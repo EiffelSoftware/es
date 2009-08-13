@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Routines used by debugger to access compiler's data..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -36,7 +36,7 @@ inherit
 
 feature -- Class c
 
-	exception_class_c: CLASS_C is
+	exception_class_c: CLASS_C
 			-- EXCEPTION class
 		local
 			cl_i: CLASS_I
@@ -47,9 +47,20 @@ feature -- Class c
 			end
 		end
 
+	any_class_c: CLASS_C
+			-- ANY class
+		local
+			cl_i: CLASS_I
+		do
+			cl_i := Eiffel_system.system.any_class
+			if cl_i /= Void then
+				Result := cl_i.compiled_class
+			end
+		end
+
 feature -- Entry point
 
-	frozen entry_point_class_feature: TUPLE [cl: CLASS_C; feat: FEATURE_I] is
+	frozen entry_point_class_feature: TUPLE [cl: CLASS_C; feat: FEATURE_I]
 			-- System entry point feature
 		local
 			cl_c: CLASS_C
@@ -69,7 +80,7 @@ feature -- Entry point
 			end
 		end
 
-	frozen entry_point_feature: E_FEATURE is
+	frozen entry_point_feature: E_FEATURE
 			-- System entry point api feature
 		local
 			t: like entry_point_class_feature
@@ -80,9 +91,19 @@ feature -- Entry point
 			end
 		end
 
+	frozen is_equal_feature (a_class: CLASS_C): FEATURE_I
+		require
+			a_class_attached: a_class /= Void
+		local
+			f: FEATURE_I
+		do
+			f := any_class_c.feature_named ("is_equal")
+			Result := fi_version_of_class (f, a_class)
+		end
+
 feature -- Type adaptation
 
-	frozen adapted_class_type (ctype: CLASS_TYPE; f: FEATURE_I): CLASS_TYPE is
+	frozen adapted_class_type (ctype: CLASS_TYPE; f: FEATURE_I): CLASS_TYPE
 			-- Adapted class_type receiving the call of `f'
 			--| Note: Only used by dotnet debugger so far.
 		local
@@ -117,7 +138,7 @@ feature -- Type adaptation
 			end
 		end
 
-	frozen ancestor_version_of (fi: FEATURE_I; an_ancestor: CLASS_C): FEATURE_I is
+	frozen ancestor_version_of (fi: FEATURE_I; an_ancestor: CLASS_C): FEATURE_I
 			-- Feature in `an_ancestor' of which `Current' is derived.
 			-- `Void' if not present in that class.
 		require
@@ -148,7 +169,7 @@ feature -- Type adaptation
 			end
 		end
 
-	frozen associated_basic_class_type (cl: CLASS_C): CLASS_TYPE is
+	frozen associated_basic_class_type (cl: CLASS_C): CLASS_TYPE
 			-- Associated classtype for type `cl'
 		require
 			cl_not_void: cl /= Void
@@ -164,7 +185,7 @@ feature -- Type adaptation
 			associated_basic_class_type_not_void: Result /= Void
 		end
 
-	frozen associated_reference_basic_class_type (cl: CLASS_C): CLASS_TYPE is
+	frozen associated_reference_basic_class_type (cl: CLASS_C): CLASS_TYPE
 			-- Associated _REF classtype for type `cl'
 			--| for instance return INTEGER_REF for INTEGER
 		require
@@ -182,7 +203,7 @@ feature -- Type adaptation
 			associated_reference_basic_class_type_not_void: Result /= Void
 		end
 
-	frozen class_c_from_type_a (t: TYPE_A; a_ctx_class: CLASS_C): CLASS_C is
+	frozen class_c_from_type_a (t: TYPE_A; a_ctx_class: CLASS_C): CLASS_C
 			-- instance of CLASS_C associated with type `t', in context of class `a_ctx_class'.
 		require
 			t_not_void: t /= Void
@@ -199,7 +220,9 @@ feature -- Type adaptation
 				if l_type.is_formal then
 					l_formal ?= l_type
 					if l_formal.is_multi_constrained (a_ctx_class) then
-						fixme("Handle multi constrained type...")
+						debug ("refactor_fixme")
+							fixme("Handle multi constrained type...")
+						end
 --						l_last_type_set := l_type.to_type_set.constraining_types (a_ctx_class)
 --						l_type := l_last_type_set.instantiated_in (a_ctx_class.actual_type)
 --						if l_type.is_formal then
@@ -219,7 +242,7 @@ feature -- Type adaptation
 			end
 		end
 
-	frozen class_c_from_type_i (a_type_i: TYPE_A): CLASS_C is
+	frozen class_c_from_type_i (a_type_i: TYPE_A): CLASS_C
 			-- Class C related to `a_type_i' if exists.
 		require
 			a_type_i_not_void: a_type_i /= Void
@@ -234,23 +257,36 @@ feature -- Type adaptation
 			end
 		end
 
-	frozen static_class_for_local (a_type: TYPE_AS; a_rout_i: FEATURE_I; a_class: CLASS_C): CLASS_C is
-			-- Static class for local represented by `a_type' and `a_rout_i'
+	frozen static_class_for_local_from_type_a (a_type_a: TYPE_A; a_rout_i: FEATURE_I; a_class: CLASS_C): CLASS_C
+			-- Static class for local represented by `a_type_a' and `a_rout_i'
 			-- `a_class' should be `a_rout_i.written_class'.
+		require
+			a_type_a_attached: a_type_a /= Void
 		local
 			l_type_a: TYPE_A
 		do
-			l_type_a := type_a_generator.evaluate_type (a_type, a_class)
 			type_a_checker.init_for_checking (a_rout_i, a_class, Void, Void)
-			l_type_a := type_a_checker.solved (l_type_a, Void)
+			l_type_a := type_a_checker.solved (a_type_a, Void)
 			if l_type_a /= Void and then l_type_a.has_associated_class then
 				Result := l_type_a.associated_class
 			end
 		end
 
+	frozen static_class_for_local (a_type: TYPE_AS; a_rout_i: FEATURE_I; a_class: CLASS_C): CLASS_C
+			-- Static class for local represented by `a_type' and `a_rout_i'
+			-- `a_class' should be `a_rout_i.written_class'.
+		local
+			l_type_a: TYPE_A
+		do
+			if a_type /= Void then
+				l_type_a := type_a_generator.evaluate_type (a_type, a_class)
+				Result := static_class_for_local_from_type_a (l_type_a, a_rout_i, a_class)
+			end
+		end
+
 feature -- Feature access
 
-	frozen feature_from_runtime_data (a_dynamic_class: CLASS_C; a_written_class: CLASS_C; a_featname: STRING): E_FEATURE is
+	frozen feature_from_runtime_data (a_dynamic_class: CLASS_C; a_written_class: CLASS_C; a_featname: STRING): E_FEATURE
 			-- Feature attached to `a_dynamic_class' from feature with name `a_feat_name' on `a_written_class'
 		require
 			written_class_attached: a_written_class /= Void
@@ -259,13 +295,13 @@ feature -- Feature access
 			f: E_FEATURE
 		do
 			if is_invariant_feature_name (a_featname) then
-				if {inv: INVARIANT_FEAT_I} a_written_class.invariant_feature then
+				if attached a_written_class.invariant_feature as inv then
 					Result := inv.api_feature (a_written_class.class_id)
 				end
 			else
 				Result := a_written_class.feature_with_name (a_featname)
 				if Result = Void then
-					if {eclc: EIFFEL_CLASS_C} a_written_class then
+					if attached {EIFFEL_CLASS_C} a_written_class as eclc then
 						Result := eclc.api_inline_agent_of_name (a_featname)
 					end
 				end
@@ -290,7 +326,7 @@ feature -- Feature access
 			end
 		end
 
-	frozen fi_version_of_class (fi: FEATURE_I; a_class: CLASS_C): FEATURE_I is
+	frozen fi_version_of_class (fi: FEATURE_I; a_class: CLASS_C): FEATURE_I
 			-- Feature in `a_class' of which `Current' is derived.
 			-- `Void' if not present in that class.
 		require
@@ -301,11 +337,11 @@ feature -- Feature access
 		do
 			if a_class.is_valid and then a_class.has_feature_table then
 				rids := fi.rout_id_set
-				Result := a_class.feature_table.feature_of_rout_id_set (fi.rout_id_set)
+				Result := a_class.feature_of_rout_id_set (rids)
 			end
 		end
 
-	frozen agent_feature_for_class_and_type_id (ct_id, fe_id: INTEGER): E_FEATURE is
+	frozen agent_feature_for_class_and_type_id (ct_id, fe_id: INTEGER): E_FEATURE
 			-- Agent feature related to `ct_id' and `fe_id'
 		require
 			id_valid: ct_id > 0 and fe_id > 0
@@ -319,7 +355,7 @@ feature -- Feature access
 				l_cc := l_ct.associated_class
 				if l_cc /= Void and then fe_id /= 0 then
 					check is_not_is_precompiled: not l_cc.is_precompiled end
-					if {l_ecc: EIFFEL_CLASS_C} l_cc then
+					if attached {EIFFEL_CLASS_C} l_cc as l_ecc then
 						Result := l_ecc.feature_with_feature_id (fe_id)
 						if Result = Void then
 							l_fi := l_ecc.inline_agent_of_id (fe_id)
@@ -333,7 +369,7 @@ feature -- Feature access
 			end
 		end
 
-	frozen agent_feature_for_origin_and_offset (a_orig, a_offset: INTEGER): E_FEATURE is
+	frozen agent_feature_for_origin_and_offset (a_orig, a_offset: INTEGER): E_FEATURE
 			-- Agent feature related to `a_orig' and `a_offset'
 		require
 			id_valid: a_orig > 0 and a_offset > 0
@@ -347,7 +383,7 @@ feature -- Feature access
 				l_cc := l_ct.associated_class
 				if l_cc /= Void then
 					check is_precompiled: l_cc.is_precompiled end
-					if {l_ecc: EIFFEL_CLASS_C} l_cc then
+					if attached {EIFFEL_CLASS_C} l_cc as l_ecc then
 						l_fi := feature_i_for_class_and_offset (l_cc, a_offset)
 						if l_fi /= Void then
 							Result := l_fi.api_feature (l_ecc.class_id)
@@ -357,9 +393,10 @@ feature -- Feature access
 			end
 		end
 
-	feature_i_for_class_and_offset (a_class: !CLASS_C; a_offset: INTEGER): FEATURE_I
+	feature_i_for_class_and_offset (a_class: CLASS_C; a_offset: INTEGER): FEATURE_I
 			-- Feature associated with `a_class' and `a_offset'
 		require
+			a_class_attached: a_class /= Void
 			a_class_precompiled: a_class.is_precompiled
 		local
 			ri_table: ROUT_INFO_TABLE
@@ -371,7 +408,7 @@ feature -- Feature access
 			until
 				ri_table.after or rid /= 0
 			loop
-				if {ri: ROUT_INFO} ri_table.item_for_iteration then
+				if attached ri_table.item_for_iteration as ri then
 					if
 						ri.offset = a_offset and
 						ri.origin = a_class.class_id
@@ -386,7 +423,7 @@ feature -- Feature access
 			end
 		end
 
-	frozen real_feature (a_feat: E_FEATURE): E_FEATURE is
+	frozen real_feature (a_feat: E_FEATURE): E_FEATURE
 			-- real feature of `a_feat'
 			-- i.e: either `a_feat' or the feature inlining `a_feat' in case of inline agent
 		require
@@ -420,7 +457,7 @@ feature -- Feature access
 
 feature -- Access on Byte node
 
-	frozen feature_i_from_call_access_b_in_context (cl: CLASS_C; a_call_access_b: CALL_ACCESS_B): FEATURE_I is
+	frozen feature_i_from_call_access_b_in_context (cl: CLASS_C; a_call_access_b: CALL_ACCESS_B): FEATURE_I
 			-- Return FEATURE_I corresponding to `a_call_access_b' in class `cl'
 			-- (this handles the feature renaming cases)
 		require
@@ -430,6 +467,7 @@ feature -- Access on Byte node
 			wcl: CLASS_C
 			l_cl: CLASS_C
 		do
+			--FIXME:jfiat:2009-03-27: review this code, since it looks pretty complicated ...
 			if cl.is_basic then
 				l_cl := associated_reference_basic_class_type (cl).associated_class
 				Result := l_cl.feature_of_rout_id (a_call_access_b.routine_id)
@@ -440,12 +478,15 @@ feature -- Access on Byte node
 				else
 					Result := cl.feature_of_rout_id (a_call_access_b.routine_id)
 					if Result = Void then
-							--| let's search from written_class
-						wcl := eiffel_system.class_of_id (a_call_access_b.written_in)
-						check wcl_not_void: wcl /= Void end
-						Result := wcl.feature_of_rout_id (a_call_access_b.routine_id)
-						if Result /= Void and then wcl /= cl then
-							Result := fi_version_of_class (Result, cl)
+						Result := cl.feature_of_name_id (a_call_access_b.feature_name_id)
+						if Result = Void then
+								--| let's search from written_class
+							wcl := eiffel_system.class_of_id (a_call_access_b.written_in)
+							check wcl_not_void: wcl /= Void end
+							Result := wcl.feature_of_rout_id (a_call_access_b.routine_id)
+							if Result /= Void and then wcl /= cl then
+								Result := fi_version_of_class (Result, cl)
+							end
 						end
 					end
 					if Result = Void then
@@ -466,7 +507,7 @@ feature -- Access on Byte node
 			end
 		end
 
-	frozen class_c_from_expr_b (a_expr_b: EXPR_B): CLASS_C is
+	frozen class_c_from_expr_b (a_expr_b: EXPR_B): CLASS_C
 			-- Class C related to `a_expr_b' if exists.
 		require
 			a_expr_b_not_void: a_expr_b /= Void
@@ -481,7 +522,7 @@ feature -- Access on Byte node
 
 feature -- Query
 
-	frozen descendants_type_names_for (n: STRING): DS_LIST [STRING] is
+	frozen descendants_type_names_for (n: STRING): DS_LIST [STRING]
 			-- CLASS_C associated to `n'
 		require
 			n_not_void: n /= Void
@@ -512,7 +553,7 @@ feature -- Query
 			Result /= Void implies Result.equality_tester /= Void
 		end
 
-	frozen descendants_type_names (cl: CLASS_C): DS_LIST [STRING] is
+	frozen descendants_type_names (cl: CLASS_C): DS_LIST [STRING]
 			-- Type names for available EXCEPTION types
 		local
 			lst: LIST [CLASS_C]
@@ -536,7 +577,7 @@ feature -- Query
 
 		end
 
-	frozen descendants_from (cl: CLASS_C): ARRAYED_LIST [CLASS_C] is
+	frozen descendants_from (cl: CLASS_C): ARRAYED_LIST [CLASS_C]
 			-- Descendant of class `cl'.
 		require
 			cl_not_void: cl /= Void
@@ -572,8 +613,8 @@ feature -- Status report
 	invariant_routine_name: STRING = "_invariant"
 			-- Invariant's feature name
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -586,22 +627,22 @@ feature -- Status report
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

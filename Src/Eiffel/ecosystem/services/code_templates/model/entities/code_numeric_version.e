@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Represents a code model numeric 4-part version, for template versioning.
 	]"
@@ -20,7 +20,7 @@ inherit
 			is_compatible_with,
 			is_equal,
 			on_version_changed,
-			infix "<"
+			is_less
 		end
 
 create
@@ -30,15 +30,20 @@ create
 feature {NONE} -- Initialization
 
 	make (a_major: like major; a_minor: like minor; a_revision: like revision; a_qfe: like qfe)
-			-- Initialize new instance {CT_NUMERIC_VERSION}.
+			-- Initialize new instance of a numeric version number.
+			--
+			-- `a_major': The major version number part
+			-- `a_minor': The minor version number part
+			-- `a_revision': The revision version number part
+			-- `a_qfe': The quick fix engineering version number part
 		do
 			rebuild_version
 			set_full_version (a_major, a_minor, a_revision, a_qfe)
 		ensure
 			major_set: major = a_major
-			minor_assigned: minor = a_minor
-			revision_assigned: revision = a_revision
-			qfe_assigned: qfe = a_qfe
+			minor_set: minor = a_minor
+			revision_set: revision = a_revision
+			qfe_set: qfe = a_qfe
 		end
 
 feature -- Access
@@ -57,10 +62,12 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	frozen format_utilities: !CODE_FORMAT_UTILITIES
+	frozen format_utilities: CODE_FORMAT_UTILITIES
 			-- Access to code formatting utilities
 		once
 			create Result
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Element change
@@ -73,7 +80,7 @@ feature -- Element change
 				rebuild_version
 			end
 		ensure
-			major_assigned: major = a_major
+			major_set: major = a_major
 		end
 
 	set_minor (a_minor: like minor)
@@ -84,7 +91,7 @@ feature -- Element change
 				rebuild_version
 			end
 		ensure
-			minor_assigned: minor = a_minor
+			minor_set: minor = a_minor
 		end
 
 	set_revision (a_revision: like revision)
@@ -95,7 +102,7 @@ feature -- Element change
 				rebuild_version
 			end
 		ensure
-			revision_assigned: revision = a_revision
+			revision_set: revision = a_revision
 		end
 
 	set_qfe (a_qfe: like qfe)
@@ -106,7 +113,7 @@ feature -- Element change
 				rebuild_version
 			end
 		ensure
-			qfe_assigned: qfe = a_qfe
+			qfe_set: qfe = a_qfe
 		end
 
 	set_full_version (a_major: like major; a_minor: like minor; a_revision: like revision; a_qfe: like qfe)
@@ -124,9 +131,9 @@ feature -- Element change
 			rebuild_version
 		ensure
 			major_set: major = a_major
-			minor_assigned: minor = a_minor
-			revision_assigned: revision = a_revision
-			qfe_assigned: qfe = a_qfe
+			minor_set: minor = a_minor
+			revision_set: revision = a_revision
+			qfe_set: qfe = a_qfe
 		end
 
 feature -- Query
@@ -142,18 +149,18 @@ feature -- Query
 			a_version_matches_version_regex: Result implies format_utilities.version_regex.matches (a_version)
 		end
 
-	is_compatible_with (a_other: !CODE_VERSION): BOOLEAN
+	is_compatible_with (a_other: CODE_VERSION): BOOLEAN
 			-- <Precursor>
 		do
 			Result := Precursor (a_other)
-			if not Result and then {l_numeric_ver: !like Current} a_other then
+			if Result and then attached {like Current} a_other as l_numeric_ver then
 				Result := l_numeric_ver > Current
 			end
 		end
 
 feature -- Visitor
 
-	process (a_visitor: !CODE_TEMPLATE_VISITOR_I)
+	process (a_visitor: CODE_TEMPLATE_VISITOR_I)
 			-- <Precursor>
 		do
 		end
@@ -163,9 +170,7 @@ feature {NONE} -- Basic operations
 	rebuild_version
 			-- Rebuilds the raw version string from the current set version parts
 		do
-			if {l_cur: !like Current} Current then
-				version := format_utilities.to_version_string (l_cur)
-			end
+			version := format_utilities.to_version_string (Current)
 		end
 
 feature {NONE} -- Actions handlers
@@ -175,7 +180,7 @@ feature {NONE} -- Actions handlers
 		do
 			Precursor {CODE_VERSION} (a_old)
 
-			if {l_version: !CODE_NUMERIC_VERSION} format_utilities.parse_version (version, create {!CODE_FACTORY}) then
+			if attached {CODE_NUMERIC_VERSION} format_utilities.parse_version (version, create {attached CODE_FACTORY}) as l_version then
 				major := l_version.major
 				minor := l_version.minor
 				revision := l_version.revision
@@ -193,23 +198,23 @@ feature {NONE} -- Actions handlers
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: CODE_VERSION): BOOLEAN
 			-- <Precursor>
 		do
-			if {l_other: !CODE_NUMERIC_VERSION} other then
+			if attached {CODE_NUMERIC_VERSION} other as l_other then
 				Result := major < l_other.major or else
 					(major = l_other.major and then (minor < l_other.minor or else
 						(minor = l_other.minor and then (revision < l_other.revision or else
 							(revision = l_other.revision and then qfe < l_other.qfe)))))
 			else
-				Result := False
+				Result := True
 			end
 		end
 
 	is_equal (other: like Current): BOOLEAN
 			-- <Precursor>
 		do
-			if {l_other: !CODE_NUMERIC_VERSION} other then
+			if attached {CODE_NUMERIC_VERSION} other as l_other then
 				Result := major < l_other.major and then
 					major = l_other.major and then
 					revision = l_other.revision and then
@@ -219,8 +224,8 @@ feature -- Comparison
 			end
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -233,22 +238,22 @@ feature -- Comparison
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

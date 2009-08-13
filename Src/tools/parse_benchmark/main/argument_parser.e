@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Argument parser for parser benchmark test application."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -29,10 +29,10 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	name: !STRING = "Eiffel Parser SpeedMark"
+	name: STRING = "Eiffel Parser SpeedMark"
 			-- <Precursor>
 
-	version: !STRING
+	version: STRING
 			-- <Precursor>
 		once
 			create Result.make (5)
@@ -41,52 +41,70 @@ feature {NONE} -- Access
 			Result.append_natural_16 ({EIFFEL_ENVIRONMENT_CONSTANTS}.minor_version)
 		end
 
-	switches: !ARRAYED_LIST [!ARGUMENT_SWITCH]
+	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			-- <Precursor>
 		once
 			create Result.make (5)
-			Result.extend (create {ARGUMENT_SWITCH}.make (null_switch, "Test parser using AST_NULL_FACTORY%N(exclude when using -all.)", True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (basic_switch, "Test parser using AST_FACTORY%N(exclude when using -all.)", True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (lite_switch, "Test parser using AST_ROUNDTRIP_LIGHT_FACTORY%N(exclude when using -all.)", True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (roundtrip_switch, "Test parser using AST_ROUNDTRIP_FACTORY%N(exclude when using -all.)", True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (all_switch, "Test parser using all factories.", True, False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (factory_switch, "Type of factory", False, True, "Type of factory", "One of null, basic, lite, roundtrip or all", False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (parser_level_switch, "Type of parser%N(default is transitional)", True, True, "Type of parser", "One of obsolete, transitional or standard", False))
 			Result.extend (create {ARGUMENT_FILE_OR_DIRECTORY_SWITCH}.make (location_switch, "Location of a file or directory to test parser with.", True, False, "location", "A file or directory to parse contents of.", False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (recursive_switch, "Should location be recursively searched?", True, False))
 			Result.extend (create {ARGUMENT_INTEGER_SWITCH}.make_with_range (error_switch, "Number of times the same file should be parsed to remove fuzzyness%N(default is 5.)", True, False, "count", "Number of parses to perform to retrieve mean parsed time.", False, 1, {NATURAL_8}.max_value))
 				-- Parser does not work using file names.
-			--Result.extend (create {ARGUMENT_SWITCH}.make (disk_access_switch, "Includes parser file loading times.", True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (disk_access_switch, "Includes parser file loading times.", True, False))
 		end
 
 feature -- Status Report
 
+	process_standard_syntax: BOOLEAN
+			-- Indicates standard syntax is to be used
+		once
+			Result := options_values_of_name (parser_level_switch).has ("standard")
+		end
+
+	process_transitional_syntax: BOOLEAN
+			-- Indicates transitional syntax is to be used
+		once
+			Result := not process_Standard_syntax or not process_obsolete_syntax
+		end
+
+	process_obsolete_syntax: BOOLEAN
+			-- Indicates obsolete syntax is to be used
+		once
+			Result := options_values_of_name (parser_level_switch).has ("obsolete")
+		end
+
 	process_null_factory: BOOLEAN
 			-- Indicates if AST_NULL_FACTORY should be tested.
 		once
-			Result := proces_all_factories xor has_option (null_switch)
+			Result := proces_all_factories or options_values_of_name (factory_switch).has ("null")
 		end
 
 	process_basic_factory: BOOLEAN
 			-- Indicates if AST_FACTORY should be tested.
 		once
-			Result := proces_all_factories xor has_option (basic_switch)
+			Result := proces_all_factories or options_values_of_name (factory_switch).has ("basic")
 		end
 
 	process_lite_factory: BOOLEAN
 			-- Indicates if AST_ROUNDTRIP_LIGHT_FACTORY should be tested.
 		once
-			Result := proces_all_factories xor has_option (lite_switch)
+			Result := proces_all_factories or options_values_of_name (factory_switch).has ("lite")
+
 		end
 
 	process_roundtrip_factory: BOOLEAN
 			-- Indicates if AST_ROUNDTRIP_FACTORY should be tested.
 		once
-			Result := proces_all_factories xor has_option (roundtrip_switch)
+			Result := proces_all_factories or options_values_of_name (factory_switch).has ("roundtrip")
+
 		end
 
 	proces_all_factories: BOOLEAN
 			-- Indicates if all AST_FACTORYs should be tested.
 		once
-			Result := has_option (all_switch)
+			Result := options_values_of_name (factory_switch).has ("all")
+
 		end
 
 	test_disk_access: BOOLEAN
@@ -108,15 +126,16 @@ feature -- Status Report
 
 feature -- Access
 
-	location: !STRING
+	location: STRING
 			-- Location of files to use
 		once
 			if has_option (location_switch) then
 				Result := option_of_name (location_switch).value
 			else
-				Result := (create {EXECUTION_ENVIRONMENT}).current_working_directory.as_attached
+				Result := (create {EXECUTION_ENVIRONMENT}).current_working_directory
 			end
 		ensure
+			location_not_void: Result /= Void
 			not_result_is_empty: not Result.is_empty
 			result_exists: (create {RAW_FILE}.make (Result)).exists or (create {DIRECTORY}.make (Result)).exists
 		end
@@ -139,7 +158,7 @@ feature -- Access
 
 feature {NONE} -- Basic Operations
 
-	execute_noop (a_agent: !PROCEDURE [ANY, TUPLE]) is
+	execute_noop (a_agent: PROCEDURE [ANY, TUPLE])
 			-- <Precursor>
 		do
 			display_usage
@@ -147,15 +166,12 @@ feature {NONE} -- Basic Operations
 
 feature {NONE} -- Switch names
 
-	null_switch: !STRING = "n|null"
-	basic_switch: !STRING = "b|basic"
-	lite_switch: !STRING = "l|lite"
-	roundtrip_switch: !STRING = "o|roundtrip"
-	all_switch: !STRING = "a|all"
-			-- Factory switches
+	factory_switch: STRING = "f|factory"
+	parser_level_switch: STRING = "s|syntax_level"
+			-- Factory switch
 
-	location_switch: !STRING = "l|location"
-	recursive_switch: !STRING = "r|recursive"
+	location_switch: STRING = "l|location"
+	recursive_switch: STRING = "r|recursive"
 			-- Location switches
 
 	error_switch: STRING = "e|error"
@@ -163,9 +179,9 @@ feature {NONE} -- Switch names
 			-- Test related switches
 
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -177,22 +193,22 @@ feature {NONE} -- Switch names
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

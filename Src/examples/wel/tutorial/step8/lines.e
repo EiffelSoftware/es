@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -8,15 +8,15 @@ inherit
 	LINKED_LIST [LINE]
 
 	STORABLE
-                undefine
-                        is_equal,
-                        copy
-                end
+		undefine
+			is_equal,
+			copy
+		end
 
 create
 	make
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

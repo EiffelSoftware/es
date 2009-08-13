@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		The ecosystem's default implementation for the {EVENT_LIST_S} interface.
 		It performs the simple event of managing event items and raising the appropriate events to any and all subscribers.
@@ -13,8 +13,13 @@ class
 
 inherit
 	EVENT_LIST_S
+		select
+			event_list_connection
+		end
 
-	EVENT_OBSERVER_CONNECTION [EVENT_LIST_OBSERVER]
+	DISPOSABLE_SAFE
+
+	LOCKABLE
 
 create
 	make
@@ -36,6 +41,24 @@ feature {NONE} -- Initialization
 			auto_dispose (item_changed_event)
 			create item_adopted_event
 			auto_dispose (item_adopted_event)
+		end
+
+feature {NONE} -- Clean up
+
+	safe_dispose (a_explicit: BOOLEAN)
+			-- <Precursor>
+		do
+			if a_explicit then
+				if internal_event_items /= Void then
+					internal_event_items.wipe_out
+				end
+				if internal_event_items_index /= Void then
+					internal_event_items_index.wipe_out
+				end
+			end
+		ensure then
+			internal_event_items_is_empty: internal_event_items /= Void implies internal_event_items.is_empty
+			internal_event_items_index_is_empty: internal_event_items_index /= Void implies internal_event_items_index.is_empty
 		end
 
 feature -- Access
@@ -130,32 +153,44 @@ feature -- Removal
 			l_index_events: DS_ARRAYED_LIST [EVENT_LIST_ITEM_I]
 			l_event_items: DS_ARRAYED_LIST [EVENT_LIST_ITEM_I]
 			l_event_item: EVENT_LIST_ITEM_I
+			l_locked: BOOLEAN
 		do
 			if internal_event_items_index.has (a_context_cookie) then
 				l_index_events := internal_event_items_index.item (a_context_cookie)
 				if l_index_events /= Void then
+					lock
+					l_locked := True
+
 					l_event_items := internal_event_items
-					from l_index_events.start until l_index_events.after loop
+						-- Iterate backwards as it is more optimal when removing items.
+					from l_index_events.finish until l_index_events.before loop
 						l_event_item := l_index_events.item_for_iteration
 
-						from l_event_items.start until l_event_items.after loop
-							l_event_items.search_forth (l_event_item)
-							if not l_event_items.after then
+						from l_event_items.finish until l_event_items.before loop
+							l_event_items.search_back (l_event_item)
+							if not l_event_items.before then
 									-- Remove event
 								l_event_items.remove_at
 
 									-- Fire events
 								on_item_removed (l_event_item)
-								l_event_items.start
+								l_event_items.finish
 							end
 						end
 
-						l_index_events.forth
+						l_index_events.back
 					end
 
 						-- Remove all index events
 					internal_event_items_index.remove (a_context_cookie)
+
+					unlock
+					l_locked := False
 				end
+			end
+		rescue
+			if l_locked then
+				unlock
 			end
 		end
 
@@ -209,17 +244,41 @@ feature -- Basic operations
 
 feature -- Events
 
-	item_added_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_added_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- <Precursor>
 
-	item_removed_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_removed_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- <Precursor>
 
-	item_changed_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_changed_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- <Precursor>
 
-	item_adopted_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I; new_cookie: UUID; old_cookie: UUID]]
+	item_adopted_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I; new_cookie: UUID; old_cookie: UUID]]
 			-- <Precursor>
+
+feature -- Events: Connection point
+
+	event_list_connection: attached EVENT_CONNECTION_I [EVENT_LIST_OBSERVER, EVENT_LIST_S]
+			-- <Precursor>
+		local
+			l_result: like internal_event_list_connection
+		do
+			l_result := internal_event_list_connection
+			if l_result = Void then
+				create {EVENT_CHAINED_CONNECTION [EVENT_LIST_OBSERVER, EVENT_LIST_S, LOCKABLE_OBSERVER, LOCKABLE_I]} Result.make (
+					agent (ia_observer: EVENT_LIST_OBSERVER): ARRAY [TUPLE [event: EVENT_TYPE [TUPLE]; action: PROCEDURE [ANY, TUPLE]]]
+						do
+							Result := << [item_added_event, agent ia_observer.on_event_item_added],
+								[item_adopted_event, agent ia_observer.on_event_item_adopted],
+								[item_changed_event, agent ia_observer.on_event_item_changed],
+								[item_removed_event, agent ia_observer.on_event_item_removed] >>
+						end, lockable_connection)
+				automation.auto_dispose (Result)
+				internal_event_list_connection := Result
+			else
+				Result := l_result
+			end
+		end
 
 feature {NONE} -- Events
 
@@ -237,7 +296,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_item_removed (a_event_item: EVENT_LIST_ITEM_I) is
+	on_item_removed (a_event_item: EVENT_LIST_ITEM_I)
 			-- Called after a event item has been removed from the service `a_service'
 			--
 			-- `a_event_item': The event item removed from the service.
@@ -289,7 +348,7 @@ feature {NONE} -- Events
 			end
 		end
 
-feature {NONE} -- Internal implementation cache
+feature {NONE} -- Implementation: Internal cache
 
 	internal_event_items: DS_ARRAYED_LIST [EVENT_LIST_ITEM_I]
 			-- Mutable events, ordered by addition for the purpose of correct indexing
@@ -297,16 +356,20 @@ feature {NONE} -- Internal implementation cache
 	internal_event_items_index: DS_HASH_TABLE [DS_ARRAYED_LIST [EVENT_LIST_ITEM_I], UUID]
 			-- Mutable event index for fast and context-based access
 
+	internal_event_list_connection: detachable like event_list_connection
+			-- Cached version of `event_list_connection'.
+			-- Note: Do not use directly!
+
 invariant
-	internal_event_items_attached: internal_event_items /= Void
+	internal_event_items_attached: attached internal_event_items
 	internal_event_items_contains_attached_items: not internal_event_items.has (Void)
-	internal_event_items_index_attached: internal_event_items_index /= Void
+	internal_event_items_index_attached: attached  internal_event_items_index
 	internal_event_items_index_contains_attached_items: not internal_event_items_index.has_item (Void)
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -317,22 +380,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

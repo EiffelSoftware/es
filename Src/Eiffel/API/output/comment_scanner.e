@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Scanners for Eiffel comment"
 	legal: "See notice at end of class."
@@ -14,9 +14,10 @@ inherit
 create
 	make_with_text_formatter
 
+
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN is
+	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= BREAK_TOKEN)
@@ -24,7 +25,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables is
+	yy_build_tables
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -36,14 +37,14 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER) is
+	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
 			inspect yy_act
 when 1 then
---|#line 38 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 38")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				if seperate_comment then
@@ -54,36 +55,36 @@ end
 				less (0)
 			
 when 2 then
---|#line 53 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 53")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
 				add_email_tokens
 			
 when 3 then
---|#line 59 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 59")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 	
 				append_buffer
 				add_url_tokens				
 			
 when 4 then
---|#line 65 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 65")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
 				add_quote_feature
 			
 when 5 then
---|#line 71 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 71")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
@@ -93,68 +94,68 @@ end
 				less (text_count - 2)
 			
 when 6 then
---|#line 79 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 79")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
 				add_class (False)
 			
 when 7 then
---|#line 85 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 85")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
 				add_cluster
 			
 when 8 then
---|#line 90 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 90")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
 				text_formatter.process_new_line
 			
 when 9 then
---|#line 95 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 95")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				buffer_token
 			
 when 10 then
---|#line 102 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 102")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_email_tokens
 			
 when 11 then
---|#line 107 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 107")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 				
 				add_url_tokens				
 			
 when 12 then
---|#line 112 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 112")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_quote_feature
 			
 when 13 then
---|#line 117 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 117")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_class (True)
@@ -163,71 +164,72 @@ end
 				less (text_count - 2)
 			
 when 14 then
---|#line 125 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 125")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_class (False)
 			
 when 15 then
---|#line 130 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 130")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_cluster
 			
 when 16 then
---|#line 134 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 134")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				text_formatter.process_new_line
 			
 when 17 then
---|#line 139 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 139")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_normal_text
 			
 when 18 then
---|#line 143 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 143")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
+
 			
 when 19 then
---|#line 146 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 146")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_normal_text
 			
 when 20 then
---|#line 151 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 151")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_normal_text	
 			
 when 21 then
---|#line 157 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 157")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				add_dot_feature
 			
 when 22 then
---|#line 160 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 160")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				less (0)
@@ -235,9 +237,9 @@ end
 				reset_last_type
 			
 when 23 then
---|#line 0 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 last_token := yyError_token
 fatal_error ("scanner jammed")
@@ -247,14 +249,14 @@ fatal_error ("scanner jammed")
 			end
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER) is
+	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
 when 0, 1, 2, 3 then
---|#line 0 "comment_scanner.l"
+--|#line <not available> "comment_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'comment_scanner.l' at line <not available>")
 end
 
 				append_buffer
@@ -267,7 +269,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER] is
+	yy_nxt_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,   13,   13,   14,   13,   13,   13,   13,   13,   13,
@@ -368,7 +370,7 @@ feature {NONE} -- Table templates
 			  166,  166,  166,  166,  166,  166,  166,  166,  166,  166, yy_Dummy>>)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER] is
+	yy_chk_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    5,    5,    5,    5,    5,    5,    5,    5,    5,
@@ -469,7 +471,7 @@ feature {NONE} -- Table templates
 			  166,  166,  166,  166,  166,  166,  166,  166,  166,  166, yy_Dummy>>)
 		end
 
-	yy_base_template: SPECIAL [INTEGER] is
+	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,  827,  826,    0,    0,   41,    0,  822,
@@ -494,7 +496,7 @@ feature {NONE} -- Table templates
 			  782,  799,  817, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER] is
+	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,  167,  167,  168,  168,  166,    5,  166,    7,  166,
@@ -519,7 +521,7 @@ feature {NONE} -- Table templates
 			  166,  166,  166, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER] is
+	yy_ec_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -552,7 +554,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER] is
+	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    2,    2,    2,    1,    1,    3,    4,    1,
@@ -562,7 +564,7 @@ feature {NONE} -- Table templates
 			    1,    4, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER] is
+	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,   24,
@@ -587,53 +589,55 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 838
+	yyJam_base: INTEGER = 838
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 166
+	yyJam_state: INTEGER = 166
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 167
+	yyTemplate_mark: INTEGER = 167
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER is 1
+	yyNull_equiv_class: INTEGER = 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN is false
+	yyReject_used: BOOLEAN = false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN is false
+	yyVariable_trail_context: BOOLEAN = false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN is false
+	yyReject_or_variable_trail_context: BOOLEAN = false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 23
+	yyNb_rules: INTEGER = 23
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 24
+	yyEnd_of_buffer: INTEGER = 24
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN is false
+	yyLine_used: BOOLEAN = false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN is false
+	yyPosition_used: BOOLEAN = false
 			-- Is `position' used?
 
-	INITIAL: INTEGER is 0
-	DOT_FEATURE: INTEGER is 1
-	NOT_BREAK_TOKEN: INTEGER is 2
-	BREAK_TOKEN: INTEGER is 3
+	INITIAL: INTEGER = 0
+	DOT_FEATURE: INTEGER = 1
+	NOT_BREAK_TOKEN: INTEGER = 2
+	BREAK_TOKEN: INTEGER = 3
 			-- Start condition codes
 
 feature -- User-defined features
 
-indexing
+
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

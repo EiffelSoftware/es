@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Enlarged access to an Eiffel attribute
@@ -30,7 +30,7 @@ feature
 	parent: NESTED_B
 			-- Parent of the current call
 
-	set_parent (p: NESTED_B) is
+	set_parent (p: NESTED_B)
 			-- Assign `p' to `parent'
 		do
 			parent := p
@@ -42,13 +42,13 @@ feature
 	basic_register: REGISTRABLE
 			-- Register used to store the metamorphosed simple type
 
-	set_register (r: REGISTRABLE) is
+	set_register (r: REGISTRABLE)
 			-- Set current register to `r'
 		do
 			register := r
 		end
 
-	free_register is
+	free_register
 			-- Free registers
 		do
 			Precursor {ATTRIBUTE_B}
@@ -57,7 +57,7 @@ feature
 			end
 		end
 
-	analyze is
+	analyze
 			-- Analyze attribute
 		do
 debug
@@ -72,7 +72,7 @@ io.error.put_string ("Out attribute_bl%N")
 end
 		end
 
-	analyze_on (reg: REGISTRABLE) is
+	analyze_on (reg: REGISTRABLE)
 			-- Analyze access to attribute on `reg'
 		local
 			tmp_register: REGISTER
@@ -103,19 +103,19 @@ io.error.put_new_line
 end
 		end
 
-	generate_on (reg: REGISTRABLE) is
+	generate_on (reg: REGISTRABLE)
 			-- Generate call of feature on `reg'
 		do
 			do_generate (reg)
 		end
 
-	generate_access is
+	generate_access
 			-- Generate access to attribute
 		do
 			do_generate (Current_register)
 		end
 
-	check_dt_current (reg: REGISTRABLE) is
+	check_dt_current (reg: REGISTRABLE)
 			-- Check whether we need to compute the dynamic type of current
 			-- and call context.add_dt_current accordingly. The parameter
 			-- `reg' is the entity on which the access is made.
@@ -133,7 +133,7 @@ end
 			end
 		end
 
-	is_polymorphic: BOOLEAN is
+	is_polymorphic: BOOLEAN
 			-- Is access polymorphic ?
 		local
 			class_type: CL_TYPE_A
@@ -146,15 +146,15 @@ end
 			end
 		end
 
-	generate_access_on_type (reg: REGISTRABLE; typ: CL_TYPE_A) is
+	generate_access_on_type (reg: REGISTRABLE; typ: CL_TYPE_A)
 			-- Generate attribute in a `typ' context
 		local
 			table_name: STRING
-			offset_class_type: CLASS_TYPE
 			type_c: TYPE_C
 			type_i: TYPE_A
 			buf: GENERATION_BUFFER
 			array_index: INTEGER
+			l_attr: ATTR_TABLE [ATTR_ENTRY]
 		do
 			buf := buffer
 			type_i := real_type (type)
@@ -202,18 +202,16 @@ end
 					-- Remember external attribute offset declaration
 				Extern_declarations.add_attribute_table (table_name)
 			else
+
 					-- Hardwire the offset
-				offset_class_type := typ.associated_class_type (context.context_class_type.type)
-					--| In this instruction, we put `False' as second
-					--| arguments. This means we won't generate anything if there is nothing
-					--| to generate. Remember that `True' is used in the generation of attributes
-					--| table in Final mode.
-				offset_class_type.skeleton.generate_offset (buf, real_feature_id (typ), False, True)
+				l_attr ?= eiffel_table.poly_table (routine_id)
+				check l_attr_not_void: l_attr /= Void end
+				l_attr.generate_attribute_offset (buf, typ, context.context_class_type)
 			end
 			buf.put_character (')')
 		end
 
-	fill_from (a: ATTRIBUTE_B) is
+	fill_from (a: ATTRIBUTE_B)
 			-- Fill in node with attribute `a'
 		do
 			attribute_name_id := a.attribute_name_id
@@ -223,8 +221,8 @@ end
 			multi_constraint_static := a.multi_constraint_static
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -237,22 +235,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

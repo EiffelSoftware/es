@@ -1,4 +1,4 @@
-indexing
+note
 	description: "COM interface for metadata consumer"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7,7 +7,7 @@ indexing
 	metadata:
 		create {COM_VISIBLE_ATTRIBUTE}.make (True) end,
 		create {CLASS_INTERFACE_ATTRIBUTE}.make ({CLASS_INTERFACE_TYPE}.none) end,
-		create {GUID_ATTRIBUTE}.make ("E1FFE1AC-C5BD-492B-924A-8DBC9D2112F5") end
+		create {GUID_ATTRIBUTE}.make ("E1FFE1AC-C88F-4CD5-BBCB-1B1B82308654") end
 
 frozen class
 	COM_CACHE_MANAGER
@@ -30,30 +30,33 @@ feature -- Access
 	is_initialized: BOOLEAN
 			-- has COM object been initialized?
 
-	last_error_message: SYSTEM_STRING
+	last_error_message: detachable SYSTEM_STRING
 			-- Last error message
 
 feature -- Basic Exportations
 
-	initialize is
+	initialize
 			-- initialize the object using default path to EAC
 		local
 			l_sub: AR_RESOLVE_SUBSCRIBER
 			l_resolver: AR_RESOLVER
+			l_current_domain: detachable APP_DOMAIN
 		do
 			create l_sub.make
 			create l_resolver.make_with_name ("Initializing Resolver")
-			l_sub.subscribe ({APP_DOMAIN}.current_domain, l_resolver)
+			l_current_domain := {APP_DOMAIN}.current_domain
+			check l_current_domainattached: l_current_domain /= Void end
+			l_sub.subscribe (l_current_domain, l_resolver)
 
 				-- Turn of all security to prevent any security exceptions
 			{SECURITY_MANAGER}.set_security_enabled (False)
 
 			is_initialized := True
 
-			{APP_DOMAIN}.current_domain.add_domain_unload (create {EVENT_HANDLER}.make (Current, $on_unload_top_level_domain))
+			l_current_domain.add_domain_unload (create {EVENT_HANDLER}.make (Current, $on_unload_top_level_domain))
 		end
 
-	initialize_with_path (a_path: SYSTEM_STRING) is
+	initialize_with_path (a_path: SYSTEM_STRING)
 			-- initialize object with path to specific EAC and initializes it if not already done.
 		local
 			cr: CACHE_READER
@@ -71,48 +74,45 @@ feature -- Basic Exportations
 			is_initialized := True
 		end
 
-	unload is
+	unload
 			-- unloads initialized app domain and cache releated objects to preserve resources
-		local
-			l_impl: MARSHAL_CACHE_MANAGER
 		do
 			if internal_marshalled_cache_manager /= Void then
-				l_impl := new_marshalled_cache_manager
-				l_impl.prepare_for_unload
-				if app_domain /= Void then
+				if attached new_marshalled_cache_manager as l_impl then
+					l_impl.prepare_for_unload
+				end
+				if attached app_domain as l_domain then
 					internal_marshalled_cache_manager := Void
-					if not app_domain.is_finalizing_for_unload then
-						{APP_DOMAIN}.unload (app_domain)
+					if not l_domain.is_finalizing_for_unload then
+						{APP_DOMAIN}.unload (l_domain)
 					end
 					app_domain := Void
 				end
 			end
 		end
 
-	consume_assembly (a_name, a_version, a_culture, a_key: SYSTEM_STRING; a_info_only: BOOLEAN) is
+	consume_assembly (a_name: SYSTEM_STRING; a_version, a_culture, a_key: detachable SYSTEM_STRING; a_info_only: BOOLEAN)
 			-- consume an assembly using it's display name parts.
 			-- "`a_name', Version=`a_version', Culture=`a_culture', PublicKeyToken=`a_key'"
-		local
-			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl := new_marshalled_cache_manager
-			l_impl.consume_assembly (a_name, a_version, a_culture, a_key, a_info_only)
-			update_current (l_impl)
+			if attached new_marshalled_cache_manager as l_impl then
+				l_impl.consume_assembly (a_name, a_version, a_culture, a_key, a_info_only)
+				update_current (l_impl)
+			end
 		end
 
-	consume_assembly_from_path (a_path: SYSTEM_STRING; a_info_only: BOOLEAN; a_references: SYSTEM_STRING) is
+	consume_assembly_from_path (a_path: SYSTEM_STRING; a_info_only: BOOLEAN; a_references: detachable SYSTEM_STRING)
 			-- Consume assembly located `a_path'
-		local
-			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl := new_marshalled_cache_manager
-			l_impl.consume_assembly_from_path (a_path, a_info_only, a_references)
-			update_current (l_impl)
+			if attached new_marshalled_cache_manager as l_impl then
+				l_impl.consume_assembly_from_path (a_path, a_info_only, a_references)
+				update_current (l_impl)
+			end
 		end
 
 feature {NONE} -- Event Handlers
 
-	on_unload_top_level_domain (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
+	on_unload_top_level_domain (a_sender: detachable SYSTEM_OBJECT; a_args: detachable EVENT_ARGS)
 			-- Called when top level domain is unloaded.
 		do
 				-- Exits notifier
@@ -121,7 +121,7 @@ feature {NONE} -- Event Handlers
 
 feature {NONE} -- Lifetime Service Sponsorship
 
-	renewal (lease: ILEASE): TIME_SPAN is
+	renewal (lease: detachable ILEASE): TIME_SPAN
 			-- Renews lease.
 		do
 			Result := {TIME_SPAN}.from_days (1)
@@ -131,9 +131,9 @@ feature {NONE} -- Lifetime Service Sponsorship
 
 feature {NONE} -- Implementation
 
-	update_current (a_impl: MARSHAL_CACHE_MANAGER) is
+	update_current (a_impl: MARSHAL_CACHE_MANAGER)
 			-- Update Current with `a_impl'.
-		indexing
+		note
 			metadata: create {COM_VISIBLE_ATTRIBUTE}.make (False) end
 		require
 			a_impl_not_void: a_impl /= Void
@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 			last_error_message := a_impl.last_error_message
 		end
 
-	new_marshalled_cache_manager: MARSHAL_CACHE_MANAGER is
+	new_marshalled_cache_manager: detachable MARSHAL_CACHE_MANAGER
 			-- New instance of {MARSHAL_CACHE_MANAGER} created in `a_app_domain'.
 		local
 			retried_count: INTEGER
@@ -161,36 +161,43 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	new_marshalled_cache_manager_object: OBJECT_HANDLE is
+	new_marshalled_cache_manager_object: OBJECT_HANDLE
 			-- New instance of {MARSHAL_CACHE_MANAGER} created in `a_app_domain'.
-		indexing
+		note
 			metadata: create {COM_VISIBLE_ATTRIBUTE}.make (False) end
 		local
-			l_inst_obj_handle: OBJECT_HANDLE
-			l_lifetime_lease: ILEASE
-			l_time_span: TIME_SPAN
-			l_marshal: MARSHAL_CACHE_MANAGER
-			l_location: SYSTEM_STRING
-			l_full_name: SYSTEM_STRING
+			l_inst_obj_handle: detachable OBJECT_HANDLE
+			l_lifetime_lease: detachable ILEASE
+			l_marshal: detachable MARSHAL_CACHE_MANAGER
+			l_assembly: detachable ASSEMBLY
+			l_location: detachable SYSTEM_STRING
+			l_full_name: detachable SYSTEM_STRING
 			l_subscription: AR_RESOLVE_SUBSCRIBER
 			l_resolver: AR_RESOLVER
 			l_type: SYSTEM_TYPE
+			l_app_domain, l_current_domain: detachable APP_DOMAIN
 		do
-			if internal_marshalled_cache_manager = Void then
+			if attached internal_marshalled_cache_manager as l_result then
+				Result := l_result
+			else
 				check
 					app_domain_not_exists: app_domain = Void
 				end
-				app_domain := {APP_DOMAIN}.create_domain ("EiffelSoftware.MetadataConsumer" + create {STRING_8}.make_from_cil ({GUID}.new_guid.to_string), Void, Void)
+				l_app_domain := {APP_DOMAIN}.create_domain ("EiffelSoftware.MetadataConsumer" + create {STRING_8}.make_from_cil ({GUID}.new_guid.to_string), Void, Void)
+				check l_app_domain_attached: l_app_domain /= Void end
+				app_domain := l_app_domain
 
 					-- ensure that no decendant is mistaken by creating an instance of `COM_CACHE_MANAGER'.
 				l_type := {COM_CACHE_MANAGER}
-				l_location := l_type.assembly.location
+				l_assembly := l_type.assembly
+				check l_assembly_attached: l_assembly /= Void end
+				l_location := l_assembly.location
 					-- Watch out here, we create a .NET type of an Eiffel type, usually it is the interface type
 					-- that we get, but in this case, MARSHAL_CACHE_MANAGER inheriting from a .NET type, interface
 					-- and implementation are actually the same type.
 				l_type := {MARSHAL_CACHE_MANAGER}
 				l_full_name := l_type.full_name
-				l_inst_obj_handle ?= app_domain.create_instance_from (l_location, l_full_name)
+				l_inst_obj_handle ?= l_app_domain.create_instance_from (l_location, l_full_name)
 
 					-- Add a lifetime lease sponsor for {OBJECT_HANDLER}.
 				check l_inst_obj_handle_attached: l_inst_obj_handle /= Void end
@@ -208,7 +215,9 @@ feature {NONE} -- Implementation
 					-- consumer is installed to.
 				create l_subscription.make
 				create l_resolver.make
-				l_subscription.subscribe ({APP_DOMAIN}.current_domain, l_resolver)
+				l_current_domain := {APP_DOMAIN}.current_domain
+				check l_current_domain_attached: l_current_domain /= Void end
+				l_subscription.subscribe (l_current_domain, l_resolver)
 
 				Result := l_inst_obj_handle
 				l_marshal ?= Result.unwrap
@@ -217,42 +226,43 @@ feature {NONE} -- Implementation
 				end
 
 					-- clean up resolver because it's no longer needed
-				l_subscription.unsubscribe ({APP_DOMAIN}.current_domain, l_resolver)
+				l_subscription.unsubscribe (l_current_domain, l_resolver)
 
-				if eac_path = Void then
-					l_marshal.initialize
+				if attached eac_path as l_path then
+					l_marshal.initialize_with_path (l_path)
 				else
-					l_marshal.initialize_with_path (eac_path)
+					l_marshal.initialize
 				end
 				if l_marshal.is_initialized then
 					internal_marshalled_cache_manager := Result
 				end
-			else
-				Result := internal_marshalled_cache_manager
 			end
 		ensure
 			new_cache_manager_not_void: Result /= Void
 		end
 
-	eac_path: SYSTEM_STRING
+	eac_path: detachable SYSTEM_STRING
 			-- Location of EAC `Eiffel Assembly Cache'
-		indexing
+		note
 			metadata: create {COM_VISIBLE_ATTRIBUTE}.make (False) end
+		attribute
 		end
 
-	internal_marshalled_cache_manager: OBJECT_HANDLE
+	internal_marshalled_cache_manager: detachable OBJECT_HANDLE
 			-- internal marshalled cache manager
-		indexing
+		note
 			metadata: create {COM_VISIBLE_ATTRIBUTE}.make (False) end
+		attribute
 		end
 
-	app_domain: APP_DOMAIN
+	app_domain: detachable APP_DOMAIN
 			-- app domain consumption is run in
-		indexing
+		note
 			metadata: create {COM_VISIBLE_ATTRIBUTE}.make (False) end
+		attribute
 		end
 
-	e_fail_code: INTEGER is
+	e_fail_code: INTEGER
 			--
 		external
 			"C [ macro %"winerror.h%"] : HRESULT"
@@ -260,7 +270,7 @@ feature {NONE} -- Implementation
 			"E_FAIL"
 		end;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

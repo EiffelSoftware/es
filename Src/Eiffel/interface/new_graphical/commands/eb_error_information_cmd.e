@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog used to display extended help concerning a compilation error."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,9 +12,10 @@ class
 inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
-			new_sd_toolbar_item,
 			tooltext
 		end
+
+	EB_STONABLE_COMMAND
 
 	EB_SHARED_WINDOW_MANAGER
 
@@ -23,79 +24,74 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize `Current'.
 		do
 		end
 
-feature -- Status setting
+feature -- Status report
 
-	execute is
-			-- Launch `Current'.
-			-- Pop up an error wizard relative to the last focused development window.
+	is_valid_stone (a_stone: STONE): BOOLEAN
+			-- <Precursor>
+		do
+			Result := attached {ERROR_STONE} a_stone as l_error
+		end
+
+feature -- Basic operations
+
+	execute
+			-- <Precursor>
 		do
 			execute_with_text (Interface_names.e_Drop_an_error_stone)
 		end
 
-	execute_with_stone (st: ERROR_STONE) is
-			-- Pop up a new dialog and display the help text of `st' inside it.
+	execute_with_stone (a_stone: STONE)
+			-- <Precursor>
 		do
-			execute_with_text (st.help_text)
+			if attached {ERROR_STONE} a_stone as l_error then
+				execute_with_text (l_error.help_text)
+			end
 		end
 
 feature -- Status report
 
-	description: STRING_GENERAL is
+	description: STRING_GENERAL
 			-- Explanatory text for this command.
 		do
 			Result := Interface_names.e_Display_error_help
 		end
 
-	tooltip: STRING_GENERAL is
+	tooltip: STRING_GENERAL
 			-- Tooltip for `Current's toolbar button.
 		do
 			Result := Interface_names.e_Display_error_help
 		end
 
-	tooltext: STRING_GENERAL is
+	tooltext: STRING_GENERAL
 			-- Text for `Current's toolbar button.
 		do
 			Result := Interface_names.b_Display_error_help
 		end
 
-	name: STRING is "Open_help_tool"
+	name: STRING = "Open_help_tool"
 			-- Internal textual representation.
 
-	pixmap: EV_PIXMAP is
+	pixmap: EV_PIXMAP
 			-- Image used for `Current's toolbar buttons.
 		do
 			Result := pixmaps.icon_pixmaps.command_error_info_icon
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.command_error_info_icon_buffer
 		end
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Text used for menu items for `Current'.
 		do
 			Result := Interface_names.m_Display_error_help
-		end
-
-	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
-			-- Create a new toolbar button for this command.
-			--
-			-- Call `recycle' on the result when you don't need it anymore otherwise
-			-- it will never be garbage collected.
-		do
-			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
-			Result.drop_actions.extend (agent execute_with_stone)
-			Result.drop_actions.set_veto_pebble_function (agent (a_pebble: ANY): BOOLEAN
-				do
-					Result := (({ERROR_STONE}) #? a_pebble) /= Void
-				end)
 		end
 
 feature {NONE} -- Implementation
@@ -106,7 +102,7 @@ feature {NONE} -- Implementation
 	current_editor: SELECTABLE_TEXT_PANEL
 			-- Text in which the explanation texts are put.
 
-	execute_with_text (a_text: STRING) is
+	execute_with_text (a_text: STRING)
 			-- Pop up a new dialog and display `a_text' inside it.
 		do
 			create_new_dialog
@@ -116,7 +112,7 @@ feature {NONE} -- Implementation
 			current_dialog := Void
 		end
 
-	create_new_dialog is
+	create_new_dialog
 			-- Fill `current_dialog' with a newly created dialog.
 		local
 			but: EV_BUTTON
@@ -171,7 +167,7 @@ feature {NONE} -- Implementation
 			valid_editor: current_editor /= Void
 		end
 
-	set_stone (editor: SELECTABLE_TEXT_PANEL; st: ERROR_STONE) is
+	set_stone (editor: SELECTABLE_TEXT_PANEL; st: ERROR_STONE)
 			-- Display the help text associated with `st' in `editor'.
 		require
 			valid_stone: st /= Void
@@ -180,8 +176,8 @@ feature {NONE} -- Implementation
 			editor.load_text (st.help_text)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -194,22 +190,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_ERROR_INFORMATION_DIALOG

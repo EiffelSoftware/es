@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A component displayed in a grid item"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	initialize_item is
+	initialize_item
 			-- Initialize item.
 		do
 			on_pointer_button_pressed_agent := agent on_pointer_button_pressed
@@ -61,7 +61,7 @@ feature -- Access
 			-- Use this tooltip if normal tooltip provided cannot satisfy,
 			-- for example, you want to be able to pick and drop from/to tooltip.
 
-	veto_general_tooltip_function: FUNCTION [ANY, TUPLE, BOOLEAN] is
+	veto_general_tooltip_function: FUNCTION [ANY, TUPLE, BOOLEAN]
 			-- Agent to veto `general_tooltip' display
 		do
 			if veto_general_tooltip_function_internal = Void then
@@ -72,33 +72,33 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	component_index_at_pointer_position: INTEGER is
+	component_index_at_position (a_orignal_pointer_position: EV_COORDINATE): INTEGER
+			-- 1-based Index component at `a_orignal_pointer_position'
+			-- 0 if no such component is found.
+		require
+			not_void: a_orignal_pointer_position /= Void
+		local
+			l_coordinate: EV_COORDINATE
+			l_pos: like component_position
+			l_rec: EV_RECTANGLE
+		do
+			l_coordinate := relative_position (grid_item, a_orignal_pointer_position.x, a_orignal_pointer_position.y)
+			Result := component_index_at_imp (l_coordinate)
+		end
+
+	component_index_at_pointer_position: INTEGER
 			-- 1-based Index component at current pointer position
-			-- 0 if no such component is fould.
+			-- 0 if no such component is found.
 		local
 			l_coordinate: EV_COORDINATE
 			l_pos: like component_position
 			l_rec: EV_RECTANGLE
 		do
 			l_coordinate := relative_pointer_position (grid_item)
-			l_pos := component_position
-			if not l_pos.is_empty then
-				from
-					l_pos.start
-				until
-					l_pos.after or Result > 0
-				loop
-					l_rec := l_pos.item
-					if l_rec.has_x_y (l_coordinate.x, l_coordinate.y) then
-						Result := l_pos.index
-					else
-						l_pos.forth
-					end
-				end
-			end
+			Result := component_index_at_imp (l_coordinate)
 		end
 
-	pick_component (i: INTEGER): ANY is
+	pick_component (i: INTEGER): ANY
 			-- Try pick on the `i'-th component,
 			-- return picked pebble.
 		require
@@ -145,7 +145,7 @@ feature -- Setting
 			component_padding_set: component_padding = a_padding
 		end
 
-	set_general_tooltip (a_tooltip: like general_tooltip) is
+	set_general_tooltip (a_tooltip: like general_tooltip)
 			-- Set `general_tooltip' with `a_tooltip' and enable it at the same time.
 			-- Note: If `components' is not empty and pointer is over a component area, this tooltip won't be displayed.
 		require
@@ -163,7 +163,7 @@ feature -- Setting
 			general_tooltip_set: general_tooltip = a_tooltip
 		end
 
-	remove_general_tooltip is
+	remove_general_tooltip
 			-- Remove `general_tooltip'.
 		do
 			if general_tooltip /= Void then
@@ -177,7 +177,7 @@ feature -- Setting
 			general_tooltip_removed: general_tooltip = Void
 		end
 
-	enable_component_pebble is
+	enable_component_pebble
 			-- Enable that every component can have its own pebble.
 		do
 			is_component_pebble_enabled := True
@@ -185,7 +185,7 @@ feature -- Setting
 			is_component_pebble_enabled: is_component_pebble_enabled
 		end
 
-	disable_component_pebble is
+	disable_component_pebble
 			-- Disable that every component can have its own pebble.
 		do
 			is_component_pebble_enabled := False
@@ -215,11 +215,11 @@ feature -- Setting
 			install_component_actions
 		ensure
 			component_inserted:
-				components.has (a_component) and then a_component.is_parented and then a_component.grid_item = Current and then
+				components.has (a_component) and then a_component.is_parented and then a_component.grid_item = grid_item and then
 				component_count = old component_count + 1
 		end
 
-	append_component (a_item: like component_type) is
+	append_component (a_item: like component_type)
 			-- Append `a_item' at the end of `items'.
 		require
 			a_item_attached: a_item /= Void
@@ -250,11 +250,11 @@ feature -- Setting
 
 feature{NONE} -- Action type constants
 
-	pointer_button_pressed_action_type: INTEGER is 1
-	pointer_double_press_action_type: INTEGER is 2
-	pointer_button_release_action_type: INTEGER is 3
+	pointer_button_pressed_action_type: INTEGER = 1
+	pointer_double_press_action_type: INTEGER = 2
+	pointer_button_release_action_type: INTEGER = 3
 
-	is_action_type_valid (a_type: INTEGER): BOOLEAN is
+	is_action_type_valid (a_type: INTEGER): BOOLEAN
 			-- Is `a_type' a valid action type?
 		do
 			Result :=
@@ -324,7 +324,7 @@ feature{NONE} -- Implementation
 			result_attached: Result >= 0
 		end
 
-	component_position: LINKED_LIST [EV_RECTANGLE] is
+	component_position: LINKED_LIST [EV_RECTANGLE]
 			-- Position area of `components'
 		do
 			if component_position_internal = Void then
@@ -341,7 +341,7 @@ feature{NONE} -- Implementation
 	component_type: ES_GRID_ITEM_COMPONENT
 			-- Component anchor type
 
-	set_is_pointer_in_component (b: BOOLEAN) is
+	set_is_pointer_in_component (b: BOOLEAN)
 			-- Set `is_ponter_in_trailer' with `b'.
 		do
 			is_pointer_in_component := b
@@ -352,9 +352,34 @@ feature{NONE} -- Implementation
 	veto_general_tooltip_function_internal: like veto_general_tooltip_function
 			-- Implementation of `veto_general_tooltip_function'
 
+	component_index_at_imp (a_relative_position: EV_COORDINATE): INTEGER
+			-- Implementation for `component_index_at_position' and `component_index_at_curernt_position'
+		require
+			not_void: a_relative_position /= Void
+		local
+			l_pos: like component_position
+			l_rec: EV_RECTANGLE
+		do
+			l_pos := component_position
+			if not l_pos.is_empty then
+				from
+					l_pos.start
+				until
+					l_pos.after or Result > 0
+				loop
+					l_rec := l_pos.item
+					if l_rec.has_x_y (a_relative_position.x, a_relative_position.y) then
+						Result := l_pos.index
+					else
+						l_pos.forth
+					end
+				end
+			end
+		end
+
 feature{NONE} -- component actions maintaining
 
-	install_component_actions is
+	install_component_actions
 			-- Install actions used for components.
 		local
 			l_grid_item: like grid_item
@@ -379,7 +404,7 @@ feature{NONE} -- component actions maintaining
 			component_position.wipe_out
 		end
 
-	uninstall_component_actions is
+	uninstall_component_actions
 			-- Uninstall actions used for components.
 		local
 			l_grid_item: like grid_item
@@ -403,7 +428,7 @@ feature{NONE} -- component actions maintaining
 			set_is_pointer_in_component (False)
 		end
 
-	check_component_actions (x, y: INTEGER; a_action_type: INTEGER; a_arguments: TUPLE) is
+	check_component_actions (x, y: INTEGER; a_action_type: INTEGER; a_arguments: TUPLE)
 			-- Find a component which is under position (`x', `y') and call action whose type is `a_action_type' with arguments `a_arguments'.
 			-- (`x', `y') is relative to top-left corner of current grid item.
 		require
@@ -438,7 +463,7 @@ feature{NONE} -- component actions maintaining
 			end
 		end
 
-	call_agent (a_component: like component_type; a_action_type: INTEGER; a_arguments: TUPLE) is
+	call_agent (a_component: like component_type; a_action_type: INTEGER; a_arguments: TUPLE)
 			-- Call actions of type `a_action_type' from `a_component_index'-th component in `components' with arguments `a_arguments'.
 		require
 			a_component_attached: a_component /= Void
@@ -462,7 +487,7 @@ feature{NONE} -- component actions maintaining
 
 feature{NONE} -- Implementation/Status report
 
-	is_position_in_area (a_x, a_y: INTEGER; a_rec: EV_RECTANGLE): BOOLEAN is
+	is_position_in_area (a_x, a_y: INTEGER; a_rec: EV_RECTANGLE): BOOLEAN
 			-- Is position (`a_x', `a_y') in area defined by `a_rec'?
 		require
 			a_rec_attached: a_rec /= Void
@@ -470,7 +495,7 @@ feature{NONE} -- Implementation/Status report
 			Result := a_rec.has_x_y (a_x, a_y)
 		end
 
-	is_ponter_out_of_component: BOOLEAN is
+	is_ponter_out_of_component: BOOLEAN
 			-- Is pointer out of trailer area?
 		do
 			Result := not is_pointer_in_component
@@ -493,25 +518,25 @@ feature{NONE} -- Actions for components
 	on_pointer_move_agent: PROCEDURE [ANY, TUPLE [x, y: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER]];
 			-- Agent of `on_pointer_move'
 
-	on_pointer_button_pressed (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
+	on_pointer_button_pressed (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- Action to be performed when pointer pressed
 		do
 			check_component_actions (x, y, pointer_button_pressed_action_type, [x, y, button, x_tilt, y_tilt, pressure, screen_x, screen_y])
 		end
 
-	on_pointer_double_pressed (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
+	on_pointer_double_pressed (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- Action to be performed when pointer pressed
 		do
 			check_component_actions (x, y, pointer_double_press_action_type, [x, y, button, x_tilt, y_tilt, pressure, screen_x, screen_y])
 		end
 
-	on_pointer_move (x, y: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
+	on_pointer_move (x, y: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- Action to be performed when pointer moves in current grid
 		do
 			on_pointer_move_internal (x, y, x_tilt, y_tilt, pressure, screen_x, screen_y, False)
 		end
 
-	on_pointer_move_internal (x, y: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER; a_leave: BOOLEAN) is
+	on_pointer_move_internal (x, y: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER; a_leave: BOOLEAN)
 			-- Action to be performed when pointer moves on current item
 			-- `a_leave' means is this aciton called when pointer leaves current item.
 		local
@@ -565,22 +590,22 @@ feature{NONE} -- Actions for components
 			end
 		end
 
-	on_pointer_leave is
+	on_pointer_leave
 			-- Action to be performed when pointer leaves current item
 		do
 			on_pointer_move_internal (-1, -1, 1, 0, 0, 0, 0, True)
 		end
 
-	on_pointer_button_release (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
+	on_pointer_button_release (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- Action to be performed when pointer button is released
 		do
 			check_component_actions (x, y, pointer_button_release_action_type, [x, y, button, x_tilt, y_tilt, pressure, screen_x, screen_y])
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -591,22 +616,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

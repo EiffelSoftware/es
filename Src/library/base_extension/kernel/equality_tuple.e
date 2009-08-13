@@ -1,4 +1,4 @@
-indexing
+note
 	description: "TUPLE with different is_equal that checks the values"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -20,19 +20,21 @@ create
 	make
 
 convert
-	make ({G})
+	make ({G, attached G})
 
 feature {NONE} -- Initialization
 
-	default_create is
+	default_create
 			-- Process instances of classes with no creation clause.
 		do
 			Precursor {ANY}
 			create item
 		end
 
-	make (a_tuple: G) is
+	make (a_tuple: G)
 			-- Initialize wrapper with implementation item
+		require
+			not_void: a_tuple /= Void
 		do
 			item := a_tuple
 		ensure
@@ -41,15 +43,15 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	item: G
+	item: attached G
 			-- Implementation item
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Does table contain the same information as `other'?
 		local
-			l_item, l_other: ANY
+			l_item, l_other: detachable ANY
 			l_count, i: INTEGER
 		do
 			l_count := item.count
@@ -64,7 +66,7 @@ feature -- Comparison
 			end
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		EiffelVision2 helper functions
 	]"
@@ -63,7 +63,7 @@ feature -- Basic operations
 
 feature -- Query
 
-	widget_top_level_window (a_widget: EV_WIDGET; a_main: BOOLEAN): EV_WINDOW is
+	widget_top_level_window (a_widget: EV_WIDGET; a_main: BOOLEAN): EV_WINDOW
 			-- Locates parent window of `a_widget', if the widget has been parented.
 			--
 			-- `a_widget': A widget to locate a top level window for.
@@ -96,7 +96,7 @@ feature -- Query
 			end
 		end
 
-	parent_window_of_focused_widget: EV_WINDOW is
+	parent_window_of_focused_widget: EV_WINDOW
 			-- Parent window of current focused widget
 			-- Result maybe void.
 		local
@@ -105,14 +105,14 @@ feature -- Query
 		do
 			create l_env
 			l_application := l_env.application
-			if {l_widget: EV_WIDGET} l_application.focused_widget then
+			if attached {EV_WIDGET} l_application.focused_widget as l_widget then
 				Result := widget_top_level_window (l_widget, False)
 			end
 		end
 
 feature -- Screen
 
-	window_working_area (a_window: EV_WINDOW): TUPLE [x, y, width, height: INTEGER] is
+	window_working_area (a_window: EV_WINDOW): TUPLE [x, y, width, height: INTEGER]
 			-- Retrieves a working area for window `a_window'
 			--
 			-- `a_window': Window to retrieve a working area for.
@@ -153,13 +153,13 @@ feature -- Screen
 			not_result_y_negative: Result.y >= 0
 			result_width_big_enough: Result.width > Result.x
 			result_height_big_enough: Result.height > Result.y
-			result_width_small_enough: Result.width <= (create {EV_SCREEN}).width
-			result_height_small_enough: Result.height <= (create {EV_SCREEN}).height
+			result_width_small_enough: Result.width <= (create {SD_SCREEN}).virtual_width
+			result_height_small_enough: Result.height <= (create {SD_SCREEN}).virtual_height
 		end
 
 feature -- Widget
 
-	maximum_string_width (a_strings: !ARRAY [?READABLE_STRING_GENERAL]; a_font: ?EV_FONT): INTEGER
+	maximum_string_width (a_strings: attached ARRAY [detachable READABLE_STRING_GENERAL]; a_font: detachable EV_FONT): INTEGER
 			-- Maximum width of a collection of strings
 			--
 			-- `a_strings': An array of string to determine the maximum width for.
@@ -170,7 +170,7 @@ feature -- Widget
 			a_strings_contains_attached_items: not a_strings.has (Void)
 			a_font_attached: a_font /= Void
 		local
-			l_str: ?READABLE_STRING_GENERAL
+			l_str: detachable READABLE_STRING_GENERAL
 			l_upper, i: INTEGER
 		do
 			from
@@ -181,7 +181,7 @@ feature -- Widget
 			loop
 				l_str := a_strings [i]
 				if l_str /= Void then
-					if {l_sg: STRING_GENERAL} l_str then
+					if attached {STRING_GENERAL} l_str as l_sg then
 						Result := Result.max (a_font.string_width (l_sg))
 					else
 						Result := Result.max (a_font.string_width (l_str.as_string_32))
@@ -191,7 +191,7 @@ feature -- Widget
 			end
 		end
 
-	maximum_string_size (a_strings: !ARRAY [?READABLE_STRING_GENERAL]; a_font: ?EV_FONT): TUPLE [width: INTEGER; height: INTEGER; left_offset: INTEGER; right_offset: INTEGER]
+	maximum_string_size (a_strings: attached ARRAY [detachable READABLE_STRING_GENERAL]; a_font: detachable EV_FONT): TUPLE [width: INTEGER; height: INTEGER; left_offset: INTEGER; right_offset: INTEGER]
 			-- Maximum width of a collection of strings
 			--
 			-- `a_strings': An array of string to determine the maximum width for.
@@ -202,7 +202,7 @@ feature -- Widget
 			a_strings_contains_attached_items: not a_strings.has (Void)
 			a_font_attached: a_font /= Void
 		local
-			l_str: ?READABLE_STRING_GENERAL
+			l_str: detachable READABLE_STRING_GENERAL
 			l_size: TUPLE [width: INTEGER; height: INTEGER; left_offset: INTEGER; right_offset: INTEGER]
 			l_upper, i: INTEGER
 		do
@@ -214,7 +214,7 @@ feature -- Widget
 			loop
 				l_str := a_strings [i]
 				if l_str /= Void then
-					if {l_sg: STRING_GENERAL} l_str then
+					if attached {STRING_GENERAL} l_str as l_sg then
 						l_size := a_font.string_size (l_sg)
 					else
 						l_size := a_font.string_size (l_str.as_string_32)
@@ -230,7 +230,7 @@ feature -- Widget
 
 feature -- Placement
 
-	suggest_pop_up_widget_location_with_size (a_widget: EV_WIDGET; a_screen_x, a_screen_y, a_width, a_height: INTEGER): TUPLE [x, y: INTEGER] is
+	suggest_pop_up_widget_location_with_size (a_widget: EV_WIDGET; a_screen_x, a_screen_y, a_width, a_height: INTEGER): TUPLE [x, y: INTEGER]
 			-- Suggests a location for a widget based on it's size
 		require
 			a_widget_attached: a_widget /= Void
@@ -307,10 +307,10 @@ feature -- Placement
 			result_y_on_screen: Result.y <= (create {EV_SCREEN}).height
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -321,19 +321,19 @@ feature -- Placement
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

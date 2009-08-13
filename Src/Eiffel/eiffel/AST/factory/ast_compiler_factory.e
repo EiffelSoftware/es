@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Factory for compiler which generates descendants of certain AST classes."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,11 +28,6 @@ inherit
 			new_vtgc1_error,
 			validate_integer_real_type,
 			validate_non_conforming_inheritance_type
-		end
-
-	PREDEFINED_NAMES
-		export
-			{NONE} all
 		end
 
 	SHARED_WORKBENCH
@@ -70,7 +65,7 @@ inherit
 
 feature -- Access
 
-	new_array_as (exp: EIFFEL_LIST [EXPR_AS]; l_as, r_as: SYMBOL_AS): COMPILER_ARRAY_AS is
+	new_array_as (exp: EIFFEL_LIST [EXPR_AS]; l_as, r_as: SYMBOL_AS): COMPILER_ARRAY_AS
 			-- New COMPILER_ARRAY_AS
 		do
 			if exp /= Void then
@@ -78,16 +73,19 @@ feature -- Access
 			end
 		end
 
-	new_bits_as (v: INTEGER_AS; b_as: KEYWORD_AS): BITS_AS is
+	new_bits_as (v: INTEGER_AS; b_as: KEYWORD_AS): BITS_AS
 			-- New BITS AST node
 		local
 			l_vtbt: VTBT_SIMPLE
+			l_class_c: CLASS_C
 		do
 			if v /= Void then
 				create Result.initialize (v, b_as)
 				if (v.integer_32_value <= 0) then
 					create l_vtbt
-					l_vtbt.set_class (system.current_class)
+					l_class_c ?= parser.current_class
+					check l_class_c_attached: l_class_c /= Void end
+					l_vtbt.set_class (l_class_c)
 					l_vtbt.set_value (v.integer_32_value)
 					l_vtbt.set_location (v.start_location)
 					Error_handler.insert_error (l_vtbt)
@@ -108,7 +106,7 @@ feature -- Access
 			s: SUPPLIERS_AS;
 			o: STRING_AS;
 			ed: KEYWORD_AS): CLASS_AS
-		is
+
 			-- New CLASS AST node
 		do
 			if n /= Void and s /= Void and (co = Void or else not co.is_empty) and ed /= Void then
@@ -122,7 +120,7 @@ feature -- Access
 			end
 		end
 
-	new_class_type_as (n: ID_AS; g: TYPE_LIST_AS): CLASS_TYPE_AS is
+	new_class_type_as (n: ID_AS; g: TYPE_LIST_AS): CLASS_TYPE_AS
 		do
 			if n /= Void then
 				if g /= Void then
@@ -133,19 +131,22 @@ feature -- Access
 			end
 		end
 
-	set_expanded_class_type (a_type: TYPE_AS; is_expanded: BOOLEAN; s_as: KEYWORD_AS) is
+	set_expanded_class_type (a_type: TYPE_AS; is_expanded: BOOLEAN; s_as: KEYWORD_AS)
+		local
+			l_class_c: CLASS_C
 		do
 			Precursor {AST_FACTORY} (a_type, is_expanded, s_as)
 			if is_expanded then
 				system.set_has_expanded
+				l_class_c ?= parser.current_class
 				check
-					system_initialized: system.current_class /= Void
+					has_class_c: l_class_c /= Void
 				end
-				system.current_class.set_has_expanded
+				l_class_c.set_has_expanded
 			end
 		end
 
-	new_debug_as (k: DEBUG_KEY_LIST_AS; c: EIFFEL_LIST [INSTRUCTION_AS]; d_as, e: KEYWORD_AS): DEBUG_AS is
+	new_debug_as (k: DEBUG_KEY_LIST_AS; c: EIFFEL_LIST [INSTRUCTION_AS]; d_as, e: KEYWORD_AS): DEBUG_AS
 		local
 			l_str: STRING
 		do
@@ -167,7 +168,7 @@ feature -- Access
 			end
 		end
 
-	new_expr_address_as (e: EXPR_AS; a_as, l_as, r_as: SYMBOL_AS): EXPR_ADDRESS_AS is
+	new_expr_address_as (e: EXPR_AS; a_as, l_as, r_as: SYMBOL_AS): EXPR_ADDRESS_AS
 		do
 			if not system.address_expression_allowed then
 				error_handler.insert_error (create {SYNTAX_ERROR}.init (eiffel_parser))
@@ -176,7 +177,7 @@ feature -- Access
 			end
 		end
 
-	new_external_lang_as (l: STRING_AS): COMPILER_EXTERNAL_LANG_AS is
+	new_external_lang_as (l: STRING_AS): COMPILER_EXTERNAL_LANG_AS
 			-- New EXTERNAL_LANGUAGE AST node
 		do
 			if l /= Void then
@@ -184,7 +185,7 @@ feature -- Access
 			end
 		end
 
-	new_feature_as (f: EIFFEL_LIST [FEATURE_NAME]; b: BODY_AS; i: INDEXING_CLAUSE_AS; next_pos: INTEGER): FEATURE_AS is
+	new_feature_as (f: EIFFEL_LIST [FEATURE_NAME]; b: BODY_AS; i: INDEXING_CLAUSE_AS; next_pos: INTEGER): FEATURE_AS
 			-- New FEATURE AST node
 		local
 			feature_name: FEATURE_NAME
@@ -272,7 +273,7 @@ feature -- Access
 
 						-- We have a built in so we set the replacement feature inside if available.
 					l_built_in_processor := built_in_processor
-					l_built_in_processor.parse_current_class (system.current_class, system.il_generation) -- FIXME! Use {EIFFEL_PARSER}.current_class instead.
+					l_built_in_processor.parse_current_class (parser.current_class, system.il_generation)
 					l_built_in_class_as := l_built_in_processor.class_as
 					if l_built_in_class_as /= Void then
 							-- We have an associating built in class.
@@ -295,14 +296,14 @@ feature -- Access
 				end
 
 				if b.is_unique then
-					if system.current_class /= Void then
-						system.current_class.set_has_unique
+					if attached {CLASS_C} parser.current_class as l_class_c then
+						l_class_c.set_has_unique
 					end
 				end
 			end
 		end
 
-	new_formal_dec_as (f: FORMAL_AS; c: CONSTRAINT_LIST_AS; cf: EIFFEL_LIST [FEATURE_NAME]; c_as: SYMBOL_AS; ck_as, ek_as: KEYWORD_AS): FORMAL_CONSTRAINT_AS is
+	new_formal_dec_as (f: FORMAL_AS; c: CONSTRAINT_LIST_AS; cf: EIFFEL_LIST [FEATURE_NAME]; c_as: SYMBOL_AS; ck_as, ek_as: KEYWORD_AS): FORMAL_CONSTRAINT_AS
 			-- New FORMAL_DECLARATION AST node
 		do
 			if f /= Void then
@@ -310,7 +311,7 @@ feature -- Access
 			end
 		end
 
-	new_integer_as (t: TYPE_AS; s: BOOLEAN; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_as (t: TYPE_AS; s: BOOLEAN; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -319,7 +320,7 @@ feature -- Access
 			end
 		end
 
-	new_integer_hexa_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_hexa_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -328,7 +329,7 @@ feature -- Access
 			end
 		end
 
-	new_integer_octal_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_octal_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -337,7 +338,7 @@ feature -- Access
 			end
 		end
 
-	new_integer_binary_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_binary_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -352,6 +353,7 @@ feature -- Access for Erros
 			-- Create new VTGC1 error.
 		local
 			l_location: LOCATION_AS
+			l_class_c: CLASS_C
 		do
 			if a_id /= Void then
 				l_location := a_id
@@ -360,21 +362,25 @@ feature -- Access for Erros
 			end
 			check l_location_not_void: l_location /= Void end
 			create Result
-			Result.set_class (system.current_class)
+			l_class_c ?= parser.current_class
+			check l_class_c_attached: l_class_c /= Void end
+			Result.set_class (l_class_c)
 			Result.set_location (l_location)
 		end
 
 feature {NONE} -- Validation
 
-	validate_integer_real_type (a_psr: EIFFEL_PARSER_SKELETON; a_type: TYPE_AS; buffer: STRING; for_integer: BOOLEAN) is
+	validate_integer_real_type (a_psr: EIFFEL_SCANNER_SKELETON; a_type: TYPE_AS; buffer: STRING; for_integer: BOOLEAN)
 			-- New integer value.
 		local
 			l_type: TYPE_A
+			l_class_c: CLASS_C
 		do
 			is_valid_integer_real := True
+			l_class_c ?= a_psr.current_class
 			if for_integer then
-				if a_type /= Void then
-					l_type := type_a_generator.evaluate_type_if_possible (a_type, System.current_class)
+				if a_type /= Void and l_class_c /= Void then
+					l_type := type_a_generator.evaluate_type_if_possible (a_type, l_class_c)
 				end
 				if l_type /= Void then
 					if not l_type.is_valid or (not l_type.is_integer and not l_type.is_natural) then
@@ -387,8 +393,8 @@ feature {NONE} -- Validation
 					a_psr.report_invalid_type_for_integer_error (a_type, buffer)
 				end
 			else
-				if a_type /= Void then
-					l_type := type_a_generator.evaluate_type (a_type, System.current_class)
+				if a_type /= Void and l_class_c /= Void then
+					l_type := type_a_generator.evaluate_type (a_type, l_class_c)
 				end
 				if l_type /= Void then
 					if not l_type.is_valid or (not l_type.is_real_32 and not l_type.is_real_64) then
@@ -418,7 +424,7 @@ feature {NONE} -- Validation
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

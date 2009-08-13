@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Container for transactions"
 	legal: "See notice at end of class."
@@ -16,38 +16,38 @@ deferred class TRANSACTION_CONTAINER [G -> TRANSACTION] inherit
 
 feature -- Access
 
-	transaction: G is
+	transaction: G
 			-- Current transaction
 		deferred
 		end
-	 
-	index: INTEGER is
+
+	index: INTEGER
 			-- Current index
 		deferred
 		end
-	
+
 feature -- Measurement
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of transactions
 		deferred
 		end
 
 feature -- Status report
 
-	insertable (t: G): BOOLEAN is
+	insertable (t: G): BOOLEAN
 	 		-- Can transaction `t' be inserted in container?
 		require
 			transaction_exists: t /= Void
 		deferred
 		end
-	 
+
 	 error_stops: BOOLEAN
 	 		-- Is transfer stopped on error?
-			
+
 feature -- Status setting
 
-	select_transaction (n: INTEGER) is
+	select_transaction (n: INTEGER)
 			-- Select `n'-th transaction.
 		require
 			not_empty: not is_empty
@@ -57,7 +57,7 @@ feature -- Status setting
 			selected: index = n
 		end
 
-	stop_on_error is
+	stop_on_error
 			-- Error stops action.
 		do
 			error_stops := True
@@ -65,7 +65,7 @@ feature -- Status setting
 			stop: error_stops
 		end
 
-	continue_on_error is
+	continue_on_error
 			-- Error does not stop action.
 		do
 			error_stops := False
@@ -75,7 +75,7 @@ feature -- Status setting
 
 feature -- Element change
 
-	add_transaction (t: G) is
+	add_transaction (t: G)
 			-- Add transaction.
 		require
 			transaction_exists: t /= Void
@@ -93,7 +93,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	check_query (q: FUNCTION[TRANSACTION, TUPLE, BOOLEAN]): BOOLEAN is
+	check_query (q: FUNCTION[TRANSACTION, TUPLE, BOOLEAN]): BOOLEAN
 			-- Is query `q' true for all transactions?
 		require
 			query_exists: q /= Void
@@ -116,23 +116,28 @@ feature {NONE} -- Implementation
 		ensure
 			index_unchanged: index = old index
 		end
-	 
-	execute_command (cmd: PROCEDURE[TRANSACTION_CONTAINER[G], TUPLE]) is
+
+	execute_command (cmd: PROCEDURE [TRANSACTION_CONTAINER[G], TUPLE])
 			-- Execute command `cmd' for all transactions.
 		require
 			command_exists: cmd /= Void
 		local
 			idx: INTEGER
 			i: INTEGER
+			l_transaction: G
 		do
 			idx := index
 			from
 				i := 1
 				select_transaction (1)
+				l_transaction := transaction
+				check l_transaction_attached: l_transaction /= Void end
 			until
-				i = count + 1 or (error_stops and transaction.error)
+				i = count + 1 or (error_stops and l_transaction.error)
 			loop
 				select_transaction (i)
+				l_transaction := transaction
+				check l_transaction_attached: l_transaction /= Void end
 				cmd.call (Void)
 				i := i + 1
 			end
@@ -140,13 +145,13 @@ feature {NONE} -- Implementation
 		ensure
 			index_unchanged: index = old index
 		end
-	 
+
 invariant
 
 	empty_definition: is_empty = (count = 0)
 	index_in_range: not is_empty implies (1 <= index and index <= count)
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

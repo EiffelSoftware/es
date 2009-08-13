@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_INNER_STATE which is docking in SD_MULTI_DOCK_AREA."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,7 +19,8 @@ inherit
 			auto_hide_tab_with,
 			restore,
 			zone,
-			change_title,
+			change_long_title,
+			change_short_title,
 			change_pixmap,
 			change_tab_tooltip,
 			show,
@@ -31,23 +32,20 @@ create
 	make,
 	make_for_tab_zone
 
+create {SD_PLACE_HOLDER_ZONE}
+	make_for_place_holder_zone
+
 feature {NONE}-- Initlization
 
-	make (a_content: SD_CONTENT; a_direction: INTEGER; a_width_height: INTEGER) is
+	make (a_content: SD_CONTENT; a_direction: INTEGER; a_width_height: INTEGER)
 			-- Creation method.
 		require
 			a_content_not_void: a_content /= Void
 			a_content_attached: a_content.is_docking_manager_attached
 		do
-			create internal_shared
-			internal_docking_manager := a_content.docking_manager
-			direction := a_direction
-			width_height := a_width_height
-			internal_content := a_content
+			make_common (a_content, a_direction, a_width_height)
 			zone := internal_shared.widget_factory.docking_zone (a_content)
 			internal_docking_manager.zones.add_zone (zone)
-			last_floating_height := a_content.state.last_floating_height
-			last_floating_width := a_content.state.last_floating_width
 			initialized := True
 		ensure
 			set: internal_content = a_content
@@ -55,7 +53,7 @@ feature {NONE}-- Initlization
 			set: width_height = a_width_height
 		end
 
-	make_for_tab_zone (a_content: SD_CONTENT; a_container: EV_CONTAINER; a_direction: INTEGER) is
+	make_for_tab_zone (a_content: SD_CONTENT; a_container: EV_CONTAINER; a_direction: INTEGER)
 			-- Creation method for SD_TAB_STATE.
 		require
 			a_content_not_void: a_content /= Void
@@ -65,13 +63,53 @@ feature {NONE}-- Initlization
 		do
 			make (a_content, a_direction, 0)
 			a_container.extend (zone)
+			initialized := True
 		ensure
 			extended: a_container.has (zone)
 		end
 
+	make_for_place_holder_zone (a_content: SD_CONTENT; a_zone: SD_PLACE_HOLDER_ZONE)
+			-- Creation method for SD_PLACE_HOLDER_ZONE
+		require
+			a_content_not_void: a_content /= Void
+			a_content_attached: a_content.is_docking_manager_attached
+			a_zone_not_void: a_zone /= Void
+			a_zone_not_destroyed: not a_zone.is_destroyed
+			a_zone_parented: a_zone.parent /= Void
+		local
+			l_zones: SD_DOCKING_MANAGER_ZONES
+		do
+			make_common (a_content, a_content.state.direction, a_content.state.width_height)
+			zone := a_zone
+			l_zones := internal_docking_manager.zones
+			if not l_zones.has_zone (a_zone) then
+				l_zones.add_zone (a_zone)
+			end
+
+			change_state (Current)
+
+			initialized := True
+		end
+
+	make_common (a_content: SD_CONTENT; a_direction: INTEGER; a_width_height: INTEGER)
+			-- Initialize common part
+		require
+			a_content_not_void: a_content /= Void
+			a_content_attached: a_content.is_docking_manager_attached
+		do
+			create internal_shared
+			internal_docking_manager := a_content.docking_manager
+			direction := a_direction
+			width_height := a_width_height
+			internal_content := a_content
+
+			last_floating_height := a_content.state.last_floating_height
+			last_floating_width := a_content.state.last_floating_width
+		end
+
 feature {SD_TAB_STATE_ASSISTANT} -- Initlization
 
-	set_widget_main_area (a_widget: EV_WIDGET; a_main_area: SD_MULTI_DOCK_AREA; a_parent: EV_CONTAINER; a_split_position: INTEGER) is
+	set_widget_main_area (a_widget: EV_WIDGET; a_main_area: SD_MULTI_DOCK_AREA; a_parent: EV_CONTAINER; a_split_position: INTEGER)
 			-- Set widget and main area which used by normal window.
 		require
 			a_widget_not_void: a_widget /= Void
@@ -82,10 +120,10 @@ feature {SD_TAB_STATE_ASSISTANT} -- Initlization
 			zone.set_widget_main_area (a_widget, a_main_area, a_parent, a_split_position)
 		end
 
-feature -- Redefine.
+feature -- Redefine
 
-	restore (a_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER) is
-			-- Redefine.
+	restore (a_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER)
+			-- <Precursor>
 		local
 			l_content: SD_CONTENT
 			l_titles: ARRAYED_LIST [STRING_GENERAL]
@@ -116,8 +154,8 @@ feature -- Redefine.
 			initialized := True
 		end
 
-	record_state is
-			-- Redefine
+	record_state
+			-- <Precursor>
 		do
 			if floating_zone /= Void then
 				check valid_height: floating_zone.height > 0 end
@@ -127,22 +165,34 @@ feature -- Redefine.
 			end
 		end
 
-	change_title (a_title: STRING_GENERAL; a_content: SD_CONTENT) is
-			-- Redefine.
+	change_long_title (a_title: STRING_GENERAL; a_content: SD_CONTENT)
+			-- <Precursor>
 		do
-			zone.set_title (a_title)
+			if content /= Void and then content.type = {SD_ENUMERATION}.tool then
+				zone.set_title (a_title)
+			end
 		ensure then
-			set: a_title /= Void implies zone.title.is_equal (a_title.as_string_32)
+			set: a_title /= Void implies zone.title ~ (a_title.as_string_32)
 		end
 
-	change_pixmap (a_pixmap: EV_PIXMAP; a_content: SD_CONTENT) is
-			-- Refine
+	change_short_title (a_title: STRING_GENERAL; a_content: SD_CONTENT)
+			-- <Precursor>
+		do
+			if content /= Void and then content.type = {SD_ENUMERATION}.editor then
+				zone.set_title (a_title)
+			end
+		ensure then
+			set: a_title /= Void implies zone.title ~ (a_title.as_string_32)
+		end
+
+	change_pixmap (a_pixmap: EV_PIXMAP; a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			zone.set_pixmap (a_pixmap)
 		end
 
-	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA) is
-			-- Redefine.
+	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA)
+			-- <Precursor>
 		local
 			l_old_stuff: EV_WIDGET
 			l_old_spliter: EV_SPLIT_AREA
@@ -170,7 +220,7 @@ feature -- Redefine.
 					l_old_stuff := a_multi_dock_area.item
 					l_old_spliter ?= l_old_stuff
 					if l_old_spliter /= Void then
-						a_multi_dock_area.save_spliter_position (l_old_spliter)
+						a_multi_dock_area.save_spliter_position (l_old_spliter, generating_type)
 					end
 					a_multi_dock_area.prune (l_old_stuff)
 				end
@@ -198,7 +248,7 @@ feature -- Redefine.
 					l_new_container.set_split_position (top_split_position (direction, l_new_container))
 				end
 				if l_old_spliter /= Void then
-					a_multi_dock_area.restore_spliter_position (l_old_spliter)
+					a_multi_dock_area.restore_spliter_position (l_old_spliter, generating_type)
 				end
 				internal_docking_manager.command.remove_empty_split_area
 				internal_docking_manager.command.update_title_bar
@@ -223,8 +273,8 @@ feature -- Redefine.
 			end
 		end
 
-	stick (a_direction: INTEGER) is
-				-- Redefine.
+	stick (a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_auto_hide_state: SD_AUTO_HIDE_STATE
 			l_width_height: INTEGER
@@ -250,8 +300,8 @@ feature -- Redefine.
 			state_changed: content.state /= Current
 		end
 
-	float (a_x, a_y: INTEGER) is
-			-- Redefine.
+	float (a_x, a_y: INTEGER)
+			-- <Precursor>
 		local
 			l_floating_state: SD_FLOATING_STATE
 			l_orignal_multi_dock_area: SD_MULTI_DOCK_AREA
@@ -277,19 +327,29 @@ feature -- Redefine.
 			internal_docking_manager.command.resize (True)
 		end
 
-	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER) is
-			-- Redefine.
+	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_called: BOOLEAN
 			l_retried: BOOLEAN
 		do
 			if not l_retried then
-				internal_docking_manager.command.lock_update (zone, False)
+				if attached {EV_WIDGET} zone as lt_widget then
+					internal_docking_manager.command.lock_update (lt_widget, False)
+				else
+					check not_possible: False end
+				end
+
 				record_state
 				if zone.parent /= Void then
 					zone.parent.prune (zone)
 				end
-				internal_docking_manager.command.lock_update (a_target_zone, False)
+				if attached {EV_WIDGET} a_target_zone as lt_target_widget then
+					internal_docking_manager.command.lock_update (lt_target_widget, False)
+				else
+					check not_possible: False end
+				end
+
 				l_called := True
 
 				change_zone_split_area_to_zone (a_target_zone, a_direction)
@@ -311,16 +371,16 @@ feature -- Redefine.
 			end
 		end
 
-	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN) is
-			-- Redefine.
+	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN)
+			-- <Precursor>
 		do
 			move_to_zone_internal (a_target_zone, a_first)
 		ensure then
 			state_changed: content.state /= Current
 		end
 
-	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER) is
-			-- Redefine.
+	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER)
+			-- <Precursor>
 		do
 			if a_index = 1 then
 				move_to_zone_internal (a_target_zone, True)
@@ -335,8 +395,8 @@ feature -- Redefine.
 			state_changed: content.state /= Current
 		end
 
-	auto_hide_tab_with (a_target_content: SD_CONTENT) is
-			-- Redefine
+	auto_hide_tab_with (a_target_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			if zone /= Void then
 				internal_docking_manager.command.lock_update (zone, False)
@@ -350,8 +410,8 @@ feature -- Redefine.
 			Precursor {SD_STATE} (a_target_content)
 		end
 
-	show is
-			-- Redefine.
+	show
+			-- <Precursor>
 		local
 			l_multi_dock_area: SD_MULTI_DOCK_AREA
 			l_state_void: SD_STATE_VOID
@@ -401,8 +461,8 @@ feature -- Redefine.
 			end
 		end
 
-	hide is
-			-- Redefine.
+	hide
+			-- <Precursor>
 		local
 			l_multi_dock_area: SD_MULTI_DOCK_AREA
 			l_spliter: EV_SPLIT_AREA
@@ -431,14 +491,20 @@ feature -- Redefine.
 			docking_manager.command.resize (False)
 		end
 
-	set_user_widget (a_widget: EV_WIDGET) is
-			-- Redefine
+	set_user_widget (a_widget: EV_WIDGET)
+			-- <Precursor>
 		do
 			zone.update_user_widget
 		end
 
-	change_tab_tooltip (a_text: STRING_GENERAL) is
-			-- Redefine
+	set_mini_toolbar (a_toolbar_widget: EV_WIDGET)
+			-- <Precursor>
+		do
+			zone.update_mini_toolbar
+		end
+
+	change_tab_tooltip (a_text: STRING_GENERAL)
+			-- <Precursor>
 		local
 			l_upper: SD_DOCKING_ZONE_UPPER
 			l_tab: SD_NOTEBOOK_TAB
@@ -453,11 +519,11 @@ feature -- Redefine.
 		end
 
 	zone: SD_DOCKING_ZONE
-			-- Redefine.
+			-- <Precursor>
 
 feature {NONE} -- Implementation
 
-	move_to_zone_internal (a_target_zone: SD_ZONE; a_first: BOOLEAN) is
+	move_to_zone_internal (a_target_zone: SD_ZONE; a_first: BOOLEAN)
 			-- Move to a zone.
 		local
 			l_tab_state: SD_TAB_STATE
@@ -471,7 +537,11 @@ feature {NONE} -- Implementation
 
 			l_docking_zone ?= a_target_zone
 			l_tab_zone ?= a_target_zone
-			internal_docking_manager.command.lock_update (a_target_zone, False)
+			if attached {EV_WIDGET} a_target_zone as lt_widget then
+				internal_docking_manager.command.lock_update (lt_widget, False)
+			else
+				check not_possible: False end
+			end
 			if l_docking_zone /= Void then
 				create l_tab_state.make (internal_content, l_docking_zone, l_orignal_direction)
 			else
@@ -489,7 +559,7 @@ feature {NONE} -- Implementation
 			internal_docking_manager.command.update_title_bar
 		end
 
-	change_zone_split_area_to_zone (a_target_zone: SD_ZONE; a_direction: INTEGER) is
+	change_zone_split_area_to_zone (a_target_zone: SD_ZONE; a_direction: INTEGER)
 			-- Change zone parent split area to docking zone.
 		require
 			a_target_zone_not_void: a_target_zone /= Void
@@ -500,48 +570,54 @@ feature {NONE} -- Implementation
 			l_target_zone_parent_spliter: EV_SPLIT_AREA
 		do
 			-- First, remove current zone from old parent split area.	
-			l_target_zone_parent := a_target_zone.parent
-			if a_target_zone.parent /= Void then
-				-- Remember target zone parent split position.
-				l_target_zone_parent_spliter ?= a_target_zone.parent
-				if l_target_zone_parent_spliter /= Void then
-					l_target_zone_parent_split_position := l_target_zone_parent_spliter.split_position
+			if attached {EV_WIDGET} a_target_zone as lt_widget then
+				l_target_zone_parent := lt_widget.parent
+
+				if lt_widget.parent /= Void then
+					-- Remember target zone parent split position.
+					l_target_zone_parent_spliter ?= lt_widget.parent
+					if l_target_zone_parent_spliter /= Void then
+						l_target_zone_parent_split_position := l_target_zone_parent_spliter.split_position
+					end
+					lt_widget.parent.prune (lt_widget)
 				end
-				a_target_zone.parent.prune (a_target_zone)
-			end
-			check not l_target_zone_parent.full end
-			-- Then, insert current zone to new split area base on  `a_direction'.
-			if a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.bottom then
-				create {SD_VERTICAL_SPLIT_AREA} l_new_split_area
-			elseif a_direction = {SD_ENUMERATION}.left or a_direction = {SD_ENUMERATION}.right then
-				create {SD_HORIZONTAL_SPLIT_AREA} l_new_split_area
-			end
-			if a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.left then
-				l_new_split_area.set_first (zone)
-				l_new_split_area.set_second (a_target_zone)
+
+				check not l_target_zone_parent.full end
+				-- Then, insert current zone to new split area base on  `a_direction'.
+				if a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.bottom then
+					create {SD_VERTICAL_SPLIT_AREA} l_new_split_area
+				elseif a_direction = {SD_ENUMERATION}.left or a_direction = {SD_ENUMERATION}.right then
+					create {SD_HORIZONTAL_SPLIT_AREA} l_new_split_area
+				end
+				if a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.left then
+					l_new_split_area.set_first (zone)
+					l_new_split_area.set_second (lt_widget)
+				else
+					l_new_split_area.set_first (lt_widget)
+					l_new_split_area.set_second (zone)
+				end
+				l_target_zone_parent.extend (l_new_split_area)
+
+				if l_target_zone_parent_spliter /= Void and then l_target_zone_parent_spliter.full and
+					 l_target_zone_parent_spliter.minimum_split_position <= l_target_zone_parent_split_position and
+					 	l_target_zone_parent_spliter.maximum_split_position >= l_target_zone_parent_split_position then
+					l_target_zone_parent_spliter.set_split_position (l_target_zone_parent_split_position)
+				end
+				-- If we don't resize here and content is in top level,
+				-- content's widget will be minimum size.
+				internal_docking_manager.command.resize (False)
+
+				l_new_split_area.set_proportion (0.5)
+				set_direction (a_target_zone.state.direction)
+				internal_docking_manager.command.remove_empty_split_area
 			else
-				l_new_split_area.set_first (a_target_zone)
-				l_new_split_area.set_second (zone)
+				check not_possible: False end
 			end
-			l_target_zone_parent.extend (l_new_split_area)
-
-			if l_target_zone_parent_spliter /= Void and then l_target_zone_parent_spliter.full and
-				 l_target_zone_parent_spliter.minimum_split_position <= l_target_zone_parent_split_position and
-				 	l_target_zone_parent_spliter.maximum_split_position >= l_target_zone_parent_split_position then
-				l_target_zone_parent_spliter.set_split_position (l_target_zone_parent_split_position)
-			end
-			-- If we don't resize here and content is in top level,
-			-- content's widget will be minimum size.
-			internal_docking_manager.command.resize (False)
-
-			l_new_split_area.set_proportion (0.5)
-			set_direction (a_target_zone.state.direction)
-			internal_docking_manager.command.remove_empty_split_area
 		ensure
 			changed:
 		end
 
-	show_all_split_parent (a_zone: SD_ZONE) is
+	show_all_split_parent (a_zone: SD_ZONE)
 			-- Show all spliter parent of `a_zone' to make sure `a_zone' will displayed.
 		require
 			not_void: a_zone /= Void
@@ -550,7 +626,8 @@ feature {NONE} -- Implementation
 			l_widget: EV_WIDGET
 		do
 			from
-				l_widget := a_zone
+				l_widget ?= a_zone
+				check l_widget_not_void: l_widget /= Void end
 				l_spliter ?= l_widget.parent
 			until
 				l_spliter = Void
@@ -567,7 +644,7 @@ invariant
 
 	internal_zone_not_void: initialized implies zone /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "File system routines"
 	author: "Andreas Leitner"
 	date: "$Date$"
@@ -7,6 +7,7 @@ indexing
 class AUT_FILE_SYSTEM_ROUTINES
 
 inherit
+	ANY
 
 	UT_SHARED_TEMPLATE_EXPANDER
 		export {NONE} all end
@@ -26,13 +27,13 @@ create {AUT_SHARED_FILE_SYSTEM_ROUTINES}
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		do
 		end
 
 feature -- Basic routines
 
-	interpreted_pathname (a_base_directory: STRING; a_pathname: STRING): STRING is
+	interpreted_pathname (a_base_directory: STRING; a_pathname: STRING): STRING
 			-- Interpreted version of `a_pathname'; All environment
 			-- variables will be replaced by their value. Undefined
 			-- environment variables are left untouched. If `a_pathname'
@@ -53,7 +54,7 @@ feature -- Basic routines
 			pathname_not_empty: Result.count > 0
 		end
 
-	absolute_parent_directory_of_filename (a_filename: STRING): STRING is
+	absolute_parent_directory_of_filename (a_filename: STRING): STRING
 			-- Absolute parent directory of `a_filename'
 		require
 			a_filename_not_void: a_filename /= Void
@@ -67,7 +68,7 @@ feature -- Basic routines
 			directory_not_empty: Result.count > 0
 		end
 
-	interpreted_string (a_string: STRING): STRING is
+	interpreted_string (a_string: STRING): STRING
 			-- String where the environment variables have been
 			-- replaced by their values. The environment variables
 			-- are considered to be either ${[^}]*} or $[a-zA-Z0-9_]+
@@ -174,7 +175,7 @@ feature -- Basic routines
 	last_error: BOOLEAN
 			-- Did an error happen?
 
-	copy_recursive (a_source_directory_name: STRING; a_target_directory_name: STRING) is
+	copy_recursive (a_source_directory_name: STRING; a_target_directory_name: STRING)
 			-- Copy `a_source_directory_name' to `a_target_directory_name' recursively.
 			-- Directories named "CVS" and ".svn" will not be copied.
 			-- TODO: Rewrite to use Gobo classes.
@@ -247,7 +248,7 @@ feature -- Basic routines
 			end
 		end
 
-	recursive_create_directory (a_directory_name: STRING) is
+	recursive_create_directory (a_directory_name: STRING)
 			-- Create `a_directory_name' physically if it doesn't exist
 			-- and the permissions allow to do so.
 			-- Don't throw an exception if the parent directory doesn't exist.
@@ -267,4 +268,35 @@ feature -- Basic routines
 			end
 		end
 
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

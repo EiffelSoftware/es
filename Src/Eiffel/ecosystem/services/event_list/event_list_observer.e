@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An observer for events implemented on a {EVENT_LIST_S} service interface.
 	]"
@@ -7,11 +7,13 @@ indexing
 	date: "$Date$";
 	revision: "$Revision $"
 
-deferred class
+class
 	EVENT_LIST_OBSERVER
 
 inherit
 	EVENT_OBSERVER_I
+
+	LOCKABLE_OBSERVER
 
 feature {EVENT_LIST_S} -- Event handlers
 
@@ -21,7 +23,7 @@ feature {EVENT_LIST_S} -- Event handlers
 			-- `a_service': Event service where event item was added.
 			-- `a_event_item': The event item added to the service.
 		require
-			is_interface_usable: is_interface_usable
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
 			a_service_attached: a_service /= Void
 			a_event_attached: a_event_item /= Void
 		do
@@ -33,7 +35,7 @@ feature {EVENT_LIST_S} -- Event handlers
 			-- `a_service': Event service where the event item was removed.
 			-- `a_event_item': The event item removed from the service.
 		require
-			is_interface_usable: is_interface_usable
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
 			a_service_attached: a_service /= Void
 			a_event_attached: a_event_item /= Void
 		do
@@ -45,7 +47,7 @@ feature {EVENT_LIST_S} -- Event handlers
 			-- `a_service': Event service where the event item was changed.
 			-- `a_event_item': The event item that was changed.
 		require
-			is_interface_usable: is_interface_usable
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
 			a_service_attached: a_service /= Void
 			a_event_attached: a_event_item /= Void
 		do
@@ -57,7 +59,7 @@ feature {EVENT_LIST_S} -- Event handlers
 			-- `a_service': Event service where the event item was adopted.
 			-- `a_event_item': The event item that was changed.
 		require
-			is_interface_usable: is_interface_usable
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
 			a_service_attached: a_service /= Void
 			a_event_attached: a_event_item /= Void
 			a_new_cookie_is_valid_context_cookie: a_service.is_valid_context_cookie (a_new_cookie)
@@ -65,7 +67,7 @@ feature {EVENT_LIST_S} -- Event handlers
 		do
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

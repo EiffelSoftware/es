@@ -9,14 +9,15 @@
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
-		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
-		<library name="service_coupling" location="$EIFFEL_SRC\framework\patterns\service_coupling\service_coupling.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>		
+		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
 		<library name="uuid" location="$EIFFEL_SRC\library\uuid\uuid.ecf"/>
 		<cluster name="jstar_proofs" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/.svn$</exclude>
 				<exclude>/CVS$</exclude>
+				<exclude>/examples$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>^/jimple_generation$</exclude>
@@ -43,3 +44,4 @@
 		</cluster>
 	</target>
 </system>
+

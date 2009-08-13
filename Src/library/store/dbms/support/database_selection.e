@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Implementation of DB_SELECTION"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -35,12 +35,12 @@ create {DATABASE_SELECTION}
 
 feature -- Access
 
-	last_parsed_query : STRING
+	last_parsed_query : detachable STRING
 			-- Last parsed query
 
 feature -- Basic operations
 
-	query (s: STRING) is
+	query (s: STRING)
 			-- Query database server using SQL `statement'.
 		require
 			argument_exists: s /= Void
@@ -48,7 +48,7 @@ feature -- Basic operations
 			prepare_execute: not immediate_execution
 			descriptor_is_available: db_spec.descriptor_is_available
 		local
-			parsed_s: STRING
+			parsed_s: detachable STRING
 			parsed: BOOLEAN
 		do
 			descriptor := db_spec.new_descriptor
@@ -69,7 +69,7 @@ feature -- Basic operations
 			next
 		end
 
-	next is
+	next
 			-- Move to next row matching execute clause.
 
 		require else
@@ -84,7 +84,7 @@ feature -- Basic operations
 		end
 
 
-	terminate is
+	terminate
 			-- Release cursor descriptor used with last query.
 		require else
 			connected: is_connected
@@ -95,14 +95,14 @@ feature -- Basic operations
 			descriptor_is_available: descriptor_available
 		end
 
-	modify (s: STRING) is
+	modify (s: STRING)
 			-- Do nothing.
 		do
 		end
 
 feature -- Status setting
 
-	cursor_to_object (object: ANY; cursor: DB_RESULT) is
+	cursor_to_object (object: ANY; cursor: DB_RESULT)
 			-- Effectively load `object' attributes with
 			-- `cursor' fields.
 		require
@@ -110,19 +110,20 @@ feature -- Status setting
 			object_exists: object /= Void
 		local
 			i, pos: INTEGER
-			r_any: ANY
+			r_any: detachable ANY
 			tst : BOOLEAN
-			database_data: DATABASE_DATA [G]
+			l_map_table: detachable ARRAY [INTEGER]
 		do
-			database_data ?= cursor.data
-			if database_data /= Void then
+			if attached {DATABASE_DATA [G]} cursor.data as database_data then
 				from
 					i := 1
 				until
 					i > database_data.count or not is_ok
 				loop
 					r_any := database_data.item (i)
-					pos := database_data.map_table.item (i)
+					l_map_table := database_data.map_table
+					check l_map_table /= Void end -- FIXME: implied by ... bug?
+					pos := l_map_table.item (i)
 					if r_any /= Void and pos > 0 then
 						tst := field_copy (pos, object,
 							db_spec.convert_string_type (r_any,
@@ -135,7 +136,7 @@ feature -- Status setting
 			end
 		end
 
-	set_ht (table: like ht) is
+	set_ht (table: like ht)
 			-- Obtain bind variables table.
 			-- Set `ht' with `table'.
 		require
@@ -146,7 +147,7 @@ feature -- Status setting
 			ht = table
 		end
 
-	set_ht_order (table: like ht_order) is
+	set_ht_order (table: like ht_order)
 			--
 		require
 			table_not_void: table /= Void
@@ -162,13 +163,13 @@ feature -- Status report
 	descriptor: INTEGER
 			-- Cursor descriptor index
 
-	descriptor_available: BOOLEAN is
+	descriptor_available: BOOLEAN
             -- Is a new cursor descriptor available?
         do
             Result := db_spec.descriptor_is_available
         end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

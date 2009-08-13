@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {ES_TEST_WIZARD_CLASS_WINDOW}."
 	author: ""
 	date: "$Date$"
@@ -44,7 +44,7 @@ feature {NONE}
 			on_after_initialize
 		end
 
-	build_class_tree (a_parent: EV_BOX) is
+	build_class_tree (a_parent: EV_BOX)
 			-- Initialize `class_tree'
 		local
 			l_layouts: EV_LAYOUT_CONSTANTS
@@ -64,7 +64,7 @@ feature {NONE}
 			a_parent.extend (class_tree)
 		end
 
-	build_feature_clause_selection (a_parent: EV_BOX) is
+	build_feature_clause_selection (a_parent: EV_BOX)
 			-- Initialize feature clause selection.
 		local
 			l_vb: EV_VERTICAL_BOX
@@ -118,10 +118,14 @@ feature {NONE}
 		local
 			l_featc: FEATURE_CLAUSE_AS
 			l_reuse: BOOLEAN
+			l_class: detachable EIFFEL_CLASS_I
+			l_name: detachable STRING
+			l_name_32: STRING_32
 		do
 			l_featc := wizard_information.feature_clause_cache
 			l_reuse := not wizard_information.is_new_feature_clause_cache
-			if {l_class: EIFFEL_CLASS_I} wizard_information.test_class_cache then
+			l_class := wizard_information.test_class_cache
+			if l_class /= Void then
 				class_tree.show_class (l_class)
 			end
 			if selected_class = Void then
@@ -137,10 +141,11 @@ feature {NONE}
 					new_feature_clause_button.enable_select
 				end
 			end
-			if {l_name: !STRING} wizard_information.feature_clause_name then
-				if {l_name32: !STRING_32} l_name.to_string_32 then
-					new_feature_clause_name.set_text (l_name32)
-				end
+			l_name := wizard_information.feature_clause_name_cache
+			if l_name /= Void then
+				l_name_32 := l_name.to_string_32
+				check l_name_32 /= Void end
+				new_feature_clause_name.set_text (l_name_32)
 			end
 			new_feature_clause_name.validate
 
@@ -152,12 +157,12 @@ feature {NONE} -- Access
 	wizard_information: ES_TEST_WIZARD_INFORMATION
 			-- Information user has provided to the wizard
 
-	selected_class: ?EIFFEL_CLASS_I
+	selected_class: detachable EIFFEL_CLASS_I
 			-- Class currently selected in `tree_view'
 
 feature {NONE} -- Access: widgets
 
-	class_tree: ?ES_TEST_WIZARD_CLASS_TREE
+	class_tree: detachable ES_TEST_WIZARD_CLASS_TREE
 			-- Tree displaying clusters and existing test classes
 			--
 			-- Note: must be detachable for recycling
@@ -171,7 +176,7 @@ feature {NONE} -- Access: widgets
 	feature_clause_box: EV_COMBO_BOX
 			-- Drop down box for selecting existing feature clause
 
-	new_feature_clause_name: ES_VALIDATION_TEXT_FIELD
+	new_feature_clause_name: ES_VALIDATING_WRAPPED_WIDGET
 			-- Text field for new feature clause name
 
 feature {NONE} -- Status report
@@ -216,7 +221,7 @@ feature {NONE} -- Events
 		do
 			selected_class := Void
 			if class_tree.selected_item /= Void then
-				if {l_eclass: !like selected_class} class_tree.selected_item.data then
+				if attached {like selected_class} class_tree.selected_item.data as l_eclass then
 					selected_class := l_eclass
 					wizard_information.set_test_class (l_eclass)
 				else
@@ -247,14 +252,14 @@ feature {NONE} -- Events
 		do
 			wizard_information.feature_clause_cache := Void
 			if feature_clause_box.selected_item /= Void then
-				if {l_fc: FEATURE_CLAUSE_AS} feature_clause_box.selected_item.data then
+				if attached {FEATURE_CLAUSE_AS} feature_clause_box.selected_item.data as l_fc then
 					wizard_information.feature_clause_cache := l_fc
 				end
 			end
 			update_next_button_status
 		end
 
-	on_validate_feature_clause_name (a_name: !STRING_32): !TUPLE [BOOLEAN, ?STRING_32]
+	on_validate_feature_clause_name (a_name: attached STRING_32): attached TUPLE [BOOLEAN, detachable STRING_32]
 			-- Called when `new_feature_clause_name' contents need to be validated.
 		local
 			l_name: STRING
@@ -400,8 +405,8 @@ feature {NONE} -- Internationalization
 
 	e_new_feature_clause_name_empty: STRING = "Feature clause name can not be empty."
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -425,10 +430,10 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

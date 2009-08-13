@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			A specialized editor analyzer state info object, specifically for use within features.
 		]"
@@ -22,12 +22,12 @@ create
 
 feature -- Access
 
-	feature_name: ?STRING_32 assign set_feature_name
+	feature_name: detachable STRING_32 assign set_feature_name
 			-- The name of the located feature
 
 feature -- Element change
 
-	set_feature_name (a_name: ?like feature_name)
+	set_feature_name (a_name: detachable like feature_name)
 			-- Set the current state result's feature name
 			--
 			-- `a_name': The name of the feature.
@@ -57,7 +57,7 @@ feature -- Status setting
 			is_inline_agent_set: is_inline_agent = a_inline
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

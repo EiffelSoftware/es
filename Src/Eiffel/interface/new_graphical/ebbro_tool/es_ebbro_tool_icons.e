@@ -321,25 +321,25 @@ feature -- Constants: Icon names
 
 feature {NONE} -- Basic operations
 
-	populate_coordinates_table (a_table: !DS_HASH_TABLE [!TUPLE [x: NATURAL_8; y: NATURAL_8], STRING])
+	populate_coordinates_table (a_table: HASH_TABLE [TUPLE [x: NATURAL_8; y: NATURAL_8], STRING])
 			-- <Precursor>
 		do
-			a_table.force_last ([{NATURAL_8}1, {NATURAL_8}1], object_type_base_name)
-			a_table.force_last ([{NATURAL_8}2, {NATURAL_8}1], object_type_boolean_name)
-			a_table.force_last ([{NATURAL_8}3, {NATURAL_8}1], object_type_container_name)
-			a_table.force_last ([{NATURAL_8}4, {NATURAL_8}1], object_type_numeric_name)
-			a_table.force_last ([{NATURAL_8}5, {NATURAL_8}1], object_type_pointer_name)
-			a_table.force_last ([{NATURAL_8}6, {NATURAL_8}1], object_type_reference_name)
-			a_table.force_last ([{NATURAL_8}7, {NATURAL_8}1], object_type_string_name)
-			a_table.force_last ([{NATURAL_8}8, {NATURAL_8}1], object_type_tuple_name)
-			a_table.force_last ([{NATURAL_8}9, {NATURAL_8}1], object_type_void_name)
-			a_table.force_last ([{NATURAL_8}1, {NATURAL_8}3], grid_cycle_reference_name)
-			a_table.force_last ([{NATURAL_8}1, {NATURAL_8}4], gui_ebbro_name)
-			a_table.force_last ([{NATURAL_8}2, {NATURAL_8}4], gui_move_left_name)
-			a_table.force_last ([{NATURAL_8}3, {NATURAL_8}4], gui_move_right_name)
-			a_table.force_last ([{NATURAL_8}4, {NATURAL_8}4], gui_custom_serialization_name)
-			a_table.force_last ([{NATURAL_8}5, {NATURAL_8}4], gui_filter_name)
-			a_table.force_last ([{NATURAL_8}6, {NATURAL_8}4], gui_comparer_name)
+			a_table.put ([{NATURAL_8}1, {NATURAL_8}1], object_type_base_name)
+			a_table.put ([{NATURAL_8}2, {NATURAL_8}1], object_type_boolean_name)
+			a_table.put ([{NATURAL_8}3, {NATURAL_8}1], object_type_container_name)
+			a_table.put ([{NATURAL_8}4, {NATURAL_8}1], object_type_numeric_name)
+			a_table.put ([{NATURAL_8}5, {NATURAL_8}1], object_type_pointer_name)
+			a_table.put ([{NATURAL_8}6, {NATURAL_8}1], object_type_reference_name)
+			a_table.put ([{NATURAL_8}7, {NATURAL_8}1], object_type_string_name)
+			a_table.put ([{NATURAL_8}8, {NATURAL_8}1], object_type_tuple_name)
+			a_table.put ([{NATURAL_8}9, {NATURAL_8}1], object_type_void_name)
+			a_table.put ([{NATURAL_8}1, {NATURAL_8}3], grid_cycle_reference_name)
+			a_table.put ([{NATURAL_8}1, {NATURAL_8}4], gui_ebbro_name)
+			a_table.put ([{NATURAL_8}2, {NATURAL_8}4], gui_move_left_name)
+			a_table.put ([{NATURAL_8}3, {NATURAL_8}4], gui_move_right_name)
+			a_table.put ([{NATURAL_8}4, {NATURAL_8}4], gui_custom_serialization_name)
+			a_table.put ([{NATURAL_8}5, {NATURAL_8}4], gui_filter_name)
+			a_table.put ([{NATURAL_8}6, {NATURAL_8}4], gui_comparer_name)
 		end
 
 ;indexing

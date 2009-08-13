@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						Handle stone for development window.
 						This class is extract from EB_DEVELOPMENT_WINDOW set_stone_after_first_check.
@@ -17,7 +17,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_window: EB_DEVELOPMENT_WINDOW) is
+	make (a_window: EB_DEVELOPMENT_WINDOW)
 			-- Creation method.
 		require
 			not_void: a_window /= Void
@@ -29,7 +29,7 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	set_stone_after_first_check (a_stone: STONE) is
+	set_stone_after_first_check (a_stone: STONE)
 			-- Display text associated with `a_stone', if any and if possible
 		local
 			l_managed_main_formatters: ARRAYED_LIST [EB_CLASS_TEXT_FORMATTER]
@@ -158,7 +158,7 @@ feature -- Command
 
 feature{NONE} -- Implementation
 
-	has_error_when_error_tool_auto_hide: BOOLEAN is
+	has_error_when_error_tool_auto_hide: BOOLEAN
 			-- When project has errors and Errors Tools is auto hiding, we should not set focus to editor.
 			-- Otherwise the Errors Tools sliding panel will be removed automatically, because it doesn't has focus.
 			-- See bug#12765.
@@ -166,8 +166,8 @@ feature{NONE} -- Implementation
 			l_tool: ES_TOOL [EB_TOOL]
 		do
 			l_tool := develop_window.shell_tools.tool ({ES_ERROR_LIST_TOOL})
-			if l_tool /= Void and then not l_tool.is_recycled and then l_tool.panel.content /= Void then
-				Result := (l_tool.panel.content.state_value = {SD_ENUMERATION}.auto_hide) and (not develop_window.eiffel_project.successful)
+			if l_tool /= Void and then not l_tool.is_recycled and then l_tool.docking_content /= Void then
+				Result := (l_tool.docking_content.state_value = {SD_ENUMERATION}.auto_hide) and (not develop_window.eiffel_project.successful)
 			end
 		end
 
@@ -210,8 +210,8 @@ feature{NONE} -- Implementation
 	save_needed: BOOLEAN;
 			-- If save file needed?
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -224,19 +224,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

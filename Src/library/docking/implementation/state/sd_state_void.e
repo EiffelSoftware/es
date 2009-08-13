@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_STATE when a content initialized, wait for change to other SD_STATE. Or when client programmer called hide, this state remember state"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -27,8 +27,8 @@ create
 
 feature {NONE}  -- Initlization
 
-	make (a_content: SD_CONTENT)is
-			-- Creation method.
+	make (a_content: SD_CONTENT)
+			-- Creation method
 		require
 			a_content_not_void: a_content /= Void
 		do
@@ -44,22 +44,22 @@ feature {NONE}  -- Initlization
 			set: internal_docking_manager = a_content.docking_manager
 		end
 
-feature -- Redefine.
+feature -- Redefine
 
-	zone: SD_ZONE is
-			-- Redefine.
+	zone: SD_ZONE
+			-- <Precursor>
 		do
 		end
 
-	restore (a_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER) is
-			-- Redefine.
+	restore (a_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER)
+			-- <Precursor>
 		do
 			content.set_visible (False)
 			initialized := True
 		end
 
-	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA) is
-			-- Redefine.
+	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA)
+			-- <Precursor>
 		local
 			l_docking_state: SD_DOCKING_STATE
 		do
@@ -77,13 +77,17 @@ feature -- Redefine.
 			state_changed: internal_content.state /= Current
 		end
 
-	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER) is
-			-- Redefine.
+	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_docking_state: SD_DOCKING_STATE
 		do
 			content.set_visible (True)
-			internal_docking_manager.command.lock_update (a_target_zone, False)
+			if attached {EV_WIDGET} a_target_zone as lt_widget then
+				internal_docking_manager.command.lock_update (lt_widget, False)
+			else
+				check not_possible: False end
+			end
 			create l_docking_state.make (internal_content, a_direction, 0)
 			l_docking_state.change_zone_split_area (a_target_zone, a_direction)
 			change_state (l_docking_state)
@@ -92,8 +96,8 @@ feature -- Redefine.
 			state_changed: internal_content.state /= Current
 		end
 
-	stick (a_direction: INTEGER) is
-			-- Redefine.
+	stick (a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_auto_hide_state: SD_AUTO_HIDE_STATE
 		do
@@ -106,8 +110,8 @@ feature -- Redefine.
 			state_changed: internal_content.state /= Current
 		end
 
-	float (a_x, a_y: INTEGER) is
-			-- Redefine.
+	float (a_x, a_y: INTEGER)
+			-- <Precursor>
 		local
 			l_docking_state: SD_DOCKING_STATE
 			l_floating_state: SD_FLOATING_STATE
@@ -126,7 +130,7 @@ feature -- Redefine.
 			if not l_platform.is_windows then
 				-- Similar to {SD_DOCKING_STATE}.show, we have to do something special for GTK.
 				-- See bug#14105
-				if {l_floating_zone: !SD_FLOATING_ZONE} l_floating_state.zone then
+				if attached {SD_FLOATING_ZONE} l_floating_state.zone as l_floating_zone then
 					create l_env
 					l_env.application.do_once_on_idle (agent set_size_in_idle (last_floating_width, last_floating_height, l_floating_zone))
 				end
@@ -137,8 +141,8 @@ feature -- Redefine.
 			state_changed: internal_content.state /= Current
 		end
 
-	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER) is
-			-- Redefine.
+	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER)
+			-- <Precursor>
 		local
 			l_tab_state: SD_TAB_STATE
 		do
@@ -154,8 +158,8 @@ feature -- Redefine.
 			state_changed: internal_content.state /= Current
 		end
 
-	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN) is
-			-- Redefine.
+	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN)
+			-- <Precursor>
 		local
 			l_tab_state: SD_TAB_STATE
 		do
@@ -174,8 +178,8 @@ feature -- Redefine.
 			state_changed: internal_content.state /= Current
 		end
 
-	show is
-			-- Redefine
+	show
+			-- <Precursor>
 		local
 			l_tab_zone: SD_TAB_ZONE
 			l_docking_zone: SD_DOCKING_ZONE
@@ -218,8 +222,15 @@ feature -- Redefine.
 
 			if content /= Void then
 				l_new_zone := content.state.zone
-				if l_new_zone /= Void and then l_new_zone.is_displayed then
-					call_show_actions
+
+				if l_new_zone /= Void then
+					if attached {EV_WIDGET} l_new_zone as lt_widget then
+						if lt_widget.is_displayed then
+							call_show_actions
+						end
+					else
+						check not_possible: False end
+					end
 				end
 			end
 		rescue
@@ -229,21 +240,27 @@ feature -- Redefine.
 			end
 		end
 
-	close is
-			-- Redefine
+	close
+			-- <Precursor>
 		do
 		end
 
-	set_user_widget (a_widget: EV_WIDGET) is
-			-- Redefine
+	set_user_widget (a_widget: EV_WIDGET)
+			-- <Precursor>
 		do
-			-- Do nothing.
+			-- Do nothing
+		end
+
+	set_mini_toolbar (a_widget: EV_WIDGET)
+			-- <Precursor>
+		do
+			-- Do nothing
 		end
 
 feature {SD_TAB_STATE, SD_AUTO_HIDE_STATE} -- Hide/Show issues when Tab
 
-	set_relative (a_content: SD_CONTENT) is
-			-- Set `relative'.
+	set_relative (a_content: SD_CONTENT)
+			-- Set `relative' with `a_content'
 		require
 			a_content_not_void: a_content /= Void
 			a_content_valid: content_valid (a_content)
@@ -254,11 +271,11 @@ feature {SD_TAB_STATE, SD_AUTO_HIDE_STATE} -- Hide/Show issues when Tab
 		end
 
 	relative: SD_CONTENT
-			-- When hide, who is group.
+			-- When hide, who is grouped with
 
 feature -- Contract support
 
-	content_valid (a_content: SD_CONTENT): BOOLEAN is
+	content_valid (a_content: SD_CONTENT): BOOLEAN
 			-- If content valid?
 		do
 			Result := internal_docking_manager.has_content (a_content)
@@ -266,8 +283,8 @@ feature -- Contract support
 
 feature {NONE} -- Implementation
 
-	set_size_in_idle (a_width, a_height: INTEGER; a_zone: !SD_FLOATING_ZONE) is
-			-- Set `a_zone''s size with `a_width' and `a_height'.
+	set_size_in_idle (a_width, a_height: INTEGER; a_zone: attached SD_FLOATING_ZONE)
+			-- Set `a_zone''s size with `a_width' and `a_height'
 		require
 			valid: a_width >= 0 and a_height >= 0
 		do
@@ -282,7 +299,7 @@ invariant
 	direction_valid: initialized implies direction = {SD_ENUMERATION}.top or direction = {SD_ENUMERATION}.bottom
 		or direction = {SD_ENUMERATION}.left or direction = {SD_ENUMERATION}.right
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: ".NET type name to be mapped to an Eiffel class name"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,14 +16,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make (t: SYSTEM_TYPE) is
+	make (t: SYSTEM_TYPE)
 			-- Initialize from .NET type `t'.
 		require
 			non_void_type: t /= Void
+		local
+			l_str: detachable SYSTEM_STRING
 		do
 			internal_type := t
 			create simple_name.make_from_cil (internal_type.name)
-			weight := t.full_name.split (dot_array).count - 1
+			create eiffel_name.make_empty
+			l_str := t.full_name
+			if l_str /= Void and then attached l_str.split (dot_array) as l_split then
+				weight := l_split.count - 1
+			else
+				weight := 0
+			end
 		ensure
 			non_void_internal_type: internal_type /= Void
 			non_void_simple_name: simple_name /= Void
@@ -34,7 +42,7 @@ feature -- Access
 	weight: INTEGER
 			-- Weight used to compare instances
 
-	dot_array: NATIVE_ARRAY [CHARACTER] is
+	dot_array: NATIVE_ARRAY [CHARACTER]
 			-- <<.>>
 		once
 			create Result.make (1)
@@ -49,7 +57,7 @@ feature -- Access
 
 feature -- Element Settings
 
-	set_eiffel_name (name: like eiffel_name) is
+	set_eiffel_name (name: like eiffel_name)
 			-- Set `eiffel_name' with `name'.
 		require
 			non_void_name: name /= Void
@@ -62,7 +70,7 @@ feature -- Element Settings
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := weight < other.weight
@@ -73,7 +81,7 @@ feature {TYPE_NAME_SOLVER, ASSEMBLY_CONSUMER} -- Implementation
 	internal_type: SYSTEM_TYPE;
 			-- Type whose name is consumed
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

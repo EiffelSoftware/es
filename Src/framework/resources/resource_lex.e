@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Lexical analysis of the resource."
@@ -15,9 +15,15 @@ inherit
 
 feature -- Parsing
 
-	parse_separators is
+	parse_separators
 			-- Get rid of the separators and comments.
+		require
+			resource_file_attached: resource_file /= Void
+		local
+			l_resource_file: like resource_file
 		do
+			l_resource_file := resource_file
+			check attached l_resource_file end -- implied by precondition `resource_file_attached'
 			from
 			until
 				end_of_line or else
@@ -28,38 +34,45 @@ feature -- Parsing
 			end;
 			from
 			until
-				not end_of_line or resource_file.end_of_file
+				not end_of_line or l_resource_file.end_of_file
 			loop
 				read_line
 			end;
 			parse_comments
 		end;
-				
-	parse_comments is
+
+	parse_comments
 			-- Get rid of the comments.
+		local
+			l_resource_file: like resource_file
 		do
+			l_resource_file := resource_file
+			check attached l_resource_file end -- implied by precondition `resource_file_attached'
+
 			from
 			until
 				position >= line_count or else
 				last_character /= '-' or else
-				line.item (position + 1) /= '-'
+				(attached line as line_l and then
+				line_l.item (position + 1) /= '-') -- Implied by position < line_count
 			loop
 				from
 					read_line
 				until
-					not end_of_line or resource_file.end_of_file
+					not end_of_line or l_resource_file.end_of_file
 				loop
 					read_line
 				end
 			end
 		end;
 
-	parse_name is
+	parse_name
 			-- Parse a name and put it in `last_token'.
 			-- `last_token' is void if a syntax error ocurred.
 			-- A name as the same form as an Eiffel identifier.
 		local
 			stop: BOOLEAN
+			l_last_token: like last_token
 		do
 			parse_separators;
 			if end_of_file then
@@ -68,8 +81,9 @@ feature -- Parsing
 				from
 					inspect last_character
 					when 'a'..'z', 'A'..'Z' then
-						create last_token.make (10);
-						last_token.extend (last_character);
+						create l_last_token.make (10);
+						last_token := l_last_token
+						l_last_token.extend (last_character);
 						read_character
 					else
 						stop := true;
@@ -80,7 +94,8 @@ feature -- Parsing
 				loop
 					inspect last_character
 					when 'a'..'z', 'A'..'Z', '0'..'9', '_', '.', '-', '+' then
-						last_token.extend (last_character);
+						check l_last_token /= Void end -- Implied by previsous `l_last_token' creation if clause (for '0'..'9', '_', '.', '-', '+'. `stop' is True)
+						l_last_token.extend (last_character);
 						read_character
 					else
 						stop := true
@@ -89,7 +104,7 @@ feature -- Parsing
 			end
 		end;
 
-	parse_colon is
+	parse_colon
 			-- Parse a colon character.
 			-- `last_token' is void if a syntax error ocurred.
 		do
@@ -102,13 +117,14 @@ feature -- Parsing
 			end
 		end;
 
-	parse_value is
+	parse_value
 			-- Parse a resource value and put it in `last_token'.
 			-- `last_token' is void if a syntax error ocurred.
 			-- A value is either a word (characters with not blank)
 			-- or an Eiffel string.
 		local
 			stop: BOOLEAN
+			l_last_token: like last_token
 		do
 			parse_separators;
 			if end_of_file then
@@ -117,20 +133,21 @@ feature -- Parsing
 				parse_string
 			else
 				from
-					create last_token.make (10)
+					create l_last_token.make (10)
+					last_token := l_last_token
 				until
 					stop
 				loop
-					last_token.extend (last_character);
+					l_last_token.extend (last_character);
 					read_character;
 					if end_of_line then
 						stop := true
 					elseif last_character = '%T' or last_character = ' ' then
 						stop := true
-					elseif 
-						position < line_count and then 
+					elseif
+						position < line_count and then
 						last_character = '-' and
-						line.item (position + 1) = '-'
+						(attached line as l_line and then l_line.item (position + 1) = '-') -- implied by not `end_of_line' and this feature only called by `parse_file'
 					then
 						parse_comments;
 						stop := true
@@ -139,26 +156,29 @@ feature -- Parsing
 			end
 		end;
 
-	parse_string is
+	parse_string
 			-- Parse a string and put it in `last_token'.
 			-- `last_token' is void if a syntax error ocurred.
 		require
 			not end_of_line and then last_character = '%"'
+		local
+			l_last_token: like last_token
 		do
 			from
 				read_character;
-				create last_token.make (10)
+				create l_last_token.make (10)
+				last_token := l_last_token
 			until
-				last_token = Void or end_of_line or else
+				l_last_token = Void or end_of_line or else
 				last_character = '%"'
 			loop
 				if last_character = '%%' then
 					read_character;
 					if end_of_line then
 						read_line;
-						if 
-							not end_of_line and then 
-							last_character = '%%' 
+						if
+							not end_of_line and then
+							last_character = '%%'
 						then
 							read_character
 						else
@@ -167,58 +187,59 @@ feature -- Parsing
 					else
 						inspect last_character
 						when 'A' then
-							last_token.extend ('%A')
+							l_last_token.extend ('%A')
 						when 'B' then
-							last_token.extend ('%B')
+							l_last_token.extend ('%B')
 						when 'C' then
-							last_token.extend ('%C')
+							l_last_token.extend ('%C')
 						when 'D' then
-							last_token.extend ('%D')
+							l_last_token.extend ('%D')
 						when 'F' then
-							last_token.extend ('%F')
+							l_last_token.extend ('%F')
 						when 'H' then
-							last_token.extend ('%H')
+							l_last_token.extend ('%H')
 						when 'L' then
-							last_token.extend ('%L')
+							l_last_token.extend ('%L')
 						when 'N' then
-							last_token.extend ('%N')
+							l_last_token.extend ('%N')
 						when 'Q' then
-							last_token.extend ('%Q')
+							l_last_token.extend ('%Q')
 						when 'R' then
-							last_token.extend ('%R')
+							l_last_token.extend ('%R')
 						when 'S' then
-							last_token.extend ('%S')
+							l_last_token.extend ('%S')
 						when 'T' then
-							last_token.extend ('%T')
+							l_last_token.extend ('%T')
 						when 'U' then
-							last_token.extend ('%U')
+							l_last_token.extend ('%U')
 						when 'V' then
-							last_token.extend ('%V')
+							l_last_token.extend ('%V')
 						when '%%' then
-							last_token.extend ('%%')
+							l_last_token.extend ('%%')
 						when '%'' then
-							last_token.extend ('%'')
+							l_last_token.extend ('%'')
 						when '%"' then
-							last_token.extend ('%"')
+							l_last_token.extend ('%"')
 						when '(' then
-							last_token.extend ('%(')
+							l_last_token.extend ('%(')
 						when ')' then
-							last_token.extend ('%)')
+							l_last_token.extend ('%)')
 						when '<' then
-							last_token.extend ('%<')
+							l_last_token.extend ('%<')
 						when '>' then
-							last_token.extend ('%>')
+							l_last_token.extend ('%>')
 						when '/' then
 							parse_char_code
 						else
 							last_token := Void
 						end;
 						read_character
-					end	
+					end
 				else
-					last_token.extend (last_character);
+					l_last_token.extend (last_character);
 					read_character
 				end
+				l_last_token := last_token
 			end;
 			if last_token /= Void and not end_of_line then
 					-- Read the last ".
@@ -228,15 +249,19 @@ feature -- Parsing
 			end
 		end;
 
-	parse_char_code is
+	parse_char_code
 			-- Parse a special character of the form %/../ and insert
 			-- it at the end of `last_token'. `last_token' becomes
 			-- void if an error occurred.
 		require
+			last_token_not_void: last_token /= Void
 			not end_of_line and then last_character = '/'
 		local
 			code: STRING
+			l_last_token: like last_token
 		do
+			l_last_token := last_token
+			check l_last_token /= Void end -- Implied by precondition `last_token_not_void'
 			read_character;
 			if not end_of_line then
 				inspect last_character
@@ -254,18 +279,18 @@ feature -- Parsing
 								when '0'..'9' then
 									code.extend (last_character)
 									read_character;
-									if 
+									if
 										not end_of_line and then
 										last_character = '/'
 									then
-										last_token.extend (charconv 
-															(code.to_integer))
+										l_last_token.extend (charconv
+																(code.to_integer))
 									else
 										last_token := Void
 									end
 								when '/' then
-									last_token.extend (charconv
-															(code.to_integer))
+									l_last_token.extend (charconv
+																(code.to_integer))
 								else
 									last_token := Void
 								end
@@ -273,7 +298,7 @@ feature -- Parsing
 								last_token := Void
 							end
 						when '/' then
-							last_token.extend (charconv (code.to_integer))
+							l_last_token.extend (charconv (code.to_integer))
 						else
 							last_token := Void
 						end
@@ -288,58 +313,75 @@ feature -- Parsing
 			end
 		end;
 
-	read_line is
+	read_line
 			-- Read the next line in `resource_file' and put it in `line'.
 			-- Remove the leading blank characters.
+		require
+			resource_file_attached: resource_file /= Void
+		local
+			l_resource_file: like resource_file
+			l_line: like line
 		do
-			if not resource_file.end_of_file then
-				resource_file.read_line;
-				line := resource_file.last_string;
-				line.left_adjust
+			l_resource_file := resource_file
+			check l_resource_file /= Void end -- implied by precondition `resource_file_attached'
+			if not l_resource_file.end_of_file then
+				l_resource_file.read_line
+				l_line := l_resource_file.last_string
+				check l_line /= Void end -- implied by postcondition of `read_line'
+				line := l_line
+				l_line.left_adjust
 			else
-				create line.make (0)
+				create l_line.make (0)
+				line := l_line
 			end;
-			line_count := line.count;
+			line_count := l_line.count;
+
 			position := 0;
 			line_number := line_number + 1;
 			read_character
 		end;
-		
-	read_character is
-			-- Read the next character on the `line' and 
+
+	read_character
+			-- Read the next character on the `line' and
 			-- put it in last_character.
 		require
 			not_end_of_line: not end_of_line
+		local
+			l_line: like line
 		do
 			position := position + 1;
 			if not end_of_line then
-				last_character := line.item (position)
+				l_line := line
+				check attached l_line end -- implied by not `end_of_line'
+				last_character := l_line.item (position)
 			end
-		end;
+		end
 
 feature -- Status report
 
-	end_of_line: BOOLEAN is
+	end_of_line: BOOLEAN
 			-- Has the end of the current line been reached?
 		do
 			Result := position = line_count + 1
 		end;
 
-	end_of_file: BOOLEAN is
+	end_of_file: BOOLEAN
 			-- Has the end of the `resource_file' been reached?
+		require
+			resource_file_attached: resource_file /= Void
 		do
-			Result := end_of_line and resource_file.end_of_file
+			Result := end_of_line and (attached resource_file as l_resource_file and then l_resource_file.end_of_file)
 		end;
 
 feature -- Access
 
-	resource_file: PLAIN_TEXT_FILE;
+	resource_file: detachable PLAIN_TEXT_FILE;
 			-- File being parsed
 
-	last_token: STRING;
+	last_token: detachable STRING;
 			-- Last token parsed
 
-	line: STRING;
+	line: detachable STRING;
 			-- Line of `resource_file' being parsed
 
 	line_number: INTEGER;
@@ -354,8 +396,8 @@ feature -- Access
 	last_character: CHARACTER;
 			-- Character at the current position in the `line'
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -368,22 +410,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class RESOURCE_LEX

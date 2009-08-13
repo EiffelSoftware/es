@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Generates po entries from an compilable Eiffel class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature -- Initialize
 
-	make (a_file: like file; a_text: like text) is
+	make (a_file: like file; a_text: like text)
 			-- Initialize.
 			--
 			-- `a_file': File where parsed messages are added
@@ -36,7 +36,7 @@ feature -- Status report
 
 feature -- Element change
 
-	set_source_file_name (a_str: STRING) is
+	set_source_file_name (a_str: STRING)
 			-- Set `source_file_name' to `a_str'.
 		require
 			a_str_not_void: a_str /= Void
@@ -60,7 +60,7 @@ feature -- Access
 
 feature -- Generation
 
-	generate is
+	generate
 			-- Generate entries and write them into `file'.
 		require
 			source_file_name_set: source_file_name /= Void
@@ -73,10 +73,17 @@ feature -- Generation
 			l_string_low := l_string.as_lower
 			if l_string_low.has_substring (name_of_translate) or else l_string_low.has_substring (name_of_translate_plural) or else l_string_low.has_substring (name_of_feature_clause.as_lower) then
 				eiffel_parser.reset
-				eiffel_parser.parse_from_string (l_string)
+				eiffel_parser.set_syntax_version (eiffel_parser.transitional_64_syntax)
+				eiffel_parser.parse_from_string (l_string, Void)
 				if eiffel_parser.error_count > 0 then
-					has_error := true
-				else
+					eiffel_parser.reset
+					eiffel_parser.set_syntax_version (eiffel_parser.Ecma_syntax)
+					eiffel_parser.parse_from_string (l_string, Void)
+					if eiffel_parser.error_count > 0 then
+						has_error := True
+					end
+				end
+				if not has_error then
 					create l_iterator
 					l_iterator.set_parsed_class (eiffel_parser.root_node)
 					l_iterator.set_match_list (eiffel_parser.match_list)
@@ -93,7 +100,7 @@ feature -- Generation
 
 feature {NONE} -- Implementation
 
-	eiffel_parser: EIFFEL_PARSER is
+	eiffel_parser: EIFFEL_PARSER
 			-- Eiffel parser used to parse input text
 		once
 			create Result.make_with_factory (create {AST_ROUNDTRIP_FACTORY})
@@ -102,11 +109,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	name_of_translate: STRING is "translation"
+	name_of_translate: STRING = "translation"
 			-- Name of translate feature
 			-- Arguments from this feature are taken as translateable messages.
 
-	name_of_translate_plural: STRING is "plural_translation"
+	name_of_translate_plural: STRING = "plural_translation"
 			-- Name of translate feature for plurals
 			-- Arguments from this feature are taken as translateable plural messages.
 
@@ -116,8 +123,8 @@ invariant
 	text_not_void: text /= Void
 	file_not_void: file /= Void
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -141,11 +148,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

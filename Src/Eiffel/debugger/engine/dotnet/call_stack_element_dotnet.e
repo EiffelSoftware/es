@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Information about a call in the calling stack."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -66,7 +66,7 @@ create {EIFFEL_CALL_STACK}
 
 feature {NONE} -- Initialization
 
-	make (level: INTEGER; tid: like thread_id) is
+	make (level: INTEGER; tid: like thread_id)
 		do
 			Precursor (level, tid)
 			private_body_index := -1
@@ -79,7 +79,7 @@ feature -- Filling
 			melted: BOOLEAN; a_address: DBG_ADDRESS;
 			a_dyn_type: CLASS_TYPE;
 			a_feature: FEATURE_I;
-			a_il_offset: INTEGER; a_line_number: INTEGER) is
+			a_il_offset: INTEGER; a_bp_index, a_bp_nested_index: INTEGER)
 		local
 			l_routine: E_FEATURE
 		do
@@ -100,10 +100,13 @@ feature -- Filling
 				class_name := dynamic_class.name_in_upper
 			end
 			written_class := a_feature.written_class
-			if a_line_number = 0 then
+			if a_bp_index = 0 then
 				break_index := 1
 			else
-				break_index := a_line_number
+				break_index := a_bp_index
+				if a_bp_nested_index > 0 then
+					break_nested_index := a_bp_nested_index
+				end
 			end
 
 			object_address := a_address
@@ -131,7 +134,7 @@ feature -- Filling
 
 feature -- Cleaning
 
-	clean is
+	clean
 			-- Clean stored data
 		do
 -- FIXME jfiat 2004-07-07 : seems to cause issue regarding ref
@@ -158,13 +161,13 @@ feature {EIFFEL_CALL_STACK_DOTNET} -- Query
 			-- Chain and Frame index used to be able to refresh
 			-- the icd_chain and icd_frame values
 
-	set_chain_frame_indexes (vc, vf: INTEGER) is
+	set_chain_frame_indexes (vc, vf: INTEGER)
 		do
 			chain_index := vc
 			frame_index := vf
 		end
 
-	refresh_icd_data is
+	refresh_icd_data
 			-- Refresh the icd_chain and icd_frame values
 		local
 			l_active_thread: ICOR_DEBUG_THREAD
@@ -213,7 +216,7 @@ feature {EIFFEL_CALL_STACK_DOTNET} -- Query
 			end
 		end
 
-	fresh_icd_il_frame: ICOR_DEBUG_IL_FRAME is
+	fresh_icd_il_frame: ICOR_DEBUG_IL_FRAME
 			-- Fresh ICorDebugILFrame value.
 		do
 			Result := icd_frame.query_interface_icor_debug_il_frame
@@ -240,7 +243,7 @@ feature -- Properties
 
 feature -- Current object
 
-	current_object: EIFNET_ABSTRACT_DEBUG_VALUE is
+	current_object: EIFNET_ABSTRACT_DEBUG_VALUE
 			-- Current object value
 		do
 			Result := private_current_object
@@ -250,7 +253,7 @@ feature -- Current object
 			end
 		end
 
-	set_private_current_object (c: like private_current_object) is
+	set_private_current_object (c: like private_current_object)
 			-- Set current object value
 			-- without initializing the full stack...
 		do
@@ -259,7 +262,7 @@ feature -- Current object
 
 feature -- Dotnet Properties
 
-	dotnet_class_token: NATURAL_32 is
+	dotnet_class_token: NATURAL_32
 			--
 		do
 			if not dotnet_initialized then
@@ -268,7 +271,7 @@ feature -- Dotnet Properties
 			Result := private_dotnet_class_token
 		end
 
-	dotnet_feature_token: NATURAL_32 is
+	dotnet_feature_token: NATURAL_32
 			--
 		do
 			if not dotnet_initialized then
@@ -277,7 +280,7 @@ feature -- Dotnet Properties
 			Result := private_dotnet_feature_token
 		end
 
-	dotnet_module_name: STRING is
+	dotnet_module_name: STRING
 			--
 		do
 			if not dotnet_initialized then
@@ -286,7 +289,7 @@ feature -- Dotnet Properties
 			Result := private_dotnet_module_name
 		end
 
-	dotnet_module_filename: STRING is
+	dotnet_module_filename: STRING
 			--
 		do
 			if not dotnet_initialized then
@@ -297,7 +300,7 @@ feature -- Dotnet Properties
 
 feature -- Stack reset
 
-	reset_stack is
+	reset_stack
 			-- <Precursor>
 		do
 			Precursor
@@ -332,7 +335,7 @@ feature {NONE} -- Implementation Properties
 
 feature {NONE} -- Implementation
 
-	initialize_dotnet_info is
+	initialize_dotnet_info
 			--
 		local
 			l_function: ICOR_DEBUG_FUNCTION
@@ -383,7 +386,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	initialize_stack_for_current_object is
+	initialize_stack_for_current_object
 		local
 			cobj: EIFNET_ABSTRACT_DEBUG_VALUE
 		do
@@ -415,7 +418,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	initialize_stack_for_arguments is
+	initialize_stack_for_arguments
 		local
 			l_count			: INTEGER
 			value			: ABSTRACT_DEBUG_VALUE
@@ -498,12 +501,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	initialize_stack_for_locals is
+	initialize_stack_for_locals
 		require
 			initialized_current_object
 		local
 			local_decl_grps: EIFFEL_LIST [TYPE_DEC_AS]
-			l_ot_locals: like object_test_locals_from
+			l_ot_locals: like object_test_locals_info
 			id_list: IDENTIFIER_LIST
 			l_index: INTEGER
 			l_count: INTEGER
@@ -634,7 +637,7 @@ feature {NONE} -- Implementation
 						end
 						if not l_list.after then
 								--| Remaining locals, should be OT locals
-							l_ot_locals := object_test_locals_from (rout)
+							l_ot_locals := object_test_locals_info
 							if l_ot_locals /= Void and then not l_ot_locals.is_empty then
 								from
 									l_ot_locals.start
@@ -645,7 +648,7 @@ feature {NONE} -- Implementation
 									value.set_item_number (counter)
 									counter := counter + 1
 									value.set_name (l_names_heap.item (l_ot_locals.item.id.name_id))
-									l_stat_class := static_class_for_local (l_ot_locals.item.type, rout_i, l_wc)
+									l_stat_class := static_class_for_local_from_type_a (l_ot_locals.item.li.type, rout_i, l_wc)
 									if l_stat_class /= Void then
 										value.set_static_class (l_stat_class)
 									end
@@ -655,6 +658,24 @@ feature {NONE} -- Implementation
 								end
 							end
 						end
+--| Note: keep this code for later, if we want to handle those extra values...						
+--						if not l_list.after then
+--								--| For some reason, there are remaining values on the stack
+--								--| let's considers them as locals
+--							from
+--							until
+--								l_list.after
+--							loop
+--								value := l_list.item
+--								value.set_item_number (counter)
+--								value.set_name ("value #" + counter.out)
+--								counter := counter + 1
+--								locals_list.extend (value)
+--								l_list.forth
+--							end
+--						end
+--						check all_value_handled: l_list.after end
+
 						if l_old_group /= Void then
 							inst_context.set_group (l_old_group)
 						end
@@ -675,7 +696,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	initialize_stack is
+	initialize_stack
 		do
 			initialize_stack_for_current_object
 			initialize_stack_for_arguments
@@ -685,7 +706,7 @@ feature {NONE} -- Implementation
 						and initialized_locals
 		end
 
-	internal_current_object: EIFNET_ABSTRACT_DEBUG_VALUE  is
+	internal_current_object: EIFNET_ABSTRACT_DEBUG_VALUE
 		require
 			icd_frame /= Void
 		local
@@ -709,7 +730,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_arg_list: LIST [EIFNET_ABSTRACT_DEBUG_VALUE]  is
+	internal_arg_list: LIST [EIFNET_ABSTRACT_DEBUG_VALUE]
 		require
 			icd_frame /= Void
 		local
@@ -734,7 +755,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_local_list: LIST [EIFNET_ABSTRACT_DEBUG_VALUE]  is
+	internal_local_list: LIST [EIFNET_ABSTRACT_DEBUG_VALUE]
 			-- Return list of Value for local var,
 			-- including the Result if there is one, in this case
 			-- this will be the first value
@@ -759,7 +780,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	debug_value_list_from_enum (a_enum: ICOR_DEBUG_VALUE_ENUM; a_enum_elts: INTEGER): LIST [EIFNET_ABSTRACT_DEBUG_VALUE] is
+	debug_value_list_from_enum (a_enum: ICOR_DEBUG_VALUE_ENUM; a_enum_elts: INTEGER): LIST [EIFNET_ABSTRACT_DEBUG_VALUE]
 		require
 			a_enum /= Void
 		local
@@ -802,8 +823,8 @@ invariant
 --				not private_locals.is_empty
 --	valid_level: level_in_stack >= 1
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -816,22 +837,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CALL_STACK_ELEMENT_DOTNET

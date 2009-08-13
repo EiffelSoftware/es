@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Widgets showing differents states and controls for {TEST_GENERATOR_I}.
 	]"
@@ -39,16 +39,13 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	factory: !TEST_GENERATOR_I
+	factory: attached TEST_GENERATOR_I
 			-- <Precursor>
 
 feature {NONE} -- Access
 
-	status_label: !EV_LABEL
+	status_label: attached EV_LABEL
 			-- Label showing status of generator
-
-	busy_dialog: ?ES_POPUP_TRANSITION_WINDOW
-			-- Dialog telling use to be patient
 
 feature {NONE} -- Status report
 
@@ -67,19 +64,15 @@ feature {NONE} -- Events
 		do
 			if factory.is_running then
 				if factory.is_compiling then
-					status_label.set_text ("Compiling")
+					status_label.set_text (locale.translation (l_compiling))
 				elseif factory.is_executing then
-					status_label.set_text ("Executing random tests")
+					status_label.set_text (locale.translation (l_random_testing))
 				elseif factory.is_replaying_log then
-					status_label.set_text ("Replaying log")
+					status_label.set_text (locale.translation (l_replaying_log))
 				elseif factory.is_minimizing_witnesses then
-					status_label.set_text ("Minimizing witnesses")
+					status_label.set_text (locale.translation (l_minimizing))
 				elseif factory.is_generating_statistics then
-					status_label.set_text ("Generating statistics")
-					if busy_dialog = Void then
-						create busy_dialog.make (locale_formatter.translation (i_please_be_patient))
-						busy_dialog.show_relative_to_window (development_window.window)
-					end
+					status_label.set_text (locale.translation (l_statistics))
 				else
 					status_label.set_text ("")
 				end
@@ -88,7 +81,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_processor_error (a_error: !STRING_8; a_tokens: !TUPLE)
+	on_processor_error (a_error: attached STRING_8; a_tokens: TUPLE)
 			-- <Precursor>
 		do
 			has_error := True
@@ -98,12 +91,8 @@ feature {NONE} -- Events
 			-- <Precursor>
 		local
 			l_dir: DIRECTORY_NAME
-			l_message: !STRING_32
+			l_message: attached STRING_32
 		do
-			if busy_dialog /= Void then
-				busy_dialog.hide
-				busy_dialog := Void
-			end
 			if not has_error then
 				create l_dir.make_from_string (factory.test_suite.eiffel_project.project_directory.testing_results_path)
 				l_dir.extend ("auto_test")
@@ -114,11 +103,17 @@ feature {NONE} -- Events
 
 feature {NONE} -- Internationalization
 
-	i_done_message: !STRING = "AutoTest is finished!%N%NResults can be found in: $1"
-	i_please_be_patient: !STRING = "Please be patient while AutoTest generates results.%N(The window might become unresponsive during that time)"
+	i_done_message: STRING = "AutoTest is finished!%N%NResults can be found in: $1"
+	i_please_be_patient: STRING = "Please be patient while AutoTest generates results.%N(The window might become unresponsive during that time)"
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	l_compiling: STRING = "Compiling"
+	l_random_testing: STRING = "Generating and executing routine invocations"
+	l_replaying_log: STRING = "Replaying log"
+	l_minimizing: STRING = "Minimizing generated tests"
+	l_statistics: STRING = "Generating statistics"
+
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -142,10 +137,10 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

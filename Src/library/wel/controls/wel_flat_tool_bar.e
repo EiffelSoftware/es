@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "[
 		Enhancement of the toolbar. This toolbar appears flat
 		and use imagelist to store bitmaps - when available.
@@ -36,7 +36,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: WEL_WINDOW; an_id: INTEGER) is
+	make (a_parent: WEL_WINDOW; an_id: INTEGER)
 			-- Create a toolbar with `a_parent' as parent and
 			-- `an_id' as id.
 		do
@@ -56,7 +56,7 @@ feature -- Access
 	bitmaps_height: INTEGER
 			-- 15 by default
 
-	buttons_width: INTEGER is
+	buttons_width: INTEGER
 			-- Width of the buttons in the toolbar.
 		do
 			if comctl32_version >= version_470 then
@@ -67,7 +67,7 @@ feature -- Access
 			end
 		end
 
-	buttons_height: INTEGER is
+	buttons_height: INTEGER
 			-- Height of the buttons in the toolbar.
 		do
 			if comctl32_version >= version_470 then
@@ -81,13 +81,13 @@ feature -- Access
 	use_image_list: BOOLEAN
 			-- Are we using ImageList for the toolbar?
 
-	use_disabled_image_list: BOOLEAN is
+	use_disabled_image_list: BOOLEAN
 			-- Are we using disabled ImageList for the toolbar?
 		do
 			Result := (disabled_image_list /= Void)
 		end
 
-	use_hot_image_list: BOOLEAN is
+	use_hot_image_list: BOOLEAN
 			-- Are we using hot ImageList for the toolbar?
 		do
 			Result := (hot_image_list /= Void)
@@ -97,29 +97,29 @@ feature -- Access
 
 	last_hot_bitmap_index: INTEGER
 
-	default_image_list: WEL_IMAGE_LIST
+	default_image_list: detachable WEL_IMAGE_LIST
 			-- ImageList associated with the toolbar
 			-- Note: only used in the "Win95+IE3" version
 
-	disabled_image_list: WEL_IMAGE_LIST
+	disabled_image_list: detachable WEL_IMAGE_LIST
 			-- ImageList associated with the toolbar for disabled
 			-- buttons
 			-- Note: only used in the "Win95+IE3" version
 
-	hot_image_list: WEL_IMAGE_LIST
+	hot_image_list: detachable WEL_IMAGE_LIST
 			-- ImageList associated with the toolbar for hot buttons
 			-- Note: only used in the "Win95+IE3" version
 
 feature -- Status report
 
-	use_image_list_supported: BOOLEAN is
+	use_image_list_supported: BOOLEAN
 			-- Are ImageList in toolbars supported in the current
 			-- version of Windows?
 		once
 			Result := comctl32_version >= version_470
 		end
 
-	find_button (a_x, a_y: INTEGER): INTEGER is
+	find_button (a_x, a_y: INTEGER): INTEGER
 			-- Determines where a point lies in a toolbar control.
 			--
 			-- Returns an integer value. If the return value is zero or a positive value,
@@ -130,11 +130,11 @@ feature -- Status report
 		local
 			coordinates: WEL_POINT
 		do
-			create coordinates.make(a_x, a_y)
+			create coordinates.make (a_x, a_y)
 			Result := {WEL_API}.send_message_result_integer (item, Tb_hittest, to_wparam (0), coordinates.item)
 		end
 
-	get_max_width: INTEGER is
+	get_max_width: INTEGER
 			-- Retrieves the total width of all of the visible buttons and separators in the toolbar.
 		require
 			function_supported: comctl32_version >= version_471
@@ -142,7 +142,7 @@ feature -- Status report
 			Result := get_max_size.width
 		end
 
-	get_max_height: INTEGER is
+	get_max_height: INTEGER
 			-- Retrieves the common height of all of the visible buttons and separators in the toolbar.
 		require
 			function_supported: comctl32_version >= version_471
@@ -150,7 +150,7 @@ feature -- Status report
 			Result := get_max_size.height
 		end
 
-	get_max_size: WEL_SIZE is
+	get_max_size: WEL_SIZE
 			-- Retrieves the total size of all of the visible buttons and separators in the toolbar
 		require
 			function_supported: comctl32_version >= version_471
@@ -166,7 +166,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	enable_use_image_list is
+	enable_use_image_list
 			-- Set the toolbar to use image lists.
 			-- Note: Require Win95+IE3 or above
 		require
@@ -178,7 +178,7 @@ feature -- Status setting
 			image_list_in_use: use_image_list
 		end
 
-	disable_use_image_list is
+	disable_use_image_list
 			-- Set the toolbar not to use image lists.
 			-- Note: This is the Default.
 		require
@@ -191,7 +191,7 @@ feature -- Status setting
 
 feature -- Element change
 
-	add_icon (a_icon: WEL_GRAPHICAL_RESOURCE) is
+	add_icon (a_icon: WEL_GRAPHICAL_RESOURCE)
 			-- Add an icon to the list of currently used images.
 			--
 			-- Note: The function will work with Comctrl32.dll version less
@@ -202,9 +202,12 @@ feature -- Element change
 		require
 			exists: exists
 			icon_not_void: a_icon /= Void
+			icon_exists: a_icon.exists
 		local
-			a_bitmap: WEL_BITMAP
-			a_toolbar_bitmap: WEL_TOOL_BAR_BITMAP
+			l_bitmap: WEL_BITMAP
+			l_info: detachable WEL_ICON_INFO
+			l_toolbar_bitmap: WEL_TOOL_BAR_BITMAP
+			l_default_image_list: like default_image_list
 		do
 			has_bitmap := True
 
@@ -213,19 +216,25 @@ feature -- Element change
 				setup_image_list (False)
 
 					-- Insert the bitmap into the image list.
-				default_image_list.add_icon (a_icon)
+				l_default_image_list := default_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_default_image_list_attached: l_default_image_list /= Void end
+				l_default_image_list.add_icon (a_icon)
 
-				last_bitmap_index := default_image_list.last_position
+				last_bitmap_index := l_default_image_list.last_position
 			else
 					-- We retrieve the bitmap from the icon.
-				a_bitmap := a_icon.get_icon_info.color_bitmap
-				create a_toolbar_bitmap.make_from_bitmap (a_bitmap)
-				last_bitmap_index := {WEL_API}.send_message_result_integer (item, Tb_addbitmap,
-					to_wparam (1), a_toolbar_bitmap.item)
+				l_info := a_icon.get_icon_info
+				if l_info /= Void then
+					l_bitmap := l_info.color_bitmap
+					create l_toolbar_bitmap.make_from_bitmap (l_bitmap)
+					last_bitmap_index := {WEL_API}.send_message_result_integer (item, Tb_addbitmap,
+						to_wparam (1), l_toolbar_bitmap.item)
+				end
 			end
 		end
 
-	add_disabled_icon (an_icon: WEL_GRAPHICAL_RESOURCE) is
+	add_disabled_icon (an_icon: WEL_GRAPHICAL_RESOURCE)
 			-- Add an icon to the disabled image list.
 			--
 			-- The feature is only supported under Windows95+IE3
@@ -233,22 +242,28 @@ feature -- Element change
 			-- do nothing.
 		require
 			icon_not_void: an_icon /= Void
+			icon_exists: an_icon.exists
+		local
+			l_disabled_image_list: like disabled_image_list
 		do
 			if use_image_list then
 					-- Create the ImageLists if not already created
-				setup_disabled_image_list(False)
+				setup_disabled_image_list (False)
 
 					-- Insert the bitmap into the image lists.
-				disabled_image_list.add_icon(an_icon)
+				l_disabled_image_list := disabled_image_list
+					-- Per poscondition of `setup_disabled_image_list'.
+				check l_disabled_image_list_attached: l_disabled_image_list /= Void end
+				l_disabled_image_list.add_icon (an_icon)
 
 					-- Update the position
-				last_disabled_bitmap_index := disabled_image_list.last_position
+				last_disabled_bitmap_index := l_disabled_image_list.last_position
 			else
 				-- Not supported... do nothing.
 			end
 		end
 
-	add_hot_icon(an_icon: WEL_GRAPHICAL_RESOURCE) is
+	add_hot_icon (an_icon: WEL_GRAPHICAL_RESOURCE)
 			-- Add an icon to the hot image list.
 			--
 			-- The feature is only supported under Windows95+IE3
@@ -256,48 +271,59 @@ feature -- Element change
 			-- do nothing.
 		require
 			icon_not_void: an_icon /= Void
+			icon_exists: an_icon.exists
+		local
+			l_hot_image_list: like hot_image_list
 		do
 			if use_image_list then
 					-- Create the ImageLists if not already created
-				setup_hot_image_list(False)
+				setup_hot_image_list (False)
 
 					-- Insert the bitmap into the image lists.
-				hot_image_list.add_icon(an_icon)
+				l_hot_image_list := hot_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_hot_image_list_attached: l_hot_image_list /= Void end
+				l_hot_image_list.add_icon (an_icon)
 
 					-- Update the position
-				last_hot_bitmap_index := hot_image_list.last_position
+				last_hot_bitmap_index := l_hot_image_list.last_position
 			else
 				-- Not supported... do nothing.
 			end
 		end
 
-	add_bitmap (a_bitmap: WEL_BITMAP) is
+	add_bitmap (a_bitmap: WEL_BITMAP)
 			-- Add a bitmap to the list of currently used images.
 		require
 			exists: exists
 			bitmap_not_void: a_bitmap /= Void
+			bitmap_exists: a_bitmap.exists
 		local
 			a_toolbar_bitmap: WEL_TOOL_BAR_BITMAP
+			l_default_image_list: like default_image_list
 		do
 			has_bitmap := True
 
 			if use_image_list then
 					-- Create the ImageList if not already created
-				setup_image_list(False)
+				setup_image_list (False)
 
 					-- Insert the bitmap into the image list.
-				default_image_list.add_bitmap(a_bitmap)
+				l_default_image_list := default_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_default_image_list_attached: l_default_image_list /= Void end
+				l_default_image_list.add_bitmap (a_bitmap)
 
-				last_bitmap_index := default_image_list.last_position
+				last_bitmap_index := l_default_image_list.last_position
 			else
 					-- We build a "toolbar bitmap".
-				create a_toolbar_bitmap.make_from_bitmap(a_bitmap)
+				create a_toolbar_bitmap.make_from_bitmap (a_bitmap)
 				last_bitmap_index := {WEL_API}.send_message_result_integer (item, Tb_addbitmap,
 					to_wparam (1), a_toolbar_bitmap.item)
 			end
 		end
 
-	add_disabled_bitmap(a_bitmap: WEL_BITMAP) is
+	add_disabled_bitmap (a_bitmap: WEL_BITMAP)
 			-- Add a bitmap to the disabled image list.
 			--
 			-- The feature is only supported under Windows95+IE3
@@ -305,22 +331,28 @@ feature -- Element change
 			-- do nothing.
 		require
 			bitmap_not_void: a_bitmap /= Void
+			bitmap_exists: a_bitmap.exists
+		local
+			l_disabled_image_list: like disabled_image_list
 		do
 			if use_image_list then
 					-- Create the ImageLists if not already created
-				setup_disabled_image_list(False)
+				setup_disabled_image_list (False)
 
 					-- Insert the bitmap into the image lists.
-				disabled_image_list.add_bitmap(a_bitmap)
+				l_disabled_image_list := disabled_image_list
+					-- Per poscondition of `setup_disabled_image_list'.
+				check l_disabled_image_list_attached: l_disabled_image_list /= Void end
+				l_disabled_image_list.add_bitmap (a_bitmap)
 
 					-- Update the position
-				last_disabled_bitmap_index := disabled_image_list.last_position
+				last_disabled_bitmap_index := l_disabled_image_list.last_position
 			else
 				-- Not supported... do nothing.
 			end
 		end
 
-	add_hot_bitmap(a_bitmap: WEL_BITMAP) is
+	add_hot_bitmap (a_bitmap: WEL_BITMAP)
 			-- Add a bitmap to the hot image list.
 			--
 			-- The feature is only supported under Windows95+IE3
@@ -328,92 +360,118 @@ feature -- Element change
 			-- do nothing.
 		require
 			bitmap_not_void: a_bitmap /= Void
+			bitmap_exists: a_bitmap.exists
+		local
+			l_hot_image_list: like hot_image_list
 		do
 			if use_image_list then
 					-- Create the ImageLists if not already created
-				setup_hot_image_list(False)
+				setup_hot_image_list (False)
 
 					-- Insert the bitmap into the image lists.
-				hot_image_list.add_bitmap(a_bitmap)
+				l_hot_image_list := hot_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_hot_image_list_attached: l_hot_image_list /= Void end
+				l_hot_image_list.add_bitmap (a_bitmap)
 
 					-- Update the position
-				last_hot_bitmap_index := hot_image_list.last_position
+				last_hot_bitmap_index := l_hot_image_list.last_position
 			else
 				-- Not supported... do nothing.
 			end
 		end
 
-	add_masked_bitmap (a_bitmap: WEL_BITMAP; a_mask_bitmap: WEL_BITMAP) is
+	add_masked_bitmap (a_bitmap: WEL_BITMAP; a_mask_bitmap: WEL_BITMAP)
 			-- Add a masked bitmap to the list of currently used images.
 		require
 			exists: exists
 			bitmap_not_void: a_bitmap /= Void
+			bitmap_exists: a_bitmap.exists
 			mask_not_void: a_mask_bitmap /= Void
+			mask_exists: a_mask_bitmap.exists
 			compatible_width_for_bitmaps: a_bitmap.width = a_mask_bitmap.width
 			compatible_height_for_bitmaps: a_bitmap.height = a_mask_bitmap.height
 			--| FIXME ARNAUD: Ensure that the mask is a monochrome bitmap
 		local
 			a_toolbar_bitmap: WEL_TOOL_BAR_BITMAP
+			l_default_image_list: like default_image_list
 		do
 			has_bitmap := True
 
 			if use_image_list then
 					-- Create the ImageList if not already created
-				setup_image_list(False)
+				setup_image_list (False)
 
 					-- Insert the bitmap into the image list.
-				default_image_list.add_masked_bitmap(a_bitmap, a_mask_bitmap)
+				l_default_image_list := default_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_default_image_list_attached: l_default_image_list /= Void end
+				l_default_image_list.add_masked_bitmap (a_bitmap, a_mask_bitmap)
 
-				last_bitmap_index := default_image_list.last_position
+				last_bitmap_index := l_default_image_list.last_position
 			else
 					-- We build a "toolbar bitmap".
-				create a_toolbar_bitmap.make_from_bitmap(a_bitmap)
+				create a_toolbar_bitmap.make_from_bitmap (a_bitmap)
 				last_bitmap_index := {WEL_API}.send_message_result_integer (item, Tb_addbitmap,
 					to_wparam (1), a_toolbar_bitmap.item)
 			end
 		end
 
-	add_disabled_masked_bitmap (a_bitmap: WEL_BITMAP; a_mask_bitmap: WEL_BITMAP) is
+	add_disabled_masked_bitmap (a_bitmap: WEL_BITMAP; a_mask_bitmap: WEL_BITMAP)
 			-- Add a masked bitmap to the disabled image list.
 		require
 			exists: exists
 			bitmap_not_void: a_bitmap /= Void
+			bitmap_exists: a_bitmap.exists
 			mask_not_void: a_mask_bitmap /= Void
+			mask_exists: a_mask_bitmap.exists
 			compatible_width_for_bitmaps: a_bitmap.width = a_mask_bitmap.width
 			compatible_height_for_bitmaps: a_bitmap.height = a_mask_bitmap.height
 			--| FIXME ARNAUD: Ensure that the mask is a monochrome bitmap
+		local
+			l_disabled_image_list: like disabled_image_list
 		do
 			if use_image_list then
 					-- Create the ImageList if not already created
-				setup_disabled_image_list(False)
+				setup_disabled_image_list (False)
 
 					-- Insert the bitmap into the image list.
-				disabled_image_list.add_masked_bitmap(a_bitmap, a_mask_bitmap)
+				l_disabled_image_list := disabled_image_list
+					-- Per poscondition of `setup_disabled_image_list'.
+				check l_disabled_image_list_attached: l_disabled_image_list /= Void end
+				l_disabled_image_list.add_masked_bitmap (a_bitmap, a_mask_bitmap)
 
-				last_disabled_bitmap_index := disabled_image_list.last_position
+				last_disabled_bitmap_index := l_disabled_image_list.last_position
 			else
 				-- Not supported... do nothing.
 			end
 		end
 
-	add_hot_masked_bitmap (a_bitmap: WEL_BITMAP; a_mask_bitmap: WEL_BITMAP) is
+	add_hot_masked_bitmap (a_bitmap: WEL_BITMAP; a_mask_bitmap: WEL_BITMAP)
 			-- Add a masked bitmap to the hot image list.
 		require
 			exists: exists
 			bitmap_not_void: a_bitmap /= Void
+			bitmap_exists: a_bitmap.exists
 			mask_not_void: a_mask_bitmap /= Void
+			mask_exists: a_mask_bitmap.exists
 			compatible_width_for_bitmaps: a_bitmap.width = a_mask_bitmap.width
 			compatible_height_for_bitmaps: a_bitmap.height = a_mask_bitmap.height
 			--| FIXME ARNAUD: Ensure that the mask is a monochrome bitmap
+		local
+			l_hot_image_list: like hot_image_list
 		do
 			if use_image_list then
 					-- Create the ImageList if not already created
-				setup_hot_image_list(False)
+				setup_hot_image_list (False)
 
 					-- Insert the bitmap into the image list.
-				hot_image_list.add_masked_bitmap(a_bitmap, a_mask_bitmap)
+				l_hot_image_list := hot_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_hot_image_list_attached: l_hot_image_list /= Void end
+				l_hot_image_list.add_masked_bitmap (a_bitmap, a_mask_bitmap)
 
-				last_hot_bitmap_index := hot_image_list.last_position
+				last_hot_bitmap_index := l_hot_image_list.last_position
 			else
 				-- Not supported... do nothing.
 			end
@@ -421,7 +479,7 @@ feature -- Element change
 
 feature -- Resizing
 
-	set_bitmap_size (a_width, a_height: INTEGER) is
+	set_bitmap_size (a_width, a_height: INTEGER)
 			-- Sets the size of the bitmapped images to be added to
 			-- the toolbar.
 			-- The size can be set only before adding any
@@ -436,41 +494,42 @@ feature -- Resizing
 
 			if use_image_list then
 					-- ImageList version
-				setup_image_list(True)
-				setup_hot_image_list(True)
-				setup_disabled_image_list(True)
+				setup_image_list (True)
+				setup_hot_image_list (True)
+				setup_disabled_image_list (True)
 			else
 					-- Plain Win95 version
 				{WEL_API}.send_message (item, Tb_setbitmapsize, to_wparam (0), cwin_make_long (a_width, a_height))
 			end
 		end
 
-	get_button_width: INTEGER  is
+	get_button_width: INTEGER
 			-- Get the width of the buttons.
 		require
 			function_supported: comctl32_version >= version_470
 		do
-			Result := cwin_lo_word({WEL_API}.send_message_result (item, Tb_getbuttonsize,
+			Result := cwin_lo_word ({WEL_API}.send_message_result (item, Tb_getbuttonsize,
 				to_wparam (0), to_lparam (0)))
 		end
 
-	get_button_height: INTEGER  is
+	get_button_height: INTEGER
 			-- Get the height of the buttons.
 		require
 			function_supported: comctl32_version >= version_470
 		do
-			Result := cwin_hi_word({WEL_API}.send_message_result (item, Tb_getbuttonsize,
+			Result := cwin_hi_word ({WEL_API}.send_message_result (item, Tb_getbuttonsize,
 				to_wparam (0), to_lparam (0)))
 		end
 
 feature -- Obsolete
 
-	add_bitmaps (tb_bitmap: WEL_TOOL_BAR_BITMAP; bitmap_count: INTEGER) is
+	add_bitmaps (tb_bitmap: WEL_TOOL_BAR_BITMAP; bitmap_count: INTEGER)
 			-- Add bitmaps.
 		obsolete
 			"use add_bitmap instead"
 		local
-			a_bitmap: WEL_BITMAP
+			l_bitmap: detachable WEL_BITMAP
+			l_default_image_list: like default_image_list
 		do
 			has_bitmap := True
 
@@ -484,18 +543,20 @@ feature -- Obsolete
 				end
 
 					-- Create the ImageList if not already created
-				setup_image_list(False)
+				setup_image_list (False)
 
 					-- Insert the bitmap into the image list.
-				if tb_bitmap.internal_bitmap /= Void then
-					default_image_list.add_bitmap(tb_bitmap.internal_bitmap)
-				else
+				l_bitmap := tb_bitmap.internal_bitmap
+				if l_bitmap = Void then
 					fixme ("Should it be `bitmap_id' or `internal_bitmap_id'?")
-					create a_bitmap.make_by_id (tb_bitmap.bitmap_id)
-					default_image_list.add_bitmap(a_bitmap)
+					create l_bitmap.make_by_id (tb_bitmap.bitmap_id)
 				end
+				l_default_image_list := default_image_list
+					-- Per poscondition of `setup_image_list'.
+				check l_default_image_list_attached: l_default_image_list /= Void end
+				l_default_image_list.add_bitmap (l_bitmap)
 
-				last_bitmap_index := default_image_list.last_position
+				last_bitmap_index := l_default_image_list.last_position
 			else
 					-- Plain Win95 version
 				last_bitmap_index := {WEL_API}.send_message_result_integer (item, Tb_addbitmap,
@@ -505,37 +566,51 @@ feature -- Obsolete
 
 feature {NONE} -- Implementation
 
-	setup_image_list(overwrite: BOOLEAN) is
+	setup_image_list (overwrite: BOOLEAN)
 			-- if `overwrite' is set, create the image list only if it existed.
 			-- if `overwrite' is not set, create the image list only if it did not exist.
+		local
+			l_default_image_list: like default_image_list
 		do
-			if (overwrite and default_image_list /= Void) or ((not overwrite) and default_image_list = Void) then
-				create default_image_list.make(bitmaps_width, bitmaps_height, Ilc_colorddb, True)
-				{WEL_API}.send_message (item, Tb_setimagelist, to_wparam (0), default_image_list.item)
+			l_default_image_list := default_image_list
+			if (overwrite and l_default_image_list /= Void) or ((not overwrite) and l_default_image_list = Void) then
+				create l_default_image_list.make (bitmaps_width, bitmaps_height, Ilc_colorddb, True)
+				default_image_list := l_default_image_list
+				{WEL_API}.send_message (item, Tb_setimagelist, to_wparam (0), l_default_image_list.item)
 			end
 		end
 
-	setup_disabled_image_list(overwrite: BOOLEAN) is
+	setup_disabled_image_list (overwrite: BOOLEAN)
 			-- if `overwrite' is set, create the image list only if it existed.
 			-- if `overwrite' is not set, create the image list only if it did not exist.
+		local
+			l_disabled_image_list: like disabled_image_list
 		do
-			if (overwrite and disabled_image_list /= Void) or ((not overwrite) and disabled_image_list = Void) then
-				create disabled_image_list.make(bitmaps_width, bitmaps_height, Ilc_colorddb, True)
-				{WEL_API}.send_message (item, Tb_setdisabledimagelist, to_wparam (0), disabled_image_list.item)
+			l_disabled_image_list := disabled_image_list
+			if (overwrite and l_disabled_image_list /= Void) or ((not overwrite) and l_disabled_image_list = Void) then
+				create l_disabled_image_list.make (bitmaps_width, bitmaps_height, Ilc_colorddb, True)
+				disabled_image_list := l_disabled_image_list
+				{WEL_API}.send_message (item, Tb_setdisabledimagelist, to_wparam (0), l_disabled_image_list.item)
 			end
 		end
 
-	setup_hot_image_list(overwrite: BOOLEAN) is
+	setup_hot_image_list (overwrite: BOOLEAN)
 			-- if `overwrite' is set, create the image list only if it existed.
 			-- if `overwrite' is not set, create the image list only if it did not exist.
+		local
+			l_hot_image_list: like hot_image_list
 		do
-			if (overwrite and hot_image_list /= Void) or ((not overwrite) and hot_image_list = Void) then
-				create hot_image_list.make(bitmaps_width, bitmaps_height, Ilc_colorddb, True)
-				{WEL_API}.send_message (item, Tb_sethotimagelist, to_wparam (0), hot_image_list.item)
+			l_hot_image_list := hot_image_list
+			if (overwrite and l_hot_image_list /= Void) or ((not overwrite) and l_hot_image_list = Void) then
+				create l_hot_image_list.make (bitmaps_width, bitmaps_height, Ilc_colorddb, True)
+				hot_image_list := l_hot_image_list
+				{WEL_API}.send_message (item, Tb_sethotimagelist, to_wparam (0), l_hot_image_list.item)
 			end
+		ensure
+			hot_image_list_attached: hot_image_list /= Void
 		end
 
-	default_style: INTEGER is
+	default_style: INTEGER
 			-- Default style used to create the control
 		once
 			Result := Ws_visible + Ws_child + Tbstyle_tooltips
@@ -551,7 +626,7 @@ invariant
 	disabled_image_list_only_when_bitmap: use_disabled_image_list implies has_bitmap
 	hot_image_list_only_when_bitmap: use_hot_image_list implies has_bitmap
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

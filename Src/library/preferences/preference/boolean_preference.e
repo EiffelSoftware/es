@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Boolean preference."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,13 +19,13 @@ create {PREFERENCE_FACTORY}
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING
 			-- String representation of `value'.		
 		do
 			Result := value.out
 		end
 
-	string_type: STRING is
+	string_type: STRING
 			-- String description of this preference type.
 		once
 			Result := "BOOLEAN"
@@ -33,19 +33,15 @@ feature -- Access
 
 feature -- Query
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING): BOOLEAN
 			-- Is `a_string' valid for this preference type to convert into a value?
-		local
-			l_string: STRING
 		do
-			l_string := a_string.twin
-			l_string.to_lower
-			Result := l_string.is_equal ("true") or l_string.is_equal ("false")
+			Result := a_string.is_case_insensitive_equal ("true") or a_string.is_case_insensitive_equal ("false")
 		end
 
 feature -- settings
 
-	set_value (a_value: BOOLEAN) is
+	set_value (a_value: BOOLEAN)
 			-- Set the value.
 		do
 			if value /= a_value then
@@ -55,7 +51,7 @@ feature -- settings
 
 feature {PREFERENCES} -- Access
 
-	generating_preference_type: STRING is
+	generating_preference_type: STRING
 			-- The generating type of the preference for graphical representation.
 		once
 			Result := "BOOLEAN"
@@ -63,14 +59,10 @@ feature {PREFERENCES} -- Access
 
 feature -- Status Setting
 
-	set_value_from_string (a_value: STRING) is
+	set_value_from_string (a_value: STRING)
 			-- Parse the string value `a_value' and set `value'.
-		local
-			l_value: STRING
 		do
-			l_value := a_value.twin
-			l_value.to_lower
-			set_value (l_value.is_equal ("true"))
+			set_value (a_value.is_case_insensitive_equal ("true"))
 		end
 
 feature {NONE} -- Implementation
@@ -78,15 +70,15 @@ feature {NONE} -- Implementation
 	auto_default_value: BOOLEAN;
 			-- Value to use when Current is using auto by default (until real auto is set)
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

@@ -1,21 +1,21 @@
-indexing
+note
 	description: "English settings"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class 
-	DATE_TIME_TOOLS	
+class
+	DATE_TIME_TOOLS
 
-inherit 	
+inherit
 	DATE_TIME_LANGUAGE_CONSTANTS
 
-feature 
+feature
 
-	name: STRING is "English"
+	name: STRING = "English"
 
-	days_text: ARRAY [STRING] is
+	days_text: ARRAY [STRING]
 		once
 			Result := <<
 				"SUN",
@@ -25,12 +25,12 @@ feature
 				"THU",
 				"FRI",
 				"SAT"
-				
+
 			>>
 			Result.compare_objects
 		end
 
-	months_text: ARRAY [STRING] is
+	months_text: ARRAY [STRING]
 		once
 			Result := <<
 				"JAN",
@@ -49,7 +49,7 @@ feature
 			Result.compare_objects
 		end
 
-	long_days_text: ARRAY [STRING] is
+	long_days_text: ARRAY [STRING]
 		once
 			Result := <<
 				"SUNDAY",
@@ -59,12 +59,12 @@ feature
 				"THURSDAY",
 				"FRIDAY",
 				"SATURDAY"
-				
+
 			>>
 			Result.compare_objects
 		end
 
-	long_months_text: ARRAY [STRING] is
+	long_months_text: ARRAY [STRING]
 		once
 			Result := <<
 				"JANUARY",
@@ -83,18 +83,18 @@ feature
 			Result.compare_objects
 		end
 
-	date_default_format_string: STRING is "[0]mm/[0]dd/yyyy"
+	date_default_format_string: STRING = "[0]mm/[0]dd/yyyy"
 
-	time_default_format_string: STRING is "hh12:[0]mi:[0]ss.ff3 AM"
+	time_default_format_string: STRING = "hh12:[0]mi:[0]ss.ff3 AM"
 
-	default_format_string: STRING is "[0]mm/[0]dd/yyyy hh12:[0]mi:[0]ss.ff3 AM";
+	default_format_string: STRING = "[0]mm/[0]dd/yyyy hh12:[0]mi:[0]ss.ff3 AM";
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
@@ -103,6 +103,6 @@ indexing
 
 
 
-end -- class DATE_TIME_TOOLS 
+end -- class DATE_TIME_TOOLS
 
 

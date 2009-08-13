@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Store information to be used when a conversion occurs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,14 +13,14 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_feature_conversion: CONVERSION_INFO) is
+	make (a_feature_conversion: CONVERSION_INFO)
 			-- Using `a_feature_conversion' create the necessary information that is needed
 			-- for checking a conversion in a descendant class.
 		require
 			a_feature_conversion_not_void: a_feature_conversion /= Void
 			a_feature_conversion_has_depend_unit: a_feature_conversion.has_depend_unit
 		do
-			if {l_info: FEATURE_CONVERSION_INFO} a_feature_conversion then
+			if attached {FEATURE_CONVERSION_INFO} a_feature_conversion as l_info then
 				is_from_conversion := l_info.is_from_conversion
 				if is_from_conversion then
 						-- Unfortunately we have to duplicate, because otherwise we have
@@ -50,7 +50,7 @@ invariant
 	creation_type_not_void: is_from_conversion implies creation_type /= Void
 	routine_id_positive: routine_id > 0
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

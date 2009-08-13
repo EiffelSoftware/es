@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A command line switch that accepts a value in the form of a Microsoft .NET regular expression.
 	]"
@@ -22,13 +22,13 @@ create
 
 feature -- Access
 
-	value_validator: !ARGUMENT_REGEX_VALIDATOR
+	value_validator: attached ARGUMENT_REGEX_VALIDATOR
 			-- <Precursor>
 		once
 			create Result
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

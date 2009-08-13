@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Byte code for creation expression"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,8 +11,8 @@ class
 inherit
 	ACCESS_B
 		redefine
-			analyze, unanalyze,
-			generate, register, get_register,
+			analyze, unanalyze, parameters,
+			generate, register, get_register, propagate,
 			enlarged, size, is_simple_expr, is_single, is_type_fixed,
 			line_number, set_line_number, has_call, allocates_memory
 		end
@@ -24,10 +24,19 @@ inherit
 
 feature -- Visitor
 
-	process (v: BYTE_NODE_VISITOR) is
+	process (v: BYTE_NODE_VISITOR)
 			-- Process current element.
 		do
 			v.process_creation_expr_b (Current)
+		end
+
+feature -- Access
+
+	parameters: BYTE_LIST [PARAMETER_B]
+		do
+			if call /= Void then
+				Result := call.parameters
+			end
 		end
 
 feature -- Register
@@ -35,7 +44,7 @@ feature -- Register
 	register: REGISTRABLE
 			-- Where the temporary result is stored
 
-	get_register is
+	get_register
 			-- Get a register
 		do
 			create {REGISTER} register.make (Reference_c_type)
@@ -44,9 +53,14 @@ feature -- Register
 	count_register: REGISTER
 			-- Store size of SPECIAL instance to create is stored if needed.
 
+	propagate (r: REGISTRABLE)
+			-- Do nothing
+		do
+		end
+
 feature -- C code generation
 
-	enlarged: CREATION_EXPR_B is
+	enlarged: CREATION_EXPR_B
 			-- Enlarge current_node
 		local
 			l_type: CL_TYPE_A
@@ -67,8 +81,8 @@ feature -- C code generation
 					elseif not l_type.associated_class.feature_of_rout_id (call.routine_id).is_empty then
 						Result.set_call (call.enlarged_on (context.real_type (type)))
 						Result.call.set_precursor_type (l_type)
-					elseif call.routine_id = system.special_make_rout_id then
-							-- We cannot optimized the empty routine `{SPECIAL}.make' as otherwise
+					elseif is_simple_special_creation then
+							-- We cannot optimize the empty routine `{SPECIAL}.make' as otherwise
 							-- it will simply generate a normal creation in `generate' below.
 						Result.set_call (call.enlarged_on (context.real_type (type)))
 					end
@@ -81,7 +95,7 @@ feature -- C code generation
 
 feature -- Analyze
 
-	analyze is
+	analyze
 			-- Analyze creation node
 		local
 			l_call: like call
@@ -93,7 +107,7 @@ feature -- Analyze
 				get_register
 				l_call := call
 				if l_call /= Void then
-					if l_call.routine_id = system.special_make_rout_id then
+					if is_simple_special_creation then
 						check
 							is_special_call_valid: is_special_call_valid
 						end
@@ -111,57 +125,84 @@ feature -- Analyze
 			end
 		end
 
-	unanalyze is
+	unanalyze
 			-- Unanalyze creation code
-		local
-			l_call: like call
 		do
-			if not real_type (type).is_basic then
-				Precursor {ACCESS_B}
-				l_call := call
-				if l_call /= Void then
-					if l_call.routine_id = system.special_make_rout_id then
-						check
-							is_special_call_valid: is_special_call_valid
-						end
-						l_call.parameters.first.unanalyze
-					else
-						l_call.unanalyze
+			if not real_type (type).is_basic and then attached call as l_call then
+				if is_simple_special_creation then
+					check
+						is_special_call_valid: is_special_call_valid
 					end
+					l_call.parameters.first.unanalyze
+				else
+					l_call.unanalyze
 				end
 			end
 		end
 
 feature -- Status report
 
-	has_call: BOOLEAN is
+	has_call: BOOLEAN
 			-- Does current node include a call?
 		do
 			Result := call /= Void
 		end
 
-	allocates_memory: BOOLEAN is True
+	allocates_memory: BOOLEAN = True
 			-- Current always allocates memory.
 
-	is_single: BOOLEAN is
+	is_single: BOOLEAN
 			-- True if no call after inline object creation or if call
 			-- `is_single'.
 		do
 			Result := call = Void or else call.is_single
 		end
 
-	is_simple_expr: BOOLEAN is
+	is_simple_expr: BOOLEAN
 			-- True if no call after inline object creation or if call
 			-- `is_simple_expr'.
 		do
 			Result := call = Void or else call.is_simple_expr
 		end
 
-	is_type_fixed: BOOLEAN is
+	is_type_fixed: BOOLEAN
 			-- Is type of the expression statically fixed,
 			-- so that there is no variation at run-time?
 		do
 			Result := info = Void and then type.is_standalone
+		end
+
+	is_special_creation: BOOLEAN
+			-- Is Current representing a creation expression for SPECIAL?
+		do
+			Result := call /= Void and then
+				(call.routine_id = system.special_make_filled_rout_id or
+				call.routine_id = system.special_make_empty_rout_id or
+				call.routine_id = system.special_make_rout_id)
+		ensure
+			definition: Result implies call /= Void
+		end
+
+	is_simple_special_creation: BOOLEAN
+			-- Is Current representing a creation expression for SPECIAL?
+		do
+			Result := call /= Void and then
+				(call.routine_id = system.special_make_empty_rout_id or
+				call.routine_id = system.special_make_rout_id)
+		ensure
+			definition: Result implies call /= Void
+		end
+
+	is_special_make_filled: BOOLEAN
+			-- Is Current representing a creation expression involving `make_filled' from SPECIAL?
+		do
+			Result := call /= Void and then call.routine_id = system.special_make_filled_rout_id
+		end
+
+	is_special_make_empty: BOOLEAN
+			-- Is Current representing a creation expression involving `make_filled' from SPECIAL?
+		do
+			Result := call /= Void and then call.routine_id = system.special_make_empty_rout_id
 		end
 
 feature -- Access
@@ -178,7 +219,7 @@ feature -- Access
 	line_number: INTEGER
 			-- Line number where construct begins in the Eiffel source.
 
-	nested_b: NESTED_BL is
+	nested_b: NESTED_BL
 			-- Create a fake nested so that `call.is_first' is False.
 		do
 			create Result
@@ -188,7 +229,7 @@ feature -- Access
 
 feature -- Settings
 
-	set_info (i: like info) is
+	set_info (i: like info)
 			-- Assign `i' to `info'.
 		require
 			i_not_void: i /= Void
@@ -198,7 +239,7 @@ feature -- Settings
 			info_set: info = i
 		end
 
-	set_call (c: like call) is
+	set_call (c: like call)
 			-- Assign `c' to `call'. `c' maybe Void in case of call
 			-- to `default_create' from ANY.
 		do
@@ -207,7 +248,7 @@ feature -- Settings
 			call_set: call = c
 		end
 
-	set_creation_instruction (v: BOOLEAN) is
+	set_creation_instruction (v: BOOLEAN)
 			-- Set `is_creation_instruction' to `v'.
 		do
 			is_creation_instruction := v
@@ -215,7 +256,7 @@ feature -- Settings
 			is_creation_instruction_set: is_creation_instruction = v
 		end
 
-	set_line_number (lnr : INTEGER) is
+	set_line_number (lnr : INTEGER)
 			-- Assign `lnr' to `line_number'.
 		do
 			line_number := lnr
@@ -223,7 +264,7 @@ feature -- Settings
 			line_number_set: line_number = lnr
 		end
 
-	set_type (t: like type) is
+	set_type (t: like type)
 			-- Assign `t' to `type'.
 		require
 			t_not_void: t /= Void
@@ -235,7 +276,7 @@ feature -- Settings
 
 feature -- Comparisons
 
-	same (other: ACCESS_B): BOOLEAN is
+	same (other: ACCESS_B): BOOLEAN
 			-- Is `other' the same access as Current ?
 		local
 			creation_expr_b: CREATION_EXPR_B
@@ -251,30 +292,30 @@ feature -- Type info
 
 feature -- Generation
 
-	generate is
+	generate
 			-- Generate C code for creation expression
 		local
 			buf: GENERATION_BUFFER
 			l_basic_type: BASIC_A
 			l_call: like call
-			l_special_creation: BOOLEAN
 			l_class_type: SPECIAL_CLASS_TYPE
 			parameter: PARAMETER_BL
+			l_is_make_filled: BOOLEAN
+			l_generate_call: BOOLEAN
 		do
 			buf := buffer
 			generate_line_info
 
 			l_basic_type ?= real_type (type)
 			l_call := call
-			l_special_creation := l_basic_type = Void and then
-				l_call /= Void and then l_call.routine_id = system.special_make_rout_id
 			if l_basic_type /= Void then
 				buf.put_new_line
 				register.print_register
 				buf.put_string (" = ")
 				l_basic_type.c_type.generate_default_value (buf)
 				buf.put_character (';')
-			elseif l_special_creation then
+			elseif is_special_creation then
+				l_is_make_filled := is_special_make_filled
 				check
 					is_special_call_valid: is_special_call_valid
 				end
@@ -286,11 +327,17 @@ feature -- Generation
 					l_class_type_not_void: l_class_type /= Void
 				end
 				l_call.parameters.first.generate
+				if l_is_make_filled then
+					l_call.parameters.i_th (2).generate
+					parameter ?= l_call.parameters.i_th (2)
+				else
+					parameter ?= l_call.parameters.first
+				end
 				info.generate_start (buf)
 				info.generate_gen_type_conversion (0)
-				parameter ?= l_call.parameters.first
-				l_class_type.generate_creation (buf, info, register, parameter)
+				l_class_type.generate_creation (buf, info, register, parameter, l_is_make_filled, is_special_make_empty)
 				info.generate_end (buf)
+				l_generate_call := l_is_make_filled
 			else
 				info.generate_start (buf)
 				info.generate_gen_type_conversion (0)
@@ -300,10 +347,15 @@ feature -- Generation
 				info.generate
 				buf.put_character (';')
 				info.generate_end (buf)
+				l_generate_call := True
+			end
 
+			if l_generate_call then
 				if call /= Void then
 					call.set_parent (nested_b)
-					call.generate_parameters (register)
+					if not l_is_make_filled then
+						call.generate_parameters (register)
+					end
 						-- We need a new line since `generate_on' doesn't do it.
 					buf.put_new_line
 					call.generate_on (register)
@@ -325,7 +377,7 @@ feature -- Generation
 
 feature -- Inlining
 
-	size: INTEGER is
+	size: INTEGER
 		do
 				-- Inlining will not be done if the feature
 				-- has a creation instruction
@@ -334,19 +386,19 @@ feature -- Inlining
 
 feature {BYTE_NODE_VISITOR} -- Assertion support
 
-	is_special_call_valid: BOOLEAN is
-			-- Is current creation call a call to SPECIAL.make?
+	is_special_call_valid: BOOLEAN
+			-- Is current creation call a call to SPECIAL.make_filled if `for_make_filled', otherwise to SPECIAL.make?
 		do
 			Result := call /= Void and then call.parameters /= Void and then
-				call.parameters.count = 1
+				((not is_special_make_filled and call.parameters.count = 1) or (is_special_make_filled and call.parameters.count = 2))
 		ensure
 			is_special_call_valid: Result implies
 				(call /= Void and then call.parameters /= Void and then
-				call.parameters.count = 1)
+				((not is_special_make_filled and call.parameters.count = 1) or (is_special_make_filled and call.parameters.count = 2)))
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -359,22 +411,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CREATION_EXPR_B

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Interfaces of encoding conversion."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,17 +13,17 @@ inherit
 
 	CODE_PAGE_CONSTANTS
 		export
-			{NONT} all
+			{NONE} all
 		end
 
 	ENCODING_HELPER
 		export
-			{NONT} all
+			{NONE} all
 		end
 
 feature {ENCODING} -- String encoding convertion
 
-	convert_to (a_from_code_page: STRING; a_from_string: STRING_GENERAL; a_to_code_page: STRING) is
+	convert_to (a_from_code_page: STRING; a_from_string: STRING_GENERAL; a_to_code_page: STRING)
 			-- Convert `a_from_string' of `a_from_code_page' to a string of `a_to_code_page'.
 		require
 			a_from_code_page_valid: is_code_page_valid (a_from_code_page)
@@ -38,7 +38,7 @@ feature {ENCODING} -- String encoding convertion
 
 feature {ENCODING} -- Reset
 
-	reset is
+	reset
 			-- Reset
 		do
 			last_converted_string := Void
@@ -51,32 +51,37 @@ feature {ENCODING} -- Reset
 
 feature {ENCODING} -- Access
 
-	last_converted_stream: STRING_8 is
+	last_converted_stream: STRING_8
 			-- Stream prepresentation of last converted string.
+		require
+			last_conversion_successful: last_conversion_successful
+		local
+			l_result: detachable STRING_8
+			l_last: like last_converted_string
 		do
-			if last_converted_string /= Void then
-				if last_was_wide_string then
-					Result := string_16_to_stream (last_converted_string.as_string_32)
-				else
-					Result := string_general_to_stream (last_converted_string)
-				end
+			l_last := last_converted_string
+			check l_last_not_void: l_last /= Void end -- implied by precondition `last_conversion_successful'
+			if last_was_wide_string then
+				l_result := string_16_to_stream (l_last.as_string_32)
+			else
+				l_result := string_general_to_stream (l_last)
 			end
+			Result := l_result
 		ensure
-			last_converted_string_syn_with_last_converted_stream:
-					(last_converted_string /= Void) = (Result /= Void)
+			last_converted_stream_not_void: Result /= Void
 		end
 
-	last_converted_string: STRING_GENERAL
+	last_converted_string: detachable STRING_GENERAL
 			-- Last converted string.
 
 feature {ENCODING} -- Status report
 
-	is_code_page_valid (a_code_page: STRING): BOOLEAN is
+	is_code_page_valid (a_code_page: STRING): BOOLEAN
 			-- Is `a_code_page' valid?
 		deferred
 		end
 
-	is_code_page_convertable (a_from_code_page, a_to_code_page: STRING): BOOLEAN is
+	is_code_page_convertable (a_from_code_page, a_to_code_page: STRING): BOOLEAN
 			-- Is `a_from_code_page' convertable to `a_to_code_page'.
 		require
 			a_from_code_page_valid: is_code_page_valid (a_from_code_page)
@@ -92,7 +97,7 @@ feature {ENCODING} -- Status report
 
 feature {NONE} -- Status report
 
-	is_valid_as_string_16 (a_string: STRING_GENERAL): BOOLEAN is
+	is_valid_as_string_16 (a_string: STRING_GENERAL): BOOLEAN
 			-- Check high 16 bit of any char in `a_string' is zero.
 		local
 			i, nb: INTEGER_32
@@ -118,7 +123,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Implementation
 
-	utf32_to_utf16 (a_str: STRING_32): STRING_32 is
+	utf32_to_utf16 (a_str: STRING_32): STRING_32
 			-- Convert utf32 to utf16 without data lose.
 		require
 			a_str_not_void: a_str /= Void
@@ -147,7 +152,7 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	utf16_to_utf32 (a_str: STRING_32): STRING_32 is
+	utf16_to_utf32 (a_str: STRING_32): STRING_32
 			-- Convert utf16 to utf32.
 		require
 			a_str_not_void: a_str /= Void
@@ -185,16 +190,16 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-indexing
+note
 	library:   "Encoding: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 
 

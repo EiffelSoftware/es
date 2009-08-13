@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_HOT_ZONE for SD_DOCKING_ZONE_UPPER."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,8 +20,8 @@ create
 
 feature {NONE} -- Redefine
 
-	update_feedback (a_screen_x, a_screen_y: INTEGER; a_rect: EV_RECTANGLE) is
-			-- Redefine, draw tab recangle on top.
+	update_feedback (a_screen_x, a_screen_y: INTEGER; a_rect: EV_RECTANGLE)
+			-- <Precursor>, draw tab recangle on top.
 		local
 			l_shared: like internal_shared
 			l_icons: SD_ICONS_SINGLETON
@@ -48,7 +48,7 @@ feature {NONE} -- Redefine
 		end
 
 --	set_rectangle (a_rect: like internal_rectangle) is
---			-- Redefine
+--			-- <Precursor>
 --		do
 --			internal_rectangle := a_rect
 --			-- Calculate five rectangle area where allow user to dock a window in this zone.
@@ -60,7 +60,7 @@ feature {NONE} -- Redefine
 --			internal_rectangle_title_area := internal_zone.title_area
 --		end
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

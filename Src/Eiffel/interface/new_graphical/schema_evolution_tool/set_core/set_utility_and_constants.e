@@ -136,8 +136,8 @@ feature -- Constants
 				file.read_line
 				content := content + file.last_string + "%N"
 			end
-			eiffel_parser.parse_from_string (content)
-			Result := attributes_from_ast (eiffel_parser.root_node)
+--Merge64:			eiffel_parser.parse_from_string (content)
+--Merge64:			Result := attributes_from_ast (eiffel_parser.root_node)
 		end
 -- TODO: check if the following is useful.
 --	parent_versioned_class (e_code: STRING): STRING is
@@ -314,10 +314,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

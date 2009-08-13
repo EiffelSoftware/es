@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Implementation of DB_CONTROL"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -19,12 +19,13 @@ inherit
 
 feature -- Status setting and report
 
-	connect is
+	connect
 			-- Connection from database
 		require
 			not_already_connected: not is_connected
 		local
-			temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8: STRING
+			temp1, temp2, temp3, temp4, temp5, temp6, temp8: STRING
+			temp7: detachable STRING
 		do
 			temp1 := handle.login.name
 			temp2 := handle.login.passwd
@@ -38,7 +39,7 @@ feature -- Status setting and report
 			db_spec.connect (temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8)
 		end
 
-	disconnect is
+	disconnect
 			-- Disconnection from database
 		require
 			connection_exists: is_connected
@@ -46,7 +47,7 @@ feature -- Status setting and report
 			db_spec.disconnect
 		end
 
-	commit is
+	commit
 			-- Commit status from database handle
 		require
 			connection_exists: is_connected
@@ -54,7 +55,7 @@ feature -- Status setting and report
 			db_spec.commit
 		end
 
-	rollback is
+	rollback
 			-- Rollback status from database handle
 		require
 			connection_exists: is_connected
@@ -62,7 +63,7 @@ feature -- Status setting and report
 			db_spec.rollback
 		end
 
-	transaction_count: INTEGER is
+	transaction_count: INTEGER
 			-- Number of started transactions with database handle
 		require
 			connection_exists: is_connected
@@ -70,7 +71,7 @@ feature -- Status setting and report
 			Result := db_spec.trancount
 		end
 
-	begin is
+	begin
 			-- Start of transaction status from database handle
 		require
 			connection_exists: is_connected
@@ -78,7 +79,7 @@ feature -- Status setting and report
 			db_spec.begin
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

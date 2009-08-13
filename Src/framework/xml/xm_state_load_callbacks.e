@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A parser callbacks implementation for processing XML documents using a state-machine.
 	]"
@@ -45,6 +45,8 @@ feature {NONE} -- Initialization
 			-- Note: Initialization will set the parser's callbacks to Current.
 			--
 			-- `a_parser': An XML parser Current is used with.
+		require
+			a_parser_attached: a_parser /= Void
 		do
 			create current_transition_stack.make_default
 			create current_attributes_stack.make_default
@@ -56,35 +58,37 @@ feature {NONE} -- Initialization
 			make_callbacks
 		ensure
 			xml_parser_set: xml_parser = a_parser
-			xml_parser_callbacks_set: xml_parser.callbacks = Current
+			xml_parser_callbacks_set: a_parser.callbacks = Current
 		end
 
 feature -- Access
 
-	xml_parser: !XM_EIFFEL_PARSER
+	xml_parser: XM_EIFFEL_PARSER
 			-- The XML parser used to in conjuntion with Current
 
-	last_error_message: !STRING_32
+	last_error_message: STRING_32
 			-- Last error message
 		require
 			has_error: has_error
 		do
-			if {l_msg: !like last_error_message} internal_last_error_message then
+			if attached internal_last_error_message as l_msg then
 				Result := l_msg
 			else
 				create Result.make_empty
 			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature {NONE} -- Access
 
-	current_transition_stack: !DS_LINKED_STACK [NATURAL_8]
+	current_transition_stack: DS_LINKED_STACK [NATURAL_8]
 			-- Stack of transitional XML element tags
 
-	current_attributes_stack: !DS_LINKED_STACK [!DS_HASH_TABLE [!STRING_32, NATURAL_8]]
+	current_attributes_stack: DS_LINKED_STACK [DS_HASH_TABLE [STRING_32, NATURAL_8]]
 			-- Current attributes
 
-	current_content_stack: !DS_LINKED_STACK [!STRING_32]
+	current_content_stack: DS_LINKED_STACK [STRING_32]
 			-- Current text content
 
 	frozen current_state: NATURAL_8
@@ -93,17 +97,21 @@ feature {NONE} -- Access
 			not_current_transition_stack_is_empty: not current_transition_stack.is_empty
 		do
 			Result := current_transition_stack.item
+		ensure
+			result_attached: Result /= Void
 		end
 
-	frozen current_attributes: !DS_HASH_TABLE [!STRING_32, NATURAL_8]
+	frozen current_attributes: DS_HASH_TABLE [STRING_32, NATURAL_8]
 			-- Current attributes
 		require
 			not_current_attributes_stack_is_empty: not current_attributes_stack.is_empty
 		do
 			Result := current_attributes_stack.item
+		ensure
+			result_attached: Result /= Void
 		end
 
-	frozen current_content: !STRING_32
+	frozen current_content: STRING_32
 			-- Current content
 		require
 			not_current_content_stack_is_empty: not current_content_stack.is_empty
@@ -113,6 +121,8 @@ feature {NONE} -- Access
 			else
 				Result := current_content_stack.item.twin.as_attached
 			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Status report
@@ -158,7 +168,7 @@ feature {NONE} -- Basic operations
 			current_content_stack.wipe_out
 
 				-- Required for the xml declaration processing instruction
-			current_attributes_stack.put (create {DS_HASH_TABLE [!STRING_32, NATURAL_8]}.make_default)
+			current_attributes_stack.put (create {DS_HASH_TABLE [STRING_32, NATURAL_8]}.make_default)
 
 			internal_last_error_message := Void
 		ensure
@@ -227,7 +237,7 @@ feature {NONE} -- Query
 
 feature -- Actions
 
-	frozen error_reported_actions: !ACTION_SEQUENCE [TUPLE [msg: !STRING_32; line: NATURAL; index: NATURAL]]
+	frozen error_reported_actions: ACTION_SEQUENCE [TUPLE [msg: attached STRING_32; line: NATURAL; index: NATURAL]]
 			-- Actions used to recieve notification of an error
 			--
 			-- 'msg': Message and cause of the error.
@@ -235,7 +245,7 @@ feature -- Actions
 			-- 'index': Offending one-base character index, on the line, of the error.
 			--          Will be zero if the line is empty.
 		do
-			if {l_actions: like error_reported_actions} internal_error_reported_actions then
+			if attached internal_error_reported_actions as l_actions then
 				Result := l_actions
 			else
 				create Result
@@ -245,7 +255,7 @@ feature -- Actions
 			result_consistent: Result = error_reported_actions
 		end
 
-	frozen warning_reported_actions: !ACTION_SEQUENCE [TUPLE [msg: !STRING_32; line: NATURAL; index: NATURAL]]
+	frozen warning_reported_actions: ACTION_SEQUENCE [TUPLE [msg: attached STRING_32; line: NATURAL; index: NATURAL]]
 			-- Actions used to recieve notification of an warning
 			--
 			-- 'msg': Message and cause of the warning.
@@ -253,7 +263,7 @@ feature -- Actions
 			-- 'index': Offending one-base character index, on the line, of the warning.
 			--          Will be zero if the line is empty.		
 		do
-			if {l_actions: like warning_reported_actions} internal_warning_reported_actions then
+			if attached internal_warning_reported_actions as l_actions then
 				Result := l_actions
 			else
 				create Result
@@ -282,7 +292,7 @@ feature {NONE} -- Action handlers
 		do
 			if not has_error then
 					-- Extend the attribute stack
-				current_attributes_stack.put (create {DS_HASH_TABLE [!STRING_32, NATURAL_8]}.make_default)
+				current_attributes_stack.put (create {DS_HASH_TABLE [STRING_32, NATURAL_8]}.make_default)
 
 					-- Set new state
 				l_next_state := t_none
@@ -308,7 +318,7 @@ feature {NONE} -- Action handlers
 					l_next_state := l_transitions.item (l_name)
 				end
 
-				if l_next_state = t_none then
+				if is_strict and then l_next_state = t_none then
 						-- Parse error
 					on_report_xml_error ("Unexpected tag '" + a_local_part + "'!")
 				else
@@ -325,7 +335,7 @@ feature {NONE} -- Action handlers
 				check not_current_transition_stack_is_empty: not current_transition_stack.is_empty end
 				process_tag_state (current_transition_stack.item)
 
-				current_content_stack.force (create {!STRING_32}.make_empty)
+				current_content_stack.force (create {STRING_32}.make_empty)
 			end
 		ensure then
 			current_transition_stack_stack_unchanged: current_transition_stack.count = old current_transition_stack.count
@@ -337,7 +347,6 @@ feature {NONE} -- Action handlers
 			l_name: STRING
 			l_cur_attributes: like current_attributes
 			l_attribute_states: like attribute_states
-			l_attributes: ?DS_HASH_TABLE [NATURAL_8, STRING]
 			l_tag_state: NATURAL_8
 			l_state: NATURAL_8
 		do
@@ -351,9 +360,8 @@ feature {NONE} -- Action handlers
 						-- Check if the attribute is valid for the current state
 					l_tag_state := current_transition_stack.item
 					l_attribute_states := attribute_states
-					if l_attribute_states.has (l_tag_state) then
-						l_attributes := l_attribute_states.item (l_tag_state)
-						if l_attributes /= Void and then l_attributes.has (l_name) then
+					if l_attribute_states /= Void and then l_attribute_states.has (l_tag_state) then
+						if (attached l_attribute_states.item (l_tag_state) as l_attributes) and then l_attributes.has (l_name) then
 							l_state := l_attributes.item (l_name)
 						end
 					end
@@ -387,14 +395,13 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-	on_content (a_content: STRING) is
+	on_content (a_content: STRING)
 			-- <Precursor>
 		do
 			if not has_error then
 				check not_current_content_stack_is_empty: not current_content_stack.is_empty end
-
-				if a_content /= Void and then {l_content: !STRING_32} a_content.as_string_32 then
-					current_content_stack.item.append (l_content)
+				if attached current_content_stack.item as l_item then
+					l_item.append (a_content.as_string_32)
 				end
 			end
 		end
@@ -404,7 +411,6 @@ feature {NONE} -- Action handlers
 		local
 			l_name: STRING
 			l_tag_transitions: like tag_state_transitions
-			l_transitions: DS_HASH_TABLE [NATURAL_8, STRING]
 			l_current_transition_stack: like current_transition_stack
 			l_current_state: like current_state
 			l_next_state: NATURAL_8
@@ -428,8 +434,7 @@ feature {NONE} -- Action handlers
 					l_current_state := t_none
 				end
 				if l_tag_transitions.has (l_current_state) then
-					l_transitions := l_tag_transitions.item (l_current_state)
-					if l_transitions /= Void and then l_transitions.has (l_name) then
+					if (attached l_tag_transitions.item (l_current_state) as l_transitions) and then l_transitions.has (l_name) then
 						l_next_state := l_transitions.item (l_name)
 						if l_next_state /= t_none then
 							l_current_transition_stack.force (l_next_state)
@@ -446,31 +451,31 @@ feature {NONE} -- Action handlers
 		end
 
 	on_report_xml_error (a_message: STRING)
-			-- Reports an XML error.
+			-- <Precursor>
 			--
 			-- `a_message': The XML error to report.
+		local
+			l_message: STRING_32
 		do
-			if a_message /= Void and then {l_message: !STRING_32} a_message.as_string_32 then
-				internal_last_error_message := l_message
-				on_error (l_message, xml_parser.line.to_natural_32, xml_parser.column.to_natural_32)
-			else
-				internal_last_error_message := "Unknown error!"
-			end
+			l_message := a_message.as_string_32
+			internal_last_error_message := l_message
+			on_error (l_message, xml_parser.line.to_natural_32, xml_parser.column.to_natural_32)
 		end
 
-	on_report_xml_warning (a_message: STRING)
+	on_report_xml_warning (a_message: READABLE_STRING_GENERAL)
 			-- Reports an XML warning.
 			--
 			-- `a_message': The XML warning to report.
+		require
+			a_message_attached: a_message /= Void
+			not_a_message_is_empty: not a_message.is_empty
 		do
-			if a_message /= Void and then {l_message: !STRING_32} a_message.as_string_32 then
-				on_warning (l_message, xml_parser.line.to_natural_32, xml_parser.column.to_natural_32)
-			end
+			on_warning (a_message.as_string_32, xml_parser.line.to_natural_32, xml_parser.column.to_natural_32)
 		end
 
 feature {NONE} -- Reporting
 
-	on_error (a_msg: !STRING_32; a_line: NATURAL; a_index: NATURAL)
+	on_error (a_msg: READABLE_STRING_GENERAL; a_line: NATURAL; a_index: NATURAL)
 			-- Reports an error.
 			--
 			-- `a_msg': Message and cause of the error.
@@ -478,12 +483,13 @@ feature {NONE} -- Reporting
 			-- `a_index': Offending one-base character index, on the line, of the error.
 			--            Will be zero if the line is empty.
 		require
+			a_msg_attached: a_msg /= Void
 			not_a_msg_is_empty: not a_msg.is_empty
 			a_line_positive: a_line >= 1
 			a_index_non_negative: a_index >= 0
 		do
-			if internal_error_reported_actions /= Void then
-				internal_error_reported_actions.call ([a_msg, a_line, a_index])
+			if attached internal_error_reported_actions as l_actions then
+				l_actions.call ([a_msg.as_string_32, a_line, a_index])
 			end
 			if is_strict then
 				xml_parser.abort
@@ -492,7 +498,7 @@ feature {NONE} -- Reporting
 			has_error: has_error
 		end
 
-	on_warning (a_msg: !STRING_32; a_line: NATURAL; a_index: NATURAL)
+	on_warning (a_msg: READABLE_STRING_GENERAL; a_line: NATURAL; a_index: NATURAL)
 			-- Reports a warning.
 			--
 			-- `a_msg': Message and cause of the warning.
@@ -500,12 +506,13 @@ feature {NONE} -- Reporting
 			-- `a_index': Offending one-base character index, on the line, of the error.
 			--            Will be zero if the line is empty.
 		require
+			a_msg_attached: a_msg /= Void
 			not_a_msg_is_empty: not a_msg.is_empty
 			a_line_positive: a_line >= 1
 			a_index_non_negative: a_index >= 0
 		do
-			if internal_warning_reported_actions /= Void then
-				internal_warning_reported_actions.call ([a_msg, a_line, a_index])
+			if attached internal_warning_reported_actions as l_actions then
+				l_actions.call ([a_msg.as_string_32, a_line, a_index])
 			end
 		end
 
@@ -521,7 +528,7 @@ feature {NONE} -- Conversion
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
 		local
-			l_attributes: !like current_attributes
+			l_attributes: attached like current_attributes
 			l_value: like prune_whitespace
 		do
 			Result := a_default
@@ -556,7 +563,7 @@ feature {NONE} -- Conversion
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
 		local
-			l_attributes: !like current_attributes
+			l_attributes: attached like current_attributes
 			l_value: like prune_whitespace
 		do
 			Result := a_default
@@ -577,7 +584,7 @@ feature {NONE} -- Conversion
 			end
 		end
 
-	to_boolean (a_name: STRING; a_value: !STRING_32; a_default: BOOLEAN): BOOLEAN
+	to_boolean (a_name: STRING; a_value: STRING_32; a_default: BOOLEAN): BOOLEAN
 			-- Converts a value to a Boolean.
 			--
 			-- `a_name': The name of the attribute or element.
@@ -593,9 +600,9 @@ feature {NONE} -- Conversion
 			l_value := prune_whitespace (a_value)
 			if l_value.is_boolean then
 				Result := l_value.to_boolean
-			elseif v_bool_one.is_equal (l_value) or else v_bool_yes.is_case_insensitive_equal (l_value) then
+			elseif v_bool_one.same_string_general (l_value) or else v_bool_yes.is_case_insensitive_equal (l_value) then
 				Result := True
-			elseif v_bool_zero.is_equal (l_value) or else v_bool_no.is_case_insensitive_equal (l_value) then
+			elseif v_bool_zero.same_string_general (l_value) or else v_bool_no.is_case_insensitive_equal (l_value) then
 				Result := False
 			else
 				Result := a_default
@@ -605,7 +612,7 @@ feature {NONE} -- Conversion
 			end
 		end
 
-	to_integer (a_name: STRING; a_value: !STRING_32; a_default: INTEGER_32): INTEGER_32
+	to_integer (a_name: STRING; a_value: STRING_32; a_default: INTEGER_32): INTEGER_32
 			-- Converts a value to a Integer.
 			--
 			-- `a_name': The name of the attribute or element.
@@ -614,6 +621,7 @@ feature {NONE} -- Conversion
 		require
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
+			a_value_attached: a_value /= Void
 			not_a_value_is_empty: not a_value.is_empty
 		local
 			l_value: like prune_whitespace
@@ -631,34 +639,40 @@ feature {NONE} -- Conversion
 
 feature {NONE} -- Formatting
 
-	unescape_text (a_text: ?STRING): !STRING_32
+	unescape_text (a_text: READABLE_STRING_GENERAL): STRING_32
 			-- Unescapes XML text.
 			--
-			-- `a_text':
-			-- `Result':
+			-- `a_text': The escaped text to unescaped.
+			-- `Result': Unescaped text.
 		require
 			a_text_attached: a_text /= Void
 		local
-			l_mapping: DS_HASH_TABLE_CURSOR [!STRING_32, !STRING_32]
+			l_mapping: DS_HASH_TABLE_CURSOR [STRING_32, STRING_32]
 		do
-			create Result.make_from_string (a_text)
+			create Result.make (a_text.count)
+			Result.append_string_general (a_text)
+
 			l_mapping := escaped_character_mapping.new_cursor
 			from l_mapping.start until l_mapping.after loop
 				Result.replace_substring_all (l_mapping.key, l_mapping.item)
 				l_mapping.forth
 			end
 		ensure
+			result_attached: Result /= Void
 			not_result_is_empty: not old a_text.is_empty implies not Result.is_empty
 		end
 
-	prune_whitespace (a_value: !STRING_32): !STRING_32
+	prune_whitespace (a_value: READABLE_STRING_GENERAL): STRING_32
 			-- Prunes all leading a trailing whitespace from `a_value' and returns the result.
 			--
 			-- `a_value': THe source value to remove leading and trailing whitespace from.
+		require
+			a_value_attached: a_value /= Void
 		local
 			l_count, i: INTEGER
 		do
-			Result := a_value.twin
+			create Result.make (a_value.count)
+			Result.append_string_general (a_value)
 
 				-- Find leading non-whitespace.
 			from
@@ -695,9 +709,11 @@ feature {NONE} -- Formatting
 				check i_positive: i > 0 end
 				Result.keep_head (i)
 			end
+		ensure
+			result_attached: Result /= Void
 		end
 
-	frozen escaped_character_mapping: !DS_HASH_TABLE [!STRING_32, !STRING_32]
+	frozen escaped_character_mapping: DS_HASH_TABLE [STRING_32, STRING_32]
 			-- Character mappings, given a escape string.
 		once
 			create Result.make (5)
@@ -706,39 +722,47 @@ feature {NONE} -- Formatting
 			Result.put (("&").as_string_32.as_attached, ("&amp;").as_string_32.as_attached)
 			Result.put (("<").as_string_32.as_attached, ("&lt;").as_string_32.as_attached)
 			Result.put ((">").as_string_32.as_attached, ("&gt;").as_string_32.as_attached)
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
 		end
 
 feature {NONE} -- State transistions
 
-	tag_state_transitions: !DS_HASH_TABLE [!DS_HASH_TABLE [NATURAL_8, !STRING], NATURAL_8]
+	tag_state_transitions: DS_HASH_TABLE [DS_HASH_TABLE [NATURAL_8, STRING], NATURAL_8]
 			-- Mapping of possible tag state transitions from `current_tag' with the tag name to the new state.
 		deferred
 		ensure
+			result_attached: Result /= Void
 			not_result_is_empty: not Result.is_empty
+			result_consistent: Result = tag_state_transitions
 		end
 
-	attribute_states: !DS_HASH_TABLE [!DS_HASH_TABLE [NATURAL_8, !STRING], NATURAL_8]
+	attribute_states: detachable DS_HASH_TABLE [DS_HASH_TABLE [NATURAL_8, STRING], NATURAL_8]
 			-- Mapping of possible attributes of tags.
 		deferred
+		ensure
+			not_result_is_empty: Result /= Void implies not Result.is_empty
+			result_consistent: Result = attribute_states
 		end
 
-feature {NONE} -- Internal implementation cache
+feature {NONE} -- Implementation: Internal cache
 
-	internal_last_error_message: STRING_32
+	internal_last_error_message: detachable like last_error_message
 			-- Cached version of `last_error_message'
 			-- Note: Do not use directly!
 
-	internal_error_reported_actions: ACTION_SEQUENCE [TUPLE [msg: !STRING_32; line: NATURAL; index: NATURAL]]
+	internal_error_reported_actions: detachable like error_reported_actions
 			-- Cached version of `error_reported_actions'
 			-- Note: Do not use directly!
 
-	internal_warning_reported_actions: ACTION_SEQUENCE [TUPLE [msg: !STRING_32; line: NATURAL; index: NATURAL]]
+	internal_warning_reported_actions: detachable like warning_reported_actions
 			-- Cached version of `warning_reported_actions'
 			-- Note: Do not use directly!
 
 feature {NONE} -- Tag states
 
-	t_none: NATURAL_8          = 0x00
+	t_none: NATURAL_8 = 0x00
 
 feature {NONE} -- Attribute names
 
@@ -755,12 +779,16 @@ feature {NONE} -- Attribute values
 	v_bool_no: STRING = "no"
 
 invariant
+	current_transition_stack_attached: current_transition_stack /= Void
+	current_attributes_stack_attached: current_attributes_stack /= Void
+	current_content_stack_attached: current_content_stack /= Void
+	xml_parser_attached: xml_parser /= Void
 	xml_parser_callbacks_is_current: xml_parser.callbacks = Current
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -771,22 +799,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

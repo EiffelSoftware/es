@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Field record"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 
 feature -- RT internals
 
-	frozen local_value_at (dep: INTEGER; pos: INTEGER; a_rt_type: like rt_type): ?ANY is
+	frozen local_value_at (dep: INTEGER; pos: INTEGER; a_rt_type: like rt_type): detachable ANY
 			-- Object attached at local position `pos' for depth `dep'
 			-- (directly or through a reference)
 		require
@@ -43,9 +43,10 @@ feature -- RT internals
 			else
 				a_loc_type := {RT_DBG_INTERNAL}.rt_DLT_LOCALVAR
 			end
-if a_loc_type /= {RT_DBG_INTERNAL}.rt_DLT_RESULT then
-			Result := stack_value_at (dep, a_loc_type, pos, a_rt_type)
-end
+			if a_loc_type /= {RT_DBG_INTERNAL}.rt_DLT_RESULT then
+				-- FIXME: maybe handle the Result case.
+				Result := stack_value_at (dep, a_loc_type, pos, a_rt_type)
+			end
 		end
 
 	set_local_value_at (dep: INTEGER; pos: INTEGER; a_rt_type: like rt_type; val: like value)
@@ -64,7 +65,7 @@ end
 
 feature -- Properties
 
-	value: ?G
+	value: detachable G
 			-- Associated value.
 
 	callstack_depth: INTEGER
@@ -75,13 +76,13 @@ feature -- Properties
 
 feature -- Access
 
-	current_value_record: ?RT_DBG_VALUE_RECORD
+	current_value_record: detachable RT_DBG_VALUE_RECORD
 			-- Record for current value
 		do
 			Result := object_local_record (callstack_depth, position, rt_type)
 		end
 
-	associated_object: ?ANY
+	associated_object: detachable ANY
 			-- Associated object, if any
 		do
 			--| No associated object for locals
@@ -90,9 +91,11 @@ feature -- Access
 	is_local_record: BOOLEAN = True
 			-- <Precursor>
 
-	is_same_as (other: !RT_DBG_VALUE_RECORD): BOOLEAN
+	is_same_as (other: RT_DBG_VALUE_RECORD): BOOLEAN
 		do
-			Result := {c: like Current} other and then position = c.position and then value = c.value
+			Result := attached {like Current} other as l_loc and then
+					position = l_loc.position and then
+					value = l_loc.value
 		end
 
 	debug_output: STRING
@@ -102,23 +105,26 @@ feature -- Access
 
 	to_string: STRING
 			-- String representation
+		local
+			v: like value
 		do
+			v := value
 			inspect type
 			when {INTERNAL}.reference_type then
-				if {vr: like value} value then
-					Result := ($vr).out
+				if v /= Void then
+					Result := ($v).out
 				else
 					Result := "Void"
 				end
 			when {INTERNAL}.expanded_type then
 				check value_attached: value /= Void end
-				if {vx: like value} value then
-					Result := ($vx).out
+				if v /= Void then
+					Result := ($v).out
 				else
 					create Result.make_empty
 				end
 			else
-				if {v: like value} value then
+				if v /= Void then
 					Result := v.out
 				else
 					create Result.make_empty
@@ -131,7 +137,7 @@ feature -- Change properties
 	get_value
 			-- Get `value'
 		do
-			if {v: like value} local_value_at (callstack_depth, position, rt_type) then
+			if attached {like value} local_value_at (callstack_depth, position, rt_type) as v then
 				value := v
 			else
 				value := default_value
@@ -140,7 +146,7 @@ feature -- Change properties
 
 feature -- Runtime
 
-	restore (val: !RT_DBG_VALUE_RECORD)
+	restore (val: RT_DBG_VALUE_RECORD)
 			-- Restore `value' , and associate `val' as `backup'
 		do
 			debug ("RT_DBG_REPLAY")
@@ -158,7 +164,7 @@ feature -- Runtime
 			end
 		end
 
-	revert (bak: !RT_DBG_VALUE_RECORD)
+	revert (bak: RT_DBG_VALUE_RECORD)
 			-- Revert previous change due to Current
 		do
 			debug ("RT_DBG_REPLAY")
@@ -172,10 +178,12 @@ feature -- Runtime
 
 feature {NONE} -- Internal Implementation
 
-	set_local_from_record (r: !RT_DBG_VALUE_RECORD)
+	set_local_from_record (r: RT_DBG_VALUE_RECORD)
 			-- Set object field defined by `r' on target `obj'
+		require
+			r_attached: r /= Void
 		do
-			if {ot_record: RT_DBG_LOCAL_RECORD [like value]} r then
+			if attached {RT_DBG_LOCAL_RECORD [like value]} r as ot_record then
 				set_local_value_at (callstack_depth, position, rt_type, ot_record.value)
 			else
 				check should_not_occur: False end
@@ -184,12 +192,12 @@ feature {NONE} -- Internal Implementation
 
 feature {NONE} -- Implementation
 
-	default_value: ?G is
+	default_value: detachable G
 			-- Default value
 		do
 		end
 
-indexing
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

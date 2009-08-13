@@ -1,11 +1,11 @@
-indexing
+note
 	description: "Eiffel Assembly Cache access errors"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	CACHE_ERRORS
 
 inherit
@@ -13,23 +13,23 @@ inherit
 
 feature -- Access
 
-	Error_category: INTEGER_8 is 0x02
-	
-	Assembly_not_found_error: INTEGER is 0x02000001
+	Error_category: INTEGER_8 = 0x02
 
-	Consume_error: INTEGER is 0x02000002
-	
-	Remove_error: INTEGER is 0x02000003
-	
-	Not_in_eac_error: INTEGER is 0x02000004
-	
-	Update_error: INTEGER is 0x02000005
-	
-	Assembly_dependancies_not_found_error: INTEGER is 0x02000006
+	Assembly_not_found_error: INTEGER = 0x02000001
+
+	Consume_error: INTEGER = 0x02000002
+
+	Remove_error: INTEGER = 0x02000003
+
+	Not_in_eac_error: INTEGER = 0x02000004
+
+	Update_error: INTEGER = 0x02000005
+
+	Assembly_dependancies_not_found_error: INTEGER = 0x02000006
 
 feature {NONE} -- Implementation
 
-	error_message_table: HASH_TABLE [STRING, INTEGER] is
+	error_message_table: HASH_TABLE [STRING, INTEGER]
 			-- Error messages
 		once
 			create Result.make (2)
@@ -40,8 +40,8 @@ feature {NONE} -- Implementation
 			Result.put ("Could not update assembly", Update_error)
 			Result.put ("Could not load one or more of assemblies dependancies", Assembly_dependancies_not_found_error)
 		end
-		
-indexing
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Serialize and deserialize multiple objects into one file."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,21 +10,33 @@ class
 
 inherit
 	ANY
+		redefine
+			default_create
+		end
 
 	SED_STORABLE_FACILITIES
 		export
 			{NONE} all
+		redefine
+			default_create
+		end
+
+feature {NONE} -- Initialization
+
+	default_create
+		do
+			create error_message.make_empty
 		end
 
 feature -- Access
 
-	deserialized_object: ?ANY
+	deserialized_object: detachable ANY
 			-- Last deserialized object
 
 	last_file_position: INTEGER
 			-- Position after last serialization
 
-	error_message: ?STRING
+	error_message: STRING
 			-- Reason for failure
 
 feature -- Status report
@@ -34,14 +46,14 @@ feature -- Status report
 
 feature -- Basic Operations
 
-	deserialize (path: STRING; a_pos: INTEGER) is
+	deserialize (path: STRING; a_pos: INTEGER)
 			-- Deserialize object previously serialized in `path' at position `a_pos'.
 		require
 			non_void_path: path /= Void
 			valid_path: (create {RAW_FILE}.make (path)).exists
 		local
 			retried: BOOLEAN
-			l_raw_file: ?RAW_FILE
+			l_raw_file: detachable RAW_FILE
 			l_reader: SED_MEDIUM_READER_WRITER
 		do
 			if not retried then
@@ -69,7 +81,7 @@ feature -- Basic Operations
 
 feature -- Basic Operations
 
-	serialize (a: ANY; path: STRING; is_appending: BOOLEAN) is
+	serialize (a: ANY; path: STRING; is_appending: BOOLEAN)
 			-- Serialize object `a' at the end of file `path' if `is_appending', otherwise
 			-- reset content of `path'.
 			-- Set `last_file_position' after storing.
@@ -77,7 +89,7 @@ feature -- Basic Operations
 			non_void_object: a /= Void
 			non_void_path: path /= Void
 		local
-			l_raw_file: ?RAW_FILE
+			l_raw_file: detachable RAW_FILE
 			l_writer: SED_MEDIUM_READER_WRITER
 			retried: BOOLEAN
 		do
@@ -109,12 +121,12 @@ feature -- Basic Operations
 
 feature {NONE} -- Logging
 
-	log_last_exception is
+	log_last_exception
 			-- Log last exception.
 		do
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						Chief manager of eweasel affairs
 																								]"
@@ -28,14 +28,14 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Creation method
 		do
 		end
 
 feature -- Command
 
-	create_unit_test_case is
+	create_unit_test_case
 			-- Launch wizard which create new eweasel test case
 		local
 			l_new: ES_NEW_EWEASEL_TEST_MANAGER
@@ -73,19 +73,22 @@ feature -- Command
 				-- Add test case folder name to end of cluster path, we do it here since this directory maybe renamed automatically
 				create l_path_helper
 				l_cluster_path := l_wizard_information.cluster_path + l_path_helper.cluster_separator + l_new.folder_name
-				compile_and_open_new_unit_test_class (l_wizard_information.new_class_file_name, l_wizard_information.cluster, l_cluster_path)
+				compile_and_open_new_unit_test_class (l_wizard_information.new_class_file_name, l_wizard_information.cluster, l_cluster_path,
+					l_wizard_information.new_class_name)
 			else
 				-- Inforation is not valid, we do noting. Just quit.
 			end
 		end
 
-	compile_and_open_new_unit_test_class (a_new_class_file_name: STRING; a_cluster: CLUSTER_I; a_cluster_sub_path: STRING) is
+	compile_and_open_new_unit_test_class (a_new_class_file_name: STRING; a_cluster: CLUSTER_I; a_cluster_sub_path: STRING; a_class_name: STRING)
 			-- Force compile `a_new_class_file_name' which is just created.
 			-- `a_new_class_file_name' file located in `a_cluster', sub path is `a_cluster_sub_path'
 		require
 			not_void: a_cluster /= Void
 			not_void: a_cluster /= Void
 			not_void: a_cluster_sub_path /= Void
+			a_class_name_not_void: a_class_name /= Void
+			a_class_name_not_empty: not a_class_name.is_empty
 		local
 			l_window: EB_SHARED_WINDOW_MANAGER
 			l_class_stone: CLASSI_STONE
@@ -95,7 +98,7 @@ feature -- Command
 			l_event_item: EVENT_LIST_TEST_CASE_ITEM
 			l_data_item: ES_EWEASEL_TEST_CASE_ITEM
 		do
-			manager.add_class_to_cluster (a_new_class_file_name, a_cluster, a_cluster_sub_path)
+			manager.add_class_to_cluster (a_new_class_file_name, a_cluster, a_cluster_sub_path, a_class_name)
 
 			create l_class_stone.make (manager.last_added_class)
 			create l_window
@@ -112,7 +115,7 @@ feature -- Command
 			end
 		end
 
-	stop_eweasel is
+	stop_eweasel
 			-- Terminate eweasel testing
 			-- We can ensure eweasel is terminated
 		do
@@ -122,7 +125,7 @@ feature -- Command
 			end
 		end
 
-	launch_eweasel (a_failed_first: BOOLEAN) is
+	launch_eweasel (a_failed_first: BOOLEAN)
 			-- Start eweasel testing if possible
 			-- To query result, use `is_eweasel_running'
 		require
@@ -143,7 +146,8 @@ feature -- Command
 						l_error.show_on_active_window
 					else
 						display_testing_result_tool
-						testing_tool.content.set_focus
+							-- Was `testing_tool.content.set_focus'.
+						testing_tool.show
 					end
 				end
 			end
@@ -151,7 +155,7 @@ feature -- Command
 
 feature -- Query
 
-	environment_manager: ES_EWEASEL_ENVIRONMENT_MANAGER is
+	environment_manager: ES_EWEASEL_ENVIRONMENT_MANAGER
 			-- All enviroment variables used by eweasel
 		do
 			if internal_environment_manager = Void then
@@ -162,7 +166,7 @@ feature -- Query
 			not_void: Result /= Void
 		end
 
-	catalog_manager: ES_EWEASEL_CATALOG_FILE_MANAGER is
+	catalog_manager: ES_EWEASEL_CATALOG_FILE_MANAGER
 			-- eweasel catalog file manager
 		do
 			if internal_catalog_manager = Void then
@@ -173,13 +177,13 @@ feature -- Query
 			not_void: Result /= Void
 		end
 
-	is_eweasel_running: BOOLEAN is
+	is_eweasel_running: BOOLEAN
 			-- If eweasel process is running?
 		do
 			Result := process.is_running
 		end
 
-	testing_tool: ES_EWEASEL_TESTING_TOOL_PANEL is
+	testing_tool: ES_EWEASEL_TESTING_TOOL_PANEL
 			-- Testing tool
 			-- Result maybe void if tool panel not initialized
 		local
@@ -203,7 +207,7 @@ feature -- Query
 			end
 		end
 
-	testing_result_tool: ES_EWEASEL_TESTING_RESULT_TOOL_PANEL is
+	testing_result_tool: ES_EWEASEL_TESTING_RESULT_TOOL_PANEL
 			-- Testing result tool
 			-- Result maybe void if result tool panel not intialized
 		local
@@ -229,79 +233,79 @@ feature -- Query
 
 feature -- UI commands
 
-	new_manual_test_command: !ES_NEW_UNIT_TEST_CASE_COMMAND is
+	new_manual_test_command: attached ES_NEW_UNIT_TEST_CASE_COMMAND
 			-- New manual/eweasel test case command
 		once
 			create Result.make (Current)
 		end
 
-	del_test_case_command: !ES_DELETE_TEST_CASE_COMMAND is
+	del_test_case_command: attached ES_DELETE_TEST_CASE_COMMAND
 			-- Delete test case from grid command
 		once
 			create Result.make (Current)
 		end
 
-	start_test_run_command: !ES_START_TEST_RUN_COMMAND is
+	start_test_run_command: attached ES_START_TEST_RUN_COMMAND
 			-- Start test run command
 		once
 			create Result.make (Current)
 		end
 
-	start_test_run_failed_first_command: !ES_START_TEST_RUN_FAILED_FIRST_COMMAND is
+	start_test_run_failed_first_command: attached ES_START_TEST_RUN_FAILED_FIRST_COMMAND
 			-- Start test run failed first command
 		once
 			create Result.make (Current)
 		end
 
-	stop_test_run_command: !ES_STOP_TEST_RUN_COMMAND is
+	stop_test_run_command: attached ES_STOP_TEST_RUN_COMMAND
 			-- Stop test run command
 		once
 			create Result.make (Current)
 		end
 
-	next_failed_test_command: !ES_NEXT_FAILED_TEST_COMMAND is
+	next_failed_test_command: attached ES_NEXT_FAILED_TEST_COMMAND
 			-- Next failed test command
 		once
 			create Result.make (Current)
 		end
 
-	previous_failed_test_command: !ES_PREVIOUS_FAILED_TEST_COMMAND is
+	previous_failed_test_command: attached ES_PREVIOUS_FAILED_TEST_COMMAND
 			-- Previous failed test command
 		once
 			create Result.make (Current)
 		end
 
-	show_failed_tests_only_command: !ES_SHOW_FAILED_TESTS_ONLY_COMMAND is
+	show_failed_tests_only_command: attached ES_SHOW_FAILED_TESTS_ONLY_COMMAND
 			-- Show failed tests only command
 		once
 			create Result.make (Current)
 		end
 
-	update_last_changed_time_command: !ES_UPDATE_TEST_CASE_TIME_COMMAND is
+	update_last_changed_time_command: attached ES_UPDATE_TEST_CASE_TIME_COMMAND
 			-- Update test case last changed time command
 		once
 			create Result.make (Current)
 		end
 
-	find_test_case_command: !ES_FIND_TEST_CASE_COMMAND is
+	find_test_case_command: attached ES_FIND_TEST_CASE_COMMAND
 			-- Find test case command
 		once
 			create Result.make (Current)
 		end
 
-	all_test_run_results_command: !ES_ALL_TEST_RUN_RESULTS_COMMAND is
+	all_test_run_results_command: attached ES_ALL_TEST_RUN_RESULTS_COMMAND
 			-- All test run results command
 		once
 			create Result.make (Current)
 		end
 
-	see_testing_failure_trace_command: !ES_SHOW_FAILURE_TRACE_COMMAND is
+	see_testing_failure_trace_command: attached ES_SHOW_FAILURE_TRACE_COMMAND
 			-- See testing failure trace command
 		once
 			create Result.make (Current)
 		end
 
-	compare_with_expected_result_command: !ES_COMPARE_RESULT_COMMAND is
+	compare_with_expected_result_command: attached ES_COMPARE_RESULT_COMMAND
 			-- Compare with expected result command
 		once
 			create Result.make (Current)
@@ -309,7 +313,7 @@ feature -- UI commands
 
 feature {ES_EWEASEL_CATALOG_FILE_MANAGER} -- Internal query
 
-	result_analyzer: ES_EWEASEL_RESULT_ANALYZER is
+	result_analyzer: ES_EWEASEL_RESULT_ANALYZER
 			--	analyzer which analyze eweasel ouputs
 		do
 			if internal_result_analyzer = Void then
@@ -322,7 +326,7 @@ feature {ES_EWEASEL_CATALOG_FILE_MANAGER} -- Internal query
 
 feature {NONE} -- Implementation
 
-	process: PROCESS is
+	process: PROCESS
 			-- Process used by process manager.
 		do
 			if internal_process = Void then
@@ -348,7 +352,7 @@ feature {NONE} -- Implementation
 			same: internal_process = Result
 		end
 
-	new_process: like internal_process is
+	new_process: like internal_process
 			-- Create a new eweasel process
 			-- ONLY used by `process'.
 		local
@@ -367,7 +371,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	init_parameter_manager: ES_EWEASEL_INIT_PARAMETER_MANAGER is
+	init_parameter_manager: ES_EWEASEL_INIT_PARAMETER_MANAGER
 			-- Control manager
 		do
 			if internal_init_parameter_manager = Void then
@@ -378,7 +382,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	update_ui_on_exit is
+	update_ui_on_exit
 			-- Update ui states on eweasel exits
 		local
 			l_testing_result_tool: like testing_result_tool
@@ -392,7 +396,8 @@ feature {NONE} -- Implementation
 			l_testing_result_tool := testing_result_tool
 			if l_testing_result_tool /= Void then
 				display_testing_result_tool
-				l_testing_result_tool.content.set_focus
+					-- Was `l_testing_result_tool.content.set_focus'.
+				l_testing_result_tool.show
 			end
 
 			l_testing_tool := testing_tool
@@ -401,7 +406,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_testing_result_tool is
+	display_testing_result_tool
 			-- We display `testing_result_tool' if not initialized or `testing_result_tool' not visible
 		require
 			ready: testing_tool /= Void
@@ -410,7 +415,7 @@ feature {NONE} -- Implementation
 			l_show_tool_command: ES_SHOW_TOOL_COMMAND
 			l_win: EB_DEVELOPMENT_WINDOW
 		do
-			if testing_result_tool = Void or else not testing_result_tool.content.is_visible then
+			if testing_result_tool = Void or else not testing_result_tool.is_visible then
 				l_win := testing_tool.develop_window
 				check not_void: l_win /= Void end
 				l_shim ?= l_win.shell_tools.tool ({ES_EWEASEL_TESTING_RESULT_TOOL})
@@ -423,7 +428,7 @@ feature {NONE} -- Implementation
 			created: testing_result_tool /= Void
 		end
 
-	check_precompile: BOOLEAN is
+	check_precompile: BOOLEAN
 			-- Check if base and base-mt precompile library correct
 			-- If we don't check it, testing tool will hang
 		local
@@ -466,7 +471,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	check_precompile_correct (a_library_target_name: STRING) is
+	check_precompile_correct (a_library_target_name: STRING)
 			-- Check if precompile library correct
 			-- If error, exception will be raised
 		require
@@ -497,7 +502,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Porcess event handler
 
-	on_exit is
+	on_exit
 			-- Handle eweasel process exit action
 		local
 			l_testing_tool: like testing_tool
@@ -519,7 +524,7 @@ feature {NONE} -- Porcess event handler
 			result_analyzer.clear_buffer_string_moving
 		end
 
-	on_terminate is
+	on_terminate
 			-- Handle eweasel terminate action
 		local
 			l_testing_result_tool: like testing_result_tool
@@ -554,8 +559,8 @@ feature {NONE} -- Internal instance holders
 			-- `result_analyzer' instance holder
 			-- Used by `result_anaylzer' only
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -579,11 +584,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

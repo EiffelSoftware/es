@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Record all the possible signatures that an Eiffel system may have. We have 2 kinds of patterns:
 		1 - pattern taken directly from source code possibly instantiated in generic derivations: PATTERN
@@ -35,7 +35,7 @@ create
 
 feature {NONE} -- Implementation
 
-	make is
+	make
 			-- Table creation
 		do
 			search_table_make (Chunk)
@@ -52,7 +52,7 @@ feature -- Access
 	last_pattern_id: INTEGER
 			-- Pattern id processed after last insertion
 
-	pattern_of_id (i: INTEGER; type: CLASS_TYPE): PATTERN is
+	pattern_of_id (i: INTEGER; type: CLASS_TYPE): PATTERN
 			-- Pattern information of id `i'.
 		require
 			i_positive: i > 0
@@ -62,7 +62,7 @@ feature -- Access
 			Result := info_array.item (i).instantiation_in (type)
 		end
 
-	c_pattern_id_in (pattern_id: INTEGER; cl_type: CLASS_TYPE): INTEGER is
+	c_pattern_id_in (pattern_id: INTEGER; cl_type: CLASS_TYPE): INTEGER
 			-- C pattern ID of pattern `pattern_id' instantiated in `cl_type'.
 		require
 			pattern_id_positive: pattern_id > 0
@@ -74,14 +74,14 @@ feature -- Access
 			c_pattern_id_in_positive: Result > 0
 		end
 
-	c_pattern_id (a_c_pattern: C_PATTERN): INTEGER is
+	c_pattern_id (a_c_pattern: C_PATTERN): INTEGER
 			-- C pattern ID from `a_c_pattern'.
 			-- Side effect: Update `c_patterns' and `c_patterns_by_ids' if not present.
 		require
 			a_c_pattern_not_void: a_c_pattern /= Void
 		do
-			marker.set_pattern (a_c_pattern)
-			c_patterns.search (marker)
+			c_pattern_marker.set_pattern (a_c_pattern)
+			c_patterns.search (c_pattern_marker)
 			if c_patterns.found then
 				Result := c_patterns.found_item.c_pattern_id
 			else
@@ -96,7 +96,7 @@ feature -- Access
 			c_pattern_id_positive: Result > 0
 		end
 
-	c_pattern_of_id (a_pattern_id: INTEGER): C_PATTERN is
+	c_pattern_of_id (a_pattern_id: INTEGER): C_PATTERN
 			-- C pattern of ID `a_pattern_id'.
 		require
 			a_pattern_id_positive: a_pattern_id > 0
@@ -106,16 +106,16 @@ feature -- Access
 
 feature -- Status report
 
-	has_c_pattern (a_c_pattern: C_PATTERN): BOOLEAN is
+	has_c_pattern (a_c_pattern: C_PATTERN): BOOLEAN
 			-- Is `a_c_pattern' present in Current?
 		require
 			a_c_pattern_not_void: a_c_pattern /= Void
 		do
-			marker.set_pattern (a_c_pattern)
-			Result := c_patterns.has (marker)
+			c_pattern_marker.set_pattern (a_c_pattern)
+			Result := c_patterns.has (c_pattern_marker)
 		end
 
-	has_pattern_of_id (a_pattern_id: INTEGER): BOOLEAN is
+	has_pattern_of_id (a_pattern_id: INTEGER): BOOLEAN
 			-- Is pattern of Id `a_pattern_id' present?
 		require
 			a_pattern_id_positive: a_pattern_id > 0
@@ -125,7 +125,7 @@ feature -- Status report
 
 feature -- Processing
 
-	process is
+	process
 			-- Process the table of C patterns
 		local
 			c_pattern: C_PATTERN
@@ -162,16 +162,20 @@ feature -- Processing
 
 feature -- Element change
 
-	insert (written_in: INTEGER; pattern: PATTERN) is
+	insert (written_in: INTEGER; pattern: PATTERN)
 		require
 			good_argument: pattern /= Void
 		local
 			other_pattern: PATTERN
 			info, other_info: PATTERN_INFO
 		do
-			create info.make (written_in, pattern)
+				-- Set pattern marker for search.
+			info := pattern_marker
+			info.set_pattern (pattern)
+			info.set_written_in (written_in)
 			other_info := item (info)
 			if other_info = Void then
+				create info.make (written_in, pattern)
 				other_pattern := patterns.item (pattern)
 				if other_pattern = Void then
 					patterns.put (pattern)
@@ -188,7 +192,7 @@ feature -- Element change
 			end
 		end
 
-	insert_c_pattern (a_c_pattern: C_PATTERN) is
+	insert_c_pattern (a_c_pattern: C_PATTERN)
 			-- Insert `a_c_pattern' in Current and gives it a new C pattern ID.
 		require
 			a_c_pattern_not_void: a_c_pattern /= Void
@@ -206,7 +210,7 @@ feature -- Element change
 
 feature -- Generation
 
-	generate is
+	generate
 			-- Generate patterns
 		local
 			i, nb: INTEGER
@@ -251,7 +255,7 @@ feature -- Generation
 			pattern_file.close
 		end
 
-	generate_pattern (buffer: GENERATION_BUFFER) is
+	generate_pattern (buffer: GENERATION_BUFFER)
 			-- Generate pattern for interfacing C generated code and
 			-- the interpreter
 		do
@@ -286,10 +290,16 @@ feature {NONE} -- Impementation: Access
 	c_pattern_id_counter: COUNTER
 			-- Counter of C patterns
 
-	Chunk: INTEGER is 100
+	Chunk: INTEGER = 100
 			-- Table chunk
 
-	Marker: C_PATTERN_INFO is
+	pattern_marker: PATTERN_INFO
+			-- Marker for search in `Current'.
+		once
+			create Result.make (0, Void)
+		end
+
+	c_pattern_marker: C_PATTERN_INFO
 			-- Marker for search in `c_patterns'
 		local
 			l_pattern: C_PATTERN
@@ -306,7 +316,7 @@ invariant
 	patterns_exists: patterns /= Void
 	info_array_exists: info_array /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Keeper for non-void entity scopes that uses stacks to track voidness status."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,18 +12,18 @@ inherit
 
 feature {NONE} -- Creation
 
-	make (n: like local_count)
-			-- Create storage to keep at least `n' locals.
+	make (n: like count)
+			-- Create storage to keep at least `n' variables.
 		require
 			non_negative_n: n >= 0
-			n_small_enough: n <= max_local_count
+			n_small_enough: n <= max_count
 		do
 			scope := new_scope (n)
 			create {ARRAYED_STACK [like scope]} outer_scopes.make (1)
 			create {ARRAYED_STACK [like scope]} inner_scopes.make (1)
-			local_count := n
+			count := n
 		ensure
-			local_count_set: local_count = n
+			count_set: count = n
 		end
 
 feature -- Status report: nesting
@@ -32,6 +32,27 @@ feature -- Status report: nesting
 			-- Current nesting level of a compound
 		do
 			Result := outer_scopes.count
+		end
+
+feature {AST_CONTEXT} -- Status report
+
+	is_sibling_dominating: BOOLEAN
+			-- <Precursor>
+		do
+			if has_siblings then
+					-- Compare siblings.
+				Result := is_dominating
+			end
+		end
+
+feature {NONE} -- Status report
+
+	is_dominating: BOOLEAN
+			-- Does variable information of a sibling dominate the previous one?
+		require
+			is_nested: nesting_level > 0
+			has_siblings: has_siblings
+		deferred
 		end
 
 feature {AST_CONTEXT} -- Modification: nesting
@@ -46,6 +67,9 @@ feature {AST_CONTEXT} -- Modification: nesting
 			scope := duplicate (scope)
 				-- Reserve stack for sibling information.
 			inner_scopes.extend (scope.default)
+		ensure then
+			not_has_siblings: not has_siblings
+			not_is_sibling_dominating: not is_sibling_dominating
 		end
 
 	update_realm
@@ -56,8 +80,7 @@ feature {AST_CONTEXT} -- Modification: nesting
 		end
 
 	save_sibling
-			-- Save scope information of a sibling
-			-- in a complex instrution.
+			-- Save scope information of a sibling in a complex instrution and restart recording using the outer scope.
 			-- For example, Then_part of Elseif condition.
 		do
 			if has_siblings then
@@ -69,6 +92,25 @@ feature {AST_CONTEXT} -- Modification: nesting
 			end
 				-- Start new scope from the state of an outer one.
 			scope := duplicate (outer_scopes.item)
+		ensure then
+			has_siblings: has_siblings
+		end
+
+	update_sibling
+			-- Update scope information of a sibling in a complex instrution and reuse it for the current scope.
+			-- For example, Loop body.
+		do
+			if has_siblings then
+					-- Merge sibling scope information.
+				merge_siblings
+			else
+					-- Record new sibling scope information.
+				inner_scopes.replace (duplicate (scope))
+			end
+				-- Start new scope from the state of an updated inner one.
+			scope := duplicate (inner_scopes.item)
+		ensure then
+			has_siblings: has_siblings
 		end
 
 	leave_realm
@@ -103,6 +145,8 @@ feature {NONE} -- Modification: nesting
 	merge_siblings
 			-- Merge sibling scope information from `scope'
 			-- into `inner_scopes.item'.
+		require
+			has_siblings: has_siblings
 		deferred
 		end
 
@@ -124,14 +168,13 @@ feature {NONE} -- Storage
 	outer_scopes: STACK [like scope]
 			-- Outer scopes
 
-	inner_scopes: STACK [?like scope]
+	inner_scopes: STACK [detachable like scope]
 			-- Inner scopes
 
 feature {NONE} -- Initialization
 
-	new_scope (n: like local_count): like scope
-			-- New scope that can track attachment status of Result
-			-- and up to `n' local variables.
+	new_scope (n: like count): like scope
+			-- New scope that can track attachment status of `n' variables.
 		deferred
 		ensure
 			result_attached: Result /= Void
@@ -158,8 +201,8 @@ invariant
 	inner_scopes_attached: inner_scopes /= Void
 	same_level: outer_scopes.count = inner_scopes.count
 
-indexing
-	copyright:	"Copyright (c) 2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 2008-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

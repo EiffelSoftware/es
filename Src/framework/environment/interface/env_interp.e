@@ -1,11 +1,11 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class ENV_INTERP
 
 feature -- Access
 
-	interpreted_string (s: STRING): STRING is
+	interpreted_string (s: STRING): STRING
 			-- Interpretation of string `s' where the environment variables
 			-- are interpreted
 		require
@@ -16,7 +16,7 @@ feature -- Access
 			good_result: Result /= Void
 		end
 
-	translated_string (s: STRING): STRING is
+	translated_string (s: STRING): STRING
 			-- Interpretation of string `s' where the environment variables
 			-- are replaced by "$(VARIABLE)"
 			--| Useful when writing makefiles.
@@ -30,12 +30,12 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	execution_environment: EXECUTION_ENVIRONMENT is
+	execution_environment: EXECUTION_ENVIRONMENT
 		once
 			create Result
 		end
 
-	processed_string (s: STRING; interpreted: BOOLEAN): STRING is
+	processed_string (s: STRING; interpreted: BOOLEAN): STRING
 			-- Interpretation of string `s' where the environment variables
 			-- are either replaced by their values (`interpreted' = True)
 			-- or replaced by "$(VARIABLE)" in order to be written in
@@ -44,7 +44,8 @@ feature {NONE} -- Implementation
 			good_argument: s /= Void
 		local
 			current_character, last_character: CHARACTER;
-			s1,s2: STRING;
+			s1: STRING
+			s2: detachable STRING;
 			i, j: INTEGER;
 			stop : BOOLEAN;
 		do
@@ -144,8 +145,8 @@ feature {NONE} -- Implementation
 		ensure
 			good_result: Result /= Void;
 		end;
-	
-	variable_value (a_name: STRING): STRING is
+
+	variable_value (a_name: STRING): detachable STRING
 			-- Value of variable `a_name', if any.
 		require
 			attached_name: a_name /= Void
@@ -153,8 +154,8 @@ feature {NONE} -- Implementation
 			Result := Execution_environment.get (a_name)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -167,22 +168,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

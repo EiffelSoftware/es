@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that represent an automatically created NONE id"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,27 +16,20 @@ inherit
 			text
 		end
 
-	PREDEFINED_NAMES
-		export
-			{NONE} all
-		undefine
-			is_equal
-		end
-
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create.
 		do
-			initialize_from_id (none_class_name_id)
+			initialize_from_id ({PREDEFINED_NAMES}.none_class_name_id)
 		end
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_none_id_as (Current)
@@ -44,7 +37,7 @@ feature -- Visitor
 
 feature -- Roundtrip
 
-	text (a_list: LEAF_AS_LIST): STRING is
+	text (a_list: LEAF_AS_LIST): STRING
 			-- Literal text of this token, which is stored in `a_list'
 		do
 				-- In view of roundtrip parser, text of a NONE_ID_AS is empty because this
@@ -52,10 +45,10 @@ feature -- Roundtrip
 			Result := ""
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -66,19 +59,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

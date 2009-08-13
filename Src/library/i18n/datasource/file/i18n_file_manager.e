@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Implementation of DATASOURCE_MANAGER that uses message catalog files as a data source."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,9 +17,9 @@ inherit
 create
 	make
 
-feature	-- Creation
+feature	{NONE} -- Creation
 
-	make (an_uri: STRING_GENERAL) is
+	make (an_uri: STRING_GENERAL)
 		do
 			Precursor (an_uri)
 				-- Initialize chain-of-responsability
@@ -35,27 +35,31 @@ feature	-- Creation
 
 feature	-- Access
 
-	dictionary (a_locale: I18N_LOCALE_ID): I18N_DICTIONARY is
+	dictionary (a_locale: I18N_LOCALE_ID): I18N_DICTIONARY
 			-- return appropriate dictionary
+		local
+			l_result: detachable I18N_DICTIONARY
 		do
 			if available_locales.has (a_locale) then
-				Result := chain.get_file_dictionary (locale_file_list.item (a_locale))
+				l_result := chain.get_file_dictionary (locale_file_list.item (a_locale))
 			elseif available_languages.has (a_locale.language_id) then
-				Result := chain.get_file_dictionary (
+				l_result := chain.get_file_dictionary (
 					language_file_list.item (a_locale.language_id))
-			else
-				create {I18N_DUMMY_DICTIONARY} Result.make(0)
 			end
+			if l_result = Void then
+				create {I18N_DUMMY_DICTIONARY}l_result.make (0)
+			end
+			Result := l_result
 		end
 
-	available_locales: LINEAR[I18N_LOCALE_ID] is
+	available_locales: LINEAR[I18N_LOCALE_ID]
 			-- return locales for which there is a locale-specific translation
 		do
 			create {ARRAYED_LIST[I18N_LOCALE_ID]} Result.make_from_array (locale_list)
 			Result.compare_objects
 		end
 
-	available_languages: LINEAR[I18N_LANGUAGE_ID] is
+	available_languages: LINEAR[I18N_LANGUAGE_ID]
 			-- return languages for which there is a generic translation
 		do
 			create {ARRAYED_LIST[I18N_LANGUAGE_ID]} Result.make_from_array (language_list)
@@ -74,14 +78,14 @@ feature {NONE} --Implementation
 	directory: DIRECTORY
 	chain: I18N_FILE_HANDLER
 
-	populate_file_lists is
+	populate_file_lists
 			-- add to file lists all locales and langugaes
 			-- that are available in `directory'
 		require
 			directory_not_void: directory /= Void
 		local
 			temp: LIST[STRING_8]
-			scope: I18N_FILE_SCOPE_INFORMATION
+			scope: detachable I18N_FILE_SCOPE_INFORMATION
 		do
 			create locale_file_list.make(16)
 			create locale_list.make(16)
@@ -134,13 +138,13 @@ invariant
 	language_file_list_exists: language_file_list /= Void
 	language_list_exists: language_list /= Void
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

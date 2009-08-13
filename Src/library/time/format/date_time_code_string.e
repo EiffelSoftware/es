@@ -1,4 +1,4 @@
-indexing
+note
 	description: "DATE/TIME to STRING conversion"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -15,7 +15,7 @@ create
 
 feature -- Creation
 
-	make (s: STRING) is
+	make (s: STRING)
 			-- Create code descriptors and hash-table from `s'.
 		require
 			s_exists: s /= Void
@@ -23,6 +23,8 @@ feature -- Creation
 			code: DATE_TIME_CODE
 			i, pos1, pos2: INTEGER
 			date_constants: DATE_CONSTANTS
+			l_substrgs: like extracted_substrings
+			l_substrg, l_substrg2: STRING
 		do
 			create value.make (20)
 			pos1 := 1
@@ -36,16 +38,18 @@ feature -- Creation
 				pos1 >= s.count
 			loop
 				pos2 := find_separator (s, pos1)
-				extract_substrings (s, pos1, pos2)
+				l_substrgs := extracted_substrings (s, pos1, pos2)
 				pos2 := abs (pos2)
-				substrg.to_lower
-				if substrg.count > 0 then
-					create code.make (substrg)
+				l_substrg := l_substrgs.substrg
+				l_substrg.to_lower
+				if l_substrg.count > 0 then
+					create code.make (l_substrg)
 					value.put (code, i)
 					i := i + 1
 				end
-				if substrg2.count > 0 then
-					value.put (create {DATE_TIME_CODE}.make (substrg2), i)
+				l_substrg2 := l_substrgs.substrg2
+				if l_substrg2.count > 0 then
+					value.put (create {DATE_TIME_CODE}.make (l_substrg2), i)
 					i := i + 1
 					separators_used := True
 				end
@@ -64,20 +68,23 @@ feature -- Attributes
 	value: HASH_TABLE [DATE_TIME_CODE, INTEGER]
 			-- Hash-table representing the code string.
 
-	name: STRING is
+	name: STRING
 			-- Name of the code string.
 		local
 			i: INTEGER
+			l_item: detachable DATE_TIME_CODE
 		do
 			create Result.make (1)
 			from
 				i := 1
+				l_item := value.item (i)
 			until
-				value.item (i) = Void
+				l_item = Void
 			loop
-				Result.append (value.item (i).name)
-				Result.append (" ")
+				Result.append (l_item.name)
+				Result.append_character (' ')
 				i := i + 1
+				l_item := value.item (i)
 			end
 		end
 
@@ -87,40 +94,39 @@ feature -- Attributes
 
 feature -- Status report
 
-	is_date (s: STRING): BOOLEAN is
+	is_date (s: STRING): BOOLEAN
 			-- Does `s' contain a DATE?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
 		do
-			build_parser (s)
-			Result := parser.is_date
+			Result := parser (s).is_date
 		end
 
-	is_time (s: STRING): BOOLEAN is
+	is_time (s: STRING): BOOLEAN
 			-- Does `s' contain a TIME?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
 		do
-			build_parser (s)
-			Result := parser.is_time
+			Result := parser (s).is_time
 		end
 
-	is_date_time (s: STRING): BOOLEAN is
+	is_date_time (s: STRING): BOOLEAN
 			-- Does `s' contain a DATE_TIME?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
 		do
-			build_parser (s)
-			Result := parser.is_date_time
+			Result := parser (s).is_date_time
 		end
 
-	is_value_valid (s: STRING): BOOLEAN is
+	is_value_valid (s: STRING): BOOLEAN
 			-- Does `s' contain a valid date or time as string representation?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
+		local
+			l_parser: like parser
 		do
-			build_parser (s)
-			Result := parser.is_date or parser.is_time or parser.is_date_time
+			l_parser := parser (s)
+			Result := l_parser.is_date or l_parser.is_time or l_parser.is_date_time
 		end
 
 	separators_used: BOOLEAN
@@ -128,7 +134,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_base_century (c: INTEGER) is
+	set_base_century (c: INTEGER)
 			-- Set base century to `c'.
 		require
 			base_valid: c > 0 and (c \\ 100 = 0)
@@ -140,14 +146,16 @@ feature -- Status setting
 
 feature -- Interface
 
-	correspond (s: STRING): BOOLEAN is
+	correspond (s: STRING): BOOLEAN
 			-- Does the user string `s' correspond to the code string?
 		require
 			s_exists: s /= Void
 		local
 			pos1, pos2, i: INTEGER
-			code: DATE_TIME_CODE
+			code: detachable DATE_TIME_CODE
 			has_seps: BOOLEAN
+			l_substrgs: like extracted_substrings
+			l_substrg, l_substrg2: STRING
 		do
 			pos1 := 1
 			pos2 := 1
@@ -165,34 +173,35 @@ feature -- Interface
 				or Result = False
 			loop
 				code := value.item (i)
-				if has_seps then
-					pos2 := find_separator (s, pos1)
-				else
-					pos2 := (pos1 + code.count_max - 1) * -1
-				end
-				extract_substrings (s, pos1, pos2)
-				pos2 := abs (pos2)
 				if code = Void then
-					Result := false
+					Result := False
 				else
-					if substrg.count > 0 then
-						Result := substrg.count <= code.count_max and
-						substrg.count >= code.count_min
+					if has_seps then
+						pos2 := find_separator (s, pos1)
+					else
+						pos2 := (pos1 + code.count_max - 1) * -1
+					end
+					l_substrgs := extracted_substrings (s, pos1, pos2)
+					pos2 := abs (pos2)
+					l_substrg := l_substrgs.substrg
+					if l_substrg.count > 0 then
+						Result := l_substrg.count <= code.count_max and
+						l_substrg.count >= code.count_min
 						if code.is_numeric then
-							Result := Result and substrg.is_integer
+							Result := Result and l_substrg.is_integer
 							if code.value_max /= -1 and
 								code.value_min /= -1 then
 								Result := Result and
-									substrg.to_integer <= code.value_max and
-									substrg.to_integer >= code.value_min
+									l_substrg.to_integer <= code.value_max and
+									l_substrg.to_integer >= code.value_min
 							end
 						elseif code.is_meridiem (code.value) then
-							Result := Result and (substrg.as_upper.is_equal ("AM") or
-								substrg.as_upper.is_equal ("PM"))
+							Result := Result and (l_substrg.as_upper.is_equal ("AM") or
+								l_substrg.as_upper.is_equal ("PM"))
 						elseif code.is_day_text (code.value) then
-							Result := Result and days.has (substrg)
+							Result := Result and days.has (l_substrg)
 						elseif code.is_month_text (code.value) then
-							Result := Result and months.has (substrg)
+							Result := Result and months.has (l_substrg)
 						end
 						i := i + 1
 					end
@@ -200,8 +209,9 @@ feature -- Interface
 						code := value.item (i)
 						i := i + 1
 						if code /= Void then
+							l_substrg2 := l_substrgs.substrg2
 							Result := Result and (pos2 /= s.count) and
-								substrg2.is_equal (code.value)
+								l_substrg2.is_equal (code.value)
 						end
 					end
 					pos1 := pos2 + 1
@@ -209,7 +219,7 @@ feature -- Interface
 			end
 		end
 
-	create_string (date_time: DATE_TIME): STRING is
+	create_string (date_time: DATE_TIME): STRING
 			-- Create the output of `date_time' according to the code string.
 		require
 			non_void: date_time /= Void
@@ -219,16 +229,18 @@ feature -- Interface
 			int, i, type: INTEGER
 			double: DOUBLE
 			l_tmp: STRING
+			l_item: detachable DATE_TIME_CODE
 		do
 			create Result.make (1)
 			date := date_time.date
 			time := date_time.time
 			from
 				i := 1
+				l_item := value.item (i)
 			until
-				value.item (i) = Void
+				l_item = Void
 			loop
-				type := value.item (i).type
+				type := l_item.type
 				inspect
 					type
 				when 1 then
@@ -321,11 +333,11 @@ feature -- Interface
 					Result.append (int.out)
 				when 16 then
 					double := time.fractional_second *
-						10 ^ (value.item (i).count_max)
+						10 ^ (l_item.count_max)
 					int := double.truncated_to_integer
 					l_tmp := int.out
-					if l_tmp.count < value.item (i).count_max then
-						Result.append (create {STRING}.make_filled ('0', value.item (i).count_max - l_tmp.count))
+					if l_tmp.count < l_item.count_max then
+						Result.append (create {STRING}.make_filled ('0', l_item.count_max - l_tmp.count))
 					end
 					Result.append (l_tmp)
 				when 23 then
@@ -336,16 +348,17 @@ feature -- Interface
 						Result.append ("PM")
 					end
 				else
-					Result.append (value.item (i).value)
+					Result.append (l_item.value)
 				end
 				i := i + 1
+				l_item := value.item (i)
 			end
 		ensure
 			string_exists: Result /= Void
 			string_correspond: correspond (Result)
 		end
 
-	create_date_string (date: DATE): STRING is
+	create_date_string (date: DATE): STRING
 				-- Create the output of `date' according to the code string.
 		require
 			date_exists: date /= Void
@@ -359,7 +372,7 @@ feature -- Interface
 			string_correspond: correspond (Result)
 		end
 
-	create_time_string (time: TIME): STRING is
+	create_time_string (time: TIME): STRING
 				-- Create the output of `time' according to the code string.
 		require
 			time_exists: time /= Void
@@ -374,7 +387,7 @@ feature -- Interface
 			string_correspond: correspond (Result)
 		end
 
-	create_date_time (s: STRING): DATE_TIME is
+	create_date_time (s: STRING): DATE_TIME
 			-- Create DATE_TIME according to `s'.
 		require
 			s_exist: s /= Void
@@ -383,21 +396,24 @@ feature -- Interface
 			valid: is_value_valid (s)
 		local
 			i: INTEGER
+			l_parser: like parser
+			l_day_text: detachable STRING
 		do
 			right_day_text := True
-			build_parser (s)
-			create Result.make_fine (parser.year, parser.month, parser.day,
-					parser.hour, parser.minute, parser.fine_second)
-			if parser.day_text /= Void then
+			l_parser := parser (s)
+			create Result.make_fine (l_parser.year, l_parser.month, l_parser.day,
+					l_parser.hour, l_parser.minute, l_parser.fine_second)
+			l_day_text := l_parser.day_text
+			if l_day_text /= Void then
 				i := Result.date.day_of_the_week
-				right_day_text := parser.day_text.is_equal (days.item (i))
+				right_day_text := l_day_text.is_equal (days.item (i))
 			end
 		ensure
 			date_time_exists: Result /= Void
 			day_text_equal_day: right_day_text
 		end
 
-	create_date (s: STRING): DATE is
+	create_date (s: STRING): DATE
 			-- Create a DATE according to the format in `s'.
 		require
 			s_exists: s /= Void
@@ -443,7 +459,7 @@ feature -- Interface
 			day_text_equal_day: right_day_text
 		end
 
-	create_time (s: STRING): TIME is
+	create_time (s: STRING): TIME
 			-- Create a TIME according to the format in `s'.
 		require
 			s_exists: s /= Void
@@ -490,7 +506,7 @@ feature -- Interface
 		end
 
 
-	precise: BOOLEAN is
+	precise: BOOLEAN
 			-- Is the code string enough precise to create
 			-- nn instance of type DATE_TIME?
 		require
@@ -499,22 +515,23 @@ feature -- Interface
 			Result := precise_date and precise_time
 		end
 
-	precise_date: BOOLEAN is
+	precise_date: BOOLEAN
 			-- Is the code string enough precise to create
 			-- nn instance of type DATE?
 		require
 			not_void: value /= Void
 		local
-			code: DATE_TIME_CODE
+			l_item, code: detachable DATE_TIME_CODE
 			i, type: INTEGER
 			has_day, has_month, has_year: BOOLEAN
 		do
 			from
 				i := 1
+				l_item := value.item (i)
 			until
-				value.item (i) = Void
+				l_item = Void
 			loop
-				code := value.item (i).twin
+				code := l_item.twin
 				type := code.type
 				if separators_used then
 					inspect
@@ -542,26 +559,28 @@ feature -- Interface
 					end
 				end
 				i := i + 1
+				l_item := value.item (i)
 			end
 			Result := has_day and has_month and has_year
 		end
 
-	precise_time: BOOLEAN is
+	precise_time: BOOLEAN
 			-- Is the code string enough precise to create
 			-- an instance of type TIME?
 		require
 			not_void: value /= Void
 		local
-			code: DATE_TIME_CODE
+			l_item, code: detachable DATE_TIME_CODE
 			i, type: INTEGER
 			has_hour, has_minute, has_second: BOOLEAN
 		do
 			from
 				i := 1
+				l_item := value.item (i)
 			until
-				value.item (i) = Void
+				l_item = Void
 			loop
-				code := value.item (i).twin
+				code := l_item.twin
 				type := code.type
 				if separators_used then
 					inspect
@@ -589,14 +608,12 @@ feature -- Interface
 					end
 				end
 				i := i + 1
+				l_item := value.item (i)
 			end
 			Result := has_hour and has_minute and has_second
 		end
 
 feature {NONE} -- Implementation
-
-	parser: DATE_TIME_PARSER
-			-- Instance of date-time string parser
 
 	days: ARRAY [STRING]
 
@@ -605,29 +622,38 @@ feature {NONE} -- Implementation
 	right_day_text: BOOLEAN
 			-- Is the name of the day the right one?
 
-	build_parser (s: STRING) is
-			-- Build parser from `s'.
+	parser (s: STRING): DATE_TIME_PARSER
+			-- Parser from `s'.
+			-- Build a new one if necessary.
 		require
 			non_empty_string: s /= Void and then not s.is_empty
+		local
+			l_parser: like internal_parser
 		do
-			if parser = Void or else not equal (parser.source_string, s) then
-				create parser.make (value)
-				parser.set_day_array (days)
-				parser.set_month_array (months)
-				parser.set_base_century (base_century)
-				parser.set_source_string (s)
-				parser.parse
+			l_parser := internal_parser
+			if l_parser = Void or else not equal (l_parser.source_string, s) then
+				create l_parser.make (value)
+				l_parser.set_day_array (days)
+				l_parser.set_month_array (months)
+				l_parser.set_base_century (base_century)
+				l_parser.set_source_string (s)
+				l_parser.parse
+				internal_parser := l_parser
 			end
+			Result := l_parser
 		ensure
-			parser_created: parser /= Void
+			parser_not_void: Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	internal_parser: detachable DATE_TIME_PARSER;
+			-- Cached instance of date-time string parser
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

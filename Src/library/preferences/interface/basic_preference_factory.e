@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		This is a helper class used to initialize preferences.  To initialize a preference
 		use the `new_*_preference_value' functions.  In doing so the following rules apply:
@@ -25,7 +25,7 @@ class
 
 feature -- Access
 
-	new_boolean_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: BOOLEAN): BOOLEAN_PREFERENCE is
+	new_boolean_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: BOOLEAN): BOOLEAN_PREFERENCE
 			-- Add a new boolean preference with name `a_name'.  If preference cannot be found in
 			-- underlying datastore or in a default values then `a_fallback_value' is used for the value.
 		require
@@ -41,7 +41,7 @@ feature -- Access
 			preference_added: a_manager.preferences.has_preference (a_name)
 		end
 
-	new_integer_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: INTEGER): INTEGER_PREFERENCE is
+	new_integer_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: INTEGER): INTEGER_PREFERENCE
 			-- Add a new integer preference with name `a_name'.   If preference cannot be found in
 			-- underlying datastore or in a default values then `a_fallback_value' is used for the value.
 		require
@@ -57,7 +57,7 @@ feature -- Access
 			preference_added: a_manager.preferences.has_preference (a_name)
 		end
 
-	new_string_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: STRING): STRING_PREFERENCE is
+	new_string_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: STRING): STRING_PREFERENCE
 			-- Add a new string preference with name `a_name'.  If preference cannot be found in
 			-- underlying datastore or in a default values then `a_fallback_value' is used for the value.
 		require
@@ -74,7 +74,7 @@ feature -- Access
 			preference_added: a_manager.preferences.has_preference (a_name)
 		end
 
-	new_array_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING]): ARRAY_PREFERENCE is
+	new_array_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING]): ARRAY_PREFERENCE
 			-- Add a new array preference with name `a_name'.  If preference cannot be found in
 			-- underlying datastore or in a default values then `a_fallback_value' is used for the value.
 		require
@@ -91,37 +91,37 @@ feature -- Access
 			preference_added: a_manager.preferences.has_preference (a_name)
 		end
 
-	new_boolean_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: BOOLEAN): BOOLEAN_PREFERENCE is
-		obsolete "use new_boolean_preference_value."
+	new_boolean_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: BOOLEAN): BOOLEAN_PREFERENCE
+		obsolete "[060113] use new_boolean_preference_value."
 		do
 			Result := new_boolean_preference_value (a_manager, a_name, a_fallback_value)
 		end
-	new_integer_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: INTEGER): INTEGER_PREFERENCE is
-		obsolete "use new_integer_preference_value."
+	new_integer_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: INTEGER): INTEGER_PREFERENCE
+		obsolete "[060113] use new_integer_preference_value."
 		do
 			Result := new_integer_preference_value (a_manager, a_name, a_fallback_value)
 		end
-	new_string_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: STRING): STRING_PREFERENCE is
-		obsolete "use new_string_preference_value."
+	new_string_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: STRING): STRING_PREFERENCE
+		obsolete "[060113] use new_string_preference_value."
 		do
 			Result := new_string_preference_value (a_manager, a_name, a_fallback_value)
 		end
-	new_array_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING]): ARRAY_PREFERENCE is
-		obsolete "use new_array_preference_value."
+	new_array_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING]): ARRAY_PREFERENCE
+		obsolete "[060113] use new_array_preference_value."
 		do
 			Result := new_array_preference_value (a_manager, a_name, a_fallback_value)
 		end
 
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

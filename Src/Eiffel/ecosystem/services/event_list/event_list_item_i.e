@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An interface for the most basic event list item used with the event service. See {EVENT_SERVICE_I} for more information on the
 		event service and how items are used.
@@ -27,37 +27,61 @@ inherit
 feature -- Access
 
 	type: NATURAL_8
-			-- Event list item type identifier, see {EVENT_LIST_ITEM_TYPES}
+			-- Event list item type identifier, see {EVENT_LIST_ITEM_TYPES}.
 		deferred
 		end
 
-	category: NATURAL_8
-			-- Event list item category, see {ENVIRONMENT_CATEGORIES}
+	category: NATURAL_8 assign set_category
+			-- Event list item category, see {ENVIRONMENT_CATEGORIES}.
 		deferred
 		ensure
 			result_is_valid_category: is_valid_category (Result)
 		end
 
-	priority: INTEGER_8
-			-- Event list item priority, see {PRIORITY_LEVELS}
+	priority: INTEGER_8 assign set_priority
+			-- Event list item priority, see {PRIORITY_LEVELS}.
 		deferred
 		ensure
 			result_is_valid_priority: is_valid_priority (Result)
 		end
 
 	description: STRING_32
-			-- Event list item description
+			-- Event list item description.
 		deferred
 		ensure
 			result_attached: Result /= Void
 			not_result_is_empty: not Result.is_empty
 		end
 
-	data: ANY
-			-- User custom data
+	data: detachable ANY
+			-- User custom data.
 		deferred
 		ensure
 			result_is_valid_data: is_valid_data (Result)
+		end
+
+feature -- Element change
+
+	set_category (a_category: like category)
+			-- Sets a new category.
+			--
+			-- `a_category': An event list category, see {ENVIRONMENT_CATEGORIES}.
+		require
+			a_category_is_valid_category: is_valid_category (a_category)
+		deferred
+		ensure
+			category_set: category = category
+		end
+
+	set_priority (a_priority: like priority)
+			-- Sets a new priority.
+			--
+			-- `a_priority': An event list category, see {PRIORITY_LEVELS}.
+		require
+			a_priority_is_valid_priority: is_valid_priority (a_priority)
+		deferred
+		ensure
+			priority_set: priority = a_priority
 		end
 
 feature -- Status report
@@ -112,7 +136,14 @@ feature -- Basic operations
 			is_invalidated: is_invalidated
 		end
 
-;indexing
+invariant
+	description_attached: description /= Void
+	not_description_is_empty: not description.is_empty
+	category_is_valid_category: is_valid_category (category)
+	priority_is_valid_priority: is_valid_priority (priority)
+	data_is_valid_data: is_valid_data (data)
+
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

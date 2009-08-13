@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Actual type description."
 	code_review: "http://docs.google.com/Doc?id=dd7kn5vj_93ng9v6cg"
 	legal: "See notice at end of class."
@@ -47,7 +47,7 @@ inherit
 
 feature -- Visitor
 
-	process (v: TYPE_A_VISITOR) is
+	process (v: TYPE_A_VISITOR)
 			-- Process current element.
 		require
 			v_not_void: v /= Void
@@ -57,7 +57,7 @@ feature -- Visitor
 
 feature -- Generic conformance
 
-	annotation_flags: NATURAL_16 is
+	annotation_flags: NATURAL_16
 			-- Flags for annotations of Current.
 			-- Currently only `!' and `frozen' are supported
 		do
@@ -72,7 +72,7 @@ feature -- Generic conformance
 --			end
 		end
 
-	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16 is
+	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16
 			-- Mode dependent type id - just for convenience
 		require
 			context_type_valid: is_valid_context_type (a_context_type)
@@ -83,7 +83,7 @@ feature -- Generic conformance
 			end
 		end
 
-	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A) is
+	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A)
 			-- Generate mode dependent sequence of type id's
 			-- separated by commas. `use_info' is true iff
 			-- we generate code for a creation instruction.
@@ -96,7 +96,7 @@ feature -- Generic conformance
 			buffer.put_character (',')
 		end
 
-	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A) is
+	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A)
 			-- Generate mode dependent sequence of type id's
 			-- separated by commas. `use_info' is true iff
 			-- we generate code for a creation instruction.
@@ -117,7 +117,7 @@ feature -- Generic conformance
 			dummy := idx_cnt.next
 		end
 
-	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL) is
+	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL)
 			-- Generate mode dependent initialization of
 			-- cid array. `use_info' is true iff
 			-- we generate code for a creation instruction.
@@ -134,7 +134,7 @@ feature -- Generic conformance
 			dummy := idx_cnt.next
 		end
 
-	frozen make_full_type_byte_code (ba: BYTE_ARRAY; a_context_type: TYPE_A) is
+	frozen make_full_type_byte_code (ba: BYTE_ARRAY; a_context_type: TYPE_A)
 			-- Append full type info for the current type to `ba'
 			-- following the format for locals, creation expressions, etc.
 		require
@@ -154,7 +154,7 @@ feature -- Generic conformance
 			ba.append_short_integer (-1)
 		end
 
-	make_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A)
 			-- Put type id's in byte array.
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
@@ -166,7 +166,7 @@ feature -- Generic conformance
 			ba.append_natural_16 (generated_id (False, a_context_type))
 		end
 
-	generate_gen_type_il (il_generator: IL_CODE_GENERATOR; use_info: BOOLEAN) is
+	generate_gen_type_il (il_generator: IL_CODE_GENERATOR; use_info: BOOLEAN)
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
 		require
@@ -176,7 +176,7 @@ feature -- Generic conformance
 
 feature {NONE} -- Generic conformance
 
-	generate_cid_prefix (buffer: GENERATION_BUFFER; idx_cnt: COUNTER) is
+	generate_cid_prefix (buffer: GENERATION_BUFFER; idx_cnt: COUNTER)
 			-- Generate prefix to a type specification if `buffer' specified.
 			-- Increment `idx_cnt' accordingly if specified.
 		local
@@ -197,7 +197,7 @@ feature {NONE} -- Generic conformance
 			end
 		end
 
-	make_type_prefix_byte_code (ba: BYTE_ARRAY) is
+	make_type_prefix_byte_code (ba: BYTE_ARRAY)
 			-- Put type id's in byte array.
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
@@ -214,7 +214,7 @@ feature {NONE} -- Generic conformance
 
 feature -- C code generation
 
-	generate_cecil_value (buffer: GENERATION_BUFFER; a_context_type: TYPE_A) is
+	generate_cecil_value (buffer: GENERATION_BUFFER; a_context_type: TYPE_A)
 			-- Generate type value for cecil.
 		require
 			buffer_not_void: buffer /= Void
@@ -225,14 +225,14 @@ feature -- C code generation
 
 feature -- IL code generation
 
-	element_type: INTEGER_8 is
+	element_type: INTEGER_8
 			-- Type of current element. See MD_SIGNATURE_CONSTANTS for
 			-- all possible values.
 		do
 			Result := c_type.element_type
 		end
 
-	il_type_name (a_prefix: STRING; a_context_type: TYPE_A): STRING is
+	il_type_name (a_prefix: STRING; a_context_type: TYPE_A): STRING
 			-- Name of current class type in IL generation.
 		require
 			in_il_generation: System.il_generation
@@ -256,7 +256,7 @@ feature -- IL code generation
 			il_type_name_not_empty: not Result.is_empty
 		end
 
-	minimum_interval_value: INTERVAL_VAL_B is
+	minimum_interval_value: INTERVAL_VAL_B
 			-- Minimum value in inspect interval for current type
 		require
 			valid_type: is_integer or else is_natural or else is_character
@@ -266,7 +266,7 @@ feature -- IL code generation
 			result_not_void: Result /= Void
 		end
 
-	maximum_interval_value: INTERVAL_VAL_B is
+	maximum_interval_value: INTERVAL_VAL_B
 			-- Maximum value in inspect interval for current type
 		require
 			valid_type: is_integer or else is_natural or else is_character
@@ -276,12 +276,12 @@ feature -- IL code generation
 			result_not_void: Result /= Void
 		end
 
-	is_optimized_as_frozen: BOOLEAN is
+	is_optimized_as_frozen: BOOLEAN
 			-- Is current type optimizable as a frozen one in .NET code generation?
 		do
 		end
 
-	is_generated_as_single_type: BOOLEAN is
+	is_generated_as_single_type: BOOLEAN
 			-- Is associated type generated as a single type or as an interface type and
 			-- an implementation type.
 		require
@@ -290,13 +290,13 @@ feature -- IL code generation
 		do
 		end
 
-	heaviest (other: TYPE_A): TYPE_A is
+	heaviest (other: TYPE_A): TYPE_A
 			-- Heaviest of two numeric types.
 		do
 			Result := Current
 		end
 
-	dispatch_anchors (a_context_class: CLASS_C) is
+	dispatch_anchors (a_context_class: CLASS_C)
 			-- If `Current' is an anchor to a feature, we need to record this anchoring
 			-- in `a_context_class'.
 			-- We do not check that `Current' is valid because this routine simply looks
@@ -311,14 +311,14 @@ feature -- IL code generation
 
 feature -- Properties
 
-	has_renaming: BOOLEAN is
+	has_renaming: BOOLEAN
 			-- Does current type have renamed features?
 			-- This can occur in code like: "G -> A rename a as b end"
 		do
 			Result := false
 		end
 
-	has_associated_class: BOOLEAN is
+	has_associated_class: BOOLEAN
 			-- Does Current have an associated class?
 		do
 			Result := not (is_void or else is_formal or else is_none or else is_type_set)
@@ -327,7 +327,7 @@ feature -- Properties
 								is_formal or else is_none or else is_type_set)
 		end
 
-	has_associated_class_type (a_context_type: TYPE_A): BOOLEAN is
+	has_associated_class_type (a_context_type: TYPE_A): BOOLEAN
 			-- Does Current have an associated class in `a_context_type'?
 		require
 			context_type_valid: is_valid_context_type (a_context_type)
@@ -335,20 +335,47 @@ feature -- Properties
 			Result := has_associated_class
 		end
 
-	generics: ARRAY [TYPE_A] is
+	generics: ARRAY [TYPE_A]
 			-- Actual generic types
 		do
 			-- Void
 		end
 
-	is_type_set: BOOLEAN is
+ 	has_frozen_mark: BOOLEAN
+			-- Is type marked frozen?
+		do
+				-- For the time being, all entities are never frozen.
+			Result := False
+		end
+
+ 	has_variant_mark: BOOLEAN
+			-- Is type marked `variant'.
+		do
+				-- For the time being, actual generic parameter are considered variant.
+			Result := True
+		end
+
+	has_variant_formal (a_context_type: TYPE_A): BOOLEAN
+			-- Does `Current' have some formal generics that are marked variant in `a_context_type'?
+		require
+			a_context_type_not_void: a_context_type /= Void
+			a_context_type_valid: a_context_type.is_valid
+			is_valid: is_valid
+			is_valid_context: has_formal_generic implies
+				(a_context_type.has_associated_class and then is_valid_for_class (a_context_type.associated_class))
+		do
+				-- For the time being, actual generic parameter are considered variant.
+			Result := has_formal_generic
+ 		end
+
+	is_type_set: BOOLEAN
 			-- Is current type a type_set?
 			-- | example: {A, B}
 		do
 			-- False
 		end
 
-	is_valid_generic_derivation: BOOLEAN is
+	is_valid_generic_derivation: BOOLEAN
 			-- Is current still a valid type to be used as a generic derivation?
 			-- Note that Current has to be a generic derivation, unfortunately
 			-- we cannot use the usual precondition `same_as (generic_derivation)'
@@ -361,13 +388,13 @@ feature -- Properties
 			Result := True
 		end
 
-	is_class_valid: BOOLEAN is
+	is_class_valid: BOOLEAN
 			-- Are all types referenced by current type part of the system?
 		do
 			Result := True
 		end
 
-	frozen is_valid: BOOLEAN is
+	frozen is_valid: BOOLEAN
 			-- Is current a valid declaration by itself?
 		do
 			Result := internal_is_valid_for_class (Void)
@@ -376,7 +403,7 @@ feature -- Properties
 			false_implication: not is_class_valid implies not is_valid
 		end
 
-	frozen is_valid_for_class (a_class: CLASS_C): BOOLEAN is
+	frozen is_valid_for_class (a_class: CLASS_C): BOOLEAN
 			-- Is current valid for a declaration in `a_class'?
 		require
 			a_class_not_void: a_class /= Void
@@ -385,7 +412,7 @@ feature -- Properties
 			Result := internal_is_valid_for_class (a_class)
 		end
 
-	frozen is_valid_context_type (a_type: TYPE_A): BOOLEAN is
+	frozen is_valid_context_type (a_type: TYPE_A): BOOLEAN
 			-- Is `a_type' a valid context type for current type?
 			--| It is assumed that `a_type' is the type coming from
 			--| a CLASS_TYPE (see first check below).
@@ -406,102 +433,102 @@ feature -- Properties
 			end
 		end
 
-	is_integer: BOOLEAN is
+	is_integer: BOOLEAN
 			--  Is the current actual type an integer type?
 		do
 			-- Do nothing
 		end
 
-	is_natural: BOOLEAN is
+	is_natural: BOOLEAN
 			-- Is current actual type a natural type?
 		do
 			-- Do nothing
 		end
 
-	is_real_32: BOOLEAN is
+	is_real_32: BOOLEAN
 			-- Is the current actual type a real 32 bits type ?
 		do
 			-- Do nothing
 		end
 
-	is_real_64: BOOLEAN is
+	is_real_64: BOOLEAN
 			-- Is the current actual type a real 64 bits type ?
 		do
 			-- Do nothing
 		end
 
-	is_character: BOOLEAN is
+	is_character: BOOLEAN
 			-- Is the current actual type a character type ?
 		do
 			-- Do nothing
 		end
 
-	is_character_32: BOOLEAN is
+	is_character_32: BOOLEAN
 			-- Is the current actual type a character 32 bits type ?
 		do
 			-- Do nothing
 		end
 
-	is_boolean: BOOLEAN is
+	is_boolean: BOOLEAN
 			-- Is the current actual type a boolean type ?
 		do
 			-- Do nothing
 		end
 
-	is_bit: BOOLEAN is
+	is_bit: BOOLEAN
 			-- Is the current actual type a bits type ?
 		do
 			-- Do nothing
 		end
 
-	is_formal: BOOLEAN is
+	is_formal: BOOLEAN
 			-- Is the current actual type a formal generic ?
 		do
 			-- Do nothing
 		end
 
-	is_expanded: BOOLEAN is
+	is_expanded: BOOLEAN
 			-- Is the current actual type an expanded one ?
 		do
 			-- Do nothing
 		end
 
-	is_enum: BOOLEAN is
+	is_enum: BOOLEAN
 			-- Is the current actual type an external enum one?
 		do
 			-- Do nothing
 		end
 
-	is_renamed_type: BOOLEAN is
+	is_renamed_type: BOOLEAN
 			-- Is current type an instance of `RENAMED_TYPE_A [TYPE_A]'?
 			-- If so there is the possibility that some features of this type are renamed.
 		do
 		end
 
-	is_reference: BOOLEAN is
+	is_reference: BOOLEAN
 			-- Is current actual type a reference one?
 		do
 			Result := not is_expanded
 		end
 
-	is_true_expanded: BOOLEAN is
+	is_true_expanded: BOOLEAN
 			-- Is current actual type an expanded one which is not basic?
 		do
 			Result := is_expanded and not is_basic
 		end
 
-	is_basic: BOOLEAN is
+	is_basic: BOOLEAN
 			-- Is the current actual type a basic type ?
 		do
 			-- Do nothing
 		end
 
-	is_external: BOOLEAN is
+	is_external: BOOLEAN
 			-- Is current type based on an external one?
 		do
 		end
 
-	is_true_external: BOOLEAN is
+	is_true_external: BOOLEAN
 			-- Is Current type based solely on an external one?
 		local
 			l_class: CLASS_C
@@ -512,102 +539,102 @@ feature -- Properties
 			end
 		end
 
-	is_separate: BOOLEAN is
+	is_separate: BOOLEAN
 			-- Is the current actual type a separate one ?
 		do
 			-- Do nothing
 		end
 
-	is_none: BOOLEAN is
+	is_none: BOOLEAN
 			-- Is the current actual type a none type ?
 		do
 			-- Do nothing
 		end
 
-	is_like: BOOLEAN is
+	is_like: BOOLEAN
 			-- Is the current type an anchored one ?
 		do
 			-- Do nothing
 		end
 
-	is_like_argument: BOOLEAN is
+	is_like_argument: BOOLEAN
 			-- Is the current type a like argument?
 		do
 			-- Do nothing
 		end
 
-	is_multi_constrained: BOOLEAN is
+	is_multi_constrained: BOOLEAN
 			-- Is the current actual type a formal generic type representing a multiconstraint?
 		do
 		end
 
-	is_named_tuple: BOOLEAN is
+	is_named_tuple: BOOLEAN
 			-- Is the current type a tuple with labels?
 		do
 			-- Do nothing
 		end
 
-	is_pointer: BOOLEAN is
+	is_pointer: BOOLEAN
 			-- Is the current type a pointer type ?
 		do
 			-- Do nothing
 		end
 
-	is_typed_pointer: BOOLEAN is
+	is_typed_pointer: BOOLEAN
 			-- Is current type a typed pointer type ?
 		do
 			-- Do nothing
 		end
 
-	is_tuple: BOOLEAN is
+	is_tuple: BOOLEAN
 			-- Is it a TUPLE type
 		do
 			-- Do nothing
 		end
 
-	is_named_type: BOOLEAN is
+	is_named_type: BOOLEAN
 			-- Is it a named type?
 		do
 		end
 
-	is_full_named_type: BOOLEAN is
+	is_full_named_type: BOOLEAN
 			-- Is it a full named type?
 		do
 		ensure
 			is_full_named_type_consistent: Result implies is_named_type
 		end
 
-	is_solved: BOOLEAN is
+	is_solved: BOOLEAN
 		do
 			Result := True
 		end
 
-	has_like: BOOLEAN is
+	has_like: BOOLEAN
 			-- Has the type anchored type in its definition ?
 		do
 			-- Do nothing
 		end
 
-	has_like_current: BOOLEAN is
+	has_like_current: BOOLEAN
 			-- Has the type `like Current' in its definition?
 		require
 			is_valid: is_valid
 		do
 		end
 
-	has_like_argument: BOOLEAN is
+	has_like_argument: BOOLEAN
 			-- Has the type like argument in its definition?
 		do
 			-- Do nothing	
 		end
 
-	has_formal_generic: BOOLEAN is
+	has_formal_generic: BOOLEAN
 			-- Has type a formal generic parameter?
 		do
 			-- False for non-generic type.
 		end
 
-	is_loose: BOOLEAN is
+	is_loose: BOOLEAN
 			-- Does type depend on formal generic parameters and/or anchors?
 		do
 			-- Do nothing
@@ -615,24 +642,24 @@ feature -- Properties
 			definition: Result = (has_like or has_formal_generic)
 		end
 
-	is_explicit: BOOLEAN is
+	is_explicit: BOOLEAN
 			-- Is type fixed at compile time without anchors or formals?	
 		do
 			Result := True
 		end
 
-	is_void: BOOLEAN is
+	is_void: BOOLEAN
 			-- Is the type void (procedure type) ?
 		do
 		end
 
-	is_like_current: BOOLEAN is
+	is_like_current: BOOLEAN
 			-- Is the current type a anchored type an Current ?
 		do
 			-- Do nothing
 		end
 
-	is_attached: BOOLEAN is
+	is_attached: BOOLEAN
 			-- Is type attached?
 		do
 				-- False by default
@@ -655,7 +682,7 @@ feature -- Properties
 			end
 		end
 
-	is_standalone: BOOLEAN is
+	is_standalone: BOOLEAN
 			-- Is type standalone, i.e. does not depend on formal generic or acnhored type?
 		do
 			Result := not is_loose
@@ -663,7 +690,7 @@ feature -- Properties
 
 feature -- Comparison
 
-	frozen is_safe_equivalent (other: TYPE_A): BOOLEAN is
+	frozen is_safe_equivalent (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 			--| `deep_equal' cannot be used as for STRINGS, the area
 			--| can have a different size but the STRING is still
@@ -672,12 +699,12 @@ feature -- Comparison
 			is_valid: is_valid
 		do
 			if other /= Void and then other.same_type (Current) then
-				Result := {l_other: like Current} other and then
+				Result := attached {like Current} other as l_other and then
 					l_other.is_valid and then is_equivalent (l_other)
 			end
 		end;
 
-	frozen equivalent (o1, o2: TYPE_A): BOOLEAN is
+	frozen equivalent (o1, o2: TYPE_A): BOOLEAN
 			-- Are `o1' and `o2' equivalent ?
 			-- this feature is similar to `deep_equal'
 			-- but ARRAYs and STRINGs are processed correctly
@@ -692,7 +719,7 @@ feature -- Comparison
 			end
 		end
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		require
 			is_valid: is_valid
@@ -702,7 +729,7 @@ feature -- Comparison
 		deferred
 		end
 
-	same_as (other: TYPE_A): BOOLEAN is
+	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 		require
 			other_attached: other /= Void
@@ -710,7 +737,7 @@ feature -- Comparison
 			-- Do nothing
 		end
 
-	same_generic_derivation_as (current_type, other: TYPE_A): BOOLEAN is
+	same_generic_derivation_as (current_type, other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' in the context of `current_type'?
 		require
 			other_not_void: other /= Void
@@ -725,14 +752,14 @@ feature -- Comparison
 
 feature -- Access
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 			-- Class associated to the current type.
 		deferred
 		ensure
 			definition: (Result /= Void) = has_associated_class
 		end
 
-	associated_class_type (a_context_type: TYPE_A): CLASS_TYPE is
+	associated_class_type (a_context_type: TYPE_A): CLASS_TYPE
 			-- Class associated to the current type.
 			--| See comments on `has_associated_class_type' for details on `a_context_type'.
 		require
@@ -741,7 +768,7 @@ feature -- Access
 		do
 		end
 
-	actual_type: TYPE_A is
+	actual_type: TYPE_A
 			-- Actual type of the interpreted type
 		do
 			Result := Current
@@ -749,7 +776,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	conformance_type: TYPE_A is
+	conformance_type: TYPE_A
 			-- Type which is used to check conformance
 		do
 			Result := actual_type
@@ -757,7 +784,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	deep_actual_type: TYPE_A is
+	deep_actual_type: TYPE_A
 			-- Actual type; recursive on generic types
 			-- NOTE by M.S: Needed for ROUTINEs - perhaps
 			--              this is the intended meaning
@@ -767,19 +794,19 @@ feature -- Access
 			Result := Current
 		end
 
-	context_free_type: TYPE_A is
+	context_free_type: TYPE_A
 			-- Type where all anchors to features are removed.
 		do
 			Result := Current
 		end
 
-	has_generics: BOOLEAN is
+	has_generics: BOOLEAN
 			-- Has the current type generics types ?
 		do
 			Result := generics /= Void
 		end
 
-	intrinsic_type: TYPE_A is
+	intrinsic_type: TYPE_A
 			-- Default type of a manifest constant.
 		do
 			Result := Current
@@ -787,7 +814,7 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	renaming: RENAMING_A is
+	renaming: RENAMING_A
 			-- Renaming of current type.
 		do
 			-- Result := Void
@@ -815,6 +842,25 @@ feature -- Attachment properties
 		ensure
 			result_attached: Result /= Void
 			result_not_attached: not Result.is_attached
+		end
+
+	as_attached_in (c: CLASS_C): like Current
+			-- Attached or implicitly attached variant of current type depending on the void safety status of contextual class `c'.
+		require
+			c_attached: c /= Void
+		do
+			Result := Current
+			if not is_attached then
+				if c.lace_class.is_void_safe_conformance then
+					Result := as_attached_type
+				elseif not is_implicitly_attached then
+					Result := as_implicitly_attached
+				end
+			end
+		ensure
+			result_attached: Result /= Void
+			result_is_attached: c.lace_class.is_void_safe_conformance implies Result.is_attached
+			result_is_implicitly_attached: Result.is_attached or else Result.is_implicitly_attached
 		end
 
 	as_implicitly_detachable: like Current
@@ -856,23 +902,23 @@ feature -- Attachment properties
 
 feature -- Output
 
-	frozen append_to (a_text_formatter: TEXT_FORMATTER) is
+	frozen append_to (a_text_formatter: TEXT_FORMATTER)
 			-- Append `Current' to `text'.
 		do
 			ext_append_to (a_text_formatter, Void)
 		end
 
-	frozen name: STRING is
+	frozen name: STRING
 		do
 			Result := dump
 		end
 
-	dump: STRING is
+	dump: STRING
 			-- Dumped trace
 		deferred
 		end
 
-	ext_append_to (a_text_formatter: TEXT_FORMATTER; c: CLASS_C) is
+	ext_append_to (a_text_formatter: TEXT_FORMATTER; c: CLASS_C)
 			-- Append `Current' to `text'.
 			-- `f' is used to retreive the generic type or argument name as string.
 			-- This replaces the old "G#2" or "arg#1" texts in feature signature views.
@@ -884,7 +930,7 @@ feature -- Output
 
 feature -- Conversion
 
-	to_type_set: TYPE_SET_A is
+	to_type_set: TYPE_SET_A
 			-- Create a type set containing one element which is `Current'.
 		do
 			create Result.make (1)
@@ -895,7 +941,7 @@ feature -- Conversion
 
 feature -- Access
 
-	sk_value (a_context_type: TYPE_A): INTEGER is
+	sk_value (a_context_type: TYPE_A): INTEGER
 			-- SK value associated to the current type.
 		require
 			context_type_valid: is_valid_context_type (a_context_type)
@@ -903,13 +949,13 @@ feature -- Access
 			Result := c_type.sk_value
 		end
 
-	has_expanded: BOOLEAN is
+	has_expanded: BOOLEAN
 			-- Has the current type some expanded types in itself ?
 		do
 			-- Do nothing
 		end
 
-	type_id (a_context_type: TYPE_A): INTEGER is
+	type_id (a_context_type: TYPE_A): INTEGER
 			-- Type ID of the corresponding class type
 			--| See comments on `has_associated_class_type' for details on `a_context_type'.
 		require
@@ -919,7 +965,7 @@ feature -- Access
 			Result := associated_class_type (a_context_type).type_id
 		end
 
-	static_type_id (a_context_type: TYPE_A): INTEGER is
+	static_type_id (a_context_type: TYPE_A): INTEGER
 			-- Static type ID of the corresponding class type.
 			--| See comments on `has_associated_class_type' for details on `a_context_type'.
 		require
@@ -929,7 +975,7 @@ feature -- Access
 			Result := associated_class_type (a_context_type).static_type_id
 		end
 
-	external_id (a_context_type: TYPE_A): INTEGER is
+	external_id (a_context_type: TYPE_A): INTEGER
 			-- External type id of `Current' (or `static_type_id' for pure Eiffel type).
 		require
 			context_type_valid: is_valid_context_type (a_context_type)
@@ -938,7 +984,7 @@ feature -- Access
 			Result := associated_class_type (a_context_type).external_id
 		end
 
-	implementation_id (a_context_type: TYPE_A): INTEGER is
+	implementation_id (a_context_type: TYPE_A): INTEGER
 			-- Return implementation id of `Current'.
 		require
 			il_generation: System.il_generation
@@ -957,7 +1003,7 @@ feature -- Access
 			valid_result: Result > 0
 		end
 
-	description: ATTR_DESC is
+	description: ATTR_DESC
 			-- Descritpion of type for skeletons
 		local
 			l_ref: REFERENCE_DESC
@@ -967,14 +1013,14 @@ feature -- Access
 			Result := l_ref
 		end
 
-	instantiated_description: ATTR_DESC is
+	instantiated_description: ATTR_DESC
 			-- Description of type when SKELETON is instantiated in the context of
 			-- a CLASS_TYPE.
 		do
 			Result := description
 		end
 
-	c_type: TYPE_C is
+	c_type: TYPE_C
 			-- Corresponding C type
 		do
 			Result := reference_c_type
@@ -982,13 +1028,13 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	meta_type: TYPE_A is
+	meta_type: TYPE_A
 			-- Meta type
 		do
 			Result := Current
 		end
 
-	generic_derivation: TYPE_A is
+	generic_derivation: TYPE_A
 			-- Precise generic derivation of current type.
 			-- That is to say given a type, it gives the associated TYPE_A
 			-- which can be used to search its associated CLASS_TYPE.
@@ -998,13 +1044,13 @@ feature -- Access
 			generic_derivation_not_void: Result /= Void
 		end
 
-	is_numeric: BOOLEAN is
+	is_numeric: BOOLEAN
 			-- Is the current actual type a numeric type ?
 		do
 			-- Do nothing
 		end
 
-	check_const_gen_conformance (a_gen_type: GEN_TYPE_A; a_target_type: TYPE_A; a_class: CLASS_C; i: INTEGER) is
+	check_const_gen_conformance (a_gen_type: GEN_TYPE_A; a_target_type: TYPE_A; a_class: CLASS_C; i: INTEGER)
 			-- Is `Current' a valid generic parameter at position `i' of `gen_type'?
 		require
 			a_gen_type_not_void: a_gen_type /= Void
@@ -1032,7 +1078,7 @@ feature -- Access
 				l_target_type := a_target_type
 			end
 
-			if not conform_to (l_target_type) then
+			if not conform_to (a_class, l_target_type) then
 					-- FIXME: Manu 02/04/2004 We should be checking convertibility here,
 					-- but for the moment it is not yet possible because this check is done
 					-- before we do degree 4. What we need to implement is the ability
@@ -1049,34 +1095,40 @@ feature -- Access
 			end
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
-			-- Does Current conform to `other' ?
+	conform_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
+			-- Does Current conform to `other' in `a_context_class'?
 		require
 			is_valid: is_valid
+			a_context_class_not_void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_valid
+			a_context_valid_for_current: is_valid_for_class (a_context_class)
 			other_not_void: other /= Void
 			other_is_valid: other.is_valid
 		deferred
 		end
 
-	frozen conforms_to_array: BOOLEAN is
+	frozen conforms_to_array: BOOLEAN
 			-- Does current conform to ARRAY regardless of the context.
 		do
 			Result := has_associated_class and then associated_class.conform_to (system.array_class.compiled_class)
 		end
 
-	is_conformant_to (other: TYPE_A): BOOLEAN is
-			-- Does Current inherit from other?
+	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
+			-- Does Current inherit from other as seen from `a_context_class'?
 			-- Most of the time, it is equivalent to `conform_to' except
 			-- when current is an expanded type.
 		require
 			is_valid: is_valid
+			a_context_class_not_void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_valid
+			a_context_valid_for_current: is_valid_for_class (a_context_class)
 			other_not_void: other /= Void
 			other_is_valid: other.is_valid
 		do
-			Result := conform_to (other)
+			Result := conform_to (a_context_class, other)
 		end
 
-	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN is
+	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN
 			-- Does current convert to `a_target_type' in `a_context_class'?
 			-- Update `last_conversion_info' of AST_CONTEXT.
 		require
@@ -1092,10 +1144,13 @@ feature -- Access
 			context_set: Result implies context.last_conversion_info /= Void
 		end
 
-	valid_generic (type: TYPE_A): BOOLEAN is
+	valid_generic (a_context_class: CLASS_C; type: TYPE_A): BOOLEAN
 			-- Do the generic parameter of `type' conform to those of
 			-- Current ?
 		require
+			a_context_class_not_void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_valid
+			a_context_valid_for_current: is_valid_for_class (a_context_class)
 			type_not_void: type /= Void
 			type_has_class: type.has_associated_class
 			has_associated_class: has_associated_class
@@ -1103,15 +1158,32 @@ feature -- Access
 		do
 		end
 
-	actual_argument_type (a_arg_types: ARRAY [TYPE_A]): TYPE_A is
+	actual_argument_type (a_arg_types: ARRAY [TYPE_A]): TYPE_A
 			-- Type including like argument process based on `a_arg_types'.
 		require
 			a_arg_types_not_void: a_arg_types /= Void
 		do
 			Result := Current
+		ensure
+			actual_argument_type_attached: Result /= Void
+			actual_argument_type_maintained: has_like_argument xor Result = Current
 		end
 
-	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A is
+	formal_instantiation_in (type: TYPE_A; constraint: TYPE_A; written_id: INTEGER): TYPE_A
+			-- Instantiation of Current written in the class of id `written_id'
+			-- in the context of (possibly formal) `type' with actual (constraint type) `constraint'.
+		require
+			type_attached: type /= Void
+			constraint_attached: constraint /= Void
+			constraint_not_formal: not constraint.is_formal
+			positive_id: written_id > 0
+		do
+			Result := Current
+		ensure
+			result_attached: Result /= Void
+		end
+
+	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A
 			-- Instantiation of Current in the context of `type'
 			-- assuming that Current is written in the class of id `written_id'.
 		require
@@ -1121,7 +1193,7 @@ feature -- Access
 			Result := Current
 		end
 
-	instantiated_in (class_type: TYPE_A): TYPE_A is
+	instantiated_in (class_type: TYPE_A): TYPE_A
 			-- Instantiation of Current in the context of `class_type'
 			-- assuming that Current is written in the associated class
 			-- of `class_type'.
@@ -1133,7 +1205,7 @@ feature -- Access
 			instantiated_in_not_void: Result /= Void
 		end
 
-	adapted_in (class_type: CLASS_TYPE): TYPE_A is
+	adapted_in (class_type: CLASS_TYPE): TYPE_A
 			-- See `TYPE_I.instantiation_in'.
 		require
 			class_type_not_void: class_type /= Void
@@ -1145,7 +1217,7 @@ feature -- Access
 			adapted_in_not_void: Result /= Void
 		end
 
-	skeleton_adapted_in (class_type: CLASS_TYPE): TYPE_A is
+	skeleton_adapted_in (class_type: CLASS_TYPE): TYPE_A
 			-- Adapt current type in the context of `class_type' where all formals are adapted using
 			-- the actual from `class_type' but only if actuals are basic types, for expanded types
 			-- we leave the formal.
@@ -1160,7 +1232,7 @@ feature -- Access
 			Result := Current
 		end
 
-	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): TYPE_A is
+	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): TYPE_A
 			-- Evaluate `Current' written in `a_ancestor' in the context of `a_descendant' class.
 			-- If `a_feature' is not Void, then it is the feature seen from `a_descendant' from where
 			-- `Current' appears (i.e. not in an inheritance clause).
@@ -1185,13 +1257,13 @@ feature -- Access
 			same_object: (a_ancestor = a_descendant) implies Result = Current
 		end
 
-	duplicate: like Current is
+	duplicate: like Current
 			-- Duplication
 		do
 			Result := twin
 		end
 
-	good_generics: BOOLEAN is
+	good_generics: BOOLEAN
 			-- Has the base class exactly the same number of generic
 			-- parameters in its formal generic declarations ?
 		require
@@ -1200,14 +1272,14 @@ feature -- Access
 			Result := True
 		end
 
-	error_generics: VTUG is
+	error_generics: VTUG
 			-- Build the error if `good_generics' returns False
 		require
 			not_good_generics: not good_generics
 		do
 		end
 
-	check_constraints (a_type_context: CLASS_C; a_context_feature: FEATURE_I; a_check_creation_readiness: BOOLEAN) is
+	check_constraints (a_type_context: CLASS_C; a_context_feature: FEATURE_I; a_check_creation_readiness: BOOLEAN)
 			-- Check the constained genericity validity rule and leave
 			-- error info in `constraint_error_list'
 		require
@@ -1216,7 +1288,7 @@ feature -- Access
 		do
 		end
 
-	check_labels (a_context_class: CLASS_C; a_node: TYPE_AS) is
+	check_labels (a_context_class: CLASS_C; a_node: TYPE_AS)
 			-- Check validity of `labels' of current in `a_context_class'.
 		require
 			a_context_class_not_void: a_context_class /= Void
@@ -1225,7 +1297,7 @@ feature -- Access
 		do
 		end
 
-	expanded_deferred: BOOLEAN is
+	expanded_deferred: BOOLEAN
 			-- Is the expanded type deferred ?
 		require
 			has_expanded
@@ -1266,7 +1338,7 @@ feature -- Access
 			end
 		end
 
-	is_ancestor_valid: BOOLEAN is
+	is_ancestor_valid: BOOLEAN
 			-- Is type ancestor valid?
 			-- (This is currently checked only for expanded types that have
 			-- an external ancestor, that is not supported by CIL code generation.)
@@ -1279,7 +1351,7 @@ feature -- Access
 			end
 		end
 
-	create_info: CREATE_INFO is
+	create_info: CREATE_INFO
 			-- Byte code information for entity type creation
 		require
 			is_valid: is_valid
@@ -1288,7 +1360,7 @@ feature -- Access
 			create_info_not_void: Result /= Void
 		end
 
-	check_for_obsolete_class (current_class: CLASS_C; current_feature: FEATURE_I) is
+	check_for_obsolete_class (current_class: CLASS_C; current_feature: FEATURE_I)
 			-- Check for obsolete class from Current. If
 			-- obsolete then display warning message.
 		require
@@ -1312,20 +1384,20 @@ feature -- Access
 			end
 		end
 
-	update_dependance (feat_depend: FEATURE_DEPENDANCE) is
+	update_dependance (feat_depend: FEATURE_DEPENDANCE)
 			-- Update dependency for Dead Code Removal
 		do
 		end
 
 feature {TYPE_A} -- Helpers
 
-	internal_is_valid_for_class (a_class: CLASS_C): BOOLEAN is
+	internal_is_valid_for_class (a_class: CLASS_C): BOOLEAN
 			-- Is Current consistent and valid for `a_class'?
 		do
 			Result := True
 		end
 
-	internal_generic_derivation (a_level: INTEGER): TYPE_A is
+	internal_generic_derivation (a_level: INTEGER): TYPE_A
 			-- Precise generic derivation of current type.
 			-- That is to say given a type, it gives the associated TYPE_A
 			-- which can be used to search its associated CLASS_TYPE.
@@ -1335,13 +1407,13 @@ feature {TYPE_A} -- Helpers
 			internal_generic_derivation_not_void: Result /= Void
 		end
 
-	internal_same_generic_derivation_as (current_type, other: TYPE_A; a_level: INTEGER): BOOLEAN is
+	internal_same_generic_derivation_as (current_type, other: TYPE_A; a_level: INTEGER): BOOLEAN
 			-- Helpers for `same_generic_derivation_as'.
 		require
 			other_not_void: other /= Void
 			other_derived: other.internal_generic_derivation (a_level).same_as (other)
 		do
-			if {l_like_current: like Current} other then
+			if attached {like Current} other as l_like_current then
 				Result := is_equal (l_like_current)
 			end
 		ensure
@@ -1359,7 +1431,7 @@ feature {NONE} -- Implementation
 			a_set_to_check, 	a_constraint_types: TYPE_SET_A;
 			i: INTEGER;
 			in_constraint: BOOLEAN)
-		is
+
 			-- Check that if we have class A [G -> ANY] and we found A [X] where
 			-- X is expanded, then it exists a conversion routine from X to reference X
 			-- and that `reference X' conforms to the constraint ANY.
@@ -1395,7 +1467,7 @@ feature {NONE} -- Implementation
 					Error_handler.insert_error (l_vtcg7)
 				elseif
 					not (l_to_check.convert_to (context_class, l_constraint_type) and
-					l_to_check.is_conformant_to (l_constraint_type))
+					l_to_check.is_conformant_to (context_class, l_constraint_type))
 				then
 					generate_constraint_error (gen_type, l_to_check, a_constraint_types, i, Void)
 						-- The feature listed in the creation constraint has
@@ -1410,7 +1482,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	generate_constraint_error (gen_type: GEN_TYPE_A; current_type: TYPE_A; constraint_type: TYPE_A; position: INTEGER; a_unmatched_creation_constraints: LIST[FEATURE_I]) is
+	generate_constraint_error (gen_type: GEN_TYPE_A; current_type: TYPE_A; constraint_type: TYPE_A; position: INTEGER; a_unmatched_creation_constraints: LIST[FEATURE_I])
 			-- Build the error corresponding to the VTCG error
 		local
 			constraint_info: CONSTRAINT_INFO
@@ -1432,8 +1504,8 @@ invariant
 		-- A tuple however is an eception and can have no generic parameter.
 	generics_not_void_implies_generics_not_empty_or_tuple: (generics /= Void implies (not generics.is_empty or is_tuple))
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1446,22 +1518,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class TYPE_A

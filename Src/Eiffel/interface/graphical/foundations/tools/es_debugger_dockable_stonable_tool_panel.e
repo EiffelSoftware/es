@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An EiffelStudio dockable debugging tool panel, allowing a context stone to be pushed, base implementation for EiffelStudio tools.
 	]"
@@ -20,11 +20,11 @@ inherit
 
 feature {NONE} -- Access
 
-	tool_descriptor: !ES_DEBUGGER_STONABLE_TOOL [like Current]
-			-- Descriptor used to created tool.
+	tool_descriptor: attached ES_DEBUGGER_STONABLE_TOOL [ES_DEBUGGER_DOCKABLE_STONABLE_TOOL_PANEL [EV_WIDGET]]
+			-- <Precursor>
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

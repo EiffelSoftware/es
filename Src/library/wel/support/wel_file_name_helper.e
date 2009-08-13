@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Helper functions of file name.
 																	]"
@@ -12,9 +12,11 @@ class
 
 feature -- Access
 
-	short_path_name (a_file_name: !STRING_GENERAL): STRING_32 is
+	short_path_name (a_file_name: STRING_GENERAL): STRING_32
 			-- Short path name of `a_file_name'
 			-- File/directory must exists before convert to short name
+		require
+			a_file_name_attached: a_file_name /= Void
 		local
 			l_wel_string, l_wel_string_result: WEL_STRING
 			l_api_return_value: INTEGER
@@ -35,11 +37,11 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Max_path_length: INTEGER is 1024
+	Max_path_length: INTEGER = 1024
 			-- Maximum path length (in characters)
 			--| Windows limit
 
-	c_win_get_short_path_name (a_long_path: POINTER; a_short_path: POINTER; a_string_length: INTEGER): INTEGER is
+	c_win_get_short_path_name (a_long_path: POINTER; a_short_path: POINTER; a_string_length: INTEGER): INTEGER
 			-- Result 0 means failed.
 			-- Result value is the length of the string that is copied, not including the terminating null character.
 		external
@@ -54,7 +56,7 @@ feature {NONE} -- Implementation
 			]"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

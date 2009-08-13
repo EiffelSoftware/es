@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "[
 		Basic mathematical operations, single-precision.
@@ -19,7 +19,7 @@ inherit
 
 feature -- Access
 
-	log_2 (v: REAL): REAL is
+	log_2 (v: REAL): REAL
 			-- Base 2 logarithm of `v'
 		require
 			v > 0.0
@@ -27,104 +27,82 @@ feature -- Access
 			Result := log (v) / log (2.0)
 		end
 
-	cosine (v: REAL): REAL is
+	cosine (v: REAL): REAL
 			-- Trigonometric cosine of radian `v' approximated
 			-- in the range [-pi/4, +pi/4]
-		local
-			l_a: MATH
 		do
-			Result := l_a.cos (v).truncated_to_real
+			Result := {MATH}.cos (v).truncated_to_real
 		end
 
-	arc_cosine (v: REAL): REAL is
+	arc_cosine (v: REAL): REAL
 			-- Trigonometric arccosine of `v'
-		local
-			l_a: MATH
 		do
-			Result := l_a.acos (v).truncated_to_real
+			Result := {MATH}.acos (v).truncated_to_real
 		end
 
-	sine (v: REAL): REAL is
+	sine (v: REAL): REAL
 			-- Trigonometric sine of radian `v' approximated
 			-- in range [-pi/4, +pi/4]
-		local
-			l_a: MATH
 		do
-			Result := l_a.sin (v).truncated_to_real
+			Result := {MATH}.sin (v).truncated_to_real
 		end
 
-	arc_sine (v: REAL): REAL is
+	arc_sine (v: REAL): REAL
 			-- Trigonometric arcsine of `v'
-		local
-			l_a: MATH
 		do
-			Result := l_a.asin (v).truncated_to_real
+			Result := {MATH}.asin (v).truncated_to_real
 		end
 
-	tangent (v: REAL): REAL is
+	tangent (v: REAL): REAL
 			-- Trigonometric tangent of radian `v' approximated
 			-- in range [-pi/4, +pi/4]
-		local
-			l_a: MATH
 		do
-			Result := l_a.tan (v).truncated_to_real
+			Result := {MATH}.tan (v).truncated_to_real
 		end
 
-	arc_tangent (v: REAL): REAL is
+	arc_tangent (v: REAL): REAL
 			-- Trigonometric arctangent of `v'
-		local
-			l_a: MATH
 		do
-			Result := l_a.atan (v).truncated_to_real
+			Result := {MATH}.atan (v).truncated_to_real
 		end
 
-	sqrt (v: REAL): REAL is
+	sqrt (v: REAL): REAL
 			-- Square root of `v'
 		require
 			v >= 0.0
-		local
-			l_a: MATH
 		do
-			Result := l_a.sqrt (v).truncated_to_real
+			Result := {MATH}.sqrt (v).truncated_to_real
 		end
 
-	log (v: REAL): REAL is
+	log (v: REAL): REAL
 			-- Natural logarithm of `v'
 		require
 			v > 0.0
-		local
-			l_a: MATH
 		do
-			Result := l_a.log (v).truncated_to_real
+			Result := {MATH}.log (v).truncated_to_real
 		end
 
-	log10 (v: REAL): REAL is
+	log10 (v: REAL): REAL
 			-- Base 10 logarithm of `v'
 		require
 			v > 0.0
-		local
-			l_a: MATH
 		do
-			Result := l_a.log_10 (v).truncated_to_real
+			Result := {MATH}.log_10 (v).truncated_to_real
 		end
 
-	floor (v: REAL): REAL is
+	floor (v: REAL): REAL
 			-- Greatest integral value less than or equal to `v'
-		local
-			l_a: MATH
 		do
-			Result := l_a.floor (v).truncated_to_real
+			Result := {MATH}.floor (v).truncated_to_real
 		end
 
-	ceiling (v: REAL): REAL is
+	ceiling (v: REAL): REAL
 			-- Least integral value greater than or equal to `v'
-		local
-			l_a: MATH
 		do
-			Result := l_a.ceiling (v).truncated_to_real
+			Result := {MATH}.ceiling (v).truncated_to_real
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

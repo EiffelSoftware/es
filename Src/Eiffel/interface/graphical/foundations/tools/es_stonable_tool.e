@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A shim, allowing a context stone to be pushed, for EiffelStudio tools, providing access to information required without having to actually initialize the tool.
 	]"
@@ -22,12 +22,12 @@ inherit
 
 feature {ES_DOCKABLE_STONABLE_TOOL_PANEL} -- Access
 
-	previous_stone: ?STONE
+	previous_stone: detachable STONE
 			-- Previous stone of `stone', if any
 
 feature {NONE} -- Basic operations
 
-	query_set_stone (a_stone: ?STONE): BOOLEAN
+	query_set_stone (a_stone: detachable STONE): BOOLEAN
 			-- <Precursor>
 		do
 			if is_tool_instantiated then
@@ -39,7 +39,7 @@ feature {NONE} -- Basic operations
 
 feature {NONE} -- Action handler
 
-	on_stone_changed (a_old_stone: ?like stone)
+	on_stone_changed (a_old_stone: detachable like stone)
 			-- <Precusor>
 		do
 			previous_stone := a_old_stone
@@ -60,7 +60,7 @@ feature -- Synchronization
 			end
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tab stubs on SD_AUTO_HIDE_PANEL."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,10 +10,6 @@ class
 
 inherit
 	SD_HOR_VER_BOX
-		export
-			{NONE} all
-			{ANY} screen_x, screen_y, width, height, pointer_enter_actions
-		end
 
 	SD_ACCESS
 		undefine
@@ -27,7 +23,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_content: SD_CONTENT; a_direction: INTEGER) is
+	make (a_content: SD_CONTENT; a_direction: INTEGER)
 			-- Creation method. If a_vertical True then vertical style otherwise horizontal style.
 		require
 			a_content_not_void: a_content /= Void
@@ -35,6 +31,10 @@ feature {NONE} -- Initlization
 				or a_direction = {SD_ENUMERATION}.left or a_direction = {SD_ENUMERATION}.right
 		do
 			create internal_shared
+			create internal_drawing_area
+			internal_drawing_area.expose_actions.extend (agent on_expose)
+			create pointer_press_actions
+			create delay_timer
 
 			if a_direction = {SD_ENUMERATION}.left or a_direction = {SD_ENUMERATION}.right then
 				init (True)
@@ -44,8 +44,6 @@ feature {NONE} -- Initlization
 				create internal_box.init (False)
 			end
 			content := a_content
-			create internal_drawing_area
-			internal_drawing_area.expose_actions.extend (agent on_expose)
 
 			extend (internal_box)
 			internal_box.extend (internal_drawing_area)
@@ -62,16 +60,13 @@ feature {NONE} -- Initlization
 			set_text (a_content.short_title)
 
 			on_expose (0, 0, internal_drawing_area.width, internal_drawing_area.height)
-
-			create pointer_press_actions
-			create delay_timer
 		ensure
 			set: content = a_content
 			drawing_area_added: internal_box.has (internal_drawing_area)
 			set: internal_docking_manager = a_content.docking_manager
 		end
 
-	init_separator (a_direction: INTEGER) is
+	init_separator (a_direction: INTEGER)
 			-- Initialization base on `a_direction'
 		require
 			a_direction_valid: a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.bottom
@@ -98,7 +93,7 @@ feature {NONE} -- Initlization
 			end
 		end
 
-	on_theme_changed is
+	on_theme_changed
 			-- Handle theme changed actions
 		local
 			l_colors: SD_SYSTEM_COLOR
@@ -109,13 +104,13 @@ feature {NONE} -- Initlization
 
 feature -- Query
 
-	text: STRING_32 is
+	text: STRING_32
 			-- Title.
 		do
 			Result := internal_text
 		end
 
-	text_width: INTEGER is
+	text_width: INTEGER
 			-- Width of title. Used for calculate max size in tab group.
 		do
 			Result := internal_drawing_area.font.string_width (internal_text)
@@ -130,7 +125,7 @@ feature -- Query
 	pointer_press_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Pointer press actions.
 
-	is_group_auto_hide_zone_showing: BOOLEAN is
+	is_group_auto_hide_zone_showing: BOOLEAN
 			-- If auto hide zone belong to our group showing?
 		local
 			l_group: ARRAYED_LIST [SD_TAB_STUB]
@@ -141,8 +136,14 @@ feature -- Query
 			until
 				l_group.after or Result
 			loop
-				if l_group.item /= Current and then l_group.item.content.state.zone /= Void and then not l_group.item.content.state.zone.is_destroyed then
-					Result := True
+				if l_group.item /= Current and then l_group.item.content.state.zone /= Void then
+					if attached {EV_WIDGET} l_group.item.content.state.zone as lt_widget then
+						if not lt_widget.is_destroyed then
+							Result := True
+						end
+					else
+						check not_possible: False end
+					end
 				end
 				l_group.forth
 			end
@@ -150,7 +151,7 @@ feature -- Query
 
 feature -- Command
 
-	set_text (a_text: STRING_GENERAL) is
+	set_text (a_text: STRING_GENERAL)
 			-- Set `title'.
 		do
 			internal_text := a_text
@@ -161,7 +162,7 @@ feature -- Command
 			set: a_text /= Void implies internal_text.is_equal (a_text.as_string_32)
 		end
 
-	set_text_size (a_size: INTEGER) is
+	set_text_size (a_size: INTEGER)
 			-- Set text width with `a_size'.
 		require
 			a_size_valid: a_size > 0
@@ -171,7 +172,7 @@ feature -- Command
 			set: text_size = a_size
 		end
 
-	set_auto_hide_panel (a_panel: SD_AUTO_HIDE_PANEL) is
+	set_auto_hide_panel (a_panel: SD_AUTO_HIDE_PANEL)
 			--
 		require
 			a_panel_not_void: a_panel /= Void
@@ -183,7 +184,7 @@ feature -- Command
 
 feature -- Properties
 
-	set_draw_separator_top (a_draw: BOOLEAN) is
+	set_draw_separator_top (a_draw: BOOLEAN)
 			-- Set `is_draw_separator_top'.
 		do
 			is_draw_separator_top := a_draw
@@ -191,7 +192,7 @@ feature -- Properties
 			set: is_draw_separator_top = a_draw
 		end
 
-	set_draw_separator_bottom (a_draw: BOOLEAN) is
+	set_draw_separator_bottom (a_draw: BOOLEAN)
 			-- Set `is_draw_separator_bottom'.
 		do
 			is_draw_separator_bottom := a_draw
@@ -199,7 +200,7 @@ feature -- Properties
 			set: is_draw_separator_bottom = a_draw
 		end
 
-	set_draw_separator_left (a_draw: BOOLEAN) is
+	set_draw_separator_left (a_draw: BOOLEAN)
 			-- Set `is_draw_separator_left'.
 		do
 			is_draw_separator_left := a_draw
@@ -207,7 +208,7 @@ feature -- Properties
 			set: is_draw_separator_left = a_draw
 		end
 
-	set_draw_separator_right (a_draw: BOOLEAN) is
+	set_draw_separator_right (a_draw: BOOLEAN)
 			-- Set `is_draw_separator_right'.
 		do
 			is_draw_separator_right := a_draw
@@ -218,7 +219,7 @@ feature -- Properties
 	is_draw_separator_top, is_draw_separator_bottom, is_draw_separator_left, is_draw_separator_right: BOOLEAN
 			-- Draw separator at top/botoom/left/right?
 
-	set_show_text (a_show: BOOLEAN) is
+	set_show_text (a_show: BOOLEAN)
 			-- If `a_show' True, show title. Vice visa.
 		do
 			if not internal_shared.show_all_tab_stub_text then
@@ -235,7 +236,7 @@ feature -- Properties
 
 feature {SD_DOCKING_MANAGER_AGENTS} -- Agents
 
-	on_pointer_enter is
+	on_pointer_enter
 			-- Handle pointer enter.
 		local
 			l_tab_group: like tab_group
@@ -264,13 +265,13 @@ feature {SD_DOCKING_MANAGER_AGENTS} -- Agents
 			end
 		end
 
-	on_pointer_press (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
+	on_pointer_press (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
 			-- Handle pointer press actions
 		do
 			pointer_press_actions.call (Void)
 		end
 
-	on_delay_timer is
+	on_delay_timer
 			-- Handle `delay_timer' actions.
 		local
 			l_screen: EV_SCREEN
@@ -289,13 +290,13 @@ feature {SD_DOCKING_MANAGER_AGENTS} -- Agents
 
 feature {SD_AUTO_HIDE_STATE} -- Expose handling
 
-	on_expose (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
+	on_expose (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER)
 			-- Handle redraw.
 		local
 			l_imp: EV_DRAWING_AREA_IMP
 		do
 			internal_drawing_area.set_background_color (internal_shared.default_background_color)
-			internal_drawing_area.clear
+			internal_shared.setter.clear_background_for_theme (internal_drawing_area, create {EV_RECTANGLE}.make (0, 0, internal_drawing_area.width, internal_drawing_area.height))
 
 			internal_drawing_area.draw_pixmap (start_x_pixmap_internal, start_y_pixmap_internal, content.pixmap)
 			if is_show_text then
@@ -327,7 +328,7 @@ feature {SD_AUTO_HIDE_STATE} -- Expose handling
 
 feature {NONE} -- Implementation
 
-	update_size_internal is
+	update_size_internal
 			-- Update minmum size base on direction and `is_show_text'.
 		local
 			l_size: INTEGER
@@ -347,7 +348,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	start_x_pixmap_internal: INTEGER is
+	start_x_pixmap_internal: INTEGER
 			-- Start x position when `on_draw' draw pixmap.
 		do
 			if is_draw_separator_left then
@@ -360,7 +361,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	start_y_pixmap_internal: INTEGER is
+	start_y_pixmap_internal: INTEGER
 			-- Start y position when `on_draw' draw pixmap.
 		do
 			if is_draw_separator_top then
@@ -373,7 +374,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	start_x_text_internal: INTEGER is
+	start_x_text_internal: INTEGER
 			-- Start x position when `on_draw' draw text.
 		local
 			l_platform: PLATFORM
@@ -390,7 +391,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	start_y_text_internal: INTEGER is
+	start_y_text_internal: INTEGER
 			-- Start y position when `on_draw' draw text.
 		local
 			l_platform: PLATFORM
@@ -409,7 +410,7 @@ feature {NONE} -- Implementation
 	internal_box: SD_HOR_VER_BOX
 			-- Box contain `internal_drawing_area' and `internal_label'.
 
-	tab_group: ARRAYED_LIST [SD_TAB_STUB] is
+	tab_group: ARRAYED_LIST [SD_TAB_STUB]
 			-- Tab group `Current' belong to.
 		do
 			Result := auto_hide_panel.tab_group (Current)
@@ -439,7 +440,7 @@ invariant
 	internal_drawing_area_not_void: internal_drawing_area /= Void
 	pointer_press_actions_not_void: pointer_press_actions /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

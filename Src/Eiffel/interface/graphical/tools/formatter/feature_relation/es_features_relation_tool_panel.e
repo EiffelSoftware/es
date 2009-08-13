@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Tools with information about a feature."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,7 +14,6 @@ inherit
 		rename
 			last_stone as stone
 		redefine
-			attach_to_docking_manager,
 			stone,
 			retrieve_formatters,
 			force_last_stone,
@@ -29,16 +28,6 @@ inherit
 create
 	make
 
-feature -- Docking issue
-
-	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
-			-- Attach to docking manager
-		do
-			build_docking_content (a_docking_manager)
-			check not_already_has: not a_docking_manager.has_content (content) end
-			a_docking_manager.contents.extend (content)
-		end
-
 feature -- Access
 
 	flat_formatter: EB_ROUTINE_FLAT_FORMATTER
@@ -48,13 +37,13 @@ feature -- Access
 	stone: STONE
 			-- Currently managed stone.
 
-	predefined_formatters: like formatters is
+	predefined_formatters: like formatters
 			-- Predefined formatters
 		do
 			Result := develop_window.managed_feature_formatters
 		end
 
-	no_target_message: STRING_GENERAL is
+	no_target_message: STRING_GENERAL
 			-- Message to be displayed in `output_line' when no stone is set
 		do
 			Result := Interface_names.l_No_feature
@@ -73,7 +62,7 @@ feature {ES_FEATURE_RELATION_TOOL} -- Access
 			l_formatters := predefined_formatters
 			l_cursor := l_formatters.cursor
 			from l_formatters.start until l_formatters.after or l_stop loop
-				if {l_formatter: !EB_FEATURE_INFO_FORMATTER} l_formatters.item and then l_formatter.selected then
+				if attached {EB_FEATURE_INFO_FORMATTER} l_formatters.item as l_formatter and then l_formatter.selected then
 					Result := l_formatter.mode
 					l_stop := True
 				else
@@ -100,7 +89,7 @@ feature {ES_FEATURE_RELATION_TOOL} -- Element change
 				l_formatters := predefined_formatters
 				l_cursor := l_formatters.cursor
 				from l_formatters.start until l_formatters.after or l_stop loop
-					if {l_formatter: !EB_FEATURE_INFO_FORMATTER} l_formatters.item and then l_formatter.mode = a_mode then
+					if attached {EB_FEATURE_INFO_FORMATTER} l_formatters.item as l_formatter and then l_formatter.mode = a_mode then
 							-- Execute formatter
 						l_formatter.execute
 						l_stop := True
@@ -133,7 +122,7 @@ feature {ES_FEATURE_RELATION_TOOL} -- Element change
 
 feature -- Status setting
 
-	set_stone (new_stone: STONE) is
+	set_stone (new_stone: STONE)
 			-- Send a stone to feature formatters.
 		local
 			l_last_stone, fst: FEATURE_STONE
@@ -179,7 +168,7 @@ feature -- Status setting
 			end
 		end
 
-	decide_tool_to_display (a_st: STONE): EB_STONABLE_TOOL is
+	decide_tool_to_display (a_st: STONE): EB_STONABLE_TOOL
 			-- Decide which tool to display.
 		local
 			fs: FEATURE_STONE
@@ -192,7 +181,7 @@ feature -- Status setting
 			end
 		end
 
-	drop_stone (st: like stone) is
+	drop_stone (st: like stone)
 			-- Test if there is a feature with the same name (or routine id?)
 			-- in the dropped class.
 		local
@@ -258,7 +247,7 @@ feature -- Status setting
 			end
 		end
 
-	pop_default_formatter is
+	pop_default_formatter
 			-- Force the display of `Current' and select the default formatter.
 		local
 			l_index: INTEGER
@@ -269,7 +258,7 @@ feature -- Status setting
 			if
 				l_index >= 1 and
 				l_index <= formatters.count and then
-				{l_formatter: !EB_FEATURE_INFO_FORMATTER} formatters.i_th (l_index)
+				attached {EB_FEATURE_INFO_FORMATTER} formatters.i_th (l_index) as l_formatter
 			then
 				l_mode := l_formatter.mode
 			end
@@ -298,7 +287,7 @@ feature {NONE} -- Event handlers
 
 feature {NONE} -- Implementation
 
-	enable_dotnet_formatters (a_flag: BOOLEAN) is
+	enable_dotnet_formatters (a_flag: BOOLEAN)
 			-- Set sensitivity of formatters to 'a_flag'.
 		local
 			l_done: BOOLEAN
@@ -341,7 +330,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	force_last_stone is
+	force_last_stone
 			-- Force that `last_stone' is displayed in formatters in Current view
 			-- And show debugged line if any.
 		do
@@ -353,7 +342,7 @@ feature {NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	retrieve_formatters is
+	retrieve_formatters
 			-- Retrieve all formatters related with Current tool and store them in `formatters'
 		do
 			Precursor
@@ -371,8 +360,8 @@ feature{NONE} -- Implementation
 			)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -385,22 +374,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_FEATURES_VIEW

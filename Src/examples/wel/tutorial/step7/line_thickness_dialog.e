@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: WEL_COMPOSITE_WINDOW) is
+	make (a_parent: WEL_COMPOSITE_WINDOW)
 			-- Make the dialog box and create `edit'.
 		do
 			make_by_id (a_parent, Dlg_line_thickness)
@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	edit: WEL_SINGLE_LINE_EDIT
+	edit: detachable WEL_SINGLE_LINE_EDIT
 			-- Edit control to enter pen width
 
 	pen_width: INTEGER
@@ -39,27 +39,29 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	setup_dialog is
+	setup_dialog
 			-- Set the width previously entered.
 		local
 			s: STRING
 		do
-			create s.make (0)
-			s.append_integer (pen_width)
-			edit.set_text (s)
+			if attached edit as l_edit then
+				create s.make_empty
+				s.append_integer (pen_width)
+				l_edit.set_text (s)
+			end
 		end
 
-	on_ok is
+	on_ok
 			-- Ensure `edit' value is an integer, save it in
 			-- `pen_width' and close the dialog box.
 		do
-			if edit.text.is_integer then
-				pen_width := edit.text.to_integer
+			if attached edit as l_edit and then l_edit.text.is_integer then
+				pen_width := l_edit.text.to_integer
 				terminate (Idok)
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

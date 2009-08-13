@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Information tree. Class tree + tag tree + affected tree"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -41,7 +41,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_eis_tree (a_context_menu_factory: EB_CONTEXT_MENU_FACTORY; a_widget: !ES_EIS_TOOL_WIDGET) is
+	make_eis_tree (a_context_menu_factory: EB_CONTEXT_MENU_FACTORY; a_widget: attached ES_EIS_TOOL_WIDGET)
 			-- Initialization
 		require
 			a_context_menu_factory_not_void: a_context_menu_factory /= Void
@@ -50,8 +50,8 @@ feature {NONE} -- Initialization
 			managed_tags.compare_objects
 
 			make_without_targets (a_context_menu_factory)
-			add_double_click_action_to_classes (agent on_class_double_click)
-			add_double_click_action_to_cluster (agent on_cluster_double_click)
+			add_single_click_action_to_classes (agent on_button_press_action)
+			add_single_click_action_to_cluster (agent on_button_press_action)
 			key_release_actions.extend (agent on_key_released)
 			eis_tool_widget := a_widget
 
@@ -59,7 +59,7 @@ feature {NONE} -- Initialization
 			storage.add_observer (Current)
 		end
 
-	build_tree is
+	build_tree
 			-- Remove and replace contents of `Current'.
 		local
 			l_sys: CONF_SYSTEM
@@ -101,7 +101,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	add_target (a_list: EV_DYNAMIC_LIST [EV_CONTAINABLE]; a_target: CONF_TARGET) is
+	add_target (a_list: EV_DYNAMIC_LIST [EV_CONTAINABLE]; a_target: CONF_TARGET)
 			-- Add targets to the tree, recursively.
 		require
 			a_list_not_void: a_list /= Void
@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 		do
 			create l_target_node.make (a_target)
 			l_target_node.set_data (a_target)
-			l_target_node.pointer_double_press_actions.extend (agent on_target_double_click)
+			l_target_node.pointer_button_press_actions.extend (agent on_button_press_action)
 			a_list.extend (l_target_node)
 			if a_target = universe.target then
 				build_tree_on_list (l_target_node)
@@ -119,16 +119,16 @@ feature {NONE} -- Initialization
 			a_target.child_targets.do_all (agent add_target (l_target_node, ?))
 		end
 
-	build_tags is
+	build_tags
 			-- Build the Items without tag item.
 		local
 			l_item: ES_EIS_TREE_TAG_ITEM
 			l_managed_tags: like managed_tags
-			l_tags: HASH_TABLE [!SEARCH_TABLE [!EIS_ENTRY], !STRING_32]
+			l_tags: HASH_TABLE [SEARCH_TABLE [EIS_ENTRY], STRING_32]
 		do
 			create l_item.make (interface_names.l_items_without_tag)
 			l_item.set_pixmap (pixmaps.icon_pixmaps.information_no_tag_icon)
-			l_item.pointer_double_press_actions.extend (agent on_tag_double_clicked)
+			l_item.pointer_button_press_actions.extend (agent on_button_press_action)
 			tag_header.extend (l_item)
 
 			create managed_tags.make
@@ -152,7 +152,7 @@ feature {NONE} -- Initialization
 					l_managed_tags.after
 				loop
 					create l_item.make (l_managed_tags.item_for_iteration)
-					l_item.pointer_double_press_actions.extend (agent on_tag_double_clicked)
+					l_item.pointer_button_press_actions.extend (agent on_button_press_action)
 					tag_header.extend (l_item)
 					l_managed_tags.forth
 				end
@@ -162,7 +162,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	build_affected_items is
+	build_affected_items
 			-- Build affected items
 		local
 			l_item: ES_EIS_TREE_TAG_ITEM
@@ -174,7 +174,7 @@ feature {NONE} -- Initialization
 
 feature -- Operation
 
-	rebuild_list_if_possible is
+	rebuild_list_if_possible
 			-- Synchronize
 		do
 			if old_view /= Void then
@@ -182,9 +182,15 @@ feature -- Operation
 			end
 		end
 
+	item_selected
+			-- Show content of selected item
+		do
+			on_component_click (selected_item)
+		end
+
 feature -- Access
 
-	current_view: ?ES_EIS_COMPONENT_VIEW [ANY] is
+	current_view: detachable ES_EIS_COMPONENT_VIEW [ANY]
 			-- Current view of list
 		do
 			Result := old_view
@@ -192,72 +198,32 @@ feature -- Access
 
 feature {NONE} -- Actions
 
-	on_class_double_click (	x_rel: INTEGER;
+	on_button_press_action (x_rel: INTEGER;
 							y_rel: INTEGER;
 							button: INTEGER;
 							x_tilt: DOUBLE;
 							y_tilt: DOUBLE;
 							pression: DOUBLE;
 							x_abs: INTEGER;
-							y_abs: INTEGER) is
-			-- Display entries corresponding to the class double clicked.
+							y_abs: INTEGER)
 		do
-			on_component_click
+			on_component_click (last_pressed_item)
 		end
 
-	on_cluster_double_click (x_rel: INTEGER;
-							y_rel: INTEGER;
-							button: INTEGER;
-							x_tilt: DOUBLE;
-							y_tilt: DOUBLE;
-							pression: DOUBLE;
-							x_abs: INTEGER;
-							y_abs: INTEGER) is
-			-- Display entries corresponding to the cluster double clicked.
-		do
-			on_component_click
-		end
-
-	on_target_double_click (x_rel: INTEGER;
-							y_rel: INTEGER;
-							button: INTEGER;
-							x_tilt: DOUBLE;
-							y_tilt: DOUBLE;
-							pression: DOUBLE;
-							x_abs: INTEGER;
-							y_abs: INTEGER) is
-			-- Display entries corresponding to the target double clicked.
-		do
-			on_component_click
-		end
-
-	on_tag_double_clicked (x_rel: INTEGER;
-							y_rel: INTEGER;
-							button: INTEGER;
-							x_tilt: DOUBLE;
-							y_tilt: DOUBLE;
-							pression: DOUBLE;
-							x_abs: INTEGER;
-							y_abs: INTEGER) is
-			-- Display entries corresponding to the double double clicked
-		do
-			on_component_click
-		end
-
-	on_key_released (a_key: EV_KEY) is
+	on_key_released (a_key: EV_KEY)
 			-- On key released
 		do
 			if a_key.code = {EV_KEY_CONSTANTS}.key_enter then
-				on_component_click
+				on_component_click (selected_item)
 			end
 		end
 
-	on_component_click is
+	on_component_click (a_item: detachable EV_TREE_NODE)
 			-- On target/cluster/class item clicked
 		local
 			l_view: ES_EIS_COMPONENT_VIEW [ANY]
 		do
-			l_view := view_from_selected_item
+			l_view := view_from_item (a_item)
 			if l_view /= Void then
 					-- If old view is void
 				if old_view = Void or else not l_view.same_view (old_view) then
@@ -277,32 +243,32 @@ feature {NONE} -- Actions
 
 feature {NONE} -- Component view factory
 
-	view_from_selected_item: ?ES_EIS_COMPONENT_VIEW [ANY] is
+	view_from_item (a_item: detachable EV_TREE_NODE): detachable ES_EIS_COMPONENT_VIEW [ANY]
 			-- Get view from
 		local
-			l_item: EV_TREE_NODE
-			l_sorted_cluster: ?EB_SORTED_CLUSTER
+			l_item: detachable EV_TREE_NODE
+			l_sorted_cluster: detachable EB_SORTED_CLUSTER
 		do
-			l_item := selected_item
+			l_item := a_item
 			if l_item /= Void then
-				if {lt_grid: ES_EIS_ENTRY_GRID}eis_tool_widget.entry_list and then lt_grid.is_usable then
-					if {lt_item: ES_EIS_TREE_TAG_ITEM}selected_item and then {lt_string: STRING_32}lt_item.text.as_string_32 then
+				if attached {ES_EIS_ENTRY_GRID} eis_tool_widget.entry_list as lt_grid and then lt_grid.is_usable then
+					if attached {ES_EIS_TREE_TAG_ITEM} l_item as lt_item and then attached lt_item.text.as_string_32 as lt_string then
 						if tag_header.first = lt_item then
 								-- Empty string indicates to view entries without tag.
 							create {ES_EIS_TAG_VIEW}Result.make (create {STRING_32}.make_empty, lt_grid)
 						else
 							create {ES_EIS_TAG_VIEW}Result.make (lt_string, lt_grid)
 						end
-					elseif {lt_class: CLASS_I}l_item.data then
+					elseif attached {CLASS_I} l_item.data as lt_class then
 						create {ES_EIS_CLASS_VIEW}Result.make (lt_class, lt_grid)
-					elseif {lt_target: CONF_TARGET}l_item.data then
+					elseif attached {CONF_TARGET} l_item.data as lt_target then
 						create {ES_EIS_CONF_VIEW}Result.make (lt_target, lt_grid)
 					else
 						l_sorted_cluster ?= l_item.data
 						if l_sorted_cluster /= Void then
-							if {lt_cluster: CONF_CLUSTER}l_sorted_cluster.actual_group then
+							if attached {CONF_CLUSTER} l_sorted_cluster.actual_group as lt_cluster then
 								create {ES_EIS_CONF_VIEW}Result.make (lt_cluster, lt_grid)
-							elseif {lt_library: CONF_LIBRARY}l_sorted_cluster.actual_group and then {lt_target1: CONF_TARGET}lt_library.library_target then
+							elseif attached {CONF_LIBRARY} l_sorted_cluster.actual_group as lt_library and then attached {CONF_TARGET} lt_library.library_target as lt_target1 then
 								create {ES_EIS_CONF_VIEW}Result.make (lt_target1, lt_grid)
 							end
 						end
@@ -313,7 +279,7 @@ feature {NONE} -- Component view factory
 
 feature {NONE} -- EIS observer
 
-	on_tag_added (a_tag: !STRING_32) is
+	on_tag_added (a_tag: attached STRING_32)
 			-- <precursor>
 		local
 			l_node: ES_EIS_TREE_TAG_ITEM
@@ -322,7 +288,7 @@ feature {NONE} -- EIS observer
 				managed_tags.extend (a_tag)
 
 				create l_node.make (a_tag)
-				l_node.pointer_double_press_actions.extend (agent on_tag_double_clicked)
+				l_node.pointer_button_press_actions.extend (agent on_button_press_action)
 					-- Here we plus one to shift the mapping between `managed_tags'
 					-- and items under `tag_header'.
 					-- This is because the first item is ocuppied by "Item without tag".
@@ -331,7 +297,7 @@ feature {NONE} -- EIS observer
 			end
 		end
 
-	on_tag_removed (a_tag: !STRING_32) is
+	on_tag_removed (a_tag: attached STRING_32)
 			-- <precursor>
 		do
 			managed_tags.start
@@ -348,7 +314,7 @@ feature {NONE} -- EIS observer
 
 feature {NONE} -- Implemenation
 
-	internal_recycle is
+	internal_recycle
 			-- <precursor>
 		do
 			Precursor {EB_CLASSES_TREE}
@@ -363,17 +329,17 @@ feature {NONE} -- Access
 
 	affected_header: EB_CLASSES_TREE_HEADER_ITEM;
 
-	eis_tool_widget: !ES_EIS_TOOL_WIDGET;
+	eis_tool_widget: attached ES_EIS_TOOL_WIDGET;
 			-- The tool widget
 
-	managed_tags: !SORTED_TWO_WAY_LIST [!STRING_32];
+	managed_tags: attached SORTED_TWO_WAY_LIST [STRING_32];
 			-- Sorted tags. Do not change directly out of EIS observer.
 
 invariant
 	only_first_item_is_off_mapping: (tag_header /= Void and not is_recycled) implies managed_tags.count = tag_header.count - 1
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -397,11 +363,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

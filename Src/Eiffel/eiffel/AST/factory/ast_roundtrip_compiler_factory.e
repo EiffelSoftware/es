@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Roundtrip compiler factory
 					It will generate `match_list' during parsing.
@@ -42,6 +42,7 @@ inherit
 			backup_match_list_count,
 			resume_match_list_count,
 			new_keyword_as,
+			new_keyword_id_as,
 			new_symbol_as,
 			new_current_as,
 			new_deferred_as,
@@ -74,7 +75,8 @@ inherit
 			new_filled_bit_id_as,
 			new_string_as,
 			new_verbatim_string_as,
-			append_string_to_buffer,
+			append_character_to_buffer,
+			append_two_characters_to_buffer,
 			new_bin_and_then_as,
 			new_bin_or_else_as,
 			new_tagged_as,
@@ -88,7 +90,7 @@ inherit
 
 feature -- Roundtrip
 
-	new_integer_as (t: TYPE_AS; s: BOOLEAN; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_as (t: TYPE_AS; s: BOOLEAN; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -101,7 +103,7 @@ feature -- Roundtrip
 			end
 		end
 
-	new_integer_hexa_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_hexa_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -114,7 +116,7 @@ feature -- Roundtrip
 			end
 		end
 
-	new_integer_octal_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_octal_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -127,7 +129,7 @@ feature -- Roundtrip
 			end
 		end
 
-	new_integer_binary_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT is
+	new_integer_binary_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_CONSTANT
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -140,7 +142,7 @@ feature -- Roundtrip
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

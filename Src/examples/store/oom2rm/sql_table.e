@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"An abstract representation of a SQL table with %
@@ -11,20 +11,20 @@ indexing
 class SQL_TABLE inherit
 
 	LINKED_LIST [SQL_COLUMN]
-		rename 
+		rename
 			make as linked_list_make
 		end;
 
 create
 
-	make, make_prefix
+	make, make_prefix, linked_list_make
 
 feature
 
-	name: STRING;
+	name: detachable STRING;
 			-- Table name.
 
-	make (a_name: STRING) is
+	make (a_name: STRING)
 			-- Make a table named `a_name'.
 		require
 			a_name_not_void: a_name /= Void
@@ -35,7 +35,7 @@ feature
 			name = a_name
 		end;
 
-	make_prefix (a_name: STRING; a_prefix: STRING) is
+	make_prefix (a_name: STRING; a_prefix: STRING)
 			-- Make a table named `a_name' with `a_prefix'.
 		require
 			a_name_not_void: a_name /= Void;
@@ -46,14 +46,18 @@ feature
 			a_name.insert_string (a_prefix, 1)
 		end;
 
-	print_result (output: FILE) is
+	print_result (output: FILE)
 			-- Print result on `output'.
 		require
 			output_not_void: output /= Void
+		local
+			l_name: detachable STRING
 		do
 			from
 	 			output.putstring ("create table ");
-				output.putstring (name);
+	 			l_name := name
+	 			check l_name /= Void end -- FIXME: implied by `table' make's postcondition, but if creation method is `linked_list_make' ?
+				output.putstring (l_name);
 				output.putstring (" (");
 				start
 			until
@@ -74,7 +78,7 @@ invariant
 
 	name_not_void: name /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

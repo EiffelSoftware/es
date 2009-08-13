@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Translation between physical address of objects and their
 			hector address in the user application. At a given time
@@ -18,10 +18,13 @@ inherit
 	DEBUG_EXT;
 
 	HEXADECIMAL_STRING_CONVERTER
+		export
+			{NONE} all
+		end
 
 feature -- Access
 
-	keep_object_as_hector_address (addr: DBG_ADDRESS): DBG_ADDRESS is
+	keep_object_as_hector_address (addr: DBG_ADDRESS): DBG_ADDRESS
 		require
 			addr_not_void: addr /= Void and then not addr.is_void
 		do
@@ -30,12 +33,12 @@ feature -- Access
 			Result_attached: Result /= Void
 		end
 
-	update_kept_objects_addresses is
+	update_kept_objects_addresses
 		do
 			update_addresses
 		end
 
-	hector_addr (addr: DBG_ADDRESS): DBG_ADDRESS is
+	hector_addr (addr: DBG_ADDRESS): DBG_ADDRESS
 			-- Hector address (EIF_OBJ) of object at `addr';
 			-- Ask user application to adopt that object if not already done
 		require
@@ -60,7 +63,7 @@ feature -- Access
 			Result_in_addr_table: Result = addr_table.item (addr)
 		end
 
-	is_object_kept (h_addr: DBG_ADDRESS): BOOLEAN is
+	is_object_kept (h_addr: DBG_ADDRESS): BOOLEAN
 			-- Is `h_addr' a known hector address?
 		require
 			h_addr_not_void: h_addr /= Void
@@ -70,12 +73,12 @@ feature -- Access
 
 feature -- Updating
 
-	release_all_objects is
+	release_all_objects
 		do
 			addr_table.wipe_out
 		end
 
-	keep_only_objects (kept_addrs: LIST [DBG_ADDRESS]) is
+	keep_only_objects (kept_addrs: LIST [DBG_ADDRESS])
 			-- Keep references to `kept_addrs' and ask user application
 			-- to wean the other adopted objects not used anymore.
 		require
@@ -103,7 +106,7 @@ feature -- Updating
 			end
 		end
 
-	update_addresses is
+	update_addresses
 			-- Update physical addresses of adopted objects after
 			-- an execution step.
 		local
@@ -125,7 +128,7 @@ feature -- Updating
 
 feature {NONE} -- Implementation
 
-	physical_addr (h_addr: DBG_ADDRESS): DBG_ADDRESS is
+	physical_addr (h_addr: DBG_ADDRESS): DBG_ADDRESS
 			-- Address of object `h_addr' (hector addr) previously
 			-- adopted by user application
 		require
@@ -145,7 +148,7 @@ feature {NONE} -- Implementation
 			Result_attached: Result /= Void
 		end
 
-	forget_obj (h_addr: DBG_ADDRESS) is
+	forget_obj (h_addr: DBG_ADDRESS)
 			-- Ask user application to wean adopted object `h_addr'.
 		require
 			h_addr_not_void: h_addr /= Void
@@ -159,7 +162,7 @@ feature {NONE} -- Implementation
 			end
 		end;
 
-	addr_table: HASH_TABLE [DBG_ADDRESS, DBG_ADDRESS] is
+	addr_table: HASH_TABLE [DBG_ADDRESS, DBG_ADDRESS]
 			-- Table of addresses of objects adopted by the user application;
 			-- the key is the physical addr of the object, the item is
 			-- its hector addr (with indirection)
@@ -168,8 +171,8 @@ feature {NONE} -- Implementation
 			Result.compare_objects
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -182,22 +185,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class OBJECT_ADDR	

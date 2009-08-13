@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Manages EiffelStudio tool and tool bar layouts
 	]"
@@ -36,7 +36,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_window: !like development_window)
+	make (a_window: attached like development_window)
 			-- Initializes the layout managed using an active development window.
 			--
 			-- `a_window': The window to managed a layout for.
@@ -67,12 +67,12 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
-	development_window: ?EB_DEVELOPMENT_WINDOW
+	development_window: detachable EB_DEVELOPMENT_WINDOW
 			-- Window to perform layout rebuilding on.
 
 feature {NONE} -- Access
 
-	docking_manager: !SD_DOCKING_MANAGER
+	docking_manager: attached SD_DOCKING_MANAGER
 			-- Docking manager for the development window
 		require
 			is_interface_usable: is_interface_usable
@@ -80,7 +80,7 @@ feature {NONE} -- Access
 			Result := development_window.docking_manager.as_attached
 		end
 
-	editors_configuration_file: !FILE_NAME
+	editors_configuration_file: attached FILE_NAME
 			-- The file name for the project's editors configuration.
 		require
 			is_interface_usable: is_interface_usable
@@ -103,7 +103,7 @@ feature -- Status report
 
 feature {NONE} -- Helpers
 
-	frozen xml_parser: !XM_EIFFEL_PARSER
+	frozen xml_parser: attached XM_EIFFEL_PARSER
 			-- Access to an XML parser
 		once
 			create {XM_EIFFEL_PARSER} Result.make
@@ -116,10 +116,9 @@ feature -- Basic operations: Standard persona
 		require
 			is_interface_usable: is_interface_usable
 		local
-			l_tool: EB_TOOL
-			l_last_tool: EB_TOOL
-			l_features_tool: ES_FEATURES_TOOL
-
+			l_shell_tools: ES_SHELL_TOOLS
+			l_tool: ES_TOOL [EB_TOOL]
+			l_last_tool: ES_TOOL [EB_TOOL]
 			l_tool_bar_content: SD_TOOL_BAR_CONTENT
 			l_tool_bar_content_2: SD_TOOL_BAR_CONTENT
 			l_is_unlocked: BOOLEAN
@@ -135,37 +134,48 @@ feature -- Basic operations: Standard persona
 			development_window.close_all_tools
 
 				-- Right bottom tools
-			l_tool := development_window.tools.c_output_tool
+			l_tool := l_shell_tools.tool ({ES_C_OUTPUT_TOOL})
 			l_tool.content.set_top ({SD_ENUMERATION}.bottom)
-
-			l_tool := development_window.shell_tools.tool ({ES_ERROR_LIST_TOOL}).panel
-			l_tool.content.set_tab_with (development_window.tools.c_output_tool.content, True)
 			l_last_tool := l_tool
 
-			l_tool := development_window.tools.output_tool
+			l_tool := l_shell_tools.tool ({ES_ERROR_LIST_TOOL})
 			l_tool.content.set_tab_with (l_last_tool.content, True)
+			l_last_tool := l_tool
 
-			l_tool := development_window.tools.features_relation_tool
-			l_tool.content.set_tab_with (development_window.tools.output_tool.content, True)
+			l_tool := l_shell_tools.tool ({ES_OUTPUT_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, True)
+			l_last_tool := l_tool
 
-			l_tool := development_window.tools.class_tool
-			l_tool.content.set_tab_with (development_window.tools.features_relation_tool.content, True)
+			l_tool := l_shell_tools.tool ({ES_FEATURE_RELATION_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, True)
+			l_last_tool := l_tool
+
+			l_tool := l_shell_tools.tool ({ES_CLASS_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, True)
+			l_last_tool := l_tool
 
 			l_tool.content.set_split_proportion (0.6)
 
 				-- Right tools
-			l_features_tool ?= development_window.shell_tools.tool ({ES_FEATURES_TOOL})
-
-			l_tool := development_window.tools.favorites_tool
+			l_tool := l_shell_tools.tool ({ES_FAVORITES_TOOL})
 			l_tool.content.set_top ({SD_ENUMERATION}.right)
-			l_tool := l_features_tool.panel
-			l_tool.content.set_tab_with (development_window.tools.favorites_tool.content, True)
-			l_tool := development_window.tools.cluster_tool
-			l_tool.content.set_tab_with (l_features_tool.panel.content, True)
+			l_last_tool := l_tool
+
+			l_tool := l_shell_tools.tool ({ES_TESTING_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, True)
+			l_last_tool := l_tool
+
+			l_tool := l_shell_tools.tool ({ES_FEATURES_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, True)
+			l_last_tool := l_tool
+
+			l_tool := l_shell_tools.tool ({ES_GROUPS_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, True)
+
 			l_tool.content.set_split_proportion (0.73)
 
-				-- Auto hide tools
-			l_tool := development_window.tools.diagram_tool
+				-- Auto hide (bottom) tools
+			l_tool := l_shell_tools.tool ({ES_DIAGRAM_TOOL})
 			if l_tool.content.state_value /= {SD_ENUMERATION}.auto_hide then
 				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 			else
@@ -174,8 +184,9 @@ feature -- Basic operations: Standard persona
 				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 			end
+			l_last_tool := l_tool
 
-			l_tool := development_window.tools.dependency_tool
+			l_tool := l_shell_tools.tool ({ES_DEPENDENCY_TOOL})
 			if l_tool.content.state_value /= {SD_ENUMERATION}.auto_hide then
 				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 			else
@@ -183,11 +194,15 @@ feature -- Basic operations: Standard persona
 				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 			end
+			l_last_tool := l_tool
 
-			l_tool := development_window.tools.metric_tool
-			l_tool.content.set_tab_with (development_window.tools.dependency_tool.content, False)
+			l_tool := l_shell_tools.tool ({ES_METRICS_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, False)
+			l_last_tool := l_tool
 
-			development_window.shell_tools.tool ({ES_INFORMATION_TOOL}).panel.content.set_tab_with (l_tool.content, False)
+			l_tool := l_shell_tools.tool ({ES_INFORMATION_TOOL})
+			l_tool.content.set_tab_with (l_last_tool.content, False)
+			l_last_tool := l_tool
 				--
 				-- End TO BE REMOVED
 				--
@@ -226,11 +241,11 @@ feature -- Basic operations: Standard persona
 		require
 			is_interface_usable: is_interface_usable
 		local
-			l_fn: !FILE_NAME
+			l_fn: attached FILE_NAME
 			retried: BOOLEAN
 		do
 			if not retried then
-				if not {l_debugger: EB_DEBUGGER_MANAGER} development_window.debugger_manager or else not l_debugger.is_exiting_eiffel_studio then
+				if not attached {EB_DEBUGGER_MANAGER} development_window.debugger_manager as l_debugger or else not l_debugger.is_exiting_eiffel_studio then
 						-- If directly exiting Eiffel Studio from EB_DEBUGGER_MANAGER, then we don't save the tools
 						-- layout, because current widgets layout is debug mode layout (not normal mode layout),
 						-- and the debug mode widgets layout is saved by EB_DEBUGGER_MANAGER already -- larrym
@@ -251,9 +266,9 @@ feature -- Basic operations: Standard persona
 		require
 			is_interface_usable: is_interface_usable
 		local
-			l_dev_window: ?like development_window
+			l_dev_window: detachable like development_window
 			l_window: EB_VISION_WINDOW
-			l_fn: !FILE_NAME
+			l_fn: attached FILE_NAME
 			l_opened: BOOLEAN
 			retried: BOOLEAN
 		do
@@ -324,7 +339,7 @@ feature -- Basic operations: Debugger persona
 		require
 			is_interface_usable: is_interface_usable
 		local
-			l_fn: !FILE_NAME
+			l_fn: attached FILE_NAME
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -344,9 +359,9 @@ feature -- Basic operations: Debugger persona
 		require
 			is_interface_usable: is_interface_usable
 		local
-			l_dev_window: ?like development_window
+			l_dev_window: detachable like development_window
 			l_window: EB_VISION_WINDOW
-			l_fn: !FILE_NAME
+			l_fn: attached FILE_NAME
 			l_opened: BOOLEAN
 			retried: BOOLEAN
 		do
@@ -419,7 +434,7 @@ feature -- Basic operations: Editor configuration
 			is_interface_usable: is_interface_usable
 			system_defined: (create {SHARED_WORKBENCH}).workbench.system_defined
 		local
-			l_fn: !FILE_NAME
+			l_fn: attached FILE_NAME
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -436,7 +451,7 @@ feature -- Basic operations: Editor configuration
 
 feature {NONE} -- Basic operations
 
-	load_persona (a_name: !STRING)
+	load_persona (a_name: attached STRING)
 			-- Loads a persona from an indexed persona names.
 			--
 			-- `a_name': A name alias to use to load a persona file.
@@ -444,8 +459,8 @@ feature {NONE} -- Basic operations
 			is_interface_usable: is_interface_usable
 			not_a_name_is_empty: not a_name.is_empty
 		local
-			l_fn: !FILE_NAME
-			l_user_fn: ?FILE_NAME
+			l_fn: attached FILE_NAME
+			l_user_fn: detachable FILE_NAME
 		do
 			create l_fn.make_from_string (eiffel_layout.eifinit_path.string)
 			l_fn.set_file_name (a_name)
@@ -454,14 +469,14 @@ feature {NONE} -- Basic operations
 			if l_user_fn /= Void then
 				l_fn := l_user_fn
 			end
-			if (create {RAW_FILE}.make (l_fn)).exists and then {l_string: STRING} l_fn.string then
+			if (create {RAW_FILE}.make (l_fn)).exists and then attached {STRING} l_fn.string as l_string then
 				load_persona_from_file (l_string)
 			else
 -- Error
 			end
 		end
 
-	load_persona_from_file (a_file_name: !STRING)
+	load_persona_from_file (a_file_name: attached STRING)
 			-- Loads a persona from a persona description file.
 			--
 			-- `a_file_name': The name of the file to load a persona from.
@@ -470,9 +485,9 @@ feature {NONE} -- Basic operations
 			not_a_file_name_is_empty: not a_file_name.is_empty
 			a_file_name_exists: (create {RAW_FILE}.make (a_file_name)).exists
 		local
-			l_parser: !like xml_parser
-			l_resolver: !XM_FILE_EXTERNAL_RESOLVER
-			l_callbacks: !ES_DOCKING_PERSONA_LOAD_CALLBACKS
+			l_parser: attached like xml_parser
+			l_resolver: attached XM_FILE_EXTERNAL_RESOLVER
+			l_callbacks: attached ES_DOCKING_PERSONA_LOAD_CALLBACKS
 			l_is_unlocked: BOOLEAN
 			retried: BOOLEAN
 		do
@@ -484,7 +499,7 @@ feature {NONE} -- Basic operations
 
 				create l_resolver.make
 				l_resolver.resolve (a_file_name)
-				if not l_resolver.has_error and then {l_window: like development_window} development_window then
+				if not l_resolver.has_error and then attached development_window as l_window then
 						-- File is loaded, create the callbacks and parse the XML.
 					l_parser := xml_parser
 					create l_callbacks.make (l_window, l_parser)
@@ -511,8 +526,8 @@ feature {NONE} -- Basic operations
 			retry
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -525,22 +540,22 @@ feature {NONE} -- Basic operations
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

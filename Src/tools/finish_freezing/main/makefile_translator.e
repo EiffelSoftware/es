@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -27,7 +27,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_options: like options; mapped_path: BOOLEAN; a_force_32bit: BOOLEAN; a_processor_count: NATURAL_8) is
+	make (a_options: like options; mapped_path: BOOLEAN; a_force_32bit: BOOLEAN; a_processor_count: NATURAL_8)
 			-- Initialize
 		require
 			a_options_not_void: a_options /= Void
@@ -38,25 +38,27 @@ feature {NONE} -- Initialization
 			create system_dependent_directories.make (5)
 			create object_dependent_directories.make (50)
 			create dependent_directories.make (55)
+			create makefile.make ("Makefile")
+			create makefile_sh.make ("Makefile.SH")
+			create appl.make_empty
 			force_32bit := a_force_32bit
 
-			eiffel_dir := eiffel_layout.shared_path
 			processor_count := a_processor_count
 
 			uses_precompiled := False
 
-			directory_separator := options.get_string ("directory_separator", "\")
-			object_extension := options.get_string ("obj_file_ext", "obj").twin
+			directory_separator := options.get_string_or_default ("directory_separator", "\")
+			object_extension := options.get_string_or_default ("obj_file_ext", "obj").twin
 			object_extension.prepend_character ('.')
 
-			lib_extension := options.get_string ("intermediate_file_ext", "lib").twin
+			lib_extension := options.get_string_or_default ("intermediate_file_ext", "lib").twin
 			lib_extension.prepend_character ('.')
 
 			check_for_il
 			quick_compilation := options.get_boolean ("quick_compilation", True)
 			if quick_compilation and not is_il_code then
 				io.put_string ("Preparing C compilation...%N")
-				io.default_output.flush
+				io.standard_default.flush
 				launch_quick_compilation
 			end
 
@@ -69,14 +71,14 @@ feature {NONE} -- Initialization
 
 feature -- Quick compile
 
-	launch_quick_compilation is
+	launch_quick_compilation
 			-- Launch the `quick_finalize' program with the correct options.
 		local
 			quick_prg: STRING
 		do
 			quick_prg := "%"" + eiffel_layout.Quick_finalize_command_name + "%""
 
-			quick_prg.append (" . " + options.get_string ("obj_file_ext", "obj"))
+			quick_prg.append (" . " + options.get_string_or_default ("obj_file_ext", "obj"))
 
 				-- On Windows, we need to surround the command with " since it is executed
 				-- by COMSPEC.
@@ -144,14 +146,14 @@ feature -- Access
 
 feature -- Execution
 
-	translate is
+	translate
 			-- create Makefile from Makefile.SH and options
 		do
 			translate_makefile (True)
 			translate_sub_makefiles
 		end
 
-	run_make is
+	run_make
 			-- run the make utility on the generated Makefile
 		local
 			command: STRING
@@ -163,11 +165,11 @@ feature -- Execution
 			l_file: RAW_FILE
 		do
 				-- the command to execute the make utility on this platform
-			command := options.get_string ("make_utility", "")
+			command := options.get_string_or_default ("make_utility", "")
 			subst_eiffel (command)
 			subst_platform (command)
 			subst_compiler (command)
-			l_make_flags := options.get_string ("make_flags", "")
+			l_make_flags := options.get_string_or_default ("make_flags", "")
 			l_make_flags.left_adjust
 			l_make_flags.right_adjust
 
@@ -224,7 +226,7 @@ feature -- Execution
 
 feature {NONE} -- Translation
 
-	check_for_il is
+	check_for_il
 			-- Read content of first Ace file
 		do
 			open_files
@@ -237,7 +239,7 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_makefile  (master: BOOLEAN) is
+	translate_makefile  (master: BOOLEAN)
 			-- translate the Makefile.SH in the current directory
 			-- 	master: is this the master makefile (i.e. the one in the F/W_code directory)?
 		do
@@ -267,7 +269,7 @@ feature {NONE} -- Translation
 
 					if master then
 						translate_master
-						translate_spit (False, options.get_string ("no_subs", Void))
+						translate_spit (False, options.get_string ("no_subs"))
 					else
 						translate_spit (False, Void)
 					end
@@ -279,7 +281,7 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_sub_makefiles is
+	translate_sub_makefiles
 			-- Translate makefiles in subdirs from master makefile.
 		local
 			dir: STRING -- the directory we're working on
@@ -308,7 +310,7 @@ feature {NONE} -- Translation
 
 					translate_makefile (False)
 
-					env.change_working_directory (options.get_string ("updir", ".."))
+					env.change_working_directory (options.get_string_or_default ("updir", ".."))
 
 					old_dir := dir.twin
 				end
@@ -317,7 +319,7 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_case is
+	translate_case
 			-- translate case section by ignoring it.
 		local
 			lastline: STRING
@@ -359,7 +361,7 @@ feature {NONE} -- Translation
 			read_next
 		end
 
-	translate_echo is
+	translate_echo
 			-- Translate echo section by ignoring it.
 		local
 			lastline: STRING
@@ -385,7 +387,7 @@ feature {NONE} -- Translation
 			read_next
 		end
 
-	translate_spit  (do_subst: BOOLEAN; endtag: STRING) is
+	translate_spit  (do_subst: BOOLEAN; endtag: detachable STRING)
 			-- Translate spitshell section
 			-- 	do_subst: should substitutions be carried out?
 			--	endtag: up to where we should read.
@@ -441,7 +443,7 @@ feature {NONE} -- Translation
 			read_next
 		end
 
-	translate_master is
+	translate_master
 			-- Translate master Makefile.SH.
 		do
 			debug ("progress")
@@ -456,7 +458,7 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_translate is
+	translate_translate
 			-- Translate.
 		local
 			lastline: STRING
@@ -469,8 +471,8 @@ feature {NONE} -- Translation
 				read_next
 				lastline := makefile_sh.last_string.twin
 			until
-				lastline.is_equal (options.get_string ("externals_continuation_text", Void)) or else
-				lastline.count>4 and then lastline.substring (1,4).is_equal (options.get_string ("all", Void).substring (1,4))
+				lastline ~ options.get_string ("externals_continuation_text") or else
+				lastline.count>4 and then lastline.substring (1,4).is_equal (options.get_string_or_default ("all", empty_string).substring (1,4))
 			loop
 				debug ("translate_translate")
 					debug ("input")
@@ -487,18 +489,18 @@ feature {NONE} -- Translation
 					subst_compiler (lastline)
 					subst_dir_sep (lastline)
 
-					lastline.replace_substring_all ("$ (CC) $ (CFLAGS) -c", options.get_string ("cc_text", "Void"))
-					lastline.replace_substring_all (".c.o:", options.get_string ("cobj_text", Void))
-					lastline.replace_substring_all (".cpp.o:", options.get_string ("cppobj_text", Void))
+					lastline.replace_substring_all ("$ (CC) $ (CFLAGS) -c", options.get_string_or_default ("cc_text", empty_string))
+					lastline.replace_substring_all (".c.o:", options.get_string_or_default ("cobj_text", empty_string))
+					lastline.replace_substring_all (".cpp.o:", options.get_string_or_default ("cppobj_text", empty_string))
 					if lastline.count>4 and then lastline.substring (1,5).is_equal (".x.o:") then
-						lastline.replace_substring_all (".x.o:", options.get_string ("xobj_text", Void))
+						lastline.replace_substring_all (".x.o:", options.get_string_or_default ("xobj_text", empty_string))
 					end
 					if lastline.count>6 and then lastline.substring (1,7).is_equal (".xpp.o:") then
-						lastline.replace_substring_all (".xpp.o:", options.get_string ("xppobj_text", Void))
+						lastline.replace_substring_all (".xpp.o:", options.get_string_or_default ("xppobj_text", empty_string))
 					end
 
 					if lastline.substring_index (".SUFFIXES", 1) /= 0 then
-						lastline.replace_substring_all (".o", options.get_string ("obj_text", ".obj"))
+						lastline.replace_substring_all (".o", options.get_string_or_default ("obj_text", ".obj"))
 					end
 				end
 
@@ -518,7 +520,7 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_externals is
+	translate_externals
 			-- Translate externals section.
 		local
 			lastline: STRING
@@ -529,7 +531,7 @@ feature {NONE} -- Translation
 
 			lastline := makefile_sh.last_string.twin
 
-			if lastline.count>8 and then lastline.substring (1, 9).is_equal (options.get_string ("externals_text", Void)) then
+			if lastline.count>8 and then lastline.substring (1, 9) ~ options.get_string ("externals_text") then
 				externals := True
 			end
 
@@ -573,7 +575,7 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_application is
+	translate_application
 			-- Translate application section.
 		local
 			lastline: STRING
@@ -597,7 +599,7 @@ feature {NONE} -- Translation
 
 			if
 				lastline.count>3 and then
-				lastline.substring (1,4).is_equal (options.get_string ("all", Void).substring (1,4))
+				lastline.substring (1,4).is_equal (options.get_string_or_default ("all", empty_string).substring (1,4))
 			then
 				shared_library_pos := lastline.substring_index ("$(SYSTEM", 6)
 				if shared_library_pos = 0 then
@@ -611,25 +613,27 @@ feature {NONE} -- Translation
 					extension := appl.twin
 					extension.to_lower
 					extension.keep_tail (4)
-					if extension.is_equal (options.get_string ("executable_file_ext", Void)) then
+					if extension ~ options.get_string ("executable_file_ext") then
 						appl := appl.substring (1, appl.count -4)
 					end
 				end
 
-				if appl.substring_index (options.get_string ("driver_text", Void),1) > 0 then
+				if appl.substring_index (options.get_string_or_default ("driver_text", empty_string),1) > 0 then
 					precompile := True
-					appl_exe := options.get_string ("driver_filename", Void)
+					appl_exe := options.get_string_or_default ("driver_filename", empty_string)
 				else
 					appl_exe := appl.twin
-					appl_exe.append (options.get_string ("executable_file_ext", Void))
+					appl_exe.append_string (options.get_string ("executable_file_ext"))
 				end
+			else
+				appl_exe := ""
 			end
 
 			if not is_il_code then
 				read_next
 				read_next
 
-				makefile.put_string (options.get_string ("all", Void))
+				makefile.put_string (options.get_string_or_default ("all", empty_string))
 				makefile.put_string (appl_exe)
 
 				if shared_library_pos /= 0 then
@@ -637,12 +641,12 @@ feature {NONE} -- Translation
 				end
 
 				makefile.put_new_line
-				makefile.put_string (options.get_string ("completed", Void))
+				makefile.put_string (options.get_string_or_default ("completed", empty_string))
 				makefile.put_string ("%N%N")
 			end
 		end
 
-	translate_dependencies is
+	translate_dependencies
 			-- Translate dependencies section.
 		local
 			lastline: STRING
@@ -689,12 +693,12 @@ feature {NONE} -- Translation
 				dependency := lastline.substring (lastline.index_of (':', 1) + 1, lastline.count)
 				subst_dir_sep (dependency)
 
-				if filename.is_equal (options.get_string ("emain_text", Void)) then
-					filename.append (options.get_string ("obj_text", ".obj"))
+				if filename ~ options.get_string ("emain_text") then
+					filename.append (options.get_string_or_default ("obj_text", ".obj"))
 					makefile.put_string (dir)
 					makefile.put_string (directory_separator)
 					subst_dir_sep (dependency)
-					makefile.put_string (options.get_string ("emain_obj_text", Void))
+					makefile.put_string (options.get_string_or_default ("emain_obj_text", empty_string))
 					makefile.put_string (": ")
 					makefile.put_string (dependency)
 					makefile.put_new_line
@@ -715,10 +719,10 @@ feature {NONE} -- Translation
 						-- generation where all objects file of E1 where in Eobj1 or if we do
 						-- on a per object file.
 					if dir.item (1) = 'E' and dir.item (2) = '1' and filename.item (1) /= 'E' then
-						filename.append (options.get_string ("obj_text", ".obj"))
+						filename.append (options.get_string_or_default ("obj_text", ".obj"))
 					else
 						filename.append_character ('.')
-						filename.append (options.get_string ("intermediate_file_ext", Void))
+						filename.append (options.get_string_or_default ("intermediate_file_ext", empty_string))
 					end
 					l_target_file.append (filename)
 					if dir.item (1) = 'E' then
@@ -748,17 +752,17 @@ feature {NONE} -- Translation
 					makefile.put_new_line
 				else
 					makefile.put_string ("%T")
-					makefile.put_string (options.get_string ("cd", Void))
+					makefile.put_string (options.get_string_or_default ("cd", empty_string))
 					makefile.put_string (" ")
 					makefile.put_string (dir)
-					makefile.put_string (options.get_string ("subcommand_separator", " && "))
+					makefile.put_string (options.get_string_or_default ("subcommand_separator", " && "))
 					makefile.put_string ("$(START_TEST) $(MAKE) ")
 					makefile.put_string (filename)
 					makefile.put_string (" $(END_TEST)")
-					makefile.put_string (options.get_string ("subcommand_separator", " && "))
-					makefile.put_string (options.get_string ("cd", Void))
+					makefile.put_string (options.get_string_or_default ("subcommand_separator", " && "))
+					makefile.put_string (options.get_string_or_default ("cd", empty_string))
 					makefile.put_string (" ")
-					makefile.put_string (options.get_string ("updir", Void))
+					makefile.put_string (options.get_string_or_default ("updir", empty_string))
 
 					read_next
 
@@ -776,7 +780,7 @@ feature {NONE} -- Translation
 				-- Generate the `OBJECTS = ' line
 			from
 				dependent_directories.start
-				makefile.put_string (options.get_string ("objects_text", Void))
+				makefile.put_string (options.get_string_or_default ("objects_text", empty_string))
 			until
 				dependent_directories.after
 			loop
@@ -790,7 +794,7 @@ feature {NONE} -- Translation
 			from
 				object_dependent_directories.start
 				makefile.put_string ("%N%N");
-				makefile.put_string (options.get_string ("c_objects_text", Void))
+				makefile.put_string (options.get_string_or_default ("c_objects_text", empty_string))
 			until
 				object_dependent_directories.after
 			loop
@@ -805,7 +809,7 @@ feature {NONE} -- Translation
 
 			from
 				makefile.put_string ("%N%N")
-				makefile.put_string (options.get_string ("eobjects_text", Void))
+				makefile.put_string (options.get_string_or_default ("eobjects_text", empty_string))
 				system_dependent_directories.start
 			until
 				system_dependent_directories.after
@@ -832,7 +836,7 @@ feature {NONE} -- Translation
 			makefile.put_new_line
 		end
 
-	translate_line_subst is
+	translate_line_subst
 			-- Translate a line requiring substitution.
 		local
 			lastline: STRING
@@ -854,11 +858,11 @@ feature {NONE} -- Translation
 
 			-- adapt RM and MAKE lines for further usage
 			if lastline.count>3 then
-				if lastline.substring (1,4).is_equal (options.get_string ("rm_text", Void)) then
+				if lastline.substring (1,4) ~ (options.get_string ("rm_text")) then
 					lastline := "RM = $rm"
 				end
 
-				if lastline.substring (1,4).is_equal (options.get_string ("make_text", Void)) then
+				if lastline.substring (1,4) ~ (options.get_string ("make_text")) then
 					lastline := "MAKE = $make"
 				end
 
@@ -893,7 +897,7 @@ feature {NONE} -- Translation
 			makefile.put_new_line
 		end
 
-	translate_line_change is
+	translate_line_change
 			-- Translate a line requiring changes.
 		local
 			lastline: STRING
@@ -914,23 +918,23 @@ feature {NONE} -- Translation
 				end
 			end
 
-			if lastline.count > 4 and then lastline.substring_index (options.get_string ("all", Void).substring (1, 4), 1) > 0 then
+			if lastline.count > 4 and then lastline.substring_index (options.get_string_or_default ("all", empty_string).substring (1, 4), 1) > 0 then
 				subst_intermediate (lastline)
 			end
 
 			subst_continuation (lastline)
 
 			-- replace all occurrences of certain strings
-			lastline.replace_substring_all ("$ (CC) $ (CFLAGS) -c", options.get_string ("cc_text", Void))
-			lastline.replace_substring_all (".c.o:", options.get_string ("cobj_text", Void))
-			lastline.replace_substring_all (".cpp.o:", options.get_string ("cppobj_text", Void))
-			lastline.replace_substring_all (".o ", options.get_string ("obj_text", Void))
+			lastline.replace_substring_all ("$ (CC) $ (CFLAGS) -c", options.get_string_or_default ("cc_text", empty_string))
+			lastline.replace_substring_all (".c.o:", options.get_string_or_default ("cobj_text", empty_string))
+			lastline.replace_substring_all (".cpp.o:", options.get_string_or_default ("cppobj_text", empty_string))
+			lastline.replace_substring_all (".o ", options.get_string_or_default ("obj_text", empty_string))
 			if lastline.substring_index (".SUFFIXES", 1) /= 0 then
-				lastline.replace_substring_all (".o", options.get_string ("obj_text", ".obj"))
+				lastline.replace_substring_all (".o", options.get_string_or_default ("obj_text", ".obj"))
 			end
 
 			-- replace .o:
-			replacement := options.get_string ("intermediate_file_ext", Void).twin
+			replacement := options.get_string_or_default ("intermediate_file_ext", empty_string).twin
 			replacement.prepend (".")
 			replacement.append (": $")
 			lastline.replace_substring_all (".o: $", replacement)
@@ -945,7 +949,7 @@ feature {NONE} -- Translation
 				lastline := ""
 			end
 			if lastline.count>8 and then lastline.substring_index ("$(LD) $(LDFLAGS) -r -o", 1) >0 then
-				lastline := options.get_string ("make_intermediate", Void).twin
+				lastline := options.get_string_or_default ("make_intermediate", empty_string).twin
 				subst_eiffel (lastline)
 				subst_platform (lastline)
 
@@ -962,17 +966,17 @@ feature {NONE} -- Translation
 
 
 			-- externals
-			if lastline.count>8 and then lastline.substring (1,9).is_equal (options.get_string("externals_text", Void)) then
+			if lastline.count>8 and then lastline.substring (1,9) ~ options.get_string ("externals_text") then
 				externals := True
 			end
 			-- .x.o
 			if lastline.count>4 and then lastline.substring (1,5).is_equal (".x.o:") then
-				lastline.replace_substring_all (".x.o:", options.get_string ("xobj_text", Void))
+				lastline.replace_substring_all (".x.o:", options.get_string_or_default ("xobj_text", empty_string))
 			end
 
 			-- .xpp.o
 			if lastline.count>6 and then lastline.substring (1,7).is_equal (".xpp.o:") then
-				lastline.replace_substring_all (".xpp.o:", options.get_string ("xppobj_text", Void))
+				lastline.replace_substring_all (".xpp.o:", options.get_string_or_default ("xppobj_text", empty_string))
 			end
 
 			-- application name, cecil
@@ -992,7 +996,7 @@ feature {NONE} -- Translation
 				lastline.substring (1, 27).is_equal ("$il_system_compilation_line")
 			then
 					-- Add resource file dependency for IL system
-				replacement := options.get_string ("il_system_compilation_line", "")
+				replacement := options.get_string_or_default ("il_system_compilation_line", "")
 				subst_eiffel (replacement)
 				subst_platform (replacement)
 				subst_compiler (replacement)
@@ -1012,7 +1016,7 @@ feature {NONE} -- Translation
 			makefile.put_new_line
 		end
 
-	translate_appl is
+	translate_appl
 			-- Translate application generation code.
 		local
 			lastline: STRING
@@ -1033,9 +1037,9 @@ feature {NONE} -- Translation
 
 			-- precompile or make application?
 			if precompile then
-				lastline := options.get_string ("precompile", Void).twin
+				lastline := options.get_string_or_default ("precompile", empty_string).twin
 			else
-				lastline := options.get_string ("appl_make", Void).twin
+				lastline := options.get_string_or_default ("appl_make", empty_string).twin
 			end
 
 			debug ("translate_appl")
@@ -1049,8 +1053,8 @@ feature {NONE} -- Translation
 			lastline.replace_substring_all ("$appl", appl)
 			subst_objects_redirection (lastline)
 
-			if options.has ("sharedlibs") then
-				lastline.replace_substring_all ("$sharedlibs", options.get_string ("sharedlibs", Void))
+			if options.has ("sharedlibs") and then attached options.get_string ("sharedlibs") as l_sharedlibs then
+				lastline.replace_substring_all ("$sharedlibs", l_sharedlibs)
 			else
 				lastline.replace_substring_all ("$sharedlibs", "$(SHAREDLIBS)")
 			end
@@ -1083,10 +1087,10 @@ feature {NONE} -- Translation
 			end
 		end
 
-	translate_cecil_and_dll is
+	translate_cecil_and_dll
 			-- Translate cecil.
 		local
-			lastline, previous_line: STRING
+			lastline, previous_line: detachable STRING
 		do
 			debug ("progress")
 				io.put_string ("%Tcecil%N")
@@ -1103,10 +1107,10 @@ feature {NONE} -- Translation
 			makefile.put_string (makefile_sh.last_string)
 			makefile.put_new_line
 
-			if options.has ("cecil_make") then
-				lastline := options.get_string ("cecil_make", Void).twin
+			if options.has ("cecil_make") and then attached options.get_string ("cecil_make") as l_cecil_make then
+				lastline := l_cecil_make.twin
 			else
-				lastline := options.get_string ("cecil_text", Void).twin
+				lastline := options.get_string_or_default ("cecil_text", empty_string).twin
 			end
 
 			debug ("translate_cecil_and_dll")
@@ -1154,7 +1158,7 @@ feature {NONE} -- Translation
 
 -- DEF_FILE= appl.def
 			if options.has ("cecil_def") then
-				lastline := options.get_string ("cecil_def", Void).twin
+				lastline := options.get_string_or_default ("cecil_def", empty_string).twin
 				lastline.replace_substring_all ("$appl", appl)
 				subst_eiffel (lastline)
 				subst_platform (lastline)
@@ -1186,7 +1190,7 @@ feature {NONE} -- Translation
 				-- SHAREDFLAGS
 			if options.has ("cecil_dynlib") then
 				makefile.put_string (" \%N")
-				lastline := options.get_string ("cecil_dynlib", Void).twin
+				lastline := options.get_string_or_default ("cecil_dynlib", empty_string).twin
 				lastline.replace_substring_all ("$appl", appl)
 				subst_eiffel (lastline)
 				subst_platform (lastline)
@@ -1205,7 +1209,7 @@ feature {NONE} -- Translation
 
 				-- $(RM) "$(SHARD_CECIL)"
 			read_next
-			lastline := options.get_string ("safe_rm", "").twin
+			lastline := options.get_string_or_default ("safe_rm", "").twin
 			lastline.replace_substring_all ("@", "$(SHARED_CECIL)")
 			lastline.precede ('%T')
 			makefile.put_string (lastline)
@@ -1263,7 +1267,7 @@ feature {NONE} -- Translation
 			read_next -- cd E1 ; $(MAKE) ....
 			lastline := makefile_sh.last_string.twin
 			lastline.replace_substring_all (".o", object_extension)
-			lastline.replace_substring_all (" ; ", options.get_string ("subcommand_separator", " && "))
+			lastline.replace_substring_all (" ; ", options.get_string_or_default ("subcommand_separator", " && "))
 			makefile.put_string (lastline)
 			makefile.put_new_line
 
@@ -1278,7 +1282,7 @@ feature {NONE} -- Translation
 			read_next -- cd E1 ; $(MAKE) ...
 			lastline := makefile_sh.last_string.twin
 			lastline.replace_substring_all (".o", object_extension)
-			lastline.replace_substring_all (" ; ", options.get_string ("subcommand_separator", " && "))
+			lastline.replace_substring_all (" ; ", options.get_string_or_default ("subcommand_separator", " && "))
 			makefile.put_string (lastline)
 			makefile.put_new_line
 
@@ -1290,6 +1294,7 @@ feature {NONE} -- Translation
 			makefile.put_new_line
 
 			from
+				previous_line := ""
 			until
 				lastline.count > 17 and then lastline.substring (1,17).is_equal ("DYNLIBSHAREDFLAGS")
 			loop
@@ -1307,7 +1312,7 @@ feature {NONE} -- Translation
 			makefile.put_string ("DYNLIBSHAREDFLAGS = $(LDSHAREDFLAGS)")
 			if options.has ("system_dynlib") then
 				makefile.put_string (" \%N")
-				lastline := options.get_string ("system_dynlib", Void).twin
+				lastline := options.get_string_or_default ("system_dynlib", empty_string).twin
 				lastline.replace_substring_all ("$appl", appl)
 				subst_eiffel (lastline)
 				subst_platform (lastline)
@@ -1326,7 +1331,7 @@ feature {NONE} -- Translation
 
 -- $(RM) "$(SYSTEM_IN_DYNAMIC_LIB)"
 			read_next
-			lastline := options.get_string ("safe_rm", "").twin
+			lastline := options.get_string_or_default ("safe_rm", "").twin
 			lastline.replace_substring_all ("@", "$(SYSTEM_IN_DYNAMIC_LIB)")
 			lastline.precede ('%T')
 			makefile.put_string (lastline)
@@ -1340,31 +1345,37 @@ feature {NONE} -- Translation
 
 feature {NONE}	-- substitutions
 
-	subst_eiffel (line: STRING) is
+	subst_eiffel (line: STRING)
 			-- Replace all occurrences of `Eiffel_dir' environment variable in `line'
+		local
+			l_eiffel_dir: STRING
 		do
 			debug ("subst")
 				io.put_string("%Tsubst_eiffel%N")
 			end
 
-			if eiffel_dir /= Void and then not eiffel_dir.is_empty then
-				line.replace_substring_all ("$(ISE_EIFFEL)", eiffel_dir)
-				line.replace_substring_all ("$(EIFFEL4)", eiffel_dir)
+			if eiffel_layout.is_valid_environment then
+				l_eiffel_dir := eiffel_layout.shared_path
+			else
+				l_eiffel_dir := empty_string
+			end
+
+			if not l_eiffel_dir.is_empty then
+				line.replace_substring_all ("$(ISE_EIFFEL)", l_eiffel_dir)
+				line.replace_substring_all ("$(EIFFEL4)", l_eiffel_dir)
 			end
 		end
 
-	subst_objects_redirection (line: STRING) is
+	subst_objects_redirection (line: STRING)
 			-- Replace all occurences of $objects_redirection with list of objects
 		local
 			l_string, l_dir: STRING
-			l_int: STRING
 			i: INTEGER
 			l_new_line_inserted: BOOLEAN
 		do
 			if line.substring_index ("$objects_redirection", 1) > 0 then
 				from
 					create l_string.make (dependent_directories.count * 10)
-					l_int := options.get_string ("intermediate_file_ext", Void)
 					dependent_directories.start
 					i := 0
 				until
@@ -1392,17 +1403,17 @@ feature {NONE}	-- substitutions
 			end
 		end
 
-	subst_platform (line: STRING) is
+	subst_platform (line: STRING)
 			-- Replace all occurrences of platform environment variable in `line'
 		do
 			debug ("subst")
 				io.put_string("%Tsubst_platform%N")
 			end
 
-			line.replace_substring_all ("$(ISE_PLATFORM)", get_replacement (once "ISE_PLATFORM"))
+			line.replace_substring_all ("$(ISE_PLATFORM)", eiffel_layout.eiffel_platform)
 		end
 
-	subst_compiler (line: STRING) is
+	subst_compiler (line: STRING)
 			-- Replace all occurrences of compiler environment variable in `line'
 		do
 			debug ("subst")
@@ -1414,7 +1425,7 @@ feature {NONE}	-- substitutions
 			end
 		end
 
-	subst_dir_sep  (line: STRING) is
+	subst_dir_sep  (line: STRING)
 			-- replace all occurrences of the directory separator in `line'
 		local
 			dir_sep: STRING
@@ -1431,7 +1442,7 @@ feature {NONE}	-- substitutions
 			end
 		end
 
-	subst_continuation  (line: STRING) is
+	subst_continuation  (line: STRING)
 			-- replace all occurrences of the line continuation character in `line'
 		do
 			debug ("subst")
@@ -1443,11 +1454,11 @@ feature {NONE}	-- substitutions
 				options.has ("continuation")
 			then
 				line.remove (line.count)
-				line.append (options.get_string ("continuation", Void))
+				line.append_string (options.get_string ("continuation"))
 			end
 		end
 
-	subst_intermediate (line: STRING) is
+	subst_intermediate (line: STRING)
 			-- replace all occurrences of ?obj#.obj with ?obj#.lib in `line' starting with "all"
 		local
 			start: INTEGER
@@ -1457,37 +1468,38 @@ feature {NONE}	-- substitutions
 			end
 
 			check
-				line.count > 4 and then line.substring_index(options.get_string("all", Void).substring (1, 4), 1) > 0
+				line.count > 4 and then line.substring_index(options.get_string_or_default ("all", empty_string).substring (1, 4), 1) > 0
 			end
 
-			line.replace_substring_all (options.get_string ("all", Void).substring (1, 4), options.get_string("all", Void))
+			line.replace_substring_all (options.get_string_or_default ("all", empty_string).substring (1, 4), options.get_string_or_default ("all", empty_string))
 			line.replace_substring_all (".o", lib_extension)
 
 			start := 1
 
-			if line.substring_index (options.get_string ("emain_text", Void), start) > 0 then
-				start := line.substring_index (options.get_string ("intermediate_file_ext", Void), start)
+			if line.substring_index (options.get_string_or_default ("emain_text", empty_string), start) > 0 then
+				start := line.substring_index (options.get_string_or_default ("intermediate_file_ext", empty_string), start)
 				check
 					start > 0
 				end
-				line.replace_substring (options.get_string ("obj_file_ext", Void), start, start+2)
+				line.replace_substring (options.get_string_or_default ("obj_file_ext", empty_string), start, start+2)
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	env: EXECUTION_ENVIRONMENT is
+	env: EXECUTION_ENVIRONMENT
 			-- Execution environment
 		once
 			 create Result
 		end
 
-	search_and_replace (line: STRING) is
+	search_and_replace (line: STRING)
 			-- search words starting with $ and replace with option or env variable
 		local
 			wordstart: INTEGER
 			wordlength: INTEGER
-			word, replacement: STRING
+			word: STRING
+			replacement: detachable STRING
 		do
 			debug ("implementation")
 				io.put_string("%Tsearch_and_replace%N")
@@ -1502,8 +1514,6 @@ feature {NONE} -- Implementation
 			until
 				wordstart = 0
 			loop
-				replacement := Void
-
 				word := get_word_to_replace (line, wordstart)
 				wordlength := word.count
 
@@ -1546,7 +1556,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_word_to_replace (line: STRING; wordstart: INTEGER): STRING is
+	get_word_to_replace (line: STRING; wordstart: INTEGER): STRING
 			-- word on `line' starting with '$' after `wordstart'
 		local
 			wordend: INTEGER
@@ -1573,8 +1583,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-
-	get_replacement (word: STRING): STRING is
+	get_replacement (word: STRING): detachable STRING
 			-- find a replacement for `word' in options or environment
 		local
 			replacement: STRING
@@ -1587,20 +1596,22 @@ feature {NONE} -- Implementation
 					-- Replace ISE_PLAFORM to 32bit builds on x64 platforms
 				Result := once "windows"
 			else
-				if options.has (word) then
-					replacement := options.get_string (word, Void).twin
+				if options.has (word) and then attached options.get_string (word) as l_replacement then
+					replacement := l_replacement.twin
 					if not replacement.is_equal("$(INCLUDE_PATH)") then
 						search_and_replace (replacement)
 					end
 					Result := replacement
-				else
+				elseif attached eiffel_layout.get_environment (word) as l_env then
 						-- Note: Before we were taking the short path (rev#66961)
-					Result := eiffel_layout.get_environment (word)
+					Result := l_env
+				else
+					Result := Void
 				end
 			end
 		end
 
-	read_next is
+	read_next
 			-- read the next line from Makefile.SH if possible
 		do
 			debug ("implementation")
@@ -1612,7 +1623,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_precompile_libs (line_to_search: STRING): STRING is
+	get_precompile_libs (line_to_search: STRING): STRING
 			-- look for precompiled libraries, also checks
 			-- if application uses multithreading mechanism
 		local
@@ -1689,7 +1700,7 @@ feature {NONE} -- Implementation
 			search_and_replace (Result)
 		end
 
-	open_files is
+	open_files
 			-- open the Makefile.SH and the Makefile to translate
 		local
 			out_file, retried: BOOLEAN
@@ -1718,7 +1729,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	close_files is
+	close_files
 			-- close the Makefile.SH and the Makefile
 		do
 			debug ("implementation")
@@ -1734,7 +1745,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	strip_parenthesis  (word: STRING) is
+	strip_parenthesis  (word: STRING)
 			-- remove enclosing parenthesis from word.
 		do
 			debug ("implementation")
@@ -1754,11 +1765,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	empty_string: STRING = ""
+			-- Default value to use when option is not found.
+
 invariant
 	options_not_void: options /= Void
+	empty_string_empty: empty_string.is_empty
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1771,22 +1786,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class MAKEFILE_TRANSLATOR

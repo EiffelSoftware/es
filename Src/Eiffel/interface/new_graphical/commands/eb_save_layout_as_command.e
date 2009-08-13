@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Command to save current docking layout as a named layout."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -33,7 +33,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_develop_window: EB_DEVELOPMENT_WINDOW) is
+	make (a_develop_window: EB_DEVELOPMENT_WINDOW)
 			-- Creation method
 		do
 			develop_window := a_develop_window
@@ -42,29 +42,16 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	execute is
+	execute
 			-- Save current docking layout as a named layout.
-		local
-			l_win: EV_WINDOW
-			l_x, l_y: INTEGER
-			l_screen: EV_SCREEN
 		do
-			create dialog.make (develop_window)
-			l_win := develop_window.window
-			l_x := l_win.screen_x + l_win.width // 2 - dialog.width // 2
-			l_y := l_win.screen_y + l_win.height // 2 - dialog.height // 2
-			create l_screen
-			if l_x + dialog.width > l_screen.width or l_y + dialog.height > l_screen.height then
-				l_x := l_win.x_position
-				l_y := l_win.y_position
-			end
-			dialog.set_position (l_x, l_y)
-			dialog.show_relative_to_window (l_win)
+			create dialog.make_with_window (develop_window)
+			dialog.show_on_active_window
 		end
 
 feature -- Query
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Menu name
 		do
 			Result := interface_names.m_save_layout_as
@@ -77,10 +64,10 @@ feature {NONE} -- Implementation
 			-- We can't declare it as a routine local, otherwise it will be
 			-- automatically recycled by gc (at least on Linux) before user finished operations on the dialog.
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -91,19 +78,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

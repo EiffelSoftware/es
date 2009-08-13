@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Common routine for RT_EXTENSION classes"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -20,10 +20,36 @@ feature -- RT extension identifiers (check eif_debug.h uses the same values)
 	Op_rt_assign_attrib:	INTEGER = 14
 	Op_rt_assign_local:		INTEGER = 15
 
+feature -- Evaluation helper
+
+	tilda_equal_evaluation (a,b: detachable ANY): BOOLEAN
+			-- Return the evaluation of `a ~ b'
+		do
+			Result := a ~ b
+		end
+
+	is_equal_evaluation (a,b: ANY): BOOLEAN
+			-- Return the evaluation of `a.is_equal (b)'	
+		require
+			a_b_attached: a /= Void and b /= Void
+		do
+			Result := a.is_equal (b)
+		end
+
+	equal_evaluation (a,b: detachable ANY): BOOLEAN
+			-- Return the evaluation of `a = b'
+		require
+			a_b_attached: a /= Void and b /= Void
+		do
+			Result := equal (a, b)
+		end
+
 feature -- Object storage Access
 
-	saved_object_to (r: ?ANY; fn: STRING): ?ANY
+	saved_object_to (r: detachable ANY; fn: STRING): detachable ANY
 			-- Save object `r' into file `fn'
+		require
+			fn_attached: fn /= Void
 		local
 			file: RAW_FILE
 		do
@@ -38,11 +64,13 @@ feature -- Object storage Access
 			end
 		end
 
-	object_loaded_from (r: ?ANY; fn: STRING): ?ANY
+	object_loaded_from (r: detachable ANY; fn: STRING): detachable ANY
 			-- Loaded object from file `fn'.
 			-- if `r' is Void return a new object
 			-- else load into `r'
 			-- If failure then results Void object.
+		require
+			fn_attached: fn /= Void
 		local
 			o: ANY
 			file: RAW_FILE
@@ -54,8 +82,8 @@ feature -- Object storage Access
 					file.open_read
 					o := file.retrieved
 					file.close
-					if {o1: ANY} r then
-						if {o2: ANY} o and then o1.same_type (o2) then
+					if attached {ANY} r as o1 then
+						if attached {ANY} o as o2 and then o1.same_type (o2) then
 							o1.standard_copy (o2)
 							Result := o1
 						end
@@ -73,7 +101,7 @@ feature -- Object storage Access
 			retry
 		end
 
-indexing
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

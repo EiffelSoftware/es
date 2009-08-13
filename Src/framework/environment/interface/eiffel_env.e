@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Environment for bitmaps, help, binaries, scripts...."
@@ -12,6 +12,8 @@ deferred class EIFFEL_ENV
 inherit
 	ANY
 
+	SHARED_COMPILER_PROFILE
+
 	EIFFEL_ENVIRONMENT_CONSTANTS
 		export
 			{NONE} all
@@ -19,14 +21,14 @@ inherit
 
 feature -- Access
 
-	application_name: !STRING_8
+	application_name: STRING_8
 			-- Name of the application.
 		deferred
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	product_name: !STRING_8
+	product_name: STRING_8
 			-- Name of the product.
 		once
 			if is_unix_layout then
@@ -38,7 +40,7 @@ feature -- Access
 			not_result_is_empty: not Result.is_empty
 		end
 
-	product_version_name: !STRING_8
+	product_version_name: STRING_8
 			-- Versioned name of the product.
 		once
 			if is_unix_layout then
@@ -51,7 +53,7 @@ feature -- Access
 			not_result_is_empty: not Result.is_empty
 		end
 
-	environment_info: !STRING_8
+	environment_info: STRING_8
 			-- Information about the environment.
 		require
 			is_valid_environment: is_valid_environment
@@ -88,7 +90,7 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	required_environment_variables: !ARRAYED_LIST [TUPLE [var: !STRING_8; is_directory: BOOLEAN]]
+	required_environment_variables: ARRAYED_LIST [TUPLE [var: STRING_8; is_directory: BOOLEAN]]
 			-- List of required environment variables.
 		once
 			create Result.make (4)
@@ -99,11 +101,9 @@ feature {NONE} -- Access
 			if {PLATFORM}.is_windows then
 				Result.extend ([{EIFFEL_ENVIRONMENT_CONSTANTS}.ise_c_compiler_env, False])
 			end
-		ensure
-			result_contains_attached_item: not Result.has (Void)
 		end
 
-	creatable_directories: !ARRAYED_LIST [STRING_8]
+	creatable_directories: ARRAYED_LIST [STRING_8]
 			-- List of directories to be created at start up
 		require
 			is_valid_environment: is_valid_environment
@@ -120,24 +120,26 @@ feature {NONE} -- Access
 				create Result.make (0)
 			end
 		ensure
-			result_contains_attached_items: not Result.has (Void)
 			result_contains: Result.for_all (agent (a_item: STRING_8): BOOLEAN do Result := not a_item.is_empty end)
 		end
 
 feature -- Status update
 
-	check_environment_variable is
+	check_environment_variable
 			-- Check if needed environment variables are set up.
 		local
 			l_product_names: PRODUCT_NAMES
 			l_op_env: like operating_environment
 			l_file: RAW_FILE
 			l_dir: DIRECTORY
-			l_value: STRING_8
+			l_dir_name: DIRECTORY_NAME
+			l_value: detachable STRING_8
 			l_variables: like required_environment_variables
-			l_variable: TUPLE [var: !STRING_8; is_directory: BOOLEAN]
+			l_variable: TUPLE [var: STRING_8; is_directory: BOOLEAN]
 			l_is_valid: like is_valid_environment
 		do
+			initialize_from_arguments
+
 			l_is_valid := True
 
 			if {PLATFORM_CONSTANTS}.is_unix then
@@ -154,7 +156,10 @@ feature -- Status update
 				l_variable := l_variables.item
 				l_value := get_environment (l_variable.var)
 
-				if l_value /= Void and then l_value.item (l_value.count) = l_op_env.directory_separator and then ({PLATFORM}.is_windows or else not (l_value.is_equal ("/") or l_value.is_equal ("~/"))) then
+				if
+					l_value /= Void and then l_value.item (l_value.count) = l_op_env.directory_separator and then
+					({PLATFORM}.is_windows or else not (l_value.is_equal ("/") or l_value.is_equal ("~/")))
+				then
 						-- Remove trailing directory separator
 					l_value.prune_all_trailing (l_op_env.directory_separator)
 				end
@@ -207,6 +212,15 @@ feature -- Status update
 			l_value := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_library_env)
 			if l_value = Void or else l_value.is_empty then
 				set_environment (lib_path, {EIFFEL_ENVIRONMENT_CONSTANTS}.ise_library_env)
+			else
+					-- To avoid having to edit the value of ISE_LIBRARY when compiling against
+					-- a certain compiler profile, we modify the value of the ISE_LIBRARY environment
+					-- variable.
+				if is_experimental_mode and l_value.substring_index ("experimental", 1) = 0 then
+					create l_dir_name.make_from_string (l_value)
+					l_dir_name.extend ("experimental")
+					set_environment (l_dir_name, {EIFFEL_ENVIRONMENT_CONSTANTS}.ise_library_env)
+				end
 			end
 
 				-- Make sure to define ISE_USER_SETTINGS if not defined.
@@ -260,7 +274,7 @@ feature -- Status report
 			end
 		end
 
-	is_workbench: BOOLEAN is
+	is_workbench: BOOLEAN
 			-- Are we running the workbench version of the compiler?
 		external
 			"C inline use %"eif_eiffel.h%""
@@ -270,7 +284,7 @@ feature -- Status report
 
 feature -- Status
 
-	has_borland: BOOLEAN is
+	has_borland: BOOLEAN
 			-- Is Borland C++ back-end C compiler?
 		once
 			Result := {PLATFORM}.is_windows and then Eiffel_c_compiler.is_equal ("bcb")
@@ -278,12 +292,12 @@ feature -- Status
 
 feature -- Status setting
 
-	set_precompile (a_is_dotnet: BOOLEAN) is
+	set_precompile (a_is_dotnet: BOOLEAN)
 			-- Set up the ISE_PRECOMP environment variable, depending on `a_is_dotnet'.
 		require
 			is_valid_environment: is_valid_environment
 		do
-			environment.put (precomp_platform_path (a_is_dotnet), {EIFFEL_ENVIRONMENT_CONSTANTS}.ise_precomp_env)
+			set_environment (precomp_platform_path (a_is_dotnet), {EIFFEL_ENVIRONMENT_CONSTANTS}.ise_precomp_env)
 			is_valid_precompile_environment := True
 		ensure
 			is_valid_precompile_environment: is_valid_precompile_environment
@@ -291,7 +305,7 @@ feature -- Status setting
 
 feature {NONE} -- Helpers
 
-	environment: !ENVIRONMENT_ACCESS
+	environment: ENVIRONMENT_ACCESS
 			-- Shared access to an instance of {ENVIRONMENT_ACCESS}.
 		once
 			create Result
@@ -299,7 +313,7 @@ feature {NONE} -- Helpers
 
 feature -- IL environment
 
-	default_il_environment: !IL_ENVIRONMENT
+	default_il_environment: IL_ENVIRONMENT
 			-- Default il environment, using the newest available runtime.
 		once
 			create Result
@@ -307,7 +321,7 @@ feature -- IL environment
 
 feature -- Query
 
-	user_priority_file_name (a_file_name: STRING_GENERAL; a_must_exist: BOOLEAN): ?FILE_NAME
+	user_priority_file_name (a_file_name: STRING_GENERAL; a_must_exist: BOOLEAN): detachable FILE_NAME
 			-- Retrieve a Eiffel installation file, taking a user replacement as priority
 		require
 			a_file_name_attached: a_file_name /= Void
@@ -318,9 +332,9 @@ feature -- Query
 			l_extension: STRING
 			l_actual_file: RAW_FILE
 		do
-			l_install := install_path
+			l_install := install_path.string
 			if l_install.count < a_file_name.count then
-				l_file := a_file_name.as_string_8
+				l_file := a_file_name.as_string_8.string
 				if l_file.substring (1, l_install.count).is_equal (l_install) then
 					l_extension := l_file.substring (l_install.count + 1, l_file.count)
 					l_extension.prune_all_leading (operating_environment.directory_separator)
@@ -339,7 +353,7 @@ feature -- Query
 			result_exists: (Result /= Void and a_must_exist) implies (create {RAW_FILE}.make (Result)).exists
 		end
 
-	user_priority_path (a_dir: STRING_GENERAL; a_must_exist: BOOLEAN): ?DIRECTORY_NAME
+	user_priority_path (a_dir: STRING_GENERAL; a_must_exist: BOOLEAN): detachable DIRECTORY_NAME
 			-- Retrieve a Eiffel installation file, taking a user replacement as priority
 		require
 			a_dir_attached: a_dir /= Void
@@ -349,9 +363,9 @@ feature -- Query
 			l_extension: STRING
 			l_dir: STRING_8
 		do
-			l_install := install_path
+			l_install := install_path.string
 			if l_install.count < a_dir.count then
-				l_dir := a_dir.as_string_8
+				l_dir := a_dir.as_string_8.string
 				if l_dir.substring (1, l_install.count).is_equal (l_install) then
 					l_extension := l_dir.substring (l_install.count + 1, l_dir.count)
 					l_extension.prune_all_leading (operating_environment.directory_separator)
@@ -369,9 +383,80 @@ feature -- Query
 			result_exists: (Result /= Void and a_must_exist) implies (create {DIRECTORY}.make (Result)).exists
 		end
 
+	platform_priority_file_name (a_file_name: READABLE_STRING_GENERAL; a_use_simple: BOOLEAN; a_must_exist: BOOLEAN): detachable FILE_NAME
+			-- Retrieve a Eiffel installation path, taking a platform specific path as a priority
+			--
+			-- `a_dir': A base directory to affix with the platform name.
+			-- `a_use_simple': True to use the Windows/Unix platform name; False to use ISE_PLATFORM.
+			-- `a_must_exist': True if the directory must exist to return a result; False otherwise.
+			-- `Result': A platform path or Void if the path does not exist.
+		require
+			a_file_name_attached: a_file_name /= Void
+			not_a_file_is_empty: not a_file_name.is_empty
+		local
+			l_file: STRING
+			l_path: like platform_priority_path
+			i: INTEGER
+		do
+			l_file := a_file_name.as_string_8
+			i := l_file.last_index_of (operating_environment.directory_separator, l_file.count)
+			if i > 0 then
+				l_path := platform_priority_path (l_file.substring (1, i - 1), a_use_simple, a_must_exist)
+				if l_path /= Void then
+					create Result.make_from_string (l_path)
+					Result.extend (l_file.substring (i + 1, l_file.count))
+					if a_must_exist and then not (create {RAW_FILE}.make (Result)).exists then
+							-- The directory does not exist
+						Result := Void
+					end
+				end
+
+			end
+		ensure
+			not_result_is_empty: Result /= Void implies not Result.is_empty
+			result_exists: (Result /= Void and a_must_exist) implies (create {RAW_FILE}.make (Result)).exists
+		end
+
+	platform_priority_path (a_dir: READABLE_STRING_GENERAL; a_use_simple: BOOLEAN; a_must_exist: BOOLEAN): detachable DIRECTORY_NAME
+			-- Retrieve a Eiffel installation path, taking a platform specific path as a priority
+			--
+			-- `a_dir': A base directory to affix with the platform name.
+			-- `a_use_simple': True to use the Windows/Unix platform name; False to use ISE_PLATFORM.
+			-- `a_must_exist': True if the directory must exist to return a result; False otherwise.
+			-- `Result': A platform path or Void if the path does not exist.
+		require
+			a_dir_attached: a_dir /= Void
+			not_a_dir_is_empty: not a_dir.is_empty
+		local
+			l_platform: like eiffel_platform
+		do
+			create Result.make_from_string (a_dir.as_string_8)
+			if a_use_simple then
+				if {PLATFORM}.is_windows then
+					Result.extend (windows_name)
+				else
+					Result.extend (unix_name)
+				end
+			else
+				l_platform := eiffel_platform
+				if not l_platform.is_empty then
+					Result.extend (l_platform)
+				elseif a_must_exist then
+					Result := Void
+				end
+			end
+			if a_must_exist and then Result /= Void and then not (create {DIRECTORY}.make (Result)).exists then
+					-- The directory does not exist
+				Result := Void
+			end
+		ensure
+			not_result_is_empty: Result /= Void implies not Result.is_empty
+			result_exists: (Result /= Void and a_must_exist) implies (create {DIRECTORY}.make (Result)).exists
+		end
+
 feature -- Directories (top-level)
 
-	install_path: !DIRECTORY_NAME
+	install_path: DIRECTORY_NAME
 			-- Absolute path to the Eiffel installation.
 			--
 			-- Note: This is the Eiffel installation location for most platforms but you should
@@ -405,7 +490,7 @@ feature -- Directories (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	docs_path: !DIRECTORY_NAME
+	docs_path: DIRECTORY_NAME
 			-- Folder contains Eiffel documention.
 		require
 			is_valid_environment: is_valid_environment
@@ -421,7 +506,7 @@ feature -- Directories (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	dotnet_path: !DIRECTORY_NAME
+	dotnet_path: DIRECTORY_NAME
 			-- Location of .NET specific data
 		require
 			is_valid_environment: is_valid_environment
@@ -432,7 +517,7 @@ feature -- Directories (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	library_path: !DIRECTORY_NAME
+	library_path: DIRECTORY_NAME
 			-- Eiffel library path
 		require
 			is_valid_environment: is_valid_environment
@@ -443,7 +528,7 @@ feature -- Directories (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	precomp_path: !DIRECTORY_NAME
+	precomp_path: DIRECTORY_NAME
 			-- Eiffel precomp path
 		require
 			is_valid_environment: is_valid_environment
@@ -454,7 +539,7 @@ feature -- Directories (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	precomp_platform_path (a_is_dotnet: BOOLEAN): !DIRECTORY_NAME
+	precomp_platform_path (a_is_dotnet: BOOLEAN): DIRECTORY_NAME
 			-- Retrieve precomp location.
 		require
 			is_valid_environment: is_valid_environment
@@ -482,7 +567,7 @@ feature -- Directories (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	application_path: !DIRECTORY_NAME
+	application_path: DIRECTORY_NAME
 			-- Location of the compile distribution.
 			--
 			-- Note: This is the Eiffel installation location for most platforms but you should
@@ -499,12 +584,12 @@ feature -- Directories (top-level)
 
 feature  -- Directories (dotnet)
 
-	assemblies_path: !DIRECTORY_NAME
+	assemblies_path: DIRECTORY_NAME
 			-- Location of Eiffel Assembly Cache.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := dotnet_path.twin
+			create Result.make_from_string (dotnet_path)
 			Result.extend (assemblies_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
@@ -512,18 +597,18 @@ feature  -- Directories (dotnet)
 
 feature -- Directories (distribution)
 
-	bitmaps_path: !DIRECTORY_NAME
+	bitmaps_path: DIRECTORY_NAME
 			-- Path containing the bitmaps for the graphical environment.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend (bitmaps_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	borland_path: !DIRECTORY_NAME
+	borland_path: DIRECTORY_NAME
 			-- Location of the borland directory
 		require
 			has_borland: has_borland
@@ -535,12 +620,12 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	built_ins_path (a_is_platform_neutral, a_is_dotnet: BOOLEAN): !DIRECTORY_NAME
+	built_ins_path (a_is_platform_neutral, a_is_dotnet: BOOLEAN): DIRECTORY_NAME
 			-- Path where implementation for `built_ins' are found.
 		require
 			is_valid_environment: is_valid_environment
 		do
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend (built_ins_name)
 			if a_is_platform_neutral then
 				Result.extend (neutral_name)
@@ -555,18 +640,18 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	config_path: !DIRECTORY_NAME
+	config_path: DIRECTORY_NAME
 			-- Path containing the Eiffel compiler configuration files.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend ("config")
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	generation_templates_path: !DIRECTORY_NAME
+	generation_templates_path: DIRECTORY_NAME
 			-- Path containing the Eiffel compiler code generation template files.
 		require
 			is_valid_environment: is_valid_environment
@@ -577,18 +662,18 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	eifinit_path: !DIRECTORY_NAME
+	eifinit_path: DIRECTORY_NAME
 			-- Path containing the Eiffel initialization configuration files.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend ("eifinit")
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	filter_path: !DIRECTORY_NAME
+	filter_path: DIRECTORY_NAME
 			-- Path containing the documentation filters.
 		require
 			is_valid_environment: is_valid_environment
@@ -599,7 +684,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	help_path: !DIRECTORY_NAME
+	help_path: DIRECTORY_NAME
 			-- Path containing the help files.
 		require
 			is_valid_environment: is_valid_environment
@@ -610,7 +695,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	error_path: !DIRECTORY_NAME
+	error_path: DIRECTORY_NAME
 			-- Path containing the compiler error description files.
 		require
 			is_valid_environment: is_valid_environment
@@ -621,7 +706,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	default_templates_path: !DIRECTORY_NAME
+	default_templates_path: DIRECTORY_NAME
 			-- Path containing the default templates.
 		require
 			is_valid_environment: is_valid_environment
@@ -632,83 +717,83 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	language_path: DIRECTORY_NAME is
+	language_path: DIRECTORY_NAME
 			-- Path containing the internationalized mo files.
 		require
 			is_valid_environment: is_valid_environment
 		once
 			if is_unix_layout then
-				Result := unix_layout_share_path.twin
+				create Result.make_from_string (unix_layout_share_path)
 				Result.extend_from_array (<<unix_layout_locale_dir, product_version_name >>)
 			else
-				Result := shared_application_path.twin
+				create Result.make_from_string (shared_application_path)
 				Result.extend_from_array (<<lang_name, mo_files_name>>)
 			end
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	metrics_path: !DIRECTORY_NAME
+	metrics_path: DIRECTORY_NAME
 			-- Location of the metric configuration files
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend (metrics_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	profile_path: !DIRECTORY_NAME
+	profile_path: DIRECTORY_NAME
 			-- Location of the profiler configuration files
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend (profiler_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	templates_path: !DIRECTORY_NAME
+	templates_path: DIRECTORY_NAME
 			-- Path to user code template, to merge with the ones from the installation.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			create Result.make_from_string (shared_application_path)
 			Result.extend (templates_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	template_default_path: !DIRECTORY_NAME
+	template_default_path: DIRECTORY_NAME
 			-- Path containing the templates for default Eiffel files.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := templates_path.twin
+			create Result.make_from_string (templates_path)
 			Result.extend (defaults_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	bin_path: !DIRECTORY_NAME
+	bin_path: DIRECTORY_NAME
 			-- Location of binary compiler components.
 		require
 			is_valid_environment: is_valid_environment
 		once
 			if is_unix_layout then
-				Result := unix_layout_base_path.twin
+				create Result.make_from_string (unix_layout_base_path)
 				Result.extend (bin_name)
 			else
-				Result := shared_application_path.twin
+				create Result.make_from_string (shared_application_path)
 				Result.extend_from_array (<<spec_name, eiffel_platform, bin_name>>)
 			end
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	runtime_include_path: !DIRECTORY_NAME
+	runtime_include_path: DIRECTORY_NAME
 			-- Location of Eiffel runtime include files.
 		require
 			is_valid_environment: is_valid_environment
@@ -724,7 +809,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	runtime_lib_path: !DIRECTORY_NAME
+	runtime_lib_path: DIRECTORY_NAME
 			-- Location of Eiffel runtime lib files.
 		require
 			is_valid_environment: is_valid_environment
@@ -740,29 +825,29 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	wizards_path: !DIRECTORY_NAME
+	wizards_path: DIRECTORY_NAME
 			-- Location of new project wizards.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := lib_application_path.twin
+			create Result.make_from_string (lib_application_path)
 			Result.extend (wizards_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	new_project_wizards_path: !DIRECTORY_NAME
+	new_project_wizards_path: DIRECTORY_NAME
 			-- Location of new project wizards.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := wizards_path.twin
+			create Result.make_from_string (wizards_path)
 			Result.extend ("new_projects")
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	precompilation_wizard_resources_path: !DIRECTORY_NAME
+	precompilation_wizard_resources_path: DIRECTORY_NAME
 			-- Location of precompiled wizard resources
 		require
 			is_valid_environment: is_valid_environment
@@ -773,7 +858,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	tools_path: !DIRECTORY_NAME
+	tools_path: DIRECTORY_NAME
 			-- Path containing the modular files for Eiffel tools.
 		require
 			is_valid_environment: is_valid_environment
@@ -784,7 +869,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	testing_tool_path: !DIRECTORY_NAME
+	testing_tool_path: DIRECTORY_NAME
 			-- Path containing testing tool files.
 		require
 			is_valid_environment: is_valid_environment
@@ -793,7 +878,7 @@ feature -- Directories (distribution)
 			Result.extend ("testing")
 		end
 
-	auto_test_path: !DIRECTORY_NAME
+	auto_test_path: DIRECTORY_NAME
 			-- Path containing auto test specific files
 		require
 			is_valid_environment: is_valid_environment
@@ -806,20 +891,23 @@ feature -- Directories (distribution)
 
 feature -- Directories (top-level user)
 
-	user_application_files_path: !DIRECTORY_NAME
+	user_application_files_path: DIRECTORY_NAME
 			-- User based application configuration Eiffel files (hidden).
 		require
 			is_valid_environment: is_valid_environment
 			is_user_files_supported: is_user_files_supported
 		local
 			l_dir: like get_environment
-			l_dir_name: ?DIRECTORY_NAME
+			l_dir_name: detachable DIRECTORY_NAME
 		once
 			l_dir := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_app_data_env)
 			if l_dir = Void or else l_dir.is_empty then
 					-- Attempt to use home location.
-				if operating_environment.home_directory_supported then
-					create l_dir_name.make_from_string  ((create {EXECUTION_ENVIRONMENT}).home_directory_name)
+				if
+					operating_environment.home_directory_supported and then
+					attached {STRING} (create {EXECUTION_ENVIRONMENT}).home_directory_name as l_home
+				then
+					create l_dir_name.make_from_string  (l_home)
 					safe_create_dir (l_dir_name.string)
 					if {PLATFORM}.is_windows then
 							-- Add company directory
@@ -842,15 +930,20 @@ feature -- Directories (top-level user)
 				if {PLATFORM}.is_windows then
 					create l_dir.make (20)
 					l_dir.append (product_version_name.as_lower)
+					if is_workbench then
+						l_dir.append (wkbench_suffix)
+					end
 				else
-					create l_dir.make (20)
-					l_dir.append (".es")
+					l_dir := ".es"
+					if is_workbench then
+						l_dir.append (wkbench_suffix)
+					end
+					l_dir_name.extend (l_dir)
+					safe_create_dir (l_dir_name.string)
+
+					create l_dir.make (5)
 					l_dir.append_integer ({EIFFEL_ENVIRONMENT_CONSTANTS}.major_version)
 					l_dir.append_integer ({EIFFEL_ENVIRONMENT_CONSTANTS}.minor_version)
-				end
-
-				if is_workbench then
-					l_dir.append (wkbench_suffix)
 				end
 				l_dir_name.extend (l_dir)
 			end
@@ -859,15 +952,15 @@ feature -- Directories (top-level user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_files_path: !DIRECTORY_NAME
+	user_files_path: DIRECTORY_NAME
 			-- User based Eiffel files.
 		require
 			is_valid_environment: is_valid_environment
 			is_user_files_supported: is_user_files_supported
 		local
-			l_user_files: like user_directory_name
-			l_dir: !STRING_8
-			l_directory: !DIRECTORY
+			l_user_files: detachable like user_directory_name
+			l_dir: STRING_8
+			l_directory: DIRECTORY
 		once
 			l_user_files := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_user_files_env)
 			if l_user_files = Void or else l_user_files.is_empty then
@@ -921,18 +1014,18 @@ feature -- Directories (top-level user)
 
 feature -- Directories (user)
 
-	user_settings_path: !DIRECTORY_NAME
+	user_settings_path: DIRECTORY_NAME
 			-- Path to user setting.
 		require
 			is_valid_environment: is_valid_environment
 			is_user_files_supported: is_user_files_supported
 		once
-			Result := user_application_files_path.twin
+			create Result.make_from_string (user_application_files_path)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_project_settings_path: !DIRECTORY_NAME
+	user_project_settings_path: DIRECTORY_NAME
 			-- Path to user project based setting.
 		require
 			is_valid_environment: is_valid_environment
@@ -944,7 +1037,7 @@ feature -- Directories (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_docking_path: !DIRECTORY_NAME
+	user_docking_path: DIRECTORY_NAME
 			-- Path to user code template, to merge with the ones from the installation.
 		require
 			is_valid_environment: is_valid_environment
@@ -956,7 +1049,7 @@ feature -- Directories (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_session_path, session_data_path: !DIRECTORY_NAME
+	user_session_path, session_data_path: DIRECTORY_NAME
 			-- Path to user code template, to merge with the ones from the installation.
 		require
 			is_valid_environment: is_valid_environment
@@ -968,7 +1061,7 @@ feature -- Directories (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_studio_path: !DIRECTORY_NAME
+	user_studio_path: DIRECTORY_NAME
 			-- User based files, replacing the Eiffel compiler installed files.
 		require
 			is_valid_environment: is_valid_environment
@@ -989,7 +1082,7 @@ feature -- Directories (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_templates_path: !DIRECTORY_NAME
+	user_templates_path: DIRECTORY_NAME
 				-- Path to user code template, to merge with the ones from the installation.
 		require
 			is_valid_environment: is_valid_environment
@@ -1001,18 +1094,21 @@ feature -- Directories (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_projects_path: !DIRECTORY_NAME
+	user_projects_path: DIRECTORY_NAME
 			-- Location of Eiffel projects.
 		local
-			l_var: STRING
+			l_var: detachable STRING
 		once
 			l_var := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_projects_env)
 			if l_var = Void or else l_var.is_empty then
 				if {PLATFORM}.is_windows or else {PLATFORM}.is_mac then
 					Result := user_files_path.twin
 					Result.extend (projects_name)
+				elseif operating_environment.home_directory_supported and then attached {STRING} environment.home_directory_name as l_home then
+					create Result.make_from_string (l_home)
 				else
-					create Result.make_from_string (environment.home_directory_name)
+						-- FIXME: What path should we put there?
+					create Result.make_from_string ("\Invalid path")
 				end
 			else
 				create Result.make_from_string (l_var)
@@ -1024,7 +1120,7 @@ feature -- Directories (user)
 
 feature -- Directories (other)
 
-	tmp_directory: !DIRECTORY_NAME
+	tmp_directory: DIRECTORY_NAME
 			-- Locate of the temporary directory
 		once
 			create Result.make
@@ -1035,7 +1131,7 @@ feature -- Directories (other)
 
 feature -- Files
 
-	default_config_file_name: !FILE_NAME
+	default_config_file_name: FILE_NAME
 			-- Default Eiffel confiration file name location
 		require
 			is_valid_environment: is_valid_environment
@@ -1055,7 +1151,7 @@ feature -- Files
 			not_result_is_empty: not Result.is_empty
 		end
 
-	predefined_metrics_file: !FILE_NAME
+	predefined_metrics_file: FILE_NAME
 			-- File to store predefined metrics
 		require
 			is_valid_environment: is_valid_environment
@@ -1075,7 +1171,7 @@ feature -- Files
 			not_result_is_empty: not Result.is_empty
 		end
 
-	compiler_configuration: !FILE_NAME
+	compiler_configuration: FILE_NAME
 			-- Platform specific system level resource specification file
 			-- ($ISE_EIFFEL/eifinit/application_name/spec/$ISE_PLATFORM)
 		require
@@ -1087,7 +1183,7 @@ feature -- Files
 
 			if is_user_files_supported then
 					-- Check user override file.
-				if {l_user: like user_priority_file_name} user_priority_file_name (Result, True) then
+				if attached {like user_priority_file_name} user_priority_file_name (Result, True) as l_user then
 					Result := l_user
 				end
 			end
@@ -1095,7 +1191,7 @@ feature -- Files
 			not_result_is_empty: not Result.is_empty
 		end
 
-	msil_culture_name: !FILE_NAME
+	msil_culture_name: FILE_NAME
 			-- Culture specification file
 		require
 			is_valid_environment: is_valid_environment
@@ -1109,7 +1205,7 @@ feature -- Files
 
 			if is_user_files_supported then
 					-- Check user override file.
-				if {l_user: like user_priority_file_name} user_priority_file_name (Result, True) then
+				if attached {like user_priority_file_name} user_priority_file_name (Result, True) as l_user then
 					Result := l_user
 				end
 			end
@@ -1117,7 +1213,7 @@ feature -- Files
 			not_result_is_empty: not Result.is_empty
 		end
 
-	libraries_config_name: !FILE_NAME
+	libraries_config_name: FILE_NAME
 			-- Libraries lookup configuration file name
 		require
 			is_valid_environment: is_valid_environment
@@ -1129,7 +1225,7 @@ feature -- Files
 			not_result_is_empty: not Result.is_empty
 		end
 
-	precompiles_config_name: !FILE_NAME
+	precompiles_config_name: FILE_NAME
 			-- Precompiled libraries lookup configuration file name
 		require
 			is_valid_environment: is_valid_environment
@@ -1143,7 +1239,7 @@ feature -- Files
 
 feature -- Files (user)
 
-	user_docking_file_name (a_file_name: STRING): !FILE_NAME
+	user_docking_file_name (a_file_name: STRING): FILE_NAME
 			-- Path of standard docking layout.
 		require
 			is_valid_environment: is_valid_environment
@@ -1158,7 +1254,7 @@ feature -- Files (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_docking_standard_file_name (a_window_id: NATURAL_32): !FILE_NAME
+	user_docking_standard_file_name (a_window_id: NATURAL_32): FILE_NAME
 			-- Path of standard docking layout.
 		require
 			is_valid_environment: is_valid_environment
@@ -1170,7 +1266,7 @@ feature -- Files (user)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	user_docking_debug_file_name (a_window_id: NATURAL_32): !FILE_NAME
+	user_docking_debug_file_name (a_window_id: NATURAL_32): FILE_NAME
 			-- Path of standard docking layout.
 		require
 			is_valid_environment: is_valid_environment
@@ -1184,7 +1280,7 @@ feature -- Files (user)
 
 feature -- Obsolete
 
-	eiffel_home: !DIRECTORY_NAME
+	eiffel_home: DIRECTORY_NAME
 			-- Name of directory containing Eiffel specific data.
 		local
 			l_dir: STRING
@@ -1207,7 +1303,7 @@ feature -- Obsolete
 
 feature -- Directories (platform independent)
 
-	shared_path: !DIRECTORY_NAME
+	shared_path: DIRECTORY_NAME
 			-- Location of shared files (platform independent).
 		require
 			is_valid_environment: is_valid_environment
@@ -1238,7 +1334,7 @@ feature -- Directories (platform independent)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	shared_application_path: !DIRECTORY_NAME
+	shared_application_path: DIRECTORY_NAME
 			-- Location of shared files specific for the current application (platform independent).
 		require
 			is_valid_environment: is_valid_environment
@@ -1249,7 +1345,7 @@ feature -- Directories (platform independent)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	lib_path: !DIRECTORY_NAME
+	lib_path: DIRECTORY_NAME
 			-- Location of libs files (platform dependent).
 		require
 			is_valid_environment: is_valid_environment
@@ -1258,18 +1354,29 @@ feature -- Directories (platform independent)
 				Result := unix_layout_base_path.twin
 				Result.extend_from_array (<<unix_layout_lib_dir, product_version_name>>)
 			else
-				Result := install_path
+				Result := install_path.twin
+			end
+			if is_experimental_mode then
+				Result.extend ("experimental")
+			elseif is_compatible_mode then
+					-- In 6.4, there is no compatible mode,
+					-- so nothing to be done.
 			end
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	lib_application_path: !DIRECTORY_NAME
+	lib_application_path: DIRECTORY_NAME
 			-- Location of lib files specific for the current application (platform dependent).
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := lib_path.twin
+			if is_unix_layout then
+				Result := unix_layout_base_path.twin
+				Result.extend_from_array (<<unix_layout_lib_dir, product_version_name>>)
+			else
+				Result := install_path.twin
+			end
 			Result.extend (distribution_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
@@ -1277,7 +1384,7 @@ feature -- Directories (platform independent)
 
 feature -- Files (commands)
 
-	estudio_command_name: !FILE_NAME
+	estudio_command_name: FILE_NAME
 			-- Complete path to `estudio'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1291,7 +1398,7 @@ feature -- Files (commands)
 			not_reuslt_is_empty: not Result.is_empty
 		end
 
-	ec_command_name: !FILE_NAME
+	ec_command_name: FILE_NAME
 			-- Absolute path to `ec'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1305,7 +1412,7 @@ feature -- Files (commands)
 			not_reuslt_is_empty: not Result.is_empty
 		end
 
-	freeze_command_name: !FILE_NAME
+	freeze_command_name: FILE_NAME
 		require
 			is_valid_environment: is_valid_environment
 		once
@@ -1318,7 +1425,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	emake_command_name: !FILE_NAME
+	emake_command_name: FILE_NAME
 			-- Complete path to `emake'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1336,7 +1443,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	quick_finalize_command_name: !FILE_NAME
+	quick_finalize_command_name: FILE_NAME
 			-- Complete path to `quick_finalize'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1354,7 +1461,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	x2c_command_name: !FILE_NAME
+	x2c_command_name: FILE_NAME
 			-- Complete path to `x2c'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1372,7 +1479,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	prelink_command_name: !FILE_NAME
+	prelink_command_name: FILE_NAME
 		require
 			is_valid_environment: is_valid_environment
 		once
@@ -1389,7 +1496,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	ecdbgd_command_name: !FILE_NAME
+	ecdbgd_command_name: FILE_NAME
 			-- Complete path to `ecdbgd'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1407,7 +1514,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	compile_library_command_name: !FILE_NAME
+	compile_library_command_name: FILE_NAME
 			-- Complete path to `compile_library.bat'.
 		require
 			is_valid_environment: is_valid_environment
@@ -1420,7 +1527,7 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	precompilation_wizard_command_name: !FILE_NAME
+	precompilation_wizard_command_name: FILE_NAME
 			-- Command to be executed to launch the precompilation wizard.
 		require
 			is_valid_environment: is_valid_environment
@@ -1437,7 +1544,7 @@ feature -- Files (commands)
 
 feature -- Executable names
 
-	estudio_name: !STRING_8
+	estudio_name: STRING_8
 			-- Name of estudio command
 		once
 			create Result.make_from_string ("estudio")
@@ -1448,7 +1555,7 @@ feature -- Executable names
 			not_result_is_empty: not Result.is_empty
 		end
 
-	ec_name: !STRING_8
+	ec_name: STRING_8
 			-- Full executable name of ec.
 		local
 			l_var: like get_environment
@@ -1467,7 +1574,7 @@ feature -- Executable names
 			not_result_is_empty: not Result.is_empty
 		end
 
-	finish_freezing_script: !STRING_8
+	finish_freezing_script: STRING_8
 			-- Name of post-eiffel compilation processing to launch C code.
 		once
 			create Result.make_from_string ("finish_freezing")
@@ -1478,24 +1585,24 @@ feature -- Executable names
 			not_result_is_empty: not Result.is_empty
 		end
 
-	quick_finalize_name: !STRING_8 = "quick_finalize"
+	quick_finalize_name: STRING_8 = "quick_finalize"
 			-- Name of estudio command
 
-	x2c_name: !STRING_8 = "x2c"
+	x2c_name: STRING_8 = "x2c"
 			-- Complete path to `x2c'.
 
-	emake_name: !STRING_8 = "emake"
+	emake_name: STRING_8 = "emake"
 			-- Name of emake command.
 
-	prelink_name: !STRING_8 = "prelink"
+	prelink_name: STRING_8 = "prelink"
 			-- Name of estudio command.
 
-	ecdbg_name: !STRING_8 = "ecdbgd"
+	ecdbg_name: STRING_8 = "ecdbgd"
 			-- Name of console line debugger command.
 
 feature {NONE} -- Configuration of layout
 
-	unix_layout_base_path: !DIRECTORY_NAME
+	unix_layout_base_path: DIRECTORY_NAME
 			-- Base for the unix layout. e.g. "/usr" or "/usr/local"
 		once
 			create Result.make
@@ -1504,7 +1611,7 @@ feature {NONE} -- Configuration of layout
 			not_result_is_empty: not Result.is_empty
 		end
 
-	unix_layout_share_path: !DIRECTORY_NAME
+	unix_layout_share_path: DIRECTORY_NAME
 			-- share for the unix layout. e.g. "/usr/share"
 		once
 			create Result.make_from_string ("/usr/share") -- Comment to finde line for replacement UNIX_BASE_PATH
@@ -1512,7 +1619,7 @@ feature {NONE} -- Configuration of layout
 			not_result_is_empty: not Result.is_empty
 		end
 
-	unix_layout_lib_dir: !STRING_8
+	unix_layout_lib_dir: STRING_8
 			-- Directory name for lib. e.g. "lib" or "lib64"
 		once
 			create Result.make_from_string ("lib") -- Comment to finde line for replacement UNIX_LIB_NAME
@@ -1520,7 +1627,7 @@ feature {NONE} -- Configuration of layout
 			not_result_is_empty: not Result.is_empty
 		end
 
-	unix_layout_locale_dir: !STRING_8
+	unix_layout_locale_dir: STRING_8
 			-- Directory name for lib. e.g. "locale"
 		once
 			create Result.make_from_string ("locale") -- Comment to finde line for replacement UNIX_LIB_NAME
@@ -1528,12 +1635,12 @@ feature {NONE} -- Configuration of layout
 			not_result_is_empty: not Result.is_empty
 		end
 
-	unix_layout_platform: !STRING_8 = "unix";
+	unix_layout_platform: STRING_8 = "unix";
 			-- Platform to use for the unix layout.
 
 feature -- Environment access
 
-	get_environment (a_var: STRING_8): ?STRING
+	get_environment (a_var: STRING_8): detachable STRING
 			-- Get `a_var' from the environment, taking into account the `application_name' to lookup the defaults.
 		require
 			a_var_attached: a_var /= Void
@@ -1550,32 +1657,32 @@ feature -- Environment update
 			a_var_ok: a_var /= Void and then not a_var.is_empty and then not a_var.has ('%U')
 			a_value_ok: a_value /= Void and then not a_value.has ('%U')
 		do
-			environment.put (a_value, a_var)
+			environment.put (a_value.string, a_var)
 		ensure
-			value_updated: get_environment (a_var) /= Void implies get_environment (a_var).is_equal (a_value)
+			value_updated: get_environment (a_var) /= Void implies get_environment (a_var) ~ a_value.string
 		end
 
 feature -- Version limitation
 
-	has_diagram: BOOLEAN is True
+	has_diagram: BOOLEAN = True
 			-- Does this version have the diagram tool?
 
-	has_metrics: BOOLEAN is True
+	has_metrics: BOOLEAN = True
 			-- Does this version have the metrics?
 
-	has_profiler: BOOLEAN is True
+	has_profiler: BOOLEAN = True
 			-- Does this version have the profiler?
 
-	has_documentation_generation: BOOLEAN is True
+	has_documentation_generation: BOOLEAN = True
 			-- Does this version have the documentation generation?
 
-	has_xmi_generation: BOOLEAN is True
+	has_xmi_generation: BOOLEAN = True
 			-- Does this version have the XMI generation?
 
-	has_dll_generation: BOOLEAN is True
+	has_dll_generation: BOOLEAN = True
 			-- Does this version have the DLL generation?
 
-	has_signable_generation: BOOLEAN is True;
+	has_signable_generation: BOOLEAN = True;
 			-- Does this version allow the signing of .NET assemblies
 
 feature {NONE} -- Basic operations
@@ -1591,7 +1698,7 @@ feature {NONE} -- Basic operations
 			l_directories.do_all (agent safe_create_dir)
 		end
 
-	safe_create_dir (a_dir: STRING) is
+	safe_create_dir (a_dir: STRING)
 			-- Try to create a directory `a_dir'.
 		require
 			a_dir_not_void: a_dir /= Void
@@ -1618,48 +1725,61 @@ feature {NONE} -- Basic operations
 
 feature -- Environment variables
 
-	eiffel_install: ?STRING_8
+	eiffel_install: STRING_8
 			-- ISE_EIFFEL name
 		do
-			Result := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_eiffel_env)
-			remove_trailing_dir_separator (Result)
+			if attached {STRING} get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_eiffel_env) as l_result then
+				Result := l_result
+				remove_trailing_dir_separator (Result)
+			else
+				Result := ""
+			end
 		ensure
-			result_attached: is_valid_environment implies Result /= Void
 			not_result_is_empty: is_valid_environment implies not Result.is_empty
 		end
 
-	eiffel_c_compiler: ?STRING_8
+	eiffel_c_compiler: STRING_8
 			-- ISE_C_COMPILER name.
 		require
 			windows: {PLATFORM}.is_windows
 		do
-			Result := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_c_compiler_env)
+			if attached {STRING} get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_c_compiler_env) as l_result then
+				Result := l_result
+			else
+				Result := ""
+			end
 		ensure
-			result_attached: is_valid_environment implies Result /= Void
 			not_result_is_empty: is_valid_environment implies not Result.is_empty
 		end
 
-	eiffel_platform: ?STRING_8
+	eiffel_platform: STRING_8
 			-- ISE_PLATFORM name.
 		do
-			Result := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_platform_env)
+			if attached {STRING} get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_platform_env) as l_result then
+				Result := l_result
+			else
+				Result := ""
+			end
 		ensure
-			result_attached: is_valid_environment implies Result /= Void
 			not_result_is_empty: is_valid_environment implies not Result.is_empty
 		end
 
-	eiffel_library: ?STRING_8
+	eiffel_library: STRING_8
 			-- ISE_LIBRARY directory name.
 		require
 			is_valid_environment: is_valid_environment
 		do
-			Result := get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_library_env)
-			remove_trailing_dir_separator (Result)
+			if attached {STRING} get_environment ({EIFFEL_ENVIRONMENT_CONSTANTS}.ise_library_env) as l_result then
+				Result := l_result
+				remove_trailing_dir_separator (Result)
+			else
+				Result := ""
+			end
 		ensure
-			not_result_is_empty: not Result.is_empty
+			not_result_is_empty: is_valid_environment implies not Result.is_empty
 		end
 
-	platform_abstraction: !STRING_8
+	platform_abstraction: STRING_8
 			-- Abstraction between Windows and Unix.
 		once
 			if {PLATFORM}.is_windows then
@@ -1673,10 +1793,10 @@ feature -- Environment variables
 
 feature -- File constants
 
-	default_config_file: !STRING_8 = "default.ecf"
+	default_config_file: STRING_8 = "default.ecf"
 			-- Default ECF file name
 
-	default_project_location_for_windows: !STRING_8
+	default_project_location_for_windows: STRING_8
 			-- Default project location on windows.
 		require
 			is_windows: {PLATFORM}.is_windows
@@ -1688,27 +1808,27 @@ feature -- File constants
 
 feature -- Directory constants (platform)
 
-	dotnet_name: !STRING = "dotnet"
+	dotnet_name: STRING = "dotnet"
 			-- .NET folder name.
 
-	neutral_name: !STRING_8 = "neutral"
+	neutral_name: STRING_8 = "neutral"
 			-- Neutral platform folder name.
 
-	classic_name: !STRING_8 = "classic"
+	classic_name: STRING_8 = "classic"
 			-- Classic Eiffel folder name.
 
-	windows_name: !STRING_8 = "windows"
+	windows_name: STRING_8 = "windows"
 			-- Windows generic platform folder name.
 
-	unix_name: !STRING_8 = "unix"
+	unix_name: STRING_8 = "unix"
 			-- Unix generic platform folder name.
 
-	wkbench_suffix: !STRING_8 = "_wkbench"
+	wkbench_suffix: STRING_8 = "_wkbench"
 			-- Workbench suffix for paths
 
 feature -- Directory constants (top-level)
 
-	distribution_name: !STRING_8
+	distribution_name: STRING_8
 			-- Name of compiler distribution.
 			--
 			--| Redefine for alternative compiler distributions.
@@ -1718,109 +1838,109 @@ feature -- Directory constants (top-level)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	docs_name: !STRING = "docs"
+	docs_name: STRING = "docs"
 			-- Documentation folder name.
 
-	library_name: !STRING = "library"
+	library_name: STRING = "library"
 			-- Library folder name.
 
-	precomp_name: !STRING = "precomp"
+	precomp_name: STRING = "precomp"
 			-- Precompile library location
 
 feature -- Directory constants (dotnet)
 
-	assemblies_name: !STRING_8 = "assemblies"
+	assemblies_name: STRING_8 = "assemblies"
 			-- .NET assembly cache folder name.
 
 feature -- Directory constants (distribution)
 
-	bin_name: !STRING_8 = "bin"
+	bin_name: STRING_8 = "bin"
 			-- Binary folder name
 
-	bitmaps_name: !STRING_8 = "bitmaps"
+	bitmaps_name: STRING_8 = "bitmaps"
 			-- Bitmpa folder name.
 
-	borland_name: !STRING_8 = "BCC55"
+	borland_name: STRING_8 = "BCC55"
 			-- Borland C compiler folder name.
 
-	built_ins_name: !STRING_8 = "built_ins"
+	built_ins_name: STRING_8 = "built_ins"
 			-- Built-in code classes folder name.
 
-	defaults_name: !STRING_8 = "defaults"
+	defaults_name: STRING_8 = "defaults"
 			-- Default templates folder name.
 
-	errors_name: !STRING_8 = "errors"
+	errors_name: STRING_8 = "errors"
 			-- Error file descriptions folder name.
 
-	etc_name: !STRING_8 = "etc"
+	etc_name: STRING_8 = "etc"
 			-- Etc library folder name
 
-	filters_name: !STRING_8 = "filters"
+	filters_name: STRING_8 = "filters"
 			-- Documentation filters folder name.
 
-	help_name: !STRING_8 = "help"
+	help_name: STRING_8 = "help"
 			-- Help files folder name.
 
-	include_name: !STRING_8 = "include"
+	include_name: STRING_8 = "include"
 			-- External include folder name
 
-	lang_name: !STRING_8 = "lang"
+	lang_name: STRING_8 = "lang"
 			-- Language folder name.
 
-	lib_name: !STRING_8 = "lib"
+	lib_name: STRING_8 = "lib"
 			-- External library folder name
 
-	metrics_name: !STRING_8 = "metrics"
+	metrics_name: STRING_8 = "metrics"
 			-- Metrics folder name.
 
-	mo_files_name: !STRING_8 = "mo_files"
+	mo_files_name: STRING_8 = "mo_files"
 			-- Language MO files folder name.
 
-	profiler_name: !STRING_8 = "profiler"
+	profiler_name: STRING_8 = "profiler"
 			-- Profiler folder name.
 
-	templates_name: !STRING_8 = "templates"
+	templates_name: STRING_8 = "templates"
 			-- Code templates folder name.
 
-	spec_name: !STRING_8 = "spec"
+	spec_name: STRING_8 = "spec"
 			-- Specific folder name
 
-	wizards_name: !STRING_8 = "wizards"
+	wizards_name: STRING_8 = "wizards"
 			-- Wizards folder name
 
 feature -- Directory constants (user)
 
-	docking_name: !STRING_8 = "docking"
+	docking_name: STRING_8 = "docking"
 			-- User docking data folder name.
 
-	projects_name: !STRING_8 = "projects"
+	projects_name: STRING_8 = "projects"
 			-- Eiffel user projects folder name
 
-	settings_name: !STRING_8 = "settings"
+	settings_name: STRING_8 = "settings"
 			-- User settings folder name.
 
-	session_name: !STRING_8 = "session"
+	session_name: STRING_8 = "session"
 			-- User session data folder name.
 
-	eiffel_software_name: !STRING_8 = "Eiffel Software"
+	eiffel_software_name: STRING_8 = "Eiffel Software"
 			-- Company folder name
 
 feature -- File constants (user)
 
-	docking_debug_file: !STRING_8 = "debug"
+	docking_debug_file: STRING_8 = "debug"
 			-- Debugger layout docking file name
 
-	docking_standard_file: !STRING_8 = "standard"
+	docking_standard_file: STRING_8 = "standard"
 			-- Editor layout docking file name
 
-	docking_file_extension: !STRING_8 = "dck"
+	docking_file_extension: STRING_8 = "dck"
 
-	eis_storage_file: !STRING_8 = "eis_storage"
+	eis_storage_file: STRING_8 = "eis_storage"
 			-- EIS storage file name.
 
 feature {NONE} -- Formatting
 
-	remove_trailing_dir_separator (a_dir: ?STRING)
+	remove_trailing_dir_separator (a_dir: detachable STRING)
 			-- Removes the trailing directory separator of a directory.
 		require
 			a_dir_attached: a_dir /= Void
@@ -1853,8 +1973,14 @@ feature {NONE} -- Externals
 			if l_ptr /= default_pointer then
 				create l_dir.make_by_pointer (l_ptr)
 				Result := l_dir.string
+			elseif
+				operating_environment.home_directory_supported and then
+				attached {STRING} (create {EXECUTION_ENVIRONMENT}).home_directory_name as l_home
+			then
+				Result := l_home
 			else
-				Result := (create {EXECUTION_ENVIRONMENT}).home_directory_name
+					-- FIXME: What path should we put there?
+				create Result.make_from_string ("\Invalid path")
 			end
 		ensure
 			result_attached: Result /= Void
@@ -1926,7 +2052,7 @@ feature -- Preferences
 			not_result_is_empty: not Result.is_empty
 		end
 
-	general_preferences: !FILE_NAME
+	general_preferences: FILE_NAME
 			-- Platform independent preferences.
 		require
 			is_valid_environment: is_valid_environment
@@ -1934,31 +2060,31 @@ feature -- Preferences
 			create Result.make_from_string (eifinit_path)
 			Result.set_file_name ("default")
 			Result.add_extension ("xml")
-			if {l_fn: like user_priority_file_name} user_priority_file_name (Result, True) then
+			if attached {like user_priority_file_name} user_priority_file_name (Result, True) as l_fn then
 				Result := l_fn
 			end
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	platform_preferences: !FILE_NAME
+	platform_preferences: FILE_NAME
 			-- Platform specific preferences.
 		once
 			create Result.make_from_string (eifinit_path)
 			Result.extend_from_array (<<spec_name, platform_abstraction>>)
 			Result.set_file_name ("default")
 			Result.add_extension ("xml")
-			if {l_fn: like user_priority_file_name} user_priority_file_name (Result, True) then
+			if attached {like user_priority_file_name} user_priority_file_name (Result, True) as l_fn then
 				Result := l_fn
 			end
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1969,22 +2095,22 @@ feature -- Preferences
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

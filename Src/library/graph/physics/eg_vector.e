@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that is a vector containing Gs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,15 +11,15 @@ deferred class
 
 inherit
 	NUMERIC
-	
+
 feature -- Basic operations
 
-	infix "|*" (other: G): like Current is
+	scalar_product alias "|*" (other: G): like Current
 			-- Scalar product between `Current' and other.
 		deferred
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

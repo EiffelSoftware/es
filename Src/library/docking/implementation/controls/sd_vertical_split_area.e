@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Same as EV_VERTICAL_SPLIT_AREA, except that when double click it'll set it's proportion to 50%.
 			A decorator.
@@ -15,22 +15,23 @@ inherit
 	SD_MIDDLE_CONTAINER
 		undefine
 			is_in_default_state,
-			initialize,
 			copy
+		redefine
+			initialize,
+			implementation
 		end
 
 	EV_VERTICAL_SPLIT_AREA
 		redefine
-			initialize
-		select
-			implementation,
-			may_contain
+			initialize,
+			set_split_position,
+			implementation
 		end
 
 feature {NONE} -- Implementation
 
-	initialize is
-			-- Redefine
+	initialize
+			-- <Precursor>
 		local
 			l_platform: PLATFORM
 		do
@@ -43,9 +44,12 @@ feature {NONE} -- Implementation
 			if l_platfoRm.is_windows then
 				pointer_double_press_actions.force_extend (agent set_half)
 			end
+
+			pointer_button_release_actions.force_extend (agent update_proportion)
+			resize_actions.force_extend (agent remember_top_resize_split_area (Current))
 		end
 
-	set_half is
+	set_half
 			-- Set splitter position to half.
 		local
 			l_half: INTEGER
@@ -57,7 +61,23 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
+feature -- Command
+
+	set_split_position (a_split_position: INTEGER_32)
+			-- <Precursor>
+		do
+			Precursor {EV_VERTICAL_SPLIT_AREA} (a_split_position)
+			update_proportion
+		end
+
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	implementation: EV_VERTICAL_SPLIT_AREA_I
+			-- Responsible for interaction with native graphics toolkit.
+
+invariant
+
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

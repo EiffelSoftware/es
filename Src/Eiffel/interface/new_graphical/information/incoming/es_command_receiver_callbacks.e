@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Callbacks for EiffelStudio command receiver"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -56,7 +56,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialization
 		do
 			reset
@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
 
 feature -- Callbacks
 
-	on_condition_found (a_condition_module, a_condition: !STRING) is
+	on_condition_found (a_condition_module, a_condition: attached STRING)
 			-- A condition found in the processing command
 		do
 			condition_found := True
@@ -76,7 +76,7 @@ feature -- Callbacks
 			condition_module_not_void: condition_module /= Void
 		end
 
-	on_action_found (a_action_module, a_action: !STRING) is
+	on_action_found (a_action_module, a_action: attached STRING)
 			-- A action has been found
 		do
 			action_found := True
@@ -87,14 +87,14 @@ feature -- Callbacks
 			action_module_not_void: action_module /= Void
 		end
 
-	on_command_finished is
+	on_command_finished
 			-- Called when command detection finished
 		do
 					-- Start to analyse action
 			if action_found then
 					-- EIS incoming module
 				if action_module.is_case_insensitive_equal ({COMMAND_PROTOCOL_NAMES}.eis_incoming_module) then
-					if {lt_action: STRING}action.twin then
+					if attached action.twin as lt_action then
 						if lt_action.starts_with ({COMMAND_PROTOCOL_NAMES}.eiffel_protocol) then
 							lt_action.remove_head ({COMMAND_PROTOCOL_NAMES}.eiffel_protocol.count)
 								-- Remove the trailing '/' if any.
@@ -126,7 +126,7 @@ feature -- Callbacks
 
 feature -- Element Change
 
-	reset is
+	reset
 			-- Reset current for new command.
 		do
 			has_error := False
@@ -140,7 +140,7 @@ feature -- Element Change
 			create eis_component_found_table.make (5)
 		end
 
-	set_starting_dialog (a_dialog: like starting_dialog) is
+	set_starting_dialog (a_dialog: like starting_dialog)
 			-- Set `starting_dialog' with `a_dialog'
 		do
 			starting_dialog := a_dialog
@@ -150,7 +150,7 @@ feature -- Element Change
 
 feature {NONE} -- EIS implementation
 
-	extract_eis_attributes (a_string: !STRING) is
+	extract_eis_attributes (a_string: attached STRING)
 			-- Extract attributes from the reference.
 		require
 			eiffel_protocol_removed: not a_string.starts_with ({COMMAND_PROTOCOL_NAMES}.eiffel_protocol)
@@ -201,10 +201,10 @@ feature {NONE} -- EIS implementation
 			end
 		end
 
-	eis_prepare_action is
+	eis_prepare_action
 			-- Prepare EIS incoming command response actions
 		local
-			l_tuple: !TUPLE [name, uuid: STRING]
+			l_tuple: attached TUPLE [name, uuid: STRING]
 			l_system_name, l_system_uuid,
 			l_target_name, l_target_uuid,
 			l_group_name, l_class_name, l_feature_name: STRING
@@ -215,14 +215,14 @@ feature {NONE} -- EIS implementation
 			l_uuid: UUID
 		do
 			eis_component_found_table.search (system_id)
-			if eis_component_found_table.found and then {lt_string: STRING}eis_component_found_table.found_item then
+			if eis_component_found_table.found and then attached eis_component_found_table.found_item as lt_string then
 				l_tuple := name_and_uuid_from_raw_string (lt_string)
 				l_system_name := l_tuple.name
 				l_system_uuid := l_tuple.uuid
 			end
 
 			eis_component_found_table.search (target_id)
-			if eis_component_found_table.found and then {lt_string1: STRING}eis_component_found_table.found_item then
+			if eis_component_found_table.found and then attached eis_component_found_table.found_item as lt_string1 then
 				l_tuple := name_and_uuid_from_raw_string (lt_string1)
 				l_target_name := l_tuple.name
 				l_target_uuid := l_tuple.uuid
@@ -267,9 +267,9 @@ feature {NONE} -- EIS implementation
 						command_accepted := True
 
 							-- Place to search and open possible project.
-						if {lt_path: STRING}preferences.misc_data.eis_path then
+						if attached preferences.misc_data.eis_path as lt_path then
 							project_searcher.search_project (lt_path, l_system_name, l_system_uuid, l_target_name, l_target_uuid)
-							if project_searcher.project_found and then {lt_project: STRING}project_searcher.found_project then
+							if project_searcher.project_found and then attached project_searcher.found_project as lt_project then
 								discard_start_dialog := True
 									-- Trying to open the project directly, the starting window is not needed anymore.
 								if starting_dialog /= Void and then not starting_dialog.is_destroyed then
@@ -315,11 +315,11 @@ feature {NONE} -- EIS implementation
 
 	locate (a_system_name, a_system_uuid,
 			a_target_name, a_target_uuid,
-			a_group_name, a_class_name, a_feature_name: ?STRING) is
+			a_group_name, a_class_name, a_feature_name: detachable STRING)
 					-- Locate the place from arguments.
 		local
-			l_target: ?CONF_TARGET
-			l_system: ?CONF_SYSTEM
+			l_target: detachable CONF_TARGET
+			l_system: detachable CONF_SYSTEM
 			l_group: CONF_GROUP
 			l_class: CONF_CLASS
 			l_feature: E_FEATURE
@@ -376,18 +376,18 @@ feature {NONE} -- EIS implementation
 			end
 		end
 
-	check_feature (a_class: CONF_CLASS; a_feature_string: STRING): E_FEATURE is
+	check_feature (a_class: CONF_CLASS; a_feature_string: STRING): E_FEATURE
 			-- Check feature from `a_class'.
 		require
 			a_class_not_void: a_class /= Void
 			a_feature_string_not_void: a_feature_string /= Void
 		do
-			if {lt_class: CLASS_I}a_class and then lt_class.is_compiled then
+			if attached {CLASS_I} a_class as lt_class and then lt_class.is_compiled then
 				Result := lt_class.compiled_representation.feature_with_name (a_feature_string.as_lower)
 			end
 		end
 
-	check_class_from_group (a_group: CONF_GROUP; a_class_string: STRING): CONF_CLASS is
+	check_class_from_group (a_group: CONF_GROUP; a_class_string: STRING): CONF_CLASS
 			-- Check class from `a_group'.
 		require
 			a_group_not_void: a_group /= Void
@@ -398,7 +398,7 @@ feature {NONE} -- EIS implementation
 			end
 		end
 
-	check_class_from_universe (a_class_string: STRING): CONF_CLASS is
+	check_class_from_universe (a_class_string: STRING): CONF_CLASS
 			-- Check class from `a_target'.
 		require
 			a_class_string_not_void: a_class_string /= Void
@@ -406,12 +406,12 @@ feature {NONE} -- EIS implementation
 			l_list: LIST [CLASS_I]
 		do
 			l_list := universe.classes_with_name (a_class_string.as_upper)
-			if not l_list.is_empty and then {lt_class: CLASS_I}l_list.first then
+			if not l_list.is_empty and then attached {CLASS_I} l_list.first as lt_class then
 				Result := lt_class.config_class
 			end
 		end
 
-	check_group (a_target: CONF_TARGET; a_group_string: STRING): CONF_GROUP is
+	check_group (a_target: CONF_TARGET; a_group_string: STRING): CONF_GROUP
 			-- Check group from `a_target'.
 		require
 			a_target_not_void: a_target /= Void
@@ -420,13 +420,13 @@ feature {NONE} -- EIS implementation
 			Result := a_target.groups.item (a_group_string)
 		end
 
-	check_system (a_system_name, a_system_uuid: ?STRING): ?CONF_SYSTEM is
+	check_system (a_system_name, a_system_uuid: detachable STRING): detachable CONF_SYSTEM
 			-- Get possible system
 			-- If Void is returned, `a_raw_system_string' is not recognized as possible system
 		local
 			l_system_name, l_uuid_string: STRING
 			l_uuid: UUID
-			l_current_system: ?CONF_SYSTEM
+			l_current_system: detachable CONF_SYSTEM
 		do
 			l_current_system := universe.conf_system
 			if a_system_name /= Void or a_system_uuid /= Void then
@@ -469,14 +469,14 @@ feature {NONE} -- EIS implementation
 			end
 		end
 
-	check_target (a_target_name, a_target_uuid: ?STRING): ?CONF_TARGET is
+	check_target (a_target_name, a_target_uuid: detachable STRING): detachable CONF_TARGET
 			-- Get possible target from given string.
 			-- If `a_raw_target_string' is Void, return system target
 			-- If Void is returned, `a_raw_target_string' is not recognized as possible target
 		local
 			l_target_name, l_uuid_string: STRING
 			l_uuid: UUID
-			l_current_system: ?CONF_SYSTEM
+			l_current_system: detachable CONF_SYSTEM
 			l_target: CONF_TARGET
 			l_arrayed_targets: ARRAYED_LIST [CONF_TARGET]
 		do
@@ -549,7 +549,7 @@ feature {NONE} -- EIS implementation
 			end
 		end
 
-	name_and_uuid_from_raw_string (a_raw_string: !STRING): !TUPLE [name, uuid: STRING] is
+	name_and_uuid_from_raw_string (a_raw_string: attached STRING): attached TUPLE [name, uuid: STRING]
 			-- Name and UUID from `a_raw_string'
 		local
 			l_name, l_uuid: STRING
@@ -591,24 +591,24 @@ feature {NONE} -- EIS implementation
 			result_not_void: Result /= Void
 		end
 
-	set_stone_when_idle (a_stone: STONE) is
+	set_stone_when_idle (a_stone: STONE)
 			-- Set stone to window when idle.
 		do
 			ev_application.do_once_on_idle (agent set_stone_to_window (a_stone))
 		end
 
-	set_stone_to_window (a_stone: STONE) is
+	set_stone_to_window (a_stone: STONE)
 			-- Set stone to a window.
 		require
 			a_stone_not_void: a_stone /= Void
 		do
-			if {lt_window: EB_DEVELOPMENT_WINDOW}window_manager.last_focused_development_window then
+			if attached {EB_DEVELOPMENT_WINDOW} window_manager.last_focused_development_window as lt_window then
 				lt_window.show
 				lt_window.set_stone (a_stone)
 			end
 		end
 
-	show_error (an_error: ?STRING_GENERAL) is
+	show_error (an_error: detachable STRING_GENERAL)
 			-- Show `an_error'
 		do
 			if an_error /= Void then
@@ -618,10 +618,10 @@ feature {NONE} -- EIS implementation
 
 feature {NONE} -- EIS access
 
-	eis_component_found_table: !HASH_TABLE [STRING, INTEGER]
+	eis_component_found_table: attached HASH_TABLE [STRING, INTEGER]
 			-- Found component table [found_value, component_id]
 
-	eis_component_table: !HASH_TABLE [INTEGER, STRING] is
+	eis_component_table: attached HASH_TABLE [INTEGER, STRING]
 			-- EIS component table.
 			-- With keys in lower cases.
 		once
@@ -634,21 +634,21 @@ feature {NONE} -- EIS access
 			Result.compare_objects
 		end
 
-	system_id: !INTEGER = unique
-	target_id: !INTEGER = unique
-	cluster_id: !INTEGER = unique
-	class_id: !INTEGER = unique
-	feature_id: !INTEGER = unique
+	system_id: INTEGER = unique
+	target_id: INTEGER = unique
+	cluster_id: INTEGER = unique
+	class_id: INTEGER = unique
+	feature_id: INTEGER = unique
 
-	system_string: !STRING = "system"
-	target_string: !STRING = "target"
-	cluster_string: !STRING = "cluster"
-	class_string: !STRING = "class"
-	feature_string: !STRING = "feature"
+	system_string: STRING = "system"
+	target_string: STRING = "target"
+	cluster_string: STRING = "cluster"
+	class_string: STRING = "class"
+	feature_string: STRING = "feature"
 
 feature -- Query
 
-	command_resolved: BOOLEAN is
+	command_resolved: BOOLEAN
 			-- Does the command accepted or can be passed to other instances of ES?
 			-- Return True if as long as there was error, despite of whether the command is accepted.
 			-- Or command has been accepted.
@@ -667,10 +667,10 @@ feature -- Query
 
 feature {NONE} -- Implementation
 
-	starting_dialog: ?EB_STARTING_DIALOG
+	starting_dialog: detachable EB_STARTING_DIALOG
 			-- Starting dialog
 
-	on_project_openned is
+	on_project_openned
 			-- Called when project is opened.
 		local
 			l_actions: like project_open_actions
@@ -689,13 +689,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	project_open_actions: ARRAYED_LIST [PROCEDURE [ANY, TUPLE]] is
+	project_open_actions: ARRAYED_LIST [PROCEDURE [ANY, TUPLE]]
 			-- Project open actions
 		once
 			create Result.make (1)
 		end
 
-	project_searcher: ES_PROJECT_SEARCHER is
+	project_searcher: ES_PROJECT_SEARCHER
 			-- Project searcher
 		once
 			create Result
@@ -707,16 +707,16 @@ feature {NONE} -- Access
 
 	action_found: BOOLEAN
 
-	condition_module: ?STRING
+	condition_module: detachable STRING
 
-	condition: ?STRING
+	condition: detachable STRING
 
-	action_module: ?STRING
+	action_module: detachable STRING
 
-	action: ?STRING;
+	action: detachable STRING;
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -740,11 +740,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

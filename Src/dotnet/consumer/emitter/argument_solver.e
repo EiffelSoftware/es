@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Generate Eiffel arguments from .NET arguments"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,19 +17,20 @@ inherit
 
 feature -- Access
 
-	arguments (info: METHOD_BASE): ARRAY [CONSUMED_ARGUMENT] is
+	arguments (info: METHOD_BASE): ARRAY [CONSUMED_ARGUMENT]
 			-- Argument of `info'
 		require
 			non_void_method: info /= Void
 		local
 			i, count: INTEGER
 			en, dn: STRING
-			params: NATIVE_ARRAY [PARAMETER_INFO]
-			p: PARAMETER_INFO
-			t: SYSTEM_TYPE
+			params: detachable NATIVE_ARRAY [detachable PARAMETER_INFO]
+			p: detachable PARAMETER_INFO
+			t: detachable SYSTEM_TYPE
 		do
-			create Result.make (1, info.get_parameters.count)
 			params := info.get_parameters
+			check params_attached: params /= Void end
+			create Result.make (1, params.count)
 			from
 				i := 0
 				count := params.count
@@ -37,6 +38,7 @@ feature -- Access
 				i >= count
 			loop
 				p := params.item (i)
+				check p_attached: p /= Void end
 				if p.name = Void then
 					en := formatted_argument_name ("", i + 1)
 					dn := en.twin
@@ -48,6 +50,7 @@ feature -- Access
 					end
 				end
 				t := p.parameter_type
+				check t_attached: t /= Void end
 				Result.put (create {CONSUMED_ARGUMENT}.make (dn, en,
 					referenced_type_from_type (t)), i + 1)
 				i := i + 1
@@ -56,7 +59,7 @@ feature -- Access
 			non_void_arguments: Result /= Void
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

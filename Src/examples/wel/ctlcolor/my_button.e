@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -22,11 +22,15 @@ create
 
 feature -- Initialization
 
- 	make (a_parent: WEL_WINDOW; a_name: STRING; a_x, a_y, a_width, a_height, an_id, a_type: INTEGER) is
+ 	make (a_parent: MAIN_WINDOW; a_name: STRING; a_x, a_y, a_width, a_height, an_id, a_type: INTEGER)
 			-- Create the button.
+		require -- from WEL_BUTTON
+			a_parent_not_void: a_parent /= Void
+			a_parent_exists: a_parent.exists
+			a_name_not_void: a_name /= Void
 		do
+			window := a_parent
 			wel_make (a_parent, a_name, a_x, a_y, a_width, a_height, an_id)
-			window ?= a_parent
 			type := a_type
 		end
 
@@ -40,10 +44,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-  	on_bn_clicked is
+  	on_bn_clicked
    			-- Called when the button is clicked
 		local
-			dialog: WEL_CHOOSE_COLOR_DIALOG 
+			dialog: WEL_CHOOSE_COLOR_DIALOG
 		do
 			create dialog.make
 			dialog.activate (window)
@@ -57,7 +61,7 @@ feature {NONE} -- Implementation
 			end
  		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Generate properties for options."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -24,7 +24,7 @@ inherit
 
 feature -- Access
 
-	conf_factory: CONF_PARSE_FACTORY is
+	conf_factory: CONF_PARSE_FACTORY
 			-- Factory to create new nodes.
 		deferred
 		ensure
@@ -42,7 +42,7 @@ feature -- Access
 
 feature -- Update
 
-	set_debugs (a_debugs: like debug_clauses) is
+	set_debugs (a_debugs: like debug_clauses)
 			-- Set `debug_clauses' to `a_debugs'.
 		require
 			a_debugs_not_void: a_debugs /= Void
@@ -54,14 +54,14 @@ feature -- Update
 
 feature {NONE} -- Implementation
 
-	handle_value_changes (a_has_group_changed: BOOLEAN) is
+	handle_value_changes (a_has_group_changed: BOOLEAN)
 			-- Handle changed values (e.g. store changes to disk).
 			-- `a_has_group_changed' indicates that a value that makes the node not group_equivalent has changed.
 		do
 			-- default is to do nothing
 		end
 
-	add_misc_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN) is
+	add_misc_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN)
 			-- Add option properties which may come from `an_options' (defined on the node itself) itself or from `an_inherited_options' (final value after inheritance).
 		require
 			an_options_not_void: an_options /= Void
@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 			properties_not_void: properties /= Void
 		local
 			l_bool_prop: BOOLEAN_PROPERTY
-			l_choice_prop: STRING_CHOICE_PROPERTY
+			c: detachable CONF_VALUE_CHOICE
 		do
 			properties.add_section (conf_interface_names.section_general)
 
@@ -174,99 +174,43 @@ feature {NONE} -- Implementation
 			properties.add_property (l_bool_prop)
 
 				-- Void safety
-			l_bool_prop := new_boolean_property (conf_interface_names.option_is_void_safe_name, an_inherited_options.is_void_safe)
-			l_bool_prop.set_description (conf_interface_names.option_is_void_safe_description)
-			l_bool_prop.change_value_actions.extend (agent an_options.set_is_void_safe)
 			if a_inherits then
-				l_bool_prop.set_refresh_action (agent an_inherited_options.is_void_safe)
-				l_bool_prop.use_inherited_actions.extend (agent an_options.unset_is_void_safe)
-				l_bool_prop.use_inherited_actions.extend (agent l_bool_prop.enable_inherited)
-				l_bool_prop.use_inherited_actions.extend (agent handle_value_changes (False))
-				l_bool_prop.change_value_actions.extend (agent change_no_argument_boolean_wrapper (?, agent l_bool_prop.enable_overriden))
-				l_bool_prop.change_value_actions.extend (agent change_no_argument_boolean_wrapper (?, agent handle_value_changes (False)))
-
-				if an_options.is_void_safe_configured then
-					l_bool_prop.enable_overriden
-				else
-					l_bool_prop.enable_inherited
-				end
+				c := an_inherited_options.void_safety
+			else
+				c := Void
 			end
-			properties.add_property (l_bool_prop)
+			add_choice_property (
+				conf_interface_names.option_void_safety_name,
+				conf_interface_names.option_void_safety_description,
+				create {ARRAYED_LIST [STRING_32]}.make_from_array (
+					<<conf_interface_names.option_void_safety_none_name,
+					conf_interface_names.option_void_safety_initialization_name,
+					conf_interface_names.option_void_safety_all_name>>),
+				an_options.void_safety,
+				c
+			)
 
 				-- Syntax support
-			create l_choice_prop.make_with_choices (conf_interface_names.option_syntax_level_name, <<conf_interface_names.option_syntax_level_obsolete_name, conf_interface_names.option_syntax_level_transitional_name, conf_interface_names.option_syntax_level_standard_name>>)
-			l_choice_prop.set_description (conf_interface_names.option_syntax_level_description)
-			l_choice_prop.disable_text_editing
 			if a_inherits then
-				l_choice_prop.set_refresh_action (
-					agent (i: CONF_OPTION): STRING_32
-						do
-							inspect i.syntax_level.item
-							when {CONF_OPTION}.syntax_level_obsolete then
-								Result := conf_interface_names.option_syntax_level_obsolete_name
-							when {CONF_OPTION}.syntax_level_transitional then
-								Result := conf_interface_names.option_syntax_level_transitional_name
-							when {CONF_OPTION}.syntax_level_standard then
-								Result := conf_interface_names.option_syntax_level_standard_name
-							end
-						end
-					(an_inherited_options)
-				)
-				if an_options.syntax_level.is_set then
-					l_choice_prop.enable_overriden
-				else
-					l_choice_prop.enable_inherited
-				end
-				l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?,
-					agent (o: CONF_OPTION; p: STRING_CHOICE_PROPERTY)
-						do
-							if o.syntax_level.is_set then
-								p.enable_overriden
-							else
-								p.enable_inherited
-							end
-						end
-					(an_options, l_choice_prop)
-				))
-				l_choice_prop.use_inherited_actions.extend (agent (o: CONF_OPTION) do o.syntax_level.unset end (an_options))
-				l_choice_prop.use_inherited_actions.extend (agent l_choice_prop.enable_inherited)
-				l_choice_prop.use_inherited_actions.extend (agent handle_value_changes (False))
-				l_choice_prop.use_inherited_actions.extend (agent l_choice_prop.enable_inherited)
-				l_choice_prop.use_inherited_actions.extend (agent l_choice_prop.redraw)
+				c := an_inherited_options.syntax
+			else
+				c := Void
 			end
-			if an_options.syntax_level.is_set then
-				inspect an_options.syntax_level.item
-				when {CONF_OPTION}.syntax_level_obsolete then
-					l_choice_prop.set_value (l_choice_prop.item_strings [1])
-				when {CONF_OPTION}.syntax_level_transitional then
-					l_choice_prop.set_value (l_choice_prop.item_strings [2])
-				when {CONF_OPTION}.syntax_level_standard then
-					l_choice_prop.set_value (l_choice_prop.item_strings [3])
-				end
-			end
-			l_choice_prop.change_value_actions.put_front (
-				agent (o: CONF_OPTION; value: STRING_32)
-					do
-						if value /= Void then
-							if value.is_equal (conf_interface_names.option_syntax_level_obsolete_name) then
-								o.syntax_level.put ({CONF_OPTION}.syntax_level_obsolete)
-							elseif value.is_equal (conf_interface_names.option_syntax_level_transitional_name) then
-								o.syntax_level.put ({CONF_OPTION}.syntax_level_transitional)
-							else
-								o.syntax_level.put ({CONF_OPTION}.syntax_level_standard)
-							end
-						end
-					end
-				(an_options, ?)
+			add_choice_property (
+				conf_interface_names.option_syntax_name,
+				conf_interface_names.option_syntax_description,
+				create {ARRAYED_LIST [STRING_32]}.make_from_array (
+					<<conf_interface_names.option_syntax_obsolete_name,
+					conf_interface_names.option_syntax_transitional_name,
+					conf_interface_names.option_syntax_standard_name>>),
+				an_options.syntax,
+				c
 			)
-			l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent handle_value_changes (False)))
-			l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent l_choice_prop.redraw))
-			properties.add_property (l_choice_prop)
 
 			properties.current_section.expand
 		end
 
-	add_assertion_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN) is
+	add_assertion_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN)
 			-- Add option properties which may come from `an_options' (defined on the node itself) itself or from `an_inherited_options' (final value after inheritance).
 		require
 			an_options_not_void: an_options /= Void
@@ -363,7 +307,7 @@ feature {NONE} -- Implementation
 			properties.current_section.expand
 		end
 
-	add_warning_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN) is
+	add_warning_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN)
 			-- Add debug option properties which may come from `an_options' (defined on the node itself) itself or from `an_inherited_options' (final value after inheritance).
 		require
 			an_options_not_void: an_options /= Void
@@ -418,7 +362,7 @@ feature {NONE} -- Implementation
 			properties.current_section.expand
 		end
 
-	add_debug_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN) is
+	add_debug_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits: BOOLEAN)
 			-- Add debug option properties which may come from `an_options' (defined on the node itself) itself or from `an_inherited_options' (final value after inheritance).
 		require
 			an_options_not_void: an_options /= Void
@@ -476,7 +420,7 @@ feature {NONE} -- Implementation
 			properties.current_section.expand
 		end
 
-	add_dotnet_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits, a_il_generation: BOOLEAN) is
+	add_dotnet_option_properties (an_options, an_inherited_options: CONF_OPTION; a_inherits, a_il_generation: BOOLEAN)
 			-- Add .NET option properties which may come from `an_options' (defined on the node itself) itself or from `an_inherited_options' (final value after inheritance).
 		require
 			an_options_not_void: an_options /= Void
@@ -522,7 +466,81 @@ feature {NONE} -- Implementation
 			properties.current_section.expand
 		end
 
-	update_assertion (an_option, a_inherited_option: CONF_OPTION; a_name: STRING_GENERAL; a_value: BOOLEAN) is
+	add_choice_property (name, description: STRING_32; items: ARRAYED_LIST [STRING_32];
+		option: CONF_VALUE_CHOICE; inherited_option: detachable CONF_VALUE_CHOICE)
+			-- Add a choice property `option' with the given `name' and `description'
+			-- that contains specified `items' and may inherit from `inherited_option' if it is attached.
+		require
+			name_attached: name /= Void
+			description_attached: description /= Void
+			items_attached: items /= Void
+			option_attached: option /= Void
+		local
+			l_choice_prop: STRING_CHOICE_PROPERTY
+		do
+			create l_choice_prop.make_with_choices (name, items)
+			l_choice_prop.set_description (description)
+			l_choice_prop.disable_text_editing
+			if inherited_option /= Void then
+				l_choice_prop.set_refresh_action (
+					agent (content: ARRAYED_LIST [STRING_32]; i: CONF_VALUE_CHOICE): STRING_32
+						do
+							Result := content.i_th (i.index)
+						end
+					(items, inherited_option)
+				)
+				if option.is_set then
+					l_choice_prop.enable_overriden
+				else
+					l_choice_prop.enable_inherited
+				end
+				l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?,
+					agent (o: CONF_VALUE_CHOICE; p: STRING_CHOICE_PROPERTY)
+						do
+							if o.is_set then
+								p.enable_overriden
+							else
+								p.enable_inherited
+							end
+						end
+					(option, l_choice_prop)
+				))
+				l_choice_prop.use_inherited_actions.extend (agent (o: CONF_VALUE_CHOICE) do o.unset end (option))
+				l_choice_prop.use_inherited_actions.extend (agent l_choice_prop.enable_inherited)
+				l_choice_prop.use_inherited_actions.extend (agent handle_value_changes (False))
+				l_choice_prop.use_inherited_actions.extend (agent l_choice_prop.enable_inherited)
+				l_choice_prop.use_inherited_actions.extend (agent l_choice_prop.redraw)
+			end
+			if option.is_set then
+				l_choice_prop.set_value (l_choice_prop.item_strings [option.index])
+			end
+			l_choice_prop.change_value_actions.put_front (
+				agent (o: CONF_VALUE_CHOICE; content: ARRAYED_LIST [STRING_32]; value: STRING_32)
+					local
+						i: INTEGER
+					do
+						if value /= Void then
+							from
+								i := content.count
+							until
+								i <= 0
+							loop
+								if value.is_equal (content.i_th ((i))) then
+									o.put_index (i.to_natural_8)
+									i := 1
+								end
+								i := i - 1
+							end
+						end
+					end
+				(option, items, ?)
+			)
+			l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent handle_value_changes (False)))
+			l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent l_choice_prop.redraw))
+			properties.add_property (l_choice_prop)
+		end
+
+	update_assertion (an_option, a_inherited_option: CONF_OPTION; a_name: STRING_GENERAL; a_value: BOOLEAN)
 			-- Update the assertion setting of `an_option' with `a_name' to `a_value'.
 		require
 			an_option_not_void: an_option /= Void
@@ -586,7 +604,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_inheritance_assertion (a_require, a_ensure, a_check, a_invariant, a_loop, a_sup_require: PROPERTY; a_overriden: BOOLEAN) is
+	update_inheritance_assertion (a_require, a_ensure, a_check, a_invariant, a_loop, a_sup_require: PROPERTY; a_overriden: BOOLEAN)
 			-- Update inheritance of `a_require', `a_ensure', `a_check', `a_invariant', `a_sup_require' and `a_loop' to `a_overriden'.
 		require
 			a_require_not_void: a_require /= Void
@@ -621,15 +639,15 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Refresh displayed data.
 
-	refresh is
+	refresh
 			-- Called if the displayed data should be regenerated from scratch.
 		do
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -640,21 +658,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

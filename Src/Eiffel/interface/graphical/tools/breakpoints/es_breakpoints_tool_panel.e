@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tool that displays breakpoints"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,6 @@ inherit
 	ES_DOCKABLE_TOOL_PANEL [EV_VERTICAL_BOX]
 		redefine
 			create_mini_tool_bar_items,
-			build_docking_content,
 			on_after_initialized,
 			internal_recycle,
 			on_show
@@ -46,7 +45,7 @@ create
 
 feature {NONE} -- Initialization
 
-	build_tool_interface (a_widget: EV_VERTICAL_BOX) is
+	build_tool_interface (a_widget: EV_VERTICAL_BOX)
 			-- Builds the tools user interface elements.
 			-- Note: This function is called prior to showing the tool for the first time.
 			--
@@ -83,8 +82,8 @@ feature {NONE} -- Initialization
 			g.set_auto_resizing_column (Details_column_index, True)
 			g.set_auto_resizing_column (Tags_column_index, True)
 
-			register_action (g.row_expand_actions, agent g.request_columns_auto_resizing)
-			register_action (g.row_collapse_actions, agent g.request_columns_auto_resizing)
+			register_action (g.row_expand_actions, agent (a_row: EV_GRID_ROW) do grid.request_columns_auto_resizing end)
+			register_action (g.row_collapse_actions, agent (a_row: EV_GRID_ROW) do grid.request_columns_auto_resizing end)
 
 			g.set_item_pebble_function (agent on_item_pebble_function)
 			g.set_item_accept_cursor_function (agent on_item_pebble_accept_cursor)
@@ -107,7 +106,7 @@ feature {NONE} -- Initialization
 			a_widget.extend (box)
 		end
 
-	create_filter_bar (a_widget: EV_BOX) is
+	create_filter_bar (a_widget: EV_BOX)
 			-- Create filter bar
 		local
 			tags_tf: EVS_TAGS_FIELD
@@ -173,24 +172,20 @@ feature {NONE} -- Initialization
 			end
         end
 
-	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
-		do
-			Precursor {ES_DOCKABLE_TOOL_PANEL} (a_docking_manager)
-			check content_not_void : content /= Void end
-			register_action (content.drop_actions, agent on_stone_dropped)
-			content.drop_actions.set_veto_pebble_function (agent can_drop_debuggable_feature_or_class)
-		end
-
 	on_after_initialized
 			-- Use to perform additional creation initializations, after the UI has been created.
 		do
 			Precursor {ES_DOCKABLE_TOOL_PANEL}
 
+				-- FIXME: Tool should be refactored to implement {ES_DOCKABLE_STONEABLE_TOOL_PANEL}
+			register_action (content.drop_actions, agent on_stone_dropped)
+			content.drop_actions.set_veto_pebble_function (agent can_drop_debuggable_feature_or_class)
+
 			enable_sorting
 
 				-- Set button states based on session data
 			if session_manager.is_service_available then
-				if {s: STRING} window_session_data.value (columns_sorting_data_session_id) then
+				if attached {STRING} window_session_data.value (columns_sorting_data_session_id) as s then
 					grid_wrapper.set_sorting_status (grid_wrapper.sorted_columns_from_string (s))
 				end
 			end
@@ -198,7 +193,7 @@ feature {NONE} -- Initialization
 			update
 		end
 
-	load_preferences is
+	load_preferences
 			-- Load preferences
 		require
 			grid_attached: grid /= Void
@@ -223,7 +218,7 @@ feature {NONE} -- Initialization
 
 feature -- Access: Help
 
-	help_context_id: !STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		once
 			Result := "9FA30DD2-231F-C1F2-4139-F8E90DF0E77F"
@@ -289,7 +284,7 @@ feature -- Widgets
 
 feature {NONE} -- Sort handling
 
-	enable_sorting is
+	enable_sorting
 			-- Enables sorting on `grid' for specific columns
 		require
 			not_is_recycled: not is_recycled
@@ -327,7 +322,7 @@ feature {NONE} -- Sort handling
 			l_wrapper.set_sort_info (l_column.index, l_sort2_info)
 		end
 
-	disable_sorting is
+	disable_sorting
 			-- Disable sorting
 		local
 			l_wrapper: like grid_wrapper
@@ -341,7 +336,7 @@ feature {NONE} -- Sort handling
 			end
 		end
 
-	sort_handler (a_column_list: LIST [INTEGER]; a_comparator: AGENT_LIST_COMPARATOR [EV_GRID_ROW]) is
+	sort_handler (a_column_list: LIST [INTEGER]; a_comparator: AGENT_LIST_COMPARATOR [EV_GRID_ROW])
 			-- Action to be performed when sort `a_column_list' using `a_comparator'.
 		require
 			a_column_list_attached: a_column_list /= Void
@@ -362,7 +357,7 @@ feature {NONE} -- Sort handling
 
 feature -- Events
 
-	on_filter_clicked is
+	on_filter_clicked
 		do
 			if filter_enabled then
 				filter_enabled := False
@@ -375,7 +370,7 @@ feature -- Events
 			end
 		end
 
-	on_stone_dropped (a_stone: STONE) is
+	on_stone_dropped (a_stone: STONE)
 			--	Stone dropped
 		local
 			fs: FEATURE_STONE
@@ -398,11 +393,11 @@ feature -- Events
 			end
 		end
 
-	on_item_pebble_function (gi: EV_GRID_ITEM): STONE is
+	on_item_pebble_function (gi: EV_GRID_ITEM): STONE
 			-- Handle item pebble function
 		do
 			if gi /= Void then
-				if {bpl: ES_GRID_BREAKPOINT_LOCATION_ITEM} gi then
+				if attached {ES_GRID_BREAKPOINT_LOCATION_ITEM} gi as bpl then
 					Result := bpl.pebble_at_position
 				else
 					Result ?= gi.data
@@ -410,7 +405,7 @@ feature -- Events
 			end
 		end
 
-	on_item_pebble_accept_cursor (gi: EV_GRID_ITEM): EV_POINTER_STYLE is
+	on_item_pebble_accept_cursor (gi: EV_GRID_ITEM): EV_POINTER_STYLE
 			-- Handle item pebble accpet cursor
 		local
 			st: STONE
@@ -421,7 +416,7 @@ feature -- Events
 			end
 		end
 
-	on_item_pebble_deny_cursor (gi: EV_GRID_ITEM): EV_POINTER_STYLE is
+	on_item_pebble_deny_cursor (gi: EV_GRID_ITEM): EV_POINTER_STYLE
 			-- Handle item pebble deny cursor
 		local
 			st: STONE
@@ -434,21 +429,21 @@ feature -- Events
 
 feature -- Updating
 
-	update is
+	update
 			-- Refresh `Current's display.
 		do
 			grid.request_delayed_clean
 			refresh_breakpoints_info
 		end
 
-	refresh is
+	refresh
 			-- Class has changed in `development_window'.
 		local
 			r: INTEGER
 			g: like grid
 			l_row: EV_GRID_ROW
 		do
-			if is_initialized and shown then
+			if is_initialized and is_shown then
 				g := grid
 				if g.row_count = 0 then
 					update
@@ -459,7 +454,7 @@ feature -- Updating
 						r = 0
 					loop
 						l_row := g.row (r)
-						if {bp: BREAKPOINT} l_row.data then
+						if attached {BREAKPOINT} l_row.data as bp then
 							l_row.clear
 						end
 						r := r - 1
@@ -468,7 +463,7 @@ feature -- Updating
 			end
 		end
 
-	synchronize	is
+	synchronize
 			-- Synchronize
 		do
 			if is_initialized then
@@ -476,7 +471,7 @@ feature -- Updating
 			end
 		end
 
-	on_project_loaded is
+	on_project_loaded
 			-- Handle project loaded actions
 		do
 			if is_initialized then
@@ -500,7 +495,7 @@ feature {NONE} -- Action handlers
 
 feature -- Memory management
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
@@ -519,7 +514,7 @@ feature {NONE} -- Grid layout Implementation
 	grid_layout_manager: ES_GRID_LAYOUT_MANAGER
 			-- Grid layout manager
 
-	record_grid_layout is
+	record_grid_layout
 			-- Record grid layout
 		do
 			if grid_layout_manager = Void then
@@ -528,7 +523,7 @@ feature {NONE} -- Grid layout Implementation
 			grid_layout_manager.record
 		end
 
-	restore_grid_layout is
+	restore_grid_layout
 			-- Restore grid layout
 		do
 			if grid_layout_manager /= Void then
@@ -538,17 +533,17 @@ feature {NONE} -- Grid layout Implementation
 
 feature {NONE} -- Implementation
 
-	clean_breakpoints_info is
+	clean_breakpoints_info
 			-- Clean the breakpoints's grid
 		do
 			record_grid_layout
 			grid.default_clean
 		end
 
-	refresh_breakpoints_info is
+	refresh_breakpoints_info
 			-- Refresh and recomputed breakpoints's grid when shown
 		do
-			if shown then -- Tool exists in layout and is displayed
+			if is_shown then -- Tool exists in layout and is displayed
 				refresh_breakpoints_info_now
 			else
 				request_refresh_breakpoints_info_now
@@ -560,7 +555,7 @@ feature {NONE} -- Refresh breakpoints info Now implementation
 	agent_refresh_breakpoints_info_now: PROCEDURE [ANY, TUPLE]
 			-- agent on `refresh_breakpoints_info_now'.
 
-	request_refresh_breakpoints_info_now is
+	request_refresh_breakpoints_info_now
 			-- Request `refresh_breakpoints_info_now'
 		require
 			tool_visible: content /= Void
@@ -573,7 +568,7 @@ feature {NONE} -- Refresh breakpoints info Now implementation
 			end
 		end
 
-	cancel_refresh_breakpoints_info_now is
+	cancel_refresh_breakpoints_info_now
 			-- Request `refresh_breakpoints_info_now'
 		do
 			if agent_refresh_breakpoints_info_now /= Void then
@@ -584,7 +579,7 @@ feature {NONE} -- Refresh breakpoints info Now implementation
 			end
 		end
 
-	refresh_breakpoints_info_now is
+	refresh_breakpoints_info_now
 			-- Refresh and recomputed breakpoints's grid
 		require
 			content_widget_visible: content /= Void and then content.user_widget /= Void and then content.user_widget.is_show_requested
@@ -600,7 +595,7 @@ feature {NONE} -- Refresh breakpoints info Now implementation
 
 feature {NONE} -- Impl filling
 
-	populate_grid is
+	populate_grid
 			-- Fetch data and Populate breakpoints's grid.
 		local
 			col: EV_COLOR
@@ -726,7 +721,7 @@ feature {NONE} -- Impl filling
 			restore_grid_layout
 		end
 
-	insert_bp_list (bps: DS_LIST [BREAKPOINT]) is
+	insert_bp_list (bps: DS_LIST [BREAKPOINT])
 		require
 			not grid.is_tree_enabled
 		local
@@ -747,7 +742,7 @@ feature {NONE} -- Impl filling
 			end
 		end
 
-	insert_bp_features_list (routine_list: LIST [E_FEATURE]) is
+	insert_bp_features_list (routine_list: LIST [E_FEATURE])
 			-- Insert `routine_list' into `a_row'
 		require
 			routine_list /= Void
@@ -839,7 +834,7 @@ feature {NONE} -- Impl filling
 			end
 		end
 
-	insert_feature_bp_detail (f: E_FEATURE; a_row: EV_GRID_ROW) is
+	insert_feature_bp_detail (f: E_FEATURE; a_row: EV_GRID_ROW)
 			-- Insert features breakpoints details.
 		require
 			f_not_void: f /= Void
@@ -934,7 +929,7 @@ feature {NONE} -- Impl filling
 			end
 		end
 
-	insert_metrics is
+	insert_metrics
 		local
 			bpm: BREAKPOINTS_MANAGER
 			t: TUPLE [total: INTEGER; not_set: INTEGER; enabled: INTEGER; hidden_enabled: INTEGER; disabled: INTEGER; hidden_disabled: INTEGER]
@@ -994,7 +989,7 @@ feature {NONE} -- Impl filling
 
 feature {NONE} -- Dynamic item filling
 
-	computed_grid_item (c, r: INTEGER): EV_GRID_ITEM is
+	computed_grid_item (c, r: INTEGER): EV_GRID_ITEM
 			-- Computed grid item corresponding to `c,r'.
 		local
 			row: EV_GRID_ROW
@@ -1020,7 +1015,7 @@ feature {NONE} -- Dynamic item filling
 			Result := row.item (c)
 		end
 
-	compute_bp_row (a_row: EV_GRID_ROW) is
+	compute_bp_row (a_row: EV_GRID_ROW)
 			-- Compute `a_row' 's grid items
 		require
 			a_row_not_void: a_row /= Void
@@ -1096,7 +1091,7 @@ feature {NONE} -- Dynamic item filling
 						bp.tags.do_all (agent (atag: STRING_32; astr: STRING)
 								do
 									if atag /= Void then
-										astr.append_string (atag + ", ")
+										astr.append (atag + ", ")
 									end
 								end(?, t)
 							)
@@ -1150,7 +1145,7 @@ feature {NONE} -- Dynamic item filling
 
 feature {NONE} -- Events on grid
 
-	on_breakpoint_cell_double_left_clicked (f: E_FEATURE; i: INTEGER; gi: EV_GRID_ITEM; x, y, button: INTEGER) is
+	on_breakpoint_cell_double_left_clicked (f: E_FEATURE; i: INTEGER; gi: EV_GRID_ITEM; x, y, button: INTEGER)
 			-- Handle a cell right click actions.
 		require
 			f /= Void
@@ -1167,7 +1162,7 @@ feature {NONE} -- Events on grid
 			end
 		end
 
-	on_line_cell_right_clicked (f: E_FEATURE; i: INTEGER; gi: EV_GRID_ITEM; x, y, button: INTEGER) is
+	on_line_cell_right_clicked (f: E_FEATURE; i: INTEGER; gi: EV_GRID_ITEM; x, y, button: INTEGER)
 			-- Handle a cell right click actions.
 		require
 			f /= Void
@@ -1184,7 +1179,7 @@ feature {NONE} -- Events on grid
 			end
 		end
 
-	on_class_item_right_clicked	(c: CLASS_C; r: EV_GRID_ROW; x, y, button: INTEGER) is
+	on_class_item_right_clicked	(c: CLASS_C; r: EV_GRID_ROW; x, y, button: INTEGER)
 		require
 			c /= Void
 			r /= Void
@@ -1218,7 +1213,7 @@ feature {NONE} -- Events on grid
 			end
 		end
 
-	on_feature_item_right_clicked	(f: E_FEATURE; r: EV_GRID_ROW; x, y, button: INTEGER) is
+	on_feature_item_right_clicked	(f: E_FEATURE; r: EV_GRID_ROW; x, y, button: INTEGER)
 		require
 			f /= Void
 			r /= Void
@@ -1253,7 +1248,7 @@ feature {NONE} -- Events on grid
 			end
 		end
 
-	key_pressed_on_grid (a_key: EV_KEY) is
+	key_pressed_on_grid (a_key: EV_KEY)
 			-- Key events on grid's handler
 		local
 			g: like grid
@@ -1281,7 +1276,7 @@ feature {NONE} -- Events on grid
 							l_selected_rows.after
 						loop
 							l_row := l_selected_rows.item
-							if {bp_s: BREAKPOINT} (l_row.data) then
+							if attached {BREAKPOINT} l_row.data as bp_s then
 								if bp_s.is_enabled then
 									bp_s.disable
 								else
@@ -1299,7 +1294,7 @@ feature {NONE} -- Events on grid
 							l_selected_rows.after
 						loop
 							l_row := l_selected_rows.item
-							if {bp_d: BREAKPOINT} (l_row.data) then
+							if attached {BREAKPOINT} l_row.data as bp_d then
 								l_selected_rows.remove
 								bp_d.discard
 								bp_changed := True
@@ -1310,7 +1305,7 @@ feature {NONE} -- Events on grid
 						end
 						l_selected_rows := Void
 					when {EV_KEY_CONSTANTS}.key_enter then
-						if {bp_e: BREAKPOINT} (l_selected_rows.first.data) then
+						if attached {BREAKPOINT} l_selected_rows.first.data as bp_e then
 							create bp_stone.make_from_breakpoint (bp_e)
 							bp_stone.display_bkpt_menu
 						end
@@ -1371,16 +1366,16 @@ feature {NONE} -- Constants
 
 feature {NONE} -- Implementation, cosmetic
 
-	Disabled_bp_symbol: STRING is "-"
+	Disabled_bp_symbol: STRING = "-"
 			-- Disable breakpoint symbol.
 
-	Conditional_bp_symbol: STRING is "*"
+	Conditional_bp_symbol: STRING = "*"
 			-- Conditional breakpoint symbol.
 
-	Disabled_conditional_bp_symbol: STRING is "*-"
+	Disabled_conditional_bp_symbol: STRING = "*-"
 			-- Disable conditional breakpoint symbol.
 
-	Breakable_icons: ES_PIXMAPS_12X12 is
+	Breakable_icons: ES_PIXMAPS_12X12
 			-- Breakable icons.
 		local
 			l_shared: EB_SHARED_PIXMAPS
@@ -1391,7 +1386,7 @@ feature {NONE} -- Implementation, cosmetic
 			result_attached: Result /= Void
 		end
 
-	bg_separator_color: EV_COLOR is
+	bg_separator_color: EV_COLOR
 			-- Background separator color.
 		once
 			create Result.make_with_8_bit_rgb (220, 220, 240)
@@ -1403,7 +1398,7 @@ feature {NONE} -- Implementation, cosmetic
 			-- Feature color
 	condition_color: EV_COLOR
 			-- Condition color
-	condition_font: EV_FONT is
+	condition_font: EV_FONT
 			-- Condition font
 		once
 			create Result
@@ -1413,7 +1408,7 @@ feature {NONE} -- Implementation, cosmetic
 	set_row_highlight_bg_color_agent : PROCEDURE [ANY, TUPLE]
 			-- Set row highlight background color agent.
 
-	set_row_highlight_bg_color (v: COLOR_PREFERENCE) is
+	set_row_highlight_bg_color (v: COLOR_PREFERENCE)
 			-- Set row highlight background color.
 		do
 			row_highlight_bg_color := v.value
@@ -1422,10 +1417,10 @@ feature {NONE} -- Implementation, cosmetic
 	row_highlight_bg_color: EV_COLOR;
 			-- Row highlight background color.
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1436,22 +1431,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

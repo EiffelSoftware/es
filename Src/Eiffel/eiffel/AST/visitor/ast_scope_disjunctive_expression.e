@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Detector of local scopes for disjunctive expression."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,37 +10,17 @@ class
 
 inherit
 	AST_SCOPE_EXPRESSION
-		redefine
-			process_bin_or_as,
-			process_bin_or_else_as
-		end
 
 create
 	make
 
-feature {AST_EIFFEL} -- Visitor pattern
-
-	process_bin_or_as (l_as: BIN_OR_AS)
-		do
-			if is_nested then
-				l_as.left.process (Current)
-			end
-			l_as.right.process (Current)
-		end
-
-	process_bin_or_else_as (l_as: BIN_OR_ELSE_AS)
-		do
-			l_as.left.process (Current)
-			l_as.right.process (Current)
-		end
-
 feature {NONE} -- Status
 
-	is_negation_expected: BOOLEAN is True;
+	is_negation_expected: BOOLEAN = True;
 			-- Is negated value of a boolean expression expected?
 
-indexing
-	copyright:	"Copyright (c) 2007-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 2007-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

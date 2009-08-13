@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
@@ -43,7 +43,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make current object
 		do
 			Precursor {ES_OBJECTS_GRID_LINE}
@@ -55,7 +55,7 @@ feature {NONE} -- Initialization
 
 feature -- Recycling
 
-	debug_output: STRING is
+	debug_output: STRING
 		do
 			Result := generating_type
 			if object_name /= Void then
@@ -65,7 +65,7 @@ feature -- Recycling
 			end
 		end
 
-	reset is
+	reset
 			-- Recycle data
 			-- in order to free special data (for instance dotnet references)
 		do
@@ -96,7 +96,7 @@ feature -- Recycling
 
 feature {ES_OBJECTS_GRID, ES_OBJECTS_GRID_LINE, ES_OBJECTS_GRID_MANAGER} -- Grid and row attachement
 
-	attach_to_row (a_row: EV_GRID_ROW) is
+	attach_to_row (a_row: EV_GRID_ROW)
 		do
 			Precursor {ES_OBJECTS_GRID_LINE} (a_row)
 			row_items_filled := False
@@ -104,7 +104,7 @@ feature {ES_OBJECTS_GRID, ES_OBJECTS_GRID_LINE, ES_OBJECTS_GRID_MANAGER} -- Grid
 			row_onces_filled := False
 		end
 
-	refresh is
+	refresh
 		do
 			row_items_filled := False
 			row_attributes_filled := False
@@ -121,7 +121,7 @@ feature {ES_OBJECTS_GRID, ES_OBJECTS_GRID_LINE, ES_OBJECTS_GRID_MANAGER} -- Grid
 
 feature {NONE} -- Helpers
 
-	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN is
+	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN
 		require
 			application_is_executing: debugger_manager.application_is_executing
 		do
@@ -132,15 +132,15 @@ feature -- Properties
 
 	object_is_special_value: BOOLEAN
 
-	object_name: STRING_32 is
+	object_name: STRING_32
 		deferred
 		end
 
-	object_address: DBG_ADDRESS is
+	object_address: DBG_ADDRESS
 		deferred
 		end
 
-	object_dynamic_class: CLASS_C is
+	object_dynamic_class: CLASS_C
 		deferred
 		end
 
@@ -148,13 +148,17 @@ feature -- Properties
 
 	object_spec_upper: INTEGER
 
-	object_spec_capacity: INTEGER is
+	object_spec_count_and_capacity: TUPLE [spec_count, spec_capacity: INTEGER]
+		require
+			object_is_special_value: object_is_special_value
 		deferred
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Bridge to parent ES_OBJECTS_GRID
 
-	generating_type_evaluation_enabled: BOOLEAN is
+	generating_type_evaluation_enabled: BOOLEAN
 		require
 			parent_grid /= Void
 		do
@@ -163,7 +167,7 @@ feature -- Bridge to parent ES_OBJECTS_GRID
 
 feature -- Query
 
-	text_data_for_clipboard: STRING_32 is
+	text_data_for_clipboard: STRING_32
 		local
 			dv: DUMP_VALUE
 		do
@@ -177,47 +181,47 @@ feature -- Query
 					Result.append (object_name + ": ")
 				end
 				Result.append (dv.generating_type_representation (generating_type_evaluation_enabled))
-				Result.append_string (" = ")
-				Result.append_string (dv.full_output)
+				Result.append (" = ")
+				Result.append (dv.full_output)
 			end
 		end
 
-	has_attributes_values: BOOLEAN is
+	has_attributes_values: BOOLEAN
 		deferred
 		end
 
-	has_once_routine: BOOLEAN is
+	has_once_routine: BOOLEAN
 			-- Current value has once feature?
 		do
-			Result := {list: like sorted_once_routines} sorted_once_routines and then not list.is_empty
+			Result := attached sorted_once_routines as list and then not list.is_empty
 		end
 
 	has_constant: BOOLEAN
 			-- Current value has constant feature?
 		do
-			Result := {list: like sorted_constant_features} sorted_constant_features and then not list.is_empty
+			Result := attached sorted_constant_features as list and then not list.is_empty
 		end
 
-	reset_special_attributes_values is
+	reset_special_attributes_values
 		do
 		end
 
-	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE]
 			-- Sorted list of attribute values
 		deferred
 		end
 
-	sorted_once_routines: LIST [E_FEATURE] is
+	sorted_once_routines: LIST [E_FEATURE]
 			-- Sorted list of once features
 		deferred
 		end
 
-	sorted_constant_features: LIST [E_CONSTANT] is
+	sorted_constant_features: LIST [E_CONSTANT]
 			-- Sorted list of constants features	
 		deferred
 		end
 
-	associated_dump_value: DUMP_VALUE is
+	associated_dump_value: DUMP_VALUE
 		require
 			application_is_executing: debugger_manager.application_is_executing
 		deferred
@@ -228,7 +232,7 @@ feature -- Status
 	display: BOOLEAN
 			-- Should we expand the associated object at all?
 
-	display_attributes: BOOLEAN is True
+	display_attributes: BOOLEAN = True
 			-- Should attributes be displayed or not?
 
 	display_onces: BOOLEAN
@@ -239,7 +243,7 @@ feature -- Status
 
 feature -- Pick and Drop
 
-	item_stone_details (i: INTEGER): like internal_item_stone_data_i_th is
+	item_stone_details (i: INTEGER): like internal_item_stone_data_i_th
 		do
 			if not items_stone_properties_computed then
 				get_items_stone_properties
@@ -249,18 +253,18 @@ feature -- Pick and Drop
 
 feature {NONE} -- Pick and Drop implementation
 
-	items_stone_properties_computed: BOOLEAN is
+	items_stone_properties_computed: BOOLEAN
 		do
 			Result := internal_items_stone_data /= Void
 		end
 
-	clear_items_stone_properties is
+	clear_items_stone_properties
 			-- Clear items stone properties
 		do
 			internal_items_stone_data := Void
 		end
 
-	get_items_stone_properties is
+	get_items_stone_properties
 		require
 			not items_stone_properties_computed
 		local
@@ -270,8 +274,8 @@ feature {NONE} -- Pick and Drop implementation
 			ocl: CLASS_C
 			t: like internal_item_stone_data_i_th
 		do
-			create internal_items_stone_data.make (row.count + 1) -- FIXME: upper value ?
-			if {oadd: like object_address} object_address and then not oadd.is_void then
+			create internal_items_stone_data.make_filled (Void, row.count + 1) -- FIXME: upper value ?
+			if attached object_address as oadd and then not oadd.is_void then
 					--| For now we don't support this for external type
 				ostn := object_name
 				if ostn = Void then
@@ -283,18 +287,18 @@ feature {NONE} -- Pick and Drop implementation
 				t.pebble := ost
 				t.accept_cursor := ost.stone_cursor
 				t.deny_cursor := ost.X_stone_cursor
-				--When compiler is fixed use: t := [ost, ost.stone_cursor, ost.X_stone_cursor]
-				internal_items_stone_data[col_value_index] := t
-				internal_items_stone_data[col_type_index] := t
+					-- When compiler is fixed use: t := [ost, ost.stone_cursor, ost.X_stone_cursor]
+				internal_items_stone_data.put (t, col_value_index)
+				internal_items_stone_data.put (t, col_type_index)
 			else
 				ocl := object_dynamic_class
 				if ocl /= Void then
-					create {CLASSC_STONE} clst.make (ocl)
+					create clst.make (ocl)
 					create t
 					t.pebble := clst
 					t.accept_cursor := clst.stone_cursor
 					t.deny_cursor := clst.X_stone_cursor
-					--When compiler is fixed use: t := [clst, clst.stone_cursor, clst.X_stone_cursor]
+						-- When compiler is fixed use: t := [clst, clst.stone_cursor, clst.X_stone_cursor]
 					internal_items_stone_data[col_type_index] := t
 				end
 			end
@@ -309,7 +313,7 @@ feature {NONE} -- Pick and Drop implementation
 			item_stone_properties_computed: items_stone_properties_computed
 		end
 
-	internal_item_stone_data_i_th (i: INTEGER): TUPLE [pebble: STONE; accept_cursor: EV_POINTER_STYLE; deny_cursor: EV_POINTER_STYLE] is
+	internal_item_stone_data_i_th (i: INTEGER): TUPLE [pebble: STONE; accept_cursor: EV_POINTER_STYLE; deny_cursor: EV_POINTER_STYLE]
 			-- Internal data related to `i_th' cell of current row.
 		do
 			if internal_items_stone_data /= Void then
@@ -328,7 +332,7 @@ feature {NONE} -- Pick and Drop implementation
 
 feature {ES_OBJECTS_TOOL_PANEL, ES_OBJECTS_GRID_LINE} -- Status change
 
-	set_display (b: BOOLEAN) is
+	set_display (b: BOOLEAN)
 			-- Should attributes be displayed in the future?
 		do
 			display := b
@@ -348,7 +352,7 @@ feature {ES_OBJECTS_TOOL_PANEL, ES_OBJECTS_GRID_LINE} -- Status change
 
 feature -- Properties change
 
-	set_object_spec_slices (vl, vu: INTEGER) is
+	set_object_spec_slices (vl, vu: INTEGER)
 			-- Set `data_spec_lower' to `vl'
 			-- and Set `data_spec_upper' to `vu'
 		do
@@ -356,7 +360,7 @@ feature -- Properties change
 			object_spec_upper := vu
 		end
 
-	refresh_spec_items (vl, vu: INTEGER) is
+	refresh_spec_items (vl, vu: INTEGER)
 			-- Refresh special items with new slices range [vl:vu]
 		local
 			g: EV_GRID
@@ -385,14 +389,14 @@ feature -- Properties change
 
 feature -- Graphical computation
 
-	reset_compute_grid_display_done is
+	reset_compute_grid_display_done
 			-- Reset value of `compute_grid_display_done'
 		do
 			Precursor {ES_OBJECTS_GRID_LINE}
 			internal_items_stone_data := Void
 		end
 
-	compute_grid_row is
+	compute_grid_row
 		do
 			clear_items_stone_properties
 			Precursor {ES_OBJECTS_GRID_LINE}
@@ -401,7 +405,7 @@ feature -- Graphical computation
 	title: STRING_32
 			-- `title' value overwrite name's value.
 
-	set_title (v: STRING_GENERAL) is
+	set_title (v: STRING_GENERAL)
 		local
 			li: EV_GRID_LABEL_ITEM
 		do
@@ -415,7 +419,7 @@ feature -- Graphical computation
 			end
 		end
 
-	apply_cell_title_properties_on (a_item: EV_GRID_LABEL_ITEM) is
+	apply_cell_title_properties_on (a_item: EV_GRID_LABEL_ITEM)
 		require
 			a_item_not_void: a_item /= Void
 		do
@@ -426,7 +430,7 @@ feature -- Graphical computation
 			a_item.font = Title_font
 		end
 
-	set_name (v: STRING_GENERAL) is
+	set_name (v: STRING_GENERAL)
 		require
 			is_attached_to_row: is_attached_to_row
 		local
@@ -444,7 +448,7 @@ feature -- Graphical computation
 			grid_cell_set_text (glab, v)
 		end
 
-	set_type (v: STRING_GENERAL) is
+	set_type (v: STRING_GENERAL)
 		require
 			is_attached_to_row: is_attached_to_row
 		local
@@ -458,7 +462,7 @@ feature -- Graphical computation
 			grid_cell_set_text (glab, v)
 		end
 
-	set_address (v: DBG_ADDRESS) is
+	set_address (v: DBG_ADDRESS)
 		require
 			is_attached_to_row: is_attached_to_row
 		local
@@ -476,7 +480,7 @@ feature -- Graphical computation
 			end
 		end
 
-	set_value (v: STRING_GENERAL) is
+	set_value (v: STRING_GENERAL)
 		require
 			is_attached_to_row: is_attached_to_row
 		local
@@ -490,7 +494,7 @@ feature -- Graphical computation
 			grid_cell_set_text (glab, v)
 		end
 
-	set_context (v: STRING_GENERAL) is
+	set_context (v: STRING_GENERAL)
 		local
 			glab: EV_GRID_LABEL_ITEM
 		do
@@ -502,43 +506,43 @@ feature -- Graphical computation
 			grid_cell_set_text (glab, v)
 		end
 
-	value_cell: EV_GRID_ITEM is
+	value_cell: EV_GRID_ITEM
 		do
 			Result := cell (Col_value_index)
 		end
 
-	new_cell_title: ES_OBJECTS_GRID_CELL is
+	new_cell_title: ES_OBJECTS_GRID_CELL
 		do
 			create Result
 			Result.set_font (Title_font)
 		end
 
-	new_cell_name: ES_OBJECTS_GRID_CELL is
+	new_cell_name: ES_OBJECTS_GRID_CELL
 		do
 			create Result
 		end
 
-	new_cell_type: ES_OBJECTS_GRID_CELL is
+	new_cell_type: ES_OBJECTS_GRID_CELL
 		do
 			create Result
 		end
 
-	new_cell_value: ES_OBJECTS_GRID_VALUE_CELL is
+	new_cell_value: ES_OBJECTS_GRID_VALUE_CELL
 		do
 			create Result
 		end
 
-	new_cell_address: ES_OBJECTS_GRID_CELL is
+	new_cell_address: ES_OBJECTS_GRID_CELL
 		do
 			create Result
 		end
 
-	new_cell_context: EV_GRID_LABEL_ITEM is
+	new_cell_context: EV_GRID_LABEL_ITEM
 		do
 			create Result
 		end
 
-	set_pixmap (v: EV_PIXMAP) is
+	set_pixmap (v: EV_PIXMAP)
 		require
 			is_attached_to_row: is_attached_to_row
 			row.count > 0
@@ -551,44 +555,44 @@ feature -- Graphical computation
 
 feature -- Column index
 
-	Col_pixmap_index: INTEGER is
+	Col_pixmap_index: INTEGER
 		do
 			Result := parent_grid.Col_pixmap_index
 		end
 
-	Col_name_index: INTEGER is
+	Col_name_index: INTEGER
 		do
 			Result := parent_grid.Col_name_index
 		end
 
-	Col_address_index: INTEGER is
+	Col_address_index: INTEGER
 		do
 			Result := parent_grid.Col_address_index
 		end
 
-	Col_value_index: INTEGER is
+	Col_value_index: INTEGER
 		do
 			Result := parent_grid.Col_value_index
 		end
 
-	Col_type_index: INTEGER is
+	Col_type_index: INTEGER
 		do
 			Result := parent_grid.Col_type_index
 		end
 
-	Col_context_index: INTEGER is
+	Col_context_index: INTEGER
 		do
 			Result := parent_grid.Col_context_index
 		end
 
 feature -- Updating
 
-	update is
+	update
 		do
 			update_value
 		end
 
-	update_value is
+	update_value
 			-- Update numerical value
 		local
 			l_dmp: DUMP_VALUE
@@ -626,7 +630,7 @@ feature -- Updating
 
 feature {NONE} -- Implementation
 
-	icons: ARRAY [EV_PIXMAP] is
+	icons: ARRAY [EV_PIXMAP]
 			-- List of available icons for objects.
 		once
 			create Result.make ({VALUE_TYPES}.Immediate_value, {VALUE_TYPES}.Error_message_value)
@@ -643,7 +647,7 @@ feature {NONE} -- Implementation
 			Result.put (pixmaps.icon_pixmaps.general_mini_error_icon, {VALUE_TYPES}.Error_message_value)
 		end
 
-	hexa_mode_enabled: BOOLEAN is
+	hexa_mode_enabled: BOOLEAN
 		do
 			Result := parent_grid.hexadecimal_mode_enabled
 		end
@@ -668,7 +672,7 @@ feature {NONE} -- Filling
 	row_constants_filled: BOOLEAN
 			-- Constant values already filled ?
 
-	on_row_expand (a_row: EV_GRID_ROW) is
+	on_row_expand (a_row: EV_GRID_ROW)
 			-- Action performed when row is expanding
 		do
 			if a_row = row then
@@ -691,7 +695,7 @@ feature {NONE} -- Filling
 			end
 		end
 
-	on_row_collapse (a_row: EV_GRID_ROW) is
+	on_row_collapse (a_row: EV_GRID_ROW)
 			-- Action performed when row is collapsing
 		do
 			if a_row = row then
@@ -703,20 +707,20 @@ feature {NONE} -- Filling
 			end
 		end
 
-	on_slice_double_click is
+	on_slice_double_click
 			-- Action triggered by double clicking on the slice limit row
 		local
 			cmd: ES_OBJECTS_GRID_SLICES_CMD
 		do
 			cmd := parent_grid.slices_cmd
 			if cmd /= Void then
-				if {os: OBJECT_STONE} item_stone (col_value_index) then
+				if attached {OBJECT_STONE} item_stone (col_value_index) as os then
 					cmd.drop_object_stone (os)
 				end
 			end
 		end
 
-	fill_items (a_row: EV_GRID_ROW) is
+	fill_items (a_row: EV_GRID_ROW)
 			-- If a tree item was expandable, fill it with its children. (Not the onces)
 		require
 			items_not_filled_yet: not row_items_filled
@@ -781,7 +785,7 @@ feature {NONE} -- Filling
 			end
 		end
 
-	fill_attributes (a_row: EV_GRID_ROW) is
+	fill_attributes (a_row: EV_GRID_ROW)
 			-- Fill attributes_row with the attributes related to Current	
 		require
 			a_row = row
@@ -821,7 +825,7 @@ feature {NONE} -- Filling
 				if object_is_special_value then
 					if object_spec_lower > 0 then
 						es_glab := slice_label_item (Interface_names.l_More_items)
-						if object_spec_lower > object_spec_capacity then
+						if object_spec_lower > object_spec_count_and_capacity.spec_capacity then
 							es_glab.set_text (es_glab.text + " (" + object_spec_lower.out + ")")
 						end
 						es_glab.pointer_double_press_actions.force_extend (agent on_slice_double_click)
@@ -831,7 +835,7 @@ feature {NONE} -- Filling
 					end
 					if
 						0 <= object_spec_upper and then
-						object_spec_upper < object_spec_capacity - 1
+						object_spec_upper < object_spec_count_and_capacity.spec_capacity - 1
 					then
 						es_glab := slice_label_item (Interface_names.l_More_items)
 						es_glab.pointer_double_press_actions.force_extend (agent on_slice_double_click)
@@ -847,7 +851,13 @@ feature {NONE} -- Filling
 				end
 				dcl := object_dynamic_class
 				if dcl /= Void then
-					if dcl.conform_to (debugger_manager.compiler_data.tuple_class_c) then
+					if
+						--| FIXME jfiat [2009-06-03]: check the implementation for dotnet, related to count and capacity
+						debugger_manager.is_classic_project and then
+						dcl.conform_to (debugger_manager.compiler_data.special_class_c)
+					then
+						fill_extra_attributes_for_special (a_row, list_cursor)
+					elseif dcl.conform_to (debugger_manager.compiler_data.tuple_class_c) then
 						fill_extra_attributes_for_tuple (a_row, list_cursor)
 					elseif
 						Eb_debugger_manager.display_agent_details
@@ -862,7 +872,7 @@ feature {NONE} -- Filling
 			end
 		end
 
-	fill_onces (a_row: EV_GRID_ROW) is
+	fill_onces (a_row: EV_GRID_ROW)
 			-- Fill onces_row with the onces related to Current
 		require
 			a_row = onces_row
@@ -894,7 +904,7 @@ feature {NONE} -- Filling
 			end
 		end
 
-	fill_onces_with_values (a_row: EV_GRID_ROW; a_once_values: ARRAY [ABSTRACT_DEBUG_VALUE]) is
+	fill_onces_with_values (a_row: EV_GRID_ROW; a_once_values: ARRAY [ABSTRACT_DEBUG_VALUE])
 		local
 			i, r: INTEGER
 			grid: EV_GRID
@@ -920,7 +930,7 @@ feature {NONE} -- Filling
 			end
 		end
 
-	fill_constants (a_row: EV_GRID_ROW) is
+	fill_constants (a_row: EV_GRID_ROW)
 			-- Fill constants_row with the constant related to Current
 		require
 			a_row = constants_row
@@ -953,7 +963,7 @@ feature {NONE} -- Filling
 					flist.after
 				loop
 					c := flist.item
-					if {ci: CONSTANT_I} c.associated_feature_i then
+					if attached {CONSTANT_I} c.associated_feature_i as ci then
 						cdv := deval.value_from_constant_i (ci)
 						if cdv /= Void then
 							cdv.set_name (flist.item.name)
@@ -984,7 +994,7 @@ feature {NONE} -- Filling
 		end
 
 
-	attach_debug_value_from_line_to_grid_row (a_row: EV_GRID_ROW; dv: ABSTRACT_DEBUG_VALUE; a_line: ES_OBJECTS_GRID_OBJECT_LINE; a_title: STRING_GENERAL) is
+	attach_debug_value_from_line_to_grid_row (a_row: EV_GRID_ROW; dv: ABSTRACT_DEBUG_VALUE; a_line: ES_OBJECTS_GRID_OBJECT_LINE; a_title: STRING_GENERAL)
 			-- attach `dv' to row `a_row'
 		require
 			debug_value_not_void: dv /= Void
@@ -992,7 +1002,7 @@ feature {NONE} -- Filling
 			parent_grid.attach_debug_value_from_line_to_grid_row (a_row, dv, a_line, a_title)
 		end
 
-	attach_debug_value_to_grid_row (a_row: EV_GRID_ROW; dv: ABSTRACT_DEBUG_VALUE; a_title: STRING_GENERAL) is
+	attach_debug_value_to_grid_row (a_row: EV_GRID_ROW; dv: ABSTRACT_DEBUG_VALUE; a_title: STRING_GENERAL)
 			-- attach `dv' to row `a_row'
 			-- if `a_title' is not Void, use this string as name.
 		require
@@ -1003,7 +1013,7 @@ feature {NONE} -- Filling
 
 feature {NONE} -- Agent filling
 
-	Grid_feature_style: EB_FEATURE_EDITOR_TOKEN_STYLE is
+	Grid_feature_style: EB_FEATURE_EDITOR_TOKEN_STYLE
 			-- Feature style to generate editor token informaton of feature
 		once
 			create Result
@@ -1017,7 +1027,40 @@ feature {NONE} -- Agent filling
 			result_attached: Result /= Void
 		end
 
-	fill_extra_attributes_for_tuple (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE]) is
+	fill_extra_attributes_for_special (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE])
+		require
+			a_row /= Void
+			list_cursor /= Void
+		local
+			lrow: EV_GRID_ROW
+			grid: EV_GRID
+			glab: EV_GRID_LABEL_ITEM
+		do
+			grid := a_row.parent
+			list_cursor.start
+
+			a_row.insert_subrow (1)
+			lrow := a_row.subrow (1)
+
+			create glab.make_with_text ("count")
+			glab.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
+			lrow.set_item (col_name_index, glab)
+
+			create glab.make_with_text (object_spec_count_and_capacity.spec_count.out)
+			lrow.set_item (Col_value_index, glab)
+
+			a_row.insert_subrow (2)
+			lrow := a_row.subrow (2)
+
+			create glab.make_with_text ("capacity")
+			glab.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
+			lrow.set_item (col_name_index, glab)
+
+			create glab.make_with_text (object_spec_count_and_capacity.spec_capacity.out)
+			lrow.set_item (Col_value_index, glab)
+		end
+
+	fill_extra_attributes_for_tuple (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE])
 		require
 			a_row /= Void
 			list_cursor /= Void
@@ -1054,7 +1097,7 @@ feature {NONE} -- Agent filling
 			end
 		end
 
-	fill_extra_attributes_for_agent (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE]) is
+	fill_extra_attributes_for_agent (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE])
 		require
 			a_row /= Void
 			list_cursor /= Void
@@ -1084,7 +1127,7 @@ feature {NONE} -- Agent filling
 				if v_item /= Void then
 					n := v_item.name
 					if n /= Void and then n.count > 3 then
-						if {vi: DEBUG_BASIC_VALUE [INTEGER]} v_item then
+						if attached {DEBUG_BASIC_VALUE [INTEGER]} v_item as vi then
 							if vi.name /= Void then
 								if v_class_id = Void and n.item (1) = 'c' and then n.is_equal ("class_id") then
 									v_nb := v_nb + 1
@@ -1094,7 +1137,7 @@ feature {NONE} -- Agent filling
 									v_feature_id := vi
 								end
 							end
-						elseif {vb: DEBUG_BASIC_VALUE [BOOLEAN]} list_cursor.item then
+						elseif attached {DEBUG_BASIC_VALUE [BOOLEAN]} list_cursor.item as vb then
 							if v_is_precompiled = void and n.item (1) = 'i' and then n.is_equal ("is_precompiled") then
 								v_nb := v_nb + 1
 								v_is_precompiled := vb
@@ -1136,31 +1179,31 @@ feature {NONE} -- Agent filling
 
 feature {NONE} -- Implementation
 
-	title_font: EV_FONT is
+	title_font: EV_FONT
 		once
 			Result := parent_grid.Title_font
 		end
 
-	slice_label_item (s: STRING_GENERAL): EV_GRID_LABEL_ITEM is
+	slice_label_item (s: STRING_GENERAL): EV_GRID_LABEL_ITEM
 		do
 			create Result
 			grid_cell_set_text (Result, s)
 			Result.set_foreground_color (parent_grid.slice_row_fg_color)
 		end
 
-	name_label_item (s: STRING): EV_GRID_LABEL_ITEM is
+	name_label_item (s: STRING): EV_GRID_LABEL_ITEM
 		do
 			Result := parent_grid.name_label_item (s)
 		end
 
-	type_label_item (s: STRING): EV_GRID_LABEL_ITEM is
+	type_label_item (s: STRING): EV_GRID_LABEL_ITEM
 		do
 			create Result
 			grid_cell_set_text (Result, s)
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -1184,11 +1227,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

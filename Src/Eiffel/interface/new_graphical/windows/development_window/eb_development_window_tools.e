@@ -1,4 +1,4 @@
-indexing
+note
 	description: "All tool for EB_DEVELOPMENT_WINDOW"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -172,8 +172,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-
-	ebbro_tool: ES_EBBRO_TOOL_PANEL
+ebbro_tool: ES_EBBRO_TOOL_PANEL
 			-- Ebbro tool.
 		require
 			not_is_recycled: not is_recycled
@@ -183,14 +182,12 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-
-	customizable_tools: ARRAYED_LIST [EB_TOOL] is
+customizable_tools: ARRAYED_LIST [EB_CUSTOMIZED_TOOL]
 			-- Access to list of tools that can be customized
 		local
 			l_tools: DS_ARRAYED_LIST_CURSOR [ES_TOOL [EB_TOOL]]
 			l_format_tool: ES_FORMATTER_TOOL [ES_FORMATTER_TOOL_PANEL_BASE]
-			l_tool: EB_TOOL
-			l_customized_tools: LIST [EB_TOOL]
+			l_customized_tools: like customized_tools
 		do
 			create Result.make (3)
 			l_customized_tools := customized_tools
@@ -201,8 +198,7 @@ feature -- Access
 				l_format_tool ?= l_tools.item
 				if l_format_tool /= Void and then l_format_tool.is_customizable then
 						-- The tool is customizable so activate the tool instance
-					l_tool := l_format_tool.panel
-					if not l_customized_tools.has (l_tool) then
+					if attached {EB_CUSTOMIZED_TOOL} l_format_tool.panel as l_tool and then not l_customized_tools.has (l_tool) then
 							-- Only add the tool if it's not a customized tool because these will be added later
 						Result.extend (l_tool)
 					end
@@ -217,7 +213,7 @@ feature -- Access
 			result_contains_attached_items: not Result.has (Void)
 		end
 
-	customized_tools: LIST [EB_CUSTOMIZED_TOOL] is
+	customized_tools: LIST [EB_CUSTOMIZED_TOOL]
 			-- Access to list of customized tools added by the user
 		do
 			Result := internal_customized_tools
@@ -232,7 +228,7 @@ feature -- Access
 
 feature -- Commands
 
-	launch_stone (a_stone: STONE) is
+	launch_stone (a_stone: STONE)
 			--	Lanunch stone.
 		do
 			if develop_window.unified_stone then
@@ -242,7 +238,7 @@ feature -- Commands
 			end
 		end
 
-	set_stone (a_stone: STONE) is
+	set_stone (a_stone: STONE)
 			-- Dispatch stone to tools for linking
 			-- Orignal version from EB_CONTEXT_TOOL set_stone.
 		do
@@ -256,7 +252,7 @@ feature -- Commands
 			stone := a_stone
 		end
 
-	set_last_stone (a_stone: STONE) is
+	set_last_stone (a_stone: STONE)
 			-- Set `stone' without setting to tools.
 			-- For synchronizing use.
 		do
@@ -265,7 +261,7 @@ feature -- Commands
 			stone_set: stone = a_stone
 		end
 
-	set_stone_and_pop_tool (a_stone: STONE) is
+	set_stone_and_pop_tool (a_stone: STONE)
 			-- Set stone and show proper tool as context.
 		local
 			l_class_stone: CLASSI_STONE
@@ -283,7 +279,7 @@ feature -- Commands
 			end
 		end
 
-	synchronize is
+	synchronize
 			-- Contexts need to be updated because of recompilation
 			-- or similar action that needs resynchonization.
 		local
@@ -322,7 +318,7 @@ feature -- Commands
 			end
 		end
 
-	refresh is
+	refresh
 			-- Class has changed in `development_window'.
 		do
 			if eiffel_layout.has_diagram then
@@ -349,13 +345,13 @@ feature -- Commands
 
 feature -- Default tools
 
-	default_class_tool: EB_STONABLE_TOOL is
+	default_class_tool: EB_STONABLE_TOOL
 			-- Default class stone tool
 		do
 			Result := class_tool
 		end
 
-	default_feature_tool: EB_STONABLE_TOOL is
+	default_feature_tool: EB_STONABLE_TOOL
 			-- Default feature stone tool
 		do
 			Result := features_relation_tool
@@ -369,7 +365,7 @@ feature -- Query
 
 feature -- Custom tools
 
-	set_stone_to_customized_tools (a_stone: STONE) is
+	set_stone_to_customized_tools (a_stone: STONE)
 			-- Set `a_stone' to `customized_tools'.
 		local
 			l_cus_tools: like customized_tools
@@ -388,7 +384,7 @@ feature -- Custom tools
 			l_cus_tools.go_to (l_cursor)
 		end
 
-	refresh_customized_tool_appearance (a_tool: EB_CUSTOMIZED_TOOL) is
+	refresh_customized_tool_appearance (a_tool: EB_CUSTOMIZED_TOOL)
 			-- Refresh appearance such as title, pixmap, stone handlers for `a_tool'.
 		require
 			a_tool_attached: a_tool /= Void
@@ -402,15 +398,15 @@ feature -- Custom tools
 			a_tool.set_title (l_tool_desp.name)
 			a_tool.set_stone_handlers (l_tool_desp.handlers)
 			a_tool.set_pixmap_location (l_tool_desp.pixmap_location)
-
-			a_tool.content.set_long_title (a_tool.title)
-			a_tool.content.set_short_title (a_tool.title)
-			a_tool.content.set_pixel_buffer (a_tool.pixel_buffer)
-			a_tool.content.set_pixmap (a_tool.pixmap)
-			develop_window.menus.update_item_from_tools_list_menu (a_tool)
+-- FIXME: To reinstantiate as this code does not compile anymore
+--			a_tool.content.set_long_title (a_tool.title)
+--			a_tool.content.set_short_title (a_tool.title)
+--			a_tool.content.set_pixel_buffer (a_tool.pixel_buffer)
+--			a_tool.content.set_pixmap (a_tool.pixmap)
+--			develop_window.menus.update_item_from_tools_list_menu (a_tool)
 		end
 
-	customized_tools_from_tools (a_tools: like customizable_tools): LIST [EB_CUSTOMIZED_TOOL] is
+	customized_tools_from_tools (a_tools: like customizable_tools): LIST [EB_CUSTOMIZED_TOOL]
 			-- Customized tools from `a_tools'.
 		require
 			a_tools_attached: a_tools /= Void
@@ -437,7 +433,7 @@ feature -- Custom tools
 			result_attached: Result /= Void
 		end
 
-	customizable_tool_by_id (a_id: STRING): EB_TOOL is
+	customizable_tool_by_id (a_id: STRING): EB_TOOL
 			-- Tool from `all_tools' whose id is `a_id'
 			-- Void if no such tool is found.
 		require
@@ -461,7 +457,7 @@ feature -- Custom tools
 			l_tools.go_to (l_cursor)
 		end
 
-	customizable_tools_by_id (a_tools: like customizable_tools; a_ids: LIST [STRING]; a_include: BOOLEAN): like customizable_tools is
+	customizable_tools_by_id (a_tools: like customizable_tools; a_ids: LIST [STRING]; a_include: BOOLEAN): like customizable_tools
 			-- Tools from `a_tools' whose IDs are in `a_ids' if `a_include' is True,
 			-- otherwise, return tools from `a_tools' whose IDS are not in `a_ids'.
 		require
@@ -495,7 +491,7 @@ feature -- Custom tools
 			result_attached: Result /= Void
 		end
 
-	invalidate_customizable_tools is
+	invalidate_customizable_tools
 			-- Invalidate tools which will force a refresh of all currently selected formatters.
 		do
 			class_tool.invalidate
@@ -515,9 +511,9 @@ feature {NONE} -- Internal implementation cache
 			-- Cached version of `customized_tools'
 			-- Note: Do not use directly!
 
-;indexing
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -540,13 +536,12 @@ feature {NONE} -- Internal implementation cache
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
-
 end -- class EB_DEVELOPMENT_WINDOW_TOOLS
 
 

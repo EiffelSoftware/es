@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog to allow the user to choose a cluster or create one."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -78,7 +78,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_default (a_target: EB_DEVELOPMENT_WINDOW; a_is_test_cluster_forced: like is_test_cluster_forced) is
+	make_default (a_target: EB_DEVELOPMENT_WINDOW; a_is_test_cluster_forced: like is_test_cluster_forced)
 			-- Create the dialog and link it to a given development window (for modality).
 		require
 			a_target_not_void: a_target /= Void
@@ -192,29 +192,37 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	call_default is
+	call_default
 			-- Display dialog and create a random cluster name.
 		do
-			default_cluster_name := "new_cluster_" + new_cluster_counter.item.out
+			if is_test_cluster_forced then
+				default_cluster_name := "tests"
+			else
+				default_cluster_name := "new_cluster_" + new_cluster_counter.item.out
+				new_cluster_counter.put (new_cluster_counter.item + 1)
+			end
 			is_default_cluster_name_set := True
-			new_cluster_counter.put (new_cluster_counter.item + 1)
 			internal_call (default_cluster_name)
 		end
 
-	call_stone (a_stone: CLUSTER_STONE) is
+	call_stone (a_stone: CLUSTER_STONE)
 			-- Display dialog give `a_stone' as default place.
 		require
 			a_stone_not_void: a_stone /= Void
 		do
-			default_cluster_name := "new_cluster_" + new_cluster_counter.item.out
+			if is_test_cluster_forced then
+				default_cluster_name := "tests"
+			else
+				default_cluster_name := "new_cluster_" + new_cluster_counter.item.out
+				new_cluster_counter.put (new_cluster_counter.item + 1)
+			end
 			is_default_cluster_name_set := True
-			new_cluster_counter.put (new_cluster_counter.item + 1)
 			cluster_list.show_stone (a_stone)
 			cluster_entry.set_text (default_cluster_name)
 			show_modal_to_window (target.window)
 		end
 
-	call (cluster_n: STRING) is
+	call (cluster_n: STRING)
 			-- Display the dialog.
 			-- Give `cluster_n' as the default cluster name in it.
 		require
@@ -232,7 +240,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Implementation
 
-	internal_call (cluster_n: STRING) is
+	internal_call (cluster_n: STRING)
 			-- Display the dialog.
 			-- Give `cluster_n' as the default cluster name in it.
 		require
@@ -245,7 +253,7 @@ feature {NONE} -- Implementation
 			show_modal_to_window (target.window)
 		end
 
-	new_cluster_counter: CELL [INTEGER] is
+	new_cluster_counter: CELL [INTEGER]
 			-- Counter for how many clusters have been created in current session.
 		once
 			create Result.put (1)
@@ -274,7 +282,7 @@ feature {NONE} -- Implementation
 	original_path: STRING
 			-- The path with environment variables.
 
-	cluster_name: STRING is
+	cluster_name: STRING
 			-- Name of the cluster entered by the user, in lower case.
 		do
 			Result := cluster_entry.text.as_lower
@@ -288,7 +296,7 @@ feature {NONE} -- Implementation
 	tests_cluster_was_selected: BOOLEAN
 			-- Was `tests_cluster_box' before selecting a test cluster been selected?
 
-	change_parent_group is
+	change_parent_group
 			-- Set `group' to selected cluster/library from tree.
 		local
 			l_folder: EB_CLASSES_TREE_FOLDER_ITEM
@@ -329,7 +337,7 @@ feature {NONE} -- Implementation
 			ok_implies_set: aok implies is_top_level or (group /= Void and then (group.is_cluster or group.is_library))
 		end
 
-	create_new_cluster is
+	create_new_cluster
 			-- Create new cluster
 		local
 			dir: DIRECTORY
@@ -411,7 +419,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	real_create_cluster (name: STRING) is
+	real_create_cluster (name: STRING)
 			-- Really create the cluster.
 			-- `name': name of the new cluster.
 		require
@@ -424,7 +432,7 @@ feature {NONE} -- Implementation
 			manager.last_added_cluster.set_recursive (recursive_box.is_selected)
 		end
 
-	create_directory (dir: DIRECTORY) is
+	create_directory (dir: DIRECTORY)
 			-- Physically create the directory `dir'.
 		require
 			valid_state: aok
@@ -440,7 +448,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	check_valid_cluster_name is
+	check_valid_cluster_name
 			-- Check that name `cluster_name' is a valid cluster name.
 			-- Only alphanumeric characters and underscores are allowed.
 		require
@@ -455,7 +463,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_valid_cluster_path is
+	check_valid_cluster_path
 			-- Check, via `aok', that the path entered is a valid one, and is not already used.
 			-- Set `chosen_dir' and `ace_path' accordingly.
 		require
@@ -492,7 +500,7 @@ feature {NONE} -- Implementation
 			aok implies (chosen_dir /= Void and original_path /= Void)
 		end
 
-	check_for_tests_cluster is
+	check_for_tests_cluster
 			-- Check if selected cluster in `cluster_list' is a test cluster. If so, disable sensitivity of
 			-- `tests_cluster_box' and make it selected by default. If no test cluster is selected and
 			-- sensitivity is still disabled, restore state of box before disabling it.
@@ -522,7 +530,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	last_browsed_directory: STRING is
+	last_browsed_directory: STRING
 			-- What was the last browsed directory when searching for a folder?
 		do
 			Result := preferences.development_window_data.last_browsed_cluster_directory
@@ -533,7 +541,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Graphic interface
 
-	start_browsing is
+	start_browsing
 			-- The user wants to browse to find a folder.
 			-- Pop up a browse dialog.
 		local
@@ -561,7 +569,7 @@ feature {NONE} -- Graphic interface
 			bd.show_modal_to_window (Current)
 		end
 
-	set_path (bd: EV_DIRECTORY_DIALOG) is
+	set_path (bd: EV_DIRECTORY_DIALOG)
 			-- Initialize the cluster path with the directory selected in `bd'.
 		local
 			sep_index: INTEGER
@@ -609,13 +617,13 @@ feature {NONE} -- Vision2 widgets
 
 feature {NONE} -- Constants
 
-	Cluster_list_minimum_width: INTEGER is
+	Cluster_list_minimum_width: INTEGER
 			-- Minimum width for the cluster list.
 		do
 			Result := Layout_constants.Dialog_unit_to_pixels (250)
 		end
 
-	Cluster_list_minimum_height: INTEGER is
+	Cluster_list_minimum_height: INTEGER
 			-- Minimum height for the cluster list.
 		do
 			Result := Layout_constants.Dialog_unit_to_pixels (100)
@@ -632,8 +640,8 @@ invariant
 	target_not_void: target /= Void
 	group_implies_path: group /= Void implies path /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -646,22 +654,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

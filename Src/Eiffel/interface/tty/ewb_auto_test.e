@@ -1,6 +1,7 @@
-indexing
-	description: "Summary description for {EWB_AUTO_TEST}."
-	author: ""
+note
+	description: "[
+		TTY menu for launching AutoTest.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,46 +12,40 @@ inherit
 	EWB_CMD
 
 create
-	default_create,
 	make_with_arguments
 
 feature {NONE} -- Initialization
 
-	make_with_arguments (a_arguments: LINKED_LIST [STRING]) is
-			-- Initialize `auto_test_arguments' with `a_arguments'.
+	make_with_arguments (args: LINKED_LIST [STRING])
+			-- Initialize `Current'.
 		require
-			a_arguments_attached: a_arguments /= Void
+			args_attached: args /= Void
 		do
 		end
 
-feature -- Properties
+feature -- Access
 
-	name: STRING is
+	is_available: BOOLEAN = False
+			-- Is testing functionality available in current compiler?
+
+	name: STRING do create Result.make_empty end
+			-- <Precursor>
+
+	help_message: STRING do create Result.make_empty end
+			-- <Precursor>
+
+	abbreviation: CHARACTER = 't'
+			-- <Precursor>
+
+feature -- Basic operations
+
+	execute
+			-- <Precursor>
 		do
-			Result := "AutoTest"
 		end
 
-	help_message: STRING_GENERAL is
-		do
-			Result := "AutoTest"
-		end
-
-	abbreviation: CHARACTER is
-		do
-			Result := 'e'
-		end
-
-feature -- Execution
-
-	execute is
-			-- Action performed when invoked from the
-			-- command line.
-		do
-			io.put_string ("AutoTest is only available in graphical version of EiffelStudio.%N%N")
-		end
-
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -74,10 +69,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

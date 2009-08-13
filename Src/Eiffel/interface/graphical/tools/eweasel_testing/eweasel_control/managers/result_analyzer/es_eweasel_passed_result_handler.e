@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Handler for failed passed output
 					If eweasel have passed output, this handler will generate a {EWEASEL_TEST_RESULT_ITEM}
@@ -19,15 +19,15 @@ feature {NONE} -- Implementation
 	process_imp (a_lines: LIST [STRING]): ES_EWEASEL_TEST_RESULT_ITEM
 			-- Redefine
 		do
-			if {l_lines: !LIST [STRING]} a_lines then
-				if l_lines.first.has_substring (passed_signature) then
+			if a_lines /= Void then
+				if a_lines.first.has_substring (passed_signature) then
 					create Result
 					Result.set_result_type ({ES_EWEASEL_RESULT_TYPE}.passed)
-					Result.set_original_eweasel_ouput (to_one_string (l_lines.twin))
-					Result.set_title (l_lines.first.twin)
-					Result.set_root_class_name (class_name_in_string (l_lines.first.twin))
-					if {l_test: ES_EWEASEL_TEST_RESULT_ITEM} Result then
-						set_with_current_item (l_test)
+					Result.set_original_eweasel_ouput (to_one_string (a_lines.twin))
+					Result.set_title (a_lines.first.twin)
+					Result.set_root_class_name (class_name_in_string (a_lines.first.twin))
+					if Result /= Void then
+						set_with_current_item (Result)
 					end
 					result_analyzer.reset_cache
 				end
@@ -36,10 +36,10 @@ feature {NONE} -- Implementation
 			valid: Result /= Void implies Result.result_type = {ES_EWEASEL_RESULT_TYPE}.passed
 		end
 
-	passed_signature: STRING is ": passed";
+	passed_signature: STRING = ": passed";
 			-- eweasel passed result output signature string
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

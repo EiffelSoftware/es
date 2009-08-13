@@ -312,13 +312,8 @@ rt_public void update(char ignore_updt, char *argv0)
 	egc_prof_enabled = wint32();
 
 		/* Allocation of variable `esystem' */
-#if CONCURRENT_EIFFEL
-	SAFE_ALLOC(esystem, struct cnode, count + 1);
-	memcpy (esystem, egc_fsystem, (scount+1) * sizeof(struct cnode));
-#else
 	SAFE_ALLOC(esystem, struct cnode, count);
 	memcpy (esystem, egc_fsystem, scount * sizeof(struct cnode));
-#endif
 
 		/* Allocation of the variable `ecall' */
 	SAFE_ALLOC(ecall, int32 *, count);
@@ -1043,14 +1038,13 @@ rt_private EIF_TYPE_INDEX *wtype_array(EIF_TYPE_INDEX *target)
 	}
 
 	/* Do not create an array if id list is actually empty */
-	if (cnt == 1)
+	if (cnt == 1) {
 		return NULL;
-
-	SAFE_ALLOC(tp, EIF_TYPE_INDEX, cnt);
-
-	memcpy (tp,cid,cnt*sizeof(EIF_TYPE_INDEX));
-
-	return tp;
+	} else {
+		SAFE_ALLOC(tp, EIF_TYPE_INDEX, cnt);
+		memcpy (tp,cid,cnt*sizeof(EIF_TYPE_INDEX));
+		return tp;
+	}
 }
 
 rt_private char *wclass_name(void)

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class modifier used to modify EIS class entries."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -18,7 +18,7 @@ create
 
 feature -- Modification
 
-	new_empty_class_entry is
+	new_empty_class_entry
 			-- New empty EIS entry.
 		require
 			is_interface_usable: is_interface_usable
@@ -26,7 +26,7 @@ feature -- Modification
 			is_ast_available: is_ast_available
 			is_modifiable: is_modifiable
 		local
-			l_entry: !EIS_ENTRY
+			l_entry: attached EIS_ENTRY
 		do
 			create l_entry.make ("Unnamed", Void, Void, Void, id_solution.id_of_class (context_class.config_class), Void)
 			write_class_entry (l_entry)
@@ -36,7 +36,7 @@ feature -- Modification
 			last_create_entry_not_void: last_create_entry /= Void
 		end
 
-	modify_class_entry (a_old_entry, a_new_entry: !EIS_ENTRY) is
+	modify_class_entry (a_old_entry, a_new_entry: attached EIS_ENTRY)
 			-- Modify `a_old_entry' to `a_new_entry' in the class.
 		require
 			is_interface_usable: is_interface_usable
@@ -57,7 +57,7 @@ feature -- Modification
 			is_dirty: is_dirty
 		end
 
-	write_class_entry (a_entry: !EIS_ENTRY) is
+	write_class_entry (a_entry: attached EIS_ENTRY)
 			-- Write `a_entry' into the class.
 		require
 			is_interface_usable: is_interface_usable
@@ -65,13 +65,13 @@ feature -- Modification
 			is_ast_available: is_ast_available
 			is_modifiable: is_modifiable
 		local
-			l_ast: ?CLASS_AS
-			l_indexes: ?INDEXING_CLAUSE_AS
+			l_ast: detachable CLASS_AS
+			l_indexes: detachable INDEXING_CLAUSE_AS
 			l_insertion_point: INTEGER
 			l_p: TUPLE [start_position: INTEGER; end_position: INTEGER]
 			l_insertion_code: STRING_32
 			l_output: ES_EIS_ENTRY_OUTPUT
-			l_entry: !EIS_ENTRY
+			l_entry: attached EIS_ENTRY
 		do
 			l_entry := a_entry
 			l_ast := ast
@@ -96,7 +96,7 @@ feature -- Modification
 			is_dirty: is_dirty
 		end
 
-	remove_class_entry (a_entry: !EIS_ENTRY; a_clean_empty_clause: BOOLEAN) is
+	remove_class_entry (a_entry: attached EIS_ENTRY; a_clean_empty_clause: BOOLEAN)
 			-- Remove `a_entry' from the class if exists.
 			-- `a_clean_empty_clause' to clean the leading empty clause if any.
 		require
@@ -105,10 +105,10 @@ feature -- Modification
 			is_ast_available: is_ast_available
 			is_modifiable: is_modifiable
 		local
-			l_ast: ?CLASS_AS
-			l_indexes: ?INDEXING_CLAUSE_AS
-			l_entry: ?EIS_ENTRY
-			l_class_id: ?STRING
+			l_ast: detachable CLASS_AS
+			l_indexes: detachable INDEXING_CLAUSE_AS
+			l_entry: detachable EIS_ENTRY
+			l_class_id: detachable STRING
 			l_list: ARRAYED_LIST [INDEXING_CLAUSE_AS]
 			l_found: BOOLEAN
 		do
@@ -138,7 +138,7 @@ feature -- Modification
 					until
 						l_indexes.after or l_found
 					loop
-						if {l_index: INDEX_AS}l_indexes.item then
+						if attached l_indexes.item as l_index then
 							l_entry := eis_entry_from_index (l_index, l_class_id)
 							if l_entry /= Void and then l_entry.same_entry (a_entry) then
 								if l_indexes.count = 1 and then a_clean_empty_clause then
@@ -166,7 +166,7 @@ feature -- Modification
 
 feature -- Access
 
-	last_create_entry: ?EIS_ENTRY
+	last_create_entry: detachable EIS_ENTRY
 			-- Last created eis entry.
 
 feature {NONE} -- Implementation
@@ -175,22 +175,22 @@ feature {NONE} -- Implementation
 
 	last_removed_position: INTEGER
 
-	keyword_note_or_indexing: !STRING is
+	keyword_note_or_indexing: attached STRING
 			-- Get eis container structure keyword from parser.
 			-- Either note or indexing
 		local
-			l_syntax_level: CONF_VALUE_CHOICE
+			l_syntax: CONF_VALUE_CHOICE
 		do
-			l_syntax_level := context_class.options.syntax_level
-			if l_syntax_level.item /= {CONF_OPTION}.syntax_level_obsolete  then
+			l_syntax := context_class.options.syntax
+			if l_syntax.index /= {CONF_OPTION}.syntax_index_obsolete  then
 				Result := "note"
 			else
 				Result := "indexing"
 			end
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -214,11 +214,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

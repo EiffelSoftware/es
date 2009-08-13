@@ -1,4 +1,4 @@
-indexing
+note
 	description: "EIS storage oberserver manager"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -13,18 +13,18 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			create {!ARRAYED_LIST [!ES_EIS_STORAGE_OBSERVER]}observer_list.make (3)
+			create {attached ARRAYED_LIST [ES_EIS_STORAGE_OBSERVER]}observer_list.make (3)
 		end
 
 feature -- Element change
 
-	add_observer (a_observer: !ES_EIS_STORAGE_OBSERVER) is
+	add_observer (a_observer: attached ES_EIS_STORAGE_OBSERVER)
 			-- Add an observer to be managed.
 		do
 			observer_list.extend (a_observer)
 		end
 
-	remove_observer (a_observer: !ES_EIS_STORAGE_OBSERVER) is
+	remove_observer (a_observer: attached ES_EIS_STORAGE_OBSERVER)
 			-- Remove an observer from management.
 		do
 			observer_list.prune_all (a_observer)
@@ -32,21 +32,21 @@ feature -- Element change
 
 feature {NONE} -- Events
 
-	on_tag_extended (a_tag: !STRING_32) is
+	on_tag_extended (a_tag: attached STRING_32)
 			-- Notify observers that `a_tag' has benn added to the storage
 		do
 			observer_list.do_all (
-					agent (aa_observer: !ES_EIS_STORAGE_OBSERVER; aa_tag: !STRING_32)
+					agent (aa_observer: attached ES_EIS_STORAGE_OBSERVER; aa_tag: attached STRING_32)
 						do
 							aa_observer.on_tag_added (aa_tag)
 						end (?, a_tag))
 		end
 
-	on_tag_removed (a_tag: !STRING_32) is
+	on_tag_removed (a_tag: attached STRING_32)
 			-- Notify observers that `a_tag' has benn removed from the storage
 		do
 			observer_list.do_all (
-					agent (aa_observer: !ES_EIS_STORAGE_OBSERVER; aa_tag: !STRING_32)
+					agent (aa_observer: attached ES_EIS_STORAGE_OBSERVER; aa_tag: attached STRING_32)
 						do
 							aa_observer.on_tag_removed (aa_tag)
 						end (?, a_tag))
@@ -54,11 +54,11 @@ feature {NONE} -- Events
 
 feature {NONE} -- Access
 
-	observer_list: !ARRAYED_LIST [!ES_EIS_STORAGE_OBSERVER];
+	observer_list: attached ARRAYED_LIST [ES_EIS_STORAGE_OBSERVER];
 			-- Observer list
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -83,7 +83,7 @@ indexing
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

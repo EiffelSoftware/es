@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -44,20 +44,25 @@ create
 
 feature {NONE} -- Initialization
 
-	make is 
+	make
 		local
 			button: WEL_PUSH_BUTTON
 			rect: WEL_RECT
 			i: INTEGER
 		do
+			create buttons.make (1, 4)
+			create flash_rects.make (1, 4)
+			create blue_brush.make_hatch (Hs_horizontal, Blue)
+			create green_brush.make_hatch (Hs_vertical, Green)
+			create yellow_brush.make_hatch (Hs_fdiagonal, Yellow)
+			create red_brush.make_hatch (Hs_bdiagonal, Red)
+
 			make_top (Title)
-			from 
-				create buttons.make (1, 4)
-				create flash_rects.make (1, 4)
+			from
 				i := buttons.lower
-			until 
+			until
 				i > buttons.upper
-			loop 
+			loop
 				create button.make (Current, Start_timer, 0, 0, 0, 0, i)
 				buttons.put (button, i)
 				create rect.make (0, 0, 0, 0)
@@ -65,10 +70,8 @@ feature {NONE} -- Initialization
 				i := i + 1
 			end
 			create dc.make (Current)
-			create blue_brush.make_hatch (Hs_horizontal, Blue)
-			create green_brush.make_hatch (Hs_vertical, Green)
-			create yellow_brush.make_hatch (Hs_fdiagonal, Yellow)
-			create red_brush.make_hatch (Hs_bdiagonal, Red)
+		ensure
+			dc_attached: dc /= Void
 		end
 
 feature -- Access
@@ -77,13 +80,13 @@ feature -- Access
 
 	flash_rects: ARRAY [WEL_RECT]
 
-	dc: WEL_CLIENT_DC
+	dc: detachable WEL_CLIENT_DC
 
 	blue_brush, green_brush, yellow_brush, red_brush: WEL_BRUSH
 
 feature
 
-	on_size (size_type, a_width, a_height: INTEGER) is
+	on_size (size_type, a_width, a_height: INTEGER)
 			-- Resize buttons and rectangles.
 		do
 			if size_type /= Size_minimized then
@@ -92,7 +95,7 @@ feature
 			end
 		end
 
-	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT) is
+	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
 			-- Paint window.
 		local
 			rect: WEL_RECT
@@ -137,21 +140,26 @@ feature
 				flash_rects.item (4).bottom)
 		end
 
-	on_timer (timer_id: INTEGER) is
+	on_timer (timer_id: INTEGER)
 			-- Flash rectangle corresponding to `timer_id'.
 		require else
 			valid_timer: timer_id >= Timer1 and timer_id <= Timer4
+		local
+			l_dc: like dc
 		do
-			dc.get
-			dc.set_rop2 (R2_not)
-			dc.rectangle (flash_rects.item (timer_id).left,
+			l_dc := dc
+				-- Per postcondition of creation routine and `dc' is a stable attribute.
+			check l_dc_attached: l_dc /= Void end
+			l_dc.get
+			l_dc.set_rop2 (R2_not)
+			l_dc.rectangle (flash_rects.item (timer_id).left,
 				flash_rects.item (timer_id).top,
 				flash_rects.item (timer_id).right,
 				flash_rects.item (timer_id).bottom)
-			dc.release
+			l_dc.release
 		end
 
-	on_control_command (a_control: WEL_CONTROL) is
+	on_control_command (a_control: WEL_CONTROL)
 			-- Start or stop a timer.
 		do
 			if a_control.text.is_equal (Start_timer) then
@@ -163,7 +171,7 @@ feature
 			end
 		end
 
-	set_buttons_positions (new_x, new_y: INTEGER) is
+	set_buttons_positions (new_x, new_y: INTEGER)
 			-- Resize buttons.
 		require
 			buttons_exist: buttons/= Void
@@ -200,7 +208,7 @@ feature
 			button.set_height (Button_height)
 		end
 
-	set_flash_rect_positions (new_x, new_y: INTEGER) is
+	set_flash_rect_positions (new_x, new_y: INTEGER)
 			-- Resize rectangles.
 		do
 			flash_rects.item (1).set_rect (Button_border,
@@ -221,33 +229,33 @@ feature
 				new_y - Button_height - 2 * Button_border)
 		end
 
-	class_icon: WEL_ICON is
+	class_icon: WEL_ICON
 			-- Window's title
 		once
 			create Result.make_by_id (Id_ico_application)
 		end
 
-	Timer1: INTEGER is 1
-	Timer2: INTEGER is 2
-	Timer3: INTEGER is 3
-	Timer4: INTEGER is 4
+	Timer1: INTEGER = 1
+	Timer2: INTEGER = 2
+	Timer3: INTEGER = 3
+	Timer4: INTEGER = 4
 
-	Button_border: INTEGER is 5
-	Button_height: INTEGER is 25
-	Text_height: INTEGER is 8
+	Button_border: INTEGER = 5
+	Button_height: INTEGER = 25
+	Text_height: INTEGER = 8
 
-	Timer_interval: INTEGER is 400
+	Timer_interval: INTEGER = 400
 
-	Start_timer: STRING is "Start Timer"
+	Start_timer: STRING = "Start Timer"
 			-- Push button text to start the timer
 
-	Stop_timer: STRING is "Stop Timer"
+	Stop_timer: STRING = "Stop Timer"
 			-- Push button text to stop the timer
 
-	Title: STRING is "WEL Timer";
+	Title: STRING = "WEL Timer";
 			-- Window's title
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

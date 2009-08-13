@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Executor running tests in the debugger
 	]"
@@ -13,8 +13,8 @@ inherit
 		rename
 			make as make_executor
 		redefine
-			evaluator_count,
 			is_ready,
+			is_valid_typed_configuration,
 			start_process_internal,
 			stop_process
 		end
@@ -40,14 +40,9 @@ feature {NONE} -- Initialization
 			make_executor (a_test_suite)
 		end
 
-feature -- Access
-
-	frozen evaluator_count: NATURAL = 1
-			-- <Precursor>
-
 feature {NONE} -- Access
 
-	breakpoints: ?DS_ARRAYED_LIST [!BREAKPOINT]
+	breakpoints: detachable DS_ARRAYED_LIST [attached BREAKPOINT]
 			-- Breakpoints of test routines which have been defined by `Current'
 
 feature -- Status report
@@ -66,12 +61,12 @@ feature {NONE} -- Status setting
 		require
 			running: is_running
 		local
-			l_cursor: DS_LINEAR_CURSOR [!TEST_I]
+			l_cursor: DS_LINEAR_CURSOR [attached TEST_I]
 			l_manager: BREAKPOINTS_MANAGER
-			l_loc: BREAKPOINT_LOCATION
 			l_test: TEST_I
-			l_feat: ?E_FEATURE
+			l_feat: detachable E_FEATURE
 			i: INTEGER
+			l_bp: BREAKPOINT
 		do
 			create breakpoints.make (test_map.count)
 			l_manager := debugger_manager.breakpoints_manager
@@ -87,7 +82,9 @@ feature {NONE} -- Status setting
 					i := l_feat.first_breakpoint_slot_index
 					if not l_manager.is_breakpoint_enabled (l_feat, i) then
 						l_manager.set_user_breakpoint (l_feat, i)
-						if {l_bp: !BREAKPOINT} l_manager.user_breakpoint (l_feat, i) then
+						if l_manager.is_breakpoint_set (l_feat, i, False) then
+							l_bp := l_manager.user_breakpoint (l_feat, i)
+							check l_bp /= Void end
 							breakpoints.force_last (l_bp)
 						end
 					end
@@ -116,6 +113,14 @@ feature {NONE} -- Status setting
 			breakpoints := Void
 		end
 
+feature {NONE} -- Query
+
+	is_valid_typed_configuration (a_conf: like conf_type): BOOLEAN
+			-- <Precursor>
+		do
+			Result := Precursor (a_conf) and then a_conf.evaluator_count = 1
+		end
+
 feature {NONE} -- Implementation
 
 	start_process_internal (a_conf: like conf_type)
@@ -134,15 +139,48 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Factory
 
-	create_evaluator: !TEST_EVALUATOR_CONTROLLER
+	create_evaluator: attached TEST_EVALUATOR_CONTROLLER
 			-- <Precursor>
+		local
+			l_assigner: like assigner
 		do
-			if {l_assigner: !like assigner} assigner then
-				create {TEST_DEBUG_EVALUATOR_CONTROLLER} Result.make (l_assigner, test_suite.eiffel_project_helper)
-			end
+			l_assigner := assigner
+			check l_assigner /= Void end
+			create {TEST_DEBUG_EVALUATOR_CONTROLLER} Result.make (l_assigner, test_suite.eiffel_project_helper)
 		end
 
 invariant
 	running_equals_breakpoints_not_void: is_running = (breakpoints /= Void)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

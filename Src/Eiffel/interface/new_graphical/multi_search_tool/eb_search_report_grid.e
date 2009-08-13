@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Search report grid."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -52,12 +52,19 @@ inherit
 			default_create, copy, is_equal
 		end
 
+	EB_CONTROL_PICK_HANDLER
+		export
+			{NONE} all
+		undefine
+			default_create, copy, is_equal
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_search_tool: like search_tool) is
+	make (a_search_tool: like search_tool)
 			-- Initialization
 		require
 			a_search_tool_attached: a_search_tool /= Void
@@ -75,7 +82,7 @@ feature {NONE} -- Initialization
 			search_tool_set: search_tool = a_search_tool
 		end
 
-	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler
 		do
 			context_menu_factory.standard_compiler_item_menu (a_menu, a_target_list, a_source, a_pebble)
@@ -83,27 +90,27 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	grid_head_class: STRING_GENERAL is
+	grid_head_class: STRING_GENERAL
 		do
 			Result := interface_names.l_class
 		end
 
-	grid_head_line_number: STRING_GENERAL is
+	grid_head_line_number: STRING_GENERAL
 		do
 			Result := interface_names.l_line
 		end
 
-	grid_head_found: STRING_GENERAL is
+	grid_head_found: STRING_GENERAL
 		do
 			Result := interface_names.l_found
 		end
 
-	grid_head_context: STRING_GENERAL is
+	grid_head_context: STRING_GENERAL
 		do
 			Result := interface_names.l_context
 		end
 
-	grid_head_file_location: STRING_GENERAL is
+	grid_head_file_location: STRING_GENERAL
 		do
 			Result := interface_names.l_file_location
 		end
@@ -113,7 +120,7 @@ feature -- Access
 
 feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Access
 
-	header_width: ARRAYED_LIST [INTEGER] is
+	header_width: ARRAYED_LIST [INTEGER]
 			-- List of header width.
 		once
 			create Result.make (4)
@@ -123,10 +130,10 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Access
 			Result.extend (label_font.string_width (grid_head_file_location) + column_border_space + column_border_space + 10)
 		end
 
-	column_border_space: INTEGER is 8
+	column_border_space: INTEGER = 8
 			-- Padding space for column content	
 
-	multi_search_performer: MSR is
+	multi_search_performer: MSR
 			-- Search performer from the search tool.
 		do
 			Result := search_tool.panel.multi_search_performer
@@ -136,11 +143,12 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Access
 
 feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Redraw
 
-	redraw_grid is
+	redraw_grid
 			-- Redraw grid according to search result and refresh summary label.
 		local
 			l_index: INTEGER
-			i, j, k: INTEGER
+			i, -- Class node count
+			k: INTEGER -- text node count for one class
 			l_row_count: INTEGER
 			submatch_parent: INTEGER
 			arrayed_list: ARRAYED_LIST[MSR_ITEM]
@@ -173,7 +181,6 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Redraw
 					arrayed_list.start
 					l_row_count := l_row_count + 1
 					i := 0
-					j := 0
 					k := 0
 				until
 					arrayed_list.after
@@ -182,7 +189,6 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Redraw
 
 					l_class_item ?= arrayed_list.item
 					if l_class_item /= Void then
-						j := j + 1
 						insert_new_row (l_row_count)
 						l_new_row := row (l_row_count)
 						l_new_row.set_data (l_class_item)
@@ -261,6 +267,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Redraw
 				if i /= 0 then
 					set_item (2, i, new_label_item (k.out))
 					item (2, i).set_foreground_color (preferences.editor_data.number_text_color)
+					extend_pointer_actions (row (i))
 				end
 				multi_search_performer.go_i_th (l_index)
 			end
@@ -269,7 +276,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Redraw
 
 feature {NONE} -- Interface
 
-	build_interface is
+	build_interface
 			-- Build interface.
 		do
 			enable_row_height_fixed
@@ -291,7 +298,7 @@ feature {NONE} -- Interface
 			set_minimum_width (100)
 		end
 
-	new_label_item (a_string: STRING_GENERAL): EV_GRID_LABEL_ITEM is
+	new_label_item (a_string: STRING_GENERAL): EV_GRID_LABEL_ITEM
 			-- Create uniformed label item
 		require
 			string_attached: a_string /= Void
@@ -306,7 +313,7 @@ feature {NONE} -- Interface
 			new_item_not_void: Result /= Void
 		end
 
-	label_font: EV_FONT is
+	label_font: EV_FONT
 			-- Font of report text.
 		local
 			l_label: EV_LABEL
@@ -321,7 +328,7 @@ feature {NONE} -- Interface
 	text_height: INTEGER
 			-- Height of the text in the `search_report_grid', buffer for effiency enhancement
 
-	expose_drawable_action (drawable: EV_DRAWABLE; a_item: MSR_ITEM; query_grid_row: EV_GRID_ROW) is
+	expose_drawable_action (drawable: EV_DRAWABLE; a_item: MSR_ITEM; query_grid_row: EV_GRID_ROW)
 			-- Draw grid item, to make the text colorfull.
 			-- return width of current drawable item.
 		local
@@ -376,7 +383,7 @@ feature {NONE} -- Interface
 			end
 		end
 
-	row_text_color (a_bg_color: EV_COLOR): EV_COLOR is
+	row_text_color (a_bg_color: EV_COLOR): EV_COLOR
 			-- Text color according to its background color `a_bg_color'
 		require
 			bg_color_attached: a_bg_color  /= Void
@@ -390,7 +397,7 @@ feature {NONE} -- Interface
 
 	report_summary_string: STRING_GENERAL
 
-	adjust_grid_column_width is
+	adjust_grid_column_width
 			-- Adjust grid column width to best fit visible area.
 		do
 			safe_resize_column_to_content (column (1), True, False)
@@ -401,7 +408,7 @@ feature {NONE} -- Interface
 
 feature {NONE} -- Stone
 
-	stone_from_class_i (a_class_i: CLASS_I): STONE is
+	stone_from_class_i (a_class_i: CLASS_I): STONE
 			-- Make a stone from a_class_i.
 			-- If a_class_i compiled returns CLASSC_STONE , or a CLASSI_STONE.
 		require
@@ -412,7 +419,7 @@ feature {NONE} -- Stone
 
 feature {NONE} -- Sort data
 
-	on_grid_header_click (a_column_index: INTEGER; a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
+	on_grid_header_click (a_column_index: INTEGER; a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
 			-- User click on the column header of index `a_column_index'.
 		require
 			a_column_index_valid: column_index_valid (a_column_index)
@@ -451,7 +458,7 @@ feature {NONE} -- Sort data
 	sorted_column: INTEGER
 			-- Column on which sorting is done.	
 
-	column_index_valid (a_column_index: INTEGER): BOOLEAN  is
+	column_index_valid (a_column_index: INTEGER): BOOLEAN
 			-- Validate a column index.
 		do
 			Result := a_column_index > 0 and a_column_index <= column_count
@@ -462,7 +469,7 @@ feature {NONE} -- Sort data
 
 feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 
-	put_report_summary is
+	put_report_summary
 			-- Put report summary
 		require
 			performer_launched: multi_search_performer.is_search_launched
@@ -475,47 +482,65 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			search_tool.panel.report_tool.set_summary (report_summary_string)
 		end
 
-	grid_pebble_function (a_item: EV_GRID_ITEM) : STONE is
-			-- Grid pebble function
+	stone_from_grid_item (a_item: EV_GRID_ITEM): detachable STONE
+			-- Stone combined with `a_item'.
+		require
+			a_item_not_void: a_item /= Void
 		local
 			l_row: EV_GRID_ROW
-			l_item: MSR_ITEM
-			l_text_item: MSR_TEXT_ITEM
 			l_start, l_end: INTEGER
-			l_class: CLASS_I
 			l_class_c: CLASS_C
 			l_compiled_line_stone: COMPILED_LINE_STONE
 			l_uncompiled_line_stone: UNCOMPILED_LINE_STONE
 		do
-			if a_item /= Void then
-				l_row := a_item.row
-				l_item ?= l_row.data
-				if l_item /= Void then
-					l_class ?= l_item.data
-					if l_class /= Void then
-						l_text_item ?= l_row.data
-						if l_text_item /= Void then
-							l_start := l_text_item.start_index_in_unix_text
-							l_end := l_text_item.end_index_in_unix_text + 1
-							l_class_c := l_class.compiled_representation
-							if l_class_c /= Void then
-								create l_compiled_line_stone.make_with_line (l_class_c, 1, True)
-								l_compiled_line_stone.set_selection ([l_start, l_end])
-								Result := l_compiled_line_stone
-							else
-								create l_uncompiled_line_stone.make_with_line (l_class, 1, True)
-								l_uncompiled_line_stone.set_selection ([l_start, l_end])
-								Result := l_uncompiled_line_stone
-							end
+			l_row := a_item.row
+			if attached {MSR_ITEM}l_row.data as l_item then
+				if attached {CLASS_I}l_item.data as l_class then
+					if attached {MSR_TEXT_ITEM}l_row.data as l_text_item then
+						l_start := l_text_item.start_index_in_unix_text
+						l_end := l_text_item.end_index_in_unix_text + 1
+						l_class_c := l_class.compiled_representation
+						if l_class_c /= Void then
+							create l_compiled_line_stone.make_with_line (l_class_c, 1, True)
+							l_compiled_line_stone.set_selection ([l_start, l_end])
+							Result := l_compiled_line_stone
 						else
-							Result := stone_from_class_i (l_class)
+							create l_uncompiled_line_stone.make_with_line (l_class, 1, True)
+							l_uncompiled_line_stone.set_selection ([l_start, l_end])
+							Result := l_uncompiled_line_stone
 						end
+					else
+						Result := stone_from_class_i (l_class)
 					end
 				end
 			end
 		end
 
-	compute_adjust_vertical (a_font: EV_FONT; a_label_item: EV_GRID_ITEM) is
+	grid_pebble_function (a_item: EV_GRID_ITEM) : detachable STONE
+			-- Grid pebble function
+		do
+			if not ev_application.ctrl_pressed and a_item /= Void then
+				Result := stone_from_grid_item (a_item)
+			end
+		end
+
+	on_pointer_right_click (a_x, a_y, a_button: INTEGER_32; a_x_tilt, a_y_tilt, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER_32; a_item: EV_GRID_ITEM)
+			-- Action to be performed when pointer right click on grid
+			-- Behavior is launch the stone contained in pointer hovered editor token in a new development window.
+		require
+			a_item_not_void: a_item /= Void
+		local
+			l_stone: detachable STONE
+		do
+			if a_button = {EV_POINTER_CONSTANTS}.right and then ev_application.ctrl_pressed then
+				l_stone := stone_from_grid_item (a_item)
+				if l_stone /= Void and then l_stone.is_valid then
+					(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+				end
+			end
+		end
+
+	compute_adjust_vertical (a_font: EV_FONT; a_label_item: EV_GRID_ITEM)
 			-- Compute `adjust_vertical'
 		require
 			font_attached: a_font /= Void
@@ -545,24 +570,27 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			end
 		end
 
-	extend_pointer_actions (a_row: EV_GRID_ROW) is
+	extend_pointer_actions (a_row: EV_GRID_ROW)
 			-- Extend pointer actions to every row item.
 		require
 			a_row_attached: a_row /= Void
 		local
 			i: INTEGER
+			l_item: EV_GRID_ITEM
 		do
 			from
 				i := 1
 			until
 				i > a_row.count
 			loop
-				a_row.item (i).pointer_double_press_actions.extend (agent on_grid_row_double_clicked (?, ?, ?, ?, ?, ?, ?, ?, a_row))
+				l_item := a_row.item (i)
+				l_item.pointer_double_press_actions.extend (agent on_grid_row_double_clicked (?, ?, ?, ?, ?, ?, ?, ?, a_row))
+				l_item.pointer_button_press_actions.extend (agent on_pointer_right_click (?, ?, ?, ?, ?, ?, ?, ?, l_item))
 				i := i + 1
 			end
 		end
 
-	on_grid_row_double_clicked (a, b, c : INTEGER; d, e, f: DOUBLE; g, h: INTEGER; a_row: EV_GRID_ROW) is
+	on_grid_row_double_clicked (a, b, c : INTEGER; d, e, f: DOUBLE; g, h: INTEGER; a_row: EV_GRID_ROW)
 			-- A row is clicked by mouse pointer.
 		do
 			if not selected_rows.is_empty then
@@ -572,7 +600,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			end
 		end
 
-	on_key_pressed (a_key: EV_KEY) is
+	on_key_pressed (a_key: EV_KEY)
 			-- On key pressed.
 		local
 			l_selected_rows: ARRAYED_LIST [EV_GRID_ROW]
@@ -605,7 +633,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			end
 		end
 
-	go_to_line_of_editor (a_row: EV_GRID_ROW) is
+	go_to_line_of_editor (a_row: EV_GRID_ROW)
 			-- Invoke when a row of the report grid selected
 		require
 			a_row_not_void: a_row /= Void
@@ -630,7 +658,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			end
 		end
 
-	on_grid_row_selected_perform is
+	on_grid_row_selected_perform
 			-- Do actual `on_grid_row_selected'
 		local
 			l_text_item: MSR_TEXT_ITEM
@@ -700,7 +728,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			end
 		end
 
-	select_current_row is
+	select_current_row
 			-- Select current row in the grid, and perform selecting in the editor.
 		require
 			search_launched: multi_search_performer.is_search_launched
@@ -730,7 +758,7 @@ feature {ES_MULTI_SEARCH_TOOL_PANEL} -- Implementation
 			end
 		end
 
-	grid_row_by_data (a_data: ANY) : EV_GRID_ROW is
+	grid_row_by_data (a_data: ANY) : EV_GRID_ROW
 			-- Find a row in a_grid that include a_data
 		local
 			i: INTEGER
@@ -756,8 +784,8 @@ invariant
 	report_summary_string_not_void: report_summary_string /= Void
 	search_tool_set: search_tool /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -770,21 +798,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

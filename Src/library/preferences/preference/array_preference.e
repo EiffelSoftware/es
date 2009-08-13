@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Array preference."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,42 +16,49 @@ create {PREFERENCE_FACTORY}
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING
 			-- String representation of `value'.				
 		local
 			index: INTEGER
 			l_value: STRING
+			l_array: like value
 		do
 			create Result.make_empty
 			from
-				index := value.lower
+				l_array := value
+				check l_array /= Void end -- implied by precondition `has_value'
+
+				index := l_array.lower
 			until
-				index > value.upper
+				index > l_array.upper
 			loop
-				l_value := value.item (index)
+				l_value := l_array.item (index)
 				if is_choice and then index = selected_index then
 					Result.append ("[" + l_value + "]")
 				else
 					Result.append (l_value)
 				end
-				if not (index = value.count) then
+				if not (index = l_array.count) then
 					Result.append (";")
 				end
 				index := index + 1
 			end
 		end
 
-	string_type: STRING is
+	string_type: STRING
 			-- String description of this preference type.
 		once
 			Result := "LIST"
 		end
 
-	selected_value: STRING is
+	selected_value: detachable STRING
 			-- Value of the selected index.
 		do
-			if value.valid_index (selected_index) then
-				Result := value.item (selected_index)
+			if
+				(attached value as l_value) and then
+				l_value.valid_index (selected_index)
+			then
+				Result := l_value.item (selected_index)
 			end
 		end
 
@@ -60,7 +67,7 @@ feature -- Access
 
 feature -- Status Setting
 
-	set_is_choice (a_flag: BOOLEAN) is
+	set_is_choice (a_flag: BOOLEAN)
 			-- Set `is_choice' to`a_flag'.
 		do
 			is_choice := a_flag
@@ -69,7 +76,7 @@ feature -- Status Setting
 			end
 		end
 
-	set_selected_index (a_index: INTEGER) is
+	set_selected_index (a_index: INTEGER)
 			-- Set `selected_index'
 		require
 			index_valie: a_index > 0
@@ -80,29 +87,32 @@ feature -- Status Setting
 			index_set: selected_index = a_index
 		end
 
-	set_value_from_string (a_value: STRING) is
+	set_value_from_string (a_value: STRING)
 			-- Parse the string value `a_value' and set `value'.
 		local
 			cnt: INTEGER
-			l_value: STRING
+			s: STRING
 			values: LIST [STRING]
+			l_value: like value
 		do
 			create internal_value.make (1, 0)
 			values := a_value.split (';')
 			if values.count > 1 or not values.first.is_empty then
 				from
+					l_value := value
+					check l_value /= Void end -- implied by `internal_value /= Void'
 					values.start
 					cnt := 1
 				until
 					values.after
 				loop
-					l_value := values.item
-					if not l_value.is_empty and then l_value.item (1) = '[' and then l_value.item (l_value.count) = ']' then
-						l_value := l_value.substring (2, l_value.count - 1)
+					s := values.item
+					if not s.is_empty and then s.item (1) = '[' and then s.item (s.count) = ']' then
+						s := s.substring (2, s.count - 1)
 						is_choice := True
 						set_selected_index (cnt)
 					end
-					value.force (l_value, cnt)
+					l_value.force (s, cnt)
 					values.forth
 					cnt := cnt + 1
 				end
@@ -115,7 +125,7 @@ feature -- Query
 	is_choice: BOOLEAN
 			-- Is this preference a single choice or the full list?
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING): BOOLEAN
 			-- Is `a_string' valid for this preference type to convert into a value?		
 		do
 			Result := a_string /= Void
@@ -123,7 +133,7 @@ feature -- Query
 
 feature {PREFERENCES} -- Access
 
-	generating_preference_type: STRING is
+	generating_preference_type: STRING
 			-- The generating type of the preference for graphical representation.
 		do
 			if is_choice then
@@ -135,21 +145,21 @@ feature {PREFERENCES} -- Access
 
 feature {NONE} -- Implementation
 
-	auto_default_value: ARRAY [STRING] is
+	auto_default_value: ARRAY [STRING]
 			-- Value to use when Current is using auto by default (until real auto is set)
 		once
 			create Result.make (0, 1)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Formats TYPE_A instances using TEXT_FORMATTER"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -36,7 +36,7 @@ create
 
 feature -- Initialization
 
-	process (a_type: TYPE_A; a_text_formatter: TEXT_FORMATTER; a_class: CLASS_C; a_feature: FEATURE_I) is
+	process (a_type: TYPE_A; a_text_formatter: TEXT_FORMATTER; a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Output `a_type' into `a_text_formatter' using context of `a_class' and `a_feature'.
 			-- `a_feature' is only used when resolving anchors to argument.
 		require
@@ -67,7 +67,7 @@ feature -- Access
 
 feature {TYPE_A} -- Visitors
 
-	process_bits_a (a_type: BITS_A) is
+	process_bits_a (a_type: BITS_A)
 			-- Process `a_type'.
 		do
 			text_formatter.process_keyword_text (ti_bit_class, Void)
@@ -75,7 +75,7 @@ feature {TYPE_A} -- Visitors
 			text_formatter.add_int (a_type.bit_count)
 		end
 
-	process_bits_symbol_a (a_type: BITS_SYMBOL_A) is
+	process_bits_symbol_a (a_type: BITS_SYMBOL_A)
 			-- Process `a_type'.
 		local
 			l_feat : E_FEATURE
@@ -89,27 +89,29 @@ feature {TYPE_A} -- Visitors
 			text_formatter.process_feature_text (l_feat.name, l_feat, False)
 		end
 
-	process_boolean_a (a_type: BOOLEAN_A) is
+	process_boolean_a (a_type: BOOLEAN_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_character_a (a_type: CHARACTER_A) is
+	process_character_a (a_type: CHARACTER_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_cl_type_a (a_type: CL_TYPE_A) is
+	process_cl_type_a (a_type: CL_TYPE_A)
 			-- Process `a_type'.
 		local
 			l_class: CLASS_C
 		do
 			if a_type.has_attached_mark then
-				text_formatter.process_symbol_text (ti_exclamation)
+				text_formatter.process_keyword_text (ti_attached_keyword, Void)
+				text_formatter.add_space
 			elseif a_type.has_detachable_mark then
-				text_formatter.process_symbol_text (ti_question)
+				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
+				text_formatter.add_space
 			end
 			if a_type.has_expanded_mark then
 				text_formatter.process_keyword_text (ti_expanded_keyword, Void)
@@ -131,13 +133,15 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
-	process_formal_a (a_type: FORMAL_A) is
+	process_formal_a (a_type: FORMAL_A)
 			-- Process `a_type'.
 		do
 			if a_type.has_attached_mark then
-				text_formatter.process_symbol_text (ti_exclamation)
+				text_formatter.process_keyword_text (ti_attached_keyword, Void)
+				text_formatter.add_space
 			elseif a_type.has_detachable_mark then
-				text_formatter.process_symbol_text (ti_question)
+				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
+				text_formatter.add_space
 			end
 			if current_feature /= Void and then current_feature.has_replicated_ast then
 					-- Current feature may be Void.
@@ -149,7 +153,7 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
-	process_gen_type_a (a_type: GEN_TYPE_A) is
+	process_gen_type_a (a_type: GEN_TYPE_A)
 			-- Process `a_type'.
 		local
 			i, count: INTEGER
@@ -176,19 +180,21 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
-	process_integer_a (a_type: INTEGER_A) is
+	process_integer_a (a_type: INTEGER_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_like_argument (a_type: LIKE_ARGUMENT) is
+	process_like_argument (a_type: LIKE_ARGUMENT)
 			-- Process `a_type'.
 		do
 			if a_type.has_attached_mark then
-				text_formatter.process_symbol_text (ti_exclamation)
+				text_formatter.process_keyword_text (ti_attached_keyword, Void)
+				text_formatter.add_space
 			elseif a_type.has_detachable_mark then
-				text_formatter.process_symbol_text (ti_question)
+				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
+				text_formatter.add_space
 			end
 			text_formatter.process_keyword_text (ti_like_keyword, Void)
 			text_formatter.add_space
@@ -200,28 +206,32 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
-	process_like_current (a_type: LIKE_CURRENT) is
+	process_like_current (a_type: LIKE_CURRENT)
 			-- Process `a_type'.
 		do
 			if a_type.has_attached_mark then
-				text_formatter.process_symbol_text (ti_exclamation)
+				text_formatter.process_keyword_text (ti_attached_keyword, Void)
+				text_formatter.add_space
 			elseif a_type.has_detachable_mark then
-				text_formatter.process_symbol_text (ti_question)
+				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
+				text_formatter.add_space
 			end
 			text_formatter.process_keyword_text (ti_like_keyword, Void)
 			text_formatter.add_space
 			text_formatter.process_keyword_text (ti_current, Void)
 		end
 
-	process_like_feature (a_type: LIKE_FEATURE) is
+	process_like_feature (a_type: LIKE_FEATURE)
 			-- Process `a_type'.
 		local
 			l_feat: E_FEATURE
 		do
 			if a_type.has_attached_mark then
-				text_formatter.process_symbol_text (ti_exclamation)
+				text_formatter.process_keyword_text (ti_attached_keyword, Void)
+				text_formatter.add_space
 			elseif a_type.has_detachable_mark then
-				text_formatter.process_symbol_text (ti_question)
+				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
+				text_formatter.add_space
 			end
 			text_formatter.process_keyword_text (ti_like_keyword, Void)
 			text_formatter.add_space
@@ -232,19 +242,19 @@ feature {TYPE_A} -- Visitors
 			text_formatter.add_feature (l_feat, l_feat.name)
 		end
 
-	process_manifest_integer_a (a_type: MANIFEST_INTEGER_A) is
+	process_manifest_integer_a (a_type: MANIFEST_INTEGER_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_manifest_natural_64_a (a_type: MANIFEST_NATURAL_64_A) is
+	process_manifest_natural_64_a (a_type: MANIFEST_NATURAL_64_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_named_tuple_type_a (a_type: NAMED_TUPLE_TYPE_A) is
+	process_named_tuple_type_a (a_type: NAMED_TUPLE_TYPE_A)
 			-- Process `a_type'.
 		local
 			i, count: INTEGER
@@ -278,49 +288,49 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
-	process_native_array_type_a (a_type: NATIVE_ARRAY_TYPE_A) is
+	process_native_array_type_a (a_type: NATIVE_ARRAY_TYPE_A)
 			-- Process `a_type'.
 		do
 			process_gen_type_a (a_type)
 		end
 
-	process_natural_a (a_type: NATURAL_A) is
+	process_natural_a (a_type: NATURAL_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_none_a (a_type: NONE_A) is
+	process_none_a (a_type: NONE_A)
 			-- Process `a_type'.
 		do
 			text_formatter.add (ti_none_class)
 		end
 
-	process_open_type_a (a_type: OPEN_TYPE_A) is
+	process_open_type_a (a_type: OPEN_TYPE_A)
 			-- Process `a_type'.
 		do
 			text_formatter.add (ti_open_arg)
 		end
 
-	process_pointer_a (a_type: POINTER_A) is
+	process_pointer_a (a_type: POINTER_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_real_32_A (a_type: REAL_32_A) is
+	process_real_32_A (a_type: REAL_32_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_real_64_a (a_type: REAL_64_A) is
+	process_real_64_a (a_type: REAL_64_A)
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
 		end
 
-	process_renamed_type_a (a_type: RENAMED_TYPE_A [TYPE_A]) is
+	process_renamed_type_a (a_type: RENAMED_TYPE_A [TYPE_A])
 			-- Process `a_type'.
 		do
 			a_type.type.append_to (text_formatter)
@@ -333,19 +343,19 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
-	process_tuple_type_a (a_type: TUPLE_TYPE_A) is
+	process_tuple_type_a (a_type: TUPLE_TYPE_A)
 			-- Process `a_type'.
 		do
 			process_gen_type_a (a_type)
 		end
 
-	process_typed_pointer_a (a_type: TYPED_POINTER_A) is
+	process_typed_pointer_a (a_type: TYPED_POINTER_A)
 			-- Process `a_type'.
 		do
 			process_gen_type_a (a_type)
 		end
 
-	process_unevaluated_bits_symbol_a (a_type: UNEVALUATED_BITS_SYMBOL_A) is
+	process_unevaluated_bits_symbol_a (a_type: UNEVALUATED_BITS_SYMBOL_A)
 			-- Process `a_type'.
 		do
 			text_formatter.process_keyword_text (ti_bit_class, Void)
@@ -353,7 +363,7 @@ feature {TYPE_A} -- Visitors
 			text_formatter.add (a_type.symbol)
 		end
 
-	process_unevaluated_like_type (a_type: UNEVALUATED_LIKE_TYPE) is
+	process_unevaluated_like_type (a_type: UNEVALUATED_LIKE_TYPE)
 			-- Process `a_type'.
 		do
 			text_formatter.process_keyword_text (ti_like_keyword, Void)
@@ -361,13 +371,13 @@ feature {TYPE_A} -- Visitors
 			text_formatter.process_local_text (a_type.anchor)
 		end
 
-	process_void_a (a_type: VOID_A) is
+	process_void_a (a_type: VOID_A)
 			-- Process `a_type'.
 		do
 			text_formatter.process_keyword_text (ti_void, Void)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

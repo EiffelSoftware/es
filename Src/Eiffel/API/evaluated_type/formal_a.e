@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Descripion of a formal generic type"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,6 +16,7 @@ inherit
 			instantiation_in,
 			has_formal_generic,
 			is_loose,
+			formal_instantiation_in,
 			instantiated_in,
 			adapted_in,
 			skeleton_adapted_in,
@@ -44,7 +45,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (is_ref: like is_reference; is_exp: like is_expanded; i: like position) is
+	make (is_ref: like is_reference; is_exp: like is_expanded; i: like position)
 			-- Initialize new instance of FORMAL_A which is garanteed to
 			-- be instantiated as a reference type if `is_ref'.
 		do
@@ -59,7 +60,7 @@ feature {NONE} -- Initialization
 
 feature -- Visitor
 
-	process (v: TYPE_A_VISITOR) is
+	process (v: TYPE_A_VISITOR)
 			-- Process current element.
 		do
 			v.process_formal_a (Current)
@@ -67,13 +68,13 @@ feature -- Visitor
 
 feature -- Property
 
-	is_formal: BOOLEAN is True
+	is_formal: BOOLEAN = True
 			-- Is the current actual type a formal generic type ?
 
-	is_explicit: BOOLEAN is False
+	is_explicit: BOOLEAN = False
 			-- Is type fixed at compile time without anchors or formals?
 
-	is_multi_constrained (a_context_class: CLASS_C): BOOLEAN is
+	is_multi_constrained (a_context_class: CLASS_C): BOOLEAN
 			-- Is Current a multi constraint formal relative to current context class?
 			--
 			-- `a_context_class': Used to resolve formals to their constraints.		
@@ -87,7 +88,7 @@ feature -- Property
 			Result := l_generics.i_th (position).is_multi_constrained (l_generics)
 		end
 
-	is_full_named_type: BOOLEAN is True
+	is_full_named_type: BOOLEAN = True
 			-- Current is a named type.
 
 	is_reference: BOOLEAN
@@ -139,7 +140,7 @@ feature -- Property
 
 feature -- IL code generation
 
-	generic_il_type_name (a_context_type: TYPE_A): STRING is
+	generic_il_type_name (a_context_type: TYPE_A): STRING
 			-- <Precursor>
 		once
 			Result := "REFERENCE"
@@ -147,7 +148,7 @@ feature -- IL code generation
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := position = other.position and then
@@ -157,12 +158,12 @@ feature -- Comparison
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 		do
 			Result := {SHARED_HASH_CODE}.other_code + position
 		end
 
-	description: GENERIC_DESC is
+	description: GENERIC_DESC
 			-- Descritpion of type for skeletons.
 		do
 			create Result
@@ -221,7 +222,7 @@ feature -- Access
 			Result := constraints (a_context_class).constraining_types (a_context_class)
 		end
 
-	constraint (a_context_class: CLASS_C): TYPE_A is
+	constraint (a_context_class: CLASS_C): TYPE_A
 			-- Constraint type of `Current'.
 			--| Return excatly what is written. For a formal like G -> H we return H.
 			--| If you want to resolve formal chains use `constrained_type'.
@@ -235,7 +236,7 @@ feature -- Access
 		end
 
 
-	constraints (a_context_class: CLASS_C): TYPE_SET_A is
+	constraints (a_context_class: CLASS_C): TYPE_SET_A
 			-- Constraint types of `Current'.
 			--| Return excatly what is written. For a formal like G -> {H,STRING} we return {H, STRING}.
 			--| If there are several formals in the type set we merge the results.
@@ -248,7 +249,7 @@ feature -- Access
 			Result_sane: Result /= Void and then not Result.is_empty
 		end
 
-	constraints_if_possible (a_context_class: CLASS_C): TYPE_SET_A is
+	constraints_if_possible (a_context_class: CLASS_C): TYPE_SET_A
 			-- Constraint types of `Current'.
 			--| Return excatly what is written. For a formal like G -> {H,STRING} we return {H, STRING}.
 			--| If there are several formals in the type set we merge the results.
@@ -260,7 +261,7 @@ feature -- Access
 			Result_sane: Result /= Void
 		end
 
-	same_as (other: TYPE_A): BOOLEAN is
+	same_as (other: TYPE_A): BOOLEAN
 			-- Is `other' the same as Current ?
 		local
 			other_formal: like Current
@@ -272,7 +273,7 @@ feature -- Access
 			end
 		end
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 		do
 			-- No associated class
 		end
@@ -283,14 +284,14 @@ feature -- Access
 
 feature -- Generic conformance
 
-	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16 is
+	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16
 			-- Id of a `like xxx'.
 		do
 				-- Not really applicable.
 			Result := {SHARED_GEN_CONF_LEVEL}.formal_type
 		end
 
-	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A) is
+	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A)
 		do
 			generate_cid_prefix (buffer, Void)
 			if use_info then
@@ -304,7 +305,7 @@ feature -- Generic conformance
 			end
 		end
 
-	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A) is
+	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A)
 		local
 			dummy: INTEGER
 		do
@@ -322,7 +323,7 @@ feature -- Generic conformance
 			end
 		end
 
-	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL) is
+	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL)
 		local
 			dummy: INTEGER
 		do
@@ -336,7 +337,7 @@ feature -- Generic conformance
 			end
 		end
 
-	make_type_byte_code (ba: BYTE_ARRAY; use_info : BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info : BOOLEAN; a_context_type: TYPE_A)
 			-- Put type id's in byte array.
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
@@ -351,7 +352,7 @@ feature -- Generic conformance
 			end
 		end
 
-	generate_gen_type_il (il_generator: IL_CODE_GENERATOR; use_info: BOOLEAN) is
+	generate_gen_type_il (il_generator: IL_CODE_GENERATOR; use_info: BOOLEAN)
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
 		do
@@ -360,7 +361,7 @@ feature -- Generic conformance
 
 feature -- Output
 
-	dump: STRING is
+	dump: STRING
 			-- Dumped trace
 		do
 			create Result.make (3)
@@ -368,15 +369,17 @@ feature -- Output
 			Result.append_integer (position)
 		end
 
-	ext_append_to (st: TEXT_FORMATTER; c: CLASS_C) is
+	ext_append_to (st: TEXT_FORMATTER; c: CLASS_C)
 		local
 			s: STRING
 			l_class: CLASS_AS
 		do
 			if has_attached_mark then
-				st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_exclamation)
+				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_attached_keyword, Void)
+				st.add_space
 			elseif has_detachable_mark then
-				st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_question)
+				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_detachable_keyword, Void)
+				st.add_space
 			end
 			if c /= Void then
 				l_class := c.ast
@@ -407,7 +410,7 @@ feature {TYPE_A} -- Helpers
 
 feature {COMPILER_EXPORTER} -- Type checking
 
-	check_const_gen_conformance (a_gen_type: GEN_TYPE_A; a_target_type: TYPE_A; a_class: CLASS_C; i: INTEGER) is
+	check_const_gen_conformance (a_gen_type: GEN_TYPE_A; a_target_type: TYPE_A; a_class: CLASS_C; i: INTEGER)
 			-- Is `Current' a valid generic parameter at position `i' of `gen_type'?
 			-- For formal generic parameter, we do check that their constraint
 			-- conforms to `a_target_type'.
@@ -435,15 +438,15 @@ feature {COMPILER_EXPORTER} -- Type checking
 				-- derivation of A as none is possible.
 		end
 
-feature {COMPILER_EXPORTER}
+feature -- Access
 
-	has_formal_generic: BOOLEAN is True
+	has_formal_generic: BOOLEAN = True
 			-- Does the current actual type have formal generic type ?
 
-	is_loose: BOOLEAN is True
+	is_loose: BOOLEAN = True
 			-- Does type depend on formal generic parameters and/or anchors?
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	conform_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
 			-- Does Current conform to `other'?
 		local
 			l_constraints: TYPE_SET_A
@@ -452,12 +455,15 @@ feature {COMPILER_EXPORTER}
 				-- Use `other.conformance_type' rather than `other' to get deanchored form.
 			t := other.conformance_type
 			Result := same_as (t)
-			if not Result and then {c: like Current} t and then is_equivalent (c) then
+			if not Result and then attached {like Current} t as c and then is_equivalent (c) then
 					-- The rules are as follows, but we need to take care about implicit attachment status:
     				-- 1. !G conforms to G, ?G and !G.
 					-- 2. G conforms to G and ?G.
     				-- 3. ?G only conforms to ?G.
-				if is_implicitly_attached then
+				if not a_context_class.lace_class.is_void_safe_conformance then
+						-- Case 0. In non-void-safe mode attachment status is not taken into account.
+					Result := True
+				elseif is_implicitly_attached then
 						-- Case 1.
 						-- An (implicitly) attached type conforms to a type of any attachment status.
 					Result := True
@@ -477,19 +483,14 @@ feature {COMPILER_EXPORTER}
 					-- so this is automatically taken care by `same_as' above.
 				if not is_expanded then
 						-- Check conformance of constrained generic type to `other'.
-					fixme ("As soon as conform_to takes a context class as an argument, do no longer use System.current_class but the argument.")
-					check
-						has_generics: System.current_class.generics /= Void
-						count_ok: System.current_class.generics.count >= position
-					end
 						-- Get the actual type for the formal generic parameter
-					l_constraints := System.current_class.constraints_if_possible (position)
-					Result := l_constraints.constraining_types (system.current_class).to_other_attachment (Current).conform_to_type (other)
+					l_constraints := a_context_class.constraints_if_possible (position)
+					Result := l_constraints.constraining_types (a_context_class).to_other_attachment (Current).conform_to_type (a_context_class, other)
 				end
 			end
 		end
 
-	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN is
+	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN
 			-- Does current convert to `a_target_type' in `a_context_class'?
 			-- Update `last_conversion_info' of AST_CONTEXT.
 		local
@@ -497,13 +498,8 @@ feature {COMPILER_EXPORTER}
 		do
 				-- Check conformance of constained generic type
 				-- to `other'
-			check
-				has_generics: System.current_class.generics /= Void
-				count_ok: System.current_class.generics.count >= position
-			end
-
 			create l_checker
-			l_checker.check_formal_conversion (System.current_class, Current, a_target_type)
+			l_checker.check_formal_conversion (a_context_class, Current, a_target_type)
 			Result := l_checker.last_conversion_check_successful
 			if Result then
 				context.set_last_conversion_info (l_checker.last_conversion_info)
@@ -512,23 +508,42 @@ feature {COMPILER_EXPORTER}
 			end
 		end
 
-	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A is
+	formal_instantiation_in (type: TYPE_A; constraint_type: TYPE_A; written_id: INTEGER): TYPE_A
+			-- <Precursor>
+		do
+				-- Use constraint type.
+			Result := instantiation_in (constraint_type, written_id)
+		end
+
+	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A
 			-- Instantiation of Current in the context of `class_type',
 			-- assuming that Current is written in class of id `written_id'.
+		local
+			t: ATTACHABLE_TYPE_A
 		do
-			if {l_cl_type: CL_TYPE_A} type.actual_type then
+			if attached {CL_TYPE_A} type.actual_type as l_cl_type then
 				Result := l_cl_type.instantiation_of (Current, written_id).to_other_attachment (Current)
 			else
 				Result := Current
 			end
+			if
+				not Result.is_attached and then
+				system.class_of_id (written_id).constrained_types (position).is_attached and then
+				attached {ATTACHABLE_TYPE_A} Result as a and then not a.has_detachable_mark
+			then
+					-- Promote attachment setting of the current contraint unless the formal has explicit detachable mark.
+				t := a.duplicate
+				t.set_is_attached
+				Result := t
+			end
 		end
 
-	adapted_in (class_type: CLASS_TYPE): TYPE_A is
+	adapted_in (class_type: CLASS_TYPE): TYPE_A
 		do
 			Result := class_type.type.generics.item (position)
 		end
 
-	skeleton_adapted_in (class_type: CLASS_TYPE): TYPE_A is
+	skeleton_adapted_in (class_type: CLASS_TYPE): TYPE_A
 		local
 			l_type: TYPE_A
 		do
@@ -546,7 +561,7 @@ feature {COMPILER_EXPORTER}
 			end
 		end
 
-	instantiated_in (class_type: TYPE_A): TYPE_A is
+	instantiated_in (class_type: TYPE_A): TYPE_A
 			-- Instantiation of Current in the context of `class_type'
 			-- assuming that Current is written in the associated class
 			-- of `class_type'.
@@ -554,7 +569,7 @@ feature {COMPILER_EXPORTER}
 			Result := class_type.generics.item (position).to_other_attachment (Current)
 		end
 
-	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): TYPE_A is
+	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): TYPE_A
 		local
 			l_feat: TYPE_FEATURE_I
 		do
@@ -566,13 +581,13 @@ feature {COMPILER_EXPORTER}
 			Result := l_feat.type.actual_type.to_other_attachment (Current)
 		end
 
-	create_info: CREATE_FORMAL_TYPE is
+	create_info: CREATE_FORMAL_TYPE
 			-- Create formal type info.
 		do
 			create Result.make (as_attachment_mark_free)
 		end
 
-	shared_create_info: CREATE_FORMAL_TYPE is
+	shared_create_info: CREATE_FORMAL_TYPE
 			-- Same as `create_info' except that it is a shared instance.
 		once
 			create Result.make (Current)
@@ -580,14 +595,14 @@ feature {COMPILER_EXPORTER}
 			shared_create_info_not_void: Result /= Void
 		end
 
-	initialize_info (an_info: like shared_create_info) is
+	initialize_info (an_info: like shared_create_info)
 			-- Initialize `an_info' with current type data.
 		do
 			an_info.make (Current)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

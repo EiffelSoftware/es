@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_HOT_ZONE for SD_DOCKING_ZONE."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,8 +19,8 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_docker_mediator: SD_DOCKER_MEDIATOR; a_zone: SD_DOCKING_ZONE; a_rect: EV_RECTANGLE) is
-			-- Creation method.
+	make (a_docker_mediator: SD_DOCKER_MEDIATOR; a_zone: SD_DOCKING_ZONE; a_rect: EV_RECTANGLE)
+			-- Creation method
 		require
 			a_zone_not_void: a_zone /= Void
 			a_docker_mediator_not_void: a_docker_mediator /= Void
@@ -38,8 +38,8 @@ feature {NONE} -- Initlization
 
 feature -- Redefine
 
-	apply_change  (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
-			-- Redefine.
+	apply_change  (a_screen_x, a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		local
 			l_caller: SD_ZONE
 		do
@@ -64,8 +64,8 @@ feature -- Redefine
 			end
 		end
 
-	update_for_feedback (a_screen_x, a_screen_y: INTEGER; a_dockable: BOOLEAN): BOOLEAN is
-			-- Redefine.
+	update_for_feedback (a_screen_x, a_screen_y: INTEGER; a_dockable: BOOLEAN): BOOLEAN
+			-- <Precursor>
 		do
 			if a_dockable then
 				if internal_rectangle_left.has_x_y (a_screen_x, a_screen_y) then
@@ -91,8 +91,8 @@ feature -- Redefine
 			end
 		end
 
-	update_for_indicator (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
-			-- Redefine.
+	update_for_indicator (a_screen_x, a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 			if internal_shared.show_all_feedback_indicator then
 				draw_drag_window_indicator (a_screen_x, a_screen_y)
@@ -105,8 +105,8 @@ feature -- Redefine
 			end
 		end
 
-	update_for_indicator_clear (a_screen_x, a_screen_y: INTEGER) is
-			-- Redefine
+	update_for_indicator_clear (a_screen_x, a_screen_y: INTEGER)
+			-- <Precursor>
 		do
 			if not internal_rectangle.has_x_y (a_screen_x, a_screen_y) then
 				clear_indicator
@@ -115,23 +115,23 @@ feature -- Redefine
 			end
 		end
 
-	show_indicator is
-			-- Show indicators if possible.
+	show_indicator
+			-- Show indicators if possible
 		do
 			if not internal_indicator.exists then
 				build_indicator
 			end
 		end
 
-	clear_indicator is
-			-- Clear indicators.
+	clear_indicator
+			-- Clear indicators
 		do
 			if internal_indicator.exists then
 				internal_indicator.clear
 			end
 		end
 
-	build_indicator is
+	build_indicator
 			-- Build indicator
 		do
 			create internal_indicator.make (internal_shared.icons.arrow_indicator_center, internal_shared.feedback.feedback_rect)
@@ -141,13 +141,13 @@ feature -- Redefine
 
 feature -- Query
 
-	docking_zone_of (a_zone: SD_ZONE): SD_DOCKING_ZONE is
-			-- Type convertion.
+	docking_zone_of (a_zone: SD_ZONE): SD_DOCKING_ZONE
+			-- Type convertion
 		do
 			Result ?= a_zone
 		end
 
-	zone_type_valid (a_zone: SD_ZONE): BOOLEAN is
+	zone_type_valid (a_zone: SD_ZONE): BOOLEAN
 			-- If `a_zone''s type fit for current class?
 		require
 			not_void: a_zone /= Void
@@ -155,10 +155,10 @@ feature -- Query
 			Result := docking_zone_of (a_zone) /= Void
 		end
 
-feature {NONE} -- Implementation functions.
+feature {NONE} -- Implementation functions
 
-	update_feedback (a_screen_x, a_screen_y: INTEGER; a_rect: EV_RECTANGLE) is
-			-- Update the feedback when pointer in or out the five rectangle area.
+	update_feedback (a_screen_x, a_screen_y: INTEGER; a_rect: EV_RECTANGLE)
+			-- Update the feedback when pointer in or out the five rectangle area
 		require
 			a_rect_not_void: a_rect /= Void
 		local
@@ -186,8 +186,8 @@ feature {NONE} -- Implementation functions.
 			end
 		end
 
-	draw_drag_window_indicator (a_screen_x, a_screen_y: INTEGER) is
-			-- Draw dragged window feedback which represent window position.
+	draw_drag_window_indicator (a_screen_x, a_screen_y: INTEGER)
+			-- Draw dragged window feedback which represent window position
 		local
 			l_shared: like internal_shared
 			l_icons: SD_ICONS_SINGLETON
@@ -213,14 +213,14 @@ feature {NONE} -- Implementation functions.
 			end
 		end
 
-	has_x_y (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	has_x_y (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- Does `internal_rectangle' has `a_screen_x' and `a_screen_y'?
 		do
 			Result := internal_rectangle.has_x_y (a_screen_x, a_screen_y)
 		end
 
-	set_rectangle (a_rect: like internal_rectangle) is
-			-- Set the rectangle which allow user to dock.
+	set_rectangle (a_rect: like internal_rectangle)
+			-- Set the rectangle which allow user to dock
 		require
 			a_rect_not_void: a_rect /= Void
 		do
@@ -250,22 +250,22 @@ feature {NONE} -- Implementation functions.
 			center_rectangle_created: internal_rectangle_center /= Void
 		end
 
-feature {NONE} -- Implementation attributes.
+feature {NONE} -- Implementation attributes
 
-	pixmap_center_width: INTEGER is 34
-			-- Width and height of the area in center figure area.
+	pixmap_center_width: INTEGER = 34
+			-- Width and height of the area in center figure area
 
-	pixmap_corner_width: INTEGER is 36
-			-- Width and height of the area in four corner figure areas.
+	pixmap_corner_width: INTEGER = 36
+			-- Width and height of the area in four corner figure areas
 
 	internal_rectangle: EV_RECTANGLE
-			-- Rectangle which allow user to dock.
+			-- Rectangle which allow user to dock
 
 	internal_rectangle_left, internal_rectangle_right, internal_rectangle_top, internal_rectangle_bottom, internal_rectangle_center, internal_rectangle_title_area: EV_RECTANGLE
-			-- Five rectangle areas which allow user dock a window in this zone.
+			-- Five rectangle areas which allow user dock a window in this zone
 
 	internal_indicator: SD_FEEDBACK_INDICATOR
-			-- Feedback indicator at center of zone.
+			-- Feedback indicator at center of zone
 
 invariant
 
@@ -275,7 +275,7 @@ invariant
 	internal_rectangle_not_void: internal_rectangle /= Void
 	not_void: internal_indicator /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

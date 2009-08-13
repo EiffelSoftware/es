@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 
 	]"
@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class: !like associated_class; a_feature: !like associated_feature; a_text: !like text)
+	make (a_class: attached like associated_class; a_feature: attached like associated_feature; a_text: attached like text)
 			-- Initializes the data required to perform class modifications.
 			--
 			-- `a_class': The associated class to perform modifications on.
@@ -42,12 +42,12 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	ast_feature: ?FEATURE_AS
+	ast_feature: detachable FEATURE_AS
 			-- Root AST node of prepared class.
 
 feature {NONE} -- Access
 
-	associated_feature: !E_FEATURE
+	associated_feature: attached E_FEATURE
 			-- Feature associated with Current
 
 feature -- Status report
@@ -85,7 +85,7 @@ feature {ES_CLASS_TEXT_MODIFIER} -- Basic operations
 			ast_feature: ast_feature = Void
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

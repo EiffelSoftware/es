@@ -97,11 +97,15 @@ extern "C" {
 	RT_LNK void (*egc_free_preallocated_trace)(EIF_REFERENCE); /* EXCEPTION_MANAGER `free_preallocated_trace' feature */
 
 	RT_LNK void (*egc_correct_mismatch)(EIF_REFERENCE);	/* ANY `correct_mismatch' */
+
+	RT_LNK int egc_has_old_special_semantic;
+
 	RT_LNK EIF_TYPE_INDEX egc_str_dtype;				/* Dynamic type for string */
 	RT_LNK EIF_TYPE_INDEX egc_arr_dtype;				/* Dynamic type for ARRAY[ANY] */
 	RT_LNK EIF_TYPE_INDEX egc_tup_dtype;				/* Dynamic type for TUPLE */
 	RT_LNK int32 egc_disp_rout_id;			/* Dispose routine id */ 
 	RT_LNK int32 egc_copy_rout_id;			/* Copy routine id */ 
+	RT_LNK int32 egc_is_equal_rout_id;		/* is_equal routine id */ 
 	RT_LNK EIF_TYPE_INDEX egc_bit_dtype;			/* Dynamic type of BIT, E1/plug.c */
 	RT_LNK EIF_TYPE_INDEX egc_any_dtype;			/* Dynamic type of ANY */
 
@@ -178,6 +182,7 @@ extern "C" {
 #else
 	RT_LNK void (**egc_edispose)(void);
 	RT_LNK void (**egc_copy)(EIF_REFERENCE, EIF_REFERENCE);
+	RT_LNK EIF_BOOLEAN (**egc_is_equal)(EIF_REFERENCE, EIF_REFERENCE);
 	RT_LNK char *(**egc_ecreate)(void);
 	RT_LNK char *(**egc_exp_create)(void);
 	RT_LNK struct ctable *egc_ce_rname;
@@ -186,10 +191,8 @@ extern "C" {
 #endif
 
 #ifdef WORKBENCH
-	RT_LNK EIF_TYPED_VALUE (*egc_equal)(EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE); /* {ANY}.equal */
 	RT_LNK EIF_TYPED_VALUE (*egc_twin)(EIF_REFERENCE); /* {ANY}.twin */
 #else
-	RT_LNK EIF_BOOLEAN   (*egc_equal)(EIF_REFERENCE, EIF_REFERENCE, EIF_REFERENCE); /* {ANY}.equal */
 	RT_LNK EIF_REFERENCE (*egc_twin)(EIF_REFERENCE); /* {ANY}.twin */
 #endif
 	RT_LNK int32 egc_rcount;			/* Number of root creation procedures */

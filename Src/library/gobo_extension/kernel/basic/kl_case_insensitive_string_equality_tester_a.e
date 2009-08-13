@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Case-insensitive string equality testers
 		]"
@@ -36,20 +36,20 @@ feature -- Status setting
 
 feature -- Query
 
-	test (v, u: !G): BOOLEAN is
+	test (v, u: attached G): BOOLEAN
 			-- <Precursor>
 		do
 			if is_case_sensitive then
 				Result := Precursor (v, u)
 			else
-				if {l_s32_v: READABLE_STRING_32} v then
-					if {l_s32_u: READABLE_STRING_32} u then
+				if attached {READABLE_STRING_32} v as l_s32_v then
+					if attached {READABLE_STRING_32} u as l_s32_u then
 						Result := l_s32_v.is_case_insensitive_equal (l_s32_u)
 					else
 						Result := l_s32_v.is_case_insensitive_equal (u.as_string_32)
 					end
-				elseif {l_s8_v: READABLE_STRING_8} v then
-					if {l_s8_u: READABLE_STRING_32} u then
+				elseif attached {READABLE_STRING_8} v as l_s8_v then
+					if attached {READABLE_STRING_32} u as l_s8_u then
 						Result := l_s8_v.is_case_insensitive_equal (l_s8_u)
 					else
 						Result := l_s8_v.is_case_insensitive_equal (u.as_string_8)
@@ -60,7 +60,7 @@ feature -- Query
 			end
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

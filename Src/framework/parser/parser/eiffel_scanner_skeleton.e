@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Eiffel scanner skeletons"
 	legal: "See notice at end of class."
@@ -18,7 +18,9 @@ inherit
 		end
 
 	EIFFEL_TOKENS
-		export {NONE} all end
+		export
+			{NONE} all
+		end
 
 	BASIC_ROUTINES
 		export {NONE} all end
@@ -34,7 +36,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel scanner using default factory for creating AST nodes.
 		local
 			l_factory: AST_FACTORY
@@ -43,7 +45,7 @@ feature {NONE} -- Initialization
 			make_with_factory (l_factory)
 		end
 
-	make_with_factory (a_factory: AST_FACTORY) is
+	make_with_factory (a_factory: AST_FACTORY)
 			-- Create a new Eiffel scanner using `a_factory' as factory to create AST nodes.
 		require
 			a_factory_not_void: a_factory /= Void
@@ -51,30 +53,29 @@ feature {NONE} -- Initialization
 			ast_factory := a_factory
 			make_with_buffer (Empty_buffer)
 			create token_buffer.make (Initial_buffer_size)
-			create token_buffer2.make (Initial_buffer_size)
+			create roundtrip_token_buffer.make (Initial_buffer_size)
+			create start_location.make_null
 			create verbatim_marker.make (Initial_verbatim_marker_size)
 			filename := ""
-			is_indexing_keyword := True
-			is_note_keyword := False
-			is_attribute_keyword := False
+			syntax_version := obsolete_64_syntax
+			ast_factory.set_parser (Current)
 		ensure
 			ast_factory_set: ast_factory = a_factory
 		end
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input source.
 			-- (This routine can be called in wrap before scanning
 			-- another input buffer.)
 		do
 			Precursor
+			start_location.set_position (0, 0, 0, 0)
 			token_buffer.clear_all
-			token_buffer2.clear_all
+			roundtrip_token_buffer.clear_all
 			verbatim_marker.clear_all
-			is_indexing_keyword := True
-			is_note_keyword := False
-			is_attribute_keyword := False
+			syntax_version := obsolete_64_syntax
 		end
 
 feature -- Roundtrip
@@ -82,17 +83,14 @@ feature -- Roundtrip
 	match_list: LEAF_AS_LIST
 			-- List of all tokens used for roundtrip
 
-	initial_match_list_size: INTEGER is 1000
+	initial_match_list_size: INTEGER = 1000
 			-- Initial size of `match_list'.
 
-	token_buffer2: STRING
-			-- Buffer for verbatim string tokens
+	roundtrip_token_buffer: STRING
+			-- Buffer for roundtrip tokens
 
-	verbatim_start_position: INTEGER
-			-- Start position of verbatim string being scanned
-
-	string_start_position: INTEGER
-			-- Start position of regular string being scanned	
+	verbatim_common_columns: INTEGER
+			-- Number of columns that the verbatim string has in common.
 
 	last_keyword_as_id_index: INTEGER
 			-- Last index in `match_list' for keywords that can be used as identifier
@@ -124,11 +122,11 @@ feature -- Access
 	last_line_pragma: BREAK_AS
 			-- Last line pragma to be associated with next instruction
 
+	start_location: LOCATION_AS
+			-- Start location of a manifest string
+
 	token_buffer: STRING
 			-- Buffer for lexical tokens
-
-	string_position: INTEGER
-			-- Start position of a string token
 
 	verbatim_marker: STRING
 			-- Sequence of characters between " and [
@@ -137,13 +135,13 @@ feature -- Access
 	has_syntax_warning: BOOLEAN
 			-- Do we create SYNTAX_WARNING instances for obsolte syntactical constructs?
 
-	Maximum_string_character_code: INTEGER is 0xFF
+	Maximum_string_character_code: INTEGER = 0xFF
 			-- Maximum value for character code inside a string
 
-	Maximum_bit_constant: INTEGER is 0x7FFF
+	Maximum_bit_constant: INTEGER = 0x7FFF
 			-- Maximum value of Constant in Bit_type declaration
 
-	Maximum_string_length: INTEGER is 0x7FFF
+	Maximum_string_length: INTEGER = 0x7FFF
 			-- Maximum length of tokens that require a string representation
 			-- (such as Identifier, Manifest_string, Free_operator)
 			-- The limit is imposed by
@@ -151,20 +149,23 @@ feature -- Access
 			--   C compiler (e.g., CL does not support strings longer than 0xFFFF bytes)
 			--   CLI specification (e.g., identifiers cannot be longer 0x1FFFFFFF bytes)
 
+	ecma_syntax: NATURAL_8 = 0x00
+			-- Syntax strictly follows the ECMA specification.
+
+	obsolete_64_syntax: NATURAL_8 = 0x01
+			-- Allows pre-ECMA keywords and ignore new ECMA keywords such as `note', `attribute', `attached' and `detachable'.
+
+	transitional_64_syntax: NATURAL_8 = 0x2
+			-- Allows both pre and ECMA keywords.
+
 feature {NONE} -- Status
 
-	is_note_keyword: BOOLEAN
-			-- Is "note" keyword allowed in current context?
-
-	is_indexing_keyword: BOOLEAN
-			-- Is "indexing" keyword allowed in current context?
-
-	is_attribute_keyword: BOOLEAN
-			-- Is "attribute" keyword allowed in current context?
+	syntax_version: NATURAL_8
+			-- Version of syntax used, one of the `ecma_syntax', `obsolete_64_syntax' and `transitional_64_syntax'.
 
 feature -- Convenience
 
-	token_line (a_node: AST_EIFFEL): like line is
+	token_line (a_node: AST_EIFFEL): like line
 			-- Line of `a_node' if not Void, `line' otherwise.
 		do
 			if a_node /= Void then
@@ -174,7 +175,7 @@ feature -- Convenience
 			end
 		end
 
-	token_column (a_node: AST_EIFFEL): like column is
+	token_column (a_node: AST_EIFFEL): like column
 			-- Line of `a_node' if not Void, `column' otherwise.
 		do
 			if a_node /= Void then
@@ -186,13 +187,13 @@ feature -- Convenience
 
 feature -- Osolete
 
-	error_code: INTEGER is 0
-	error_message: STRING is ""
+	error_code: INTEGER = 0
+	error_message: STRING = ""
 			-- Compatibility with parser written in C with yacc
 
 feature -- Settings
 
-	set_has_syntax_warning (b: BOOLEAN) is
+	set_has_syntax_warning (b: BOOLEAN)
 			-- Set `has_syntax_warning' to `b'
 		do
 			has_syntax_warning := b
@@ -200,33 +201,19 @@ feature -- Settings
 			has_syntax_warning_set: has_syntax_warning = b
 		end
 
-	set_is_indexing_keyword (value: BOOLEAN)
-			-- Set `is_indexing_keyword' to `value'
+	set_syntax_version (a_version: like syntax_version)
+			-- Set `syntax_version' to `a_version'.
+		require
+			valid_version: a_version = ecma_syntax or a_version = transitional_64_syntax or a_version = obsolete_64_syntax
 		do
-			is_indexing_keyword := value
+			syntax_version := a_version
 		ensure
-			is_indexing_keyword_set: is_indexing_keyword = value
-		end
-
-	set_is_note_keyword (value: BOOLEAN)
-			-- Set `is_note_keyword' to `value'
-		do
-			is_note_keyword := value
-		ensure
-			is_note_keyword_set: is_note_keyword = value
-		end
-
-	set_is_attribute_keyword (value: BOOLEAN)
-			-- Set `is_attribute_keyword' to `value'
-		do
-			is_attribute_keyword := value
-		ensure
-			is_attribute_keyword_set: is_attribute_keyword = value
+			syntax_version_set: syntax_version = a_version
 		end
 
 feature {NONE} -- Error handling
 
-	report_one_error (a_error: ERROR) is
+	report_one_error (a_error: ERROR)
 			-- Log `a_error'.
 		require
 			a_error_not_void: a_error /= Void
@@ -238,7 +225,7 @@ feature {NONE} -- Error handling
 			terminate
 		end
 
-	report_one_warning (a_error: ERROR) is
+	report_one_warning (a_error: ERROR)
 			-- Log `a_error'.
 		require
 			a_error_not_void: a_error /= Void
@@ -247,14 +234,14 @@ feature {NONE} -- Error handling
 			error_handler.insert_warning (a_error)
 		end
 
-	fatal_error (a_message: STRING) is
+	fatal_error (a_message: STRING)
 			-- A fatal error occurred.
 			-- Log `a_message' and raise an exception.
 		do
 			report_one_error (create {SYNTAX_ERROR}.make (line, column, filename, a_message))
 		end
 
-	report_character_missing_quote_error (char: STRING) is
+	report_character_missing_quote_error (char: STRING)
 			-- Invalid character: final quote missing.
 		require
 			char_not_void: char /= Void
@@ -266,7 +253,7 @@ feature {NONE} -- Error handling
 			last_token := TE_CHAR
 		end
 
-	report_string_bad_special_character_error is
+	report_string_bad_special_character_error
 			-- Invalid special character after % in manisfest string.
 		do
 			report_one_error (create {STRING_EXTENSION}.make (line, column, filename, ""))
@@ -275,7 +262,7 @@ feature {NONE} -- Error handling
 			token_buffer.append_character ('a')
 		end
 
-	report_string_invalid_code_error (a_code: INTEGER) is
+	report_string_invalid_code_error (a_code: INTEGER)
 			-- Invalid character code after % in manisfest string.
 		do
 			report_one_error (create {STRING_EXTENSION}.make (line, column, filename, ""))
@@ -284,7 +271,7 @@ feature {NONE} -- Error handling
 			token_buffer.append_character ('a')
 		end
 
-	report_string_missing_quote_error (a_string: STRING) is
+	report_string_missing_quote_error (a_string: STRING)
 			-- Invalid string: final quote missing.
 		require
 			a_string_not_void: a_string /= Void
@@ -299,7 +286,7 @@ feature {NONE} -- Error handling
 			end
 		end
 
-	report_missing_end_of_verbatim_string_error (a_string: STRING) is
+	report_missing_end_of_verbatim_string_error (a_string: STRING)
 			-- Invalid verbatim string: final bracket-quote missing.
 		require
 			a_string_not_void: a_string /= Void
@@ -314,7 +301,7 @@ feature {NONE} -- Error handling
 			end
 		end
 
-	report_too_long_string (a_text: STRING) is
+	report_too_long_string (a_text: STRING)
 			-- Report that current token has too long string representation.
 		require
 			valid_token: last_token = TE_STR_FREE or last_token = TE_ID or last_token = TE_STRING or last_token = TE_VERBATIM_STRING
@@ -327,21 +314,102 @@ feature {NONE} -- Error handling
 					" characters long that exceeds limit of " + maximum_string_length.out + " characters."))
 		end
 
-	report_unknown_token_error (a_token: CHARACTER) is
+	report_unknown_token_error (a_token: CHARACTER)
 			-- Unknown token.
 		do
 			report_one_error (create {SYNTAX_ERROR}.make (line, column, filename, ""))
 		end
 
-	report_invalid_integer_error (a_text: STRING) is
+feature {AST_FACTORY} -- Error handling
+
+	report_invalid_integer_error (a_text: STRING)
 			-- Invalid integer
 		do
 			report_one_error (create {VIIN}.make (line, column, filename, ""))
 		end
 
+	report_invalid_type_for_real_error (a_type: TYPE_AS; a_real: STRING)
+			-- Error when an incorrect type `a_type' is specified for a real constant `a_real'.
+		require
+			a_type_not_void: a_type /= Void
+			a_real_not_void: a_real /= Void
+		local
+			an_error: SYNTAX_ERROR
+		do
+			create an_error.make (line, column, filename,
+				"Specified type %"" + a_type.dump +
+					"%" is not a valid type for real constant %"" + a_real + "%"")
+			report_one_error (an_error)
+		end
+
+	report_invalid_type_for_integer_error (a_type: TYPE_AS; an_int: STRING)
+			-- Error when an incorrect type `a_type' is specified for a real constant `a_real'.
+		require
+			a_type_not_void: a_type /= Void
+			an_int_not_void: an_int /= Void
+		local
+			an_error: SYNTAX_ERROR
+		do
+			create an_error.make (line, column, filename,
+				"Specified type %"" + a_type.dump +
+					"%" is not a valid type for integer constant %"" + an_int + "%"")
+			report_one_error (an_error)
+		end
+
+	report_integer_too_large_error (a_type: TYPE_AS; an_int: STRING)
+			-- `an_int', although only made up of digits, doesn't fit
+			-- in an INTEGER (i.e. greater than maximum_integer_value).
+		require
+			an_int_not_void: an_int /= Void
+		local
+			an_error: SYNTAX_ERROR
+			l_message: STRING
+		do
+			fixme ("Change plain syntax error to Integer_too_large error when the corresponding validity rule is available.")
+			if a_type /= Void then
+				l_message := "Integer value " + an_int + " is too large for " + a_type.dump + "."
+			else
+				l_message := "Integer value " + an_int + " is too large for any integer type."
+			end
+			create an_error.make (line, column, filename, l_message)
+			report_one_error (an_error)
+		end
+
+	report_integer_too_small_error (a_type: TYPE_AS; an_int: STRING)
+			-- `an_int', although only made up of digits, doesn't fit
+			-- in an INTEGER (i.e. less than minimum_integer_value).
+		require
+			an_int_not_void: an_int /= Void
+		local
+			an_error: SYNTAX_ERROR
+			l_message: STRING
+		do
+			fixme ("Change plain syntax error to Integer_too_small error when the corresponding validity rule is available.")
+			if a_type /= Void then
+				l_message := "Integer value " + an_int + " is too small for " + a_type.dump + "."
+			else
+				l_message := "Integer value " + an_int + " is too small for any integer type."
+			end
+			create an_error.make (line, column, filename, l_message)
+			report_one_error (an_error)
+		end
+
+	report_character_code_too_large_error (a_code: STRING)
+			-- Integer encoded by `a_code' is too large to fit into a CHARACTER_32
+		require
+			a_code_not_void: a_code /= Void
+		local
+			l_message: STRING
+			an_error: BAD_CHARACTER
+		do
+			l_message := "Character code " + a_code + " is too large for CHARACTER_32."
+			create an_error.make (line, column, filename, l_message)
+			report_one_error (an_error)
+		end
+
 feature {NONE} -- Implementation
 
-	process_id_as is
+	process_id_as
 			-- Process current token which is an identifier
 		local
 			l_count: INTEGER
@@ -355,7 +423,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_id_as_with_existing_stub (keyword: KEYWORD_AS; a_index: INTEGER; is_lower: BOOLEAN) is
+	process_id_as_with_existing_stub (keyword: KEYWORD_AS; a_index: INTEGER; is_lower: BOOLEAN)
 			-- Process current token which is an identifier and whose leaf stub has been inserted into `match_list'.
 			-- For example, an "assign" keyword is later recognized as an identifier.
 			-- Used for roundtrip.
@@ -390,7 +458,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_string_character_code (code: INTEGER) is
+	process_string_character_code (code: INTEGER)
 			-- Check whether `code' is a valid character code
 			-- in a string and set `last_token' accordingly.
 		require
@@ -405,9 +473,47 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	process_simple_string_as (a_token: INTEGER)
+			-- Set `last_string_as_value' accordingly to the current scanner input of a manifest string and set `last_token' with `a_token'
+		local
+			l_str: STRING
+			n: INTEGER
+		do
+			n := text_count
+
+				-- We remove the double quotes and initializes it with scanned input.
+			l_str := ast_factory.new_string (n - 2)
+			if l_str /= Void then
+				append_text_substring_to_string (2, n - 1, l_str)
+			end
+
+				-- `roundtrip_token_buffer' is used for the getting the actual input
+				-- (useful for roundtrip parsing)
+			ast_factory.set_buffer (roundtrip_token_buffer, Current)
+
+				-- `l_str' being a new object, it is just fine to pass it as is.
+				-- `roundtrip_token_buffer' is not a new object but redefinitions of `new_string_as'
+				-- take care of duplicating it when necessary.
+			last_string_as_value := ast_factory.new_string_as (l_str, line, column, position, n, roundtrip_token_buffer)
+			last_token := a_token
+
+				-- Check if manifest string is not too long (excluding the double quotes).
+			if (n - 2) > maximum_string_length then
+					-- If `l_str' is Void, we need to actually create it for error purpose even if it was
+					-- not needed by the factory.
+				if l_str = Void then
+					create l_str.make (n - 2)
+					append_text_substring_to_string (2, n - 1, l_str)
+				end
+				report_too_long_string (l_str)
+			end
+		ensure
+			last_token_set: last_token = a_token
+		end
+
 feature {NONE} -- Implementation
 
-	is_verbatim_string_closer: BOOLEAN is
+	is_verbatim_string_closer: BOOLEAN
 			-- Is `text' a valid Verbatim_string_closer?
 		require
 			-- valid_text: `text' matches regexp [ \t\r]*\][^\n"]*\"
@@ -441,7 +547,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	align_left (s: STRING) is
+	align_left (s: STRING)
 			-- Align multiline string `s' to the left so that
 			-- the same white space in front of every line is removed.
 		require
@@ -452,6 +558,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			from
+				verbatim_common_columns := 0
 				done := s.count = 0
 			until
 				done
@@ -472,6 +579,7 @@ feature {NONE} -- Implementation
 					if i <= 0 then
 							-- Remove leading `c'.
 						s.remove (1)
+						verbatim_common_columns := verbatim_common_columns + 1
 						from
 							i := s.index_of ('%N', 1)
 						until
@@ -486,15 +594,15 @@ feature {NONE} -- Implementation
 						end
 						done := s.count = 0
 					else
-						done := true
+						done := True
 					end
 				else
-					done := true
+					done := True
 				end
 			end
 		end
 
-	cloned_string (a_string: STRING): STRING is
+	cloned_string (a_string: STRING): STRING
 			-- Clone of `a_string'
 			-- (Reduce memory storage if possible.)
 		require
@@ -509,7 +617,7 @@ feature {NONE} -- Implementation
 			less_memory: Result.capacity <= a_string.capacity
 		end
 
-	cloned_lower_string (a_string: STRING): STRING is
+	cloned_lower_string (a_string: STRING): STRING
 			-- Clone of `a_string'; convert characters to lower case
 			-- (Reduce memory storage if possible.)
 		require
@@ -526,11 +634,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	Initial_buffer_size: INTEGER is 5120
+	Initial_buffer_size: INTEGER = 5120
 			-- Initial size for `token_buffer'
 			-- (See `eif_rtlimits.h')
 
-	Initial_verbatim_marker_size: INTEGER is 3
+	Initial_verbatim_marker_size: INTEGER = 3
 			-- Initial size for `verbatim_marker'
 
 invariant
@@ -539,8 +647,8 @@ invariant
 	verbatim_marker_not_void: verbatim_marker /= Void
 	filename_not_void: filename /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -553,22 +661,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EIFFEL_SCANNER_SKELETON

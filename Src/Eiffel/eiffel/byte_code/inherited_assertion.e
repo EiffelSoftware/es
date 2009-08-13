@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Inherited details of assertions. Used for the generation%
 				  %of chain assertions."
 	legal: "See notice at end of class."
@@ -20,7 +20,7 @@ create
 
 feature -- Creation
 
-	make is
+	make
 			-- Make lists
 		do
 			create precondition_list.make
@@ -56,7 +56,7 @@ feature -- Locals
 			until
 				t.after
 			loop
-				context.add_object_test_locals (a.item.object_test_locals, b.item, t.item)
+				context.add_object_test_locals (a.item.object_test_locals, b.item, t.item, True)
 				a.forth
 				b.forth
 				t.forth
@@ -71,7 +71,7 @@ feature -- Locals
 			until
 				t.after
 			loop
-				context.add_object_test_locals (a.item.object_test_locals, b.item, t.item)
+				context.add_object_test_locals (a.item.object_test_locals, b.item, t.item, False)
 				a.forth
 				b.forth
 				t.forth
@@ -95,7 +95,7 @@ feature -- Assertion
 	saved_old_expressions: LINKED_LIST [UN_OLD_B]
 			-- Saved old expressions
 
-	restore_current_context is
+	restore_current_context
 			-- Restore details of current context.
 		local
 			o: like saved_old_expressions
@@ -114,7 +114,7 @@ feature -- Assertion
 			restored: restored
 		end
 
-	init is
+	init
 			-- Save current context.
 		require
 			not_initialzed: saved_class_type = Void and then
@@ -135,13 +135,13 @@ feature -- Assertion
 			end
 		end
 
-	has_assertion: BOOLEAN is
+	has_assertion: BOOLEAN
 			-- Does Current have inhertied assertions?
 		do
 			Result := has_precondition or else has_postcondition
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out inherited details.
 		do
 			debug ("ASSERTIONS") trace; end
@@ -162,11 +162,12 @@ feature -- Assertion
 			saved_result_type := Void
 		end
 
-	enlarge_precondition_tree is
+	enlarge_precondition_tree
 			-- Enlarges inherited preconditions byte code
 			-- tree for C code generation.
 		require
 			types_and_assert_count_same: valid_count
+			is_precondition: context.assertion_type = {ASSERT_TYPE}.in_precondition
 		do
 			from
 				precondition_start
@@ -174,19 +175,18 @@ feature -- Assertion
 				precondition_after
 			loop
 				precondition_context_init
-				Context.set_assertion_type (Context.In_precondition)
 				precondition_list.item.enlarge_tree
-				Context.set_assertion_type (0)
 				precondition_forth
 			end
 			restore_current_context
 		end
 
-	enlarge_postcondition_tree is
+	enlarge_postcondition_tree
 			-- Enlarges inherited postconditions byte code
 			-- tree for C code generation.
 		require
 			types_and_assert_count_same: valid_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		local
 			old_expr: LINKED_LIST [UN_OLD_B]
 		do
@@ -220,25 +220,25 @@ feature -- Assertion
 			restore_current_context
 		end
 
-	valid_count: BOOLEAN is
+	valid_count: BOOLEAN
 			-- Are types count the same as the assertion count?
 		do
 			Result := (valid_prec_count and then valid_post_count)
 		end
 
-	valid_prec_count: BOOLEAN is
+	valid_prec_count: BOOLEAN
 			-- Are types count the same as the precondition count?
 		do
 			Result := (precondition_list.count = precondition_types.count)
 		end
 
-	valid_post_count: BOOLEAN is
+	valid_post_count: BOOLEAN
 			-- Are types count the same as the postcondition count?
 		do
 			Result := (postcondition_list.count = postcondition_types.count)
 		end
 
-	restored: BOOLEAN is
+	restored: BOOLEAN
 			-- Was Byte Context restored?
 		do
 			Result := (Context.class_type = saved_class_type)
@@ -247,7 +247,7 @@ feature -- Assertion
 						and then (Context.byte_code.result_type = saved_result_type)
 		end
 
-	precondition_list_count: INTEGER is
+	precondition_list_count: INTEGER
 			-- Number of inherited precondition.
 		local
 			c: CURSOR
@@ -285,13 +285,13 @@ feature -- Inherited precondition
 	precondition_oms_counts: LINKED_LIST [INTEGER]
 			-- Number of once manifest strings declared in routine body identified by `precondition_body_indices'
 
-	has_precondition: BOOLEAN is
+	has_precondition: BOOLEAN
 			-- Does Current have inherited preconditions?
 		do
 			Result := (precondition_types.count > 0)
 		end
 
-	add_precondition_type (ct: CLASS_TYPE; bc: BYTE_CODE) is
+	add_precondition_type (ct: CLASS_TYPE; bc: BYTE_CODE)
 			-- Add class type `ct' and byte code `bc' to
 			-- precondition details.
 		require
@@ -311,18 +311,19 @@ feature -- Inherited precondition
 			prec_arg_list.extend (bc.arguments)
 		end
 
-	has_prec_type (ct: CLASS_TYPE): BOOLEAN is
+	has_prec_type (ct: CLASS_TYPE): BOOLEAN
 			-- Does precondition_types have `ct'?
 		do
 			Result := precondition_types.has (ct)
 		end
 
-	generate_il_precondition (a_generator: IL_NODE_GENERATOR) is
+	generate_il_precondition (a_generator: IL_NODE_GENERATOR)
 			-- Make IL code for inherited preconditions.
 		require
 			a_generator_not_void: a_generator /= Void
 			types_and_assert_count_same: valid_prec_count
 			has_precondition: has_precondition
+			is_precondition: context.assertion_type = {ASSERT_TYPE}.in_precondition
 		local
 			success_block, failure_block: IL_LABEL
 			assert_b: ASSERT_B
@@ -366,12 +367,13 @@ feature -- Inherited precondition
 			context_restored: restored
 		end
 
-	make_precondition_byte_code (a_generator: MELTED_GENERATOR; ba: BYTE_ARRAY) is
+	make_precondition_byte_code (a_generator: MELTED_GENERATOR; ba: BYTE_ARRAY)
 			-- Make byte code for inherited precondition.
 		require
 			a_generator_not_void: a_generator /= Void
 			types_and_assert_count_same: valid_prec_count
 			has_precondition: has_precondition
+			is_precondition: context.assertion_type = {ASSERT_TYPE}.in_precondition
 		do
 			from
 				precondition_start
@@ -388,7 +390,7 @@ feature -- Inherited precondition
 			context_restored: restored
 		end
 
-	write_forward (ba: BYTE_ARRAY) is
+	write_forward (ba: BYTE_ARRAY)
 			-- Write forward for each precondition.
 		local
 			count, i: INTEGER
@@ -404,10 +406,11 @@ feature -- Inherited precondition
 			end
 		end
 
-	analyze_precondition is
+	analyze_precondition
 			-- Analyze inherited preconditions
 		require
 			types_and_assert_count_same: valid_prec_count
+			is_precondition: context.assertion_type = {ASSERT_TYPE}.in_precondition
 		do
 			from
 				precondition_start
@@ -423,11 +426,12 @@ feature -- Inherited precondition
 			context_restored: restored
 		end;
 
-	generate_precondition is
+	generate_precondition
 			-- Generate inherited precondition.
 		require
 			types_and_assert_count_same: valid_prec_count
 			has_prec: has_precondition
+			is_precondition: context.assertion_type = {ASSERT_TYPE}.in_precondition
 		do
 			from
 				precondition_start
@@ -444,7 +448,7 @@ feature -- Inherited precondition
 			context_restored: restored
 		end
 
-	precondition_start is
+	precondition_start
 			-- Move cursor to start of precondition details lists.
 		do
 			precondition_list.start
@@ -454,13 +458,13 @@ feature -- Inherited precondition
 			precondition_oms_counts.start
 		end
 
-	precondition_after: BOOLEAN is
+	precondition_after: BOOLEAN
 			-- Are lists' position after?
 		do
 			Result := precondition_list.after
 		end
 
-	precondition_forth is
+	precondition_forth
 			-- Move cursor one position to right
 			-- for precondition details lists.
 		do
@@ -471,7 +475,7 @@ feature -- Inherited precondition
 			precondition_oms_counts.forth
 		end
 
-	precondition_context_init is
+	precondition_context_init
 			-- Initialize the byte context according
 			-- to current assertion class type.
 		do
@@ -504,7 +508,7 @@ feature -- inherited postcondition
 	postcondition_oms_counts: LINKED_LIST [INTEGER]
 			-- Number of once manifest strings declared in routine body identified by `postcondition_body_indices'
 
-	add_postcondition_type (ct: CLASS_TYPE; bc: BYTE_CODE) is
+	add_postcondition_type (ct: CLASS_TYPE; bc: BYTE_CODE)
 			-- Add class type `ct' and byte code `bc' to
 			-- postcondition details.
 		require
@@ -526,19 +530,19 @@ feature -- inherited postcondition
 			old_expression_list.extend (bc.old_expressions)
 		end
 
-	has_post_type (ct: CLASS_TYPE): BOOLEAN is
+	has_post_type (ct: CLASS_TYPE): BOOLEAN
 			-- Does postcondition_types have `ct'?
 		do
 			Result := postcondition_types.has (ct)
 		end
 
-	has_postcondition: BOOLEAN is
+	has_postcondition: BOOLEAN
 			-- Does Current have inhertied postconditions?
 		do
 			Result := (postcondition_types.count > 0)
 		end
 
-	has_old_expression: BOOLEAN is
+	has_old_expression: BOOLEAN
 			-- Does Current have inhertied postconditions?
 		do
 			from
@@ -551,7 +555,7 @@ feature -- inherited postcondition
 			end
 		end
 
-	old_expression_count: INTEGER is
+	old_expression_count: INTEGER
 			-- Total number of old expression
 		do
 			from
@@ -566,10 +570,11 @@ feature -- inherited postcondition
 			end
 		end
 
-	analyze_old_expressions is
+	analyze_old_expressions
 			-- Analyze inherited old expressions
 		require
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		local
 			old_expressions: LINKED_LIST [UN_OLD_B]
 			old_exp: UN_OLD_BL
@@ -601,10 +606,11 @@ feature -- inherited postcondition
 			context_restored: restored
 		end;
 
-	analyze_postcondition is
+	analyze_postcondition
 			-- Analyze inherited postconditions
 		require
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		do
 			from
 				postcondition_start
@@ -620,10 +626,11 @@ feature -- inherited postcondition
 			context_restored: restored
 		end
 
-	generate_postcondition is
+	generate_postcondition
 			-- Generate inherited postcondition .
 		require
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		do
 			from
 				postcondition_start
@@ -640,11 +647,12 @@ feature -- inherited postcondition
 			context_restored: restored
 		end
 
-	generate_il_postcondition (a_generator: IL_NODE_GENERATOR) is
+	generate_il_postcondition (a_generator: IL_NODE_GENERATOR)
 			-- Generate IL code for inherited postcondition
 		require
 			a_generator_not_void: a_generator /= Void
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		do
 			from
 				postcondition_start
@@ -660,11 +668,12 @@ feature -- inherited postcondition
 			restore_current_context
 		end
 
-	generate_il_old_exp_init (a_generator: IL_NODE_GENERATOR) is
+	generate_il_old_exp_init (a_generator: IL_NODE_GENERATOR)
 			-- Make byte code for inherited old expressions.
 		require
 			a_generator_not_void: a_generator /= Void
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		local
 			old_expressions: LINKED_LIST [UN_OLD_B]
 		do
@@ -694,11 +703,12 @@ feature -- inherited postcondition
 			context_restored: restored
 		end
 
-	make_postcondition_byte_code (a_generator: MELTED_GENERATOR; ba: BYTE_ARRAY) is
+	make_postcondition_byte_code (a_generator: MELTED_GENERATOR; ba: BYTE_ARRAY)
 			-- Make byte code for inherited postcondition.
 		require
 			a_generator_not_void: a_generator /= Void
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		do
 			from
 				postcondition_start
@@ -713,7 +723,7 @@ feature -- inherited postcondition
 			restore_current_context
 		end
 
-	setup_local_variables (pos: INTEGER) is
+	setup_local_variables (pos: INTEGER)
 			-- Set up the local variable type for
 			-- old expressions.
 		local
@@ -753,11 +763,12 @@ feature -- inherited postcondition
 			context_restored: restored
 		end
 
-	make_old_exp_byte_code (a_generator: MELTED_GENERATOR; ba: BYTE_ARRAY) is
+	make_old_exp_byte_code (a_generator: MELTED_GENERATOR; ba: BYTE_ARRAY)
 			-- Make byte code for inherited old expressions.
 		require
 			a_generator_not_void: a_generator /= Void
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		local
 			old_expressions: LINKED_LIST [UN_OLD_B]
 		do
@@ -787,10 +798,11 @@ feature -- inherited postcondition
 			context_restored: restored
 		end
 
-	generate_old_variables is
+	generate_old_variables
 			-- Generate value for old variables
 		require
 			types_and_assert_count_same: valid_post_count
+			is_postcondition: context.assertion_type = {ASSERT_TYPE}.in_postcondition
 		local
 			old_expressions: LINKED_LIST [UN_OLD_B]
 			item: UN_OLD_BL
@@ -822,7 +834,7 @@ feature -- inherited postcondition
 			context_restored: restored
 		end;
 
-	postcondition_start is
+	postcondition_start
 			-- Move cursor to start of postcondition details lists.
 		do
 			postcondition_list.start
@@ -834,13 +846,13 @@ feature -- inherited postcondition
 			post_result_list.start
 		end
 
-	postcondition_after: BOOLEAN is
+	postcondition_after: BOOLEAN
 			-- Are lists' position after?
 		do
 			Result := postcondition_list.after
 		end
 
-	postcondition_forth is
+	postcondition_forth
 			-- Move cursor one position to right
 			-- for postondition details lists.
 		do
@@ -853,7 +865,7 @@ feature -- inherited postcondition
 			post_result_list.forth
 		end
 
-	postcondition_context_init is
+	postcondition_context_init
 			-- Initialize the byte context according
 			-- to current assertion class type.
 		do
@@ -864,7 +876,7 @@ feature -- inherited postcondition
 			Context.byte_code.set_old_expressions (old_expression_list.item)
 		end
 
-	trace is
+	trace
 		local
 			c: CLASS_C
 		do
@@ -904,8 +916,8 @@ feature -- inherited postcondition
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

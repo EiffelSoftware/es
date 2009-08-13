@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Specialized configiration for Microsoft WindowsSDKs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -19,42 +19,51 @@ inherit
 create
 	make
 
+feature -- Access
+
+	wsdk_60: STRING = "WSDK60"
+	wsdk_61: STRING = "WSDK61"
+	wsdk_70: STRING = "WSDK70"
+			-- Constants defining the various supported SDKs
+
 feature {NONE} -- Access
 
-	batch_file_name: STRING is
-			-- Absolute path to an environment configuration batch script
+	batch_file_name: STRING
+			-- <Precursor>
 		local
-			l_layout: FINISH_FREEZING_EIFFEL_LAYOUT
+			l_result: detachable STRING
 		do
-			l_layout ?= eiffel_layout
-			if l_layout /= Void and then l_layout.is_valid_environment then
-				create Result.make (256)
-				Result.append (l_layout.config_eif_path)
-				if code.is_equal ("WSDK60") then
-					Result.append ("\windows_sdk_v6.0.bat")
-				elseif code.is_equal ("WSDK61") then
-					Result.append ("\windows_sdk_v6.1.bat")
+			if attached {FINISH_FREEZING_EIFFEL_LAYOUT} eiffel_layout as l_layout and then l_layout.is_valid_environment then
+				create l_result.make (256)
+				l_result.append (l_layout.config_eif_path)
+				if code.is_equal (wsdk_60) then
+					l_result.append ("\windows_sdk_v6.0.bat")
+				elseif code.is_equal (wsdk_61) then
+					l_result.append ("\windows_sdk_v6.1.bat")
+				elseif code.is_equal (wsdk_70) then
+					l_result.append ("\windows_sdk_v7.0.bat")
+				else
+						-- We will use the default batch file.
+					l_result := Void
 				end
 			end
 
-			if Result = Void then
+			if l_result = Void then
 					-- Default to using one found in SDK, typically happens for
 					-- library consumers that are used in install application or are used
 					-- with no product install base
-				create Result.make (256)
-				Result.append (install_path)
-				Result.append ("Bin\SetEnv.cmd")
+				create l_result.make (256)
+				l_result.append (install_path)
+				l_result.append ("Bin\SetEnv.cmd")
 			end
+			Result := l_result
 		end
 
-	batch_file_arguments: STRING is
-			-- Arguments for `batch_file_name' execution
-		local
-			l_layout: FINISH_FREEZING_EIFFEL_LAYOUT
+	batch_file_arguments: STRING
+			-- <Precursor>
 		do
 			create Result.make (10)
-			l_layout ?= eiffel_layout
-			if l_layout /= Void then
+			if attached {FINISH_FREEZING_EIFFEL_LAYOUT} eiffel_layout as l_layout then
 					-- Need to do the same check as in `batch_file_name' to ensure we do
 					-- not pass the install path as an argument when we are using the config library
 					-- in an environment that has no install-base (like an installation program)
@@ -68,14 +77,14 @@ feature {NONE} -- Access
 			end
 		end
 
-	batch_file_options: STRING is
-			-- Option to the COMSPEC DOS prompt.
+	batch_file_options: STRING
+			-- <Precursor>
 		do
 			Result := "/V:ON"
 		end
 
-	full_product_reg_path: STRING is
-			-- Absolute product registry location
+	full_product_reg_path: STRING
+			-- <Precursor>
 		do
 			create Result.make (256)
 			Result.append ("HKEY_LOCAL_MACHINE\SOFTWARE\")
@@ -83,13 +92,13 @@ feature {NONE} -- Access
 		end
 
 	install_path_value_name: STRING
-			-- Key value name for install location
+			-- <Precursor>
 		once
 			Result := "InstallationFolder"
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -102,22 +111,22 @@ feature {NONE} -- Access
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

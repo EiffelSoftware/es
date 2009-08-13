@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract representation of a routine"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -36,18 +36,18 @@ feature -- Access
 
 feature -- Status report
 
-	is_routine: BOOLEAN is True
+	is_routine: BOOLEAN = True
 			-- Current is a procedure.
 
 feature -- Settings
 
-	set_assert_id_set (set: like assert_id_set) is
+	set_assert_id_set (set: like assert_id_set)
 			-- Assign `set' to assert_id_set.
 		do
 			assert_id_set := set
 		end
 
-	set_arguments (args: like arguments) is
+	set_arguments (args: like arguments)
 			-- Assign `args' to `arguments'.
 		do
 			arguments := args
@@ -55,23 +55,7 @@ feature -- Settings
 			arguments_set: arguments = args
 		end
 
-	frozen set_has_precondition (b: BOOLEAN) is
-			-- Assign `b' to `has_precondition'.
-		do
-			feature_flags := feature_flags.set_bit_with_mask (b, has_precondition_mask)
-		ensure
-			has_precondition_set: has_precondition = b
-		end
-
-	frozen set_has_postcondition (b: BOOLEAN) is
-			-- Assign `b' to `has_postcondition'.
-		do
-			feature_flags := feature_flags.set_bit_with_mask (b, has_postcondition_mask)
-		ensure
-			has_postcondition_set: has_postcondition = b
-		end
-
-	set_obsolete_message (s: STRING) is
+	set_obsolete_message (s: STRING)
 			-- Assign `s' to `obsolete_message'
 		require
 			s_not_void: s /= Void
@@ -85,7 +69,7 @@ feature -- Settings
 			obsolete_message_set: equal (obsolete_message, s)
 		end
 
-	set_obsolete_message_id (v: like obsolete_message_id) is
+	set_obsolete_message_id (v: like obsolete_message_id)
 			-- Assign `v' to `obsolete_message_id'
 		do
 			obsolete_message_id := v
@@ -95,7 +79,7 @@ feature -- Settings
 
 feature -- Initialization
 
-	duplicate_arguments is
+	duplicate_arguments
 			-- Do a clone of the arguments (for replication)
 		do
 			if arguments /= Void then
@@ -103,7 +87,7 @@ feature -- Initialization
 			end
 		end
 
-	init_assertion_flags (content: ROUTINE_AS) is
+	init_assertion_flags (content: ROUTINE_AS)
 			-- Initialize assertion flags with `content'.
 		require
 			content_not_void: content /= Void
@@ -114,7 +98,7 @@ feature -- Initialization
 			set_has_postcondition (content.has_postcondition)
 		end
 
-	duplicate: like Current is
+	duplicate: like Current
 			-- Duplicate feature
 		do
 			Result := Precursor {FEATURE_I}
@@ -126,7 +110,7 @@ feature -- Initialization
 			end
 		end
 
-	init_arg (argument_as: EIFFEL_LIST [TYPE_DEC_AS]; a_context_class: CLASS_C) is
+	init_arg (argument_as: EIFFEL_LIST [TYPE_DEC_AS]; a_context_class: CLASS_C)
 			-- Initialization of arguments.
 		require
 			argument_as_not_void: argument_as /= Void
@@ -150,7 +134,6 @@ feature -- Initialization
 				-- Creation of data structures
 			create arguments.make (nb_arg)
 				-- Fill the data structures
-			nb_arg := 1
 			from
 				i := 1
 			until
@@ -165,16 +148,14 @@ feature -- Initialization
 				until
 					j > dec_count
 				loop
-					arguments.put_name (id_list.i_th (j), nb_arg)
-					arguments.put_i_th (arg_type, nb_arg)
-					nb_arg := nb_arg + 1
+					arguments.extend_with_name (arg_type, id_list.i_th (j))
 					j := j + 1
 				end
 				i := i + 1
 			end
 		end
 
-	transfer_to (other: PROCEDURE_I) is
+	transfer_to (other: PROCEDURE_I)
 			-- Transfer datas form `other' into Current.
 		do
 			Precursor {FEATURE_I} (other)
@@ -188,7 +169,7 @@ feature -- Initialization
 			other.set_has_rescue_clause (has_rescue_clause)
 		end
 
-	transfer_from (other: PROCEDURE_I) is
+	transfer_from (other: PROCEDURE_I)
 			-- Transfer datas form `other' into Current.
 		do
 			Precursor {FEATURE_I} (other)
@@ -197,7 +178,7 @@ feature -- Initialization
 			assert_id_set := other.assert_id_set
 		end
 
-	check_local_names (a_body: BODY_AS) is
+	check_local_names (a_body: BODY_AS)
 			-- Check the conflicts between local names and feature names
 			-- for an unchanged feature
 		do
@@ -250,14 +231,14 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-    new_api_feature: E_ROUTINE is
+    new_api_feature: E_ROUTINE
             -- API feature creation
         do
 			create {E_PROCEDURE} Result.make (feature_name_id, alias_name, has_convert_mark, feature_id)
 			update_api (Result)
         end
 
-	update_api (f: E_ROUTINE) is
+	update_api (f: E_ROUTINE)
 			-- Update the attributes of api feature `f'.
 		require
 			f_not_void: f /= Void
@@ -273,8 +254,8 @@ feature {NONE} -- Implementation
 			f.set_obsolete_message (obsolete_message)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -287,22 +268,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

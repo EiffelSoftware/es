@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Tool descriptor for the debugger's execution call stack tool.
 	]"
@@ -32,7 +32,7 @@ feature {DEBUGGER_MANAGER} -- Access
 			end
 		end
 
-	set_execution_replay_level (dep: INTEGER_32; deplim: INTEGER_32; rep: REPLAYED_CALL_STACK_ELEMENT) is
+	set_execution_replay_level (dep: INTEGER_32; deplim: INTEGER_32; rep: REPLAYED_CALL_STACK_ELEMENT)
 			-- Set execution replay active level on the panel
 		require
 			app_is_stopped: debugger_manager.safe_application_is_stopped
@@ -57,30 +57,34 @@ feature -- Access
 			Result := stock_pixmaps.tool_call_stack_icon
 		end
 
-	title: STRING_32
+	title: attached STRING_32
 			-- <Precursor>
 		do
-			Result := interface_names.t_call_stack_tool
+			Result := locale_formatter.translation (t_tool_title)
 		end
 
 feature {NONE} -- Status report
 
-	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
 			-- <Precursor>
 		do
-			Result := ({cst: CALL_STACK_STONE} a_stone or else {fst: FEATURE_STONE} a_stone)
+			Result := (attached {CALL_STACK_STONE} a_stone as cst or else attached {FEATURE_STONE} a_stone as fst)
 		end
 
 feature {NONE} -- Factory
 
-	create_tool: ES_CALL_STACK_TOOL_PANEL
-			-- Creates the tool for first use on the development `window'
+	new_tool: attached ES_CALL_STACK_TOOL_PANEL
+			-- <Precursor>
 		do
 			create Result.make (window, Current)
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+feature {NONE} -- Internationalization
+
+	t_tool_title: STRING = "Call Stack"
+
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -93,22 +97,22 @@ feature {NONE} -- Factory
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

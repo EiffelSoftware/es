@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"[
 			Thread which is served as a listener to output and error data
@@ -19,13 +19,15 @@ deferred class
 
 inherit
 	THREAD
+		rename
+			sleep as obsolete_thread_sleep
 		export
-			{ANY}terminated
+			{ANY} terminated
 		end
 
 feature -- Status setting
 
-	set_exit_signal is
+	set_exit_signal
 			-- Notify this thread that it should exit.
 			-- This feature is called when the launched process has exit.
 		require
@@ -36,7 +38,7 @@ feature -- Status setting
 			mutex.unlock
 		end
 
-	set_sleep_time (interval: INTEGER) is
+	set_sleep_time (interval: INTEGER)
 			-- Set `sleep_time' with `interval' in milliseconds.
 		require
 			thread_capable: {PLATFORM}.is_thread_capable
@@ -51,7 +53,7 @@ feature -- Status setting
 
 feature -- Status reporting
 
-	should_thread_exit: BOOLEAN is
+	should_thread_exit: BOOLEAN
 			-- Should this thread exit?
 		require
 			thread_capable: {PLATFORM}.is_thread_capable
@@ -75,21 +77,20 @@ feature {NONE} -- Implementation
 	sleep_time: INTEGER
 			-- Time in milliseconds for this thread to sleep when waiting for data
 
-	initial_sleep_time: INTEGER is 10
+	initial_sleep_time: INTEGER = 10
 			-- Initial time in nanosecond for this thread to sleep when waiting for data
 
 invariant
 	mutex_not_null: mutex /= Void
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 end

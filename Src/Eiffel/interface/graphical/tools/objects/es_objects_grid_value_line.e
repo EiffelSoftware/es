@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -32,13 +32,14 @@ create
 
 feature {NONE}
 
-	make_with_value (dv: ABSTRACT_DEBUG_VALUE; g: like parent_grid) is
+	make_with_value (dv: ABSTRACT_DEBUG_VALUE; g: like parent_grid)
 		require
 			dv /= Void
 		local
 			conv_abs_ref: ABSTRACT_REFERENCE_VALUE
 			conv_abs_spec: ABSTRACT_SPECIAL_VALUE
 		do
+			create object_spec_count_and_capacity
 			make_with_grid (g)
 			conv_abs_ref ?= dv
 			if conv_abs_ref /= Void then
@@ -48,7 +49,8 @@ feature {NONE}
 				if conv_abs_spec /= Void then
 					object_address := conv_abs_spec.address
 					object_is_special_value := True
-					object_spec_capacity := conv_abs_spec.capacity
+					object_spec_count_and_capacity.spec_count := conv_abs_spec.count
+					object_spec_count_and_capacity.spec_capacity := conv_abs_spec.capacity
 				else
 					object_address := Void -- "Unknown address"
 				end
@@ -58,7 +60,7 @@ feature {NONE}
 
 feature -- Recycling
 
-	reset is
+	reset
 			-- Recycle data
 			-- in order to free special data (for instance dotnet references)
 		do
@@ -71,7 +73,7 @@ feature -- Properties
 
 	object: ABSTRACT_DEBUG_VALUE
 
-	object_name: STRING_32 is
+	object_name: STRING_32
 		do
 			Result := object.name
 		end
@@ -79,7 +81,7 @@ feature -- Properties
 	object_address: DBG_ADDRESS
 			-- <Precursor>
 
-	object_dynamic_class: CLASS_C is
+	object_dynamic_class: CLASS_C
 		do
 			Result := object.dynamic_class
 			if Result = Void then
@@ -87,11 +89,11 @@ feature -- Properties
 			end
 		end
 
-	object_spec_capacity: INTEGER
+	object_spec_count_and_capacity: TUPLE [spec_count, spec_capacity: INTEGER]
 
 feature {NONE} -- Object stone
 
-	get_items_stone_properties is
+	get_items_stone_properties
 		local
 			cl: CLASS_C
 			fst: FEATURE_STONE
@@ -136,7 +138,7 @@ feature {NONE} -- Object stone
 
 feature -- Related line if precised
 
-	set_related_line (v: like related_line) is
+	set_related_line (v: like related_line)
 		do
 			related_line := v
 		end
@@ -145,27 +147,27 @@ feature -- Related line if precised
 
 feature -- Query
 
-	has_attributes_values: BOOLEAN is
+	has_attributes_values: BOOLEAN
 		do
 			Result := object.expandable
 		end
 
-	reset_special_attributes_values is
+	reset_special_attributes_values
 		do
-			if {spec_items: ABSTRACT_SPECIAL_VALUE} object then
+			if attached {ABSTRACT_SPECIAL_VALUE} object as spec_items then
 				spec_items.reset_items
 				spec_items.set_sp_bounds (object_spec_lower, object_spec_upper)
 			end
 		end
 
-	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE]
 		do
 			Result := object.sorted_children
 		end
 
-	sorted_once_routines: LIST [E_FEATURE] is
+	sorted_once_routines: LIST [E_FEATURE]
 		do
-			if {l_class: like object_dynamic_class} object_dynamic_class then
+			if attached object_dynamic_class as l_class then
 				Result := l_class.once_routines
 			else
 				--| Q: Why do we have Void dynamic_class ?
@@ -174,16 +176,16 @@ feature -- Query
 			end
 		end
 
-	sorted_constant_features: LIST [E_CONSTANT] is
+	sorted_constant_features: LIST [E_CONSTANT]
 		do
-			if {l_class: like object_dynamic_class} object_dynamic_class then
+			if attached object_dynamic_class as l_class then
 				Result := l_class.constant_features
 			else
 				--| Q: Why do we have Void dynamic_class ?
 			end
 		end
 
-	associated_dump_value: DUMP_VALUE is
+	associated_dump_value: DUMP_VALUE
 		do
 			Result := internal_associated_dump_value
 			if Result = Void then
@@ -196,7 +198,7 @@ feature -- Query
 
 feature -- Graphical changes
 
-	compute_grid_display is
+	compute_grid_display
 		local
 			dv: ABSTRACT_DEBUG_VALUE
 			dmdv: DUMMY_MESSAGE_DEBUG_VALUE
@@ -266,7 +268,7 @@ feature -- Graphical changes
 			end
 		end
 
-	show_exception_dialog (a_exc_dv: EXCEPTION_DEBUG_VALUE) is
+	show_exception_dialog (a_exc_dv: EXCEPTION_DEBUG_VALUE)
 			-- Show `a_exc_dv' in exception dialog
 		local
 			dlg: EB_DEBUGGER_EXCEPTION_DIALOG
@@ -280,8 +282,8 @@ feature -- Graphical changes
 invariant
 	object_not_void: object /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -294,22 +296,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

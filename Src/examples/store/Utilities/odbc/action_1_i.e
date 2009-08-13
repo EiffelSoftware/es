@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Nested queries example."
 	legal: "See notice at end of class."
@@ -19,16 +19,17 @@ create
 
 feature
 
-	process_row is
+	process_row
 		local
 			my_action: ACTION_2_I
 			new_selection: DB_SELECTION
 			tuple: DB_TUPLE
-			table_name: STRING
+			l_cursor: detachable DB_RESULT
 		do
-			create tuple.copy (selection.cursor)
-			table_name ?= tuple.item (3)
-			if table_name /= Void  then
+			l_cursor := selection.cursor
+			check l_cursor /= Void end -- FIXME: implied by ...?
+			create tuple.copy (l_cursor)
+			if attached {STRING} tuple.item (3) as table_name then
 				io.putstring ("-- Column(s) for table ")
 				io.putstring (table_name)
 				io.new_line
@@ -45,13 +46,13 @@ feature
 			end
 		end
 
-	select_string: STRING is
+	select_string: STRING
 		once
 			Result :=
 			"sqlcolumns(:table_name)"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

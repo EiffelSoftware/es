@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Standard dialog box to choose a font."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -41,7 +41,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make and setup the structure.
 			-- By default the dialog will show the screen fonts.
 		local
@@ -59,10 +59,11 @@ feature -- Access
 	log_font: WEL_LOG_FONT
 			-- Information about the selected font
 
-	font_type: INTEGER is
+	font_type: INTEGER
 			-- Type of the selected font.
 			-- See class WEL_FONT_TYPE_CONSTANTS for values.
 		require
+			exists: exists
 			selected: selected
 		do
 			Result := cwel_choose_font_get_nfonttype (item)
@@ -70,36 +71,43 @@ feature -- Access
 			valid_font_type: valid_font_type_constant (Result)
 		end
 
-	point_size: INTEGER is
+	point_size: INTEGER
 			-- Size of the selected font (in units of 1/10 of
 			-- a point)
 		require
+			exists: exists
 			selected: selected
 		do
 			Result := cwel_choose_font_get_ipointsize (item)
 		end
 
-	minimum_size: INTEGER is
+	minimum_size: INTEGER
 			-- Minimum point size a user can select
+		require
+			exists: exists
 		do
 			Result := cwel_choose_font_get_nsizemin (item)
 		end
 
-	maximum_size: INTEGER is
+	maximum_size: INTEGER
 			-- Maximum point size a user can select
+		require
+			exists: exists
 		do
 			Result := cwel_choose_font_get_nsizemax (item)
 		end
 
-	flags: INTEGER is
+	flags: INTEGER
 			-- Dialog box creation flags.
 			-- Can be a combination of the values defined in
 			-- class WEL_CF_CONSTANTS.
+		require
+			exists: exists
 		do
 			Result := cwel_choose_font_get_flags (item)
 		end
 
-	color: WEL_COLOR_REF is
+	color: WEL_COLOR_REF
 			-- Font color
 		require
 			exits: exists
@@ -111,10 +119,11 @@ feature -- Access
 
 feature -- Element change
 
-	set_dc (a_dc: WEL_DC) is
+	set_dc (a_dc: WEL_DC)
 			-- Set a device context `a_dc' of the printer whose
 			-- fonts will be listed in the dialog box.
 		require
+			exists: exists
 			a_dc_not_void: a_dc /= Void
 			a_dc_exists: a_dc.exists
 		do
@@ -122,10 +131,12 @@ feature -- Element change
 			cwel_choose_font_set_hdc (item, a_dc.item)
 		end
 
-	set_log_font (a_log_font: WEL_LOG_FONT) is
+	set_log_font (a_log_font: WEL_LOG_FONT)
 			-- Set `log_font' with `a_log_font'.
 		require
+			exists: exists
 			a_log_font_not_void: a_log_font /= Void
+			a_log_font_exists: a_log_font.exists
 		do
 			log_font := a_log_font
 			add_flag (Cf_inittologfontstruct)
@@ -134,8 +145,10 @@ feature -- Element change
 			log_font_set: log_font.item = a_log_font.item
 		end
 
-	set_minimum_size (size: INTEGER) is
+	set_minimum_size (size: INTEGER)
 			-- Set `minimum_size' with `size'.
+		require
+			exists: exists
 		do
 			add_flag (Cf_limitsize)
 			cwel_choose_font_set_nsizemin (item, size)
@@ -143,8 +156,10 @@ feature -- Element change
 			minimum_size_set: minimum_size = size
 		end
 
-	set_maximum_size (size: INTEGER) is
+	set_maximum_size (size: INTEGER)
 			-- Set `maximum_size' with `size'.
+		require
+			exists: exists
 		do
 			add_flag (Cf_limitsize)
 			cwel_choose_font_set_nsizemax (item, size)
@@ -152,8 +167,11 @@ feature -- Element change
 			maximum_size_set: maximum_size = size
 		end
 
-	set_color (a_color: WEL_COLOR_REF) is
+	set_color (a_color: WEL_COLOR_REF)
 			-- Set `color' with `a_color'.
+		require
+			exists: exists
+			a_color_not_void: a_color /= Void
 		do
 			add_flag (Cf_effects)
 			cwel_choose_font_set_rgbcolors (item, a_color.item)
@@ -161,27 +179,33 @@ feature -- Element change
 			color_set: color.is_equal (a_color)
 		end
 
-	set_flags (a_flags: INTEGER) is
+	set_flags (a_flags: INTEGER)
 			-- Set `flags' with `a_flags'.
 			-- See class WEL_CF_CONSTANTS for `a_flags' values.
+		require
+			exists: exists
 		do
 			cwel_choose_font_set_flags (item, a_flags)
 		ensure
 			flags_set: flags = a_flags
 		end
 
-	add_flag (a_flags: INTEGER) is
+	add_flag (a_flags: INTEGER)
 			-- Add `a_flags' to `flags'.
 			-- See class WEL_CF_CONSTANTS for `a_flags' values.
+		require
+			exists: exists
 		do
 			set_flags (set_flag (flags, a_flags))
 		ensure
 			has_flag: has_flag (a_flags)
 		end
 
-	remove_flag (a_flags: INTEGER) is
+	remove_flag (a_flags: INTEGER)
 			-- Remove `a_flags' from `flags'.
 			-- See class WEL_CF_CONSTANTS for `a_flags' values.
+		require
+			exists: exists
 		do
 			set_flags (clear_flag (flags, a_flags))
 		ensure
@@ -190,16 +214,18 @@ feature -- Element change
 
 feature -- Status report
 
-	has_flag (a_flags: INTEGER): BOOLEAN is
+	has_flag (a_flags: INTEGER): BOOLEAN
 			-- Is `a_flags' set in `flags'?
 			-- See class WEL_CF_CONSTANTS for `a_flags' values.
+		require
+			exists: exists
 		do
 			Result := flag_set (flags, a_flags)
 		end
 
 feature -- Basic operations
 
-	activate (a_parent: WEL_COMPOSITE_WINDOW) is
+	activate (a_parent: WEL_COMPOSITE_WINDOW)
 			-- Activate the dialog box (modal mode) with
 			-- `a_parent' as owner.
 		do
@@ -209,9 +235,10 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	set_parent (a_parent: WEL_COMPOSITE_WINDOW) is
+	set_parent (a_parent: WEL_COMPOSITE_WINDOW)
 			-- Set the parent window with `a_parent'.
 		require
+			exists: exists
 			a_parent_not_void: a_parent /= Void
 			a_parent_exists: a_parent.exists
 		do
@@ -220,7 +247,7 @@ feature {NONE} -- Implementation
 
 feature -- Measurement
 
-	structure_size: INTEGER is
+	structure_size: INTEGER
 			-- Size to allocate (in bytes)
 		once
 			Result := c_size_of_choose_font
@@ -228,98 +255,98 @@ feature -- Measurement
 
 feature {NONE} -- Externals
 
-	c_size_of_choose_font: INTEGER is
+	c_size_of_choose_font: INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		alias
 			"sizeof (CHOOSEFONT)"
 		end
 
-	cwel_choose_font_set_lstructsize (ptr: POINTER; value: INTEGER) is
+	cwel_choose_font_set_lstructsize (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_hwndowner (ptr: POINTER; value: POINTER) is
+	cwel_choose_font_set_hwndowner (ptr: POINTER; value: POINTER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_hdc (ptr: POINTER; value: POINTER) is
+	cwel_choose_font_set_hdc (ptr: POINTER; value: POINTER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_lplogfont (ptr: POINTER; value: POINTER) is
+	cwel_choose_font_set_lplogfont (ptr: POINTER; value: POINTER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_flags (ptr: POINTER; value: INTEGER) is
+	cwel_choose_font_set_flags (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_rgbcolors (ptr: POINTER; value: INTEGER) is
+	cwel_choose_font_set_rgbcolors (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_nsizemin (ptr: POINTER; value: INTEGER) is
+	cwel_choose_font_set_nsizemin (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_nsizemax (ptr: POINTER; value: INTEGER) is
+	cwel_choose_font_set_nsizemax (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_set_lpfnhook (ptr: POINTER; value: POINTER) is
+	cwel_choose_font_set_lpfnhook (ptr: POINTER; value: POINTER)
 		external
 			"C inline use <windows.h>"
 		alias
 			"((LPCHOOSEFONT) $ptr)->lpfnHook = (LPCFHOOKPROC) $value;"
 		end
 
-	cwel_choose_font_get_flags (ptr: POINTER): INTEGER is
+	cwel_choose_font_get_flags (ptr: POINTER): INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_get_rgbcolors (ptr: POINTER): INTEGER is
+	cwel_choose_font_get_rgbcolors (ptr: POINTER): INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_get_ipointsize (ptr: POINTER): INTEGER is
+	cwel_choose_font_get_ipointsize (ptr: POINTER): INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_get_nfonttype (ptr: POINTER): INTEGER is
+	cwel_choose_font_get_nfonttype (ptr: POINTER): INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_get_nsizemin (ptr: POINTER): INTEGER is
+	cwel_choose_font_get_nsizemin (ptr: POINTER): INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_get_nsizemax (ptr: POINTER): INTEGER is
+	cwel_choose_font_get_nsizemax (ptr: POINTER): INTEGER
 		external
 			"C [macro <choosefo.h>]"
 		end
 
-	cwel_choose_font_get_lpfnhook (ptr: POINTER): POINTER is
+	cwel_choose_font_get_lpfnhook (ptr: POINTER): POINTER
 		external
 			"C inline use <windows.h>"
 		alias
 			"return ((LPCHOOSEFONT) $ptr)->lpfnHook;"
 		end
 
-	cwin_choose_font (ptr: POINTER): BOOLEAN is
+	cwin_choose_font (ptr: POINTER): BOOLEAN
 			-- SDK ChooseFont
 		external
 			"C [macro <cdlg.h>] (LPCHOOSEFONT): EIF_BOOLEAN"
@@ -327,7 +354,7 @@ feature {NONE} -- Externals
 			"ChooseFont"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

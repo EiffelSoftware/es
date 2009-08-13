@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		The service interface for retrieving the global service provider.
 	]"
@@ -15,38 +15,66 @@ inherit
 
 	SERVICE_PROVIDER_I
 
+	DISPOSABLE_SAFE
+		redefine
+			is_interface_usable
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_provider: !like provider)
+	make (a_provider: like provider)
 			-- Initializes the service provider service with an actual provider.
 			--
 			-- `a_provider': The actual service provider use to delegate calls to.
+		require
+			a_provider_attached: a_provider /= Void
 		do
 			provider := a_provider
 		ensure
 			provider_set: provider = a_provider
 		end
 
+feature {NONE} -- Clean up
+
+	safe_dispose (a_explicit: BOOLEAN)
+			-- <Precursor>
+		do
+		end
+
 feature {NONE} -- Access
 
-	provider: !SERVICE_PROVIDER_I
+	provider: SERVICE_PROVIDER_I
 			-- Actual service provider to perform operations on.
+
+feature -- Status report
+
+	is_interface_usable: BOOLEAN
+			-- <Precursor>
+		do
+			Result := Precursor and then
+				(attached {USABLE_I} provider as l_usable) implies l_usable.is_interface_usable
+		ensure then
+			provider_is_interface_usable: (attached {USABLE_I} provider as l_usable) implies l_usable.is_interface_usable
+		end
 
 feature -- Query
 
-	service (a_type: !TYPE [SERVICE_I]): ?SERVICE_I
+	service (a_type: TYPE [SERVICE_I]): detachable SERVICE_I
 			-- <Precursor>
 		do
 			Result := provider.service (a_type)
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+invariant
+	provider_attached: provider /= Void
+
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -57,22 +85,22 @@ feature -- Query
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

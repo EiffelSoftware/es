@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class type for SPECIAL class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -34,7 +34,7 @@ create
 
 feature -- Status
 
-	is_any_array: BOOLEAN is
+	is_any_array: BOOLEAN
 			-- Is Current an array of ANY?
 		local
 			any_type: CL_TYPE_A
@@ -45,7 +45,7 @@ feature -- Status
 
 feature -- Access
 
-	first_generic: TYPE_A is
+	first_generic: TYPE_A
 			-- First generic parameter type
 		require
 			has_generics: type.generics /= Void;
@@ -62,7 +62,7 @@ feature -- Access
 
 feature -- Byte code generation
 
-	make_creation_byte_code (ba: BYTE_ARRAY) is
+	make_creation_byte_code (ba: BYTE_ARRAY)
 			-- Generate byte code for creation of a special instance.
 		require
 			ba_not_void: ba /= Void
@@ -94,7 +94,7 @@ feature -- Byte code generation
 
 feature -- C code generation
 
-	generate_creation (buffer: GENERATION_BUFFER; info: CREATE_INFO; target_register: REGISTRABLE; nb_register: PARAMETER_BL) is
+	generate_creation (buffer: GENERATION_BUFFER; info: CREATE_INFO; target_register: REGISTRABLE; nb_register: PARAMETER_BL; a_make_filled, a_make_empty: BOOLEAN)
 			-- Generate creation of a special instance using `info' to get the exact type
 			-- to create.
 		require
@@ -122,13 +122,12 @@ feature -- C code generation
 				buffer.put_string ("if (")
 				nb_register.print_immediate_register
 				buffer.put_string ("< 0) {")
-				buffer.put_new_line
 				buffer.indent
+				buffer.put_new_line
 				buffer.put_string ("eraise (%"non_negative_argument%", EN_RT_CHECK);")
-				buffer.put_new_line
 				buffer.exdent
-				buffer.put_character ('}')
 				buffer.put_new_line
+				buffer.put_character ('}')
 			end
 
 			if l_param_is_expanded then
@@ -184,7 +183,14 @@ feature -- C code generation
 				buffer.put_string ("EIF_FALSE);")
 			end
 
-			if gen_param.is_bit then
+			if a_make_empty then
+				buffer.put_string ("RT_SPECIAL_COUNT(")
+				target_register.print_register
+				buffer.put_three_character (')', ' ', '=')
+				buffer.put_three_character (' ', '0', ';')
+			end
+
+			if gen_param.is_bit and not a_make_filled then
 					-- Initialize array of bits with default values
 				shared_include_queue.put (Names_heap.eif_plug_header_name_id)
 				l_bit ?= gen_param
@@ -219,7 +225,7 @@ feature -- C code generation
 			end
 		end
 
-	generate_feature (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_feature (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generate feature `feat' in `buffer'.
 		local
 			f_name_id: INTEGER
@@ -231,13 +237,18 @@ feature -- C code generation
 					-- Generate built-in feature `put' of class SPECIAL
 				generate_put (feat, buffer)
 
+			when {PREDEFINED_NAMES}.extend_name_id then
+					-- Generate built-in feature `extend' of class SPECIAL
+				generate_extend (feat, buffer)
+
 			when {PREDEFINED_NAMES}.put_default_name_id then
 					-- Generate built-in feature `put_default' of class SPECIAL
 				generate_put_default (feat, buffer)
 
 			when
 				{PREDEFINED_NAMES}.item_name_id,
-				{PREDEFINED_NAMES}.infix_at_name_id
+				{PREDEFINED_NAMES}.infix_at_name_id,
+				{PREDEFINED_NAMES}.at_name_id
 			then
 					-- Generate built-in feature `item' of class SPECIAL
 				generate_item (feat, buffer)
@@ -268,7 +279,7 @@ feature -- C code generation
 
 feature {NONE} -- C code generation
 
-	generate_put (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_put (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generates built-in feature `put' of class SPECIAL
 		require
 			good_argument: buffer /= Void
@@ -372,13 +383,13 @@ feature {NONE} -- C code generation
 					buffer.put_new_line
 					if l_exp_class_type.skeleton.has_references then
 							-- Optimization: size is known at compile time
-						buffer.put_string ("ecopy(arg1, Current + OVERHEAD + arg2 * (");
+						buffer.put_string ("ecopy(arg1, Current + OVERHEAD + (rt_uint_ptr) arg2 * (rt_uint_ptr) (");
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string (" + OVERHEAD));")
 					else
 							-- No references, do a simple `memcpy'.
 						buffer.put_new_line
-						buffer.put_string ("memcpy(Current + arg2 * ")
+						buffer.put_string ("memcpy(Current + (rt_uint_ptr) arg2 * (rt_uint_ptr) ")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string (", arg1, ")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
@@ -386,10 +397,8 @@ feature {NONE} -- C code generation
 					end
 				else
 					buffer.put_new_line
-					buffer.put_string ("ecopy(arg1, Current + OVERHEAD + arg2 * (%
-						%*(EIF_INTEGER *) (Current + %
-						%(HEADER(Current)->ov_size & B_SIZE) - LNGPAD(2) + %
-						%sizeof(EIF_INTEGER))));")
+					buffer.put_string ("ecopy(arg1, Current + OVERHEAD + (rt_uint_ptr) arg2 * %
+						%RT_SPECIAL_ELEM_SIZE(Current));")
 				end
 			else
 				buffer.put_new_line
@@ -445,7 +454,180 @@ feature {NONE} -- C code generation
 			l_byte_context.clear_feature_data
 		end
 
-	generate_put_default (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_extend (feat: FEATURE_I; buffer: GENERATION_BUFFER)
+			-- Generates built-in feature `extend' of class SPECIAL
+		require
+			good_argument: buffer /= Void
+			feat_exists: feat /= Void
+			consistency: feat.feature_name_id = {PREDEFINED_NAMES}.extend_name_id
+		local
+			gen_param: TYPE_A
+			l_exp_class_type: CLASS_TYPE
+			l_param_is_expanded: BOOLEAN
+			type_c: TYPE_C
+			final_mode: BOOLEAN
+			encoded_name: STRING
+			value_type_name: STRING
+			value_arg_name: STRING
+			l_byte_context: like byte_context
+			l_arg: ARGUMENT_BL
+		do
+			l_byte_context := byte_context
+			gen_param := first_generic
+			l_param_is_expanded := gen_param.is_true_expanded
+			type_c := gen_param.c_type
+
+			feat.generate_header (Current, buffer)
+			encoded_name := Encoder.feature_name (type_id, feat.body_index)
+
+			System.used_features_log_file.add (Current, "extend", encoded_name)
+
+			final_mode := l_byte_context.final_mode
+
+			if final_mode then
+				value_type_name := type_c.c_string
+				value_arg_name := "arg1"
+			else
+				value_type_name := "EIF_TYPED_VALUE"
+				value_arg_name := "arg1x"
+			end
+
+			buffer.generate_function_signature ("void", encoded_name, True,
+				l_byte_context.header_buffer, <<"Current", value_arg_name>>,
+				<<"EIF_REFERENCE", value_type_name>>)
+
+			buffer.generate_block_open
+			buffer.put_gtcx
+
+			buffer.put_new_line
+			buffer.put_string ("EIF_INTEGER arg2 = RT_SPECIAL_COUNT(Current)++;")
+
+			if not final_mode then
+				buffer.put_new_line
+				if not type_c.is_pointer then
+					buffer.put_new_line
+					buffer.put_string ("if (arg1x.type == SK_REF) arg1x.")
+					type_c.generate_typed_field (buffer)
+					buffer.put_string (" = * ")
+					type_c.generate_access_cast (buffer)
+					buffer.put_string ("arg1x.it_r;")
+				end
+				buffer.put_new_line_only
+				buffer.put_string ("#define arg1 arg1x.")
+				type_c.generate_typed_field (buffer)
+			end
+
+			if not final_mode and then l_param_is_expanded then
+				buffer.put_new_line
+				buffer.put_string ("if (arg1 == NULL) RTEC(EN_VEXP);")
+			end
+
+			if not final_mode or else system.check_for_catcall_at_runtime then
+				if gen_param.c_type.is_pointer then
+					byte_context.set_byte_code (byte_server.disk_item (feat.body_index))
+					byte_context.set_current_feature (feat)
+					if l_param_is_expanded then
+							-- Minor hack because expanded arguments are generated with a `e' prefix
+							-- but for SPECIAL we use without the prefix because the generation is done
+							-- manually.
+						buffer.put_new_line_only
+						buffer.put_string ("#define earg1 arg1")
+					end
+					byte_context.set_has_feature_name_stored (False)
+					create l_arg
+					l_arg.set_position (1)
+					byte_context.generate_catcall_check (l_arg, create {FORMAL_A}.make (False, False, 1), 1, False)
+					if l_param_is_expanded then
+						buffer.put_new_line_only
+						buffer.put_string ("#undef earg1")
+					end
+				end
+			end
+
+			if not final_mode or else associated_class.assertion_level.is_precondition then
+				buffer.put_new_line
+				buffer.put_string ("if (arg2 >= RT_SPECIAL_CAPACITY(Current)) {%N")
+				buffer.put_string ("%T%Teraise (%"count_small_enough%", EN_RT_CHECK);%N%T}%N");
+			end
+
+			if l_param_is_expanded then
+				if final_mode then
+					l_exp_class_type := gen_param.associated_class_type (Void)
+					buffer.put_new_line
+					if l_exp_class_type.skeleton.has_references then
+							-- Optimization: size is known at compile time
+						buffer.put_string ("ecopy(arg1, Current + OVERHEAD + (rt_uint_ptr) arg2 * (rt_uint_ptr) (");
+						l_exp_class_type.skeleton.generate_size (buffer, True)
+						buffer.put_string (" + OVERHEAD));")
+					else
+							-- No references, do a simple `memcpy'.
+						buffer.put_new_line
+						buffer.put_string ("memcpy(Current + (rt_uint_ptr) arg2 * (rt_uint_ptr) ")
+						l_exp_class_type.skeleton.generate_size (buffer, True)
+						buffer.put_string (", arg1, ")
+						l_exp_class_type.skeleton.generate_size (buffer, True)
+						buffer.put_string (");")
+					end
+				else
+					buffer.put_new_line
+					buffer.put_string ("ecopy(arg1, Current + OVERHEAD + (rt_uint_ptr) arg2 * %
+						%RT_SPECIAL_ELEM_SIZE(Current));")
+				end
+			else
+				buffer.put_new_line
+				buffer.put_string ("*(")
+				type_c.generate_access_cast (buffer)
+				buffer.put_string (" Current + arg2) = arg1;")
+				if type_c.level = c_ref then
+					buffer.put_new_line
+					buffer.put_string ("RTAR(Current, arg1);%N")
+				end
+			end
+
+			buffer.generate_block_close
+			if not final_mode then
+				buffer.put_new_line_only
+				buffer.put_string ("#undef arg1")
+			end
+				-- Separation for formatting
+			buffer.put_new_line
+
+			if final_mode then
+					-- Generate generic wrapper.
+				buffer.generate_function_signature ("void", encoded_name + "2", True,
+					l_byte_context.header_buffer, <<"Current", "arg1">>,
+					<<"EIF_REFERENCE", "EIF_REFERENCE">>)
+				buffer.generate_block_open
+				buffer.put_new_line
+				if l_param_is_expanded or else type_c.level = c_ref or else associated_class.assertion_level.is_precondition then
+					buffer.put_string (encoded_name)
+					buffer.put_string (" (Current, ")
+					if gen_param.is_basic then
+						buffer.put_character ('*')
+						gen_param.c_type.generate_access_cast (buffer)
+					end
+					buffer.put_string ("arg1);")
+				else
+					buffer.put_string ("EIF_INTEGER arg2 = RT_SPECIAL_COUNT(Current)++;")
+					buffer.put_new_line
+					buffer.put_string ("*(")
+					type_c.generate_access_cast (buffer)
+					buffer.put_string (" Current + arg2) = ")
+					if gen_param.is_basic then
+						buffer.put_character ('*')
+						gen_param.c_type.generate_access_cast (buffer)
+					end
+					buffer.put_string ("arg1;")
+				end
+				buffer.generate_block_close
+					-- Separation for formatting
+				buffer.put_new_line
+			end
+
+			l_byte_context.clear_feature_data
+		end
+
+	generate_put_default (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generates built-in feature `put_default' of class SPECIAL
 		require
 			good_argument: buffer /= Void
@@ -497,9 +679,8 @@ feature {NONE} -- C code generation
 				type_c.generate (buffer)
 				buffer.put_string ("loc1 = ")
 				type_c.generate_cast (buffer)
-				buffer.put_string ("(sloc1.data")
-				l_exp_class_type.generate_expanded_overhead_size (buffer)
-				buffer.put_two_character (')', ';')
+				buffer.put_string ("sloc1.data")
+				buffer.put_character (';')
 				buffer.put_new_line
 				buffer.put_string ("RTLD;")
 				buffer.put_new_line
@@ -507,16 +688,19 @@ feature {NONE} -- C code generation
 				buffer.put_current_registration (0)
 				buffer.put_local_registration (1, "loc1")
 				buffer.put_new_line
-				buffer.put_string ("memset (sloc1.data, 0, ")
+				buffer.put_string ("memset (&sloc1.overhead, 0, OVERHEAD + ")
 				if final_mode then
 					l_exp_class_type.skeleton.generate_size (buffer, True)
 				else
 					l_exp_class_type.skeleton.generate_workbench_size (buffer)
 				end
-				l_exp_class_type.generate_expanded_overhead_size (buffer)
-				buffer.put_string (gc_rparan_semi_c)
-					-- Update the type information
-				l_exp_class_type.generate_expanded_type_initialization (buffer, "sloc1", gen_param, Current)
+				buffer.put_two_character (')', ';')
+					-- Create expanded type based on the actual generic parameter, and not
+					-- on the recorded derivation (as it would not work if `gen_param' is
+					-- generic. (See eweasel test#exec282 and test#exec283 for an example where
+					-- it does not work).
+				l_exp_class_type.generate_expanded_type_initialization (buffer, "sloc1",
+					create {FORMAL_A}.make (False, False, 1), Current)
 			elseif final_mode and then associated_class.assertion_level.is_precondition then
 				buffer.put_gtcx
 			end
@@ -536,13 +720,13 @@ feature {NONE} -- C code generation
 					buffer.put_new_line
 					if l_exp_class_type.skeleton.has_references then
 							-- Optimization: size is known at compile time
-						buffer.put_string ("ecopy(loc1, Current + OVERHEAD + arg1 * (");
+						buffer.put_string ("ecopy(loc1, Current + OVERHEAD + (rt_uint_ptr) arg1 * (rt_uint_ptr) (");
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string (" + OVERHEAD));")
 					else
 							-- No references, do a simple `memcpy'.
 						buffer.put_new_line
-						buffer.put_string ("memcpy(Current + arg1 * ")
+						buffer.put_string ("memcpy(Current + (rt_uint_ptr) arg1 * (rt_uint_ptr) ")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string (", loc1, ")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
@@ -550,10 +734,8 @@ feature {NONE} -- C code generation
 					end
 				else
 					buffer.put_new_line
-					buffer.put_string ("ecopy(loc1, Current + OVERHEAD + arg1 * (%
-						%*(EIF_INTEGER *) (Current + %
-						%(HEADER(Current)->ov_size & B_SIZE) - LNGPAD(2) + %
-						%sizeof(EIF_INTEGER))));")
+					buffer.put_string ("ecopy(loc1, Current + OVERHEAD + (rt_uint_ptr) arg1 * %
+						%RT_SPECIAL_ELEM_SIZE(Current));")
 				end
 				buffer.put_new_line
 				buffer.put_string ("RTLE;")
@@ -577,13 +759,14 @@ feature {NONE} -- C code generation
 			l_byte_context.clear_feature_data
 		end
 
-	generate_item (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_item (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generates built-in feature `item' of class SPECIAL
 		require
 			good_argument: buffer /= Void
 			feat_exists: feat /= Void
 			consistency: feat.feature_name_id = {PREDEFINED_NAMES}.item_name_id or
-				feat.feature_name_id = {PREDEFINED_NAMES}.infix_at_name_id
+				feat.feature_name_id = {PREDEFINED_NAMES}.infix_at_name_id or
+				feat.feature_name_id = {PREDEFINED_NAMES}.at_name_id
 		local
 			gen_param: TYPE_A
 			l_exp_class_type: CLASS_TYPE
@@ -655,7 +838,7 @@ feature {NONE} -- C code generation
 				if final_mode then
 						-- Optimization: size of expanded is known at compile time
 					if l_exp_has_references then
-						buffer.put_string ("return RTCL(Current + OVERHEAD + arg1 * (")
+						buffer.put_string ("return RTCL(Current + OVERHEAD + (rt_uint_ptr) arg1 * (rt_uint_ptr) (")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string (" + OVERHEAD));")
 					else
@@ -665,14 +848,16 @@ feature {NONE} -- C code generation
 						buffer.put_new_line
 						buffer.put_string ("RTLI(1);")
 						buffer.put_new_line
-						buffer.put_string ("RTLR(0, Current);")
+						buffer.put_current_registration (0)
 							-- Create expanded type based on the actual generic parameter, and not
 							-- on the recorded derivation (as it would not work if `gen_param' is
-							-- generic. (See eweasel test#exec282 for an example where it does not work).
-						l_exp_class_type.generate_expanded_creation (buffer, "Result", create {FORMAL_A}.make (False, False, 1), Current)
+							-- generic. (See eweasel test#exec282 nd test#exec283 for an example where
+							-- it does not work).
+						l_exp_class_type.generate_expanded_creation (buffer, "Result",
+							create {FORMAL_A}.make (False, False, 1), Current)
 						buffer.put_new_line
 						buffer.put_string ("memcpy (Result, ")
-						buffer.put_string ("Current + arg1 * (")
+						buffer.put_string ("Current + (rt_uint_ptr) arg1 * (rt_uint_ptr) (")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string ("), ")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
@@ -686,10 +871,8 @@ feature {NONE} -- C code generation
 				else
 					buffer.put_string ("r.")
 					type_c.generate_typed_field (buffer)
-					buffer.put_string (" = RTCL(Current + OVERHEAD + arg1 * (%
-						%*(EIF_INTEGER *) (Current + %
-						%(HEADER(Current)->ov_size & B_SIZE) - LNGPAD(2) + %
-						%sizeof(EIF_INTEGER))));%N")
+					buffer.put_string ("= RTCL(Current + OVERHEAD + (rt_uint_ptr) arg1 * %
+						%RT_SPECIAL_ELEM_SIZE(Current));")
 					buffer.put_new_line
 					buffer.put_string ("return r;")
 				end
@@ -755,7 +938,7 @@ feature {NONE} -- C code generation
 			byte_context.clear_feature_data
 		end
 
-	generate_item_address (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_item_address (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generates built-in feature `item_address' of class SPECIAL
 		require
 			good_argument: buffer /= Void;
@@ -835,20 +1018,20 @@ feature {NONE} -- C code generation
 						-- necessary until we are able to do a flat code generation for
 						-- expanded.
 					if True or l_exp_class_type.skeleton.has_references then
-						buffer.put_string ("OVERHEAD + arg1 * (")
+						buffer.put_string ("OVERHEAD + (rt_uint_ptr) arg1 * (rt_uint_ptr) (")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_string (" + OVERHEAD));")
 					else
-						buffer.put_string ("arg1 * ")
+						buffer.put_string ("(rt_uint_ptr) arg1 * (rt_uint_ptr) ")
 						l_exp_class_type.skeleton.generate_size (buffer, True)
 						buffer.put_character (')')
 						buffer.put_character (';')
 					end
 				else
-					buffer.put_string ("OVERHEAD + arg1 * sp_elem_size (Current));")
+					buffer.put_string ("OVERHEAD + (rt_uint_ptr) arg1 * (rt_uint_ptr) RT_SPECIAL_ELEM_SIZE(Current));")
 				end
 			else
-				buffer.put_string ("arg1 * sizeof(")
+				buffer.put_string ("(rt_uint_ptr) arg1 * (rt_uint_ptr) sizeof(")
 				type_c.generate (buffer)
 				buffer.put_string ("));")
 			end
@@ -866,7 +1049,7 @@ feature {NONE} -- C code generation
 			l_byte_context.clear_feature_data
 		end
 
-	generate_base_address (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_base_address (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generates built-in feature `base_address' of class SPECIAL
 		require
 			good_argument: buffer /= Void;
@@ -929,7 +1112,7 @@ feature {NONE} -- C code generation
 			byte_context.clear_feature_data
 		end
 
-	generate_clear_all (feat: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_clear_all (feat: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generate `clear_all' from SPECIAL using `memset' for increased efficiency.
 		require
 			good_argument: buffer /= Void;
@@ -949,71 +1132,42 @@ feature {NONE} -- C code generation
 			buffer.generate_block_open
 				-- We zeroed the memory used by the SPECIAL instance.
 			buffer.put_new_line
-			buffer.put_string ("memset (Current, 0, (HEADER(Current)->ov_size & B_SIZE) - LNGPAD_2);")
+			buffer.put_string ("memset (Current, 0, RT_SPECIAL_VISIBLE_SIZE(Current));")
 			buffer.generate_block_close
 				-- Separation for formatting
 			buffer.put_new_line
 			byte_context.clear_feature_data
 		end
 
-	generate_precondition (buffer: GENERATION_BUFFER; final_mode: BOOLEAN; arg_name: STRING) is
+	generate_precondition (buffer: GENERATION_BUFFER; final_mode: BOOLEAN; arg_name: STRING)
 			-- Generate precondition for `item', `put' and `item_address' where index
 			-- is stored in `arg_name'.
 		require
 			buffer_not_void: buffer /= Void
 			arg_name_not_void: arg_name /= Void
 		do
-			if not final_mode then
+			if not final_mode or else associated_class.assertion_level.is_precondition then
 				buffer.put_new_line
-				buffer.put_string ("%
-					%if (")
+				buffer.put_string ("if (")
 				buffer.put_string (arg_name)
-				buffer.put_string ("< 0) {%N%
-					%%Teraise (%"index_large_enough%", EN_RT_CHECK);%N%T}%N");
-
-				buffer.put_string ("%
-					%if (")
-				buffer.put_string (arg_name)
-				buffer.put_string (">= *(EIF_INTEGER *) %
-						%(Current + (HEADER(Current)->ov_size & B_SIZE)%
-						% - LNGPAD(2))) {%N%
-					%%Teraise (%"index_small_enough%", EN_RT_CHECK);%N}");
-			elseif associated_class.assertion_level.is_precondition then
+				buffer.put_string ("< 0) {%N%T%Teraise (%"index_large_enough%", EN_RT_CHECK);%N%T}");
 				buffer.put_new_line
-				buffer.put_string ("if (~in_assertion) {%N");
-				buffer.put_string ("%
-					%RTCT(%"index_large_enough%", EX_PRE);%N%
-					%if (")
+				buffer.put_string ("if (")
 				buffer.put_string (arg_name)
-				buffer.put_string (">= 0) {%N%
-					%%TRTCK;%N%
-					%} else {%N%
-					%%TRTCF;%N}%N");
-
-				buffer.put_string ("%
-					%RTCT(%"index_small_enough%", EX_PRE);%N%
-					%if (")
-				buffer.put_string (arg_name)
-				buffer.put_string ("< *(EIF_INTEGER *) %
-						%(Current + (HEADER(Current)->ov_size & B_SIZE)%
-						% - LNGPAD(2))) {%N%
-					%%TRTCK;%N%
-					%} else {%N%
-					%%TRTCF;%N}%N");
-
-				buffer.put_string ("}");
+				buffer.put_string (">= RT_SPECIAL_COUNT(Current)) {%N%T%Teraise (%"index_small_enough%", EN_RT_CHECK);%N%T}");
 			end
 		end
 
 feature -- IL code generation
 
-	prepare_generate_il (name_id: INTEGER; special_type: CL_TYPE_A) is
+	prepare_generate_il (name_id: INTEGER; special_type: CL_TYPE_A)
 			-- Generate call to `name_id' from SPECIAL so that it is
 			-- very efficient.
 		require
 			valid_name_id:
 				name_id = {PREDEFINED_NAMES}.Item_name_id or
 				name_id = {PREDEFINED_NAMES}.Infix_at_name_id or
+				name_id = {PREDEFINED_NAMES}.at_name_id or
 				name_id = {PREDEFINED_NAMES}.Put_name_id
 			special_type_not_void: special_type /= Void
 			has_generics: type.generics /= Void
@@ -1032,13 +1186,14 @@ feature -- IL code generation
 			Il_generator.generate_attribute (True, special_type, l_native_array.feature_id)
 		end
 
-	generate_il (name_id: INTEGER; special_type, a_context_type: CL_TYPE_A) is
+	generate_il (name_id: INTEGER; special_type, a_context_type: CL_TYPE_A)
 			-- Generate call to `name_id' from SPECIAL so that it is
 			-- very efficient.
 		require
 			valid_name_id:
 				name_id = {PREDEFINED_NAMES}.Item_name_id or
 				name_id = {PREDEFINED_NAMES}.Infix_at_name_id or
+				name_id = {PREDEFINED_NAMES}.at_name_id or
 				name_id = {PREDEFINED_NAMES}.Put_name_id
 			special_type_not_void: special_type /= Void
 			special_is_indeed_special: special_type.associated_class.is_special
@@ -1106,8 +1261,8 @@ feature -- IL code generation
 			l_native_array_class_type.generate_il (name_id, l_native_array_type, a_context_type)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1120,22 +1275,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

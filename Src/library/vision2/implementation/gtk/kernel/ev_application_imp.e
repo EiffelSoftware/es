@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"EiffelVision application, GTK+ implementation."
 	legal: "See notice at end of class."
@@ -33,12 +33,14 @@ inherit
 
 	EV_GTK_EVENT_STRINGS
 
+	RT_DEBUGGER
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface) is
+	make (an_interface: like interface)
 			-- Set up the callback marshal and initialize GTK+.
 		local
 			locale_str: STRING
@@ -62,7 +64,7 @@ feature {NONE} -- Initialization
 			then
 				initialize_threading
 					-- Store the value of the debug mode.
-				saved_debug_mode := debug_mode
+				saved_debug_state := debug_state
 				enable_ev_gtk_log (0)
 					-- 0 = No messages, 1 = Gtk Log Messages, 2 = Gtk Log Messages with Eiffel exception.
 				{EV_GTK_EXTERNALS}.gdk_set_show_events (False)
@@ -90,8 +92,6 @@ feature {NONE} -- Initialization
 
 					-- We do not want X Errors to exit the system so we ignore them indefinitely.
 				{EV_GTK_EXTERNALS}.gdk_error_trap_push
-
-				init_connection_number
 
 					-- Check if an GdkImage using the GDK_IMAGE_SHARED flag (first argument '1') may be created, if so then display is local.
 				l_image := {EV_GTK_EXTERNALS}.gdk_image_new (1, {EV_GTK_EXTERNALS}.gdk_rgb_get_visual, 1, 1)
@@ -129,7 +129,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Event loop
 
-	 launch is
+	 launch
 			-- Display the first window, set up the post_launch_actions,
 			-- and start the event loop.
 		do
@@ -160,7 +160,7 @@ feature {EV_ANY_I} -- Implementation
 		-- Graphical objects that is presently shown
 		-- Used for holding a reference do not get garbage collected.
 
-	focused_widget: EV_WIDGET is
+	focused_widget: EV_WIDGET
 			-- Widget with keyboard focus
 		local
 			current_windows: like windows
@@ -194,76 +194,13 @@ feature {EV_ANY_I} -- Implementation
 			end
 		end
 
-	display_connection_number: INTEGER
-		-- Connection number of display.
-		-- This is a file descriptor from which we can poll for user events.
-
-	x11_display: POINTER
-		-- Pointer to the default X11 display used by `Current'.
-
-	init_connection_number
-			-- Initialize `display_connection_number'.
-		local
-			l_gdk_display: POINTER
-		do
-			l_gdk_display := {EV_GTK_EXTERNALS}.gdk_get_display
-			x11_display := gdk_drawable_xdisplay ({EV_GTK_EXTERNALS}.gdk_root_parent)
-			display_connection_number := connection_number (x11_display)
-		end
-
-	wait_for_input (msec: INTEGER) is
+	wait_for_input (msec: INTEGER)
 			-- Wait for at most `msec' milliseconds for an event.
-		local
-			l_result: INTEGER
 		do
-			if xpending (x11_display) = 0 then
-					-- If there are no events then we wait for some.
-					-- The call to XPending will also flush any events in the buffer.
-				l_result := fd_select (display_connection_number, msec * 1000)
-			end
+			sleep (msec)
 		end
 
-	fd_select (a_fd, a_timeout: INTEGER): INTEGER
-		external
-			"C inline use <gdk/gdkx.h>"
-		alias
-			"[
-				fd_set rfds;
-				struct timeval tv;
-				int retval;
-
-				FD_ZERO(&rfds);
-				FD_SET((int) $a_fd, &rfds);
-
-				tv.tv_sec = 0;
-				tv.tv_usec = (long) $a_timeout;
-
- 				return select(1, &rfds, NULL, NULL, &tv);
- 			]"
-		end
-
-	gdk_drawable_xdisplay (a_gdk_display: POINTER): POINTER
-		external
-			"C macro use <gdk/gdkx.h>"
-		alias
-			"GDK_DRAWABLE_XDISPLAY"
-		end
-
-	connection_number (a_x_display: POINTER): INTEGER
-		external
-			"C macro use <gdk/gdkx.h>"
-		alias
-			"ConnectionNumber"
-		end
-
-	xpending (a_x_display: POINTER): INTEGER
-		external
-			"C macro use <gdk/gdkx.h>"
-		alias
-			"XPending"
-		end
-
-	process_underlying_toolkit_event_queue is
+	process_underlying_toolkit_event_queue
 			-- Process all pending GDK events and then dispatch GTK iteration until no more
 			-- events are pending.
 		local
@@ -716,7 +653,7 @@ feature {EV_ANY_I} -- Implementation
 
 feature {NONE} -- Implementation
 
-	main_module: POINTER is
+	main_module: POINTER
 			-- Module representing `Current' application instance.
 		do
 			if {EV_GTK_EXTERNALS}.gtk_min_ver >= 6 and then {EV_GTK_EXTERNALS}.g_module_supported then
@@ -726,25 +663,25 @@ feature {NONE} -- Implementation
 
 feature -- Access
 
-	ctrl_pressed: BOOLEAN is
+	ctrl_pressed: BOOLEAN
 			-- Is ctrl key currently pressed?
 		do
 			Result := keyboard_modifier_mask & {EV_GTK_EXTERNALS}.gdk_control_mask_enum = {EV_GTK_EXTERNALS}.gdk_control_mask_enum
 		end
 
-	alt_pressed: BOOLEAN is
+	alt_pressed: BOOLEAN
 			-- Is alt key currently pressed?
 		do
 			Result := keyboard_modifier_mask & {EV_GTK_EXTERNALS}.gdk_mod1_mask_enum = {EV_GTK_EXTERNALS}.gdk_mod1_mask_enum
 		end
 
-	shift_pressed: BOOLEAN is
+	shift_pressed: BOOLEAN
 			-- Is shift key currently pressed?
 		do
 			Result := keyboard_modifier_mask & {EV_GTK_EXTERNALS}.gdk_shift_mask_enum = {EV_GTK_EXTERNALS}.gdk_shift_mask_enum
 		end
 
-	caps_lock_on: BOOLEAN is
+	caps_lock_on: BOOLEAN
 			-- Is the Caps or Shift Lock key currently on?
 		do
 			Result := keyboard_modifier_mask & {EV_GTK_EXTERNALS}.gdk_lock_mask_enum = {EV_GTK_EXTERNALS}.gdk_lock_mask_enum
@@ -753,7 +690,7 @@ feature -- Access
 	window_oids: LINKED_LIST [INTEGER]
 			-- Global list of window object ids.
 
-	windows: LINEAR [EV_WINDOW] is
+	windows: LINEAR [EV_WINDOW]
 			-- Global list of windows.
 		local
 			cur: CURSOR
@@ -794,13 +731,13 @@ feature -- Access
 
 feature -- Basic operation
 
-	process_graphical_events is
+	process_graphical_events
 			-- Process all pending graphical events and redraws.
 		do
 			{EV_GTK_EXTERNALS}.gdk_window_process_all_updates
 		end
 
-	motion_tuple: TUPLE [x: INTEGER; y: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER; originating_x: INTEGER; originating_y: INTEGER] is
+	motion_tuple: TUPLE [x: INTEGER; y: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER; originating_x: INTEGER; originating_y: INTEGER]
 			-- Tuple optimization
 		once
 			create Result
@@ -812,7 +749,7 @@ feature -- Basic operation
 			create Result
 		end
 
-	process_button_event (a_gdk_event: POINTER) is
+	process_button_event (a_gdk_event: POINTER)
 			-- Process button event `a_gdk_event'.
 		require
 			a_gdkevent_not_null: a_gdk_event /= default_pointer
@@ -897,7 +834,7 @@ feature -- Basic operation
 			use_stored_display_data := False
 		end
 
-	handle_dnd (a_event: POINTER) is
+	handle_dnd (a_event: POINTER)
 			-- Handle drag and drop event.
 		local
 			a_context: POINTER
@@ -976,51 +913,51 @@ feature -- Basic operation
 		end
 
 
-	GDK_NOTHING: INTEGER is -1
-	GDK_DELETE: INTEGER is 0
-	GDK_DESTROY: INTEGER is 1
-	GDK_EXPOSE: INTEGER is 2
-	GDK_MOTION_NOTIFY: INTEGER is 3
-	GDK_BUTTON_PRESS: INTEGER is 4
-	GDK_2BUTTON_PRESS : INTEGER is 5
-	GDK_3BUTTON_PRESS: INTEGER is 6
-	GDK_BUTTON_RELEASE: INTEGER is 7
-	GDK_KEY_PRESS: INTEGER is 8
-	GDK_KEY_RELEASE: INTEGER is 9
-	GDK_ENTER_NOTIFY: INTEGER is 10
-	GDK_LEAVE_NOTIFY: INTEGER is 11
-	GDK_FOCUS_CHANGE: INTEGER is 12
-	GDK_CONFIGURE: INTEGER is 13
-	GDK_MAP: INTEGER is 14
-	GDK_UNMAP: INTEGER is 15
-	GDK_PROPERTY_NOTIFY: INTEGER is 16
-	GDK_SELECTION_CLEAR: INTEGER is 17
-	GDK_SELECTION_REQUEST: INTEGER is 18
-	GDK_SELECTION_NOTIFY: INTEGER is 19
-	GDK_PROXIMITY_IN: INTEGER is 20
-	GDK_PROXIMITY_OUT: INTEGER is 21
-	GDK_DRAG_ENTER: INTEGER is 22
-	GDK_DRAG_LEAVE: INTEGER is 23
-	GDK_DRAG_MOTION: INTEGER is 24
-	GDK_DRAG_STATUS: INTEGER is 25
-	GDK_DROP_START: INTEGER is 26
-	GDK_DROP_FINISHED : INTEGER is 27
-	GDK_CLIENT_EVENT: INTEGER is 28
-	GDK_VISIBILITY_NOTIFY: INTEGER is 29
-	GDK_NO_EXPOSE: INTEGER is 30
-	GDK_SCROLL: INTEGER is 31
-	GDK_WINDOW_STATE: INTEGER is 32
-	GDK_SETTING: INTEGER is 33
-	GDK_OWNER_CHANGE: INTEGER is 34
+	GDK_NOTHING: INTEGER = -1
+	GDK_DELETE: INTEGER = 0
+	GDK_DESTROY: INTEGER = 1
+	GDK_EXPOSE: INTEGER = 2
+	GDK_MOTION_NOTIFY: INTEGER = 3
+	GDK_BUTTON_PRESS: INTEGER = 4
+	GDK_2BUTTON_PRESS : INTEGER = 5
+	GDK_3BUTTON_PRESS: INTEGER = 6
+	GDK_BUTTON_RELEASE: INTEGER = 7
+	GDK_KEY_PRESS: INTEGER = 8
+	GDK_KEY_RELEASE: INTEGER = 9
+	GDK_ENTER_NOTIFY: INTEGER = 10
+	GDK_LEAVE_NOTIFY: INTEGER = 11
+	GDK_FOCUS_CHANGE: INTEGER = 12
+	GDK_CONFIGURE: INTEGER = 13
+	GDK_MAP: INTEGER = 14
+	GDK_UNMAP: INTEGER = 15
+	GDK_PROPERTY_NOTIFY: INTEGER = 16
+	GDK_SELECTION_CLEAR: INTEGER = 17
+	GDK_SELECTION_REQUEST: INTEGER = 18
+	GDK_SELECTION_NOTIFY: INTEGER = 19
+	GDK_PROXIMITY_IN: INTEGER = 20
+	GDK_PROXIMITY_OUT: INTEGER = 21
+	GDK_DRAG_ENTER: INTEGER = 22
+	GDK_DRAG_LEAVE: INTEGER = 23
+	GDK_DRAG_MOTION: INTEGER = 24
+	GDK_DRAG_STATUS: INTEGER = 25
+	GDK_DROP_START: INTEGER = 26
+	GDK_DROP_FINISHED : INTEGER = 27
+	GDK_CLIENT_EVENT: INTEGER = 28
+	GDK_VISIBILITY_NOTIFY: INTEGER = 29
+	GDK_NO_EXPOSE: INTEGER = 30
+	GDK_SCROLL: INTEGER = 31
+	GDK_WINDOW_STATE: INTEGER = 32
+	GDK_SETTING: INTEGER = 33
+	GDK_OWNER_CHANGE: INTEGER = 34
 		-- GDK Event Type Constants
 
-	sleep (msec: INTEGER) is
+	sleep (msec: INTEGER)
 			-- Wait for `msec' milliseconds and return.
 		do
 			nano_sleep ({INTEGER_64} 1000000 * msec)
 		end
 
-	destroy is
+	destroy
 			-- End the application.
 		do
 			if not is_destroyed then
@@ -1038,7 +975,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_tooltip_delay (a_delay: INTEGER) is
+	set_tooltip_delay (a_delay: INTEGER)
 			-- Set `tooltip_delay' to `a_delay'.
 		do
 			tooltip_delay := a_delay
@@ -1049,20 +986,20 @@ feature -- Status setting
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
 
-	set_docking_source (a_source: EV_DOCKABLE_SOURCE_IMP) is
+	set_docking_source (a_source: EV_DOCKABLE_SOURCE_IMP)
 			-- Set `docking_source' to `a_source'.
 		do
 			internal_docking_source := a_source
 		end
 
-	on_pick (a_source: EV_PICK_AND_DROPABLE_IMP; a_pebble: ANY) is
+	on_pick (a_source: EV_PICK_AND_DROPABLE_IMP; a_pebble: ANY)
 			-- Called by EV_PICK_AND_DROPABLE_IMP.start_transport
 		do
 			internal_pick_and_drop_source := a_source
 			interface.pick_actions.call ([a_pebble])
 		end
 
-	on_drop (a_pebble: ANY) is
+	on_drop (a_pebble: ANY)
 			-- Called by EV_PICK_AND_DROPABLE_IMP.end_transport
 		do
 			internal_pick_and_drop_source := Void
@@ -1075,7 +1012,7 @@ feature {EV_ANY_I} -- Implementation
 
 feature -- Implementation
 
-	is_in_transport: BOOLEAN is
+	is_in_transport: BOOLEAN
 			-- Is application currently in transport (either PND or docking)?
 		do
 			Result := pick_and_drop_source /= Void or else docking_source /= Void
@@ -1098,7 +1035,7 @@ feature -- Implementation
 	internal_pick_and_drop_source: like pick_and_drop_source
 	internal_docking_source: like docking_source
 
-	keyboard_modifier_mask: NATURAL_32 is
+	keyboard_modifier_mask: NATURAL_32
 			-- Mask representing current keyboard modifiers state.
 		local
 			l_display_data: like retrieve_display_data
@@ -1112,7 +1049,7 @@ feature -- Implementation
 			Result := l_display_data.mask
 		end
 
-	retrieve_display_data: TUPLE [window: POINTER; x, y: INTEGER; mask: NATURAL_32; originating_x, originating_y: INTEGER] is
+	retrieve_display_data: TUPLE [window: POINTER; x, y: INTEGER; mask: NATURAL_32; originating_x, originating_y: INTEGER]
 			-- Retrieve mouse and keyboard data from the display.
 		do
 			if not use_stored_display_data then
@@ -1122,7 +1059,7 @@ feature -- Implementation
 			Result := stored_display_data
 		end
 
-	update_display_data is
+	update_display_data
 			-- Update stored values with current values.
 		local
 			temp_mask: NATURAL_32
@@ -1150,22 +1087,22 @@ feature -- Implementation
 		-- Store for the previous call to 'retrieve_display_data'
 		-- This is needed to avoid unnecessary roundtrips.
 
-	enable_debugger is
+	enable_debugger
 			-- Enable the Eiffel debugger.
 		do
 			if debugger_is_disabled then
 				debugger_is_disabled := False
-				internal_set_debug_mode (saved_debug_mode)
+				restore_debug_state (saved_debug_state)
 			end
 		end
 
-	disable_debugger is
+	disable_debugger
 			-- Disable the Eiffel debugger.
 		do
 			if not debugger_is_disabled then
 				debugger_is_disabled := True
-				saved_debug_mode := debug_mode
-				internal_set_debug_mode (0)
+				saved_debug_state := debug_state
+				disable_debugger
 			end
 		end
 
@@ -1174,7 +1111,7 @@ feature -- Implementation
 
 feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
-	eif_object_from_gtk_object (a_gtk_object: POINTER): EV_ANY_IMP is
+	eif_object_from_gtk_object (a_gtk_object: POINTER): EV_ANY_IMP
 			-- Return the EV_ANY_IMP object from `a_gtk_object' if any.
 		local
 			gtkwid, l_null: POINTER
@@ -1192,7 +1129,7 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			end
 		end
 
-	gtk_widget_imp_at_pointer_position: EV_GTK_WIDGET_IMP is
+	gtk_widget_imp_at_pointer_position: EV_GTK_WIDGET_IMP
 			-- Gtk Widget implementation at current mouse pointer position (if any)
 		local
 			a_x, a_y: INTEGER
@@ -1204,7 +1141,7 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			end
 		end
 
-	gtk_widget_from_gdk_window (a_gdk_window: POINTER): EV_GTK_WIDGET_IMP is
+	gtk_widget_from_gdk_window (a_gdk_window: POINTER): EV_GTK_WIDGET_IMP
 			-- Gtk Widget implementation from GdkWindow.
 		local
 			gtkwid, l_null: POINTER
@@ -1218,33 +1155,33 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 	gtk_is_launchable: BOOLEAN
 		-- Is Gtk launchable?
 
-	default_gtk_window: POINTER is
+	default_gtk_window: POINTER
 			-- Pointer to a default GtkWindow.
 		once
 			Result := default_window_imp.c_object
 			window_oids.prune_all (Default_window_imp.object_id)
 		end
 
-	default_gdk_window: POINTER is
+	default_gdk_window: POINTER
 			-- Pointer to a default GdkWindow that may be used to
 			-- access default visual information (color depth).
 		do
 			Result := {EV_GTK_EXTERNALS}.gtk_widget_struct_window (default_gtk_window)
 		end
 
-	default_window: EV_WINDOW is
+	default_window: EV_WINDOW
 			-- Default Window used for creation of agents and holder of clipboard widget.
 		once
 			create Result
 		end
 
-	default_window_imp: EV_WINDOW_IMP is
+	default_window_imp: EV_WINDOW_IMP
 			-- Default window implementation.
 		once
 			Result ?= default_window.implementation
 		end
 
-	default_font_height: INTEGER is
+	default_font_height: INTEGER
 			-- Default font height.
 		local
 			temp_style: POINTER
@@ -1253,7 +1190,7 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			Result := {EV_GTK_EXTERNALS}.gdk_font_struct_ascent ({EV_GTK_EXTERNALS}.gtk_style_get_font (temp_style))
 		end
 
-	default_font_ascent: INTEGER is
+	default_font_ascent: INTEGER
 			-- Default font ascent.
 		local
 			temp_style: POINTER
@@ -1262,7 +1199,7 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			Result := {EV_GTK_EXTERNALS}.gdk_font_struct_ascent ({EV_GTK_EXTERNALS}.gtk_style_get_font (temp_style))
 		end
 
-	default_font_descent: INTEGER is
+	default_font_descent: INTEGER
 			-- Default font descent.
 		local
 			temp_style: POINTER
@@ -1271,13 +1208,13 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			Result := {EV_GTK_EXTERNALS}.gdk_font_struct_descent ({EV_GTK_EXTERNALS}.gtk_style_get_font (temp_style))
 		end
 
-	reusable_rectangle_struct: POINTER is
+	reusable_rectangle_struct: POINTER
 			-- Persistent GdkColorStruct
 		once
 			Result := {EV_GTK_EXTERNALS}.c_gdk_rectangle_struct_allocate
 		end
 
-	c_string_from_eiffel_string (a_string: STRING_GENERAL): EV_GTK_C_STRING is
+	c_string_from_eiffel_string (a_string: STRING_GENERAL): EV_GTK_C_STRING
 			-- Return a EV_GTK_C_STRING from`a_string'
 			-- `Item' of result must not be freed by gtk.
 			-- Result must only be used for temporary setting and should not be persistent.
@@ -1293,13 +1230,13 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			end
 		end
 
-	reusable_gtk_c_string: EV_GTK_C_STRING is
+	reusable_gtk_c_string: EV_GTK_C_STRING
 			-- Persistent EV_GTK_C_STRING.
 		once
 			create Result.set_with_eiffel_string ("")
 		end
 
-	reusable_color_struct: POINTER is
+	reusable_color_struct: POINTER
 			-- Persistent GdkColorStruct
 		once
 			Result := {EV_GTK_EXTERNALS}.c_gdk_color_struct_allocate
@@ -1307,7 +1244,7 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 
 feature -- Thread Handling.
 
-	initialize_threading is
+	initialize_threading
 			-- Initialize thread support.
 		do
 			if {PLATFORM}.is_thread_capable then
@@ -1323,7 +1260,7 @@ feature -- Thread Handling.
 			end
 		end
 
-	lock is
+	lock
 			-- Lock the Mutex.
 		do
 			if {PLATFORM}.is_thread_capable then
@@ -1331,7 +1268,7 @@ feature -- Thread Handling.
 			end
 		end
 
-	try_lock: BOOLEAN is
+	try_lock: BOOLEAN
 			-- Try to see if we can lock, False means no lock could be attained
 		do
 			if {PLATFORM}.is_thread_capable then
@@ -1342,7 +1279,7 @@ feature -- Thread Handling.
 			end
 		end
 
-	unlock is
+	unlock
 			-- Unlock the Mutex.
 		do
 			if {PLATFORM}.is_thread_capable then
@@ -1352,53 +1289,27 @@ feature -- Thread Handling.
 
 feature {NONE} -- External implementation
 
-	default_c_string_size: INTEGER is 1000
+	default_c_string_size: INTEGER = 1000
 		-- Default size to set the reusable gtk C string.
 
-	internal_set_debug_mode (a_debug_mode: INTEGER) is
-			-- Set `debug_mode' to `a_debug_mode'.
-		external
-			"C inline use %"eif_main.h%""
-		alias
-			"[
-			#ifdef WORKBENCH
-				set_debug_mode ($a_debug_mode);
-			#endif
-			]"
-		end
-
-	saved_debug_mode: INTEGER
+	saved_debug_state: like debug_state
 		-- Debug mode before debugger was disabled
 
-	debug_mode: INTEGER is
-			-- State of debugger.
-		external
-			"C inline use %"eif_main.h%""
-		alias
-			"[
-			#ifdef WORKBENCH
-				return is_debug_mode();
-			#else
-				return 0;
-			#endif
-			]"
-		end
-
-	enable_ev_gtk_log (a_mode: INTEGER) is
+	enable_ev_gtk_log (a_mode: INTEGER)
 			-- Connect GTK+ logging to Eiffel exception handler.
 			-- `a_mode' = 0 means no log messages, 1 = messages, 2 = messages with exceptions.
 		external
 			"C (EIF_INTEGER) | %"ev_c_util.h%""
 		end
 
-	gtk_init is
+	gtk_init
 		external
 			"C [macro <gtk/gtk.h>] | %"eif_argv.h%""
 		alias
     		"gtk_init (&eif_argc, &eif_argv)"
 		end
 
-	gtk_init_check: BOOLEAN is
+	gtk_init_check: BOOLEAN
 		external
 			"C [macro <gtk/gtk.h>] | %"eif_argv.h%""
 		alias
@@ -1414,7 +1325,7 @@ invariant
 	window_oids_not_void: is_usable implies window_oids /= void
 	tooltips_not_void: tooltips /= default_pointer
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

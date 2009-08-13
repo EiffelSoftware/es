@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"[
 			Popup dialog to enter new arguments, modify existing ones and launch system with
@@ -60,7 +60,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_window: EB_DEVELOPMENT_WINDOW; cmd: like run) is
+	make (a_window: EB_DEVELOPMENT_WINDOW; cmd: like run)
 			-- Initialize Current with `par' as parent and
 			-- `cmd' as command window.
 		require
@@ -84,7 +84,7 @@ feature {NONE} -- Initialization
 			close_request_actions.extend (agent on_close)
 		end
 
-	build_interface is
+	build_interface
 		require
 			debugging_options_control_not_void: debugging_options_control /= Void
 		local
@@ -144,7 +144,7 @@ feature {NONE} -- Initialization
 				vbox.disable_item_expand (start_wb_button)
 				start_wb_button.set_pixmap (cmd.pixmap)
 				start_wb_button.set_tooltip (cmd.tooltip)
-				if {wbcmd: EB_EXEC_WORKBENCH_CMD} eb_debugger_manager.run_workbench_cmd then
+				if attached {EB_EXEC_WORKBENCH_CMD} eb_debugger_manager.run_workbench_cmd as wbcmd then
 					start_wb_button.select_actions.extend (agent execute_operation (agent wbcmd.execute_with_parameters))
 				end
 				Layout_constants.set_default_width_for_button (start_wb_button)
@@ -155,7 +155,7 @@ feature {NONE} -- Initialization
 				vbox.disable_item_expand (start_final_button)
 				start_final_button.set_pixmap (cmd.pixmap)
 				start_final_button.set_tooltip (cmd.tooltip)
-				if {fncmd: EB_EXEC_FINALIZED_CMD} eb_debugger_manager.run_finalized_cmd then
+				if attached {EB_EXEC_FINALIZED_CMD} eb_debugger_manager.run_finalized_cmd as fncmd then
 					start_final_button.select_actions.extend (agent execute_operation (agent fncmd.execute_with_parameters))
 				end
 				Layout_constants.set_default_width_for_button (start_final_button)
@@ -172,15 +172,15 @@ feature {NONE} -- session data
 
 	keep_opened_status_session_data_id: STRING = "com.eiffel.execution_options_dialog.keep_opened_status"
 
-	keep_opened_status: BOOLEAN is
+	keep_opened_status: BOOLEAN
 			-- Access to keep_opened_status' data
 		local
-    		consumer: !SERVICE_CONSUMER [!SESSION_MANAGER_S]
+    		consumer: attached SERVICE_CONSUMER [attached SESSION_MANAGER_S]
 		do
 			create consumer
     		if consumer.is_service_available then
-				if {session: SESSION_I} consumer.service.retrieve (True) then
-					if {ref: BOOLEAN_REF} session.value (keep_opened_status_session_data_id) then
+				if attached {SESSION_I} consumer.service.retrieve (True) as session then
+					if attached {BOOLEAN_REF} session.value (keep_opened_status_session_data_id) as ref then
 						Result := ref.item
 					else
 						Result := False
@@ -189,14 +189,14 @@ feature {NONE} -- session data
       		end
 	  	end
 
-	save_keep_opened_status is
+	save_keep_opened_status
 			-- Change keep_opened_status' data.
 		local
-    		consumer: !SERVICE_CONSUMER [!SESSION_MANAGER_S]
+    		consumer: attached SERVICE_CONSUMER [attached SESSION_MANAGER_S]
 		do
 			create consumer
     		if consumer.is_service_available then
-				if {session: SESSION_I} consumer.service.retrieve (True) then
+				if attached {SESSION_I} consumer.service.retrieve (True) as session then
         			session.set_value (keep_opened_check_button.is_selected, keep_opened_status_session_data_id)
         		end
       		end
@@ -217,7 +217,7 @@ feature -- GUI
 
 feature -- Status Setting
 
-	update is
+	update
 			-- Update.
 		do
 			debugging_options_control.update
@@ -225,7 +225,7 @@ feature -- Status Setting
 
 feature {NONE} -- Actions
 
-	on_close is
+	on_close
 	 		-- Action to take when user presses 'Cancel' button.
 	 	local
 	 		l_question: ES_DISCARDABLE_QUESTION_PROMPT
@@ -255,13 +255,13 @@ feature {NONE} -- Properties
 
 feature {NONE} -- Implementation
 
-	on_window_focused is
+	on_window_focused
 			-- Acion to be taken when window gains focused.
 		do
 			debugging_options_control.set_focus_on_widget
 		end
 
-	on_run_button_key_press (key: EV_KEY) is
+	on_run_button_key_press (key: EV_KEY)
 			-- Key was pressed whilst button had focus.
 		do
 			if key.code = {EV_KEY_CONSTANTS}.key_enter then
@@ -269,7 +269,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	escape_check (key: EV_KEY) is
+	escape_check (key: EV_KEY)
 			-- Check for keyboard escape character.
 		require
 			key_not_void: key /= Void
@@ -279,7 +279,7 @@ feature {NONE} -- Implementation
             end
       	end
 
-	execute_operation (op: like run) is
+	execute_operation (op: like run)
 			-- Execute operation `op'
 		local
 			params: DEBUGGER_EXECUTION_PARAMETERS
@@ -294,12 +294,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	execute is
+	execute
 		do
 			execute_operation (run)
 		end
 
-	execute_and_close is
+	execute_and_close
 		do
 			keep_opened_check_button.disable_select
 			execute
@@ -307,26 +307,26 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Observing event handling.
 
-	on_application_exited (dbg: DEBUGGER_MANAGER) is
+	on_application_exited (dbg: DEBUGGER_MANAGER)
 			-- Action to take when the application is killed.
 		do
 			run_button.enable_sensitive
 		end
 
-	on_application_launched (dbg: DEBUGGER_MANAGER) is
+	on_application_launched (dbg: DEBUGGER_MANAGER)
 			-- Action to take when the application is launched.
 		do
 			run_button.disable_sensitive
 --			on_application_resumed (dbg)
 		end
 
-	on_application_resumed (dbg: DEBUGGER_MANAGER) is
+	on_application_resumed (dbg: DEBUGGER_MANAGER)
 			-- Action to take when the application is resumed.
 		do
 --			run_button.disable_sensitive
 		end
 
-	on_application_stopped (dbg: DEBUGGER_MANAGER) is
+	on_application_stopped (dbg: DEBUGGER_MANAGER)
 			-- Action to take when the application is stopped.
 		do
 --			run_button.enable_sensitive
@@ -335,7 +335,7 @@ feature {NONE} -- Observing event handling.
 invariant
 	argument_control_not_void: debugging_options_control /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

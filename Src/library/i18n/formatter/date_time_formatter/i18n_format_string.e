@@ -1,4 +1,4 @@
-indexing
+note
 	description: "String of formatting elements that can be filled at any time."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,12 +14,15 @@ inherit
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make (a_format_string: STRING_32; a_locale_info: I18N_LOCALE_INFO) is
+	make (a_format_string: STRING_32; a_locale_info: I18N_LOCALE_INFO)
 			-- parse `a_format_string' and put parsed data
 			-- in `element_list', this can than be filled
 			-- with `filled()'
+		require
+			a_format_string_not_void: a_format_string /= Void
+			a_locale_info_not_void: a_locale_info /= Void
 		local
 			parser: I18N_FORMAT_STRING_PARSER
 		do
@@ -29,7 +32,7 @@ feature -- Initialization
 
 feature --Output
 
- 	filled (a_date: DATE; a_time: TIME): STRING_32 is
+ 	filled (a_date: DATE; a_time: TIME): STRING_32
  			-- fill `elemets_list' with the data in `a_date'
  			-- and `a_time'
  		do
@@ -53,13 +56,13 @@ feature {NONE} -- Actions
 invariant
 	correct_element_list: elements_list /= Void
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

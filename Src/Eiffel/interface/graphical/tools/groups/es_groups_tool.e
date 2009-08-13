@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Tool descriptor for EiffelStudio's groups tree tool.
 	]"
@@ -11,9 +11,14 @@ frozen class
 	ES_GROUPS_TOOL
 
 inherit
-	ES_TOOL [ES_GROUPS_TOOL_PANEL]
+	ES_STONABLE_TOOL [ES_GROUPS_TOOL_PANEL]
 		redefine
 			shortcut_preference_name
+		end
+
+	ES_GROUPS_COMMANDER_I
+		undefine
+			out
 		end
 
 create {NONE}
@@ -22,44 +27,72 @@ create {NONE}
 feature -- Access
 
 	icon: EV_PIXEL_BUFFER
-			-- Tool icon
-			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := stock_pixmaps.tool_clusters_icon_buffer
 		end
 
 	icon_pixmap: EV_PIXMAP
-			-- Tool icon pixmap
-			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := stock_pixmaps.tool_clusters_icon
 		end
 
-	title: STRING_32
-			-- Tool title.
-			-- Note: Do not call `tool.title' as it will create the tool unnecessarly!
+	title: attached STRING_32
+			-- <Precursor>
 		do
-			Result := interface_names.t_cluster_tool
+			Result := locale_formatter.translation (t_tool_title)
 		end
 
-	shortcut_preference_name: STRING
-			-- An optional shortcut preference name, for automatic preference binding.
-			-- Note: The preference should be registered in the default.xml file
-			--       as well as in the {EB_MISC_SHORTCUT_DATA} class.
+	shortcut_preference_name: attached STRING
+			-- <Precursor>
 		do
 			Result := "show_clusters_tool"
 		end
 
+feature -- Basic operations
+
+	highlight_stone (a_stone: attached STONE)
+			-- <Precursor>
+		do
+				-- Must create the tool and show it so there is no need to check for the tool's instantiation
+				-- status.
+			panel.highlight_stone (a_stone)
+			show (True)
+		end
+
+	highlight_editor_stone
+			-- <Precursor>
+		do
+				-- Must create the tool and show it so there is no need to check for the tool's instantiation
+				-- status.
+			panel.highlight_editor_stone
+			show (True)
+		end
+
+feature {NONE} -- Status report
+
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
+			-- <Precursor>
+		do
+			Result := attached {CLUSTER_STONE} a_stone as l_cluster or else
+				attached {CLASSI_STONE} a_stone as l_class
+		end
+
 feature {NONE} -- Factory
 
-	create_tool: ES_GROUPS_TOOL_PANEL
-			-- Creates the tool for first use on the development `window'
+	new_tool: attached ES_GROUPS_TOOL_PANEL
+			-- <Precursor>
 		do
 			create Result.make (window, Current)
 		end
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+feature {NONE} -- Internationalization
+
+	t_tool_title: STRING = "Groups"
+
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -83,11 +116,11 @@ feature {NONE} -- Factory
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

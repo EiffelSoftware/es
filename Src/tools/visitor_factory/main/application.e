@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Application command line entry point.
 	]"
@@ -21,7 +21,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		local
 			l_layout: EIFFEL_LAYOUT
@@ -38,18 +38,18 @@ feature -- Initialization
 			l_parser.execute (agent start (l_parser))
 		end
 
-	start (a_parser: ARGUMENT_PARSER) is
+	start (a_parser: ARGUMENT_PARSER)
 			-- Start exection of application
 		require
 			a_parser_attached: a_parser /= Void
 			a_parser_is_successful: a_parser.is_successful
 		local
 			l_options: APPLICATION_OPTIONS
-			l_printer: TEXT_PRINTER
+			l_printer: TEXT_WRITER_I
 			l_generator: FILE_GENERATOR_ENGINE
 		do
 				-- Create configuration objects
-			create {BASIC_TEXT_PRINTER}l_printer.make (io.default_output)
+			create {MEDIUM_TEXT_WRITER}l_printer.make (io.default_output)
 			l_printer.put_string (status_messages.scanning_files_message)
 			create l_options.make (a_parser)
 
@@ -68,8 +68,8 @@ feature -- Initialization
 			l_printer.new_line
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -82,22 +82,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class APPLICATION

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Register of action to process external command other process."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_key (a_key: !STRING) is
+	make_key (a_key: attached STRING)
 			-- Initialization
 		do
 			key := a_key
@@ -22,16 +22,16 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	external_command_action: ?FUNCTION [ANY, TUPLE [STRING], BOOLEAN]
+	external_command_action: detachable FUNCTION [ANY, TUPLE [STRING], BOOLEAN]
 			-- Function to be called when command is received.
 			-- Return True to claim that the command can be handled.
 
-	key: !STRING
+	key: attached STRING
 			-- The key to identify current
 
 feature -- Element change
 
-	set_external_command_action (a_action: like external_command_action) is
+	set_external_command_action (a_action: like external_command_action)
 			-- Set `external_command_action' with `a_action'
 		do
 			external_command_action := a_action
@@ -39,7 +39,7 @@ feature -- Element change
 			external_command_action_set: external_command_action = a_action
 		end
 
-	destroy is
+	destroy
 			-- Destroy the receiver
 		do
 			if implementation /= Void then
@@ -50,11 +50,11 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	implementation: ?COMMAND_RECEIVER_I
+	implementation: detachable COMMAND_RECEIVER_I
 
 feature {NONE} -- Implementation
 
-	create_implementation is
+	create_implementation
 			-- Create implementation
 		do
 			create {COMMAND_RECEIVER_IMP}implementation.make (Current)
@@ -62,7 +62,7 @@ feature {NONE} -- Implementation
 			implementation_not_void: implementation /= Void
 		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

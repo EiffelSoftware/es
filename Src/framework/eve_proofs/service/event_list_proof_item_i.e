@@ -74,6 +74,22 @@ feature -- Element change
 			milliseconds_used_set: milliseconds_used = a_value
 		end
 
+	set_category (a_category: like category)
+			-- Sets a new category.
+			--
+			-- `a_category': An event list category, see {ENVIRONMENT_CATEGORIES}.
+		do
+-- Merge64:
+		end
+
+	set_priority (a_priority: like priority)
+			-- Sets a new priority.
+			--
+			-- `a_priority': An event list category, see {PRIORITY_LEVELS}.
+		do
+-- Merge64:
+		end
+
 feature -- Basic operations
 
 	invalidate

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A base matrix configuration INI file processor.
 	]"
@@ -14,8 +14,7 @@ inherit
 	MULTI_ERROR_MANAGER
 		rename
 			make as make_error_manager,
-			reset as reset_error_manager,
-			class_name as c_class_name
+			reset as reset_error_manager
 		export
 			{NONE} all
 			{ANY} successful, trace_errors, trace_warnings, errors, warnings
@@ -23,7 +22,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize `Current'.
 		do
 			make_error_manager
@@ -93,7 +92,7 @@ feature {NONE} -- Query
 			not_result_is_empty: not Result.is_empty
 		end
 
-	icon_prefix (a_literal: INI_LITERAL): !STRING
+	icon_prefix (a_literal: INI_LITERAL): attached STRING
 			-- Retrieves a icon prefix for `a_literal'
 		require
 			a_literal_attached: a_literal /= Void
@@ -112,19 +111,19 @@ feature {NONE} -- Query
 			Result.append_character ('_')
 		end
 
-	icon_suffix: !STRING
+	icon_suffix: attached STRING
 			-- Retrieves icon name suffix
 		do
-			if {l_suffix: STRING} suffix then
+			if attached {STRING} suffix as l_suffix then
 				Result := l_suffix
 			else
 				Result := default_icon_suffix
 			end
 		end
-		
+
 feature -- Basic Operations
 
-	process (a_doc: INI_DOCUMENT; a_post_validate: PROCEDURE [ANY, TUPLE]; a_post_process: PROCEDURE [ANY, TUPLE]) is
+	process (a_doc: INI_DOCUMENT; a_post_validate: PROCEDURE [ANY, TUPLE]; a_post_process: PROCEDURE [ANY, TUPLE])
 			-- Processes INI document `a_doc' and executes `a_post_validate' to do other initalization once the basics have been validated
 			-- and `a_post_validate' on post processing
 		require
@@ -155,7 +154,7 @@ feature -- Basic Operations
 
 feature {NONE} -- Basic Operations
 
-	reset is
+	reset
 			-- Resets generator
 		do
 			width := 0
@@ -261,7 +260,7 @@ feature {NONE} -- Processing
 				if y <= l_height then
 					process_section (l_item)
 				else
-					add_warning (create {WARNING_OUT_OF_BOUNDS}.make_with_context ([l_item.label, "section"]))
+					add_warning (create {WARNING_OUT_OF_BOUNDS}.make ([l_item.label, "section"]))
 				end
 				a_sections.forth
 			end
@@ -301,7 +300,7 @@ feature {NONE} -- Processing
 					if y <= l_height then
 						process_literal_item (l_lit, x, y)
 					else
-						add_warning (create {WARNING_OUT_OF_BOUNDS}.make_with_context ([l_lit.name, "item"]))
+						add_warning (create {WARNING_OUT_OF_BOUNDS}.make ([l_lit.name, "item"]))
 					end
 
 					l_literals.forth
@@ -333,22 +332,22 @@ feature {NONE} -- Validation
 			a_doc_attached: a_doc /= Void
 		do
 			if pixel_height = 0 then
-				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make_with_context ([pixel_width_property]), False)
+				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make ([pixel_width_property]), False)
 			end
 			if pixel_width = 0 then
-				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make_with_context ([pixel_height_property]), False)
+				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make ([pixel_height_property]), False)
 			end
 			if width = 0 then
-				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make_with_context ([width_property]), False)
+				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make ([width_property]), False)
 			end
 			if height = 0 then
-				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make_with_context ([height_property]), False)
+				add_error (create {ERROR_MISSING_INI_FILE_PROPERTIES}.make ([height_property]), False)
 			end
 		end
 
 feature {NONE} -- Formatting
 
-	format_eiffel_name (a_name: STRING): !STRING
+	format_eiffel_name (a_name: STRING): attached STRING
 			-- Formats `a_name' into an Eiffel name
 		require
 			a_name_attached: a_name /= Void
@@ -383,18 +382,19 @@ feature {NONE} -- Formatting
 
 feature {NONE} -- Constants: Defaults
 
-	default_icon_suffix: !STRING = "_icon"
+	default_icon_suffix: STRING = "_icon"
 			-- Default icon suffix for a full icon name generation.
 
 feature {NONE} -- Constants: Property Names
 
-	class_name_property: !STRING = "name"
-	width_property: !STRING = "width"
-	height_property: !STRING = "height"
-	pixel_width_property: !STRING = "pixel_width"
-	pixel_height_property: !STRING = "pixel_height"
-	pixel_border_property: !STRING = "pixel_border"
-	suffix_property: !STRING = "suffix"
+	class_name_property: STRING = "name"
+	width_property: STRING = "width"
+	height_property: STRING = "height"
+	pixel_width_property: STRING = "pixel_width"
+	pixel_height_property: STRING = "pixel_height"
+	pixel_border_property: STRING = "pixel_border"
+	command_line_property: STRING = "command_line"
+	suffix_property: STRING = "suffix"
 
 	continue_mark: CHARACTER = '@'
 			-- Character mark on sections to indication a continuation
@@ -402,9 +402,9 @@ feature {NONE} -- Constants: Property Names
 invariant
 	not_suffix_is_empty: suffix /= Void implies not suffix.is_empty
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -416,22 +416,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {MATRIX_FILE_GENERATOR}

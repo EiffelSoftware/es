@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Objects that represent the state of a {TEST_ROOT_APPLICATION}, also called evaluator. An
 			evaluator can be launched for a given list of tests to execute. The controller will communicate
@@ -26,10 +26,10 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	status: !TEST_EVALUATOR_STATUS
+	status: attached TEST_EVALUATOR_STATUS
 			-- Status showing testing progress
 
-	launch_time: !DATE_TIME
+	launch_time: attached DATE_TIME
 			-- Date and time evaluator was last launched
 		require
 			running: is_running
@@ -41,12 +41,12 @@ feature -- Access
 			Result := l_launch_time
 		end
 
-	assigner: !TEST_EXECUTION_ASSIGNER
+	assigner: attached TEST_EXECUTION_ASSIGNER
 			-- Assigner for retrieving test to be executed
 
 feature {NONE} -- Access
 
-	internal_launch_time: ?like launch_time
+	internal_launch_time: detachable like launch_time
 			-- Internal storage for `launch_time'
 
 	receiver: TEST_RESULT_RECEIVER
@@ -58,7 +58,7 @@ feature {NONE} -- Access
 	last_port: INTEGER
 			-- Port last receiver launched by `Current' opened a socket
 
-	execution_environment: !EXECUTION_ENVIRONMENT
+	execution_environment: attached EXECUTION_ENVIRONMENT
 			-- Helper class providing `sleep' routine.
 		once
 			create Result
@@ -87,7 +87,7 @@ feature {TEST_EXECUTOR_I} -- Status setting
 			running: is_running
 		end
 
-	frozen terminate is
+	frozen terminate
 			-- Terminate evaluator if running.
 		require
 			running: is_running
@@ -112,12 +112,10 @@ feature {TEST_EXECUTOR_I} -- Status setting
 
 feature {NONE} -- Query
 
-	arguments: !ARRAYED_LIST [!STRING] is
+	arguments: attached ARRAYED_LIST [attached STRING]
 			-- Arguments used to launch evaluator
 		local
-			l_idx, l_port, l_root: !STRING
-			l_array: !ARRAYED_LIST [!STRING]
-			l_cursor: DS_LINEAR_CURSOR [!TEST_I]
+			l_port, l_root: attached STRING
 		do
 			create Result.make (5)
 
@@ -142,18 +140,18 @@ feature	{NONE} -- Implementation
 		local
 			l_socket: NETWORK_STREAM_SOCKET
 		do
-			create l_socket.make_client_by_port (last_port, "localhost")
+			create l_socket.make_client_by_address_and_port ((create {INET_ADDRESS_FACTORY}).create_loopback, last_port)
 			l_socket.connect
 			l_socket.close
 		end
 
-	launch_evaluator (a_args: !LIST [!STRING]) is
+	launch_evaluator (a_args: attached LIST [attached STRING])
 			-- Launch evaluator executable
 			--
 			-- `a_args': Arguments for launching evaluator process
 		require
 			running: is_running
-			a_args_not_empty: not a_args.there_exists (agent {!STRING}.is_empty)
+			a_args_not_empty: not a_args.there_exists (agent {attached STRING}.is_empty)
 		deferred
 		end
 
@@ -164,7 +162,7 @@ feature	{NONE} -- Implementation
 		deferred
 		end
 
-	terminate_evaluator is
+	terminate_evaluator
 			-- Terminate evaluator executable
 		require
 			running: is_running
@@ -173,4 +171,35 @@ feature	{NONE} -- Implementation
 			evaluator_not_running: not is_evaluator_running
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Context for third pass"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -26,16 +26,24 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ERROR_HANDLER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create instance of AST_CONTEXT.	
 		do
 			create inline_agent_counter
+			create hidden_local_counter
+			create inline_agents.make (1, 0)
 			create_local_containers
+			create attributes.make (0)
 		end
 
 	create_local_containers
@@ -45,24 +53,8 @@ feature {NONE} -- Initialization
 			create locals.make (10)
 			create supplier_ids.make
 			create scopes.make (0)
-			create object_test_locals.make (0)
-			create used_object_test_local_names.make (0)
-		end
-
-feature -- Initialization
-
-	initialize_variables
-			-- Initializes `variables' to meet the void-safety requirements of `current_class'
-		require
-			current_class_attached: current_class /= Void
-		do
-			if current_class.lace_class.is_void_safe then
-				create {AST_VOID_SAFE_VARIABLE_CONTEXT} variables
-			else
-				create {AST_VARIABLE_CONTEXT} variables
-			end
-		ensure
-			variables_attached: variables /= Void
+			create object_test_scopes.make (0)
+			create object_test_locals.make_map (0)
 		end
 
 feature -- Access
@@ -89,6 +81,32 @@ feature -- Access
 	supplier_ids: FEATURE_DEPENDANCE
 			-- Supplier units
 
+	hidden_local_counter: COUNTER
+			-- Counter for managing hidden locals needed for object test where user does not specify
+			-- a local.
+
+	inline_agents: ARRAY [TUPLE [f: FEATURE_I; ast: INLINE_AGENT_CREATION_AS]]
+			-- Inline agents with their feature descriptors corresponding to their AST for the current FEATURE_AS.
+
+	inline_agent (a: INLINE_AGENT_CREATION_AS): FEATURE_I
+			-- Feature descriptor, associated with the given AST `a'.
+		require
+			a_attached: a /= Void
+		local
+			i: INTEGER
+		do
+			from
+				i := inline_agents.count
+			until
+				i <= 0 or else inline_agents [i].ast = a
+			loop
+				i := i - 1
+			end
+			if i > 0 then
+				Result := inline_agents [i].f
+			end
+		end
+
 	inline_agent_counter: COUNTER
 			-- counter for managing the inline agents that are enclosed in the current feature
 
@@ -113,22 +131,19 @@ feature -- Access
 	used_local_names: SEARCH_TABLE [INTEGER]
 			-- Local names that are already used by enclosing features
 
-	used_object_test_local_names: SEARCH_TABLE [INTEGER_32]
-			-- Names of object-test locals used by enclosing features
-
-	set_used_argument_names (table: like used_argument_names) is
+	set_used_argument_names (table: like used_argument_names)
 			-- Set the used argument names
 		do
 			used_argument_names := table
 		end
 
-	set_used_local_names (table: like used_local_names) is
+	set_used_local_names (table: like used_local_names)
 			-- Set the used local names
 		do
 			used_local_names := table
 		end
 
-	is_name_used (id: INTEGER_32): BOOLEAN is
+	is_name_used (id: INTEGER_32): BOOLEAN
 			-- Is the name with id `id' already used in an enclosing feature?
 		do
 			if used_argument_names /= Void then
@@ -142,19 +157,41 @@ feature -- Access
 			end
 		end
 
-	is_object_test_local_used (id: INTEGER_32): BOOLEAN
-			-- Is the name `id' already used in an object test of an enclosing feature?
+feature -- Modification
+
+	put_inline_agent (f: FEATURE_I; a: INLINE_AGENT_CREATION_AS)
+			-- Store feature descriptor `f' for an inline agent `a'.
+		require
+			f_attached: f /= Void
+			a_attached: a /= Void
+		local
+			i: INTEGER
 		do
-			Result := used_object_test_local_names.has (id)
+				-- Check that the given AST has no feature descriptor yet.
+			from
+				i := inline_agents.count
+			until
+				i <= 0 or else inline_agents [i].ast = a
+			loop
+				i := i - 1
+			end
+			if i = 0 then
+					-- AST `a' is not yet registered.
+					-- Register it now.
+				inline_agents.force ([f, a], inline_agents.count + 1)
+			end
 		end
 
 feature {NONE} -- Local scopes
 
-	object_test_locals: HASH_TABLE [LOCAL_INFO, INTEGER_32]
+	object_test_locals: DS_HASH_TABLE [LOCAL_INFO, ID_AS]
 			-- Types of object-test locals indexes by their name id
 
 	result_id: INTEGER_32 = 0x7fffffff
 			-- Name ID that is used for the special entity "Result"
+
+	old_id: INTEGER_32 = 0x7ffffffe
+			-- Name ID that is used to mark the scope of an old expression
 
 feature {AST_FEATURE_CHECKER_GENERATOR, SHARED_AST_CONTEXT} -- Local scopes
 
@@ -164,20 +201,59 @@ feature {AST_FEATURE_CHECKER_GENERATOR, SHARED_AST_CONTEXT} -- Local scopes
 			Result := object_test_locals.count + 1
 		end
 
-	add_object_test_local (l: LOCAL_INFO; id: INTEGER_32)
-			-- Add a new object test local of type `t' with name `id'.
+	add_object_test_local (l: LOCAL_INFO; id: ID_AS)
+			-- Add a new object test local of type `t' with name `id' specified in the object test.
 		require
 			l_attached: l /= Void
 		do
-			object_test_locals.put (l, id)
-			used_object_test_local_names.put (id)
+			object_test_locals.force (l, id)
 		end
 
 	object_test_local (id: INTEGER_32): LOCAL_INFO
 			-- Information about object-test local of name `id' if such
 			-- a local is currently in scope
+		local
+			i: INTEGER
+			l: INTEGER
+			n: ID_AS
 		do
-			if scopes.has (id) then
+			from
+				i := scopes.count
+			until
+				i <= 0
+			loop
+				l := scopes [i]
+				if l = id then
+						-- The current evaulation position is in the scope of the name `id'.
+						-- Find the associated object test local information (if any).
+					from
+						i := object_test_scopes.count
+					until
+						i <= 0
+					loop
+						n := object_test_scopes [i]
+						if n.name_id = id and then object_test_locals.has (n) then
+							Result := object_test_locals.item (n)
+						end
+						i := i - 1
+					end
+				elseif l = old_id then
+						-- Object test local declared outside an old expression cannot be used inside it.
+					i := 0
+				else
+					i := i - 1
+				end
+			variant
+				i
+			end
+		end
+
+	unchecked_object_test_local (id: ID_AS): LOCAL_INFO
+			-- Information about object-test local of name `id' (if any) regardless of current scope
+		require
+			id_attached: id /= Void
+		do
+			if object_test_locals.has (id) then
 				Result := object_test_locals.item (id)
 			end
 		end
@@ -193,7 +269,7 @@ feature {AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Local scopes: status rep
 	is_local_attached (id: INTEGER_32): BOOLEAN
 			-- Is local `id' in the scope where it is considered attached?
 		do
-			Result := scope_keeper.is_local_attached (locals.item (id).position)
+			Result := local_scope.is_local_attached (locals.item (id).position)
 			if not Result then
 				Result := scopes.has (id)
 			end
@@ -202,16 +278,34 @@ feature {AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Local scopes: status rep
 	is_result_attached: BOOLEAN
 			-- Is special entity "Result" in the scope where it is considered attached?
 		do
-			Result := scope_keeper.is_result_attached
+			Result := local_scope.is_result_attached
 			if not Result then
 				Result := scopes.has (result_id)
+			end
+		end
+
+	is_attribute_attached (id: INTEGER_32): BOOLEAN
+			-- Is attribute `id' in the scope where it is considered attached?
+		local
+			f: FEATURE_I
+			p: INTEGER_32
+		do
+			Result := scopes.has (id)
+			if not Result then
+				f := current_class.feature_of_name_id (id)
+				if f /= Void then
+					p := attributes.item (f.feature_id)
+					if p > 0 then
+						Result := attribute_initialization.is_attribute_set (p)
+					end
+				end
 			end
 		end
 
 feature {AST_CONTEXT} -- Local scopes
 
 	scopes: ARRAYED_LIST [INTEGER_32]
-			-- Currently active scopes
+			-- Currently active scopes identified by entity name ID
 
 	scope_count: INTEGER
 			-- Number of active scopes
@@ -219,7 +313,15 @@ feature {AST_CONTEXT} -- Local scopes
 			Result := scopes.count
 		end
 
-feature -- Scope state
+	object_test_scopes: ARRAYED_LIST [ID_AS]
+			-- Currently active scopes of object test locals
+
+feature {AST_CREATION_PROCEDURE_CHECKER, AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Attribute positions
+
+	attributes: HASH_TABLE [INTEGER_32, INTEGER_32]
+			-- Attribute indecies indexed by their feature ID
+
+feature {AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Scope state
 
 	scope: INTEGER
 			-- Current scope ID
@@ -236,11 +338,17 @@ feature -- Scope state
 			i: like scope_count
 		do
 			from
+				object_test_scopes.finish
 				i := scope_count - s
 			until
 				i <= 0
 			loop
 				scopes.finish
+				if not object_test_scopes.before and then object_test_scopes.item_for_iteration.name_id = scopes.item_for_iteration then
+						-- Remove object test scope.
+					object_test_scopes.remove
+					object_test_scopes.finish
+				end
 				scopes.remove
 				i := i - 1
 			end
@@ -248,33 +356,54 @@ feature -- Scope state
 			scope_set: scope = s
 		end
 
-	init_variable_scopes
-			-- Prepare structures to track variable scopes.
+	init_local_scopes
+			-- Prepare structures to track local scopes.
+		require
+			locals_attached: locals /= Void
 		do
-			initialization_keeper := scope_keeper_factory.create_scope_keeper (locals.count)
-			scope_keeper := scope_keeper_factory.create_scope_keeper (locals.count)
+			create local_initialization.make (locals.count)
+			create local_scope.make (locals.count)
 		ensure
-			initialization_keeper_attached: initialization_keeper /= Void
-			initialization_keeper_initialized: initialization_keeper.local_count = locals.count
-			scope_keeper_attached: scope_keeper /= Void
-			scope_keeper_initialized: scope_keeper.local_count = locals.count
+			local_initialization_attached: local_initialization /= Void
+			local_initialization_initialized: local_initialization.local_count = locals.count
+			local_scope_attached: local_scope /= Void
+			local_scope_initialized: local_scope.local_count = locals.count
 		end
 
-	initialization_keeper: AST_INITIALIZATION_KEEPER
-			-- Keeper of initialized variables
+	init_attribute_scopes
+			-- Prepare structures to track attribute scopes.
+		require
+			attributes_attached: attributes /= Void
+		do
+			create attribute_initialization.make (attributes.count)
+		ensure
+			attribute_initialization_attached: attribute_initialization /= Void
+			attribute_initialization_initialized: attribute_initialization.attribute_count = attributes.count
+		end
 
-	scope_keeper: AST_SCOPE_KEEPER
-			-- Keeper of scopes of non-void variables
+	local_initialization: AST_LOCAL_INITIALIZATION_TRACKER
+			-- Tracker of initialized locals
 
-feature {NONE} -- Scope state
+	local_scope: AST_LOCAL_SCOPE_TRACKER
+			-- Tracker of scopes of non-void locals
 
-	scope_keeper_factory: AST_SCOPE_KEEPER_FACTORY
-			-- Factory to create scope keepers
-		once
-			create Result
+	attribute_initialization: AST_ATTRIBUTE_INITIALIZATION_TRACKER
+			-- Tracker of initialized stable attributes
+
+	is_sibling_dominating: BOOLEAN
+			-- Does variable information of a sibling dominate the previous one (if any)?
+		do
+				-- At the moment only local variables are tracked to become (potentially) detached.
+			Result := local_scope.keeper.is_sibling_dominating
 		end
 
 feature {AST_SCOPE_MATCHER, AST_FEATURE_CHECKER_GENERATOR} -- Local scopes: modification
+
+	add_old_expression_scope
+			-- Add a scope of an old expression
+		do
+			scopes.extend (old_id)
+		end
 
 	add_argument_expression_scope (id: INTEGER_32)
 			-- Add a scope for an argument identified by `id'.
@@ -303,6 +432,15 @@ feature {AST_SCOPE_MATCHER, AST_FEATURE_CHECKER_GENERATOR} -- Local scopes: modi
 			is_result_attached: is_result_attached
 		end
 
+	add_attribute_expression_scope (id: INTEGER_32)
+			-- Add a scope for an attribute identified by `id'.
+		do
+			scopes.extend (id)
+		ensure
+			scope_count_inremented: scope_count = old scope_count + 1
+			is_attribute_attached: is_attribute_attached (id)
+		end
+
 	add_argument_instruction_scope (id: INTEGER_32)
 			-- Add a scope for an argument identified by `id'.
 		do
@@ -314,7 +452,7 @@ feature {AST_SCOPE_MATCHER, AST_FEATURE_CHECKER_GENERATOR} -- Local scopes: modi
 	add_local_instruction_scope (id: INTEGER_32)
 			-- Add a scope for a local identified by `id'.
 		do
-			scope_keeper.start_local_scope (locals.item (id).position)
+			local_scope.start_local_scope (locals.item (id).position)
 		ensure
 			is_local_attached: is_local_attached (id)
 		end
@@ -322,75 +460,104 @@ feature {AST_SCOPE_MATCHER, AST_FEATURE_CHECKER_GENERATOR} -- Local scopes: modi
 	add_result_instruction_scope
 			-- Add a scope for the special entity "Result".
 		do
-			scope_keeper.start_result_scope
+			local_scope.start_result_scope
 		ensure
 			is_result_attached: is_result_attached
+		end
+
+	add_attribute_instruction_scope (id: INTEGER_32)
+			-- Add a scope for a local identified by `id'.
+		local
+			f: FEATURE_I
+			p: INTEGER_32
+		do
+			f := current_class.feature_of_name_id (id)
+			if f /= Void then
+				p := attributes.item (f.feature_id)
+				if p > 0 then
+					attribute_initialization.set_attribute (p)
+				end
+			end
 		end
 
 	set_local (id: INTEGER_32)
 			-- Mark that a local identified by `id' is set.
 		do
-			initialization_keeper.set_local (locals.item (id).position)
+			local_initialization.set_local (locals.item (id).position)
 		end
 
 	set_result
 			-- Mark that "Result" is set.
 		do
-			initialization_keeper.set_result
+			local_initialization.set_result
 		end
 
 feature {AST_SCOPE_MATCHER, SHARED_AST_CONTEXT} -- Local scopes: modification
 
-	add_object_test_expression_scope (id: INTEGER_32)
+	add_object_test_expression_scope (id: ID_AS)
 			-- Add a scope for an object-test local identified by `id'.
+		require
+			id_attached: id /= Void
 		do
-			scopes.extend (id)
+			if scopes.has (id.name_id) then
+				error_handler.insert_error (create {VUOT1}.make (Current, id))
+			end
+			scopes.extend (id.name_id)
+			object_test_scopes.extend (id)
 		ensure
 			scope_count_inremented: scope_count = old scope_count +1
+			object_test_scopes_count_incremented: object_test_scopes.count = old object_test_scopes.count + 1
 		end
 
-	add_object_test_instruction_scope (id: INTEGER_32)
+	add_object_test_instruction_scope (id: ID_AS)
 			-- Add a scope for an object-test local identified by `id'.
+		require
+			id_attached: id /= Void
 		do
-			scopes.extend (id)
+			add_object_test_expression_scope (id)
 		ensure
 			scope_count_inremented: scope_count = old scope_count +1
+			object_test_scopes_count_incremented: object_test_scopes.count = old object_test_scopes.count + 1
 		end
 
 feature {AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Local scopes: removal
 
 	remove_object_test_scopes (s: like scope)
 			-- Remove scopes of any known object test locals registered after scope identified by `s'.
+		local
+			i: INTEGER
+			j: INTEGER
 		do
 			from
-				scopes.go_i_th (s + 1)
+				i := scopes.count
+				j := object_test_scopes.count
 			until
-				scopes.after
+				i <= s or else j <= 0
 			loop
-				if object_test_locals.has (scopes.item) then
+				if scopes [i] = object_test_scopes [j].name_id then
+						-- The `i'-th item corresponds to an object test local, let's remove it.
+					scopes.go_i_th (i)
 					scopes.remove
-				else
-					scopes.forth
+					object_test_scopes.go_i_th (j)
+					object_test_scopes.remove
+					j := j - 1
 				end
+				i := i - 1
 			variant
-				scopes.count - scopes.index + 1
+				i
 			end
 		end
 
 	remove_local_scope (id: INTEGER_32)
 			-- Mark that an attached scope of a local identified by `id' is terminated.
 		do
-			scope_keeper.stop_local_scope (locals.item (id).position)
-		ensure
-			local_scope_removed: not is_local_attached (id)
+			local_scope.stop_local_scope (locals.item (id).position)
 		end
 
 	remove_result_scope
 			-- Mark that an attached scope of the special entity "Result" is terminated.
 		do
-			scope_keeper.stop_result_scope
-		ensure
-			result_scope_removed: not is_result_attached
+			local_scope.stop_result_scope
 		end
 
 feature -- Local initialization and scopes: nesting
@@ -398,44 +565,53 @@ feature -- Local initialization and scopes: nesting
 	enter_realm
 			-- Enter a new complex instruction with inner compound parts.
 		do
-			initialization_keeper.enter_realm
-			scope_keeper.enter_realm
+			local_initialization.keeper.enter_realm
+			local_scope.keeper.enter_realm
+			attribute_initialization.keeper.enter_realm
 		end
 
 	update_realm
 			-- Update realm variable information from the current state.
 		do
-			initialization_keeper.update_realm
-			scope_keeper.update_realm
+			local_initialization.keeper.update_realm
+			local_scope.keeper.update_realm
+			attribute_initialization.keeper.update_realm
 		end
 
 	save_sibling
-			-- Save variable information of a sibling in a complex instrution.
+			-- Save scope information of a sibling in a complex instrution and restart recording using the outer scope.
 			-- For example, Then_part of Elseif condition.
 		do
-			initialization_keeper.save_sibling
-			scope_keeper.save_sibling
+			local_initialization.keeper.save_sibling
+			local_scope.keeper.save_sibling
+			attribute_initialization.keeper.save_sibling
+		end
+
+	update_sibling
+			-- Update scope information of a sibling in a complex instrution and reuse it for the current scope.
+			-- For example, Loop body.
+		do
+			local_initialization.keeper.update_sibling
+			local_scope.keeper.update_sibling
+			attribute_initialization.keeper.update_sibling
 		end
 
 	leave_realm
 			-- Leave a complex instruction and promote variable information to the outer compound.
 		do
-			initialization_keeper.leave_realm
-			scope_keeper.leave_realm
+			local_initialization.keeper.leave_realm
+			local_scope.keeper.leave_realm
+			attribute_initialization.keeper.leave_realm
 		end
 
 	leave_optional_realm
 			-- Leave a complex instruction and discard its variable information.
 			-- For example, Debug instruction.
 		do
-			initialization_keeper.leave_optional_realm
-			scope_keeper.leave_optional_realm
+			local_initialization.keeper.leave_optional_realm
+			local_scope.keeper.leave_optional_realm
+			attribute_initialization.keeper.leave_optional_realm
 		end
-
-feature -- Variable context
-
-	variables: AST_VARIABLE_CONTEXT
-			-- Context for tracking variable usage.
 
 feature -- Status report
 
@@ -448,31 +624,35 @@ feature -- Status report
 
 feature -- Setting
 
-	initialize (a_class: like current_class; a_type: CL_TYPE_A; a_feat_tbl: like current_feature_table) is
+	initialize (a_class: like current_class; a_type: CL_TYPE_A; a_feat_tbl: like current_feature_table)
 			-- Initialize current context for class analyzis.
 		require
 			a_class_not_void: a_class /= Void
 			a_feat_tbl_not_void: a_feat_tbl /= Void
 			a_type_not_void: a_type /= Void
+		local
+			s: GENERIC_SKELETON
+			i: INTEGER
 		do
 			current_class := a_class
 			create current_class_type
 			current_class_type.set_actual_type (a_type)
-			if current_class.lace_class.is_void_safe then
-				if not current_class_type.is_attached then
-						-- Current is always attached
-					current_class_type.set_attached_mark
-				end
-			else
-				if not current_class_type.is_attached and then
-					not current_class_type.is_implicitly_attached
-				then
-						-- Current is always attached
-					current_class_type.set_is_implicitly_attached
-				end
-			end
+				-- Current is always attached.
+			current_class_type := current_class_type.as_attached_in (current_class)
 			current_feature_table := a_feat_tbl
 			written_class := Void
+			from
+				s := a_class.skeleton
+				if s /= Void then
+					i := s.count
+				end
+				create attributes.make (i)
+			until
+				i <= 0
+			loop
+				attributes.put (i, s [i].feature_id)
+				i := i - 1
+			end
 		ensure
 			current_class_set: current_class = a_class
 			current_class_type_set: current_class_type.conformance_type = a_type
@@ -481,7 +661,7 @@ feature -- Setting
 			current_feature_table_set: current_feature_table = a_feat_tbl
 		end
 
-	set_current_feature (f: FEATURE_I) is
+	set_current_feature (f: FEATURE_I)
 			-- Assign `f' to `current_feature'.
 		require
 			f_not_void: f /= Void
@@ -491,7 +671,7 @@ feature -- Setting
 			current_feature_set: current_feature = f
 		end
 
-	set_written_class (c: like written_class) is
+	set_written_class (c: like written_class)
 			-- Set `written_class' to `c'.
 		do
 			written_class := c
@@ -499,7 +679,7 @@ feature -- Setting
 			written_class_set: written_class = c
 		end
 
-	set_is_ignoring_export (b: BOOLEAN) is
+	set_is_ignoring_export (b: BOOLEAN)
 			-- Assign `b' to `is_ignoring_export'.
 		do
 			is_ignoring_export := b
@@ -507,13 +687,13 @@ feature -- Setting
 			is_ignoring_export_set: is_ignoring_export = b
 		end
 
-	set_locals (l: like locals) is
+	set_locals (l: like locals)
 			-- Assign `l' to `locals'.
 		do
 			locals := l;
 		end;
 
-	set_last_conversion_info (l: like last_conversion_info) is
+	set_last_conversion_info (l: like last_conversion_info)
 			-- Assign `l' to `last_conversion_info'.
 		do
 			last_conversion_info := l
@@ -521,7 +701,7 @@ feature -- Setting
 			last_conversion_info_set: last_conversion_info = l
 		end
 
-	init_error (e: FEATURE_ERROR) is
+	init_error (e: FEATURE_ERROR)
 			-- Initialize `e'.
 		require
 			good_argument: not (e = Void)
@@ -533,7 +713,7 @@ feature -- Setting
 			end
 		end
 
-	init_byte_code (byte_code: BYTE_CODE) is
+	init_byte_code (byte_code: BYTE_CODE)
 			-- Initialiaze `byte_code'.
 		require
 			byte_code_attached: byte_code /= Void
@@ -653,7 +833,7 @@ feature -- Setting
 			end
 		end
 
-	set_current_inline_agent_body (body: like current_inline_agent_body) is
+	set_current_inline_agent_body (body: like current_inline_agent_body)
 			-- Sets the current inline agent body
 		do
 			current_inline_agent_body := body
@@ -661,18 +841,18 @@ feature -- Setting
 
 feature -- Managing the type stack
 
-	clear_all is
+	clear_all
 			-- Clear the structure: to use while changing of analyzed
 			-- current_class.
 		do
 			current_class := Void
 			current_class_type := Void
 			current_feature_table := Void
-			variables := Void
+			attributes.wipe_out
 			clear_feature_context
 		end
 
-	clear_feature_context is
+	clear_feature_context
 			-- Clear `current_feature' context: to use while changing of current
 			-- analyzed feature.
 		do
@@ -680,6 +860,9 @@ feature -- Managing the type stack
 			last_conversion_info := Void
 			supplier_ids.wipe_out
 			written_class := Void
+			inline_agent_counter.reset
+			hidden_local_counter.reset
+			create inline_agents.make (1, 0)
 			clear_local_context
 		end
 
@@ -689,31 +872,29 @@ feature -- Managing the type stack
 		do
 			locals.clear_all
 			object_test_locals.wipe_out
-			used_object_test_local_names.wipe_out
 			scopes.wipe_out
-			if variables /= Void then
-				variables.wipe_out
-			end
+			object_test_scopes.wipe_out
 		end
 
 feature	-- Saving contexts
 
-	save: AST_CONTEXT is
+	save: AST_CONTEXT
 			-- Returns a saved context
 		require
 			current_class_attached: current_class /= Void
 		do
 			Result := twin
 			create_local_containers
-			initialize_variables
 			used_argument_names := Void
 			used_local_names := Void
 			scopes.copy (Result.scopes)
-			scope_keeper := Void
-			initialization_keeper := Void
+			object_test_scopes.copy (Result.object_test_scopes)
+			local_scope := Void
+			local_initialization := Void
+			attribute_initialization := Void
 		end
 
-	restore (context: AST_CONTEXT) is
+	restore (context: AST_CONTEXT)
 			-- Restores a given context
 		do
 			copy (context)
@@ -725,10 +906,11 @@ feature {NONE} --Internals
 invariant
 	locals_attached: locals /= Void
 	object_test_locals_attached: object_test_locals /= Void
+	inline_agents_attached: inline_agents /= Void
+	inline_agents_normalized: inline_agents.lower = 1
 
-
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

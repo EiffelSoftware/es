@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Container looks like a spliter area which have a gap between childs, but it can't be dragged by end users.
 					It's be used when a zone is minimized.
@@ -21,6 +21,8 @@ inherit
 			is_in_default_state
 		redefine
 			initialize,
+			implementation,
+			may_contain,
 			set_splitter_visible
 		select
 			count_except_spliter,
@@ -28,23 +30,24 @@ inherit
 		end
 
 	EV_HORIZONTAL_BOX
+		export
+			{SD_HORIZONTAL_BOX} cl_extend
 		redefine
 			initialize,
+			implementation,
 			extend,
 			may_contain,
 			first,
 			last,
 			is_in_default_state
 		select
-			implementation,
-			cl_extend,
-			cl_put,
-			may_contain
+			put,
+			cl_extend
 		end
 
 feature {NONE} -- Initlization
 
-	count_except_spliter: INTEGER is
+	count_except_spliter: INTEGER
 			-- Count except `fake_spliter'
 		do
 			Result := count
@@ -53,14 +56,14 @@ feature {NONE} -- Initlization
 			end
 		end
 
-	full_docking: BOOLEAN is
-			--	Redefine
+	full_docking: BOOLEAN
+			--	<Precursor>
 		do
 			Result := first /= Void and second /= Void
 		end
 
-	initialize	is
-			-- Redefine
+	initialize
+			-- <Precursor>
 		do
 			Precursor {EV_HORIZONTAL_BOX}
 			create fake_spliter
@@ -72,8 +75,8 @@ feature {NONE} -- Initlization
 	fake_spliter: EV_CELL
 			-- Fake spiter which can't be dragged.
 
-	extend (a_widget: EV_WIDGET) is
-			-- Redefine
+	extend (a_widget: EV_WIDGET)
+			-- <Precursor>
 		local
 			l_index: INTEGER
 		do
@@ -96,8 +99,8 @@ feature {NONE} -- Initlization
 			end
 		end
 
-	first: EV_WIDGET is
-			-- Redefine.
+	first: EV_WIDGET
+			-- <Precursor>
 		do
 			if i_th (1) /= Void then
 				if i_th (1) /= fake_spliter then
@@ -109,14 +112,14 @@ feature {NONE} -- Initlization
 	second_was_void: BOOLEAN
 			-- If second is void?
 
-	is_in_default_state: BOOLEAN is
-			-- Redefine
+	is_in_default_state: BOOLEAN
+			-- <Precursor>
 		do
 			Result := True
 		end
 
-	last: EV_WIDGET is
-			-- Redefine
+	last: EV_WIDGET
+			-- <Precursor>
 		do
 			if Result = Void and count = 1 then
 				Result := fake_spliter
@@ -129,20 +132,13 @@ feature {NONE} -- Initlization
 			end
 		end
 
-	may_contain (v: EV_WIDGET): BOOLEAN is
-			-- Redefine
-		do
-			Result := Precursor {EV_HORIZONTAL_BOX} (v)
-			Result := Result and count <= 3
-		end
-
-	spliter_width: INTEGER is 4
+	spliter_width: INTEGER = 4
 			-- Fake spliter width.
 
 feature -- Access
 
-	second: EV_WIDGET is
-			-- Redefine	
+	second: EV_WIDGET
+			-- <Precursor>	
 		do
 			if first = Void then
 				Result := i_th (2)
@@ -151,33 +147,41 @@ feature -- Access
 			end
 		end
 
-	minimum_split_position: INTEGER is
-			-- Redefine
+	minimum_split_position: INTEGER
+			-- <Precursor>
 		do
 		end
 
-	maximum_split_position: INTEGER is
-			-- Redefine
+	maximum_split_position: INTEGER
+			-- <Precursor>
 			-- This value is useful when executing SD_MULTI_DOCK_AREA.restore_spliter_position.
 		do
 			Result := {INTEGER}.max_value
 		end
 
 	split_position: INTEGER
-			-- Redefine
+			-- <Precursor>
+
+feature -- Contract support
+
+	may_contain (v: EV_WIDGET): BOOLEAN
+			-- <Precursor>
+		do
+			Result := Precursor {EV_HORIZONTAL_BOX} (v) and then count <= 3
+		end
 
 feature -- Setting
 
-	set_split_position (a_pos: INTEGER) is
-			-- Redefine
+	set_split_position (a_pos: INTEGER)
+			-- <Precursor>
 		do
 			split_position := a_pos
 		ensure then
 			set: split_position = a_pos
 		end
 
-	set_splitter_visible (a_visible: BOOLEAN) is
-			-- Redefine
+	set_splitter_visible (a_visible: BOOLEAN)
+			-- <Precursor>
 		do
 			if fake_spliter /= Void then
 				if a_visible then
@@ -188,7 +192,12 @@ feature -- Setting
 			end
 		end
 
-indexing
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	implementation: EV_HORIZONTAL_BOX_I
+			-- Responsible for interaction with native graphics toolkit.
+
+;note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
@@ -199,10 +208,5 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-
-
-
-
-
 
 end

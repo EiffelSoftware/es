@@ -1,4 +1,4 @@
-indexing
+note
 	description: "General notion of command. To write an actual command %
 		%inherit from this class and implement the `execute' feature."
 	legal: "See notice at end of class."
@@ -11,19 +11,19 @@ deferred class
 
 feature -- Access
 
-	message_information: WEL_MESSAGE_INFORMATION
+	message_information: detachable WEL_MESSAGE_INFORMATION
 			-- Information associated to the message
 
 feature -- Execution
 
-	execute (argument: ANY) is
+	execute (argument: detachable ANY)
 			-- Execute the command with `argument'.
 		deferred
 		end
 
 feature -- Element change
 
-	set_message_information (mi: WEL_MESSAGE_INFORMATION) is
+	set_message_information (mi: detachable WEL_MESSAGE_INFORMATION)
 			-- Set `message_information' with `mi'.
 		do
 			message_information := mi
@@ -31,7 +31,7 @@ feature -- Element change
 			message_information_set: message_information = mi
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

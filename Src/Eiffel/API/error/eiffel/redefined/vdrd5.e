@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Error for non signature-conformance for a redefinition."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -26,11 +26,11 @@ feature -- Properties
 	precursor_of_redeclaration: E_FEATURE
 			-- Precursor of the redeclaration
 
-	code: STRING is "VDRD"
+	code: STRING = "VDRD"
 
 feature -- Access
 
-	is_defined: BOOLEAN is
+	is_defined: BOOLEAN
 			-- Is the error fully defined?
 		do
 			Result := is_class_defined and then
@@ -43,7 +43,7 @@ feature -- Access
 
 feature -- Output
 
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
+	build_explain (a_text_formatter: TEXT_FORMATTER)
 			-- Build specific explanation image for current error
 			-- in `a_text_formatter'.
 		local
@@ -64,11 +64,15 @@ feature -- Output
 			a_text_formatter.add_new_line
 		end
 
-	trace_primary_context (a_text_formatter: TEXT_FORMATTER) is
+	trace_primary_context (a_text_formatter: TEXT_FORMATTER)
 			-- Build the primary context string so errors can be navigated to
 		do
-			if {l_formatter: !TEXT_FORMATTER} a_text_formatter and then {l_feature: !like redeclaration} redeclaration and then {l_class: !like class_c} class_c then
-				print_context_feature (l_formatter, l_feature, l_class)
+			if 
+				a_text_formatter /= Void and then 
+				attached redeclaration as l_feature and then 
+				attached class_c as l_class 
+			then
+				print_context_feature (a_text_formatter, l_feature, l_class)
 			else
 				Precursor (a_text_formatter)
 			end
@@ -76,7 +80,7 @@ feature -- Output
 
 feature {COMPILER_EXPORTER}
 
-	init (old_feature, new_feature: FEATURE_I) is
+	init (old_feature, new_feature: FEATURE_I)
 			-- Initialization
         require
             good_arguments: not (old_feature = Void or else
@@ -87,7 +91,7 @@ feature {COMPILER_EXPORTER}
 			precursor_of_redeclaration := old_feature.api_feature (old_feature.written_in)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

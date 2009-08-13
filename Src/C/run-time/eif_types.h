@@ -71,7 +71,8 @@ struct ex_vect {
 	unsigned char	ex_retry;		/* True if function has been retried */
 	unsigned char	ex_rescue;		/* True if function entered its rescue clause */
 	unsigned char	ex_is_invariant;/* True if function entered is the _invariant routine */
-	int				ex_linenum;		/* current line number (line number <=> breakpoint slot) */
+	int				ex_linenum;		/* current breakable point index (line number <=> breakpoint slot) */
+	int				ex_bpnested;	/* current breakable point nested index (line number <=> breakpoint slot) */
 #if defined(WORKBENCH) || defined(EIF_IPC)
 	BODY_INDEX 		ex_bodyid;	/* body id of the feature */
 	uint32			ex_locnum;	/* number of local variables in the function */
@@ -168,24 +169,24 @@ struct eif_exception {
  * General information structure.
  */
 struct gacinfo {
-	unsigned long nb_full;		/* Number of full GC collections */
-	unsigned long nb_partial;	/* Number of partial collections */
+	rt_uint_ptr nb_full;		/* Number of full GC collections */
+	rt_uint_ptr nb_partial;		/* Number of partial collections */
 	rt_uint_ptr mem_used;		/* State of memory after previous run */
-	rt_uint_ptr mem_copied;	/* Amount of memory copied by the scavenging */
+	rt_uint_ptr mem_copied;		/* Amount of memory copied by the scavenging */
 	rt_uint_ptr mem_move;		/* Size of the 'from' spaces */
-	int gc_to;					/* Number of 'to' zone allocated for plsc */
+	rt_uint_ptr gc_to;			/* Number of 'to' zone allocated for plsc */
 	char status;				/* Describes the collecting status */
 };
 
 struct gacstat {
-	long count;				/* Number of full or partial collection so far. */
+	rt_uint_ptr count;				/* Number of full or partial collection so far. */
 	rt_uint_ptr mem_used;			/* State of memory after previous run */
 	rt_uint_ptr mem_collect;		/* Memory collected during previous run */
 	rt_uint_ptr mem_avg;			/* Average memory collected in a cycle */
-	long real_avg;			/* Average amount of real cs used by plsc() */
-	long real_time;			/* Amount of real cs used by last plsc() */
-	long real_iavg;			/* Average real time between two collections */
-	long real_itime;		/* Real time between two collections */
+	rt_uint_ptr real_avg;			/* Average amount of real cs used by plsc() */
+	rt_uint_ptr real_time;			/* Amount of real cs used by last plsc() */
+	rt_uint_ptr real_iavg;			/* Average real time between two collections */
+	rt_uint_ptr real_itime;			/* Real time between two collections */
 	double cpu_avg;			/* Average amount of CPU used by plsc() */
 	double sys_avg;			/* Average kernel time used by plsc() */
 	double cpu_iavg;		/* Average CPU time between two collections */

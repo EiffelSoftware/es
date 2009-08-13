@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Used for extracting comments from a routine and displaying inherited comments, when appropriate.
 		
@@ -17,10 +17,69 @@ indexing
 class
 	COMMENT_EXTRACTOR
 
+inherit
+	SHARED_SERVER
+		export
+			{NONE} all
+		end
+
 feature -- Query
 
-	feature_comments (a_feature: !E_FEATURE): ?EIFFEL_COMMENTS
-			-- Retrieve's the feature comments from a given compiled feature.
+	class_comments (a_class: attached CLASS_I): detachable EIFFEL_COMMENTS
+			-- Retrieves the classes comments from a given class, uncompiled or otherwise.
+			--
+			-- `a_class': The class to extract the comments from.
+			-- `Result': A list of tokens of Void if no comments were found.
+		local
+			l_ast: CLASS_AS
+			l_indexing: INDEXING_CLAUSE_AS
+			l_index: INDEX_AS
+			l_tag: ID_AS
+			l_list: EIFFEL_LIST [ATOMIC_AS]
+			l_text: STRING
+			l_text_lines: LIST [STRING]
+			l_stop: BOOLEAN
+		do
+			create Result.make
+
+			if a_class.is_compiled and then attached a_class.compiled_class as l_class then
+				if ast_server.has (l_class.class_id) then
+					l_ast := ast_server.item (l_class.class_id)
+					l_indexing := l_ast.top_indexes
+					if not attached l_indexing then
+						l_indexing := l_ast.bottom_indexes
+					end
+					if attached l_indexing then
+						from l_indexing.start until l_indexing.after or l_stop loop
+							l_index := l_indexing.item
+							if attached l_index then
+								l_tag := l_index.tag
+								if attached l_tag and then l_tag.name.is_case_insensitive_equal (once "description") then
+									l_list := l_index.index_list
+									if l_list /= Void and then not l_list.is_empty and then attached {STRING_AS} l_list.first as l_comment then
+										l_text := l_comment.value
+										if l_text /= Void and then not l_text.is_empty then
+											l_text_lines := l_text.split ('%N')
+											from l_text_lines.start until l_text_lines.after loop
+												Result.extend (create {EIFFEL_COMMENT_LINE}.make_from_string (l_text_lines.item))
+												l_text_lines.forth
+											end
+										end
+										l_stop := True
+									end
+								end
+							end
+
+							l_indexing.forth
+						end
+					end
+
+				end
+			end
+		end
+
+	feature_comments (a_feature: attached E_FEATURE): detachable EIFFEL_COMMENTS
+			-- Retrieves the feature comments from a given compiled feature.
 			--
 			-- `a_feature': The feature to show comments for.
 			-- `Result': A list of tokens or Void if no comments were found.
@@ -28,15 +87,15 @@ feature -- Query
 			Result := feature_comments_ex (a_feature, False)
 		end
 
-	feature_comments_ex (a_feature: !E_FEATURE; a_show_impl: BOOLEAN): ?EIFFEL_COMMENTS is
+	feature_comments_ex (a_feature: attached E_FEATURE; a_show_impl: BOOLEAN): detachable EIFFEL_COMMENTS
 			-- Retrieve's the feature comments from a given compiled feature, with the option to include implementation comments
 			--
 			-- `a_feature': The feature to show comments for.
 			-- `a_show_impl': True if the feature's implmentation comments should be displayed; False otherwise.
 			-- `Result': A list of tokens or Void if no comments were found.
 		local
-			l_parent_comments: ?EIFFEL_COMMENTS
-			l_parent_feature: ?like find_ancestors_feature
+			l_parent_comments: detachable EIFFEL_COMMENTS
+			l_parent_feature: detachable like find_ancestors_feature
 			l_comments: EIFFEL_COMMENTS
 			l_comment: EIFFEL_COMMENT_LINE
 			l_string: STRING_8
@@ -46,7 +105,7 @@ feature -- Query
 		do
 			create Result.make
 
-			if {l_mls: !MATCH_LIST_SERVER} a_feature.system.match_list_server then
+			if attached a_feature.system.match_list_server as l_mls then
 				l_leaf := l_mls.item (a_feature.written_class.class_id)
 				if l_leaf /= Void then
 					l_comments := a_feature.ast.comment (l_leaf)
@@ -140,7 +199,7 @@ feature -- Query
 
 feature {NONE} -- Query
 
-	find_ancestors_feature (a_feature: !E_FEATURE; a_parent_name: ?STRING_8): ?E_FEATURE
+	find_ancestors_feature (a_feature: attached E_FEATURE; a_parent_name: detachable STRING_8): detachable E_FEATURE
 			-- Attempts to locate an ancestor feature. This also respects ancestor features for attributes.
 			--
 			-- `a_feature': The feature to locate a first parent from.
@@ -149,8 +208,8 @@ feature {NONE} -- Query
 		require
 			not_a_parent_name_is_empty: a_parent_name /= Void implies not a_parent_name.is_empty
 		do
-			if {l_class: CLASS_C} a_feature.associated_class then
-				Result := find_ancestors_feature_internal (a_feature, l_class, a_parent_name, create {ARRAYED_LIST [!CLASS_C]}.make (20))
+			if attached a_feature.associated_class as l_class then
+				Result := find_ancestors_feature_internal (a_feature, l_class, a_parent_name, create {ARRAYED_LIST [attached CLASS_C]}.make (20))
 			end
 		end
 
@@ -167,7 +226,7 @@ feature {NONE} -- Regular expressions
 
 feature {NONE} -- Implementation: Query
 
-	find_ancestors_feature_internal (a_feature: !E_FEATURE; a_class: !CLASS_C; a_parent_name: ?STRING_8; a_processed: !ARRAYED_LIST [!CLASS_C]): ?E_FEATURE
+	find_ancestors_feature_internal (a_feature: attached E_FEATURE; a_class: attached CLASS_C; a_parent_name: detachable STRING_8; a_processed: attached ARRAYED_LIST [attached CLASS_C]): detachable E_FEATURE
 			-- Attepts to locate an ancestor feature. This also respects ancestor features for attributes.
 			--
 			-- `a_feature': The feature to locate a first parent from.
@@ -189,7 +248,7 @@ feature {NONE} -- Implementation: Query
 			l_parents := a_class.parents
 			if not l_parents.is_empty then
 				from l_parents.start until l_parents.after or Result /= Void or l_matched_parent loop
-					if {l_parent: CLASS_C} l_parents.item.associated_class and then not a_processed.has (l_parent) then
+					if attached l_parents.item.associated_class as l_parent and then not a_processed.has (l_parent) then
 							-- The parent class has not get been processed.
 						l_matched_parent := a_parent_name /= Void and then l_parent.name_in_upper.is_equal (a_parent_name)
 						if a_parent_name = Void or l_matched_parent then
@@ -214,8 +273,8 @@ feature {NONE} -- Implementation: Query
 			end
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -228,22 +287,22 @@ feature {NONE} -- Implementation: Query
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

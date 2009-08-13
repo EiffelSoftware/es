@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that specify visibility of classes."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ inherit
 
 feature -- Basic commands
 
-	update_visible (a_added_classes: DS_HASH_SET [CONF_CLASS]) is
+	update_visible (a_added_classes: DS_HASH_SET [CONF_CLASS])
 			-- Update visible options on classes.
 		require
 			a_added_classes_not_void: a_added_classes /= Void
@@ -36,11 +36,11 @@ feature -- Basic commands
 					if l_map.has_key (l_name) then
 						l_name := l_map.found_item
 					end
-					l_vis := visible.item_for_iteration.item
 					l_class := classes.item (l_name)
 					if l_class = Void then
 						last_warnings.force (create {CONF_ERROR_VISI}.make (l_name))
 					else
+						l_vis := visible.item_for_iteration.item
 						l_class.add_visible (l_vis)
 						if l_class.is_error then
 							l_error := True
@@ -70,7 +70,7 @@ feature {CONF_ACCESS} -- Access, stored in configuration file
 
 feature {CONF_ACCESS} -- Update, stored to configuration file
 
-	set_visible (a_visible: like visible) is
+	set_visible (a_visible: like visible)
 			-- Set `visible' to `a_visible'.
 		do
 			visible := a_visible
@@ -78,7 +78,7 @@ feature {CONF_ACCESS} -- Update, stored to configuration file
 			visible_set: visible = a_visible
 		end
 
-	add_visible (a_class, a_feature, a_class_rename, a_feature_rename: STRING) is
+	add_visible (a_class, a_feature, a_class_rename, a_feature_rename: STRING)
 			-- Add a visible.
 		require
 			a_class_ok: a_class /= Void and then not a_class.is_empty
@@ -135,18 +135,18 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
-	classes: HASH_TABLE [CONF_CLASS, STRING] is
+	classes: HASH_TABLE [CONF_CLASS, STRING]
 			-- List of classes.
 		deferred
 		end
 
-	set_error (an_error: CONF_ERROR) is
+	set_error (an_error: CONF_ERROR)
 			-- Set `an_error'.
 		deferred
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -159,21 +159,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

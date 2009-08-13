@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -22,7 +22,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_file: FILE) is
+	make (a_file: FILE)
 			-- Copy all information from argument
 			-- OR KEEP A REFERENCE?
 		do
@@ -50,54 +50,54 @@ feature -- Properties
 --			Result := class_i.cluster
 --		end
 --
-	stone_cursor: EV_POINTER_STYLE is
+	stone_cursor: EV_POINTER_STYLE
 			-- Cursor associated with Current stone during transport
 			-- when widget at cursor position is compatible with Current stone
 		once
 			Result := Cursors.cur_Class
 		end
 
-	x_stone_cursor: EV_POINTER_STYLE is
+	x_stone_cursor: EV_POINTER_STYLE
 			-- Cursor associated with Current stone during transport
 			-- when widget at cursor position is not compatible with Current stone
 		once
 			Result := Cursors.cur_X_Class
 		end
 
-	file_name: FILE_NAME is
+	file_name: STRING
 			-- File associated with `file'.
 		do
-			create Result.make_from_string (file.name)
+			Result := file.name.twin
 		end
 
-	stone_signature: STRING is
+	stone_signature: STRING
 		do
 			Result := file.name
 		end
 
-	history_name: STRING is
+	history_name: STRING
 		do
 			Result := Interface_names.s_Class_stone.as_string_32 + stone_signature
 		end
 
-	same_as (other: STONE): BOOLEAN is
+	same_as (other: STONE): BOOLEAN
 			-- Do `Current' and `other' represent the same class?
 		do
-			Result := {convcur: EXTERNAL_FILE_STONE} other and then file.is_equal (convcur.file)
+			Result := attached {EXTERNAL_FILE_STONE} other as convcur and then file.is_equal (convcur.file)
 		end
 
 feature -- Access
 
 	file: FILE
 
-	header: STRING_GENERAL is
+	header: STRING_GENERAL
 			-- Display class name, class' cluster and class location in
 			-- window title bar.
 		do
 			Result := interface_names.l_not_eiffel_class_file (stone_signature, file.name)
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is `Current' a valid stone?
 		do
 			Result := file /= Void
@@ -133,10 +133,10 @@ feature -- Access
 --
 --	actual_class_i: CLASS_I
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -147,19 +147,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

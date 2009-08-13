@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that contains information about a process from system snapshot"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -14,7 +14,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (pid, ppid: INTEGER; thr_count: INTEGER; pri_base: INTEGER_64; exe: STRING) is
+	make (pid, ppid: INTEGER; thr_count: INTEGER; pri_base: INTEGER_64; exe: STRING)
 			-- Use process id `pid', parent process id `ppid', thread count `thr_count',
 			-- priority class base in `pribase' and executable file name `exe'
 			-- to initialize this object.
@@ -48,15 +48,14 @@ invariant
 	parent_process_id_non_negative: parent_process_id >= 0
 	thread_count_positive: thread_count > 0
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 end

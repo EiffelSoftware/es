@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Abstaction for a widget representing a particular preference.%
 		%Used for reading and writing preference values.  Actual interface is `change_item_widget'. To%
 		%create an custom interface redefine this."
@@ -12,19 +12,14 @@ deferred class
 
 feature {NONE} -- Initialization
 
-	make is
-			-- Create
-		do
-			create change_actions
-		end
-
-	make_with_preference (a_preference: like preference) is
+	make_with_preference (a_preference: like preference)
 			-- Make with values from `a_preference'.
 		require
 			preference_not_void: a_preference /= Void
 		do
-			make
+			create change_actions
 			set_preference (a_preference)
+			build_change_item_widget
 		ensure
 			has_preference: preference /= Void
 		end
@@ -34,34 +29,30 @@ feature -- Access
 	change_item_widget: EV_GRID_ITEM
 			-- Widget to change the item.
 
-	caller: PREFERENCE_VIEW
+	caller: detachable PREFERENCE_VIEW note option: stable attribute end
 			-- Caller view to which this preference widget currently belongs.
 
 	preference: PREFERENCE
 			-- Actual preference associated to the widget.
 
-	graphical_type: STRING is
+	graphical_type: STRING
 			-- Graphical type identifier.
 		deferred
 		end
 
 feature -- Basic operations
 
-	set_preference (new_preference: like preference) is
+	set_preference (new_preference: like preference)
 			-- Set the preference.
 		require
 			preference_not_void: new_preference /= Void
 		do
 			preference := new_preference
-
-			if change_item_widget = Void then
-				build_change_item_widget
-			end
 		ensure
 			preference_set: preference = new_preference
 		end
 
-	set_caller (a_caller: like caller) is
+	set_caller (a_caller: like caller)
 			-- Set the view this widget belongs to.
 		require
 			caller_not_void: a_caller /= Void
@@ -71,31 +62,31 @@ feature -- Basic operations
 			caller_set: caller = a_caller
 		end
 
-	destroy is
+	destroy
 			-- Destroy all graphical objects.
 		do
-			if change_item_widget /= Void then
-				change_item_widget.destroy
+			if attached change_item_widget as w then
+				w.destroy
 			end
 		end
 
-	update_changes is
+	update_changes
 			-- Update the changes made in `change_item_widget' to `preference'.
 		do
 			change_actions.call ([preference])
 		end
 
-	update_preference is
+	update_preference
 			-- Update the changes made in `change_item_widget' to `preference'.
 		deferred
 		end
 
-	refresh is
+	refresh
 			-- Refresh preference widget to current value
 		do
 		end
 
-	show is
+	show
 			-- Show the widget in its editable state
 		deferred
 		end
@@ -107,7 +98,7 @@ feature -- Actions
 
 feature {NONE} -- Implementation
 
-	build_change_item_widget is
+	build_change_item_widget
 				-- Create and setup `change_item_widget'.
 		deferred
 		ensure
@@ -117,15 +108,15 @@ feature {NONE} -- Implementation
 invariant
 	has_widget: preference /= Void implies change_item_widget /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

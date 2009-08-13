@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tool that displays objects"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,7 +14,7 @@ inherit
 		redefine
 			create_mini_tool_bar_items,
 			on_before_initialize,
-			build_docking_content,
+			on_after_initialized,
 			show, close
 		end
 
@@ -44,7 +44,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_command (cmd: EB_OBJECT_VIEWER_COMMAND; a_manager: EB_DEVELOPMENT_WINDOW; a_tool: like tool_descriptor) is
+	make_with_command (cmd: EB_OBJECT_VIEWER_COMMAND; a_manager: EB_DEVELOPMENT_WINDOW; a_tool: like tool_descriptor)
 		require
 			cmd_attached: cmd /= Void
 			a_manager_attached: a_manager /= Void
@@ -55,18 +55,53 @@ feature {NONE} -- Initialization
 			make (a_manager, a_tool)
 		end
 
-	on_before_initialize is
+feature {NONE} -- Initialization: User interface
+
+	build_tool_interface (a_widget: EV_VERTICAL_BOX)
+			-- <Precursor>
+		do
+			a_widget.extend (viewers_manager.widget)
+		end
+
+	on_before_initialize
 			-- <Precursor>
 		do
 			Precursor
+
 			create viewers_manager.make_for_tool (Current)
 			viewers_manager.viewer_changed_actions.extend (agent update_viewers_selector)
 		end
 
-	build_tool_interface (a_widget: EV_VERTICAL_BOX) is
+	on_after_initialized
 			-- <Precursor>
 		do
-			a_widget.extend (viewers_manager.widget)
+			Precursor
+
+				-- FIXME: Tool should be refactored to implement {ES_DOCKABLE_STONEABLE_TOOL_PANEL}
+			register_action (content.drop_actions, agent set_stone)
+			content.drop_actions.set_veto_pebble_function (agent is_stone_valid)
+		end
+
+feature -- Access: Help
+
+	help_context_id: STRING
+			-- <Precursor>
+		once
+			Result := "62002CE3-37F9-22DE-39F0-0930468A67BE"
+		end
+
+feature {NONE} -- Factory
+
+    create_widget: EV_VERTICAL_BOX
+            -- Create a new container widget upon request.
+            -- Note: You may build the tool elements here or in `build_tool_interface'
+        do
+        	Create Result
+        end
+
+	create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			-- Retrieves a list of tool bar items to display at the top of the tool.
+		do
 		end
 
     create_mini_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
@@ -97,37 +132,7 @@ feature {NONE} -- Initialization
 			update_viewers_selector (Void)
 		end
 
-	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
-		do
-			Precursor (a_docking_manager)
-			check content_not_void : content /= Void end
-			content.drop_actions.extend (agent set_stone)
-			content.drop_actions.set_veto_pebble_function (agent is_stone_valid)
-		end
-
-feature -- Access: Help
-
-	help_context_id: !STRING_GENERAL
-			-- <Precursor>
-		once
-			Result := "62002CE3-37F9-22DE-39F0-0930468A67BE"
-		end
-
-feature {NONE} -- Factory
-
-    create_widget: EV_VERTICAL_BOX
-            -- Create a new container widget upon request.
-            -- Note: You may build the tool elements here or in `build_tool_interface'
-        do
-        	Create Result
-        end
-
-	create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
-			-- Retrieves a list of tool bar items to display at the top of the tool.
-		do
-		end
-
-feature -- Properties
+feature -- Access: User interface elements
 
 	command: EB_OBJECT_VIEWER_COMMAND
 
@@ -141,7 +146,7 @@ feature -- Properties
 
 feature -- change
 
-	reset_tool is
+	reset_tool
 		do
 			reset_update_on_idle
 			if viewers_manager /= Void then
@@ -154,7 +159,7 @@ feature -- change
 
 feature -- Events
 
-	open_viewer_selector_menu (ax, ay, abutton: INTEGER; ax_tilt, ay_tilt, apressure: DOUBLE; ascreen_x, ascreen_y: INTEGER) is
+	open_viewer_selector_menu (ax, ay, abutton: INTEGER; ax_tilt, ay_tilt, apressure: DOUBLE; ascreen_x, ascreen_y: INTEGER)
 		local
 			m: EV_MENU
 		do
@@ -164,7 +169,7 @@ feature -- Events
 			end
 		end
 
-	update_viewers_selector	(viewer: EB_OBJECT_VIEWER) is
+	update_viewers_selector	(viewer: EB_OBJECT_VIEWER)
 		local
 			v: EB_OBJECT_VIEWER
 		do
@@ -189,7 +194,7 @@ feature -- Events
 			end
 		end
 
-	replace_cell_content (cl: EV_CELL; w: EV_WIDGET) is
+	replace_cell_content (cl: EV_CELL; w: EV_WIDGET)
 			--
 		local
 			p: EV_CONTAINER
@@ -201,22 +206,22 @@ feature -- Events
 			cl.replace (w)
 		end
 
-	is_stone_valid (a_stone: ANY): BOOLEAN is
+	is_stone_valid (a_stone: ANY): BOOLEAN
 			-- Is stone `a_stone' valid ?
 		do
 			Result := viewers_manager /= Void and
-					({ost: OBJECT_STONE} a_stone and then viewers_manager.is_stone_valid (ost))
+					(attached {OBJECT_STONE} a_stone as ost and then viewers_manager.is_stone_valid (ost))
 		end
 
-	set_stone (a_stone: STONE) is
+	set_stone (a_stone: STONE)
 			--	Stone dropped
 		do
-			if {ost: OBJECT_STONE} a_stone then
+			if attached {OBJECT_STONE} a_stone as ost then
 				viewers_manager.set_stone (ost)
 			end
 		end
 
-	refresh is
+	refresh
 			-- Class has changed in `development_window'.
 		do
 			if viewers_manager /= Void then
@@ -224,7 +229,7 @@ feature -- Events
 			end
 		end
 
-	show is
+	show
 			-- Show tool.
 		local
 			w: EV_WIDGET
@@ -237,13 +242,13 @@ feature -- Events
 			refresh
 		end
 
-	close is
+	close
 		do
 			Precursor
 			viewers_manager.reset
 		end
 
-	close_tool is
+	close_tool
 		do
 			close
 			recycle
@@ -261,18 +266,18 @@ feature -- Events
 
 feature {NONE} -- Update
 
-	on_update_when_application_is_executing (dbg_stopped: BOOLEAN) is
+	on_update_when_application_is_executing (dbg_stopped: BOOLEAN)
 			-- Update when debugging
 		do
 		end
 
-	on_update_when_application_is_not_executing is
+	on_update_when_application_is_not_executing
 			-- Update when not debugging
 		do
 			viewers_manager.clear
 		end
 
-	real_update (dbg_was_stopped: BOOLEAN) is
+	real_update (dbg_was_stopped: BOOLEAN)
 			-- Display current execution status.
 			-- dbg_was_stopped is ignore if Application/Debugger is not running
 		do
@@ -281,7 +286,7 @@ feature {NONE} -- Update
 
 feature -- Label management
 
-	new_clickable_label (a_text: STRING_GENERAL): EV_LABEL is
+	new_clickable_label (a_text: STRING_GENERAL): EV_LABEL
 		local
 			default_font, big_font: EV_FONT
 		do
@@ -296,7 +301,7 @@ feature -- Label management
 			Result.set_minimum_width (maximum_label_width (Result.text, default_font, big_font))
 		end
 
-	highlight_label (lab: EV_LABEL; default_font, big_font: EV_FONT) is
+	highlight_label (lab: EV_LABEL; default_font, big_font: EV_FONT)
 			-- Display `lab' with a bold font.
 			-- (export status {NONE})
 		local
@@ -307,14 +312,14 @@ feature -- Label management
 			lab.set_font (a_font)
 		end
 
-	unhighlight_label (lab: EV_LABEL; default_font, big_font: EV_FONT) is
+	unhighlight_label (lab: EV_LABEL; default_font, big_font: EV_FONT)
 			-- Display `lab' with a bold font.
 			-- (export status {NONE})
 		do
 			lab.set_font (default_font)
 		end
 
-	maximum_label_width (a_text: STRING_GENERAL; default_font, big_font: EV_FONT): INTEGER is
+	maximum_label_width (a_text: STRING_GENERAL; default_font, big_font: EV_FONT): INTEGER
 			-- Maximum width of a label when set with text `a_text'
 			-- (export status {NONE})
 		require
@@ -325,13 +330,13 @@ feature -- Label management
 
 feature -- Memory management
 
-	is_destroyed: BOOLEAN is
+	is_destroyed: BOOLEAN
 		do
 			Result := widget = Void or else widget.is_destroyed
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -344,22 +349,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

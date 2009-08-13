@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		IO exception
 		]"
@@ -34,14 +34,19 @@ create
 	default_create
 
 create
-	{EXCEPTION_MANAGER}make_dotnet_exception
+	{EXCEPTION_MANAGER} make_dotnet_exception
 
 feature -- Access
 
-	frozen code: INTEGER is
+	frozen code: INTEGER
 			-- Exception code
 		do
-			Result := {EXCEP_CONST}.io_exception
+			if internal_code = {EXCEP_CONST}.Io_exception then
+				Result := internal_code
+			else
+					-- Default to `Runtime_io_exception'.
+				Result := {EXCEP_CONST}.Runtime_io_exception
+			end
 		end
 
 	error_code: INTEGER
@@ -49,17 +54,26 @@ feature -- Access
 
 feature {EXCEPTION_MANAGER} -- Status setting
 
-	set_Error_code (a_code: like Error_code) is
-			-- Set `Error_code' with `a_code'
+	set_error_code (a_code: like error_code)
+			-- Set `error_code' with `a_code'
 		do
-			Error_code := a_code
+			error_code := a_code
+		end
+
+	set_code (a_code: like code)
+			-- Set `code' with `a_code'.
+		do
+			internal_code := code
 		end
 
 feature {NONE} -- Accesss
 
-	frozen internal_meaning: STRING is "I/O error.";
+	frozen internal_meaning: STRING = "I/O error."
 
-indexing
+	internal_code: like code;
+			-- Internal code
+
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

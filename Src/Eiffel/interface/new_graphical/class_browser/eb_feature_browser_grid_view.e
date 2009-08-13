@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Feature browser to display information"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,7 +12,6 @@ class
 inherit
 	EB_CLASS_BROWSER_GRID_VIEW [EB_FEATURE_BROWSER_GRID_ROW]
 		redefine
-			make,
 			data,
 			recycle_agents,
 			default_ensure_visible_action
@@ -22,14 +21,6 @@ inherit
 
 create
 	make
-
-feature{NONE} -- Initialization
-
-	make (a_dev_window: like development_window; a_drop_actions: like drop_actions) is
-			-- Initialize.
-		do
-			Precursor (a_dev_window, a_drop_actions)
-		end
 
 feature -- Status report
 
@@ -46,7 +37,7 @@ feature -- Status report
 	is_version_from_displayed: BOOLEAN
 			-- Is message "version from" displayed?
 
-	should_tooltip_be_displayed: BOOLEAN is
+	should_tooltip_be_displayed: BOOLEAN
 			-- Should tooltip display be vetoed?
 		do
 			Result := show_tooltip_button.is_selected
@@ -54,7 +45,7 @@ feature -- Status report
 			good_result: Result = show_tooltip_button.is_selected
 		end
 
-	is_last_sorted_column_valid (a_column_index: INTEGER): BOOLEAN is
+	is_last_sorted_column_valid (a_column_index: INTEGER): BOOLEAN
 			-- Is last sorted column valid?
 			-- Last sorted column may become invalid because columns in grid changes.
 		do
@@ -63,7 +54,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_is_written_class_used (b: BOOLEAN) is
+	set_is_written_class_used (b: BOOLEAN)
 			-- Set `is_written_class_used' with `b'.
 		do
 			is_written_class_used := b
@@ -71,7 +62,7 @@ feature -- Setting
 			is_written_class_used_set: is_written_class_used = b
 		end
 
-	set_is_branch_id_used (b: BOOLEAN) is
+	set_is_branch_id_used (b: BOOLEAN)
 			-- Set `is_branch_id_used' with `b'.
 		do
 			is_branch_id_used := b
@@ -79,7 +70,7 @@ feature -- Setting
 			is_branch_id_used_set: is_branch_id_used = b
 		end
 
-	set_is_signature_displayed (b: BOOLEAN) is
+	set_is_signature_displayed (b: BOOLEAN)
 			-- Set `is_signature_displayed' with `b'.
 		do
 			is_signature_displayed := b
@@ -87,7 +78,7 @@ feature -- Setting
 			is_signature_displayed_set: is_signature_displayed = b
 		end
 
-	set_is_version_from_displayed (b: BOOLEAN) is
+	set_is_version_from_displayed (b: BOOLEAN)
 			-- Set `is_version_from_displayed' with `b'.
 		do
 			is_version_from_displayed := b
@@ -95,7 +86,7 @@ feature -- Setting
 			is_version_from_displayed_set: is_version_from_displayed = b
 		end
 
-	set_feature_item (a_feature: like feature_item) is
+	set_feature_item (a_feature: like feature_item)
 			-- Set `feature_item' with `a_feature'.
 		require
 			a_feature_attached: a_feature /= Void
@@ -105,7 +96,7 @@ feature -- Setting
 			feature_item_set: feature_item = a_feature
 		end
 
-	rebuild_interface is
+	rebuild_interface
 			-- Rebuild interface
 		local
 			l_written_class_sort_info: EVS_GRID_THREE_WAY_SORTING_INFO [EB_FEATURE_BROWSER_GRID_ROW]
@@ -124,7 +115,7 @@ feature -- Setting
 
 feature -- Actions
 
-	on_key_pressed (a_key: EV_KEY) is
+	on_key_pressed (a_key: EV_KEY)
 			-- Action to be performed when some key is pressed in `grid'
 		require
 			a_key_attached: a_key /= Void
@@ -134,19 +125,19 @@ feature -- Actions
 			l_processed := on_predefined_key_pressed (a_key)
 		end
 
-	on_expand_all_level is
+	on_expand_all_level
 			-- Action to be performed to recursively expand all selected rows.
 		do
 			do_all_in_items (grid.selected_items, agent expand_item)
 		end
 
-	on_collapse_all_level is
+	on_collapse_all_level
 			-- Action to be performed to recursively collapse all selected rows.
 		do
 			do_all_in_items (grid.selected_items, agent collapse_item)
 		end
 
-	on_expand_one_level is
+	on_expand_one_level
 			-- Action to be performed to expand all selected rows.
 		local
 			l_selected_items: LIST [EV_GRID_ITEM]
@@ -168,7 +159,7 @@ feature -- Actions
 			end
 		end
 
-	on_collapse_one_level is
+	on_collapse_one_level
 			-- Action to be performed to collapse all selected rows.
 		local
 			l_selected_items: LIST [EV_GRID_ITEM]
@@ -194,7 +185,7 @@ feature -- Actions
 
 feature -- Access
 
-	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
+	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Widget of a control bar through which, certain control can be performed upon current view
 		do
 			if control_tool_bar = Void then
@@ -212,7 +203,7 @@ feature -- Access
 
 feature{NONE} -- Initialization
 
-	bind_grid is
+	bind_grid
 			-- Bind `grid'.
 		local
 			l_rows: like rows
@@ -262,7 +253,7 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	build_grid is
+	build_grid
 			-- Build `grid'.
 		do
 			create grid
@@ -278,14 +269,11 @@ feature{NONE} -- Initialization
 			grid.enable_tree
 			grid.enable_multiple_item_selection
 			grid.key_press_actions.extend (agent on_key_pressed)
-			if drop_actions /= Void then
-				grid.drop_actions.fill (drop_actions)
-			end
 			enable_ctrl_right_click_to_open_new_window
 			enable_grid_item_pnd_support
 		end
 
-	build_sortable_and_searchable is
+	build_sortable_and_searchable
 			-- Build facilities to support sort and search
 		local
 			l_class_sort_info: EVS_GRID_THREE_WAY_SORTING_INFO [EB_FEATURE_BROWSER_GRID_ROW]
@@ -315,7 +303,7 @@ feature{NONE} -- Initialization
 
 feature -- Notification
 
-	provide_result is
+	provide_result
 			-- Provide result displayed in Current view.
 		do
 			fill_rows
@@ -339,7 +327,7 @@ feature -- Notification
 			end
 		end
 
-	fill_rows is
+	fill_rows
 			-- Fill `rows' using `data'.
 		local
 			l_data: like data
@@ -388,7 +376,7 @@ feature -- Notification
 
 feature -- Visiability
 
-	default_ensure_visible_action (a_item: EVS_GRID_SEARCHABLE_ITEM; a_selected: BOOLEAN) is
+	default_ensure_visible_action (a_item: EVS_GRID_SEARCHABLE_ITEM; a_selected: BOOLEAN)
 			-- Ensure that `a_item' is visible.
 			-- If `a_selected' is True, make sure that `a_item' is in its selected status.
 		local
@@ -413,16 +401,16 @@ feature -- Visiability
 
 feature{NONE} -- Sorting
 
-	class_column: INTEGER is 1
+	class_column: INTEGER = 1
 			-- Column index for class
 
-	feature_column: INTEGER is 2
+	feature_column: INTEGER = 2
 			-- Column index for feature
 
-	written_class_column: INTEGER is 3
+	written_class_column: INTEGER = 3
 			-- Column index for written class
 
-	feature_name_tester (row_a, row_b: EB_FEATURE_BROWSER_GRID_ROW; a_order: INTEGER): BOOLEAN is
+	feature_name_tester (row_a, row_b: EB_FEATURE_BROWSER_GRID_ROW; a_order: INTEGER): BOOLEAN
 			-- Compare `row_a' and `row_b' ascendingly.
 		require
 			row_a_valid: row_a /= Void
@@ -439,7 +427,7 @@ feature{NONE} -- Sorting
 			end
 		end
 
-	class_tester (row_a, row_b: EB_FEATURE_BROWSER_GRID_ROW; a_order: INTEGER): BOOLEAN is
+	class_tester (row_a, row_b: EB_FEATURE_BROWSER_GRID_ROW; a_order: INTEGER): BOOLEAN
 			-- Compare `row_a' and `row_b' ascendingly.
 		require
 			row_a_valid: row_a /= Void
@@ -465,7 +453,7 @@ feature{NONE} -- Sorting
 			end
 		end
 
-	written_class_tester (row_a, row_b: EB_FEATURE_BROWSER_GRID_ROW; a_order: INTEGER): BOOLEAN is
+	written_class_tester (row_a, row_b: EB_FEATURE_BROWSER_GRID_ROW; a_order: INTEGER): BOOLEAN
 			-- Compare `row_a' and `row_b' ascendingly.
 		require
 			row_a_valid: row_a /= Void
@@ -491,7 +479,7 @@ feature{NONE} -- Sorting
 			end
 		end
 
-	sort_agent (a_column_list: LIST [INTEGER]; a_comparator: AGENT_LIST_COMPARATOR [EB_FEATURE_BROWSER_GRID_ROW]) is
+	sort_agent (a_column_list: LIST [INTEGER]; a_comparator: AGENT_LIST_COMPARATOR [EB_FEATURE_BROWSER_GRID_ROW])
 			-- Action to be performed when sort `a_column_list' using `a_comparator'.
 		require
 			a_column_list_attached: a_column_list /= Void
@@ -506,7 +494,7 @@ feature{NONE} -- Sorting
 
 feature -- Recyclable
 
-	recycle_agents is
+	recycle_agents
 			-- Recyclable
 		do
 			Precursor {EB_CLASS_BROWSER_GRID_VIEW}
@@ -517,7 +505,7 @@ feature{NONE} -- Implementation
 	data: QL_FEATURE_DOMAIN
 			-- Data to be displayed
 
-	rows: DS_ARRAYED_LIST [EB_FEATURE_BROWSER_GRID_ROW] is
+	rows: DS_ARRAYED_LIST [EB_FEATURE_BROWSER_GRID_ROW]
 			-- Rows to be displayed
 		do
 			if rows_internal = Void then
@@ -534,7 +522,7 @@ feature{NONE} -- Implementation
 	control_tool_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Implementation of `control_bar'
 
-	branch_item (a_branch_id: INTEGER): EB_GRID_EDITOR_TOKEN_ITEM is
+	branch_item (a_branch_id: INTEGER): EB_GRID_EDITOR_TOKEN_ITEM
 			-- A grid item to display branch id
 		do
 			create Result
@@ -545,7 +533,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	branch_item_style: EB_TEXT_EDITOR_TOKEN_STYLE is
+	branch_item_style: EB_TEXT_EDITOR_TOKEN_STYLE
 			-- Style to generate editor tokens for branch items
 		once
 			create Result
@@ -553,7 +541,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	expand_item (a_item: EV_GRID_ITEM) is
+	expand_item (a_item: EV_GRID_ITEM)
 			-- Expand `a_item'.
 		require
 			a_item_attached: a_item /= Void
@@ -566,7 +554,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	collapse_item (a_item: EV_GRID_ITEM) is
+	collapse_item (a_item: EV_GRID_ITEM)
 			-- Collapse `a_item'.
 		require
 			a_item_attached: a_item /= Void
@@ -581,43 +569,43 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation/Stone
 
-	item_to_put_in_editor: EV_GRID_ITEM is
+	item_to_put_in_editor: EV_GRID_ITEM
 			-- Grid item which may contain a stone to put into editor
 			-- Void if no satisfied item is found.			
 		do
 			Result := item_to_put_in_editor_for_single_item_grid
 		end
 
-indexing
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+        copyright:	"Copyright (c) 1984-2009, Eiffel Software"
         license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
         licensing_options:	"http://www.eiffel.com/licensing"
         copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
         source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

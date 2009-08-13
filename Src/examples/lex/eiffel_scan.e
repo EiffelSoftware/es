@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Example of a lexical analyzer based on the Eiffel syntax.
@@ -9,44 +9,37 @@ indexing
 class EIFFEL_SCAN
 
 inherit
-
 	SCANNING
 		rename
 			make as scanning_make
+		redefine
+			analyze
 		end;
 
-	ARGUMENTS
-		undefine
-			copy, is_equal
-		end
-
 create
-
 	make
 
-feature 
+feature {NONE} -- Initialization
 
-	make is
-			-- Create a lexical analyser for Eiffel if none,
-			-- then use it to analyze the file of name
-			-- `file_name'.
-		local
-			file_name: STRING;
+	make
+			-- Create a lexical analyser for Eiffel,
 		do
-			if argument_count < 1 then
-				io.error.putstring ("Usage: eiffel_scan eiffel_class_file.e%N")
-			else
-				file_name := argument (1);
-				scanning_make;
-				build ("eiffel_lex", "eiffel_regular");
-				io.putstring ("Scanning file `");
-				io.putstring (file_name);
-				io.putstring ("'.%N");
-				analyze (file_name)
-			end
-		end -- make
+			scanning_make;
+			build ("eiffel_lex", "eiffel_regular");
+		end
 
-indexing
+feature -- Basic operations
+
+	analyze (file_name: STRING)
+			-- <Precursor>
+		do
+			io.putstring ("Scanning file `");
+			io.putstring (file_name);
+			io.putstring ("'.%N");
+			Precursor (file_name)
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

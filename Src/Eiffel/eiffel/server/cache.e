@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Cache for data, the index is an integer number"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -8,7 +8,7 @@ indexing
 class CACHE [T -> IDABLE]
 
 inherit
-	TO_SPECIAL [ARRAY [H_CELL[T]]]
+	TO_SPECIAL [detachable ARRAY [H_CELL[T]]]
 
 	SHARED_CONFIGURE_RESOURCES
 
@@ -17,69 +17,23 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 			-- Creates a table of Cache_size hash_entry
 		local
-			i: INTEGER
-			array: ARRAY [H_CELL[T]]
 			s: INTEGER
 		do
 			s := Cache_size
 			count := 0
 			size := s
-			make_area (s)
-			create array_count.make (0, s - 1)
-			create history.make (s)
-			create index.make (0, s - 1)
-			from
-			until
-				i = s
-			loop
-				create array.make (1, 5)
-				area.put (array, i)
-				i := i + 1
-			end
+			set_internal_items (s)
 		end
-
-	cache_size: INTEGER is
-			-- Cache size
-		local
-			s: STRING
-			l_int: INTERNAL
-		do
-			create l_int
-			if l_int.generic_count (Current) > 0 then
-				s := l_int.class_name_of_type (l_int.generic_dynamic_type (Current, 1))
-			else
-				s := generator
-			end
-			s.to_lower
-			Result := Configure_resources.get_integer (s, default_value)
-
-			debug ("CACHE_SERVER")
-				io.error.put_string ("Size of ")
-				io.error.put_string (generator)
-				io.error.put_string (" is ")
-				io.error.put_integer (Result)
-				io.error.put_new_line
-			end
-		end;
-
-	default_value: INTEGER is
-			-- Default value of cache
-		do
-			Result :=  Configure_resources.get_integer (r_Cache_size, 20)
-		end;
-
-	Default_size: INTEGER
-			-- Default cache size
 
 	array_count: ARRAY [INTEGER]
 		-- number of element in each sub-array
 
 feature -- Cache manipulations
 
-	has_id (id: INTEGER): BOOLEAN is
+	has_id (id: INTEGER): BOOLEAN
 			-- Is an item of id `i' in the cache ?
 		require
 			not_void: id /= 0
@@ -147,7 +101,7 @@ feature -- Cache manipulations
 			end
 		end
 
-	item_id (id: INTEGER): T is
+	item_id (id: INTEGER): T
 			-- Item which id is `an_id'
 			-- Void if not found
 		require
@@ -225,7 +179,7 @@ feature -- Cache manipulations
 			end
 		end
 
-	remove_id (id: INTEGER) is
+	remove_id (id: INTEGER)
 			-- Remove item of id `i' form cache.
 			-- better use force instead
 		require
@@ -267,7 +221,7 @@ feature -- Cache manipulations
 			end
 		end
 
-	force (e: T) is
+	force (e: T)
 			-- like put if full remove an element
 			-- to put our new one
 		require
@@ -299,19 +253,19 @@ feature -- Cache manipulations
 			l_array.put (h_cell, t + 1)
 		end
 
-	is_full: BOOLEAN is
+	is_full: BOOLEAN
 			-- is the cache full ?
 		do
 			Result := count >= size
 		end
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- is the cache empty ?
 		do
 			Result := count = 0
 		end
 
-	clear_all, wipe_out is
+	clear_all, wipe_out
 			-- wipe all out
 		local
 			s: INTEGER
@@ -330,7 +284,7 @@ feature -- Cache manipulations
 			after := True
 		end
 
-	change_last_item (e: T) is
+	change_last_item (e: T)
 			-- make e take the place of the last item consulted
 		local
 			tmp: H_CELL[T]
@@ -357,7 +311,7 @@ feature -- Cache manipulations
 
 feature -- linear iteration
 
-	start is
+	start
 			-- put item_for_iteration on the first element of the cache
 		local
 			item_array: INTEGER
@@ -385,7 +339,7 @@ feature -- linear iteration
 
 	after: BOOLEAN
 
-	forth is
+	forth
 			-- put item_for_iteration on the next element of the cache
 		local
 			item_array, item_number, limit: INTEGER
@@ -424,13 +378,63 @@ feature -- linear iteration
 			end
 		end
 
-	item_for_iteration: T is
+	item_for_iteration: T
 			-- give the item in a linear ?????
 		do
 			Result := last_item_array.item (last_item_pos).item
 		end
 
-feature {NONE}
+feature {NONE} -- Implementation
+
+	set_internal_items (s: INTEGER)
+			-- Set up items for `cache'.
+		local
+			i: INTEGER
+			array: ARRAY [H_CELL[T]]
+		do
+			make_filled_area (Void, s)
+			create array_count.make (0, s - 1)
+			create history.make (s)
+			create index.make (0, s - 1)
+			from
+			until
+				i = s
+			loop
+				create array.make (1, 5)
+				area.put (array, i)
+				i := i + 1
+			end
+		end
+
+	cache_size: INTEGER
+			-- Cache size
+		local
+			s: STRING
+			l_int: INTERNAL
+		do
+			create l_int
+			if l_int.generic_count (Current) > 0 then
+				s := l_int.class_name_of_type (l_int.generic_dynamic_type (Current, 1))
+			else
+				s := generator
+			end
+			s.to_lower
+			Result := Configure_resources.get_integer (s, default_value)
+
+			debug ("CACHE_SERVER")
+				io.error.put_string ("Size of ")
+				io.error.put_string (generator)
+				io.error.put_string (" is ")
+				io.error.put_integer (Result)
+				io.error.put_new_line
+			end
+		end;
+
+	default_value: INTEGER
+			-- Default value of cache
+		do
+			Result :=  Configure_resources.get_integer (r_Cache_size, 20)
+		end;
 
 	last_item_array: ARRAY [H_CELL[T]]
 		-- the array in which the last searched item
@@ -445,7 +449,7 @@ feature {NONE}
 
 feature {NONE} -- to implement force
 
-	internal_remove (e: T) is
+	internal_remove (e: T)
 			-- Remove item of id `i' from cache.
 			-- but do not touch to history nor count
 		require
@@ -515,7 +519,7 @@ feature {NONE} -- statistics
 	success: REAL;
 		-- proportion of successful researchs in the cache
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

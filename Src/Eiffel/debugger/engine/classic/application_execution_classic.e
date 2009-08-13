@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Controls execution of classic debugged application."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -48,7 +48,7 @@ create {DEBUGGER_MANAGER}
 
 feature {NONE} -- Initialization
 
-	make_with_debugger (dbg: like debugger_manager) is
+	make_with_debugger (dbg: like debugger_manager)
 			-- Instanciate Current with `dbg'
 		local
 			l_ipc: like ipc_engine
@@ -67,13 +67,13 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- IPC implementation
 
-	ipc_engine: IPC_ENGINE is
+	ipc_engine: IPC_ENGINE
 			-- IPC engine, used to control the ecdbgd debugger daemon.
 		do
 			Result := Ipc_engine_cell.item
 		end
 
-	Ipc_engine_cell: CELL [IPC_ENGINE] is
+	Ipc_engine_cell: CELL [IPC_ENGINE]
 			-- cell containing `ipc_engine'.
 		once
 			create Result.put (Void)
@@ -81,7 +81,7 @@ feature {NONE} -- IPC implementation
 
 feature -- recycling data
 
-	recycle is
+	recycle
 			-- Recycle
 		do
 			once_request.recycle
@@ -90,7 +90,7 @@ feature -- recycling data
 
 feature {DEAD_HDLR, RUN_REQUEST} -- Status
 
-	build_status is
+	build_status
 			-- Build associated `status'
 			-- (ie: the application is running)
 		do
@@ -102,7 +102,7 @@ feature -- Properties
 	status: APPLICATION_STATUS_CLASSIC
 			-- Status of the running dotnet application
 
-	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN is
+	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN
 			-- <Precursor>
 		do
 			Result := Precursor (addr) and then is_object_kept (addr)
@@ -110,7 +110,7 @@ feature -- Properties
 
 feature -- Execution
 
-	run_with_env_string (app, args, cwd: STRING; env: STRING_GENERAL) is
+	run_with_env_string (app, args, cwd: STRING; env: STRING_GENERAL)
 			-- Run application with arguments `args' in directory `cwd'.
 			-- If `is_running' is false after the
 			-- execution of this routine, it means that
@@ -131,10 +131,12 @@ feature -- Execution
 				run_request.set_arguments (args)
 				run_request.set_working_directory (cwd)
 				if env /= Void then
-					fixme ("[
-						Try to use UNICODE for environment variables in debugger. 
-						But for now the classic debugger would not allow that.
-						]")
+					debug ("refactor_fixme")
+						fixme ("[
+							Try to use UNICODE for environment variables in debugger. 
+							But for now the classic debugger would not allow that.
+							]")
+					end
 					l_env_s8 := env.as_string_8
 				end
 				run_request.set_environment_variables (l_env_s8)
@@ -148,7 +150,7 @@ feature -- Execution
 			end
 		end
 
-	continue_ignoring_kept_objects is
+	continue_ignoring_kept_objects
 			-- Continue the running of the application
 			-- before any debugger's operation occurred
 			-- so basically, we are sure we have the same `kept_objects'
@@ -158,13 +160,13 @@ feature -- Execution
 			cont_request.send_rqst_3_integer (Rqst_resume, Resume_cont, debugger_manager.interrupt_number, debugger_manager.critical_stack_depth)
 		end
 
-	process_before_resuming is
+	process_before_resuming
 			-- Operation to process before resuming
 		do
 			send_breakpoints
 		end
 
-	interrupt is
+	interrupt
 			-- Send an interrupt to the application
 			-- which will stop at the next breakable line number
 		do
@@ -172,7 +174,7 @@ feature -- Execution
 			ewb_request.send
 		end
 
-	request_debugger_data_update is
+	request_debugger_data_update
 			-- Request the application to pause, in order to update debugger data
 			-- such as new breakpoints, or other catcall detection,...
 			-- mainl for classic debugging
@@ -181,7 +183,7 @@ feature -- Execution
 			ewb_request.send
 		end
 
-	notify_breakpoints_change is
+	notify_breakpoints_change
 			-- Send an interrupt to the application
 			-- which will stop at the next breakable line number
 			-- in order to record the new breakpoint(s) before
@@ -190,7 +192,7 @@ feature -- Execution
 			request_debugger_data_update
 		end
 
-	kill is
+	kill
 			-- Ask the application to terminate itself.
 		do
 			ewb_request.make (Rqst_kill)
@@ -216,7 +218,7 @@ feature -- Execution
 			app_is_not_running: not is_running
 		end
 
-	clean_on_process_termination is
+	clean_on_process_termination
 			-- Process the termination of the executed
 			-- application. Also execute the `termination_command'.
 		do
@@ -224,7 +226,7 @@ feature -- Execution
 			release_all_objects
 		end
 
-	request_ipc_end_of_debugging is
+	request_ipc_end_of_debugging
 			-- Request ipc engine end of debugging
 		do
 			Ipc_engine.end_of_debugging
@@ -233,7 +235,7 @@ feature -- Execution
 
 feature -- Remote access to RT_
 
-	remote_rt_object: ABSTRACT_DEBUG_VALUE is
+	remote_rt_object: ABSTRACT_DEBUG_VALUE
 			-- Return the remote rt_object
 		do
 			ewb_request.send_rqst_1 (rqst_rt_operation, rtop_dump_object)
@@ -244,14 +246,14 @@ feature -- Remote access to RT_
 			ewb_request.reset_recv_value
 		end
 
-	activate_execution_replay_recording (b: BOOLEAN): BOOLEAN is
+	activate_execution_replay_recording (b: BOOLEAN): BOOLEAN
 			-- Activate Execution replay recording on debuggee depending of `b'
 		do
 			cont_request.send_rqst_3_integer (rqst_rt_operation, rtop_exec_replay, rtdbg_op_replay_record, b.to_integer)
 			Result := Precursor {APPLICATION_EXECUTION} (b)
 		end
 
-	remote_current_exception_value: EXCEPTION_DEBUG_VALUE is
+	remote_current_exception_value: EXCEPTION_DEBUG_VALUE
 			-- `{EXCEPTION_MANAGER}.last_exception' value.
 		do
 			send_rqst_0 (rqst_last_exception)
@@ -268,7 +270,7 @@ feature -- Remote access to RT_
 
 feature {NONE} -- Breakpoints implementation
 
-	send_breakpoints_for_stepping (a_execution_mode: INTEGER; ign_bp: BOOLEAN) is
+	send_breakpoints_for_stepping (a_execution_mode: INTEGER; ign_bp: BOOLEAN)
 			-- Send breakpoints for step operation
 			-- called by `send_breakpoints'
 			-- DO NOT CALL DIRECTLY
@@ -277,7 +279,7 @@ feature {NONE} -- Breakpoints implementation
 			ewb_request.send_breakpoints_for_stepping (Current, a_execution_mode)
 		end
 
-	send_no_breakpoints is
+	send_no_breakpoints
 			-- Application execution without any breakpoint
 		local
 			bps: BREAK_LIST
@@ -306,14 +308,14 @@ feature {NONE} -- Breakpoints implementation
 			end
 		end
 
-	set_application_breakpoint (loc: BREAKPOINT_LOCATION) is
+	set_application_breakpoint (loc: BREAKPOINT_LOCATION)
 			-- enable breakpoint at `loc'
 			-- if no breakpoint already exists at `loc' a breakpoint is created
 		do
 			ewb_request.set_classic_breakpoint (loc, True)
 		end
 
-	unset_application_breakpoint (loc: BREAKPOINT_LOCATION) is
+	unset_application_breakpoint (loc: BREAKPOINT_LOCATION)
 			-- remove breakpoint at `loc'
 		do
 			ewb_request.set_classic_breakpoint (loc, False)
@@ -321,7 +323,7 @@ feature {NONE} -- Breakpoints implementation
 
 feature -- Catcall detection change
 
-	set_catcall_detection_mode (a_console, a_dbg: BOOLEAN) is
+	set_catcall_detection_mode (a_console, a_dbg: BOOLEAN)
 			-- <Precursor>
 		local
 			i, j: INTEGER
@@ -333,7 +335,7 @@ feature -- Catcall detection change
 
 feature {NONE} -- Assertion change Implementation
 
-	impl_check_assert (b: BOOLEAN): BOOLEAN is
+	impl_check_assert (b: BOOLEAN): BOOLEAN
 			-- `check_assert (b)' on debuggee
 		local
 			s: STRING
@@ -347,7 +349,7 @@ feature {NONE} -- Assertion change Implementation
 
 feature -- Change
 
-	update_critical_stack_depth (d: INTEGER) is
+	update_critical_stack_depth (d: INTEGER)
 			-- Call stack depth at which we warn the user against a possible stack overflow.
 			-- -1 never warns the user.
 		do
@@ -358,7 +360,7 @@ feature -- Change
 
 feature -- Query
 
-	onces_values (flist: LIST [E_FEATURE]; a_addr: DBG_ADDRESS; a_cl: CLASS_C): ARRAY [ABSTRACT_DEBUG_VALUE] is
+	onces_values (flist: LIST [E_FEATURE]; a_addr: DBG_ADDRESS; a_cl: CLASS_C): ARRAY [ABSTRACT_DEBUG_VALUE]
 		local
 			i: INTEGER
 			err_dv: DUMMY_MESSAGE_DEBUG_VALUE
@@ -402,12 +404,12 @@ feature -- Query
 			end
 		end
 
-	dump_value_at_address_with_class (a_addr: DBG_ADDRESS; a_cl: CLASS_C): DUMP_VALUE is
+	dump_value_at_address_with_class (a_addr: DBG_ADDRESS; a_cl: CLASS_C): DUMP_VALUE
 		do
 			Result := Debugger_manager.Dump_value_factory.new_object_value (a_addr, a_cl)
 		end
 
-	debug_value_at_address_with_class (a_addr: DBG_ADDRESS; a_cl: CLASS_C): ABSTRACT_DEBUG_VALUE is
+	debug_value_at_address_with_class (a_addr: DBG_ADDRESS; a_cl: CLASS_C): ABSTRACT_DEBUG_VALUE
 		do
 --			debugged_object_manager.classic_debugged_object_with_class (a_addr, a_cl)
 --			Result := dump_value_at_address_with_class (a_addr, a_cl).
@@ -415,7 +417,7 @@ feature -- Query
 			check False end
 		end
 
-	get_exception_value_details	(e: EXCEPTION_DEBUG_VALUE; a_details_level: INTEGER) is
+	get_exception_value_details	(e: EXCEPTION_DEBUG_VALUE; a_details_level: INTEGER)
 			-- Code, Tag, Message from `val'.
 		local
 			cl: CLASS_C
@@ -478,7 +480,7 @@ feature -- Query
 
 feature {APPLICATION_EXECUTION} -- Launching status
 
-	can_not_launch_system_message: STRING is
+	can_not_launch_system_message: STRING
 			-- Message displayed when estudio is unable to launch the system
 		local
 			env_var_str: STRING_8
@@ -512,22 +514,22 @@ feature {APPLICATION_EXECUTION} -- Launching status
 
 feature {APPLICATION_STATUS}
 
-	once_request: ONCE_REQUEST is
+	once_request: ONCE_REQUEST
 		once
 			create Result.make
 		end
 
-	ewb_request: EWB_REQUEST is
+	ewb_request: EWB_REQUEST
 		once
 			create Result.make (Rqst_quit)
 		end
 
-	run_request: RUN_REQUEST is
+	run_request: RUN_REQUEST
 		once
 			create Result.make (Rqst_application)
 		end
 
-	cont_request: EWB_REQUEST is
+	cont_request: EWB_REQUEST
 		once
 			create Result.make (Rqst_cont)
 		end
@@ -536,8 +538,8 @@ invariant
 
 	ipc_engine_not_void: ipc_engine /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -550,22 +552,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

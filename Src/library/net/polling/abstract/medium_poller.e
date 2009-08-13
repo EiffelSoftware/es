@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"A medium poller for asynchronous IO on IO_MEDIUMs"
@@ -22,7 +22,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create poller for multi-event polling.
 		do
 			set_read;
@@ -30,7 +30,7 @@ feature -- Initialization
 			set_exception
 		end;
 
-	make_read_only is
+	make_read_only
 			-- Create poller for read events only.
 		do
 			set_read;
@@ -38,7 +38,7 @@ feature -- Initialization
 			set_ignore_exception
 		end;
 
-	make_write_only is
+	make_write_only
 			-- Create poller for write events only.
 		do
 			set_write;
@@ -46,7 +46,7 @@ feature -- Initialization
 			set_ignore_exception
 		end;
 
-	make_exception_only is
+	make_exception_only
 			-- Create poller for exception events only.
 		do
 			set_exception;
@@ -56,7 +56,7 @@ feature -- Initialization
 
 feature
 
-	execute (max_des, time_out_millisec: INTEGER) is
+	execute (max_des, time_out_millisec: INTEGER)
 			-- Poll io_medium's whose descriptor is less than
 			-- `max_des' and process ready media.
 			-- If no medium is ready, wait the 'time_out..' milliseconds
@@ -72,26 +72,29 @@ feature
 			end
 		end;
 
-	medium_select (number_to_check, time_out_millisec: INTEGER): INTEGER is
+	medium_select (number_to_check, time_out_millisec: INTEGER): INTEGER
 			-- Check the multiplexing masks for the
 			-- read, write, and exception medium reception
 			-- and return the number of mediums waiting
 			-- after 'time_out...' milliseconds time
 		local
 			lrm, lwm, lem: POINTER
+			l_mask: POLL_MASK
 		do
 			if not ignore_read and then not read_command_list.all_default then
-				last_read_mask := read_mask.twin
-				lrm := last_read_mask.mask.item
+				l_mask := read_mask.twin
+				lrm := l_mask.mask.item
+				last_read_mask := l_mask
 			end;
 			if not ignore_write and then not write_command_list.all_default then
-				last_write_mask := write_mask.twin
-				lwm := last_write_mask.mask.item
+				l_mask := write_mask.twin
+				lwm := l_mask.mask.item
+				last_write_mask := l_mask
 			end;
-			if not ignore_exception and then
-				not exception_command_list.all_default then
-				last_except_mask := except_mask.twin
-				lem := last_except_mask.mask.item
+			if not ignore_exception and then not exception_command_list.all_default then
+				l_mask := except_mask.twin
+				lem := l_mask.mask.item
+				last_except_mask := l_mask
 			end;
 
 			if wait then
@@ -107,7 +110,7 @@ feature --  blocking features
 		-- Poller blocks until event?
 		-- (otherwise, returns after timeout)
 
-	set_wait is
+	set_wait
 			-- Set poller to block.
 		do
 			wait := True
@@ -115,7 +118,7 @@ feature --  blocking features
 			wait_set: wait
 		end;
 
-	unset_wait is
+	unset_wait
 			-- Set poller to return after timeout.
 		do
 			wait := False
@@ -125,16 +128,19 @@ feature --  blocking features
 
 feature -- process set commands
 
-	process_selected (number_of_selected: INTEGER) is
+	process_selected (number_of_selected: INTEGER)
 			-- Process commands for ready media.
 		require
 			valid_number: number_of_selected > 0
 		local
 			counter, counter1: INTEGER;
-			a_command: POLL_COMMAND
+			a_command: detachable POLL_COMMAND
+			l_last_mask: detachable POLL_MASK
 		do
 			if not ignore_read and then not read_command_list.all_default then
 				from
+					l_last_mask := last_read_mask
+					check l_last_mask_attached: l_last_mask /= Void end
 					counter1 := read_command_list.lower
 				until
 					counter1 > read_command_list.upper or else
@@ -142,7 +148,7 @@ feature -- process set commands
 				loop
 					a_command := read_command_list.item (counter1);
 					if a_command /= Void then
-						if last_read_mask.is_medium_ready (a_command.active_medium) then
+						if l_last_mask.is_medium_ready (a_command.active_medium) then
 							a_command.execute (Void);
 							counter := counter + 1
 						end
@@ -150,9 +156,10 @@ feature -- process set commands
 					counter1 := counter1 + 1
 				end
 			end;
-			if not ignore_write and then counter < number_of_selected and then
-				not write_command_list.all_default then
+			if not ignore_write and then counter < number_of_selected and then not write_command_list.all_default then
 				from
+					l_last_mask := last_write_mask
+					check l_last_mask_attached: l_last_mask /= Void end
 					counter1 := write_command_list.lower
 				until
 					counter1 > write_command_list.upper or else
@@ -160,7 +167,7 @@ feature -- process set commands
 				loop
 					a_command := write_command_list.item (counter1);
 					if a_command /= Void then
-						if last_write_mask.is_medium_ready (a_command.active_medium) then
+						if l_last_mask.is_medium_ready (a_command.active_medium) then
 							a_command.execute (Void);
 							counter := counter + 1
 						end
@@ -168,9 +175,10 @@ feature -- process set commands
 					counter1 := counter1 + 1
 				end
 			end;
-			if not ignore_exception and then counter < number_of_selected and
-				then not exception_command_list.all_default then
+			if not ignore_exception and then counter < number_of_selected and then not exception_command_list.all_default then
 				from
+					l_last_mask := last_except_mask
+					check l_last_mask_attached: l_last_mask /= Void end
 					counter1 := exception_command_list.lower
 				until
 					counter1 > exception_command_list.upper or else
@@ -178,7 +186,7 @@ feature -- process set commands
 				loop
 					a_command := exception_command_list.item (counter1);
 					if a_command /= Void then
-						if last_except_mask.is_medium_ready (a_command.active_medium) then
+						if l_last_mask.is_medium_ready (a_command.active_medium) then
 							a_command.execute (Void);
 							counter := counter + 1
 						end
@@ -190,28 +198,28 @@ feature -- process set commands
 
 feature -- medium masks
 
-	last_except_mask: POLL_MASK;
+	last_except_mask: detachable POLL_MASK;
 			-- Exception mask returned by medium select
 
-	last_read_mask: POLL_MASK;
+	last_read_mask: detachable POLL_MASK;
 			-- Read mask returned by medium select
 
-	last_write_mask: POLL_MASK;
+	last_write_mask: detachable POLL_MASK;
 			-- Write mask returned by medium select
 
-	except_mask: POLL_MASK is
+	except_mask: POLL_MASK
 			-- Exception mask used by medium select
 		once
 			create Result.make
 		end;
 
-	read_mask: POLL_MASK is
+	read_mask: POLL_MASK
 			-- Read mask used by medium select
 		once
 			create Result.make
 		end;
 
-	write_mask: POLL_MASK is
+	write_mask: POLL_MASK
 			-- Write mask used by medium select.
 		once
 			create Result.make
@@ -228,7 +236,7 @@ feature -- booleans to decide whether to include each mask in the select call
 	ignore_exception: BOOLEAN;
 			-- Is Exception mask ignored?
 
-	set_exception is
+	set_exception
 			-- Set exception mask to be looked up.
 		do
 			ignore_exception := False
@@ -236,7 +244,7 @@ feature -- booleans to decide whether to include each mask in the select call
 			exception_used: not ignore_exception
 		end;
 
-	set_ignore_exception is
+	set_ignore_exception
 			--  Ignore exception mask.
 		do
 			ignore_exception := True
@@ -244,7 +252,7 @@ feature -- booleans to decide whether to include each mask in the select call
 			exception_not_used: ignore_exception
 		end;
 
-	set_read is
+	set_read
 			-- Set read mask to be looked up.
 		do
 			ignore_read := False
@@ -252,7 +260,7 @@ feature -- booleans to decide whether to include each mask in the select call
 			read_used: not ignore_read
 		end;
 
-	set_ignore_read is
+	set_ignore_read
 			-- Ignore read mask.
 		do
 			ignore_read := True
@@ -260,7 +268,7 @@ feature -- booleans to decide whether to include each mask in the select call
 			read_not_used: ignore_read
 		end;
 
-	set_write is
+	set_write
 			-- Set write mask to be looked up.
 		do
 			ignore_write := False
@@ -268,7 +276,7 @@ feature -- booleans to decide whether to include each mask in the select call
 			write_used: not ignore_write
 		end;
 
-	set_ignore_write is
+	set_ignore_write
 			-- Ignore write mask.
 		do
 			ignore_write := True
@@ -278,14 +286,14 @@ feature -- booleans to decide whether to include each mask in the select call
 
 feature -- commands to be executed
 
-	read_command_list: ARRAY [POLL_COMMAND] is
+	read_command_list: ARRAY [detachable POLL_COMMAND]
 			-- List of poll commands to be called
 			-- when their medium is selected for read event.
 		once
 			create Result.make (0, 10)
 		end;
 
-	put_read_command (a_command: POLL_COMMAND) is
+	put_read_command (a_command: POLL_COMMAND)
 			-- Set `a_command' to be called when read event is
 			-- selected on its io_medium.
 		require
@@ -298,7 +306,7 @@ feature -- commands to be executed
 			command_added: read_command_list.has (a_command)
 		end;
 
-	remove_read_command (a_command: POLL_COMMAND) is
+	remove_read_command (a_command: POLL_COMMAND)
 			-- Remove `a_command' from read registered media.
 		require
 			valid_command: a_command /= Void;
@@ -311,7 +319,7 @@ feature -- commands to be executed
 			command_removed: not read_command_list.has (a_command)
 		end;
 
-	remove_associated_read_command (s: IO_MEDIUM) is
+	remove_associated_read_command (s: IO_MEDIUM)
 			-- Remove command associated with medium `s' from
 			-- read registered media.
 		require
@@ -323,14 +331,14 @@ feature -- commands to be executed
 			command_removed: read_command_list.item (s.handle) = Void
 		end;
 
-	write_command_list: ARRAY [POLL_COMMAND] is
+	write_command_list: ARRAY [detachable POLL_COMMAND]
 			-- List of poll commands to be called
 			-- when their medium is selected for write event.
 		once
 			create Result.make (0, 10)
 		end;
 
-	put_write_command (a_command: POLL_COMMAND) is
+	put_write_command (a_command: POLL_COMMAND)
 			-- Set `a_command' to be called when write event is
 			-- selected on its io_medium.
 		require
@@ -343,7 +351,7 @@ feature -- commands to be executed
 			command_added: write_command_list.has (a_command)
 		end;
 
-	remove_write_command (a_command: POLL_COMMAND) is
+	remove_write_command (a_command: POLL_COMMAND)
 			-- Remove `a_command' from write registered media.
 		require
 			has_command: write_command_list.has (a_command)
@@ -354,7 +362,7 @@ feature -- commands to be executed
 			command_removed: not write_command_list.has (a_command)
 		end;
 
-	remove_associated_write_command (s: IO_MEDIUM) is
+	remove_associated_write_command (s: IO_MEDIUM)
 			-- Remove command associated with medium `s' from
 			-- write registered media.
 		require
@@ -366,14 +374,14 @@ feature -- commands to be executed
 			command_removed: write_command_list.item (s.handle) = Void
 		end;
 
-	exception_command_list: ARRAY [POLL_COMMAND] is
+	exception_command_list: ARRAY [detachable POLL_COMMAND]
 			-- List of poll commands to be called
 			-- when their medium is selected for exception event.
 		once
 			create Result.make (0, 10)
 		end;
 
-	put_exception_command (a_command: POLL_COMMAND) is
+	put_exception_command (a_command: POLL_COMMAND)
 			-- Set `a_command' to be called when exception event
 			-- is selected on its io_medium.
 		require
@@ -386,7 +394,7 @@ feature -- commands to be executed
 			command_added: exception_command_list.has (a_command)
 		end;
 
-	remove_exception_command (a_command: POLL_COMMAND) is
+	remove_exception_command (a_command: POLL_COMMAND)
 			-- Remove `a_command' from exception registered media.
 		require
 			has_command: exception_command_list.has (a_command)
@@ -397,7 +405,7 @@ feature -- commands to be executed
 			command_removed: not exception_command_list.has (a_command)
 		end;
 
-	remove_associated_exception_command (s: IO_MEDIUM) is
+	remove_associated_exception_command (s: IO_MEDIUM)
 			-- Remove command associated with medium `s' from
 			-- exception registered media.
 		require
@@ -411,13 +419,13 @@ feature -- commands to be executed
 
 feature {NONE}
 
-	c_select (nfds: INTEGER; rmask, wmask, emask: POINTER; time_sec, time_millisec: INTEGER): INTEGER  is
+	c_select (nfds: INTEGER; rmask, wmask, emask: POINTER; time_sec, time_millisec: INTEGER): INTEGER
 			-- External C routine designed for asynchronous IO
 		external
 			"C blocking"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

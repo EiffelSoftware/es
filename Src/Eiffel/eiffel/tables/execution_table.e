@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Table of execution units (either C routines or byte code arrays)
@@ -10,6 +10,8 @@ inherit
 		rename
 			make as search_table_make,
 			search as table_search
+		redefine
+			same_keys
 		end
 
 	SHARED_WORKBENCH
@@ -54,7 +56,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new execution table.
 		do
 			create melted_list.make (10)
@@ -67,13 +69,13 @@ feature -- Initialization
 
 feature -- Access
 
-	melted_list: SEARCH_TABLE [EXECUTION_UNIT]
+	melted_list: MELTED_EXECUTION_TABLE
 			-- List of melted unit
 
 	last_unit: EXECUTION_UNIT
 			-- Last unit evaluated by `put'
 
-	real_body_index (body_index: INTEGER; class_type: CLASS_TYPE): INTEGER is
+	real_body_index (body_index: INTEGER; class_type: CLASS_TYPE): INTEGER
 			-- Real body index associated to an instance of FEATURE_I of
 			-- body index `body_index' in a class type `class_type'.
 		local
@@ -85,7 +87,7 @@ feature -- Access
 			end
 		end
 
-	real_body_id (body_index: INTEGER; class_type: CLASS_TYPE): INTEGER is
+	real_body_id (body_index: INTEGER; class_type: CLASS_TYPE): INTEGER
 			-- Real body id associated to an instance of FEATURE_I of
 			-- body index `body_index' in a class type `class_type'.
 		local
@@ -97,7 +99,7 @@ feature -- Access
 			end
 		end
 
-	real_pattern_id (body_index: INTEGER; class_type: CLASS_TYPE): INTEGER is
+	real_pattern_id (body_index: INTEGER; class_type: CLASS_TYPE): INTEGER
 			-- Real pattern id associated to an instance of FEATURE_I of
 			-- body index `body_index' in a class type `class_type'.
 		local
@@ -111,7 +113,7 @@ feature -- Access
 
 feature -- Element change
 
-	update_with (t: EXECUTION_UNIT) is
+	update_with (t: EXECUTION_UNIT)
 			-- Find `t' in table. If found update found item
 			-- with content of `t'. If not found, insert `t'
 			-- in table.
@@ -141,7 +143,7 @@ feature -- Element change
 			last_unit_correctly_set: last_unit.is_equal (t)
 		end
 
-	search (t: EXECUTION_UNIT) is
+	search (t: EXECUTION_UNIT)
 			-- If present `last_unit' contains already present element.
 		require
 			execution_unit_not_void: t /= Void
@@ -155,7 +157,7 @@ feature -- Element change
 
 feature -- Removal
 
-	add_dead_function (body_index: INTEGER) is
+	add_dead_function (body_index: INTEGER)
 			-- Add `body_index' into `dead_attributes'
 		require
 			positive_body_index: body_index > 0
@@ -166,7 +168,7 @@ feature -- Removal
 			dead_attributes.force (body_index)
 		end
 
-	has_dead_function (body_index: INTEGER): BOOLEAN is
+	has_dead_function (body_index: INTEGER): BOOLEAN
 			-- Check if `body_index' is in `dead_attributes'
 		require
 			positive_body_index: body_index > 0
@@ -177,21 +179,23 @@ feature -- Removal
 	dead_attributes: SEARCH_TABLE [INTEGER]
 			-- Record dead functions transformed into attributes.
 
+feature -- Comparison
+
+	same_keys (a_search_key, a_key: EXECUTION_UNIT): BOOLEAN
+			-- <Precursor>
+		do
+			Result := a_search_key.same_as (a_key)
+		end
+
 feature -- Update
 
-	mark_melted (t: EXECUTION_UNIT) is
+	mark_melted (t: EXECUTION_UNIT)
 			-- Insert `t' in `melted_list'.
 		do
 			melted_list.force (t)
 		end
 
-	freeze is
-			-- Wipe out `melted_list'.
-		do
-			create melted_list.make (10)
-		end
-
-	nb_frozen_features: INTEGER is
+	nb_frozen_features: INTEGER
 			-- Melted/Frozen limit
 		do
 			Result := counter.count
@@ -199,7 +203,16 @@ feature -- Update
 
 feature {SYSTEM_I} -- Shake table
 
-	shake is
+	melt
+			-- Clean table after a successful melt
+		do
+				-- All functions changed into attributes have been detected and
+				-- removed from execution table, we can reset `dead_attributes'
+				-- for next recompilation.
+			dead_attributes := Void
+		end
+
+	freeze
 			-- Reorganize the table during a refreezing
 		local
 			u: EXECUTION_UNIT
@@ -219,11 +232,12 @@ feature {SYSTEM_I} -- Shake table
 				-- removed from execution table, we can reset `dead_attributes'
 				-- for next recompilation.
 			dead_attributes := Void
+			create melted_list.make (10)
 		end
 
 feature {NONE} -- Search
 
-	unit_of_body_index (body_index: INTEGER; class_type: CLASS_TYPE): EXECUTION_UNIT is
+	unit_of_body_index (body_index: INTEGER; class_type: CLASS_TYPE): EXECUTION_UNIT
 			-- Unit associated to an instance of FEATURE_I of
 			-- body index `body_index' in a class type `class_type'.
 		do
@@ -232,7 +246,7 @@ feature {NONE} -- Search
 			Result := item (Marker)
 		end
 
-	Marker: EXECUTION_UNIT is
+	Marker: EXECUTION_UNIT
 			-- Marker for search
 		once
 			create Result.make (System.any_class.compiled_class.types.first)
@@ -241,7 +255,7 @@ feature {NONE} -- Search
 
 feature -- Byte Code generation
 
-	make_update (file: RAW_FILE) is
+	make_update (file: RAW_FILE)
 			-- Generate byte code for updating the execution table
 		local
 			e: EXECUTION_UNIT
@@ -300,7 +314,7 @@ end
 
 feature -- C code generation
 
-	generate is
+	generate
 			-- Generate the frozen execution table in `buffer'.
 		local
 			values: ARRAY [EXECUTION_UNIT]
@@ -402,18 +416,18 @@ feature {NONE} -- Include set
 
 feature {NONE} -- Constants
 
-	Chunk: INTEGER is 5000
+	Chunk: INTEGER = 5000
 			-- Table chunk
 
 feature {NONE} -- External features
 
-	write_int (f: POINTER; v: INTEGER) is
+	write_int (f: POINTER; v: INTEGER)
 			-- Write integer `v' in file `f'.
 		external
 			"C"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

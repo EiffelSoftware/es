@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that represents a dialog used in metric grid domain item"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,12 +17,12 @@ inherit
 
 feature{NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize.
 		do
 			create ok_actions
 			create cancel_actions
-			create domain_selector
+			create domain_selector.make
 			Precursor {PROPERTY_DIALOG}
 			show_actions.extend (agent on_show)
 		end
@@ -38,7 +38,7 @@ feature -- Access
 	domain_selector: EB_METRIC_DOMAIN_SELECTOR
 			-- Domain selector
 
-	domain: EB_METRIC_DOMAIN is
+	domain: EB_METRIC_DOMAIN
 			-- Domain from `domain_selector'
 		do
 			Result := domain_selector.domain
@@ -48,7 +48,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_domain (a_domain: EB_METRIC_DOMAIN) is
+	set_domain (a_domain: EB_METRIC_DOMAIN)
 			-- Set domain in `domain_selector' with `a_domain'.
 		require
 			a_domain_attached: a_domain /= Void
@@ -56,7 +56,7 @@ feature -- Setting
 			domain_selector.set_domain (a_domain)
 		end
 
-	set_context_menu_factory (a_factory: EB_CONTEXT_MENU_FACTORY) is
+	set_context_menu_factory (a_factory: EB_CONTEXT_MENU_FACTORY)
 			-- Set context menu factory.
 		do
 			domain_selector.set_context_menu_factory (a_factory)
@@ -64,7 +64,7 @@ feature -- Setting
 
 feature{NONE} -- Actions
 
-	on_show is
+	on_show
 			-- Action to be performed when dialog is displayed
 		deferred
 		end
@@ -74,36 +74,36 @@ invariant
 	cancel_actions_attached: cancel_actions /= Void
 	domain_selector_attached: domain_selector /= Void
 
-indexing
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+        copyright:	"Copyright (c) 1984-2009, Eiffel Software"
         license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
         licensing_options:	"http://www.eiffel.com/licensing"
         copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
         source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 
 end

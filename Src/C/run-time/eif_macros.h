@@ -936,7 +936,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 /* If call on void target are detected, we use RTCV to perform the check. Unlike the workbench
  * mode, we won't know the message of the call as it would require too much data to be generated. */
-#if !defined(WORKBENCH) && !defined(EIF_NO_RTCV)
+#if defined(WORKBENCH) || !defined(EIF_NO_RTCV)
 #define RTCV(x) eif_check_call_on_void_target(x)
 #else
 #define RTCV(x)	(x)
@@ -1082,8 +1082,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 #else
 #define RTLU(x,y)
 #define RTLO(n)	
-#define RTHOOK(n)		exvect->ex_linenum = n
-#define RTNHOOK(n,m)
+#define RTHOOK(n)		exvect->ex_linenum = n; exvect->ex_bpnested = 0;
+#define RTNHOOK(n,m)	exvect->ex_bpnested = m;
 #endif
 
 /* Old expression evaluation */
@@ -1192,7 +1192,6 @@ RT_LNK void eif_exit_eiffel_code(void);
  *  RTST(c,d,i,n) creates an Eiffel ARRAY[ANY] (for strip).
  *  RTXA(x,y) copies 'x' into expanded 'y' with exception if 'x' is void.
  *  RTEQ(x,y) returns true if 'x' = 'y'
- *  RTIE(x) returns true if 'x' is an expanded object
  *  RTOF(x) returns the offset of expanded 'x' within enclosing object
  *  RTEO(x) returns the address of the enclosing object for expanded 'x'
  */
@@ -1249,7 +1248,6 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTXA(x,y)		eif_xcopy(x, y)
 #define RTEQ(x,y)		eif_xequal((x),(y))
 #define RTCEQ(x,y)		(((x) && eif_is_boxed_expanded(HEADER(x)->ov_flags) && (y) && eif_is_boxed_expanded(HEADER(y)->ov_flags) && eif_gen_conf(Dftype(x), Dftype(y)))? eif_xequal((x),(y)): (x)==(y))
-#define RTIE(x)			((x) != (EIF_REFERENCE) 0 ? eif_is_nested_expanded(HEADER(x)->ov_flags) : 0)
 #define RTOF(x)			(HEADER(x)->ov_size & B_SIZE)
 #define RTEO(x)			((x) - RTOF(x))
 
@@ -1396,6 +1394,31 @@ RT_LNK void eif_exit_eiffel_code(void);
 #endif
 #define RTTS		trace_call_level = current_call_level	/* Clean up trace levels */
 
+
+/* Macro used to get info about SPECIAL objects.
+ * RT_SPECIAL_PADDED_DATA_SIZE is the additional size of the data at the end of the SPECIAL.
+ * RT_SPECIAL_DATA_SIZE is the meaningful part of RT_SPECIAL_PADDED_DATA_SIZE being used.
+ * RT_SPECIAL_MALLOC_COUNT is the macro to compute the necessary memory size for the SPECIAL.
+ * RT_SPECIAL_COUNT returns `count' of special objects.
+ * RT_SPECIAL_ELEM_SIZE returns `element_size' of items in special objects.
+ */
+#define RT_SPECIAL_PADDED_DATA_SIZE	LNGPAD(3)
+#define RT_SPECIAL_DATA_SIZE	(3*sizeof(EIF_INTEGER))
+#define RT_SPECIAL_VISIBLE_SIZE(spec) ((rt_uint_ptr) RT_SPECIAL_COUNT(spec) * (rt_uint_ptr) RT_SPECIAL_ELEM_SIZE(spec))
+#define RT_SPECIAL_MALLOC_COUNT(nb_items,item_size) \
+	((rt_uint_ptr) (CHRPAD((rt_uint_ptr) nb_items * (rt_uint_ptr) item_size) + RT_SPECIAL_PADDED_DATA_SIZE))
+
+#define RT_IS_SPECIAL(obj) \
+	((HEADER(obj)->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC)
+
+#define RT_SPECIAL_COUNT(spec) \
+	(*(EIF_INTEGER *) ((char *) ((spec) + (HEADER(spec)->ov_size & B_SIZE) - RT_SPECIAL_PADDED_DATA_SIZE)))
+
+#define RT_SPECIAL_ELEM_SIZE(spec) \
+	(*(EIF_INTEGER *) ((char *) ((spec) + (HEADER(spec)->ov_size & B_SIZE) - RT_SPECIAL_PADDED_DATA_SIZE) + sizeof(EIF_INTEGER)))
+
+#define RT_SPECIAL_CAPACITY(spec) \
+	(*(EIF_INTEGER *) ((char *) ((spec) + (HEADER(spec)->ov_size & B_SIZE) - RT_SPECIAL_PADDED_DATA_SIZE) + 2*sizeof(EIF_INTEGER)))
 
 
 /* Macros used for array optimization

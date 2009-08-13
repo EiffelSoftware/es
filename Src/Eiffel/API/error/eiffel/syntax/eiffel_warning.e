@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Warning in an Eiffel class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -24,22 +24,25 @@ feature -- Properties
 	associated_class: CLASS_C
 			-- Class where the error is encountered
 
-	file_name: STRING is
+	file_name: STRING
 			-- File where error is encountered
 		do
 			Result := associated_class.file_name
 		end
 
-	has_associated_file: BOOLEAN is True
+	has_associated_file: BOOLEAN = True
 			-- Current is associated to a file/class
 
 feature -- Output
 
-	trace_primary_context (a_text_formatter: TEXT_FORMATTER) is
+	trace_primary_context (a_text_formatter: TEXT_FORMATTER)
 			-- Build the primary context string so errors can be navigated to
 		do
-			if {l_class: !like associated_class} associated_class and then {l_formatter: !TEXT_FORMATTER} a_text_formatter then
-				print_context_class (l_formatter, l_class)
+			if 
+				a_text_formatter /= Void and then
+				attached associated_class as l_class
+			then 
+				print_context_class (a_text_formatter, l_class)
 			else
 				Precursor (a_text_formatter)
 			end
@@ -48,7 +51,7 @@ feature -- Output
 invariant
 	associated_class_not_void: associated_class /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

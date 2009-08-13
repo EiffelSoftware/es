@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An abstract interface for a collection of managed session data, bound to a IDE/project context.
 	]"
@@ -15,9 +15,14 @@ deferred class
 	SESSION_I
 
 inherit
-	USABLE_I
+	INTERFACE_I
 
-	EVENT_OBSERVER_CONNECTION_I [SESSION_EVENT_OBSERVER]
+	DISPOSABLE_I
+
+	EVENT_CONNECTION_POINT_I [SESSION_EVENT_OBSERVER, SESSION_I]
+		rename
+			connection as session_connection
+		end
 
 feature -- Access
 
@@ -40,7 +45,7 @@ feature -- Access
 
 feature {SESSION_MANAGER_S, SESSION_I} -- Access
 
-	extension_name: ?STRING_8 assign set_extension_name
+	extension_name: detachable STRING_8 assign set_extension_name
 			-- Optional extension name for specialized categories
 		require
 			is_interface_usable: is_interface_usable
@@ -76,7 +81,7 @@ feature -- Element change
 		ensure
 			value_set: equal (a_value, value (a_id))
 			is_dirty: not equal (a_value, old value (a_id)) implies is_dirty
-			session_set_on_session_data: {l_session_data: !SESSION_DATA_I} a_value implies (({SESSION_DATA_I}) #? a_value).session = Current
+			session_set_on_session_data: attached {SESSION_DATA_I} a_value as l_session_data implies (({SESSION_DATA_I}) #? a_value).session = Current
 		end
 
 feature {SESSION_MANAGER_S, SESSION_I} -- Element change
@@ -141,18 +146,6 @@ feature -- Query
 		deferred
 		end
 
-feature {NONE} -- Query
-
-	events (a_observer: !SESSION_EVENT_OBSERVER): !DS_ARRAYED_LIST [!TUPLE [event: !EVENT_TYPE [TUPLE]; action: !PROCEDURE [ANY, TUPLE]]]
-			-- List of events and associated action.
-			--
-			-- `a_observer': Event observer interface to bind agent actions to.
-			-- `Result': A list of event types paired with a associated action on the passed observer
-		do
-			create Result.make (1)
-			Result.put_last ([value_changed_event, agent a_observer.on_session_value_changed])
-		end
-
 feature -- Status report
 
 	is_dirty: BOOLEAN
@@ -190,7 +183,7 @@ feature {SESSION_MANAGER_S} -- Status setting
 
 feature {SESSION_DATA_I, SESSION_I} -- Basic operations
 
-	notify_value_changed (a_value: !SESSION_DATA_I)
+	notify_value_changed (a_value: attached SESSION_DATA_I)
 			-- Used by complex session data objects to notify the session that an inner value has changed.
 			--
 			-- `a_value': The changed session data value.
@@ -204,7 +197,7 @@ feature {SESSION_DATA_I, SESSION_I} -- Basic operations
 
 feature -- Events
 
-	value_changed_event: !EVENT_TYPE [TUPLE [session: SESSION_I; id: STRING_8]]
+	value_changed_event: attached EVENT_TYPE [TUPLE [session: SESSION_I; id: STRING_8]]
 			-- Events fired when a value, indexed by an id, in the session object changes.
 			--
 			-- `session': The session where the change occured.
@@ -212,6 +205,27 @@ feature -- Events
 		require
 			is_interface_usable: is_interface_usable
 		deferred
+		end
+
+feature -- Events: Connection point
+
+	session_connection: EVENT_CONNECTION_I [SESSION_EVENT_OBSERVER, SESSION_I]
+			-- <Precursor>
+		local
+			l_result: like internal_session_connection
+		do
+			l_result := internal_session_connection
+			if l_result = Void then
+				create {EVENT_CONNECTION [SESSION_EVENT_OBSERVER, SESSION_I]} Result.make (
+					agent (ia_observer: SESSION_EVENT_OBSERVER): ARRAY [TUPLE [event: EVENT_TYPE [TUPLE]; action: PROCEDURE [ANY, TUPLE]]]
+						do
+							Result := << [value_changed_event, agent ia_observer.on_session_value_changed] >>
+						end)
+				automation.auto_dispose (Result)
+				internal_session_connection := Result
+			else
+				Result := l_result
+			end
 		end
 
 feature {SESSION_MANAGER_S} -- Action Handlers
@@ -230,11 +244,17 @@ feature {SESSION_MANAGER_S} -- Action Handlers
 		deferred
 		end
 
+feature {NONE} -- Implementation: Internal cache
+
+	internal_session_connection: detachable like session_connection
+			-- Cached version of `session_connection'
+			-- Note: Do not use directly!
+
 invariant
 	window_id_positive: is_per_window implies window_id > 0
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -247,22 +267,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

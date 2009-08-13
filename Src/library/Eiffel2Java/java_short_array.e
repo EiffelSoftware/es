@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Access to Java array of shorts (in Eiffel shorts %
                  %are respresente as INTEGER)"
 	legal: "See notice at end of class."
@@ -15,24 +15,24 @@ inherit
 create
 	make,
 	make_from_pointer
-	
+
 feature -- Initialization
 
-	make (size: INTEGER) is
+	make (size: INTEGER)
 			-- Create a new Java array and an Eiffel accessor object
 			-- Note: Java arrays are indexed from zero
 		require
-			size_ok: size > 0		
+			size_ok: size > 0
 		do
 			jarray := jni.new_short_array (size)
 			create jvalue.make
 		ensure
-			array_ok: jarray /= default_pointer	
+			array_ok: jarray /= default_pointer
 		end
 
 feature -- Access
 
-	item (index: INTEGER): INTEGER_16 is
+	item (index: INTEGER): INTEGER_16
 			-- Item at `index'.
 		require
 			valid_index: valid_index (index)
@@ -47,8 +47,8 @@ feature -- Access
 
 feature -- Element change
 
-	put (an_item: INTEGER_16; index: INTEGER) is
-			-- Put `an_item' at `index'. 
+	put (an_item: INTEGER_16; index: INTEGER)
+			-- Put `an_item' at `index'.
 		require
 			valid_index: valid_index (index)
 		local
@@ -62,15 +62,15 @@ feature -- Element change
 			inserted: item (index) = an_item
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

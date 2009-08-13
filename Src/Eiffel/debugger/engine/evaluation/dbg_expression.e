@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstraction of an expression as in %"expression evaluation%" in the debugger.%
 				%Note that it is not possible to change the type of the expression dynamically%
 				%(i.e it is not possible to switch from an object-related expression to%
@@ -33,7 +33,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_as_object (cl: CLASS_C; addr: DBG_ADDRESS) is
+	make_as_object (cl: CLASS_C; addr: DBG_ADDRESS)
 		require
 			valid_class: cl /= Void and then cl.is_valid
 			valid_address: addr /= Void and then not addr.is_void
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 			make_with_object (cl, addr, Void)
 		end
 
-	make_with_object (cl: CLASS_C; addr: DBG_ADDRESS; new_expr: STRING_32) is
+	make_with_object (cl: CLASS_C; addr: DBG_ADDRESS; new_expr: STRING_32)
 			-- Initialize `Current' and link it to an object `obj' whose dynamic type is `dtype'.
 			-- Initialize the expression to `new_expr'.
 		require
@@ -61,7 +61,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	make_with_class (cl: CLASS_C; new_expr: STRING_32) is
+	make_with_class (cl: CLASS_C; new_expr: STRING_32)
 			-- Initialize `Current' and link it to a class `cl'.
 			-- Initialize the expression to `new_expr'.
 		require
@@ -74,7 +74,7 @@ feature {NONE} -- Initialization
 			set_text (new_expr)
 		end
 
-	make_with_context (new_expr: STRING_32) is
+	make_with_context (new_expr: STRING_32)
 			-- Initialize `Current' and link it to the context.
 			-- Initialize the expression to `new_expr'.
 		require
@@ -101,7 +101,7 @@ feature -- Access
 
 feature {DEBUGGER_EXPORTER} -- Element change
 
-	set_text (expr: like text) is
+	set_text (expr: like text)
 			-- Set string value for `dbg_expression'
 		require
 			expr /= Void
@@ -120,7 +120,7 @@ feature {DEBUGGER_EXPORTER} -- Element change
 
 feature -- Change
 
-	set_name (n: like name) is
+	set_name (n: like name)
 			-- Set `name' with `n'
 		require
 			n /= Void
@@ -133,7 +133,7 @@ feature -- Change
 			end
 		end
 
-	set_is_context_object (b: BOOLEAN) is
+	set_is_context_object (b: BOOLEAN)
 			-- If b is True, Current represents the associated context's object
 			-- i.e: the object related to `context.associated_address'
 		do
@@ -145,7 +145,7 @@ feature -- Change
 
 feature -- Access
 
-	is_boolean_expression (f: E_FEATURE): BOOLEAN is
+	is_boolean_expression (f: E_FEATURE): BOOLEAN
 			-- Is `Current' a boolean in the context of `f'?
 		require
 			valid_f: f /= Void
@@ -159,20 +159,20 @@ feature -- Access
 			evl.destroy
 		end
 
-	is_reusable: BOOLEAN is
+	is_reusable: BOOLEAN
 			-- Is `Current' still valid now and for other debugging session?
 			-- Should be checked when a debugging session starts.
 			--| If `Current' relies on an object, it is clearly
 			--| no longer reusable when a new debugging session starts.	
 		do
-			Result := {ctx: like context} context and then (
+			Result := attached context as ctx and then (
 						ctx.is_coherent and
 						not ctx.on_object and
 						ctx.is_valid
 					)
 		end
 
-	context_as_string: STRING_32 is
+	context_as_string: STRING_32
 			-- Return a string representing `Current's context.
 		local
 			ctx: like context
@@ -204,7 +204,7 @@ feature -- Evaluation: Settings
 
 feature -- Evaluation: Status report
 
-	error_occurred: BOOLEAN is
+	error_occurred: BOOLEAN
 			-- has error in the expression's text (syntax) or during evaluation?
 		do
 			Result := syntax_error_occurred -- or evaluation_error_occurred
@@ -212,7 +212,7 @@ feature -- Evaluation: Status report
 
 feature -- Evaluation: Settings change
 
-	set_keep_assertion_checking	(b: like keep_assertion_checking) is
+	set_keep_assertion_checking	(b: like keep_assertion_checking)
 			-- Set `keep_assertion_checking' with `b'
 		do
 			keep_assertion_checking := b
@@ -253,7 +253,7 @@ feature {NONE} -- Evaluation: access
 	evaluations: ARRAYED_LIST [DBG_EXPRESSION_EVALUATION]
 			-- registered evaluations
 
-	reset_evaluations is
+	reset_evaluations
 			-- Reset expression evaluations
 		do
 			if evaluations /= Void then
@@ -266,13 +266,13 @@ feature {NONE} -- Evaluation: access
 
 feature -- Analysis: Status report
 
-	syntax_error_occurred: BOOLEAN is
+	syntax_error_occurred: BOOLEAN
 			-- Is there a syntax error in dbg_expression ?
 		do
 			Result := not is_context_object and then has_syntax_error
 		end
 
-feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR} -- Analysis: implementation
+feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR, AST_DEBUGGER_EXPRESSION_CHECKER_GENERATOR} -- Analysis: implementation
 
 	ast: EXPR_AS
 			-- Abstract class representation
@@ -284,18 +284,18 @@ feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR} --
 			-- If `Current' or one of its descendants couldn't be evaluated,
 			-- return an explanatory message.			
 
-	valid_expression (expr: STRING_GENERAL): BOOLEAN is
+	valid_expression (expr: STRING_GENERAL): BOOLEAN
 			-- Is `expr' a valid expression?
 		do
 			Result := expr /= Void and then
 						expr.is_valid_as_string_8 and then
-						{s8: STRING_8} expr.to_string_8 and then
+						(attached expr.to_string_8 as s8) and then
 						not s8.is_empty and then
 						not s8.has ('%R') and then
 						not s8.has ('%N')
 		end
 
-	analyze_expression is
+	analyze_expression
 			-- analyze `text'
 		require
 			valid_expression: valid_expression (text)
@@ -317,9 +317,10 @@ feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR} --
 				else
 					create sp
 					p := sp.expression_parser
+					p.set_syntax_version (p.transitional_64_syntax)
 					check expression_not_void: text /= Void end
 					s8 := text.as_string_8
-					p.parse_from_string (once "check " + s8)
+					p.parse_from_string (once "check " + s8, context.associated_class)
 					has_syntax_error := p.syntax_error
 					if not has_syntax_error then
 						en := p.expression_node
@@ -331,6 +332,8 @@ feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR} --
 						else
 							has_syntax_error := True
 						end
+					else
+						get_analysis_error_message (p)
 					end
 				end
 			else
@@ -339,21 +342,32 @@ feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR} --
 					io.error.put_string (p.error_message + "%N")
 				end
 				has_syntax_error := True
-				if p.error_message = Void or else p.error_message.is_empty  then
-					create analysis_error_message.make_from_string (Cst_syntax_error)
-				else
-					create analysis_error_message.make_from_string (p.error_message)
-				end
+				get_analysis_error_message (p)
 			end
 		rescue
 			retried := True
 			retry
 		end
 
+	get_analysis_error_message (p: EIFFEL_PARSER)
+			-- Get `analysis_error_message' from parser `p'
+		require
+			has_syntax_error: has_syntax_error
+		do
+			if
+				p = Void
+				or else
+					(p.error_message = Void or else p.error_message.is_empty)
+			then
+				create analysis_error_message.make_from_string (Cst_syntax_error)
+			else
+				create analysis_error_message.make_from_string (p.error_message)
+			end
+		end
 
 feature -- Recycling
 
-	reset is
+	reset
 			-- Recycle data
 			-- in order to free special data (for instance dotnet references)
 		do
@@ -362,7 +376,7 @@ feature -- Recycling
 
 feature -- debug output
 
-	debug_output: STRING is
+	debug_output: STRING
 			-- <Precursor>
 		do
 			create Result.make_empty
@@ -375,9 +389,9 @@ feature -- debug output
 
 feature {NONE} -- Implementation
 
-	Cst_syntax_error: STRING is "Syntax error"
+	Cst_syntax_error: STRING = "Syntax error"
 
-	is_valid_expression_string (s: STRING_GENERAL): BOOLEAN is
+	is_valid_expression_string (s: STRING_GENERAL): BOOLEAN
 			-- Is a valid expression string ?
 		do
 			Result := s /= Void and then s.is_valid_as_string_8
@@ -387,8 +401,8 @@ invariant
 	context_attached: context /= Void
 	valid_context: context.is_coherent
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -401,22 +415,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class DBG_EXPRESSION

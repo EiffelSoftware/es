@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Constructs whose specimens are specimens of constructs %
@@ -19,13 +19,13 @@ deferred class CHOICE inherit
 
 feature -- Access
 
-	retained: CONSTRUCT;
+	retained: detachable CONSTRUCT;
 			-- Child which matches the input document;
 			-- Void if none.
 
 feature -- Status report
 
-	left_recursion: BOOLEAN is
+	left_recursion: BOOLEAN
 			-- Is the construct's definition left-recursive?
 		do
 			if structure_list.has (production) then
@@ -54,8 +54,10 @@ feature -- Status report
 
 feature {CONSTRUCT} -- Implementation
 
-	check_recursion is
+	check_recursion
 			-- Check choice construct for left recursion.
+		local
+			l_child: like child
 		do
 			if not check_recursion_list.has (production) then
 				check_recursion_list.extend (production);
@@ -67,7 +69,9 @@ feature {CONSTRUCT} -- Implementation
 				until
 					no_components or child_after
 				loop
-					child.check_recursion;
+					l_child := child
+					check l_child /= Void end -- Implied from the `child_after'.
+					l_child.check_recursion;
 					child_forth
 				end
 			end
@@ -75,8 +79,10 @@ feature {CONSTRUCT} -- Implementation
 
 feature {NONE} -- Implementation
 
-	print_children is
+	print_children
 			-- Print children separated with a bar.
+		local
+			l_child: like child
 		do
 			print_name;
 			io.put_string (" :    ");
@@ -85,26 +91,29 @@ feature {NONE} -- Implementation
 			until
 				no_components or child_after
 			loop
-				child.print_name;
+				l_child := child
+				check l_child /= Void end -- Implied from the `child_after'.
+				l_child.print_name;
 				child_forth;
 				if not child_after then
 					io.put_string (" | ")
 				end
 			end;
 			io.new_line
-		end; 
+		end;
 
-	expand is
+	expand
 			-- Create list of possible choices.
 		do
 			expand_next
-		end; 
+		end;
 
-	parse_body is
+	parse_body
 			-- Try each possible expansion and keep
 			-- the one that works.
 		local
 			initial_document_position: INTEGER
+			l_child: like child
 		do
 			from
 				initial_document_position := document.index;
@@ -113,8 +122,10 @@ feature {NONE} -- Implementation
 				no_components or child_after or retained /= Void
 			loop
 				parse_child;
-				if child.parsed then
-					retained := child
+				l_child := child
+				check l_child /= Void end -- Implied from the `child_after'.
+				if l_child.parsed then
+					retained := l_child
 				else
 					document.go_i_th (initial_document_position)
 				end;
@@ -124,24 +135,24 @@ feature {NONE} -- Implementation
 			wipe_out;
 		-- A choice, once parsed, is not used as a tree node: it
 		-- has only one child which is accessed through 'retained'
-		end; 
+		end;
 
-	in_action is
+	in_action
 		do
-			if retained /= Void then
-				retained.semantics
+			if attached retained as l_retained then
+				l_retained.semantics
 			end
 		end;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

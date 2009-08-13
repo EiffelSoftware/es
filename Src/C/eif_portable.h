@@ -40,8 +40,9 @@
 #include "eif_config.h"
 
 #ifdef EIF_VMS		/* VMS platform specific definitions; must precede any system or library includes */
-#define __NEW_STARLET		/* define prototypes for VMS system (sys$) and library (lib$) functions */
-#define _POSIX_EXIT		/* use POSIX-1 semantics for exit() */
+#define __NEW_STARLET 1		/* define prototypes for VMS system (sys$) and library (lib$) functions */
+#define _POSIX_EXIT 1		/* use POSIX-1 semantics for exit() */
+#define _SOCKADDR_LEN 1		/* enables 4.4BSD- and and XPG4 V2-compatible socket interfaces */
 //#define _POSIX_C_SOURCE 2 
 //#define _XOPEN_SOURCE 
 //#define _XOPEN_SOURCE_EXTENDED 
@@ -73,14 +74,6 @@
 #define seekdir   eifrt_vms_seekdir
 #define telldir   eifrt_vms_telldir
 #endif /* USE_VMS_JACKETS */
-
-/* language, locale, and i18n stuff */
-#define nl_langinfo eifrt_vms_nl_langinfo
-#undef setlocale
-#define setlocale   eifrt_vms_setlocale
-#define iconv_open  eifrt_vms_iconv_open
-#define iconv_close eifrt_vms_iconv_close
-#define iconv       eifrt_vms_iconv
 
 #endif /* EIF_VMS */
 
@@ -152,12 +145,17 @@ typedef uint64_t rt_uint_ptr;
 typedef int32_t  rt_int_ptr;
 typedef uint32_t rt_uint_ptr;
 #endif
-#else /* VMSVAX always 32 bit; VMSIA64 always 64 bit? */
+#elif defined(__ia64) /* VMSIA64 always 64 bit? */
+typedef	int64_t	 rt_int_ptr;
+typedef uint64_t rt_uint_ptr;
+#elif defined(__VAXC) || defined(__vaxc)
 typedef intptr_t    rt_int_ptr;
 typedef uintptr_t   rt_uint_ptr;
+#else /* unknown VMS platform? */
+#error "unknown VMS platform"
 #endif
-#else
 
+#else
 #include <stdint.h>
 #endif
 
@@ -250,6 +248,10 @@ typedef uint32		BODY_INDEX;
 
 /* Index into array of once values */
 typedef uint32 ONCE_INDEX;
+
+/* 64-bit signed and unsigned type for runtime */
+typedef EIF_NATURAL_64	rt_uint64;
+typedef EIF_INTEGER_64	rt_int64;
 
 	/* previously in eif_globals.h */
 #define MTC_NOARG           

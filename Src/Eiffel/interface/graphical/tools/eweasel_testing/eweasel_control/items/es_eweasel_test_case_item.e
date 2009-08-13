@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						Objects that identify a test case
 						This class have all informations about a test case class
@@ -23,15 +23,15 @@ feature -- Query
 			-- Last test run result
 			-- One value from {EWEASEL_RESULT_TYPE}
 
-	changed_time: DT_DATE_TIME
+	changed_time: DATE_TIME
 			-- The time this test case have been modified
 
-	last_run_time: DT_DATE_TIME
+	last_run_time: DATE_TIME
 			-- Does this test case modified after last test run?
 
 feature -- Command
 
-	set_tag (a_tag: like tag) is
+	set_tag (a_tag: like tag)
 			-- Set `tag' with `a_tag'
 		do
 			tag := a_tag
@@ -39,7 +39,7 @@ feature -- Command
 			set: tag = a_tag
 		end
 
-	set_last_run_result (a_result: INTEGER) is
+	set_last_run_result (a_result: INTEGER)
 			-- Set `last_run_result' with `a_result'
 		require
 			valid: (create {ES_EWEASEL_RESULT_TYPE}).is_valid (a_result)
@@ -49,7 +49,7 @@ feature -- Command
 			set: last_run_result = a_result
 		end
 
-	set_changed_time (a_time: like changed_time) is
+	set_changed_time (a_time: like changed_time)
 			-- Set `changed_time' with `a_time'
 		do
 			changed_time := a_time
@@ -57,7 +57,7 @@ feature -- Command
 			set: changed_time = a_time
 		end
 
-	set_last_run_time (a_date: like last_run_time) is
+	set_last_run_time (a_date: like last_run_time)
 			-- Set `last_run_time' with `a_date'
 		do
 			last_run_time := a_date
@@ -65,7 +65,7 @@ feature -- Command
 			set: last_run_time = a_date
 		end
 
-	to_saving_state is
+	to_saving_state
 			-- Convert Current to state for saving
 		require
 			valid: is_valid_for_running
@@ -80,7 +80,7 @@ feature -- Command
 			done: is_valid_for_saving and not is_valid_for_running
 		end
 
-	to_running_state is
+	to_running_state
 			-- Convert Current to state for running
 		require
 			valid: is_valid_for_saving
@@ -88,8 +88,8 @@ feature -- Command
 			l_solution: EB_SHARED_ID_SOLUTION
 		do
 			create l_solution
-			if {l_conf_class: CONF_CLASS} l_solution.class_of_id (class_id.as_string_8) then
-				if {l_class_i: CLASS_I} l_conf_class then
+			if attached {CONF_CLASS} l_solution.class_of_id (class_id.as_string_8) as l_conf_class then
+				if attached {CLASS_I} l_conf_class as l_class_i then
 					class_i:= l_class_i
 					if class_i /= Void then
 						class_id := Void
@@ -108,7 +108,7 @@ feature -- Cache which should be void when saving
 	class_i: CLASS_I
 			-- Test case related root test class
 
-	set_class_i (a_class: like class_i) is
+	set_class_i (a_class: like class_i)
 			-- Set `class_i' with `a_class'
 		do
 			class_i := a_class
@@ -118,14 +118,14 @@ feature -- Cache which should be void when saving
 
 feature -- Contract support
 
-	is_valid_for_saving: BOOLEAN is
+	is_valid_for_saving: BOOLEAN
 			-- If Current state valid for saving to session data?
 		do
 			Result :=	class_i = Void and -- We don't save `class_i'
 						class_id /= Void
 		end
 
-	is_valid_for_running: BOOLEAN is
+	is_valid_for_running: BOOLEAN
 			-- If Current state valid for running ?
 		do
 			Result :=	class_i /= Void
@@ -136,8 +136,8 @@ feature {NONE} -- Implementation
 	internal_class_id: STRING_GENERAL;
 			-- Cache of `class_id'
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -161,11 +161,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

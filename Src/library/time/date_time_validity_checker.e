@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Facility routines to check the validity of DATE_TIMEs"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,12 +18,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	ANY
 
 feature -- Preconditions
 
-	date_time_valid (s: STRING; code_string: STRING): BOOLEAN is
+	date_time_valid (s: STRING; code_string: STRING): BOOLEAN
 			-- Is the code_string enough precise
 			-- To create an instance of type DATE_TIME
 			-- And does the string `s' correspond to `code_string'?
@@ -39,7 +39,7 @@ feature -- Preconditions
 		end
 
 	date_time_valid_with_base (s: STRING; code_string: STRING;
-					base: INTEGER): BOOLEAN is
+					base: INTEGER): BOOLEAN
 			-- Is the code_string enough precise
 			-- To create an instance of type DATE_TIME
 			-- And does the string `s' correspond to `code_string'?
@@ -58,22 +58,22 @@ feature -- Preconditions
 		end
 
 	is_correct_date_time (y, mo, d, h, mi: INTEGER; s: DOUBLE;
-					 	  twelve_hour_scale: BOOLEAN): BOOLEAN is
+					 	  twelve_hour_scale: BOOLEAN): BOOLEAN
 			-- Is date-time specified by `y', `mo', `d', `h', `mi', `s'
 			-- correct?
 			-- `twelve_hour_scale' specifies if the hour range is 1 - 12
 			-- (if True) or 0 - 23 (if False).
 		do
-			Result := is_correct_date (y, mo, d) and 
+			Result := is_correct_date (y, mo, d) and
 				is_correct_time (h, mi, s, twelve_hour_scale)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

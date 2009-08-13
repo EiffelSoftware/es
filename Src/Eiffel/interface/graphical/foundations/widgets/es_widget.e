@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A base widget implementation for all custom/composite widgets used in EiffelStudio.
 	]"
@@ -19,7 +19,7 @@ inherit
 		end
 
 convert
-	widget: {EV_WIDGET, !G}
+	widget: {EV_WIDGET, attached G}
 
 feature {NONE} -- User interface initialization
 
@@ -30,7 +30,7 @@ feature {NONE} -- User interface initialization
 			build_widget_interface (widget)
 		end
 
-	build_widget_interface (a_widget: !G)
+	build_widget_interface (a_widget: attached G)
 			-- Builds widget's interface.
 			--
 			-- `a_widget': The widget to initialize of build upon.
@@ -49,22 +49,23 @@ feature {NONE} -- Clean up
 	internal_recycle
 			-- <Precursor>
 		do
-			if is_initialized then
+			if is_initialized and not widget.has_parent then
+					-- Widget does not have a parent so it needs to be destroyed explicitly.
 				widget.destroy
 			end
 			Precursor {ES_TOOL_FOUNDATIONS}
 		ensure then
-			widget_is_destroyed: (old widget).is_destroyed
+			widget_is_destroyed: not (old widget).has_parent implies (old widget).is_destroyed
 		end
 
 feature -- Access
 
-	widget: !G
+	widget: attached G
 			-- Actual widget
 
 feature {NONE} -- Access
 
-	window: ?EV_WINDOW
+	window: detachable EV_WINDOW
 			-- Acces to window containing widget
 		require
 			is_interface_usable: is_interface_usable
@@ -244,7 +245,7 @@ feature -- Status setting
 
 feature {NONE} -- Factory
 
-	create_widget: !G
+	create_widget: attached G
 			-- Creates a new widget, which will be initialized when `build_interface' is called.
 		require
 			is_interface_usable: is_interface_usable
@@ -256,8 +257,8 @@ feature {NONE} -- Factory
 			not_result_has_parent: not Result.has_parent
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -270,22 +271,22 @@ feature {NONE} -- Factory
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

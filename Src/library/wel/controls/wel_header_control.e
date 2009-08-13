@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A header control is a window that is usually positioned
 		above columns of text or numbers. It contains a title for
@@ -57,7 +57,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_parent: WEL_WINDOW; a_x, a_y, a_width, a_height,
-				an_id: INTEGER) is
+				an_id: INTEGER)
 			-- Make a header control.
 			-- `a_x', `a_y', `a_width', `a_height' will not neccesarily
 			-- determine the the size of the control. Rather the
@@ -66,6 +66,7 @@ feature {NONE} -- Initialization
 			-- the controls parent window
 		require
 			a_parent_not_void: a_parent /= Void
+			a_parent_exists: a_parent.exists
 		local
 			a_rect: WEL_RECT
 		do
@@ -80,9 +81,8 @@ feature {NONE} -- Initialization
 				-- will be made visible in case default_style
 				-- includes Ws_visible.
 			internal_window_make (a_parent, Void,
-										 clear_flag (default_style, Ws_visible),
-										 0, 0, 0, 0,
-										 an_id, default_pointer)
+				 clear_flag (default_style, Ws_visible),
+				 0, 0, 0, 0, an_id, default_pointer)
 			id := an_id
 
 			create a_rect.make (a_x, a_y, a_x + a_width, a_y + a_height)
@@ -97,7 +97,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	item_count: INTEGER is
+	item_count: INTEGER
 			-- Retrieves the number of items that are in the header control
 		require
 			exists: exists
@@ -111,12 +111,12 @@ feature -- Status report
 			positive_result: Result >= 0
 		end
 
-	valid_index (index: INTEGER): BOOLEAN is
+	valid_index (index: INTEGER): BOOLEAN
 		do
 			Result := (index >= 0) and (index < item_count)
 		end
 
-	item_info_from_point (a_point: WEL_POINT): WEL_HD_HIT_TEST_INFO is
+	item_info_from_point (a_point: WEL_POINT): WEL_HD_HIT_TEST_INFO
 			-- Tests a point to determine which header item, if any, is at the specified point.
 		require
 			exists: exists
@@ -127,7 +127,7 @@ feature -- Status report
 			{WEL_API}.send_message (item, Hdm_hit_test, to_wparam (0), Result.item)
 		end
 
-	get_image_list: WEL_IMAGE_LIST is
+	get_image_list: detachable WEL_IMAGE_LIST
 			-- Get the image list associated with `Current'
 			-- or `Void' if none.
 		local
@@ -143,7 +143,7 @@ feature -- Status setting
 
 feature -- Element change
 
-	insert_text_header_item (a_label: STRING_GENERAL; a_width, a_format: INTEGER; insert_after_item_no: INTEGER) is
+	insert_text_header_item (a_label: STRING_GENERAL; a_width, a_format: INTEGER; insert_after_item_no: INTEGER)
 			-- Insert a text item to the header control after the
 			-- `insert_item_item_no' item. If there is no item in the list
 			-- yet, or you want to insert the new item as the first
@@ -168,7 +168,7 @@ feature -- Element change
 			item_count_increased: item_count = old item_count + 1
 		end
 
-	insert_header_item (hd_item: WEL_HD_ITEM; insert_after_item_no: INTEGER) is
+	insert_header_item (hd_item: WEL_HD_ITEM; insert_after_item_no: INTEGER)
 			-- Insert an item to the header control after the
 			-- `insert_item_item_no' item. If there is no item in the list
 			-- yet, or you want to insert the new item as the first
@@ -176,6 +176,7 @@ feature -- Element change
 		require
 			exists: exists
 			hd_item_not_void: hd_item /= Void
+			hd_item_exists: hd_item.exists
 			insert_after_item_no_positive: insert_after_item_no >= 0
 		local
 			i_result: INTEGER
@@ -188,7 +189,7 @@ feature -- Element change
 			item_count_increased: item_count = old item_count + 1
 		end
 
-	delete_header_item (index: INTEGER) is
+	delete_header_item (index: INTEGER)
 			-- delete item from header control at index `index'
 		require
 			exists: exists
@@ -204,7 +205,7 @@ feature -- Element change
 			item_count_decreased: item_count = old item_count - 1
 		end
 
-	set_header_item (index: INTEGER; hd_item: WEL_HD_ITEM) is
+	set_header_item (index: INTEGER; hd_item: WEL_HD_ITEM)
 			-- This windows message sets the attributes of the specified item in a header control.
 		require
 			exists: exists
@@ -219,7 +220,7 @@ feature -- Element change
 			end
 		end
 
-	retrieve_and_set_windows_pos (parent_client_rect: WEL_RECT) is
+	retrieve_and_set_windows_pos (parent_client_rect: WEL_RECT)
 			-- Asks the OS for the window position and size,
 			-- given the parents client area is `parent_client_rect'
 		require
@@ -229,18 +230,19 @@ feature -- Element change
 			window_handle_insert_after: POINTER
 			a_window_style: INTEGER
 			l_success: BOOLEAN
+			l_window_pos: WEL_WINDOW_POS
+			l_window: detachable WEL_WINDOW
 		do
-			send_layout_message (parent_client_rect)
+			l_window_pos := retrieved_window_position (parent_client_rect)
 
 				-- Set the size we got from windows
 				-- Only use the `window_insert_after' field if it is not Void
-			if
-				last_retrieved_window_pos.window_insert_after /= Void
-			then
-				window_handle_insert_after := last_retrieved_window_pos.window_insert_after.item
+			l_window := l_window_pos.window_insert_after
+			if l_window /= Void then
+				window_handle_insert_after := l_window.item
 			end
 
-			a_window_style :=	last_retrieved_window_pos.flags
+			a_window_style :=	l_window_pos.flags
 				--	If Ws_visible is set in `default_style' make the window now
 				-- visible.
 			if
@@ -251,15 +253,17 @@ feature -- Element change
 
 				-- Set the initial window position				
 			l_success := {WEL_API}.set_window_pos (item, window_handle_insert_after,
-										last_retrieved_window_pos.x, last_retrieved_window_pos.y,
-										last_retrieved_window_pos.width, last_retrieved_window_pos.height,
+										l_window_pos.x, l_window_pos.y,
+										l_window_pos.width, l_window_pos.height,
 										a_window_style)
 		end
 
-	set_image_list (image_list: WEL_IMAGE_LIST) is
+	set_image_list (image_list: detachable WEL_IMAGE_LIST)
 			-- Associate `image_list' with `Current'.
 			-- If `image_list' is `Void', removes the currently associated
 			-- image list (if any).
+		require
+			image_list_valid: image_list /= Void implies image_list.exists
 		do
 			if image_list = Void then
 				{WEL_API}.send_message (item, hdm_set_image_list, to_wparam (0), to_lparam (0))
@@ -270,7 +274,7 @@ feature -- Element change
 
 feature -- Notifications
 
-	on_hdn_begin_track (info: WEL_HD_NOTIFY) is
+	on_hdn_begin_track (info: WEL_HD_NOTIFY)
 			-- The user has begun dragging a divider in the control
 			-- (that is, the user has pressed the left mouse button while
 			-- the mouse cursor is on a divider in the header control).
@@ -280,7 +284,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_track (info: WEL_HD_NOTIFY) is
+	on_hdn_track (info: WEL_HD_NOTIFY)
 			-- The user is dragging a divider in the header control.
 		require
 			exists: exists
@@ -288,7 +292,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_end_track (info: WEL_HD_NOTIFY) is
+	on_hdn_end_track (info: WEL_HD_NOTIFY)
 			-- The user has finished dragging a divider.
 		require
 			exists: exists
@@ -296,7 +300,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_divider_dbl_click (info: WEL_HD_NOTIFY) is
+	on_hdn_divider_dbl_click (info: WEL_HD_NOTIFY)
 			-- The user double-clicked the divider area of the control.
 		require
 			exists: exists
@@ -304,7 +308,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_item_changed (info: WEL_HD_NOTIFY) is
+	on_hdn_item_changed (info: WEL_HD_NOTIFY)
 			-- The attributes of a header item have changed.
 		require
 			exists: exists
@@ -312,7 +316,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_item_changing (info: WEL_HD_NOTIFY) is
+	on_hdn_item_changing (info: WEL_HD_NOTIFY)
 			-- The attributes of a header item are about to change.
 		require
 			exists: exists
@@ -320,7 +324,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_item_click (info: WEL_HD_NOTIFY) is
+	on_hdn_item_click (info: WEL_HD_NOTIFY)
 			-- The user clicked the control.
 		require
 			exists: exists
@@ -328,7 +332,7 @@ feature -- Notifications
 		do
 		end
 
-	on_hdn_item_dbl_click (info: WEL_HD_NOTIFY) is
+	on_hdn_item_dbl_click (info: WEL_HD_NOTIFY)
 			-- The user double-clicked the control.
 		require
 			exists: exists
@@ -338,7 +342,7 @@ feature -- Notifications
 
 feature {WEL_COMPOSITE_WINDOW} -- Implementation
 
-	process_notification_info (notification_info: WEL_NMHDR) is
+	process_notification_info (notification_info: WEL_NMHDR)
 			-- Process a `notification_code' sent by Windows
 			-- through the Wm_notify message
 		local
@@ -377,13 +381,10 @@ feature {WEL_COMPOSITE_WINDOW} -- Implementation
 
 feature {NONE} -- Implementation
 
-	last_retrieved_window_pos: WEL_WINDOW_POS
-
-	send_layout_message (a_rect: WEL_RECT) is
+	retrieved_window_position (a_rect: WEL_RECT): WEL_WINDOW_POS
 			-- This Windows message retrieves the size and position of a header control
 			-- within a given rectangle. This message is used to determine the appropriate
 			-- dimensions for a new header control that is to occupy the given rectangle.
-			-- The resulting window position will be stored in `last_retrieved_window_pos'
 		require
 			exists: exists
 			rect_exists: a_rect /= Void and then a_rect.exists
@@ -397,18 +398,18 @@ feature {NONE} -- Implementation
 			check
 				successfull: i_result /= 0
 			end
-			last_retrieved_window_pos := hd_layout.window_pos
+			Result := hd_layout.window_pos
 		ensure
-			last_retrieved_window_pos_not_void: last_retrieved_window_pos /= Void
+			last_retrieved_window_pos_not_void: Result /= Void
 		end
 
-	class_name: STRING_32 is
+	class_name: STRING_32
 			-- Window class name to create
 		once
 			Result := (create {WEL_STRING}.share_from_pointer (cwin_wc_header)).string
 		end
 
-	default_style: INTEGER is
+	default_style: INTEGER
 			-- Default style used to create the control
 		once
 			Result := Ws_child + Ws_border +
@@ -417,14 +418,14 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Externals
 
-	cwin_wc_header: POINTER is
+	cwin_wc_header: POINTER
 		external
 			"C [macro %"cctrl.h%"] : EIF_POINTER"
 		alias
 			"WC_HEADER"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

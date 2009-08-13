@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Windows SD_TOOL_BAR_DRAWER implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -36,7 +36,7 @@ create
 
 feature{NONE} -- Initlization
 
-	make is
+	make
 			-- Creation method
 		do
 			init_theme
@@ -45,8 +45,8 @@ feature{NONE} -- Initlization
 			create internal_shared
 		end
 
-	init_theme is
-			-- Initialize theme drawer.
+	init_theme
+			-- Initialize theme drawer
 		local
 			l_app_imp: EV_APPLICATION_IMP
 			l_tool_bar: EV_TOOL_BAR
@@ -66,31 +66,31 @@ feature{NONE} -- Initlization
 			theme_data := theme_drawer.open_theme_data (l_wel_tool_bar.item, "Toolbar")
 		end
 
-	base_make_called: BOOLEAN is True
-			-- Not breaking the invariant.
+	base_make_called: BOOLEAN = True
+			-- Not breaking the invariant
 
 feature -- Redefine
 
 	internal_buffered_dc: WEL_DC
-			-- Buffered dc.
+			-- Buffered dc
 
 	internal_rectangle: EV_RECTANGLE
-			-- Whole rectangle ara during a `start_draw' and `end_draw'.
+			-- Whole rectangle ara during a `start_draw' and `end_draw'
 
 	internal_client_dc: WEL_DC
-			-- Dc for tool bar windows implementation.
+			-- Dc for tool bar windows implementation
 
 	is_start_draw_called: BOOLEAN
-			-- Redefine
+			-- <Precursor>
 
-	set_tool_bar (a_tool_bar: SD_TOOL_BAR) is
-			-- Redefine
+	set_tool_bar (a_tool_bar: SD_TOOL_BAR)
+			-- <Precursor>
 		do
 			tool_bar := a_tool_bar
 		end
 
-	start_draw (a_rectangle: EV_RECTANGLE) is
-			-- Redefine
+	start_draw (a_rectangle: EV_RECTANGLE)
+			-- <Precursor>
 		local
 			l_imp: WEL_WINDOW
 			l_wel_bitmap: WEL_BITMAP
@@ -134,8 +134,8 @@ feature -- Redefine
 			set: internal_rectangle = a_rectangle
 		end
 
-	end_draw is
-			-- Redefine
+	end_draw
+			-- <Precursor>
 		local
 		do
 			if internal_buffered_dc /= Void then
@@ -160,34 +160,41 @@ feature -- Redefine
 			is_start_draw_called := False
 		end
 
-	draw_item (a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS) is
-			-- Redefine
+	draw_item (a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS)
+			-- <Precursor>
 		local
 			l_rect, l_rect_2: WEL_RECT
 			l_vision_rect: EV_RECTANGLE
-			l_button: SD_TOOL_BAR_DUAL_POPUP_BUTTON
+			l_popup_button: SD_TOOL_BAR_DUAL_POPUP_BUTTON
+			l_item: SD_TOOL_BAR_ITEM
 		do
 		 	if internal_buffered_dc /= Void then
 				l_vision_rect := a_arguments.item.rectangle
 
 				create l_rect.make (l_vision_rect.left, l_vision_rect.top, l_vision_rect.right, l_vision_rect.bottom)
 
-				l_button ?= a_arguments.item
-				if l_button = Void then
-					draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, part_constants_by_type (a_arguments.item))
-				else
-					-- Specail handling for SD_TOOL_BAR_DUAL_POPUP_BUTTON background
-					if l_button.is_dropdown_area then
-						-- Draw the background as a whole without separator
-						draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, {WEL_THEME_PART_CONSTANTS}.tp_button)
-					else
-						-- Draw dropdown area which cover the whole background
-						create l_rect_2.make (l_vision_rect.left, l_vision_rect.top, l_vision_rect.right, l_vision_rect.bottom)
-						draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, {WEL_THEME_PART_CONSTANTS}.tp_button)
+				l_item := a_arguments.item
+				check not_vod: l_item /= Void end
 
-						-- Draw front area, overwrite the front
-						create l_rect.make (l_vision_rect.left, l_vision_rect.top, l_vision_rect.right - l_button.dropdrown_width - l_button.gap // 2, l_vision_rect.bottom)
-						draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, {WEL_THEME_PART_CONSTANTS}.tp_splitbutton)
+				-- See bug#12580, we only draw background for sensitive buttons
+				if l_item.is_sensitive then
+					l_popup_button ?= l_item
+					if l_popup_button = Void then
+						draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, part_constants_by_type (a_arguments.item))
+					else
+						-- Special handling for SD_TOOL_BAR_DUAL_POPUP_BUTTON background
+						if l_popup_button.is_dropdown_area then
+							-- Draw the background as a whole without separator
+							draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, {WEL_THEME_PART_CONSTANTS}.tp_button)
+						else
+							-- Draw dropdown area which cover the whole background
+							create l_rect_2.make (l_vision_rect.left, l_vision_rect.top, l_vision_rect.right, l_vision_rect.bottom)
+							draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, {WEL_THEME_PART_CONSTANTS}.tp_button)
+
+							-- Draw front area, overwrite the front
+							create l_rect.make (l_vision_rect.left, l_vision_rect.top, l_vision_rect.right - l_popup_button.dropdrown_width - l_popup_button.gap // 2, l_vision_rect.bottom)
+							draw_button_background (internal_buffered_dc, l_rect, a_arguments.item.state, {WEL_THEME_PART_CONSTANTS}.tp_splitbutton)
+						end
 					end
 				end
 
@@ -196,7 +203,7 @@ feature -- Redefine
 		 	end
 		end
 
-	draw_button_background (a_dc: WEL_DC; a_rect: WEL_RECT; a_state: INTEGER; a_part_constant: INTEGER) is
+	draw_button_background (a_dc: WEL_DC; a_rect: WEL_RECT; a_state: INTEGER; a_part_constant: INTEGER)
 			-- Draw button background on `a_dc'
 		require
 			not_void: a_dc /= Void and then a_dc.exists
@@ -230,8 +237,8 @@ feature -- Redefine
 			l_brush.delete
 		end
 
-	on_wm_theme_changed is
-			-- Redefine
+	on_wm_theme_changed
+			-- <Precursor>
 		local
 			l_app_imp: EV_APPLICATION_IMP
 		do
@@ -245,16 +252,16 @@ feature -- Redefine
 feature {NONE} -- Implementation
 
 	internal_shared: SD_SHARED
-			-- All singletons.
+			-- All singletons
 
 	theme_data: POINTER
-			-- Theme data.
+			-- Theme data
 
 	theme_drawer: EV_THEME_DRAWER_IMP
-			-- Theme drawer.
+			-- Theme drawer
 
-	to_mswin_state (a_state: INTEGER): INTEGER is
-			-- Convert from SD_TOOL_BAR_ITEM_STATE to WEL_THEME_TS_CONSTANTS.
+	to_mswin_state (a_state: INTEGER): INTEGER
+			-- Convert from SD_TOOL_BAR_ITEM_STATE to WEL_THEME_TS_CONSTANTS
 		do
 			inspect
 				a_state
@@ -273,7 +280,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	draw_pixmap (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS) is
+	draw_pixmap (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS)
 			-- Draw pixmap
 		require
 			not_void: a_dc_to_draw /= Void
@@ -292,7 +299,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	is_use_gdip (a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS): BOOLEAN is
+	is_use_gdip (a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS): BOOLEAN
 			-- If using gdi+ to draw icons?
 		local
 			l_button: SD_TOOL_BAR_BUTTON
@@ -303,8 +310,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	draw_pixel_buffer (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS) is
-			-- Draw icons when using gdi+.
+	draw_pixel_buffer (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS)
+			-- Draw icons when using gdi+
 		require
 			use_gdip: is_use_gdip (a_arguments)
 		local
@@ -353,8 +360,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	draw_pixmap_real (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS) is
-			-- Draw icons when using gdi.
+	draw_pixmap_real (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS)
+			-- Draw icons when using gdi
 		local
 			l_pixmap_state: EV_PIXMAP_IMP_STATE
 			l_wel_bitmap, l_mask_bitmap: WEL_BITMAP
@@ -426,12 +433,12 @@ feature {NONE} -- Implementation
 		end
 
 	arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS
-			-- Temp arguments during draw desartuated tool bar icons.
+			-- Temp arguments during draw desartuated tool bar icons
 
 	pixmap_coordinate: EV_COORDINATE
-			-- Temp arguments during draw desartuated tool bar icons.
+			-- Temp arguments during draw desartuated tool bar icons
 
-	draw_text (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS) is
+	draw_text (a_dc_to_draw: WEL_DC; a_arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS)
 			-- Draw text
 		require
 			not_void: a_dc_to_draw /= Void
@@ -477,8 +484,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	part_constants_by_type (a_item: SD_TOOL_BAR_ITEM): INTEGER is
-			-- Part constants base on `a_item''s type.
+	part_constants_by_type (a_item: SD_TOOL_BAR_ITEM): INTEGER
+			-- Part constants base on `a_item''s type
 		require
 			not_void: a_item /= Void
 		local
@@ -504,8 +511,8 @@ feature {NONE} -- Implementation
 				or Result = {WEL_THEME_PART_CONSTANTS}.tp_separator
 		end
 
-	desaturation (a_pixmap: EV_PIXMAP; a_k: REAL; a_dc_to_draw: WEL_DC) is
-			-- Desatuation `a_pixmap' with `a_k' when Gdi+ is not available.
+	desaturation (a_pixmap: EV_PIXMAP; a_k: REAL; a_dc_to_draw: WEL_DC)
+			-- Desatuation `a_pixmap' with `a_k' when Gdi+ is not available
 		require
 			valid: 0 <= a_k  and a_k <= 1
 			not_void: a_pixmap /= Void
@@ -550,8 +557,8 @@ feature {NONE} -- Implementation
 			a_dc_to_draw.draw_bitmap (l_bitmap_imp.get_bitmap, pixmap_coordinate.x, pixmap_coordinate.y, a_pixmap.width, a_pixmap.height)
 		end
 
-	desaturation_pixel_buffer (a_pixel_buffer: EV_PIXEL_BUFFER; a_dc_to_draw: WEL_DC) is
-			-- Disaturation `a_pixel_buffer' when Gdi+ is available.
+	desaturation_pixel_buffer (a_pixel_buffer: EV_PIXEL_BUFFER; a_dc_to_draw: WEL_DC)
+			-- Disaturation `a_pixel_buffer' when Gdi+ is available
 		require
 			not_void: a_pixel_buffer /= Void
 			not_void: a_dc_to_draw /= Void and then a_dc_to_draw.exists
@@ -567,14 +574,14 @@ feature {NONE} -- Implementation
 		end
 
 	grayscale_icon_drawer: WEL_GDIP_GRAYSCALE_IMAGE_DRAWER
-			-- Grayscale icon drawer.
+			-- Grayscale icon drawer
 		once
 			create Result
 		ensure
 			not_void: Result /= Void
 		end
 
-	draw_classic_separator (a_dc: WEL_DC; a_rect: WEL_RECT; a_part_constant: INTEGER) is
+	draw_classic_separator (a_dc: WEL_DC; a_rect: WEL_RECT; a_part_constant: INTEGER)
 			-- Draw separator for classic theme
 		require
 			not_void: a_dc /= Void
@@ -608,8 +615,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	draw_flat_button_edge_hot (a_dc: WEL_DC; a_rect: WEL_RECT) is
-			-- Draw flat style button edge when is hot.
+	draw_flat_button_edge_hot (a_dc: WEL_DC; a_rect: WEL_RECT)
+			-- Draw flat style button edge when is hot
 		require
 			not_void: a_dc /= Void
 			not_void: a_rect /= Void
@@ -631,8 +638,8 @@ feature {NONE} -- Implementation
 			l_drawer.draw_line (a_dc, a_rect.left, a_rect.bottom - 1, a_rect.right, a_rect.bottom - 1, l_color)
 		end
 
-	draw_flat_button_edge_hot_pressed (a_dc: WEL_DC; a_rect: WEL_RECT) is
-			-- Draw flat style button edge when is hot and checked.
+	draw_flat_button_edge_hot_pressed (a_dc: WEL_DC; a_rect: WEL_RECT)
+			-- Draw flat style button edge when is hot and checked
 		require
 			not_void: a_dc /= Void
 			not_void: a_rect /= Void
@@ -651,8 +658,8 @@ feature {NONE} -- Implementation
 			l_drawer.draw_line (a_dc, a_rect.left + 1, a_rect.top + 1, a_rect.left + 1, a_rect.bottom - 1, l_color)
 		end
 
-	draw_flat_button_edge_pressed (a_dc: WEL_DC; a_rect: WEL_RECT) is
-			-- Draw flat style button edge when is pressed.
+	draw_flat_button_edge_pressed (a_dc: WEL_DC; a_rect: WEL_RECT)
+			-- Draw flat style button edge when is pressed
 		require
 			not_void: a_dc /= Void
 			not_void: a_rect /= Void
@@ -679,7 +686,7 @@ invariant
 	not_void: theme_drawer /= Void
 	not_void: internal_shared /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

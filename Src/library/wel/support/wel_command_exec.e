@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Execute commands."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,8 +13,8 @@ create
 
 feature -- Initialization
 
-	make (a_command: WEL_COMMAND; an_argument: ANY) is
-			-- Set `command' and `argument' with 
+	make (a_command: WEL_COMMAND; an_argument: detachable ANY)
+			-- Set `command' and `argument' with
 			-- `a_command' and `an_argument'.
 		require
 			a_command_not_void: a_command /= Void
@@ -31,12 +31,12 @@ feature -- Access
 	command: WEL_COMMAND
 			-- User-defined command to execute
 
-	argument: ANY
+	argument: detachable ANY
 			-- Argument to be given to `command' before execution
 
 feature -- Execution
 
-	execute (window: WEL_WINDOW; message: INTEGER; wparam, lparam: POINTER) is
+	execute (window: WEL_WINDOW; message: INTEGER; wparam, lparam: POINTER)
 			-- Create message information corresponding to `message'
 			-- and execute `command'.
 		require
@@ -50,7 +50,7 @@ feature -- Execution
 			command.execute (argument)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Degree 4 during Eiffel compilation"
 	legal: "See notice at end of class."
@@ -55,7 +55,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new Degree 4.
 		do
 			create changed_status.make
@@ -64,7 +64,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	Degree_number: INTEGER is 4
+	Degree_number: INTEGER = 4
 			-- Degree number
 
 	changed_status: TWO_WAY_SORTED_SET [INTEGER]
@@ -77,7 +77,7 @@ feature -- Access
 
 feature -- Processing
 
-	execute is
+	execute
 			-- Inheritance analysis on the changed classes. Since the
 			-- classes contained in `changed_classes' are sorted by class
 			-- topological ids, it ensures that a class will be treated
@@ -208,7 +208,18 @@ feature -- Processing
 				l_system.check_vtec
 			end
 
+				-- Reset all inheritance helper structures.
+			analyzer.wipe_out
+			analyzer.origin_table.wipe_out
+			analyzer.selection_list_cache.reset_all
+			analyzer.inherit_feat_cache.reset_all
+			analyzer.inherit_info_cache.reset_all
+
+				-- Wipe out feature table cache.
+			feature_table_cache.wipe_out
 			wipe_out
+
+
 			changed_status.wipe_out
 			l_system.set_current_class (Void)
 			l_degree_output.put_end_degree
@@ -216,7 +227,7 @@ feature -- Processing
 
 feature -- Element change
 
-	insert_class (a_class: CLASS_C) is
+	insert_class (a_class: CLASS_C)
 			-- Add `a_class' to be processed.
 		local
 			l_ext: EXTERNAL_CLASS_C
@@ -237,7 +248,7 @@ feature -- Element change
 
 feature -- Removal
 
-	remove_class (a_class: CLASS_C) is
+	remove_class (a_class: CLASS_C)
 			-- Remove `a_class'.
 		do
 			if a_class.degree_4_needed then
@@ -246,7 +257,7 @@ feature -- Removal
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Remove all classes.
 		local
 			i, nb: INTEGER
@@ -272,7 +283,7 @@ feature -- Removal
 
 feature -- Setting
 
-	set_expanded_modified (a_class: CLASS_C) is
+	set_expanded_modified (a_class: CLASS_C)
 			-- The expanded status of `a_class' has been modified.
 		require
 			a_class_not_void: a_class /= Void
@@ -281,7 +292,7 @@ feature -- Setting
 			a_class.set_expanded_modified
 		end
 
-	set_deferred_modified (a_class: CLASS_C) is
+	set_deferred_modified (a_class: CLASS_C)
 			-- The deferred status of `a_class' has been modified.
 		require
 			a_class_not_void: a_class /= Void
@@ -290,7 +301,7 @@ feature -- Setting
 			a_class.set_deferred_modified
 		end
 
-	set_supplier_status_modified (a_class: CLASS_C) is
+	set_supplier_status_modified (a_class: CLASS_C)
 			-- The status of a supplier has changed.
 		require
 			a_class_not_void: a_class /= Void
@@ -299,7 +310,7 @@ feature -- Setting
 			a_class.set_supplier_status_modified
 		end
 
-	set_assertion_prop_list (a_class: CLASS_C; l: LINKED_LIST [INTEGER]) is
+	set_assertion_prop_list (a_class: CLASS_C; l: LINKED_LIST [INTEGER])
 			-- Dino stuff.
 		require
 			a_class_not_void: a_class /= Void
@@ -308,7 +319,7 @@ feature -- Setting
 			a_class.set_assertion_prop_list (l)
 		end
 
-	add_changed_status (a_class: CLASS_C) is
+	add_changed_status (a_class: CLASS_C)
 			-- Record `a_class.class_id' in `changed_status'.
 		require
 			a_class_not_void: a_class /= Void
@@ -317,7 +328,7 @@ feature -- Setting
 			changed_status.extend (a_class.class_id)
 		end
 
-	remove_descendant_classes_from_processing (a_class: CLASS_C) is
+	remove_descendant_classes_from_processing (a_class: CLASS_C)
 			-- Add all descendants of `a_class' to `ignored_classes'.
 		require
 			a_class_not_void: a_class /= Void
@@ -339,7 +350,7 @@ feature -- Setting
 
 feature {NONE} -- Processing
 
-	process_class (a_class: CLASS_C) is
+	process_class (a_class: CLASS_C)
 			-- Process Degree 4 on `a_class'.
 		require
 			a_class_not_void: a_class /= Void
@@ -390,7 +401,7 @@ feature {INHERIT_TABLE} -- Propagation
 
 	process_and_propagate (a_class: CLASS_C; resulting_table: FEATURE_TABLE;
 		equivalent_table: BOOLEAN; pass2_control: PASS2_CONTROL;
-		a_assert_prop_list: LINKED_LIST [INTEGER]; a_changed_features: ARRAYED_LIST [INTEGER]) is
+		a_assert_prop_list: LINKED_LIST [INTEGER]; a_changed_features: ARRAYED_LIST [INTEGER])
 			-- Propagate to Degree 4 and Degree 3 according to
 			-- `resulting_table' and `pass2_control'.
 		require
@@ -523,7 +534,7 @@ feature {INHERIT_TABLE} -- Propagation
 
 feature {NONE} -- Propagation to Degree 4
 
-	propagate_pass2 (a_class: CLASS_C; real_pass2: BOOLEAN) is
+	propagate_pass2 (a_class: CLASS_C; real_pass2: BOOLEAN)
 			-- Ask the compiler to recalculate the feature table for
 			-- the direct descendants. The feature table of `a_class'
 			-- has varied between two compilations, the feature tables
@@ -599,7 +610,7 @@ feature {NONE} -- Propagation to Degree 4
 
 feature {NONE} -- Propagation to Degree 3
 
-	propagate_pass3 (a_class: CLASS_C; pass2_control: PASS2_CONTROL; status_modified: BOOLEAN) is
+	propagate_pass3 (a_class: CLASS_C; pass2_control: PASS2_CONTROL; status_modified: BOOLEAN)
 			-- Ask the compiler to execute Degree 3 on
 			-- all clients of `a_class'.
 		require
@@ -639,7 +650,7 @@ feature {NONE} -- Propagation to Degree 3
 
 feature {NONE} -- Implementation
 
-	force_type_checks (a_class: CLASS_C; pass2_control: PASS2_CONTROL) is
+	force_type_checks (a_class: CLASS_C; pass2_control: PASS2_CONTROL)
 			-- Force type checks on conformance dependent classes.
 		require
 			a_class_not_void: a_class /= Void
@@ -669,7 +680,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Generic checking
 
-	check_creation_constraint_instances (a_error_occurred: BOOLEAN) is
+	check_creation_constraint_instances (a_error_occurred: BOOLEAN)
 			-- If not `a_error_occurred' check that all the generic
 			-- declarations where the generic class defines a creation
 			-- constraint clause are system valid.
@@ -716,7 +727,7 @@ invariant
 	changed_status_not_void: changed_status /= Void
 	ignored_classes_not_void: ignored_classes /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

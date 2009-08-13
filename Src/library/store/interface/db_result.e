@@ -1,4 +1,4 @@
-indexing
+note
 
 	status: "See notice at end of class.";
 	Date: "$Date$"
@@ -21,7 +21,7 @@ create -- Creation procedure
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create an interface object
 			-- to receive query result.
 		do
@@ -30,13 +30,13 @@ feature -- Initialization
 
 feature -- Element change
 
-	fill_in is
+	fill_in
 			-- Fill in `data'.
 		do
 			implementation.fill_in (descriptor)
 		end
 
-	copy (other: DB_RESULT) is
+	copy (other: DB_RESULT)
 			-- Assign Current attributes with `other' attributes.
 		require
 			other /= Void
@@ -48,28 +48,28 @@ feature -- Element change
 
 feature -- Status report
 
-	data: DB_DATA is
+	data: DB_DATA
 			-- Loaded data
 		do
 			Result := implementation.data
 		end
-	
-	map_table_to_create: BOOLEAN is
-			-- Does map table need to be created? 
+
+	map_table_to_create: BOOLEAN
+			-- Does map table need to be created?
 		do
 			Result := map_table = Void
 		end
-	
+
 feature {DB_SELECTION} -- Status setting
 
-	update_map_table (obj: ANY) is
+	update_map_table (obj: ANY)
 			-- Update table mapping field
 			-- position in `obj' with column rank.
 		do
 			implementation.update_map_table (obj)
 		end
 
-	set_descriptor (d: INTEGER) is
+	set_descriptor (d: INTEGER)
 			-- Associate `d' to `Current' for selection.
 		do
 			descriptor := d
@@ -77,7 +77,7 @@ feature {DB_SELECTION} -- Status setting
 			descriptor = d
 		end
 
-	update_metadata is
+	update_metadata
 			-- Cursor must update database metadata to
 			-- fill in properly.
 		do
@@ -93,15 +93,15 @@ feature {NONE} -- Status report
 
 	descriptor: INTEGER
 			-- Cursor descriptor
-			
-	map_table: ARRAY [INTEGER] is
+
+	map_table: detachable ARRAY [INTEGER]
 			-- Map table which allows to find data position
 			-- into an Eiffel object.
 		do
 			Result := implementation.map_table
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

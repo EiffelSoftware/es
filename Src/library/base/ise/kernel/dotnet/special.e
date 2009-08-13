@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Special objects: homogeneous sequences of values, 
 		used to represent arrays and strings
@@ -14,12 +14,14 @@ frozen class
 inherit
 	ABSTRACT_SPECIAL
 		redefine
+			debug_output,
 			is_equal,
 			copy
 		end
 
 create
 	make,
+	make_filled,
 	make_from_native_array
 
 feature {INTERNAL} -- Initialization
@@ -36,13 +38,31 @@ feature {INTERNAL} -- Initialization
 
 feature {NONE} -- Initialization
 
+	make_filled (v: T; n: INTEGER)
+			-- Create a special object for `n' entries initialized with `v'.
+		require
+			non_negative_argument: n >= 0
+		do
+			make (n)
+			fill_with (v, 0, n - 1)
+		ensure
+			capacity_set: capacity = n
+			count_set: count = n
+			filled: -- For every `i' in `0' .. `n - 1', `item' (`i') = `v'
+		end
+
 	make_from_native_array (an_array: like native_array)
 			-- Create a special object from `an_array'.
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
 			an_array_not_void: an_array /= Void
 		do
-			internal_native_array ?= an_array.clone
+			if attached {like native_array} an_array.clone as l_array then
+				internal_native_array := l_array
+			else
+				check not_possible: False end
+				internal_native_array := an_array
+			end
 		ensure
 				-- Commented because `equals' in .NET does not compare the content of arrays.
 --			native_array_set: native_array.equals (an_array)
@@ -60,7 +80,7 @@ feature -- Access
 			Result := internal_native_array.item (i)
 		end
 
-	infix "@" (i: INTEGER): T
+	at alias "@" (i: INTEGER): T
 			-- Item at `i'-th position
 			-- (indices begin at 0)
 		require
@@ -114,7 +134,7 @@ feature -- Access
 			base_address_not_null: Result /= default_pointer
 		end
 
-	native_array: ?NATIVE_ARRAY [T]
+	native_array: NATIVE_ARRAY [T]
 			-- Only for compatibility with .NET
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
@@ -140,7 +160,7 @@ feature -- Measurement
 		do
 			Result := internal_native_array.count
 		end
-	
+
 	capacity: INTEGER
 			-- Count of special area
 		do
@@ -157,7 +177,7 @@ feature -- Status report
 			index_big_enough: i >= 0
 			index_small_enough: i < count
 		local
-			default_value: ?T
+			default_value: detachable T
 		do
 			Result := item (i) = default_value
 		end
@@ -171,7 +191,6 @@ feature -- Status report
 			end_index_valid: end_index < count
 		local
 			i: INTEGER
-			t: T
 		do
 			from
 				Result := True
@@ -179,11 +198,33 @@ feature -- Status report
 			until
 				i > end_index or else not Result
 			loop
-				Result := item (i) = t
+				Result := is_default (i)
 				i := i + 1
 			end
 		ensure
 			valid_on_empty_area: (end_index < start_index) implies Result
+		end
+
+	filled_with (v: T; start_index, end_index: INTEGER): BOOLEAN
+			-- Are all items between index `start_index' and `end_index'
+			-- set to `v'?
+			-- (Use reference equality for comparison.)			
+		require
+			start_index_non_negative: start_index >= 0
+			start_index_not_too_big: start_index <= end_index + 1
+			end_index_valid: end_index < count
+		local
+			i: INTEGER
+		do
+			from
+				Result := True
+				i := start_index
+			until
+				i > end_index or else not Result
+			loop
+				Result := item (i) = v
+				i := i + 1
+			end
 		end
 
 	same_items (other: like Current; source_index, destination_index, n: INTEGER): BOOLEAN
@@ -412,6 +453,32 @@ feature -- Resizing
 			preserved: Result.same_items (old twin, 0, 0, old count)
 		end
 
+	aliased_resized_area_with_default (a_default_value: T; n: INTEGER): like Current
+			-- Try to resize `Current' with a count of `n', if not
+			-- possible a new copy. Non yet initialized entries are set to `a_default_value'.
+		require
+			n_non_negative: n > count
+		local
+			i: INTEGER
+			l_old_count: INTEGER
+		do
+			l_old_count := count
+			Result := aliased_resized_area (n)
+			from
+				i := l_old_count
+			until
+				i = n
+			loop
+				Result.put (a_default_value, i)
+				i := i + 1
+			end
+		ensure
+			Result_not_void: Result /= Void
+			new_count: Result.count = n
+			new_capacity: Result.capacity = n
+			preserved: Result.same_items (old twin, 0, 0, old count)
+		end
+
 feature -- Removal
 
 	clear_all
@@ -458,12 +525,22 @@ feature -- Removal
 			filled: -- For every `i' in `start_index' .. `end_index', `is_default' (`i')
 		end
 
+feature -- Output
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := Precursor
+			Result.append_string (", capacity=")
+			Result.append_integer (capacity)
+		end
+
 feature {SPECIAL} -- Implementation: Access
 
 	internal_native_array: like native_array;
 			-- Access to memory location.
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

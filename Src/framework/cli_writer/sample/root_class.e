@@ -1,8 +1,7 @@
-indexing
+note
 	description	: "System's root class"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	note		: "Initial version automatically generated"
 
 class
 	ROOT_CLASS
@@ -12,7 +11,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		local
 			l_pe_file: CLI_PE_FILE
@@ -168,7 +167,7 @@ feature -- Initialization
 			l_pe_file.save
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

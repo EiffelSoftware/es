@@ -59,7 +59,6 @@ doc:<file name="traverse.c" header="eif_traverse.h" version="$Id$" summary="Trav
 #include "rt_gen_conf.h"
 #include "rt_struct.h"
 #include "rt_interp.h"
-#include "eif_size.h"		/* For LNGPAD macros... */
 #include <string.h>				/* For memset() */
 #include "rt_assert.h"
 
@@ -107,6 +106,7 @@ rt_shared uint32 nomark(char *);
 rt_private uint32 chknomark(char *, struct htable *, long);
 #endif
 
+rt_private void internal_traversal(EIF_REFERENCE object, int p_accounting, int is_first_level);
 rt_private EIF_REFERENCE matching (void (*action_fnptr) (EIF_REFERENCE, EIF_REFERENCE), EIF_TYPE_INDEX result_type);
 rt_private void match_object (EIF_REFERENCE object, void (*action_fnptr) (EIF_REFERENCE, EIF_REFERENCE));
 rt_private void match_simple_stack (struct stack *stk, void (*action_fnptr) (EIF_REFERENCE, EIF_REFERENCE));
@@ -270,28 +270,35 @@ doc:	</routine>
 
 rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 {
-	/* First pass of the store mechanism consisting in marking objects. */
+	REQUIRE("object not null", object);
 
+		/* Use `internal_traversal' so that if `object' is expanded, we still process it properly. */
+	internal_traversal(object, p_accounting, 1);
+}
+
+rt_private void internal_traversal(EIF_REFERENCE object, int p_accounting, int is_first_level)
+{
+		/* First pass of the store mechanism consisting in marking objects. */
 	EIF_GET_CONTEXT
-	char *object_ref, *reference;
-	EIF_INTEGER count, elem_size;
+	char *reference;
+	rt_uint_ptr count, elem_size;
 	union overhead *zone;		/* Object header */
 	uint16 flags;				/* Object flags */
 	char *new;					/* Mapped object */
 	EIF_OBJECT mapped;				/* Mapped object protection */
 	int mapped_object = 0;		/* True if maping occurred */
-	int i;						/* To iterate over the references */
+	rt_uint_ptr i;						/* To iterate over the references */
+
+	REQUIRE("object not null", object);
 
 	zone = HEADER(object);
 	flags = zone->ov_flags;
 
-	if (flags & EO_C)				/* Stop on C objects */
-		return;
-
 	if (flags & EO_STORE)			/* Object is already marked? */
 		return;						/* Then we already dealt with it */
 
-	if (!eif_is_nested_expanded(flags)) {		/* Mark the object if not expanded */
+		/* Mark the object if it is not expanded, or if it is, it should be the top level object. */
+	if (is_first_level || !eif_is_nested_expanded(flags)) {
 
 		/* If a maping table is to be built, create a new object and insert it
 		 * in the map table. The reference is protected by requesting insertion
@@ -350,9 +357,8 @@ rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 			return;
 		}
 
-		/* Evaluation of the number of items in the special object */
-		object_ref = RT_SPECIAL_INFO_WITH_ZONE(object, zone);
-		count = RT_SPECIAL_COUNT_WITH_INFO(object_ref);
+			/* Evaluation of the number of items in the special object */
+		count = RT_SPECIAL_COUNT(object);
 
 		if (flags & EO_TUPLE) {
 				/* Don't forget that first element of TUPLE is the BOOLEAN
@@ -361,25 +367,26 @@ rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 				if (eif_item_sk_type(object, i) == SK_REF) {
 					reference = eif_reference_item(object, i);
 					if (reference) {
-						traversal(reference, p_accounting);	
+						internal_traversal(reference, p_accounting, 0);
 					}
 				}
 			}
 		} else if (!(flags & EO_COMP))
-			/* Special object filled with references */
+				/* Special object filled with references */
 			for (i = 0; i < count; i++) {
 				reference = *((char **) object + i);
-				if (reference)		/* Non void reference */
-					traversal(reference, p_accounting);
+				if (reference) {
+					internal_traversal(reference, p_accounting, 0);
+				}
 			}
 		else {
-			/* Special object filled with expanded objects which are
-			 * necessary not special objects.
-			 */
-			int offset = OVERHEAD;
-			elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(object_ref);
-			for (i = 0; i < count; i++, offset += elem_size)
-				traversal(object + offset, p_accounting);
+				/* Special object filled with expanded objects which are
+				 * necessary not special objects. */
+			rt_uint_ptr offset = OVERHEAD;
+			elem_size = RT_SPECIAL_ELEM_SIZE(object);
+			for (i = 0; i < count; i++, offset += elem_size) {
+				internal_traversal(object + offset, p_accounting, 0);
+			}
 		}
 	} else {
 		/* Normal object */
@@ -388,8 +395,9 @@ rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 		/* Traversal of references of `object' */
 		for (i = 0; i < count; i++) {
 			reference = *((char **) object + i);
-			if ((char *) 0 != reference)
-				traversal(reference, p_accounting);
+			if (reference) {
+				internal_traversal(reference, p_accounting, 0);
+			}
 		}
 	}
 
@@ -526,9 +534,14 @@ doc:	</routine>
 rt_public EIF_REFERENCE find_referers (EIF_REFERENCE target, EIF_INTEGER result_type)
 {
 	RT_GET_CONTEXT
+	EIF_GET_CONTEXT
 	EIF_REFERENCE result = NULL;
 #ifdef ISE_GC
+		/* Fixed eweasel test#thread008 where if a GC cycle happen, while we wait for the
+		 * synchronization, then `target' might not be valid anymore. */
+	RT_GC_PROTECT(target);
 	GC_THREAD_PROTECT(eif_synchronize_gc (rt_globals));
+	RT_GC_WEAN(target);
 	referers_target = target;
 	result = matching (internal_find_referers, (EIF_TYPE_INDEX) result_type);
 	GC_THREAD_PROTECT(eif_unsynchronize_gc (rt_globals));
@@ -712,7 +725,6 @@ rt_private EIF_REFERENCE matching (void (*action_fnptr) (EIF_REFERENCE, EIF_REFE
 	struct obj_array l_found, l_marked;
 	union overhead *zone;
 	EIF_REFERENCE Result;
-	EIF_REFERENCE ref;
 	
 		/* Initialize structure that will hold found objects */
 	l_found.count = 0;
@@ -774,14 +786,14 @@ rt_private EIF_REFERENCE matching (void (*action_fnptr) (EIF_REFERENCE, EIF_REFE
 		 * We turn off GC since we do not want objects to be moved. */
 	gc_stopped = !eif_gc_ison();
 	eif_gc_stop();
-	Result = spmalloc (CHRPAD ((rt_uint_ptr) l_found.count * (rt_uint_ptr) sizeof (EIF_REFERENCE)) + LNGPAD(2), EIF_FALSE);
+	Result = spmalloc (RT_SPECIAL_MALLOC_COUNT(l_found.count, sizeof (EIF_REFERENCE)), EIF_FALSE);
 	zone = HEADER (Result);
-	ref = Result + (zone->ov_size & B_SIZE) - LNGPAD (2);
 	zone->ov_flags |= EO_REF;
 	zone->ov_dftype = result_type;
 	zone->ov_dtype = To_dtype(result_type);
-	*(EIF_INTEGER *) ref = l_found.count;
-	*(EIF_INTEGER *) (ref + sizeof (EIF_INTEGER)) = sizeof (EIF_REFERENCE);
+	RT_SPECIAL_COUNT(Result) = l_found.count;
+	RT_SPECIAL_ELEM_SIZE(Result) = sizeof(EIF_REFERENCE);
+	RT_SPECIAL_CAPACITY(Result) = l_found.count;
 
 		/* Now, populate `Result' with content of `l_found'. Since we just
 		 * created a new Eiffel objects. */
@@ -944,7 +956,7 @@ rt_private void match_object (EIF_REFERENCE object, void (*action_fnptr) (EIF_RE
 	zone = HEADER(object);
 	flags = zone->ov_flags;
 
-	if ((flags & EO_C) || (flags & EO_STORE)) {
+	if (flags & EO_STORE) {
 		/* Object is already marked, so we skip it. */
 		return;
 	}
@@ -979,7 +991,7 @@ rt_private void match_object (EIF_REFERENCE object, void (*action_fnptr) (EIF_RE
 			}
 			return;
 		} else {
-			count = *(EIF_INTEGER *) (object + (zone->ov_size & B_SIZE) - LNGPAD_2);
+			count = RT_SPECIAL_COUNT(object);
 		}
 	} else {
 		count = References(zone->ov_dtype);
@@ -1021,17 +1033,13 @@ rt_private uint32 chknomark(char *object, struct htable *tbl, uint32 object_coun
 {
 	/* First pass of the store mechanism consisting in marking objects. */
 
-	char *object_ref, *reference;
-	EIF_INTEGER count, elem_size;
+	char *reference;
+	rt_uint_ptr count, elem_size, i;
 	union overhead *zone = HEADER(object);		/* Object header */
 	uint16 flags;								/* Object flags */
 	unsigned long key = ((unsigned long) object) - 1;
 
 	flags = zone->ov_flags;
-
-	/* Stop on C objects */
-	if (flags & EO_C)
-		return object_count;
 
 	/* Check if the object is already checked */
 	if (ht_value(tbl,key) != (char *) 0)
@@ -1059,21 +1067,17 @@ rt_private uint32 chknomark(char *object, struct htable *tbl, uint32 object_coun
 			return object_count;
 
 		/* Evaluation of the number of items in the special object */
-		object_ref = RT_SPECIAL_INFO_WITH_ZONE(object, zone);
-		count = RT_SPECIAL_COUNT_WITH_INFO(object_ref);
+		count = RT_SPECIAL_COUNT(object);
 
 		if (flags & EO_TUPLE) {
-			EIF_TYPED_VALUE *l_item = (EIF_TYPED_VALUE *) object;
 				/* Don't forget that first element of TUPLE is the BOOLEAN
 				 * `object_comparison' attribute. */
-			l_item++;
-			count--;
-			for (; count > 0; count--, l_item++) {
-				if
-					(eif_is_reference_tuple_item(l_item) &&
-				 	(eif_reference_tuple_item(l_item)))
-				{
-					object_count = chknomark(eif_reference_tuple_item(l_item), tbl, object_count);	
+			for (i = 1; i < count ; i++) {
+				if (eif_item_sk_type(object, i) == SK_REF) {
+					reference = eif_reference_item(object, i);
+					if (reference) {
+						object_count = chknomark(reference, tbl, object_count);	
+					}
 				}
 			}
 		} else if (!(flags & EO_COMP)) {
@@ -1089,7 +1093,7 @@ rt_private uint32 chknomark(char *object, struct htable *tbl, uint32 object_coun
 			/* Special object filled with expanded objects which are
 			 * necessary not special objects.
 			 */
-			elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(object_ref);
+			elem_size = RT_SPECIAL_ELEM_SIZE(object);
 			for (object += OVERHEAD; count > 0;
 					count --, object += elem_size)
 				object_count = chknomark(object,tbl,object_count);

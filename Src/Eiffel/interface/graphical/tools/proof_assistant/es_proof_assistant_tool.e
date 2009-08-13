@@ -39,13 +39,13 @@ feature -- Access
 
 feature {NONE} -- Factory
 
-	create_tool: ES_PROOF_ASSISTANT_TOOL_PANEL
+	new_tool: ES_PROOF_ASSISTANT_TOOL_PANEL
 			-- Creates the tool for first use on the development `window'
 		do
 			create Result.make (window, Current)
 		end
 
-	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: !like stone): BOOLEAN
 		do
 			Result := {st: !CLASSC_STONE} a_stone and then st.is_storable
 		end
@@ -75,10 +75,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						Fourth page of new unit test wizard
 
@@ -43,7 +43,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_info: like wizard_information) is
+	make (an_info: like wizard_information)
 			-- Redefine
 		do
 			wizard_information := an_info
@@ -71,7 +71,7 @@ feature {NONE} -- Implementation
 				until
 					l_tree_items.after
 				loop
-					if {l_feature: E_FEATURE} l_tree_items.item.data then
+					if attached {E_FEATURE} l_tree_items.item.data as l_feature then
 
 						from
 							l_found := False
@@ -104,7 +104,7 @@ feature {NONE} -- Wizard UI Implementation
 			subtitle.set_text (interface_names.t_Select_features_for_which)
 		end
 
-	update_features_to_test is
+	update_features_to_test
 			-- Update features to test information
 		do
 			wizard_information.features_to_test.wipe_out
@@ -239,7 +239,7 @@ feature {NONE} -- Wizard UI Implementation
 			update_features_to_test
 		end
 
-	on_add_to_be_implemented_checks_selected is
+	on_add_to_be_implemented_checks_selected
 			-- On `add_to_be_implemented_checks' selected
 		do
 			wizard_information.set_add_to_be_implemented_selected (add_to_be_implemented_checks.is_selected)
@@ -252,7 +252,7 @@ feature {NONE} -- Wizard UI Implementation
 		local
 			l_items: like all_items_under
 		do
-			if {l_feature_clause_data: !FEATURE_CLAUSE_AS} a_item.data then
+			if attached {FEATURE_CLAUSE_AS} a_item.data as l_feature_clause_data then
 				-- It's a feature clause, we should select all sub nodes.
 				l_items := all_items_under (a_item)
 				l_items.do_all (agent (a_tree_item: EV_TREE_ITEM; a_to_check: BOOLEAN)
@@ -266,7 +266,7 @@ feature {NONE} -- Wizard UI Implementation
 			end
 		end
 
-	expand_all_items is
+	expand_all_items
 			-- Expand all feature tree items
 		local
 			l_items: like all_items_under
@@ -298,7 +298,7 @@ feature {NONE} -- Wizard UI Implementation
 			until
 				l_items.after
 			loop
-				if {l_feature: !E_FEATURE} l_items.item.data then
+				if attached {E_FEATURE} l_items.item.data as l_feature then
 					if feature_tree.is_item_checked (l_items.item) then
 						Result.extend (l_feature)
 					end
@@ -336,7 +336,7 @@ feature {NONE} -- Wizard UI Implementation
 			-- All items temporary used by `all_items_under'
 			-- It should not called by any other features directly.
 
-	check_all_imp (a_check: BOOLEAN) is
+	check_all_imp (a_check: BOOLEAN)
 			-- Recursive select all tree items.
 		local
 			l_all_items: like all_items_under
@@ -363,7 +363,7 @@ feature {NONE} -- Wizard UI Implementation
 
 feature {NONE}	-- Tree manipulation
 
-	build_tree_ui is
+	build_tree_ui
 			-- Build tree UI
 		local
 			l_class_name: STRING
@@ -429,7 +429,7 @@ feature {NONE}	-- Tree manipulation
 								l_tree.selected_item.disable_select
 							end
 
-							if {l_clauses: !EIFFEL_LIST [FEATURE_CLAUSE_AS]} l_class_ast.features then
+							if attached l_class_ast.features as l_clauses then
 									-- Build tree from AST nodes
 								build_tree_imp (l_clauses, a_class_c)
 							else
@@ -437,7 +437,7 @@ feature {NONE}	-- Tree manipulation
 								l_tree.extend (create {EV_TREE_ITEM}.make_with_text (warning_messages.w_no_feature_to_display))
 							end
 						end
-					elseif {l_external_classc: !EXTERNAL_CLASS_C} a_class_c then
+					elseif attached {EXTERNAL_CLASS_C} a_class_c as l_external_classc then
 						-- Special processing for a .NET type since has no 'ast' in the normal
 						-- sense.
 
@@ -457,7 +457,7 @@ feature {NONE}	-- Tree manipulation
 			end
 		end
 
-	build_tree_for_external (a_class: !EXTERNAL_CLASS_C)
+	build_tree_for_external (a_class: attached EXTERNAL_CLASS_C)
 			-- Build tree for .Net classes
 		do
 			-- FIXIT: Don't support .Net classes for the moment
@@ -545,7 +545,7 @@ feature {NONE}	-- Tree manipulation
 
 feature {NONE} -- Implementation
 
-	pixmap_factory: EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY is
+	pixmap_factory: EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
 			-- Pixmap factory
 		once
 			create Result
@@ -553,7 +553,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	build_tree_folder (n: STRING; fl: EIFFEL_LIST [FEATURE_AS]; a_class: CLASS_C): EV_TREE_ITEM is
+	build_tree_folder (n: STRING; fl: EIFFEL_LIST [FEATURE_AS]; a_class: CLASS_C): EV_TREE_ITEM
 			-- Build the tree node corresponding to feature clause named `n'.
 			-- Modified from {EB_FEATURES_TREE}, now the class replaced by {ES}
 		require
@@ -610,7 +610,7 @@ feature {NONE} -- Implementation
 						if ef = Void then
 							l_tree_item.set_text (f_item_name)
 							l_tree_item.set_data (f_item_name)
-							if {l_feature_name: !STRING_8} l_first_item_name then
+							if attached l_first_item_name as l_feature_name then
 								l_tree_item.set_pixmap (pixmap_factory.pixmap_from_feature_ast (l_external, fa, f_names.index))
 							end
 						else
@@ -636,14 +636,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	feature_name (a_ef: E_FEATURE): STRING is
+	feature_name (a_ef: E_FEATURE): STRING
 			-- Feature name of `a_ef' depending of the signature displayed or not.
 		require
 			a_ef_not_void: a_ef /= Void
 		do
 			Result := a_ef.name.twin
 		end
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

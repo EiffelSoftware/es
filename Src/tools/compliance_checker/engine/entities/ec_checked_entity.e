@@ -1,4 +1,4 @@
-indexing
+note
 	description : "[
 		Abstact base implementation for compliance checked entities.
 		
@@ -16,6 +16,8 @@ deferred class
 	EC_CHECKED_ENTITY
 
 inherit
+	ANY
+
 	EC_CHECKED_CACHE
 		export
 			{NONE} all
@@ -28,9 +30,9 @@ inherit
 
 feature -- Access
 
-	is_compliant: like internal_is_compliant is
+	is_compliant: like internal_is_compliant
 			-- Is `assembly' CLS-compliant?
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		require
 			not_is_being_checked: has_been_checked or not is_being_checked
@@ -43,9 +45,9 @@ feature -- Access
 			not_is_being_checked: has_been_checked or not is_being_checked
 		end
 
-	is_eiffel_compliant: like internal_is_eiffel_compliant is
+	is_eiffel_compliant: like internal_is_eiffel_compliant
 			-- Is `assembly' Eiffel-compliant?
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		require
 			not_is_being_checked: has_been_checked or not is_being_checked
@@ -58,9 +60,9 @@ feature -- Access
 			not_is_being_checked: has_been_checked or not is_being_checked
 		end
 
-	is_marked: like internal_is_marked is
+	is_marked: like internal_is_marked
 			-- Is `assembly' marked with a `CLS_COMPLIANT_ATTRIBUTE'?
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		require
 			not_is_being_checked: has_been_checked or not is_being_checked
@@ -76,10 +78,10 @@ feature -- Access
 	is_being_checked: BOOLEAN
 		-- Is entity in the process of being checked?
 
-	non_compliant_reason: STRING
+	non_compliant_reason: detachable STRING
 			-- Reason why entity is non-CLS-compliant
 
-	non_eiffel_compliant_reason: STRING
+	non_eiffel_compliant_reason: detachable STRING
 			-- Reason why entity is non-Eiffel-compliant
 
 	has_been_checked: BOOLEAN
@@ -87,9 +89,9 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	non_compliant_reasons: EC_CHECKED_REASON_CONSTANTS is
+	non_compliant_reasons: EC_CHECKED_REASON_CONSTANTS
 			-- Checked reasons
-		indexing
+		note
 			once_status: global
 		once
 			create Result
@@ -99,9 +101,9 @@ feature {NONE} -- Access
 
 feature {NONE} -- Basic Operations
 
-	frozen check_compliance is
+	frozen check_compliance
 			-- Checks entity's CLS-compliance.
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		require
 			not_has_been_checked: not has_been_checked
@@ -125,18 +127,18 @@ feature {NONE} -- Basic Operations
 			eiffel_reason_set: not internal_is_eiffel_compliant implies non_eiffel_compliant_reason /= Void
 		end
 
-	check_extended_compliance is
+	check_extended_compliance
 			-- Aguments `check_compliance' compliance checking.
 			-- Decendents wanting to provide more checking should redefine this feature.
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		do
 			--| Do nothing...
 		end
 
-	check_eiffel_compliance is
+	check_eiffel_compliance
 			-- Checks entity to see if it is Eiffel-compliant.
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		do
 			internal_is_eiffel_compliant := True
@@ -144,26 +146,30 @@ feature {NONE} -- Basic Operations
 
 feature {NONE} -- Query
 
-	custom_attribute_provider: ICUSTOM_ATTRIBUTE_PROVIDER is
+	custom_attribute_provider: ICUSTOM_ATTRIBUTE_PROVIDER
 			-- Retrieve custom attribute provider for entity.
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		deferred
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	is_cls_member_name (a_member: MEMBER_INFO): BOOLEAN is
+	is_cls_member_name (a_member: MEMBER_INFO): BOOLEAN
 			-- Does `a_member' have a valid CLS-compliant name?
 		require
 			a_member_not_void: a_member /= Void
 		local
-			l_name: NATIVE_ARRAY [CHARACTER]
+			l_name: detachable NATIVE_ARRAY [CHARACTER]
 			l_count: INTEGER
 			i: INTEGER
 			c: CHARACTER
+			l_string: detachable SYSTEM_STRING
 		do
-			l_name := a_member.name.to_char_array
+			l_string := a_member.name
+			check l_string_attached: l_string /= Void end
+			l_name := l_string.to_char_array
+			check l_name_attached: l_name /= Void end
 			l_count := l_name.count
 			if l_count > 0 then
 				Result := l_name.item (0).is_alpha
@@ -196,25 +202,23 @@ feature {NONE} -- Implementation
 			-- Is `assembly' marked with a `CLS_COMPLIANT_ATTRIBUTE'?
 			-- Note: Do not use directly, use `is_marked' instead.
 
-	examine_attributes (a_provider: ICUSTOM_ATTRIBUTE_PROVIDER) is
+	examine_attributes (a_provider: ICUSTOM_ATTRIBUTE_PROVIDER)
 			-- Examines `a_provider' custom attributes for System.ClsCompliant attribute.
 			-- State is set accordingly.
-		indexing
+		note
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
 		require
 			a_provider_not_void: a_provider /= Void
 		local
-			l_attributes: NATIVE_ARRAY [SYSTEM_OBJECT]
-			l_cls_comp_attr: CLS_COMPLIANT_ATTRIBUTE
-			l_eiffel_attr: EIFFEL_CONSUMABLE_ATTRIBUTE
-			l_enum: IENUMERATOR
+			l_attributes: detachable NATIVE_ARRAY [detachable SYSTEM_OBJECT]
+			l_cls_comp_attr: detachable CLS_COMPLIANT_ATTRIBUTE
+			l_eiffel_attr: detachable EIFFEL_CONSUMABLE_ATTRIBUTE
 			l_compliant: BOOLEAN
 		do
 			l_compliant := True
 			l_attributes := {RT_CUSTOM_ATTRIBUTE_DATA}.get_eiffel_custom_attributes ({CLS_COMPLIANT_ATTRIBUTE}, a_provider)
-			if l_attributes /= Void and then l_attributes.count > 0 then
+			if l_attributes /= Void and then l_attributes.count > 0 and then attached l_attributes.get_enumerator as l_enum then
 				from
-					l_enum := l_attributes.get_enumerator
 				until
 					not l_enum.move_next or else
 					l_cls_comp_attr /= Void
@@ -229,9 +233,8 @@ feature {NONE} -- Implementation
 			internal_is_compliant := l_compliant
 
 			l_attributes := {RT_CUSTOM_ATTRIBUTE_DATA}.get_eiffel_custom_attributes ({EIFFEL_CONSUMABLE_ATTRIBUTE}, a_provider)
-			if l_attributes /= Void and then l_attributes.count > 0 then
+			if l_attributes /= Void and then l_attributes.count > 0  and then attached l_attributes.get_enumerator as l_enum then
 				from
-					l_enum := l_attributes.get_enumerator
 				until
 					not l_enum.move_next or else
 					l_eiffel_attr /= Void
@@ -250,8 +253,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -264,21 +267,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end -- class EC_CHECKED_ENTITY

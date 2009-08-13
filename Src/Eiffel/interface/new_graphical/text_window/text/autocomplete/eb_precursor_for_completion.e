@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that represent a precursor item in completion list."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,9 +20,12 @@ inherit
 create
 	make
 
+create {EB_PRECURSOR_FOR_COMPLETION}
+	make_string
+
 feature {NONE} -- Initialization
 
-	make (a_class_from: like class_from; a_type: like type; a_arguments: like arguments) is
+	make (a_class_from: like class_from; a_type: like type; a_arguments: like arguments)
 			-- Initialization
 		do
 			make_old (precursor_string)
@@ -51,19 +54,19 @@ feature -- Access
 
 feature -- Status report
 
-	has_class_from: BOOLEAN is
+	has_class_from: BOOLEAN
 			-- Has `type'?
 		do
 			Result := class_from /= Void
 		end
 
-	has_type: BOOLEAN is
+	has_type: BOOLEAN
 			-- Has `has_type'?
 		do
 			Result := type /= Void
 		end
 
-	has_arguments: BOOLEAN is
+	has_arguments: BOOLEAN
 			-- Has `arguments'?
 		do
 			Result := arguments /= Void
@@ -71,7 +74,7 @@ feature -- Status report
 
 feature -- Query
 
-	grid_item: EB_GRID_EDITOR_TOKEN_ITEM is
+	grid_item: EB_GRID_EDITOR_TOKEN_ITEM
 			-- Grid item
 		local
 			l_items: ARRAYED_LIST [EDITOR_TOKEN]
@@ -106,7 +109,7 @@ feature -- Query
 
 feature -- Element change
 
-	set_class_from (a_class_from: like class_from) is
+	set_class_from (a_class_from: like class_from)
 			-- Set `class_from' with `a_class_from'.
 		require
 			a_class_from_not_void: a_class_from /= Void
@@ -117,7 +120,7 @@ feature -- Element change
 			class_from_set: has_class_from
 		end
 
-	set_type (a_type: like type) is
+	set_type (a_type: like type)
 			-- Set `type' with `a_type'.
 		require
 			a_type_from_not_void: a_type /= Void
@@ -128,7 +131,7 @@ feature -- Element change
 			has_type: has_type
 		end
 
-	set_arguments (a_arguments: like arguments) is
+	set_arguments (a_arguments: like arguments)
 			-- Set `arguments' with `a_arguments'.
 		require
 			a_arguments_from_not_void: a_arguments /= Void
@@ -141,13 +144,13 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	calculate_insert_name is
+	calculate_insert_name
 			-- Calculate insert name
 		local
 			l_string: STRING_32
 		do
 			create l_string.make (50)
-			l_string.append_string (precursor_string)
+			l_string.append (precursor_string)
 			if has_class_from then
 				l_string.append (image_of_list (class_from))
 			end
@@ -157,7 +160,7 @@ feature {NONE} -- Implementation
 			insert_name := l_string
 		end
 
-	image_of_list (a_list: LIST [EDITOR_TOKEN]): STRING_32 is
+	image_of_list (a_list: LIST [EDITOR_TOKEN]): STRING_32
 			-- Image of token list
 		require
 			a_list_not_void: a_list /= Void
@@ -177,10 +180,10 @@ feature {NONE} -- Implementation
 
 	precursor_string: STRING = "Precursor";
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -191,22 +194,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "System's root class"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -24,7 +24,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		do
 				-- setup env
@@ -44,13 +44,16 @@ feature {NONE} -- Implementation
 	ignores: HASH_TABLE [SEARCH_TABLE [STRING], STRING]
 			-- Ignored files/targets.
 
-	start is
+	start
 			-- Starts application
 		require
 			arguments_attached: arguments /= Void
 		do
 			if arguments.ignore /= Void then
 				load_ignores (arguments.ignore)
+			end
+			if arguments.is_ecb then
+				execution_environment.set_variable_value ("EC_NAME", "ecb")
 			end
 			process_directory (arguments.location)
 		end
@@ -109,7 +112,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_directory (a_directory: STRING) is
+	process_directory (a_directory: STRING)
 			-- Process `a_directory'.
 		require
 			a_directory_ok: a_directory /= Void and then not a_directory.is_empty
@@ -149,7 +152,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_configuration (a_file: STRING) is
+	process_configuration (a_file: STRING)
 			-- Process configuration file `a_file'.
 		require
 			a_file_ok: a_file /= Void and then not a_file.is_empty
@@ -176,7 +179,7 @@ feature {NONE} -- Implementation
 			end
 	end
 
-	process_target (a_target: CONF_TARGET) is
+	process_target (a_target: CONF_TARGET)
 			-- Compile `a_target'.
 		require
 			a_target_ok: a_target /= Void
@@ -196,7 +199,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	parse (a_target: CONF_TARGET) is
+	parse (a_target: CONF_TARGET)
 			-- Only parse configuration system (incl. used libraries) of `a_target'.
 		require
 			a_target_not_void: a_target /= Void
@@ -238,7 +241,7 @@ feature {NONE} -- Implementation
 			io.new_line
 		end
 
-	compile (a_action: STRING; a_clean: BOOLEAN; a_target: CONF_TARGET) is
+	compile (a_action: STRING; a_clean: BOOLEAN; a_target: CONF_TARGET)
 			-- Compile `a_target' according to `a_action' clean before compilation if `a_clean'.
 		require
 			a_action_ok: a_action /= Void and then (a_action.is_equal ("melt") or
@@ -295,6 +298,7 @@ feature {NONE} -- Implementation
 			create l_prc_factory
 			l_prc_launcher := l_prc_factory.process_launcher (eiffel_layout.ec_command_name, l_args, Void)
 			if arguments.is_log_verbose then
+				add_data_to_file (l_file + ".log", a_target.system.file_name, a_target.name)
 				l_prc_launcher.redirect_output_to_file (l_file+".log")
 			else
 				l_prc_launcher.redirect_output_to_agent (agent (a_string: STRING)
@@ -315,9 +319,38 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	add_data_to_file (a_file_name: STRING; a_config, a_target: STRING)
+			-- Insert some data in `a_file_name' saying what we are compiling and when.
+		require
+			a_file_name_attached: a_file_name /= Void
+			a_config_attached: a_config /= Void
+			a_target_attached: a_target /= Void
+		local
+			retried: BOOLEAN
+			l_file: PLAIN_TEXT_FILE
+			l_date: DATE_TIME
+		do
+			if not retried then
+				create l_date.make_now
+				create l_file.make_open_append (a_file_name)
+				l_file.put_string ("**********************************************************************%N")
+				l_file.put_string ("Date: ")
+				l_file.put_string (l_date.out)
+				l_file.put_string ("%NCompiling target %"")
+				l_file.put_string (a_target)
+				l_file.put_string ("%" from config %"")
+				l_file.put_string (a_config)
+				l_file.put_string ("%"%N%N")
+				l_file.close
+			end
+		rescue
+			retried := True
+			retry
+		end
+
 feature {NONE} -- Error handling
 
-	display_error (a_message: STRING) is
+	display_error (a_message: STRING)
 			-- Process `a_message'.
 		require
 			a_message_ok: a_message /= Void and then not a_message.is_empty
@@ -326,4 +359,35 @@ feature {NONE} -- Error handling
 			io.error.new_line
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

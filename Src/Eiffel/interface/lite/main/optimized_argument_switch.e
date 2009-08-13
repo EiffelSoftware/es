@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Argument switch for optimization flags"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,8 +11,8 @@ class
 inherit
 	ARGUMENT_FLAG_SWITCH
 		redefine
-			create_option,
-			create_value_option
+			new_option,
+			new_value_option
 		end
 
 create
@@ -23,13 +23,13 @@ feature -- Status report
 
 feature {ARGUMENT_PARSER} -- Factory functions
 
-	create_option: !OPTIMIZED_ARGUMENT_OPTION
+	new_option: attached OPTIMIZED_ARGUMENT_OPTION
 			-- Creates a new argument option for switch
 		do
-			create Result.make ("", create {ARRAYED_LIST [CHARACTER_8]}.make (0), case_sensitive_flags, Current)
+			create Result.make ("", create {ARRAYED_LIST [CHARACTER_8]}.make (0), is_case_sensitive, Current)
 		end
 
-	create_value_option (a_value: !STRING_8): !OPTIMIZED_ARGUMENT_OPTION
+	new_value_option (a_value: attached STRING_8): attached OPTIMIZED_ARGUMENT_OPTION
 			-- Creates a new argument option given a value `a_value'
 		local
 			l_flags: ARRAYED_LIST [CHARACTER_8]
@@ -42,7 +42,7 @@ feature {ARGUMENT_PARSER} -- Factory functions
 				do
 					a_flags.extend (a_item)
 				end (?, l_flags))
-			create Result.make (a_value, l_flags, case_sensitive_flags, Current)
+			create Result.make (a_value, l_flags, is_case_sensitive, Current)
 		end
 
 feature -- Flags
@@ -50,8 +50,8 @@ feature -- Flags
 	keep_flag: CHARACTER_8 = 'k';
 			-- Flag used to keep assertions
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -75,11 +75,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {OPTIMIZED_ARGUMENT_SWITCH}

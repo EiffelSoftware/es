@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tree items in a cluster tree"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -39,13 +39,13 @@ inherit
 
 feature -- Access
 
-	parent_tree: EB_CLASSES_TREE is
+	parent_tree: EB_CLASSES_TREE
 			-- Tree of clusters containing `Current'.
 		do
 			Result ?= Precursor
 		end
 
-	set_associated_textable (textable: EV_TEXT_COMPONENT) is
+	set_associated_textable (textable: EV_TEXT_COMPONENT)
 			-- Associate `Current' with `textable' and change event handling.
 		require
 			textable /= Void
@@ -55,10 +55,10 @@ feature -- Access
 			select_actions.extend (agent print_name)
 		end
 
-	dummy_string: STRING is "DUMMY"
+	dummy_string: STRING = "DUMMY"
 			-- Dummy string used by `fake_load'
 
-	stone: STONE is
+	stone: STONE
 			-- Class stone representing `Current'.
 		deferred
 		end
@@ -77,7 +77,7 @@ feature -- Status Setting
 
 feature -- Interactivity
 
-	associate_with_window (a_window: like associated_window) is
+	associate_with_window (a_window: like associated_window)
 			-- Associate recursively with `a_window' so that we can call `set_stone' on `a_window'.
 		do
 			if pointer_press_action_agent = Void then
@@ -89,7 +89,7 @@ feature -- Interactivity
 
 feature {NONE} -- Context menu
 
-	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu
 		local
 			l_factory: EB_CONTEXT_MENU_FACTORY
@@ -102,7 +102,7 @@ feature {NONE} -- Context menu
 
 feature {NONE} -- Recyclable
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle
 		local
 			l_item: EB_CLASSES_TREE_ITEM
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 	associated_textable: EV_TEXT_COMPONENT
 			-- Text component in which `Current' writes its name when clicked on.
 
-	print_name is
+	print_name
 			-- Print class name in textable, the associated text component.
 		do
 			if associated_textable /= Void then
@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 			-- Is `Current' already associated to a window?
 
 	pointer_press_action (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
-						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32; action: PROCEDURE [ANY, TUPLE]) is
+						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
 			-- Send a stone corresponding to `Current' to `associated_window'.
 		local
 			l_stone: STONE
@@ -150,6 +150,17 @@ feature {NONE} -- Implementation
 				l_stone := stone
 				if l_stone /= Void and then l_stone.is_valid then
 						(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+				end
+			end
+		end
+
+	register_pressed_item (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
+						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+			-- Register current into the tree.
+		do
+			if a_button = 1 then
+				if attached parent_tree as l_tree then
+					l_tree.set_last_pressed_item (Current)
 				end
 			end
 		end
@@ -167,8 +178,8 @@ feature {NONE} -- Implementation
 	pointer_press_action_agent: PROCEDURE [ANY, TUPLE [x: INTEGER_32; y: INTEGER_32; button: INTEGER_32; x_tilt: REAL_64; y_tilt: REAL_64; pressure: REAL_64; screen_x: INTEGER_32; screen_y: INTEGER_32]];
 			-- `pointer_press_action' handler
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -181,22 +192,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CLASSES_TREE_ITEM

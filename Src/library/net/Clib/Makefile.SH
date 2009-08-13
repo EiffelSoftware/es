@@ -48,7 +48,7 @@ all: $(NET_LIBS)
 	$(MV) $? ../spec/$(PLATFORM)/lib
 	$(MAKE) clobber
 
-SMODE = local.c network.c network_r.c storable.c
+SMODE = local.c network.c network_r.c storable.c ipv6.c ipv6ux.c
 
 LSRCS = $(SMODE)
 
@@ -58,7 +58,9 @@ MT_OBJECTS = \
 	MTnetwork_r.o \
 	MThostname.o \
 	MTsyncpoll.o \
-	MTstorable.o
+	MTstorable.o \
+	MTipv6.o \
+	MTipv6ux.o
 
 OBJECTS = \
 	local.o \
@@ -66,7 +68,9 @@ OBJECTS = \
 	network_r.o \
 	hostname.o \
 	syncpoll.o \
-	storable.o
+	storable.o \
+	ipv6.o \
+	ipv6ux.o
 
 ALL_OBJECTS = $(OBJECTS) $(MT_OBJECTS)
 MTlocal.o: local.c
@@ -87,6 +91,12 @@ MThostname.o: hostname.c
 MTstorable.o: storable.c
 	$(CC) -c $(MTCFLAGS) $? -o $@
 
+MTipv6.o: ipv6.c
+	$(CC) -c $(MTCFLAGS) $? -o $@
+
+MTipv6ux.o: ipv6ux.c
+	$(CC) -c $(MTCFLAGS) $? -o $@
+
 libmtnet.a: $(MT_OBJECTS)
 	$(RM) $@
 	$(AR) $@ $(MT_OBJECTS)
@@ -105,8 +115,6 @@ libnet.so: $(OBJECTS)
 	$(RM) $@
 	$(SHAREDLINK) $(LDSHAREDFLAGS) $@ $(OBJECTS)
 
-local_realclean::
-	$(RM) $(NET_LIBS) $(ALL_OBJECTS)
 ########################################################################
 # Common rules for all Makefiles -- do not edit
 
@@ -117,7 +125,7 @@ realclean: local_realclean
 clobber: local_clobber
 
 local_clean::
-	$(RM) core *~ *.o
+	$(RM) core *~ *.o *.so *.a
 
 local_realclean:: local_clean
 

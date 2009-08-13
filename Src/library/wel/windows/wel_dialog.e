@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog box which can be loaded from a resource. Common %
 		%ancestor to modal and modeless dialog box."
 	legal: "See notice at end of class."
@@ -32,7 +32,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make_by_id (a_parent: WEL_WINDOW; an_id: INTEGER) is
+	make_by_id (a_parent: detachable WEL_WINDOW; an_id: INTEGER)
 			-- Initialize a loadable dialog box identified by
 			-- `an_id' using `a_parent' as parent.
 		require
@@ -47,7 +47,7 @@ feature {NONE} -- Initialization
 			dialog_children_not_void: dialog_children /= Void
 		end
 
-	make_by_name (a_parent: WEL_COMPOSITE_WINDOW; a_name: STRING_GENERAL) is
+	make_by_name (a_parent: detachable WEL_COMPOSITE_WINDOW; a_name: STRING_GENERAL)
 			-- Initialize a loadable dialog box identified by
 			-- `a_name' using `a_parent' as parent.
 		require
@@ -60,16 +60,24 @@ feature {NONE} -- Initialization
 			create dialog_children.make
 		ensure
 			parent_set: parent = a_parent
-			resource_name_set: resource_name.is_equal (a_name)
+			resource_name_set: attached resource_name as l_name and then l_name.same_string (a_name)
 			dialog_children_not_void: dialog_children /= Void
 		end
 
-	make_by_template (a_parent: WEL_COMPOSITE_WINDOW; a_template: WEL_DLG_TEMPLATE) is
+	make_by_template (a_parent: detachable WEL_COMPOSITE_WINDOW; a_template: WEL_DLG_TEMPLATE)
+		require
+			parent_exists: a_parent /= Void implies a_parent.exists
+		local
+			l_parent_item: POINTER
 		do
-			register_dialog
+			parent := a_parent
 			create dialog_children.make
+			register_dialog
+			if a_parent /= Void then
+				l_parent_item := a_parent.item
+			end
 			item := cwin_dialog_box_indirect (main_args.current_instance.item, a_template.item,
-				a_parent.item, cwel_dialog_procedure_address)
+				l_parent_item, cwel_dialog_procedure_address)
 		ensure
 			dialog_children_not_void: dialog_children /= Void
 		end
@@ -82,7 +90,7 @@ feature -- Access
 
 feature -- Status report
 
-	ok_pushed: BOOLEAN is
+	ok_pushed: BOOLEAN
 			-- Has the OK button been pushed?
 		do
 			Result := result_id = Idok
@@ -90,18 +98,17 @@ feature -- Status report
 
 feature -- Basic operations
 
-	activate is
+	activate
 			-- Activate the dialog box.
 			-- Can be called several times.
 		require
-			parent_exists: parent /= Void implies parent.exists
+			parent_exists: attached parent as l_parent implies l_parent.exists
 			not_exists: not exists
 		do
-			internal_dialog_make (parent, resource_id,
-				resource_name)
+			internal_dialog_make (parent, resource_id, resource_name)
 		end
 
-	setup_dialog is
+	setup_dialog
 			-- May be redefined to setup the dialog and its
 			-- children.
 		require
@@ -109,7 +116,7 @@ feature -- Basic operations
 		do
 		end
 
-	terminate (a_result: INTEGER) is
+	terminate (a_result: INTEGER)
 			-- Terminate the dialog with `a_result'.
 			-- `result_id' will contain `a_result'.
 		require
@@ -119,13 +126,13 @@ feature -- Basic operations
 			result_id_set: result_id = a_result
 		end
 
-	destroy is
+	destroy
 			-- Terminate the dialog.
 		do
 			terminate (Idcancel)
 		end
 
-	on_ok is
+	on_ok
 			-- Button Ok has been pressed.
 		require
 			exists: exists
@@ -133,7 +140,7 @@ feature -- Basic operations
 			terminate (Idok)
 		end
 
-	on_cancel is
+	on_cancel
 			-- Button Cancel has been pressed.
 		require
 			exists: exists
@@ -141,7 +148,7 @@ feature -- Basic operations
 			terminate (Idcancel)
 		end
 
-	on_abort is
+	on_abort
 			-- Button Abort has been pressed.
 		require
 			exists: exists
@@ -149,7 +156,7 @@ feature -- Basic operations
 			terminate (Idabort)
 		end
 
-	on_retry is
+	on_retry
 			-- Button Retry has been pressed.
 		require
 			exists: exists
@@ -157,7 +164,7 @@ feature -- Basic operations
 			terminate (Idretry)
 		end
 
-	on_ignore is
+	on_ignore
 			-- Button Ignore has been pressed.
 		require
 			exists: exists
@@ -165,7 +172,7 @@ feature -- Basic operations
 			terminate (Idignore)
 		end
 
-	on_yes is
+	on_yes
 			-- Button Yes has been pressed.
 		require
 			exists: exists
@@ -173,7 +180,7 @@ feature -- Basic operations
 			terminate (Idyes)
 		end
 
-	on_no is
+	on_no
 			-- Button No has been pressed.
 		require
 			exists: exists
@@ -183,7 +190,7 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	register_dialog is
+	register_dialog
 			-- Register `dialog' in window manager.
 		do
 			new_dialog_cell.put (Current)
@@ -191,7 +198,7 @@ feature {NONE} -- Implementation
 			registered: new_dialog = Current
 		end
 
-	resource_name: STRING_GENERAL
+	resource_name: detachable STRING_GENERAL
 			-- Name of the dialog in the resource.
 			-- Void if the dialog is identified by an
 			-- id (`resource_id').
@@ -202,7 +209,7 @@ feature {NONE} -- Implementation
 			-- a name (`resource_name').
 
 	frozen dialog_process_message, process_message (hwnd: POINTER;
-			msg: INTEGER; wparam, lparam: POINTER): POINTER is
+			msg: INTEGER; wparam, lparam: POINTER): POINTER
 		do
 			Result := composite_process_message (hwnd, msg,
 				wparam, lparam)
@@ -211,7 +218,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_wm_control_id_command (control_id: INTEGER) is
+	on_wm_control_id_command (control_id: INTEGER)
 			-- Wm_command from a standard button idenfied by
 			-- `control_id'.
 		do
@@ -235,7 +242,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_wm_menu_command (menu_id: INTEGER) is
+	on_wm_menu_command (menu_id: INTEGER)
 			-- Wm_command from a `menu_id'.
 		do
 			on_menu_command (menu_id)
@@ -244,7 +251,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_wm_init_dialog is
+	on_wm_init_dialog
 			-- Wm_initdialog message.
 		require
 			exists: exists
@@ -268,19 +275,19 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	internal_dialog_make (a_parent: WEL_WINDOW; an_id: INTEGER;
-			a_name: STRING_GENERAL) is
+	internal_dialog_make (a_parent: detachable WEL_WINDOW; an_id: INTEGER;
+			a_name: detachable STRING_GENERAL)
 			-- Create the dialog
 		deferred
 		end
 
-	class_name: STRING_32 is
+	class_name: STRING_32
 			-- No class name
 		once
 			create Result.make_empty
 		end
 
-	default_style: INTEGER is
+	default_style: INTEGER
 			-- No style
 		do
 			Result := 0
@@ -293,19 +300,19 @@ feature {WEL_CONTROL} -- Implementation
 
 feature {NONE} -- Externals
 
-	cwin_dialog_box_indirect (hinst, template, hwnd, dlgproc: POINTER): POINTER is
+	cwin_dialog_box_indirect (hinst, template, hwnd, dlgproc: POINTER): POINTER
 		external
 			"C [macro <wel.h>] (HINSTANCE, LPCDLGTEMPLATE, HWND, DLGPROC): EIF_POINTER"
 		alias
 			"DialogBoxIndirect"
 		end
 
-	cwel_dialog_procedure_address: POINTER is
+	cwel_dialog_procedure_address: POINTER
 		external
 			"C [macro <disptchr.h>]"
 		end
 
-	cwin_make_int_resource (an_id: INTEGER): POINTER is
+	cwin_make_int_resource (an_id: INTEGER): POINTER
 			-- Convert `id' to a pointer
 			-- SDK MAKEINTRESOURCE
 		external
@@ -314,12 +321,12 @@ feature {NONE} -- Externals
 			"MAKEINTRESOURCE"
 		end
 
-	cwel_temp_dialog_value: POINTER is
+	cwel_temp_dialog_value: POINTER
 		external
 			"C [macro <wel.h>]: EIF_POINTER"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

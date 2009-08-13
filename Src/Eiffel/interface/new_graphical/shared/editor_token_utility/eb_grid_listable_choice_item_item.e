@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Items for EB_GRID_LISTABLE_CHOICE_ITEM"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature	{NONE} -- Initialization
 
-	make (a_item: !like item_components) is
+	make (a_item: attached like item_components)
 			-- Initialization
 		do
 			item_components := a_item
@@ -23,7 +23,7 @@ feature	{NONE} -- Initialization
 
 feature -- Element change
 
-	set_data (a_data: like data) is
+	set_data (a_data: like data)
 			-- Set `data' with `a_data'
 		do
 			data := a_data
@@ -33,13 +33,13 @@ feature -- Element change
 
 feature -- Access
 
-	item_components: !ARRAYED_LIST [ES_GRID_ITEM_COMPONENT]
+	item_components: attached ARRAYED_LIST [ES_GRID_ITEM_COMPONENT]
 			-- Components of the item
 
-	data: ?ANY;
+	data: detachable ANY;
 			-- Associated data
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

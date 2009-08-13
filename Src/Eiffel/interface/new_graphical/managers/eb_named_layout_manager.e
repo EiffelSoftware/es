@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Manager that manage all saved layouts."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_dev_window: EB_DEVELOPMENT_WINDOW) is
+	make (a_dev_window: EB_DEVELOPMENT_WINDOW)
 			-- Creation method
 		require
 			not_void: a_dev_window /= Void
@@ -34,13 +34,13 @@ feature {NONE} -- Initlization
 			set: development_window = a_dev_window
 		end
 
-	init_existing_layouts is
+	init_existing_layouts
 			-- Initialize `layouts'.
 		do
 			init_existing_layouts_imp (layout_file_path (is_normal_mode), is_normal_mode)
 		end
 
-	init_existing_layouts_imp (a_dir: !DIRECTORY_NAME; a_from_normal_mode: BOOLEAN) is
+	init_existing_layouts_imp (a_dir: attached DIRECTORY_NAME; a_from_normal_mode: BOOLEAN)
 			-- Used by `init_eixisting_layouts'.
 		require
 			dir_not_empty: not a_dir.is_empty
@@ -85,7 +85,7 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	add_layout (a_name: STRING_GENERAL): BOOLEAN is
+	add_layout (a_name: STRING_GENERAL): BOOLEAN
 			-- Add a new layout which name is `a_name if not exist.
 			-- Otherwise overwrite the exsiting one.
 		require
@@ -98,6 +98,7 @@ feature -- Command
 			if layouts.has (a_name) then
 				l_fn := layouts.item (a_name).file_path
 			else
+				-- FIXIT: When `a_name' is non-English, file name is not correct
 				l_fn := layout_file_name (a_name.as_string_8, is_normal_mode)
 			end
 			create l_file_utils
@@ -105,7 +106,34 @@ feature -- Command
 			Result := development_window.docking_manager.save_tools_data_with_name (l_fn, a_name)
 		end
 
-	open_layout (a_name: STRING_GENERAL) is
+	delete_layout (a_name: STRING_GENERAL): BOOLEAN
+			-- Delete a layout which name is `a_name'
+		require
+			a_name_not_void: a_name /= Void
+			a_name_not_empty: not a_name.is_empty
+		local
+			l_retired: BOOLEAN
+			l_item: TUPLE [file_path: FILE_NAME; is_normal_mode: BOOLEAN]
+			l_file: RAW_FILE
+		do
+			if not l_retired then
+				l_item := layouts.item (a_name)
+				if l_item /= Void then
+					create l_file.make (l_item.file_path)
+					l_file.open_read_write
+
+					l_file.delete
+					layouts.remove (a_name)
+
+					Result := True
+				end
+			end
+		rescue
+			l_retired := True
+			retry
+		end
+
+	open_layout (a_name: STRING_GENERAL)
 			-- Open a named layout
 			-- `a_win' is the window which show modal to.
 		require
@@ -177,7 +205,7 @@ feature -- Query
 
 feature {NONE} -- Query
 
-	layout_file_name (a_file_name: STRING; a_normal_mode: BOOLEAN): !FILE_NAME
+	layout_file_name (a_file_name: STRING; a_normal_mode: BOOLEAN): attached FILE_NAME
 			-- Retrieve a full path for a docking layout file name
 		require
 			a_file_name_attached: a_file_name /= Void
@@ -190,7 +218,7 @@ feature {NONE} -- Query
 			not_result_is_empty: not Result.is_empty
 		end
 
-	layout_file_path (a_normal_mode: BOOLEAN): !DIRECTORY_NAME
+	layout_file_path (a_normal_mode: BOOLEAN): attached DIRECTORY_NAME
 			-- Retrieve a full path for a docking layout file name
 		do
 			Result := eiffel_layout.user_docking_path.twin
@@ -205,7 +233,7 @@ feature {NONE} -- Query
 
 feature {NONE} -- Implementation
 
-	is_normal_mode: BOOLEAN is
+	is_normal_mode: BOOLEAN
 			-- True means Eiffel Studio is normal mode now.
 			-- False means Eiffel Studio is debug mode now.
 		local
@@ -227,8 +255,8 @@ feature {NONE} -- Implementation
 invariant
 	not_void: layouts /= Void
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

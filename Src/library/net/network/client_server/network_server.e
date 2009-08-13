@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"A server for a network socket."
@@ -12,7 +12,7 @@ deferred class NETWORK_SERVER inherit
 
 	SERVER
 		redefine
-			in, resend
+			in
 		end
 
 feature -- Access
@@ -20,9 +20,9 @@ feature -- Access
 	in: NETWORK_STREAM_SOCKET;
 			-- Receive socket.
 
-	make (a_port: INTEGER) is
+	make (a_port: INTEGER)
 			-- Make a network server listening to `a_port'.
-		require 
+		require
 			valid_port: a_port >= 0
 		do
 			create in.make_server_by_port (a_port);
@@ -33,35 +33,43 @@ feature -- Access
 			end
 		end;
 
-	cleanup is
+	cleanup
 			-- Clean close of server.
 		do
-			in.close
+			if not in.is_closed then
+				in.close
+			end
 		end;
 
-	receive is
+	receive
 			-- Receive activity of server.
 		do
-			in.accept;
-			outflow ?= in.accepted;
-			received ?= outflow.retrieved
+			in.accept
+			if attached {like outflow} in.accepted as l_outflow then
+				outflow := l_outflow
+				if attached {like received} l_outflow.retrieved as l_received then
+					received := l_received
+				else
+					received := Void
+				end
+			else
+				outflow := Void
+				received := Void
+			end
 		end;
 
-	resend (msg: ANY) is
-			-- Send back message `msg'.
-		do
-			outflow.independent_store (msg)
-		end;
-	
-	close is
+	close
 			-- Close server socket.
+		local
+			l_outflow: like outflow
 		do
-			if outflow /= Void and then not outflow.is_closed then
-				outflow.close
+			l_outflow := outflow
+			if l_outflow /= Void and then not l_outflow.is_closed then
+				l_outflow.close
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

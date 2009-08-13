@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Status bar of development windows."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -50,7 +50,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize `Current'.
 		local
 			mg: EB_PROJECT_MANAGER
@@ -92,7 +92,7 @@ feature {NONE} -- Initialization
 			running_icon_index := 1
 		end
 
-	build_interface is
+	build_interface
 			-- Build all widgets and organize them.
 		local
 			vp: EV_VIEWPORT
@@ -123,10 +123,10 @@ feature {NONE} -- Initialization
 			coordinate_label.set_tooltip (Interface_names.e_Cursor_position)
 			debugger_icon.clear
 
-				-- Organize widgets.
 			create vp
 			vp.extend (label)
 			vp.set_offset (-1, -(16 - label.height) // 2)
+
 			create f
 			f.set_style ({EV_FRAME_CONSTANTS}.Ev_frame_lowered)
 			f.extend (vp)
@@ -187,14 +187,14 @@ feature {NONE} -- Initialization
 
 feature -- Status setting
 
-	reset is
+	reset
 			-- Reset status bar.
 		do
 			display_message ("")
 			display_progress_value (0)
 		end
 
-	display_message (mess: STRING_GENERAL) is
+	display_message (mess: STRING_GENERAL)
 			-- Display `mess'.
 		do
 			label.set_foreground_color (black_color)
@@ -202,7 +202,7 @@ feature -- Status setting
 			label.refresh_now
 		end
 
-	display_error_message (mess: STRING_GENERAL) is
+	display_error_message (mess: STRING_GENERAL)
 			-- Display error message `mess'.
 		do
 			label.set_foreground_color (red_color)
@@ -210,7 +210,7 @@ feature -- Status setting
 			label.refresh_now
 		end
 
-	reset_progress_bar_with_range (a_range: INTEGER_INTERVAL) is
+	reset_progress_bar_with_range (a_range: INTEGER_INTERVAL)
 			-- Reset `progress_bar' to use range `a_range'.
 		require
 			a_range_not_void: a_range /= Void
@@ -218,20 +218,20 @@ feature -- Status setting
 			progress_bar.reset_with_range (a_range)
 		end
 
-	display_progress_value (a_value: INTEGER) is
+	display_progress_value (a_value: INTEGER)
 			-- Display `a_value' in `progress_bar'.
 		do
 			progress_bar.set_value (a_value)
 		end
 
-	remove_cursor_position is
+	remove_cursor_position
 			-- Do not display any position for the editor cursor.
 		do
 			set_cursor_position (0, 0, 0)
 			coordinate_label.disable_sensitive
 		end
 
-	set_cursor_position (l, c, v: INTEGER) is
+	set_cursor_position (l, c, v: INTEGER)
 			-- Display a new editor coordinate.
 		require
 			valid_pos: l >= 0 and c >= 0
@@ -252,7 +252,7 @@ feature -- Status setting
 			coordinate_label.enable_sensitive
 		end
 
-	on_project_edited is
+	on_project_edited
 			-- The project has just been edited.
 		local
 			p: EV_PIXMAP
@@ -266,7 +266,7 @@ feature -- Status setting
 
 feature {NONE} -- Status setting
 
-	internal_recycle is
+	internal_recycle
 			-- Remove references to `Current', which becomes no longer usable.
 		local
 			mg: EB_PROJECT_MANAGER
@@ -287,7 +287,7 @@ feature {NONE} -- Status setting
 
 feature -- Status report
 
-	message: STRING_32 is
+	message: STRING_32
 			-- Return the currently displayed message.
 		do
 			Result := label.text
@@ -300,26 +300,33 @@ feature -- Access
 
 feature -- Access
 
-	current_progress_value: INTEGER is
+	current_progress_value: INTEGER
 			-- Current value display by `progress_bar'.
 		do
 			Result := progress_bar.value
 		end
 
-	current_project_name: STRING_32 is
+	current_project_name: STRING_32
 			-- Current project name
 		local
-			l_name: STRING
+			l_name, l_target_name: STRING
 		do
-			if eiffel_project.initialized and then eiffel_project.system_defined then
-				l_name := eiffel_system.name
-				if l_name.is_equal (eiffel_ace.lace.target_name) then
+			if eiffel_project.initialized then
+				l_target_name := eiffel_ace.lace.target_name
+				if eiffel_project.system_defined then
+					l_name := eiffel_system.name
+				else
+					l_name := eiffel_ace.lace.conf_system.name
+				end
+			end
+			if l_name /= Void then
+				if l_name.is_equal (l_target_name) then
 					Result := l_name
 				else
-					create Result.make (l_name.count + 1 + eiffel_ace.lace.target_name.count)
+					create Result.make (l_name.count + 1 + l_target_name.count)
 					Result.append (l_name)
 					Result.append_character (':')
-					Result.append (eiffel_ace.lace.target_name)
+					Result.append (l_target_name)
 				end
 			else
 				Result := interface_names.l_no_project
@@ -362,13 +369,13 @@ feature {NONE} -- Implementation: widgets
 
 feature {NONE} -- Implementation: event handling
 
-	on_application_launched (dbg: DEBUGGER_MANAGER) is
+	on_application_launched (dbg: DEBUGGER_MANAGER)
 			-- The application has just been launched by the debugger.
 		do
 			on_application_resumed (dbg)
 		end
 
-	on_application_resumed (dbg: DEBUGGER_MANAGER) is
+	on_application_resumed (dbg: DEBUGGER_MANAGER)
 			-- The application has been resumed by the debugger.
 		do
 			if debugger_cell.is_empty then
@@ -385,7 +392,7 @@ feature {NONE} -- Implementation: event handling
 			end
 		end
 
-	on_application_stopped (dbg: DEBUGGER_MANAGER) is
+	on_application_stopped (dbg: DEBUGGER_MANAGER)
 			-- The application has just stopped (paused).
 		local
 			p: EV_PIXMAP
@@ -401,21 +408,22 @@ feature {NONE} -- Implementation: event handling
 			end
 		end
 
-	on_application_exited (dbg: DEBUGGER_MANAGER) is
+	on_application_exited (dbg: DEBUGGER_MANAGER)
 			-- The application has just terminated (dead).
 		do
 			running_timer.set_interval (0)
 			debugger_cell.prune_all (debugger_icon)
 		end
 
-	on_project_created (dbg: DEBUGGER_MANAGER) is
+	on_project_created (dbg: DEBUGGER_MANAGER)
 			-- The project has been created.
 		do
+			set_project_name (current_project_name)
 			on_project_updated
 			on_application_exited (dbg)
 		end
 
-	on_project_loaded (dbg: DEBUGGER_MANAGER) is
+	on_project_loaded (dbg: DEBUGGER_MANAGER)
 			-- The project has been loaded.
 		do
 			if not is_recycled then
@@ -440,7 +448,7 @@ feature {NONE} -- Implementation: event handling
 			end
 		end
 
-	on_project_closed (dbg: DEBUGGER_MANAGER) is
+	on_project_closed (dbg: DEBUGGER_MANAGER)
 			-- The project has been closed.
 		do
 			set_project_name (interface_names.l_no_project)
@@ -454,7 +462,7 @@ feature {NONE} -- Implementation: event handling
 			on_application_exited (dbg)
 		end
 
-	on_project_compiles is
+	on_project_compiles
 			-- The project starts to compile.
 		do
 			compilation_icon.set_tooltip (Interface_names.E_compiling)
@@ -471,7 +479,7 @@ feature {NONE} -- Implementation: event handling
 			end
 		end
 
-	on_project_compiled (is_successful: BOOLEAN) is
+	on_project_compiled (is_successful: BOOLEAN)
 			-- The project has finished compiling.
 		local
 			p: EV_PIXMAP
@@ -491,7 +499,7 @@ feature {NONE} -- Implementation: event handling
 			compilation_icon.draw_pixmap (0, 0, p)
 		end
 
-	on_project_updated is
+	on_project_updated
 			-- The project has just been updated (the exe corresponds to the class texts).
 		local
 			p: EV_PIXMAP
@@ -520,7 +528,7 @@ feature {NONE} -- Implementation: event handling
 
 feature {NONE} -- Implementation
 
-	set_project_name (n: STRING_GENERAL) is
+	set_project_name (n: STRING_GENERAL)
 			-- Display `n' as the project name.
 		require
 			valid_name: n /= Void
@@ -546,7 +554,7 @@ feature {NONE} -- Implementation
 	update_running_icon
 			-- Change the "running" icon to the next pixmap.
 		local
-			l_anim: !ARRAY [!EV_PIXMAP]
+			l_anim: ARRAY [EV_PIXMAP]
 		do
 				--| We do not check every time that the `use_animated_icons'
 				--| preference is still set.
@@ -566,7 +574,7 @@ feature {NONE} -- Implementation
 	update_compiling_icon
 			-- Change the "compiling" icon to the next pixmap.
 		local
-			l_anim: !ARRAY [!EV_PIXMAP]
+			l_anim: ARRAY [EV_PIXMAP]
 		do
 			l_anim := pixmaps.icon_pixmaps.compile_animation_anim
 			compilation_icon.set_background_color (debugger_cell.background_color)
@@ -581,7 +589,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	use_animated_icons: BOOLEAN is
+	use_animated_icons: BOOLEAN
 			-- Should we use animated icons whenever possible? (compiling, running)
 		do
 			Result := preferences.development_window_data.use_animated_icons
@@ -603,8 +611,8 @@ invariant
 	compiling_icon_index_positive: compiling_icon_index > 0
 	running_icon_index_positive: running_icon_index > 0
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -617,22 +625,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_DEVELOPMENT_WINDOW_STATUS_BAR

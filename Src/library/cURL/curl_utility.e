@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Utilities for Eiffel cURL wrapper library.
 																		]"
@@ -12,21 +12,31 @@ class
 
 feature -- Query
 
-	module_name: STRING is
-			-- Module name.
+	api_loader: DYNAMIC_MODULE
+			-- API dynamic loader
+		local
+			l_platform: PLATFORM
 		once
-			if {PLATFORM}.is_windows then
-				Result := "libcurl.dll"
-			elseif {PLATFORM}.is_mac then
-				Result := "libcurl.3.dylib"
+			create l_platform
+			if l_platform.is_unix or l_platform.is_mac then
+				create Result.make_with_version (module_name, "3")
 			else
-				Result := "libcurl.so.3"
+				check is_window: l_platform.is_windows end
+				create Result.make (module_name)
 			end
 		ensure
 			not_void: Result /= Void
 		end
+		
+	module_name: STRING
+			-- Module name.
+		once
+				Result := "libcurl"
+		ensure
+			not_void: Result /= Void
+		end
 
-indexing
+note
 	library:   "cURL: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

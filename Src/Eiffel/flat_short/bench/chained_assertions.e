@@ -1,4 +1,4 @@
-indexing
+note
 	description: "List of routine assertions defined in precursor features. See end of class for more info."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -25,7 +25,7 @@ create
 
 feature -- Output
 
-	format_precondition (ctxt: TEXT_FORMATTER_DECORATOR) is
+	format_precondition (ctxt: TEXT_FORMATTER_DECORATOR)
 			-- Format precondition to `ctxt'. Detect
 			-- if the assertion in the origin precursor
 			-- feature is defined. If not, generate
@@ -37,106 +37,146 @@ feature -- Output
 			inherited_body: BOOLEAN
 			current_feature: FEATURE_I
 			l_source_class, l_feature_written_class: CLASS_C
+			l_begin_count: INTEGER
 			nb: INTEGER
+			retried: BOOLEAN
 		do
-			l_source_class := ctxt.source_class
-			ctxt.begin
-			l_feature_written_class := ctxt.target_feature.written_class
-			inherited_body := l_feature_written_class /= ctxt.current_class
-			from
-				nb := count
-				start
-			until
-				after
-			loop
-				current_item := item
-				current_feature := current_item.origin
-					-- Test if it is a routine with no assertion merged with a routine with assertion,
-					-- in which case we print th
-				if current_item.precondition = Void then
-					if nb > 1 then
-							-- Compute cached data
-						current_cl := current_feature.written_class
+			if not retried then
+				l_source_class := ctxt.source_class
+				ctxt.begin
+				l_begin_count := 1
+				set_in_assertion
 
-							-- Test if there is an empty but origin fea
-						if current_feature.is_origin and then current_cl /= l_feature_written_class then
-								-- enable the flag for further use
-							precondition_true := True
+				l_feature_written_class := ctxt.target_feature.written_class
+				inherited_body := l_feature_written_class /= ctxt.current_class
+				from
+					nb := count
+					start
+				until
+					after
+				loop
+					current_item := item
+					current_feature := current_item.origin
+						-- Test if it is a routine with no assertion merged with a routine with assertion,
+						-- in which case we print th
+					if current_item.precondition = Void then
+						if nb > 1 then
+								-- Compute cached data
+							current_cl := current_feature.written_class
 
-								-- Display the name of the class that has generated
-								-- the "precondition True".
-							ctxt.process_keyword_text (ti_require_keyword, Void)
-							ctxt.put_space
-							ctxt.process_comment_text (ti_dashdash, Void)
-							ctxt.put_space
-							ctxt.process_comment_text ("from ", Void)
-							ctxt.put_space
-							ctxt.put_classi (current_cl.lace_class)
-							ctxt.indent
-							ctxt.put_new_line
-							ctxt.process_keyword_text (ti_true_keyword, Void)
-							ctxt.put_new_line
-							ctxt.exdent
-							ctxt.set_first_assertion (False)
+								-- Test if there is an empty but origin fea
+							if current_feature.is_origin and then current_cl /= l_feature_written_class then
+									-- enable the flag for further use
+								precondition_true := True
+
+									-- Display the name of the class that has generated
+									-- the "precondition True".
+								ctxt.process_keyword_text (ti_require_keyword, Void)
+								ctxt.put_space
+								ctxt.process_comment_text (ti_dashdash, Void)
+								ctxt.put_space
+								ctxt.process_comment_text ("from ", Void)
+								ctxt.put_space
+								ctxt.put_classi (current_cl.lace_class)
+								ctxt.indent
+								ctxt.put_new_line
+								ctxt.process_keyword_text (ti_true_keyword, Void)
+								ctxt.put_new_line
+								ctxt.exdent
+								ctxt.set_first_assertion (False)
+							end
 						end
-					end
-				else
-					ctxt.begin
-					ctxt.set_source_class (current_item.origin.written_class)
-						-- If the precondition is True, we don't show the
-						-- breakable marks on the preconditions.
-					if inherited_body then
-						current_item.format_precondition (ctxt,
-							not l_feature_written_class.simple_conform_to (current_item.origin.written_class))
 					else
-						current_item.format_precondition (ctxt, precondition_true)
+						ctxt.begin
+						l_begin_count := l_begin_count + 1
+						ctxt.set_source_class (current_item.origin.written_class)
+							-- If the precondition is True, we don't show the
+							-- breakable marks on the preconditions.
+						if inherited_body then
+							current_item.format_precondition (ctxt, precondition_true or
+								not l_feature_written_class.simple_conform_to (current_item.origin.written_class))
+						else
+							current_item.format_precondition (ctxt, precondition_true)
+						end
+						l_begin_count := l_begin_count - 1
+						ctxt.commit
 					end
-					ctxt.commit
+					forth
 				end
-				forth
+			else
+				ctxt.add_new_line
+				ctxt.add_comment ("-- Unable to show all preconditions!")
+				ctxt.add_new_line
 			end
 			set_not_in_assertion
-			ctxt.commit
+			if l_begin_count > 0 then
+				from until l_begin_count = 0 loop
+					l_begin_count := l_begin_count - 1
+					ctxt.commit
+				end
+			end
 			ctxt.set_source_class (l_source_class)
+		rescue
+			retried := True
+			retry
 		end
 
-	format_postcondition (ctxt: TEXT_FORMATTER_DECORATOR) is
+	format_postcondition (ctxt: TEXT_FORMATTER_DECORATOR)
 			-- Format format_postcondition to `ctxt'.
 		local
 			inherited_body: BOOLEAN
 			l_source_class: CLASS_C
 			l_feature_written_class: CLASS_C
+			l_begin_count: INTEGER
+			retried: BOOLEAN
 		do
-			l_source_class := ctxt.source_class
-			l_feature_written_class := ctxt.target_feature.written_class
-			inherited_body := l_feature_written_class /= ctxt.current_class
-			ctxt.begin
-			set_in_assertion
-			from
-				start
-			until
-				after
-			loop
-				if item.postcondition /= Void then
-					ctxt.begin
-					ctxt.set_source_class (item.origin.written_class)
-						-- Only postconditions inherited from definition of routine
-						-- are activated, the other one coming from the other branches are not
-						-- taken into account.
-					item.format_postcondition (ctxt,
-						inherited_body and then not l_feature_written_class.simple_conform_to (item.origin.written_class))
-					ctxt.commit
+			if not retried then
+				l_source_class := ctxt.source_class
+				l_feature_written_class := ctxt.target_feature.written_class
+				inherited_body := l_feature_written_class /= ctxt.current_class
+				ctxt.begin
+				l_begin_count := 1
+				set_in_assertion
+				from
+					start
+				until
+					after
+				loop
+					if item.postcondition /= Void then
+						ctxt.begin
+						l_begin_count := l_begin_count + 1
+						ctxt.set_source_class (item.origin.written_class)
+							-- Only postconditions inherited from definition of routine
+							-- are activated, the other one coming from the other branches are not
+							-- taken into account.
+						item.format_postcondition (ctxt,
+							inherited_body and then not l_feature_written_class.simple_conform_to (item.origin.written_class))
+						l_begin_count := l_begin_count - 1
+						ctxt.commit
+					end
+					forth
 				end
-				forth
+			else
+				ctxt.add_new_line
+				ctxt.add_comment ("-- Unable to show all postconditions!")
+				ctxt.add_new_line
 			end
 			set_not_in_assertion
-			ctxt.commit
+			if l_begin_count > 0 then
+				from until l_begin_count = 0 loop
+					l_begin_count := l_begin_count - 1
+					ctxt.commit
+				end
+			end
 			ctxt.set_source_class (l_source_class)
+		rescue
+			retried := True
+			retry
 		end
 
 feature -- Debug
 
-	trace is
+	trace
 		do
 			from
 				start
@@ -148,8 +188,8 @@ feature -- Debug
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -162,22 +202,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end	-- class CHAINED_ASSERTIONS

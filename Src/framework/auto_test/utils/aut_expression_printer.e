@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that print expressions to a character output stream.
 		]"
@@ -28,7 +28,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_output_stream: like output_stream) is
+	make (an_output_stream: like output_stream)
 			-- Create new printer using `an_output_stream' as output
 			-- stream.
 		require
@@ -39,14 +39,14 @@ feature {NONE} -- Initialization
 			output_stream_set: output_stream = an_output_stream
 		end
 
-	make_null is
+	make_null
 			-- Create new printer using the null output stream as output
 			-- stream.
 		do
 			make (null_output_stream)
 		end
 
-	make_string (a_string: STRING) is
+	make_string (a_string: STRING)
 			-- Create a new printer appending its output
 			-- to `a_string'.
 		require
@@ -62,7 +62,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_output_stream (an_output_stream: like output_stream) is
+	set_output_stream (an_output_stream: like output_stream)
 			-- Set `output_stream' to `an_output_stream'.
 		require
 			an_output_stream_not_void: an_output_stream /= Void
@@ -74,7 +74,7 @@ feature -- Setting
 
 feature {ITP_EXPRESSION} -- Processing
 
-	process_constant (a_value: ITP_CONSTANT) is
+	process_constant (a_value: ITP_CONSTANT)
 		local
 			l_type, l_value: STRING
 		do
@@ -90,13 +90,13 @@ feature {ITP_EXPRESSION} -- Processing
 				output_stream.put_string (l_type)
 				output_stream.put_character ('}')
 				output_stream.put_character (' ')
-				if {l_char_8: CHARACTER_8} a_value.value then
+				if attached {CHARACTER_8} a_value.value as l_char_8 then
 					put_quoted_eiffel_character (output_stream, l_char_8)
-				elseif {l_char_32: CHARACTER_32} a_value.value then
+				elseif attached {CHARACTER_32} a_value.value as l_char_32 then
 					put_quoted_eiffel_character (output_stream, l_char_32.to_character_8)
 				else
 					l_value := a_value.value.out
-					if {l_dbl: DOUBLE} a_value.value or {l_real: REAL} a_value.value then
+					if attached {DOUBLE} a_value.value as l_dbl or attached {REAL} a_value.value as l_real then
 						if not l_value.has ('.') then
 							l_value.append (".0")
 						end
@@ -106,7 +106,7 @@ feature {ITP_EXPRESSION} -- Processing
 			end
 		end
 
-	process_variable (a_value: ITP_VARIABLE) is
+	process_variable (a_value: ITP_VARIABLE)
 		do
 			output_stream.put_string (a_value.name (variable_name_prefix))
 		end

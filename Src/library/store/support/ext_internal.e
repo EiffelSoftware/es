@@ -1,4 +1,4 @@
-indexing
+note
 	status: "See notice at end of class."
 	Access: "internal"
 	Product: "EiffelStore"
@@ -17,7 +17,7 @@ inherit
 
 feature -- Basic operations
 
-	field_copy (i: INTEGER; object, value: ANY): BOOLEAN is
+	field_copy (i: INTEGER; object, value: ANY): BOOLEAN
 			-- Copy `value' in `i'-th field of `object'.
 		require
 			object_not_void: object /= Void
@@ -25,28 +25,20 @@ feature -- Basic operations
 		local
 			ftype, local_int: INTEGER
 			fname: STRING
-			int_ref: INTEGER_REF
 			local_real: REAL
-			real_ref: REAL_REF
-			double_ref: DOUBLE_REF
 			local_double: DOUBLE
 			local_boolean: BOOLEAN
-			boolean_ref: BOOLEAN_REF
-			local_string1: STRING
 			local_char: CHARACTER
-			char_ref: CHARACTER_REF
 		do
 			ftype := field_type (i, object)
 			fname := field_name (i, object)
 			Result := True
 
 			if ftype = Integer_type then
-				double_ref ?= value
-				if double_ref /= Void then
+				if attached {DOUBLE_REF} value as double_ref then
 					local_int := double_ref.item.truncated_to_integer
 				else
-					int_ref ?= value
-					if int_ref /= Void then
+					if attached {INTEGER_REF} value as int_ref then
 						local_int := int_ref.item
 					else
 						Result := False
@@ -54,59 +46,55 @@ feature -- Basic operations
 				end
 				set_integer_field (i, object, local_int)
 			elseif ftype = Real_type then
-				real_ref ?= value
-				double_ref ?= value
-				int_ref ?= value
-				if real_ref /= Void then
+				if attached {REAL_REF} value as real_ref then
 					local_real := real_ref.item
 					set_real_field (i, object, local_real)
-				elseif double_ref /= Void then
+				elseif attached {DOUBLE_REF} value as double_ref then
 					local_real := double_ref.item
 					set_real_field (i, object, local_real)
-				elseif int_ref /= Void then
-					int_ref ?= value
+				elseif attached {INTEGER_REF} value as int_ref then
 					local_real := int_ref.item
 					set_real_field (i, object, local_real)
 				else
 					Result := False
 				end
 			elseif ftype = Double_type then
-				real_ref ?= value
-				double_ref ?= value
-				int_ref ?= value
-				if real_ref /= Void then
+				if attached {REAL_REF} value as real_ref then
 					local_double := real_ref.item
 					set_double_field (i, object, local_double)
-				elseif double_ref /= Void then
+				elseif attached {DOUBLE_REF} value as double_ref then
 					local_double := double_ref.item
 					set_double_field (i, object, local_double)
-				elseif int_ref /= Void then
-					int_ref ?= value
+				elseif attached {INTEGER_REF} value as int_ref then
 					local_double := int_ref.item
 					set_double_field (i, object, local_double)
 				else
 					Result := False
 				end
 			elseif is_character (value) and then ftype = Character_type then
-				char_ref ?= value
-				local_char := char_ref.item
-				set_character_field (i, object, local_char)
+				if attached {CHARACTER_REF} value as char_ref then
+					local_char := char_ref.item
+					set_character_field (i, object, local_char)
+				else
+					check False end -- implied by ftype = Character_type
+				end
 			elseif is_boolean (value) and then ftype = Boolean_type then
-				boolean_ref ?= value
-				local_boolean := boolean_ref.item
-				set_boolean_field (i, object, local_boolean)
+				if attached {BOOLEAN_REF} value as boolean_ref then
+					local_boolean := boolean_ref.item
+					set_boolean_field (i, object, local_boolean)
+				else
+					check False end -- implied by ftype = Boolean_type
+				end
 			elseif is_string (value) then
 				if ftype = Character_type then
-					local_string1 ?= value
-					if local_string1.count = 1 then
+					if attached {STRING} value as local_string1 and then local_string1.count = 1 then
 						local_char := local_string1.item (1)
 						set_character_field (i, object, local_char)
 					else
 						Result := False
 					end
 				elseif ftype = Boolean_type then
-					local_string1 ?= value
-					if local_string1.count = 1 then
+					if attached {STRING} value as local_string1 and then local_string1.count = 1 then
 						local_char := local_string1.item (1)
 						local_boolean := 'T' = local_char
 						set_boolean_field (i, object, local_boolean)
@@ -126,7 +114,7 @@ feature -- Basic operations
 
 		end
 
-	field_clean (i: INTEGER; object: ANY): BOOLEAN is
+	field_clean (i: INTEGER; object: ANY): BOOLEAN
 			-- Clean `i'-th field of `object'.
 		require
 			object_not_void: object /= Void
@@ -155,7 +143,7 @@ feature -- Basic operations
 			end
 		end
 
-	switch_mark (obj: ANY) is
+	switch_mark (obj: ANY)
 			-- Unmark `obj' if marked or mark it if unmarked.
 		require
 			object_not_void: obj /= Void
@@ -167,7 +155,7 @@ feature -- Basic operations
 			end
 		end
 
-	unmark_structure (obj: ANY) is
+	unmark_structure (obj: ANY)
 			-- Unmark structure of objects.
 		require
 			object_not_void: obj /= Void
@@ -175,7 +163,7 @@ feature -- Basic operations
 			i: INTEGER
 			nbfield: INTEGER
 			type_value: INTEGER
-			field_i: ANY
+			field_i: detachable ANY
 		do
 			unmark(obj)
 			from
@@ -187,13 +175,14 @@ feature -- Basic operations
 				type_value := field_type (i, obj)
 				if type_value = Reference_type then
 					field_i := field (i, obj)
+					check field_i /= Void end -- implied by i <= nbfield
 					unmark_structure (field_i)
 				end
 				i := i + 1
 			end
 		end
 
-	traversal (object: ANY) is
+	traversal (object: ANY)
 			-- Traverse the entire object structure starting with root `obj'.
 			-- An object in the Eiffel run-time system includes the following:
 			--    a) Reference objects instance of a class type
@@ -227,25 +216,22 @@ feature -- Basic operations
 			object_finish_action (object)
 		end
 
-	deep_traversal (object: ANY) is
-			-- Perform a deep recursive traversal on 
-			-- the transitive closure of the object network 
+	deep_traversal (object: ANY)
+			-- Perform a deep recursive traversal on
+			-- the transitive closure of the object network
 			-- reachable from root `object'.
 		require
 			root_object_non_void: object /= Void
 		local
 			type_value, nb_field, i: INTEGER
-			one_field: ANY
-			one_array: ARRAY [ANY]
 		do
 			mark (object)
-			one_array ?= object
 				-- Test if currently traversed object
 				-- is an array.
-			if one_array /= Void then
+			if attached {ARRAY [ANY]} object as one_array then
 				array_traversal (one_array)
 			else
-					-- Perform action to store currently 
+					-- Perform action to store currently
 					-- traversed object
 					-- (implementation provided by a descendant class).
 				store_action (object)
@@ -257,12 +243,11 @@ feature -- Basic operations
 				loop
 					type_value := field_type (i, object)
 					if type_value = Reference_type then
-						one_field := field (i, object)
-						if one_field /= Void and then
+						if attached {ANY} field (i, object) as one_field and then
 								not is_marked (one_field) then
-								-- Propagate the traversal to 
+								-- Propagate the traversal to
 								-- referenced objects not traversed yet
-							deep_traversal (one_field)	
+							deep_traversal (one_field)
 						end
 					end
 					i := i + 1
@@ -270,37 +255,37 @@ feature -- Basic operations
 			end
 		end
 
-	object_init_action (object: ANY) is
+	object_init_action (object: ANY)
 			-- Do nothing.
 			-- (To be redefined in heir.)
 		do
 		end
 
-	reference_object_action (i: INTEGER; object: ANY) is
+	reference_object_action (i: INTEGER; object: ANY)
 			-- Do nothing.
 			-- (To be redefined in heir.)
 		do
 		end
 
-	simple_object_action (type, i: INTEGER; object: ANY) is
+	simple_object_action (type, i: INTEGER; object: ANY)
 			-- Do nothing.
 			-- (To be redefined in heir.)
 		do
 		end
 
-	object_finish_action (object: ANY) is
+	object_finish_action (object: ANY)
 			-- Do nothing.
 			-- (To be redefined in heir.)
 		do
 		end
 
-	store_action (object: ANY) is
+	store_action (object: ANY)
 			-- Do nothing.
 			-- (To be redefined in heir.)
 		do
 		end
 
-	nb_classes: INTEGER is
+	nb_classes: INTEGER
 			-- Number of dynamic types in current system
 		obsolete
 			"Should not be used. No other equivalent feature is supported."
@@ -309,77 +294,56 @@ feature -- Basic operations
 
 feature {NONE} -- Status report
 
-	is_void (obj: ANY): BOOLEAN is
+	is_void (obj: detachable ANY): BOOLEAN
 		do
 			Result := (obj = Void)
 		end
 
-	is_integer (obj: ANY): BOOLEAN is
+	is_integer (obj: detachable ANY): BOOLEAN
 			-- Is `obj' an integer value?
-		local
-			r_int: INTEGER_REF
 		do
-			r_int ?= obj
-			Result := r_int /= Void
+			Result := attached {INTEGER_REF} obj
 		end
 
-	is_real (obj: ANY): BOOLEAN is
+	is_real (obj: detachable ANY): BOOLEAN
 			-- Is `obj' a real value?
-		local
-			r_real: REAL_REF
 		do
-			r_real ?= obj
-			Result := r_real /= Void
+			Result := attached {REAL_REF} obj
 		end
 
-	is_double (obj: ANY): BOOLEAN is
+	is_double (obj: detachable ANY): BOOLEAN
 			-- Is `obj' a double value?
-		local
-			r_double: DOUBLE_REF
 		do
-			r_double ?= obj
-			Result := r_double /= Void
+			Result := attached {DOUBLE_REF} obj
 		end
 
-	is_boolean (obj: ANY): BOOLEAN is
+	is_boolean (obj: detachable ANY): BOOLEAN
 			-- Is `obj' a boolean value?
-		local
-			r_boolean: BOOLEAN_REF
 		do
-			r_boolean ?= obj
-			Result := r_boolean /= Void
+			Result := attached {BOOLEAN_REF} obj
 		end
 
-	is_character (obj: ANY): BOOLEAN is
+	is_character (obj: detachable ANY): BOOLEAN
 			-- Is `obj' a character value?
-		local
-			r_character: CHARACTER_REF
 		do
-			r_character ?= obj
-			Result := r_character /= Void
+			Result := attached {CHARACTER_REF} obj
 		end
 
-	is_string (obj: ANY): BOOLEAN is
+	is_string (obj: detachable ANY): BOOLEAN
 			-- Is `obj' a string value?
-		local
-			r_string: STRING
 		do
-			r_string ?= obj
-			Result := r_string /= Void
+			Result := attached {STRING} obj
 		end
 
-	is_date (obj: ANY): BOOLEAN is
+	is_date (obj: detachable ANY): BOOLEAN
 			-- Is `obj' a date object?
-		local
-			r_date: DATE_TIME
 		do
-			r_date ?= obj
-			Result := r_date /= Void
+			Result := attached {DATE_TIME} obj
 		end
 
 feature {NONE} -- Basic operations
 
-	array_traversal (one_array: ARRAY [ANY]) is
+	array_traversal (one_array: ARRAY [ANY])
 			-- Scan though all item elements of `one_array'
 			-- and propagate the deep traversal to those
 			-- that are references to objects.
@@ -396,7 +360,7 @@ feature {NONE} -- Basic operations
 				from
 					i := one_array.lower
 				until
-					i > one_array.upper 
+					i > one_array.upper
 				loop
 					one_field := one_array.item (i)
 					if one_field /= Void and then not is_marked (one_field) then
@@ -411,22 +375,19 @@ feature {NONE} -- Basic operations
 					-- that are NOT of reference type.
 				store_action (one_array)
 			end
-		end 
+		end
 
-	deep_unmark (object: ANY) is
+	deep_unmark (object: ANY)
 			-- Unmark all objects reachable from
 			-- the transitive closure of the object network
 			-- reachable from the `object' root.
 		require
-			object_non_void: object /= Void	
+			object_non_void: object /= Void
 		local
 			type_value, nb_field, i: INTEGER
-			one_array: ARRAY [ANY]
-			one_field: ANY
 		do
 			unmark (object)
-			one_array ?= object
-			if one_array /= Void then
+			if attached {ARRAY [ANY]} object as one_array then
 				array_unmark (one_array)
 			else
 				from
@@ -437,8 +398,7 @@ feature {NONE} -- Basic operations
 				loop
 					type_value := field_type (i, object)
 					if type_value = Reference_type then
-						one_field := field (i, object)
-						if one_field /= Void and then is_marked (one_field) then
+						if attached {ANY} field (i, object) as one_field and then is_marked (one_field) then
 							deep_unmark (one_field)
 						end
 					end
@@ -447,7 +407,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	array_unmark (one_array: ARRAY [ANY]) is
+	array_unmark (one_array: ARRAY [ANY])
 			-- Scan though all item elements of `one_array'
 			-- and propagate the unmarking traversal to those
 			-- that are references to objects.
@@ -462,7 +422,7 @@ feature {NONE} -- Basic operations
 				from
 					i := one_array.lower
 				until
-					i > one_array.upper 
+					i > one_array.upper
 				loop
 					one_field := one_array.item (i)
 					if one_field /= Void and then is_marked (one_field) then
@@ -471,9 +431,9 @@ feature {NONE} -- Basic operations
 					i := i + 1
 				end
 			end
-		end 
+		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

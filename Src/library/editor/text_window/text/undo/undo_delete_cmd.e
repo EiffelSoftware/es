@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Undo command for string deletion."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,7 +17,7 @@ create
 
 feature -- Initialization
 
-	make_from_string (tc: EDITOR_CURSOR; s: STRING_GENERAL; txt: EDITABLE_TEXT) is
+	make_from_string (tc: EDITOR_CURSOR; s: STRING_GENERAL; txt: EDITABLE_TEXT)
 		do
 			y_start := tc.y_in_lines
 			x_start := tc.x_in_characters
@@ -35,12 +35,12 @@ feature -- Access
 
 feature -- Element change
 
-	extend (c: CHARACTER_32) is
+	extend (c: CHARACTER_32)
 		do
 			message.extend (c)
 		end
 
-	prepend (tc: EDITOR_CURSOR; c: CHARACTER_32) is
+	prepend (tc: EDITOR_CURSOR; c: CHARACTER_32)
 		do
 			y_start := tc.y_in_lines
 			x_start := tc.x_in_characters
@@ -49,24 +49,28 @@ feature -- Element change
 
 feature -- Basic operations
 
-	undo	is
+	undo
 		local
 			cur: EDITOR_CURSOR
 		do
 			cur := text.cursor
 			text.forget_selection
 			cur.make_from_character_pos (x_start, y_start, text)
-			text.insert_string_at_cursor_pos (message)
+			if not message.is_empty then
+				text.insert_string_at_cursor_pos (message)
+			end
 		end
 
-	redo is
+	redo
 		local
 			cur: EDITOR_CURSOR
 		do
 			cur := text.cursor
 			text.forget_selection
 			cur.make_from_character_pos (x_start, y_start, text)
-			text.delete_n_chars_at_cursor_pos (message.count)
+			if not message.is_empty then
+				text.delete_n_chars_at_cursor_pos (message.count)
+			end
 		end
 
 
@@ -74,7 +78,7 @@ feature {NONE} -- Implementation
 
 	text : EDITABLE_TEXT;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

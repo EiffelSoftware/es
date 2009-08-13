@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog for class options."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -32,7 +32,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_factory: like conf_factory) is
+	make (a_factory: like conf_factory)
 			-- Create.
 		require
 			a_factory_not_void: a_factory /= Void
@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 			factory_set: conf_factory = a_factory
 		end
 
-	initialize is
+	initialize
 			-- Initialization
 		local
 			hb, hb2: EV_HORIZONTAL_BOX
@@ -123,7 +123,7 @@ feature {NONE} -- Initialization
 
 feature -- Update
 
-	set_group_options (an_option: like group_options) is
+	set_group_options (an_option: like group_options)
 			-- Set `group_options' to `an_option'.
 		require
 			an_option_not_void: an_option /= Void
@@ -143,7 +143,7 @@ feature {NONE} -- Gui elements
 
 feature {NONE} -- Agents
 
-	on_show is
+	on_show
 			-- Called if the dialog is shown.
 		require
 			initialized: is_initialized
@@ -151,7 +151,7 @@ feature {NONE} -- Agents
 			refresh
 		end
 
-	add_class is
+	add_class
 			-- Add a new class.
 		local
 			l_name: STRING
@@ -167,7 +167,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	remove_class is
+	remove_class
 			-- Remove a class.
 		do
 			if current_class /= Void then
@@ -177,7 +177,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	show_options (a_class: STRING) is
+	show_options (a_class: STRING)
 			-- Show options for `a_class'
 		require
 			properties_set: properties /= Void
@@ -222,7 +222,7 @@ feature {NONE} -- Implementation
 	current_class: STRING
 			-- Currently selected class.
 
-	refresh is
+	refresh
 			-- Refresh the displayed values.
 		local
 			l_sort: DS_ARRAYED_LIST [STRING]
@@ -261,7 +261,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	class_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL] is
+	class_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL]
 			-- Expanded status of sections of class options.
 		once
 			create Result.make (4)
@@ -274,10 +274,10 @@ feature {NONE} -- Implementation
 invariant
 	elements: is_initialized implies class_list /= Void and new_class /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -288,19 +288,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

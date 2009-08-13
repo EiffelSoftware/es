@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Base visitor iterator for visiting code template models.
 	]"
@@ -21,25 +21,25 @@ inherit
 
 feature {CODE_NODE} -- Processing
 
-	process_code_category_collection (a_value: !CODE_CATEGORY_COLLECTION)
+	process_code_category_collection (a_value: attached CODE_CATEGORY_COLLECTION)
 			-- Process object `a_value'.
 		do
 			process_collection (a_value)
 		end
 
-	process_code_declaration_collection (a_value: !CODE_DECLARATION_COLLECTION)
+	process_code_declaration_collection (a_value: attached CODE_DECLARATION_COLLECTION)
 			-- Process object `a_value'.
 		do
 			process_collection (a_value)
 		end
 
-	process_code_template_collection (a_value: !CODE_TEMPLATE_COLLECTION)
+	process_code_template_collection (a_value: attached CODE_TEMPLATE_COLLECTION)
 			-- Process object `a_value'.
 		do
 			process_collection (a_value)
 		end
 
-	process_code_template_definition (a_value: !CODE_TEMPLATE_DEFINITION)
+	process_code_template_definition (a_value: attached CODE_TEMPLATE_DEFINITION)
 			-- Process object `a_value'.
 		do
 			if is_applicable_visitation_entity (a_value.metadata) then
@@ -53,7 +53,7 @@ feature {CODE_NODE} -- Processing
 			end
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

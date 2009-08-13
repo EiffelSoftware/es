@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"[
 			EV_GRID Text label that may be interactively edited by the user via a text field.
@@ -43,7 +43,7 @@ feature -- Access
 
 feature -- Action
 
-	deactivate is
+	deactivate
 			-- Cleanup from previous call to activate.
 		do
 			if text_label /= Void then
@@ -58,7 +58,7 @@ feature -- Action
 
 feature {NONE} -- Implementation
 
-	update_popup_dimensions (a_popup: EV_POPUP_WINDOW) is
+	update_popup_dimensions (a_popup: EV_POPUP_WINDOW)
 			-- Update dimensions and positioning for `a_popup'.
 		require
 			a_popup_not_void: a_popup /= Void
@@ -67,9 +67,11 @@ feature {NONE} -- Implementation
 			a_width: INTEGER
 			a_widget_y_offset: INTEGER
 			a_widget: EV_WIDGET
+			l_text_height: INTEGER
 		do
 			a_widget := a_popup.item
 				-- Account for position of text relative to pixmap.
+			l_text_height := text_height
 			l_x_offset := left_border
 			if pixmap /= Void then
 				l_x_offset := l_x_offset + pixmap.width + spacing
@@ -80,17 +82,18 @@ feature {NONE} -- Implementation
 
 			a_width := a_popup.width - l_x_coord - right_border
 
-			a_widget_y_offset := (a_widget.minimum_height - text_height) // 2
+			a_widget_y_offset := (a_widget.minimum_height - l_text_height) // 2
 
 			a_widget.set_minimum_width (0)
 
 			a_popup.set_x_position (a_popup.x_position + l_x_coord)
 			a_popup.set_width (a_width)
-			a_popup.set_y_position (a_popup.y_position + ((a_popup.height - top_border - bottom_border - text_height) // 2) + top_border - a_widget_y_offset)
-			a_popup.set_height (text_height)
+
+			a_popup.set_y_position (a_popup.y_position + top_border - a_widget_y_offset)
+			a_popup.set_height (l_text_height + top_border + spacing)
 		end
 
-	handle_key (a_key: EV_KEY) is
+	handle_key (a_key: EV_KEY)
 			-- Handle the Escape key for cancelling activation.
 		require
 			a_key_not_void: a_key /= Void
@@ -104,16 +107,20 @@ feature {NONE} -- Implementation
 	user_cancelled_activation: BOOLEAN
 		-- Did the user cancel the activation using the Esc key?
 
-	activate_action (popup_window: EV_POPUP_WINDOW) is
+	activate_action (popup_window: EV_POPUP_WINDOW)
 			-- `Current' has been requested to be updated via `popup_window'.
+		local
+			h: INTEGER
 		do
 			create text_label
-			text_label.set_minimum_size (1, text_height)
+			h := text_height
 			text_label.align_text_left
-			if font /= Void then
-				text_label.set_font (font)
+			if attached font as f then
+				text_label.set_font (f)
 			end
+
 			text_label.set_text (text)
+			text_label.set_minimum_size (1, h)
 
 			text_label.set_background_color (implementation.displayed_background_color)
 			popup_window.set_background_color (implementation.displayed_background_color)
@@ -126,15 +133,15 @@ feature {NONE} -- Implementation
 			popup_window.show_actions.extend (agent initialize_actions)
 		end
 
-	initialize_actions is
+	initialize_actions
 			-- Setup the action sequences when the item is shown.
 		do
 			user_cancelled_activation := False
 			text_label.key_press_actions.extend (agent handle_key)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -147,22 +154,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

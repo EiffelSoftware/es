@@ -108,6 +108,7 @@ UTF8_tail	[\x80-\xBF]
 ">>"				|
 "?="				|
 ":="				|
+"/~"				|
 "-"					|
 "+"					|
 "*"					|
@@ -115,7 +116,8 @@ UTF8_tail	[\x80-\xBF]
 "^"					|
 "="					|
 ">"					|
-"<"					{ 
+"<"					|
+"~"					{ 
 						-- Operator Symbol
 					if not in_comments then
 						curr_token := new_operator (text)					
@@ -134,7 +136,8 @@ UTF8_tail	[\x80-\xBF]
 [aA][nN][dD]						|
 [aA][sS]						|
 [aA][sS][sS][iI][gG][nN]				|
-[aA][tT][tT][rR][iI][bB][uU][tT][eE]		|
+[aA][tT][tT][aA][cC][hH][eE][dD]		|
+[aA][tT][tT][rR][iI][bB][uU][tT][eE]	|
 [bB][iI][tT]					|
 [cC][hH][eE][cC][kK]					|
 [cC][lL][aA][sS][sS]					|
@@ -144,6 +147,7 @@ UTF8_tail	[\x80-\xBF]
 [cC][uU][rR][rR][eE][nN][tT]			|
 [dD][eE][bB][uU][gG]					|
 [dD][eE][fF][eE][rR][rR][eE][dD]		|
+[dD][eE][tT][aA][cC][hH][aA][bB][lL][eE]	|
 [dD][oO]								|
 [eE][lL][sS][eE]						|
 [eE][lL][sS][eE][iI][fF]				|
@@ -488,7 +492,7 @@ UTF8_tail	[\x80-\xBF]
 %%
 
 indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -512,11 +516,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- EDITOR_EIFFEL_SCANNER

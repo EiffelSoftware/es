@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Provide formatting of .NET identifiers into Eiffel"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -8,7 +8,7 @@ class
 
 feature -- Status Report
 
-	has_special_type_name (a_full_name: STRING): BOOLEAN is
+	has_special_type_name (a_full_name: STRING): BOOLEAN
 			-- Does .NET type with full name `a_full_name' has a special
 			-- name in Eiffel?
 		do
@@ -21,13 +21,17 @@ feature -- Status Report
 
 feature -- Access
 
-	special_type_name: STRING is
+	special_type_name: STRING
 			-- Eiffel name of .NET type whose full name was given to
 			-- `has_special_type_name' last
 		require
 			was_special: was_special
+		local
+			l_result: detachable STRING
 		do
-			Result := full_name_type_mapping_table.found_item
+			l_result := full_name_type_mapping_table.found_item
+			check l_result_attached: l_result /= Void end
+			Result := l_result
 		ensure
 			non_void_name: Result /= Void
 		end
@@ -37,56 +41,57 @@ feature -- Access
 			-- `has_special_type_name' have a special Eiffel name?
 			-- False if `has_special_type_name' was not called.
 
-	formatted_type_name (name: STRING; used_names: HASH_TABLE [STRING, STRING]): STRING is
+	formatted_type_name (name: STRING; used_names: detachable HASH_TABLE [STRING, STRING]): STRING
 			-- Format `name' to Eiffel conventions.
 		require
 			non_void_name: name /= Void
 			valid_name: not name.is_empty and then name.item (1) /= '.'
-			used_names_not_void: used_names /= Void
 		local
-			i, index, pos, count: INTEGER
+			count: INTEGER
 		do
 			Result := full_formatted_type_name (name, used_names)
-			if used_names.has (Result) then
-				from
-					count := 2
-				until
-					not used_names.has (Result)
-				loop
-					trim_end_digits (Result)
-					Result.append (count.out)
-					count := count + 1
+			if used_names /= Void then
+				if used_names.has (Result) then
+					from
+						count := 2
+					until
+						not used_names.has (Result)
+					loop
+						trim_end_digits (Result)
+						Result.append (count.out)
+						count := count + 1
+					end
 				end
+				used_names.put (Result, Result)
 			end
-			used_names.put (Result, Result)
 		ensure
 			non_void_name: Result /= Void
 		end
 
-	full_formatted_type_name (name: STRING; used_names: HASH_TABLE [STRING, STRING]): STRING is
+	full_formatted_type_name (name: STRING; used_names: detachable HASH_TABLE [STRING, STRING]): STRING
 			-- Format .NET type name `name' to Eiffel class name.
 		require
 			non_void_name: name /= Void
 			valid_name: not name.is_empty
-			used_names_not_void: used_names /= Void
 		local
 			simple_name: STRING
 			count, pos, index, i: INTEGER
 			container, nested: STRING
 		do
 			full_name_type_mapping_table.search (name)
-			if full_name_type_mapping_table.found then
-				Result := full_name_type_mapping_table.found_item
+			if full_name_type_mapping_table.found and then attached full_name_type_mapping_table.found_item as l_result then
+				Result := l_result
 			else
 				index := name.occurrences ('.')
 				if index > 0 then
 					from
+						Result := ""
 						count := name.count
 						pos := name.last_index_of ('.', count)
 						simple_name := name.substring (pos + 1, count)
 						i := 2
 					until
-						i > index or else not used_names.has (Result)
+						i > index or else (used_names /= Void and then not used_names.has (Result))
 					loop
 						pos := name.last_index_of ('.', pos - 1)
 						simple_name := name.substring (pos + 1, count)
@@ -97,8 +102,8 @@ feature -- Access
 				end
 
 				variable_mapping_table.search (simple_name.as_lower)
-				if variable_mapping_table.found then
-					Result := variable_mapping_table.found_item.as_upper
+				if variable_mapping_table.found and then attached variable_mapping_table.found_item as l_result then
+					Result := l_result.as_upper
 				else
 					create Result.make_from_string (simple_name)
 					if Result.item (simple_name.count) = ']' then
@@ -140,7 +145,7 @@ feature -- Access
 			non_void_name: Result /= Void
 		end
 
-	formatted_feature_name (name: STRING): STRING is
+	formatted_feature_name (name: STRING): STRING
 			-- Format `name' to Eiffel conventions
 		require
 			non_void_name: name /= Void
@@ -149,8 +154,8 @@ feature -- Access
 			l_name: STRING
 		do
 			operators.search (name)
-			if operators.found then
-				Result := operators.found_item
+			if operators.found and then attached operators.found_item as l_result then
+				Result := l_result
 			else
 				l_name := name.twin
 				if l_name.item (1) = '_'  then
@@ -166,7 +171,7 @@ feature -- Access
 			non_void_result: Result /= Void
 		end
 
-	formatted_argument_name (name: STRING; pos: INTEGER): STRING is
+	formatted_argument_name (name: STRING; pos: INTEGER): STRING
 			-- Format argument at position `pos'.
 		require
 			name_not_void: name /= Void
@@ -188,7 +193,7 @@ feature -- Access
 			formatted_argument_name_not_void: Result /= Void
 		end
 
-	formatted_variable_name (name: STRING): STRING is
+	formatted_variable_name (name: STRING): STRING
 			-- Format `name' to Eiffel conventions
 		require
 			non_void_name: name /= Void
@@ -202,8 +207,8 @@ feature -- Access
 			l_name.to_lower
 			l_var := variable_mapping_table
 			l_var.search (l_name)
-			if l_var.found then
-				Result := l_var.found_item
+			if l_var.found and then attached l_var.found_item as l_result then
+				Result := l_result
 			else
 				create Result.make_from_string (name)
 				if Result.item (Result.count) = '&' then
@@ -221,7 +226,7 @@ feature -- Access
 			non_void_result: Result /= Void
 		end
 
-	formatted_variable_type_name (name: STRING): STRING is
+	formatted_variable_type_name (name: STRING): STRING
 			-- Format variable name that represent a type into Eiffel
 			-- naming convention.
 		require
@@ -242,8 +247,8 @@ feature -- Access
 			end
 			l_arg := argument_mapping_table
 			l_arg.search (Result)
-			if l_arg.found then
-				Result := l_arg.found_item
+			if l_arg.found and then attached l_arg.found_item as l_result then
+				Result := l_result
 			else
 				i := name.index_of ('+', 1)
 				if i > 0 then
@@ -275,7 +280,7 @@ feature -- Access
 			non_void_result: Result /= Void
 		end
 
-	valid_variable_name (name: STRING): STRING is
+	valid_variable_name (name: STRING): STRING
 			-- Format `name' to Eiffel valid variable name.
 		require
 			non_void_name: name /= Void
@@ -291,8 +296,8 @@ feature -- Access
 			l_name.to_lower
 			l_var := variable_mapping_table
 			l_var.search (l_name)
-			if l_var.found then
-				Result := l_var.found_item
+			if l_var.found and then attached l_var.found_item as l_result then
+				Result := l_result
 			else
 				if name.item (1) = '_' then
 					create Result.make (name.count + 1)
@@ -338,7 +343,7 @@ feature -- Access
 			valid_name: is_valid_variable_name (Result)
 		end
 
-	is_valid_variable_name (a_name: STRING): BOOLEAN is
+	is_valid_variable_name (a_name: STRING): BOOLEAN
 			-- Is `a_name' a valid variable name?
 		require
 			non_void_a_name: a_name /= Void
@@ -359,7 +364,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	escaped_character (a_character: CHARACTER): STRING is
+	escaped_character (a_character: CHARACTER): STRING
 			-- Escape `a_character' so that it is a valid Eiffel identifier string
 		do
 			create Result.make (4)
@@ -367,7 +372,7 @@ feature {NONE} -- Implementation
 			Result.append (a_character.code.out)
 		end
 
-	trim_end_digits (s: STRING) is
+	trim_end_digits (s: STRING)
 			-- Remove end digits from `s' and append `_' if needed.
 		require
 			non_void_string: s /= Void
@@ -396,7 +401,7 @@ feature {NONE} -- Implementation
 			trimmed: s.item (s.count) = '_'
 		end
 
-	eiffel_format (s: STRING; a_class_format: BOOLEAN): STRING is
+	eiffel_format (s: STRING; a_class_format: BOOLEAN): STRING
 			-- Format from CamelCase to eiffel_case
 		require
 			non_void_value: s /= Void
@@ -467,7 +472,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	full_name_type_mapping_table: HASH_TABLE [STRING, STRING] is
+	full_name_type_mapping_table: HASH_TABLE [STRING, STRING]
 			-- Special types indexed by .NET full name (including namespace)
 		once
 			create Result.make (40)
@@ -518,7 +523,7 @@ feature {NONE} -- Implementation
 			Result.put ("SYSTEM_ZONE", "System.Security.Policy.Zone")
 		end
 
-	variable_mapping_table: HASH_TABLE [STRING, STRING] is
+	variable_mapping_table: HASH_TABLE [STRING, STRING]
 			-- Protected Eiffel identifiers
 		once
 			-- Features in ANY Eiffel class
@@ -598,7 +603,7 @@ feature {NONE} -- Implementation
 			Result.put ("make", ".ctor")
 		end
 
-	argument_mapping_table: HASH_TABLE [STRING, STRING] is
+	argument_mapping_table: HASH_TABLE [STRING, STRING]
 			-- Mapping for type when used in feature name to distinguish between
 			-- different overloading.
 		once
@@ -618,7 +623,7 @@ feature {NONE} -- Implementation
 			Result.put ("real", "Single")
 		end
 
-	unary_operators: HASH_TABLE [STRING, STRING] is
+	unary_operators: HASH_TABLE [STRING, STRING]
 			-- Unary known operators table.
 		once
 			create Result.make (11)
@@ -637,7 +642,7 @@ feature {NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	binary_operators: HASH_TABLE [STRING, STRING] is
+	binary_operators: HASH_TABLE [STRING, STRING]
 			-- binary known operators table.
 		once
 			create Result.make (37)
@@ -681,7 +686,7 @@ feature {NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	operators: HASH_TABLE [STRING, STRING] is
+	operators: HASH_TABLE [STRING, STRING]
 			-- Operator symbols table
 		once
 			create Result.make (unary_operators.count + binary_operators.count)
@@ -691,16 +696,16 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	single_dot_string: STRING is "."
-	single_underscore_string: STRING is "_"
-	double_underscore_string: STRING is "__"
-	triple_underscore_string: STRING is "___"
-	array_string: STRING is "_array"
-	native_array_string: STRING is "NATIVE_ARRAY ["
-	in_string: STRING is "_IN_";
+	single_dot_string: STRING = "."
+	single_underscore_string: STRING = "_"
+	double_underscore_string: STRING = "__"
+	triple_underscore_string: STRING = "___"
+	array_string: STRING = "_array"
+	native_array_string: STRING = "NATIVE_ARRAY ["
+	in_string: STRING = "_IN_";
 			-- To save time in creating those strings in current class.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

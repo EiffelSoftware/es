@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -35,13 +35,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make the main window.
 		do
+			create dc.make (create {WEL_FRAME_WINDOW}.make_top ("dummy"))
+			create lines.make
+			create current_line.make
+			set_pen_width (1)
+
 			make_top ("My application")
 			create dc.make (Current)
-			set_pen_width (1)
-			create lines.make
 			set_menu (main_menu)
 		end
 
@@ -57,7 +60,7 @@ feature -- Access
 	pen: WEL_PEN
 			-- Pen currently selected in `dc'
 
-	line_thickness_dialog: LINE_THICKNESS_DIALOG
+	line_thickness_dialog: detachable LINE_THICKNESS_DIALOG
 			-- Dialog box to change line thickness
 
 	lines: LINES
@@ -66,15 +69,15 @@ feature -- Access
 	current_line: LINE
 			-- Line currently drawn by the user
 
-	open_dialog: WEL_OPEN_FILE_DIALOG
+	open_dialog: detachable WEL_OPEN_FILE_DIALOG
 			-- Standard dialog box to open a file
 
-	save_dialog: WEL_SAVE_FILE_DIALOG
+	save_dialog: detachable WEL_SAVE_FILE_DIALOG
 			-- Standard dialog box to save a file
 
 feature -- Element change
 
-	set_pen_width (new_width: INTEGER) is
+	set_pen_width (new_width: INTEGER)
 			-- Set pen width with `new_width'.
 		do
 			create pen.make_solid (new_width, black)
@@ -82,7 +85,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Initiate the drawing process.
 		do
 			if not button_down then
@@ -97,7 +100,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_mouse_move (keys, x_pos, y_pos: INTEGER) is
+	on_mouse_move (keys, x_pos, y_pos: INTEGER)
 			-- Connect the points to make lines.
 		do
 			if button_down then
@@ -106,7 +109,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_left_button_up (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_up (keys, x_pos, y_pos: INTEGER)
 			-- Terminate the drawing process.
 		do
 			if button_down then
@@ -115,7 +118,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT) is
+	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
 			-- Paint the lines.
 		local
 			a_line: LINE
@@ -150,8 +153,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_menu_command (menu_id: INTEGER) is
+	on_menu_command (menu_id: INTEGER)
 			-- `menu_id' has been selected.
+		local
+			l_dialog: like line_thickness_dialog
+			l_open_dialog: like open_dialog
+			l_save_dialog: like save_dialog
 		do
 			inspect
 				menu_id
@@ -159,43 +166,53 @@ feature {NONE} -- Implementation
 				lines.wipe_out
 				invalidate
 			when Cmd_open then
-				if open_dialog = Void then
-					create open_dialog.make
-					open_dialog.set_filter (<<"Draw file">>, <<"*.drw">>)
-					open_dialog.set_default_extension ("drw")
-					open_dialog.add_flag (Ofn_filemustexist)
+				l_open_dialog := open_dialog
+				if l_open_dialog = Void then
+					create l_open_dialog.make
+					open_dialog := l_open_dialog
+					l_open_dialog.set_filter (<<"Draw file">>, <<"*.drw">>)
+					l_open_dialog.set_default_extension ("drw")
+					l_open_dialog.add_flag (Ofn_filemustexist)
 				end
-				open_dialog.activate (Current)
-				if open_dialog.selected then
-					lines ?= lines.retrieve_by_name (open_dialog.file_name)
+				l_open_dialog.activate (Current)
+				if l_open_dialog.selected then
+					if attached {like lines} lines.retrieve_by_name (l_open_dialog.file_name) as l_lines then
+						lines := l_lines
+					else
+						create lines.make
+					end
 					invalidate
 				end
 			when Cmd_save then
-				if save_dialog = Void then
-					create save_dialog.make
-					save_dialog.set_filter (<<"Draw file">>, <<"*.drw">>)
-					save_dialog.set_default_extension ("drw")
+				l_save_dialog := save_dialog
+				if l_save_dialog = Void then
+					create l_save_dialog.make
+					save_dialog := l_save_dialog
+					l_save_dialog.set_filter (<<"Draw file">>, <<"*.drw">>)
+					l_save_dialog.set_default_extension ("drw")
 				end
-				save_dialog.activate (Current)
-				if save_dialog.selected then
-					lines.store_by_name (save_dialog.file_name)
+				l_save_dialog.activate (Current)
+				if l_save_dialog.selected then
+					lines.store_by_name (l_save_dialog.file_name)
 				end
 			when Cmd_exit then
 				if closeable then
 					destroy
 				end
 			when Cmd_line_thickness then
-				if line_thickness_dialog = Void then
-					create line_thickness_dialog.make (Current)
+				l_dialog := line_thickness_dialog
+				if l_dialog = Void then
+					create l_dialog.make (Current)
+					line_thickness_dialog := l_dialog
 				end
-				line_thickness_dialog.activate
-				if line_thickness_dialog.ok_pushed then
-					set_pen_width (line_thickness_dialog.pen_width)
+				l_dialog.activate
+				if l_dialog.ok_pushed then
+					set_pen_width (l_dialog.pen_width)
 				end
 			end
 		end
 
-	closeable: BOOLEAN is
+	closeable: BOOLEAN
 			-- Does the user want to quit?
 		local
 			msg_box: WEL_MSG_BOX
@@ -206,13 +223,13 @@ feature {NONE} -- Implementation
 			Result := msg_box.message_box_result = Idyes
 		end
 
-	main_menu: WEL_MENU is
+	main_menu: WEL_MENU
 			-- Window's menu
 		once
 			create Result.make_by_id (Main_menu_id)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

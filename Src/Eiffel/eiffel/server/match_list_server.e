@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Match list server for a class indexed by class id."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -34,11 +34,13 @@ create
 
 feature -- Access
 
-	item (an_id: INTEGER): LEAF_AS_LIST is
+	item (an_id: INTEGER): LEAF_AS_LIST
 			-- Retrieve object.
 		local
 			l_class: CLASS_C
 			l_text: STRING
+			l_options: CONF_OPTION
+			l_scanner: like matchlist_scanner
 			l_retried: BOOLEAN
 		do
 			if not l_retried then
@@ -56,8 +58,18 @@ feature -- Access
 						-- If the file associated with `l_class' has been removed we might get no text
 						-- thus the protection.
 					if l_text /= Void then
-						matchlist_scanner.scan_string (l_class.text)
-						Result := matchlist_scanner.match_list
+						l_options := l_class.lace_class.options
+						l_scanner := matchlist_scanner
+						inspect l_options.syntax.index
+						when {CONF_OPTION}.syntax_index_obsolete then
+							l_scanner.set_syntax_version ({EIFFEL_SCANNER}.obsolete_64_syntax)
+						when {CONF_OPTION}.syntax_index_transitional then
+							l_scanner.set_syntax_version ({EIFFEL_SCANNER}.transitional_64_syntax)
+						else
+							l_scanner.set_syntax_version ({EIFFEL_SCANNER}.ecma_syntax)
+						end
+						l_scanner.scan_string (l_class.text)
+						Result := l_scanner.match_list
 						Result.set_class_id (an_id)
 						Result.set_generated (l_class.lace_class.date)
 							-- 02/06/2006 Patrickr
@@ -79,13 +91,13 @@ feature -- Access
 			retry
 		end
 
-	cache: CACHE [LEAF_AS_LIST] is
+	cache: CACHE [LEAF_AS_LIST]
 			-- Cache to speedup
 		once
 			create Result.make
 		end
 
-	has (an_id: INTEGER): BOOLEAN is
+	has (an_id: INTEGER): BOOLEAN
 			-- Does the server have the matchlist for `an_id'?
 		do
 			Result := stored_has (an_id)
@@ -97,11 +109,11 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Chunk: INTEGER is 500;
+	Chunk: INTEGER = 500;
 			-- Size of a HASH_TABLE' block
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

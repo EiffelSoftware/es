@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"The general notion of language construct,  %
@@ -20,13 +20,21 @@ inherit
 			make as twt_make
 		export
 			{CONSTRUCT} twt_put, twt_make
-		redefine 
-			parent, new_cell
+		undefine
+			new_tree, clone_node
+		redefine
+			parent,
+			new_cell,
+			child_cursor,
+			twl_merge_left,
+			twl_merge_right,
+			tree_is_equal,
+			tree_copy
 		end
 
 feature -- Initialization
 
-	make is
+	make
 			-- Set up construct.
 		do
 			twt_make (Current)
@@ -34,18 +42,27 @@ feature -- Initialization
 
 feature -- Access
 
-	document: INPUT is
+	parent: detachable CONSTRUCT
+			-- <precursor>
+
+	child_cursor: CONSTRUCT_CURSOR
+			-- <precursor>
+		do
+			create Result.make (child, child_after, child_before)
+		end
+
+	document: INPUT
 			-- The document to be parsed
 		once
 			create Result.make
 		end
 
-	production: LINKED_LIST [CONSTRUCT] is 
+	production: LINKED_LIST [CONSTRUCT]
 			-- Right-hand side of the production for the construct
-		deferred 
+		deferred
 		end
 
-	construct_name: STRING is 
+	construct_name: STRING
 			-- Name of the construct in the grammar
 		deferred
 		end;
@@ -53,11 +70,11 @@ feature -- Access
 feature -- Status report
 
 	is_optional: BOOLEAN
-			-- Is construct optional? 
+			-- Is construct optional?
 
-	left_recursion: BOOLEAN is 
+	left_recursion: BOOLEAN
 			-- Is the construct's definition left-recursive?
-		deferred 
+		deferred
 		end
 
 	parsed: BOOLEAN
@@ -70,16 +87,16 @@ feature -- Status report
 			-- (Otherwise the parsing process will backtrack, trying
 			-- other possible interpretations of the part already read.)
 
-	print_mode: CELL [BOOLEAN] is 
+	print_mode: CELL [BOOLEAN]
 			-- Must the left-recursion test also print the production?
 			-- (Default: no.)
-		once 
+		once
 			create Result.put (False)
 		end
 
 feature -- Status setting
 
-	set_optional is
+	set_optional
 			-- Define this construct as optional.
 		do
 			is_optional := True
@@ -89,7 +106,7 @@ feature -- Status setting
 
 feature -- Transformation
 
-	process is
+	process
 			-- Parse a specimen of the construct, then apply
 			-- semantic actions if parsing successful.
 		do
@@ -99,10 +116,10 @@ feature -- Transformation
 			end
 		end
 
-	parse is
+	parse
 			-- Attempt to analyze incoming lexical
-			-- tokens according to current construct. 
-			-- Set `parsed' to true if successful; 
+			-- tokens according to current construct.
+			-- Set `parsed' to true if successful;
 			-- return to original position in input otherwise.
 		local
 			initial_document_position: INTEGER
@@ -120,14 +137,14 @@ feature -- Transformation
 			end
 		end
 
-	commit is
+	commit
             -- If this construct is one among several possible ones,
             -- discard the others.
 				-- By default this does nothing.
 		do
 		end
 
-	semantics is
+	semantics
 			-- Apply semantic actions in order:
 			-- `pre_action', `in_action', `post_action'.
 		do
@@ -136,25 +153,43 @@ feature -- Transformation
 			post_action
 		end
 
-	pre_action is
+	pre_action
 			-- Semantic action executed before construct is parsed
 			-- (nothing by default; may be redefined in descendants).
 		do
 		end
 
-	post_action is
+	post_action
 			-- Semantic action executed after construct is parsed
 			-- (nothing by default; may be redefined in descendants).
 		do
 		end
 
-feature -- Output 
+feature -- Output
 
-	print_name is
+	print_name
 			-- Print the construct name on standard output.
 		do
 			if construct_name /= Void then
 				io.put_string (construct_name)
+			end
+		end
+
+feature -- Element Change
+
+	twl_merge_left (other: CONSTRUCT)
+			-- <precursor>
+		do
+			if attached {like Current} other as l_other then
+				Precursor {TWO_WAY_TREE}(l_other)
+			end
+		end
+
+	twl_merge_right (other: CONSTRUCT)
+			-- <precursor>
+		do
+			if attached {like Current} other as l_other then
+				Precursor {TWO_WAY_TREE}(l_other)
 			end
 		end
 
@@ -165,22 +200,21 @@ feature {CONSTRUCT} -- Implementation
 			-- (Like `parsed', but in addition the construct,
 			-- if optional, must be present.)
 
-	parent: CONSTRUCT
-			-- Parent of current construct
-
-	new_cell (v: like item): like item is
+	new_cell (v: like item): CONSTRUCT
 		do
+				--| FIXME: Bad design, no way to ensure result is attached.
+			check v /= Void end
 			Result := v
 			Result.twt_put (v)
 			Result.attach_to_parent (Current)
 		end
 
-	check_recursion is 
+	check_recursion
 			-- Check construct for left recursion.
-		deferred 
+		deferred
 		end
 
-	expand_all is
+	expand_all
 			-- Used by recursion checking
 		do
 			if is_leaf then
@@ -196,32 +230,39 @@ feature {CONSTRUCT} -- Implementation
 
 feature {NONE} -- Implementation
 
-	put (c: CONSTRUCT) is
+	put (c: CONSTRUCT)
 			-- Add a construct to the production.
-		do  
+		do
 			production.put_left (c)
 			last_sub_construct := c
 		end
 
-	last_sub_construct: CONSTRUCT;
+	last_sub_construct: detachable CONSTRUCT;
 			-- Subconstruct most recently added to the production
 
-	make_optional is
+	make_optional
 			-- Make the last entered subconstruct optional.
+		local
+			l_last_sub: like last_sub_construct
 		do
-			last_sub_construct.set_optional
+			l_last_sub := last_sub_construct
+			if l_last_sub /= Void then
+				l_last_sub.set_optional
+			end
 		end
 
-	keyword (s: STRING) is
+	keyword (s: STRING)
 			-- Insert a keyword into the production.
+		require
+			s_not_void: s /= Void
 		local
 			key: KEYWORD
-		do     
+		do
 			create key.make (s)
 			put (key)
 		end
 
-	expand_next is
+	expand_next
 			-- Expand the next child of current node
 			-- after current child.
 			-- This is the most likely version of expand
@@ -248,46 +289,56 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	expand is
+	expand
 			-- Create next construct to be parsed.
 			-- Used by `parse' to build the production
 			-- that is expected at each node, according to `production'.
 		deferred
 		end
 
-	put_component (new: CONSTRUCT) is
+	put_component (new: CONSTRUCT)
 			-- Add a new component to expand the production.
 			-- Note that the components are always added in
 			-- the tree node in left to right order.
+		require
+			new_not_void: new /= Void
 		do
 			child_finish;
 			child_put_right (new)
 			child_forth
 		end
 
-	raise_syntax_error (s: STRING) is
+	raise_syntax_error (s: STRING)
 			-- Print error message s.
+		require
+			s_not_void: s /= Void
 		local
 			s2 : STRING
-		do  
+		do
 			s2 := s.twin
-			s2.append (" in ") 
-			s2.append (construct_name) 
-			if parent /= Void then
+			s2.append (" in ")
+			s2.append (construct_name)
+			if attached parent as l_parent then
 				s2.append (" in ")
-				s2.append (parent.construct_name)
+				s2.append (l_parent.construct_name)
 			end;
 			document.raise_error (s2)
 		end
 
-	expected_found_error is
-			-- Print an error message saying what was 
+	expected_found_error
+			-- Print an error message saying what was
 			-- expected and what was found.
+		require
+			child_not_void: child /= Void
 		local
+			l_child: like child
 			err: STRING
 		do
+			l_child := child
+			check l_child /= Void end -- Implied from the precondition.
+
 			create err.make (20)
-			err.append (child.construct_name)
+			err.append (l_child.construct_name)
 			err.append (" expected, ")
 			if document.token.type = -1 then
 				err.append ("end of document found")
@@ -298,44 +349,50 @@ feature {NONE} -- Implementation
 			raise_syntax_error (err)
 		end
 
-	structure_list: LINKED_LIST [LINKED_LIST [CONSTRUCT]] is
+	structure_list: LINKED_LIST [LINKED_LIST [CONSTRUCT]]
 			-- List of the structures already examined when
 			-- searching for left recursion
 		once
 			create Result.make
 		end
 
-	check_recursion_list: LINKED_LIST [LINKED_LIST [CONSTRUCT]] is
+	check_recursion_list: LINKED_LIST [LINKED_LIST [CONSTRUCT]]
 			-- List of the structures already examined when
 			-- checking for left recursion
 		once
 			create Result.make
 		end
 
-	global_left_recursion: CELL [BOOLEAN] is 
+	global_left_recursion: CELL [BOOLEAN]
 			-- Is there any left recursion in the whole program?
-		once 
+		once
 			create Result.put (False)
 		end
 
-	child_recursion: CELL [BOOLEAN] is 
+	child_recursion: CELL [BOOLEAN]
 			-- Is there any recursion in the whole program?
-		once 
+		once
 			create Result.put (False)
 		end
 
-	recursion_message: STRING is
+	recursion_message: STRING
 			-- Error message when left recursion has been detected,
 			-- with all productions involved in the recursion chain
 		once
 			create Result.make (100)
 		end
 
-	message_construction: BOOLEAN is
+	message_construction: BOOLEAN
 			-- Has the message on left recursion been already printed?
+		require
+			child_not_void: child /= Void
+		local
+			l_child: like child
 		do
-			child.expand_all
-			Result := not child.left_recursion
+			l_child := child
+			check l_child /= Void end -- Implied from the precondition.
+			l_child.expand_all
+			Result := not l_child.left_recursion
 			if not Result then
 				if not structure_list.has (production) then
 					structure_list.put_right (production)
@@ -355,46 +412,64 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	in_action is
+	in_action
 			-- Perform a certain semantic operation.
 		deferred
 		end
 
-	parse_body is
+	parse_body
 			-- Perform any special parsing action for a particular
 			-- type of construct.
 			-- Call `parse_child' on each child construct.
-			-- Set `committed' to true if enough has been 
+			-- Set `committed' to true if enough has been
 			-- recognized to freeze the parse tree built so far.
 			-- Set `complete' to true if the whole construct has been
 			-- correctly recognized.
 		deferred
 		end
 
-	parse_child is
+	parse_child
 			-- Parse child recursively to build the tree.
-			-- An error is output the first time a parse fails 
-			-- in an uncommitted child of a committed parent 
+			-- An error is output the first time a parse fails
+			-- in an uncommitted child of a committed parent
 			-- i.e. at the deepest point known to be meaningful.
+		require
+			child_not_void: child /= Void
+		local
+			l_child: like child
 		do
-			child.parse
-			if child.committed then
+			l_child := child
+			check l_child /= Void end -- Implied from the precondition.
+			l_child.parse
+			if l_child.committed then
 				committed := True
 			end;
-			if committed and not (child.parsed or child.committed) then
+			if committed and not (l_child.parsed or l_child.committed) then
 				expected_found_error
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	tree_is_equal (t1, t2: like Current): BOOLEAN
+			-- <precursor>
+		do
+			Result := Precursor {TWO_WAY_TREE}(t1, t2)
+		end
+
+	tree_copy (other, tmp_tree: like Current)
+			-- <precursor>
+		do
+			Precursor {TWO_WAY_TREE}(other, tmp_tree)
+		end
+
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

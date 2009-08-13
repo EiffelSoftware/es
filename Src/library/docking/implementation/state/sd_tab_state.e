@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_STATE which manage a SD_TAB_ZONE."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,8 @@ inherit
 			move_to_docking_zone,
 			dock_at_top_level,
 			content,
-			change_title,
+			change_short_title,
+			change_long_title,
 			change_pixmap,
 			change_tab_tooltip,
 			close,
@@ -41,7 +42,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_content: SD_CONTENT; a_target_zone: SD_DOCKING_ZONE; a_direction: INTEGER) is
+	make (a_content: SD_CONTENT; a_target_zone: SD_DOCKING_ZONE; a_direction: INTEGER)
 			-- Creation method
 		require
 			a_content_not_void: a_content /= Void
@@ -83,6 +84,14 @@ feature {NONE} -- Initlization
 			l_target_zone_tab_state.set_last_floating_height (a_target_zone.state.last_floating_height)
 			l_target_zone_tab_state.set_last_floating_width (a_target_zone.state.last_floating_width)
 			a_target_zone.content.change_state (l_target_zone_tab_state)
+
+			internal_content := a_content
+
+			-- For bug#15565
+			-- a_content's state can be {SD_STATE_VOID} if we don't update it now, so (in following `tab_zone.extend (a_content)') when executing in {SD_NOTEBOOK}.select_item,
+			-- the content's `show_actions' will call {SD_STATE_VOID}.set_user_widget but not {SD_TAB_STATE}.set_user_widget
+			change_state (Current)
+
 			-- At the end, add `a_content', so `a_content' is selected on SD_TAB_ZONE.
 			tab_zone.extend (a_content)
 
@@ -93,15 +102,14 @@ feature {NONE} -- Initlization
 					l_split_parent.set_split_position (l_old_split_position)
 				end
 			end
-			internal_content := a_content
 
 			initialized := True
 		ensure
 			set: internal_content = a_content
 		end
 
-	make_with_tab_zone (a_content: SD_CONTENT; a_target_zone: SD_TAB_ZONE; a_direction: INTEGER) is
-			-- Creation method.
+	make_with_tab_zone (a_content: SD_CONTENT; a_target_zone: SD_TAB_ZONE; a_direction: INTEGER)
+			-- Creation method
 		require
 			a_content_not_void: a_content /= Void
 			a_target_zone: a_target_zone /= Void
@@ -114,17 +122,22 @@ feature {NONE} -- Initlization
 			if internal_content.user_widget.parent /= Void then
 				internal_content.user_widget.parent.prune (internal_content.user_widget)
 			end
-			tab_zone.extend (internal_content)
-
 			internal_content := a_content
+
+			-- For bug#15565
+			-- a_content's state can be {SD_STATE_VOID} if we don't update it now, so (in following `tab_zone.extend (a_content)') when executing in {SD_NOTEBOOK}.select_item,
+			-- the content's `show_actions' will call {SD_STATE_VOID}.set_user_widget but not {SD_TAB_STATE}.set_user_widget			
+			change_state (Current)
+
+			tab_zone.extend (internal_content)
 		ensure
 			set: a_target_zone = tab_zone
 			extended: tab_zone.has (internal_content)
 			set: internal_content = a_content
 		end
 
-	make_for_restore (a_contents: ARRAYED_LIST [SD_CONTENT]; a_container: EV_CONTAINER; a_direction: INTEGER) is
-			-- Creation method for restoring.
+	make_for_restore (a_contents: ARRAYED_LIST [SD_CONTENT]; a_container: EV_CONTAINER; a_direction: INTEGER)
+			-- Creation method for restoring
 		require
 			at_least_two: a_contents /= Void and then a_contents.count >= 2
 			not_full: a_container /= Void and then not a_container.full
@@ -155,8 +168,8 @@ feature {NONE} -- Initlization
 			end
 		end
 
-	make_for_restore_internal (a_content: SD_CONTENT; a_tab_zone: SD_TAB_ZONE; a_direction: INTEGER) is
-			-- Creation method, only called by `make_for_restore'.
+	make_for_restore_internal (a_content: SD_CONTENT; a_tab_zone: SD_TAB_ZONE; a_direction: INTEGER)
+			-- Creation method, only called by `make_for_restore'
 		require
 			not_void: a_content /= Void
 			not_void: a_tab_zone /= Void
@@ -166,8 +179,8 @@ feature {NONE} -- Initlization
 			tab_zone := a_tab_zone
 		end
 
-	init_common (a_content: SD_CONTENT; a_direction: INTEGER) is
-			-- Initlization common parts.
+	init_common (a_content: SD_CONTENT; a_direction: INTEGER)
+			-- Initlization common parts
 		require
 			not_void: a_content /= Void
 		do
@@ -185,8 +198,8 @@ feature {NONE} -- Initlization
 
 feature -- Redefine
 
-	restore (a_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER) is
-			-- Redefine.
+	restore (a_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER)
+			-- <Precursor>
 		local
 			l_content: SD_CONTENT
 			l_contents: ARRAYED_LIST [SD_CONTENT]
@@ -269,8 +282,8 @@ feature -- Redefine
 			restored:
 		end
 
-	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA) is
-			-- Redefine.
+	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA)
+			-- <Precursor>
 		do
 			internal_docking_manager.command.lock_update (a_multi_dock_area, False)
 			if zone.is_drag_title_bar then
@@ -288,8 +301,8 @@ feature -- Redefine
 			is_dock_at_top: old a_multi_dock_area.full implies is_dock_at_top (a_multi_dock_area)
 		end
 
-	stick (a_direction: INTEGER) is
-			-- Redefine.
+	stick (a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_auto_hide_state: SD_AUTO_HIDE_STATE
 			l_contents: ARRAYED_LIST [SD_CONTENT]
@@ -324,8 +337,8 @@ feature -- Redefine
 			pruned: not internal_docking_manager.zones.has_zone (tab_zone)
 		end
 
-	close is
-			-- Redefine.
+	close
+			-- <Precursor>
 		local
 			l_parent: EV_CONTAINER
 			l_state_void: SD_STATE_VOID
@@ -345,8 +358,8 @@ feature -- Redefine
 			internal_docking_manager.command.unlock_update
 		end
 
-	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER) is
-			-- Redefine.
+	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_docking_state: SD_DOCKING_STATE
 			l_parent: EV_CONTAINER
@@ -381,8 +394,8 @@ feature -- Redefine
 			parent_changed:
 		end
 
-	float (a_x, a_y: INTEGER) is
-			-- Redefine.
+	float (a_x, a_y: INTEGER)
+			-- <Precursor>
 		local
 			l_orignal_multi_dock_area: SD_MULTI_DOCK_AREA
 		do
@@ -397,8 +410,8 @@ feature -- Redefine
 --			whole_floated:
 		end
 
-	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER) is
-			-- Redefine.
+	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER)
+			-- <Precursor>
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
 			l_tab_state: SD_TAB_STATE
@@ -432,8 +445,8 @@ feature -- Redefine
 			moved:
 		end
 
-	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN) is
-			-- Redefine.
+	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN)
+			-- <Precursor>
 		do
 			internal_docking_manager.command.lock_update (zone, False)
 			if zone.is_drag_title_bar then
@@ -452,8 +465,8 @@ feature -- Redefine
 			moved:
 		end
 
-	hide is
-			-- Redefine.
+	hide
+			-- <Precursor>
 		local
 			l_state: SD_STATE_VOID
 		do
@@ -463,8 +476,8 @@ feature -- Redefine
 			change_state (l_state)
 		end
 
-	show is
-			-- Redefine
+	show
+			-- <Precursor>
 		local
 			l_state_void: SD_STATE_VOID
 		do
@@ -478,25 +491,39 @@ feature -- Redefine
 			end
 		end
 
-	set_user_widget (a_widget: EV_WIDGET) is
-			-- Redefine
+	set_user_widget (a_widget: EV_WIDGET)
+			-- <Precursor>
 		do
 			zone.replace_user_widget (content)
 		end
 
+	set_mini_toolbar (a_widget: EV_WIDGET)
+			-- <Precursor>
+		do
+			zone.update_mini_tool_bar_when_selected (content)
+		end
+
 feature {SD_CONTENT} -- Redefine
 
-	change_title (a_title: STRING_GENERAL; a_content: SD_CONTENT) is
+	change_short_title (a_title: STRING_GENERAL; a_content: SD_CONTENT)
+			-- <Precursor>
+		do
+			if tab_zone.has (a_content) then
+				tab_zone.set_short_title (a_title, a_content)
+			end
+		end
+
+	change_long_title (a_title: STRING_GENERAL; a_content: SD_CONTENT)
 			-- <Precursor>
 		do
 			-- During zone transforming, `tab_zone' maybe not has `a_content'
 			-- See bug#14623
 			if tab_zone.has (a_content) then
-				tab_zone.set_title (a_title, a_content)
+				tab_zone.set_long_title (a_title, a_content)
 			end
 		end
 
-	change_pixmap (a_pixmap: EV_PIXMAP; a_content: SD_CONTENT) is
+	change_pixmap (a_pixmap: EV_PIXMAP; a_content: SD_CONTENT)
 			-- <Precursor>
 		do
 			-- During zone transforming, `tab_zone' maybe not has `a_content'
@@ -506,7 +533,7 @@ feature {SD_CONTENT} -- Redefine
 			end
 		end
 
-	change_tab_tooltip (a_text: STRING_GENERAL) is
+	change_tab_tooltip (a_text: STRING_GENERAL)
 			-- <Precursor>
 		do
 			-- During zone transforming, `tab_zone' maybe not has `a_content'
@@ -518,8 +545,8 @@ feature {SD_CONTENT} -- Redefine
 
 feature {SD_OPEN_CONFIG_MEDIATOR, SD_STATE} -- Redefine
 
-	set_last_floating_width (a_int: INTEGER) is
-			-- Redefine
+	set_last_floating_width (a_int: INTEGER)
+			-- <Precursor>
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
 			l_state: SD_TAB_STATE
@@ -547,8 +574,8 @@ feature {SD_OPEN_CONFIG_MEDIATOR, SD_STATE} -- Redefine
 			flag_cleared: is_set_width_after_restore = False
 		end
 
-	set_last_floating_height (a_int: INTEGER) is
-			-- Redefine
+	set_last_floating_height (a_int: INTEGER)
+			-- <Precursor>
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
 			l_state: SD_TAB_STATE
@@ -579,18 +606,18 @@ feature {SD_OPEN_CONFIG_MEDIATOR, SD_STATE} -- Redefine
 	is_set_width_after_restore, is_set_height_after_restore: BOOLEAN
 			-- Is set `last_floating_width' and `last_floating_height' after restore?
 
-feature -- Properties redefine.
+feature -- Properties redefine
 
-	content: SD_CONTENT is
-			-- Redefine.
+	content: SD_CONTENT
+			-- <Precursor>
 		do
 			Result := internal_content
 		ensure then
 			not_void: not internal_docking_manager.property.is_opening_config implies Result /= Void
 		end
 
-	zone: SD_TAB_ZONE is
-			-- Redefine.
+	zone: SD_TAB_ZONE
+			-- <Precursor>
 		do
 			Result := tab_zone
 		ensure then
@@ -599,19 +626,19 @@ feature -- Properties redefine.
 
 feature -- Query
 
-	content_count_valid (a_titles: ARRAYED_LIST [STRING_GENERAL]): BOOLEAN is
+	content_count_valid (a_titles: ARRAYED_LIST [STRING_GENERAL]): BOOLEAN
 		do
 			Result := a_titles.count > 1
 		end
 
-	has (a_content: SD_CONTENT): BOOLEAN is
-			-- Redefine
+	has (a_content: SD_CONTENT): BOOLEAN
+			-- <Precursor>
 		do
 			Result := tab_zone.has (a_content)
 		end
 
-	is_dock_at_top (a_multi_dock_area: SD_MULTI_DOCK_AREA): BOOLEAN is
-			-- Redefine.
+	is_dock_at_top (a_multi_dock_area: SD_MULTI_DOCK_AREA): BOOLEAN
+			-- <Precursor>
 		local
 			l_container: EV_SPLIT_AREA
 			l_widget: EV_WIDGET
@@ -638,7 +665,7 @@ feature -- Query
 			end
 		end
 
-	is_selected: BOOLEAN is
+	is_selected: BOOLEAN
 			-- If Current selected in notebook widget?
 		do
 			Result := tab_zone.is_content_selected (content)
@@ -646,8 +673,8 @@ feature -- Query
 
 feature -- Command
 
-	select_tab (a_content: SD_CONTENT; a_focus: BOOLEAN) is
-			-- Enable select one tab.
+	select_tab (a_content: SD_CONTENT; a_focus: BOOLEAN)
+			-- Enable select one tab
 		require
 			has_content: has (a_content)
 		do
@@ -656,19 +683,19 @@ feature -- Command
 			selected: tab_zone.selected_item_index = tab_zone.index_of (a_content)
 		end
 
-feature {SD_TAB_STATE_ASSISTANT} -- Internal attibutes.
+feature {SD_TAB_STATE_ASSISTANT} -- Internal attibutes
 
 	tab_zone: SD_TAB_ZONE
-			-- SD_TAB_ZONE managed by `Current'.
+			-- SD_TAB_ZONE managed by `Current'
 
 	assistant: SD_TAB_STATE_ASSISTANT
-			-- Assistant for Current.
+			-- Assistant for Current
 
 invariant
 	tab_zone_not_void: initialized implies tab_zone /= Void
 	assistant_not_void: initialized implies assistant /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

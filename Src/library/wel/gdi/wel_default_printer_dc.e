@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Device context to use the default printer which is %
 		%connected."
 	legal: "See notice at end of class."
@@ -17,13 +17,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make a dc associated to the default printer.
 			-- If there is no default printer connected, `exists'
 			-- is equal to False.
 		local
 			loc_driver, loc_device, loc_output: WEL_STRING
 		do
+			create device.make_empty
+			create driver.make_empty
+			create output.make_empty
 			retrieve_default_printer
 			create loc_device.make (device)
 			create loc_driver.make (driver)
@@ -34,7 +37,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	retrieve_default_printer is
+	retrieve_default_printer
 			-- Retrieve the default printer installed and set
 			-- `device', `driver', `output'.
 		local
@@ -58,16 +61,12 @@ feature -- Basic operations
 			printer := a_printer.substring (1, nb)
 			if printer.is_equal (Options_const) then
 				-- There is no default printer connected.
-				-- Let's create empty strings.
-				create device.make (0)
-				create driver.make (0)
-				create output.make (0)
+				-- Nothing to be done
 			else
 				-- There is a default printer connected.
 				-- Let's parse the string and find the device,
 				-- driver and output fields.
-				device := printer.substring (1,
-					printer.index_of (Comma_const, 1) - 1)
+				device := printer.substring (1, printer.index_of (Comma_const, 1) - 1)
 				device_count := device.count
 				driver := printer.substring (device_count + 2,
 					printer.index_of (Comma_const, device_count + 2) - 1)
@@ -89,20 +88,20 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Windows_const: STRING is "windows"
+	Windows_const: STRING = "windows"
 
-	Device_const: STRING is "device"
+	Device_const: STRING = "device"
 
-	Comma_const: CHARACTER is ','
+	Comma_const: CHARACTER = ','
 
-	Options_const: STRING is ",,,"
+	Options_const: STRING = ",,,"
 
-	Max_printer_name: INTEGER is 255
+	Max_printer_name: INTEGER = 255
 
 feature {NONE} -- Externals
 
 	cwin_get_profile_string (section, entry, def, dest: POINTER;
-			size: INTEGER): INTEGER is
+			size: INTEGER): INTEGER
 			-- SDK GetProfileString
 		external
 			"C [macro <wel.h>] (LPCTSTR, LPCTSTR, LPCTSTR, LPTSTR, %
@@ -116,7 +115,7 @@ invariant
 	driver_not_void: driver /= Void
 	output_not_void: output /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

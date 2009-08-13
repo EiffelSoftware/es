@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		
 		It is not recommended to use unless you know you are working with a focused window, or need access to shared
@@ -16,6 +16,8 @@ inherit
 	ES_TOOL_ICONS_PROVIDER_I [G]
 
 	ES_TOOL_PROVIDER [T]
+		rename
+			make as make_tool_provider
 		redefine
 			window
 		end
@@ -25,7 +27,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_window: !like window)
+	make (a_window: attached like window)
 			-- Initializes the icon provider using a
 		require
 			a_window_is_interface_usable: a_window.is_interface_usable
@@ -37,11 +39,11 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	window: !EB_DEVELOPMENT_WINDOW
+	window: attached EB_DEVELOPMENT_WINDOW
 			-- <Precursor>
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -65,11 +67,11 @@ feature {NONE} -- Access
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

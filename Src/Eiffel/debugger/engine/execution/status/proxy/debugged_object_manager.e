@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that manages DEBUGGED_OBJECT instances."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,7 +14,7 @@ create {DEBUGGER_MANAGER}
 
 feature {NONE}-- Creation
 
-	make (dbg_manager: DEBUGGER_MANAGER) is
+	make (dbg_manager: DEBUGGER_MANAGER)
 			-- Instanciate with `dbg_manager'
 		do
 			debugger_manager := dbg_manager
@@ -26,7 +26,7 @@ feature {NONE}-- Creation
 
 feature -- Reset
 
-	reset is
+	reset
 			-- Reset Current
 		do
 			last_debugged_object := Void
@@ -34,7 +34,7 @@ feature -- Reset
 
 feature -- Settings
 
-	set_dotnet_system is
+	set_dotnet_system
 			-- Set dotnet system behavior
 		do
 			is_dotnet := True
@@ -42,7 +42,7 @@ feature -- Settings
 
 feature -- Query
 
-	class_type_at_address (addr: DBG_ADDRESS): CLASS_TYPE is
+	class_type_at_address (addr: DBG_ADDRESS): CLASS_TYPE
 			-- CLASS_TYPE for remote object at address `addr'
 		require
 			address_not_void: addr /= Void and then not addr.is_void
@@ -53,7 +53,7 @@ feature -- Query
 			Result := dobj.class_type
 		end
 
-	class_c_at_address (addr: DBG_ADDRESS): CLASS_C is
+	class_c_at_address (addr: DBG_ADDRESS): CLASS_C
 			-- CLASS_C for remote object at address `addr'
 		require
 			address_not_void: addr /= Void and then not addr.is_void
@@ -64,7 +64,7 @@ feature -- Query
 			Result := dobj.dynamic_class
 		end
 
-	attributes_at_address (addr: DBG_ADDRESS; sp_lower, sp_upper: INTEGER): DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	attributes_at_address (addr: DBG_ADDRESS; sp_lower, sp_upper: INTEGER): DS_LIST [ABSTRACT_DEBUG_VALUE]
 			-- Attributes for remote object at address `addr'
 		require
 			address_not_void: addr /= Void and then not addr.is_void
@@ -75,7 +75,7 @@ feature -- Query
 			Result := dobj.attributes
 		end
 
-	sorted_attributes_at_address (addr: DBG_ADDRESS; sp_lower, sp_upper: INTEGER): DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	sorted_attributes_at_address (addr: DBG_ADDRESS; sp_lower, sp_upper: INTEGER): DS_LIST [ABSTRACT_DEBUG_VALUE]
 			-- Sorted attributes for remote object at address `addr'
 		require
 			address_not_void: addr /= Void and then not addr.is_void
@@ -86,7 +86,7 @@ feature -- Query
 			Result := dobj.sorted_attributes
 		end
 
-	object_at_address_has_attributes (addr: DBG_ADDRESS): BOOLEAN is
+	object_at_address_has_attributes (addr: DBG_ADDRESS): BOOLEAN
 			-- Remote object at address `addr' has attribute ?
 		require
 			address_not_void: addr /= Void and then not addr.is_void
@@ -99,15 +99,17 @@ feature -- Query
 			Result := lst /= Void and then not lst.is_empty
 		end
 
-	special_object_capacity_at_address (addr: DBG_ADDRESS): INTEGER is
-			-- Capacity of SPECIAL remote object at address `addr'
+	special_object_count_and_capacity_at_address (addr: DBG_ADDRESS): TUPLE [spec_count, spec_capacity: INTEGER]
+			-- Count and Capacity of SPECIAL remote object at address `addr'
 		require
 			address_not_void: addr /= Void and then not addr.is_void
 		local
 			dobj: DEBUGGED_OBJECT
 		do
 			dobj := debugged_object (addr, 0, 0)
-			Result := dobj.capacity
+			Result := [dobj.capacity, dobj.max_capacity]
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Settings
@@ -127,7 +129,7 @@ feature -- Settings
 
 feature -- Status report
 
-	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN is
+	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN
 				-- Is `addr' a valid object address?
 		require
 			application_is_executing: debugger_manager.application_is_executing
@@ -140,7 +142,7 @@ feature -- Status report
 
 feature -- Access
 
-	classic_debugged_object_with_class (addr: DBG_ADDRESS; a_compiled_class: CLASS_C): DEBUGGED_OBJECT_CLASSIC is
+	classic_debugged_object_with_class (addr: DBG_ADDRESS; a_compiled_class: CLASS_C): DEBUGGED_OBJECT_CLASSIC
 			-- Debugged object at address `addr' for classic system
 		require
 			not is_dotnet
@@ -148,7 +150,7 @@ feature -- Access
 			create Result.make_with_class (addr, a_compiled_class)
 		end
 
-	debugged_object (addr: DBG_ADDRESS; sp_lower, sp_upper: INTEGER): DEBUGGED_OBJECT is
+	debugged_object (addr: DBG_ADDRESS; sp_lower, sp_upper: INTEGER): DEBUGGED_OBJECT
 				-- Debugged remote object located at address `addr'
 		require
 			non_void_addr: addr /= Void and then not addr.is_void
@@ -207,8 +209,8 @@ feature -- Access
 			Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -221,22 +223,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

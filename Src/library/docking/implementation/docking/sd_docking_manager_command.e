@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Docking manager commands."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ create
 
 feature {NONE}  -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -56,7 +56,7 @@ feature {NONE}  -- Initlization
 
 feature -- Commands
 
-	resize (a_force: BOOLEAN) is
+	resize (a_force: BOOLEAN)
 			-- Resize fixed area.
 			-- `a_force' is always perform resize actions, even it's same size.
 		local
@@ -68,10 +68,10 @@ feature -- Commands
 			end
 		end
 
-	lock_update (a_zone: EV_WIDGET; a_main_window: BOOLEAN) is
+	lock_update (a_widget: EV_WIDGET; a_main_window: BOOLEAN)
 			-- Lock window update.
 		require
-			a_zone_not_void_when_not_main_window: not a_main_window implies a_zone /= Void
+			a_widget_not_void_when_not_main_window: not a_main_window implies a_widget /= Void
 		do
 			if not internal_docking_manager.is_closing_all then
 				if lock_call_time = 0 then
@@ -79,7 +79,7 @@ feature -- Commands
 							-- We should ignore these lock window update calls.
 						ignore_update := True
 					else
-						lock_update_internal (a_zone, a_main_window)
+						lock_update_internal (a_widget, a_main_window)
 					end
 				else
 					-- Nothing to be done, since we have already locked it, or it was already locked.
@@ -88,7 +88,7 @@ feature -- Commands
 			end
 		end
 
-	unlock_update is
+	unlock_update
 			-- Unlock window update.
 		do
 			if not internal_docking_manager.is_closing_all then
@@ -102,7 +102,7 @@ feature -- Commands
 			end
 		end
 
-	add_inner_container (a_area: SD_MULTI_DOCK_AREA) is
+	add_inner_container (a_area: SD_MULTI_DOCK_AREA)
 			-- Add `a_area'.
 		require
 			a_area_not_void: a_area /= Void
@@ -110,7 +110,7 @@ feature -- Commands
 			internal_docking_manager.inner_containers.extend (a_area)
 		end
 
-	prune_inner_container (a_area: SD_MULTI_DOCK_AREA) is
+	prune_inner_container (a_area: SD_MULTI_DOCK_AREA)
 			-- Prune `a_area'.
 		require
 			a_area_not_void: a_area /= Void
@@ -120,7 +120,7 @@ feature -- Commands
 			internal_docking_manager.inner_containers.prune (a_area)
 		end
 
-	remove_empty_split_area  is
+	remove_empty_split_area
 			-- Remove empty split area in SD_MULTI_DOCK_AREA.
 		local
 			l_containers: ARRAYED_LIST [SD_MULTI_DOCK_AREA]
@@ -138,7 +138,7 @@ feature -- Commands
 			end
 		end
 
-	remove_auto_hide_zones (a_animation: BOOLEAN) is
+	remove_auto_hide_zones (a_animation: BOOLEAN)
 			-- Remove all auto hide zones in `zones'.
 		local
 			l_auto_hide_zone: SD_AUTO_HIDE_ZONE
@@ -169,7 +169,7 @@ feature -- Commands
 --			no_auto_hide_zone_left: internal_docking_manager.fixed_area.count = 1
 		end
 
-	recover_normal_state is
+	recover_normal_state
 			-- Recover all zone's state to normal state.
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -189,7 +189,7 @@ feature -- Commands
 			end
 		end
 
-	recover_normal_state_in (a_dock_area: SD_MULTI_DOCK_AREA) is
+	recover_normal_state_in (a_dock_area: SD_MULTI_DOCK_AREA)
 			-- Recover zone which is in `a_dock_area' normal state.
 		require
 			not_void: a_dock_area /= Void
@@ -207,14 +207,19 @@ feature -- Commands
 			until
 				l_zones.after
 			loop
-				if l_zones.item /= Void and then a_dock_area.has_recursive (l_zones.item) then
-					l_zones.item.recover_to_normal_state
+				if attached {EV_WIDGET} l_zones.item as lt_widget then
+					if l_zones.item /= Void and then a_dock_area.has_recursive (lt_widget) then
+						l_zones.item.recover_to_normal_state
+					end
+				else
+					check not_possible: False end
 				end
+
 				l_zones.forth
 			end
 		end
 
-	recover_normal_state_in_dock_area_of (a_zone: SD_ZONE) is
+	recover_normal_state_in_dock_area_of (a_zone: SD_ZONE)
 			-- Recover zone normal state in the SD_MULTI_DOCK_AREA which has `a_zone'.
 		local
 			l_area: SD_MULTI_DOCK_AREA
@@ -231,7 +236,7 @@ feature -- Commands
 			end
 		end
 
-	update_title_bar is
+	update_title_bar
 			-- Update all title bar.
 			-- Also prune and destroy floating zones which are not used anymore.
 		local
@@ -250,7 +255,7 @@ feature -- Commands
 			end
 		end
 
-	update_mini_tool_bar_size (a_content: SD_CONTENT) is
+	update_mini_tool_bar_size (a_content: SD_CONTENT)
 			-- Update all zones' title bar size for mini tool bar widgets new size.
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -272,7 +277,7 @@ feature -- Commands
 			end
 		end
 
-	on_zone_navigation (a_shift_pressed: BOOLEAN) is
+	on_zone_navigation (a_shift_pressed: BOOLEAN)
 			-- User request to show zone navigation.
 		local
 			l_dialog: SD_ZONE_NAVIGATION_DIALOG
@@ -287,7 +292,7 @@ feature -- Commands
 			end
 		end
 
-	propagate_accelerators is
+	propagate_accelerators
 			-- If `main_window' of SD_DOCKING_MANAGER accelerators changed, we update all floating zones accelerators.
 		local
 			l_zones: ARRAYED_LIST [SD_FLOATING_ZONE]
@@ -308,7 +313,7 @@ feature -- Commands
 			end
 		end
 
-	restore_editor_area_for_minimized is
+	restore_editor_area_for_minimized
 			-- Restore editors area to normal.
 		local
 			l_main_area: SD_MULTI_DOCK_AREA
@@ -318,7 +323,7 @@ feature -- Commands
 
 				l_main_area := internal_docking_manager.query.inner_container_main
 
-				if {lt_upper_zone: SD_PLACE_HOLDER_ZONE} minimized_editor_area  then
+				if attached {SD_PLACE_HOLDER_ZONE} minimized_editor_area as lt_upper_zone  then
 
 					if not is_minimize_orignally then
 						lt_upper_zone.recover_normal_size_from_minimize
@@ -332,13 +337,13 @@ feature -- Commands
 				l_parent.prune (minimized_editor_area)
 				l_parent.extend (orignal_whole_item_for_minimized)
 				if is_minimize_orignally then
-					if {lt_box: EV_BOX} l_parent then
+					if attached {EV_BOX} l_parent as lt_box then
 						lt_box.disable_item_expand (orignal_whole_item_for_minimized)
 					end
 				end
 
 				internal_docking_manager.command.resize (True)
-				l_main_area.restore_spliter_position (l_parent)
+				l_main_area.restore_spliter_position (l_parent, generating_type + ".minimized")
 
 				orignal_whole_item_for_minimized := Void
 				minimized_editor_area := Void
@@ -351,7 +356,7 @@ feature -- Commands
 			cleared: minimized_editor_area = Void
 		end
 
-	minimize_editor_area is
+	minimize_editor_area
 			-- Minimize whole editor area
 		local
 			l_editor_parent: EV_CONTAINER
@@ -378,9 +383,9 @@ feature -- Commands
 
 						orignal_whole_item_for_minimized := l_editor_parent
 
-						l_editor_area.save_spliter_position (l_parent_parent)
+						l_editor_area.save_spliter_position (l_parent_parent, generating_type + ".minimized")
 
-						if {lt_parent_parent: EV_BOX} l_parent_parent then
+						if attached {EV_BOX} l_parent_parent as lt_parent_parent then
 							is_minimize_orignally := True
 						else
 							is_minimize_orignally := False
@@ -391,8 +396,10 @@ feature -- Commands
 						minimized_editor_area := internal_shared.widget_factory.docking_zone (internal_docking_manager.zones.place_holder_content)
 
 						l_parent_parent.extend (minimized_editor_area)
-						if {lt_upper_zone: SD_PLACE_HOLDER_ZONE} minimized_editor_area  then
+						if attached {SD_PLACE_HOLDER_ZONE} minimized_editor_area as lt_upper_zone  then
 							lt_upper_zone.prepare_for_minimized_editor_area (internal_docking_manager)
+
+							-- Minimize this place holder zone, so it can replace surrounded spliter bar with FAKE spliter bar
 							lt_upper_zone.minimize
 						end
 
@@ -402,7 +409,7 @@ feature -- Commands
 			end
 		end
 
-	maximize_editor_area is
+	maximize_editor_area
 			-- Maximize whole editor area.
 		local
 			l_editor_parent: EV_CONTAINER
@@ -428,7 +435,7 @@ feature -- Commands
 					orignal_editor_parent := l_editor_parent.parent
 
 					orignal_whole_item := l_editor_area.item
-					l_editor_area.save_spliter_position (orignal_whole_item)
+					l_editor_area.save_spliter_position (orignal_whole_item, generating_type + ".maximize_editor_area")
 
 					orignal_editor_parent.prune (l_editor_parent)
 
@@ -440,12 +447,13 @@ feature -- Commands
 			end
 		end
 
-	restore_editor_area is
-			-- Restore editors area to normal.
+	restore_editor_area
+			-- Restore editors area from maximium to normal.
 		local
 			l_editor_area: EV_WIDGET
 			l_main_area: SD_MULTI_DOCK_AREA
 		do
+			restore_maximized_editor
 			if orignal_editor_parent /= Void then
 				l_main_area := internal_docking_manager.query.inner_container_main
 				l_editor_area := l_main_area.item
@@ -456,7 +464,7 @@ feature -- Commands
 				l_main_area.extend (orignal_whole_item)
 
 				internal_docking_manager.command.resize (True)
-				l_main_area.restore_spliter_position (orignal_whole_item)
+				l_main_area.restore_spliter_position (orignal_whole_item, generating_type + ".maximize_editor_area")
 
 				orignal_editor_parent := Void
 				orignal_whole_item := Void
@@ -470,7 +478,7 @@ feature -- Commands
 			cleared: orignal_whole_item = Void
 		end
 
-	minimize_editors is
+	minimize_editors
 			-- Minimize all editors.
 		local
 			l_upper_zones: ARRAYED_LIST [SD_UPPER_ZONE]
@@ -491,7 +499,7 @@ feature -- Commands
 			end
 		end
 
-	restore_minimized_editors is
+	restore_minimized_editors
 			-- Restore all minimized editors
 			local
 				l_upper_zones: ARRAYED_LIST [SD_UPPER_ZONE]
@@ -512,7 +520,21 @@ feature -- Commands
 				end
 			end
 
-	show_displayed_floating_windows_in_idle is
+	restore_maximized_editor
+			-- Restore maximized editor in main window if possible
+		local
+			l_zone: SD_ZONE
+		do
+			l_zone := internal_docking_manager.zones.maximized_zone_in_main_window
+			if l_zone /= Void then
+				check maximized: l_zone.is_maximized end
+				if attached {SD_UPPER_ZONE} l_zone as l_upper_zone then
+					l_upper_zone.restore_from_maximized
+				end
+			end
+		end
+
+	show_displayed_floating_windows_in_idle
 			-- Show all displayed floating windows again for Solaris CDE.
 			-- This feature fix bug#13645
 		local
@@ -538,7 +560,7 @@ feature -- Query
 
 feature -- Contract Support
 
-	is_main_inner_container (a_container: SD_MULTI_DOCK_AREA): BOOLEAN is
+	is_main_inner_container (a_container: SD_MULTI_DOCK_AREA): BOOLEAN
 			-- If `a_container' is main contianer?
 		do
 			Result := internal_docking_manager.query.is_main_inner_container (a_container)
@@ -547,17 +569,9 @@ feature -- Contract Support
 	lock_call_time: INTEGER
 			-- Used for remember how many times client call `lock_update'.
 
-	find_window (a_zone: EV_WIDGET): EV_WINDOW is
-			-- Function wrapper for contract support.
-		require
-			a_zone_not_void: a_zone /= Void
-		do
-			Result := internal_docking_manager.query.find_window_by_zone (a_zone)
-		end
-
 feature {NONE}  -- Implementation
 
-	restore_minimized_editors_for_maximize_editor_area is
+	restore_minimized_editors_for_maximize_editor_area
 			-- Restore all minimized editors if all editors minimized.
 			local
 				l_upper_zones: ARRAYED_LIST [SD_UPPER_ZONE]
@@ -588,10 +602,10 @@ feature {NONE}  -- Implementation
 	ignore_update: BOOLEAN
 			-- If ignore update?
 
-	lock_update_internal (a_zone: EV_WIDGET; a_main_window: BOOLEAN) is
+	lock_update_internal (a_widget: EV_WIDGET; a_main_window: BOOLEAN)
 			-- Lock window update.
 		require
-			a_zone_not_void_when_not_main_window: not a_main_window implies a_zone /= Void
+			a_zone_not_void_when_not_main_window: not a_main_window implies a_widget /= Void
 		local
 			l_lock_window: EV_WINDOW
 		do
@@ -599,14 +613,14 @@ feature {NONE}  -- Implementation
 				if a_main_window then
 					locked_windows.force_last (internal_docking_manager.main_window, 0)
 				else
-					locked_windows.force_last (internal_docking_manager.query.find_window_by_zone (a_zone), 0)
+					locked_windows.force_last (internal_docking_manager.query.find_window_by_widget (a_widget), 0)
 				end
 				locked_windows.item (0).lock_update
 			else
 				if a_main_window then
 					l_lock_window := internal_docking_manager.main_window
 				else
-					l_lock_window := find_window(a_zone)
+					l_lock_window := internal_docking_manager.query.find_window_by_widget (a_widget)
 				end
 				if  l_lock_window /= locked_windows.last then
 					locked_windows.last.unlock_update
@@ -616,7 +630,7 @@ feature {NONE}  -- Implementation
 			end
 		end
 
-	unlock_update_internal is
+	unlock_update_internal
 			-- Unlock window update.
 		do
 			if lock_call_time = 0 then
@@ -639,7 +653,7 @@ feature {NONE}  -- Implementation
 			end
 		end
 
-	show_all_floating_zones is
+	show_all_floating_zones
 			-- This fix bug#13645 which only happens on Solaris CDE.
 			-- The bug is a floating tool `is_displayed' is true but actually not displayed. We have to call show again in idle actions.
 		local
@@ -687,7 +701,7 @@ invariant
 	locked_windows_not_void: locked_windows /= Void
 	internal_docking_manager_not_void: internal_docking_manager /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

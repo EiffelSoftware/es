@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"A server for a Unix socket."
@@ -24,7 +24,7 @@ feature -- Access
 	in: UNIX_STREAM_SOCKET;
 			-- Receive socket
 
-	make (a_path : STRING) is
+	make (a_path : STRING)
 			-- Create an unix socket server bound to address
 			-- `a_path'.
 		do
@@ -36,7 +36,7 @@ feature -- Access
 			end
 		end;
 
-	cleanup is
+	cleanup
 			-- Clean close
 		do
 			in.close;
@@ -45,23 +45,27 @@ feature -- Access
 			end
 		end;
 
-	receive is
+	receive
 			-- Receive activity of server
 		do
 			in.accept;
 			outflow ?= in.accepted;
-			received ?= outflow.retrieved
+			if attached outflow as l_outflow then
+				received ?= l_outflow.retrieved
+			else
+				received := Void
+			end
 		end;
-	
-	close is
+
+	close
 			-- Close socket.
 		do
-			if outflow /= Void and then not outflow.is_closed then
-				outflow.close
+			if attached outflow as l_outflow and then not l_outflow.is_closed then
+				l_outflow.close
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

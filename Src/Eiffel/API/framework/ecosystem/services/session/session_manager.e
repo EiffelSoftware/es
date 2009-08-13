@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Session persistance manager, for retrieving an storing sessions from a user's home profile.
 	]"
@@ -13,11 +13,9 @@ class
 inherit
 	SESSION_MANAGER_S
 
-	SAFE_AUTO_DISPOSABLE
-		redefine
-			safe_dispose
-		end
+	DISPOSABLE_SAFE
 
+--inherit {NONE}
 	EIFFEL_LAYOUT
 
 create
@@ -30,7 +28,7 @@ feature -- Clean up
 			--
 			-- `a_session': The session object to close.
 		local
-			l_sessions: ?like internal_sessions
+			l_sessions: detachable like internal_sessions
 		do
 			if is_interface_usable then
 				l_sessions := internal_sessions
@@ -42,7 +40,7 @@ feature -- Clean up
 					l_sessions.remove_at
 
 						-- Cleans up the session object.
-					if a_session.is_interface_usable and then {l_disposable: DISPOSABLE} a_session then
+					if a_session.is_interface_usable and then attached {DISPOSABLE_I} a_session as l_disposable then
 						l_disposable.dispose
 					end
 				end
@@ -65,20 +63,18 @@ feature {NONE} -- Clean up
 						-- Clean up sessions
 					l_cursor := l_sessions.new_cursor
 					from l_cursor.start until l_cursor.after loop
-						if {l_disposable: DISPOSABLE} l_cursor.item then
+						if attached {DISPOSABLE} l_cursor.item as l_disposable then
 							l_disposable.dispose
 						end
 						l_cursor.forth
 					end
 				end
 			end
-
-			Precursor {SAFE_AUTO_DISPOSABLE} (a_disposing)
 		end
 
 feature -- Access
 
-	active_sessions: !DS_ARRAYED_LIST [SESSION_I]
+	active_sessions: attached DS_ARRAYED_LIST [SESSION_I]
 			-- <Precursor>
 		do
 			create Result.make_from_linear (sessions)
@@ -86,12 +82,12 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	sessions: !DS_ARRAYED_LIST [SESSION_I]
+	sessions: attached DS_ARRAYED_LIST [SESSION_I]
 			-- List of retrieve sessions
 		require
 			is_interface_usable: is_interface_usable
 		do
-			if {l_sessions: like sessions} internal_sessions then
+			if attached internal_sessions as l_sessions then
 				Result := l_sessions
 			else
 				create Result.make_default
@@ -103,7 +99,7 @@ feature {NONE} -- Access
 
 feature {NONE} -- Query
 
-	session_file_path (a_session: SESSION_I): !STRING_8
+	session_file_path (a_session: SESSION_I): attached STRING_8
 			-- <Precursor>
 		require
 			is_interface_usable: is_interface_usable
@@ -119,15 +115,15 @@ feature {NONE} -- Query
 			l_conf_target: CONF_TARGET
 			l_ver: STRING_8
 			l_target: STRING_8
-			l_workbench: ?WORKBENCH_I
+			l_workbench: detachable WORKBENCH_I
 			l_window_id: NATURAL_32
-			l_extension: ?STRING_8
-			l_name: ?STRING_8
+			l_extension: detachable STRING_8
+			l_name: detachable STRING_8
 		do
 			create l_formatter
 			create l_kinds
 
-			if {l_session: !CUSTOM_SESSION_I} a_session then
+			if attached {CUSTOM_SESSION_I} a_session as l_session then
 				Result := l_session.file_name
 			else
 					-- Determine session type		
@@ -151,7 +147,7 @@ feature {NONE} -- Query
 					l_workbench := (create {SHARED_WORKBENCH}).workbench
 					if l_workbench.system_defined then
 						l_conf_target := l_workbench.lace.target
-						if {l_uuid: !UUID} (create {USER_OPTIONS_FACTORY}).mapped_uuid (l_workbench.lace.file_name) then
+						if attached (create {USER_OPTIONS_FACTORY}).mapped_uuid (l_workbench.lace.file_name) as l_uuid then
 							l_ver := l_uuid.out
 						else
 							l_ver := l_conf_target.system.uuid.out
@@ -193,10 +189,10 @@ feature {NONE} -- Query
 
 feature {NONE} -- Helpers
 
-	logger_service: !SERVICE_CONSUMER [LOGGER_S]
+	logger_service: attached SERVICE_CONSUMER [LOGGER_S]
 			-- Access to logger service
 		do
-			if {l_service: !SERVICE_CONSUMER [LOGGER_S]} internal_logger_service then
+			if attached internal_logger_service as l_service then
 				Result := l_service
 			else
 				check sited: site /= Void end
@@ -205,7 +201,7 @@ feature {NONE} -- Helpers
 			end
 		end
 
-	file_utilities: !FILE_UTILITIES
+	file_utilities: attached FILE_UTILITIES
 			-- Access to file utilities
 		once
 			create Result
@@ -221,7 +217,7 @@ feature -- Storage
 			l_file: RAW_FILE
 			l_sed_util: SED_STORABLE_FACILITIES
 			l_writer: SED_MEDIUM_READER_WRITER
-			l_message: !STRING_32
+			l_message: attached STRING_32
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -293,7 +289,7 @@ feature -- Storage
 
 feature -- Retrieval
 
-	retrieve (a_per_project: BOOLEAN): ?SESSION_I
+	retrieve (a_per_project: BOOLEAN): detachable SESSION_I
 			-- <Precursor>
 		do
 			Result := retrieve_extended (a_per_project, Void)
@@ -303,7 +299,7 @@ feature -- Retrieval
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	retrieve_extended (a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
+	retrieve_extended (a_per_project: BOOLEAN; a_extension: detachable STRING_8): detachable SESSION_I
 			-- <Precursor>
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [SESSION_I]
@@ -337,7 +333,7 @@ feature -- Retrieval
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	retrieve_per_window (a_window: SHELL_WINDOW_I; a_per_project: BOOLEAN): ?SESSION_I
+	retrieve_per_window (a_window: SHELL_WINDOW_I; a_per_project: BOOLEAN): detachable SESSION_I
 			-- <Precursor>
 		do
 			Result := retrieve_per_window_extended (a_window, a_per_project, Void)
@@ -347,7 +343,7 @@ feature -- Retrieval
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	retrieve_per_window_extended (a_window: SHELL_WINDOW_I; a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
+	retrieve_per_window_extended (a_window: SHELL_WINDOW_I; a_per_project: BOOLEAN; a_extension: detachable STRING_8): detachable SESSION_I
 			-- <Precursor>
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [SESSION_I]
@@ -379,7 +375,7 @@ feature -- Retrieval
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	retrieve_from_disk (a_file_name: !STRING_8): ?SESSION_I
+	retrieve_from_disk (a_file_name: attached STRING_8): detachable SESSION_I
 			-- <Precursor>
 		do
 				-- Create a new custom session
@@ -419,7 +415,7 @@ feature {NONE} -- Basic operation
 			l_object: ANY
 			l_file: RAW_FILE
 			l_logger: SERVICE_CONSUMER [LOGGER_S]
-			l_message: !STRING_32
+			l_message: attached STRING_32
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -459,7 +455,7 @@ feature {NONE} -- Basic operation
 
 feature {NONE} -- Factory
 
-	create_new_session (a_window: ?SHELL_WINDOW_I; a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
+	create_new_session (a_window: detachable SHELL_WINDOW_I; a_per_project: BOOLEAN; a_extension: detachable STRING_8): detachable SESSION_I
 			-- Creates a new session object
 			--
 			-- `a_window': The window to bind the session object to; False to make a session for the entire IDE.
@@ -529,14 +525,15 @@ feature {NONE} -- Factory
 							l_existing_load_agents.forth
 						end
 
-						if {l_safe_disposable: SAFE_AUTO_DISPOSABLE} Result then
+						if attached {DISPOSABLE_I} Result as l_disposable then
 								-- We have to be sure to remove the load agent on dispose. When a new window is opened
 								-- with no project loaded, then the window is closed and then project is opened, the agent
 								-- will still be called. We cannot have this.
-							l_safe_disposable.perform_auto_dispose (agent (ia_load_agents: ACTION_SEQUENCE [TUPLE]; ia_agent: PROCEDURE [ANY, TUPLE])
-								do
-									ia_load_agents.prune (ia_agent)
-								end (l_load_agents,l_load_agent))
+							l_disposable.automation.notify_on_disposing (
+								agent (ia_load_agents: ACTION_SEQUENCE [TUPLE]; ia_agent: PROCEDURE [ANY, TUPLE])
+									do
+										ia_load_agents.prune (ia_agent)
+									end (l_load_agents,l_load_agent))
 						else
 								-- Sanity check. This should only happen if there is alternative implementation (possibly external)
 								-- for {SESSSION_I}.
@@ -575,7 +572,7 @@ feature {NONE} -- Factory
 			result_extension_set: Result /= Void implies equal (a_extension, Result.extension_name)
 		end
 
-	create_new_custom_session (a_file_name: !STRING_8): ?CUSTOM_SESSION_I
+	create_new_custom_session (a_file_name: attached STRING_8): detachable CUSTOM_SESSION_I
 			-- Creates a new session object
 			--
 			-- `a_file_name': The full path to a file on disk to retrieve session data from.
@@ -601,7 +598,7 @@ feature {NONE} -- Constants
 
 feature {NONE} -- Internal implementation cache
 
-	internal_sessions: ?like sessions
+	internal_sessions: detachable like sessions
 			-- Cached version of `sessions'
 			-- Note: Do not use directly!
 
@@ -609,10 +606,10 @@ feature {NONE} -- Internal implementation cache
 			-- Cached version of `logger_service'
 			-- Note: Do not use directly!
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -623,22 +620,22 @@ feature {NONE} -- Internal implementation cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

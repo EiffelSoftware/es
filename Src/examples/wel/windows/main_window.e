@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		local
 			on_off: ON_OFF_CONTROL
 			static: WEL_STATIC
@@ -40,15 +40,15 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	modal: MODAL
+	modal: detachable MODAL
 			-- Modal dialog box
 
-	modeless: MODELESS
+	modeless: detachable MODELESS
 			-- Modeless dialog box
 
 feature {NONE} -- Implementation
 
-	on_menu_command (menu_id: INTEGER) is
+	on_menu_command (menu_id: INTEGER)
 		local
 			popup: WEL_POPUP_WINDOW
 			static: WEL_STATIC
@@ -58,12 +58,16 @@ feature {NONE} -- Implementation
 			when Cmd_exit then
 				destroy
 			when Cmd_modal_dlg then
-				modal.activate
+				if attached modal as l_modal then
+					l_modal.activate
+				end
 			when Cmd_modeless_dlg then
-				if not modeless.exists then
-					modeless.activate
-				else
-					modeless.set_focus
+				if attached modeless as l_modeless then
+					if not l_modeless.exists then
+						l_modeless.activate
+					else
+						l_modeless.set_focus
+					end
 				end
 			when Cmd_popup_window_with_parent then
 				create popup.make_child (Current, "Popup Window with parent")
@@ -85,13 +89,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	class_icon: WEL_ICON is
+	class_icon: WEL_ICON
 			-- Window's icon
 		once
 			create Result.make_by_id (Id_ico_application)
 		end
 
-	main_menu: WEL_MENU is
+	main_menu: WEL_MENU
 			-- Window's menu
 		once
 			create Result.make_by_id (Id_main_menu)
@@ -99,10 +103,10 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
-	Title: STRING is "WEL Windows";
+	Title: STRING = "WEL Windows";
 			-- Window's title
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

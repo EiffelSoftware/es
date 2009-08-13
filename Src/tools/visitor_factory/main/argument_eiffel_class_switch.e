@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A command line switch that accepts a value in the form of an Eiffel class name.
 	]"
@@ -22,13 +22,13 @@ create
 
 feature -- Access
 
-	value_validator: !ARGUMENT_EIFFEL_CLASS_VALIDATOR
+	value_validator: attached ARGUMENT_EIFFEL_CLASS_VALIDATOR
 			-- <Precursor>
 		once
 			create Result
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

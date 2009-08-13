@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Description of a generic derivation of a generic CLASS_C. It contains
 		type of the current generic derivation. All generic derivations are stored
@@ -75,7 +75,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (t: like type) is
+	make (t: like type)
 			-- Create new generic derivation CLASS_TYPE based on
 			-- `t', type of actual CLASS_C as used in Eiffel code.
 		require
@@ -154,19 +154,19 @@ feature -- Access
 	skeleton: SKELETON
 			-- Skeleton of the class type
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is current type still valid for current system?
 		do
 			Result := associated_class /= Void and then system.class_type_of_id (type_id) /= Void
 		end
 
-	is_modifiable: BOOLEAN is
+	is_modifiable: BOOLEAN
 			-- Is current type not part of a precompiled library?
 		do
 			Result := not is_precompiled
 		end
 
-	is_generated: BOOLEAN is
+	is_generated: BOOLEAN
 			-- Is current type to be generated in IL code generation?
 		require
 			il_generation: System.il_generation
@@ -184,13 +184,13 @@ feature -- Access
 			Result := type.is_reference
 		end
 
-	is_basic: BOOLEAN is
+	is_basic: BOOLEAN
 			-- Is current class type a basic type?
 		do
 			Result := basic_type /= Void
 		end
 
-	is_expanded: BOOLEAN is
+	is_expanded: BOOLEAN
 			-- Is current class type expanded?
 		require
 			type_not_void: type /= Void
@@ -198,7 +198,7 @@ feature -- Access
 			Result := type.is_expanded
 		end
 
-	is_true_expanded: BOOLEAN is
+	is_true_expanded: BOOLEAN
 			-- Is current class type expanded but not basic?
 		require
 			type_not_void: type /= Void
@@ -206,7 +206,7 @@ feature -- Access
 			Result := type.is_true_expanded and basic_type = Void
 		end
 
-	is_generic: BOOLEAN is
+	is_generic: BOOLEAN
 			-- Is current class a generic class?
 		local
 			l_gen_type: GEN_TYPE_A
@@ -215,7 +215,7 @@ feature -- Access
 			Result := l_gen_type /= Void
 		end
 
-	is_external: BOOLEAN is
+	is_external: BOOLEAN
 			-- Is current class type external?
 		require
 			type_not_void: type /= Void
@@ -226,7 +226,7 @@ feature -- Access
 			Result := l_class.is_external and (not l_class.is_basic or l_class.is_typed_pointer or l_class.is_native_array)
 		end
 
-	is_generated_as_single_type: BOOLEAN is
+	is_generated_as_single_type: BOOLEAN
 			-- Is associated type generated as a single type or as an interface type and
 			-- an implementation type.
 		require
@@ -242,7 +242,7 @@ feature -- Access
 			-- Has the class changed its `has_cpp_externals' flag
 			-- after a recompilation.
 
-	is_precompiled: BOOLEAN is
+	is_precompiled: BOOLEAN
 		do
 			Result := Static_type_id_counter.is_precompiled (static_type_id)
 		end
@@ -256,7 +256,7 @@ feature -- Access
 	is_dotnet_name: BOOLEAN
 			-- Is current type being generated using dotnet name convention?
 
-	il_type_name (a_prefix: STRING): STRING is
+	il_type_name (a_prefix: STRING): STRING
 			-- Name of type in IL code generation.
 		require
 			is_precompiled: is_precompiled
@@ -267,7 +267,7 @@ feature -- Access
 	conformance_table: PACKED_BOOLEANS
 			-- Conformance table for current type.
 
-	type_number: INTEGER is
+	type_number: INTEGER
 			-- Gives the position on which this CLASS_TYPE occors in its associated class's TYPE_LIST
 		local
 			types: TYPE_LIST
@@ -286,15 +286,17 @@ feature -- Access
 			Result := type_number_int
 		end
 
-feature {NONE} -- Implementation: Access
-
 	basic_type: BASIC_A
 			-- If `type' is originally a basic type, we keep the BASIC_A instance
 			-- as it is used for certain queries (e.g. tuple_code).
+		attribute
+		ensure
+			is_basic_implies_attached: is_basic implies basic_type /= Void
+		end
 
 feature -- Status report
 
-	dynamic_conform_to (a_type: TYPE_A; a_type_id: INTEGER; a_context_type: TYPE_A): BOOLEAN is
+	dynamic_conform_to (a_type: TYPE_A; a_type_id: INTEGER; a_context_type: TYPE_A): BOOLEAN
 			-- Does Current conform to `a_type' in a dynamic binding sense?
 			-- That is to say if you have Current be `B [G#1]' with a conformance
 			-- type be `B [TUPLE]' and the ancestor `a_type' be `A [TUPLE [INTEGER]]'
@@ -371,7 +373,7 @@ feature -- Status report
 
 feature -- Settings
 
-	set_is_changed (b: BOOLEAN) is
+	set_is_changed (b: BOOLEAN)
 			-- Assign `b' to `is_changed' ?
 		do
 			is_changed := b
@@ -379,7 +381,7 @@ feature -- Settings
 			is_changed_set: is_changed = b
 		end
 
-	set_skeleton (s: like skeleton) is
+	set_skeleton (s: like skeleton)
 			-- Assign `s' to `skeleton'.
 		do
 			skeleton := s
@@ -387,7 +389,7 @@ feature -- Settings
 			skeleton_set: skeleton = s
 		end
 
-	set_last_type_token (v: like last_type_token) is
+	set_last_type_token (v: like last_type_token)
 			-- Assign `v' to `last_type_token'.
 		require
 			v_not_zero: v /= 0
@@ -397,7 +399,7 @@ feature -- Settings
 			last_type_token_set: last_type_token = v
 		end
 
-	set_last_implementation_type_token (v: like last_implementation_type_token) is
+	set_last_implementation_type_token (v: like last_implementation_type_token)
 			-- Assign `v' to `last_implementation_type_token'.
 		require
 			v_not_zero: v /= 0
@@ -407,7 +409,7 @@ feature -- Settings
 			last_implementation_type_token_set: last_implementation_type_token = v
 		end
 
-	set_last_create_type_token (v: like last_create_type_token) is
+	set_last_create_type_token (v: like last_create_type_token)
 			-- Assign `v' to `last_create_type_token'.
 		require
 			v_not_zero: v /= 0
@@ -417,7 +419,7 @@ feature -- Settings
 			last_create_type_token_set: last_create_type_token = v
 		end
 
-	set_has_cpp_externals (b: BOOLEAN) is
+	set_has_cpp_externals (b: BOOLEAN)
 			-- Assign `b' to `has_cpp_externals'.
 		do
 			has_cpp_status_changed := b /= has_cpp_externals
@@ -429,7 +431,7 @@ feature -- Settings
 			has_cpp_externals_set: has_cpp_externals = b
 		end
 
-	set_type_id (i: INTEGER) is
+	set_type_id (i: INTEGER)
 			-- Assign `i' to `type_id'.
 		require
 			valid_i: i > 0
@@ -439,7 +441,7 @@ feature -- Settings
 			type_id_set: type_id = i
 		end
 
-	set_class_interface (cl: like class_interface) is
+	set_class_interface (cl: like class_interface)
 			-- Assign `cl' to `class_interface'.
 		require
 			cl_not_void: cl /= Void
@@ -449,7 +451,7 @@ feature -- Settings
 			class_interface_set: class_interface = cl
 		end
 
-	set_assembly_info (a: like assembly_info) is
+	set_assembly_info (a: like assembly_info)
 			-- Set `assembly_info' with `a'.
 		require
 			a_not_void: a /= Void
@@ -459,7 +461,7 @@ feature -- Settings
 			assembly_info_set: assembly_info = a
 		end
 
-	set_il_type_name is
+	set_il_type_name
 			-- Store basic information that will help us reconstruct
 			-- a complete name.
 		require
@@ -480,7 +482,7 @@ feature -- Settings
 
 feature {SYSTEM_I} -- Setting
 
-	set_implementation_id (i: like implementation_id) is
+	set_implementation_id (i: like implementation_id)
 			-- Set `implementation_id' with `i'
 		require
 			il_generation: system.il_generation
@@ -493,7 +495,7 @@ feature {SYSTEM_I} -- Setting
 
 feature -- Update
 
-	reset_conformance_table is
+	reset_conformance_table
 			-- Reset conformance table for current type.
 		do
 			conformance_table := Void
@@ -501,7 +503,7 @@ feature -- Update
 			conformance_table_reset: conformance_table = Void
 		end
 
-	build_conformance_table is
+	build_conformance_table
 			-- Build conformance table for current type.
 		do
 			create conformance_table.make (type_id)
@@ -510,7 +512,7 @@ feature -- Update
 			conformance_table_not_void: conformance_table /= Void
 		end
 
-	build_conformance_table_of (cl: CLASS_TYPE) is
+	build_conformance_table_of (cl: CLASS_TYPE)
 			-- Build recursively the conformance table of class `cl' knowing that
 			-- `cl' conforms to Current.
 		require
@@ -552,7 +554,7 @@ feature -- Update
 
 feature -- Conveniences
 
-	full_il_type_name: STRING is
+	full_il_type_name: STRING
 			-- Full type name of Current as used in IL code generation with
 			-- namespace specification.
 		require
@@ -568,7 +570,7 @@ feature -- Conveniences
 			full_il_create_type_name_not_empty: not Result.is_empty
 		end
 
-	full_il_implementation_type_name: STRING is
+	full_il_implementation_type_name: STRING
 			-- Full type name of implementation of Current in IL code generation
 			-- with namespace specification.
 		require
@@ -584,7 +586,7 @@ feature -- Conveniences
 			full_il_create_type_name_not_empty: not Result.is_empty
 		end
 
-	full_il_create_type_name: STRING is
+	full_il_create_type_name: STRING
 			-- Full type name of implementation of Current in IL code generation
 			-- with namespace specification.
 		require
@@ -600,7 +602,7 @@ feature -- Conveniences
 			full_il_create_type_name_not_empty: not Result.is_empty
 		end
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 			-- Associated class
 		require
 			type_exists: type /= Void
@@ -608,7 +610,7 @@ feature -- Conveniences
 			Result := System.class_of_id (type.class_id)
 		end
 
-	written_type (a_class: CLASS_C): CLASS_TYPE is
+	written_type (a_class: CLASS_C): CLASS_TYPE
 			-- Class type associated to class `a_class' in the context
 			-- of Current
 		require
@@ -621,7 +623,7 @@ feature -- Conveniences
 			written_type_not_void: Result /= Void
 		end
 
-	written_type_id (a_class: CLASS_C): INTEGER is
+	written_type_id (a_class: CLASS_C): INTEGER
 			-- Type id of the type associated to class `a_class' in the
 			-- context of Current
 		require
@@ -633,7 +635,7 @@ feature -- Conveniences
 
 feature -- Generation
 
-	pass4 is
+	pass4
 			-- Generation of the C file
 		local
 			l_feature_table: COMPUTED_FEATURE_TABLE
@@ -868,7 +870,7 @@ feature -- Generation
 			shared_include_queue.wipe_out
 		end
 
-	generate_feature (f: FEATURE_I; buffer: GENERATION_BUFFER) is
+	generate_feature (f: FEATURE_I; buffer: GENERATION_BUFFER)
 			-- Generate feature `feat' in Current class type
 		require
 			good_argument: buffer /= Void
@@ -877,7 +879,7 @@ feature -- Generation
 			f.generate (Current, buffer)
 		end
 
-	open_generation_file (has_cpp_externals_calls: BOOLEAN): INDENT_FILE is
+	open_generation_file (has_cpp_externals_calls: BOOLEAN): INDENT_FILE
 			-- Open in write mode a file for generating class code
 			-- of the current class type
 		local
@@ -910,7 +912,7 @@ feature -- Generation
 			create Result.make_c_code_file (l_file_name)
 		end
 
-	open_descriptor_file: INDENT_FILE is
+	open_descriptor_file: INDENT_FILE
 			-- Open in write mode a file for generating descriptor table
 		require
 			Workbench_mode: not byte_context.final_mode
@@ -923,14 +925,14 @@ feature -- Generation
 			create Result.make_c_code_file (l_file_name)
 		end
 
-	extern_declaration_filename: STRING is
+	extern_declaration_filename: STRING
 			-- File name for external declarations in final mode
 		do
 			Result := full_file_name (System.in_final_mode, packet_name (C_prefix, packet_number), base_file_name, Void)
 			Result.append (Dot_h)
 		end
 
-	header_filename: INTEGER is
+	header_filename: INTEGER
 			-- File name for external declarations in final mode
 			-- It is only a relativ path to F_code
 		local
@@ -950,7 +952,7 @@ feature -- Generation
 			Result := Names_heap.found_item
 		end
 
-	already_included_header: STRING is
+	already_included_header: STRING
 			-- #define statement used to protect generated header files for current
 			-- generation.
 		do
@@ -962,7 +964,7 @@ feature -- Generation
 			Result.append_character ('_')
 		end
 
-	base_file_name: STRING is
+	base_file_name: STRING
 			-- Generated base file name prefix
 		do
 			create Result.make (10)
@@ -973,13 +975,13 @@ feature -- Generation
 			pure_query: Result /= base_file_name and Result.is_equal (base_file_name)
 		end
 
-	packet_number: INTEGER is
+	packet_number: INTEGER
 			-- Packet in which the file will be generated
 		do
 			Result := static_type_id_counter.packet_number (static_type_id)
 		end
 
-	relative_file_name: STRING is
+	relative_file_name: STRING
 			-- Relative path of the generation file
 		local
 			f_name: FILE_NAME
@@ -996,7 +998,7 @@ feature -- Generation
 			Result := f_name
 		end
 
-	has_creation_routine: BOOLEAN is
+	has_creation_routine: BOOLEAN
 			-- Does the class type need an initialization routine ?
 			--| i.e has the skeleton a bit or an expanded attribute at least ?
 		do
@@ -1004,7 +1006,7 @@ feature -- Generation
 			Result := not skeleton.after
 		end
 
-	generate_creation_routine (buffer, header_buffer: GENERATION_BUFFER) is
+	generate_creation_routine (buffer, header_buffer: GENERATION_BUFFER)
 			-- Creation routine, if necessary (i.e. if the object is
 			-- composite and has expanded we must initialize, as well
 			-- as some special header flags).
@@ -1125,7 +1127,7 @@ feature -- Generation
 			buffer.put_new_line
 		end
 
-	mark_creation_routine (r: REMOVER) is
+	mark_creation_routine (r: REMOVER)
 			-- Mark all the routines called in the creation routine
 		local
 			cl: CLASS_C
@@ -1144,7 +1146,7 @@ feature -- Generation
 
 feature -- IL code generation
 
-	generate_il_feature (f: FEATURE_I) is
+	generate_il_feature (f: FEATURE_I)
 			-- Generate feature `feat' in Current class type
 		require
 			feature_not_void: f /= Void
@@ -1156,7 +1158,7 @@ feature -- IL code generation
 
 feature -- Byte code generation
 
-	update_execution_table is
+	update_execution_table
 			-- Update the execution table using melted features
 		require
 			good_context: associated_class.has_features_to_melt
@@ -1178,7 +1180,7 @@ feature -- Byte code generation
 			end
 		end
 
-	melt is
+	melt
 			-- Generate byte code for changed features of Current class
 			-- type
 		require
@@ -1207,7 +1209,7 @@ feature -- Byte code generation
 			end
 		end
 
-	melt_feature_table is
+	melt_feature_table
 			-- Melt the feature table of the associated class
 		local
 			melted_feat_tbl: MELTED_FEATURE_TABLE
@@ -1220,7 +1222,7 @@ feature -- Byte code generation
 feature -- Parent table generation
 
 	generate_parent_table (buffer: GENERATION_BUFFER;
-						   final_mode: BOOLEAN) is
+						   final_mode: BOOLEAN)
 			-- Generate parent table.
 		require
 			valid_file   : buffer /= Void
@@ -1229,7 +1231,7 @@ feature -- Parent table generation
 			Par_table.generate (buffer, final_mode, Current)
 		end
 
-	make_parent_table_byte_code (ba: BYTE_ARRAY) is
+	make_parent_table_byte_code (ba: BYTE_ARRAY)
 			-- Generate parent table.
 		do
 			compute_parent_table (False)
@@ -1238,7 +1240,7 @@ feature -- Parent table generation
 
 feature {NONE} -- Implementation
 
-	compute_parent_table (final_mode: BOOLEAN) is
+	compute_parent_table (final_mode: BOOLEAN)
 			-- Compute parent table and make it available in `Par_table'.
 		local
 			parents     : FIXED_LIST [CL_TYPE_A];
@@ -1284,7 +1286,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	Par_table: PARENT_TABLE is
+	Par_table: PARENT_TABLE
 			-- Buffer for parent table generation
 		once
 			create Result.make
@@ -1292,17 +1294,29 @@ feature {NONE} -- Implementation
 
 feature -- Skeleton generation
 
-	generate_skeleton1 (buffer: GENERATION_BUFFER) is
-			-- Generate skeleton names and types of Current class type
+	generate_attribute_names (buffer: GENERATION_BUFFER)
+			-- Generate attributes names of Current class type
 		require
 			skeleton_exists: skeleton /= Void
 		do
 			if not skeleton.empty then
 					-- Generate attribute names sequence
-				buffer.put_string ("static char *names")
+				buffer.put_string ("char *names")
 				buffer.put_integer (type_id)
 				buffer.put_string (" [] =%N")
 				skeleton.generate_name_array
+			end
+		end
+
+	generate_skeleton1 (buffer: GENERATION_BUFFER)
+			-- Generate skeleton names and types of Current class type
+		require
+			skeleton_exists: skeleton /= Void
+		do
+			if not skeleton.empty then
+				buffer.put_string ("extern char *names")
+				buffer.put_integer (type_id)
+				buffer.put_four_character ('[', ']', ';', '%N')
 
 					-- Generate attribute types sequence
 				buffer.put_string ("uint32 types")
@@ -1343,7 +1357,7 @@ feature -- Skeleton generation
 			end
 		end
 
-	generate_skeleton2 (buffer: GENERATION_BUFFER) is
+	generate_skeleton2 (buffer: GENERATION_BUFFER)
 			-- Generate skeleton of Current class type
 		local
 			skeleton_empty: BOOLEAN
@@ -1488,7 +1502,7 @@ feature -- Skeleton generation
 
 feature -- Structure generation
 
-	generate_expanded_structure_declaration (buffer: GENERATION_BUFFER; a_name: STRING) is
+	generate_expanded_structure_declaration (buffer: GENERATION_BUFFER; a_name: STRING)
 			-- Declaration of variable `a_name' for current expanded type in `buffer'.
 		require
 			is_expanded: is_expanded
@@ -1503,27 +1517,35 @@ feature -- Structure generation
 			buffer.put_string (";")
 		end
 
-	generate_expanded_structure_definition (buffer: GENERATION_BUFFER) is
+	generate_expanded_structure_definition (buffer: GENERATION_BUFFER)
 			-- Define associated expanded structure if current is expanded.
 		require
 			buffer_not_void: buffer /= Void
+		local
+			l_size: INTEGER
 		do
 			if is_expanded then
 				buffer.put_new_line
 				buffer.put_string (expanded_structure_name)
-				buffer.put_string (" {")
-				buffer.put_string ("char data [")
-				if byte_context.final_mode then
-					skeleton.generate_size (buffer, False)
+				buffer.put_string (" {union overhead overhead; char data [")
+					-- We check the workbench size for a 0 sized object in which case this
+					-- also applies to finalized code. This fixes eweasel test#ccomp
+				l_size := skeleton.workbench_size
+				if l_size = 0 then
+					buffer.put_three_character ('1', ']', ';')
 				else
-					buffer.put_integer (skeleton.workbench_size)
+					if byte_context.final_mode then
+						skeleton.generate_size (buffer, False)
+					else
+						buffer.put_integer (l_size)
+					end
+					buffer.put_two_character (']', ';')
 				end
-				generate_expanded_overhead_size (buffer)
-				buffer.put_string ("]; };")
+				buffer.put_two_character ('}', ';')
 			end
 		end
 
-	generate_expanded_overhead_size (buffer: GENERATION_BUFFER) is
+	generate_expanded_overhead_size (buffer: GENERATION_BUFFER)
 			-- Generate size of overhead if any.
 		require
 			is_expanded: is_expanded
@@ -1534,7 +1556,7 @@ feature -- Structure generation
 --			end
 		end
 
-	generate_expanded_type_initialization (buffer: GENERATION_BUFFER; a_name: STRING; a_type: TYPE_A; a_context_type: CLASS_TYPE) is
+	generate_expanded_type_initialization (buffer: GENERATION_BUFFER; a_name: STRING; a_type: TYPE_A; a_context_type: CLASS_TYPE)
 			-- Generate initialization of expanded local variable `a_name' and `type `a_type'
 			-- declared in the context of `a_context_type' into `buffer'.
 		require
@@ -1554,19 +1576,24 @@ feature -- Structure generation
 --			l_gen_type ?= a_type.adapted_in (type)
 --			if l_workbench_mode or else (skeleton.has_references or l_gen_type /= Void) then
 					-- The dynamic type has to be set after setting the flags.
-					-- Also note that we use EO_C as those expanded cannot move.
+					-- Also note that we use EO_STACK as those expanded cannot move.
 				buffer.put_new_line
-				buffer.put_string ("((union overhead *) ")
 				buffer.put_string (a_name)
-				buffer.put_string (".data)->ov_flags = EO_EXP | EO_C;")
+				buffer.put_string (".overhead.ov_flags = EO_EXP | EO_STACK")
+				if has_creation_routine then
+						-- Class has an expanded attribute we need to give it the EO_COMP flag.
+					buffer.put_string (" | EO_COMP;")
+				else
+					buffer.put_character (';')
+				end
 
 				l_create_info.generate_start (buffer)
 				l_create_info.generate_gen_type_conversion (0)
 
 				buffer.put_new_line
-				buffer.put_string ("RT_DFS((union overhead *) ")
+				buffer.put_string ("RT_DFS(&")
 				buffer.put_string (a_name)
-				buffer.put_string (".data, ")
+				buffer.put_string (".overhead, ")
 				l_create_info.generate_type_id (buffer, not l_workbench_mode, 0)
 				buffer.put_character (')')
 				buffer.put_character (';')
@@ -1574,7 +1601,7 @@ feature -- Structure generation
 --			end
 		end
 
-	generate_expanded_creation (buffer: GENERATION_BUFFER; a_target_name: STRING; a_type: TYPE_A; a_context_type: CLASS_TYPE) is
+	generate_expanded_creation (buffer: GENERATION_BUFFER; a_target_name: STRING; a_type: TYPE_A; a_context_type: CLASS_TYPE)
 			-- Allocate memory and call to `default_create' if needed on `a_target_name' of type `a_type'
 			-- declared in context `a_context_type'.
 		require
@@ -1598,7 +1625,7 @@ feature -- Structure generation
 			l_create_info.generate_end (buffer)
 		end
 
-	generate_expanded_initialization (buffer: GENERATION_BUFFER; a_target_name, a_parent_name: STRING; needs_initialization: BOOLEAN) is
+	generate_expanded_initialization (buffer: GENERATION_BUFFER; a_target_name, a_parent_name: STRING; needs_initialization: BOOLEAN)
 			-- If `needs_initialization', initialize expanded attributes of `a_target_name'
 			-- which is located in `a_parent_name' object.
 			-- Then generate call to `default_create' if needed on `a_target_name'.
@@ -1667,7 +1694,7 @@ feature -- Structure generation
 			end
 		end
 
-	expanded_structure_name: STRING is
+	expanded_structure_name: STRING
 			-- Name of associated structure.
 		require
 			is_expanded: is_expanded
@@ -1681,7 +1708,7 @@ feature -- Structure generation
 
 feature -- Cecil generation
 
-	generate_cecil (buffer: GENERATION_BUFFER) is
+	generate_cecil (buffer: GENERATION_BUFFER)
 			-- Generation of the Cecil table
 		require
 			has_visible: associated_class.has_visible
@@ -1702,7 +1729,7 @@ feature -- Cecil generation
 
 feature -- Byte code generation
 
-	melted_feature_table: MELTED_FEATURE_TABLE is
+	melted_feature_table: MELTED_FEATURE_TABLE
 		local
 			ba: BYTE_ARRAY
 			creation_feature: FEATURE_I
@@ -1757,7 +1784,7 @@ feature -- Byte code generation
 
 feature -- Cleaning
 
-	remove_c_generated_files is
+	remove_c_generated_files
 			-- Remove the C generated files when we remove `Current' from system.
 		local
 			retried, file_exists: BOOLEAN
@@ -1846,7 +1873,7 @@ feature -- Cleaning
 
 feature {NONE} -- Convenience
 
-	skeleton_flags: NATURAL_16 is
+	skeleton_flags: NATURAL_16
 			-- Corresponding flags to insert in skeleton structure
 		local
 			l_class: like associated_class
@@ -1890,7 +1917,7 @@ feature {NONE} -- Convenience
 
 feature {NONE} -- Debug output
 
-	debug_output: STRING is
+	debug_output: STRING
 			-- Output displayed in debugger.
 		local
 			l_name: STRING
@@ -1922,7 +1949,7 @@ feature {NONE} -- Implementation
 			-- Internal storage to help us reconstruct names of classes and features
 			-- from a precompiled library.
 
-	create_current: CREATE_CURRENT is
+	create_current: CREATE_CURRENT
 			-- Byte code information for "like Current" type creation.
 		once
 			create Result
@@ -1940,7 +1967,7 @@ invariant
 	valid_static_type_id: static_type_id > 0
 	valid_implementation_id: System.il_generation implies implementation_id > 0
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Used to parser command-line arguments.
 	]"
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize parser
 		do
 			make_multi_parser (False, True)
@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	commands: LINEAR [STRING] is
+	commands: LINEAR [STRING]
 			-- List of commands
 		require
 			is_successful: is_successful
@@ -43,7 +43,7 @@ feature -- Access
 			not_result_is_empty: not Result.is_empty
 		end
 
-	for_32bit: BOOLEAN is
+	for_32bit: BOOLEAN
 			-- Indiciates if tool should be run in a 32bit emulated enironment
 		require
 			is_successful: is_successful
@@ -53,7 +53,7 @@ feature -- Access
 			true_for_64bit: not {PLATFORM_CONSTANTS}.is_64_bits implies Result
 		end
 
-	specific_compiler_code: STRING is
+	specific_compiler_code: STRING
 			-- The user specified compiler code to use to establish an environment
 		require
 			is_successful: is_successful
@@ -65,7 +65,7 @@ feature -- Access
 			not_result_is_empty: not Result.is_empty
 		end
 
-	ignore_failures: BOOLEAN is
+	ignore_failures: BOOLEAN
 			-- Indicates if process execution failures should be ignored
 		require
 			is_successful: is_successful
@@ -73,7 +73,7 @@ feature -- Access
 			Result := has_option (ignore_switch)
 		end
 
-	manual: BOOLEAN is
+	manual: BOOLEAN
 			-- Inidicates if user wants to manually setup their environment
 		require
 			is_successful: is_successful
@@ -81,7 +81,7 @@ feature -- Access
 			Result := has_option (manual_switch)
 		end
 
-	asynchronous: BOOLEAN is
+	asynchronous: BOOLEAN
 			-- Inidicates if commands should be launched aynchronously
 		require
 			is_successful: is_successful
@@ -89,16 +89,16 @@ feature -- Access
 			Result := has_option (aync_switch)
 		end
 
-	max_processors: NATURAL_16 is
+	max_processors: NATURAL_16
 			-- Maximum number of processors to untilize
 		require
 			is_successful: is_successful
-		local
-			l_option: ARGUMENT_NATURAL_OPTION
 		once
 			if asynchronous then
-				l_option ?= option_of_name (aync_switch)
-				if l_option /= Void and then l_option.has_value then
+				if
+					attached {ARGUMENT_NATURAL_OPTION} option_of_name (aync_switch) as l_option and then
+					l_option.has_value
+				then
 					Result := l_option.natural_16_value
 				end
 				if Result = 0 or Result > resident_cpu_count then
@@ -111,7 +111,7 @@ feature -- Access
 			result_positive: Result > 0
 		end
 
-	list_available_compilers: BOOLEAN is
+	list_available_compilers: BOOLEAN
 			-- Indicates if espawn should list the available compiler codes
 		require
 			is_successful: is_successful
@@ -121,7 +121,7 @@ feature -- Access
 
 feature -- Status report
 
-	use_specific_compiler: BOOLEAN is
+	use_specific_compiler: BOOLEAN
 			-- Inidicate if a specific compiler code should be used
 		require
 			is_successful: is_successful
@@ -131,28 +131,28 @@ feature -- Status report
 
 feature {NONE} -- Usage
 
-	name: !STRING = "Eiffel Environment Command Spawn Utility"
+	name: attached STRING = "Eiffel Environment Command Spawn Utility"
 			-- <Precursor>
 
-	version: !STRING
+	version: attached STRING
 			-- <Precursor>
-		do
+		once
 			create Result.make (3)
 			Result.append_integer ({EIFFEL_ENVIRONMENT_CONSTANTS}.major_version)
 			Result.append_character ('.')
 			Result.append_integer ({EIFFEL_ENVIRONMENT_CONSTANTS}.minor_version)
 		end
 
-	non_switched_argument_description: !STRING = "Command or application to execute."
+	non_switched_argument_description: attached STRING = "Command or application to execute."
 			-- <Precursor>
 
-	non_switched_argument_name: !STRING = "command"
+	non_switched_argument_name: attached STRING = "command"
 			-- <Precursor>
 
-	non_switched_argument_type: !STRING = "A command"
+	non_switched_argument_type: attached STRING = "A command"
 			-- <Precursor>
 
-	switches: !ARRAYED_LIST [!ARGUMENT_SWITCH] is
+	switches: attached ARRAYED_LIST [attached ARGUMENT_SWITCH]
 			-- <Precursor>
 		once
 			create Result.make (1)
@@ -168,9 +168,9 @@ feature {NONE} -- Usage
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_compilers_switch, "List available compiler codes.", False, False))
 		end
 
-	switch_groups: !ARRAYED_LIST [!ARGUMENT_GROUP] is
+	switch_groups: attached ARRAYED_LIST [attached ARGUMENT_GROUP]
 			-- Valid switch grouping
-		do
+		once
 			create Result.make (2)
 			Result.extend (create {ARGUMENT_GROUP}.make (<<switch_of_name (x86_switch), switch_of_name (use_compiler_switch), switch_of_name (aync_switch), switch_of_name (ignore_switch)>>, True))
 			Result.extend (create {ARGUMENT_GROUP}.make (<<switch_of_name (manual_switch), switch_of_name (aync_switch), switch_of_name (ignore_switch)>>, True))
@@ -179,16 +179,16 @@ feature {NONE} -- Usage
 
 feature {NONE} -- Switch names
 
-	manual_switch: !STRING = "manual"
-	x86_switch: !STRING = "x86"
-	aync_switch: !STRING = "async"
-	ignore_switch: !STRING = "ignore"
-	list_compilers_switch: !STRING = "l"
-	use_compiler_switch: !STRING = "use"
+	manual_switch: attached STRING = "m|manual"
+	x86_switch: attached STRING = "x86"
+	aync_switch: attached STRING = "a|async"
+	ignore_switch: attached STRING = "i|ignore"
+	list_compilers_switch: attached STRING = "l|list"
+	use_compiler_switch: attached STRING = "u|use"
 
 feature {NONE} -- Externals
 
-	resident_cpu_count: NATURAL_16 is
+	resident_cpu_count: NATURAL_16
 			-- Number of CPUs.
 		external
 			"C inline use <windows.h>"
@@ -203,8 +203,8 @@ feature {NONE} -- Externals
 			]"
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -217,22 +217,22 @@ feature {NONE} -- Externals
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

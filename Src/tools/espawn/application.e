@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Application root class for starting process spawning.
 	]"
@@ -11,6 +11,8 @@ class
 	APPLICATION
 
 inherit
+	ANY
+	
 	ENV_CONSTANTS
 		export
 			{NONE} all
@@ -21,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize application
 		local
 			l_parser: ARGUMENT_PARSER
@@ -36,7 +38,7 @@ feature {NONE} -- Initialization
 			l_parser.execute (agent start (l_parser, l_layout.eiffel_layout))
 		end
 
-	start (a_options: ARGUMENT_PARSER; a_env: EIFFEL_ENV) is
+	start (a_options: ARGUMENT_PARSER; a_env: EIFFEL_ENV)
 			-- Starts application
 		require
 			a_options_attached: a_options /= Void
@@ -61,7 +63,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	initialize_environment (a_options: ARGUMENT_PARSER; a_env: EIFFEL_ENV) is
+	initialize_environment (a_options: ARGUMENT_PARSER; a_env: EIFFEL_ENV)
 			-- Initializes an environment base on `a_options'
 		require
 			a_options_attached: a_options /= Void
@@ -69,7 +71,7 @@ feature -- Basic operations
 			a_env_attached: a_env /= Void
 		local
 			l_manager: C_CONFIG_MANAGER
-			l_config: C_CONFIG
+			l_config: detachable C_CONFIG
 		do
 			if not a_options.manual then
 					-- Configure environment
@@ -99,7 +101,7 @@ feature -- Basic operations
 			end
 		end
 
-	spawn_processes (a_options: ARGUMENT_PARSER): BOOLEAN is
+	spawn_processes (a_options: ARGUMENT_PARSER): BOOLEAN
 			-- Spawns all processes found in `a_options' and returns successful result
 		require
 			a_options_attached: a_options /= Void
@@ -138,7 +140,7 @@ feature -- Basic operations
 			Result := l_spawner.successful
 		end
 
-	list_available_compilers (a_options: ARGUMENT_PARSER) is
+	list_available_compilers (a_options: ARGUMENT_PARSER)
 			-- Lists the available C/C++ compilers
 		require
 			a_options_attached: a_options /= Void
@@ -147,7 +149,7 @@ feature -- Basic operations
 			l_manager: C_CONFIG_MANAGER
 			l_codes: LIST [STRING]
 			l_cursor: CURSOR
-			l_config: C_CONFIG
+			l_config: detachable C_CONFIG
 			l_code: STRING
 			l_count: INTEGER
 		do
@@ -167,13 +169,14 @@ feature -- Basic operations
 
 				from l_codes.start until l_codes.after loop
 					l_config := l_manager.config_from_code (l_codes.item, False)
-					check l_config_attached: l_config /= Void end
 					if l_config /= Void then
 						check l_config_exists: l_config.exists end
 						l_code := l_config.code
 						print ("   " + l_code)
 						print (create {STRING}.make_filled (' ', l_count - l_code.count))
 						print (":  " + l_config.description + "%N")
+					else
+						check False end
 					end
 					l_codes.forth
 				end
@@ -183,32 +186,31 @@ feature -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	merge_variable (a_name: STRING; a_values: STRING; a_env: EIFFEL_ENV) is
+	merge_variable (a_name: STRING; a_values: STRING; a_env: EIFFEL_ENV)
 			-- Merges `a_value' with the environment variable `a_name'
 		require
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
 			a_env_attached: a_env /= Void
 		local
-			l_var: STRING
+			l_var: detachable STRING
 			l_new_var: STRING
 		do
 			if a_values /= Void and then not a_values.is_empty then
 				l_var := a_env.get_environment (a_name)
 				if l_var = Void or else l_var.is_empty then
 					l_new_var := a_values
-
 				else
 					create l_new_var.make (a_values.count + l_var.count)
 					l_new_var.append (a_values)
 					l_new_var.append_character (';')
 					l_new_var.append (l_var)
 				end
-				a_env.set_environment (a_values, a_name)
+				a_env.set_environment (l_new_var, a_name)
 			end
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

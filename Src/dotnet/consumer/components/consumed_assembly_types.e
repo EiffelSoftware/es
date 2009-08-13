@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Table of consumed types for a given assembly"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,26 +13,26 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_count: INTEGER) is
+	make (a_count: INTEGER)
 			-- Create name arrays.
 		require
 			a_count_non_negative: a_count >= 0
 		do
-			create eiffel_names.make (a_count + 1)
-			create dotnet_names.make (a_count + 1)
-			create flags.make (a_count + 1)
-			create positions.make (a_count + 1)
+			create eiffel_names.make_filled (Void, a_count + 1)
+			create dotnet_names.make_filled (Void, a_count + 1)
+			create flags.make_filled (0, a_count + 1)
+			create positions.make_filled (0, a_count + 1)
 			count := a_count
 		ensure
 			count_set: count = a_count
 		end
-		
+
 feature -- Access
 
-	eiffel_names: SPECIAL [STRING]
+	eiffel_names: SPECIAL [detachable STRING]
 			-- Assembly types eiffel name
-	
-	dotnet_names: SPECIAL [STRING]
+
+	dotnet_names: SPECIAL [detachable STRING]
 			-- Assembly types .NET name
 
 	flags: SPECIAL [INTEGER]
@@ -41,15 +41,16 @@ feature -- Access
 
 	positions: SPECIAL [INTEGER]
 			-- Position of types.
-	
+
 	count: INTEGER
 			-- Number of types.
 
-	namespaces: ARRAY [STRING] is
+	namespaces: ARRAY [STRING]
 			-- Namespaces
 		local
 			i, l_index, namespace_count, l_count: INTEGER
-			namespace, name: STRING
+			namespace: detachable STRING
+			name: detachable STRING
 			l_namespaces: ARRAYED_LIST [STRING]
 		do
 			create l_namespaces.make (count)
@@ -68,7 +69,7 @@ feature -- Access
 					l_index := 0
 				end
 				namespace := Void
-				if l_index > 0 then
+				if name /= Void then
 					namespace := name.substring (1, l_index - 1)
 				end
 				if namespace /= Void and then not l_namespaces.has (namespace) then
@@ -89,15 +90,15 @@ feature -- Access
 			Result.compare_objects
 			-- We compare by object to satisfy assertions.
 		end
-	
-	namespace_types (namespace_name: STRING): ARRAY [INTEGER] is
+
+	namespace_types (namespace_name: STRING): ARRAY [INTEGER]
 			-- Indices of types that belong to namespace `namespace_name'.
 		require
-			non_void_name: namespace_name /= Void 
+			non_void_name: namespace_name /= Void
 			valid_name: namespaces.has (namespace_name)
 		local
 			i, l_index, types_count, l_count: INTEGER
-			name: STRING
+			name: detachable STRING
 			l_types_index: ARRAYED_LIST [INTEGER]
 		do
 			create l_types_index.make (count)
@@ -127,10 +128,10 @@ feature -- Access
 				l_types_index.forth
 			end
 		end
-		
+
 feature -- Element Settings	
 
-	put (dn, en: STRING; int, enum, dele, val: BOOLEAN; a_pos: INTEGER) is
+	put (dn, en: STRING; int, enum, dele, val: BOOLEAN; a_pos: INTEGER)
 			-- Add type with Eiffel name `en' and .NET name `dn'.
 			-- type is interface if `int' is true, enum if `enum'
 			-- is true, delegate if `dele' is true, deferred if
@@ -180,7 +181,7 @@ invariant
 	count_non_negative: count >= 0
 	valid_index: 0 <= index and index <= count
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

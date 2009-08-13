@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Describes a deleted list box or combo box item. 
 			The `lparam' parameter of a Wm_deleteitem message 
@@ -6,7 +6,7 @@ indexing
 			item is removed from a list box or combo box 
 			or when a list box or combo box is destroyed, 
 			the system sends the Wm_deleteitem message to 
-			the owner for each deleted item. 
+			the owner for each deleted item.
 			]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,54 +23,54 @@ inherit
 		undefine
 			copy, is_equal
 		end
-	
+
 create
 	make_by_pointer
 
 feature -- Access
 
-	ctl_type: INTEGER is
-			-- Specifies one of the following values to 
-			-- indicate whether the item was deleted from 
-			-- a list box or a combo box. 
+	ctl_type: INTEGER
+			-- Specifies one of the following values to
+			-- indicate whether the item was deleted from
+			-- a list box or a combo box.
 			-- See class WEL_ODT_CONSTANTS.
 			-- Specifies ODT_LISTBOX or ODT_COMBOBOX.
 		do
 			Result := cwel_deleteitemstruct_get_ctltype (item)
 		end
 
-	ctl_id: INTEGER is
-			-- Specifies the identifier of the list box or combo box. 
+	ctl_id: INTEGER
+			-- Specifies the identifier of the list box or combo box.
 		do
 			Result := cwel_deleteitemstruct_get_ctlid (item)
 		end
 
-	window_item: WEL_CONTROL is
+	window_item: detachable WEL_CONTROL
 			-- Identifies the control.
 		do
 			Result ?= window_of_item (cwel_deleteitemstruct_get_hwnditem (item))
 		end
-		
-	item_id: INTEGER is
-			-- Specifies index of the item in the list box or 
-			-- combo box being removed.  
+
+	item_id: INTEGER
+			-- Specifies index of the item in the list box or
+			-- combo box being removed.
 		do
 			Result := cwel_deleteitemstruct_get_itemid (item)
 		end
 
-	item_data: POINTER is
-			-- Specifies application-defined data for the item. 
-			-- This value is passed to the control in the 
-			-- `lparam' parameter of the message that adds 
-			-- the item to the list box or combo box.  
+	item_data: POINTER
+			-- Specifies application-defined data for the item.
+			-- This value is passed to the control in the
+			-- `lparam' parameter of the message that adds
+			-- the item to the list box or combo box.
 		do
 			Result := cwel_deleteitemstruct_get_itemdata (item)
 		end
-		
-		
+
+
 feature -- Measurement
 
-	structure_size: INTEGER is
+	structure_size: INTEGER
 			-- Size to allocate (in bytes)
 		once
 			Result := c_size_of_deleteitemstruct
@@ -78,39 +78,39 @@ feature -- Measurement
 
 feature {NONE} -- Externals
 
-	c_size_of_deleteitemstruct: INTEGER is
+	c_size_of_deleteitemstruct: INTEGER
 		external
 			"C [macro <wel_delete_item.h>]"
 		alias
 			"sizeof (DELETEITEMSTRUCT)"
 		end
 
-	cwel_deleteitemstruct_get_ctltype (ptr: POINTER): INTEGER is
+	cwel_deleteitemstruct_get_ctltype (ptr: POINTER): INTEGER
 		external
 			"C macro signature (DELETEITEMSTRUCT *): EIF_INTEGER use <wel_delete_item.h>"
 		end
 
-	cwel_deleteitemstruct_get_ctlid (ptr: POINTER): INTEGER is
+	cwel_deleteitemstruct_get_ctlid (ptr: POINTER): INTEGER
 		external
 			"C macro signature (DELETEITEMSTRUCT *): EIF_INTEGER use <wel_delete_item.h>"
 		end
 
-	cwel_deleteitemstruct_get_hwnditem (ptr: POINTER): POINTER is
+	cwel_deleteitemstruct_get_hwnditem (ptr: POINTER): POINTER
 		external
 			"C macro signature (DELETEITEMSTRUCT *): EIF_POINTER use <wel_delete_item.h>"
 		end
 
-	cwel_deleteitemstruct_get_itemid (ptr: POINTER): INTEGER is
+	cwel_deleteitemstruct_get_itemid (ptr: POINTER): INTEGER
 		external
 			"C macro signature (DELETEITEMSTRUCT *): EIF_INTEGER use <wel_delete_item.h>"
 		end
 
-	cwel_deleteitemstruct_get_itemdata (ptr: POINTER): POINTER is
+	cwel_deleteitemstruct_get_itemdata (ptr: POINTER): POINTER
 		external
 			"C macro signature (DELETEITEMSTRUCT *): EIF_POINTER use <wel_delete_item.h>"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="debugger" uuid="DF764393-641F-4099-A39E-55F4465F0AC8" library_target="debugger">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="debugger" uuid="DF764393-641F-4099-A39E-55F4465F0AC8" library_target="debugger">
 	<description>ISE Eiffel - Debugger engine</description>
 	<target name="debugger">
 		<file_rule>
@@ -26,11 +26,8 @@
 				<warning name="once_in_generic" enabled="false"/>
 			</class_option>
 		</library>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf" readonly="true">
-			<option>
-				<warning name="syntax" enabled="false"/>
-			</option>
-		</library>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf" readonly="true"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf" readonly="true"/>
 		<library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf" readonly="false"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf" readonly="false" use_application_options="true"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf" readonly="false"/>
@@ -60,14 +57,25 @@
 			</file_rule>
 			<file_rule>
 				<exclude>/gtk$</exclude>
+				<exclude>/cocoa$</exclude>
 				<condition>
 					<platform value="windows"/>
 				</condition>
 			</file_rule>
 			<file_rule>
+				<exclude>/gtk$</exclude>
 				<exclude>/mswin$</exclude>
 				<condition>
+					<platform value="macintosh"/>
+					<custom name="vision_implementation" value="cocoa"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/mswin$</exclude>
+				<exclude>/cocoa$</exclude>
+				<condition>
 					<platform excluded_value="windows"/>
+					<custom name="vision_implementation" excluded_value="cocoa"/>
 				</condition>
 			</file_rule>
 		</cluster>

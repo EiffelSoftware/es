@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Defines the general notions of a stream out for the rich %
 		%edit control."
 	legal: "See notice at end of class."
@@ -17,7 +17,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize the C variables.
 		do
 			Precursor {WEL_RICH_EDIT_STREAM}
@@ -28,12 +28,12 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	buffer: MANAGED_POINTER
+	buffer: detachable MANAGED_POINTER
 			-- Buffer to set in `read_buffer'.
 
 feature -- Basic operations
 
-	write_buffer is
+	write_buffer
 			-- Write `buffer'.
 		require
 			buffer_not_void: buffer /= Void
@@ -42,34 +42,34 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	internal_callback (a_buffer: POINTER; a_length: INTEGER): INTEGER is
+	internal_callback (a_buffer: POINTER; a_length: INTEGER): INTEGER
 			-- `buffer' contains `length' characters.
 		do
-			if buffer = Void then
-				create buffer.share_from_pointer (a_buffer, a_length)
+			if attached buffer as l_buffer then
+				l_buffer.set_from_pointer (a_buffer, a_length)
 			else
-				buffer.set_from_pointer (a_buffer, a_length)
+				create buffer.share_from_pointer (a_buffer, a_length)
 			end
 			stream_result := 0
 			write_buffer
 			Result := stream_result
 		end
 
-	stream_out_delegate: WEL_RICH_EDIT_STREAM_OUT_DELEGATE
+	stream_out_delegate: detachable WEL_RICH_EDIT_STREAM_OUT_DELEGATE
 
 feature {NONE} -- Externals
 
-	cwel_editstream_set_pfncallback_out (ptr: POINTER) is
+	cwel_editstream_set_pfncallback_out (ptr: POINTER)
 		external
 			"C [macro %"estream.h%"]"
 		end
 
-	cwel_set_editstream_out_procedure_address (address: WEL_RICH_EDIT_STREAM_OUT_DELEGATE) is
+	cwel_set_editstream_out_procedure_address (address: like stream_out_delegate)
 		external
 			"C [macro %"estream.h%"]"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

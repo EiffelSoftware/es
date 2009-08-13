@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Base implementation for a form used to host a notification icon."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,25 +18,28 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize form.
 		do
+			notify_string := ""
 			initialize_component
 		end
 
-	initialize_component is
+	initialize_component
 			-- Initialize form controls
 		local
 			l_rm: RESOURCE_MANAGER
-			l_icon: DRAWING_ICON
+			l_icon: detachable DRAWING_ICON
 			l_location: DRAWING_POINT
+			l_type: SYSTEM_TYPE
 		do
-			create l_rm.make (resource_name, (({SYSTEM_TYPE})[{NOTIFY_FORM}]).assembly)
+			l_type := {NOTIFY_FORM}
+			create l_rm.make (resource_name, (l_type.assembly))
 			l_icon ?= l_rm.get_object (tray_icon_resource_name)
 			check l_icon_attached: l_icon /= Void end
 
-			{WINFORMS_APPLICATION}.add_idle (create {EVENT_HANDLER}.make (Current, $on_idle))
 			create notify_icon.make
+			{WINFORMS_APPLICATION}.add_idle (create {EVENT_HANDLER}.make (Current, $on_idle))
 
 			create l_location.make_from_x_and_y (-1000, -1000)
 			set_location (l_location)
@@ -53,59 +56,54 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Clean Up
 
-	dispose_boolean (a_disposing: BOOLEAN) is
+	dispose_boolean (a_disposing: BOOLEAN)
 			-- Called when for has closed
 		do
 			Precursor {WINFORMS_FORM} (a_disposing)
 			if a_disposing then
-				if notify_icon /= Void then
-					notify_icon.dispose
-					notify_icon := Void
-				end
+				notify_icon.dispose
 			end
-		ensure then
-			notify_icon_unattached: notify_icon = Void
 		end
 
 feature -- Status Setting
 
-	notify_consume (a_message: NOTIFY_MESSAGE) is
+	notify_consume (a_message: NOTIFY_MESSAGE)
 			-- Notifies user of a consume.
 		require
 			a_message_attached: a_message /= Void
 		do
 			notify_info ({SYSTEM_STRING}.format ("Consuming assembly: {0}", a_message.assembly_path))
 		ensure
-			last_notification_set: last_notification = old notify_string
+			last_notification_set: last_notification ~ old notify_string.to_cil
 		end
 
-	notify_info (a_message: SYSTEM_STRING) is
+	notify_info (a_message: STRING)
 			-- Notifier user of an event
 		require
 			a_message_attached: a_message /= Void
-			not_a_message_is_empty: a_message.length > 0
+			not_a_message_is_empty: not a_message.is_empty
 		do
-			last_notification := notify_string
-			if a_message.length > 64 then
+			last_notification := notify_string.to_cil
+			if a_message.count > 64 then
 				notify_string := a_message.substring (0, 63)
 			else
 				notify_string := a_message
 			end
 		ensure
-			last_notification_set: last_notification = old notify_string
+			last_notification_set: last_notification ~ old notify_string.to_cil
 		end
 
-	restore_last_notification is
+	restore_last_notification
 			-- Restores last message
 		do
-			if last_notification /= Void then
-				notify_info (last_notification)
+			if attached last_notification as l_notification and then l_notification.length > 0 then
+				notify_info (l_notification)
 			else
 				clear_notification
 			end
 		end
 
-	clear_notification is
+	clear_notification
 			-- Clears last notification message.
 		do
 			notify_string := "No current jobs to process."
@@ -119,33 +117,31 @@ feature -- Access
 	notify_icon: WINFORMS_NOTIFY_ICON
 			-- Notify icon
 
-	notify_string: SYSTEM_STRING
+	notify_string: STRING
 			-- String used to populate notify icon ballon
 
 feature -- Events
 
-	on_idle (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
+	on_idle (a_sender: detachable SYSTEM_OBJECT; a_args: detachable EVENT_ARGS)
 			-- Processes application idle events.
 		do
-			if notify_icon /= Void then
-				notify_icon.text := notify_string
-			end
+			notify_icon.text := notify_string
 		end
 
 feature {NONE} -- Constants
 
-	tray_icon_resource_name: SYSTEM_STRING is "tray_icon"
+	tray_icon_resource_name: SYSTEM_STRING = "tray_icon"
 			-- Tray icon resource name
 
-	resource_name: SYSTEM_STRING is "consumer"
+	resource_name: SYSTEM_STRING = "consumer"
 			-- Consumer resources name
 
 feature {NONE} -- Implementation
 
-	last_notification: SYSTEM_STRING;
+	last_notification: detachable SYSTEM_STRING;
 			-- Last set notification
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

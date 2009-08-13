@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that represents a comment line"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,14 +21,14 @@ create
 
 feature{NONE} -- Implementation
 
-	make_from_string (a_content: STRING) is
+	make_from_string (a_content: STRING)
 		require
 			a_content_not_void: a_content /= Void
 		do
 			create content.make_from_string (a_content)
 		end
 
-	make_with_data (a_content: STRING; l, c, p: INTEGER; own_line: BOOLEAN; is_imp: BOOLEAN; b_id: INTEGER; b_offset: INTEGER) is
+	make_with_data (a_content: STRING; l, c, p: INTEGER; own_line: BOOLEAN; is_imp: BOOLEAN; b_id: INTEGER; b_offset: INTEGER)
 			-- Initialize instance.
 		require
 			a_content_not_void: a_content /= Void
@@ -58,13 +58,13 @@ feature{NONE} -- Implementation
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is comment made of the same character sequence as `other'?
 		do
 			Result := content.is_equal (other.content)
 		end
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is comment lexicographically lower than `other'?
 		do
 			Result := content < other.content
@@ -72,7 +72,7 @@ feature -- Comparison
 
 feature -- Setting
 
-	set_arguments (l, c, p: INTEGER; own_line: BOOLEAN; is_imp: BOOLEAN; b_id: INTEGER; b_offset: INTEGER) is
+	set_arguments (l, c, p: INTEGER; own_line: BOOLEAN; is_imp: BOOLEAN; b_id: INTEGER; b_offset: INTEGER)
 			-- Setup arguments of an Eiffel comment line.
 		require
 			l_positive: l > 0
@@ -120,7 +120,7 @@ feature
 	is_implementation: BOOLEAN
 			-- Is current an implementation comment (e.g. starts with --|)?
 
-	is_exclusion: BOOLEAN is
+	is_exclusion: BOOLEAN
 			-- Is current an exclusion comment (e.g. starts from first column of a line)?
 		do
 			Result := column = 1 and not is_implementation
@@ -137,10 +137,10 @@ feature
 invariant
 	content_not_void: content /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -151,19 +151,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

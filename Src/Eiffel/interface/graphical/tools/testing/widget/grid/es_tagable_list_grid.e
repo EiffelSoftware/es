@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Grid displaying a list of tagable items. The items are retreived from an ACTIVE_COLLECTION_I. The
 		items in the grid are kept synchronized with the collection.
@@ -26,7 +26,7 @@ create
 
 feature -- Access
 
-	collection: !ACTIVE_COLLECTION_I [G]
+	collection: attached ACTIVE_COLLECTION_I [G]
 			-- <Precursor>
 		local
 			l_collection: like internal_collection
@@ -38,7 +38,7 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	internal_collection: ?like collection
+	internal_collection: detachable like collection
 			-- Internal storage for `collection'
 
 feature -- Status report
@@ -57,7 +57,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	connect (a_collection: like collection) is
+	connect (a_collection: like collection)
 			-- List all items of collection in grid.
 			--
 			-- `a_collection': Collection containing items which are listed in grid.
@@ -66,7 +66,7 @@ feature -- Status setting
 			a_collection_usable: a_collection.is_interface_usable
 		do
 			internal_collection := a_collection
-			collection.connect_events (Current)
+			collection.active_collection_connection.connect_events (Current)
 			initialize_layout
 			fill
 		ensure
@@ -79,7 +79,7 @@ feature -- Status setting
 		require
 			connected: is_connected
 		do
-			collection.disconnect_events (Current)
+			collection.active_collection_connection.disconnect_events (Current)
 			internal_collection := Void
 		end
 
@@ -95,7 +95,7 @@ feature {NONE} -- Query
 			until
 				Result > 0 or i > grid.row_count
 			loop
-				if {l_data: ES_TAGABLE_GRID_ITEM_DATA [G]} grid.row (i).data then
+				if attached {ES_TAGABLE_GRID_ITEM_DATA [G]} grid.row (i).data as l_data then
 					if l_data.item = a_item then
 						Result := i
 					end
@@ -106,7 +106,7 @@ feature {NONE} -- Query
 
 feature -- Events
 
-	on_item_added (a_collection: !ACTIVE_COLLECTION_I [G]; a_item: !G)
+	on_item_added (a_collection: attached ACTIVE_COLLECTION_I [G]; a_item: attached G)
 			-- <Precursor>
 		local
 			l_cursor: DS_LINEAR_CURSOR [G]
@@ -126,13 +126,13 @@ feature -- Events
 			l_cursor.go_after
 		end
 
-	on_item_removed (a_collection: !ACTIVE_COLLECTION_I [G]; a_item: !G)
+	on_item_removed (a_collection: attached ACTIVE_COLLECTION_I [G]; a_item: attached G)
 			-- <Precursor>
 		do
 			grid.remove_row (row_index_for_item (a_item))
 		end
 
-	on_item_changed (a_collection: !ACTIVE_COLLECTION_I [G]; a_item: !G)
+	on_item_changed (a_collection: attached ACTIVE_COLLECTION_I [G]; a_item: attached G)
 			-- <Precursor>
 		local
 			l_item: EV_GRID_ITEM
@@ -140,7 +140,7 @@ feature -- Events
 			l_item := computed_grid_item (1, row_index_for_item (a_item))
 		end
 
-	on_items_reset (a_collection: !ACTIVE_COLLECTION_I [G])
+	on_items_reset (a_collection: attached ACTIVE_COLLECTION_I [G])
 			-- <Precursor>
 		do
 			grid.remove_and_clear_all_rows
@@ -154,7 +154,7 @@ feature {NONE} -- Implementation
 			connected: is_connected
 			grid_empty: grid.row_count = 0
 		local
-			l_cursor: DS_LINEAR_CURSOR [!G]
+			l_cursor: DS_LINEAR_CURSOR [attached G]
 			i: INTEGER
 		do
 			l_cursor := collection.items.new_cursor
@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_row_for_item (a_item: !G; a_pos: INTEGER)
+	add_row_for_item (a_item: attached G; a_pos: INTEGER)
 			-- Insert row for item into grid at given position
 		require
 			connected: is_connected
@@ -186,4 +186,35 @@ feature {NONE} -- Implementation
 			create l_new.make (l_row, a_item)
 		end
 
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

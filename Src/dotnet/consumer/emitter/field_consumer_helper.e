@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A utility class for extracting the content of a field"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,16 +10,20 @@ deferred class
 
 feature {NONE} -- Query
 
-	field_value (a_fi: FIELD_INFO): SYSTEM_OBJECT is
+	field_value (a_fi: FIELD_INFO): SYSTEM_OBJECT
 			-- Retrieves field value for `a_fi'
 		require
 			a_fi_attached: a_fi /= Void
 			a_fi_is_literal: a_fi.is_literal
+		local
+			l_obj: detachable SYSTEM_OBJECT
 		do
-			Result := a_fi.get_raw_constant_value
+			l_obj := a_fi.get_raw_constant_value
+			check l_obj_attached: l_obj /= Void end
+			Result := l_obj
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

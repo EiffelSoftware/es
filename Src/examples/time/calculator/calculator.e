@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Simple calculator for date"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,12 +14,12 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 		local
 			j: INTEGER
 			test, key, c: CHARACTER
 			date2: DATE
-			command: COMMAND_DATE
+			command: detachable COMMAND_DATE
 		do
 			print (" CALCULATOR FOR DATES ") print ("%N")
 			create date2.make_now
@@ -49,13 +49,16 @@ feature -- Initialization
 						c := command_table.current_keys @ j
 						j := j + 1
 						print (c) print (": ")
-						print (command_table.item (c).display_help)
+						command := command_table.item (c)
+						check command_not_void: command /= Void end
+						print (command.display_help)
 						print ("%N")
 					end
  						io.next_line
 				when 'y', 'm', 'w', 'd', 's' then
 					command := command_table.item (key)
-					date2 := command.execute (date2) 
+					check command_not_void: command /= Void end
+					date2 := command.execute (date2)
 					print ("Current date is now: ")
 					print (date2)
 				when '%N' then
@@ -67,7 +70,7 @@ feature -- Initialization
 			print ("bye !")
 		end
 
-	initialize_command is
+	initialize_command
 		do
 			create command_table.make (0)
 			create add_day
@@ -81,7 +84,7 @@ feature -- Initialization
 			create set_date
 			command_table.put (set_date, 's')
 		end
-			
+
 
 feature -- Access
 
@@ -92,7 +95,7 @@ feature -- Access
 	add_week: ADD_WEEK
 	set_date: SET_DATE;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
@@ -104,5 +107,5 @@ indexing
 		]"
 
 
-end -- class CALCULATOR 
+end -- class CALCULATOR
 

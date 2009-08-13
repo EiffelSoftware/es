@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Stone representing a compiled Eiffel class."
 	legal: "See notice at end of class."
@@ -24,7 +24,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class: CLASS_C) is
+	make (a_class: CLASS_C)
 			-- Copy all information from argument
 			-- OR KEEP A REFERENCE?
 		require
@@ -38,46 +38,46 @@ feature -- Properties
 
 	e_class: CLASS_C
 
-	group: CONF_GROUP is
+	group: CONF_GROUP
 		do
-			if {c: like e_class} e_class then
+			if attached e_class as c then
 				Result := c.group
 			end
 		end
 
-	class_name: STRING is
+	class_name: STRING
 		do
-			if {c: like e_class} e_class then
+			if attached e_class as c then
 				Result := c.name
 			end
 		end
 
-	class_i: CLASS_I is
+	class_i: CLASS_I
 		do
-			if {c: like e_class} e_class then
+			if attached e_class as c then
 				Result := c.lace_class
 			end
 		end
 
 feature -- Access
 
-	stone_signature: STRING is
+	stone_signature: STRING
 		do
-			if {c: like e_class} e_class then
+			if attached e_class as c then
 				Result := c.class_signature
 			end
 		end
 
-	history_name: STRING_GENERAL is
+	history_name: STRING_GENERAL
 		do
 			Result := Interface_names.s_Class_stone.as_string_32 + stone_signature
 		end
 
-	header: STRING_GENERAL is
+	header: STRING_GENERAL
 			-- Display class name, class' cluster and class location in
 			-- window title bar.
 		do
-			if {c: like e_class} e_class then
+			if attached e_class as c then
 				if c.is_precompiled then
 					Result := interface_names.l_classc_header_precompiled (eiffel_system.name,
 																			eiffel_universe.target_name,
@@ -93,17 +93,17 @@ feature -- Access
 			end
 		end
 
-	file_name: FILE_NAME is
+	file_name: STRING
 			-- The one from CLASSC
 		do
 			if e_class /= Void then
-				create Result.make_from_string (e_class.file_name)
+				Result := e_class.file_name
 			end
 		end
 
 feature -- Status report
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is `Current' a valid stone?
 		do
 			Result := e_class /= Void and then e_class.is_valid and then
@@ -112,7 +112,7 @@ feature -- Status report
 
 feature -- Synchronization
 
-	synchronized_stone: CLASSI_STONE is
+	synchronized_stone: CLASSI_STONE
 			-- Clone of `Current' stone after a recompilation
 			-- (May be Void if not valid anymore. It may also be a
 			-- classi_stone if the class is not compiled anymore)
@@ -130,10 +130,10 @@ feature -- Synchronization
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -144,19 +144,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

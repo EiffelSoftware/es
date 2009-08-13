@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Agents for SD_TOOL_BAR_ZONE dragging issues."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature {NONE}  -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER; a_tool_bar_zone: SD_TOOL_BAR_ZONE) is
+	make (a_docking_manager: SD_DOCKING_MANAGER; a_tool_bar_zone: SD_TOOL_BAR_ZONE)
 			-- Creation method.
 		require
 			not_void: a_docking_manager /= Void
@@ -30,7 +30,7 @@ feature {NONE}  -- Initlization
 			set: zone = a_tool_bar_zone
 		end
 
-	init_actions is
+	init_actions
 			-- Initialize actions.
 		do
 			on_pointer_motion_agent := agent on_pointer_motion
@@ -41,7 +41,7 @@ feature {NONE}  -- Initlization
 
 feature -- Agents
 
-	on_drag_area_pressed (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_drag_area_pressed (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle drag area pressed.
 		do
 			if not is_destroyed then
@@ -50,7 +50,7 @@ feature -- Agents
 					internal_docker_mediator := Void
 					internal_shared.set_tool_bar_docker_mediator (Void)
 
-					setter.before_enable_capture
+					internal_shared.setter.before_enable_capture
 					-- Following `enable_capture' will cancel pointer double press actions of SD_TOOL_BAR_TITLE_BAR on GTK.				
 					zone.tool_bar.enable_capture
 				end
@@ -62,7 +62,7 @@ feature -- Agents
 								(a_button = {EV_POINTER_CONSTANTS}.left and is_in_drag_area (a_screen_x, a_screen_y) implies internal_docker_mediator = Void)
 		end
 
-	on_drag_area_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_drag_area_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle drag area release.
 		do
 			if not is_destroyed then
@@ -71,7 +71,7 @@ feature -- Agents
 					internal_docker_mediator := Void
 					internal_shared.set_tool_bar_docker_mediator (Void)
 					zone.tool_bar.disable_capture
-					setter.after_disable_capture
+					internal_shared.setter.after_disable_capture
 				end
 			end
 		ensure
@@ -81,7 +81,7 @@ feature -- Agents
 								(a_button = {EV_POINTER_CONSTANTS}.left and is_in_drag_area (a_screen_x, a_screen_y) implies internal_docker_mediator = Void)
 		end
 
-	on_drag_area_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_drag_area_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle drag area motion.
 		require
 			not_destroyed: not is_destroyed
@@ -133,7 +133,7 @@ feature -- Agents
 			-- We can't not guaranntee caller have capture on GTK, since we disable it temporty when floating from docking(or docking from floating).
 		end
 
-	on_drag_area_pointer_double_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_drag_area_pointer_double_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer double press actions.
 		do
 			if not is_destroyed then
@@ -147,7 +147,7 @@ feature -- Agents
 
 feature -- Query
 
-	is_in_drag_area (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	is_in_drag_area (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- If `a_screen_x' and `a_screen_y' in drag area?
 		require
 			not_destroyed: not is_destroyed
@@ -169,7 +169,7 @@ feature -- Query
 
 feature -- Command
 
-	destroy is
+	destroy
 			-- Clear references
 		do
 			zone.tool_bar.pointer_motion_actions.prune_all (on_pointer_motion_agent)
@@ -182,14 +182,14 @@ feature -- Command
 
 feature {NONE} -- Implementation functions
 
-	on_cancel is
+	on_cancel
 			-- Handle user cancel dragging events.
 		local
 			l_pixmaps: EV_STOCK_PIXMAPS
 		do
 			if not is_destroyed then
 				zone.tool_bar.disable_capture
-				setter.after_disable_capture
+				internal_shared.setter.after_disable_capture
 				internal_pointer_pressed := False
 				internal_docker_mediator := Void
 				internal_shared.set_tool_bar_docker_mediator (Void)
@@ -202,7 +202,7 @@ feature {NONE} -- Implementation functions
 			cleared: not is_destroyed implies (internal_shared.tool_bar_docker_mediator_cell.item = Void and internal_docker_mediator = Void)
 		end
 
-	on_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer motion.
 		do
 			if not is_destroyed then
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation functions
 			pointer_motion_forwarded:
 		end
 
-	on_pointer_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_pointer_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer release.
 		do
 			if not is_destroyed then
@@ -233,14 +233,6 @@ feature {NONE} -- Implementation functions
 		end
 
 feature {NONE} -- Implementation attributes
-
-	setter: SD_SYSTEM_SETTER is
-			-- System setter singleton.
-		require
-			not_destroyed: not is_destroyed
-		once
-			create {SD_SYSTEM_SETTER_IMP} Result
-		end
 
 	setted: BOOLEAN
 		-- If pointer style setted?
@@ -268,7 +260,7 @@ invariant
 	not_void: internal_shared /= Void
 	not_void: zone /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

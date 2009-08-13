@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Tool descriptor for EiffelStudio's custom formatter code browsing tool.
 	]"
@@ -13,8 +13,9 @@ frozen class
 inherit
 	ES_FORMATTER_TOOL [EB_CUSTOMIZED_TOOL]
 		redefine
-			is_supporting_multiple_instances,
-			is_recycled_on_closing
+			is_multiple_edition,
+			is_recycled_on_close,
+			shortcut_preference_name
 		end
 
 create {NONE}
@@ -22,14 +23,15 @@ create {NONE}
 
 feature -- Access
 
-	icon: EV_PIXEL_BUFFER
+	icon: attached EV_PIXEL_BUFFER
 			-- Tool icon
 			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
 		local
 			l_path: like icon_file_path
 		do
-			Result := internal_icon
-			if Result = Void then
+			if attached {like icon} internal_icon as l_icon then
+				Result := l_icon
+			else
 				l_path := icon_file_path
 				if l_path /= Void and (create {RAW_FILE}.make (l_path)).exists then
 					create Result
@@ -44,14 +46,15 @@ feature -- Access
 			retry
 		end
 
-	icon_pixmap: EV_PIXMAP
+	icon_pixmap: attached EV_PIXMAP
 			-- Tool icon pixmap
 			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
 		local
 			l_path: like icon_file_path
 		do
-			Result := internal_icon
-			if Result = Void then
+			if attached {like icon_pixmap} internal_icon_pixmap as l_icon then
+				Result := l_icon
+			else
 				l_path := icon_file_path
 				if l_path /= Void and (create {RAW_FILE}.make (l_path)).exists then
 					create Result
@@ -59,19 +62,19 @@ feature -- Access
 				else
 					Result := stock_pixmaps.tool_feature_icon
 				end
-				internal_icon := Result
+				internal_icon_pixmap := Result
 			end
 		rescue
-			internal_icon := stock_pixmaps.tool_feature_icon
+			internal_icon_pixmap := stock_pixmaps.tool_feature_icon
 			retry
 		end
 
-	title: STRING_32 assign set_title
+	title: attached STRING_32 assign set_title
 			-- Tool title.
 
 feature {NONE} -- Access
 
-	shortcut_preference_name: STRING_32
+	shortcut_preference_name: detachable STRING
 			-- An optional shortcut preference name, for automatic preference binding.
 		do
 			--| No shortcut preference for customized tools
@@ -117,40 +120,41 @@ feature -- Status report
 	is_customizable: BOOLEAN = True
 			-- Indicates if the tool can be customize to support custom views.
 
-	is_supporting_multiple_instances: BOOLEAN = True
+	is_multiple_edition: BOOLEAN = True
 			-- Indicates if the tool can spawn multiple instances in the
 			-- same development window
 
 feature {NONE} -- Status report
 
-	is_recycled_on_closing: BOOLEAN = False
+	is_recycled_on_close: BOOLEAN = False
 			-- Indicates if the tool should be recycled on closing
 
 feature {NONE} -- Factory
 
-	create_tool: EB_CUSTOMIZED_TOOL
+	new_tool: attached EB_CUSTOMIZED_TOOL
 			-- Creates the tool for first use on the development `window'
 		do
-			--create Result.make (window, Current)
+				-- Needs to be fixed. Code was added to make the compiler happy.
+			create Result.make (window, "", "", "", Void)
 		end
 
 feature {NONE} -- Internal implementation cache
 
-	internal_icon: like icon
+	internal_icon: detachable like icon
 			-- Cached version of `icon'
 			-- Note: Do not use directly
 
-	internal_icon_pixmap: like icon_pixmap
+	internal_icon_pixmap: detachable like icon_pixmap
 			-- Cached version of `icon_pixmap'
 			-- Note: Do not use directly
 
 invariant
 	not_icon_file_path_is_empty: icon_file_path /= Void not icon_file_path.is_empty
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -161,22 +165,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

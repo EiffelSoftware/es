@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Editor preferences"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -47,7 +47,7 @@ create
 
 feature {EB_PREFERENCES} -- Initialization
 
-	make (a_preferences: PREFERENCES) is
+	make (a_preferences: PREFERENCES)
 			-- Create
 		do
 			Precursor {EDITOR_DATA} (a_preferences)
@@ -56,172 +56,172 @@ feature {EB_PREFERENCES} -- Initialization
 
 feature -- Value
 
-	breakpoint_background_color: EV_COLOR is
+	breakpoint_background_color: EV_COLOR
 			-- Background color used to display breakpoints		
 		do
 			Result := breakpoint_background_color_preference.value
 		end
 
-	assertion_tag_text_color: EV_COLOR is
+	assertion_tag_text_color: EV_COLOR
 		do
 			Result := assertion_tag_text_color_preference.value
 		end
 
-	assertion_tag_background_color: EV_COLOR is
+	assertion_tag_background_color: EV_COLOR
 		do
 			Result := assertion_tag_background_color_preference.value
 		end
 
-	indexing_tag_text_color: EV_COLOR is
+	indexing_tag_text_color: EV_COLOR
 		do
 			Result := indexing_tag_text_color_preference.value
 		end
 
-	indexing_tag_background_color: EV_COLOR is
+	indexing_tag_background_color: EV_COLOR
 		do
 			Result := indexing_tag_background_color_preference.value
 		end
 
-	reserved_text_color: EV_COLOR is
+	reserved_text_color: EV_COLOR
 		do
 			Result := reserved_text_color_preference.value
 		end
 
-	reserved_background_color: EV_COLOR is
+	reserved_background_color: EV_COLOR
 		do
 			Result := reserved_background_color_preference.value
 		end
 
-	generic_text_color: EV_COLOR is
+	generic_text_color: EV_COLOR
 		do
 			Result := generic_text_color_preference.value
 		end
 
-	generic_background_color: EV_COLOR is
+	generic_background_color: EV_COLOR
 		do
 			Result := generic_background_color_preference.value
 		end
 
-	local_text_color: EV_COLOR is
+	local_text_color: EV_COLOR
 		do
 			Result := local_text_color_preference.value
 		end
 
-	local_background_color: EV_COLOR is
+	local_background_color: EV_COLOR
 		do
 			Result := local_background_color_preference.value
 		end
 
-	class_text_color: EV_COLOR is
+	class_text_color: EV_COLOR
 		do
 			Result := class_text_color_preference.value
 		end
 
-	class_background_color: EV_COLOR is
+	class_background_color: EV_COLOR
 		do
 			Result := class_background_color_preference.value
 		end
 
-	feature_text_color: EV_COLOR is
+	feature_text_color: EV_COLOR
 		do
 			Result := feature_text_color_preference.value
 		end
 
-	feature_background_color: EV_COLOR is
+	feature_background_color: EV_COLOR
 		do
 			Result := feature_background_color_preference.value
 		end
 
-	target_text_color: EV_COLOR is
+	target_text_color: EV_COLOR
 		do
 			Result := target_text_color_preference.value
 		end
 
-	target_background_color: EV_COLOR is
+	target_background_color: EV_COLOR
 		do
 			Result := target_background_color_preference.value
 		end
 
-	cluster_text_color: EV_COLOR is
+	cluster_text_color: EV_COLOR
 		do
 			Result := cluster_text_color_preference.value
 		end
 
-	cluster_background_color: EV_COLOR is
+	cluster_background_color: EV_COLOR
 		do
 			Result := cluster_background_color_preference.value
 		end
 
-	error_text_color: EV_COLOR is
+	error_text_color: EV_COLOR
 		do
 			Result := error_text_color_preference.value
 		end
 
-	error_background_color: EV_COLOR is
+	error_background_color: EV_COLOR
 		do
 			Result := error_background_color_preference.value
 		end
 
-	object_text_color: EV_COLOR is
+	object_text_color: EV_COLOR
 		do
 			Result := object_text_color_preference.value
 		end
 
-	object_background_color: EV_COLOR is
+	object_background_color: EV_COLOR
 		do
 			Result := object_background_color_preference.value
 		end
 
-	once_and_constant_in_upper: BOOLEAN is
+	once_and_constant_in_upper: BOOLEAN
 			-- Is first letter of once or constant in upper case?
 		do
 			Result := once_and_constant_in_upper_preference.value
 		end
 
-	underscore_is_separator: BOOLEAN is
+	underscore_is_separator: BOOLEAN
 			-- Should '_' be considered a word separator (used for word by word
 			-- moves and selection)
 		do
 			Result := underscore_is_separator_preference.value
 		end
 
-	autocomplete_brackets_and_parentheses: BOOLEAN is
+	autocomplete_brackets_and_parentheses: BOOLEAN
 			-- Should we close the brackets and parentheses automatically?
 		do
 			Result := autocomplete_brackets_and_parentheses_preference.value
 		end
 
-	autocomplete_quotes: BOOLEAN is
+	autocomplete_quotes: BOOLEAN
 			-- Should we close the quotes automatically?
 		do
 			Result := autocomplete_quotes_preference.value
 		end
 
-	show_any_features: BOOLEAN is
+	show_any_features: BOOLEAN
 			-- Should autocomplete show features inherited from any ?
 		do
 			Result := show_any_features_preference.value
 		end
 
-	auto_auto_complete: BOOLEAN is
+	auto_auto_complete: BOOLEAN
 			-- Should completion window show automatically after valid '.' calls?
 		do
 			Result := auto_auto_complete_preference.value
 		end
 
-	auto_complete_words: BOOLEAN is
+	auto_complete_words: BOOLEAN
 			-- Should completion automatically complete words when a single best match is available?
 		do
 			Result := auto_complete_words_preference.value
 		end
 
-	auto_remove_trailing_blank_when_saving: BOOLEAN is
+	auto_remove_trailing_blank_when_saving: BOOLEAN
 			-- Should trailing blanks be auto-removed when saving?
 		do
 			Result := auto_remove_trailing_blank_when_saving_preference.value
 		end
 
-	filter_completion_list: BOOLEAN is
+	filter_completion_list: BOOLEAN
 			-- Indicates if completion list matches should be filtered down based on current matches.  If not then
 			-- the list will always contain possible completion options and closest match will be selected during typing.
 		do
@@ -234,55 +234,61 @@ feature -- Value
 			Result := highlight_matching_braces_preference.value
 		end
 
-	show_completion_signature: BOOLEAN is
+	show_completion_signature: BOOLEAN
 			-- Should feature signature be shown in completion list?
 		do
 			Result := show_completion_signature_preference.value
 		end
 
-	show_completion_type: BOOLEAN is
+	show_completion_type: BOOLEAN
 			-- Should feature type be shown in completion list?
 		do
 			Result := show_completion_type_preference.value
 		end
 
-	show_completion_disambiguated_name: BOOLEAN is
+	show_completion_disambiguated_name: BOOLEAN
 			-- Should disambiguated name be shown in completion list?
 		do
 			Result := show_completion_disambiguated_name_preference.value
 		end
 
-	show_completion_obsolete_items: BOOLEAN is
+	show_completion_obsolete_items: BOOLEAN
 			-- Should obsolete items be shown in completion list?
 		do
 			Result := show_completion_obsolete_items_preference.value
 		end
 
-	syntax_complete_enabled: BOOLEAN is
+	show_completion_tooltip: BOOLEAN
+			-- Should tooltips be shown in the completion list
+		do
+			Result := show_completion_tooltip_preference.value
+		end
+
+	syntax_complete_enabled: BOOLEAN
 			-- should main keywords be completed ?
 		do
 			Result := syntax_complete_enabled_preference.value
 		end
 
-	customized_string_1: STRING is
+	customized_string_1: STRING
 			-- strings defined by the user.
 		do
 			Result := customized_string_1_preference.value
 		end
 
-	customized_string_2: STRING is
+	customized_string_2: STRING
 			-- strings defined by the user.
 		do
 			Result := customized_string_2_preference.value
 		end
 
-	customized_string_3: STRING is
+	customized_string_3: STRING
 			-- strings defined by the user.
 		do
 			Result := customized_string_3_preference.value
 		end
 
-	new_tab_at_left: BOOLEAN is
+	new_tab_at_left: BOOLEAN
 			-- When creating new tab, should added it at the begin of the target notebook?
 		do
 			Result := new_tab_at_left_preference.value
@@ -292,7 +298,7 @@ feature -- Value
 
 	maximized: BOOLEAN
 
-	warning_text_color: EV_COLOR is
+	warning_text_color: EV_COLOR
 			-- Warning text color
 		do
 			Result := warning_text_color_preference.value
@@ -300,7 +306,7 @@ feature -- Value
 			result_attached: Result /= Void
 		end
 
-	warning_background_color: EV_COLOR is
+	warning_background_color: EV_COLOR
 			-- Warning background color
 		do
 			Result := warning_background_color_preference.value
@@ -308,7 +314,7 @@ feature -- Value
 			result_attached: Result /= Void
 		end
 
-	argument_text_color: EV_COLOR is
+	argument_text_color: EV_COLOR
 			-- Argument text color
 		do
 			Result := argument_text_color_preference.value
@@ -316,7 +322,7 @@ feature -- Value
 			result_attached: Result /= Void
 		end
 
-	argument_background_color: EV_COLOR is
+	argument_background_color: EV_COLOR
 			-- Argument background color
 		do
 			Result := argument_background_color_preference.value
@@ -324,7 +330,7 @@ feature -- Value
 			result_attached: Result /= Void
 		end
 
-	folder_text_color: EV_COLOR is
+	folder_text_color: EV_COLOR
 			-- Folder text color
 		do
 			Result := folder_text_color_preference.value
@@ -332,7 +338,7 @@ feature -- Value
 			result_attached: Result /= Void
 		end
 
-	folder_background_color: EV_COLOR is
+	folder_background_color: EV_COLOR
 			-- Folder background color
 		do
 			Result := folder_background_color_preference.value
@@ -418,6 +424,9 @@ feature -- Preference
 	show_completion_obsolete_items_preference: BOOLEAN_PREFERENCE
 			-- Should obsolete items be shown in completion list?
 
+	show_completion_tooltip_preference: BOOLEAN_PREFERENCE
+			-- Should obsolete items be shown in completion list?
+
 	syntax_complete_enabled_preference: BOOLEAN_PREFERENCE
 			-- should main keywords be completed ?
 
@@ -445,91 +454,94 @@ feature -- Preference
 
 feature {NONE} -- Preference Strings
 
-	assertion_tag_text_color_string: STRING is "editor.eiffel.colors.assertion_tag_text_color"
-	assertion_tag_background_color_string: STRING is "editor.eiffel.colors.assertion_tag_background_color"
-	indexing_tag_text_color_string: STRING is "editor.eiffel.colors.indexing_tag_text_color"
-	indexing_tag_background_color_string: STRING is "editor.eiffel.colors.indexing_tag_background_color"
-	reserved_text_color_string: STRING is "editor.eiffel.colors.reserved_text_color"
-	reserved_background_color_string: STRING is "editor.eiffel.colors.reserved_background_color"
-	generic_text_color_string: STRING is "editor.eiffel.colors.generic_text_color"
-	generic_background_color_string: STRING is "editor.eiffel.colors.generic_background_color"
-	local_text_color_string: STRING is "editor.eiffel.colors.local_text_color"
-	local_background_color_string: STRING is "editor.eiffel.colors.local_background_color"
-	class_text_color_string: STRING is "editor.eiffel.colors.class_text_color"
-	class_background_color_string: STRING is "editor.eiffel.colors.class_background_color"
-	feature_text_color_string: STRING is "editor.eiffel.colors.feature_text_color"
-	feature_background_color_string: STRING is "editor.eiffel.colors.feature_background_color"
-	cluster_text_color_string :STRING is "editor.eiffel.colors.cluster_text_color"
-	cluster_background_color_string: STRING is "editor.eiffel.colors.cluster_background_color"
-	error_text_color_string : STRING is "editor.eiffel.colors.error_text_color"
-	error_background_color_string: STRING is "editor.eiffel.colors.error_background_color"
-	object_text_color_string: STRING is "editor.eiffel.colors.object_text_color"
-	object_background_color_string: STRING is "editor.eiffel.colors.object_background_color"
-	breakpoint_background_color_string: STRING is "editor.eiffel.colors.breakpoint_background_color"
-	target_text_color_string: STRING is "editor.eiffel.colors.target_text_color"
-	target_background_color_string: STRING is "editor.eiffel.colors.target_text_background_color"
-	warning_text_color_string: STRING is "editor.eiffel.colors.warning_text_color"
-	warning_background_color_string: STRING is "editor.eiffel.colors.warning_background_color"
-	line_text_color_string: STRING is "editor.eiffel.colors.line_text_color"
-	line_background_color_string: STRING is "editor.eiffel.colors.line_background_color"
-	argument_text_color_string: STRING is "editor.eiffel.colors.argument_text_color"
-	argument_background_color_string: STRING is "editor.eiffel.colors.argument_background_color"
-	folder_text_color_string: STRING is "editor.eiffel.colors.folder_text_color"
-	folder_background_color_string: STRING is "editor.eiffel.colors.folder_background_color"
+	assertion_tag_text_color_string: STRING = "editor.eiffel.colors.assertion_tag_text_color"
+	assertion_tag_background_color_string: STRING = "editor.eiffel.colors.assertion_tag_background_color"
+	indexing_tag_text_color_string: STRING = "editor.eiffel.colors.indexing_tag_text_color"
+	indexing_tag_background_color_string: STRING = "editor.eiffel.colors.indexing_tag_background_color"
+	reserved_text_color_string: STRING = "editor.eiffel.colors.reserved_text_color"
+	reserved_background_color_string: STRING = "editor.eiffel.colors.reserved_background_color"
+	generic_text_color_string: STRING = "editor.eiffel.colors.generic_text_color"
+	generic_background_color_string: STRING = "editor.eiffel.colors.generic_background_color"
+	local_text_color_string: STRING = "editor.eiffel.colors.local_text_color"
+	local_background_color_string: STRING = "editor.eiffel.colors.local_background_color"
+	class_text_color_string: STRING = "editor.eiffel.colors.class_text_color"
+	class_background_color_string: STRING = "editor.eiffel.colors.class_background_color"
+	feature_text_color_string: STRING = "editor.eiffel.colors.feature_text_color"
+	feature_background_color_string: STRING = "editor.eiffel.colors.feature_background_color"
+	cluster_text_color_string :STRING = "editor.eiffel.colors.cluster_text_color"
+	cluster_background_color_string: STRING = "editor.eiffel.colors.cluster_background_color"
+	error_text_color_string : STRING = "editor.eiffel.colors.error_text_color"
+	error_background_color_string: STRING = "editor.eiffel.colors.error_background_color"
+	object_text_color_string: STRING = "editor.eiffel.colors.object_text_color"
+	object_background_color_string: STRING = "editor.eiffel.colors.object_background_color"
+	breakpoint_background_color_string: STRING = "editor.eiffel.colors.breakpoint_background_color"
+	target_text_color_string: STRING = "editor.eiffel.colors.target_text_color"
+	target_background_color_string: STRING = "editor.eiffel.colors.target_text_background_color"
+	warning_text_color_string: STRING = "editor.eiffel.colors.warning_text_color"
+	warning_background_color_string: STRING = "editor.eiffel.colors.warning_background_color"
+	line_text_color_string: STRING = "editor.eiffel.colors.line_text_color"
+	line_background_color_string: STRING = "editor.eiffel.colors.line_background_color"
+	argument_text_color_string: STRING = "editor.eiffel.colors.argument_text_color"
+	argument_background_color_string: STRING = "editor.eiffel.colors.argument_background_color"
+	folder_text_color_string: STRING = "editor.eiffel.colors.folder_text_color"
+	folder_background_color_string: STRING = "editor.eiffel.colors.folder_background_color"
 
-	once_and_constant_in_upper_string: STRING is "editor.eiffel.once_and_constant_in_upper"
+	once_and_constant_in_upper_string: STRING = "editor.eiffel.once_and_constant_in_upper"
 			-- Is first letter of once or constant in upper case?
 
-	underscore_is_separator_string: STRING is "editor.eiffel.underscore_is_separator"
+	underscore_is_separator_string: STRING = "editor.eiffel.underscore_is_separator"
 			-- Should '_' be considered a word separator (used for word by word
 			-- moves and selection)
 
-	autocomplete_brackets_and_parentheses_string: STRING is "editor.eiffel.auto-complete_brackets_and_parentheses"
+	autocomplete_brackets_and_parentheses_string: STRING = "editor.eiffel.auto-complete_brackets_and_parentheses"
 			-- Should we close the brackets and parentheses automatically?
 
-	autocomplete_quotes_string: STRING is "editor.eiffel.auto-complete_quotes"
+	autocomplete_quotes_string: STRING = "editor.eiffel.auto-complete_quotes"
 			-- Should we close the quotes automatically?
 
-	show_any_features_string: STRING is "editor.eiffel.show_ANY_features"
+	show_any_features_string: STRING = "editor.eiffel.show_ANY_features"
 			-- Should autocomplete show features inherited from any ?
 
-	auto_auto_complete_string: STRING is "editor.eiffel.auto_auto-complete"
+	auto_auto_complete_string: STRING = "editor.eiffel.auto_auto-complete"
 			-- Should completion window show automatically after valid '.' calls?
 
-	auto_complete_words_string: STRING is "editor.eiffel.auto_complete_words"
+	auto_complete_words_string: STRING = "editor.eiffel.auto_complete_words"
 			-- Should completion automatically complete words when a single best match is available?
 
-	auto_remove_trailing_blank_when_saving_string: STRING is "editor.eiffel.auto_remove_trailing_blank_when_saving"
+	auto_remove_trailing_blank_when_saving_string: STRING = "editor.eiffel.auto_remove_trailing_blank_when_saving"
 			-- Should trailing blanks be auto-removed when saving?
 
-	filter_completion_list_string: STRING is "editor.eiffel.filter_completion_list"
+	filter_completion_list_string: STRING = "editor.eiffel.filter_completion_list"
 			-- Indicates if completion list matches should be filtered down based on current matches.  If not then
 			-- the list will always contain possible completion options and closest match will be selected during typing.
 
-	show_completion_signature_string: STRING is "editor.eiffel.show_completion_signature"
+	show_completion_signature_string: STRING = "editor.eiffel.show_completion_signature"
 			-- Should feature signature be shown in completion list?
 
-	show_completion_type_string: STRING is "editor.eiffel.show_completion_type"
+	show_completion_type_string: STRING = "editor.eiffel.show_completion_type"
 			-- Should feature type be shown in completion list?
 
-	show_completion_disambiguated_name_string: STRING is "editor.eiffel.show_completion_disambiguated_name"
+	show_completion_disambiguated_name_string: STRING = "editor.eiffel.show_completion_disambiguated_name"
 			-- Should disambiguated name be shown in completion list?
 
 	show_completion_obsolete_items_string: STRING = "editor.eiffel.show_obsolete_items"
 			-- Should obsolete items be shown in completion list?
 
-	syntax_complete_enabled_string: STRING is "editor.eiffel.syntax_complete_enabled"
+	show_completion_tooltip_string: STRING = "editor.eiffel.show_completion_tooltip"
+			-- Should completion tooltips be shown in the completion list?
+
+	syntax_complete_enabled_string: STRING = "editor.eiffel.syntax_complete_enabled"
 			-- should main keywords be completed ?
 
-	customized_string_1_string: STRING is "editor.eiffel.customized_string_1"
-	customized_string_2_string: STRING is "editor.eiffel.customized_string_2"
-	customized_string_3_string: STRING is "editor.eiffel.customized_string_3"
+	customized_string_1_string: STRING = "editor.eiffel.customized_string_1"
+	customized_string_2_string: STRING = "editor.eiffel.customized_string_2"
+	customized_string_3_string: STRING = "editor.eiffel.customized_string_3"
 			-- strings defined by the user.
 
-	new_tab_at_left_string: STRING is "editor.general.new_tab_at_left"
+	new_tab_at_left_string: STRING = "editor.general.new_tab_at_left"
 			-- Create new tab at left side of the target notebook?
 
-	highlight_matching_braces_string: STRING is "editor.eiffel.highlight_matching_braces"
+	highlight_matching_braces_string: STRING = "editor.eiffel.highlight_matching_braces"
 			-- Should matching braces be highlighted at the carets position?
 
 	auto_show_feature_contract_tooltips_string: STRING = "editor.eiffel.auto_show_feature_contract_tooltip"
@@ -537,7 +549,7 @@ feature {NONE} -- Preference Strings
 
 feature {NONE} -- Init colors and fonts.
 
-	init_colors is
+	init_colors
 			-- Initialize colors.
 		do
 			Precursor
@@ -572,7 +584,7 @@ feature {NONE} -- Init colors and fonts.
 			colors.put (folder_background_color_preference.value, folder_background_color_id)
 		end
 
-	init_fonts is
+	init_fonts
 			-- <Precursor>
 		do
 			Precursor
@@ -580,7 +592,7 @@ feature {NONE} -- Init colors and fonts.
 
 feature -- Update
 
-	update is
+	update
 			-- The preferences have changed.
 		do
 			init_colors
@@ -595,7 +607,7 @@ feature -- Update
 
 feature {NONE} -- Initialization
 
-	initialize_preferences is
+	initialize_preferences
 			-- Initialize preference values.
 		local
 			l_manager: EB_PREFERENCE_MANAGER
@@ -652,6 +664,7 @@ feature {NONE} -- Initialization
 			show_completion_type_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_type_string, True)
 			show_completion_disambiguated_name_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_disambiguated_name_string, False)
 			show_completion_obsolete_items_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_obsolete_items_string, False)
+			show_completion_tooltip_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_tooltip_string, True)
 			customized_string_1_preference := l_manager.new_string_preference_value (l_manager, customized_string_1_string, "")
 			customized_strings.extend (customized_string_1_preference)
 			customized_string_2_preference := l_manager.new_string_preference_value (l_manager, customized_string_2_string, "")
@@ -722,6 +735,7 @@ feature {NONE} -- Initialization
 			show_completion_type_preference.change_actions.extend (agent update)
 			show_completion_disambiguated_name_preference.change_actions.extend (agent update)
 			show_completion_obsolete_items_preference.change_actions.extend (agent update)
+			show_completion_tooltip_preference.change_actions.extend (agent update)
 			customized_string_1_preference.change_actions.extend (agent update)
 			customized_string_2_preference.change_actions.extend (agent update)
 			customized_string_3_preference.change_actions.extend (agent update)
@@ -745,7 +759,7 @@ feature {NONE} -- Initialization
 			initialize_shortcuts_prefs (l_manager)
 		end
 
-	initialize_autocomplete_prefs is
+	initialize_autocomplete_prefs
 		local
 			i: INTEGER
 			id: STRING
@@ -760,8 +774,8 @@ feature {NONE} -- Initialization
 			a_list: ARRAYED_LIST [STRING]
 		do
 			from
-				create complete_keywords.make (1, 39)
-				create insert_after_keyword.make (1, 39)
+				create complete_keywords.make (1, 40)
+				create insert_after_keyword.make (1, 40)
 				cnt := complete_keywords.count
 				complete_keywords_names_keys.start
 			until
@@ -819,7 +833,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	initialize_fixed_shortcuts is
+	initialize_fixed_shortcuts
 			-- Initialize fixed shortcuts in relative shortcuts.
 			-- Fixed shortcuts can not be overridden by normal shortcuts.
 		do
@@ -833,7 +847,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Build preferences for autocomplete
 
-	default_insert: ARRAY [ARRAY [STRING]] is
+	default_insert: ARRAY [ARRAY [STRING]]
 			-- default strings to be inserted after keywords
 		once
 			Result := <<
@@ -856,6 +870,8 @@ feature {NONE} -- Build preferences for autocomplete
 					<<" $cursor$", "%N$indent$%%T$cursor$", " $cursor$", "%N$indent$%T$cursor$">>,
 						-- local
 					<<" $cursor$", "%N$indent$%%T$cursor$", " $cursor$", "%N$indent$%T$cursor$">>,
+						-- attribute
+					<<" $cursor$ end", "%N$indent$%%T$cursor$%N$indent$end", " $cursor$", "%N$indent$%T$cursor$">>,
 						-- do
 					<<" $cursor$ end", "%N$indent$%%T$cursor$%N$indent$end", " $cursor$", "%N$indent$%T$cursor$">>,
 						-- once
@@ -923,7 +939,7 @@ feature {NONE} -- Build preferences for autocomplete
 				>>
 		end
 
-	key_with_name (name: STRING): INTEGER is
+	key_with_name (name: STRING): INTEGER
 			-- key code corresponding to `name'
 		require
 			name /= Void
@@ -955,7 +971,7 @@ feature {NONE} -- Build preferences for autocomplete
 
 feature -- Syntax Completion Customization
 
-	completed_keywords: ARRAYED_LIST [STRING] is
+	completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
 			create Result.make (35)
@@ -967,35 +983,35 @@ feature -- Syntax Completion Customization
 			Result.compare_objects
 		end
 
-	class_completed_keywords: ARRAYED_LIST [STRING] is
+	class_completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
 			create Result.make_from_array (<<"indexing", "class", "inherit", "creation", "feature">>)
 			Result.compare_objects
 		end
 
-	feature_completed_keywords: ARRAYED_LIST [STRING] is
+	feature_completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
-			create Result.make_from_array (<<"is", "require", "require else", "local", "do", "once", "deferred", "external", "rescue", "ensure", "ensure then", "alias">>)
+			create Result.make_from_array (<<"is", "require", "require else", "local", "attribute", "do", "once", "deferred", "external", "rescue", "ensure", "ensure then", "alias">>)
 			Result.compare_objects
 		end
 
-	inherit_completed_keywords: ARRAYED_LIST [STRING] is
+	inherit_completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
 			create Result.make_from_array (<<"rename", "redefine", "undefine", "select", "export">>)
 			Result.compare_objects
 		end
 
-	control_completed_keywords: ARRAYED_LIST [STRING] is
+	control_completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
 			create Result.make_from_array (<<"if", "then", "elseif", "else", "inspect", "when", "from", "variant", "until", "loop", "debug", "check">>)
 			Result.compare_objects
 		end
 
-	other_completed_keywords: ARRAYED_LIST [STRING] is
+	other_completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
 			create Result.make_from_array (<<"precursor", "create", "obsolete", "invariant", "end">>)
@@ -1008,7 +1024,7 @@ feature -- Syntax Completion Customization
 	insert_after_keyword: ARRAY [ARRAY[STRING]]
 			-- strings to be inserted after keywords
 
-	complete_keywords_names: HASH_TABLE [ARRAYED_LIST[STRING], STRING] is
+	complete_keywords_names: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			-- should the corresponding keyword in `completed_keywords' be completed ?
 		once
 			create Result.make (35)
@@ -1019,7 +1035,7 @@ feature -- Syntax Completion Customization
 			Result.put (other_completed_keywords, complete_keywords_names_keys @ 5)
 		end
 
-	complete_keywords_names_keys: ARRAYED_LIST [STRING] is
+	complete_keywords_names_keys: ARRAYED_LIST [STRING]
 			-- should the corresponding keyword in `completed_keywords' be completed ?
 		once
 			create Result.make_from_array (<<"class_structure_keywords", "feature_structure_keywords", "inherit_clauses_keywords", "control_structure_keywords", "other_keywords">>)
@@ -1027,37 +1043,37 @@ feature -- Syntax Completion Customization
 
 feature -- Fixed shortcuts
 
-	indention_shortcut: EB_FIXED_SHORTCUT is
+	indention_shortcut: EB_FIXED_SHORTCUT
 			-- Indention shortcut
 		once
 			create Result.make (names.fs_indent,  create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_tab), False, False, False)
 		end
 
-	unindention_shortcut: EB_FIXED_SHORTCUT is
+	unindention_shortcut: EB_FIXED_SHORTCUT
 			-- Unindention shortcut
 		once
 			create Result.make (names.fs_unindent,  create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_tab), False, False, True)
 		end
 
-	editor_cut_shortcut: EB_FIXED_SHORTCUT is
+	editor_cut_shortcut: EB_FIXED_SHORTCUT
 			-- Fixed shortcut for Cut.
 		once
 			create Result.make (names.fs_cut, create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_x), False, True, False)
 		end
 
-	editor_copy_shortcut: EB_FIXED_SHORTCUT is
+	editor_copy_shortcut: EB_FIXED_SHORTCUT
 			-- Fixed shortcut for Copy.
 		once
 			create Result.make (names.fs_copy, create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_c), False, True, False)
 		end
 
-	editor_paste_shortcut: EB_FIXED_SHORTCUT is
+	editor_paste_shortcut: EB_FIXED_SHORTCUT
 			-- Fixed shortcut for Paste.
 		once
 			create Result.make (names.fs_paste, create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_v), False, True, False)
 		end
 
-	editor_select_all_shortcut: EB_FIXED_SHORTCUT is
+	editor_select_all_shortcut: EB_FIXED_SHORTCUT
 			-- Fixed shortcut for Select All.
 		once
 			create Result.make (names.fs_select_all, create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_a), False, True, False)
@@ -1065,13 +1081,13 @@ feature -- Fixed shortcuts
 
 feature -- Keybord shortcuts Customization
 
-	customized_strings: ARRAYED_LIST [STRING_PREFERENCE] is
+	customized_strings: ARRAYED_LIST [STRING_PREFERENCE]
 			--
 		once
 			create Result.make (3)
 		end
 
-	shortcuts: HASH_TABLE [SHORTCUT_PREFERENCE, STRING] is
+	shortcuts: HASH_TABLE [SHORTCUT_PREFERENCE, STRING]
 			-- Shortcuts
 		once
 			create Result.make (default_shortcut_actions.count)
@@ -1080,7 +1096,9 @@ feature -- Keybord shortcuts Customization
 	default_shortcut_actions: ARRAYED_LIST [TUPLE [actions: HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8]; group: MANAGED_SHORTCUT_GROUP]]
 			-- Array of shortcut defaults (Alt/Ctrl/Shift/KeyString)
 
-	editor_shortcut_actions: ARRAYED_LIST [TUPLE [HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8], MANAGED_SHORTCUT_GROUP]] is
+	editor_shortcut_actions: ARRAYED_LIST [TUPLE [HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8], MANAGED_SHORTCUT_GROUP]]
+			-- Array for shortcut defaults
+			-- in tuple, the four elements are: (Alt/Ctrl/Shift/KeyString)
 		local
 			l_hash: HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8]
 		once
@@ -1112,6 +1130,9 @@ feature -- Keybord shortcuts Customization
 
 			l_hash.put ([False, True, False, key_strings.item (Key_g).twin.as_string_8], "show_goto_dialog")
 
+			l_hash.put ([False,  True, False, key_strings.item (Key_m).twin.as_string_8], "maximize_editor_area")
+			l_hash.put ([False,  True, True, key_strings.item (Key_m).twin.as_string_8], "minimize_editor_area")
+
 			l_hash.put ([False,  True, False, key_strings.item (Key_equal).twin.as_string_8], "zoom_in")
 			l_hash.put ([False,  True, False, key_strings.item (Key_dash).twin.as_string_8], "zoom_out")
 
@@ -1124,7 +1145,7 @@ feature -- Keybord shortcuts Customization
 			Result.extend ([l_hash, main_window_group])
 		end
 
-	completion_shortcut_actions: ARRAYED_LIST [TUPLE [HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8], MANAGED_SHORTCUT_GROUP]] is
+	completion_shortcut_actions: ARRAYED_LIST [TUPLE [HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8], MANAGED_SHORTCUT_GROUP]]
 		local
 			l_hash: HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8]
 		once
@@ -1142,7 +1163,8 @@ feature -- Keybord shortcuts Customization
 			l_hash.put ([False, False, False, key_strings.item (Key_F3).twin.as_string_8], "toggle_show_signature")
 			l_hash.put ([False, False, False, key_strings.item (Key_F4).twin.as_string_8], "toggle_show_disambiguated_name")
 			l_hash.put ([False, False, False, key_strings.item (Key_F5).twin.as_string_8], "toggle_show_obsolete_items")
-			l_hash.put ([False, False, False, key_strings.item (Key_F6).twin.as_string_8], "toggle_remember_size")
+			l_hash.put ([False, False, False, key_strings.item (Key_F6).twin.as_string_8], "toggle_show_tooltip")
+			l_hash.put ([False, False, False, key_strings.item (Key_F7).twin.as_string_8], "toggle_remember_size")
 			Result.extend ([l_hash, completion_window_group])
 		end
 
@@ -1202,6 +1224,7 @@ invariant
 	show_completion_type_preference_not_void: show_completion_type_preference /= Void
 	show_completion_disambiguated_name_preference_not_void: show_completion_disambiguated_name_preference /= Void
 	show_completion_obsolete_items_preference_not_void: show_completion_obsolete_items_preference /= Void
+	show_completion_tooltip_string_attached: show_completion_tooltip_string /= Void
 	syntax_complete_enabled_preference_not_void: syntax_complete_enabled_preference /= Void
 	customized_string_1_preference_not_void: customized_string_1_preference /= Void
 	customized_string_2_preference_not_void: customized_string_2_preference /= Void
@@ -1214,10 +1237,10 @@ invariant
 	auto_show_feature_contract_tooltips_preference_attached: auto_show_feature_contract_tooltips_preference /= Void
 
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1228,22 +1251,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_EDITOR_DATA

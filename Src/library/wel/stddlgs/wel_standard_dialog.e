@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Ancestor of all standard dialog boxes."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,10 +16,11 @@ inherit
 
 feature -- Basic operations
 
-	activate (a_parent: WEL_COMPOSITE_WINDOW) is
+	activate (a_parent: WEL_COMPOSITE_WINDOW)
 			-- Activate the dialog box (modal mode) with
 			-- `a_parent' as owner.
 		require
+			exists: exists
 			a_parent_not_void: a_parent /= Void
 			a_parent_exists: a_parent.exists
 		deferred
@@ -32,7 +33,7 @@ feature -- Status report
 			-- If True, the Ok button has been chosen. If False,
 			-- the Cancel button has been chosen.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

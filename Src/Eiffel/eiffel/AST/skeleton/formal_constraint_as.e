@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract description of a formal generic parameter. %
 				%Instances produced by Yacc. Version for Bench."
 	legal: "See notice at end of class."
@@ -46,7 +46,7 @@ create
 
 feature -- Status
 
-	constraint_types (a_context_class: CLASS_C): TYPE_SET_A is
+	constraint_types (a_context_class: CLASS_C): TYPE_SET_A
 			-- Actual type of the constraint.
 		require
 			a_context_class_not_void: a_context_class /= Void
@@ -91,7 +91,7 @@ feature -- Status
 			result_does_not_containt_void: Result.for_all (agent (a_any: RENAMED_TYPE_A [TYPE_A]): BOOLEAN do Result := (a_any /= Void) end)
 		end
 
-	constraint_types_if_possible (a_context_class: CLASS_C): TYPE_SET_A is
+	constraint_types_if_possible (a_context_class: CLASS_C): TYPE_SET_A
 			-- Fault tolerant actual type of the constraint.
 			--
 			-- `a_context_class' is the context class.
@@ -138,7 +138,7 @@ feature -- Status
 			result_not_void: Result /= Void
 		end
 
-	constraint_type (a_context_class: CLASS_C): RENAMED_TYPE_A [TYPE_A] is
+	constraint_type (a_context_class: CLASS_C): RENAMED_TYPE_A [TYPE_A]
 			-- Actual type of the constraint.
 			--
 			-- `a_context_class' is used to evaluate the type.
@@ -165,7 +165,7 @@ feature -- Status
 			result_not_void: Result /= Void
 		end
 
-	constraint_type_if_possible (a_context_class: CLASS_C): RENAMED_TYPE_A [TYPE_A] is
+	constraint_type_if_possible (a_context_class: CLASS_C): RENAMED_TYPE_A [TYPE_A]
 			-- Actual type of the constraint.
 		require
 			a_context_class_not_void: a_context_class /= Void
@@ -189,7 +189,7 @@ feature -- Status
 			end
 		end
 
-	has_computed_feature_table (a_context_class: CLASS_C): BOOLEAN is
+	has_computed_feature_table (a_context_class: CLASS_C): BOOLEAN
 			-- Check that we can retrieve a FEATURE_TABLE from the class
 			-- on which we want to check the validity rule about creation
 			-- constraint.
@@ -221,7 +221,7 @@ feature -- Status
 			end
 		end
 
-	constraint_creation_list (a_context_class: CLASS_C): LINKED_LIST [TUPLE [type_item: RENAMED_TYPE_A [TYPE_A]; feature_item: FEATURE_I]] is
+	constraint_creation_list (a_context_class: CLASS_C): LINKED_LIST [TUPLE [type_item: RENAMED_TYPE_A [TYPE_A]; feature_item: FEATURE_I]]
 			-- Actual creation routines from a constraint clause.
 			--
 			-- `a_context_class' is used to compute a flat version of the formal constraints.
@@ -306,22 +306,27 @@ feature -- Status
 
 feature {NONE} -- Access
 
-	Any_constraint_type: RENAMED_TYPE_A [CL_TYPE_A] is
+	Any_constraint_type: RENAMED_TYPE_A [CL_TYPE_A]
 			-- Default constraint actual type
 		once
 			create Result.make (create {CL_TYPE_A}.make(System.any_id),Void)
 		end
 
-	Constraint_types_containing_any: TYPE_SET_A is
+	Constraint_types_containing_any: TYPE_SET_A
 			-- Default constraint actual type
+		local
+			t: CL_TYPE_A
 		once
-			create Result.make(1)
-			Result.extend(create {RENAMED_TYPE_A [TYPE_A]}.make (create {CL_TYPE_A}.make (System.any_id), Void))
+				-- Default constraint class type is detachable
+			create t.make (System.any_id)
+			t.set_detachable_mark
+			create Result.make (1)
+			Result.extend(create {RENAMED_TYPE_A [TYPE_A]}.make (t, Void))
 		end
 
 feature -- Output
 
-	append_signature (a_text_formatter: TEXT_FORMATTER; a_short: BOOLEAN; a_context_class: CLASS_C) is
+	append_signature (a_text_formatter: TEXT_FORMATTER; a_short: BOOLEAN; a_context_class: CLASS_C)
 			-- Append the signature of current class in `a_text_formatter'
 			-- If `a_short', use "..." to replace constrained generic type, so
 			-- class {HASH_TABLE [G, H -> HASHABLE]} becomes {HASH_TABLE [G, H -> ...]}.
@@ -464,7 +469,7 @@ feature -- Validity checking
 			end
 		end
 
-	check_constraint_creation (a_context_class: CLASS_C) is
+	check_constraint_creation (a_context_class: CLASS_C)
 			-- Check validity of the creation clause in the constraint.
 			-- Also checks the constraint renaming (`check_constraint_renaming')
 			--
@@ -523,7 +528,7 @@ feature -- Validity checking
 
 		end
 
-	is_valid_creation_routine (f: FEATURE_I): BOOLEAN is
+	is_valid_creation_routine (f: FEATURE_I): BOOLEAN
 			-- Does `f' have all the needed requirement to be
 			-- used a creation routine for the future creation
 			-- of the generic parameter.
@@ -538,7 +543,7 @@ feature -- Validity checking
 
 feature {NONE} -- Implementation
 
-	append_constraints (a_text_formatter: TEXT_FORMATTER; a_short: BOOLEAN; a_context_class: CLASS_C) is
+	append_constraints (a_text_formatter: TEXT_FORMATTER; a_short: BOOLEAN; a_context_class: CLASS_C)
 			-- Append constraints to a text decorator.
 			--
 			-- Output is appended to a`a_text_formatter'
@@ -558,7 +563,7 @@ feature {NONE} -- Implementation
 		do
 			l_has_multi_constraints := has_multi_constraints
 			if l_has_multi_constraints then
-				a_text_formatter.process_symbol_text ("{")
+				a_text_formatter.process_symbol_text (ti_l_curly)
 			end
 
 			l_constraints := constraints
@@ -590,17 +595,18 @@ feature {NONE} -- Implementation
 				end
 				l_constraints.forth
 				if l_has_multi_constraints and not l_constraints.after then
-					a_text_formatter.add (", ")
+					a_text_formatter.add (ti_comma)
+					a_text_formatter.add_space
 				end
 			end
 			l_constraints.go_i_th (l_constraints_cursor)
 			if l_has_multi_constraints then
-				a_text_formatter.process_symbol_text ("}")
+				a_text_formatter.process_symbol_text (ti_r_curly)
 			end
 		end
 
 
-	append_rename_clause (a_text_formatter: TEXT_FORMATTER; a_rename_clause: RENAME_CLAUSE_AS; a_constraint_class: CLASS_C; a_short: BOOLEAN) is
+	append_rename_clause (a_text_formatter: TEXT_FORMATTER; a_rename_clause: RENAME_CLAUSE_AS; a_constraint_class: CLASS_C; a_short: BOOLEAN)
 			-- Prints renaming
 			--
 			-- `a_text_formatter': Used to append the renaming to.
@@ -616,11 +622,8 @@ feature {NONE} -- Implementation
 			l_old_name, l_new_name: ID_AS
 			l_e_feature: E_FEATURE
 			l_alias_name: STRING_AS
-			l_as, l_quote: STRING
 		do
-			l_as := " as "
-			l_quote := "%""
-			a_text_formatter.process_keyword_text ("rename", Void)
+			a_text_formatter.process_keyword_text (ti_rename_keyword, Void)
 			if a_short then
 				a_text_formatter.add (" ... ")
 			else
@@ -643,25 +646,28 @@ feature {NONE} -- Implementation
 						a_text_formatter.add (l_old_name.name)
 					end
 
-					a_text_formatter.add (l_as)
+					a_text_formatter.add_space
+					a_text_formatter.process_keyword_text (ti_as_keyword, Void)
+					a_text_formatter.add_space
 					a_text_formatter.add (l_new_name.name)
 					if l_alias_name /= Void then
 						a_text_formatter.add_space
-						a_text_formatter.process_keyword_text ("alias", Void)
+						a_text_formatter.process_keyword_text (ti_alias_keyword, Void)
 						a_text_formatter.add_space
-						a_text_formatter.process_symbol_text (l_quote)
+						a_text_formatter.process_symbol_text (ti_double_quote)
 						a_text_formatter.add (l_alias_name.value)
-						a_text_formatter.process_symbol_text (l_quote)
+						a_text_formatter.process_symbol_text (ti_double_quote)
 					end
 
 					l_content.forth
 					if not l_content.after then
-						a_text_formatter.add (once ", ")
+						a_text_formatter.add (ti_comma)
+						a_text_formatter.add_space
 					end
 				end
 			end
 			a_Text_formatter.add_space
-			a_text_formatter.process_keyword_text ("end", Void)
+			a_text_formatter.process_keyword_text (ti_end_keyword, Void)
 		end
 
 
@@ -681,76 +687,35 @@ feature {NONE} -- Implementation
 		local
 			l_renaming_cache: ARRAY [RENAMING_A]
 			l_renaming: RENAMING_A
+			l_renamings: EIFFEL_LIST [RENAME_AS]
 			l_vtgc2: VTGC2
 		do
 			l_renaming_cache := a_context_class.constraint_renaming (Current)
 			l_renaming := l_renaming_cache.item (a_constraint_position)
 			if l_renaming = Void then
-				l_renaming := new_renaming_a (a_rename_clause)
-				if l_renaming /= Void then
-					l_renaming.check_against_feature_table (a_constraint.feature_table)
-					if l_renaming.has_error_report then
-						create l_vtgc2
-						l_vtgc2.set_class (system.current_class)
-						l_vtgc2.set_formal_constraint (Current)
-						l_vtgc2.set_constraint (a_constraint, a_constraint_position)
-						l_vtgc2.set_renaming (a_rename_clause)
-						l_vtgc2.set_features_renamed_multiple_times (l_renaming.error_report.renamed_multiple_times)
-						l_vtgc2.set_features_renamed_to_the_same_name (l_renaming.error_report.renamed_to_same_name)
-						l_vtgc2.set_non_existent_features (l_renaming.error_report.non_existent)
-						error_handler.insert_error (l_vtgc2)
-					else
-						l_renaming_cache.put (l_renaming, a_constraint_position)
+				if a_rename_clause /= Void then
+					l_renamings := a_rename_clause.content
+					if l_renamings /= Void then
+						create l_renaming.make (l_renamings, a_constraint)
+						if l_renaming.has_error then
+							create l_vtgc2
+							l_vtgc2.set_class (a_context_class)
+							l_vtgc2.set_formal_constraint (Current)
+							l_vtgc2.set_constraint (a_constraint, a_constraint_position)
+							l_vtgc2.set_renaming (a_rename_clause)
+							l_vtgc2.set_features_renamed_multiple_times (l_renaming.error_report.renamed_multiple_times)
+							l_vtgc2.set_features_renamed_to_the_same_name (l_renaming.error_report.renamed_to_same_name)
+							l_vtgc2.set_non_existent_features (l_renaming.error_report.non_existent)
+							error_handler.insert_error (l_vtgc2)
+						else
+							l_renaming_cache.put (l_renaming, a_constraint_position)
+						end
 					end
 				end
 			end
 		end
 
-	new_renaming_a (a_rename_clause: RENAME_CLAUSE_AS): RENAMING_A is
-			-- Renaming lookup datastructure from `a_renaming_clause'.
-			--
-			-- `a_rename_clause': AST for which the RENAMING_A instance is built.
-		local
-			l_renamings: EIFFEL_LIST [RENAME_AS]
-			l_rename: RENAME_AS
-			l_new_name: FEATURE_NAME
-			l_old_name_id, l_alias_name_id: INTEGER
-			l_feature_name_id: FEAT_NAME_ID_AS
-		do
-			if a_rename_clause /= Void then
-				l_renamings := a_rename_clause.content
-				if l_renamings /= Void then
-					create Result.make (l_renamings.count)
-					from
-						l_renamings.start
-					until
-						l_renamings.after
-					loop
-						l_rename := l_renamings.item
-						l_old_name_id := l_rename.old_name.internal_name.name_id
-						l_new_name := l_rename.new_name
-						l_feature_name_id ?= l_new_name
-						if l_feature_name_id /= Void then
-								-- We have a "normal" name (but in case of an object of type `FEATURE_NAME_ALIAS_AS' we can still have an alias.)
-							Result.put (l_old_name_id,
-										l_new_name.internal_name.name_id)
-						end
-							-- Now check in any case for an alias
-							-- This includes the case where we have an object of type `INFIX_PREFIX_AS'
-						l_alias_name_id := l_new_name.internal_alias_name_id
-						if l_alias_name_id /= 0 then
-							Result.put_delayed_alias (l_old_name_id, l_new_name)
-						end
-						l_renamings.forth
-					end
-				end
-			end
-		ensure
-			new_rename_a_not_void:
-				(a_rename_clause /= Void and then a_rename_clause.content /= Void) implies Result /= Void
-		end
-
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class which contains the information relative to an html page."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7,7 +7,7 @@ indexing
 
 class
 	HTML_PAGE
-		
+
 inherit
 	ANY
 		redefine
@@ -16,33 +16,68 @@ inherit
 
 create
 	make,
-	make_from_template
+	make_from_template,
+	make_from_templates
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create an HTML page.
 		do
 			image := "<HTML>%N</HTML>"
 		end
 
-	make_from_template(fi_n: STRING) is
+	make_from_template (a_fi_n: STRING)
 			-- Create an HTML page from a template whose path name is
 			-- 'fi'. The template may contains special symbols/words, which
 			-- will allow smart replacing (see feature 'replace').
 		require
-			path_not_void: fi_n /= Void
+			path_not_void: a_fi_n /= Void
+		do
+			create image.make (10)
+			image.append ("<html>")
+			fill_with_template (image, a_fi_n)
+			image.append ("</html>")
+		end
+
+feature {NONE} -- Initialization
+
+	make_from_templates (a_templates: ARRAY [STRING])
+		require
+			a_templates_not_void: a_templates /= Void
+		local
+			i, nb: INTEGER
+		do
+			create image.make (10)
+			image.append ("<html>")
+			from
+				i := a_templates.lower
+				nb := a_templates.upper
+			until
+				i > nb
+			loop
+				fill_with_template (image, a_templates.item (i))
+				i := i + 1
+			end
+			image.append ("</html>")
+		end
+
+	fill_with_template (a_buffer, a_fi_n: STRING)
+			-- Put content of file `a_fi_n' into `a_buffer'.
+		require
+			a_buffer_not_void: a_buffer /= Void
+			a_fi_n_not_void: a_fi_n /= Void
 		local
 			fi: PLAIN_TEXT_FILE
 			retried: BOOLEAN
 		do
 			if not retried then
-				create fi.make_open_read (fi_n)
+				create fi.make_open_read (a_fi_n)
 				fi.read_stream (fi.count)
-				image := fi.last_string.twin
+				a_buffer.append_string (fi.last_string)
 				fi.close
 			else
-				image := "<HTML>Could not read file " + fi_n + ".</HTML>"
+				image := "<p>Could not read file " + a_fi_n + ".</p>%N"
 			end
 		ensure
 			image_exists: image /= Void
@@ -53,8 +88,8 @@ feature -- Initialization
 
 feature -- Basic Operations
 
-	replace_marker (a_marker, s: STRING) is
-			-- Replace marker 'a_marker' by string 's' 
+	replace_marker (a_marker, s: STRING)
+			-- Replace marker 'a_marker' by string 's'
 			-- within the template.
 			-- Do nothing if it does not exist.
 		require
@@ -63,7 +98,7 @@ feature -- Basic Operations
 			image.replace_substring_all (a_marker,s)
 		end
 
-	add_html_code (s: STRING) is
+	add_html_code (s: STRING)
 			-- Add html code 's'.
 		require
 			code_exists: s/=Void
@@ -72,7 +107,7 @@ feature -- Basic Operations
 			s1: STRING
 		do
 			i := image.substring_index ("</HTML",1)
-			if i=0 then
+			if i = 0 then
 				i := image.substring_index ("</html",1)
 			end
 			check
@@ -81,9 +116,9 @@ feature -- Basic Operations
 			s1 := image.substring (i, i + 6)
 			s.append (s1)
 			image.replace_substring_all (s1, s)
-		end 
+		end
 
-	insert_hidden_field (name,value: STRING) is
+	insert_hidden_field (name,value: STRING)
 				-- Insert hidden field with name 'name' and value 'value'.
 			require
 				has_form: out.substring_index ("</form>", 1) > 0 or
@@ -106,23 +141,21 @@ feature -- Basic Operations
 
 feature -- Access
 
-	out: STRING is
+	out: STRING
 			-- Usable copy of the output.
 		do
-			if image /= Void then
-				Result := image.twin
-			end
+			Result := image.twin
 		end
 
 feature {NONE} -- Implementation
 
 	image: STRING
 		-- Image corresponding to Current.
-	
+
 invariant
 	page_exists: out /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

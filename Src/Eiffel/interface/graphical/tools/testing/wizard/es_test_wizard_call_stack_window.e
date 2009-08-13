@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {ES_TEST_WIZARD_CALL_STACK_WINDOW}."
 	author: ""
 	date: "$Date$"
@@ -9,6 +9,11 @@ class
 
 inherit
 	ES_TEST_WIZARD_FINAL_WINDOW
+		redefine
+			conf,
+			has_valid_conf,
+			update_state_information
+		end
 
 create
 	make_window
@@ -21,6 +26,8 @@ feature {NONE} -- Initialization
 			l_parent: EV_BOX
 			l_vb: EV_VERTICAL_BOX
 		do
+			first_window.set_final_state (locale_formatter.translation (b_create))
+
 			l_parent := initialize_container (choice_box)
 
 			create grid
@@ -53,14 +60,16 @@ feature {NONE} -- Initialization
 	on_after_initialize
 			-- Called after all widgets have been initialized.
 		local
-			l_stack: ?EIFFEL_CALL_STACK
+			l_stack: detachable EIFFEL_CALL_STACK
 			i: INTEGER
 			l_reg: TEST_PROCESSOR_REGISTRAR_I
+			l_row: EV_GRID_ROW
+			l_cse: CALL_STACK_ELEMENT
 		do
 			if test_suite.is_service_available then
 				l_reg := test_suite.service.processor_registrar
 				if l_reg.is_valid_type (extractor_factory_type, test_suite.service) then
-					if {l_extractor: like extractor} test_suite.service.factory (extractor_factory_type) then
+					if attached {like extractor} test_suite.service.factory (extractor_factory_type) as l_extractor then
 						extractor := l_extractor
 					end
 				end
@@ -70,7 +79,6 @@ feature {NONE} -- Initialization
 					l_stack := debugger_manager.application_status.current_call_stack
 				end
 			end
-			wizard_information.call_stack_elements.wipe_out
 			if l_stack /= Void and then not l_stack.is_empty then
 				from
 					l_stack.start
@@ -79,40 +87,58 @@ feature {NONE} -- Initialization
 				until
 					l_stack.after
 				loop
-					if {l_row: !EV_GRID_ROW} grid.row (i) and {l_cse: !CALL_STACK_ELEMENT} l_stack.item then
-						populate_row (l_row, l_cse)
-					end
+					l_row := grid.row (i)
+					check l_row /= Void end
+					l_cse := l_stack.item
+					check l_cse /= Void end
+					populate_row (l_row, l_cse)
 					l_stack.forth
 					i := i + 1
 				end
 			end
+			update_next_button_status
 		end
 
 feature {NONE} -- Access
 
-	factory_type: !TYPE [TEST_CREATOR_I]
+	conf: TEST_EXTRACTOR_CONF
+			-- <Precursor>
+		do
+			Result := wizard_information.extractor_conf
+		end
+
+	factory_type: attached TYPE [TEST_CREATOR_I]
 			-- <Precursor>
 		do
 			Result := extractor_factory_type
 		end
 
-	grid: !ES_GRID
+	grid: attached ES_GRID
 			-- Grid showing call stack
 
-	extractor: ?TEST_EXTRACTOR_I
+	extractor: detachable TEST_EXTRACTOR_I
 			-- Extractor instance
+
+	selection_count: NATURAL
+			-- Number of items selected in `grid'
 
 feature {NONE} -- Status report
 
 	is_valid: BOOLEAN
 			-- <Precursor>
 		do
-			Result := not wizard_information.call_stack_elements.is_empty
+			Result := selection_count > 0
+		end
+
+	has_valid_conf (a_wizard_info: like wizard_information): BOOLEAN
+			-- <Precursor>
+		do
+			Result := Precursor (a_wizard_info) and a_wizard_info.is_extractor_conf
 		end
 
 feature {NONE} -- Query
 
-	populate_row (a_row: !EV_GRID_ROW; a_cse: !CALL_STACK_ELEMENT)
+	populate_row (a_row: attached EV_GRID_ROW; a_cse: attached CALL_STACK_ELEMENT)
 			-- Populate row items with information from call stack element
 			--
 			--| Note: this code is a modified version of {ES_CALL_STACK_TOOL_PANEL}.compute_stack_grid_row
@@ -132,7 +158,7 @@ feature {NONE} -- Query
 			gclab: EV_GRID_CHECKABLE_LABEL_ITEM
 			glab: EV_GRID_LABEL_ITEM
 			app_exec: APPLICATION_EXECUTION
-			l_sensitive, l_selected: BOOLEAN
+			l_sensitive: BOOLEAN
 		do
 			if extractor /= Void then
 				l_sensitive := extractor.is_valid_call_stack_element (a_cse.level_in_stack)
@@ -166,14 +192,10 @@ feature {NONE} -- Query
 				--| Object address
 			l_obj_address_info := a_cse.object_address.output
 
-			if {e_cse: EIFFEL_CALL_STACK_ELEMENT} a_cse then
+			if attached {EIFFEL_CALL_STACK_ELEMENT} a_cse as e_cse then
 					--| Origin class
 				dc := e_cse.dynamic_class
 				oc := e_cse.written_class
-
-				if l_sensitive and then {l_ec: EIFFEL_CLASS_C} dc then
-					l_selected := a_cse.level_in_stack = 1 or not (l_ec.cluster.is_used_in_library and l_ec.cluster.is_readonly)
-				end
 
 				if oc /= Void then
 					l_orig_class_info := oc.name_in_upper
@@ -196,14 +218,14 @@ feature {NONE} -- Query
 				end
 
 				if
-					{dotnet_cse: CALL_STACK_ELEMENT_DOTNET} e_cse
+					attached {CALL_STACK_ELEMENT_DOTNET} e_cse as dotnet_cse
 					and then dotnet_cse.dotnet_module_name /= Void
 				then
 					l_tooltip.append_string (interface_names.l_module_is (dotnet_cse.dotnet_module_name))
 				end
 			else --| It means, this is an EXTERNAL_CALL_STACK_ELEMENT
 				l_orig_class_info := ""
-				if {ext_cse: EXTERNAL_CALL_STACK_ELEMENT} a_cse then
+				if attached {EXTERNAL_CALL_STACK_ELEMENT} a_cse as ext_cse then
 					l_extra_info := ext_cse.info
 				end
 			end
@@ -212,11 +234,11 @@ feature {NONE} -- Query
 			app_exec := Debugger_manager.application
 				--| Tooltip addition
 			l_nb_stack := app_exec.status.current_call_stack.count
-			l_tooltip.prepend_string ((a_cse.level_in_stack).out + "/" + l_nb_stack.out + ": ")
-			l_tooltip.append_string (interface_names.l_break_index_is (l_breakindex_info))
-			l_tooltip.append_string (interface_names.l_address_is (l_obj_address_info))
+			l_tooltip.prepend ((a_cse.level_in_stack).out + "/" + l_nb_stack.out + ": ")
+			l_tooltip.append (interface_names.l_break_index_is (l_breakindex_info))
+			l_tooltip.append (interface_names.l_address_is (l_obj_address_info))
 			if l_extra_info /= Void then
-				l_tooltip.append_string ("%N    + " + l_extra_info)
+				l_tooltip.append ("%N    + " + l_extra_info)
 			end
 
 				--| Fill columns
@@ -227,10 +249,13 @@ feature {NONE} -- Query
 			a_row.set_item (Feature_column_index, gclab)
 			if l_sensitive then
 				gclab.enable_sensitive
-				if l_selected then
+					-- Note: we only select the first 20 stack frames, which should limit the size of the test
+					--       case if the user directly hits the create button.
+				if conf.call_stack_elements_cache.has (a_cse.level_in_stack) and selection_count < 20 then
 					gclab.toggle_is_checked
 				end
 			else
+				conf.call_stack_elements_cache.remove (a_cse.level_in_stack)
 				gclab.set_foreground_color (unsensitive_color)
 				gclab.disable_sensitive
 			end
@@ -261,26 +286,45 @@ feature {NONE} -- Query
 
 feature {NONE} -- Events
 
+	update_state_information
+			-- <Precursor>
+		local
+			i: INTEGER
+			l_set: DS_HASH_SET [INTEGER]
+		do
+			l_set := conf.call_stack_elements_cache
+			l_set.wipe_out
+			from
+				i := 1
+			until
+				i > grid.row_count
+			loop
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (1) as l_item then
+					if l_item.is_checked and attached {EIFFEL_CALL_STACK_ELEMENT} l_item.data as l_cse then
+						l_set.force (l_cse.level_in_stack)
+					end
+				end
+				i := i + 1
+			end
+		end
+
 	on_selection_change (a_item: EV_GRID_CHECKABLE_LABEL_ITEM)
 			-- Called when item is check box changes.
-		local
-			l_index: INTEGER
 		do
-			if {l_cse: !CALL_STACK_ELEMENT} a_item.data then
-				l_index := l_cse.level_in_stack
-				if a_item.is_checked then
-					wizard_information.call_stack_elements.force (l_index)
-				else
-					wizard_information.call_stack_elements.remove (l_index)
-				end
+			if a_item.is_checked then
+				selection_count := selection_count + 1
+			else
+				selection_count := selection_count - 1
 			end
 			update_next_button_status
 		end
 
 feature {NONE} -- Internationalization
 
-	t_title: !STRING = "Extract application state"
-	t_subtitle: !STRING = "Chose features on call stack for which test should be created"
+	t_title: STRING = "Extract application state"
+	t_subtitle: STRING = "Chose features on call stack for which test should be created"
+
+	b_create: STRING = "Extract"
 
 	h_feature: STRING = "Feature"
 	h_dtype: STRING = "In Class"
@@ -298,8 +342,8 @@ feature {NONE} -- Constants
 			Result := (create {EV_STOCK_COLORS}).grey
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -323,10 +367,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Files accessed via HTTP"
 	legal: "See notice at end of class."
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize protocol.
 		do
 			set_read_buffer_size (Default_buffer_size)
@@ -30,11 +30,11 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Constants
 
-	Read_mode_id: INTEGER is unique
+	Read_mode_id: INTEGER = unique
 
 feature -- Access
 
-	location: STRING is
+	location: STRING
 			-- Resource location
 		do
 			Result := address.location
@@ -42,55 +42,59 @@ feature -- Access
 
 feature -- Measurement
 
-	count: INTEGER is
+	count: INTEGER
 			-- Size of data resource
 		do
 			if is_count_valid then Result := content_length end
 		end
 
-	Default_buffer_size: INTEGER is 16384
+	Default_buffer_size: INTEGER = 16384
 			-- Default size of read buffer.
 
 feature -- Status report
 
-	read_mode: BOOLEAN is
+	read_mode: BOOLEAN
 			-- Is read mode set?
 		do
 			Result := (mode = Read_mode_id)
 		end
 
-	Write_mode: BOOLEAN is False
+	Write_mode: BOOLEAN = False
 			-- Is write mode set? (Answer: no)
 
-	Is_writable: BOOLEAN is False
+	Is_writable: BOOLEAN = False
 			-- Is it possible to open in write mode currently? (Answer: no)
 			-- (HTTP resources are read-only.)
 
-	valid_mode (n: INTEGER): BOOLEAN is
+	valid_mode (n: INTEGER): BOOLEAN
 			-- Is mode `n' valid?
 		do
 			Result := n = Read_mode_id
 		end
 
-	Supports_multiple_transactions: BOOLEAN is False
+	Supports_multiple_transactions: BOOLEAN = False
 			-- Does resource support multiple tranactions per connection?
 			-- (Answer: no)
 
 feature -- Status setting
 
-	open is
+	open
 			-- Open resource.
+		local
+			l_main_socket: like main_socket
 		do
 			if not is_open then
 				if address.is_proxy_used then
-					create main_socket.make_client_by_port
+					create l_main_socket.make_client_by_port
 						(address.proxy_port, address.proxy_host)
 				else
-					create main_socket.make_client_by_port
+					create l_main_socket.make_client_by_port
 							(address.port, address.host)
 				end
-				main_socket.set_timeout (timeout)
-				main_socket.connect
+				main_socket := l_main_socket
+				l_main_socket.set_timeout (timeout)
+				l_main_socket.set_connect_timeout (connect_timeout)
+				l_main_socket.connect
 			end
 			if not is_open then
 				error_code := Connection_refused
@@ -104,10 +108,14 @@ feature -- Status setting
 			error_code := Connection_refused
 		end
 
-	close is
+	close
 			-- Close.
+		local
+			l_socket: like main_socket
 		do
-			main_socket.close
+			l_socket := main_socket
+			check l_socket_attached: l_socket /= Void end
+			l_socket.close
 			if is_packet_pending then is_count_valid := False end
 			main_socket := Void
 			last_packet := Void
@@ -116,10 +124,11 @@ feature -- Status setting
 			error_code := Transmission_error
 		end
 
-	initiate_transfer is
+	initiate_transfer
 			-- Initiate transfer.
 		local
 			str: STRING
+			l_socket: like main_socket
 		do
 			str := Http_get_command.twin
 			str.extend (' ')
@@ -144,10 +153,12 @@ feature -- Status setting
 			end
 			str.append (Http_end_of_command)
 			if not error then
-				main_socket.put_string (str)
-					debug ("eiffelnet")
-						Io.error.put_string (str)
-					end
+				l_socket := main_socket
+				check l_socket_attached: l_socket /= Void end
+				l_socket.put_string (str)
+				debug ("eiffelnet")
+					Io.error.put_string (str)
+				end
 				get_headers
 				transfer_initiated := True
 				is_packet_pending := True
@@ -156,20 +167,20 @@ feature -- Status setting
 			error_code := Transfer_failed
 		end
 
-	set_read_mode is
+	set_read_mode
 			-- Set read mode.
 		do
 			mode := Read_mode_id
 		end
 
-	 set_write_mode is
+	 set_write_mode
 	 		-- Set write mode.
 		do
 		end
 
 feature {NONE} -- Status setting
 
-	open_connection is
+	open_connection
 			-- Open the connection.
 		do
 			open
@@ -183,28 +194,27 @@ feature {NONE} -- Implementation
 	content_length: INTEGER
 			-- Cached value of 'Content-Length:'
 
-	get_headers is
+	get_headers
 			-- Get HTTP headers
 		require
 			open: is_open
 		local
-			str: STRING
+			str: detachable STRING
+			l_socket: like main_socket
 		do
 			headers.wipe_out
+			l_socket := main_socket
+			check l_socket_not_void: l_socket /= Void end
 			from
 			until
-				error or else (str /= Void and str.is_equal ("%R"))
+				error or else (str /= Void and then str.is_equal ("%R"))
 			loop
-				check_socket (main_socket, Read_only)
+				check_socket (l_socket, Read_only)
 				if not error then
-					main_socket.read_line
-					str := main_socket.last_string.twin
-						debug ("eiffelnet")
-							Io.error.put_string (str)
-							Io.error.put_new_line
-						end
+					l_socket.read_line
+					str := l_socket.last_string
 					if not str.is_empty then
-						headers.extend (str)
+						headers.extend (str.twin)
 					end
 				end
 			end
@@ -212,7 +222,7 @@ feature {NONE} -- Implementation
 			if not error then get_content_length end
 		end
 
-	get_content_length is
+	get_content_length
 			-- Get content length from HTTP headers
 		require
 			non_empty_headers: not headers.is_empty
@@ -244,7 +254,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_error is
+	check_error
 			-- Check for error.
 		do
 			if is_open and headers.count > 0 then
@@ -265,7 +275,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Encoder Implementation
 
-	base64_encoded (s: STRING): STRING_8 is
+	base64_encoded (s: STRING): STRING_8
 			-- base64 encoded value of `s'.
 		require
 			s_not_void: s /= Void
@@ -275,7 +285,7 @@ feature {NONE} -- Encoder Implementation
 			f: SPECIAL [BOOLEAN]
 			base64chars: STRING_8
 		do
-			base64chars := once "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+			base64chars := once "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
 			from
 				n := s.count
 				i := (8 * n) \\ 6
@@ -334,7 +344,7 @@ invariant
 	count_constraint: (is_count_valid and count > 0) implies
 				(is_packet_pending = (bytes_transferred < count))
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

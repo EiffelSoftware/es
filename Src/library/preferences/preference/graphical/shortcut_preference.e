@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Shortcut preference."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,7 +11,8 @@ class
 inherit
 	TYPED_PREFERENCE [TUPLE [alt: BOOLEAN; ctrl: BOOLEAN; shift: BOOLEAN; key_string: STRING]]
 		redefine
-			is_default_value
+			is_default_value,
+			init_value_from_string
 		end
 
 	PREFERENCE_CONSTANTS
@@ -23,9 +24,18 @@ inherit
 create {PREFERENCE_FACTORY}
 	make, make_from_string_value
 
+feature {NONE} -- Initialization
+
+	init_value_from_string (a_value: STRING)
+			-- Set initial value from String `a_value'
+		do
+			internal_value := [False, False, False, ""]
+			Precursor (a_value)
+		end
+
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING
 			-- String representation of `value'.
 		do
 			create Result.make_empty
@@ -37,19 +47,23 @@ feature -- Access
 			end
 		end
 
-	string_type: STRING is
+	string_type: STRING
 			-- String description of this preference type.
 		once
 			Result := "SHORTCUT"
 		end
 
-	key: EV_KEY is
+	key: EV_KEY
 			-- Actual Key
 		local
 			l_key_code: INTEGER
 			s: STRING
 		do
-			s := value.key_string
+			if attached value as l_value then
+				s := l_value.key_string
+			else
+				create s.make_empty
+			end
 			l_key_code := key_code_from_key_string (s)
 			if l_key_code > 0 then
 				create Result.make_with_code (l_key_code)
@@ -58,7 +72,7 @@ feature -- Access
 			end
 		end
 
-	Shortcut_keys: ARRAY [INTEGER] is
+	Shortcut_keys: ARRAY [INTEGER]
 			-- All key codes that are acceptable for use in shortcut preferences.
 		once
 			create Result.make (1, 87)
@@ -154,7 +168,7 @@ feature -- Access
 
 feature -- Status Setting
 
-	set_value_from_string (a_value: STRING) is
+	set_value_from_string (a_value: STRING)
 			-- Parse the string value `a_value' and set `value'.
 			-- String format: "Alt+Ctrl+Shift+KeyString"		
 		local
@@ -163,27 +177,31 @@ feature -- Status Setting
 			l_value: like value
 			l_cnt: INTEGER
 			l_key_code: INTEGER
-			l_key: EV_KEY
+			l_key: detachable EV_KEY
 			l_alt, l_ctrl, l_shift: BOOLEAN
+			l_start_index, l_end_index: INTEGER
 		do
-			if internal_value = Void then
-				internal_value := [False, False, False, ""]
-			end
-			values := a_value.split ('+')
 			l_value := [False, False, False, ""]
 
 			from
 				l_cnt := 1
+				l_start_index := 1
 			until
-				l_cnt > values.count
+				l_cnt > 4
 			loop
-				l_string ?= values.i_th (l_cnt).as_lower
-				if l_string.is_equal (str_lower_true) then
+				l_end_index := a_value.index_of ('+', l_start_index)
+				if l_cnt /= 4 and l_end_index /= 0 then
+					l_string := a_value.substring (l_start_index, l_end_index - 1)
+				else
+					l_string := a_value.substring (l_start_index, a_value.count)
+				end
+				if l_string.is_case_insensitive_equal (str_true) then
 					l_value.put_boolean (True, l_cnt)
-				elseif l_cnt = values.count then
+				elseif l_cnt = 4 then
 						-- Last one is assumed to be key
 					l_value.key_string := l_string
 				end
+				l_start_index := l_end_index + 1
 				l_cnt := l_cnt + 1
 			end
 
@@ -207,31 +225,31 @@ feature -- Status Setting
 
 feature -- Query
 
-	is_alt: BOOLEAN is
+	is_alt: BOOLEAN
 			-- Requires Alt key?
 		do
-			Result := value.alt
+			Result := attached value as l_value and then l_value.alt
 		end
 
-	is_ctrl: BOOLEAN is
+	is_ctrl: BOOLEAN
 			-- Requires Ctrl key?
 		do
-			Result := value.ctrl
+			Result := attached value as l_value and then l_value.ctrl
 		end
 
-	is_shift: BOOLEAN is
+	is_shift: BOOLEAN
 			-- Requires Shift key?
 		do
-			Result := value.shift
+			Result := attached value as l_value and then l_value.shift
 		end
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING): BOOLEAN
 			-- Is `a_string' valid for this preference type to convert into a value?		
 		do
-			Result := a_string /= Void and then a_string.split ('+').count = 4
+			Result := a_string.split ('+').count >= 4
 		end
 
-	is_default_value: BOOLEAN is
+	is_default_value: BOOLEAN
 			-- Is this preference value the same as the default value?
 		do
 			if not is_wiped then
@@ -241,7 +259,7 @@ feature -- Query
 
 feature {PREFERENCES} -- Access
 
-	generating_preference_type: STRING is
+	generating_preference_type: STRING
 			-- The generating type of the preference for graphical representation.
 		do
 			Result := "SHORTCUT"
@@ -249,25 +267,24 @@ feature {PREFERENCES} -- Access
 
 feature {NONE} -- Implementation
 
-	auto_default_value: TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING] is
+	auto_default_value: TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING]
 			-- Value to use when Current is using auto by default (until real auto is set)
 		once
 			Result := [True, False, False, (create {EV_KEY}).out]
 		end
 
-	str_true: STRING is "True"
-	str_false: STRING is "False"
-	str_lower_true: STRING is "true";
+	str_true: STRING = "True"
+	str_false: STRING = "False";
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

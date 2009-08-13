@@ -1,4 +1,4 @@
-indexing
+note
 	Description: "Objects that enable to create a class related%
 			%to a specific database table from a template and%
 			%a class description (class DB_REPOSITORY)."
@@ -14,18 +14,18 @@ class
 
 inherit
 	DB_CLASS_GENERATOR
-	
+
 feature -- Status report
 
-	description_set: BOOLEAN is
+	description_set: BOOLEAN
 			-- Are table names set?
 		do
 			Result := table_name_list /= Void
 		end
-	
+
 feature -- Basic operations
 
-	set_table_names (table_names: ARRAYED_LIST [DB_REPOSITORY]) is
+	set_table_names (table_names: ARRAYED_LIST [DB_REPOSITORY])
 			-- Set table names to map template to the database tables.
 		require
 			not_void: table_names /= Void
@@ -37,15 +37,19 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	append_block (template_block: STRING; column_number: INTEGER) is
+	append_block (template_block: STRING; column_number: INTEGER)
 			-- Replace tags in `attribute_block' with values of attribute in
 			-- `column' (which is at `column_number').
 			-- Append result to `result_block'.
 		local
 			mapped_item: STRING
 			table_name: STRING
+			l_table_name_list: like table_name_list
+			l_result_block: like result_block
 		do
-			table_name := table_name_list.i_th (column_number).repository_name.as_lower
+			l_table_name_list := table_name_list
+			check l_table_name_list /= Void end -- FIXME: implied by nothing... bug?
+			table_name := l_table_name_list.i_th (column_number).repository_name.as_lower
 			mapped_item := template_block.twin
 			mapped_item.replace_substring_all (tags.Lower_class_name, table_name)
 			to_initcap (table_name)
@@ -53,19 +57,25 @@ feature {NONE} -- Implementation
 			table_name.to_upper
 			mapped_item.replace_substring_all (tags.Upper_class_name, table_name)
 			mapped_item.replace_substring_all (tags.Iterator, column_number.out)
-			result_block.append (mapped_item)
+			l_result_block := result_block
+			check l_result_block /= Void end -- FIXME: implied by ... bug?
+			l_result_block.append (mapped_item)
 		end
-		
-	description_count: INTEGER is
+
+	description_count: INTEGER
 			-- Count of database entities (table or attribute) in description.
+		local
+			l_table_name_list: like table_name_list
 		do
-			Result := table_name_list.count
+			l_table_name_list := table_name_list
+			check l_table_name_list /= Void end -- FIXME: bug?
+			Result := l_table_name_list.count
 		end
-		
-	table_name_list: ARRAYED_LIST [DB_REPOSITORY];
+
+	table_name_list: detachable ARRAYED_LIST [DB_REPOSITORY];
 			-- Database table name list.
-			
-indexing
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

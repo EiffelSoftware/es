@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- System level routine id counter.
@@ -21,7 +21,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new routine id counter.
 		do
 			create attribute_ids.make (1, Chunk)
@@ -30,12 +30,13 @@ feature -- Initialization
 			initialization_rout_id := next_rout_id
 			dispose_rout_id := next_rout_id
 			copy_rout_id := next_rout_id
+			is_equal_rout_id := next_rout_id
 			creation_rout_id := next_rout_id
 		end
 
 feature -- Access
 
-	is_attribute (rout_id: INTEGER): BOOLEAN is
+	is_attribute (rout_id: INTEGER): BOOLEAN
 		do
 			Result := rout_id <= attribute_ids.upper
 			if Result then
@@ -43,7 +44,7 @@ feature -- Access
 			end
 		end
 
-	next_attr_id: INTEGER is
+	next_attr_id: INTEGER
 			-- Next attribute id
 		do
 			count := count + 1
@@ -57,12 +58,13 @@ feature -- Access
 	initialization_rout_id: INTEGER
 	dispose_rout_id: INTEGER
 	copy_rout_id: INTEGER
+	is_equal_rout_id: INTEGER
 	creation_rout_id: INTEGER
             -- Predefined routine ids
 
 feature -- Status report
 
-	is_feature_routine_id (rout_id: like next_rout_id): BOOLEAN is
+	is_feature_routine_id (rout_id: like next_rout_id): BOOLEAN
 			-- Does `rout_id' correspond to some feature
 			-- rather than to some special service entity?
 		do
@@ -70,6 +72,7 @@ feature -- Status report
 				rout_id = initialization_rout_id or
 				rout_id = dispose_rout_id or
 				rout_id = copy_rout_id or
+				rout_id = is_equal_rout_id or
 				rout_id = creation_rout_id)
 		end
 
@@ -78,10 +81,10 @@ feature {NONE} -- Implementation
 	attribute_ids: ARRAY [BOOLEAN]
 			-- Let us know which entries are attributes.
 
-	Chunk: INTEGER is 500;
+	Chunk: INTEGER = 500;
 			-- Size of an array chunk at beginning.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: ".NET events"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -24,16 +24,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make (dn: STRING; pub: BOOLEAN; decl_type: CONSUMED_REFERENCED_TYPE; cp_raiser, cp_adder, cp_remover: CONSUMED_PROCEDURE) is
+	make (dn: STRING; pub: BOOLEAN; decl_type: CONSUMED_REFERENCED_TYPE; cp_raiser, cp_adder, cp_remover: detachable CONSUMED_PROCEDURE)
 			-- Initialize property with name `n' and type `type'.
 		require
 			non_void_dotnet_name: dn /= Void
 			valid_dotnet_name: not dn.is_empty
 			non_void_declaring_type: decl_type /= Void
 		do
-			n := dn
 			p := pub
-			entity_make (dn, pub, decl_type)
+			entity_make (dn, dn, pub, decl_type)
 			i := cp_raiser
 			a := cp_adder
 			r := cp_remover
@@ -42,18 +41,18 @@ feature {NONE} -- Initialization
 			raiser_set: raiser = cp_raiser
 			adder_set: adder = cp_adder
 			remover_set: remover = cp_remover
-			valid_raiser: raiser /= Void implies raiser.is_property_or_event
+			valid_raiser: attached raiser as l_raiser implies l_raiser.is_property_or_event
 		end
 
 feature -- ConsumerWrapper functions
 
-	is_event: BOOLEAN is True
+	is_event: BOOLEAN = True
 			-- Is `Current' a .Net Event.
 
-	is_property_or_event: BOOLEAN is True
+	is_property_or_event: BOOLEAN = True
 			-- Is 'Current' a .NET Property or Event?
 
-	is_public: BOOLEAN is
+	is_public: BOOLEAN
 			-- Is `Current' public.
 		do
 			Result := p
@@ -61,34 +60,34 @@ feature -- ConsumerWrapper functions
 
 feature -- Access
 
-	eiffelized_consumed_entities: ARRAYED_LIST [CONSUMED_ENTITY] is
+	eiffelized_consumed_entities: ARRAYED_LIST [CONSUMED_PROCEDURE]
 			-- List of eiffelized Consumed Entities relative to `Current'.
 		do
 			create Result.make (0)
-			if adder /= Void then
-				Result.extend (adder)
+			if attached adder as l_adder then
+				Result.extend (l_adder)
 			end
-			if remover /= Void then
-				Result.extend (remover)
+			if attached remover as l_remover then
+				Result.extend (l_remover)
 			end
-			if raiser /= Void then
-				Result.extend (raiser)
+			if attached raiser as l_raiser then
+				Result.extend (l_raiser)
 			end
 		end
 
-	adder: CONSUMED_PROCEDURE is
+	adder: detachable CONSUMED_PROCEDURE
 			-- Property getter function
 		do
 			Result := a
 		end
 
-	remover: CONSUMED_PROCEDURE is
+	remover: detachable CONSUMED_PROCEDURE
 			-- Property setter procedure
 		do
 			Result := r
 		end
 
-	raiser: CONSUMED_PROCEDURE is
+	raiser: detachable CONSUMED_PROCEDURE
 			-- Property setter procedure
 		do
 			Result := i
@@ -108,7 +107,7 @@ feature {NONE} -- Access
 	p: like is_public;
 			-- Internal data for `is_public'.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

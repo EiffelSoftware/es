@@ -1,8 +1,8 @@
-indexing
+note
 	description: "System's root class for multithreaded %
 	%cecil example"
 	legal: "See notice at end of class."
-	status: "See notice at end of class.";
+	status: "See notice at end of class."
 
 class
 	BANK_ACCOUNT
@@ -13,15 +13,15 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 		do
-			
+
 		end;
 
 feature -- Cecil
-	
 
-indexing
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

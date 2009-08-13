@@ -1,9 +1,7 @@
-indexing
-
+note
 	description:
 		"General finite-state automata"
 	legal: "See notice at end of class.";
-
 	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
@@ -28,43 +26,39 @@ feature -- Measurement
 
 feature -- Status setting
 
-	set_start (n: INTEGER) is
+	set_start (n: INTEGER)
 			-- Select state `n' as the starting state.
 		require
 			no_other_start: start_number = 0 or start_number = n;
 			is_in_automaton: n <= nb_states and n >= 1
 		do
 			start_number := n
-		end; 
+		end;
 
-	set_transition (source, input_doc, target: INTEGER) is
+	set_transition (source, input_doc, target: INTEGER)
 			-- Set transition from source to target on `input_doc'.
 		deferred
-		end; 
+		end;
 
-	set_final (state, f: INTEGER) is
+	set_final (state, f: INTEGER)
 			-- Make `state' final for regular expression `f'.
 		deferred
-		end; 
+		end;
 
-	set_state is
+	set_state
 			-- Make a new state.
 		deferred
-		end 
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
-end -- class AUTOMATON
-
+end

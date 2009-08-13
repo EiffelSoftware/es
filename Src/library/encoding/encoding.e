@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that represent encodings and that provide conversion methods."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,7 +19,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_code_page: STRING) is
+	make (a_code_page: STRING)
 			-- Set `code_page' with `a_code_page'
 			-- `a_code_page' should be valid, either it is from CODE_PAGE_CONSTANTS
 			-- or dynamically from i18n library.
@@ -39,7 +39,7 @@ feature -- Access
 			-- Code page/Character set name.
 			-- Immutable name.
 
-	last_converted_stream: STRING_8 is
+	last_converted_stream: STRING_8
 			-- Stream representation of last converted string.
 			-- Note: Original string object could be returned directly.
 		require
@@ -47,23 +47,27 @@ feature -- Access
 		do
 			Result := encoding_i.last_converted_stream
 		ensure
-			last_conversion_successful_implies_not_void: last_conversion_successful implies Result /= Void
+			last_converted_stream_not_void: Result /= Void
 		end
 
-	last_converted_string: STRING_GENERAL is
+	last_converted_string: STRING_GENERAL
 			-- Last converted string.
 			-- Note: Original string object could be returned directly.
 		require
 			last_conversion_successful: last_conversion_successful
+		local
+			l_str: detachable STRING_GENERAL
 		do
-			Result := encoding_i.last_converted_string
+			l_str := encoding_i.last_converted_string
+			check l_str /= Void end -- Implied from the precondition and postcondition of `encoding_i.convert_to'
+			Result := l_str
 		ensure
-			last_conversion_successful_implies_not_void: last_conversion_successful implies Result /= Void
+			last_converted_string_not_void: Result /= Void
 		end
 
 feature -- Conversion
 
-	convert_to (a_to_encoding: ENCODING; a_string: STRING_GENERAL) is
+	convert_to (a_to_encoding: ENCODING; a_string: STRING_GENERAL)
 			-- Convert `a_string' from current encoding to `a_to_encoding'.
 			-- If either current or `a_to_encoding' is not `is_valid', or an error occurs during conversion,
 			-- `last_conversion_successful' is unset.
@@ -95,7 +99,7 @@ feature -- Conversion
 
 feature -- Status report
 
-	last_conversion_successful: BOOLEAN is
+	last_conversion_successful: BOOLEAN
 			-- Is last conversion successful?
 		do
 			Result := encoding_i.last_conversion_successful
@@ -103,7 +107,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 			-- |FIXME: Different names can indicate the same encoding.
@@ -113,13 +117,13 @@ feature -- Comparison
 
 feature {ENCODING} -- Status report
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is current valid?
 		do
 			Result := encoding_i.is_code_page_valid (code_page)
 		end
 
-	is_conversion_possible (a_to_encoding: ENCODING): BOOLEAN is
+	is_conversion_possible (a_to_encoding: ENCODING): BOOLEAN
 			-- Is conversion possible?
 		require
 			a_to_encoding_not_void: a_to_encoding /= Void
@@ -134,13 +138,13 @@ feature {NONE} -- Implementation
 	encoding_i: ENCODING_I
 			-- Current encoding implementation
 
-	unicode_conversion: UNICODE_CONVERSION is
+	unicode_conversion: UNICODE_CONVERSION
 			-- Unicode conversion
 		once
 			create Result
 		end
 
-	regular_encoding_imp: ENCODING_I is
+	regular_encoding_imp: ENCODING_I
 			-- Regular encoding implementation (Distinguished from Unicode conversion)
 		once
 			create {ENCODING_IMP}Result
@@ -150,13 +154,13 @@ invariant
 	code_page_not_void: code_page /= Void
 	encoding_i_not_void: encoding_i /= Void
 
-indexing
+note
 	library:   "Encoding: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

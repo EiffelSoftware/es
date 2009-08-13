@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Default implementation for accessing a tool. This uses the last focused development window to query for a tool.
 		
@@ -21,17 +21,60 @@ inherit
 			{NONE} all
 		end
 
+create
+	default_create,
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_edition: like tool_edition)
+			-- Initializes a tool provider with a specific edition number.
+			-- Note: If no edition is required, use `default_create'.
+			--
+			-- `a_edition': The edition of the tool the provider should reveal.
+		require
+			a_edition_positive: a_edition >= 1
+		do
+			tool_edition := a_edition
+		ensure
+			tool_edition_set: tool_edition = a_edition
+		end
+
 feature -- Access
 
-	frozen tool: !ES_TOOL [EB_TOOL]
+	frozen tool: attached ES_TOOL [EB_TOOL]
 			-- <Precursor>
+		local
+			l_shell_tools: ES_SHELL_TOOLS
+			l_tool_type: TYPE [ES_TOOL [EB_TOOL]]
+			l_edition: like tool_edition
 		do
-			Result := window.shell_tools.tool ({G})
+			l_tool_type := {G}
+			l_shell_tools := window.shell_tools
+			if l_shell_tools.is_multiple_edition_tool (l_tool_type) then
+				l_edition := tool_edition
+			end
+			if l_edition > 1 then
+				Result := l_shell_tools.tool_edition (l_tool_type, l_edition)
+			else
+				Result := l_shell_tools.tool (l_tool_type)
+			end
 		end
 
 feature {NONE} -- Access
 
-	window: ?EB_DEVELOPMENT_WINDOW
+	tool_edition: NATURAL_8
+			-- Optional edition of a tool.
+		require
+			is_interface_usable: is_interface_usable
+			is_multi_edition: window.shell_tools.is_multiple_edition_tool ({G})
+		attribute
+			Result := 1
+		ensure
+			result_positive: Result >= 1
+		end
+
+	window: detachable EB_DEVELOPMENT_WINDOW
 			-- Access to the development window the tool is initialized for.
 			--
 			--| The result type is detachable because of the use of SITE with ESF.
@@ -50,8 +93,8 @@ feature -- Status report
 			window_is_interface_usable: window.is_interface_usable
 		end
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -75,11 +118,11 @@ feature -- Status report
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

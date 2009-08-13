@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that provide common functionality needed for implementations of {TEST_PROCESSOR_I}
 	]"
@@ -15,8 +15,8 @@ inherit
 	TEST_COLLECTION
 		rename
 			make as make_collection
-		undefine
-			events
+		redefine
+			is_interface_usable
 		end
 
 	TEST_SUITE_OBSERVER
@@ -30,13 +30,23 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'.
 		do
 			test_suite := a_test_suite
-			test_suite.connect_events (Current)
+			test_suite.test_suite_connection.connect_events (Current)
 			make_collection
+		end
+
+feature {NONE} -- Clean up
+
+	safe_dispose (a_explicit: BOOLEAN)
+			-- <Precursor>
+		do
+			if a_explicit then
+				--| FIXME: Arno, correctly clean up resources	
+			end
 		end
 
 feature -- Access
 
-	test_suite: !TEST_SUITE_S
+	test_suite: attached TEST_SUITE_S
 			-- <Precursor>
 
 feature {NONE} -- Access
@@ -45,6 +55,14 @@ feature {NONE} -- Access
 			-- Internal storage of `progress'
 
 feature -- Status report
+
+	is_interface_usable: BOOLEAN
+			-- <Precursor>
+		do
+			Result := Precursor and then test_suite.is_interface_usable
+		ensure then
+			test_suite_is_interface_usable: Result implies test_suite.is_interface_usable
+		end
 
 	is_idle: BOOLEAN
 			-- <Precursor>
@@ -64,7 +82,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	request_stop is
+	request_stop
 			-- <Precursor>
 		do
 			is_stop_requested := True
@@ -72,7 +90,7 @@ feature -- Status setting
 
 feature {TEST_SUITE_S} -- Status setting
 
-	frozen proceed is
+	frozen proceed
 			-- <Precursor>
 		do
 			is_idle := False
@@ -80,7 +98,7 @@ feature {TEST_SUITE_S} -- Status setting
 			is_idle := True
 		end
 
-	frozen stop is
+	frozen stop
 			-- <Precursor>
 		do
 			stop_process
@@ -111,7 +129,7 @@ feature {NONE} -- Status setting
 		deferred
 		end
 
-	proceed_process is
+	proceed_process
 			-- Proceed with actual task
 		require
 			running: is_running
@@ -119,7 +137,7 @@ feature {NONE} -- Status setting
 		deferred
 		end
 
-	stop_process is
+	stop_process
 			-- Stop task
 		require
 			running: is_running
@@ -131,15 +149,47 @@ feature {NONE} -- Status setting
 
 feature {TEST_SUITE_S} -- Events
 
-	on_test_changed (a_collection: !ACTIVE_COLLECTION_I [!TEST_I]; a_item: !TEST_I)
+	on_test_changed (a_collection: attached ACTIVE_COLLECTION_I [attached TEST_I]; a_item: attached TEST_I)
 			-- <Precursor>
 		do
 			if tests.has (a_item) then
-				test_changed_event.publish ([Current, a_item])
+					-- Note: replace `as_attached' with Current when compiler treats Current as attached
+				test_changed_event.publish ([as_attached, a_item.as_attached])
 			end
 		end
 
 invariant
 	internal_progress_valid: internal_progress >= {REAL} 0.0 and internal_progress <= {REAL} 1.0
 
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

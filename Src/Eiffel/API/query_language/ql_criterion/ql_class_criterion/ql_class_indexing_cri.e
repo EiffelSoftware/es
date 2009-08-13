@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Criterion to test certain condition in an indexing clause"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,14 +28,14 @@ inherit
 
 feature -- Evaluate
 
-	is_satisfied_by (a_item: QL_CLASS): BOOLEAN is
+	is_satisfied_by (a_item: QL_CLASS): BOOLEAN
 			-- Evaluate `a_item'.
 		deferred
 		end
 
 feature -- Status report
 
-	require_compiled: BOOLEAN is
+	require_compiled: BOOLEAN
 			-- Does current criterion require a compiled item?
 		do
 			Result := False
@@ -43,7 +43,7 @@ feature -- Status report
 
 feature{NONE} -- Implementation
 
-	class_ast (a_item: QL_CLASS): CLASS_AS is
+	class_ast (a_item: QL_CLASS): CLASS_AS
 			-- CLASS_AS of `a_item'.
 		require
 			a_item_attached: a_item /= Void
@@ -54,7 +54,7 @@ feature{NONE} -- Implementation
 				if a_item.is_compiled then
 					Result := a_item.class_c.ast
 				else
-					roundtrip_eiffel_parser.parse_from_string (a_item.class_i.text)
+					roundtrip_eiffel_parser.parse_from_string (a_item.class_i.text, a_item.class_c)
 					Result := roundtrip_eiffel_parser.root_node
 				end
 			end
@@ -66,7 +66,7 @@ feature{NONE} -- Implementation
 
 feature {NONE} -- Internal parsers
 
-	roundtrip_eiffel_parser: EIFFEL_PARSER is
+	roundtrip_eiffel_parser: EIFFEL_PARSER
 			-- Roundtrip parser used to retrieve indexing clause
 		do
 			if il_parsing then
@@ -78,7 +78,7 @@ feature {NONE} -- Internal parsers
 			result_attached: Result /= Void
 		end
 
-	roundtrip_pure_eiffel_parser: EIFFEL_PARSER is
+	roundtrip_pure_eiffel_parser: EIFFEL_PARSER
 			-- Pure Eiffel parser
 		deferred
 		ensure
@@ -86,7 +86,7 @@ feature {NONE} -- Internal parsers
 			pure_parser: not Result.il_parser
 		end
 
-	roundtrip_il_eiffel_parser: EIFFEL_PARSER is
+	roundtrip_il_eiffel_parser: EIFFEL_PARSER
 			-- IL Eiffel parser.
 		deferred
 		ensure
@@ -97,36 +97,36 @@ feature {NONE} -- Internal parsers
 	match_list: LEAF_AS_LIST;
 			-- Match list of last class parsed by `roundtrip_eiffel_parser'
 
-indexing
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+        copyright:	"Copyright (c) 1984-2009, Eiffel Software"
         license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
         licensing_options:	"http://www.eiffel.com/licensing"
         copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
         source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

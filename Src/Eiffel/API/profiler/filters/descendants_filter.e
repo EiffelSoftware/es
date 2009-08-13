@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Profile filter to check whether the time spent in the descendants %
@@ -26,7 +26,7 @@ create
 
 feature -- Creation is
 
-	make is
+	make
 		do
 			value := -1;
 			lower_interval := -1;
@@ -35,12 +35,12 @@ feature -- Creation is
 
 feature -- Checking
 
-	copy_value (item: PROFILE_DATA) is
+	copy_value (item: PROFILE_DATA)
 		do
 			item_value := item.descendants;
 		end
 
-	filtering_is_allowed: BOOLEAN is
+	filtering_is_allowed: BOOLEAN
 			-- May `filter' be called?
 		do
 			Result := operator /= Void and then
@@ -50,65 +50,65 @@ feature -- Checking
 
 feature -- Value setting
 
-	set_value_range (lower, upper: COMPARABLE) is
+	set_value_range (lower, upper: COMPARABLE)
 			-- Value range as used in the Comparing-features 
 		local
-			real_ref: REAL_REF
+			real_ref: REAL_64_REF
 		do
 			real_ref ?= lower
 			check
-				new_value_must_be_REAL: real_ref /= Void
+				new_value_must_be_real_64: real_ref /= Void
 			end
 			lower_interval := real_ref.item
 			real_ref ?= upper
 			check
-				new_value_must_be_REAL: real_ref /= Void
+				new_value_must_be_real_64: real_ref /= Void
 			end
 			upper_interval := real_ref.item
 		end
 
-	set_value (new_value: COMPARABLE) is
+	set_value (new_value: COMPARABLE)
 			-- Value as used in Comparing-features
 		local
-			real_ref: REAL_REF
+			real_ref: REAL_64_REF
 		do
 			real_ref ?= new_value
 			check
-				new_value_must_be_REAL: real_ref /= Void
+				new_value_must_be_real_64: real_ref /= Void
 			end
 			value := real_ref.item
 		end
 
 feature -- Comparing
 
-	equal_to: BOOLEAN is
+	equal_to: BOOLEAN
 			-- Is value equal to the specified value?
 		do
 			Result := item_value = value
 		end
 
-	min: BOOLEAN is
+	min: BOOLEAN
 			-- Is value equal to the minimum value?
 		do
 		end
 
-	max: BOOLEAN is
+	max: BOOLEAN
 			-- Is value equal to the maximum value?
 		do
 		end
 
-	avg: BOOLEAN is
+	avg: BOOLEAN
 			-- Is value equal to average value?
 		do
 		end
 
-	less_than: BOOLEAN is
+	less_than: BOOLEAN
 			-- Is value less than the specified value?
 		do
 			Result := item_value < value
 		end
 
-	in_interval: BOOLEAN is
+	in_interval: BOOLEAN
 			-- Is value in specified interval?
 		do
 			Result := lower_interval <= item_value and
@@ -117,13 +117,13 @@ feature -- Comparing
 
 feature {NONE} -- Attributes
 
-	value: REAL
+	value: REAL_64
 
-	item_value: REAL
+	item_value: REAL_64
 
-	lower_interval, upper_interval: REAL;
+	lower_interval, upper_interval: REAL_64;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

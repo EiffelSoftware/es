@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Transactions consisting of multiple transfers"
 	legal: "See notice at end of class."
@@ -22,12 +22,13 @@ inherit
 		rename
 			item as transaction
 		undefine
-			copy, is_equal, force, is_inserted, search, append, fill
+			copy, is_equal, force, is_inserted, search, append, fill,
+			for_all, there_exists, do_all, do_if
 		end
-	
+
 	ARRAYED_LIST[TRANSACTION]
 		rename
-			make as list_make, go_i_th as select_transaction, 
+			make as list_make, go_i_th as select_transaction,
 			item as transaction
 		export
 			{ANY} valid_index, valid_cursor_index
@@ -44,7 +45,7 @@ create {MULTIPLE_TRANSACTION}
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create transaction list.
 		do
 			list_make (1)
@@ -53,48 +54,48 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	source: DATA_RESOURCE is
+	source: DATA_RESOURCE
 			-- Current source
 		do
 			Result := transaction.source
 		end
-	
-	target: DATA_RESOURCE is
+
+	target: DATA_RESOURCE
 			-- Current target
 		do
 			Result := transaction.target
 		end
-	
+
 feature -- Status report
 
-	is_correct: BOOLEAN is
+	is_correct: BOOLEAN
 			-- Is transaction set up correctly?
 		do
 			Result := check_query (agent transaction.is_correct)
 		end
-	 
-	error: BOOLEAN is
+
+	error: BOOLEAN
 			-- Has an error occurred in current transaction?
 		do
 			Result := check_query (agent transaction.error)
 		end
 
-	succeeded: BOOLEAN is
+	succeeded: BOOLEAN
 			-- Has the transaction succeeded?
 		do
 			Result := check_query (agent transaction.succeeded)
 		end
-	 
-	insertable (t: TRANSACTION): BOOLEAN is
+
+	insertable (t: TRANSACTION): BOOLEAN
 	 		-- Can transaction `t' be inserted in container?
 		do
 			Result := t.source.supports_multiple_transactions and then
 				(not is_empty implies equal (transaction.source, t.source))
 		end
-	 
+
 feature -- Status setting
 
-	reset_error is
+	reset_error
 			-- Reset error flags.
 		do
 			execute_command (agent reset_error_flags)
@@ -102,15 +103,14 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	execute is
+	execute
 			-- Execute transaction.
 		do
 			start
 			debug Io.error.put_string ("- OPEN SOURCE -%N") end
 			source.open
-			first_source := source
 			if not transaction.error then
-				execute_command (agent do_transaction)
+				execute_command (agent do_transaction (source))
 			end
 			debug Io.error.put_string ("- CLOSE SOURCE -%N") end
 			source.close
@@ -118,10 +118,7 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	first_source: DATA_RESOURCE
-			-- Handle to first source in collection
-			
-	reset_error_flags is
+	reset_error_flags
 			-- Reset error flags for selected transaction.
 		require
 			not_empty: not is_empty
@@ -130,14 +127,14 @@ feature {NONE} -- Implementation
 			target.reset_error
 		end
 
-	do_transaction is
+	do_transaction (a_first_source: DATA_RESOURCE)
 			-- Execute selected transaction.
 		require
 			not_empty: not is_empty
-			first_source_set: first_source /= Void
+			first_source_set: a_first_source /= Void
 		do
-			if index > 1 then 
-				transaction.source.reuse_connection (first_source)
+			if index > 1 then
+				transaction.source.reuse_connection (a_first_source)
 			end
 			debug Io.error.put_string ("- OPEN TARGET -%N") end
 			target.open
@@ -153,8 +150,8 @@ feature {NONE} -- Implementation
 			debug Io.error.put_string ("- CLOSE TARGET -%N") end
 			target.close
 		end
-		
-indexing
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

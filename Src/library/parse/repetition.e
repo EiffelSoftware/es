@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Constructs whose specimens are sequences of specimens %
@@ -21,7 +21,7 @@ deferred class REPETITION inherit
 
 feature -- Status report
 
-	left_recursion: BOOLEAN is
+	left_recursion: BOOLEAN
 			-- Is the construct's definition left-recursive?
 		do
 			if structure_list.has (production) then
@@ -38,20 +38,22 @@ feature -- Status report
 			structure_list.search (production);
 			structure_list.remove;
 			structure_list.go_i_th (0)
-		end 
+		end
 
 feature {CONSTRUCT} -- Implementation
 
-	expand_all is
+	expand_all
 			-- Expand all child constructs.
 		do
 			if no_components then
 				expand
 			end
-		end; 
+		end;
 
-	check_recursion is
+	check_recursion
 			-- Check the sequence for left recursion.
+		local
+			l_child: like child
 		do
 			if not check_recursion_list.has (production) then
 				check_recursion_list.extend (production);
@@ -59,26 +61,29 @@ feature {CONSTRUCT} -- Implementation
 					print_children
 				end;
 				child_start;
-				child.expand_all;
-				child.check_recursion
+				l_child := child
+				if l_child /= Void then
+					l_child.expand_all;
+					l_child.check_recursion
+				end
 			end
-		end 
+		end
 
 feature {NONE} -- Implementation
 
-	separator: STRING is 
+	separator: STRING
 			-- List separator in the descendant,
 			-- must be defined as a keyword in the lexical analyzer
-		deferred 
-		end; 
+		deferred
+		end;
 
-	separator_code: INTEGER is 
+	separator_code: INTEGER
 			-- Code of the keyword-separator; -1 if none
 			-- (according to lexical code)
 		local
 			separator_not_keyword: EXCEPTIONS
 		do
-			if separator /= Void then 
+			if separator /= Void then
 				Result := document.keyword_code (separator);
 				if Result = -1 then
 					create separator_not_keyword;
@@ -89,7 +94,7 @@ feature {NONE} -- Implementation
 			end
 		end;
 
-	commit_on_separator : BOOLEAN is
+	commit_on_separator : BOOLEAN
 			-- Is one element of the sequence and a separator enough to
 			-- commit the sequence?
 			-- (This is true by default, but not where the same
@@ -97,15 +102,15 @@ feature {NONE} -- Implementation
 			-- choice construct as a common ancestor of the parents)
 		do
 			Result := True
-		end; 
+		end;
 
-	has_separator: BOOLEAN is
+	has_separator: BOOLEAN
 			-- Has the sequence a separator?
 		do
 			Result := separator_code /= -1
-		end; 
+		end;
 
-	expand is
+	expand
 			-- Create next construct to be parsed and insert it in
 			-- the list of the items of the sequence.
 		local
@@ -116,9 +121,9 @@ feature {NONE} -- Implementation
 				n := n.twin
 			end
 			field (n)
-		end; 
+		end;
 
-	parse_body is
+	parse_body
 			-- Attempt to find a sequence of constructs with separators
 			-- starting at current position. Set committed
 			-- at first separator if `commit_on_separator' is set.
@@ -130,17 +135,17 @@ feature {NONE} -- Implementation
 				child_found := parse_one;
 				first_child_found := child_found
 			until
-				not child_found 
+				not child_found
 			loop
 				separator_found := False;
 				child_found := False;
 				if has_separator then
 					separator_found := document.token.is_keyword (separator_code);
-					if separator_found then 
+					if separator_found then
 						if commit_on_separator then
 							committed := True
 						end;
-						document.get_token 
+						document.get_token
 					end
 				end;
 				if (not has_separator) or separator_found then
@@ -149,13 +154,14 @@ feature {NONE} -- Implementation
 			end;
 			wrong := has_separator and separator_found and not child_found;
 			complete := first_child_found and not (committed and wrong)
-		end; 
+		end;
 
-	parse_one: BOOLEAN is
+	parse_one: BOOLEAN
 			-- Parse one element of the sequence and
 			-- return true if successful.
 		local
 			tmp_committed: BOOLEAN
+			l_child: like child
 		do
 			expand;
 			if has_separator then
@@ -166,15 +172,19 @@ feature {NONE} -- Implementation
 				parse_child;
 				committed := committed or tmp_committed
 			end;
-			Result := child.parsed;
-			if not child.parsed then
+			l_child := child
+			check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+			Result := l_child.parsed;
+			if not l_child.parsed then
 				remove_child
 			end
-		end; 
+		end;
 
-	in_action is
+	in_action
 			-- Execute semantic actions on current construct
 			-- by executing actions on children in sequence.
+		local
+			l_child: like child
 		do
 			if not no_components then
 				from
@@ -182,31 +192,39 @@ feature {NONE} -- Implementation
 				until
 					child_after
 				loop
-					child.semantics;
+					l_child := child
+					check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+					l_child.semantics;
 					middle_action;
 					child_forth
 				end
 			end
-		end; 
+		end;
 
-	middle_action is
+	middle_action
 			-- Execute this after parsing each child.
 			-- Does nothing by default; may be redefined in descendants.
 		do
 		end;
 
-	print_children is
+	print_children
 			-- Print content of sequence,
 			-- optional are between square brackets.
+		require
+			has_child: not is_empty
+		local
+			l_child: like child
 		do
 			print_name;
 			io.put_string (" :	");
 			child_start;
-			if child.is_optional then
+			l_child := child
+			check l_child_not_void: l_child /= Void end -- Implied from the precondition.
+			if l_child.is_optional then
 				io.put_character ('[')
 			end;
-			child.print_name;
-			if child.is_optional then
+			l_child.print_name;
+			if l_child.is_optional then
 				io.put_character (']')
 			end;
 			io.put_string (" ..");
@@ -216,25 +234,25 @@ feature {NONE} -- Implementation
 				print_keyword
 			end;
 			io.new_line
-		end; 
+		end;
 
-	print_keyword is
+	print_keyword
 			-- Print separator string.
 		do
 			io.put_character ('"');
 			io.put_string (document.keyword_string (separator_code));
 			io.put_string ("%" ")
-		end 
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

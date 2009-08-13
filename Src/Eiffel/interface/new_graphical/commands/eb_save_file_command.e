@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command to save a file. Used by the development window and the dynamic lib window"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -46,7 +46,7 @@ create
 
 feature -- Initialization
 
-	make (a_manager: like target) is
+	make (a_manager: like target)
 			-- Create a formatter associated with `a_manager'.
 		local
 			l_shortcut: SHORTCUT_PREFERENCE
@@ -61,7 +61,7 @@ feature -- Initialization
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Save a file with the chosen name.
 		local
 			compileok: BOOLEAN
@@ -70,15 +70,7 @@ feature -- Execution
 				-- It would be nicer to use the `executable' feature but that's 5.1 :)
 			if is_sensitive and target.file_name /= Void then
 				target.perform_check_before_save
-				if
-					Workbench.is_compiling and then
-					Workbench.last_reached_degree > 4
-				then
-					prompts.show_error_prompt (Warning_messages.w_Degree_needed (5), Void, Void)
-					compileok := False
-				else
-					compileok := True
-				end
+				compileok := True
 				target.on_before_text_saved
 				if
 					target.check_passed and then
@@ -99,66 +91,68 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Save_new
 		end
 
-	pixmap: EV_PIXMAP is
+	pixmap: EV_PIXMAP
 			-- Pixmaps representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.general_save_icon
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.general_save_icon_buffer
 		end
 
-	tooltip: STRING_GENERAL is
+	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Save
 		end
 
-	tooltext: STRING_GENERAL is
+	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Save
 		end
 
-	description: STRING_GENERAL is
+	description: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Save
 		end
 
-	name: STRING is "Save_file"
+	name: STRING = "Save_file"
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 
-	on_text_edited (directly_edited: BOOLEAN) is
+	on_text_edited (directly_edited: BOOLEAN)
 			-- make the command sensitive
 		do
 			enable_sensitive
 		end
 
-	on_text_reset is
+	on_text_reset
+			-- make the command insensitive
+		do
+			if attached target as l_target then
+				l_target.update_save_symbol
+			end
+		end
+
+	on_text_back_to_its_last_saved_state
 			-- make the command insensitive
 		do
 			disable_sensitive
 		end
 
-	on_text_back_to_its_last_saved_state is
-			-- make the command insensitive
-		do
-			disable_sensitive
-		end
-
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -171,22 +165,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_SAVE_FILE_COMMAND

@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Comparator for character sets"
 	legal: "See notice at end of class."
@@ -13,7 +13,7 @@ indexing
 		   %using the character '\'"
 
 class CHARACTER_SET inherit
-	
+
 	TO_SPECIAL [BOOLEAN]
 		redefine
 			default_create
@@ -21,7 +21,7 @@ class CHARACTER_SET inherit
 
 feature {NONE} -- Initialization
 
-	default_create is
+	default_create
 			-- Initialize `Current'.
 		do
 			make_area ({CHARACTER}.Max_value + 1)
@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	contains_string (s: STRING): BOOLEAN is
+	contains_string (s: STRING): BOOLEAN
 			-- Does character set contain string `s'?
 		require
 			not_empty: not is_empty
@@ -50,7 +50,7 @@ feature -- Access
 			end
 		end
 
-	contains_character (c: CHARACTER): BOOLEAN is
+	contains_character (c: CHARACTER): BOOLEAN
 			-- Does character set contain character `c'?
 		require
 			not_empty: not is_empty
@@ -60,7 +60,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is character set empty?
 		local
 			i, cnt: INTEGER
@@ -75,10 +75,10 @@ feature -- Status report
 			end
 			Result := not Result
 		end
-		
+
 feature -- Status setting
 
-	define (s: STRING) is
+	define (s: STRING)
 			-- Define character set.
 		require
 			string_exists: s /= Void
@@ -102,7 +102,7 @@ feature -- Status setting
 
 feature -- Element change
 
-	add (s: STRING) is
+	add (s: STRING)
 			-- Add `s' to character set.
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -110,10 +110,10 @@ feature -- Element change
 		do
 			process_string (s, True)
 		end
-		
+
 feature -- Removal
 
-	remove (s: STRING) is
+	remove (s: STRING)
 			-- Remove `s' from character set.
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -121,10 +121,10 @@ feature -- Removal
 		do
 			process_string (s, False)
 		end
-		
+
 feature {NONE} -- Implementation
 
-	process_string (s: STRING; for_addition: BOOLEAN) is
+	process_string (s: STRING; for_addition: BOOLEAN)
 			-- Add or remove (depending on `for_addition') the characters that `s' defines to/from the set.
 		require
 			valid_string: s /= Void and not s.is_empty
@@ -165,7 +165,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_characters (c1, c2: CHARACTER; for_addition: BOOLEAN) is
+	set_characters (c1, c2: CHARACTER; for_addition: BOOLEAN)
 			-- Set or unset (depending on `for_addition') the characters
 			-- between `c1' and `c2' to the set (bounds included).
 			-- Do nothing if c2 is before c1.
@@ -186,7 +186,7 @@ feature {NONE} -- Implementation
 														(area.item (c2.code) = for_addition))
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

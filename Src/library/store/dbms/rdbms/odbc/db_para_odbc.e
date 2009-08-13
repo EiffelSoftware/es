@@ -1,4 +1,4 @@
-indexing
+note
 
 	status: "See notice at end of class.";
 	Date: "$Date$"
@@ -16,7 +16,7 @@ create
 
 feature -- Initialization
 
-	make ( size: INTEGER) is
+	make ( size: INTEGER)
 		do
 			create ptr.make(1, size)
 			count := size
@@ -24,7 +24,7 @@ feature -- Initialization
 
 feature -- Status Setting
 
-	resize (size: INTEGER) is
+	resize (size: INTEGER)
 		require
 			array_exist: ptr /= Void
 		do
@@ -32,14 +32,14 @@ feature -- Status Setting
 			count := size
 		end
 
-	set (val: MANAGED_POINTER; pos: INTEGER) is
+	set (val: detachable MANAGED_POINTER; pos: INTEGER)
 		do
 			ptr.put(val, pos)
 		end
 
-	get (pos: INTEGER): POINTER is
+	get (pos: INTEGER): POINTER
 		local
-			l_ptr: MANAGED_POINTER
+			l_ptr: detachable MANAGED_POINTER
 		do
 			l_ptr := ptr.item (pos)
 			if l_ptr /= Void then
@@ -47,7 +47,7 @@ feature -- Status Setting
 			end
 		end
 
-	release is
+	release
 		local
 			i: INTEGER
 		do
@@ -67,19 +67,19 @@ feature  -- Status
 
 	count: INTEGER
 
-	ptr: ARRAY[MANAGED_POINTER]
+	ptr: ARRAY[detachable MANAGED_POINTER]
 
 
 feature { NONE} -- External Features
 
-	odbc_c_free (p: POINTER) is
+	odbc_c_free (p: POINTER)
 		external
 			"C [macro %"odbc.h%"]"
 		alias
 			"ODBC_C_FREE"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

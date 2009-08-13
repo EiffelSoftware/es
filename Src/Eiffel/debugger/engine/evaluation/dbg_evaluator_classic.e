@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class used to process evaluation on classic system ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,6 +28,9 @@ inherit
 		end
 
 	HEXADECIMAL_STRING_CONVERTER
+		export
+			{NONE} all
+		end
 
 	IPC_SHARED
 		export
@@ -39,7 +42,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (dm: like debugger_manager) is
+	make (dm: like debugger_manager)
 		require else
 			is_classic_project: dm.is_classic_project
 		do
@@ -50,7 +53,7 @@ feature {NONE} -- Implementation
 
 	effective_evaluate_routine (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE; f, realf: FEATURE_I;
 			ctype: CLASS_TYPE; orig_class: CLASS_C; params: LIST [DUMP_VALUE];
-			is_static_call: BOOLEAN) is
+			is_static_call: BOOLEAN)
 		local
 			fi: FEATURE_I
 			dmp: DUMP_VALUE
@@ -79,6 +82,7 @@ feature {NONE} -- Implementation
 				end
 			else
 				dmp := a_target
+				check is_valid_value: dmp.is_valid_value end
 				if dmp.is_basic then
 					fi := realf
 					par := par + 4
@@ -114,13 +118,15 @@ feature {NONE} -- Implementation
 					rout_info := System.rout_info_table.item (fi.rout_id_set.first)
 					send_rqst_4_integer (Rqst_dynamic_eval, rout_info.offset, rout_info.origin, wclt.type_id - 1, par)
 				else
-					fixme ("it seems the runtime/debug is not designed to call precursor ...")
+					debug ("refactor_fixme")
+						fixme ("it seems the runtime/debug is not designed to call precursor ...")
+					end
 					send_rqst_4_integer (Rqst_dynamic_eval, fi.feature_id, wclt.static_type_id - 1, 0, par)
 				end
 					-- Receive the Result.
 				recv_value (Current)
 				if is_exception then
-					if {exv: EXCEPTION_DEBUG_VALUE} exception_item then
+					if attached exception_item as exv then
 						exv.set_hector_addr
 						dbg_error_handler.notify_error_exception (Debugger_names.msg_error_exception_occurred_during_evaluation (fi.written_class.name_in_upper, fi.feature_name, exv.long_description))
 					else
@@ -132,7 +138,7 @@ feature {NONE} -- Implementation
 					if fi.is_function then
 						if item /= Void then
 							item.set_hector_addr
-							if {dv: DUMP_VALUE} item.dump_value then
+							if attached item.dump_value as dv then
 								create last_result.make_with_value (dv)
 							else
 								--FIXME: should we create last_result.failed
@@ -146,7 +152,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	effective_evaluate_once_function (f: FEATURE_I) is
+	effective_evaluate_once_function (f: FEATURE_I)
 		local
 			once_r: ONCE_REQUEST
 			res: ABSTRACT_DEBUG_VALUE
@@ -161,7 +167,7 @@ feature {NONE} -- Implementation
 					else
 						if res /= Void then
 							create last_result.make_with_value (res.dump_value)
-							if {cl: CLASS_C} f.type.associated_class then
+							if attached f.type.associated_class as cl then
 								last_result.suggest_static_class (cl)
 							end
 						else
@@ -178,7 +184,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_empty_instance_of (a_type_i: CL_TYPE_A) is
+	create_empty_instance_of (a_type_i: CL_TYPE_A)
 			-- create an empty instance of `a_type_i' in the context of object's type `a_curr_obj_typeid'
 		local
 			b: BOOLEAN
@@ -194,7 +200,7 @@ feature {NONE} -- Implementation
 			end
 			if item /= Void then
 				item.set_hector_addr
-				if {dv: DUMP_VALUE} item.dump_value then
+				if attached item.dump_value as dv then
 					create last_result.make_with_value (dv)
 				else
 					--FIXME: should we create last_result.failed
@@ -230,7 +236,7 @@ feature {NONE} -- Implementation
 --			end
 --		end
 
-	create_special_any_instance (a_type_i: CL_TYPE_A; a_count: INTEGER) is
+	create_special_any_instance (a_type_i: CL_TYPE_A; a_count: INTEGER)
 		local
 			l_class_c: CLASS_C
 			l_params: LINKED_LIST [DUMP_VALUE]
@@ -263,12 +269,12 @@ feature {NONE} -- Implementation
 
 feature -- Query
 
-	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE is
+	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE
 		do
 			Result := Debugger_manager.Dump_value_factory.new_object_value (cse.object_address, cse.dynamic_class)
 		end
 
-	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE is
+	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE
 			-- <Precursor>
 		local
 			l_cl: CLASS_C
@@ -281,7 +287,7 @@ feature -- Query
 			end
 		end
 
-	address_from_basic_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS is
+	address_from_basic_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS
 		require else
 			a_target_not_void: a_target /= Void
 		local
@@ -297,12 +303,12 @@ feature -- Query
 
 feature {NONE} -- Parameters operation
 
-	parameters_push (dmp: DUMP_VALUE) is
+	parameters_push (dmp: DUMP_VALUE)
 		do
 			dmp.classic_send_value
 		end
 
-	parameters_push_and_metamorphose (dmp: DUMP_VALUE) is
+	parameters_push_and_metamorphose (dmp: DUMP_VALUE)
 		do
 			debug ("debugger_trace_eval_data")
 				print (generating_type + ".parameters_push_and_metamorphose :: Send Metamorphose request ... %N")
@@ -313,15 +319,15 @@ feature {NONE} -- Parameters operation
 
 feature -- Implementation
 
-	Once_request: ONCE_REQUEST is
+	Once_request: ONCE_REQUEST
 			-- Facilities to inspect whether a once routine
 			-- has already been called
 		once
 			create Result.make
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -334,22 +340,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

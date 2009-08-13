@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -16,7 +16,7 @@ create
 
 feature
 
-	make is
+	make
 		do
 			create descriptor.make;
 			create book.make;
@@ -33,9 +33,10 @@ feature {NONE}
 
 	converter1, converter2: CONVERTER;
 
-	execute is
+	execute
 		local
 			i:INTEGER
+			l_message: detachable STRING
 		do
 			io.putstring ("First example file:%N");
 			descriptor.make_conform (book);
@@ -43,7 +44,9 @@ feature {NONE}
 			converter1.set_file_name ("example1.dat");
 			converter1.parse_file;
 			if converter1.conv_error then
-				io.putstring (converter1.conv_message)
+				l_message := converter1.conv_message
+				check l_message /= Void end -- FIXME: implied by .. `conv_error'?
+				io.putstring (l_message)
 			else
 				from
 					i:=1
@@ -69,13 +72,17 @@ feature {NONE}
 			descriptor.set_field_separator ('$');
 			descriptor.check_conformity (book);
 			if descriptor.ecd_error then
-				io.putstring (descriptor.ecd_message)
+				l_message := descriptor.ecd_message
+				check l_message /= Void end -- FIXME: implied by `ecd_error'?
+				io.putstring (l_message)
 			else
 				converter2.set_descriptor (descriptor);
 				converter2.set_file_name ("example2.dat");
 				converter2.parse_file;
 				if converter2.conv_error then
-					io.putstring (converter2.conv_message)
+					l_message := converter2.conv_message
+					check l_message /= Void end -- FIXME: implied by `conv_error'?
+					io.putstring (l_message)
 				else
 					from
 						i:=1
@@ -89,7 +96,7 @@ feature {NONE}
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

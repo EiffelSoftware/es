@@ -1,4 +1,4 @@
-indexing
+note
 	description: "EIS background visiting and storage management"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -15,13 +15,19 @@ inherit
 
 feature -- Operation
 
-	retrieve_storage is
+	save_storage
+			-- Save storage to file
+		do
+			storage.save_to_file
+		end
+
+	retrieve_storage
 			-- Retrive storage from file
 		do
 			storage.retrieve_from_file
 		end
 
-	start_background_visitor is
+	start_background_visitor
 			-- Start EIS background visitor.
 		require
 			universe_ready: workbench.universe_defined
@@ -32,7 +38,7 @@ feature -- Operation
 			background_visitor.start
 		end
 
-	stop_background_visitor is
+	stop_background_visitor
 			-- Stop EIS background visitor.
 		do
 			if background_visitor /= Void then
@@ -42,7 +48,7 @@ feature -- Operation
 
 feature -- Status report
 
-	full_visited: BOOLEAN is
+	full_visited: BOOLEAN
 			-- Has background visiting fully visited?
 		do
 			if background_visitor /= Void then
@@ -54,7 +60,7 @@ feature -- Status report
 
 feature -- Element Change
 
-	add_observer (a_observer: !PROGRESS_OBSERVER) is
+	add_observer (a_observer: attached PROGRESS_OBSERVER)
 			-- Add observer to be managed
 		do
 			if background_visitor = Void then
@@ -63,7 +69,7 @@ feature -- Element Change
 			background_visitor.add_observer (a_observer)
 		end
 
-	remove_observer (a_observer: !PROGRESS_OBSERVER) is
+	remove_observer (a_observer: attached PROGRESS_OBSERVER)
 			-- Add observer to be managed
 		do
 			if background_visitor /= Void then
@@ -73,10 +79,10 @@ feature -- Element Change
 
 feature {NONE} -- Implementation
 
-	background_visitor: ?ES_EIS_BACKGROUND_VISITOR;
+	background_visitor: detachable ES_EIS_BACKGROUND_VISITOR;
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -100,11 +106,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

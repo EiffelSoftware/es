@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Advanced editor for Eiffel Studio.
 		Completes syntax automatically.
@@ -17,7 +17,6 @@ inherit
 	EB_CLICKABLE_EDITOR
 		export
 			{ANY} highlight_selected, first_line_displayed
-			{EB_COMPLETION_CHOICE_WINDOW} Editor_preferences, line_height, offset
 		redefine
 			handle_extended_key,
 			handle_extended_ctrled_key,
@@ -79,7 +78,7 @@ create
 
 feature {NONE} -- Initialize
 
-	make (a_dev_window: EB_DEVELOPMENT_WINDOW) is
+	make (a_dev_window: EB_DEVELOPMENT_WINDOW)
 			-- Initialize the editor.
 		require else
 			dev_window_not_void: a_dev_window /= Void
@@ -93,17 +92,17 @@ feature {NONE} -- Initialize
 			set_completion_possibilities_provider (text_displayed)
 			text_displayed.set_code_completable (Current)
 
-			if {l_window: !EV_WINDOW} a_dev_window then
+			if attached {EV_WINDOW} a_dev_window as l_window then
 				bind_help_shortcut (l_window)
 			end
 		end
 
 feature {NONE} -- Access
 
-	editor_context_cookie: !UUID
+	editor_context_cookie: attached UUID
 			-- The associated editor's context cookie for use with the event list service.
 		do
-			if {l_cookie: UUID} internal_editor_context_cookie then
+			if attached internal_editor_context_cookie as l_cookie then
 				Result := l_cookie
 			else
 				Result := (create {UUID_GENERATOR}).generate_uuid.as_attached
@@ -111,13 +110,13 @@ feature {NONE} -- Access
 			end
 		end
 
-	event_list: !SERVICE_CONSUMER [EVENT_LIST_S]
+	event_list: attached SERVICE_CONSUMER [EVENT_LIST_S]
 			-- Access to the event list service for adding class syntax errors/warnings.
 		once
 			create Result
 		end
 
-	help_uri_scavenger: !ES_HELP_CONTEXT_SCAVENGER [!EB_SMART_EDITOR]
+	help_uri_scavenger: attached ES_HELP_CONTEXT_SCAVENGER [attached EB_SMART_EDITOR]
 			-- Scavenger used to local help contexts within the editor
 		require
 			help_providers_is_service_available: help_providers.is_service_available
@@ -133,36 +132,33 @@ feature {NONE} -- Basic operations
 			-- Attempts to show help given the current help context implemented on Current.
 		local
 			l_uri_scavenger: like help_uri_scavenger
-			l_contexts: !DS_BILINEAR [!HELP_CONTEXT_I]
+			l_contexts: attached DS_BILINEAR [attached HELP_CONTEXT_I]
 			l_dialog: ES_HELP_SELECTOR_DIALOG
 		do
 			if help_providers.is_service_available and then has_focus then
 					-- Look for help contexts
 				l_uri_scavenger := help_uri_scavenger
-				if {l_editor: !EB_SMART_EDITOR} Current then
-					l_uri_scavenger.probe (l_editor)
-					if l_uri_scavenger.has_probed then
-						l_contexts := l_uri_scavenger.scavenged_contexts
-						if not l_contexts.is_empty then
-							if l_contexts.count > 1 then
-									-- Multiple pieces of help available, show dialog
-								create l_dialog.make
-								l_dialog.set_links (l_contexts)
-								l_dialog.show_on_active_window
-							else
-									-- Only one piece of help available.
-								on_help_requested (l_contexts.first)
-							end
+				l_uri_scavenger.probe (Current)
+				if l_uri_scavenger.has_probed then
+					l_contexts := l_uri_scavenger.scavenged_contexts
+					if not l_contexts.is_empty then
+						if l_contexts.count > 1 then
+								-- Multiple pieces of help available, show dialog
+							create l_dialog.make
+							l_dialog.set_links (l_contexts)
+							l_dialog.show_on_active_window
+						else
+								-- Only one piece of help available.
+							on_help_requested (l_contexts.first)
 						end
 					end
 				end
 			end
 		end
 
-
 feature -- Content change
 
-	set_editor_text (s: STRING_32) is
+	set_editor_text (s: STRING_32)
 			-- load text represented by `s' in the editor
 			-- text is considered edited after load, i.e. save command
 			-- is sensitive.
@@ -183,7 +179,7 @@ feature -- Content change
 			date_when_checked := f_d_c
 		end
 
-	reload is
+	reload
 			-- Reload the file named `file_name' in the editor.
 		do
 			load_without_save := True
@@ -192,13 +188,13 @@ feature -- Content change
 
 feature -- Status report
 
-	click_and_complete_is_active: BOOLEAN is
+	click_and_complete_is_active: BOOLEAN
 			-- If in the basic text format, is the text clickable?
 		do
 			Result := text_displayed.click_and_complete_is_active and then allow_edition and then not open_backup
 		end
 
-	syntax_is_correct: BOOLEAN is
+	syntax_is_correct: BOOLEAN
 			-- When text was parsed, was a syntax error found?
 		do
 			Result := text_displayed.click_tool_status /= text_displayed.syntax_error
@@ -207,13 +203,13 @@ feature -- Status report
 	load_without_save: BOOLEAN
 			-- Check and save file before loading a new content?
 
-	exploring_current_class: BOOLEAN is
+	exploring_current_class: BOOLEAN
 			-- Is the current class being explored by the click tool?
 		do
 			Result := text_displayed.exploring_current_class
 		end
 
-	is_text_loaded (a_stone: STONE): BOOLEAN is
+	is_text_loaded (a_stone: STONE): BOOLEAN
 			-- If text loaded?
 		do
 			if is_text_loaded_called then
@@ -226,7 +222,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	no_save_before_next_load is
+	no_save_before_next_load
 			-- Disable check before next loading.
 		do
 			load_without_save := True
@@ -234,7 +230,7 @@ feature -- Status setting
 
 feature -- Search
 
-	find_feature_named (a_name: STRING_32) is
+	find_feature_named (a_name: STRING_32)
 			-- Look for a feature named `a_name' in the text and
 			-- scroll to the corresponding line.
 		local
@@ -256,7 +252,7 @@ feature -- Search
 			end
 		end
 
-	found_feature: BOOLEAN is
+	found_feature: BOOLEAN
 			-- Was last searched feature name found?
 		do
 			Result := text_displayed.found_feature
@@ -264,7 +260,7 @@ feature -- Search
 
 feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Commands
 
-	complete_feature_name is
+	complete_feature_name
 			-- Complete feature name.
 		do
 			if not is_empty and then text_displayed.completing_context and is_editable then
@@ -276,7 +272,7 @@ feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} 
 			end
 		end
 
-	complete_class_name is
+	complete_class_name
 			-- Complete class name.
 		do
 			if not is_empty and then text_displayed.completing_context and is_editable then
@@ -295,7 +291,7 @@ feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} 
 			not_is_empty: not is_empty
 			text_is_fully_loaded: text_is_fully_loaded
 		local
-			l_brace: ?like brace_match_caret_token
+			l_brace: detachable like brace_match_caret_token
 			l_caret_outside: BOOLEAN
 		do
 			l_brace := brace_match_caret_token
@@ -316,7 +312,7 @@ feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} 
 					end
 
 						-- Set new cursor position
-					if {l_eiffel_line: EIFFEL_EDITOR_LINE} l_brace.line then
+					if attached {EIFFEL_EDITOR_LINE} l_brace.line as l_eiffel_line then
 						check valid_line: l_eiffel_line.is_valid end
 						text_displayed.cursor.set_line (l_eiffel_line)
 						if brace_matcher.is_closing_brace (l_brace.token) then
@@ -340,7 +336,7 @@ feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} 
 			end
 		end
 
-	embed_in_block (keyword: STRING_32; pos_in_keyword: INTEGER) is
+	embed_in_block (keyword: STRING_32; pos_in_keyword: INTEGER)
 			-- Embed selection or current line in block formed by `keyword' and "end".
 			-- Cursor is positioned to the `pos_in_keyword'-th character of `keyword'.
 		require
@@ -356,7 +352,7 @@ feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} 
 
 feature -- Autocomplete
 
-	update_click_list (after_save: BOOLEAN) is
+	update_click_list (after_save: BOOLEAN)
 			-- update the click tool
 			-- `after_save' must be True if current class text has just been saved
 			-- and False otherwise.
@@ -369,7 +365,7 @@ feature -- Autocomplete
 
 feature {NONE} -- Text loading
 
-	string_loading_setup, file_loading_setup is
+	string_loading_setup, file_loading_setup
 			-- Setup editor just before file/string loading begins.
 		do
 					-- If `load_file_error' has been set before, we simply do not setup the click tool.
@@ -380,7 +376,7 @@ feature {NONE} -- Text loading
 			end
 		end
 
-	on_text_back_to_its_last_saved_state is
+	on_text_back_to_its_last_saved_state
 			-- Reset click tool when back to the saved state
 		do
 			Precursor
@@ -391,14 +387,14 @@ feature {NONE} -- Text loading
 			set_title_saved (True)
 		end
 
-	on_text_reset is
+	on_text_reset
 			-- Redefine
 		do
 			Precursor
 			set_title_saved (True)
 		end
 
-	on_text_edited (directly_edited: BOOLEAN) is
+	on_text_edited (directly_edited: BOOLEAN)
 			-- Redefine
 		do
 			Precursor (directly_edited)
@@ -410,7 +406,7 @@ feature {NONE} -- Text loading
 
 feature -- Process Vision2 events
 
- 	on_char (character_string: STRING_32) is
+ 	on_char (character_string: STRING_32)
    			-- Process displayable character key press event.
    		do
    			Precursor (character_string)
@@ -420,9 +416,9 @@ feature -- Process Vision2 events
 			end
  		end
 
-feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
+feature {NONE} -- Process Vision2 Events
 
-	handle_character (c: CHARACTER_32) is
+	handle_character (c: CHARACTER_32)
  			-- Process the push on a character key.
 		local
 			t: EDITOR_TOKEN_KEYWORD
@@ -499,7 +495,7 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			auto_point := switch_auto_point xor auto_point
 		end
 
-	handle_extended_key (ev_key: EV_KEY) is
+	handle_extended_key (ev_key: EV_KEY)
  			-- Process the push on an extended key.
 		local
 			t: EDITOR_TOKEN_KEYWORD
@@ -569,7 +565,7 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			end
 		end
 
-	handle_extended_ctrled_key (ev_key: EV_KEY) is
+	handle_extended_ctrled_key (ev_key: EV_KEY)
  			-- Process the push on Ctrl + an extended key.
 		local
 			code: INTEGER
@@ -587,7 +583,7 @@ feature {NONE} -- Handle keystrokes
 
 	completion_bckp: INTEGER
 
-	basic_cursor_move (action: PROCEDURE [like cursor_type,TUPLE]) is
+	basic_cursor_move (action: PROCEDURE [like cursor_type,TUPLE])
 			-- Perform a basic cursor move such as go_left,
 			-- go_right, ... an example of agent `action' is
 			-- cursor~go_left_char.
@@ -603,13 +599,13 @@ feature {NONE} -- Handle keystrokes
 
 feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 
-	auto_complete_after_dot: BOOLEAN is
+	auto_complete_after_dot: BOOLEAN
 	        -- Should build autocomplete dialog after call on valid target?
 	  	do
 	  	   	Result := preferences.editor_data.auto_auto_complete
 	  	end
 
-	exit_complete_mode is
+	exit_complete_mode
 			-- Set mode to normal (not completion mode).
 		do
 			is_completing := False
@@ -625,7 +621,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			end
 		end
 
-	calculate_completion_list_x_position: INTEGER is
+	calculate_completion_list_x_position: INTEGER
 			-- Determine the x position to display the completion list
 		local
 			screen: EB_STUDIO_SCREEN
@@ -662,13 +658,13 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			Result := Result - 20
 
 			create l_helpers
-			if {l_window: !EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) and then l_window.is_maximized then
+			if attached {EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) as l_window and then l_window.is_maximized then
 				Result := l_helpers.suggest_pop_up_widget_location_with_size (l_window, Result, 0, list_width, 10).x
 			end
 			Result := Result.max (0)
 		end
 
-	calculate_completion_list_y_position: INTEGER is
+	calculate_completion_list_y_position: INTEGER
 			-- Determine the y position to display the completion list
 		local
 			cursor: like cursor_type
@@ -683,7 +679,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 				-- Get y pos of cursor
 			create l_helpers
 
-			if {l_window: !EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) and then l_window.is_maximized then
+			if attached {EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) as l_window and then l_window.is_maximized then
 				l_height := l_helpers.window_working_area (l_window).height
 			end
 			if l_height = 0 then
@@ -740,7 +736,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			end
 		end
 
-	calculate_completion_list_height: INTEGER is
+	calculate_completion_list_height: INTEGER
 			-- Determine the height the completion should list should have
 		local
 			upper_space,
@@ -798,7 +794,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			end
 		end
 
-	calculate_completion_list_width: INTEGER is
+	calculate_completion_list_width: INTEGER
 			-- Determine the width the completion list should have			
 		do
 			if preferences.development_window_data.remember_completion_list_size then
@@ -811,7 +807,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 
 feature {NONE} -- Brace matching
 
-	brace_matcher: !ES_EDITOR_BRACE_MATCHER
+	brace_matcher: attached ES_EDITOR_BRACE_MATCHER
 			-- Brace matcher utility access.
 		require
 			is_interface_usable: is_interface_usable
@@ -819,7 +815,7 @@ feature {NONE} -- Brace matching
 			create Result
 		end
 
-	brace_match_caret_token: ?TUPLE [token: !EDITOR_TOKEN; line: !EDITOR_LINE]
+	brace_match_caret_token: detachable TUPLE [token: attached EDITOR_TOKEN; line: attached EDITOR_LINE]
 			-- Attempts to retrieve the most applicable brace match token under the caret.
 			--
 			-- `Result': The most applicable token or Void if no token was found.
@@ -828,10 +824,10 @@ feature {NONE} -- Brace matching
 			not_is_empty: not is_empty
 			text_is_fully_loaded: text_is_fully_loaded
 		local
-			l_utils: !like brace_matcher
-			l_token: ?EDITOR_TOKEN
-			l_prev_token: ?EDITOR_TOKEN
-			l_line: ?EDITOR_LINE
+			l_utils: attached like brace_matcher
+			l_token: detachable EDITOR_TOKEN
+			l_prev_token: detachable EDITOR_TOKEN
+			l_line: detachable EDITOR_LINE
 		do
 				-- Locate applicable tokens
 			l_utils := brace_matcher
@@ -871,73 +867,82 @@ feature {NONE} -- Brace matching
 		require
 			is_interface_usable: is_interface_usable
 			not_is_empty: not is_empty
-			text_is_fully_loaded: text_is_fully_loaded
 		local
-			l_utils: !like brace_matcher
-			l_token: !EDITOR_TOKEN
-			l_line: !EDITOR_LINE
-			l_brace: ?like brace_match_caret_token
+			l_utils: attached like brace_matcher
+			l_token: attached EDITOR_TOKEN
+			l_line: attached EDITOR_LINE
+			l_brace: detachable like brace_match_caret_token
 			l_invalidated_lines: ARRAYED_SET [EDITOR_LINE]
-			l_last_matches: !like last_highlighted_matched_braces
-			l_invalidated_line: ?EDITOR_LINE
+			l_last_matches: attached like last_highlighted_matched_braces
+			l_invalidated_line: detachable EDITOR_LINE
+			l_action: PROCEDURE [EB_CLICKABLE_EDITOR, TUPLE]
 		do
-			create l_invalidated_lines.make (2)
+			if text_is_fully_loaded then
+				create l_invalidated_lines.make (2)
 
-				-- Remove last matches
-			l_last_matches := last_highlighted_matched_braces
-			from l_last_matches.start until l_last_matches.after loop
-				l_brace ?= l_last_matches.item
-				if l_brace /= Void then
-					l_brace.token.set_highlighted (False)
-					if not l_invalidated_lines.has (l_brace.line) then
-						l_invalidated_lines.extend (l_brace.line)
+					-- Remove last matches
+				l_last_matches := last_highlighted_matched_braces
+				from l_last_matches.start until l_last_matches.after loop
+					l_brace ?= l_last_matches.item
+					if l_brace /= Void then
+						l_brace.token.set_highlighted (False)
+						if not l_invalidated_lines.has (l_brace.line) then
+							l_invalidated_lines.extend (l_brace.line)
+						end
 					end
+					l_last_matches.remove
 				end
-				l_last_matches.remove
-			end
 
-			if not has_selection and then preferences.editor_data.highlight_matching_braces then
-					-- Locate applicable tokens
-				l_brace := brace_match_caret_token
-				if l_brace /= Void then
-					l_token := l_brace.token
-					l_line := l_brace.line
+				if not has_selection and then preferences.editor_data.highlight_matching_braces then
+						-- Locate applicable tokens
+					l_brace := brace_match_caret_token
+					if l_brace /= Void then
+						l_token := l_brace.token
+						l_line := l_brace.line
 
-						-- Find matching brace tokens.
-					l_utils := brace_matcher
-					if l_utils.is_brace (l_token) and then l_line.has_token (l_token) then
-						l_brace := l_utils.match_brace (l_token, l_line, Void)
-						if l_brace /= Void then
-								-- There was a match.
-							l_token.set_highlighted (True)
-							if not l_invalidated_lines.has (l_line) then
-								l_invalidated_lines.extend (l_line)
+							-- Find matching brace tokens.
+						l_utils := brace_matcher
+						if l_utils.is_brace (l_token) and then l_line.has_token (l_token) then
+							l_brace := l_utils.match_brace (l_token, l_line, Void)
+							if l_brace /= Void then
+									-- There was a match.
+								l_token.set_highlighted (True)
+								if not l_invalidated_lines.has (l_line) then
+									l_invalidated_lines.extend (l_line)
+								end
+								l_last_matches.extend ([l_token, l_line])
+
+								l_brace.token.set_highlighted (True)
+								if not l_invalidated_lines.has (l_brace.line) then
+									l_invalidated_lines.extend (l_brace.line)
+								end
+								l_last_matches.extend ([l_brace.token, l_brace.line])
 							end
-							l_last_matches.extend ([l_token, l_line])
-
-							l_brace.token.set_highlighted (True)
-							if not l_invalidated_lines.has (l_brace.line) then
-								l_invalidated_lines.extend (l_brace.line)
-							end
-							l_last_matches.extend ([l_brace.token, l_brace.line])
 						end
 					end
 				end
-			end
 
-			if a_update and then not l_invalidated_lines.is_empty then
-					-- Perform line redraws
-				from l_invalidated_lines.start until l_invalidated_lines.after loop
-					l_invalidated_line := l_invalidated_lines.item
-					if l_invalidated_line.is_valid then
-						invalidate_line (l_invalidated_line.index, True)
+				if a_update and then not l_invalidated_lines.is_empty then
+						-- Perform line redraws
+					from l_invalidated_lines.start until l_invalidated_lines.after loop
+						l_invalidated_line := l_invalidated_lines.item
+						if l_invalidated_line.is_valid then
+							invalidate_line (l_invalidated_line.index, True)
+						end
+						l_invalidated_lines.forth
 					end
-					l_invalidated_lines.forth
+				end
+			else
+					-- We are not ready to hightlight braces just yet, deferred until the text
+					-- has been fully loaded.
+				l_action := agent highlight_matched_braces (a_update)
+				if not after_reading_text_actions.has (l_action) then
+					after_reading_text_actions.extend (l_action)
 				end
 			end
 		end
 
-	last_highlighted_matched_braces: !ARRAYED_LIST [!TUPLE [token: EDITOR_TOKEN; line: EDITOR_LINE]]
+	last_highlighted_matched_braces: attached ARRAYED_LIST [attached TUPLE [token: EDITOR_TOKEN; line: EDITOR_LINE]]
 			-- Last matched brace tokens, set in `highlight_matched_braces'.
 		require
 			is_interface_usable: is_interface_usable
@@ -947,7 +952,7 @@ feature {NONE} -- Brace matching
 
 feature {EB_SAVE_FILE_COMMAND, EB_SAVE_ALL_FILE_COMMAND, EB_DEVELOPMENT_WINDOW, EB_STONE_CHECKER} -- Docking title
 
-	set_title_saved (a_saved: BOOLEAN) is
+	set_title_saved (a_saved: BOOLEAN)
 			-- Set '*' in the title base on `a_saved'.
 		local
 			l_title: STRING_32
@@ -963,7 +968,7 @@ feature {EB_SAVE_FILE_COMMAND, EB_SAVE_ALL_FILE_COMMAND, EB_DEVELOPMENT_WINDOW, 
 			end
 		end
 
-	set_title_saved_with (a_saved: BOOLEAN; a_title: STRING) is
+	set_title_saved_with (a_saved: BOOLEAN; a_title: STRING)
 			-- Set '*' in the title base on `a_saved'.
 			-- `a_title' will be used as name in editor docking_content
 		require
@@ -1008,7 +1013,7 @@ feature {EB_SAVE_FILE_COMMAND, EB_SAVE_ALL_FILE_COMMAND, EB_DEVELOPMENT_WINDOW, 
 
 feature {NONE} -- Autocomplete implementation
 
-	on_key_down (ev_key: EV_KEY)is
+	on_key_down (ev_key: EV_KEY)
 		do
 			completion_timeout.actions.block
 			if ev_key.code = {EV_KEY_CONSTANTS}.key_f1 then
@@ -1036,7 +1041,7 @@ feature {NONE} -- syntax completion
 	previous_token_image: STRING_32
 			-- Image of the previous token
 
-	keyword_image (token: EDITOR_TOKEN_KEYWORD): STRING_32 is
+	keyword_image (token: EDITOR_TOKEN_KEYWORD): STRING_32
 			-- Image of keyword beginning by `token'.
 		local
 			test: STRING_32
@@ -1086,11 +1091,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	process_click_tool_error is
+	process_click_tool_error
 			-- Show warning corresponding to `click_tool' error.
 		local
 			l_displayed: ES_ERROR_DISPLAYER
-			l_item: EVENT_LIST_ERROR_ITEM
 			l_error: SYNTAX_ERROR
 		do
 			if event_list.is_service_available then
@@ -1104,15 +1108,24 @@ feature {NONE} -- Implementation
 					-- There has been a syntax error so add the item to the list
 				l_error := text_displayed.last_syntax_error
 				check l_error_attached: l_error /= Void end
-				if event_list.is_service_available then
-					create l_displayed.make (window_manager)
-					create l_item.make ({ENVIRONMENT_CATEGORIES}.editor, l_error.out, l_error)
-					event_list.service.put_event_item (editor_context_cookie, l_item)
+				create l_displayed.make (window_manager)
+				l_displayed.trace_error ({ENVIRONMENT_CATEGORIES}.editor, editor_context_cookie, l_error)
+
+				if attached {ES_ERROR_LIST_TOOL} dev_window.shell_tools.tool ({ES_ERROR_LIST_TOOL}) as l_tool then
+					if not l_tool.is_tool_instantiated then
+							-- If the error list tool is not yet shown, show it, but just the first time.
+							-- The purpose is two fold; This is the first error generated and so the user should
+							-- be alerted to the first error, much like in the same way the compiler error
+							-- brings the UI to the front. Second, it will update the error count index.
+						l_tool.show (False)
+							-- Brings focus back (Legacy tool implementation causes focusing when show is called - Grr!)
+						set_focus
+					end
 				end
 			end
 		end
 
-	complementary_character (c:CHARACTER_32): CHARACTER_32 is
+	complementary_character (c:CHARACTER_32): CHARACTER_32
 			-- Character complementary to `c', i.e. closing bracket
 			-- for an opening one for instance.
 		do
@@ -1143,7 +1156,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	initialize_customizable_commands is
+	initialize_customizable_commands
 			-- Create array of customizable commands.
 		do
 			create customizable_commands.make (11)
@@ -1166,14 +1179,14 @@ feature {NONE} -- Implementation
 			customizable_commands.put (agent insert_customized_string (3), "customized_insertion_3")
 		end
 
-	insert_customized_string (index: INTEGER) is
+	insert_customized_string (index: INTEGER)
 			--
 		do
 			text_displayed.insert_customized_expression (preferences.editor_data.customized_strings.i_th (index).value)
 			refresh_now
 		end
 
-	show_syntax_warning is
+	show_syntax_warning
 			-- Display syntax error warning message
 			-- and highlight error.
 		require
@@ -1208,7 +1221,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	on_mouse_wheel (a_delta: INTEGER) is
+	on_mouse_wheel (a_delta: INTEGER)
 			-- <Precursor>
 		local
 			l_env: EV_ENVIRONMENT
@@ -1225,7 +1238,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_mouse_button_up (x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; unused4,unused5:INTEGER) is
+	on_mouse_button_up (x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; unused4,unused5:INTEGER)
 			-- <Precursor>
 		do
 			if button = 1 and then not is_empty then
@@ -1237,7 +1250,7 @@ feature {NONE} -- Implementation
 
 feature -- Text Loading	
 
-	load_file (a_file_name: FILE_NAME) is
+	load_file (a_file_name: FILE_NAME)
 			-- Load file named `a_file_name' in the editor.
 		do
 			if (not load_without_save) and then changed then
@@ -1249,7 +1262,7 @@ feature -- Text Loading
 			load_without_save := False
 		end
 
-	load_text (s: STRING_GENERAL) is
+	load_text (s: STRING_GENERAL)
 			-- <Precursor>
 		local
 			l_d_class : DOCUMENT_CLASS
@@ -1278,7 +1291,7 @@ feature -- Text Loading
 
 feature {NONE} -- Memory management
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
@@ -1293,7 +1306,7 @@ feature {NONE} -- Memory management
 			end
 		end
 
-	internal_detach_entities is
+	internal_detach_entities
 			-- <Precursor>
 		do
 			completion_timeout := Void
@@ -1306,25 +1319,25 @@ feature {NONE} -- Memory management
 
 feature {NONE} -- Factory
 
-	create_token_handler: ?ES_EDITOR_TOKEN_HANDLER
+	create_token_handler: detachable ES_EDITOR_TOKEN_HANDLER
 			-- Create a token handler, used to perform actions or respond to mouse/keyboard events
 			-- Note: Return Void to prevent any handling from takening place.
 		do
-			if {l_editor: !EB_CUSTOM_WIDGETTED_EDITOR} Current then
-				create {!ES_SMART_EDITOR_TOKEN_HANDLER} Result.make (l_editor)
+			if attached {EB_CUSTOM_WIDGETTED_EDITOR} Current as l_editor then
+				create {attached ES_SMART_EDITOR_TOKEN_HANDLER} Result.make (l_editor)
 			end
 		end
 
 feature {NONE} -- Code completable implementation
 
-	prepare_auto_complete is
+	prepare_auto_complete
 			-- Prepare possibilities in provider.
 		do
 			check_need_signature
 			Precursor {EB_TAB_CODE_COMPLETABLE}
 		end
 
-	check_need_signature is
+	check_need_signature
 			-- Check if signature needed.
 			-- We don't need signature when completing outside a feature.
 		local
@@ -1436,7 +1449,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	current_line: EIFFEL_EDITOR_LINE is
+	current_line: EIFFEL_EDITOR_LINE
 			-- Line of current cursor.
 			-- Every query is not guarenteed the same object.
 		do
@@ -1446,7 +1459,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	can_complete (a_key: EV_KEY; a_ctrl: BOOLEAN; a_alt: BOOLEAN; a_shift: BOOLEAN): BOOLEAN is
+	can_complete (a_key: EV_KEY; a_ctrl: BOOLEAN; a_alt: BOOLEAN; a_shift: BOOLEAN): BOOLEAN
 			-- Can complete by these keys?
 		local
 			l_shortcut_pref: SHORTCUT_PREFERENCE
@@ -1490,7 +1503,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	handle_tab_action (a_backwards: BOOLEAN) is
+	handle_tab_action (a_backwards: BOOLEAN)
 			-- Handle tab action.
 		do
 			if a_backwards then
@@ -1502,7 +1515,7 @@ feature {NONE} -- Code completable implementation
 			run_if_editable (agent check_cursor_position)
 		end
 
-	go_to_start_of_selection is
+	go_to_start_of_selection
 			-- Move cursor to the start of the selection if possible.
 		do
 			if text_displayed.cursor /= text_displayed.selection_start then
@@ -1515,7 +1528,7 @@ feature {NONE} -- Code completable implementation
 			disable_selection
 		end
 
-	go_to_end_of_selection is
+	go_to_end_of_selection
 			-- Move cursor to the end of selection
 		do
 			if text_displayed.cursor /= text_displayed.selection_end then
@@ -1528,7 +1541,7 @@ feature {NONE} -- Code completable implementation
 			disable_selection
 		end
 
-	go_to_start_of_line is
+	go_to_start_of_line
 			-- Move cursor to the start of a line
 			-- where tab switching to next feature argument should function.
 		do
@@ -1538,7 +1551,7 @@ feature {NONE} -- Code completable implementation
 			text_displayed.cursor.go_start_line
 		end
 
-	go_to_end_of_line is
+	go_to_end_of_line
 			-- Move cursor to the start of a line.
 		do
 			if has_selection then
@@ -1547,7 +1560,7 @@ feature {NONE} -- Code completable implementation
 			text_displayed.cursor.go_end_line
 		end
 
-	go_right_char is
+	go_right_char
 			-- Go to right character.
 		do
 			if has_selection then
@@ -1556,7 +1569,7 @@ feature {NONE} -- Code completable implementation
 			text_displayed.cursor.go_right_char_no_down_line
 		end
 
-	move_cursor_to (a_token: EDITOR_TOKEN; a_line: like current_line) is
+	move_cursor_to (a_token: EDITOR_TOKEN; a_line: like current_line)
 			-- Move cursor to `a_token' which is in `a_line'.
 		do
 			if has_selection then
@@ -1566,7 +1579,7 @@ feature {NONE} -- Code completable implementation
 			text_displayed.cursor.make_from_relative_pos (a_line, a_token, 1, text_displayed)
 		end
 
-	select_region_between_token (a_start_token: EDITOR_TOKEN; a_start_line: like current_line; a_end_token: EDITOR_TOKEN; a_end_line: like current_line) is
+	select_region_between_token (a_start_token: EDITOR_TOKEN; a_start_line: like current_line; a_end_token: EDITOR_TOKEN; a_end_line: like current_line)
 			-- Select from the start position of `a_start_token' to the start position of `a_end_token'.
 		do
 			if has_selection then
@@ -1581,7 +1594,7 @@ feature {NONE} -- Code completable implementation
 			show_possible_selection
 		end
 
-	allow_tab_selecting: BOOLEAN is
+	allow_tab_selecting: BOOLEAN
 			-- Allow tab selecting?
 		local
 			l_current_line: like current_line
@@ -1638,7 +1651,7 @@ feature {NONE} -- Code completable implementation
 					until
 						l_current_token = Void or else
 						l_current_token = l_current_line.eol_token or else
-						{lt_com: EDITOR_TOKEN_COMMENT}l_current_token
+						attached {EDITOR_TOKEN_COMMENT} l_current_token as lt_com
 					loop
 						if
 							not l_has_right_brace_following and then
@@ -1665,13 +1678,13 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	current_token_in_line (a_line: like current_line): EDITOR_TOKEN is
+	current_token_in_line (a_line: like current_line): EDITOR_TOKEN
 			-- Token of the cursor.
 		do
 			Result := text_displayed.cursor.token
 		end
 
-	selection_start_token_in_line (a_line: like current_line): EDITOR_TOKEN is
+	selection_start_token_in_line (a_line: like current_line): EDITOR_TOKEN
 			-- Start token in the selection.
 		do
 			if text_displayed.cursor.y_in_lines = text_displayed.selection_start.y_in_lines then
@@ -1681,7 +1694,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	selection_end_token_in_line (a_line: like current_line): EDITOR_TOKEN is
+	selection_end_token_in_line (a_line: like current_line): EDITOR_TOKEN
 			-- Token after end of selection.
 		do
 			if text_displayed.cursor.y_in_lines = text_displayed.selection_end.y_in_lines then
@@ -1691,7 +1704,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	show_possible_selection is
+	show_possible_selection
 			-- Show possible selection
 		do
 			text_displayed.enable_selection
@@ -1700,13 +1713,13 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	key_press_actions: EV_KEY_ACTION_SEQUENCE is
+	key_press_actions: EV_KEY_ACTION_SEQUENCE
 			-- Actions to be performed when a keyboard key is pressed.
 		do
 			Result := editor_drawing_area.key_press_actions
 		end
 
-	delete_char is
+	delete_char
 			-- Delete char.
 		do
 			if has_selection then
@@ -1720,7 +1733,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	back_delete_char is
+	back_delete_char
 			-- Back delete character.
 		do
 			if has_selection then
@@ -1734,7 +1747,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	insert_string (a_str: STRING_32) is
+	insert_string (a_str: STRING_32)
 			-- Insert `a_str' at cursor position.
 		do
 			if has_selection then
@@ -1748,7 +1761,7 @@ feature {NONE} -- Code completable implementation
 			end
 		end
 
-	insert_char (a_char: CHARACTER_32) is
+	insert_char (a_char: CHARACTER_32)
 			-- Insert `a_char' at cursor position.
 		do
 			if has_selection then
@@ -1757,7 +1770,7 @@ feature {NONE} -- Code completable implementation
 			text_displayed.insert_char (a_char)
 		end
 
-	replace_char (a_char: CHARACTER_32) is
+	replace_char (a_char: CHARACTER_32)
 			-- Replace current char with `a_char'.
 		do
 			if has_selection then
@@ -1766,41 +1779,37 @@ feature {NONE} -- Code completable implementation
 			text_displayed.replace_char (a_char)
 		end
 
-	resume_focus_in_actions is
+	resume_focus_in_actions
 			-- Resume focus in actions
-			-- (export status {EB_CODE_COMPLETION_WINDOW})
 		do
 			editor_drawing_area.focus_in_actions.resume
 		end
 
-	block_focus_in_actions is
+	block_focus_in_actions
 			-- Block focus in actions
-			-- (export status {EB_CODE_COMPLETION_WINDOW})
 		do
 			editor_drawing_area.focus_in_actions.block
 		end
 
-	block_focus_out_actions is
+	block_focus_out_actions
 			-- Block focus out actions.
-			-- (export status {EB_CODE_COMPLETION_WINDOW})
 		do
 			editor_drawing_area.focus_out_actions.block
 		end
 
-	resume_focus_out_actions is
+	resume_focus_out_actions
 			-- Resume focus out actions.
-			-- (export status {EB_CODE_COMPLETION_WINDOW})
 		do
 			editor_drawing_area.focus_out_actions.resume
 		end
 
-	save_cursor is
+	save_cursor
 			-- Save cursor position for retrieving.
 		do
 			saved_cursor := text_displayed.cursor.twin
 		end
 
-	retrieve_cursor is
+	retrieve_cursor
 			-- Retrieve cursor position from saving.
 		do
 			text_displayed.cursor.make_from_character_pos (saved_cursor.x_in_characters, saved_cursor.y_in_lines, text_displayed)
@@ -1808,13 +1817,13 @@ feature {NONE} -- Code completable implementation
 
 	saved_cursor: EDITOR_CURSOR
 
-	complete_feature_call (completed: STRING_32; is_feature_signature: BOOLEAN; appended_character: CHARACTER_32; remainder: INTEGER; a_continue_completion: BOOLEAN) is
+	complete_feature_call (completed: STRING_32; is_feature_signature: BOOLEAN; appended_character: CHARACTER_32; remainder: INTEGER; a_continue_completion: BOOLEAN)
 			--
 		do
 			text_displayed.complete_feature_call (completed, is_feature_signature, appended_character, remainder, not a_continue_completion)
 		end
 
-	select_from_cursor_to_saved is
+	select_from_cursor_to_saved
 			-- Select from cursor position to saved cursor position
 		do
 			check saved_cursor /= Void end
@@ -1824,19 +1833,19 @@ feature {NONE} -- Code completable implementation
 			show_possible_selection
 		end
 
-	end_of_line: BOOLEAN is
+	end_of_line: BOOLEAN
 			--
 		do
 			Result := text_displayed.cursor.token = text_displayed.cursor.line.eol_token
 		end
 
-	current_char: CHARACTER_32 is
+	current_char: CHARACTER_32
 			-- Current character, to the right of the cursor.
 		do
 			Result := text_displayed.cursor.wide_item
 		end
 
-	on_key_pressed (a_key: EV_KEY) is
+	on_key_pressed (a_key: EV_KEY)
 			-- Do nothing.
 			-- We do it in `handle_extended_key'
 		do
@@ -1845,7 +1854,7 @@ feature {NONE} -- Code completable implementation
 	completing_automatically: BOOLEAN
 			-- Is completion being shown automatically?
 
-	completing_word: BOOLEAN is
+	completing_word: BOOLEAN
 			-- Has user requested to complete a word.
 			-- Note: Word completion is based on context.
 			-- Completing without context is considered completing (pressing CTRL+SPACE for a feature list of Current).
@@ -1886,14 +1895,14 @@ feature {NONE} -- Code completable implementation
 
 feature {NONE} -- Implementation: Internal cache
 
-	internal_editor_context_cookie: ?like editor_context_cookie
+	internal_editor_context_cookie: detachable like editor_context_cookie
 			-- Cached version of `editor_context_cookie'
 			-- Note: Do not use directly!
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1904,22 +1913,22 @@ feature {NONE} -- Implementation: Internal cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SMART_EDITOR

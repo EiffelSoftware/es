@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Mechanisms for building and using lexical analyzers. %
@@ -19,7 +19,7 @@ create
 
 feature -- Initialization
 
-	build (store_file_name, grammar_file_name: STRING) is
+	build (store_file_name, grammar_file_name: STRING)
 			-- Create a lexical analyzer.
 			-- If `store_file_name' is the name of an existing file,
 			-- use analyzer stored in that file.
@@ -37,29 +37,33 @@ feature -- Initialization
 			retrieve_analyzer (store_file_name)
 		ensure
 			analyzer_exists: analyzer /= Void
-		end; 
+		end;
 
 feature -- Status setting
 
-	analyze (input_file_name: STRING) is
+	analyze (input_file_name: STRING)
 			-- Perform lexical analysis on file
 			-- of name `input_file_name'.
+		local
+			l_analyzer: like analyzer
 		do
+			l_analyzer := analyzer
+			check l_analyzer_attached: l_analyzer /= Void end
 			from
-				analyzer.set_file (input_file_name);
+				l_analyzer.set_file (input_file_name);
 				begin_analysis
 			until
-				analyzer.end_of_text
+				l_analyzer.end_of_text
 			loop
-				analyzer.get_any_token;
-				do_a_token (analyzer.last_token)
+				l_analyzer.get_any_token;
+				do_a_token (l_analyzer.last_token)
 			end;
 			end_analysis
-		end; 
+		end;
 
 feature -- Output
 
-	end_analysis is
+	end_analysis
 			-- Terminate lexical analysis.
 			-- This default version of the procedure
 			-- does nothing.
@@ -68,7 +72,7 @@ feature -- Output
 		do
 		end;
 
-	begin_analysis is
+	begin_analysis
 			-- Initialize lexical analysis.
 			-- This default version of the procedure
 			-- simply prints header information.
@@ -84,7 +88,7 @@ feature -- Output
 			end
 		end;
 
-	do_a_token (read_token: TOKEN) is
+	do_a_token (read_token: TOKEN)
 			-- Handle `read_token'.
 			-- This default version of the procedure
 			-- simply prints information on `read_token'.
@@ -111,11 +115,11 @@ feature -- Output
 					io.new_line
 				end
 			end
-		end 
+		end
 
 feature {NONE} -- Implementation
 
-	build_from_grammar (store_file_name, grammar_file_name: STRING) is
+	build_from_grammar (store_file_name, grammar_file_name: STRING)
 			-- From the grammar in file of name `grammar_file_name',
 			-- make a lexical analyzer for Eiffel
 			-- and store it into file of name `store_file_name'
@@ -125,14 +129,14 @@ feature {NONE} -- Implementation
 			store_analyzer (store_file_name)
 		ensure
 			analyzer_exists: analyzer /= Void
-		end 
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

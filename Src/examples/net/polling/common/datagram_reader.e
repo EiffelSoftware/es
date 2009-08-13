@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Command executed by both the polling client and the polling%
@@ -26,22 +26,24 @@ feature
 
 	active_medium: NETWORK_DATAGRAM_SOCKET
 
-	execute (arg: ANY) is
+	execute (arg: ANY)
 		local
-			rec_pack: DATAGRAM_PACKET
+			rec_pack: PACKET
+			datagram: DATAGRAM_PACKET
 			i: INTEGER
 		do
 			rec_pack := active_medium.received (10, 0)
-			io.putint (rec_pack.packet_number)
+			create datagram.make_from_managed_pointer (rec_pack.data)
+			io.putint (datagram.packet_number)
 			io.new_line
 			from i := 0 until i > 9 loop
-				io.putchar (rec_pack.element (i))
+				io.putchar (datagram.element (i))
 				i := i + 1
 			end
 			io.new_line
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

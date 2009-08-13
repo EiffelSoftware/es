@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		reg2wix command line argument parser.
 	]"
@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize command line argument parser
 		do
 			make_multi_parser (False, True)
@@ -35,13 +35,13 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	reg_files: !LINEAR [!STRING]
+	reg_files: LINEAR [STRING]
 			-- List of registry files to process
 		do
 			Result := values
 		end
 
-	output_file_name: !STRING
+	output_file_name: STRING
 			-- Optional output file name
 		do
 			Result := options_values_of_name (out_switch).first
@@ -57,24 +57,24 @@ feature -- Status report
 
 feature {NONE} -- Usage
 
-	name: !STRING = "Registry File to WiX Conversion Tool"
+	name: attached STRING = "Registry File to WiX Conversion Tool"
 			-- <Precursor>
 
-	version: !STRING = "3.1"
+	version: attached STRING = "3.1"
 			-- <Precursor>
 
-	non_switched_argument_name: !STRING = "RegFile"
+	non_switched_argument_name: attached STRING = "RegFile"
 			-- <Precursor>
 
-	non_switched_argument_description: !STRING = "A Windows registry file."
+	non_switched_argument_description: attached STRING = "A Windows registry file."
 			-- <Precursor>
 
-	non_switched_argument_type: !STRING = "Registry file"
+	non_switched_argument_type: attached STRING = "Registry file"
 			-- <Precursor>
 
 feature {NONE} -- Switches
 
-	switches: !ARRAYED_LIST [!ARGUMENT_SWITCH]
+	switches: attached ARRAYED_LIST [attached ARGUMENT_SWITCH]
 			-- Retrieve a list of switch used for a specific application
 			-- (export status {NONE})
 		do
@@ -82,11 +82,11 @@ feature {NONE} -- Switches
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (out_switch, "An output file name for the generated WiX document.", True, False, "File", "Output file name.", False))
 		end
 
-	out_switch: !STRING = "out"
+	out_switch: attached STRING = "out"
 			-- Command line switches
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -99,22 +99,22 @@ feature {NONE} -- Switches
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

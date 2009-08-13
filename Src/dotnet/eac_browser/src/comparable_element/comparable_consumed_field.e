@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "COMPARABLE_CONSUMED_FIELD with comparaison on feature dotnet_name"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,11 +21,6 @@ inherit
 			return_type
 		end
 
-	COMPARABLE
-		undefine
-			default_create, is_equal, copy
-		end
-
 create
 	make_with_consumed_field
 
@@ -36,10 +31,10 @@ feature -- Access
 	return_type: CONSUMED_REFERENCED_TYPE
 	arguments: ARRAY [CONSUMED_ARGUMENT]
 	declared_type: CONSUMED_REFERENCED_TYPE
-	
+
 feature -- Initialization
-	
-	make_with_consumed_field (a_consumed_field: CONSUMED_FIELD) is
+
+	make_with_consumed_field (a_consumed_field: CONSUMED_FIELD)
 		require
 			non_void_a_consumed_field: a_consumed_field /= Void
 		do
@@ -48,25 +43,17 @@ feature -- Initialization
 			arguments := a_consumed_field.arguments
 			declared_type := a_consumed_field.declared_type
 			return_type := a_consumed_field.return_type
-			r := a_consumed_field.r
+			r := a_consumed_field.return_type
 		ensure
 			eiffel_name_set: eiffel_name = a_consumed_field.eiffel_name
 			dotnet_name_set: dotnet_name = a_consumed_field.dotnet_name
 			arguments_set: arguments = a_consumed_field.arguments
 			declared_type_set: declared_type = a_consumed_field.declared_type
 			return_type_set: return_type = a_consumed_field.return_type
-			a_set: r = a_consumed_field.r
+			a_set: r = a_consumed_field.return_type
 		end
 
-feature -- Implementation
-	
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is current object less than `other'?
-		do
-			Result := dotnet_name < other.dotnet_name
-		end
-
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

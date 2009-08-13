@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Dialog for choosing where to put a new class"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -86,7 +86,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_default (a_target: EB_HISTORY_OWNER) is
+	make_default (a_target: EB_HISTORY_OWNER)
 		require
 			a_target_not_void: a_target /= Void
 		local
@@ -243,13 +243,13 @@ feature -- Status Report
 
 feature -- Status Settings
 
-	set_stone_when_finished is
+	set_stone_when_finished
 			-- `Current' will send a stone when its execution is over.
 		do
 			set_stone := True
 		end
 
-	preset_cluster (a_cluster: CONF_CLUSTER) is
+	preset_cluster (a_cluster: CONF_CLUSTER)
 			-- Assign `a_cluster' to `cluster'.
 		require
 			a_cluster_not_void: a_cluster /= Void
@@ -264,14 +264,14 @@ feature -- Status Settings
 
 feature -- Basic operations
 
-	call_default is
+	call_default
 			-- Create a new dialog with a pre-computed class name.
 		do
 			call ("NEW_CLASS_" + new_class_counter.item.out)
 			new_class_counter.put (new_class_counter.item + 1)
 		end
 
-	call_stone (a_stone: CLUSTER_STONE) is
+	call_stone (a_stone: CLUSTER_STONE)
 			-- Create a new dialog with `a_stone' as parent cluster.
 		require
 			a_stone_not_void: a_stone /= Void
@@ -286,7 +286,7 @@ feature -- Basic operations
 			show_modal_to_window (target.window)
 		end
 
-	call (class_n: STRING) is
+	call (class_n: STRING)
 			-- Create a new dialog with `class_n' as preset class name.
 		require
 			valid_args: class_n /= Void
@@ -310,19 +310,19 @@ feature -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	render_class_template (a_dest_file_name: !STRING)
+	render_class_template (a_dest_file_name: attached STRING)
 			-- Renders a class name into a choose destination file
 			--
 			-- `a_dest_file_name': The destination file to render the default class template file into.
 		local
 			l_wizard: SERVICE_CONSUMER [WIZARD_ENGINE_S]
-			l_source_file: !FILE_NAME
-			l_user_file: ?FILE_NAME
-			l_params: !DS_HASH_TABLE [!ANY, !STRING]
-			l_buffer: !STRING_32
+			l_source_file: attached FILE_NAME
+			l_user_file: detachable FILE_NAME
+			l_params: attached DS_HASH_TABLE [attached ANY, attached STRING]
+			l_buffer: attached STRING_32
 			l_parents: EV_LIST
-			l_creation_routine: ?STRING_32
-			l_class_name: ?STRING_32
+			l_creation_routine: detachable STRING_32
+			l_class_name: detachable STRING_32
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -345,18 +345,24 @@ feature {NONE} -- Basic operations
 					end
 
 					create l_params.make_default
+						-- Class name
 					l_class_name := class_name.as_string_32
 					if l_class_name /= Void then
 						l_params.put_last (l_class_name, class_name_symbol)
 					end
 
-					if cluster.options.syntax_level.item = {CONF_OPTION}.syntax_level_obsolete then
+						-- Note keyword
+					if cluster.options.syntax.index = {CONF_OPTION}.syntax_index_obsolete then
 							-- Use old syntax
 						l_params.put_last ({EIFFEL_KEYWORD_CONSTANTS}.indexing_keyword, note_keyword_symbol)
 					else
 							-- Use new syntax
 						l_params.put_last ({EIFFEL_KEYWORD_CONSTANTS}.note_keyword, note_keyword_symbol)
 					end
+
+						-- Year
+					l_params.put_last ((create {DATE}.make_now).year, year_symbol)
+
 					if (create {RAW_FILE}.make (l_source_file)).exists then
 							-- Only render if the file exists.
 						create l_buffer.make (64)
@@ -438,7 +444,7 @@ feature {NONE} -- Basic operations
 
 feature {NONE} -- Access
 
-	change_cluster is
+	change_cluster
 			-- Set `cluster' to selected cluster from tree.
 		local
 			l_folder: EB_CLASSES_TREE_FOLDER_ITEM
@@ -473,7 +479,7 @@ feature {NONE} -- Access
 
 feature {NONE} -- Implementation
 
-	class_name: STRING is
+	class_name: STRING
 			-- Name of the class entered by the user.
 		do
 			Result := class_entry.text.as_upper
@@ -481,7 +487,7 @@ feature {NONE} -- Implementation
 			class_name_not_void: class_name /= Void
 		end
 
-	file_name: FILE_NAME is
+	file_name: FILE_NAME
 			-- File name of the class chosen by the user.
 		local
 			str: STRING
@@ -525,10 +531,10 @@ feature {NONE} -- Implementation
 	target: EB_HISTORY_OWNER
 			-- Associated target.
 
-	create_new_class is
+	create_new_class
 			-- Create a new class
 		local
-			f_name: !FILE_NAME
+			f_name: attached FILE_NAME
 			file: RAW_FILE -- Windows specific
 			base_name: STRING
 			retried: BOOLEAN
@@ -559,7 +565,7 @@ feature {NONE} -- Implementation
 						destroy
 						render_class_template (f_name)
 						if not could_not_load_file then
-							manager.add_class_to_cluster (base_name, cluster, path)
+							manager.add_class_to_cluster (base_name, cluster, path, class_name)
 							class_i := manager.last_added_class
 							if set_stone and class_i /= Void then
 								target.advanced_set_stone (create {CLASSI_STONE}.make (class_i))
@@ -578,7 +584,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	on_show_actions is
+	on_show_actions
 			-- The dialog has just been shown, set it up.
 		local
 			curr_selected_item: EV_TREE_NODE
@@ -596,7 +602,7 @@ feature {NONE} -- Implementation
 			class_entry.select_all
 		end
 
-	check_class_not_exists is
+	check_class_not_exists
 			-- Check that class with name `class_name' does not exist in the universe.
 		require
 			current_state_is_valid: aok
@@ -610,7 +616,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_valid_class_name is
+	check_valid_class_name
 			-- Check that name `class_name' is a valid class name.
 		require
 			current_state_is_valid: aok
@@ -624,7 +630,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_valid_creation_procedure is
+	check_valid_creation_procedure
 			-- Check that creation procedure name is valid
 		require
 			current_state_is_valid: aok
@@ -639,7 +645,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_file_entry is
+	update_file_entry
 			-- Update the file name according to the class name.
 		local
 			str: STRING
@@ -656,7 +662,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	cancel is
+	cancel
 			-- User pressed `cancel_b'.
 		do
 			cancelled := True
@@ -665,7 +671,7 @@ feature {NONE} -- Implementation
 			cancelled_set: cancelled
 		end
 
-	on_deferred is
+	on_deferred
 			-- User selected deferred => uncheck expanded.
 		do
 			if deferred_check.is_selected then
@@ -685,7 +691,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_creation_check is
+	on_creation_check
 			-- User selected or unselected the `creation procedure' check box.
 		do
 			if creation_check.is_selected then
@@ -695,7 +701,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_expanded is
+	on_expanded
 			-- User selected expanded => uncheck deferred.
 		do
 			if expanded_check.is_selected then
@@ -703,7 +709,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_focus_in is
+	on_focus_in
 			-- When the parents list has the focus, we disable the default push button.
 		do
 			if default_push_button /= Void then
@@ -711,7 +717,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_focus_out is
+	on_focus_out
 			-- When the parents list loses the focus, we enable the default push button.
 		do
 				-- Need to check that the dialog is not destroyed as sometimes
@@ -721,7 +727,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	compute_group: CONF_GROUP is
+	compute_group: CONF_GROUP
 			-- Compute group.
 		do
 			change_cluster
@@ -762,19 +768,19 @@ feature {NONE} -- Vision2 widgets
 
 feature {NONE} -- Constants
 
-	Cluster_list_minimum_width: INTEGER is
+	Cluster_list_minimum_width: INTEGER
 			-- Minimum width for the cluster list.
 		do
 			Result := Layout_constants.Dialog_unit_to_pixels (250)
 		end
 
-	Cluster_list_minimum_height: INTEGER is
+	Cluster_list_minimum_height: INTEGER
 			-- Minimum height for the cluster list.
 		do
 			Result := Layout_constants.Dialog_unit_to_pixels (100)
 		end
 
-	new_class_counter: CELL [INTEGER] is
+	new_class_counter: CELL [INTEGER]
 			-- Number of classes being created so far
 		once
 			create Result.put (1)
@@ -784,14 +790,15 @@ feature {NONE} -- Constants
 
 feature {NONE} -- Constants
 
-	note_keyword_symbol: !STRING = "NOTE_KEYWORD"
-	class_name_symbol: !STRING = "CLASS_NAME"
-	class_modifiers_symbol: !STRING = "CLASS_MODIFIERS"
-	inherit_clause_symbol: !STRING = "INHERIT_CLAUSE"
-	create_clause_symbol: !STRING = "CREATE_CLAUSE"
-	init_clause_symbol: !STRING = "INIT_CLAUSE"
+	note_keyword_symbol: STRING = "NOTE_KEYWORD"
+	class_name_symbol: STRING = "CLASS_NAME"
+	class_modifiers_symbol: STRING = "CLASS_MODIFIERS"
+	inherit_clause_symbol: STRING = "INHERIT_CLAUSE"
+	create_clause_symbol: STRING = "CREATE_CLAUSE"
+	init_clause_symbol: STRING = "INIT_CLAUSE"
+	year_symbol: STRING = "YEAR"
 
-	default_class_template: !STRING = "class%N%T$CLASS_NAME%N%N-- Class template file not found in the installation!%N%Nend"
+	default_class_template: STRING = "class%N%T$CLASS_NAME%N%N-- Class template file not found in the installation!%N%Nend"
 
 invariant
 	create_button_valid: create_button /= Void and then not create_button.is_destroyed
@@ -808,10 +815,10 @@ invariant
 	target_not_void: target /= Void
 	cluster_implies_path: cluster /= Void implies path /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -822,19 +829,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

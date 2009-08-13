@@ -1,9 +1,7 @@
-indexing
-
+note
 	description:
 		"Lists of error messages for screen display"
 	legal: "See notice at end of class.";
-
 	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
@@ -23,37 +21,39 @@ create {ERROR_LIST}
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create list.
 		do
 			linked_list_make;
 			debug ("lex_output")
 				display := True
-			end		
-		end; 
+			end
+		end;
 
 feature -- Status setting
 
-	display_message is
+	display_message
 			-- From now, display new messages on standard output.
 		do
 			display := True
 		ensure
 			display_enabled: display
-		end; 
+		end;
 
-	do_not_display_message is
+	do_not_display_message
 			-- From now, do not display new messages on standard output.
 		do
 			display := False
 		ensure
 			display_disabled: not display
-		end; 
+		end;
 
 feature -- Element change
 
-	add_message (message: STRING) is
+	add_message (message: STRING)
 			-- Add message in list and display it or not.
+		require
+			message_attached: message /= Void
 		do
 			finish;
 			if (before or is_empty) or else not message.is_equal (item) then
@@ -63,7 +63,7 @@ feature -- Element change
 					output.new_line
 				end
 			end
-		end; 
+		end;
 
 feature {NONE} -- Implementation
 
@@ -71,26 +71,22 @@ feature {NONE} -- Implementation
 			-- Are the messages to be displayed?
 			-- (default is True)
 
-	output: STD_FILES is
+	output: STD_FILES
 			-- Standard error output if the messages are to be displayed.
 		once
 			create Result;
 			Result.set_error_default
 		end;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
-end -- class ERROR_LIST
-
+end

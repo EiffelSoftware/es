@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Node which is the result of a conversion."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,13 +16,13 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize (e: like expr; d: like data) is
+	initialize (e: like expr; d: like data)
 			-- Initialize new CONVERTED_EXPR_AS node
 		require
 			e_not_void: e /= Void
 			d_not_void: d /= Void
 		do
-			if {l_already_converted: like Current} e then
+			if attached {like Current} e as l_already_converted then
 				expr := l_already_converted.expr
 			else
 				expr := e
@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_converted_expr_as (Current)
@@ -50,19 +50,19 @@ feature -- Access
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	first_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			Result := expr.first_token (a_list)
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			Result := expr.last_token (a_list)
 		end
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := equivalent (expr, other.expr)
@@ -72,7 +72,7 @@ invariant
 	expr_not_void: expr /= Void
 	data_not_void: data /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Zone which tab at top common features."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -38,7 +38,7 @@ inherit
 
 feature -- Command
 
-	recover_normal_size_from_minimize is
+	recover_normal_size_from_minimize
 			-- Recover to normal zone size from minimized state.
 		local
 			l_parent: SD_MIDDLE_CONTAINER
@@ -69,7 +69,11 @@ feature -- Command
 								l_other := l_parent.second
 								l_first := True
 							end
-							internal_docking_manager.query.inner_container (Current).save_spliter_position (l_other)
+							if attached {SD_ZONE} Current as lt_zone then
+								internal_docking_manager.query.inner_container (lt_zone).save_spliter_position (l_other, generating_type + ".recover_normal_size_from_minimize")
+							else
+								check not_possible: False end
+							end
 
 							l_parent_parent.prune (l_parent)
 							l_parent.wipe_out
@@ -90,7 +94,11 @@ feature -- Command
 							end
 
 							if l_other /= Void then
-								internal_docking_manager.query.inner_container (Current).restore_spliter_position (l_other)
+								if attached {SD_ZONE} Current as lt_zone_2 then
+								internal_docking_manager.query.inner_container (lt_zone_2).restore_spliter_position (l_other, generating_type + ".recover_normal_size_from_minimize")
+								else
+									check not_possible: False end
+								end
 							end
 						end
 					end
@@ -99,14 +107,18 @@ feature -- Command
 				is_minimized := False
 				show_notebook_contents (True)
 				internal_notebook.set_show_minimized (is_minimized)
-				internal_docking_manager.query.inner_container (Current).update_middle_container
+				if attached {SD_ZONE} Current as lt_zone_3 then
+					internal_docking_manager.query.inner_container (lt_zone_3).update_middle_container
+				else
+					check not_possible: False end
+				end
 			end
 			internal_docking_manager.command.unlock_update
 		ensure
 			recovered: not is_minimized
 		end
 
-	expand_parent_spliter (a_spliter: EV_SPLIT_AREA; a_size_to_expand: INTEGER)  is
+	expand_parent_spliter (a_spliter: EV_SPLIT_AREA; a_size_to_expand: INTEGER)
 			-- Try to expand `a_size_to_expand'
 			-- Stop when no parent available or has already expanded `a_size_to_expand'
 		require
@@ -149,7 +161,7 @@ feature -- Command
 			end
 		end
 
-	expand_finish is
+	expand_finish
 			-- Do things after finish expand.
 		local
 			l_target: EV_SPLIT_AREA
@@ -168,12 +180,12 @@ feature -- Command
 			end
 		end
 
-	restore_from_maximized is
+	restore_from_maximized
 			-- Restore to normal size if current maximized
 		deferred
 		end
 
-	on_minimize is
+	on_minimize
 			-- Handle minimize actions.
 		do
 			restore_from_maximized
@@ -185,7 +197,7 @@ feature -- Command
 			end
 		end
 
-	minimize is
+	minimize
 			-- Minimize current
 		local
 			l_parent: SD_MIDDLE_CONTAINER
@@ -202,28 +214,31 @@ feature -- Command
 					save_parent_split_position (l_parent_parent)
 					l_last_normal_size := l_parent.split_position
 					l_parent_parent.prune (l_parent)
+					if attached {SD_ZONE} Current as lt_zone then
+						if l_parent.first = Current then
+							l_other := l_parent.second
+							internal_docking_manager.query.inner_container (lt_zone).save_spliter_position (l_other, generating_type + ".minimize")
+							l_parent.wipe_out
+							l_box := minimized_container (l_parent)
 
-					if l_parent.first = Current then
-
-						l_other := l_parent.second
-						internal_docking_manager.query.inner_container (Current).save_spliter_position (l_other)
-						l_parent.wipe_out
-						l_box := minimized_container (l_parent)
-
-						l_parent_parent.extend (l_box)
-						l_box.extend (Current)
-						l_box.extend (l_other)
-						l_box.disable_item_expand (Current)
+							l_parent_parent.extend (l_box)
+							l_box.extend (Current)
+							l_box.extend (l_other)
+							l_box.disable_item_expand (Current)
+						else
+							l_other := l_parent.first
+							internal_docking_manager.query.inner_container (lt_zone).save_spliter_position (l_other, generating_type + ".minimize")
+							l_parent.wipe_out
+							l_box := minimized_container (l_parent)
+							l_parent_parent.extend (l_box)
+							l_box.extend (l_other)
+							l_box.extend (Current)
+							l_box.disable_item_expand (Current)
+						end
 					else
-						l_other := l_parent.first
-						internal_docking_manager.query.inner_container (Current).save_spliter_position (l_other)
-						l_parent.wipe_out
-						l_box := minimized_container (l_parent)
-						l_parent_parent.extend (l_box)
-						l_box.extend (l_other)
-						l_box.extend (Current)
-						l_box.disable_item_expand (Current)
+						check not_possible: False end
 					end
+
 					l_box.set_split_position (l_last_normal_size)
 					restore_parent_split_position (l_parent_parent)
 
@@ -236,20 +251,26 @@ feature -- Command
 				is_minimized := True
 				show_notebook_contents (False)
 				internal_notebook.set_show_minimized (is_minimized)
-
-				internal_docking_manager.query.inner_container (Current).update_middle_container
-
+				if attached {SD_ZONE} Current as lt_zone_2 then
+					internal_docking_manager.query.inner_container (lt_zone_2).update_middle_container
+				else
+					check not_possible: False end
+				end
 			else
 				-- Current is in top level
 			end
 			internal_docking_manager.command.resize (True)
 			if l_other /= Void then
-				internal_docking_manager.query.inner_container (Current).restore_spliter_position (l_other)
+				if attached {SD_ZONE} Current as lt_zone_3 then
+				internal_docking_manager.query.inner_container (lt_zone_3).restore_spliter_position (l_other, generating_type + ".minimize")
+				else
+					check not_possible: False end
+				end
 			end
 			internal_docking_manager.command.unlock_update
 		end
 
-	minimize_for_restore is
+	minimize_for_restore
 			-- Minimize operations for restore docking layout.
 		do
 			is_minimized := True
@@ -259,7 +280,7 @@ feature -- Command
 
 feature -- Query
 
-	spliter_size (a_spliter: EV_SPLIT_AREA; a_zone_size: INTEGER): INTEGER is
+	spliter_size (a_spliter: EV_SPLIT_AREA; a_zone_size: INTEGER): INTEGER
 			-- Spliter size.
 		require
 			not_void: a_spliter /= Void
@@ -274,7 +295,7 @@ feature -- Query
 			end
 		end
 
-	spliter_upper (a_parent: EV_CONTAINER): EV_SPLIT_AREA is
+	spliter_upper (a_parent: EV_CONTAINER): EV_SPLIT_AREA
 			-- Upper level spliter of `a_spliter'
 			-- Void if not exists.
 		require
@@ -292,7 +313,7 @@ feature -- Query
 	is_minimized: BOOLEAN
 			-- If Current is minimized?
 
-	is_ignore_restore_area: BOOLEAN is
+	is_ignore_restore_area: BOOLEAN
 			-- If pointer in tab close button or normal/maximize button area?
 		do
 			Result := internal_notebook.is_in_close_area
@@ -303,7 +324,7 @@ feature -- Query
 
 feature {NONE} -- Implementation
 
-	show_notebook_contents (a_is_show: BOOLEAN) is
+	show_notebook_contents (a_is_show: BOOLEAN)
 			-- Show all notebook contents if `a_is_show'
 			-- Otherwise hide all notebook contents.
 		local
@@ -327,17 +348,17 @@ feature {NONE} -- Implementation
 	expand_stack: ARRAYED_STACK [TUPLE [spliter: EV_SPLIT_AREA; is_set_maximum: BOOLEAN]]
 			-- Stack remembered when expand.
 
-	internal_notebook: SD_NOTEBOOK_UPPER is
+	internal_notebook: SD_NOTEBOOK_UPPER
 			-- Upper zone's notebook
 		deferred
 		end
 
-	internal_docking_manager: SD_DOCKING_MANAGER is
+	internal_docking_manager: SD_DOCKING_MANAGER
 			-- Docking manager
 		deferred
 		end
 
-	normal_container (a_container: SD_MIDDLE_CONTAINER): EV_SPLIT_AREA is
+	normal_container (a_container: SD_MIDDLE_CONTAINER): EV_SPLIT_AREA
 			-- Normal container for `a_container' which is fake split area.
 		require
 			not_void: a_container /= Void
@@ -358,7 +379,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	minimized_container (a_old_one: SD_MIDDLE_CONTAINER): SD_MIDDLE_CONTAINER is
+	minimized_container (a_old_one: SD_MIDDLE_CONTAINER): SD_MIDDLE_CONTAINER
 			-- Create middle container correspond to `a_old_one'.
 		require
 			not_void: a_old_one /= Void
@@ -380,7 +401,7 @@ feature {NONE} -- Implementation
 			minimized: Result.is_minimized
 		end
 
-	save_parent_split_position (a_container: EV_CONTAINER) is
+	save_parent_split_position (a_container: EV_CONTAINER)
 			-- Save `a_container' split position.
 		local
 			l_split: EV_SPLIT_AREA
@@ -394,7 +415,7 @@ feature {NONE} -- Implementation
 	last_split_position: INTEGER
 			-- Split position setted by `save_parent_split_position'.
 
-	restore_parent_split_position (a_container: EV_CONTAINER) is
+	restore_parent_split_position (a_container: EV_CONTAINER)
 			-- Restpre `a_container' split position.
 		local
 			l_split: EV_SPLIT_AREA
@@ -405,7 +426,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

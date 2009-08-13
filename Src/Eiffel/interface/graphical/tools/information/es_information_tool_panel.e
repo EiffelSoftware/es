@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Information (EIS) tool UI."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -48,13 +48,13 @@ feature {NONE} -- Initialization
     build_tool_interface (a_widget: like user_widget)
             -- <Precursor>
 		do
-			if {lt_observer: PROGRESS_OBSERVER} a_widget then
+			if attached {PROGRESS_OBSERVER} a_widget as lt_observer then
 				eis_manager.add_observer (lt_observer)
 			end
 
 			if session_manager.is_service_available then
 					-- Retrieve session data and set button states
-				if {l_toggle: BOOLEAN_REF} session_data.value_or_default (auto_sweep_session_id, False) then
+				if attached {BOOLEAN_REF} session_data.value_or_default (auto_sweep_session_id, False) as l_toggle then
 					if l_toggle.item then
 						a_widget.auto_sweep_button.enable_select
 					else
@@ -73,7 +73,7 @@ feature {NONE} -- Initialization
 			Precursor {ES_DOCKABLE_TOOL_PANEL}
 
 			if session_manager.is_service_available then
-				session_data.connect_events (Current)
+				session_data.session_connection.connect_events (Current)
 			end
 
 				-- Request EIS background visiting post project load.
@@ -96,12 +96,12 @@ feature {NONE} -- Clean up
 		do
 			if is_initialized then
 				if session_manager.is_service_available then
-					if session_data.is_connected (Current) then
-						session_data.disconnect_events (Current)
+					if session_data.session_connection.is_connected (Current) then
+						session_data.session_connection.disconnect_events (Current)
 					end
 				end
 			end
-			if {lt_observer: PROGRESS_OBSERVER}user_widget then
+			if attached {PROGRESS_OBSERVER} user_widget as lt_observer then
 				eis_manager.remove_observer (lt_observer)
 			end
 			Precursor {ES_DOCKABLE_TOOL_PANEL}
@@ -109,7 +109,7 @@ feature {NONE} -- Clean up
 
 feature -- Access: Help
 
-	help_context_id: !STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		once
 			Result := "26E2C799-B48A-C588-CDF1-DD47B1994B09"
@@ -135,7 +135,7 @@ feature {ES_INFORMATION_TOOL_COMMANDER_I} -- Basic operations
 			-- Reqest EIS background visiting to collect information into EIS storage.
 		do
 			is_visit_requested := True
-			if shown then
+			if is_shown then
 				perform_auto_background_visiting
 			end
 		end
@@ -152,7 +152,7 @@ feature {NONE} -- Basic operations
 		do
 			if session_manager.is_service_available and then workbench.universe_defined then
 				l_session := session_data
-				if {lt_auto: BOOLEAN_REF} l_session.value_or_default (auto_sweep_session_id, False) then
+				if attached {BOOLEAN_REF} l_session.value_or_default (auto_sweep_session_id, False) as lt_auto then
 					if lt_auto.item then
 						if eis_manager.full_visited then
 							eis_manager.start_background_visitor
@@ -175,7 +175,7 @@ feature {NONE} -- Event handlers
 			if a_id.is_equal (auto_sweep_session_id) then
 				l_button := user_widget.auto_sweep_button
 				if l_button /= Void then
-					if {l_toggle: BOOLEAN_REF} a_session.value_or_default (a_id, False) then
+					if attached {BOOLEAN_REF} a_session.value_or_default (a_id, False) as l_toggle then
 						l_button.select_actions.block
 						if l_toggle.item then
 							l_button.enable_select
@@ -263,11 +263,11 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Constants
 
-	auto_sweep_session_id: !STRING = "com.eiffel.eis_tool.auto_sweep";
+	auto_sweep_session_id: STRING = "com.eiffel.eis_tool.auto_sweep";
 			-- Session IDs
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -291,11 +291,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

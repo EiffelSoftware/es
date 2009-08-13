@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -15,16 +15,18 @@ class KL_EQUALITY_TESTER_A [G]
 inherit
 	ANY -- Needed for SE 2.1b1.
 
-	KL_EQUALITY_TESTER [?G]
+	KL_EQUALITY_TESTER [detachable G]
 		rename
 			test as internal_test
 		redefine
 			internal_test
 		end
 
+	KL_IMPORTED_ANY_ROUTINES
+
 feature -- Status report
 
-	test (v, u: !G): BOOLEAN is
+	test (v, u: detachable G): BOOLEAN
 			-- Are `v' and `u' considered equal?
 			-- (Use `equal' by default.)
 		do
@@ -33,7 +35,7 @@ feature -- Status report
 
 feature {NONE} -- Status report
 
-	frozen internal_test (v, u: ?G): BOOLEAN
+	frozen internal_test (v, u: detachable G): BOOLEAN
 			-- <Precursor>
 		do
 			if v ~ u then

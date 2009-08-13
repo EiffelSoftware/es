@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Identifies a given locale and optionally it's script (sometimes a locale has multiple scripts)."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_language, a_region, a_script: STRING_32) is
+	make (a_language, a_region: STRING_32; a_script: detachable STRING_32)
 			-- Initialize locale id.
 			--
 			-- `a_language': Language of locale, e.g. 'en'
@@ -45,10 +45,10 @@ feature {NONE} -- Initialization
 		ensure
 			language_set: language.is_equal (a_language)
 			region_set: region.is_equal (a_region)
-			script_set: script /= Void implies script.is_equal (a_script)
+			script_set: script /= Void implies script ~ a_script
 		end
 
-	make_from_string (identifier: STRING_32) is
+	make_from_string (identifier: STRING_32)
 			-- Initialize locale id with identifier.
 			--
 			-- There are several ways this identifier could look
@@ -140,10 +140,10 @@ feature  -- Access
 	region: STRING_32
 			-- Region of locale id
 
-	script: STRING_32
+	script: detachable STRING_32
 			-- Script of locale id (optional)
 
- 	language_id: I18N_LANGUAGE_ID is
+ 	language_id: I18N_LANGUAGE_ID
  			-- Language ID corresponding to current locale id
  		do
  			create Result.make (language)
@@ -151,7 +151,7 @@ feature  -- Access
  			language_id_not_void: Result /= Void
  		end
 
- 	hash_code: INTEGER is
+ 	hash_code: INTEGER
  			-- Hash code value
  		do
  			Result := name.hash_code
@@ -159,7 +159,7 @@ feature  -- Access
 
 feature	 -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
@@ -170,10 +170,10 @@ feature	 -- Comparison
 
 feature {NONE} -- Implementation
 
-	encoding: STRING_32
+	encoding: detachable STRING_32
 			-- Encoding of locale id (optional)
 
-	set_name is
+	set_name
 			-- Set `name' to a platform independent name.
 		require
 			language_not_void: language /= Void
@@ -204,13 +204,13 @@ invariant
 	language_not_void: language /= Void
 	region_not_void: region /= Void
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

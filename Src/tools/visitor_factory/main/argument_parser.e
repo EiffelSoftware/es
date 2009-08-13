@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Used to parse command line arguments of Eiffel Visitor Factory Tool.
 	]"
@@ -38,25 +38,25 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	included_files: !LIST [!STRING]
+	included_files: LIST [STRING]
 			-- <Precursor>
 		once
 			Result := options_values_of_name (include_switch)
 		end
 
-	exclude_expressions: !LIST [!STRING]
+	exclude_expressions: LIST [STRING]
 			-- <Precursor>
 		once
 			Result := options_values_of_name (exclude_switch)
 		end
 
-	class_name: !STRING
+	class_name: STRING
 			-- <Precursor>
 		once
 			Result := option_of_name (class_name_switch).value
 		end
 
-	user_data_class_name: !STRING
+	user_data_class_name: STRING
 			-- <Precursor>
 		once
 			Result := option_of_name (user_data_switch).value
@@ -102,10 +102,10 @@ feature -- Status report
 
 feature {NONE} -- Usage
 
-	name: !STRING = "Eiffel Class Visitor Generator"
+	name: STRING = "Eiffel Class Visitor Generator"
 			--  <Precursor>
 
-	version: !STRING
+	version: STRING
 			--  <Precursor>
 		once
 			create Result.make (5)
@@ -114,19 +114,19 @@ feature {NONE} -- Usage
 			Result.append_natural_16 ({EIFFEL_ENVIRONMENT_CONSTANTS}.minor_version)
 		end
 
-	non_switched_argument_name: !STRING = "folder"
+	non_switched_argument_name: STRING = "folder"
 			--  <Precursor>
 
-	non_switched_argument_description: !STRING = "Location to search in for Eiffel classes"
+	non_switched_argument_description: attached STRING = "Location to search in for Eiffel classes"
 			--  <Precursor>
 
-	non_switched_argument_type: !STRING = "a folder"
+	non_switched_argument_type: STRING = "a folder"
 			--  <Precursor>
 
 
 feature {NONE} -- Switches
 
-	switches: !ARRAYED_LIST [!ARGUMENT_SWITCH]
+	switches: attached ARRAYED_LIST [attached ARGUMENT_SWITCH]
 			-- Retrieve a list of switch used for a specific application
 		once
 			create Result.make (5)
@@ -142,17 +142,17 @@ feature {NONE} -- Switches
 
 feature {NONE} -- Switch names
 
-	include_switch: !STRING = "i|include"
-	exclude_switch: !STRING = "e|exclude"
-	class_name_switch: !STRING = "n|class-name"
-	user_data_switch: !STRING = "u|user-data"
-	recurse_switch: !STRING = "r|recursive"
-	stub_switch: !STRING = "s|stub"
-	interface_switch: !STRING = "t|interface"
-	routines_switch: !STRING = "o|routines"
+	include_switch: attached STRING = "i|include"
+	exclude_switch: attached STRING = "e|exclude"
+	class_name_switch: attached STRING = "n|class-name"
+	user_data_switch: attached STRING = "u|user-data"
+	recurse_switch: attached STRING = "r|recursive"
+	stub_switch: attached STRING = "s|stub"
+	interface_switch: attached STRING = "t|interface"
+	routines_switch: attached STRING = "o|routines"
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -165,22 +165,22 @@ feature {NONE} -- Switch names
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {ARGUMENT_PARSER}

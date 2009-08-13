@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Form used to host notification icon, for Win64 systems"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize_component is
+	initialize_component
 			-- Initialize form controls
 		do
 			Precursor {NOTIFY_FORM_BASE}
@@ -36,28 +36,29 @@ feature {NONE} -- Initialization
 
 feature -- Status Setting
 
-	notify_consume (a_message: NOTIFY_MESSAGE) is
+	notify_consume (a_message: NOTIFY_MESSAGE)
 			-- Notifies user of a consume.
 		do
 			notify_info (a_message.message)
 		end
 
-	notify_info (a_messge: SYSTEM_STRING) is
+	notify_info (a_messge: STRING)
 			-- Notifier user of an event
 		local
-			l_message: SYSTEM_STRING
+			l_message: STRING
 		do
 			l_message := a_messge
-			if l_message.length > 255 then
-				l_message := {SYSTEM_STRING}.concat (l_message.substring (0, 251), ({SYSTEM_STRING})["..."])
+			if l_message.count > 255 then
+				l_message := l_message.substring (1, 252)
+				l_message.append ("...")
 			end
-			notify_string := l_message
+			Precursor (l_message)
 		end
 
-	clear_notification is
+	clear_notification
 			-- Clears last notification message.
 		do
-			notify_string := ""
+			Precursor
 			show_ballon := False
 		end
 
@@ -68,11 +69,11 @@ feature -- Status
 
 feature -- Events
 
-	on_idle (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
+	on_idle (a_sender: detachable SYSTEM_OBJECT; a_args: detachable EVENT_ARGS)
 			-- Processes application idle events.
 		do
 			if show_ballon then
-				if notify_string /= Void and then notify_string.length > 0 then
+				if notify_string /= Void and then notify_string.count > 0 then
 
 					notify_icon.balloon_tip_text := notify_string
 					notify_icon.show_balloon_tip (1)
@@ -84,26 +85,20 @@ feature -- Events
 			end
 		end
 
-	on_form_load (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
-			-- Processes form load event.
-		do
-			on_idle (a_sender, a_args)
-		end
-
-	on_notify_clicked (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
+	on_notify_clicked (a_sender: detachable SYSTEM_OBJECT; a_args: detachable EVENT_ARGS)
 			-- Processes mouse click events over notify icon.
 		do
 			show_ballon := True
 			on_idle (a_sender, create {EVENT_ARGS}.make)
 		end
 
-	on_closed_notify_ballon (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
+	on_closed_notify_ballon (a_sender: detachable SYSTEM_OBJECT; a_args: detachable EVENT_ARGS)
 			-- Processes actions when ballon is closed.
 		do
 			show_ballon := False
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,9 +1,9 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Parenthesized expressions: "(" SUM ")"
 
-class NESTED 
+class NESTED
 
 inherit
 
@@ -20,14 +20,14 @@ inherit
 create
 	make
 
-feature 
+feature
 
-	construct_name: STRING is
+	construct_name: STRING
 		once
 			Result := "NESTED"
 		end; -- construct_name
 
-	production: LINKED_LIST [CONSTRUCT] is
+	production: LINKED_LIST [CONSTRUCT]
 		local
 			expression: SUM
 		once
@@ -40,14 +40,34 @@ feature
 			keyword (")")
 		end -- production
 
-	post_action is
-		do       
+	post_action
+		local
+			l_child: like child
+		do
 			child_start
 			child_forth
-			child.post_action
+			l_child := child
+			if l_child /= Void then
+				l_child.post_action
+			end
 		end -- post_action
 
-indexing
+feature {NESTED} -- Implementation
+
+	clone_node (n: like Current): like Current
+			-- <precursor>
+		do
+			create Result.make
+			Result.copy_node (n)
+		end
+
+	new_tree: like Current
+			-- <precursor>
+		do
+			create Result.make
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

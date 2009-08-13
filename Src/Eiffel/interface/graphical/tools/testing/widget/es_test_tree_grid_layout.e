@@ -1,6 +1,6 @@
-indexing
+note
 	description: "[
-		Objects representing a {ES_TAGABLE_GRID} layout for eiffel tests.
+		Objects representing a {ES_TAGABLE_GRID} layout for Eiffel tests.
 		
 		See {ES_TAGABLE_GRID_LAYOUT} for more information.
 	]"
@@ -48,7 +48,7 @@ feature -- Status report
 
 feature {NONE} -- Query
 
-	exception_text (a_exception: !EQA_TEST_INVOCATION_EXCEPTION): !STRING_32
+	exception_text (a_exception: attached EQA_TEST_INVOCATION_EXCEPTION): attached STRING_32
 			-- Text describing for given expception
 		do
 			create Result.make_empty
@@ -56,14 +56,14 @@ feature {NONE} -- Query
 
 feature -- Basic functionality
 
-	populate_header (a_header: !EV_GRID_HEADER) is
+	populate_header (a_header: attached EV_GRID_HEADER)
 			-- <Precursor>
 		do
 			a_header.i_th (last_tested_column).set_text (locale_formatter.translation (t_last_executed))
 			Precursor (a_header)
 		end
 
-	populate_item_row (a_row: !EV_GRID_ROW; a_item: !TEST_I) is
+	populate_item_row (a_row: attached EV_GRID_ROW; a_item: attached TEST_I)
 			-- <Precursor>
 		local
 			l_label: EV_GRID_LABEL_ITEM
@@ -80,10 +80,12 @@ feature -- Basic functionality
 
 feature {NONE} -- Basic functionality
 
-	date_time_item (a_date: !DATE_TIME): !EV_GRID_ITEM is
+	date_time_item (a_date: DATE_TIME): attached EV_GRID_ITEM
 			-- Item displaying how long a given date is in the past.
 			--
 			-- `a_date': Date shown on item.
+		require
+			a_date_attached: a_date /= Void
 		local
 			l_label: EV_GRID_LABEL_ITEM
 			l_now: DATE_TIME
@@ -132,7 +134,7 @@ feature {NONE} -- Basic functionality
 			Result := l_label
 		end
 
-	append_class_name (a_test: !TEST_I)
+	append_class_name (a_test: attached TEST_I)
 			-- <Precursor>
 		do
 		end
@@ -165,8 +167,8 @@ feature {NONE} -- Constants
 			create Result.make ("yyyy-[0]mm-[0]dd [0]hh-[0]mi-[0]ss")
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -190,10 +192,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

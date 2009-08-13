@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Standard discardable dialog for EiffelStudio.%
 			%Same functionalities as a discardable dialog, %
 			%but not deferred to avoid having too many classes."
@@ -20,7 +20,7 @@ create
 feature {NONE} -- Initialization
 
 	make_initialized (button_count: INTEGER; res_name: STRING;
-				confirmation_text: STRING_GENERAL; check_label: STRING_GENERAL; app_prefs: PREFERENCES) is
+				confirmation_text: STRING_GENERAL; check_label: STRING_GENERAL; app_prefs: PREFERENCES)
 			-- Initialize `Current' based on these values.
 			-- `res_name' is the name of the boolean preference corresponding
 			-- to this dialog.
@@ -31,12 +31,13 @@ feature {NONE} -- Initialization
 			valid_button_count: button_count > 0 and button_count < 4
 			valid_confirmation_text: confirmation_text /= Void
 			valid_check_label: check_label /= Void
+			valid_res_name: res_name /= Void
 		do
 			preferences := app_prefs
+			check_button_label := check_label
 			buttons_count := button_count
 			preference_name := res_name
 			confirmation_message_label := confirmation_text
-			check_button_label := check_label
 			default_create
 		ensure
 			status_set: buttons_count = button_count and
@@ -47,13 +48,10 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	assume_ok: BOOLEAN is
+	assume_ok: BOOLEAN
 			-- Should `OK' be assumed?
-		local
-			l_pref: BOOLEAN_PREFERENCE
 		do
-			l_pref ?= preferences.get_preference (preference_name)
-			Result := l_pref /= Void and then not l_pref.value
+			Result := attached {BOOLEAN_PREFERENCE} preferences.get_preference (preference_name) as l_pref and then not l_pref.value
 		end
 
 	buttons_count: INTEGER
@@ -70,28 +68,20 @@ feature -- Access
 
 feature -- Basic operations
 
-	is_boolean_preference (s: STRING): BOOLEAN is
+	is_boolean_preference (s: STRING): BOOLEAN
 			-- Does `s' represent a boolean preference?
 		require
 			valid_string: s /= Void and not s.is_empty
-		local
-			r: BOOLEAN_PREFERENCE
 		do
-			r ?= preferences.get_preference (s)
-			Result := r /= Void
+			Result := attached {BOOLEAN_PREFERENCE} preferences.get_preference (s)
 		end
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
-	save_check_button_state (checked: BOOLEAN) is
+	save_check_button_state (checked: BOOLEAN)
 			-- Update the preferences state.
-		local
-			l_pref: BOOLEAN_PREFERENCE
 		do
-			l_pref ?= preferences.get_preference (preference_name)
-			if l_pref /= Void then
+			if attached {BOOLEAN_PREFERENCE} preferences.get_preference (preference_name) as l_pref then
 				l_pref.set_value (not checked)
 			end
 		end
@@ -104,7 +94,7 @@ invariant
 			check_button_label /= Void and
 			confirmation_message_label /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

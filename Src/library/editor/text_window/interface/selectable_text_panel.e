@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Editable: no
 		Scroll bars: yes
@@ -23,7 +23,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	user_initialization is
+	user_initialization
 			-- Initialize variables and objects related to display.
 		do
 
@@ -43,13 +43,15 @@ feature {NONE} -- Initialization
 			click_delay.actions.wipe_out
 			click_delay.actions.extend (agent mouse_time_out_action)
 
+				-- Default `auto_scroll' to be true.
+			auto_scroll := True
 			create autoscroll.make_with_interval (0)
 			autoscroll.actions.extend (agent scroll)
 		end
 
 feature {NONE} -- Process Vision2 events
 
-	on_mouse_button_down (abs_x_pos, abs_y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+	on_mouse_button_down (abs_x_pos, abs_y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y: INTEGER)
 			-- Process single click on mouse buttons.
 		do
 			if not text_displayed.is_empty then
@@ -59,7 +61,7 @@ feature {NONE} -- Process Vision2 events
 			end
 		end
 
-	on_double_click (abs_x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+	on_double_click (abs_x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y: INTEGER)
 			-- Process double clicks on mouse buttons
 		do
 			if not text_displayed.is_empty then
@@ -81,7 +83,7 @@ feature {NONE} -- Process Vision2 events
 			end
 		end
 
-	on_mouse_move (abs_x_pos, abs_y_pos: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y:INTEGER) is
+	on_mouse_move (abs_x_pos, abs_y_pos: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y:INTEGER)
 			-- Process events related to mouse pointer moves.
 		do
 			if (not text_displayed.is_empty) and then click_count < 4 and then mouse_left_button_down then
@@ -89,7 +91,7 @@ feature {NONE} -- Process Vision2 events
 			end
 		end
 
-	on_mouse_button_up (x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; unused4,unused5:INTEGER) is
+	on_mouse_button_up (x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; unused4,unused5:INTEGER)
 			-- Process release of mouse buttons.
 		do
 			if button = 1 then
@@ -105,7 +107,7 @@ feature {NONE} -- Process Vision2 events
 
 feature {NONE} -- Scroll Management
 
-	scroll is
+	scroll
 			-- Scroll one step (i.e. 10 pixels horizontally and/or one line vertically)
 			-- in the direction defined by `scroll_horizontal', `scroll_right', `scroll_vertical'
 			-- and `scroll_up'.
@@ -137,7 +139,7 @@ feature {NONE} -- Scroll Management
 
 feature {NONE} -- Handle mouse clicks
 
-	on_click_in_text (x_pos, y_pos, button: INTEGER; a_screen_x, a_screen_y: INTEGER) is
+	on_click_in_text (x_pos, y_pos, button: INTEGER; a_screen_x, a_screen_y: INTEGER)
 			-- Process click on the text. `x_pos' and `y_pos' are coordinates relative to the upper left
 			-- left corner of the drawing area.
 		require
@@ -183,7 +185,7 @@ feature {NONE} -- Handle mouse clicks
 			end
 		end
 
-	process_left_click (x_pos, y_pos: INTEGER; a_screen_x, a_screen_y: INTEGER) is
+	process_left_click (x_pos, y_pos: INTEGER; a_screen_x, a_screen_y: INTEGER)
 			-- Process click with mouse left button. `x_pos' and `y_pos' are coordinates relative to the upper left
 			-- left corner of the drawing area.
 		require
@@ -236,7 +238,7 @@ feature {NONE} -- Handle mouse clicks
 			end
 		end
 
-	select_current_token (is_for_word: BOOLEAN) is
+	select_current_token (is_for_word: BOOLEAN)
 			-- Select the token where current cursor is, if `is_for_word',
 			-- look for the previous token if current token is not a word.
 		local
@@ -269,7 +271,7 @@ feature {NONE} -- Handle mouse clicks
 			invalidate_line (l_cursor.y_in_lines, False)
 		end
 
-	is_word (s: STRING_32): BOOLEAN is
+	is_word (s: STRING_32): BOOLEAN
 			-- Is `s' a word?
 			-- |FIXME: Not implemented correctly for Unicode.
 		require
@@ -294,31 +296,31 @@ feature {NONE} -- Handle mouse clicks
 			end
 		end
 
-	mouse_time_out_action is
+	mouse_time_out_action
 			-- Process mouse button up event if necessary.
 			-- Called when `click_delay' is out.
 		do
 			click_delay.set_interval (0)
 				-- Change the state of our flag.
-			store_mouse_up := false
+			store_mouse_up := False
 			if mouse_up_delayed then
 				mouse_up_delayed := False
 				mouse_up_action (1)
 			end
 		end
 
-	queue_mouse_up (button: INTEGER) is
+	queue_mouse_up (button: INTEGER)
 			-- Delay or launch mouse left button up event processing
 			-- according to `store_mouse_up'.
 		do
 			if store_mouse_up and button = 1 then
-				mouse_up_delayed := true
+				mouse_up_delayed := True
 			else
 				mouse_up_action (button)
 			end
 		end
 
-	mouse_up_action (button: INTEGER) is
+	mouse_up_action (button: INTEGER)
 			-- Process mouse button `button' up event.
 		local
 			l_num,
@@ -346,7 +348,7 @@ feature {NONE} -- Handle mouse clicks
 			end
 		end
 
-	scroll_and_select (abs_x_pos, abs_y_pos: INTEGER; a_screen_x, a_screen_y: INTEGER) is
+	scroll_and_select (abs_x_pos, abs_y_pos: INTEGER; a_screen_x, a_screen_y: INTEGER)
 			-- Compute valid coordinates if the mouse is out of the panel, use these values
 			-- to position cursor, begin automatic scroll if necessary and update selection.
 			-- Part of mouse pointer moves event processing.
@@ -361,71 +363,73 @@ feature {NONE} -- Handle mouse clicks
 			bottom_pos := editor_y + viewable_height
 			y_pos := (abs_y_pos - editor_viewport.y_offset).max (1)
 			x_pos := abs_x_pos.max (1)
-			scroll_horizontal := false
-			scroll_vertical := false
-			stop_scrolling := true
+			scroll_horizontal := False
+			scroll_vertical := False
+			stop_scrolling := True
 			current_mouse_coordinates := <<abs_x_pos, abs_y_pos, a_screen_x, a_screen_y>>
 
 				-- Let's check if the pointer is still in the editor area
 				-- if not launch automatic scroll and correct `x_pos' and `y_pos' values.
 
-			if a_screen_x <= editor_x + left_margin_width then
-					-- cursor on the left of the text
-					-- launch horizontal scroll if necessary				
-				if editor_viewport.width < editor_width then
-					stop_scrolling := False
-					scroll_horizontal := true
-					scroll_right := false
-					i := editor_x + left_margin_width - a_screen_x
-					autoscroll.set_interval (2000 // (5 + i.min (95)))
-					y_pos:= (former_y + a_screen_y - former_mouse_y).max (1)
-				end
-				x_pos := offset + 1
-				x_computed := true
+			if auto_scroll then
+				if a_screen_x <= editor_x + left_margin_width then
+						-- cursor on the left of the text
+						-- launch horizontal scroll if necessary				
+					if editor_viewport.width < editor_width then
+						stop_scrolling := False
+						scroll_horizontal := True
+						scroll_right := False
+						i := editor_x + left_margin_width - a_screen_x
+						autoscroll.set_interval (2000 // (5 + i.min (95)))
+						y_pos:= (former_y + a_screen_y - former_mouse_y).max (1)
+					end
+					x_pos := offset + 1
+					x_computed := True
 
-			elseif a_screen_x >= editor_x + editor_viewport.width then
-					-- cursor on the right of the text
-					-- launch horizontal scroll if necessary				
-				if editor_viewport.width < editor_width then
-					stop_scrolling := False
-					scroll_horizontal := true
-					scroll_right := true
-					i := a_screen_x - editor_x - editor_viewport.width
-					autoscroll.set_interval (2000 // (5 + i.min (95)))
-					y_pos := (former_y + a_screen_y - former_mouse_y).max (1)
-				end
-				x_pos := offset + editor_viewport.width - left_margin_width
-				x_computed := True
-			end
-
-			if a_screen_y <= editor_y then
-					-- cursor above the text
-					-- launch vertical scroll if necessary
-				if number_of_lines > number_of_lines_displayed then
-					scroll_vertical := true
-					scroll_up := true
-					stop_scrolling := false
-					i := i.max(editor_y - a_screen_y)
-					autoscroll.set_interval (2000 // (5 + i.min (95)))
-					y_pos := 1
-				end
-				if not x_computed then
-					x_pos := former_x + a_screen_x - former_mouse_x
+				elseif a_screen_x >= editor_x + editor_viewport.width then
+						-- cursor on the right of the text
+						-- launch horizontal scroll if necessary				
+					if editor_viewport.width < editor_width then
+						stop_scrolling := False
+						scroll_horizontal := True
+						scroll_right := True
+						i := a_screen_x - editor_x - editor_viewport.width
+						autoscroll.set_interval (2000 // (5 + i.min (95)))
+						y_pos := (former_y + a_screen_y - former_mouse_y).max (1)
+					end
+					x_pos := offset + editor_viewport.width - left_margin_width
+					x_computed := True
 				end
 
-			elseif a_screen_y >= bottom_pos then
-					-- cursor below the text
-					-- launch vertical scroll if necessary
-				if number_of_lines > number_of_lines_displayed then
-					stop_scrolling := false
-					scroll_vertical := true
-					scroll_up := false
-					i := i.max (a_screen_y - editor_y - viewable_height)
-					autoscroll.set_interval (2000 // (5 + i.min (95)))
-					y_pos := viewable_height - 1
-				end
-				if not x_computed then
-					x_pos := former_x + a_screen_x - former_mouse_x
+				if a_screen_y <= editor_y then
+						-- cursor above the text
+						-- launch vertical scroll if necessary
+					if number_of_lines > number_of_lines_displayed then
+						scroll_vertical := True
+						scroll_up := True
+						stop_scrolling := False
+						i := i.max(editor_y - a_screen_y)
+						autoscroll.set_interval (2000 // (5 + i.min (95)))
+						y_pos := 1
+					end
+					if not x_computed then
+						x_pos := former_x + a_screen_x - former_mouse_x
+					end
+
+				elseif a_screen_y >= bottom_pos then
+						-- cursor below the text
+						-- launch vertical scroll if necessary
+					if number_of_lines > number_of_lines_displayed then
+						stop_scrolling := False
+						scroll_vertical := True
+						scroll_up := False
+						i := i.max (a_screen_y - editor_y - viewable_height)
+						autoscroll.set_interval (2000 // (5 + i.min (95)))
+						y_pos := viewable_height - 1
+					end
+					if not x_computed then
+						x_pos := former_x + a_screen_x - former_mouse_x
+					end
 				end
 			end
 				-- if no scroll needed, stop automatic scroll
@@ -443,7 +447,7 @@ feature {NONE} -- Handle mouse clicks
 			end
 		end
 
-	perform_selection (x_pos, y_pos, a_screen_x, a_screen_y:INTEGER) is
+	perform_selection (x_pos, y_pos, a_screen_x, a_screen_y:INTEGER)
 			-- Update selection as the mouse pointer has moved.
 			-- Selection mode depends on how many times the user has clicked
 			-- on the mouse button before moving the pointer.
@@ -588,13 +592,13 @@ feature {NONE} -- Handle mouse clicks
 				until
 					i = l_number.max (former_pointed_line)
 				loop
-					invalidate_line (i,true)
+					invalidate_line (i,True)
 					i := i + 1
 				end
-				invalidate_line (i,true)
+				invalidate_line (i,True)
 				former_pointed_line := l_number
 			elseif former_pointed_char /= l_cursor.x_in_characters then
-				invalidate_line (l_number,true)
+				invalidate_line (l_number,True)
 				former_pointed_char := l_cursor.x_in_characters
 			end
 
@@ -659,14 +663,14 @@ feature {NONE} -- Private Characteristics of the window
 	empty_word_selection: BOOLEAN
 			-- Did word by word selection begin with empty selection (end of line)?
 
-	scroll_only: BOOLEAN is
+	scroll_only: BOOLEAN
 			-- Block selection modification?
 		do
 		end
 
 feature {NONE} -- Memory Management
 
-	recycle is
+	recycle
 			-- Destroy `Current'.
 		do
 			Precursor {KEYBOARD_SELECTABLE_TEXT_PANEL}
@@ -682,7 +686,7 @@ feature {NONE} -- Memory Management
 			autoscroll := Void
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

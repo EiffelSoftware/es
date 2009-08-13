@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class that provides a feature to replace tokens in a string by provided values"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Initialization
 
-	default_create is
+	default_create
 			-- Initialize with default escape character '$'.
 		do
 			escape_character := '$'
@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			default_escape_character_set: escape_character = '$'
 		end
 
-	make_with_escape_character (a_escape_character: CHARACTER) is
+	make_with_escape_character (a_escape_character: CHARACTER)
 			-- Initialize with `a_escape_character' as escape_character
 			--
 			-- `a_escape_character': Character used to escape replacement tokens
@@ -45,7 +45,7 @@ feature -- Access
 
 feature -- Element Change
 
-	set_escape_character (a_character: like escape_character) is
+	set_escape_character (a_character: like escape_character)
 			-- Set `escape_character' with `a_character'.
 			--
 			-- `a_character': Character used to escape replacement tokens
@@ -57,7 +57,7 @@ feature -- Element Change
 
 feature -- Basic operations
 
-	formatted_string (a_string: STRING_32; args_tuple: TUPLE): STRING_32 is
+	formatted_string (a_string: STRING_32; args_tuple: TUPLE): STRING_32
 			-- String which has it's tokens replaced by given values
 			--
 			-- The string given can have token placeholders. The placeholder has
@@ -77,8 +77,6 @@ feature -- Basic operations
 			l_list_item,
 			l_string: STRING_32
 			l_id: INTEGER
-			test: STRING_GENERAL
-			a_arg: ANY
 		do
 			l_list := a_string.split (escape_character)
 			create Result.make_empty
@@ -111,12 +109,10 @@ feature -- Basic operations
 						l_id := l_string.to_integer
 
 							--FIXME!!! HACK because 'out' in ANY possibly gives a STRING_8 and this is not so good for STRING_32
-						test ?= args_tuple.item (l_id)
-						if test /= Void then
-							Result.append (test.as_string_32)
+						if attached {STRING_GENERAL} args_tuple.item (l_id) as test then
+							Result.append (test)
 						else
-							a_arg := args_tuple.item (l_id)
-							if a_arg /= Void then
+							if attached args_tuple.item (l_id) as a_arg then
 								Result.append (a_arg.out)
 							end
 						end
@@ -136,7 +132,7 @@ feature -- Basic operations
 
 feature -- Check functions
 
-	valid_arguments (a_tuple: TUPLE) : BOOLEAN is
+	valid_arguments (a_tuple: TUPLE) : BOOLEAN
 			-- Are all values in the tuple non-void?
 		require
 			a_tuple_not_void: a_tuple /= Void
@@ -154,7 +150,7 @@ feature -- Check functions
 			end
 		end
 
-	required_arguments (a_string: STRING_32): INTEGER is
+	required_arguments (a_string: STRING_32): INTEGER
 			-- The number of arguments which `a_string' needs to have replaced
 		require
 			a_string_not_void: a_string /= Void
@@ -193,13 +189,13 @@ feature -- Check functions
 			result_correct: a_string.has_substring (escape_character.out + Result.out)
 		end
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

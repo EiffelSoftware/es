@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Decoding of arbitrary objects graphs between sessions of programs %
 		%containing the same types. It basically takes care of potential reordering %
 		%of attributes from one system to the other."
@@ -23,11 +23,11 @@ create
 
 feature {NONE} -- Implementation: access
 
-	attributes_mapping: ?SPECIAL [SPECIAL [INTEGER]]
+	attributes_mapping: detachable SPECIAL [SPECIAL [INTEGER]]
 			-- Mapping for each dynamic type id between old attribute location
 			-- and new attribute location.
 
-	new_attribute_offset (a_new_type_id, a_old_offset: INTEGER): INTEGER is
+	new_attribute_offset (a_new_type_id, a_old_offset: INTEGER): INTEGER
 			-- Given attribute offset `a_old_offset' in the stored object whose dynamic type id
 			-- is now `a_new_type_id', retrieve new offset in `a_new_type_id'.
 		local
@@ -51,7 +51,7 @@ feature {NONE} -- Implementation: access
 
 feature {NONE} -- Implementation
 
-	read_header (a_count: NATURAL_32) is
+	read_header (a_count: NATURAL_32)
 			-- Read header which contains mapping between dynamic type and their
 			-- string representation.
 		local
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	read_attributes (a_dtype: INTEGER) is
+	read_attributes (a_dtype: INTEGER)
 			-- Read attribute description for `a_dtype' where `a_dtype' is a dynamic type
 			-- from the current system.
 		require
@@ -168,10 +168,10 @@ feature {NONE} -- Implementation
 			l_map: like attributes_map
 			l_mapping: SPECIAL [INTEGER]
 			l_name: STRING
-			l_dtype, l_field_count: INTEGER
+			l_old_dtype, l_dtype, l_field_count: INTEGER
 			i, nb: INTEGER
 			a: like attributes_mapping
-			l_item: ?TUPLE [INTEGER, INTEGER]
+			l_item: detachable TUPLE [INTEGER, INTEGER]
 		do
 			l_deser := deserializer
 
@@ -193,7 +193,8 @@ feature {NONE} -- Implementation
 					i = nb
 				loop
 						-- Read attribute static type
-					l_dtype := new_dynamic_type_id (l_deser.read_compressed_natural_32.to_integer_32)
+					l_old_dtype := l_deser.read_compressed_natural_32.to_integer_32
+					l_dtype := new_dynamic_type_id (l_old_dtype)
 						-- Write attribute name
 					l_name := l_deser.read_string_8
 
@@ -227,7 +228,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attributes_map (a_dtype, a_field_count: INTEGER): HASH_TABLE [TUPLE [INTEGER, INTEGER], STRING] is
+	attributes_map (a_dtype, a_field_count: INTEGER): HASH_TABLE [TUPLE [INTEGER, INTEGER], STRING]
 			-- Attribute map for dynamic type `a_dtype' which records
 			-- position and dynamic type for a given attribute name.
 		require
@@ -257,14 +258,14 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Cleaning
 
-	clear_internal_data is
+	clear_internal_data
 			-- Clear all allocated data
 		do
 			Precursor {SED_BASIC_DESERIALIZER}
 			attributes_mapping := Void
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Manager which can generate eweasel testing catalog file.
 																				]"
@@ -18,7 +18,7 @@ create
 
 feature -- Command
 
-	update_catalog_file (a_failed_first: BOOLEAN): BOOLEAN is
+	update_catalog_file (a_failed_first: BOOLEAN): BOOLEAN
 			-- Update catalog file contents
 			-- Result false means catalog file generating failed
 		local
@@ -44,7 +44,7 @@ feature -- Command
 						l_last_test_cases_folder := l_catalog_content.item.a_test_cases_folder
 
 						-- Convert to short name, otherwise eweasel will not recognize the long names.
-						if {lt_string: STRING_32} l_last_test_cases_folder.as_string_32 then
+						if attached l_last_test_cases_folder.as_string_32 as lt_string then
 							l_short_name := short_name_of (lt_string)
 							check not_void: l_short_name /= Void end
 							if l_short_name.last_index_of ('\', l_short_name.count) = l_short_name.count then
@@ -70,7 +70,7 @@ feature -- Command
 			end
 		end
 
-	append_catalog_parameter (a_list: LIST [STRING]) is
+	append_catalog_parameter (a_list: LIST [STRING])
 			-- Append catalog parameter
 			-- This feature used by Process library as eweasel execution paramters
 		require
@@ -90,11 +90,11 @@ feature -- Query
 			Result := manager.environment_manager.test_case_directory
 		end
 
-	generate_catalog_file_from_test_case_grid (a_failed_first: BOOLEAN): BOOLEAN is
+	generate_catalog_file_from_test_case_grid (a_failed_first: BOOLEAN): BOOLEAN
 			-- Generate eweasel catalog file base on selected rows in test case grid
 			-- Result false if no catalog file content generated
 		local
-			l_selected: !ARRAYED_LIST [EVENT_LIST_TEST_CASE_ITEM]
+			l_selected: attached ARRAYED_LIST [EVENT_LIST_TEST_CASE_ITEM]
 			l_catalog_content: like catalog_file_content
 		do
 			l_selected := manager.testing_tool.test_case_grid_manager.selected_test_cases (a_failed_first)
@@ -120,18 +120,18 @@ feature -- Query
 
 feature {NONE} -- Implementation routines
 
-	short_name_of (a_long_file_name: !STRING_32): !STRING_32 is
+	short_name_of (a_long_file_name: attached STRING_32): attached STRING_32
 			-- Short name of `a_long_file_name'
 		local
 			l_helper: ES_FILE_NAME_HELPER
 		do
 			create l_helper
-			if {l_result: !STRING_32} l_helper.short_name_of (a_long_file_name) then
+			if attached l_helper.short_name_of (a_long_file_name) as l_result then
 				Result := l_result
 			end
 		end
 
-	append_init_lines (a_new_line: BOOLEAN) is
+	append_init_lines (a_new_line: BOOLEAN)
 			-- Append initial line for a catalog file.
 		require
 			ready: test_case_source_folder /= Void
@@ -158,7 +158,7 @@ feature {NONE} -- Implementation routines
 			file.put_string ("%N")
 		end
 
-	 append_new_tast_case_line (a_test_case_name, a_folder_name: STRING) is
+	 append_new_tast_case_line (a_test_case_name, a_folder_name: STRING)
 			-- Append a new line to catalog file which describe a new test case.
 		require
 			valid: a_test_case_name /= Void and not a_test_case_name.is_empty
@@ -167,7 +167,7 @@ feature {NONE} -- Implementation routines
 			file.put_string ("%Ntest	" + a_test_case_name + "	" + a_folder_name + "  " + manager.environment_manager.tcf_file_name + " pass execution")
 		end
 
-	close_and_clear_file is
+	close_and_clear_file
 			-- Close and clean `internal_file'
 		do
 			if internal_file /= Void then
@@ -180,7 +180,7 @@ feature {NONE} -- Implementation routines
 			cleared: internal_file = Void
 		end
 
-	test_information_of (a_test_case_item: EVENT_LIST_TEST_CASE_ITEM; a_catalog_content: like catalog_file_content) is
+	test_information_of (a_test_case_item: EVENT_LIST_TEST_CASE_ITEM; a_catalog_content: like catalog_file_content)
 			-- Extract test information of `a_test_case_item'
 			-- Including:
 			-- Test case directory
@@ -195,7 +195,7 @@ feature {NONE} -- Implementation routines
 			l_dir: DIRECTORY_NAME
 			l_class_i: CLASS_I
 		do
-			if {l_test_case_item: ES_EWEASEL_TEST_CASE_ITEM} a_test_case_item.data then
+			if attached {ES_EWEASEL_TEST_CASE_ITEM} a_test_case_item.data as l_test_case_item then
 
 				l_class_i := l_test_case_item.class_i
 				l_test_case_name := l_class_i.file_name
@@ -234,7 +234,7 @@ feature {NONE} -- Implementation routines
 			generated: a_catalog_content.count = old catalog_file_content.count + 1
 		end
 
-	full_file_name: FILE_NAME is
+	full_file_name: FILE_NAME
 			-- Full file name (path included) of eweasel catalog file.
 		local
 			l_file_name_helper: ES_FILE_NAME_HELPER
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation routines
 
 			l_tmp_name := Result.twin
 			create l_file_name_helper
-			if {lt_string: STRING_GENERAL} l_tmp_name then
+			if attached l_tmp_name as lt_string then
 				-- File must exists before convert to short name
 				create l_file.make (l_tmp_name.as_string_8)
 				if not l_file.exists then
@@ -264,7 +264,7 @@ feature {NONE} -- Implementation routines
 			not_void: Result /= Void
 		end
 
-	clear_file_content is
+	clear_file_content
 			-- Clear catalog file content
 		local
 			l_file: RAW_FILE
@@ -279,7 +279,7 @@ feature {NONE} -- Implementation routines
 			end
 		end
 
-	file: IO_MEDIUM is
+	file: IO_MEDIUM
 			-- Control file instance
 		local
 			l_file: RAW_FILE
@@ -304,18 +304,18 @@ feature {NONE} -- Implementation attributes
 	catalog_file_content: ARRAYED_LIST [TUPLE [a_test_cases_folder, a_test_case_directory, a_test_case_name: STRING]]
 			-- Catalog file content generated by `test_informaion_of'
 
-	folder_name: STRING is "control"
+	folder_name: STRING = "control"
 			-- Control file folder name
 
-	file_name: STRING is "catalog"
+	file_name: STRING = "catalog"
 			-- Catalog file name
 
 	internal_file: like file;
 			-- Instance holder for `file'
 			-- Used by `file' ONLY.
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -339,11 +339,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

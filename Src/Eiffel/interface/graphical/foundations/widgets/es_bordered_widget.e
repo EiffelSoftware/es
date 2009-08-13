@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A utility widget wrapper to create a widget with a standard border.
 	]"
@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- User interface initialization
 
-	build_widget_interface (a_widget: !EV_HORIZONTAL_BOX)
+	build_widget_interface (a_widget: attached EV_HORIZONTAL_BOX)
 			-- <Precursor>
 		do
 			a_widget.set_border_width (border_width)
@@ -66,7 +66,7 @@ feature {NONE} -- Access
 			result_positive: Result > 0
 		end
 
-	border_color: !EV_COLOR
+	border_color: attached EV_COLOR
 			-- Color of the widget border.
 		require
 			is_interface_usable: is_interface_usable
@@ -82,7 +82,7 @@ feature -- User interface elements
 
 feature {NONE} -- Factory
 
-	create_border_widget: !EV_HORIZONTAL_BOX
+	create_border_widget: attached EV_HORIZONTAL_BOX
 			-- <Precursor>
 		do
 			create Result
@@ -91,7 +91,7 @@ feature {NONE} -- Factory
 invariant
 	widget_not_void: widget /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

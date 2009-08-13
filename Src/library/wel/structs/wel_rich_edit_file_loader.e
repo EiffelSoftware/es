@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		This class allows to load a file into a rich edit control.
 		
@@ -26,16 +26,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_file: RAW_FILE) is
+	make (a_file: RAW_FILE)
 			-- Load `a_file' in the rich edit control.
 		require
 			a_file_not_void: a_file /= Void
 			a_file_exists: a_file.exists
 			a_file_is_open_read: a_file.is_open_read
 		do
-			rich_edit_stream_in_make
 			file := a_file
 			is_unicode_data := False
+			rich_edit_stream_in_make
 		ensure
 			file_set: file = a_file
 			not_is_unicode: not is_unicode_data
@@ -46,21 +46,26 @@ feature {NONE} -- Implementation
 	file: RAW_FILE
 			-- File to load
 
-	read_buffer is
+	read_buffer
 			-- Read from `file' `length' characters.
+		local
+			l_buffer: like buffer
 		do
+			l_buffer := buffer
+				-- Per precondition
+			check l_buffer_attached: l_buffer /= Void end
 				-- FIXME: we do not handle `is_unicode' because it would imply
 				-- that we know which encoding is used in `file'. This explains
 				-- the not_is_unicode invariant.
 			if file.readable then
-				file.read_to_managed_pointer (buffer, 0, buffer.count)
-				buffer.set_from_pointer (buffer.item, file.bytes_read)
+				file.read_to_managed_pointer (l_buffer, 0, l_buffer.count)
+				l_buffer.set_from_pointer (l_buffer.item, file.bytes_read)
 			else
-				buffer.set_from_pointer (buffer.item, 0)
+				l_buffer.set_from_pointer (l_buffer.item, 0)
 			end
 		end
 
-	finish_action is
+	finish_action
 			-- Close `file'.
 		do
 			file.close
@@ -72,7 +77,7 @@ invariant
 	file_not_void: file /= Void
 	not_is_unicode: not is_unicode_data
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

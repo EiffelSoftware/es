@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Convert path string formats to DOS 8.3 length filename conventions."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,14 +10,11 @@ class
 
 feature -- Access
 
-	eiffel_dir: STRING
-			-- EIFFEL installation environment variable
-
-	Max_path_length: INTEGER is 1024
+	Max_path_length: INTEGER = 1024
 			-- Maximum path length (in characters)
 			--| Windows limit.
 
-	short_path (long_path: STRING): STRING is
+	short_path (long_path: STRING): STRING
 			-- Short path name corresponding to `long_path'.
 		require
 			non_void_long_path: long_path /= Void
@@ -41,7 +38,7 @@ feature -- Access
 
 feature {NONE} -- Externals
 
-	convert_path (a1, a2: POINTER; sz: INTEGER): INTEGER is
+	convert_path (a1, a2: POINTER; sz: INTEGER): INTEGER
 			-- Convert a long path name to a short path name.
 		external
 			"C signature (LPCTSTR, LPTSTR, DWORD): DWORD use <windows.h>"
@@ -49,8 +46,8 @@ feature {NONE} -- Externals
 			"GetShortPathName"
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -63,22 +60,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class PATH_CONVERTER

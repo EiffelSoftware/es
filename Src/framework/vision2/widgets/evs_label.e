@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An EiffelVision2 label extension that supports text wrapping and text ellipsing.
 	]"
@@ -30,6 +30,14 @@ inherit
 			copy
 		end
 
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		undefine
+			default_create,
+			copy
+		end
+
 create
 	make
 
@@ -48,6 +56,8 @@ feature {NONE} -- Initialization
 					resize_text
 					resize_actions.resume
 				end)
+			maximum_height := -1
+			maximum_width := -1
 		end
 
 feature -- Access
@@ -74,7 +84,7 @@ feature -- Element change
 			no_carriage_returns: not a_text.has_code (('%R').natural_32_code)
 		local
 			l_lines: LIST [STRING_32]
-			l_text_lines: ARRAYED_LIST [ARRAY [STRING_32]]
+			l_text_lines: ARRAYED_LIST [ARRAYED_LIST [STRING_32]]
 			l_text_sizes: ARRAYED_LIST [ARRAY [INTEGER]]
 			l_words: like split_words
 			l_sizes: like measure_words
@@ -103,7 +113,7 @@ feature -- Element change
 			text_set: text = a_text
 		end
 
-	set_font (a_font: like font) is
+	set_font (a_font: like font)
 			-- Assign `a_font' to `font'.
 		do
 			Precursor {EV_LABEL} (a_font)
@@ -112,7 +122,7 @@ feature -- Element change
 			end
 		end
 
-	set_maximum_width (a_width: INTEGER) is
+	set_maximum_width (a_width: INTEGER)
 			-- Set maximum size for text wrapping.
 		require
 			not_destroyed: not is_destroyed
@@ -129,7 +139,7 @@ feature -- Element change
 			is_maximum_width_set_by_user: is_maximum_width_set_by_user
 		end
 
-	set_maximum_height (a_height: INTEGER) is
+	set_maximum_height (a_height: INTEGER)
 			-- Set maximum size for text ellipsing.
 		require
 			not_destroyed: not is_destroyed
@@ -146,7 +156,7 @@ feature -- Element change
 			is_maximum_height_set_by_user: is_maximum_height_set_by_user
 		end
 
-	set_maximum_size (a_width, a_height: INTEGER) is
+	set_maximum_size (a_width, a_height: INTEGER)
 			-- Set maximum size for text wrapping and text ellipsing.
 		require
 			not_destroyed: not is_destroyed
@@ -164,7 +174,7 @@ feature -- Element change
 
 feature -- Removal
 
-	remove_text is
+	remove_text
 			-- Make `text' `is_empty'.
 		do
 			text_lines := Void
@@ -193,12 +203,12 @@ feature {EV_BUILDER} -- Status report
 	is_maximum_height_set_by_user: BOOLEAN
 			-- Indicates if the ellipsed miniumu width has been set
 		do
-			Result := maximum_height > 0
+			Result := maximum_height >= 0
 		end
 
 	is_maximum_width_set_by_user: BOOLEAN
 		do
-			Result := maximum_width > 0
+			Result := maximum_width >= 0
 		end
 
 	is_size_calculated: BOOLEAN
@@ -249,6 +259,7 @@ feature -- Basic operations
 			-- Calculates the size of the label.
 			-- Note: You must call this prior to a show to get the correct size information
 		do
+			fixme ("Paul: Why isn't is_size_calculated calculated?")
 			resize_text
 		ensure
 			is_size_calculated: is_size_calculated
@@ -256,7 +267,7 @@ feature -- Basic operations
 
 feature {NONE} -- Line analysis
 
-	split_words (a_line: STRING_32): ARRAY [STRING_32]
+	split_words (a_line: STRING_32): ARRAYED_LIST [STRING_32]
 			-- Splits a line of text into words and whitespace
 			--
 			-- `a_line': A line of text to split into words
@@ -264,13 +275,12 @@ feature {NONE} -- Line analysis
 		require
 			a_line_attached: a_line /= Void
 		local
-			l_words: ARRAYED_LIST [STRING_32]
 			l_word: STRING_32
 			l_count, i: INTEGER
 			c: CHARACTER_32
 			l_last_is_space: BOOLEAN
 		do
-			create l_words.make (0)
+			create Result.make (0)
 			if not a_line.is_empty then
 				create l_word.make (24)
 				from
@@ -284,15 +294,14 @@ feature {NONE} -- Line analysis
 					l_last_is_space := (c.is_character_8 and then c.is_space)
 					c := a_line.item (i)
 					if i > 1 and then (c.is_character_8 and then c.is_space) /= l_last_is_space then
-						l_words.extend (l_word)
+						Result.extend (l_word)
 						create l_word.make (24)
 					end
 					l_word.append_character (c)
 					i := i + 1
 				end
-				l_words.extend (l_word)
+				Result.extend (l_word)
 			end
-			Result := l_words
 		ensure
 			result_attached: Result /= Void
 			not_result_is_empty: a_line.is_empty = Result.is_empty
@@ -326,7 +335,7 @@ feature {NONE} -- Line analysis
 			until
 				i > l_count
 			loop
-				l_word := a_words.item (i)
+				l_word := a_words.i_th (i)
 				l_len := a_cache.item (l_word)
 				if l_len = 0 then
 					l_len := l_font.string_width (l_word)
@@ -339,14 +348,14 @@ feature {NONE} -- Line analysis
 			is_size_calculated := True
 		ensure
 			result_attached: Result /= Void
-			not_result_is_empty: not Result.is_empty
+			not_result_is_empty: not a_words.is_empty implies not Result.is_empty
 			result_contains_valid_items: Result.for_all (agent (a_len: INTEGER): BOOLEAN do Result := a_len > 0 end)
 			is_size_calculated: is_size_calculated
 		end
 
 feature {NONE} -- Line rendering
 
-	text_lines: LIST [ARRAY [STRING_32]]
+	text_lines: LIST [ARRAYED_LIST [STRING_32]]
 			-- Original lines, split into words
 
 	text_sizes: LIST [ARRAY [INTEGER]]
@@ -362,7 +371,7 @@ feature {NONE} -- Line rendering
 			l_wrapped: like is_text_wrapped
 			l_ellipsed: like is_text_ellipsed
 			l_font: like font
-			l_words: ARRAY [STRING_32]
+			l_words: like split_words
 			l_sizes: ARRAY [INTEGER]
 			l_word: STRING_32
 			l_small_word: STRING_32
@@ -402,7 +411,7 @@ feature {NONE} -- Line rendering
 							i > l_count
 						loop
 							l_len := l_sizes.item (i)
-							l_word := l_words.item (i)
+							l_word := l_words.i_th (i)
 
 							if not l_wrapped or l_eval_width + l_len <= l_width then
 								l_eval_width := l_eval_width + l_len
@@ -444,7 +453,7 @@ feature {NONE} -- Line rendering
 										l_word := l_word.substring (2, l_word.count)
 									end
 									if not l_word.is_empty then
-										l_text.append (l_words.item (i))
+										l_text.append (l_words.i_th (i))
 									end
 								end
 							end
@@ -514,10 +523,10 @@ invariant
 	text_lines_and_text_sizes_synced: (text_lines = Void) = (text_sizes = Void) and then
 			text_lines /= Void implies text_lines.count = text_sizes.count
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -528,22 +537,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

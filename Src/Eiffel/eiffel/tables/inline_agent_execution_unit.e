@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Execution unit of an inline agent"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ create
 
 feature -- Initialization
 
-	make (a_cl_type: CLASS_TYPE; a_enclosing_feature: FEATURE_I) is
+	make (a_cl_type: CLASS_TYPE; a_enclosing_feature: FEATURE_I)
 			-- Initialization
 		require
 			a_cl_type_not_void: a_cl_type /= Void
@@ -33,7 +33,7 @@ feature -- Initialization
 
 feature -- Access
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is the execution unit still valid ?
 		local
 			written_type: CLASS_TYPE
@@ -47,7 +47,8 @@ feature -- Access
 				System.class_type_of_id (type_id) = class_type
 			then
 				written_type :=	class_type.written_type (written_class)
-				if written_type.is_precompiled then
+				if written_in = access_in and then written_type.is_precompiled then
+						-- If routine id is from precompiled class then it must be valid.
 					Result := True
 				else
 						-- Feature may have disappeared from system and

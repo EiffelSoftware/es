@@ -1,6 +1,6 @@
-indexing
+note
 	description: "[
-		Objects providing base implementation for eiffel test factories.
+		Objects providing base implementation for Eiffel test factories.
 	]"
 	author: ""
 	date: "$Date$"
@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	created_tests: !DS_LINEAR [!TEST_I]
+	created_tests: attached DS_LINEAR [attached TEST_I]
 			-- <Precursor>
 		do
 			Result := internal_created_tests
@@ -45,10 +45,10 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	configuration: ?like conf_type
+	configuration: detachable like conf_type
 			-- Internal storage for `configuration'
 
-	internal_created_tests: !DS_HASH_SET [!TEST_I]
+	internal_created_tests: attached DS_HASH_SET [attached TEST_I]
 			-- Internal storage for `created_tests'
 
 	class_name_counter: NATURAL
@@ -83,7 +83,8 @@ feature {NONE} -- Status setting
 			-- <Precursor>
 		do
 			internal_created_tests.wipe_out
-			tests_reset_event.publish ([Current])
+				-- Note: replace `as_attached' with Current when compiler treats Current as attached
+			tests_reset_event.publish ([as_attached])
 			is_finished := False
 			configuration := a_conf
 			class_name_counter := 1
@@ -115,8 +116,8 @@ feature {NONE} -- Basic operations
 		local
 			l_location: DIRECTORY_NAME
 			l_directory: DIRECTORY
-			l_path: ?FILE_NAME
-			l_file: !KL_TEXT_OUTPUT_FILE
+			l_path: detachable FILE_NAME
+			l_file: attached KL_TEXT_OUTPUT_FILE
 			l_filename: STRING
 			l_class_name: STRING
 		do
@@ -165,7 +166,7 @@ feature {NONE} -- Basic operations
 								l_file.close
 							end
 							if l_file.exists and then l_file.count > 0 then
-								add_class (l_filename)
+								add_class (l_filename, l_class_name)
 							end
 						else
 							test_suite.propagate_error (e_file_not_creatable, [l_location, l_filename], Current)
@@ -185,7 +186,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	print_new_class (a_file: !KL_TEXT_OUTPUT_FILE; a_class_name: !STRING)
+	print_new_class (a_file: attached KL_TEXT_OUTPUT_FILE; a_class_name: attached STRING)
 			-- Print new class text to `a_file'.
 		require
 			running: is_running
@@ -194,19 +195,19 @@ feature {NONE} -- Basic operations
 		deferred
 		end
 
-	add_class (a_filename: !STRING)
-			-- Add new test class to eiffel project and update test suite.
+	add_class (a_filename: attached STRING; a_class_name: attached STRING)
+			-- Add new test class to Eiffel project and update test suite.
 		require
 			running: is_running
 			configuration_valid: configuration.is_new_class
 		do
-			test_suite.eiffel_project_helper.add_class (configuration.cluster, configuration.path, a_filename)
+			test_suite.eiffel_project_helper.add_class (configuration.cluster, configuration.path, a_filename, a_class_name)
 			if test_suite.eiffel_project_helper.is_class_added then
 				synchronize_class (test_suite.eiffel_project_helper.last_added_class)
 			end
 		end
 
-	synchronize_class (a_class: !EIFFEL_CLASS_I)
+	synchronize_class (a_class: attached EIFFEL_CLASS_I)
 			-- Synchronize `a_class' with test suite and add any new tests to `created_tests'.
 		do
 			is_adding_tests := True
@@ -216,59 +217,92 @@ feature {NONE} -- Basic operations
 
 feature {NONE} -- Events
 
-	on_test_added (a_collection: !ACTIVE_COLLECTION_I [!TEST_I]; a_item: !TEST_I)
+	on_test_added (a_collection: attached ACTIVE_COLLECTION_I [attached TEST_I]; a_item: attached TEST_I)
 			-- <Precursor>
 		do
 			if is_adding_tests then
 				internal_created_tests.force_last (a_item)
-				test_added_event.publish ([Current, a_item])
+					-- Note: replace `as_attached' with Current when compiler treats Current as attached
+				test_added_event.publish ([as_attached, a_item.as_attached])
 			end
 		end
 
-	on_test_removed (a_collection: !ACTIVE_COLLECTION_I [!TEST_I]; a_item: !TEST_I)
+	on_test_removed (a_collection: attached ACTIVE_COLLECTION_I [attached TEST_I]; a_item: attached TEST_I)
 			-- <Precursor>
 		do
 			internal_created_tests.search (a_item)
 			if internal_created_tests.found then
 				internal_created_tests.remove_found_item
-				test_removed_event.publish ([Current, a_item])
+					-- Note: replace `as_attached' with Current when compiler treats Current as attached
+				test_removed_event.publish ([as_attached, a_item.as_attached])
 			end
 		end
 
 feature {NONE} -- Typing
 
-	conf_type: !TEST_CREATOR_CONF_I
+	conf_type: attached TEST_CREATOR_CONF_I
 			-- <Precursor>
 		deferred
 		end
 
 feature {NONE} -- Constants
 
-	e_can_not_create_new_class_file: !STRING = "Can not create new class file in $1:%N%N"
-	e_cluster_read_only: !STRING
+	e_can_not_create_new_class_file: attached STRING = "Can not create new class file in $1:%N%N"
+	e_cluster_read_only: attached STRING
 		do
 			Result := e_can_not_create_new_class_file.twin
 			Result.append ("Cluster is read only.")
 		end
-	e_directory_does_not_exist: !STRING
+	e_directory_does_not_exist: attached STRING
 		do
 			Result := e_can_not_create_new_class_file.twin
 			Result.append ("Path does not exist.")
 		end
-	e_directory_not_writable: !STRING
+	e_directory_not_writable: attached STRING
 		do
 			Result := e_can_not_create_new_class_file.twin
 			Result.append ("Path is not writable.")
 		end
-	e_file_already_exists: !STRING
+	e_file_already_exists: attached STRING
 		do
 			Result := e_can_not_create_new_class_file.twin
 			Result.append ("File $2 already exists.")
 		end
-	e_file_not_creatable: !STRING
+	e_file_not_creatable: attached STRING
 		do
 			Result := e_can_not_create_new_class_file.twin
 			Result.append ("Unable to create file $2.")
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

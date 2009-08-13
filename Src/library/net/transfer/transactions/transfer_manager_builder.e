@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Singleton instance of the transfer manager builder"
 	legal: "See notice at end of class."
@@ -7,18 +7,18 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class 
+class
 	TRANSFER_MANAGER_BUILDER
 
 feature -- Access
 
-	Transfer_manager_builder: TRANSFER_MANAGER_BUILDER_IMPL is
+	Transfer_manager_builder: TRANSFER_MANAGER_BUILDER_IMPL
 			-- Transfer manager builder singleton
 		once
 			create Result.make
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

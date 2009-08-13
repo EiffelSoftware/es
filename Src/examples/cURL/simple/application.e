@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "[
 						cURL simple example Eiffel version. 
 						For original C version, please see:
@@ -20,32 +20,34 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Run application.
 		local
 			l_result: INTEGER
 		do
-			print ("Eiffel cURL simple example.%N")
+			io.put_string ("Eiffel cURL simple example.")
+			io.put_new_line
 
-			curl_handle := curl_easy.init
+			if curl_easy.is_dynamic_library_exists then
+				curl_handle := curl_easy.init
 
-			if curl_handle /= default_pointer then
-
-				-- First we specify which URL we would like to download.
+					-- First we specify which URL we would like to download.
 				curl_easy.setopt_string (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_url, "www.google.com")
 
-				-- After `perform' has been called, the remote HTML source is printed in the console.
+					-- After `perform' has been called, the remote HTML source is printed in the console.
 				l_result := curl_easy.perform (curl_handle)
 
-				-- Always cleanup
+					-- Always cleanup
 				curl_easy.cleanup (curl_handle)
+			else
+				io.error.put_string ("cURL library not found!")
+				io.error.put_new_line
 			end
-
 		end
 
 feature {NONE} -- Implementation
 
-	curl_easy: CURL_EASY_EXTERNALS is
+	curl_easy: CURL_EASY_EXTERNALS
 			-- cURL easy externals
 		once
 			create Result
@@ -54,7 +56,7 @@ feature {NONE} -- Implementation
 	curl_handle: POINTER;
 			-- cURL handle
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

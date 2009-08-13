@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A base contract editor ({ES_CONTRACT_EDITOR_WIDGET}) context for class-level contracts.
 	]"
@@ -15,7 +15,7 @@ inherit
 
 feature {NONE} -- Query
 
-	calculate_parents (a_class: !CLASS_I; a_list: !DS_LIST [CLASS_C])
+	calculate_parents (a_class: attached CLASS_I; a_list: attached DS_LIST [CLASS_C])
 			-- <Precursor>
 		local
 			l_class_i: CLASS_I
@@ -42,7 +42,7 @@ feature {NONE} -- Query
 			end
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

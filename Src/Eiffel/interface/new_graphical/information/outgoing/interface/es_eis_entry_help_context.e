@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Help context of EIS entries."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -29,12 +29,12 @@ create
 
 feature {NONE} -- Initialzation
 
-	make (a_entry: !EIS_ENTRY) is
+	make (a_entry: attached EIS_ENTRY)
 			-- Initialization
 		do
 			entry := a_entry
-			if {lt_source: STRING_GENERAL}a_entry.source then
-				help_context_id := lt_source
+			if attached a_entry.source as l_source then
+				help_context_id := l_source
 			else
 				help_context_id := "No source available"
 			end
@@ -51,20 +51,20 @@ feature -- Querry
 
 feature -- Access
 
-	help_context_id: !STRING_GENERAL
+	help_context_id:STRING
 			-- <precursor>
 
-	help_context_section: ?HELP_CONTEXT_SECTION_I
+	help_context_section: detachable HELP_CONTEXT_SECTION_I
 			-- <precursor>
 
-	help_context_description: ?STRING_GENERAL
+	help_context_description: detachable STRING_32
 			-- An optional description of the context.
 		do
 			eis_output.process (entry)
 			Result := eis_output.last_output_code
 		end
 
-	help_provider: !UUID
+	help_provider: attached UUID
 			-- <precursor>
 		do
 			Result := help_provider_from_protocol (entry.protocol)
@@ -72,11 +72,15 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	entry: !EIS_ENTRY;
+	entry: attached EIS_ENTRY;
 			-- The entry
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+invariant
+	help_context_id_attached: help_context_id /= Void
+	not_help_context_id_is_empty: not help_context_id.is_empty
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -100,11 +104,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -9,7 +9,7 @@ class
 inherit
 	EB_TOOL
 		redefine
-			attach_to_docking_manager,
+--Merge64:	attach_to_docking_manager,
 			internal_recycle
 		end
 
@@ -48,13 +48,13 @@ feature {NONE} -- Initialization
 
 feature {EB_DEVELOPMENT_WINDOW_BUILDER} -- Initialization
 
-	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
-			-- Attach to docking manager.
-		do
-			build_docking_content (a_docking_manager)
-			check not_already_has: not a_docking_manager.has_content (content) end
-			a_docking_manager.contents.extend (content)
-		end
+--Merge64:	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+--Merge64:			-- Attach to docking manager.
+--Merge64:		do
+--Merge64:			build_docking_content (a_docking_manager)
+--Merge64:			check not_already_has: not a_docking_manager.has_content (content) end
+--Merge64:			a_docking_manager.contents.extend (content)
+--Merge64:		end
 
 feature -- Clean up
 
@@ -80,7 +80,7 @@ feature -- Status setting
 			-- Only if `Current' is in the focused window.
 		do
 			if develop_window = Window_manager.last_focused_window then
-				if not shown or else is_auto_hide then
+				if not is_shown or else is_auto_hide then
 					show_with_setting
 				end
 				content.set_focus
@@ -171,7 +171,7 @@ feature {NONE} -- Implementation
 			l_feature_tool := develop_window.tools.features_relation_tool
 			l_feature_tool.set_stone (st)
 			l_feature_tool.show
-			l_feature_tool.content.set_focus
+			l_feature_tool.set_focus
 			l_feature_tool.set_focus
 		end
 
@@ -207,10 +207,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

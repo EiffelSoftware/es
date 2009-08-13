@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Interface for a eiffe test factory that creates manual test cases.
 	]"
@@ -17,7 +17,7 @@ inherit
 
 feature {NONE} -- Typing
 
-	conf_type: !TEST_MANUAL_CREATOR_CONF_I
+	conf_type: attached TEST_MANUAL_CREATOR_CONF_I
 			-- <Precursor>
 		do
 		end

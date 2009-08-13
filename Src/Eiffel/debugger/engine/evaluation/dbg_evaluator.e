@@ -1,4 +1,4 @@
-indexing
+note
 	description : "Objects used to evaluate concrete feature ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -41,7 +41,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (dm: like debugger_manager) is
+	make (dm: like debugger_manager)
 			-- Initialize `Current'.
 		require
 			dm_not_void: dm /= Void
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 
 feature {DEBUGGER_MANAGER, DBG_EXPRESSION_EVALUATOR, APPLICATION_EXECUTION} -- Init
 
-	reset is
+	reset
 			-- Reset data
 		do
 			reset_error
@@ -60,7 +60,7 @@ feature {DEBUGGER_MANAGER, DBG_EXPRESSION_EVALUATOR, APPLICATION_EXECUTION} -- I
 			parameters_reset
 		end
 
-	clear_evaluation is
+	clear_evaluation
 			-- Clear evaluation data	
 		do
 			last_result := Void
@@ -72,7 +72,7 @@ feature {NONE} -- Internal properties
 
 feature -- Access
 
-	error_occurred: BOOLEAN is
+	error_occurred: BOOLEAN
 			-- Did an error occurred during processing ?
 		do
 			Result := dbg_error_handler.error_occurred
@@ -100,7 +100,7 @@ feature {DBG_EXPRESSION_EVALUATOR, DEBUGGER_MANAGER, APPLICATION_EXECUTION} -- V
 
 feature {DBG_EXPRESSION_EVALUATOR} -- Variables preparation
 
-	set_last_variables (v: DBG_EVALUATED_VALUE) is
+	set_last_variables (v: DBG_EVALUATED_VALUE)
 		do
 			reset_error
 			if v /= Void then
@@ -110,14 +110,14 @@ feature {DBG_EXPRESSION_EVALUATOR} -- Variables preparation
 			end
 		end
 
-	reset_error is
+	reset_error
 		do
 			dbg_error_handler.reset
 		end
 
 feature -- Access
 
-	value_from_constant_i (a_constant_i: CONSTANT_I): ABSTRACT_DEBUG_VALUE is
+	value_from_constant_i (a_constant_i: CONSTANT_I): ABSTRACT_DEBUG_VALUE
 			-- Evaluate `a_constant_i'
 		require
 			a_constant_i_not_void: a_constant_i /= Void
@@ -127,14 +127,14 @@ feature -- Access
 		do
 			a_value_i := a_constant_i.value
 			if a_value_i.is_integer then
-				if {l_integer: INTEGER_CONSTANT} a_value_i then
+				if attached {INTEGER_CONSTANT} a_value_i as l_integer then
 					Result := value_from_integer_constant (l_integer)
 				else
 					check False end
 				end
 			else
 				if a_value_i.is_string then
-					if {l_string: STRING_VALUE_I} a_value_i then
+					if attached {STRING_VALUE_I} a_value_i as l_string then
 						create m.make_with_name (a_constant_i.feature_name)
 						m.set_message (l_string.string_value)
 						m.set_display_kind ({VALUE_TYPES}.Reference_value)
@@ -143,7 +143,7 @@ feature -- Access
 				elseif a_value_i.is_boolean then
 					create {DEBUG_BASIC_VALUE[BOOLEAN]} Result.make ({SK_CONST}.sk_bool, a_value_i.boolean_value)
 				elseif a_value_i.is_character then
-					if {l_char: CHAR_VALUE_I} a_value_i then
+					if attached {CHAR_VALUE_I} a_value_i as l_char then
 						if l_char.is_character_32 then
 							create {DEBUG_BASIC_VALUE[CHARACTER_32]} Result.make ({SK_CONST}.sk_wchar, l_char.character_value)
 						else
@@ -151,7 +151,7 @@ feature -- Access
 						end
 					end
 				elseif a_value_i.is_real then
-					if {l_real: REAL_VALUE_I} a_value_i then
+					if attached {REAL_VALUE_I} a_value_i as l_real then
 						if l_real.is_real_32 then
 							create {DEBUG_BASIC_VALUE[REAL_32]} Result.make ({SK_CONST}.sk_real32, l_real.real_32_value)
 						else
@@ -167,7 +167,7 @@ feature -- Access
 			end
 		end
 
-	value_from_integer_constant (a_node: INTEGER_CONSTANT): ABSTRACT_DEBUG_VALUE is
+	value_from_integer_constant (a_node: INTEGER_CONSTANT): ABSTRACT_DEBUG_VALUE
 			-- Value from `a_node'.
 		local
 			l_type: TYPE_A
@@ -216,7 +216,7 @@ feature -- Access
 
 feature {NONE} -- Query		
 
-	address_from_basic_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS is
+	address_from_basic_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS
 		require
 			a_target /= Void and then a_target.address = Void
 		deferred
@@ -224,23 +224,23 @@ feature {NONE} -- Query
 
 feature {NONE} -- Parameters Implementation
 
-	parameters_reset is
+	parameters_reset
 		do
 		end
 
-	parameters_init (n: INTEGER) is
+	parameters_init (n: INTEGER)
 		do
 		end
 
-	parameters_push (dmp: DUMP_VALUE) is
+	parameters_push (dmp: DUMP_VALUE)
 		deferred
 		end
 
-	parameters_push_and_metamorphose (dmp: DUMP_VALUE) is
+	parameters_push_and_metamorphose (dmp: DUMP_VALUE)
 		deferred
 		end
 
-	prepare_parameters (dt: CLASS_TYPE; f: FEATURE_I; params: LIST [DUMP_VALUE]) is
+	prepare_parameters (dt: CLASS_TYPE; f: FEATURE_I; params: LIST [DUMP_VALUE])
 			-- Prepare parameters for function evaluation
 			-- For classic system
 			--| Warning: for classic system be sure `Init_recv_c' had been done before
@@ -279,7 +279,7 @@ feature {NONE} -- Parameters Implementation
 					check dmp_not_void: dmp /= Void end
 					if dmp.is_basic then
 						if dt /= Void and f /= Void then
-							if {ta: TYPE_A} f.arguments.i_th (params.index) then
+							if attached f.arguments.i_th (params.index) as ta then
 								l_type := ta.instantiation_in (dt.type, f.written_in)
 							end
 							if l_type /= Void and then not l_type.is_basic then
@@ -305,7 +305,7 @@ feature {NONE} -- Parameters Implementation
 
 feature -- Concrete evaluation
 
-	evaluate_static_function (f: FEATURE_I; cl: CLASS_C; params: LIST [DUMP_VALUE]) is
+	evaluate_static_function (f: FEATURE_I; cl: CLASS_C; params: LIST [DUMP_VALUE])
 		require
 			f /= Void
 			f_is_not_attribute: not f.is_attribute
@@ -319,7 +319,7 @@ feature -- Concrete evaluation
 
 			effective_evaluate_static_function (f, l_dyntype, params)
 
-			if last_result /= Void and then {sc: CLASS_C} class_c_from_type_a (f.type, cl) then
+			if last_result /= Void and then (attached class_c_from_type_a (f.type, cl) as sc) then
 				last_result.suggest_static_class (sc)
 			end
 			if last_result = Void or else not last_result.has_value then
@@ -327,7 +327,7 @@ feature -- Concrete evaluation
 			end
 		end
 
-	evaluate_once (f: FEATURE_I) is
+	evaluate_once (f: FEATURE_I)
 			-- Evaluate once feature
 		require
 			feature_not_void: f /= Void
@@ -339,7 +339,7 @@ feature -- Concrete evaluation
 			effective_evaluate_once_function (f)
 		end
 
-	evaluate_attribute (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE; c: CLASS_C; f: FEATURE_I) is
+	evaluate_attribute (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE; c: CLASS_C; f: FEATURE_I)
 			-- Evaluate attribute feature
 		local
 			lst: DS_LIST [ABSTRACT_DEBUG_VALUE]
@@ -389,18 +389,23 @@ feature -- Concrete evaluation
 			end
 		end
 
-	evaluate_routine (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE; cl: CLASS_C; f: FEATURE_I; params: LIST [DUMP_VALUE]; is_static_call: BOOLEAN) is
+	evaluate_routine (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE; cl: CLASS_C; f: FEATURE_I; params: LIST [DUMP_VALUE]; is_static_call: BOOLEAN)
 		require
 			f /= Void
 			f_is_not_attribute: not f.is_attribute
 		local
+			l_addr: DBG_ADDRESS
 			l_target_dynclass, l_statcl: CLASS_C
 			l_dyntype: CLASS_TYPE
 			realf: FEATURE_I
 		do
+			l_addr := a_addr
+			if l_addr = Void and a_target /= Void then
+				l_addr := a_target.value_address
+			end
 			debug ("debugger_trace_eval")
 				print (generating_type + ".evaluate_routine :%N")
-				print ("%Taddr="); print (a_addr.output); print ("%N")
+				print ("%Taddr="); print (l_addr.output); print ("%N")
 				if a_target /= Void then
 					print ("%Ttarget=not Void : [")
 					print (a_target.full_output)
@@ -422,11 +427,11 @@ feature -- Concrete evaluation
 			elseif l_target_dynclass /= Void and then l_target_dynclass.types.count = 1 then
 				l_dyntype := l_target_dynclass.types.first
 			elseif l_target_dynclass = Void or else l_target_dynclass.types.count > 1 then
-				if a_addr /= Void and then not a_addr.is_void then
+				if l_addr /= Void and then not l_addr.is_void then
 						-- The type has generic derivations: we need to find the precise type.
-					l_dyntype := class_type_from_object_relative_to (a_addr, l_target_dynclass)
+					l_dyntype := class_type_from_object_relative_to (l_addr, l_target_dynclass)
 					if l_dyntype = Void then
-						dbg_error_handler.notify_error_evaluation (Debugger_names.msg_error_cannot_find_context_object (a_addr.output))
+						dbg_error_handler.notify_error_evaluation (Debugger_names.msg_error_cannot_find_context_object (l_addr.output))
 					elseif l_target_dynclass = Void then
 						l_target_dynclass := l_dyntype.associated_class
 					end
@@ -476,11 +481,11 @@ feature -- Concrete evaluation
 					if realf.is_deferred and f.is_deferred then
 						dbg_error_handler.notify_error_evaluation (Debugger_names.msg_error_unable_to_evaluate_deferred_call (f.written_class.name_in_upper, f.feature_name))
 					else
-						effective_evaluate_routine (a_addr, a_target, f, realf, l_dyntype, l_target_dynclass, params, is_static_call)
+						effective_evaluate_routine (l_addr, a_target, f, realf, l_dyntype, l_target_dynclass, params, is_static_call)
 						if last_result = Void or else not last_result.has_value then
-							if a_addr /= Void then
+							if l_addr /= Void then
 								dbg_error_handler.notify_error_evaluation (
-											Debugger_names.msg_error_unable_to_evaluate_call (l_dyntype.associated_class.name_in_upper, f.feature_name, a_addr.output, Void)
+											Debugger_names.msg_error_unable_to_evaluate_call (l_dyntype.associated_class.name_in_upper, f.feature_name, l_addr.output, Void)
 										)
 							else
 								dbg_error_handler.notify_error_evaluation (
@@ -521,7 +526,7 @@ feature -- Concrete evaluation
 
 	evaluate_function_with_name (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE;
 				a_feature_name, a_external_name: STRING;
-				params: LIST [DUMP_VALUE]) is
+				params: LIST [DUMP_VALUE])
 			-- Note: this feature is used only for external function				
 		require
 			a_feature_name_not_void: a_feature_name /= Void
@@ -530,7 +535,7 @@ feature -- Concrete evaluation
 			effective_evaluate_function_with_name (a_addr, a_target, a_feature_name, a_external_name, params)
 		end
 
-	effective_evaluate_once_function (f: FEATURE_I) is
+	effective_evaluate_once_function (f: FEATURE_I)
 		require
 			feature_not_void: f /= Void
 			f.written_class.types.count <= 1
@@ -543,21 +548,21 @@ feature -- Concrete evaluation
 				ctype: CLASS_TYPE; orig_class: CLASS_C;
 				params: LIST [DUMP_VALUE];
 				is_static_call: BOOLEAN
-			) is
+			)
 		require
 			realf /= Void
 			no_error_occurred: not error_occurred
 		deferred
 		end
 
-	create_empty_instance_of (a_type_i: CL_TYPE_A) is
+	create_empty_instance_of (a_type_i: CL_TYPE_A)
 		require
 			a_type_i_not_void: a_type_i /= Void
 			a_type_i_compiled: a_type_i.has_associated_class_type (Void)
 		deferred
 		end
 
-	create_special_any_instance (a_type_i: CL_TYPE_A; a_count: INTEGER) is
+	create_special_any_instance (a_type_i: CL_TYPE_A; a_count: INTEGER)
 		require
 			a_type_i_not_void: a_type_i /= Void
 			a_type_i_compiled: a_type_i.has_associated_class_type (Void)
@@ -567,7 +572,7 @@ feature -- Concrete evaluation
 
 feature -- Implementation
 
-	effective_evaluate_static_function (f: FEATURE_I; ctype: CLASS_TYPE; params: LIST [DUMP_VALUE]) is
+	effective_evaluate_static_function (f: FEATURE_I; ctype: CLASS_TYPE; params: LIST [DUMP_VALUE])
 		require
 			f /= Void
 			f_is_not_attribute: not f.is_attribute
@@ -578,7 +583,7 @@ feature -- Implementation
 
 	effective_evaluate_function_with_name (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE;
 				a_feature_name, a_external_name: STRING;
-				params: LIST [DUMP_VALUE]) is
+				params: LIST [DUMP_VALUE])
 			-- Note: this feature is used only for external function				
 		require
 			a_feature_name_not_void: a_feature_name /= Void
@@ -589,17 +594,17 @@ feature -- Implementation
 
 feature -- Query
 
-	attributes_list_from_object (a_addr: DBG_ADDRESS): DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	attributes_list_from_object (a_addr: DBG_ADDRESS): DS_LIST [ABSTRACT_DEBUG_VALUE]
 		do
 			Result := debugger_manager.object_manager.attributes_at_address (a_addr, 0, 0)
 		end
 
-	class_type_from_object (a_addr: DBG_ADDRESS): CLASS_TYPE is
+	class_type_from_object (a_addr: DBG_ADDRESS): CLASS_TYPE
 		do
 			Result := debugger_manager.object_manager.class_type_at_address (a_addr)
 		end
 
-	class_type_from_object_relative_to (a_addr: DBG_ADDRESS; cl: CLASS_C): CLASS_TYPE is
+	class_type_from_object_relative_to (a_addr: DBG_ADDRESS; cl: CLASS_C): CLASS_TYPE
 		do
 			Result := class_type_from_object (a_addr)
 			if
@@ -613,19 +618,19 @@ feature -- Query
 			end
 		end
 
-	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE is
+	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE
 		require
 			cse_not_void: cse /= Void
 		deferred
 		end
 
-	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE is
+	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE
 		require
 			addr_attached: addr /= Void and then not addr.is_void
 		deferred
 		end
 
-	address_from_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS is
+	address_from_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS
 		require
 			a_target /= Void
 		do
@@ -638,7 +643,7 @@ feature -- Query
 			end
 		end
 
-	class_c_from_external_b_with_extension	(a_external_b: EXTERNAL_B): CLASS_C is
+	class_c_from_external_b_with_extension	(a_external_b: EXTERNAL_B): CLASS_C
 		require
 			a_external_b /= Void and then a_external_b.extension /= Void
 		do
@@ -646,7 +651,7 @@ feature -- Query
 
 feature {NONE} -- List helpers
 
-	find_item_in_list (n: STRING; lst: DS_LIST [ABSTRACT_DEBUG_VALUE]): ABSTRACT_DEBUG_VALUE is
+	find_item_in_list (n: STRING; lst: DS_LIST [ABSTRACT_DEBUG_VALUE]): ABSTRACT_DEBUG_VALUE
 			-- Try to find an item named `n' in list `lst'.
 		require
 			not_void: n /= Void
@@ -676,7 +681,7 @@ feature {NONE} -- List helpers
 invariant
 	dbg_handler_attached: dbg_error_handler /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Command names for menu entries."
@@ -11,201 +11,205 @@ class SHARED_EWB_CMD_NAMES
 
 feature {NONE}
 
-	ace_cmd_name: STRING is "config"
+	ace_cmd_name: STRING = "config"
 
-	add_subquery_cmd_name: STRING is "add"
+	add_subquery_cmd_name: STRING = "add"
 
-	ancestors_cmd_name: STRING is "ancestors"
+	ancestors_cmd_name: STRING = "ancestors"
 
-	Arguments_cmd_name: STRING is "arguments"
+	Arguments_cmd_name: STRING = "arguments"
 
-	attributes_cmd_name: STRING is "attributes"
+	attributes_cmd_name: STRING = "attributes"
 
-	aversions_cmd_name: STRING is "aversions"
+	aversions_cmd_name: STRING = "aversions"
 
-	batch_cmd_name: STRING is "batch"
+	batch_cmd_name: STRING = "batch"
 
-	callers_cmd_name: STRING is "callers"
+	callers_cmd_name: STRING = "callers"
 
-	callees_cmd_name: STRING is "callees"
+	callees_cmd_name: STRING = "callees"
 
-	c_compile_cmd_name: STRING is "c_compile"
+	c_compile_cmd_name: STRING = "c_compile"
 			-- Name of command launching C compilation
 
-	change_operator_cmd_name: STRING is "operator"
+	change_operator_cmd_name: STRING = "operator"
 
-	class_cmd_name: STRING is "class"
+	class_cmd_name: STRING = "class"
 
-	class_list_cmd_name: STRING is "classes"
+	class_list_cmd_name: STRING = "classes"
 
-	clean_cmd_name: STRING is "clean"
+	clean_cmd_name: STRING = "clean"
 
-	clients_cmd_name: STRING is "clients"
+	clients_cmd_name: STRING = "clients"
 
-	cluster_hierarchy_cmd_name: STRING is "Cluster hierarchy"
+	cluster_hierarchy_cmd_name: STRING = "Cluster hierarchy"
 
-	clusters_cmd_name: STRING is "clusters"
+	clusters_cmd_name: STRING = "clusters"
 
-	compile_cmd_name: STRING is "compile"
+	compat_cmd_name: STRING = "compat"
 
-	config_cmd_name: STRING is "config"
+	compile_cmd_name: STRING = "compile"
 
-	Convert_profile_cmd_name: STRING is "convert"
+	config_cmd_name: STRING = "config"
 
-	debug_cmd_name: STRING is "debug"
+	Convert_profile_cmd_name: STRING = "convert"
 
-	Defaults_cmd_name: STRING is "defaults"
+	debug_cmd_name: STRING = "debug"
 
-	deferred_cmd_name: STRING is "deferred"
+	Defaults_cmd_name: STRING = "defaults"
 
-	descendants_cmd_name: STRING is "descendants"
+	deferred_cmd_name: STRING = "deferred"
 
-	Documentation_cmd_name: STRING is "documentation"
+	descendants_cmd_name: STRING = "descendants"
 
-	dversions_cmd_name: STRING is "dversions"
+	Documentation_cmd_name: STRING = "documentation"
 
-	edit_ace_cmd_name: STRING is "edit"
+	dversions_cmd_name: STRING = "dversions"
 
-	edit_class_cmd_name: STRING is "edit"
+	edit_ace_cmd_name: STRING = "edit"
 
-	exported_cmd_name: STRING is "exported"
+	edit_class_cmd_name: STRING = "edit"
 
-	externals_cmd_name: STRING is "externals"
+	experiment_cmd_name: STRING = "experiment"
 
-	f_compile_cmd_name: STRING is "F-compile"
+	exported_cmd_name: STRING = "exported"
 
-	feature_cmd_name: STRING is "feature"
+	externals_cmd_name: STRING = "externals"
 
-	Featurename_cmd_name: STRING is "featurename"
+	f_compile_cmd_name: STRING = "F-compile"
 
-	file_cmd_name: STRING is "file"
+	feature_cmd_name: STRING = "feature"
 
-	filter_cmd_name: STRING is "filter"
+	Featurename_cmd_name: STRING = "featurename"
 
-	finalize_cmd_name: STRING is "finalize"
+	file_cmd_name: STRING = "file"
 
-	flat_cmd_name: STRING is "flat"
+	filter_cmd_name: STRING = "filter"
 
-	flatshort_cmd_name: STRING is "flatshort"
+	finalize_cmd_name: STRING = "finalize"
 
-	freeze_cmd_name: STRING is "freeze"
+	flat_cmd_name: STRING = "flat"
 
-	Generate_cmd_name: STRING is "generate"
+	flatshort_cmd_name: STRING = "flatshort"
 
-	gui_cmd_name: STRING is "gui"
+	freeze_cmd_name: STRING = "freeze"
 
-	help_cmd_name: STRING is "help"
+	Generate_cmd_name: STRING = "generate"
 
-	homonyms_cmd_name: STRING is "homonyms"
+	gui_cmd_name: STRING = "gui"
 
-	implementers_cmd_name: STRING is "implementers"
+	help_cmd_name: STRING = "help"
 
-	indexing_cmd_name: STRING is "indexing"
+	homonyms_cmd_name: STRING = "homonyms"
 
-	Input_cmd_name: STRING is "input"
+	implementers_cmd_name: STRING = "implementers"
 
-	Language_cmd_name: STRING is "language"
+	indexing_cmd_name: STRING = "indexing"
 
-	library_cmd_name: STRING is "library"
+	Input_cmd_name: STRING = "input"
 
-	loop_cmd_name: STRING is "loop"
+	Language_cmd_name: STRING = "language"
 
-	loop_help_cmd_name: STRING is "help"
+	library_cmd_name: STRING = "library"
 
-	overwrite_old_project_cmd_name: STRING is "overwrite_old_project"
+	loop_cmd_name: STRING = "loop"
 
-	melt_cmd_name: STRING is "melt"
+	loop_help_cmd_name: STRING = "help"
 
-	main_cmd_name: STRING is "main"
+	overwrite_old_project_cmd_name: STRING = "overwrite_old_project"
 
-	modified_cmd_name: STRING is "modifications"
+	melt_cmd_name: STRING = "melt"
 
-	Number_of_calls_cmd_name: STRING is "calls"
+	main_cmd_name: STRING = "main"
 
-	once_cmd_name: STRING is "once"
+	modified_cmd_name: STRING = "modifications"
 
-	parent_cmd_name: STRING is "parent menu"
+	Number_of_calls_cmd_name: STRING = "calls"
 
-	Percentage_cmd_name: STRING is "percentage"
+	once_cmd_name: STRING = "once"
 
-	precompile_cmd_name: STRING is "precompile"
+	parent_cmd_name: STRING = "parent menu"
 
-	finalized_precompile_cmd_name: STRING is "finalize_precompile"
+	Percentage_cmd_name: STRING = "percentage"
 
-	Profile_cmd_name: STRING is "profile"
+	precompile_cmd_name: STRING = "precompile"
 
-	project_path_cmd_name: STRING is "project_path"
+	finalized_precompile_cmd_name: STRING = "finalize_precompile"
 
-	project_cmd_name: STRING is "project"
+	Profile_cmd_name: STRING = "profile"
 
-	queries_cmd_name: STRING is "query"
+	project_path_cmd_name: STRING = "project_path"
 
-	quick_melt_cmd_name: STRING is "quick_melt"
+	project_cmd_name: STRING = "project"
 
-	quit_cmd_name: STRING is "quit"
+	queries_cmd_name: STRING = "query"
 
-	reactivate_subquery_cmd_name: STRING is "reactivate"
+	quick_melt_cmd_name: STRING = "quick_melt"
 
-	inactivate_subquery_cmd_name: STRING is "inactivate"
+	quit_cmd_name: STRING = "quit"
 
-	routines_cmd_name: STRING is "routines"
+	reactivate_subquery_cmd_name: STRING = "reactivate"
 
-	invariants_cmd_name: STRING is "invariants"
+	inactivate_subquery_cmd_name: STRING = "inactivate"
 
-	creators_cmd_name: STRING is "creators"
+	routines_cmd_name: STRING = "routines"
 
-	run_cmd_name: STRING is "run"
+	invariants_cmd_name: STRING = "invariants"
 
-	Self_sec_cmd_name: STRING is "self"
+	creators_cmd_name: STRING = "creators"
 
-	short_cmd_name: STRING is "short"
+	run_cmd_name: STRING = "run"
 
-	show_subqueries_cmd_name: STRING is "show"
+	Self_sec_cmd_name: STRING = "self"
 
-	single_file_compilation_cmd_name: STRING is "class_file.e"
+	short_cmd_name: STRING = "short"
 
-	statistics_cmd_name: STRING is "statistics"
+	show_subqueries_cmd_name: STRING = "show"
 
-	stop_cmd_name: STRING is "stop"
+	single_file_compilation_cmd_name: STRING = "class_file.e"
 
-	storage_cmd_name: STRING is "store"
+	statistics_cmd_name: STRING = "statistics"
 
-	suppliers_cmd_name: STRING is "suppliers"
+	stop_cmd_name: STRING = "stop"
 
-	switches_cmd_name: STRING is "switches"
+	storage_cmd_name: STRING = "store"
 
-	system_cmd_name: STRING is "system"
+	suppliers_cmd_name: STRING = "suppliers"
 
-	target_cmd_name: STRING is "target"
+	switches_cmd_name: STRING = "switches"
 
-	use_settings_cmd_name: STRING is "use_settings"
+	system_cmd_name: STRING = "system"
 
-	no_library_cmd_name: STRING is "no_library"
+	target_cmd_name: STRING = "target"
 
-	text_cmd_name: STRING is "text"
+	use_settings_cmd_name: STRING = "use_settings"
 
-	Total_sec_cmd_name: STRING is "total"
+	no_library_cmd_name: STRING = "no_library"
 
-	yank_cmd_name: STRING is "yank"
+	text_cmd_name: STRING = "text"
 
-	w_compile_cmd_name: STRING is "W-compile"
+	Total_sec_cmd_name: STRING = "total"
 
-	flat_doc_cmd_name: STRING is "Documentation (Flat)"
+	yank_cmd_name: STRING = "yank"
 
-	flat_short_doc_cmd_name: STRING is "Documentation (Flat/Short)"
+	w_compile_cmd_name: STRING = "W-compile"
 
-	short_doc_cmd_name: STRING is "Documentation (Short)"
+	flat_doc_cmd_name: STRING = "Documentation (Flat)"
 
-	text_doc_cmd_name: STRING is "Documentation (Text)"
+	flat_short_doc_cmd_name: STRING = "Documentation (Flat/Short)"
 
-	version_cmd_name: STRING is "version"
+	short_doc_cmd_name: STRING = "Documentation (Short)"
 
-	gc_stats_cmd_name: STRING is "gc_stats";
+	text_doc_cmd_name: STRING = "Documentation (Text)"
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	version_cmd_name: STRING = "version"
+
+	gc_stats_cmd_name: STRING = "gc_stats";
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -216,22 +220,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

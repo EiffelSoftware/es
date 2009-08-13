@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Finish freezing's argument parser"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	location: STRING is
+	location: STRING
 			-- Location specified by user, via command line
 		require
 			is_successful: is_successful
@@ -36,15 +36,14 @@ feature -- Access
 			l_opt: ARGUMENT_OPTION
 		once
 			l_opt := option_of_name (location_switch)
-			if l_opt /= Void then
-				Result := l_opt.value
-			end
+			check l_opt_attached: l_opt /= Void end
+			Result := l_opt.value
 		ensure
 			result_attached: Result /= Void
 			not_result_is_empty: not Result.is_empty
 		end
 
-	generate_only: BOOLEAN is
+	generate_only: BOOLEAN
 			-- Indicates if only a make file should be generated
 		require
 			is_successful: is_successful
@@ -52,7 +51,7 @@ feature -- Access
 			Result := has_option (generate_only_switch)
 		end
 
-	force_32bit_code_generation: BOOLEAN is
+	force_32bit_code_generation: BOOLEAN
 			-- Indicates if 32 bit code should be generated
 		require
 			is_successful: is_successful
@@ -60,13 +59,13 @@ feature -- Access
 			Result := has_option (x86_switch)
 		end
 
-	max_processors: NATURAL_8 is
+	max_processors: NATURAL_8
 			-- Maximum number of processors to utilize
 		require
 			is_successful: is_successful
 			has_max_processors: has_max_processors
 		once
-			if {l_value: ARGUMENT_NATURAL_OPTION} option_of_name (nproc_switch) then
+			if attached {ARGUMENT_NATURAL_OPTION} option_of_name (nproc_switch) as l_value then
 				Result := l_value.natural_8_value
 			else
 				check False end
@@ -75,7 +74,7 @@ feature -- Access
 			result_positive: Result > 0
 		end
 
-	use_low_priority_mode: BOOLEAN is
+	use_low_priority_mode: BOOLEAN
 			-- Indicates if finish_freezing should execute in low priority mode.
 		require
 			is_successful: is_successful
@@ -83,7 +82,7 @@ feature -- Access
 			Result := has_option (low_priority_switch)
 		end
 
-	is_for_library: BOOLEAN is
+	is_for_library: BOOLEAN
 			-- Is `finish_freezing' launched to compile the C code for an Eiffel library?
 		require
 			is_successful: is_successful
@@ -93,7 +92,7 @@ feature -- Access
 
 feature -- Query
 
-	has_location: BOOLEAN is
+	has_location: BOOLEAN
 			-- Indicates if user specified a location
 		require
 			is_successful: is_successful
@@ -101,7 +100,7 @@ feature -- Query
 			Result := has_option (location_switch)
 		end
 
-	has_max_processors: BOOLEAN is
+	has_max_processors: BOOLEAN
 			-- Indicates if user specified a number of processors
 		require
 			is_successful: is_successful
@@ -111,10 +110,10 @@ feature -- Query
 
 feature {NONE} -- Usage
 
-	name: !STRING = "Eiffel C/C++ Compilation Tool"
+	name: attached STRING = "Eiffel C/C++ Compilation Tool"
 			-- <Precursor>
 
-	version: !STRING
+	version: attached STRING
 			-- <Precursor>
 		once
 			create Result.make (3)
@@ -123,7 +122,7 @@ feature {NONE} -- Usage
 			Result.append_integer ({EIFFEL_ENVIRONMENT_CONSTANTS}.minor_version)
 		end
 
-	switches: !ARRAYED_LIST [!ARGUMENT_SWITCH] is
+	switches: attached ARRAYED_LIST [attached ARGUMENT_SWITCH]
 			-- <Precursor>
 		once
 			create Result.make (4)
@@ -149,8 +148,8 @@ feature {NONE} -- Switches
 	silent_switch: STRING = "silent";
 			-- Obsolete switch be kept for backward compatibility
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -163,22 +162,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {ARGUMENT_PARSER}

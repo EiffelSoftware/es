@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Widget showing detailed information about testing outcomes for a given test.
 	]"
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	test: !TEST_I
+	test: attached TEST_I
 			-- Test being displayed by `Current'
 		local
 			l_test: like internal_test
@@ -62,7 +62,7 @@ feature -- Access
 			Result := l_test
 		end
 
-	title: !STRING_32
+	title: attached STRING_32
 			-- Caption for tab
 		do
 			Result := locale_formatter.translation (t_title)
@@ -82,10 +82,10 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	grid: !ES_GRID
+	grid: attached ES_GRID
 			-- Grid for listing test results
 
-	internal_test: ?like test
+	internal_test: detachable like test
 			-- Internal storage for `test'
 
 	token_writer: EB_EDITOR_TOKEN_GENERATOR
@@ -109,11 +109,11 @@ feature {NONE} -- Status report
 
 feature -- Status setting
 
-	show_test (a_test: !TEST_I)
+	show_test (a_test: attached TEST_I)
 			-- <Precursor>
 		local
 			i: INTEGER
-			l_cursor: DS_BILINEAR_CURSOR [!EQA_TEST_OUTCOME]
+			l_cursor: DS_BILINEAR_CURSOR [attached EQA_TEST_RESULT]
 		do
 			if is_active and a_test /= test then
 				remove_test
@@ -145,7 +145,7 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	add_outcome (a_outcome: !EQA_TEST_OUTCOME; a_expanded: BOOLEAN) is
+	add_outcome (a_outcome: attached EQA_TEST_RESULT; a_expanded: BOOLEAN)
 			-- Add outcome to grid
 			--
 			-- `a_outcome': Outcome for which information should be added.
@@ -169,14 +169,16 @@ feature {NONE} -- Implementation
 			l_row.set_item (1, l_label)
 
 			if a_outcome.has_response then
-				add_invocation (l_row, a_outcome.setup_response, "setup", a_expanded)
+				add_invocation (l_row, a_outcome.setup_response, "prepare", a_expanded)
 				if a_outcome.is_setup_clean then
 					add_invocation (l_row, a_outcome.test_response, "test", a_expanded)
-					add_invocation (l_row, a_outcome.teardown_response, "tear down", a_expanded)
+					add_invocation (l_row, a_outcome.teardown_response, "clean", a_expanded)
 				end
 			else
 				if a_outcome.is_user_abort then
 					l_label.set_text ("user abort")
+				elseif a_outcome.is_communication_error then
+					l_label.set_text ("communication error")
 				else
 					l_label.set_text ("no response")
 				end
@@ -186,7 +188,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_invocation (a_parent: EV_GRID_ROW; a_invocation: EQA_TEST_INVOCATION_RESPONSE; a_name: !STRING; a_expanded: BOOLEAN) is
+	add_invocation (a_parent: EV_GRID_ROW; a_invocation: EQA_TEST_INVOCATION_RESPONSE; a_name: attached STRING; a_expanded: BOOLEAN)
 			-- Add invocation information to grid
 			--
 			-- `a_parent': Parent row for new rows.
@@ -210,7 +212,7 @@ feature {NONE} -- Implementation
 			if a_invocation.is_exceptional and then not a_invocation.exception.trace.is_empty then
 				l_text.append ("exceptional")
 				add_exception_details (l_row, a_invocation.exception)
-				add_text (l_row, "trace", a_invocation.exception.trace)
+				add_text (l_row, "trace", a_invocation.exception.trace.string)
 			else
 				l_text.append ("normal")
 			end
@@ -223,40 +225,41 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_text (a_parent: EV_GRID_ROW; a_name, a_text: !STRING)
+	add_text (a_parent: EV_GRID_ROW; a_name, a_text: READABLE_STRING_8)
 			-- Add plain text to grid
 			--
 			-- `a_parent': Parent row for all new rows.
 			-- `a_name': Name describing text.
 			-- `a_text': Actual text to be added.
 		require
+			a_name_attached: a_name /= Void
+			a_text_attached: a_text /= Void
 			a_text_not_empty: not a_text.is_empty
 		local
 			l_pos: INTEGER
 			l_label: EV_GRID_LABEL_ITEM
+			l_link_label: EVS_GRID_LINK_LABEL_ITEM
 			l_row: EV_GRID_ROW
-			l_font: EV_FONT
 		do
 			l_pos := a_parent.index + a_parent.subrow_count_recursive + 1
 			grid.insert_new_row_parented (l_pos, a_parent)
 			l_row := grid.row (l_pos)
-			create l_label.make_with_text (a_name)
-			l_label.pointer_double_press_actions.force_extend (agent show_text (a_text))
+			create l_label.make_with_text (a_name.string)
 			l_row.set_item (1, l_label)
-			create l_label
-			create l_font
-			l_font.set_shape ({EV_FONT_CONSTANTS}.shape_italic)
-			l_label.set_font (l_font)
-			l_label.set_text ("double click to view")
-			l_label.pointer_double_press_actions.force_extend (agent show_text (a_text))
-			l_row.set_item (2, l_label)
+
+			create l_link_label.make_with_text (locale.translation (l_click_to_view))
+			l_link_label.select_actions.extend (agent show_text (a_text))
+			l_row.set_item (2, l_link_label)
 		end
 
-	add_exception_details (a_parent: EV_GRID_ROW; a_exception: !EQA_TEST_INVOCATION_EXCEPTION) is
+	add_exception_details (a_parent: EV_GRID_ROW; a_exception: EQA_TEST_INVOCATION_EXCEPTION)
 			-- Add rows with exception details
 			--
 			-- `a_parent': Parent row for all new rows.
 			-- `a_exception': Exception containing details to be added.
+		require
+			a_parent_attached: a_parent /= Void
+			a_exception_attached: a_exception /= Void
 		local
 			l_pos: INTEGER
 			l_label: EV_GRID_LABEL_ITEM
@@ -274,12 +277,14 @@ feature {NONE} -- Implementation
 				-- tag
 			create l_label.make_with_text ("tag")
 			grid.row (l_pos + 2).set_item (1, l_label)
-			create l_label.make_with_text (a_exception.tag_name)
+			create l_label.make_with_text (a_exception.tag_name.string)
 			grid.row (l_pos + 2).set_item (2, l_label)
 		end
 
-	show_text (a_text: !STRING) is
+	show_text (a_text: READABLE_STRING_8)
 			-- Display text in a separate window.
+		require
+			a_text_attached: a_text /= Void
 		local
 			l_dialog: ES_BASIC_EDITOR_DIALOG
 			l_text: STRING_32
@@ -294,7 +299,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Factory
 
-	code_item (a_code: INTEGER): !EV_GRID_ITEM
+	code_item (a_code: INTEGER): attached EV_GRID_ITEM
 			-- Item containing exception code and corresonding name
 		local
 			l_label: EV_GRID_LABEL_ITEM
@@ -309,7 +314,7 @@ feature {NONE} -- Factory
 			Result := l_label
 		end
 
-	recipient_item (a_exception: !EQA_TEST_INVOCATION_EXCEPTION): !EV_GRID_ITEM
+	recipient_item (a_exception: attached EQA_TEST_INVOCATION_EXCEPTION): attached EV_GRID_ITEM
 			-- Item containing a clickable exception recipient if available
 			--
 			-- `a_exception': Exception containing recipient.
@@ -342,31 +347,32 @@ feature {NONE} -- Factory
 			if l_class /= Void then
 				token_writer.add_class (l_class)
 			else
-				token_writer.add_string (a_exception.class_name)
+				token_writer.add_string (a_exception.class_name.string)
 			end
 			token_writer.add_char ('}')
 			token_writer.add_char ('.')
 			if l_feat /= Void then
 				token_writer.add_feature (l_feat, l_feat.name)
 			else
-				token_writer.add_string (a_exception.recipient_name)
+				token_writer.add_string (a_exception.recipient_name.string)
 			end
 			create l_eitem
 			l_eitem.set_text_with_tokens (token_writer.last_line.content)
 			Result := l_eitem
 		end
 
-	create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		do
 		end
 
 feature {NONE} -- Internationalization
 
-	t_title: !STRING = "Outcomes"
+	t_title: STRING = "Results"
+	l_click_to_view: STRING = "Click here to view"
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -390,10 +396,10 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Invertible object with an internal + operation.
 
@@ -14,7 +14,7 @@ deferred class
 
 feature -- Access
 
-	zero: like Current is
+	zero: like Current
 			-- Neutral element for "+" and "-"
 		deferred
 		ensure
@@ -23,7 +23,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	infix "+" (other: like Current): like Current is
+	plus alias "+" (other: like Current): like Current
 			-- Sum with `other' (commutative)
 		require
 			other_exists: other /= Void
@@ -33,7 +33,7 @@ feature -- Basic operations
 			commutative: Result.is_equal (other + Current)
 		end
 
-	infix "-" (other: like Current): like Current is
+	minus alias "-" (other: like Current): like Current
 			-- Result of subtracting `other'
 		require
 			other_exists: other /= Void
@@ -42,7 +42,7 @@ feature -- Basic operations
 			result_exists: Result /= Void
 		end
 
-	prefix "+": like Current is
+	identity alias "+": like Current
 			-- Unary plus
 		deferred
 		ensure
@@ -50,7 +50,7 @@ feature -- Basic operations
 			result_definition: Result.is_equal (Current)
 		end
 
-	prefix "-": like Current is
+	opposite alias "-": like Current
 			-- Unary minus
 		deferred
 		ensure
@@ -63,12 +63,12 @@ invariant
 	neutral_addition: is_equal (Current + zero)
 	self_subtraction: zero.is_equal (Current - Current)
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

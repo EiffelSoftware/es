@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Holder for non-comparable objects used for pseudo-comparison
 			with others via the use of a custom comparator.
@@ -43,13 +43,13 @@ feature -- Access
 
 feature -- Implementation
 
-	infix "<" (other: like Current): BOOLEAN
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := less_than_comparator.item ([item, other.item])
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

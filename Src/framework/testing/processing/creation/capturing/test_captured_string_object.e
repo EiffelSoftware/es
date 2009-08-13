@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Captured string object ({STRING_8} or {STRING_32}).
 	]"
@@ -36,7 +36,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	string: !STRING
+	string: attached STRING
 			-- <Precursor>
 
 feature -- Status report

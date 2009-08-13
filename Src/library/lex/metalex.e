@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Mechanisms for building lexical analyzers from regular expressions."
@@ -23,27 +23,43 @@ create
 
 feature -- Initialization
 
-	make_analyzer is
+	make_analyzer
 			-- Create analyzer (if Void) and initialize it.
 		require
 			not_initialized: not initialized
+		local
+			l_dfa: like dfa
+			l_categories_table: like categories_table
+			l_keyword_h_table: like keyword_h_table
+			l_analyzer: like analyzer
 		do
 			freeze_lexical;
-			if analyzer = Void then
-				create analyzer.make
+			l_analyzer := analyzer
+			if l_analyzer = Void then
+				create l_analyzer.make
+				analyzer := l_analyzer
 			end;
-			analyzer.initialize_attributes (dfa, categories_table,
-				keyword_h_table, keywords_case_sensitive);
+
+			l_dfa := dfa
+			l_categories_table := categories_table
+			l_keyword_h_table := keyword_h_table
+				--| implied by post-condition of `freeze_lexical'
+			check
+				l_dfa_attached: l_dfa /= Void
+				l_categories_table_attached: l_categories_table /= Void
+				l_keyword_h_table_attached: l_keyword_h_table /= Void
+			end
+			l_analyzer.initialize_attributes (l_dfa, l_categories_table, l_keyword_h_table, keywords_case_sensitive);
 			initialized := True
 		ensure
 			initialized;
 			analyzer_created: analyzer /= Void;
 			lexical_frozen
-		end; 
+		end;
 
 feature -- Element change
 
-	put_expression (s: STRING; n: INTEGER; c: STRING) is
+	put_expression (s: STRING; n: INTEGER; c: STRING)
 			-- Record the regular expression described by `s'
 			-- and associate it with token type `n' and name `c'.
 		require
@@ -51,9 +67,9 @@ feature -- Element change
 		do
 			construct := c;
 			put_nameless_expression (s, n)
-		end; 
+		end;
 
-	add_word (s: STRING; n: INTEGER) is
+	add_word (s: STRING; n: INTEGER)
 			-- Record the word `s' and
 			-- associate it with token type `n'.
 		require
@@ -63,11 +79,11 @@ feature -- Element change
 			set_word (s);
 			select_tool (last_created_tool);
 			associate (last_created_tool, n)
-		end; 
+		end;
 
 feature -- Input
 
-	read_grammar (token_file_name: STRING) is
+	read_grammar (token_file_name: STRING)
 			-- Create lexical analyzer for grammar in file of name
 			-- `token_file_name'. File structure:
 			-- One or more lines of the form
@@ -81,80 +97,118 @@ feature -- Input
 			make_analyzer
 		ensure
 			analyzer_exists: analyzer /= Void
-		end; 
+		end;
 
-	No_token: INTEGER is 0
+	No_token: INTEGER = 0
 
 feature {NONE} -- Implementation
 
-	construct: STRING;
+	construct: detachable STRING;
 			-- Construct including description
 			-- For error messages
 
-	give_h_table (d: HASH_TABLE [INTEGER, STRING]) is
+	give_h_table (d: HASH_TABLE [INTEGER, STRING])
 			-- Set the h_table to d.
 			-- Used when the h_table is not built by a `LEX_BUILDER'.
 		do
 			keyword_h_table := d
-		end; 
+		end;
 
-	token_file: PLAIN_TEXT_FILE;
+	token_file: detachable PLAIN_TEXT_FILE;
 
-	record_atomics is
+	record_atomics
 			-- Record the regular expressions with their names and
 			-- their line numbers as token identifiers.
+		require
+			token_file_attached: token_file /= Void
 		local
-			token_name, regular: STRING;
+			l_token_file: like token_file
+			l_token_name: detachable STRING;
+			l_regular: detachable STRING
 			id: INTEGER
 		do
+			l_token_file := token_file
+			check l_token_file_attached: l_token_file /= Void end
+
+			l_token_file.read_word;
+			l_token_name := l_token_file.last_string
+			check l_token_name_attached: l_token_name /= Void end
+			l_token_name := l_token_name.twin
+			l_token_file.read_line;
+			l_regular := l_token_file.last_string
+			check l_regular_attached: l_regular /= Void end
+			l_regular := l_regular.twin
+
 			from
 				id := 1;
-				token_file.read_word;
-				token_name := token_file.last_string.twin
-				token_file.read_line;
-				regular := token_file.last_string.twin
 			until
-				token_name.is_equal ("--")
+				l_token_name ~ "--"
 			loop
-				put_expression (regular, id, token_name);
-				token_file.read_word;
-				token_name := token_file.last_string.twin
-				token_file.read_line;
-				regular := token_file.last_string.twin
+				put_expression (l_regular, id, l_token_name);
+				l_token_file.read_word;
+				l_token_name := l_token_file.last_string
+				check l_token_name_attached: l_token_name /= Void end
+				l_token_name := l_token_name.twin
+				l_token_file.read_line;
+				l_regular := l_token_file.last_string
+				check l_regular_attached: l_regular /= Void end
+				l_regular := l_regular.twin
 				id := id + 1
 			end
-		end; 
+		end;
 
-	record_keywords is
+	record_keywords
 			-- Record the keywords with their names, with type
 			-- corresponding to the last atomic expression read.
+		require
+			token_file_attached: token_file /= Void
+			token_type_list_attached: token_type_list /= Void
 		local
-			keyword_name: STRING;
-			keyword_type: INTEGER
+			l_token_file: like token_file
+			l_token_type_list: like token_type_list
+			l_keyword_name: detachable STRING;
+			l_keyword_type: INTEGER
 		do
-			from
-					-- The type of the keywords
-					-- corresponds to the last type recorded.
-				keyword_type := token_type_list.last;
-				token_file.read_word;
-				keyword_name := token_file.last_string.twin
-			until
-				token_file.end_of_file
-			loop
-				put_keyword (keyword_name, keyword_type);
-				token_file.read_word;
-				keyword_name := token_file.last_string.twin
-			end
-		end; 
+			l_token_file := token_file
+			l_token_type_list := token_type_list
 
-	raise_error (pos: INTEGER; expected: CHARACTER; mes: STRING) is
+				--| Implied by preconditions
+			check
+				l_token_file_attached: l_token_file /= Void
+				l_token_type_list_attached: l_token_type_list /= Void
+			end
+
+				-- The type of the keywords
+				-- corresponds to the last type recorded.
+			l_keyword_type := l_token_type_list.last;
+			l_token_file.read_word;
+			l_keyword_name := l_token_file.last_string
+			check l_keyword_name_attached: l_keyword_name /= Void end
+			l_keyword_name := l_keyword_name.twin
+
+			from
+			until
+				l_token_file.end_of_file
+			loop
+				put_keyword (l_keyword_name, l_keyword_type);
+				l_token_file.read_word;
+				l_keyword_name := l_token_file.last_string
+				check l_keyword_name_attached: l_keyword_name /= Void end
+				l_keyword_name := l_keyword_name.twin
+			end
+
+				-- The file should have read to the end.
+			check l_token_file_read: l_token_file.end_of_file end
+		end;
+
+	raise_error (pos: INTEGER; expected: CHARACTER; mes: STRING)
 			-- Print an error message and stop parsing.
 			-- The message is recorded in "error_list".
-		require else
-			parsing_not_stopped: not parsing_stopped
 		local
 			error_position: INTEGER;
 			message: STRING
+			l_construct: like construct
+			l_description: like description
 		do
 			create message.make (0);
 			if description_length = 1 or pos < 1 then
@@ -165,9 +219,13 @@ feature {NONE} -- Implementation
 				error_position := description_length - 1
 			end;
 			message.append ("Metalex, construct ");
-			message.append (construct);
+			l_construct := construct
+			check l_construct_attached: l_construct /= Void end
+			message.append (l_construct);
 			message.append (", error in format near: ``");
-			message.extend (description.item (error_position));
+			l_description := description
+			check l_description_attached: l_description /= Void end
+			message.extend (l_description.item (error_position));
 			message.append ("''%N(");
 			message.append_integer (error_position);
 			message.append ("-th significant character of the description).%N");
@@ -181,17 +239,17 @@ feature {NONE} -- Implementation
 			message.append ("%NParsing of the grammar stopped.%N");
 			error_list.add_message (message);
 			parsing_stopped := True
-		end 
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Default implementation of CURL_FUNCTION.
 																				]"
@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Creation method
 		do
 			set_object_and_function_address
@@ -26,28 +26,34 @@ feature {NONE} -- Initialization
 
 feature -- Command
 
-	progress_function (a_object_id: POINTER; a_download_total, a_download_now, a_upload_total, a_upload_now: REAL_64): INTEGER is
+	progress_function (a_object_id: POINTER; a_download_total, a_download_now, a_upload_total, a_upload_now: REAL_64): INTEGER
 			-- Redefine
 		do
 		end
 
-	write_function (a_data_pointer: POINTER; a_size, a_nmemb: INTEGER; a_object_id: POINTER): INTEGER is
+	write_function (a_data_pointer: POINTER; a_size, a_nmemb: INTEGER; a_object_id: POINTER): INTEGER
 			-- Redefine
 		local
 			l_c_string: C_STRING
-			l_string: CURL_STRING
 			l_identified: IDENTIFIED
 		do
 			Result := a_size * a_nmemb
-			create l_c_string.share_from_pointer_and_count (a_data_pointer, Result)
+			create l_c_string.make_shared_from_pointer_and_count (a_data_pointer, Result)
 
 			create l_identified
-			l_string ?= l_identified.id_object (a_object_id.to_integer_32)
-			check not_void: l_string /= Void end
-			l_string.append (l_c_string.string)
+			if attached {CURL_STRING} l_identified.id_object (a_object_id.to_integer_32) as l_string then
+				l_string.append (l_c_string.string)
+			else
+				check False end
+			end
 		end
 
-	debug_function (a_curl_handle: POINTER; a_curl_infotype: INTEGER; a_char_pointer: POINTER; a_size: INTEGER; a_object_id: POINTER): INTEGER is
+	read_function (a_data_pointer: POINTER; a_size, a_nmemb: INTEGER; a_object_id: POINTER): INTEGER
+			-- A callback readfunction
+		do
+		end
+
+	debug_function (a_curl_handle: POINTER; a_curl_infotype: INTEGER; a_char_pointer: POINTER; a_size: INTEGER; a_object_id: POINTER): INTEGER
 			-- Redefine
 		local
 			l_c_string: C_STRING
@@ -76,7 +82,7 @@ feature -- Command
 
 feature {NONE} -- Implementation
 
-	dump (a_text: STRING; a_char_pointer: POINTER; a_size: INTEGER) is
+	dump (a_text: STRING; a_char_pointer: POINTER; a_size: INTEGER)
 			-- Dump debug information
 		require
 			not_void: a_text /= Void
@@ -85,11 +91,11 @@ feature {NONE} -- Implementation
 		local
 			l_c_string: C_STRING
 		do
-			create l_c_string.share_from_pointer_and_count (a_char_pointer, a_size)
+			create l_c_string.make_shared_from_pointer_and_count (a_char_pointer, a_size)
 			print ("%N" + a_text + "%N" + l_c_string.string)
 		end
 
-indexing
+note
 	library:   "cURL: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A transitional popup window, to display something when switching between view states.
 	]"
@@ -31,7 +31,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_text: ?STRING_GENERAL)
+	make (a_text: detachable STRING_GENERAL)
 			-- Initialize a new transitional window.
 			--
 			-- `a_text': The message text to display to the use.
@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 			not_a_text_is_empty: not a_text.is_empty
 		do
 			make_popup_window (True)
-			if {l_text: STRING_32} a_text.as_string_32 then
+			if attached {STRING_32} a_text.as_string_32 as l_text then
 				set_text (l_text)
 			else
 				set_text (create {STRING_32}.make_from_string (locale_formatter.translation (l_please_wait)))
@@ -49,7 +49,7 @@ feature {NONE} -- Initialization
 			text_set: a_text.same_string (text)
 		end
 
-	make_with_icon (a_text: ?STRING_GENERAL; a_icon: ?like icon)
+	make_with_icon (a_text: detachable STRING_GENERAL; a_icon: detachable like icon)
 			-- Initialize a new transitional window with an icon.
 			--
 			-- `a_text': The message text to display to the use.
@@ -102,12 +102,8 @@ feature {NONE} -- Initialization
 			l_hbox.extend (message_label)
 
 			a_container.extend (l_hbox)
-
-				-- Set white background color
-			propagate_colors (a_container, Void, colors.stock_colors.white, Void)
-				-- Set white background color for icon pixmap because the propgation ignores pixmaps by default.
-			icon_pixmap.set_background_color (colors.stock_colors.white)
-			icon_pixmap.set_foreground_color (colors.stock_colors.white)
+			a_container.set_background_color (colors.stock_colors.white)
+			a_container.propagate_background_color
 		end
 
 	on_after_initialized
@@ -121,7 +117,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	text: !STRING_32 assign set_text
+	text: attached STRING_32 assign set_text
 			-- Text message displayed on the transition window
 		require
 			is_interface_usable: is_interface_usable
@@ -130,10 +126,10 @@ feature -- Access
 			create Result.make_from_string (message_label.text)
 		end
 
-	icon: ?EV_PIXEL_BUFFER
+	icon: detachable EV_PIXEL_BUFFER
 			-- Icon displayed adjecent to the message.
 
-	action: ?PROCEDURE [ANY, TUPLE] assign set_action
+	action: detachable PROCEDURE [ANY, TUPLE] assign set_action
 			-- Action called when the window is shown, and hides the window when completed.
 
 feature {NONE} -- Access
@@ -171,7 +167,7 @@ feature -- Element change
 			text_set: text.same_string (a_text)
 		end
 
-	set_action (a_action: ?like action)
+	set_action (a_action: detachable like action)
 			-- Sets the window action to be performed when the window is shown. The window will be closed
 			-- automatically when the action is completed.
 			--
@@ -185,7 +181,7 @@ feature -- Element change
 			action_set: action = a_action
 		end
 
-	set_icon (a_icon: ?like icon)
+	set_icon (a_icon: detachable like icon)
 			-- Sets icon image, appearring adjecent to the message.
 			--
 			-- `a_icon': An icon to set on the transitional window.
@@ -206,7 +202,6 @@ feature -- Element change
 			l_pixmap.set_minimum_size (l_width, l_height)
 			l_pixmap.set_size (l_width, l_height)
 			l_pixmap.clear_rectangle (0, 0, l_width, l_height)
-			l_pixmap.fill_rectangle (0, 0, l_width, l_height)
 			l_pixmap.draw_sub_pixel_buffer (0, 0, a_icon, create {EV_RECTANGLE}.make (0, 0, l_width, l_height))
 			l_pixmap.show
 
@@ -225,18 +220,18 @@ feature -- Status report
 			-- Indicates if the window is sensitive to having a mouse pointer. By default, if the mouse pointer leaves the
 			-- window, is it remains open.
 
-	is_recycled_on_closing: BOOLEAN
-			-- Indicates if the foundation should be recycled on closing.
+	is_recycled_on_close: BOOLEAN
+			-- <Precursor>
 		do
 			Result := True
 		end
 
 feature {NONE} -- User interface elements
 
-	message_label: !EV_LABEL
+	message_label: attached EV_LABEL
 			-- Label used to display the message to the user.
 
-	icon_pixmap: !EV_PIXMAP
+	icon_pixmap: attached EV_PIXMAP
 			-- Pixmap place holder to render the icon on.
 
 feature -- Basic operation
@@ -267,7 +262,7 @@ feature -- Basic operation
 			not_is_committed_on_closed: not is_committed_on_closed
 		end
 
-	show_relative_to_window (a_window: ?EV_WINDOW)
+	show_relative_to_window (a_window: detachable EV_WINDOW)
 			-- Shows popup window centered to a parent window.
 			--
 			-- `a_window': The window to show the popup window centered to.
@@ -300,14 +295,22 @@ feature {NONE} -- Basic operations
 			is_initialized: is_initialized
 			is_shown: is_shown
 			action_attached: action /= Void
+		local
+			retried: BOOLEAN
 		do
-			action.call (Void)
-			hide
+			if not retried then
+				action.call (Void)
+				({ANY} #? void).do_nothing
+				hide
+			elseif is_interface_usable and then is_recycled_on_close then
+				recycle
+			end
 		ensure
 			not_is_shown: not is_shown
 		rescue
-			if is_shown then
-				popup_window.hide
+			if not retried then
+				retried := True
+				retry
 			end
 		end
 
@@ -315,8 +318,8 @@ feature {NONE} -- Internationalization
 
 	l_please_wait: STRING = "Please wait..."
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -340,11 +343,11 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

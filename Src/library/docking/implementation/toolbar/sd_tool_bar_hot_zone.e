@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tool bar hot zone of four tool bar area."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,13 +10,13 @@ class
 
 inherit
 	SD_ACCESS
-	
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_tool_bar_box: EV_BOX; a_vertical: BOOLEAN; a_tool_bar_dock_mediator: like internal_dock_mediator) is
+	make (a_tool_bar_box: EV_BOX; a_vertical: BOOLEAN; a_tool_bar_dock_mediator: like internal_dock_mediator)
 			-- Creation method.
 		require
 			a_tool_bar_box_not_void: a_tool_bar_box /= Void
@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	area_managed: EV_RECTANGLE is
+	area_managed: EV_RECTANGLE
 			-- Managed area. Different from `area', it's bigger.
 		local
 			l_area: EV_RECTANGLE
@@ -55,7 +55,7 @@ feature -- Status report
 
 feature -- Basic operation
 
-	set_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+	set_docking_manager (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Set docking manager
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -65,7 +65,7 @@ feature -- Basic operation
 			set: internal_docking_manager = a_docking_manager
 		end
 
-	on_pointer_motion (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	on_pointer_motion (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- Handle pointer motion.
 		do
 			-- It we don't compare a_screen_y_or_x with last_screen_y_or_x
@@ -84,7 +84,7 @@ feature -- Basic operation
 			end
 		end
 
-	start_drag is
+	start_drag
 			-- Start drag.
 		local
 			l_tool_bar_row: SD_TOOL_BAR_ROW
@@ -97,7 +97,11 @@ feature -- Basic operation
 				l_tool_bar_row := Void
 				l_tool_bar_row ?= internal_box.item
 				check box_only_have_tool_bar_row: l_tool_bar_row /= Void end
-				l_tool_bar_row.start_drag (internal_dock_mediator.caller.tool_bar)
+				if attached {EV_WIDGET} internal_dock_mediator.caller.tool_bar as lt_widget then
+					l_tool_bar_row.start_drag (lt_widget)
+				else
+					check not_possible: False end
+				end
 				internal_box.forth
 			end
 		ensure
@@ -106,7 +110,7 @@ feature -- Basic operation
 
 feature {NONE} -- Implementation functions.
 
-	move_in (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	move_in (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- Handle pointer move in one row/column.
 		local
 			l_tool_bar_row: SD_TOOL_BAR_ROW
@@ -119,35 +123,40 @@ feature {NONE} -- Implementation functions.
 				l_tool_bar_row ?= internal_box.item
 				check l_tool_bar_row /= Void end
 
-				if not l_tool_bar_row.has (internal_dock_mediator.caller.tool_bar)  then
-					if (l_tool_bar_row.has_screen_y (a_screen_y) and not internal_vertical)
-						or (l_tool_bar_row.has_screen_x (a_screen_x) and internal_vertical) then
-						--Change caller's row.
-						internal_docking_manager.command.lock_update (Void, True)
-						prune_internal_caller_from_parent
-						l_tool_bar_row.extend (internal_dock_mediator.caller)
+				if attached {EV_WIDGET} internal_dock_mediator.caller.tool_bar as lt_widget then
+					if not l_tool_bar_row.has (lt_widget)  then
+						if (l_tool_bar_row.has_screen_y (a_screen_y) and not internal_vertical)
+							or (l_tool_bar_row.has_screen_x (a_screen_x) and internal_vertical) then
+							--Change caller's row.
+							internal_docking_manager.command.lock_update (Void, True)
+							prune_internal_caller_from_parent
+							l_tool_bar_row.extend (internal_dock_mediator.caller)
 
-						internal_dock_mediator.caller.tool_bar.enable_capture
-						debug ("docking")
-							print ("%N SD_TOOL_BAR_HOT_ZONE move_in a_screen_x: " + a_screen_x.out + " .a_screen_y: " + a_screen_y.out)
+							internal_dock_mediator.caller.tool_bar.enable_capture
+							debug ("docking")
+								print ("%N SD_TOOL_BAR_HOT_ZONE move_in a_screen_x: " + a_screen_x.out + " .a_screen_y: " + a_screen_y.out)
+							end
+							if internal_vertical then
+								l_tool_bar_row.on_pointer_motion (a_screen_y)
+							else
+								l_tool_bar_row.on_pointer_motion (a_screen_x)
+							end
+							internal_docking_manager.command.resize (True)
+							internal_docking_manager.command.unlock_update
+							Result := True
 						end
-						if internal_vertical then
-							l_tool_bar_row.on_pointer_motion (a_screen_y)
-						else
-							l_tool_bar_row.on_pointer_motion (a_screen_x)
-						end
-						internal_docking_manager.command.resize (True)
-						internal_docking_manager.command.unlock_update
-						Result := True
 					end
+				else
+					check not_possible: False end
 				end
+
 				if not internal_box.after then
 					internal_box.forth
 				end
 			end
 		end
 
-	move_out (a_screen_y_or_x: INTEGER): BOOLEAN is
+	move_out (a_screen_y_or_x: INTEGER): BOOLEAN
 			-- Handle pointer move into SD_TOOL_BAR_ROW.
 		local
 			l_at_side: BOOLEAN
@@ -172,7 +181,7 @@ feature {NONE} -- Implementation functions.
 			end
 		end
 
-	create_new_row_by_position (a_screen_y_or_x: INTEGER) is
+	create_new_row_by_position (a_screen_y_or_x: INTEGER)
 			-- Create new row base on `a_screen_or_x'.
 			-- `a_screen_y_or_x' is y for top and bottom tool bar areas.
 			-- `a_screen_y_or_x' is x for left and right tool bar areas.
@@ -190,7 +199,7 @@ feature {NONE} -- Implementation functions.
 			row_first_pruned_then_added:
 		end
 
-	create_new_row (a_start: BOOLEAN; a_screen_position: INTEGER) is
+	create_new_row (a_start: BOOLEAN; a_screen_position: INTEGER)
 			-- Create a new row at top if a_start is True, otherwise create a new row at bottom.
 		local
 			l_new_row: SD_TOOL_BAR_ROW
@@ -216,7 +225,7 @@ feature {NONE} -- Implementation functions.
 			extended: old internal_box.count = internal_box.count - 1
 		end
 
-	prune_internal_caller_from_parent is
+	prune_internal_caller_from_parent
 			-- Prune `caller' from parent.
 		local
 			l_row: SD_TOOL_BAR_ROW
@@ -232,28 +241,33 @@ feature {NONE} -- Implementation functions.
 				end
 			end
 			-- Maybe parent is floating tool bar zone
-			if internal_dock_mediator.caller.tool_bar.parent /= Void then
-				check is_floating: internal_dock_mediator.caller.is_floating end
-				internal_dock_mediator.set_ignore_focus_out_actions (True)
-				internal_dock_mediator.caller.dock
-				internal_dock_mediator.set_ignore_focus_out_actions (False)
+			if attached {EV_WIDGET} internal_dock_mediator.caller.tool_bar as lt_widget then
+				if lt_widget.parent /= Void then
+					check is_floating: internal_dock_mediator.caller.is_floating end
+					internal_dock_mediator.set_ignore_focus_out_actions (True)
+					internal_dock_mediator.caller.dock
+					internal_dock_mediator.set_ignore_focus_out_actions (False)
+				end
+			else
+				check not_possible: False end
 			end
+
 		ensure
-			pruned: internal_dock_mediator.caller.row /= Void implies
-				 not internal_dock_mediator.caller.row.has (internal_dock_mediator.caller.tool_bar)
+			pruned: internal_dock_mediator.caller.row /= Void and attached {EV_WIDGET} internal_dock_mediator.caller.tool_bar as lt_widget_2
+			implies not internal_dock_mediator.caller.row.has (lt_widget_2)
 			parent_row_void: internal_dock_mediator.caller.row = Void
-			parent_void: internal_dock_mediator.caller.tool_bar.parent = Void
+			parent_void: attached {EV_WIDGET} internal_dock_mediator.caller.tool_bar as lt_widget_3 implies lt_widget_3.parent = Void
 		end
 
 feature {NONE}  -- Implementation query
 
-	caller_in_single_row: BOOLEAN is
+	caller_in_single_row: BOOLEAN
 			-- If caller's SD_tool_bar_ROW only has caller?
 		do
 			Result := internal_dock_mediator.caller.row.count = 1
 		end
 
-	caller_in_current_area: BOOLEAN is
+	caller_in_current_area: BOOLEAN
 			-- If caller already in `Current'?
 		local
 			l_tool_bar_row: SD_TOOL_BAR_ROW
@@ -265,7 +279,12 @@ feature {NONE}  -- Implementation query
 			loop
 				l_tool_bar_row ?= internal_box.item
 				check l_tool_bar_row /= Void end
-				Result := l_tool_bar_row.has (internal_dock_mediator.caller.tool_bar)
+				if attached {EV_WIDGET} internal_dock_mediator.caller.tool_bar as lt_widget then
+					Result := l_tool_bar_row.has (lt_widget)
+				else
+					check not_possible: False end
+				end
+
 				internal_box.forth
 			end
 		end
@@ -297,7 +316,7 @@ invariant
 
 	internal_shared_not_void: internal_shared /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

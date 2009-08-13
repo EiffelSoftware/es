@@ -1,10 +1,10 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Products: Term "*" Term "*" ... "*" Term
 
 class
-	PRODUCT 
+	PRODUCT
 
 inherit
 
@@ -21,20 +21,20 @@ inherit
 create
 	make
 
-feature 
+feature
 
-	construct_name: STRING is
+	construct_name: STRING
 		once
 			Result := "PRODUCT"
 		end
 
 feature {NONE}
 
-	separator: STRING is "*"
+	separator: STRING = "*"
 
-feature 
+feature
 
-	production: LINKED_LIST [CONSTRUCT] is
+	production: LINKED_LIST [CONSTRUCT]
 		local
 			base: TERM
 		once
@@ -44,9 +44,10 @@ feature
 			put (base)
 		end -- production
 
-	post_action is
+	post_action
 		local
 			int_value: INTEGER
+			l_child: like child
 		do
 			if not no_components then
 				from
@@ -57,7 +58,9 @@ feature
 				until
 					child_after
 				loop
-					child.post_action
+					l_child := child
+					check l_child /= Void end -- Implied from `child_after'.
+					l_child.post_action
 					int_value := int_value * info.child_value
 					child_forth
 				end;
@@ -65,7 +68,22 @@ feature
 			end
 		end -- post_action
 
-indexing
+feature {PRODUCT} -- Implementation
+
+	clone_node (n: like Current): like Current
+			-- <precursor>
+		do
+			create Result.make
+			Result.copy_node (n)
+		end
+
+	new_tree: like Current
+			-- <precursor>
+		do
+			create Result.make
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

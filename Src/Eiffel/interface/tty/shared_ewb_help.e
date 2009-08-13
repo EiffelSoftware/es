@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Help constants for menu entries."
@@ -14,210 +14,214 @@ inherit
 
 feature {NONE}
 
-	ace_help: STRING_GENERAL is do Result := locale.translation ("specify the Ace file (obsolete)") end
+	ace_help: STRING_GENERAL do Result := locale.translation ("specify the Ace file (obsolete)") end
 
-	ace_loop_help: STRING_GENERAL is do Result := locale.translation ("show the config file") end
+	ace_loop_help: STRING_GENERAL do Result := locale.translation ("show the config file") end
 
-	add_subquery_help: STRING_GENERAL is do Result := locale.translation ("add a subquery") end
+	add_subquery_help: STRING_GENERAL do Result := locale.translation ("add a subquery") end
 
-	ancestors_help: STRING_GENERAL is do Result := locale.translation ("show the ancestors of a class") end
+	ancestors_help: STRING_GENERAL do Result := locale.translation ("show the ancestors of a class") end
 
-	arguments_help: STRING_GENERAL is do Result := locale.translation ("set the arguments") end
+	arguments_help: STRING_GENERAL do Result := locale.translation ("set the arguments") end
 
-	aversions_help: STRING_GENERAL is do Result := locale.translation ("show the ancestor versions of a feature") end
+	aversions_help: STRING_GENERAL do Result := locale.translation ("show the ancestor versions of a feature") end
 
-	attributes_help: STRING_GENERAL is do Result := locale.translation ("show the attributes of a class") end
+	attributes_help: STRING_GENERAL do Result := locale.translation ("show the attributes of a class") end
 
-	batch_help: STRING_GENERAL is do Result := locale.translation ("launch the compilation without user request") end
+	batch_help: STRING_GENERAL do Result := locale.translation ("launch the compilation without user request") end
 
-	c_compile_help: STRING_GENERAL is do Result := locale.translation ("launch C compilation if needed") end
+	c_compile_help: STRING_GENERAL do Result := locale.translation ("launch C compilation if needed") end
 
-	config_help: STRING_GENERAL is do Result := locale.translation ("specify the config file") end
+	config_help: STRING_GENERAL do Result := locale.translation ("specify the config file") end
 
-	callers_help: STRING_GENERAL is do Result := locale.translation ("show the callers of a feature") end
+	callers_help: STRING_GENERAL do Result := locale.translation ("show the callers of a feature") end
 
-	callees_help: STRING_GENERAL is do Result := locale.translation ("show the callees of a feature") end
+	callees_help: STRING_GENERAL do Result := locale.translation ("show the callees of a feature") end
 
-	change_operator_help: STRING_GENERAL is do Result := locale.translation ("change the boolean operator") end
+	change_operator_help: STRING_GENERAL do Result := locale.translation ("change the boolean operator") end
 
-	class_help: STRING_GENERAL is do Result := locale.translation ("class formats and information") end
+	class_help: STRING_GENERAL do Result := locale.translation ("class formats and information") end
 
-	class_list_help: STRING_GENERAL is do Result := locale.translation ("show the classes in alphabetic order") end
+	class_list_help: STRING_GENERAL do Result := locale.translation ("show the classes in alphabetic order") end
 
-	clean_help: STRING_GENERAL is do Result := locale.translation ("delete existing project if any and perform a fresh compilation") end
+	clean_help: STRING_GENERAL do Result := locale.translation ("delete existing project if any and perform a fresh compilation") end
 
-	clients_help: STRING_GENERAL is do Result := locale.translation ("show the clients of a class") end
+	clients_help: STRING_GENERAL do Result := locale.translation ("show the clients of a class") end
 
-	cluster_hierarchy_help: STRING_GENERAL is do Result := locale.translation ("display the cluster hierarchy of the system") end
+	cluster_hierarchy_help: STRING_GENERAL do Result := locale.translation ("display the cluster hierarchy of the system") end
 
-	clusters_help: STRING_GENERAL is do Result := locale.translation ("show the system's classes, cluster by cluster") end
+	clusters_help: STRING_GENERAL do Result := locale.translation ("show the system's classes, cluster by cluster") end
 
-	compile_help: STRING_GENERAL is do Result := locale.translation ("compile or run the system") end
+	compat_help: STRING_GENERAL do Result := locale.translation ("enable pre-attached type compatibility") end
 
-	Convert_profile_help: STRING_GENERAL is do Result := locale.translation ("convert profiler output files") end
+	compile_help: STRING_GENERAL do Result := locale.translation ("compile or run the system") end
 
-	Debug_help: STRING_GENERAL is do Result := locale.translation ("debug the system as a command loop") end
+	Convert_profile_help: STRING_GENERAL do Result := locale.translation ("convert profiler output files") end
 
-	defaults_help: STRING_GENERAL is do Result := locale.translation ("reset all values to their defaults") end
+	Debug_help: STRING_GENERAL do Result := locale.translation ("debug the system as a command loop") end
 
-	deferred_help: STRING_GENERAL is do Result := locale.translation ("show the deferred features of a class") end
+	defaults_help: STRING_GENERAL do Result := locale.translation ("reset all values to their defaults") end
 
-	descendants_help: STRING_GENERAL is do Result := locale.translation ("show the descendants of a class") end
+	deferred_help: STRING_GENERAL do Result := locale.translation ("show the deferred features of a class") end
 
-	Descendants_time_help: STRING_GENERAL is do Result := locale.translation (" output of time spent in descendants of a function") end
+	descendants_help: STRING_GENERAL do Result := locale.translation ("show the descendants of a class") end
 
-	Documentation_help: STRING_GENERAL is do Result := locale.translation ("create documents from the system") end
+	Descendants_time_help: STRING_GENERAL do Result := locale.translation (" output of time spent in descendants of a function") end
 
-	dversions_help: STRING_GENERAL is do Result := locale.translation ("show the descendant versions of a feature") end
+	Documentation_help: STRING_GENERAL do Result := locale.translation ("create documents from the system") end
 
-	edit_ace_help: STRING_GENERAL is do Result := locale.translation ("edit the config file") end
+	dversions_help: STRING_GENERAL do Result := locale.translation ("show the descendant versions of a feature") end
 
-	edit_class_help: STRING_GENERAL is do Result := locale.translation ("edit the text of a class") end
+	edit_ace_help: STRING_GENERAL do Result := locale.translation ("edit the config file") end
 
-	exported_help: STRING_GENERAL is do Result := locale.translation ("show the exported features of a class") end
+	edit_class_help: STRING_GENERAL do Result := locale.translation ("edit the text of a class") end
 
-	externals_help: STRING_GENERAL is do Result := locale.translation ("show the external features of a class") end
+	experiment_help: STRING_GENERAL do Result := locale.translation ("enable experimental functionalities") end
 
-	f_compile_help: STRING_GENERAL is do Result := locale.translation ("(re)compile the C code generated by finalize") end
+	exported_help: STRING_GENERAL do Result := locale.translation ("show the exported features of a class") end
 
-	feature_help: STRING_GENERAL is do Result := locale.translation ("feature formats and information") end
+	externals_help: STRING_GENERAL do Result := locale.translation ("show the external features of a class") end
 
-	Featurename_help: STRING_GENERAL is do Result := locale.translation (" output of feature names") end
+	f_compile_help: STRING_GENERAL do Result := locale.translation ("(re)compile the C code generated by finalize") end
 
-	file_help: STRING_GENERAL is do Result := locale.translation ("save the output to a file") end
+	feature_help: STRING_GENERAL do Result := locale.translation ("feature formats and information") end
 
-	filter_help: STRING_GENERAL is do Result := locale.translation ("show a filtered form (troff, ...) of the class text") end
+	Featurename_help: STRING_GENERAL do Result := locale.translation (" output of feature names") end
 
-	finalize_help: STRING_GENERAL is do Result := locale.translation ("finalize the system (discard assertions by default)") end
+	file_help: STRING_GENERAL do Result := locale.translation ("save the output to a file") end
 
-	flat_help: STRING_GENERAL is do Result := locale.translation ("show the flat form of a class") end
+	filter_help: STRING_GENERAL do Result := locale.translation ("show a filtered form (troff, ...) of the class text") end
 
-	flatshort_help: STRING_GENERAL is do Result := locale.translation ("show the flat-short form of a class") end
+	finalize_help: STRING_GENERAL do Result := locale.translation ("finalize the system (discard assertions by default)") end
 
-	freeze_help: STRING_GENERAL is do Result := locale.translation ("freeze the system") end
+	flat_help: STRING_GENERAL do Result := locale.translation ("show the flat form of a class") end
 
-	Generate_help: STRING_GENERAL is do Result := locale.translation ("generate profile information for latest run") end
+	flatshort_help: STRING_GENERAL do Result := locale.translation ("show the flat-short form of a class") end
 
-	gui_help: STRING_GENERAL is do Result := locale.translation ("start the graphical environment") end
+	freeze_help: STRING_GENERAL do Result := locale.translation ("freeze the system") end
 
-	help_help: STRING_GENERAL is do Result := locale.translation ("show this help message") end
+	Generate_help: STRING_GENERAL do Result := locale.translation ("generate profile information for latest run") end
 
-	homonyms_help: STRING_GENERAL is do Result := locale.translation ("shown the homonyms of a feature") end
+	gui_help: STRING_GENERAL do Result := locale.translation ("start the graphical environment") end
 
-	implementers_help: STRING_GENERAL is do Result := locale.translation ("show the classes implementing a feature") end
+	help_help: STRING_GENERAL do Result := locale.translation ("show this help message") end
 
-	indexing_help: STRING_GENERAL is do Result := locale.translation ("show indexing clauses of classes") end
+	homonyms_help: STRING_GENERAL do Result := locale.translation ("shown the homonyms of a feature") end
 
-	Input_help: STRING_GENERAL is do Result := locale.translation ("specify input file (filename or last_output)") end
+	implementers_help: STRING_GENERAL do Result := locale.translation ("show the classes implementing a feature") end
 
-	Language_help: STRING_GENERAL is do Result := locale.translation ("specify language (eiffel, c, cycles)") end
+	indexing_help: STRING_GENERAL do Result := locale.translation ("show indexing clauses of classes") end
 
-	library_help: STRING_GENERAL is do Result := locale.translation ("specify a library for single file compilation") end
+	Input_help: STRING_GENERAL do Result := locale.translation ("specify input file (filename or last_output)") end
 
-	loop_help: STRING_GENERAL is do Result := locale.translation ("run ec as a command loop") end
+	Language_help: STRING_GENERAL do Result := locale.translation ("specify language (eiffel, c, cycles)") end
 
-	loop_help_help: STRING_GENERAL is do Result := locale.translation ("show list of commands") end
+	library_help: STRING_GENERAL do Result := locale.translation ("specify a library for single file compilation") end
 
-	overwrite_old_project_help: STRING_GENERAL is do Result := locale.translation ("overwrite any existing old project") end
+	loop_help: STRING_GENERAL do Result := locale.translation ("run ec as a command loop") end
 
-	main_help: STRING_GENERAL is do Result := locale.translation ("go back to main menu") end
+	loop_help_help: STRING_GENERAL do Result := locale.translation ("show list of commands") end
 
-	melt_help: STRING_GENERAL is do Result := locale.translation ("melt the system") end
+	overwrite_old_project_help: STRING_GENERAL do Result := locale.translation ("overwrite any existing old project") end
 
-	modified_help: STRING_GENERAL is do Result := locale.translation ("show classes modified since last compilation") end
+	main_help: STRING_GENERAL do Result := locale.translation ("go back to main menu") end
 
-	Number_of_calls_help: STRING_GENERAL is do Result := locale.translation (" output of number of calls to a feature") end
+	melt_help: STRING_GENERAL do Result := locale.translation ("melt the system") end
 
-	once_help: STRING_GENERAL is do Result := locale.translation ("show the once & constant features of a class") end
+	modified_help: STRING_GENERAL do Result := locale.translation ("show classes modified since last compilation") end
 
-	parent_help: STRING_GENERAL is do Result := locale.translation ("go back to parent menu") end
+	Number_of_calls_help: STRING_GENERAL do Result := locale.translation (" output of number of calls to a feature") end
 
-	Percentage_help: STRING_GENERAL is do Result := locale.translation (" output of percentage of time spent in a feature") end
+	once_help: STRING_GENERAL do Result := locale.translation ("show the once & constant features of a class") end
 
-	precompile_help: STRING_GENERAL is do Result := locale.translation ("precompile the system") end
+	parent_help: STRING_GENERAL do Result := locale.translation ("go back to parent menu") end
 
-	finalize_precompile_help: STRING_GENERAL is do Result := locale.translation ("precompile and finalize the system") end
+	Percentage_help: STRING_GENERAL do Result := locale.translation (" output of percentage of time spent in a feature") end
 
-	Profile_help: STRING_GENERAL is do Result := locale.translation ("information about a profiled run") end
+	precompile_help: STRING_GENERAL do Result := locale.translation ("precompile the system") end
 
-	project_path_help: STRING_GENERAL is do Result := locale.translation ("specify the compilation directory") end
+	finalize_precompile_help: STRING_GENERAL do Result := locale.translation ("precompile and finalize the system") end
 
-	project_help: STRING_GENERAL is do Result := locale.translation ("specify the project file to load (obsolete)") end
+	Profile_help: STRING_GENERAL do Result := locale.translation ("information about a profiled run") end
 
-	queries_help: STRING_GENERAL is do Result := locale.translation ("manipulate subqueries") end
+	project_path_help: STRING_GENERAL do Result := locale.translation ("specify the compilation directory") end
 
-	quick_melt_help: STRING_GENERAL is do Result := locale.translation ("quick melt the system") end
+	project_help: STRING_GENERAL do Result := locale.translation ("specify the project file to load (obsolete)") end
 
-	quit_help: STRING_GENERAL is do Result := locale.translation ("terminate session") end
+	queries_help: STRING_GENERAL do Result := locale.translation ("manipulate subqueries") end
 
-	r_flat_help: STRING_GENERAL is do Result := locale.translation ("show the flat form of a feature") end
+	quick_melt_help: STRING_GENERAL do Result := locale.translation ("quick melt the system") end
 
-	r_text_help: STRING_GENERAL is do Result := locale.translation ("show the text of a feature") end
+	quit_help: STRING_GENERAL do Result := locale.translation ("terminate session") end
 
-	reactivate_subquery_help: STRING_GENERAL is do Result := locale.translation ("reactivate subquery") end
+	r_flat_help: STRING_GENERAL do Result := locale.translation ("show the flat form of a feature") end
 
-	inactivate_subquery_help: STRING_GENERAL is do Result := locale.translation ("inactivate subquery") end
+	r_text_help: STRING_GENERAL do Result := locale.translation ("show the text of a feature") end
 
-	routines_help: STRING_GENERAL is do Result := locale.translation ("show the routines of a class") end
+	reactivate_subquery_help: STRING_GENERAL do Result := locale.translation ("reactivate subquery") end
 
-	invariants_help: STRING_GENERAL is do Result := locale.translation ("show the invariants of a class") end
+	inactivate_subquery_help: STRING_GENERAL do Result := locale.translation ("inactivate subquery") end
 
-	creators_help: STRING_GENERAL is do Result := locale.translation ("show the creation procedures of a class") end
+	routines_help: STRING_GENERAL do Result := locale.translation ("show the routines of a class") end
 
-	run_help: STRING_GENERAL is do Result := locale.translation ("execute the system") end
+	invariants_help: STRING_GENERAL do Result := locale.translation ("show the invariants of a class") end
 
-	run_prof_help: STRING_GENERAL is do Result := locale.translation ("run the query") end
+	creators_help: STRING_GENERAL do Result := locale.translation ("show the creation procedures of a class") end
 
-	Self_sec_help: STRING_GENERAL is do Result := locale.translation (" output of time spent in a function itself") end
+	run_help: STRING_GENERAL do Result := locale.translation ("execute the system") end
 
-	single_file_compilation_help: STRING_GENERAL is do Result := locale.translation ("specify a class file for single file compilation") end
+	run_prof_help: STRING_GENERAL do Result := locale.translation ("run the query") end
 
-	short_help: STRING_GENERAL is do Result := locale.translation ("show the short form of a class") end
+	Self_sec_help: STRING_GENERAL do Result := locale.translation (" output of time spent in a function itself") end
 
-	show_subqueries_help: STRING_GENERAL is do Result := locale.translation ("show the list of queries") end
+	single_file_compilation_help: STRING_GENERAL do Result := locale.translation ("specify a class file for single file compilation") end
 
-	statistics_help: STRING_GENERAL is do Result := locale.translation ("show system statistics") end
+	short_help: STRING_GENERAL do Result := locale.translation ("show the short form of a class") end
 
-	stop_help: STRING_GENERAL is do Result := locale.translation ("stop on error") end
+	show_subqueries_help: STRING_GENERAL do Result := locale.translation ("show the list of queries") end
 
-	storage_help: STRING_GENERAL is do Result := locale.translation ("store in EiffelCase format") end
+	statistics_help: STRING_GENERAL do Result := locale.translation ("show system statistics") end
 
-	suppliers_help: STRING_GENERAL is do Result := locale.translation ("show the suppliers of a class") end
+	stop_help: STRING_GENERAL do Result := locale.translation ("stop on error") end
 
-	switches_help: STRING_GENERAL is do Result := locale.translation ("show the output switches") end
+	storage_help: STRING_GENERAL do Result := locale.translation ("store in EiffelCase format") end
 
-	system_help: STRING_GENERAL is do Result := locale.translation ("Config and cluster details") end
+	suppliers_help: STRING_GENERAL do Result := locale.translation ("show the suppliers of a class") end
 
-	text_help: STRING_GENERAL is do Result := locale.translation ("show the text of a class") end
+	switches_help: STRING_GENERAL do Result := locale.translation ("show the output switches") end
 
-	target_help: STRING_GENERAL is do Result := locale.translation ("specify the target") end
+	system_help: STRING_GENERAL do Result := locale.translation ("Config and cluster details") end
 
-	use_settings_help: STRING_GENERAL is do Result := locale.translation ("use settings for project location") end
+	text_help: STRING_GENERAL do Result := locale.translation ("show the text of a class") end
 
-	no_library_help: STRING_GENERAL is do Result := locale.translation ("do not convert clusters into libraries") end
+	target_help: STRING_GENERAL do Result := locale.translation ("specify the target") end
 
-	Total_sec_help: STRING_GENERAL is do Result := locale.translation (" output of time spent in both the function and its descendants") end
+	use_settings_help: STRING_GENERAL do Result := locale.translation ("use settings for project location") end
 
-	yank_help: STRING_GENERAL is do Result := locale.translation ("yank (save) output of last command to a file") end
+	no_library_help: STRING_GENERAL do Result := locale.translation ("do not convert clusters into libraries") end
 
-	w_compile_help: STRING_GENERAL is do Result := locale.translation ("(re)compile the C code generated by freeze") end
+	Total_sec_help: STRING_GENERAL do Result := locale.translation (" output of time spent in both the function and its descendants") end
 
-	flat_doc_help: STRING_GENERAL is do Result := locale.translation ("Generate flat form of all classes in system") end
+	yank_help: STRING_GENERAL do Result := locale.translation ("yank (save) output of last command to a file") end
 
-	flat_short_doc_help: STRING_GENERAL is do Result := locale.translation ("Generate flat/short form of all classes in system") end
+	w_compile_help: STRING_GENERAL do Result := locale.translation ("(re)compile the C code generated by freeze") end
 
-	short_doc_help: STRING_GENERAL is do Result := locale.translation ("Generate short form of all classes in system") end
+	flat_doc_help: STRING_GENERAL do Result := locale.translation ("Generate flat form of all classes in system") end
 
-	text_doc_help: STRING_GENERAL is do Result := locale.translation ("Generate text form of all classes in system") end
+	flat_short_doc_help: STRING_GENERAL do Result := locale.translation ("Generate flat/short form of all classes in system") end
 
-	version_help: STRING_GENERAL is do Result := locale.translation ("show compiler version number") end
+	short_doc_help: STRING_GENERAL do Result := locale.translation ("Generate short form of all classes in system") end
 
-	gc_stats_help: STRING_GENERAL is do Result := locale.translation ("Show GC statistics") end
+	text_doc_help: STRING_GENERAL do Result := locale.translation ("Generate text form of all classes in system") end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	version_help: STRING_GENERAL do Result := locale.translation ("show compiler version number") end
+
+	gc_stats_help: STRING_GENERAL do Result := locale.translation ("Show GC statistics") end
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -228,22 +232,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

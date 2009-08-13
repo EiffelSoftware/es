@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Layout for vision2_tour."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,12 +10,16 @@ class
 
 inherit
 	EIFFEL_ENV
+		redefine
+			distribution_name
+		end
 
 feature -- Access
 
-	application_name: STRING is "vision2_demo";
+	application_name: STRING = "vision2_demo"
+	distribution_name: STRING = "vision2_demo";
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

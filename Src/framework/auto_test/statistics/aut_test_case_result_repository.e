@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 
 		"Test case result repository"
@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create new repository.
 		do
 			create class_equality_tester.make
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	classes: DS_LINEAR [CLASS_C] is
+	classes: DS_LINEAR [CLASS_C]
 			-- List of classes for which there are test results
 		local
 			list: DS_ARRAYED_LIST [CLASS_C]
@@ -50,7 +50,7 @@ feature -- Access
 			classes_doesnt_have_void: not Result.has (Void)
 		end
 
-	results_by_feature_and_class (a_feature: FEATURE_I; a_class: CLASS_C): AUT_TEST_CASE_RESULT_SET is
+	results_by_feature_and_class (a_feature: FEATURE_I; a_class: CLASS_C): AUT_TEST_CASE_RESULT_SET
 			-- List of test case results of `a_feature' of class `a_class'
 		require
 			a_feature_not_void: a_feature /= Void
@@ -81,7 +81,7 @@ feature -- Access
 			results_not_void: Result /= Void
 		end
 
-	results_by_class (a_class: CLASS_C): AUT_TEST_CASE_RESULT_SET is
+	results_by_class (a_class: CLASS_C): AUT_TEST_CASE_RESULT_SET
 			-- List of test case results of any feature of class `a_class'
 		require
 			a_class_not_void: a_class /= Void
@@ -96,7 +96,7 @@ feature -- Access
 			results_not_void: Result /= Void
 		end
 
-	results: AUT_TEST_CASE_RESULT_SET is
+	results: AUT_TEST_CASE_RESULT_SET
 			-- All results
 		local
 			cs: DS_HASH_TABLE_CURSOR [DS_LIST [AUT_TEST_CASE_RESULT], CLASS_C]
@@ -122,7 +122,7 @@ feature -- Access
 
 feature -- Element change
 
-	add_witness (a_witness: AUT_WITNESS) is
+	add_witness (a_witness: AUT_WITNESS)
 			-- Add `a_witness' to `witnesses'.
 		require
 			a_witness_not_void: a_witness /= Void
@@ -148,7 +148,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	add_result (a_result: AUT_TEST_CASE_RESULT) is
+	add_result (a_result: AUT_TEST_CASE_RESULT)
 				-- Add `a_result' to the repository.
 		require
 			a_result_not_void: a_result /= Void
@@ -179,4 +179,35 @@ invariant
 	witnesses_not_void: witnesses /= Void
 	no_witness_void: not witnesses.has (Void)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

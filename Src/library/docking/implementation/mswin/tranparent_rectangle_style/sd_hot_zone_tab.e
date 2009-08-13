@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_HOT_ZONEs for SD_TAB_ZONEs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -24,8 +24,8 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_zone: SD_TAB_ZONE; a_rect: EV_RECTANGLE; a_docker_mediator: SD_DOCKER_MEDIATOR) is
-			-- Creation method.
+	make (a_zone: SD_TAB_ZONE; a_rect: EV_RECTANGLE; a_docker_mediator: SD_DOCKER_MEDIATOR)
+			-- Creation method
 		require
 			a_zone_not_void: a_zone /= Void
 			a_rect_not_void: a_rect /= Void
@@ -45,8 +45,8 @@ feature {NONE} -- Initlization
 
 feature -- Redefine
 
-	apply_change  (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
-			-- Redefine.
+	apply_change  (a_screen_x, a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		local
 			l_caller: SD_ZONE
 		do
@@ -86,8 +86,8 @@ feature -- Redefine
 			end
 		end
 
-	update_for_feedback (a_screen_x, a_screen_y: INTEGER; a_dockable: BOOLEAN): BOOLEAN is
-			-- Redefine.
+	update_for_feedback (a_screen_x, a_screen_y: INTEGER; a_dockable: BOOLEAN): BOOLEAN
+			-- <Precursor>
 		local
 			l_item: EV_RECTANGLE
 		do
@@ -113,24 +113,24 @@ feature -- Redefine
 
 feature -- Query
 
-	tab_zone_of (a_zone: SD_ZONE): SD_TAB_ZONE is
-			-- Type convertion.
+	tab_zone_of (a_zone: SD_ZONE): SD_TAB_ZONE
+			-- Type convertion
 		require
 			not_void: a_zone /= Void
 		do
 			Result ?= a_zone
 		end
 
-	zone_type_valid (a_zone: SD_ZONE): BOOLEAN is
-			-- Redefine.
+	zone_type_valid (a_zone: SD_ZONE): BOOLEAN
+			-- <Precursor>
 		do
 			Result := tab_zone_of (a_zone) /= Void
 		end
 
 feature {NONE} -- Implementation
 
-	set_rectangle (a_rect: EV_RECTANGLE) is
-			-- Redefine
+	set_rectangle (a_rect: EV_RECTANGLE)
+			-- <Precursor>
 		local
 			l_tabs: DS_HASH_TABLE [SD_NOTEBOOK_TAB, INTEGER]
 			l_rect: EV_RECTANGLE
@@ -174,7 +174,7 @@ feature {NONE} -- Implementation
 	internal_tab_area: DS_HASH_TABLE [EV_RECTANGLE, INTEGER];
 			-- Tab area's rectangle
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

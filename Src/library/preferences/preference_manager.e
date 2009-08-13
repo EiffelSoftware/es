@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Manager of related preference values.
 		]"
@@ -15,7 +15,7 @@ create {PREFERENCES}
 
 feature {NONE} -- Initialization
 
-	make (a_preferences: PREFERENCES; a_namespace: STRING) is
+	make (a_preferences: PREFERENCES; a_namespace: STRING)
 			-- New manager.
 		require
 			preferences_not_void: a_preferences /= Void
@@ -39,7 +39,7 @@ feature -- Access
 
 feature -- Query
 
-	known_preference (a_name: STRING): BOOLEAN is
+	known_preference (a_name: STRING): BOOLEAN
 			-- Is the preference with `a_name' in the system?
 		require
 			name_not_void: a_name /= Void
@@ -48,8 +48,8 @@ feature -- Query
 			Result := preferences.has_preference (namespace + "." + a_name)
 		end
 
-	known_resource (a_name: STRING): BOOLEAN is
-		obsolete "use know_preference instead of know_resource"
+	known_resource (a_name: STRING): BOOLEAN
+		obsolete "[060113] use know_preference instead of know_resource"
 		do
 			Result := known_preference (a_name)
 		end
@@ -64,15 +64,15 @@ invariant
 	has_namespace: namespace /= Void
 	namespace_valid: not namespace.is_empty
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

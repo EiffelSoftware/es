@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Create new queue. By default all features from
 			-- `a_system' will have a priority of 0.
 		require
@@ -50,7 +50,7 @@ feature -- Access
 	system: SYSTEM_I
 			-- System
 
-	static_priority (a_feature: AUT_FEATURE_OF_TYPE): INTEGER is
+	static_priority (a_feature: AUT_FEATURE_OF_TYPE): INTEGER
 			-- Static priority of feature `a_feature'
 		require
 			a_feature_not_void: a_feature /= Void
@@ -63,7 +63,7 @@ feature -- Access
 			priority_valid: Result >= 0
 		end
 
-	dynamic_priority (a_feature: AUT_FEATURE_OF_TYPE): INTEGER is
+	dynamic_priority (a_feature: AUT_FEATURE_OF_TYPE): INTEGER
 			-- Dynamic priority of feature `a_feature'
 		require
 			a_feature_not_void: a_feature /= Void
@@ -81,7 +81,7 @@ feature -- Access
 
 feature -- Changing Priority
 
-	set_static_priority_of_feature (a_feature: AUT_FEATURE_OF_TYPE; a_priority: INTEGER) is
+	set_static_priority_of_feature (a_feature: AUT_FEATURE_OF_TYPE; a_priority: INTEGER)
 			-- Sets the static priority of `a_feature' to `a_priority'.
 		require
 			a_feature_not_void: a_feature /= Void
@@ -109,13 +109,14 @@ feature -- Changing Priority
 					list.force_last (a_feature)
 				else
 					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 					list.force_last (a_feature)
 					feature_list_table.force (list, a_priority)
 				end
 			end
 		end
 
-	set_static_priority_of_type (a_type: CL_TYPE_A; a_priority: INTEGER) is
+	set_static_priority_of_type (a_type: CL_TYPE_A; a_priority: INTEGER)
 			-- Set static priority of all feaures in `a_type' to a
 			-- priority `a_priority'. Features of class ANY are ignored. Note
 			-- that expanded types are not yet supported.
@@ -128,35 +129,45 @@ feature -- Changing Priority
 			feature_i: FEATURE_I
 			l_feat_table: FEATURE_TABLE
 			l_any_class: CLASS_C
+			l_added: INTEGER
+			l_exported_creators: LINKED_LIST [FEATURE_I]
 		do
 			l_any_class := system.any_class.compiled_class
 			class_ := a_type.associated_class
 			l_feat_table := class_.feature_table
+			create l_exported_creators.make
 			from
 				l_feat_table.start
 			until
 				l_feat_table.after
 			loop
 				feature_i := l_feat_table.item_for_iteration
-				if
-					feature_i.export_status.is_exported_to (l_any_class) and then
-					not feature_i.is_prefix and then
-					not feature_i.is_infix
-				then
-					create feature_.make (feature_i, a_type)
-					if feature_i.written_class.name.is_case_insensitive_equal ("ANY") then
-						set_static_priority_of_feature (feature_, 0)
-					else
-						set_static_priority_of_feature (feature_, a_priority)
+				if not feature_i.is_prefix and then not feature_i.is_infix then
+						-- Normal exported features.
+					if feature_i.export_status.is_exported_to (l_any_class) then
+						register_feature (feature_i, a_type, False, a_priority)
+						if feature_i.written_class /= l_any_class then
+							l_added := l_added + 1
+						end
+					end
+
+					if is_exported_creator (feature_i, a_type) then
+						l_exported_creators.extend (feature_i)
 					end
 				end
 				l_feat_table.forth
+			end
+
+				-- We added exported features as candidate feature under test when there is
+				-- no non-creator feature (except those from ANY) to test in `a_type'.
+			if l_added = 0 and then not l_exported_creators.is_empty then
+				l_exported_creators.do_all (agent register_feature (?, a_type, True, a_priority))
 			end
 		end
 
 feature -- Basic routines
 
-	select_next is
+	select_next
 			-- Select a feature to test and make it available via
 			-- `last_feature'.
 		require
@@ -177,7 +188,7 @@ feature -- Basic routines
 			last_feature_has_highest_priority: dynamic_priority (last_feature) = highest_dynamic_priority
 		end
 
-	mark (a_feature: AUT_FEATURE_OF_TYPE) is
+	mark (a_feature: AUT_FEATURE_OF_TYPE)
 			-- Mark `a_feature' as called.
 		require
 			a_feature_not_void: a_feature /= Void
@@ -211,6 +222,7 @@ feature -- Basic routines
 					feature_list_table.found_item.force_last (a_feature)
 				else
 					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 					list.force_last (a_feature)
 					feature_list_table.force (list, new_priority)
 				end
@@ -228,7 +240,7 @@ feature {NONE} -- Implementation
 	priority_table: DS_HASH_TABLE [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
 			-- Table that maps features to their priorities (static, dynamic)
 
-	reset_dynamic_priorities is
+	reset_dynamic_priorities
 			-- Reset the dynamic priorities of all
 			-- features to their static value.
 		local
@@ -262,6 +274,7 @@ feature {NONE} -- Implementation
 					feature_list_table.found_item.force_last (feature_)
 				else
 					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 					list.force_last (feature_)
 					feature_list_table.force (list, new_priority)
 				end
@@ -270,7 +283,7 @@ feature {NONE} -- Implementation
 			set_highest_priority
 		end
 
-	set_highest_priority is
+	set_highest_priority
 			-- Set `highest_dynamic_priority' to the highest priority value
 			-- found in `feature_list_table'.
 		local
@@ -290,9 +303,69 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	register_feature (a_feature: FEATURE_I; a_type: TYPE_A; a_creator: BOOLEAN; a_priority: INTEGER) is
+			-- Register `a_feature' declared in `a_type' to be a test candidate.
+			-- `a_creator' indicates if `a_feature' should be registered as a creator.
+			-- `a_priority' is the priority under which `a_feature' should be tested.
+		require
+			a_feature_attached: a_feature /= Void
+			a_type_attached: a_type /= Void
+			a_priority_valid: a_priority >= 0
+		local
+			feature_: AUT_FEATURE_OF_TYPE
+			feature_i: FEATURE_I
+		do
+			create feature_.make (a_feature, a_type)
+			if a_creator then
+				feature_.set_is_creator (True)
+			end
+
+			if a_feature.written_class.name.is_case_insensitive_equal ("ANY") then
+				if a_creator then
+						-- If `a_feature' is a creator, even if it comes from {ANY}, we assign a positive priority
+						-- so it will be tested by AutoTest.
+					set_static_priority_of_feature (feature_, 1)
+				else
+					set_static_priority_of_feature (feature_, 0)
+				end
+			else
+				set_static_priority_of_feature (feature_, a_priority)
+			end
+		end
+
+	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN is
+			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
+		require
+			a_feature_attached: a_feature /= Void
+			a_type_attached: a_type /= Void
+		local
+			l_class: CLASS_C
+		do
+			if
+				a_type.has_associated_class and then
+				a_type.associated_class.creators /= Void and then
+				a_type.associated_class.creators.has (a_feature.feature_name)
+			then
+				Result := a_type.associated_class.creators.item (a_feature.feature_name).is_all
+			end
+
+			if a_type.has_associated_class then
+				l_class := a_type.associated_class
+
+				if l_class.creators /= Void and then l_class.creators.has (a_feature.feature_name) then
+						-- For normal creators.
+					Result := l_class.creators.item (a_feature.feature_name).is_all
+
+				elseif l_class.allows_default_creation and then l_class.default_create_feature.feature_name.is_equal (a_feature.feature_name) then
+						-- For default creators.
+					Result := True
+				end
+			end
+		end
+
 feature {NONE} -- Assertion helpers
 
-	is_highest_priority_valid: BOOLEAN is
+	is_highest_priority_valid: BOOLEAN
 			-- Is `highest_dynamic_priority' set to the highest priority found
 			-- in `feature_list_table'.
 		local
@@ -313,7 +386,7 @@ feature {NONE} -- Assertion helpers
 			cs.go_after
 		end
 
-	are_tables_valid: BOOLEAN is
+	are_tables_valid: BOOLEAN
 			-- Are the tables `feature_list_table' and `priority_table'
 			-- synchronized?
 		local
@@ -360,4 +433,35 @@ invariant
 	highest_priority_valid: is_highest_priority_valid
 	tables_valid: are_tables_valid
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

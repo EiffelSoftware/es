@@ -1,4 +1,4 @@
-indexing
+note
     description: "[
         An EiffelStudio dockable tool window base implementation for EiffelStudio tools.
         
@@ -16,7 +16,6 @@ deferred class
 inherit
     EB_TOOL
         rename
-            title_for_pre as tool_ref_id,
             pixmap as icon_pixmap,
             pixel_buffer as icon,
             build_interface as on_before_initialize
@@ -28,8 +27,7 @@ inherit
             icon,
             icon_pixmap,
             title,
-            show,
-            build_docking_content
+            show
 		end
 
 	ES_HELP_REQUEST_BINDER
@@ -60,38 +58,10 @@ feature {NONE} -- Initialization
 	frozen make (a_window: like develop_window; a_tool: like tool_descriptor)
 			-- <Precursor>
 		do
+				-- This is seemingly pointless because it calls Precursor, but do not remove because this
+				-- routine is frozen for a reason!
 			Precursor {EB_TOOL} (a_window, a_tool)
 		end
-
-    frozen initialize
-            -- Initializes the creation of the tool.
-        require
-            not_is_initialized: not is_initialized
-        do
-            if not is_initializing then
-                is_initializing := True
-                if has_tool_bar then
-                    widget.extend (create_tool_container_widget (user_widget))
-                else
-                    widget.extend (user_widget)
-                end
-
-                build_tool_interface (user_widget)
-
-                is_initializing := False
-                is_initialized := True
-
-                on_after_initialized
-
-					-- Ensure on_shown is always called.
-                register_action (content.show_actions, agent on_shown)
-                if content.is_visible then
-                	on_shown
-                end
-            end
-        ensure
-            is_initialized: not is_initializing implies is_initialized
-        end
 
     on_before_initialize
             -- Use to perform additional creation initializations, before the UI has been created.
@@ -110,7 +80,7 @@ feature {NONE} -- Initialization
         		-- Focus
         	register_action (content.focus_in_actions, agent
         		do
-        			if is_interface_usable and then is_initialized and then shown then
+        			if is_interface_usable and then is_initialized and then is_shown then
         				on_focus_in
         			end
         		end)
@@ -126,11 +96,57 @@ feature {NONE} -- Initialization
         			-- We need a widget that is parented to a window so we need to wait until after the
         			-- docking content is attached to the window.
         		do
-		        	if {l_window: !EV_WINDOW} helpers.widget_top_level_window (user_widget, False) then
+		        	if attached {EV_WINDOW} helpers.widget_top_level_window (user_widget, False) as l_window then
 		        			-- Set up help shortcut binding
 		        		bind_help_shortcut (l_window)
 		        	end
         		end)
+        end
+
+feature {ES_TOOL} -- Initialization: User interface
+
+    frozen initialize
+            -- Initializes the creation of the tool.
+        require
+            not_is_initialized: not is_initialized
+		local
+			l_content: like content
+        do
+            if not is_initializing then
+                is_initializing := True
+                if has_tool_bar then
+                    widget.extend (create_tool_container_widget (user_widget))
+                else
+                    widget.extend (user_widget)
+                end
+
+				build_mini_toolbar
+
+				l_content := content
+				l_content.set_user_widget (widget)
+
+				if mini_tool_bar_widget /= Void then
+					l_content.set_mini_toolbar (mini_tool_bar_widget)
+					mini_tool_bar_widget.update_size
+					l_content.update_mini_tool_bar_size
+					mini_tool_bar_widget.update_size
+				end
+
+                build_tool_interface (user_widget)
+
+                is_initializing := False
+                is_initialized := True
+
+                on_after_initialized
+
+					-- Ensure on_shown is always called.
+                register_action (content.show_actions, agent on_shown)
+                if content.is_visible then
+                	on_shown
+                end
+            end
+        ensure
+            is_initialized: not is_initializing implies is_initialized
         end
 
 feature {NONE} -- Initialization: User interface
@@ -138,7 +154,7 @@ feature {NONE} -- Initialization: User interface
     build_mini_toolbar
             -- Build mini tool bar.
         do
-            mini_toolbar := mini_tool_bar_widget
+			mini_toolbar := mini_tool_bar_widget
         end
 
     build_tool_interface (a_widget: G)
@@ -153,27 +169,6 @@ feature {NONE} -- Initialization: User interface
         deferred
         ensure
             not_is_initialized: not is_initialized
-        end
-
-    build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
-            -- Build's docking tool content
-        do
-            Precursor {EB_TOOL}(a_docking_manager)
-
-                -- Initialize when showing for the first time.
-                -- This is useful when `content' is auto hide.
-			register_kamikaze_action (content.show_actions, agent
-                do
-                    if
-                    	not is_recycled and then
-                    	not is_initialized and then
-                    	develop_window /= Void and then
-                    	not (develop_window.is_recycled or develop_window.is_recycling)
-                    then
-                    		-- Only initialize if we really can (not in shutdown)
-                        initialize
-                    end
-                end)
         end
 
 feature {NONE} -- Clean up
@@ -220,10 +215,7 @@ feature {NONE} -- Clean up
 	internal_detach_entities
 			-- <Precursor>
 		do
-			internal_stone_director := Void
 			Precursor
-		ensure then
-			internal_stone_director_detached: internal_stone_director = Void
 		end
 
 feature -- Access
@@ -286,7 +278,7 @@ feature {NONE} -- Access
             l_tool := tool_descriptor
             create l_result.make (15)
             l_result.append (l_tool.title)
-            if l_tool.is_supporting_multiple_instances and then l_tool.edition > 1 then
+            if l_tool.is_multiple_edition and then l_tool.edition > 1 then
                 l_result.append (" #" + l_tool.edition.out)
             end
             Result := l_result
@@ -295,7 +287,7 @@ feature {NONE} -- Access
             not_result_is_empty: not Result.is_empty
         end
 
-	frozen name: !STRING
+	frozen name: attached STRING
 			-- The tool's associated name, used for modularizing development of a tool.
 		require
 			is_interface_usable: is_interface_usable
@@ -347,22 +339,6 @@ feature {NONE} -- Access
 
 feature {NONE} -- Helpers
 
-    frozen stone_director: ES_TOOL_STONE_REDIRECT_HELPER
-            -- Shared access to a stone redirection helper
-        require
-            not_development_window_is_recycled: internal_stone_director /= Void or not develop_window.is_recycled
-        do
-            Result := internal_stone_director
-            if Result = Void then
-                create Result.make (develop_window)
-                internal_stone_director := Result
-                auto_recycle (internal_stone_director)
-            end
-        ensure
-            result_attached: Result /= Void
-            result_consistent: Result = Result
-        end
-
     frozen preferences: EB_PREFERENCES
         once
             Result := (create {EB_SHARED_PREFERENCES}).preferences
@@ -392,6 +368,21 @@ feature {NONE} -- Helpers
 			create Result
 		ensure
 			result_attached: Result /= Void
+		end
+
+	context_menus: attached EB_CONTEXT_MENU_FACTORY
+			-- Access to the window's content menu factory
+		require
+			is_interface_usable: is_interface_usable
+		local
+			l_menus: EB_DEVELOPMENT_WINDOW_MENUS
+		do
+			l_menus := develop_window.menus
+			check
+				l_menus_attached: l_menus /= Void
+				l_menus_is_interface_usable: l_menus.is_interface_usable
+			end
+			Result := l_menus.context_menu_factory.as_attached
 		end
 
 feature -- Element change
@@ -450,7 +441,7 @@ feature {NONE} -- Basic operations
 	show_help
 			-- <Precursor>
 		do
-			if is_initialized and then shown and content.has_focus then
+			if is_initialized and then is_shown and content.has_focus then
 					-- Only show help for focused tool.
 				Precursor
 			end
@@ -503,21 +494,21 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				a_action.call ([a_start_widget])
 			end
 
-			if {l_list: !EV_WIDGET_LIST} a_start_widget then
+			if attached {EV_WIDGET_LIST} a_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if {l_widget: !EV_WIDGET} l_list.item and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 							-- Perform action on all child widgets
 						propagate_action (l_widget, a_action, a_excluded)
 					end
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
-			elseif {l_split: EV_SPLIT_AREA} a_start_widget then
-				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+			elseif attached {EV_SPLIT_AREA} a_start_widget as l_split then
+				if attached l_split.first as l_first and then not l_first.is_destroyed then
 					propagate_action (l_first, a_action, a_excluded)
 				end
-				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+				if attached l_split.second as l_second and then not l_second.is_destroyed then
 					propagate_action (l_second, a_action, a_excluded)
 				end
 			end
@@ -546,7 +537,7 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				end
 			end
 
-			if {l_window: !EV_WINDOW} a_start_widget then
+			if attached {EV_WINDOW} a_start_widget as l_window then
 				if not l_window.is_empty then
 					l_start_widget := l_window.item
 				end
@@ -554,21 +545,21 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				l_start_widget := a_start_widget
 			end
 
-			if {l_list: !EV_WIDGET_LIST} l_start_widget then
+			if attached {EV_WIDGET_LIST} l_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if {l_widget: !EV_WIDGET} l_list.item and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 							-- Apply addition to all child widgets
 						propagate_register_action (l_widget, a_sequence, a_action, a_excluded)
 					end
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
-			elseif {l_split: EV_SPLIT_AREA} l_start_widget then
-				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+			elseif attached {EV_SPLIT_AREA} l_start_widget as l_split then
+				if attached l_split.first as l_first and then not l_first.is_destroyed then
 					propagate_register_action (l_first, a_sequence, a_action, a_excluded)
 				end
-				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+				if attached l_split.second as l_second and then not l_second.is_destroyed then
 					propagate_register_action (l_second, a_sequence, a_action, a_excluded)
 				end
 			end
@@ -610,65 +601,6 @@ feature {NONE} -- Status report
 			Result := False
 		end
 
-feature {NONE} -- Action handlers
-
-	frozen on_shown
-			-- Perform update actions when the tool is displayed.
-			-- Note: This implementation takes into account that auto-hide tools may receive a show action
-			--       yet the user widget is not shown. In this case a timer is used to poll the user widget's
-			--       shown state.
-		do
-			check
-				is_initialized: is_initialized
-			end
-
-			if shown then
-				on_show
-			else
-					-- May be auto-hidden or some other state that does not indicate being shown.
-					-- Use a polling timer to determine when `shown' returns true and `on_show' can be called.
-				if show_polling_timer = Void then
-					create show_polling_timer
-					register_action (show_polling_timer.actions, agent
-						do
-							if is_interface_usable and is_initialized and then shown then
-								show_polling_timer.destroy
-								show_polling_timer := Void
-								on_show
-							end
-						end)
-				end
-				show_polling_timer.set_interval (100)
-			end
-		end
-
-	on_show is
-			-- Performs actions when the user widget is displayed.
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			shown: shown
-			user_widget_is_displayed: user_widget.is_displayed
-		do
-		end
-
-	on_focus_in
-			-- Called when the panel receives focus.
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			shown: shown
-		do
-		end
-
-	on_focus_out
-			-- Called when the panel loses focus.
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-		do
-		end
-
 feature {NONE} -- User interface elements
 
     frozen icon_pixmap: EV_PIXMAP
@@ -688,7 +620,7 @@ feature {NONE} -- User interface elements
             -- Access to user widget, as `widget' may not be the indicated user widget due to
             -- tool bar additions
         local
-            l_result: ?G
+            l_result: detachable G
         do
             l_result := internal_user_widget
             if l_result = Void then
@@ -698,13 +630,13 @@ feature {NONE} -- User interface elements
 				internal_user_widget := Result
 
                     -- If user widget is siteable then site with the development window
-                if {l_site: SITE [EB_DEVELOPMENT_WINDOW]} Result then
+                if attached {SITE [EB_DEVELOPMENT_WINDOW]} Result as l_site then
                     l_site.set_site (develop_window)
                 end
 			else
 				check
 					correctly_sited: is_recycling or else
-						({l_other_site: SITE [EB_DEVELOPMENT_WINDOW]} l_result implies l_other_site.site ~ develop_window)
+						(attached {SITE [EB_DEVELOPMENT_WINDOW]} l_result as l_other_site implies l_other_site.site ~ develop_window)
 				end
 				Result := l_result
             end
@@ -713,13 +645,13 @@ feature {NONE} -- User interface elements
             result_consistent: Result = user_widget
         end
 
-    frozen mini_tool_bar_widget: SD_TOOL_BAR
+    frozen mini_tool_bar_widget: detachable SD_WIDGET_TOOL_BAR
             -- Access to user widget, as `widget' may not be the indicated user widget due to
             -- tool bar additions
         local
             l_cell: like internal_mini_tool_bar_widget
             l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
-            l_help_button: ?SD_TOOL_BAR_ITEM
+            l_help_button: detachable SD_TOOL_BAR_ITEM
             l_multi: BOOLEAN
             l_command: ES_NEW_TOOL_COMMAND
             l_tools: ES_SHELL_TOOLS
@@ -729,15 +661,15 @@ feature {NONE} -- User interface elements
             if l_cell = Void then
                 create l_cell.put (Void)
                 internal_mini_tool_bar_widget := l_cell
-                l_multi := tool_descriptor.is_supporting_multiple_instances
-				if {l_context: HELP_CONTEXT_I} Current then
+                l_multi := tool_descriptor.is_multiple_edition
+				if attached {HELP_CONTEXT_I} Current as l_context then
 						-- Create the help button
 					l_help_button := create_help_button
 				end
 
                 l_items := create_mini_tool_bar_items
                 if l_items /= Void or else l_multi or else l_help_button /= Void then
-                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
+                    create Result.make (create {SD_TOOL_BAR}.make)
 
 	                if l_items /= Void then
 	                        -- Add tool bar items
@@ -750,10 +682,10 @@ feature {NONE} -- User interface elements
 							-- Note: This is done after all of the tool bar items have been added because extending the tool bar
 							--       causes a resize, which in turn causes a post-condition violation in a deeper call.
 						from l_items.start until l_items.after loop
-							if {l_widget: SD_TOOL_BAR_WIDGET_ITEM} l_items.item_for_iteration then
+							if attached {SD_TOOL_BAR_WIDGET_ITEM} l_items.item_for_iteration as l_widget then
 									-- The tool bar is a widget item, so register resize actions to recompute the minimum width
 									-- when the widget changes size.
-								register_action (l_widget.widget.resize_actions, agent (ia_tool_bar: !SD_TOOL_BAR; ia_x: INTEGER_32; ia_y: INTEGER_32; ia_width: INTEGER_32; ia_height: INTEGER_32)
+								register_action (l_widget.widget.resize_actions, agent (ia_tool_bar: attached SD_GENERIC_TOOL_BAR; ia_x: INTEGER_32; ia_y: INTEGER_32; ia_width: INTEGER_32; ia_height: INTEGER_32)
 									do
 										if is_interface_usable then
 											ia_tool_bar.update_size
@@ -787,9 +719,10 @@ feature {NONE} -- User interface elements
             result_consistent: Result = mini_tool_bar_widget
         end
 
-    frozen tool_bar_widget: SD_TOOL_BAR
+    frozen tool_bar_widget: SD_WIDGET_TOOL_BAR
             -- Main tool tool bar
         local
+        	l_padding: EV_CELL
             l_cell: like internal_tool_bar_widget
             l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
         do
@@ -800,11 +733,20 @@ feature {NONE} -- User interface elements
 
                 l_items := create_tool_bar_items
                 if l_items /= Void then
-                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
+                    create Result.make (create {SD_TOOL_BAR}.make)
 
                         -- Add tool bar items
 					from l_items.start until l_items.after loop
-						Result.extend (l_items.item_for_iteration)
+						if attached l_items.item_for_iteration as l_item then
+							if l_items.is_first and then attached {SD_TOOL_BAR_WIDGET_ITEM} l_item as l_widget then
+									-- Need to added initial padding because the widgets look too close to the window's border.
+								create l_padding
+								l_padding.set_minimum_width ({ES_UI_CONSTANTS}.frame_border)
+								Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (l_padding))
+							end
+							Result.extend (l_item)
+						end
+
 						l_items.forth
 					end
 
@@ -812,10 +754,10 @@ feature {NONE} -- User interface elements
 						-- Note: This is done after all of the tool bar items have been added because extending the tool bar
 						--       causes a resize, which in turn causes a post-condition violation in a deeper call.
 					from l_items.start until l_items.after loop
-						if {l_widget: SD_TOOL_BAR_WIDGET_ITEM} l_items.item_for_iteration then
+						if attached {SD_TOOL_BAR_WIDGET_ITEM} l_items.item_for_iteration as l_widget then
 								-- The tool bar is a widget item, so register resize actions to recompute the minimum width
 								-- when the widget changes size.
-							register_action (l_widget.widget.resize_actions, agent (ia_tool_bar: !SD_TOOL_BAR; ia_x: INTEGER_32; ia_y: INTEGER_32; ia_width: INTEGER_32; ia_height: INTEGER_32)
+							register_action (l_widget.widget.resize_actions, agent (ia_tool_bar: attached SD_GENERIC_TOOL_BAR; ia_x: INTEGER_32; ia_y: INTEGER_32; ia_width: INTEGER_32; ia_height: INTEGER_32)
 								do
 									if is_interface_usable then
 										ia_tool_bar.update_size
@@ -834,7 +776,7 @@ feature {NONE} -- User interface elements
             result_consistent: Result = tool_bar_widget
         end
 
-    frozen right_tool_bar_widget: SD_TOOL_BAR
+    frozen right_tool_bar_widget: SD_GENERIC_TOOL_BAR
             -- Secondary right tool bar
         local
             l_cell: like internal_right_tool_bar_widget
@@ -848,7 +790,9 @@ feature {NONE} -- User interface elements
                 l_items := create_right_tool_bar_items
                 if l_items /= Void then
                     create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
-                    Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    if attached tool_bar_widget as l_tool_bar and then not l_tool_bar.items.is_empty then
+                    	Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    end
                     l_items.do_all (agent Result.extend)
                     l_cell.put (Result)
                 end
@@ -859,7 +803,64 @@ feature {NONE} -- User interface elements
             result_consistent: Result = right_tool_bar_widget
         end
 
-feature {NONE} -- Action Handlers
+feature {NONE} -- Action handlers
+
+	frozen on_shown
+			-- Perform update actions when the tool is displayed.
+			-- Note: This implementation takes into account that auto-hide tools may receive a show action
+			--       yet the user widget is not shown. In this case a timer is used to poll the user widget's
+			--       shown state.
+		do
+			check
+				is_initialized: is_initialized
+			end
+
+			if is_shown then
+				on_show
+			else
+					-- May be auto-hidden or some other state that does not indicate being shown.
+					-- Use a polling timer to determine when `shown' returns true and `on_show' can be called.
+				if show_polling_timer = Void then
+					create show_polling_timer
+					register_action (show_polling_timer.actions, agent
+						do
+							if is_interface_usable and is_initialized and then is_shown then
+								show_polling_timer.destroy
+								show_polling_timer := Void
+								on_show
+							end
+						end)
+				end
+				show_polling_timer.set_interval (100)
+			end
+		end
+
+	on_show
+			-- Performs actions when the user widget is displayed.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			is_shown: is_shown
+			user_widget_is_displayed: user_widget.is_displayed
+		do
+		end
+
+	on_focus_in
+			-- Called when the panel receives focus.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			is_shown: is_shown
+		do
+		end
+
+	on_focus_out
+			-- Called when the panel loses focus.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		do
+		end
 
 	frozen on_key_pressed (a_key: EV_KEY)
 			-- Called when the tool recieves a key press
@@ -924,7 +925,7 @@ feature {NONE} -- Factory
             result_attached: Result /= Void
         end
 
-    create_mini_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_mini_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- Retrieves a list of tool bar items to display on the window title
         do
         ensure
@@ -932,7 +933,7 @@ feature {NONE} -- Factory
             result_contains_attached_items: Result /= Void implies not Result.has (Void)
         end
 
-    create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- Retrieves a list of tool bar items to display at the top of the tool.
         deferred
         ensure
@@ -940,7 +941,7 @@ feature {NONE} -- Factory
             result_contains_attached_items: Result /= Void implies not Result.has (Void)
         end
 
-    create_right_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_right_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- Retrieves a list of tool bar items that should be displayed at the top, but right aligned.
             -- Note: Redefine to add a right tool bar.
         do
@@ -977,16 +978,24 @@ feature {NONE} -- Factory
 
                 -- Add left tool bar
             if l_tool_bar /= Void then
-                l_container.extend (l_tool_bar)
+				if attached {EV_WIDGET} l_tool_bar as lt_widget then
+					l_container.extend (lt_widget)
+				else
+					check not_possible: False end
+				end
             end
 
                 -- Add right tool bar
             if l_right_tool_bar /= Void then
-                create l_padding
-                l_container.extend (l_padding)
-                l_container.extend (l_right_tool_bar)
-                l_right_tool_bar.compute_minimum_size
-                l_container.disable_item_expand (l_right_tool_bar)
+				if attached {EV_WIDGET} l_right_tool_bar as lt_widget_2 then
+	                create l_padding
+	                l_container.extend (l_padding)
+	                l_container.extend (lt_widget_2)
+	                l_right_tool_bar.compute_minimum_size
+	                l_container.disable_item_expand (lt_widget_2)
+				else
+					check not_possible: False end
+				end
             end
 
             create Result
@@ -1036,7 +1045,7 @@ feature {NONE} -- Factory
 			create Result.make
 			Result.set_pixel_buffer (stock_mini_pixmaps.callstack_send_to_external_editor_icon_buffer)
 			Result.set_pixmap (stock_mini_pixmaps.callstack_send_to_external_editor_icon)
-			Result.set_tooltip ("Click to show the help documentation.")
+			Result.set_tooltip (locale_formatter.formatted_translation (tt_show_help, [tool_descriptor.title]))
 			register_action (Result.select_actions, agent show_help)
 		ensure
 			not_result_is_destroyed: Result /= Void implies not Result.is_destroyed
@@ -1044,38 +1053,39 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internal implementation cache
 
-    internal_stone_director: ?like stone_director
-            -- Cached version of `stone_director'
-
-    internal_icon_pixmap: ?like icon_pixmap
+    internal_icon_pixmap: detachable like icon_pixmap
             -- Cached version of `pixmap'
 
-    internal_icon: ?like icon
+    internal_icon: detachable like icon
             -- Cached version of `icon'
 
-    internal_title: ?like title
+    internal_title: detachable like title
             -- Mutable version of `title'
 
-    internal_widget: ?like widget
+    internal_widget: detachable like widget
             -- Cached version of `widget'
 
-    internal_user_widget: ?G
+    internal_user_widget: detachable G
             -- User widget, which was returned from `create_widget'
 
-    internal_mini_tool_bar_widget: ?CELL [?like mini_tool_bar_widget]
+    internal_mini_tool_bar_widget: detachable CELL [detachable like mini_tool_bar_widget]
             -- Cached version of `mini_tool_bar_widget'
 
-    internal_tool_bar_widget: ?CELL [?like tool_bar_widget]
+    internal_tool_bar_widget: detachable CELL [detachable like tool_bar_widget]
             -- Cached version of `tool_bar_widget'
 
-    internal_right_tool_bar_widget: ?CELL [?like right_tool_bar_widget]
+    internal_right_tool_bar_widget: detachable CELL [detachable like right_tool_bar_widget]
             -- Cached version of `right_tool_bar_widget'
+
+feature {NONE} -- Internationalization
+
+	tt_show_help: STRING = "Click to show the $1 tool help documentation."
 
 invariant
     not_is_initialized: is_initializing implies not is_initialized
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -1099,11 +1109,11 @@ invariant
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

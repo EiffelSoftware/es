@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -19,13 +19,15 @@ create
 
 feature
 
-	make is
+	make
 		do
+			create value_value.make_empty
+			create comment_value.make_empty
 		end
 
 feature -- Routines out
 
-	out: STRING is
+	out: STRING
 		do
 			Result := Option_start.twin
 			Result.append (attributes_out)
@@ -36,7 +38,7 @@ feature -- Routines out
 			Result.append (NewLine)
 		end;
 
-	attributes_out: STRING is
+	attributes_out: STRING
 		do
 			Result := ""
 			if has_value (value_value) then
@@ -47,12 +49,12 @@ feature -- Routines out
 			end
 		end
 
-	body_out: STRING is
+	body_out: STRING
 		do
 			Result := comment_value
 		end
 
-    attribute_out (an_attribute, its_value: STRING): STRING is
+    attribute_out (an_attribute, its_value: STRING): STRING
             -- String representation for the pair 'an_attribute' and 'its_value'
         do
             Result := an_attribute.twin
@@ -63,7 +65,7 @@ feature -- Routines out
 
 feature -- Wipe out
 
-	wipe_out is
+	wipe_out
 		do
 			if has_value (value_value) then
 				value_value.wipe_out
@@ -76,19 +78,19 @@ feature -- Wipe out
 
 feature -- Set attributes
 
-	set_value (s: STRING) is
+	set_value (s: STRING)
 		require
 			s /= Void
 		do
 			value_value := s.twin
 		end
 
-	set_selected is
+	set_selected
 		do
 			selected_value := true
 		end
 
-	set_text (s: STRING) is
+	set_text (s: STRING)
 		require
 			s /= Void
 		do
@@ -98,14 +100,12 @@ feature -- Set attributes
 
 feature {NONE}
 
-	has_value (s: STRING): BOOLEAN is
+	has_value (s: detachable STRING): BOOLEAN
 			-- Has the attribute 's' a value ?
 		do
-			if s = Void or else s.is_equal("") then
-				Result := False
-			else
-				Result := True
-			end
+			Result := s /= Void and then not s.is_empty
+		ensure
+			definition: Result = (s /= Void and then not s.is_empty)
 		end
 
 feature {NONE}
@@ -113,7 +113,7 @@ feature {NONE}
 	value_value, comment_value: STRING
 	selected_value: BOOLEAN;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

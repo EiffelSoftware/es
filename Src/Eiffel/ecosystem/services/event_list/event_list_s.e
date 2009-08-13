@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Service interface for working with an event list.
 		
@@ -19,7 +19,15 @@ deferred class
 inherit
 	SERVICE_I
 
-	EVENT_OBSERVER_CONNECTION_I [EVENT_LIST_OBSERVER]
+	LOCKABLE_I
+
+--inherit {NONE}
+	EVENT_CONNECTION_POINT_I [EVENT_LIST_OBSERVER, EVENT_LIST_S]
+		rename
+			connection as event_list_connection
+		select
+			event_list_connection
+		end
 
 feature -- Access
 
@@ -117,42 +125,30 @@ feature {NONE} -- Access
 			result_attached: Result /= Void
 		end
 
-feature {NONE} -- Query
-
-	events (a_observer: !EVENT_LIST_OBSERVER): !DS_ARRAYED_LIST [!TUPLE [event: !EVENT_TYPE [TUPLE]; action: !PROCEDURE [ANY, TUPLE]]]
-			-- <Precursor>
-		do
-			create Result.make (4)
-			Result.put_last ([item_added_event, agent a_observer.on_event_item_added])
-			Result.put_last ([item_removed_event, agent a_observer.on_event_item_removed])
-			Result.put_last ([item_changed_event, agent a_observer.on_event_item_changed])
-			Result.put_last ([item_adopted_event, agent a_observer.on_event_item_adopted])
-		end
-
 feature -- Events
 
-	item_added_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_added_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- Events called when an event list item is added.
 		require
 			is_interface_usable: is_interface_usable
 		deferred
 		end
 
-	item_removed_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_removed_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- Events called when an event list item is removed.
 		require
 			is_interface_usable: is_interface_usable
 		deferred
 		end
 
-	item_changed_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_changed_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- Events called when an event list item is changed.
 		require
 			is_interface_usable: is_interface_usable
 		deferred
 		end
 
-	item_adopted_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I; new_cookie: UUID; old_cookie: UUID]]
+	item_adopted_event: attached EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I; new_cookie: UUID; old_cookie: UUID]]
 			-- Events called when an event list item is adopted by another parent.
 		require
 			is_interface_usable: is_interface_usable
@@ -252,7 +248,7 @@ feature -- Query
 			Result := all_items.has (a_event_item)
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

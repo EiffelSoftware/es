@@ -40,6 +40,10 @@
 #include "eif_eiffel.h"
 #include "eif_misc.h"
 #include "eif_argv.h"
+#include "eif_internal.h"
+#include "eif_gen_conf.h"
+#include "eif_object_id.h"
+#include "eif_traverse.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,6 +60,7 @@ extern "C" {
 #define eif_builtin_ANY_twin(object)			eif_twin (object)
 #define eif_builtin_ANY_standard_twin(object)			eif_standard_twin (object)
 #define eif_builtin_ANY_is_deep_equal(some, other)		ediso ((some), (other))
+#define eif_builtin_ANY_is_equal(some, other)			eequal ((some), (other))
 #define eif_builtin_ANY_standard_is_equal(some, other)	eequal ((some), (other))
 #define eif_builtin_ANY_deep_twin(object)				edclone ((object))
 
@@ -63,8 +68,16 @@ extern "C" {
 #define eif_builtin_ARGUMENTS_argument(some,i)			arg_option(i)
 #define eif_builtin_ARGUMENTS_argument_count(some)		(arg_number() - 1)
 
-/* EXCEPTION_MANAGER */
+/* EV_ANY_IMP class */
+#define eif_builtin_EV_ANY_IMP_eif_current_object_id(object)	eif_reference_id(object)
+#define eif_builtin_EV_ANY_IMP_eif_is_object_id_of_current(object,id) EIF_TEST(eif_id_object(id) == object)
+
+/* EXCEPTION_MANAGER class */
 #define eif_builtin_ISE_EXCEPTION_MANAGER_developer_raise(object, code, meaning, message)			draise(code, meaning, message)
+
+/* IDENTIFIED_ROUTINES class */
+#define eif_builtin_IDENTIFIED_ROUTINES_eif_current_object_id(object)	eif_reference_id(object)
+#define eif_builtin_IDENTIFIED_ROUTINES_eif_is_object_id_of_current(object,id) EIF_TEST(eif_id_object(id) == object)
 
 /* INTERNAL class */
 #define eif_builtin_INTERNAL_c_is_instance_of(dftype,obj)	RTRA(dftype,obj)
@@ -126,6 +139,7 @@ extern "C" {
 #define eif_builtin_PLATFORM_is_windows 				EIF_IS_WINDOWS
 #define eif_builtin_PLATFORM_is_unix 					EIF_TEST(!(EIF_IS_VMS || EIF_IS_WINDOWS))
 #define eif_builtin_PLATFORM_is_mac						EIF_OS==EIF_OS_DARWIN
+#define eif_builtin_PLATFORM_is_vxworks					EIF_OS==EIF_OS_VXWORKS
 #ifdef EIF_IL_DLL
 #define eif_builtin_PLATFORM_is_dotnet					EIF_TRUE
 #else
@@ -140,13 +154,22 @@ extern "C" {
 #define eif_builtin_PLATFORM_pointer_bytes 				sizeof(EIF_POINTER)
 
 /* SPECIAL class */
+#define eif_builtin_SPECIAL_aliased_resized_area(area, n)	arycpy (area, n, RT_SPECIAL_COUNT (area))
 #define eif_builtin_SPECIAL_base_address(area)				(EIF_POINTER) (area)
-#define eif_builtin_SPECIAL_count(area)						sp_count (area)
-#define eif_builtin_SPECIAL_element_size(area)				sp_elem_size (area)
-#define eif_builtin_SPECIAL_aliased_resized_area(area, n)	arycpy (area, n, 0, sp_count (area))
+#define eif_builtin_SPECIAL_capacity(area)					RT_SPECIAL_CAPACITY(area)
+#define eif_builtin_SPECIAL_count(area)						RT_SPECIAL_COUNT(area)
+#define eif_builtin_SPECIAL_element_size(area)				RT_SPECIAL_ELEM_SIZE(area)
+#define eif_builtin_SPECIAL_set_count(area,n)				RT_SPECIAL_COUNT(area) = n
+
+/* TYPE class */
+#define eif_builtin_TYPE_has_default(obj)					eif_gen_has_default(eif_gen_param_id(Dftype(obj), 1))
 
 /* TUPLE class */
-#define eif_builtin_TUPLE_count(area)						(sp_count (area) - 1) /* - 1 because first argument is for object_comparison */
+#define eif_builtin_TUPLE_count(area)						(RT_SPECIAL_COUNT(area) - 1) /* - 1 because first argument is for object_comparison */
+
+/* WEL_IDENTIFIED class */
+#define eif_builtin_WEL_IDENTIFIED_eif_current_object_id(object)	eif_reference_id(object)
+#define eif_builtin_WEL_IDENTIFIED_eif_is_object_id_of_current(object,id) EIF_TEST(eif_id_object(id) == object)
 
 #ifdef __cplusplus
 }

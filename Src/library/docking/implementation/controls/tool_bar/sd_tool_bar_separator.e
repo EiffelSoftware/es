@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tool bar separator for SD_TOOL_BAR_SEPARATOR."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,7 +19,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make is
+	make
 			-- Creation method
 		local
 			l_shared: SD_SHARED
@@ -33,54 +33,54 @@ feature {NONE} -- Initlization
 			pixmap := l_shared.icons.tool_bar_separator_icon
 		end
 
-feature -- Redefine Agents
+feature -- Redefine agents
 
-	on_pointer_motion (a_relative_x, a_relative_y: INTEGER) is
-			-- Redefine
+	on_pointer_motion (a_relative_x, a_relative_y: INTEGER)
+			-- <Precursor>
 		do
 		end
 
-	on_pointer_leave is
-			-- Redefine
+	on_pointer_leave
+			-- <Precursor>
 		do
 		end
 
-	on_pointer_press (a_relative_x, a_relative_y: INTEGER) is
-			-- Redefine
+	on_pointer_press (a_relative_x, a_relative_y: INTEGER)
+			-- <Precursor>
 		do
 		end
 
-	on_pointer_release (a_relative_x, a_relative_y: INTEGER) is
-			-- Redefine
+	on_pointer_release (a_relative_x, a_relative_y: INTEGER)
+			-- <Precursor>
 		do
 		end
 
-	on_pointer_motion_for_tooltip (a_relative_x, a_relative_y: INTEGER) is
-			-- Redefine
+	on_pointer_motion_for_tooltip (a_relative_x, a_relative_y: INTEGER)
+			-- <Precursor>
 		do
 			if rectangle.has_x_y (a_relative_x, a_relative_y) then
 				tool_bar.remove_tooltip
 			end
 		end
 
-	on_pointer_press_forwarding (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Redefine
+	on_pointer_press_forwarding (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
+			-- <Precursor>
 		do
 		end
 
 feature -- Redefine querys
 
-	width: INTEGER is 6
-			-- Redefine
+	width: INTEGER = 6
+			-- <Precursor>
 
-	has_rectangle (a_rect: EV_RECTANGLE): BOOLEAN is
-			-- Redefine
+	has_rectangle (a_rect: EV_RECTANGLE): BOOLEAN
+			-- <Precursor>
 		do
 			Result := True
 		end
 
-	rectangle: EV_RECTANGLE is
-			-- Redefine
+	rectangle: EV_RECTANGLE
+			-- <Precursor>
 		do
 			if tool_bar /= Void and then is_wrap then
 				create Result.make (0, tool_bar.item_y (Current), tool_bar.minimum_width, width)
@@ -91,12 +91,12 @@ feature -- Redefine querys
 
 feature {SD_TOOL_BAR} -- Pick and drop issues.
 
-	update_for_pick_and_drop (a_starting: BOOLEAN; a_pebble: ANY) is
+	update_for_pick_and_drop (a_starting: BOOLEAN; a_pebble: ANY)
 			-- Update for pick and drop
 		do
 			-- Separator do nothing.
 		end
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

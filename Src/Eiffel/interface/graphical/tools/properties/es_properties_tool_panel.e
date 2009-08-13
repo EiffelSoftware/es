@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Tool to view the properties of a system/cluster/class"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,7 +14,6 @@ inherit
 			layout_constants
 		redefine
 			make,
-			build_docking_content,
 			show,
 			internal_recycle,
 			is_stone_valid
@@ -58,25 +57,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_manager: EB_DEVELOPMENT_WINDOW; a_tool: like tool_descriptor) is
+	make (a_manager: EB_DEVELOPMENT_WINDOW; a_tool: like tool_descriptor)
 			-- Make a new properties tool.
 		do
-			set_pixmaps (pixmaps.configuration_pixmaps)
 			cluster_manager.extend (Current)
 			create {CONF_COMP_FACTORY} conf_factory
 
 			Precursor (a_manager, a_tool)
 		end
 
-	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
-			-- Build docking content
-		do
-			Precursor {EB_STONABLE_TOOL}(a_docking_manager)
-			content.drop_actions.extend (agent set_stone)
-			content.drop_actions.set_veto_pebble_function (agent dropable)
-		end
-
-	build_interface is
+	build_interface
 			-- Build all the tool's widgets.
 		do
 			create widget
@@ -84,7 +74,10 @@ feature {NONE} -- Initialization
 			create properties
 			widget.extend (properties)
 
-			properties.drop_actions.extend (agent set_stone)
+			register_action (content.drop_actions, agent set_stone)
+			content.drop_actions.set_veto_pebble_function (agent dropable)
+
+			register_action (properties.drop_actions, agent set_stone)
 			properties.drop_actions.set_veto_pebble_function (agent dropable)
 		end
 
@@ -98,7 +91,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_stone_valid (a_stone: like stone): BOOLEAN is
+	is_stone_valid (a_stone: like stone): BOOLEAN
 			-- Is stone valid to set?
 		do
 			Result := a_stone /= Void and then a_stone.is_valid
@@ -106,7 +99,7 @@ feature -- Status report
 
 feature -- Command
 
-	show is
+	show
 			-- Show tool.
 		do
 			Precursor {EB_STONABLE_TOOL}
@@ -115,7 +108,7 @@ feature -- Command
 
 feature -- Memory management
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
@@ -125,13 +118,13 @@ feature -- Memory management
 
 feature {NONE} -- External changes to classes/clusters
 
-	on_class_removed (a_class: EIFFEL_CLASS_I) is
+	on_class_removed (a_class: EIFFEL_CLASS_I)
 			-- Refresh the properties to not display properties for `a_class'.
 		do
 			refresh
 		end
 
-	on_cluster_removed (a_group: EB_SORTED_CLUSTER; a_path: STRING_8) is
+	on_cluster_removed (a_group: EB_SORTED_CLUSTER; a_path: STRING_8)
 			-- Refresh the properties to not display properties for `a_group'.
 		do
 			refresh
@@ -139,7 +132,7 @@ feature {NONE} -- External changes to classes/clusters
 
 feature {EB_STONE_CHECKER, EB_CONTEXT_MENU_FACTORY} -- Actions
 
-	set_stone (a_stone: STONE) is
+	set_stone (a_stone: STONE)
 			-- Add `a_stone'.
 		local
 			l_gs: CLUSTER_STONE
@@ -267,7 +260,7 @@ feature {EB_STONE_CHECKER, EB_CONTEXT_MENU_FACTORY} -- Actions
 			stone_set: stone = a_stone
 		end
 
-	dropable (a_pebble: ANY): BOOLEAN is
+	dropable (a_pebble: ANY): BOOLEAN
 			-- Can user drop `a_pebble' on `Current'?
 		require
 			a_pebble_not_void: a_pebble /= Void
@@ -290,7 +283,7 @@ feature {NONE} -- Implementation
 	stone: STONE
 			-- Stone we display properties for.
 
-	group_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL] is
+	group_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL]
 			-- Expanded status of sections of groups.
 		once
 			create Result.make (5)
@@ -301,7 +294,7 @@ feature {NONE} -- Implementation
 			Result.force (False, conf_interface_names.section_advanced)
 		end
 
-	class_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL] is
+	class_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL]
 			-- Expanded status of sections of class options.
 		once
 			create Result.make (4)
@@ -311,7 +304,7 @@ feature {NONE} -- Implementation
 			Result.force (False, conf_interface_names.section_debug)
 		end
 
-	target_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL] is
+	target_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL]
 			-- Expanded status of sections of targets.
 		once
 			create Result.make (5)
@@ -323,7 +316,7 @@ feature {NONE} -- Implementation
 			Result.force (False, conf_interface_names.section_dotnet)
 		end
 
-	handle_value_changes (a_has_group_changed: BOOLEAN) is
+	handle_value_changes (a_has_group_changed: BOOLEAN)
 			-- Store changes to disk.
 		do
 				-- only if the stone is still valid
@@ -341,7 +334,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	refresh is
+	refresh
 			-- Refresh the displayed data.
 		do
 			if not is_storing then
@@ -356,10 +349,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -370,22 +363,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

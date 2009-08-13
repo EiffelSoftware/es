@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Routines for use by classes that need to print eiffel strings and characters."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,7 +10,7 @@ class
 
 feature -- Access
 
-	char_text (char: CHARACTER): STRING is
+	char_text (char: CHARACTER): STRING
 			-- "Readable" representation of `char' using
 			-- special character convention when necessary;
 			-- Syntactically correct when quoted
@@ -20,7 +20,7 @@ feature -- Access
 			char_text_not_void: Result /= Void
 		end
 
-	wchar_text (char32: CHARACTER_32): STRING_32 is
+	wchar_text (char32: CHARACTER_32): STRING_32
 			-- "Readable" representation of `wchar' using
 			-- special character convention when necessary;
 			-- Syntactically correct when quoted
@@ -30,7 +30,7 @@ feature -- Access
 			char32_text_not_void: Result /= Void
 		end
 
-	eiffel_string (s: STRING): STRING is
+	eiffel_string (s: STRING): STRING
 			-- "eiffel" representation of `s'
 			-- Translation of special characters
 			--| "%T" -> "%%T", "%N" -> "%%N", "%%" -> "%%%%"
@@ -56,7 +56,7 @@ feature -- Access
 			eiffel_string_not_void: Result /= Void
 		end
 
-	eiffel_string_32 (s: STRING_32): STRING_32 is
+	eiffel_string_32 (s: STRING_32): STRING_32
 			-- "eiffel" representation of `s'
 			-- Translation of special characters
 			--| "%T" -> "%%T", "%N" -> "%%N", "%%" -> "%%%%"
@@ -86,7 +86,7 @@ feature -- Unescape
 
 	last_unescaping_raised_error: BOOLEAN
 
-	unescaped_string (s: STRING): STRING is
+	unescaped_string (s: STRING): STRING
 			-- Unescaped Eiffel String.
 			--| "%%T" -> "%T", "%%N" -> "%N", "%%%%" -> "%%"
 			--| but for printable char "%%A" -> "@", "%%(" -> "["
@@ -187,7 +187,7 @@ feature -- Unescape
 			last_unescaping_raised_error := error
 		end
 
-	unescaped_string_32 (s: STRING_32): STRING_32 is
+	unescaped_string_32 (s: STRING_32): STRING_32
 			-- Unescaped Eiffel String.
 			--| "%%T" -> "%T", "%%N" -> "%N", "%%%%" -> "%%"
 			--| but for printable char "%%A" -> "@", "%%(" -> "["
@@ -288,7 +288,7 @@ feature -- Unescape
 
 feature {NONE} -- Implementation
 
-	char32_to_string_32 (char: CHARACTER_32; a_result: STRING_32; for_string: BOOLEAN): STRING_32 is
+	char32_to_string_32 (char: CHARACTER_32; a_result: STRING_32; for_string: BOOLEAN): STRING_32
 			-- "Readable" representation of `char' using
 			-- special character convention when necessary;
 			-- Syntactically correct when quoted
@@ -340,9 +340,12 @@ feature {NONE} -- Implementation
 				end
 			else
 				code := char.natural_32_code
-				if code < {ASCII}.First_printable.to_natural_32 then
+				if
+					code < {ASCII}.First_printable.to_natural_32 or
+					(code > {ASCII}.Last_printable.to_natural_32 and code <= iso_8859_1_apc)
+				then
 					Result.grow (Result.count + 6)
-					Result.append_string ("%%/")
+					Result.append ("%%/")
 					Result.append_natural_32 (code);
 					Result.append_character ('/')
 				else
@@ -354,7 +357,7 @@ feature {NONE} -- Implementation
 			Result_different: Result /= char32_to_string_32 (char, Void, for_string)
 		end
 
-	char_to_string (char: CHARACTER; a_result: STRING; for_string: BOOLEAN): STRING is
+	char_to_string (char: CHARACTER; a_result: STRING; for_string: BOOLEAN): STRING
 			-- "Readable" representation of `char' using
 			-- special character convention when necessary;
 			-- Syntactically correct when quoted
@@ -406,7 +409,10 @@ feature {NONE} -- Implementation
 				end
 			else
 				code := char.code;
-				if code < {ASCII}.First_printable then
+				if
+					code < {ASCII}.First_printable or
+					(code > {ASCII}.Last_printable and code <= iso_8859_1_apc.as_integer_32)
+				then
 					Result.grow (Result.count + 6)
 					Result.append_string ("%%/")
 					Result.append_integer (code);
@@ -420,8 +426,14 @@ feature {NONE} -- Implementation
 			Result_different: Result /= char_to_string (char, Void, for_string)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	iso_8859_1_del: NATURAL_32 = 127
+			-- DEL, the first character in the second unprintable section in ISO-8859-1.
+
+	iso_8859_1_apc: NATURAL_32 = 159
+			-- APC, the last character in the second unprintable section in ISO-8859-1.
+
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -434,22 +446,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CHARACTER_ROUTINES

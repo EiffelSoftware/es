@@ -1,4 +1,4 @@
-indexing
+note
 	description: "EIS entry to code"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -11,9 +11,11 @@ class
 inherit
 	ES_EIS_SHARED
 
+	CONF_ACCESS
+
 feature -- Operation
 
-	process (a_entry: !EIS_ENTRY) is
+	process (a_entry: attached EIS_ENTRY)
 			-- Start process `a_entry'
 		local
 			l_output: STRING_32
@@ -58,22 +60,20 @@ feature -- Operation
 					l_output.append (others_as_code (a_entry))
 				end
 			else
-				create last_output_conf.make (2)
-					-- Add the ise_support attribute.
-				last_output_conf.force ({ES_EIS_TOKENS}.eis_string, {ES_EIS_TOKENS}.ise_support_string)
+				create last_output_conf.make ({ES_EIS_TOKENS}.eis_string.as_lower)
 				if a_entry.name /= Void then
-					last_output_conf.force (a_entry.name, {ES_EIS_TOKENS}.name_string)
+					last_output_conf.add_attribute (a_entry.name, {ES_EIS_TOKENS}.name_string)
 				end
 				if a_entry.protocol /= Void then
-					last_output_conf.force (a_entry.protocol, {ES_EIS_TOKENS}.protocol_string)
+					last_output_conf.add_attribute (a_entry.protocol, {ES_EIS_TOKENS}.protocol_string)
 				end
 				if a_entry.source /= Void then
-					last_output_conf.force (a_entry.source, {ES_EIS_TOKENS}.source_string)
+					last_output_conf.add_attribute (a_entry.source, {ES_EIS_TOKENS}.source_string)
 				end
 				if a_entry.tags /= Void and then not a_entry.tags.is_empty then
-					last_output_conf.force (tags_as_code (a_entry), {ES_EIS_TOKENS}.tag_string)
+					last_output_conf.add_attribute (tags_as_code (a_entry), {ES_EIS_TOKENS}.tag_string)
 				end
-				if {lt_others: HASH_TABLE [STRING_32, STRING_32]}a_entry.others and then not a_entry.others.is_empty then
+				if attached {HASH_TABLE [STRING_32, STRING_32]} a_entry.others as lt_others and then not a_entry.others.is_empty then
 					from
 						lt_others.start
 					until
@@ -81,7 +81,7 @@ feature -- Operation
 					loop
 						if not lt_others.key_for_iteration.is_empty then
 								--|FIXME: Bad conversion to STRING_8
-							last_output_conf.force (lt_others.item_for_iteration, lt_others.key_for_iteration)
+							last_output_conf.add_attribute (lt_others.item_for_iteration, lt_others.key_for_iteration)
 						end
 						lt_others.forth
 					end
@@ -100,7 +100,7 @@ feature -- Status report
 
 feature -- Status change
 
-	set_is_for_conf (a_b: BOOLEAN) is
+	set_is_for_conf (a_b: BOOLEAN)
 			-- Set `is_for_conf' with `a_b'
 		do
 			is_for_conf := a_b
@@ -110,19 +110,19 @@ feature -- Status change
 
 feature -- Access
 
-	last_output_code: ?STRING_32
+	last_output_code: detachable STRING_32
 			-- Last output of code.
 
-	last_output_conf: HASH_TABLE [STRING, STRING]
+	last_output_conf: CONF_NOTE_ELEMENT
 			-- Last output of conf note.
 
-	tags_as_code (a_entry: !EIS_ENTRY): !STRING_32 is
+	tags_as_code (a_entry: attached EIS_ENTRY): attached STRING_32
 			-- Tags as a string of code.
 			-- Unquoted
 		local
 			l_found: BOOLEAN
 		do
-			if {lt_tags: ARRAYED_LIST [STRING_32]}a_entry.tags then
+			if attached {ARRAYED_LIST [STRING_32]} a_entry.tags as lt_tags then
 				create Result.make (10)
 				from
 					lt_tags.start
@@ -145,7 +145,7 @@ feature -- Access
 			end
 		end
 
-	others_as_code (a_entry: !EIS_ENTRY): !STRING_32 is
+	others_as_code (a_entry: attached EIS_ENTRY): attached STRING_32
 			-- Others as string of code.
 			-- Quoted
 		local
@@ -154,7 +154,7 @@ feature -- Access
 			l_value: STRING_32
 			l_found: BOOLEAN
 		do
-			if {lt_others: HASH_TABLE [STRING_32, STRING_32]}a_entry.others then
+			if attached {HASH_TABLE [STRING_32, STRING_32]} a_entry.others as lt_others then
 				create Result.make (10)
 				from
 					lt_others.start
@@ -185,7 +185,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	quoted_string (a_string: STRING_32): !STRING_32 is
+	quoted_string (a_string: STRING_32): attached STRING_32
 			-- Quoted `a_string'
 		require
 			a_string_not_void: a_string /= Void
@@ -196,8 +196,8 @@ feature {NONE} -- Implementation
 		end
 
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -221,11 +221,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Access to information provided by a user through an HTML form. This %
@@ -26,7 +26,7 @@ inherit
 
 feature -- Initialization
 
-	make is
+	make
 			-- Initiate input data parsing and process information.
 		local
 			retried: BOOLEAN
@@ -35,6 +35,7 @@ feature -- Initialization
 				parse_input
 				execute
 			else
+				create form_data.make (0)
 				if debug_mode then
 					handle_exception
 				end
@@ -46,19 +47,19 @@ feature -- Initialization
 
 feature -- Miscellanous
 
-	execute is
+	execute
 			-- Process user provided information.
 		deferred
 		end
 
-	set_environment is
+	set_environment
 			-- Set environment variable to user value.
 		do
 		end
 
 feature {CGI_INTERFACE} -- Access	
 
-	debug_mode: BOOLEAN is 
+	debug_mode: BOOLEAN
 			-- Is Current application executed in debug mode?
 		deferred
 		end
@@ -68,10 +69,10 @@ feature {CGI_FORMS}-- Access
 	form_data: HASH_TABLE [LINKED_LIST [STRING], STRING]
 			-- User provided data.
 
-	hexa_to_ascii (s: STRING) is
+	hexa_to_ascii (s: STRING)
 			-- Replace %xy by the corresponding ASCII character.
 		local
-			char: CHARACTER;
+			c, c1, c2: CHARACTER;
 			new: STRING;
 			i: INTEGER
 		do
@@ -81,30 +82,40 @@ feature {CGI_FORMS}-- Access
 			until
 				i > s.count
 			loop
-				if s.item (i) = '%%' then
+				c := s.item (i)
+				if c = '%%' then
 					if s.valid_index (i + 1) and s.valid_index (i + 2) then
-						char := charconv (16 * hexa_value (s.item (i + 1)) +
-											hexa_value (s.item (i + 2)))
-						new.append_character (char)
-						i := i + 2
-					else
-						new.append_character (s.item (i))
+						c1 := s.item (i + 1)
+						c2 := s.item (i + 2)
+						if is_valid_hexa_character (c1) and is_valid_hexa_character (c2) then
+							c := charconv (16 * hexa_value (c1) + hexa_value (c2))
+							i := i + 2
+						end
 					end
-				else
-					new.append_character (s.item (i))
 				end
+				new.append_character (c)
 				i := i + 1
 			end
 			s.make_from_string (new)
 		end
 
-	hexa_value (c: CHARACTER): INTEGER is
+	is_valid_hexa_character (c: CHARACTER): BOOLEAN
+			-- Is `c' a valid hexadecimal character
+			-- (and uppercase if it is alphabetic)?
+		local
+			l_upper: CHARACTER
+		do
+			l_upper := c.as_upper
+			Result := (l_upper >= '0' and l_upper <= '9') or (l_upper >= 'A' and l_upper <= 'F')
+		end
+
+	hexa_value (c: CHARACTER): INTEGER
 			-- Hexadecimal value of a character from the hexa alphabet.
 		require
-			valid_hexa_character: (c>='0' and c<='9') or (c>='A' and c<='F')
+			valid_hexa_character: is_valid_hexa_character (c)
 		do
 			inspect
-				c
+				c.as_upper
 			when '0'..'9' then
 				Result := c.code - ('0').code
 			when 'A'..'F' then
@@ -112,39 +123,50 @@ feature {CGI_FORMS}-- Access
 			end
 		end
 
-	Input_data: STRING is
+	Input_data: STRING
 			-- Data sent by the server.
+		local
+			l_result: detachable STRING
 		once
 				-- Default method is "GET".
 			if Request_method.is_equal ("POST") then
-				if Content_length.is_integer then
+				if Content_length.is_empty then
+					create Result.make_empty
+				elseif Content_length.is_integer then
 					stdin.read_stream (Content_length.to_integer)
-					Result := stdin.last_string
+					l_result := stdin.last_string
+						-- Per postcondition of `stdin.read_stream'.
+					check l_result_attached: l_result /= Void end
+					Result := l_result
 				else
+					create Result.make_empty
 					raise_error ("Incorrect value for CONTENT_LENGTH")
 				end
 			else
 				Result := Query_string
-			end;
-			if Result = Void then
-				Result := ""
 			end
 		ensure
 			input_data_exists: Result /= Void
 		end
 
-	insert_pair (name, val: STRING) is
+	insert_pair (name, val: STRING)
 			-- Insert pair (name,value) into form_data; take care of collisions.
-		local
-			vl: LINKED_LIST [STRING]
 		do
 				-- Convert strings to plain ASCII
 			hexa_to_ascii (name)
 			hexa_to_ascii (val)
+			insert_pair_without_encoding (name, val)
+		end
+
+	insert_pair_without_encoding (name, val: STRING)
+			-- Insert pair (name,value) into form_data; take care of collisions.
+		local
+			vl: LINKED_LIST [STRING]
+		do
 				-- Is there already a value for `name'?
-			if form_data.has (name) then
-				form_data.item (name).extend (val)
-				form_data.item (name).start
+			if form_data.has (name) and then attached {LINKED_LIST [STRING]} form_data.item (name) as l_list then
+				l_list.extend (val)
+				l_list.start
 			else
 				create vl.make
 				vl.extend (val)
@@ -153,7 +175,7 @@ feature {CGI_FORMS}-- Access
 			end
 		end
 
-	parse_arguments (args: ARRAY[STRING]) is
+	parse_arguments (args: ARRAY[STRING])
 			-- Parse arguments array and set environment variables.
 		local
 			i, sep_index: INTEGER
@@ -179,7 +201,13 @@ feature {CGI_FORMS}-- Access
 			end
 		end
 
-	parse_input is
+	parse_input
+			-- Split input string and build (name,value) pairs.
+		do
+			parse_urlencoded_input
+		end
+
+	parse_urlencoded_input
 			-- Split input string and build (name,value) pairs.
 		local
 			data, pair, key, val: STRING;
@@ -190,7 +218,7 @@ feature {CGI_FORMS}-- Access
 			if not data.is_empty then
 					-- Convert +'s to spaces
 				data.replace_substring_all ("+", " ")
-	
+
 					-- Build the (name,value) pairs
 				nb_pairs := data.occurrences (Pair_separator) + 1
 				create form_data.make (nb_pairs)
@@ -228,13 +256,13 @@ feature {CGI_FORMS}-- Access
 
 feature {NONE} -- Implementation constants
 
-	Pair_separator: CHARACTER is '&'
+	Pair_separator: CHARACTER = '&'
 			-- Name / value pairs separator.
 
-	Value_separator: CHARACTER is '=';
+	Value_separator: CHARACTER = '=';
 			-- Name / value separator.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

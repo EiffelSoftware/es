@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tool bar for docking library."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -9,6 +9,13 @@ class
 	SD_TOOL_BAR
 
 inherit
+	SD_GENERIC_TOOL_BAR
+		undefine
+			default_create,
+			is_equal,
+			copy
+		end
+
 	SD_DRAWING_AREA
 		rename
 			has_capture as has_capture_vision2,
@@ -22,15 +29,15 @@ inherit
 					pointer_motion_actions, pointer_button_release_actions,
 					x_position, y_position, destroy, out,
 					set_minimum_width, set_minimum_height, is_destroyed,
-					object_id
-			{SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE, SD_TOOL_BAR} implementation, draw_pixmap, clear_rectangle
-			{SD_TOOL_BAR_ITEM, SD_TOOL_BAR} tooltip, set_tooltip, remove_tooltip, font
-			{SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR, SD_TOOL_BAR, SD_TOOL_BAR_ITEM} set_pointer_style
-			{SD_TOOL_BAR_ZONE, SD_TOOL_BAR} expose_actions, pointer_button_press_actions, pointer_double_press_actions,
+					object_id, is_sensitive
+			{SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE, SD_GENERIC_TOOL_BAR} implementation, draw_pixmap, clear_rectangle
+			{SD_TOOL_BAR_ITEM, SD_GENERIC_TOOL_BAR} tooltip, set_tooltip, remove_tooltip, font
+			{SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR, SD_GENERIC_TOOL_BAR, SD_TOOL_BAR_ITEM} set_pointer_style
+			{SD_TOOL_BAR_ZONE, SD_GENERIC_TOOL_BAR} expose_actions, pointer_button_press_actions, pointer_double_press_actions,
 							redraw_rectangle
 			{SD_NOTEBOOK_HIDE_TAB_DIALOG} key_press_actions, focus_out_actions, set_focus, has_focus
 			{SD_TOOL_BAR_DRAWER_IMP} draw_ellipsed_text_top_left
-			{SD_TOOL_BAR} is_initialized
+			{SD_GENERIC_TOOL_BAR} is_initialized
 		redefine
 			update_for_pick_and_drop,
 			initialize,
@@ -49,7 +56,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make is
+	make
 			-- Creation method
 		do
 			default_create
@@ -58,7 +65,7 @@ feature {NONE} -- Initlization
 
 feature {SD_TOOL_BAR} -- Internal initlization
 
-	initialize is
+	initialize
 			-- Initlialize
 		do
 			Precursor {SD_DRAWING_AREA}
@@ -84,28 +91,17 @@ feature {SD_TOOL_BAR} -- Internal initlization
 
 feature -- Command
 
-	extend (a_item: SD_TOOL_BAR_ITEM) is
-			-- Extend `a_item' to the end.
-		require
-			not_void: a_item /= Void
-			valid: is_item_valid (a_item)
+	extend (a_item: like item_type)
+			-- <Precursor>
 		do
 			internal_items.extend (a_item)
 			a_item.set_tool_bar (Current)
 
 			is_need_calculate_size := True
-		ensure
-			has: has (a_item)
-			is_parent_set: is_parent_set (a_item)
 		end
 
-	force (a_item: SD_TOOL_BAR_ITEM; a_index: INTEGER) is
-			-- Assign item `a_item' to `a_index'-th entry.
-			-- Always applicable: resize the array if `a_index' falls out of
-			-- currently defined bounds; preserve existing items.
-		require
-			not_void: a_item /= Void
-			valid: is_item_valid (a_item)
+	force (a_item: like item_type; a_index: INTEGER)
+			-- <Precursor>
 		do
 			internal_items.go_i_th (a_index)
 			internal_items.put_left (a_item)
@@ -113,26 +109,26 @@ feature -- Command
 			is_need_calculate_size := True
 		end
 
-	prune (a_item: SD_TOOL_BAR_ITEM) is
-			-- Prune `a_item'
+	prune (a_item: like item_type)
+			-- <Precursor>
 		do
 			internal_items.prune_all (a_item)
 			a_item.set_tool_bar (Void)
 			is_need_calculate_size := True
-		ensure
+		ensure then
 			pruned: not has (a_item)
 			parent_void: a_item.tool_bar = Void
 		end
 
-	compute_minimum_size is
-			-- Compute `minmum_width' and `minimum_height'.
+	compute_minimum_size
+			-- <Precursor>
 		local
 			l_minimum_width: INTEGER
 			l_minimum_height: INTEGER
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_items: like internal_items
 			l_separator: SD_TOOL_BAR_SEPARATOR
-			l_item_before: SD_TOOL_BAR_ITEM
+			l_item_before: like item_type
 		do
 			from
 				l_items := items
@@ -174,8 +170,8 @@ feature -- Command
 			set_minimum_height (l_minimum_height)
 		end
 
-	update_size is
-			-- Update `tool_bar' size if Current width changed.
+	update_size
+			-- <Precursor>
 		local
 			l_tool_bar_row: SD_TOOL_BAR_ROW
 			l_parent: EV_CONTAINER
@@ -208,26 +204,26 @@ feature -- Command
 			end
 		end
 
-	wipe_out is
-			-- Wipe out
+	wipe_out
+			-- <Precursor>
 		do
 			internal_items.wipe_out
 		end
 
-	enable_capture is
-			-- Enable capture
+	enable_capture
+			-- <Precursor>
 		do
 			enable_capture_vision2
 		end
 
-	disable_capture is
-			-- Disable capture
+	disable_capture
+			-- <Precursor>
 		do
 			disable_capture_vision2
 		end
 
-	destroy	is
-			-- Redefine
+	destroy
+			-- <Precursor>
 		do
 			expose_actions.wipe_out
 			pointer_motion_actions.wipe_out
@@ -247,11 +243,11 @@ feature -- Command
 
 feature {SD_TOOL_BAR_TITLE_BAR, SD_TITLE_BAR} -- Special setting
 
-	prefered_height: INTEGER is
+	prefered_height: INTEGER
 			-- Prefered tool bar height.
 		local
-			l_item: SD_TOOL_BAR_ITEM
-			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			l_item: like item_type
+			l_items: ARRAYED_LIST [like item_type]
 			l_height: INTEGER
 			l_separator: SD_TOOL_BAR_SEPARATOR
 		do
@@ -282,43 +278,56 @@ feature {SD_TOOL_BAR_TITLE_BAR, SD_TITLE_BAR} -- Special setting
 
 feature -- Query
 
-	items: like internal_items is
-			-- Visible items
+	items: like internal_items
+			-- <Precursor>
 		do
 			Result := internal_items.twin
-		ensure
-			not_void: Result /= Void
 		end
 
-	all_items: like internal_items is
-			-- All items
+	all_items: like internal_items
+			-- <Precursor>
+		local
+			l_items: ARRAYED_SET [SD_TOOL_BAR_ITEM]
 		do
 			if content /= Void then
-				Result := content.items.twin
+				from
+					l_items := content.items
+					l_items.start
+					create Result.make (l_items.count)
+				until
+					l_items.after
+				loop
+					if attached {like item_type} l_items.item as l_item then
+						Result.extend (l_item)
+					else
+						-- FIXIT: Maybe we should have SD_MENU_CONTENT? However, SD_MENU_BAR is not complete now
+						check menu_bar_only_have_menu_items: False end
+					end
+
+					l_items.forth
+				end
 			else
 				Result := items
 			end
-		ensure
-			not_void: Result /= Void
 		end
 
-	has (a_item: SD_TOOL_BAR_ITEM): BOOLEAN is
+	has (a_item: like item_type): BOOLEAN
 			-- If Current has `a_item' ?
 		do
 			Result := internal_items.has (a_item)
 		end
 
-	padding_width: INTEGER is 4
-			-- Padding width.
+	padding_width: INTEGER = 4
+			-- <Precursor>
 
-	standard_height: INTEGER is
-			-- Standard tool bar height.
+	standard_height: INTEGER
+			-- <Precursor>
 		do
 			Result := internal_shared.tool_bar_size
 		end
 
-	row_height: INTEGER is
-			-- Height of row.
+	row_height: INTEGER
+			-- <Precursor>
 		local
 			l_font_height, l_pixmap_height: INTEGER
 		do
@@ -339,14 +348,12 @@ feature -- Query
 			else
 				Result := internal_row_height
 			end
-		ensure
-			valid: is_row_height_valid (Result)
 		end
 
-	items_have_texts: BOOLEAN is
-			-- If any item has text?
+	items_have_texts: BOOLEAN
+			-- <Precursor>
 		local
-			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			l_items: ARRAYED_LIST [like item_type]
 			l_button: SD_TOOL_BAR_BUTTON
 		do
 			from
@@ -366,7 +373,7 @@ feature -- Query
 			end
 		end
 
-	has_capture: BOOLEAN is
+	has_capture: BOOLEAN
 			-- If current has capture?
 			-- We rename `has_capture' from ancestor, because we want remove the postcondition (bridge_ok) in
 			-- SD_WIDGET_TOOL_BAR.
@@ -374,40 +381,46 @@ feature -- Query
 			Result := has_capture_vision2
 		end
 
+	item_type: SD_TOOL_BAR_ITEM
+			-- Type of items of Current.
+		do
+
+		end
+
 feature -- Contract support
 
-	is_row_height_set (a_new_height: INTEGER): BOOLEAN is
+	is_row_height_set (a_new_height: INTEGER): BOOLEAN
 			-- If row height set?
 		do
 			Result := internal_row_height = a_new_height
 		end
 
-	is_row_height_valid (a_height: INTEGER): BOOLEAN is
-			-- If `a_height' valid?
+	is_row_height_valid (a_height: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 			Result := internal_row_height = a_height
 		end
 
-	is_parent_set (a_item: SD_TOOL_BAR_ITEM): BOOLEAN is
-			-- If `a_item' parent set?
+	is_parent_set (a_item: like item_type): BOOLEAN
+			-- <Precursor>
 		do
 			Result := a_item.tool_bar = Current
 		end
 
-	is_start_x_set (a_x: INTEGER): BOOLEAN is
-			--
+	is_start_x_set (a_x: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 			Result := start_x = a_x
 		end
 
-	is_start_y_set (a_y: INTEGER): BOOLEAN is
-			--
+	is_start_y_set (a_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 			Result := start_y = a_y
 		end
 
-	is_item_valid (a_item: SD_TOOL_BAR_ITEM): BOOLEAN is
-			-- If `a_item' valid?
+	is_item_valid (a_item: like item_type): BOOLEAN
+			-- <Precursor>
 		local
 			l_widget_item: SD_TOOL_BAR_WIDGET_ITEM
 		do
@@ -418,28 +431,32 @@ feature -- Contract support
 			end
 		end
 
-	is_item_position_valid (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
-			-- If `a_screen_x' and `a_screen_y' within tool bar items area?
+	is_item_position_valid (a_screen_x, a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 			Result := a_screen_x >= screen_x and a_screen_y >= screen_y
 								and a_screen_x < width + screen_x and a_screen_y < height + screen_y
 		end
 
-feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR, SD_SIZES, SD_TOOL_BAR_ZONE} -- Internal issues
+feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_GENERIC_TOOL_BAR, SD_SIZES, SD_TOOL_BAR_ZONE} -- Internal issues
 
-	need_calculate_size is
-			-- Set if need recalculate `row_height'.
+	set_need_calculate_size (a_bool: BOOLEAN)
+			-- <Precursor>
 		do
-			is_need_calculate_size := True
+			is_need_calculate_size := a_bool
 		end
 
-	item_x (a_item: SD_TOOL_BAR_ITEM): INTEGER is
-			-- Relative x position of `a_item'.
-		require
-			has: has (a_item)
+	set_row_height (a_height: INTEGER)
+			-- <Precursor>
+		do
+			internal_row_height := a_height
+		end
+
+	item_x (a_item: like item_type): INTEGER
+			-- <Precursor>
 		local
 			l_stop: BOOLEAN
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_items: like internal_items
 			l_separator: SD_TOOL_BAR_SEPARATOR
 		do
@@ -468,13 +485,11 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR, SD_SIZES, SD_TOO
 			end
 		end
 
-	item_y (a_item: SD_TOOL_BAR_ITEM): INTEGER is
-			-- Relative y position of `a_item'.
-		require
-			has: has (a_item)
+	item_y (a_item: like item_type): INTEGER
+			-- <Precursor>
 		local
 			l_stop: BOOLEAN
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_separator: SD_TOOL_BAR_SEPARATOR
 			l_items: like internal_items
 		do
@@ -504,12 +519,12 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR, SD_SIZES, SD_TOO
 			end
 		end
 
-	update is
-			-- Redraw item(s) which `is_need_redraw'
+	update
+			-- <Precursor>
 		local
-			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			l_items: ARRAYED_LIST [like item_type]
 			l_rect: EV_RECTANGLE
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 		do
 			if width /= 0 and height /= 0 then
 				from
@@ -532,39 +547,35 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR, SD_SIZES, SD_TOO
 			end
 		end
 
-feature {SD_TOOL_BAR_ZONE, SD_TOOL_BAR} -- Tool bar zone issues
+feature {SD_TOOL_BAR_ZONE, SD_GENERIC_TOOL_BAR} -- Tool bar zone issues
 
-	set_start_x (a_x: INTEGER) is
-			-- Set start x position with `a_x'.
+	set_start_x (a_x: INTEGER)
+			-- <Precursor>
 		do
 			internal_start_x := a_x
-		ensure
-			set: is_start_x_set (a_x)
 		end
 
-	set_start_y (a_y: INTEGER) is
-			-- Set start y position with `a_y'.
+	set_start_y (a_y: INTEGER)
+			-- <Precursor>
 		do
 			internal_start_y := a_y
-		ensure
-			set: is_start_y_set (a_y)
 		end
 
-	start_x: INTEGER is
-			-- `internal_start_x'
+	start_x: INTEGER
+			-- <Precursor>
 		do
 			Result := internal_start_x
 		end
 
-	start_y: INTEGER is
-			-- 'internal_start_y'
+	start_y: INTEGER
+			-- <Precursor>
 		do
 			Result := internal_start_y
 		end
 
 feature {NONE} -- Agents
 
-	on_expose (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
+	on_expose (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER)
 			-- Handle expose actions.
 		local
 			l_items: like internal_items
@@ -586,11 +597,11 @@ feature {NONE} -- Agents
 			drawer.end_draw
 		end
 
-	on_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer motion actions.
 		local
 			l_items: like internal_items
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_platform: PLATFORM
 			l_capture_enabled: BOOLEAN
 		do
@@ -622,11 +633,11 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pointer_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_pointer_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer press actions.
 		local
 			l_items: like internal_items
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 		do
 			debug ("docking")
 				print ("%NSD_TOOL_BAR on_pointer_press")
@@ -657,7 +668,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pointer_press_forwarding (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_pointer_press_forwarding (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer press actions for forwarding.
 		local
 			l_items: like internal_items
@@ -673,11 +684,11 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pointer_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_pointer_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer release actions.
 		local
 			l_items: like internal_items
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 		do
 			if a_button = {EV_POINTER_CONSTANTS}.left then
 				-- Reset state value and disable capture should not care about the pointer position. Otherwise capture will still enabled if end user released the pointer button outside current.
@@ -712,7 +723,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pointer_enter is
+	on_pointer_enter
 			-- Handle poiner enter actions.
 			-- Pointer enter actions and pointer leave actions always called in pairs.
 			-- That means: `on_pointer_motion' actions can be called without `on_pointer_enter' be called.
@@ -723,11 +734,11 @@ feature {NONE} -- Agents
 			set: pointer_entered = True
 		end
 
-	on_pointer_leave is
+	on_pointer_leave
 			-- Handle pointer leave actions.
 		local
 			l_items: like internal_items
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 		do
 			from
 				l_items := items
@@ -749,11 +760,11 @@ feature {NONE} -- Agents
 			set: pointer_entered = False
 		end
 
-	on_drop_action (a_any: ANY) is
+	on_drop_action (a_any: ANY)
 			-- Handle drop actions.
 		local
 			l_screen: EV_SCREEN
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_pointer_position: EV_COORDINATE
 		do
 			create l_screen
@@ -764,11 +775,11 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_veto_pebble_function (a_any: ANY): BOOLEAN is
+	on_veto_pebble_function (a_any: ANY): BOOLEAN
 			-- Handle veto pebble function.
 		local
 			l_screen: EV_SCREEN
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_pointer_position: EV_COORDINATE
 			l_stock_pixmap: EV_STOCK_PIXMAPS
 		do
@@ -793,10 +804,10 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pebble_function: ANY is
+	on_pebble_function: ANY
 			-- Handle pebble function event.
 		local
-			l_item: SD_TOOL_BAR_ITEM
+			l_item: like item_type
 			l_screen: EV_SCREEN
 			l_position: EV_COORDINATE
 		do
@@ -811,20 +822,18 @@ feature {NONE} -- Agents
 			end
 		end
 
-feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
+feature {SD_GENERIC_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
 
-	set_content (a_content: like content) is
-			-- Set `content' with `a_content'.
+	set_content (a_content: like content)
+			-- <Precursor>
 		do
 			content := a_content
-		ensure
-			content_set: content = a_content
 		end
 
 	content: SD_TOOL_BAR_CONTENT
-			-- Related tool bar content
+			-- <Precursor>
 
-	redraw_item (a_item: SD_TOOL_BAR_ITEM) is
+	redraw_item (a_item: like item_type)
 			-- Redraw `a_item'.
 		require
 			not_void: a_item /= Void
@@ -849,7 +858,7 @@ feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
 			end
 		end
 
-	update_for_pick_and_drop (a_starting: BOOLEAN; a_pebble: ANY) is
+	update_for_pick_and_drop (a_starting: BOOLEAN; a_pebble: ANY)
 			-- Update items for pick and drop.
 		local
 			l_items: like items
@@ -866,24 +875,21 @@ feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
 			update
 		end
 
-	drawer: SD_TOOL_BAR_DRAWER is
+	drawer: SD_TOOL_BAR_DRAWER
 			-- Drawer with responsibility for draw OS native looks.
 		do
 			Result := internal_shared.tool_bar_drawer
 			Result.set_tool_bar (Current)
 		end
 
-	internal_items: ARRAYED_SET [SD_TOOL_BAR_ITEM]
+	internal_items: ARRAYED_SET [like item_type]
 			-- All tool bar items in Current.
 
 	internal_pointer_pressed: BOOLEAN
 			-- If pointer button pressed?
 
-	item_at_position (a_screen_x, a_screen_y: INTEGER): SD_TOOL_BAR_ITEM is
-			-- Item at `a_screen_x', `a_screen_y'
-			-- Result may be void when there wraps.
-		require
-			in_position: is_item_position_valid (a_screen_x, a_screen_y)
+	item_at_position (a_screen_x, a_screen_y: INTEGER): like item_type
+			-- <Precursor>
 		local
 			l_x, l_y: INTEGER
 			l_items: like internal_items
@@ -908,9 +914,6 @@ feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
 			-- Has pointer enter actions been called?
 			-- The reason why have this flag see `on_pointer_enter''s comments.
 
-	internal_shared: SD_SHARED
-			-- All singletons.
-
 	internal_row_height: INTEGER
 			-- Row height of Current.
 
@@ -921,13 +924,13 @@ feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
 			-- Y postion start to draw buttons.
 
 	is_need_calculate_size: BOOLEAN
-			-- Need recalcualte current `row_height'? Because some thing changed?
+			-- <Precursor>
 
 invariant
 	items_not_void: items /= Void
 	internal_items_not_void: internal_items /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

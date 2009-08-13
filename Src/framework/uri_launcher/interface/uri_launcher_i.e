@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		The interface used to launch URIs in the platform's default browser.
 	]"
@@ -12,17 +12,18 @@ deferred class
 
 feature -- Basic operations
 
-	launch (a_uri: !READABLE_STRING_GENERAL): BOOLEAN
+	launch (a_uri: READABLE_STRING_8): BOOLEAN
 			-- Launches a URI in the system's default web-browser.
 			--
 			-- `a_uri': The URI to launch.
 			-- `Result': True if the URI was launched; False otherwise.
 		require
+			a_uri_attached: a_uri /= Void
 			not_a_uri_is_empty: not a_uri.is_empty
 		deferred
 		end
 
-	launch_with_default_app (a_uri: !READABLE_STRING_GENERAL; a_default_app: !READABLE_STRING_GENERAL): BOOLEAN
+	launch_with_default_app (a_uri: READABLE_STRING_8; a_default_app: READABLE_STRING_8): BOOLEAN
 			-- Launches a URI in the system's default web-browser, or if that fails, then the supplied
 			-- default application.
 			--
@@ -30,7 +31,9 @@ feature -- Basic operations
 			-- `a_default_app': The default application to use in case of system default failure.
 			-- `Result'       : True if the URI was launched; False otherwise.
 		require
+			a_uri_attached: a_uri /= Void
 			not_a_uri_is_empty: not a_uri.is_empty
+			a_default_app_attached: a_default_app /= Void
 			not_a_default_app_is_empty: not a_default_app.is_empty
 		do
 			Result := launch (a_uri)
@@ -41,7 +44,7 @@ feature -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	launch_with_app (a_uri: !READABLE_STRING_GENERAL; a_app: !READABLE_STRING_GENERAL): BOOLEAN
+	launch_with_app (a_uri: READABLE_STRING_8; a_app: READABLE_STRING_8): BOOLEAN
 			-- Launches a URI in the system's default web-browser, or if that fails, then the supplied
 			-- default application.
 			--
@@ -49,7 +52,9 @@ feature {NONE} -- Basic operations
 			-- `a_default_app': The default application to use in case of system default failure.
 			-- `Result'       : True if the URI was launched; False otherwise.
 		require
+			a_uri_attached: a_uri /= Void
 			not_a_uri_is_empty: not a_uri.is_empty
+			a__app_attached: a_app /= Void
 			not_a_app_is_empty: not a_app.is_empty
 		local
 			l_process: PROCESS
@@ -91,12 +96,14 @@ feature {NONE} -- Basic operations
 			l_process.launch
 
 				-- Wait for an exit, but not infinitly because a new process may be blocking.
-			l_process.wait_for_exit_with_timeout (1000)
-			Result := l_process.is_running or else l_process.exit_code = 0
+			if l_process.launched then
+				l_process.wait_for_exit_with_timeout (1000)
+				Result := l_process.is_running or else l_process.exit_code = 0
+			end
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -109,22 +116,22 @@ feature {NONE} -- Basic operations
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

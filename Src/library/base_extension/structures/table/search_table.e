@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Set based on implementation of HASH_TABLE for fast lookup"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,7 @@ create
 
 feature -- Creation
 
-	make (n: INTEGER) is
+	make (n: INTEGER)
 			-- Allocate hash table for at least `n' items.
 			-- The table will be resized automatically
 			-- if more than `n' items are inserted.
@@ -44,7 +44,7 @@ feature -- Creation
 
 feature -- Access and queries
 
-	item (key: H): H is
+	item (key: H): detachable H
 			-- Item associated with `key', if present
 			-- otherwise default value of type `G'
 		require
@@ -56,7 +56,7 @@ feature -- Access and queries
 			end
 		end
 
-	has (key: H): BOOLEAN is
+	has (key: H): BOOLEAN
 			-- Is `access_key' currently used?
 			-- (Shallow equality)
 		require
@@ -66,7 +66,7 @@ feature -- Access and queries
 			Result := (control = Found_constant)
 		end
 
-	key_at (n: INTEGER): H is
+	key_at (n: INTEGER): detachable H
 			-- Key corresponding to entry `n'
 		do
 			if n >= 0 and n < content.count then
@@ -74,18 +74,18 @@ feature -- Access and queries
 			end
 		end
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is structure empty?
 		do
 			Result := (count = 0)
 		end
 
-	search (key: H) is
+	search (key: H)
 			-- Search for item of key `key'
 			-- If found, set `found' to True, and set
 			-- `found_item' to item associated with `key'.
 		local
-			default_value: H
+			default_value: detachable H
 		do
 			internal_search (key)
 			if control = Found_constant then
@@ -97,7 +97,7 @@ feature -- Access and queries
 			item_if_found: found implies (found_item = content.item (position))
 		end
 
-	go_to (c: like cursor) is
+	go_to (c: like cursor)
 			-- Move to position `c'.
 		require
 			valid_cursor: valid_cursor (c)
@@ -105,11 +105,11 @@ feature -- Access and queries
 			iteration_position := c
 		end
 
-	found_item: H
+	found_item: detachable H
 			-- Item found during a search with `has' to reduce the number of
 			-- search for clients
 
-	found: BOOLEAN is
+	found: BOOLEAN
 			-- Did last operation find the item sought?
 		do
 			Result := (control = Found_constant)
@@ -117,7 +117,7 @@ feature -- Access and queries
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Does table contain the same information as `other'?
 		do
 			Result :=
@@ -125,19 +125,19 @@ feature -- Comparison
 				equal (deleted_marks, other.deleted_marks)
 		end
 
-	same_keys (a_search_key, a_key: H): BOOLEAN is
+	same_keys (a_search_key, a_key: H): BOOLEAN
 			-- Does `a_search_key' equal to `a_key'?
-			--| Default implementation is using `is_equal'.
+			--| Default implementation is using ~.
 		require
 			valid_search_key: valid_key (a_search_key)
 			valid_key: valid_key (a_key)
 		do
-			Result := a_search_key.is_equal (a_key)
+			Result := a_search_key ~ a_key
 		end
 
 feature -- Insertion, deletion
 
-	put (key: H) is
+	put (key: H)
 			-- Attempt to insert `new' with `key'.
 			-- Set `control' to `Inserted' or `Conflict'.
 			-- No insertion if conflict.
@@ -160,7 +160,7 @@ feature -- Insertion, deletion
 			insertion_done: control = Inserted implies item (key) = key
 		end
 
-	force (key: H) is
+	force (key: H)
 			-- If `key' is present, replace corresponding item by `new',
 			-- if not, insert item `new' with key `key'.
 			-- Set `control' to `Inserted'.
@@ -181,7 +181,7 @@ feature -- Insertion, deletion
 			insertion_done: item (key) = key
 		end
 
-	change_key (new_key: H; old_key: H) is
+	change_key (new_key: H; old_key: H)
 			-- If table contains an item at `old_key',
 			-- replace its key by `new_key'.
 			-- Set `control' to `Changed', `Conflict' or `Not_found_constant'.
@@ -200,17 +200,15 @@ feature -- Insertion, deletion
 			changed: control = Changed implies not has (old_key)
 		end
 
-	remove, prune (key: H) is
+	remove, prune (key: H)
 			-- Remove item associated with `key', if present.
 			-- Set `control' to `Removed' or `Not_found_constant'.
 		require
 			valid_key: valid_key (key)
-		local
-			dead_key: H
 		do
 			internal_search (key)
 			if control = Found_constant then
-				content.put (dead_key, position)
+				content.put_default (position)
 				deleted_marks.put (True, position)
 				count := count - 1
 			end
@@ -218,10 +216,10 @@ feature -- Insertion, deletion
 			not_has: not has (key)
 		end
 
-	wipe_out, clear_all is
+	wipe_out, clear_all
 			-- Reset all items to default values.
 		local
-			default_value: H
+			default_value: detachable H
 		do
 			content.clear_all
 			deleted_marks.clear_all
@@ -231,7 +229,7 @@ feature -- Insertion, deletion
 			found_item := default_value
 		end
 
-	merge (other: like Current) is
+	merge (other: like Current)
 			-- Merge two search_tables
 		require
 			other_not_void: other /= Void
@@ -284,7 +282,7 @@ feature -- Number of elements
 
 feature -- Duplication
 
-	copy (other: like Current) is
+	copy (other: like Current)
 			-- Re-initialize from `other'.
 		do
 			standard_copy (other)
@@ -294,7 +292,7 @@ feature -- Duplication
 
 feature -- Conversion
 
-	linear_representation: ARRAYED_LIST [H] is
+	linear_representation: ARRAYED_LIST [H]
 			-- Representation as a linear structure
 			-- (order is same as original order of insertion)
 		local
@@ -325,7 +323,7 @@ feature {NONE} -- Internal features
 	position: INTEGER
 			-- Hash table cursor
 
-	internal_search (search_key: H) is
+	internal_search (search_key: H)
 			-- Search for item of `search_key'.
 			-- If successful, set `position' to index
 			-- of item with this key (the same index as the key's index).
@@ -336,11 +334,13 @@ feature {NONE} -- Internal features
 		local
 			increment, hash_code, table_size, pos: INTEGER
 			first_deleted_position, visited_count: INTEGER
-			old_key, default_key: H
+			old_key, default_key: detachable H
 			stop: BOOLEAN
 			local_content: SPECIAL [H]
 			local_deleted_marks: SPECIAL [BOOLEAN]
 		do
+				-- Per precondition
+			check search_key_not_void: search_key /= Void end
 			from
 				local_content := content
 				local_deleted_marks := deleted_marks
@@ -356,7 +356,7 @@ feature {NONE} -- Internal features
 				pos := (pos + increment) \\ table_size
 				visited_count := visited_count + 1
 				old_key := local_content.item (pos)
-				if old_key = default_key then
+				if old_key = default_key or old_key = Void then
 					if not local_deleted_marks.item (pos) then
 						control := Not_found_constant
 						stop := True
@@ -380,7 +380,7 @@ feature {NONE} -- Internal features
 			position := pos
 		end
 
-	add_space is
+	add_space
 			-- Double the capacity of `Current'.
 			-- Transfer everything except deleted keys.
 		local
@@ -407,10 +407,10 @@ feature {NONE} -- Internal features
 			capacity := other.capacity
 		end
 
-	Size_threshold: INTEGER is 80
+	Size_threshold: INTEGER = 80
 			-- Filling percentage over which some resizing is done
 
-	soon_full: BOOLEAN is
+	soon_full: BOOLEAN
 			-- Is `Current' close to being filled?
 			-- (If so, resizing is needed to avoid performance degradation.)
 		do
@@ -419,18 +419,20 @@ feature {NONE} -- Internal features
 
 feature -- Assertion check
 
-	valid_key (k: H): BOOLEAN is
+	valid_key (k: H): BOOLEAN
 			-- Is `k' a valid key?
 		local
-			dead_key: H
+			l_default_key: detachable H
 		do
-			Result := k /= dead_key and then k.is_hashable
+			Result := k /= l_default_key
+		ensure
+			definition: Result implies k /= Void
 		end
 
-	valid_cursor (c: like cursor): BOOLEAN is
+	valid_cursor (c: like cursor): BOOLEAN
 			-- Can cursor be moved to position `c'?
 		local
-			l_default: H
+			l_default: detachable H
 		do
 			Result := (c >= capacity) or else (((c >= 0) and (c <= capacity)) and then content.item (c) /= l_default)
 		end
@@ -442,22 +444,22 @@ feature {NONE} -- Status
 			-- several possible conditions.
 			-- Possible control codes are the following:
 
-	Inserted: INTEGER is unique
+	Inserted: INTEGER = unique
 			-- Insertion successful
 
-	Found_constant: INTEGER is unique
+	Found_constant: INTEGER = unique
 			-- Key found
 
-	Changed: INTEGER is unique
+	Changed: INTEGER = unique
 			-- Change successful
 
-	Removed: INTEGER is unique
+	Removed: INTEGER = unique
 			-- Remove successful
 
-	Conflict: INTEGER is unique
+	Conflict: INTEGER = unique
 			-- Could not insert an already existing key
 
-	Not_found_constant: INTEGER is unique
+	Not_found_constant: INTEGER = unique
 			-- Key not found
 
 feature {SEARCH_TABLE}
@@ -473,14 +475,14 @@ feature {SEARCH_TABLE}
 
 feature -- Iteration
 
-	start is
+	start
 			-- Iteration initialization
 		do
 			iteration_position := -1
 			forth
 		end
 
-	forth is
+	forth
 			-- Iteration
 		local
 			stop: BOOLEAN
@@ -500,13 +502,13 @@ feature -- Iteration
 			iteration_position := pos_for_iter
 		end
 
-	after, off: BOOLEAN is
+	after, off: BOOLEAN
 			-- Is the iteration cursor off ?
 		do
 			Result := iteration_position > capacity - 1
 		end
 
-	item_for_iteration, key_for_iteration: H is
+	item_for_iteration, key_for_iteration: H
 			-- Item at cursor position
 		require
 			not_off: not after
@@ -514,7 +516,8 @@ feature -- Iteration
 			Result := content.item (iteration_position)
 		end
 
-	cursor: INTEGER is
+	cursor: INTEGER
+			-- Cursor
 		do
 			Result := iteration_position
 		end
@@ -527,7 +530,7 @@ feature {NONE} -- Iteration cursor
 invariant
 	count_big_enough: 0 <= count
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

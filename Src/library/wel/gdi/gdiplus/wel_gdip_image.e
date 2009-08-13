@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Image functions in GDI+."
 					For more information, please see:
@@ -19,9 +19,28 @@ inherit
 			destroy_item
 		end
 
+create
+	default_create
+
+create {WEL_GDIP_IMAGE}
+	make_with_item
+
+feature {NONE} -- Initialization
+
+	make_with_item (a_item: POINTER)
+			-- Creation method
+		require
+			not_void: a_item /= default_pointer
+		do
+			default_create
+			item := a_item
+		ensure
+			set: item = a_item
+		end
+
 feature -- Command
 
-	load_image_from_file (a_file_name: STRING) is
+	load_image_from_file (a_file_name: STRING)
 			-- Load datas from a file.
 		require
 			not_void: a_file_name /= Void
@@ -29,7 +48,7 @@ feature -- Command
 			load_image_from_file_original (a_file_name)
 		end
 
-	save_image_to_file (a_file_name: STRING) is
+	save_image_to_file (a_file_name: STRING)
 			-- Save data to a file.
 		require
 			not_void: a_file_name /= Void
@@ -41,7 +60,7 @@ feature -- Command
 			save_image_to_file_with_encoder (a_file_name, l_format)
 		end
 
-	save_image_to_file_with_parameters (a_file_name: STRING; a_parameters: WEL_GDIP_IMAGE_ENCODER_PARAMETERS) is
+	save_image_to_file_with_parameters (a_file_name: STRING; a_parameters: detachable WEL_GDIP_IMAGE_ENCODER_PARAMETERS)
 			-- Save data to a file with `a_parameters' options
 		require
 			not_void: a_file_name /= Void
@@ -53,7 +72,7 @@ feature -- Command
 			save_image_to_file_with_encoder_and_parameters (a_file_name, l_format, a_parameters)
 		end
 
-	save_image_to_file_with_encoder (a_file_name: STRING; a_format: WEL_GDIP_IMAGE_ENCODER) is
+	save_image_to_file_with_encoder (a_file_name: STRING; a_format: WEL_GDIP_IMAGE_ENCODER)
 			-- Save data to a file with image encoder parameter
 		require
 			not_void: a_file_name /= Void
@@ -62,7 +81,7 @@ feature -- Command
 			save_image_to_file_with_encoder_and_parameters (a_file_name, a_format, Void)
 		end
 
-	save_image_to_file_with_encoder_and_parameters (a_file_name: STRING; a_format: WEL_GDIP_IMAGE_ENCODER; a_parameters: WEL_GDIP_IMAGE_ENCODER_PARAMETERS) is
+	save_image_to_file_with_encoder_and_parameters (a_file_name: STRING; a_format: WEL_GDIP_IMAGE_ENCODER; a_parameters: detachable WEL_GDIP_IMAGE_ENCODER_PARAMETERS)
 			-- Save data to a file with image encoder and parameters
 		require
 			not_void: a_file_name /= Void
@@ -71,7 +90,7 @@ feature -- Command
 			l_result: INTEGER
 			l_wel_string: WEL_STRING
 			l_parameters: POINTER
-			l_encoder_info: WEL_GDIP_IMAGE_CODEC_INFO
+			l_encoder_info: detachable WEL_GDIP_IMAGE_CODEC_INFO
 		do
 			create l_wel_string.make (a_file_name)
 			if a_parameters /= Void then
@@ -83,7 +102,7 @@ feature -- Command
 			check ok: l_result = {WEL_GDIP_STATUS}.ok end
 		end
 
-	clone_rectangle_pixel_format (a_rectangle: WEL_GDIP_RECT; a_format: INTEGER): WEL_GDIP_BITMAP is
+	clone_rectangle_pixel_format (a_rectangle: WEL_GDIP_RECT; a_format: INTEGER): WEL_GDIP_BITMAP
 			-- Close Current with option `a_rectangle' and `a_format'
 		require
 			valid: a_rectangle /= Void and then (a_rectangle.width > 0 and a_rectangle.height > 0)
@@ -104,7 +123,7 @@ feature -- Command
 
 feature -- Query
 
-	width: INTEGER is
+	width: INTEGER
 			-- Width
 		local
 			l_result_status: INTEGER
@@ -113,7 +132,7 @@ feature -- Query
 			check ok: l_result_status = {WEL_GDIP_STATUS}.ok end
 		end
 
-	height: INTEGER is
+	height: INTEGER
 			-- Height
 		local
 			l_result_status: INTEGER
@@ -122,13 +141,13 @@ feature -- Query
 			check ok: l_result_status = {WEL_GDIP_STATUS}.ok end
 		end
 
-	raw_format: WEL_GUID is
+	raw_format: detachable WEL_GUID
 			-- Image format guid.
 		do
 			Result := raw_format_orignal
 		end
 
-	pixel_format: INTEGER is
+	pixel_format: INTEGER
 			-- Pixel format in memory
 		local
 			l_result_status: INTEGER
@@ -139,7 +158,19 @@ feature -- Query
 			valid: (create {WEL_GDIP_PIXEL_FORMAT}).is_valid_format (Result)
 		end
 
-	all_image_encoders: ARRAYED_LIST [WEL_GDIP_IMAGE_CODEC_INFO] is
+	get_thumbnail_image (a_width, a_height: INTEGER): WEL_GDIP_IMAGE
+			-- Gets a thumbnail image from this Image object
+		local
+			l_result_pointer: POINTER
+			l_result_status: INTEGER
+		do
+			l_result_pointer := c_gdip_get_thumbnail_image (gdi_plus_handle, item, a_width, a_height, default_pointer, default_pointer, $l_result_status)
+			check ok: l_result_status = {WEL_GDIP_STATUS}.ok end
+
+			create Result.make_with_item (l_result_pointer)
+		end
+
+	all_image_encoders: ARRAYED_LIST [WEL_GDIP_IMAGE_CODEC_INFO]
 			-- All image encoders.
 		local
 			l_size, l_num_encoders: NATURAL_32
@@ -171,7 +202,7 @@ feature -- Query
 
 feature -- Destory
 
-	destroy_item is
+	destroy_item
 			-- Redefine
 		local
 			l_result: INTEGER
@@ -185,7 +216,7 @@ feature -- Destory
 
 feature {WEL_GDIP_IMAGE} -- Implementation
 
-	raw_format_orignal: WEL_GUID is
+	raw_format_orignal: WEL_GUID
 			-- Image raw format. Orignal Gdi+ implmentation
 		local
 			l_result: INTEGER
@@ -195,7 +226,7 @@ feature {WEL_GDIP_IMAGE} -- Implementation
 			check ok: l_result = {WEL_GDIP_STATUS}.ok end
 		end
 
-	load_image_from_file_original (a_file_name: STRING) is
+	load_image_from_file_original (a_file_name: STRING)
 			-- Load datas from a file. Orignal Gdi+ implementation.
 		require
 			not_void: a_file_name /= Void
@@ -211,31 +242,34 @@ feature {WEL_GDIP_IMAGE} -- Implementation
 			end
 		end
 
-	find_format: WEL_GDIP_IMAGE_ENCODER is
+	find_format: WEL_GDIP_IMAGE_ENCODER
 			-- Find image encoder.
 		require
 			format_recorded: raw_format /= Void
 		local
 			l_all_format: ARRAYED_LIST [WEL_GDIP_IMAGE_ENCODER]
 			l_constants: WEL_GDIP_IMAGE_ENCODER_CONSTANTS
+			l_result: detachable like find_format
 		do
 			from
 				create l_constants
 				l_all_format := l_constants.all_formats
 				l_all_format.start
 			until
-				l_all_format.after or Result /= Void
+				l_result /= Void or l_all_format.after
 			loop
-				if l_all_format.item.guid.is_equal (raw_format) then
-					Result := l_all_format.item
+				if l_all_format.item.guid ~ raw_format then
+					l_result := l_all_format.item
 				end
 				l_all_format.forth
 			end
+			check l_result /= Void end
+			Result := l_result
 		ensure
 			not_void: Result /= Void
 		end
 
-	format_for_save_file: WEL_GDIP_IMAGE_ENCODER is
+	format_for_save_file: WEL_GDIP_IMAGE_ENCODER
 			-- Find proper image encoder for saving the image to file
 		local
 			l_constants: WEL_GDIP_IMAGE_ENCODER_CONSTANTS
@@ -253,7 +287,7 @@ feature {WEL_GDIP_IMAGE} -- Implementation
 
 feature {NONE} -- C externals
 
-	c_gdip_load_image_from_file (a_gdiplus_handle: POINTER; a_wchar_file_name: POINTER; a_result_status: TYPED_POINTER [INTEGER]): POINTER is
+	c_gdip_load_image_from_file (a_gdiplus_handle: POINTER; a_wchar_file_name: POINTER; a_result_status: TYPED_POINTER [INTEGER]): POINTER
 			-- Create a Gdi+ bitmap object name from file `a_wchar_file_name'.
 			-- Pixmap format include BMP, GIF, JPEG, PNG, TIFF, and EMF.
 		require
@@ -283,7 +317,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_save_image_to_file (a_gdiplus_handle: POINTER; a_gdip_image: POINTER; a_wchar_file_name, a_clsid_encoder, a_encoder_params: POINTER; a_result_status: TYPED_POINTER [INTEGER]) is
+	c_gdip_save_image_to_file (a_gdiplus_handle: POINTER; a_gdip_image: POINTER; a_wchar_file_name, a_clsid_encoder, a_encoder_params: POINTER; a_result_status: TYPED_POINTER [INTEGER])
 			-- Save `a_gdip_image' to `a_wchar_file_name'
 			-- Pixmap format include BMP, GIF, JPEG, PNG, TIFF, and EMF.
 		require
@@ -314,7 +348,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_get_image_width (a_gdiplus_handle: POINTER; a_item: POINTER; a_result_status: TYPED_POINTER [INTEGER]): NATURAL_32  is
+	c_gdip_get_image_width (a_gdiplus_handle: POINTER; a_item: POINTER; a_result_status: TYPED_POINTER [INTEGER]): NATURAL_32
 			-- Width
 		require
 			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
@@ -341,7 +375,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_get_image_height (a_gdiplus_handle: POINTER; a_item: POINTER; a_result_status: TYPED_POINTER [INTEGER]): NATURAL_32  is
+	c_gdip_get_image_height (a_gdiplus_handle: POINTER; a_item: POINTER; a_result_status: TYPED_POINTER [INTEGER]): NATURAL_32
 			-- Height
 		require
 			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
@@ -370,7 +404,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_get_image_pixel_format (a_gdiplus_handle: POINTER; a_item: POINTER; a_result_status: TYPED_POINTER [INTEGER]): INTEGER  is
+	c_gdip_get_image_pixel_format (a_gdiplus_handle: POINTER; a_item: POINTER; a_result_status: TYPED_POINTER [INTEGER]): INTEGER
 			-- Get pixel format information
 		require
 			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
@@ -399,7 +433,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_dispose_image (a_gdiplus_handle: POINTER; a_image: POINTER; a_result_status: TYPED_POINTER [INTEGER]) is
+	c_gdip_dispose_image (a_gdiplus_handle: POINTER; a_image: POINTER; a_result_status: TYPED_POINTER [INTEGER])
 			-- Dispose `a_image'
 		require
 			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
@@ -423,7 +457,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_get_image_encoders_size (a_gdiplus_handle: POINTER; a_num_encoders, a_size: TYPED_POINTER [NATURAL_32]; a_result_status: TYPED_POINTER [INTEGER]) is
+	c_gdip_get_image_encoders_size (a_gdiplus_handle: POINTER; a_num_encoders, a_size: TYPED_POINTER [NATURAL_32]; a_result_status: TYPED_POINTER [INTEGER])
 			-- Get image encoders size.
 			-- `a_num_encoders' and `a_size' is out paramter.
 		require
@@ -448,7 +482,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_get_image_encoders (a_gdiplus_handle: POINTER; a_num_encoders, a_size: NATURAL_32; a_result_pointer: POINTER; a_result_status: TYPED_POINTER [INTEGER]) is
+	c_gdip_get_image_encoders (a_gdiplus_handle: POINTER; a_num_encoders, a_size: NATURAL_32; a_result_pointer: POINTER; a_result_status: TYPED_POINTER [INTEGER])
 			-- Get image encoders.
 		require
 			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
@@ -473,7 +507,7 @@ feature {NONE} -- C externals
 			]"
 		end
 
-	c_gdip_get_image_raw_format (a_gdiplus_handle: POINTER; a_image: POINTER; a_result_guid: POINTER; a_result_status: TYPED_POINTER [INTEGER]) is
+	c_gdip_get_image_raw_format (a_gdiplus_handle: POINTER; a_image: POINTER; a_result_guid: POINTER; a_result_status: TYPED_POINTER [INTEGER])
 			-- Get image encoders.
 		require
 			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
@@ -497,9 +531,39 @@ feature {NONE} -- C externals
 			]"
 		end
 
+	c_gdip_get_thumbnail_image (a_gdiplus_handle: POINTER; a_image: POINTER; a_width, a_height: INTEGER; a_get_thumbnail_image_abort: POINTER; a_callback_data: POINTER; a_result_status: TYPED_POINTER [INTEGER]): POINTER
+			-- Get thumbnail_image
+		require
+			a_gdiplus_handle_not_null: a_gdiplus_handle /= default_pointer
+		external
+			"C inline use %"wel_gdi_plus.h%""
+		alias
+			"[
+			{
+				static FARPROC GdipGetImageThumbnail = NULL;
+				GpImage *l_result = NULL;
+				*(EIF_INTEGER *) $a_result_status = 1;
+
+				if (!GdipGetImageThumbnail) {
+					GdipGetImageThumbnail = GetProcAddress ((HMODULE) $a_gdiplus_handle, "GdipGetImageThumbnail");
+				}
+				if (GdipGetImageThumbnail) {
+					*(EIF_INTEGER *) $a_result_status = (FUNCTION_CAST_TYPE (GpStatus, WINGDIPAPI, (GpImage *, UINT, UINT, GpImage **, GetThumbnailImageAbort, VOID *)) GdipGetImageThumbnail)
+								((GpImage *) $a_image,
+								(UINT) $a_width,
+								(UINT) $a_height,			
+								(GpBitmap **) &l_result,
+								(GetThumbnailImageAbort) $a_get_thumbnail_image_abort,
+								(VOID *) $a_callback_data);
+				}
+				return (EIF_POINTER) l_result;
+			}
+			]"
+		end
+
 feature -- Obsolete
 
-	save_image_to_file_with_format (a_file_name: STRING; a_format: WEL_GDIP_IMAGE_FORMAT) is
+	save_image_to_file_with_format (a_file_name: STRING; a_format: WEL_GDIP_IMAGE_FORMAT)
 			-- Save data to a file with image format parameter
 		obsolete
 			"Use save_image_to_file_with_encoder instead"
@@ -513,15 +577,15 @@ feature -- Obsolete
 			save_image_to_file_with_encoder_and_parameters (a_file_name, l_encoder, Void)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

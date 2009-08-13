@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object font which can be selected into a DC."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 	make (a_height, a_width, escapement, orientation, weight,
 			italic, underline, strike_out, charset,
 			output_precision, clip_precision, quality,
-			pitch_and_family: INTEGER; a_face_name: STRING_GENERAL) is
+			pitch_and_family: INTEGER; a_face_name: STRING_GENERAL)
 			-- Make font named `a_face_name'.
 		require
 			a_face_name_not_void: a_face_name /= Void
@@ -61,10 +61,11 @@ feature {NONE} -- Initialization
 			gdi_make
 		end
 
-	make_indirect (a_log_font: WEL_LOG_FONT) is
+	make_indirect (a_log_font: WEL_LOG_FONT)
 			-- Make a font using `a_log_font'.
 		require
 			a_log_font_not_void: a_log_font /= Void
+			a_log_font_exists: a_log_font.exists
 		do
 			item := cwin_create_font_indirect (a_log_font.item)
 			gdi_make
@@ -72,9 +73,10 @@ feature {NONE} -- Initialization
 
 feature -- Setting
 
-	set_height (a_height: INTEGER) is
+	set_height (a_height: INTEGER)
 			-- Set `height' with `a_height'.
 		require
+			exists: exists
 			a_height_bigger_than_zero: a_height > 0
 		local
 			l: like log_font
@@ -89,8 +91,10 @@ feature -- Setting
 			set_indirect (l)
 		end
 
-	set_height_in_points (a_height_in_points: INTEGER) is
+	set_height_in_points (a_height_in_points: INTEGER)
 			-- Set `height' based on `a_height_in_points'.
+		require
+			exists: exists
 		local
 			l: like log_font
 			screen_dc: WEL_SCREEN_DC
@@ -107,10 +111,11 @@ feature -- Setting
 
 feature -- Re-initialisation
 
-	set_indirect (a_log_font: WEL_LOG_FONT) is
+	set_indirect (a_log_font: WEL_LOG_FONT)
 			-- Reset the current font the 'a_log_font' without
 			-- creating new object
 		require
+			exists: exists
 			a_log_font_not_void: a_log_font /= Void
 		local
 			object_destroyed: BOOLEAN
@@ -139,7 +144,7 @@ feature -- Re-initialisation
 
 feature -- Access
 
-	log_font: WEL_LOG_FONT is
+	log_font: WEL_LOG_FONT
 			-- Log font structure associated to `Current'
 		require
 			exists
@@ -149,14 +154,18 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	width: INTEGER is
+	width: INTEGER
 			-- Character width of current fixed-width font.
+		require
+			exists: exists
 		do
 			Result := string_width ("x")
 		end
 
-	height: INTEGER is
+	height: INTEGER
 			-- Size of font measured in pixels.
+		require
+			exists: exists
 		local
 			screen_dc: WEL_SCREEN_DC
 		do
@@ -168,8 +177,10 @@ feature -- Access
 			Result_bigger_than_zero: Result > 0
 		end
 
-	point: INTEGER is
+	point: INTEGER
 			-- Size of font in points (1 point = 1/72 of an inch)
+		require
+			exists: exists
 		local
 			screen_dc: WEL_SCREEN_DC
 		do
@@ -179,19 +190,25 @@ feature -- Access
 			screen_dc.release
 		end
 
-	string_width (a_string: STRING_GENERAL): INTEGER is
+	string_width (a_string: STRING_GENERAL): INTEGER
 			-- Width of `a_string'.
+		require
+			exists: exists
+			a_string_not_void: a_string /= Void
 		do
 			Result := string_size (a_string).width
 		end
 
-	string_height (a_string: STRING_GENERAL): INTEGER is
+	string_height (a_string: STRING_GENERAL): INTEGER
 			-- Height of `a_string'.
+		require
+			exists: exists
+			a_string_not_void: a_string /= Void
 		do
 			Result := string_size (a_string).height
 		end
 
-	string_size_extended (a_string: STRING_GENERAL): TUPLE [width: INTEGER; height: INTEGER; leading_overhang: INTEGER; trailing_overhang: INTEGER] is
+	string_size_extended (a_string: STRING_GENERAL): TUPLE [width: INTEGER; height: INTEGER; leading_overhang: INTEGER; trailing_overhang: INTEGER]
 			-- [width, height, leading overhang, trailing overhang] of `a_string'.
 			-- Not all fonts have characters that fit completely within the bounds of
 			-- the standard `string_size'. See `char_abc_widths' from WEL_DC which
@@ -205,6 +222,9 @@ feature -- Access
 			-- to the left hand side (before the string), with a negative value specifying a protuding point.
 			-- The fourth integer value of `Result' corresponds to the maximum character extent
 			-- to the right hand side (after the string), with a negative value indicating that it protudes)
+		require
+			exists: exists
+			a_string_not_void: a_string /= Void
 		local
 			cur_width, cur_height: INTEGER
 			screen_dc: WEL_SCREEN_DC
@@ -334,8 +354,11 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	string_size (a_string: STRING_GENERAL): TUPLE [width: INTEGER; height: INTEGER] is
+	string_size (a_string: STRING_GENERAL): TUPLE [width: INTEGER; height: INTEGER]
 			-- [width, height] of `a_string'.
+		require
+			exists: exists
+			a_string_not_void: a_string /= Void
 		local
 			cur_width, cur_height: INTEGER
 			screen_dc: WEL_SCREEN_DC
@@ -363,7 +386,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	get_char_a_width (dc: WEL_DC; character_code: NATURAL_32): INTEGER is
+	get_char_a_width (dc: WEL_DC; character_code: NATURAL_32): INTEGER
 			-- `Result' is "a" width from truetype font character `character_code'.
 		require
 			dc_not_void: dc /= Void
@@ -372,7 +395,7 @@ feature {NONE} -- Implementation
 			Result := dc.char_abc_widths (character_code, character_code).i_th (1).a
 		end
 
-	get_char_c_width (dc: WEL_DC; character_code: NATURAL_32): INTEGER is
+	get_char_c_width (dc: WEL_DC; character_code: NATURAL_32): INTEGER
 			-- `Result' is "c" width from truetype font character `character_code'.
 		require
 			dc_not_void: dc /= Void
@@ -385,7 +408,7 @@ feature {NONE} -- Implementation
 			italic, underline, strike_out,
 			charset, output_precision, clip_precision,
 			quality, pitch_and_family: INTEGER;
-			face: POINTER): POINTER is
+			face: POINTER): POINTER
 			-- SDK CreateFont
 		external
 			"C [macro <wel.h>] (int, int, int, int, int, DWORD, %
@@ -395,7 +418,7 @@ feature {NONE} -- Implementation
 			"CreateFont"
 		end
 
-	cwin_create_font_indirect (ptr: POINTER): POINTER is
+	cwin_create_font_indirect (ptr: POINTER): POINTER
 			-- SDK CreateFontIndirect
 		external
 			"C [macro <wel.h>] (LOGFONT *): EIF_POINTER"
@@ -403,7 +426,7 @@ feature {NONE} -- Implementation
 			"CreateFontIndirect"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

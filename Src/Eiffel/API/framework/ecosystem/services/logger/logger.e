@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A service for logging interal messages in EiffelStudio.
 	]"
@@ -16,15 +16,12 @@ inherit
 			on_sited
 		end
 
+	DISPOSABLE_SAFE
+
 	EVENT_LIST_OBSERVER
 		redefine
 			on_event_item_added,
 			on_event_item_removed
-		end
-
-	SAFE_AUTO_DISPOSABLE
-		redefine
-			safe_dispose
 		end
 
 create
@@ -51,30 +48,33 @@ feature {NONE} -- Initialization
 			l_service: like event_list_service
 		do
 			l_service := event_list_service
-			if l_service.is_service_available and then {l_observer: !EVENT_LIST_OBSERVER} Current then
+			if l_service.is_service_available then
 					-- Connect observer
-				l_service.service.connect_events (l_observer)
+				l_service.service.event_list_connection.connect_events (Current)
 			end
 			Precursor {LOGGER_S}
 		end
 
 feature {NONE} -- Clean up
 
-	safe_dispose (a_disposing: BOOLEAN) is
+	safe_dispose (a_disposing: BOOLEAN)
 			-- <Precursor>
 		local
 			l_service: like event_list_service
+			l_event_list: EVENT_LIST_S
 		do
 			if a_disposing then
 				clear_log
 
 				l_service := event_list_service
-				if l_service.is_service_available and then {l_observer: !EVENT_LIST_OBSERVER} Current and then l_service.service.is_connected (l_observer) then
-						-- Disconnect observer
-					l_service.service.disconnect_events (l_observer)
+				if l_service.is_service_available then
+					l_event_list := l_service.service
+					if l_event_list.event_list_connection.is_connected (Current) then
+							-- Disconnect observer
+						l_event_list.event_list_connection.disconnect_events (Current)
+					end
 				end
 			end
-			Precursor {SAFE_AUTO_DISPOSABLE} (a_disposing)
 		end
 
 feature -- Access
@@ -84,7 +84,7 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	frozen event_list_service: !SERVICE_CONSUMER [EVENT_LIST_S]
+	frozen event_list_service: attached SERVICE_CONSUMER [EVENT_LIST_S]
 			-- Event list service to send log item to.
 		once
 				-- Use local service provider when creating the event list service consumer.
@@ -92,13 +92,13 @@ feature {NONE} -- Access
 			create Result.make_with_provider (site)
 		end
 
-	context_cookie: !UUID
+	context_cookie: attached UUID
 			-- Context cookie for event list service
 		once
 			create Result.make_from_string ("E1FFE100-0106-4145-A53F-ED44CE92714D")
 		end
 
-	log_cache: !DS_LINKED_LIST [!EVENT_LIST_LOG_ITEM_I]
+	log_cache: attached DS_LINKED_LIST [attached EVENT_LIST_LOG_ITEM_I]
 			-- Cache of all logged items
 
 feature -- Element change
@@ -135,17 +135,17 @@ feature -- Extension
 		local
 			l_item: like create_event_list_log_item
 			l_service: like event_list_service
+			l_string: STRING_32
 		do
-			if {l_string: !STRING_32} a_msg.as_string_32 then
-				l_service := event_list_service
-				if l_service.is_service_available then
-					l_item := create_event_list_log_item (l_string, a_cat, a_level)
-					l_service.service.put_event_item (context_cookie, l_item)
-				end
-
-					-- Publish events
-				message_logged_events.publish ([l_string, a_cat, a_level])
+			l_string := a_msg.as_string_32
+			l_service := event_list_service
+			if l_service.is_service_available then
+				l_item := create_event_list_log_item (l_string, a_cat, a_level)
+				l_service.service.put_event_item (context_cookie, l_item)
 			end
+
+				-- Publish events
+			message_logged_events.publish ([l_string, a_cat, a_level])
 		end
 
 	put_message_format_with_severity (a_msg: STRING_GENERAL; a_args: TUPLE; a_cat: NATURAL_8; a_level: INTEGER_8)
@@ -169,7 +169,7 @@ feature -- Removal
 
 feature -- Events
 
-	message_logged_events: !EVENT_TYPE [TUPLE [message: !STRING_32; category: NATURAL_8; level: INTEGER_8]]
+	message_logged_events: attached EVENT_TYPE [TUPLE [message: attached STRING_32; category: NATURAL_8; level: INTEGER_8]]
 			-- <Precursor>
 
 feature {EVENT_LIST_S} -- Event handlers
@@ -180,7 +180,7 @@ feature {EVENT_LIST_S} -- Event handlers
 			l_service: like event_list_service
 			l_cache: like log_cache
 		do
-			if {l_log_item: !EVENT_LIST_LOG_ITEM_I} a_event_item then
+			if attached {EVENT_LIST_LOG_ITEM_I} a_event_item as l_log_item then
 				l_cache := log_cache
 				if l_cache.count = log_cache_length then
 						-- Too many items, remove the first.
@@ -194,7 +194,7 @@ feature {EVENT_LIST_S} -- Event handlers
 				l_cache.force_last (l_log_item)
 			end
 		ensure then
-			log_cache_has_a_event_item: {i: EVENT_LIST_LOG_ITEM_I} a_event_item implies log_cache.has (i)
+			log_cache_has_a_event_item: attached {EVENT_LIST_LOG_ITEM_I} a_event_item as i implies log_cache.has (i)
 		end
 
 	on_event_item_removed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
@@ -202,7 +202,7 @@ feature {EVENT_LIST_S} -- Event handlers
 		local
 			l_cache: like log_cache
 		do
-			if {l_log_item: EVENT_LIST_LOG_ITEM_I} a_event_item then
+			if attached {EVENT_LIST_LOG_ITEM_I} a_event_item as l_log_item then
 				l_cache := log_cache
 				if not l_cache.is_empty then
 					if l_cache.first = a_event_item then
@@ -219,12 +219,12 @@ feature {EVENT_LIST_S} -- Event handlers
 				end
 			end
 		ensure then
-			not_log_cache_has_a_event_item: {i: EVENT_LIST_LOG_ITEM_I} a_event_item implies not log_cache.has (i)
+			not_log_cache_has_a_event_item: attached {EVENT_LIST_LOG_ITEM_I} a_event_item as i implies not log_cache.has (i)
 		end
 
 feature {NONE} -- Factory
 
-	create_event_list_log_item (a_msg: !STRING_32; a_cat: NATURAL_8; a_level: INTEGER_8): !EVENT_LIST_LOG_ITEM_I
+	create_event_list_log_item (a_msg: attached STRING_32; a_cat: NATURAL_8; a_level: INTEGER_8): attached EVENT_LIST_LOG_ITEM_I
 			-- <Precursor>
 		require
 			not_a_msg_is_empty: not a_msg.is_empty
@@ -232,7 +232,7 @@ feature {NONE} -- Factory
 			a_level_is_valid_severity_level: is_valid_severity_level (a_level)
 			is_event_list_service_available: event_list_service.is_service_available
 		do
-			create {!EVENT_LIST_LOG_ITEM} Result.make (a_cat, a_msg, a_level)
+			create {attached EVENT_LIST_LOG_ITEM} Result.make (a_cat, a_msg, a_level)
 		ensure
 			result_is_log_item: Result.type = {EVENT_LIST_ITEM_TYPES}.log
 		end
@@ -240,10 +240,10 @@ feature {NONE} -- Factory
 invariant
 	log_cache_count_small_enought: log_cache.count <= log_cache_length
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -254,22 +254,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

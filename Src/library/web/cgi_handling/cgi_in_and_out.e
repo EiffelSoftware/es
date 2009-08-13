@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class which allows to access the files %
 				% corresponding to the in/out data flow"
 	legal: "See notice at end of class."
@@ -9,26 +9,21 @@ indexing
 class
 	CGI_IN_AND_OUT
 
+inherit
+	SHARED_STDIN
+	SHARED_STDOUT
+		rename
+			stdout as output
+		end
+
 feature -- Access
 
-	output: STDOUT is
-			-- Shared standard output.
+	response_header: CGI_RESPONSE_HEADER
 		once
-			Create Result.make
+			create Result.make
 		end
 
-	stdin: STDIN is
-			-- Shared standard input
-		once
-			Create Result.make
-		end
-
-	response_header: CGI_RESPONSE_HEADER is
-		once
-			Create Result
-		end
-
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Window that displays a text area and a list of possible features for automatic completion"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -34,7 +34,8 @@ inherit
 			set_expanded_row_icon,
 			show,
 			is_applicable_item,
-			exit
+			exit,
+			build_displayed_list
 		end
 
 	EB_CONSTANTS
@@ -72,33 +73,74 @@ inherit
 			copy
 		end
 
+	ES_SHARED_FONTS_AND_COLORS
+		export
+			{NONE} all
+		undefine
+			default_create,
+			copy
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create
 		do
 			Precursor {CODE_COMPLETION_WINDOW}
 			choice_list.enable_tree
 			choice_list.set_configurable_target_menu_mode
 			choice_list.set_configurable_target_menu_handler (agent context_menu_handler)
+			choice_list.enable_single_row_selection
+			register_action (choice_list.row_select_actions, agent on_row_selected)
 			set_title (Interface_names.t_Autocomplete_window)
 			setup_option_buttons
 			setup_accelerators
 			register_accelerator_preference_change_actions
 		end
 
-	build_option_bar: EV_VERTICAL_BOX is
+	build_option_bar: EV_VERTICAL_BOX
 			-- Build option bar
 		local
 			l_hbox: EV_HORIZONTAL_BOX
+			l_vbox: EV_VERTICAL_BOX
 			l_sep: EV_HORIZONTAL_SEPARATOR
 			l_label: EV_LABEL
 			l_tooltip: STRING
+			l_padding: EV_CELL
 		do
 			create Result
+
+				-- Separator
+			create l_vbox
+			create l_sep
+			l_sep.set_minimum_height (2)
+			l_vbox.extend (l_sep)
+
+			create l_padding
+			l_padding.set_minimum_height ({ES_UI_CONSTANTS}.label_vertical_padding)
+			l_padding.set_background_color (colors.tooltip_color)
+			l_vbox.extend (l_padding)
+			l_vbox.disable_item_expand (l_padding)
+
+				-- Tool tip
+			create comment_preview.make
+			comment_preview.align_text_left
+			comment_preview.is_text_wrapped := True
+			comment_preview.set_background_color (colors.tooltip_color)
+			l_vbox.extend (comment_preview)
+
+			create l_padding
+			l_padding.set_minimum_height ({ES_UI_CONSTANTS}.label_vertical_padding)
+			l_padding.set_background_color (colors.tooltip_color)
+			l_vbox.extend (l_padding)
+			l_vbox.disable_item_expand (l_padding)
+
+			Result.extend (l_vbox)
+			Result.disable_item_expand (l_vbox)
+			comment_preview_box := l_vbox
 
 				-- Separator
 			create l_sep
@@ -125,7 +167,7 @@ feature {NONE} -- Initialization
 			filter_button.set_pixmap (pixmaps.mini_pixmaps.completion_filter_icon)
 			l_tooltip := preferences.editor_data.filter_completion_list_preference.description
 			if l_tooltip /= Void then
-			 	filter_button.set_tooltip (l_tooltip)
+			 	filter_button.set_tooltip (locale.translation (l_tooltip))
 			end
 			option_bar.extend (filter_button)
 
@@ -133,7 +175,7 @@ feature {NONE} -- Initialization
 			show_return_type_button.set_pixmap (pixmaps.mini_pixmaps.completion_show_return_type_icon)
 			l_tooltip := preferences.editor_data.show_completion_type_preference.description
 			if l_tooltip /= Void then
-				show_return_type_button.set_tooltip (l_tooltip)
+				show_return_type_button.set_tooltip (locale.translation (l_tooltip))
 			end
 			option_bar.extend (show_return_type_button)
 
@@ -149,7 +191,7 @@ feature {NONE} -- Initialization
 			show_disambiguated_name_button.set_pixmap (pixmaps.mini_pixmaps.completion_show_disambiguants_icon)
 			l_tooltip := preferences.editor_data.show_completion_disambiguated_name_preference.description
 			if l_tooltip /= Void then
-				show_disambiguated_name_button.set_tooltip (l_tooltip)
+				show_disambiguated_name_button.set_tooltip (locale.translation (l_tooltip))
 			end
 			option_bar.extend (show_disambiguated_name_button)
 
@@ -157,20 +199,30 @@ feature {NONE} -- Initialization
 			show_obsolete_items_button.set_pixmap (pixmaps.mini_pixmaps.completion_show_obsolete_icon)
 			l_tooltip := preferences.editor_data.show_completion_obsolete_items_preference.description
 			if l_tooltip /= Void then
-				show_disambiguated_name_button.set_tooltip (l_tooltip)
+				show_obsolete_items_button.set_tooltip (locale.translation (l_tooltip))
 			end
 			option_bar.extend (show_obsolete_items_button)
+
+			option_bar.extend (create {EV_TOOL_BAR_SEPARATOR})
+
+			create show_tooltip_button
+			show_tooltip_button.set_pixmap (pixmaps.mini_pixmaps.debugger_expand_info_icon)
+			l_tooltip := preferences.editor_data.show_completion_tooltip_preference.description
+			if l_tooltip /= Void then
+				show_tooltip_button.set_tooltip (locale.translation (l_tooltip))
+			end
+			option_bar.extend (show_tooltip_button)
 
 			create remember_size_button
 			remember_size_button.set_pixmap (pixmaps.mini_pixmaps.completion_remember_size_icon)
 			l_tooltip := preferences.development_window_data.remember_completion_list_size_preference.description
 			if l_tooltip /= Void then
-				remember_size_button.set_tooltip (l_tooltip)
+				remember_size_button.set_tooltip (locale.translation (l_tooltip))
 			end
 			option_bar.extend (remember_size_button)
 		end
 
-	setup_option_buttons is
+	setup_option_buttons
 			-- Setup option buttons according to preference.
 			-- Setup callbacks on option buttons.
 		do
@@ -205,32 +257,32 @@ feature {NONE} -- Initialization
 			else
 				remember_size_button.disable_select
 			end
+			if show_completion_tooltip then
+				show_tooltip_button.enable_select
+			else
+				show_tooltip_button.disable_select
+				comment_preview_box.hide
+			end
 
 				-- Callbacks
-			filter_button.select_actions.extend (agent on_option_button_selected (filter_button))
-			show_return_type_button.select_actions.extend (agent on_option_button_selected (show_return_type_button))
-			show_signature_button.select_actions.extend (agent on_option_button_selected (show_signature_button))
-			show_disambiguated_name_button.select_actions.extend (agent on_option_button_selected (show_disambiguated_name_button))
-			show_obsolete_items_button.select_actions.extend (agent on_option_button_selected (show_obsolete_items_button))
-			remember_size_button.select_actions.extend (agent on_option_button_selected (remember_size_button))
+			register_action (filter_button.select_actions, agent on_option_button_selected (filter_button))
+			register_action (show_return_type_button.select_actions, agent on_option_button_selected (show_return_type_button))
+			register_action (show_signature_button.select_actions, agent on_option_button_selected (show_signature_button))
+			register_action (show_disambiguated_name_button.select_actions, agent on_option_button_selected (show_disambiguated_name_button))
+			register_action (show_obsolete_items_button.select_actions, agent on_option_button_selected (show_obsolete_items_button))
+			register_action (show_tooltip_button.select_actions, agent on_option_button_selected (show_tooltip_button))
+			register_action (remember_size_button.select_actions, agent on_option_button_selected (remember_size_button))
 
-				-- Preference change
-			filter_completion_list_agent := agent on_option_changed (filter_button)
-			show_return_type_agent := agent on_option_changed (show_return_type_button)
-			show_completion_signature_agent := agent on_option_changed (show_signature_button)
-			show_completion_disambiguated_name_agent := agent on_option_changed (show_disambiguated_name_button)
-			show_completion_obsolete_items_agent := agent on_option_changed (show_obsolete_items_button)
-			remember_window_size_agent := agent on_option_changed (remember_size_button)
-
-			preferences.editor_data.filter_completion_list_preference.change_actions.extend (filter_completion_list_agent)
-			preferences.editor_data.show_completion_type_preference.change_actions.extend (show_return_type_agent)
-			preferences.editor_data.show_completion_signature_preference.change_actions.extend (show_completion_signature_agent)
-			preferences.editor_data.show_completion_disambiguated_name_preference.change_actions.extend (show_completion_disambiguated_name_agent)
-			preferences.editor_data.show_completion_obsolete_items_preference.change_actions.extend (show_completion_obsolete_items_agent)
-			preferences.development_window_data.remember_completion_list_size_preference.change_actions.extend (remember_window_size_agent)
+			register_action (preferences.editor_data.filter_completion_list_preference.change_actions, agent on_option_button_selected (filter_button))
+			register_action (preferences.editor_data.show_completion_type_preference.change_actions, agent on_option_button_selected (show_return_type_button))
+			register_action (preferences.editor_data.show_completion_signature_preference.change_actions, agent on_option_button_selected (show_signature_button))
+			register_action (preferences.editor_data.show_completion_disambiguated_name_preference.change_actions, agent on_option_button_selected (show_disambiguated_name_button))
+			register_action (preferences.editor_data.show_completion_obsolete_items_preference.change_actions, agent on_option_button_selected (show_obsolete_items_button))
+			register_action (preferences.editor_data.show_completion_tooltip_preference.change_actions, agent on_option_button_selected (show_tooltip_button))
+			register_action (preferences.development_window_data.remember_completion_list_size_preference.change_actions, agent on_option_button_selected (remember_size_button))
 		end
 
-	register_accelerator_preference_change_actions is
+	register_accelerator_preference_change_actions
 		local
 			l_pre: SHORTCUT_PREFERENCE
 		do
@@ -247,9 +299,11 @@ feature {NONE} -- Initialization
 			l_pre.change_actions.extend (setup_accelerators_agent)
 			l_pre := preferences.editor_data.shortcuts.item ("toggle_remember_size")
 			l_pre.change_actions.extend (setup_accelerators_agent)
+			l_pre := preferences.editor_data.shortcuts.item ("toggle_show_tooltip")
+			l_pre.change_actions.extend (setup_accelerators_agent)
 		end
 
-	setup_accelerators is
+	setup_accelerators
 			-- Build accelerators.
 		local
 			l_acc: EV_ACCELERATOR
@@ -272,13 +326,17 @@ feature {NONE} -- Initialization
 			create l_acc.make_with_key_combination (l_pre.key, l_pre.is_ctrl, l_pre.is_alt, l_pre.is_shift)
 			l_acc.actions.extend (agent toggle_button (show_disambiguated_name_button))
 			accelerators.extend (l_acc)
+			l_pre := preferences.editor_data.shortcuts.item ("toggle_show_tooltip")
+			create l_acc.make_with_key_combination (l_pre.key, l_pre.is_ctrl, l_pre.is_alt, l_pre.is_shift)
+			l_acc.actions.extend (agent toggle_button (show_tooltip_button))
+			accelerators.extend (l_acc)
 			l_pre := preferences.editor_data.shortcuts.item ("toggle_remember_size")
 			create l_acc.make_with_key_combination (l_pre.key, l_pre.is_ctrl, l_pre.is_alt, l_pre.is_shift)
 			l_acc.actions.extend (agent toggle_button (remember_size_button))
 			accelerators.extend (l_acc)
 		end
 
-	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler
 		do
 			if context_menu_factory /= Void then
@@ -292,7 +350,7 @@ feature -- Initialization
 							feature_name: STRING;
 							a_remainder: INTEGER;
 							completion_possibilities: like sorted_names;
-							a_complete_word: BOOLEAN) is
+							a_complete_word: BOOLEAN)
 			-- Initialize to to complete for `feature_name' in `an_editor'.
 		local
 			l_string: STRING
@@ -307,7 +365,7 @@ feature -- Initialization
 	initialize_for_classes (an_editor: like code_completable;
 							class_name: STRING;
 							a_remainder: INTEGER;
-							completion_possibilities: like sorted_names) is
+							completion_possibilities: like sorted_names)
 			-- Initialize to to complete for `class_name' in `an_editor'.
 		do
 			feature_mode := False
@@ -318,6 +376,12 @@ feature -- Access
 
 	choice_list: EB_COMPLETION_LIST_GRID
 			-- Choice list
+
+	comment_preview: EVS_LABEL
+			-- Comment preview tooltip information
+
+	comment_preview_box: EV_VERTICAL_BOX
+			-- Comment preview container box
 
 	code_completable: EB_TAB_CODE_COMPLETABLE
 			-- associated window
@@ -344,6 +408,9 @@ feature -- Widget
 	remember_size_button: EV_TOOL_BAR_TOGGLE_BUTTON
 			-- Button to remember window size
 
+	show_tooltip_button: EV_TOOL_BAR_TOGGLE_BUTTON
+			-- Button to show/hide tool-tips
+
 feature -- Query
 
 	is_applicable_item (a_item: like name_type): BOOLEAN
@@ -367,24 +434,24 @@ feature -- Status report
 	feature_mode: BOOLEAN
 			-- Is `Current' used to select feature names ?
 
-	scrolling_common_line_count : INTEGER is
+	scrolling_common_line_count : INTEGER
 		do
 			Result := preferences.editor_data.scrolling_common_line_count
 		end
 
-	mouse_wheel_scroll_full_page : BOOLEAN is
+	mouse_wheel_scroll_full_page : BOOLEAN
 		do
 			Result := preferences.editor_data.mouse_wheel_scroll_full_page
 		end
 
-	mouse_wheel_scroll_size: INTEGER is
+	mouse_wheel_scroll_size: INTEGER
 		do
 			Result := preferences.editor_data.mouse_wheel_scroll_size
 		end
 
 feature -- Status change
 
-	show is
+	show
 			-- Show
 		do
 			Precursor {CODE_COMPLETION_WINDOW}
@@ -393,39 +460,44 @@ feature -- Status change
 
 feature {NONE} -- Option Preferences
 
-	filter_completion_list: BOOLEAN is
+	filter_completion_list: BOOLEAN
 		do
 			Result := preferences.editor_data.filter_completion_list
 		end
 
-	show_completion_type: BOOLEAN is
+	show_completion_type: BOOLEAN
 		do
 			Result := preferences.editor_data.show_completion_type
 		end
 
-	show_completion_signature: BOOLEAN is
+	show_completion_signature: BOOLEAN
 		do
 			Result := preferences.editor_data.show_completion_signature
 		end
 
-	show_completion_disambiguated_name: BOOLEAN is
+	show_completion_disambiguated_name: BOOLEAN
 		do
 			Result := preferences.editor_data.show_completion_disambiguated_name
 		end
 
-	show_obsolete_items: BOOLEAN is
+	show_obsolete_items: BOOLEAN
 		do
 			Result := preferences.editor_data.show_completion_obsolete_items
 		end
 
-	remember_window_size: BOOLEAN is
+	remember_window_size: BOOLEAN
 		do
 			Result := preferences.development_window_data.remember_completion_list_size
 		end
 
+	show_completion_tooltip: BOOLEAN
+		do
+			Result := preferences.editor_data.show_completion_tooltip
+		end
+
 feature {NONE} -- Option behaviour
 
-	on_option_changed (a_button: EV_TOOL_BAR_TOGGLE_BUTTON) is
+	on_option_changed (a_button: EV_TOOL_BAR_TOGGLE_BUTTON)
 			-- On option changed
 		require
 			a_button_not_void: a_button /= Void
@@ -459,6 +531,20 @@ feature {NONE} -- Option behaviour
 				else
 					a_button.disable_select
 				end
+			elseif a_button = show_obsolete_items_button then
+				apply_show_obsolete_items (show_obsolete_items)
+				if remember_window_size then
+					a_button.enable_select
+				else
+					a_button.disable_select
+				end
+			elseif a_button = show_tooltip_button then
+				apply_show_tooltip (show_completion_tooltip)
+				if remember_window_size then
+					a_button.enable_select
+				else
+					a_button.disable_select
+				end
 			elseif a_button = remember_size_button then
 				apply_remember_window_size (remember_window_size)
 				if remember_window_size then
@@ -474,7 +560,7 @@ feature {NONE} -- Option behaviour
 			a_button.select_actions.resume
 		end
 
-	on_option_button_selected (a_button: EV_TOOL_BAR_TOGGLE_BUTTON) is
+	on_option_button_selected (a_button: EV_TOOL_BAR_TOGGLE_BUTTON)
 			-- On option button selected
 		require
 			a_button_not_void: a_button /= Void
@@ -516,6 +602,13 @@ feature {NONE} -- Option behaviour
 					l_prefernce.set_value (a_button.is_selected)
 					apply_show_obsolete_items (show_obsolete_items)
 				end
+			elseif a_button = show_tooltip_button then
+				if show_completion_tooltip /= a_button.is_selected then
+					l_prefernce := preferences.editor_data.show_completion_tooltip_preference
+					l_prefernce.change_actions.block
+					l_prefernce.set_value (a_button.is_selected)
+					apply_show_tooltip (show_completion_tooltip)
+				end
 			elseif a_button = remember_size_button then
 				if remember_window_size /= a_button.is_selected then
 					l_prefernce := preferences.development_window_data.remember_completion_list_size_preference
@@ -531,7 +624,7 @@ feature {NONE} -- Option behaviour
 			l_prefernce.change_actions.resume
 		end
 
-	apply_filter_completion_list (a_b: BOOLEAN) is
+	apply_filter_completion_list (a_b: BOOLEAN)
 			-- Apply filtering completion list.
 		local
 			local_name: like name_type
@@ -564,7 +657,7 @@ feature {NONE} -- Option behaviour
 			unlock_update
 		end
 
-	apply_show_return_type (a_b: BOOLEAN) is
+	apply_show_return_type (a_b: BOOLEAN)
 			-- Apply showing return type.
 		local
 			local_index: INTEGER
@@ -600,25 +693,42 @@ feature {NONE} -- Option behaviour
 			unlock_update
 		end
 
-	apply_show_completion_signature (a_b: BOOLEAN) is
+	apply_show_completion_signature (a_b: BOOLEAN)
 			-- Apply showing completion signature.
 		do
 			apply_show_return_type (a_b)
 		end
 
-	apply_show_completion_disambiguated_name (a_b: BOOLEAN) is
+	apply_show_completion_disambiguated_name (a_b: BOOLEAN)
 			-- Apply showing completion disambiguated name.
 		do
 			apply_show_return_type (a_b)
 		end
 
-	apply_show_obsolete_items (a_b: BOOLEAN) is
+	apply_show_obsolete_items (a_b: BOOLEAN)
 			-- Apply showing completion obsolete items.
 		do
 			apply_show_return_type (a_b)
 		end
 
-	apply_remember_window_size (a_b: BOOLEAN) is
+	apply_show_tooltip (a_b: BOOLEAN)
+			-- Apply showing completion tooltip.
+		local
+			l_rows: ARRAYED_LIST [EV_GRID_ROW]
+		do
+			if a_b then
+				l_rows := choice_list.selected_rows
+				if not l_rows.is_empty then
+						-- Forces the selection
+					on_row_selected (l_rows.first)
+				end
+				comment_preview_box.show
+			else
+				comment_preview_box.hide
+			end
+		end
+
+	apply_remember_window_size (a_b: BOOLEAN)
 			-- Apply remembering window size.
 		do
 			lock_update
@@ -634,20 +744,14 @@ feature {NONE} -- Option behaviour
 
 feature {NONE} -- Recyclable
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle
 		do
-			preferences.editor_data.filter_completion_list_preference.change_actions.prune_all (filter_completion_list_agent)
-			preferences.editor_data.show_completion_type_preference.change_actions.prune_all (show_return_type_agent)
-			preferences.editor_data.show_completion_signature_preference.change_actions.prune_all (show_completion_signature_agent)
-			preferences.editor_data.show_completion_disambiguated_name_preference.change_actions.prune_all (show_completion_disambiguated_name_agent)
-			preferences.editor_data.show_completion_obsolete_items_preference.change_actions.prune (show_completion_obsolete_items_agent)
-			preferences.development_window_data.remember_completion_list_size_preference.change_actions.prune_all (remember_window_size_agent)
 			unregister_accelerator_preference_change_actions
 			choice_list.recycle
 		end
 
-	unregister_accelerator_preference_change_actions is
+	unregister_accelerator_preference_change_actions
 		local
 			l_pre: SHORTCUT_PREFERENCE
 		do
@@ -667,21 +771,63 @@ feature {NONE} -- Recyclable
 
 	setup_accelerators_agent: PROCEDURE [ANY, TUPLE]
 
-	filter_completion_list_agent: PROCEDURE [ANY, TUPLE]
+feature {NONE} -- Action handlers
 
-	show_return_type_agent:  PROCEDURE [ANY, TUPLE]
+	on_row_selected (a_row: EV_GRID_ROW)
+			-- Selected grid row
+		require
+			is_interface_usable: is_interface_usable
+			a_row_attached: a_row /= Void
+		local
+			l_tt_text: STRING_32
+		do
+			if comment_preview.is_displayed then
+				if attached {EB_FEATURE_FOR_COMPLETION} a_row.data as l_completion_feature then
+					l_tt_text := l_completion_feature.tooltip_text
+				elseif attached {EB_CLASS_FOR_COMPLETION} a_row.data as l_completion_class then
+					l_tt_text := l_completion_class.tooltip_text
+				end
+				if l_tt_text /= Void then
+					l_tt_text.prune_all_trailing ('%N')
+					if l_tt_text.count > 150 then
+						l_tt_text.keep_head (147)
+						l_tt_text.append ("...")
+					end
+					comment_preview.set_text (l_tt_text)
+				else
+					comment_preview.set_text ("")
+				end
 
-	show_completion_signature_agent: PROCEDURE [ANY, TUPLE]
+				if {PLATFORM}.is_windows then
+					a_row.ensure_visible
+				else
+					ev_application.add_idle_action_kamikaze (agent
+						local
+							l_selected: ARRAYED_LIST [EV_GRID_ROW]
+						do
+								-- Ensure the row is visible on GTK platforms.
+							if is_interface_usable then
+								l_selected := choice_list.selected_rows
+								if not l_selected.is_empty then
+									l_selected.first.ensure_visible
+								end
+							end
+						end)
+				end
 
-	show_completion_disambiguated_name_agent: PROCEDURE [ANY, TUPLE]
-
-	show_completion_obsolete_items_agent: PROCEDURE [ANY, TUPLE]
-
-	remember_window_size_agent: PROCEDURE [ANY, TUPLE]
+			end
+		end
 
 feature {NONE} -- Implementation
 
-	on_char (character_string: STRING_32) is
+	build_displayed_list (name: STRING_8)
+			-- <Precursor>
+		do
+			comment_preview.set_text ("")
+			Precursor (name)
+		end
+
+	on_char (character_string: STRING_32)
 			-- Process displayable character key press event.
 		local
 			c: CHARACTER
@@ -721,7 +867,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_key_down (ev_key: EV_KEY) is
+	on_key_down (ev_key: EV_KEY)
 			-- process user input in `choice_list'.
 		do
 			if ev_key /= Void then
@@ -738,7 +884,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	toggle_button (a_button: like filter_button) is
+	toggle_button (a_button: like filter_button)
 			-- Toggle button selection
 		require
 			a_button_not_void: a_button /= Void
@@ -750,7 +896,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_key_released (ev_key: EV_KEY) is
+	on_key_released (ev_key: EV_KEY)
 			-- process user input in `choice_list'.
 		do
 			if ev_key /= Void then
@@ -769,19 +915,19 @@ feature {NONE} -- Implementation
 
 	temp_switching_show_disambiguated_name: BOOLEAN
 
-	rebuild_list_during_matching: BOOLEAN is
+	rebuild_list_during_matching: BOOLEAN
 			-- Should the list be rebuilt according to current match?
 		do
 		    Result := preferences.editor_data.filter_completion_list
 		end
 
-	automatically_complete_words: BOOLEAN is
+	automatically_complete_words: BOOLEAN
 			-- Should completion list automatically complete words.
 		do
 			Result := preferences.editor_data.auto_complete_words
 		end
 
-	close_and_complete is
+	close_and_complete
 			-- close the window and perform completion with selected item
 		do
 			if not choice_list.selected_rows.is_empty then
@@ -798,7 +944,7 @@ feature {NONE} -- Implementation
 			exit
 		end
 
-	exit is
+	exit
 			-- Cancel autocomplete
 		do
 			Precursor
@@ -807,7 +953,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	verify_display is
+	verify_display
 			-- Verify display and focus on current window.
 			-- Resume focus out actions.
 			-- |FIXME: This is a work around on Unix.
@@ -821,7 +967,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	complete_feature is
+	complete_feature
 			-- Complete feature name
 		local
 			local_feature: EB_FEATURE_FOR_COMPLETION
@@ -867,7 +1013,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	complete_class is
+	complete_class
 			-- Complete class name
 		local
 			l_row: EV_GRID_ROW
@@ -889,13 +1035,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_expanded_row_icon (a_item: EB_GRID_EDITOR_TOKEN_ITEM; a_name: like name_type) is
+	set_expanded_row_icon (a_item: EB_GRID_EDITOR_TOKEN_ITEM; a_name: like name_type)
 			-- Set pixmap of `a_item'.
 		do
 			a_item.set_pixmap (pixmaps.icon_pixmaps.feature_group_icon)
 		end
 
-	resize_window_to_column_width is
+	resize_window_to_column_width
 			-- Resize window to column width
 		local
 			i: INTEGER
@@ -917,8 +1063,8 @@ feature {NONE} -- Implementation
 	last_completed_feature_had_arguments: BOOLEAN;
 			-- Did the last inserted completed feature name contain arguments?
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -942,11 +1088,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_COMPLETION_CHOICE_WINDOW

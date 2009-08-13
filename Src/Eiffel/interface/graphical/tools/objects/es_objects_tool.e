@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Tool descriptor for the debugger's object analyer tool.
 	]"
@@ -12,13 +12,31 @@ frozen class
 
 inherit
 	ES_DEBUGGER_STONABLE_TOOL [ES_OBJECTS_TOOL_PANEL]
+		redefine
+			on_tool_instantiated
+		end
 
 create {NONE}
 	default_create
 
-feature {DEBUGGER_MANAGER} -- Access
+feature {NONE} -- Events
 
-	disable_refresh is
+	on_tool_instantiated
+			-- Called when a tool panel is instatiated and has been built.
+			-- (export status {NONE})
+		do
+			Precursor
+			if delayed_split_proportion > 0 then
+				set_split_proportion (delayed_split_proportion)
+			end
+		end
+
+	delayed_split_proportion: like split_proportion
+			-- Split proportion to set when tool instantiated			
+
+feature {DEBUGGER_MANAGER} -- Status setting
+
+	disable_refresh
 			-- Disable refresh
 		do
 			if is_tool_instantiated	then
@@ -26,7 +44,7 @@ feature {DEBUGGER_MANAGER} -- Access
 			end
 		end
 
-	enable_refresh is
+	enable_refresh
 			-- Disable refresh
 		do
 			if is_tool_instantiated then
@@ -34,7 +52,35 @@ feature {DEBUGGER_MANAGER} -- Access
 			end
 		end
 
-	record_grids_layout is
+feature -- Access: split
+
+	split_exists: BOOLEAN
+		do
+			if is_tool_instantiated then
+				Result := panel.split_exists
+			end
+		end
+
+	split_proportion: REAL
+		require
+			split_exists: split_exists
+		do
+			Result := panel.split_proportion
+		end
+
+	set_split_proportion (p: like split_proportion)
+		do
+			if is_tool_instantiated then
+				delayed_split_proportion := 0
+				panel.set_split_proportion (p)
+			else
+				delayed_split_proportion := p
+			end
+		end
+
+feature -- Basic operations
+
+	record_grids_layout
 			-- Record grid's layout
 		do
 			if
@@ -45,7 +91,7 @@ feature {DEBUGGER_MANAGER} -- Access
 			end
 		end
 
-	update_cleaning_delay (ms: INTEGER_32) is
+	update_cleaning_delay (ms: INTEGER_32)
 			-- Set cleaning delay to object grids
 		do
 			if
@@ -70,31 +116,35 @@ feature -- Access
 			Result := stock_pixmaps.tool_objects_icon
 		end
 
-	title: STRING_32
+	title: attached STRING_32
 			-- <Precursor>
 		do
-			Result := interface_names.t_object_tool
+			Result := locale_formatter.translation (t_tool_title)
 		end
 
 feature {NONE} -- Status report
 
-	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
 			-- <Precursor>
 		do
-			Result := {l_stone: CALL_STACK_STONE} a_stone
+			Result := attached {CALL_STACK_STONE} a_stone as l_stone
 		end
 
 feature {NONE} -- Factory
 
-	create_tool: ES_OBJECTS_TOOL_PANEL
+	new_tool:attached  ES_OBJECTS_TOOL_PANEL
 			-- <Precursor>
 		do
 			create Result.make (window, Current)
 			Result.set_debugger_manager (debugger_manager)
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+feature {NONE} -- Internationalization
+
+	t_tool_title: STRING = "Objects"
+
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -107,22 +157,22 @@ feature {NONE} -- Factory
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

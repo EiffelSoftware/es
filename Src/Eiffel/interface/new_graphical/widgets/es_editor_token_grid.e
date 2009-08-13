@@ -1,4 +1,4 @@
-indexing
+note
 	description: "ES grid that enables basic preferenced editor colors."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -68,10 +68,10 @@ feature {NONE} -- Implementation
 			redraw
 		end
 
-	set_colors_and_redraw_agent: ?PROCEDURE [ANY, TUPLE];
+	set_colors_and_redraw_agent: detachable PROCEDURE [ANY, TUPLE];
 			-- Saved agent to be recycled.
 
-indexing
+note
         copyright:	"Copyright (c) 1984-2006, Eiffel Software"
         license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
         licensing_options:	"http://www.eiffel.com/licensing"

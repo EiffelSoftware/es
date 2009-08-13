@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					AST factory that supports roundtrip facility
 					This factory will setup all indexes used by roundtrip parser,
@@ -23,6 +23,7 @@ inherit
 			backup_match_list_count,
 			resume_match_list_count,
 			new_keyword_as,
+			new_keyword_id_as,
 			new_symbol_as,
 			new_current_as,
 			new_deferred_as,
@@ -66,7 +67,7 @@ inherit
 
 feature -- Match list maintain
 
-	create_match_list (l_size: INTEGER) is
+	create_match_list (l_size: INTEGER)
 			-- Create a new `match_list' with initial `l_size'.
 		do
 			match_list_count := 0
@@ -74,13 +75,13 @@ feature -- Match list maintain
 			match_list_count_set: match_list_count = 0
 		end
 
-	increase_match_list_count is
+	increase_match_list_count
 			-- Increase count of `match_list' by one.
 		do
 			match_list_count := match_list_count + 1
 		end
 
-	set_match_list_count (a_new_count: INTEGER) is
+	set_match_list_count (a_new_count: INTEGER)
 			-- Set `match_list_count' to `a_new_count'.
 		require
 			a_new_count_valid: a_new_count >= 0
@@ -89,7 +90,7 @@ feature -- Match list maintain
 			match_list_count_set: match_list_count = a_new_count
 		end
 
-	backup_match_list_count is
+	backup_match_list_count
 			-- Backup value of `match_list_count' into `match_list_count_backup'.
 		do
 			 match_list_count_backup := match_list_count
@@ -97,7 +98,7 @@ feature -- Match list maintain
 			match_list_count_backup_set: match_list_count_backup = match_list_count
 		end
 
-	resume_match_list_count is
+	resume_match_list_count
 			-- Resume the value of `match_list_count_backup' and set `match_list_count' with it.
 		do
 			match_list_count := match_list_count_backup
@@ -107,7 +108,7 @@ feature -- Match list maintain
 
 feature -- List operation
 
-	reverse_extend_separator (a_list: EIFFEL_LIST [AST_EIFFEL]; l_as: LEAF_AS) is
+	reverse_extend_separator (a_list: EIFFEL_LIST [AST_EIFFEL]; l_as: LEAF_AS)
 			-- Add `l_as' into `a_list'.separator_list.
 		do
 			if a_list /= Void and l_as /= Void then
@@ -115,7 +116,7 @@ feature -- List operation
 			end
 		end
 
-	reverse_extend_identifier (a_list: IDENTIFIER_LIST l_as: ID_AS) is
+	reverse_extend_identifier (a_list: IDENTIFIER_LIST l_as: ID_AS)
 			-- Add `l_as' into `a_list'.
 		do
 			if a_list /= Void and l_as /= Void then
@@ -123,7 +124,7 @@ feature -- List operation
 			end
 		end
 
-	reverse_extend_identifier_separator (a_list: IDENTIFIER_LIST; l_as: LEAF_AS) is
+	reverse_extend_identifier_separator (a_list: IDENTIFIER_LIST; l_as: LEAF_AS)
 			-- Add `l_as' into `a_list.separator_list'.
 		do
 			if a_list /= Void and l_as /= Void then
@@ -133,7 +134,7 @@ feature -- List operation
 
 feature -- Leaf nodes
 
-	new_character_as (c: CHARACTER_32; l, co, p, n: INTEGER; a_text: STRING): CHAR_AS is
+	new_character_as (c: CHARACTER_32; l, co, p, n: INTEGER; a_text: STRING): CHAR_AS
 			-- New CHARACTER AST node
 		do
 			create Result.initialize (c, l, co, p, n)
@@ -141,15 +142,16 @@ feature -- Leaf nodes
 			Result.set_index (match_list_count)
 		end
 
-	new_typed_char_as (t_as: TYPE_AS; c: CHARACTER_32; l, co, p, n: INTEGER; a_text: STRING): TYPED_CHAR_AS is
+	new_typed_char_as (t_as: TYPE_AS; a_char: CHAR_AS): TYPED_CHAR_AS
 			-- New TYPED_CHAR AST node.
 		do
-			create Result.initialize (t_as, c, l, co, p, n)
-			increase_match_list_count
-			Result.set_index (match_list_count)
+			if t_as /= Void and a_char /= Void then
+				create Result.initialize (t_as, a_char.value, a_char.line, a_char.column, a_char.position, a_char.location_count)
+				Result.set_index (a_char.index)
+			end
 		end
 
-	new_string_as (s: STRING; l, c, p, n: INTEGER; buf: STRING): STRING_AS is
+	new_string_as (s: STRING; l, c, p, n: INTEGER; buf: STRING): STRING_AS
 			-- New STRING AST node
 		do
 			if s /= Void then
@@ -159,17 +161,17 @@ feature -- Leaf nodes
 			end
 		end
 
-	new_verbatim_string_as (s, marker: STRING; is_indentable: BOOLEAN; l, c, p, n: INTEGER; buf: STRING): VERBATIM_STRING_AS is
+	new_verbatim_string_as (s, marker: STRING; is_indentable: BOOLEAN; l, c, p, n, cc: INTEGER; buf: STRING): VERBATIM_STRING_AS
 			-- New VERBATIM_STRING AST node
 		do
 			if s /= Void and marker /= Void then
-				create Result.initialize (s, marker, is_indentable, l, c, p, n)
+				create Result.initialize (s, marker, is_indentable, l, c, p, n, cc)
 				increase_match_list_count
 				Result.set_index (match_list_count)
 			end
 		end
 
-	new_integer_as (t: TYPE_AS; s: BOOLEAN; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS is
+	new_integer_as (t: TYPE_AS; s: BOOLEAN; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -181,7 +183,7 @@ feature -- Leaf nodes
 			end
 		end
 
-	new_integer_hexa_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS is
+	new_integer_hexa_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -193,7 +195,7 @@ feature -- Leaf nodes
 			end
 		end
 
-	new_integer_octal_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS is
+	new_integer_octal_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -205,7 +207,7 @@ feature -- Leaf nodes
 			end
 		end
 
-	new_integer_binary_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS is
+	new_integer_binary_as (t: TYPE_AS; s: CHARACTER; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): INTEGER_AS
 			-- New INTEGER_AS node
 		do
 			if v /= Void then
@@ -217,7 +219,7 @@ feature -- Leaf nodes
 			end
 		end
 
-	new_real_as (t: TYPE_AS; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): REAL_AS is
+	new_real_as (t: TYPE_AS; v: STRING; buf: STRING; s_as: SYMBOL_AS; l, c, p, n: INTEGER): REAL_AS
 			-- New REAL AST node
 		do
 			if v /= Void then
@@ -229,14 +231,14 @@ feature -- Leaf nodes
 			end
 		end
 
-	new_filled_id_as (a_scn: EIFFEL_SCANNER_SKELETON): ID_AS is
+	new_filled_id_as (a_scn: EIFFEL_SCANNER_SKELETON): ID_AS
 		do
 			Result := Precursor (a_scn)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_filled_id_as_with_existing_stub (a_scn: EIFFEL_SCANNER_SKELETON; a_index: INTEGER): ID_AS is
+	new_filled_id_as_with_existing_stub (a_scn: EIFFEL_SCANNER_SKELETON; a_index: INTEGER): ID_AS
 			-- New empty ID AST node.
 		local
 			l_cnt: INTEGER
@@ -250,7 +252,7 @@ feature -- Leaf nodes
 			Result.set_index (a_index)
 		end
 
-	new_filled_bit_id_as (a_scn: EIFFEL_SCANNER): ID_AS is
+	new_filled_bit_id_as (a_scn: EIFFEL_SCANNER_SKELETON): ID_AS
 			-- New empty ID AST node.
 		do
 			Result := Precursor (a_scn)
@@ -258,56 +260,56 @@ feature -- Leaf nodes
 			Result.set_index (match_list_count)
 		end
 
-	new_void_as (a_scn: EIFFEL_SCANNER): VOID_AS is
+	new_void_as (a_scn: EIFFEL_SCANNER_SKELETON): VOID_AS
 		do
 			create Result.make_with_location (a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_unique_as (a_scn: EIFFEL_SCANNER): UNIQUE_AS is
+	new_unique_as (a_scn: EIFFEL_SCANNER_SKELETON): UNIQUE_AS
 		do
 			create Result.make_with_location (a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_retry_as (a_scn: EIFFEL_SCANNER): RETRY_AS is
+	new_retry_as (a_scn: EIFFEL_SCANNER_SKELETON): RETRY_AS
 		do
 			create Result.make_with_location (a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_result_as (a_scn: EIFFEL_SCANNER): RESULT_AS is
+	new_result_as (a_scn: EIFFEL_SCANNER_SKELETON): RESULT_AS
 		do
 			create Result.make_with_location (a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_boolean_as (b: BOOLEAN; a_scn: EIFFEL_SCANNER): BOOL_AS is
+	new_boolean_as (b: BOOLEAN; a_scn: EIFFEL_SCANNER_SKELETON): BOOL_AS
 		do
 			create Result.initialize (b, a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_current_as (a_scn: EIFFEL_SCANNER): CURRENT_AS is
+	new_current_as (a_scn: EIFFEL_SCANNER_SKELETON): CURRENT_AS
 		do
 			create Result.make_with_location (a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_deferred_as (a_scn: EIFFEL_SCANNER): DEFERRED_AS is
+	new_deferred_as (a_scn: EIFFEL_SCANNER_SKELETON): DEFERRED_AS
 		do
 			create Result.make_with_location (a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 			increase_match_list_count
 			Result.set_index (match_list_count)
 		end
 
-	new_keyword_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_keyword_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node
 		do
 			create Result.make (a_code, a_scn.text, a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
@@ -315,43 +317,70 @@ feature -- Leaf nodes
 			Result.set_index (match_list_count)
 		end
 
-	new_creation_keyword_as (a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_keyword_id_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER_SKELETON): like keyword_id_type
+			-- New KEYWORD AST node
+		local
+			l_id_as: ID_AS
+			l_keyword_as: KEYWORD_AS
+			l_cnt: INTEGER_32
+			l_str: STRING_8
+		do
+				-- Create the ID_AS first.
+			l_cnt := a_scn.text_count
+			l_str := reusable_string_buffer
+			l_str.clear_all
+			a_scn.append_text_to_string (l_str)
+			create l_id_as.initialize (l_str)
+			l_id_as.set_position (a_scn.line, a_scn.column, a_scn.position, l_cnt)
+
+				-- Create the KEYWORD_AS
+			create l_keyword_as.make (a_code, a_scn.text, a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
+
+				-- Since the keyword is sharing the same piece of text as the ID_AS, we share the index.
+			increase_match_list_count
+			l_id_as.set_index (match_list_count)
+			l_keyword_as.set_index (match_list_count)
+
+			Result := [l_keyword_as, l_id_as, a_scn.line, a_scn.column, a_scn.filename]
+		end
+
+	new_creation_keyword_as (a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node for keyword "creation'
 		do
 			Result := new_keyword_as ({EIFFEL_TOKENS}.te_creation, a_scn)
 		end
 
-	new_end_keyword_as (a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_end_keyword_as (a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node for keyword "end'
 		do
 			Result := new_keyword_as ({EIFFEL_TOKENS}.te_end, a_scn)
 		end
 
-	new_frozen_keyword_as (a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_frozen_keyword_as (a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node for keyword "frozen'
 		do
 			Result := new_keyword_as ({EIFFEL_TOKENS}.te_frozen, a_scn)
 		end
 
-	new_infix_keyword_as (a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_infix_keyword_as (a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node for keyword "infix'
 		do
 			Result := new_keyword_as ({EIFFEL_TOKENS}.te_infix, a_scn)
 		end
 
-	new_precursor_keyword_as (a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_precursor_keyword_as (a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node for keyword "precursor'
 		do
 			Result := new_keyword_as ({EIFFEL_TOKENS}.te_precursor, a_scn)
 		end
 
-	new_prefix_keyword_as (a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_prefix_keyword_as (a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- New KEYWORD AST node for keyword "prefix'
 		do
 			Result := new_keyword_as ({EIFFEL_TOKENS}.te_prefix, a_scn)
 		end
 
-	new_once_string_keyword_as (a_text: STRING; l, c, p, n: INTEGER): KEYWORD_AS is
+	new_once_string_keyword_as (a_text: STRING; l, c, p, n: INTEGER): KEYWORD_AS
 			-- New KEYWORD AST node
 		do
 			create Result.make ({EIFFEL_TOKENS}.te_once_string, a_text, l, c, p, n)
@@ -359,7 +388,7 @@ feature -- Leaf nodes
 			Result.set_index (match_list_count)
 		end
 
-	new_symbol_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER): SYMBOL_AS is
+	new_symbol_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER_SKELETON): SYMBOL_AS
 			-- New KEYWORD AST node		
 		do
 			create Result.make (a_code, a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
@@ -367,20 +396,20 @@ feature -- Leaf nodes
 			Result.set_index (match_list_count)
 		end
 
-	new_square_symbol_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER): SYMBOL_AS is
+	new_square_symbol_as (a_code: INTEGER; a_scn: EIFFEL_SCANNER_SKELETON): SYMBOL_AS
 			-- New KEYWORD AST node	only for symbol "[" and "]"
 		do
 			Result := new_symbol_as (a_code, a_scn)
 			Result.set_index (match_list_count)
 		end
 
-	create_break_as (a_scn: EIFFEL_SCANNER) is
+	create_break_as (a_scn: EIFFEL_SCANNER_SKELETON)
 			-- NEw BREAK_AS node
 		do
 			increase_match_list_count
 		end
 
-	create_break_as_with_data (a_text: STRING; l, c, p, n: INTEGER) is
+	create_break_as_with_data (a_text: STRING; l, c, p, n: INTEGER)
 			-- New COMMENT_AS node
 		do
 			increase_match_list_count
@@ -388,7 +417,7 @@ feature -- Leaf nodes
 
 feature -- Access
 
-	new_integer_value (a_psr: EIFFEL_PARSER_SKELETON; sign_symbol: CHARACTER; a_type: TYPE_AS; buffer: STRING; s_as: SYMBOL_AS): INTEGER_AS is
+	new_integer_value (a_psr: EIFFEL_SCANNER_SKELETON; sign_symbol: CHARACTER; a_type: TYPE_AS; buffer: STRING; s_as: SYMBOL_AS): INTEGER_AS
 		local
 			token_value: STRING
 		do
@@ -413,7 +442,7 @@ feature -- Access
 			end
 		end
 
-	new_real_value (a_psr: EIFFEL_PARSER_SKELETON; is_signed: BOOLEAN; sign_symbol: CHARACTER; a_type: TYPE_AS; buffer: STRING; s_as: SYMBOL_AS): REAL_AS is
+	new_real_value (a_psr: EIFFEL_SCANNER_SKELETON; is_signed: BOOLEAN; sign_symbol: CHARACTER; a_type: TYPE_AS; buffer: STRING; s_as: SYMBOL_AS): REAL_AS
 		local
 			l_buffer: STRING
 		do
@@ -426,7 +455,7 @@ feature -- Access
 			Result := new_real_as (a_type, buffer, a_psr.text, s_as, a_psr.line, a_psr.column, a_psr.position, a_psr.text_count)
 		end
 
-	new_bin_and_then_as (l, r: EXPR_AS; k_as, s_as: KEYWORD_AS): BIN_AND_THEN_AS is
+	new_bin_and_then_as (l, r: EXPR_AS; k_as, s_as: KEYWORD_AS): BIN_AND_THEN_AS
 			-- New binary and then AST node
 		do
 			if l /= Void and r /= Void then
@@ -434,7 +463,7 @@ feature -- Access
 			end
 		end
 
-	new_bin_or_else_as (l, r: EXPR_AS; k_as, s_as: KEYWORD_AS): BIN_OR_ELSE_AS is
+	new_bin_or_else_as (l, r: EXPR_AS; k_as, s_as: KEYWORD_AS): BIN_OR_ELSE_AS
 			-- New binary or else AST node
 		do
 			if l /= Void and r /= Void then
@@ -442,14 +471,14 @@ feature -- Access
 			end
 		end
 
-	new_tagged_as (t: ID_AS; e: EXPR_AS; s_as: SYMBOL_AS): TAGGED_AS is
+	new_tagged_as (t: ID_AS; e: EXPR_AS; s_as: SYMBOL_AS): TAGGED_AS
 			-- New TAGGED AST node
 		do
 			create Result.initialize (t, e, s_as)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -462,22 +491,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

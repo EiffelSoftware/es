@@ -1,4 +1,4 @@
-indexing
+note
 
 	status: "See notice at end of class.";
 	Date: "$Date$"
@@ -28,6 +28,8 @@ inherit
 			is_boolean as string_is_boolean
 		undefine
 			clear_all
+		redefine
+			string_make
 		end
 
 	DB_FORMAT
@@ -50,19 +52,27 @@ create {SQL_SCAN}
 
 feature -- Initialization
 
-	make (i: INTEGER) is
+	make (i: INTEGER)
 			-- Create format and allocate string.
 		do
 			string_make (i)
+		end
+
+	string_make (i: INTEGER)
+			-- <Precursor>
+		do
+			Precursor {STRING} (i)
 			format_make
 		end
 
 feature -- Basic operations
 
-	parse (s: STRING): STRING is
+	parse (s: STRING): STRING
 			-- Parse string `s' by replacing each pattern ":<name>"
 			-- with the Eiffel object description whose name
 			-- also matches "<name>".
+		require
+			s_not_void: s /= Void
 		do
 			wipe_out
 			append (s)
@@ -74,65 +84,82 @@ feature -- Basic operations
 			Result := Current
 		end
 
-	get_value (obj: ANY; str: STRING) is
+	get_value (obj: detachable ANY; str: STRING)
 			-- Retrieve string value of `obj' and put in `str'.
 		require
 			str_exists: str /= Void
 		local
-			r_int: INTEGER_REF
-			r_real: REAL_REF
-			r_character: CHARACTER_REF
-			r_string: STRING
-			r_date: DATE_TIME
-			r_bool: BOOLEAN_REF
-			r_double: DOUBLE_REF
+			l_obj: detachable ANY
 		do
 			if is_void (obj) then
 				str.append (null_string)
 			else
 				if is_integer (obj) then
-					r_int ?= obj
-					if r_int.item = numeric_null_value.truncated_to_integer then
-						str.append (null_string)
+					if attached {INTEGER_REF} obj as r_int then
+						if r_int.item = numeric_null_value.truncated_to_integer then
+							str.append (null_string)
+						else
+							str.append (r_int.out)
+						end
 					else
-						str.append (r_int.out)
+						check False end -- implied by `is_integer'
 					end
 				elseif is_double (obj) then
-					r_double ?= obj
-					if r_double.item = numeric_null_value then
-						str.append (null_string)
+					if attached {DOUBLE_REF} obj as r_double then
+						if r_double.item = numeric_null_value then
+							str.append (null_string)
+						else
+							str.append (r_double.out)
+						end
 					else
-						str.append (r_double.out)
+						check False end -- implied by `is_double'
 					end
 				elseif is_real (obj) then
-					r_real ?= obj
-					if r_real.item = numeric_null_value.truncated_to_real then
-						str.append (null_string)
+					if attached {REAL_REF} obj as r_real then
+						if r_real.item = numeric_null_value.truncated_to_real then
+							str.append (null_string)
+						else
+							str.append (r_real.out)
+						end
 					else
-						str.append (r_real.out)
+						check False end -- implied by `is_real'
 					end
 				elseif is_character (obj) then
-					r_character ?= obj
-					str.extend ('%'')
-					str.extend (r_character.item)
-					str.extend ('%'')
+					if attached {CHARACTER_REF} obj as r_character then
+						str.extend ('%'')
+						str.extend (r_character.item)
+						str.extend ('%'')
+					else
+						check False end -- implied by `is_character'
+					end
 				elseif is_string (obj) then
-					r_string ?= obj
-					buffer.copy (r_string)
-					str.append (string_format (buffer))
+					if attached {STRING} obj as r_string then
+						buffer.copy (r_string)
+						str.append (string_format (buffer))
+					else
+						check False end -- implied by `is_string'
+					end
 				elseif is_boolean (obj) then
-					r_bool ?= obj
-					str.append (boolean_format (r_bool.item))
+					if attached {BOOLEAN_REF} obj as r_bool then
+						str.append (boolean_format (r_bool.item))
+					else
+						check False end -- implied by `is_boolean'
+					end
 				elseif is_date (obj) then
-					r_date ?= obj
-					str.append (date_format (r_date))
+					if attached {DATE_TIME} obj as r_date then
+						str.append (date_format (r_date))
+					else
+						check False end -- implied by `is_date'
+					end
 				else
-					get_complex_value (obj, str)
+					l_obj := obj
+					check l_obj /= Void end -- implied by previous `if is_void (obj)'
+					get_complex_value (l_obj, str)
 				end
 			end
 		end
 
-	get_complex_value (obj: ANY; str: STRING) is
+	get_complex_value (obj: ANY; str: STRING)
 			-- Retrieve string value of reference object `obj' and put in `str'.
 		require
 			object_exists: obj /= Void
@@ -144,12 +171,10 @@ feature -- Basic operations
 			r_bool: BOOLEAN
 			r_double: DOUBLE
 			r_character: CHARACTER
-			i_obj_field: ANY
+			i_obj_field: detachable ANY
 			ind, l_identity_index: INTEGER
-			table: DB_TABLE
 		do
-			table ?= obj
-			if table /= Void and then not db_spec.insert_auto_identity_column then
+			if attached {DB_TABLE} obj as table and then not db_spec.insert_auto_identity_column then
 					-- There was an explicit requirement from the database to exclude
 					-- the identity column from the statement.
 				l_identity_index := table.table_description.identity_column
@@ -196,10 +221,10 @@ feature -- Basic operations
 			end
 		end
 
-	replace is
+	replace
 			-- Replace all occurrences of :key by `ht.item (":key")'
 		local
-			l_new_string: like Current
+			l_new_string: detachable like Current
 			c: CHARACTER
 			old_index: INTEGER
 		do
@@ -254,10 +279,10 @@ feature {NONE} -- Status report
 	index: INTEGER
 			-- Internal counter
 
-	Null_string: STRING is "NULL"
+	Null_string: STRING = "NULL"
 			-- SQL null value constant
 
-	buffer: STRING is
+	buffer: STRING
 			-- Constant temporary string
 		once
 			create Result.make (200)
@@ -265,7 +290,7 @@ feature {NONE} -- Status report
 			Result /= Void
 		end
 
-	next_index (k: INTEGER): INTEGER is
+	next_index (k: INTEGER): INTEGER
 			-- Get next index position in formalized way through index `k'.
 			-- (May be redefined in descendant class).
 		do
@@ -274,7 +299,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Status setting
 
-	start (obj: ANY) is
+	start (obj: ANY)
 			-- Set `max_index' with number of field of Current.
 			-- (May be redefined in descendant class).
 		do
@@ -287,7 +312,7 @@ feature {NONE} -- Status setting
 --			
 		end
 
-	search_special is
+	search_special
 			-- Move cursor to next occurrence of ':', '%'', or '"'
 		local
 			c: CHARACTER
@@ -317,7 +342,7 @@ feature {NONE} -- Status setting
 			else item (index) = '"'
 		end
 
-	go_after_identifier is
+	go_after_identifier
 			-- Move cursor to next character not allowed in identifier
 		local
 			found: BOOLEAN
@@ -348,15 +373,18 @@ feature {NONE} -- Status setting
 			index := i
 		end
 
-	replacement_string (key, destination: STRING) is
+	replacement_string (key, destination: STRING)
 			-- Replace object associated with `key' in `destination'.
 		require
 			key_exists: key /= Void
 			destination_exists: destination /= Void
 		local
-			object: ANY
+			object: detachable ANY
+			l_ht: like ht
 		do
-			object := ht.item (key)
+			l_ht := ht
+			check l_ht /= Void end -- FIXME: implied by ... bug?
+			object := l_ht.item (key)
 			if object /= Void then
 				get_value (object, destination)
 			else
@@ -364,7 +392,7 @@ feature {NONE} -- Status setting
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

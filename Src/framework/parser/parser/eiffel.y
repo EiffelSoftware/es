@@ -1,6 +1,6 @@
 
 %{
-indexing
+note
 
 	description: "Eiffel parsers"
 	legal: "See notice at end of class."
@@ -41,11 +41,10 @@ create
 %token <ID_AS> TE_FREE TE_ID TE_TUPLE TE_A_BIT
 %token TE_INTEGER
 %token TE_REAL
-%token <CHAR_AS>TE_CHAR
+%token <CHAR_AS>		TE_CHAR
 
 %token <SYMBOL_AS> 		TE_LSQURE TE_RSQURE
 %token <SYMBOL_AS>		TE_ACCEPT TE_ADDRESS TE_ASSIGNMENT
-%token <SYMBOL_AS> 		TE_CURLYTILDE
 %token <SYMBOL_AS>		TE_LARRAY TE_RARRAY TE_RPARAN TE_LPARAN
 %token <SYMBOL_AS>		TE_LCURLY TE_RCURLY
 %token <SYMBOL_AS> 		TE_BANG TE_SEMICOLON
@@ -73,8 +72,8 @@ create
 %token <KEYWORD_AS> TE_PREFIX
 
 %token <KEYWORD_AS> TE_IS
-%token <KEYWORD_AS> TE_AGENT TE_ALIAS TE_ALL TE_AND TE_AS TE_ASSIGN
-%token <KEYWORD_AS> TE_ATTRIBUTE TE_BIT TE_CHECK TE_CLASS TE_CONVERT
+%token <KEYWORD_AS> TE_AGENT TE_ALIAS TE_ALL TE_AND TE_AS
+%token <KEYWORD_AS> TE_BIT TE_CHECK TE_CLASS TE_CONVERT
 %token <KEYWORD_AS> TE_CREATE TE_DEBUG TE_DO TE_ELSE TE_ELSEIF
 %token <KEYWORD_AS> TE_ENSURE TE_EXPANDED TE_EXPORT TE_EXTERNAL TE_FEATURE
 %token <KEYWORD_AS> TE_FROM TE_IF TE_IMPLIES TE_INDEXING TE_INHERIT
@@ -84,13 +83,15 @@ create
 %token <KEYWORD_AS> TE_REQUIRE TE_RESCUE TE_SELECT TE_SEPARATE TE_STRIP
 %token <KEYWORD_AS> TE_THEN TE_UNDEFINE	TE_UNTIL TE_VARIANT TE_WHEN	
 %token <KEYWORD_AS> TE_XOR
+-- Special type for keywords that are either keyword or identifier
+%token <TUPLE [KEYWORD_AS, ID_AS, INTEGER, INTEGER, STRING] as keyword_id> TE_ASSIGN TE_ATTRIBUTE TE_ATTACHED TE_DETACHABLE
 
-%token TE_STRING TE_EMPTY_STRING TE_VERBATIM_STRING	TE_EMPTY_VERBATIM_STRING
-%token TE_STR_LT TE_STR_LE TE_STR_GT TE_STR_GE TE_STR_MINUS
-%token TE_STR_PLUS TE_STR_STAR TE_STR_SLASH TE_STR_MOD
-%token TE_STR_DIV TE_STR_POWER TE_STR_AND TE_STR_AND_THEN
-%token TE_STR_IMPLIES TE_STR_OR TE_STR_OR_ELSE TE_STR_XOR
-%token TE_STR_NOT TE_STR_FREE TE_STR_BRACKET
+%token <STRING_AS> TE_STRING TE_EMPTY_STRING TE_VERBATIM_STRING	TE_EMPTY_VERBATIM_STRING
+%token <STRING_AS> TE_STR_LT TE_STR_LE TE_STR_GT TE_STR_GE TE_STR_MINUS
+%token <STRING_AS> TE_STR_PLUS TE_STR_STAR TE_STR_SLASH TE_STR_MOD
+%token <STRING_AS> TE_STR_DIV TE_STR_POWER TE_STR_AND TE_STR_AND_THEN
+%token <STRING_AS> TE_STR_IMPLIES TE_STR_OR TE_STR_OR_ELSE TE_STR_XOR
+%token <STRING_AS> TE_STR_NOT TE_STR_FREE TE_STR_BRACKET
 
 %type <SYMBOL_AS>ASemi
 %type <KEYWORD_AS> Alias_mark Is_keyword
@@ -157,12 +158,12 @@ create
 %type <REQUIRE_AS>			Precondition
 %type <REVERSE_AS>			Reverse_assignment
 %type <ROUT_BODY_AS>		Routine_body
-%type <ROUTINE_AS>			Routine Optional_attribute_or_routine
+%type <ROUTINE_AS>			Routine
 %type <ROUTINE_CREATION_AS>	Agent_call
 %type <STRING_AS>			Manifest_string Non_empty_string Default_manifest_string Typed_manifest_string Infix_operator Prefix_operator Alias_name
 %type <TAGGED_AS>			Assertion_clause
 %type <TUPLE_AS>			Manifest_tuple
-%type <TYPE_AS>				Type Attached_type Non_class_type Typed Class_or_tuple_type Attached_class_type Attached_class_or_tuple_type Tuple_type Type_no_id Constraint_type
+%type <TYPE_AS>				Type Attached_type Non_class_type Typed Class_or_tuple_type Attached_class_type Attached_class_or_tuple_type Marked_class_or_tuple_type Tuple_type Type_no_id Constraint_type
 %type <PAIR [SYMBOL_AS, TYPE_AS]> Type_mark
 %type <CLASS_TYPE_AS>		Parent_class_type
 %type <TYPE_DEC_AS>			Entity_declaration_group
@@ -207,7 +208,7 @@ create
 %type <CONSTRAINT_LIST_AS> Multiple_constraint_list
 %type <CONSTRAINING_TYPE_AS> Single_constraint
 
-%expect 109
+%expect 269
 
 %%
 
@@ -414,9 +415,9 @@ Note_list: Note_entry
 					$$.reverse_extend ($1)
 				end
 			}
-	|	Note_entry Increment_counter Note_list
+	|	Note_entry ASemi Increment_counter Note_list
 			{
-				$$ := $3
+				$$ := $4
 				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
 				end
@@ -446,7 +447,7 @@ Index_clause_impl: Identifier_as_lower TE_COLON Index_terms ASemi
 			}
 	;
 
-Note_entry_impl: Identifier_as_lower TE_COLON Note_values ASemi
+Note_entry_impl: Identifier_as_lower TE_COLON Note_values
 			{
 				$$ := ast_factory.new_index_as ($1, $3, $2)
 			}
@@ -777,7 +778,6 @@ New_feature: Extended_feature_name
 			{
 				$$ := $2
 				if $$ /= Void then
-					$$.set_is_frozen (True)
 					$$.set_frozen_keyword ($1)
 				end
 			}
@@ -805,12 +805,26 @@ Feature_name: Identifier_as_lower
 	;
 
 Infix: TE_INFIX Infix_operator
-			{ $$ := ast_factory.new_infix_as ($2, $1) }
+			{
+				$$ := ast_factory.new_infix_as ($2, $1)
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the alias form of the infix routine."))
+				end
+			}
 	;
 
 
 Prefix: TE_PREFIX Prefix_operator
-			{ $$ := ast_factory.new_prefix_as ($2, $1) }
+			{
+				$$ := ast_factory.new_prefix_as ($2, $1)
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the alias form of the prefix routine."))
+				end
+			}
 	;
 
 Alias: TE_ALIAS Alias_name Alias_mark
@@ -822,13 +836,9 @@ Alias: TE_ALIAS Alias_name Alias_mark
 Alias_name: Infix_operator
 			{ $$ := $1 }
 	|	TE_STR_NOT
-			{
-				$$ := ast_factory.new_string_as ("not", line, column, position, 5, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_BRACKET
-			{
-				$$ := ast_factory.new_string_as ("[]", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	;
 
 Alias_mark: -- Empty
@@ -929,7 +939,7 @@ Assigner_mark_opt: -- Empty
 			}
 	|	TE_ASSIGN Identifier_as_lower
 			{
-				$$ := ast_factory.new_assigner_mark_as ($1, $2)
+				$$ := ast_factory.new_assigner_mark_as (extract_keyword ($1), $2)
 			}
 	;
 
@@ -1392,7 +1402,7 @@ Internal: TE_DO Compound
 	|	TE_ONCE Compound
 			{ $$ := ast_factory.new_once_as ($2, $1) }
 	|	TE_ATTRIBUTE Compound
-			{ $$ := ast_factory.new_attribute_as ($2, $1) }
+			{ $$ := ast_factory.new_attribute_as ($2, extract_keyword ($1)) }
 	;
 
 Local_declarations: -- Empty
@@ -1585,6 +1595,8 @@ Type_no_id:
 			{ $$ := $1 }
 	|	Non_class_type
 			{ $$ := $1 }
+	| Marked_class_or_tuple_type
+			{ $$ := $1 }
 	;
 	
 Non_class_type: TE_EXPANDED Attached_class_type
@@ -1612,11 +1624,30 @@ Non_class_type: TE_EXPANDED Attached_class_type
 			{ $$ := ast_factory.new_bits_symbol_as ($2, $1) }
 	|	TE_LIKE Identifier_as_lower
 			{ $$ := ast_factory.new_like_id_as ($2, $1) }
+	|	TE_ATTACHED TE_LIKE Identifier_as_lower
+			{
+				$$ := ast_factory.new_like_id_as ($3, $2)
+				if $$ /= Void then
+					$$.set_attachment_mark (extract_keyword ($1), True, False)
+				end
+			}
 	|	TE_BANG TE_LIKE Identifier_as_lower
 			{
 				$$ := ast_factory.new_like_id_as ($3, $2)
 				if $$ /= Void then
 					$$.set_attachment_mark ($1, True, False)
+				end
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `attached' keyword instead of !."))
+				end
+			}
+	|	TE_DETACHABLE TE_LIKE Identifier_as_lower
+			{
+				$$ := ast_factory.new_like_id_as ($3, $2)
+				if $$ /= Void then
+					$$.set_attachment_mark (extract_keyword ($1), False, True)
 				end
 			}
 	|	TE_QUESTION TE_LIKE Identifier_as_lower
@@ -1625,14 +1656,38 @@ Non_class_type: TE_EXPANDED Attached_class_type
 				if $$ /= Void then
 					$$.set_attachment_mark ($1, False, True)
 				end
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
 			}
 	|	TE_LIKE TE_CURRENT
 			{ $$ := ast_factory.new_like_current_as ($2, $1) }
+	|	TE_ATTACHED TE_LIKE TE_CURRENT
+			{
+				$$ := ast_factory.new_like_current_as ($3, $2)
+				if $$ /= Void then
+					$$.set_attachment_mark (extract_keyword ($1), True, False)
+				end
+			}
 	|	TE_BANG TE_LIKE TE_CURRENT
 			{
 				$$ := ast_factory.new_like_current_as ($3, $2)
 				if $$ /= Void then
 					$$.set_attachment_mark ($1, True, False)
+				end
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `attached' keyword instead of !."))
+				end
+	}
+	|	TE_DETACHABLE TE_LIKE TE_CURRENT
+			{
+				$$ := ast_factory.new_like_current_as ($3, $2)
+				if $$ /= Void then
+					$$.set_attachment_mark (extract_keyword ($1), False, True)
 				end
 			}
 	|	TE_QUESTION TE_LIKE TE_CURRENT
@@ -1641,26 +1696,60 @@ Non_class_type: TE_EXPANDED Attached_class_type
 				if $$ /= Void then
 					$$.set_attachment_mark ($1, False, True)
 				end
-			}
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
+	}
 	;
 
 Class_or_tuple_type:
 	Attached_class_or_tuple_type
 			{ $$ := $1 }
+	| Marked_class_or_tuple_type
+			{ $$ := $1 }
+	;
+
+Marked_class_or_tuple_type:
+	TE_DETACHABLE Attached_class_or_tuple_type
+			{
+				$$ := $2
+				if $$ /= Void then
+					$$.set_attachment_mark (extract_keyword ($1), False, True)
+				end
+		}
+	| TE_ATTACHED Attached_class_or_tuple_type
+			{
+				$$ := $2
+				if $$ /= Void then
+					$$.set_attachment_mark (extract_keyword ($1), True, False)
+				end
+		}
 	| TE_BANG Attached_class_or_tuple_type
 			{
 				$$ := $2
 				if $$ /= Void then
 					$$.set_attachment_mark ($1, True, False)
 				end
-			}
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `attached' keyword instead of !."))
+				end
+		}
 	| TE_QUESTION Attached_class_or_tuple_type
 			{
 				$$ := $2
 				if $$ /= Void then
 					$$.set_attachment_mark ($1, False, True)
 				end
-			}
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
+		}
 	;
 
 Attached_class_type: Class_identifier Generics_opt
@@ -1869,7 +1958,7 @@ Formal_generic_list: Formal_generic
 
 Formal_parameter: TE_REFERENCE Class_identifier
 			{
-				if $2 /= Void and then none_class_name_id = $2.name_id then
+				if $2 /= Void and then {PREDEFINED_NAMES}.none_class_name_id = $2.name_id then
 						-- Trigger an error when constraint is NONE.
 						-- Needs to be done manually since current test for
 						-- checking that `$2' is not a class name
@@ -1883,7 +1972,7 @@ Formal_parameter: TE_REFERENCE Class_identifier
 			}
 	| TE_EXPANDED Class_identifier
 			{
-				if $2 /= Void and then none_class_name_id = $2.name_id then
+				if $2 /= Void and then {PREDEFINED_NAMES}.none_class_name_id = $2.name_id then
 						-- Trigger an error when constraint is NONE.
 						-- Needs to be done manually since current test for
 						-- checking that `$2' is not a class name
@@ -1898,7 +1987,7 @@ Formal_parameter: TE_REFERENCE Class_identifier
 
 	|	Class_identifier
 			{
-				if $1 /= Void and then none_class_name_id = $1.name_id then
+				if $1 /= Void and then {PREDEFINED_NAMES}.none_class_name_id = $1.name_id then
 						-- Trigger an error when constraint is NONE.
 						-- Needs to be done manually since current test for
 						-- checking that `$1' is not a class name
@@ -2361,7 +2450,7 @@ Creation_clause:
 	;
 
 Agent_call: 
-		TE_AGENT Optional_formal_arguments Type_mark {add_feature_frame} Optional_attribute_or_routine {remove_feature_frame} Delayed_actuals
+		TE_AGENT Optional_formal_arguments Type_mark {add_feature_frame} Routine {remove_feature_frame} Delayed_actuals
 		{
 			if $3 /= Void then
 				last_type := $3.second
@@ -2406,13 +2495,6 @@ Type_mark:
 	|	TE_COLON Type
 		{
 			create $$.make ($1, $2)
-		}
-	;
-
-Optional_attribute_or_routine:
-		Routine
-		{
-			$$ := $1
 		}
 	;
 
@@ -2567,8 +2649,6 @@ Expression:
 			{ $$ := $1; has_type := True }
 	|	Factor
 			{ $$ := $1 }
-	|	Typed_expression
-			{ $$ := $1; has_type := True }
 	|	Expression TE_TILDE Expression
 			{ $$ := ast_factory.new_bin_tilde_as ($1, $3, $2); has_type := True }
 	|	Expression TE_NOT_TILDE Expression
@@ -2579,14 +2659,53 @@ Expression:
 			{ $$ := ast_factory.new_bin_ne_as ($1, $3, $2); has_type := True }
 	|	Qualified_binary_expression
 			{ $$ := $1; has_type := True }
-	|	TE_LCURLY TE_ID TE_COLON Type TE_RCURLY Expression %prec TE_NOT
+		-- The following rules adds many shift reduce/conflicts (309 vs 151 without them).
+	|	TE_ATTACHED Expression %prec TE_NOT
 			{
-				$$ := ast_factory.new_object_test_as ($1, $2, $4, $6);
+				$$ := ast_factory.new_object_test_as (extract_keyword ($1), Void, $2, Void, Void)
+				has_type := True
+			}
+	|	TE_ATTACHED Expression TE_AS Identifier_as_lower
+			{
+				$$ := ast_factory.new_object_test_as (extract_keyword ($1), Void, $2, $3, $4)
+				has_type := True
+			}
+	|	TE_ATTACHED TE_LCURLY Type TE_RCURLY Expression %prec TE_NOT
+			{
+				if $3 /= Void then
+					$3.set_lcurly_symbol ($2)
+					$3.set_rcurly_symbol ($4)
+				end
+				$$ := ast_factory.new_object_test_as (extract_keyword ($1), $3, $5, Void, Void)
+				has_type := True
+			}
+	|	TE_ATTACHED TE_LCURLY Type TE_RCURLY Expression TE_AS Identifier_as_lower
+			{
+				if $3 /= Void then
+					$3.set_lcurly_symbol ($2)
+					$3.set_rcurly_symbol ($4)
+				end
+				$$ := ast_factory.new_object_test_as (extract_keyword ($1), $3, $5, $6, $7)
+				has_type := True
+				if object_test_locals = Void then
+					create object_test_locals.make (1)
+				end
+				object_test_locals.extend ([$7, $3])
+			}
+	|	TE_LCURLY Identifier_as_lower TE_COLON Type TE_RCURLY Expression %prec TE_NOT
+			{
+				$$ := ast_factory.new_old_syntax_object_test_as ($1, $2, $4, $6)
 				has_type := True
 				if object_test_locals = Void then
 					create object_test_locals.make (1)
 				end
 				object_test_locals.extend ([$2, $4])
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1),
+							filename, once "Use the new syntax for object test `attached {T} exp as x'."))
+
+				end
 			}
 	;
 
@@ -2796,6 +2915,8 @@ Feature_access: Feature_name_for_call Parameters
 Bracket_target:
 		Expression_constant
 			{ $$ := $1; has_type := True }
+	|	Typed_expression
+			{ $$ := $1; has_type := True }
 	|	Manifest_tuple
 			{ $$ := $1; has_type := True }
 	|	TE_CURRENT
@@ -2855,14 +2976,22 @@ Class_identifier: TE_ID
 	|	TE_ASSIGN
 			{
 					-- Keyword used as identifier
-				process_id_as_with_existing_stub ($1, last_keyword_as_id_index, False)
-				$$ := last_id_as_value
+				$$ := extract_id ($1)
 			}
 	|	TE_ATTRIBUTE
 			{
 					-- Keyword used as identifier
-				process_id_as_with_existing_stub ($1, last_keyword_as_id_index, False)
-				$$ := last_id_as_value
+				$$ := extract_id ($1)
+			}
+	|	TE_ATTACHED
+			{
+					-- Keyword used as identifier
+				$$ := extract_id ($1)
+			}
+	|	TE_DETACHABLE
+			{
+					-- Keyword used as identifier
+				$$ := extract_id ($1)
 			}
 	;
 
@@ -2892,8 +3021,17 @@ Identifier_as_lower: TE_ID
 	|	TE_ASSIGN
 			{
 					-- Keyword used as identifier
-				process_id_as_with_existing_stub ($1, last_keyword_as_id_index, True)
-				$$ := last_id_as_value
+				$$ := extract_id ($1)
+			}
+	|	TE_ATTACHED
+			{
+					-- Keyword used as identifier
+				$$ := extract_id ($1)
+			}
+	|	TE_DETACHABLE
+			{
+					-- Keyword used as identifier
+				$$ := extract_id ($1)
 			}
 	;
 
@@ -2947,19 +3085,9 @@ Boolean_constant: TE_FALSE
 	;
 
 Character_constant: TE_CHAR
-			{
-				check is_character: not token_buffer.is_empty end
-				
-				$$ := ast_factory.new_character_value (Current, Void, token_buffer, token_buffer2)
-
-			}
+			{ $$ := $1 }
 	|	Typed TE_CHAR
-			{
-				check is_character: not token_buffer.is_empty end
-				fixme (once "We should handle `Type' instead of ignoring it.")
-
-				$$ := ast_factory.new_character_value (Current, $1, token_buffer, token_buffer2)
-			}
+			{ $$ := ast_factory.new_typed_char_as ($1, $2) }
 	;
 
 --###################################################################
@@ -3080,13 +3208,9 @@ Manifest_string: Default_manifest_string
 Default_manifest_string: Non_empty_string
 			{ $$ := $1 }
 	|	TE_EMPTY_STRING
-			{
-				$$ := ast_factory.new_string_as ("", line, column, string_position, position + text_count - string_position, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_EMPTY_VERBATIM_STRING
-			{
-				$$ := ast_factory.new_verbatim_string_as ("", verbatim_marker.substring (2, verbatim_marker.count), verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
-			}
+			{ $$ := $1 }
 	;
 
 Typed_manifest_string: TE_RCURLY Type TE_RCURLY Default_manifest_string
@@ -3104,186 +3228,152 @@ Typed_manifest_string: TE_RCURLY Type TE_RCURLY Default_manifest_string
 	;
 
 Non_empty_string: TE_STRING
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, string_position, position + text_count - string_position, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_VERBATIM_STRING
-			{
-				$$ := ast_factory.new_verbatim_string_as (cloned_string (token_buffer), verbatim_marker.substring (2, verbatim_marker.count), verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_LT
-			{
-				$$ := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_LE
-			{
-				$$ := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_GT
-			{
-				$$ := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_GE
-			{
-				$$ := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_MINUS
-			{
-				$$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_PLUS
-			{
-				$$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_STAR
-			{
-				$$ := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_SLASH
-			{
-				$$ := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_MOD
-			{
-				$$ := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_DIV
-			{
-				$$ := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_POWER
-			{
-				$$ := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_BRACKET
-			{
-				$$ := ast_factory.new_string_as ("[]", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_AND
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_AND_THEN
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 10, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_IMPLIES
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_OR
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_OR_ELSE
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_XOR
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_NOT
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_FREE
-			{
-				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
-			}
+			{ $$ := $1 }
 	;
 
 Prefix_operator: TE_STR_MINUS
-			{
-				$$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_PLUS
-			{
-				$$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_NOT
 			{
-				$$ := ast_factory.new_string_as ("not", line, column, position, 5, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_FREE
 			{
-				$$ := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	;
 
 Infix_operator: TE_STR_LT
-			{
-				$$ := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_LE
-			{
-				$$ := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_GT
-			{
-				$$ := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_GE
-			{
-				$$ := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_MINUS
-			{
-				$$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_PLUS
-			{
-				$$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_STAR
-			{
-				$$ := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_SLASH
-			{
-				$$ := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_MOD
-			{
-				$$ := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_DIV
-			{
-				$$ := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_POWER
-			{
-				$$ := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2)
-			}
+			{ $$ := $1 }
 	|	TE_STR_AND
 			{
-				$$ := ast_factory.new_string_as ("and", line, column, position, 5, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_AND_THEN
 			{
-				$$ := ast_factory.new_string_as ("and then", line, column, position, 10, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_IMPLIES
 			{
-				$$ := ast_factory.new_string_as ("implies", line, column, position, 9, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_OR
 			{
-				$$ := ast_factory.new_string_as ("or", line, column, position, 4, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_OR_ELSE
 			{
-				$$ := ast_factory.new_string_as ("or else", line, column, position, 9, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_XOR
 			{
-				$$ := ast_factory.new_string_as ("xor", line, column, position, 5, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
 	|	TE_STR_FREE
 			{
-				$$ := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
+					-- Alias names should always be taken in their lower case version
+				if $1 /= Void then
+					$1.value.to_lower
+				end
+				$$ := $1
 			}
-				;
+	;
 
 Manifest_array: TE_LARRAY TE_RARRAY
 			{
@@ -3323,7 +3413,7 @@ Remove_counter: { remove_counter }
 
 %%
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

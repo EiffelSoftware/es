@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Common routine for RT_EXTENSION classes"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -18,11 +18,13 @@ feature -- Trace
 
 	dtrace (m: STRING)
 			-- note: might be be removed with 6.2	
+		require
+			m_attached: m /= Void
 		do
 			io.error.put_string (m)
 		end
 
-indexing
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

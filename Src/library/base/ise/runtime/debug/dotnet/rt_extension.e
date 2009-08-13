@@ -1,4 +1,4 @@
-indexing
+note
 	description : "Eiffel class instanciated and used from the Eiffel runtime."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -48,31 +48,40 @@ feature -- Notification
 			retry
 		end
 
-	notify_argument (a_id: INTEGER): TUPLE
+	notify_argument (a_id: INTEGER): detachable TUPLE
 			-- Empty argument container for operation `a_id'.
 		local
 			retried: BOOLEAN
 		do
 			if not retried then
-				inspect a_id
-				when Op_enter_feature, Op_leave_feature, Op_rescue_feature, 
-					Op_rt_hook,	Op_rt_assign_attrib, Op_rt_assign_local then
-					-- Not yet implemented on dotnet platform
---				when Op_exec_replay_record, Op_exec_replay, Op_exec_replay_query then
---					-- Not yet implemented on dotnet platform
---				when Op_object_storage_save, Op_object_storage_load then
---					create {like object_storage_argument} Result
-				else
-				end
+--				Result := cached_arguments[a_id]
+--				if Result = Void then
+--					inspect a_id
+--					when Op_enter_feature, Op_leave_feature, Op_rescue_feature,
+--						Op_rt_hook,	Op_rt_assign_attrib, Op_rt_assign_local then
+--						 Not yet implemented on dotnet platform
+--					when Op_exec_replay_record, Op_exec_replay, Op_exec_replay_query then
+--						-- Not yet implemented on dotnet platform
+--					when Op_object_storage_save, Op_object_storage_load then
+--						create {like object_storage_argument} Result
+--					else
+--					end
+--				end
 			end
 		rescue
-			debug ("RT_EXTENSION")
-				dtrace ("Error: Rescue -> RT_EXTENSION.notify_argument (" + a_id.out + ")%N")
-			end
+			dtrace ("Error: Rescue -> RT_EXTENSION.notify_argument (" + a_id.out + ")%N")
 			retried := True
 			retry
 		end
 
+--	cached_arguments: ARRAY [TUPLE]
+--			-- Cached argument to use less temporary objects
+--		once
+--				--| Make sure, the id are contigus, and in this range !
+--			create Result.make (Op_enter_feature, Op_rt_assign_local)
+--		ensure
+--			result_attached: Result /= Void
+--		end
 
 feature {NONE} -- Object storage
 
@@ -108,7 +117,7 @@ invariant
 			-- Since this object is shared among threads,
 			-- it is better to avoid any attribute conflict
 
-indexing
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

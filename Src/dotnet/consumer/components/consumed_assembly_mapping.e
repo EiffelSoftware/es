@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Mapping between referenced assemblies and ids"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,36 +13,32 @@ create
 
 feature {NONE} -- Initialization
 
-	make (assembly_ids: LINKED_LIST [CONSUMED_ASSEMBLY]) is
+	make (assembly_ids: LINKED_LIST [CONSUMED_ASSEMBLY])
 			-- Set `assemblies' with `assembly_ids'.
 		require
 			non_void_ids: assembly_ids /= Void
-		local
-			i: INTEGER
 		do
-			create assemblies.make (1, assembly_ids.count)
+			create assemblies.make (assembly_ids.count)
 			assemblies.compare_objects
 			from
 				assembly_ids.start
-				i := 1
 			until
 				assembly_ids.after
 			loop
-				assemblies.put (assembly_ids.item, i)
-				i := i + 1
+				assemblies.extend (assembly_ids.item)
 				assembly_ids.forth
 			end
 		end
 
 feature -- Access
 
-	assemblies: ARRAY [CONSUMED_ASSEMBLY]
+	assemblies: ARRAYED_LIST [CONSUMED_ASSEMBLY]
 			-- Referenced assemblies indexed by id
 
 invariant
 	attached_assemblies: assemblies /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

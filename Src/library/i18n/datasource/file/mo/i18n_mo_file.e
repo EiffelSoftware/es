@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 				Class that represents a .mo file. 
 				The description of this file format can be found here: 
@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_path: STRING_GENERAL) is
+	make (a_path: STRING_GENERAL)
 			-- Initialize file from `a_path'.
 			--
 			-- `a_path': File path of a valid mo file
@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 
 feature
 
-	open is
+	open
 			-- opens file and intialises parser
 		do
 			if file.exists and file.is_plain then
@@ -71,7 +71,7 @@ feature
 			end
 		end
 
-	close is
+	close
 			-- closes file
 		do
 			file.close
@@ -80,67 +80,85 @@ feature
 
 feature -- Access
 
-	valid_index (i:INTEGER): BOOLEAN is
+	valid_index (i:INTEGER): BOOLEAN
 			-- is this index valid?
 		do
-			Result := (i >= 1) and (i <= entry_count)
+			Result := ((i >= 1) and (i <= entry_count))
 		ensure then
-			correct_result: Result = (i >= 1) and (i <= entry_count)
+			correct_result: Result = ((i >= 1) and (i <= entry_count))
 		end
 
-	entry_has_plurals (i:INTEGER): BOOLEAN is
+	entry_has_plurals (i:INTEGER): BOOLEAN
 			-- does `i'-th entry have a plural?
+		local
+			l_list: detachable LIST [STRING_32]
 		do
 			get_original_entries (i)
-			Result := last_original.list.count > 1
+			l_list := last_original.list
+			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
+			Result := l_list.count > 1
 		end
 
-	original_singular_string (i:INTEGER): STRING_32 is
+	original_singular_string (i:INTEGER): STRING_32
 			-- `i'-th original string
+		local
+			l_list: detachable LIST [STRING_32]
 		do
 			get_original_entries (i)
-			Result := last_original.list.i_th (1)
+			l_list := last_original.list
+			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
+			Result := l_list.i_th (1)
 		end
 
-	original_plural_string (i:INTEGER): STRING_32 is
+	original_plural_string (i:INTEGER): STRING_32
 			-- `i'-th original plural
+		local
+			l_list: detachable LIST [STRING_32]
 		do
 			get_original_entries (i)
-			Result := last_original.list.i_th(2)
+			l_list := last_original.list
+			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
+			Result := l_list.i_th(2)
 		end
 
-	translated_singular_string (i: INTEGER): STRING_32 is
+	translated_singular_string (i: INTEGER): STRING_32
 			-- singular translation of `i'-th entry
 		local
 			red: INTEGER
+			l_list: detachable LIST [STRING_32]
 		do
 			get_translated_entries (i)
+			l_list := last_translated.list
+			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
 			red := plural_tools.get_reduction_agent (plural_form).item ([1])
-			Result := last_translated.list.i_th(red+1)
+			Result := l_list.i_th(red+1)
 		end
 
-	translated_plural_strings (i: INTEGER): ARRAY[STRING_32] is
+	translated_plural_strings (i: INTEGER): ARRAY[STRING_32]
 			-- plural translations of `i'-th entry
 		local
 			counter: INTEGER
+			l_list: detachable LIST [STRING_32]
 		do
 			create Result.make (0, 3)
 			get_translated_entries (i)
+			l_list := last_translated.list
+			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
 			from
-				last_translated.list.start
+				l_list.start
 				counter := 0
 			until
-				last_translated.list.after
+				l_list.after
 				or
 				counter > 3
 			loop
-				Result.put (last_translated.list.item, counter)
+				Result.put (l_list.item, counter)
 				counter := counter + 1
-				last_translated.list.forth
+				l_list.forth
 			end
 		end
 
-	locale:STRING_32 is
+	locale: detachable STRING_32
 			-- Best guess at locale of the file. This could also be a language.
 		local
 			file_name: STRING_32
@@ -148,7 +166,6 @@ feature -- Access
 			possible: STRING_32
 			separator_index: INTEGER
 		do
-			Result := Void
 			-- The only inherent locale identifier in a .mo file is the name.
 			-- Any other way to identify it is project dependant, see FILE_MANAGER for more details
 			file_name := file.name.as_string_32
@@ -168,10 +185,10 @@ feature -- Access
 
 feature --Entries
 
-	last_original: TUPLE[i:INTEGER; list:LIST[STRING_32]]
-	last_translated: TUPLE[i:INTEGER; list:LIST[STRING_32]]
+	last_original: TUPLE[i:INTEGER; list: detachable LIST[STRING_32]]
+	last_translated: TUPLE[i:INTEGER; list: detachable LIST[STRING_32]]
 
-	get_original_entries (i_th: INTEGER) is
+	get_original_entries (i_th: INTEGER)
 			-- get `i_th' original entry in the file
 		do
 			if (last_original.i /= i_th) then
@@ -182,7 +199,7 @@ feature --Entries
 			last_original.list /= Void
 		end
 
-	get_translated_entries (i_th: INTEGER) is
+	get_translated_entries (i_th: INTEGER)
 			-- What's the `i-th' translated entry?
 		do
 			if (last_translated.i /= i_th) then
@@ -195,7 +212,7 @@ feature --Entries
 
 feature -- Status
 
-	valid: BOOLEAN is
+	valid: BOOLEAN
 			-- Is the file a valid .mo file? This is a silly check
 		do
 			Result := is_little_endian_file xor is_big_endian_file
@@ -203,7 +220,7 @@ feature -- Status
 
 feature {NONE} -- Implementation
 
-	read_magic_number is
+	read_magic_number
 			-- reads the magic number and sets big/little endianness of machine and file  -> This will, hopefully, make valid true
 		require
 			file_opened: file.is_open_read
@@ -237,24 +254,27 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	read_plural_form is
+	read_plural_form
 			-- Reads the Plural-Form header
 		require
 			correct_file: file.is_open_read and valid
 		local
-			t_list : LIST[STRING_32]
-			t_string : STRING_32
+			t_list : LIST [STRING_32]
+			t_string : detachable STRING_32
 			index : INTEGER
 			char0: WIDE_CHARACTER
 			code0: INTEGER
 			conditional: STRING_32
 			nplurals: INTEGER
+			l_list: detachable LIST [STRING_32]
 		do
 			char0 := '0'
 			code0 := char0.code
 				-- Get the first translated string of the first entry in the .mo file - this is the headers entry (the empty string)
 			get_translated_entries (1)
-			t_list := last_translated.list.i_th(1).split('%N')
+			l_list := last_translated.list
+			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
+			t_list := l_list.i_th(1).split('%N')
 			 	-- Search the headers
 			from
 				t_list.start
@@ -291,7 +311,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation (helpers)
 
-	extract_string (a_offset, a_number: INTEGER): STRING_32 is
+	extract_string (a_offset, a_number: INTEGER): STRING_32
 			-- Which is the a_number-th string into the table at a_offset?
 		require
 			correct_file: file.is_open_read and then valid
@@ -310,7 +330,7 @@ feature {NONE} -- Implementation (helpers)
 			result_exists : Result /= Void
 		end
 
-	read_integer: INTEGER is
+	read_integer: INTEGER
 			-- read an integer from the current
 			-- position in the mo file, taking care of the endianness of the file
 		require
@@ -323,7 +343,7 @@ feature {NONE} -- Implementation (helpers)
 			end
 		end
 
-	read_integer_same_endianness: INTEGER is
+	read_integer_same_endianness: INTEGER
 			-- Reading an integer on the same architecture where the MO file was created
 		require
 			file_open: file.is_open_read
@@ -332,7 +352,7 @@ feature {NONE} -- Implementation (helpers)
 			Result := file.last_integer
 		end
 
-	read_integer_opposite_endianness: INTEGER is
+	read_integer_opposite_endianness: INTEGER
 			-- Reading an integer on the opposite architecture of which where the MO file was created
 		require
 			file_open: file.is_open_read
@@ -352,7 +372,7 @@ feature {NONE} -- Implementation (helpers)
 			end
 		end
 
-	get_integer: ARRAY[NATURAL_8] is
+	get_integer: ARRAY[NATURAL_8]
 			-- read an integer byte to byte
 			-- and put them a tuple in the
 			-- order they where encountered
@@ -400,13 +420,13 @@ invariant
 	last_translated.i > 0 implies last_translated.list /= Void
 	last_original.i > 0 implies last_original.list /= Void
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

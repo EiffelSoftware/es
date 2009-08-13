@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Widget displaying tests of any {TEST_PROCESSOR_I} in a grid, also providing basic test
 		    suite eventing for its implementors.
@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 			a_window_is_interface_usable: a_window.is_interface_usable
 		do
 			if test_suite.is_service_available then
-				test_suite.service.connect_events (Current)
+				test_suite.service.test_suite_connection.connect_events (Current)
 			end
 			processor := a_processor
 			make_widget (a_window)
@@ -113,46 +113,50 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	processor: !TEST_PROCESSOR_I
+	processor: attached TEST_PROCESSOR_I
 			-- Executor being visualized by `Current'
 
-	grid: !ES_TAGABLE_LIST_GRID [!TEST_I]
+	grid: attached ES_TAGABLE_LIST_GRID [attached TEST_I]
 			-- Grid displaying list of tests
 
-	title: !STRING_32
+	title: attached STRING_32
 			-- Caption for tab
 		deferred
 		end
 
-	icon: !EV_PIXEL_BUFFER
+	icon: EV_PIXEL_BUFFER
 			-- Pixel buffer for widget
 		deferred
+		ensure
+			icon_attached: Result /= Void
 		end
 
-	icon_pixmap: !EV_PIXMAP
+	icon_pixmap: EV_PIXMAP
 			-- Icon for widget
 		deferred
+		ensure
+			icon_pixmap_attached: Result /= Void
 		end
 
 feature -- Access: widgets
 
-	close_button: !SD_TOOL_BAR_BUTTON
+	close_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for closing/removing `Current' from widget
 
 feature {NONE} -- Access
 
-	stop_button: !SD_TOOL_BAR_BUTTON
+	stop_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for stopping test execution
 
-	progress_bar: !EV_HORIZONTAL_PROGRESS_BAR
+	progress_bar: attached EV_HORIZONTAL_PROGRESS_BAR
 			-- Bar showing `processor' progress
 
-	progress_widget: !EV_VERTICAL_BOX
+	progress_widget: attached EV_VERTICAL_BOX
 			-- Widget containing `progress_bar'
 
 feature {NONE} -- Events: test suite
 
-	frozen on_processor_launched_frozen (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I)
+	frozen on_processor_launched_frozen (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I)
 			-- <Precursor>
 		do
 			if a_processor = processor then
@@ -162,7 +166,7 @@ feature {NONE} -- Events: test suite
 			end
 		end
 
-	frozen on_processor_finished_frozen (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I)
+	frozen on_processor_finished_frozen (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I)
 			-- <Precursor>
 		do
 			if a_processor = processor then
@@ -171,7 +175,7 @@ feature {NONE} -- Events: test suite
 			end
 		end
 
-	frozen on_processor_stopped_frozen (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I)
+	frozen on_processor_stopped_frozen (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I)
 			-- <Precursor>
 		do
 			if a_processor = processor then
@@ -181,7 +185,7 @@ feature {NONE} -- Events: test suite
 			end
 		end
 
-	frozen on_processor_proceeded_frozen (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I)
+	frozen on_processor_proceeded_frozen (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I)
 			-- <Precursor>
 		do
 			if a_processor = processor then
@@ -190,7 +194,7 @@ feature {NONE} -- Events: test suite
 			end
 		end
 
-	frozen on_processor_error_frozen (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I; a_error: !STRING_8; a_tokens: !TUPLE)
+	frozen on_processor_error_frozen (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I; a_error: attached STRING_8; a_tokens: TUPLE)
 			-- <Precursor>
 		do
 			if a_processor = processor then
@@ -219,10 +223,14 @@ feature {NONE} -- Events: processor
 			   processor.is_running and then
 			   not processor.is_finished
 			then
-				stop_button.enable_sensitive
+				if not stop_button.is_sensitive then
+					stop_button.enable_sensitive
+				end
 				progress_bar.set_proportion (processor.progress)
 			else
-				stop_button.disable_sensitive
+				if stop_button.is_sensitive then
+					stop_button.disable_sensitive
+				end
 			end
 		end
 
@@ -251,32 +259,38 @@ feature {NONE} -- Events: processor
 		do
 		end
 
-	on_processor_error (a_error: !STRING_8; a_tokens: !TUPLE)
+	on_processor_error (a_error: attached STRING_8; a_tokens: TUPLE)
 			-- Called when `processor' reports an error
+		require
+			a_tokens_attached: a_tokens /= Void
 		do
-
 		end
 
 feature {NONE} -- Implementation
 
 	internal_recycle
 			-- <Precursor>
+		local
+			l_test_suite: TEST_SUITE_S
 		do
 			Precursor
 			if test_suite.is_service_available then
-				test_suite.service.disconnect_events (Current)
+				l_test_suite := test_suite.service
+				if l_test_suite.test_suite_connection.is_connected (Current) then
+					l_test_suite.test_suite_connection.disconnect_events (Current)
+				end
 			end
 		end
 
 feature {NONE} -- Factory
 
-	create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		do
 
 		end
 
-	create_right_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_right_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		do
 			create Result.make (1)
@@ -288,7 +302,7 @@ feature {NONE} -- Factory
 			Result.force_last (close_button)
 		end
 
-	create_progress_bar_items: !DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_progress_bar_items: attached DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Create items shown to the right of `progress_bar'
 		do
 			create Result.make (1)
@@ -303,13 +317,13 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	b_close: !STRING = "Close"
+	b_close: STRING = "Close"
 
-	tt_stop: !STRING = "Stop current execution"
-	tt_close: !STRING = "Close tab"
+	tt_stop: STRING = "Stop current execution"
+	tt_close: STRING = "Close tab"
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -333,10 +347,10 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

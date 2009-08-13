@@ -1,4 +1,4 @@
-indexing  
+note
 	description: "JNI external declarations"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,63 +10,63 @@ class
 
 feature {NONE} -- Structure size
 
-	sizeof_jboolean: INTEGER is
+	sizeof_jboolean: INTEGER
 			-- Size of `jboolean' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jboolean)"
-		end	
+		end
 
-	sizeof_jchar: INTEGER is
+	sizeof_jchar: INTEGER
 			-- Size of `jchar' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jchar)"
 		end
-		
-	sizeof_jbyte: INTEGER is
+
+	sizeof_jbyte: INTEGER
 			-- Size of `jbyte' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jbyte)"
 		end
-		
-	sizeof_jshort: INTEGER is
+
+	sizeof_jshort: INTEGER
 			-- Size of `jshort' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jshort)"
 		end
-		
-	sizeof_jint: INTEGER is
+
+	sizeof_jint: INTEGER
 			-- Size of `jint' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jint)"
 		end
-		
-	sizeof_jlong: INTEGER is
+
+	sizeof_jlong: INTEGER
 			-- Size of `jlong' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jlong)"
 		end
-		
-	sizeof_jfloat: INTEGER is
+
+	sizeof_jfloat: INTEGER
 			-- Size of `jfloat' structure.
 		external
 			"C macro use %"jni.h%""
 		alias
 			"sizeof(jfloat)"
 		end
-		
-	sizeof_jdouble: INTEGER is
+
+	sizeof_jdouble: INTEGER
 			-- Size of `jdouble' structure.
 		external
 			"C macro use %"jni.h%""
@@ -74,15 +74,15 @@ feature {NONE} -- Structure size
 			"sizeof(jdouble)"
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects providing interface to launch and communicate with process. Separate threads are used
 		to terminate process after a given timeout.
@@ -11,6 +11,8 @@ frozen class
 	AUT_PROCESS_CONTROLLER
 
 inherit
+	ANY
+
 	THREAD
 		rename
 			sleep as thread_sleep,
@@ -162,7 +164,10 @@ feature -- Basic operations
 			not_launched: not is_launched
 		do
 			is_launched := True
+
 			process.enable_launch_in_new_process_group
+			process.set_hidden (True)
+			process.set_separate_console (False)
 
 				-- Fixme: We should only redirect input and left output and error not redirected.
 				-- But maybe due to a bug in process library, if we do this, the launched process
@@ -173,12 +178,8 @@ feature -- Basic operations
 			process.redirect_error_to_same_as_output
 			process.redirect_output_to_agent (a_output_handler)
 
-			if operating_system.is_windows then
-				process.set_hidden (True)
-				process.set_separate_console (False)
-			end
-
 			process.launch
+			
 			launch_thread
 		ensure
 			launched: is_launched
@@ -235,4 +236,35 @@ feature {NONE} -- Implementation
 invariant
 	timeout_not_negative: timeout >= 0
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

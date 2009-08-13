@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Representation of a class in the cluster tree."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -30,7 +30,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class: CLASS_I; a_name: STRING) is
+	make (a_class: CLASS_I; a_name: STRING)
 			-- Create a tree item representing class `a_class' with `a_name' in its context.
 		require
 			a_class_ok: a_class /= Void and then a_class.is_valid
@@ -39,6 +39,7 @@ feature {NONE} -- Initialization
 			default_create
 			name := a_name
 			set_data (a_class)
+			pointer_button_press_actions.extend (agent register_pressed_item)
 		ensure
 			name_set: name = a_name
 			data_set: data = a_class
@@ -52,7 +53,7 @@ feature -- Status report
 	name: STRING
 			-- Renamed name in the context of this item in the classes tree.
 
-	stone: CLASSI_STONE is
+	stone: CLASSI_STONE
 			-- Class stone representing `Current', can be a classi_stone or a classc_stone.
 		local
 			l_classc: CLASS_C
@@ -67,7 +68,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_data (a_class: CLASS_I) is
+	set_data (a_class: CLASS_I)
 			-- Change the associated class to `a_class'.
 		do
 			set_text (name)
@@ -83,7 +84,7 @@ feature -- Status setting
 			set_configurable_target_menu_handler (agent context_menu_handler)
 		end
 
-	load_overriden_children is
+	load_overriden_children
 			-- Add classes this class overrides or the class that overrides this class as children.
 			-- (needs to be called after the class has been completely set up)
 		local
@@ -149,15 +150,21 @@ feature -- Status setting
 			end
 		end
 
-	add_double_click_action (p: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]]) is
+	add_double_click_action (p: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]])
 			-- Add a double click action `p' on `Current'.
 		do
 			pointer_double_press_actions.extend (p)
 		end
 
+	add_single_click_action (p: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]])
+			-- Add a single click action `p' on `Current'.
+		do
+			pointer_button_press_actions.extend (p)
+		end
+
 feature {NONE} -- Recycle
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle
 		do
 			Precursor {EB_CLASSES_TREE_ITEM}
@@ -166,7 +173,7 @@ feature {NONE} -- Recycle
 
 feature {NONE} -- Implementation
 
-	cluster_contains_class (f: CONF_GROUP): BOOLEAN is
+	cluster_contains_class (f: CONF_GROUP): BOOLEAN
 			-- Does `f' recursively contains `data'?
 		require
 			f_not_void: f /= Void
@@ -174,7 +181,7 @@ feature {NONE} -- Implementation
 			Result := f = data.group
 		end
 
-	droppable (a_pebble: ANY): BOOLEAN is
+	droppable (a_pebble: ANY): BOOLEAN
 			-- Can user drop `a_pebble' on `Current'?
 		local
 			conv_folder: CLUSTER_STONE
@@ -203,7 +210,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	print_name is
+	print_name
 			-- Print class name in textable, the associated text component.
 		do
 			if associated_textable /= Void then
@@ -212,8 +219,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -226,22 +233,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CLASSES_TREE_CLASS_ITEM

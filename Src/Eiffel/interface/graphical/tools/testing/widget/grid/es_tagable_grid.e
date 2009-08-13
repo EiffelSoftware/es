@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that display tagable items in an ES_GRID.
 	]"
@@ -65,6 +65,7 @@ feature {NONE} -- Initialization
 		local
 			i: INTEGER
 			l_col: EV_GRID_COLUMN
+			l_header: EV_GRID_HEADER
 		do
 			grid.clear
 			grid.set_column_count_to (layout.column_count)
@@ -81,31 +82,33 @@ feature {NONE} -- Initialization
 				end
 				i := i + 1
 			end
-			if {l_header: !EV_GRID_HEADER} grid.header then
-				layout.populate_header (l_header)
-			end
+			l_header := grid.header
+			check l_header /= Void end
+			layout.populate_header (l_header)
 		end
 
 feature {NONE} -- Access
 
-	grid: !ES_GRID
+	grid: attached ES_GRID
 			-- Actual grid visualizing tree as in items
 
-	layout: !ES_TAGABLE_GRID_LAYOUT [G]
+	layout: attached ES_TAGABLE_GRID_LAYOUT [G]
 			-- Layout responsible for drawing grid items and header
+		local
+			l_layout: like internal_layout
 		do
-			if {l_layout: like layout} internal_layout then
-				Result := l_layout
-			else
-				create Result
-				internal_layout := Result
+			l_layout := internal_layout
+			if l_layout = Void then
+				create l_layout
+				internal_layout := l_layout
 			end
+			Result := l_layout
 		end
 
-	internal_layout: ?like layout
+	internal_layout: detachable like layout
 			-- Internal storage for factory
 
-	timer: !EV_TIMEOUT
+	timer: attached EV_TIMEOUT
 			-- Timer for redrawing items in `grid'
 
 	timer_interval: INTEGER = 10000
@@ -113,7 +116,7 @@ feature {NONE} -- Access
 
 feature {ES_TAGABLE_TREE_GRID_NODE_CONTAINER} -- Query
 
-	computed_grid_item (a_col_index, a_row_index: INTEGER): EV_GRID_ITEM is
+	computed_grid_item (a_col_index, a_row_index: INTEGER): EV_GRID_ITEM
 			-- Computed grid item at given location
 			--
 			-- Note: this will reset all items in the according row and return the requested item.
@@ -128,7 +131,7 @@ feature {ES_TAGABLE_TREE_GRID_NODE_CONTAINER} -- Query
 			propagate_selection_events := False
 			l_row := grid.row (a_row_index)
 			l_selected := l_row.is_selected
-			if {l_data: ES_TAGABLE_GRID_DATA [G]} l_row.data then
+			if attached {ES_TAGABLE_GRID_DATA [G]} l_row.data as l_data then
 				l_data.populate_row (layout)
 			else
 				check
@@ -149,7 +152,7 @@ feature {NONE} -- Status report
 
 feature -- Status setting
 
-	set_layout (a_layout: ?like layout)
+	set_layout (a_layout: detachable like layout)
 			-- Define a specific layout for grid items
 			--
 			-- `a_layout': Layout which shall be used to build grid columns and items. Can be Void to make
@@ -164,7 +167,7 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	highlight_row (a_row: !EV_GRID_ROW) is
+	highlight_row (a_row: attached EV_GRID_ROW)
 			-- Make `a_row' look like it is fully selected.
 		do
 			if grid.has_focus then
@@ -174,13 +177,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	unhighlight_row (a_row: !EV_GRID_ROW) is
+	unhighlight_row (a_row: attached EV_GRID_ROW)
 			-- Make `a_row' look like it is not selected.
 		do
 			a_row.set_background_color (grid.background_color)
 		end
 
-	change_focus is
+	change_focus
 			-- Make sure all selected rows have correct background color.
 		do
 			grid.selected_rows.do_all (
@@ -222,22 +225,22 @@ feature {NONE} -- Events
 			timer.set_interval (timer_interval)
 		end
 
-	on_row_select (a_row: !EV_GRID_ROW)
+	on_row_select (a_row: attached EV_GRID_ROW)
 			-- Called when a row in `grid' is selected.
 		do
 			if propagate_selection_events then
-				if {l_data: ES_TAGABLE_GRID_ITEM_DATA [G]} a_row.data then
+				if attached {ES_TAGABLE_GRID_ITEM_DATA [G]} a_row.data as l_data then
 					internal_selected_items.force (l_data.item)
 					item_selected_actions.call ([l_data.item])
 				end
 			end
 		end
 
-	on_row_deselect (a_row: !EV_GRID_ROW)
+	on_row_deselect (a_row: attached EV_GRID_ROW)
 			-- Called when a row in `grid' is deselected.
 		do
 			if propagate_selection_events then
-				if {l_data: ES_TAGABLE_GRID_ITEM_DATA [G]} a_row.data then
+				if attached {ES_TAGABLE_GRID_ITEM_DATA [G]} a_row.data as l_data then
 					internal_selected_items.remove (l_data.item)
 					item_deselected_actions.call ([l_data.item])
 				end
@@ -248,7 +251,7 @@ feature {NONE} -- Events
 			-- Called when a item has been double clicked in `grid'
 		do
 			if a_button = {EV_POINTER_CONSTANTS}.left then
-				if a_item /= Void and then {l_data: ES_TAGABLE_GRID_ITEM_DATA [G]} a_item.row.data then
+				if a_item /= Void and then attached {ES_TAGABLE_GRID_ITEM_DATA [G]} a_item.row.data as l_data then
 					item_pointer_double_press_actions.call ([l_data.item])
 				end
 			end
@@ -261,4 +264,35 @@ feature {NONE} -- Factory
 		do
 			create Result
 		end
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

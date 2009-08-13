@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Node for Eiffel feature name. Version for Bench."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize (f: like feature_name) is
+	initialize (f: like feature_name)
 			-- Create a new FEAT_NAME_ID AST node.
 		require
 			f_not_void: f /= Void
@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_feat_name_id_as (Current)
@@ -41,14 +41,14 @@ feature -- Access
 	feature_name: ID_AS
 			-- Feature name
 
-	internal_alias_name: ID_AS is
+	internal_alias_name: ID_AS
 			-- Operator associated with the feature (if any)
 			-- augmented with information about its arity
 		do
 				-- Void here
 		end
 
-	alias_name: STRING_AS is
+	alias_name: STRING_AS
 			-- Operator name associated with the feature (if any)
 		do
 				-- Void here
@@ -56,14 +56,14 @@ feature -- Access
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := is_frozen = other.is_frozen and then
 				equivalent (feature_name, other.feature_name)
 		end
 
-	infix "<" (other: FEATURE_NAME): BOOLEAN is
+	is_less alias "<" (other: FEATURE_NAME): BOOLEAN
 		local
 			normal_feature: FEAT_NAME_ID_AS
 			infix_feature: INFIX_PREFIX_AS
@@ -84,17 +84,15 @@ feature -- Comparison
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	first_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
-			if a_list /= Void and frozen_keyword_index /= 0 then
-				Result := frozen_keyword (a_list)
-			end
+			Result := frozen_keyword
 			if Result = Void or else Result.is_null then
 				Result := feature_name.first_token (a_list)
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			Result := feature_name.last_token (a_list)
 		end
@@ -102,10 +100,10 @@ feature -- Roundtrip/Token
 invariant
 	feature_name_not_void: feature_name /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -116,22 +114,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class FEAT_NAME_ID_AS

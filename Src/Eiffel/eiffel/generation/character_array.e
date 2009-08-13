@@ -1,23 +1,23 @@
-indexing
+note
 	description: "Array of character used for storing interpreted datas."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class CHARACTER_ARRAY 
+class CHARACTER_ARRAY
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (n: INTEGER) is
+	make (n: INTEGER)
 			-- Allocate `n' characters
 		require
 			valid_n: n >= 0
 		do
-			create area.make (n)
+			create area.make_filled ('%/000/', n)
 			count := n
 		ensure
 			size_set: count = n
@@ -33,9 +33,18 @@ feature {CHARACTER_ARRAY} -- Access
 	area: SPECIAL [CHARACTER]
 			-- Storage for byte code.
 
+feature -- Access
+
+	item (i: INTEGER): CHARACTER
+		require
+			valid_index: i >= 1 and i <= count
+		do
+			Result := area.item (i - 1)
+		end
+
 feature -- Store
 
-	store (file: RAW_FILE) is
+	store (file: RAW_FILE)
 			-- Store C array in `file'.
 		require
 			good_argument: file /= Void
@@ -46,16 +55,12 @@ feature -- Store
 
 feature -- Resizing
 
-	resize (n: INTEGER) is
+	resize (n: INTEGER)
 			-- Reallocation for `n' characters
 		require
 			valid_n: n >= 0 and n > count
-		local
-			old_area: like area
 		do
-			old_area := area
-			create area.make (n)
-			internal_copy (old_area, area, count, 0)
+			area := area.aliased_resized_area_with_default ('%/000/', n)
 			count := n
 		ensure
 			good_size: count = n
@@ -63,7 +68,7 @@ feature -- Resizing
 
 feature -- Debug
 
-	trace is
+	trace
 			-- Debug purpose
 		local
 			i: INTEGER
@@ -83,7 +88,7 @@ feature -- Debug
 
 feature {NONE} -- Implementation
 
-	internal_store (an_area: like area; nb_items: INTEGER; a_file: FILE) is
+	internal_store (an_area: like area; nb_items: INTEGER; a_file: FILE)
 			-- Store first `nb_items' of `an_area' into `a_file'.
 		require
 			an_area_not_void: an_area /= Void
@@ -95,7 +100,7 @@ feature {NONE} -- Implementation
 			ca_store ($an_area, nb_items, a_file.file_pointer)
 		end
 
-	internal_copy (a_source, a_target: like area; nb_items, pos: INTEGER) is
+	internal_copy (a_source, a_target: like area; nb_items, pos: INTEGER)
 			-- Copy first `nb_items' of `a_source' area into `a_target'
 			-- area starting at index `pos'.
 		require
@@ -111,7 +116,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- External features
 
-	ca_store (ptr: POINTER; siz: INTEGER; fil: POINTER) is
+	ca_store (ptr: POINTER; siz: INTEGER; fil: POINTER)
 		external
 			"C"
 		end
@@ -119,8 +124,8 @@ feature {NONE} -- External features
 invariant
 	area_exists: area /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -133,22 +138,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CHARACTER_ARRAY

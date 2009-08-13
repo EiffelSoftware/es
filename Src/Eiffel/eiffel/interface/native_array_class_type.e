@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class type for NATIVE_ARRAY class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,8 +21,6 @@ inherit
 
 	IL_CONST
 
-	PREDEFINED_NAMES
-
 create
 	make
 
@@ -31,7 +29,7 @@ feature -- Access
 	type: NATIVE_ARRAY_TYPE_A
 			-- Type of generic derivation.
 
-	first_generic: TYPE_A is
+	first_generic: TYPE_A
 			-- First generic parameter type
 		require
 			has_generics: type.generics /= Void
@@ -40,7 +38,7 @@ feature -- Access
 			Result := type.generics.item (1)
 		end
 
-	il_type_name: STRING is
+	il_type_name: STRING
 			-- Associated name to current generic derivation.
 			-- E.g. NATIVE_ARRAY [INTEGER] gives `INTEGER []'.
 		require
@@ -52,7 +50,7 @@ feature -- Access
 			Result.append ("[]")
 		end
 
-	il_element_type_name: STRING is
+	il_element_type_name: STRING
 			-- Associated name of element types.
 			-- E.g. NATIVE_ARRAY [INTEGER] gives `INTEGER'.
 		require
@@ -72,7 +70,7 @@ feature -- Access
 			Result.append (l_name)
 		end
 
-	deep_il_element_type: CL_TYPE_A is
+	deep_il_element_type: CL_TYPE_A
 			-- Find actual type of element array.
 			-- I.e. if you have NATIVE_ARRAY [NATIVE_ARRAY [INTEGER]], it
 			-- will return INTEGER.
@@ -84,7 +82,7 @@ feature -- Access
 
 feature -- IL code generation
 
-	generate_il_put_preparation (array_type, a_context_type: CL_TYPE_A) is
+	generate_il_put_preparation (array_type, a_context_type: CL_TYPE_A)
 			-- Generate preparation to `put' calls in case of expanded elements.
 		require
 			has_generics: type.generics /= Void
@@ -100,7 +98,7 @@ feature -- IL code generation
 				l_actual_generic_parameter := array_type.generics.item (1)
 				if l_actual_generic_parameter.actual_type.is_formal then
 						-- Type that was provided to us didn't have much type information, we have
-						-- to rely on what we have from `Current'. 
+						-- to rely on what we have from `Current'.
 					l_actual_generic_parameter := first_generic
 				end
 				if l_actual_generic_parameter.has_associated_class_type (a_context_type) then
@@ -113,7 +111,7 @@ feature -- IL code generation
 			end
 		end
 
-	generate_il (name_id: INTEGER; array_type, a_context_type: CL_TYPE_A) is
+	generate_il (name_id: INTEGER; array_type, a_context_type: CL_TYPE_A)
 			-- Generate call to `name_id' from NATIVE_ARRAY.
 		require
 			valid_name_id: name_id > 0
@@ -142,7 +140,7 @@ feature -- IL code generation
 			l_actual_generic_parameter := l_actual_array_type.generics.item (1)
 			if l_actual_generic_parameter.actual_type.is_formal and not first_generic.is_formal then
 					-- Type that was provided to us didn't have much type information, we have
-					-- to rely on what we have from `Current'. 
+					-- to rely on what we have from `Current'.
 				l_actual_generic_parameter := first_generic
 			end
 			if l_actual_generic_parameter.has_associated_class_type (a_context_type) then
@@ -197,13 +195,16 @@ feature -- IL code generation
 			inspect
 				name_id
 
-			when item_name_id, infix_at_name_id then
+			when {PREDEFINED_NAMES}.item_name_id, {PREDEFINED_NAMES}.infix_at_name_id, {PREDEFINED_NAMES}.at_name_id then
 				il_generator.generate_array_access (type_kind, generic_type_id)
 
-			when put_name_id then
+			when {PREDEFINED_NAMES}.put_name_id then
 				il_generator.generate_array_write (type_kind, generic_type_id)
 
-			when make_name_id then
+			when
+				{PREDEFINED_NAMES}.make_name_id,
+				{PREDEFINED_NAMES}.make_empty_name_id
+			then
 				if l_formal /= Void then
 						-- Create the correct array type based on how the formal
 						-- will be instantiated.
@@ -217,24 +218,24 @@ feature -- IL code generation
 					il_generator.generate_array_initialization (l_actual_array_type, generic_type)
 				end
 
-			when count_name_id then
+			when {PREDEFINED_NAMES}.count_name_id then
 				il_generator.generate_array_count
 
-			when lower_name_id then
+			when {PREDEFINED_NAMES}.lower_name_id then
 				il_generator.generate_array_lower
 
-			when upper_name_id then
+			when {PREDEFINED_NAMES}.upper_name_id then
 				il_generator.generate_array_upper
 
-			when all_default_name_id then
+			when {PREDEFINED_NAMES}.all_default_name_id then
 
-			when clear_all_name_id then
+			when {PREDEFINED_NAMES}.clear_all_name_id then
 
-			when index_of_name_id then
+			when {PREDEFINED_NAMES}.index_of_name_id then
 
-			when resized_area_name_id then
+			when {PREDEFINED_NAMES}.resized_area_name_id then
 
-			when same_items_name_id then
+			when {PREDEFINED_NAMES}.same_items_name_id then
 
 			else
 --					check
@@ -243,7 +244,7 @@ feature -- IL code generation
 			end
 		end
 
-	Object_type: CL_TYPE_A is
+	Object_type: CL_TYPE_A
 			-- Type of SYSTEM_OBJECT.
 		require
 			in_il_generation: system.il_generation
@@ -259,8 +260,8 @@ feature -- IL code generation
 invariant
 	il_generation: System.il_generation
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -273,22 +274,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- end of NATIVE_ARRAY_CLASS_TYPE

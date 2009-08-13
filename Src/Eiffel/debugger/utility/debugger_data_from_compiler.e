@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that represents data from compiler..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,12 +12,17 @@ class
 inherit
 	SHARED_EIFFEL_PROJECT
 
+	SHARED_AST_CONTEXT
+		rename
+			context as ast_context
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize `Current'.
 		local
 			sys: SYSTEM_I
@@ -37,6 +42,11 @@ feature {NONE} -- Initialization
 			cl_i := sys.array_class
 			if cl_i /= Void then
 				array_class_c := cl_i.compiled_class
+			end
+
+			cl_i := sys.special_class
+			if cl_i /= Void then
+				special_class_c := cl_i.compiled_class
 			end
 
 			cl_i := sys.tuple_class
@@ -165,6 +175,7 @@ feature -- Access
 	any_class_c: CLASS_C
 	routine_class_c: CLASS_C
 	array_class_c: CLASS_C
+	special_class_c: CLASS_C
 	tuple_class_c: CLASS_C
 	type_class_c: CLASS_C
 	string_8_class_c: CLASS_C
@@ -189,7 +200,7 @@ feature -- Access
 
 feature -- Specific access
 
-	internal_class_c: CLASS_C is
+	internal_class_c: CLASS_C
 			--
 		local
 			lst: LIST [CLASS_I]
@@ -212,7 +223,7 @@ feature -- Specific access
 			Result_not_Void: Result /= Void
 		end
 
-	ise_runtime_class_c: CLASS_C is
+	ise_runtime_class_c: CLASS_C
 			-- ISE_RUNTIME class (for dotnet)
 		local
 			lst: LIST [CLASS_I]
@@ -244,8 +255,8 @@ feature {NONE} -- Once per object
 	opo_internal_class_c: like internal_class_c
 	opo_ise_runtime_class_c: like ise_runtime_class_c
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -258,22 +269,22 @@ feature {NONE} -- Once per object
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

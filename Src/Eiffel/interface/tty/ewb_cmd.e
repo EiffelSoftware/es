@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"General notion of command line command%
@@ -39,19 +39,19 @@ inherit
 
 feature -- Properties
 
-	name: STRING is
+	name: STRING
 		deferred
 		end
 
-	help_message: STRING_GENERAL is
+	help_message: STRING_GENERAL
 		deferred
 		end
 
-	abbreviation: CHARACTER is
+	abbreviation: CHARACTER
 		deferred
 		end
 
-	output_window: OUTPUT_WINDOW is
+	output_window: OUTPUT_WINDOW
 			-- Output for current menu selection
 		do
 			Result := command_line_io.output_window
@@ -61,7 +61,7 @@ feature -- Properties
 
 feature {NONE} -- Error messages
 
-	Warning_messages: WARNING_MESSAGES is
+	Warning_messages: WARNING_MESSAGES
 			-- Placeholder to access all warning messages.
 		once
 			create Result
@@ -69,7 +69,7 @@ feature {NONE} -- Error messages
 
 feature -- Comparison
 
-	infix "<" (other: EWB_CMD): BOOLEAN is
+	is_less alias "<" (other: EWB_CMD): BOOLEAN
 			-- The sort criteria is the command name
 		do
 			Result := name < other.name
@@ -77,7 +77,7 @@ feature -- Comparison
 
 feature -- Setting
 
-	set_output_window (display: OUTPUT_WINDOW) is
+	set_output_window (display: OUTPUT_WINDOW)
 			-- Set the output window to `display'
 		do
 			command_line_io.set_output_window (display)
@@ -87,7 +87,7 @@ feature -- Setting
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Action performed when invoked from the
 			-- command line.
 		require
@@ -97,7 +97,7 @@ feature -- Execution
 
 feature {EWB_LOOP} -- Execution
 
-	loop_action is
+	loop_action
 			-- Action performed when invoked from the
 			-- command loop (ie after ec -loop).
 		do
@@ -106,18 +106,18 @@ feature {EWB_LOOP} -- Execution
 
 feature {NONE} -- Implementation
 
-	command_line_io: COMMAND_LINE_IO is
+	command_line_io: COMMAND_LINE_IO
 		once
 			create Result
 		end
 
-	arguments: STRING is
+	arguments: STRING
 			-- Arguments passed to the application
 		once
 			create Result.make (0)
 		end
 
-	check_arguments_and_execute is
+	check_arguments_and_execute
 			-- Check the arguments and then perform then
 			-- command line action.
 		do
@@ -136,10 +136,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -150,19 +150,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

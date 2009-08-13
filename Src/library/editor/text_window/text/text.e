@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Basic, read only text. The text is made of a sequence of EDITOR_LINEs,
 		which are themselves sequences of EDITOR_TOKENs.
@@ -48,7 +48,7 @@ create
 
 feature {NONE}-- Initialization
 
-	make is
+	make
 			-- create an empty text
 		do
 			Precursor {TEXT_OBSERVER_MANAGER}
@@ -59,7 +59,7 @@ feature {NONE}-- Initialization
 
 feature -- Content Change
 
-	load_string (a_string: STRING) is
+	load_string (a_string: STRING)
 			-- Scan `a_string' and fill the object with resulting
 			-- lines and tokens
 			-- `a_string' must be in UTF8.
@@ -73,9 +73,24 @@ feature -- Content Change
 			read_enough_lines: number_of_lines >= first_read_block_size or else reading_text_finished
 		end
 
+feature {TEXT_PANEL} -- Content Change		
+
+	flush
+			-- Load texts immediately
+		do
+			from until
+				not text_being_processed
+			loop
+				finish_reading_string
+			end
+		ensure
+			not_text_being_processed: not text_being_processed
+			reading_text_finished: reading_text_finished
+		end
+
 feature -- Reinitialization
 
-	reset_text is
+	reset_text
 			-- reset the text to its original, empty state
 		do
 			abort_idle_processing
@@ -94,7 +109,7 @@ feature -- Access
 	current_line: like line
 		-- current line
 
-	text: STRING is
+	text: STRING
 			-- Image of text in `Current'.
 		obsolete
 			"Use `wide_text' instead, or wide characters are truncated."
@@ -104,7 +119,7 @@ feature -- Access
 			Result := wide_text.as_string_8
 		end
 
-	wide_text: STRING_32 is
+	wide_text: STRING_32
 			-- Image of text in `Current'.
 			-- In UTF-32.
 		require
@@ -130,7 +145,7 @@ feature -- Access
 			-- size in lines of the first block of text that
 			-- will be read.
 
-	tabulation_size: INTEGER is
+	tabulation_size: INTEGER
 			-- Tabulation size in characters.
 		do
 			Result := internal_tabulation_size
@@ -138,7 +153,7 @@ feature -- Access
 
 feature -- Status Setting
 
-	set_first_read_block_size (a_size: INTEGER) is
+	set_first_read_block_size (a_size: INTEGER)
 			-- set the size in lines of the first block of text
 			-- that will be read.
 		require
@@ -147,7 +162,7 @@ feature -- Status Setting
 			 first_read_block_size := a_size
 		end
 
-	set_tabulation_size (a_size: INTEGER) is
+	set_tabulation_size (a_size: INTEGER)
 			-- Set thet tabulation size.  Overrides preferences default value.
 		require
 			a_size_big_enough: a_size > 0
@@ -155,7 +170,7 @@ feature -- Status Setting
 			internal_tabulation_size := a_size
 		end
 
-	highlight_line (a_line: INTEGER) is
+	highlight_line (a_line: INTEGER)
 			-- Highlight line.  Do not move cursor to this line.
 		require
 		do
@@ -163,7 +178,7 @@ feature -- Status Setting
 			current_line.set_highlighted (True)
 		end
 
-	unhighlight_line (a_line: INTEGER) is
+	unhighlight_line (a_line: INTEGER)
 			-- Highlight line.  Do not move cursor to this line.
 		require
 		do
@@ -173,19 +188,19 @@ feature -- Status Setting
 
 feature -- Query
 
-	after: BOOLEAN is
+	after: BOOLEAN
 			-- Is the `current_line' beyond the end of the text ?
 		do
 			Result := (current_line = Void)
 		end
 
-	text_length: INTEGER is
+	text_length: INTEGER
 			-- Length of displayed text
 		do
 			Result := wide_text.count
 		end
 
-	first_non_blank_token (a_line: like line): EDITOR_TOKEN is
+	first_non_blank_token (a_line: like line): EDITOR_TOKEN
 			-- First non blank token in `a_line'.
 		local
 			blnk: EDITOR_TOKEN_BLANK
@@ -201,7 +216,7 @@ feature -- Query
 			end
 		end
 
-	line_pos_in_chars (a_line: like line): INTEGER is
+	line_pos_in_chars (a_line: like line): INTEGER
 			-- Position in chars of start of `a_line'.
 		require
 			line_not_void: a_line /= Void
@@ -221,7 +236,7 @@ feature -- Query
 
 feature -- Element Change
 
-	forth is
+	forth
 			-- move `current_line' to the next line
 		require
 			not after
@@ -229,7 +244,7 @@ feature -- Element Change
 			current_line := current_line.next
 		end
 
-	start is
+	start
 			-- set the first line as `current_line'
 		require
 			number_of_lines >= 1
@@ -237,7 +252,7 @@ feature -- Element Change
 			current_line := first_line
 		end
 
-	go_i_th (i: INTEGER) is
+	go_i_th (i: INTEGER)
 			-- set the i-th line as `current_line'
 		require
 			valid_i: i >= 1 and then i <= number_of_lines
@@ -245,7 +260,7 @@ feature -- Element Change
 			current_line := line (i)
 		end
 
-	update_line (a_line: INTEGER) is
+	update_line (a_line: INTEGER)
 			-- Update line tokens
 		require
 			line_index_valid: a_line > 0 and a_line <= number_of_lines
@@ -255,7 +270,7 @@ feature -- Element Change
 
 feature -- Status report
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is there no text loaded in the editor ?
 		do
 			Result := number_of_lines = 0
@@ -269,7 +284,7 @@ feature -- Status report
 
 feature -- Search
 
-	search_string (searched_string: STRING_GENERAL) is
+	search_string (searched_string: STRING_GENERAL)
 			-- Search the text for the string `searched_string'.
 			-- If the search was successful, `successful_search' is
 			-- set to True and `found_string_line' &
@@ -325,9 +340,22 @@ feature -- Search
 	successful_search: BOOLEAN
 			-- Was the last call to `search_string' successful?
 
+feature {TEXT_PANEL} -- Userset data
+
+	set_userset_data (a_data: like userset_data)
+			-- Set `userset_data' with `a_data'
+		do
+			userset_data := a_data
+		ensure
+			userset_data_set: userset_data = a_data
+		end
+
+	userset_data: TEXT_PANEL_BUFFERED_DATA assign set_userset_data
+			-- Userset editor data
+
 feature {NONE} -- Text Loading
 
-	start_reading_string is
+	start_reading_string
 			-- Read the file named `a_name' and perform a lexical analysis
 		local
 			curr_string, l_current_string: STRING -- UTF-8
@@ -384,7 +412,7 @@ feature {NONE} -- Text Loading
 			ev_application.add_idle_action (finish_reading_string_agent)
 		end
 
-	finish_reading_string is
+	finish_reading_string
 			-- Read the file named `a_name' and perform a lexical analysis
 		local
 			l_current_string, curr_string: STRING -- UTF-8
@@ -440,7 +468,7 @@ feature {NONE} -- Text Loading
 			end
 		end
 
-	new_line_from_lexer (line_image: STRING): like line is
+	new_line_from_lexer (line_image: STRING): like line
 			-- create a new EDITOR_LINE from `line_image' using
 			-- `line_image' is in UTF-8.
 		require
@@ -455,14 +483,14 @@ feature {NONE} -- Text Loading
 			end
 		end
 
-	abort_idle_processing is
+	abort_idle_processing
 			-- Stop text processing done during idle actions.
 		do
 			text_being_processed := False
 			ev_application.remove_idle_action (finish_reading_string_agent)
 		end
 
-	after_reading_idle_action is
+	after_reading_idle_action
 			-- action performed on idle when text reading is finished.
 		do
 			ev_application.remove_idle_action (finish_reading_string_agent)
@@ -475,13 +503,13 @@ feature {NONE} -- Text Loading
 
 feature {NONE} -- Implementation
 
-	lexer: EDITOR_SCANNER is
+	lexer: EDITOR_SCANNER
 			-- Text lexer
 		do
 		   	Result := current_class.scanner
 		end
 
-	execute_lexer_with_wide_string (a_string: STRING_GENERAL) is
+	execute_lexer_with_wide_string (a_string: STRING_GENERAL)
 			-- Excute the lexer with wide string.
 			-- Convert the string back to `lexer.current_encoding' first.
 		require
@@ -498,7 +526,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Private Constants
 
-	Lines_read_per_idle_action: INTEGER is 25
+	Lines_read_per_idle_action: INTEGER = 25
 		-- Number of lines read each time finish_reading_file
 		-- is called on an idle action.
 
@@ -507,7 +535,7 @@ feature {NONE} -- Private Constants
 
 feature -- Memory management
 
-	recycle is
+	recycle
 		do
 			reset_text
 			finish_reading_string_agent := Void
@@ -516,7 +544,7 @@ feature -- Memory management
 invariant
 	current_line_valid: current_line /= Void implies current_line.is_valid
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

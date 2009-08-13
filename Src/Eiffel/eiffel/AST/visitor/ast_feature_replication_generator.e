@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
@@ -132,6 +132,12 @@ feature -- Processing
 					-- is not unreplicated if then inherited by a descendent so we need
 					-- a flag to distinguish the two types of replicated features.
 				a_feature.set_is_replicated_directly (True)
+
+					-- Make sure that `generate_in' is reset for non-conforming attributes as it is
+					-- not needed due to flat inheritance.
+				if a_parent_c.is_non_conforming and then attached {ENCAPSULATED_I} a_feature as l_attr then
+					l_attr.set_generate_in (0)
+				end
 			else
 					-- This routine is either joined or redefined in `a_current_class', if redefined
 					-- in current class then we need to set it as directly replicated so that
@@ -189,7 +195,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_renaming (a_access_inv_as: ACCESS_INV_AS) is
+	process_renaming (a_access_inv_as: ACCESS_INV_AS)
 			-- Process renaming for unqualified call.
 		require
 			access_inv_as_not_void: a_access_inv_as /= Void
@@ -235,27 +241,27 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_routine_as (l_as: ROUTINE_AS) is
+	process_routine_as (l_as: ROUTINE_AS)
 			-- <Precursor>
 		do
 			routine_as := l_as
 			Precursor (l_as)
 		end
 
-	process_precursor_as (l_as: PRECURSOR_AS) is
+	process_precursor_as (l_as: PRECURSOR_AS)
 			-- <Precursor>
 		do
 			Precursor (l_as)
 		end
 
-	process_access_id_as (l_as: ACCESS_ID_AS) is
+	process_access_id_as (l_as: ACCESS_ID_AS)
 			-- <Precursor>
 		do
 			process_renaming (l_as)
 			Precursor (l_as)
 		end
 
-	process_access_assert_as (l_as: ACCESS_ASSERT_AS) is
+	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
 			-- <Precursor>
 		do
 			process_renaming (l_as)

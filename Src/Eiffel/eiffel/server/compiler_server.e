@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Offset table associated to a cache"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -22,7 +22,7 @@ inherit
 
 feature -- Initialization
 
-	make is
+	make
 		do
 			set_current_file_id
 			Precursor
@@ -33,7 +33,7 @@ feature
 	current_file_id: INTEGER
 			-- Current server file id used by primitive `put'.
 
-	set_current_file_id is
+	set_current_file_id
 			-- Set `current_file_id' to a new value.
 		do
 debug ("SERVER")
@@ -44,16 +44,16 @@ end
 			current_file_id := Server_controler.last_computed_id
 		end
 
-	put_precompiled (fid: INTEGER; item_id: INTEGER; sinf: SERVER_INFO) is
+	put_precompiled (fid: INTEGER; item_id: INTEGER; sinf: SERVER_INFO)
 		do
 			tbl_force (sinf, item_id)
 		end
 
-	Size_limit: INTEGER is 500
+	Size_limit: INTEGER = 500
 			-- Limit of the size of one file under the control	
 			-- of the current server (500KB)
 
-	put (t: T) is
+	put (t: T)
 			-- Put object `t' in server.
 		local
 			l_old_item: T
@@ -79,7 +79,7 @@ end
 			end
 		end
 
-	write (t: T) is
+	write (t: T)
 			-- Write item `t' on disk
 		local
 			an_id: INTEGER
@@ -123,7 +123,7 @@ end
 			end
 		end
 
-	remove (an_id: INTEGER) is
+	remove (an_id: INTEGER)
 			-- Remove information of id `an_id'.
 			-- NO precondition, the feature will check if the
 			-- server has the element to remove.
@@ -150,7 +150,7 @@ end
 			end
 		end
 
-	item, frozen server_item (an_id: INTEGER): T is
+	item, frozen server_item (an_id: INTEGER): T
 			-- Object of id `an_id'.
 		local
 			info: SERVER_INFO
@@ -200,7 +200,7 @@ end
 			end
 		end
 
-	disk_item (an_id: INTEGER): T is
+	disk_item (an_id: INTEGER): T
 			-- Object of id `an_id' on disk.
 		local
 			info: SERVER_INFO
@@ -232,7 +232,7 @@ end
 			end
 		end
 
-	clear is
+	clear
 			-- Clear the server.
 			-- Clears the server entirely.
 			-- Must not be used in conjunction with
@@ -264,7 +264,7 @@ end
 			Precursor {ISE_SERVER}
 		end
 
-	take_control (other: COMPILER_SERVER [T]) is
+	take_control (other: COMPILER_SERVER [T])
 			-- Take control of `other'.
 		require
 			good_argument: other /= Void
@@ -297,11 +297,15 @@ end
 			end
 			other.clear_all
 
+				-- Wipe out cache as we are storing to disk
 			other_cache ?= other.cache
 			if other_cache /= Void then
-				cache.copy (other_cache)
-				other_cache.make
+--				--| Wipe out cache instead of copying to retain system memory and speed up flush to disk.			
+--				cache.copy (other_cache)
+--				other_cache.make
+				other_cache.wipe_out
 			end
+			cache.wipe_out
 
 			l_server_file := server_controler.file_of_id (other.current_file_id)
 			if l_server_file /= Void and then l_server_file.occurrence > 0 then
@@ -311,25 +315,25 @@ end
 			end
 		end
 
-	flush is
+	flush
 			-- Flush server
 		do
 			-- Do nothing
 		end
 
-	make_index (obj: ANY; file_position, object_count: INTEGER) is
+	make_index (obj: ANY; file_position, object_count: INTEGER)
 			-- Index building
 		require
 			need_index (obj)
 		do
 		end
 
-	need_index (obj: ANY): BOOLEAN is
+	need_index (obj: ANY): BOOLEAN
 			-- Is an index needed for `obj'?
 		do
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

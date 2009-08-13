@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Contains information about a list view control%
 				% column."
 	legal: "See notice at end of class."
@@ -32,14 +32,14 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Make a list view column structure
 		do
 			structure_make
 			set_mask (0)
 		end
 
-	make_with_attributes (a_mask, a_width, an_alignment: INTEGER; a_text: STRING_GENERAL) is
+	make_with_attributes (a_mask, a_width, an_alignment: INTEGER; a_text: STRING_GENERAL)
 			-- Make a list view column structure with the given
 			-- attributes:
 			-- `a_mask' set the valid member (`Lvcf_text', ...)
@@ -49,6 +49,7 @@ feature -- Initialization
 			-- `a_text' is the text of of the header.
 		require
 			valid_fmt: valid_lvcfmt_constant (an_alignment)
+			a_text_not_void: a_text /= Void
 		do
 			structure_make
 			cwel_lv_column_set_mask (item, a_mask)
@@ -59,23 +60,28 @@ feature -- Initialization
 
 feature -- Access
 
-	mask: INTEGER is
+	mask: INTEGER
 			-- Array of flags that indicate which of the other
 			-- structure members contain valid data or which are
 			-- to be filled in. This member can be a combination
 			-- of the Lvcf_* values.
 			-- See class WEL_LVCF_CONSTANTS.
+		require
+			exists: exists
 		do
 			Result := cwel_lv_column_get_mask (item)
 		end
 
-	text: STRING_32 is
+	text: STRING_32
 			-- Title of the column
 		require
 			text_meaningfull: is_text_valid
+		local
+			l_text: like str_text
 		do
-			if str_text /= Void then
-				Result := str_text.string
+			l_text := str_text
+			if l_text /= Void then
+				Result := l_text.string
 			else
 				create Result.make_empty
 			end
@@ -83,9 +89,10 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	width: INTEGER is
+	width: INTEGER
 			-- Get the width, in pixel, of the column
 		require
+			exists: exists
 			width_meaningfull: is_width_valid
 		do
 			Result := cwel_lv_column_get_cx (item)
@@ -93,9 +100,11 @@ feature -- Access
 			positive_result: Result >= 0
 		end
 
-	alignment: INTEGER is
+	alignment: INTEGER
 			-- Specifies the alignment of the column
 			-- See class WEL_LVCF_CONSTANTS for possible values.
+		require
+			exists: exists
 		do
 			Result := cwel_lv_column_get_fmt (item)
 		ensure
@@ -104,26 +113,34 @@ feature -- Access
 
 feature -- Status Report
 
-	is_width_valid: BOOLEAN is
+	is_width_valid: BOOLEAN
 			-- Is there any specified width in pixel for this column?
+		require
+			exists: exists
 		do
 			Result := is_in_mask (Lvcf_width)
 		end
 
-	is_text_valid: BOOLEAN is
+	is_text_valid: BOOLEAN
 			-- Is there any specified text for this column?
+		require
+			exists: exists
 		do
 			Result := is_in_mask (Lvcf_text)
 		end
 
-	is_alignment_valid: BOOLEAN is
+	is_alignment_valid: BOOLEAN
 			-- Is there any specified alignment for this column?
+		require
+			exists: exists
 		do
 			Result := is_in_mask (Lvcf_fmt)
 		end
 
-	is_in_mask (a_mask: INTEGER): BOOLEAN is
+	is_in_mask (a_mask: INTEGER): BOOLEAN
 			-- Is `a_mask' contained in the current mask?
+		require
+			exists: exists
 		local
 			backup_mask: INTEGER
 			new_mask: INTEGER
@@ -145,46 +162,57 @@ feature -- Status Report
 
 feature -- Element change
 
-	set_mask (a_mask: INTEGER) is
+	set_mask (a_mask: INTEGER)
 			-- Set `mask' with `a_mask'.
+		require
+			exists: exists
 		do
 			cwel_lv_column_set_mask (item, a_mask)
 		ensure
 			mask_set: mask = a_mask
 		end
 
-	remove_mask is
+	remove_mask
 			-- Reset the mask to zero.
+		require
+			exists: exists
 		do
 			cwel_lv_column_set_mask (item, 0)
 		ensure
 			mask_reseted: mask = 0
 		end
 
-	set_text (a_text: STRING_GENERAL) is
+	set_text (a_text: STRING_GENERAL)
 			-- Set `text' with `a_text'.
 		require
+			exists: exists
 			a_text_not_void: a_text /= Void
+		local
+			l_text: like str_text
 		do
 			cwel_lv_column_add_mask (item, Lvcf_text)
-			create str_text.make (a_text)
-			cwel_lv_column_set_psztext (item, str_text.item)
+			create l_text.make (a_text)
+			str_text := l_text
+			cwel_lv_column_set_psztext (item, l_text.item)
 			cwel_lv_column_set_cchtextmax (item, a_text.count)
 		ensure
 			text_set: text.is_equal (a_text)
 		end
 
-	remove_text is
+	remove_text
 			-- Remove any specified text on the column.
+		require
+			exists: exists
 		do
 			cwel_lv_column_remove_mask (item, Lvcf_text)
 		ensure
 			text_not_valid: not is_text_valid
 		end
 
-	set_width (a_width: INTEGER) is
+	set_width (a_width: INTEGER)
 			-- Set the width of the column to `a_width'.
 		require
+			exists: exists
 			valid_width: a_width >= 0 or
 			a_width = Lvscw_autosize or
 			a_width = Lvscw_autosize_useheader
@@ -195,18 +223,21 @@ feature -- Element change
 			width_set: width = a_width
 		end
 
-	remove_width is
+	remove_width
 			-- Remove any specified width on the column.
+		require
+			exists: exists
 		do
 			cwel_lv_column_remove_mask (item, Lvcf_width)
 		ensure
 			width_not_valid: not is_width_valid
 		end
 
-	set_alignment (an_alignment: INTEGER) is
+	set_alignment (an_alignment: INTEGER)
 			-- Set the alignment of the column to `an_alignment'.
 			-- See class WEL_LVCF_CONSTANTS for possible values.
 		require
+			exists: exists
 			valid_alignment: valid_lvcfmt_constant (an_alignment)
 		do
 			cwel_lv_column_add_mask (item, Lvcf_fmt)
@@ -215,8 +246,10 @@ feature -- Element change
 			fmt_set: alignment = an_alignment
 		end
 
-	remove_alignment  is
+	remove_alignment
 			-- Remove any specified alignment on the column.
+		require
+			exists: exists
 		do
 			cwel_lv_column_remove_mask (item, Lvcf_fmt)
 		ensure
@@ -225,7 +258,7 @@ feature -- Element change
 
 feature -- Measurement
 
-	structure_size: INTEGER is
+	structure_size: INTEGER
 			-- Size to allocate (in bytes)
 		once
 			Result := c_size_of_lv_column
@@ -233,107 +266,115 @@ feature -- Measurement
 
 feature -- Obsolete
 
-	cx: INTEGER is
+	cx: INTEGER
 			-- Specifies the width, in pixel, of the column
 		obsolete
 			"use `width' instead, `cx' will be removed after January 2001"
+		require
+			exists: exists
 		do
 			Result := width
 		end
 
-	set_cx (a_width: INTEGER) is
+	set_cx (a_width: INTEGER)
 			-- Set `cx' with `a_cx'.
 		obsolete
 			"use `set_width' instead, `set_cx' will be removed after January 2001"
+		require
+			exists: exists
 		do
 			set_width (a_width)
 		end
 
-	set_fmt (a_fmt: INTEGER) is
+	set_fmt (a_fmt: INTEGER)
 			-- Set `fmt' with `a_fmt'.
 		obsolete
 			"use `set_alignment' instead, `set_fmt' will be removed after January 2001"
+		require
+			exists: exists
 		do
 			set_alignment (a_fmt)
 		end
 
-	fmt: INTEGER is
+	fmt: INTEGER
 			-- Specifies the alignment of the column
 			-- See class WEL_LVCF_CONSTANTS for possible values.
 		obsolete
 			"use `alignment' instead, `fmt' will be removed after January 2001"
+		require
+			exists: exists
 		do
 			Result := alignment
 		end
 
 feature {NONE} -- Externals
 
-	str_text: WEL_STRING
+	str_text: detachable WEL_STRING
 			-- Backend buffer for `text'.
 
-	c_size_of_lv_column: INTEGER is
+	c_size_of_lv_column: INTEGER
 		external
 			"C [macro <cctrl.h>]"
 		alias
 			"sizeof (LV_COLUMN)"
 		end
 
-	cwel_lv_column_set_mask (ptr: POINTER; value: INTEGER) is
+	cwel_lv_column_set_mask (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_add_mask (ptr: POINTER; value: INTEGER) is
+	cwel_lv_column_add_mask (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_remove_mask (ptr: POINTER; value: INTEGER) is
+	cwel_lv_column_remove_mask (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_set_fmt (ptr: POINTER; value: INTEGER) is
+	cwel_lv_column_set_fmt (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_set_cx (ptr: POINTER; value: INTEGER) is
+	cwel_lv_column_set_cx (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_set_psztext (ptr: POINTER; value: POINTER) is
+	cwel_lv_column_set_psztext (ptr: POINTER; value: POINTER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_set_cchtextmax (ptr: POINTER; value: INTEGER) is
+	cwel_lv_column_set_cchtextmax (ptr: POINTER; value: INTEGER)
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_get_mask (ptr: POINTER): INTEGER is
+	cwel_lv_column_get_mask (ptr: POINTER): INTEGER
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_get_fmt (ptr: POINTER): INTEGER is
+	cwel_lv_column_get_fmt (ptr: POINTER): INTEGER
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_get_cx (ptr: POINTER): INTEGER is
+	cwel_lv_column_get_cx (ptr: POINTER): INTEGER
 		external
 			"C [macro <lvcolumn.h>]"
 		end
 
-	cwel_lv_column_get_psztext (ptr: POINTER): POINTER is
+	cwel_lv_column_get_psztext (ptr: POINTER): POINTER
 		external
 			"C [macro <lvcolumn.h>] (LV_COLUMN*): EIF_POINTER"
 		end
 
-	cwel_lv_column_get_cchtextmax (ptr: POINTER): INTEGER is
+	cwel_lv_column_get_cchtextmax (ptr: POINTER): INTEGER
 		external
 			"C [macro <lvcolumn.h>]"
 		end
@@ -352,7 +393,7 @@ feature {NONE} -- Externals
 --		end
 -----------------------------------------------------------------
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

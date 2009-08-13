@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Create new instance of FEATURE_I"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -38,7 +38,7 @@ inherit
 
 feature -- Factory
 
-	new_feature (a_node: FEATURE_AS; a_name_id: INTEGER; a_class: CLASS_C): FEATURE_I is
+	new_feature (a_node: FEATURE_AS; a_name_id: INTEGER; a_class: CLASS_C): FEATURE_I
 			-- Create associated FEATURE_I instance of `a_node'.
 		require
 			a_node_not_void: a_node /= Void
@@ -63,6 +63,8 @@ feature -- Factory
 					else
 						fixme ("support process-relative constants (e.g., string constants)")
 					end
+				elseif Result.is_attribute and then a_node.indexes.is_stable and then attached {ATTRIBUTE_I} Result as a then
+					a.set_is_stable
 				end
 				if a_node.property_name /= Void then
 					Result.set_has_property (True)
@@ -95,7 +97,7 @@ feature {NONE} -- Implementation: Access
 
 feature {NONE} -- Implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_body_as (l_as: BODY_AS)
 		require
 			l_as_not_void: l_as /= Void
 		local
@@ -177,7 +179,7 @@ feature {NONE} -- Implementation
 					end
 
 					if l_routine.is_built_in then
-						if {l_built_in_as: !BUILT_IN_AS} l_routine.routine_body then
+						if attached {BUILT_IN_AS} l_routine.routine_body as l_built_in_as then
 							l_feature_as := l_built_in_as.body
 						end
 					end
@@ -237,7 +239,7 @@ feature {NONE} -- Implementation
 					type_exists: l_as.type /= Void
 				end
 				if l_routine.is_built_in then
-					if {l_built_in: !BUILT_IN_AS} l_routine.routine_body then
+					if attached {BUILT_IN_AS} l_routine.routine_body as l_built_in then
 						l_feature_as := l_built_in.body
 					end
 					if l_feature_as /= Void then
@@ -266,6 +268,7 @@ feature {NONE} -- Implementation
 						create l_attr.make
 						l_attr.set_type (query_type (l_as.type), l_assigner_name_id)
 						l_attr.set_has_body (True)
+						l_attr.init_assertion_flags (l_routine)
 						l_result := l_attr
 						l_result.set_is_empty (l_as.content.is_empty)
 					elseif l_routine.is_deferred then
@@ -351,7 +354,7 @@ feature {NONE} -- Implementation
 			last_feature := l_result
 		end
 
-	query_type (a_type: TYPE_AS): TYPE_A is
+	query_type (a_type: TYPE_AS): TYPE_A
 		require
 			a_type_not_void: a_type /= Void
 		do
@@ -360,8 +363,8 @@ feature {NONE} -- Implementation
 			query_type_not_void: Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -374,22 +377,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A library."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -26,7 +26,7 @@ create {CONF_PARSE_FACTORY}
 
 feature {NONE} -- Initialization
 
-	make (a_name: like name; a_location: like location; a_target: CONF_TARGET) is
+	make (a_name: like name; a_location: like location; a_target: CONF_TARGET)
 			-- Create associated to `a_target'.
 		do
 			Precursor {CONF_VIRTUAL_GROUP}(a_name, a_location, a_target)
@@ -37,13 +37,13 @@ feature {NONE} -- Initialization
 
 feature -- Status
 
-	is_library: BOOLEAN is
+	is_library: BOOLEAN
 			-- Is this a library?
 		once
 			Result := True
 		end
 
-	is_readonly: BOOLEAN is
+	is_readonly: BOOLEAN
 			-- Is this library readonly?
 		do
 			if is_readonly_set then
@@ -65,7 +65,7 @@ feature -- Access, in compiled only, not stored to configuration file
 	library_target: CONF_TARGET
 			-- The library target.
 
-	mapping: EQUALITY_HASH_TABLE [STRING, STRING] is
+	mapping: EQUALITY_HASH_TABLE [STRING, STRING]
 			-- We use the one from the target.
 		do
 			if library_target /= Void then
@@ -77,7 +77,7 @@ feature -- Access, in compiled only, not stored to configuration file
 
 feature -- Access queries
 
-	sub_group_by_name (a_name: STRING): CONF_GROUP is
+	sub_group_by_name (a_name: STRING): CONF_GROUP
 			-- Return sub group with `a_name' if there is any.
 		do
 			if library_target /= Void then
@@ -85,7 +85,7 @@ feature -- Access queries
 			end
 		end
 
-	class_by_name (a_class: STRING; a_dependencies: BOOLEAN): LINKED_SET [CONF_CLASS] is
+	class_by_name (a_class: STRING; a_dependencies: BOOLEAN): LINKED_SET [CONF_CLASS]
 			-- Get the class with the final (after renaming/prefix) name `a_class'
 			-- (if `a_dependencies' then we check dependencies)
 		local
@@ -106,26 +106,30 @@ feature -- Access queries
 			end
 		end
 
-	options: CONF_OPTION is
+	options: CONF_OPTION
 			-- Options (Debuglevel, assertions, ...)
 		do
-				-- get local options
+				-- Only options that can be overridden should be taken from the local definition,
+				-- so `internal_options' cannot be used as a starting point, the clean object is used instead.
+			create Result
+
+				-- Apply local options if present.
 			if internal_options /= Void then
-				Result := internal_options.twin
-			else
-				create Result
+				Result.merge_client (internal_options)
 			end
 
-				-- use options of the application
+				-- Apply options of the application if required.
 			if use_application_options then
-				Result.merge (target.options)
-				-- use options specified in the library
-			elseif library_target /= Void then
+				Result.merge_client (target.options)
+			end
+
+				-- Apply options specified in the library.
+			if library_target /= Void then
 				Result.merge (library_target.options)
 			end
 		end
 
-	class_options: HASH_TABLE [CONF_OPTION, STRING] is
+	class_options: HASH_TABLE [CONF_OPTION, STRING]
 			-- Options for classes.
 		do
 				-- get local options
@@ -136,7 +140,7 @@ feature -- Access queries
 
 feature {CONF_ACCESS} -- Update, stored in configuration file
 
-	set_use_application_options (a_flag: like use_application_options) is
+	set_use_application_options (a_flag: like use_application_options)
 			-- Set `use_application_options' to `a_flag'.
 		do
 			use_application_options := a_flag
@@ -146,7 +150,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration file
 
-	set_library_target (a_target: CONF_TARGET) is
+	set_library_target (a_target: CONF_TARGET)
 			-- Set `library_target' to `a_target'.
 		require
 			target_fully_parsed: a_target.system.is_fully_parsed
@@ -160,7 +164,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 
 feature -- Visit
 
-	process (a_visitor: CONF_VISITOR) is
+	process (a_visitor: CONF_VISITOR)
 			-- Process `a_visitor'.
 		do
 			Precursor (a_visitor)
@@ -169,7 +173,7 @@ feature -- Visit
 
 feature -- Equality
 
-	is_group_equivalent (other: like Current): BOOLEAN is
+	is_group_equivalent (other: like Current): BOOLEAN
 			-- Is `other' and `Current' the same with respect to the group layout?
 		do
 			Result := Precursor (other) and then equal (visible, other.visible) and then
@@ -179,8 +183,8 @@ feature -- Equality
 invariant
 	library_target_set: classes_set implies library_target /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -193,21 +197,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

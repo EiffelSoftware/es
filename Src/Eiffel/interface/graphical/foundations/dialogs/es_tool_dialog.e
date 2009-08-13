@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A base dialog implementation for all dialogs resident in EiffelStudio with a tool bar ribbon.
 	]"
@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	frozen build_dialog_tool_interface (a_container: EV_VERTICAL_BOX) is
+	frozen build_dialog_tool_interface (a_container: EV_VERTICAL_BOX)
 			-- Builds the dialog's user interface.
 			--
 			-- `a_container': The dialog's container where the user interface elements should be extended
@@ -53,7 +53,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Clean up
 
-    internal_recycle is
+    internal_recycle
             -- Recycle tool.
         do
             if internal_tool_bar_widget /= Void and internal_tool_bar_widget.item /= Void and then not internal_tool_bar_widget.item.is_destroyed then
@@ -66,7 +66,7 @@ feature {NONE} -- Clean up
             Precursor {ES_DIALOG}
         end
 
-    internal_detach_entities is
+    internal_detach_entities
             -- Detaches objects from their container
         do
             Precursor {ES_DIALOG}
@@ -79,7 +79,7 @@ feature {NONE} -- Clean up
 
 feature {NONE} -- Access
 
-    frozen tool_bar_widget: SD_TOOL_BAR
+    frozen tool_bar_widget: SD_GENERIC_TOOL_BAR
             -- Main tool tool bar
         local
             l_cell: like internal_tool_bar_widget
@@ -104,7 +104,7 @@ feature {NONE} -- Access
             result_consistent: Result = tool_bar_widget
         end
 
-    frozen right_tool_bar_widget: SD_TOOL_BAR
+    frozen right_tool_bar_widget: SD_GENERIC_TOOL_BAR
             -- Secondary right tool bar
         local
             l_cell: like internal_right_tool_bar_widget
@@ -118,7 +118,9 @@ feature {NONE} -- Access
                 l_items := create_right_tool_bar_items
                 if l_items /= Void then
                     create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
-                    Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    if attached tool_bar_widget as l_tool_bar and then not l_tool_bar.items.is_empty then
+                    	Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    end
                     l_items.do_all (agent Result.extend)
                     l_cell.put (Result)
                 end
@@ -182,16 +184,24 @@ feature {NONE} -- Factory
 
                 -- Add left tool bar
             if l_tool_bar /= Void then
-                l_container.extend (l_tool_bar)
+            	if attached {EV_WIDGET} l_tool_bar as lt_widget then
+					l_container.extend (lt_widget)
+				else
+					check not_possible: False end
+				end
             end
 
                 -- Add right tool bar
             if l_right_tool_bar /= Void then
-                create l_padding
-                l_container.extend (l_padding)
-                l_container.extend (l_right_tool_bar)
-                l_right_tool_bar.compute_minimum_size
-                l_container.disable_item_expand (l_right_tool_bar)
+				if attached {EV_WIDGET} l_right_tool_bar as lt_widget_2 then
+	                create l_padding
+	                l_container.extend (l_padding)
+	                l_container.extend (lt_widget_2)
+	                l_right_tool_bar.compute_minimum_size
+	                l_container.disable_item_expand (lt_widget_2)
+				else
+					check not_possible: False end
+				end
             end
 
             create Result
@@ -211,10 +221,10 @@ feature {NONE} -- Internal implementation cache
     internal_right_tool_bar_widget: CELL [like right_tool_bar_widget]
             -- Cached version of `right_tool_bar_widget'
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -225,22 +235,22 @@ feature {NONE} -- Internal implementation cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

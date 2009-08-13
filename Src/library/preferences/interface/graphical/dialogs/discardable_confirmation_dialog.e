@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Dialog asking the user if he really wants to start a command"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize to default state.
 		local
 			hb: EV_HORIZONTAL_BOX
@@ -34,14 +34,13 @@ feature {NONE} -- Initialization
 			pixmap_box: EV_CELL -- Container to display pixmap in.
 			button_box: EV_HORIZONTAL_BOX -- Bar with all buttons of the dialog.
 		do
+			create check_button.make_with_text (Check_button_label)
+			button_box := build_buttons_box
+
 			Precursor {EV_DIALOG}
 			set_title (dialog_title)
 			set_icon_pixmap (default_pixmaps.question_pixmap)
 			disable_user_resize
-
-			create check_button.make_with_text (Check_button_label)
-
-			button_box := build_buttons_box
 
 			create label
 			label.align_text_left
@@ -98,7 +97,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	build_buttons_box: EV_HORIZONTAL_BOX is
+	build_buttons_box: EV_HORIZONTAL_BOX
 			-- Build the button box.
 		do
 			create Result
@@ -107,13 +106,14 @@ feature {NONE} -- Initialization
 			Result.enable_homogeneous
 
 			ok_button := create_button (ok_button_label)
+			no_button := create_button (no_button_label)
+			cancel_button := create_button (cancel_button_label)
+			
 			Result.extend (ok_button)
 			if buttons_count >= 3 then
-				no_button := create_button (no_button_label)
 				Result.extend (no_button)
 			end
 			if buttons_count >= 2 then
-				cancel_button := create_button (cancel_button_label)
 				Result.extend (cancel_button)
 			end
 		ensure
@@ -122,7 +122,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	show_modal_to_window (a_window: EV_WINDOW) is
+	show_modal_to_window (a_window: EV_WINDOW)
 			-- Show and wait until `Current' is closed.
 			-- `Current' is shown modal with respect to `a_window'.
 		do
@@ -144,7 +144,7 @@ feature -- Access
 
 	preferences: PREFERENCES
 
-	buttons_count: INTEGER is
+	buttons_count: INTEGER
 			-- Number of buttons.
 			--
 			-- Typically:
@@ -156,8 +156,10 @@ feature -- Access
 
 feature -- Status setting
 
-	set_ok_action (an_agent: PROCEDURE [ANY, TUPLE]) is
+	set_ok_action (an_agent: PROCEDURE [ANY, TUPLE])
 			-- Set the action performed when the Ok button is selected.
+		require
+			an_agent_attached: an_agent /= Void
 		do
 				-- Remove the previous `ok_action' if any.
 			if ok_action /= Void then
@@ -168,22 +170,24 @@ feature -- Status setting
 			ok_button.select_actions.extend (an_agent)
 		end
 
-	set_no_action (an_agent: PROCEDURE [ANY, TUPLE]) is
+	set_no_action (an_agent: PROCEDURE [ANY, TUPLE])
 			-- Set the action performed when the No button is selected.
 		require
 			no_button_exists: buttons_count >= 3
+			an_agent_attached: an_agent /= Void
 		do
-			if no_action /= void then
+			if no_action /= Void then
 				no_button.select_actions.prune_all (no_action)
 			end
 			no_action := an_agent
 			no_button.select_actions.extend (an_agent)
 		end
 
-	set_cancel_action (an_agent: PROCEDURE [ANY, TUPLE]) is
+	set_cancel_action (an_agent: PROCEDURE [ANY, TUPLE])
 			-- Set the action performed when the Cancel button is selected.
 		require
 			cancel_button_exists: buttons_count >= 2
+			an_agent_attached: an_agent /= Void
 		do
 				-- Remove the previous `cancel_action' if any.
 			if cancel_action /= Void then
@@ -194,7 +198,7 @@ feature -- Status setting
 			cancel_button.select_actions.extend (an_agent)
 		end
 
-	destroy is
+	destroy
 			-- Destroy the dialog (update the preferences based on the check button first)
 		do
 			save_check_state
@@ -203,7 +207,7 @@ feature -- Status setting
 
 feature {NONE} -- Contract support
 
-	is_in_default_state: BOOLEAN is
+	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?
 		do
 				-- FIXME: Manu 02/27/2001
@@ -227,34 +231,34 @@ feature {NONE} -- Implementation
 	cancel_button: EV_BUTTON
 			-- Button for "Cancel" answer.
 
-	ok_action: PROCEDURE [ANY, TUPLE]
+	ok_action: detachable PROCEDURE [ANY, TUPLE] note option: stable attribute end
 			-- Action performed when ok is selected.
 
-	cancel_action: PROCEDURE [ANY, TUPLE]
+	cancel_action: detachable PROCEDURE [ANY, TUPLE] note option: stable attribute end
 			-- Action performed when Cancel is selected.
 
-	no_action: PROCEDURE [ANY, TUPLE]
+	no_action: detachable PROCEDURE [ANY, TUPLE] note option: stable attribute end
 			-- Action performed when ok is selected.
 
-	Layout_constants: EV_LAYOUT_CONSTANTS is
+	Layout_constants: EV_LAYOUT_CONSTANTS
 			-- Constants that help design nice GUIs.
 		once
 			create Result
 		end
 
-	Interface_names: PREFERENCE_CONSTANTS is
+	Interface_names: PREFERENCE_CONSTANTS
 			-- Constants that help design nice GUIs.
 		once
 			create Result
 		end
 
-	save_check_state is
+	save_check_state
 			-- Save the state of the check button to the preferences.
 		do
 			save_check_button_state (check_button.is_selected)
 		end
 
-	create_button (a_text: STRING_GENERAL): EV_BUTTON is
+	create_button (a_text: STRING_GENERAL): EV_BUTTON
 			-- Create a new button labeled `a_text'
 		do
 			create Result
@@ -264,7 +268,7 @@ feature {NONE} -- Implementation
 			Result.select_actions.extend (agent destroy)
 		end
 
-	dialog_title: STRING_GENERAL is
+	dialog_title: STRING_GENERAL
 			-- Title for this confirmation dialog
 		do
 			Result := "Confirmation"
@@ -272,14 +276,14 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Deferred Constants
 
-	check_button_label: STRING_GENERAL is
+	check_button_label: STRING_GENERAL
 			-- Label for `check_button'.
 		deferred
 		ensure
 			valid_label: Result /= Void and then not Result.is_empty
 		end
 
-	ok_button_label: STRING_GENERAL is
+	ok_button_label: STRING_GENERAL
 			-- Label for the Ok/Yes button.
 		do
 			if buttons_count >= 3 then
@@ -291,7 +295,7 @@ feature {NONE} -- Deferred Constants
 			valid_label: Result /= Void and then not Result.is_empty
 		end
 
-	no_button_label: STRING_GENERAL is
+	no_button_label: STRING_GENERAL
 			-- Label for the No button.
 		do
 			Result := (create {EV_DIALOG_CONSTANTS}).ev_No
@@ -299,7 +303,7 @@ feature {NONE} -- Deferred Constants
 			valid_label: Result /= Void and then not Result.is_empty
 		end
 
-	cancel_button_label: STRING_GENERAL is
+	cancel_button_label: STRING_GENERAL
 			-- Label for the Cancel/No button.
 		do
 			Result := (create {EV_DIALOG_CONSTANTS}).ev_Cancel
@@ -307,7 +311,7 @@ feature {NONE} -- Deferred Constants
 			valid_label: Result /= Void and then not Result.is_empty
 		end
 
-	confirmation_message_label: STRING_GENERAL is
+	confirmation_message_label: STRING_GENERAL
 			-- Label for the confirmation message.
 		deferred
 		ensure
@@ -316,7 +320,7 @@ feature {NONE} -- Deferred Constants
 
 feature {NONE} -- Deferred Implementation
 
-	assume_ok: BOOLEAN is
+	assume_ok: BOOLEAN
 			-- Should `Ok' be assumed as selected?
 		deferred
 		ensure
@@ -324,7 +328,7 @@ feature {NONE} -- Deferred Implementation
 				Result implies ok_action /= Void
 		end
 
-	assume_cancel: BOOLEAN is
+	assume_cancel: BOOLEAN
 			-- Should `Cancel' be assumed as selected?
 		do
 			Result := False
@@ -333,12 +337,12 @@ feature {NONE} -- Deferred Implementation
 				Result implies cancel_action /= Void
 		end
 
-	save_check_button_state (check_button_checked: BOOLEAN) is
+	save_check_button_state (check_button_checked: BOOLEAN)
 			-- Save the preferences according to the state of the check button.
 		deferred
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Constants and conversion functions for NLS LCIDS"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,7 +16,7 @@ create
 
 feature --Access
 
-	is_supported_locale(lcid:INTEGER):BOOLEAN is
+	is_supported_locale(lcid:INTEGER):BOOLEAN
 			-- Is the given LCID supported _and_ installed?
 		do
 				-- Possible flags, from winnls.h :
@@ -25,7 +25,7 @@ feature --Access
 			Result := is_valid_locale(lcid, 2)
 		end
 
-	supported_locales: LIST[I18N_LOCALE_ID] is
+	supported_locales: LIST[I18N_LOCALE_ID]
 			--  List all installed locales
 		local
 			i: INTEGER
@@ -43,7 +43,7 @@ feature --Access
 			end
 		end
 
-	lcid_to_locale_id(lcid: INTEGER):I18N_LOCALE_ID is
+	lcid_to_locale_id(lcid: INTEGER):I18N_LOCALE_ID
 			-- Only Windows Vista can manage to give you the correct identifier in one query.
 			-- Everyone else needs to take a crash course on how these identifiers are composed:
 			-- Typically we have: ll-RR where ll is a lowercase language code from ISO 639-1 (or 639-2/T)
@@ -54,13 +54,11 @@ feature --Access
 		local
 			iso639: STRING_32
 			iso3166: STRING_32
-			script: STRING_32
+			script: detachable STRING_32
 			i: INTEGER
 		do
-			iso639 := extract_locale_string (lcid, nls_constants.locale_siso639langname,
-												nls_constants.locale_siso639langname_maxlen )
-			iso3166 := extract_locale_string (lcid, nls_constants.locale_siso3166ctryname,
-												nls_constants.locale_siso3166ctryname_maxlen )
+			iso639 := extract_locale_string (lcid, nls_constants.locale_siso639langname)
+			iso3166 := extract_locale_string (lcid, nls_constants.locale_siso3166ctryname)
 				-- We can get away with this because we know scripts is a small array
 			from
 				i := 1
@@ -76,7 +74,7 @@ feature --Access
 			create Result.make (iso639, iso3166, script)
 		end
 
-	locale_id_to_lcid(id: I18N_LOCALE_ID):INTEGER is
+	locale_id_to_lcid(id: I18N_LOCALE_ID):INTEGER
 			-- takes an locale id and returns corresponding LCID
 			-- if it returns 0 Something Is Wrong
 		require
@@ -86,12 +84,11 @@ feature --Access
 			found: BOOLEAN
 			name, t_string: STRING_32
 		do
-
 			create name.make_from_string(id.language)
-			if (id.script /= Void and then not id.script.is_equal ("euro")) then
-				name.append_string("-"+id.script)
+			if (attached id.script as l_script) and then not l_script.is_equal (("euro").as_string_32) then
+				name.append ("-"+l_script)
 			end
-			name.append_string ("-"+id.region)
+			name.append ("-"+id.region)
 				-- locales is sorted by iso_code, so we can use etienne's well-contracted binary search
 
 			from
@@ -136,7 +133,7 @@ feature {NONE}  -- LCIDS
 
 feature -- Initialisation
 
-	initialize_locales is
+	initialize_locales
 			-- populate locales array and scripts array
 		do
 			locales := <<
@@ -372,7 +369,7 @@ feature -- Initialisation
 feature {NONE} -- C functions
 
 
-	is_valid_locale(lcid:INTEGER; flags:INTEGER):BOOLEAN is
+	is_valid_locale(lcid:INTEGER; flags:INTEGER):BOOLEAN
 			-- encapsulation of IsValidLocaleName
 		external
 			"C signature (LCID, DWORD): BOOL use <windows.h>"
@@ -383,13 +380,13 @@ feature {NONE} -- C functions
 invariant
 	locales /= Void
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

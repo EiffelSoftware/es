@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Graphical panel for EiffelStudio's testing tool.
 	]"
@@ -42,8 +42,6 @@ inherit
 	ES_HELP_CONTEXT
 		export
 			{NONE} all
-		redefine
-			help_provider
 		end
 
 	TAG_UTILITIES
@@ -56,10 +54,10 @@ inherit
 			{NONE} all
 		end
 
-	EB_SHARED_GRAPHICAL_COMMANDS
-		export
-			{NONE} all
-		end
+--	EB_SHARED_GRAPHICAL_COMMANDS
+--		export
+--			{NONE} all
+--		end
 
 create {ES_TESTING_TOOL}
 	make
@@ -69,7 +67,7 @@ feature {NONE} -- Initialization
 	on_before_initialize
 			-- <Precursor>
 		local
-			l_et: KL_STRING_EQUALITY_TESTER_A [!STRING]
+			l_et: KL_STRING_EQUALITY_TESTER_A [attached STRING]
 		do
 			Precursor
 			create l_et
@@ -85,7 +83,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Initialization: widgets
 
-	build_tool_interface (a_widget: like create_widget) is
+	build_tool_interface (a_widget: like create_widget)
 			-- <Precursor>
 		do
 			build_view_bar (a_widget)
@@ -95,7 +93,7 @@ feature {NONE} -- Initialization: widgets
 			a_widget.extend (split_area)
 		end
 
-	build_view_bar (a_widget: like create_widget) is
+	build_view_bar (a_widget: like create_widget)
 			-- Build tool bar containing view and filter box
 		local
 			l_tool_bar: SD_TOOL_BAR
@@ -138,7 +136,7 @@ feature {NONE} -- Initialization: widgets
 			a_widget.disable_item_expand (l_hbox)
 		end
 
-	build_tree_view is
+	build_tree_view
 			-- Create `tree_view' and add it to `split_area'.
 		do
 			create tree_view.make (develop_window)
@@ -168,12 +166,11 @@ feature {NONE} -- Initialization: widget status
 	on_after_initialized
 			-- <Precursor>
 		local
-			l_service: TEST_SUITE_S
+			l_app: EV_APPLICATION
 		do
 			Precursor
 			if test_suite.is_service_available then
-				l_service := test_suite.service
-				l_service.connect_events (Current)
+				test_suite.service.test_suite_connection.connect_events (Current)
 			end
 			tree_view.set_layout (create {ES_TEST_TREE_GRID_LAYOUT}.make (Current))
 			propagate_drop_actions (Void)
@@ -181,6 +178,9 @@ feature {NONE} -- Initialization: widget status
 			initialize_tool_bar
 			initialize_view_bar
 			update_run_labels
+
+			l_app := (create {EV_SHARED_APPLICATION}).ev_application
+			l_app.add_idle_action_kamikaze (agent split_area.set_proportion (0.5))
 		end
 
 	initialize_tool_bar
@@ -197,7 +197,7 @@ feature {NONE} -- Initialization: widget status
 			view_templates.force_last ("class")
 			view_template_descriptions.force_last ("Tests")
 			view_templates.force_last ("outcome")
-			view_template_descriptions.force_last ("Outcomes")
+			view_template_descriptions.force_last ("Results")
 			view_templates.force_last ("covers")
 			view_template_descriptions.force_last ("Classes under test")
 			view_templates.force_last ("type")
@@ -209,83 +209,81 @@ feature {NONE} -- Initialization: widget status
 
 feature -- Access: help
 
-	help_provider: !UUID
+	help_context_id: STRING
 			-- <Precursor>
 		once
-			Result := (create {HELP_PROVIDER_KINDS}).wiki
-		end
-
-	help_context_id: !STRING_GENERAL
-			-- <Precursor>
-		once
-			Result := "Testing Tool (Specification)"
+			Result := "1d8cc843-238e-feaa-cfa6-629f080ffba7"
 		end
 
 feature {NONE} -- Access
 
-	tree_view: !ES_TAGABLE_TREE_GRID [!TEST_I]
+	tree_view: attached ES_TAGABLE_TREE_GRID [attached TEST_I]
 			-- Tree view displaying tests
 
-	filter: !TAG_BASED_FILTERED_COLLECTION [!TEST_I]
+	filter: attached TAG_BASED_FILTERED_COLLECTION [attached TEST_I]
 			-- Collection used for filter
 
-	outcome_tab: !ES_TESTING_TOOL_OUTCOME_WIDGET
+	outcome_tab: attached ES_TESTING_TOOL_OUTCOME_WIDGET
 			-- Tab showing details of a selected test
 
-	library_prompt_cell: !CELL [BOOLEAN]
-			-- Cell containing status of library prompt
-		once
-			create Result
+	current_window: attached EV_WINDOW
+			-- <Precursor>
+		local
+			l_window: EV_WINDOW
+		do
+			l_window := develop_window.window
+			check l_window /= Void end
+			Result := l_window
 		end
 
 feature {NONE} -- Access: widgets
 
-	view_box: !EV_COMBO_BOX
+	view_box: attached EV_COMBO_BOX
 			-- Combo box which defines prefix for `tree_view'
 
-	filter_box: !EV_COMBO_BOX
+	filter_box: attached EV_COMBO_BOX
 			-- Combo box containing pattern for filtering tests
 
-	split_area: !EV_VERTICAL_SPLIT_AREA
+	split_area: attached EV_VERTICAL_SPLIT_AREA
 			-- Splitting area for grid and notebook
 
-	notebook: !EV_NOTEBOOK
+	notebook: attached EV_NOTEBOOK
 			-- Notebook for detailed information
 
-	runs_label: !EV_LABEL
+	runs_label: attached EV_LABEL
 			-- Label showing number of tests which have been executed
 
-	errors_label: !EV_LABEL
+	errors_label: attached EV_LABEL
 			-- Label showing number of tests currently failing
 
-	errors_pixmap: !EV_PIXMAP
+	errors_pixmap: attached EV_PIXMAP
 
 feature {NONE} -- Access: view
 
-	view_templates: !DS_ARRAYED_LIST [!STRING]
+	view_templates: attached DS_ARRAYED_LIST [attached STRING]
 			-- List of predefined tags to be used in `tree_view'
 
-	view_template_descriptions: !DS_ARRAYED_LIST [!STRING]
+	view_template_descriptions: attached DS_ARRAYED_LIST [attached STRING]
 			-- List of readable descriptions for each tag in `view_templates'
 
-	view_history: !DS_LINKED_LIST [!STRING]
+	view_history: attached DS_LINKED_LIST [attached STRING]
 			-- List of tags user has entered recently
 
 feature {NONE} -- Access: buttons
 
-	wizard_button: !SD_TOOL_BAR_BUTTON
+	wizard_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for launching test wizard
 
-	run_button: !SD_TOOL_BAR_DUAL_POPUP_BUTTON
+	run_button: attached SD_TOOL_BAR_DUAL_POPUP_BUTTON
 			-- Button for launching the test executor
 
-	debug_button: !SD_TOOL_BAR_DUAL_POPUP_BUTTON
+	debug_button: attached SD_TOOL_BAR_DUAL_POPUP_BUTTON
 			-- Button for debugging tests
 
-	stop_button: !SD_TOOL_BAR_BUTTON
+	stop_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for stopping any current test execution
 
-	clear_filter_button: !SD_TOOL_BAR_BUTTON
+	clear_filter_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for clearing any filter
 
 feature {NONE} -- Access: menus
@@ -293,22 +291,22 @@ feature {NONE} -- Access: menus
 	run_all_menu,
 	run_failing_menu,
 	run_selected_menu,
-	run_filtered_menu: !EV_MENU_ITEM
+	run_filtered_menu: attached EV_MENU_ITEM
 			-- Menu items for running tests in background
 
 	debug_all_menu,
 	debug_failing_menu,
 	debug_selected_menu,
-	debug_filtered_menu: !EV_MENU_ITEM
+	debug_filtered_menu: attached EV_MENU_ITEM
 			-- Menu items for debugging tests
 
 feature {NONE} -- Status setting: view
 
-	on_return_view is
+	on_return_view
 			-- Called when the user enters a new view definition
 		local
 			l_orig_tag: STRING
-			l_tag: !STRING
+			l_tag: attached STRING
 		do
 			l_orig_tag := view_box.text.to_string_8
 			check l_orig_tag /= Void end
@@ -343,10 +341,10 @@ feature {NONE} -- Status setting: view
 			end
 		end
 
-	on_select_view is
+	on_select_view
 			-- Called when a view new view is selected
 		do
-			if {l_tag: STRING} view_box.selected_item.data then
+			if attached {STRING} view_box.selected_item.data as l_tag then
 				view_box.set_text (l_tag)
 				execute_with_busy_cursor (agent update_view)
 			end
@@ -365,10 +363,10 @@ feature {NONE} -- Status setting: view
 			execute_with_busy_cursor (agent update_view)
 		end
 
-	update_view_box is
+	update_view_box
 			-- Update proposal list for `view_box'
 		local
-			l_cursor: DS_LINEAR_CURSOR [!STRING]
+			l_cursor: DS_LINEAR_CURSOR [attached STRING]
 			i: INTEGER
 			l_item: EV_LIST_ITEM
 		do
@@ -396,10 +394,10 @@ feature {NONE} -- Status setting: view
 			end
 		end
 
-	update_view is
+	update_view
 			-- Refresh `tree_view' according to current view definition.
 		local
-			l_tag: STRING
+			l_tag, l_expr: STRING
 		do
 			develop_window.lock_update
 			if test_suite.is_service_available then
@@ -413,7 +411,9 @@ feature {NONE} -- Status setting: view
 				if not filter.is_connected then
 					filter.connect (test_suite.service)
 				end
-				if {l_expr: !STRING} filter_box.text.to_string_8 and then not l_expr.is_empty then
+				l_expr := filter_box.text.to_string_8
+				check l_expr /= Void end
+				if not l_expr.is_empty then
 					if not (filter.has_expression and then filter.expression.is_equal (l_expr)) then
 						filter.set_expression (l_expr)
 					end
@@ -447,14 +447,14 @@ feature {NONE} -- Status setting: view
 
 feature {NONE} -- Status setting: stones
 
-	on_stone_changed (a_old_stone: ?like stone)
+	on_stone_changed (a_old_stone: detachable like stone)
 			-- <Precursor>
 		local
 			l_view_text, l_filter_text: STRING
 			l_is_test_class: BOOLEAN
 		do
 			if not is_in_stone_synchronization then
-				if {l_class_stone: !CLASSI_STONE} stone and then {l_class: !EIFFEL_CLASS_I} l_class_stone.class_i then
+				if attached {CLASSI_STONE} stone as l_class_stone and then attached {EIFFEL_CLASS_I} l_class_stone.class_i as l_class then
 					create l_filter_text.make (40)
 					l_filter_text.append ("class:")
 					l_filter_text.append (l_class_stone.class_name)
@@ -467,11 +467,11 @@ feature {NONE} -- Status setting: stones
 					else
 						l_view_text := "covers"
 					end
-					if {l_feature_stone: FEATURE_STONE} stone then
+					if attached {FEATURE_STONE} stone as l_feature_stone then
 						l_filter_text.append_character (' ')
 						l_filter_text.append (l_feature_stone.feature_name)
 					end
-				elseif {l_cluster: CLUSTER_STONE} stone then
+				elseif attached {CLUSTER_STONE} stone as l_cluster then
 					create l_filter_text.make (40)
 					if l_cluster.group.is_cluster then
 						l_filter_text.append ("cluster:")
@@ -501,6 +501,7 @@ feature {NONE} -- Status settings: widgets
 		local
 			l_text: STRING_32
 			l_ts: TEST_SUITE_S
+			l_tool_bar: like right_tool_bar_widget
 		do
 			if test_suite.is_service_available then
 				l_ts := test_suite.service
@@ -528,8 +529,9 @@ feature {NONE} -- Status settings: widgets
 					errors_label.disable_sensitive
 				end
 
-				if {l_tb: like right_tool_bar_widget} right_tool_bar_widget then
-					l_tb.compute_minimum_size
+				l_tool_bar := right_tool_bar_widget
+				if l_tool_bar /= Void then
+					l_tool_bar.compute_minimum_size
 				end
 			end
 		end
@@ -539,72 +541,14 @@ feature {NONE} -- Events: wizard
 	on_launch_wizard
 			-- Called when user_widget click on `wizard_button'.
 		local
-			l_project: E_PROJECT
-			l_uuid: UUID
 			l_wizard: ES_TEST_WIZARD_MANAGER
 		do
-			if test_suite.is_service_available then
-				l_project := test_suite.service.eiffel_project
-				if test_suite.service.is_project_initialized then
-					create l_uuid.make_from_string (testing_library_uuid)
-					if l_project.universe.library_of_uuid (l_uuid, False).is_empty and not library_prompt_cell.item then
-						library_prompt_cell.put (True)
-						prompts.show_question_prompt_with_cancel (locale_formatter.translation (q_add_library), develop_window.window,
-								-- Yes action
-							agent (a_project: E_PROJECT)
-								local
-									l_location: CONF_FILE_LOCATION
-									l_factory: CONF_PARSE_FACTORY
-									l_library: CONF_LIBRARY
-									l_w: ES_TEST_WIZARD_MANAGER
-									l_system: CONF_SYSTEM
-									l_target: CONF_TARGET
-								do
-									l_target := a_project.universe.target
-									create l_factory
-									l_location := l_factory.new_location_from_full_path (testing_library_path, l_target)
-									l_library := l_factory.new_library ("testing", l_location, l_target)
-									l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
-									l_system := l_factory.new_system_generate_uuid ("temp")
-									l_system.set_application_target (l_target)
-									l_library.set_library_target (l_factory.new_target ("temp", l_system))
-									l_target.add_library (l_library)
-									l_target.system.store
-
-										-- Find added classes & compile
-									if discover_melt_cmd.executable then
-										discover_melt_cmd.execute
-									end
-
-										-- Launch wizard if compilation was successful
-									if a_project.successful then
-										create l_w.make (develop_window)
-									end
-								end (l_project),
-								-- No action
-							agent
-								local
-									l_w: ES_TEST_WIZARD_MANAGER
-								do
-									create l_w.make (develop_window)
-								end,
-								-- Cancel action
-							agent
-								do
-									library_prompt_cell.put (False)
-								end)
-					else
-						create l_wizard.make (develop_window)
-					end
-				else
-					prompts.show_error_prompt (locale_formatter.translation (e_project_not_compiled), develop_window.window, Void)
-				end
-			end
+			create l_wizard.make (develop_window)
 		end
 
 feature {NONE} -- Events: test execution
 
-	on_run_current (a_type: !TYPE [TEST_EXECUTOR_I]) is
+	on_run_current (a_type: attached TYPE [TEST_EXECUTOR_I])
 			-- Called when user presses `run_button' or `debug_button' directly.
 		do
 			if not tree_view.selected_items.is_empty then
@@ -614,18 +558,18 @@ feature {NONE} -- Events: test execution
 			end
 		end
 
-	on_run_all (a_type: !TYPE [TEST_EXECUTOR_I]) is
+	on_run_all (a_type: attached TYPE [TEST_EXECUTOR_I])
 			-- Called when user selects "run all" item of `run_button'.
 		do
 			launch_executor (Void, a_type)
 		end
 
-	on_run_failing (a_type: !TYPE [TEST_EXECUTOR_I]) is
+	on_run_failing (a_type: attached TYPE [TEST_EXECUTOR_I])
 			-- Called when user selectes "run failing" item of `run_button'.
 		local
-			l_item: !TEST_I
-			l_list: !DS_ARRAYED_LIST [!TEST_I]
-			l_cursor: DS_LINEAR_CURSOR [!TEST_I]
+			l_item: attached TEST_I
+			l_list: attached DS_ARRAYED_LIST [attached TEST_I]
+			l_cursor: DS_LINEAR_CURSOR [attached TEST_I]
 		do
 			if test_suite.is_service_available then
 				create l_list.make (test_suite.service.tests.count)
@@ -647,7 +591,7 @@ feature {NONE} -- Events: test execution
 			end
 		end
 
-	on_run_filtered (a_type: !TYPE [TEST_EXECUTOR_I]) is
+	on_run_filtered (a_type: attached TYPE [TEST_EXECUTOR_I])
 			-- Called when user selects "run filteres" item of `run_button'.
 		do
 			if filter.has_expression then
@@ -657,46 +601,24 @@ feature {NONE} -- Events: test execution
 			end
 		end
 
-	on_run_selected (a_type: !TYPE [TEST_EXECUTOR_I]) is
+	on_run_selected (a_type: attached TYPE [TEST_EXECUTOR_I])
 			-- Called when user selects "run selected" item of `run_button'.
 		do
 			launch_executor (tree_view.selected_items, a_type)
 		end
 
-	launch_executor (a_list: ?DS_LINEAR [!TEST_I]; a_type: !TYPE [TEST_EXECUTOR_I])
+	launch_executor (a_list: detachable DS_LINEAR [attached TEST_I]; a_type: attached TYPE [TEST_EXECUTOR_I])
 			-- Try to run all tests in a given list through the background executor. If of some reason
 			-- the tests can not be executed, show an error message.
 		local
-			l_executor: TEST_EXECUTOR_I
-			l_test_suite: TEST_SUITE_S
 			l_conf: TEST_EXECUTOR_CONF
 		do
-			l_test_suite := test_suite.service
-			if test_suite.is_service_available then
-				if l_test_suite.processor_registrar.is_valid_type (a_type, l_test_suite) then
-					l_executor := l_test_suite.executor (a_type)
-					if l_executor.is_ready then
-						if a_list /= Void then
-							create l_conf.make_with_tests (a_list)
-						else
-							create l_conf.make
-						end
-						l_conf.set_sorter_prefix (tree_view.tag_prefix)
-						if l_executor.is_valid_configuration (l_conf) then
-							l_test_suite.launch_processor (l_executor, l_conf, False)
-						else
-							show_error_prompt (e_invalid_test_list, [])
-						end
-					else
-						show_error_prompt (e_executor_already_running, [])
-
-					end
-				else
-					show_error_prompt (e_executor_unavailable, [])
-				end
+			if a_list /= Void then
+				create l_conf.make_with_tests (a_list, a_type ~ debug_executor_type)
 			else
-				show_error_prompt (e_test_suite_unavailable, [])
+				create l_conf.make (a_type ~ debug_executor_type)
 			end
+			launch_processor (a_type, l_conf)
 		end
 
 	on_stop
@@ -721,7 +643,7 @@ feature {NONE} -- Events: test execution
 
 feature {NONE} -- Events: labels
 
-	on_run_label_select
+	on_run_label_select (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tile, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER)
 			-- Called when user clicks on `runs_label'.
 		do
 			view_box.set_text (l_outcome_view)
@@ -729,7 +651,7 @@ feature {NONE} -- Events: labels
 			update_view
 		end
 
-	on_error_label_select
+	on_error_label_select (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tile, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER)
 			-- Called when user clicks on `errors_label'.
 		do
 			view_box.set_text (l_outcome_view)
@@ -739,13 +661,13 @@ feature {NONE} -- Events: labels
 
 feature {TEST_SUITE_S} -- Events: test suite
 
-	on_test_added (a_collection: !ACTIVE_COLLECTION_I [!TEST_I]; a_item: !TEST_I)
+	on_test_added (a_collection: attached ACTIVE_COLLECTION_I [attached TEST_I]; a_item: attached TEST_I)
 			-- <Precursor>
 		do
 			update_run_labels
 		end
 
-	on_test_changed (a_test_suite: !ACTIVE_COLLECTION_I [!TEST_I]; a_test: !TEST_I)
+	on_test_changed (a_test_suite: attached ACTIVE_COLLECTION_I [attached TEST_I]; a_test: attached TEST_I)
 			-- <Precursor>
 		do
 			if outcome_tab.is_active and then outcome_tab.test = a_test then
@@ -754,7 +676,7 @@ feature {TEST_SUITE_S} -- Events: test suite
 			update_run_labels
 		end
 
-	on_test_removed (a_collection: !ACTIVE_COLLECTION_I [!TEST_I]; a_item: !TEST_I)
+	on_test_removed (a_collection: attached ACTIVE_COLLECTION_I [attached TEST_I]; a_item: attached TEST_I)
 			-- <Precursor>
 		do
 			if outcome_tab.is_active and then outcome_tab.test = a_item then
@@ -763,7 +685,7 @@ feature {TEST_SUITE_S} -- Events: test suite
 			update_run_labels
 		end
 
-	on_processor_launched (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I)
+	on_processor_launched (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I)
 			-- <Precursor>
 		local
 			l_new_tab: ES_TESTING_TOOL_PROCESSOR_WIDGET
@@ -775,7 +697,7 @@ feature {TEST_SUITE_S} -- Events: test suite
 			until
 				notebook.after or l_found
 			loop
-				if {l_tab: ES_TESTING_TOOL_PROCESSOR_WIDGET} notebook.item_for_iteration.data then
+				if attached {ES_TESTING_TOOL_PROCESSOR_WIDGET} notebook.item_for_iteration.data as l_tab then
 					if l_tab.processor = a_processor then
 						l_found := True
 						notebook.item_tab (l_tab.widget).enable_select
@@ -787,12 +709,12 @@ feature {TEST_SUITE_S} -- Events: test suite
 			if not l_found then
 				l_window := develop_window
 				check l_window /= Void end
-				if {l_executor: !TEST_EXECUTOR_I} a_processor then
+				if attached {TEST_EXECUTOR_I} a_processor as l_executor then
 					create {ES_TESTING_TOOL_EXECUTOR_WIDGET} l_new_tab.make (l_executor, l_window)
-				elseif {l_generator: !TEST_GENERATOR_I} a_processor then
+				elseif attached {TEST_GENERATOR_I} a_processor as l_generator then
 					create {ES_TESTING_TOOL_GENERATOR_WIDGET} l_new_tab.make (l_generator, l_window)
-				elseif {l_factory: !TEST_CREATOR_I} a_processor then
-					create {ES_TESTING_TOOL_CREATOR_WIDGET} l_new_tab.make (l_factory, l_window)
+				elseif attached {TEST_CREATOR_I} a_processor as l_creator then
+					create {ES_TESTING_TOOL_CREATOR_WIDGET} l_new_tab.make (l_creator, l_window)
 				end
 				if l_new_tab /= Void then
 					l_new_tab.widget.set_data (l_new_tab)
@@ -813,7 +735,7 @@ feature {TEST_SUITE_S} -- Events: test suite
 			end
 		end
 
- 	on_processor_stopped (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I)
+ 	on_processor_stopped (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I)
  			-- <Precursor>
  		do
  			if background_executor_type.attempt (a_processor) /= Void then
@@ -823,17 +745,18 @@ feature {TEST_SUITE_S} -- Events: test suite
 			end
  		end
 
- 	on_processor_error (a_test_suite: !TEST_SUITE_S; a_processor: !TEST_PROCESSOR_I; a_error: !STRING_8; a_token_values: !TUPLE)
+ 	on_processor_error (a_test_suite: attached TEST_SUITE_S; a_processor: attached TEST_PROCESSOR_I; a_error: attached STRING_8; a_token_values: TUPLE)
  			-- <Precursor>
  		do
  			if window_manager.last_focused_window = develop_window then
- 				prompts.show_error_prompt (locale_formatter.formatted_translation (a_error, a_token_values), develop_window.window, Void)
+ 					-- Note: remove `as_attached' compiler treats Current as attached
+ 				prompts.show_error_prompt (locale_formatter.formatted_translation (a_error, a_token_values.as_attached), develop_window.window, Void)
  			end
  		end
 
 feature {ES_TAGABLE_TREE_GRID} -- Events: tree view
 
-	on_item_double_press (a_item: !TEST_I; a_in_tree_view: BOOLEAN)
+	on_item_double_press (a_item: attached TEST_I; a_in_tree_view: BOOLEAN)
 			-- Called when user double presses on item in of the grids
 		do
 			if a_in_tree_view then
@@ -846,7 +769,7 @@ feature {ES_TAGABLE_TREE_GRID} -- Events: tree view
 			end
 		end
 
-	on_selection_change (a_test: !TEST_I; a_is_selected: BOOLEAN)
+	on_selection_change (a_test: attached TEST_I; a_is_selected: BOOLEAN)
 			-- Called when item is selected or deselected.
 		do
 			if tree_view.selected_items.is_empty then
@@ -880,17 +803,9 @@ feature {NONE} -- Events: notebook
 			end
 		end
 
-feature {NONE} -- Implementation
-
-	show_error_prompt (a_message: !STRING; a_tokens: !TUPLE)
-			-- Show error prompt with `a_message'.
-		do
-			prompts.show_error_prompt (locale_formatter.formatted_translation (a_message, a_tokens), develop_window.window, Void)
-		end
-
 feature {NONE} -- Factory
 
-	create_widget: !EV_VERTICAL_BOX
+	create_widget: EV_VERTICAL_BOX
 			-- <Precursor>
 		do
 			create Result
@@ -944,8 +859,8 @@ feature {NONE} -- Factory
 				-- Create debug button
 			create debug_button.make
 			debug_button.set_tooltip (locale_formatter.translation (f_debug_button))
-			debug_button.set_pixel_buffer (stock_pixmaps.debugger_environment_force_debug_mode_icon_buffer)
-			debug_button.set_pixmap (stock_pixmaps.debugger_environment_force_debug_mode_icon)
+			debug_button.set_pixel_buffer (stock_pixmaps.debugger_environment_force_execution_mode_icon_buffer)
+			debug_button.set_pixmap (stock_pixmaps.debugger_environment_force_execution_mode_icon)
 			register_action (debug_button.select_actions, agent on_run_current (debug_executor_type))
 
 			create l_menu
@@ -1035,45 +950,32 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	tt_wizard: !STRING = "Create new tests"
-	f_run_button: !STRING = "Run all tests in background"
-	f_debug_button: !STRING = "Debug all tests in EiffelStudio"
-	f_stop_button: !STRING = "Stop all execution"
-	tt_clear_filter: !STRING = "Clear filter"
+	tt_wizard: STRING = "Create new tests"
+	f_run_button: STRING = "Run all tests in background"
+	f_debug_button: STRING = "Debug all tests in EiffelStudio"
+	f_stop_button: STRING = "Stop all execution"
+	tt_clear_filter: STRING = "Clear filter"
 
-	m_run_all: !STRING = "Run all"
-	m_run_failing: !STRING = "Run failing"
-	m_run_filtered: !STRING = "Run filtered"
-	m_run_selected: !STRING = "Run selected"
-	m_debug_all: !STRING = "Debug all"
-	m_debug_failing: !STRING = "Debug failing"
-	m_debug_filtered: !STRING = "Debug filtered"
-	m_debug_selected: !STRING = "Debug selected"
+	m_run_all: STRING = "Run all"
+	m_run_failing: STRING = "Run failing"
+	m_run_filtered: STRING = "Run filtered"
+	m_run_selected: STRING = "Run selected"
+	m_debug_all: STRING = "Debug all"
+	m_debug_failing: STRING = "Debug failing"
+	m_debug_filtered: STRING = "Debug filtered"
+	m_debug_selected: STRING = "Debug selected"
 
-	l_view: !STRING = "View"
-	l_filter: !STRING = "Filter"
-	l_outcome_view: !STRING = "outcome"
-	l_filter_not_passing: !STRING = "-outcome/passes"
-
-	q_add_library: !STRING = "The testing library has not been added yet. Would you like EiffelStudio to add the library and recompile before launching the test wizard?"
-
-	e_invalid_test_list: !STRING = "Selected tests can not be executed. Make sure none of the selected tests are currently being tested."
-	e_executor_already_running: !STRING = "Executor is already running tests."
-	e_executor_unavailable: !STRING = "Executor is not available"
-	e_test_suite_unavailable: !STRING = "Test suite service is not available"
-	e_project_not_compiled: !STRING = "Please compile the project first"
-
-feature {NONE} -- Constants
-
-	testing_library_uuid: !STRING = "B77B3A44-A1A9-4050-8DF9-053598561C33"
-	testing_library_path: !STRING = "$ISE_LIBRARY/library/testing/testing.ecf"
+	l_view: STRING = "View"
+	l_filter: STRING = "Filter"
+	l_outcome_view: STRING = "outcome"
+	l_filter_not_passing: STRING = "-outcome/passes"
 
 invariant
 	predefined_view_count_correct: view_template_descriptions.count = view_templates.count
-	details_tab_valid: notebook.has (outcome_tab.widget)
+	details_tab_valid: is_initialized implies notebook.has (outcome_tab.widget)
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -1097,10 +999,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

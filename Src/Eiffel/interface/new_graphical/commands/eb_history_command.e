@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command to go back/forth in the history."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -29,7 +29,7 @@ inherit
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Save a file with the chosen name.
 		do
 			operate
@@ -41,7 +41,7 @@ feature -- Execution
 
 feature -- Basic operations
 
-	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Create a new toolbar button for this command.
 			do
 				start_observer
@@ -52,7 +52,7 @@ feature -- Basic operations
 				Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
 			end
 
-	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON is
+	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Create a new toolbar button for this command.
 		do
 			start_observer
@@ -63,7 +63,7 @@ feature -- Basic operations
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 		end
 
-	new_menu_item: EB_COMMAND_MENU_ITEM is
+	new_menu_item: EB_COMMAND_MENU_ITEM
 			-- Create a new menu entry for this command.
 		do
 			start_observer
@@ -74,7 +74,7 @@ feature -- Basic operations
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 		end
 
-	new_menu_item_unmanaged: EV_MENU_ITEM is
+	new_menu_item_unmanaged: EV_MENU_ITEM
 			-- Create an unmanaged menu item for this command.
 		do
 			start_observer
@@ -85,7 +85,7 @@ feature -- Basic operations
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 		end
 
-	set_accelerator (a_acc: like accelerator) is
+	set_accelerator (a_acc: like accelerator)
 			-- Set `accelerator' with `a_acc'.
 		do
 			accelerator := a_acc
@@ -95,7 +95,7 @@ feature -- Basic operations
 
 feature {NONE} -- Recycle
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle current command.
 		do
 			if observer_started then
@@ -111,9 +111,9 @@ feature -- Properties
 	target: EB_HISTORY_OWNER
 			-- That that owns the history that will be modified.
 
-feature {EB_HISTORY_COMMAND_MENU_ITEM} -- Implementation
+feature {NONE} -- Implementation
 
-	history_manager: EB_HISTORY_MANAGER is
+	history_manager: EB_HISTORY_MANAGER
 			-- Manager for history. It encapsulates the history.
 		do
 			Result := target.history_manager
@@ -121,7 +121,7 @@ feature {EB_HISTORY_COMMAND_MENU_ITEM} -- Implementation
 
 feature {NONE} -- Implementation
 
-	operate is
+	operate
 			-- Move backward or forward in the history.
 		deferred
 		end
@@ -131,7 +131,7 @@ feature {NONE} -- Implementation / Observer pattern
 	observer_started: BOOLEAN
 			-- The observer has been set up.
 
-	start_observer is
+	start_observer
 			-- Start observing the stack
 		do
 			if not observer_started then
@@ -141,7 +141,7 @@ feature {NONE} -- Implementation / Observer pattern
 			end
 		end
 
-	on_update is
+	on_update
 			-- History has changed
 		do
 				-- Update the "sensitive" status of buttons and menus.
@@ -152,28 +152,28 @@ feature {NONE} -- Implementation / Observer pattern
 			end
 		end
 
-	on_position_changed is
+	on_position_changed
 			-- Index in history has changed.
 		do
 			on_update
 		end
 
-	on_item_added (a_stone: STONE; a_stone_position: INTEGER) is
+	on_item_added (a_stone: STONE; a_stone_position: INTEGER)
 			-- A new stone was added in the history.
 		do
 			on_update
 		end
 
-	on_item_removed (a_stone: STONE; index_item: INTEGER) is
+	on_item_removed (a_stone: STONE; index_item: INTEGER)
 			-- A new stone was added in the history.
 		do
 			on_update
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -184,19 +184,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

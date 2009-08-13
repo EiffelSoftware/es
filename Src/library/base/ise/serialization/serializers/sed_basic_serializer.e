@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Encoding of arbitrary objects graphs between sessions of a same program."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,7 +19,7 @@ create
 
 feature {NONE} -- Implementation
 
-	write_header (a_list: ARRAYED_LIST [ANY]) is
+	write_header (a_list: ARRAYED_LIST [ANY])
 			-- Write header of storable.
 		local
 			l_dtype_table: like type_table
@@ -40,15 +40,19 @@ feature {NONE} -- Implementation
 				l_dtype := l_dtype_table.item_for_iteration
 				l_ser.write_compressed_natural_32 (l_dtype.to_natural_32)
 					-- Write type name
-				l_ser.write_string_8 (l_int.type_name_of_type (l_dtype))
-
+				if l_int.is_attached_type (l_dtype) then
+						-- We could use a buffer to speed up things here.
+					l_ser.write_string_8 ("!" + l_int.type_name_of_type (l_dtype))
+				else
+					l_ser.write_string_8 (l_int.type_name_of_type (l_dtype))
+				end
 				l_dtype_table.forth
 			end
 
 			write_object_table (a_list)
 		end
 
-	type_table (a_list: ARRAYED_LIST [ANY]): HASH_TABLE [INTEGER, INTEGER] is
+	type_table (a_list: ARRAYED_LIST [ANY]): HASH_TABLE [INTEGER, INTEGER]
 			-- Given a list of objects `a_list', builds a compact table of the
 			-- dynamic type IDs present in `a_list'.
 		require
@@ -57,7 +61,7 @@ feature {NONE} -- Implementation
 		local
 			l_dtype: INTEGER
 			l_int: like internal
-			l_array: ?ARRAY [ANY]
+			l_array: detachable ARRAY [ANY]
 			l_area: SPECIAL [ANY]
 			i, nb: INTEGER
 		do
@@ -83,7 +87,7 @@ feature {NONE} -- Implementation
 			type_table_not_void: Result /= Void
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

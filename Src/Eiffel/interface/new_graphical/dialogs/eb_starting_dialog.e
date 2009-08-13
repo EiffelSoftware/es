@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Dialog displayed at startup of $EiffelGraphicalCompiler$"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -94,7 +94,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_default is
+	make_default
 			-- Initialize the dialog with a regular layout (Create/Open project)
 		do
 			show_open_project_frame := True
@@ -102,7 +102,7 @@ feature {NONE} -- Initialization
 			build_interface
 		end
 
-	make_without_open_project_frame is
+	make_without_open_project_frame
 			-- Initialize the dialog with the "Create Project" frame only.
 		do
 			show_open_project_frame := False
@@ -110,7 +110,7 @@ feature {NONE} -- Initialization
 			build_interface
 		end
 
-	build_interface is
+	build_interface
 			-- Initialize
 		local
 			new_project_vb: EV_VERTICAL_BOX
@@ -150,13 +150,9 @@ feature {NONE} -- Initialization
 			if show_open_project_frame then
 				create vb
 				create open_project.make (Current)
-				wizards_list.row_select_actions.force_extend (agent open_project.remove_selection)
-				wizards_list.row_select_actions.force_extend (agent ok_button.set_text (interface_names.b_create))
-				wizards_list.row_select_actions.force_extend (agent ok_button.enable_sensitive)
+				wizards_list.row_select_actions.force_extend (agent on_wizards_selected)
 				wizards_list.row_deselect_actions.force_extend (agent on_item_deselected)
-				open_project.select_actions.force_extend (agent wizards_list.remove_selection)
-				open_project.select_actions.force_extend (agent ok_button.set_text (interface_names.b_open))
-				open_project.select_actions.force_extend (agent ok_button.enable_sensitive)
+				open_project.select_actions.force_extend (agent on_project_selected)
 				open_project.deselect_actions.force_extend (agent on_item_deselected)
 
 				vb.extend (open_project.widget)
@@ -240,7 +236,7 @@ feature -- Status report
 	ok_selected: BOOLEAN
 			-- Has the button "OK" been selected?
 
-	cancel_selected: BOOLEAN is
+	cancel_selected: BOOLEAN
 			-- Has the button "Cancel" been selected?
 		do
 			Result := not ok_selected
@@ -248,7 +244,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	show_modal_to_window (a_window: EV_WINDOW) is
+	show_modal_to_window (a_window: EV_WINDOW)
 			-- Show and wait until `Current' is closed.
 			-- `Current' is shown modal with respect to `a_window'.
 		do
@@ -259,7 +255,7 @@ feature -- Basic operations
 
 feature {NONE} -- Execution
 
-	on_cancel is
+	on_cancel
 			-- Cancel button has been pressed
 		do
 			ok_selected := False
@@ -268,7 +264,7 @@ feature {NONE} -- Execution
 			incoming_command_manager.notify_closing_starting_dialog
 		end
 
-	on_item_deselected is
+	on_item_deselected
 			-- Handle case when an item has been deselected and whether or not
 			-- the `OK' button should be activated.
 		do
@@ -279,7 +275,7 @@ feature {NONE} -- Execution
 			end
 		end
 
-	on_ok is
+	on_ok
 			-- Ok button has been pressed
 		do
 			update_preferences
@@ -302,7 +298,7 @@ feature {NONE} -- Execution
 
 	on_double_click (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER;
 					a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE;
-					a_screen_x: INTEGER; a_screen_y: INTEGER) is
+					a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- A radio button has been double clicked
 		do
 				-- Execute the selected radio button
@@ -311,7 +307,27 @@ feature {NONE} -- Execution
 			end
 		end
 
-	create_blank_project is
+	on_wizards_selected
+			-- Items in the wizards are selected.
+		do
+			open_project.remove_selection
+			ok_button.set_text (interface_names.b_create)
+			ok_button.enable_sensitive
+		end
+
+	on_project_selected
+			-- Items in the project list selected.
+		do
+			wizards_list.remove_selection
+			ok_button.set_text (interface_names.b_open)
+			if not open_project.has_error then
+				ok_button.enable_sensitive
+			else
+				ok_button.disable_sensitive
+			end
+		end
+
+	create_blank_project
 			-- Create a new blank project.
 		require
 			parent_window_not_void: parent_window /= Void
@@ -332,7 +348,7 @@ feature {NONE} -- Execution
 			end
 		end
 
-	create_new_project_using_wizard is
+	create_new_project_using_wizard
 			-- Create a new project using the ISE Wizard.
 		require
 			parent_window_not_void: parent_window /= Void
@@ -358,10 +374,10 @@ feature {NONE} -- Execution
 
 feature {NONE} -- Implementation
 
-	compile_project: BOOLEAN
-			-- Should a compilation be launched upon completion of this dialog?
+	compile_project, freeze_project: BOOLEAN
+			-- Should a compilation be launched upon completion of this dialog and possible frozen?
 
-	update_preferences is
+	update_preferences
 			-- Update user preferences
 		do
 			if show_open_project_frame then
@@ -371,7 +387,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_and_fill_wizards_list is
+	create_and_fill_wizards_list
 			-- Create and fill `wizards_list'
 		do
 			create wizards_list
@@ -388,7 +404,7 @@ feature {NONE} -- Implementation
 			wizards_list_created: wizards_list /= Void
 		end
 
-	fill_list_with_available_wizards is
+	fill_list_with_available_wizards
 			-- Fill in `wizard_list' with the available wizards
 		local
 			list_item: EV_GRID_LABEL_ITEM
@@ -424,7 +440,7 @@ feature {NONE} -- Implementation
 			l_column.set_width (l_column.required_width_of_item_span (1, wizards_list.row_count))
 		end
 
-	load_available_wizards is
+	load_available_wizards
 			-- Enumerate the available wizards.
 		local
 			new_project_directory: DIRECTORY
@@ -467,7 +483,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selected_wizard: EB_NEW_PROJECT_WIZARD is
+	selected_wizard: EB_NEW_PROJECT_WIZARD
 			-- Currently selected wizard.
 		local
 			selected_item: EV_GRID_LABEL_ITEM
@@ -493,7 +509,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_project (directory_name: STRING; ace_file_name: STRING) is
+	create_project (directory_name: STRING; ace_file_name: STRING)
 			-- Create a project in directory `directory_name', with ace file
 			-- `ace_file_name'.
 		require
@@ -501,7 +517,7 @@ feature {NONE} -- Implementation
 			ace_file_name_not_void: ace_file_name /= Void
 		local
 			l_loader: EB_GRAPHICAL_PROJECT_LOADER
-			ebench_name: STRING
+			ebench_name, l_profile: STRING
 			last_char: CHARACTER
 			ace_name, dir_name: STRING
 		do
@@ -520,10 +536,19 @@ feature {NONE} -- Implementation
 				l_loader.open_project_file (ace_file_name, Void, directory_name, True)
 				if not l_loader.has_error and then compile_project then
 					l_loader.set_is_compilation_requested (compile_project)
-					l_loader.compile_project
+					if freeze_project then
+						l_loader.freeze_project (False)
+					else
+						l_loader.melt_project (False)
+					end
 				end
 			else
-				ebench_name := "%"" + eiffel_layout.Estudio_command_name + "%""
+				ebench_name := "%"" + eiffel_layout.estudio_command_name + "%""
+				l_profile := eiffel_layout.command_line_profile_option
+				if not l_profile.is_empty then
+					ebench_name.append_character (' ')
+					ebench_name.append (l_profile)
+				end
 				ebench_name.append (" -clean")
 				if dir_name /= Void and not dir_name.is_empty then
 					ebench_name.append (" -project_path %"")
@@ -533,7 +558,11 @@ feature {NONE} -- Implementation
 				ebench_name.append (" -config %"")
 				ebench_name.append (ace_name)
 				if compile_project then
-					ebench_name.append ("%" -melt")
+					if freeze_project then
+						ebench_name.append ("%" -freeze")
+					else
+						ebench_name.append ("%" -melt")
+					end
 					compile_project := False
 				else
 					ebench_name.append ("%"")
@@ -544,7 +573,7 @@ feature {NONE} -- Implementation
 			set_error_message (warning_messages.w_unable_to_initiate_project)
 		end
 
-	start_wizard (a_wizard: EB_NEW_PROJECT_WIZARD) is
+	start_wizard (a_wizard: EB_NEW_PROJECT_WIZARD)
 			-- Start the selected wizard, wait for the wizard to
 			-- terminate and load the generated wizard.
 		local
@@ -555,6 +584,7 @@ feature {NONE} -- Implementation
 		do
 			if not retried then
 				compile_project := False
+				freeze_project := False
 
 					-- Disable all controls
 				disable_sensitive
@@ -579,6 +609,9 @@ feature {NONE} -- Implementation
 						elseif (result_parameters.item @ 1).is_equal ("compilation") then
 							(result_parameters.item @ 2).to_lower
 							compile_project := (result_parameters.item @ 2).is_equal ("yes")
+						elseif (result_parameters.item @ 1).is_equal ("compilation_type") then
+							(result_parameters.item @ 2).to_lower
+							freeze_project := (result_parameters.item @ 2).is_equal ("freeze")
 						elseif (result_parameters.item @ 1).is_equal ("success") then
 							-- Do nothing
 						else
@@ -635,8 +668,8 @@ feature {NONE} -- Private attributes
 	open_project: EB_OPEN_PROJECT_WIDGET;
 			-- Widget for opening a project using a config file.
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -649,22 +682,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_STARTING_DIALOG

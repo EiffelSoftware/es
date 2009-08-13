@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Ancestor of all exception classes.
 		]"
@@ -30,7 +30,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_tag_and_trace (a_tag, a_trace_string: STRING) is
+	make_with_tag_and_trace (a_tag, a_trace_string: STRING)
 			-- Make `Current' with `tag' set to `a_tag'.
 		obsolete
 			"Use `default_create' and `set_message' instead."
@@ -40,12 +40,12 @@ feature {NONE} -- Initialization
 		do
 			set_message (a_tag)
 		ensure
-			tag_set: tag.is_equal (a_tag)
+			tag_set: tag ~ a_tag
 		end
 
 feature -- Raise
 
-	raise is
+	raise
 			-- Raise current exception
 		require
 			is_raisable: is_raisable
@@ -55,46 +55,60 @@ feature -- Raise
 
 feature -- Access
 
-	meaning: STRING is
+	meaning: STRING
 			-- A message in English describing what `except' is
 		do
 			Result := internal_meaning
 		end
 
-	message: STRING
+	message: detachable STRING
 			-- A message in English describing what `except' is
 
-	exception_trace: STRING is
+	exception_trace: detachable STRING
 			-- String representation of current exception trace
 		do
 			create Result.make_from_cil (stack_trace)
 		end
 
-	frozen original: EXCEPTION is
-			-- The original exception caused current exception
+	code: INTEGER
+			-- Code of the exception.
 		do
-			if throwing_exception = Current or else throwing_exception = Void then
+		end
+
+	frozen original: EXCEPTION
+			-- The original exception directly triggered current exception
+		local
+			t: like throwing_exception
+		do
+			t := throwing_exception
+			if t = Current or else t = Void then
 				Result := Current
+			elseif (attached {ROUTINE_FAILURE} Current) or else (attached {OLD_VIOLATION} Current) then
+				Result := t.original
 			else
-				Result := throwing_exception.original
+				Result := Current
 			end
 		ensure
 			original_not_void: Result /= Void
 		end
 
-	code: INTEGER is
-			-- Code of the exception.
+	frozen cause: EXCEPTION
+			-- The cause of current exception raised during rescue processing
 		do
+			if attached original.throwing_exception as e then
+				Result := e
+			else
+				Result := Current
+			end
+		ensure
+			cause_not_void: Result /= Void
 		end
 
-	frozen throwing_exception: EXCEPTION
-			-- The exception throwing current exception
-
-	frozen recipient_name: STRING
+	frozen recipient_name: detachable STRING
 			-- Name of the routine whose execution was
 			-- interrupted by current exception
 
-	frozen type_name: STRING
+	frozen type_name: detachable STRING
 			-- Name of the class that includes the recipient
 			-- of original form of current exception
 
@@ -103,7 +117,7 @@ feature -- Access
 
 feature -- Access obselete
 
-	tag: STRING is
+	tag: detachable STRING
 			-- Exception tag of `Current'
 		obsolete
 			"Use `message' instead."
@@ -111,7 +125,7 @@ feature -- Access obselete
 			Result := message
 		end
 
-	trace_as_string: STRING is
+	trace_as_string: detachable STRING
 			-- Exception trace represented as a string
 		obsolete
 			"Use `exception_trace' instead."
@@ -121,7 +135,7 @@ feature -- Access obselete
 
 feature -- Status settings
 
-	set_message (a_message: like message) is
+	set_message (a_message: like message)
 			-- Set `message' with `a_message'.
 		do
 			message := a_message
@@ -131,43 +145,43 @@ feature -- Status settings
 
 feature -- Status report
 
-	frozen is_ignorable: BOOLEAN is
+	frozen is_ignorable: BOOLEAN
 			-- Is current exception ignorable?
 		local
 			l_internal: INTERNAL
-			l_type: TYPE [EXCEPTION]
 		do
 			create l_internal
-			l_type ?= l_internal.type_of (Current)
-			Result := exception_manager.is_ignorable (l_type)
+			if attached {TYPE [EXCEPTION]} l_internal.type_of (Current) as l_type then
+				Result := exception_manager.is_ignorable (l_type)
+			end
 		end
 
-	frozen is_raisable: BOOLEAN is
+	frozen is_raisable: BOOLEAN
 			-- Is current exception raisable by `raise'?
 		local
 			l_internal: INTERNAL
-			l_type: TYPE [EXCEPTION]
 		do
 			create l_internal
-			l_type ?= l_internal.type_of (Current)
-			Result := exception_manager.is_raisable (l_type)
+			if attached {TYPE [EXCEPTION]} l_internal.type_of (Current) as l_type then
+				Result := exception_manager.is_raisable (l_type)
+			end
 		end
 
-	frozen is_ignored: BOOLEAN is
+	frozen is_ignored: BOOLEAN
 			-- If set, no exception is raised.
 		local
 			l_internal: INTERNAL
-			l_type: TYPE [EXCEPTION]
 		do
 			create l_internal
-			l_type ?= l_internal.type_of (Current)
-			Result := exception_manager.is_ignored (l_type)
+			if attached {TYPE [EXCEPTION]} l_internal.type_of (Current) as l_type then
+				Result := exception_manager.is_ignored (l_type)
+			end
 		ensure
 			is_ignored_implies_is_ignorable: Result implies is_ignorable
 			not_is_caught: Result = not is_caught
 		end
 
-	frozen is_caught: BOOLEAN is
+	frozen is_caught: BOOLEAN
 			-- If set, exception is raised.
 		do
 			Result := not is_ignored
@@ -178,7 +192,7 @@ feature -- Status report
 
 feature -- Output
 
-	out: STRING is
+	out: STRING
 			-- New string containing terse printable representation
 			-- of current object
 		do
@@ -187,54 +201,34 @@ feature -- Output
 			Result.append_string (exception_trace)
 		end
 
+feature {EXCEPTION} -- Access
+
+	frozen throwing_exception: detachable EXCEPTION
+			-- The exception throwing current exception
+
 feature {EXCEPTION_MANAGER} -- Implementation
 
-	frozen set_throwing_exception (a_exception: EXCEPTION) is
+	frozen set_throwing_exception (a_exception: detachable EXCEPTION)
 			-- Set `throwing_exception' with `a_exception'.
-		require
-			not_throwing_a_exception: a_exception /= Void implies not is_throwing (a_exception)
 		do
 			throwing_exception := a_exception
 		ensure
 			throwing_exception_set: throwing_exception = a_exception
 		end
 
-	frozen is_throwing (a_exception: EXCEPTION): BOOLEAN is
-			-- Is current exception throwing `a_exception'?
-			-- If the throwing exception is current, return False.
-		require
-			a_exception_not_viod: a_exception /= Void
-		local
-			l_exception: EXCEPTION
-		do
-			if a_exception /= Current and then a_exception.throwing_exception /= a_exception then
-				from
-					l_exception := a_exception.throwing_exception
-				until
-					l_exception = Void or else Result
-				loop
-					if l_exception = Current then
-						Result := True
-					else
-						l_exception := l_exception.throwing_exception
-					end
-				end
-			end
-		end
-
-	frozen set_type_name (a_type: like type_name) is
+	frozen set_type_name (a_type: like type_name)
 			-- Set `type_name' with `a_type'
 		do
 			type_name := a_type
 		end
 
-	frozen set_recipient_name (a_name: like recipient_name) is
+	frozen set_recipient_name (a_name: like recipient_name)
 			-- Set `recipient_name' with `a_name'
 		do
 			recipient_name := a_name
 		end
 
-	frozen set_line_number (a_number: like line_number) is
+	frozen set_line_number (a_number: like line_number)
 			-- Set `line_number' with `a_number'.
 		do
 			line_number := a_number
@@ -243,13 +237,13 @@ feature {EXCEPTION_MANAGER} -- Implementation
 	frozen internal_is_ignorable: BOOLEAN
 			-- Internal `is_ignorable'
 
-	internal_meaning: STRING is
+	internal_meaning: STRING
 			-- Internal `meaning'
 		once
 			Result := "General exception."
 		end
 
-	exception_message: STRING is
+	exception_message: STRING
 		do
 			Result := internal_meaning
 			if Result /= Void then
@@ -257,12 +251,12 @@ feature {EXCEPTION_MANAGER} -- Implementation
 			else
 				Result := "Code: " + code.out
 			end
-			if message /= Void then
-				Result := Result + " Tag: " + message
+			if attached message as l_message then
+				Result := Result + " Tag: " + l_message
 			end
 		end
 
-	frozen dotnet_message: SYSTEM_STRING is
+	frozen dotnet_message: SYSTEM_STRING
 			-- Message for the .NET runtime.
 		do
 			Result := exception_message

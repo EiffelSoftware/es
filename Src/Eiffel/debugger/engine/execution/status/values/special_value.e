@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Run time value representing of a special object."
@@ -36,7 +36,7 @@ create {DEBUG_VALUE_EXPORTER}
 
 feature {NONE} -- Initialization
 
-	make_set_ref (ref: DBG_ADDRESS; id: INTEGER) is
+	make_set_ref (ref: DBG_ADDRESS; id: INTEGER)
 			-- Create Current as a standalone object
 			-- i.e: not an attribute
 			-- nevertheless at this point we don't have the `capacity'
@@ -57,7 +57,7 @@ feature {NONE} -- Initialization
 		end
 
 	make_attribute (attr_name: like name; a_class: like e_class;
-						addr: like address; cap: like capacity) is
+						addr: like address; a_count: like count; a_capacity: like capacity)
 		require
 			not_attr_name_void: attr_name /= Void;
 			not_addr_void: addr /= Void
@@ -69,7 +69,8 @@ feature {NONE} -- Initialization
 			end
 			address := addr
 			is_null := address = Void or else address.is_void
-			capacity := cap
+			count := a_count
+			capacity := a_capacity
 				--| No need to preallocate area, since the fill_items or similar
 				--| will change the capacity if needed
 				--| We require only to get a non Void list
@@ -77,12 +78,15 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	dynamic_class: CLASS_C is
+	count: INTEGER
+			-- Number of items that SPECIAL object holds
+
+	dynamic_class: CLASS_C
 		once
 			Result := Eiffel_system.special_class.compiled_class
 		end
 
-	string_value: STRING_32 is
+	string_value: STRING_32
 			-- If `Current' represents a string then return its value.
 			-- Else return Void.
 		local
@@ -115,7 +119,7 @@ feature -- Access
 			end
 		end
 
-	truncated_raw_string_value (a_size: INTEGER): STRING_32 is
+	truncated_raw_string_value (a_size: INTEGER): STRING_32
 			-- If `Current' represents a string then return its value truncated to `a_size'.
 			-- Else return Void.
 			-- Do not convert special characters to an Eiffel representation.
@@ -199,7 +203,7 @@ feature -- Access
 			raw_string_value_not_void: Result /= Void
 		end
 
-	raw_string_value: STRING_32 is
+	raw_string_value: STRING_32
 			-- If `Current' represents a string then return its value.
 			-- Else return Void.
 			-- Do not convert special characters to an Eiffel representation.
@@ -217,7 +221,7 @@ feature -- Access
 			raw_string_value_not_void: Result /= Void
 		end
 
-	dump_value: DUMP_VALUE is
+	dump_value: DUMP_VALUE
 			-- Dump_value corresponding to `Current'.
 		do
 			Result := Debugger_manager.Dump_value_factory.new_object_value (address, dynamic_class)
@@ -225,7 +229,7 @@ feature -- Access
 
 feature -- Items
 
-	get_items (a_min, a_max: INTEGER) is
+	get_items (a_min, a_max: INTEGER)
 		local
 			rqst: ATTR_REQUEST
 		do
@@ -233,14 +237,15 @@ feature -- Items
 			create rqst.make (address)
 			rqst.set_sp_bounds (sp_lower, sp_upper)
 			rqst.send
-			capacity := rqst.capacity
+			count := rqst.capacity
+			capacity := rqst.max_capacity
 			items.append_last (rqst.attributes)
 			items_computed := True
 		end
 
 feature -- Output
 
-	children: DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	children: DS_LIST [ABSTRACT_DEBUG_VALUE]
 			-- List of all sub-items of `Current'. May be void if there are no children.
 			-- Generated on demand.
 		do
@@ -258,7 +263,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	set_hector_addr is
+	set_hector_addr
 			-- Convert the physical addresses received from the application
 			-- to hector addresses. (should be called only once just after
 			-- all the information has been received from the application.)
@@ -271,22 +276,26 @@ feature {NONE} -- Implementation
 				--| When created as local (for instance)
 				--| we don't set the capacity right away
 				--| so let's compute it when needed
-			get_capacity
+			get_count_and_capacity
 		end
 
-	get_capacity is
+	get_count_and_capacity
 			-- Get SPECIAL capacity value
+		local
+			t: TUPLE [a_count: INTEGER; a_capacity: INTEGER]
 		do
 			if capacity < 0 then
-				capacity := debugger_manager.object_manager.special_object_capacity_at_address (address)
+				t := debugger_manager.object_manager.special_object_count_and_capacity_at_address (address)
+				count := t.a_count
+				capacity := t.a_capacity
 			end
 		end
 
 invariant
 	items_exists: items_computed implies items /= Void;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -299,22 +308,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SPECIAL_VALUE

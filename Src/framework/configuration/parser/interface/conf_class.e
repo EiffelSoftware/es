@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that represent a class on the configuration level, if the project is compiled."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -34,12 +34,14 @@ create {CONF_PARSE_FACTORY}
 
 feature {NONE} -- Initialization
 
-	make (a_file_name: STRING; a_group: like group; a_path: STRING; a_factory: like factory) is
+	make (a_file_name: STRING; a_group: like group; a_path, a_classname: STRING; a_factory: like factory)
 			-- Create
 		require
 			a_file_name_ok: a_file_name /= Void and then not a_file_name.is_empty
 			a_group_not_void: a_group /= Void
 			a_path_not_void: a_path /= Void
+			a_classname_not_void: a_classname /= Void
+			a_classname_not_empty: not a_classname.is_empty
 			a_factory_not_void: a_factory /= Void
 		local
 			l_cluster: CONF_CLUSTER
@@ -47,17 +49,10 @@ feature {NONE} -- Initialization
 			file_name := a_file_name
 			group := a_group
 			path := a_path
+			name := a_classname
 			is_valid := True
 			check_changed
-				--| FIXME IEK Optimize `name' retrieval by estimating class name based on file name
-				-- instead of parsing EVERY single class in the universe.
-			--name := a_file_name.split ('.').first.as_upper
-
 			if not is_error then
-				check
-					name_set: name /= Void and then not name.is_empty
-				end
-
 				l_cluster ?= a_group
 			end
 			is_renamed := False
@@ -80,7 +75,7 @@ feature -- Access, in compiled only, not stored to configuration file
 	name: STRING
 			-- Class name without any renamings.
 
-	options: CONF_OPTION is
+	options: CONF_OPTION
 			-- Options (Debuglevel, assertions, ...)
 		do
 			Result := actual_class.group.get_class_options (name)
@@ -98,13 +93,13 @@ feature -- Access, in compiled only, not stored to configuration file
 	is_valid: BOOLEAN
 			-- Is `Current' still valid, ie. still part of the system?
 
-	is_compiled: BOOLEAN is
+	is_compiled: BOOLEAN
 			-- Has the class been compiled?
 		once
 			Result := False
 		end
 
-	is_always_compile: BOOLEAN is
+	is_always_compile: BOOLEAN
 			-- Does this class have to be always compiled?
 		do
 			Result := visible /= Void
@@ -113,7 +108,7 @@ feature -- Access, in compiled only, not stored to configuration file
 	is_partial: BOOLEAN
 			-- Is the class generated out of partial classes?
 
-	is_read_only: BOOLEAN is
+	is_read_only: BOOLEAN
 			-- Is the class read only?
 		local
 			l_file: RAW_FILE
@@ -126,19 +121,19 @@ feature -- Access, in compiled only, not stored to configuration file
 			end
 		end
 
-	is_overriden: BOOLEAN is
+	is_overriden: BOOLEAN
 			-- Is the class overridden?
 		do
 			Result := overriden_by /= Void
 		end
 
-	is_class_assembly: BOOLEAN is
+	is_class_assembly: BOOLEAN
 			-- Is class from an assembly?
 		do
 
 		end
 
-	does_override: BOOLEAN is
+	does_override: BOOLEAN
 			-- Does the class override other classes?
 		do
 			Result := overrides /= Void
@@ -162,7 +157,7 @@ feature -- Access, in compiled only, not stored to configuration file
 	file_name: STRING
 			-- The file name of the class.
 
-	full_file_name: STRING is
+	full_file_name: STRING
 			-- The full file name of the class (including path).
 		do
 			Result := group.location.build_path (path, file_name)
@@ -177,9 +172,15 @@ feature -- Access, in compiled only, not stored to configuration file
 	overrides: ARRAYED_LIST [CONF_CLASS]
 			-- The classes that this class overrides.
 
+	is_class_name_confirmed: BOOLEAN
+			-- Has the class name of current class been confirmed?
+
+	last_class_name: STRING
+			-- Last found class name set by `rebuild'.
+
 feature -- Status report
 
-	has_modification_date_changed: BOOLEAN is
+	has_modification_date_changed: BOOLEAN
 			-- Did modification date changed since last call to `check_changed'?
 		local
 			l_date: INTEGER
@@ -190,7 +191,7 @@ feature -- Status report
 
 feature -- Access queries
 
-	actual_class: like class_type is
+	actual_class: like class_type
 			-- Return the actual class (takes overriding into account).
 		do
 			if is_overriden then
@@ -204,7 +205,7 @@ feature -- Access queries
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 			-- Hash code value
 		do
 				-- compute hash code on demand
@@ -216,13 +217,13 @@ feature -- Access
 
 feature -- Status update
 
-	set_modified is
+	set_modified
 			-- Mark the class as modified.
 		do
 			is_modified := True
 		end
 
-	reset_error is
+	reset_error
 			-- Reset the error.
 		do
 			is_error := False
@@ -232,7 +233,7 @@ feature -- Status update
 			last_error_empty: last_error = Void
 		end
 
-	set_up_to_date is
+	set_up_to_date
 			-- The class has been recompiled and is now up to date.
 		do
 			is_modified := False
@@ -244,9 +245,17 @@ feature -- Status update
 			not_removed: not is_removed
 		end
 
+	confirm_class_name
+			-- Class name of Current was confirmed.
+		do
+			is_class_name_confirmed := True
+		ensure
+			is_class_name_confirmed_set: is_class_name_confirmed
+		end
+
 feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration file
 
-	add_visible (a_vis: like visible) is
+	add_visible (a_vis: like visible)
 			-- Add visible rules to `visible'. Set `is_error' and `last_error' if there is a conflict.
 		require
 			a_vis_not_void: a_vis /= Void
@@ -328,19 +337,19 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			end
 		end
 
-	invalidate is
+	invalidate
 			-- Set `is_valid' to False.
 		do
 			is_valid := False
 		end
 
-	resurect is
+	resurect
 			-- Set `is_valid' to True.
 		do
 			is_valid := True
 		end
 
-	rebuild(a_file_name: STRING; a_group: like group; a_path: STRING) is
+	rebuild (a_file_name: STRING; a_group: like group; a_path: STRING)
 			-- Update the informations during a rebuild.
 			-- More or less the same thing as we during `make'.
 		require
@@ -349,22 +358,20 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			a_path_not_void: a_path /= Void
 		local
 			l_cluster: CONF_CLUSTER
-			l_old_name: STRING
 		do
-			is_rebuilding := True
-
-			l_old_name := name.twin
 			group := a_group
-			if not equal (l_old_name, name)	then
-				is_renamed := True
-				date := 0
-			end
 			file_name := a_file_name
 			path := a_path
 			check_changed
+			if is_modified and not is_class_name_confirmed then
+				last_class_name := name_from_associated_file
+				is_renamed := last_class_name = Void or else not last_class_name.is_equal (name)
+			else
+				last_class_name := name
+			end
 
-				-- do not lose information if we were renamed as we build a new class if we are renamed and we want the old information
-				-- to deal with removed overrides
+				-- do not lose information if we were renamed as we build a new class if we
+				-- are renamed and we want the old information to deal with removed overrides.
 			if not is_renamed then
 				if not is_error then
 					l_cluster ?= a_group
@@ -377,11 +384,11 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 				old_overriden_by := overriden_by
 				overriden_by := Void
 			end
-
-			is_rebuilding := False
+		ensure
+			last_class_name_set: (last_class_name = Void and not is_class_name_confirmed) or else (last_class_name /= Void and then not last_class_name.is_empty)
 		end
 
-	check_changed is
+	check_changed
 			-- Check if the file was changed.
 			-- And update name if necessary
 		local
@@ -394,17 +401,26 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			elseif date /= l_date then
 				date := l_date
 				is_modified := True
-
-					-- check for a changed class name
-				set_name
+					-- File was changed, its name cannot be confirmed anymore
+				is_class_name_confirmed := False
 			end
 		end
 
-	set_name is
+	set_name (a_name: STRING)
 			-- Compute and set (if we are not rebuilding) `name' and `renamed_name'.
+		require
+			a_name_not_void: a_name /= Void
+			a_name_not_empty: not a_name.is_empty
+		do
+			name := a_name.as_upper
+		ensure
+			name_set: name ~ a_name.as_upper
+		end
+
+	name_from_associated_file: STRING
+			-- Read associated file and extract the name from it if possible.
 		local
 			l_file: KL_BINARY_INPUT_FILE
-			l_name: like name
 			l_classname_finder: like classname_finder
 		do
 			reset_error
@@ -414,23 +430,19 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 				l_file.open_read
 				l_classname_finder.parse (l_file)
 				l_file.close
-				l_name := l_classname_finder.classname
-				if l_name = Void then
+				Result := l_classname_finder.classname
+				if Result = Void then
 					date := -1
 					set_error (create {CONF_ERROR_CLASSN}.make (full_file_name, group.target.system.file_name))
 				else
-					l_name.to_upper
-					if name = Void or else not name.is_equal (l_name) then
-						is_renamed := True
-						if not is_rebuilding then
-							name := l_name
-						end
-					end
+					Result.to_upper
 				end
 			end
+		ensure
+			valid_name_in_upper: Result = Void or else Result.as_upper.is_equal (Result)
 		end
 
-	set_overriden_by (a_class: like class_type) is
+	set_overriden_by (a_class: like class_type)
 			-- `a_class' overrides `Current'.
 		require
 			a_class_not_void: a_class /= Void
@@ -444,7 +456,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			is_overriden: is_overriden
 		end
 
-	add_does_override (a_class: like class_type) is
+	add_does_override (a_class: like class_type)
 			-- `Current' overrides `a_class'.
 		do
 			if overrides = Void then
@@ -455,7 +467,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Class name alphabetic order
 		do
 			Result := name < other.name
@@ -463,7 +475,7 @@ feature -- Comparison
 
 feature -- Output
 
-	debug_output: STRING is
+	debug_output: STRING
 			-- Generate a nice representation of Current to be seen
 			-- in debugger.
 		do
@@ -475,16 +487,13 @@ feature {NONE} -- Implementation
 	factory: CONF_PARSE_FACTORY
 			-- Factory to create new config objects.
 
-	is_rebuilding: BOOLEAN
-			-- Are we currently rebuilding an old class?
-
 	internal_hash_code: like hash_code
 			-- Computed `hash_code'.
 
 	old_overriden_by: like overriden_by
 			-- `overriden_by' from last compilation.
 
-	set_error (an_error: CONF_ERROR) is
+	set_error (an_error: CONF_ERROR)
 			-- Set `an_error'.
 		do
 			is_error := True
@@ -493,7 +502,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Type anchors
 
-	class_type: CONF_CLASS is
+	class_type: CONF_CLASS
 			-- Class type anchor.
 		do
 		end
@@ -508,10 +517,10 @@ invariant
 	compiled_or_overrides: is_compiled implies not does_override
 	factory_not_void: factory /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -522,19 +531,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

@@ -1,4 +1,4 @@
-indexing
+note
 
 	status: "See notice at end of class.";
 	Date: "$Date$"
@@ -14,21 +14,21 @@ inherit
 
 feature {NONE} -- Status report
 
-	session_database: DB [DATABASE] is
+	session_database: detachable DB [DATABASE]
 			-- Data base handle
 		deferred
 		end
 
-	session_process: POINTER_REF
+	session_process: detachable POINTER_REF
 			-- A reference to a pointer object
 
-	session_status: DB_STATUS
+	session_status: detachable DB_STATUS
 			-- A session management object reference
-	
-	session_execution_type: DB_EXEC;
+
+	session_execution_type: detachable DB_EXEC;
 			-- An execution status object reference
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

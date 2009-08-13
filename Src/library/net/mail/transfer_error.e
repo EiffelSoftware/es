@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,7 +11,7 @@ class
 
 feature -- Access
 
-	transfer_error_message: STRING
+	transfer_error_message: detachable STRING
 
 feature -- Status report
 
@@ -21,22 +21,22 @@ feature -- Status report
 
 feature -- Status setting
 
-	enable_transfer_error is
+	enable_transfer_error
 		do
 			transfer_error:= True
 		end
 
-	disable_transfer_error is
+	disable_transfer_error
 		do
 			transfer_error:= False
 		end
 
-	set_transfer_error_message (s: STRING) is
+	set_transfer_error_message (s: STRING)
 		do
 			transfer_error_message:= s
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

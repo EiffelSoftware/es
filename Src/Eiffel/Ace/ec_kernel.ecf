@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="ec_kernel" uuid="8C34810E-D67D-46DF-A13C-F3821FA4FA8E" library_target="compiler_kernel">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="ec_kernel" uuid="8C34810E-D67D-46DF-A13C-F3821FA4FA8E" library_target="compiler_kernel">
 	<target name="compiler_kernel">
 		<root all_classes="true"/>
 		<file_rule>
@@ -105,8 +105,12 @@
 		<library name="eiffel_identifier" location="$EIFFEL_SRC\framework\eiffel_identifier\eiffel_identifier.ecf"/>
 		<library name="emitter_loader" location="$EIFFEL_SRC\framework\emitter_loader\emitter_loader.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf"/>
 		<library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>

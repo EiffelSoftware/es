@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Generate properties for targets."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,7 +19,7 @@ feature {NONE} -- Implementation
 	conf_system: CONF_SYSTEM
 			-- Configuration system.
 
-	add_general_properties is
+	add_general_properties
 			-- Add general properties.
 		require
 			properties_not_void: properties /= Void
@@ -70,7 +70,9 @@ feature {NONE} -- Implementation
 			properties.add_property (l_bool_prop)
 
 				-- compilation type
-			create l_choice_prop.make_with_choices (conf_interface_names.target_compilation_type_name, <<conf_interface_names.target_compilation_type_standard, conf_interface_names.target_compilation_type_dotnet>>)
+			create l_choice_prop.make_with_choices (conf_interface_names.target_compilation_type_name,
+				create {ARRAYED_LIST [STRING_32]}.make_from_array (
+				<<conf_interface_names.target_compilation_type_standard, conf_interface_names.target_compilation_type_dotnet>>))
 			l_choice_prop.set_description (conf_interface_names.target_compilation_type_description)
 			l_choice_prop.disable_text_editing
 			l_choice_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent update_inheritance_setting (s_msil_generation, l_choice_prop)))
@@ -152,7 +154,7 @@ feature {NONE} -- Implementation
 			properties_not_void: properties /= Void
 		end
 
-	add_advanced_properties is
+	add_advanced_properties
 			-- Add advanced properties.
 		require
 			properties_not_void: properties /= Void
@@ -167,7 +169,7 @@ feature {NONE} -- Implementation
 			l_dir_prop: DIRECTORY_PROPERTY
 			l_file_prop: FILE_PROPERTY
 			l_key_file_prop: KEY_FILE_PROPERTY
-			l_installed_runtimes: DS_LINEAR [STRING]
+			l_installed_runtimes: LIST [STRING]
 			l_il_env: IL_ENVIRONMENT
 			l_il_choices: ARRAYED_LIST [STRING_32]
 			l_il_version: STRING
@@ -381,7 +383,8 @@ feature {NONE} -- Implementation
 			end
 			properties.add_property (l_choice_prop)
 
-			create l_choice_prop.make_with_choices (conf_interface_names.target_msil_generation_type_name, <<"exe", "dll">>)
+			create l_choice_prop.make_with_choices (conf_interface_names.target_msil_generation_type_name,
+				create {ARRAYED_LIST [STRING_32]}.make_from_array (<<"exe", "dll">>))
 			l_choice_prop.set_description (conf_interface_names.target_msil_generation_type_description)
 			add_string_setting_actions (l_choice_prop, s_msil_generation_type, "")
 			if not l_il_generation then
@@ -419,7 +422,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation helper
 
-	add_string_setting_actions (a_property: TYPED_PROPERTY [STRING_32]; a_name: STRING; a_default: STRING) is
+	add_string_setting_actions (a_property: TYPED_PROPERTY [STRING_32]; a_name: STRING; a_default: STRING)
 			-- Add actions that deal with string settings.
 		require
 			a_property_not_void: a_property /= Void
@@ -437,7 +440,7 @@ feature {NONE} -- Implementation helper
 			update_inheritance_setting (a_name, a_property)
 		end
 
-	add_boolean_setting_actions (a_property: BOOLEAN_PROPERTY; a_name: STRING; a_default: BOOLEAN) is
+	add_boolean_setting_actions (a_property: BOOLEAN_PROPERTY; a_name: STRING; a_default: BOOLEAN)
 			-- Add actions that deal with boolean settings.
 		require
 			a_property_not_void: a_property /= Void
@@ -457,7 +460,7 @@ feature {NONE} -- Implementation helper
 
 feature {NONE} -- Inheritance handling
 
-	update_inheritance_setting (a_name: STRING; a_property: PROPERTY) is
+	update_inheritance_setting (a_name: STRING; a_property: PROPERTY)
 			-- Enable inheritance/override on `a_property' accordint to the setting `a_name'.
 		require
 			a_name_valid: valid_setting (a_name)
@@ -473,7 +476,7 @@ feature {NONE} -- Inheritance handling
 			end
 		end
 
-	update_inheritance_root (a_dummy: CONF_ROOT; a_property: PROPERTY) is
+	update_inheritance_root (a_dummy: CONF_ROOT; a_property: PROPERTY)
 			-- Enable inheritance/override on `a_property' depending on if the root value is set in the current_target.
 		require
 			a_property_not_void: a_property /= Void
@@ -488,7 +491,7 @@ feature {NONE} -- Inheritance handling
 			end
 		end
 
-	update_inheritance_version (a_dummy: CONF_VERSION; a_property: PROPERTY) is
+	update_inheritance_version (a_dummy: CONF_VERSION; a_property: PROPERTY)
 			-- Enable inheritance/override on `a_property' depending on if the version value is set in the current_target.
 		require
 			a_property_not_void: a_property /= Void
@@ -503,7 +506,7 @@ feature {NONE} -- Inheritance handling
 			end
 		end
 
-	update_inheritance_file_rule (a_dummy: ARRAYED_LIST [CONF_FILE_RULE]; a_property: PROPERTY) is
+	update_inheritance_file_rule (a_dummy: ARRAYED_LIST [CONF_FILE_RULE]; a_property: PROPERTY)
 			-- Enable inheritance/override on `a_property' depending on if there are file rules in the `current_target'.
 		require
 			a_property_not_void: a_property /= Void
@@ -520,7 +523,7 @@ feature {NONE} -- Inheritance handling
 
 feature {NONE} -- Configuration setting
 
-	set_compilation_mode (a_mode: STRING_32) is
+	set_compilation_mode (a_mode: STRING_32)
 			-- Set settings for `a_mode'.
 		require
 			current_target_not_void: current_target /= Void
@@ -539,7 +542,7 @@ feature {NONE} -- Configuration setting
 			end
 		end
 
-	set_string_setting (a_name: STRING; a_default: STRING; a_value: STRING) is
+	set_string_setting (a_name: STRING; a_default: STRING; a_value: STRING)
 			-- Set a string setting with `a_name' to `a_value'.
 		require
 			a_name_valid: valid_setting (a_name)
@@ -552,7 +555,7 @@ feature {NONE} -- Configuration setting
 			end
 		end
 
-	set_boolean_setting (a_name: STRING; a_default: BOOLEAN; a_value: BOOLEAN) is
+	set_boolean_setting (a_name: STRING; a_default: BOOLEAN; a_value: BOOLEAN)
 			-- Set a boolean setting with `a_name' to `a_value'.
 		require
 			a_name_valid: valid_setting (a_name)
@@ -567,7 +570,7 @@ feature {NONE} -- Configuration setting
 
 feature {NONE} -- Validation and warning generation
 
-	check_target_name (a_name: STRING_32): BOOLEAN is
+	check_target_name (a_name: STRING_32): BOOLEAN
 			-- Is `a_name' a valid name for a target?
 		require
 			current_target: current_target /= Void
@@ -588,7 +591,7 @@ feature {NONE} -- Validation and warning generation
 			end
 		end
 
-	valid_classes_per_module (a_value: STRING_32): BOOLEAN is
+	valid_classes_per_module (a_value: STRING_32): BOOLEAN
 			-- Is `a_value' a correct value for the classes per module setting?
 		require
 			current_target: current_target /= Void
@@ -600,7 +603,7 @@ feature {NONE} -- Validation and warning generation
 			end
 		end
 
-	valid_inlining_size (a_value: STRING_32): BOOLEAN is
+	valid_inlining_size (a_value: STRING_32): BOOLEAN
 			-- Is `a_value' a correct value for the classes per module setting?
 		require
 			current_target: current_target /= Void
@@ -614,7 +617,7 @@ feature {NONE} -- Validation and warning generation
 
 feature {NONE} -- Wrappers
 
-	get_setting (a_name: STRING): STRING_32 is
+	get_setting (a_name: STRING): STRING_32
 			-- Get value of a setting as STRING_32.
 		require
 			current_target: current_target /= Void
@@ -628,8 +631,8 @@ feature {NONE} -- Wrappers
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -642,21 +645,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

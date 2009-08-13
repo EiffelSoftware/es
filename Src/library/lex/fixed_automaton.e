@@ -1,9 +1,7 @@
-indexing
-
+note
 	description:
 		"General finite-state automata, implemented by arrays"
 	legal: "See notice at end of class.";
-
 	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
@@ -23,7 +21,7 @@ create
 
 feature -- Initialization
 
-	make (i, s: INTEGER) is
+	make (i, s: INTEGER)
 			-- Make an automaton including at most `s' states,
 			-- with transitions 0 to `i'.
 		require
@@ -31,7 +29,7 @@ feature -- Initialization
 			i_large_enough: i >= 0
 		do
 			array_make (1, s);
-		end; 
+		end;
 
 feature -- Access
 
@@ -40,38 +38,40 @@ feature -- Access
 
 feature -- Status setting
 
-	set_final (state, f: INTEGER) is
+	set_final (state, f: INTEGER)
 			-- Make `state' `final' for regular expression `f'.
 		require
 			is_in_automaton: state <= upper and state >= lower
+		local
+			l_state: S
 		do
-			item (state).set_final (f)
+			l_state := item (state)
+			check l_state_attached: l_state /= Void end
+			l_state.set_final (f)
 		end;
 
 feature -- Element change
 
-	add_right (s: S) is
+	add_right (s: S)
 			-- Assign `s' to the first possible item.
 		require
 			not_full: last_position < count
 		do
 			last_position := last_position + 1;
 			put (s, last_position)
-		end; 
+		ensure
+			last_position_incremented: last_position = old last_position + 1
+		end;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
-end -- class FIXED_AUTOMATON
-
+end

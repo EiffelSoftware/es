@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "All information about the wizard ... This class is inherited in each state "
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Assign default values
 		local
 			l_dir: DIRECTORY
@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 			l_layout: WIZARD_EIFFEL_LAYOUT
 		do
 			compile_project := True
+			freeze_required := False
 			ace_location := ""
 
 			project_location := eiffel_layout.user_projects_path
@@ -56,26 +57,34 @@ feature {NONE} -- Initialization
 
 feature -- Setting
 
-	set_project_location (a_location: STRING) is
+	set_project_location (a_location: STRING)
 			-- Set the project location to `a_location'.
 		do
 			project_location := a_location
 		end
 
-	set_project_name (a_project_name: STRING) is
+	set_project_name (a_project_name: STRING)
 			-- Set the project name to `a_project_name'.
 		do
 			project_name := a_project_name
 		end
 
-	set_compile_project (enable_compilation: BOOLEAN) is
+	set_compile_project (enable_compilation: BOOLEAN)
 			-- Enable or disable the compilation of the project depending on
 			-- `enable_compilation'.
 		do
 			compile_project := enable_compilation
 		end
 
-	set_ace_location (an_ace_location: STRING) is
+	set_freeze_required (v: BOOLEAN)
+			-- Enable or disable the freeze of the project depending on `v'.
+		do
+			freeze_required := v
+		ensure
+			freeze_required_set: freeze_required = v
+		end
+
+	set_ace_location (an_ace_location: STRING)
 			-- Set the location of the ace file to `an_ace_location'.
 		do
 			ace_location := an_ace_location
@@ -95,9 +104,12 @@ feature -- Access
 	compile_project: BOOLEAN
 			-- Should the project be compiled upon generation?
 
+	freeze_required: BOOLEAN
+			-- Should we freeze the project if compiled?
+
 feature {NONE} -- Implementation
 
-	project_path: STRING is
+	project_path: STRING
 			-- project path
 		do
 			create Result.make (project_location.count + project_name.count + 2)
@@ -108,14 +120,14 @@ feature {NONE} -- Implementation
 			non_void_project_path: Result /= Void
 		end
 
-	Default_project_name: STRING is
+	Default_project_name: STRING
 			-- Default project name
 		deferred
 		ensure
 			valid_result: Result /= Void and then not Result.is_empty
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

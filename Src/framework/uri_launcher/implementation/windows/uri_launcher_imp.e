@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		The Windows implementation of a URI launcher.
 	]"
@@ -13,37 +13,19 @@ class
 inherit
 	URI_LAUNCHER_I
 
--- inherit {NONE}
-	SHARED_API_MARSHALLER
-		export
-			{NONE} all
-		end
-
 feature -- Basic operations
 
-	launch (a_uri: !READABLE_STRING_GENERAL): BOOLEAN
+	launch (a_uri: READABLE_STRING_8): BOOLEAN
 			-- <Precursor>
 		local
-			l_cleaner: !API_MARSHALLER_AUTO_CLEANER
-			l_op: POINTER
-			l_uri: POINTER
+			l_uri: C_STRING
 			l_null: POINTER
 		do
 			check is_windows: {PLATFORM}.is_windows end
 
-				-- Marshal c-data
-			create l_cleaner.make (marshaller)
-			l_op := marshaller.string_to_tstring ("open")
-			l_uri := marshaller.string_to_tstring (a_uri)
-			l_cleaner.auto_free (l_op)
-			l_cleaner.auto_free (l_uri)
-
 				-- Return values greater than 32 represent a success, see MS documentation on ShellExecute.
-			Result := cwin_shell_execute (l_null, l_null, l_uri, l_null, l_null, cwin_sw_shownormal) > 32
-
-			l_cleaner.clean
-		rescue
-			l_cleaner.clean
+			create l_uri.make (a_uri)
+			Result := cwin_shell_execute (l_null, l_null, l_uri.item, l_null, l_null, cwin_sw_shownormal) > 32
 		end
 
 feature {NONE} -- Externals
@@ -51,9 +33,9 @@ feature {NONE} -- Externals
 	cwin_shell_execute (a_hwnd: POINTER; a_operation: POINTER; a_file: POINTER; a_params: POINTER; a_directory: POINTER; a_show_cmd: INTEGER): INTEGER
 			-- Performs an operation on a specified file.
 		external
-			"C signature (HWND, LPCTSTR, LPCTSTR, LPCTSTR, LPCTSTR, INT): HINSTANCE use <shellapi.h>"
+			"C inline use <shellapi.h>"
 		alias
-			"ShellExecute"
+			"return (EIF_INTEGER) ShellExecuteA ((HWND) $a_hwnd, (LPCSTR) $a_operation, (LPCSTR) $a_file, (LPCSTR) $a_params, (LPCSTR) $a_directory, (int) $a_show_cmd);"
 		end
 
 	cwin_sw_shownormal: INTEGER
@@ -66,8 +48,8 @@ feature {NONE} -- Externals
 			"SW_SHOWNORMAL"
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -80,22 +62,22 @@ feature {NONE} -- Externals
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command to execute an external wizard to create a new project"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_file (a_filename: FILE_NAME) is
+	make_with_file (a_filename: FILE_NAME)
 			-- Load the command from the description file named
 			-- `a_filename'.
 			--
@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 					elseif (entry @ 1).is_equal ("description") then
 						set_description (wrap_word (entry @ 2, 70))
 					elseif (entry @ 1).is_equal ("location") then
-						location := eiffel_layout.New_project_wizards_path.twin
+						create location.make_from_string (eiffel_layout.New_project_wizards_path)
 						location.extend (entry @ 2)
 					elseif (entry @ 1).is_equal ("platform") then
 						target_platform := entry.item (2).as_lower
@@ -73,7 +73,7 @@ feature -- Access
 	target_platform: STRING
 			-- Target platform for this wizard: "all" for all platform, "windows" for windows, ...
 
-	target_platform_supported: BOOLEAN is
+	target_platform_supported: BOOLEAN
 			-- Is the target platform supported by the current platform?
 		do
 			Result := target_platform.is_equal ("all") or else target_platform.is_case_insensitive_equal (eiffel_layout.platform_abstraction)
@@ -81,13 +81,13 @@ feature -- Access
 
 feature -- Status Setting
 
-	set_name (a_name: STRING) is
+	set_name (a_name: STRING)
 			-- Set `name' to `a_name'.
 		do
 			name := a_name
 		end
 
-	set_description (a_description: STRING) is
+	set_description (a_description: STRING)
 			-- Set `description' to `a_description'.
 		do
 			description := a_description
@@ -95,7 +95,7 @@ feature -- Status Setting
 
 feature {NONE} -- Implementation
 
-	wrap_word (a_string: STRING; a_margin: INTEGER): STRING is
+	wrap_word (a_string: STRING; a_margin: INTEGER): STRING
 			-- Return a copy of `a_string', with a maximum of `a_margin' characters per line.
 		local
 			original: STRING
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make (0)
 			from
-				original := a_string.twin
+				original := a_string.string
 			until
 				original.count < a_margin
 			loop
@@ -117,13 +117,13 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	Additional_parameters: STRING is
+	Additional_parameters: STRING
 		do
-			Result := "Ace=%"<ACE>%"%NDirectory=%"<DIRECTORY>%"%NCompilation=%"<COMPILATION>%""
+			Result := "Ace=%"<ACE>%"%NDirectory=%"<DIRECTORY>%"%NCompilation=%"<COMPILATION>%"%NCompilation_type=%"<COMPILATION_TYPE>%""
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -136,22 +136,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_NEW_PROJECT_WIZARD

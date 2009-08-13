@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class that allows formatting of the numerical part of a monetary quantity"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,12 +20,14 @@ create
 	make_from_locale_info,
 	make_from_currency_info
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make_from_currency_info (a_currency_info: I18N_CURRENCY_INFO) is
+	make_from_currency_info (a_currency_info: I18N_CURRENCY_INFO)
 			-- Initialize values according
 			-- the currency information in
 			-- `a_locale_info'
+		require
+			a_currency_info_not_void: a_currency_info /= Void
 		do
 			decimal_separator := a_currency_info.currency_decimal_separator
 					-- decimal separator
@@ -39,7 +41,7 @@ feature -- Initialization
 			negative_sign := a_currency_info.currency_negative_sign
 		end
 
-	make_from_locale_info (a_locale_info: I18N_LOCALE_INFO) is
+	make_from_locale_info (a_locale_info: I18N_LOCALE_INFO)
 			-- Initialize values according
 			-- the currency information in
 			-- `a_currency_info'
@@ -47,13 +49,13 @@ feature -- Initialization
 			make_from_currency_info (a_locale_info)
 		end
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

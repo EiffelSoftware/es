@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -28,7 +28,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		do
 			make_top (Title)
 			resize (300, 255)
@@ -41,26 +41,26 @@ feature {NONE} -- Initialization
 				-- Set a timer for the 3d_demo.
 				-- `demo_timer_id' is the timer id and 50 is the
 				-- interval length in milliseconds.
-			set_timer (demo_timer_id, 50)	
+			set_timer (demo_timer_id, 50)
 		end
 
 feature -- Access
 
-	brush_demo: BRUSH_DEMO
+	brush_demo: detachable BRUSH_DEMO
 
-	rectangle_demo: RECTANGLE_DEMO
+	rectangle_demo: detachable RECTANGLE_DEMO
 
-	three_d_demo: DEMO_3D
+	three_d_demo: detachable DEMO_3D
 
-	brush_button: WEL_PUSH_BUTTON
+	brush_button: detachable WEL_PUSH_BUTTON
 
-	rectangle_button: WEL_PUSH_BUTTON
+	rectangle_button: detachable WEL_PUSH_BUTTON
 
-	demo3d_button: WEL_PUSH_BUTTON
+	demo3d_button: detachable WEL_PUSH_BUTTON
 
 feature {NONE} -- Implementation
 
-	on_control_command (control: WEL_CONTROL) is
+	on_control_command (control: WEL_CONTROL)
 		do
 			if control = brush_button then
 				create brush_demo.make
@@ -71,34 +71,34 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT) is
+	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
 			-- Draw the ISE logo bitmap
 		do
-			paint_dc.draw_bitmap (ise_logo, 158, 10, 
+			paint_dc.draw_bitmap (ise_logo, 158, 10,
 				ise_logo.width, ise_logo.height)
 		end
-		
-	on_timer (timer_id: INTEGER) is
+
+	on_timer (timer_id: INTEGER)
 			-- Wm_timer message.
 			-- A Wm_timer has been received from `timer_id'
-			-- We use this timer to 
+			-- We use this timer to
 		do
-			if timer_id = demo_timer_id and then
-				three_d_demo /= Void and then
-				three_d_demo.exists and then
-				three_d_demo.ready then
-				three_d_demo.go
+			if
+				timer_id = demo_timer_id and then
+				attached three_d_demo as l_demo and then
+				l_demo.exists and then l_demo.ready
+			then
+				l_demo.go
 			end
 		end
-		
 
-	class_icon: WEL_ICON is
+	class_icon: WEL_ICON
 			-- Window's icon
 		once
 			create Result.make_by_id (Id_ico_application)
 		end
 
-	ise_logo: WEL_BITMAP is
+	ise_logo: WEL_BITMAP
 			-- ISE logo bitmap
 		once
 			create Result.make_by_id (Id_bmp_ise_logo)
@@ -106,13 +106,13 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
-	Title: STRING is "WEL GDI demo"
+	Title: STRING = "WEL GDI demo"
 		-- Window's title
-			
-	demo_timer_id: INTEGER is unique;
+
+	demo_timer_id: INTEGER = unique;
 		-- Unique integer for timer.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

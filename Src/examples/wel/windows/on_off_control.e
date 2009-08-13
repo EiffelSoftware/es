@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -22,17 +22,16 @@ create
 
 feature -- Initialization
 
-	make (a_parent: WEL_COMPOSITE_WINDOW; a_x, a_y: INTEGER) is
+	make (a_parent: WEL_COMPOSITE_WINDOW; a_x, a_y: INTEGER)
 			-- Load the bitmaps
 		require
 			a_parent_not_void: a_parent /= Void
 			a_parent_exists: a_parent.exists
 		do
-			control_make (a_parent, "")
 			create on_bitmap.make_by_id (On_bmp_id)
 			create off_bitmap.make_by_id (Off_bmp_id)
-			move_and_resize (a_x, a_y, on_bitmap.width,
-				on_bitmap.height, False)
+			control_make (a_parent, "")
+			move_and_resize (a_x, a_y, on_bitmap.width, on_bitmap.height, False)
 		end
 
 feature -- Access
@@ -42,7 +41,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT) is
+	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
 			-- Paint the bitmap according to `off'.
 		do
 			if on then
@@ -52,7 +51,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Switch the value of `off'.
 		do
 			on := not on
@@ -65,7 +64,7 @@ feature {NONE} -- Implementation
 	on_bitmap: WEL_BITMAP;
 			-- Bitmap corresponding to on
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

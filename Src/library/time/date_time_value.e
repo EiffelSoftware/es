@@ -1,13 +1,15 @@
-indexing
+note
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 	access: date, time
 
-class DATE_TIME_VALUE inherit 
+deferred class
+	DATE_TIME_VALUE
 
+inherit
 	DATE_TIME_MEASUREMENT
-	
+
 feature -- Access
 
 	date: DATE_VALUE
@@ -15,24 +17,24 @@ feature -- Access
 
 	time: TIME_VALUE
 			-- Time of the current object
-			 
-	fractional_second: DOUBLE is 
-			-- Decimal part of second 
-		do 
+
+	fractional_second: DOUBLE
+			-- Decimal part of second
+		do
 			Result := time.fractional_second
 		ensure
 			same_fractional: Result = time.fractional_second
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

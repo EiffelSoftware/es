@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Arguments of a FEATURE_I"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -59,11 +59,11 @@ create {FEAT_ARG}
 
 feature {NONE} -- Implementation
 
-	make (n: INTEGER) is
+	make (n: INTEGER)
 			-- Arrays creation
 		do
-			make_filled (n)
-			create argument_names.make (n)
+			old_make (n)
+			create argument_names.make_filled (0, n)
 		end
 
 feature -- Access
@@ -71,7 +71,7 @@ feature -- Access
 	argument_names: SPECIAL [INTEGER]
 			-- Argument names. Index in `Names_heap' table.
 
-	item_id (i: INTEGER): INTEGER is
+	item_id (i: INTEGER): INTEGER
 			-- Name of argument at position `i'.
 		require
 			index_positive: i >= 1
@@ -82,7 +82,7 @@ feature -- Access
 			valid_result: Result > 0
 		end
 
-	item_name (i: INTEGER): STRING is
+	item_name (i: INTEGER): STRING
 			-- Name of argument at position `i'.
 		require
 			index_positive: i >= 1
@@ -94,7 +94,7 @@ feature -- Access
 			Result_not_empty: not Result.is_empty
 		end
 
-	argument_position_id (arg_id: INTEGER; a_start_position: INTEGER): INTEGER is
+	argument_position_id (arg_id: INTEGER; a_start_position: INTEGER): INTEGER
 		require
 			arg_id_not_void: arg_id >= 0
 			valid_start_position: a_start_position >= 1
@@ -106,7 +106,7 @@ feature -- Access
 			not_found_or_found: Result = 0 or else (Result >= 1 and then Result <= count)
 		end
 
-	pattern_types: ARRAY [TYPE_A] is
+	pattern_types: ARRAY [TYPE_A]
 			-- Pattern types of arguments
 		local
 			l_area: SPECIAL [TYPE_A]
@@ -128,7 +128,7 @@ feature -- Access
 
 feature -- Duplication
 
-	copy (other: like Current) is
+	copy (other: like Current)
 			-- Clone
 		do
 			Precursor {ARRAYED_LIST} (other)
@@ -137,24 +137,24 @@ feature -- Duplication
 
 feature -- Element change
 
-	put_name (id: INTEGER; i: INTEGER) is
+	extend_with_name (a_type: TYPE_A; id: INTEGER)
 			-- Record argument name `s'.
 		require
-			index_small_enough: i <= count
+			id_valid: id >= 0
 		do
-			argument_names.put (id, i - 1)
+			extend (a_type)
+			argument_names.put (id, count - 1)
 		end
 
 feature -- Checking
 
-	check_types (feat_table: FEATURE_TABLE; f: FEATURE_I) is
+	check_types (feat_table: FEATURE_TABLE; f: FEATURE_I)
 			-- Check like types in arguments and instantiate arguments
 		require
 			good_argument: not (feat_table = Void or f = Void)
 		local
 			solved_type: TYPE_A
 			associated_class: CLASS_C
-			argument_name: STRING
 			i, nb: INTEGER
 			l_area: SPECIAL [TYPE_A]
 			a_area: like argument_names
@@ -171,7 +171,6 @@ feature -- Checking
 				i = nb
 			loop
 					-- Process anchored type for argument types
-				argument_name := l_names_heap.item (a_area.item (i))
 				solved_type := type_a_checker.check_and_solved (l_area.item (i), Void)
 				if solved_type /= Void then
 					l_area.put (solved_type, i)
@@ -180,7 +179,7 @@ feature -- Checking
 			end
 		end
 
-	check_type_validity (a_context_class: CLASS_C; a_feature: FEATURE_I; a_checker: TYPE_A_CHECKER; a_check_for_obsolete: BOOLEAN) is
+	check_type_validity (a_context_class: CLASS_C; a_feature: FEATURE_I; a_checker: TYPE_A_CHECKER; a_check_for_obsolete: BOOLEAN)
 			-- Check like types in arguments and instantiate arguments
 		require
 			a_context_class_not_void: a_context_class /= Void
@@ -211,7 +210,7 @@ feature -- Checking
 			end
 		end
 
-	check_expanded (associated_class: CLASS_C f: FEATURE_I) is
+	check_expanded (associated_class: CLASS_C f: FEATURE_I)
 			-- Check expanded validity rules
 		require
 			good_argument: not (associated_class = Void or f = Void)
@@ -266,13 +265,14 @@ feature -- Checking
 			end
 		end
 
-	solve_types (feat_tbl: FEATURE_TABLE f: FEATURE_I) is
+	solve_types (feat_tbl: FEATURE_TABLE f: FEATURE_I)
 			-- Evaluates argument types in the context of `feat_tbl'.
 			-- | Take care of possible anchored types.
 		local
 			l_area: SPECIAL [TYPE_A]
 			i, nb: INTEGER
 			arg_eval: ARG_EVALUATOR
+			l_solved_type: TYPE_A
 		do
 			from
 				arg_eval := Arg_evaluator
@@ -281,14 +281,16 @@ feature -- Checking
 			until
 				i = nb
 			loop
-				l_area.put (arg_eval.evaluated_type (l_area.item (i), feat_tbl, f), i)
+				l_solved_type := arg_eval.evaluated_type (l_area.item (i), feat_tbl, f)
+				check l_solved_type_not_void: l_solved_type /= Void end
+				l_area.put (l_solved_type, i)
 				i := i + 1
 			end
 		end
 
 feature -- Status report
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- All the types are still in the system
 		local
 			type_a: TYPE_A
@@ -308,7 +310,7 @@ feature -- Status report
 			end
 		end
 
-	same_interface (other: FEAT_ARG): BOOLEAN is
+	same_interface (other: FEAT_ARG): BOOLEAN
 			-- Has the other argument list the same interface than the
 			-- current one ?
 		require
@@ -333,7 +335,7 @@ feature -- Status report
 
 feature -- Debugging
 
-	trace is
+	trace
 		local
 			l_area: SPECIAL [TYPE_A]
 			i, nb: INTEGER
@@ -353,7 +355,7 @@ feature -- Debugging
 
 feature {FEATURE_I}
 
-	api_args: E_FEATURE_ARGUMENTS is
+	api_args: E_FEATURE_ARGUMENTS
 		local
 			i, c: INTEGER
 			args: ARRAYED_LIST [STRING]
@@ -376,8 +378,8 @@ feature {FEATURE_I}
 invariant
 	argument_names_not_void: argument_names /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -390,22 +392,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- end of class FEAT_ARG

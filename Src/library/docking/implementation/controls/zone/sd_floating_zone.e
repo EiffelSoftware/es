@@ -1,4 +1,4 @@
-indexing
+note
 	description: "When a content is floating, objects to hold content(s)."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,25 +12,12 @@ inherit
 	SD_ZONE
 		rename
 			internal_shared as internal_shared_zone,
-			extend_widget as extend_sizeable_popup_window,
-			has_widget as has_untitled_dialog,
 			is_maximized as is_maximized_zone
 		export
 			{NONE} all
-			{ANY} has_focus, width, height, is_destroyed, is_displayed
-			{SD_OPEN_CONFIG_MEDIATOR, SD_DOCKING_MANAGER} destroy
-		undefine
-			initialize,
-			Identifier_path_separator,
-			show
 		redefine
 			type,
-			state,
-			hide,
-			screen_y,
-			screen_x,
-			width,
-			height
+			state
 		end
 
 	SD_DOCKER_SOURCE
@@ -45,7 +32,7 @@ inherit
 			has as has_untitled_dialog
 		export
 			{NONE} all
-			{ANY} set_position, set_size, screen_x, screen_y
+			{ANY} set_position, set_size, screen_x, screen_y, is_displayed, is_destroyed, has_focus
 			{SD_DOCKING_MANAGER_COMMAND} accelerators
 			{SD_DOCKING_STATE, SD_STATE_VOID} set_width, set_height
 			{SD_DOCKING_MANAGER_COMMAND} hide
@@ -58,9 +45,6 @@ inherit
 			height,
 			set_position,
 			set_size
-		select
-			implementation,
-			show_allow_to_back
 		end
 
 create
@@ -68,14 +52,16 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_floating_state: SD_FLOATING_STATE) is
-			-- Creation method.
+	make (a_floating_state: SD_FLOATING_STATE)
+			-- Creation method
 		require
 			a_floating_state_not_void: a_floating_state /= Void
 		do
 			internal_floating_state := a_floating_state
 			internal_docking_manager := a_floating_state.docking_manager
+
 			create internal_shared
+
 			create internal_shared_zone
 			default_create
 			create internal_vertical_box
@@ -105,7 +91,7 @@ feature {NONE} -- Initlization
 
 feature {SD_OPEN_CONFIG_MEDIATOR} -- Save config
 
-	save_content_title (a_config_data: SD_INNER_CONTAINER_DATA) is
+	save_content_title (a_config_data: SD_INNER_CONTAINER_DATA)
 			-- <Precursor>
 		do
 			a_config_data.add_title ("SD_FLOATING_ZONE")
@@ -113,9 +99,9 @@ feature {SD_OPEN_CONFIG_MEDIATOR} -- Save config
 
 feature -- Command
 
-	update_title_bar is
-			-- Remove/add title bar if `Current' content count changed.
-			-- Destroy Current if no zone in.
+	update_title_bar
+			-- Remove/add title bar if `Current' content count changed
+			-- Destroy Current if no zone in
 		local
 			l_title_zone: SD_TITLE_BAR_REMOVEABLE
 			l_env: EV_ENVIRONMENT
@@ -157,8 +143,8 @@ feature -- Command
 			end
 		end
 
-	show is
-			-- Show `Current'.
+	show
+			-- Show `Current'
 		do
 			if internal_shared.allow_window_to_back then
 				show_allow_to_back
@@ -169,8 +155,8 @@ feature -- Command
 			showed: is_displayed
 		end
 
-	hide is
-			-- Redefine.
+	hide
+			-- <Precursor>
 		do
 			last_screen_x := screen_x
 			last_screen_y := screen_y
@@ -181,7 +167,7 @@ feature -- Command
 			Precursor {SD_SIZABLE_POPUP_WINDOW}
 		end
 
-	set_title_focus (a_focus: BOOLEAN) is
+	set_title_focus (a_focus: BOOLEAN)
 			-- Set title focus color?
 		do
 			if a_focus then
@@ -191,27 +177,27 @@ feature -- Command
 			end
 		end
 
-	extend (a_content: SD_CONTENT) is
-			-- Redefine.
+	extend (a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 		end
 
-	has (a_content: SD_CONTENT): BOOLEAN is
-			-- Redefine.
+	has (a_content: SD_CONTENT): BOOLEAN
+			-- <Precursor>
 		do
 			Result := has_recursive (a_content.user_widget)
 		end
 
 feature -- Query
 
-	type: INTEGER is
-			-- Redefine.
+	type: INTEGER
+			-- <Precursor>
 		do
 			Result := {SD_ENUMERATION}.tool
 		end
 
-	state: SD_STATE is
-			-- Redefine.
+	state: SD_STATE
+			-- <Precursor>
 		local
 			l_zone: SD_ZONE
 		do
@@ -225,16 +211,16 @@ feature -- Query
 			end
 		end
 
-	inner_container: like internal_inner_container is
-			-- Main container which is  a SD_MULTI_DOCK_AREA.
+	inner_container: like internal_inner_container
+			-- Main container which is a SD_MULTI_DOCK_AREA
 		do
 			Result := internal_inner_container
 		ensure
 			not_void: Result /= Void
 		end
 
-	content: SD_CONTENT is
-			-- Redefine.
+	content: SD_CONTENT
+			-- <Precursor>
 		local
 			l_zone: SD_ZONE
 		do
@@ -246,7 +232,7 @@ feature -- Query
 			end
 		end
 
-	count_zone_displayed is
+	count_zone_displayed
 			-- If more than one zone displayed?
 		require
 			readable: inner_container_readable
@@ -263,18 +249,18 @@ feature -- Query
 			end
 		end
 
-	inner_container_readable: BOOLEAN is
+	inner_container_readable: BOOLEAN
 			-- If `internal_inner_container' readable?
 		do
 			Result := internal_inner_container.readable
 		end
 
 	last_width, last_height, last_screen_x, last_screen_y: INTEGER
-			-- On GTK, `width', `height', `screen_x' and `screen_y' are 0 if Current hidden.
-			-- See bug#13685 which only happens on GTK.
+			-- On GTK, `width', `height', `screen_x' and `screen_y' are 0 if Current hidden
+			-- See bug#13685 which only happens on GTK
 
-	set_position (a_screen_x, a_screen_y: INTEGER) is
-			-- Redefine
+	set_position (a_screen_x, a_screen_y: INTEGER)
+			-- <Precursor>
 		do
 			last_screen_x := a_screen_x
 			last_screen_y := a_screen_y
@@ -285,8 +271,8 @@ feature -- Query
 			set: last_screen_y = a_screen_y
 		end
 
-	set_size (a_width, a_height: INTEGER) is
-			-- Redefine
+	set_size (a_width, a_height: INTEGER)
+			-- <Precursor>
 		do
 			last_width := a_width
 			last_height := a_height
@@ -303,8 +289,8 @@ feature -- Query
 	is_last_size_or_position_recorded: BOOLEAN
 			-- If any of `last_width', `last_height', `last_screen_x' or `last_screen_y' have been set?
 
-	screen_y: INTEGER is
-			-- Redefine
+	screen_y: INTEGER
+			-- <Precursor>
 		do
 			if not is_displayed and then is_last_position_recorded then
 				Result := last_screen_y
@@ -313,8 +299,8 @@ feature -- Query
 			end
 		end
 
-	screen_x: INTEGER is
-			-- Redefine
+	screen_x: INTEGER
+			-- <Precursor>
 		do
 			if not is_displayed and then is_last_position_recorded then
 				Result := last_screen_x
@@ -323,8 +309,8 @@ feature -- Query
 			end
 		end
 
-	width: INTEGER is
-			-- Redefine
+	width: INTEGER
+			-- <Precursor>
 		do
 			if not is_displayed and then is_last_size_recorded then
 				Result := last_width
@@ -333,8 +319,8 @@ feature -- Query
 			end
 		end
 
-	height: INTEGER is
-			-- Redefine
+	height: INTEGER
+			-- <Precursor>
 		do
 			if not is_displayed and then is_last_size_recorded then
 				Result := last_height
@@ -346,25 +332,25 @@ feature -- Query
 feature {NONE} -- Implementation
 
 	internal_floating_state: SD_FLOATING_STATE
-			-- Zone state.
+			-- Zone state
 
 	internal_vertical_box: EV_VERTICAL_BOX
-			-- Vertical box which contain `internal_title_bar' and `internal_inner_container'.
+			-- Vertical box which contain `internal_title_bar' and `internal_inner_container'
 
 	internal_inner_container: SD_MULTI_DOCK_AREA
-			-- Main container allow dock SD_ZONEs.
+			-- Main container allow dock SD_ZONEs
 
 	internal_title_bar: SD_TITLE_BAR
-			-- Title bar.
+			-- Title bar
 
 	docker_mediator: SD_DOCKER_MEDIATOR
-			-- Docker mediator.
+			-- Docker mediator
 
 	pointer_press_offset_x, pointer_press_offset_y: INTEGER
-			-- When user clicked title bar, x y offset.
+			-- When user clicked title bar, x y offset
 
-	all_zones: ARRAYED_LIST [SD_ZONE] is
-			-- All zones in Current.
+	all_zones: ARRAYED_LIST [SD_ZONE]
+			-- All zones in Current
 		do
 			create Result.make (1)
 			if inner_container.readable then
@@ -374,8 +360,8 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	all_zones_in_current (a_widget: EV_WIDGET; a_zones: ARRAYED_LIST [SD_ZONE]) is
-			-- Find all zones in Current.
+	all_zones_in_current (a_widget: EV_WIDGET; a_zones: ARRAYED_LIST [SD_ZONE])
+			-- Find all zones in Current
 		require
 			a_widget_not_void: a_widget /= Void
 			a_zones_not_void: a_zones /= Void
@@ -399,8 +385,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extend_title_bar is
-			-- Extend title bar.
+	extend_title_bar
+			-- Extend title bar
 		do
 			if not internal_vertical_box.has (internal_title_bar) then
 				internal_vertical_box.start
@@ -410,8 +396,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	count_zone_display (a_container: EV_CONTAINER) is
-			-- Count zone which is displayed.
+	count_zone_display (a_container: EV_CONTAINER)
+			-- Count zone which is displayed
 		require
 			a_container_not_void: a_container /= Void
 		local
@@ -421,9 +407,13 @@ feature {NONE} -- Implementation
 		do
 			l_zone ?= a_container
 			if l_zone /= Void then
-				if l_zone.is_displayed then
-					only_one_zone_displayed := l_zone
-					zone_display_count := zone_display_count + 1
+				if attached {EV_WIDGET} l_zone as lt_widget then
+					if lt_widget.is_displayed then
+						only_one_zone_displayed := l_zone
+						zone_display_count := zone_display_count + 1
+					end
+				else
+					check not_possible: False end
 				end
 			else
 				l_split ?= a_container
@@ -442,8 +432,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_all_title_bar (a_widget: EV_WIDGET) is
-			-- Set all zones' title bar in `Current' show normal\max.
+	set_all_title_bar (a_widget: EV_WIDGET)
+			-- Set all zones' title bar in `Current' show normal\max
 		require
 			a_widget_not_void: a_widget /= Void
 		local
@@ -464,53 +454,62 @@ feature {NONE} -- Implementation
 			-- How many zones are displayed?
 
 	only_one_zone_displayed: SD_ZONE
-			-- Zone which is only one displayed.
+			-- Zone which is only one displayed
 
 feature {NONE} -- Agents
 
-	on_dialog_focus_in is
-			-- Handle Current dialog focus in actions.
+	on_dialog_focus_in
+			-- Handle Current dialog focus in actions
 		local
 			l_last_zone: SD_ZONE
 			l_zones: like all_zones
 		do
-			if {l_content: SD_CONTENT} internal_docking_manager.property.last_focus_content then
-				if {l_state: SD_STATE} l_content.state then
+			if attached {SD_CONTENT} internal_docking_manager.property.last_focus_content as l_content then
+				if attached {SD_STATE} l_content.state as l_state then
 					l_last_zone := l_state.zone
-					if not has_recursive (l_last_zone) then
-						l_zones := all_zones
-						if l_zones.count > 0 then
-							-- If the first content is not visible, it means the floating zone is showing for the first time.
-							if l_zones.first.content.is_visible then
-								l_zones.first.content.set_focus
+					if attached {EV_WIDGET} l_last_zone as lt_widget then
+						if not has_recursive (lt_widget) then
+							l_zones := all_zones
+							if l_zones.count > 0 then
+								-- If the first content is not visible, it means the floating zone is showing for the first time.
+								if l_zones.first.content.is_visible then
+									l_zones.first.content.set_focus
+								end
 							end
+						else
+							l_last_zone.set_focus_color (True)
 						end
+						internal_title_bar.enable_focus_color
 					else
-						l_last_zone.set_focus_color (True)
+						check not_possible: False end
 					end
-					internal_title_bar.enable_focus_color
 				end
 			end
 		end
 
-	on_dialog_focus_out is
-			-- Handle Current dialog focus out actions.
+	on_dialog_focus_out
+			-- Handle Current dialog focus out actions
 		local
 			l_last_zone: SD_ZONE
 		do
-			if {l_content: SD_CONTENT} internal_docking_manager.property.last_focus_content then
-				if {l_state: SD_STATE} l_content.state then
+			if attached {SD_CONTENT} internal_docking_manager.property.last_focus_content as l_content then
+				if attached {SD_STATE} l_content.state as l_state then
 					l_last_zone := l_state.zone
-					if not is_destroyed and then has_recursive (l_last_zone) then
-						internal_title_bar.enable_non_focus_active_color
-						l_last_zone.set_non_focus_selection_color
+					if attached {EV_WIDGET} l_last_zone as lt_widget then
+						if not is_destroyed and then has_recursive (lt_widget) then
+							internal_title_bar.enable_non_focus_active_color
+							l_last_zone.set_non_focus_selection_color
+						end
+					else
+						check not_possible: False end
 					end
+
 				end
 			end
 		end
 
-	on_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
-			-- Forward pointer motion actions to docker mediator.
+	on_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
+			-- Forward pointer motion actions to docker mediator
 		do
 			debug ("docking")
 				print ("%NSD_FLOATING_ZONE on_pointer_motion screen_x, screen_y: " + a_screen_x.out + " " + a_screen_y.out)
@@ -520,8 +519,8 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_close is
-			-- Handle close request.
+	on_close
+			-- Handle close request
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
 			l_multi_zone: SD_MULTI_CONTENT_ZONE
@@ -553,8 +552,8 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_title_bar_drag (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
-			-- Start `docker_mediator'.
+	on_title_bar_drag (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
+			-- Start `docker_mediator'
 		do
 			-- We should check if `docker_mediator' is void since `on_drag_started' will be called multi times when starting dragging on GTK
 			if docker_mediator = Void then
@@ -567,8 +566,8 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pointer_button_release (a_x, a_y, a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
-			-- Stop `docker_mediator'.
+	on_pointer_button_release (a_x, a_y, a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
+			-- Stop `docker_mediator'
 		do
 			if a_button = 1 and docker_mediator /= Void then
 				disable_capture
@@ -580,15 +579,15 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_cancel_dragging is
-			-- Handle cancel dragging from SD_DOCKER_MEDIATOR.
+	on_cancel_dragging
+			-- Handle cancel dragging from SD_DOCKER_MEDIATOR
 		do
 			disable_capture
 			docker_mediator := Void
 		end
 
-	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
-			-- Handle resize actions.
+	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER)
+			-- Handle resize actions
 		local
 			l_zone: SD_ZONE
 		do
@@ -602,7 +601,7 @@ feature {NONE} -- Agents
 			internal_floating_state.record_state
 		end
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

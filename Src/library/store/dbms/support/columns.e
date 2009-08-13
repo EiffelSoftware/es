@@ -1,11 +1,11 @@
- indexing
+ note
 	description: "Description of a database table column"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
 
-class 
+class
 	COLUMNS [G -> DATABASE create default_create end]
 
 inherit
@@ -14,28 +14,28 @@ inherit
 
 feature -- Status report
 
-	table_qualifier, table_cat: STRING
+	table_qualifier: detachable STRING
 		-- Qualifier of the table in which the column belongs
 
-	owner, table_owner, table_schem: STRING 
+	table_owner: detachable STRING
 		-- Owner id of table of name `table_name'
 
-	table_name: STRING
+	table_name: detachable STRING
 		-- Table name
 
-	table_type: STRING
+	table_type: detachable STRING
 		-- Table type
 
-	column_name: STRING
+	column_name: detachable STRING
 		-- Column name
 
 	column_id: INTEGER
 		-- Column identification number (number of column in table)
 
-	column_nulls: STRING
+	column_nulls: detachable STRING
 		-- 'Y' if the column can contain null values, 'N' if the column can't contain null values
 
-	column_typename: STRING
+	column_typename: detachable STRING
 
 
 	data_type: INTEGER
@@ -50,9 +50,6 @@ feature -- Status report
 		-- varchar	-21/21
 		-- table_key -12/12
 		-- object_key -11/11
-
-	type_name: STRING
-		-- type name in ODBC
 
 	data_precision, precision, column_size: INTEGER
 		-- precision of the Column
@@ -72,7 +69,7 @@ feature -- Status report
 	default_length: INTEGER
 		-- Length of default value for a column
 
-	data_default: STRING
+	data_default: detachable STRING
 		-- Default field value
 
 	num_distinct: INTEGER
@@ -93,13 +90,13 @@ feature -- Status report
 	table_id: INTEGER
 		-- Table identification number
 
-	creation_date: DATE_TIME
+	creation_date: detachable DATE_TIME
 		-- Table creation date
 
 	status: INTEGER
 		--  Flag to check whether a column field can be null
 
-	duplicate: like Current is
+	duplicate: like Current
 			-- Duplicate copy of Current
 		do
 			create Result
@@ -107,7 +104,7 @@ feature -- Status report
 					data_default, table_qualifier, table_owner, table_name, table_type, column_name, column_nulls,column_typename, creation_date)
 		end
 
-	eiffel_type: INTEGER is
+	eiffel_type: INTEGER
 			-- Eiffel type code mapped to Ingres type `data_type'
 		do
 			Result := db_spec.conv_type (-data_length, data_type)
@@ -117,7 +114,7 @@ feature -- Status report
 feature -- Status setting
 
 	set_all (col_id, dat_type, dat_len, sca, rad, prec, nulable, def_len, num_dist, low_val, high_val, dens, own_id, tb_id, stat : INTEGER;
-		dat_def, qualifier, own,tab_name, tab_type, col_name, col_nulls, col_typename: STRING; creat_date: DATE_TIME) is
+		dat_def, qualifier, own,tab_name, tab_type, col_name, col_nulls, col_typename: detachable STRING; creat_date: detachable DATE_TIME)
 			-- Set attributes with input parameter values.
 		do
 
@@ -144,7 +141,7 @@ feature -- Status setting
 			if col_name /= Void then
 				column_name := col_name.twin
 			end
-			data_type := dat_type	
+			data_type := dat_type
 			column_id := col_id
 			data_length := dat_len
 -- For ODBC
@@ -175,7 +172,7 @@ feature -- Status setting
 
 feature -- Removal
 
-	clear_all is
+	clear_all
 			-- Reset all attributes to default values.
 		do
 			table_qualifier := Void
@@ -204,7 +201,7 @@ feature -- Removal
 			status := 0
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

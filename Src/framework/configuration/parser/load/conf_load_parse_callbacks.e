@@ -1,4 +1,4 @@
-indexing
+note
 	description: "The callbacks that react on the xml parsing."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -35,7 +35,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_factory (a_factory: like factory) is
+	make_with_factory (a_factory: like factory)
 			-- Create.
 		do
 			make
@@ -46,6 +46,9 @@ feature {NONE} -- Initialization
 			create overrides_list.make (0)
 			create current_content.make_empty
 			factory := a_factory
+			last_undefined_tag_number := undefined_tag_start
+			create current_element_under_note.make
+			create current_attributes_undefined.make (0)
 		ensure
 			factory_set: factory = a_factory
 		end
@@ -57,11 +60,11 @@ feature -- Access
 
 feature -- Callbacks
 
-	on_start_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING) is
+	on_start_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING)
 			-- Start of start tag.
 		local
-			l_trans: HASH_TABLE [INTEGER, STRING]
 			l_tag: INTEGER
+			l_elem, l_parent_elem: CONF_NOTE_ELEMENT
 		do
 			if not is_error then
 				a_local_part.to_lower
@@ -73,9 +76,21 @@ feature -- Callbacks
 				if current_tag.is_empty then
 					current_tag.extend (t_none)
 				end
-				l_trans := state_transitions_tag.item (current_tag.item)
-				if l_trans /= Void then
-					l_tag := l_trans.item (a_local_part)
+
+				l_tag := tag_from_state_transitions (current_tag.item, a_local_part)
+					-- Record levels of note element as a flag we allow any content in note.
+
+				if note_level = 0 and then l_tag = t_note then
+						-- Root element
+					create l_elem.make (a_local_part)
+					current_element_under_note.extend (l_elem)
+				elseif note_level > 0 then
+						-- Subelements
+					create l_elem.make (a_local_part)
+					l_parent_elem := current_element_under_note.item
+					l_parent_elem.extend (l_elem)
+					l_elem.set_parent (l_parent_elem)
+					current_element_under_note.extend (l_elem)
 				end
 
 				if l_tag = 0 then
@@ -92,7 +107,7 @@ feature -- Callbacks
 			end
 		end
 
-	on_attribute (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING; a_value: STRING) is
+	on_attribute (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING; a_value: STRING)
 			-- Start of attribute.
 		local
 			l_attr: HASH_TABLE [INTEGER, STRING]
@@ -105,45 +120,39 @@ feature -- Callbacks
 					a_local_part.is_case_insensitive_equal ("schemaLocation")
 				then
 					a_local_part.to_lower
-						-- check if the attribute is valid for the current state
-					l_attr := tag_attributes.item (current_tag.item)
-					if l_attr /= Void then
-						l_attribute := l_attr.item (a_local_part)
-					end
-					if current_attributes = Void then
-						create current_attributes.make (1)
-					end
-					if current_attributes_undefined = Void then
-						create current_attributes_undefined.make (1)
-					end
-					if l_attribute /= 0 and then not current_attributes.has (l_attribute) then
-							-- Check and put defined attributes in `current_attributes'.
-						if not a_value.is_empty then
-							a_value.replace_substring_all (lt_entity, lt_string)
-							a_value.replace_substring_all (gt_entity, gt_string)
-							current_attributes.force (a_value, l_attribute)
-						else
-							set_parse_error_message (conf_interface_names.e_parse_invalid_value (a_local_part))
+
+					if note_level = 0 then
+							-- check if the attribute is valid for the current state
+						l_attr := tag_attributes.item (current_tag.item)
+						if l_attr /= Void then
+							l_attribute := l_attr.item (a_local_part)
 						end
-					elseif tag_with_undefined_attributes.has (current_tag.item) and then not current_attributes_undefined.has (a_local_part) then
+						if current_attributes = Void then
+							create current_attributes.make (1)
+						end
+						if l_attribute /= 0 and then not current_attributes.has (l_attribute) then
+								-- Check and put defined attributes in `current_attributes'.
+							if not a_value.is_empty then
+								a_value.replace_substring_all (lt_entity, lt_string)
+								a_value.replace_substring_all (gt_entity, gt_string)
+								current_attributes.force (a_value, l_attribute)
+							else
+								set_parse_error_message (conf_interface_names.e_parse_invalid_value (a_local_part))
+							end
+						else
+							report_unknown_attribute (a_local_part)
+						end
+					else
 							-- Put undefined attributes in `current_attributes_undefined'.
 						a_value.replace_substring_all (lt_entity, lt_string)
 						a_value.replace_substring_all (gt_entity, gt_string)
 						current_attributes_undefined.force (a_value, a_local_part)
-					else
-						if is_unknown_version then
-								-- unknown version, just add a warning
-							set_parse_warning_message (conf_interface_names.e_parse_invalid_attribute (a_local_part))
-						else
-								-- known version, this is an error
-							set_parse_error_message (conf_interface_names.e_parse_invalid_attribute (a_local_part))
-						end
 					end
 				end
 			end
 		end
 
-	on_start_tag_finish is
+	on_start_tag_finish
 			-- End of start tag.
 		do
 			if not is_error then
@@ -226,20 +235,25 @@ feature -- Callbacks
 				when t_mapping then
 					process_mapping_attributes
 				when t_note then
-					process_note_attributes
+					process_element_under_note
 				else
+						-- Process attributes of elements under the first level of note.
+					if note_level > 0 then
+						process_element_under_note
+					end
 				end
 				current_attributes.clear_all
 				current_attributes_undefined.clear_all
 			end
 		end
 
-	on_end_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING) is
+	on_end_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING)
 			-- End tag.
 		local
 			l_group: CONF_GROUP
 			l_error: CONF_ERROR_GRUNDEF
 			l_e_ov: CONF_ERROR_OVERRIDE
+			l_element: CONF_NOTE_ELEMENT
 		do
 			if not is_error then
 				current_content.left_adjust
@@ -257,7 +271,12 @@ feature -- Callbacks
 					when t_include then
 						process_include_content
 					else
-						set_parse_error_message (conf_interface_names.e_parse_invalid_content (current_content))
+						if note_level > 0 then
+							l_element := current_element_under_note.item
+							l_element.set_content (current_content)
+						else
+							set_parse_error_message (conf_interface_names.e_parse_invalid_content (current_content))
+						end
 					end
 					create current_content.make_empty
 				end
@@ -317,6 +336,11 @@ feature -- Callbacks
 					uses_list.clear_all
 					overrides_list.clear_all
 					group_list.clear_all
+					if current_target.extends = Void then
+							-- Set default options for the standalone target in case the old schema is being processed.
+							-- Extension targets do not need it because the options are inherited from the standalone ones.
+						set_default_options (current_target, a_namespace)
+					end
 					current_target := Void
 				when t_file_rule then
 					current_file_rule := Void
@@ -356,12 +380,18 @@ feature -- Callbacks
 				when t_class_option then
 					current_option := Void
 				else
+					if note_level > 0 then
+						if note_level = 1 then
+							process_note
+						end
+						current_element_under_note.remove
+					end
 				end
 				current_tag.remove
 			end
 		end
 
-	on_content (a_content: STRING) is
+	on_content (a_content: STRING)
 			-- Text content.
 		do
 			if not is_error then
@@ -371,7 +401,7 @@ feature -- Callbacks
 
 feature {NONE} -- Implementation attribute processing
 
-	process_system_attributes is
+	process_system_attributes
 			-- Process attributes of a system tag.
 		local
 			l_name, l_uuid, l_readonly: STRING
@@ -409,7 +439,7 @@ feature {NONE} -- Implementation attribute processing
 			last_system_not_void: not is_error implies last_system /= Void
 		end
 
-	process_target_attributes is
+	process_target_attributes
 			-- Process attributes of a target tag.
 		require
 			last_system_not_void: last_system /= Void
@@ -461,7 +491,7 @@ feature {NONE} -- Implementation attribute processing
 			target_not_void: not is_error implies current_target /= Void
 		end
 
-	process_root_attributes is
+	process_root_attributes
 			-- Process attributes of a root tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -505,7 +535,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 	end
 
-	process_version_attributes is
+	process_version_attributes
 			-- Process attributes of a version tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -551,7 +581,7 @@ feature {NONE} -- Implementation attribute processing
 			current_target.set_version (l_version)
 		end
 
-	process_setting_attributes is
+	process_setting_attributes
 			-- Process attributes of a setting tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -576,7 +606,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_file_rule_attributes is
+	process_file_rule_attributes
 			-- Process attributes of a file_rule tag.
 		require
 			target_or_cluster: current_target /= Void or current_cluster /= Void
@@ -593,7 +623,7 @@ feature {NONE} -- Implementation attribute processing
 			current_file_rule_not_void: current_file_rule /= Void
 		end
 
-	process_external_attributes is
+	process_external_attributes
 			-- Process attributes of external_(include|object|resource) tags.
 		require
 			current_target_not_void: current_target /= Void
@@ -639,7 +669,7 @@ feature {NONE} -- Implementation attribute processing
 			current_external_not_void: not is_error implies current_external /= Void
 		end
 
-	process_action_attributes is
+	process_action_attributes
 			-- Process attributes of (pre|post)_compile_action tags.
 		require
 			current_target_not_void: current_target /= Void
@@ -679,7 +709,7 @@ feature {NONE} -- Implementation attribute processing
 			current_action_not_void: not is_error implies current_action /= Void
 		end
 
-	process_variable_attributes is
+	process_variable_attributes
 			-- Process attributes of a variable tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -698,7 +728,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_library_attributes is
+	process_library_attributes
 			-- Process attributes of a library tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -748,7 +778,7 @@ feature {NONE} -- Implementation attribute processing
 			library_and_group: not is_error implies current_library /= Void and current_group /= Void
 		end
 
-	process_precompile_attributes is
+	process_precompile_attributes
 			-- Process attributes of a precompile tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -800,7 +830,7 @@ feature {NONE} -- Implementation attribute processing
 			library_and_group: not is_error implies current_library /= Void and current_group /= Void
 		end
 
-	process_assembly_attributes is
+	process_assembly_attributes
 			-- Process attributes of an assembly tag.
 		require
 			current_target_not_void: current_target /= Void
@@ -855,7 +885,7 @@ feature {NONE} -- Implementation attribute processing
 			assembly_and_group: not is_error implies current_assembly /= Void and current_group /= Void
 		end
 
-	process_cluster_attributes (a_is_test_cluster: BOOLEAN) is
+	process_cluster_attributes (a_is_test_cluster: BOOLEAN)
 			-- Process attributes of a cluster tag.
 			--
 			-- `a_is_test_cluster': Defines whether new cluster is a test cluster or not.
@@ -925,7 +955,7 @@ feature {NONE} -- Implementation attribute processing
 			cluster_and_group: not is_error implies current_cluster /= Void and current_group /= Void
 		end
 
-	process_override_attributes is
+	process_override_attributes
 			-- Process attributes of an override tag.
 		require
 			target: current_target /= Void
@@ -987,7 +1017,7 @@ feature {NONE} -- Implementation attribute processing
 			override_and_cluster_and_group: current_override /= Void and current_cluster /= Void and current_group /= Void
 		end
 
-	process_debug_attributes is
+	process_debug_attributes
 			-- Process attributes of a debug tag.
 		require
 			current_option_not_void: current_option /= Void
@@ -1007,7 +1037,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_warning_attributes is
+	process_warning_attributes
 			-- Process attributes of a warning tag.
 		require
 			current_option_not_void: current_option /= Void
@@ -1031,7 +1061,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_assertions_attributes is
+	process_assertions_attributes
 			-- Process attributes of a assertions tag.
 		require
 			current_option_not_void: current_option /= Void
@@ -1103,7 +1133,7 @@ feature {NONE} -- Implementation attribute processing
 			current_option.set_assertions (l_assert)
 		end
 
-	process_renaming_attributes is
+	process_renaming_attributes
 			-- Process attributes of a renaming tag.
 		require
 			group: current_group /= Void
@@ -1128,7 +1158,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_option_attributes (a_class_option: BOOLEAN) is
+	process_option_attributes (a_class_option: BOOLEAN)
 			-- Process attributes of a (class) option tag.
 		require
 			group: a_class_option implies current_group /= Void
@@ -1137,7 +1167,7 @@ feature {NONE} -- Implementation attribute processing
 			l_trace, l_profile, l_optimize, l_debug, l_namespace, l_class,
 			l_warning, l_msil_application_optimize, l_full_class_checking,
 			l_cat_call_detection, l_is_attached_by_default, l_is_void_safe,
-			l_syntax_level: STRING
+			l_void_safety, l_syntax_level, l_syntax: STRING
 		do
 			l_trace := current_attributes.item (at_trace)
 			l_profile := current_attributes.item (at_profile)
@@ -1151,7 +1181,9 @@ feature {NONE} -- Implementation attribute processing
 			l_cat_call_detection := current_attributes.item (at_cat_call_detection)
 			l_is_attached_by_default := current_attributes.item (at_is_attached_by_default)
 			l_is_void_safe := current_attributes.item (at_is_void_safe)
+			l_void_safety := current_attributes.item (at_void_safety)
 			l_syntax_level := current_attributes.item (at_syntax_level)
+			l_syntax := current_attributes.item (at_syntax)
 
 			current_option := factory.new_option
 			if l_trace /= Void then
@@ -1217,17 +1249,60 @@ feature {NONE} -- Implementation attribute processing
 				end
 			end
 			if l_is_void_safe /= Void then
-				if l_is_void_safe.is_boolean then
-					current_option.set_is_void_safe (l_is_void_safe.to_boolean)
+				if is_unknown_version or else current_namespace <= namespace_1_4_0 then
+					if l_is_void_safe.is_boolean then
+						if l_is_void_safe.to_boolean then
+							current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_all)
+						else
+							current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_none)
+						end
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("is_void_safe"))
+					end
 				else
-					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("is_void_safe"))
+					report_unknown_attribute ("is_void_safe")
+				end
+			end
+			if l_void_safety /= Void then
+				if is_unknown_version or else current_namespace >= namespace_1_5_0 then
+					if current_option.void_safety.is_valid_item (l_void_safety) then
+						current_option.void_safety.put (l_void_safety)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("void_safety"))
+					end
+				else
+					report_unknown_attribute ("void_safety")
 				end
 			end
 			if l_syntax_level /= Void then
-				if l_syntax_level.is_natural_8 and then current_option.is_valid_syntax_level (l_syntax_level.to_natural_8) then
-					current_option.syntax_level.put (l_syntax_level.to_natural_8)
+				if is_unknown_version or else current_namespace <= namespace_1_4_0 then
+					if l_syntax_level.is_natural_8 then
+						inspect l_syntax_level.to_natural_8
+						when 0 then
+							current_option.syntax.put_index ({CONF_OPTION}.syntax_index_obsolete)
+						when 1 then
+							current_option.syntax.put_index ({CONF_OPTION}.syntax_index_transitional)
+						when 2 then
+							current_option.syntax.put_index ({CONF_OPTION}.syntax_index_standard)
+						else
+							set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax_level"))
+						end
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax_level"))
+					end
 				else
-					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax_level"))
+					report_unknown_attribute ("syntax_level")
+				end
+			end
+			if l_syntax /= Void then
+				if is_unknown_version or else current_namespace >= namespace_1_5_0 then
+					if current_option.syntax.is_valid_item (l_syntax) then
+						current_option.syntax.put (l_syntax)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax"))
+					end
+				else
+					report_unknown_attribute ("syntax")
 				end
 			end
 
@@ -1244,11 +1319,14 @@ feature {NONE} -- Implementation attribute processing
 					current_target.set_options (current_option)
 				end
 			end
+			if current_group /= Void and then attached {CONF_LIBRARY} current_group then
+				report_non_client_options
+			end
 		ensure
 			current_option_not_void: not is_error implies current_option /= Void
 		end
 
-	process_visible_attributes is
+	process_visible_attributes
 			-- Process attributes of a visible tag.
 		require
 			cluster_or_library: current_cluster /= Void or current_library /= Void
@@ -1293,7 +1371,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_uses_attributes is
+	process_uses_attributes
 			-- Process attributes of an uses tag.
 		require
 			cluster: current_cluster /= Void
@@ -1318,7 +1396,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_overrides_attributes is
+	process_overrides_attributes
 			-- Process attributes of an overides tag.
 		require
 			override: current_override /= Void
@@ -1343,7 +1421,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_condition_attributes is
+	process_condition_attributes
 			-- Process attributes of a condition tag.
 		require
 			external_or_action_or_group_or_file_rule: current_external /= Void or current_action /= Void or current_group /= Void or current_file_rule /= Void
@@ -1367,7 +1445,7 @@ feature {NONE} -- Implementation attribute processing
 			current_condition: not is_error implies current_condition /= Void
 		end
 
-	process_platform_attributes is
+	process_platform_attributes
 			-- Process attributes of a platform tag.
 		require
 			current_condition: current_condition /= Void
@@ -1413,7 +1491,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_build_attributes is
+	process_build_attributes
 			-- Process attributes of a build tag.
 		require
 			current_condition: current_condition /= Void
@@ -1459,7 +1537,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_multithreaded_attributes is
+	process_multithreaded_attributes
 			-- Process attributes of a multithreaded tag.
 		require
 			current_condition: current_condition /= Void
@@ -1474,7 +1552,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_dotnet_attributes is
+	process_dotnet_attributes
 			-- Process attributes of a dotnet tag.
 		require
 			current_condition: current_condition /= Void
@@ -1489,7 +1567,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_dynamic_runtime_attributes is
+	process_dynamic_runtime_attributes
 			-- Process attributes of a dynamic_runtime tag.
 		require
 			current_condition: current_condition /= Void
@@ -1504,7 +1582,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_version_condition_attributes is
+	process_version_condition_attributes
 			-- Process attributes of a condition version tag.
 		require
 			current_condition: current_condition /= Void
@@ -1542,7 +1620,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_custom_attributes is
+	process_custom_attributes
 			-- Process attributes of a custom tag.
 		require
 			current_condition: current_condition /= Void
@@ -1568,7 +1646,7 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_mapping_attributes is
+	process_mapping_attributes
 			-- Process attributes of a mapping tag.
 		require
 			cluster_or_target: current_cluster /= Void or current_target /= Void
@@ -1588,29 +1666,9 @@ feature {NONE} -- Implementation attribute processing
 			end
 		end
 
-	process_note_attributes is
-			-- Process attributes of note tag.
-		require
-			system_or_group_or_target: last_system /= Void or current_group /= Void or current_target /= Void
-		local
-			l_attrs: like current_attributes_undefined
-		do
-				-- All notes attributes are undefined.
-			l_attrs := current_attributes_undefined
-			if l_attrs /= Void then
-				if current_group /= Void then
-					current_group.add_note (l_attrs.twin)
-				elseif current_target /= Void then
-					current_target.add_note (l_attrs.twin)
-				elseif last_system /= Void then
-					last_system.add_note (l_attrs.twin)
-				end
-			end
-		end
-
 feature {NONE} -- Implementation content processing
 
-	process_description_content is
+	process_description_content
 			-- Process content of a description tag.
 		do
 			if current_file_rule /= Void then
@@ -1632,7 +1690,7 @@ feature {NONE} -- Implementation content processing
 			end
 		end
 
-	process_exclude_content is
+	process_exclude_content
 			-- Process content of an exclude tag.
 		require
 			file_rule: current_file_rule /= Void
@@ -1644,7 +1702,7 @@ feature {NONE} -- Implementation content processing
 			end
 		end
 
-	process_include_content is
+	process_include_content
 			-- Process content of an include tag.
 		require
 			file_rule: current_file_rule /= Void
@@ -1653,6 +1711,104 @@ feature {NONE} -- Implementation content processing
 				current_file_rule.add_include (current_content)
 			else
 				set_error (create {CONF_ERROR_REGEXP}.make (current_content))
+			end
+		end
+
+feature {NONE} -- Processing of options
+
+	set_default_options (t: like current_target; namespace: like namespace_1_0_0)
+			-- Set default options depending on the supplied schema.
+		require
+			t_attached: t /= Void
+		local
+			o: detachable CONF_OPTION
+		do
+			if namespace /~ latest_namespace then
+					-- Option settings are different from the current defauls, we need to set them if they are not set yet.
+				o := t.options
+				if o = Void then
+					o := factory.new_option
+				end
+				if namespace ~ namespace_1_5_0 then
+						-- Use the defaults of ES 6.4.
+					o.merge (default_options_6_4)
+				elseif
+					namespace ~ namespace_1_4_0 or else
+					namespace ~ namespace_1_3_0 or else
+					namespace ~ namespace_1_2_0 or else
+					namespace ~ namespace_1_0_0
+				then
+						-- Use the defaults of ES 6.3 and below.
+					o.merge (default_options_6_3)
+				else
+						-- Unknown version, do not change anything just in case it is above the current one.
+					o := Void
+				end
+				if o /= Void then
+					t.set_options (o)
+				end
+			end
+		end
+
+	non_client_options: ARRAY [TUPLE [name: STRING; id: INTEGER]]
+			-- Non-client option names with their IDs
+		local
+			ids: ARRAY [like at_syntax]
+			i: INTEGER
+			o: like at_syntax
+			a: HASH_TABLE [like at_syntax, STRING]
+		once
+			a := tag_attributes.item (t_option)
+			ids := <<
+					at_namespace,
+					at_full_class_checking,
+					at_cat_call_detection,
+					at_is_attached_by_default,
+					at_is_void_safe,
+					at_void_safety,
+					at_syntax_level,
+					at_syntax
+				>>
+			from
+				i := 1
+				create Result.make (1, 0)
+			until
+				i > ids.upper
+			loop
+				o := ids.item (i)
+				check
+					a.has_item (o)
+				end
+				from
+					a.start
+				until
+					a.item_for_iteration = o
+				loop
+					a.forth
+				end
+				Result.force ([a.key_for_iteration, o], i)
+				i := i + 1
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+	report_non_client_options
+			-- Report options that cannot be overridden if specified in the current context (`current_attributes').
+		local
+			o: like non_client_options
+			i: INTEGER
+		do
+			o := non_client_options
+			from
+				i := o.lower
+			until
+				i > o.upper
+			loop
+				if current_attributes.has (o [i].id) then
+					set_parse_warning_message (conf_interface_names.e_parse_incorrect_option_override (o[i].name))
+				end
+				i := i + 1
 			end
 		end
 
@@ -1693,13 +1849,116 @@ feature {NONE} -- Implementation
 			-- The values of the current attributes.
 			-- Defined attributes.
 
+feature {NONE} -- Note Implementation
+
+	process_element_under_note
+			-- Process attributes of an element under note.
+		require
+			in_note: note_level > 0
+		local
+			l_attrs: like current_attributes_undefined
+			l_element: CONF_NOTE_ELEMENT
+		do
+				-- All notes attributes are undefined.
+			l_attrs := current_attributes_undefined
+			l_element := current_element_under_note.item
+			if l_attrs /= Void then
+				l_element.set_attributes (l_attrs.twin)
+			end
+		end
+
+	process_note
+			-- Process note element
+		require
+			group_or_target_or_system: current_group /= Void or current_target /= Void or last_system /= Void
+			root_element: note_level = 1
+		local
+			l_note: CONF_NOTE_ELEMENT
+		do
+			l_note := current_element_under_note.item
+			if current_group /= Void then
+				if current_group.note_node = Void then
+					current_group.set_note_node (l_note)
+				else
+					set_parse_warning_message (conf_interface_names.e_parse_more_than_one_note (current_group.name))
+				end
+			elseif current_target /= Void then
+				if current_target.note_node = Void then
+					current_target.set_note_node (l_note)
+				else
+					set_parse_warning_message (conf_interface_names.e_parse_more_than_one_note (current_target.name))
+				end
+			elseif last_system /= Void then
+				if last_system.note_node = Void then
+					last_system.set_note_node (l_note)
+				else
+					set_parse_warning_message (conf_interface_names.e_parse_more_than_one_note (last_system.name))
+				end
+			end
+		end
+
+	note_level: INTEGER
+			-- Level of elements under note
+		do
+			Result := current_element_under_note.count
+		end
+
+	tag_from_state_transitions (a_tag: INTEGER; a_local_part: STRING): INTEGER
+			-- Get number presentation from current tag state transitions.
+		require
+			a_tag_greater_than_zero: a_tag > 0
+			a_local_part_not_void: a_local_part /= Void
+		local
+			l_trans: HASH_TABLE [INTEGER, STRING]
+			l_tag: INTEGER
+			l_tags_undef: like tags_undefined
+		do
+			if note_level = 0 then
+				l_trans := state_transitions_tag.item (a_tag)
+				if l_trans /= Void then
+					Result := l_trans.item (a_local_part)
+				end
+			else
+					-- In note, we allow anything.
+					-- Record the tag in `tags_undefined' if not found.
+				l_tags_undef := tags_undefined
+				if l_tags_undef /= Void then
+					l_tag := l_tags_undef.item (a_local_part)
+				else
+					create l_tags_undef.make (2)
+					tags_undefined := l_tags_undef
+				end
+				if l_tag = 0 then
+					l_tag := new_undefined_tag_number
+					l_tags_undef.force (l_tag, a_local_part)
+				end
+				Result := l_tag
+			end
+		end
+
+	new_undefined_tag_number: like last_undefined_tag_number
+			-- Return a new number for undefined tags.
+		do
+			Result := last_undefined_tag_number + 1
+			last_undefined_tag_number := Result
+		end
+
 	current_attributes_undefined: HASH_TABLE [STRING, STRING]
 			-- The values of the current attributes.
 			-- Undefined attributes.
 
+	current_element_under_note: LINKED_STACK [CONF_NOTE_ELEMENT]
+			-- The stack of elements under note element.
+
+	last_undefined_tag_number: INTEGER
+			-- Last number of undefined tag.
+
+	tags_undefined: HASH_TABLE [INTEGER, STRING]
+			-- Allowed undefined tags found dynamically
+
 feature {NONE} -- Implementation state transitions
 
-	state_transitions_tag: HASH_TABLE [HASH_TABLE [INTEGER, STRING], INTEGER] is
+	state_transitions_tag: HASH_TABLE [HASH_TABLE [INTEGER, STRING], INTEGER]
 			-- Mapping of possible tag state transitions from `current_tag' with the tag name to the new state.
 		local
 			l_trans: HASH_TABLE [INTEGER, STRING]
@@ -1885,7 +2144,7 @@ feature {NONE} -- Implementation state transitions
 			Result_not_void: Result /= Void
 		end
 
-	tag_attributes: HASH_TABLE [HASH_TABLE [INTEGER, STRING], INTEGER] is
+	tag_attributes: HASH_TABLE [HASH_TABLE [INTEGER, STRING], INTEGER]
 			-- Mapping of possible attributes of tags.
 		local
 			l_attr: HASH_TABLE [INTEGER, STRING]
@@ -1982,7 +2241,9 @@ feature {NONE} -- Implementation state transitions
 			l_attr.force (at_cat_call_detection, "cat_call_detection")
 			l_attr.force (at_is_attached_by_default, "is_attached_by_default")
 			l_attr.force (at_is_void_safe, "is_void_safe")
+			l_attr.force (at_void_safety, "void_safety")
 			l_attr.force (at_syntax_level, "syntax_level")
+			l_attr.force (at_syntax, "syntax")
 			Result.force (l_attr, t_option)
 
 				-- class_option
@@ -2182,121 +2443,158 @@ feature {NONE} -- Implementation state transitions
 			Result.force (t_note)
 		end
 
+	report_unknown_attribute (name: STRING)
+			-- Report that attributes `name' is unknown for the current element.
+		require
+			name_attached: name /= Void
+		do
+			if is_unknown_version then
+					-- unknown version, just add a warning
+				set_parse_warning_message (conf_interface_names.e_parse_invalid_attribute (name))
+			else
+					-- known version, this is an error
+				set_parse_error_message (conf_interface_names.e_parse_invalid_attribute (name))
+			end
+		end
+
+feature {NONE} -- Default options
+
+	default_options_6_4: CONF_OPTION
+			-- Default options of 6.4
+		once
+			create Result.make_6_4
+		ensure
+			result_attached: Result /= Void
+		end
+
+	default_options_6_3: CONF_OPTION
+			-- Default options of 6.3
+		once
+			create Result.make_6_3
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature {NONE} -- Implementation constants
 
 		-- Tag states
-	t_none: INTEGER is 1
-	t_system: INTEGER is 2
-	t_description: INTEGER is 3
-	t_target: INTEGER is 4
-	t_root: INTEGER is 5
-	t_version: INTEGER is 6
-	t_file_rule: INTEGER is 7
-	t_option: INTEGER is 8
-	t_setting: INTEGER is 9
-	t_external_include: INTEGER is 10
-	t_external_object: INTEGER is 11
-	t_external_library: INTEGER is 12
-	t_external_resource: INTEGER is 13
-	t_external_make: INTEGER is 14
-	t_pre_compile_action: INTEGER is 15
-	t_post_compile_action: INTEGER is 16
-	t_variable: INTEGER is 17
-	t_precompile: INTEGER is 18
-	t_library: INTEGER is 19
-	t_assembly: INTEGER is 20
-	t_cluster: INTEGER is 21
-	t_override: INTEGER is 22
-	t_exclude: INTEGER is 23
-	t_include: INTEGER is 24
-	t_debug: INTEGER is 25
-	t_assertions: INTEGER is 26
-	t_warning: INTEGER is 27
-	t_condition: INTEGER is 28
-	t_platform: INTEGER is 29
-	t_build: INTEGER is 30
-	t_multithreaded: INTEGER is 31
-	t_dotnet: INTEGER is 32
-	t_dynamic_runtime: INTEGER is 33
-	t_version_condition: INTEGER is 34
-	t_custom: INTEGER is 35
-	t_renaming: INTEGER is 36
-	t_class_option: INTEGER is 37
-	t_uses: INTEGER is 38
-	t_visible: INTEGER is 39
-	t_overrides: INTEGER is 40
-	t_mapping: INTEGER is 41
-	t_note: INTEGER is 42
-	t_test_cluster: INTEGER is 43
+	t_none: INTEGER = 1
+	t_system: INTEGER = 2
+	t_description: INTEGER = 3
+	t_target: INTEGER = 4
+	t_root: INTEGER = 5
+	t_version: INTEGER = 6
+	t_file_rule: INTEGER = 7
+	t_option: INTEGER = 8
+	t_setting: INTEGER = 9
+	t_external_include: INTEGER = 10
+	t_external_object: INTEGER = 11
+	t_external_library: INTEGER = 12
+	t_external_resource: INTEGER = 13
+	t_external_make: INTEGER = 14
+	t_pre_compile_action: INTEGER = 15
+	t_post_compile_action: INTEGER = 16
+	t_variable: INTEGER = 17
+	t_precompile: INTEGER = 18
+	t_library: INTEGER = 19
+	t_assembly: INTEGER = 20
+	t_cluster: INTEGER = 21
+	t_override: INTEGER = 22
+	t_exclude: INTEGER = 23
+	t_include: INTEGER = 24
+	t_debug: INTEGER = 25
+	t_assertions: INTEGER = 26
+	t_warning: INTEGER = 27
+	t_condition: INTEGER = 28
+	t_platform: INTEGER = 29
+	t_build: INTEGER = 30
+	t_multithreaded: INTEGER = 31
+	t_dotnet: INTEGER = 32
+	t_dynamic_runtime: INTEGER = 33
+	t_version_condition: INTEGER = 34
+	t_custom: INTEGER = 35
+	t_renaming: INTEGER = 36
+	t_class_option: INTEGER = 37
+	t_uses: INTEGER = 38
+	t_visible: INTEGER = 39
+	t_overrides: INTEGER = 40
+	t_mapping: INTEGER = 41
+	t_note: INTEGER = 42
+	t_test_cluster: INTEGER = 43
 
 		-- Attribute states
-	at_abstract: INTEGER is 1000
-	at_name: INTEGER is 1001
-	at_uuid: INTEGER is 1002
-	at_library_target: INTEGER is 1003
-	at_eifgen: INTEGER is 1004
-	at_extends: INTEGER is 1005
-	at_cluster: INTEGER is 1006
-	at_class: INTEGER is 1007
-	at_all_classes: INTEGER is 1008
-	at_feature: INTEGER is 1009
-	at_class_rename: INTEGER is 1010
-	at_feature_rename: INTEGER is 1011
-	at_major: INTEGER is 1012
-	at_minor: INTEGER is 1013
-	at_release: INTEGER is 1014
-	at_build: INTEGER is 1015
-	at_product: INTEGER is 1016
-	at_company: INTEGER is 1017
-	at_copyright: INTEGER is 1018
-	at_trademark: INTEGER is 1019
-	at_trace: INTEGER is 1020
-	at_profile: INTEGER is 1021
-	at_optimize: INTEGER is 1022
-	at_debug: INTEGER is 1023
-	at_namespace: INTEGER is 1024
-	at_location: INTEGER is 1025
-	at_command: INTEGER is 1026
-	at_value: INTEGER is 1027
-	at_excluded_value: INTEGER is 1028
-	at_readonly: INTEGER is 1029
-	at_prefix: INTEGER is 1030
-	at_target: INTEGER is 1031
-	at_assembly_name: INTEGER is 1032
-	at_assembly_version: INTEGER is 1033
-	at_assembly_culture: INTEGER is 1034
-	at_assembly_key: INTEGER is 1035
-	at_recursive: INTEGER is 1036
-	at_enabled: INTEGER is 1037
-	at_precondition: INTEGER is 1038
-	at_postcondition: INTEGER is 1039
-	at_check: INTEGER is 1040
-	at_invariant: INTEGER is 1041
-	at_loop: INTEGER is 1042
-	at_supplier_precondition: INTEGER is 1043
-	at_platform: INTEGER is 1044
-	at_min: INTEGER is 1045
-	at_max: INTEGER is 1046
-	at_old_name: INTEGER is 1047
-	at_new_name: INTEGER is 1048
-	at_group: INTEGER is 1049
-	at_succeed: INTEGER is 1050
-	at_working_directory: INTEGER is 1051
-	at_type: INTEGER is 1052
-	at_eifgens_location: INTEGER is 1053
-	at_warning: INTEGER is 1054
-	at_hidden: INTEGER is 1055
-	at_msil_application_optimize: INTEGER is 1056
-	at_use_application_options: INTEGER is 1057
-	at_full_class_checking: INTEGER is 1058
-	at_cat_call_detection: INTEGER is 1059
-	at_is_attached_by_default: INTEGER is 1060
-	at_is_void_safe: INTEGER is 1061
-	at_syntax_level: INTEGER is 1062
+	at_abstract: INTEGER = 1000
+	at_name: INTEGER = 1001
+	at_uuid: INTEGER = 1002
+	at_library_target: INTEGER = 1003
+	at_eifgen: INTEGER = 1004
+	at_extends: INTEGER = 1005
+	at_cluster: INTEGER = 1006
+	at_class: INTEGER = 1007
+	at_all_classes: INTEGER = 1008
+	at_feature: INTEGER = 1009
+	at_class_rename: INTEGER = 1010
+	at_feature_rename: INTEGER = 1011
+	at_major: INTEGER = 1012
+	at_minor: INTEGER = 1013
+	at_release: INTEGER = 1014
+	at_build: INTEGER = 1015
+	at_product: INTEGER = 1016
+	at_company: INTEGER = 1017
+	at_copyright: INTEGER = 1018
+	at_trademark: INTEGER = 1019
+	at_trace: INTEGER = 1020
+	at_profile: INTEGER = 1021
+	at_optimize: INTEGER = 1022
+	at_debug: INTEGER = 1023
+	at_namespace: INTEGER = 1024
+	at_location: INTEGER = 1025
+	at_command: INTEGER = 1026
+	at_value: INTEGER = 1027
+	at_excluded_value: INTEGER = 1028
+	at_readonly: INTEGER = 1029
+	at_prefix: INTEGER = 1030
+	at_target: INTEGER = 1031
+	at_assembly_name: INTEGER = 1032
+	at_assembly_version: INTEGER = 1033
+	at_assembly_culture: INTEGER = 1034
+	at_assembly_key: INTEGER = 1035
+	at_recursive: INTEGER = 1036
+	at_enabled: INTEGER = 1037
+	at_precondition: INTEGER = 1038
+	at_postcondition: INTEGER = 1039
+	at_check: INTEGER = 1040
+	at_invariant: INTEGER = 1041
+	at_loop: INTEGER = 1042
+	at_supplier_precondition: INTEGER = 1043
+	at_platform: INTEGER = 1044
+	at_min: INTEGER = 1045
+	at_max: INTEGER = 1046
+	at_old_name: INTEGER = 1047
+	at_new_name: INTEGER = 1048
+	at_group: INTEGER = 1049
+	at_succeed: INTEGER = 1050
+	at_working_directory: INTEGER = 1051
+	at_type: INTEGER = 1052
+	at_eifgens_location: INTEGER = 1053
+	at_warning: INTEGER = 1054
+	at_hidden: INTEGER = 1055
+	at_msil_application_optimize: INTEGER = 1056
+	at_use_application_options: INTEGER = 1057
+	at_full_class_checking: INTEGER = 1058
+	at_cat_call_detection: INTEGER = 1059
+	at_is_attached_by_default: INTEGER = 1060
+	at_is_void_safe: INTEGER = 1061
+	at_void_safety: INTEGER = 1062
+	at_syntax_level: INTEGER = 1063
+	at_syntax: INTEGER = 1064
+
+		-- Undefined tag starting number
+	undefined_tag_start: INTEGER = 100000
 
 feature -- Assertions
 
-	has_resolved_namespaces: BOOLEAN is True
+	has_resolved_namespaces: BOOLEAN = True
 
 invariant
 	current_tag_not_void: current_tag /= Void
@@ -2307,8 +2605,8 @@ invariant
 	overrides_list_not_void: overrides_list /= Void
 	factory_not_void: factory /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -2321,21 +2619,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

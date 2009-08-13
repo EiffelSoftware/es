@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Component to display valid XML in GRID"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,7 +17,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		do
 			build_resources
 
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 
 feature -- Actions
 
-	drop_actions: EV_PND_ACTION_SEQUENCE is
+	drop_actions: EV_PND_ACTION_SEQUENCE
 		do
 			Result := grid.drop_actions
 		end
@@ -63,12 +63,12 @@ feature -- Access
 
 	widget: EV_VERTICAL_BOX
 
-	attach_to_container (c: EV_CONTAINER) is
+	attach_to_container (c: EV_CONTAINER)
 		do
 			c.extend (widget)
 		end
 
-	clear is
+	clear
 		do
 			grid.set_row_count_to (0)
 			status_label.remove_text
@@ -77,7 +77,7 @@ feature -- Access
 
 feature -- Change
 
-	enable_files_dropping is
+	enable_files_dropping
 			-- Enable file dropping.
 		do
 			if not is_file_dropping_enabled then
@@ -88,11 +88,7 @@ feature -- Change
 
 feature -- Loading
 
-	load_xml_string (s: STRING) is
-		local
-			l_fact: XM_EIFFEL_PARSER_FACTORY
-			l_parser: XM_PARSER
-			l_callback: XM_CALLBACKS
+	load_xml_string (s: STRING)
 		do
 			grid.set_row_count_to (0)
 			if s /= Void and then not s.is_empty then
@@ -102,7 +98,7 @@ feature -- Loading
 			update_columns
 		end
 
-	load_xml_file (fn: STRING) is
+	load_xml_file (fn: STRING)
 			--
 		local
 			f: RAW_FILE
@@ -120,7 +116,7 @@ feature -- Loading
 			update_columns
 		end
 
-	update_columns is
+	update_columns
 		do
 			if grid.column_count > 0 then
 				grid.column (1).resize_to_content
@@ -138,7 +134,7 @@ feature {NONE} -- Xml parser implementation
 	xml_parser: XM_PARSER
 			-- XML parser.
 
-	build_xml_parser is
+	build_xml_parser
 			-- Build `xml_parser'
 		local
 			l_fact: XM_EIFFEL_PARSER_FACTORY
@@ -156,13 +152,13 @@ feature {NONE} -- xml callbacks
 
 	tags_row_index: DS_LINKED_STACK [INTEGER]
 
-	log (a_message: STRING) is
+	log (a_message: STRING)
 		do
 			status_label.set_text (a_message)
 			status_label.refresh_now
 		end
 
-	on_start is
+	on_start
 			-- Called when parsing starts.
 		do
 			current_depth := 0
@@ -171,7 +167,7 @@ feature {NONE} -- xml callbacks
 			log ("Start XML parsing")
 		end
 
-	on_finish is
+	on_finish
 			-- Called when parsing finished.
 		local
 			r: EV_GRID_ROW
@@ -200,10 +196,9 @@ feature {NONE} -- xml callbacks
 			end
 		end
 
-	on_xml_declaration (a_version: STRING; an_encoding: STRING; a_standalone: BOOLEAN) is
+	on_xml_declaration (a_version: STRING; an_encoding: STRING; a_standalone: BOOLEAN)
 			-- XML declaration.
 		local
-			s: STRING
 			r: EV_GRID_ROW
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -233,10 +228,9 @@ feature {NONE} -- xml callbacks
 			current_depth := current_depth - 1
 		end
 
-	on_error (a_message: STRING) is
+	on_error (a_message: STRING)
 			-- Event producer detected an error.
 		local
-			s: STRING
 			r: EV_GRID_ROW
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -252,7 +246,7 @@ feature {NONE} -- xml callbacks
 			current_depth := current_depth - 1
 		end
 
-	on_processing_instruction (a_name: STRING; a_content: STRING) is
+	on_processing_instruction (a_name: STRING; a_content: STRING)
 			-- Processing instruction.
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		local
@@ -271,12 +265,11 @@ feature {NONE} -- xml callbacks
 			current_depth := current_depth - 1
 		end
 
-	on_comment (a_content: STRING) is
+	on_comment (a_content: STRING)
 			-- Processing a comment.
 			-- Atomic: single comment produces single event
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		local
-			s: STRING
 			r: EV_GRID_ROW
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -289,7 +282,7 @@ feature {NONE} -- xml callbacks
 			current_depth := current_depth - 1
 		end
 
-	on_start_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING) is
+	on_start_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING)
 			-- Start of start tag.
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		local
@@ -320,7 +313,7 @@ feature {NONE} -- xml callbacks
 			tags_row_index.put (grid.row_count)
 		end
 
-	on_attribute (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING; a_value: STRING) is
+	on_attribute (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING; a_value: STRING)
 			-- Start of attribute.
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		local
@@ -359,13 +352,13 @@ feature {NONE} -- xml callbacks
 			current_depth := current_depth - 1
 		end
 
-	on_start_tag_finish is
+	on_start_tag_finish
 			-- End of start tag.
 		do
 			last_content := Void
 		end
 
-	on_end_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING) is
+	on_end_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING)
 			-- End tag.
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		local
@@ -396,7 +389,7 @@ feature {NONE} -- xml callbacks
 
 	last_content: STRING
 
-	on_content (a_content: STRING) is
+	on_content (a_content: STRING)
 			-- Text content.
 			-- NOT atomic: two on_content events may follow each other
 			-- without a markup event in between.
@@ -411,9 +404,9 @@ feature {NONE} -- xml callbacks
 
 feature -- Properties
 
-	build_pixmaps is
+	build_pixmaps
 		local
-			bg, fg: EV_COLOR
+			bg: EV_COLOR
 			ft: EV_FONT
 			w,h: INTEGER
 		do
@@ -432,7 +425,7 @@ feature -- Properties
 			info_pixmap := new_pixmap ("i", w, h, info_color, bg, ft)
 		end
 
-	new_pixmap (a_text: STRING; w,h: INTEGER; fg,bg: EV_COLOR; ft: EV_FONT): EV_PIXMAP is
+	new_pixmap (a_text: STRING; w,h: INTEGER; fg,bg: EV_COLOR; ft: EV_FONT): EV_PIXMAP
 		local
 			sw, tw: INTEGER
 		do
@@ -467,31 +460,31 @@ feature -- Properties
 
 feature -- Change pixmaps
 
-	set_tag_pixmap (p: like tag_pixmap) is
+	set_tag_pixmap (p: like tag_pixmap)
 			-- Set Pixmap for tag
 		do
 			tag_pixmap := p
 		end
 
-	set_attribute_pixmap (p: like attribute_pixmap) is
+	set_attribute_pixmap (p: like attribute_pixmap)
 			-- Set Pixmap for attribute
 		do
 			attribute_pixmap := p
 		end
 
-	set_content_pixmap (p: like content_pixmap) is
+	set_content_pixmap (p: like content_pixmap)
 			-- Set Pixmap for attribute
 		do
 			content_pixmap := p
 		end
 
-	set_error_pixmap (p: like error_pixmap) is
+	set_error_pixmap (p: like error_pixmap)
 			-- Set Pixmap for error	
 		do
 			error_pixmap := p
 		end
 
-	set_info_pixmap (p: like info_pixmap) is
+	set_info_pixmap (p: like info_pixmap)
 			-- Set Pixmap for information
 		do
 			info_pixmap := p
@@ -501,7 +494,7 @@ feature {NONE} -- Grid event
 
 	is_file_dropping_enabled: BOOLEAN
 
-	files_dropped (files: LIST [STRING_32]) is
+	files_dropped (files: LIST [STRING_32])
 			-- If ever you drop an 'xml' file inside the grid
 		do
 			if is_file_dropping_enabled then
@@ -509,7 +502,7 @@ feature {NONE} -- Grid event
 			end
 		end
 
-	on_row_selected (r: EV_GRID_ROW) is
+	on_row_selected (r: EV_GRID_ROW)
 		local
 			i: INTEGER
 		do
@@ -526,7 +519,7 @@ feature {NONE} -- Grid event
 			end
 		end
 
-	on_row_deselected (r: EV_GRID_ROW) is
+	on_row_deselected (r: EV_GRID_ROW)
 		local
 			i: INTEGER
 		do
@@ -545,7 +538,7 @@ feature {NONE} -- Grid event
 
 feature {NONE} -- Row management
 
-	new_tag_label (t: STRING): EV_GRID_LABEL_ITEM is
+	new_tag_label (t: STRING): EV_GRID_LABEL_ITEM
 			--
 		do
 			create Result.make_with_text (t)
@@ -558,7 +551,7 @@ feature {NONE} -- Row management
 			end
 		end
 
-	new_attribute_label (t: STRING): EV_GRID_LABEL_ITEM is
+	new_attribute_label (t: STRING): EV_GRID_LABEL_ITEM
 			--
 		do
 			create Result.make_with_text (t)
@@ -568,7 +561,7 @@ feature {NONE} -- Row management
 			end
 		end
 
-	new_info_label (t: STRING): EV_GRID_LABEL_ITEM is
+	new_info_label (t: STRING): EV_GRID_LABEL_ITEM
 			--
 		do
 			create Result.make_with_text (t)
@@ -578,7 +571,7 @@ feature {NONE} -- Row management
 			end
 		end
 
-	new_content_label (t: STRING): EV_GRID_LABEL_ITEM is
+	new_content_label (t: STRING): EV_GRID_LABEL_ITEM
 			--
 		do
 			create Result.make_with_text (t)
@@ -588,14 +581,14 @@ feature {NONE} -- Row management
 			end
 		end
 
-	new_value_label (t: STRING): EV_GRID_LABEL_ITEM is
+	new_value_label (t: STRING): EV_GRID_LABEL_ITEM
 			--
 		do
 			create Result.make_with_text (t)
 			Result.set_font (value_font)
 		end
 
-	new_error_label (t: STRING): EV_GRID_LABEL_ITEM is
+	new_error_label (t: STRING): EV_GRID_LABEL_ITEM
 			--
 		do
 			create Result.make_with_text (t)
@@ -605,12 +598,12 @@ feature {NONE} -- Row management
 			end
 		end
 
-	last_row: EV_GRID_ROW is
+	last_row: EV_GRID_ROW
 		do
 			Result := grid.row (grid.row_count)
 		end
 
-	new_child: EV_GRID_ROW is
+	new_child: EV_GRID_ROW
 		local
 			r: EV_GRID_ROW
 		do
@@ -623,7 +616,7 @@ feature {NONE} -- Row management
 			Result := last_row
 		end
 
-	new_row: EV_GRID_ROW is
+	new_row: EV_GRID_ROW
 		local
 			p, r: EV_GRID_ROW
 		do
@@ -641,7 +634,7 @@ feature {NONE} -- Row management
 			Result := last_row
 		end
 
-	new_parent_row: EV_GRID_ROW is
+	new_parent_row: EV_GRID_ROW
 		local
 			p, r: EV_GRID_ROW
 		do
@@ -664,7 +657,7 @@ feature {NONE} -- Row management
 
 	last_depth, current_depth: INTEGER
 
-	next_row: EV_GRID_ROW is
+	next_row: EV_GRID_ROW
 		do
 			if current_depth > last_depth then
 				last_depth := last_depth + 1
@@ -680,7 +673,7 @@ feature {NONE} -- Row management
 
 feature -- Colors
 
-	init_colors is
+	init_colors
 		do
 			create tag_color.make_with_8_bit_rgb (0, 0, 255)
 			create attribute_color.make_with_8_bit_rgb (0, 128, 0)
@@ -701,34 +694,34 @@ feature -- Colors
 
 feature -- Change color
 
-	set_tag_color (c: like tag_color) is
+	set_tag_color (c: like tag_color)
 		do
 			tag_color := c
 		end
 
-	set_attribute_color (c: like attribute_color) is
+	set_attribute_color (c: like attribute_color)
 		do
 			attribute_color := c
 		end
 
-	set_info_color (c: like info_color) is
+	set_info_color (c: like info_color)
 		do
 			info_color := c
 		end
 
-	set_content_color (c: like content_color) is
+	set_content_color (c: like content_color)
 		do
 			content_color := c
 		end
 
-	set_error_color (c: like error_color) is
+	set_error_color (c: like error_color)
 		do
 			error_color := c
 		end
 
 feature {NONE} -- Style management
 
-	colorize_row (r: EV_GRID_ROW; is_selected: BOOLEAN) is
+	colorize_row (r: EV_GRID_ROW; is_selected: BOOLEAN)
 		do
 			if is_selected then
 				if r.background_color = Void or else not r.background_color.is_equal (non_closed_color) then
@@ -741,13 +734,13 @@ feature {NONE} -- Style management
 			end
 		end
 
-	build_resources is
+	build_resources
 		do
-			create selected_row_colors.make (2)
+			create selected_row_colors.make_filled (Void, 2)
 			selected_row_colors.put (create {EV_COLOR}.make_with_8_bit_rgb (240, 255, 240), 0)
 			selected_row_colors.put (create {EV_COLOR}.make_with_8_bit_rgb (225, 255, 225), 1)
 
-			create row_colors.make (2)
+			create row_colors.make_filled (Void, 2)
 			row_colors.put (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255), 0)
 			row_colors.put (create {EV_COLOR}.make_with_8_bit_rgb (245, 245, 245), 1)
 
@@ -777,10 +770,10 @@ invariant
 	tag_font_not_void: tag_font /= Void
 	value_font_not_void: value_font /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -791,22 +784,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

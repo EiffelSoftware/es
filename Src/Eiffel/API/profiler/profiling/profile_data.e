@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Abstract notion of a class containing profile information."
@@ -19,19 +19,19 @@ inherit
 
 feature -- Creation feature
 
-	make(num_call : INTEGER; feature_percentage, feature_total, feature_descendants: REAL) is
+	make(num_call : INTEGER; feature_percentage, feature_total, feature_descendants: REAL_64)
 			-- Create profile data for a single function
 		do
 			calls := num_call
 			total := feature_total
 			descendants := feature_descendants
 			percentage := feature_percentage
-			self := ((total - descendants) * 100.0).rounded / 100.0
+			self := total - descendants
 		end;
 
 feature -- Output
 
-	out : STRING is
+	out : STRING
 			-- Representation for output.
 		do
 			create Result.make (0);
@@ -49,7 +49,7 @@ feature -- Output
 
 feature -- Compare
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- is `Current' equal to `other'?
 		do
 			Result := calls = other.calls and then
@@ -61,7 +61,7 @@ feature -- Compare
 
 feature -- copy features
 
-	copy (other: like Current) is
+	copy (other: like Current)
 			-- Reinitialize by copying the attributes of `other'.
 			-- (This is also used by `clone'.)
 		deferred
@@ -69,7 +69,7 @@ feature -- copy features
 
 feature -- Status report
 
-	function: LANGUAGE_FUNCTION is
+	function: LANGUAGE_FUNCTION
 			-- The function where all is about.
 		deferred
 		end
@@ -88,7 +88,7 @@ feature -- attributes
 	descendants,
 		-- Total amount of seconds spent in the descendants of the function.
 
-	percentage: REAL
+	percentage: REAL_64
 		-- Percentage of time spent in the function and the descendants.
 
 	int_function: LANGUAGE_FUNCTION
@@ -96,15 +96,15 @@ feature -- attributes
 
 feature {PROFILE_SET} -- Spit Information (for debugging)
 
-	spit_info is
+	spit_info
 		-- Spits all kinds of information about Current.
 		do
 			io.error.put_string (out);
 			io.error.put_new_line
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -117,22 +117,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class PROFILE_DATA

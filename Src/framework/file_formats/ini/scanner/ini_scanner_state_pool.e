@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A state scanner state pool for retrieving cached states by a corresponding TYPE [G]."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize scanner state pool.
 		local
 			l_pool: like state_pool
@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	state (a_type: TYPE [INI_SCANNER_STATE]): INI_SCANNER_STATE is
+	state (a_type: TYPE [INI_SCANNER_STATE]): INI_SCANNER_STATE
 			-- Retrieve a scanner state for type `a_type'
 		require
 			a_type_attached: a_type /= Void
@@ -35,14 +35,14 @@ feature -- Access
 			l_key := a_type.generating_type
 			Result := state_pool.item (l_key)
 			if Result = Void then
-				if a_type.is_equal ({INI_SCANNER_INITIAL_STATE}) then
-					create {INI_SCANNER_INITIAL_STATE}Result
-				elseif a_type.is_equal ({INI_SCANNER_OPEN_SECTION_STATE}) then
-					create {INI_SCANNER_OPEN_SECTION_STATE}Result
-				elseif a_type.is_equal ({INI_SCANNER_POST_PROPERTY_STATE}) then
-					create {INI_SCANNER_POST_PROPERTY_STATE}Result
-				elseif a_type.is_equal ({INI_SCANNER_POST_ASSIGNER_STATE}) then
-					create {INI_SCANNER_POST_ASSIGNER_STATE}Result
+				if a_type ~ {INI_SCANNER_INITIAL_STATE} then
+					create {INI_SCANNER_INITIAL_STATE} Result
+				elseif a_type ~ {INI_SCANNER_OPEN_SECTION_STATE} then
+					create {INI_SCANNER_OPEN_SECTION_STATE} Result
+				elseif a_type ~ {INI_SCANNER_POST_PROPERTY_STATE} then
+					create {INI_SCANNER_POST_PROPERTY_STATE} Result
+				elseif a_type ~ {INI_SCANNER_POST_ASSIGNER_STATE} then
+					create {INI_SCANNER_POST_ASSIGNER_STATE} Result
 				end
 				state_pool.extend (Result, l_key)
 			end
@@ -62,7 +62,7 @@ invariant
 	state_pool_attahed: state_pool /= Void
 	state_pool_compares_objects: state_pool.object_comparison
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

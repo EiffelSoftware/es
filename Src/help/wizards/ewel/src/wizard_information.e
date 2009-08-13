@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "All information about the wizard ... This class is inherited in each state "
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,12 +20,13 @@ create
 
 feature  -- Initialization
 
-	make is
+	make
 			-- Assign default values
 		local
 			icon_path: FILE_NAME
 		do
 			Precursor
+			freeze_required := True
 
 			create icon_path.make_from_string (wizard_resources_path)
 			icon_path.set_file_name ("eiffel")
@@ -37,12 +38,12 @@ feature  -- Initialization
 
 feature -- Setting
 
-	set_dialog_application (b: BOOLEAN) is
+	set_dialog_application (b: BOOLEAN)
 		do
 			dialog_application := b
 		end
 
-	set_icon_location (s: STRING) is
+	set_icon_location (s: STRING)
 		do
 			icon_location := s
 		end
@@ -51,19 +52,22 @@ feature -- Access
 
 	icon_location: STRING
 			-- Location of the icon choose by the user
-	
+
 	dialog_application: BOOLEAN
 			-- Does the user want to generate a dialog application
 
 feature {NONE} -- Implementation
 
-	Default_project_name: STRING is
+	Default_project_name: STRING
 			-- Default project name
 		do
 			Result := "my_wel_application"
 		end
 
-indexing
+invariant
+	freeze_required: freeze_required
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

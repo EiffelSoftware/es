@@ -1,15 +1,15 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Simple variables
 
 class
-	SIMPLE_VAR 
+	SIMPLE_VAR
 
 inherit
 
 	IDENTIFIER
-		redefine 
+		redefine
 			action, construct_name
 		end
 
@@ -23,17 +23,22 @@ create
 
 feature {NONE}
 
-	construct_name: STRING is
+	construct_name: STRING
 		once
 			Result := "SIMPLE_VAR"
 		end -- construct_name
 
-	action is
+	action
+		local
+			l_token: like token
 		do
-			info.set_child_value (info.int_value (token.string_value))
+			l_token := token
+			if l_token /= Void then
+				info.set_child_value (info.int_value (l_token.string_value))
+			end
 		end -- action
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

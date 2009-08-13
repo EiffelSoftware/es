@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Stone that has a file name associated with it."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -6,7 +6,7 @@ indexing
 	revision: "$Revision $"
 
 deferred class
-	FILED_STONE 
+	FILED_STONE
 
 inherit
 	STONE
@@ -14,16 +14,18 @@ inherit
 			is_valid,
 			synchronized_stone
 		end
-	
+
 feature -- Access
 
-	file_name: FILE_NAME is 
-			-- Name of the file which parsing led 
+	file_name: STRING
+			-- Name of the file which parsing led
 			-- to the creation of current AST node.
 		deferred
+		ensure
+			file_name_valid: Result /= Void implies Result.same_type ("")
 		end
 
-	origin_text: STRING is
+	origin_text: STRING
 			-- Content of the file named `file_name'
 			-- Void if unreadable file.
 		local
@@ -40,7 +42,7 @@ feature -- Access
 			end
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Does `Current' still represent a valid file?
 		local
 			testfile: RAW_FILE
@@ -51,7 +53,7 @@ feature -- Access
 			end
 		end
 
-	synchronized_stone: STONE is
+	synchronized_stone: STONE
 			-- Valid stone corresponding to `Current' if `is_valid'
 			-- or Void if not.
 		do
@@ -59,11 +61,11 @@ feature -- Access
 				Result := Current
 			end
 		end
-		
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -74,19 +76,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

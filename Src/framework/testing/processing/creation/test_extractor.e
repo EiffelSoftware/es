@@ -1,4 +1,4 @@
-indexing
+note
 	description: "{
 		Implementation of {TEST_EXTRACTOR_I}.
 	}"
@@ -34,8 +34,13 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	capturer: !TEST_CAPTURER
+	capturer: attached TEST_CAPTURER
 			-- Capturer retrieving objects from running application.
+
+feature {TEST_PROCESSOR_SCHEDULER_I} -- Status report
+
+	sleep_time: NATURAL = 0
+			-- <Precursor>
 
 feature {NONE} -- Status report
 
@@ -47,25 +52,30 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Status setting
 
-	print_new_class (a_file: !KL_TEXT_OUTPUT_FILE; a_class_name: !STRING)
+	print_new_class (a_file: attached KL_TEXT_OUTPUT_FILE; a_class_name: attached STRING)
 			-- <Precursor>
 		local
-			l_source_writer: !TEST_EXTRACTED_SOURCE_WRITER
+			l_source_writer: attached TEST_EXTRACTED_SOURCE_WRITER
+			l_app_stat: detachable APPLICATION_STATUS
+			l_cs: detachable EIFFEL_CALL_STACK
 		do
 			create l_source_writer.make
 			capturer.observers.force_last (l_source_writer)
 
 			l_source_writer.prepare (a_file, a_class_name)
-			if {l_stat: APPLICATION_STATUS} debugger_manager.application_status then
-				if {l_cs: EIFFEL_CALL_STACK} l_stat.current_call_stack then
+			l_app_stat := debugger_manager.application_status
+			if l_app_stat /= Void then
+				l_cs := l_app_stat.current_call_stack
+				if l_cs /= Void then
 					from
 						capturer.prepare
 						l_cs.start
 					until
 						l_cs.after
 					loop
-						if {l_cse: !EIFFEL_CALL_STACK_ELEMENT} l_cs.item and then
-						   configuration.call_stack_elements.has (l_cse.level_in_stack)
+						if
+							attached {EIFFEL_CALL_STACK_ELEMENT} l_cs.item as l_cse and then
+							configuration.call_stack_elements.has (l_cse.level_in_stack)
 						then
 							capturer.capture_call_stack_element (l_cse)
 						end
@@ -88,10 +98,6 @@ feature {NONE} -- Status setting
 	proceed_process
 			-- <Precursor>
 		local
-			l_filename: !STRING
-			l_file: KL_TEXT_OUTPUT_FILE
-			l_name: STRING
-			l_source_writer: !TEST_EXTRACTED_SOURCE_WRITER
 		do
 			create_new_class
 			is_finished := True
@@ -120,7 +126,7 @@ feature -- Query
 			if debugger_manager.application_is_executing and then debugger_manager.application_is_stopped then
 				l_cs := debugger_manager.application_status.current_call_stack
 				if l_cs /= Void and then l_cs.count >= a_index then
-					if {l_cse: EIFFEL_CALL_STACK_ELEMENT} l_cs.i_th(a_index) then
+					if attached {EIFFEL_CALL_STACK_ELEMENT} l_cs.i_th(a_index) as l_cse then
 						Result := capturer.is_valid_call_stack_element (l_cse)
 					end
 				end
@@ -131,4 +137,35 @@ feature {NONE} -- Constants
 
 	e_no_application_status: STRING = "Could not retrieve application status"
 
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

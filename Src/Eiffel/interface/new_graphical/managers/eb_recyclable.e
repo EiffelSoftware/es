@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "[
 		Object recycler for explicit recycling of active objects enabling
 		disconnection between objects/agents that the GC is unable to recognize.
@@ -27,8 +27,8 @@ inherit
 
 feature -- Basic operations
 
-	frozen recycle is
-			-- To be called when the button has became useless.
+	frozen recycle
+			-- To be called when the user interface has become useless.
 		local
 			l_pool: like internal_recycle_pool
 			l_recycle_actions: like internal_recycle_actions
@@ -131,7 +131,7 @@ feature -- Basic operations
 			end
 		ensure
 			recycled: is_recycling or else is_recycled
-			internal_recycle_pool_detached: is_recycled implies internal_recycle_pool = Void
+			internal_recycle_pool_detached: is_recycled implies (not is_auto_recycled or internal_recycle_pool = Void)
 		rescue
 			if l_recycling then
 					-- Recycling was actually performed so set the state flags, even though there was an exception.
@@ -142,7 +142,7 @@ feature -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	frozen detach_entities (a_recyclable: EB_RECYCLABLE) is
+	frozen detach_entities (a_recyclable: EB_RECYCLABLE)
 			-- Detaches objects from their container.
 			-- Note: Please enable the debug clause recycle_and_detach to enable this feature for debugging purposes.
 			--
@@ -224,7 +224,7 @@ feature {ANY} -- Extension
 
 feature -- Agent assistance
 
-	register_action (a_sequence: ACTION_SEQUENCE [TUPLE]; a_action: PROCEDURE [ANY, TUPLE]) is
+	register_action (a_sequence: ACTION_SEQUENCE [TUPLE]; a_action: PROCEDURE [ANY, TUPLE])
 			-- Registers an action sequence and automatically pools it for later removal.
 			--
 			-- `a_sequence': Action sequence to extend an action on.
@@ -239,7 +239,7 @@ feature -- Agent assistance
 			a_sequence_has_action: a_sequence.has (a_action)
 		end
 
-	register_kamikaze_action (a_sequence: ACTION_SEQUENCE [TUPLE]; a_action: PROCEDURE [ANY, TUPLE]) is
+	register_kamikaze_action (a_sequence: ACTION_SEQUENCE [TUPLE]; a_action: PROCEDURE [ANY, TUPLE])
 			-- Registers a single-execute action sequence and automatically pools it for later removal, if it was not used.
 			--
 			-- `a_sequence': Action sequence to extend an action on.
@@ -254,7 +254,7 @@ feature -- Agent assistance
 			a_sequence_has_action: a_sequence.has_kamikaze_action (a_action)
 		end
 
-	unregister_action (a_sequence: ACTION_SEQUENCE [TUPLE]; a_action: PROCEDURE [ANY, TUPLE]) is
+	unregister_action (a_sequence: ACTION_SEQUENCE [TUPLE]; a_action: PROCEDURE [ANY, TUPLE])
 			-- Unregisters an action sequence and automatically pools it for later removal.
 			--
 			-- `a_sequence': Action sequence to remove an action on.
@@ -397,13 +397,13 @@ feature {NONE} -- Query
 
 feature {NONE} -- Implementation
 
-	internal_recycle is
+	internal_recycle
 			-- To be called when the button has became useless.
 			-- Note: It's recommended that you do not detach objects here.
 		deferred
 		end
 
-	internal_detach_entities is
+	internal_detach_entities
 			-- Detaches objects from their container
 		do
 			detach_entities (Current)
@@ -423,8 +423,8 @@ invariant
 	recycler_attached: is_auto_recycled implies recycler /= Void
 	not_is_recycled: is_recycling implies not is_recycled
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -437,22 +437,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_RECYCLABLE

@@ -75,6 +75,9 @@ doc:<file name="except.c" header="eif_except.c" version="$Id$" summary="Exceptio
 
 #include <stdlib.h>				/* For exit(), abort() */
 
+/* Comment out the line below to step through the Eiffel code in EiffelStudio */
+/* #define ENABLE_STEP_THROUGH */
+
 /* Failure yields a specific code. For a given execution vector 'v', the macro
  * xcode gives the associated exception code for the trace stack. Note that
  * for GC purposes, the value of EX_* constants starts at EX_START, not 0--RAM.
@@ -464,7 +467,8 @@ rt_public struct ex_vect *new_exset(char *name, EIF_TYPE_INDEX origin, char *obj
 	vector->ex_rout = name;			/* Set the routine name */
 	vector->ex_orig = origin;		/* And its origin (where it was written) */
 	vector->ex_id = object;			/* The value of Current (Object ID) */
-	vector->ex_linenum = 0;			/* breakable line number */
+	vector->ex_linenum = 0;			/* breakable point index */
+	vector->ex_bpnested = 0;		/* breakable point nested index */
 #ifdef WORKBENCH
 	vector->ex_locnum = loc_nb;		/* number of local variables in the feature */
 	vector->ex_argnum = arg_nb;		/* number of arguments the feature takes */
@@ -1164,7 +1168,8 @@ rt_public void eraise(char *tag, long num)
 	char 			*tg;
 	EIF_REFERENCE obj = NULL;
 	unsigned char	type;
-	int				line_number;	/* line number within feature */
+	int				line_number;	/* breakable point index */
+	int				bpnested_index;	/* breakable nested index */
 	int				eclass = 0;
 	int				signo, eno = signo = -1;
 	char			*reci_name = NULL;
@@ -1247,6 +1252,7 @@ rt_public void eraise(char *tag, long num)
 		echrt = (char *) 0;	/* Null routine name */
 		echclass = 0;		/* Null class name */
 		line_number = 0;	/* Invalid line number */
+		bpnested_index = 0;	/* Invalid breakable nested index */
 	} else {
 		type = vector->ex_type;
 		/* Record recipient and its class name */
@@ -1274,10 +1280,12 @@ rt_public void eraise(char *tag, long num)
 				echrt = (char *) 0;	/* Null routine name */
 				echclass = 0;		/* Null class name */
 				line_number = 0;	/* Invalid line number */
+				bpnested_index = 0;	/* Invalid breakable nested index */
 			} else {
 				echrt = vector->ex_rout;	/* Record routine name */
 				echclass = vector->ex_orig; /* Record class name */
 				line_number = vector->ex_linenum; /* Record line number */
+				bpnested_index = vector->ex_bpnested; /* Record breakable nested index */
 				vector = exget(&eif_stack);
 				if (vector == (struct ex_vect *) 0) {	/* Stack is full now */
 					echmem |= MEM_FULL;					/* Signal it */
@@ -1296,6 +1304,7 @@ rt_public void eraise(char *tag, long num)
 			echrt = vector->ex_rout;	/* Record routine name */
 			echclass = vector->ex_orig; /* Record class name */
 			line_number = vector->ex_linenum; /* Record line number */
+			bpnested_index = vector->ex_bpnested; /* Record breakable nested index */
 		}
 	}
 
@@ -1303,6 +1312,7 @@ rt_public void eraise(char *tag, long num)
 		trace->ex_where = echrt;			/* Save routine in trace for exorig */
 		trace->ex_from = echclass;			/* Save class in trace for exorig */
 		trace->ex_linenum = line_number;	/* Save line number in trace */
+		trace->ex_bpnested = bpnested_index;/* Save breakable nested index */
 	}
 
 	if (trace) {
@@ -1317,13 +1327,14 @@ rt_public void eraise(char *tag, long num)
 			trace->ex_rout = echrt;				/* Save routine in trace */
 			trace->ex_orig = echclass;			/* Save class in trace */
 		}
-		trace->ex_linenum = line_number;	/* Save line number in trace */
+		trace->ex_linenum = line_number;		/* Save line number in trace */
+		trace->ex_bpnested = bpnested_index;	/* Save breakable nested index */
 	}
 
 	SIGRESUME;			/* End of critical section, dispatch queued signals */
 
 	/* INVARIANT_VIOLATION is not raised in here, so we don't care if entry or not. */
-	make_exception (num, signo, eno, echtg, reci_name, Origin(eclass), "", "", line_number, 0, 1); 
+	make_exception (num, signo, eno, echtg, reci_name, Origin(eclass), "", "", line_number, 0, 1); // FIXME:jfiat 
 
 #ifndef NOHOOK
 	exception(PG_RAISE);	/* Debugger hook -- explicitly raised exception */
@@ -1735,7 +1746,7 @@ rt_private jmp_buf *backtrack(void)
 		}
 
 #ifdef DEBUG
-		dump_vector("backtrack: top of eif_trace", trace);
+		dump_vector("backtrack: top of eif_trace", top);
 #endif
 
 	}
@@ -1757,7 +1768,7 @@ rt_private struct ex_vect *traverse_for_trace (struct xstack *from_stack, int fo
 	struct ex_vect *trace = NULL;	/* The stack trace entry */
 	int l_level = echlvl;			/* We cannot change the value of `echlvl' when building full trace */
 
-	while (top = extop(from_stack)) {	/* While bottom not reached */
+	while ((top = extop(from_stack))) {	/* While bottom not reached */
 
 		/* Whether or not there is a rescue clause for the top of the stack
 		 * (indicated by the jmp_buf pointer), we need to push the current
@@ -2946,6 +2957,7 @@ rt_private void print_top(void (*append_trace)(char *))
 	char			buffer[1024];
 	char			rout_name_buffer[256];	/* To add line number at end of routine name */
 	int				line_number;
+	int				bpnested_index;
 	int				finished = 0;
 	char			code = eif_except.code;	/* Exception's code */
 	struct ex_vect	*top;					/* Top of stack */
@@ -2980,11 +2992,12 @@ rt_private void print_top(void (*append_trace)(char *))
 	/* get the line number, it's situated in the next satck element (the current bottom */
 	/* element gives only the reason of crashes                                         */
 	line_number = (eif_trace.st_bot)->ex_linenum;
+	bpnested_index = (eif_trace.st_bot)->ex_bpnested;
 
 	/* create the 'routine_name@line_number' string. We limit ourself to the first 192
 	 * characters of `routine_name' otherwise we will do a buffer overflow. 
 	 * 189 = 192 - 3, 3 being characters of "..." */
-	if (line_number>0) {
+	if (line_number>0) { //FIXME:jfiat bpnested_index?
 		/* the line number seems valid, so we are going to print it */
 		if (strlen (eif_except.rname) > 189) {
 			sprintf(rout_name_buffer, "%.189s... @%d", eif_except.rname, line_number);
@@ -3688,6 +3701,7 @@ rt_public void draise(long code, char *meaning, char *message)
 	EIF_REFERENCE obj = NULL;
 	unsigned char	type;
 	int				line_number;	/* line number within feature */
+	int				bpnested_index;	/* breakable nested index */
 	int				num;
 	char			*tag;
 	struct ex_vect	*vector_call;
@@ -3746,6 +3760,7 @@ rt_public void draise(long code, char *meaning, char *message)
 		echrt = (char *) 0;	/* Null routine name */
 		echclass = 0;		/* Null class name */
 		line_number = 0;	/* Invalid line number */
+		bpnested_index = 0;	/* Invalid breakable nested index */
 	} else {
 		type = vector->ex_type;
 		/* Record recipient and its class name */
@@ -3773,10 +3788,12 @@ rt_public void draise(long code, char *meaning, char *message)
 				echrt = (char *) 0;	/* Null routine name */
 				echclass = 0;		/* Null class name */
 				line_number = 0;	/* Invalid line number */
+				bpnested_index = 0;	/* Invalid breakable nested index */
 			} else {
 				echrt = vector->ex_rout;	/* Record routine name */
 				echclass = vector->ex_orig; /* Record class name */
 				line_number = vector->ex_linenum; /* Record line number */
+				bpnested_index = vector->ex_bpnested; /* Record breakable nested index */
 				vector = exget(&eif_stack);
 				if (vector == (struct ex_vect *) 0) {	/* Stack is full now */
 					echmem |= MEM_FULL;					/* Signal it */
@@ -3795,6 +3812,7 @@ rt_public void draise(long code, char *meaning, char *message)
 			echrt = vector->ex_rout;	/* Record routine name */
 			echclass = vector->ex_orig; /* Record class name */
 			line_number = vector->ex_linenum; /* Record line number */
+			bpnested_index = vector->ex_bpnested; /* Record breakable nested index */
 		}
 	}
 
@@ -3808,7 +3826,8 @@ rt_public void draise(long code, char *meaning, char *message)
 			trace->ex_rout = echrt;				/* Save routine in trace */
 			trace->ex_orig = echclass;			/* Save class in trace */
 		}
-		trace->ex_linenum = line_number;	/* Save line number in trace */
+		trace->ex_linenum = line_number;		/* Save line number in trace */
+		trace->ex_bpnested = bpnested_index;	/* Save breakable nested index in trace */
 	}
 	SIGRESUME;			/* End of critical section, dispatch queued signals */	
 	
@@ -3831,7 +3850,7 @@ rt_private void make_exception (long except_code, int signal_code, int eno, char
 	RT_GET_CONTEXT
 	EIF_GET_CONTEXT
 
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 	DISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 	
@@ -3958,7 +3977,7 @@ rt_private void make_exception (long except_code, int signal_code, int eno, char
 		RT_GC_WEAN(_trace);
 	}
 
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 	UNDISCARD_BREAKPOINTS; /* the debugger can now stop again */
 #endif
 
@@ -3983,11 +4002,11 @@ rt_public void set_last_exception (EIF_REFERENCE ex)
 		_ex = ex;
 #endif
 
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 		DISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 		(egc_set_last_exception)(except_mnger, _ex);
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 		UNDISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 		nstcall = is_nested;	/* Restore `nstcall' */
@@ -4007,12 +4026,12 @@ rt_public EIF_REFERENCE last_exception (void)
 #endif
 
 	if (except_mnger) { /* In case get called in `dispose' */
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 		DISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 		_re = (egc_last_exception)(except_mnger);
 
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 		UNDISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 	nstcall = is_nested;	/* Restore `nstcall' */
@@ -4075,11 +4094,11 @@ rt_private int is_ex_ignored (int ex_code)
 	code = (EIF_INTEGER)ex_code;
 #endif
 
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 	DISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 	result = (egc_is_code_ignored)(except_mnger, code);
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 	UNDISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 
@@ -4120,13 +4139,13 @@ rt_public void init_emnger (void)
 	if (!ex_string.area) {
 		failure(); /* No enough memory to init the application */
 	}
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 	DISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 	egc_prof_enabled = 0; /* Disable profiling to be save. */
 	(egc_init_exception_manager)(except_mnger);
 	egc_prof_enabled = pf_status; /* Resume profiling status. */
-#ifdef WORKBENCH
+#ifndef ENABLE_STEP_THROUGH
 	UNDISCARD_BREAKPOINTS; /* prevent the debugger from stopping in the following functions */
 #endif
 }
@@ -4166,6 +4185,41 @@ rt_private EIF_TYPE_INDEX safe_Dtype (EIF_REFERENCE obj)
 	print_history_table = prt_trace; /* Resume `print_history_table' */
 	expop(&eif_stack);					/* Pop pseudo vector */
 	return result;
+}
+
+rt_public EIF_BOOLEAN eif_is_in_rescue (void)							
+	/* Is current execution during rescue?
+	 * We traverse the execution stack to find if there is a EX_RESC vector. */
+{
+	EIF_GET_CONTEXT
+	struct xstack *stk = &eif_stack;
+	struct ex_vect *top = stk->st_top;	/* Top of stack */
+	struct stxchunk *cur;
+
+	if (top == (struct ex_vect *) 0)	{		/* No stack yet? */
+		return EIF_TRUE;
+	}
+	cur = stk->st_cur;
+	while (top--){
+		if (top >= cur->sk_arena){ /* We are still in current chunk */
+			if (top->ex_type == EX_RESC)
+			{
+				return EIF_TRUE;
+			}
+		} else { /* We are out of current chunk */
+			cur = cur->sk_prev;
+			if (cur){ /* There is a previous chunk. */
+				top = cur->sk_end - 1;
+				if (top->ex_type == EX_RESC)
+				{
+					return EIF_TRUE;
+				}
+			} else {	/* It is already bottom of the stack. */
+				return EIF_FALSE;
+			}
+		}
+	}
+	return EIF_FALSE; /* Should never reach, just to make the c compiler happy. */
 }
 
 /*

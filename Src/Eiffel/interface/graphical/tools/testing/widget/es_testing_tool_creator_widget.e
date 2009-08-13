@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Widget showing status and control buttons for an {EIFFEL_TEST_FACTORY_I}
 	]"
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	title: !STRING_32
+	title: attached STRING_32
 		do
 			if generator_factory_type.attempt (factory) /= Void then
 				Result := locale_formatter.translation (t_generator_title)
@@ -53,13 +53,13 @@ feature {NONE} -- Access
 			end
 		end
 
-	icon: !EV_PIXEL_BUFFER
+	icon: EV_PIXEL_BUFFER
 			-- <Precursor>
 		do
 			Result := stock_pixmaps.overlay_new_icon_buffer
 		end
 
-	icon_pixmap: !EV_PIXMAP
+	icon_pixmap: EV_PIXMAP
 			-- <Precursor>
 		do
 			Result := stock_pixmaps.overlay_new_icon
@@ -69,12 +69,12 @@ feature {NONE} -- Events
 
 feature {NONE} -- Internationalization
 
-	t_generator_title: !STRING = "Generation"
-	t_extractor_title: !STRING = "Extraction"
-	t_creator_title: !STRING = "New manual tests"
+	t_generator_title: STRING = "Generation"
+	t_extractor_title: STRING = "Extraction"
+	t_creator_title: STRING = "New manual tests"
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -98,10 +98,10 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

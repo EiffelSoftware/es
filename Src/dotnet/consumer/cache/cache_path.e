@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Path to various EAC files"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -39,7 +39,7 @@ inherit
 
 feature -- Access
 
-	absolute_consume_path: STRING is
+	absolute_consume_path: STRING
 			-- Absolute path to EAC assemblies file info
 		require
 			non_void_clr_version: clr_version /= Void
@@ -53,7 +53,7 @@ feature -- Access
 			valid_result: not Result.is_empty
 		end
 
-	absolute_info_path: STRING is
+	absolute_info_path: STRING
 			-- Absolute path to EAC assemblies file info
 		require
 			non_void_clr_version: clr_version /= Void
@@ -67,7 +67,7 @@ feature -- Access
 			valid_result: not Result.is_empty
 		end
 
-	absolute_assembly_path_from_consumed_assembly (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	absolute_assembly_path_from_consumed_assembly (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Absolute path to folder containing `a_assembly' types.
 		require
 			non_void_assembly: a_assembly /= Void
@@ -85,7 +85,7 @@ feature -- Access
 			ends_with_directory_separator: Result.item (Result.count) = (create {OPERATING_ENVIRONMENT}).Directory_separator
 		end
 
-	absolute_assembly_mapping_path_from_consumed_assembly (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	absolute_assembly_mapping_path_from_consumed_assembly (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Absolute path to folder containing `a_assembly' types.
 		require
 			non_void_assembly: a_assembly /= Void
@@ -102,7 +102,7 @@ feature -- Access
 			non_void_path: Result /= Void
 		end
 
-	absolute_type_path (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	absolute_type_path (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Path to file describing `a_type' from `a_assembly' relative to `Eac_path'
 			-- Always return a value even if `a_type' in not in EAC
 		require
@@ -120,7 +120,7 @@ feature -- Access
 			non_void_path: Result /= Void
 		end
 
-	absolute_type_mapping_path (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	absolute_type_mapping_path (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Path to file, describing `a_assembly' .NET type name to class mappings
 			-- Always return a value even if `a_assembly' in not in EAC
 		require
@@ -140,7 +140,7 @@ feature -- Access
 
 feature {CACHE_READER} -- Access
 
-	relative_assembly_path_from_consumed_assembly (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	relative_assembly_path_from_consumed_assembly (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Path to folder containing `a_assembly' types relative to `Eac_path'
 		require
 			non_void_assembly: a_assembly /= Void
@@ -154,7 +154,7 @@ feature {CACHE_READER} -- Access
 			ends_with_directory_separator: Result.item (Result.count) = (create {OPERATING_ENVIRONMENT}).Directory_separator
 		end
 
-	relative_type_path (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	relative_type_path (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Path to file describing `a_type' from `a_assembly' relative to `Eac_path'
 			-- Always return a value even if `a_type' in not in EAC
 		require
@@ -170,7 +170,7 @@ feature {CACHE_READER} -- Access
 			non_void_path: Result /= Void
 		end
 
-	relative_type_mapping_path (a_assembly: CONSUMED_ASSEMBLY): STRING is
+	relative_type_mapping_path (a_assembly: CONSUMED_ASSEMBLY): STRING
 			-- Path to file, describing `a_assembly' .NET type name to class mappings, relative to `Eac_path'
 			-- Always return a value even if `a_assembly' in not in EAC
 		require
@@ -186,36 +186,33 @@ feature {CACHE_READER} -- Access
 			non_void_path: Result /= Void
 		end
 
-	eac_info_file_name: STRING is "eac.info"
+	eac_info_file_name: STRING = "eac.info"
 			-- Path to EAC info file relative to `Eac_path'.
 
-	eiffel_assembly_cache_path: STRING is
+	eiffel_assembly_cache_path: STRING
 			-- Path to versioned Eiffel Assembly Cache installation
 		require
 			clr_version_not_void: clr_version /= Void
 			clr_version_not_empty: not clr_version.is_empty
 		local
 			retried: BOOLEAN
-			l_str: SYSTEM_STRING
-			l_registry_key: REGISTRY_KEY
-			l_obj: SYSTEM_OBJECT
-			l_file_info: FILE_INFO
 			l_dir_sep: CHARACTER
+			l_result: detachable STRING
 		once
 			if not retried then
 				l_dir_sep := (create {OPERATING_ENVIRONMENT}).Directory_separator
-				if internal_eiffel_cache_path.item = Void then
+				if attached internal_eiffel_cache_path.item as l_cache then
+					Result := l_cache
+				else
 					if is_eiffel_layout_defined then
-						Result := eiffel_layout.install_path
+						l_result := eiffel_layout.install_path
 					end
-					if Result = Void then
-						Result := (create {EXECUTION_ENVIRONMENT}).current_working_directory
+					if l_result = Void then
+						l_result := (create {EXECUTION_ENVIRONMENT}).current_working_directory
 					else
-						Result := Result.twin
+						l_result := l_result.twin
 					end
-					check
-						Ise_eiffel_defined: Result /= Void
-					end
+					Result := l_result
 					if Result.item (Result.count) /= l_dir_sep then
 						Result.append_character (l_dir_sep)
 					end
@@ -223,8 +220,6 @@ feature {CACHE_READER} -- Access
 
 						-- set internal EAC path to registry key
 					internal_eiffel_cache_path.put (Result)
-				else
-					Result := internal_eiffel_cache_path.item
 				end
 				if Result.item (Result.count) /= l_dir_sep then
 					Result.append_character (l_dir_sep)
@@ -232,6 +227,7 @@ feature {CACHE_READER} -- Access
 			else
 					-- FIXME: Manu 05/14/2002: we should raise an error here.
 				io.error.put_string ("ISE_EIFFEL environment variable is not defined!%N")
+				create Result.make_empty
 			end
 		ensure
 			exist: Result /= Void
@@ -244,12 +240,12 @@ feature {CACHE_READER} -- Access
 			retry
 		end
 
-	eac_path: STRING is "dotnet\assemblies"
+	eac_path: STRING = "dotnet\assemblies"
 			-- EAC path relative to $ISE_EIFFEL
 
 feature {EMITTER} -- Access
 
-	relative_executing_env_path: STRING is
+	relative_executing_env_path: STRING
 			-- retrieve relative path for execting environment
 		local
 			l_name: STRING
@@ -276,7 +272,7 @@ feature {EMITTER} -- Access
 			ends_with_directory_separator: Result.item (Result.count) = (create {OPERATING_ENVIRONMENT}).Directory_separator
 		end
 
-	internal_eiffel_cache_path: CELL [STRING] is
+	internal_eiffel_cache_path: CELL [detachable STRING]
 			-- internal eiffel cache path
 		once
 			create Result.put (Void)
@@ -284,7 +280,7 @@ feature {EMITTER} -- Access
 
 feature {EMITTER} -- Element Change
 
-	set_internal_eiffel_cache_path (a_path: STRING) is
+	set_internal_eiffel_cache_path (a_path: STRING)
 			-- set `internal_eiffel_cache_path' to 'a_path'
 		require
 			non_void_path: a_path /= Void
@@ -293,7 +289,7 @@ feature {EMITTER} -- Element Change
 			internal_eiffel_cache_path.put (a_path)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

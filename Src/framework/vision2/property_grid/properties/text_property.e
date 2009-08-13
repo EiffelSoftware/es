@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Simple text properties."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,36 +8,21 @@ deferred class
 
 inherit
 	TYPED_PROPERTY [G]
-		undefine
-			deactivate,
-			create_implementation
 		redefine
 			activate_action,
 			initialize,
-			implementation,
 			value,
 			set_value
 		end
 
-	EV_GRID_EDITABLE_ITEM
-		undefine
-			is_in_default_state,
-			activate,
-			set_data
-		redefine
-			initialize,
-			activate_action,
-			implementation
-		end
-
 feature {NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize
 		do
 			pointer_button_press_actions.force_extend (agent activate)
 			deactivate_actions.extend (agent update_text_on_deactivation)
-			Precursor {EV_GRID_EDITABLE_ITEM}
+			Precursor
 			set_left_border (3)
 			set_right_border (3)
 		end
@@ -47,7 +32,7 @@ feature -- Access
 	value: G
 			-- Data
 
-	displayed_value: STRING_32 is
+	displayed_value: STRING_32
 			-- Displayed format of the data.
 		do
 			Result := to_displayed_value (value)
@@ -57,7 +42,7 @@ feature -- Access
 
 feature -- Update
 
-	set_value (a_value: like value) is
+	set_value (a_value: like value)
 			-- Set `value' to `a_value'.
 		local
 			l_val: like displayed_value
@@ -75,7 +60,7 @@ feature -- Update
 			end
 		end
 
-	set_display_agent (an_agent: like display_agent) is
+	set_display_agent (an_agent: like display_agent)
 			-- Set `display_agent' to `an_agent'.
 		do
 			display_agent := an_agent
@@ -85,7 +70,7 @@ feature -- Update
 			display_agent_set: display_agent = an_agent
 		end
 
-	set_convert_to_data_agent (an_agent: like convert_to_data_agent) is
+	set_convert_to_data_agent (an_agent: like convert_to_data_agent)
 			-- Set `convert_to_data_agent' to `an_agent'.
 		do
 			convert_to_data_agent := an_agent
@@ -95,7 +80,7 @@ feature -- Update
 
 feature {NONE} -- Agents
 
-	update_text_on_deactivation is
+	update_text_on_deactivation
 			-- Update text on deactivation.
 		local
 			l_data: like value
@@ -111,7 +96,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	activate_action (popup_window: EV_POPUP_WINDOW) is
+	activate_action (popup_window: EV_POPUP_WINDOW)
 			-- Activate action.
 		local
 		do
@@ -129,7 +114,7 @@ feature {NONE} -- Agents
 			popup_window.set_size (popup_window.width - (left_border - 1) - (right_border - 1), popup_window.height - 1)
 		end
 
-	save_set_text (a_text: G) is
+	save_set_text (a_text: G)
 			-- Save `set_text'.
 		do
 			set_text (displayed_value)
@@ -142,7 +127,7 @@ feature {NONE} -- Implementation
 
 	display_agent: FUNCTION [ANY, TUPLE [G], STRING_32]
 
-	to_displayed_value (a_value: like value): like displayed_value is
+	to_displayed_value (a_value: like value): like displayed_value
 		do
 			if a_value /= Void then
 				if display_agent /= Void then
@@ -160,14 +145,40 @@ feature {NONE} -- Implementation
 
 	convert_to_data_agent: FUNCTION [ANY, TUPLE [STRING_32], G]
 
-	convert_to_data (a_string: like displayed_value): like value is
+	convert_to_data (a_string: like displayed_value): like value
 			-- Convert displayed data into data.
 		deferred
 		end
 
-feature {EV_ANY, EV_ANY_I, EV_GRID_DRAWER_I} -- Implementation
-
-	implementation: EV_GRID_LABEL_ITEM_I
-			-- Responsible for interaction with native graphics toolkit.
-
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

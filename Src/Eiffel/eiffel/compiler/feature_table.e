@@ -1,4 +1,4 @@
-indexing
+note
 description: "[
 		Class for a feature table: it is basically a hash table of entries
 		the real feature name available in the corresponding classes, and of items
@@ -98,7 +98,7 @@ create
 
 feature {NONE} -- Creation
 
-	make (n: INTEGER) is
+	make (n: INTEGER)
 		do
 			internal_table_make (n)
 			create alias_table.make (0)
@@ -121,7 +121,7 @@ feature -- Access
 			-- list of associated resolved feature name id. (e.g. for `put' you will possibly
 			-- find `put_integer', `put_double',...)
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 			-- Associated class
 		require
 			feat_tbl_id /= 0
@@ -129,7 +129,7 @@ feature -- Access
 			Result := System.class_of_id (feat_tbl_id)
 		end
 
-	item_alias_id (alias_name_id: INTEGER): FEATURE_I is
+	item_alias_id (alias_name_id: INTEGER): FEATURE_I
 			-- Feature with alias name id `alias_name_id', if present; Void otherwise
 		require
 			valid_alias_name_id: alias_name_id > 0
@@ -150,12 +150,12 @@ feature -- Access
 			search_id (a_renaming.renamed (a_feature_name_id))
 		end
 
-	features: COMPUTED_FEATURE_TABLE is
+	features: COMPUTED_FEATURE_TABLE
 			-- Linear representation of all features of `feature_table'.
 		require
 			computed: is_computed
 		local
-			i, l_count, l_id: INTEGER
+			l_id: INTEGER
 			l_server: FEATURE_SERVER
 		do
 			Result := feature_table
@@ -163,22 +163,19 @@ feature -- Access
 				Result := feature_table_cache.item_id (feat_tbl_id)
 				if Result = Void then
 					from
-						l_count := count
-							-- Create Result filled with at least `l_count' items.
-						create Result.make_filled (l_count)
+							-- Create Result filled with at least `count' items.
+						create Result.make (count)
 						Result.set_id (feat_tbl_id)
 						l_server := system.feature_server
-							--
-						iteration_position := -1
+						internal_table_start
 					until
-						i = l_count
+						internal_table_after
 					loop
-						i := i + 1
-						internal_table_forth
-						l_id := content [iteration_position]
+						l_id := internal_table_item_for_iteration
 						if l_id > 0 then
-							Result.put_i_th (l_server.item (l_id), i)
+							Result.extend (l_server.item (l_id))
 						end
+						internal_table_forth
 					end
 					feature_table_cache.force (Result)
 				end
@@ -200,7 +197,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	internal_features: COMPUTED_FEATURE_TABLE is
+	internal_features: COMPUTED_FEATURE_TABLE
 			-- Linear representation of all features of `feature_table'.
 		require
 			computed: is_computed
@@ -216,7 +213,7 @@ feature {NONE} -- Implementation
 
 feature -- HASH_TABLE like feature
 
-	item_id (an_id: INTEGER): FEATURE_I is
+	item_id (an_id: INTEGER): FEATURE_I
 			-- Item of name ID `an_id'
 		require
 			an_id_positive: an_id > 0
@@ -229,7 +226,7 @@ feature -- HASH_TABLE like feature
 			end
 		end
 
-	found_item: FEATURE_I is
+	found_item: FEATURE_I
 			--
 		local
 			l_id: INTEGER
@@ -240,13 +237,16 @@ feature -- HASH_TABLE like feature
 			end
 		end
 
-	put (new: FEATURE_I; key: INTEGER) is
+	put (new: FEATURE_I; key: INTEGER; new_is_aliased: BOOLEAN)
 		local
 			alias_name_id: INTEGER
 		do
-				-- Even if there is an id, we recreate one.
-			new.set_id (system.feature_counter.next_id)
-			tmp_feature_server.put (new)
+			if not new_is_aliased then
+					-- If the feature is not aliased then we generate
+					-- a new id.
+				new.set_id (system.feature_counter.next_id)
+			end
+			tmp_feature_server.put (new, new_is_aliased)
 			internal_table_put (new.id, key)
 			if not found and then new.is_attribute then
 					-- We are adding a new attribute so we update the attribute count.
@@ -259,13 +259,15 @@ feature -- HASH_TABLE like feature
 			end
 		end
 
-	replace (new: FEATURE_I; key: INTEGER) is
+	replace (new: FEATURE_I; key: INTEGER; new_is_aliased: BOOLEAN)
 		do
-			remove (key)
-			put (new, key)
+			if item_id (key) /= new then
+				remove (key)
+				put (new, key, new_is_aliased)
+			end
 		end
 
-	item_for_iteration: FEATURE_I is
+	item_for_iteration: FEATURE_I
 		local
 			l_id: INTEGER
 			l_feat_tbl: like feature_table
@@ -283,7 +285,7 @@ feature -- HASH_TABLE like feature
 
 feature {NONE} -- HASH_TABLE like features
 
-	remove (key: INTEGER) is
+	remove (key: INTEGER)
 		local
 			old_feature: FEATURE_I
 			l_id: INTEGER
@@ -297,7 +299,10 @@ feature {NONE} -- HASH_TABLE like features
 				end
 				l_id := old_feature.id
 				if l_id > 0 then
-					tmp_feature_server.remove (l_id)
+					if not tmp_feature_server.aliased_features.has (l_id) then
+							-- We do not want aliased features to be removed from disk.
+						tmp_feature_server.remove (l_id)
+					end
 				end
 					-- Remove old alias name
 				alias_name_id := old_feature.alias_name_id
@@ -310,7 +315,7 @@ feature {NONE} -- HASH_TABLE like features
 
 feature -- Access: compatibility
 
-	item (s: STRING): FEATURE_I is
+	item (s: STRING): FEATURE_I
 			-- Item of name `s'.
 		require
 			s_not_void: s /= Void
@@ -324,7 +329,7 @@ feature -- Access: compatibility
 			end
 		end
 
-	overloaded_items (an_id: INTEGER): LIST [FEATURE_I] is
+	overloaded_items (an_id: INTEGER): LIST [FEATURE_I]
 			-- List of features matching overloaded name `s'.
 		require
 			an_id_valid: an_id >= 0
@@ -346,7 +351,7 @@ feature -- Access: compatibility
 			overloaded_items_not_void: Result /= Void
 		end
 
-	has (s: STRING): BOOLEAN is
+	has (s: STRING): BOOLEAN
 			-- Has item of name `s'.
 		require
 			s_not_void: s /= Void
@@ -355,7 +360,7 @@ feature -- Access: compatibility
 			Result := has_id (Names_heap.id_of (s))
 		end
 
-	search (s: STRING) is
+	search (s: STRING)
 			-- Search for `s'.
 		require
 			s_not_void: s /= Void
@@ -364,7 +369,7 @@ feature -- Access: compatibility
 			search_id (Names_heap.id_of (s))
 		end
 
-	alias_item (alias_name: STRING): FEATURE_I is
+	alias_item (alias_name: STRING): FEATURE_I
 			-- Feature with given `alias_name' if any
 		require
 			alias_name_not_void: alias_name /= Void
@@ -375,7 +380,7 @@ feature -- Access: compatibility
 
 feature -- Traversal
 
-	start is
+	start
 			-- Start iteration
 		do
 			if feature_table /= Void then
@@ -387,7 +392,7 @@ feature -- Traversal
 			end
 		end
 
-	after: BOOLEAN is
+	after: BOOLEAN
 			-- Are we off?
 		do
 			if feature_table /= Void then
@@ -400,7 +405,7 @@ feature -- Traversal
 			end
 		end
 
-	forth is
+	forth
 			-- Are we off?
 		do
 			if feature_table /= Void then
@@ -412,7 +417,7 @@ feature -- Traversal
 
 feature -- Status report
 
-	has_overloaded (a_feature_name_id: INTEGER): BOOLEAN is
+	has_overloaded (a_feature_name_id: INTEGER): BOOLEAN
 			-- Does Current have `a_feature_name' as being an overloaded routine?
 		do
 			if a_feature_name_id > 0 and then overloaded_names /= Void and then associated_class.is_true_external then
@@ -420,7 +425,7 @@ feature -- Status report
 			end
 		end
 
-	is_alias_conflict: BOOLEAN is
+	is_alias_conflict: BOOLEAN
 			-- Did last operation cause a conflict on alias name?
 		do
 			Result := alias_table.conflict
@@ -439,7 +444,7 @@ feature -- Status report
 
 feature -- Settings
 
-	set_overloaded_names (o: like overloaded_names) is
+	set_overloaded_names (o: like overloaded_names)
 			-- Assign `o' to `overloaded_names'.
 		do
 			overloaded_names := o
@@ -447,7 +452,7 @@ feature -- Settings
 			overloaded_names_set: overloaded_names = o
 		end
 
-	set_computed is
+	set_computed
 			-- Mark `is_computed' to True. This is useful in the
 			-- case of an empty feature table.
 		do
@@ -461,7 +466,7 @@ feature -- Settings
 
 feature -- Comparison
 
-	equiv (other: like Current; pass2_ctrl: PASS2_CONTROL): BOOLEAN is
+	equiv (other: like Current; pass2_ctrl: PASS2_CONTROL): BOOLEAN
 			-- Incrementality test on feature table in second pass.
 			-- We must know if a feature table has possibly changed,
 			-- for recompiling descendants of a changed class. Note that
@@ -554,7 +559,7 @@ end
 			end
 		end
 
-	fill_pass2_control (pass_control: PASS2_CONTROL; other: like Current) is
+	fill_pass2_control (pass_control: PASS2_CONTROL; other: like Current)
 			-- Process the interface changes between the new feature table
 			-- `other' and the current one.
 		local
@@ -699,32 +704,9 @@ end
 
 				forth
 			end
-
-			if feat_tbl_id /= 0 then
-					-- Bug fix: moving a class around can create problems:
-					-- class test1 t: TEST2 end; class test2 inherit t1 end
-					-- class test2 moved from one cluster to another
-					-- Iteration on the features removed by `update_table'
-				from
-					removed_feature_ids.start
-				until
-					removed_feature_ids.after
-				loop
-	debug ("ACTIVITY")
-		io.error.put_string ("%Tfeature of id ")
-		io.error.put_integer (removed_feature_ids.item.routine_id)
-		io.error.put_string (" (removed by `update_table' is propagated to clients%N")
-	end
-					create depend_unit.make_no_dead_code (feat_tbl_id, removed_feature_ids.item.routine_id)
-					propagators.put (depend_unit)
-					removed_features.put (removed_feature_ids.item.body_id)
-					removed_feature_ids.forth
-				end
-				removed_feature_ids := Void
-			end
 		end
 
-	propagate_assertions (assert_list: LINKED_LIST [INTEGER]) is
+	propagate_assertions (assert_list: LINKED_LIST [INTEGER])
 			-- Propagate features to Pass 4 using the routine ids
 			-- in `assert_list'.
 		local
@@ -762,141 +744,41 @@ end
 			end
 		end
 
-feature -- Check
-
-	update_table (a_class_id: INTEGER) is
-			-- Check if the references to the supplier classes
-			-- are still valid and remove the entry otherwise
-		require
-			a_class_id_positive: a_class_id > 0
-		local
-			f: FEATURE_I
-			l_features: like features
-		do
-			from
-				create removed_feature_ids.make
-				l_features := internal_features
-				l_features.start
-			until
-				l_features.after
-			loop
-				f := l_features.item_for_iteration
-				if not f.is_valid then
-						-- The result type or one of the arguments type is not valid
-debug ("ACTIVITY")
-	io.error.put_string ("Update table: ")
-	io.error.put_string (f.feature_name)
-	io.error.put_string (" removed%N")
-end
-					if f.written_in = a_class_id or else f.is_replicated_directly then
-							-- There is no need for a corresponding "reactivate" here
-							-- since it will be done in by pass2 in `feature_unit' if need be
-						Tmp_ast_server.desactive (f.body_index)
-						removed_feature_ids.extend ([f.rout_id_set.first, f.body_index])
-						remove (f.feature_name_id)
-					end
-					l_features.remove
-				else
-					l_features.forth
-				end
-			end
-		end
-
-	removed_feature_ids: LINKED_LIST [TUPLE[routine_id, body_id: INTEGER]]
-			-- Set of routine_id and body_id removed by `update_table'
-			--| It will be used for incrementality (propagation of pass3)
-
-	check_table is
-			-- Check all the features in the table
-		local
-			non_deferred, deferred_found: BOOLEAN
-			feature_i: FEATURE_I
-			vcch1: VCCH1
-		do
-			from
-				non_deferred := not associated_class.is_deferred
-				start
-			until
-				after
-			loop
-				feature_i := item_for_iteration
-				if feature_i.is_deferred then
-					deferred_found := True
-					if non_deferred then
-						create vcch1
-						vcch1.set_class (associated_class)
-						vcch1.set_a_feature (feature_i)
-						Error_handler.insert_error (vcch1)
-					end
-				end
-				check_feature (feature_i)
-				forth
-			end
-		end
-
-	check_feature (f: FEATURE_I) is
-			-- Check arguments and type of feature `f'.
-			-- The objective is to deal with anchored types and genericity.
-			-- All the anchored types are interpreted here and the generic
-			-- parameter instantiated if possible.
-		do
-debug
-io.error.put_string ("Check feature: ")
-io.error.put_string (f.feature_name)
-io.error.put_new_line
-end
-			if f.written_in = feat_tbl_id then
-					-- Take a feature written in the class associated
-					-- to the feature table
-				if f.arguments /= Void then
-						-- Check if there is not twice the same argument name,
-						-- or if one argument has a feature name.
-					f.check_argument_names (Current)
-				end
-			end
-			f.check_types (Current)
-		end
-
-	compute_lookup_tables is
+	compute_lookup_tables
 			-- Build `select_table', `feature_id_table' and `body_index_table'.
 		local
 			l_feat: FEATURE_I
 			nb: INTEGER
 			l_feature_server: FEATURE_SERVER
-			i: INTEGER
 		do
 			from
 				nb := count
 				l_feature_server := system.feature_server
-				create feature_table.make_filled (nb)
+				create feature_table.make (nb)
 				feature_table.set_id (feat_tbl_id)
 				create select_table.make (nb, Current)
 				create feature_id_table.make (1, nb)
 				create body_index_table.make (nb)
-				iteration_position := -1
+				internal_table_start
 			until
-				i = nb
+				internal_table_after
 			loop
-					-- We loop 'nb' times so that when all features are computed we exit loop immediately.
-				internal_table_forth
-				i := i + 1
 					-- Retrieve feature from current routine id of `Current'.
-				check l_id_positive: content [iteration_position] > 0 end
-				l_feat := l_feature_server.item (content [iteration_position])
+				check l_id_positive: internal_table_item_for_iteration > 0 end
+				l_feat := l_feature_server.item (internal_table_item_for_iteration)
 
 				feature_id_table.force (l_feat.feature_name_id, l_feat.feature_id)
 				body_index_table.put (l_feat.feature_name_id, l_feat.body_index)
 				select_table.add_feature (l_feat)
-					-- We can use `i' to insert the feature in to the correct
-					-- part of the feature table.
-				feature_table.put_i_th (l_feat, i)
+				feature_table.extend (l_feat)
+				internal_table_forth
 			end
 			is_computed := True
 		ensure
 			is_computed: is_computed
 		end
 
-	check_expanded is
+	check_expanded
 			-- Check the expanded validity rules
 		local
 			class_c: CLASS_C
@@ -913,7 +795,7 @@ end
 			Error_handler.checksum
 		end
 
-	feature_of_feature_id (i: INTEGER): FEATURE_I is
+	feature_of_feature_id (i: INTEGER): FEATURE_I
 			-- Feature of feature_id id equal to `i'.
 		require
 			is_computed: is_computed
@@ -928,7 +810,7 @@ end
 			end
 		end
 
-	feature_of_body_index (i: INTEGER): FEATURE_I is
+	feature_of_body_index (i: INTEGER): FEATURE_I
 			-- Feature of body id equal to `i'.
 		require
 			is_computed: is_computed
@@ -941,7 +823,7 @@ end
 			end
 		end
 
-	feature_of_rout_id (rout_id: INTEGER): FEATURE_I is
+	feature_of_rout_id (rout_id: INTEGER): FEATURE_I
 			-- Feature with routine ID `rout_id'.
 		require
 			valid_rout_id: rout_id > 0
@@ -950,7 +832,7 @@ end
 			Result := select_table.item (rout_id)
 		end
 
-	feature_of_rout_id_set (rout_id_set: ROUT_ID_SET): FEATURE_I is
+	feature_of_rout_id_set (rout_id_set: ROUT_ID_SET): FEATURE_I
 			-- Feature with routine ID `rout_id'.
 		require
 			rout_id_set_not_void: rout_id_set /= Void
@@ -971,7 +853,7 @@ end
 			end
 		end
 
-	update_instantiator2 is
+	update_instantiator2
 			-- Look for generic types in the result and arguments of
 			-- the features assuming that the associated class is
 			-- syntactically changed
@@ -993,7 +875,7 @@ end
 			end
 		end
 
-	skeleton: GENERIC_SKELETON is
+	skeleton: GENERIC_SKELETON
 			-- Skeleton of the associated class
 		local
 			feature_i: FEATURE_I
@@ -1042,7 +924,7 @@ end
 			create Result.make (0)
 		end
 
-	melt is
+	melt
 			-- Melt routine id array associated to the current
 			-- feature table
 		local
@@ -1057,7 +939,7 @@ end
 			Tmp_m_rout_id_server.put (melted_array)
 		end
 
-	make_byte_code (ba: BYTE_ARRAY) is
+	make_byte_code (ba: BYTE_ARRAY)
 			-- Make routine id array byte code
 		local
 			tab: ARRAY [FEATURE_I]
@@ -1100,7 +982,7 @@ end
 			ba.append ('%U')
 		end
 
-	generate (buffer: GENERATION_BUFFER) is
+	generate (buffer: GENERATION_BUFFER)
 			-- Generate routine id array in `buffer'.
 		require
 			good_argument: buffer /= Void
@@ -1109,23 +991,21 @@ end
 			feat: FEATURE_I
 			i, nb: INTEGER
 			rout_id: INTEGER
-			l_int32_str, l_comma_newline_str: STRING
 		do
 			tab := routine_id_array
+			nb := tab.upper
 			buffer.put_string ("int32 ra")
 			buffer.put_integer (feat_tbl_id)
-			buffer.put_string ("[] = {")
-			buffer.put_new_line
+			buffer.put_string ("[")
+				-- Print number of static array initializers.
+			buffer.put_integer (nb + 1)
+			buffer.put_string ("] = {")
 			from
 				i := 0
-				nb := tab.upper
-				l_int32_str := "(int32) "
-				l_comma_newline_str := ",%N"
 			until
 				i > nb
 			loop
 				feat := tab.item (i)
-				buffer.put_string (l_int32_str)
 				if feat = Void then
 					buffer.put_integer (0)
 				else
@@ -1137,13 +1017,15 @@ buffer.put_string (feat.feature_name)
 buffer.put_string ("' */")
 end
 				end
-				buffer.put_string (l_comma_newline_str)
+				if i < nb then
+					buffer.put_character (',')
+				end
 				i := i + 1
 			end
-			buffer.put_string ("};%N%N")
+			buffer.put_string ("};%N")
 		end
 
-	routine_id_array: ARRAY [FEATURE_I] is
+	routine_id_array: ARRAY [FEATURE_I]
 			-- Routine id array
 		local
 			feature_i: FEATURE_I
@@ -1189,7 +1071,7 @@ end
 			end
 		end
 
-	replicated_features: HASH_TABLE [ARRAYED_LIST [FEATURE_I], INTEGER] is
+	replicated_features: HASH_TABLE [ARRAYED_LIST [FEATURE_I], INTEGER]
 			-- Replicated features for Current feature table
 			-- hashed on body_index
 		local
@@ -1217,7 +1099,7 @@ end
 
 feature -- Case stuff
 
-	has_introduced_new_externals: BOOLEAN is
+	has_introduced_new_externals: BOOLEAN
 			-- Has `associated_class' introduced new externals?
 			--| Looks for externals features that are "written in"
 			--| `associated_class'
@@ -1237,7 +1119,7 @@ feature -- Case stuff
 
 feature -- API
 
-	api_table: E_FEATURE_TABLE is
+	api_table: E_FEATURE_TABLE
 			-- API table of features
 		local
 			c_id: INTEGER
@@ -1264,7 +1146,7 @@ feature -- API
 			end
 		end
 
-	written_in_features: LIST [E_FEATURE] is
+	written_in_features: LIST [E_FEATURE]
 			-- List of features defined in current class
 		local
 			c_id: like feat_tbl_id
@@ -1287,7 +1169,7 @@ feature -- API
 
 feature -- Server storing
 
-	flush is
+	flush
 		local
 			l_old_item: like feature_table
 			l_cache: like feature_table_cache
@@ -1314,7 +1196,7 @@ invariant
 	select_table_not_void: is_computed implies select_table /= Void
 	related_select_table: is_computed implies select_table.feature_table = Current
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

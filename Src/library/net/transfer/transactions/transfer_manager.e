@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Managers that control the data transactions"
 	legal: "See notice at end of class."
@@ -13,12 +13,13 @@ class TRANSFER_MANAGER inherit
 		rename
 			item as transaction
 		undefine
-			copy, is_equal, force, is_inserted, search, append, fill
+			copy, is_equal, force, is_inserted, search, append, fill,
+			for_all, there_exists, do_all, do_if
 		end
 
 	ARRAYED_LIST [TRANSACTION]
 		rename
-			make as list_make, item as transaction, 
+			make as list_make, item as transaction,
 			go_i_th as select_transaction
 		export
 			{ANY} valid_index, valid_cursor_index
@@ -33,7 +34,7 @@ class TRANSFER_MANAGER inherit
 		undefine
 			copy, is_equal
 		end
-		
+
 create
 	make
 
@@ -42,7 +43,7 @@ create {TRANSFER_MANAGER}
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create manager.
 		do
 			list_make (1)
@@ -51,13 +52,13 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	source: DATA_RESOURCE is
+	source: DATA_RESOURCE
 			-- Selected source
 		do
 			Result := transaction.source
 		end
 
-	target: DATA_RESOURCE is
+	target: DATA_RESOURCE
 			-- Selected target
 		do
 			Result := transaction.target
@@ -65,7 +66,7 @@ feature -- Access
 
 feature -- Measurement
 
-	total_count: INTEGER is
+	total_count: INTEGER
 			-- Total number of transactions
 		local
 			idx: INTEGER
@@ -86,43 +87,46 @@ feature -- Measurement
 
 	finished_transactions: INTEGER
 			-- Number of already finished transactions
-			
+
 feature -- Status report
 
-	error: BOOLEAN is
+	error: BOOLEAN
 			-- Has an error occurred in any transaction?
 		require
 			not_empty: not is_empty
 		do
 			Result := check_query (agent transaction.error)
 		end
-		
-	error_reason: STRING is
+
+	error_reason: STRING
 			-- Reason of most recent error
 		require
 			error_exists: error
 		local
 			idx: INTEGER
 			error_found: BOOLEAN
+			l_error: detachable STRING
 		do
 			idx := index
 			from start until error_found or after loop
 				if source.error then
-					Result := error_text (source.error_code)
+					l_error := error_text (source.error_code)
 					error_found := True
 				elseif target.error then
-					Result := error_text (target.error_code)
+					l_error := error_text (target.error_code)
 					error_found := True
 				end
 				forth
 			end
+			check l_error_attached: l_error /= Void end
+			Result := l_error
 			select_transaction (idx)
 		ensure
 			non_empty_string: Result /= Void and then not Result.is_empty
 			index_unchanged: index = old index
 		end
 
-	transactions_succeeded: BOOLEAN is
+	transactions_succeeded: BOOLEAN
 			-- Have all transactions succeeded?
 		require
 			not_empty: not is_empty
@@ -131,19 +135,19 @@ feature -- Status report
 				Result := check_query (agent transaction.succeeded)
 			end
 		end
-		
+
 	transfer_finished: BOOLEAN
 			-- Has a transfer taken place?
-	
-	insertable (t: TRANSACTION): BOOLEAN is
+
+	insertable (t: TRANSACTION): BOOLEAN
 			-- Can transaction `t' be added?
 		do
 			Result := True
 		end
-	 
+
 feature -- Status setting
 
-	reset_status is
+	reset_status
 			-- Reset status flags.
 		do
 			transfer_finished := False
@@ -155,7 +159,7 @@ feature -- Status setting
 
 feature -- Removal
 
-	remove_transaction (n: INTEGER) is
+	remove_transaction (n: INTEGER)
 			-- Remove `n'-th transaction.
 		require
 			not_empty: not is_empty
@@ -171,13 +175,13 @@ feature -- Removal
 		ensure
 			one_less_item: count = count - 1
 			index_unchanged: (old index < old count) implies (index = old index)
-			index_adapted: (old index = old count) implies 
+			index_adapted: (old index = old count) implies
 					(index = old index - 1)
 		end
-			
+
 feature -- Basic operations
 
-	transfer is
+	transfer
 			-- Execute all transactions.
 		require
 			not_empty: not is_empty
@@ -189,23 +193,23 @@ feature -- Basic operations
 			transfer_flag_set: transfer_finished
 		end
 
-	execute_transaction is
+	execute_transaction
 			-- Execute selected transaction.
 		do
 			transaction.execute
 			if not transaction.error then
-				finished_transactions := 
+				finished_transactions :=
 					finished_transactions + transaction.count
 			end
 		ensure
 			counter_updated: not transaction.error implies
-				finished_transactions = old finished_transactions + 
+				finished_transactions = old finished_transactions +
 					transaction.count
 		end
 
 feature {NONE} -- Implementation
 
-	reset_error is
+	reset_error
 			-- Reset error flags.
 		do
 			transaction.reset_error
@@ -216,7 +220,7 @@ invariant
 	finished_transaction_range: 0 <= finished_transactions and
 			finished_transactions <= total_count
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

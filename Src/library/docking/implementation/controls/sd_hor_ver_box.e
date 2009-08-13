@@ -1,4 +1,4 @@
-indexing
+note
 	description: "EV_BOX that wrapper EV_HORIZONTAL_BOX and EV_VERTICAL_BOX. Actually this is EV_VERTICAL_BOX contain a EV_HORIZONTAL_BOX."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -39,9 +39,6 @@ inherit
 			swap as swap_vertical_box,
 			is_empty as is_empty_vertical_box,
 			put_right as put_right_vertical_box
-		export
-			{NONE} all
-			{ANY} height, set_minimum_height, set_minimum_width, has_recursive
 		redefine
 			is_background_color_void
 		end
@@ -51,8 +48,8 @@ create
 
 feature {NONE} -- Initlization
 
-	init (a_vertical_style: BOOLEAN)is
-			-- Creation method.
+	init (a_vertical_style: BOOLEAN)
+			-- Creation method
 		do
 			internal_vertical_style := a_vertical_style
 			if not internal_vertical_style then
@@ -67,15 +64,15 @@ feature {NONE} -- Initlization
 			set: internal_vertical_style = a_vertical_style
 		end
 
-	init_horizontal_style is
-			-- If internal_vertical_style false, add horizontal box.
+	init_horizontal_style
+			-- If internal_vertical_style false, add horizontal box
 		require
 			horizontal: not internal_vertical_style
 		do
-			-- First change the style, so the horizontal_box can be added in.
+			-- First change the style, so the horizontal_box can be added in
 			internal_vertical_style := not internal_vertical_style
 			extend (horizontal_box)
-			-- Then change the style back.
+			-- Then change the style back
 			internal_vertical_style := not internal_vertical_style
 		ensure
 			horizontal: not internal_vertical_style
@@ -83,8 +80,8 @@ feature {NONE} -- Initlization
 
 feature -- Basic operations
 
-	change_direction is
-			-- Change `interal_direction', then change all items layout.
+	change_direction
+			-- Change `interal_direction', then change all items layout
 		require
 			is_empty: is_empty
 		do
@@ -102,7 +99,7 @@ feature -- Actions
 
 feature -- Query
 
-	is_vertical: BOOLEAN is
+	is_vertical: BOOLEAN
 			-- If Current vertical style?
 		do
 			Result := internal_vertical_style
@@ -110,8 +107,8 @@ feature -- Query
 
 feature -- Redefine
 
-	extend (v: like item) is
-			-- Redefine.
+	extend (v: like item)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				extend_vertical_box (v)
@@ -120,8 +117,8 @@ feature -- Redefine
 			end
 		end
 
-	prune (v: like item) is
-			-- Redefine.
+	prune (v: like item)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				prune_vertical_box (v)
@@ -130,8 +127,8 @@ feature -- Redefine
 			end
 		end
 
-	start is
-			-- Redefine.
+	start
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				start_vertical_box
@@ -141,8 +138,8 @@ feature -- Redefine
 		end
 
 
-	after: BOOLEAN is
-			-- Redefine.
+	after: BOOLEAN
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := after_vertical_box
@@ -151,8 +148,8 @@ feature -- Redefine
 			end
 		end
 
-	forth is
-			-- Redefine.
+	forth
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				forth_vertical_box
@@ -161,8 +158,8 @@ feature -- Redefine
 			end
 		end
 
-	finish is
-			-- Redefine
+	finish
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				finish_vertical_box
@@ -171,8 +168,8 @@ feature -- Redefine
 			end
 		end
 
-	back is
-			-- Redefine
+	back
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				back_vertical_box
@@ -181,8 +178,8 @@ feature -- Redefine
 			end
 		end
 
-	before: BOOLEAN is
-			-- Redefine
+	before: BOOLEAN
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := before_vertical_box
@@ -191,8 +188,8 @@ feature -- Redefine
 			end
 		end
 
-	item: EV_WIDGET is
-			-- Redefine.
+	item: EV_WIDGET
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := item_vertical_box
@@ -201,8 +198,8 @@ feature -- Redefine
 			end
 		end
 
-	count: INTEGER is
-			-- Redefine.
+	count: INTEGER
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := count_vertical_box
@@ -211,8 +208,8 @@ feature -- Redefine
 			end
 		end
 
-	disable_item_expand (an_item: EV_WIDGET) is
-			-- Redefine.
+	disable_item_expand (an_item: EV_WIDGET)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				disable_item_expand_vertical_box (an_item)
@@ -221,8 +218,8 @@ feature -- Redefine
 			end
 		end
 
-	has (v: like item): BOOLEAN is
-			-- Redefine.
+	has (v: like item): BOOLEAN
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := has_vertical_box (v)
@@ -231,8 +228,8 @@ feature -- Redefine
 			end
 		end
 
-	search (v: like item) is
-			-- Redefine.
+	search (v: like item)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				search_vertical_box (v)
@@ -241,8 +238,8 @@ feature -- Redefine
 			end
 		end
 
-	wipe_out is
-			-- Redefine.
+	wipe_out
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				wipe_out_vertical_box
@@ -251,8 +248,8 @@ feature -- Redefine
 			end
 		end
 
-	linear_representation: LINEAR [EV_WIDGET] is
-			-- Redefine.
+	linear_representation: LINEAR [EV_WIDGET]
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := linear_representation_vertical_box
@@ -261,8 +258,8 @@ feature -- Redefine
 			end
 		end
 
-	off: BOOLEAN is
-			-- Redefine.
+	off: BOOLEAN
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := off_vertical_box
@@ -271,8 +268,8 @@ feature -- Redefine
 			end
 		end
 
-	remove is
-			-- Redefine.
+	remove
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				remove_vertical_box
@@ -281,8 +278,8 @@ feature -- Redefine
 			end
 		end
 
-	prune_all (a_item: EV_WIDGET) is
-			-- Redefine.
+	prune_all (a_item: EV_WIDGET)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				prune_all_vertical_box (a_item)
@@ -291,8 +288,8 @@ feature -- Redefine
 			end
 		end
 
-	set_background_color (a_color: EV_COLOR) is
-			-- Redefine.
+	set_background_color (a_color: EV_COLOR)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				set_background_color_vertical_box (a_color)
@@ -301,8 +298,8 @@ feature -- Redefine
 			end
 		end
 
-	background_color: EV_COLOR is
-			-- Redefine.
+	background_color: EV_COLOR
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := background_color_vertical_box
@@ -311,8 +308,8 @@ feature -- Redefine
 			end
 		end
 
-	set_border_width (a_width: INTEGER) is
-			-- Redefine
+	set_border_width (a_width: INTEGER)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				set_border_width_vertical_box (a_width)
@@ -321,8 +318,8 @@ feature -- Redefine
 			end
 		end
 
-	set_padding_width (a_width: INTEGER) is
-			-- Redefine
+	set_padding_width (a_width: INTEGER)
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				set_padding_width_vertical_box (a_width)
@@ -331,8 +328,8 @@ feature -- Redefine
 			end
 		end
 
-	padding_width: INTEGER is
-			-- Redefine
+	padding_width: INTEGER
+			-- <Precursor>
 		do
 			if internal_vertical_style then
 				Result := padding_width_vertical_box
@@ -341,8 +338,8 @@ feature -- Redefine
 			end
 		end
 
-	index: INTEGER is
-			-- Redefine
+	index: INTEGER
+			-- <Precursor>
 		do
 			if is_vertical then
 				Result := index_vertical_box
@@ -351,8 +348,8 @@ feature -- Redefine
 			end
 		end
 
-	swap (a_index: INTEGER) is
-			-- Redefine
+	swap (a_index: INTEGER)
+			-- <Precursor>
 		do
 			if is_vertical then
 				swap_vertical_box (a_index)
@@ -361,8 +358,8 @@ feature -- Redefine
 			end
 		end
 
-	is_empty: BOOLEAN is
-			-- Redefine
+	is_empty: BOOLEAN
+			-- <Precursor>
 		do
 			if is_vertical then
 				Result := is_empty_vertical_box
@@ -371,8 +368,8 @@ feature -- Redefine
 			end
 		end
 
-	put_right (a_widget: EV_WIDGET) is
-			-- Redefine
+	put_right (a_widget: EV_WIDGET)
+			-- <Precursor>
 		do
 			if is_vertical then
 				put_right_vertical_box (a_widget)
@@ -384,20 +381,20 @@ feature -- Redefine
 feature {NONE} -- Implementation
 
 	internal_vertical_style: BOOLEAN
-			-- If current box show vertically? Otherwise is show horizontally.
+			-- If current box show vertically? Otherwise is show horizontally
 
 	horizontal_box: EV_HORIZONTAL_BOX
-			-- Horizontal box in the Current when show horizontally.
+			-- Horizontal box in the Current when show horizontally
 
 feature {NONE} -- Contract Support
 
-	is_background_color_void: BOOLEAN is False;
-		-- Redefine
+	is_background_color_void: BOOLEAN = False;
+		-- <Precursor>
 		-- We have to disable the invariant {EV_COLORIZABLE} background_color_not_void when executing `background_color'. Otherwise there is stack overflow when executing `background_color'.
 		-- Because in the descendant SD_AUTO_HIDE_ZONE, this `background_color' is selected to replace the original `background_color' in the invariant.
 		-- For example: When start Eiffel Studio 6.1 without empty application data, stack overflow will happen.
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

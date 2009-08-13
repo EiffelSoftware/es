@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						This tool showing result from eweasel tests.
 						This tool can also manage all test run data, compare test results etc.
@@ -29,7 +29,7 @@ create
 
 feature {NONE} -- Redefine
 
-	build_tool_interface (a_grid: ES_GRID) is
+	build_tool_interface (a_grid: ES_GRID)
 			-- <Precursor>
 		local
 			l_cell: EV_CELL
@@ -64,7 +64,7 @@ feature {NONE} -- Redefine
 			set: failure_trace_grid = a_grid
 		end
 
-	on_after_initialized is
+	on_after_initialized
 			-- <Precursor>
 			-- Build own interface after base interface created
 		local
@@ -84,17 +84,17 @@ feature {NONE} -- Redefine
 			end
 		end
 
-	populate_event_grid_row_items (a_event_item: EVENT_LIST_ITEM_I; a_row: EV_GRID_ROW) is
+	populate_event_grid_row_items (a_event_item: EVENT_LIST_ITEM_I; a_row: EV_GRID_ROW)
 			-- <Precursor>
 		do
-			if {l_testing_event: EVENT_LIST_TESTING_RESULT_ITEM} a_event_item then
-				if {l_result: ES_EWEASEL_TEST_RESULT_ITEM} l_testing_event.data then
+			if attached {EVENT_LIST_TESTING_RESULT_ITEM} a_event_item as l_testing_event then
+				if attached {ES_EWEASEL_TEST_RESULT_ITEM} l_testing_event.data as l_result then
 					test_run_result_grid_manager.append_result_item (l_result, a_row)
 				end
 			end
 		end
 
-	do_default_action (a_row: EV_GRID_ROW) is
+	do_default_action (a_row: EV_GRID_ROW)
 			-- <Precursor>
 		local
 			l_factory: ES_EWEASEL_SINGLETON_FACTORY
@@ -108,16 +108,17 @@ feature {NONE} -- Redefine
 			if not l_factory.manager.is_eweasel_running then
 				l_testing_tool := l_factory.manager.testing_tool
 				if l_testing_tool /= Void then
-					if {l_event_list: EVENT_LIST_ITEM} a_row.data then
-						if {l_test_run_result: ES_EWEASEL_TEST_RESULT_ITEM} l_event_list.data then
+					if attached {EVENT_LIST_ITEM} a_row.data as l_event_list then
+						if attached {ES_EWEASEL_TEST_RESULT_ITEM} l_event_list.data as l_test_run_result then
 							if l_test_run_result.root_class_name /= Void then
 								create l_util
-								if {lt_class_name: STRING} l_test_run_result.root_class_name.as_string_8 then
+								if attached {STRING} l_test_run_result.root_class_name.as_string_8 as lt_class_name then
 									l_conf_class := l_util.conf_class_of (lt_class_name)
-									if {lt_conf_class: CONF_CLASS} l_conf_class then
+									if attached {CONF_CLASS} l_conf_class as lt_conf_class then
 										l_row := l_testing_tool.test_case_grid_manager.test_case_row_related_with (lt_conf_class)
 										if l_row /= Void then
-											l_testing_tool.content.set_focus
+												-- Was `l_testing_tool.content.set_focus'.
+											l_testing_tool.show
 											l_testing_tool.test_case_grid_manager.unselect_all_rows
 											l_row.enable_select
 											-- Start test for that row
@@ -134,7 +135,7 @@ feature {NONE} -- Redefine
 			end
 		end
 
-	create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
+	create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
@@ -168,11 +169,11 @@ feature {NONE} -- Redefine
 			end
 		end
 
-	is_appliable_event (a_item: EVENT_LIST_ITEM_I): BOOLEAN is
+	is_appliable_event (a_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- <Precursor>
 		do
 			Result := a_item /= Void and then a_item.category = {ENVIRONMENT_CATEGORIES}.testing and then
-						{l_test: EVENT_LIST_TESTING_RESULT_ITEM} a_item
+						attached {EVENT_LIST_TESTING_RESULT_ITEM} a_item as l_test
 		end
 
 	row_item_text (a_item: EV_GRID_ITEM): STRING_32
@@ -195,10 +196,10 @@ feature {NONE} -- Redefine
 
 feature -- Query
 
-	test_run_result_grid_manager: !ES_EWEASEL_TEST_RUN_RESULT_GRID_MANAGER is
+	test_run_result_grid_manager: attached ES_EWEASEL_TEST_RUN_RESULT_GRID_MANAGER
 			-- Manager of `failure_trace_grid'
 		do
-			if not {l_test: ES_EWEASEL_TEST_RUN_RESULT_GRID_MANAGER} internal_test_run_result_grid_manager then
+			if not attached {ES_EWEASEL_TEST_RUN_RESULT_GRID_MANAGER} internal_test_run_result_grid_manager as l_test then
 				create internal_test_run_result_grid_manager.make (failure_trace_grid)
 			end
 			Result := internal_test_run_result_grid_manager
@@ -206,7 +207,7 @@ feature -- Query
 
 feature {NONE} -- Implementation
 
-	set_is_failure_trace_button_enabled is
+	set_is_failure_trace_button_enabled
 			-- Set `session_data_id_show_failure_trace_enabled' session data
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
@@ -215,15 +216,15 @@ feature {NONE} -- Implementation
 			session_data.set_value (l_shared.manager.see_testing_failure_trace_command.is_selected, session_data_id_show_failure_trace_enabled)
 		end
 
-	is_failure_trace_button_enabled: BOOLEAN is
+	is_failure_trace_button_enabled: BOOLEAN
 			-- If failure trace button enabled in last time running Eiffel Studio?
 		do
-			if {l_result: BOOLEAN} session_data.value (session_data_id_show_failure_trace_enabled) then
+			if attached {BOOLEAN} session_data.value (session_data_id_show_failure_trace_enabled) as l_result then
 				Result := l_result
 			end
 		end
 
-	session_data_id_show_failure_trace_enabled: STRING is "com.eiffel.testing.show_failure_trace_enabled"
+	session_data_id_show_failure_trace_enabled: STRING = "com.eiffel.testing.show_failure_trace_enabled"
 			-- Session data used for session service	
 			-- This id means whether show failure trace button is selected	
 
@@ -234,8 +235,8 @@ feature {NONE} -- Implementation
 			-- Instance holder.
 			-- Used by `test_run_result_grid_manager' ONLY!
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -259,11 +260,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

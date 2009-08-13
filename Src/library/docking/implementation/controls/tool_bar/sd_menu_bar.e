@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Menu bar for Smart Docking libarry"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,9 +12,7 @@ inherit
 	SD_TOOL_BAR
 		redefine
 			make,
-			extend,
-			force,
-			prune,
+			item_type,
 			internal_items,
 			on_pointer_press,
 			on_pointer_release
@@ -25,36 +23,23 @@ create
 
 feature {NONE} -- Initlization
 
-	make is
-			-- Redefine
+	make
+			-- <Precursor>
 		do
 			Precursor {SD_TOOL_BAR}
 		end
 
-feature -- Command
+feature -- Acces
 
-	extend (a_item: SD_TOOL_BAR_MENU_ITEM) is
-			-- Redefine
+	item_type: SD_TOOL_BAR_MENU_ITEM
+			-- <Precursor>
 		do
-			Precursor {SD_TOOL_BAR} (a_item)
-		end
-
-	force (a_item: SD_TOOL_BAR_MENU_ITEM; a_index: INTEGER) is
-			-- Redefine
-		do
-			Precursor {SD_TOOL_BAR}(a_item, a_index)
-		end
-
-	prune (a_item: SD_TOOL_BAR_MENU_ITEM) is
-			-- Redefine
-		do
-			Precursor {SD_TOOL_BAR} (a_item)
 		end
 
 feature {NONE} -- Agents
 
-	on_pointer_press (a_x, a_y, a_button: INTEGER_32; a_x_tilt, a_y_tilt, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER_32) is
-			-- Redefine
+	on_pointer_press (a_x, a_y, a_button: INTEGER_32; a_x_tilt, a_y_tilt, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER_32)
+			-- <Precursor>
 		do
 			enable_capture
 			from
@@ -71,8 +56,8 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_pointer_release (a_x, a_y, a_button: INTEGER_32; a_x_tilt, a_y_tilt, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER_32) is
-			-- Redefine
+	on_pointer_release (a_x, a_y, a_button: INTEGER_32; a_x_tilt, a_y_tilt, a_pressure: REAL_64; a_screen_x, a_screen_y: INTEGER_32)
+			-- <Precursor>
 		do
 			disable_capture
 		end
@@ -80,9 +65,9 @@ feature {NONE} -- Agents
 feature {NONE} -- Implementations
 
 	internal_items: ARRAYED_SET [SD_TOOL_BAR_MENU_ITEM];
-			-- Redefine
+			-- <Precursor>
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

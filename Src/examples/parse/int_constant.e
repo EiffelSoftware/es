@@ -1,10 +1,10 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Integer constants
 
-class
-	INT_CONSTANT 
+deferred class
+	INT_CONSTANT
 
 inherit
 
@@ -15,21 +15,21 @@ inherit
 			copy, is_equal
 		end
 
-feature 
+feature
 
-	token_type: INTEGER is
-		do  
+	token_type: INTEGER
+		do
 			Result := Integer_constant
 		end
 
 feature {NONE}
 
-	construct_name: STRING is
+	construct_name: STRING
 		once
 			Result := "INT_CONSTANT"
 		end -- construct_name
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

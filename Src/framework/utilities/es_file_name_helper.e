@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						File name utility
 												]"
@@ -12,25 +12,25 @@ class
 
 feature -- Query
 
-	short_name_of (a_long_file_name: !STRING_GENERAL): STRING_32 is
+	short_name_of (a_long_file_name: attached STRING_GENERAL): STRING_32
 			-- Short name of `a_long_file_name'
 			-- Result is Void if error
 			-- File must exists before convert to short name
 		do
-			if {l_result: STRING_GENERAL} implementation.short_name_of (a_long_file_name) then
+			if attached {STRING_GENERAL} implementation.short_name_of (a_long_file_name) as l_result then
 				Result := l_result
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	implementation: ES_FILE_NAME_HELPER_IMP is
+	implementation: ES_FILE_NAME_HELPER_IMP
 			-- Implementation
 		do
 			create Result
 		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

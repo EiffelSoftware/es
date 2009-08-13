@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"EiffelVision screen. GTK+ implementation."
 	legal: "See notice at end of class."
@@ -31,13 +31,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface) is
+	make (an_interface: like interface)
 			-- Create an empty drawing area.
 		do
 			base_make (an_interface)
 		end
 
-	initialize is
+	initialize
 			-- Set up action sequence connections and create graphics context.
 		do
 			gc := {EV_GTK_EXTERNALS}.gdk_gc_new (drawable)
@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	pointer_position: EV_COORDINATE is
+	pointer_position: EV_COORDINATE
 			-- Position of the screen pointer.
 		local
 			l_display_data: TUPLE [a_window: POINTER; a_x: INTEGER; a_y: INTEGER; a_mask: NATURAL_32]
@@ -57,7 +57,7 @@ feature -- Status report
 			create Result.set (l_display_data.a_x, l_display_data.a_y)
 		end
 
-	widget_at_position (x, y: INTEGER): EV_WIDGET is
+	widget_at_position (x, y: INTEGER): EV_WIDGET
 			-- Widget at position ('x', 'y') if any.
 		local
 			l_pointer_position: like pointer_position
@@ -79,7 +79,7 @@ feature -- Status report
 			end
 		end
 
-	widget_at_mouse_pointer: EV_WIDGET is
+	widget_at_mouse_pointer: EV_WIDGET
 			-- Widget at mouse pointer if any.
 		local
 			l_widget_imp: EV_WIDGET_IMP
@@ -90,7 +90,7 @@ feature -- Status report
 			end
 		end
 
-	widget_imp_at_pointer_position: EV_WIDGET_IMP is
+	widget_imp_at_pointer_position: EV_WIDGET_IMP
 			-- Widget implementation at current mouse pointer position (if any)
 		local
 			a_x, a_y: INTEGER
@@ -111,7 +111,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_default_colors is
+	set_default_colors
 			-- Set foreground and background color to their default values.
 		local
 			a_default_colors: EV_STOCK_COLORS
@@ -123,123 +123,146 @@ feature -- Status setting
 
 feature -- Basic operation
 
-	redraw is
+	redraw
 			-- Redraw the entire area.
 		do
 			{EV_GTK_EXTERNALS}.gdk_window_invalidate_rect (drawable, default_pointer, True)
 			{EV_GTK_EXTERNALS}.gdk_window_process_updates (drawable, True)
 		end
 
-	x_test_capable: BOOLEAN is
-			-- Is current display capable of performing x tests.
-		local
-			a_event_base, a_error_base, a_maj_ver, a_min_ver: INTEGER
-		do
-			Result := x_test_query_extension (
-					{EV_GTK_EXTERNALS}.gdk_display,
-					$a_event_base,
-					$a_error_base,
-					$a_maj_ver,
-					$a_min_ver)
-
-		end
-
-	set_pointer_position (a_x, a_y: INTEGER) is
+	set_pointer_position (a_x, a_y: INTEGER)
 			-- Set pointer position to (a_x, a_y).
 		local
 			a_success_flag: BOOLEAN
+			l_display, l_screen: POINTER
+			l_gdk_display_warp_pointer_symbol, l_x_test_fake_motion_event_symbol: POINTER
 		do
-			check
-				x_test_capable: x_test_capable
-			end
-			a_success_flag := x_test_fake_motion_event ({EV_GTK_EXTERNALS}.gdk_display, -1, a_x, a_y, 0)
-			check
-				pointer_position_set: a_success_flag
+			l_gdk_display_warp_pointer_symbol := gdk_display_warp_pointer_symbol
+			if l_gdk_display_warp_pointer_symbol /= default_pointer then
+				l_display := {EV_GTK_EXTERNALS}.gdk_display_get_default
+				l_screen := {EV_GTK_EXTERNALS}.gdk_display_get_default_screen (l_display)
+				gdk_display_warp_pointer_call (l_gdk_display_warp_pointer_symbol, l_display, l_screen, a_x, a_y)
+			else
+				l_x_test_fake_motion_event_symbol := x_test_fake_motion_event_symbol
+				if l_x_test_fake_motion_event_symbol /= default_pointer then
+					a_success_flag := x_test_fake_motion_event_call (l_x_test_fake_motion_event_symbol, gdk_x_display, -1, a_x, a_y, 0)
+				end
 			end
 		end
 
-	fake_pointer_button_press (a_button: INTEGER) is
+	fake_pointer_button_press (a_button: INTEGER)
 			-- Fake button `a_button' press on pointer.
 		local
 			a_success_flag: BOOLEAN
+			l_p_b_press_symbol: POINTER
+			l_window: POINTER
+			l_x, l_y: INTEGER
+			l_x_test_fake_button_event_symbol: POINTER
 		do
-			check
-				x_test_capable: x_test_capable
+			l_p_b_press_symbol := gdk_test_simulate_button_symbol
+			if l_p_b_press_symbol /= default_pointer then
+				l_window := {EV_GTK_EXTERNALS}.gdk_window_at_pointer ($l_x, $l_y)
+				a_success_flag := gdk_test_simulate_call (l_p_b_press_symbol, l_window, l_x, l_y, a_button, 0, {EV_GTK_ENUMS}.gdk_button_press_enum)
 			end
-			a_success_flag := x_test_fake_button_event ({EV_GTK_EXTERNALS}.gdk_display, a_button, True, 0)
-			check
-				fake_pointer_button_press_success: a_success_flag
+			if not a_success_flag then
+				l_x_test_fake_button_event_symbol := x_test_fake_button_event_symbol
+				if l_x_test_fake_button_event_symbol /= default_pointer then
+					a_success_flag := x_test_fake_key_button_event_call (l_x_test_fake_button_event_symbol, gdk_x_display, a_button, True, 0)
+				end
 			end
 		end
 
-	fake_pointer_button_release (a_button: INTEGER) is
+	fake_pointer_button_release (a_button: INTEGER)
 			-- Fake button `a_button' release on pointer.
 		local
 			a_success_flag: BOOLEAN
+			l_p_b_release_symbol: POINTER
+			l_window: POINTER
+			l_x, l_y: INTEGER
+			l_x_test_fake_button_event_symbol: POINTER
 		do
-			check
-				x_test_capable: x_test_capable
+			l_p_b_release_symbol := gdk_test_simulate_button_symbol
+			if l_p_b_release_symbol /= default_pointer then
+				l_window := {EV_GTK_EXTERNALS}.gdk_window_at_pointer ($l_x, $l_y)
+				a_success_flag := gdk_test_simulate_call (l_p_b_release_symbol, l_window, l_x, l_y, a_button, 0, {EV_GTK_ENUMS}.gdk_button_release_enum)
 			end
-			a_success_flag := x_test_fake_button_event ({EV_GTK_EXTERNALS}.gdk_display, a_button, False, 0)
-			check
-				fake_pointer_button_release_success: a_success_flag
+			if not a_success_flag then
+				l_x_test_fake_button_event_symbol := x_test_fake_button_event_symbol
+				if l_x_test_fake_button_event_symbol /= default_pointer then
+					a_success_flag := x_test_fake_key_button_event_call (l_x_test_fake_button_event_symbol, gdk_x_display, a_button, False, 0)
+				end
 			end
 		end
 
-	fake_pointer_wheel_up is
+	fake_pointer_wheel_up
 			-- Simulate the user rotating the mouse wheel up.
 		do
 				--| Mouse pointer button number 4 relates to mouse wheel up
 			fake_pointer_button_press (4)
 		end
 
-	fake_pointer_wheel_down is
+	fake_pointer_wheel_down
 			-- Simulate the user rotating the mouse wheel down.
 		do
 				--| Mouse pointer button number 5 relates to mouse wheel up
 			fake_pointer_button_press (5)
 		end
 
-	fake_key_press (a_key: EV_KEY) is
+	fake_key_press (a_key: EV_KEY)
 			-- Fake key `a_key' press.
 		local
 			a_success_flag: BOOLEAN
 			a_key_code: INTEGER
+			l_window, l_x_test_fake_key_event_symbol, l_x_keysym_to_keycode_symbol, l_gdk_test_simulate_key_symbol: POINTER
+			l_x, l_y: INTEGER
 		do
-			check
-				x_test_capable: x_test_capable
+			l_x_test_fake_key_event_symbol := x_test_fake_key_event_symbol
+			if l_x_test_fake_key_event_symbol /= default_pointer then
+				l_x_keysym_to_keycode_symbol := x_keysym_to_keycode_symbol
+				if l_x_keysym_to_keycode_symbol /= default_pointer then
+					a_key_code := x_keysym_to_keycode_call (l_x_keysym_to_keycode_symbol, gdk_x_display, key_conversion.key_code_to_gtk (a_key.code).to_integer_32)
+					a_success_flag := x_test_fake_key_button_event_call (l_x_test_fake_key_event_symbol, gdk_x_display, a_key_code, True, 0)
+				end
 			end
-			a_key_code := key_conversion.key_code_to_gtk (a_key.code).to_integer_32
-			a_key_code := x_keysym_to_keycode ({EV_GTK_EXTERNALS}.gdk_display, a_key_code)
-			a_success_flag := x_test_fake_key_event ( {EV_GTK_EXTERNALS}.gdk_display, a_key_code, True, 0)
-			check
-				fake_key_press_success: a_success_flag
+
+			if not a_success_flag then
+				a_key_code := key_conversion.key_code_to_gtk (a_key.code).to_integer_32
+				l_gdk_test_simulate_key_symbol := gdk_test_simulate_key_symbol
+				if l_gdk_test_simulate_key_symbol /= default_pointer then
+					l_window := {EV_GTK_EXTERNALS}.gdk_window_at_pointer ($l_x, $l_y)
+					a_success_flag := gdk_test_simulate_call (l_gdk_test_simulate_key_symbol, l_window, l_x, l_y, a_key_code, 0, {EV_GTK_EXTERNALS}.gdk_key_press_enum)
+				end
 			end
 		end
 
-	fake_key_release (a_key: EV_KEY) is
+	fake_key_release (a_key: EV_KEY)
 			-- Fake key `a_key' release.
 		local
 			a_success_flag: BOOLEAN
 			a_key_code: INTEGER
+			l_window, l_x_test_fake_key_event_symbol, l_x_keysym_to_keycode_symbol, l_gdk_test_simulate_key_symbol: POINTER
+			l_x, l_y: INTEGER
 		do
-			check
-				x_test_capable: x_test_capable
+			l_x_test_fake_key_event_symbol := x_test_fake_key_event_symbol
+			if l_x_test_fake_key_event_symbol /= default_pointer then
+				l_x_keysym_to_keycode_symbol := x_keysym_to_keycode_symbol
+				if l_x_keysym_to_keycode_symbol /= default_pointer then
+					a_key_code := x_keysym_to_keycode_call (l_x_keysym_to_keycode_symbol, gdk_x_display, key_conversion.key_code_to_gtk (a_key.code).to_integer_32)
+					a_success_flag := x_test_fake_key_button_event_call (l_x_test_fake_key_event_symbol, gdk_x_display, a_key_code, False, 0)
+				end
 			end
-			a_key_code := key_conversion.key_code_to_gtk (a_key.code).to_integer_32
-			a_key_code := x_keysym_to_keycode ( {EV_GTK_EXTERNALS}.gdk_display, a_key_code)
-			a_success_flag := x_test_fake_key_event (
-								{EV_GTK_EXTERNALS}.gdk_display,
-								a_key_code,
-								False,
-								0
-					)
-			check
-				fake_key_release_success: a_success_flag
+
+			if not a_success_flag then
+				a_key_code := key_conversion.key_code_to_gtk (a_key.code).to_integer_32
+				l_gdk_test_simulate_key_symbol := gdk_test_simulate_key_symbol
+				if l_gdk_test_simulate_key_symbol /= default_pointer then
+					l_window := {EV_GTK_EXTERNALS}.gdk_window_at_pointer ($l_x, $l_y)
+					a_success_flag := gdk_test_simulate_call (l_gdk_test_simulate_key_symbol, l_window, l_x, l_y, a_key_code, 0, {EV_GTK_EXTERNALS}.gdk_key_release_enum)
+				end
 			end
 		end
 
-	key_conversion: EV_GTK_KEY_CONVERSION is
+	key_conversion: EV_GTK_KEY_CONVERSION
 			-- Utilities for converting X key codes.
 		once
 			create Result
@@ -247,25 +270,25 @@ feature -- Basic operation
 
 feature -- Measurement
 
-	horizontal_resolution: INTEGER is
+	horizontal_resolution: INTEGER
 			-- Number of pixels per inch along horizontal axis
 		do
 			Result := horizontal_resolution_internal
 		end
 
-	vertical_resolution: INTEGER is
+	vertical_resolution: INTEGER
 			-- Number of pixels per inch along vertical axis
 		do
 			Result := vertical_resolution_internal
 		end
 
-	height: INTEGER is
+	height: INTEGER
 			-- Vertical size in pixels.
 		do
 			Result := {EV_GTK_EXTERNALS}.gdk_screen_height
 		end
 
-	width: INTEGER is
+	width: INTEGER
 			-- Horizontal size in pixels.
 		do
 			Result := {EV_GTK_EXTERNALS}.gdk_screen_width
@@ -273,68 +296,133 @@ feature -- Measurement
 
 feature {NONE} -- Externals (XTEST extension)
 
-	frozen x_keysym_to_keycode (a_display: POINTER; a_keycode: INTEGER): INTEGER is
-		external
-			"C: EIF_INTEGER| <X11/Xlib.h>"
-		alias
-			"XKeysymToKeycode"
+	gdk_test_simulate_button_symbol: POINTER
+			-- Symbol for `gdk_test_simulate_button'
+		once
+			Result := app_implementation.symbol_from_symbol_name ("gdk_test_simulate_button")
 		end
 
-	frozen x_test_fake_button_event (a_display: POINTER; a_button: INTEGER; a_is_press: BOOLEAN; a_delay: INTEGER): BOOLEAN is
-		external
-			"C: EIF_BOOL| <X11/extensions/XTest.h>"
-		alias
-			"XTestFakeButtonEvent"
+	x_test_fake_button_event_symbol: POINTER
+			-- Symbol for `XTestFakeButtonEvent'
+		once
+			Result := app_implementation.symbol_from_symbol_name ("XTestFakeButtonEvent")
 		end
 
-	frozen x_test_fake_key_event (a_display: POINTER; a_keycode: INTEGER; a_is_press: BOOLEAN; a_delay: INTEGER): BOOLEAN is
-		external
-			"C: EIF_BOOL| <X11/extensions/XTest.h>"
-		alias
-			"XTestFakeKeyEvent"
+	x_test_fake_key_event_symbol: POINTER
+			-- Symbol for `XTestFakeKeyEvent'
+		once
+			Result := app_implementation.symbol_from_symbol_name ("XTestFakeKeyEvent")
 		end
 
-	frozen x_test_fake_motion_event (a_display: POINTER; a_scr_num, a_x, a_y, a_delay: INTEGER): BOOLEAN is
-		external
-			"C: EIF_BOOL| <X11/extensions/XTest.h>"
-		alias
-			"XTestFakeMotionEvent"
+	x_test_fake_motion_event_symbol: POINTER
+			-- Symbol for `XTestFakeMotionEvent'
+		once
+			Result := app_implementation.symbol_from_symbol_name ("XTestFakeMotionEvent")
 		end
 
-	frozen x_test_query_extension (a_display, a_event_base, a_error_base, a_major_version, a_minor_version: POINTER): BOOLEAN is
+	gdk_test_simulate_key_symbol: POINTER
+			-- Symbol for `gdk_test_simulate_key'
+		once
+			Result := app_implementation.symbol_from_symbol_name ("gdk_test_simulate_key")
+		end
+
+	gdk_display_warp_pointer_symbol: POINTER
+			-- Symbol for `gdk_display_warp_pointer'.
+		once
+			Result := app_implementation.symbol_from_symbol_name ("gdk_display_warp_pointer")
+		end
+
+	gdk_test_simulate_call (a_function, a_window: POINTER; a_x, a_y: INTEGER; a_button, a_modifiers: INTEGER; a_press_release: INTEGER): BOOLEAN
 		external
-			"C: EIF_BOOL| <X11/extensions/XTest.h>"
+			"C inline use <gtk/gtk.h>"
 		alias
-			"XTestQueryExtension"
+			"return (FUNCTION_CAST(gboolean, (GdkWindow*, gint, gint, guint, GdkModifierType, GdkEventType)) $a_function) ((GdkWindow*) $a_window, (gint) $a_x, (gint) $a_y, (guint) $a_button, (GdkModifierType) $a_modifiers, (GdkEventType) $a_press_release)"
+		end
+
+	gdk_display_warp_pointer_call (a_function, a_display, a_screen: POINTER; a_x, a_y: INTEGER)
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"(FUNCTION_CAST(void, (GdkDisplay*, GdkScreen*, gint, gint)) $a_function) ((GdkDisplay*) $a_display, (GdkScreen*) $a_screen, (gint) $a_x, (gint) $a_y)"
+		end
+
+	x_keysym_to_keycode_symbol: POINTER
+			-- Symbol for `x_keysym_to_keycode'.
+		once
+			Result := app_implementation.symbol_from_symbol_name ("XKeysymToKeycode")
+		end
+
+	x_keysym_to_keycode_call (a_function, a_display: POINTER; a_keycode: INTEGER): INTEGER
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"return (FUNCTION_CAST(EIF_INTEGER, (EIF_POINTER, EIF_INTEGER)) $a_function) ((EIF_POINTER) $a_display, (EIF_INTEGER) $a_keycode)"
+		end
+
+	x_test_fake_key_button_event_call (a_function, a_display: POINTER; a_keycode_or_button: INTEGER; a_is_press: BOOLEAN; a_delay: INTEGER): BOOLEAN
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"return (FUNCTION_CAST(EIF_BOOLEAN, (EIF_POINTER, EIF_INTEGER, EIF_BOOLEAN, EIF_INTEGER)) $a_function) ((EIF_POINTER) $a_display, (EIF_INTEGER) $a_keycode_or_button, (EIF_BOOLEAN) $a_is_press, (EIF_INTEGER) $a_delay)"
+		end
+
+	x_test_fake_motion_event_call (a_function, a_display: POINTER; a_scr_num, a_x, a_y, a_delay: INTEGER): BOOLEAN
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"return (FUNCTION_CAST(EIF_BOOLEAN, (EIF_POINTER, EIF_INTEGER, EIF_INTEGER, EIF_INTEGER, EIF_INTEGER)) $a_function) ((EIF_POINTER) $a_display, (EIF_INTEGER) $a_scr_num, (EIF_INTEGER) $a_x, (EIF_INTEGER) $a_x, (EIF_INTEGER) $a_delay)"
 		end
 
 feature {NONE} -- Implementation
 
-	app_implementation: EV_APPLICATION_IMP is
+	frozen gdk_x_display: POINTER
+		local
+			l_symbol: POINTER
+		do
+			l_symbol := gdk_x11_display_get_xdisplay_symbol
+			if l_symbol /= default_pointer then
+				Result := gdk_x11_display_get_xdisplay_call (l_symbol, {EV_GTK_EXTERNALS}.gdk_display_get_default)
+			end
+		end
+
+	gdk_x11_display_get_xdisplay_symbol: POINTER
+			-- Symbol for `gdk_x11_display_get_xdisplay'.
+		once
+			Result := app_implementation.symbol_from_symbol_name ("gdk_x11_display_get_xdisplay")
+		end
+
+	gdk_x11_display_get_xdisplay_call (a_function, a_display: POINTER): POINTER
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"return (FUNCTION_CAST(EIF_POINTER, (GdkDisplay*)) $a_function) ((GdkDisplay*) $a_display)"
+		end
+
+	app_implementation: EV_APPLICATION_IMP
 			-- Return the instance of EV_APPLICATION_IMP.
 		once
 			Result ?= (create {EV_ENVIRONMENT}).application.implementation
 		end
 
-	flush is
+	flush
 			-- Force all queued draw to be called.
 		do
 			-- By default do nothing
 		end
 
-	update_if_needed is
+	update_if_needed
 			-- Update `Current' if needed
 		do
 			-- By default do nothing
 		end
 
-	destroy is
+	destroy
 		do
 			{EV_GTK_EXTERNALS}.gdk_gc_unref (gc)
 			set_is_destroyed (True)
 		end
 
-	dispose is
+	dispose
 			-- Cleanup
 		do
 			if gc /= default_pointer then
@@ -343,13 +431,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	drawable: POINTER is
+	drawable: POINTER
 			-- Pointer to the screen (root window)
 		do
 			Result := {EV_GTK_EXTERNALS}.gdk_root_parent
 		end
 
-	mask: POINTER is
+	mask: POINTER
 			-- Mask of `Current', which is always NULL
 		do
 			-- Not applicable to screen
@@ -357,7 +445,7 @@ feature {NONE} -- Implementation
 
 	interface: EV_SCREEN;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

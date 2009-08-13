@@ -1,4 +1,4 @@
-indexing
+note
 	description: "This class is used to initially load the JVM into %
                  %the running program"
 	legal: "See notice at end of class."
@@ -14,7 +14,7 @@ create {SHARED_JNI_ENVIRONMENT}
 
 feature {NONE} -- Initialization
 
-	make (class_path: STRING) is 
+	make (class_path: STRING)
 			-- Create a JVM execution environment and specify a CLASSPATH
 		require
 			class_path_valid: class_path /= Void
@@ -27,14 +27,14 @@ feature {NONE} -- Initialization
 		do
 			create default_vm_args.make
 			default_vm_args.set_version ({JAVA_VM_INIT_ARGS}.Jni_version_1_4)
-			
+
 			create l_options.make (1, 1)
 			create l_option.make
 			l_option.set_option_string ("-Djava.class.path=" + class_path)
 			l_options.put (l_option, 1)
-			
+
 			default_vm_args.set_options (l_options)
-			
+
 				-- Store attribute into local variable as `$' operator is safer on
 				-- local variables and not on attributes.
 			l_envp := envp
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 			err := c_create_jvm ($l_jvmp, $l_envp, default_vm_args.item)
 			envp := l_envp
 			jvmp := l_jvmp
-			
+
 			if err /= 0 then
 				debug ("java_vm")
 					io.error.putstring ("*** Failed to load JVM=")
@@ -51,21 +51,11 @@ feature {NONE} -- Initialization
 					io.error.putstring (class_path)
 					io.error.new_line
 				end
-				
+
 				create l_ex
 				l_ex.raise ("Failed to load java VM")
-			else
-				create jni.make (Current)
-				debug ("java_vm")
-					io.error.putstring ("Created a Java VM OK.%N")
-				end
 			end
 		end
-
-feature {SHARED_JNI_ENVIRONMENT} -- Access
-
-	jni: JNI_ENVIRONMENT
-			-- Java environment information.
 
 feature {JNI_ENVIRONMENT} -- Access
 
@@ -74,7 +64,7 @@ feature {JNI_ENVIRONMENT} -- Access
 
 feature -- Disposal
 
-	destroy_vm is
+	destroy_vm
 			-- Destroy the JVM
 		local
 			err: INTEGER
@@ -91,7 +81,7 @@ feature -- Disposal
 
 feature -- Thread
 
-	attach_current_thread is
+	attach_current_thread
 			-- Attach to current thread of execution.
 		local
 			err: INTEGER
@@ -114,7 +104,7 @@ feature -- Thread
 			end
 		end
 
-	detach_current_thread is
+	detach_current_thread
 			-- Detach from current thread of execution.
 		local
 			err: INTEGER
@@ -139,48 +129,48 @@ feature {NONE} -- Implementation
 	default_vm_args: JAVA_VM_INIT_ARGS
 			-- Pointer to default arguments for JVM.
 
-	jvmp: POINTER 
+	jvmp: POINTER
 			-- Pointer to current JVM.
 
 feature {NONE} -- externals
 
-	c_create_jvm (jvm: POINTER; env: POINTER; args: POINTER): INTEGER is
+	c_create_jvm (jvm: POINTER; env: POINTER; args: POINTER): INTEGER
 		external
 			"C signature (JavaVM **, void **, void *): EIF_INTEGER use %"jni.h%""
 		alias
 			"JNI_CreateJavaVM"
 		end
 
-	c_destroy_jvm (jvm: POINTER): INTEGER is
+	c_destroy_jvm (jvm: POINTER): INTEGER
 		external
 			"C++ JavaVM use %"jni.h%""
 		alias
 			"DestroyJavaVM"
 		end
 
-	c_attach_current_thread (jvm: POINTER; env: POINTER; args: POINTER): INTEGER is
+	c_attach_current_thread (jvm: POINTER; env: POINTER; args: POINTER): INTEGER
 		external
 			"C++ JavaVM signature (void **, void *): EIF_INTEGER use %"jni.h%""
 		alias
 			"AttachCurrentThread"
 		end
 
-	c_detach_current_thread (jvm: POINTER): INTEGER is
+	c_detach_current_thread (jvm: POINTER): INTEGER
 		external
 			"C++ JavaVM use %"jni.h%""
 		alias
 			"DetachCurrentThread"
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

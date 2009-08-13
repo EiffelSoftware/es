@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command to perform a clipboard-paste operation"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -43,7 +43,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_target: like target) is
+	make (a_target: like target)
 			-- Initialization
 		do
 			Precursor {EB_DEVELOPMENT_WINDOW_COMMAND}(a_target)
@@ -61,16 +61,27 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	executable: BOOLEAN is
+	executable: BOOLEAN
 			-- Is the operation possible?
 		do
 				--| FIXME ARNAUD: waiting for Vision2 clipboard.
 			Result := is_sensitive
 		end
 
+feature -- Access
+
+	mini_pixmap: EV_PIXMAP
+			-- <Precursor>
+
+	mini_pixel_buffer: EV_PIXEL_BUFFER
+			-- <Precursor>
+
+	tooltext: STRING_GENERAL
+			-- <Precursor>
+
 feature {NONE} -- Implementation
 
-	execute_command is
+	execute_command
 			-- Execute the copy/copy/paste operation
 		local
 			l_editor: like editor
@@ -82,29 +93,23 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	editor: EB_EDITOR is
+	editor: EB_EDITOR
 			-- Editor corresponding to Current
 		do
 			Result := target.ui.current_editor
 		end
 
-	tooltext: STRING_GENERAL
-
-	mini_pixmap: EV_PIXMAP
-
-	mini_pixel_buffer: EV_PIXEL_BUFFER
-
-	internal_recycle is
+	internal_recycle
 			-- Internal recycle
 		do
 			Precursor {EB_DEVELOPMENT_WINDOW_COMMAND}
 			Precursor {EB_EDITOR_COMMAND}
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -115,19 +120,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

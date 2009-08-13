@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Enumerate all child windows of a WEL_WINDOW."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7,7 +7,7 @@ indexing
 
 class
 	WEL_WINDOW_ENUMERATOR
-	
+
 inherit
 	ANY
 
@@ -18,16 +18,19 @@ inherit
 
 feature -- Access
 
-	enumerate (a_window: WEL_WINDOW): LIST [WEL_WINDOW] is
+	enumerate (a_window: WEL_WINDOW): LIST [WEL_WINDOW]
 			-- Construct a linear representation with all children of `a_window'.
 		require
 			a_window_not_void: a_window /= Void
 			a_window_exists: a_window.exists
+		local
+			l_children: like internal_children
 		do
-			create internal_children.make (1)
+			create l_children.make (1)
+			internal_children := l_children
 			cwel_enum_child_windows_procedure (Current, $enumerate_child_windows_callback,
 				a_window.item)
-			Result := internal_children
+			Result := l_children
 			internal_children := Void
 		ensure
 			result_not_void: Result /= Void
@@ -35,25 +38,30 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	internal_children: ARRAYED_LIST [WEL_WINDOW]
+	internal_children: detachable ARRAYED_LIST [WEL_WINDOW]
 			-- Temporary container for `enumerate'. Used by `enumerate_child_windows_callback'.
-	
-	enumerate_child_windows_callback (child_hwnd: POINTER) is
+
+	enumerate_child_windows_callback (child_hwnd: POINTER)
 			-- Callback feature called by `enumerate'.
 		require
 			child_hwnd_not_null: child_hwnd /= default_pointer
+			internal_children_attached: internal_children /= Void
 		local
-			wnd: WEL_WINDOW
+			wnd: detachable WEL_WINDOW
+			l_children: like internal_children
 		do
 			if is_window (child_hwnd) then
 				wnd := window_of_item (child_hwnd)
-				if wnd /= void and then wnd.exists then
-					internal_children.extend (wnd)
+				if wnd /= Void and then wnd.exists then
+					l_children := internal_children
+						-- Per precondition
+					check l_children_attached: l_children /= Void end
+					l_children.extend (wnd)
 				end
 			end
-		end	
+		end
 
-	cwel_enum_child_windows_procedure (cur_obj: like Current; callback: POINTER; hwnd: POINTER) is
+	cwel_enum_child_windows_procedure (cur_obj: like Current; callback: POINTER; hwnd: POINTER)
 			-- SDK EnumChildWindows
 			-- (from WEL_COMPOSITE_WINDOW)
 			-- (export status {NONE})
@@ -61,7 +69,7 @@ feature {NONE} -- Implementation
 			"C signature (EIF_OBJECT, EIF_POINTER, HWND) use %"wel_enum_child_windows.h%""
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

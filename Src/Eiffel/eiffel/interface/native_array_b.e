@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Compiled class NATIVE_ARRAY"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,7 @@ create
 
 feature -- Validity
 
-	check_validity is
+	check_validity
 			-- Check validity of class ARRAY
 		local
 			error: BOOLEAN
@@ -62,7 +62,7 @@ feature -- Validity
 				Error_handler.insert_error (special_error)
 			end
 
-				-- Third, check if class has a feature item and infix "@" (INTEGER): G#1
+				-- Third, check if class has a feature item and at alias "@" (INTEGER): G#1
 			l_feat := l_feat_tbl.item_id ({PREDEFINED_NAMES}.item_name_id)
 			if
 				l_feat = Void
@@ -73,14 +73,21 @@ feature -- Validity
 				Error_handler.insert_error (special_error)
 			end
 
-			l_feat := l_feat_tbl.item_id ({PREDEFINED_NAMES}.infix_at_name_id)
+			l_feat := l_feat_tbl.item_id ({PREDEFINED_NAMES}.at_name_id)
 			if
 				l_feat = Void
 				or else not (l_feat.written_in = class_id)
-				or else not l_feat.same_signature (infix_at_signature)
+				or else not l_feat.same_signature (at_signature)
 			then
-				create special_error.make (native_array_case_4, Current)
-				Error_handler.insert_error (special_error)
+				l_feat := l_feat_tbl.item_id ({PREDEFINED_NAMES}.infix_at_name_id)
+				if
+					l_feat = Void
+					or else not (l_feat.written_in = class_id)
+					or else not l_feat.same_signature (infix_at_signature)
+				then
+					create special_error.make (native_array_case_4, Current)
+					Error_handler.insert_error (special_error)
+				end
 			end
 
 				-- Fourth, check if class has a feature put (G#1, INTEGER)
@@ -108,7 +115,7 @@ feature -- Validity
 
 feature -- Generic derivation
 
-	new_type (data: CL_TYPE_A): NATIVE_ARRAY_CLASS_TYPE is
+	new_type (data: CL_TYPE_A): NATIVE_ARRAY_CLASS_TYPE
 			-- New class type for class NATIVE_ARRAY.
 		local
 			l_data: NATIVE_ARRAY_TYPE_A
@@ -126,7 +133,7 @@ feature -- Generic derivation
 
 feature -- Actual class type
 
-	actual_type: CL_TYPE_A is
+	actual_type: CL_TYPE_A
 			-- Actual type of the class
 		local
 			i, nb: INTEGER
@@ -159,7 +166,7 @@ feature -- Actual class type
 			end
 		end
 
-	constraint_actual_type: CL_TYPE_A is
+	constraint_actual_type: CL_TYPE_A
 			-- Actual type of the class
 		local
 			i, nb: INTEGER
@@ -185,7 +192,7 @@ feature -- Actual class type
 
 feature {CLASS_TYPE_AS} -- Actual class type
 
-	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp: BOOLEAN; is_sep: BOOLEAN): CL_TYPE_A is
+	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp: BOOLEAN; is_sep: BOOLEAN): CL_TYPE_A
 			-- Actual type of `current depending on the context in which it is declared
 			-- in CLASS_TYPE_AS. That is to say, it could have generics `gen' but not
 			-- be a generic class. It simplifies creation of `CL_TYPE_A' instances in
@@ -210,24 +217,24 @@ feature {CLASS_TYPE_AS} -- Actual class type
 
 feature -- Status report
 
-	is_native_array: BOOLEAN is True
+	is_native_array: BOOLEAN = True
 			-- Is the class special ?
 
 feature {NONE}
 
-	make_signature: DYN_PROC_I is
+	make_signature: DYN_PROC_I
 			-- Required signature for feature `make' of class NATIVE_ARRAY.
 		local
 			args: FEAT_ARG
 		do
 			create  args.make (1)
-			args.put_i_th (Integer_type, 1)
+			args.extend (Integer_type)
 			create  Result
 			Result.set_arguments (args)
 			Result.set_feature_name_id ({PREDEFINED_NAMES}.make_name_id, 0)
 		end
 
-	count_signature: DYN_FUNC_I is
+	count_signature: DYN_FUNC_I
 			-- Required signature for feature `count' of class NATIVE_ARRAY.
 		local
 			args: FEAT_ARG
@@ -241,14 +248,14 @@ feature {NONE}
 			item_signature_not_void: Result /= Void
 		end
 
-	item_signature: DYN_FUNC_I is
+	item_signature: DYN_FUNC_I
 			-- Required signature for feature `item' of class NATIVE_ARRAY.
 		local
 			args: FEAT_ARG
 			f: FORMAL_A
 		do
 			create args.make (1)
-			args.put_i_th (Integer_type, 1)
+			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
 			create f.make (False, False, 1)
@@ -258,14 +265,31 @@ feature {NONE}
 			item_signature_not_void: Result /= Void
 		end
 
-	infix_at_signature: DYN_FUNC_I is
+	at_signature: DYN_FUNC_I
 			-- Required signature for feature `infix "@"' of class NATIVE_ARRAY.
 		local
 			args: FEAT_ARG
 			f: FORMAL_A
 		do
 			create args.make (1)
-			args.put_i_th (Integer_type, 1)
+			args.extend (Integer_type)
+			create Result
+			Result.set_arguments (args)
+			create f.make (False, False, 1)
+			Result.set_type (f, 0)
+			Result.set_feature_name_id ({PREDEFINED_NAMES}.at_name_id, 0)
+		ensure
+			item_signature_not_void: Result /= Void
+		end
+
+	infix_at_signature: DYN_FUNC_I
+			-- Required signature for feature `infix "@"' of class NATIVE_ARRAY.
+		local
+			args: FEAT_ARG
+			f: FORMAL_A
+		do
+			create args.make (1)
+			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
 			create f.make (False, False, 1)
@@ -275,7 +299,7 @@ feature {NONE}
 			item_signature_not_void: Result /= Void
 		end
 
-	put_signature: DYN_PROC_I is
+	put_signature: DYN_PROC_I
 			-- Required signature for feature `put' of class NATIVE_ARRAY.
 		local
 			args: FEAT_ARG
@@ -283,8 +307,8 @@ feature {NONE}
 		do
 			create f.make (False, False, 1)
 			create args.make (2)
-			args.put_i_th (Integer_type, 1)
-			args.put_i_th (f, 2)
+			args.extend (Integer_type)
+			args.extend (f)
 			create Result
 			Result.set_arguments (args)
 			Result.set_feature_name_id ({PREDEFINED_NAMES}.put_name_id, 0)
@@ -292,7 +316,7 @@ feature {NONE}
 			put_signature_not_void: Result /= Void
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

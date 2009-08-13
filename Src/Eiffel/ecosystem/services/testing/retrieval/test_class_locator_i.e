@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Interface which scans project for potential test classes.
 	]"
@@ -13,7 +13,7 @@ inherit
 
 feature -- Access
 
-	project: !TEST_PROJECT_I
+	project: attached TEST_PROJECT_I
 			-- Project for which `Current' is locating test classes
 		require
 			usable: is_interface_usable
@@ -32,7 +32,7 @@ feature -- Status report
 
 feature {TEST_PROJECT_I} -- Status setting
 
-	locate_classes (a_project: like project) is
+	locate_classes (a_project: like project)
 			-- Locate potential test classes in project
 			--
 			-- `a_project': Test project for which test classes shall be reported
@@ -48,7 +48,7 @@ feature {TEST_PROJECT_I} -- Status setting
 
 feature {TEST_PROJECT_I} -- Query
 
-	is_test_class (a_class: !EIFFEL_CLASS_I; a_project: like project): BOOLEAN
+	is_test_class (a_class: attached EIFFEL_CLASS_I; a_project: like project): BOOLEAN
 			-- Does class represent a test class?
 			--
 			-- `a_class': Class for which should be determined whether it is a test class.

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Main abstract class for Graphic mode in EiffelStudio."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -50,16 +50,16 @@ feature {NONE} -- Initialization
 	initialize_services
 			-- Initializes graphical services
 		local
-			l_container: !SERVICE_CONSUMER [SERVICE_CONTAINER_S]
+			l_container: attached SERVICE_CONSUMER [SERVICE_CONTAINER_S]
 		do
 			create l_container
 			check is_service_available: l_container.is_service_available end
-			if l_container.is_service_available and then {l_service: SERVICE_CONTAINER_S} l_container.service then
+			if l_container.is_service_available and then attached {SERVICE_CONTAINER_S} l_container.service as l_service then
 				service_initializer.add_core_services (l_service)
 			end
 		end
 
-	compiler_initialization is
+	compiler_initialization
 			-- Various initialization of the compiler
 		local
 			l_compiler_setting: SETTABLE_COMPILER_OBJECTS
@@ -146,7 +146,7 @@ feature {NONE} -- Initialization
 			eiffel_layout_not_void: eiffel_layout /= Void
 		end
 
-	initialize_debugger	is
+	initialize_debugger
 			-- Various initialization of the debugger
 		local
 			dbg: DEBUGGER_MANAGER
@@ -157,15 +157,15 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	service_initializer: !SERVICE_INITIALIZER
+	service_initializer: attached SERVICE_INITIALIZER
 			-- Initializer used to register all services.
 		once
-			create {!ES_SERVICE_INITIALIZER} Result
+			create {attached ES_SERVICE_INITIALIZER} Result
 		end
 
 feature {NONE} -- Implementation (preparation of all widgets)
 
-	prepare (an_app: EV_APPLICATION) is
+	prepare (an_app: EV_APPLICATION)
 			-- Build graphical compiler
 		require
 			an_app_not_void: an_app /= Void
@@ -174,6 +174,7 @@ feature {NONE} -- Implementation (preparation of all widgets)
 			path_index: INTEGER
 			target_index: INTEGER
 			l_config, l_project_path, l_target: STRING
+			l_conf_constants: CONF_GUI_INTERFACE_CONSTANTS
 			first_window: EB_DEVELOPMENT_WINDOW
 			l_loader: EB_GRAPHICAL_PROJECT_LOADER
 		do
@@ -187,11 +188,17 @@ feature {NONE} -- Implementation (preparation of all widgets)
 			window_manager.create_window
 			first_window := window_manager.last_created_window
 
+				-- Initialize the configuration pixmaps
+			create l_conf_constants
+			l_conf_constants.set_pixmaps (pixmaps.configuration_pixmaps)
+
 				-- Initialize external command manager
 			incoming_command_manager_cell.put (create {ES_INCOMING_COMMAND_MANAGER}.make (create {ES_COMMAND_RECEIVER_CALLBACKS}.make))
 				-- Retrive EIS storage when project loaded.
-				-- Put font in case the background visitor has been started in prior agents.
+				-- Put front in case the background visitor has been started in prior agents.
 			eiffel_project.manager.load_agents.put_front (agent eis_manager.retrieve_storage)
+				-- Save EIS storage when project is closed.
+			eiffel_project.manager.close_agents.extend (agent eis_manager.save_storage)
 
 				-- If some more arguments were specified, it means that we either asked to retrieve
 				-- an existing project, or to create one.
@@ -240,7 +247,7 @@ feature {NONE} -- Implementation (preparation of all widgets)
 			end
 		end
 
-	display_starting_dialog is
+	display_starting_dialog
 			-- Show the starting dialog letting the user choose where
 			-- his project is (or will be).
 		local
@@ -258,7 +265,7 @@ feature {NONE} -- Implementation (preparation of all widgets)
 
 feature {NONE} -- Exception handling
 
-	handle_exception (a_exception: EXCEPTION) is
+	handle_exception (a_exception: EXCEPTION)
 			-- Handle the exception `a_exception'
 		do
 				-- Attempt to salvage any open files
@@ -271,7 +278,7 @@ feature {NONE} -- Exception handling
 			clean_exit (a_exception.exception_trace)
 		end
 
-	parent_for_dialog: EV_WINDOW is
+	parent_for_dialog: EV_WINDOW
 			-- Retrieve or create a parent for `show_modal_to_window'	
 		local
 			dev_window: EB_DEVELOPMENT_WINDOW
@@ -284,7 +291,7 @@ feature {NONE} -- Exception handling
 			end
 		end
 
-	try_to_save_files is
+	try_to_save_files
 			-- In case of a crash, try to make a backup of all edited files.
 		local
 			retried: BOOLEAN
@@ -310,7 +317,7 @@ feature {NONE} -- Exception handling
 	try_to_save_session_data
 			-- In case of a crash, try to store the session data.
 		local
-			l_service: !SERVICE_CONSUMER [SESSION_MANAGER_S]
+			l_service: attached SERVICE_CONSUMER [SESSION_MANAGER_S]
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -327,7 +334,7 @@ feature {NONE} -- Exception handling
 			retry
 		end
 
-	clean_exit (trace: STRING) is
+	clean_exit (trace: STRING)
 			-- Perform clean quit of $EiffelGraphicalCompiler$
 		local
 			l_dialog: ES_EXCEPTION_DIALOG
@@ -350,10 +357,10 @@ feature {NONE} -- Factory
 			result_attached: Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -364,22 +371,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ES_GRAPHIC

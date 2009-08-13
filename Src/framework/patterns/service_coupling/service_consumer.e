@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A utility for clients accessing a service (globally or locally via a service provider) and determining a service's existence.
 	]"
@@ -27,13 +27,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_provider (a_provider: ?like service_provider)
+	make_with_provider (a_provider: like service_provider)
 			-- Initialize a service consumer using an alternative (local) service provider.
 			--
 			-- `a_provider': A service provider to use when querying for a service, instead of the global
 			--               one.
-		indexing
-			doc: "wiki://Service Consumers:Using Local Service Providers"
 		require
 			a_provider_attached: a_provider /= Void
 		do
@@ -44,20 +42,20 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	service: !G
+	service: attached G
 			-- Access to the service
 		require
 			is_service_available: is_service_available
 		local
-			l_service: ?G
+			l_service: detachable G
+			l_result: like internal_service
 		do
-			if {l_internal_service: G} internal_service then
-				Result := l_internal_service
+			l_result := internal_service
+			if l_result /= Void then
+				Result := l_result
 			else
-				if {l_other_service: G} service_provider.service ({G}) then
+				if attached {G} service_provider.service ({G}) as l_other_service then
 					l_service := l_other_service
-				else
-					check False end
 				end
 				check l_service_attached: l_service /= Void end
 				Result := l_service
@@ -67,22 +65,25 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	service_provider: !SERVICE_PROVIDER_I
+	service_provider: SERVICE_PROVIDER_I
 			-- Access to the set service provider, or global service provider if no local provider was set.
+		local
+			l_result: like internal_service_provider
 		do
-			if {l_provider :like internal_service_provider} internal_service_provider then
-				Result := l_provider
+			l_result := internal_service_provider
+			if l_result /= Void then
+				Result := l_result
 			else
 				Result := global_service_provider
 			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Status report
 
 	is_service_available: BOOLEAN
-			-- Indicates if the service is available
-		indexing
-			doc: "wiki://Service Consumers:Services Are Tentative"
+			-- Indicates if the service is available.
 		do
 			Result := internal_service /= Void or else (service_provider.service ({G}) /= Void)
 		ensure
@@ -91,16 +92,16 @@ feature -- Status report
 
 feature {NONE} -- Implementation: Internal cache
 
-	internal_service: ?G
+	internal_service: detachable G
 			-- Cached version of `service'.
 			-- Note: Do not use directly!
 
-	internal_service_provider: ?like service_provider
+	internal_service_provider: detachable like service_provider
 			-- Cached version of `service_provider'
 			-- Note: Do not use directly!
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -113,22 +114,22 @@ feature {NONE} -- Implementation: Internal cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

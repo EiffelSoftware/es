@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Event list which used by a test case
 					Which data is {ES_EWEASEL_TEST_CASE_ITEM}
@@ -22,21 +22,21 @@ create
 
 feature {NONE} -- Redefine
 
-	description: STRING_32 is
+	description: STRING_32
 			-- <Precursor>
 		do
 			Result := "Event list which used by a test case"
 		end
 
-	is_valid_data (a_data: ANY): BOOLEAN is
+	is_valid_data (a_data: ANY): BOOLEAN
 			-- <Precursor>
 		do
-			if {l_test: ES_EWEASEL_TEST_CASE_ITEM} a_data then
+			if attached {ES_EWEASEL_TEST_CASE_ITEM} a_data as l_test then
 				Result := l_test.is_valid_for_running
 			end
 		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

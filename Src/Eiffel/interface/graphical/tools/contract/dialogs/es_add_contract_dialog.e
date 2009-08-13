@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A dialog to add a new contract to the contract tool {ES_CONTRACT_TOOL}.
 	]"
@@ -63,7 +63,7 @@ feature {NONE} -- Initialization
 			tag_text.text_field.set_font (preferences.editor_data.editor_font_preference.value)
 			suppress_confirmation_key_close (tag_text.text_field)
 			auto_recycle (tag_text)
-			tag_text.valid_state_changed_event.subscribe (agent on_valid_state_changed)
+			register_action (tag_text.valid_state_changed_actions, agent on_valid_state_changed)
 			l_vbox.extend (tag_text)
 			l_vbox.disable_item_expand (tag_text)
 			a_container.extend (l_vbox)
@@ -101,7 +101,7 @@ feature {NONE} -- Initialization
 			Precursor
 
 				-- Set default tag name
-			tag_text.set_text (create {!STRING_32}.make_from_string ("new_contract"))
+			tag_text.set_text (create {attached STRING_32}.make_from_string ("new_contract"))
 			tag_text.validate
 			register_kamikaze_action (show_actions, agent
 				do
@@ -129,7 +129,7 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
-	contract: ?TUPLE [tag: !STRING_32; contract: !STRING_32]
+	contract: detachable TUPLE [tag: attached STRING_32; contract: attached STRING_32]
 			-- Resulting contact
 
 feature -- Dialog access
@@ -172,15 +172,15 @@ feature -- Dialog access
 
 feature {NONE} -- User interface elements
 
-	tag_text: !ES_VALIDATION_TEXT_FIELD
+	tag_text: attached ES_VALIDATING_WRAPPED_WIDGET
 			-- Contract tag text field
 
-	contract_editor: !EB_SMART_EDITOR
+	contract_editor: attached EB_SMART_EDITOR
 			-- Editor use to edit the contract
 
 feature {NONE} -- Helpers
 
-	expression_parser: !EIFFEL_PARSER
+	expression_parser: attached EIFFEL_PARSER
 			-- Parser used to parse Eiffel expression
 		once
 			create Result.make_with_factory (create {AST_NULL_FACTORY})
@@ -191,7 +191,7 @@ feature {NONE} -- Helpers
 
 feature {NONE} -- Validation
 
-	validate_tag_text (a_text: !STRING_32): !TUPLE [is_valid: BOOLEAN; reason: ?STRING_32]
+	validate_tag_text (a_text: attached STRING_32): attached TUPLE [is_valid: BOOLEAN; reason: detachable STRING_32]
 			--
 		require
 			is_interface_usable: is_interface_usable
@@ -233,7 +233,7 @@ feature {NONE} -- Action handler
 		do
 			check not_error_handler_has_error: not error_handler.has_error end
 			create l_uc_string.make_from_utf8 (utf32_to_utf8 (("check ").as_string_32 + contract_editor.wide_text))
-			expression_parser.parse_from_string (l_uc_string)
+			expression_parser.parse_from_string (l_uc_string, Void)
 			if expression_parser.syntax_error then
 				create l_error.make_standard (interface_messages.e_contract_tool_expression_error)
 				l_error.show_on_active_window
@@ -261,7 +261,7 @@ feature {TEXT_OBSERVER_MANAGER} -- Observer handler
 
 feature {NONE} -- Regular expression
 
-	contract_tag_name_regex: !RX_PCRE_MATCHER
+	contract_tag_name_regex: attached RX_PCRE_MATCHER
 			-- Regular expression for contract tags
 		once
 			create Result.make
@@ -274,8 +274,8 @@ invariant
 	contract_tag_is_valid: contract /= Void implies not contract.tag.is_empty
 	contract_tag_is_valid: contract /= Void implies not contract.contract.is_empty
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -288,22 +288,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

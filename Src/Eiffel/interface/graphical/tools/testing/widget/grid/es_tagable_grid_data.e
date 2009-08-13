@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that represent data for a row in a {ES_TAGABLE_GRID}. Given a layout it will fill the
 		corresponding row with items based on the data.
@@ -11,7 +11,7 @@ deferred class
 
 feature -- Access
 
-	row: !EV_GRID_ROW
+	row: attached EV_GRID_ROW
 			-- Row to which `Current' is attached
 
 feature -- Basic functionality

@@ -1,14 +1,14 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Shared instance of intermediate structure for second pass and analysis
 -- of selections
 
 class SHARED_ORIGIN_TABLE
-	
-feature {NONE}
 
-	Origin_table: ORIGIN_TABLE is
+feature -- Access
+
+	Origin_table: ORIGIN_TABLE
 			-- Origin table associated to `feature_table': it is the table
 			-- of features sorted by origins: necessary for handling the
 			-- selections
@@ -16,7 +16,31 @@ feature {NONE}
 			create Result.make (500);
 		end;
 
-indexing
+	inherit_info_cache: INHERIT_INFO_CACHE
+			-- Cache for reusing INHERIT_INFO objects for each degree 4 pass.
+		once
+			create Result.make (35)
+		ensure
+			cache_not_void: Result /= Void
+		end
+
+	inherit_feat_cache: INHERIT_FEAT_CACHE
+			-- Cache for reusing INHERIT_FEAT objects for each degree 4 pass.
+		once
+			create Result.make (35)
+		ensure
+			cache_not_void: Result /= Void
+		end
+
+	selection_list_cache: SELECTION_LIST_CACHE
+			-- Cache for reusing SELECTION_LIST objects for each degree 4 pass.
+		do
+			Result := origin_table.selection_list_cache
+		ensure
+			cache_not_void: Result /= Void
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

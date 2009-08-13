@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Error when name clash in a cluster."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ feature -- Properties
 
 feature -- Output
 
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
+	build_explain (a_text_formatter: TEXT_FORMATTER)
 		local
 			l_ext: EXTERNAL_CLASS_I
 			l_cl: CLASS_I
@@ -41,8 +41,14 @@ feature -- Output
 			else
 				a_text_formatter.add ("First file: %"")
 				a_text_formatter.add (first.full_file_name)
+				a_text_formatter.add ("%"")
+				a_text_formatter.add_new_line
+				a_text_formatter.add ("Referenced from: ")
+				a_text_formatter.add (first.group.target.system.file_name)
+				a_text_formatter.add_string (" (")
+				a_text_formatter.add (first.group.name)
+				a_text_formatter.add_char (')')
 			end
-			a_text_formatter.add ("%"")
 			a_text_formatter.add_new_line
 			l_cl ?= second
 			check
@@ -58,14 +64,20 @@ feature -- Output
 			else
 				a_text_formatter.add ("Second file: %"")
 				a_text_formatter.add (second.full_file_name)
+				a_text_formatter.add ("%"")
+				a_text_formatter.add_new_line
+				a_text_formatter.add ("Referenced from: ")
+				a_text_formatter.add (second.group.target.system.file_name)
+				a_text_formatter.add_string (" (")
+				a_text_formatter.add (second.group.name)
+				a_text_formatter.add_char (')')
 			end
-			a_text_formatter.add ("%"")
 			a_text_formatter.add_new_line
 		end
 
 feature {UNIVERSE_I, CLUSTER_I, CLUST_REN_SD} -- Setting
 
-	set_first (c: like first) is
+	set_first (c: like first)
 			-- Assign `c' to `first'.
 		require
 			c_not_void: c /= Void
@@ -75,7 +87,7 @@ feature {UNIVERSE_I, CLUSTER_I, CLUST_REN_SD} -- Setting
 			first_set: first = c
 		end
 
-	set_second (c: like second) is
+	set_second (c: like second)
 			-- Assing `c' to `second'.
 		require
 			c_not_void: c /= Void
@@ -85,7 +97,7 @@ feature {UNIVERSE_I, CLUSTER_I, CLUST_REN_SD} -- Setting
 			second_set: second = c
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

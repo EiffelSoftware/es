@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Scan and process a cluster directory."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ inherit
 
 feature -- Event handling
 
-	on_process_directory (a_cluster: CONF_CLUSTER; a_path: STRING_8) is
+	on_process_directory (a_cluster: CONF_CLUSTER; a_path: STRING_8)
 			-- (Sub)directory a_path of a_cluster is processed.
 		require
 			a_cluster_not_void: a_cluster /= Void
@@ -23,7 +23,7 @@ feature -- Event handling
 
 feature -- Processing
 
-	process_cluster_recursive (a_path: STRING; a_cluster: CONF_CLUSTER; a_file_rule: CONF_FILE_RULE) is
+	process_cluster_recursive (a_path: STRING; a_cluster: CONF_CLUSTER; a_file_rule: CONF_FILE_RULE)
 			-- Recursively process `a_path'.
 		require
 			a_file_rule_not_void: a_file_rule /= Void
@@ -67,7 +67,7 @@ feature -- Processing
 						l_full_path.append (a_path)
 						l_full_path.append (l_cluster_separator)
 						l_full_path.append (l_name)
-						if a_file_rule.is_included (l_full_path) then
+						if l_name.count >= 2 and then a_file_rule.is_included (l_full_path) then
 							handle_class (l_name, a_path, a_cluster)
 						end
 						i := i + 1
@@ -98,40 +98,45 @@ feature -- Processing
 			end
 		end
 
-	handle_class (a_file, a_path: STRING_8; a_cluster: CONF_CLUSTER) is
+	handle_class (a_file, a_path: STRING_8; a_cluster: CONF_CLUSTER)
 			-- Handle class in `a_file' with `a_path' in `a_cluster'
+		require
+			a_file_not_void: a_file /= Void
+			a_file_enough_count: a_file.count >= 2
+			a_path_not_void: a_path /= Void
+			a_cluster_not_void: a_cluster /= Void
 		deferred
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-
+			
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-
+			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
-
+			See the GNU General Public License for more details.
+			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

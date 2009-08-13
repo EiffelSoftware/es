@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Facility routines to check the validity of DATEs"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7,7 +7,7 @@ indexing
 
 class
 	DATE_VALIDITY_CHECKER
-	
+
 inherit
 	DATE_CONSTANTS
 		export
@@ -18,12 +18,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	ANY
 
 feature -- Preconditions
 
-	date_valid (s: STRING; code_string: STRING): BOOLEAN is
+	date_valid (s: STRING; code_string: STRING): BOOLEAN
 			-- Is the code_string enough precise
 			-- To create an instance of type DATE
 			-- And does the string `s' correspond to `code_string'?
@@ -38,8 +38,8 @@ feature -- Preconditions
 				code.is_date (s)
 		end
 
-	date_valid_with_base (s: STRING; code_string: STRING; 
-							base: INTEGER): BOOLEAN is
+	date_valid_with_base (s: STRING; code_string: STRING;
+							base: INTEGER): BOOLEAN
 			-- Is the code_string enough precise
 			-- To create an instance of type DATE
 			-- And does the string `s' correspond to `code_string'?
@@ -57,21 +57,21 @@ feature -- Preconditions
 				code.is_date (s)
 		end
 
-	date_valid_default (s: STRING): BOOLEAN is
+	date_valid_default (s: STRING): BOOLEAN
 			-- Is the code_string enough precise
 			-- To create an instance of type DATE
-			-- And does the string `s' correspond to 
+			-- And does the string `s' correspond to
 			-- `date_default_format_string'?
 		require
 			s_exists: s /= Void
 		do
 			Result := date_valid (s, date_default_format_string)
-		end	
+		end
 
-	date_valid_default_with_base (s: STRING; base: INTEGER): BOOLEAN is
+	date_valid_default_with_base (s: STRING; base: INTEGER): BOOLEAN
 			-- Is the code_string enough precise
 			-- To create an instance of type DATE
-			-- And does the string `s' correspond to 
+			-- And does the string `s' correspond to
 			-- `date_default_format_string'?
 			-- Use base century `base'.
 		require
@@ -79,9 +79,9 @@ feature -- Preconditions
 			base_valid: base > 0 and (base \\ 100 = 0)
 		do
 			Result := date_valid_with_base (s, date_default_format_string, base)
-		end	
+		end
 
-	compact_date_valid (c_d: INTEGER): BOOLEAN is
+	compact_date_valid (c_d: INTEGER): BOOLEAN
 			-- Is compact date `c_d' valid?
 		local
 			l_cd: INTEGER
@@ -96,7 +96,7 @@ feature -- Preconditions
 			Result := is_correct_date (y, m, d)
 		end
 
-	ordered_compact_date_valid (c_d: INTEGER): BOOLEAN is
+	ordered_compact_date_valid (c_d: INTEGER): BOOLEAN
 			-- Is compact date `c_d' valid?
 		local
 			l_cd: INTEGER
@@ -111,19 +111,19 @@ feature -- Preconditions
 			Result := is_correct_date (y, m, d)
 		end
 
-	is_correct_date (y, m, d: INTEGER): BOOLEAN is
+	is_correct_date (y, m, d: INTEGER): BOOLEAN
 			-- Is date specified by `y', `m', and `d' a correct date?
 		do
-			Result := m >= 1 and m <= Months_in_year and then d >= 1 and 
+			Result := m >= 1 and m <= Months_in_year and then d >= 1 and
 				d <= days_in_i_th_month (m, y) and then y >= 0 and then y <= 65535
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

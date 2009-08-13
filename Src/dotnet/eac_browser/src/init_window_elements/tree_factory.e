@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Print in output the eiffel type with all its eiffelfeatures corresponding to given dotnet type name."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,10 +18,10 @@ inherit
 
 create
 	make
-	
+
 feature {NONE} -- Initialization
 
- 	make (a_window: MAIN_WINDOW_IMP) is
+ 	make (a_window: MAIN_WINDOW_IMP)
  			-- Initialize `parent_window'.
  		require
  			non_void_a_window: a_window /= Void
@@ -30,29 +30,28 @@ feature {NONE} -- Initialization
  		ensure
  			current_window_set: parent_window = a_window implies parent_window /= Void
  		end
- 		
+
  feature {NONE}	-- Access
 
 	parent_window: MAIN_WINDOW_IMP
 			-- current window.
-			
-	edit: EDIT_FACTORY is
+
+	edit: EDIT_FACTORY
 			-- edtion area.
 		once
 			create Result.make (parent_window)
 		end
-		
-	Fictive_element: STRING is "fictive_element"
+
+	Fictive_element: STRING = "fictive_element"
 
 feature {MAIN_WINDOW} -- Initialization tree
 
-	initialize is
+	initialize
 			-- Add widgets to `widget_tree'.
 		local
 			tree_item, tree_item1: EV_COMPARABLE_TREE_ITEM
 			eac: EAC_BROWSER
 			ci: CACHE_INFO
-			counter: INTEGER
 			l_ico: EV_PIXMAP
 			unclassified_assemblies: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]
 		do
@@ -63,34 +62,34 @@ feature {MAIN_WINDOW} -- Initialization tree
 				tree_item.set_pixmap (l_ico)
 			end
 			parent_window.widget_tree.extend (tree_item)
-			
+
 			create eac
 			ci := eac.info
-			from 
-				counter := 1
-				create unclassified_assemblies.make
-			until
-				ci = Void
-				or else counter > ci.assemblies.count
-			loop
-				tree_item1 := initialize_tree_item_assembly (ci.assemblies.item (counter)) 
-				unclassified_assemblies.extend (tree_item1)
-
-				counter := counter + 1
+			if ci /= Void then
+				from
+					create unclassified_assemblies.make
+					ci.assemblies.start
+				until
+					ci.assemblies.after
+				loop
+					tree_item1 := initialize_tree_item_assembly (ci.assemblies.item)
+					unclassified_assemblies.extend (tree_item1)
+					ci.assemblies.forth
+				end
 			end
 
 			tree_item.append (classify_assemblies (unclassified_assemblies))
 
 			tree_item.expand
 			edit.edit_info_assemblies
-			
+
 				-- Set accelerator when enter or F2 are pressed.
 			parent_window.widget_tree.key_press_actions.extend (agent on_key_pressed (?))
 		end
 
 feature {NONE} -- Add element to tree
 
-	add_namespaces_branches (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM) is
+	add_namespaces_branches (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM)
 			-- initialize widget_tree if not allready done.
 			-- Add classes in cache.
 			-- add click action on each assembly_item to see its informations in `edit_area'.
@@ -121,7 +120,7 @@ feature {NONE} -- Add element to tree
 					-- Deserialize information of assembly.
 				(create {CACHE}).deserialize_information_assembly (an_assembly)
 				des_dlg.set_progress_bar (30)
-				
+
 				create eac
 				cat := eac.consumed_assembly (an_assembly)
 				l_namespaces := cat.namespaces
@@ -133,7 +132,7 @@ feature {NONE} -- Add element to tree
 				loop
 					des_dlg.set_progress_bar (30 + (counter * 70 / l_namespaces.count).rounded)
 
-					l_namespace_name := l_namespaces.item (counter) 
+					l_namespace_name := l_namespaces.item (counter)
 					l_namespace_node := initialize_tree_item_namespace (l_namespace_name)
 					add_types_branches (an_assembly, l_namespace_node, l_namespace_name, cat)
 					l_namespaces_list.extend (l_namespace_node)
@@ -144,9 +143,9 @@ feature {NONE} -- Add element to tree
 				des_dlg.destroy
 			end
 --			edit.edit_info_assembly (an_assembly)
-		end		
+		end
 
-	add_types_branches (an_assembly: CONSUMED_ASSEMBLY; a_tree_item_namespace: EV_TREE_ITEM; a_namespace_name: STRING; cat: CONSUMED_ASSEMBLY_TYPES) is
+	add_types_branches (an_assembly: CONSUMED_ASSEMBLY; a_tree_item_namespace: EV_TREE_ITEM; a_namespace_name: STRING; cat: CONSUMED_ASSEMBLY_TYPES)
 			-- add type contained in `tree' to `tree_item_parent'.
 			-- add click action on each type_item to see its contain in edit_area.
 			-- add expand action on each type_item to see its features in the tree.
@@ -171,7 +170,7 @@ feature {NONE} -- Add element to tree
 				types_array.put (l_type_node, i)
 				i := i + 1
 			end
-			
+
 			types_array.sort
 			from
 				i := 1
@@ -321,8 +320,8 @@ feature {NONE} -- Add element to tree
 --		do
 --			a_tree_item_namespace.append (classify_types (a_types_list))
 --		end
-		
-	add_features_branches (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM; full_dotnet_type_name: STRING) is
+
+	add_features_branches (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM; full_dotnet_type_name: STRING)
 			-- add feature contained in `a_dotnet_type_name' to `tree_item_parent'.
 			-- add double click action on each type_item to be editable.
 		require
@@ -354,13 +353,13 @@ feature {NONE} -- Add element to tree
 						ct.constructors = Void
 						or else i > ct.constructors.count
 					loop
-						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.constructors.item (i).eiffel_name, Path_icon_constructor)
-						
+						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.constructors.i_th (i).eiffel_name, Path_icon_constructor)
+
 						l_constructors_list.extend (tree_item)
 						i := i + 1
 					end
 					tree_item_parent.append (classify_tree_nodes (l_constructors_list))
-					
+
 					from
 						i := 1
 						create l_fields_list.make
@@ -368,8 +367,8 @@ feature {NONE} -- Add element to tree
 						ct.fields = Void
 						or else i > ct.fields.count
 					loop
-						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.fields.item (i).eiffel_name, Path_icon_public_attribute)
-		
+						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.fields.i_th (i).eiffel_name, Path_icon_public_attribute)
+
 						l_fields_list.extend (tree_item)
 						i := i + 1
 					end
@@ -382,8 +381,8 @@ feature {NONE} -- Add element to tree
 						ct.procedures = Void
 						or else i > ct.procedures.count
 					loop
-						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.procedures.item (i).eiffel_name, Path_icon_public_procedure)
-		
+						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.procedures.i_th (i).eiffel_name, Path_icon_public_procedure)
+
 					l_procedures_list.extend (tree_item)
 						i := i + 1
 					end
@@ -396,8 +395,8 @@ feature {NONE} -- Add element to tree
 						ct.functions = Void
 						or else i > ct.functions.count
 					loop
-						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.functions.item (i).eiffel_name, Path_icon_public_function)
-		
+						tree_item := initialize_tree_item_feature (an_assembly, full_dotnet_type_name, ct.functions.i_th (i).eiffel_name, Path_icon_public_function)
+
 						l_functions_list.extend (tree_item)
 						i := i + 1
 					end
@@ -408,7 +407,7 @@ feature {NONE} -- Add element to tree
 		end
 
 
-	add_choise_type (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM; full_dotnet_type_name: STRING) is
+	add_choise_type (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM; full_dotnet_type_name: STRING)
 			-- add feature contained in `a_dotnet_type_name' to `tree_item_parent'.
 		local
 			l_ico: EV_PIXMAP
@@ -419,11 +418,11 @@ feature {NONE} -- Add element to tree
 			if tree_item_parent.count = 1 and then tree_item_parent.first.text.is_equal (Fictive_element) then
 					-- remove element that served to show the cross to expand tree.
 				tree_item_parent.first.destroy
-				
+
 					-- Add elements...
 				create eac
 				ct := eac.consumed_type (an_assembly, full_dotnet_type_name)
-				
+
 				if ct.constructors.count > 0 then
 					create l_node.make_with_text ("Construtors")
 					l_ico := load_icon (Path_icon_constructor)
@@ -433,7 +432,7 @@ feature {NONE} -- Add element to tree
 					l_node.pointer_button_press_actions.force_extend (agent edit.display_tree_constructors (an_assembly, full_dotnet_type_name))
 					tree_item_parent.extend (l_node)
 				end
-	
+
 				if ct.inherited_entities.count > 0 then
 					create l_node.make_with_text ("Inherited entities")
 					l_ico := load_icon (Path_icon_inherited_features)
@@ -443,7 +442,7 @@ feature {NONE} -- Add element to tree
 					l_node.pointer_button_press_actions.force_extend (agent edit.display_inherited_features (an_assembly, full_dotnet_type_name))
 					tree_item_parent.extend (l_node)
 				end
-	
+
 				if ct.flat_entities.count > 0 then
 					create l_node.make_with_text ("All features")
 					l_ico := load_icon (Path_icon_all_features)
@@ -453,7 +452,7 @@ feature {NONE} -- Add element to tree
 					l_node.pointer_button_press_actions.force_extend (agent edit.display_tree_all_features (an_assembly, full_dotnet_type_name))
 					tree_item_parent.extend (l_node)
 				end
-	
+
 				if ct.ancestors.count > 0 then
 					create l_node.make_with_text ("Ancestors")
 					l_ico := load_icon (Path_icon_ancestors)
@@ -471,7 +470,7 @@ feature {NONE} -- Add element to tree
 		end
 
 
-	add_ancestors_branches (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM; ancestors: ARRAYED_LIST [CONSUMED_REFERENCED_TYPE]) is
+	add_ancestors_branches (an_assembly: CONSUMED_ASSEMBLY; tree_item_parent: EV_TREE_ITEM; ancestors: ARRAYED_LIST [CONSUMED_REFERENCED_TYPE])
 			-- add feature contained in `a_dotnet_type_name' to `tree_item_parent'.
 		local
 			i: INTEGER
@@ -486,7 +485,7 @@ feature {NONE} -- Add element to tree
 			if tree_item_parent.count = 1 and then tree_item_parent.first.text.is_equal (Fictive_element) then
 					-- remove element that served to show the cross to expand tree.
 				tree_item_parent.first.destroy
-				
+
 					-- Add ancestors...
 				from
 					ancestors.start
@@ -497,7 +496,7 @@ feature {NONE} -- Add element to tree
 					l_referenced_assembly := eac.referenced_assembly (an_assembly, ancestors.item.assembly_id)
 					if l_referenced_assembly /= Void then
 						cat := eac.consumed_assembly (l_referenced_assembly)
-					
+
 						from
 							i := 1
 							found := False
@@ -514,7 +513,7 @@ feature {NONE} -- Add element to tree
 						add_choise_type (l_referenced_assembly, l_node, ancestors.item.name)
 						tree_item_parent.extend (l_node)
 					end
-					
+
 					ancestors.forth
 				end
 
@@ -526,7 +525,7 @@ feature {NONE} -- Add element to tree
 
 feature {NONE} -- Classify
 
-	classify_assemblies (assemblies_list: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM] is
+	classify_assemblies (assemblies_list: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM]
 			-- Classify `assemblies_list'.
 		require
 			non_void_assemblies_list: assemblies_list /= Void
@@ -548,9 +547,9 @@ feature {NONE} -- Classify
 				counter := counter + 1
 				assemblies_list.forth
 			end
-			
+
 			l_sortable_assemblies.sort;
-			
+
 			from
 				counter := 1
 				create Result.make
@@ -569,7 +568,7 @@ feature {NONE} -- Classify
 			same_number_assemblies: assemblies_list.count = Result.count
 		end
 
-	classify_namespaces (namespaces: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM] is
+	classify_namespaces (namespaces: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM]
 			-- Classify `namespaces'.
 		require
 			non_void_namespaces: namespaces /= Void
@@ -588,9 +587,9 @@ feature {NONE} -- Classify
 				counter := counter + 1
 				namespaces.forth
 			end
-			
+
 			l_sortable_types.sort;
-			
+
 			from
 				counter := 1
 				create Result.make
@@ -605,7 +604,7 @@ feature {NONE} -- Classify
 			same_number_namespaces: namespaces.count = Result.count
 		end
 
-	classify_types (types_list: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM] is
+	classify_types (types_list: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM]
 			-- Classify `types_list'.
 		require
 			non_void_types_list: types_list /= Void
@@ -624,9 +623,9 @@ feature {NONE} -- Classify
 				counter := counter + 1
 				types_list.forth
 			end
-			
+
 			l_sortable_types.sort;
-			
+
 			from
 				counter := 1
 				create Result.make
@@ -640,8 +639,8 @@ feature {NONE} -- Classify
 			non_void_result: Result /= Void
 			same_number_types: types_list.count = Result.count
 		end
-		
-	classify_tree_nodes (nodes: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM] is
+
+	classify_tree_nodes (nodes: LINKED_LIST [EV_COMPARABLE_TREE_ITEM]): LINKED_LIST [EV_COMPARABLE_TREE_ITEM]
 			-- Classify `nodes'.
 		require
 			non_void_nodes: nodes /= Void
@@ -660,9 +659,9 @@ feature {NONE} -- Classify
 				counter := counter + 1
 				nodes.forth
 			end
-			
+
 			l_sortable_nodes.sort;
-			
+
 			from
 				counter := 1
 				create Result.make
@@ -676,11 +675,11 @@ feature {NONE} -- Classify
 			non_void_result: Result /= Void
 			same_number_nodes: nodes.count = Result.count
 		end
-		
+
 
 feature {NONE} -- Initialization of tree elements
 
-	initialize_tree_item_assembly (an_assembly: CONSUMED_ASSEMBLY): EV_COMPARABLE_TREE_ITEM is
+	initialize_tree_item_assembly (an_assembly: CONSUMED_ASSEMBLY): EV_COMPARABLE_TREE_ITEM
 			-- init a_tree_item_assembly.
 		require
 			non_void_an_assembly: an_assembly /= Void
@@ -708,10 +707,10 @@ feature {NONE} -- Initialization of tree elements
 				-- Add a fictive element for a cross to appear.
 			Result.extend (create {EV_TREE_ITEM}.make_with_text (Fictive_element))
 		ensure
-			non_void_result: Result /= Void		
+			non_void_result: Result /= Void
 		end
 
-	initialize_tree_item_namespace (a_namespace_name: STRING): EV_COMPARABLE_TREE_ITEM is
+	initialize_tree_item_namespace (a_namespace_name: STRING): EV_COMPARABLE_TREE_ITEM
 			-- init a_tree_item_namespace.
 		require
 			non_void_a_namespace_name: a_namespace_name /= Void
@@ -729,11 +728,11 @@ feature {NONE} -- Initialization of tree elements
 				Result.set_pixmap (l_ico)
 			end
 		ensure
-			non_void_result: Result /= Void		
+			non_void_result: Result /= Void
 		end
 
 
-	initialize_tree_item_type (an_assembly: CONSUMED_ASSEMBLY; full_dotnet_type_name: STRING; eiffel_type_name: STRING; flag: INTEGER): EV_COMPARABLE_TREE_ITEM is
+	initialize_tree_item_type (an_assembly: CONSUMED_ASSEMBLY; full_dotnet_type_name: STRING; eiffel_type_name: STRING; flag: INTEGER): EV_COMPARABLE_TREE_ITEM
 			-- init a_tree_item_type.
 			-- flag corresponding to the type of the type (class, interface or delegate).
 		require
@@ -754,7 +753,7 @@ feature {NONE} -- Initialization of tree elements
 
 				-- Add data associated to item.
 			Result.set_data (full_dotnet_type_name)
-	
+
 				-- Add action to item.
 			Result.pointer_button_press_actions.force_extend (agent edit.display_imediat_features (an_assembly, full_dotnet_type_name))
 			Result.pointer_button_press_actions.force_extend (agent edit.color_edit_type (an_assembly, full_dotnet_type_name))
@@ -767,7 +766,7 @@ feature {NONE} -- Initialization of tree elements
 
 				-- Add a fictive element for a cross to appear
 			Result.extend (create {EV_TREE_ITEM}.make_with_text (Fictive_element))
-			
+
 				-- Add type icon.
 			inspect
 				flag
@@ -788,10 +787,10 @@ feature {NONE} -- Initialization of tree elements
 				Result.set_pixmap (l_ico)
 			end
 		ensure
-			non_void_result: Result /= Void		
+			non_void_result: Result /= Void
 		end
-		
-	initialize_tree_item_feature (an_assembly: CONSUMED_ASSEMBLY; full_dotnet_type_name: STRING; eiffel_feature_name: STRING; icon_path: STRING): EV_COMPARABLE_TREE_ITEM is
+
+	initialize_tree_item_feature (an_assembly: CONSUMED_ASSEMBLY; full_dotnet_type_name: STRING; eiffel_feature_name: STRING; icon_path: STRING): EV_COMPARABLE_TREE_ITEM
 			-- init a_tree_item_type.
 		require
 			non_void_an_assembly: an_assembly /= Void
@@ -805,26 +804,26 @@ feature {NONE} -- Initialization of tree elements
 		do
 			create Result
 			Result.set_text (eiffel_feature_name)
-			
+
 				-- Mouse actions
 			Result.pointer_button_press_actions.force_extend (agent edit.color_edit_type_with_feature_selected (an_assembly, full_dotnet_type_name, eiffel_feature_name))
 			Result.pointer_double_press_actions.force_extend (agent edit.color_edit_type_with_feature_selected (an_assembly, full_dotnet_type_name, eiffel_feature_name))
 			Result.pointer_double_press_actions.force_extend (agent edit_feature (?, ?, ?, ?, ?, ?, ?, ?, an_assembly, Result))
 
 			Result.set_data (eiffel_feature_name)
-			
+
 				-- Add type icon.
 			l_ico := load_icon (icon_path)
 			if l_ico /= Void then
 				Result.set_pixmap (l_ico)
 			end
 		ensure
-			non_void_result: Result /= Void		
+			non_void_result: Result /= Void
 		end
 
 feature {NONE} -- Edit
 
-	edit_feature (a, b, c: INTEGER; d, e, f: DOUBLE; g, h: INTEGER; an_assembly: CONSUMED_ASSEMBLY; eiffel_feature_item: EV_COMPARABLE_TREE_ITEM) is
+	edit_feature (a, b, c: INTEGER; d, e, f: DOUBLE; g, h: INTEGER; an_assembly: CONSUMED_ASSEMBLY; eiffel_feature_item: EV_COMPARABLE_TREE_ITEM)
 			--
 		require
 			non_void_an_assembly: an_assembly /= Void
@@ -842,7 +841,7 @@ feature {NONE} -- Edit
 --			edit_box.focus_out_actions.extend (agent edit_box.destroy)
 		end
 
-	on_key_pressed (a_key: EV_KEY) is
+	on_key_pressed (a_key: EV_KEY)
 			-- feature performed when the focus is in tree and a key is pressed.
 		local
 			key_constant: EV_KEY_CONSTANTS
@@ -882,8 +881,8 @@ feature {NONE} -- Edit
 				end
 			end
 		end
-		
-	assembly_node_selected (an_assembly: CONSUMED_ASSEMBLY) is
+
+	assembly_node_selected (an_assembly: CONSUMED_ASSEMBLY)
 			-- Feature performed when assembly_node is selected.
 		require
 			non_an_assembly: an_assembly /= Void
@@ -892,18 +891,18 @@ feature {NONE} -- Edit
 			(create {SESSION}).set_current_assembly (an_assembly)
 			parent_window.color_edit_area.clear
 		end
-		
-	
+
+
 feature -- Action
 
-	expand_assembly (an_assembly: CONSUMED_ASSEMBLY) is
+	expand_assembly (an_assembly: CONSUMED_ASSEMBLY)
 			--
 		require
 			non_void_an_assembly: an_assembly /= Void
 		local
 			l_assembly_node: EV_TREE_NODE
 		do
-			l_assembly_node := parent_window.widget_tree.find_item_recursively_by_data (an_assembly)
+			l_assembly_node := parent_window.widget_tree.retrieve_item_recursively_by_data (an_assembly, True)
 			if l_assembly_node /= Void then
 				l_assembly_node.expand
 				l_assembly_node.parent_tree.ensure_item_visible (l_assembly_node)
@@ -911,7 +910,7 @@ feature -- Action
 			end
 		end
 
-	expand_type (an_assembly: CONSUMED_ASSEMBLY; a_type: CONSUMED_TYPE) is
+	expand_type (an_assembly: CONSUMED_ASSEMBLY; a_type: CONSUMED_TYPE)
 			--
 		require
 			non_void_an_assembly: an_assembly /= Void
@@ -921,10 +920,10 @@ feature -- Action
 			l_type_node: EV_TREE_NODE
 			l_namespace_item: EV_TREE_ITEM
 		do
-			l_assembly_node := parent_window.widget_tree.find_item_recursively_by_data (an_assembly)
+			l_assembly_node := parent_window.widget_tree.retrieve_item_recursively_by_data (an_assembly, True)
 			if l_assembly_node /= Void then
 				l_assembly_node.expand
-				l_type_node := parent_window.widget_tree.find_item_recursively_by_data (a_type.dotnet_name)
+				l_type_node := parent_window.widget_tree.retrieve_item_recursively_by_data (a_type.dotnet_name, True)
 				if l_type_node /= Void then
 					l_namespace_item ?= l_type_node.parent
 					if l_namespace_item /= Void then
@@ -939,8 +938,8 @@ feature -- Action
 
 invariant
 	non_void_current_window: parent_window /= Void
-		
-indexing
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

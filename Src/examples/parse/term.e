@@ -1,10 +1,10 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Terms: SIMPLE_VAR | POLY_INTEGER | NESTED
 
 class
-	TERM 
+	TERM
 
 inherit
 
@@ -21,14 +21,14 @@ inherit
 create
 	make
 
-feature 
+feature
 
-	construct_name: STRING is
+	construct_name: STRING
 		once
 			Result := "TERM"
 		end -- construct_name
 
-	production: LINKED_LIST [CONSTRUCT] is
+	production: LINKED_LIST [CONSTRUCT]
 		local
 			id: SIMPLE_VAR;
 			val: POLY_INTEGER;
@@ -44,12 +44,29 @@ feature
 			put (nest)
 		end -- production
 
-	post_action is
+	post_action
 		do
-			retained.post_action
+			if attached retained as l_retained then
+				l_retained.post_action
+			end
 		end -- post_action
 
-indexing
+feature {TERM} -- Implementation
+
+	clone_node (n: like Current): like Current
+			-- <precursor>
+		do
+			create Result.make
+			Result.copy_node (n)
+		end
+
+	new_tree: like Current
+			-- <precursor>
+		do
+			create Result.make
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

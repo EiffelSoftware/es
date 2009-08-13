@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Describe a connection for the advanced example."
@@ -11,12 +11,21 @@ indexing
 class CONNECTION
 
 inherit
-
 	POLL_COMMAND
+		redefine
+			make
+		end
 
 create
-
 	make
+
+feature {NONE} -- Initialization
+
+	make (s: IO_MEDIUM)
+		do
+			Precursor (s)
+			create client_name.make_empty
+		end
 
 feature
 
@@ -24,24 +33,24 @@ feature
 
 	client_name: STRING
 
-	execute (arg: ANY) is
+	execute (arg: ANY)
 		do
 			is_waiting := True
 		end
 
-	initialize is
+	initialize
 		do
 			is_waiting := False
 		end
 
-	set_client_name (s: STRING) is
+	set_client_name (s: STRING)
 		require
 			s_exists: s /= Void
 		do
 			client_name := s.twin
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

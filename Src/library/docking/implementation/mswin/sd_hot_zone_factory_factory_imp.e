@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Windows implementation of SD_HOT_ZONE_FACTORY_FACTORY."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,8 +13,8 @@ inherit
 
 feature -- Hot zone factory
 
-	hot_zone_factory: SD_HOT_ZONE_ABSTRACT_FACTORY is
-			-- Redefine
+	hot_zone_factory: SD_HOT_ZONE_ABSTRACT_FACTORY
+			-- <Precursor>
 		local
 			l_version: WEL_WINDOWS_VERSION
 			l_shared: SD_SHARED
@@ -32,7 +32,7 @@ feature -- Hot zone factory
 				l_line_drawer.reset_screen
 			end
 		end
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

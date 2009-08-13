@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Base prompts for requesting user to confirm/cancel saving of modified entities.
 	]"
@@ -33,7 +33,7 @@ feature {NONE} -- User interface initialization
 			entities_list.hide_header
 
 				-- Current hack because EV_GRID does not implement EV_TAB_CONTROLABLE				
-			if {l_tabbable: EV_TAB_CONTROLABLE} entities_list then
+			if attached {EV_TAB_CONTROLABLE} entities_list as l_tabbable then
 				l_tabbable.disable_tabable_to
 			end
 
@@ -56,29 +56,29 @@ feature {NONE} -- User interface initialization
 
 feature {NONE} -- User interface elements
 
-	entities_list: !ES_GRID
+	entities_list: attached ES_GRID
 			-- List used to display modified entities.
 
 feature -- Access
 
-	entities: ?DS_BILINEAR [G] assign set_entities
+	entities: detachable DS_BILINEAR [G] assign set_entities
 			-- Actual list of modified entity.
 
 feature {NONE} -- Access
 
-	token_generator: !EB_EDITOR_TOKEN_GENERATOR
+	token_generator: attached EB_EDITOR_TOKEN_GENERATOR
 			-- Formatter used to generate token lists.
 		once
 			create Result.make
 		end
 
-	context_printer: !ERROR_CONTEXT_PRINTER
+	context_printer: attached ERROR_CONTEXT_PRINTER
 			-- Printer used to generate a context token list.
 		once
 			create Result
 		end
 
-	shared_writer: !EB_SHARED_WRITER
+	shared_writer: attached EB_SHARED_WRITER
 			-- Access to shared writer used to retrieve editor label font settings
 		once
 			create Result
@@ -161,7 +161,7 @@ invariant
 	not_entities_is_empty: entities /= Void implies not entities.is_empty
 	entities_contains_attached_items: entities /= Void implies not entities.has (Void)
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

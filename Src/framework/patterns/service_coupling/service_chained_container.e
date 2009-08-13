@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A service container that can be sited with a parent container to promote services to higher container.
 	]"
@@ -29,20 +29,20 @@ create
 
 feature -- Extension
 
-	register (a_type: !TYPE [SERVICE_I]; a_service: !SERVICE_I; a_promote: BOOLEAN)
+	register (a_type: TYPE [SERVICE_I]; a_service: SERVICE_I; a_promote: BOOLEAN)
 			-- <Precursor>
 		do
-			if a_promote and then {l_container: SERVICE_CONTAINER_I} site then
+			if a_promote and then attached {SERVICE_CONTAINER_I} site as l_container then
 				l_container.register (a_type, a_service, True)
 			else
 				Precursor {SERVICE_PROVIDER_CONTAINER} (a_type, a_service, False)
 			end
 		end
 
-	register_with_activator (a_type: !TYPE [SERVICE_I]; a_activator: !FUNCTION [ANY, TUPLE, ?SERVICE_I] a_promote: BOOLEAN)
+	register_with_activator (a_type: TYPE [SERVICE_I]; a_activator: FUNCTION [ANY, TUPLE, detachable SERVICE_I] a_promote: BOOLEAN)
 			-- <Precursor>
 		do
-			if a_promote and then {l_container: SERVICE_CONTAINER_I} site then
+			if a_promote and then attached {SERVICE_CONTAINER_I} site as l_container then
 				l_container.register_with_activator (a_type, a_activator, True)
 			else
 				Precursor {SERVICE_PROVIDER_CONTAINER} (a_type, a_activator, False)
@@ -51,31 +51,31 @@ feature -- Extension
 
 feature -- Removal
 
-	revoke (a_type: !TYPE [SERVICE_I]; a_promote: BOOLEAN)
+	revoke (a_type: TYPE [SERVICE_I]; a_promote: BOOLEAN)
 			-- <Precursor>
 		do
 			if is_service_proffered (a_type, False) then
 				Precursor {SERVICE_PROVIDER_CONTAINER} (a_type, a_promote)
-			elseif a_promote and then {l_container: SERVICE_CONTAINER_I} site then
+			elseif a_promote and then attached {SERVICE_CONTAINER_I} site as l_container then
 				l_container.revoke (a_type, True)
 			end
 		end
 
 feature -- Query
 
-	is_service_proffered (a_type: !TYPE [SERVICE_I]; a_promote: BOOLEAN): BOOLEAN
+	is_service_proffered (a_type: TYPE [SERVICE_I]; a_promote: BOOLEAN): BOOLEAN
 			-- <Precursor>
 		do
 			Result := Precursor {SERVICE_PROVIDER_CONTAINER} (a_type, a_promote)
 			if not Result and then a_promote then
-				if {l_container: SERVICE_CONTAINER_I} site then
+				if attached {SERVICE_CONTAINER_I} site as l_container then
 					Result := l_container.is_service_proffered (a_type, True)
 				end
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -88,22 +88,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {SERVICE_CHAINED_CONTAINER}

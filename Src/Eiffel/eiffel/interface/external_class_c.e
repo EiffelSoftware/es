@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Representation of a non-Eiffel compiled class that is external to current system."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -24,12 +24,17 @@ inherit
 			external_class_c
 		end
 
+	SHARED_AST_CONTEXT
+		rename
+			context as ast_context
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (l: like original_class) is
+	make (l: like original_class)
 			-- Create instance of a compiled class using 'l'.
 		do
 			Precursor {CLASS_C} (l)
@@ -38,7 +43,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	process_degree_5 is
+	process_degree_5
 			-- Read XML data and analyzes syntactical suppliers.
 		require
 			not_built: not is_built
@@ -133,7 +138,7 @@ feature -- Initialization
 			not_in_degree_minus_1: not degree_minus_1_needed
 		end
 
-	process_degree_4 is
+	process_degree_4
 			-- Read XML data and create feature table.
 		require
 			not_built: not is_built
@@ -223,10 +228,10 @@ feature -- Initialization
 
 feature -- Access
 
-	is_external_class_c: BOOLEAN is True
+	is_external_class_c: BOOLEAN = True
 			-- Is `Current' an EXTERNAL_CLASS_C?
 
-	external_class_c: EXTERNAL_CLASS_C is
+	external_class_c: EXTERNAL_CLASS_C
 			-- `Current' as `EXTERNAL_CLASS_C'.
 		do
 			Result := Current
@@ -244,13 +249,13 @@ feature -- Access
 	enclosing_class: CLASS_C
 			-- Class in which Current class is defined when `is_nested'.
 
-	assembly: ASSEMBLY_I is
+	assembly: ASSEMBLY_I
 			-- Associated assembly of current.
 		do
 			Result := lace_class.assembly
 		end
 
-	type_from_consumed_type (c: CONSUMED_REFERENCED_TYPE): CL_TYPE_A is
+	type_from_consumed_type (c: CONSUMED_REFERENCED_TYPE): CL_TYPE_A
 			-- Given an external type `c' get its associated CL_TYPE_A.
 			-- Void, if `c' is not part of system.
 		require
@@ -267,7 +272,7 @@ feature {NONE} -- Implementation: Overloading
 			-- list of associated resolved feature name id. (e.g. for `put' you will possibly
 			-- find `put_integer', `put_double',...)
 
-	clean_overloaded_names (a_feat_tbl: FEATURE_TABLE) is
+	clean_overloaded_names (a_feat_tbl: FEATURE_TABLE)
 			-- Remove single entries of `overloaded_names'.
 		require
 			overloaded_names_not_void: overloaded_names /= Void
@@ -312,7 +317,7 @@ feature {NONE} -- Implementation: Overloading
 			end
 		end
 
-	updated_overloaded_list (a_feat_tbl: FEATURE_TABLE; a_list: ARRAYED_LIST [INTEGER]): ARRAYED_LIST [INTEGER] is
+	updated_overloaded_list (a_feat_tbl: FEATURE_TABLE; a_list: ARRAYED_LIST [INTEGER]): ARRAYED_LIST [INTEGER]
 			-- Process `a_list' to ensure that there are no 2 routines that only differ by
 			-- their return type if any. CLS rules guarantee that the two routines cannot be in the
 			-- same class, so we return a new list with the one which is defined in
@@ -336,7 +341,7 @@ feature {NONE} -- Implementation: Overloading
 			from
 				i := 1
 				nb := a_list.count
-				create l_processed.make (nb + 1)
+				create l_processed.make_filled (False, nb + 1)
 				create Result.make (nb)
 			until
 				i > nb
@@ -382,11 +387,11 @@ feature -- Status report
 	is_nested: BOOLEAN
 			-- Is current external class a nested type?
 
-	is_true_external: BOOLEAN is True
+	is_true_external: BOOLEAN = True
 			-- Is class an instance of EXTERNAL_CLASS_C?
 			-- If yes, we do not generate it.
 
-	is_removable: BOOLEAN is False
+	is_removable: BOOLEAN = False
 			-- FIXME: Manu 08/07/2002: because of the way we initialize
 			-- EXTERNAL_CLASS_C from the XML, we are missing some information
 			-- that will generate incorrect VHPR error when removing an external
@@ -395,7 +400,7 @@ feature -- Status report
 
 feature -- Query
 
-	has_associated_property_setter (a_feat: FEATURE_I): BOOLEAN is
+	has_associated_property_setter (a_feat: FEATURE_I): BOOLEAN
 			-- Associated property setter of `a_feat' if any.
 		require
 			a_feat_not_void: a_feat /= Void
@@ -403,7 +408,7 @@ feature -- Query
 			a_feat_is_external: a_feat.is_external
 		local
 			l_consumed_type: CONSUMED_TYPE
-			l_properties: ARRAY [CONSUMED_PROPERTY]
+			l_properties: ARRAYED_LIST [CONSUMED_PROPERTY]
 			l_prop: CONSUMED_PROPERTY
 			i, nb: INTEGER
 			done: BOOLEAN
@@ -416,12 +421,12 @@ feature -- Query
 			if l_consumed_type /= Void and l_consumed_type.properties /= Void then
 				l_properties := l_consumed_type.properties
 				from
-					i := l_properties.lower
-					nb := l_properties.upper
+					i := 1
+					nb := l_properties.count
 				until
 					i > nb or done
 				loop
-					l_prop := l_properties.item (i)
+					l_prop := l_properties.i_th (i)
 					if l_prop /= Void then
 						if l_prop.getter.eiffel_name.is_equal (a_feat.feature_name) then
 							done := True
@@ -435,7 +440,7 @@ feature -- Query
 
 feature {NONE} -- Initialization
 
-	process_parents is
+	process_parents
 			-- Initialize inheritance clause of Current using `external_class'
 		require
 			system_object_not_void: System.system_object_class /= Void
@@ -515,7 +520,7 @@ feature {NONE} -- Initialization
 					implies conforming_parents_classes.count > 0
 		end
 
-	process_syntax_features (a_features: ARRAYED_LIST [CONSUMED_ENTITY]) is
+	process_syntax_features (a_features: ARRAYED_LIST [CONSUMED_ENTITY])
 			-- Get all features and make sure all referenced types are in system.
 		require
 			a_features_not_void: a_features /= Void
@@ -559,7 +564,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	add_features_of_any (a_feat_tbl: like feature_table) is
+	add_features_of_any (a_feat_tbl: like feature_table)
 			-- Get all features of ANY and add them in `a_feat_tbl'.
 		require
 			a_feat_tbl_not_void: a_feat_tbl /= Void
@@ -567,7 +572,7 @@ feature {NONE} -- Initialization
 			any_has_feature_table: system.any_class.compiled_class.has_feature_table
 		local
 			l_any_tbl: like feature_table
-			l_feat: FEATURE_I
+			l_feat, l_table_feat: FEATURE_I
 			any_parent_type: LIKE_CURRENT
 		do
 			l_any_tbl := system.any_class.compiled_class.feature_table
@@ -580,15 +585,25 @@ feature {NONE} -- Initialization
 			check
 				l_any_tbl_not_void: l_any_tbl /= Void
 			end
+
+				-- Make sure context is initialized for `a_feat_tbl' before calling check_types on the feature_i objects.
+			ast_context.initialize (a_feat_tbl.associated_class, a_feat_tbl.associated_class.actual_type, a_feat_tbl)
+
 			from
 				l_any_tbl.start
 			until
 				l_any_tbl.after
 			loop
-				l_feat := l_any_tbl.item_for_iteration.duplicate
 					-- Update `l_feat' in context of current class.
-				l_feat.instantiate (any_parent_type)
-				l_feat.check_types (a_feat_tbl)
+				l_table_feat := l_any_tbl.item_for_iteration
+				l_feat := l_table_feat.instantiated (any_parent_type)
+				if l_feat = l_table_feat then
+						-- If the instantiation didn't return a new object then we twin.
+					l_feat := l_feat.twin
+				else
+						-- We only need to check types should feature be instantiated for `Current'
+					l_feat.check_types (a_feat_tbl)
+				end
 				l_feat.set_feature_id (feature_id_counter.next)
 				l_feat.set_is_origin (False)
 				l_feat.set_rout_id_set (l_feat.rout_id_set.twin)
@@ -599,7 +614,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	insert_feature (a_feat: FEATURE_I; a_feat_tbl: like feature_table) is
+	insert_feature (a_feat: FEATURE_I; a_feat_tbl: like feature_table)
 			-- Insert `a_feat' into `a_feat_tbl'. If there is a name conflict with
 			-- a routine already there, we rename the version from ANY.
 		require
@@ -635,10 +650,10 @@ feature {NONE} -- Initialization
 				end
 			end
 
-			a_feat_tbl.put (a_feat, a_feat.feature_name_id)
+			a_feat_tbl.put (a_feat, a_feat.feature_name_id, False)
 		end
 
-	process_features (a_feat_tbl: like feature_table; a_features: ARRAYED_LIST [CONSUMED_ENTITY]) is
+	process_features (a_feat_tbl: like feature_table; a_features: ARRAYED_LIST [CONSUMED_ENTITY])
 			-- Get all features and make sure all referenced types are in system.
 		require
 			a_feat_tbl_not_void: a_feat_tbl /= Void
@@ -891,9 +906,8 @@ feature {NONE} -- Initialization
 						if j >= l_record_pos then
 							l_external_type := internal_type_from_consumed_type (True,
 								l_arg.type)
-							l_feat_arg.put_i_th (l_external_type, m + 1)
 							l_names_heap.put (l_arg.eiffel_name)
-							l_feat_arg.argument_names.put (l_names_heap.found_item, m)
+							l_feat_arg.extend_with_name (l_external_type, l_names_heap.found_item)
 							m := m + 1
 						end
 
@@ -999,7 +1013,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	process_property_assigners (a_feat_tbl: like feature_table) is
+	process_property_assigners (a_feat_tbl: like feature_table)
 			-- Processes current feature table `feature_table' and matches
 			-- property functions (getters) with an assigner (setter), if available.
 		require
@@ -1091,7 +1105,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	add_enum_conversion (a_feat_tbl: like feature_table) is
+	add_enum_conversion (a_feat_tbl: like feature_table)
 			-- Binds a conversion routine to an Enum type for artifical `to_integer' feature.
 		require
 			is_enum: is_enum
@@ -1119,7 +1133,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	process_nesting is
+	process_nesting
 			-- If `external_class' represent an instance of CONSUMED_NESTED_TYPE
 			-- we initialize `enclosing_class' correctly.
 		require
@@ -1141,7 +1155,7 @@ feature {NONE} -- Implementation
 
 	update_feature_with_parents (a_feat_tbl: FEATURE_TABLE; a_feat: FEATURE_I;
 			a_member: CONSUMED_ENTITY)
-		is
+
 			-- Compute a new `rout_id_set' for `a_feat' based on info of current class and
 			-- parent classes. If we do not found a matching routine in a parent class, then
 			-- we set `is_origin' on `a_feat'.
@@ -1244,7 +1258,7 @@ feature {NONE} -- Implementation
 
 	matching_external_feature_in (
 			a_feat: FEATURE_I; a_class: CLASS_C; a_member: CONSUMED_ENTITY): FEATURE_I
-		is
+
 			-- Look up a feature whose external name is `a_name_id' in `a_class'.
 		require
 			a_feat_not_void: a_feat /= Void
@@ -1342,7 +1356,7 @@ feature {NONE} -- Implementation
 
 	internal_type_from_consumed_type (
 			force_compilation: BOOLEAN; c: CONSUMED_REFERENCED_TYPE): CL_TYPE_A
-		is
+
 			-- Given an external type `c' get its associated CL_TYPE_A.
 			-- If `force_compilation' automatically add it for later compilation
 		require
@@ -1365,8 +1379,7 @@ feature {NONE} -- Implementation
 			l_array_type ?= c
 			l_is_array := l_array_type /= Void
 			if l_is_array then
-				l_type_a := internal_type_from_consumed_type (force_compilation,
-					l_array_type.element_type)
+				l_type_a := internal_type_from_consumed_type (force_compilation, l_array_type.element_type)
 				if l_type_a /= Void then
 					create l_generics.make (1, 1)
 					l_generics.put (l_type_a, 1)
@@ -1398,6 +1411,10 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+			if not Result.is_expanded then
+				Result := Result.duplicate
+				Result.set_detachable_mark
+			end
 			if c.is_by_ref then
 					-- We need to create an instance of TYPED_POINTER here.
 				create {TYPED_POINTER_A} Result.make_typed (Result)
@@ -1406,7 +1423,7 @@ feature {NONE} -- Implementation
 			result_not_void: force_compilation implies Result /= Void
 		end
 
-	set_constant_value (a_constant: CONSTANT_I; a_external_type: CL_TYPE_A; a_value: STRING) is
+	set_constant_value (a_constant: CONSTANT_I; a_external_type: CL_TYPE_A; a_value: STRING)
 			-- Set `value' of `a_constant' with data of `a_value' using `a_external_type'
 			-- to find out type of constant.
 		require
@@ -1514,7 +1531,7 @@ feature {NONE} -- Implementation
 			a_constant.set_value (l_value)
 		end
 
-	add_syntactical_supplier (cl: CL_TYPE_A) is
+	add_syntactical_supplier (cl: CL_TYPE_A)
 			-- Add every class mentioned in `cl' to `syntactical_suppliers' list.
 		require
 			cl_not_void: cl /= Void
@@ -1534,12 +1551,12 @@ feature {NONE} -- Implementation
 				syntactical_suppliers.has (cl.generics.item (1).associated_class)
 		end
 
-	prefix_infix_names: PREFIX_INFIX_NAMES is
+	prefix_infix_names: PREFIX_INFIX_NAMES
 		once
 			create Result
 		end
 
-	fully_consume_assembly is
+	fully_consume_assembly
 			-- Fully consumes external class' assembly
 		require
 			assembly_attached: assembly /= Void
@@ -1600,7 +1617,7 @@ feature {NONE} -- Implementation
 			not_assembly_is_partially_consumed: not assembly.is_partially_consumed
 		end
 
-	new_family_export (written_in: INTEGER): EXPORT_SET_I is
+	new_family_export (written_in: INTEGER): EXPORT_SET_I
 			-- New export clause to
 		local
 			l_clients: ID_LIST
@@ -1621,8 +1638,8 @@ invariant
 	is_true_external_set: is_true_external
 	valid_enclosing_class: is_nested implies enclosing_class /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1635,22 +1652,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EXTERNAL_CLASS_C

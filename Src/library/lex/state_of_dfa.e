@@ -1,9 +1,7 @@
-indexing
-
+note
 	description:
 		"States of deterministic finite automata"
 	legal: "See notice at end of class.";
-
 	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
@@ -15,7 +13,7 @@ class STATE_OF_DFA inherit
 			copy, is_equal
 		end;
 
-	ARRAY [STATE_OF_DFA]
+	ARRAY [detachable STATE_OF_DFA]
 		rename
 			make as array_make
 		export
@@ -28,47 +26,43 @@ create
 
 feature -- Initialization
 
-	make (s: INTEGER) is
+	make (s: INTEGER)
 			-- Make state with 0 to `s' possibles inputs.
 		do
 			array_make (0, s)
-		end; 
+		end;
 
 feature -- Element change
 
-	append_transition (i: INTEGER; t: STATE_OF_DFA) is
+	append_transition (i: INTEGER; t: detachable STATE_OF_DFA)
 			-- Append transition from current state to state t on input i.
 		require
 			no_other_transition: item (i) = Void;
 			possible_input: i <= upper and i >= 0
 		do
 			put (t, i)
-		end; 
+		end;
 
 feature -- Cursor movement
 
-	successor (i: INTEGER): STATE_OF_DFA is
+	successor (i: INTEGER): detachable STATE_OF_DFA
 			-- Successor of current state for input `i';
 			-- Void if no successor
 		require
 			possible_input: i <= upper and i >= 0
 		do
 			Result := item (i)
-		end 
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
-end -- class STATE_OF_DFA
-
+end

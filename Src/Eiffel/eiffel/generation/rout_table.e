@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Representation of a table of routine pointer for the final Eiffel executable"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -54,7 +54,7 @@ create
 
 feature -- Insertion
 
-	extend (v: ROUT_ENTRY) is
+	extend (v: ROUT_ENTRY)
 			-- <Precursor>
 		do
 			Precursor {POLY_TABLE} (v)
@@ -66,7 +66,7 @@ feature -- Insertion
 			end
 		end
 
-	merge (other: like Current) is
+	merge (other: like Current)
 			-- <Precursor>
 		do
 			Precursor {POLY_TABLE} (other)
@@ -80,19 +80,19 @@ feature -- Insertion
 
 feature -- Status report
 
-	is_routine_table: BOOLEAN is
+	is_routine_table: BOOLEAN
 			-- Is the table a routine table?
 		do
 			Result := True
 		end
 
-	is_attribute_table: BOOLEAN is
+	is_attribute_table: BOOLEAN
 			-- Is the current table an attribute table ?
 		do
 				-- False here.
 		end
 
-	is_implemented: BOOLEAN is
+	is_implemented: BOOLEAN
 			-- Is implemented
 			-- in a static type greater than `type_id'.
 		require
@@ -101,7 +101,7 @@ feature -- Status report
 			Result := position <= max_position
 		end
 
-	feature_name: STRING is
+	feature_name: STRING
 			-- Feature name of the first implemented feature available
 			-- in a static type greater than `type_id' found by last
 			-- call to `goto_implemented (type_id)'.
@@ -112,14 +112,14 @@ feature -- Status report
 			Result := array_item (position).routine_name
 		end
 
-	new_entry (f: FEATURE_I; c: INTEGER): ENTRY is
+	new_entry (f: FEATURE_I; c: INTEGER): ENTRY
 			-- New entry corresponding to `f' in class of class ID `c'
 		do
 			Result := f.new_rout_entry
 			Result.set_class_id (c)
 		end
 
-	is_polymorphic (a_type: TYPE_A; a_context_type: CLASS_TYPE): BOOLEAN is
+	is_polymorphic (a_type: TYPE_A; a_context_type: CLASS_TYPE): BOOLEAN
 			-- Is the table polymorphic from entry indexed by `type_id' to
 			-- the maximum entry id ?
 		local
@@ -158,6 +158,9 @@ feature -- Status report
 									entry.pattern_id /= first_pattern_id
 							else
 								found := True
+									-- If the pattern ID is does not match the one from the current type
+									-- then the call has to be polymorphic. See eweasel test#ccomp040 and test#ccomp083.
+								Result := first_pattern_id /= entry.pattern_id
 								first_real_body_index := entry.real_body_index
 								first_body_index := entry.body_index
 							end
@@ -174,7 +177,24 @@ feature -- Status report
 
 feature -- Code generation
 
-	generate (writer: TABLE_GENERATOR) is
+	generate_initialization (buf: GENERATION_BUFFER; header_buf: GENERATION_BUFFER)
+			-- <Precursor>
+		local
+			l_table_name: STRING
+		do
+			l_table_name := encoder.routine_table_name (rout_id)
+				-- Declare initialization routine for table
+			header_buf.put_new_line
+			header_buf.put_string ("extern void ")
+			header_buf.put_string (l_table_name)
+			header_buf.put_string ("_init(void);")
+				-- Call the routine
+			buf.put_new_line
+			buf.put_string (l_table_name)
+			buf.put_string ("_init();")
+		end
+
+	generate (writer: TABLE_GENERATOR)
 			-- Generation of the routine table in buffer "erout*.c".
 		require
 			writer_attached: writer /= Void
@@ -189,14 +209,14 @@ feature -- Code generation
 			internal_generate (writer.current_buffer, 0, final_table_size, l_min_used, max_used)
 		end
 
-	generate_full (real_rout_id: INTEGER; buffer: GENERATION_BUFFER) is
+	generate_full (real_rout_id: INTEGER; buffer: GENERATION_BUFFER)
 			-- Generation of the table in buffer "erout*.c" without optimizing the lower bound.
 		local
 			l_rout_id: INTEGER
 			l_min_used: INTEGER
 			l_table_name: STRING
 		do
-			if max_position = 0 then
+			if max_position = 0 or not used then
 				l_table_name := Encoder.routine_table_name (real_rout_id)
 				buffer.put_string ("char *(*");
 				buffer.put_string (l_table_name);
@@ -221,7 +241,7 @@ feature -- Code generation
 			end
 		end
 
-	goto_implemented (a_type: TYPE_A; a_context_type: CLASS_TYPE) is
+	goto_implemented (a_type: TYPE_A; a_context_type: CLASS_TYPE)
 			-- Go to first implemented feature available in
 			-- a static type greater than `type_id'.
 		require
@@ -260,7 +280,7 @@ feature -- Code generation
 
 feature {POLY_TABLE} -- Special data
 
-	tmp_poly_table: ARRAY [ROUT_ENTRY] is
+	tmp_poly_table: ARRAY [ROUT_ENTRY]
 			-- Contain a copy of Current during a merge
 		once
 			create Result.make (1, Block_size)
@@ -268,7 +288,7 @@ feature {POLY_TABLE} -- Special data
 
 feature {NONE} -- Implementation
 
-	add_header_files (include_list: ARRAY [INTEGER]) is
+	add_header_files (include_list: ARRAY [INTEGER])
 			-- Add `include_list' in header files of the `erout' files.
 		require
 			include_list_not_void: include_list /= Void
@@ -288,7 +308,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_generate (buffer: GENERATION_BUFFER; an_offset, a_table_size, a_min, a_max: INTEGER) is
+	internal_generate (buffer: GENERATION_BUFFER; an_offset, a_table_size, a_min, a_max: INTEGER)
 			-- Generate current routine table starting from index `a_min' to `a_max'.
 		require
 			buffer_not_void: buffer /= Void
@@ -312,16 +332,16 @@ feature {NONE} -- Implementation
 				-- consecutives rows are identical we will generate a loop to fill the rows
 			from
 				buffer.put_new_line
-				buffer.put_string ("char *(*");
+				buffer.put_string (once "char *(*");
 				l_table_name := Encoder.routine_table_name (rout_id)
 				buffer.put_string (l_table_name);
-				buffer.put_string ("[")
+				buffer.put_character ('[')
 				buffer.put_integer (a_table_size)
-				buffer.put_string ("])();")
+				buffer.put_string (once "])();")
 				buffer.put_new_line
-				buffer.put_string ("void ")
+				buffer.put_string (once "void ")
 				buffer.put_string (l_table_name)
-				buffer.put_string ("_init () {")
+				buffer.put_string (once "_init () {")
 				buffer.indent
 				i := a_min;
 				j := an_offset
@@ -394,7 +414,8 @@ feature {NONE} -- Implementation
 						l_pattern_id := l_rout_entry.pattern_id
 						if l_seed_pattern_id /= l_pattern_id then
 								-- A wrapper needs to be used/generated.
-							l_wrapped_name := l_routine_name.twin
+							create l_wrapped_name.make (l_routine_name.count + 6)
+							l_wrapped_name.append (l_routine_name)
 							l_wrapped_name.append_character ('_')
 							l_wrapped_name.append_integer (rout_id)
 
@@ -427,7 +448,8 @@ feature {NONE} -- Implementation
 				l_pattern_id := l_rout_entry.pattern_id
 				if l_seed_pattern_id /= l_pattern_id then
 						-- A wrapper needs to be used/generated.
-					l_wrapped_name := l_routine_name.twin
+					create l_wrapped_name.make (l_routine_name.count + 6)
+					l_wrapped_name.append (l_routine_name)
 					l_wrapped_name.append_character ('_')
 					l_wrapped_name.append_integer (rout_id)
 
@@ -448,13 +470,13 @@ feature {NONE} -- Implementation
 			end
 			buffer.exdent
 			buffer.put_new_line
-			buffer.put_string ("}")
+			buffer.put_character ('}')
 				-- Add wrappers if any.
 			buffer.put_buffer (wrapper_buffer)
 			buffer.put_new_line
 		end
 
-	generate_wrapper (buffer: GENERATION_BUFFER; a_entry: ROUT_ENTRY; a_seed_pattern_id, a_pattern_id: INTEGER; a_wrapped_name, a_routine_name: STRING) is
+	generate_wrapper (buffer: GENERATION_BUFFER; a_entry: ROUT_ENTRY; a_seed_pattern_id, a_pattern_id: INTEGER; a_wrapped_name, a_routine_name: STRING)
 			-- Generate wrapper for `a_routine_name' called `a_wrapped_name' using signature information from `a_seed_pattern_id' and `a_pattern_id'.
 		require
 			buffer_not_void: buffer /= Void
@@ -602,7 +624,7 @@ feature {NONE} -- Implementation
 			buffer.generate_block_close
 		end
 
-	generate_loop_initialization (buffer: GENERATION_BUFFER; a_table_name, a_routine_name: STRING; a_lower, a_upper: INTEGER) is
+	generate_loop_initialization (buffer: GENERATION_BUFFER; a_table_name, a_routine_name: STRING; a_lower, a_upper: INTEGER)
 			-- Generate code to initialize current array with `a_routine_name'. Generate a
 			-- loop if `a_lower' is different from `a_upper'.
 		require
@@ -643,10 +665,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	function_ptr_cast_string: STRING is "(char *(*)()) ";
+	function_ptr_cast_string: STRING = "(char *(*)()) ";
 			-- String representing cast to type of function pointer
 
-	write is
+	write
 			-- Generate table using writer.
 		do
 			generate (Rout_generator)
@@ -658,7 +680,7 @@ feature {NONE} -- Implementation
 			generate_type_table (rout_generator)
 		end
 
-	wrapper_buffer: GENERATION_BUFFER is
+	wrapper_buffer: GENERATION_BUFFER
 			-- Buffer to generate a polymorphic wrapper.
 		once
 			create Result.make (500)
@@ -666,8 +688,8 @@ feature {NONE} -- Implementation
 			wrapper_buffer_not_void: Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

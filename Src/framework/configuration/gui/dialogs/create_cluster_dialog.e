@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Create a new cluster."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -38,7 +38,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize.
 		local
 			l_btn: EV_BUTTON
@@ -132,7 +132,7 @@ feature -- Access
 
 feature -- Update
 
-	set_parent_cluster (a_parent: like parent_cluster) is
+	set_parent_cluster (a_parent: like parent_cluster)
 			-- Set `parent_cluster' to `a_parent'.
 		do
 			parent_cluster := a_parent
@@ -150,7 +150,7 @@ feature {NONE} -- GUI elements
 
 feature {NONE} -- Actions
 
-	browser_dialog: EV_DIRECTORY_DIALOG is
+	browser_dialog: EV_DIRECTORY_DIALOG
 			-- Dialog to browse to a directory.
 		local
 			l_dir: DIRECTORY
@@ -164,7 +164,7 @@ feature {NONE} -- Actions
 			result_not_void: Result /= Void
 		end
 
-	browse is
+	browse
 			-- Browse for a location.
 		local
 			l_loc: CONF_DIRECTORY_LOCATION
@@ -182,7 +182,7 @@ feature {NONE} -- Actions
 			browser_dialog.show_modal_to_window (Current)
 		end
 
-	fill_fields is
+	fill_fields
 			-- Set location from `browser_dialog'.
 		local
 			l_name: STRING
@@ -199,20 +199,20 @@ feature {NONE} -- Actions
 			end
 		end
 
-	on_cancel is
+	on_cancel
 			-- Close the dialog.
 		do
 			destroy
 		end
 
-	on_ok is
+	on_ok
 			-- Add group and close the dialog.
 		local
 			l_loc: CONF_DIRECTORY_LOCATION
 		do
 			if not name.text.is_empty and not location.text.is_empty then
 				if not is_valid_group_name (name.text) then
-					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_group_name, Current, Void)
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_cluster_name, Current, Void)
 				elseif group_exists (name.text, target) then
 					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.group_already_exists (name.text), Current, Void)
 				else
@@ -233,8 +233,8 @@ feature {NONE} -- Actions
 			is_ok_last_group: is_ok implies last_group /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -247,21 +247,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

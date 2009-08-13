@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Nested queries example."
 	legal: "See notice at end of class."
@@ -17,25 +17,26 @@ class ACTION_2_I inherit
 		end
 
 create
-        
+
 	make
 
 feature
 
-        execute is
+        execute
 		local
 			tuple: DB_TUPLE
-			column_name: STRING
+			l_cursor: detachable DB_RESULT
 		do
-			create tuple.copy (selection.cursor)
-			column_name ?= tuple.item (1)
-			if column_name /= Void then
+			l_cursor := selection.cursor
+			check l_cursor /= Void end -- FIXME: implied by ...?
+			create tuple.copy (l_cursor)
+			if attached {STRING} tuple.item (1) as column_name then
 				io.putstring (column_name)
 				io.new_line
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

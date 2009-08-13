@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Facilities to manage a recent project"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,7 +17,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a project manager.
 		local
 			l_value: STRING
@@ -60,7 +60,7 @@ feature -- Access
 
 feature -- Menus handling
 
-	new_menu: EB_RECENT_PROJECTS_MANAGER_MENU is
+	new_menu: EB_RECENT_PROJECTS_MANAGER_MENU
 			-- Menu corresponding to current: This is a menu with
 			-- one entry per old project.
 			--
@@ -71,7 +71,7 @@ feature -- Menus handling
 
 feature -- Basic operations
 
-	add_recent_project (a_project: STRING) is
+	add_recent_project (a_project: STRING)
 			-- Add `a_project' to list of recent projects.
 		require
 			a_project_not_void: a_project /= Void
@@ -81,13 +81,13 @@ feature -- Basic operations
 			recent_projects.put_front (a_project)
 		end
 
-	save_recent_projects is
+	save_recent_projects
 			-- Save the current list of recent projects
 		do
 			save_projects (recent_projects)
 		end
 
-	save_projects (a_projects_list: like recent_projects) is
+	save_projects (a_projects_list: like recent_projects)
 			-- Save `a_projects_list' recent projects.
 		require
 			a_projects_list_not_void: a_projects_list /= Void
@@ -97,14 +97,14 @@ feature -- Basic operations
 				-- Let observers know about the changes.
 			on_update
 				-- Update it.
-			preferences.recent_projects_data.last_opened_projects_preference.set_value (recent_projects)
+			preferences.recent_projects_data.last_opened_projects_preference.set_value (recent_projects.to_array)
 				-- Save it to disk.
 			preferences.preferences.save_preference (preferences.recent_projects_data.last_opened_projects_preference)
 		end
 
 feature {EB_RECENT_PROJECTS_MANAGER_OBSERVER} -- Observer pattern / Registration
 
-	add_observer (an_observer: EB_RECENT_PROJECTS_MANAGER_OBSERVER) is
+	add_observer (an_observer: EB_RECENT_PROJECTS_MANAGER_OBSERVER)
 			-- Add `an_observer' to the list of observers for Current.
 		require
 			valid_observer: an_observer /= Void
@@ -115,7 +115,7 @@ feature {EB_RECENT_PROJECTS_MANAGER_OBSERVER} -- Observer pattern / Registration
 			observers.extend (an_observer)
 		end
 
-	remove_observer (an_observer: EB_RECENT_PROJECTS_MANAGER_OBSERVER) is
+	remove_observer (an_observer: EB_RECENT_PROJECTS_MANAGER_OBSERVER)
 			-- Remove `an_observer' to the list of observers for Current.
 		require
 			valid_observer: an_observer /= Void
@@ -127,7 +127,7 @@ feature {EB_RECENT_PROJECTS_MANAGER_OBSERVER} -- Observer pattern / Registration
 
 feature {NONE} -- Observer pattern / Implementation
 
-	on_update is
+	on_update
 			-- The list of recent projects has changed
 		do
 			if observers /= Void then
@@ -149,8 +149,8 @@ invariant
 	recent_projects_not_void: recent_projects /= Void
 	recent_projects_compare_objects: recent_projects.object_comparison
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -163,22 +163,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_RECENT_PROJECTS_MANAGER

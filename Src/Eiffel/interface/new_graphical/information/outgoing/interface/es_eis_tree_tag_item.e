@@ -1,4 +1,4 @@
-indexing
+note
 	description: "EIS tag item for the tree"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_name: STRING_GENERAL) is
+	make (a_name: STRING_GENERAL)
 			-- Create a tree item representing class `a_class' with `a_name' in its context.
 		require
 			a_name_ok: a_name /= Void
@@ -33,17 +33,18 @@ feature {NONE} -- Initialization
 			default_create
 			set_text (a_name)
 			set_pixmap (pixmaps.icon_pixmaps.information_tag_icon)
+			pointer_button_press_actions.extend (agent register_pressed_item)
 		end
 
 feature -- Access
 
-	stone: STONE is
+	stone: STONE
 			-- No stones for tags.
 		do
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -67,11 +68,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

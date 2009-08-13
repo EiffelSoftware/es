@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"View with information about a class."
 	legal: "See notice at end of class."
@@ -13,9 +13,6 @@ inherit
 	ES_FORMATTER_TOOL_PANEL_BASE
 		rename
 			last_stone as stone
-		redefine
-			attach_to_docking_manager,
-			stone
 		end
 
 	ES_CLASS_TOOL_COMMANDER_I
@@ -26,28 +23,15 @@ inherit
 create
 	make
 
-feature -- Docking issues
-
-	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
-			-- Attach to docking manager
-		do
-			build_docking_content (a_docking_manager)
-			check not_already_has: not a_docking_manager.has_content (content) end
-			a_docking_manager.contents.extend (content)
-		end
-
 feature -- Access
 
-	stone: CLASSI_STONE
-			-- Stone
-
-	predefined_formatters: like formatters is
+	predefined_formatters: like formatters
 			-- Predefined formatters
 		do
 			Result := develop_window.managed_class_formatters
 		end
 
-	no_target_message: STRING_GENERAL is
+	no_target_message: STRING_GENERAL
 			-- Message to be displayed in `output_line' when no stone is set
 		do
 			Result := Interface_names.l_Not_in_system_no_info
@@ -66,7 +50,7 @@ feature {ES_CLASS_TOOL} -- Access
 			l_formatters := predefined_formatters
 			l_cursor := l_formatters.cursor
 			from l_formatters.start until l_formatters.after or l_stop loop
-				if {l_formatter: !EB_CLASS_INFO_FORMATTER} l_formatters.item and then l_formatter.selected then
+				if attached {EB_CLASS_INFO_FORMATTER} l_formatters.item as l_formatter and then l_formatter.selected then
 					Result := l_formatter.mode
 					l_stop := True
 				else
@@ -91,7 +75,7 @@ feature {ES_CLASS_TOOL} -- Element change
 				l_formatters := predefined_formatters
 				l_cursor := l_formatters.cursor
 				from l_formatters.start until l_formatters.after or l_stop loop
-					if {l_formatter: !EB_CLASS_INFO_FORMATTER} l_formatters.item and then l_formatter.mode = a_mode then
+					if attached {EB_CLASS_INFO_FORMATTER} l_formatters.item as l_formatter and then l_formatter.mode = a_mode then
 							-- Execute formatter
 						l_formatter.execute
 						l_stop := True
@@ -121,7 +105,7 @@ feature {ES_CLASS_TOOL} -- Element change
 
 feature -- Status setting
 
-	set_stone (new_stone: STONE) is
+	set_stone (new_stone: STONE)
 			-- Send a stone to class formatters.
 		local
 			fst: FEATURE_STONE
@@ -173,7 +157,7 @@ feature -- Status setting
 			end
 		end
 
-	pop_default_formatter is
+	pop_default_formatter
 			-- Pop the default class formatter.
 		local
 			real_index: INTEGER
@@ -191,7 +175,7 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	enable_dotnet_formatters (a_flag: BOOLEAN) is
+	enable_dotnet_formatters (a_flag: BOOLEAN)
 			-- Set sensitivity of formatters to 'a_flag'.
 		local
 			l_done: BOOLEAN
@@ -237,7 +221,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	drop_stone (st: like stone) is
+	drop_stone (st: like stone)
 			-- Set `st' in the stone manager and pop up the feature view if it is a feature stone.
 		local
 			fst: FEATURE_STONE
@@ -257,7 +241,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decide_tool_to_display (a_st: STONE): EB_STONABLE_TOOL is
+	decide_tool_to_display (a_st: STONE): EB_STONABLE_TOOL
 			-- Decide which tool to display.
 		local
 			fs: FEATURE_STONE
@@ -275,10 +259,10 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -289,22 +273,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CLASS_VIEW

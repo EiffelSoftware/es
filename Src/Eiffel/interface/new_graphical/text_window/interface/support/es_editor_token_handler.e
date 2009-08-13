@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Base handler for performing idle actions on editor tokens in a EiffelStudio custom widget based editor {EB_CUSTOM_WIDGETTED_EDITOR}.
 	]"
@@ -40,12 +40,12 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
-	last_token_handled: ?EDITOR_TOKEN
+	last_token_handled: detachable EDITOR_TOKEN
 			-- The last token performed upon
 
 feature {NONE} -- Access
 
-	editor: !EB_CUSTOM_WIDGETTED_EDITOR
+	editor: attached EB_CUSTOM_WIDGETTED_EDITOR
 			-- Editor to perform operations on.
 
 feature -- Status report
@@ -68,7 +68,7 @@ feature -- Status report
 
 feature -- Query
 
-	is_applicable_token (a_token: !EDITOR_TOKEN): BOOLEAN
+	is_applicable_token (a_token: attached EDITOR_TOKEN): BOOLEAN
 			-- Determines if a token is applicable for processing
 			--
 			-- `a_token': Token to test for applicablity.
@@ -87,7 +87,7 @@ feature -- Query
 
 feature -- Basic operations
 
-	perform_on_token (a_token: !EDITOR_TOKEN; a_line: INTEGER)
+	perform_on_token (a_token: attached EDITOR_TOKEN; a_line: INTEGER)
 			-- Performs an action on a token, regardless of the mouse or caret position.
 			--
 			-- `a_token': The editor token to process.
@@ -104,7 +104,7 @@ feature -- Basic operations
 			last_token_handled_set: last_token_handled = a_token
 		end
 
-	perform_on_token_with_mouse_coords (a_instant: BOOLEAN; a_token: !EDITOR_TOKEN; a_line: INTEGER; a_x: INTEGER; a_y: INTEGER; a_screen_x: INTEGER; a_screen_y: INTEGER)
+	perform_on_token_with_mouse_coords (a_instant: BOOLEAN; a_token: attached EDITOR_TOKEN; a_line: INTEGER; a_x: INTEGER; a_y: INTEGER; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Performs an action on a token, respecting the current mouse x and y coordinates.
 			--
 			-- `a_instant': Indicates if the user held the instant-action key.
@@ -162,7 +162,7 @@ invariant
 	editor_is_interface_usable: is_interface_usable implies editor.is_interface_usable
 	last_token_handled_attached: is_active implies last_token_handled /= Void
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

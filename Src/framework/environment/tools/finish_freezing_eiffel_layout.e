@@ -1,4 +1,4 @@
-indexing
+note
 	description: "finish freezing layout"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,12 +13,15 @@ inherit
 
 feature -- Access
 
-	application_name: !STRING_8 = "finish_freezing"
+	application_name: attached STRING_8
 			-- <Precursor>
+		once
+			Result := "finish_freezing"
+		end
 
 feature -- Directories
 
-	config_eif_path: !DIRECTORY_NAME
+	config_eif_path: attached DIRECTORY_NAME
 			-- Path to directory containing `config.eif'.
 		require
 			is_valid_environment: is_valid_environment
@@ -32,7 +35,7 @@ feature -- Directories
 
 feature -- Files
 
-	config_eif_file_name: !FILE_NAME
+	config_eif_file_name: attached FILE_NAME
 			-- Location of `config.eif' file.
 		require
 			is_valid_environment: is_valid_environment
@@ -54,7 +57,7 @@ feature -- Files
 			not_result_is_empty: not Result.is_empty
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

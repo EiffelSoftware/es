@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Implementation of DICTIONARY that stores entries in a sorted array and uses binary search to retrieve them"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,9 +23,9 @@ inherit
 create
 	make
 
-feature --Creation
+feature {NONE} --Creation
 
-	make(a_plural_form:INTEGER) is
+	make(a_plural_form:INTEGER)
 			-- create the datastructure
 		do
 			Precursor(a_plural_form)
@@ -36,7 +36,7 @@ feature --Creation
 
 feature --Insertion
 
-	extend (a_entry: I18N_DICTIONARY_ENTRY) is
+	extend (a_entry: I18N_DICTIONARY_ENTRY)
 			-- a_entry is not duplicated, duplicate is precondition
 			-- add an entry to `array' without sorting it
 			-- auto resize when the capacity of `array' is filled
@@ -54,7 +54,7 @@ feature --Insertion
 
 feature --Access
 
-	has(original:STRING_GENERAL):BOOLEAN is
+	has(original:STRING_GENERAL):BOOLEAN
 			-- does the dictionary have this entry?
 			-- use binary search algorithm
 			-- require `array'is sorted
@@ -70,7 +70,7 @@ feature --Access
 
 feature--{NONE}	--help functions
 
-	search_index_and_insert is
+	search_index_and_insert
 			-- `array' is sorted except the last  inserted element
 			-- after every `insert' is insertion_sort is called
 			-- compare with its neighbour recursively until the right_index for it is found
@@ -119,13 +119,15 @@ feature--{NONE}	--help functions
 			end
 		end
 
-	has_index(original:STRING_GENERAL):INTEGER is
+	has_index(original:STRING_GENERAL):INTEGER
 			-- does the dictionary have this entry?
 			-- use binary search algorithm
-			-- require `array'is sorted
+			-- require `array' is sorted
 			-- return the Index of the found item
 			-- return -1 if not found
 			-- based only on the  `key item', no info about translation items
+		require
+			original_not_void: original /= Void
 		local
 			left,right,middle: INTEGER
 			m_string: STRING_32
@@ -166,55 +168,53 @@ feature--{NONE}	--help functions
 
 feature	-- Access
 
-	has_plural(original_singular, original_plural: STRING_GENERAL; plural_number:INTEGER):BOOLEAN is
+	has_plural (original_singular, original_plural: STRING_GENERAL; plural_number:INTEGER):BOOLEAN
+			--
+		local
+			entry: detachable I18N_DICTIONARY_ENTRY
+			index: INTEGER
+			l_trans: detachable ARRAY [STRING_32]
+		do
+			index:=has_index(original_singular.as_string_32)
+			if index /= -1 then
+				entry := array.item (index)
+				check entry /= Void end -- Implied from `has_index'
+				l_trans := entry.plural_translations
+				if l_trans /= Void then
+					Result := l_trans.item (reduce (plural_number)) /= Void
+				end
+			end
+		end
+
+	singular(original:STRING_GENERAL): STRING_32
 			--
 		local
 			entry: I18N_DICTIONARY_ENTRY
 			index: INTEGER
 		do
-			index:=has_index(original_singular.as_string_32)
-			if index /= -1 then
-				entry := array.item (index)
-				if entry.plural_translations.item(reduce (plural_number)) /= Void then
-						Result := True
-				end
-			end
-		end
-
-	singular(original:STRING_GENERAL): STRING_32 is
-		--
-		local
-			entry: I18N_DICTIONARY_ENTRY
-			index: INTEGER
-		do
 			index:=has_index(original.as_string_32)
-			if index /= -1 then
-				entry := array.item (index)
-				Result := entry.singular_translation
-			end
+			entry := array.item (index)
+			Result := entry.singular_translation
 		end
 
-	plural(original_singular, original_plural: STRING_GENERAL; plural_number: INTEGER): STRING_32 is
-				--
+	plural(original_singular, original_plural: STRING_GENERAL; plural_number: INTEGER): STRING_32
+			--
 		local
 			entry: I18N_DICTIONARY_ENTRY
 			index: INTEGER
+			l_trans: detachable ARRAY [STRING_32]
 		do
-			index:=has_index(original_singular.as_string_32)
-
-				-- i do not know whether it is necessary to check `index /= -1'
-				-- because `has_plural' has checked it already
-
-			if index /= -1 then
-				entry := array.item (index)
-				Result := entry.plural_translations.item (reduce (plural_number))
-			end
+			index := has_index(original_singular.as_string_32)
+			entry := array.item (index)
+			l_trans := entry.plural_translations
+			check l_trans /= Void end
+			Result := l_trans.item (reduce (plural_number))
 		end
 
 
 feature --Information
 
-	count:INTEGER is
+	count:INTEGER
 		do
 			Result := current_index-1
 		end
@@ -222,11 +222,11 @@ feature --Information
 feature {NONE} -- Implementation
 
 	array: ARRAY[I18N_DICTIONARY_ENTRY]
-	min_index: INTEGER is 1
+	min_index: INTEGER = 1
 	max_index: INTEGER
 		-- should be updated after it is equal to `default_number_of_entries'
 
-	last_index: INTEGER is
+	last_index: INTEGER
 			--actually last_index is equal to `count'
 		do
 			Result :=current_index-1
@@ -235,19 +235,19 @@ feature {NONE} -- Implementation
 	current_index: INTEGER
 		 -- the index which is to be filled next
 
-	default_number_of_entries: INTEGER is 50
+	default_number_of_entries: INTEGER = 50
 
 invariant
 	count_equal_current_index: count=current_index-1
 	count_equal_last_index: count=last_index
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

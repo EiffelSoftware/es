@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Exception manager
 		]"
@@ -30,7 +30,7 @@ inherit
 
 feature -- Access
 
-	last_exception: EXCEPTION
+	last_exception: detachable EXCEPTION
 			-- Last exception
 		do
 			Result ?= {ISE_RUNTIME}.last_exception
@@ -38,12 +38,10 @@ feature -- Access
 
 feature -- Raise
 
-	raise (a_exception: EXCEPTION) is
+	raise (a_exception: EXCEPTION)
 			-- Raise `a_exception'.
-			-- Raising `a_exception' by this routine makes `a_exception' accessable by `last_exception'
+			-- Raising `a_exception' by this routine makes `a_exception' accessible by `last_exception'
 			-- in rescue clause. Hence causes removal of original `last_exception'.
-			-- If the original `last_exception' needs to be reserved, `set_throwing_exception'
-			-- on `a_exception' can be called.
 		do
 			if not a_exception.is_ignored then
 				{ISE_RUNTIME}.raise (a_exception)
@@ -52,7 +50,7 @@ feature -- Raise
 
 feature -- Status setting
 
-	ignore (a_exception: TYPE [EXCEPTION]) is
+	ignore (a_exception: TYPE [EXCEPTION])
 			-- Make sure that any exception of code `code' will be
 			-- ignored. This is not the default.
 		local
@@ -62,7 +60,7 @@ feature -- Status setting
 			ignored_exceptions.force (l_type, l_type)
 		end
 
-	catch (a_exception: TYPE [EXCEPTION]) is
+	catch (a_exception: TYPE [EXCEPTION])
 			-- Set type of `a_exception' `is_ignored'.
 		local
 			l_type: INTEGER
@@ -71,7 +69,7 @@ feature -- Status setting
 			ignored_exceptions.remove (l_type)
 		end
 
-	set_is_ignored (a_exception: TYPE [EXCEPTION]; a_ignored: BOOLEAN) is
+	set_is_ignored (a_exception: TYPE [EXCEPTION]; a_ignored: BOOLEAN)
 			-- Set type of `a_exception' to be `a_ignored'.
 		do
 			if a_ignored then
@@ -83,25 +81,25 @@ feature -- Status setting
 
 feature -- Status report
 
-	is_ignorable (a_exception: TYPE [EXCEPTION]): BOOLEAN is
+	is_ignorable (a_exception: TYPE [EXCEPTION]): BOOLEAN
 			-- If set, type of `a_exception' is ignorable.
 		do
 			Result := not unignorable_exceptions.has (internal_object.dynamic_type (a_exception))
 		end
 
-	is_raisable (a_exception: TYPE [EXCEPTION]): BOOLEAN is
+	is_raisable (a_exception: TYPE [EXCEPTION]): BOOLEAN
 			-- If set, type of `a_exception' is raisable.
 		do
 			Result := not unraisable_exceptions.has (internal_object.dynamic_type (a_exception))
 		end
 
-	is_ignored (a_exception: TYPE [EXCEPTION]): BOOLEAN is
+	is_ignored (a_exception: TYPE [EXCEPTION]): BOOLEAN
 			-- If set, type of `a_exception' is not raised.
 		do
 			Result := ignored_exceptions.has (internal_object.dynamic_type (a_exception))
 		end
 
-	is_caught (a_exception: TYPE [EXCEPTION]): BOOLEAN is
+	is_caught (a_exception: TYPE [EXCEPTION]): BOOLEAN
 			-- If set, type of `a_exception' is raised.
 		do
 			Result := not ignored_exceptions.has (internal_object.dynamic_type (a_exception))
@@ -109,7 +107,7 @@ feature -- Status report
 
 feature {EXCEPTIONS} -- Backward compatibility support
 
-	type_of_code (a_code: INTEGER): TYPE [EXCEPTION]
+	type_of_code (a_code: INTEGER): detachable TYPE [EXCEPTION]
 			-- Exception type of `a_code'
 		do
 			inspect a_code
@@ -143,7 +141,7 @@ feature {EXCEPTIONS} -- Backward compatibility support
 					-- Obselete
 				Result := {RESCUE_FAILURE}
 			when {EXCEP_CONST}.Out_of_memory then
-					-- Should have difference with `No_more_memory'
+					-- Merged with `No_more_memory'
 				Result := {NO_MORE_MEMORY}
 			when {EXCEP_CONST}.Resumption_failed then
 					-- Obselete
@@ -166,10 +164,12 @@ feature {EXCEPTIONS} -- Backward compatibility support
 			when {EXCEP_CONST}.Developer_exception then
 				Result := {DEVELOPER_EXCEPTION}
 			when {EXCEP_CONST}.Eiffel_runtime_fatal_error then
+					-- Merged with `Eiffel_runtime_panic'
 				Result := {EIFFEL_RUNTIME_PANIC}
 			when {EXCEP_CONST}.Dollar_applied_to_melted_feature then
 				Result := {ADDRESS_APPLIED_TO_MELTED_FEATURE}
 			when {EXCEP_CONST}.Runtime_io_exception then
+					-- Merged with `Io_exception'
 				Result := {IO_FAILURE}
 			when {EXCEP_CONST}.Com_exception then
 				Result := {COM_FAILURE}
@@ -184,14 +184,20 @@ feature {EXCEPTIONS} -- Backward compatibility support
 			end
 		end
 
-	exception_from_code (a_code: INTEGER): EXCEPTION is
+	exception_from_code (a_code: INTEGER): detachable EXCEPTION
 			-- Create exception object from `a_code'
+		local
+			l_rt_panic: EIFFEL_RUNTIME_PANIC
+			l_io_failure: IO_FAILURE
+			l_no_more_mem: NO_MORE_MEMORY
 		do
 			inspect a_code
 			when {EXCEP_CONST}.void_call_target then
 				create {VOID_TARGET}Result
 			when {EXCEP_CONST}.No_more_memory then
-				create {NO_MORE_MEMORY}Result
+				create l_no_more_mem
+				l_no_more_mem.set_code ({EXCEP_CONST}.No_more_memory)
+				Result := l_no_more_mem
 			when {EXCEP_CONST}.Precondition then
 				create {PRECONDITION_VIOLATION}Result
 			when {EXCEP_CONST}.Postcondition then
@@ -213,13 +219,17 @@ feature {EXCEPTIONS} -- Backward compatibility support
 			when {EXCEP_CONST}.Signal_exception then
 				create {OPERATING_SYSTEM_SIGNAL_FAILURE}Result
 			when {EXCEP_CONST}.Eiffel_runtime_panic then
-				create {EIFFEL_RUNTIME_PANIC}Result
+				create l_rt_panic
+				l_rt_panic.set_code ({EXCEP_CONST}.Eiffel_runtime_panic)
+				Result := l_rt_panic
 			when {EXCEP_CONST}.Rescue_exception then
 					-- Obselete
 				create {RESCUE_FAILURE}Result
 			when {EXCEP_CONST}.Out_of_memory then
-					-- Should have difference with `No_more_memory'
-				create {NO_MORE_MEMORY}Result
+					-- Merged with `No_more_memory'
+				create l_no_more_mem
+				l_no_more_mem.set_code ({EXCEP_CONST}.Out_of_memory)
+				Result := l_no_more_mem
 			when {EXCEP_CONST}.Resumption_failed then
 					-- Obselete
 				create {RESUMPTION_FAILURE}Result
@@ -233,7 +243,9 @@ feature {EXCEPTIONS} -- Backward compatibility support
 					-- Obselete
 				create {EXCEPTION_IN_SIGNAL_HANDLER_FAILURE}Result
 			when {EXCEP_CONST}.Io_exception then
-				create {IO_FAILURE}Result
+				create l_io_failure
+				l_io_failure.set_code ({EXCEP_CONST}.Io_exception)
+				Result := l_io_failure
 			when {EXCEP_CONST}.Operating_system_exception then
 				create {OPERATING_SYSTEM_FAILURE}Result
 			when {EXCEP_CONST}.Retrieve_exception then
@@ -241,12 +253,17 @@ feature {EXCEPTIONS} -- Backward compatibility support
 			when {EXCEP_CONST}.Developer_exception then
 				create {DEVELOPER_EXCEPTION}Result
 			when {EXCEP_CONST}.Eiffel_runtime_fatal_error then
-					-- Should be different from `Eiffel_runtime_panic'
-				create {EIFFEL_RUNTIME_PANIC}Result
+					-- Merged with `Eiffel_runtime_panic'
+				create l_rt_panic
+				l_rt_panic.set_code ({EXCEP_CONST}.Eiffel_runtime_fatal_error)
+				Result := l_rt_panic
 			when {EXCEP_CONST}.Dollar_applied_to_melted_feature then
 				create {ADDRESS_APPLIED_TO_MELTED_FEATURE}Result
 			when {EXCEP_CONST}.Runtime_io_exception then
-				create {IO_FAILURE}Result
+					-- Merged with `Io_exception'
+				create l_io_failure
+				l_io_failure.set_code ({EXCEP_CONST}.Runtime_io_exception)
+				Result := l_io_failure
 			when {EXCEP_CONST}.Com_exception then
 				create {COM_FAILURE}Result
 			when {EXCEP_CONST}.Runtime_check_exception then
@@ -261,7 +278,7 @@ feature {EXCEPTIONS} -- Backward compatibility support
 
 feature {NONE} -- Element change
 
-	compute_last_exception (a_last_exception: NATIVE_EXCEPTION): EXCEPTION is
+	compute_last_exception (a_last_exception: NATIVE_EXCEPTION): detachable EXCEPTION
 			-- Set `last_exception' with `a_last_exception'.
 		do
 			if a_last_exception /= Void then
@@ -271,50 +288,52 @@ feature {NONE} -- Element change
 
 feature {NONE} -- Implementation, ignoring
 
-	ignored_exceptions: HASH_TABLE [INTEGER, INTEGER] is
+	ignored_exceptions: HASH_TABLE [INTEGER, INTEGER]
 			-- Ignored exceptions
 		once
 			create Result.make (0)
 		end
 
-	unignorable_exceptions: HASH_TABLE [INTEGER, INTEGER] is
+	unignorable_exceptions: HASH_TABLE [INTEGER, INTEGER]
 			-- Unignorable exceptions
 		local
 			l_type: INTEGER
 		once
-			l_type := internal_object.dynamic_type ({VOID_TARGET})
 			create Result.make (1)
+			l_type := internal_object.dynamic_type ({VOID_TARGET})
 			Result.force (l_type, l_type)
 		end
 
-	unraisable_exceptions: HASH_TABLE [INTEGER, INTEGER] is
+	unraisable_exceptions: HASH_TABLE [INTEGER, INTEGER]
 			-- Unraisable exceptions
+		local
+			l_type: INTEGER
 		once
-			create Result.make (0)
+			create Result.make (2)
+			l_type := internal_object.dynamic_type ({ROUTINE_FAILURE})
+			Result.force (l_type, l_type)
+			l_type := internal_object.dynamic_type ({OLD_VIOLATION})
+			Result.force (l_type, l_type)
 		end
 
 feature {NONE} -- Implementation, exception chain
 
-	constructed_exception_chain (a_last_exception: NATIVE_EXCEPTION): EXCEPTION is
+	constructed_exception_chain (a_last_exception: NATIVE_EXCEPTION): EXCEPTION
 			-- Construct exception chain
 		require
 			a_last_exception_not_viod: a_last_exception /= Void
 		local
-			l_exception: EXCEPTION
-			l_pre: PRECONDITION_VIOLATION
-			l_rf: ROUTINE_FAILURE
+			l_exception: detachable EXCEPTION
 			l_stack_trace: STACK_TRACE
 			l_rs: like recipient_and_type_name
 			l_to_skip: INTEGER
 		do
-			l_rf ?= a_last_exception
-			if l_rf /= Void then
+			if attached {ROUTINE_FAILURE} a_last_exception as l_rf then
 				l_to_skip := 2
 			else
 					-- Skip a frame for precondition violation and invariant violation on entry
 					-- To get the caller.
-				l_pre ?= a_last_exception
-				if l_pre /= Void or {ISE_RUNTIME}.in_precondition then
+				if attached {PRECONDITION_VIOLATION} a_last_exception as l_pre or {ISE_RUNTIME}.in_precondition then
 					l_to_skip := 2	-- The number is decided because for a normal Eiffel call, there are two frames.
 				end
 			end
@@ -322,69 +341,60 @@ feature {NONE} -- Implementation, exception chain
 			create l_stack_trace.make (a_last_exception)
 			l_rs := recipient_and_type_name (l_stack_trace, l_to_skip)
 			l_exception := wrapped_exception (a_last_exception)
+			check l_exception_attached: l_exception /= Void end
 			l_exception.set_recipient_name (l_rs.recipient)
 			l_exception.set_type_name (l_rs.type)
 			l_exception.set_line_number (l_rs.line_number)
+			if {ISE_RUNTIME}.exception_from_rescue then
+				l_exception.original.set_throwing_exception (last_exception)
+			end
 			Result := l_exception
 		ensure
 			constructed_exception_chain_not_void: Result /= Void
 		end
 
-	wrapped_exception (a_exception: NATIVE_EXCEPTION): EXCEPTION is
+	wrapped_exception (a_exception: NATIVE_EXCEPTION): detachable EXCEPTION
 			-- Wrapped .NET exception
 		require
 			a_exception_not_void: a_exception /= Void
 		local
-			l_conv_io: IO_EXCEPTION
-			l_conv_sys: SYSTEM_EXCEPTION
-			l_conv_acc: UNAUTHORIZED_ACCESS_EXCEPTION
-			l_conv_sec: SECURITY_EXCEPTION
-			l_nullref_exception: NULL_REFERENCE_EXCEPTION
-			l_exception: EXCEPTION
+			l_exception: detachable EXCEPTION
 		do
 			l_exception ?= a_exception
 			if l_exception = Void then
 					-- A pure .NET exception
-				l_nullref_exception ?= a_exception
-				if l_nullref_exception /= Void then
+				if attached {NULL_REFERENCE_EXCEPTION} a_exception as l_nullref then
 						-- Replace NullReferenceException with VOID_TARGET
-					create {VOID_TARGET}l_exception.make_dotnet_exception (a_exception)
+					create {VOID_TARGET} l_exception.make_dotnet_exception (a_exception)
+				elseif
+					attached {UNAUTHORIZED_ACCESS_EXCEPTION} a_exception as l_conv_acc or
+					attached {SECURITY_EXCEPTION} a_exception as l_conv_sec or
+					attached {IO_EXCEPTION} a_exception as l_conv_io
+				then
+					create {IO_FAILURE} l_exception.make_dotnet_exception (a_exception)
 				else
-					l_conv_sec ?= a_exception
-					if l_conv_sys /= Void then
-						create {OPERATING_SYSTEM_FAILURE}l_exception.make_dotnet_exception (a_exception)
-					else
-						l_conv_acc ?= a_exception
-						l_conv_sec ?= a_exception
-						l_conv_io ?= a_exception
-						if l_conv_acc /= Void or l_conv_sec /= Void or l_conv_io /= Void then
-							create {IO_FAILURE}l_exception.make_dotnet_exception (a_exception)
-						else
-							create {OPERATING_SYSTEM_SIGNAL_FAILURE}l_exception.make_dotnet_exception (a_exception)
-						end
-					end
+					create {OPERATING_SYSTEM_SIGNAL_FAILURE} l_exception.make_dotnet_exception (a_exception)
 				end
 				l_exception.set_message ("")
 			end
 			Result := l_exception
-		ensure
-			wrapped_exception_not_void: Result /= Void
 		end
 
-	recipient_and_type_name (a_st: STACK_TRACE; a_skip: INTEGER): TUPLE [recipient, type: STRING; line_number: INTEGER] is
+	recipient_and_type_name (a_st: STACK_TRACE; a_skip: INTEGER): TUPLE [recipient, type: detachable STRING; line_number: INTEGER]
 			-- Compute recipient name, type name and possible line number via `a_st'.
 			-- `a_skip' is number of first caught frames to though away.
 		require
 			a_st_not_void: a_st /= Void
 		local
-			l_routine_name, l_class: STRING
+			l_routine_name, l_class: detachable STRING
 			l_stack_trace: STACK_TRACE
-			l_frame: STACK_FRAME
+			l_frame: detachable STACK_FRAME
 			l_frame_count, i: INTEGER
-			l_method: METHOD_BASE
+			l_method: detachable METHOD_BASE
 			l_skipped, l_to_skip: INTEGER
 			l_line_number: INTEGER
 			l_found: BOOLEAN
+			l_type: detachable SYSTEM_TYPE
 		do
 			l_stack_trace := a_st
 			l_frame_count := l_stack_trace.frame_count
@@ -395,8 +405,9 @@ feature {NONE} -- Implementation, exception chain
 				i >= l_frame_count or else l_found
 			loop
 				l_frame := l_stack_trace.get_frame (i)
+				check l_frame_attached: l_frame /= Void end
 				l_method := l_frame.get_method
-				if is_filtered_routine (l_method) then
+				if l_method /= Void and then is_filtered_routine (l_method) then
 					if l_skipped >= l_to_skip then
 						create l_routine_name.make_from_cil (l_method.name)
 						if l_routine_name.count > 2 and then
@@ -405,7 +416,9 @@ feature {NONE} -- Implementation, exception chain
 						then
 							l_routine_name := l_routine_name.substring (3, l_routine_name.count)
 						end
-						create l_class.make_from_cil (l_method.declaring_type.name)
+						l_type := l_method.declaring_type
+						check l_type_not_void: l_type /= Void end
+						create l_class.make_from_cil (l_type.name)
 						l_line_number := l_frame.get_file_line_number
 						l_found := True
 					else
@@ -419,20 +432,21 @@ feature {NONE} -- Implementation, exception chain
 			result_not_void: Result /= Void
 		end
 
-	is_filtered_routine (a_method: METHOD_BASE): BOOLEAN is
+	is_filtered_routine (a_method: METHOD_BASE): BOOLEAN
 			-- Is `a_name' filtered?
 			-- Implementations, routines out of Eiffel classes and some routines in the manager are filtered.
 		require
 			a_method_not_void: a_method /= Void
 		local
-			l_attributs: NATIVE_ARRAY [SYSTEM_OBJECT]
+			l_attributes: detachable NATIVE_ARRAY [detachable SYSTEM_OBJECT]
 			l_routine_name: STRING
-			l_attr: EIFFEL_NAME_ATTRIBUTE
+			l_type: detachable SYSTEM_TYPE
 		do
-			l_attributs := a_method.declaring_type.get_custom_attributes ({EIFFEL_NAME_ATTRIBUTE}, False)
-			if l_attributs.count = 1 then
-				l_attr ?= l_attributs.item (0)
-				if l_attr /= Void then
+			l_type := a_method.declaring_type
+			check l_type_attached: l_type /= Void end
+			l_attributes := l_type.get_custom_attributes ({EIFFEL_NAME_ATTRIBUTE}, False)
+			if l_attributes /= Void and then l_attributes.count = 1 then
+				if attached {EIFFEL_NAME_ATTRIBUTE} l_attributes.item (0) as l_attr then
 					if not filtered_class.has (create {STRING}.make_from_cil(l_attr.name)) then
 						create l_routine_name.make_from_cil (a_method.name)
 						Result := not filtered_routines.has (l_routine_name)
@@ -441,7 +455,7 @@ feature {NONE} -- Implementation, exception chain
 			end
 		end
 
-	filtered_class: HASH_TABLE [INTEGER, STRING] is
+	filtered_class: HASH_TABLE [INTEGER, STRING]
 			-- Filterred routines
 		once
 			create Result.make (2)
@@ -449,7 +463,7 @@ feature {NONE} -- Implementation, exception chain
 			Result.put (0, "ISE_EXCEPTION_MANAGER")
 		end
 
-	filtered_routines: HASH_TABLE [INTEGER, STRING] is
+	filtered_routines: HASH_TABLE [INTEGER, STRING]
 			-- Filterred routines
 		once
 			create Result.make (15)
@@ -478,11 +492,11 @@ feature {NONE} -- Implementation, exception chain
 
 feature {NONE} -- Internal raise, Implementation of RT_EXCEPTION_MANAGER
 
-	internal_raise (e_code: INTEGER; msg: SYSTEM_STRING) is
+	internal_raise (e_code: INTEGER; msg: SYSTEM_STRING)
 			-- Internal raise exception of code `e_code'
 		local
-			l_exception: EXCEPTION
-			l_inv: INVARIANT_VIOLATION
+			l_exception: detachable EXCEPTION
+			l_inv: detachable INVARIANT_VIOLATION
 			l_saved_assertion, l_assertion_set: BOOLEAN
 			l_assertion_tag: STRING
 		do
@@ -492,6 +506,7 @@ feature {NONE} -- Internal raise, Implementation of RT_EXCEPTION_MANAGER
 				l_saved_assertion := {ISE_RUNTIME}.check_assert (False)
 			end
 			l_exception := exception_from_code (e_code)
+			check l_exception_not_void: l_exception /= Void end
 			l_inv ?= l_exception
 			if l_inv /= Void then
 				l_inv.set_is_entry ({ISE_RUNTIME}.invariant_entry)
@@ -515,7 +530,7 @@ feature {NONE} -- Internal raise, Implementation of RT_EXCEPTION_MANAGER
 			end
 		end
 
-	internal_raise_old (a_exception: NATIVE_EXCEPTION) is
+	internal_raise_old (a_exception: NATIVE_EXCEPTION)
 			-- Raise OLD_VIOLATION with original of `a_exception'
 		local
 			l_exception: OLD_VIOLATION
@@ -527,11 +542,11 @@ feature {NONE} -- Internal raise, Implementation of RT_EXCEPTION_MANAGER
 			end
 		end
 
-	throw_last_exception (a_exception: NATIVE_EXCEPTION; a_for_once: BOOLEAN) is
+	throw_last_exception (a_exception: NATIVE_EXCEPTION; a_for_once: BOOLEAN)
 			-- Rethrow the exception at the end of rescue clause.
 		local
 			l_failure: ROUTINE_FAILURE
-			l_exception: EXCEPTION
+			l_exception: detachable EXCEPTION
 			l_stack_trace: STACK_TRACE
 			l_rs: like recipient_and_type_name
 		do
@@ -545,17 +560,19 @@ feature {NONE} -- Internal raise, Implementation of RT_EXCEPTION_MANAGER
 				l_failure.set_throwing_exception (l_exception)
 
 				create l_stack_trace.make
-					-- The number 2 is the frames of current call.
 				l_rs := recipient_and_type_name (l_stack_trace, 0)
 				l_failure.set_routine_name (l_rs.recipient)
 				l_failure.set_class_name (l_rs.type)
+					-- Substitute `last_exception' for the use at the beginning of a `rescue',
+					-- where we setup possible `cause'.
+				{ISE_RUNTIME}.restore_last_exception (l_failure)
 				{ISE_RUNTIME}.raise (l_failure)
 			else
 				{ISE_RUNTIME}.raise (l_exception)
 			end
 		end
 
-	is_assertion_violation (a_code: INTEGER): BOOLEAN is
+	is_assertion_violation (a_code: INTEGER): BOOLEAN
 			-- Is `a_code' exception of assertion violation?
 		do
 			Result := 	a_code = {EXCEP_CONST}.precondition or else
@@ -593,7 +610,7 @@ feature {NONE} -- Exception codes, Implementation of RT_EXCEPTION_MANAGER
 	old_exception:INTEGER do Result := {EXCEP_CONST}.old_exception end
 	serialization_exception:INTEGER do Result := {EXCEP_CONST}.serialization_exception end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

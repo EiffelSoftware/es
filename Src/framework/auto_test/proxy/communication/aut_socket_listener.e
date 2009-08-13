@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects waiting for an incoming connection in a non blocking matter.
 	]"
@@ -37,7 +37,7 @@ feature {NONE} -- Access
 	condition: CONDITION_VARIABLE
 			-- Condition variable for waiting on socket
 
-	port_cell: CELL [INTEGER] is
+	port_cell: CELL [INTEGER]
 			-- Cell to contain port number.
 		once
 			create Result.put (min_port)
@@ -45,7 +45,7 @@ feature {NONE} -- Access
 			result_attached: Result /= Void
 		end
 
-	connection: ?NETWORK_STREAM_SOCKET
+	connection: detachable NETWORK_STREAM_SOCKET
 			-- Connection to client once established
 
 feature -- Status report
@@ -87,7 +87,6 @@ feature -- Basic functionality
 			listening: is_listening
 		local
 			l_res: BOOLEAN
-			i: NATURAL
 		do
 			mutex.lock
 			if connection = Void then
@@ -109,7 +108,7 @@ feature -- Basic functionality
 
 feature {NONE} -- Implementation
 
-	open_listener: ?NETWORK_STREAM_SOCKET
+	open_listener: detachable NETWORK_STREAM_SOCKET
 			-- Create listening socket. If no available port was found Void is returned.
 		local
 			l_attempts: NATURAL
@@ -125,7 +124,9 @@ feature {NONE} -- Implementation
 					port_cell.put (min_port)
 				end
 				current_port := port_cell.item
-				create Result.make_server_by_port (current_port)
+
+				create Result.make_loopback_server_by_port (current_port)
+
 				l_attempts := l_attempts + 1
 			end
 			if Result.is_open_read then
@@ -145,7 +146,7 @@ feature {NONE} -- Implementation
 			l_rescued: BOOLEAN
 		do
 			if not l_rescued then
-				create l_socket.make_client_by_port (current_port, "localhost")
+				create l_socket.make_client_by_address_and_port ((create {INET_ADDRESS_FACTORY}).create_loopback, current_port)
 				l_socket.connect
 				l_socket.close
 			end
@@ -154,7 +155,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	start_listening (a_socket: !like open_listener)
+	start_listening (a_socket: attached like open_listener)
 			-- Start listening to `a_socket' for incomming connection. Once connection is established and
 			-- `is_listening' is still True, set `connection' to new connection with client.
 			--
@@ -167,6 +168,7 @@ feature {NONE} -- Implementation
 				mutex.lock
 				if is_listening then
 					connection := a_socket.accepted
+					connection.set_blocking
 					condition.broadcast
 				end
 				mutex.unlock
@@ -185,4 +187,35 @@ feature {NONE} -- Constants
 invariant
 	current_port_not_negative: current_port >= 0
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

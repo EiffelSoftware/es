@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Supports brace match scanning functionality in the editor.
 		]"
@@ -15,7 +15,7 @@ inherit
 
 feature -- Access
 
-	opening_brace_map: !HASH_TABLE [!STRING_32, !STRING_32]
+	opening_brace_map: attached HASH_TABLE [attached STRING_32, attached STRING_32]
 			-- <Precursor>
 		once
 			create Result.make (4)
@@ -25,7 +25,7 @@ feature -- Access
 			Result.put (create {STRING_32}.make_from_string (">>"), create {STRING_32}.make_from_string ("<<"))
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

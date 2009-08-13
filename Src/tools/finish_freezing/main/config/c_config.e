@@ -1,4 +1,4 @@
-indexing
+note
 	description: "An abstract environment configuration for a C/C++ compiler."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,7 +18,7 @@ inherit
 
 feature {NONE} -- Initalization
 
-	make (a_use_32bit: like use_32bit; a_code: like code; a_desc: like description; a_version: like version) is
+	make (a_use_32bit: like use_32bit; a_code: like code; a_desc: like description; a_version: like version)
 			-- Initialize a config
 		require
 			a_code_attached: a_code /= Void
@@ -28,6 +28,7 @@ feature {NONE} -- Initalization
 			a_version_attached: a_version /= Void
 			not_a_version_is_empty: not a_version.is_empty
 		do
+			create variable_table.make (3)
 			use_32bit := a_use_32bit
 			code := a_code
 			description := a_desc
@@ -39,11 +40,10 @@ feature {NONE} -- Initalization
 			version_set: version = a_version
 		end
 
-	frozen initialize is
+	frozen initialize
 			-- Initializes internal state variables, if possible
 		do
 			if not is_initialized and not is_initializing then
-				create variable_table.make (3)
 				is_initializing := True
 				on_initialize
 				is_initialized := True
@@ -53,7 +53,7 @@ feature {NONE} -- Initalization
 			is_initialized: not is_initializing implies is_initialized
 		end
 
-	on_initialize is
+	on_initialize
 			-- Does actual initialization
 		require
 			is_initializing: is_initializing
@@ -65,7 +65,7 @@ feature {NONE} -- Initalization
 
 feature -- Clean up
 
-	frozen dispose is
+	frozen dispose
 			-- Action to be executed just before garbage collection
 			-- reclaims an object.
 		do
@@ -79,7 +79,7 @@ feature -- Clean up
 
 feature {NONE} -- Clean up
 
-	on_dispose is
+	on_dispose
 			-- Action to be executed just before garbage collection
 			-- reclaims an object.
 		require
@@ -91,7 +91,7 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
-	install_path: STRING is
+	install_path: STRING
 			-- Location of Visual Studio install base
 		require
 			exists: exists
@@ -102,7 +102,7 @@ feature -- Access
 			result_ends_with_dir_separator: Result.item (Result.count) = operating_environment.directory_separator
 		end
 
-	path_var: STRING is
+	path_var: STRING
 			-- PATH environment variable
 		require
 			exists: exists
@@ -112,7 +112,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	include_var: STRING is
+	include_var: STRING
 			-- INCLUDE environment variable
 		require
 			exists: exists
@@ -122,7 +122,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	lib_var: STRING is
+	lib_var: STRING
 			-- LIBS environment variable
 		require
 			exists: exists
@@ -151,7 +151,7 @@ feature -- Access
 
 feature -- Status report
 
-	exists: BOOLEAN is
+	exists: BOOLEAN
 			-- Indicates if the product exists
 		deferred
 		end
@@ -174,7 +174,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Variable caching
 
-	extend_variable (a_name: STRING; a_values: STRING) is
+	extend_variable (a_name: STRING; a_values: STRING)
 			-- Extends internal variable `a_name' with values in `a_values'
 		require
 			a_name_attached: a_name /= Void
@@ -183,7 +183,7 @@ feature {NONE} -- Variable caching
 			variable_table_attached: variable_table /= Void
 		local
 			l_table: like variable_table
-			l_old_values: STRING
+			l_old_values: detachable STRING
 			l_new_values: STRING
 		do
 			l_table := variable_table
@@ -205,15 +205,19 @@ feature {NONE} -- Variable caching
 			variable_table_has_a_name: variable_table.has (a_name)
 		end
 
-	variable_for_name (a_name: STRING): STRING is
+	variable_for_name (a_name: STRING): STRING
 			-- Retrieves varaible for name `a_name'
 		require
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
 			variable_table_attached: variable_table /= Void
+		local
+			l_result: detachable STRING
 		do
-			Result := variable_table.item (a_name)
-			if Result = Void then
+			l_result := variable_table.item (a_name)
+			if l_result /= Void then
+				Result := l_result
+			else
 				create Result.make_empty
 			end
 		ensure
@@ -233,9 +237,10 @@ invariant
 	not_description_is_empty: not description.is_empty
 	version_attached: version /= Void
 	not_version_is_empty: not version.is_empty
+	variable_table_attached: variable_table /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -248,22 +253,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

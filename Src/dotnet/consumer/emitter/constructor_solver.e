@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Intermediate representation of constructors used to solve overloading"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,7 +28,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (cons: CONSTRUCTOR_INFO) is
+	make (cons: CONSTRUCTOR_INFO)
 			-- Initialize from `cons'.
 		require
 			non_void_constructor: cons /= Void
@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	name: STRING
+	name: detachable STRING
 			-- Eiffel name of constructor
 
 	arguments: ARRAY [CONSUMED_ARGUMENT]
@@ -52,20 +52,26 @@ feature -- Access
 	is_public: BOOLEAN
 			-- Is constructor public?
 
-	consumed_constructor: CONSUMED_CONSTRUCTOR is
+	consumed_constructor: CONSUMED_CONSTRUCTOR
 			-- Generate consumed constructor from `name' and `internal_constructor'.
 		require
 			name_set: name /= Void
+		local
+			l_name: like name
+			l_type: detachable SYSTEM_TYPE
 		do
-			create Result.make (name, arguments, is_public,
-				referenced_type_from_type (internal_constructor.declaring_type))
+			l_name := name
+			check l_name_attached: l_name /= Void end
+			l_type := internal_constructor.declaring_type
+			check l_type_attached: l_type /= Void end
+			create Result.make (l_name, arguments, is_public, referenced_type_from_type (l_type))
 		ensure
 			non_void_constructor: Result /= Void
 		end
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compare argument count.
 		do
 			Result := arguments.count < other.arguments.count
@@ -73,7 +79,7 @@ feature -- Comparison
 
 feature {TYPE_CONSUMER} -- Element settings
 
-	set_name (n: like name) is
+	set_name (n: like name)
 			-- set `name' with `n'.
 		require
 			non_void_name: n /= Void
@@ -89,7 +95,7 @@ feature {CONSTRUCTOR_SOLVER} -- Implementation
 	internal_constructor: CONSTRUCTOR_INFO;
 			-- Constructor info
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

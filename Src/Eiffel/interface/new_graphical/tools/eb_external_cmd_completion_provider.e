@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Auto-completion provider for external command
 			Allow four kinds of completaions:
@@ -33,7 +33,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_possibilities: like completion_possibilities) is
+	make (a_possibilities: like completion_possibilities)
 			-- Initialize `completion_possibilities' with `a_possibilities'.
 		do
 			completion_possibilities := a_possibilities
@@ -51,9 +51,26 @@ feature -- Access
 	completion_possibilities: SORTABLE_ARRAY [like name_type]
 			-- Completions proposals found by `prepare_auto_complete'
 
+	insertion: STRING_32
+			-- String to be partially completed
+		do
+			if insertion_internal /= Void then
+				Result := insertion_internal
+			else
+				Result := ""
+			end
+		end
+
+	insertion_remainder: INTEGER
+			-- The number of characters in the insertion remaining from the cursor position to the
+			-- end of the token
+		do
+			Result := 0
+		end
+
 feature {CODE_COMPLETABLE} -- Basic operation
 
-	prepare_completion is
+	prepare_completion
 			-- Prepare completion possibilities.
 		local
 			l_text_before_caret: STRING_32
@@ -101,25 +118,7 @@ feature{NONE} -- Implementation
 
 	insertion_internal: like insertion
 
-	insertion: STRING_32 is
-			-- String to be partially completed
-
-		do
-			if insertion_internal /= Void then
-				Result := insertion_internal
-			else
-				Result := ""
-			end
-		end
-
-	insertion_remainder: INTEGER is
-			-- The number of characters in the insertion remaining from the cursor position to the
-			-- end of the token
-		do
-			Result := 0
-		end
-
-	class_possibilities: like completion_possibilities is
+	class_possibilities: like completion_possibilities
 			-- Class possibilities
 		local
 			l_generator: QL_CLASS_DOMAIN_GENERATOR
@@ -147,7 +146,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	feature_possibilities (a_class: CLASS_C): like completion_possibilities is
+	feature_possibilities (a_class: CLASS_C): like completion_possibilities
 			-- Feature possibilities from `a_class'
 		require
 			a_class_attached: a_class /= Void
@@ -181,7 +180,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	is_upper_required (a_feat: E_FEATURE): BOOLEAN is
+	is_upper_required (a_feat: E_FEATURE): BOOLEAN
 			-- Did user configured his system to have once and constants with an upper case?
 		require
 			a_feat_not_void: a_feat /= Void
@@ -189,7 +188,7 @@ feature{NONE} -- Implementation
 			Result := not (a_feat.is_infix or a_feat.is_prefix) and (a_feat.is_once or a_feat.is_constant) and preferences.editor_data.once_and_constant_in_upper
 		end
 
-	placeholder_possibilities: like completion_possibilities is
+	placeholder_possibilities: like completion_possibilities
 			-- Possibilities for placeholders such as $file, $path
 		do
 			create Result.make (1, 13)
@@ -211,7 +210,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	extracted_class_part_at_end (a_text: STRING): STRING is
+	extracted_class_part_at_end (a_text: STRING): STRING
 			-- Class part of `a_text' at the end, if not found, return Void
 		require
 			a_text_attached: a_text /= Void
@@ -252,7 +251,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	extracted_feature_part_at_end (a_text: STRING): TUPLE [class_name: STRING; feature_name: STRING] is
+	extracted_feature_part_at_end (a_text: STRING): TUPLE [class_name: STRING; feature_name: STRING]
 			-- Feature part from `a_text' in form of {CLASS}.feat, result will be ["CLASS", "feat"]
 			-- Void if no suitable format is found
 		require
@@ -305,7 +304,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	extracted_placeholder_part_at_end (a_text: STRING): STRING is
+	extracted_placeholder_part_at_end (a_text: STRING): STRING
 			-- Placeholder part at end of `a_text'
 			-- Void if not found
 		require
@@ -356,37 +355,37 @@ invariant
 	scanner_attached: scanner /= Void
 	factory_attached: factory /= Void
 
-indexing
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
-        source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 
 end
 

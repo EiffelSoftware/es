@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A class to be inserted into the auto-complete list"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -37,7 +37,7 @@ create {EB_CLASS_FOR_COMPLETION}
 
 feature {NONE} -- Initialization
 
-	make (a_class: like associated_class) is
+	make (a_class: like associated_class)
 			-- Creates and initializes a new class completion item
 		require
 			a_class_not_void: a_class /= Void
@@ -53,7 +53,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	is_class: BOOLEAN is
+	is_class: BOOLEAN
 			-- Is completion item a class?
 		do
 			Result := True
@@ -62,20 +62,51 @@ feature -- Access
 	insert_name: STRING_32
 			-- Name to insert in editor
 
-	icon: EV_PIXMAP is
+	icon: EV_PIXMAP
 			-- Associated icon based on data
 		do
 			Result := pixmap_from_class_i (associated_class)
 		end
 
-	tooltip_text: STRING_32 is
+	tooltip_text: STRING_32
 			-- Text for tooltip of Current.  The tooltip shall display information which is not included in the
 			-- actual output of Current.
+		local
+			l_comments: EIFFEL_COMMENTS
+			l_text: STRING_32
+			l_nls: INTEGER
 		do
-			Result := string
+			create Result.make_empty
+
+			l_comments := (create {COMMENT_EXTRACTOR}).class_comments (associated_class)
+			if attached l_comments then
+				from l_comments.start until l_comments.after loop
+					if attached l_comments.item as l_comment_line then
+						l_text := l_comment_line.content
+						l_text.left_adjust
+						l_text.right_adjust
+
+						if not l_text.is_empty then
+							Result.append_string_general (l_text)
+							Result.append_character (' ')
+							l_nls := 0
+						else
+							if l_nls >= 2 and then not l_comments.islast then
+								Result.append ("%N%N")
+							end
+						end
+						l_nls := l_nls + 1
+					end
+					l_comments.forth
+				end
+			end
+
+			if Result.is_empty then
+				Result := string
+			end
 		end
 
-	grid_item : EB_GRID_EDITOR_TOKEN_ITEM is
+	grid_item : EB_GRID_EDITOR_TOKEN_ITEM
 			-- Corresponding grid item
 		local
 			l_class: CLASS_C
@@ -96,7 +127,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_obsolete: BOOLEAN is
+	is_obsolete: BOOLEAN
 			-- Is item obsolete?
 		local
 			l_class: like associated_class
@@ -112,8 +143,8 @@ feature {NONE} -- Implementation
 	associated_class: CLASS_I;
 			-- Corresponding class
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -126,22 +157,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CLASS_FOR_COMPLETION

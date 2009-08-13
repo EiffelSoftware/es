@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Compiled class STRING"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,7 @@ create
 
 feature
 
-	check_validity is
+	check_validity
 			-- Check validity of class STRING
 		local
 			set_count_feat: FEATURE_I;
@@ -101,19 +101,19 @@ feature
 
 feature {NONE} -- Implementation
 
-	make_signature: DYN_PROC_I is
+	make_signature: DYN_PROC_I
 			-- Required signature for feature `make' of class STRING
 		local
 			args: FEAT_ARG;
 		do
 			create args.make (1);
-			args.put_i_th (Integer_type, 1);
+			args.extend (Integer_type);
 			create Result;
 			Result.set_arguments (args);
 			Result.set_feature_name_id (Names_heap.make_name_id, 0)
 		end;
 
-	area_type: GEN_TYPE_A is
+	area_type: GEN_TYPE_A
 			-- Type SPECIAL [CHARACTER]
 		local
 			gen: ARRAY [TYPE_A]
@@ -125,20 +125,20 @@ feature {NONE} -- Implementation
 			area_type_not_void: area_type /= Void
 		end
 
-	set_count_signature: DYN_PROC_I is
+	set_count_signature: DYN_PROC_I
 			-- Required signature for `set_count' of class STRING
 		local
 			args: FEAT_ARG;
 		do
 			create args.make (1);
-			args.put_i_th (Integer_type, 1);
+			args.extend (Integer_type);
 			create Result;
 			Result.set_arguments (args);
 			Result.set_feature_name_id (Names_heap.set_count_name_id, 0)
 		end;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -151,22 +151,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

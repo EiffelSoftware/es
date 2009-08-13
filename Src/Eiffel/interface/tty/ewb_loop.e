@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Batch compiler invoked by the -loop option.%
@@ -27,7 +27,7 @@ inherit
 
 feature -- Properties
 
-	yank_window: YANK_WINDOW is
+	yank_window: YANK_WINDOW
 			-- Output window to be saved to a file
 		once
 			create Result.make
@@ -44,7 +44,7 @@ feature -- Properties
 
 feature -- Initialization
 
-	main_menu: EWB_MENU is
+	main_menu: EWB_MENU
 			-- Main menu options
 		local
 			i: INTEGER
@@ -55,6 +55,9 @@ feature -- Initialization
 			end
 			if eiffel_layout.Has_documentation_generation then
 				i := i + 3
+			end
+			if {EWB_TESTING}.is_available then
+				i := i + 1
 			end
 			create Result.make (1, i)
 			Result.set_is_main
@@ -74,6 +77,10 @@ feature -- Initialization
 
 			Result.add_entry (create {EWB_STRING}.make (system_cmd_name, system_help, system_abb, system_menu))
 
+			if {EWB_TESTING}.is_available then
+				Result.add_entry (create {EWB_TESTING}.make)
+			end
+
 			if eiffel_layout.has_profiler then
 				Result.add_entry (
 					create {EWB_STRING}.make (profile_cmd_name, profile_help, profile_abb, profile_menu))
@@ -87,7 +94,7 @@ feature -- Initialization
 			main_menu_not_void: Result /= Void
 		end
 
-	Documentation_menu: EWB_MENU is
+	Documentation_menu: EWB_MENU
 			-- Documentation menu options
 		once
 			create Result.make (1, 4)
@@ -99,10 +106,10 @@ feature -- Initialization
 			documentation_menu_not_void: Result /= Void
 		end
 
-	System_menu: EWB_MENU is
+	System_menu: EWB_MENU
 			-- System menu options
 		once
-			create Result.make (1, 9)
+			create Result.make (1, 8)
 			Result.set_parent (Main_menu)
 			Result.add_entry (create {EWB_ACE})
 			Result.add_entry (create {EWB_CLASS_LIST})
@@ -112,12 +119,11 @@ feature -- Initialization
 			Result.add_entry (create {EWB_INDEXING})
 			Result.add_entry (create {EWB_MODIFIED})
 			Result.add_entry (create {EWB_STATISTICS})
-			Result.add_entry (create {EWB_AUTO_TEST})
 		ensure
 			system_menu_not_void: Result /= Void
 		end
 
-	profile_menu: EWB_MENU is
+	profile_menu: EWB_MENU
 			-- Profile menu options.
 		once
 			create Result.make (1, 7)
@@ -135,7 +141,7 @@ feature -- Initialization
 			profile_menu_not_void: Result /= Void
 		end
 
-	class_menu: EWB_MENU is
+	class_menu: EWB_MENU
 			-- Class menu options
 		once
 			create Result.make (1, 17)
@@ -161,7 +167,7 @@ feature -- Initialization
 			class_menu_not_void: Result /= Void
 		end
 
-	feature_menu: EWB_MENU is
+	feature_menu: EWB_MENU
 			-- Feature menu options
 		once
 			create Result.make (1, 8)
@@ -178,13 +184,13 @@ feature -- Initialization
 			feature_menu_not_void: Result /= Void
 		end
 
-	compile_menu: EWB_MENU is
+	compile_menu: EWB_MENU
 			-- Menu options for compilation
 		once
 			Result := c_menu
 		end
 
-	c_menu: EWB_MENU is
+	c_menu: EWB_MENU
 			-- Menu options for execution
 		do
 			create Result.make (1,9)
@@ -201,7 +207,7 @@ feature -- Initialization
 			c_menu_not_void: Result /= Void
 		end
 
-	menu_commands: ARRAY [EWB_MENU] is
+	menu_commands: ARRAY [EWB_MENU]
 			-- Menu commands
 		local
 			i: INTEGER
@@ -236,7 +242,7 @@ feature -- Initialization
 			menu_commands_not_void: menu_commands /= Void
 		end
 
-	switches_menu: EWB_MENU is
+	switches_menu: EWB_MENU
 			-- Menu containing output switches
 		once
 			create Result.make (1, 6)
@@ -251,7 +257,7 @@ feature -- Initialization
 			switches_menu_not_void: Result /= Void
 		end
 
-	queries_menu: EWB_MENU is
+	queries_menu: EWB_MENU
 			-- Sub-menu containing commands to manipulate queries.
 		once
 			create Result.make (1,5)
@@ -267,7 +273,7 @@ feature -- Initialization
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Execute current menu option.
 		require else
 			no_need_for_compiled_project: True
@@ -277,7 +283,7 @@ feature -- Execution
 
 feature -- Update
 
-	save_to_disk is
+	save_to_disk
 			-- Save last output to file.
 		local
 			s: STRING_32
@@ -321,7 +327,7 @@ feature -- Update
 			end
 		end
 
-	get_user_request is
+	get_user_request
 			-- Get user request.
 		local
 			done: BOOLEAN
@@ -347,7 +353,7 @@ feature -- Update
 			end
 		end
 
-	process_request (req: STRING) is
+	process_request (req: STRING)
 			-- Process request `req'.
 		local
 			next_cmd: EWB_CMD
@@ -452,19 +458,19 @@ feature -- Update
 
 feature -- Output
 
-	display_header is
+	display_header
 		do
 			localized_print (ewb_names.ise_batch_version (Workbench_name, Version_number))
 		end
 
-	display_commands is
+	display_commands
 		do
 			menu_command_list.print_help
 		end
 
 feature -- Command loop
 
-	ewb_iterate is
+	ewb_iterate
 		local
 			done: BOOLEAN
 		do
@@ -488,10 +494,10 @@ feature -- Command loop
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -502,19 +508,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

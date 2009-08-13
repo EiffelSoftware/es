@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects which start the ISE Eiffel compiler (out of process)"
 	author: "Andreas Leitner"
 	date: "$Date$"
@@ -7,6 +7,7 @@ indexing
 class AUT_ISE_EIFFEL_COMPILER
 
 inherit
+	ANY
 
 	AUT_SHARED_REGISTRY
 		export {NONE} all end
@@ -30,13 +31,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create new eiffel compiler (standard edition) that will silently surpress all output.
 		do
 			ise_eiffel_edition_extension := ""
 		end
 
-	make_edition (an_edition_extension: STRING) is
+	make_edition (an_edition_extension: STRING)
 			-- Create new eiffel compiler (edition denoted by `an_edition_extension') that will silently surpress all output.
 		require
 			an_edition_extension /= Void
@@ -54,7 +55,7 @@ feature -- Status
 	is_running: BOOLEAN
 			-- Is compilation currently running?
 
-	was_successful: BOOLEAN is
+	was_successful: BOOLEAN
 			-- Was the last compilation successfull?
 		require
 			not_running: not is_running
@@ -72,7 +73,7 @@ feature -- Access
 
 feature -- Status Settings
 
-	enable_finalize is
+	enable_finalize
 			-- Enable finalizing.
 		require
 			finalizing_disabled: not is_finalizing_enabled
@@ -82,7 +83,7 @@ feature -- Status Settings
 			finalizing_enabled: is_finalizing_enabled
 		end
 
-	disable_finalize is
+	disable_finalize
 			-- Disable finalizing.
 		require
 			finalizing_enabled: is_finalizing_enabled
@@ -94,7 +95,7 @@ feature -- Status Settings
 
 feature -- Setting
 
-	set_output_handler (an_output_handler: like output_handler) is
+	set_output_handler (an_output_handler: like output_handler)
 			-- Set `output_handler' to `an_output_handler'.
 		require
 			an_output_handler_not_void: an_output_handler /= Void
@@ -106,7 +107,7 @@ feature -- Setting
 
 feature -- Execution
 
-	run (a_working_directory: STRING; a_config_filename: STRING; a_system_name: STRING) is
+	run (a_working_directory: STRING; a_config_filename: STRING; a_system_name: STRING)
 			-- Run ISE Eiffel compiler in directory `a_working_directory'
 			-- compiling the system described via `an_config_file_name'.
 			-- Do not block, but return as soon as compiler is running.
@@ -119,7 +120,7 @@ feature -- Execution
 			run_with_additional_arguments (a_working_directory, a_config_filename, a_system_name, create {ARRAYED_LIST [STRING]}.make (0))
 		end
 
-	run_with_build_directory (a_working_directory: STRING; a_config_filename: STRING; a_system_name: STRING; a_build_directory: STRING) is
+	run_with_build_directory (a_working_directory: STRING; a_config_filename: STRING; a_system_name: STRING; a_build_directory: STRING)
 			-- Run ISE Eiffel compiler in directory `a_working_directory'
 			-- compiling the system described via `an_config_file_name'.
 			-- Use `a_build_directory' as location for generated system (EIFGENs folder).
@@ -133,7 +134,7 @@ feature -- Execution
 			run_with_additional_arguments (a_working_directory, a_config_filename, a_system_name, l_argument_list)
 		end
 
-	run_with_additional_arguments (a_working_directory: STRING; a_config_filename: STRING; a_system_name: STRING; an_argument_list: ARRAYED_LIST [STRING]) is
+	run_with_additional_arguments (a_working_directory: STRING; a_config_filename: STRING; a_system_name: STRING; an_argument_list: ARRAYED_LIST [STRING])
 			-- Run with additional arguments given by `an_argument_list'
 		require
 			a_working_directory_not_void: a_working_directory /= Void
@@ -181,7 +182,7 @@ feature -- Execution
 		end
 
 
-	block is
+	block
 			-- Block until compilation stops.
 		require
 			is_running: is_running
@@ -192,7 +193,7 @@ feature -- Execution
 			end
 		end
 
-	terminate is
+	terminate
 			-- Terminate current compilation.
 		require
 			is_running: is_running
@@ -203,7 +204,7 @@ feature -- Execution
 			end
 		end
 
-	process_output is
+	process_output
 			-- Read text output from compiler and dispatch it to `output_handler'.
 			-- Call this routine repeatedly until the compiler is no longer running.
 		local
@@ -244,7 +245,7 @@ feature -- Execution
 
 feature -- Constants
 
-	eiffel_compiler_executable_name: STRING is
+	eiffel_compiler_executable_name: STRING
 			-- Name of the command line ISE eiffel compiler
 		require
 			ise_eiffel_installed: is_ise_eiffel_installed
@@ -257,7 +258,7 @@ feature -- Constants
 			executable_name_not_void: Result /= Void
 		end
 
-	is_ise_eiffel_installed: BOOLEAN is
+	is_ise_eiffel_installed: BOOLEAN
 			-- Is ISE Eiffel installed on this computer?
 		once
 			if operating_system.is_windows then
@@ -270,7 +271,7 @@ feature -- Constants
 			end
 		end
 
-	ise_eiffel_path: STRING is
+	ise_eiffel_path: STRING
 			-- Path to ISE Eiffel directory
 		require
 			ise_eiffel_installed: is_ise_eiffel_installed
@@ -283,7 +284,7 @@ feature -- Constants
 			path_not_void: Result /= Void
 		end
 
-	ise_eiffel_bin_path: STRING is
+	ise_eiffel_bin_path: STRING
 			-- Path to ISE Eiffel directory
 		require
 			ise_eiffel_installed: is_ise_eiffel_installed
@@ -294,7 +295,7 @@ feature -- Constants
 			path_not_empty: Result.count > 0
 		end
 
-	ise_platform_name: STRING is
+	ise_platform_name: STRING
 			-- Platform name of current computer
 		require
 			ise_eiffel_installed: is_ise_eiffel_installed
@@ -309,7 +310,7 @@ feature -- Constants
 			name_not_empty: Result.count > 0
 		end
 
-	ise_eiffel_variable_name: STRING is
+	ise_eiffel_variable_name: STRING
 			-- Name of ISE Eiffel environment variable
 		once
 			Result := "ISE_EIFFEL"
@@ -318,14 +319,14 @@ feature -- Constants
 			name_correct: Result.is_equal ("ISE_EIFFEL")
 		end
 
-	ise_eiffel_variable: STRING is
+	ise_eiffel_variable: STRING
 			-- Content of environment variable ${ISE_EIFFEL};
 			-- `Void' if not set.
 		once
 			Result := execution_environment.variable_value (ise_eiffel_variable_name)
 		end
 
-	ise_platform_variable: STRING is
+	ise_platform_variable: STRING
 			-- Content of environment variable ${ISE_PLATFORM};
 			-- `Void' if not set.
 		once
@@ -343,7 +344,7 @@ feature {NONE} -- Implementation
 	stderr_reader: AUT_THREAD_SAFE_LINE_READER
 			-- Non blocking reader for compiler-stderr
 
-	unset_running is
+	unset_running
 			-- Set `is_running' to `False'.
 		do
 			is_running := False
@@ -359,10 +360,10 @@ feature {NONE} -- Implementation
 	ec_process: PROCESS
 			-- 'ec' process
 
-	ise_eiffel_common_root_key: STRING is "HKEY_LOCAL_MACHINE\SOFTWARE\ISE"
+	ise_eiffel_common_root_key: STRING = "HKEY_LOCAL_MACHINE\SOFTWARE\ISE"
 			-- Key where ISE Eiffel installation will register themselves
 
-	latest_ise_eiffel_key: STRING is
+	latest_ise_eiffel_key: STRING
 			-- Registry key to the latest installed version of ISE Eiffel
 			-- or `Void' if no version installed at all
 		require
@@ -416,4 +417,35 @@ invariant
 	is_running_implies_ec_process_not_void: is_running implies (ec_process /= Void)
 	ise_eiffel_edition_extension_not_void: ise_eiffel_edition_extension /= Void
 
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

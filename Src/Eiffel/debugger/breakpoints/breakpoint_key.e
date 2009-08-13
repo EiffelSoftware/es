@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "[
 					Describes a breakpoint's key. It is by its `body_index' 
 				  	and its `breakable_line_number' (line number in stop points view).
@@ -24,16 +24,15 @@ create
 
 feature {NONE} -- Creation
 
-	make (a_location: BREAKPOINT_LOCATION) is
+	make (a_location: BREAKPOINT_LOCATION)
 			-- Create a breakpoint at location `a_location'
 		require
-			valid_location: 	a_location /= Void and then
-								not a_location.is_corrupted
+			valid_location: a_location /= Void and then not a_location.is_corrupted
 		do
 			location := a_location
 		end
 
-	make_hidden (a_location: BREAKPOINT_LOCATION) is
+	make_hidden (a_location: BREAKPOINT_LOCATION)
 			-- Create a hidden breakpoint at location `a_location'
 		do
 			is_hidden := True
@@ -42,15 +41,19 @@ feature {NONE} -- Creation
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	frozen same_breakpoint_key (other: BREAKPOINT_KEY): BOOLEAN
 			-- Is `other' equal to `Current'?
 			-- `other' equals to `Current' if they represent
 			-- the same physical breakpoint, in other words they
 			-- have the same `body_index' and `offset'.
 			-- We use 'body_index' because it does not change after
 			-- a recompilation
+		require
+			other_not_void: other /= Void
 		do
 			Result := location.is_equal (other.location) and (is_hidden = other.is_hidden)
+		ensure
+			symmetric: Result implies other.same_breakpoint_key (Current)
 		end
 
 feature -- Properties
@@ -63,7 +66,7 @@ feature -- Properties
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 			-- Hash code for breakpoint.
 		do
 			Result := Precursor
@@ -99,7 +102,7 @@ feature -- Access
 invariant
 	location_not_void: location /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

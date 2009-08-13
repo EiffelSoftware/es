@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Keeper for non-void entity scopes."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,32 +10,45 @@ deferred class AST_SCOPE_KEEPER
 inherit
 	AST_INITIALIZATION_KEEPER
 		rename
-			is_local_set as is_local_attached,
-			is_result_set as is_result_attached,
-			set_local as start_local_scope,
-			set_result as start_result_scope
+			is_set as is_attached,
+			set as start_scope
+		export
+			{AST_ARGUMENT_SCOPE_TRACKER} start_scope
 		redefine
-			start_local_scope,
-			start_result_scope
+			update_sibling,
+			start_scope
 		end
 
-feature -- Modification: variables
+feature {AST_CONTEXT} -- Status report
 
-	stop_local_scope (position: like local_count)
-			-- Mark that a local with the given `position' can be void.
+	is_sibling_dominating: BOOLEAN
+			-- Does variable information of a sibling dominate the previous one (if any)?
 		require
-			position_large_enough: position > 0
-			position_small_emough: position <= local_count
+			is_nested: nesting_level > 0
 		deferred
 		end
 
-	stop_result_scope
-			-- Mark that "Result" can be void.
+feature {AST_ARGUMENT_SCOPE_TRACKER, AST_LOCAL_SCOPE_TRACKER} -- Modification: variables
+
+	stop_scope (index: like count)
+			-- Mark that a variable with the given `index' can be void.
+		require
+			index_large_enough: index > 0
+			index_small_emough: index <= count
 		deferred
 		end
 
-indexing
-	copyright:	"Copyright (c) 2008, Eiffel Software"
+feature {AST_SCOPE_COMBINED_PRECONDITION, AST_CONTEXT, AST_CREATION_PROCEDURE_CHECKER} -- Modification: nesting
+
+	update_sibling
+			-- <Precursor>
+		deferred
+		ensure then
+			is_sibling_dominating: is_sibling_dominating
+		end
+
+note
+	copyright:	"Copyright (c) 2008-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

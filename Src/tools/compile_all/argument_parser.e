@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Argument parser for all classes compilation tool."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,10 +28,10 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	name: !STRING = "Compile All Tool"
+	name: STRING = "Compile All Tool"
 			-- Application name
 
-	version: !STRING
+	version: STRING
 			-- Application version
 		once
 			create Result.make (5)
@@ -40,7 +40,7 @@ feature {NONE} -- Access
 			Result.append_integer ({EIFFEL_ENVIRONMENT_CONSTANTS}.minor_version)
 		end
 
-	switches: !ARRAYED_LIST [!ARGUMENT_SWITCH]
+	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			-- Argument switches
 		once
 			create Result.make (9)
@@ -48,6 +48,7 @@ feature {NONE} -- Access
 			Result.extend (create {ARGUMENT_DIRECTORY_SWITCH}.make (eifgen_switch, "Directory where projects will be compiled.", True, False, "eifgen", "A directory where the projects will be compiled", False))
 			Result.extend (create {ARGUMENT_FILE_SWITCH}.make (ignore_switch, "Ignore file with files/targets to ignore.", True, False, "ignore.ini", "INI file with the ignores.", False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (log_verbose_switch, "Verbose logging of actions?", True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (ecb_switch, "Use ecb instead of ec?", True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (clean_switch, "Clean before compilation?", True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (c_compile_switch, "Compile generated C code?", True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (melt_switch, "Melt the project?", True, False))
@@ -70,7 +71,7 @@ feature -- Status Report
 
 feature -- Access
 
-	location: !STRING
+	location: STRING
 			-- Location of files to use
 		once
 			if has_option (location_switch) then
@@ -79,11 +80,12 @@ feature -- Access
 				Result := (create {EXECUTION_ENVIRONMENT}).current_working_directory.as_attached
 			end
 		ensure
-			not_result_is_empty: not Result.is_empty
+			location_not_void: Result /= Void
+			location_not_empty: not Result.is_empty
 			result_exists: (create {RAW_FILE}.make (Result)).exists or (create {DIRECTORY}.make (Result)).exists
 		end
 
-	eifgen: ?STRING
+	eifgen: STRING
 			-- Location where the projects are compiled.
 		once
 			if has_option (eifgen_switch) then
@@ -91,7 +93,7 @@ feature -- Access
 			end
 		end
 
-	ignore: ?STRING
+	ignore: STRING
 			-- File with the ignores.
 		once
 			if has_option (ignore_switch) then
@@ -99,6 +101,11 @@ feature -- Access
 			end
 		ensure
 			Result_ok: Result /= Void implies not Result.is_empty and then (create {RAW_FILE}.make (Result)).exists or (create {DIRECTORY}.make (Result)).exists
+		end
+
+	is_ecb: BOOLEAN
+		once
+			Result := has_option (ecb_switch)
 		end
 
 	is_parse_only: BOOLEAN
@@ -149,15 +156,16 @@ feature {NONE} -- Switch names
 	eifgen_switch: STRING = "eifgen"
 	ignore_switch: STRING = "ignore"
 	log_verbose_switch: STRING = "log_verbose"
+	ecb_switch: STRING = "ecb"
 	clean_switch: STRING = "clean"
 	c_compile_switch: STRING = "c_compile"
 	melt_switch: STRING = "melt"
 	freeze_switch: STRING = "freeze"
 	finalize_switch: STRING = "finalize";
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -169,22 +177,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

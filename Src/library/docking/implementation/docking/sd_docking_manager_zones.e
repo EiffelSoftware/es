@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Manager that help docking manager manage all zones."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,13 +10,13 @@ class
 
 inherit
 	SD_ACCESS
-	
+
 create
 	make
 
 feature {NONE}  -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -28,7 +28,7 @@ feature {NONE}  -- Initlization
 			set: internal_docking_manager = a_docking_manager
 		end
 
-	init_place_holder is
+	init_place_holder
 			-- Init `place_holder_content'
 		local
 			l_shared: SD_SHARED
@@ -44,7 +44,7 @@ feature -- Zones managements
 	zones: ACTIVE_LIST [SD_ZONE]
 			-- All SD_ZONE in current system.
 
-	maximized_zones: ARRAYED_LIST [SD_ZONE] is
+	maximized_zones: ARRAYED_LIST [SD_ZONE]
 			-- Maximized zone, maybe void if not exists.
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -65,7 +65,7 @@ feature -- Zones managements
 			not_void: Result /= Void
 		end
 
-	maximized_zone_in_main_window: SD_ZONE is
+	maximized_zone_in_main_window: SD_ZONE
 			-- Maximized zone in main window.
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -79,15 +79,19 @@ feature -- Zones managements
 				l_zones.after or Result /= Void
 			loop
 				if l_zones.item.is_maximized then
-					if l_main_area.has_recursive (l_zones.item) then
-						Result := l_zones.item
+					if attached {EV_WIDGET} l_zones.item as lt_widget then
+						if l_main_area.has_recursive (lt_widget) then
+							Result := l_zones.item
+						end
+					else
+						check not_possible: False end
 					end
 				end
 				l_zones.forth
 			end
 		end
 
-	upper_zones: ARRAYED_LIST [SD_UPPER_ZONE] is
+	upper_zones: ARRAYED_LIST [SD_UPPER_ZONE]
 			-- ALl upper zones existing.
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -110,7 +114,7 @@ feature -- Zones managements
 			not_void: Result /= Void
 		end
 
-	zone_by_content (a_content: SD_CONTENT): SD_ZONE is
+	zone_by_content (a_content: SD_CONTENT): SD_ZONE
 			-- If main container has zone with a_content?
 		do
 			from
@@ -127,13 +131,13 @@ feature -- Zones managements
 			end
 		end
 
-	has_zone (a_zone: SD_ZONE): BOOLEAN is
+	has_zone (a_zone: SD_ZONE): BOOLEAN
 			-- If the main container has zone?
 		do
 			Result := zones.has (a_zone)
 		end
 
-	has_zone_by_content (a_content: SD_CONTENT): BOOLEAN is
+	has_zone_by_content (a_content: SD_CONTENT): BOOLEAN
 			-- If the main container has zone with a_content?
 		do
 			from
@@ -146,7 +150,7 @@ feature -- Zones managements
 			end
 		end
 
-	zone_parent_void (a_zone: SD_ZONE): BOOLEAN is
+	zone_parent_void (a_zone: SD_ZONE): BOOLEAN
 			-- Contract support
 		require
 			a_zone_not_void: a_zone /= Void
@@ -165,7 +169,7 @@ feature -- Zones managements
 			end
 		end
 
-	add_zone (a_zone: SD_ZONE) is
+	add_zone (a_zone: SD_ZONE)
 			-- Add a zone to show.
 		require
 			a_zone_not_void: a_zone /= Void
@@ -176,16 +180,21 @@ feature -- Zones managements
 			extended: zones.has (a_zone)
 		end
 
-	prune_zone (a_zone: SD_ZONE) is
+	prune_zone (a_zone: SD_ZONE)
 			-- Prune a zone which was managed by docking manager.
 		require
 			a_zone_not_void: a_zone /= Void
 		local
 			l_parent: EV_CONTAINER
 		do
-			if a_zone.parent /= Void then
-				a_zone.parent.prune (a_zone)
+			if attached {EV_WIDGET} a_zone as lt_widget then
+				if lt_widget.parent /= Void then
+					lt_widget.parent.prune (lt_widget)
+				end
+			else
+				check not_possible: False end
 			end
+
 			-- FIXIT: call prune_all from ACTIVE_LIST contract broken?
 			zones.start
 			zones.prune (a_zone)
@@ -198,7 +207,7 @@ feature -- Zones managements
 			a_zone_pruned: not zones.has (a_zone)
 		end
 
-	prune_zone_by_content (a_content: SD_CONTENT) is
+	prune_zone_by_content (a_content: SD_CONTENT)
 			-- Prune a zone which contain a_content.
 		require
 			has_content: has_content (a_content)
@@ -220,7 +229,7 @@ feature -- Zones managements
 			end
 		end
 
-	set_zone_size (a_zone: SD_ZONE; a_width, a_height: INTEGER) is
+	set_zone_size (a_zone: SD_ZONE; a_width, a_height: INTEGER)
 			-- Set a zone size.
 		require
 			has_zone: has_zone (a_zone)
@@ -232,19 +241,19 @@ feature -- Zones managements
 			l_height := a_height
 			l_auto_hide_zone ?= a_zone
 			if l_auto_hide_zone /= Void then
-				if l_width < a_zone.minimum_width then
-					l_width := a_zone.minimum_width
+				if l_width < l_auto_hide_zone.minimum_width then
+					l_width := l_auto_hide_zone.minimum_width
 				end
-				if l_height < a_zone.minimum_height then
-					l_height := a_zone.minimum_height
+				if l_height < l_auto_hide_zone.minimum_height then
+					l_height := l_auto_hide_zone.minimum_height
 				end
 				internal_docking_manager.fixed_area.set_item_size (l_auto_hide_zone, l_width, l_height)
 			end
 		ensure
-			set: a_zone.width = a_width and a_zone.height =  a_height
+			set: attached {EV_WIDGET} a_zone as lt_widget implies lt_widget.width = a_width and lt_widget.height = a_height
 		end
 
-	disable_all_zones_focus_color (a_except: SD_ZONE) is
+	disable_all_zones_focus_color (a_except: SD_ZONE)
 			-- Disable all zones focus color except `a_except'.
 		do
 			from
@@ -269,7 +278,7 @@ feature -- Query
 
 feature -- Contract support
 
-	has_content (a_content: SD_CONTENT): BOOLEAN is
+	has_content (a_content: SD_CONTENT): BOOLEAN
 			-- If `internal_docking_manager' has `a_content'?
 		do
 			Result := internal_docking_manager.has_content (a_content)
@@ -286,7 +295,7 @@ invariant
 	not_void: internal_docking_manager /= Void
 	not_void: place_holder_content /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

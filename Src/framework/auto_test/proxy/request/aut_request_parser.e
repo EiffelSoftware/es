@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Request language parser for line based Eiffel like interpreter language.
 		]"
@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; an_error_handler: like error_handler) is
+	make (a_system: like system; an_error_handler: like error_handler)
 			-- Create new parses for requests that deal in `system'.
 		require
 			a_system_not_void: a_system /= Void
@@ -61,7 +61,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_line_number (a_line_number: like line_number) is
+	set_line_number (a_line_number: like line_number)
 			-- Set `line_number' to `a_line_number'.
 		require
 			a_line_number_positive: a_line_number > 0
@@ -71,7 +71,7 @@ feature -- Setting
 			line_number_set: line_number = a_line_number
 		end
 
-	set_filename (a_filename: like filename) is
+	set_filename (a_filename: like filename)
 			-- Set `filename' to `a_filename'.
 		require
 			a_filename_not_void: a_filename /= Void
@@ -81,7 +81,7 @@ feature -- Setting
 			filname_set: filename = a_filename
 		end
 
-	unset_filename is
+	unset_filename
 			-- Set `filename' to `Void'.
 		do
 			filename := Void
@@ -89,7 +89,7 @@ feature -- Setting
 			filename_void: filename = Void
 		end
 
-	clear_last_request is
+	clear_last_request
 			-- Set `last_request' to Void.
 		do
 			last_request := Void
@@ -102,7 +102,7 @@ feature {NONE} -- Handlers
 	report_create_request (a_type_name: STRING;
 							a_target_variable_name: STRING;
 							a_creation_procedure_name: STRING;
-							an_argument_list: ERL_LIST [ITP_EXPRESSION]) is
+							an_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION])
 		local
 			receiver: ITP_VARIABLE
 			type: TYPE_A
@@ -116,7 +116,7 @@ feature {NONE} -- Handlers
 			elseif type.is_none then
 				report_error ("Cannot create object of NONE type.")
 			else
-				argument_list := arrayed_list_from_erl_list (an_argument_list)
+				argument_list := an_argument_list
 				if a_creation_procedure_name = Void then
 					create {AUT_CREATE_OBJECT_REQUEST} last_request.make (system, receiver, type, type.associated_class.default_create_feature, create {DS_LINKED_LIST [ITP_EXPRESSION]}.make)
 				else
@@ -134,20 +134,20 @@ feature {NONE} -- Handlers
 
 	report_invoke_request (a_target_variable_name: STRING;
 							a_feature_name: STRING;
-							an_argument_list: ERL_LIST [ITP_EXPRESSION]) is
+							an_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION])
 		local
 			target: ITP_VARIABLE
 			argument_list: DS_LINEAR [ITP_EXPRESSION]
 		do
 			create target.make (variable_index (a_target_variable_name, variable_name_prefix))
-			argument_list := arrayed_list_from_erl_list (an_argument_list)
+			argument_list := an_argument_list
 			create {AUT_INVOKE_FEATURE_REQUEST} last_request.make (system, a_feature_name, target, argument_list)
 		end
 
 	report_invoke_and_assign_request (a_left_hand_variable_name: STRING;
 										a_target_variable_name: STRING;
 										a_feature_name: STRING;
-										an_argument_list: ERL_LIST [ITP_EXPRESSION]) is
+										an_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION])
 		local
 			receiver: ITP_VARIABLE
 			target: ITP_VARIABLE
@@ -155,14 +155,14 @@ feature {NONE} -- Handlers
 		do
 			create receiver.make (variable_index (a_left_hand_variable_name, variable_name_prefix))
 			create target.make (variable_index (a_target_variable_name, variable_name_prefix))
-			argument_list := arrayed_list_from_erl_list (an_argument_list)
+			argument_list := an_argument_list
 			create {AUT_INVOKE_FEATURE_REQUEST} last_request.make_assign (system, receiver,
 																			a_feature_name, target,
 																			argument_list)
 		end
 
 	report_assign_request (a_left_hand_variable_name: STRING;
-							an_expression: ITP_EXPRESSION) is
+							an_expression: ITP_EXPRESSION)
 		local
 			receiver: ITP_VARIABLE
 		do
@@ -171,7 +171,7 @@ feature {NONE} -- Handlers
 																		an_expression)
 		end
 
-	report_type_request (a_variable_name: STRING) is
+	report_type_request (a_variable_name: STRING)
 		local
 			variable: ITP_VARIABLE
 		do
@@ -179,7 +179,7 @@ feature {NONE} -- Handlers
 			create {AUT_TYPE_REQUEST} last_request.make (system, variable)
 		end
 
-	report_quit_request is
+	report_quit_request
 		do
 			create {AUT_STOP_REQUEST} last_request.make (system)
 		end
@@ -191,7 +191,7 @@ feature {NONE} -- Handlers
 			last_request.set_response (create {AUT_NORMAL_RESPONSE}.make (""))
 		end
 
-	report_execute_request is
+	report_execute_request
 			-- Report execute request.
 		local
 			create_keyword_count: INTEGER
@@ -217,7 +217,7 @@ feature {NONE} -- Handlers
 
 feature {NONE} -- Error Reporting
 
-	report_error (a_reason: STRING) is
+	report_error (a_reason: STRING)
 		do
 			error_handler.report_log_parsing_error (filename, line_number, a_reason)
 			has_error := True
@@ -225,24 +225,24 @@ feature {NONE} -- Error Reporting
 
 feature {NONE} -- Implementation
 
-	arrayed_list_from_erl_list (an_erl_list: ERL_LIST [ITP_EXPRESSION]): DS_ARRAYED_LIST [ITP_EXPRESSION] is
-		require
-			an_erl_list_not_void: an_erl_list /= Void
-		local
-			i: INTEGER
-		do
-			from
-				i := 1
-				create Result.make (an_erl_list.count)
-			until
-				i > an_erl_list.count
-			loop
-				Result.force_last (an_erl_list.item (i))
-				i := i + 1
-			end
-		ensure
-			arrayed_list_not_void: Result /= Void
-		end
+--	arrayed_list_from_erl_list (an_erl_list: ERL_LIST [ITP_EXPRESSION]): DS_ARRAYED_LIST [ITP_EXPRESSION]
+--		require
+--			an_erl_list_not_void: an_erl_list /= Void
+--		local
+--			i: INTEGER
+--		do
+--			from
+--				i := 1
+--				create Result.make (an_erl_list.count)
+--			until
+--				i > an_erl_list.count
+--			loop
+--				Result.force_last (an_erl_list.item (i))
+--				i := i + 1
+--			end
+--		ensure
+--			arrayed_list_not_void: Result /= Void
+--		end
 
 invariant
 
@@ -251,4 +251,35 @@ invariant
 	line_number_positive: line_number > 0
 	filename_not_void: filename /= Void
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
@@ -9,7 +9,7 @@ class
 
 feature -- Factory Functions
 
-	new_cache_info (a_path: STRING): CACHE_INFO is
+	new_cache_info (a_path: STRING): CACHE_INFO
 			-- Creates an initialize a {CACHE_INFO}.
 			-- To ensure correct initialization `'a_path's directory will be created,
 			-- as will the cache file `a_path'
@@ -18,13 +18,11 @@ feature -- Factory Functions
 			not_a_path_is_empty: not a_path.is_empty
 		local
 			l_file: FILE_INFO
-			l_dir: DIRECTORY_INFO
-			info_path: STRING
-			retried: BOOLEAN
+			l_dir: detachable DIRECTORY_INFO
 		do
 			create l_file.make (a_path)
 			l_dir := l_file.directory
-			if not l_dir.exists then
+			if l_dir /= Void and then not l_dir.exists then
 				l_dir.create_
 			end
 			create Result
@@ -32,7 +30,7 @@ feature -- Factory Functions
 				(create {EIFFEL_SERIALIZER}).serialize (Current, a_path, False)
 			end
 		ensure
-			a_path_exists: (create {DIRECTORY_INFO}.make (a_path)).exists
+			a_path_exists: (create {FILE_INFO}.make (a_path)).exists
 		end
 
 end -- class {CACHE_INFO_FACTORY}

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_DOCKING_ZONE when title is at top area."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,6 +18,7 @@ inherit
 			on_focus_out,
 			on_normal_max_window,
 			update_user_widget,
+			update_mini_toolbar,
 			update_mini_tool_bar_size,
 			set_non_focus_selection_color
 		end
@@ -26,12 +27,11 @@ create
 
 feature	{NONE} -- Initlization
 
-	make (a_content: SD_CONTENT) is
-			-- Creation method.
+	make (a_content: SD_CONTENT)
+			-- Creation method
 		require
 			a_content_not_void: a_content /= Void
 		do
-			create internal_shared_not_used
 			create internal_shared
 			internal_docking_manager := a_content.docking_manager
 			default_create
@@ -64,8 +64,8 @@ feature	{NONE} -- Initlization
 
 feature {SD_CONTENT}
 
-	on_focus_in (a_content: SD_CONTENT) is
-			-- Redefine.
+	on_focus_in (a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			Precursor {SD_DOCKING_ZONE} (a_content)
 			internal_docking_manager.command.remove_auto_hide_zones (True)
@@ -74,32 +74,32 @@ feature {SD_CONTENT}
 
 feature -- Command
 
-	set_show_normal_max (a_show: BOOLEAN) is
-			-- Redefine.
+	set_show_normal_max (a_show: BOOLEAN)
+			-- <Precursor>
 		do
 			window.set_show_normal_max (a_show)
 		end
 
-	set_show_stick (a_show: BOOLEAN) is
-			-- Redefine.
+	set_show_stick (a_show: BOOLEAN)
+			-- <Precursor>
 		do
 			window.set_show_stick (a_show)
 		end
 
-	set_title (a_title: STRING_GENERAL) is
-			-- Set title.
+	set_title (a_title: STRING_GENERAL)
+			-- <Precursor>
 		do
 			window.title_bar.set_title (a_title)
 		end
 
-	set_max (a_max: BOOLEAN) is
-			-- Redefine.
+	set_max (a_max: BOOLEAN)
+			-- <Precursor>
 		do
 			window.title_bar.set_max (a_max)
 		end
 
-	set_focus_color (a_selection: BOOLEAN) is
-			-- Redefine.
+	set_focus_color (a_selection: BOOLEAN)
+			-- <Precursor>
 		do
 			if a_selection then
 				window.title_bar.enable_focus_color
@@ -108,14 +108,14 @@ feature -- Command
 			end
 		end
 
-	set_non_focus_selection_color is
-			-- Set title bar non-focuse color.
+	set_non_focus_selection_color
+			-- <Precursor>
 		do
 			window.title_bar.enable_non_focus_active_color
 		end
 
-	stick is
-			-- Stick window.
+	stick
+			-- Stick window
 		local
 			l_enum: SD_ENUMERATION
 			l_direction: INTEGER
@@ -131,20 +131,20 @@ feature -- Command
 
 feature -- Query
 
-	title: STRING_32 is
-			-- Redefine
+	title: STRING_32
+			-- <Precursor>
 		do
 			Result := window.title_bar.title
 		end
 
-	title_area: EV_RECTANGLE is
-			-- Refedine
+	title_area: EV_RECTANGLE
+			-- <Precursor>
 		do
 			create Result.make (window.title_bar.screen_x, window.title_bar.screen_y, window.title_bar.width, window.title_bar.height)
 		end
 
-	is_maximized: BOOLEAN is
-			-- Redefine
+	is_maximized: BOOLEAN
+			-- <Precursor>
 		do
 			Result := window.title_bar.is_max
 		end
@@ -152,20 +152,20 @@ feature -- Query
 feature {NONE} -- Implementation
 
 	resize_bar: SD_RESIZE_BAR
-			-- Resize bar at the side.
+			-- Resize bar at the side
 
 	window: SD_PANEL
-			-- Window.
+			-- Window
 
-	on_focus_out is
-			-- Redefine.
+	on_focus_out
+			-- <Precursor>
 		do
 			Precursor {SD_DOCKING_ZONE}
 			window.set_focus_color (False)
 		end
 
-	on_normal_max_window is
-			-- Redefine
+	on_normal_max_window
+			-- <Precursor>
 		do
 			if window.is_show_normal_max then
 				Precursor {SD_DOCKING_ZONE}
@@ -173,14 +173,23 @@ feature {NONE} -- Implementation
 
 		end
 
-	update_user_widget is
-			-- Redefine
+	update_user_widget
+			-- <Precursor>
 		do
 			window.set_user_widget (content.user_widget)
 		end
 
-	update_mini_tool_bar_size is
-			-- Redefine
+	update_mini_toolbar
+			-- <Precursor>
+		local
+			l_title_bar: SD_TITLE_BAR
+		do
+			l_title_bar := window.title_bar
+			l_title_bar.extend_custom_area (content.mini_toolbar)
+		end
+
+	update_mini_tool_bar_size
+			-- <Precursor>
 		do
 			window.title_bar.update_fixed_size
 		end
@@ -190,7 +199,7 @@ invariant
 	internal_shared_not_void: internal_shared /= Void
 	window_not_void: window /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Access to a development window's collection of tools.
 	]"
@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Clean up
 
-	internal_recycle is
+	internal_recycle
 			-- Called to clean up resources of Current.
 		local
 			l_win: like window
@@ -249,8 +249,7 @@ feature {NONE} -- Access
 			l_tools.put_last ({ES_WINDOWS_TOOL})
 			l_tools.put_last ({ES_CONTRACT_TOOL})
 			l_tools.put_last ({ES_INFORMATION_TOOL})
-			l_tools.put_last ({ES_EWEASEL_TESTING_TOOL})
-			l_tools.put_last ({ES_EWEASEL_TESTING_RESULT_TOOL})
+			l_tools.put_last ({ES_TESTING_TOOL})
 
 				-- Custom formatter tools
 				-- FIXME: Custom formatter tools have been tricking to adapt for 6.1. Given the time-frame
@@ -272,7 +271,7 @@ feature {NONE} -- Access
 			result_contains_attached_items: not Result.has (Void)
 		end
 
-	requested_tools: DS_HASH_TABLE [ARRAY [ES_TOOL [EB_TOOL]], STRING_8] is
+	requested_tools: DS_HASH_TABLE [ARRAY [ES_TOOL [EB_TOOL]], STRING_8]
 			-- Table of requested, and therefore created, tools.
 		do
 			if not is_recycled then
@@ -283,7 +282,7 @@ feature {NONE} -- Access
 
 feature -- Status reporting
 
-	is_multi_edition_tool (a_type: TYPE [ES_TOOL [EB_TOOL]]): BOOLEAN
+	is_multiple_edition_tool (a_type: TYPE [ES_TOOL [EB_TOOL]]): BOOLEAN
 			-- Determines if a tool support multiple editions
 			--
 			-- `a_type': The type of tool requested.
@@ -297,7 +296,7 @@ feature -- Status reporting
 				-- Fetch first edition to determine if it supports multiple instances.
 			l_tool := tool (a_type)
 			if l_tool /= Void then
-				Result := l_tool.is_supporting_multiple_instances
+				Result := l_tool.is_multiple_edition
 			end
 		end
 
@@ -331,7 +330,7 @@ feature -- Query
 			end
 		end
 
-	frozen tool (a_type: TYPE [ES_TOOL [EB_TOOL]]): !ES_TOOL [EB_TOOL]
+	frozen tool (a_type: TYPE [ES_TOOL [EB_TOOL]]): attached ES_TOOL [EB_TOOL]
 			-- Retrieves an activate tool associated with a particular type.
 			-- Note: Requesting a tool descriptor that has not yet been instantiated will instatiate it before
 			--       it is returned.
@@ -342,7 +341,7 @@ feature -- Query
 			is_interface_usable: is_interface_usable
 			a_type_attached: a_type /= Void
 		local
-			l_tool: ?like tool
+			l_tool: detachable like tool
 		do
 			l_tool := tool_edition (a_type, 1)
 			check l_tool_not_void: l_tool /= Void end
@@ -390,7 +389,7 @@ feature -- Query
 				end)
 		end
 
-	tool_edition (a_type: TYPE [ES_TOOL [EB_TOOL]]; a_edition: NATURAL_8): ES_TOOL [EB_TOOL]
+	tool_edition (a_type: TYPE [ES_TOOL [EB_TOOL]]; a_edition: NATURAL_8): attached ES_TOOL [EB_TOOL]
 			-- Retrieves an activate edition of a tool associated with a particular type.
 			-- Note: Requesting a tool descriptor that has not yet been instantiated will instatiate it before
 			--       it is returned.
@@ -401,27 +400,27 @@ feature -- Query
 		require
 			is_interface_usable: is_interface_usable
 			a_type_attached: a_type /= Void
-			a_type_is_multi_edition_tool: a_edition > 1 implies is_multi_edition_tool (a_type)
+			a_type_is_multi_edition_tool: a_edition > 1 implies is_multiple_edition_tool (a_type)
 			a_edition_positive: a_edition > 0
 			a_edition_small_enough: a_edition <= editions_of_tool (a_type, False) + 1
 		local
 			l_tools: like internal_requested_tools
 			l_id: like tool_id
 			l_editions: ARRAY [ES_TOOL [EB_TOOL]]
-			l_tool: like create_tool
+			l_tool: like new_tool
 		do
 			l_tools := internal_requested_tools
 			l_id := tool_id (a_type)
 			if l_tools.has (l_id) then
 				l_editions := l_tools.item (l_id)
 				if a_edition > l_editions.count then
-					l_tool := create_tool (a_type, a_edition)
+					l_tool := new_tool (a_type, a_edition)
 					l_editions.grow (a_edition)
 					l_editions.put (l_tool, a_edition)
 				end
 			else
 				create l_editions.make (1, 1)
-				l_editions.put (create_tool (a_type, 1), 1)
+				l_editions.put (new_tool (a_type, 1), 1)
 				l_tools.force (l_editions, l_id)
 			end
 
@@ -429,7 +428,9 @@ feature -- Query
 				l_editions_attached: l_editions /= Void
 				l_editions_big_enough: l_editions.count >= a_edition
 			end
-			Result := l_editions.item (a_edition)
+			l_tool := l_editions.item (a_edition)
+			check l_tool_attached: l_tool /= Void end
+			Result := l_tool
 		ensure
 			result_attached: Result /= Void
 			not_result_is_recycled: not Result.is_recycled
@@ -455,9 +456,8 @@ feature -- Query
 			l_count, i: INTEGER
 		do
 			l_tool := tool_edition (a_type, 1)
-			if not l_tool.is_tool_instantiated then
-					-- We reuse the first edition if it hasn't been created because `all_tools'
-					-- will add an descriptor instances, even if the tool is never used.
+			if not l_tool.is_visible then
+					-- We reuse the first edition if it is not on the UI.
 				Result := l_tool
 			else
 				l_editions := editions_of_tool (a_type, False)
@@ -474,7 +474,7 @@ feature -- Query
 						if
 							not l_tool.is_recycled and then
 							(not l_tool.is_tool_instantiated or else
-							(not l_tool.panel.is_recycled and then not l_tool.panel.shown))
+							(not l_tool.panel.is_recycled and then not l_tool.panel.is_shown))
 						then
 							Result := l_tool
 						end
@@ -520,7 +520,7 @@ feature -- Query
 						-- Active instances only.
 					from i := 1; l_count := l_tools.count until i > l_count loop
 						l_tool := l_tools[i]
-						if l_tool.is_tool_instantiated then
+						if l_tool.is_tool_instantiated or else l_tool.is_visible then
 							Result := Result + 1
 						end
 						i := i + 1
@@ -584,7 +584,7 @@ feature -- Basic operation
 			show_tool_edition (a_type, 1, a_activate)
 		ensure
 			tool_is_instatiated: tool (a_type).is_tool_instantiated
-			tool_is_shown: tool (a_type).panel.shown
+			tool_is_shown: tool (a_type).panel.is_shown
 		end
 
 	show_tool_edition (a_type: TYPE [ES_TOOL [EB_TOOL]]; a_edition: NATURAL_8; a_activate: BOOLEAN)
@@ -596,17 +596,17 @@ feature -- Basic operation
 		require
 			is_interface_usable: is_interface_usable
 			a_type_attached: a_type /= Void
-			a_type_is_multi_edition_tool: a_edition > 1 implies is_multi_edition_tool (a_type)
+			a_type_is_multi_edition_tool: a_edition > 1 implies is_multiple_edition_tool (a_type)
 			a_edition_positive: a_edition > 0
 			a_edition_small_enough: a_edition <= editions_of_tool (a_type, False) + 1
 		local
-			l_tool: ?like tool
+			l_tool: detachable like tool
 		do
 			l_tool := tool_edition (a_type, a_edition)
 			l_tool.show (a_activate)
 		ensure
 			tool_is_instatiated: tool_edition (a_type, a_edition).is_tool_instantiated
-			tool_is_shown: tool_edition (a_type, a_edition).panel.shown
+			tool_is_shown: tool_edition (a_type, a_edition).panel.is_shown
 		end
 
 	show_tool_next_available_edition (a_type: TYPE [ES_TOOL [EB_TOOL]]; a_reuse: BOOLEAN; a_activate: BOOLEAN)
@@ -619,18 +619,18 @@ feature -- Basic operation
 			is_interface_usable: is_interface_usable
 			a_type_attached: a_type /= Void
 		local
-			l_tool: ?like tool
+			l_tool: detachable like tool
 		do
 			l_tool := tool_next_available_edition (a_type, a_reuse)
 			l_tool.show (a_activate)
 		ensure
 			tool_is_instatiated: (old tool_next_available_edition (a_type, a_reuse)).is_tool_instantiated
-			tool_is_shown: (old tool_next_available_edition (a_type, a_reuse)).panel.shown
+			tool_is_shown: (old tool_next_available_edition (a_type, a_reuse)).panel.is_shown
 		end
 
 feature {ES_TOOL} -- Removal
 
-	close_tool (a_tool: ES_TOOL [EB_TOOL]) is
+	close_tool (a_tool: ES_TOOL [EB_TOOL])
 			-- Performs clean up of tool and removes it from the cached heap of tools.
 			-- Note: This should be called only by ES_TOOL! Calling it from elsewhere
 			--       will only perform the recycling.
@@ -639,7 +639,7 @@ feature {ES_TOOL} -- Removal
 		require
 			a_tool_attached: a_tool /= Void
 		do
-			if not a_tool.is_recycled and then not a_tool.is_hide_requested and then a_tool.is_recycled_on_closing then
+			if not a_tool.is_recycled and then not a_tool.is_hide_requested and then a_tool.is_recycled_on_close then
 				a_tool.recycle
 				a_tool.set_window (Void)
 				if not is_recycled then
@@ -647,14 +647,14 @@ feature {ES_TOOL} -- Removal
 				end
 			end
 		ensure
-			a_tool_is_recycled: a_tool.is_recycled or else not a_tool.is_recycled_on_closing
-			not_requested_tools: (a_tool.is_recycled or else a_tool.is_recycled_on_closing) implies (not requested_tools.has (tool_id_from_tool (a_tool)) or not
+			a_tool_is_recycled: a_tool.is_recycled or else not a_tool.is_recycled_on_close
+			not_requested_tools: (a_tool.is_recycled or else a_tool.is_recycled_on_close) implies (not requested_tools.has (tool_id_from_tool (a_tool)) or not
 				requested_tools.item (tool_id_from_tool (a_tool)).has (a_tool))
 		end
 
 feature {NONE} -- Factory
 
-	create_tool (a_type: TYPE [ES_TOOL [EB_TOOL]]; a_edition: NATURAL_8): ES_TOOL [EB_TOOL]
+	new_tool (a_type: TYPE [ES_TOOL [EB_TOOL]]; a_edition: NATURAL_8): ES_TOOL [EB_TOOL]
 			-- Creates and initializes a tool.
 			--
 			-- `a_type': Tool type to initialize a tool for.
@@ -672,7 +672,7 @@ feature {NONE} -- Factory
 			Result ?= l_internal.new_instance_of (l_internal.generic_dynamic_type (a_type, 1))
 			check
 				result_attached: Result /= Void
-				result_supports_multiple_editions: a_edition > 1 implies Result.is_supporting_multiple_instances
+				result_is_multiple_edition: a_edition > 1 implies Result.is_multiple_edition
 			end
 			Result.set_edition (a_edition)
 			Result.set_window (window)
@@ -683,11 +683,11 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internal implementation cache
 
-	internal_all_tools: like all_tools
+	internal_all_tools: detachable like all_tools
 			-- Cached version of `all_tools'
 			-- Note: Do not use directly!
 
-	internal_requested_tools: like requested_tools
+	internal_requested_tools: detachable like requested_tools
 			-- Mutable version of `requested_tools'
 			-- Note: Functions wanting to add tools to `requested_tools' should use this attribute instead
 			--       of `requested_tools'. All queries should use `requested_tools' and not this attribute!
@@ -698,8 +698,8 @@ invariant
 	internal_requested_tools_attached: not is_recycled implies internal_requested_tools /= Void
 	internal_requested_tools_contains_attached_items: not is_recycled implies not internal_requested_tools.has_item (Void)
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -712,22 +712,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

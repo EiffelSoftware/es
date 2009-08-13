@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -36,13 +36,15 @@ inherit
 
 	REFACTORING_HELPER
 
+	AUT_TASK
+
 create
 
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_output_dirname: like output_dirname; a_system: like system; a_classes_under_test: like classes_under_test) is
+	make (an_output_dirname: like output_dirname; a_system: like system; a_classes_under_test: like classes_under_test)
 			-- Create new html generator.
 		do
 			Precursor (an_output_dirname, a_system, a_classes_under_test)
@@ -51,20 +53,185 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	absolute_index_filename: STRING is
+	absolute_index_filename: STRING
 			-- Absolute filename of main entry page
 		do
 			Result := file_system.pathname (output_dirname, "index.html")
 		end
 
-feature -- HTML generation
+feature {NONE} -- Access
 
-	generate (a_repository: AUT_TEST_CASE_RESULT_REPOSITORY) is
+	repository: detachable AUT_TEST_CASE_RESULT_REPOSITORY
+			-- Result repository for which documentation is currently generated
+
+	cursor: detachable DS_LINEAR_CURSOR [CLASS_C]
+			-- Cursor pointing to current class being processed by `step'
+
+	state: NATURAL_8
+			-- Current state of `step'
+
+	class_state: NATURAL_8 = 1
+	scope_state: NATURAL_8 = 2
+	manual_state: NATURAL_8 = 3
+	other_state: NATURAL_8 = 4
+			-- Valid states for `state'
+
+	counter: INTEGER
+			-- Counter used by `step'
+
+	is_first: BOOLEAN
+			-- Boolean flag used by `step'
+
+feature -- Status report
+
+	has_next_step: BOOLEAN
+			-- <Precursor>
+		do
+			Result := cursor /= Void
+		end
+
+feature -- Status setting
+
+	start
+			-- <Precursor>
+			--
+			-- Note: `start' and `step' together do the same as `generate'.
+		local
+			l_repo: like repository
+			l_cursor: like cursor
+		do
+			l_repo := repository
+			if l_repo /= Void then
+				current_id := 0
+				file_system.recursive_create_directory (output_dirname)
+				file_system.recursive_create_directory (file_system.pathname (output_dirname, "image"))
+				copy_static_files
+				create tree_content_file.make (file_system.pathname (output_dirname, "treeContent.js"))
+				tree_content_file.open_write
+				generate_tree_content_file_header
+				generate_summary_page (l_repo)
+				generate_header_page
+				if not tree_content_file.is_open_write then
+					has_fatal_error := True
+				else
+					l_cursor := l_repo.classes.new_cursor
+					l_cursor.start
+					cursor := l_cursor
+					state := class_state
+				end
+			end
+		end
+
+	step
+			-- <Precursor>
+			--
+			-- Note: `start' and `step' together do the same as `generate'.
+		local
+			l_cursor: like cursor
+			l_repo: like repository
+		do
+			l_cursor := cursor
+			l_repo := repository
+			if l_cursor = Void or l_cursor.after then
+					-- Actions performed at the end of the stage currently set in `state'
+				if state = other_state then
+					tree_content_file.put_line ("])")
+				else
+					inspect
+						state
+					when class_state then
+						tree_content_file.put_string ("ClassesInScope.addChildren([")
+						state := scope_state
+					when scope_state then
+						tree_content_file.put_line ("])")
+						tree_content_file.put_string ("ManualTests.addChildren([")
+						state := manual_state
+					when manual_state then
+						tree_content_file.put_line ("])")
+						tree_content_file.put_string ("Others.addChildren([")
+						state := other_state
+					end
+					l_cursor := repository.classes.new_cursor
+					cursor := l_cursor
+					counter := 1
+					is_first := True
+				end
+			else
+				inspect
+					state
+				when class_state then
+					generate_class (l_cursor.item, l_repo)
+				when scope_state then
+					if is_class_in_test_scope (l_cursor.item) then
+						if is_first then
+							is_first := False
+						else
+							tree_content_file.put_string (", ")
+						end
+						tree_content_file.put_string ("class_")
+						tree_content_file.put_string (l_cursor.item.name_in_upper)
+					end
+				when manual_state then
+					if is_manual_test_class (l_cursor.item) then
+						if is_first then
+							is_first := False
+						else
+							tree_content_file.put_string (", ")
+						end
+						tree_content_file.put_string ("class_")
+						tree_content_file.put_string (l_cursor.item.name_in_upper)
+					end
+				when other_state then
+					if not is_class_in_test_scope (l_cursor.item) and not is_manual_test_class (l_cursor.item) then
+						if is_first then
+							is_first := False
+						else
+							tree_content_file.put_string (", ")
+						end
+						tree_content_file.put_string ("class_")
+						tree_content_file.put_string (l_cursor.item.name_in_upper)
+					end
+				end
+				counter := counter + 1
+			end
+			if has_fatal_error or (l_cursor = Void or else l_cursor.after) then
+				cancel
+			else
+				l_cursor.forth
+			end
+		end
+
+	cancel
+			-- <Precursor>
+		local
+			l_cursor: like cursor
+		do
+			generate_tree_content_file_footer
+			tree_content_file.close
+			repository := Void
+			l_cursor := cursor
+			if l_cursor /= Void then
+				l_cursor.go_after
+				cursor := Void
+			end
+		end
+
+feature -- Element change
+
+	set_repository (a_repository: like repository)
+			-- Set `repository' to `a_repository'.
+		require
+			not_started: not has_next_step
+		do
+			repository := a_repository
+		end
+
+	generate (a_repository: AUT_TEST_CASE_RESULT_REPOSITORY)
 			-- Generate HTML pages describing the results from `a_repository'.
 		local
 			cs: DS_LINEAR_CURSOR [CLASS_C]
 			i: INTEGER
-			is_first: BOOLEAN
+			l_first: BOOLEAN
 		do
 			current_id := 0
 			file_system.recursive_create_directory (output_dirname)
@@ -92,13 +259,13 @@ feature -- HTML generation
 					cs := a_repository.classes.new_cursor
 					cs.start
 					i := 1
-					is_first := True
+					l_first := True
 				until
 					cs.off
 				loop
 					if is_class_in_test_scope (cs.item) then
-						if is_first then
-							is_first := False
+						if l_first then
+							l_first := False
 						else
 							tree_content_file.put_string (", ")
 						end
@@ -114,13 +281,13 @@ feature -- HTML generation
 					cs := a_repository.classes.new_cursor
 					cs.start
 					i := 1
-					is_first := True
+					l_first := True
 				until
 					cs.off
 				loop
 					if is_manual_test_class (cs.item) then
-						if is_first then
-							is_first := False
+						if l_first then
+							l_first := False
 						else
 							tree_content_file.put_string (", ")
 						end
@@ -136,13 +303,13 @@ feature -- HTML generation
 					cs := a_repository.classes.new_cursor
 					cs.start
 					i := 1
-					is_first := True
+					l_first := True
 				until
 					cs.off
 				loop
 					if not is_class_in_test_scope (cs.item) and not is_manual_test_class (cs.item) then
-						if is_first then
-							is_first := False
+						if l_first then
+							l_first := False
 						else
 							tree_content_file.put_string (", ")
 						end
@@ -160,14 +327,14 @@ feature -- HTML generation
 
 feature {NONE} -- HTML Generation
 
-	copy_static_files is
+	copy_static_files
 			-- Copy static files from test studio directory to html directory.
 		do
 			file_system_routines.copy_recursive (pathnames.image_dirname, file_system.pathname (output_dirname, "image"))
 			file_system_routines.copy_recursive (pathnames.misc_html_dirname, output_dirname)
 		end
 
-	generate_summary_page (a_repository: AUT_TEST_CASE_RESULT_REPOSITORY) is
+	generate_summary_page (a_repository: AUT_TEST_CASE_RESULT_REPOSITORY)
 			-- Generate main summary page.
 		require
 			a_repository_not_void: a_repository /= Void
@@ -188,7 +355,7 @@ feature {NONE} -- HTML Generation
 			end
 		end
 
-	generate_header_page is
+	generate_header_page
 			-- Generate header page.
 		local
 			file: KL_TEXT_OUTPUT_FILE
@@ -203,7 +370,7 @@ feature {NONE} -- HTML Generation
 			end
 		end
 
-	generate_class (a_class: CLASS_C; a_repository: AUT_TEST_CASE_RESULT_REPOSITORY) is
+	generate_class (a_class: CLASS_C; a_repository: AUT_TEST_CASE_RESULT_REPOSITORY)
 			-- Generate HTML pages describing the results from `a_repository' of class `a_class'.
 		require
 			a_repository_not_void: a_repository /= Void
@@ -321,7 +488,7 @@ feature {NONE} -- HTML Generation
 			end
 		end
 
-	generate_feature (a_class: CLASS_C; a_feature: FEATURE_I; a_repository: AUT_TEST_CASE_RESULT_REPOSITORY; a_id_list: DS_ARRAYED_LIST [INTEGER]) is
+	generate_feature (a_class: CLASS_C; a_feature: FEATURE_I; a_repository: AUT_TEST_CASE_RESULT_REPOSITORY; a_id_list: DS_ARRAYED_LIST [INTEGER])
 			-- Generate HTML pages describing the results from `a_repository' of class `a_class'.
 			-- This routine also generates the corresponding tree node entry and puts the id for the node into `a_id_list'.
 		require
@@ -460,7 +627,7 @@ feature {NONE} -- HTML Generation
 			end
 		end
 
-	generate_test_case_result (a_result: AUT_TEST_CASE_RESULT; a_stream: KI_TEXT_OUTPUT_STREAM) is
+	generate_test_case_result (a_result: AUT_TEST_CASE_RESULT; a_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print test case results in `a_set' to `a_stream'.
 		require
 			a_result_not_void: a_result /= Void
@@ -503,7 +670,7 @@ feature {NONE} -- HTML Generation
 			a_stream.put_line ("<br/>")
 		end
 
-	generate_summary (a_set: AUT_TEST_CASE_RESULT_SET; a_stream: KI_TEXT_OUTPUT_STREAM) is
+	generate_summary (a_set: AUT_TEST_CASE_RESULT_SET; a_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Generate summary for set `a_set' into `a_stream'.
 		require
 			a_set_not_void: a_set /= Void
@@ -546,7 +713,7 @@ feature {NONE} -- HTML Generation
 						>>))
 		end
 
-	generate_tree_content_file_header is
+	generate_tree_content_file_header
 			-- Generate header for `tree_file'.
 		require
 			tree_content_file_not_void: tree_content_file /= Void
@@ -573,13 +740,15 @@ feature {NONE} -- HTML Generation
 			tree_content_file.put_line ("Others.iconSrcClosed = %"image/folder.gif%"")
 		end
 
-	generate_tree_content_file_footer is
+	generate_tree_content_file_footer
 			-- Generate header for `tree_file'.
 		require
 			tree_content_file_not_void: tree_content_file /= Void
 			tree_content_file_open_write: tree_content_file.is_open_write
 		do
-			tree_content_file.put_line ("foldersTree.addChildren([ClassesInScope, ManualTests, Others])")
+				-- Disabling the menu entry for manual tests since they are currently not taken into account (Arno 05/20/2009)
+			--tree_content_file.put_line ("foldersTree.addChildren([ClassesInScope, ManualTests, Others])")
+			tree_content_file.put_line ("foldersTree.addChildren([ClassesInScope, Others])")
 		end
 
 feature {NONE} -- File handles
@@ -589,7 +758,7 @@ feature {NONE} -- File handles
 
 feature {NONE} -- Implementation
 
-	class_summary_file_name (a_class: CLASS_C): STRING is
+	class_summary_file_name (a_class: CLASS_C): STRING
 				-- File name for class sumamry file for class `a_class'
 			require
 				a_class_not_void: a_class /= Void
@@ -603,7 +772,7 @@ feature {NONE} -- Implementation
 				name_not_empty: Result.count > 0
 			end
 
-	feature_summary_file_name (a_class: CLASS_C; a_feature: FEATURE_I): STRING is
+	feature_summary_file_name (a_class: CLASS_C; a_feature: FEATURE_I): STRING
 				-- File name for feature sumamry file for feature `a_feature' of class `a_class'
 			require
 				a_class_not_void: a_class /= Void
@@ -620,7 +789,7 @@ feature {NONE} -- Implementation
 				name_not_empty: Result.count > 0
 			end
 
-	consume_id is
+	consume_id
 			-- Mark the id stored in `current_id' as used and provide a new one.
 		do
 			current_id := current_id + 1
@@ -634,11 +803,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation constants
 
-	class_summary_file_postfix: STRING is "_class_summary.html"
+	class_summary_file_postfix: STRING = "_class_summary.html"
 
-	feature_summary_file_postfix: STRING is "_feature_summary.html"
+	feature_summary_file_postfix: STRING = "_feature_summary.html"
 
-	class_summary_header_template: STRING is "[
+	class_summary_header_template: STRING = "[
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
@@ -651,12 +820,12 @@ feature {NONE} -- Implementation constants
 			<h1>${1}</h2>
 ]"
 
-	class_summary_footer_template: STRING is "[
+	class_summary_footer_template: STRING = "[
 		</div>
 	</body>
 </html>
 ]"
-	feature_summary_header_template: STRING is "[
+	feature_summary_header_template: STRING = "[
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
@@ -673,13 +842,13 @@ feature {NONE} -- Implementation constants
 			</p>
 ]"
 
-	feature_summary_footer_template: STRING is "[
+	feature_summary_footer_template: STRING = "[
 		</div>
 	</body>
 </html>
 ]"
 
-	summary_page_header_template: STRING is "[
+	summary_page_header_template: STRING = "[
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
@@ -692,12 +861,12 @@ feature {NONE} -- Implementation constants
 		<h1>System '${1}'</h1>
 ]"
 
-	summary_page_footer_template: STRING is "[
+	summary_page_footer_template: STRING = "[
 		</div>
 	</body>
 </html>
 ]"
-	summary_table_template: STRING is "[
+	summary_table_template: STRING = "[
 			<h1>Test Case Summary</h1>
 			<table>
 				<tr>
@@ -727,7 +896,7 @@ feature {NONE} -- Implementation constants
 			</table>
 ]"
 
-	header_page_template: STRING is "[
+	header_page_template: STRING = "[
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
@@ -759,11 +928,11 @@ feature {NONE} -- Implementation constants
 </html>
 ]"
 
-	class_has_error_template: STRING is "[
+	class_has_error_template: STRING = "[
 <ul><li>The class has syntax or type errors.</li></ul>
 ]"
 
-	explain_link_template: STRING is "[
+	explain_link_template: STRING = "[
 <a href="JavaScript: explain ('${1}')">${2}</a>
 ]"
 
@@ -771,4 +940,35 @@ invariant
 
 	test_case_printer_not_void: test_case_printer /= Void
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

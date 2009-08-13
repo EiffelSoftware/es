@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Commands applicable to the context diagram."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -20,7 +20,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (a_target: like tool) is
+	make (a_target: like tool)
 			-- Initialize the command with target `a_target'.
 		do
 			Precursor (a_target)
@@ -36,13 +36,13 @@ feature -- Access
 	history: EB_HISTORY_DIALOG
 			-- History of undoable commands.
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Name on corresponding menu items
 		do
 			Result := "Diagram command"
 		end
 
-	description: STRING_GENERAL is
+	description: STRING_GENERAL
 			-- Description for this command.
 		do
 			Result := tooltip
@@ -50,7 +50,7 @@ feature -- Access
 
 feature {NONE} -- Removal
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle code.
 		do
 			Precursor {EB_TARGET_COMMAND}
@@ -62,10 +62,10 @@ feature {NONE} -- Removal
 			internal_managed_sd_toolbar_items := Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -76,19 +76,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

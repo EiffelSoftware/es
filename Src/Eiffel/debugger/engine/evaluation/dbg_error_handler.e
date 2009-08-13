@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that handles debugger evaluation error."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -68,31 +68,31 @@ feature -- Status report
 	initialized: BOOLEAN
 			-- Is Current initialized?
 
-	error_occurred: BOOLEAN is
+	error_occurred: BOOLEAN
 			-- Did an error occurred ?
 		do
 			Result := error /= 0
 		end
 
-	has_error_syntax: BOOLEAN is
+	has_error_syntax: BOOLEAN
 			-- Syntax error occurred?
 		do
 			Result := error & (cst_error_syntax |>> 4) > 0
 		end
 
-	has_error_expression: BOOLEAN is
+	has_error_expression: BOOLEAN
 			-- Error occurred during expression analysis, or context setting?
 		do
 			Result := error & (cst_error_expression |>> 4) > 0
 		end
 
-	has_error_evaluation: BOOLEAN is
+	has_error_evaluation: BOOLEAN
 			-- Error occurred during expession evaluation?
 		do
 			Result := error & (cst_error_evaluation |>> 4) > 0
 		end
 
-	has_error_exception: BOOLEAN is
+	has_error_exception: BOOLEAN
 			-- Exception occurred during expession evaluation?	
 			--| Internal error (debugger)
 		do
@@ -107,7 +107,7 @@ feature -- Status report
 
 feature -- Error notification: main categories
 
-	notify_error (a_code: INTEGER; a_tag, a_msg: STRING_GENERAL) is
+	notify_error (a_code: INTEGER; a_tag, a_msg: STRING_GENERAL)
 			-- Notify error with `a_code', `a_tag' and `a_msg'
 		require
 			valid_code: a_code /= 0
@@ -127,17 +127,17 @@ feature -- Error notification: main categories
 			error_list.extend (err)
 		end
 
-	notify_error_syntax (mesg: STRING_GENERAL) is
+	notify_error_syntax (mesg: STRING_GENERAL)
 		do
 			notify_error (cst_error_syntax, Void, mesg)
 		end
 
-	notify_error_expression (mesg: STRING_GENERAL) is
+	notify_error_expression (mesg: STRING_GENERAL)
 		do
 			notify_error (cst_error_expression, Void, mesg)
 		end
 
-	notify_error_evaluation (mesg: STRING_GENERAL) is
+	notify_error_evaluation (mesg: STRING_GENERAL)
 		do
 			if mesg = Void then
 				notify_error (cst_error_evaluation, Void, Debugger_names.Cst_error_occurred)
@@ -146,14 +146,14 @@ feature -- Error notification: main categories
 			end
 		end
 
-	notify_error_exception (mesg: STRING_GENERAL) is
+	notify_error_exception (mesg: STRING_GENERAL)
 		do
 			notify_error (cst_error_exception, Void, mesg)
 		end
 
 feature -- Error notification: expression error
 
-	notify_error_expression_and_tag (mesg: STRING_GENERAL; t: STRING_GENERAL) is
+	notify_error_expression_and_tag (mesg: STRING_GENERAL; t: STRING_GENERAL)
 		do
 			notify_error (cst_error_expression, t, mesg)
 		end
@@ -178,13 +178,13 @@ feature -- Error notification: expression error
 			end
 		end
 
-	notify_error_expression_error (err: ERROR) is
+	notify_error_expression_error (err: ERROR)
 		local
 			msg32: STRING_32
 			tag: STRING
 		do
 			msg32 := "Error "
-			msg32.append_string (err.code)
+			msg32.append (err.code)
 			msg32.append_character ('%N')
 			msg32.append_string_general (error_to_string (err))
 			tag := err.code
@@ -212,24 +212,26 @@ feature -- Error notification: expression error
 
 feature -- Error notification: evaluation error
 
-	notify_error_evaluation_side_effect_forbidden is
+	notify_error_evaluation_side_effect_forbidden
 		do
 			notify_error_evaluation (Debugger_names.Cst_error_evaluation_side_effect_forbidden)
 		end
 
-	notify_error_evaluation_call_on_void (fname: STRING_GENERAL) is
+	notify_error_evaluation_call_on_void (fname: STRING_GENERAL)
 		do
 			notify_error_evaluation (Debugger_names.msg_error_call_on_void_target (fname))
 		end
 
-	notify_error_evaluation_report_to_support (a: ANY) is
-		require
-			a_not_void: a /= Void
+	notify_error_evaluation_report_to_support (a: detachable ANY)
 		do
-			notify_error_evaluation (Debugger_names.msg_error_report_to_support (a))
+			if a /= Void then
+				notify_error_evaluation (Debugger_names.msg_error_report_to_support (a.generating_type))
+			else
+				notify_error_evaluation (Debugger_names.msg_error_report_to_support (""))
+			end
 		end
 
-	notify_error_evaluation_during_call_evaluation (a: ANY; fname: STRING_GENERAL) is
+	notify_error_evaluation_during_call_evaluation (a: ANY; fname: STRING_GENERAL)
 		require
 			a_not_void: a /= Void
 			fname_not_void: fname /= Void
@@ -261,19 +263,19 @@ feature -- Error notification: evaluation error
 			end
 		end
 
-	notify_error_not_implemented (mesg: STRING_GENERAL) is
+	notify_error_not_implemented (mesg: STRING_GENERAL)
 		do
 			notify_error (cst_error_not_implemented, Void, mesg)
 		end
 
-	notify_error_not_supported (a: ANY) is
+	notify_error_not_supported (a: ANY)
 		require
 			a_not_void: a /= Void
 		do
 			notify_error_not_implemented (Debugger_names.msg_error_not_supported (a))
 		end
 
-	notify_error_should_not_occur_in_expression_evaluation (a: ANY) is
+	notify_error_should_not_occur_in_expression_evaluation (a: ANY)
 		require
 			a_not_void: a /= Void
 		do
@@ -302,7 +304,7 @@ feature -- Error notification : exception error
 			notify_error_exception (Debugger_names.cst_error_evaluation_failed_with_internal_exception)
 		end
 
-	notify_error_exception_during_evaluation (m: STRING_GENERAL)
+	notify_error_exception_during_evaluation (m: detachable STRING_GENERAL)
 		do
 			if m = Void then
 				notify_error_exception (Debugger_names.cst_error_exception_during_evaluation)
@@ -313,7 +315,7 @@ feature -- Error notification : exception error
 
 feature -- Query
 
-	short_text_from_errors: STRING_32 is
+	short_text_from_errors: STRING_32
 			-- Short text from errors
 		local
 			details: DBG_ERROR
@@ -324,7 +326,7 @@ feature -- Query
 			end
 		end
 
-	full_text_from_errors: STRING_32 is
+	full_text_from_errors: STRING_32
 			-- Full text from errors
 		local
 			details: DBG_ERROR
@@ -429,7 +431,7 @@ feature {NONE} -- Implementation: Status report
 
 feature {NONE} -- Implementation
 
-	error_to_string (e: ERROR): STRING_32 is
+	error_to_string (e: ERROR): STRING_32
 			-- Convert Error code to Error description STRING
 		require
 			error_not_void: e /= Void
@@ -444,8 +446,8 @@ feature {NONE} -- Implementation
 invariant
 	error_list_attached: error_list /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -458,22 +460,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

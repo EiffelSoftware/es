@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -15,24 +15,24 @@ create
 
 feature
 
-	main_window: SPLIT_AREA_DEMO is
+	main_window: SPLIT_AREA_DEMO
 			-- Create the application's main window
 		once
 			create Result.make
 		end
 
-	init_application is
+	init_application
 			-- Load the common controls dll and the rich edit dll.
 		do
 			create common_controls_dll.make
 			create rich_edit_dll.make
 		end
 
-	common_controls_dll: WEL_COMMON_CONTROLS_DLL
+	common_controls_dll: detachable WEL_COMMON_CONTROLS_DLL
 
-	rich_edit_dll: WEL_RICH_EDIT_DLL;
+	rich_edit_dll: detachable WEL_RICH_EDIT_DLL;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

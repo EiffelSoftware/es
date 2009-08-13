@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Pixmaps used in interface."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,31 +18,31 @@ inherit
 
 feature -- Access
 
-	stock_pixmaps: !EV_STOCK_PIXMAPS
+	stock_pixmaps: attached EV_STOCK_PIXMAPS
 			-- EiffelVision2 OS pixmaps
 		once
 			create Result
 		end
 
-	mini_pixmaps: !ES_PIXMAPS_10X10
+	mini_pixmaps: attached ES_PIXMAPS_10X10
 			-- Title bar pixmaps (10px)
 		once
 			create Result.make ("10x10")
 		end
 
-	small_pixmaps: !ES_PIXMAPS_12X12
+	small_pixmaps: attached ES_PIXMAPS_12X12
 			-- Small icon pixmaps (12px)
 		once
 			create Result.make ("12x12")
 		end
 
-	icon_pixmaps: !ES_PIXMAPS_16X16
+	icon_pixmaps: attached ES_PIXMAPS_16X16
 			-- Normal sized icon pixmaps (16px)
 		once
 			create Result.make ("16x16")
 		end
 
-	configuration_pixmaps: !ES_CONFIGURATION_PIXMAPS
+	configuration_pixmaps: attached ES_CONFIGURATION_PIXMAPS
 			-- Configuration system pixmaps (16px)
 		once
 			create Result.make ("16x16")
@@ -50,7 +50,7 @@ feature -- Access
 
 feature -- Helpers
 
-	resource_handler: !ES_PIXMAP_RESOURCE_HANDLER
+	resource_handler: attached ES_PIXMAP_RESOURCE_HANDLER
 			-- Shared access to an icon resource handled
 		once
 			create Result.make
@@ -58,7 +58,7 @@ feature -- Helpers
 
 feature -- Pngs
 
-	bm_About: EV_PIXMAP is
+	bm_About: EV_PIXMAP
 			-- Bitmap for the "About Dialog"
 		local
 			l_buffer: EV_PIXEL_BUFFER
@@ -67,7 +67,7 @@ feature -- Pngs
 			Result := l_buffer.to_pixmap
 		end
 
-	bm_Wizard_blue: EV_PIXMAP is
+	bm_Wizard_blue: EV_PIXMAP
 			-- Bitmap for the wizards
 		local
 			l_buffer: EV_PIXEL_BUFFER
@@ -76,7 +76,7 @@ feature -- Pngs
 			Result := l_buffer.to_pixmap
 		end
 
-	bm_Wizard_profiler_icon: EV_PIXMAP is
+	bm_Wizard_profiler_icon: EV_PIXMAP
 			-- Icon Bitmap for the wizards
 		local
 			l_buffer: EV_PIXEL_BUFFER
@@ -85,7 +85,7 @@ feature -- Pngs
 			Result := l_buffer.to_pixmap
 		end
 
-	bm_Wizard_testing_icon: EV_PIXMAP is
+	bm_Wizard_testing_icon: EV_PIXMAP
 			-- Icon Bitmap for the wizards
 		local
 			l_buffer: EV_PIXEL_BUFFER
@@ -94,7 +94,7 @@ feature -- Pngs
 			Result := l_buffer.to_pixmap
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

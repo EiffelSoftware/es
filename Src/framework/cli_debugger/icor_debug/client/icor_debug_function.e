@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		]"
 	legal: "See notice at end of class."
@@ -20,29 +20,32 @@ create {ICOR_OBJECTS_MANAGER}
 
 feature -- Addons
 
-	to_function_name: STRING is
+	to_function_name: detachable STRING
 		do
 			Result := get_module.md_member_name (token)
 		end
 
-	to_string: STRING is
+	to_string: STRING
 			-- String representation of the Current ICorDebugFunction.
 			-- For debug purpose only
-		local
-			l_cl: ICOR_DEBUG_CLASS
-			l_module: ICOR_DEBUG_MODULE
 		do
-			Result := "Function [" + item.out + "] "
-					+ " Token="+ token.out + "~0x" + token.to_hex_string
-			l_cl := get_class
-			if l_cl /= Void then
+			create Result.make_from_string ("Function [")
+			Result.append_string (item.out)
+			Result.append_character (']')
+			Result.append_string (" Token=" + token.out + "~0x" + token.to_hex_string)
+			if attached get_class as l_cl then
 				Result.append (" ClassToken=" + l_cl.token.out + "~0x" + l_cl.token.to_hex_string)
 --				l_cl.clean_on_dispose
 			else
-				Result.append (" Class= not IL ")
+				Result.append (" Class=not IL ")
 			end
-			l_module := get_module
-			Result.append (" Module[" + l_module.get_token.out + "]=" + l_module.name + " .")
+			if attached get_module as l_module then
+				Result.append (" Module[" + l_module.get_token.out + "]=" + l_module.name + " .")
+			else
+				Result.append (" Module=None ")
+			end
+		ensure
+			Result_attached: Result /= Void
 		end
 
 feature {ICOR_EXPORTER} -- Access
@@ -56,7 +59,7 @@ feature {ICOR_EXPORTER} -- Access
 
 feature {ICOR_EXPORTER} -- Access
 
-	get_module: ICOR_DEBUG_MODULE is
+	get_module: detachable ICOR_DEBUG_MODULE
 		local
 			p: POINTER
 		do
@@ -68,7 +71,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_class: ICOR_DEBUG_CLASS is
+	get_class: detachable ICOR_DEBUG_CLASS
 		local
 			p: POINTER
 		do
@@ -80,7 +83,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_il_code: ICOR_DEBUG_CODE is
+	get_il_code: detachable ICOR_DEBUG_CODE
 		local
 			p: POINTER
 		do
@@ -92,7 +95,7 @@ feature {ICOR_EXPORTER} -- Access
 --			success: last_call_success = 0
 		end
 
-	get_native_code: ICOR_DEBUG_CODE is
+	get_native_code: detachable ICOR_DEBUG_CODE
 		local
 			p: POINTER
 		do
@@ -104,7 +107,7 @@ feature {ICOR_EXPORTER} -- Access
 --			success: last_call_success = 0
 		end
 
-	create_breakpoint: ICOR_DEBUG_FUNCTION_BREAKPOINT is
+	create_breakpoint: detachable ICOR_DEBUG_FUNCTION_BREAKPOINT
 		local
 			p: POINTER
 		do
@@ -122,7 +125,7 @@ feature {ICOR_EXPORTER} -- Access
 --			success: last_call_success = 0
 		end
 
-	get_local_var_sig_token: NATURAL_32 is
+	get_local_var_sig_token: NATURAL_32
 			-- Returns mdSignature of Function
 		do
 			last_call_success := cpp_get_local_var_sig_token (item, $Result)
@@ -130,7 +133,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_current_version_number: NATURAL_32 is
+	get_current_version_number: NATURAL_32
 			-- Returns version number of code
 		do
 			last_call_success := cpp_get_current_version_number (item, $Result)
@@ -140,7 +143,7 @@ feature {ICOR_EXPORTER} -- Access
 
 feature {NONE} -- Access
 
-	get_token: like token is
+	get_token: like token
 		do
 			last_call_success := cpp_get_token (item, $Result)
 		ensure
@@ -149,7 +152,7 @@ feature {NONE} -- Access
 
 feature {NONE} -- Implementation
 
-	cpp_get_module (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
+	cpp_get_module (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugModule**): EIF_INTEGER 
@@ -159,7 +162,7 @@ feature {NONE} -- Implementation
 			"GetModule"
 		end
 
-	cpp_get_class (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
+	cpp_get_class (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugClass**): EIF_INTEGER 
@@ -169,7 +172,7 @@ feature {NONE} -- Implementation
 			"GetClass"
 		end
 
-	cpp_get_token (obj: POINTER; a_p: TYPED_POINTER [NATURAL_32]): INTEGER is
+	cpp_get_token (obj: POINTER; a_p: TYPED_POINTER [NATURAL_32]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(mdMethodDef*): EIF_INTEGER 
@@ -179,7 +182,7 @@ feature {NONE} -- Implementation
 			"GetToken"
 		end
 
-	cpp_get_il_code (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
+	cpp_get_il_code (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugCode**): EIF_INTEGER 
@@ -189,7 +192,7 @@ feature {NONE} -- Implementation
 			"GetILCode"
 		end
 
-	cpp_get_native_code (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
+	cpp_get_native_code (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugCode**): EIF_INTEGER 
@@ -199,7 +202,7 @@ feature {NONE} -- Implementation
 			"GetNativeCode"
 		end
 
-	cpp_create_breakpoint (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
+	cpp_create_breakpoint (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugFunctionBreakpoint**): EIF_INTEGER 
@@ -209,7 +212,7 @@ feature {NONE} -- Implementation
 			"CreateBreakpoint"
 		end
 
-	cpp_get_local_var_sig_token (obj: POINTER; a_p_token: TYPED_POINTER [NATURAL_32]): INTEGER is
+	cpp_get_local_var_sig_token (obj: POINTER; a_p_token: TYPED_POINTER [NATURAL_32]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(mdSignature*): EIF_INTEGER 
@@ -219,7 +222,7 @@ feature {NONE} -- Implementation
 			"GetLocalVarSigToken"
 		end
 
-	cpp_get_current_version_number (obj: POINTER; a_p_vers_number: TYPED_POINTER [NATURAL_32]): INTEGER is
+	cpp_get_current_version_number (obj: POINTER; a_p_vers_number: TYPED_POINTER [NATURAL_32]): INTEGER
 		external
 			"[
 				C++ ICorDebugFunction signature(ULONG32*): EIF_INTEGER 
@@ -229,7 +232,7 @@ feature {NONE} -- Implementation
 			"GetCurrentVersionNumber"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

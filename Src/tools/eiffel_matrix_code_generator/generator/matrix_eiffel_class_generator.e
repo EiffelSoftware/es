@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A generator for creating Eiffel classes from a matrix INI file.
 	]"
@@ -36,12 +36,12 @@ feature {NONE} -- Access
 	class_name: STRING
 			-- Class name specified in matrix file
 
-	animation_pixmaps: !HASH_TABLE [!ARRAYED_LIST [!STRING], !STRING]
+	animation_pixmaps: attached HASH_TABLE [attached ARRAYED_LIST [attached STRING], attached STRING]
 			-- Table of pixmap animations
 
 feature -- Basic Operations
 
-	generate (a_doc: INI_DOCUMENT; a_frame: STRING; a_class_name: STRING; a_output: STRING) is
+	generate (a_doc: INI_DOCUMENT; a_frame: STRING; a_class_name: STRING; a_output: STRING)
 			-- Generates a matrix file.
 		require
 			not_a_class_name_is_empty: a_class_name /= Void implies not a_class_name.is_empty
@@ -52,12 +52,13 @@ feature -- Basic Operations
 			l_cursor: CURSOR
 			l_of: STRING
 			l_buffer: STRING
-			l_temp_buffer: !STRING
+			l_temp_buffer: attached STRING
 			l_buffers: like internal_buffers
 			l_fragment: STRING
-			l_anim_pixmaps: !like animation_pixmaps
-			l_iname: !STRING
-			l_ibname: !STRING
+			l_anim_pixmaps: attached like animation_pixmaps
+			l_iname: attached STRING
+			l_ibname: attached STRING
+			l_args: ARGUMENTS
 		do
 			reset
 
@@ -86,6 +87,8 @@ feature -- Basic Operations
 						l_buffer.replace_substring_all (token_variable (class_name_property), "")
 					end
 					l_buffer.replace_substring_all (token_variable (pixel_border_property), pixel_border.out)
+					create l_args
+					l_buffer.replace_substring_all (token_variable (command_line_property), l_args.command_line)
 
 						-- Replace aux tokens based on other properties in the configuration file
 					l_props := a_doc.named_properties
@@ -107,10 +110,10 @@ feature -- Basic Operations
 					l_anim_pixmaps := animation_pixmaps
 					if not l_anim_pixmaps.is_empty then
 						from l_anim_pixmaps.start until l_anim_pixmaps.after loop
-							if {l_animations: ARRAYED_LIST [!STRING]} l_anim_pixmaps.item_for_iteration then
+							if attached {ARRAYED_LIST [STRING]} l_anim_pixmaps.item_for_iteration as l_animations then
 								if l_animations.count > 1 then
 										-- More than one entry, so it must be an animation
-									if {l_name: STRING} l_anim_pixmaps.key_for_iteration then
+									if attached {STRING} l_anim_pixmaps.key_for_iteration as l_name then
 											-- Create feature names
 										create l_iname.make_from_string (l_name)
 										l_iname.append (icon_animation_suffix)
@@ -228,7 +231,7 @@ feature {NONE} -- Basic Operations
 				l_file.open_write
 				l_file.put_string (a_content)
 			else
-				error_manager.set_last_error (create {ERROR_CREATING_FILE}.make_with_context ([a_file_name]), False)
+				error_manager.set_last_error (create {ERROR_CREATING_FILE}.make ([a_file_name]), False)
 			end
 			if l_file /= Void and then not l_file.is_closed then
 				l_file.close
@@ -240,7 +243,7 @@ feature {NONE} -- Basic Operations
 
 feature {NONE} -- Processing
 
-	process_property (a_property: INI_PROPERTY): BOOLEAN is
+	process_property (a_property: INI_PROPERTY): BOOLEAN
 			-- Process document properties
 		local
 			l_name: STRING
@@ -258,27 +261,27 @@ feature {NONE} -- Processing
 			end
 		end
 
-	process_literal_item (a_item: INI_LITERAL; a_x: NATURAL_32; a_y: NATURAL_32) is
+	process_literal_item (a_item: INI_LITERAL; a_x: NATURAL_32; a_y: NATURAL_32)
 			-- Processes a literal from an INI matrix file.
 		local
-			l_base: !STRING
-			l_prefix: !STRING
-			l_isuffix: !like icon_suffix
-			l_ibsuffix: !like icon_buffer_suffix
-			l_csuffix: !like name_suffix
-			l_iname: !STRING
-			l_ibname: !STRING
-			l_cname: !STRING
-			l_aname: !STRING
-			l_animations: !ARRAYED_LIST [!STRING]
+			l_base: attached STRING
+			l_prefix: attached STRING
+			l_isuffix: attached like icon_suffix
+			l_ibsuffix: attached like icon_buffer_suffix
+			l_csuffix: attached like name_suffix
+			l_iname: attached STRING
+			l_ibname: attached STRING
+			l_cname: attached STRING
+			l_aname: attached STRING
+			l_animations: attached ARRAYED_LIST [attached STRING]
 			l_index: INTEGER
-			l_anim_regex: !like animation_regex
-			l_anim_pixmaps: !like animation_pixmaps
-			l_cvalue: !STRING
+			l_anim_regex: attached like animation_regex
+			l_anim_pixmaps: attached like animation_pixmaps
+			l_cvalue: attached STRING
 		do
 				-- Create feature prefix
 			l_prefix := icon_prefix (a_item)
-			if {l_name: STRING} a_item.name then
+			if attached {STRING} a_item.name as l_name then
 				l_name.to_lower
 
 					-- Name constants
@@ -289,7 +292,7 @@ feature {NONE} -- Processing
 				l_cname.append (l_csuffix)
 				l_cname := format_eiffel_name (l_cname)
 				create l_cvalue.make (25)
-				if {l_section: INI_SECTION} a_item.container then
+				if attached {INI_SECTION} a_item.container as l_section then
 					l_cvalue.append (section_label (l_section))
 					l_cvalue.append_character (' ')
 				end
@@ -332,7 +335,7 @@ feature {NONE} -- Processing
 					l_anim_pixmaps := animation_pixmaps
 					if l_anim_pixmaps.has (l_aname) then
 							-- An animation list already exists
-						if {l_anim_pixmaps_item: ARRAYED_LIST [!STRING]} l_anim_pixmaps.item (l_aname) then
+						if attached {ARRAYED_LIST [attached STRING]} l_anim_pixmaps.item (l_aname) as l_anim_pixmaps_item then
 							l_animations := l_anim_pixmaps_item
 						else
 							check False end
@@ -353,27 +356,27 @@ feature {NONE} -- Processing
 
 feature {NONE} -- Validation
 
-	validate_properties (a_doc: INI_DOCUMENT) is
+	validate_properties (a_doc: INI_DOCUMENT)
 			-- Validates properties examined in `generate' or those that are in `a_doc' that have not been examined from some reason.
 		do
 			Precursor {MATRIX_FILE_GENERATOR} (a_doc)
 			if a_doc.property_of_name (icons_token, True) /= Void then
-				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make_with_context ([icons_token]), False)
+				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make ([icons_token]), False)
 			end
 			if a_doc.property_of_name (animations_token, True) /= Void then
-				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make_with_context ([animations_token]), False)
+				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make ([animations_token]), False)
 			end
 			if a_doc.property_of_name (icon_names_token, True) /= Void then
-				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make_with_context ([icon_names_token]), False)
+				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make ([icon_names_token]), False)
 			end
 			if a_doc.property_of_name (coordinates_token, True) /= Void then
-				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make_with_context ([coordinates_token]), False)
+				add_error (create {ERROR_MISSING_INI_RESERVED_PROPERTY}.make ([coordinates_token]), False)
 			end
 		end
 
 feature {NONE} -- Query
 
-	buffer (a_name: !STRING): !STRING
+	buffer (a_name: attached STRING): attached STRING
 			-- Retrieves a text buffer given a name.
 			--
 			-- 'a_name':
@@ -382,7 +385,7 @@ feature {NONE} -- Query
 			not_a_name_is_empty: not a_name.is_empty
 		do
 			if internal_buffers.has (a_name) then
-				if {s: STRING} internal_buffers.item (a_name) then
+				if attached {STRING} internal_buffers.item (a_name) as s then
 					Result := s
 				else
 					check False end
@@ -396,7 +399,7 @@ feature {NONE} -- Query
 			result_consistent: Result = buffer (a_name)
 		end
 
-	token_variable (a_name: ?STRING): !STRING
+	token_variable (a_name: detachable STRING): attached STRING
 			-- Returns a token varaible for token name `a_name'
 		require
 			a_name_attached: a_name /= Void
@@ -420,7 +423,7 @@ feature {NONE} -- Helpers
 
 feature {NONE} -- Regular expressions
 
-	animation_regex: !RX_PCRE_MATCHER
+	animation_regex: attached RX_PCRE_MATCHER
 			-- Regular expression to match animation items
 		once
 			create Result.make
@@ -447,59 +450,83 @@ feature {NONE} -- Constants: Token names
 
 feature {NONE} -- Constants: Templates
 
-	icon_name_constant_template: !STRING = "%T{1}: !STRING = %"{2}%"%N"
+	icon_name_constant_template: STRING = "%T{1}: STRING = %"{2}%"%N"
 			-- Template for icon name constants
 
-	icon_name_registration_template: !STRING = "%T%T%Ta_table.force_last ([{{NATURAL_8}}{1}, {{NATURAL_8}}{2}], {3})%N"
+	icon_name_registration_template: STRING = "%T%T%Ta_table.put ([{{NATURAL_8}} {1}, {{NATURAL_8}} {2}], {3})%N"
 			-- Template for icon name constants
 
-	icon_animation_registration_template: !STRING = "%T%T%TResult.put (named_icon ({1}), {2})%N"
+	icon_animation_registration_template: STRING = "%T%T%TResult.put (named_icon ({1}), {2})%N"
 			-- Template for icon animation indexes
 
-	icon_buffer_animation_registration_template: !STRING = "%T%T%TResult.put (named_icon_buffer ({1}), {2})%N"
+	icon_buffer_animation_registration_template: STRING = "%T%T%TResult.put (named_icon_buffer ({1}), {2})%N"
 			-- Template for icon buffer animation indexes
 
-	icon_template: !STRING =
+	icon_template: STRING =
 			-- Template used for access features
-		"%Tfrozen {1}: !EV_PIXMAP%N%
-		%%T%T%T-- Access to '{2}' pixmap.%N%
-		%%T%Trequire%N%
-		%%T%T%Thas_named_icon: has_named_icon ({3})%N%
-		%%T%Tonce%N%
-		%%T%T%TResult := named_icon ({3})%N%
-		%%T%Tend%N%N"
+			"[
+	frozen {1}: EV_PIXMAP
+			-- Access to '{2}' pixmap.
+		require
+			has_named_icon: has_named_icon ({3})
+		once
+			Result := named_icon ({3})
+		ensure
+			{1}_attached: Result /= Void
+		end
 
-	icon_buffer_template: !STRING =
-			-- Template used for access pixel buffer features
-		"%Tfrozen {1}: !EV_PIXEL_BUFFER%N%
-		%%T%T%T-- Access to '{2}' pixmap pixel buffer.%N%
-		%%T%Trequire%N%
-		%%T%T%Thas_named_icon: has_named_icon ({3})%N%
-		%%T%Tonce%N%
-		%%T%T%TResult := named_icon_buffer ({3})%N%
-		%%T%Tend%N%N"
 
-	icon_animation_template: !STRING =
-			-- Template used for access pixel buffer features
-		"%Tfrozen {1}: !ARRAY [!EV_PIXMAP]%N%
-		%%T%T%T-- Access to '{2}' pixmap animation items.%N%
-		%%T%Tonce%N%
-		%%T%T%Tcreate Result.make (1, {3})%N%
-		%{4}%N%
-		%%T%Tend%N%N"
+	]"
 
-	icon_buffer_animation_template: !STRING =
+	icon_buffer_template: STRING =
 			-- Template used for access pixel buffer features
-		"%Tfrozen {1}: !ARRAY [!EV_PIXEL_BUFFER]%N%
-		%%T%T%T-- Access to '{2}' pixel buffer animation items.%N%
-		%%T%Tonce%N%
-		%%T%T%Tcreate Result.make (1, {3})%N%
-		%{4}%N%
-		%%T%Tend%N%N"
+			"[
+	frozen {1}: EV_PIXEL_BUFFER
+			-- Access to '{2}' pixmap pixel buffer.
+		require
+			has_named_icon: has_named_icon ({3})
+		once
+			Result := named_icon_buffer ({3})
+		ensure
+			{1}_attached: Result /= Void
+		end
+
+
+	]"
+
+	icon_animation_template: STRING =
+			-- Template used for access pixel buffer features
+		"[
+	frozen {1}: ARRAY [EV_PIXMAP]
+			-- Access to '{2}' pixmap animation items.
+		once
+			create Result.make (1, {3})
+	{4}
+		ensure
+			{1}_attached: Result /= Void
+		end
+
+
+	]"
+
+	icon_buffer_animation_template: STRING =
+			-- Template used for access pixel buffer features
+		"[
+	frozen {1}: ARRAY [EV_PIXEL_BUFFER]
+			-- Access to '{2}' pixel buffer animation items.
+		once
+			create Result.make (1, {3})
+	{4}
+		ensure
+			{1}_attached: Result /= Void
+		end
+
+
+		]"
 
 feature {NONE} -- Implementation: Internal cache
 
-	internal_buffers: !HASH_TABLE [!STRING, !STRING]
+	internal_buffers: attached HASH_TABLE [attached STRING, attached STRING]
 			-- Table of cached buffers
 			--
 			-- Key: The name of the buffer
@@ -509,9 +536,9 @@ invariant
 	generated_file_name_not_empty: generated_file_name /= Void implies not generated_file_name.is_empty
 	class_name_not_empty: class_name /= Void implies not class_name.is_empty
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -523,22 +550,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {MATRIX_EIFFEL_CLASS_GENERATOR}

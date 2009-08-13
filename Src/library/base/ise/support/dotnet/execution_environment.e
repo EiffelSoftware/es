@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"The objects available from the environment at time of execution"
@@ -13,48 +13,46 @@ class EXECUTION_ENVIRONMENT
 
 feature -- Access
 
-	command_line: ARGUMENTS is
+	command_line: ARGUMENTS
 			-- Command line that was used to start current execution
 		once
 			create Result
 		end
 
-	current_working_directory: STRING is
+	current_working_directory: STRING
 			-- Directory of current execution
 		do
 			Result := {ENVIRONMENT}.current_directory
 		end
 
-	default_shell: STRING is
+	default_shell: STRING
 			-- Default shell
+		local
+			l_result: detachable STRING
 		once
-			Result := get ("SHELL")
-			if Result = Void then
-				Result := create {STRING}.make (0)
+			l_result := get ("SHELL")
+			if l_result = Void then
+				create {STRING} Result.make (0)
+			else
+				Result := l_result
 			end
 		end
 
-	get (s: STRING): STRING is
+	get (s: STRING): detachable STRING
 			-- Value of `s' if it is an environment variable and has been set;
 			-- void otherwise.
 		require
 			s_exists: s /= Void
-		local
-			cs: SYSTEM_STRING
 		do
 			user_environment_variables.search (s)
 			if user_environment_variables.found then
-				Result := user_environment_variables.found_item.twin
-			else
-				cs := s.to_cil
-				cs := {ENVIRONMENT}.get_environment_variable (cs)
-				if cs /= Void then
-					create Result.make_from_cil (cs)
-				end
+				Result := user_environment_variables.found_item
+			elseif attached {SYSTEM_STRING} {ENVIRONMENT}.get_environment_variable (s.to_cil) as cs then
+				create Result.make_from_cil (cs)
 			end
 		end
 
-	home_directory_name: STRING is
+	home_directory_name: STRING
 			-- Directory name corresponding to the home directory.
 		require
 			home_directory_supported: Operating_environment.home_directory_supported
@@ -62,7 +60,7 @@ feature -- Access
 			Result := {ENVIRONMENT}.get_folder_path ({SPECIAL_FOLDER_IN_ENVIRONMENT}.local_application_data)
 		end
 
-	root_directory_name: STRING is
+	root_directory_name: STRING
 			-- Directory name corresponding to the root directory.
 		require
 			root_directory_supported: Operating_environment.root_directory_supported
@@ -72,31 +70,31 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	environment_variables: HASH_TABLE [STRING, STRING] is
+	environment_variables: HASH_TABLE [STRING, STRING]
 			-- Table of environment variables associated with current process,
 			-- indexed by variable name
 		local
-			l_dic: IDICTIONARY
-			l_enumerator: IENUMERATOR
-			l_entry: DICTIONARY_ENTRY
-			l_key: SYSTEM_STRING
-			l_value: SYSTEM_STRING
+			l_key: detachable SYSTEM_STRING
+			l_value: detachable SYSTEM_STRING
 		do
-			l_dic := {ENVIRONMENT}.get_environment_variables
-			l_enumerator := l_dic.get_enumerator_2
-			create Result.make (l_dic.count)
-			from
-			until
-				not l_enumerator.move_next
-			loop
-				l_entry ?= l_enumerator.current_
-				l_key ?= l_entry.key
-				l_value ?= l_entry.value
-				check
-					l_key /= Void
-					l_value /= Void
+			if attached {IDICTIONARY} {ENVIRONMENT}.get_environment_variables as l_dic and then attached {IENUMERATOR} l_dic.get_enumerator_2 as l_enumerator then
+				create Result.make (l_dic.count)
+				from
+				until
+					not l_enumerator.move_next
+				loop
+					if attached {DICTIONARY_ENTRY} l_enumerator.current_ as l_entry then
+						l_key ?= l_entry.key
+						l_value ?= l_entry.value
+						check
+							l_key /= Void
+							l_value /= Void
+						end
+						Result.force (l_value, l_key)
+					end
 				end
-				Result.force (l_value, l_key)
+			else
+				create Result.make (0)
 			end
 		end
 
@@ -107,13 +105,13 @@ feature -- Status
 
 feature -- Status setting
 
-	change_working_directory (path: STRING) is
+	change_working_directory (path: STRING)
 			-- Set the current directory to `path'
 		do
 			{ENVIRONMENT}.set_current_directory (path)
 		end
 
-	put (value, key: STRING) is
+	put (value, key: STRING)
 			-- Set the environment variable `key' to `value'.
 		require
 			key_exists: key /= Void
@@ -127,7 +125,7 @@ feature -- Status setting
 				(equal (value, get (key)) or else (value.is_empty and then (get (key) = Void)))
 		end
 
-	system (s: STRING) is
+	system (s: STRING)
 			-- Pass to the operating system a request to execute `s'.
 			-- If `s' is empty, use the default shell as command.
 		require
@@ -136,7 +134,7 @@ feature -- Status setting
 			internal_launch (s, True)
 		end
 
-	launch (s: STRING) is
+	launch (s: STRING)
 			-- Pass to the operating system an asynchronous request to
 			-- execute `s'.
 			-- If `s' is empty, use the default shell as command.
@@ -146,7 +144,7 @@ feature -- Status setting
 			internal_launch (s, False)
 		end
 
-	sleep (nanoseconds: INTEGER_64) is
+	sleep (nanoseconds: INTEGER_64)
 			-- Suspend thread execution for interval specified in
 			-- `nanoseconds' (1 nanosecond = 10^(-9) second).
 		require
@@ -158,11 +156,10 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	last_process: SYSTEM_DLL_PROCESS
 			-- Handle to last launched process through `launch'. Used by `system'
 			-- to wait until process is finished.
 
-	internal_launch (s: STRING; should_wait: BOOLEAN) is
+	internal_launch (s: STRING; should_wait: BOOLEAN)
 			-- Pass to the operating system an asynchronous request to
 			-- execute `s'.
 			-- If the current directory is a volume, then use the old
@@ -175,9 +172,10 @@ feature {NONE} -- Implementation
 		require
 			s_not_void: s /= Void
 		local
-			l_cmd, l_args: STRING
+			l_cmd, l_args: detachable STRING
 			l_si: SYSTEM_DLL_PROCESS_START_INFO
 			l_pos: INTEGER
+			last_process: detachable SYSTEM_DLL_PROCESS
 		do
 			if (current_working_directory @ 2) = ':' then -- assume a volume
 				internal_launch_from_local_volume (s, should_wait)
@@ -205,6 +203,7 @@ feature {NONE} -- Implementation
 					l_si.set_redirect_standard_error (True)
 					l_si.set_redirect_standard_output (True)
 					last_process := {SYSTEM_DLL_PROCESS}.start_process_start_info (l_si)
+					check last_process_attached: last_process /= Void end
 					if should_wait then
 						last_process.wait_for_exit
 						return_code := last_process.exit_code
@@ -213,7 +212,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_launch_from_local_volume (s: STRING; should_wait: BOOLEAN) is
+	internal_launch_from_local_volume (s: STRING; should_wait: BOOLEAN)
 			-- Pass to the operating system an asynchronous request to
 			-- execute `s'.
 			-- If `s' is empty, use the default shell as command.
@@ -222,9 +221,10 @@ feature {NONE} -- Implementation
 		require
 			s_not_void: s /= Void
 		local
-			l_comspec: STRING
+			l_comspec: detachable STRING
 			l_si: SYSTEM_DLL_PROCESS_START_INFO
 			l_pos: INTEGER
+			last_process: detachable SYSTEM_DLL_PROCESS
 		do
 			if should_wait then
 				l_comspec := get ("COMSPEC")
@@ -252,13 +252,14 @@ feature {NONE} -- Implementation
 			l_si.set_use_shell_execute (False)
 			merge_env_vars (l_si.environment_variables)
 			last_process := {SYSTEM_DLL_PROCESS}.start_process_start_info (l_si)
+			check last_process_attached: last_process /= Void end
 			if should_wait then
 				last_process.wait_for_exit
 				return_code := last_process.exit_code
 			end
 		end
 
-	fully_qualified_program_name (a_cmd: STRING): STRING is
+	fully_qualified_program_name (a_cmd: STRING): detachable STRING
 			-- If `a_cmd' can be found, then return a fully qualified
 			-- path to it. Otherwise returns a Void string
 		require
@@ -295,10 +296,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	executable_extensions: ARRAYED_LIST [STRING] is
+	executable_extensions: ARRAYED_LIST [STRING]
 			-- List of legal executable extensions
 		local
-			l_extensions: STRING
+			l_extensions: detachable STRING
 		do
 			l_extensions := get ("PATHEXT")
 			if l_extensions = Void then
@@ -310,18 +311,20 @@ feature {NONE} -- Implementation
 			executable_extensions_not_void: Result /= Void
 		end
 
-	search_directories: ARRAYED_LIST [STRING] is
+	search_directories: ARRAYED_LIST [STRING]
 			-- While it would be more efficient to make this a
 			-- "once" feature, it's also possible that the caller
 			-- could manually modify environment variables between
 			-- calls. Plus the relative cost of repeating this code
 			-- with starting a windows process makes this operation cheap.
 		local
-			l_path: STRING
+			l_path: detachable STRING
+			l_assembly: detachable ASSEMBLY
 		do
 			create Result.make (100)
-			Result.extend ({PATH}.get_directory_name (
-				({ASSEMBLY}.get_entry_assembly).location))
+			l_assembly := {ASSEMBLY}.get_entry_assembly
+			check l_assembly_attached: l_assembly /= Void end
+			Result.extend ({PATH}.get_directory_name (l_assembly.location))
 			Result.extend (current_working_directory)
 			l_path := get ("PATH")
 			if l_path /= Void then
@@ -329,32 +332,32 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	merge_env_vars (evsd: SYSTEM_DLL_STRING_DICTIONARY) is
+	merge_env_vars (evsd: detachable SYSTEM_DLL_STRING_DICTIONARY)
 			-- Merge user environment variable set in `user_environment_variables'
 			-- to the system one.
-		require
-			evsd_not_void: evsd /= Void
 		local
 			l_vars: like user_environment_variables
 		do
-			from
-				l_vars := user_environment_variables
-				l_vars.start
-			until
-				l_vars.off
-			loop
-				evsd.set_item (l_vars.key_for_iteration, l_vars.item_for_iteration)
-				l_vars.forth
+			if evsd /= Void then
+				from
+					l_vars := user_environment_variables
+					l_vars.start
+				until
+					l_vars.off
+				loop
+					evsd.set_item (l_vars.key_for_iteration, l_vars.item_for_iteration)
+					l_vars.forth
+				end
 			end
 		end
 
-	user_environment_variables: HASH_TABLE [STRING, STRING] is
+	user_environment_variables: HASH_TABLE [STRING, STRING]
 			-- User-defined environment variables.
 		once
 			create Result.make (10)
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

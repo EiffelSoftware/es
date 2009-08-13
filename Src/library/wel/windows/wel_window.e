@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract notions of a window."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -99,21 +99,23 @@ inherit
 
 feature -- Access
 
-	parent: WEL_WINDOW
+	parent: detachable WEL_WINDOW
 			-- Parent window
 
-	commands: WEL_COMMAND_MANAGER
+	commands: detachable WEL_COMMAND_MANAGER
 			-- Command manager associated to the current window.
 
 feature -- Status report
 
-	is_inside: BOOLEAN is
+	is_inside: BOOLEAN
 			-- Is the current window inside another window?
+		require
+			exists: exists
 		do
 			Result := flag_set (style, Ws_child)
 		end
 
-	default_processing_enabled: BOOLEAN is
+	default_processing_enabled: BOOLEAN
 		obsolete
 			"Use `default_processing' instead"
 			-- Is the default window processing enabled?
@@ -125,7 +127,7 @@ feature -- Status report
 			Result := default_processing
 		end
 
-	enabled: BOOLEAN is
+	enabled: BOOLEAN
 			-- Is the window enabled for mouse and keyboard input?
 		require
 			exists: exists
@@ -133,7 +135,7 @@ feature -- Status report
 			Result := cwin_is_window_enabled (item)
 		end
 
-	shown: BOOLEAN is
+	shown: BOOLEAN
 			-- Is the window shown?
 		require
 			exists: exists
@@ -141,7 +143,7 @@ feature -- Status report
 			Result := cwin_is_window_visible (item)
 		end
 
-	minimized: BOOLEAN is
+	minimized: BOOLEAN
 			-- Is the window minimized?
 		require
 			exists: exists
@@ -149,7 +151,7 @@ feature -- Status report
 			Result := cwin_is_iconic (item)
 		end
 
-	maximized: BOOLEAN is
+	maximized: BOOLEAN
 			-- Is the window maximized?
 		require
 			exists: exists
@@ -157,7 +159,7 @@ feature -- Status report
 			Result := cwin_is_zoomed (item)
 		end
 
-	focused_window: WEL_WINDOW is
+	focused_window: detachable WEL_WINDOW
 			-- Current window which has the focus.
 		require
 			exists: exists
@@ -170,7 +172,7 @@ feature -- Status report
 			end
 		end
 
-	captured_window: WEL_WINDOW is
+	captured_window: detachable WEL_WINDOW
 			-- Current window which has been captured.
 		require
 			exists: exists
@@ -184,13 +186,13 @@ feature -- Status report
 			end
 		end
 
-	window_captured: BOOLEAN is
+	window_captured: BOOLEAN
 			-- Has a window been captured?
 		do
 			Result := cwin_get_capture /= default_pointer
 		end
 
-	has_focus: BOOLEAN is
+	has_focus: BOOLEAN
 			-- Does this window have the focus?
 		require
 			exists: exists
@@ -198,7 +200,7 @@ feature -- Status report
 			Result := focused_window = Current
 		end
 
-	has_capture: BOOLEAN is
+	has_capture: BOOLEAN
 			-- Does this window have the capture?
 		require
 			exists: exists
@@ -210,7 +212,7 @@ feature -- Status report
 	has_heavy_capture: BOOLEAN
 			-- Does this window have the heavy capture?
 
-	heavy_capture_activated: BOOLEAN is
+	heavy_capture_activated: BOOLEAN
 			-- Is the heavy capture currently running?
 			-- (i.e. is there a window in the current program
 			-- with `has_heavy_capture' to True?)
@@ -218,7 +220,7 @@ feature -- Status report
 			Result := cwel_get_hook_window /= Default_pointer
 		end
 
-	has_vertical_scroll_bar: BOOLEAN is
+	has_vertical_scroll_bar: BOOLEAN
 			-- Does this window have a vertical scroll bar?
 		require
 			exists: exists
@@ -226,7 +228,7 @@ feature -- Status report
 			Result := flag_set (style, Ws_vscroll)
 		end
 
-	has_horizontal_scroll_bar: BOOLEAN is
+	has_horizontal_scroll_bar: BOOLEAN
 			-- Does this window have a horizontal scroll bar?
 		require
 			exists: exists
@@ -234,21 +236,23 @@ feature -- Status report
 			Result := flag_set (style, Ws_hscroll)
 		end
 
-	x: INTEGER is
+	x: INTEGER
 			-- Window x position
 		require
 			exists: exists
 		local
 			rect: WEL_RECT
 			point: WEL_POINT
+			l_parent: like parent
 		do
-			if parent /= Void then
+			l_parent := parent
+			if l_parent /= Void then
 				-- Unfortunately, there is no easy
 				-- way to get the relative x position of
 				-- a child!
 				rect := window_rect
 				create point.make (rect.x, rect.y)
-				point.screen_to_client (parent)
+				point.screen_to_client (l_parent)
 				Result := point.x
 			else
 				Result := absolute_x
@@ -257,21 +261,23 @@ feature -- Status report
 			parent = Void implies Result = absolute_x
 		end
 
-	y: INTEGER is
+	y: INTEGER
 			-- Window y position
 		require
 			exists: exists
 		local
 			rect: WEL_RECT
 			point: WEL_POINT
+			l_parent: like parent
 		do
-			if parent /= Void then
+			l_parent := parent
+			if l_parent /= Void then
 				-- Unfortunately, there is no easy
 				-- way to get the relative y position of
 				-- a child!
 				rect := window_rect
 				create point.make (rect.x, rect.y)
-				point.screen_to_client (parent)
+				point.screen_to_client (l_parent)
 				Result := point.y
 			else
 				Result := absolute_y
@@ -280,7 +286,7 @@ feature -- Status report
 			parent = Void implies Result = absolute_y
 		end
 
-	width: INTEGER is
+	width: INTEGER
 			-- Window width
 		require
 			exists: exists
@@ -288,7 +294,7 @@ feature -- Status report
 			Result := window_rect.width
 		end
 
-	height: INTEGER is
+	height: INTEGER
 			-- Window height
 		require
 			exists: exists
@@ -296,7 +302,7 @@ feature -- Status report
 			Result := window_rect.height
 		end
 
-	absolute_x: INTEGER is
+	absolute_x: INTEGER
 			-- Absolute x position
 		require
 			exists: exists
@@ -306,7 +312,7 @@ feature -- Status report
 			Result = window_rect.x
 		end
 
-	absolute_y: INTEGER is
+	absolute_y: INTEGER
 			-- Absolute y position
 		require
 			exists: exists
@@ -316,7 +322,7 @@ feature -- Status report
 			Result = window_rect.y
 		end
 
-	minimal_width: INTEGER is
+	minimal_width: INTEGER
 			-- Minimal width allowed for the window
 			-- Zero by default.
 		do
@@ -325,7 +331,7 @@ feature -- Status report
 			result_small_enough: Result <= maximal_width
 		end
 
-	maximal_width: INTEGER is
+	maximal_width: INTEGER
 			-- Maximal width allowed for the window
 		do
 			Result := screen_width
@@ -333,7 +339,7 @@ feature -- Status report
 			result_large_enough: Result >= minimal_width
 		end
 
-	minimal_height: INTEGER is
+	minimal_height: INTEGER
 			-- Minimal height allowed for the window
 			-- Zero by default.
 		do
@@ -342,7 +348,7 @@ feature -- Status report
 			result_small_enough: Result <= maximal_height
 		end
 
-	maximal_height: INTEGER is
+	maximal_height: INTEGER
 			-- Maximal height allowed for the window
 		do
 			Result := screen_height
@@ -350,27 +356,27 @@ feature -- Status report
 			result_large_enough: Result >= minimal_height
 		end
 
-	client_rect: WEL_RECT is
+	client_rect: WEL_RECT
 			-- Client rectangle
 		require
 			exists: exists
 		do
-			create Result.make_client (Current)
+			create Result.make_client_from_pointer (item)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	window_rect: WEL_RECT is
+	window_rect: WEL_RECT
 			-- Window rectangle (absolute position)
 		require
 			exists: exists
 		do
-			create Result.make_window (Current)
+			create Result.make_window_from_pointer (item)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	 text: STRING_32 is
+	 text: STRING_32
 			-- Window text
 		require
 			exists: exists
@@ -392,7 +398,7 @@ feature -- Status report
 			result_not_void: Result /= Void
 		end
 
-	text_length: INTEGER is
+	text_length: INTEGER
 			-- Text length
 		require
 			exists: exists
@@ -402,7 +408,7 @@ feature -- Status report
 			positive_result: Result >= 0
 		end
 
-	placement: WEL_WINDOW_PLACEMENT is
+	placement: WEL_WINDOW_PLACEMENT
 			-- Window placement information
 		require
 			exists: exists
@@ -412,7 +418,7 @@ feature -- Status report
 			result_not_void: Result /= Void
 		end
 
-	style: INTEGER is
+	style: INTEGER
 			-- Window style
 		require
 			exists: exists
@@ -420,7 +426,7 @@ feature -- Status report
 			Result := cwin_get_window_long (item, Gwl_style).to_integer_32
 		end
 
-	ex_style: INTEGER is
+	ex_style: INTEGER
 			-- Window ex_style
 		require
 			exists: exists
@@ -428,7 +434,7 @@ feature -- Status report
 			Result := cwin_get_window_long (item, Gwl_exstyle).to_integer_32
 		end
 
-	background_brush: WEL_BRUSH is
+	background_brush: detachable WEL_BRUSH
 			-- Current window background color used to refresh the window when
 			-- requested by the WM_ERASEBKGND windows message.
 			-- By default there is no background
@@ -437,44 +443,66 @@ feature -- Status report
 			new_object: Result /= Void implies Result /= background_brush
 		end
 
-	commands_enabled: BOOLEAN is
+	commands_enabled: BOOLEAN
 			-- Is the commands execution enabled?
 		do
 			Result := commands_enabled_ref.item
 		end
 
-	command_exists (message: INTEGER): BOOLEAN is
+	command_exists (message: INTEGER): BOOLEAN
 			-- Does a command associated to `message' exist?
 		require
 			positive_message: message >= 0
+		local
+			l_commands: like commands
 		do
-			Result := commands /= Void and then
-				commands.exists (message)
+			l_commands := commands
+			Result := l_commands /= Void and then l_commands.exists (message)
+		ensure
+			definition: Result implies attached commands as l_commands_var and then l_commands_var.item (message) /= Void
 		end
 
-	command (message: INTEGER): WEL_COMMAND is
+	command (message: INTEGER): WEL_COMMAND
 			-- Command associated to `message'
 		require
 			positive_message: message >= 0
 			command_exists: command_exists (message)
+		local
+			l_message: detachable WEL_COMMAND_EXEC
+			l_commands: like commands
 		do
-			Result := commands.item (message).command
+			l_commands := commands
+				-- Per precondition
+			check l_commands_attached: l_commands /= Void end
+			l_message := l_commands.item (message)
+				-- Per precondition
+			check l_message_attached: l_message /= Void end
+			Result := l_message.command
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	command_argument (message: INTEGER): ANY is
+	command_argument (message: INTEGER): detachable ANY
 			-- Command argument associated to `message'
 		require
 			positive_message: message >= 0
 			command_exists: command_exists (message)
+		local
+			l_message: detachable WEL_COMMAND_EXEC
+			l_commands: like commands
 		do
-			Result := commands.item (message).argument
+			l_commands := commands
+				-- Per precondition
+			check l_commands_attached: l_commands /= Void end
+			l_message := l_commands.item (message)
+				-- Per precondition
+			check l_message_attached: l_message /= Void end
+			Result := l_message.argument
 		end
 
 feature -- Status setting
 
-	enable_commands is
+	enable_commands
 			-- Enable commands execution.
 		do
 			commands_enabled_ref.put (True)
@@ -482,7 +510,7 @@ feature -- Status setting
 			commands_enabled: commands_enabled
 		end
 
-	disable_commands is
+	disable_commands
 			-- Disable commands execution.
 		do
 			commands_enabled_ref.put (False)
@@ -490,7 +518,7 @@ feature -- Status setting
 			commands_disabled: not commands_enabled
 		end
 
-	enable_default_processing is
+	enable_default_processing
 			-- Enable default window processing.
 			-- The standard window procedure will be called for
 			-- each messages received by the window and then the
@@ -501,7 +529,7 @@ feature -- Status setting
 			default_processing_enabled: default_processing
 		end
 
-	disable_default_processing is
+	disable_default_processing
 			-- Disable default window processing.
 			-- The standard window procedure will not be called for
 			-- each messages received by the window and then the
@@ -512,7 +540,7 @@ feature -- Status setting
 			default_processing_disabled: not default_processing
 		end
 
-	enable is
+	enable
 			-- Enable mouse and keyboard input.
 		require
 			exists: exists
@@ -522,7 +550,7 @@ feature -- Status setting
 			enabled: enabled
 		end
 
-	disable is
+	disable
 			-- Disable mouse and keyboard input
 		require
 			exists: exists
@@ -532,7 +560,7 @@ feature -- Status setting
 			disabled: not enabled
 		end
 
-	enable_drag_accept_files is
+	enable_drag_accept_files
 			-- Allow `Current' to be a file drag and drop target.
 		require
 			exists
@@ -540,7 +568,7 @@ feature -- Status setting
 			cwin_drag_accept_files (item, True)
 		end
 
-	disable_drag_accept_files is
+	disable_drag_accept_files
 			-- Disallow `Current' from being a file drag and drop target.
 		require
 			exists
@@ -548,7 +576,7 @@ feature -- Status setting
 			cwin_drag_accept_files (item, False)
 		end
 
-	show is
+	show
 			-- Show the window
 		require
 			exists: exists
@@ -556,7 +584,7 @@ feature -- Status setting
 			cwin_show_window (item, sw_show)
 		end
 
-	hide is
+	hide
 			-- Hide the window
 		require
 			exists: exists
@@ -566,7 +594,7 @@ feature -- Status setting
 			hidden: not shown
 		end
 
-	minimize is
+	minimize
 			-- Minimize the window and display its icon
 		require
 			exists: exists
@@ -576,7 +604,7 @@ feature -- Status setting
 			minimized: minimized
 		end
 
-	maximize is
+	maximize
 			-- Maximize the window
 		require
 			exists: exists
@@ -586,7 +614,7 @@ feature -- Status setting
 			maximized: maximized
 		end
 
-	restore is
+	restore
 			-- Restore the window to its
 			-- original size and position after
 			-- `minimize' or `maximize'
@@ -596,7 +624,7 @@ feature -- Status setting
 			cwin_show_window (item, Sw_restore)
 		end
 
-	set_focus is
+	set_focus
 			-- Set the focus to `Current'
 		require
 			exists: exists
@@ -604,7 +632,7 @@ feature -- Status setting
 			cwin_set_focus (item)
 		end
 
-	set_capture is
+	set_capture
 			-- Set the mouse capture to the `Current' window.
 			-- Once the window has captured the mouse, all
 			-- mouse input is directed to this window, regardless
@@ -623,7 +651,7 @@ feature -- Status setting
 			has_capture: has_capture
 		end
 
-	set_heavy_capture is
+	set_heavy_capture
 			-- Set the mouse capture to the `Current' window.
 			-- Once the window has captured the mouse, all
 			-- mouse input is directed to this window, regardless
@@ -641,7 +669,7 @@ feature -- Status setting
 			heavy_capture_set: has_heavy_capture implies heavy_capture_activated
 		end
 
-	release_capture is
+	release_capture
 			-- Release the mouse capture after a call
 			-- to `set_capture'.
 		require
@@ -653,7 +681,7 @@ feature -- Status setting
 			not_has_capture: not has_capture
 		end
 
-	release_heavy_capture is
+	release_heavy_capture
 			-- Release the mouse capture after a call
 			-- to `set_heavy_capture'.
 		require
@@ -667,7 +695,7 @@ feature -- Status setting
 			heavy_capture_deactivated: not heavy_capture_activated
 		end
 
-	set_style (a_style: INTEGER) is
+	set_style (a_style: INTEGER)
 			-- Set `style' with `a_style'.
 		require
 			exists: exists
@@ -681,7 +709,7 @@ feature -- Status setting
 			update_cached_style (cur_ex_style, cur_ex_style)
 		end
 
-	set_ex_style (an_ex_style: INTEGER) is
+	set_ex_style (an_ex_style: INTEGER)
 			-- Set `an_ex_style' with `ex_style'.
 			--
 		require
@@ -699,7 +727,7 @@ feature -- Status setting
 			update_cached_style (an_ex_style, old_ex_style)
 		end
 
-	update_cached_style (new_ex_style, old_ex_style: INTEGER) is
+	update_cached_style (new_ex_style, old_ex_style: INTEGER)
 			-- Update Window cache buffer for Window style.
 			--|
 			--| Certain window data is cached, so changes you make using
@@ -734,14 +762,14 @@ feature -- Status setting
 
 feature -- Element change
 
-	set_parent (a_parent: WEL_WINDOW) is
+	set_parent (a_parent: detachable WEL_WINDOW)
 			-- Change the parent of the current window.
 		require
 			exists: exists
 		local
 			l_previous_hwnd: POINTER
 		do
-			if a_parent /= Void then
+			if a_parent /= Void and then a_parent.exists then
 				parent := a_parent
 				l_previous_hwnd := {WEL_API}.set_parent (item, a_parent.item)
 			else
@@ -755,7 +783,7 @@ feature -- Element change
 			end
 		end
 
-	set_text (a_text: STRING_GENERAL) is
+	set_text (a_text: detachable STRING_GENERAL)
 			-- Set the window text
 		require
 			exists: exists
@@ -773,18 +801,19 @@ feature -- Element change
 			text_set_when_void: a_text = Void implies text.count = 0
 		end
 
-	set_placement (a_placement: WEL_WINDOW_PLACEMENT) is
+	set_placement (a_placement: WEL_WINDOW_PLACEMENT)
 			-- Set `placement' with `a_placement'
 		require
 			exists: exists
 			a_placement_not_void: a_placement /= Void
+			a_placement_exists: a_placement.exists
 		do
 			cwin_set_window_placement (item, a_placement.item)
 		ensure
 			-- placement_set: placement = a_placement
 		end
 
-	set_x (a_x: INTEGER) is
+	set_x (a_x: INTEGER)
 			-- Set `x' with `a_x'
 		require
 			exists: exists
@@ -792,7 +821,7 @@ feature -- Element change
 			move (a_x, y)
 		end
 
-	set_y (a_y: INTEGER) is
+	set_y (a_y: INTEGER)
 			-- Set `y' with `a_y'
 		require
 			exists: exists
@@ -800,7 +829,7 @@ feature -- Element change
 			move (x, a_y)
 		end
 
-	set_width (a_width: INTEGER) is
+	set_width (a_width: INTEGER)
 			-- Set `width' with `a_width'
 		require
 			exists: exists
@@ -808,7 +837,7 @@ feature -- Element change
 			resize (a_width, height)
 		end
 
-	set_height (a_height: INTEGER) is
+	set_height (a_height: INTEGER)
 			-- Set `height' with `a_height'
 		require
 			exists: exists
@@ -816,7 +845,7 @@ feature -- Element change
 			resize (width, a_height)
 		end
 
-	set_timer (timer_id, time_out: INTEGER) is
+	set_timer (timer_id, time_out: INTEGER)
 			-- Set a timer identified by `timer_id' with a
 			-- `time_out' value (in milliseconds).
 			-- See also `on_timer', `kill_timer'.
@@ -829,7 +858,7 @@ feature -- Element change
 				default_pointer)
 		end
 
-	has_system_window_locked: BOOLEAN is
+	has_system_window_locked: BOOLEAN
 			-- Is there any window locked ?
 		local
 			c_result: BOOLEAN
@@ -843,7 +872,7 @@ feature -- Element change
 			end
 		end
 
-	lock_window_update is
+	lock_window_update
 			-- Disables drawing in the current window. A locked window cannot be moved.
 			-- Only one window can be locked at a time. To unlock a window locked with
 			-- `lock_window_update' , call 'unlock_window_update'.
@@ -857,7 +886,7 @@ feature -- Element change
 			has_system_window_locked
 		end
 
-	unlock_window_update is
+	unlock_window_update
 			-- Unlock a locked window.	
 		require
 			exists: exists
@@ -867,7 +896,7 @@ feature -- Element change
 			success := c_lock_window_update (default_pointer)
 		end
 
-	enable_redraw is
+	enable_redraw
 			-- Ensure `Current' is redrawn as required.
 		require
 			exists: exists
@@ -875,7 +904,7 @@ feature -- Element change
 			{WEL_API}.send_message (item, wm_setredraw, {WEL_DATA_TYPE}.to_wparam (1), default_pointer)
 		end
 
-	disable_redraw is
+	disable_redraw
 			-- Disable redrawing of `Current' until next call to `enable_redraw'.
 		require
 			exists: exists
@@ -886,49 +915,56 @@ feature -- Element change
 
 feature -- Basic operations
 
-	put_command (a_command: WEL_COMMAND; message: INTEGER; argument: ANY) is
+	put_command (a_command: WEL_COMMAND; message: INTEGER; argument: detachable ANY)
 			-- Put `a_command' associated to `message'.
 		require
 			a_command_not_void: a_command /= Void
 			positive_message: message >= 0
 		local
 			command_exec: WEL_COMMAND_EXEC
+			l_commands: like commands
 		do
-			-- Has a command been already put?
-			-- If no, let's create `commands'.
-			if commands = Void then
-				create commands.make
+				-- Has a command been already put?
+				-- If no, let's create `commands'.
+			l_commands := commands
+			if l_commands = Void then
+				create l_commands.make
+				commands := l_commands
 			end
 			create command_exec.make (a_command, argument)
-			commands.force (command_exec, message)
+			l_commands.force (command_exec, message)
 		ensure
 			command_added: command (message) = a_command and
 				command_argument (message) = argument
 		end
 
-	remove_command (message: INTEGER) is
+	remove_command (message: INTEGER)
 			-- Remove the command associated to `message'.
 		require
 			positive_message: message >= 0
 			command_exists: command_exists (message)
+		local
+			l_commands: like commands
 		do
-			commands.remove (message)
+			l_commands := commands
+				-- Per precondition
+			check l_commands_attached: l_commands /= Void end
+			l_commands.remove (message)
 		ensure
 			command_removed: not command_exists (message)
 		end
 
-	show_with_option (cmd_show: INTEGER) is
+	show_with_option (cmd_show: INTEGER)
 			-- Set the window's visibility with `cmd_show'.
 			-- See class WEL_SW_CONSTANTS for `cmd_show' value.
 		require
 			exists: exists
-			parent_shown: parent /= Void implies parent.exists and
-				parent.shown
+			parent_shown: attached parent as l_parent implies l_parent.exists and l_parent.shown
 		do
 			cwin_show_window (item, cmd_show)
 		end
 
-	move_and_resize (a_x, a_y, a_width, a_height: INTEGER; repaint: BOOLEAN) is
+	move_and_resize (a_x, a_y, a_width, a_height: INTEGER; repaint: BOOLEAN)
 			-- Move the window to `a_x', `a_y' position and
 			-- resize it with `a_width', `a_height'.
 		require
@@ -937,7 +973,7 @@ feature -- Basic operations
 			move_and_resize_internal (a_x, a_y, a_width, a_height, repaint, 0)
 		end
 
-	move (a_x, a_y: INTEGER) is
+	move (a_x, a_y: INTEGER)
 			-- Move the window to `a_x', `a_y'.
 		require
 			exists: exists
@@ -945,7 +981,7 @@ feature -- Basic operations
 			move_and_resize_internal (a_x, a_y, 0, 0, True, Swp_nosize)
 		end
 
-	resize (a_width, a_height: INTEGER) is
+	resize (a_width, a_height: INTEGER)
 			-- Resize the window with `a_width', `a_height'.
 		require
 			exists: exists
@@ -953,7 +989,7 @@ feature -- Basic operations
 			move_and_resize_internal (0, 0, a_width, a_height, True, Swp_nomove)
 		end
 
-	set_z_order (z_order: POINTER) is
+	set_z_order (z_order: POINTER)
 			-- Set the z-order of the window.
 			-- See class WEL_HWND_CONSTANTS for `z_order' values.
 		require
@@ -967,7 +1003,7 @@ feature -- Basic operations
 				Swp_noactivate)
 		end
 
-	bring_to_top is
+	bring_to_top
 			-- Bring this window to the top of the Z order.
 			--
 			-- Note:
@@ -982,7 +1018,7 @@ feature -- Basic operations
 			success := cwin_bring_window_to_top (item)
 		end
 
-	insert_after (a_window: WEL_WINDOW) is
+	insert_after (a_window: WEL_WINDOW)
 			-- Insert the current window after `a_window'.
 		require
 			exists: exists
@@ -996,7 +1032,7 @@ feature -- Basic operations
 				Swp_nosize + Swp_nomove + Swp_noactivate)
 		end
 
-	show_scroll_bars is
+	show_scroll_bars
 			-- Show the horizontal and vertical scroll bars.
 		require
 			exists: exists
@@ -1004,7 +1040,7 @@ feature -- Basic operations
 			cwin_show_scroll_bar (item, Sb_both, True)
 		end
 
-	show_vertical_scroll_bar is
+	show_vertical_scroll_bar
 			-- Show the vertical scroll bar.
 		require
 			exists: exists
@@ -1012,7 +1048,7 @@ feature -- Basic operations
 			cwin_show_scroll_bar (item, Sb_vert, True)
 		end
 
-	show_horizontal_scroll_bar is
+	show_horizontal_scroll_bar
 			-- Show the horizontal scroll bar.
 		require
 			exists: exists
@@ -1020,7 +1056,7 @@ feature -- Basic operations
 			cwin_show_scroll_bar (item, Sb_horz, True)
 		end
 
-	hide_scroll_bars is
+	hide_scroll_bars
 			-- Hide the horizontal and vertical scroll bars.
 		require
 			exists: exists
@@ -1028,7 +1064,7 @@ feature -- Basic operations
 			cwin_show_scroll_bar (item, Sb_both, False)
 		end
 
-	hide_vertical_scroll_bar is
+	hide_vertical_scroll_bar
 			-- Hide the vertical scroll bar.
 		require
 			exists: exists
@@ -1036,7 +1072,7 @@ feature -- Basic operations
 			cwin_show_scroll_bar (item, Sb_vert, False)
 		end
 
-	hide_horizontal_scroll_bar is
+	hide_horizontal_scroll_bar
 			-- Hide the horizontal scroll bar.
 		require
 			exists: exists
@@ -1044,7 +1080,7 @@ feature -- Basic operations
 			cwin_show_scroll_bar (item, Sb_horz, False)
 		end
 
-	disable_horizontal_scroll_bar is
+	disable_horizontal_scroll_bar
 			-- Disable the horizontal scroll bar.
 		require
 			exists: exists
@@ -1052,7 +1088,7 @@ feature -- Basic operations
 			cwin_enable_scroll_bar (item, Sb_horz, Esb_disable_both)
 		end
 
-	enable_horizontal_scroll_bar is
+	enable_horizontal_scroll_bar
 			-- Enable the horizontal scroll bar.
 		require
 			exists: exists
@@ -1060,7 +1096,7 @@ feature -- Basic operations
 			cwin_enable_scroll_bar (item, Sb_horz, Esb_enable_both)
 		end
 
-	disable_vertical_scroll_bar is
+	disable_vertical_scroll_bar
 			-- Disable the vertical scroll bar.
 		require
 			exists: exists
@@ -1068,7 +1104,7 @@ feature -- Basic operations
 			cwin_enable_scroll_bar (item, Sb_vert, Esb_disable_both)
 		end
 
-	enable_vertical_scroll_bar is
+	enable_vertical_scroll_bar
 			-- Enable the vertical scroll bar.
 		require
 			exists: exists
@@ -1076,7 +1112,7 @@ feature -- Basic operations
 			cwin_enable_scroll_bar (item, Sb_vert, Esb_enable_both)
 		end
 
-	message_box (a_text, a_title: STRING_GENERAL; a_style: INTEGER): INTEGER is
+	message_box (a_text, a_title: STRING_GENERAL; a_style: INTEGER): INTEGER
 		obsolete "Use class WEL_MSG_BOX instead."
 			-- Show an information message box with `Current'
 			-- as parent with `a_text' and `a_title'.
@@ -1095,7 +1131,7 @@ feature -- Basic operations
 				a_style)
 		end
 
-	information_message_box (a_text, a_title: STRING_GENERAL) is
+	information_message_box (a_text, a_title: STRING_GENERAL)
 		obsolete "Use class WEL_MSG_BOX instead."
 			-- Show an information message box with `Current'
 			-- as parent with `a_text' and `a_title'.
@@ -1112,7 +1148,7 @@ feature -- Basic operations
 				Mb_ok + Mb_iconinformation)
 		end
 
-	warning_message_box (a_text, a_title: STRING_GENERAL) is
+	warning_message_box (a_text, a_title: STRING_GENERAL)
 		obsolete "Use class WEL_MSG_BOX instead."
 			-- Show a warning message box with `Current'
 			-- as parent with `a_text' and `a_title'.
@@ -1129,7 +1165,7 @@ feature -- Basic operations
 				Mb_ok + Mb_iconexclamation)
 		end
 
-	error_message_box (a_text: STRING_GENERAL) is
+	error_message_box (a_text: STRING_GENERAL)
 		obsolete "Use class WEL_MSG_BOX instead."
 			-- Show an error message box with `Current' as
 			-- parent with `a_text' and error as title.
@@ -1144,7 +1180,7 @@ feature -- Basic operations
 				Mb_ok + Mb_iconhand)
 		end
 
-	question_message_box (a_text, a_title: STRING_GENERAL): BOOLEAN is
+	question_message_box (a_text, a_title: STRING_GENERAL): BOOLEAN
 		obsolete "Use class WEL_MSG_BOX instead."
 			-- Show a question message box with `Current'
 			-- as parent with `a_text' and `a_title'.
@@ -1163,7 +1199,7 @@ feature -- Basic operations
 				Mb_yesno + Mb_iconquestion) = Idyes
 		end
 
-	update is
+	update
 			-- Update the client area by sending a Wm_paint message.
 		require
 			exists: exists
@@ -1171,7 +1207,7 @@ feature -- Basic operations
 			cwin_update_window (item)
 		end
 
-	invalidate is
+	invalidate
 			-- Invalide the entire client area of the window. The
 			-- background will be erased before.
 		require
@@ -1180,7 +1216,7 @@ feature -- Basic operations
 			cwin_invalidate_rect (item, default_pointer, True)
 		end
 
-	invalidate_without_background is
+	invalidate_without_background
 			-- Invalidate the entire client area of the window. The
 			-- background will not be erased.
 		require
@@ -1189,17 +1225,18 @@ feature -- Basic operations
 			cwin_invalidate_rect (item, default_pointer, False)
 		end
 
-	invalidate_rect (rect: WEL_RECT; erase_background: BOOLEAN) is
+	invalidate_rect (rect: WEL_RECT; erase_background: BOOLEAN)
 			-- Invalidate the area `rect' and erase
 			-- the background if `erase_background' is True.
 		require
 			exists: exists
 			rect_not_void: rect /= Void
+			rect_exists: rect.exists
 		do
 			cwin_invalidate_rect (item, rect.item, erase_background)
 		end
 
-	invalidate_region (region: WEL_REGION; erase_background: BOOLEAN) is
+	invalidate_region (region: WEL_REGION; erase_background: BOOLEAN)
 			-- Invalidate the area `region' and erase
 			-- the background if `erase_background' is True.
 		require
@@ -1211,7 +1248,7 @@ feature -- Basic operations
 				erase_background)
 		end
 
-	validate is
+	validate
 			-- Validate the entire client area of the window.
 		require
 			exists: exists
@@ -1219,16 +1256,17 @@ feature -- Basic operations
 			cwin_validate_rect (item, default_pointer)
 		end
 
-	validate_rect (rect: WEL_RECT) is
+	validate_rect (rect: WEL_RECT)
 			-- Validate the area `rect'.
 		require
 			exists: exists
 			rect_not_void: rect /= Void
+			rect_exists: rect.exists
 		do
 			cwin_validate_rect (item, rect.item)
 		end
 
-	validate_region (region: WEL_REGION) is
+	validate_region (region: WEL_REGION)
 			-- Validate the area `region'.
 		require
 			exists: exists
@@ -1238,7 +1276,7 @@ feature -- Basic operations
 			cwin_validate_rgn (item, region.item)
 		end
 
-	kill_timer (timer_id: INTEGER) is
+	kill_timer (timer_id: INTEGER)
 			-- Kill the timer identified by `timer_id'.
 			-- See also `set_timer', `on_timer'.
 		require
@@ -1248,7 +1286,7 @@ feature -- Basic operations
 			cwin_kill_timer (item, timer_id)
 		end
 
-	scroll (a_x, a_y: INTEGER) is
+	scroll (a_x, a_y: INTEGER)
 			-- Scroll the contents of the window's client area.
 			-- `a_x' and `a_y' specify the amount of horizontal
 			-- and vertical scrolling.
@@ -1259,7 +1297,7 @@ feature -- Basic operations
 				default_pointer, default_pointer)
 		end
 
-	win_help (help_file: STRING_GENERAL; a_command, data: INTEGER) is
+	win_help (help_file: STRING_GENERAL; a_command, data: INTEGER)
 			-- Start the Windows Help program with `help_file'.
 			-- `a_command' specifies the type of help requested. See
 			-- class WEL_HELP_CONSTANTS for `a_command' values.
@@ -1274,7 +1312,7 @@ feature -- Basic operations
 			cwin_win_help (item, a_wel_string.item, a_command, data)
 		end
 
-	set_class_icon (new_icon: WEL_ICON) is
+	set_class_icon (new_icon: WEL_ICON)
 			-- Replace the current icon for the class which this window
 			-- belongs to.
 			--
@@ -1282,11 +1320,14 @@ feature -- Basic operations
 			-- value at the specified offset into the extra class memory
 			-- or the WNDCLASSEX structure for the class to which the
 			-- specified window belongs.
+		require
+			new_icon_not_void: new_icon /= Void
+			new_icon_exists: new_icon.exists
 		do
 			cwin_set_class_long (item, Wel_gcl_constants.Gclp_hicon, new_icon.item)
 		end
 
-	set_class_small_icon (new_icon: WEL_ICON) is
+	set_class_small_icon (new_icon: WEL_ICON)
 			-- Replace the current icon for the class which this window
 			-- belongs to.
 			--
@@ -1294,13 +1335,16 @@ feature -- Basic operations
 			-- value at the specified offset into the extra class memory
 			-- or the WNDCLASSEX structure for the class to which the
 			-- specified window belongs.
+		require
+			new_icon_not_void: new_icon /= Void
+			new_icon_exists: new_icon.exists
 		do
 			cwin_set_class_long (item, Wel_gcl_constants.Gclp_hiconsm, new_icon.item)
 		end
 
 feature -- Removal
 
-	destroy is
+	destroy
 			-- Destroy the window.
 		require
 			exists: exists
@@ -1312,7 +1356,7 @@ feature -- Removal
 
 feature {NONE} -- Messages
 
-	on_window_pos_changed (window_pos: WEL_WINDOW_POS) is
+	on_window_pos_changed (window_pos: WEL_WINDOW_POS)
 			-- Wm_windowpschanged message.
 			-- This message is sent to a window whose size,
 			-- position, or place in the Z order has changed as a
@@ -1320,10 +1364,11 @@ feature {NONE} -- Messages
 		require
 			exists: exists
 			window_pos_not_void: window_pos /= Void
+			window_pos_exists: window_pos.exists
 		do
 		end
 
-	on_window_pos_changing (window_pos: WEL_WINDOW_POS) is
+	on_window_pos_changing (window_pos: WEL_WINDOW_POS)
 			-- Wm_windowposchanging
 			-- This message is sent to a window whose size,
 			-- position or place in the Z order is about to change
@@ -1333,10 +1378,11 @@ feature {NONE} -- Messages
 		require
 			exists: exists
 			window_pos_not_void: window_pos /= Void
+			window_pos_exists: window_pos.exists
 		do
 		end
 
-	on_size (size_type, a_width, a_height: INTEGER) is
+	on_size (size_type, a_width, a_height: INTEGER)
 			-- Wm_size message
 			-- See class WEL_SIZE_CONSTANTS for `size_type' value
 		require
@@ -1344,7 +1390,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_move (x_pos, y_pos: INTEGER) is
+	on_move (x_pos, y_pos: INTEGER)
 			-- Wm_move message.
 			-- This message is sent after a window has been moved.
 			-- `x_pos' specifies the x-coordinate of the upper-left
@@ -1356,7 +1402,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Wm_lbuttondown message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1364,7 +1410,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_left_button_up (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_up (keys, x_pos, y_pos: INTEGER)
 			-- Wm_lbuttonup message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1372,7 +1418,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_left_button_double_click (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_double_click (keys, x_pos, y_pos: INTEGER)
 			-- Wm_lbuttondblclk message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1380,7 +1426,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_middle_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_middle_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Wm_rbuttondown message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1388,7 +1434,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_middle_button_up (keys, x_pos, y_pos: INTEGER) is
+	on_middle_button_up (keys, x_pos, y_pos: INTEGER)
 			-- Wm_rbuttonup message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1396,7 +1442,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_middle_button_double_click (keys, x_pos, y_pos: INTEGER) is
+	on_middle_button_double_click (keys, x_pos, y_pos: INTEGER)
 			-- Wm_rbuttondblclk message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1404,7 +1450,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_right_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_right_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Wm_rbuttondown message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1412,7 +1458,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_right_button_up (keys, x_pos, y_pos: INTEGER) is
+	on_right_button_up (keys, x_pos, y_pos: INTEGER)
 			-- Wm_rbuttonup message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1420,7 +1466,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_right_button_double_click (keys, x_pos, y_pos: INTEGER) is
+	on_right_button_double_click (keys, x_pos, y_pos: INTEGER)
 			-- Wm_rbuttondblclk message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1428,7 +1474,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_mouse_move (keys, x_pos, y_pos: INTEGER) is
+	on_mouse_move (keys, x_pos, y_pos: INTEGER)
 			-- Wm_mousemove message
 			-- See class WEL_MK_CONSTANTS for `keys' value
 		require
@@ -1436,14 +1482,14 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_mouse_wheel (delta, keys, x_pos, y_pos: INTEGER) is
+	on_mouse_wheel (delta, keys, x_pos, y_pos: INTEGER)
 			-- Wm_mousewheel message
 		require
 			exists: exists
 		do
 		end
 
-	on_char (character_code, key_data: INTEGER) is
+	on_char (character_code, key_data: INTEGER)
 			-- Wm_char message
 			-- See class WEL_VK_CONSTANTS for `character_code' value.
 		require
@@ -1451,56 +1497,56 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_sys_char (character_code, key_data: INTEGER) is
+	on_sys_char (character_code, key_data: INTEGER)
 			-- Wm_syschar message
 		require
 			exists: exists
 		do
 		end
 
-	on_key_down (virtual_key, key_data: INTEGER) is
+	on_key_down (virtual_key, key_data: INTEGER)
 			-- Wm_keydown message
 		require
 			exists: exists
 		do
 		end
 
-	on_key_up (virtual_key, key_data: INTEGER) is
+	on_key_up (virtual_key, key_data: INTEGER)
 			-- Wm_keyup message
 		require
 			exists: exists
 		do
 		end
 
-	on_sys_key_down (virtual_key, key_data: INTEGER) is
+	on_sys_key_down (virtual_key, key_data: INTEGER)
 			-- Wm_syskeydown message
 		require
 			exists: exists
 		do
 		end
 
-	on_sys_key_up (virtual_key, key_data: INTEGER) is
+	on_sys_key_up (virtual_key, key_data: INTEGER)
 			-- Wm_syskeyup message
 		require
 			exists: exists
 		do
 		end
 
-	on_set_focus is
+	on_set_focus
 			-- Wm_setfocus message
 		require
 			exists: exists
 		do
 		end
 
-	on_kill_focus is
+	on_kill_focus
 			-- Wm_killfocus message
 		require
 			exists: exists
 		do
 		end
 
-	on_set_cursor (hit_code: INTEGER) is
+	on_set_cursor (hit_code: INTEGER)
 			-- Wm_setcursor message.
 			-- See class WEL_HT_CONSTANTS for valid `hit_code' values.
 		require
@@ -1508,7 +1554,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_show is
+	on_show
 			-- Wm_showwindow message.
 			-- The window is being shown.
 		require
@@ -1516,7 +1562,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_hide is
+	on_hide
 			-- Wm_showwindow message.
 			-- The window is being hidden.
 		require
@@ -1524,7 +1570,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_destroy is
+	on_destroy
 			-- Wm_destroy message.
 			-- The window is about to be destroyed.
 		require
@@ -1532,7 +1578,7 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_timer (timer_id: INTEGER) is
+	on_timer (timer_id: INTEGER)
 			-- Wm_timer message.
 			-- A Wm_timer has been received from `timer_id'
 			-- See also `set_timer', `kill_timer'.
@@ -1542,21 +1588,26 @@ feature {NONE} -- Messages
 		do
 		end
 
-	on_notify (control_id: INTEGER; info: WEL_NMHDR) is
+	on_notify (control_id: INTEGER; info: WEL_NMHDR)
 		require
 			exists: exists
 			info_not_void: info /= Void
+			info_exists: info.exists
 		do
 		end
 
-	on_erase_background (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT) is
+	on_erase_background (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
 			-- Wm_erasebkgnd message.
 			-- May be redefined to paint something on
 			-- the `paint_dc'. `invalid_rect' defines
 			-- the invalid rectangle of the client area that
 			-- needs to be repainted.
+		require
+			paint_dc_not_void: paint_dc /= Void
+			invalid_rect_not_void: invalid_rect /= Void
+			invalid_rect_exists: invalid_rect.exists
 		local
-			bk_brush: WEL_BRUSH
+			bk_brush: detachable WEL_BRUSH
 		do
 			bk_brush := background_brush
 			if bk_brush /= Void then
@@ -1569,22 +1620,22 @@ feature {NONE} -- Messages
 			end
 		end
 
-	on_desactivate is
+	on_desactivate
 			-- Called when window loses activation.
 		do
 		end
 
-	on_activate is
+	on_activate
 			-- Called when window gains activation (alt-tab or mouse click on title bar)
 		do
 		end
 
-	on_getdlgcode is
+	on_getdlgcode
 			-- Called when window receives WM_GETDLGCODE message.
 		do
 		end
 
-	on_wm_theme_changed is
+	on_wm_theme_changed
 			-- Called when window receives WM_THEMECHANGED message.
 		do
 		end
@@ -1596,9 +1647,9 @@ feature {WEL_WINDOW, WEL_DISPATCHER} -- Implementation
 
 feature {WEL_WINDOW} -- Implementation
 
-	internal_window_make (a_parent: WEL_WINDOW; a_name: STRING_GENERAL;
+	internal_window_make (a_parent: detachable WEL_WINDOW; a_name: detachable STRING_GENERAL;
 			a_style, a_x, a_y, a_w, a_h, an_id: INTEGER;
-			data: POINTER) is
+			data: POINTER)
 			-- Create the window
 		local
 			a_wel_string1, a_wel_string2: WEL_STRING
@@ -1629,19 +1680,22 @@ feature {WEL_WINDOW} -- Implementation
 			exists: exists
 		end
 
-	class_name: STRING_32 is
+	class_name: STRING_32
 			-- Window class name to create
 		deferred
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	parent_item: POINTER is
+	parent_item: POINTER
 			-- Parent `item'.
 			-- Equal to `default_pointer' if no parent
+		local
+			l_parent: like parent
 		do
-			if parent /= Void then
-				Result := parent.item
+			l_parent := parent
+			if l_parent /= Void then
+				Result := l_parent.item
 			end
 		ensure
 			result_parent_not_void: (parent /= Void implies
@@ -1649,7 +1703,7 @@ feature {WEL_WINDOW} -- Implementation
 				Result = default_pointer
 		end
 
-	set_default_window_procedure is
+	set_default_window_procedure
 			-- Set `default_window_procedure' if the window must
 			-- call its previous window procedure.
 		require
@@ -1657,26 +1711,26 @@ feature {WEL_WINDOW} -- Implementation
 		do
 		end
 
-	default_style: INTEGER is
+	default_style: INTEGER
 			-- Default style used to create the window.
 			-- See class WEL_WS_CONSTANTS.
 		deferred
 		end
 
-	default_ex_style: INTEGER is
+	default_ex_style: INTEGER
 			-- Default extented style used to create the window
 		do
 			Result := 0
 		end
 
-	main_args: WEL_MAIN_ARGUMENTS is
+	main_args: WEL_MAIN_ARGUMENTS
 		once
 			create Result
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	commands_enabled_ref: CELL [BOOLEAN] is
+	commands_enabled_ref: CELL [BOOLEAN]
 			-- Is the commands execution enabled?
 			-- False by default.
 		once
@@ -1685,7 +1739,7 @@ feature {WEL_WINDOW} -- Implementation
 			commands_enabled_ref_not_void: Result /= Void
 		end
 
-	on_wm_show_window (wparam, lparam: INTEGER) is
+	on_wm_show_window (wparam, lparam: INTEGER)
 			-- Wm_showwindow message
 		require
 			exists: exists
@@ -1697,7 +1751,7 @@ feature {WEL_WINDOW} -- Implementation
 			end
 		end
 
-	on_wm_destroy is
+	on_wm_destroy
 			-- Wm_destroy message.
 		require
 			exists: exists
@@ -1705,12 +1759,12 @@ feature {WEL_WINDOW} -- Implementation
 			on_destroy
 		end
 
-	on_wm_nc_destroy is
+	on_wm_nc_destroy
 			--  Wm_ncdestroy message.
 		do
 		end
 
-	on_wm_notify (wparam, lparam: POINTER) is
+	on_wm_notify (wparam, lparam: POINTER)
 			-- Wm_notify message
 		require
 			exists: exists
@@ -1721,7 +1775,7 @@ feature {WEL_WINDOW} -- Implementation
 			on_notify (wparam.to_integer_32, info)
 		end
 
-	on_wm_erase_background (wparam: POINTER) is
+	on_wm_erase_background (wparam: POINTER)
 			-- Wm_erasebkgnd message.
 			-- A WEL_DC and WEL_PAINT_STRUCT are created and passed to the
 			-- `on_erase_background' routine.
@@ -1734,7 +1788,7 @@ feature {WEL_WINDOW} -- Implementation
 			on_erase_background (paint_dc, client_rect)
 		end
 
-	on_wm_activate (wparam: INTEGER) is
+	on_wm_activate (wparam: INTEGER)
 			-- Wm_activate message
 		require
 			exists: exists
@@ -1746,7 +1800,7 @@ feature {WEL_WINDOW} -- Implementation
 			end
 		end
 
-	on_wm_window_pos_changed (lparam: POINTER) is
+	on_wm_window_pos_changed (lparam: POINTER)
 			-- Wm_windowposchanged message
 		require
 			exists: exists
@@ -1757,7 +1811,7 @@ feature {WEL_WINDOW} -- Implementation
 			on_window_pos_changed (wp)
 		end
 
-	on_wm_window_pos_changing (lparam: POINTER) is
+	on_wm_window_pos_changing (lparam: POINTER)
 			-- Wm_windowposchanging message
 		require
 			exists: exists
@@ -1768,20 +1822,20 @@ feature {WEL_WINDOW} -- Implementation
 			on_window_pos_changing (wp)
 		end
 
-	on_wm_dropfiles (wparam: POINTER) is
+	on_wm_dropfiles (wparam: POINTER)
 			-- Wm_dropfile message
 		require
 			exists: exists
 		do
 		end
 
-	default_process_message (msg: INTEGER; wparam, lparam: POINTER) is
+	default_process_message (msg: INTEGER; wparam, lparam: POINTER)
 			-- Process `msg' which has not been processed by
 			-- `process_message'.
 		do
 		end
 
-	recursive_set_parent (a_parent: WEL_WINDOW): POINTER is
+	recursive_set_parent (a_parent: WEL_WINDOW): POINTER
 			-- Helper function for `set_parent'. It is needed because Windows
 			-- will report an error even if it is valid to set the parent. The
 			-- cause is that Windows doesn't like deeply nested window.
@@ -1794,8 +1848,9 @@ feature {WEL_WINDOW} -- Implementation
 			-- until we reached no parent.
 		require
 			a_parent_not_void: a_parent /= Void
+			a_parent_exists: a_parent.exists
 		local
-			l_parent_of_parent: WEL_WINDOW
+			l_parent_of_parent: detachable WEL_WINDOW
 			l_previous_child_parent: POINTER
 			l_failure: BOOLEAN
 		do
@@ -1828,7 +1883,7 @@ feature {WEL_WINDOW} -- Implementation
 
 feature {NONE} -- Implementation
 
-	set_parent_window: WEL_WINDOW is
+	set_parent_window: WEL_WINDOW
 			-- Window used by `recursive_set_parent' to temporary store a window in it.
 			-- Before we were using no window, but then the windows would briefly flash
 			-- on screen which is not very nice.
@@ -1842,11 +1897,14 @@ feature {NONE} -- Implementation
 feature {WEL_ABSTRACT_DISPATCHER, WEL_WINDOW} -- Implementation
 
 	window_process_message, process_message (hwnd: POINTER; msg: INTEGER;
-		wparam, lparam: POINTER): POINTER is
+		wparam, lparam: POINTER): POINTER
 			-- Call the routine `on_*' corresponding to the
 			-- message `msg'.
 		require
 			exists: exists
+		local
+			l_message: detachable WEL_COMMAND_EXEC
+			l_commands: like commands
 		do
 			inspect msg
 			when Wm_mousemove then
@@ -1962,22 +2020,23 @@ feature {WEL_ABSTRACT_DISPATCHER, WEL_WINDOW} -- Implementation
 			else
 				default_process_message (msg, wparam, lparam)
 			end
-			if commands /= Void and then
-			   commands_enabled and then
-			   commands.has (msg)
-			then
-				commands.item (msg).execute (Current, msg, wparam, lparam)
+			l_commands := commands
+			if l_commands /= Void and then commands_enabled and then l_commands.has (msg) then
+				l_message := l_commands.item (msg)
+					-- Per checking.
+				check l_message_attached: l_message /= Void end
+				l_message.execute (Current, msg, wparam, lparam)
 			end
 		end
 
-	call_default_window_procedure (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): POINTER is
+	call_default_window_procedure (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): POINTER
 		do
 			Result := cwin_def_window_proc (hwnd, msg, wparam, lparam)
 		end
 
 feature -- Registration
 
-	frozen register_current_window is
+	frozen register_current_window
 			-- Register `Current' in window manager.
 		local
 			l_old_data: POINTER
@@ -1986,7 +2045,7 @@ feature -- Registration
 			l_object_id := internal_object_id
 				-- If object was already registered, no need to create a new entry.
 			if l_object_id = 0 then
-				l_object_id := eif_object_id (Current)
+				l_object_id := eif_current_object_id
 				internal_object_id := l_object_id
 			end
 			l_old_data := {WEL_API}.set_window_long (item, Gwlp_userdata, cwel_integer_to_pointer (l_object_id))
@@ -1994,7 +2053,7 @@ feature -- Registration
 			registered: is_registered
 		end
 
-	is_registered: BOOLEAN is
+	is_registered: BOOLEAN
 			-- Is `window' registered?
 		local
 			l_data, null: POINTER
@@ -2005,7 +2064,7 @@ feature -- Registration
 				l_data := {WEL_API}.get_window_long (item, gwlp_userdata)
 				if l_data /= null then
 					l_object_id := l_data.to_integer_32
-					Result := l_object_id = internal_object_id and then  eif_id_object (l_object_id) = Current
+					Result := l_object_id = internal_object_id and then eif_is_object_id_of_current (l_object_id)
 				end
 			end
 		end
@@ -2018,21 +2077,26 @@ feature {NONE} -- Registration
 
 feature {WEL_WINDOW} -- Properties
 
-	is_located_inside (window: WEL_WINDOW): BOOLEAN is
+	is_located_inside (window: WEL_WINDOW): BOOLEAN
 			-- Is `Current' directly or indirectly located inside `window'?
+		local
+			l_parent: like parent
 		do
 			if window = Current then
 				Result := True
-			elseif parent = Void then
-				Result := False
 			else
-				Result := parent.is_located_inside (window)
+				l_parent := parent
+				if l_parent = Void then
+					Result := False
+				else
+					Result := l_parent.is_located_inside (window)
+				end
 			end
 		end
 
 feature {NONE} -- Removal
 
-	dispose is
+	dispose
 			-- Free allocated memory.
 		local
 			l_object_id: INTEGER
@@ -2047,14 +2111,14 @@ feature {NONE} -- Removal
 			Precursor {WEL_ANY}
 		end
 
-	frozen destroy_item is
+	frozen destroy_item
 			-- Called by GC and `item' is still not equal to default_pointer,
 			-- meaning that `destroy' has not been called. We need to call it.
 		do
 			destroy_item_from_context (True)
 		end
 
-	frozen destroy_item_from_context (is_from_gc: BOOLEAN) is
+	frozen destroy_item_from_context (is_from_gc: BOOLEAN)
 			-- Cleanup current. If `is_from_gc' then it was called from `dispose',
 			-- otherwise from a call to `destroy'.
 		local
@@ -2108,16 +2172,19 @@ feature {NONE} -- Removal
 			not_exists: not exists
 		end
 
-	track_mouse_event (info: WEL_TRACK_MOUSE_EVENT): BOOLEAN is
+	track_mouse_event (info: WEL_TRACK_MOUSE_EVENT): BOOLEAN
 			-- Start a windows TRACKMOUSEEVENT dependent on information
 			-- contained in `info'
+		require
+			info_not_void: info /= Void
+			info_exists: info.exists
 		do
 			Result := cwin_track_mouse_event (info.item)
 		end
 
 feature {WEL_WINDOW} -- Windows bug workaround
 
-	frozen move_and_resize_internal (a_x, a_y, a_width, a_height: INTEGER; repaint: BOOLEAN; a_flags: INTEGER) is
+	frozen move_and_resize_internal (a_x, a_y, a_width, a_height: INTEGER; repaint: BOOLEAN; a_flags: INTEGER)
 			-- Move the window to `a_x', `a_y' position and
 			-- resize it with `a_width', `a_height'.
 			-- This wrapper around `cwin_move_window' is required to solve an issue with
@@ -2132,6 +2199,7 @@ feature {WEL_WINDOW} -- Windows bug workaround
 		local
 			l_diff: BOOLEAN
 			l_flags: INTEGER
+			l_parent: like parent
 		do
 				-- Reset `internal_wm_size_called'. It is set to True in `process_message'
 				-- when receiving a WM_SIZE message.
@@ -2162,8 +2230,9 @@ feature {WEL_WINDOW} -- Windows bug workaround
 					-- was not sent because it did not need to.
 					-- Ideally, we should hook to the WM_WINDOWPOSCHANGED in Vision2 to better bypass
 					-- this limitation.
-				if parent /= Void then
-					parent.invalidate
+				l_parent := parent
+				if l_parent /= Void then
+					l_parent.invalidate
 				end
 				invalidate
 				{WEL_API}.post_message (item, wm_size, to_wparam (0), cwin_make_long (a_width, a_height))
@@ -2179,7 +2248,7 @@ feature {WEL_WINDOW} -- Windows bug workaround
 
 feature {NONE} -- Constants
 
-	Wel_gcl_constants: WEL_GCL_CONSTANTS is
+	Wel_gcl_constants: WEL_GCL_CONSTANTS
 		once
 			create Result
 		end
@@ -2190,7 +2259,7 @@ feature {NONE} -- Externals
 				a_name: POINTER; a_style, a_x, a_y, a_w,
 				a_h: INTEGER; a_parent_hwnd: POINTER;
 				an_id: INTEGER; a_hinstance,
-				param: POINTER): POINTER is
+				param: POINTER): POINTER
 			-- SDK CreateWindowEx
 		external
 			"C [macro %"wel.h%"] (DWORD, LPCTSTR, LPCTSTR, DWORD, int, %
@@ -2200,7 +2269,7 @@ feature {NONE} -- Externals
 			"CreateWindowEx"
 		end
 
-	cwin_set_parent (hwmd_child, hwmd_parent: POINTER) is
+	cwin_set_parent (hwmd_child, hwmd_parent: POINTER)
 			-- Change the parent of the given child and return handle to
 			-- previous parent, or NULL otherwise.
 		obsolete
@@ -2211,7 +2280,7 @@ feature {NONE} -- Externals
 			"SetParent"
 		end
 
-	cwin_destroy_window (hwnd: POINTER): INTEGER is
+	cwin_destroy_window (hwnd: POINTER): INTEGER
 			-- SDK DestroyWindow
 		external
 			"C [macro %"wel.h%"] (HWND): BOOL"
@@ -2219,7 +2288,7 @@ feature {NONE} -- Externals
 			"DestroyWindow"
 		end
 
-	cwin_drag_accept_files (hwnd: POINTER; accept: BOOLEAN) is
+	cwin_drag_accept_files (hwnd: POINTER; accept: BOOLEAN)
 			-- SDK DragAcceptFiles
 		external
 			"C inline use %"wel.h%""
@@ -2227,7 +2296,7 @@ feature {NONE} -- Externals
 			"DragAcceptFiles ((HWND) $hwnd, (BOOL) $accept)"
 		end
 
-	cwin_drag_query_file (hdrop: POINTER; ifile: INTEGER; buffer_pointer: POINTER; buffer_size: INTEGER): INTEGER is
+	cwin_drag_query_file (hdrop: POINTER; ifile: INTEGER; buffer_pointer: POINTER; buffer_size: INTEGER): INTEGER
 			-- SDK DragQueryFile
 		external
 			"C inline use %"wel.h%""
@@ -2235,7 +2304,7 @@ feature {NONE} -- Externals
 			"DragQueryFile ((HDROP) $hdrop, (UINT) $ifile, (LPTSTR) $buffer_pointer, (UINT) $buffer_size)"
 		end
 
-	cwin_is_iconic (hwnd: POINTER): BOOLEAN is
+	cwin_is_iconic (hwnd: POINTER): BOOLEAN
 			-- SDK IsIconic
 		external
 			"C [macro %"wel.h%"] (HWND): EIF_BOOLEAN"
@@ -2243,7 +2312,7 @@ feature {NONE} -- Externals
 			"IsIconic"
 		end
 
-	cwin_is_zoomed (hwnd: POINTER): BOOLEAN is
+	cwin_is_zoomed (hwnd: POINTER): BOOLEAN
 			-- SDK IsZoomed
 		external
 			"C [macro %"wel.h%"] (HWND): EIF_BOOLEAN"
@@ -2251,7 +2320,7 @@ feature {NONE} -- Externals
 			"IsZoomed"
 		end
 
-	cwin_enable_window (hwnd: POINTER; enable_flag: BOOLEAN) is
+	cwin_enable_window (hwnd: POINTER; enable_flag: BOOLEAN)
 			-- SDK EnableWindow
 		external
 			"C [macro %"wel.h%"] (HWND, BOOL)"
@@ -2259,7 +2328,7 @@ feature {NONE} -- Externals
 			"EnableWindow"
 		end
 
-	cwin_is_window_enabled (hwnd: POINTER): BOOLEAN is
+	cwin_is_window_enabled (hwnd: POINTER): BOOLEAN
 			-- SDK IsWindowEnabled
 		external
 			"C [macro %"wel.h%"] (HWND): EIF_BOOLEAN"
@@ -2267,7 +2336,7 @@ feature {NONE} -- Externals
 			"IsWindowEnabled"
 		end
 
-	cwin_set_focus (hwnd: POINTER) is
+	cwin_set_focus (hwnd: POINTER)
 			-- SDK SetFocus
 		external
 			"C [macro %"wel.h%"] (HWND)"
@@ -2276,7 +2345,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_set_timer (hwnd: POINTER; timer_id, time_out: INTEGER;
-				proc: POINTER) is
+				proc: POINTER)
 			-- SDK SetTimer
 		external
 			"C [macro %"wel.h%"] (HWND, UINT, UINT, TIMERPROC)"
@@ -2284,7 +2353,7 @@ feature {NONE} -- Externals
 			"SetTimer"
 		end
 
-	cwin_kill_timer (hwnd: POINTER; timer_id: INTEGER) is
+	cwin_kill_timer (hwnd: POINTER; timer_id: INTEGER)
 			-- SDK KillTimer
 		external
 			"C [macro %"wel.h%"] (HWND, UINT)"
@@ -2292,7 +2361,7 @@ feature {NONE} -- Externals
 			"KillTimer"
 		end
 
-	cwin_get_focus: POINTER is
+	cwin_get_focus: POINTER
 			-- SDK GetFocus
 		obsolete
 			"Use {WEL_API}.get_focus instead."
@@ -2302,7 +2371,7 @@ feature {NONE} -- Externals
 			"GetFocus ()"
 		end
 
-	cwin_set_capture (hwnd: POINTER) is
+	cwin_set_capture (hwnd: POINTER)
 			-- SDK SetCapture
 		external
 			"C [macro %"wel.h%"] (HWND)"
@@ -2310,7 +2379,7 @@ feature {NONE} -- Externals
 			"SetCapture"
 		end
 
-	cwin_release_capture is
+	cwin_release_capture
 			-- SDK ReleaseCapture
 		external
 			"C [macro %"wel.h%"]"
@@ -2318,7 +2387,7 @@ feature {NONE} -- Externals
 			"ReleaseCapture ()"
 		end
 
-	cwin_get_capture: POINTER is
+	cwin_get_capture: POINTER
 			-- SDK GetCapture
 		external
 			"C [macro %"wel.h%"]: EIF_POINTER"
@@ -2326,7 +2395,7 @@ feature {NONE} -- Externals
 			"GetCapture ()"
 		end
 
-	cwin_show_window (hwnd: POINTER; cmd_show: INTEGER) is
+	cwin_show_window (hwnd: POINTER; cmd_show: INTEGER)
 			-- SDK ShowWindow
 		external
 			"C [macro %"wel.h%"] (HWND, int)"
@@ -2334,7 +2403,7 @@ feature {NONE} -- Externals
 			"ShowWindow"
 		end
 
-	cwin_is_window_visible (hwnd: POINTER): BOOLEAN is
+	cwin_is_window_visible (hwnd: POINTER): BOOLEAN
 			-- SDK IsWindowVisible
 		external
 			"C [macro %"wel.h%"] (HWND): EIF_BOOLEAN"
@@ -2342,7 +2411,7 @@ feature {NONE} -- Externals
 			"IsWindowVisible"
 		end
 
-	cwin_set_window_text (hwnd, str: POINTER) is
+	cwin_set_window_text (hwnd, str: POINTER)
 			-- SDK SetWindowText
 		obsolete
 			"Use {WEL_API}.set_window_text instead."
@@ -2352,7 +2421,7 @@ feature {NONE} -- Externals
 			"SetWindowText"
 		end
 
-	cwin_get_window_text_length (hwnd: POINTER): INTEGER is
+	cwin_get_window_text_length (hwnd: POINTER): INTEGER
 			-- SDK GetWindowTextLength
 		external
 			"C [macro %"wel.h%"] (HWND): EIF_INTEGER"
@@ -2360,7 +2429,7 @@ feature {NONE} -- Externals
 			"GetWindowTextLength"
 		end
 
-	cwin_get_window_text (hwnd, str: POINTER; len: INTEGER): INTEGER is
+	cwin_get_window_text (hwnd, str: POINTER; len: INTEGER): INTEGER
 			-- SDK GetWindowText
 		external
 			"C [macro %"wel.h%"] (HWND, LPTSTR, int): EIF_INTEGER"
@@ -2369,7 +2438,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_message_box_result (hwnd, a_text, a_title: POINTER;
-			a_style: INTEGER): INTEGER is
+			a_style: INTEGER): INTEGER
 			-- SDK MessageBox (with result)
 		external
 			"C [macro %"wel.h%"] (HWND, LPCTSTR, LPCTSTR, %
@@ -2379,7 +2448,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_message_box (hwnd, a_text, a_title: POINTER;
-			a_style: INTEGER) is
+			a_style: INTEGER)
 			-- SDK MessageBox (without result)
 		external
 			"C [macro %"wel.h%"] (HWND, LPCTSTR, LPCTSTR, UINT)"
@@ -2387,7 +2456,7 @@ feature {NONE} -- Externals
 			"MessageBox"
 		end
 
-	cwin_def_window_proc (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): POINTER is
+	cwin_def_window_proc (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): POINTER
 			-- SDK DefWindowProc
 		external
 			"C [macro <windows.h>] (HWND, UINT, WPARAM, LPARAM): LRESULT"
@@ -2395,7 +2464,7 @@ feature {NONE} -- Externals
 			"DefWindowProc"
 		end
 
-	cwin_update_window (hwnd: POINTER) is
+	cwin_update_window (hwnd: POINTER)
 			-- SDK UpdateWindow
 		external
 			"C [macro %"wel.h%"] (HWND)"
@@ -2403,7 +2472,7 @@ feature {NONE} -- Externals
 			"UpdateWindow"
 		end
 
-	cwin_track_mouse_event (struct: POINTER): BOOLEAN is
+	cwin_track_mouse_event (struct: POINTER): BOOLEAN
 		external
 			"C [macro %"wel.h%"] (TRACKMOUSEEVENT*): EIF_BOOLEAN"
 		alias
@@ -2411,7 +2480,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_invalidate_rect (hwnd, a_rect: POINTER;
-			erase_background: BOOLEAN) is
+			erase_background: BOOLEAN)
 			-- SDK InvalidateRect
 		external
 			"C [macro %"wel.h%"] (HWND, RECT *, BOOL)"
@@ -2420,7 +2489,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_invalidate_rgn (hwnd, a_region: POINTER;
-			erase_background: BOOLEAN) is
+			erase_background: BOOLEAN)
 			-- SDK InvalidateRgn
 		external
 			"C [macro %"wel.h%"] (HWND, HRGN, BOOL)"
@@ -2428,7 +2497,7 @@ feature {NONE} -- Externals
 			"InvalidateRgn"
 		end
 
-	cwin_validate_rect (hwnd, a_rect: POINTER) is
+	cwin_validate_rect (hwnd, a_rect: POINTER)
 			-- SDK ValidateRect
 		external
 			"C [macro %"wel.h%"] (HWND, RECT *)"
@@ -2436,7 +2505,7 @@ feature {NONE} -- Externals
 			"ValidateRect"
 		end
 
-	cwin_validate_rgn (hwnd, a_region: POINTER) is
+	cwin_validate_rgn (hwnd, a_region: POINTER)
 			-- SDK ValidateRgn
 		external
 			"C [macro %"wel.h%"] (HWND, HRGN)"
@@ -2444,7 +2513,7 @@ feature {NONE} -- Externals
 			"ValidateRgn"
 		end
 
-	cwin_send_message_result (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): POINTER is
+	cwin_send_message_result (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): POINTER
 			-- SDK SendMessage (with the result)
 		obsolete
 			"Use {WEL_API}.send_message_result instead."
@@ -2454,7 +2523,7 @@ feature {NONE} -- Externals
 			"SendMessage"
 		end
 
-	cwin_send_message_result_integer (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): INTEGER is
+	cwin_send_message_result_integer (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): INTEGER
 			-- SDK SendMessage (with the result)
 		obsolete
 			"Use {WEL_API}.send_message_result_integer instead,"
@@ -2464,7 +2533,7 @@ feature {NONE} -- Externals
 			"SendMessage"
 		end
 
-	cwin_send_message (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER) is
+	cwin_send_message (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER)
 			-- SDK SendMessage (without the result)
 		obsolete
 			"Use {WEL_API}.send_message instead."
@@ -2474,7 +2543,7 @@ feature {NONE} -- Externals
 			"SendMessage"
 		end
 
-	cwin_post_message_result (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): BOOLEAN is
+	cwin_post_message_result (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER): BOOLEAN
 			-- SDK PostMessage (with the result)
 		obsolete
 			"Use {WEL_API}.post_message_result instead."
@@ -2485,7 +2554,7 @@ feature {NONE} -- Externals
 			"PostMessage"
 		end
 
-	cwin_post_message (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER) is
+	cwin_post_message (hwnd: POINTER; msg: INTEGER; wparam, lparam: POINTER)
 			-- SDK PostMessage (without the result)
 		obsolete
 			"Use {WEL_API}.post_message instead."
@@ -2495,7 +2564,7 @@ feature {NONE} -- Externals
 			"PostMessage"
 		end
 
-	cwin_bring_window_to_top (hwnd: POINTER): BOOLEAN is
+	cwin_bring_window_to_top (hwnd: POINTER): BOOLEAN
 			-- SDK BringWindowToTop, Return True is case of Success
 		external
 			"C [macro %"wel.h%"] (HWND): BOOL"
@@ -2504,7 +2573,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_move_window (hwnd: POINTER; a_x, a_y, a_w, a_h: INTEGER;
-				repaint: BOOLEAN) is
+				repaint: BOOLEAN)
 			-- SDK MoveWindow
 		obsolete
 			"Use {WEL_API}.move_window (x, y, w, h, b).do_nothing instead."
@@ -2515,7 +2584,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_set_window_pos (hwnd, hwnd_after: POINTER; a_x, a_y, a_w, a_h,
-				flags: INTEGER) is
+				flags: INTEGER)
 			-- SDK SetWindowPos
 		obsolete
 			"Use {WEL_API}.set_window_pos (hwnd, hwnd_after, a_x, a_y, a_w, a_h, flags).do_nothing instead."
@@ -2525,7 +2594,7 @@ feature {NONE} -- Externals
 			"SetWindowPos"
 		end
 
-	cwin_set_window_placement (hwnd, a_placement: POINTER) is
+	cwin_set_window_placement (hwnd, a_placement: POINTER)
 			-- SDK SetWindowPlacement
 		external
 			"C [macro %"wel.h%"] (HWND, WINDOWPLACEMENT *)"
@@ -2534,7 +2603,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_show_scroll_bar (hwnd: POINTER; bar_flag: INTEGER;
-			show_flag: BOOLEAN) is
+			show_flag: BOOLEAN)
 			-- SDK ShowScrollBar
 		external
 			"C [macro %"wel.h%"] (HWND, int, BOOL)"
@@ -2542,7 +2611,7 @@ feature {NONE} -- Externals
 			"ShowScrollBar"
 		end
 
-	cwin_enable_scroll_bar (hwnd: POINTER; wsbflags, warrows: INTEGER) is
+	cwin_enable_scroll_bar (hwnd: POINTER; wsbflags, warrows: INTEGER)
 			-- SDK EnableScrollBar
 		external
 			"C [macro %"wel.h%"] (HWND, int, int)"
@@ -2551,7 +2620,7 @@ feature {NONE} -- Externals
 		end
 
 	cwin_scroll_window (hwnd: POINTER; a_x, a_y: INTEGER;
-			scroll_rect, clip_rect: POINTER) is
+			scroll_rect, clip_rect: POINTER)
 			-- SDK ScrollWindow
 		external
 			"C [macro %"wel.h%"] (HWND, int, int, RECT *, RECT *)"
@@ -2559,7 +2628,7 @@ feature {NONE} -- Externals
 			"ScrollWindow"
 		end
 
-	cwin_win_help (hwnd, file: POINTER; a_command, data: INTEGER) is
+	cwin_win_help (hwnd, file: POINTER; a_command, data: INTEGER)
 			-- SDK WinHelp
 		external
 			"C [macro %"wel.h%"] (HWND, LPCTSTR, UINT, DWORD)"
@@ -2567,55 +2636,55 @@ feature {NONE} -- Externals
 			"WinHelp"
 		end
 
-	c_mouse_wheel_delta (wparam: POINTER): INTEGER is
+	c_mouse_wheel_delta (wparam: POINTER): INTEGER
 		external
 			"C inline use <windows.h>"
 		alias
 			"((short)HIWORD($wparam))"
 		end
 
-	x_position_from_lparam (lparam: POINTER): INTEGER is
+	x_position_from_lparam (lparam: POINTER): INTEGER
 		external
 			"C inline use <windows.h>"
 		alias
 			"((int)(short)LOWORD($lparam))"
 		end
 
-	y_position_from_lparam (lparam: POINTER): INTEGER is
+	y_position_from_lparam (lparam: POINTER): INTEGER
 		external
 			"C inline use <windows.h>"
 		alias
 			"((int)(short)HIWORD($lparam))"
 		end
 
-	cwel_window_procedure_address: POINTER is
+	cwel_window_procedure_address: POINTER
 		external
 			"C [macro <disptchr.h>]"
 		end
 
-	c_lock_window_update (hwnd_lock: POINTER): BOOLEAN is
+	c_lock_window_update (hwnd_lock: POINTER): BOOLEAN
 		external
 			"C [macro %"wel.h%"] (HWND): EIF_BOOLEAN"
 		alias
 			"LockWindowUpdate"
 		end
 
-	cwel_hook_mouse (hwnd: POINTER): BOOLEAN is
+	cwel_hook_mouse (hwnd: POINTER): BOOLEAN
 		external
 			"C (HWND): EIF_BOOLEAN | %"wel_mousehook.h%""
 		end
 
-	cwel_unhook_mouse: BOOLEAN is
+	cwel_unhook_mouse: BOOLEAN
 		external
 			"C (): EIF_BOOLEAN | %"wel_mousehook.h%""
 		end
 
-	cwel_get_hook_window: POINTER is
+	cwel_get_hook_window: POINTER
 		external
 			"C (): HWND | %"wel_mousehook.h%""
 		end
 
-	cwin_set_class_long (hwnd: POINTER; n_index: INTEGER; new_value: POINTER) is
+	cwin_set_class_long (hwnd: POINTER; n_index: INTEGER; new_value: POINTER)
 			-- SDK SetClassLong
 		external
 			"C [macro %"wel.h%"] (HWND, int, LONG_PTR)"
@@ -2623,17 +2692,17 @@ feature {NONE} -- Externals
 			"SetClassLongPtr"
 		end
 
-	cwel_set_dispatcher_pointer (dispatcher_ptr: POINTER) is
+	cwel_set_dispatcher_pointer (dispatcher_ptr: POINTER)
 		external
 			"C [macro %"disptchr.h%"]"
 		end
 
-	cwel_dispatcher_pointer: POINTER is
+	cwel_dispatcher_pointer: POINTER
 		external
 			"C [macro %"disptchr.h%"]"
 		end
 
-	cwel_get_message_pos: INTEGER is
+	cwel_get_message_pos: INTEGER
 		external
 			"[
 				C signature (): DWORD
@@ -2643,7 +2712,7 @@ feature {NONE} -- Externals
 			"GetMessagePos"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

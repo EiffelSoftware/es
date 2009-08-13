@@ -1,4 +1,4 @@
-indexing
+note
     description: "Node for id. Version for Bench."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -49,7 +49,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize (s: STRING) is
+	initialize (s: STRING)
 			-- Create a new ID AST node made up
 			-- of characters contained in `s'.
 		require
@@ -70,7 +70,7 @@ feature {NONE} -- Initialization
 
 feature -- Update
 
-	set_name (a_name: like name) is
+	set_name (a_name: like name)
 			-- Set `name' to `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -80,7 +80,7 @@ feature -- Update
 			name_set: name.is_equal (a_name)
 		end
 
-	set_name_id (a_name_id: like name_id) is
+	set_name_id (a_name_id: like name_id)
 			-- Set `name' to `a_name'.
 		require
 			a_name_id_positive: a_name_id > 0
@@ -91,13 +91,63 @@ feature -- Update
 		end
 
 	to_upper
+			-- Make sure `name' is in upper case
+		local
+			l_code: CHARACTER_8
+			l_area: SPECIAL [CHARACTER_8]
+			l_index: INTEGER
+			l_needs_uppering: BOOLEAN
 		do
-			initialize (name.as_upper)
+				-- We only want to duplicate string if necessary
+			from
+				l_area := name.area
+				l_index := l_area.count - 2
+					-- We have to take null character in to account
+			until
+				l_index < 0
+			loop
+				l_code := l_area [l_index]
+				if l_code /= l_code.as_upper then
+						-- Character is lower case so we make sure `Current' is correctly initialized.
+					l_needs_uppering := True
+					l_index := -1
+				else
+					l_index := l_index - 1
+				end
+			end
+			if l_needs_uppering then
+				initialize (name.as_upper)
+			end
 		end
 
 	to_lower
+			-- Make sure `name' is in upper case
+		local
+			l_code: CHARACTER_8
+			l_area: SPECIAL [CHARACTER_8]
+			l_index: INTEGER
+			l_needs_lowering: BOOLEAN
 		do
-			initialize (name.as_lower)
+				-- We only want to duplicate string if necessary
+			from
+				l_area := name.area
+				l_index := l_area.count - 2
+					-- We have to take null character in to account
+			until
+				l_index < 0
+			loop
+				l_code := l_area [l_index]
+				if l_code /= l_code.as_lower then
+						-- Character is upper case so we make sure `Current' is correctly initialized.
+					l_needs_lowering := True
+					l_index := -1
+				else
+					l_index := l_index - 1
+				end
+			end
+			if l_needs_lowering then
+				initialize (name.as_lower)
+			end
 		end
 
 feature -- Access
@@ -105,7 +155,7 @@ feature -- Access
 	name_id: INTEGER
 			-- ID representing the string in the names heap.
 
-	name: STRING is
+	name: STRING
 			-- Name of this id.
 		do
 			Result := names_heap.item (name_id)
@@ -115,7 +165,7 @@ feature -- Access
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_id_as (Current)
@@ -123,18 +173,18 @@ feature -- Visitor
 
 feature -- Properties
 
-	is_id: BOOLEAN is True
+	is_id: BOOLEAN = True
 			-- Is the current atomic node an id?
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is `other' equal to the current object?
 		do
 			Result := name_id = other.name_id
 		end
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := is_equal (other)
@@ -147,8 +197,8 @@ feature {NONE} -- Implementation
 			Result := name
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -161,22 +211,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ID_AS

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Representation of a compiler error (either syntax or semantics)."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,7 +16,7 @@ feature -- Access
 	column: INTEGER
 			-- Column number involved in error
 
-	file_name: STRING is
+	file_name: STRING
 			-- Path to file involved in error.
 			-- Could be Void if not a file specific error.
 		require
@@ -29,7 +29,7 @@ feature -- Access
 	associated_class: ABSTRACT_CLASS_C
 			-- Associate class, if any
 
-	help_file_name: STRING is
+	help_file_name: STRING
 			-- Associated file name where error explanation is located.
 		do
 			Result := code
@@ -37,21 +37,31 @@ feature -- Access
 			help_file_name_not_void: Result /= Void
 		end
 
+feature {NONE} -- Access: File source caching
+
+	cached_file: attached CELL [detachable CACHED_PLAIN_TEXT_FILE_READER]
+			-- Cached file
+		require
+			has_associated_file
+		once
+			create Result.put (Void)
+		end
+
 feature -- Properties
 
-	code: STRING is
+	code: STRING
 			-- Code error
 		deferred
 		ensure
 			code_not_void: Result /= Void
 		end
 
-	subcode: INTEGER is
+	subcode: INTEGER
 			-- Subcode of error. `0' if none.
 		do
 		end
 
-	Error_string: STRING is
+	Error_string: STRING
 		do
 			Result := "Error"
 		ensure
@@ -60,12 +70,12 @@ feature -- Properties
 
 feature -- Status report
 
-	has_associated_file: BOOLEAN is
+	has_associated_file: BOOLEAN
 			-- Is current relative to a file?
 		do
 		end
 
-	is_defined: BOOLEAN is
+	is_defined: BOOLEAN
 			-- Is the error fully defined?
 		do
 			Result := True
@@ -73,7 +83,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_location (a_location: LOCATION_AS) is
+	set_location (a_location: LOCATION_AS)
 			-- Initialize `line' and `column' from `a_location'
 		require
 			a_location_not_void: a_location /= Void
@@ -85,7 +95,7 @@ feature -- Setting
 			column_set: column = a_location.column
 		end
 
-	set_position (l, c: INTEGER) is
+	set_position (l, c: INTEGER)
 			-- Set `line' and `column' with `l' and `c'.
 		require
 			l_non_negative: l >= 0
@@ -98,7 +108,7 @@ feature -- Setting
 			column_set: column = c
 		end
 
-	set_associated_class (a_class: like associated_class) is
+	set_associated_class (a_class: like associated_class)
 			-- Set `associated_class' with `a_class'
 		do
 			associated_class := a_class
@@ -111,7 +121,7 @@ feature {ERROR_VISITOR} -- Compute surrounding text around error
 	previous_line, current_line, next_line: STRING
 			-- Surrounding lines where error occurs.
 
-	has_source_text: BOOLEAN is
+	has_source_text: BOOLEAN
 			-- Did we get the source text?
 		do
 			Result := current_line /= Void
@@ -147,47 +157,42 @@ feature {ERROR_VISITOR} -- Compute surrounding text around error
 			end
 		end
 
-	initialize_output is
+	frozen initialize_output
 			-- Set `previous_line', `current_line' and `next_line' with their proper values
 			-- taken from file `file_name'.
 		require
 			file_name_not_void: file_name /= Void
 		local
-			file: PLAIN_TEXT_FILE
-			nb: INTEGER
+			l_line: INTEGER
+			l_fn: like file_name
+			l_file: detachable CACHED_PLAIN_TEXT_FILE_READER
 		do
-			current_line := Void
-			create file.make (file_name)
-			if file.exists then
-				file.open_read
-				from
-					nb := 1
-				until
-					nb > line or else file.end_of_file
-				loop
-					if nb >= line - 1 then
-						previous_line := current_line
-					end
-					file.read_line
-					nb := nb + 1
-					if nb >= line - 1 then
-						current_line := file.last_string.twin
-					end
-				end
-				if not file.end_of_file then
-					file.read_line
-					next_line := file.last_string.twin
-				end
-				file.close
-				check
-					current_line_not_void: current_line /= Void
-				end
+			l_fn := file_name
+			l_file := cached_file.item
+			if l_file = Void or else l_fn /~ l_file.file_name then
+					-- No file, or it has changed/
+				create l_file.make (l_fn.as_attached)
+				l_file.is_contents_auto_refreshed := True
+				cached_file.put (l_file)
 			end
+			l_line := line
+			if l_line > 1 then
+				l_file.read_line (l_line - 1)
+				previous_line := l_file.last_string
+				current_line := l_file.peek_read_line (l_line)
+			else
+				previous_line := Void
+				l_file.read_line (l_line)
+				current_line := l_file.last_string
+			end
+			next_line := l_file.peek_read_line (l_line + 1)
+
+			check current_line_not_void: attached current_line end
 		end
 
 feature -- Visitor
 
-	process (a_visitor: ERROR_VISITOR) is
+	process (a_visitor: ERROR_VISITOR)
 			-- Process Current using `a_visitor'.
 		require
 			a_visitor_not_void: a_visitor /= Void
@@ -199,8 +204,8 @@ invariant
 	non_void_error_message: error_string /= Void
 	non_void_help_file_name: help_file_name /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -213,22 +218,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

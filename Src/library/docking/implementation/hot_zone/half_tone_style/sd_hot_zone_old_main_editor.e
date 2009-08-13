@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_HOT_ZONE for editor type zone"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_docker_mediator: SD_DOCKER_MEDIATOR; a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docker_mediator: SD_DOCKER_MEDIATOR; a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method
 		require
 			not_void: a_docker_mediator /= Void
@@ -32,38 +32,38 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	update_for_indicator (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
-			-- Redefine
+	update_for_indicator (a_screen_x, a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 
 		end
 
-	update_for_indicator_clear (a_screen_x, a_screen_y: INTEGER) is
-			-- Redefine
+	update_for_indicator_clear (a_screen_x, a_screen_y: INTEGER)
+			-- <Precursor>
 		do
 
 		end
 
-	clear_indicator is
-			-- Redefine
+	clear_indicator
+			-- <Precursor>
 		do
 			internal_docking_manager.main_window.set_pointer_style ((create {EV_STOCK_PIXMAPS}).standard_cursor)
 		end
 
-	build_indicator is
-			-- Redefine
+	build_indicator
+			-- <Precursor>
 		do
 
 		end
 
-	apply_change (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
-			-- Redefine
+	apply_change (a_screen_x, a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		do
 
 		end
 
-	update_for_feedback (a_screen_x, a_screen_y: INTEGER; a_dockable: BOOLEAN): BOOLEAN is
-			-- Redefine
+	update_for_feedback (a_screen_x, a_screen_y: INTEGER; a_dockable: BOOLEAN): BOOLEAN
+			-- <Precursor>
 		local
 			l_pixmaps: EV_STOCK_PIXMAPS
 		do
@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 	internal_docking_manager: SD_DOCKING_MANAGER;
 			-- Docking manger which Current belong to.
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

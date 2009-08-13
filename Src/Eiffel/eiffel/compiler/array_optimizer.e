@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class ARRAY_OPTIMIZER
@@ -29,7 +29,7 @@ create
 
 feature
 
-	make is
+	make
 		local
 			nb: INTEGER
 		do
@@ -47,11 +47,12 @@ feature
 
 feature
 
-	record_array_descendants is
+	record_array_descendants
 		local
 			array_class: CLASS_C
 			ftable: FEATURE_TABLE
 			l_names_heap: like Names_heap
+			l_feat: FEATURE_I
 		do
 			array_class := System.array_class.compiled_class
 
@@ -59,21 +60,22 @@ feature
 			l_names_heap := Names_heap
 
 				-- get the rout_ids of the special/unsafe features
-			put_rout_id := ftable.item_id (l_names_heap.put_name_id).rout_id_set.first
-			item_rout_id := ftable.item_id (l_names_heap.item_name_id).rout_id_set.first
-			infix_at_rout_id := ftable.item_id (l_names_heap.infix_at_name_id).rout_id_set.first
-			make_area_rout_id := ftable.item_id (l_names_heap.make_area_name_id).rout_id_set.first
-			set_area_rout_id := ftable.item_id (l_names_heap.set_area_name_id).rout_id_set.first
-			lower_rout_id := ftable.item_id (l_names_heap.lower_name_id).rout_id_set.first
-			area_rout_id := ftable.item_id (l_names_heap.area_name_id).rout_id_set.first
+			put_rout_id := ftable.item_id ({PREDEFINED_NAMES}.put_name_id).rout_id_set.first
+			item_rout_id := ftable.item_id ({PREDEFINED_NAMES}.item_name_id).rout_id_set.first
+			lower_rout_id := ftable.item_id ({PREDEFINED_NAMES}.lower_name_id).rout_id_set.first
+			area_rout_id := ftable.item_id ({PREDEFINED_NAMES}.area_name_id).rout_id_set.first
+			l_feat := ftable.item_id ({PREDEFINED_NAMES}.at_name_id)
+			if l_feat = Void then
+					-- We must be compiling an old version of the ARRAY class, so look for `infix "@"' instead.
+				l_feat := ftable.item_id ({PREDEFINED_NAMES}.infix_at_name_id)
+			end
+			check l_feat_not_void: l_feat /= Void end
+			infix_at_rout_id := l_feat.rout_id_set.first
 
 			create array_descendants.make (10)
 
 			create special_features.make
 			special_features.compare_objects
-
-			create unsafe_features.make
-			unsafe_features.compare_objects
 
 			create lower_and_area_features.make
 			lower_and_area_features.compare_objects
@@ -97,7 +99,7 @@ feature {NONE} -- Array optimization
 	array_optimization_on: BOOLEAN
 
 	put_rout_id, item_rout_id, infix_at_rout_id: INTEGER
-	make_area_rout_id, set_area_rout_id, lower_rout_id, area_rout_id: INTEGER
+	lower_rout_id, area_rout_id: INTEGER
 			-- rout_ids of the special/unsafe features
 
 	array_descendants: ARRAYED_LIST [CLASS_C]
@@ -107,7 +109,7 @@ feature {NONE} -- Array optimization
 			-- Set of all the features `lower' and `area' from ARRAY
 			-- and descendants
 
-	record_unsafe_features is
+	record_unsafe_features
 		local
 			a_class: CLASS_C
 			ftable: FEATURE_TABLE
@@ -192,7 +194,6 @@ debug ("OPTIMIZATION")
 	io.error.put_new_line
 end
 						create dep.make (a_class.class_id, a_feature)
-						unsafe_features.extend (dep)
 						mark_alive (a_feature.body_index)
 					end
 					ftable.forth
@@ -205,12 +206,11 @@ end
 			a_class := System.any_class.compiled_class
 			a_feature := a_class.feature_table.item_id (Names_heap.clone_name_id)
 			create dep.make (a_class.class_id, a_feature)
-			unsafe_features.extend (dep)
 			unsafe_body_indexes.put (True, a_feature.body_index)
 			mark_alive (a_feature.body_index)
 		end
 
-	record_descendants (a_class: CLASS_C) is
+	record_descendants (a_class: CLASS_C)
 			-- Recursively records `a_class' and its descendants in `descendants'
 		local
 			d: ARRAYED_LIST [CLASS_C]
@@ -243,10 +243,6 @@ end
 				lower_and_area_features.extend (dep)
 
 					-- Record unsafe features
-				create dep.make (an_id, ftable.feature_of_rout_id (make_area_rout_id))
-				unsafe_features.extend (dep)
-				create dep.make (an_id, ftable.feature_of_rout_id (set_area_rout_id))
-				unsafe_features.extend (dep)
 				from
 					d := a_class.direct_descendants
 					d.start
@@ -261,7 +257,7 @@ end
 
 feature
 
-	process (a_class: CLASS_C; body_index: INTEGER; depend_list: FEATURE_DEPENDANCE) is
+	process (a_class: CLASS_C; body_index: INTEGER; depend_list: FEATURE_DEPENDANCE)
 		local
 			opt_unit: OPTIMIZE_UNIT
 			byte_code: BYTE_CODE
@@ -327,30 +323,30 @@ feature
 
 	current_feature_optimized: BOOLEAN
 
-	set_current_feature_optimized is
+	set_current_feature_optimized
 		do
 			current_feature_optimized := True
 		end
 
 feature -- Contexts
 
-	optimization_context: OPTIMIZATION_CONTEXT is
+	optimization_context: OPTIMIZATION_CONTEXT
 			-- Current loop context
 		do
 			Result := context_stack.item
 		end
 
-	push_optimization_context (c: OPTIMIZATION_CONTEXT) is
+	push_optimization_context (c: OPTIMIZATION_CONTEXT)
 		do
 			context_stack.put (c)
 		end
 
-	pop_optimization_context is
+	pop_optimization_context
 		do
 			context_stack.remove
 		end
 
-	array_item_type (id: INTEGER): TYPE_C is
+	array_item_type (id: INTEGER): TYPE_C
 		local
 			type_a: TYPE_A
 			bc: BYTE_CODE
@@ -384,14 +380,14 @@ feature -- Contexts
 			end
 		end
 
-	generate_plug_declarations (buffer: GENERATION_BUFFER) is
+	generate_plug_declarations (buffer: GENERATION_BUFFER)
 		do
 			generate_feature_table (buffer, "eif_lower_table", lower_rout_id)
 			generate_feature_table (buffer, "eif_area_table", area_rout_id)
 		end
 
 	generate_feature_table (buffer: GENERATION_BUFFER; table_name: STRING
-			rout_id: INTEGER) is
+			rout_id: INTEGER)
 		local
 			entry: POLY_TABLE [ENTRY]
 			temp: STRING
@@ -416,13 +412,9 @@ feature {NONE} -- Contexts
 
 feature -- Detection of safe/unsafe features
 
-	unsafe_features: TWO_WAY_SORTED_SET [DEPEND_UNIT]
-			-- Set of all the features that cannot be called
-			-- within a loop
-
 	unsafe_body_indexes: ARRAY [BOOLEAN]
 
-	test_safety (a_feature: FEATURE_I; a_class: CLASS_C) is
+	test_safety (a_feature: FEATURE_I; a_class: CLASS_C)
 			-- Insert the feature in the safe or unsafe set
 			-- depending if it calls unsafe features
 		require
@@ -434,7 +426,7 @@ feature -- Detection of safe/unsafe features
 			end
 		end
 
-	is_safe (dep: DEPEND_UNIT): BOOLEAN is
+	is_safe (dep: DEPEND_UNIT): BOOLEAN
 			-- Can the feature be safely called within an optimized loop?
 		local
 			table: ROUT_TABLE
@@ -476,7 +468,7 @@ feature -- Detection of safe/unsafe features
 
 feature {NONE} -- Detection of safe/unsafe features
 
-	propagate_feature (written_class_id: INTEGER; original_body_index: INTEGER; depend_list: FEATURE_DEPENDANCE) is
+	propagate_feature (written_class_id: INTEGER; original_body_index: INTEGER; depend_list: FEATURE_DEPENDANCE)
 		local
 			depend_unit: DEPEND_UNIT
 			body_index: INTEGER
@@ -507,13 +499,13 @@ feature {NONE} -- Detection of safe/unsafe features
 			end
 		end
 
-	optimization_tables: SEARCH_TABLE [OPTIMIZE_UNIT] is
+	optimization_tables: SEARCH_TABLE [OPTIMIZE_UNIT]
 		do
 			Result := System.optimization_tables
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -526,22 +518,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

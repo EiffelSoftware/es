@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -25,13 +25,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make the main window.
 		do
-			make_top ("My application")
-			create dc.make (Current)
+			create dc.make (create {WEL_FRAME_WINDOW}.make_top ("Dummy"))
 			set_pen_width (1)
 			create lines.make
+			create current_line.make
+
+			make_top ("My application")
+			create dc.make (Current)
 		end
 
 feature -- Access
@@ -46,7 +49,7 @@ feature -- Access
 	pen: WEL_PEN
 			-- Pen currently selected in `dc'
 
-	line_thickness_dialog: LINE_THICKNESS_DIALOG
+	line_thickness_dialog: detachable LINE_THICKNESS_DIALOG
 			-- Dialog box to change line thickness
 
 	lines: LINKED_LIST [LINE]
@@ -57,7 +60,7 @@ feature -- Access
 
 feature -- Element change
 
-	set_pen_width (new_width: INTEGER) is
+	set_pen_width (new_width: INTEGER)
 			-- Set pen width with `new_width'.
 		do
 			create pen.make_solid (new_width, black)
@@ -65,7 +68,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Initiate the drawing process.
 		do
 			if not button_down then
@@ -80,7 +83,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_mouse_move (keys, x_pos, y_pos: INTEGER) is
+	on_mouse_move (keys, x_pos, y_pos: INTEGER)
 			-- Connect the points to make lines.
 		do
 			if button_down then
@@ -89,7 +92,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_left_button_up (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_up (keys, x_pos, y_pos: INTEGER)
 			-- Terminate the drawing process.
 		do
 			if button_down then
@@ -98,20 +101,24 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_right_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_right_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Bring up `line_thickness_dialog' and set the
 			-- new pen width.
+		local
+			l_dialog: like line_thickness_dialog
 		do
-			if line_thickness_dialog = Void then
-				create line_thickness_dialog.make (Current)
+			l_dialog := line_thickness_dialog
+			if l_dialog = Void then
+				create l_dialog.make (Current)
+				line_thickness_dialog := l_dialog
 			end
-			line_thickness_dialog.activate
-			if line_thickness_dialog.ok_pushed then
-				set_pen_width (line_thickness_dialog.pen_width)
+			l_dialog.activate
+			if l_dialog.ok_pushed then
+				set_pen_width (l_dialog.pen_width)
 			end
 		end
 
-	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT) is
+	on_paint (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
 			-- Paint the lines.
 		local
 			a_line: LINE
@@ -146,7 +153,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	closeable: BOOLEAN is
+	closeable: BOOLEAN
 			-- Does the user want to quit?
 		local
 			msg_box: WEL_MSG_BOX
@@ -157,7 +164,7 @@ feature {NONE} -- Implementation
 			Result := msg_box.message_box_result = Idyes
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

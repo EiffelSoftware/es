@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Editor that can have controls surrounded. Search and quick search bar is surported here."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -29,7 +29,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_dev_window: EB_DEVELOPMENT_WINDOW) is
+	make (a_dev_window: EB_DEVELOPMENT_WINDOW)
 			-- Initialization
 		do
 			dev_window := a_dev_window
@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 			initialize_customizable_commands
 		end
 
-	user_initialization is
+	user_initialization
 			-- Initialization
 		do
 			Precursor {EB_EDITOR}
@@ -51,7 +51,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	initialize_customizable_commands is
+	initialize_customizable_commands
 			-- Create array of customizable commands.
 		do
 			create customizable_commands.make (6)
@@ -77,17 +77,21 @@ feature -- Access
 
 	search_bar: QUICK_SEARCH_BAR
 
-	search_tool: ES_MULTI_SEARCH_TOOL_PANEL is
+	search_tool: ES_MULTI_SEARCH_TOOL_PANEL
 			-- Current search tool.
 		do
-			if dev_window /= Void and then dev_window.shell_tools.is_interface_usable then
-				Result ?= dev_window.shell_tools.tool ({ES_SEARCH_TOOL}).panel
+			if attached internal_search_tool as l_result then
+				Result := l_result
+			else
+				if dev_window /= Void and then dev_window.shell_tools.is_interface_usable then
+					Result ?= dev_window.shell_tools.tool ({ES_SEARCH_TOOL}).panel
+				end
 			end
 		end
 
 feature {NONE} -- Access
 
-	token_handler: ?ES_EDITOR_TOKEN_HANDLER
+	token_handler: detachable ES_EDITOR_TOKEN_HANDLER
 			-- Access to a token handler, for processing actions on tokens
 		do
 			Result := internal_token_handler
@@ -105,13 +109,13 @@ feature {NONE} -- Access
 
 feature -- Quick search bar basic operation
 
-	quick_search is
+	quick_search
 			-- Prepare and show quick search bar, switch to quick search mode.
 		local
 			l_string : STRING_32
 		do
 			if search_tool /= Void then
-				if search_tool.is_visible then
+				if search_tool.is_shown then
 					search_tool.close
 				end
 				show_search_bar
@@ -128,7 +132,7 @@ feature -- Quick search bar basic operation
 			end
 		end
 
-	hide_search_bar is
+	hide_search_bar
 			-- Hide quick search bar.
 		require
 			search_bar_exists: search_bar /= Void
@@ -137,7 +141,7 @@ feature -- Quick search bar basic operation
 			search_bar.hide
 		end
 
-	show_search_bar is
+	show_search_bar
 			-- Show quick search bar.
 		require
 			search_bar_exists: search_bar /= Void
@@ -145,12 +149,12 @@ feature -- Quick search bar basic operation
 		do
 			-- Commented out to prevent QSB flickering.
 			-- set_quick_search_mode (true)
-			if not search_tool.is_visible then
+			if not search_tool.is_shown then
 				search_bar.show
 			end
 		end
 
-	quick_find_next is
+	quick_find_next
 			-- Find next using default search and options on quick search bar.
 		do
 			search_bar.record_current_searched
@@ -162,7 +166,7 @@ feature -- Quick search bar basic operation
 			search_tool.trigger_keyword_field_color (search_bar.keyword_field)
 		end
 
-	quick_find_previous is
+	quick_find_previous
 			-- Find next using default search and options on quick search bar.
 		do
 			search_bar.record_current_searched
@@ -174,7 +178,7 @@ feature -- Quick search bar basic operation
 			search_tool.trigger_keyword_field_color (search_bar.keyword_field)
 		end
 
-	set_quick_search_mode (a_mode: BOOLEAN) is
+	set_quick_search_mode (a_mode: BOOLEAN)
 			-- Set `quick_search_mode' with `a_mode'.
 		do
 			shared_quick_search_mode.put (a_mode)
@@ -182,7 +186,7 @@ feature -- Quick search bar basic operation
 
 feature {NONE} -- Quick search bar.
 
-	build_search_bar is
+	build_search_bar
 			-- Build quick search bar.
 		require
 			bottom_widget_created: bottom_widget /= Void
@@ -217,7 +221,7 @@ feature {NONE} -- Quick search bar.
 			search_bar.set_key_press_action (agent on_key_pressed_on_search_bar)
 		end
 
-	prepare_quick_search is
+	prepare_quick_search
 			-- Prepare search options and keyword on search panel for quick search.
 		local
 			l_incremental_search: BOOLEAN
@@ -258,7 +262,7 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	quick_incremental_search is
+	quick_incremental_search
 			-- Incremental search for text in search bar.
 		local
 			l_editor: EB_EDITOR
@@ -287,14 +291,14 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	trigger_advanced_search is
+	trigger_advanced_search
 			-- Show advanced search panel.
 		local
 			l_tool: like search_tool
 		do
 			l_tool := search_tool
 			if l_tool /= Void then
-				if not l_tool.is_visible then
+				if not l_tool.is_shown then
 					l_tool.prepare_search
 				else
 					l_tool.close
@@ -304,7 +308,7 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	gain_focus is
+	gain_focus
 			-- Update the panel as it has just gained the focus.
 			-- Show quick search bar, if is in search mode.
 		do
@@ -314,7 +318,7 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	lose_focus is
+	lose_focus
 			-- Update the panel as it has just lost the focus.
 			-- Hide quick search bar.
 		do
@@ -334,7 +338,7 @@ feature {NONE} -- Quick search bar.
 
 	focusing_search_bar: BOOLEAN
 
-	on_search_bar_lose_focus is
+	on_search_bar_lose_focus
 			-- On search bar losing focus.
 		do
 			if is_initialized then
@@ -346,7 +350,7 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	on_key_pressed_on_search_bar (a_key: EV_KEY) is
+	on_key_pressed_on_search_bar (a_key: EV_KEY)
 			-- On key pressed on any widget of search bar.
 		local
 			l_shortcut_forw: SHORTCUT_PREFERENCE
@@ -376,7 +380,7 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	return_on_quick_search_field is
+	return_on_quick_search_field
 			-- On key pressed on keyword field of quick search bar.
 		do
 			if ctrled_key and not shifted_key and not alt_key then
@@ -389,7 +393,7 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	close_quick_search_bar (a_focus_editor: BOOLEAN) is
+	close_quick_search_bar (a_focus_editor: BOOLEAN)
 			-- When `close_button' is pressed.
 		do
 			set_quick_search_mode (false)
@@ -399,13 +403,13 @@ feature {NONE} -- Quick search bar.
 			end
 		end
 
-	quick_search_mode : BOOLEAN is
+	quick_search_mode : BOOLEAN
 			-- Is editor in search mode?
 		do
 			Result := shared_quick_search_mode.item
 		end
 
-	check_search_bar_visible is
+	check_search_bar_visible
 			-- Show search bar if it has focus on one of its widget.
 		do
 			if search_bar.has_focus_on_widgets then
@@ -417,11 +421,11 @@ feature {NONE} -- Quick search bar.
 
 feature -- Search commands
 
-	find_next is
+	find_next
 			-- Find next occurrence of last searched pattern.
 		do
 			if search_tool /= Void then
-				if search_tool.is_visible then
+				if search_tool.is_shown then
 					search_tool.go_to_next_found
 					if not text_displayed.is_empty then
 						check_cursor_position
@@ -433,11 +437,11 @@ feature -- Search commands
 			end
 		end
 
-	find_previous is
+	find_previous
 			-- Find next occurrence of last searched pattern.
 		do
 			if search_tool /= Void then
-				if search_tool.is_visible then
+				if search_tool.is_shown then
 					search_tool.go_to_previous_found
 					if not text_displayed.is_empty then
 						check_cursor_position
@@ -449,7 +453,7 @@ feature -- Search commands
 			end
 		end
 
-	find_next_selection is
+	find_next_selection
 			-- Find next occurrence of selection.
 		do
 			if search_tool /= Void then
@@ -458,7 +462,7 @@ feature -- Search commands
 			end
 		end
 
-	find_previous_selection is
+	find_previous_selection
 			--
 		do
 			if search_tool /= Void then
@@ -467,7 +471,7 @@ feature -- Search commands
 			end
 		end
 
-	search is
+	search
 			-- Display search tool if necessary.
 		do
 			if search_tool /= Void then
@@ -475,7 +479,7 @@ feature -- Search commands
 			end
 		end
 
-	replace is
+	replace
 			-- Display search tool (with Replace field) if necessary.
 		do
 			if search_tool /= Void then
@@ -551,11 +555,11 @@ feature {NONE} -- Action hanlders
 			if text_is_fully_loaded then
 				l_handler := token_handler
 				if l_handler /= Void then
-					if {l_clickable_text: !CLICKABLE_TEXT} text_displayed then
+					if attached {CLICKABLE_TEXT} text_displayed as l_clickable_text then
 							-- Fetch token at current mouse position
 						create l_cursor.make_from_character_pos (1, 1, l_clickable_text)
 						position_cursor (l_cursor, a_abs_x, a_abs_y - editor_viewport.y_offset)
-						if {l_token: !EDITOR_TOKEN} l_cursor.token then
+						if attached l_cursor.token as l_token then
 								-- An instant key (CTRL) allows direct processing of the token.
 							l_instant := (ev_application.ctrl_pressed and then not ev_application.alt_pressed and then not ev_application.shift_pressed)
 							if l_instant or else not l_handler.is_active then
@@ -597,7 +601,7 @@ feature {NONE} -- Action hanlders
 
 feature {NONE} -- Factory
 
-	create_token_handler: ?ES_EDITOR_TOKEN_HANDLER
+	create_token_handler: detachable ES_EDITOR_TOKEN_HANDLER
 			-- Create a token handler, used to perform actions or respond to mouse/keyboard events
 			-- Note: Return Void to prevent any handling from takening place.
 		do
@@ -608,7 +612,7 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Implementation
 
-	set_focus_to_drawing_area is
+	set_focus_to_drawing_area
 		do
 			if editor_drawing_area.is_displayed and then
 				editor_drawing_area.is_sensitive and then
@@ -618,25 +622,29 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle
 		do
 			if mouse_move_idle_timer /= Void and then not mouse_move_idle_timer.is_destroyed then
 				mouse_move_idle_timer.destroy
 			end
-			dev_window.window.focus_in_actions.prune_all (check_search_bar_visible_procedure)
-			if search_tool /= Void then
-				search_tool.first_result_reached_actions.prune_all (first_result_reached_action)
-				search_tool.bottom_reached_actions.prune_all (bottom_reached_action)
+			if dev_window /= Void then
+				dev_window.window.focus_in_actions.prune_all (check_search_bar_visible_procedure)
 			end
-			search_bar.destroy
+			if internal_search_tool /= Void then
+				internal_search_tool.first_result_reached_actions.prune_all (first_result_reached_action)
+				internal_search_tool.bottom_reached_actions.prune_all (bottom_reached_action)
+			end
+			if search_bar /= Void then
+				search_bar.destroy
+			end
 			if customizable_commands /= Void then
 				customizable_commands.wipe_out
 			end
 			Precursor {EB_EDITOR}
 		end
 
-	internal_detach_entities is
+	internal_detach_entities
 			-- <Precursor>
 		do
 			right_widget := Void
@@ -653,13 +661,13 @@ feature {NONE} -- Implementation
 			Precursor
 		end
 
-	shared_quick_search_mode: CELL [BOOLEAN] is
+	shared_quick_search_mode: CELL [BOOLEAN]
 			-- Shared quick search mode.
 		once
 			create Result.put (False)
 		end
 
-	prepare_search_tool (a_replace: BOOLEAN) is
+	prepare_search_tool (a_replace: BOOLEAN)
 			-- Show and give focus to search panel.
 		local
 			l_replace: BOOLEAN
@@ -681,7 +689,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	prepare_search_selection is
+	prepare_search_selection
 			-- Prepare search selection.
 		local
 			l_search_tool: ES_MULTI_SEARCH_TOOL_PANEL
@@ -710,7 +718,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_surrounding_widgets is
+	build_surrounding_widgets
 			-- Build surrounding widgets.
 		local
 			l_widget: like widget
@@ -760,10 +768,14 @@ feature {NONE} -- Internal implentation cache
 			-- Cached version of `token_handler'
 			-- Note: Do not use directly!
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	internal_search_tool: like search_tool
+			-- Cached version of `search_tool'
+			-- Note: Do not use directly!
+
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -774,22 +786,22 @@ feature {NONE} -- Internal implentation cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

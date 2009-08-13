@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Roundtrip visitor to generate Eiffel code"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -38,7 +38,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_ctxt: ROUNDTRIP_CONTEXT)  is
+	make (a_ctxt: like context)
 			-- Initialize and set `context' with `a_ctxt'.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 			context := a_ctxt
 		end
 
-	make_with_default_context is
+	make_with_default_context
 			-- Initialize and create context of type `ROUNDTRIP_STRING_LIST_CONTEXT'.
 		do
 			make (create {ROUNDTRIP_STRING_LIST_CONTEXT}.make)
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 
 feature -- Context setting
 
-	set_context (a_ctxt: ROUNDTRIP_CONTEXT) is
+	set_context (a_ctxt: like context)
 			-- Set `context' with `a_ctxt'.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -64,7 +64,7 @@ feature -- Context setting
 			context_set: context = a_ctxt
 		end
 
-	reset is
+	reset
 			-- Reset visitor for a next visit.
 		do
 			Precursor
@@ -73,114 +73,114 @@ feature -- Context setting
 
 feature -- Roundtrip: process leaf
 
-	process_break_as (l_as: BREAK_AS) is
+	process_break_as (l_as: BREAK_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_keyword_as (l_as: KEYWORD_AS) is
+	process_keyword_as (l_as: KEYWORD_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_symbol_as (l_as: SYMBOL_AS) is
+	process_symbol_as (l_as: SYMBOL_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_symbol_stub_as (l_as: SYMBOL_STUB_AS) is
+	process_symbol_stub_as (l_as: SYMBOL_STUB_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_bool_as (l_as: BOOL_AS) is
+	process_bool_as (l_as: BOOL_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_char_as (l_as: CHAR_AS) is
+	process_char_as (l_as: CHAR_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_typed_char_as (l_as: TYPED_CHAR_AS) is
+	process_typed_char_as (l_as: TYPED_CHAR_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			context.add_string (l_as.character_text (match_list))
 		end
 
-	process_result_as (l_as: RESULT_AS) is
+	process_result_as (l_as: RESULT_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_retry_as (l_as: RETRY_AS) is
+	process_retry_as (l_as: RETRY_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_unique_as (l_as: UNIQUE_AS) is
+	process_unique_as (l_as: UNIQUE_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_deferred_as (l_as: DEFERRED_AS) is
+	process_deferred_as (l_as: DEFERRED_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_void_as (l_as: VOID_AS) is
+	process_void_as (l_as: VOID_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_string_as (l_as: STRING_AS) is
+	process_string_as (l_as: STRING_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_verbatim_string_as (l_as: VERBATIM_STRING_AS) is
+	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_current_as (l_as: CURRENT_AS) is
+	process_current_as (l_as: CURRENT_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
-	process_integer_as (l_as: INTEGER_AS) is
+	process_integer_as (l_as: INTEGER_AS)
 		do
 			Precursor (l_as)
 			context.add_string (l_as.number_text (match_list))
 		end
 
-	process_real_as (l_as: REAL_AS) is
+	process_real_as (l_as: REAL_AS)
 		do
 			Precursor (l_as)
 			context.add_string (l_as.number_text (match_list))
 		end
 
-	process_id_as (l_as: ID_AS) is
+	process_id_as (l_as: ID_AS)
 		do
 			Precursor (l_as)
 			put_string (l_as)
@@ -188,7 +188,7 @@ feature -- Roundtrip: process leaf
 
 feature
 
-	text: STRING is
+	text: STRING
 			-- Generated Eiffel code
 		do
 			Result := context.string_representation
@@ -199,7 +199,7 @@ feature{NONE} -- Implementation
 	context: ROUNDTRIP_CONTEXT
 			-- Context used to store generated code
 
-	put_string (l_as: LEAF_AS) is
+	put_string (l_as: LEAF_AS)
 			-- Print text contained in `l_as' into `context'.
 		require
 			l_as_in_list: l_as.index >= start_index and then l_as.index <= end_index
@@ -210,10 +210,10 @@ feature{NONE} -- Implementation
 invariant
 	context_not_void: context /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -224,19 +224,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

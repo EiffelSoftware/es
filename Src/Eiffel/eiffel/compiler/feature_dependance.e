@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dependance between features"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -44,7 +44,7 @@ create {FEATURE_DEPENDANCE}
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		do
 			Precursor {TWO_WAY_SORTED_SET}
 			compare_objects
@@ -56,7 +56,7 @@ feature -- Access
 	suppliers: TWO_WAY_SORTED_SET [INTEGER]
 			-- Set of all the syntactical suppliers of the feature
 
-	add_supplier (a_class: CLASS_C) is
+	add_supplier (a_class: CLASS_C)
 			-- Add the class to the list of suppliers
 		require
 			good_argument: a_class /= Void
@@ -64,24 +64,46 @@ feature -- Access
 			suppliers.extend (a_class.class_id)
 		end;
 
-	wipe_out is
+	reusable_depend_unit: DEPEND_UNIT
+			-- Reusable depend unit for optimized addition by `extend_depend_unit_with_level'.
+		once
+			create Result.make_creation_unit (system.any_id)
+		end
+
+	extend_depend_unit_with_level (a_class_id: INTEGER; a_feature: FEATURE_I; a_context: NATURAL_16)
+			-- Optimized extend to avoid creating unnecessary depend units when they already exist.
+		require
+			a_feature_attached: a_feature /= Void
+		local
+			l_depend_unit: DEPEND_UNIT
+		do
+			l_depend_unit := reusable_depend_unit
+			l_depend_unit.set_with_level (a_class_id, a_feature, a_context)
+			extend (l_depend_unit)
+			if item = l_depend_unit then
+					-- We have been successfully insert so we add a new version.
+				replace (create {DEPEND_UNIT}.make_with_level (a_class_id, a_feature, a_context))
+			end
+		end
+
+	wipe_out
 		do
 			Precursor {TWO_WAY_SORTED_SET}
 			suppliers.wipe_out
 		end;
 
-	copy (other: like Current) is
+	copy (other: like Current)
 		do
 			Precursor {TWO_WAY_SORTED_SET} (other)
 			set_suppliers (suppliers.twin)
 		end
 
-	set_suppliers (new_suppliers: like suppliers) is
+	set_suppliers (new_suppliers: like suppliers)
 		do
 			suppliers := new_suppliers
 		end;
 
-	feature_name: STRING is
+	feature_name: STRING
 			-- Final name of the feature
 		require
 			feature_name_id_set: feature_name_id >= 1
@@ -95,7 +117,7 @@ feature -- Access
 	feature_name_id: INTEGER
 			-- name ID of the feature for which we have the dependances
 
-	set_feature_name_id (id: INTEGER) is
+	set_feature_name_id (id: INTEGER)
 			-- Assign `id' to `feature_name_id'.
 		require
 			valid_id: Names_heap.valid_index (id)
@@ -107,7 +129,7 @@ feature -- Access
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
@@ -116,7 +138,7 @@ feature -- Comparison
 
 feature -- Incrementality
 
-	has_removed_id: BOOLEAN is
+	has_removed_id: BOOLEAN
 			-- One of the suppliers has been removed from the system?
 		local
 			l_system: like system
@@ -146,7 +168,7 @@ feature -- Incrementality
 
 feature -- Debug
 
-	trace is
+	trace
 		do
 			io.error.put_string("Suppliers%N");
 			from
@@ -169,7 +191,7 @@ feature -- Debug
 			end;
 		end;
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

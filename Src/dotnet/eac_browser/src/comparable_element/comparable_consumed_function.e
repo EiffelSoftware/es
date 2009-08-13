@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "COMPARABLE_CONSUMED_FUNCTION with comparaison on feature dotnet_name"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,11 +21,6 @@ inherit
 			return_type
 		end
 
-	COMPARABLE
-		undefine
-			default_create, is_equal, copy
-		end
-
 create
 	make_with_consumed_procedure
 
@@ -38,19 +33,17 @@ feature -- Access
 	declared_type: CONSUMED_REFERENCED_TYPE
 
 feature -- Initialization
-	
-	make_with_consumed_procedure (a_consumed_procedure: CONSUMED_PROCEDURE) is
+
+	make_with_consumed_procedure (a_consumed_procedure: CONSUMED_PROCEDURE)
 		require
 			non_void_a_consumed_procedure: a_consumed_procedure /= Void
-		local
-			l_function: CONSUMED_FUNCTION
 		do
 			eiffel_name := a_consumed_procedure.eiffel_name
 			dotnet_name := a_consumed_procedure.dotnet_name
 			arguments := a_consumed_procedure.arguments
 			declared_type := a_consumed_procedure.declared_type
 			return_type := a_consumed_procedure.return_type
-			a := a_consumed_procedure.a
+			a := a_consumed_procedure.arguments
 		ensure
 			eiffel_name_set: eiffel_name = a_consumed_procedure.eiffel_name
 			dotnet_name_set: dotnet_name = a_consumed_procedure.dotnet_name
@@ -59,15 +52,7 @@ feature -- Initialization
 			return_type_set: return_type = a_consumed_procedure.return_type
 		end
 
-feature -- Implementation
-	
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is current object less than `other'?
-		do
-			Result := dotnet_name < other.dotnet_name
-		end
-
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

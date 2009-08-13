@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Perform type checking for debugger's expression evaluator."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,12 +16,32 @@ inherit
 			process_access_feat_as,
 			check_type,
 			feature_with_name_using,
-			match_list_of_class
+			match_list_of_class,
+			is_void_safe_call
+		end
+
+	SHARED_INST_CONTEXT
+		export
+			{NONE} all
+		end
+
+	SHARED_BYTE_CONTEXT
+		rename
+			context as byte_context
+		export
+			{NONE} all
+		end
+
+	SHARED_AST_CONTEXT
+		rename
+			Context as Ast_context
+		export
+			{NONE} all
 		end
 
 feature -- Settings
 
-	reset is
+	reset
 			-- Reset all attributes to their default value
 		do
 			Precursor {AST_FEATURE_CHECKER_GENERATOR}
@@ -33,9 +53,258 @@ feature -- Properties
 	expression_context: AST_CONTEXT
 			-- Saved original Ast context when processing in the ancestor's context.
 
+feature -- Access: byte node
+
+	expression_byte_node (a_expression: DBG_EXPRESSION; a_context: DBG_EXPRESSION_EVALUATION_CONTEXT; a_dbg_error_handler: DBG_ERROR_HANDLER): like last_byte_node
+		require
+			a_expression_attached: a_expression /= Void
+			a_context_attached: a_context /= Void
+			a_dbg_error_handler_attached: a_dbg_error_handler /= Void
+		local
+			retried: BOOLEAN
+
+			l_byte_code: BYTE_CODE
+			bak_byte_code: BYTE_CODE
+			bak_cc, l_cl: CLASS_C
+		do
+			dbg_error_handler := a_dbg_error_handler
+			if not retried then
+				error_handler.wipe_out
+
+				debug ("debugger_trace_eval_data")
+					print (generator + ".get_expression_byte_node from [" + a_expression.text + "]%N")
+					print (a_context.to_string)
+				end
+					--| If we want to recompute the `byte_node',
+					--| we need to call `reset_byte_node'
+
+				l_cl := a_context.class_c
+				if l_cl /= Void then
+					ast_context.clear_all
+
+						--| backup previous data
+					bak_cc := System.current_class
+					bak_byte_code := Byte_context.byte_code
+					if a_context.on_context and then attached a_context.feature_i as fi then
+						if not l_cl.conform_to (fi.written_class) then
+							debug ("debugger_trace_eval_data")
+								io.put_string ("Context class {" + l_cl.name_in_upper	+ "} does not has context feature %"" + fi.feature_name + "%"%N")
+							end
+							--| This issue occurs for instance in {TEST}.twin
+							--| where {ISE_RUNTIME} check_assert (boolean) is called
+							--| at this point the context class is TEST,
+							--| and the context feature is `check_assert (BOOLEAN)'
+							--| but TEST doesn't conform to ISE_RUNTIME.
+							l_cl := fi.written_class
+							prepare_contexts (l_cl, Void)
+						else
+							prepare_contexts (l_cl, a_context.class_type)
+						end
+						System.set_current_class (l_cl)
+						Ast_context.set_current_feature (fi)
+						Ast_context.set_written_class (fi.written_class)
+						l_byte_code := fi.byte_server.item (fi.body_index)
+						if l_byte_code /= Void then
+							Byte_context.set_byte_code (l_byte_code)
+						end
+							--| Locals and object test locals
+						add_local_info_to_ast_context (fi.e_feature, ast_context, a_context)
+					elseif a_context.on_object then
+						prepare_contexts (l_cl, Void)
+						System.set_current_class (l_cl)
+						ast_context.set_written_class (l_cl)
+					else
+						prepare_contexts (l_cl, a_context.class_type)
+						System.set_current_class (l_cl)
+					end
+
+						--| Compute and get `expression_byte_node'
+					if attached a_expression.ast as l_expr_as then
+						Result := byte_node_from_ast (l_expr_as, a_context)
+					else
+							--| How come it is Void ?
+							--| for instance, expression: create {STRING}.make_empty
+						dbg_error_handler.notify_error_expression_during_analyse
+					end
+
+						--| Revert Compiler context
+					if bak_cc /= Void then
+						System.set_current_class (bak_cc)
+					end
+					if bak_byte_code /= Void then
+						Byte_context.set_byte_code (bak_byte_code)
+					end
+					Ast_context.clear_all
+					error_handler.wipe_out
+				else
+					dbg_error_handler.notify_error_exception_context_corrupted_or_not_found
+					Ast_context.clear_all
+				end
+			else
+				a_dbg_error_handler.notify_error_expression_during_analyse
+				error_handler.wipe_out
+			end
+			dbg_error_handler := Void
+		ensure
+			error_handler_cleaned: not error_handler.has_error
+		rescue
+			retried := True
+			retry
+		end
+
+feature {NONE} -- Implementation: byte node	
+
+	dbg_error_handler: DBG_ERROR_HANDLER
+			-- Debugger error handler
+
+	prepare_contexts (cl: CLASS_C; ct: CLASS_TYPE)
+			-- Prepare AST shared context  with `cl' and `ct'
+		require
+			cl_not_void: cl /= Void
+			ct_associated_to_cl: ct /= Void implies ct.associated_class.is_equal (cl)
+		local
+			l_ta: CL_TYPE_A
+		do
+			if ct /= Void then
+				l_ta := ct.type
+			else
+				l_ta := cl.actual_type
+			end
+			Ast_context.initialize (cl, l_ta, cl.feature_table)
+			if ct /= Void then
+				byte_context.init (ct)
+			end
+			Inst_context.set_group (cl.group)
+		end
+
+	byte_node_from_ast (a_expr_as: EXPR_AS; a_context: DBG_EXPRESSION_EVALUATION_CONTEXT): like last_byte_node
+			-- compute expression_byte_node from EXPR_AS `a_expr_as'
+		require
+			exp_attached: a_expr_as /= Void
+			context_feature_not_void: a_context.on_context implies a_context.feature_i /= Void
+		local
+			retried: BOOLEAN
+			type_check_succeed: BOOLEAN
+			old_is_ignoring_export: BOOLEAN
+		do
+			if not retried then
+				debug ("debugger_trace_eval_data")
+					io.put_string (generator + ".expression_byte_node_from_ast (..) %N")
+					io.put_string ("   Ast_context -> {" + ast_context.current_class.name_in_upper + "}")
+					if ast_context.current_feature /= Void then
+						io.put_string ("." + ast_context.current_feature.feature_name)
+					end
+					io.put_string ("%N")
+				end
+
+					--| compute byte node from AST
+				old_is_ignoring_export := ast_context.is_ignoring_export
+				Ast_context.set_is_ignoring_export (True)
+				init (ast_context)
+				expression_type_check_and_code (a_context.feature_i, a_expr_as)
+				Ast_context.set_is_ignoring_export (old_is_ignoring_export)
+
+					--| check results
+				if error_handler.has_error then
+					type_check_succeed := True
+					dbg_error_handler.notify_error_list_expression_and_tag (error_handler.error_list)
+					error_handler.wipe_out
+					Result := Void
+				else
+					Result := last_byte_node
+				end
+			else
+					--| revert change and notify errors
+				ast_context.set_is_ignoring_export (old_is_ignoring_export)
+				if not type_check_succeed then
+					dbg_error_handler.notify_error_expression_type_checking_failed
+				end
+				if error_handler.has_error then
+					dbg_error_handler.notify_error_list_expression_and_tag (error_handler.error_list)
+					error_handler.wipe_out
+				else
+					if not dbg_error_handler.error_occurred then
+						dbg_error_handler.notify_error_expression (Void)
+					end
+				end
+				Result := Void
+			end
+		ensure
+			error_handler_cleaned: not error_handler.has_error
+		rescue
+			retried := True
+			retry
+		end
+
+	add_local_info_to_ast_context (f: E_FEATURE; ctx: AST_CONTEXT; a_context: DBG_EXPRESSION_EVALUATION_CONTEXT)
+			-- Add local variable info to the context (local, object test locals, ...)
+		require
+			f_not_void: f /= Void
+			ctx_attached: ctx /= Void
+		local
+			tu: TUPLE [id: ID_AS; li: LOCAL_INFO]
+			l_name_id: INTEGER
+			ct: CLASS_TYPE
+			lst: detachable LIST [TUPLE [id: ID_AS; li: LOCAL_INFO]]
+			l_names: HASH_TABLE [STRING, INTEGER]
+			l_local_table: HASH_TABLE [LOCAL_INFO, INTEGER]
+		do
+			ct := a_context.class_type
+			if ct = Void then
+				ct := f.associated_class.types.first
+			end
+
+			l_local_table := a_context.local_table
+			if l_local_table /= Void and then not l_local_table.is_empty then
+					--| if it failed .. let's continue anyway for now
+
+					--| Last local is a cached value, so let's twin it
+				ctx.set_locals (l_local_table.twin)
+				ctx.init_local_scopes
+				from
+					l_local_table.start
+				until
+					l_local_table.after
+				loop
+					ctx.add_local_expression_scope (l_local_table.key_for_iteration)
+					l_local_table.forth
+				end
+			end
+
+			lst := a_context.object_test_locals
+			if lst /= Void and then	not lst.is_empty then
+				from
+					create l_names.make (lst.count)
+					lst.start
+				until
+					lst.after
+				loop
+					tu := lst.item_for_iteration
+					l_name_id := tu.id.name_id
+					if l_names.has_key (l_name_id) then
+						--| Same object test local name !!!
+						-- For now, let's ignore it.
+						-- kind of fixed bug#15708
+						debug ("debugger_evaluator")
+							print ("To avoid VUOT error, ignore object test local name with existing name%N")
+						end
+						debug ("to_implement")
+							to_implement ("Support object test locals of the same name.")
+						end
+					else
+						l_names.force (tu.id.name, l_name_id)
+						ctx.add_object_test_local (tu.li, tu.id)
+						ctx.add_object_test_expression_scope (tu.id)
+					end
+
+					lst.forth
+				end
+			end
+		end
+
 feature -- Type checking
 
-	expression_type_check_and_code (a_feature: FEATURE_I; an_exp: EXPR_AS) is
+	expression_type_check_and_code (a_feature: FEATURE_I; an_exp: EXPR_AS)
 			-- Type check `an_exp' in the context of `a_feature'.
 		require
 			an_exp_not_void: an_exp /= Void
@@ -78,7 +347,7 @@ feature -- Type checking
 			end
 		end
 
-	expression_or_instruction_type_check_and_code (a_feature: FEATURE_I; an_ast: AST_EIFFEL) is
+	expression_or_instruction_type_check_and_code (a_feature: FEATURE_I; an_ast: AST_EIFFEL)
 			-- Type check `an_ast' in the context of `a_feature'.
 		require
 			an_ast_not_void: an_ast /= Void
@@ -106,14 +375,16 @@ feature -- Type checking
 					l_ctx := context.twin
 					expression_context := l_ctx
 					context.initialize (l_wc, l_wc.actual_type, l_ft)
-					context.init_variable_scopes
+					context.init_attribute_scopes
+					context.init_local_scopes
 					type_a_checker.init_for_checking (a_feature, l_wc, Void, error_handler)
 					an_ast.process (Current)
 					reset
 					set_is_inherited (True)
 					context.restore (l_ctx)
 				end
-				context.init_variable_scopes
+				context.init_attribute_scopes
+				context.init_local_scopes
 				type_a_checker.init_for_checking (a_feature, l_cl, Void, error_handler)
 			end
 			if l_error_level = error_level then
@@ -121,13 +392,62 @@ feature -- Type checking
 			end
 		end
 
-	type_a_from_type_as (a_type_as: TYPE_AS): TYPE_A is
+	type_a_from_type_as (a_type_as: TYPE_AS): TYPE_A
 			-- TYPE_A related to `a_type_as'.
+		require
+			a_type_as_attached: a_type_as /= Void
+		local
+			retried: BOOLEAN
 		do
+			if not retried then
+				reset
+				context.init_attribute_scopes
+				context.init_local_scopes
+				type_a_checker.init_for_checking (context.current_feature, context.current_class, Void, error_handler)
+				check_type (a_type_as)
+				Result := last_type
+				error_handler.wipe_out
+			end
 			reset
-			type_a_checker.init_for_checking (context.current_feature, context.current_class, Void, error_handler)
-			check_type (a_type_as)
-			Result := last_type
+			error_handler.wipe_out
+		ensure
+			error_handler_cleaned: not error_handler.has_error
+		rescue
+			retried := True
+			retry
+		end
+
+	type_a_from_expr_as (a_expr_as: EXPR_AS): TYPE_A
+			-- TYPE_A related to `a_expr_as'.
+		require
+			a_expr_as_attached: a_expr_as /= Void
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				reset
+				context.init_attribute_scopes
+				context.init_local_scopes
+				type_a_checker.init_for_checking (context.current_feature, context.current_class, Void, error_handler)
+				a_expr_as.process (Current)
+				Result := last_type
+			end
+			reset
+			error_handler.wipe_out
+		ensure
+			error_handler_cleaned: not error_handler.has_error
+		rescue
+			retried := True
+			retry
+		end
+
+feature {AST_FEATURE_CHECKER_GENERATOR}
+
+	is_void_safe_call (a_class: CLASS_C): BOOLEAN
+			-- <Precursor>
+			-- Never check void-safety for debugger's expressions
+		do
+			-- Result := False
 		end
 
 feature {NONE} -- Implementation
@@ -141,7 +461,7 @@ feature {NONE} -- Implementation
 			Result := Void
 		end
 
-	check_type (a_type: TYPE_AS) is
+	check_type (a_type: TYPE_AS)
 			-- Evaluate `a_type' into a TYPE_A instance if valid.
 			-- If not valid, raise a compiler error and return Void.
 		local
@@ -164,7 +484,9 @@ feature {NONE} -- Implementation
 
 			if l_type = Void then
 				context_hack_applied := True
-				fixme ("2006-09-14: Is it correct to try to find the correct context ? Need more testing with class renaming. (Asked by Manu)")
+				debug ("refactor_fixme")
+					fixme ("2006-09-14: Is it correct to try to find the correct context ? Need more testing with class renaming. (Asked by Manu)")
+				end
 					-- Check about dependencies
 				l_class_type ?= a_type
 				if l_class_type /= Void then
@@ -239,7 +561,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_un_old_as (l_as: UN_OLD_AS) is
+	process_un_old_as (l_as: UN_OLD_AS)
 		local
 			b: BOOLEAN
 		do
@@ -253,7 +575,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
 			l_dbg_err: DBG_EXPRESSION_TYPE_CHECKER_ERROR
 		do
@@ -266,8 +588,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -280,22 +602,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

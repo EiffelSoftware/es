@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Comand recevier implementation"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -21,14 +21,14 @@ create
 
 feature -- Operation
 
-	destroy is
+	destroy
 			-- <precursor>
 		do
 		end
 
 feature {NONE} -- Initialization
 
-	make (an_interface: !like interface)
+	make (an_interface: attached like interface)
 			-- Initialization
 		do
 			interface := an_interface
@@ -36,9 +36,9 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	interface: !COMMAND_RECEIVER;
+	interface: attached COMMAND_RECEIVER;
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

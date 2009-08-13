@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -12,16 +12,293 @@ indexing
 class AUTO_TEST_COMMAND_LINE_PARSER
 
 inherit
-
 	AUT_SHARED_RANDOM
 
-	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-feature -- Status report
+create
+	make_with_arguments,
+	make_with_configuration
 
-	error_handler: AUT_ERROR_HANDLER
-			-- Error handler
+feature {NONE} -- Initialization
+
+	make_with_arguments (a_arguments: DS_LIST [STRING]; error_handler: AUT_ERROR_HANDLER)
+			-- Process `a_arguments'.
+		require
+			a_arguments_attached: a_arguments /= Void
+			error_hadler_not_void: error_handler /= Void
+		local
+			parser: AUT_AP_PARSER
+			version_option: AP_FLAG
+			quiet_option: AP_FLAG
+			debug_option: AP_FLAG
+			just_test_option: AP_FLAG
+--			ecf_target_option: AP_STRING_OPTION
+--			deep_manual_option: AP_FLAG
+			disable_manual_option: AP_FLAG
+			disable_auto_option: AP_FLAG
+			benchmark_option: AP_FLAG
+			disable_minimize_option: AP_FLAG
+			minimize_option: AP_STRING_OPTION
+			finalize_option: AP_FLAG
+			output_dir_option: AP_STRING_OPTION
+			time_out_option: AP_INTEGER_OPTION
+			test_count_option: AP_INTEGER_OPTION
+			seed_option: AP_INTEGER_OPTION
+			statistics_format_op: AP_STRING_OPTION
+			time: TIME
+			proxy_time_out_option: AP_INTEGER_OPTION
+			l_log_to_replay: AP_STRING_OPTION
+			l_help_option: AP_FLAG
+			l_help_flag: AP_DISPLAY_HELP_FLAG
+		do
+			create parser.make_empty
+			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
+			parser.set_parameters_description ("class-name+")
+
+			create version_option.make ('V', "version")
+			version_option.set_description ("Output version information and exit")
+			parser.options.force_last (version_option)
+
+			create quiet_option.make ('q', "quiet")
+			quiet_option.set_description ("Be quiet.")
+			parser.options.force_last (quiet_option)
+
+			create debug_option.make ('d', "debug")
+			debug_option.set_description ("Append debugging output to log.")
+			parser.options.force_last (debug_option)
+
+			create just_test_option.make ('j', "just-test")
+			just_test_option.set_description ("Skip compilation and generation of interpreter and go right to testing.")
+			parser.options.force_last (just_test_option)
+
+--			create ecf_target_option.make ('r', "target")
+--			ecf_target_option.set_description ("Target (from supplied ECF file) that should be used for testing.")
+--			parser.options.force_last (ecf_target_option)
+
+--			create deep_manual_option.make ('d', "deep-manual")
+--			deep_manual_option.set_description ("Enable deep relevancy check for manual strategy.")
+--			parser.options.force_last (deep_manual_option)
+
+			create disable_manual_option.make ('m', "disable-manual")
+			disable_manual_option.set_description ("Disable manual testing strategy.")
+			parser.options.force_last (disable_manual_option)
+
+			create disable_auto_option.make ('a', "disable-auto")
+			disable_auto_option.set_description ("Disable automated testing strategy.")
+			parser.options.force_last (disable_auto_option)
+
+			create benchmark_option.make ('k', "benchmark")
+			benchmark_option.set_description ("Log timeing information (usefull for assessing efficiency).")
+			parser.options.force_last (benchmark_option)
+
+			create disable_minimize_option.make ('i', "disable-minimize")
+			disable_minimize_option.set_description ("Disable minimize testing strategy.")
+			parser.options.force_last (disable_minimize_option)
+
+			create minimize_option.make ('n', "minimize")
+			minimize_option.set_description ("Minimize with a certain algorithm.")
+			parser.options.force_last (minimize_option)
+
+--			create finalize_option.make ('f', "finalize")
+--			finalize_option.set_description ("Use finalized intepreter. (Better performance, but no melting)")
+--			parser.options.force_last (finalize_option)
+
+			create output_dir_option.make ('o', "output-dir")
+			output_dir_option.set_description ("Output directory for reflection library")
+			parser.options.force_last (output_dir_option)
+
+			create time_out_option.make ('t', "time-out")
+			time_out_option.set_description ("Time used for testing (in minutes). Default is 15 minutes.")
+			parser.options.force_last (time_out_option)
+
+			create test_count_option.make ('c', "count")
+			test_count_option.set_description ("Maximum number of tests to be executed, 0 means no restriction. Default is 0.")
+			parser.options.force_last (test_count_option)
+
+			create seed_option.make ('e', "seed")
+			seed_option.set_description ("Integer seed to initialize pseudo-random number generation with. If not specified seed is intialized with current time.")
+			parser.options.force_last (seed_option)
+
+			create statistics_format_op.make ('s', "stat-format")
+			statistics_format_op.set_description ("Format in which to output statistics. Possibilities are 'html' and 'text'. Default is 'html'.")
+			parser.options.force_last (statistics_format_op)
+
+			create proxy_time_out_option.make ('x', "proxy-time-out")
+			proxy_time_out_option.set_description ("Time in seconds used by proxy to wait for a feature to execute. Default is 5.")
+			parser.options.force_last (proxy_time_out_option)
+
+			create l_log_to_replay.make ('l', "log")
+			l_log_to_replay.set_description ("Log file to be replayed. All the test cases in the given log file will be replayed.")
+			parser.options.force_last (l_log_to_replay)
+
+			create l_help_option.make ('h', "help")
+			l_help_option.set_description ("Display this help message.")
+			parser.options.force_last (l_help_option)
+
+			parser.parse_list (a_arguments)
+
+--			if version_option.was_found then
+--				error_handler.enable_verbose
+--				error_handler.report_version_message
+--				error_handler.disable_verbose
+--				Exceptions.die (0)
+--			end
+
+			if not quiet_option.was_found then
+				error_handler.enable_verbose
+			end
+
+			if debug_option.was_found then
+				is_debugging := True
+			end
+
+			just_test := just_test_option.was_found
+
+--			if ecf_target_option.was_found then
+--				ecf_target := ecf_target_option.parameter
+--			end
+
+			is_manual_testing_enabled := not disable_manual_option.was_found
+			is_deep_relevancy_enabled := False -- deep_manual_option.was_found
+			is_automatic_testing_enabled := not disable_auto_option.was_found
+			is_minimization_enabled := not disable_minimize_option.was_found
+--			is_debug_mode_enabled := not finalize_option.was_found
+
+			if benchmark_option.was_found then
+				error_handler.enable_benchmarking
+			end
+
+			if is_minimization_enabled then
+				if minimize_option.was_found then
+					if minimize_option.parameter.is_equal ("slice") then
+						is_slicing_enabled := True
+					elseif minimize_option.parameter.is_equal ("ddmin") then
+						is_ddmin_enabled := True
+					elseif minimize_option.parameter.is_equal ("slice,ddmin") then
+						is_slicing_enabled := True
+						is_ddmin_enabled := True
+					else
+						error_handler.report_invalid_minimization_algorithm (minimize_option.parameter)
+						--Exceptions.die (1)
+
+					end
+				else
+					is_slicing_enabled := True -- Default
+				end
+			else
+				if minimize_option.was_found then
+					error_handler.report_cannot_specify_both_disable_minimze_and_minimize
+					--Exceptions.die (1)
+				end
+			end
+
+			if not error_handler.has_error then
+				if output_dir_option.was_found then
+					output_dirname := output_dir_option.parameter
+				end
+
+				if time_out_option.was_found and then time_out_option.parameter >= 0 then
+					create time_out.make (0, 0 ,0, 0, time_out_option.parameter, 0)
+				else
+					create time_out.make (0, 0, 0, 0, default_time_out.as_integer_32, 0)
+				end
+
+				if test_count_option.was_found then
+					if test_count_option.parameter > 0 then
+						test_count := test_count_option.parameter.as_natural_32
+					end
+				end
+
+				if seed_option.was_found then
+					random.set_seed (seed_option.parameter)
+				else
+					create time.make_now
+					random.set_seed (time.milli_second)
+				end
+				random.start
+
+				if statistics_format_op.was_found then
+					if statistics_format_op.parameter.is_equal ("text") then
+						is_text_statistics_format_enabled := True
+					elseif statistics_format_op.parameter.is_equal ("html") then
+						is_html_statistics_format_enabled := True
+					else
+						error_handler.report_statistics_format_error (statistics_format_op.parameter)
+					end
+				else
+					is_html_statistics_format_enabled := True
+					is_text_statistics_format_enabled := True
+				end
+			end
+
+			if not error_handler.has_error then
+				if proxy_time_out_option.was_found then
+					proxy_time_out := proxy_time_out_option.parameter
+				end
+
+				if l_log_to_replay.was_found then
+					is_replay_enabled := True
+					log_to_replay := l_log_to_replay.parameter.twin
+				end
+
+				should_display_help_message := l_help_option.was_found
+				if should_display_help_message then
+					create l_help_flag.make_with_short_form ('h')
+					help_message := l_help_flag.full_help_text (parser)
+				end
+
+			end
+--			if parser.parameters.count = 0 then
+--				error_handler.report_missing_ecf_filename_error
+--				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
+--				-- error_handler.report_info_message (parser.help_option.usage_instruction (parser))
+--				Exceptions.die (1)
+--			else
+--				ecf_filename := parser.parameters.first
+				class_names := parser.parameters.twin
+--				create {DS_ARRAYED_LIST []} class_names.make
+--				from
+--					cs := parser.parameters.new_cursor
+--					cs.start
+----					cs.forth
+--				until
+--					cs.off
+--				loop
+--					class_names.force_last (cs.item)
+--					cs.forth
+--				end
+--			end
+		ensure
+			help_message_set_when_required: should_display_help_message implies help_message /= Void
+		end
+
+	make_with_configuration (a_conf: TEST_GENERATOR_CONF_I; error_handler: AUT_ERROR_HANDLER)
+			-- use `configuration' to initialize AutoTest settings
+		do
+			is_slicing_enabled := a_conf.is_slicing_enabled
+			is_ddmin_enabled := a_conf.is_ddmin_enabled
+			is_minimization_enabled := is_slicing_enabled or is_ddmin_enabled
+
+			create time_out.make (0, 0, 0, 0, a_conf.time_out.as_integer_32, 0)
+			test_count := a_conf.test_count
+
+			if a_conf.seed > 0 then
+				random.set_seed (a_conf.seed.to_integer_32)
+			else
+				random.set_seed ((create {TIME}.make_now).milli_second)
+			end
+			random.start
+
+			is_text_statistics_format_enabled := True
+			is_html_statistics_format_enabled := a_conf.is_html_output
+
+			proxy_time_out := a_conf.proxy_time_out.as_integer_32
+
+			create {DS_ARRAYED_LIST [attached STRING]} class_names.make_from_linear (a_conf.types)
+		end
+
+feature -- Status report
 
 	output_dirname: STRING
 			-- Name of output directory
@@ -39,7 +316,12 @@ feature -- Status report
 			-- Maximal time to test;
 			-- A timeout value of `0' means no time out.
 
-	is_debug_mode_enabled: BOOLEAN
+	test_count: NATURAL
+			-- Maximum number of tests to be executed
+			--
+			-- Note: a value of `0' means no upper limit
+
+--	is_debug_mode_enabled: BOOLEAN
 			-- Should the interpreter runtime be compiled with
 			-- assertion checking on?
 
@@ -87,234 +369,46 @@ feature -- Status report
 			-- Help message for command line arguments
 			-- This value is only set if help option presents.
 
-feature -- Parsing
+	is_debugging: BOOLEAN
+			-- True if debugging output should be written to log.
 
-	process_arguments (a_arguments: DS_LIST [STRING]) is
-			-- Process `a_arguments'.
-		require
-			a_arguments_attached: a_arguments /= Void
-			error_hanlder_not_void: error_handler /= Void
-		local
-			parser: AP_PARSER
-			version_option: AP_FLAG
-			quiet_option: AP_FLAG
-			just_test_option: AP_FLAG
---			ecf_target_option: AP_STRING_OPTION
-			deep_manual_option: AP_FLAG
-			disable_manual_option: AP_FLAG
-			disable_auto_option: AP_FLAG
-			benchmark_option: AP_FLAG
-			disable_minimize_option: AP_FLAG
-			minimize_option: AP_STRING_OPTION
-			finalize_option: AP_FLAG
-			output_dir_option: AP_STRING_OPTION
-			time_out_option: AP_INTEGER_OPTION
-			seed_option: AP_INTEGER_OPTION
-			statistics_format_op: AP_STRING_OPTION
-			time: TIME
-			proxy_time_out_option: AP_INTEGER_OPTION
-			l_log_to_replay: AP_STRING_OPTION
-			l_help_option: AP_FLAG
-			l_help_flag: AP_DISPLAY_HELP_FLAG
-		do
-			create parser.make_empty
-			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
-			parser.set_parameters_description ("class-name+")
+feature {NONE} -- Constants
 
-			create version_option.make ('V', "version")
-			version_option.set_description ("Output version information and exit")
-			parser.options.force_last (version_option)
-
-			create quiet_option.make ('q', "quiet")
-			quiet_option.set_description ("Be quiet.")
-			parser.options.force_last (quiet_option)
-
-			create just_test_option.make ('j', "just-test")
-			just_test_option.set_description ("Skip compilation and generation of interpreter and go right to testing.")
-			parser.options.force_last (just_test_option)
-
---			create ecf_target_option.make ('r', "target")
---			ecf_target_option.set_description ("Target (from supplied ECF file) that should be used for testing.")
---			parser.options.force_last (ecf_target_option)
-
-			create deep_manual_option.make ('d', "deep-manual")
-			deep_manual_option.set_description ("Enable deep relevancy check for manual strategy.")
-			parser.options.force_last (deep_manual_option)
-
-			create disable_manual_option.make ('m', "disable-manual")
-			disable_manual_option.set_description ("Disable manual testing strategy.")
-			parser.options.force_last (disable_manual_option)
-
-			create disable_auto_option.make ('a', "disable-auto")
-			disable_auto_option.set_description ("Disable automated testing strategy.")
-			parser.options.force_last (disable_auto_option)
-
-			create benchmark_option.make ('k', "benchmark")
-			benchmark_option.set_description ("Log timeing information (usefull for assessing efficiency).")
-			parser.options.force_last (benchmark_option)
-
-			create disable_minimize_option.make ('i', "disable-minimize")
-			disable_minimize_option.set_description ("Disable minimize testing strategy.")
-			parser.options.force_last (disable_minimize_option)
-
-			create minimize_option.make ('n', "minimize")
-			minimize_option.set_description ("Minimize with a certain algorithm.")
-			parser.options.force_last (minimize_option)
-
-			create finalize_option.make ('f', "finalize")
-			finalize_option.set_description ("Use finalized intepreter. (Better performance, but no melting)")
-			parser.options.force_last (finalize_option)
-
-			create output_dir_option.make ('o', "output-dir")
-			output_dir_option.set_description ("Output directory for reflection library")
-			parser.options.force_last (output_dir_option)
-
-			create time_out_option.make ('t', "time-out")
-			time_out_option.set_description ("Time used for testing (in minutes). Default is 15 minutes.")
-			parser.options.force_last (time_out_option)
-
-			create seed_option.make ('e', "seed")
-			seed_option.set_description ("Integer seed to initialize pseudo-random number generation with. If not specified seed is intialized with current time.")
-			parser.options.force_last (seed_option)
-
-			create statistics_format_op.make ('s', "stat-format")
-			statistics_format_op.set_description ("Format in which to output statistics. Possibilities are 'html' and 'text'. Default is 'html'.")
-			parser.options.force_last (statistics_format_op)
-
-			create proxy_time_out_option.make ('x', "proxy-time-out")
-			proxy_time_out_option.set_description ("Time in seconds used by proxy to wait for a feature to execute. Default is 5.")
-			parser.options.force_last (proxy_time_out_option)
-
-			create l_log_to_replay.make ('l', "log")
-			l_log_to_replay.set_description ("Log file to be replayed. All the test cases in the given log file will be replayed.")
-			parser.options.force_last (l_log_to_replay)
-
-			create l_help_option.make ('h', "help")
-			l_help_option.set_description ("Display this help message.")
-			parser.options.force_last (l_help_option)
-
-			parser.parse_list (a_arguments)
-
-			if version_option.was_found then
-				error_handler.enable_verbose
-				error_handler.report_version_message
-				error_handler.disable_verbose
-				Exceptions.die (0)
-			end
-
-			if not quiet_option.was_found then
-				error_handler.enable_verbose
-			end
-
-			just_test := just_test_option.was_found
-
---			if ecf_target_option.was_found then
---				ecf_target := ecf_target_option.parameter
---			end
-
-			is_manual_testing_enabled := not disable_manual_option.was_found
-			is_deep_relevancy_enabled := deep_manual_option.was_found
-			is_automatic_testing_enabled := not disable_auto_option.was_found
-			is_minimization_enabled := not disable_minimize_option.was_found
-			is_debug_mode_enabled := not finalize_option.was_found
-
-			if benchmark_option.was_found then
-				error_handler.enable_benchmarking
-			end
-
-			if is_minimization_enabled then
-				if minimize_option.was_found then
-					if minimize_option.parameter.is_equal ("slice") then
-						is_slicing_enabled := True
-					elseif minimize_option.parameter.is_equal ("ddmin") then
-						is_ddmin_enabled := True
-					elseif minimize_option.parameter.is_equal ("slice,ddmin") then
-						is_slicing_enabled := True
-						is_ddmin_enabled := True
-					else
-						error_handler.report_invalid_minimization_algorithm (minimize_option.parameter)
-						Exceptions.die (1)
-
-					end
-				else
-					is_slicing_enabled := True -- Default
-				end
-			else
-				if minimize_option.was_found then
-					error_handler.report_cannot_specify_both_disable_minimze_and_minimize
-					Exceptions.die (1)
-				end
-			end
-
-			if output_dir_option.was_found then
-				output_dirname := output_dir_option.parameter
-			end
-
-			if time_out_option.was_found then
-				create time_out.make (0, 0 ,0, 0, time_out_option.parameter, 0)
-			end
-
-			if seed_option.was_found then
-				random.set_seed (seed_option.parameter)
-			else
-				create time.make_now
-				random.set_seed (time.milli_second)
-			end
-
-			if statistics_format_op.was_found then
-				if statistics_format_op.parameter.is_equal ("text") then
-					is_text_statistics_format_enabled := True
-				elseif statistics_format_op.parameter.is_equal ("html") then
-					is_html_statistics_format_enabled := True
-				else
-					error_handler.report_statistics_format_error (statistics_format_op.parameter)
-					Exceptions.die (1)
-				end
-			else
-				is_html_statistics_format_enabled := True
-				is_text_statistics_format_enabled := True
-			end
-
-			if proxy_time_out_option.was_found then
-				proxy_time_out := proxy_time_out_option.parameter
-			end
-
-			if l_log_to_replay.was_found then
-				is_replay_enabled := True
-				log_to_replay := l_log_to_replay.parameter.twin
-			end
-
-			should_display_help_message := l_help_option.was_found
-			if should_display_help_message then
-				create l_help_flag.make_with_short_form ('h')
-				help_message := l_help_flag.full_help_text (parser)
-			end
-
---			if parser.parameters.count = 0 then
---				error_handler.report_missing_ecf_filename_error
---				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
---				-- error_handler.report_info_message (parser.help_option.usage_instruction (parser))
---				Exceptions.die (1)
---			else
---				ecf_filename := parser.parameters.first
-				class_names := parser.parameters.twin
---				create {DS_ARRAYED_LIST []} class_names.make
---				from
---					cs := parser.parameters.new_cursor
---					cs.start
-----					cs.forth
---				until
---					cs.off
---				loop
---					class_names.force_last (cs.item)
---					cs.forth
---				end
---			end
-		ensure
-			help_message_set_when_required: should_display_help_message implies help_message /= Void
-		end
+	default_time_out: NATURAL = 5
+			-- Default value for `time_out' in minutes
 
 invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

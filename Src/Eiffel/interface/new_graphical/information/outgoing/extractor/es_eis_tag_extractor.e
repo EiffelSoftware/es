@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Extractor to fetch EIS entries of a tag. The extractor only read from the storage.
 			The actually extracting has been done or being done at background by
@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_tag: like tag) is
+	make (a_tag: like tag)
 			-- Initialize with `a_tag'.
 			-- Empty tag indicates to view entries without tag.
 		do
@@ -31,10 +31,10 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	tag: !STRING_32
+	tag: attached STRING_32
 			-- The tag to extract
 
-	eis_full_entries: !SEARCH_TABLE [!EIS_ENTRY]
+	eis_full_entries: attached SEARCH_TABLE [EIS_ENTRY]
 			-- EIS entries including all flat entries from all associated component
 		do
 			Result := eis_entries
@@ -42,7 +42,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	extract is
+	extract
 			-- Perform extracting.
 			-- Only read from the storage.
 			-- The actually extracting has been done or being done at background by
@@ -55,8 +55,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -81,7 +81,7 @@ indexing
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

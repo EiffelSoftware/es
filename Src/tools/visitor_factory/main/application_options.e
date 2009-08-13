@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Provides access to application specific options for use with initializing applications or processing data.
 	]"
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_params: IAPPLICATION_PARAMETERS) is
+	make (a_params: IAPPLICATION_PARAMETERS)
 			-- Initialize application options using application parameters `a_params'.
 		require
 			a_params_attached: a_params /= Void
@@ -102,7 +102,7 @@ feature -- Access
 
 feature -- Status report
 
-	use_user_data: BOOLEAN is
+	use_user_data: BOOLEAN
 			-- Indiciates if user data should be passed via a process feature call
 		once
 			Result := user_data_class_name /= Void
@@ -110,9 +110,10 @@ feature -- Status report
 
 feature {NONE} -- Query
 
-	has_eiffel_extension (a_file_name: !STRING): BOOLEAN is
+	has_eiffel_extension (a_file_name: STRING): BOOLEAN
 			-- Determines if `a_file_name' has an Eiffel source file extension
 		require
+			a_file_name_not_void: a_file_name /= Void
 			not_a_file_name_is_empty: not a_file_name.is_empty
 		local
 			l_count: INTEGER
@@ -123,23 +124,23 @@ feature {NONE} -- Query
 
 feature {NONE} -- Implementation
 
-	calcuate_files (a_params: IAPPLICATION_PARAMETERS) is
+	calcuate_files (a_params: IAPPLICATION_PARAMETERS)
 			-- Calculates requested for generation by `a_params'
 		require
 			a_params_attached: a_params /= Void
 			a_params_successful: a_params.is_readable
 		local
-			l_exclude_rx: ?RX_PCRE_MATCHER
-			l_list: !LIST [!STRING]
-			l_excludes: !LIST [!STRING]
-			l_array_list: !ARRAYED_LIST [!STRING]
-			l_files: !ARRAYED_LIST [!STRING]
+			l_exclude_rx: detachable RX_PCRE_MATCHER
+			l_list: LIST [STRING]
+			l_excludes: LIST [STRING]
+			l_array_list: ARRAYED_LIST [STRING]
+			l_files: ARRAYED_LIST [STRING]
 			l_cursor: CURSOR
 			l_recurse: BOOLEAN
 		do
 			l_list := a_params.included_files
 			if l_list.is_empty then
-				if {l_wd: STRING} (create {EXECUTION_ENVIRONMENT}).current_working_directory then
+				if attached {STRING} (create {EXECUTION_ENVIRONMENT}).current_working_directory as l_wd then
 					create l_array_list.make (1)
 					l_array_list.extend (l_wd)
 					l_list := l_array_list
@@ -167,11 +168,13 @@ feature {NONE} -- Implementation
 			files_attached: files /= Void
 		end
 
-	append_file_list (a_path: !STRING; a_list: !ARRAYED_LIST [!STRING]; a_recurse: BOOLEAN; a_expression: ?RX_PCRE_MATCHER) is
+	append_file_list (a_path: STRING; a_list: ARRAYED_LIST [STRING]; a_recurse: BOOLEAN; a_expression: detachable RX_PCRE_MATCHER)
 			-- Appends Eiffel source files located at or in `a_path' to `a_list'. If `a_path' happens to
 			-- be a directory and `a_recurse' is True then any subdirectories will also be scanned.
 			-- `a_expression' represents an excluded expression
 		require
+			a_path_not_void: a_path /= Void
+			a_list_not_void: a_list /= Void
 			not_a_path_is_empty: not a_path.is_empty
 		local
 			l_file: RAW_FILE
@@ -181,8 +184,11 @@ feature {NONE} -- Implementation
 			if l_file.exists then
 				if l_file.is_directory or l_file.is_device then
 					create l_directory.make (a_path)
-					l_directory.filenames.do_all (agent (ia_item: !STRING; ia_inner_list: !ARRAYED_LIST [!STRING]; ia_dir: !STRING; ia_in_expr: ?RX_PCRE_MATCHER)
+					l_directory.filenames.do_all (agent (ia_item: STRING; ia_inner_list: ARRAYED_LIST [STRING]; ia_dir: STRING; ia_in_expr: detachable RX_PCRE_MATCHER)
 						require
+							ia_item_not_void: ia_item /= Void
+							ia_inner_list_not_void: ia_inner_list /= Void
+							ia_dir_not_void: ia_dir /= Void
 							not_ia_item_is_empty: not ia_item.is_empty
 						local
 							l_file_name: FILE_NAME
@@ -201,8 +207,11 @@ feature {NONE} -- Implementation
 						end (?, a_list, a_path, a_expression))
 
 					if a_recurse then
-						l_directory.directory_names.do_all (agent (ia_item: !STRING; ia_files: !ARRAYED_LIST [!STRING]; ia_dir: !STRING; ia_in_expr: ?RX_PCRE_MATCHER)
+						l_directory.directory_names.do_all (agent (ia_item: STRING; ia_files: ARRAYED_LIST [STRING]; ia_dir: STRING; ia_in_expr: detachable RX_PCRE_MATCHER)
 							require
+								ia_item_not_void: ia_item /= Void
+								ia_files_not_void: ia_files /= Void
+								ia_dir_not_void: ia_dir /= Void
 								not_ia_item_is_empty: not ia_item.is_empty
 							local
 								l_path_name: FILE_NAME
@@ -226,7 +235,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_pattern_for_file_list (a_list: LIST [STRING]): RX_PCRE_MATCHER is
+	create_pattern_for_file_list (a_list: LIST [STRING]): RX_PCRE_MATCHER
 			-- Creates an regular expression pattern for list `a_list' and returns the result
 		require
 			a_list_attached: a_list /= Void
@@ -286,8 +295,8 @@ invariant
 	not_user_data_class_name_is_empty: user_data_class_name /= Void implies not user_data_class_name.is_empty
 
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -300,22 +309,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {APPLICATION_OPTIONS}

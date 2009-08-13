@@ -1,11 +1,11 @@
-indexing
+note
 	description: "Implementation of DB_FORMAT"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
 	date: "$Date$"
 	revision: "$Revision$"
 
-class 
+class
 	DATABASE_FORMAT [G -> DATABASE create default_create end]
 
 inherit
@@ -14,22 +14,24 @@ inherit
 
 feature -- Conversion
 
-	boolean_format (object: BOOLEAN): STRING is
+	boolean_format (object: BOOLEAN): STRING
 			-- String representation in SQL of `object'
 		do
 			if object.item then
 				Result := db_spec.True_representation
 			else
 				Result := db_spec.False_representation
-			end		
+			end
 		end
 
-	date_format (object: DATE_TIME): STRING is
+	date_format (object: DATE_TIME): STRING
 			-- String representation in SQL of `object'
+		require
+			object_not_void: object /= Void
 		local
 			d_str: STRING
 		do
-			create d_str.make(20) 
+			create d_str.make(20)
 			d_str := db_spec.date_to_str (object)
 			date_buffer.wipe_out
 			date_buffer.append (d_str)
@@ -37,22 +39,24 @@ feature -- Conversion
 		ensure then
 			Result = date_buffer
 		end
-	
-	string_format (object: STRING): STRING is
+
+	string_format (object: STRING): STRING
 			-- String representation in SQL of `object'
+		require
+			object_not_void: object /= Void
 		do
 			Result := db_spec.string_format (object)
 		end
 
 feature {NONE} -- Status report
 
-	date_buffer: STRING is
+	date_buffer: STRING
 			-- String constant
 		once
 			create Result.make (20)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

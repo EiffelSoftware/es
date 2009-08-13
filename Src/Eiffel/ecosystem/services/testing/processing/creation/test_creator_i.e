@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An interface of an test factory which an arbitrary number of tests.
 		
@@ -37,7 +37,7 @@ feature {NONE} -- Query
 
 feature {NONE} -- Typing
 
-	conf_type: !TEST_CREATOR_CONF_I
+	conf_type: attached TEST_CREATOR_CONF_I
 			-- <Precursor>
 		do
 		end

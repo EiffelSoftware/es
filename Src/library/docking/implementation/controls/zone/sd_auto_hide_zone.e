@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that is the zone when docking at a SD_AUTO_HIDE_PANEL"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,37 +16,14 @@ inherit
 			has_focus as has_focus_vertical_box
 		redefine
 			destroy
-		select
-			pointer_enter_actions,
-			implementation,
-			item_vertical_box,
-			count_vertical_box,
-			linear_representation_vertical_box,
-			set_extend,
-			prune_vertical_box,
-			wipe_out_vertical_box,
-			cl_put,
-			prune_all,
-			set_background_color,
-			background_color,
-			is_empty_vertical_box
 		end
 
 	SD_SINGLE_CONTENT_ZONE
-		rename
-			extend_widget as extend_vertical_box,
-			has_widget as has_vertical_box,
-			has_focus as has_focus_vertical_box
 		undefine
 			on_focus_in,
-			on_focus_out,
-			pointer_enter_actions,
-			set_background_color,
-			background_color,
-			is_background_color_void
+			on_focus_out
 		redefine
-			set_focus_color,
-			destroy
+			set_focus_color
 		end
 
 	SD_RESIZE_SOURCE
@@ -59,8 +36,8 @@ create
 
 feature	{NONE} -- Initlization
 
-	make (a_content: SD_CONTENT; a_direction: INTEGER) is
-			-- Creation method.
+	make (a_content: SD_CONTENT; a_direction: INTEGER)
+			-- Creation method
 		require
 			a_content_not_void: a_content /= Void
 			a_direction_valid: a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.bottom
@@ -107,19 +84,19 @@ feature	{NONE} -- Initlization
 feature {NONE} -- Implementation
 
 	internal_direction: INTEGER
-			-- Direction.
+			-- Direction
 
-	stick is
-			-- Stick zone.
+	stick
+			-- Stick zone
 		do
 			internal_content.state.stick (content.state.direction)
 		end
 
 	resize_bar: SD_RESIZE_BAR
-			-- Resize bar at side.
+			-- Resize bar at side
 
-	start_resize_operation (a_bar: SD_RESIZE_BAR; a_screen_boundary: EV_RECTANGLE) is
-			-- Redefine.
+	start_resize_operation (a_bar: SD_RESIZE_BAR; a_screen_boundary: EV_RECTANGLE)
+			-- <Precursor>
 		do
 			-- Set the area which allow user to resize the window.
 			if internal_direction = {SD_ENUMERATION}.left then
@@ -140,8 +117,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	end_resize_operation (a_bar: SD_RESIZE_BAR; a_delta: INTEGER) is
-			-- Redefine.
+	end_resize_operation (a_bar: SD_RESIZE_BAR; a_delta: INTEGER)
+			-- <Precursor>
 		do
 			disable_item_expand (resize_bar)
 			if internal_direction = {SD_ENUMERATION}.left or internal_direction = {SD_ENUMERATION}.right then
@@ -165,15 +142,15 @@ feature {NONE} -- Implementation
 
 feature {SD_AUTO_HIDE_STATE} -- For user docking
 
-	on_focus_in (a_content: SD_CONTENT)is
-			-- Redefine.
+	on_focus_in (a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			Precursor {SD_SINGLE_CONTENT_ZONE} (a_content)
 			window.set_focus_color (True)
 		end
 
-	on_focus_out is
-			-- Redefine.
+	on_focus_out
+			-- <Precursor>
 		do
 			Precursor {SD_SINGLE_CONTENT_ZONE}
 			window.set_focus_color (False)
@@ -182,9 +159,17 @@ feature {SD_AUTO_HIDE_STATE} -- For user docking
 feature -- Query
 
 	window: SD_PANEL
-			-- Window.
+			-- Window
 
-	has_focus: BOOLEAN is
+	title: STRING_32
+			-- Texts on title bar
+		do
+			Result := window.title_bar.title
+		ensure
+			not_void: Result /= Void
+		end
+
+	has_focus: BOOLEAN
 			-- If `Current' has focus?
 		do
 			Result := window.title_bar.is_focus_color_enable
@@ -192,8 +177,8 @@ feature -- Query
 
 feature -- Command
 
-	set_focus_color (a_selection: BOOLEAN) is
-			-- Redefine.
+	set_focus_color (a_selection: BOOLEAN)
+			-- <Precursor>
 		do
 			if a_selection then
 				window.title_bar.enable_focus_color
@@ -202,10 +187,20 @@ feature -- Command
 			end
 		end
 
-	destroy is
-			-- Redefine.
+	set_title (a_title: STRING_GENERAL)
+			-- Set title of title bar.
+		require
+			a_title_not_void: a_title /= Void
 		do
-			Precursor {SD_SINGLE_CONTENT_ZONE}
+			window.title_bar.set_title (a_title)
+		ensure
+			set: window.title_bar.title ~ a_title
+		end
+
+	destroy
+			-- <Precursor>
+		do
+			Precursor
 			window.title_bar.destroy
 			window.destroy
 			resize_bar.destroy
@@ -220,7 +215,7 @@ invariant
 
 	internal_shared_not_void: internal_shared /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

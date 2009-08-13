@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -17,17 +17,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make the main window and a button
 		do
 			make_top ("WEL xy")
-			create clear_button.make (Current, "Clear",
-				1, 1, 70, 40, 1)
+			create clear_button.make (Current, "Clear", 1, 1, 70, 40, 1)
 		end
 
 feature {NONE} -- Behaviors
 
-	on_control_command (control: WEL_CONTROL) is
+	on_control_command (control: WEL_CONTROL)
 			-- Clear the window
 		do
 			if control = clear_button then
@@ -35,7 +34,7 @@ feature {NONE} -- Behaviors
 			end
 		end
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Write `x_pos' and `y_pos'
 		local
 			dc: WEL_CLIENT_DC
@@ -55,16 +54,16 @@ feature {NONE} -- Behaviors
 
 feature {NONE} -- Implementation
 
-	clear_button: WEL_PUSH_BUTTON
+	clear_button: detachable WEL_PUSH_BUTTON
 			-- Clear button
 
-	class_background: WEL_WHITE_BRUSH is
+	class_background: WEL_WHITE_BRUSH
 			-- White background
 		once
 			create Result.make
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

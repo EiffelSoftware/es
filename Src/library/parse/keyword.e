@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Terminal constructs with just one specimen, %
@@ -24,16 +24,18 @@ create
 
 feature -- Initialization
 
-	make (s: STRING) is
+	make (s: STRING)
 			-- Set up terminal to represent `s'.
+		require
+			s_not_void: s /= Void
 		do
-			construct_make;
 			construct_name := s;
+			construct_make;
 			lex_code := document.keyword_code (s)
 		ensure
 			construct_name = s;
 			lex_code = document.keyword_code (s)
-		end; 
+		end;
 
 feature -- Access
 
@@ -43,26 +45,41 @@ feature -- Access
 	lex_code: INTEGER
 			-- Code of keyword in the lexical anayser
 
+feature {KEYWORD} -- Implementation
+
+	clone_node (n: like Current): like Current
+			-- <precursor>
+		do
+			create Result.make (n.construct_name)
+			Result.copy_node (n)
+		end
+
+	new_tree: like Current
+			-- <precursor>
+		do
+			create Result.make (construct_name)
+		end
+
 feature {NONE} -- Implementation
 
-	token_correct: BOOLEAN is
+	token_correct: BOOLEAN
 			-- Is this keyword the active token?
 		do
 			Result := document.token.is_keyword (lex_code)
-		end; 
+		end;
 
-	token_type: INTEGER is 0;
+	token_type: INTEGER = 0;
 			-- Unused token type
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

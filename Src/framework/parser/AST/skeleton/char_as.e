@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Node for character constant. Version for Bench."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -22,7 +22,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize (c: CHARACTER_32; l, co, p, n: INTEGER) is
+	initialize (c: CHARACTER_32; l, co, p, n: INTEGER)
 			-- Create a new CHARACTER AST node.
 		require
 			l_non_negative: l >= 0
@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_char_as (Current)
@@ -49,7 +49,7 @@ feature -- Properties
 	value: CHARACTER_32
 			-- Character value
 
-	type: TYPE_AS is
+	type: TYPE_AS
 			-- Associated type (if any)
 		do
 				-- Void here
@@ -57,7 +57,7 @@ feature -- Properties
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := value = other.value
@@ -65,15 +65,20 @@ feature -- Comparison
 
 feature -- Output
 
-	string_value: STRING is
+	string_value: STRING
+		do
+			Result := string_32_value.as_string_8
+		end
+
+	string_32_value: STRING_32
 		do
 			Result := wchar_text (value)
 			Result.precede ('%'')
 			Result.extend ('%'')
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -86,22 +91,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CHAR_AS

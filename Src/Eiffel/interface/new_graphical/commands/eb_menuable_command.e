@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command that can be added in a menu."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ inherit
 
 feature -- Access
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with '&' symbol).
 		deferred
 		ensure
@@ -30,7 +30,7 @@ feature -- Access
 
 feature -- Status setting
 
-	enable_sensitive is
+	enable_sensitive
 			-- Set `is_sensitive' to True.
 		local
 			menu_items: like internal_managed_menu_items
@@ -51,7 +51,7 @@ feature -- Status setting
 			end
 		end
 
-	disable_sensitive is
+	disable_sensitive
 			-- Set `is_sensitive' to False.
 		local
 			menu_items: like internal_managed_menu_items
@@ -72,7 +72,7 @@ feature -- Status setting
 			end
 		end
 
-	update (a_window: EV_WINDOW) is
+	update (a_window: EV_WINDOW)
 			-- Update `accelerator' and interfaces according to `referred_shortcut'.
 		local
 			l_items: like managed_menu_items
@@ -97,24 +97,32 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	new_menu_item: EB_COMMAND_MENU_ITEM is
+	new_menu_item: EB_COMMAND_MENU_ITEM
 			-- New menu item, managed, recycling needed.
 		do
 			create Result.make (Current)
 			initialize_menu_item (Result)
 			Result.select_actions.extend (agent execute)
+			if attached {EB_STONABLE_COMMAND} Current as l_stoneable then
+				Result.drop_actions.extend (agent l_stoneable.execute_with_stone)
+				Result.drop_actions.set_veto_pebble_function (agent l_stoneable.is_valid_stone)
+			end
 		end
 
-	new_menu_item_unmanaged: EV_MENU_ITEM is
+	new_menu_item_unmanaged: EV_MENU_ITEM
 			-- New menu item, unmanaged.
 			-- Command name, pixmap and shortcut text are never updated.
 		do
 			create Result
 			initialize_menu_item (Result)
 			Result.select_actions.extend (agent execute)
+			if attached {EB_STONABLE_COMMAND} Current as l_stoneable then
+				Result.drop_actions.extend (agent l_stoneable.execute_with_stone)
+				Result.drop_actions.set_veto_pebble_function (agent l_stoneable.is_valid_stone)
+			end
 		end
 
-	initialize_menu_item (a_menu_item: EV_MENU_ITEM) is
+	initialize_menu_item (a_menu_item: EV_MENU_ITEM)
 			-- Initialize `a_menu_item'
 		require
 			a_menu_item_attached: a_menu_item /= Void
@@ -136,7 +144,7 @@ feature -- Basic operations
 
 feature {EB_COMMAND_MENU_ITEM} -- Implementation
 
-	add_menu_item (a_menu_item: like new_menu_item) is
+	add_menu_item (a_menu_item: like new_menu_item)
 			-- Add `a_menu_item' to `managed_menu_items'.
 		do
 			managed_menu_items.extend (a_menu_item)
@@ -144,7 +152,7 @@ feature {EB_COMMAND_MENU_ITEM} -- Implementation
 			managed_menu_items_has_item: managed_menu_items.has (a_menu_item)
 		end
 
-	remove_menu_item (a_menu_item: like new_menu_item) is
+	remove_menu_item (a_menu_item: like new_menu_item)
 			-- Remove `a_menu_item' from `managed_menu_items'.
 		require
 			managed_menu_items_not_empty: not managed_menu_items.is_empty
@@ -155,7 +163,7 @@ feature {EB_COMMAND_MENU_ITEM} -- Implementation
 			managed_menu_items_not_has_item: not managed_menu_items.has (a_menu_item)
 		end
 
-	managed_menu_items: ARRAYED_LIST [like new_menu_item] is
+	managed_menu_items: ARRAYED_LIST [like new_menu_item]
 			-- Menu items associated with this command.
 		do
 			if internal_managed_menu_items = Void then
@@ -171,10 +179,10 @@ feature {NONE} -- Implementation
 	internal_managed_menu_items: ARRAYED_LIST [like new_menu_item]
 		-- Menu items associated with this command.
 
-	Tabulation: STRING is "%T";
+	Tabulation: STRING = "%T";
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -187,22 +195,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_MENUABLE_COMMAND

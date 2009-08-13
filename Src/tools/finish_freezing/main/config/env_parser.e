@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Used to evaluate environment configuration files that set environment variables."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_batch_file: like batch_file_name; a_args: like batch_arguments; a_options: like batch_options) is
+	make (a_batch_file: like batch_file_name; a_args: like batch_arguments; a_options: like batch_options)
 			-- Initialize parser from source batch file `a_batch_file'
 		require
 			a_batch_file_attached: a_batch_file /= Void
@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	path: STRING is
+	path: STRING
 			-- PATH environment variable
 		do
 			Result := variable_for_name (path_var_name)
@@ -49,7 +49,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	include: STRING is
+	include: STRING
 			-- INCLUDE environment variable
 		do
 			Result := variable_for_name (include_var_name)
@@ -57,7 +57,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	lib: STRING is
+	lib: STRING
 			-- LIBS environment variable
 		do
 			Result := variable_for_name (lib_var_name)
@@ -70,7 +70,7 @@ feature {NONE} -- Access
 	batch_file_name: STRING
 			-- Location of a configuration batch script.
 
-	batch_arguments: STRING
+	batch_arguments: detachable STRING
 			-- Arguments for `batch_file_name' or Void if none.
 
 	batch_options: STRING
@@ -86,38 +86,44 @@ feature {NONE} -- Access
 
 feature {NONE} -- Basic operations
 
-	variable_for_name (a_name: STRING): STRING is
+	variable_for_name (a_name: STRING): STRING
 			-- Retrieves varaible for name `a_name'
 		require
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
+		local
+			l_result: detachable STRING
 		do
-			Result := variables_via_evaluation.item (a_name)
-			if Result = Void then
+			l_result := variables_via_evaluation.item (a_name)
+			if l_result /= Void then
+				Result := l_result
+			else
 				create Result.make_empty
 			end
 		ensure
 			result_attached: Result /= Void
 		end
 
-	variables_via_evaluation: HASH_TABLE [STRING, STRING] is
+	variables_via_evaluation: HASH_TABLE [STRING, STRING]
 			-- Retrieves a list of name/value environment variable pairs from evaluating the current environment
 			-- Using a batch file provided by `vsvars_batch_file'
 		local
+			l_result: like internal_variables_via_evaluation
 			l_file_name: STRING
 			l_eval_file_name: STRING
-			l_file: PLAIN_TEXT_FILE
-			l_com_spec: STRING
+			l_file: detachable PLAIN_TEXT_FILE
+			l_com_spec: detachable STRING
 			l_cmd: STRING
 			l_launcher: WEL_PROCESS_LAUNCHER
-			l_pair: TUPLE [name: STRING; value: STRING]
+			l_pair: like parse_variable_name_value_pair
 			l_appliable: like applicable_variables
-			l_line: STRING
-			l_result: HASH_TABLE [STRING, STRING]
+			l_line: detachable STRING
 			retry_count: INTEGER
 		do
-			Result := internal_variables_via_evaluation
-			if Result = Void then
+			l_result := internal_variables_via_evaluation
+			if l_result /= Void then
+				Result := l_result
+			else
 				create l_result.make (0)
 				l_result.compare_objects
 
@@ -205,7 +211,7 @@ feature {NONE} -- Basic operations
 			end
 		ensure
 			result_attached: Result /= Void
-			internal_variables_via_evaluation_set: internal_variables_via_evaluation = Result
+			result_consistent: variables_via_evaluation = Result
 		rescue
 			if retry_count < 2 then
 				retry_count := retry_count + 1
@@ -213,7 +219,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	parse_variable_name_value_pair (a_string: STRING): TUPLE [name: STRING; value: STRING] is
+	parse_variable_name_value_pair (a_string: STRING): detachable TUPLE [name: STRING; value: STRING]
 			-- Given 'a_string' parse and extract the environment variable from it.
 		require
 			a_string_not_void: a_string /= Void
@@ -228,7 +234,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	batch_file_content (a_out: STRING): STRING is
+	batch_file_content (a_out: STRING): STRING
 			-- Generates content for a batch file, used to executed and extract env vars from.
 		require
 			a_out_attached: a_out /= Void
@@ -255,8 +261,8 @@ feature {NONE} -- Basic operations
 			not_result_is_empty: not Result.is_empty
 		end
 
-	applicable_variables: ARRAYED_LIST [STRING] is
-			-- List of applicable variables
+	applicable_variables: ARRAYED_LIST [STRING]
+			-- List of applicable variables.
 		once
 			create Result.make (3)
 			Result.extend (path_var_name)
@@ -270,32 +276,40 @@ feature {NONE} -- Basic operations
 		end
 
 	temp_batch_file_name: STRING
-			-- File name of evaluated environment variables
+			-- File name of evaluated environment variables.
 		once
 			Result := (create {FILE_NAME}.make_temporary_name).out
 			Result.append ("_espawn.bat")
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
 		end
 
 	env_eval_tmp_file_name: STRING
-			-- File name of evaluated environment variables
+			-- File name of evaluated environment variables.
 		once
 			Result := (create {FILE_NAME}.make_temporary_name).out
 			Result.append ("_espawn.tmp")
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
 		end
 
-	cmd_exe_file_name: STRING is
-			-- File name of Command exe
+	cmd_exe_file_name: STRING
+			-- File name of Command exe.
 		local
-			l_system: STRING
+			l_root: detachable STRING
+			l_system: detachable STRING
 		once
 			create Result.make (256)
-
 			l_system := system_folder
 			if l_system /= Void and then not l_system.is_empty then
 				Result.append (l_system)
 			else
 					-- Failed to retrieve folder, use fall back
-				Result.append (environment.get ("SystemRoot"))
+				l_root := environment.get ("SystemRoot")
+				check l_root_attached: l_root /= Void end
+				Result.append (l_root)
 				Result.append ("\system32")
 			end
 			Result.append ("\cmd.exe")
@@ -311,8 +325,8 @@ feature {NONE} -- Basic operations
 
 feature {NONE} -- Externals
 
-	system_folder: STRING
-			-- Retrieve Windows system folder
+	system_folder: detachable STRING
+			-- Retrieve Windows system folder.
 		external
 			"C inline use %"shlobj.h%""
 		alias
@@ -343,9 +357,9 @@ feature {NONE} -- Externals
 			]"
 		end
 
-feature {NONE} -- Internal implementation cache
+feature {NONE} -- Implementation: Internal cache
 
-	internal_variables_via_evaluation: like variables_via_evaluation
+	internal_variables_via_evaluation: detachable like variables_via_evaluation
 			-- Cached version of `variables_via_evaluation'
 			-- Note: Do not use directly!
 
@@ -353,10 +367,11 @@ invariant
 	batch_file_name_attached: batch_file_name /= Void
 	not_batch_file_name_is_empty: not batch_file_name.is_empty
 	batch_file_name_exists: (create {RAW_FILE}.make (batch_file_name)).exists
-	not_batch_arguments_is_empty: batch_arguments /= Void implies not batch_arguments.is_empty
+	not_batch_arguments_is_empty: attached batch_arguments as l_args implies not l_args.is_empty
+	batch_options_attached: batch_options /= Void
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -369,22 +384,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

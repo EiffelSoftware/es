@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Detector of local scopes for an associative expression."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,30 +11,21 @@ inherit
 	AST_SCOPE_MATCHER
 		redefine
 			add_argument_scope,
+			add_attribute_scope,
 			add_local_scope,
 			add_object_test_scope,
 			add_result_scope,
-			process_paran_as
+			make
 		end
 
-feature {AST_EIFFEL} -- Visitor pattern
+feature {NONE} -- Initialization
 
-	process_paran_as (l_as: PARAN_AS)
-		local
-			old_is_nested: BOOLEAN
+	make (c: like context)
+			-- Initialize Current.
 		do
-			old_is_nested := is_nested
-			is_nested := True
-			Precursor (l_as)
-			is_nested := old_is_nested
+			context := c
+			is_nested := False
 		end
-
-feature {NONE} -- Status report
-
-	is_nested: BOOLEAN
-			-- Is current expression nested, so that associativity rules
-			-- should not be taken into account that is important for
-			-- strict operators?
 
 feature {NONE} -- Context
 
@@ -44,14 +35,20 @@ feature {NONE} -- Context
 			context.add_argument_expression_scope (id)
 		end
 
+	add_attribute_scope (id: INTEGER_32)
+			-- Add scope of a non-void attribute.
+		do
+			context.add_attribute_expression_scope (id)
+		end
+
 	add_local_scope (id: INTEGER_32)
 			-- Add scope of a non-void local.
 		do
 			context.add_local_expression_scope (id)
 		end
 
-	add_object_test_scope (id: INTEGER_32)
-			-- Add scope of an object test.
+	add_object_test_scope (id: ID_AS)
+			-- Add scope of an object test local.
 		do
 			context.add_object_test_expression_scope (id)
 		end
@@ -62,8 +59,8 @@ feature {NONE} -- Context
 			context.add_result_expression_scope
 		end
 
-indexing
-	copyright:	"Copyright (c) 2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 2008-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

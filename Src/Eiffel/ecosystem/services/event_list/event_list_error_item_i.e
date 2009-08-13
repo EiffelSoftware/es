@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		The interface of an event list service ({EVENT_LIST_SERVICE_I}) item for Eiffel compiler {ERROR} objects.
 	]"
@@ -16,7 +16,7 @@ inherit
 feature -- Access
 
 	frozen type: NATURAL_8
-			-- Event list item type identifier, see {EVENT_LIST_ITEM_TYPES}
+			-- <Precursor>
 		once
 			Result := {EVENT_LIST_ITEM_TYPES}.error
 		end
@@ -24,11 +24,11 @@ feature -- Access
 feature -- Status report
 
 	is_warning: BOOLEAN
-			-- Indicates if the error item represents a warning
+			-- Indicates if the error item represents a warning.
 		deferred
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

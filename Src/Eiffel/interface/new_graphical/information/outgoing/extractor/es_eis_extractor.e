@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that are used to extract EIS entries from given components in the system."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -18,17 +18,22 @@ inherit
 
 feature -- Access
 
-	eis_entries: !SEARCH_TABLE [!EIS_ENTRY]
+	eis_entries: attached SEARCH_TABLE [EIS_ENTRY]
 			-- EIS entries
 			-- Only physical appearances of current component
 
-	eis_full_entries: !SEARCH_TABLE [!EIS_ENTRY]
+	eis_full_entries: attached SEARCH_TABLE [EIS_ENTRY]
 			-- EIS entries including all flat entries from all associated component
 		deferred
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+feature -- Status report
+
+	force_extracting: BOOLEAN;
+			-- Force extracting?
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -53,7 +58,7 @@ indexing
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

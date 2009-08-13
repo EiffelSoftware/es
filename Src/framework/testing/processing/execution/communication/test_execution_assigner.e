@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Object assigning test indices to clients which then execute the corresponding test.
 		Since tests are executed in separate threads, mutexes are used to controll access.
@@ -44,7 +44,7 @@ feature {NONE} -- Access
 	cursor_mutex: MUTEX
 			-- Mutex for controlling access to `cursor' and `aborted_tests'.
 
-	aborted_tests: !DS_HASH_SET [like test_count]
+	aborted_tests: attached DS_HASH_SET [like test_count]
 			-- Indices of tests that have been aborted
 
 feature {TEST_EVALUATOR_STATUS} -- Query

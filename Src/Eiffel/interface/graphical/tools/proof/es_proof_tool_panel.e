@@ -14,8 +14,8 @@ inherit
 			on_after_initialized,
 			internal_recycle,
 			create_right_tool_bar_items,
-			surpress_synchronization,
-			scroll_list_automatically,
+			is_event_list_synchronized_on_initialized,
+			is_event_list_scrolled_automatically,
 			is_appliable_event,
 			on_event_item_added,
 			on_event_item_removed
@@ -40,10 +40,10 @@ feature {NONE} -- Initialization
 
 				-- Hook up events for session data
 			if session_manager.is_service_available then
-				session_data.connect_events (Current)
+				session_data.session_connection.connect_events (Current)
 			end
 
-			scroll_list_automatically := False
+			is_event_list_scrolled_automatically := False
 
 			Precursor
 		end
@@ -193,7 +193,7 @@ feature -- Status report
 			Result := not is_initialized or else skipped_button.is_selected
 		end
 
-	is_visible (a_item: EV_GRID_ROW): BOOLEAN
+	is_item_visible (a_item: EV_GRID_ROW): BOOLEAN
 			-- Is `a_item' visible?
 		local
 			l_text: STRING
@@ -224,10 +224,10 @@ feature -- Status report
 			end
 		end
 
-	frozen surpress_synchronization: BOOLEAN
+	frozen is_event_list_synchronized_on_initialized: BOOLEAN
 			-- <Precursor>
 
-	frozen scroll_list_automatically: BOOLEAN
+	frozen is_event_list_scrolled_automatically: BOOLEAN
 			-- <Precursor>
 
 feature {NONE} -- User interface items
@@ -255,7 +255,7 @@ feature {NONE} -- Events
 			if l_applicable and not is_initialized then
 					-- We have to perform initialization to set the icon and counter.
 					-- Synchronization with the event list service is surpress to prevent duplication of event items being added.
-				surpress_synchronization := True
+				is_event_list_synchronized_on_initialized := True
 				initialize
 			end
 			if l_applicable then
@@ -286,7 +286,7 @@ feature {NONE} -- Events
 			if l_applicable and not is_initialized then
 					-- We have to perform initialization to set the icon and counter
 					-- Synchronization with the event list service is surpress to prevent duplication of event items being added.
-				surpress_synchronization := True
+				is_event_list_synchronized_on_initialized := True
 				initialize
 			end
 			if l_applicable then
@@ -324,7 +324,7 @@ feature {NONE} -- Events
 				i > l_count
 			loop
 				l_row := grid_events.row (i)
-				if is_visible (l_row) then
+				if is_item_visible (l_row) then
 					l_row.show
 				else
 					l_row.hide
@@ -428,14 +428,14 @@ feature {NONE} -- Basic operations
 				-- Class location
 			create l_gen.make
 			l_proof_event_item.context_class.append_name (l_gen)
-			l_editor_item := create_clickable_grid_item (l_gen.last_line)
+			l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
 			a_row.set_item (class_column, l_editor_item)
 
 				-- Feature location
 			if l_proof_event_item.context_feature /= Void then
 				create l_gen.make
 				l_gen.add_feature_name (l_proof_event_item.context_feature.feature_name, l_proof_event_item.context_class)
-				l_editor_item := create_clickable_grid_item (l_gen.last_line)
+				l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
 				a_row.set_item (feature_column, l_editor_item)
 			end
 
@@ -489,7 +489,7 @@ feature {NONE} -- Basic operations
 					end
 				end
 
-				l_editor_item := create_clickable_grid_item (l_message_gen.last_line)
+				l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
 				a_row.set_item (info_column, l_editor_item)
 
 				l_lines := l_text_gen.lines
@@ -524,7 +524,7 @@ feature {NONE} -- Basic operations
 					l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
 					l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
 
-					l_editor_item := create_multiline_clickable_grid_item (l_lines, False)
+					l_editor_item := create_multiline_clickable_grid_item (l_lines, True, False)
 					l_row.set_height (l_editor_item.required_height_for_text_and_component)
 					l_row.set_item (info_column, l_editor_item)
 
@@ -562,8 +562,7 @@ feature {NONE} -- Basic operations
 			else
 				check false end
 			end
-
-			if not is_visible (a_row) then
+			if not is_item_visible (a_row) then
 				a_row.hide
 			end
 		end
@@ -583,8 +582,8 @@ feature {NONE} -- Clean up
 		do
 			if is_initialized then
 				if session_manager.is_service_available then
-					if session_data.is_connected (Current) then
-						session_data.disconnect_events (Current)
+					if session_data.session_connection.is_connected (Current) then
+						session_data.session_connection.disconnect_events (Current)
 					end
 				end
 			end
@@ -661,10 +660,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

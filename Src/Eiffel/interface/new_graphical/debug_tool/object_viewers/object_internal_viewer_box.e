@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object internal viewer  ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -32,7 +32,7 @@ create
 
 feature {NONE} -- Implementation
 
-	build_widget is
+	build_widget
 		local
 			vb: EV_VERTICAL_BOX
 			f: EV_FRAME
@@ -60,12 +60,12 @@ feature {NONE} -- Implementation
  			set_title (name)
 		end
 
-	build_tool_bar is
+	build_tool_bar
 		local
 			but: SD_TOOL_BAR_BUTTON
 		do
 			if tool_bar = Void then
-				create tool_bar.make
+				create {SD_TOOL_BAR} tool_bar.make
 				create but.make
 				but.set_pixmap (pixmaps.icon_pixmaps.general_copy_icon)
 				but.set_pixel_buffer (pixmaps.icon_pixmaps.general_copy_icon_buffer)
@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_mini_tool_bar is
+	build_mini_tool_bar
 		local
 			but: SD_TOOL_BAR_BUTTON
 		do
@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 
 feature -- Access
 
-	name: STRING_GENERAL is
+	name: STRING_GENERAL
 			-- <Precursor>
 		do
 			Result := Interface_names.t_viewer_object_internal_title
@@ -109,15 +109,15 @@ feature -- Access
 
 feature -- Access
 
-	is_valid_stone (a_stone: ANY; is_strict: BOOLEAN): BOOLEAN is
+	is_valid_stone (a_stone: ANY; is_strict: BOOLEAN): BOOLEAN
 			-- Is `st' valid stone for Current?
 		do
-			Result := {st: OBJECT_STONE} a_stone
+			Result := attached {OBJECT_STONE} a_stone as st
 		end
 
 feature -- Change
 
-	refresh is
+	refresh
 			-- Recompute the displayed text.
 		local
 			cdv, dv: DUMP_VALUE
@@ -178,7 +178,7 @@ feature -- Change
 			end
 		end
 
-	destroy is
+	destroy
 			-- Destroy Current
 		do
 			reset
@@ -190,12 +190,12 @@ feature -- Change
 
 feature {NONE} -- Implementation
 
-	is_in_default_state: BOOLEAN is
+	is_in_default_state: BOOLEAN
 		do
 			Result := True
 		end
 
-	parent_window (w: EV_WIDGET): EV_WINDOW is
+	parent_window (w: EV_WIDGET): EV_WINDOW
 		local
 			p: EV_WIDGET
 		do
@@ -208,7 +208,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	clear is
+	clear
 			-- Clean current data, useless if dialog closed or destroyed
 		do
 			output.wipe_out
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Event handling
 
-	copy_button_selected is
+	copy_button_selected
 			-- Called by `select_actions' of `copy_button'.
 		local
 			l_rows: LIST [EV_GRID_ROW]
@@ -238,7 +238,7 @@ feature {NONE} -- Event handling
 					until
 						i > r.count
 					loop
-						if {lab: EV_GRID_LABEL_ITEM} r.item (i) then
+						if attached {EV_GRID_LABEL_ITEM} r.item (i) as lab then
 							s.append (lab.text)
 						else
 							s.append_character ('%T')
@@ -253,20 +253,20 @@ feature {NONE} -- Event handling
 			Ev_application.clipboard.set_text (s)
 		end
 
-	on_stone_dropped (st: OBJECT_STONE) is
+	on_stone_dropped (st: OBJECT_STONE)
 			-- A stone was dropped in the output. Handle it.
 		do
 			set_stone (st)
 		end
 
-	close_action is
+	close_action
 			-- Close dialog
 		do
 			destroy
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

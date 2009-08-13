@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Process status listening timer implemented with thread."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,13 +12,23 @@ inherit
 	PROCESS_TIMER
 
 	THREAD
+		rename
+			sleep as obsolete_sleep
+		end
+
+	EXECUTION_ENVIRONMENT
+		rename
+			launch as environment_launch
+		export
+			{NONE} all
+		end
 
 create
 	make
 
 feature {NONE} -- Implementation
 
-	make (interval: INTEGER) is
+	make (interval: INTEGER)
 			-- Set time interval which this timer will be triggered with `interval'.
 			-- Unit of `interval' is milliseconds.
 		require
@@ -35,7 +45,7 @@ feature {NONE} -- Implementation
 
 feature -- Control
 
-	start is
+	start
 		local
 			l_thread_attribute: THREAD_ATTRIBUTES
 		do
@@ -49,49 +59,56 @@ feature -- Control
 			mutex.unlock
 		end
 
-	destroy is
+	destroy
 		do
 			mutex.lock
 			should_destroy := True
 			mutex.unlock
 		end
 
-	wait (a_timeout: INTEGER): BOOLEAN is
+	wait (a_timeout: INTEGER): BOOLEAN
 		local
 			l_sleep_time: INTEGER_64
-			prc_imp: PROCESS_IMP
 			l_timeout: BOOLEAN
-			l_start_time: DATE_TIME
+			l_start_time: detachable DATE_TIME
 			l_now_time: DATE_TIME
 		do
 			if not destroyed then
-				prc_imp ?= process_launcher
-				check prc_imp /= Void end
-				if a_timeout > 0 then
-					create l_start_time.make_now
-				end
-				from
-					l_sleep_time := sleep_time * 1000000
-				until
-					destroyed or l_timeout
-				loop
+				if {PLATFORM}.is_thread_capable then
 					if a_timeout > 0 then
-						create l_now_time.make_now
-						if l_now_time.relative_duration (l_start_time).fine_seconds_count * 1000 > a_timeout then
-							l_timeout := True
+						create l_start_time.make_now
+					end
+					from
+						l_sleep_time := sleep_time * 1000000
+					until
+						destroyed or l_timeout
+					loop
+						if a_timeout > 0 then
+							create l_now_time.make_now
+							check l_start_time /= Void end
+							if l_now_time.relative_duration (l_start_time).fine_seconds_count * 1000 > a_timeout then
+								l_timeout := True
+							end
+						end
+						if not l_timeout then
+							sleep (l_sleep_time)
 						end
 					end
-					if not l_timeout then
-						sleep (l_sleep_time)
+					Result := not l_timeout
+				elseif a_timeout = 0 then
+						-- We are not in multithreaded mode, simply wait indefinitely
+					if attached {PROCESS_IMP} process_launcher as l_prc_imp then
+						l_prc_imp.check_exit
+					else
+						check launcher_has_valid_type: False end
 					end
 				end
-				Result := not l_timeout
 			else
 				Result := True
 			end
 		end
 
-	destroyed: BOOLEAN is
+	destroyed: BOOLEAN
 		do
 			mutex.lock
 			Result := (not has_started) or (has_started and then terminated)
@@ -100,21 +117,23 @@ feature -- Control
 
 feature {NONE} -- Implementation
 
-	execute is
+	execute
 		local
-			prc_imp: PROCESS_IMP
 			l_sleep_time: INTEGER_64
 		do
-			prc_imp ?= process_launcher
-			from
-				l_sleep_time := sleep_time.to_integer_64 * 1000000
-			until
-				should_destroy
-			loop
-				prc_imp.check_exit
-				if not should_destroy then
-					sleep (l_sleep_time)
+			if attached {PROCESS_IMP} process_launcher as l_prc_imp then
+				from
+					l_sleep_time := sleep_time.to_integer_64 * 1000000
+				until
+					should_destroy
+				loop
+					l_prc_imp.check_exit
+					if not should_destroy then
+						sleep (l_sleep_time)
+					end
 				end
+			else
+				check process_launcher_has_valid_type: False end
 			end
 		end
 
@@ -130,16 +149,15 @@ invariant
 
 	mutex_not_void: mutex /= Void
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 
 

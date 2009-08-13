@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Observer for EB_METRIC_TOOL"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,34 +14,34 @@ inherit
 
 feature -- Manager
 
-	file_manager: EB_METRIC_FILE_MANAGER is
+	file_manager: EB_METRIC_FILE_MANAGER
 			-- Manager that handles `metric_file' for saving new metrics and measures.
 		once
 			create Result.make
 		end
 
-	notify_measure is
+	notify_measure
 			-- The state of the manager has changed. Measures have been changed. Update `Current'.
 		deferred
 		end
 
-	notify_new_metric (a_new_metric: EB_METRIC; new_metric_element: XM_ELEMENT; overwrite: BOOLEAN; index: INTEGER) is
+	notify_new_metric (a_new_metric: EB_METRIC; new_metric_element: XM_ELEMENT; overwrite: BOOLEAN; index: INTEGER)
 			-- The state of the manager has changed. New metrics have been added. Update `Current'.
 		deferred
 		end
 
-	notify_management_metric (metric_list: ARRAYED_LIST [EB_METRIC]; xml_list: ARRAYED_LIST [XM_ELEMENT]) is
+	notify_management_metric (metric_list: ARRAYED_LIST [EB_METRIC]; xml_list: ARRAYED_LIST [XM_ELEMENT])
 			-- The state of the manager has changed. Metrics have been changed. Update `Current'.
 		deferred
 		end
 
-	set_recompiled (bool: BOOLEAN) is
+	set_recompiled (bool: BOOLEAN)
 			-- Assign `bool' to `is_recompiled'.
 		deferred
 		end
-		
-	recycle is
-			-- Remove all references to `Current', and leave `Current' in an 
+
+	internal_recycle
+			-- Remove all references to `Current', and leave `Current' in an
 			-- unstable state to make sure it is not referenced any more.
 		do
 			file_manager.remove_observer (Current)
@@ -49,10 +49,10 @@ feature -- Manager
 			not file_manager.observer_list.has (Current)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -63,19 +63,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

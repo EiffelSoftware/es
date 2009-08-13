@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Creation of an object bounded to type of a feature during execution."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -35,7 +35,7 @@ create
 
 feature -- Initialization
 
-	make (f_id, f_rout_id: INTEGER) is
+	make (f_id, f_rout_id: INTEGER)
 			-- Initialize Current with `f_id' and `f_name_id'
 			-- in context of class `a_class_id'.
 		require
@@ -51,7 +51,7 @@ feature -- Initialization
 
 feature -- Settings
 
-	set_info (f_id, r_id: INTEGER) is
+	set_info (f_id, r_id: INTEGER)
 			-- Set `feature_id' and `routine_id' with `f_id' and `r_id'.
 		require
 			valid_f_id: f_id > 0
@@ -74,7 +74,7 @@ feature -- Access
 
 feature -- C code generation
 
-	generate is
+	generate
 			-- Generate creation type
 		local
 			buffer: GENERATION_BUFFER
@@ -85,7 +85,7 @@ feature -- C code generation
 			buffer.put_two_character (')', ')')
 		end
 
-	analyze is
+	analyze
 			-- We need Dftype(Current).
 		local
 			entry: POLY_TABLE [ENTRY]
@@ -99,10 +99,10 @@ feature -- C code generation
 					context.add_dftype_current
 				else
 					l_type := entry.first.type.deep_actual_type
-					if {l_gen_type: GEN_TYPE_A} l_type then
+					if attached {GEN_TYPE_A} l_type as l_gen_type then
 						context.mark_current_used
 						context.add_dftype_current
-					elseif {l_formal: FORMAL_A} l_type then
+					elseif attached {FORMAL_A} l_type as l_formal then
 						context.add_dftype_current
 					end
 				end
@@ -111,7 +111,7 @@ feature -- C code generation
 			end
 		end
 
-	generate_type_id (buffer: GENERATION_BUFFER; final_mode: BOOLEAN; a_level: NATURAL) is
+	generate_type_id (buffer: GENERATION_BUFFER; final_mode: BOOLEAN; a_level: NATURAL)
 			-- Generate the creation type id of the feature.
 		local
 			table: POLY_TABLE [ENTRY]
@@ -136,7 +136,7 @@ feature -- C code generation
 					if l_type.has_generics then
 						buffer.put_string ("typres")
 						buffer.put_natural_32 (a_level)
-					elseif {l_formal: FORMAL_A} l_type then
+					elseif attached {FORMAL_A} l_type as l_formal then
 						buffer.put_string ("eif_gen_param_id(")
 						context.generate_current_dftype
 						buffer.put_two_character (',', ' ')
@@ -194,7 +194,7 @@ feature -- C code generation
 
 feature -- IL code generation
 
-	generate_il is
+	generate_il
 			-- Generate IL code for an anchored creation type.
 		local
 			target_type: TYPE_A
@@ -216,14 +216,14 @@ feature -- IL code generation
 			il_generator.generate_check_cast (Void, target_type)
 		end
 
-	generate_il_type is
+	generate_il_type
 			-- Generate IL code to load type of anchored creation type.
 		do
 				-- Generate call to feature that will give the type we want to create.
 			il_generator.generate_type_feature_call (context.class_type.associated_class.anchored_features.item (routine_id))
 		end
 
-	created_in (other: CLASS_TYPE): TYPE_A is
+	created_in (other: CLASS_TYPE): TYPE_A
 			-- Resulting type of Current as if it was used to create object in `other'
 		do
 			Result := context.real_type_in (other.associated_class.feature_of_rout_id (routine_id).type, other.type)
@@ -231,7 +231,7 @@ feature -- IL code generation
 
 feature -- Byte code generation
 
-	make_byte_code (ba: BYTE_ARRAY) is
+	make_byte_code (ba: BYTE_ARRAY)
 			-- Generate byte code for an anchored creation type.
 		local
 			rout_info: ROUT_INFO
@@ -251,7 +251,7 @@ feature -- Byte code generation
 
 feature -- Genericity
 
-	is_explicit: BOOLEAN is
+	is_explicit: BOOLEAN
 			-- Is Current type fixed at compile time?
 		local
 			table: POLY_TABLE [ENTRY]
@@ -264,7 +264,7 @@ feature -- Genericity
 			end
 		end
 
-	generate_cid (buffer: GENERATION_BUFFER; final_mode : BOOLEAN) is
+	generate_cid (buffer: GENERATION_BUFFER; final_mode : BOOLEAN)
 
 		local
 			table: POLY_TABLE [ENTRY]
@@ -343,7 +343,7 @@ feature -- Genericity
 		end
 
 	generate_cid_array (buffer : GENERATION_BUFFER;
-						final_mode : BOOLEAN; idx_cnt : COUNTER) is
+						final_mode : BOOLEAN; idx_cnt : COUNTER)
 		local
 			dummy : INTEGER
 			table: POLY_TABLE [ENTRY]
@@ -385,7 +385,7 @@ feature -- Genericity
 		end
 
 	generate_cid_init (buffer : GENERATION_BUFFER;
-					   final_mode : BOOLEAN; idx_cnt : COUNTER; a_level: NATURAL) is
+					   final_mode : BOOLEAN; idx_cnt : COUNTER; a_level: NATURAL)
 		local
 			dummy: INTEGER
 			table: POLY_TABLE [ENTRY]
@@ -468,7 +468,7 @@ feature -- Genericity
 			end
 		end
 
-	make_type_byte_code (ba : BYTE_ARRAY) is
+	make_type_byte_code (ba : BYTE_ARRAY)
 
 		local
 			rout_info: ROUT_INFO
@@ -486,7 +486,7 @@ feature -- Genericity
 			end
 		end
 
-	type_to_create: CL_TYPE_A is
+	type_to_create: CL_TYPE_A
 
 		local
 			table : POLY_TABLE [ENTRY]
@@ -499,7 +499,7 @@ feature -- Genericity
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

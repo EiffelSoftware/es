@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Helper factory to create new TYPED_PREFERENCE's.  This class is used by PREFERENCE_MANAGER to
 			create new preferences and values.  Use PREFERENCE_MANAGER to manipulate PREFERENCE objects in your
@@ -14,7 +14,7 @@ class
 
 feature -- Commands
 
-	new_preference (preferences: PREFERENCES; a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: G): H is
+	new_preference (preferences: PREFERENCES; a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: G): H
 			-- Create a new preference with name `a_name'.  If preference cannot be found in
 			-- underlying datastore or in a default values then `a_fallback_value' is used for the value.
 		require
@@ -25,37 +25,36 @@ feature -- Commands
 			name_not_empty: not a_name.is_empty
 			value_not_void: a_fallback_value /= Void
 		local
-			l_fullname,
-			l_value,
-			l_desc: STRING
+			l_fullname: STRING
+			l_value, l_desc: detachable STRING
 		do
 			l_fullname := a_name
-			if preferences.session_values.has (l_fullname) then
+			l_value := preferences.session_values.item (l_fullname)
+			if l_value /= Void then
 					-- Retrieve from saved values.
-				l_value := preferences.session_values.item (l_fullname)
 				create Result.make_from_string_value (a_manager, a_name, l_value)
-				if preferences.default_values.has (l_fullname) then
-					Result.set_hidden (preferences.default_values.item (l_fullname).hidden)
-					Result.set_restart_required (preferences.default_values.item (l_fullname).restart)
+				if attached preferences.default_values.item (l_fullname) as l_dft_value then
+					Result.set_hidden (l_dft_value.hidden)
+					Result.set_restart_required (l_dft_value.restart)
 				end
-			elseif preferences.default_values.has (l_fullname) then
+			elseif attached preferences.default_values.item (l_fullname) as l_dft_value then
 					-- Retrieve from default values.
-				l_value := preferences.default_values.item (l_fullname).value
+				l_value := l_dft_value.value
 				if l_value = Void then
 					l_value := ""
 				end
 				create Result.make_from_string_value (a_manager, a_name, l_value)
-				Result.set_hidden (preferences.default_values.item (l_fullname).hidden)
-				Result.set_restart_required (preferences.default_values.item (l_fullname).restart)
+				Result.set_hidden (l_dft_value.hidden)
+				Result.set_restart_required (l_dft_value.restart)
 			else
 					-- Create with `a_value'.
 				create Result.make (a_manager, a_name, a_fallback_value)
 			end
 
 					-- Set the default value for future resetting by user.
-			if preferences.default_values.has (l_fullname) then
-				l_desc := preferences.default_values.item (l_fullname).description
-				l_value := preferences.default_values.item (l_fullname).value
+			if attached preferences.default_values.item (l_fullname) as l_dft_value then
+				l_desc := l_dft_value.description
+				l_value := l_dft_value.value
 				if l_desc /= Void and then not l_desc.is_empty then
 					Result.set_description (l_desc)
 				end
@@ -73,21 +72,21 @@ feature -- Commands
 			preference_added: preferences.has_preference (a_name)
 		end
 
-	new_resource (preferences: PREFERENCES; a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: G): H is
-		obsolete "use new_preference instead of new_resource."
+	new_resource (preferences: PREFERENCES; a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: G): H
+		obsolete "[060113] use new_preference instead of new_resource."
 		do
 			Result := new_preference (preferences, a_manager, a_name, a_fallback_value)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"A collection of features with the same export policy and%
@@ -32,7 +32,7 @@ create
 
 feature -- Initialization
 
-	make (feat_adapter: FEATURE_ADAPTER) is
+	make (feat_adapter: FEATURE_ADAPTER)
 			-- Initialize Current.
 		require
 			valid_feat_adapter: feat_adapter /= Void;
@@ -56,7 +56,7 @@ feature -- Properties
 
 feature -- Access
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Are there any features?
 		do
 			Result := features.is_empty;
@@ -64,19 +64,19 @@ feature -- Access
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is Current less restrictive than `other'?
 		do
 			Result := not export_status.is_subset (other.export_status);
 		end;
 
-	compatible (other: like Current): BOOLEAN is
+	compatible (other: like Current): BOOLEAN
 			-- Is `other' clause compatible with Current?
 		do
 			Result := other.export_status.same_as (export_status);
 		end;
 
-	can_include (feat: FEATURE_I): BOOLEAN is
+	can_include (feat: FEATURE_I): BOOLEAN
 			-- Can current include export status from `feat'?
 		do
 			Result := export_status.same_as (feat.export_status);
@@ -84,7 +84,7 @@ feature -- Comparison
 
 feature -- Element change
 
-	add (f: FEATURE_ADAPTER) is
+	add (f: FEATURE_ADAPTER)
 			-- Add feature adapter `f' to Current feature clause.
 		require
 			valid_f: f /= Void
@@ -95,7 +95,7 @@ feature -- Element change
 			added: features.has (f)
 		end;
 
-	merge (other: like Current) is
+	merge (other: like Current)
 			-- Merge `other' clause with Current.
 		require
 			valid_other: other /= Void
@@ -105,7 +105,7 @@ feature -- Element change
 
 feature -- Context output
 
-	format (ctxt: TEXT_FORMATTER_DECORATOR; comments: EIFFEL_COMMENTS) is
+	format (ctxt: TEXT_FORMATTER_DECORATOR; comments: EIFFEL_COMMENTS)
 			-- Reconstitute text.
 		local
 			l_feature_i: FEATURE_I
@@ -155,7 +155,7 @@ feature {FEATURE_CLAUSE_EXPORT, CATEGORY} -- Implementation
 
 feature -- Debug
 
-	trace is
+	trace
 		do
 			from features.start until features.after loop
 				io.error.put_string ("%T" + features.item.ast.feature_name.name + "%N")
@@ -168,10 +168,10 @@ invariant
 	valid_features: features /= Void;
 	valid_export_status: export_status /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -182,19 +182,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

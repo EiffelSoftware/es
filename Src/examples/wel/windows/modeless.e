@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -21,37 +21,41 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: WEL_COMPOSITE_WINDOW) is
+	make (a_parent: WEL_COMPOSITE_WINDOW)
 		do
+			create edit_text.make_empty
 			make_by_id (a_parent, Modeless_dlg_id)
 			create edit.make_by_id (Current, Edit_id)
-			create edit_text.make (0)
 		end
 
 feature -- Access
 
-	edit: WEL_SINGLE_LINE_EDIT
+	edit: detachable WEL_SINGLE_LINE_EDIT
 			-- Edit control
 
-	edit_text: STRING	
+	edit_text: STRING
 			-- Text of the edit control
 
 feature {NONE} -- Implementation
 
-	setup_dialog is
+	setup_dialog
 			-- Restore the previous text in the edit control
 		do
-			edit.set_text (edit_text)
+			if attached edit as l_edit then
+				l_edit.set_text (edit_text)
+			end
 		end
 
-	on_ok is
+	on_ok
 			-- Save the text from the edit control
 		do
-			edit_text := edit.text
+			if attached edit as l_edit then
+				edit_text := l_edit.text
+			end
 			terminate (Idok)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

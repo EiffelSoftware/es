@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An observer for events implemented on a file notifier {FILE_NOTIFIER_S} service interface.
 	]"
@@ -7,7 +7,7 @@ indexing
 	date: "$Date$";
 	revision: "$Revision $"
 
-deferred class
+class
 	FILE_NOTIFIER_EVENT_OBSERVER
 
 inherit
@@ -15,18 +15,18 @@ inherit
 
 feature {FILE_NOTIFIER_S} -- Event handlers
 
-	on_file_modified (a_file_name: !STRING_32; a_modification_type: NATURAL_8)
+	on_file_modified (a_file_name: attached STRING_32; a_modification_type: NATURAL_8)
 			-- Called when a file has been modifications.
 			--
 			-- `a_file_name': The name of the file modified.
 			-- `a_modification_type': The type of modification applied to the file. See {FILE_NOTIFIER_MODIFICATION_TYPES} for the respective flags
 		require
-			is_interface_usable: is_interface_usable
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
 			not_a_file_name_is_empty: not a_file_name.is_empty
 		do
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

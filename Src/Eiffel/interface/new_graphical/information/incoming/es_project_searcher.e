@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Project searcher. Search project that match given system name or system UUID or target name or target UUID in given pathes."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -18,7 +18,7 @@ inherit
 
 feature -- Searcher
 
-	search_project (a_path: !STRING; a_system_name, a_system_uuid, a_target_name, a_target_uuid: ?STRING) is
+	search_project (a_path: attached STRING; a_system_name, a_system_uuid, a_target_name, a_target_uuid: detachable STRING)
 			-- Search project
 			-- `a_path' is in the format of "path1; path2; path3"
 		local
@@ -49,8 +49,8 @@ feature -- Searcher
 							if l_path.item (l_path.count) = l_sep then
 								l_path.remove_tail (1)
 							end
-							if {lt_path: STRING}l_path then
-								search_project_in_directory (lt_path)
+							if l_path /= Void then
+								search_project_in_directory (l_path)
 							end
 							l_splitted_path.forth
 						end
@@ -66,17 +66,17 @@ feature -- Querry
 
 feature -- Access
 
-	found_project_option: ?USER_OPTIONS
+	found_project_option: detachable USER_OPTIONS
 			-- Found project option
 
-	found_project: ?STRING
+	found_project: detachable STRING
 			-- Found project file name.
 
 feature {NONE} -- Access
 
-	system_name, system_uuid, target_name, target_uuid: ?STRING
+	system_name, system_uuid, target_name, target_uuid: detachable STRING
 
-	file_matcher: RX_PCRE_MATCHER is
+	file_matcher: RX_PCRE_MATCHER
 			-- Config file matcher
 		once
 			create Result.make
@@ -85,20 +85,21 @@ feature {NONE} -- Access
 
 feature {NONE} -- Implemetation
 
-	search_needed: BOOLEAN is
+	search_needed: BOOLEAN
 			-- Is current context needed to search?
 		do
 			Result := system_name /= Void or system_uuid /= Void or target_name /= Void or target_uuid /= Void
 		end
 
-	search_project_in_directory (a_path: !STRING) is
+	search_project_in_directory (a_path: attached STRING)
 			-- Search project in `a_path'
 		require
 			a_path_not_empty: not a_path.is_empty
 			search_needed: search_needed
 		local
 			l_file_uti: FILE_UTILITIES
-			l_files: !DS_ARRAYED_LIST [!STRING]
+			l_files: attached DS_ARRAYED_LIST [STRING]
+			l_file: detachable STRING
 		do
 			if file_system.directory_exists (a_path) then
 				create l_file_uti
@@ -108,13 +109,15 @@ feature {NONE} -- Implemetation
 				until
 					l_files.after or project_found
 				loop
-					check_file (l_files.item_for_iteration)
+					l_file := l_files.item_for_iteration
+					check l_file_not_void: l_file /= Void end
+					check_file (l_file)
 					l_files.forth
 				end
 			end
 		end
 
-	check_file (a_file: !STRING) is
+	check_file (a_file: attached STRING)
 			-- Check file and see if it is the system we need.
 		require
 			search_needed: search_needed
@@ -194,7 +197,7 @@ feature {NONE} -- Implemetation
 			end
 		end
 
-	reset is
+	reset
 			-- Reset the searcher
 		do
 			project_found := False
@@ -227,8 +230,8 @@ feature {NONE} -- Implemetation
 invariant
 	project_found_implies_project_not_void: project_found implies (found_project /= Void)
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -252,11 +255,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

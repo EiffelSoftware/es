@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Factory for creating SYSTEM_STRING instances."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,7 +8,7 @@ class
 
 feature -- Conversion
 
-	from_string_to_system_string (a_str: READABLE_STRING_GENERAL): SYSTEM_STRING is
+	from_string_to_system_string (a_str: READABLE_STRING_GENERAL): SYSTEM_STRING
 			-- Convert `a_str' to an instance of SYSTEM_STRING.
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
@@ -16,10 +16,10 @@ feature -- Conversion
 		local
 			i, nb: INTEGER
 			l_str: STRING_BUILDER
-			l_str8: STRING
+			l_dummy: detachable STRING_BUILDER
+			l_string: detachable SYSTEM_STRING
 		do
-			if a_str.is_string_8 then
-				l_str8 ?= a_str
+			if attached {STRING_8} a_str as l_str8 then
 				create Result.make (l_str8.area.native_array, 0, a_str.count)
 			else
 				nb := a_str.count
@@ -29,16 +29,18 @@ feature -- Conversion
 				until
 					i > nb
 				loop
-					l_str := l_str.append_character (a_str.code (i).to_character_8)
+					l_dummy := l_str.append_character (a_str.code (i).to_character_8)
 					i := i + 1
 				end
-				Result := l_str.to_string
+				l_string := l_str.to_string
+				check l_string_attached: l_string /= Void end
+				Result := l_string
 			end
 		ensure
 			from_string_to_system_string_not_void: Result /= Void
 		end
 
-	read_system_string_into (a_str: SYSTEM_STRING; a_result: STRING_GENERAL) is
+	read_system_string_into (a_str: SYSTEM_STRING; a_result: STRING_GENERAL)
 			-- Fill `a_result' with `a_str' content.
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
@@ -47,10 +49,8 @@ feature -- Conversion
 			a_result_valid: a_result.count = a_str.length
 		local
 			i, nb: INTEGER
-			l_str8: STRING
 		do
-			if a_result.is_string_8 then
-				l_str8 ?= a_result
+			if attached {STRING_8} a_result as l_str8 then
 				a_str.copy_to (0, l_str8.area.native_array, 0, a_str.length)
 			else
 				from
@@ -65,7 +65,7 @@ feature -- Conversion
 			end
 		end
 
-	read_system_string_into_area_8 (a_str: SYSTEM_STRING; a_area: SPECIAL [CHARACTER_8]) is
+	read_system_string_into_area_8 (a_str: SYSTEM_STRING; a_area: SPECIAL [CHARACTER_8])
 			-- Fill `a_result' with `a_str' content.
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
@@ -76,7 +76,7 @@ feature -- Conversion
 			a_str.copy_to (0, a_area.native_array, 0, a_str.length)
 		end
 
-	read_system_string_into_area_32 (a_str: SYSTEM_STRING; a_area: SPECIAL [CHARACTER_32]) is
+	read_system_string_into_area_32 (a_str: SYSTEM_STRING; a_area: SPECIAL [CHARACTER_32])
 			-- Fill `a_area' with `a_str' content.
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
@@ -97,7 +97,7 @@ feature -- Conversion
 			end
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

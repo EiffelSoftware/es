@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Entity that generates IL code into one module file. Stores only
 		module specific data such as tokens. Delegate most of the work to
@@ -70,7 +70,7 @@ feature {NONE} -- Initialization
 			a_module_id: INTEGER;
 			a_is_debug_mode: BOOLEAN;
 			a_is_main_module: BOOLEAN)
-		is
+
 			-- Create a new module of name `a_file_name' using metadata dispenser `a_dispenser'.
 			-- If `a_is_main_module', current is an assembly manifest.
 		require
@@ -253,6 +253,13 @@ feature -- Access: tokens
 			-- Token for `ISE.Runtime.raise_old' that raise old violation when there was exception
 			-- during old expression evaluation
 
+	ise_enter_rescue_token: INTEGER
+			-- Token for `ISE.Runtime.enter_rescue' that increase rescue level when entering rescue.
+
+	ise_get_rescue_level_token, ise_set_rescue_level_token: INTEGER
+			-- Tokens for `ISE.Runtime.get_rescue_level' and `ISE.Runtime.set_rescue_level'
+			-- static members that holds rescue level.
+
 	ise_in_assertion_token, ise_set_in_assertion_token: INTEGER
 			-- Token for `ISE.Runtime.in_assertion' and `ISE.Runtime.set_in_assertion'
 			-- static members that holds status of assertion checking.
@@ -309,7 +316,7 @@ feature {NONE} -- Custom attributes: access
 	thread_static_attribute_ctor_token: INTEGER
 			-- Token of ThreadStaticAttribute constructor
 
-	is_thread_static_attribute_defined: BOOLEAN is
+	is_thread_static_attribute_defined: BOOLEAN
 			-- Is token of ThreadStaticAttribute constructor defined?
 		do
 			Result := thread_static_attribute_ctor_token /= 0
@@ -319,7 +326,7 @@ feature {NONE} -- Custom attributes: access
 
 feature {CIL_CODE_GENERATOR} -- Custom attributes: modification
 
-	define_thread_static_attribute (field_token: INTEGER) is
+	define_thread_static_attribute (field_token: INTEGER)
 			-- Define a ThreadStaticAttribute attribute for field identified by `field_token'.
 		require
 			valid_token: field_token /= 0
@@ -342,7 +349,7 @@ feature {CIL_CODE_GENERATOR} -- Custom attributes: modification
 
 feature {CIL_CODE_GENERATOR} -- Synchronization tokens
 
-	define_monitor_method_token (method_name: STRING): INTEGER is
+	define_monitor_method_token (method_name: STRING): INTEGER
 			-- Define token for a procedure of type "System.Threading.Monitor" that takes one argument of type "System.Object"
 		require
 			method_name_not_void: method_name /= Void
@@ -368,7 +375,7 @@ feature {CIL_CODE_GENERATOR} -- Synchronization tokens
 
 feature {CIL_CODE_GENERATOR} -- Once manifest strings: access
 
-	once_string_field_token (is_cil_string: BOOLEAN): INTEGER is
+	once_string_field_token (is_cil_string: BOOLEAN): INTEGER
 			-- Token of a field that is used to store values of once manifest strings
 			-- if CIL type "string" if `is_cil_string' is `true' or of Eiffel type "STRING" otherwise
 		local
@@ -413,7 +420,7 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: access
 			old_eiffel_token_preserved: (old is_once_string_field_eiffel_defined) implies once_string_field_eiffel_token = old once_string_field_eiffel_token
 		end
 
-	once_string_allocation_routine_token: INTEGER is
+	once_string_allocation_routine_token: INTEGER
 			-- Token of a routine that allocates array to store once manifest string values
 		local
 			l_method_sig: like method_sig
@@ -442,7 +449,7 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: access
 
 feature {CIL_CODE_GENERATOR} -- Once manifest strings: status report
 
-	is_once_string_class_defined: BOOLEAN is
+	is_once_string_class_defined: BOOLEAN
 			-- Is token of a run-time helper class to manage once strings defined?
 		do
 			Result := once_string_class_token_value /= 0
@@ -450,7 +457,7 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: status report
 			definition: Result implies once_string_class_token_value /= 0
 		end
 
-	is_once_string_field_cil_defined: BOOLEAN is
+	is_once_string_field_cil_defined: BOOLEAN
 			-- Is token of a field that is used to store values of CIL once manifest strings defined?
 		do
 			Result := once_string_field_cil_token /= 0
@@ -458,7 +465,7 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: status report
 			definition: Result implies once_string_field_cil_token /= 0
 		end
 
-	is_once_string_field_eiffel_defined: BOOLEAN is
+	is_once_string_field_eiffel_defined: BOOLEAN
 			-- Is token of a field that is used to store values of Eiffel once manifest strings defined?
 		do
 			Result := once_string_field_eiffel_token /= 0
@@ -466,7 +473,7 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: status report
 			definition: Result implies once_string_field_eiffel_token /= 0
 		end
 
-	is_once_string_allocation_routine_defined: BOOLEAN is
+	is_once_string_allocation_routine_defined: BOOLEAN
 			-- Is token of a routine that allocates array to store once manifest string values defined?
 		do
 			Result := once_string_allocation_routine_token_value /= 0
@@ -476,7 +483,7 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: status report
 
 feature {CIL_CODE_GENERATOR} -- Once manifest strings: management
 
-	define_once_string_tokens is
+	define_once_string_tokens
 			-- Define tokens to work with once manifest strings:
 			--    helper class
 			--    field for CIL strings array
@@ -550,25 +557,25 @@ feature {CIL_CODE_GENERATOR} -- Once manifest strings: management
 
 feature {NONE} -- Once manifest strings: names
 
-	runtime_helper_class_name: UNI_STRING is
+	runtime_helper_class_name: UNI_STRING
 			-- Name of the helper run-time class.
 		once
 			create Result.make ("EiffelSoftware.Runtime.Data")
 		end
 
-	once_string_field_cil_name: UNI_STRING is
+	once_string_field_cil_name: UNI_STRING
 			-- Name of the once manifest string field to store CIL strings
 		once
 			create Result.make ("oms_cil")
 		end
 
-	once_string_field_eiffel_name: UNI_STRING is
+	once_string_field_eiffel_name: UNI_STRING
 			-- Name of the once manifest string field to store Eiffel strings
 		once
 			create Result.make ("oms_eiffel")
 		end
 
-	once_string_allocation_routine_name: UNI_STRING is
+	once_string_allocation_routine_name: UNI_STRING
 			-- Name of the routine that allocates storage for once manifest strings
 		once
 			create Result.make ("allocate_oms")
@@ -590,7 +597,7 @@ feature {NONE} -- Once manifest strings: tokens
 	once_string_class_token_value: INTEGER
 			-- Token of a run-time helper class that keeps values of once manifest strings
 
-	once_string_class_token: INTEGER is
+	once_string_class_token: INTEGER
 			-- Token of a run-time helper class that keeps values of once manifest strings
 		local
 			once_string_resolution_token: INTEGER
@@ -624,7 +631,7 @@ feature {NONE} -- Once manifest strings: tokens
 
 feature -- Access: types
 
-	local_types: ARRAYED_LIST [PAIR [TYPE_A, STRING]] is
+	local_types: ARRAYED_LIST [PAIR [TYPE_A, STRING]]
 			-- To store types of local variables. For type definition only here.
 		do
 		end
@@ -650,7 +657,7 @@ feature {NONE} -- Access: metadata generation
 			-- Token of parent class when no interface is being generated:
 			-- either if `is_single_inheritance_implementation' or if class `is_single'.
 
-	is_single_inheritance_implementation: BOOLEAN is
+	is_single_inheritance_implementation: BOOLEAN
 			-- Is current generation of type SINGLE_IL_CODE_GENERATOR?
 		do
 			Result := il_code_generator.is_single_inheritance_implementation
@@ -676,7 +683,7 @@ feature -- Access: signatures
 
 feature -- Settings: Generation type
 
-	set_console_application is
+	set_console_application
 			-- Current module is marked as being a CONSOLE application.
 		do
 			is_console_application := True
@@ -685,7 +692,7 @@ feature -- Settings: Generation type
 			is_console_application_set: is_console_application
 		end
 
-	set_window_application is
+	set_window_application
 			-- Current module is marked as being a WINDOW application.
 		do
 			is_console_application := False
@@ -694,7 +701,7 @@ feature -- Settings: Generation type
 			is_console_application_set: not is_console_application
 		end
 
-	set_dll is
+	set_dll
 			-- Current module is a DLL.
 		do
 			is_console_application := True
@@ -703,7 +710,7 @@ feature -- Settings: Generation type
 			is_dll_set: is_dll
 		end
 
-	set_32bits is
+	set_32bits
 			-- Current module is a 32bit module?
 		do
 			is_32bits := True
@@ -713,7 +720,7 @@ feature -- Settings: Generation type
 
 feature -- Settings
 
-	set_resources (r: like resources) is
+	set_resources (r: like resources)
 			-- Set `resources' with `r'.
 		require
 			r_not_void: r /= Void
@@ -725,7 +732,7 @@ feature -- Settings
 
 feature -- Settings: signature
 
-	set_method_return_type (a_sig: MD_METHOD_SIGNATURE; a_type: TYPE_A; a_context_type: CLASS_TYPE) is
+	set_method_return_type (a_sig: MD_METHOD_SIGNATURE; a_type: TYPE_A; a_context_type: CLASS_TYPE)
 			-- Set `a_type' to return type of `a_sig'.
 		require
 			is_generated: is_generated
@@ -736,7 +743,7 @@ feature -- Settings: signature
 			set_signature_type (a_sig, a_type, a_context_type)
 		end
 
-	set_signature_type (a_sig: MD_SIGNATURE; a_type: TYPE_A; a_context_type: CLASS_TYPE) is
+	set_signature_type (a_sig: MD_SIGNATURE; a_type: TYPE_A; a_context_type: CLASS_TYPE)
 			-- Set `a_type' to return type of `a_sig'.
 		require
 			is_generated: is_generated
@@ -761,7 +768,7 @@ feature -- Settings: signature
 
 feature {NONE} -- Implementations: signatures
 
-	set_extended_signature_type (a_sig: MD_SIGNATURE; a_type: TYPE_A; a_is_by_ref: BOOLEAN; a_context_type: CLASS_TYPE) is
+	set_extended_signature_type (a_sig: MD_SIGNATURE; a_type: TYPE_A; a_is_by_ref: BOOLEAN; a_context_type: CLASS_TYPE)
 			-- Set `a_type' to return type of `a_sig'.
 		require
 			is_generated: is_generated
@@ -823,7 +830,7 @@ feature {NONE} -- Implementations: signatures
 
 feature -- Cleanup
 
-	cleanup is
+	cleanup
 			-- Clean up external data structures.
 		do
 			internal_dbg_documents := Void
@@ -836,7 +843,7 @@ feature -- Cleanup
 
 feature -- Code generation
 
-	prepare (a_dispenser: MD_DISPENSER; a_count: INTEGER) is
+	prepare (a_dispenser: MD_DISPENSER; a_count: INTEGER)
 			-- Prepare Current to start metadata and code generation.
 		require
 			a_dispenser_not_void: a_dispenser /= Void
@@ -922,7 +929,7 @@ feature -- Code generation
 	define_entry_point
 			(creation_type: CLASS_TYPE; a_class_type: CLASS_TYPE; a_feature_id: INTEGER;
 			a_has_arguments: BOOLEAN)
-		is
+
 			-- Define entry point for IL component from `a_feature_id' in
 			-- class `a_class_type'.
 		require
@@ -1083,7 +1090,7 @@ feature -- Code generation
 			method_writer.write_current_body
 		end
 
-	save_to_disk (a_signing: MD_STRONG_NAME) is
+	save_to_disk (a_signing: MD_STRONG_NAME)
 			-- Save byte code and metadata to file `module_file_name'.
 		require
 			is_generated: is_generated
@@ -1123,7 +1130,7 @@ feature -- Code generation
 
 feature -- Metadata description
 
-	generate_external_class_mapping (class_type: CLASS_TYPE) is
+	generate_external_class_mapping (class_type: CLASS_TYPE)
 			-- Define reference to external type `class_type'.
 		require
 			is_generated: is_generated
@@ -1176,7 +1183,7 @@ feature -- Metadata description
 			end
 		end
 
-	generate_interface_class_mapping (class_type: CLASS_TYPE) is
+	generate_interface_class_mapping (class_type: CLASS_TYPE)
 			-- Define reference/definition of Eiffel type `class_type' used for
 			-- interface purpose (i.e. interface class of an implementation class,
 			-- or class itself if generated as a single class).
@@ -1247,7 +1254,7 @@ feature -- Metadata description
 			end
 		end
 
-	generate_implementation_class_mapping (class_type: CLASS_TYPE) is
+	generate_implementation_class_mapping (class_type: CLASS_TYPE)
 			-- Define reference/definition of Eiffel type `class_type' used for
 			-- implementation purpose.
 		require
@@ -1315,7 +1322,7 @@ feature -- Metadata description
 			class_mapping.put (l_type_token, class_type.implementation_id)
 		end
 
-	update_parents (class_type: CLASS_TYPE; class_c: CLASS_C; for_interface: BOOLEAN) is
+	update_parents (class_type: CLASS_TYPE; class_c: CLASS_C; for_interface: BOOLEAN)
 			-- Generate ancestors map of `class_type' associated to `class_c' for context
 			-- `for_interface'.
 		require
@@ -1507,7 +1514,7 @@ feature -- Metadata description
 			end
 		end
 
-	define_constructor (class_type: CLASS_TYPE; a_signature: like method_sig; is_reference: BOOLEAN; external_token, eiffel_token: INTEGER; feature_id: INTEGER) is
+	define_constructor (class_type: CLASS_TYPE; a_signature: like method_sig; is_reference: BOOLEAN; external_token, eiffel_token: INTEGER; feature_id: INTEGER)
 			-- Define constructor for implementation of `class_type'
 		require
 			is_generated: is_generated
@@ -1640,7 +1647,7 @@ feature -- Metadata description
 			end
 		end
 
-	put_args_on_stack (a_count: INTEGER) is
+	put_args_on_stack (a_count: INTEGER)
 			-- Put arguments on stack
 		local
 			i: INTEGER
@@ -1655,7 +1662,7 @@ feature -- Metadata description
 			end
 		end
 
-	define_default_constructor (class_type: CLASS_TYPE; is_reference: BOOLEAN) is
+	define_default_constructor (class_type: CLASS_TYPE; is_reference: BOOLEAN)
 			-- Define default constructor for implementation of `class_type'
 		require
 			is_generated: is_generated
@@ -1669,7 +1676,7 @@ feature -- Metadata description
 			end
 		end
 
-	define_constructors (class_type: CLASS_TYPE; is_reference: BOOLEAN) is
+	define_constructors (class_type: CLASS_TYPE; is_reference: BOOLEAN)
 			-- Define constructors for implementation of `class_type'
 		require
 			is_generated: is_generated
@@ -1766,7 +1773,7 @@ feature -- Metadata description
 			end
 		end
 
-	argument_actual_type (a_type: TYPE_A): TYPE_A is
+	argument_actual_type (a_type: TYPE_A): TYPE_A
 			-- Compute real type of Current in current generated class.
 		require
 			a_type_not_void: a_type /= Void
@@ -1782,7 +1789,7 @@ feature -- Metadata description
 
 feature -- Local saving
 
-	store_locals (a_local_types: like local_types; a_meth_token: INTEGER; a_context_type: CLASS_TYPE) is
+	store_locals (a_local_types: like local_types; a_meth_token: INTEGER; a_context_type: CLASS_TYPE)
 			-- Store `local_types' into `il_code_generator.method_body' for routine `a_meth_token'.
 		require
 			is_generated: is_generated
@@ -1830,7 +1837,7 @@ feature -- Local saving
 			end
 		end
 
-	generate_local_debug_info (a_method_token: INTEGER; a_context_type: CLASS_TYPE) is
+	generate_local_debug_info (a_method_token: INTEGER; a_context_type: CLASS_TYPE)
 			-- Generate local information about routine `method_token'.
 		require
 			is_generated: is_generated
@@ -1880,7 +1887,7 @@ feature -- Debug info
 
 feature -- Mapping between Eiffel compiler and generated tokens
 
-	external_token_mapping (a_type_name: STRING): INTEGER is
+	external_token_mapping (a_type_name: STRING): INTEGER
 			-- Quickly find a type token given its external_name.
 		require
 			a_type_name_not_void: a_type_name /= Void
@@ -1922,7 +1929,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 	internal_constructors: ARRAY [HASH_TABLE [INTEGER, INTEGER]]
 			-- Array of ctor tokens indexed by their `type_id' and parent ctor tokens.
 
-	constructor_token (a_type_id: INTEGER): INTEGER is
+	constructor_token (a_type_id: INTEGER): INTEGER
 			-- Token identifier for default constructor of `a_type_id'.
 		require
 			is_generated: is_generated
@@ -1940,7 +1947,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			constructor_token_valid: Result /= 0
 		end
 
-	inherited_constructor_token (a_type_id: INTEGER; a_feature_id: INTEGER): INTEGER is
+	inherited_constructor_token (a_type_id: INTEGER; a_feature_id: INTEGER): INTEGER
 			-- Token identifier for constructor of `a_type_id' generated for
 			-- a feature identified by `a_feature_id'.
 		require
@@ -1997,7 +2004,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			end
 		end
 
-	invariant_token (a_type_id: INTEGER): INTEGER is
+	invariant_token (a_type_id: INTEGER): INTEGER
 			-- Metadata token of invariant feature in class type `a_type_id'.
 		require
 			is_generated: is_generated
@@ -2030,7 +2037,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			-- Array of invariant feature indexed by `type_id' of class in
 			-- which they are defined.
 
-	actual_class_type_token (a_type_id: INTEGER): INTEGER is
+	actual_class_type_token (a_type_id: INTEGER): INTEGER
 			-- Given `a_type_id' returns its associated metadata token
 		require
 			is_generated: is_generated
@@ -2066,7 +2073,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			class_token_valid: Result /= 0
 		end
 
-	mapped_class_type_token (a_type_id: INTEGER): INTEGER is
+	mapped_class_type_token (a_type_id: INTEGER): INTEGER
 			-- Given `a_type_id' returns its associated metadata token
 			-- to be used in signatures and code generation token where
 			-- ANY needs to be mapped into System.Object.
@@ -2085,7 +2092,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			class_token_valid: Result /= 0
 		end
 
-	define_assembly_reference (a_name, a_version, a_culture, a_key: STRING): INTEGER is
+	define_assembly_reference (a_name, a_version, a_culture, a_key: STRING): INTEGER
 			-- Define an assembly reference matching given parameters
 		require
 			a_name_not_void: a_name /= Void
@@ -2135,7 +2142,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			is_token_assembly_ref: Result & {MD_TOKEN_TYPES}.md_mask =  {MD_TOKEN_TYPES}.md_assembly_ref
 		end
 
-	class_data_token (class_c: CLASS_C): INTEGER is
+	class_data_token (class_c: CLASS_C): INTEGER
 			-- Token for class data  of `class_c'
 		require
 			class_c_not_void: class_c /= Void
@@ -2183,7 +2190,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 				Result & {MD_TOKEN_TYPES}.md_mask = {MD_TOKEN_TYPES}.md_type_spec
 		end
 
-	feature_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	feature_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given a `a_feature_id' in `a_type_id' return associated
 			-- token
 		require
@@ -2207,7 +2214,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			feature_token_valid: Result /= 0
 		end
 
-	setter_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	setter_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given an attribute `a_feature_id' in `a_type_id' return associated
 			-- token that sets it.
 		require
@@ -2228,7 +2235,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			setter_token_valid: Result /= 0
 		end
 
-	defined_property_setter_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	defined_property_setter_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given an attribute `a_feature_id' in `a_type_id' return associated
 			-- token of a property setter (if any) without attempting to define it.
 		require
@@ -2244,7 +2251,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 				Result & {MD_TOKEN_TYPES}.md_mask = {MD_TOKEN_TYPES}.md_member_ref
 		end
 
-	property_setter_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	property_setter_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given an attribute `a_feature_id' in `a_type_id' return associated
 			-- token of a property setter (if any).
 		require
@@ -2267,7 +2274,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 				Result & {MD_TOKEN_TYPES}.md_mask = {MD_TOKEN_TYPES}.md_member_ref
 		end
 
-	defined_property_getter_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	defined_property_getter_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given an attribute `a_feature_id' in `a_type_id' return associated
 			-- token of a property getter (if any) without attempting to define it.
 		require
@@ -2283,7 +2290,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 				Result & {MD_TOKEN_TYPES}.md_mask = {MD_TOKEN_TYPES}.md_member_ref
 		end
 
-	property_getter_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	property_getter_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given an attribute `a_feature_id' in `a_type_id' return associated
 			-- token of a property getter (if any).
 		require
@@ -2306,7 +2313,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 				Result & {MD_TOKEN_TYPES}.md_mask = {MD_TOKEN_TYPES}.md_member_ref
 		end
 
-	implementation_feature_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	implementation_feature_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given a `a_feature_id' in `a_type_id' return associated
 			-- token
 		require
@@ -2327,7 +2334,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			valid_result: Result /= 0
 		end
 
-	attribute_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+	attribute_token (a_type_id, a_feature_id: INTEGER): INTEGER
 			-- Given a `a_feature_id' in `a_type_id' return associated
 			-- token
 		require
@@ -2348,7 +2355,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			valid_result: Result /= 0
 		end
 
-	signature (a_type_id, a_feature_id: INTEGER): TUPLE [class_type: CLASS_TYPE; routine_id: INTEGER] is
+	signature (a_type_id, a_feature_id: INTEGER): TUPLE [class_type: CLASS_TYPE; routine_id: INTEGER]
 			-- Given a `a_feature_id' in `a_type_id' retrieves its associated signature.
 		require
 			is_generated: is_generated
@@ -2370,7 +2377,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			result_not_void: Result /= Void
 		end
 
-	implementation_signature (a_type_id, a_feature_id: INTEGER): like signature is
+	implementation_signature (a_type_id, a_feature_id: INTEGER): like signature
 			-- Given a `a_feature_id' in `a_type_id' retrieves its associated
 			-- signature.
 		require
@@ -2395,7 +2402,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 
 	table_token (a_table: ARRAY [HASH_TABLE [INTEGER, INTEGER]];
 			a_type_id, a_feature_id: INTEGER): INTEGER
-		is
+
 			-- Given a `a_feature_id' in `a_type_id' return associated
 			-- token
 		require
@@ -2427,12 +2434,12 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			end_columns:	ARRAY [INTEGER];	-- End columns
 			written_class_id: INTEGER			-- Written in class ID
 			]
-		is
+
 			-- For type definition purpose.
 		do
 		end
 
-	local_debug_info: TUPLE [start_offset: INTEGER; end_offset: INTEGER; nb: INTEGER; locals: like local_types] is
+	local_debug_info: TUPLE [start_offset: INTEGER; end_offset: INTEGER; nb: INTEGER; locals: like local_types]
 			-- For type definition purpose.
 		require
 			False
@@ -2445,7 +2452,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 	method_sequence_points: HASH_TABLE [LINKED_LIST [like sequence_point], INTEGER]
 			-- Table of `method_token' to sequence points definition.
 
-	dbg_documents (a_class_id: INTEGER): DBG_DOCUMENT_WRITER is
+	dbg_documents (a_class_id: INTEGER): DBG_DOCUMENT_WRITER
 			-- Associated document to `a_class_id'.
 		require
 			is_generated: is_generated
@@ -2466,7 +2473,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			dbg_documents_not_void: Result /= Void
 		end
 
-	dbg_pragma_documents (a_path: STRING): DBG_DOCUMENT_WRITER is
+	dbg_pragma_documents (a_path: STRING): DBG_DOCUMENT_WRITER
 			-- Associated document to `a_path'.
 		require
 			attached_path: a_path /= Void
@@ -2533,7 +2540,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			-- Array of CLASS_TYPE in system indexed by `implementation_id' and
 			-- `static_type_id' of CLASS_TYPE.
 
-	clean_implementation_class_data (a_type_id: INTEGER) is
+	clean_implementation_class_data (a_type_id: INTEGER)
 			-- Clean current class implementation data.
 		require
 			is_generated: is_generated
@@ -2542,7 +2549,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			internal_features.put (Void, a_type_id)
 		end
 
-	insert_feature (a_token, a_type_id, a_feature_id: INTEGER) is
+	insert_feature (a_token, a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `internal_features'.
 		require
 			is_generated: is_generated
@@ -2556,7 +2563,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: feature_token (a_type_id, a_feature_id) = a_token
 		end
 
-	insert_setter (a_token, a_type_id, a_feature_id: INTEGER) is
+	insert_setter (a_token, a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `internal_setters'.
 		require
 			is_generated: is_generated
@@ -2570,7 +2577,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: setter_token (a_type_id, a_feature_id) = a_token
 		end
 
-	insert_property_setter (a_token, a_type_id, a_feature_id: INTEGER) is
+	insert_property_setter (a_token, a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `internal_property_setters'.
 		require
 			is_generated: is_generated
@@ -2585,7 +2592,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: property_setter_token (a_type_id, a_feature_id) = a_token
 		end
 
-	insert_property_getter (a_token, a_type_id, a_feature_id: INTEGER) is
+	insert_property_getter (a_token, a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `internal_property_getters'.
 		require
 			is_generated: is_generated
@@ -2600,7 +2607,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: property_getter_token (a_type_id, a_feature_id) = a_token
 		end
 
-	insert_implementation_feature (a_token, a_type_id, a_feature_id: INTEGER) is
+	insert_implementation_feature (a_token, a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in
 			-- `internal_implementation_features'.
 		require
@@ -2615,7 +2622,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: implementation_feature_token (a_type_id, a_feature_id) = a_token
 		end
 
-	insert_attribute (a_token, a_type_id, a_feature_id: INTEGER) is
+	insert_attribute (a_token, a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `internal_features'.
 		require
 			is_generated: is_generated
@@ -2629,7 +2636,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: attribute_token (a_type_id, a_feature_id) = a_token
 		end
 
-	insert_signature (a_signature: like signature; a_type_id, a_feature_id: INTEGER) is
+	insert_signature (a_signature: like signature; a_type_id, a_feature_id: INTEGER)
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `signatures_table'.
 		require
 			is_generated: is_generated
@@ -2654,7 +2661,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 		end
 
 	insert_implementation_signature (a_signature: like signature; a_type_id, a_feature_id: INTEGER)
-		is
+
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `implementation_signatures_table'.
 		require
 			is_generated: is_generated
@@ -2678,7 +2685,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 
 	insert_in_table (a_table: ARRAY [HASH_TABLE [INTEGER, INTEGER]];
 			a_token, a_type_id, a_feature_id: INTEGER)
-		is
+
 			-- Insert `a_token' of `a_feature_id' in `a_type_id' in `internal_attributes'.
 		require
 			is_generated: is_generated
@@ -2702,7 +2709,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			inserted: a_table.item (a_type_id).item (a_feature_id) = a_token
 		end
 
-	assembly_token (a_class_type: CLASS_TYPE): INTEGER is
+	assembly_token (a_class_type: CLASS_TYPE): INTEGER
 			-- Given `a_class_type' find its associated assembly token.
 		require
 			is_generated: is_generated
@@ -2716,7 +2723,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			end
 		end
 
-	external_assembly_token (a_class_type: CLASS_TYPE): INTEGER is
+	external_assembly_token (a_class_type: CLASS_TYPE): INTEGER
 			-- Given `a_class_type' find its associated assembly token
 			-- using an external type counterpart (if any).
 		require
@@ -2731,7 +2738,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			end
 		end
 
-	module_reference_token (a_module: IL_MODULE): INTEGER is
+	module_reference_token (a_module: IL_MODULE): INTEGER
 			-- Given `a_module' from current assembly find its associated module token.
 		require
 			is_generated: is_generated
@@ -2749,7 +2756,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			end
 		end
 
-	find_and_insert_assembly_token (a_class_type: CLASS_TYPE; is_used_as_external: BOOLEAN) is
+	find_and_insert_assembly_token (a_class_type: CLASS_TYPE; is_used_as_external: BOOLEAN)
 			-- Given `a_class_type' find out which assembly defines it and updates
 			-- `internal_assemblies' accordingly. Create assembly reference
 			-- as they are needed.
@@ -2833,7 +2840,7 @@ feature -- Mapping between Eiffel compiler and generated tokens
 
 feature {NONE} -- Once per modules being generated.
 
-	initialize_mapping (a_type_count: INTEGER) is
+	initialize_mapping (a_type_count: INTEGER)
 			-- Following calls to current will only be `generate_class_mappings'.
 		require
 			is_generated: is_generated
@@ -2866,7 +2873,7 @@ feature {NONE} -- Once per modules being generated.
 			internal_class_types := Void
 		end
 
-	initialize_runtime_type_class_mappings is
+	initialize_runtime_type_class_mappings
 			-- Initializes correspondance between .NET runtime types and Eiffel types.
 		require
 			is_generated: is_generated
@@ -2938,7 +2945,7 @@ feature {NONE} -- Once per modules being generated.
 				actual_class_type_token (il_code_generator.eiffel_type_info_type_id) = ise_eiffel_type_info_type_token
 		end
 
-	initialize_tokens is
+	initialize_tokens
 			-- Recompute all tokens in context of newly created module.
 		require
 			is_generated: is_generated
@@ -2971,7 +2978,7 @@ feature {NONE} -- Once per modules being generated.
 			once_string_allocation_routine_not_defined: not is_once_string_allocation_routine_defined
 		end
 
-	compute_c_module_token is
+	compute_c_module_token
 			-- Compute `c_module_token'.
 		require
 			is_generated: is_generated
@@ -2982,7 +2989,7 @@ feature {NONE} -- Once per modules being generated.
 			c_module_token := md_emit.define_module_ref (l_uni_string)
 		end
 
-	compute_mscorlib_token is
+	compute_mscorlib_token
 			-- Compute `mscorlib_token'.
 		require
 			is_generated: is_generated
@@ -3022,7 +3029,7 @@ feature {NONE} -- Once per modules being generated.
 				create {UNI_STRING}.make (Type_handle_class_name), mscorlib_token)
 		end
 
-	compute_mscorlib_type_tokens is
+	compute_mscorlib_type_tokens
 			-- Compute `double_type_token', `math_type_token'.
 		require
 			is_generated: is_generated
@@ -3108,7 +3115,7 @@ feature {NONE} -- Once per modules being generated.
 			system_exception_token_set: system_exception_token /= 0
 		end
 
-	compute_power_method_token is
+	compute_power_method_token
 			-- Compute `power_method_token'.
 		require
 			is_generated: is_generated
@@ -3129,7 +3136,7 @@ feature {NONE} -- Once per modules being generated.
 			power_method_token_set: power_method_token /= 0
 		end
 
-	compute_mscorlib_method_tokens is
+	compute_mscorlib_method_tokens
 			-- Compute `to_string_method_token'.
 		require
 			is_generated: is_generated
@@ -3154,7 +3161,7 @@ feature {NONE} -- Once per modules being generated.
 			to_string_method_token: to_string_method_token /= 0
 		end
 
-	compute_ise_runtime_tokens is
+	compute_ise_runtime_tokens
 			-- Compute `ise_runtime_token'.
 		require
 			is_generated: is_generated
@@ -3213,7 +3220,6 @@ feature {NONE} -- Once per modules being generated.
 				create {UNI_STRING}.make ("get_last_exception"), ise_runtime_type_token, l_meth_sig)
 
 				-- Define `ise_restore_last_exception_token'.
-			l_meth_sig := method_sig
 			l_meth_sig.reset
 			l_meth_sig.set_method_type ({MD_SIGNATURE_CONSTANTS}.Default_sig)
 			l_meth_sig.set_parameter_count (1)
@@ -3243,6 +3249,34 @@ feature {NONE} -- Once per modules being generated.
 
 			ise_raise_old_token := md_emit.define_member_ref (
 				create {UNI_STRING}.make ("raise_old"), ise_runtime_type_token, l_meth_sig)
+
+				-- Define `ise_enter_rescue_token'.
+			l_meth_sig.reset
+			l_meth_sig.set_method_type ({MD_SIGNATURE_CONSTANTS}.Default_sig)
+			l_meth_sig.set_parameter_count (0)
+			l_meth_sig.set_return_type ({MD_SIGNATURE_CONSTANTS}.Element_type_void, 0)
+
+			ise_enter_rescue_token := md_emit.define_member_ref (
+				create {UNI_STRING}.make ("enter_rescue"), ise_runtime_type_token, l_meth_sig)
+
+				-- Define `ise_set_rescue_level_token'.
+			l_meth_sig.reset
+			l_meth_sig.set_method_type ({MD_SIGNATURE_CONSTANTS}.Default_sig)
+			l_meth_sig.set_parameter_count (1)
+			l_meth_sig.set_return_type ({MD_SIGNATURE_CONSTANTS}.Element_type_void, 0)
+			l_meth_sig.set_type ({MD_SIGNATURE_CONSTANTS}.Element_type_i4, 0)
+
+			ise_set_rescue_level_token := md_emit.define_member_ref (
+				create {UNI_STRING}.make ("set_rescue_level"), ise_runtime_type_token, l_meth_sig)
+
+				-- Define `ise_get_rescue_level_token'.
+			l_meth_sig.reset
+			l_meth_sig.set_method_type ({MD_SIGNATURE_CONSTANTS}.Default_sig)
+			l_meth_sig.set_parameter_count (0)
+			l_meth_sig.set_return_type ({MD_SIGNATURE_CONSTANTS}.Element_type_i4, 0)
+
+			ise_get_rescue_level_token := md_emit.define_member_ref (
+				create {UNI_STRING}.make ("get_rescue_level"), ise_runtime_type_token, l_meth_sig)
 
 				-- Define `ise_rethrow_token'.
 			l_meth_sig.reset
@@ -3451,7 +3485,7 @@ feature {NONE} -- Once per modules being generated.
 
 feature {NONE} -- Implementation
 
-	generate_argument_array is
+	generate_argument_array
 			-- Generate a new argument array for system procedure creation that takes
 			-- an ARRAY [STRING] as argument.
 			-- Note: Maybe we do not need to rely on ARGUMENTS being in the system
@@ -3480,7 +3514,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Convenience
 
-	is_by_ref_type (a_type: TYPE_A): BOOLEAN is
+	is_by_ref_type (a_type: TYPE_A): BOOLEAN
 			-- Is `a_type' an out parameter type?
 		require
 			a_type_not_void: a_type /= Void
@@ -3491,7 +3525,7 @@ feature {NONE} -- Convenience
 			Result := l_ptr_type /= Void
 		end
 
-	by_ref_type (a_type: TYPE_A): TYPE_A is
+	by_ref_type (a_type: TYPE_A): TYPE_A
 			-- True type represented by `a_type'.
 		require
 			a_type_not_void: a_type /= Void
@@ -3505,7 +3539,7 @@ feature {NONE} -- Convenience
 			by_ref_type_not_void: Result /= Void
 		end
 
-	typed_pointer_class_id: INTEGER is
+	typed_pointer_class_id: INTEGER
 			-- Class id of TYPED_POINTER class.
 		once
 			Result := System.typed_pointer_class.compiled_class.class_id
@@ -3513,13 +3547,13 @@ feature {NONE} -- Convenience
 			typed_pointer_class_id_positive: Result > 0
 		end
 
-	ise_exception_manager_type_id: INTEGER is
+	ise_exception_manager_type_id: INTEGER
 			-- Type id of ISE_EXCEPTION_MANAGER
 		once
 			Result := system.ise_exception_manager_class.compiled_class.types.first.implementation_id
 		end
 
-	rt_extension_type_implementation_id: INTEGER is
+	rt_extension_type_implementation_id: INTEGER
 			-- Type id of RT_EXTENSION class.
 		require
 			present: system.rt_extension_class /= Void
@@ -3530,7 +3564,7 @@ feature {NONE} -- Convenience
 
 feature {NONE} -- Cleaning
 
-	wipe_out is
+	wipe_out
 			-- Free all used memory.
 		do
 			assembly_info := Void
@@ -3576,7 +3610,7 @@ invariant
 	il_code_generator_not_void: il_code_generator /= Void
 	dll_or_console_valid: not is_assembly_module implies (is_dll and is_console_application)
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

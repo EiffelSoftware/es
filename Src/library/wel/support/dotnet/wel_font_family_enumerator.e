@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Font family enumerator. The user must inherit from this
 		class and define the routine `action'.
@@ -24,7 +24,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (dc: WEL_DC; family: STRING_GENERAL) is
+	make (dc: WEL_DC; family: detachable STRING_GENERAL)
 			-- Enumerate the fonts in the font `family' that are
 			-- available on the `dc'.
 			-- If `family' is Void, Windows randomly selects and
@@ -32,9 +32,12 @@ feature {NONE} -- Initialization
 		require
 			dc_not_void: dc /= Void
 			dc_exits: dc.exists
+		local
+			l_font_enumerator_delegate: like font_enumerator_delegate
 		do
-			create font_enumerator_delegate.make (Current, $update_current)
-			cwel_set_enum_font_fam_procedure_address (font_enumerator_delegate)
+			create l_font_enumerator_delegate.make (Current, $update_current)
+			cwel_set_enum_font_fam_procedure_address (l_font_enumerator_delegate)
+			font_enumerator_delegate := l_font_enumerator_delegate
 			font_enumerator_object := {GC_HANDLE}.alloc (Current)
 			cwel_set_font_family_enumerator_object
 				({GC_HANDLE}.to_pointer (font_enumerator_object))
@@ -47,7 +50,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	action (elf: WEL_ENUM_LOG_FONT; tm: WEL_TEXT_METRIC; font_type: INTEGER) is
+	action (elf: WEL_ENUM_LOG_FONT; tm: WEL_TEXT_METRIC; font_type: INTEGER)
 			-- Called for each font found.
 			-- `elf', `tm' and `font_type' contain informations
 			-- about the font.
@@ -59,13 +62,13 @@ feature -- Basic operations
 		deferred
 		end
 
-	init_action is
+	init_action
 			-- Called before the enumeration.
 			-- May be redefined to make special operations.
 		do
 		end
 
-	finish_action is
+	finish_action
 			-- Called after the enumeration.
 			-- May be redefined to make special operations.
 		do
@@ -73,7 +76,7 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	enumerate (dc: WEL_DC; family: STRING_GENERAL) is
+	enumerate (dc: WEL_DC; family: detachable STRING_GENERAL)
 			-- Enumerate `family' on `dc'
 		require
 			dc_not_void: dc /= Void
@@ -91,7 +94,7 @@ feature {NONE} -- Implementation
 			finish_action
 		end
 
-	update_current (lpelf, lpntm: POINTER; font_type: INTEGER; extra: POINTER) is
+	update_current (lpelf, lpntm: POINTER; font_type: INTEGER; extra: POINTER)
 			-- Convert Windows pointers into Eiffel objects and
 			-- call `action'.
 		local
@@ -108,37 +111,37 @@ feature {NONE} -- Memory management
 	font_enumerator_object: GC_HANDLE
 			-- Handle to Current object.
 
-	font_enumerator_delegate: WEL_ENUM_FONT_DELEGATE
+	font_enumerator_delegate: detachable WEL_ENUM_FONT_DELEGATE
 			-- Delegate for callbacks.
 
-	dispose is
+	dispose
 		do
 			font_enumerator_object.free
 		end
 
 feature {NONE} -- Externals
 
-	cwel_set_enum_font_fam_procedure_address (address: WEL_ENUM_FONT_DELEGATE) is
+	cwel_set_enum_font_fam_procedure_address (address: like font_enumerator_delegate)
 		external
 			"C [macro %"enumfont.h%"]"
 		end
 
-	cwel_set_font_family_enumerator_object (object: POINTER) is
+	cwel_set_font_family_enumerator_object (object: POINTER)
 		external
 			"C [macro %"enumfont.h%"]"
 		end
 
-	cwel_release_font_family_enumerator_object is
+	cwel_release_font_family_enumerator_object
 		external
 			"C [macro %"enumfont.h%"]"
 		end
 
-	cwel_enum_font_fam_procedure: POINTER is
+	cwel_enum_font_fam_procedure: POINTER
 		external
 			"C [macro %"enumfont.h%"] :EIF_POINTER"
 		end
 
-	cwin_enum_font_families (hdc, family, enum_proc, data: POINTER) is
+	cwin_enum_font_families (hdc, family, enum_proc, data: POINTER)
 			-- SDK EnumFontFamilies
 		external
 			"C [macro %"windows.h%"] (HDC, LPCTSTR, FONTENUMPROC, LPARAM)"
@@ -146,15 +149,15 @@ feature {NONE} -- Externals
 			"EnumFontFamilies"
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

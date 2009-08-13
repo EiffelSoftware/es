@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects help SD_DOCKING_MANAGER with agents issues."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ create
 
 feature {NONE}  -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -49,7 +49,7 @@ feature {NONE}  -- Initlization
 
 feature -- Command
 
-	init_actions is
+	init_actions
 			-- Initlialize actions.
 		require
 			not_destroyed: not is_destroyed
@@ -71,7 +71,7 @@ feature -- Command
 
 feature  -- Agents
 
-	on_widget_pointer_press (a_widget: EV_WIDGET; a_button, a_x, a_y: INTEGER) is
+	on_widget_pointer_press (a_widget: EV_WIDGET; a_button, a_x, a_y: INTEGER)
 			-- Handle EV_APPLICATION's pointer button press actions.
 		require
 			not_destroyed: not is_destroyed
@@ -86,32 +86,37 @@ feature  -- Agents
 			until
 				l_zones.after
 			loop
-				if not l_zones.item.is_destroyed and then (l_zones.item.has_recursive (a_widget) and not ignore_additional_click) and l_zones.item.content /= internal_docking_manager.zones.place_holder_content then
-					if internal_docking_manager.property.last_focus_content /= l_zones.item.content then
-						internal_docking_manager.property.set_last_focus_content (l_zones.item.content)
-						l_zones.item.on_focus_in (Void)
-						if l_zones.item.content.focus_in_actions /= Void then
-							l_zones.item.content.focus_in_actions.call (Void)
-						end
-					else
-						l_content := internal_docking_manager.property.last_focus_content
-						if l_content /= Void then
-							l_auto_hide_zone ?= l_content.state.zone
-						end
-						if l_auto_hide_zone = Void and not ignore_additional_click then
-							internal_docking_manager.command.remove_auto_hide_zones (True)
-						elseif l_auto_hide_zone /= Void then
-							l_auto_hide_zone.set_focus_color (True)
+				if attached {EV_CONTAINER} l_zones.item as lt_container then
+					if not lt_container.is_destroyed and then (lt_container.has_recursive (a_widget) and not ignore_additional_click) and l_zones.item.content /= internal_docking_manager.zones.place_holder_content then
+						if internal_docking_manager.property.last_focus_content /= l_zones.item.content then
+							internal_docking_manager.property.set_last_focus_content (l_zones.item.content)
+							l_zones.item.on_focus_in (Void)
+							if l_zones.item.content.focus_in_actions /= Void then
+								l_zones.item.content.focus_in_actions.call (Void)
+							end
+						else
+							l_content := internal_docking_manager.property.last_focus_content
+							if l_content /= Void then
+								l_auto_hide_zone ?= l_content.state.zone
+							end
+							if l_auto_hide_zone = Void and not ignore_additional_click then
+								internal_docking_manager.command.remove_auto_hide_zones (True)
+							elseif l_auto_hide_zone /= Void then
+								l_auto_hide_zone.set_focus_color (True)
+							end
 						end
 					end
+				else
+					check not_possible: False end
 				end
+
 				l_zones.forth
 			end
 
 			ignore_additional_click := False
 		end
 
-	on_widget_pointer_press_for_upper_zone (a_widget: EV_WIDGET; a_button, a_x, a_y: INTEGER) is
+	on_widget_pointer_press_for_upper_zone (a_widget: EV_WIDGET; a_button, a_x, a_y: INTEGER)
 			-- Handle EV_APPLICATION's pointer button press actions, for recover SD_UPPER_ZONE's size.
 		require
 			not_destroyed: not is_destroyed
@@ -128,19 +133,24 @@ feature  -- Agents
 			loop
 				l_upper_zone ?= l_zones.item
 				if l_upper_zone /= Void then
-					if l_zones.item.has_recursive (a_widget) then
-						l_tool_bar ?= a_widget
-						-- We ignore click on tool bar.
-						if l_tool_bar = Void and then not l_upper_zone.is_ignore_restore_area then
-							l_upper_zone.recover_normal_size_from_minimize
+					if attached {EV_CONTAINER} l_zones.item as lt_container then
+						if lt_container.has_recursive (a_widget) then
+							l_tool_bar ?= a_widget
+							-- We ignore click on tool bar.
+							if l_tool_bar = Void and then not l_upper_zone.is_ignore_restore_area then
+								l_upper_zone.recover_normal_size_from_minimize
+							end
 						end
+					else
+						check not_possible: False end
 					end
 				end
+
 				l_zones.forth
 			end
 		end
 
-	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER; a_force: BOOLEAN) is
+	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER; a_force: BOOLEAN)
 			-- Handle resize zone event. Resize all the widgets in fixed_area (EV_FIXED).
 		require
 			not_destroyed: not is_destroyed
@@ -176,14 +186,14 @@ feature  -- Agents
 			internal_docking_manager.tool_bar_manager.on_resize (a_x, a_y, internal_docking_manager.internal_viewport.width, internal_docking_manager.internal_viewport.height, a_force)
 		end
 
-	on_added_zone (a_zone: SD_ZONE) is
+	on_added_zone (a_zone: SD_ZONE)
 			-- Handle inserted a zone event.
 		require
 			not_destroyed: not is_destroyed
 		do
 		end
 
-	on_pruned_zone (a_zone: SD_ZONE) is
+	on_pruned_zone (a_zone: SD_ZONE)
 			-- Handle pruned a zone event.
 		require
 			not_destroyed: not is_destroyed
@@ -191,7 +201,7 @@ feature  -- Agents
 		do
 		end
 
-	on_added_content (a_content: SD_CONTENT) is
+	on_added_content (a_content: SD_CONTENT)
 			--  Handle added a content to contents.
 		require
 			not_destroyed: not is_destroyed
@@ -203,7 +213,7 @@ feature  -- Agents
 			set: a_content.docking_manager = internal_docking_manager
 		end
 
-	on_prune_content (a_content: SD_CONTENT) is
+	on_prune_content (a_content: SD_CONTENT)
 			--  Handle prune a content from contents.
 		require
 			not_void: a_content /= Void
@@ -213,7 +223,7 @@ feature  -- Agents
 			set: a_content.docking_manager = Void
 		end
 
-	on_main_window_focus_out is
+	on_main_window_focus_out
 			-- Handle window lost focus event.
 		require
 			not_destroyed: not is_destroyed
@@ -224,8 +234,14 @@ feature  -- Agents
 			if internal_docking_manager /= Void then
 				l_content := internal_docking_manager.property.last_focus_content
 				l_zone := internal_docking_manager.zones.zone_by_content (l_content)
-				if l_zone /= Void and then internal_docking_manager.main_container.has_recursive (l_zone) then
-					l_zone.set_non_focus_selection_color
+				if l_zone /= Void then
+					if attached {EV_WIDGET} l_zone as lt_widget then
+						if internal_docking_manager.main_container.has_recursive (lt_widget) then
+							l_zone.set_non_focus_selection_color
+						end
+					else
+						check not_possible: False end
+					end
 				end
 			end
 			debug ("docking")
@@ -233,7 +249,7 @@ feature  -- Agents
 			end
 		end
 
-	on_main_window_focus_in is
+	on_main_window_focus_in
 			-- Handle window get focus event.
 		require
 			not_destroyed: not is_destroyed
@@ -244,8 +260,14 @@ feature  -- Agents
 			if internal_docking_manager /= Void then
 				l_content := internal_docking_manager.property.last_focus_content
 				l_zone := internal_docking_manager.zones.zone_by_content (l_content)
-				if l_zone /= Void and then internal_docking_manager.main_container.has_recursive (l_zone) then
-					l_zone.set_focus_color (True)
+				if l_zone /= Void then
+					if attached {EV_WIDGET} l_zone as lt_widget then
+						if internal_docking_manager.main_container.has_recursive (lt_widget) then
+							l_zone.set_focus_color (True)
+						end
+					else
+						check not_possible: False end
+					end
 				end
 			end
 			debug ("docking")
@@ -255,13 +277,11 @@ feature  -- Agents
 
 	on_top_level_window_focus_out
 			-- Handle top level window focus out actions.
-		require
-			not_destroyed: not is_destroyed
 		local
 			l_floating_zones: ARRAYED_LIST [SD_FLOATING_ZONE]
 			l_has_focus: BOOLEAN
 		do
-			if internal_docking_manager /= Void then
+			if not is_destroyed and then internal_docking_manager /= Void then
 				if not internal_docking_manager.main_window.is_destroyed and not internal_docking_manager.property.is_opening_config then
 					l_floating_zones := internal_docking_manager.query.floating_zones
 					l_has_focus := internal_docking_manager.main_window.has_focus
@@ -285,7 +305,7 @@ feature  -- Agents
 			end
 		end
 
-	on_top_level_window_focus_in is
+	on_top_level_window_focus_in
 			-- Handle top level window focus in actions.
 		require
 			not_destroyed: not is_destroyed
@@ -293,7 +313,7 @@ feature  -- Agents
 --			internal_docking_manager.tool_bar_manager.show_all_floating
 		end
 
-	on_pick_actions (a_pebble: ANY) is
+	on_pick_actions (a_pebble: ANY)
 			-- Handle pick actions.
 		require
 			not_destroyed: not is_destroyed
@@ -301,7 +321,7 @@ feature  -- Agents
 			focused_tab_stub := Void
 		end
 
-	on_drop_actions (a_pebble: ANY) is
+	on_drop_actions (a_pebble: ANY)
 			-- Handle drop actions.
 		require
 			not_destroyed: not is_destroyed
@@ -309,7 +329,7 @@ feature  -- Agents
 			ignore_additional_click := True
 		end
 
-	on_theme_changed is
+	on_theme_changed
 			-- Handle theme changed actions.
 		require
 			not_destroyed: not is_destroyed
@@ -321,7 +341,7 @@ feature  -- Agents
 			internal_docking_manager.main_container.set_background_color (internal_shared.non_focused_color_lightness)
 		end
 
-	on_pnd_motions (a_x, a_y: INTEGER; a_target: EV_ABSTRACT_PICK_AND_DROPABLE) is
+	on_pnd_motions (a_x, a_y: INTEGER; a_target: EV_ABSTRACT_PICK_AND_DROPABLE)
 			-- Handle pick and drop motion actions.
 			-- We notify all auto hide tab stubs when pick and drop shere.
 		require
@@ -360,7 +380,7 @@ feature  -- Agents
 	pointer_in_tab: BOOLEAN
 			-- During pick and drop, if pointer position with in a tab stub?
 
-	notify_one_auto_hide_panel (a_direction: INTEGER; a_target: EV_WIDGET; a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	notify_one_auto_hide_panel (a_direction: INTEGER; a_target: EV_WIDGET; a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- Notify one auto hide
 			-- Result is if notified one tab stub
 		require
@@ -407,7 +427,7 @@ feature  -- Agents
 
 feature -- Destory
 
-	destroy is
+	destroy
 			-- Destory all underline objects
 		local
 			l_viewport: EV_VIEWPORT
@@ -438,7 +458,7 @@ feature -- Destory
 
 feature -- Contract support
 
-	user_widget_valid (a_content: SD_CONTENT): BOOLEAN is
+	user_widget_valid (a_content: SD_CONTENT): BOOLEAN
 			-- Dose a_widget alreay in docking library?
 		require
 			not_destroyed: not is_destroyed
@@ -472,7 +492,7 @@ feature -- Contract support
 			Result := not l_found
 		end
 
-	title_unique (a_content: SD_CONTENT): BOOLEAN is
+	title_unique (a_content: SD_CONTENT): BOOLEAN
 			-- If `a_unique_title' really unique?
 		require
 			not_destroyed: not is_destroyed
@@ -500,7 +520,7 @@ feature -- Contract support
 
 feature {SD_DEBUG_ACCESS} -- For debug.
 
-	show_inner_container_structure is
+	show_inner_container_structure
 			-- For debug.
 		require
 			not_destroyed: not is_destroyed
@@ -510,7 +530,7 @@ feature {SD_DEBUG_ACCESS} -- For debug.
 			show_inner_container_structure_imp (internal_docking_manager.inner_containers.item.item, " ")
 		end
 
-	show_inner_container_structure_imp (a_container: EV_WIDGET; a_indent: STRING_GENERAL) is
+	show_inner_container_structure_imp (a_container: EV_WIDGET; a_indent: STRING_GENERAL)
 			-- For debug.
 		require
 			not_destroyed: not is_destroyed
@@ -573,7 +593,7 @@ invariant
 	theme_changed_handler_not_void: theme_changed_handler /= Void
 	internal_shared_not_void: internal_shared /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

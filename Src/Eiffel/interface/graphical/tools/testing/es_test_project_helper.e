@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Implementation of {TEST_PROJECT_HELPER_I} for EiffelStudio UI.
 	]"
@@ -39,39 +39,45 @@ inherit
 
 feature -- Access
 
-	last_added_class: !EIFFEL_CLASS_I
+	last_added_class: attached EIFFEL_CLASS_I
 			-- <Precursor>
+		local
+			l_class: like internal_added_class
 		do
-			if {l_class: like last_added_class} internal_added_class then
-				Result := l_class
-			end
+			l_class := internal_added_class
+			check l_class /= Void end
+			Result := l_class
 		end
 
-	last_added_cluster: !CONF_CLUSTER
+	last_added_cluster: attached CONF_CLUSTER
 			-- <Precursor>
+		local
+			l_cluster: like internal_added_cluster
 		do
-			if {l_cluster: like last_added_cluster} internal_added_cluster then
-				Result := l_cluster
-			end
+			l_cluster := last_added_cluster
+			check l_cluster /= Void end
+			Result := l_cluster
 		end
 
-	last_error: !STRING_32
+	last_error: attached STRING_32
 			-- <Precursor>
+		local
+			l_error: like internal_error
 		do
-			if {l_error: like last_error} internal_error then
-				Result := l_error
-			end
+			l_error := internal_error
+			check l_error /= Void end
+			Result := l_error
 		end
 
 feature {NONE} -- Access
 
-	internal_added_class: ?like last_added_class
+	internal_added_class: detachable like last_added_class
 			-- <Precursor>
 
-	internal_added_cluster: ?like last_added_cluster
+	internal_added_cluster: detachable like last_added_cluster
 			-- <Precursor>
 
-	internal_error: ?like last_error
+	internal_error: detachable like last_error
 			-- <Precursor>
 
 feature -- Status report
@@ -111,10 +117,10 @@ feature -- Status report
 
 feature -- Element change
 
-	add_class (a_cluster: !CONF_CLUSTER; a_path: !STRING; a_file_name: !STRING)
+	add_class (a_cluster: attached CONF_CLUSTER; a_path: attached STRING; a_file_name: attached STRING; a_class_name: attached STRING)
 			-- <Precursor>
 		local
-			l_stone: !CLASSI_STONE
+			l_stone: attached CLASSI_STONE
 			l_list: LIST [CONF_CLUSTER]
 			l_cluster: CONF_CLUSTER
 			l_retried: BOOLEAN
@@ -135,8 +141,8 @@ feature -- Element change
 				end
 
 				if l_cluster /= Void then
-					manager.add_class_to_cluster (a_file_name, l_cluster, a_path)
-					if {l_class: like last_added_class} manager.last_added_class then
+					manager.add_class_to_cluster (a_file_name, l_cluster, a_path, a_class_name)
+					if attached {like last_added_class} manager.last_added_class as l_class then
 						internal_added_class := l_class
 						create l_stone.make (internal_added_class)
 						window_manager.last_focused_development_window.advanced_set_stone (l_stone)
@@ -151,14 +157,12 @@ feature -- Element change
 			retry
 		end
 
-	add_cluster (a_target: !CONF_TARGET; a_path: !STRING)
+	add_cluster (a_target: attached CONF_TARGET; a_path: attached STRING)
 			-- <Precursor>
 		do
 			internal_error := Void
-			internal_added_cluster := Void
-			if {l_cluster: like last_added_cluster} manager.last_added_cluster then
-				internal_added_cluster := l_cluster
-			else
+			internal_added_cluster := manager.last_added_cluster
+			if internal_added_cluster = Void then
 				internal_error := locale_formatter.translation ("unknown error occurred")
 			end
 		end
@@ -169,9 +173,16 @@ feature -- Basic operations
 			-- <Precursor>
 		do
 			melt_project_cmd.execute_and_wait
+			if eiffel_project.successful then
+				window_manager.development_windows.do_all (
+					agent (a_window: EB_DEVELOPMENT_WINDOW)
+						do
+							a_window.shell_tools.show_tool ({ES_TESTING_TOOL}, True)
+						end)
+			end
 		end
 
-	run (a_working_directory: ?STRING; a_arguments: ?STRING; a_env: ?HASH_TABLE [!STRING_32, !STRING_32])
+	run (a_working_directory: detachable STRING; a_arguments: detachable STRING; a_env: detachable HASH_TABLE [attached STRING_32, attached STRING_32])
 			-- <Precursor>
 		local
 			l_params: DEBUGGER_EXECUTION_PARAMETERS
@@ -183,8 +194,8 @@ feature -- Basic operations
 			run_project_cmd.launch_with_parameters ({EXEC_MODES}.run, l_params)
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -208,10 +219,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

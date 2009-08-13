@@ -1,4 +1,4 @@
-indexing
+note
 	description : "Objects that ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,12 +19,14 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_DEBUGGER_MANAGER
+
 feature -- Properties
 
 	is_eiffel_call_stack_element: BOOLEAN = True
 			-- Is Current an Eiffel Call Stack Element ?
 
-	body_index: INTEGER is
+	body_index: INTEGER
 			-- body index of the associated routine
 		require
 			routine_not_void: routine /= Void
@@ -49,7 +51,7 @@ feature -- Properties
 	written_class: CLASS_C
 			-- Class where routine is written in
 
-	routine_i: FEATURE_I is
+	routine_i: FEATURE_I
 		local
 			ef: E_FEATURE
 		do
@@ -59,13 +61,13 @@ feature -- Properties
 			end
 		end
 
-	routine: E_FEATURE is
+	routine: E_FEATURE
 			-- Routine being called
 			-- Note from Arnaud: Computation has been deferred for optimisation purpose
 		deferred
 		end
 
-	has_result: BOOLEAN is
+	has_result: BOOLEAN
 			-- Does this routine has a Result ?
 			-- ie: function or once
 		local
@@ -75,12 +77,12 @@ feature -- Properties
 			Result := r /= Void and then r.has_return_value
 		end
 
-	has_rescue: BOOLEAN is
+	has_rescue: BOOLEAN
 		do
 			Result := routine_i /= Void and then routine_i.has_rescue_clause
 		end
 
-	result_value: ABSTRACT_DEBUG_VALUE is
+	result_value: ABSTRACT_DEBUG_VALUE
 			-- Result value of routine
 		do
 			if not initialized then
@@ -97,12 +99,12 @@ feature -- Properties
 			is_function_non_void: routine.is_function implies Result /= Void
 		end
 
-	current_object_value: ABSTRACT_DEBUG_VALUE is
+	current_object_value: ABSTRACT_DEBUG_VALUE
 			-- Current object's value.
 		deferred
 		end
 
-	local_value (i: INTEGER): ABSTRACT_DEBUG_VALUE is
+	local_value (i: INTEGER): ABSTRACT_DEBUG_VALUE
 			-- Local value at position `i'
 		require
 			routine_attached: routine /= Void
@@ -115,22 +117,66 @@ feature -- Properties
 			end
 		end
 
-	object_test_local_value (i: INTEGER): ABSTRACT_DEBUG_VALUE is
+	object_test_local_value (i: INTEGER): ABSTRACT_DEBUG_VALUE
 			-- Local value at position `i'
 		require
 			routine_attached: routine /= Void
 		local
 			locs: like locals
+			pos: INTEGER
 		do
 			locs := locals
 			if locs /= Void then
-				if {lst: EIFFEL_LIST [TYPE_DEC_AS]} routine.locals then
-					Result := locs.i_th (lst.count + i)
+				if attached routine.locals as lst then
+					pos := lst.count + i
+					if locs.valid_index (pos) then
+						Result := locs.i_th (pos)
+					end
 				end
 			end
 		end
 
-	locals: LIST [ABSTRACT_DEBUG_VALUE] is
+	local_table: HASH_TABLE [LOCAL_INFO, INTEGER]
+			-- Local variables table
+		local
+			l_result: detachable like local_table
+		do
+			l_result := private_local_table
+			if l_result = Void then
+				if routine /= Void and dynamic_type /= Void then
+					l_result := debugger_manager.debugger_ast_server.local_table (routine)
+				end
+				if l_result = Void then
+					l_result := empty_local_table
+				end
+				private_local_table := l_result
+			end
+			Result := l_result
+		ensure
+			Result_attached: Result /= Void
+		end
+
+	object_test_locals_info: LIST [TUPLE [id: ID_AS; li: LOCAL_INFO]]
+			-- List of object test local's info
+		local
+			l_result: detachable like object_test_locals_info
+		do
+			l_result := private_object_test_locals_info
+			if l_result = Void then
+				if routine /= Void then -- and dynamic_type /= Void then
+					l_result := debugger_manager.debugger_ast_server.object_test_locals (routine, break_index, break_nested_index)
+				end
+				if l_result = Void then
+					create {ARRAYED_LIST [TUPLE [ID_AS, LOCAL_INFO]]} l_result.make (0)
+				end
+				private_object_test_locals_info := l_result
+			end
+			Result := l_result
+		ensure
+			Result_attached: Result /= Void
+		end
+
+	locals: LIST [ABSTRACT_DEBUG_VALUE]
 			-- Value of local variables
 		local
 			l_locals: EIFFEL_LIST [TYPE_DEC_AS]
@@ -155,7 +201,7 @@ feature -- Properties
 			end
 		end
 
-	arguments: LIST [ABSTRACT_DEBUG_VALUE] is
+	arguments: LIST [ABSTRACT_DEBUG_VALUE]
 			-- Value of arguments
 		local
 			l_args: E_FEATURE_ARGUMENTS
@@ -182,10 +228,10 @@ feature -- Properties
 			non_void_implies_not_empty: Result /= Void implies not Result.is_empty
 		end
 
-	argument (pos: INTEGER): ABSTRACT_DEBUG_VALUE is
+	argument (pos: INTEGER): ABSTRACT_DEBUG_VALUE
 			-- Argument at position `pos'
 		do
-			if {args: like arguments} arguments then
+			if attached arguments as args then
 				if args.valid_index (pos) then
 					Result := args.i_th (pos)
 				end
@@ -194,20 +240,21 @@ feature -- Properties
 
 feature -- Stack reset
 
-	reset_stack is
+	reset_stack
 			-- Reset stack data (locals, arguments, result, ..)
 		do
 			initialized := False
 			private_arguments := Void
 			private_locals := Void
 			private_result := Void
+			private_object_test_locals_info := Void
 		ensure
 			not_initialized: not initialized
 		end
 
 feature {NONE} -- Implementation
 
-	initialize_stack is
+	initialize_stack
 			-- Initialize stack data (locals, arguments, result, ..)
 		require
 			not_initialized: not initialized
@@ -216,16 +263,10 @@ feature {NONE} -- Implementation
 			initialized: initialized
 		end
 
-	local_decl_grps_from (feat: E_FEATURE): EIFFEL_LIST [TYPE_DEC_AS] is
+	local_decl_grps_from (feat: E_FEATURE): EIFFEL_LIST [TYPE_DEC_AS]
 			-- Locals declaration groups for `feat'.
 		do
 			Result := feat.locals
-		end
-
-	object_test_locals_from (feat: E_FEATURE): LIST [TUPLE [id: ID_AS; type: TYPE_AS]] is
-			-- Locals declaration groups for `feat'.
-		do
-			Result := feat.object_test_locals
 		end
 
 feature {NONE} -- Implementation Properties
@@ -239,6 +280,12 @@ feature {NONE} -- Implementation Properties
 	private_result: like result_value
 			-- Associated result
 
+	private_local_table: like local_table
+			-- Associated local variables table
+
+	private_object_test_locals_info: like object_test_locals_info
+			-- Associated list of object test local's resolved info
+
 	initialized: BOOLEAN
 			-- Is the stack initialized
 
@@ -247,10 +294,18 @@ feature {NONE} -- Implementation Properties
 
 feature {NONE} -- Implementation helper
 
-	error_value (a_name, a_mesg: STRING): DUMMY_MESSAGE_DEBUG_VALUE is
+	error_value (a_name, a_mesg: STRING): DUMMY_MESSAGE_DEBUG_VALUE
 		do
 			create Result.make_with_name (a_name)
 			Result.set_message (a_mesg)
+		end
+
+feature {NONE} -- Implementation
+
+	empty_local_table: HASH_TABLE [LOCAL_INFO, INTEGER]
+			-- Empty local table
+		once
+			create Result.make (0)
 		end
 
 invariant
@@ -261,8 +316,8 @@ invariant
 --				not private_locals.is_empty
 --	valid_level: level_in_stack >= 1
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -275,22 +330,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EIFFEL_CALL_STACK_ELEMENT

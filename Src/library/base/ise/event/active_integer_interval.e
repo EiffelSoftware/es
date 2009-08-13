@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Contiguous integer interval that calls an action sequence
 		when it changes.
@@ -27,7 +27,7 @@ create
 
 feature -- Initialization
 
-	adapt (other: INTEGER_INTERVAL) is
+	adapt (other: INTEGER_INTERVAL)
 			-- Reset to be the same interval as `other'.
 		do
 			Precursor (other)
@@ -36,14 +36,14 @@ feature -- Initialization
 
 feature -- Element change
 
-	extend (v: INTEGER) is
+	extend (v: INTEGER)
 			-- Make sure that interval goes all the way
 			-- to `v' (up or down).
 		do
 			put (v)
 		end
 
-	put (v: INTEGER) is
+	put (v: INTEGER)
 			-- Make sure that interval goes all the way
 			-- to `v' (up or down).
 		local
@@ -58,7 +58,7 @@ feature -- Element change
 
 feature -- Resizing
 
-	resize (min_index, max_index: INTEGER) is
+	resize (min_index, max_index: INTEGER)
 			-- Rearrange interval to go from at most
 			-- `min_index' to at least `max_index',
 			-- encompassing previous bounds.
@@ -72,7 +72,7 @@ feature -- Resizing
 			end
 		end
 
-	resize_exactly (min_index, max_index: INTEGER) is
+	resize_exactly (min_index, max_index: INTEGER)
 			-- Rearrange interval to go from
 			-- `min_index' to `max_index'.
 		local
@@ -87,7 +87,7 @@ feature -- Resizing
 
 feature -- Duplication
 
-	copy (other: like Current) is
+	copy (other: like Current)
 			-- Reset to be the same interval as `other'.
 		do
 			Precursor (other)
@@ -96,10 +96,10 @@ feature -- Duplication
 
 feature -- Event handling
 
-	change_actions: ACTION_SEQUENCE [TUPLE] is
+	change_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions performed when interval changes.
 		local
-			r: ?ACTION_SEQUENCE [TUPLE]
+			r: detachable ACTION_SEQUENCE [TUPLE]
 		do
 			r := opo_change_actions
 			if r = Void then
@@ -113,10 +113,10 @@ feature -- Event handling
 
 feature {NONE} -- Implementation
 
-	on_change is
+	on_change
 			-- Called when interval changes.
 		local
-			a: ?ACTION_SEQUENCE [TUPLE]
+			a: detachable ACTION_SEQUENCE [TUPLE]
 		do
 			a := opo_change_actions
 			if a /= Void then
@@ -124,10 +124,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	opo_change_actions: ?ACTION_SEQUENCE [TUPLE];
+	opo_change_actions: detachable ACTION_SEQUENCE [TUPLE];
 			-- Once per object implementation for `change_actions'
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

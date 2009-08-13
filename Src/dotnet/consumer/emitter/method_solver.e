@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Method to be consumed in Eiffel, intermediate structure used to solve overloading"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -33,21 +33,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make (meth: METHOD_INFO; get_property: BOOLEAN) is
+	make (meth: METHOD_INFO; get_property: BOOLEAN)
 			-- Set `internal_method' with `meth'.
 		require
 			non_void_method: meth /= Void
 		do
+			eiffel_name := ""
 			internal_method := meth
 			is_get_property := get_property
 			if
 				internal_method.is_special_name and
-				(internal_method.name.equals (op_explicit) or
-					internal_method.name.equals (op_implicit))
+				((internal_method.name ~ op_explicit) or
+				(internal_method.name ~ op_implicit))
 			then
 				if
-					internal_method.get_parameters.count = 1 and
-					not internal_method.return_type.equals_type (Void_type)
+					attached internal_method.get_parameters as l_params and then l_params.count = 1 and
+					not Void_type.equals_type (internal_method.return_type)
 				then
 					is_conversion_operator := True
 				end
@@ -58,34 +59,42 @@ feature {NONE} -- Initialization
 			arguments_set: arguments /= Void
 		end
 
-
 feature -- Access
 
-	dotnet_name: STRING is
+	dotnet_name: STRING
 			-- .NET name
 		do
 			create Result.make_from_cil (internal_method.name)
 		end
 
-	starting_resolution_name: STRING is
+	starting_resolution_name: STRING
 			-- .NET Name used to perform overloading resolution
+		local
+			l_params: detachable NATIVE_ARRAY [detachable PARAMETER_INFO]
+			l_param: detachable PARAMETER_INFO
+			l_type: detachable SYSTEM_TYPE
 		do
-			Result := internal_start_name
-			if Result = Void then
+			if attached internal_start_name as l_result then
+				Result := l_result
+			else
 				Result := dotnet_name
 				if is_get_property and then Result.substring_index ("get_", 1) = 1 then
 					Result.remove_head (4)
 				elseif is_conversion_operator then
-					if internal_method.get_parameters.item (0).parameter_type.equals_type (internal_method.reflected_type) then
+					l_params := internal_method.get_parameters
+					check l_params_attached: l_params /= Void end
+					l_param := l_params.item (0)
+					check l_param_attached: l_param /= Void end
+					l_type := l_param.parameter_type
+					check l_type_attached: l_type /= Void end
+					if l_type.equals_type (internal_method.reflected_type) then
 						Result := to_conversion_name.twin
-						Result.append (
-							formatted_variable_type_name (referenced_type_from_type (
-								internal_method.return_type).name))
+						l_type := internal_method.return_type
+						check l_type_attached: l_type /= Void end
+						Result.append (formatted_variable_type_name (referenced_type_from_type (l_type).name))
 					else
 						Result := from_conversion_name.twin
-						Result.append (
-							formatted_variable_type_name (referenced_type_from_type (
-								internal_method.get_parameters.item (0).parameter_type).name))
+						Result.append (formatted_variable_type_name (referenced_type_from_type (l_type).name))
 					end
 				end
 				if is_com_interface_member then
@@ -111,30 +120,34 @@ feature -- Access
 	is_conversion_operator: BOOLEAN
 			-- Is Current a conversion operator?
 
-	is_com_interface_member: BOOLEAN is
+	is_com_interface_member: BOOLEAN
 			-- Is member from a COM interface	
 		local
-			l_source_type: SYSTEM_TYPE
+			l_source_type: detachable SYSTEM_TYPE
 		do
 			l_source_type := internal_method.declaring_type
+			check l_source_type_attached: l_source_type /= Void end
 			Result := l_source_type.is_interface and l_source_type.is_import
 		end
 
-	com_member_suffix: STRING is
+	com_member_suffix: STRING
 			-- A COM member's suffix
 		require
 			is_com_interface_member: is_com_interface_member
 		local
-			l_type: SYSTEM_TYPE
-			l_name: SYSTEM_STRING
+			l_type: detachable SYSTEM_TYPE
+			l_name: detachable SYSTEM_STRING
 			l_count, i: INTEGER
 			l_stop: BOOLEAN
 		do
 			l_type := internal_method.declaring_type
+			check l_type_attached: l_type /= Void end
 			l_name := l_type.name
-			Result ?= suffix_table.item (l_name)
-			if Result = Void then
-				if l_type.get_interfaces.count > 0 then
+			check l_name_attached: l_name /= Void end
+			if attached {STRING_8} suffix_table.item (l_name) as l_result then
+				Result := l_result
+			else
+				if attached l_type.get_interfaces as l_interfaces and then l_interfaces.count > 0 then
 						-- Only version if a COM interface inherits another interface.
 						-- There is no need to check if the inherited interfaces are COM interfaces, becasue they should be. If not
 						-- then the COM binary will no load.
@@ -161,7 +174,7 @@ feature -- Access
 
 feature -- Element Settings
 
-	set_eiffel_name (name: like eiffel_name) is
+	set_eiffel_name (name: like eiffel_name)
 			-- Set `eiffel_name' with `name'.
 		require
 			non_void_name: name /= Void
@@ -173,7 +186,7 @@ feature -- Element Settings
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			if arguments.count = other.arguments.count then
@@ -191,7 +204,7 @@ feature {METHOD_SOLVER, OVERLOAD_SOLVER} -- Implementation
 
 feature {NONE} -- Implementation
 
-	suffix_table: HASHTABLE is
+	suffix_table: HASHTABLE
 			--
 		once
 			create Result.make (100)
@@ -199,26 +212,30 @@ feature {NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	internal_start_name: STRING
+	internal_start_name: detachable STRING
 			-- Cached version of `starting_resolution_name'
 
 feature {NONE} -- Constants
 
-	Void_type: SYSTEM_TYPE is
+	Void_type: SYSTEM_TYPE
 			-- Void .NET type
+		local
+			l_result: detachable SYSTEM_TYPE
 		once
-			Result := {SYSTEM_TYPE}.get_type_string (("System.Void").to_cil)
+			l_result := {SYSTEM_TYPE}.get_type_string (("System.Void").to_cil)
+			check l_result_attached: l_result /= Void end
+			Result := l_result
 		end
 
-	op_implicit: SYSTEM_STRING is "op_Explicit"
-	op_explicit: SYSTEM_STRING is "op_Implicit"
+	op_implicit: SYSTEM_STRING = "op_Explicit"
+	op_explicit: SYSTEM_STRING = "op_Implicit"
 			-- Special routine for conversion.
 
-	from_conversion_name: STRING is "from_"
-	to_conversion_name: STRING is "to_";
+	from_conversion_name: STRING = "from_"
+	to_conversion_name: STRING = "to_";
 			-- Generated name corresponding to `op_xx'.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

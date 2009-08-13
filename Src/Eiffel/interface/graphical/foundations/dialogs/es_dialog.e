@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A base dialog implementation for all dialogs resident in EiffelStudio.
 		
@@ -37,7 +37,11 @@ convert
 feature {NONE} -- Initialization
 
 	make_with_window (a_window: like development_window)
-			-- Initialize dialog using a specific development window
+			-- Initialize dialog using a specific development window.
+			-- Note: There is typically no need to use use this routine unless access to the window is
+			--       required during `build_dialog_interface'/`on_after_initialize'.
+			--
+			-- `a_window': A window to show use to show the dialog relative to.
 		require
 			a_window_attached: a_window /= Void
 			a_window_is_interface_usable: a_window.is_interface_usable
@@ -91,7 +95,7 @@ feature {NONE} -- Initialization
 				dialog.set_default_push_button (dialog_window_buttons.item (default_button))
 			end
 
-			if help_providers.is_service_available and then {l_context: !HELP_CONTEXT_I} Current then
+			if help_providers.is_service_available and then attached {HELP_CONTEXT_I} Current as l_context then
 				bind_help_shortcut (dialog)
 			end
 
@@ -219,14 +223,20 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	dialog: EV_DIALOG
-			-- Actual dialog
+	dialog: attached EV_DIALOG
+			-- Actual dialog.
+		local
+			l_result: like internal_dialog
 		do
-			Result := internal_dialog
-			if Result = Void then
-				Result := create_dialog
+			l_result := internal_dialog
+			if l_result = Void then
+				Result := create_dialog.as_attached
 				internal_dialog := Result
+			else
+				Result := l_result
 			end
+		ensure then
+			result_consistent: Result = dialog
 		end
 
 	buttons: DS_SET [INTEGER]
@@ -275,12 +285,13 @@ feature {NONE} -- Access
 			is_interface_usable: is_interface_usable
 			is_initialized: internal_development_window /= Void or else (is_initialized or is_initializing)
 		local
+			l_result: like internal_development_window
 			l_window: EV_WINDOW
 			l_windows: BILINEAR [EB_WINDOW]
-			l_wm: ?EB_WINDOW_MANAGER
+			l_wm: detachable EB_WINDOW_MANAGER
 		do
-			Result := internal_development_window
-			if Result = Void then
+			l_result := internal_development_window
+			if l_result = Void then
 				if is_modal then
 					l_window := dialog.blocking_window
 					if l_window /= Void then
@@ -290,21 +301,22 @@ feature {NONE} -- Access
 				if l_window /= Void then
 						-- Attempt to find matching top level window.
 					l_windows := (create {EB_SHARED_WINDOW_MANAGER}).window_manager.windows
-					from l_windows.start until l_windows.after or Result /= Void loop
-						if l_window = l_windows.item.window then
-							Result ?= l_windows.item
+					from l_windows.start until l_windows.after or l_result /= Void loop
+						if l_window = l_windows.item.window and then attached {EB_DEVELOPMENT_WINDOW} l_windows.item as l_result_window then
+							l_result := l_result_window
 						end
 						l_windows.forth
 					end
 				else
 					l_wm := (create {EB_SHARED_WINDOW_MANAGER}).window_manager
 					if l_wm /= Void then
-						Result := l_wm.last_focused_development_window
+						l_result := l_wm.last_focused_development_window
 					end
 				end
 			end
+			Result := l_result
 		ensure
-			not_result_is_recycled: Result /= Void implies not Result.is_recycled
+			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
 	dialog_border_width: INTEGER
@@ -344,7 +356,7 @@ feature {NONE} -- Access
 	frozen button_actions: DS_HASH_TABLE [TUPLE [action: like button_action; before_close: BOOLEAN], INTEGER]
 			-- Dialog button actions
 
-	dialog_session_id: !STRING_8
+	dialog_session_id: attached STRING_8
 			-- Dialog session ID for storing size/position information
 		require
 			is_interface_usable: is_interface_usable
@@ -458,8 +470,8 @@ feature {NONE} -- Status report
 			-- Indicates if the dialog's shutdown has been vetoed
 			-- Note: See `veto_close' for more information
 
-	is_recycled_on_closing: BOOLEAN
-			-- Indicates if the dialog should be recycled on closing.
+	is_recycled_on_close: BOOLEAN
+			-- <Precursor>
 		do
 			Result := True
 		end
@@ -606,6 +618,12 @@ feature {NONE} -- Query
 				Result := interface_names.b_reset
 			when {ES_DIALOG_BUTTONS}.apply_button then
 				Result := interface_names.b_apply
+			when {ES_DIALOG_BUTTONS}.save_button then
+				Result := interface_names.b_save
+			when {ES_DIALOG_BUTTONS}.open_button then
+				Result := interface_names.b_open
+			when {ES_DIALOG_BUTTONS}.print_button then
+				Result := interface_names.b_print
 			end
 		ensure
 			result_attached: Result /= Void
@@ -784,10 +802,10 @@ feature {NONE} -- Basic operation
 
 feature -- Actions
 
-	frozen show_actions: !EV_LITE_ACTION_SEQUENCE [TUPLE]
+	frozen show_actions: attached EV_LITE_ACTION_SEQUENCE [TUPLE]
 			-- Actions performed when the window is shown
 
-	frozen hide_actions: !EV_LITE_ACTION_SEQUENCE [TUPLE]
+	frozen hide_actions: attached EV_LITE_ACTION_SEQUENCE [TUPLE]
 			-- Actions performed when the window is hided
 
 feature {NONE} -- Action handlers
@@ -922,7 +940,7 @@ feature {NONE} -- Action handlers
 					else
 					end
 				elseif not Result and not a_alt and not a_shift and then (is_confirmation_key_active or a_ctrl) and a_key.code = {EV_KEY_CONSTANTS}.key_enter then
-					if a_ctrl or else ({l_widget: !EV_WIDGET} ev_application.focused_widget and then not {l_button: !EV_BUTTON} l_widget) then
+					if a_ctrl or else (attached ev_application.focused_widget as l_widget and then not attached {EV_BUTTON} l_widget as l_button) then
 							-- We check if the focus widget is Void, because if it is then, technically the dialog does not have focus.
 							-- The key processing will stil be effective if there is no focused widget, which could be a bug.
 						on_confirm_dialog
@@ -966,7 +984,7 @@ feature {NONE} -- Factory
 
 			if help_providers.is_service_available then
 					-- Add a help button, if help is available
-				if {l_help_context: !HELP_CONTEXT_I} Current and then l_help_context.is_help_available then
+				if attached {HELP_CONTEXT_I} Current as l_help_context and then l_help_context.is_help_available then
 					l_button := create_help_button
 					l_container.extend (l_button)
 					l_container.disable_item_expand (l_button)
@@ -1011,7 +1029,7 @@ feature {NONE} -- Factory
 				register_action (l_button.select_actions, agent on_dialog_button_pressed (l_id))
 					-- Bind other actions
 				bind_dialog_button (l_id, l_button)
-				if is_recycled_on_closing then
+				if is_recycled_on_close then
 						-- Process automatic recycling
 					register_action (l_button.select_actions, agent do if not is_shown then recycle end end)
 				end
@@ -1054,7 +1072,7 @@ feature {NONE} -- Factory
 			Result.set_pixmap (stock_pixmaps.command_system_info_icon)
 
 			l_enable_help := True
-			if {l_context: !HELP_CONTEXT_I} Current then
+			if attached {HELP_CONTEXT_I} Current as l_context then
 				l_enable_help := l_context.is_interface_usable and then help_providers.service.is_provider_available (l_context.help_provider)
 			end
 
@@ -1095,8 +1113,8 @@ invariant
 	default_cancel_button_is_valid_button_id: buttons.has (default_cancel_button)
 	button_actions_attached: button_actions /= Void
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1109,22 +1127,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

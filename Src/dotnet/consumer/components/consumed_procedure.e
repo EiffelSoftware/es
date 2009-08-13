@@ -1,4 +1,4 @@
-indexing
+note
 	description: ".NET method as seen by Eiffel"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ inherit
 		rename
 			make as member_make
 		redefine
-			has_arguments, arguments, q, dotnet_eiffel_name
+			has_arguments, arguments, q
 		end
 create
 	make,
@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 
 	make (en, dn, den: STRING; args: like arguments; froz, static, defer, pub, ns, virt, poe: BOOLEAN;
 			a_type: CONSUMED_REFERENCED_TYPE)
-		is
+
 			-- Initialize consumed method.
 		require
 			non_void_eiffel_name: en /= Void
@@ -38,6 +38,8 @@ feature {NONE} -- Initialization
 			member_make (en, dn, pub, a_type)
 			if not den.is_equal (en) then
 				q := den
+			else
+				q := en
 			end
 			a := args
 			if froz or not virt then
@@ -56,7 +58,7 @@ feature {NONE} -- Initialization
 				f := f | {FEATURE_ATTRIBUTE}.Is_virtual
 			end
 			if poe then
-				f := f | {FEATURE_ATTRIBUTE}.Is_property_or_event				
+				f := f | {FEATURE_ATTRIBUTE}.Is_property_or_event
 			end
 		ensure
 			eiffel_name_set: eiffel_name = en
@@ -73,7 +75,7 @@ feature {NONE} -- Initialization
 			declared_type_set: declared_type = a_type
 		end
 
-	make_attribute_setter (en, dn: STRING; arg: CONSUMED_ARGUMENT; a_type: CONSUMED_REFERENCED_TYPE; a_is_static: BOOLEAN) is
+	make_attribute_setter (en, dn: STRING; arg: CONSUMED_ARGUMENT; a_type: CONSUMED_REFERENCED_TYPE; a_is_static: BOOLEAN)
 			-- Initialize consumed method.
 		require
 			non_void_eiffel_name: en /= Void
@@ -84,15 +86,16 @@ feature {NONE} -- Initialization
 			a_type_not_void: a_type /= Void
 		do
 			member_make (en, dn, True, a_type)
+			q := en
 			a := <<arg>>
 			f := f | {FEATURE_ATTRIBUTE}.Is_frozen
 			if a_is_static then
-				f := f | {FEATURE_ATTRIBUTE}.Is_static	
+				f := f | {FEATURE_ATTRIBUTE}.Is_static
 			end
 			f := f | {FEATURE_ATTRIBUTE}.Is_attribute_setter
 		ensure
 			eiffel_name_set: eiffel_name = en
-			dotnet_name_set: dotnet_name = en
+			dotnet_name_set: dotnet_name = dn
 			donet_eiffel_name_set: equal (dotnet_eiffel_name, en)
 			is_frozen_set: is_frozen = True
 			is_static_set: is_static = a_is_static
@@ -107,31 +110,20 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	arguments: ARRAY [CONSUMED_ARGUMENT] is
+	arguments: ARRAY [CONSUMED_ARGUMENT]
 			-- Feature arguments
 		do
 			Result := a
 		end
 
-	dotnet_eiffel_name: STRING is
-			-- Eiffel entity name without overloading resolved.
-		do
-			if q = Void then
-					-- If `q' is not set then it is identical to the `eiffel_name'.
-				Result := e
-			else
-				Result := q
-			end
-		end
-
 feature -- Status report
 
-	has_arguments: BOOLEAN is
+	has_arguments: BOOLEAN
 			-- Does current have arguments?
 		do
 			Result := arguments /= Void and then arguments.count /= 0
 		end
-		
+
 feature {NONE} -- Access
 
 	a: like arguments
@@ -140,7 +132,7 @@ feature {NONE} -- Access
 	q: like dotnet_eiffel_name;
 			-- Internal data for `dotnet_eiffel_name'.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

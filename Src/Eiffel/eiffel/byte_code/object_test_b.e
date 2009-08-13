@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Byte node for object test."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -34,23 +34,25 @@ create
 
 feature {NONE} -- Creation
 
-	make (l: like target; e: like expression; i: like info)
+	make (l: like target; e: like expression; i: like info; b: BOOLEAN)
 		require
-			t_attached: l /= Void
+			l_attached: l /= Void
 			e_attached: e /= Void
 		do
 			target := l
 			expression := e
 			info := i
+			is_void_check := b
 		ensure
 			target_set: target = l
 			expression_set: expression = e
 			info_set: info = i
+			is_void_check_set: is_void_check = b
 		end
 
 feature -- Visitor
 
-	process (v: BYTE_NODE_VISITOR) is
+	process (v: BYTE_NODE_VISITOR)
 			-- Process current element.
 		do
 			v.process_object_test_b (Current)
@@ -73,21 +75,25 @@ feature -- Access
 	info: CREATE_INFO
 			-- Additional information about target type
 
+	is_void_check: BOOLEAN
+			-- Are we simply performing a check for voidness, in which case no need to
+			-- perform a type check.
+
 feature -- Status report
 
-	has_gcable_variable: BOOLEAN is
+	has_gcable_variable: BOOLEAN
 			-- Is the expression using a GCable variable?
 		do
 			Result := expression.has_gcable_variable
 		end
 
-	has_call: BOOLEAN is
+	has_call: BOOLEAN
 			-- Is the expression using a call?
 		do
 			Result := expression.has_call
 		end
 
-	allocates_memory: BOOLEAN is
+	allocates_memory: BOOLEAN
 			-- Does the expression allocate memory?
 		do
 			Result := expression.allocates_memory or else expression.allocates_memory_for_type (target.type)
@@ -101,7 +107,7 @@ feature -- C code generation
 			create {OBJECT_TEST_BL} Result.make (Current)
 		end
 
-	used (r: REGISTRABLE): BOOLEAN is
+	used (r: REGISTRABLE): BOOLEAN
 			-- Is register `r' used in local or forthcomming dot calls ?
 		do
 			Result := target.used (r) or else expression.used (r)
@@ -155,7 +161,7 @@ invariant
 	expression_not_void: expression /= Void
 	target_not_void: target /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 2007-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

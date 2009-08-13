@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Works like SD_DOCKING_ZONE, but instead of showing title bar, show one tab."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -39,15 +39,13 @@ create
 
 feature -- Initlization
 
-	make (a_content: SD_CONTENT) is
-			-- Creation method.
+	make (a_content: SD_CONTENT)
+			-- Creation method
 		require
 			a_content_not_void: a_content /= Void
 		do
 			default_create
 			create internal_shared
-			-- Not breaking the invariant
-			create internal_shared_not_used
 
 			internal_content := a_content
 			internal_docking_manager := a_content.docking_manager
@@ -73,92 +71,94 @@ feature -- Initlization
 
 feature -- Redefine
 
-	on_focus_in (a_content: SD_CONTENT) is
-			-- Redefine
+	on_focus_in (a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			Precursor {SD_DOCKING_ZONE} (a_content)
 			internal_docking_manager.command.remove_auto_hide_zones (True)
 			notebook.set_focus_color (True)
 		end
 
-	on_focus_out is
-			-- Redefine
+	on_focus_out
+			-- <Precursor>
 		do
 			Precursor {SD_DOCKING_ZONE}
 			notebook.set_focus_color (False)
 		end
 
-	set_title (a_title: STRING_GENERAL) is
-			-- Redefine
+	set_title (a_title: STRING_GENERAL)
+			-- <Precursor>
 		do
 			notebook.set_item_text (internal_content, a_title)
 		end
 
-	set_show_normal_max (a_show: BOOLEAN) is
-			-- Redefine
+	set_show_normal_max (a_show: BOOLEAN)
+			-- <Precursor>
 		do
 		end
 
-	set_show_stick (a_show: BOOLEAN) is
-			-- Redefine
+	set_show_stick (a_show: BOOLEAN)
+			-- <Precursor>
 		do
 
 		end
 
-	set_max (a_max: BOOLEAN) is
-			-- Redefine
+	set_max (a_max: BOOLEAN)
+			-- <Precursor>
 		do
 			notebook.set_show_maximized (a_max)
 		end
 
-	set_pixmap (a_pixmap: EV_PIXMAP) is
-			-- Redefine
+	set_pixmap (a_pixmap: EV_PIXMAP)
+			-- <Precursor>
 		do
 			notebook.set_item_pixmap (content, a_pixmap)
 		end
 
-	update_user_widget is
-			-- Redefine
+	update_user_widget
+			-- <Precursor>
 		do
 			notebook.replace (content)
 		end
 
-	is_maximized: BOOLEAN is
-			-- Redefine
+	is_maximized: BOOLEAN
+			-- <Precursor>
 		do
 			Result := notebook.is_maximized
 		end
 
-	title: STRING_32 is
-			-- Redefine
+	title: STRING_32
+			-- <Precursor>
 		do
 			Result := notebook.item_text (internal_content)
 		end
 
-	title_area: EV_RECTANGLE is
-			-- Refedine
+	title_area: EV_RECTANGLE
+			-- <Precursor>
 		do
 			Result := notebook.tab_area
 		end
 
-	set_focus_color (a_selection: BOOLEAN) is
-			-- Redefine.
+	set_focus_color (a_selection: BOOLEAN)
+			-- <Precursor>
 		do
 			if a_selection then
-				notebook.set_active_color (a_selection)
-			else
-				notebook.set_focus_color (False)
+				notebook.set_tab_active_color (True)
 			end
+
+			-- Although `set_focus_color' only used for setting notebook tab's color, we have to ensure
+			-- notebook border color correct, see bug#15159
+			notebook.set_focus_color (a_selection)
 		end
 
-	set_non_focus_selection_color is
-			-- Set title bar non-focuse color.
+	set_non_focus_selection_color
+			-- <Precursor>
 		do
-			notebook.set_focus_color (False)
+			notebook.set_tab_active_color (False)
 		end
 
-	show_notebook_contents (a_is_show: BOOLEAN) is
-			-- Redefine
+	show_notebook_contents (a_is_show: BOOLEAN)
+			-- <Precursor>
 		do
 			Precursor {SD_UPPER_ZONE}(a_is_show)
 			if a_is_show then
@@ -171,17 +171,17 @@ feature -- Redefine
 feature {SD_DOCKING_STATE} -- Query
 
 	notebook: SD_NOTEBOOK_UPPER
-			-- Notebook used for hold SD_CONTENT.
+			-- Notebook used for hold SD_CONTENT
 
 feature {NONE} -- Implementation
 
-	on_tab_drag (a_content: SD_CONTENT; a_x, a_y, a_screen_x, a_screen_y: INTEGER) is
-			-- Handle drag tab actions.
+	on_tab_drag (a_content: SD_CONTENT; a_x, a_y, a_screen_x, a_screen_y: INTEGER)
+			-- Handle drag tab actions
 		do
 			on_drag_started (a_x, a_y, 0, 0, 0, a_screen_x, a_screen_y)
 		end
 
-	on_normal_max_window is
+	on_normal_max_window
 		do
 			-- We need to remove the minimized state when either
 			-- selecting `restore' or `maximize'.
@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 invariant
 	internal_notebook_not_void: notebook /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Mutex base lock to prevent mutlitple processes from concurrent access to IO sensitive functions."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,13 +10,8 @@ frozen class
 
 inherit
 	SYSTEM_OBJECT
-	
-	CACHE_SETTINGS
-		export
-			{NONE} all
-		end
 
-	MUTEX_FACTORY
+	CACHE_SETTINGS
 		export
 			{NONE} all
 		end
@@ -28,7 +23,7 @@ create
 
 feature -- Basic Operation
 
-	lock is
+	lock
 			-- lock cache
 		do
 			internal_count.set_item (count + 1)
@@ -41,7 +36,7 @@ feature -- Basic Operation
 			is_locked: is_locked
 		end
 
-	unlock is
+	unlock
 			-- lock cache
 		require
 			count_positive: count > 0
@@ -57,7 +52,7 @@ feature -- Basic Operation
 
 feature -- Access
 
-	count: INTEGER is
+	count: INTEGER
 			-- number of locks
 		do
 			Result := internal_count.item
@@ -65,18 +60,18 @@ feature -- Access
 			count_positive: count >= 0
 		end
 
-	is_locked: BOOLEAN is
+	is_locked: BOOLEAN
 			-- is cache locked?
 		do
 			Result := count > 0
 		end
 
-	notifier: NOTIFIER
+	notifier: detachable NOTIFIER
 			-- Notifier used to inform user of locks
 
 feature -- Element change
 
-	set_notifier (a_notifier: like notifier) is
+	set_notifier (a_notifier: like notifier)
 			-- Set `notifier' to `a_notifier'.
 		do
 			notifier := a_notifier
@@ -86,7 +81,7 @@ feature -- Element change
 
 feature -- DISPOSABLE
 
-	dispose is
+	dispose
 			-- clean up
 		do
 			check
@@ -97,7 +92,7 @@ feature -- DISPOSABLE
 
 feature {NONE} -- Implementation
 
-	perform_locking is
+	perform_locking
 			-- performs locking
 		local
 			l_wait: BOOLEAN
@@ -115,7 +110,7 @@ feature {NONE} -- Implementation
 			is_locked: is_locked
 		end
 
-	perform_unlocking is
+	perform_unlocking
 			-- performs locking
 		do
 			guard.release_mutex
@@ -123,21 +118,53 @@ feature {NONE} -- Implementation
 			not_locked: not is_locked
 		end
 
-	guard: SYSTEM_MUTEX is
+	guard: SYSTEM_MUTEX
 			-- guard implementation
 		once
-			Result := new_mutex (cache_lock_id)
+			create Result.make (False, "Global\" + create {STRING}.make_from_cil (cache_lock_id))
+			setup_mutex (Result)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	internal_count: INTEGER_REF is
+	internal_count: INTEGER_REF
 			-- internal count
 		once
 			create Result
 		end
 
-indexing
+	setup_mutex (a_mutex: SYSTEM_MUTEX)
+			-- Setup `a_mutex' to be shared among various users of a machine.
+		require
+			a_mutex_not_void: a_mutex /= Void
+		local
+			retried: BOOLEAN
+			l_security: detachable MUTEX_SECURITY
+			l_rule: MUTEX_ACCESS_RULE
+			l_account: NT_ACCOUNT
+			l_identity: detachable IDENTITY_REFERENCE
+		do
+			if not retried then
+				create l_account.make ("Everyone")
+				if l_account.is_valid_target_type ({SECURITY_IDENTIFIER}) then
+						-- In theory the following code should always succeed since we check for its validity
+						-- just before, but on a swedish version of Windows it simply crashes with a
+						-- IdentityNotMappedException exception. This is why we have the rescue clause.
+						-- If it fails it simply keeps the default access control.
+					l_identity := l_account.translate ({SECURITY_IDENTIFIER})
+					l_security := a_mutex.get_access_control
+					check l_security_attached: l_security /= Void end
+					create l_rule.make (l_identity, {MUTEX_RIGHTS}.Full_control, {ACCESS_CONTROL_TYPE}.Allow)
+					l_security.add_access_rule (l_rule)
+					a_mutex.set_access_control (l_security)
+				end
+			end
+		rescue
+			retried := True
+			retry
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

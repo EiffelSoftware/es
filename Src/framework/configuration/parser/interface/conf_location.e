@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract representation of a file system location."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -47,7 +47,7 @@ feature -- Access, stored in configuration file
 
 feature -- Access queries
 
-	original_directory: STRING is
+	original_directory: STRING
 			-- The directory part of `original_path' (without trailing '\').
 		do
 			Result := directory (original_path)
@@ -55,7 +55,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	original_file: STRING is
+	original_file: STRING
 			-- The file part of `original_path'.
 		do
 			Result := file (original_path)
@@ -63,7 +63,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	evaluated_path: STRING is
+	evaluated_path: STRING
 			-- The fully resolved path with file name.
 		local
 			l_file_system: like file_system
@@ -74,7 +74,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	evaluated_directory: STRING is
+	evaluated_directory: STRING
 			-- The directory part of `evaluated_path' (without trailing '\' or '/').
 		local
 			l_file_system: like file_system
@@ -90,7 +90,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	evaluated_file: STRING is
+	evaluated_file: STRING
 			-- The file part of `evaluated_path'.
 		do
 			Result := file (internal_evaluated_path)
@@ -98,7 +98,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	directory_separator: CHARACTER is
+	directory_separator: CHARACTER
 			-- The directory separator for the curren platform.
 		do
 			if operating_system.is_windows then
@@ -108,7 +108,7 @@ feature -- Access queries
 			end
 		end
 
-	build_path (a_directory, a_file: STRING): STRING is
+	build_path (a_directory, a_file: STRING): STRING
 			-- Add directories and filename to current directory.
 			-- `a_directory' can be in any format.
 		require
@@ -145,7 +145,7 @@ feature -- Access queries
 
 feature {CONF_ACCESS} -- Update, stored in configuration file
 
-	set_parent (a_parent: like parent) is
+	set_parent (a_parent: like parent)
 			-- Set `parent' to `a_parent'.
 		do
 			parent := a_parent
@@ -153,7 +153,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			parent_set: parent = a_parent
 		end
 
-	set_target (a_target: like target) is
+	set_target (a_target: like target)
 			-- Set `target' to `a_target'
 		require
 			a_target_not_void: a_target /= Void
@@ -165,7 +165,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is it the same location as `other'?
 		do
 			Result := equal (original_path, other.original_path)
@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 	--| The internal format uses the windows format (because we would otherwise lose the drive letter)
 	--| directories are always terminated by a \
 
-	to_internal (a_path: STRING): STRING is
+	to_internal (a_path: STRING): STRING
 			-- Convert `a_path' into the internal representation.
 		require
 			a_path_not_void: a_path /= Void
@@ -209,7 +209,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_evaluated_path: STRING is
+	internal_evaluated_path: STRING
 			-- The fully resolved path with file name in internal format.
 		local
 			i, j, k: INTEGER
@@ -220,7 +220,7 @@ feature {NONE} -- Implementation
 			l_offset: INTEGER
 			l_stop: BOOLEAN
 		do
-			Result := original_path.twin
+			create Result.make_from_string (original_path)
 
 				-- replace $| with parent path
 			if parent /= Void then
@@ -297,7 +297,7 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	directory (a_path: STRING): STRING is
+	directory (a_path: STRING): STRING
 			-- Get the directory of `a_path' that is in the internal format.
 			-- a_path = directory + '\' + path
 		require
@@ -319,7 +319,7 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	file (a_path: STRING): STRING is
+	file (a_path: STRING): STRING
 			-- Get the file of `a_path' that is in the internal format.
 			-- a_path = directory + '\' + path
 		require
@@ -345,8 +345,8 @@ invariant
 	original_path_not_void: original_path /= Void
 	target_not_void: target /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -359,21 +359,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

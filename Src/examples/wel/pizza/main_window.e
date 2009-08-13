@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -22,22 +22,21 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		do
 			make_top (Title)
 			set_menu (main_menu)
 			resize (300, 200)
-			create dialog.make (Current)
 		end
 
 feature -- Access
 
-	dialog: DIALOG
+	dialog: detachable DIALOG
 			-- Pizza dialog
 
 feature {NONE} -- Implementation
 
-	closeable: BOOLEAN is
+	closeable: BOOLEAN
 		local
 			msg_box: WEL_MSG_BOX
 		do
@@ -46,34 +45,40 @@ feature {NONE} -- Implementation
 			Result := msg_box.message_box_result = Idyes
 		end
 
-	on_menu_command (menu_id: INTEGER) is
+	on_menu_command (menu_id: INTEGER)
+		local
+			l_dialog: like dialog
 		do
 			if menu_id = Cmd_exit then
 				if closeable then
 					destroy
 				end
 			elseif menu_id = Cmd_order then
-				dialog.activate
+				if l_dialog = Void then
+					create l_dialog.make (Current)
+					dialog := l_dialog
+				end
+				l_dialog.activate
 			end
 		end
 
-	class_icon: WEL_ICON is
+	class_icon: WEL_ICON
 			-- Window's icon
 		once
 			create Result.make_by_id (Id_ico_application)
 		end
 
-	main_menu: WEL_MENU is
+	main_menu: WEL_MENU
 		once
 			create Result.make_by_id (Id_main_menu)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	Title: STRING is "WEL Pizza";
+	Title: STRING = "WEL Pizza";
 			-- Window's title
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

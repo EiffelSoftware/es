@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_STATE that manage SD_FLOATING_ZONE."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -26,8 +26,8 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_screen_x, a_screen_y: INTEGER; a_docking_manager: SD_DOCKING_MANAGER; a_visible: BOOLEAN) is
-			-- Creation method.
+	make (a_screen_x, a_screen_y: INTEGER; a_docking_manager: SD_DOCKING_MANAGER; a_visible: BOOLEAN)
+			-- Creation method
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
 		do
@@ -44,10 +44,10 @@ feature {NONE} -- Initlization
 			set: internal_docking_manager = a_docking_manager
 		end
 
-feature -- Redefine.
+feature -- Redefine
 
-	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA) is
-			-- Redefine.
+	dock_at_top_level (a_multi_dock_area: SD_MULTI_DOCK_AREA)
+			-- <Precursor>
 		local
 			l_width_height: INTEGER
 			l_widget: EV_WIDGET
@@ -67,7 +67,7 @@ feature -- Redefine.
 				l_split_area := create {SD_VERTICAL_SPLIT_AREA}
 			end
 			l_main_container_widget := internal_docking_manager.query.inner_container_main.item
-			internal_docking_manager.query.inner_container_main.save_spliter_position (l_main_container_widget)
+			internal_docking_manager.query.inner_container_main.save_spliter_position (l_main_container_widget, generating_type + ".dock_at_top_level")
 			internal_docking_manager.query.inner_container_main.wipe_out
 			internal_docking_manager.query.inner_container_main.extend (l_split_area)
 			if direction = {SD_ENUMERATION}.left or direction = {SD_ENUMERATION}.top then
@@ -80,18 +80,18 @@ feature -- Redefine.
 			if l_split_area.full then
 				l_split_area.set_split_position (top_split_position (direction, l_split_area))
 			end
-			internal_docking_manager.query.inner_container_main.restore_spliter_position (l_main_container_widget)
+			internal_docking_manager.query.inner_container_main.restore_spliter_position (l_main_container_widget, generating_type + ".dock_at_top_level")
 			internal_docking_manager.command.unlock_update
 			internal_docking_manager.command.update_title_bar
 		end
 
-	stick (a_direction: INTEGER) is
-			-- Redefine.
+	stick (a_direction: INTEGER)
+			-- <Precursor>
 		do
 		end
 
-	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER) is
-			-- Redefine.
+	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER)
+			-- <Precursor>
 		local
 			l_zone: SD_ZONE
 			l_current_item: EV_WIDGET
@@ -106,8 +106,8 @@ feature -- Redefine.
 			internal_docking_manager.command.update_title_bar
 		end
 
-	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN) is
-			-- Redefine.
+	move_to_docking_zone (a_target_zone: SD_DOCKING_ZONE; a_first: BOOLEAN)
+			-- <Precursor>
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
 			l_tab_zone, l_tab_zone_source: SD_TAB_ZONE
@@ -146,13 +146,18 @@ feature -- Redefine.
 			internal_docking_manager.command.unlock_update
 		end
 
-	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER) is
-			-- Redefine.
+	move_to_tab_zone (a_target_zone: SD_TAB_ZONE; a_index: INTEGER)
+			-- <Precursor>
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
 			l_tab_zone_source: SD_TAB_ZONE
 		do
-			internal_docking_manager.command.lock_update (zone, False)
+			if attached {EV_WIDGET} zone as lt_widget then
+				internal_docking_manager.command.lock_update (lt_widget, False)
+			else
+				check not_possible: False end
+			end
+
 			l_zones := inner_container.zones
 			from
 				l_zones.start
@@ -176,8 +181,8 @@ feature -- Redefine.
 			internal_docking_manager.command.unlock_update
 		end
 
-	change_state (a_state: SD_STATE) is
-			-- Redefine
+	change_state (a_state: SD_STATE)
+			-- <Precursor>
 		do
 			content.change_state (a_state)
 			a_state.set_last_floating_height (internal_zone.height)
@@ -187,44 +192,50 @@ feature -- Redefine.
 			set: a_state.last_floating_width = last_floating_width
 		end
 
-	record_state is
-			-- Redefine
+	record_state
+			-- <Precursor>
 		do
 			last_floating_width := internal_zone.width
 			last_floating_height := internal_zone.height
 		end
 
-	content_void: BOOLEAN is
-			-- Redefine.
+	content_void: BOOLEAN
+			-- <Precursor>
 		do
 			Result := not internal_zone.inner_container.readable
 		end
 
 	internal_zone: SD_FLOATING_ZONE
-			-- Redefine.
+			-- <Precursor>
 
-	zone: SD_ZONE is
-			-- Redefine.
+	zone: SD_ZONE
+			-- <Precursor>
 		do
 			Result := internal_zone
 		end
 
-	set_user_widget (a_widget: EV_WIDGET) is
-			-- Redefine
+	set_user_widget (a_widget: EV_WIDGET)
+			-- <Precursor>
 		do
-			-- Do nothing.
+			-- Do nothing
+		end
+
+	set_mini_toolbar (a_toolbar: EV_WIDGET)
+			-- <Precursor>
+		do
+			-- Do nothing
 		end
 
 feature -- Command
 
-	update_title_bar is
-			-- Update title bar.
+	update_title_bar
+			-- Update title bar
 		do
 			internal_zone.update_title_bar
 		end
 
-	set_size (a_width, a_height: INTEGER) is
-			-- Set floating zone size.
+	set_size (a_width, a_height: INTEGER)
+			-- Set floating zone size
 		do
 			internal_zone.set_size (a_width, a_height)
 			last_floating_width := a_width
@@ -233,8 +244,8 @@ feature -- Command
 
 feature -- Query
 
-	inner_container: SD_MULTI_DOCK_AREA is
-			-- Main container of `Current'.
+	inner_container: SD_MULTI_DOCK_AREA
+			-- Main container of Current
 		do
 			Result := internal_zone.inner_container
 		ensure
@@ -243,8 +254,8 @@ feature -- Query
 
 feature {NONE} -- Implementation
 
-	set_all_zones_direction (a_direction: INTEGER) is
-			-- Set all zones direction.
+	set_all_zones_direction (a_direction: INTEGER)
+			-- Set all zones direction
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
 		do
@@ -259,8 +270,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	change_zone_split_area_whole_content (a_target_zone: SD_ZONE; a_direction: INTEGER) is
-			-- Change whole floating zone contents to `a_target_zone'.
+	change_zone_split_area_whole_content (a_target_zone: SD_ZONE; a_direction: INTEGER)
+			-- Change whole floating zone contents to `a_target_zone'
 		require
 			a_target_zone_not_void: a_target_zone /= Void
 			a_direction_valid: a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.bottom
@@ -275,7 +286,7 @@ feature {NONE} -- Implementation
 		do
 			l_current_item ?= inner_container.item
 			check l_current_item /= Void end
-			inner_container.save_spliter_position (l_current_item)
+			inner_container.save_spliter_position (l_current_item, generating_type + ".change_zone_split_area_whole_content")
 			l_widget ?= a_target_zone
 			check l_widget /= Void end
 			l_container ?= l_widget.parent
@@ -312,10 +323,10 @@ feature {NONE} -- Implementation
 				l_target_split.set_split_position (l_target_split_position)
 			end
 			l_spliter.set_proportion (0.5)
-			inner_container.restore_spliter_position (l_current_item)
+			inner_container.restore_spliter_position (l_current_item, generating_type + ".change_zone_split_area_whole_content")
 		end
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

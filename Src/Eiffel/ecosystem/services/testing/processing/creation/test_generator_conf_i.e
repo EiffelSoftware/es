@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Interface defining configuration options for AutoTest.
 	]"
@@ -14,7 +14,7 @@ inherit
 
 feature -- Access
 
-	types: !DS_LINEAR [!STRING]
+	types: attached DS_LINEAR [attached STRING]
 			-- Names of classes to be tested
 		require
 			usable: is_interface_usable
@@ -24,7 +24,16 @@ feature -- Access
 	time_out: NATURAL
 			-- Time in minutes used for testing.
 			--
-			-- Note: is zero, default will be used.
+			-- Note: if zero, default will be used.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	test_count: NATURAL
+			-- Maximum number of tests that will be executed.
+			--
+			-- Note: if zero, no restriction will be applied.
 		require
 			usable: is_interface_usable
 		deferred
@@ -50,13 +59,6 @@ feature -- Access
 
 feature -- Status report
 
-	is_benchmarking: BOOLEAN
-			-- Log timeing information (usefull for assessing efficiency)
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
 	is_slicing_enabled: BOOLEAN
 			-- Is slicing enabled?
 		require
@@ -73,6 +75,13 @@ feature -- Status report
 
 	is_html_output: BOOLEAN
 			-- Output statistics as html?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_debugging: BOOLEAN
+			-- Should debugging output be printed to log?
 		require
 			usable: is_interface_usable
 		deferred

@@ -55,7 +55,6 @@ doc:<file name="plug.c" header="eif_plug.h" version="$Id$" summary="Set of routi
 #endif
 #include "rt_bits.h"
 #include "rt_struct.h"
-#include "eif_size.h"		/* For macro LNGPAD */
 #include <string.h>
 #include "rt_assert.h"		/* For assertions checkings. */
 #include "rt_gen_conf.h"
@@ -118,8 +117,15 @@ rt_public EIF_REFERENCE argarr(int argc, char **argv)
 	 * Create the array
 	 */
 
-	typres = eif_typeof_array_of (egc_str_dtype);
+	typres = eif_typeof_array_of (eif_attached_type (egc_str_dtype));
 	array = emalloc(typres);		/* If we return, it succeeded */
+		/* We perform a hack here by letting the Eiffel code believe
+		 * we are using an ARRAY [detachable STRING_8]. We will restore
+		 * the real dynamic type after initializing the ARRAY. This
+		 * is to prevent the precondition violation inf {ARRAY}.make
+		 * which expects the actual generic type to be detachable
+		 * for calling `make' as otherwise a default value is requested. */
+	Dftype(array) = eif_typeof_array_of (egc_str_dtype);
 	RT_GC_PROTECT(array); 		/* Protect address in case it moves */
 	nstcall = 0;					/* Turn invariant checking off */
 #ifdef WORKBENCH
@@ -147,6 +153,8 @@ rt_public EIF_REFERENCE argarr(int argc, char **argv)
 		RTAR(sp, ((EIF_REFERENCE *)sp)[i]);
 	}
 
+		/* End of hack. We restore the true dynamic type of the ARRAY. */
+	Dftype(array) = typres;
 #ifdef WORKBENCH
 	UNDISCARD_BREAKPOINTS; /* the debugger can now stop again */
 #endif
@@ -416,43 +424,6 @@ rt_public EIF_REFERENCE makestr_with_hash_as_old (register char *s, register siz
 }
 
 /*
- * Special object count
- */
-
-rt_public EIF_INTEGER sp_count(EIF_REFERENCE spobject)
-{
-	/* Return the count of a special or TUPLE object */
-
-	EIF_INTEGER res; 
-
-	REQUIRE ("Not null.", spobject != NULL);
-	REQUIRE ("Must be a special object", HEADER (spobject)->ov_flags & EO_SPEC);
-
-	res = RT_SPECIAL_COUNT(spobject);
-
-	ENSURE ("Must be positive", res >= 0);
-
-	return res;
-}
-
-rt_public EIF_INTEGER sp_elem_size(EIF_REFERENCE spobject)
-{
-	/* Return the size of the element of a SPECIAL */
-
-	EIF_INTEGER res;
-
-	REQUIRE ("Not null.", spobject != NULL);
-	REQUIRE ("Must be a special object", HEADER (spobject)->ov_flags & EO_SPEC);
-
-	res = RT_SPECIAL_ELEM_SIZE(spobject);
-
-	ENSURE ("Must be positive", res >= 0);
-
-	return res;
-}
-
-
-/*
  * Invariant checking
  */
 
@@ -528,6 +499,10 @@ rt_private void recursive_chkinv(EIF_TYPE_INDEX dtype, EIF_REFERENCE obj, int wh
 	cn_parents++;	/* We skip the annotation mark. */
 	p_type = *cn_parents++;
 	while (p_type != TERMINATOR) {
+			/* Skip any potential annotation mark on the parent clause. */
+		while (RT_HAS_ANNOTATION_TYPE(p_type)) {
+			p_type = *cn_parents++;
+		}
 			/* Call to potential parent invariant */
 		recursive_chkinv(p_type, obj, where);
 			/* Iterate `cn_parents' until we reach the next parent or the end. */

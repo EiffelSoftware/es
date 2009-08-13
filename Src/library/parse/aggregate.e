@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Constructs whose specimens are obtained %
@@ -19,12 +19,13 @@ deferred class AGGREGATE inherit
 			commit
 		end
 
-feature -- Status report 
+feature -- Status report
 
-	left_recursion: BOOLEAN is
+	left_recursion: BOOLEAN
 			-- Is the construct's definition left-recursive?
 		local
 			end_loop: BOOLEAN;
+			l_child: like child
 		do
 			if structure_list.has (production) then
 				global_left_recursion.put (True);
@@ -41,7 +42,9 @@ feature -- Status report
 					end_loop or no_components or child_after or Result
 				loop
 					Result := not message_construction;
-					end_loop := not child.is_optional;
+					l_child := child
+					check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+					end_loop := not l_child.is_optional;
 					child_forth
 				end
 			end;
@@ -50,13 +53,13 @@ feature -- Status report
 			structure_list.go_i_th (0)
 		end
 
-feature -- Transformation 
+feature -- Transformation
 
-	commit is
+	commit
 			-- If this construct is one among several possible ones,
 			-- discard the others.
 		require else
-			only_commit_once: not has_commit 
+			only_commit_once: not has_commit
 		do
 			has_commit := True;
 			commit_value := production.index - 1
@@ -73,7 +76,7 @@ feature {NONE} -- Implementation
 			-- above which the construct is commited
 
 
-	expand is
+	expand
 			-- Expand the next field of the aggregate.
 		do
 			expand_next;
@@ -82,7 +85,7 @@ feature {NONE} -- Implementation
 			end
 		end;
 
-	parse_body is
+	parse_body
 			-- Attempt to find input matching the components of
 			-- the aggregate starting at current position.
 			-- Set parsed to true if successful.
@@ -90,6 +93,7 @@ feature {NONE} -- Implementation
 			no_child: no_components
 		local
 			wrong: BOOLEAN;
+			l_child: like child
 		do
 			from
 				expand
@@ -97,7 +101,9 @@ feature {NONE} -- Implementation
 				wrong or no_components or child_after
 			loop
 				parse_child;
-				wrong :=  not child.parsed;
+				l_child := child
+				check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+				wrong :=  not l_child.parsed;
 				if not wrong then
 					expand
 				end
@@ -108,7 +114,9 @@ feature {NONE} -- Implementation
 			until
 				no_components or child_after
 			loop
-				if child.is_optional and then child.parsed and then not child.complete then
+				l_child := child
+				check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+				if l_child.is_optional and then l_child.parsed and then not l_child.complete then
 					remove_child
 				else
 					child_forth
@@ -116,25 +124,30 @@ feature {NONE} -- Implementation
 			end
 		end;
 
-	in_action is
+	in_action
 			-- Perform semantics of the child constructs.
+		local
+			l_child: like child
 		do
 			from
 				child_start
 			until
-				no_components or child_after 
+				no_components or child_after
 			loop
-				child.semantics;
+				l_child := child
+				check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+				l_child.semantics;
 				child_forth
 			end
 		end
 
 feature {CONSTRUCT} -- Implementation
 
-	check_recursion is
+	check_recursion
 			-- Check the aggregate for left recursion.
 		local
 			not_optional_found, b: BOOLEAN
+			l_child: like child
 		do
 			if not check_recursion_list.has (production) then
 				check_recursion_list.extend (production);
@@ -146,19 +159,21 @@ feature {CONSTRUCT} -- Implementation
 				until
 					no_components or child_after
 				loop
+					l_child := child
+					check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
 					if not_optional_found then
-						child.expand_all;
-						b := not child.left_recursion;
+						l_child.expand_all;
+						b := not l_child.left_recursion;
 						if child_recursion.item then
 							child_recursion.put (False)
 						else
-							child.check_recursion
+							l_child.check_recursion
 						end;
 						child_forth
 					else
-						child.expand_all;
-						child.check_recursion;
-						not_optional_found := not child.is_optional;
+						l_child.expand_all;
+						l_child.check_recursion;
+						not_optional_found := not l_child.is_optional;
 						child_forth
 					end
 				end
@@ -167,7 +182,7 @@ feature {CONSTRUCT} -- Implementation
 
 feature {NONE} -- Implementation
 
-	print_children is
+	print_children
 			-- Print content of aggregate.
 		do
 			from
@@ -184,28 +199,34 @@ feature {NONE} -- Implementation
 			io.new_line
 		end;
 
-	print_child is
+	print_child
 			-- Print active child name,
 			-- with square brackets if optional.
+		require
+			child_not_void: child /= Void
+		local
+			l_child: like child
 		do
-			if child.is_optional then
+			l_child := child
+			check l_child_not_void: l_child /= Void end -- Implied from `child_after'.
+			if l_child.is_optional then
 				io.put_character ('[')
 			end;
-			child.print_name;
-			if child.is_optional then
+			l_child.print_name;
+			if l_child.is_optional then
 				io.put_character (']')
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

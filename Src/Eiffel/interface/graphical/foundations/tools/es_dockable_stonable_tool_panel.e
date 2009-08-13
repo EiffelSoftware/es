@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An EiffelStudio dockable tool window, allowing a context stone to be pushed, base implementation for EiffelStudio tools.
 	]"
@@ -13,7 +13,6 @@ deferred class
 inherit
 	ES_DOCKABLE_TOOL_PANEL [G]
 		redefine
-			build_docking_content,
 			internal_recycle,
 			tool_descriptor,
 			on_show
@@ -26,57 +25,13 @@ inherit
 			set_stone
 		end
 
-feature {NONE} -- Initialization: User interface
-
-	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
-            -- <Precursor>
-        do
-            Precursor (a_docking_manager)
-
-        		-- Register the same action with the docking content
-        	register_action (content.drop_actions, agent (ia_pebble: ANY)
-        			-- Propagate the stone drop actions	
-        		do
-        			if is_interface_usable and then tool_descriptor.is_interface_usable then
-        				if not is_initialized then
-        						-- Force initialization
-        					initialize
-        				end
-        				check is_initialized: is_initialized end
-        				if {l_stone: !STONE} ia_pebble and then tool_descriptor.is_stone_usable (l_stone) then
-								-- Force tool to be shown. This way any query set stone prompt can be displayed in the correct context.
-							show
-
-      							-- Force stone on descriptor, which will optimize the display of the stone on Current.
-	        					-- I cannot see any reason why the tool would not be shown when a drop action occurs (unless the action is published programmatically),
-	        					-- but going through the descriptor is the safest and most optimized means of setting a stone.
-        					tool_descriptor.set_stone_with_query (l_stone)
-						else
-							if ia_pebble = Void then
-								tool_descriptor.set_stone_with_query (Void)
-								if ia_pebble = stone then
-										-- Force tool to be shown
-									show
-								end
-							end
-        				end
-					end
-        		end)
-
-				-- Set veto function
-			content.drop_actions.set_veto_pebble_function (agent (ia_pebble: ANY): BOOLEAN
-					-- Query if a pebble should be vetoed.
-				do
-					if is_interface_usable then
-						Result := ia_pebble = Void
-						if not Result and then {l_stone: STONE} ia_pebble then
-							Result := is_stone_usable (l_stone)
-						end
-					end
-				end)
-		ensure then
-			veto_action_set: content.drop_actions.veto_pebble_function /= Void
-        end
+	ES_STONABLE_SYNCHRONIZED_I
+		export
+			{ES_STONABLE_I, ES_TOOL} all
+		redefine
+			set_stone,
+			synchronize
+		end
 
 feature {NONE} -- Clean up
 
@@ -96,14 +51,14 @@ feature {ES_STONABLE_I, ES_TOOL} -- Access
 	frozen stone: STONE
 			-- <Precursor>
 		do
-			if {l_stonable: !ES_STONABLE_I} tool_descriptor then
+			if attached {ES_STONABLE_I} tool_descriptor as l_stonable then
 				Result := l_stonable.stone
 			end
 		end
 
 feature {NONE} -- Access
 
-	tool_descriptor: !ES_STONABLE_TOOL [like Current]
+	tool_descriptor: attached ES_STONABLE_TOOL [ES_DOCKABLE_STONABLE_TOOL_PANEL [EV_WIDGET]]
 			-- <Precursor>
 
 feature {ES_STONABLE_I, ES_TOOL} -- Element change
@@ -115,7 +70,7 @@ feature {ES_STONABLE_I, ES_TOOL} -- Element change
 					-- Client is setting the stone directly, and not through {ES_STONABLE_TOOL}
 					-- This is normal because of the transistion of tool development to ESF.
 					-- See notes for `stone_change_notified'.
-				if {l_stonable: !ES_STONABLE_I} tool_descriptor then
+				if attached {ES_STONABLE_I} tool_descriptor as l_stonable then
 					l_stonable.set_stone (a_stone)
 				end
 			else
@@ -123,28 +78,11 @@ feature {ES_STONABLE_I, ES_TOOL} -- Element change
 			end
 
 			if is_initialized and not has_performed_stone_change_notification then
-				internal_on_stone_changed (tool_descriptor.previous_stone)
+				on_stone_changed_internal (tool_descriptor.previous_stone)
 			end
 		end
 
 feature {NONE} -- Status report
-
-	is_in_stone_synchronization: BOOLEAN
-			-- Indicates if a stone synchronization is taking place instead of a simple change of stone
-
-	is_stone_sychronization_required (a_old_stone: ?STONE; a_new_stone: ?STONE): BOOLEAN
-			-- Determines if stone synchronization is required given two stones.
-			--|Note: Redefine to better determine if a stone is applicable for synchronization, rather than
-			--|      redefine `synchronize'.
-			--
-			-- `a_old_stone': The current "old" stone.
-			-- `a_new_stone': The stone to be set if synchronization is required.
-			-- `Result': True if the panel should be synchronized with the new stone.
-		require
-			is_interface_usable: is_interface_usable
-		do
-			Result := a_old_stone /~ a_new_stone
-		end
 
 	has_performed_stone_change_notification: BOOLEAN
 			-- Status flag to ensure stone change notifications are performed.
@@ -153,10 +91,28 @@ feature {NONE} -- Status report
 			--       as ESF dictates that no interaction should be perform with the panel (Current) but
 			--       the tool descritor (`tool_descriptor').
 
-	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
 			-- <Precursor>
 		do
 			Result := tool_descriptor.is_stone_usable (a_stone)
+		end
+
+feature {NONE} -- Helpers
+
+	stone_sychronizer: ES_STONE_SYNCHRONIZER
+			-- A stone synchronizer, using Current as the primary stonable object.
+		require
+			is_interface_usable: is_interface_usable
+		do
+			if attached internal_stone_sychronizer as l_result then
+				Result := l_result
+			else
+				create Result.make (Current)
+				internal_stone_sychronizer := Result
+				auto_recycle (Result)
+			end
+		ensure
+			result_consistent: Result = stone_sychronizer
 		end
 
 feature {NONE} -- Basic opertations
@@ -174,7 +130,7 @@ feature {NONE} -- Basic opertations
         			-- Propagate the stone drop actions	
         		do
         			if is_interface_usable and is_initialized and then tool_descriptor.is_interface_usable then
-        				if {l_stone: !STONE} ia_pebble and then tool_descriptor.is_stone_usable (l_stone) then
+        				if attached {STONE} ia_pebble as l_stone and then tool_descriptor.is_stone_usable (l_stone) then
       							-- Force stone on descriptor, which will optimize the display of the stone on Current.
 	        					-- I cannot see any reason why the tool would not be shown when a drop action occurs (unless the action is published programmatically),
 	        					-- but going through the descriptor is the safest and most optimized means of setting a stone.
@@ -202,19 +158,83 @@ feature {NONE} -- Basic opertations
 							-- Query if a pebble should be vetoed.
 						do
 							Result := ia_pebble = Void
-							if not Result and then {l_stone: STONE} ia_pebble then
+							if not Result and then attached {STONE} ia_pebble as l_stone then
 								Result := is_stone_usable (l_stone)
 							end
 						end)
 				end, Void)
         end
 
-feature {ES_STONABLE_I, ES_TOOL} -- Synchronization
+feature -- Actions
 
-	frozen synchronize
-			-- Synchronizes any new data (compiled or other wise).
-			--|Note: Redefine `is_stone_sychronization_required' instead of `synchornize' to prevent or
-			--|      force stone synchronization.
+	stone_changed_actions: EV_LITE_ACTION_SEQUENCE [TUPLE [sender: ES_STONABLE_I; old_stone: detachable STONE]]
+			-- <Precursor>
+		do
+			if attached internal_stone_changed_actions as l_result then
+				Result := l_result
+			else
+				create Result
+				internal_stone_changed_actions := Result
+			end
+		end
+
+feature {NONE} -- Action handlers
+
+	on_show
+			-- Called when the tool is brought into view.
+		local
+			l_previous_stone: detachable STONE
+		do
+			Precursor {ES_DOCKABLE_TOOL_PANEL}
+
+        	if not has_performed_stone_change_notification and (stone = Void or else is_stone_usable (stone)) then
+        			-- Synchronize stone and by-pass display checks because the UI is shown.
+        		l_previous_stone := tool_descriptor.previous_stone
+        		if is_stone_usable (l_previous_stone) then
+        			on_stone_changed (l_previous_stone)
+        		end
+				has_performed_stone_change_notification := True
+        	end
+		end
+
+	on_stone_changed (a_old_stone: detachable like stone)
+			-- Called when the set stone changes.
+			-- Note: This routine can be called when `stone' is Void, to indicate a stone has been cleared.
+			--       Be sure to check `is_in_stone_synchronization' to determine if a stone has change through an explicit
+			--       setting or through compile synchronization.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			not_stone_change_notified: not has_performed_stone_change_notification
+			is_shown: is_shown or is_auto_hide
+		deferred
+		ensure
+				-- This change is handled by the callee
+			not_stone_change_notified: not has_performed_stone_change_notification
+		end
+
+	frozen on_stone_changed_internal (a_old_stone: detachable like stone)
+			-- Called when the set stone changes.
+			-- Note: This routine can be called when `stone' if Void.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			not_stone_change_notified: not has_performed_stone_change_notification
+		do
+			if is_shown then
+				on_stone_changed (a_old_stone)
+				has_performed_stone_change_notification := True
+			end
+		ensure
+			stone_change_notified: is_shown implies has_performed_stone_change_notification
+		rescue
+			has_performed_stone_change_notification := True
+		end
+
+feature {ES_STONABLE_I} -- Synchronization
+
+	synchronize
+			-- <Precursor>
 		local
 			l_stone: STONE
 			l_new_stone: STONE
@@ -240,59 +260,21 @@ feature {ES_STONABLE_I, ES_TOOL} -- Synchronization
 			is_in_stone_synchronization := False
 		end
 
-feature {NONE} -- Action handlers
+feature {NONE} -- Implementation: Internal cache
 
-	on_show
-			-- Called when the tool is brought into view
-		do
-			Precursor {ES_DOCKABLE_TOOL_PANEL}
+	internal_stone_changed_actions: like stone_changed_actions
+			-- Cache version of `stone_changed_actions'
+			-- Note: Do not use directly!
 
-        	if not has_performed_stone_change_notification and (stone = Void or else is_stone_usable (stone)) then
-        			-- Synchronize stone and by-pass display checks because the UI is shown.
-				on_stone_changed (tool_descriptor.previous_stone)
-				has_performed_stone_change_notification := True
-        	end
-		end
-
-	on_stone_changed (a_old_stone: ?like stone)
-			-- Called when the set stone changes.
-			-- Note: This routine can be called when `stone' is Void, to indicate a stone has been cleared.
-			--       Be sure to check `is_in_stone_synchronization' to determine if a stone has change through an explicit
-			--       setting or through compile synchronization.
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			not_stone_change_notified: not has_performed_stone_change_notification
-			shown: shown or is_auto_hide
-		deferred
-		ensure
-				-- This change is handled by the callee
-			not_stone_change_notified: not has_performed_stone_change_notification
-		end
-
-	frozen internal_on_stone_changed (a_old_stone: ?like stone)
-			-- Called when the set stone changes.
-			-- Note: This routine can be called when `stone' if Void.
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			not_stone_change_notified: not has_performed_stone_change_notification
-		do
-			if shown then
-				on_stone_changed (a_old_stone)
-				has_performed_stone_change_notification := True
-			end
-		ensure
-			stone_change_notified: shown implies has_performed_stone_change_notification
-		rescue
-			has_performed_stone_change_notification := True
-		end
+	internal_stone_sychronizer: like stone_sychronizer
+			-- Cache version of `stone_sychronizer'
+			-- Note: Do not use directly!
 
 invariant
 	tool_descriptor_is_stonable: is_interface_usable implies (({ES_STONABLE_I}) #? tool_descriptor) /= Void
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -316,11 +298,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

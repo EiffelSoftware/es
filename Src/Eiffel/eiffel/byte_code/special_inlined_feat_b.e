@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Special inlining for SPECIAL classes"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -15,9 +15,11 @@ inherit
 			generate_parameters
 		end
 
+	SHARED_INCLUDE
+
 feature -- Generation
 
-	generate_parameters (gen_reg: REGISTRABLE) is
+	generate_parameters (gen_reg: REGISTRABLE)
 			-- Generate inlined routines.
 		local
 			buf: like buffer
@@ -27,7 +29,11 @@ feature -- Generation
 				generate_put (gen_reg)
 --			when {PREDEFINED_NAMES}.put_default_name_id then
 --				generate_put_default (gen_reg)
-			when {PREDEFINED_NAMES}.item_name_id, {PREDEFINED_NAMES}.infix_at_name_id then
+			when
+				{PREDEFINED_NAMES}.item_name_id,
+				{PREDEFINED_NAMES}.infix_at_name_id,
+				{PREDEFINED_NAMES}.at_name_id
+			then
 				generate_item (gen_reg)
 			when {PREDEFINED_NAMES}.base_address_name_id then
 				buf := buffer
@@ -77,12 +83,9 @@ feature -- Generation
 
 				buf.put_new_line
 				result_reg.print_register
-				buf.put_string (" = ")
-				buf.put_string ("(*(EIF_INTEGER *) (char *) ((")
+				buf.put_string (" = RT_SPECIAL_COUNT(")
 				gen_reg.print_register
-				buf.put_string (") + (HEADER(")
-				gen_reg.print_register
-				buf.put_string (")->ov_size & B_SIZE) - LNGPAD_2));")
+				buf.put_two_character (')', ';')
 				buf.put_new_line
 				buf.put_string ("/* END INLINED CODE */")
 			else
@@ -92,7 +95,7 @@ feature -- Generation
 
 feature {NONE} -- Status report
 
-	is_expanded_with_references: BOOLEAN is
+	is_expanded_with_references: BOOLEAN
 			-- Is current type of generic parameter G in SPECIAL [G] is
 			-- expanded with references?
 		local
@@ -104,7 +107,7 @@ feature {NONE} -- Status report
 			end
 		end
 
-	generic_type: TYPE_A is
+	generic_type: TYPE_A
 				-- Extract type of generic parameter G in SPECIAL [G].
 			local
 				l_special_type: GEN_TYPE_A
@@ -131,7 +134,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Implementation
 
-	generate_item (gen_reg: REGISTRABLE) is
+	generate_item (gen_reg: REGISTRABLE)
 			-- Generate inlined version of `item'.
 		require
 			gen_reg_not_void: gen_reg /= Void
@@ -159,9 +162,9 @@ feature {NONE} -- Implementation
 					result_reg.print_register
 					buf.put_string (" = RTCL(")
 					gen_reg.print_register
-					buf.put_string (" + OVERHEAD + ")
+					buf.put_string (" + OVERHEAD + (rt_uint_ptr)")
 					parameters.i_th (1).print_register
-					buf.put_string (" * (")
+					buf.put_string (" * (rt_uint_ptr)(")
 					l_exp_class_type.skeleton.generate_size (buf, True)
 					buf.put_string (" + OVERHEAD));")
 					buf.put_new_line
@@ -191,9 +194,9 @@ feature {NONE} -- Implementation
 					result_reg.print_register
 					buf.put_string (", ")
 					gen_reg.print_register
-					buf.put_string (" + ")
+					buf.put_string (" + (rt_uint_ptr)")
 					parameters.i_th (1).print_register
-					buf.put_string (" * (");
+					buf.put_string (" * (rt_uint_ptr)(");
 					l_exp_class_type.skeleton.generate_size (buf, True)
 					buf.put_string ("), ")
 					l_exp_class_type.skeleton.generate_size (buf, True)
@@ -215,7 +218,7 @@ feature {NONE} -- Implementation
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
-	generate_item_address (gen_reg: REGISTRABLE) is
+	generate_item_address (gen_reg: REGISTRABLE)
 			-- Generate inlined version of `item_address'.
 		require
 			gen_reg_not_void: gen_reg /= Void
@@ -243,20 +246,20 @@ feature {NONE} -- Implementation
 			if l_param_is_expanded then
 				l_exp_class_type := l_gen_param.associated_class_type (context.context_class_type.type)
 				if l_exp_class_type.skeleton.has_references then
-					buf.put_string (" + OVERHEAD + ")
+					buf.put_string (" + OVERHEAD + (rt_uint_ptr)")
 					parameters.i_th (1).print_register
-					buf.put_string (" * (")
+					buf.put_string (" * (rt_uint_ptr)(")
 					l_exp_class_type.skeleton.generate_size (buf, True)
 					buf.put_string (" + OVERHEAD)")
 				else
-					buf.put_string (" + ")
+					buf.put_string (" + (rt_uint_ptr)")
 					parameters.i_th (1).print_register
-					buf.put_string (" * ")
+					buf.put_string (" * (rt_uint_ptr)")
 					l_exp_class_type.skeleton.generate_size (buf, True)
 				end
 			else
 				type_c := l_gen_param.c_type
-				buf.put_string (" + ")
+				buf.put_string (" + (rt_uint_ptr)")
 				parameters.i_th (1).print_register
 				buf.put_string (" * sizeof(")
 				type_c.generate (buf)
@@ -267,7 +270,7 @@ feature {NONE} -- Implementation
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
-	generate_put (gen_reg: REGISTRABLE) is
+	generate_put (gen_reg: REGISTRABLE)
 			-- Generate inlined version of `put'.
 		require
 			gen_reg_not_void: gen_reg /= Void
@@ -295,18 +298,18 @@ feature {NONE} -- Implementation
 					parameters.i_th (1).print_register
 					buf.put_string (", ")
 					gen_reg.print_register
-					buf.put_string (" + OVERHEAD + ")
+					buf.put_string (" + OVERHEAD + (rt_uint_ptr)")
 					parameters.i_th (2).print_register
-					buf.put_string (" * (")
+					buf.put_string (" * (rt_uint_ptr)(")
 					l_exp_class_type.skeleton.generate_size (buf, True)
 					buf.put_string (" + OVERHEAD));")
 					buf.put_new_line
 				else
 					buf.put_string ("memcpy(")
 					gen_reg.print_register
-					buf.put_string (" + ")
+					buf.put_string (" + (rt_uint_ptr)")
 					parameters.i_th (2).print_register
-					buf.put_string (" * ")
+					buf.put_string (" * (rt_uint_ptr)")
 					l_exp_class_type.skeleton.generate_size (buf, True)
 					buf.put_string (",")
 					parameters.i_th (1).print_register
@@ -339,7 +342,7 @@ feature {NONE} -- Implementation
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
-	generate_move (gen_reg: REGISTRABLE; is_overlapping: BOOLEAN) is
+	generate_move (gen_reg: REGISTRABLE; is_overlapping: BOOLEAN)
 			-- Generate inlined version of `move_data' and `overlapping_move'.
 		require
 			gen_reg_not_void: gen_reg /= Void
@@ -369,22 +372,21 @@ feature {NONE} -- Implementation
 
 			if l_param_is_expanded then
 				l_exp_class_type := l_gen_param.associated_class_type (context.context_class_type.type)
-
 				buf.put_string ("((char *)")
 				gen_reg.print_register
-				buf.put_string (" + ")
+				buf.put_string (" + (rt_uint_ptr)")
 				parameters.i_th (2).print_register
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				l_exp_class_type.skeleton.generate_size (buf, True)
 				buf.put_string (", (char *) ")
 				gen_reg.print_register
-				buf.put_string (" + ")
+				buf.put_string (" + (rt_uint_ptr)")
 				parameters.i_th (1).print_register
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				l_exp_class_type.skeleton.generate_size (buf, True)
-				buf.put_string (", ")
+				buf.put_string (", (rt_uint_ptr)")
 				parameters.i_th (3).print_register
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				l_exp_class_type.skeleton.generate_size (buf, True)
 			else
 				type_c := l_gen_param.c_type
@@ -398,18 +400,31 @@ feature {NONE} -- Implementation
 				gen_reg.print_register
 				buf.put_string (" + ")
 				parameters.i_th (1).print_register
-				buf.put_string (", ")
+				buf.put_string (", (rt_uint_ptr)")
 				type_c.generate_size (buf)
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				parameters.i_th (3).print_register
 			end
 			buf.put_character (')')
 			buf.put_character (';')
+
+				-- Add `eif_helpers.h' for C compilation where `eif_max_int32' function is declared.
+			shared_include_queue.put ({PREDEFINED_NAMES}.eif_helpers_header_name_id)
+			buf.put_new_line
+			buf.put_string("RT_SPECIAL_COUNT(");
+			gen_reg.print_register
+			buf.put_string (") = eif_max_int32(RT_SPECIAL_COUNT(")
+			gen_reg.print_register
+			buf.put_three_character (')', ',', ' ')
+			parameters.i_th (2).print_register
+			buf.put_three_character (' ', '+', ' ')
+			parameters.i_th (3).print_register
+			buf.put_two_character (')', ';')
 			buf.put_new_line
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
-	generate_copy_data (gen_reg: REGISTRABLE) is
+	generate_copy_data (gen_reg: REGISTRABLE)
 			-- Generate inlined version of `copy_data'.
 		require
 			gen_reg_not_void: gen_reg /= Void
@@ -436,19 +451,19 @@ feature {NONE} -- Implementation
 
 				buf.put_string ("memmove((char *)")
 				gen_reg.print_register
-				buf.put_string (" + ")
+				buf.put_string (" + (rt_uint_ptr)")
 				parameters.i_th (3).print_register
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				l_exp_class_type.skeleton.generate_size (buf, True)
 				buf.put_string (", (char *) ")
 				parameters.i_th (1).print_register
-				buf.put_string (" + ")
+				buf.put_string (" + (rt_uint_ptr)")
 				parameters.i_th (2).print_register
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				l_exp_class_type.skeleton.generate_size (buf, True)
-				buf.put_string (", ")
+				buf.put_string (", (rt_uint_ptr)")
 				parameters.i_th (4).print_register
-				buf.put_string (" * ")
+				buf.put_string (" * (rt_uint_ptr)")
 				l_exp_class_type.skeleton.generate_size (buf, True)
 				buf.put_character (')')
 				buf.put_character (';')
@@ -478,20 +493,32 @@ feature {NONE} -- Implementation
 					parameters.i_th (1).print_register
 					buf.put_string (" + ")
 					parameters.i_th (2).print_register
-					buf.put_string (", ")
+					buf.put_string (", (rt_uint_ptr)")
 					type_c.generate_size (buf)
-					buf.put_string (" * ")
+					buf.put_string (" * (rt_uint_ptr)")
 					parameters.i_th (4).print_register
 				end
 				buf.put_character (')')
 				buf.put_character (';')
 			end
 
+				-- Add `eif_helpers.h' for C compilation where `eif_max_int32' function is declared.
+			shared_include_queue.put ({PREDEFINED_NAMES}.eif_helpers_header_name_id)
+			buf.put_new_line
+			buf.put_string("RT_SPECIAL_COUNT(");
+			gen_reg.print_register
+			buf.put_string (") = eif_max_int32(RT_SPECIAL_COUNT(")
+			gen_reg.print_register
+			buf.put_three_character (')', ',', ' ')
+			parameters.i_th (3).print_register
+			buf.put_three_character (' ', '+', ' ')
+			parameters.i_th (4).print_register
+			buf.put_two_character (')', ';')
 			buf.put_new_line
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
-	generate_clear_all (gen_reg: REGISTRABLE) is
+	generate_clear_all (gen_reg: REGISTRABLE)
 			-- Generate inlined version of `clear_all'.
 		require
 			gen_reg_not_void: gen_reg /= Void
@@ -505,15 +532,15 @@ feature {NONE} -- Implementation
 			buf.put_new_line
 			buf.put_string ("memset (")
 			gen_reg.print_register
-			buf.put_string (", 0, (HEADER(")
+			buf.put_string (", 0, RT_SPECIAL_VISIBLE_SIZE(")
 			gen_reg.print_register
-			buf.put_string (")->ov_size & B_SIZE) - LNGPAD_2);")
+			buf.put_three_character (')', ')', ';')
 			buf.put_new_line
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -526,22 +553,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SPECIAL_INLINED_FEAT_B

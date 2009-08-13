@@ -1,4 +1,4 @@
-indexing
+note
 	description : "Objects used to evaluate a DBG_EXPRESSION ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (dm: like debugger_manager; expr: like expression) is
+	make (dm: like debugger_manager; expr: like expression)
 			-- Create Current from `expr'.
 		require
 			dm_not_void: dm /= Void
@@ -39,12 +39,7 @@ feature {NONE} -- Initialization
 			expression := expr
 			ctx := expr.context
 
-			set_on_class (ctx.on_class)
-			set_on_object (ctx.on_object)
-			set_on_context (ctx.on_context)
-
-			set_context_address (ctx.associated_address)
-			set_context_class (ctx.associated_class)
+			create context.make_from_expression_context (ctx)
 		end
 
 	initialize_dbg_error_handler
@@ -57,7 +52,7 @@ feature {NONE} -- Initialization
 			dbg_error_handler_attached: dbg_error_handler /= Void
 		end
 
-	get_dbg_evaluator is
+	get_dbg_evaluator
 			-- Get non void dbg_evaluator
 		do
 			if dbg_evaluator = Void then
@@ -81,18 +76,34 @@ feature -- Status report
 			Result := dbg_error_handler.error_occurred
 		end
 
-	expression_has_syntax_error: BOOLEAN is
+	expression_has_syntax_error: BOOLEAN
 			-- has `expression' syntax error?
 		do
 			Result := expression.has_syntax_error
 		end
 
-	is_boolean_expression (f: FEATURE_I): BOOLEAN is
+	is_boolean_expression (f: FEATURE_I): BOOLEAN
 			-- is feature `f' a boolean expression?
 		require
 			valid_f: f /= Void
 			no_error: not expression_has_syntax_error
 			good_state: f.written_class /= Void and then f.written_class.has_feature_table
+		deferred
+		end
+
+	is_equal_evaluation_on_values (a_left, a_right: DBG_EVALUATED_VALUE): BOOLEAN
+			-- Compare using `is_equal'
+		require
+			a_left_attached: a_left /= Void and then a_left.has_attached_value
+			a_right_attached: a_right /= Void and then a_right.has_attached_value
+		deferred
+		end
+
+	equal_evaluation_on_values (a_left, a_right: DBG_EVALUATED_VALUE): BOOLEAN
+			-- Compare using ` = '
+		require
+			a_left_attached: a_left /= Void
+			a_right_attached: a_right /= Void
 		deferred
 		end
 
@@ -104,23 +115,33 @@ feature {DBG_EXPRESSION_EVALUATION} -- Evaluation: Access
 
 feature -- Settings
 
+	context: DBG_EXPRESSION_EVALUATION_CONTEXT
+			-- evaluation context
+
+	apply_context
+		do
+			if context.changed then
+				context.reset_changed
+			end
+		end
+
 	on_class: BOOLEAN
 			-- Is the expression relative to a class ?
+		do
+			Result := context.on_class
+		end
 
 	on_object: BOOLEAN
 			-- Is the expression relative to an object ?
+		do
+			Result := context.on_object
+		end
 
 	on_context: BOOLEAN
 			-- Is the expression relative to a context ?	
-
-	context_class_type: CLASS_TYPE
-			-- Class related to the target, in on_object context
-
-	context_class: CLASS_C
-			-- Class related to the expression
-
-	context_address: DBG_ADDRESS
-			-- Object's address related to the expression	
+		do
+			Result := context.on_context
+		end
 
 	side_effect_forbidden: BOOLEAN assign set_side_effect_forbidden
 			-- Forbid potential side effect during evaluation?
@@ -133,43 +154,13 @@ feature -- Settings
 
 feature -- Change
 
-	set_on_class (v: like on_class) is
-			-- set value of `on_class' with `v'
-		do
-			on_class := v
-		end
-
-	set_on_object (v: like on_object) is
-			-- set value of `on_object' with `v'	
-		do
-			on_object := v
-		end
-
-	set_on_context (v: like on_context) is
-			-- set value of `on_context' with `v'	
-		do
-			on_context := v
-		end
-
-	set_context_class (c: like context_class) is
-			-- set value of `context_class' with `c'
-		do
-			context_class := c
-		end
-
-	set_context_address (c: like context_address) is
-			-- set value of `context_address' with `c'
-		do
-			context_address := c
-		end
-
-	reset_error is
+	reset_error
 			-- Reset error related data
 		do
 			dbg_error_handler.reset
 		end
 
-	set_side_effect_forbidden (b: like side_effect_forbidden) is
+	set_side_effect_forbidden (b: like side_effect_forbidden)
 			-- Set `side_effect_forbidden' with `b'
 		do
 			side_effect_forbidden := b
@@ -213,7 +204,7 @@ feature {DBG_EXPRESSION_EVALUATION} -- Implementation
 			Result := debugger_manager.safe_application_is_stopped
 		end
 
-	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE is
+	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE
 			-- DUNP_VALUE object associated with object address `addr'
 		require
 			addr_attached: addr /= Void and then not addr.is_void
@@ -233,8 +224,8 @@ invariant
 	debugger_manager_attached: debugger_manager /= Void
 	error_handler_initialized: dbg_error_handler /= Void and then dbg_error_handler.initialized
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -247,22 +238,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class DBG_EXPRESSION_EVALUATOR

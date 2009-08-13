@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Eiffel runtime panic
 		]"
@@ -16,14 +16,30 @@ inherit
 
 feature -- Access
 
-	frozen code: INTEGER is
+	frozen code: INTEGER
 			-- Exception code
 		do
-			Result := {EXCEP_CONST}.eiffel_runtime_panic
+			if internal_code = {EXCEP_CONST}.Eiffel_runtime_fatal_error then
+				Result := internal_code
+			else
+					-- Default to `Eiffel_runtime_panic'.
+				Result := {EXCEP_CONST}.Eiffel_runtime_panic
+			end
+		end
+
+feature {EXCEPTION_MANAGER} -- Status setting
+
+	set_code (a_code: like code)
+			-- Set `code' with `a_code'.
+		do
+			internal_code := code
 		end
 
 feature {NONE} -- Accesss
 
-	frozen internal_meaning: STRING is "Eiffel run-time panic."
+	frozen internal_meaning: STRING = "Eiffel run-time panic."
+
+	internal_code: like code
+			-- Internal code
 
 end

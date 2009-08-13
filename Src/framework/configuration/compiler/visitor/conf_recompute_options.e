@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Recompute options."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -24,7 +24,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_new_target: CONF_TARGET) is
+	make (a_new_target: CONF_TARGET)
 			-- Create from `a_new_target'.
 		require
 			a_new_target_not_void: a_new_target /= Void
@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 
 feature -- Visit nodes
 
-	process_target (a_target: CONF_TARGET) is
+	process_target (a_target: CONF_TARGET)
 			-- Visit `a_target'.
 		require else
 			new_target_group_equivalent: new_target.is_group_equivalent (a_target)
@@ -59,6 +59,7 @@ feature -- Visit nodes
 					a_target.set_options (new_target.internal_options)
 				end
 				a_target.set_description (new_target.description)
+				a_target.set_note_node (new_target.note_node)
 				a_target.set_external_includes (new_target.internal_external_include)
 				a_target.set_external_objects (new_target.internal_external_object)
 				a_target.set_external_libraries (new_target.internal_external_library)
@@ -84,7 +85,7 @@ feature -- Visit nodes
 			end
 		end
 
-	process_group (a_group: CONF_GROUP) is
+	process_group (a_group: CONF_GROUP)
 			-- Visit `a_group'.
 		local
 			l_cluster, l_cluster_new: CONF_CLUSTER
@@ -118,7 +119,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	process_with_new (an_old_groups, a_new_groups: HASH_TABLE [CONF_GROUP, STRING]) is
+	process_with_new (an_old_groups, a_new_groups: HASH_TABLE [CONF_GROUP, STRING])
 			-- Process `a_old_groups' and set `new_group' to the corresponding group of `a_new_groups'.
 		local
 			l_group: CONF_GROUP
@@ -138,10 +139,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -152,21 +153,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

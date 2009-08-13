@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Features to create/manipulate directories and directory names"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ create
 
 feature -- Basic operations
 
-	validate_directory_name (a_directory_name: STRING): DIRECTORY_NAME is
+	validate_directory_name (a_directory_name: STRING): DIRECTORY_NAME
 			-- Check the validy of `a_directory_name'. If it is valid or almost
 			-- valid, returns the valid name of `a_directory_name', otherwise
 			-- returns Void.
@@ -39,7 +39,7 @@ feature -- Basic operations
 				-- Remove blanks
 			a_directory_name_string.left_adjust
 			a_directory_name_string.right_adjust
-			
+
 			if a_directory_name_string.count /= 0 then
 					-- Remove any ending separator
 				ending_char := (a_directory_name_string @ a_directory_name_string.count)
@@ -59,15 +59,15 @@ feature -- Basic operations
 			Result_is_void_or_a_valid_directory: Result = Void or else (Result.is_valid and not Result.is_empty)
 		end
 
-	recursive_create_directory (a_directory_name: DIRECTORY_NAME) is
+	recursive_create_directory (a_directory_name: DIRECTORY_NAME)
 			-- Create the directory `a_directory_name' recursively.
-			-- 
-			-- Ex: if /temp/ exists but not /temp/test, calling 
+			--
+			-- Ex: if /temp/ exists but not /temp/test, calling
 			--     `recursive_create_directory ("/temp/test/toto")'
 			--     will create /temp/test and then /temp/test/toto.
 		require
-			valid_directory_name: 
-				a_directory_name /= Void and then 
+			valid_directory_name:
+				a_directory_name /= Void and then
 				not a_directory_name.is_empty and then
 				a_directory_name.is_valid
 		local
@@ -111,7 +111,7 @@ feature -- Basic operations
 			loop
 				new_directory_name.extend (directories_to_build.item)
 				directories_to_build.remove
-				
+
 				create a_directory.make (new_directory_name)
 				a_directory.create_dir
 				if not a_directory.exists then
@@ -122,7 +122,7 @@ feature -- Basic operations
 			Result_exists: (create {DIRECTORY}.make (a_directory_name)).exists
 		end
 
-	path_ellipsis (a_path: STRING; a_max_length: INTEGER): STRING is
+	path_ellipsis (a_path: STRING; a_max_length: INTEGER): STRING
 			-- Create the displayed string of `a_path', with a maximum
 			-- length of `a_max_length' characters. If `a_path' is
 			-- longer than `a_max_length', we only keep the beginning
@@ -143,7 +143,7 @@ feature -- Basic operations
 			loc_directory_separator := operating_environment.directory_separator
 
 			if a_max_length >= a_path.count then
-				Result := a_path.twin
+				create Result.make_from_string (a_path)
 			else
 				create Result.make (a_max_length)
 				slash_index := a_path.index_of (loc_directory_separator, 1)
@@ -176,7 +176,7 @@ feature -- Basic operations
 
 feature {NONE} -- Validation
 
-	make_for_test is
+	make_for_test
 			-- Test the features of this class.
 		local
 			dir: DIRECTORY_NAME
@@ -209,7 +209,7 @@ feature {NONE} -- Validation
 			end
 		end
 
-	test_validate_directory_name (a_dir: STRING; a_dir_valid: BOOLEAN) is
+	test_validate_directory_name (a_dir: STRING; a_dir_valid: BOOLEAN)
 		local
 			dir: DIRECTORY_NAME
 		do
@@ -220,8 +220,8 @@ feature {NONE} -- Validation
 			dir := validate_directory_name (dir)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -234,22 +234,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ISE_DIRECTORY_UTILS

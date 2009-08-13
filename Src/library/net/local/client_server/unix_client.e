@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"A client with Unix socket."
@@ -19,6 +19,9 @@ inherit
 			in_out
 		end
 
+create
+	make
+
 feature -- Access
 
 	in_out: UNIX_STREAM_SOCKET
@@ -26,7 +29,7 @@ feature -- Access
 
 feature -- Initialization
 
-	make (a : STRING) is
+	make (a : STRING)
 			-- Create an unix socket client.
 		require
 			a_valid_name: a /= Void and then not a.is_empty
@@ -37,7 +40,7 @@ feature -- Initialization
 
 feature -- Status setting
 
-	cleanup is
+	cleanup
 			-- Clean close
 		do
 			in_out.close;
@@ -46,7 +49,7 @@ feature -- Status setting
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

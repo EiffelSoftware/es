@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 
 		"Sequence of requests with their responses that are witness to an observation of that execution"
@@ -31,7 +31,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_list: like list; a_first_index: like first_index; a_last_index: like last_index) is
+	make (a_list: like list; a_first_index: like first_index; a_last_index: like last_index)
 			-- Create new witness.
 		do
 			Precursor (a_list, a_first_index, a_last_index)
@@ -57,7 +57,7 @@ feature -- Access
 	classifications: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT]
 			-- Classifcations resulting from this witness
 
-	is_same_bug (other: AUT_WITNESS): BOOLEAN is
+	is_same_bug (other: AUT_WITNESS): BOOLEAN
 			-- Is `other' witnessing the same bug as this witness?
 			-- Note that this is a heuristics that considers class, feature and exception only.
 		require
@@ -108,7 +108,7 @@ feature -- Access
 			used_vars_set: used_vars = a_used_vars
 		end
 
-	used_vars: DS_HASH_TABLE [TUPLE [type: ?TYPE_A; name: ?STRING; check_dyn_type: BOOLEAN], ITP_VARIABLE]
+	used_vars: DS_HASH_TABLE [TUPLE [type: detachable TYPE_A; name: detachable STRING; check_dyn_type: BOOLEAN; use_void: BOOLEAN], ITP_VARIABLE]
 			-- Set of used variables: keys are variables, items are tuples of static type of variable
 			-- and a boolean flag showing if the static type should be checked against dynamic type
 			-- (is only the case for variables returned as results of function calls and those whose type
@@ -116,7 +116,7 @@ feature -- Access
 
 feature -- Deltas
 
-	deltas (n: INTEGER): DS_LINEAR [DS_LIST [AUT_REQUEST]] is
+	deltas (n: INTEGER): DS_LINEAR [DS_LIST [AUT_REQUEST]]
 			-- Request list divided into `n' parts.
 			-- Requests will be fresh.
 		require
@@ -130,7 +130,7 @@ feature -- Deltas
 			delta_size_correct: Result.count = n
 		end
 
-	deltas_complement (i: INTEGER; n: INTEGER): DS_LIST [AUT_REQUEST] is
+	deltas_complement (i: INTEGER; n: INTEGER): DS_LIST [AUT_REQUEST]
 			-- All but the `i'-th complement of the `n' delta list of the current requests.
 			-- Requests will be fresh.
 		require
@@ -146,7 +146,7 @@ feature -- Deltas
 
 feature {NONE} -- Implementation
 
-	judge is
+	judge
 			-- Judge current witness.
 		local
 			last_request: AUT_REQUEST
@@ -197,16 +197,16 @@ feature {NONE} -- Implementation
 							classifications.force_last (classification)
 						end
 					else
-						if normal_response.exception.code = Precondition and normal_response.exception.trace_depth = 1 then
-							is_invalid := True
+						if not normal_response.exception.is_test_invalid then
+							is_fail := True
+							-- TODO: if the exception trace is bigger than one, we should create a classification
+							-- for each routine that failed, not only for the bottom most
 							if feature_ /= Void then
 								create classification.make (Current, class_, feature_)
 								classifications.force_last (classification)
 							end
 						else
-							is_fail := True
-							-- TODO: if the exception trace is bigger than one, we should create a classification
-							-- for each routine that failed, not only for the bottom most
+							is_invalid := True
 							if feature_ /= Void then
 								create classification.make (Current, class_, feature_)
 								classifications.force_last (classification)
@@ -230,4 +230,35 @@ invariant
 	no_classification_void: not classifications.has (Void)
 	at_most_one_classification: classifications.count <= 1
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

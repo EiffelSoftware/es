@@ -1,4 +1,4 @@
- indexing
+ note
 	description: "A notebook show mini tool bar and tabs at top."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -31,8 +31,8 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
-			-- Creation method.
+	make (a_docking_manager: SD_DOCKING_MANAGER)
+			-- Creation method
 		do
 			create internal_tool_bar.make
 			create internal_minimize_button.make
@@ -43,7 +43,7 @@ feature {NONE} -- Initlization
 			create normal_max_actions
 			create minimize_actions
 			create drag_tab_area_actions
-			
+
 			Precursor {SD_NOTEBOOK}	(a_docking_manager)
 
 			prune_vertical_box (internal_border_for_tab_area)
@@ -82,8 +82,8 @@ feature {NONE} -- Initlization
 			init_action
 		end
 
-	init_action is
-			-- Initialize actions.
+	init_action
+			-- Initialize actions
 		do
 			internal_normal_max_button.select_actions.extend (agent on_normal_max_window)
 			internal_minimize_button.select_actions.extend (agent on_minimize)
@@ -95,21 +95,21 @@ feature {NONE} -- Initlization
 feature -- Query
 
 	custom_area: EV_CELL
-			-- Custom area which allow client programmer extend.
+			-- Custom area which allow client programmer extend
 
 	normal_max_actions: EV_NOTIFY_ACTION_SEQUENCE
-			-- Normal\max actions.
+			-- Normal\max actions
 
 	minimize_actions: EV_NOTIFY_ACTION_SEQUENCE
-			-- Minimize actions.
+			-- Minimize actions
 
 	drag_tab_area_actions: EV_POINTER_MOTION_ACTION_SEQUENCE
-			-- Tab area drag actions.
+			-- Tab area drag actions
 
 	is_maximized: BOOLEAN
-			-- If Current is maximized?
+			-- If Current maximized?
 
-	is_in_close_area: BOOLEAN is
+	is_in_close_area: BOOLEAN
 			-- If pointer position in tab close button area?
 		do
 			from
@@ -122,7 +122,7 @@ feature -- Query
 			end
 		end
 
-	in_normal_maximize_area: BOOLEAN is
+	in_normal_maximize_area: BOOLEAN
 			-- If pointer position in normal/maximize button area?
 		do
 			Result := internal_minimize_button.state = {SD_TOOL_BAR_ITEM_STATE}.hot
@@ -130,8 +130,8 @@ feature -- Query
 
 feature -- Command
 
-	set_mini_tool_bar (a_widget: EV_WIDGET) is
-			-- Set `custom_area' widget.
+	set_mini_tool_bar (a_widget: EV_WIDGET)
+			-- Set `custom_area' widget with `a_widget'
 		require
 			a_widget_not_void: a_widget /= Void
 		do
@@ -139,8 +139,8 @@ feature -- Command
 			custom_area.extend (a_widget)
 		end
 
-	set_tab_position (a_position: INTEGER) is
-			-- Redefine
+	set_tab_position (a_position: INTEGER)
+			-- <Precursor>
 		do
 			start
 			search (internal_border_for_tab_area)
@@ -158,8 +158,8 @@ feature -- Command
 			disable_item_expand (internal_border_for_tab_area)
 		end
 
-	set_show_maximized (a_maximized: BOOLEAN) is
-			-- Set `internal_normal_max_button''s pixmap.
+	set_show_maximized (a_maximized: BOOLEAN)
+			-- Set `internal_normal_max_button''s pixmap
 		do
 			if a_maximized then
 				internal_normal_max_button.set_pixmap (internal_shared.icons.normal)
@@ -177,7 +177,7 @@ feature -- Command
 			is_maximized := a_maximized
 		end
 
-	set_show_minimized (a_minimized: BOOLEAN) is
+	set_show_minimized (a_minimized: BOOLEAN)
 			-- Set `internal_minimized_button''s pixmap
 		do
 			if not a_minimized then
@@ -195,20 +195,20 @@ feature -- Command
 			end
 		end
 
-	extend (a_content: SD_CONTENT) is
-			-- Redefine.
+	extend (a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			Precursor {SD_NOTEBOOK} (a_content)
 		end
 
-	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
-			-- Redefine.
+	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER)
+			-- <Precursor>
 		do
 			internal_tab_box.on_resize (a_x, a_y, a_width - internal_tool_bar.width, a_height)
 		end
 
-	destroy is
-			-- Refefine
+	destroy
+			-- <Precursor>
 		do
 			Precursor {SD_NOTEBOOK}
 			-- If we don't call destory, there is 2 Gdi objects leak.
@@ -217,44 +217,44 @@ feature -- Command
 
 feature {NONE}  -- Agents
 
-	on_normal_max_window is
-			-- Handle normal max window.
+	on_normal_max_window
+			-- Handle normal max window
 		do
 			normal_max_actions.call (Void)
 		end
 
-	on_minimize is
-			-- Handle minimize actions.
+	on_minimize
+			-- Handle minimize actions
 		do
 			minimize_actions.call (Void)
 		end
 
-	on_tab_area_pointer_press (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
-			-- Handle tab area pointer press actions.
+	on_tab_area_pointer_press (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+			-- Handle tab area pointer press actions
 		do
 			if a_button = 1 then
-				setter.before_enable_capture
+				internal_shared.setter.before_enable_capture
 				internal_tab_box.enable_capture
 				is_pointer_pressed := True
 			end
 		end
 
-	on_tab_area_pointer_release (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
-			-- Handle tab area pointer release actions.
+	on_tab_area_pointer_release (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+			-- Handle tab area pointer release actions
 		do
 			if a_button = 1 then
 				internal_tab_box.disable_capture
-				setter.after_disable_capture
+				internal_shared.setter.after_disable_capture
 				is_pointer_pressed := False
 			end
 		end
 
-	on_tab_area_motion (a_x: INTEGER_32; a_y: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
-			-- Handle tab area motion actions.
+	on_tab_area_motion (a_x: INTEGER_32; a_y: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+			-- Handle tab area motion actions
 		do
 			if is_pointer_pressed then
 				internal_tab_box.disable_capture
-				setter.after_disable_capture
+				internal_shared.setter.after_disable_capture
 				is_pointer_pressed := False
 				drag_tab_area_actions.call ([a_x, a_y, a_x_tilt, a_y_tilt, a_pressure, a_screen_x, a_screen_y])
 			end
@@ -265,12 +265,6 @@ feature {NONE}  -- Implementation
 	is_pointer_pressed: BOOLEAN
 			-- If pointer pressed on `internal_tab_box'?
 
-	setter: SD_SYSTEM_SETTER is
-			-- System setter
-		once
-			create {SD_SYSTEM_SETTER_IMP} Result
-		end
-
 	internal_top_box: EV_HORIZONTAL_BOX
 			-- Box which contain
 
@@ -278,10 +272,10 @@ feature {NONE}  -- Implementation
 			-- Box which contain `custom_area' and `internal_tool_bar'
 
 	internal_tool_bar: SD_TOOL_BAR
-			-- Tool bar has `internal_normal_max_button', `internal_close_button'.
+			-- Tool bar has `internal_normal_max_button', `internal_close_button'
 
 	internal_minimize_button: SD_TOOL_BAR_BUTTON
-			-- Minimize button.
+			-- Minimize button
 
 	internal_normal_max_button: SD_TOOL_BAR_BUTTON
 			-- Normal\max button
@@ -298,7 +292,7 @@ invariant
 	normal_max_actions_not_void: normal_max_actions /= Void
 	minimize_actions_not_void: minimize_actions /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

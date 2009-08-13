@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 
 		"Maps variables to their type"
@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Create new handler.
 		require
 			a_system_not_void: a_system /= Void
@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	is_variable_defined (a_variable: ITP_VARIABLE): BOOLEAN is
+	is_variable_defined (a_variable: ITP_VARIABLE): BOOLEAN
 			-- Is variable `a_variable' defined in interpreter?
 		require
 			a_variable_not_void: a_variable /= Void
@@ -51,7 +51,7 @@ feature -- Status report
 			Result := variable_type_table.has (a_variable)
 		end
 
-	are_expressions_valid (a_list: DS_LINEAR [ITP_EXPRESSION]): BOOLEAN is
+	are_expressions_valid (a_list: DS_LINEAR [ITP_EXPRESSION]): BOOLEAN
 			-- Are the expressions in `a_list' valid? I.e. are the variables in `a_list' defined?
 		require
 			a_list_not_void: a_list /= Void
@@ -82,7 +82,7 @@ feature -- Access
 	system: SYSTEM_I
 			-- system
 
-	variable_type (a_variable: ITP_VARIABLE): TYPE_A is
+	variable_type (a_variable: ITP_VARIABLE): TYPE_A
 			-- Type of `a_variable'
 			-- Void of the value of `a_variable' is Void so we don't know the exact type of `a_variable' from the proxy side.
 		require
@@ -94,7 +94,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	random_variable: ITP_VARIABLE is
+	random_variable: ITP_VARIABLE
 			-- Random variable from interpreter or `Void' if none
 			-- defined
 		local
@@ -122,10 +122,12 @@ feature -- Access
 			variable_defined: Result /= Void implies is_variable_defined (Result)
 		end
 
-	random_conforming_variable (a_type: TYPE_A): ITP_VARIABLE is
+	random_conforming_variable (a_context_class: CLASS_C; a_type: TYPE_A): ITP_VARIABLE
 			-- Random variable of `conforming_variables (a_type)' or Void if list
 			-- is emtpy
 		require
+			a_context_class_not_Void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_valid
 			a_type_not_void: a_type /= Void
 		local
 			list: like conforming_variables
@@ -133,7 +135,7 @@ feature -- Access
 			i: INTEGER
 			j: INTEGER
 		do
-			list := conforming_variables (a_type)
+			list := conforming_variables (a_context_class, a_type)
 			if list.count > 0 then
 				random.forth
 				i := (random.item  \\ list.count) + 1
@@ -154,12 +156,15 @@ feature -- Access
 			variable_defined: Result /= Void implies is_variable_defined (Result)
 		end
 
-	conforming_variables (a_type: TYPE_A): DS_LIST [ITP_VARIABLE] is
+	conforming_variables (a_context_class: CLASS_C; a_type: TYPE_A): DS_LIST [ITP_VARIABLE]
 			-- All defeined variables conforming to `a_type'
 		require
+			a_context_class_not_Void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_valid
 			a_type_not_void: a_type /= Void
 		local
 			cs: DS_HASH_TABLE_CURSOR [TYPE_A, ITP_VARIABLE]
+			l_type: TYPE_A
 		do
 			create {DS_ARRAYED_LIST [ITP_VARIABLE]} Result.make (variable_type_table.count)
 			from
@@ -168,7 +173,9 @@ feature -- Access
 			until
 				cs.off
 			loop
-				if cs.item = Void or else cs.item.actual_type.is_conformant_to (a_type) then
+				l_type := cs.item.actual_type
+					-- We only allow Void conforms to a non expanded type.
+				if l_type.is_conformant_to (a_context_class, a_type) and then not (a_type.is_expanded and then l_type.is_none) then
 					Result.force_last (cs.key)
 				end
 				cs.forth
@@ -178,7 +185,7 @@ feature -- Access
 			variables_doesnt_have_void: not Result.has (Void)
 		end
 
-	new_variable: ITP_VARIABLE is
+	new_variable: ITP_VARIABLE
 			-- Variable not yet defined
 		do
 			name_generator.generate_new_name
@@ -191,7 +198,7 @@ feature -- Access
 
 feature -- Element change
 
-	define_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A) is
+	define_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A)
 			-- Define variable `a_variable' to be of type `a_type'.
 			-- `a_type' is Void means that the value of `a_variable' is Void so we don't know the exact type of it
 			-- from the proxy side.
@@ -207,7 +214,7 @@ feature -- Element change
 
 feature -- Removal
 
-	wipe_out is
+	wipe_out
 			-- Remove all variable mappings.
 		do
 			create name_generator.make_with_string_stream (variable_name_prefix)
@@ -229,4 +236,35 @@ invariant
 	variable_type_table_not_void: variable_type_table /= Void
 	all_variables_have_type: not variable_type_table.has (Void)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

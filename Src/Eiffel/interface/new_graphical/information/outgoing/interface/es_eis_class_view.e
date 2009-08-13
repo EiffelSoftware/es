@@ -1,4 +1,4 @@
-indexing
+note
 	description: "EIS list of a given class."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -9,7 +9,7 @@ class
 	ES_EIS_CLASS_VIEW
 
 inherit
-	ES_EIS_COMPONENT_VIEW [!CLASS_I]
+	ES_EIS_COMPONENT_VIEW [CLASS_I]
 		rename
 			component as class_i
 		redefine
@@ -32,7 +32,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class: !CLASS_I; a_eis_grid: !ES_EIS_ENTRY_GRID) is
+	make (a_class: attached CLASS_I; a_eis_grid: attached ES_EIS_ENTRY_GRID)
 			-- Initialized with `a_conf_notable' and `a_eis_grid'.
 		require
 			a_eis_grid_not_destroyed: not a_eis_grid.is_destroyed
@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 
 feature -- Operation
 
-	create_new_entry is
+	create_new_entry
 			-- Create new EIS entry in `class_i'.
 		local
 			l_class_modifier: ES_EIS_CLASS_MODIFIER
@@ -58,10 +58,10 @@ feature -- Operation
 					l_class_modifier.commit
 
 					if
-						{lt_entry: EIS_ENTRY}l_class_modifier.last_create_entry and then
-						{lt_id: STRING}id_solution.id_of_class (class_i.config_class)
+						attached l_class_modifier.last_create_entry as lt_entry and then
+						attached id_solution.id_of_class (class_i.config_class) as lt_id
 					then
-						storage.register_entry (lt_entry, lt_id)
+						storage.register_entry (lt_entry, lt_id, class_i.date)
 						if extracted_entries = Void then
 							create extracted_entries.make (1)
 						end
@@ -76,7 +76,7 @@ feature -- Operation
 			end
 		end
 
-	delete_selected_entries is
+	delete_selected_entries
 			-- <precursor>
 		local
 			l_selected_rows: ARRAYED_LIST [EV_GRID_ROW]
@@ -100,7 +100,7 @@ feature -- Operation
 					until
 						l_selected_rows.after
 					loop
-						if {lt_entry: EIS_ENTRY}l_selected_rows.item_for_iteration.data then
+						if attached {EIS_ENTRY} l_selected_rows.item_for_iteration.data as lt_entry then
 							if entry_editable (lt_entry) then
 								remove_entry (lt_entry)
 								extracted_entries.remove (l_selected_rows.item_for_iteration.index)
@@ -120,7 +120,7 @@ feature -- Operation
 
 feature -- Querry
 
-	component_editable: BOOLEAN is
+	component_editable: BOOLEAN
 			-- Is component editable?
 		do
 			Result := not class_i.is_read_only
@@ -128,17 +128,17 @@ feature -- Querry
 
 feature {NONE} -- Access
 
-	entry_editable (a_entry: !EIS_ENTRY): BOOLEAN is
+	entry_editable (a_entry: attached EIS_ENTRY): BOOLEAN
 			-- If `a_entry' is editable through current view?
 		local
 			l_type: NATURAL
 			l_feature: E_FEATURE
 			l_modifier: ES_EIS_CLASS_MODIFIER
 		do
-			if {lt_id: STRING}a_entry.id then
+			if attached a_entry.id as lt_id then
 				l_type := id_solution.most_possible_type_of_id (lt_id)
 				if l_type = id_solution.class_type then
-					if {lt_class: CLASS_I}id_solution.class_of_id (lt_id) then
+					if attached {CLASS_I} id_solution.class_of_id (lt_id) as lt_class then
 						Result := (class_i = lt_class)
 					end
 				elseif l_type = id_solution.feature_type then
@@ -157,7 +157,7 @@ feature {NONE} -- Access
 
 feature {NONE} -- Class modification
 
-	modify_entry_in_feature (a_old_entry, a_new_entry: !EIS_ENTRY; a_feature: !E_FEATURE) is
+	modify_entry_in_feature (a_old_entry, a_new_entry: attached EIS_ENTRY; a_feature: attached E_FEATURE)
 			-- Modify `a_old_entry' with `a_new_entry' in `a_feature'.
 		require
 			a_old_entry_editable: entry_editable (a_old_entry)
@@ -174,7 +174,7 @@ feature {NONE} -- Class modification
 			end
 		end
 
-	modify_entry_in_class (a_old_entry, a_new_entry: !EIS_ENTRY; a_class: !CLASS_I) is
+	modify_entry_in_class (a_old_entry, a_new_entry: attached EIS_ENTRY; a_class: attached CLASS_I)
 			-- Modify `a_old_entry' with `a_new_entry' in `a_class'.
 		require
 			a_old_entry_editable: entry_editable (a_old_entry)
@@ -191,21 +191,21 @@ feature {NONE} -- Class modification
 			end
 		end
 
-	remove_entry (a_entry: !EIS_ENTRY) is
+	remove_entry (a_entry: attached EIS_ENTRY)
 			-- Remove entry in component.
 		require
 			a_entry_editable: entry_editable (a_entry)
 		do
-			if {lt_feature: E_FEATURE}id_solution.feature_of_id (a_entry.id) then
+			if attached {E_FEATURE} id_solution.feature_of_id (a_entry.id) as lt_feature then
 				remove_entry_in_feature (a_entry, lt_feature)
 				storage.deregister_entry (a_entry, component_id)
-			elseif {lt_class: CLASS_I}id_solution.class_of_id (a_entry.id) then
+			elseif attached {CLASS_I} id_solution.class_of_id (a_entry.id) as lt_class then
 				remove_entry_in_class (a_entry, lt_class)
 				storage.deregister_entry (a_entry, component_id)
 			end
 		end
 
-	remove_entry_in_feature (a_entry: !EIS_ENTRY; a_feature: !E_FEATURE) is
+	remove_entry_in_feature (a_entry: attached EIS_ENTRY; a_feature: attached E_FEATURE)
 			-- Remove entry in feature.
 		require
 			a_entry_editable: entry_editable (a_entry)
@@ -222,7 +222,7 @@ feature {NONE} -- Class modification
 			end
 		end
 
-	remove_entry_in_class (a_entry: !EIS_ENTRY; a_class: !CLASS_I) is
+	remove_entry_in_class (a_entry: attached EIS_ENTRY; a_class: attached CLASS_I)
 			-- Remove entry in class.
 		require
 			a_entry_editable: entry_editable (a_entry)
@@ -239,7 +239,7 @@ feature {NONE} -- Class modification
 			end
 		end
 
-	write_entry_in_feature (a_entry: !EIS_ENTRY; a_feature: !E_FEATURE) is
+	write_entry_in_feature (a_entry: attached EIS_ENTRY; a_feature: attached E_FEATURE)
 			-- Write entry in feature.
 		local
 			l_feature_modifier: ES_EIS_FEATURE_MODIFIER
@@ -258,7 +258,7 @@ feature {NONE} -- Class modification
 			end
 		end
 
-	write_entry_in_class (a_entry: !EIS_ENTRY; a_class: !CLASS_I) is
+	write_entry_in_class (a_entry: attached EIS_ENTRY; a_class: attached CLASS_I)
 			-- Write entry in class.
 		local
 			l_class_modifier: ES_EIS_CLASS_MODIFIER
@@ -279,7 +279,7 @@ feature {NONE} -- Class modification
 
 feature {NONE} -- Location token
 
-	class_editor_token_for_location (a_item: CLASS_I): !ES_GRID_LIST_ITEM is
+	class_editor_token_for_location (a_item: CLASS_I): attached ES_GRID_LIST_ITEM
 			-- Create editor token for loaction accordingly.
 		do
 			if a_item.is_compiled then
@@ -289,7 +289,7 @@ feature {NONE} -- Location token
 			end
 		end
 
-	feature_editor_token_for_location (a_item: E_FEATURE; a_name: STRING): !ES_GRID_LIST_ITEM is
+	feature_editor_token_for_location (a_item: E_FEATURE; a_name: STRING): attached ES_GRID_LIST_ITEM
 			-- Create editor token item for loaction accordingly.
 		do
 			if a_item /= Void then
@@ -299,13 +299,13 @@ feature {NONE} -- Location token
 			end
 		end
 
-	class_feature_editor_token_for_location (a_item: ANY): !ES_GRID_LIST_ITEM is
+	class_feature_editor_token_for_location (a_item: ANY): attached ES_GRID_LIST_ITEM
 			-- Create editor token item for loaction accordingly.
 		local
-			l_editable_item: !EB_GRID_LISTABLE_CHOICE_ITEM
+			l_editable_item: attached EB_GRID_LISTABLE_CHOICE_ITEM
 			l_line: EIFFEL_EDITOR_LINE
 			l_list: ARRAYED_LIST [EB_GRID_LISTABLE_CHOICE_ITEM_ITEM]
-			l_item_item: !EB_GRID_LISTABLE_CHOICE_ITEM_ITEM
+			l_item_item: attached EB_GRID_LISTABLE_CHOICE_ITEM_ITEM
 			l_e_com: EB_GRID_EDITOR_TOKEN_COMPONENT
 			l_modifier: ES_EIS_CLASS_MODIFIER
 			l_classc: CLASS_C
@@ -342,7 +342,7 @@ feature {NONE} -- Location token
 				until
 					l_written_in_features.after
 				loop
-					if ({lt_feature: E_FEATURE}l_written_in_features.item_for_iteration and then not lt_feature.is_attribute and then not lt_feature.is_constant) then
+					if (attached {E_FEATURE} l_written_in_features.item_for_iteration as lt_feature and then not lt_feature.is_attribute and then not lt_feature.is_constant) then
 						token_writer.new_line
 						token_writer.add_sectioned_feature_name (lt_feature)
 						l_line := token_writer.last_line
@@ -370,17 +370,17 @@ feature {NONE} -- Location token
 
 feature {NONE} -- Implementation
 
-	new_extractor: !ES_EIS_EXTRACTOR is
+	new_extractor: attached ES_EIS_EXTRACTOR
 			-- Create extractor
 		do
-			create {ES_EIS_CLASS_EXTRACTOR}Result.make (class_i)
+			create {ES_EIS_CLASS_EXTRACTOR}Result.make (class_i, True)
 		end
 
-	background_color_of_entry (a_entry: !EIS_ENTRY): EV_COLOR is
+	background_color_of_entry (a_entry: attached EIS_ENTRY): EV_COLOR
 			-- Background color of `a_entry'
 		do
 			if
-				{lt_id: STRING}a_entry.id and then
+				attached a_entry.id as lt_id and then
 				(lt_id.is_equal (component_id) or id_solution.most_possible_type_of_id (lt_id) = id_solution.feature_type)
 			then
 					-- Default background color without change
@@ -389,52 +389,52 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	component_id: !STRING
+	component_id: attached STRING
 			-- Component ID
 		do
 			if internal_component_id = Void then
-				if {lt_id: STRING}computed_component_id then
+				if attached computed_component_id as lt_id then
 					Result := lt_id
 				end
 			else
-				if {lt_id1: STRING}internal_component_id then
+				if attached internal_component_id as lt_id1 then
 					Result := lt_id1
 				end
 			end
 		end
 
-	computed_component_id: ?STRING is
+	computed_component_id: detachable STRING
 			-- Compute component id
 		do
 			Result := id_solution.id_of_class (class_i.config_class)
 		end
 
-	internal_component_id: ?STRING;
+	internal_component_id: detachable STRING;
 			-- Buffered component ID
 
 feature {NONE} -- Callbacks
 
-	on_name_changed (a_item: EV_GRID_EDITABLE_ITEM) is
+	on_name_changed (a_item: EV_GRID_EDITABLE_ITEM)
 			-- On name changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
-			l_new_entry: !EIS_ENTRY
+			l_new_entry: attached EIS_ENTRY
 			l_done: BOOLEAN
 		do
-			if {lt_entry: EIS_ENTRY}a_item.row.data and then {lt_name: STRING_32}a_item.text then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_name then
 				if lt_entry.name /= Void and then lt_name.is_equal (lt_entry.name) then
 						-- Do nothing when the name is not actually changed
 				else
 					if entry_editable (lt_entry) then
-						if {lt_feature: E_FEATURE}id_solution.feature_of_id (lt_entry.id) then
-							if {lt_new_entry: EIS_ENTRY}lt_entry.twin then
+						if attached {E_FEATURE} id_solution.feature_of_id (lt_entry.id) as lt_feature then
+							if attached lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
 							l_new_entry.set_name (lt_name)
 							modify_entry_in_feature (lt_entry, l_new_entry, lt_feature)
 							l_done := True
-						elseif {lt_class: CLASS_I}id_solution.class_of_id (lt_entry.id) then
-							if {lt_new_entry1: EIS_ENTRY}lt_entry.twin then
+						elseif attached {CLASS_I} id_solution.class_of_id (lt_entry.id) as lt_class then
+							if attached lt_entry.twin as lt_new_entry1 then
 								l_new_entry := lt_new_entry1
 							end
 							l_new_entry.set_name (lt_name)
@@ -445,34 +445,34 @@ feature {NONE} -- Callbacks
 						if l_done then
 							storage.deregister_entry (lt_entry, component_id)
 							lt_entry.set_name (lt_name)
-							storage.register_entry (lt_entry, component_id)
+							storage.register_entry (lt_entry, component_id, class_i.date)
 						end
 					end
 				end
 			end
 		end
 
-	on_protocol_changed (a_item: EV_GRID_EDITABLE_ITEM) is
+	on_protocol_changed (a_item: EV_GRID_EDITABLE_ITEM)
 			-- On protocol changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
-			l_new_entry: !EIS_ENTRY
+			l_new_entry: attached EIS_ENTRY
 			l_done: BOOLEAN
 		do
-			if {lt_entry: EIS_ENTRY}a_item.row.data and then {lt_protocol: STRING_32}a_item.text then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_protocol then
 				if lt_entry.protocol /= Void and then lt_protocol.is_equal (lt_entry.protocol) then
 						-- Do nothing when the protocol is not actually changed
 				else
 					if entry_editable (lt_entry) then
-						if {lt_feature: E_FEATURE}id_solution.feature_of_id (lt_entry.id) then
-							if {lt_new_entry: EIS_ENTRY}lt_entry.twin then
+						if attached {E_FEATURE} id_solution.feature_of_id (lt_entry.id) as lt_feature then
+							if attached lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
 							l_new_entry.set_protocol (lt_protocol)
 							modify_entry_in_feature (lt_entry, l_new_entry, lt_feature)
 							l_done := True
-						elseif {lt_class: CLASS_I}id_solution.class_of_id (lt_entry.id) then
-							if {lt_new_entry1: EIS_ENTRY}lt_entry.twin then
+						elseif attached {CLASS_I} id_solution.class_of_id (lt_entry.id) as lt_class then
+							if attached lt_entry.twin as lt_new_entry1 then
 								l_new_entry := lt_new_entry1
 							end
 							l_new_entry.set_protocol (lt_protocol)
@@ -483,34 +483,34 @@ feature {NONE} -- Callbacks
 						if l_done then
 							storage.deregister_entry (lt_entry, component_id)
 							lt_entry.set_protocol (lt_protocol)
-							storage.register_entry (lt_entry, component_id)
+							storage.register_entry (lt_entry, component_id, class_i.date)
 						end
 					end
 				end
 			end
 		end
 
-	on_source_changed (a_item: EV_GRID_EDITABLE_ITEM) is
+	on_source_changed (a_item: EV_GRID_EDITABLE_ITEM)
 			-- On source changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
-			l_new_entry: !EIS_ENTRY
+			l_new_entry: attached EIS_ENTRY
 			l_done: BOOLEAN
 		do
-			if {lt_entry: EIS_ENTRY}a_item.row.data and then {lt_source: STRING_32}a_item.text then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_source then
 				if lt_entry.source /= Void and then lt_source.is_equal (lt_entry.source) then
 						-- Do nothing when the source is not actually changed
 				else
 					if entry_editable (lt_entry) then
-						if {lt_feature: E_FEATURE}id_solution.feature_of_id (lt_entry.id) then
-							if {lt_new_entry: EIS_ENTRY}lt_entry.twin then
+						if attached {E_FEATURE} id_solution.feature_of_id (lt_entry.id) as lt_feature then
+							if attached lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
 							l_new_entry.set_source (lt_source)
 							modify_entry_in_feature (lt_entry, l_new_entry, lt_feature)
 							l_done := True
-						elseif {lt_class: CLASS_I}id_solution.class_of_id (lt_entry.id) then
-							if {lt_new_entry1: EIS_ENTRY}lt_entry.twin then
+						elseif attached {CLASS_I} id_solution.class_of_id (lt_entry.id) as lt_class then
+							if attached lt_entry.twin as lt_new_entry1 then
 								l_new_entry := lt_new_entry1
 							end
 							l_new_entry.set_source (lt_source)
@@ -521,24 +521,24 @@ feature {NONE} -- Callbacks
 						if l_done then
 							storage.deregister_entry (lt_entry, component_id)
 							lt_entry.set_source (lt_source)
-							storage.register_entry (lt_entry, component_id)
+							storage.register_entry (lt_entry, component_id, class_i.date)
 						end
 					end
 				end
 			end
 		end
 
-	on_tags_changed (a_item: EV_GRID_EDITABLE_ITEM) is
+	on_tags_changed (a_item: EV_GRID_EDITABLE_ITEM)
 			-- On tags changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
-			l_new_entry: !EIS_ENTRY
-			l_tags: !ARRAYED_LIST [!STRING_32]
+			l_new_entry: attached EIS_ENTRY
+			l_tags: attached ARRAYED_LIST [STRING_32]
 			l_done: BOOLEAN
 		do
-			if {lt_entry: EIS_ENTRY}a_item.row.data and then {lt_tags: STRING_32}a_item.text then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_tags then
 					 -- |FIXME: Bad conversion, should not convert to string_8.
-				if {lt_tags_str_8: STRING}lt_tags.as_string_8 then
+				if attached lt_tags.as_string_8 as lt_tags_str_8 then
 					l_tags := parse_tags (lt_tags_str_8)
 					l_tags.compare_objects
 				end
@@ -546,15 +546,15 @@ feature {NONE} -- Callbacks
 						-- Do nothing when the tags is not actually changed
 				else
 					if entry_editable (lt_entry) then
-						if {lt_feature: E_FEATURE}id_solution.feature_of_id (lt_entry.id) then
-							if {lt_new_entry: EIS_ENTRY}lt_entry.twin then
+						if attached {E_FEATURE} id_solution.feature_of_id (lt_entry.id) as lt_feature then
+							if attached {EIS_ENTRY} lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
 							l_new_entry.set_tags (l_tags)
 							modify_entry_in_feature (lt_entry, l_new_entry, lt_feature)
 							l_done := True
-						elseif {lt_class: CLASS_I}id_solution.class_of_id (lt_entry.id) then
-							if {lt_new_entry1: EIS_ENTRY}lt_entry.twin then
+						elseif attached {CLASS_I} id_solution.class_of_id (lt_entry.id) as lt_class then
+							if attached lt_entry.twin as lt_new_entry1 then
 								l_new_entry := lt_new_entry1
 							end
 							l_new_entry.set_tags (l_tags)
@@ -569,37 +569,37 @@ feature {NONE} -- Callbacks
 							else
 								lt_entry.set_tags (Void)
 							end
-							storage.register_entry (lt_entry, component_id)
+							storage.register_entry (lt_entry, component_id, class_i.date)
 						end
 					end
 				end
 			end
 		end
 
-	on_others_changed (a_item: EV_GRID_EDITABLE_ITEM) is
+	on_others_changed (a_item: EV_GRID_EDITABLE_ITEM)
 			-- On others changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
-			l_new_entry: !EIS_ENTRY
-			l_others: !HASH_TABLE [STRING_32, STRING_32]
+			l_new_entry: attached EIS_ENTRY
+			l_others: attached HASH_TABLE [STRING_32, STRING_32]
 			l_done: BOOLEAN
 		do
-			if {lt_entry: EIS_ENTRY}a_item.row.data and then {lt_others: STRING_32}a_item.text then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_others then
 				l_others := parse_others (lt_others)
 				l_others.compare_objects
 				if lt_entry.others /= Void and then lt_entry.others.is_equal (l_others) then
 						-- Do nothing when the others is not actually changed
 				else
 					if entry_editable (lt_entry) then
-						if {lt_feature: E_FEATURE}id_solution.feature_of_id (lt_entry.id) then
-							if {lt_new_entry: EIS_ENTRY}lt_entry.twin then
+						if attached {E_FEATURE} id_solution.feature_of_id (lt_entry.id) as lt_feature then
+							if attached lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
 							l_new_entry.set_others (l_others)
 							modify_entry_in_feature (lt_entry, l_new_entry, lt_feature)
 							l_done := True
-						elseif {lt_class: CLASS_I}id_solution.class_of_id (lt_entry.id) then
-							if {lt_new_entry1: EIS_ENTRY}lt_entry.twin then
+						elseif attached {CLASS_I} id_solution.class_of_id (lt_entry.id) as lt_class then
+							if attached lt_entry.twin as lt_new_entry1 then
 								l_new_entry := lt_new_entry1
 							end
 							l_new_entry.set_others (l_others)
@@ -614,14 +614,14 @@ feature {NONE} -- Callbacks
 							else
 								lt_entry.set_others (Void)
 							end
-							storage.register_entry (lt_entry, component_id)
+							storage.register_entry (lt_entry, component_id, class_i.date)
 						end
 					end
 				end
 			end
 		end
 
-	on_location_changed (a_item: EB_GRID_LISTABLE_CHOICE_ITEM_ITEM; a_grid_item: EB_GRID_LISTABLE_CHOICE_ITEM): BOOLEAN is
+	on_location_changed (a_item: EB_GRID_LISTABLE_CHOICE_ITEM_ITEM; a_grid_item: EB_GRID_LISTABLE_CHOICE_ITEM): BOOLEAN
 			-- On selection changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		require
@@ -634,9 +634,9 @@ feature {NONE} -- Callbacks
 			l_class_modifier: ES_EIS_CLASS_MODIFIER
 			l_feature_modifier: ES_EIS_FEATURE_MODIFIER
 			l_grid_item: EB_GRID_LISTABLE_CHOICE_ITEM_ITEM
-			l_eis_entry: !EIS_ENTRY
+			l_eis_entry: attached EIS_ENTRY
 		do
-			if {lt_entry: EIS_ENTRY}a_grid_item.row.data then
+			if attached {EIS_ENTRY} a_grid_item.row.data as lt_entry then
 				l_eis_entry := lt_entry
 				l_classi ?= a_item.data
 				l_feature ?= a_item.data
@@ -649,7 +649,7 @@ feature {NONE} -- Callbacks
 							if l_grid_item /= Void then
 								l_current_feature ?= l_grid_item.data
 							end
-							if {lt_current_feature: E_FEATURE}l_current_feature then
+							if attached {E_FEATURE} l_current_feature as lt_current_feature then
 								l_class_modifier.write_class_entry (l_eis_entry)
 								l_class_modifier.commit
 								Result := True
@@ -658,7 +658,7 @@ feature {NONE} -- Callbacks
 									-- Change the id of the entry
 								storage.deregister_entry (l_eis_entry, component_id)
 								l_eis_entry.set_id (component_id)
-								storage.register_entry (l_eis_entry, component_id)
+								storage.register_entry (l_eis_entry, component_id, class_i.date)
 							end
 						else
 							prompts.show_error_prompt (interface_names.l_syntax_error, Void, Void)
@@ -666,7 +666,7 @@ feature {NONE} -- Callbacks
 					else
 						prompts.show_error_prompt (interface_names.l_class_is_not_editable, Void, Void)
 					end
-				elseif {lt_feature: E_FEATURE}l_feature and then lt_feature.written_class.lace_class.is_equal (class_i) then
+				elseif attached {E_FEATURE} l_feature as lt_feature and then lt_feature.written_class.lace_class.is_equal (class_i) then
 					create l_feature_modifier.make (lt_feature, class_i)
 					l_feature_modifier.prepare
 					if l_feature_modifier.is_modifiable then
@@ -681,16 +681,16 @@ feature {NONE} -- Callbacks
 								l_feature_modifier.commit
 								Result := True
 
-								if {lt_current_feature1: E_FEATURE}l_current_feature then
+								if attached {E_FEATURE} l_current_feature as lt_current_feature1 then
 										-- Remove the eis from current feature.
 									remove_entry_in_feature (l_eis_entry, lt_current_feature1)
-								elseif {lt_current_class: CLASS_I}l_current_class then
+								elseif attached {CLASS_I} l_current_class as lt_current_class then
 									remove_entry_in_class (l_eis_entry, lt_current_class)
 								end
 										-- Change the id of the entry
 								storage.deregister_entry (l_eis_entry, component_id)
 								l_eis_entry.set_id (id_solution.id_of_feature (lt_feature))
-								storage.register_entry (l_eis_entry, component_id)
+								storage.register_entry (l_eis_entry, component_id, class_i.date)
 							end
 						else
 							prompts.show_error_prompt (interface_names.l_syntax_error, Void, Void)
@@ -702,8 +702,8 @@ feature {NONE} -- Callbacks
 			end
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -727,11 +727,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

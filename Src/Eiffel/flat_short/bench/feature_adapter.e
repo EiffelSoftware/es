@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Evaluates (adapts) source and target feature_i for a feature%
 				  %ast structure which is used in the format context."
 	legal: "See notice at end of class."
@@ -43,7 +43,7 @@ feature -- Properties
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is Current adaptation less than `other'?
 		do
 			Result := ast < other.ast
@@ -51,7 +51,7 @@ feature -- Comparison
 
 feature -- Element change
 
-	register (feature_as: FEATURE_AS; format_reg: FORMAT_REGISTRATION) is
+	register (feature_as: FEATURE_AS; format_reg: FORMAT_REGISTRATION)
 			-- Initialize and register Current adapter (if possible)
 			-- with ast `feature_ast' and evaluate the source and target
 			-- feature. Also set comments to `c'.
@@ -138,7 +138,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	synonym_comment (exclude: INTEGER; names: EIFFEL_LIST [FEATURE_NAME]; class_name: STRING; a_is_unique: BOOLEAN): STRING is
+	synonym_comment (exclude: INTEGER; names: EIFFEL_LIST [FEATURE_NAME]; class_name: STRING; a_is_unique: BOOLEAN): STRING
 			-- Create comment describing feature synonyms.
 			-- Do not include visual name with index `exclude'.
 		require
@@ -199,7 +199,7 @@ feature {NONE} -- Implementation
 
 feature -- Output
 
-	format (ctxt: TEXT_FORMATTER_DECORATOR) is
+	format (ctxt: TEXT_FORMATTER_DECORATOR)
 			-- Format Current feature into `ctxt'.
 		local
 			format_reg: FORMAT_REGISTRATION
@@ -220,7 +220,7 @@ feature -- Output
 feature {FEATURE_ADAPTER} -- Implementation
 
 	replicate_feature (s_feat, t_feat: FEATURE_I;
-				f_ast: like ast; format_reg: FORMAT_REGISTRATION) is
+				f_ast: like ast; format_reg: FORMAT_REGISTRATION)
 			-- Replicated feature information from `feat_adapter'
 			-- with target_feature `t_feat' in `format_reg'.
 		require
@@ -237,7 +237,7 @@ feature {FEATURE_ADAPTER} -- Implementation
 
 feature {NONE} -- Implementation
 
-	adapt (old_name: FEATURE_NAME; format_reg: FORMAT_REGISTRATION) is
+	adapt (old_name: FEATURE_NAME; format_reg: FORMAT_REGISTRATION)
 			-- Adaptation for feature defined in current class being analyzed.
 		require
 			diff_class: format_reg.current_class /= format_reg.target_class;
@@ -287,7 +287,7 @@ feature {NONE} -- Implementation
 			end;
 		end;
 
-	immediate_adapt (name: FEATURE_NAME; format_reg: FORMAT_REGISTRATION) is
+	immediate_adapt (name: FEATURE_NAME; format_reg: FORMAT_REGISTRATION)
 			-- Adaptation for feature defined in target_class.
 		require
 			same_class: format_reg.current_class = format_reg.target_class;
@@ -310,13 +310,13 @@ feature {NONE} -- Implementation
 
 	register_feature (feat: FEATURE_I;
 				is_replicated: BOOLEAN;
-				format_reg: FORMAT_REGISTRATION) is
+				format_reg: FORMAT_REGISTRATION)
 			-- Register feature `feat'.
 		require
 			valid_feat: feat /= Void
 			valid_format_reg: format_reg /= Void
 		do
-			if {l_feat: !E_FEATURE} feat.e_feature then
+			if attached feat.e_feature as l_feat then
 				comments := (create {COMMENT_EXTRACTOR}).feature_comments (l_feat)
 			else
 				comments := Void
@@ -344,7 +344,7 @@ feature {NONE} -- Implementation
 			format_reg.record_creation_feature (Current)
 		end;
 
-	register_uncompiled_feature (format_reg: FORMAT_REGISTRATION) is
+	register_uncompiled_feature (format_reg: FORMAT_REGISTRATION)
 			-- Register uncompiled feature.
 		do
 			comments := format_reg.feature_comments (ast);
@@ -354,7 +354,7 @@ feature {NONE} -- Implementation
 
 feature {FEATURE_ADAPTER} -- Element change
 
-	add_comment (comment: STRING; is_precompiled: BOOLEAN) is
+	add_comment (comment: STRING; is_precompiled: BOOLEAN)
 			-- Add `comment' to `comments'.
 		require
 			valid_comment: comment /= Void
@@ -372,7 +372,7 @@ feature {FEATURE_ADAPTER} -- Element change
 
 feature {FORMAT_REGISTRATION} -- Element chage
 
-	register_for_assertions (s_feature: FEATURE_I) is
+	register_for_assertions (s_feature: FEATURE_I)
 			-- Register feature adapter only for the purpose of retrieving
 			-- chained assertions if `source_feature' is redefined in descendant.
 		require
@@ -383,10 +383,10 @@ feature {FORMAT_REGISTRATION} -- Element chage
 			body_index := s_feature.body_index;
 		end;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -397,22 +397,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class FEATURE_ADAPTER

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_ZONE which tab is at top side without SD_TITLE_BAR"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -36,8 +36,8 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_content: SD_CONTENT) is
-			-- Redefine.
+	make (a_content: SD_CONTENT)
+			-- <Precursor>
 		do
 			Precursor {SD_TAB_ZONE} (a_content)
 			internal_notebook.set_tab_position ({SD_NOTEBOOK}.tab_top)
@@ -51,28 +51,28 @@ feature {NONE} -- Initlization
 
 feature -- Query
 
-	is_maximized: BOOLEAN is
-			-- Redefine
+	is_maximized: BOOLEAN
+			-- <Precursor>
 		do
 			Result := internal_notebook.is_maximized
 		end
 
-	title_area: EV_RECTANGLE is
-			-- Redefine
+	title_area: EV_RECTANGLE
+			-- <Precursor>
 		do
 			Result := internal_notebook.tab_area
 		end
 
 feature -- Command
 
-	set_max (a_max: BOOLEAN) is
-			-- Redefine.
+	set_max (a_max: BOOLEAN)
+			-- <Precursor>
 		do
 			 internal_notebook.set_show_maximized (a_max)
 		end
 
-	show_notebook_contents (a_is_show: BOOLEAN) is
-			-- Redefine
+	show_notebook_contents (a_is_show: BOOLEAN)
+			-- <Precursor>
 		do
 			Precursor {SD_UPPER_ZONE}(a_is_show)
 			if a_is_show then
@@ -84,8 +84,8 @@ feature -- Command
 
 feature {NONE} -- Implementation
 
-	on_select_tab is
-			-- Redefine
+	on_select_tab
+			-- <Precursor>
 		local
 			l_content: SD_CONTENT
 		do
@@ -98,8 +98,8 @@ feature {NONE} -- Implementation
 --			end
 		end
 
-	on_normal_max_window is
-			-- Redefine. (Just copy from SD_ZONE version)
+	on_normal_max_window
+			-- <Precursor> (Just copy from SD_ZONE version)
 		local
 			l_split_area: EV_SPLIT_AREA
 		do
@@ -123,8 +123,8 @@ feature {NONE} -- Implementation
 			internal_docking_manager.command.unlock_update
 		end
 
-	recover_to_normal_state is
-			-- Redefine.
+	recover_to_normal_state
+			-- <Precursor>
 		do
 --			internal_notebook.set_show_maximized (False)
 			Precursor {SD_TAB_ZONE}
@@ -133,9 +133,9 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	internal_notebook: SD_NOTEBOOK_UPPER;
-			-- Notebook which tabs at top.
+			-- Notebook which tabs at top
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Handle any emails actions"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,11 +16,11 @@ feature -- Access
 
 	hostname: STRING
 		-- hostname .. ex: smtp
-		
+
 	code_number: INTEGER
 		-- Last error code received from server.
 
-	default_port: INTEGER is
+	default_port: INTEGER
 		-- Default port
 		deferred
 		end
@@ -33,47 +33,47 @@ feature -- Status report
 
 feature -- Basic operations
 
-	initiate_protocol is
+	initiate_protocol
 			-- Initiate the protocol.
 		deferred
 		end
 
-	close_protocol is
+	close_protocol
 			-- Close the protocol.
 		deferred
 		end
 
 feature -- Settings
 
-	enable_connected is
+	enable_connected
 			-- Set is_connected.
 		do
 			is_connected:= True
 		end
 
-	disable_connected is
+	disable_connected
 			-- Unset is_connected.
 		do
 			is_connected:= False
 		end
 
-	set_default_port (new_port: INTEGER) is
+	set_default_port (new_port: INTEGER)
 			-- Set the default port to 'new_port'.
 		do
 			port:= new_port
 		end
 
-feature {NONE} -- Implementation 
+feature {NONE} -- Implementation
 
 	port: INTEGER
 		-- port number
 
-	socket: NETWORK_STREAM_SOCKET
+	socket: detachable NETWORK_STREAM_SOCKET
 		-- Socket use to communicate
 
 feature {NONE} -- Miscellaneous
 
-	connect is
+	connect
 			-- Connect to the host machine,
 			-- Use this feature only if the protocol has been created without the connection.
 		do
@@ -82,23 +82,30 @@ feature {NONE} -- Miscellaneous
 			is_connected
 		end
 
-	init_socket is
+	init_socket
 			-- Initiate the socket.
+		local
+			l_socket: like socket
 		do
-			create socket.make_client_by_port (port, hostname)
-			socket.connect
-			decode
+			create l_socket.make_client_by_port (port, hostname)
+			l_socket.connect
+			decode (l_socket)
+			socket := l_socket
 			if code_number = Ack_begin_connection then
 				enable_connected
 			end
+		ensure
+			socket_attached: socket /= Void
 		end
 
-	decode is
+	decode (a_socket: attached like socket)
 			-- Read answer from server and set `code_number'.
+		require
+			a_socket_attached: a_socket /= Void
 		deferred
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Manipulate Windows handle to file"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -12,7 +12,7 @@ class
 
 feature -- Factory
 
-	open_file_inheritable (a_filename: STRING): POINTER is
+	open_file_inheritable (a_filename: STRING): POINTER
 			-- Open a file `a_filename' and made returned handle inheritable by child
 			-- process if any, so that it can be read from by child.
 		require
@@ -33,7 +33,7 @@ feature -- Factory
 				{WEL_FILE_CONSTANTS}.file_attribute_normal, default_pointer)
 		end
 
-	create_file_inheritable (a_filename: STRING; is_append: BOOLEAN): POINTER is
+	create_file_inheritable (a_filename: STRING; is_append: BOOLEAN): POINTER
 			-- If not `is_append' create a file `a_filename' and overwrite if it exists.
 			-- Otherwise append to existing file.
 		require
@@ -65,7 +65,7 @@ feature -- Factory
 			end
 		end
 
-	create_pipe_write_inheritable: TUPLE [POINTER, POINTER] is
+	create_pipe_write_inheritable: detachable TUPLE [POINTER, POINTER]
 			-- Create pipe where `write' part of pipe can be written to.
 			-- Actual type is TUPLE [read, write: POINTER]
 		local
@@ -86,7 +86,7 @@ feature -- Factory
 			end
 		end
 
-	create_pipe_read_inheritable: TUPLE [POINTER, POINTER] is
+	create_pipe_read_inheritable: detachable TUPLE [POINTER, POINTER]
 			-- Create pipe where `write' part of pipe can be written to.
 			-- Actual type is TUPLE [read, write: POINTER]
 		local
@@ -115,7 +115,7 @@ feature -- Status report
 	last_read_successful: BOOLEAN
 			-- Was last read operation successful?
 
-	last_string: STRING
+	last_string: detachable STRING
 			-- Last read string
 
 	last_written_bytes: INTEGER
@@ -126,7 +126,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	close (a_handle: POINTER): BOOLEAN is
+	close (a_handle: POINTER): BOOLEAN
 			-- Close `a_handle'.
 		do
 			Result := cwin_close_handle (a_handle)
@@ -134,7 +134,7 @@ feature -- Status setting
 
 feature -- Input
 
-	read_stream (a_handle: POINTER; a_count: INTEGER) is
+	read_stream (a_handle: POINTER; a_count: INTEGER)
 			-- Read a string of at most `count' bound characters
 			-- or until end of pipe is encountered.
 			-- Put number of read bytes in `last_read_bytes'.
@@ -169,7 +169,7 @@ feature -- Input
 			last_read_bytes := l_bytes
 		end
 
-	read_line (a_handle: POINTER) is
+	read_line (a_handle: POINTER)
 			-- Read a line or until end of pipe is encountered.
 			-- Put number of read bytes in `last_read_bytes'.
 			-- Make result available in `last_string'.
@@ -177,9 +177,11 @@ feature -- Input
 			l_str: C_STRING
 			l_done, l_success: BOOLEAN
 			l_bytes: like last_read_bytes
+			l_last_string: like last_string
 		do
 			from
-				create last_string.make (10)
+				create l_last_string.make (10)
+				last_string := l_last_string
 				create l_str.make_empty (1)
 				last_read_successful := True
 			until
@@ -199,8 +201,8 @@ feature -- Input
 					check l_bytes > 0 end
 					last_read_successful := True
 					l_str.set_count (l_bytes)
-					last_string.append (l_str.substring (1, l_bytes))
-					l_done := last_string.item (last_string.count) = '%N'
+					l_last_string.append (l_str.substring (1, l_bytes))
+					l_done := l_last_string.item (l_last_string.count) = '%N'
 				else
 					last_read_successful := False
 					last_string := Void
@@ -211,7 +213,7 @@ feature -- Input
 
 feature -- Element change
 
-	duplicate_handle (a_handle: POINTER; a_duplicated_handle: TYPED_POINTER [POINTER]): BOOLEAN is
+	duplicate_handle (a_handle: POINTER; a_duplicated_handle: TYPED_POINTER [POINTER]): BOOLEAN
 			-- Duplicate `a_handle', mostly used for:
 			-- We've set the SA so the pipe handles are inheritable.  However,
 			-- we only want the write end of the pipe inheritable, so we use
@@ -232,14 +234,14 @@ feature -- Element change
 			]"
 		end
 
-	flush (a_handle: POINTER) is
+	flush (a_handle: POINTER)
 			-- Flush buffered data.
 		do
 			if cwin_flush_file_buffers (a_handle) then
 			end
 		end
 
-	put_string (a_handle: POINTER; a_string: STRING) is
+	put_string (a_handle: POINTER; a_string: STRING)
 			-- Write `a_string' to `a_handle'.
 			-- Put number of written bytes in `last_written_bytes'.
 		require
@@ -256,7 +258,7 @@ feature -- Element change
 
 feature -- Error reporting
 
-	display_error is
+	display_error
 		do
 			-- By default do nothing, it can be used for debugging
 			-- Most likely it will use {WEL_ERROR}.display_last_error
@@ -264,7 +266,7 @@ feature -- Error reporting
 
 feature {NONE} -- Implementation
 
-	cwin_create_pipe (a_output_handle_pointer, a_input_handle_pointer, a_pointer: POINTER; a_size: INTEGER): BOOLEAN is
+	cwin_create_pipe (a_output_handle_pointer, a_input_handle_pointer, a_pointer: POINTER; a_size: INTEGER): BOOLEAN
 			-- SDK CreatePipe
 		external
 			"C [macro <winbase.h>] (PHANDLE, PHANDLE, LPSECURITY_ATTRIBUTES, DWORD): BOOL"
@@ -272,7 +274,7 @@ feature {NONE} -- Implementation
 			"CreatePipe"
 		end
 
-	cwin_create_file (a_name: POINTER; an_integer, an_integer2: INTEGER; a_pointer: POINTER; an_integer3, an_integer4: INTEGER; a_handle: POINTER): POINTER is
+	cwin_create_file (a_name: POINTER; an_integer, an_integer2: INTEGER; a_pointer: POINTER; an_integer3, an_integer4: INTEGER; a_handle: POINTER): POINTER
 			-- SDK CreateFile
 		external
 			"C macro signature (LPCTSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE): HANDLE use <windows.h>"
@@ -280,7 +282,7 @@ feature {NONE} -- Implementation
 			"CreateFile"
 		end
 
-	cwin_read_file (a_handle: POINTER; a_buffer: POINTER; an_integer:INTEGER; a_pointer1, a_pointer2: POINTER): BOOLEAN is
+	cwin_read_file (a_handle: POINTER; a_buffer: POINTER; an_integer:INTEGER; a_pointer1, a_pointer2: POINTER): BOOLEAN
 			-- SDK ReadFile
 		external
 			"C blocking macro signature (HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED): BOOL use <windows.h>"
@@ -288,7 +290,7 @@ feature {NONE} -- Implementation
 			"ReadFile"
 		end
 
-	cwin_write_file (a_handle: POINTER; a_buffer: POINTER; an_integer:INTEGER; a_pointer1, a_pointer2: POINTER): BOOLEAN is
+	cwin_write_file (a_handle: POINTER; a_buffer: POINTER; an_integer:INTEGER; a_pointer1, a_pointer2: POINTER): BOOLEAN
 			-- SDK WriteFile
 		external
 			"C blocking macro signature (HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED): BOOL use <windows.h>"
@@ -296,7 +298,7 @@ feature {NONE} -- Implementation
 			"WriteFile"
 		end
 
-	cwin_close_handle (a_handle: POINTER): BOOLEAN is
+	cwin_close_handle (a_handle: POINTER): BOOLEAN
 			-- SDK CloseHandle
 		external
 			"C macro signature (HANDLE): BOOL use <windows.h>"
@@ -304,7 +306,7 @@ feature {NONE} -- Implementation
 			"CloseHandle"
 		end
 
-	cwin_flush_file_buffers (a_handle: POINTER): BOOLEAN is
+	cwin_flush_file_buffers (a_handle: POINTER): BOOLEAN
 			-- SDK CloseHandle
 		external
 			"C macro signature (HANDLE): BOOL use <windows.h>"
@@ -312,7 +314,7 @@ feature {NONE} -- Implementation
 			"CloseHandle"
 		end
 
-	cwin_set_file_pointer (a_handle: POINTER; a_dist_to_move: INTEGER; a_dist_to_move_high: TYPED_POINTER [INTEGER]; a_method: INTEGER) is
+	cwin_set_file_pointer (a_handle: POINTER; a_dist_to_move: INTEGER; a_dist_to_move_high: TYPED_POINTER [INTEGER]; a_method: INTEGER)
 			-- Move File pointer to given location
 		external
 			"C macro signature (HANDLE, LONG, PLONG, DWORD) use <windows.h>"
@@ -320,15 +322,14 @@ feature {NONE} -- Implementation
 			"SetFilePointer"
 		end
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 end

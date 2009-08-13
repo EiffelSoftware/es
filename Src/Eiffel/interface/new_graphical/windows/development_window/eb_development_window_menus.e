@@ -1,4 +1,4 @@
-indexing
+note
 	description: "All menus in EB_DEVELOPMENT_WINDOW."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -50,28 +50,6 @@ feature -- Query
 	debugging_tools_menu: EV_MENU
 			-- Debugging tools menu item
 
-	active_menus (erase: BOOLEAN) is
-			-- Enable all the menus and if `erase' clean
-			-- the content of the Project tool.
-		do
-			compile_menu.enable_sensitive
-			if erase then
-				develop_window.output_manager.clear
-			end
-		end
-
-	disable_menus is
-			-- Disable all the menus.
-		do
-			compile_menu.disable_sensitive
-		end
-
-	update_debug_menu is
-			-- Update debug menu
-		do
-			develop_window.Eb_debugger_manager.update_debugging_tools_menu_from (develop_window)
-		end
-
 	project_menu: EV_MENU
 			-- Menu for entries relative to the Project.
 
@@ -96,10 +74,13 @@ feature -- Query
 	tools_layout_menu: EV_MENU
 			-- Menu containing items for tools docking layout
 
+	exist_layouts_menu: EV_MENU
+			-- Menu containing items for exist named layouts
+
 	docking_lock_menu: EV_MENU
 			-- Menu containing items for lock docking mechanism
 
-	context_menu_factory: EB_CONTEXT_MENU_FACTORY is
+	context_menu_factory: EB_CONTEXT_MENU_FACTORY
 			-- Context menu factory
 		do
 			Result := context_menu_factory_internal
@@ -109,85 +90,65 @@ feature -- Query
 			end
 		end
 
-	remove_item_from_tools_list_menu (a_tool: EB_TOOL) is
-			-- Remove item corresponding to `a_tool' from `tools_list_menu' and recycle their components.
-		require
-			a_tool_attached: a_tool /= Void
-		local
-			l_menu: like tools_list_menu
-			l_menu_item: EV_MENU_ITEM
-			l_data: TUPLE [menu_item: EB_COMMAND_MENU_ITEM; tool_id: STRING]
-			l_develop_window: like develop_window
-		do
-			l_menu := tools_list_menu
-			l_develop_window := develop_window
-			from
-				l_menu.start
-			until
-				l_menu.after
-			loop
-				l_menu_item := l_menu.item
-				l_data ?= l_menu_item.data
-				if l_data /= Void and then l_data.tool_id.is_equal (a_tool.title_for_pre) then
-					l_menu.remove
-					l_develop_window.auto_recycle (l_data.menu_item)
-				else
-					l_menu.forth
-				end
-			end
-		end
+--	remove_item_from_tools_list_menu (a_tool: EB_TOOL)
+--			-- Remove item corresponding to `a_tool' from `tools_list_menu' and recycle their components.
+--		require
+--			a_tool_attached: a_tool /= Void
+--		local
+--			l_menu: like tools_list_menu
+--			l_menu_item: EV_MENU_ITEM
+--			l_data: TUPLE [menu_item: EB_COMMAND_MENU_ITEM; tool_id: STRING]
+--			l_develop_window: like develop_window
+--		do
+--			l_menu := tools_list_menu
+--			l_develop_window := develop_window
+--			from
+--				l_menu.start
+--			until
+--				l_menu.after
+--			loop
+--				l_menu_item := l_menu.item
+--				l_data ?= l_menu_item.data
+--					-- FIXME: title_for_pre does not exist anymore. Must use {ES_TOOL}.content_id
+--				if l_data /= Void and then l_data.tool_id.is_equal (a_tool.title_for_pre) then
+--					l_menu.remove
+--					l_develop_window.auto_recycle (l_data.menu_item)
+--				else
+--					l_menu.forth
+--				end
+--			end
+--		end
 
-	update_item_from_tools_list_menu (a_tool: EB_TOOL) is
-			-- Update appearance such as title/pixmap for menu item of `a_tool' in `tools_list_menu'.
-		require
-			a_tool_attached: a_tool /= Void
-		local
-			l_menu: like tools_list_menu
-			l_menu_item: EV_MENU_ITEM
-			l_data: TUPLE [menu_item: EB_COMMAND_MENU_ITEM; tool_id: STRING]
-			l_done: BOOLEAN
-		do
-			from
-				l_menu := tools_list_menu
-				l_menu.start
-			until
-				l_menu.after or l_done
-			loop
-				l_menu_item := l_menu.item
-				l_data ?= l_menu_item.data
-				if l_data /= Void and then l_data.tool_id.is_equal (a_tool.title_for_pre) then
-					l_data.menu_item.set_pixmap (a_tool.pixmap)
-					l_data.menu_item.set_text (a_tool.title)
-					l_done := True
-				else
-					l_menu.forth
-				end
-			end
-		end
-
-	docking_menu_items_cell: CELL [ARRAYED_LIST [EV_MENU_ITEM]]
-			-- Docking library menu items for current development window
-			-- We can't make a global list for all development windows,
-			-- otherwise there will be recycling problem if other development window closed
-		do
-			if docking_menu_items_cell_cache = Void then
-				create docking_menu_items_cell_cache.put (Void)
-			end
-			Result := docking_menu_items_cell_cache
-		ensure
-			not_void: Result /= Void
-		end
+--	update_item_from_tools_list_menu (a_tool: EB_TOOL)
+--			-- Update appearance such as title/pixmap for menu item of `a_tool' in `tools_list_menu'.
+--		require
+--			a_tool_attached: a_tool /= Void
+--		local
+--			l_menu: like tools_list_menu
+--			l_menu_item: EV_MENU_ITEM
+--			l_data: TUPLE [menu_item: EB_COMMAND_MENU_ITEM; tool_id: STRING]
+--			l_done: BOOLEAN
+--		do
+--			from
+--				l_menu := tools_list_menu
+--				l_menu.start
+--			until
+--				l_menu.after or l_done
+--			loop
+--				l_menu_item := l_menu.item
+--				l_data ?= l_menu_item.data
+--					-- FIXME: title_for_pre does not exist anymore. Must use {ES_TOOL}.content_id
+--				if l_data /= Void and then l_data.tool_id.is_equal (a_tool.title_for_pre) then
+--					l_data.menu_item.set_pixmap (a_tool.pixmap)
+--					l_data.menu_item.set_text (a_tool.title)
+--					l_done := True
+--				else
+--					l_menu.forth
+--				end
+--			end
+--		end
 
 feature -- Item querys
-
-	melt_menu_item: EV_MENU_ITEM
-			-- Melt menu entry
-
-	freeze_menu_item: EV_MENU_ITEM
-			-- Freeze menu entry
-
-	finalize_menu_item: EV_MENU_ITEM
-			-- Finalize menu entry
 
 	show_favorites_menu_item: EV_MENU_ITEM
 			-- Show/Hide favorites menu item.
@@ -202,7 +163,7 @@ feature -- Other querys
 
 feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 
-	set_debug_menu (a_menu: like debug_menu) is
+	set_debug_menu (a_menu: like debug_menu)
 			-- Set `debug_menu'
 		do
 			debug_menu := a_menu
@@ -210,7 +171,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: debug_menu = a_menu
 		end
 
-	set_refactoring_menu (a_menu: like refactoring_menu) is
+	set_refactoring_menu (a_menu: like refactoring_menu)
 			-- Set `refactoring_menu'
 		do
 			refactoring_menu := a_menu
@@ -218,7 +179,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: refactoring_menu = a_menu
 		end
 
-	set_debugging_tools_menu (a_menu: like debugging_tools_menu) is
+	set_debugging_tools_menu (a_menu: like debugging_tools_menu)
 			-- Set `debugging_tools_menu'
 		do
 			debugging_tools_menu := a_menu
@@ -226,7 +187,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: debugging_tools_menu = a_menu
 		end
 
-	set_file_menu (a_menu: like file_menu) is
+	set_file_menu (a_menu: like file_menu)
 			-- Set `file_menu'
 		do
 			file_menu := a_menu
@@ -234,7 +195,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: file_menu = a_menu
 		end
 
-	set_recent_projects_menu (a_menu: like recent_projects_menu) is
+	set_recent_projects_menu (a_menu: like recent_projects_menu)
 			-- Set `recent_projects_menu'
 		do
 			recent_projects_menu := a_menu
@@ -242,7 +203,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: recent_projects_menu = a_menu
 		end
 
-	set_edit_menu (a_menu: like edit_menu) is
+	set_edit_menu (a_menu: like edit_menu)
 			-- Set `edit_menu'
 		do
 			edit_menu := a_menu
@@ -250,7 +211,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: edit_menu = a_menu
 		end
 
-	set_tools_menu (a_menu: like tools_menu) is
+	set_tools_menu (a_menu: like tools_menu)
 			-- Set `tools_menu'
 		do
 			tools_menu := a_menu
@@ -258,7 +219,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: tools_menu = a_menu
 		end
 
-	set_show_favorites_menu_item (a_item: like show_favorites_menu_item) is
+	set_show_favorites_menu_item (a_item: like show_favorites_menu_item)
 			-- Set `show_favorites_menu_item'
 		do
 			show_favorites_menu_item := a_item
@@ -266,7 +227,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: show_favorites_menu_item = a_item
 		end
 
-	set_project_menu (a_menu: like project_menu) is
+	set_project_menu (a_menu: like project_menu)
 			-- Set `project_menu'
 		do
 			project_menu := a_menu
@@ -274,7 +235,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: project_menu = a_menu
 		end
 
-	set_view_menu (a_menu: like view_menu) is
+	set_view_menu (a_menu: like view_menu)
 			-- Set `view_menu'
 		do
 			view_menu := a_menu
@@ -282,7 +243,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: view_menu = a_menu
 		end
 
-	set_zoom_font_menu (a_menu: like zoom_font_menu) is
+	set_zoom_font_menu (a_menu: like zoom_font_menu)
 			-- Set `zoom_font_menu'
 		do
 			zoom_font_menu := a_menu
@@ -290,7 +251,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: zoom_font_menu = a_menu
 		end
 
-	set_editor_area_manipulation_menu (a_menu: like editor_area_manipulation_menu) is
+	set_editor_area_manipulation_menu (a_menu: like editor_area_manipulation_menu)
 			-- Set `editor_area_manipulation_menu'
 		do
 			editor_area_manipulation_menu := a_menu
@@ -298,7 +259,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: editor_area_manipulation_menu = a_menu
 		end
 
-	set_tools_layout_menu (a_menu: like tools_layout_menu) is
+	set_tools_layout_menu (a_menu: like tools_layout_menu)
 			-- Set `tools_layout_menu'
 		do
 			tools_layout_menu := a_menu
@@ -306,7 +267,15 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: tools_layout_menu = a_menu
 		end
 
-	set_docking_lock_menu (a_menu: like docking_lock_menu) is
+	set_exist_layouts_menu (a_menu: like exist_layouts_menu)
+			-- Set `exist_layouts_menu'
+		do
+			exist_layouts_menu := a_menu
+		ensure
+			set: exist_layouts_menu = a_menu
+		end
+
+	set_docking_lock_menu (a_menu: like docking_lock_menu)
 			-- Set `docking_lock_menu'
 		do
 			docking_lock_menu := a_menu
@@ -314,7 +283,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: docking_lock_menu = a_menu
 		end
 
-	set_window_menu (a_menu: like window_menu) is
+	set_window_menu (a_menu: like window_menu)
 			-- Set `a_menu'
 		do
 			window_menu := a_menu
@@ -322,7 +291,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: window_menu = a_menu
 		end
 
-	set_help_menu (a_menu: like help_menu) is
+	set_help_menu (a_menu: like help_menu)
 			-- Set `help_menu'
 		do
 			help_menu := a_menu
@@ -330,7 +299,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: help_menu = a_menu
 		end
 
-	set_favorites_menu (a_menu: like favorites_menu) is
+	set_favorites_menu (a_menu: like favorites_menu)
 			-- Set `favorites_menu'
 		do
 			favorites_menu := a_menu
@@ -338,7 +307,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: favorites_menu = a_menu
 		end
 
-	set_formatting_marks_command_menu_item (a_item: like formatting_marks_command_menu_item) is
+	set_formatting_marks_command_menu_item (a_item: like formatting_marks_command_menu_item)
 			-- Set `formatting_marks_command_menu_item'
 		do
 			formatting_marks_command_menu_item := a_item
@@ -346,7 +315,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: formatting_marks_command_menu_item = a_item
 		end
 
-	set_number_of_displayed_external_commands (a_number: INTEGER) is
+	set_number_of_displayed_external_commands (a_number: INTEGER)
 			-- Set `number_of_displayed_external_commands'
 		do
 			number_of_displayed_external_commands := a_number
@@ -354,7 +323,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: number_of_displayed_external_commands = a_number
 		end
 
-	set_tools_list_menu (a_menu: like tools_list_menu) is
+	set_tools_list_menu (a_menu: like tools_list_menu)
 			-- Set `tools_list_menu' with `a_menu'.
 		do
 			tools_list_menu := a_menu
@@ -364,7 +333,7 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 
 feature -- Command
 
-	update_menu_lock_items is
+	update_menu_lock_items
 			-- Update 'lock docking' and 'lock tool bar' menu items state.
 		local
 			l_docking_manager: SD_DOCKING_MANAGER
@@ -375,7 +344,7 @@ feature -- Command
 			develop_window.commands.lock_editor_docking_command.set_select (l_docking_manager.is_editor_locked)
 		end
 
-	update_show_tool_bar_items is
+	update_show_tool_bar_items
 			-- Update show/hide tool bar menu items state.
 		local
 			l_contents: ARRAYED_LIST [SD_TOOL_BAR_CONTENT]
@@ -404,7 +373,7 @@ feature -- Command
 
 feature {NONE} -- Implementation
 
-	build_context_menu_factory is
+	build_context_menu_factory
 			-- Build context menu factory.
 		do
 			create context_menu_factory_internal.make (develop_window)
@@ -416,13 +385,9 @@ feature {NONE} -- Implementation
 	context_menu_factory_internal: EB_CONTEXT_MENU_FACTORY
 			-- Context menu factory
 
-	docking_menu_items_cell_cache: like docking_menu_items_cell
-			-- Cache for docking_menu_items_cell
-			-- Note: used by `docking_menu_items_cell' only!
-
 feature -- Recycle
 
-	internal_recycle is
+	internal_recycle
 			-- Recycyle all menus.
 		do
 			if tools_menu /= Void then
@@ -459,6 +424,10 @@ feature -- Recycle
 				tools_layout_menu.destroy
 			end
 
+			if exist_layouts_menu /= Void then
+				exist_layouts_menu.destroy
+			end
+
 			if docking_lock_menu /= Void then
 				docking_lock_menu.destroy
 			end
@@ -475,19 +444,16 @@ feature -- Recycle
 			zoom_font_menu := Void
 			editor_area_manipulation_menu := Void
 			tools_layout_menu := Void
+			exist_layouts_menu := Void
 			docking_lock_menu := Void
-
-			if docking_menu_items_cell.item /= Void then
-				docking_menu_items_cell.item.wipe_out
-			end
 
 			Precursor {EB_DEVELOPMENT_WINDOW_PART}
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -498,22 +464,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

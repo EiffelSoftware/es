@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Timer used to check process status."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -10,7 +10,7 @@ deferred class
 
 feature {PROCESS} -- Control
 
-	start is
+	start
 			-- Start timer.
 		require
 			thread_capable: {PLATFORM}.is_thread_capable
@@ -19,7 +19,7 @@ feature {PROCESS} -- Control
 		deferred
 		end
 
-	destroy is
+	destroy
 			-- Destroy timer.
 		require
 			thread_capable: {PLATFORM}.is_thread_capable
@@ -27,7 +27,7 @@ feature {PROCESS} -- Control
 		deferred
 		end
 
-	wait (a_timeout: INTEGER): BOOLEAN is
+	wait (a_timeout: INTEGER): BOOLEAN
 			-- Wait at most `a_timeout' milliseconds for current timer to be destroyed.
 			-- If `a_timeout' is 0, wait infinitly until timer is destroyed.			
 			-- Return True if timer is destroyed in `a_timeout', otherwise False.
@@ -44,7 +44,7 @@ feature {PROCESS} -- Control
 
 feature -- Setting
 
-	set_process_launcher (prc_launcher: PROCESS) is
+	set_process_launcher (prc_launcher: PROCESS)
 			-- Set process launcher to which this timer is attached with `prc_launcher'.
 		require
 			prc_launcher_not_void: prc_launcher /= Void
@@ -60,7 +60,7 @@ feature -- Status reporting
 	has_started: BOOLEAN
 			-- Has this timer started yet?
 
-	destroyed: BOOLEAN is
+	destroyed: BOOLEAN
 		-- Has this timer been destroyed?
 		deferred
 		end
@@ -68,21 +68,20 @@ feature -- Status reporting
 	sleep_time: INTEGER
 			-- Time in milliseconds for this timer to sleep	
 
-	process_launcher: PROCESS
+	process_launcher: detachable PROCESS
 			-- process launcher to which this timer is attached.
 
 invariant
 	sleep_time_positive: sleep_time > 0
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 end

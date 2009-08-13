@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Constructs to be parsed by lexical analysis classes"
@@ -11,47 +11,48 @@ indexing
 deferred class TERMINAL  inherit
 
 	CONSTRUCT
-		rename 
-			post_action as action, 
+		rename
+			post_action as action,
 			pre_action as unused_pre_action
-		redefine 
+		redefine
 			action
 		end
 
 feature -- Access
 
-	token: TOKEN
+	token: detachable TOKEN
 			-- Token associated with terminal
 
 feature -- Status report
 
-	token_type: INTEGER is
+	token_type: INTEGER
 			-- Token code associated with terminal
-		deferred 
-		end 
+		deferred
+		end
 
 feature {NONE} -- Implementation
 
-	production: LINKED_LIST [CONSTRUCT] is
-			-- Void
+	production: LINKED_LIST [CONSTRUCT]
+			-- Empty
 			-- (Meaningless for terminal constructs)
-		once 
+		once
+			create Result.make
 		end
 
-	left_recursion: BOOLEAN is False;
+	left_recursion: BOOLEAN = False;
 
-	check_recursion is
+	check_recursion
 			-- Do nothing.
 			-- (Meaningless for terminal constructs)
 		do
 		end
 
-	expand is
+	expand
 			-- Do nothing.
 		do
 		end
 
-	parse_body is
+	parse_body
 			-- Parse a terminal construct.
 		do
 			-- From Kim Walden if token_correct or is_optional then
@@ -64,31 +65,31 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	token_correct: BOOLEAN is
+	token_correct: BOOLEAN
 			-- Is token recognized?
-		do  
+		do
 			Result := document.token.type = token_type
-		end 
+		end
 
-   action is
+   action
 			-- To be redefined in descendants.
 		do
-		end 
+		end
 
-	in_action is
+	in_action
 			-- Do nothing.
 		do
-		end 
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

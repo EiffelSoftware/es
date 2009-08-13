@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Visitor for Eiffel errors. Currently it visists only the node which are defined in the parser library.
 		
@@ -28,7 +28,7 @@ inherit
 
 feature -- Display
 
-	trace (a_text_formatter: TEXT_FORMATTER; a_error: ERROR; a_kind: INTEGER) is
+	trace (a_text_formatter: TEXT_FORMATTER; a_error: ERROR; a_kind: INTEGER)
 			-- Display `a_error' in `a_text_formatter'
 		require
 			text_formatter_not_void: a_text_formatter /= Void
@@ -100,7 +100,7 @@ feature -- Processing
 				text_formatter.add ("Syntax error at line ")
 				text_formatter.add_int (a_value.line)
 					-- Error happened in a class
-				if {l_class1: !CLASS_C} a_value.associated_class then
+				if attached {CLASS_C} a_value.associated_class as l_class1 then
 					text_formatter.add (" in class ")
 					text_formatter.add_class_syntax (a_value, l_class1, l_class1.class_signature)
 				elseif a_value.file_name /= Void then
@@ -130,8 +130,8 @@ feature -- Processing
 					text_formatter.add_new_line
 				end
 			elseif type = context then
-				if {l_class2: !CLASS_C} a_value.associated_class then
-					if {l_formatter: !TEXT_FORMATTER} text_formatter then
+				if attached {CLASS_C} a_value.associated_class as l_class2 then
+					if attached {TEXT_FORMATTER} text_formatter as l_formatter then
 						print_context_class (l_formatter, l_class2)
 					end
 				elseif a_value.file_name /= Void then
@@ -160,7 +160,7 @@ feature -- Processing
 				text_formatter.add (" syntax used at line ")
 				text_formatter.add_int (a_value.line)
 					-- Error happened in a class
-				if {l_class1: !CLASS_C} a_value.associated_class then
+				if attached {CLASS_C} a_value.associated_class as l_class1 then
 					text_formatter.add (" in class ")
 					text_formatter.add_class_syntax (a_value, l_class1, l_class1.class_signature)
 				end
@@ -188,8 +188,8 @@ feature -- Processing
 				text_formatter.add (". ")
 				text_formatter.add (a_value.warning_message)
 			elseif type = context then
-				if {l_class2: !CLASS_C} a_value.associated_class then
-					if {l_formatter: !TEXT_FORMATTER} text_formatter then
+				if attached {CLASS_C} a_value.associated_class as l_class2 then
+					if attached {TEXT_FORMATTER} text_formatter as l_formatter then
 						print_context_class (l_formatter, l_class2)
 					end
 				else
@@ -201,7 +201,7 @@ feature -- Processing
 	process_user_defined_error (a_value: USER_DEFINED_ERROR)
 			-- Process object `a_value'.
 		do
-			if {l_compiler_error: !COMPILER_ERROR} a_value then
+			if attached {COMPILER_ERROR} a_value as l_compiler_error then
 				inspect type
 				when normal then
 					l_compiler_error.trace (text_formatter)
@@ -227,7 +227,7 @@ feature -- Processing
 			if type = normal then
 				print_error_message (text_formatter, a_value)
 				a_value.initialize_output
-				if {l_class: !CLASS_C} a_value.associated_class then
+				if attached {CLASS_C} a_value.associated_class as l_class then
 					text_formatter.add ("Class: ")
 					text_formatter.add_class_syntax (a_value, l_class, l_class.class_signature)
 					text_formatter.add_new_line
@@ -263,7 +263,7 @@ feature {NONE} -- Type of display
 
 feature {NONE} -- Trace
 
-	trace_error (a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	trace_error (a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Display full error message in `a_text_formatter'.
 		require
 			valid_st: a_text_formatter /= Void;
@@ -271,12 +271,12 @@ feature {NONE} -- Trace
 			is_defined: a_error.is_defined
 		do
 			print_error_message (a_text_formatter, a_error);
-			if {l_compiler_error: !COMPILER_ERROR} a_error then
+			if attached {COMPILER_ERROR} a_error as l_compiler_error then
 				l_compiler_error.build_explain (a_text_formatter);
 			end
 		end;
 
-	trace_single_line (a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	trace_single_line (a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Display short error, single line message in `a_text_formatter'.
 		require
 			valid_st: a_text_formatter /= Void;
@@ -287,7 +287,7 @@ feature {NONE} -- Trace
 			print_single_line_error_message (a_text_formatter, a_error)
 		end
 
-	trace_primary_context (a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	trace_primary_context (a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Build the primary context string so errors can be navigated to
 		require
 			valid_st: a_text_formatter /= Void
@@ -301,7 +301,7 @@ feature {NONE} -- Trace
 
 feature {NONE} -- Line
 
-	display_line (a_text_formatter: TEXT_FORMATTER; a_line: STRING) is
+	display_line (a_text_formatter: TEXT_FORMATTER; a_line: STRING)
 			-- Display `a_line' in `a_text_formatter'. It translates `%T' accordingly to `a_text_formatter' specification
 			-- which is to call `add_indent'.
 		require
@@ -332,7 +332,7 @@ feature {NONE} -- Line
 			end
 		end
 
-	display_syntax_line (a_text_formatter: TEXT_FORMATTER; a_line: STRING; a_error: ERROR) is
+	display_syntax_line (a_text_formatter: TEXT_FORMATTER; a_line: STRING; a_error: ERROR)
 			-- Display `a_line' which does like `display_line' but with an additional
 			-- arrowed line that points out to `column' where syntax issue is located.
 		require
@@ -405,7 +405,7 @@ feature {NONE} -- Implementation
 			a_text_formatter.add_space
 		end
 
-	print_single_line_error_message (a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	print_single_line_error_message (a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Displays single line help in `a_text_formatter'.
 		require
 			valid_st: a_text_formatter /= Void
@@ -473,7 +473,7 @@ feature {NONE} -- Implementation
 			a_text_formatter.add (l_text)
 		end
 
-	print_error_message (a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	print_error_message (a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Display error in `a_text_formatter'.
 		require
 			valid_st: a_text_formatter /= Void
@@ -493,7 +493,7 @@ feature {NONE} -- Implementation
 			print_short_help (a_text_formatter, a_error);
 		end;
 
-	frozen print_short_help (a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	frozen print_short_help (a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Display help in `a_text_formatter'.
 		require
 			valid_st: a_text_formatter /= Void
@@ -541,7 +541,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	frozen print_context_of_error (a_context_class: CLASS_C; a_text_formatter: TEXT_FORMATTER; a_error: ERROR) is
+	frozen print_context_of_error (a_context_class: CLASS_C; a_text_formatter: TEXT_FORMATTER; a_error: ERROR)
 			-- Display the line number in `a_text_formatter'.
 		require
 			st_not_void: a_text_formatter /= Void
@@ -585,7 +585,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

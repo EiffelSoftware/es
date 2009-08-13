@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Optimized id container list with one element most of the time."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,7 +19,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Allocate current ID set.
 		do
 			first := Dead_value
@@ -30,7 +30,7 @@ feature -- Access
 	first: INTEGER
 			-- First id.
 
-	item (i: INTEGER): like first is
+	item (i: INTEGER): like first
 			-- Entry at index `i'.
 		require
 			valid_index: valid_index (i)
@@ -44,10 +44,10 @@ feature -- Access
 
 feature -- Status report
 
-	Lower: INTEGER is 1
+	Lower: INTEGER = 1
 			-- Lower bound of set.
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is set empty?
 		do
 			Result := first = Dead_value
@@ -55,7 +55,7 @@ feature -- Status report
 			is_empty_definition: Result implies count = 0
 		end
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of routine IDs.
 		do
 			if area /= Void then
@@ -70,13 +70,13 @@ feature -- Status report
 			count_nonnegative: count >= 0
 		end
 
-	valid_index (i: INTEGER): BOOLEAN is
+	valid_index (i: INTEGER): BOOLEAN
 			-- Is `i' within bounds of current set?
 		do
 			Result := (1 <= i) and then (i <= count)
 		end
 
-	has (a_id: like first): BOOLEAN is
+	has (a_id: like first): BOOLEAN
 			-- Is id `a_id' present in the set ?
 		require
 			a_id_positive: a_id >= 0
@@ -102,14 +102,14 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
 			Result := other = Current or else (first = other.first and then equal (area, other.area))
 		end
 
-	same_as (other: like Current): BOOLEAN is
+	same_as (other: like Current): BOOLEAN
 			-- Has `other' the same content than Current ?
 		require
 			other_not_void: other /= Void
@@ -146,7 +146,7 @@ feature -- Comparison
 
 feature -- Duplication
 
-	copy (other: like Current) is
+	copy (other: like Current)
 			-- Reinitialize by copying all items of `other'.
 			-- (This is also used by `clone'.)
 		do
@@ -162,7 +162,7 @@ feature -- Duplication
 
 feature -- Conversion
 
-	linear_representation: ARRAYED_LIST [like first] is
+	linear_representation: ARRAYED_LIST [like first]
 			-- Representation as a linear structure
 		local
 			i, nb: INTEGER
@@ -183,7 +183,7 @@ feature -- Conversion
 
 feature -- Change
 
-	put, force (a_id: like first) is
+	put, force (a_id: like first)
 			-- Insert id `a_id' in set if not already
 			-- present.
 		require
@@ -194,31 +194,28 @@ feature -- Change
 			inserted: has (a_id)
 		end
 
-	extend (a_id: like first) is
+	extend (a_id: like first)
 			-- Insert id `a_id' in set if not already
 			-- present.
 		require
 			a_id_positive: a_id >= 0
-		local
-			l_pos: INTEGER
 		do
 				-- id `a_id' is not present in set.
 			if first = Dead_value then
 				first := a_id
 			else
 				if area /= Void then
-					l_pos := area.count
-					area := area.aliased_resized_area (l_pos + 1)
+					area := area.aliased_resized_area_with_default (0, area.count + 1)
 				else
-					create area.make (1)
+					create area.make_filled (0, 1)
 				end
-				area.put (a_id, l_pos)
+				area.put (a_id, area.count - 1)
 			end
 		ensure
 			inserted: has (a_id)
 		end
 
-	merge (other: like Current) is
+	merge (other: like Current)
 			-- Put ids of `other' not present in Current.
 		require
 			good_argument: other /= Void
@@ -236,7 +233,7 @@ feature -- Change
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Clear the structure.
 		do
 			first := Dead_value
@@ -247,7 +244,7 @@ feature -- Change
 
 feature -- Output
 
-	trace is
+	trace
 			-- Debug purpose. Not efficient at all.
 		local
 			i: INTEGER
@@ -272,11 +269,11 @@ feature {ID_LIST} -- Implementation: access
 
 feature {NONE} -- Implementation
 
-	dead_value: INTEGER is -1;
+	dead_value: INTEGER = -1;
 			-- Special value to show that `first' is not yet set.
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -289,22 +286,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

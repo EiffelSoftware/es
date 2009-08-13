@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Field record"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -21,8 +21,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make (obj: !ANY; o,eif_t: INTEGER; t: NATURAL_32; v: like value)
+	make (obj: ANY; o,eif_t: INTEGER; t: NATURAL_32; v: like value)
 			-- Make field record with index `i', type `t' an value `v'
+		require
+			obj_attached: obj /= Void
 		do
 			object := obj
 			offset := o
@@ -33,10 +35,10 @@ feature {NONE} -- Initialization
 
 feature -- Properties
 
-	object: !ANY
+	object: ANY
 			-- Associated object.
 
-	value: ?G
+	value: detachable G
 			-- Associated value.
 
 	rt_type: NATURAL_32
@@ -44,13 +46,13 @@ feature -- Properties
 
 feature -- Access
 
-	current_value_record: ?RT_DBG_VALUE_RECORD
+	current_value_record: detachable RT_DBG_VALUE_RECORD
 			-- Record for current value
 		do
 			Result := object_attribute_record (offset, rt_type, object)
 		end
 
-	associated_object: ?ANY
+	associated_object: detachable ANY
 			-- Associated object, if any
 		do
 			Result := object
@@ -59,9 +61,11 @@ feature -- Access
 	is_local_record: BOOLEAN = False
 			-- <Precursor>
 
-	is_same_as (other: !RT_DBG_VALUE_RECORD): BOOLEAN
+	is_same_as (other: RT_DBG_VALUE_RECORD): BOOLEAN
 		do
-			Result := {c: like Current} other and then offset = c.offset and then value = c.value
+			Result := attached {like Current} other as l_att and then
+					offset = l_att.offset and then
+					value = l_att.value
 		end
 
 	debug_output: STRING
@@ -71,23 +75,26 @@ feature -- Access
 
 	to_string: STRING
 			-- String representation
+		local
+			v: like value
 		do
+			v := value
 			inspect type
 			when {INTERNAL}.reference_type then
-				if {vr: like value} value then
-					Result := ($vr).out
+				if v /= Void then
+					Result := ($v).out
 				else
 					Result := "Void"
 				end
 			when {INTERNAL}.expanded_type then
 				check value_attached: value /= Void end
-				if {vx: like value} value then
-					Result := ($vx).out
+				if v /= Void then
+					Result := ($v).out
 				else
 					create Result.make_empty
 				end
 			else
-				if {v: like value} value then
+				if v /= Void then
 					Result := v.out
 				else
 					check False end
@@ -101,7 +108,7 @@ feature -- Change properties
 	get_value
 			-- Get `value'
 		do
-			if {v: like value} field_at (offset, rt_type, object) then
+			if attached {like value} field_at (offset, rt_type, object) as v then
 				value := v
 			else
 				value := default_value
@@ -110,12 +117,12 @@ feature -- Change properties
 
 feature -- Runtime
 
-	restore (val: !RT_DBG_VALUE_RECORD)
+	restore (val: RT_DBG_VALUE_RECORD)
 			-- Restore `value' on `object'
 		do
 			debug ("RT_DBG_REPLAY")
 				dtrace (generator + ".restore (" + object.generator + " #" + offset.out + ")%N")
-				if {fn: like field_name} field_name_at (offset, object) then
+				if attached {like field_name} field_name_at (offset, object) as fn then
  					dtrace (" -> " + fn  + "%N")
  				else
  					dtrace (" -> Unknown name%N")
@@ -133,7 +140,7 @@ feature -- Runtime
 			end
 		end
 
-	revert (bak: !RT_DBG_VALUE_RECORD)
+	revert (bak: RT_DBG_VALUE_RECORD)
 			-- Revert previous change due to Current to `object'
 		do
 			debug ("RT_DBG_REPLAY")
@@ -147,10 +154,13 @@ feature -- Runtime
 
 feature {NONE} -- Internal Implementation
 
-	set_attribute_from_record (obj: !ANY; r: !RT_DBG_VALUE_RECORD)
+	set_attribute_from_record (obj: ANY; r: RT_DBG_VALUE_RECORD)
 			-- Set object field defined by `r' on target `obj'
+		require
+			obj_attached: obj /= Void
+			r_attached: r /= Void
 		do
-			if {ot_record: RT_DBG_ATTRIBUTE_RECORD [like value]} r then
+			if attached {RT_DBG_ATTRIBUTE_RECORD [like value]} r as ot_record then
 				set_field_at (offset, rt_type, ot_record.value, obj)
 			else
 				check should_not_occur: False end
@@ -159,12 +169,12 @@ feature {NONE} -- Internal Implementation
 
 feature {NONE} -- Implementation
 
-	default_value: ?G is
+	default_value: detachable G
 			-- Default value
 		do
 		end
 
-indexing
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

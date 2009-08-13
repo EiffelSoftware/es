@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Parser to parse ec actions from given argument. Produces ec command as string that EiffelStudio knows."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -10,7 +10,7 @@ class
 
 feature -- Action
 
-	parse (a_string: !STRING) is
+	parse (a_string: attached STRING)
 			-- Parse `a_string' to produce `last_command'
 			--| Incoming example:
 			--| eisi:eiffel://project=base.6D7FF712-BBA5-4AC0-AABF-2D9880493A01&target=base&cluster=ise&class=exception&feature=raise
@@ -18,8 +18,8 @@ feature -- Action
 			--| <com.eiffel.compiler><project_ready><com.eiffel.eis_incoming>
 			--| <eiffel://project=base.6D7FF712-BBA5-4AC0-AABF-2D9880493A01&target=base&cluster=ise&class=exception&feature=raise>
 		local
-			l_string: !STRING
-			l_cmd, l_dcmd: ?STRING
+			l_string: attached STRING
+			l_cmd, l_dcmd: detachable STRING
 			l_prefix_count: INTEGER
 		do
 			last_command := Void
@@ -44,15 +44,15 @@ feature -- Action
 
 feature -- Access
 
-	last_command: ?STRING
+	last_command: detachable STRING
 			-- Last commans string for EiffelStudio
 
-	last_direct_command: ?STRING
+	last_direct_command: detachable STRING
 			-- Last direct command without condition
 
 feature {NONE} -- Implementation
 
-	label (a_content: !STRING): !STRING is
+	label (a_content: attached STRING): attached STRING
 			-- A label: <a_content>
 		do
 			Result := a_content.twin
@@ -62,13 +62,13 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	eis_incoming: !STRING = "eisi:"
+	eis_incoming: attached STRING = "eisi:"
 
 	left_angle_bracket: CHARACTER = '<'
 
 	right_angle_bracket: CHARACTER = '>';
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

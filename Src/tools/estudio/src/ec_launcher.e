@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Ec launcher's ."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		do
 			is_splashing := True
@@ -51,14 +51,14 @@ feature -- Initialization
 			end
 		end
 
-	do_ec_launching is
+	do_ec_launching
 		require
 			is_environment_valid: is_environment_valid
 		do
 			launch_ec
 		end
 
-	launch_ec_with_action is
+	launch_ec_with_action
 			-- Launch ec with `ec_action'
 		require
 			is_environment_valid: is_environment_valid
@@ -71,7 +71,7 @@ feature -- Initialization
 
 feature -- Launching
 
-	display_usage (is_exiting: BOOLEAN) is
+	display_usage (is_exiting: BOOLEAN)
 			-- Display usage and exit if `is_exiting' is True
 		do
 			io.error.put_string ("Usage: estudio {estudio's parameters} {ec's parameters} %N")
@@ -86,7 +86,7 @@ feature -- Launching
 			io.error.put_string ("     /ec_action <action> %N")
 			io.error.put_string ("                : Send <action> to suitable running ec, or start new ec if needed. %N")
 			io.error.put_string ("  * ec's parameters %N")
-			io.error.put_string ("     any ec's command line parameters (-config, -target, -project_path ...)%N")
+			io.error.put_string ("     any ec's command line parameters (-compat -config, -target, -project_path ...)%N")
 			io.error.put_string ("     if there is only one parameter, this is the eiffel configuration file (file.ecf)%N")
 			io.error.put_string ("%NOptional environment variables:%N")
 			io.error.put_string ("  * EC_NAME     : name of the compiler (default: ec)%N")
@@ -97,7 +97,7 @@ feature -- Launching
 			end
 		end
 
-	launch_ec is
+	launch_ec
 			-- Launch ec process
 		require
 			is_environment_valid: is_environment_valid
@@ -138,7 +138,7 @@ feature -- Launching
 			retry
 		end
 
-	start_process (cmd: STRING; args: LIST [STRING]; dir: STRING) is
+	start_process (cmd: STRING; args: LIST [STRING]; dir: STRING)
 			-- Start process using command `cmd' and arguments `args'
 			-- in the working directory `dir'
 		require
@@ -205,7 +205,7 @@ feature -- Launching
 			end
 		end
 
-	exit_if_process_has_exited (p: PROCESS) is
+	exit_if_process_has_exited (p: PROCESS)
 		do
 			if not p.is_running or else p.has_exited then
 				is_waiting := False
@@ -215,13 +215,13 @@ feature -- Launching
 
 feature {NONE} -- Application exit
 
-	do_exit_launcher is
+	do_exit_launcher
 		do
 			is_waiting := False
 			exit_launcher
 		end
 
-	exit_launcher is
+	exit_launcher
 		require
 			is_not_waiting: not is_waiting
 		do
@@ -230,17 +230,17 @@ feature {NONE} -- Application exit
 
 feature -- Splash
 
-	splash_delay: INTEGER_32 is 3_000
+	splash_delay: INTEGER_32 = 3_000
 			-- 2 seconds seems ok
 
 	splasher: SPLASH_DISPLAYER_I
 
-	new_splasher (t: STRING_GENERAL): like splasher is
+	new_splasher (t: STRING_GENERAL): like splasher
 		do
 			create {NATIVE_SPLASH_DISPLAYER} Result.make_with_text (t)
 		end
 
-	display_splasher is
+	display_splasher
 			-- Display splash window (if available)
 		require
 			is_environment_valid: is_environment_valid
@@ -283,7 +283,7 @@ feature -- Splash
 			retry
 		end
 
-	close_splasher (delay: INTEGER_32) is
+	close_splasher (delay: INTEGER_32)
 			-- 'delay' has no sense in none graphical context
 		do
 			debug ("LAUNCHER")
@@ -310,20 +310,20 @@ feature -- Properties
 
 feature {NONE} -- Command sender
 
-	broadcast_command is
+	broadcast_command
 			-- Broadcast `direct_action' as command to EiffelStudio processes.
 			-- We broadcast `direct_action', so that EiffelStudios directly process command if possible.
 		require
 			command_sender_not_void: command_sender /= Void
 		do
 			last_command_handled := False
-			if {lt_action: STRING}direct_action then
+			if attached {STRING} direct_action as lt_action then
 				command_sender.send_command (lt_action, {COMMAND_PROTOCOL_NAMES}.eiffel_studio_key)
 				last_command_handled := command_sender.last_command_handled
 			end
 		end
 
-	send_command_to_launched_ec_and_exit is
+	send_command_to_launched_ec_and_exit
 			-- Send command to last launched ec and exit.
 			-- If trial exceeds the maximum times, exit.
 		require
@@ -334,7 +334,7 @@ feature {NONE} -- Command sender
 				print ("Launched process ID: " + last_launched_ec_pid.out + "%N")
 			end
 				-- We send `ec_action' rather than `direct_action' trying to conduct the explicit target of ES.
-			if {lt_action: STRING}ec_action and then last_launched_ec_pid > 0 then
+			if attached {STRING} ec_action as lt_action and then last_launched_ec_pid > 0 then
 				command_sender.send_command_process (lt_action, {COMMAND_PROTOCOL_NAMES}.eiffel_studio_key, last_launched_ec_pid)
 				command_sent_trial := command_sent_trial + 1
 				last_command_handled := command_sender.last_command_handled
@@ -362,7 +362,7 @@ feature {NONE} -- Command sender
 	last_launched_ec_pid: INTEGER
 			-- Last process ID of launched ec.
 
-	command_sender: ?COMMAND_SENDER
+	command_sender: detachable COMMAND_SENDER
 			-- Command sender
 
 	is_ec_action: BOOLEAN
@@ -394,19 +394,19 @@ feature -- Environment
 
 	cmdline_arguments_count: INTEGER
 
-	cmdline_remove_head (n: INTEGER) is
+	cmdline_remove_head (n: INTEGER)
 		do
 			cmdline_arguments_offset := cmdline_arguments_offset + n
 			cmdline_arguments_count := cmdline_arguments_count - n
 		end
 
-	get_cmdline_arguments is
+	get_cmdline_arguments
 		do
 			cmdline_arguments := Execution_environment.command_line
 			cmdline_arguments_count := cmdline_arguments.argument_count
 		end
 
-	cmdline_argument (i: INTEGER): STRING is
+	cmdline_argument (i: INTEGER): STRING
 		require
 			cmdline_arguments /= Void
 		do
@@ -415,7 +415,7 @@ feature -- Environment
 
 	ec_arguments: LIST [STRING]
 
-	get_parameters is
+	get_parameters
 		local
 			s: STRING
 		do
@@ -450,7 +450,7 @@ feature -- Environment
 						cmdline_remove_head (1)
 						if cmdline_arguments_count > 0 then
 							argument_variables.put (cmdline_argument (1), ec_action_string)
-							if {lt_string: STRING}cmdline_argument (1) then
+							if attached {STRING} cmdline_argument (1) as lt_string then
 								ec_action_parser.parse (lt_string)
 								ec_action := ec_action_parser.last_command
 								direct_action := ec_action_parser.last_direct_command
@@ -464,7 +464,7 @@ feature -- Environment
 			end
 		end
 
-	get_ec_arguments is
+	get_ec_arguments
 		require
 			is_environment_valid: is_environment_valid
 		local
@@ -476,67 +476,46 @@ feature -- Environment
 		do
 				--| Compute command line, args, and working directory
 			create {ARRAYED_LIST [STRING]} ec_arguments.make (cmdline_arguments_count + 1)
-			ec_arguments.extend ("-from_bench")
+			ec_arguments.extend ("-gui")
 
 			if cmdline_arguments_count > 0 then
 					--| And now we get the parameters for EiffelStudio
-
 				if cmdline_arguments_count = 1 then
-						--| use the -config argument
-					ec_arguments.extend ("-config")
-					s := cmdline_argument (1).twin
+					if not eiffel_layout.is_default_mode then
+						ec_arguments.extend (eiffel_layout.command_line_profile_option)
+					else
+							--| use the required -config argument
+						ec_arguments.extend ("-config")
+						s := cmdline_argument (1)
 
-						--| Try to be smart and guess if the path is relative or not
-					cwd := Execution_environment.current_working_directory
-					create fn.make
-					if fn.is_file_name_valid (s) then
-						create file.make (s)
-					end
-					if file = Void or else not file.exists then
-						fn.set_directory (cwd)
-						fn.set_file_name (s)
-						if fn.is_valid then
-							create file.make (fn)
-							if file.exists then
-								s := fn
-							end
+							--| `s' is the path to the config file
+						if s.has (' ') and then not s.has ('"') then
+							s.left_adjust
+							s.right_adjust
+							s.prepend_character ('"')
+							s.append_character ('"')
 						end
-						fn := Void
-						file := Void
+						ec_arguments.extend (s)
 					end
-
-						--| `s' is the path to the config file
-					if s.has (' ') and then not s.has ('"') then
-						s.left_adjust
-						s.right_adjust
-						s.prepend_character ('"')
-						s.append_character ('"')
-					end
-					ec_arguments.extend (s)
-				elseif cmdline_arguments_count >= 1  then
-					ec_arguments.fill (	cmdline_arguments.argument_array.subarray (1 + cmdline_arguments_offset,
-										cmdline_arguments_count))
+				else
 					from
 						i := 1
 					until
 						i > cmdline_arguments_count
 					loop
-						s := cmdline_argument (i)
+						s := cmdline_argument (i).twin
 						if
-							s.is_equal ("-config")
-							or s.is_equal ("-project_path")
-							or s.is_equal ("-target")
+							i < cmdline_arguments_count and then
+							(s.is_equal ("-config") or s.is_equal ("-project_path") or s.is_equal ("-target"))
 						then
-							if i < cmdline_arguments_count then
-								ec_arguments.extend (s)
-								i := i + 1
-								s := cmdline_argument (i)
-								if s.has (' ') and then not s.has ('"') then
-									s.left_adjust
-									s.right_adjust
-									s.prepend_character ('"')
-									s.append_character ('"')
-								end
+							ec_arguments.extend (s)
+							i := i + 1
+							s := cmdline_argument (i).twin
+							if s.has (' ') and then not s.has ('"') then
+								s.left_adjust
+								s.right_adjust
+								s.prepend_character ('"')
+								s.append_character ('"')
 							end
 						end
 						ec_arguments.extend (s)
@@ -546,7 +525,7 @@ feature -- Environment
 			end
 		end
 
-	get_environment_value (v: STRING; dft: STRING): STRING is
+	get_environment_value (v: STRING; dft: STRING): STRING
 		do
 			if argument_variables.has (v) then
 				Result := argument_variables.item (v)
@@ -558,7 +537,7 @@ feature -- Environment
 			end
 		end
 
-	get_environment is
+	get_environment
 			-- Get environment variables
 		require
 			cmdline_arguments_not_void: cmdline_arguments /= Void
@@ -566,7 +545,7 @@ feature -- Environment
 			eiffel_layout.check_environment_variable
 		end
 
-	check_environment is
+	check_environment
 			-- Check if the retrieved environment data are valid
 			-- If successful, is_environment_valid is set to True
 			-- else it is set to False
@@ -588,7 +567,7 @@ feature -- Environment
 
 feature {NONE} -- Events
 
-	on_output (s: STRING) is
+	on_output (s: STRING)
 		do
 			if splasher /= Void and s /= Void then
 				splasher.output_text (s)
@@ -597,29 +576,29 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementations
 
-	process_factory: PROCESS_FACTORY is
+	process_factory: PROCESS_FACTORY
 		once
 			create Result
 		end
 
-	implementation: EC_LAUNCHER_I is
+	implementation: EC_LAUNCHER_I
 		once
 			create {EC_LAUNCHER_IMP} Result
 		end
 
-	Execution_environment: EXECUTION_ENVIRONMENT is
+	Execution_environment: EXECUTION_ENVIRONMENT
 		once
 			create Result
 		end
 
-	ec_action_parser: EC_ACTION_PARSER is
+	ec_action_parser: EC_ACTION_PARSER
 		once
 			create Result
 		end
 
 feature {NONE} -- File system helpers
 
-	file_exists (fn: STRING): BOOLEAN is
+	file_exists (fn: STRING): BOOLEAN
 		local
 			f: RAW_FILE
 		do
@@ -627,8 +606,8 @@ feature {NONE} -- File system helpers
 			Result := f.exists
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -641,22 +620,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EC_LAUNCHER

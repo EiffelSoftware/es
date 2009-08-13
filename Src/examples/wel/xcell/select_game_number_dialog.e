@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: WEL_COMPOSITE_WINDOW) is
+	make (a_parent: WEL_COMPOSITE_WINDOW)
 			-- Creates the dialog
 		require
 			a_parent_not_void: a_parent /= Void
@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	set_game_number (a_game_number: INTEGER) is
+	set_game_number (a_game_number: INTEGER)
 			-- Set the 'game_number' to `a_game_number'
 		do
 			game_number := a_game_number
@@ -43,42 +43,46 @@ feature -- Access
 	game_number: INTEGER
 			-- Number of cards choosen
 
-	number_edit: WEL_SINGLE_LINE_EDIT
+	number_edit: detachable WEL_SINGLE_LINE_EDIT
 			-- Edit control to input the game number
 
 feature {NONE} -- Implementation
 
-	setup_dialog is
+	setup_dialog
 			-- Setup the dialog before
 			-- it is activated
 		do
-			number_edit.set_text (game_number.out)
+			if attached number_edit as l_number_edit then
+				l_number_edit.set_text (game_number.out)
+			end
 		end
 
-	on_ok is
+	on_ok
 			-- Ok button is pressed
 		local
 			msg_box: WEL_MSG_BOX
 		do
-			if number_edit.text.is_integer then
-				if number_edit.text.to_integer < 1 or number_edit.text.to_integer > 65000 then
-					create msg_box.make
-					msg_box.information_message_box (Current, "You can only select %
-						%a game number from 1 to 65000.", "Information")
-					number_edit.set_text (game_number.out)
+			if attached number_edit as l_number_edit then
+				if l_number_edit.text.is_integer then
+					if l_number_edit.text.to_integer < 1 or l_number_edit.text.to_integer > 65000 then
+						create msg_box.make
+						msg_box.information_message_box (Current, "You can only select %
+							%a game number from 1 to 65000.", "Information")
+						l_number_edit.set_text (game_number.out)
+					else
+						game_number := l_number_edit.text.to_integer
+						terminate (Idok)
+					end
 				else
-					game_number := number_edit.text.to_integer
-					terminate (Idok)
+					create msg_box.make
+					msg_box.information_message_box (Current, "This field requires %
+						%a number.", "Information")
+					l_number_edit.set_text (game_number.out)
 				end
-			else
-				create msg_box.make
-				msg_box.information_message_box (Current, "This field requires %
-					%a number.", "Information")
-				number_edit.set_text (game_number.out)
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

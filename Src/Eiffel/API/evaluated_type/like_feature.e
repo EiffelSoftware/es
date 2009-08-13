@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class for an staticed type on a feature."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -30,7 +30,7 @@ create
 
 feature -- Initialization and reinitialization
 
-	make (f: FEATURE_I; a_context_class_id: INTEGER) is
+	make (f: FEATURE_I; a_context_class_id: INTEGER)
 			-- Creation
 		require
 			valid_argument: f /= Void
@@ -49,7 +49,7 @@ feature -- Initialization and reinitialization
 
 feature -- Visitor
 
-	process (v: TYPE_A_VISITOR) is
+	process (v: TYPE_A_VISITOR)
 			-- Process current element.
 		do
 			v.process_like_feature (Current)
@@ -63,7 +63,7 @@ feature -- Properties
 	class_id: INTEGER;
 			-- Class ID of the class where the anchor is referenced
 
-	feature_name: STRING is
+	feature_name: STRING
 			-- Final name of anchor.
 		require
 			feature_name_id_set: feature_name_id >= 1
@@ -76,7 +76,7 @@ feature -- Properties
 
 feature -- Status Report
 
-	is_explicit: BOOLEAN is
+	is_explicit: BOOLEAN
 			-- Is type fixed at compile time without anchors or formals?
 		do
 			if system.in_final_mode then
@@ -97,7 +97,7 @@ feature {COMPILER_EXPORTER} -- Implementation: Access
 
 feature -- Access
 
-	same_as (other: TYPE_A): BOOLEAN is
+	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 		local
 			other_like_feat: LIKE_FEATURE
@@ -111,41 +111,39 @@ feature -- Access
 			end
 		end
 
-	update_dependance (feat_depend: FEATURE_DEPENDANCE) is
+	update_dependance (feat_depend: FEATURE_DEPENDANCE)
 			-- Update dependency for Dead Code Removal
 		local
 			a_class: CLASS_C
-			depend_unit: DEPEND_UNIT
 			feature_i: FEATURE_I
 		do
 				-- we must had a dependance to the anchor feature
 			a_class := System.class_of_id (class_id)
 			feature_i := a_class.feature_table.item_id (feature_name_id)
-			create depend_unit.make (class_id, feature_i)
-			feat_depend.extend (depend_unit)
+			feat_depend.extend_depend_unit_with_level (class_id, feature_i, 0)
 		end
 
 feature -- Generic conformance
 
-	initialize_info (an_info: like shared_create_info) is
+	initialize_info (an_info: like shared_create_info)
 		do
 				-- FIXME: Should we use `make' or just `set_info'?
 			an_info.make (feature_id, routine_id)
 		end
 
-	create_info: CREATE_FEAT is
+	create_info: CREATE_FEAT
 		do
 			create Result.make (feature_id, routine_id)
 		end
 
-	shared_create_info: CREATE_FEAT is
+	shared_create_info: CREATE_FEAT
 		once
 			create Result
 		end
 
 feature -- IL code generation
 
-	dispatch_anchors (a_context_class: CLASS_C) is
+	dispatch_anchors (a_context_class: CLASS_C)
 			-- <Precursor>
 		do
 			a_context_class.extend_type_set (routine_id)
@@ -153,7 +151,7 @@ feature -- IL code generation
 
 feature -- Output
 
-	dump: STRING is
+	dump: STRING
 			-- Dumped trace
 		local
 			s: STRING
@@ -170,7 +168,7 @@ feature -- Output
 			Result.append (s)
 		end
 
-	ext_append_to (st: TEXT_FORMATTER; c: CLASS_C) is
+	ext_append_to (st: TEXT_FORMATTER; c: CLASS_C)
 		local
 			ec: CLASS_C
 			l_feat: E_FEATURE
@@ -178,9 +176,11 @@ feature -- Output
 			ec := Eiffel_system.class_of_id (class_id)
 			st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_l_bracket)
 			if has_attached_mark then
-				st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_exclamation)
+				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_attached_keyword, Void)
+				st.add_space
 			elseif has_detachable_mark then
-				st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_question)
+				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_detachable_keyword, Void)
+				st.add_space
 			end
 			st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_like_keyword, Void)
 			st.add_space
@@ -201,7 +201,7 @@ feature -- Output
 
 feature -- Primitives
 
-	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): LIKE_FEATURE is
+	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): LIKE_FEATURE
 		local
 			l_anchor: FEATURE_I
 		do
@@ -222,7 +222,7 @@ feature -- Primitives
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := routine_id = other.routine_id and then
@@ -234,7 +234,7 @@ feature -- Comparison
 				other.has_detachable_mark = has_detachable_mark
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -6,6 +6,9 @@ class
 
 inherit
 	WEL_FRAME_WINDOW
+		redefine
+			on_show
+		end
 
 	WEL_STANDARD_PENS
 		export
@@ -41,12 +44,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 		do
+			create virtual_dcs.make (1, virtual_dcs_count)
+			create virtual_bitmaps.make (1, virtual_dcs_count)
+			create brushes.make (1, max_color)
+			create pens.make (1, max_color)
 			make_top ("3D Demo")
 			resize (400, 300)
 			show
-			run_demo
 		end
 
 feature -- Access
@@ -56,7 +62,9 @@ feature -- Access
 
 feature -- Basic operations
 
-	go is
+	go
+		local
+			win_dc: WEL_CLIENT_DC
 		do
 			create win_dc.make (Current)
 			win_dc.get
@@ -69,15 +77,18 @@ feature -- Basic operations
 			win_dc.release
 		end
 
+	on_show
+		do
+			run_demo
+		end
+
 feature {NONE} -- Implementation
 
-	Max_color: INTEGER is 200
+	max_color: INTEGER = 200
 
-	Virtual_dcs_count: INTEGER is 20
+	virtual_dcs_count: INTEGER = 20
 
-	palette: WEL_PALETTE
-
-	win_dc: WEL_CLIENT_DC
+	palette: detachable WEL_PALETTE
 
 	virtual_dcs: ARRAY [WEL_MEMORY_DC]
 
@@ -93,7 +104,7 @@ feature {NONE} -- Implementation
 
 	pens: ARRAY [WEL_PEN]
 
-	run_demo is
+	run_demo
 		local
 			x_min, x_max, y_min, y_max, z_min, z_max: REAL
 			ang, rap: REAL
@@ -101,6 +112,8 @@ feature {NONE} -- Implementation
 			number_bitmap: INTEGER
 			virtual_dc: WEL_MEMORY_DC
 			message: STRING
+			win_dc: WEL_CLIENT_DC
+			l_palette: like palette
 		do
 			create win_dc.make (Current)
 			win_dc.get
@@ -116,8 +129,11 @@ feature {NONE} -- Implementation
 			rap := max_y / max_x
 			nx := 50
 			ny := 50
-			initialize_demo
-			win_dc.select_palette (palette)
+			initialize_demo (win_dc)
+			l_palette := palette
+				-- Per postcondition of `initialize_demo'.
+			check l_palette_attached: l_palette /= Void end
+			win_dc.select_palette (l_palette)
 			win_dc.realize_palette
 			win_dc.select_brush (White_brush)
 			win_dc.rectangle (0, 0, max_x, max_y)
@@ -133,7 +149,7 @@ feature {NONE} -- Implementation
 			loop
 				phase := ((dec - 1) * 6.28 / virtual_dcs_count)
 				virtual_dc := (virtual_dcs @ dec)
-				virtual_dc.select_palette (palette)
+				virtual_dc.select_palette (l_palette)
 				virtual_dc.realize_palette
 				message := "Now computing bitmap #"
 				message.append (dec.out)
@@ -147,7 +163,7 @@ feature {NONE} -- Implementation
 			ready := True
 		end
 
-	initialize_demo is 
+	initialize_demo (a_dc: WEL_DC)
 		local
 			log_pal: WEL_LOG_PALETTE
 			pal_entry: WEL_PALETTE_ENTRY
@@ -158,6 +174,7 @@ feature {NONE} -- Implementation
 			colors: ARRAY [WEL_COLOR_REF]
 			virtual_dc: WEL_MEMORY_DC
 			virtual_bitmap: WEL_BITMAP
+			l_palette: like palette
 		do
 			create log_pal.make (768, max_color)
 			from
@@ -172,16 +189,15 @@ feature {NONE} -- Implementation
 				log_pal.set_pal_entry (ind, pal_entry)
 				ind := ind + 1
 			end
-			create palette.make (log_pal)
+			create l_palette.make (log_pal)
+			palette := l_palette
 			create colors.make (1, max_color)
-			create brushes.make (1, max_color)
-			create pens.make (1, max_color)
 			from
 				ind := 1
 			until
 				ind > max_color
 			loop
-				color := palette.palette_index (ind - 1)
+				color := l_palette.palette_index (ind - 1)
 				colors.force (color,ind)
 				create brush.make_solid (color)
 				brushes.force (brush, ind)
@@ -189,15 +205,13 @@ feature {NONE} -- Implementation
 				pens.force (pen, ind)
 				ind := ind + 1
 			end
-			create virtual_dcs.make (1, virtual_dcs_count)
-			create virtual_bitmaps.make (1, virtual_dcs_count)
 			from
 				dec := 1
 			until
 				dec > virtual_dcs_count
 			loop
-				create virtual_dc.make_by_dc (win_dc)
-				create virtual_bitmap.make_compatible (win_dc,
+				create virtual_dc.make_by_dc (a_dc)
+				create virtual_bitmap.make_compatible (a_dc,
 					width, height)
 				virtual_dc.select_bitmap (virtual_bitmap)
 				virtual_dc.select_brush (white_brush)
@@ -205,11 +219,13 @@ feature {NONE} -- Implementation
 				virtual_dcs.force (virtual_dc, dec)
 				virtual_bitmaps.force (virtual_bitmap, dec)
 				dec := dec + 1
-			end			
+			end
+		ensure
+			palette_attached: palette /= Void
 		end
 
 	surface (nx, ny: INTEGER; x_min, x_max, y_min, y_max,
-			z_min, z_max, ang, rap: REAL) is
+			z_min, z_max, ang, rap: REAL)
 			-- Draw the surface on the compatible dc
 		local
 			coord: ARRAY [PROJECTION]
@@ -227,7 +243,7 @@ feature {NONE} -- Implementation
 			from
 				ind := 1
 			until
-				ind > nx 
+				ind > nx
 			loop
 				create projected_point
 				coord.force (projected_point, ind)
@@ -351,7 +367,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	compute_angle (x1, y1, z1, x2, y2, z2, x3, y3, z3: REAL): REAL is
+	compute_angle (x1, y1, z1, x2, y2, z2, x3, y3, z3: REAL): REAL
 			-- Compute the angle between the surface and the light
 		local
 			loc_p1, loc_p2, loc_p3, loc_q1, loc_q2, loc_q3: REAL
@@ -376,13 +392,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	evaluate (a_x, a_y: REAL): REAL is
+	evaluate (a_x, a_y: REAL): REAL
 			-- Evaluate the function at `a_x', `a_y' point
 		do
 			Result :=  sine (sqrt (a_x * a_x + a_y * a_y) - phase )
 		end
 
-	fill (a_poly_coord: ARRAY [INTEGER]; color: INTEGER) is
+	fill (a_poly_coord: ARRAY [INTEGER]; color: INTEGER)
 			-- Fill the polygon defined by `a_poly_coord'
 			-- using `color'
 		require
@@ -393,13 +409,13 @@ feature {NONE} -- Implementation
 			(virtual_dcs @ dec).polygon (a_poly_coord)
 		end
 
-	White_brush : WEL_WHITE_BRUSH is
+	White_brush : WEL_WHITE_BRUSH
 		once
 			create Result.make
 		end
 
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

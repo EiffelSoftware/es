@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Title bar on the top of SD_ZONE."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,7 +28,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make is
+	make
 			-- Creation method.
 		do
 			create internal_shared
@@ -101,18 +101,18 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	set_title (a_title: STRING_GENERAL) is
+	set_title (a_title: STRING_GENERAL)
 			-- Set the title on the title bar.
 		require
 			a_title_not_void: a_title /= Void
 		do
 			internal_title.set_title (a_title)
-			internal_title.refresh
+			add_refresh_title_in_idle_action
 		ensure
 			set: internal_title.title.is_equal (a_title.as_string_32)
 		end
 
-	set_stick (a_stick: BOOLEAN) is
+	set_stick (a_stick: BOOLEAN)
 			-- Set `is_stick'.
 		do
 			if a_stick then
@@ -133,7 +133,7 @@ feature -- Command
 			set: a_stick = is_stick
 		end
 
-	set_max (a_max: BOOLEAN) is
+	set_max (a_max: BOOLEAN)
 			-- Set `is_max'.
 		do
 			if a_max then
@@ -154,7 +154,7 @@ feature -- Command
 			set: is_max = a_max
 		end
 
-	set_show_normal_max (a_show: BOOLEAN) is
+	set_show_normal_max (a_show: BOOLEAN)
 			-- Set show normal\max button?
 		do
 			if a_show then
@@ -180,7 +180,7 @@ feature -- Command
 			set: a_show = internal_tool_bar.has (normal_max)
 		end
 
-	set_show_stick (a_show: BOOLEAN) is
+	set_show_stick (a_show: BOOLEAN)
 			-- Set show stick button.
 		do
 			if a_show then
@@ -202,26 +202,27 @@ feature -- Command
 			set: a_show = internal_tool_bar.has (stick)
 		end
 
-	enable_focus_color is
+	enable_focus_color
 			-- Enable focus color in applicaiton idle actions.
 		do
 			set_color_in_idle (agent enable_focus_color_imp)
 		end
 
-	enable_non_focus_active_color is
+	enable_non_focus_active_color
 			-- Enable non-focused active color in applicaiton idle actions.
 		do
 			set_color_in_idle (agent enable_non_focus_active_color_imp)
 		end
 
-	disable_focus_color is
+	disable_focus_color
 			-- Disable focus color in applicaiton idle actions.
 		do
 			set_color_in_idle (agent disable_focus_color_imp)
 		end
 
-	extend_custom_area (a_widget: EV_WIDGET) is
-			-- Extend `custom_area' with a_widget
+	extend_custom_area (a_widget: EV_WIDGET)
+			-- Extend `custom_area' with `a_widget'
+			-- `a_widget' can be void
 		do
 			if internal_custom_widget /= a_widget and fixed.has (internal_custom_widget) then
 				-- Prune the old one
@@ -236,7 +237,7 @@ feature -- Command
 			set: internal_custom_widget = a_widget
 		end
 
-	clear_custom_widget is
+	clear_custom_widget
 			-- Wipe out custom area.
 		do
 			fixed.prune (internal_custom_widget)
@@ -246,7 +247,7 @@ feature -- Command
 			wuped_out: internal_custom_widget = Void
 		end
 
-	update_fixed_size is
+	update_fixed_size
 			-- Update fixed sizes.
 			-- Different from `internal_update_fixed_size', this feature will force `internal_custom_widget' recalculate its size.
 		do
@@ -261,21 +262,21 @@ feature -- Command
 			end
 		end
 
-	enable_baseline is
+	enable_baseline
 			-- Set `is_baseline_enalbed' with True.
 		do
 			is_baseline_enabled := True
 			update_baseline
 		end
 
-	disable_baseline is
+	disable_baseline
 			-- Set `is_baseline_enalbed' with false.
 		do
 			is_baseline_enabled := False
 			update_baseline
 		end
 
-	update_baseline is
+	update_baseline
 			-- Update baseline state and color.
 		do
 			if not is_destroyed then
@@ -290,7 +291,7 @@ feature -- Command
 			end
 		end
 
-	destroy is
+	destroy
 			-- Destroy
 		do
 			prune_title_bar (Current)
@@ -300,7 +301,7 @@ feature -- Command
 			internal_tool_bar.destroy
 		end
 
-	update_size_and_font is
+	update_size_and_font
 			-- Update size and font
 		do
 			viewport.set_minimum_height (internal_shared.title_bar_height - 1)
@@ -312,7 +313,7 @@ feature -- Command
 
 feature -- Query
 
-	title: STRING_32 is
+	title: STRING_32
 			-- Title
 		do
 			Result := internal_title.title
@@ -326,31 +327,31 @@ feature -- Query
 	is_max: BOOLEAN
 			-- If current maximized?
 
-	is_show_normal_max: BOOLEAN is
+	is_show_normal_max: BOOLEAN
 			-- Show normal\max button?
 		do
 			Result := internal_tool_bar.has (normal_max)
 		end
 
-	is_show_stick: BOOLEAN is
+	is_show_stick: BOOLEAN
 			-- Show stick button?
 		do
 			Result := internal_tool_bar.has (stick)
 		end
 
-	is_focus_color_enable: BOOLEAN is
+	is_focus_color_enable: BOOLEAN
 			-- If show highlight color now?
 		do
 			Result := internal_title.is_focus_color_enable
 		end
 
-	is_focused_active_color_enable: BOOLEAN is
+	is_focused_active_color_enable: BOOLEAN
 			-- Is active focused drawing style enabled?
 		do
 			Result := is_focus_color_enable and then internal_title.is_focused_color
 		end
 
-	is_non_focused_active_color_enable: BOOLEAN is
+	is_non_focused_active_color_enable: BOOLEAN
 			-- Is active non-focused drawing style enabled?
 		do
 			Result := is_focus_color_enable and then not internal_title.is_focused_color
@@ -362,7 +363,7 @@ feature -- Query
 
 feature -- Actions
 
-	stick_select_actions: like internal_stick_select_actions is
+	stick_select_actions: like internal_stick_select_actions
 			-- Stick button select actions.
 		do
 			if internal_stick_select_actions = Void then
@@ -373,7 +374,7 @@ feature -- Actions
 			not_void: Result /= Void
 		end
 
-	close_request_actions: like internal_close_request_actions is
+	close_request_actions: like internal_close_request_actions
 			-- Close button select actions.
 		do
 			if internal_close_request_actions = Void then
@@ -384,7 +385,7 @@ feature -- Actions
 			not_void: Result /= Void
 		end
 
-	normal_max_actions: like internal_normal_max_actions is
+	normal_max_actions: like internal_normal_max_actions
 			-- Min max select actions.
 		do
 			if internal_normal_max_actions = Void then
@@ -395,7 +396,7 @@ feature -- Actions
 			not_void: Result /= Void
 		end
 
-	drag_actions: EV_POINTER_MOTION_ACTION_SEQUENCE is
+	drag_actions: EV_POINTER_MOTION_ACTION_SEQUENCE
 			-- Drag actions.
 		do
 			Result := internal_title.drag_actions
@@ -405,7 +406,7 @@ feature -- Actions
 
 feature {NONE} -- Agents
 
-	on_mini_tool_bar_indicator_clicked is
+	on_mini_tool_bar_indicator_clicked
 			-- Handle `mini_tool_bar_indicator' select actions.
 		local
 			l_dialog: SD_MINI_TOOL_BAR_DIALOG
@@ -418,7 +419,7 @@ feature {NONE} -- Agents
 			l_dialog.set_focus
 		end
 
-	on_fixed_resize (a_x: INTEGER_32; a_y: INTEGER_32; a_width: INTEGER_32; a_height: INTEGER_32) is
+	on_fixed_resize (a_x: INTEGER_32; a_y: INTEGER_32; a_width: INTEGER_32; a_height: INTEGER_32)
 			-- Handle fixed resize actions.
 		do
 			if a_width > 0 and a_height > 0 and not fixed.is_destroyed and not internal_tool_bar.is_destroyed then
@@ -485,7 +486,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_stick_select is
+	on_stick_select
 			-- Notify clients when user click stick button.
 		do
 			if  is_stick then
@@ -504,7 +505,7 @@ feature {NONE} -- Agents
 			stick_select_actions.call (Void)
 		end
 
-	on_normal_max is
+	on_normal_max
 			-- Handle `normal_max_actions'.
 		do
 			if is_max then
@@ -524,7 +525,7 @@ feature {NONE} -- Agents
 			normal_max_actions.call (Void)
 		end
 
-	on_close is
+	on_close
 			-- Handle `close_request_actions'.
 		do
 			close_request_actions.call (Void)
@@ -550,7 +551,7 @@ feature {NONE} -- Implementation
 	internal_tool_bar: SD_TOOL_BAR
 			-- Tool bar which hold `stick', `normal_max', `close' buttons.
 
-	tool_bar_width: INTEGER is
+	tool_bar_width: INTEGER
 			-- Actual width of `internal_tool_bar'
 			-- If we query internal_tool_bar.width directly, we will always get maximum width on Windows.
 		do
@@ -566,7 +567,7 @@ feature {NONE} -- Implementation
 	close: SD_TOOL_BAR_BUTTON
 			-- Close button
 
-	mini_tool_bar_indicator: SD_TOOL_BAR_BUTTON is
+	mini_tool_bar_indicator: SD_TOOL_BAR_BUTTON
 			-- Factory method for `internal_mini_tool_bar_indicator'.
 		do
 			if internal_mini_tool_bar_indicator = Void then
@@ -583,7 +584,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	internal_update_fixed_size is
+	internal_update_fixed_size
 			-- Different from `update_fixed_size', this feature will not force `internal_custom_widget' recalculate it's size.
 		do
 			if not is_resizing then
@@ -612,14 +613,14 @@ feature {NONE} -- Implementation
 	internal_stick_select_actions, internal_close_request_actions, internal_normal_max_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Title bar actions.
 
-	is_focused_color: BOOLEAN is
+	is_focused_color: BOOLEAN
 			-- If Current use focused color?
 			-- Otherwise we use non-focused color.
 		do
 			Result := internal_title.is_focused_color
 		end
 
-	enable_focus_color_imp is
+	enable_focus_color_imp
 			-- Enable focus color.
 		do
 			if not is_focused_active_color_enable then
@@ -636,7 +637,7 @@ feature {NONE} -- Implementation
 			focused_color_enabled: is_focused_active_color_enable
 		end
 
-	enable_non_focus_active_color_imp is
+	enable_non_focus_active_color_imp
 			-- Enable non-focused active color.
 		do
 			if not is_non_focused_active_color_enable  then
@@ -653,7 +654,7 @@ feature {NONE} -- Implementation
 			non_focused_active_color_enabled: is_non_focused_active_color_enable
 		end
 
-	disable_focus_color_imp is
+	disable_focus_color_imp
 			-- Disable focus color.
 		do
 			if is_focus_color_enable then
@@ -667,7 +668,7 @@ feature {NONE} -- Implementation
 			focused_color_enabled: not is_focus_color_enable
 		end
 
-	set_color_in_idle (a_agent: like last_color_setting_agent) is
+	set_color_in_idle (a_agent: like last_color_setting_agent)
 			-- Add `a_agent' to application idle actions and removed `last_color_setting_agent' if possible.
 		do
 			if last_color_setting_agent /= Void then
@@ -682,7 +683,7 @@ feature {NONE} -- Implementation
 	last_color_setting_agent: PROCEDURE [SD_TITLE_BAR, TUPLE]
 			--	Last agent, possibly one of `enable_focus_color_imp', `enable_non_focus_active_color_imp' and `disable_focus_color_imp'.
 
-	application: EV_APPLICATION is
+	application: EV_APPLICATION
 			-- Application instance.
 		local
 			l_env: EV_ENVIRONMENT
@@ -693,11 +694,41 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
+	add_refresh_title_in_idle_action
+			-- call `internal_title'.refresh in idle actions
+		local
+			l_env: EV_ENVIRONMENT
+		do
+			if title_bar_refresh_agent = Void then
+				title_bar_refresh_agent := agent refresh_title_bar
+				create l_env
+				l_env.application.do_once_on_idle (title_bar_refresh_agent)
+			end
+		ensure
+			created: title_bar_refresh_agent /= Void
+		end
+
+	title_bar_refresh_agent: PROCEDURE [SD_TITLE_BAR, TUPLE]
+			-- Agent for refresh title bar
+
+	refresh_title_bar
+			-- Title bar refresh action in idle action
+		require
+			already_set: title_bar_refresh_agent /= Void
+		do
+			if internal_title /= Void and then not internal_title.is_destroyed then
+				internal_title.refresh
+			end
+			title_bar_refresh_agent := Void
+		ensure
+			cleared: title_bar_refresh_agent = Void
+		end
+
 invariant
 
 	internal_shared_not_void: internal_shared /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

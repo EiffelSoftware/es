@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Handler for failed eweasel output
 					If eweasel have failed output, this handler will generate a {EWEASEL_TEST_RESULT_ITEM}
@@ -23,12 +23,12 @@ feature {NONE} -- Implementation
 		do
 			if a_lines.first.has_substring (signature) then
 				create Result
-				if {l_lines: !LIST [STRING]} a_lines then
-					Result.set_original_eweasel_ouput (to_one_string (l_lines))
+				if a_lines /= Void then
+					Result.set_original_eweasel_ouput (to_one_string (a_lines))
 				end
 				Result.set_title (a_lines.first)
-				if {l_test: ES_EWEASEL_TEST_RESULT_ITEM} Result then
-					set_with_current_item (l_test)
+				if Result /= Void then
+					set_with_current_item (Result)
 				end
 
 				l_class_name := class_name_in_string (a_lines.first)
@@ -46,10 +46,10 @@ feature {NONE} -- Implementation
 			valid: Result /= Void implies (Result.result_type = {ES_EWEASEL_RESULT_TYPE}.failed or Result.result_type = {ES_EWEASEL_RESULT_TYPE}.error)
 		end
 
-	signature: STRING is ": failed";
+	signature: STRING = ": failed";
 			-- eweasel output failed signature string.
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

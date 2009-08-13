@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					This class models the header entry of a .po file. 
 					A header entry is a singular entry with the empty string as msgid. The msgstr contains the headers;
@@ -32,7 +32,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize empty header entry
 		do
 			make_entry ("")
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	has_header (key: STRING_GENERAL): BOOLEAN is
+	has_header (key: STRING_GENERAL): BOOLEAN
 			-- Does a header with key `key' exist?
 			--
 			-- `key': Key of header line
@@ -55,7 +55,7 @@ feature -- Status report
 
 feature -- Access
 
-	header (key: STRING_GENERAL): STRING_32 is
+	header (key: STRING_GENERAL): STRING_32
 			-- Value of header identified by `key'
 			--
 			-- `key': Key of header line
@@ -69,7 +69,7 @@ feature -- Access
 			header_not_void: Result /= Void
 		end
 
-	msgstr: STRING_32 is
+	msgstr: STRING_32
 			-- Message string of header
 		do
 				-- In this case the msgstr is _not_ stored in msgstr_lines like a normal entry,
@@ -91,7 +91,7 @@ feature -- Access
 
 feature -- Element change
 
-	add_header (key: STRING_GENERAL; value: STRING_GENERAL) is
+	add_header (key: STRING_GENERAL; value: STRING_GENERAL)
 			-- Add header line
 			--
 			-- `key': Key of header line
@@ -106,7 +106,7 @@ feature -- Element change
 			header_set: has_header (key) and then header (key).is_equal (value.to_string_32)
 		end
 
-	modify_header (key:STRING_GENERAL; value: STRING_GENERAL) is
+	modify_header (key:STRING_GENERAL; value: STRING_GENERAL)
 			-- Change header identified by `key'
 			--
 			-- `key': Key of header line
@@ -123,7 +123,7 @@ feature -- Element change
 
 feature -- Output
 
-	to_string: STRING_32 is
+	to_string: STRING_32
 			-- Entry as a unicode string
 		local
 			accumulator: STRING_32
@@ -139,9 +139,9 @@ feature -- Output
 			loop
 				accumulator.wipe_out
 				accumulator.append_string (headers.key_for_iteration)
-				accumulator.append_string (": ")
+				accumulator.append (": ")
 				accumulator.append_string (headers.item_for_iteration)
-				accumulator.append_string ("\n")
+				accumulator.append ("\n")
 				msgstr_lines.extend (accumulator.twin)
 				headers.forth
 			end
@@ -153,8 +153,8 @@ feature {NONE} -- Implementation
 	headers: HASH_TABLE [STRING_32, STRING_32];
 			-- Header values identified by header keys
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -178,11 +178,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

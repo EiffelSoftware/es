@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -32,29 +32,61 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make the main window
 		do
 			make_by_id (Id_main_dialog)
-			create eiffel_file_edit.make_by_id (Current, Id_edit_eiffel)
-			create h_file_edit.make_by_id (Current, id_edit_h)
-			create class_name_edit.make_by_id (Current, Id_edit_class_name)
-			create translate_button.make_by_id (Current, Cmd_file_translate)
+			create internal_eiffel_file_edit.make_by_id (Current, Id_edit_eiffel)
+			create internal_h_file_edit.make_by_id (Current, id_edit_h)
+			create internal_class_name_edit.make_by_id (Current, Id_edit_class_name)
+			create internal_translate_button.make_by_id (Current, Cmd_file_translate)
 		end
 
 feature -- Access
 
 	eiffel_file_edit: WEL_SINGLE_LINE_EDIT
+		local
+			l_edit: detachable WEL_SINGLE_LINE_EDIT
+		do
+			l_edit := internal_eiffel_file_edit
+				-- Per invariant
+			check l_edit_attached: l_edit /= Void end
+			Result := l_edit
+		end
 
 	h_file_edit: WEL_SINGLE_LINE_EDIT
+		local
+			l_edit: detachable WEL_SINGLE_LINE_EDIT
+		do
+			l_edit := internal_h_file_edit
+				-- Per invariant
+			check l_edit_attached: l_edit /= Void end
+			Result := l_edit
+		end
 
 	class_name_edit: WEL_SINGLE_LINE_EDIT
+		local
+			l_edit: detachable WEL_SINGLE_LINE_EDIT
+		do
+			l_edit := internal_class_name_edit
+				-- Per invariant
+			check l_edit_attached: l_edit /= Void end
+			Result := l_edit
+		end
 
 	translate_button: WEL_PUSH_BUTTON
+		local
+			l_button: detachable WEL_PUSH_BUTTON
+		do
+			l_button := internal_translate_button
+				-- Per invariant
+			check l_button_attached: l_button /= Void end
+			Result := l_button
+		end
 
 feature {NONE} -- Behaviors
 
-	on_menu_command (id_menu: INTEGER) is
+	on_menu_command (id_menu: INTEGER)
 		local
 			about: WEL_MODAL_DIALOG
 		do
@@ -75,12 +107,12 @@ feature {NONE} -- Behaviors
 			end
 		end
 
-	on_control_id_command (an_id: INTEGER) is
+	on_control_id_command (an_id: INTEGER)
 		do
 			on_menu_command (an_id)
 		end
 
-	on_file_select_h_file is
+	on_file_select_h_file
 		do
 			open_header_file_dialog.activate (Current)
 			if open_header_file_dialog.selected then
@@ -88,7 +120,7 @@ feature {NONE} -- Behaviors
 			end
 		end
 
-	on_file_select_eiffel_file is
+	on_file_select_eiffel_file
 		local
 			c: WEL_CURSOR
 		do
@@ -104,7 +136,7 @@ feature {NONE} -- Behaviors
 			end
 		end
 
-	on_translate is
+	on_translate
 		local
 			conv: CONVERTER
 			c: WEL_CURSOR
@@ -129,7 +161,7 @@ feature {NONE} -- Behaviors
 			end
 		end
 
-	notify (a_control: WEL_CONTROL; notify_code: INTEGER) is
+	notify (a_control: WEL_CONTROL; notify_code: INTEGER)
 		do
 			if notify_code = En_change then
 				if not class_name_edit.text.is_empty and then not
@@ -146,8 +178,9 @@ feature {NONE} -- Behaviors
 
 feature {NONE} -- Implementation
 
-	scan_file_for_classname (a_file_name: STRING) is
+	scan_file_for_classname (a_file_name: STRING)
 		require
+			a_file_name_not_void: a_file_name /= Void
 			file_exists: file_exists (a_file_name)
 		local
 			a_file: PLAIN_TEXT_FILE
@@ -170,26 +203,34 @@ feature {NONE} -- Implementation
 			a_file.close
 		end
 
-	scan_for_class_name (a_file: PLAIN_TEXT_FILE): BOOLEAN is
+	scan_for_class_name (a_file: PLAIN_TEXT_FILE): BOOLEAN
 			-- Scan for the classname and set it if it's found.
 		require
 			a_file_not_void: a_file /= Void
 			a_file_exists: a_file.exists
 			a_file_open: a_file.is_open_read
+		local
+			l_string: detachable STRING
 		do
 			if not a_file.end_of_file then
 				a_file.read_word
-				if a_file.last_string.is_equal ("lass") then
+				l_string := a_file.last_string
+					-- Per postcondition of `a_file.read_word'.
+				check l_string_attached: l_string /= Void end
+				if l_string.same_string ("lass") then
 					if not a_file.end_of_file then
 						a_file.read_word
-						class_name_edit.set_text (a_file.last_string)
+						l_string := a_file.last_string
+							-- Per postcondition of `a_file.read_word'.
+						check l_string_attached: l_string /= Void end
+						class_name_edit.set_text (l_string)
 						Result := True
 					end
 				end
 			end
 		end
 
-	scan_for_next_string_terminator (a_file: PLAIN_TEXT_FILE): BOOLEAN is
+	scan_for_next_string_terminator (a_file: PLAIN_TEXT_FILE): BOOLEAN
 			-- Scan `a_file' until string terminator detected
 		require
 			a_file_not_void: a_file /= Void
@@ -212,7 +253,7 @@ feature {NONE} -- Implementation
 			Result := a_file.after
 		end
 
-	open_eiffel_file_dialog: WEL_OPEN_FILE_DIALOG is
+	open_eiffel_file_dialog: WEL_OPEN_FILE_DIALOG
 		once
 			create Result.make
 			Result.set_title ("Select the Eiffel file")
@@ -222,7 +263,7 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
-	open_header_file_dialog: WEL_OPEN_FILE_DIALOG is
+	open_header_file_dialog: WEL_OPEN_FILE_DIALOG
 		once
 			create Result.make
 			Result.set_title ("Select the header/resource file")
@@ -233,14 +274,14 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
-	file_menu: WEL_MENU is
+	file_menu: WEL_MENU
 		once
 			Result := menu.popup_menu (0)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	file_exists (filename: STRING): BOOLEAN is
+	file_exists (filename: STRING): BOOLEAN
 			-- Does `filename' exist?
 		require
 			filename_not_void: filename /= Void
@@ -251,7 +292,23 @@ feature {NONE} -- Implementation
 			Result := a_file.exists
 		end
 
-indexing
+feature {NONE} -- Internal data
+
+	internal_eiffel_file_edit: detachable WEL_SINGLE_LINE_EDIT
+
+	internal_h_file_edit: detachable WEL_SINGLE_LINE_EDIT
+
+	internal_class_name_edit: detachable WEL_SINGLE_LINE_EDIT
+
+	internal_translate_button: detachable WEL_PUSH_BUTTON
+
+invariant
+	internal_eiffel_file_edit_attached: internal_eiffel_file_edit /= Void
+	internal_h_file_edit_attached: internal_h_file_edit /= Void
+	internal_class_name_edit_attached: internal_class_name_edit /= Void
+	internal_translate_button_attached: internal_translate_button /= Void
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

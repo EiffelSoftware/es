@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -19,9 +19,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make the main window.
 		do
+			create dc.make (create {WEL_FRAME_WINDOW}.make_top ("dummy"))
 			make_top ("My application")
 			create dc.make (Current)
 		end
@@ -37,7 +38,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Initiate the drawing process.
 		do
 			if not button_down then
@@ -47,7 +48,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_mouse_move (keys, x_pos, y_pos: INTEGER) is
+	on_mouse_move (keys, x_pos, y_pos: INTEGER)
 			-- Connect the points to make lines.
 		do
 			if button_down then
@@ -55,7 +56,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_left_button_up (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_up (keys, x_pos, y_pos: INTEGER)
 			-- Terminate the drawing process.
 		do
 			if button_down then
@@ -64,24 +65,23 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_right_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_right_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Invalidate window.
 		do
 			invalidate
 		end
 
-	closeable: BOOLEAN is
+	closeable: BOOLEAN
 			-- Does the user want to quit?
 		local
 			msg_box: WEL_MSG_BOX
 		do
 			create msg_box.make
-			msg_box.question_message_box (Current, "Do you want to quit?",
-				"Quit")
+			msg_box.question_message_box (Current, "Do you want to quit?", "Quit")
 			Result := msg_box.message_box_result = Idyes
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

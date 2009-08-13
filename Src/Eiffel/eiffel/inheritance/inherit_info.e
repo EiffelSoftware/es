@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Information about an inherited feature"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,30 +17,31 @@ inherit
 		end
 
 create
-	make, make_with_feature_and_parent
+	set_with_feature_and_parent
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
-	make (f: like a_feature) is
-			-- Make inheritance information object for feature `f'.
+	set_with_feature_and_parent (f: like a_feature; p: like parent; a_parent_type: like parent_type)
+			-- Set inheritance information object for feature `f' in parent `p'.
 		require
-			f_not_void: f /= Void
+			parent_type_valid: a_parent_type /= Void implies (f /= Void and p /= Void)
+			p_valid: p /= Void implies (f /= Void and a_parent_type /= Void)
 		do
-			a_feature := f
-		ensure
-			a_feature_set: a_feature = f
-		end
-
-	make_with_feature_and_parent (f: like a_feature; p: like parent) is
-			-- Make inheritance information object for feature `f' in parent `p'.
-		require
-			f_not_void: f /= Void
-			p_not_void: p /= Void
-		do
-			a_feature := f
+			internal_a_feature := f
 			parent := p
+			parent_type := a_parent_type
+			if parent_type /= Void then
+					-- Flag that `a_feature' has yet to be instantiated.
+				status_flags := a_feature_needs_instantiation_mask
+			elseif f /= Void then
+
+				status_flags := a_feature_instantiated_for_feature_table_mask
+			else
+					-- We are creating an empty object so we reset the flags.
+				status_flags := 0
+			end
 		ensure
-			a_feature_set: a_feature = f
+			internal_a_feature_set: internal_a_feature = f
 			parent_set: parent = p
 		end
 
@@ -48,60 +49,154 @@ feature -- Access
 
 	a_feature: FEATURE_I
 			-- Inherited feature
+		do
+			if a_feature_needs_instantiation then
+				instantiate_a_feature
+			end
+			Result := internal_a_feature
+		end
+
+	internal_a_feature: like a_feature
 
 	parent: PARENT_C
 			-- Parent from which the feature is inherited
 
+	parent_type: LIKE_CURRENT
+			-- Parent type of `parent' for current class.
+
 	renaming_processed: BOOLEAN
 			-- Has Current already been processed for renaming?
+		do
+			Result := status_flags & renaming_processed_mask = renaming_processed_mask
+		end
+
+	a_feature_needs_instantiation: BOOLEAN
+			-- Does `a_feature' need instantiation with `parent' before use?
+		do
+			Result := status_flags & a_feature_needs_instantiation_mask = a_feature_needs_instantiation_mask
+		end
+
+	a_feature_instantiated_for_feature_table: BOOLEAN
+			-- Has `a_feature' instantiated a new object for feature table?
+		do
+			Result := status_flags & a_feature_instantiated_for_feature_table_mask = a_feature_instantiated_for_feature_table_mask
+		end
+
+	a_feature_copied_for_feature_table: BOOLEAN
+			-- Is `a_feature' copied specifically for feature table (ie: new object created for feature table)?
+		do
+			Result := status_flags & a_feature_copied_for_feature_table_mask = a_feature_copied_for_feature_table_mask
+		end
+
+	a_feature_aliased: BOOLEAN
+			-- Is `a_feature' aliased from `parent'.
+		do
+			Result := not (a_feature_instantiated_for_feature_table or else a_feature_copied_for_feature_table)
+		end
 
 feature -- Settings
 
-	set_renaming_processed is
-			-- Set True to `renaming_processed'.			
+	set_renaming_processed
+			-- Set `renaming_processed' to True.			
 		do
-			renaming_processed := True
+			status_flags := status_flags.set_bit_with_mask (True, renaming_processed_mask)
 		ensure
 			renaming_processed: renaming_processed
 		end
 
-	set_a_feature (f: like a_feature) is
+	set_a_feature_needs_instantiation (b: BOOLEAN)
+			-- Set `a_feature_needs_instantiating' to `b'.			
+		do
+			status_flags := status_flags.set_bit_with_mask (b, a_feature_needs_instantiation_mask)
+		ensure
+			a_feature_needs_instantiating: a_feature_needs_instantiation = b
+		end
+
+	set_a_feature_instantiated_for_feature_table (b: BOOLEAN)
+			-- Set `a_feature_instantiated_for_feature_table' to `b'.			
+		do
+			status_flags := status_flags.set_bit_with_mask (b, a_feature_instantiated_for_feature_table_mask)
+		ensure
+			a_feature_instantiated_for_feature_table: a_feature_instantiated_for_feature_table = b
+		end
+
+	set_a_feature_copied_for_feature_table (b: BOOLEAN)
+			-- Set `a_feature_copied_for_feature_table' to `b'.			
+		do
+			status_flags := status_flags.set_bit_with_mask (b, a_feature_copied_for_feature_table_mask)
+		ensure
+			a_feature_copied_for_feature_table: a_feature_copied_for_feature_table = b
+		end
+
+	set_a_feature (f: like a_feature)
 			-- Assign `f' to `a_feature'.
 		require
 			f_not_void: f /= Void
 		do
-			a_feature := f
+			internal_a_feature := f
 		ensure
-			a_feature_set: a_feature = f
+			internal_a_feature_set: internal_a_feature = f
 		end
 
-	set_parent (p: like parent) is
+	instantiate_a_feature
+			-- Instantiate `a_feature' for `parent_type'.
+		require
+			a_feature_needs_instantiation: a_feature_needs_instantiation
+			parent_type_not_void: parent_type /= Void
+			a_feature_not_void: internal_a_feature /= Void
+		local
+			l_feature: FEATURE_I
+		do
+				-- Store previous `internal_a_feature' so that we can check whether a new object is created.
+			l_feature := internal_a_feature
+			internal_a_feature := internal_a_feature.instantiated (parent_type)
+			if l_feature /= internal_a_feature then
+				set_a_feature_instantiated_for_feature_table (True)
+			end
+			set_a_feature_needs_instantiation (False)
+		end
+
+	copy_a_feature_for_feature_table
+			-- Make sure that `a_feature' is copied directly for feature_table.
+		require
+			not_a_feature_needs_instantiation: not a_feature_needs_instantiation
+		do
+			if a_feature_aliased then
+				internal_a_feature := internal_a_feature.twin
+				set_a_feature_copied_for_feature_table (True)
+			end
+		end
+
+	set_parent (p: like parent)
 			-- Assign `p' to `parent'.
 		require
 			p_not_void: p /= Void
 		do
-			parent:= p
+			parent := p
 		ensure
 			parent_set: parent = p
 		end
 
 feature -- Comparison
 
-	infix "<" (other: INHERIT_INFO): BOOLEAN is
+	is_less alias "<" (other: INHERIT_INFO): BOOLEAN
 			-- Is `other' greater than Current ?
 		do
-			Result := a_feature.body_index < other.a_feature.body_index
+			Result := other.internal_a_feature = Void
+			if not Result then
+				Result := internal_a_feature.feature_id < other.internal_a_feature.feature_id
+			end
 		end
 
 feature -- Status
 
-	inherited_assertion: BOOLEAN is
+	inherited_assertion: BOOLEAN
 			-- (For merging)
 		local
 			i: INTEGER
 			assert_set: ASSERT_ID_SET
 		do
-			assert_set := a_feature.assert_id_set
+			assert_set := internal_a_feature.assert_id_set
 			if assert_set /= Void then
 				from
 					i := 1
@@ -114,42 +209,69 @@ feature -- Status
 			end
 		end
 
-	has_property_getter: BOOLEAN is
+	has_property_getter: BOOLEAN
 			-- Has an associated feature a property getter?
 		require
-			a_feature_attached: a_feature /= Void
+			a_feature_attached: internal_a_feature /= Void
 		do
-			Result := a_feature.has_property_getter
+			Result := internal_a_feature.has_property_getter
 		ensure
-			definition: Result = a_feature.has_property_getter
+			definition: Result = internal_a_feature.has_property_getter
 		end
 
-	has_property_setter: BOOLEAN is
+	has_property_setter: BOOLEAN
 			-- Has an associated feature a property setter?
 		require
-			a_feature_attached: a_feature /= Void
+			a_feature_attached: internal_a_feature /= Void
 		do
-			Result := a_feature.has_property_setter
+			Result := internal_a_feature.has_property_setter
 		ensure
-			definition: Result = a_feature.has_property_setter
+			definition: Result = internal_a_feature.has_property_setter
 		end
+
+	non_conforming: BOOLEAN
+			-- Is feature from a non-conforming parent?
+		do
+			Result := parent /= Void and then parent.is_non_conforming
+		end
+
+feature -- Implementation
+
+	reset
+			-- Reset `Current' for reuse.
+		do
+			status_flags := 0
+			internal_a_feature := Void
+			parent := Void
+			parent_type := Void
+		end
+
+feature {NONE} -- Implementation
+
+	status_flags: NATURAL_8
+		-- Flags used for signifying status of `Current'
+
+	renaming_processed_mask: NATURAL_8 = 0x1
+	a_feature_instantiated_for_feature_table_mask: NATURAL_8 = 0x2
+	a_feature_needs_instantiation_mask: NATURAL_8 = 0x4
+	a_feature_copied_for_feature_table_mask: NATURAL_8 = 0x8
 
 feature -- Debug
 
-	trace is
+	trace
 		do
 			if
-				a_feature/= Void and then
-				a_feature.written_class > System.any_class.compiled_class
+				internal_a_feature/= Void and then
+				internal_a_feature.written_class > System.any_class.compiled_class
 			then
 				io.error.put_string ("set a feature in inherit info%N")
 				a_feature.trace
-				io.error.put_string (a_feature.generator)
+				io.error.put_string (internal_a_feature.generator)
 				io.put_new_line
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
@@ -182,4 +304,6 @@ indexing
 		]"
 
 end
+
+
 

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Abstract inferface for tools/UI where stones can set and synchronized.
 	]"
@@ -15,7 +15,7 @@ inherit
 
 feature -- Access
 
-	stone: ?STONE assign set_stone
+	stone: detachable STONE assign set_stone
 			-- Last set stone.
 		require
 			is_interface_usable: is_interface_usable
@@ -24,7 +24,7 @@ feature -- Access
 
 feature -- Element change
 
-	set_stone (a_stone: ?like stone)
+	set_stone (a_stone: detachable like stone)
 			-- Sets current stone.
 			-- Note: This call is unprotected and will set the stone regardless. For a protected call
 			--       use `set_stone_with_query', which will interactive with the user if necessary
@@ -38,7 +38,7 @@ feature -- Element change
 			stone_set: equal (stone, a_stone)
 		end
 
-	frozen set_stone_with_query (a_stone: ?like stone)
+	frozen set_stone_with_query (a_stone: detachable like stone)
 			-- Sets the current stone and preforms a protected call to ensure a stone can be set.
 			-- This does not guarentee a stone will be set because it depends on possible user interaction
 			-- to confirm setting.
@@ -77,17 +77,17 @@ feature -- Status report
 	is_setting_stone_with_query: BOOLEAN
 			-- Indicates if a stone is currenly being set using `set_stone_with_query'
 
-	frozen is_stone_usable (a_stone: ?like stone): BOOLEAN
-			--  Determines if a stone can be used by Current.
-			--| Note: Redefine `internal_is_stone_usable' to extend usablity checking.
+	frozen is_stone_usable (a_stone: detachable like stone): BOOLEAN
+			-- Determines if a stone can be used by Current.
+			--|Note: Redefine `internal_is_stone_usable' to extend usablity checking.
 			--
 			-- `a_stone': Stone to determine usablity.
 			-- `Result': True if the stone can be used, False otherwise.
 		require
 			is_interface_usable: is_interface_usable
 		do
-			if {l_stone: like stone} a_stone then
-				Result := l_stone.is_valid and then internal_is_stone_usable (l_stone)
+			if attached {like stone} a_stone as l_stone then
+				Result := l_stone.is_valid and then is_stone_usable_internal (l_stone)
 			else
 				Result := a_stone = Void
 			end
@@ -97,7 +97,7 @@ feature -- Status report
 
 feature {NONE} -- Status report
 
-	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
 			-- Determines if a stone can be used by Current.
 			--
 			-- `a_stone': Stone to determine usablity.
@@ -109,7 +109,7 @@ feature {NONE} -- Status report
 
 feature -- Query
 
-	query_set_stone (a_stone: ?like stone): BOOLEAN
+	query_set_stone (a_stone: detachable like stone): BOOLEAN
 			-- Determines if a stone can be set, possibly using a UI to ask the user for confirmation.
 			-- Note: This function should not be used in any contracts due to the possibility of UI presentation.
 			--
@@ -118,7 +118,6 @@ feature -- Query
 		require
 			is_interface_usable: is_interface_usable
 			a_stone_is_stone_usable: a_stone /= Void implies is_stone_usable (a_stone)
-			not_is_setting_stone_with_query: not is_setting_stone_with_query
 		do
 			Result := True
 		end
@@ -152,6 +151,15 @@ feature -- Basic operations
 			is_setting_stone_with_query_unchanged: is_setting_stone_with_query = old is_setting_stone_with_query
 		end
 
+feature -- Actions
+
+	stone_changed_actions: EV_LITE_ACTION_SEQUENCE [TUPLE [sender: ES_STONABLE_I; old_stone: detachable STONE]]
+			-- Actions called when a `stone' was changed
+		require
+			is_interface_usable: is_interface_usable
+		deferred
+		end
+
 feature -- Synchronization
 
 	synchronize
@@ -165,8 +173,8 @@ feature -- Synchronization
 invariant
 	stone_is_stone_usable: stone /= Void implies is_stone_usable (stone)
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -179,22 +187,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

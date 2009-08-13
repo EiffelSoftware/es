@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Formatter that displays the text of a feature in flat form."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -38,7 +38,7 @@ feature -- Access
 
 feature -- Status setting
 
-	set_editor_displayer (a_displayer: like displayer) is
+	set_editor_displayer (a_displayer: like displayer)
 			-- Set `displayer' with `a_displayer'.
 		do
 			Precursor {EB_FEATURE_TEXT_FORMATTER} (a_displayer)
@@ -48,13 +48,13 @@ feature -- Status setting
 			end
 		end
 
-	set_stone (new_stone: FEATURE_STONE) is
+	set_stone (new_stone: STONE)
 			-- Associate `Current' with class contained in `new_stone'.
 		do
 			force_stone (new_stone)
-			if new_stone /= Void and new_stone.class_i.is_external_class then
+			if attached {FEATURE_STONE} new_stone as l_new_stone and then l_new_stone.class_i.is_external_class then
 				set_dotnet_mode (True)
-				internal_consumed_type := consumed_type (new_stone.class_i)
+				internal_consumed_type := consumed_type (l_new_stone.class_i)
 			else
 				set_dotnet_mode (False)
 				internal_consumed_type := Void
@@ -64,10 +64,10 @@ feature -- Status setting
 
 feature -- Formatting
 
-	show_debugged_line is
+	show_debugged_line
 			-- Update arrows in formatter and ensure that arrows is visible.
 		local
-			t: TUPLE [line: INTEGER; fid: INTEGER]
+			t: TUPLE [bp, bp_nested: INTEGER; fid: INTEGER]
 			dm: like debugger_manager
 		do
 			if displayed and selected then
@@ -75,8 +75,8 @@ feature -- Formatting
 					dm := debugger_manager
 					if dm.safe_application_is_stopped then
 						t := dm.application_status.debugged_position_information (associated_feature)
-						if t /= Void and then t.line > 0 then
-							editor.display_breakpoint_number_when_ready (t.line, t.fid)
+						if t /= Void and then t.bp > 0 then
+							editor.display_breakpoint_number_when_ready (t.bp, t.fid)
 								-- Refresh is needed on the margin because if we are showing the same
 								-- feature but from a different CALL_STACK_ELEMENT (case of recursive call)
 								-- we need to refresh it to show/hide the green arrow representing
@@ -90,7 +90,7 @@ feature -- Formatting
 
 feature -- Properties
 
-	symbol: ARRAY [EV_PIXMAP] is
+	symbol: ARRAY [EV_PIXMAP]
 			-- Graphical representation of the command.
 		once
 			create Result.make (1, 2)
@@ -98,13 +98,13 @@ feature -- Properties
 			Result.put (pixmaps.icon_pixmaps.view_clickable_feature_icon, 2)
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representation.
 		once
 			Result := pixmaps.icon_pixmaps.view_clickable_feature_icon_buffer
 		end
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Identifier of `Current' in menus.
 		do
 			Result := Interface_names.m_Showflat
@@ -112,19 +112,19 @@ feature -- Properties
 
 feature {NONE} -- Properties
 
-	capital_command_name: STRING_GENERAL is
+	capital_command_name: STRING_GENERAL
 			-- Name of the command.
 		do
 			Result := Interface_names.l_Flat_view
 		end
 
-	post_fix: STRING is "rfl"
+	post_fix: STRING = "rfl"
 			-- String symbol of the command, used as an extension when saving.
 
 	internal_consumed_type: CONSUMED_TYPE
 			-- .NET consumed type contain this feature if external.
 
-	is_dotnet_formatter: BOOLEAN is
+	is_dotnet_formatter: BOOLEAN
  			-- Is Current able to format .NET XML types?
  		do
  			Result := True
@@ -132,7 +132,7 @@ feature {NONE} -- Properties
 
 feature {NONE} -- Implementation
 
-	on_breakable_drop (st: BREAKABLE_STONE) is
+	on_breakable_drop (st: BREAKABLE_STONE)
 			-- Launch `st' to the manager.
 		do
 			manager.set_stone (st)
@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 	feature_cmd: E_SHOW_ROUTINE_FLAT
 			-- Class command that can generate the information. Not used.
 
-	create_feature_cmd is
+	create_feature_cmd
 			-- Create `feature_cmd'.
 		require else
 			associated_feature_non_void: associated_feature /= Void
@@ -150,7 +150,7 @@ feature {NONE} -- Implementation
 			feature_cmd.set_text_formatter (editor.text_displayed)
 		end
 
-	generate_text is
+	generate_text
 		local
 			retried: BOOLEAN
 		do
@@ -172,13 +172,13 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	has_breakpoints: BOOLEAN is True;
+	has_breakpoints: BOOLEAN = True;
 			-- Should breakpoints be shown in Current?
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -189,22 +189,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_ROUTINE_FLAT_FORMATTER

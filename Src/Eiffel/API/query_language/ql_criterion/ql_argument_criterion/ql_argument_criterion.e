@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that represents a class argument criterion in Eiffel query lanagage"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,9 +13,6 @@ inherit
 	QL_CRITERION
 		redefine
 			is_satisfied_by,
-			infix "and",
-			prefix "not",
-			infix "or",
 			require_compiled,
 			compiled_criterion,
 			intrinsic_domain,
@@ -25,14 +22,14 @@ inherit
 
 feature -- Evaluate
 
-	is_satisfied_by (a_item: QL_ARGUMENT): BOOLEAN is
+	is_satisfied_by (a_item: QL_ARGUMENT): BOOLEAN
 			-- Evaluate `a_item'.
 		deferred
 		end
 
 feature -- Status report
 
-	require_compiled: BOOLEAN is
+	require_compiled: BOOLEAN
 			-- Does current criterion require a compiled item?
 		do
 			Result := True
@@ -40,7 +37,7 @@ feature -- Status report
 
 feature -- Access
 
-	scope: QL_SCOPE is
+	scope: QL_SCOPE
 			-- Scope of current ciretrion
 		do
 			Result := argument_scope
@@ -48,7 +45,7 @@ feature -- Access
 			good_result: Result.is_equal (argument_scope)
 		end
 
-	domain_generator (a_enable_fill_domain: BOOLEAN; a_apply_current: BOOLEAN): QL_ARGUMENT_DOMAIN_GENERATOR is
+	domain_generator (a_enable_fill_domain: BOOLEAN; a_apply_current: BOOLEAN): QL_ARGUMENT_DOMAIN_GENERATOR
 			-- Domain generator in which current criterion can be used
 			-- If `a_enable_fill_domain' is True, return a generator with `fill_domain_enabled' set to True.
 			-- If `a_apply_current' is True, return a generator with `criterion' set to Current.
@@ -59,19 +56,19 @@ feature -- Access
 
 feature -- Logic operations
 
-	infix "and" (other: QL_ARGUMENT_CRITERION): QL_ARGUMENT_CRITERION is
+	conjuncted alias "and" (other: QL_ARGUMENT_CRITERION): QL_ARGUMENT_CRITERION
 			-- Boolean conjunction with `other'
 		do
 			create {QL_ARGUMENT_AND_CRITERION}Result.make (Current, other)
 		end
 
-	prefix "not": QL_ARGUMENT_CRITERION is
+	negated alias "not": QL_ARGUMENT_CRITERION
 			-- Negation
 		do
 			create {QL_ARGUMENT_NOT_CRITERION}Result.make (Current)
 		end
 
-	infix "or" (other: QL_ARGUMENT_CRITERION): QL_ARGUMENT_CRITERION is
+	disjuncted alias "or" (other: QL_ARGUMENT_CRITERION): QL_ARGUMENT_CRITERION
 			-- Boolean disjunction with `other'		
 		do
 			create {QL_ARGUMENT_OR_CRITERION}Result.make (Current, other)
@@ -79,7 +76,7 @@ feature -- Logic operations
 
 feature -- Access
 
-	compiled_criterion: QL_ARGUMENT_CRITERION is
+	compiled_criterion: QL_ARGUMENT_CRITERION
 			-- A criterion which takes `require_compiled' into account
 		do
 			if require_compiled then
@@ -91,48 +88,48 @@ feature -- Access
 
 feature -- Intrinsic domain
 
-	intrinsic_domain: QL_ARGUMENT_DOMAIN is
+	intrinsic_domain: QL_ARGUMENT_DOMAIN
 			-- Intrinsic_domain which can be inferred from current criterion
 		do
 		end
 
 feature{NONE} -- Implementation
 
-	item_type: QL_ARGUMENT is
+	item_type: QL_ARGUMENT
 			-- Anchor type
 		do
 		end
 
-indexing
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+        copyright:	"Copyright (c) 1984-2009, Eiffel Software"
         license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
         licensing_options:	"http://www.eiffel.com/licensing"
         copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
         source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

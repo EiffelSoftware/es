@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects implementing {TEST_I}.
 	]"
@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			name := a_name
 			class_name := a_class_name
 			internal_tags := new_hash_set (0)
-			create {!DS_ARRAYED_LIST [!EQA_TEST_OUTCOME]} internal_outcomes.make (0)
+			create {DS_ARRAYED_LIST [EQA_TEST_RESULT]} internal_outcomes.make (0)
 		ensure
 			name_set: name = a_name
 			class_name_set: class_name = a_class_name
@@ -37,25 +37,25 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	name: !STRING
+	name: STRING
 			-- <Precursor>
 
-	class_name: !STRING
+	class_name: STRING
 			-- <Precursor>
 
-	tags: !DS_LINEAR [!STRING]
+	tags: DS_LINEAR [STRING]
 			-- <Precursor>
 		do
 			Result := internal_tags
 		end
 
-	outcomes: !DS_BILINEAR [like last_outcome]
+	outcomes: DS_BILINEAR [like last_outcome]
 			-- <Precursor>
 		do
 			Result := internal_outcomes
 		end
 
-	executor: !TEST_EXECUTOR_I
+	executor: TEST_EXECUTOR_I
 			-- <Precursor>
 		local
 			l_executor: like internal_executor
@@ -71,7 +71,7 @@ feature -- Access
 			Result := name.hash_code
 		end
 
-	memento: !TEST_MEMENTO_I is
+	memento: TEST_MEMENTO_I
 			-- <Precursor>
 		do
 			Result := Current
@@ -81,8 +81,11 @@ feature -- Access: Memento
 
 	added_tags: like tags
 			-- Tags added by last call to `set_explicit_tags'
+		local
+			l_tags: like internal_added_tags
 		do
-			if {l_tags: like tags} internal_added_tags then
+			l_tags := internal_added_tags
+			if l_tags /= Void then
 				Result := l_tags
 			else
 				Result := empty_tags
@@ -91,8 +94,11 @@ feature -- Access: Memento
 
 	removed_tags: like tags
 			-- Tags removed by last call to `set_explicit_tags'
+		local
+			l_tags: like internal_removed_tags
 		do
-			if {l_tags: like tags} internal_removed_tags then
+			l_tags := internal_removed_tags
+			if l_tags /= Void then
 				Result := l_tags
 			else
 				Result := empty_tags
@@ -101,35 +107,35 @@ feature -- Access: Memento
 
 feature {NONE} -- Access
 
-	internal_tags: !DS_HASH_SET [!STRING]
+	internal_tags: DS_HASH_SET [STRING]
 			-- Internal set of tags
 
-	internal_added_tags: ?like internal_tags
+	internal_added_tags: detachable like internal_tags
 			-- Internal storage for `added_tags'
 
-	internal_removed_tags: ?like internal_tags
+	internal_removed_tags: detachable like internal_tags
 			-- Internal storage for `removed_tags'
 
-	empty_tags: !DS_LINEAR [!STRING]
+	empty_tags: DS_LINEAR [STRING]
 			-- Empty list of tags
 		once
-			create {DS_ARRAYED_LIST [!STRING]} Result.make (0)
+			create {DS_ARRAYED_LIST [STRING]} Result.make (0)
 		ensure
 			empty: Result.is_empty
 		end
 
-	internal_executor: ?TEST_EXECUTOR_I
+	internal_executor: detachable TEST_EXECUTOR_I
 			-- Internal storage for `executor'
 
-	internal_outcomes: !DS_LIST [like last_outcome]
+	internal_outcomes: DS_LIST [like last_outcome]
 			-- Internal list of outcomes
 
-	old_tags: ?like internal_tags
+	old_tags: detachable like internal_tags
 			-- Old tags
 
 feature {NONE} -- Query
 
-	outcome_tag: !STRING
+	outcome_tag: STRING
 			-- Tag representing status of last outcome
 		require
 			has_been_tested: is_outcome_available
@@ -148,7 +154,7 @@ feature -- Status report
 	is_interface_usable: BOOLEAN = True
 			-- <Precursor>
 
-	has_changed: BOOLEAN is
+	has_changed: BOOLEAN
 			-- <Precursor>
 		do
 			Result := internal_added_tags /= Void or internal_removed_tags /= Void or
@@ -171,7 +177,7 @@ feature -- Status report: Memento
 
 feature {ACTIVE_COLLECTION_I} -- Status setting
 
-	clear_changes is
+	clear_changes
 			-- <Precursor>
 		do
 			internal_added_tags := Void
@@ -180,9 +186,9 @@ feature {ACTIVE_COLLECTION_I} -- Status setting
 			has_execution_status_changed := False
 		end
 
-feature {EIFFEL_TEST_SUITE_S} -- Status setting
+feature {TEST_SUITE_S} -- Status setting
 
-	set_explicit_tags (a_list: !DS_LINEAR [!STRING]) is
+	set_explicit_tags (a_list: DS_LINEAR [STRING])
 			-- <Precursor>
 		do
 			old_tags := internal_tags
@@ -197,7 +203,7 @@ feature {EIFFEL_TEST_SUITE_S} -- Status setting
 			old_tags := Void
 		end
 
-	set_queued (a_executor: like executor) is
+	set_queued (a_executor: like executor)
 			-- <Precursor>
 		do
 			is_queued := True
@@ -205,7 +211,7 @@ feature {EIFFEL_TEST_SUITE_S} -- Status setting
 			internal_executor := a_executor
 		end
 
-	set_running is
+	set_running
 			-- <Precursor>
 		do
 			is_queued := False
@@ -213,13 +219,12 @@ feature {EIFFEL_TEST_SUITE_S} -- Status setting
 			is_running := True
 		end
 
-	add_outcome (an_outcome: like last_outcome) is
+	add_outcome (an_outcome: like last_outcome)
 			-- Add `an_outcome' to the end of `outcomes'. Addopt outcome tag
 			-- according to `an_outcome' and set `has_changed' to True if `tags'
 			-- has changed. Otherwise `has_changed' is False.
 		local
-			l_add: BOOLEAN
-			l_old, l_new: !STRING
+			l_old, l_new: STRING
 		do
 			if is_outcome_available then
 				l_old := outcome_tag
@@ -243,11 +248,12 @@ feature {EIFFEL_TEST_SUITE_S} -- Status setting
 			is_running := False
 			is_queued := False
 			has_execution_status_changed := True
+			is_outcome_added := True
 		ensure then
 			tags_contain_outcome_tag: tags.has (outcome_tag)
 		end
 
-	abort is
+	abort
 			-- <Precursor>
 		do
 			internal_executor := Void
@@ -256,18 +262,18 @@ feature {EIFFEL_TEST_SUITE_S} -- Status setting
 			has_execution_status_changed := True
 		end
 
-feature {EIFFEL_TEST_MEMENTO} -- Factory
+feature {TEST_MEMENTO_I} -- Factory
 
 	new_hash_set (a_count: NATURAL): like internal_tags
 			-- Create new {DS_HASH_SET [!STRING]} with capacity `n' using a string equality tester.
 		do
 			create Result.make (a_count.to_integer_32)
-			Result.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [!STRING]})
+			Result.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [STRING]})
 		end
 
 feature {NONE} -- Implementation
 
-	add_tag (a_tag: !STRING)
+	add_tag (a_tag: STRING)
 			-- Add tag to `internal_tags' and remove it from `old_tags'
 		require
 			old_tags_attached: old_tags /= Void
@@ -284,4 +290,35 @@ feature {NONE} -- Implementation
 			end
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -1,6 +1,6 @@
-indexing
+note
 	description: "Parser facility for dates and times"
-	legal: "See notice at end of class." 
+	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,7 @@ class DATE_TIME_PARSER inherit
 	DATE_TIME_VALIDITY_CHECKER
 		rename
 			year as checker_year, month as checker_month,
-			day as checker_day, hour as checker_hour, minute as checker_minute, 
+			day as checker_day, hour as checker_hour, minute as checker_minute,
 			fine_second as checker_fine_second
 		export
 			{NONE} all
@@ -24,7 +24,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (c: HASH_TABLE [DATE_TIME_CODE, INTEGER]) is
+	make (c: HASH_TABLE [DATE_TIME_CODE, INTEGER])
 			-- Create parser with date/time code `c', months array `m',
 			-- days array `d', and base century `b'.
 		require
@@ -34,13 +34,13 @@ feature {NONE} -- Initialization
 		ensure
 			code_set: code = c
 		end
-		
+
 feature -- Access
 
-	source_string: STRING
+	source_string: detachable STRING
 			-- String to be parsed
 
-	year: INTEGER is
+	year: INTEGER
 			-- Year part of `source_string'
 		require
 			value_parsed: parsed
@@ -48,7 +48,7 @@ feature -- Access
 			Result := year_val
 		end
 
-	month: INTEGER is
+	month: INTEGER
 			-- Month part of `source_string'
 		require
 			value_parsed: parsed
@@ -56,7 +56,7 @@ feature -- Access
 			Result := month_val
 		end
 
-	day: INTEGER is
+	day: INTEGER
 			-- Day part of `source_string'
 		require
 			value_parsed: parsed
@@ -64,7 +64,7 @@ feature -- Access
 			Result := day_val
 		end
 
-	hour: INTEGER is
+	hour: INTEGER
 			-- Hour part of `source_string'
 		require
 			value_parsed: parsed
@@ -72,7 +72,7 @@ feature -- Access
 			Result := hour_val
 		end
 
-	minute: INTEGER is
+	minute: INTEGER
 			-- Minute part of `source_string'
 		require
 			value_parsed: parsed
@@ -80,7 +80,7 @@ feature -- Access
 			Result := minute_val
 		end
 
-	fine_second: DOUBLE is
+	fine_second: DOUBLE
 			-- Seconds part of `source_string'
 		require
 			value_parsed: parsed
@@ -88,7 +88,7 @@ feature -- Access
 			Result := fine_second_val
 		end
 
-	day_text: STRING is
+	day_text: detachable STRING
 			-- Text representation of `day'
 		require
 			value_parsed: parsed
@@ -101,14 +101,14 @@ feature -- Status report
 	parsed: BOOLEAN
 			-- Has `source_string' been parsed?
 
-	is_set_up: BOOLEAN is
+	is_set_up: BOOLEAN
 			-- Has parser been set up completely?
 		do
-			Result := (days /= Void) and (months /= Void) and 
-				(source_string /= Void and then not source_string.is_empty)
+			Result := (days /= Void) and (months /= Void) and
+				(attached source_string as l_source_string and then not l_source_string.is_empty)
 		end
-		
-	is_date: BOOLEAN is
+
+	is_date: BOOLEAN
 			-- Does `source_string' contain a DATE?
 		require
 			string_parsed: parsed
@@ -116,7 +116,7 @@ feature -- Status report
 			Result := is_correct_date (year, month, day)
 		end
 
-	is_time: BOOLEAN is
+	is_time: BOOLEAN
 			-- Does `source_string' contain a TIME?
 		require
 			string_parsed: parsed
@@ -124,7 +124,7 @@ feature -- Status report
 			Result := is_correct_time (hour, minute, fine_second, False)
 		end
 
-	is_date_time: BOOLEAN is
+	is_date_time: BOOLEAN
 			-- Does `source_string' contain a DATE_TIME?
 		require
 			string_parsed: parsed
@@ -133,7 +133,7 @@ feature -- Status report
 				minute, fine_second, False)
 		end
 
-	is_value_valid: BOOLEAN is
+	is_value_valid: BOOLEAN
 			-- Is parsed value valid?
 		do
 			Result := parsed and then (is_date or is_time or is_date_time)
@@ -141,7 +141,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_source_string (s: STRING) is
+	set_source_string (s: STRING)
 			-- Assign `s' to `source_string'.
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -153,7 +153,7 @@ feature -- Status setting
 			not_parsed: not parsed
 		end
 
-	set_day_array (d: ARRAY [STRING]) is
+	set_day_array (d: ARRAY [STRING])
 			-- Set day array to `d'.
 		require
 			not_void: d /= Void
@@ -163,7 +163,7 @@ feature -- Status setting
 			days_set: days = d
 		end
 
-	set_month_array (m: ARRAY [STRING]) is
+	set_month_array (m: ARRAY [STRING])
 			-- Set month array to `m'.
 		require
 			not_void: m /= Void
@@ -173,7 +173,7 @@ feature -- Status setting
 			months_set: months = m
 		end
 
-	set_base_century (c: INTEGER) is
+	set_base_century (c: INTEGER)
 			-- Set base century to `c'.
 		require
 			base_century_valid: c /= 0 and (c \\ 100 = 0)
@@ -185,7 +185,7 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	parse is
+	parse
 			-- Parse `source_string'.
 		require
 			setup_complete: is_set_up
@@ -198,9 +198,15 @@ feature -- Basic operations
 			l_year_now: INTEGER
 			l_is_pm, l_is_pm_computed: BOOLEAN
 			l_hour_val_need_computation: BOOLEAN
+			l_source_string: like source_string
+			l_item: detachable DATE_TIME_CODE
+			l_substrg: STRING
+			l_months: like months
 		do
+			l_source_string := source_string
+			check l_source_string_not_void: l_source_string /= Void end
 			l_year_now := (create {C_DATE}).year_now
-			s := source_string.as_upper
+			s := l_source_string.as_upper
 			year_val := 1
 			month_val := 1
 			day_val := 1
@@ -210,39 +216,40 @@ feature -- Basic operations
 			pos1 := 1
 			pos2 := 1
 			has_seps := has_separators (s)
-			from 
+			from
 				i := 1
-			until 
+			until
 				pos1 > s.count
 			loop
-				if has_seps then
-					pos2 := find_separator (s, pos1)
-				else
-					pos2 := (pos1 + code.item (i).count_max - 1) * -1
-				end
-				extract_substrings (s, pos1, pos2)
-				pos2 := abs (pos2)
-				if code.item (i) = Void then
+				l_item := code.item (i)
+				if l_item = Void then
 					pos1 := s.count + 1
 				else
-					type := code.item (i).type
+					if has_seps then
+						pos2 := find_separator (s, pos1)
+					else
+						pos2 := (pos1 + l_item.count_max - 1) * -1
+					end
+					l_substrg := extracted_substrings (s, pos1, pos2).substrg
+					pos2 := abs (pos2)
+					type := l_item.type
 					inspect
 						type
 					when 1, 2 then
-						day_val := substrg.to_integer
+						day_val := l_substrg.to_integer
 					when 3 then
-						day_text_val := substrg
+						day_text_val := l_substrg
 					when 4 then
-						year_val := substrg.to_integer
-					when 5 then 
+						year_val := l_substrg.to_integer
+					when 5 then
 						if base_century < 0 then
 							-- A negative value in `base_century' indicates
 							-- that this value has been calculated
 							-- automaticaly. Since we want to add it, we
 							-- have to substract it, because it is
 							-- negative.
-							year_val := substrg.to_integer - base_century
-							
+							year_val := l_substrg.to_integer - base_century
+
 							-- We need a smart century correction
 							-- eventually.
 							if year_val - l_year_now > 50 then
@@ -252,17 +259,19 @@ feature -- Basic operations
 							end
 						else
 							-- `base_century' has been set manually.
-							year_val := substrg.to_integer - base_century
+							year_val := l_substrg.to_integer - base_century
 						end
 					when 6, 7 then
-						month_val := substrg.to_integer
+						month_val := l_substrg.to_integer
 					when 8 then
+						l_months := months
+						check l_months_not_void: l_months /= Void end
 						from
 							j := 1
-						until 
+						until
 							j > 12
 						loop
-							if months.item (j).is_equal (substrg) then
+							if l_months.item (j).is_equal (l_substrg) then
 								month_val := j
 							else
 								-- error
@@ -270,9 +279,9 @@ feature -- Basic operations
 							j := j + 1
 						end
 					when 9, 10 then
-						hour_val := substrg.to_integer
+						hour_val := l_substrg.to_integer
 					when 11 then
-						hour_val := substrg.to_integer
+						hour_val := l_substrg.to_integer
 						if l_is_pm_computed then
 							if l_is_pm then
 								hour_val := hour_val + 12
@@ -288,13 +297,13 @@ feature -- Basic operations
 					when 23 then
 						l_is_pm_computed := True
 						l_is_pm := s.as_upper.is_equal ("PM")
-					when 12, 13 then 
-						minute_val := substrg.to_integer
+					when 12, 13 then
+						minute_val := l_substrg.to_integer
 					when 14, 15 then
-						second_val := substrg.to_integer
+						second_val := l_substrg.to_integer
 					when 16 then
-						fine_second_val := substrg.to_double / 
-							(10 ^ (substrg.count))
+						fine_second_val := l_substrg.to_double /
+							(10 ^ (l_substrg.count))
 					end
 					if has_seps then
 						i := i + 2
@@ -339,33 +348,33 @@ feature {NONE} -- Implementation
 
 	fine_second_val: DOUBLE
 
-	day_text_val: STRING
+	day_text_val: detachable STRING
 
 	code: HASH_TABLE [DATE_TIME_CODE, INTEGER]
 			-- Hash table containing the parsed date/time code
 
-	months: ARRAY [STRING]
+	months: detachable ARRAY [STRING]
 			-- Names of months
-			
-	days: ARRAY [STRING]
+
+	days: detachable ARRAY [STRING]
 			-- Names of days	
 
 	base_century: INTEGER
 			-- Base century, used when interpreting 2-digit year
 			-- specifications
-			
+
 invariant
 
 	valid_value_definition: is_value_valid =
 			(parsed and then (is_date or is_time or is_date_time))
 	valid_value_implies_parsing: is_value_valid implies parsed
-	
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

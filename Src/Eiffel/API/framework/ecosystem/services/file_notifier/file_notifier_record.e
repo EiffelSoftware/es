@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Represents a cached file information record for use with the file notification service {FILE_NOTIFICATION_S}.
 	]"
@@ -31,7 +31,7 @@ feature {NONE} -- File was changed
 
 feature -- Access
 
-	file_name: !STRING_32
+	file_name: attached STRING_32
 			-- The associate file record's absolute file path.
 
 	time_stamp: INTEGER_32
@@ -107,7 +107,7 @@ invariant
 	not_file_name_is_empty: not file_name.is_empty
 	time_stamp_positive: file_exists implies time_stamp > 0
 
-;indexing
+;note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

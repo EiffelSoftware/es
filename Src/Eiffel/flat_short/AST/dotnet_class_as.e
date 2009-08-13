@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract description of an .NET class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_consumed: CONSUMED_TYPE; a_local_features_only: BOOLEAN; a_class: CLASS_I) is
+	make (a_consumed: CONSUMED_TYPE; a_local_features_only: BOOLEAN; a_class: CLASS_I)
 		require
 			a_consumed_not_void: a_consumed /= Void
 			a_classi_not_void: a_class /= Void
@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 			deferred_set: is_deferred implies (a_consumed.is_deferred or a_consumed.is_interface)
 		end
 
-	initialize (a_consumed: CONSUMED_TYPE) is
+	initialize (a_consumed: CONSUMED_TYPE)
 			-- Initialize information for Current pertaining to 'a_consumed'.
 		require
 			a_consumed_not_void: a_consumed /= Void
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 			initialize_feature_categories
 		end
 
-	initialize_feature_categories is
+	initialize_feature_categories
 			-- Initialize the features by category for formatting.
 		local
 			l_entity: CONSUMED_ENTITY
@@ -79,11 +79,11 @@ feature {NONE} -- Initialization
 			create hidden_command_features.make ("Commands", False)
 
 			from
-				loop_counter := 1
+				entities.start
 			until
-				loop_counter = entities.count
+				entities.after
 			loop
-				l_entity := entities.item (loop_counter)
+				l_entity := entities.item
 				if should_add (l_entity) then
 					if l_entity.is_property_or_event then
 						initialize_property_or_event (l_entity)
@@ -112,7 +112,7 @@ feature {NONE} -- Initialization
 						misc_features.extend (l_entity)
 					end
 				end
-				loop_counter := loop_counter + 1
+				entities.forth
 			end
 
 					-- Add features to feature category list if not empty.
@@ -135,7 +135,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	initialize_property_or_event (a_entity: CONSUMED_ENTITY) is
+	initialize_property_or_event (a_entity: CONSUMED_ENTITY)
 			-- Initialize 'a_entity' for inclusion in corresponding entity list.
 		require
 			entity_not_void: a_entity /= Void
@@ -191,42 +191,31 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	set_constructors (a_consumed: CONSUMED_TYPE) is
+	set_constructors (a_consumed: CONSUMED_TYPE)
 			-- Set all constrcutor for the .NET class.
 		require
 			a_consumed_not_void: a_consumed /= Void
 		local
-			i, nb: INTEGER
-			l_constructors: ARRAY [CONSUMED_CONSTRUCTOR]
+			l_constructors: ARRAYED_LIST [CONSUMED_CONSTRUCTOR]
 		do
 			l_constructors := a_consumed.constructors
 			if l_constructors = Void or else l_constructors.is_empty then
 				create constructors.make (0)
 			else
-				from
-					i := 1
-					nb := l_constructors.count
-					create constructors.make (nb)
-				until
-					i > nb
-				loop
-					constructors.extend (l_constructors.item (i))
-					i := i + 1
-				end
-				loop_counter := i
+				constructors := l_constructors.twin
 			end
 		ensure
 			constructors_set: constructors /= Void
 		end
 
-	set_ancestors (a_consumed: CONSUMED_TYPE) is
+	set_ancestors (a_consumed: CONSUMED_TYPE)
 			-- Set all ancestors for the .NET class.
 		require
 			a_consumed_not_void: a_consumed /= Void
 		local
 			l_c_parent: CONSUMED_REFERENCED_TYPE
-			l_interfaces: ARRAY [CONSUMED_REFERENCED_TYPE]
-			i, nb: INTEGER
+			l_interfaces: ARRAYED_LIST [CONSUMED_REFERENCED_TYPE]
+			nb: INTEGER
 		do
 			l_interfaces := a_consumed.interfaces
 			if l_interfaces = Void or else l_interfaces.is_empty then
@@ -245,17 +234,16 @@ feature {NONE} -- Initialization
 					create ancestors.make (nb)
 				end
 				from
-					i := 1
+					l_interfaces.start
 				until
-					i > nb
+					l_interfaces.after
 				loop
-					l_c_parent := l_interfaces.item (i)
+					l_c_parent := l_interfaces.item
 					if l_c_parent /= Void then
 						ancestors.extend (l_c_parent)
 					end
-					i := i + 1
+					l_interfaces.forth
 				end
-				loop_counter := i
 			end
 		ensure
 			ancestors_set: ancestors /= Void
@@ -294,7 +282,7 @@ feature {NONE} -- Access
 
 feature -- Status Setting
 
-	set_current_class_only (a_flag: BOOLEAN) is
+	set_current_class_only (a_flag: BOOLEAN)
 			-- Set format type to include inherited features.
 		do
 			is_current_class_only := a_flag
@@ -304,7 +292,7 @@ feature -- Status Setting
 
 feature -- Formatting
 
-	format (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Perform formatting of current using `a_ctxt'.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -320,7 +308,7 @@ feature -- Formatting
 
 feature {NONE} -- Formatting
 
-	format_indexes (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_indexes (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format indexes, i.e. class description.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -368,7 +356,7 @@ feature {NONE} -- Formatting
 			a_ctxt.put_new_line
 		end
 
-	format_header (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_header (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format header, ie classname and generics.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -397,7 +385,7 @@ feature {NONE} -- Formatting
 			a_ctxt.put_new_line
 		end
 
-	format_footer (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_footer (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format footer, ie classname and end keyword.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -413,7 +401,7 @@ feature {NONE} -- Formatting
 			a_ctxt.put_new_line
 		end
 
-	format_ancestors (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_ancestors (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format class ancestors, if short.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -437,7 +425,7 @@ feature {NONE} -- Formatting
 			end
 		end
 
-	format_generics (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_generics (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format class formal generic parameters, if any.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -453,7 +441,7 @@ feature {NONE} -- Formatting
 			end
 		end
 
-	format_constructors (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_constructors (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format constructors.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -483,7 +471,7 @@ feature {NONE} -- Formatting
 			a_ctxt.process_filter_item (f_creators, false)
 		end
 
-	format_features (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR) is
+	format_features (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR)
 			-- Format all features.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -515,7 +503,7 @@ feature {NONE} -- Formatting
 			end
 		end
 
-	format_feature_header (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR; a_header: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]) is
+	format_feature_header (a_ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR; a_header: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY])
 			-- Format feature with category 'a_header'.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
@@ -538,7 +526,7 @@ feature {NONE} -- Formatting
 
 feature {NONE} -- Implementation
 
-	should_display (a_list: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]): BOOLEAN is
+	should_display (a_list: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]): BOOLEAN
 			-- Should any of the items in 'a_list' be displayed in current context?
 		do
 			if is_current_class_only then
@@ -555,7 +543,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	should_add (a_entity: CONSUMED_ENTITY): BOOLEAN is
+	should_add (a_entity: CONSUMED_ENTITY): BOOLEAN
 			-- Should 'a_entity' be added to the features?
 		require
 			a_entity_not_void: a_entity /= Void
@@ -567,7 +555,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_to_features_list (a_list: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]) is
+	add_to_features_list (a_list: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY])
 			-- Add 'a_list' to list of known features.
 		require
 			a_list_not_void: a_list /= Void
@@ -577,7 +565,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	entities: ARRAY [CONSUMED_ENTITY]
+	entities: ARRAYED_LIST [CONSUMED_ENTITY]
 			-- All field, procedure and function implemented/inherited.
 
 	constructors: ARRAYED_LIST [CONSUMED_CONSTRUCTOR]
@@ -591,9 +579,6 @@ feature {NONE} -- Implementation
 	events_features, hidden_events_features: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]
 			-- Property and event feature lists.
 
-	loop_counter: INTEGER
-			-- Reusable loop counter
-
 	ctxt: DOTNET_CLASS_TEXT_FORMATTER_DECORATOR
 			-- Associated class context.
 
@@ -603,8 +588,8 @@ invariant
 	entities_not_void: entities /= Void
 	ancestors_not_void: ancestors /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -617,22 +602,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class DOTNET_CLASS_AS

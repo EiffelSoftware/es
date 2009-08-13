@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A basic dialog for displaying text in a basic Eiffel studio editor.
 	]"
@@ -32,12 +32,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_icon: !like icon; a_title: !READABLE_STRING_GENERAL)
+	make (a_icon: like icon; a_title: attached READABLE_STRING_GENERAL)
 			-- Initialize the editor dialog.
 			--
 			-- `a_icon': The icon to set on the dialog.
 			-- `a_title': The title to set on the dialog.
 		require
+			a_icon_attached: a_icon /= Void
 			not_a_icon_is_destroyed: not a_icon.is_destroyed
 			not_a_title_is_empty: not a_title.is_empty
 		do
@@ -49,13 +50,14 @@ feature {NONE} -- Initialization
 			title_set: a_title.as_string_32.is_equal (title)
 		end
 
-	make_with_window (a_icon: !like icon; a_title: !READABLE_STRING_GENERAL; a_window: !like development_window)
+	make_with_window (a_icon: like icon; a_title: attached READABLE_STRING_GENERAL; a_window: attached like development_window)
 			-- Initialize the editor dialog using a specific development window.
 			--
 			-- `a_icon': The icon to set on the dialog.
 			-- `a_title': The title to set on the dialog.
 			-- `a_window': The parent host window to center the dialog to.
 		require
+			a_icon_attached: a_icon /= Void
 			not_a_icon_is_destroyed: not a_icon.is_destroyed
 			not_a_title_is_empty: not a_title.is_empty
 			a_window_is_interface_usable: a_window.is_interface_usable
@@ -121,15 +123,15 @@ feature -- Access
 			Result := dialog_buttons.ok_button
 		end
 
-	icon: !EV_PIXEL_BUFFER assign set_icon
+	icon: EV_PIXEL_BUFFER assign set_icon
 			-- <Precursor>
 
-	title: !STRING_32
+	title: attached STRING_32
 			-- <Precursor>
 		do
-			if {l_result: STRING_32} dialog.title and then not l_result.is_empty then
+			if attached {STRING_32} dialog.title as l_result and then not l_result.is_empty then
 				Result := l_result
-			elseif {l_internal_result: STRING_32} internal_title then
+			elseif attached {STRING_32} internal_title as l_internal_result then
 				Result := l_internal_result
 			else
 				check False end
@@ -137,12 +139,12 @@ feature -- Access
 			end
 		end
 
-	text: !STRING_32
+	text: attached STRING_32
 			-- Editor text
 		require
 			is_interface_usable: is_interface_usable
 		do
-			if {l_result: STRING_32} internal_text then
+			if attached {STRING_32} internal_text as l_result then
 				Result := l_result
 			else
 				create Result.make_empty
@@ -152,7 +154,7 @@ feature -- Access
 
 feature -- Element change
 
-	set_title (a_title: !READABLE_STRING_GENERAL)
+	set_title (a_title: attached READABLE_STRING_GENERAL)
 			-- Sets the dialog title.
 			--
 			-- `a_title': The title to display on the dialog
@@ -167,13 +169,14 @@ feature -- Element change
 			title_set: a_title.as_string_32.is_equal (title)
 		end
 
-	set_icon (a_icon: !like icon)
+	set_icon (a_icon: like icon)
 			-- Sets the dialog's icon.
 			--
 			-- `a_icon': The icon to display on the dialog.
 		require
 			is_initialized: is_initialized
 			is_interface_usable: is_interface_usable
+			a_icon_attached: a_icon /= Void
 			not_a_icon_is_destroyed: not a_icon.is_destroyed
 		do
 			dialog.set_icon_pixmap (icon.to_pixmap)
@@ -181,7 +184,7 @@ feature -- Element change
 			icon_set: icon ~ a_icon
 		end
 
-	set_text (a_text: !like text)
+	set_text (a_text: attached like text)
 			-- Sets the display text.
 			--
 			-- `a_text': The text to display in the editor
@@ -242,7 +245,7 @@ feature {NONE} -- Basic operations
 
 feature {NONE} -- User interface elements
 
-	text_panel: !SELECTABLE_TEXT_PANEL
+	text_panel: attached SELECTABLE_TEXT_PANEL
 			-- Widget diaplying exception log
 
 feature {NONE} -- Action handlers
@@ -255,16 +258,16 @@ feature {NONE} -- Action handlers
 
 feature {NONE} -- Implementation: Internal cache
 
-	internal_title: ?like title
+	internal_title: detachable like title
 			-- Temporary version of `title', used during initialization only.
 			-- Note: Do not use!
 
-	internal_text: ?like text
+	internal_text: detachable like text
 			-- Cached version of `text'.
 			-- Note: Do not use!
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -277,22 +280,22 @@ feature {NONE} -- Implementation: Internal cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An observer for events implemented on a {SESSION_I} interface.
 	]"
@@ -7,7 +7,7 @@ indexing
 	date: "$Date$";
 	revision: "$Revision $"
 
-deferred class
+class
 	SESSION_EVENT_OBSERVER
 
 inherit
@@ -21,14 +21,14 @@ feature {SESSION_I} -- Event handlers
 			-- `a_session': The session where the value changed.
 			-- `a_id': The session data identifier of the changed value.
 		require
-			is_interface_usable: is_interface_usable
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
 			a_session_attached: a_session /= Void
 			a_id_attached: a_id /= Void
 			not_a_id_is_empty: not a_id.is_empty
 		do
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

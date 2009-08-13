@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "[
 					Describes a breakpoint's key. It is by its `body_index' 
 				  	and its `breakable_line_number' (line number in stop points view).
@@ -9,19 +9,15 @@ indexing
 	date		: "$Date$"
 	revision	: "$Revision$"
 
-deferred
-class
+deferred class
 	BREAKPOINT_KEY_I
 
 inherit
 	HASHABLE
-		undefine
-			is_equal
-		end
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 			-- Hash code for breakpoint.
 		do
 			Result := (body_index |<< 6 | breakable_line_number).hash_code |<< 1
@@ -49,7 +45,7 @@ invariant
 						breakable_line_number > 0 and then
 						routine.body_index /= 0
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

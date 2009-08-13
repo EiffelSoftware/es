@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	has_feature (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN is
+	has_feature (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
 			-- Does `a_class' contain `a_feature'?
 		require
 			a_class_not_void: a_class /= Void
@@ -35,7 +35,7 @@ feature -- Access
 			Result := a_class.feature_table.has (a_feature.feature_name)
 		end
 
-	is_default_creatable (a_class: CLASS_C; a_system: SYSTEM_I): BOOLEAN is
+	is_default_creatable (a_class: CLASS_C; a_system: SYSTEM_I): BOOLEAN
 			-- Are objects of type `a_class' creatable via default creation?
 		require
 			a_class_not_void: a_class /= Void
@@ -44,7 +44,7 @@ feature -- Access
 			Result := a_class.allows_default_creation
 		end
 
-	generic_derivation (a_class: CLASS_C; a_system: SYSTEM_I): TYPE_A is
+	generic_derivation (a_class: CLASS_C; a_system: SYSTEM_I): TYPE_A
 			-- Generic derivation `a_class'; this is a type which has `a_class' as base class
 			-- but where all formal parameters have been closed with types. The types to be used
 			-- as actual paramenters will be ANY for unconstrained formal parameters and
@@ -59,7 +59,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	generic_derivation_type_visitor: AUT_GENERIC_DERIVATION_TYPE_VISITOR is
+	generic_derivation_type_visitor: AUT_GENERIC_DERIVATION_TYPE_VISITOR
 			-- Generic derivation type visitor
 		once
 			create Result
@@ -67,13 +67,13 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	generic_derivation_of_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A is
+	generic_derivation_of_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A
 			-- Generic derivation for `a_type'
 		do
 			Result := generic_derivation_type_visitor.derived_type (a_type, a_context)
 		end
 
-	exported_creators (a_class: CLASS_C; a_system: SYSTEM_I): LINKED_LIST [STRING] is
+	exported_creators (a_class: CLASS_C; a_system: SYSTEM_I): LINKED_LIST [STRING]
 			-- Names of creators which are exported to class ANY from `a_class'
 			-- Return an empty list of no valid creator is found.
 		require
@@ -106,7 +106,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	creation_procedure_count (a_type: TYPE_A; a_system: SYSTEM_I): INTEGER is
+	creation_procedure_count (a_type: TYPE_A; a_system: SYSTEM_I): INTEGER
 			-- Number of exported creation procedures for class associated with `a_type'.
 			-- Return 0 if `a_type' is not creatable.
 		require
@@ -124,7 +124,7 @@ feature -- Access
 
 feature {NONE} -- Parsing class types
 
-	type_a_generator: AST_TYPE_A_GENERATOR is
+	type_a_generator: AST_TYPE_A_GENERATOR
 			-- TYPE_A generator
 		once
 			create Result
@@ -132,7 +132,7 @@ feature {NONE} -- Parsing class types
 			result_attached: Result /= Void
 		end
 
-	base_type (a_name: STRING): TYPE_A is
+	base_type (a_name: STRING): TYPE_A
 			-- Type parsed from `a_name'
 			-- If `a_name' is "NONE", return {NONE_A}.
 			-- If `a_name' is an unknown type, return Void.
@@ -146,11 +146,11 @@ feature {NONE} -- Parsing class types
 				Result := none_type
 			else
 					-- Parse `a_name' into a type AST node.
-				type_parser.parse_from_string ("type " + a_name)
+				type_parser.parse_from_string ("type " + a_name, interpreter_root_class)
 				l_type_as := type_parser.type_node
 
 					-- Generate TYPE_A object from type AST node.
-				if l_type_as /= Void and then {l_context_class: CLASS_C} interpreter_root_class then
+				if l_type_as /= Void and then attached {CLASS_C} interpreter_root_class as l_context_class then
 					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
 				end
 			end
@@ -158,7 +158,7 @@ feature {NONE} -- Parsing class types
 
 feature{NONE} -- Implementation
 
-	add_feature_argument_type_in_input_creator (a_feature: FEATURE_I; a_context: TYPE_A; a_input_creator: AUT_RANDOM_INPUT_CREATOR) is
+	add_feature_argument_type_in_input_creator (a_feature: FEATURE_I; a_context: TYPE_A; a_input_creator: AUT_RANDOM_INPUT_CREATOR)
 			-- Add types of arguments in `a_feature' if any into `a_input_creator'.
 			-- Types are evaluated in context `a_context'.
 		require
@@ -172,7 +172,7 @@ feature{NONE} -- Implementation
 			l_arg_types.do_all (agent a_input_creator.add_type)
 		end
 
-	feature_argument_types (a_feature: FEATURE_I; a_context: TYPE_A): LIST [TYPE_A] is
+	feature_argument_types (a_feature: FEATURE_I; a_context: TYPE_A): LIST [TYPE_A]
 			-- List of types for arguments in `a_feature'. Types are evaluated in context `a_context'.
 			-- If `a_feature' doesn't have any argument, return an empty list.
 		require
@@ -199,4 +199,35 @@ feature{NONE} -- Implementation
 			good_result: not Result.has (Void)
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

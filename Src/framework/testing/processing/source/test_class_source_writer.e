@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that write class text to file.
 	]"
@@ -11,25 +11,25 @@ deferred class
 
 feature -- Access
 
-	class_name: !STRING
+	class_name: attached STRING
 			-- Name of class
 		deferred
 		end
 
-	ancestor_names: !ARRAY [!STRING]
+	ancestor_names: attached ARRAY [attached STRING]
 			-- Name of ancestor classes
 		do
 			Result := << >>
 		end
 
-	root_feature_name: !STRING
+	root_feature_name: attached STRING
 			-- Name for root feature
 		deferred
 		end
 
 feature {NONE} -- Access
 
-	stream: ?TEST_INDENTING_SOURCE_WRITER
+	stream: detachable TEST_INDENTING_SOURCE_WRITER
 
 feature -- Status report
 
@@ -44,12 +44,30 @@ feature -- Status report
 
 feature {NONE} -- Output
 
-	put_indexing is
+	put_indexing_keyword
+			-- Put "indexing" or "note" keyword depending on configuration.
+		require
+			stream_valid: is_writing
+		local
+			l_universe: UNIVERSE_I
+			l_target: CONF_TARGET
+		do
+			l_target := (create {SHARED_EIFFEL_PROJECT}).eiffel_universe.target
+			if l_target /= Void and then l_target.options.syntax.index = {CONF_OPTION}.syntax_index_obsolete then
+					-- Use old syntax
+				stream.put_line ({EIFFEL_KEYWORD_CONSTANTS}.indexing_keyword)
+			else
+					-- Use new syntax
+				stream.put_line ({EIFFEL_KEYWORD_CONSTANTS}.note_keyword)
+			end
+		end
+
+	put_indexing
 			-- Append indexing clause.
 		require
 			stream_valid: is_writing
 		do
-			stream.put_line ("indexing%N")
+			put_indexing_keyword
 			stream.indent
 			stream.put_line ("description: %"Testing tool internal root class%"")
 			stream.put_line ("author: %"Testing tool%"")
@@ -57,13 +75,13 @@ feature {NONE} -- Output
 			stream.put_line ("")
 		end
 
-	put_class_header is
+	put_class_header
 			-- Append cdd interpreter class header.
 		require
 			stream_valid: is_writing
 		local
-			l_ancs: ARRAY [!STRING]
-			l_root: ?STRING
+			l_ancs: ARRAY [attached STRING]
+			l_root: detachable STRING
 			i: INTEGER
 		do
 			stream.put_line ("class")
@@ -103,7 +121,7 @@ feature {NONE} -- Output
 			end
 		end
 
-	put_class_footer is
+	put_class_footer
 			-- Append class footer
 		require
 			stream_valid: is_writing
@@ -112,4 +130,35 @@ feature {NONE} -- Output
 			stream.put_line ("")
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

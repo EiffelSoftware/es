@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"A sequence of actions to be performed on `call'"
 	legal: "See notice at end of class."
@@ -36,7 +36,7 @@ indexing
 		"$Revision$"
 
 class
-	ACTION_SEQUENCE [EVENT_DATA -> TUPLE create default_create end]
+	ACTION_SEQUENCE [EVENT_DATA -> detachable TUPLE create default_create end]
 
 inherit
 	ARRAYED_LIST [PROCEDURE [ANY, EVENT_DATA]]
@@ -61,7 +61,7 @@ create {ACTION_SEQUENCE}
 
 feature {NONE} -- Initialization
 
-	default_create is
+	default_create
 			-- Begin in `Normal_state'.
 		do
 			arrayed_list_make (0)
@@ -70,7 +70,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	call (event_data: ?EVENT_DATA) is
+	call (event_data: detachable EVENT_DATA)
 			-- Call each procedure in order unless `is_blocked'.
 			-- If `is_paused' delay execution until `resume'.
 			-- Stop at current point in list on `abort'.
@@ -139,10 +139,10 @@ feature -- Basic operations
 			end
 		ensure
 			is_aborted_stack_unchanged:
-				old is_aborted_stack.is_equal (is_aborted_stack)
+				(old is_aborted_stack) ~ is_aborted_stack
 		end
 
-	extend_kamikaze (an_item: like item) is
+	extend_kamikaze (an_item: like item)
 			-- Extend `an_item' and remove it again after it is called.
 		do
 			extend (an_item)
@@ -151,7 +151,7 @@ feature -- Basic operations
 
 feature -- Access
 
-	name: ?STRING is
+	name: detachable STRING
 			-- Textual description.
 		local
 			i: like name_internal
@@ -161,15 +161,15 @@ feature -- Access
 				Result := i.twin
 			end
 		ensure
-			equal_to_name_internal: equal (Result, name_internal)
+			equal_to_name_internal: Result ~ name_internal
 		end
 
-	dummy_event_data: EVENT_DATA is
+	dummy_event_data: EVENT_DATA
 			-- Attribute of the generic type.
 			-- Useful for introspection and use in like statements.
 		obsolete "Not implemented. To be removed"
 		local
-			r: ?EVENT_DATA
+			r: detachable EVENT_DATA
 		do
 			r := dummy_event_data_internal
 			if r = Void then
@@ -179,7 +179,7 @@ feature -- Access
 			Result := r
 		end
 
-	event_data_names: ?ARRAY [STRING] is
+	event_data_names: detachable ARRAY [STRING]
 			-- Textual description of each event datum.
 		obsolete "Not implemented. To be removed"
 		local
@@ -196,7 +196,7 @@ feature -- Access
 
 feature -- Status setting
 
-	abort is
+	abort
 			-- Abort the current `call'.
 			-- (The current item.call will be completed.)
 		require
@@ -207,7 +207,7 @@ feature -- Status setting
 			is_aborted_set: is_aborted_stack.item
 		end
 
-	block is
+	block
 			-- Ignore subsequent `call's.
 		do
 			state := Blocked_state
@@ -215,7 +215,7 @@ feature -- Status setting
 			blocked_state: state = Blocked_state
 		end
 
-	pause is
+	pause
 			-- Buffer subsequent `call's for later execution.
 			-- If `is_blocked' calls will simply be ignored.
 		do
@@ -224,7 +224,7 @@ feature -- Status setting
 			paused_state: state = Paused_state
 		end
 
-	resume is
+	resume
 			-- Used after `block' or `pause' to resume normal `call'
 			-- execution.  Executes any buffered `call's.
 		local
@@ -243,7 +243,7 @@ feature -- Status setting
 			normal_state: state = Normal_state
 		end
 
-	flush is
+	flush
 			-- Discard any buffered `call's.
 		do
 			call_buffer.wipe_out
@@ -256,11 +256,11 @@ feature -- Status report
 	state: INTEGER
 			-- One of `Normal_state' `Paused_state' or `Blocked_state'
 
-	Normal_state: INTEGER is 1
-	Paused_state: INTEGER is 2
-	Blocked_state: INTEGER is 3
+	Normal_state: INTEGER = 1
+	Paused_state: INTEGER = 2
+	Blocked_state: INTEGER = 3
 
-	call_is_underway: BOOLEAN is
+	call_is_underway: BOOLEAN
 			-- Is `call' currently being executed?
 		do
 			Result := not is_aborted_stack.is_empty
@@ -270,7 +270,7 @@ feature -- Status report
 
 feature -- Removal
 
-	prune (v: like item) is
+	prune (v: like item)
 			-- Remove first occurrence of `v', if any,
 			-- after cursor position.
 			-- Move cursor to right neighbor.
@@ -296,7 +296,7 @@ feature -- Removal
 			end
 		end
 
-	prune_when_called (an_action: like item) is
+	prune_when_called (an_action: like item)
 			-- Remove `an_action' after the next time it is called.
 		require
 			has (an_action)
@@ -306,7 +306,7 @@ feature -- Removal
 
 feature -- Element status
 
-	has_kamikaze_action (an_action: like item): BOOLEAN is
+	has_kamikaze_action (an_action: like item): BOOLEAN
 			-- Return True is `an_action' is found and will be pruned when called.
 		require
 			has (an_action)
@@ -344,7 +344,7 @@ feature -- Event handling
 
 feature {NONE} -- Implementation, ARRAYED_LIST
 
-	set_count (new_count: INTEGER) is
+	set_count (new_count: INTEGER)
 			-- Set `count' to `new_count'
 		do
 			if empty_actions_internal /= Void and then count /= 0 and new_count = 0 then
@@ -361,7 +361,7 @@ feature {NONE} -- Implementation, ARRAYED_LIST
 
 feature {NONE} -- Implementation
 
-	call_action_list (actions: ARRAYED_LIST [PROCEDURE [ANY, TUPLE]]) is
+	call_action_list (actions: ARRAYED_LIST [PROCEDURE [ANY, TUPLE]])
 			-- Call each action in `actions'.
 		require
 			actions_not_void: actions /= Void
@@ -398,10 +398,10 @@ feature {NONE} -- Implementation
 			Result := r
 		end
 
-	is_aborted_stack_internal: ?like is_aborted_stack
+	is_aborted_stack_internal: detachable like is_aborted_stack
 		-- Internal storage for `is_aborted_stack'.
 
-	call_buffer: LINKED_QUEUE [?EVENT_DATA]
+	call_buffer: LINKED_QUEUE [detachable EVENT_DATA]
 			-- Holds calls made while `is_paused'
 			-- to be executed on `resume'.
 		local
@@ -415,22 +415,22 @@ feature {NONE} -- Implementation
 			Result := r
 		end
 
-	call_buffer_internal: ?like call_buffer
+	call_buffer_internal: detachable like call_buffer
 			-- Internal storage for `call_buffer'.
 
-	name_internal: ?STRING
+	name_internal: detachable STRING
 			-- See name.
 
-	event_data_names_internal: ?ARRAY [STRING]
+	event_data_names_internal: detachable ARRAY [STRING]
 			-- See event_data_names.
 
-	dummy_event_data_internal: ?EVENT_DATA
+	dummy_event_data_internal: detachable EVENT_DATA
 			-- See dummy_event_data.
 
 	kamikazes: ARRAYED_LIST [like item]
 			-- Used by `prune_when_called'.
 		local
-			r: ?ARRAYED_LIST [like item]
+			r: detachable ARRAYED_LIST [like item]
 		do
 			r := kamikazes_internal
 			if r = Void then
@@ -440,18 +440,18 @@ feature {NONE} -- Implementation
 			Result := r
 		end
 
-	kamikazes_internal: ?like kamikazes
+	kamikazes_internal: detachable like kamikazes
 			-- Internal storage for `kamikazes'.
 
-	not_empty_actions_internal: ?like not_empty_actions
+	not_empty_actions_internal: detachable like not_empty_actions
 			-- Internal storage for `not_empty_actions'.
 
-	empty_actions_internal: ?like empty_actions
+	empty_actions_internal: detachable like empty_actions
 			-- Internal storage for `empty_actions'.
 
 feature -- Obsolete
 
-	make is
+	make
 		obsolete
 			"use default_create"
 		do
@@ -459,7 +459,7 @@ feature -- Obsolete
 		end
 
 	set_source_connection_agent
-				(a_source_connection_agent: PROCEDURE [ANY, TUPLE]) is
+				(a_source_connection_agent: PROCEDURE [ANY, TUPLE])
 			-- Set `a_source_connection_agent' that will connect sequence to an
 			-- actual event source. The agent will be called when the first action is
 			-- added to the sequence. If there are already actions in the
@@ -482,9 +482,9 @@ invariant
 	not_empty_actions_not_void: not_empty_actions /= Void
 	empty_actions_not_void: empty_actions /= Void
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software

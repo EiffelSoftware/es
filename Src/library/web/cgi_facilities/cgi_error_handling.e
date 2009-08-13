@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Error Handling"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7,7 +7,7 @@ indexing
 
 class
 	CGI_ERROR_HANDLING
-	
+
 inherit
 	CGI_IN_AND_OUT
 
@@ -18,20 +18,25 @@ inherit
 
 feature -- Basic Operations
 
-	handle_exception is
+	handle_exception
 			-- General exception hanlding.
 		local
-			msg: STRING
+			msg: detachable STRING
+			l_trace: detachable STRING
 		do
-			if raised_error /= Void then
-				msg := raised_error
-			else
+			msg := raised_error
+			if msg = Void then
 				msg := ""
 			end
-			response_header.send_trace (msg + exception_trace)
+			l_trace := exception_trace
+			if l_trace /= Void then
+				response_header.send_trace (msg + l_trace)
+			else
+				response_header.send_trace (msg)
+			end
 		end
 
-	raise_error(msg: STRING) is
+	raise_error(msg: STRING)
 			-- Raise an error.
 		require
 			message_exists: msg /= Void
@@ -44,10 +49,10 @@ feature -- Basic Operations
 
 feature {CGI_ERROR_HANDLING} -- Access
 
-	raised_error: STRING;
+	raised_error: detachable STRING;
 			-- Error explicitely raised by developer code.
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

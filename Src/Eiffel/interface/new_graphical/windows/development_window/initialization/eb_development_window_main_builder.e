@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Main Builder for EB_DEVELOPMENT_WINDOW.
 					Build all tools and formatters.
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Clean up
 
-	internal_recycle is
+	internal_recycle
 			-- To be called when the button has became useless.
 		do
 			if develop_window.docking_manager /= Void then
@@ -32,7 +32,7 @@ feature {NONE} -- Clean up
 			Precursor {EB_DEVELOPMENT_WINDOW_BUILDER}
 		end
 
-	internal_detach_entities is
+	internal_detach_entities
 			-- Detaches objects from their container
 		do
 
@@ -41,7 +41,7 @@ feature {NONE} -- Clean up
 
 feature -- Command
 
-	init_size_and_position is
+	init_size_and_position
 			-- Initialize window size.
 		local
 			l_screen: EB_STUDIO_SCREEN
@@ -56,7 +56,9 @@ feature -- Command
 			if(create {SHARED_WORKBENCH}).workbench.system_defined then
 				l_data ?= develop_window.project_session_data.value (develop_window.development_window_data.development_window_data_id)
 			end
-
+			if l_data = Void then
+				l_data ?= develop_window.session_data.value (develop_window.development_window_data.development_window_data_id)
+			end
 			if l_data = Void then
 				l_data := develop_window.development_window_data
 			end
@@ -82,7 +84,7 @@ feature -- Command
 			develop_window.window.set_position (l_x, l_y)
 		end
 
-	safe_restore is
+	safe_restore
 			-- Ensure that when restoring a window it appears on screen.
 		local
 			l_screen: EB_STUDIO_SCREEN
@@ -107,7 +109,7 @@ feature -- Command
 			end
 		end
 
-	init_commands is
+	init_commands
 			-- Initialize commands.
 		local
 			l_accel: EV_ACCELERATOR
@@ -139,14 +141,13 @@ feature -- Command
 			l_toggle_stone_cmd: EB_UNIFY_STONE_CMD
 			l_send_stone_to_context_cmd: EB_STANDARD_CMD
 
-			l_show_tool_commands: HASH_TABLE [EB_SHOW_TOOL_COMMAND, EB_TOOL]
+--			l_show_tool_commands: HASH_TABLE [EB_SHOW_TOOL_COMMAND, EB_TOOL]
 			l_show_toolbar_commands: HASH_TABLE [EB_SHOW_TOOLBAR_COMMAND, SD_TOOL_BAR_CONTENT]
 			l_editor_commands: ARRAYED_LIST [EB_GRAPHICAL_COMMAND]
 			l_simple_shortcut_commands: ARRAYED_LIST [EB_SIMPLE_SHORTCUT_COMMAND]
 
 			l_reset_command: EB_RESET_LAYOUT_COMMAND
 			l_save_layout_as_command: EB_SAVE_LAYOUT_AS_COMMAND
-			l_open_layout_command: EB_OPEN_LAYOUT_COMMAND
 			l_shortcut: SHORTCUT_PREFERENCE
 			l_lock_tool_bar_command: EB_LOCK_TOOL_BAR_COMMAND
 			l_lock_docking_command: EB_LOCK_DOCKING_COMMAND
@@ -162,68 +163,75 @@ feature -- Command
 			l_editor_font_zoom_reset_numpad_command: ES_EDITOR_FONT_ZOOM_RESET_NUMPAD_COMMAND
 
 			l_edit_contracts_command: ES_EDIT_CONTRACTS_COMMAND
+			l_find_class_or_cluster_command: ES_FIND_CLASS_OR_CLUSTER_CMD
+
+			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
+
 			l_proof_command: EB_PROOF_COMMAND
+
+
 		do
 				-- Directly call a un-redefine init_commands in EB_DEVELOPMENT_WINDOW
 				-- Non-docking Eiffel Studio was call Precursor
 			develop_window.init_commands
+			l_dev_commands := develop_window.commands
 
 			create l_toolbarable_commands.make (15)
-			develop_window.commands.set_toolbarable_commands (l_toolbarable_commands)
+			l_dev_commands.set_toolbarable_commands (l_toolbarable_commands)
 
 			create l_simple_shortcut_commands.make (10)
-			develop_window.commands.set_simple_shortcut_commands (l_simple_shortcut_commands)
+			l_dev_commands.set_simple_shortcut_commands (l_simple_shortcut_commands)
 
 				-- Open, save, ...
 			create l_new_tab_cmd.make (develop_window)
 			auto_recycle (l_new_tab_cmd)
-			develop_window.commands.set_new_tab_cmd (l_new_tab_cmd)
-			develop_window.commands.toolbarable_commands.extend (develop_window.commands.new_tab_cmd)
+			l_dev_commands.set_new_tab_cmd (l_new_tab_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_dev_commands.new_tab_cmd)
 
 			create l_save_cmd.make (develop_window)
 			auto_recycle (l_save_cmd)
 			develop_window.set_save_cmd (l_save_cmd)
-			develop_window.commands.toolbarable_commands.extend (develop_window.save_cmd)
+			l_dev_commands.toolbarable_commands.extend (develop_window.save_cmd)
 
 			create l_save_as_cmd.make (develop_window)
 			auto_recycle (l_save_as_cmd)
-			develop_window.commands.set_save_as_cmd (l_save_as_cmd)
+			l_dev_commands.set_save_as_cmd (l_save_as_cmd)
 			if develop_window.editors_manager = Void or else
 				develop_window.editors_manager.current_editor = Void or else
 				develop_window.editors_manager.current_editor.is_empty
 			then
-				develop_window.commands.save_as_cmd.disable_sensitive
+				l_dev_commands.save_as_cmd.disable_sensitive
 			else
-				develop_window.commands.save_as_cmd.enable_sensitive
+				l_dev_commands.save_as_cmd.enable_sensitive
 			end
 
 			create l_save_all_cmd.make (develop_window)
 			auto_recycle (l_save_all_cmd)
 			develop_window.set_save_all_cmd (l_save_all_cmd)
-			develop_window.commands.toolbarable_commands.extend (develop_window.save_all_cmd)
+			l_dev_commands.toolbarable_commands.extend (develop_window.save_all_cmd)
 
 			create l_shell_cmd.make (develop_window)
 			auto_recycle (l_shell_cmd)
-			develop_window.commands.set_shell_cmd (l_shell_cmd)
-			develop_window.commands.toolbarable_commands.extend (develop_window.commands.shell_cmd)
+			l_dev_commands.set_shell_cmd (l_shell_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_dev_commands.shell_cmd)
 
 			create l_print_cmd.make (develop_window)
 			auto_recycle (l_print_cmd)
-			develop_window.commands.set_print_cmd (l_print_cmd)
+			l_dev_commands.set_print_cmd (l_print_cmd)
 			if develop_window.is_empty then
-				develop_window.commands.print_cmd.disable_sensitive
+				l_dev_commands.print_cmd.disable_sensitive
 			else
-				develop_window.commands.print_cmd.enable_sensitive
+				l_dev_commands.print_cmd.enable_sensitive
 			end
-			develop_window.commands.toolbarable_commands.extend (develop_window.commands.print_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_dev_commands.print_cmd)
 
 				-- Compilation
 			create l_c_workbench_compilation_cmd.make_workbench (develop_window)
 			auto_recycle (l_c_workbench_compilation_cmd)
-			develop_window.commands.set_c_workbench_compilation_cmd (l_c_workbench_compilation_cmd)
+			l_dev_commands.set_c_workbench_compilation_cmd (l_c_workbench_compilation_cmd)
 			create l_c_finalized_compilation_cmd.make_finalized (develop_window)
 			auto_recycle (l_c_finalized_compilation_cmd)
-			develop_window.commands.set_c_finalized_compilation_cmd (l_c_finalized_compilation_cmd)
+			l_dev_commands.set_c_finalized_compilation_cmd (l_c_finalized_compilation_cmd)
 			if eiffel_layout.has_dll_generation then
 				create l_show_dynamic_lib_tool.make
 				auto_recycle (l_show_dynamic_lib_tool)
@@ -234,73 +242,73 @@ feature -- Command
 			if eiffel_layout.has_profiler then
 				create l_show_profiler
 				auto_recycle (l_show_profiler)
-				develop_window.commands.set_show_profiler (l_show_profiler)
+				l_dev_commands.set_show_profiler (l_show_profiler)
 			end
 
 				-- Undo/redo, cut, copy, paste.
 			create l_undo_cmd.make (develop_window)
 			auto_recycle (l_undo_cmd)
-			develop_window.commands.set_undo_cmd (l_undo_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_undo_cmd)
+			l_dev_commands.set_undo_cmd (l_undo_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_undo_cmd)
 
 			create l_redo_cmd.make (develop_window)
 			auto_recycle (l_redo_cmd)
-			develop_window.commands.set_redo_cmd (l_redo_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_redo_cmd)
+			l_dev_commands.set_redo_cmd (l_redo_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_redo_cmd)
 
 			create l_editor_cut_cmd.make (develop_window)
 			auto_recycle (l_editor_cut_cmd)
-			develop_window.commands.set_editor_cut_cmd (l_editor_cut_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_editor_cut_cmd)
+			l_dev_commands.set_editor_cut_cmd (l_editor_cut_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_editor_cut_cmd)
 
 			create l_editor_copy_cmd.make (develop_window)
 			auto_recycle (l_editor_copy_cmd)
-			develop_window.commands.set_editor_copy_cmd (l_editor_copy_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_editor_copy_cmd)
+			l_dev_commands.set_editor_copy_cmd (l_editor_copy_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_editor_copy_cmd)
 
 			create l_editor_paste_cmd.make (develop_window)
 			auto_recycle (l_editor_paste_cmd)
-			develop_window.commands.set_editor_paste_cmd (l_editor_paste_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_editor_paste_cmd)
+			l_dev_commands.set_editor_paste_cmd (l_editor_paste_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_editor_paste_cmd)
 
 			create l_new_cluster_cmd.make (develop_window, False)
 			auto_recycle (l_new_cluster_cmd)
-			develop_window.commands.set_new_cluster_cmd (l_new_cluster_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_new_cluster_cmd)
+			l_dev_commands.set_new_cluster_cmd (l_new_cluster_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_new_cluster_cmd)
 
 			create l_new_library_cmd.make (develop_window)
 			auto_recycle (l_new_library_cmd)
-			develop_window.commands.set_new_library_cmd (l_new_library_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_new_library_cmd)
+			l_dev_commands.set_new_library_cmd (l_new_library_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_new_library_cmd)
 
 			create l_new_assembly_cmd.make (develop_window)
 			auto_recycle (l_new_assembly_cmd)
-			develop_window.commands.set_new_assembly_cmd (l_new_assembly_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_new_assembly_cmd)
+			l_dev_commands.set_new_assembly_cmd (l_new_assembly_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_new_assembly_cmd)
 
 			create l_new_class_cmd.make (develop_window)
 			auto_recycle (l_new_class_cmd)
-			develop_window.commands.set_new_class_cmd (l_new_class_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_new_class_cmd)
+			l_dev_commands.set_new_class_cmd (l_new_class_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_new_class_cmd)
 
 			create l_delete_class_cluster_cmd.make (develop_window)
 			auto_recycle (l_delete_class_cluster_cmd)
-			develop_window.commands.set_delete_class_cluster_cmd (l_delete_class_cluster_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_delete_class_cluster_cmd)
+			l_dev_commands.set_delete_class_cluster_cmd (l_delete_class_cluster_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_delete_class_cluster_cmd)
 
 			create l_new_feature_cmd.make (develop_window)
 			auto_recycle (l_new_feature_cmd)
-			develop_window.commands.set_new_feature_cmd (l_new_feature_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_new_feature_cmd)
+			l_dev_commands.set_new_feature_cmd (l_new_feature_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_new_feature_cmd)
 
 			create l_toggle_stone_cmd.make (develop_window)
 			auto_recycle (l_toggle_stone_cmd)
-			develop_window.commands.set_toggle_stone_cmd (l_toggle_stone_cmd)
-			develop_window.commands.toolbarable_commands.extend (l_toggle_stone_cmd)
+			l_dev_commands.set_toggle_stone_cmd (l_toggle_stone_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_toggle_stone_cmd)
 
 			create l_send_stone_to_context_cmd.make
 			auto_recycle (l_send_stone_to_context_cmd)
-			develop_window.commands.set_send_stone_to_context_cmd (l_send_stone_to_context_cmd)
+			l_dev_commands.set_send_stone_to_context_cmd (l_send_stone_to_context_cmd)
 			l_send_stone_to_context_cmd.set_pixmap (develop_window.pixmaps.icon_pixmaps.context_sync_icon)
 			l_send_stone_to_context_cmd.set_pixel_buffer (develop_window.pixmaps.icon_pixmaps.context_sync_icon_buffer)
 			l_send_stone_to_context_cmd.set_tooltip (develop_window.Interface_names.e_send_stone_to_context)
@@ -314,70 +322,80 @@ feature -- Command
 			l_send_stone_to_context_cmd.set_accelerator (l_accel)
 			l_send_stone_to_context_cmd.set_referred_shortcut (l_shortcut)
 			l_send_stone_to_context_cmd.disable_sensitive
-			develop_window.commands.toolbarable_commands.extend (l_send_stone_to_context_cmd)
+			l_dev_commands.toolbarable_commands.extend (l_send_stone_to_context_cmd)
 
-			develop_window.commands.toolbarable_commands.extend (develop_window.window_manager.minimize_all_cmd)
+			l_dev_commands.toolbarable_commands.extend (develop_window.window_manager.minimize_all_cmd)
 			develop_window.window_manager.minimize_all_cmd.enable_sensitive
-			develop_window.commands.toolbarable_commands.extend (develop_window.window_manager.raise_all_cmd)
+			l_dev_commands.toolbarable_commands.extend (develop_window.window_manager.raise_all_cmd)
 			develop_window.window_manager.raise_all_cmd.enable_sensitive
 
-			develop_window.commands.toolbarable_commands.extend (develop_window.New_development_window_cmd)
+			l_dev_commands.toolbarable_commands.extend (develop_window.New_development_window_cmd)
 				-- Show tool/toolbar commands (will be filled when tools will
 				-- be created)
 
-			create l_show_tool_commands.make (7)
-			develop_window.commands.set_show_tool_commands (l_show_tool_commands)
+--			create l_show_tool_commands.make (7)
+--			l_dev_commands.set_show_tool_commands (l_show_tool_commands)
 			create l_show_toolbar_commands.make (3)
-			develop_window.commands.set_show_toolbar_commands (l_show_toolbar_commands)
+			l_dev_commands.set_show_toolbar_commands (l_show_toolbar_commands)
 			create l_editor_commands.make (10)
-			develop_window.commands.set_editor_commands (l_editor_commands)
-			develop_window.commands.set_show_shell_tool_commands (create {HASH_TABLE [ES_SHOW_TOOL_COMMAND, ES_TOOL [EB_TOOL]]}.make (1))
+			l_dev_commands.set_editor_commands (l_editor_commands)
+			l_dev_commands.set_show_shell_tool_commands (create {HASH_TABLE [ES_SHOW_TOOL_COMMAND, ES_TOOL [EB_TOOL]]}.make (1))
 
-			develop_window.commands.new_feature_cmd.disable_sensitive
+			l_dev_commands.new_feature_cmd.disable_sensitive
 
 			create l_reset_command.make (develop_window)
-			develop_window.commands.set_reset_layout_command (l_reset_command)
+			l_dev_commands.set_reset_layout_command (l_reset_command)
 
 			create l_save_layout_as_command.make (develop_window)
-			develop_window.commands.set_save_layout_as_command (l_save_layout_as_command)
-
-			create l_open_layout_command.make (develop_window)
-			develop_window.commands.set_open_layout_command (l_open_layout_command)
+			l_dev_commands.set_save_layout_as_command (l_save_layout_as_command)
 
 			create l_lock_tool_bar_command.make (develop_window)
-			develop_window.commands.set_lock_tool_bar_command (l_lock_tool_bar_command)
+			l_dev_commands.set_lock_tool_bar_command (l_lock_tool_bar_command)
 
 			create l_lock_docking_command.make (develop_window)
-			develop_window.commands.set_lock_docking_command (l_lock_docking_command)
+			l_dev_commands.set_lock_docking_command (l_lock_docking_command)
 
 			create l_lock_editor_docking_command.make (develop_window)
-			develop_window.commands.set_lock_editor_docking_command (l_lock_editor_docking_command)
+			l_dev_commands.set_lock_editor_docking_command (l_lock_editor_docking_command)
 
 			create l_minimize_editors_command.make (develop_window)
-			develop_window.commands.set_minimize_editors_command (l_minimize_editors_command)
+			l_dev_commands.set_minimize_editors_command (l_minimize_editors_command)
 
 			create l_restore_editors_command.make (develop_window)
-			develop_window.commands.set_restore_editors_command (l_restore_editors_command)
+			l_dev_commands.set_restore_editors_command (l_restore_editors_command)
 
 			create l_editor_font_zoom_in_command.make (develop_window)
-			develop_window.commands.set_editor_font_zoom_in_command (l_editor_font_zoom_in_command)
+			l_dev_commands.set_editor_font_zoom_in_command (l_editor_font_zoom_in_command)
+			l_dev_commands.editor_commands.extend (l_editor_font_zoom_in_command)
+
 			create l_editor_font_zoom_in_numpad_command.make (develop_window)
-			develop_window.commands.set_editor_font_zoom_in_numpad_command (l_editor_font_zoom_in_numpad_command)
+			l_dev_commands.set_editor_font_zoom_in_numpad_command (l_editor_font_zoom_in_numpad_command)
+			l_dev_commands.editor_commands.extend (l_editor_font_zoom_in_numpad_command)
+
 			create l_editor_font_zoom_out_command.make (develop_window)
-			develop_window.commands.set_editor_font_zoom_out_command (l_editor_font_zoom_out_command)
+			l_dev_commands.set_editor_font_zoom_out_command (l_editor_font_zoom_out_command)
+			l_dev_commands.editor_commands.extend (l_editor_font_zoom_out_command)
+
 			create l_editor_font_zoom_out_numpad_command.make (develop_window)
-			develop_window.commands.set_editor_font_zoom_out_numpad_command (l_editor_font_zoom_out_numpad_command)
+			l_dev_commands.set_editor_font_zoom_out_numpad_command (l_editor_font_zoom_out_numpad_command)
+			l_dev_commands.editor_commands.extend (l_editor_font_zoom_out_numpad_command)
 
 			create l_editor_font_zoom_reset_command.make (develop_window)
-			develop_window.commands.set_editor_font_zoom_reset_command (l_editor_font_zoom_reset_command)
-			create l_editor_font_zoom_reset_numpad_command.make (develop_window)
-			develop_window.commands.set_editor_font_zoom_reset_numpad_command (l_editor_font_zoom_reset_numpad_command)
+			l_dev_commands.set_editor_font_zoom_reset_command (l_editor_font_zoom_reset_command)
+			l_dev_commands.editor_commands.extend (l_editor_font_zoom_reset_command)
 
-			develop_window.commands.set_customized_formatter_command (create {EB_SETUP_CUSTOMIZED_FORMATTER_COMMAND})
-			develop_window.commands.set_customized_tool_command (create {EB_SETUP_CUSTOMIZED_TOOL_COMMAND})
+			create l_editor_font_zoom_reset_numpad_command.make (develop_window)
+			l_dev_commands.set_editor_font_zoom_reset_numpad_command (l_editor_font_zoom_reset_numpad_command)
+			l_dev_commands.editor_commands.extend (l_editor_font_zoom_reset_numpad_command)
+
+			l_dev_commands.set_customized_formatter_command (create {EB_SETUP_CUSTOMIZED_FORMATTER_COMMAND})
+			l_dev_commands.set_customized_tool_command (create {EB_SETUP_CUSTOMIZED_TOOL_COMMAND})
 
 			create l_edit_contracts_command.make (develop_window.shell_tools.tool ({ES_CONTRACT_TOOL}))
-			develop_window.commands.set_edit_contracts_command (l_edit_contracts_command)
+			l_dev_commands.set_edit_contracts_command (l_edit_contracts_command)
+
+			create l_find_class_or_cluster_command.make (develop_window)
+			l_dev_commands.set_find_class_or_cluster_command (l_find_class_or_cluster_command)
 
 				-- EVE Proofs command
 			create l_proof_command.make
@@ -405,6 +423,8 @@ feature -- Command
 			l_maximize_editor_area_command: EB_MAXIMIZE_EDITOR_AREA_COMMAND
 			l_minimize_editor_area_command: EB_MINIMIZE_EDITOR_AREA_COMMAND
 			l_restore_editor_area_command: EB_RESTORE_EDITOR_AREA_COMMAND
+
+			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
 		do
 				-- Error navigation
 			l_ear_commander ?= develop_window.shell_tools.tool ({ES_ERROR_LIST_TOOL})
@@ -412,34 +432,35 @@ feature -- Command
 				l_ear_commander_attached: l_ear_commander /= Void
 			end
 			if l_ear_commander /= Void then
+				l_dev_commands := develop_window.commands
 				create l_go_to_previous_error_cmd.make (l_ear_commander)
-				develop_window.commands.set_go_to_previous_error_command (l_go_to_previous_error_cmd)
-				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_previous_error_command)
+				l_dev_commands.set_go_to_previous_error_command (l_go_to_previous_error_cmd)
+				l_dev_commands.toolbarable_commands.extend (l_dev_commands.go_to_previous_error_command)
 
 				create l_go_to_next_error_cmd.make (l_ear_commander)
-				develop_window.commands.set_go_to_next_error_command (l_go_to_next_error_cmd)
-				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_next_error_command)
+				l_dev_commands.set_go_to_next_error_command (l_go_to_next_error_cmd)
+				l_dev_commands.toolbarable_commands.extend (l_dev_commands.go_to_next_error_command)
 
 				create l_go_to_previous_warning_cmd.make (l_ear_commander)
-				develop_window.commands.set_go_to_previous_warning_command (l_go_to_previous_warning_cmd)
-				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_previous_warning_command)
+				l_dev_commands.set_go_to_previous_warning_command (l_go_to_previous_warning_cmd)
+				l_dev_commands.toolbarable_commands.extend (l_dev_commands.go_to_previous_warning_command)
 
 				create l_go_to_next_warning_cmd.make (l_ear_commander)
-				develop_window.commands.set_go_to_next_warning_command (l_go_to_next_warning_cmd)
-				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_next_warning_command)
+				l_dev_commands.set_go_to_next_warning_command (l_go_to_next_warning_cmd)
+				l_dev_commands.toolbarable_commands.extend (l_dev_commands.go_to_next_warning_command)
 
 				create l_maximize_editor_area_command.make (develop_window)
-				develop_window.commands.set_maximize_editor_area_command (l_maximize_editor_area_command)
+				l_dev_commands.set_maximize_editor_area_command (l_maximize_editor_area_command)
 
 				create l_minimize_editor_area_command.make (develop_window)
-				develop_window.commands.set_minimize_editor_area_command (l_minimize_editor_area_command)
+				l_dev_commands.set_minimize_editor_area_command (l_minimize_editor_area_command)
 
 				create l_restore_editor_area_command.make (develop_window)
-				develop_window.commands.set_restore_editor_area_command (l_restore_editor_area_command)
+				l_dev_commands.set_restore_editor_area_command (l_restore_editor_area_command)
 			end
 		end
 
-	setup_history_back_and_forth_commands is
+	setup_history_back_and_forth_commands
 			-- Setup accelerators for back and forth commands.
 		local
 			l_shortcut: SHORTCUT_PREFERENCE
@@ -461,13 +482,13 @@ feature -- Command
 			l_cmd.set_accelerator (l_accel)
 		end
 
-	set_up_accelerators is
+	set_up_accelerators
 			-- All proper configurable shortcut is related to the window.
 		do
 			develop_window.refresh_all_commands
 		end
 
-	build_formatters is
+	build_formatters
 			-- Build all formatters used.
 		local
 			l_form: EB_CLASS_TEXT_FORMATTER
@@ -552,7 +573,7 @@ feature -- Command
 			l_managed_main_formatters.extend (l_form)
 		end
 
-	end_build_formatters is
+	end_build_formatters
 			-- Finish initialization of formatters (associate them with editor
 			-- and select a formatter).
 		local
@@ -644,7 +665,7 @@ feature -- Command
 			develop_window.managed_dependency_formatters.i_th (l_f_ind).enable_select
 		end
 
-	build_tools is
+	build_tools
 			-- Build all tools that can take place in this window and attach them with docking manager.
 		local
 			l_undo_redo_observer: UNDO_REDO_OBSERVER
@@ -653,9 +674,10 @@ feature -- Command
 			l_editors_manager: EB_EDITORS_MANAGER
 			l_names: EB_DOCKING_NAMES
 			l_sd_shared: SD_SHARED
-
+			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
 		do
 			develop_window.lock_update
+			l_dev_commands := develop_window.commands
 
 				-- Set interface names for docking library.
 			create l_sd_shared
@@ -671,29 +693,29 @@ feature -- Command
 				-- Build dynmaic tools
 			build_shell_tools
 
-				-- Build the features tool
-			build_customized_tools
+--				-- Build the features tool
+--			build_customized_tools
 
 			create l_editors_manager.make (develop_window)
 			develop_window.set_editors_manager (l_editors_manager)
 
 			l_editors_manager.add_edition_observer (develop_window.save_cmd)
-			l_editors_manager.add_edition_observer (develop_window.commands.save_as_cmd)
+			l_editors_manager.add_edition_observer (l_dev_commands.save_as_cmd)
 
 			l_editors_manager.add_edition_observer (develop_window.save_all_cmd)
 
- 			l_editors_manager.add_edition_observer (develop_window.commands.print_cmd)
+ 			l_editors_manager.add_edition_observer (l_dev_commands.print_cmd)
 			l_editors_manager.add_edition_observer (develop_window.agents)
 			l_editors_manager.add_edition_observer (develop_window.tools.search_tool)
 			l_editors_manager.add_cursor_observer (develop_window.agents)
 
-			l_undo_redo_observer ?= develop_window.commands.undo_cmd
+			l_undo_redo_observer ?= l_dev_commands.undo_cmd
 			check
 				l_undo_redo_observer /= Void
 			end
 			develop_window.editors_manager.editor_switched_actions.extend (agent (a_editor: EB_SMART_EDITOR; a_observer: UNDO_REDO_OBSERVER) do a_observer.on_changed end (?, l_undo_redo_observer))
 
-			l_undo_redo_observer ?= develop_window.commands.redo_cmd
+			l_undo_redo_observer ?= l_dev_commands.redo_cmd
 			check
 				l_undo_redo_observer /= Void
 			end
@@ -709,10 +731,10 @@ feature -- Command
 				--			develop_window.tools.editor_tool.widget.set_minimum_height (20)
 
 				-- Build the refactoring tools
-			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.pull_command)
-			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.rename_command)
-			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.undo_command)
-			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.redo_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.pull_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.rename_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.undo_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.redo_command)
 
 				-- Force build
 				-- FIXME: We force the tools to be built completely here in order to perform
@@ -730,7 +752,7 @@ feature -- Command
 			develop_window.unlock_update
 		end
 
-	prepare_editor_tool is
+	prepare_editor_tool
 			-- Build address toolbar and docking manager.
 		local
 			l_editors_widget_for_docking: EV_HORIZONTAL_BOX
@@ -744,7 +766,7 @@ feature -- Command
 			l_editors_widget.extend (l_editors_widget_for_docking)
 		end
 
-	build_vision_window is
+	build_vision_window
 			-- Build development window
 		local
 			l_window: EB_VISION_WINDOW
@@ -771,7 +793,7 @@ feature -- Command
 			init_tool_commands
 		end
 
-	build_interface is
+	build_interface
 			-- Build system widget.
 		local
 			l_cell: EV_CELL
@@ -835,68 +857,70 @@ feature -- Command
 			setup_editor_close_action
 		end
 
-	register_customized_tools (a_tools: LIST [EB_CUSTOMIZED_TOOL]) is
-			-- Register `a_tools' into `develop_window'.
-		require
-			a_tools_attached: a_tools /= Void
-			a_tools_valid: not a_tools.has (Void)
-		local
-			l_cursor: CURSOR
-			l_menu_builder: EB_DEVELOPMENT_WINDOW_MENU_BUILDER
-		do
-				-- Register `a_tools' into `develop_window'.
-			l_cursor := a_tools.cursor
-			from
-				a_tools.start
-			until
-				a_tools.after
-			loop
-				setup_tool (a_tools.item, a_tools.item.title_for_pre)
-				a_tools.item.force_reload
-				develop_window.tools.customized_tools.extend (a_tools.item)
-				a_tools.forth
-			end
-			a_tools.go_to (l_cursor)
+--	register_customized_tools (a_tools: LIST [EB_CUSTOMIZED_TOOL])
+--			-- Register `a_tools' into `develop_window'.
+--		require
+--			a_tools_attached: a_tools /= Void
+--			a_tools_valid: not a_tools.has (Void)
+--		local
+--			l_cursor: CURSOR
+--			l_menu_builder: EB_DEVELOPMENT_WINDOW_MENU_BUILDER
+--		do
+--				-- Register `a_tools' into `develop_window'.
+--			l_cursor := a_tools.cursor
+--			from
+--				a_tools.start
+--			until
+--				a_tools.after
+--			loop
+--				setup_tool (a_tools.item, a_tools.item.title_for_pre)
+--				a_tools.item.force_reload
+--				develop_window.tools.customized_tools.extend (a_tools.item)
+--				a_tools.forth
+--			end
+--			a_tools.go_to (l_cursor)
 
-				-- Setup menus.
-			create l_menu_builder.make (develop_window)
-			l_menu_builder.attach_customized_tools (a_tools)
-		end
+--				-- Setup menus.
+--			create l_menu_builder.make (develop_window)
+--			l_menu_builder.attach_customized_tools (a_tools)
+--		end
 
-	deregister_customized_tool (a_tool: EB_CUSTOMIZED_TOOL) is
-			-- Delete `a_tool' from `develop_window'.
-		require
-			a_tool_attached: a_tool /= Void
-		local
-			l_show_cmd: EB_SHOW_TOOL_COMMAND
-			l_cmds: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
-		do
-			if a_tool.content /= Void then
-				a_tool.content.close
-			end
+--	deregister_customized_tool (a_tool: EB_CUSTOMIZED_TOOL)
+--			-- Delete `a_tool' from `develop_window'.
+--		require
+--			a_tool_attached: a_tool /= Void
+--		local
+--			l_show_cmd: EB_SHOW_TOOL_COMMAND
+--			l_cmds: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
+--			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
+--		do
+--			l_dev_commands := develop_window.commands
+--			if a_tool.content /= Void then
+--				a_tool.content.close
+--			end
 
-				--Remove `a_tool' from `develop_window'.`customized_tools'.
-			develop_window.tools.customized_tools.start
-			develop_window.tools.customized_tools.search (a_tool)
-			if not develop_window.tools.customized_tools.exhausted then
-				develop_window.tools.customized_tools.remove
-			end
+--				--Remove `a_tool' from `develop_window'.`customized_tools'.
+--			develop_window.tools.customized_tools.start
+--			develop_window.tools.customized_tools.search (a_tool)
+--			if not develop_window.tools.customized_tools.exhausted then
+--				develop_window.tools.customized_tools.remove
+--			end
 
-			develop_window.menus.remove_item_from_tools_list_menu (a_tool)
+--			develop_window.menus.remove_item_from_tools_list_menu (a_tool)
 
-				-- Remove and recycle related command.
-			l_show_cmd := develop_window.commands.show_tool_commands.item (a_tool)
-			if l_show_cmd /= Void then
-				l_cmds := develop_window.commands.toolbarable_commands
-				develop_window.commands.show_tool_commands.remove (a_tool)
-				l_cmds.start
-				l_cmds.search (l_show_cmd)
-				if not l_cmds.exhausted then
-					l_cmds.remove
-				end
-				auto_recycle (a_tool)
-			end
-		end
+--				-- Remove and recycle related command.
+--			l_show_cmd := l_dev_commands.show_tool_commands.item (a_tool)
+--			if l_show_cmd /= Void then
+--				l_cmds := l_dev_commands.toolbarable_commands
+--				l_dev_commands.show_tool_commands.remove (a_tool)
+--				l_cmds.start
+--				l_cmds.search (l_show_cmd)
+--				if not l_cmds.exhausted then
+--					l_cmds.remove
+--				end
+--				auto_recycle (a_tool)
+--			end
+--		end
 
 feature {NONE} -- Access
 
@@ -910,13 +934,13 @@ feature {NONE} -- Access
 
 feature {NONE} -- Tool construction
 
-	build_shell_tools is
+	build_shell_tools
 			-- Builds all dynamically activated tools of {ES_SHELL_TOOLS}.
 		do
 			develop_window.shell_tools.all_tools.do_all (agent setup_shell_tool)
 		end
 
-	setup_shell_tool (a_tool: ES_TOOL [EB_TOOL]) is
+	setup_shell_tool (a_tool: ES_TOOL [EB_TOOL])
 			-- Sets up a dynamically created tool's shortcut, and commands.
 		require
 			a_tool_not_void: a_tool /= Void
@@ -924,11 +948,13 @@ feature {NONE} -- Tool construction
 			l_show_cmd: ES_SHOW_TOOL_COMMAND
 			l_accel: EV_ACCELERATOR
 			l_shortcut: SHORTCUT_PREFERENCE
+			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
 		do
+			l_dev_commands := develop_window.commands
 			create l_show_cmd.make (a_tool)
 			auto_recycle (l_show_cmd)
-			develop_window.commands.show_shell_tool_commands.force (l_show_cmd, a_tool)
-			develop_window.commands.toolbarable_commands.extend (l_show_cmd)
+			l_dev_commands.show_shell_tool_commands.force (l_show_cmd, a_tool)
+			l_dev_commands.toolbarable_commands.extend (l_show_cmd)
 
 			if a_tool.shortcut_preference_name /= Void and then a_tool.edition = 1 then
 					-- Create shortcuts for first edition only!
@@ -944,7 +970,7 @@ feature {NONE} -- Tool construction
 
 feature {NONE} -- Docking
 
-	frozen retrieve_docking_content (a_tool_id: STRING_GENERAL): SD_CONTENT is
+	frozen retrieve_docking_content (a_tool_id: STRING_GENERAL): SD_CONTENT
 			-- Performs dynamic creation of tools when restoration of the docked layout requires them.
 			--
 			-- `a_tool_id': The unique title for the persisted docking content.
@@ -988,11 +1014,11 @@ feature {NONE} -- Docking
 					if l_tool /= Void then
 						check
 								-- This check is just for the future, if we support reinstantiation of multiple editions.
-							l_tool_is_supporting_multiple_instance: l_tool.edition > 1 implies l_tool.is_supporting_multiple_instances
+							l_tool_is_multiple_edition: l_tool.edition > 1 implies l_tool.is_multiple_edition
 						end
 
 							-- The following initialize the tool and attached it to the docking manager.
-						Result := l_tool.panel.content
+						Result := l_tool.content
 					end
 				end
 			end
@@ -1000,62 +1026,66 @@ feature {NONE} -- Docking
 
 feature{NONE} -- Implementation
 
-	build_customized_tools is
-			-- Build customized tools.
-		local
-			l_customized_tool: EB_CUSTOMIZED_TOOL
-			l_manager: EB_CUSTOMIZED_TOOL_MANAGER
-			l_descriptors: LIST [EB_CUSTOMIZED_TOOL_DESP]
-			l_tools: LIST [EB_CUSTOMIZED_TOOL]
-		do
-			l_manager := develop_window.customized_tool_manager
-			l_tools := develop_window.tools.customized_tools
-			l_tools.wipe_out
-			if not l_manager.is_loaded then
-				l_manager.load (Void)
-			end
-			if l_manager.has_tools then
-				from
-					l_descriptors := l_manager.tool_descriptors
-					l_descriptors.start
-				until
-					l_descriptors.after
-				loop
-					l_customized_tool := l_descriptors.item.new_tool (develop_window)
-					setup_tool (l_customized_tool, l_customized_tool.id)
-					l_tools.extend (l_customized_tool)
-					l_descriptors.forth
-				end
-			end
-		end
+--	build_customized_tools
+--			-- Build customized tools.
+--		local
+--			l_customized_tool: EB_CUSTOMIZED_TOOL
+--			l_manager: EB_CUSTOMIZED_TOOL_MANAGER
+--			l_descriptors: LIST [EB_CUSTOMIZED_TOOL_DESP]
+--			l_tools: LIST [EB_CUSTOMIZED_TOOL]
+--		do
+--			l_manager := develop_window.customized_tool_manager
+--			l_tools := develop_window.tools.customized_tools
+--			l_tools.wipe_out
+--			if not l_manager.is_loaded then
+--				l_manager.load (Void)
+--			end
+--			if l_manager.has_tools then
+--				from
+--					l_descriptors := l_manager.tool_descriptors
+--					l_descriptors.start
+--				until
+--					l_descriptors.after
+--				loop
+--					l_customized_tool := l_descriptors.item.new_tool (develop_window)
+--					setup_tool (l_customized_tool, l_customized_tool.id)
+--					l_tools.extend (l_customized_tool)
+--					l_descriptors.forth
+--				end
+--			end
+--		end
 
-	setup_tool (a_tool: EB_TOOL; a_shortcut_string: STRING) is
-			-- Setup tool.
-		require
-			a_tool_not_void: a_tool /= Void
-			a_shortcut_string_not_void: a_shortcut_string /= Void
-		local
-			l_show_cmd: EB_SHOW_TOOL_COMMAND
-			l_accel: EV_ACCELERATOR
-			l_shortcut: SHORTCUT_PREFERENCE
-		do
-			a_tool.attach_to_docking_manager (develop_window.docking_manager)
+--	setup_tool (a_tool: EB_TOOL; a_shortcut_string: STRING)
+--			-- Setup tool.
+--		require
+--			a_tool_not_void: a_tool /= Void
+--			a_shortcut_string_not_void: a_shortcut_string /= Void
+--		local
+--			l_show_cmd: EB_SHOW_TOOL_COMMAND
+--			l_accel: EV_ACCELERATOR
+--			l_shortcut: SHORTCUT_PREFERENCE
+--			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
+--		do
+--			if {l_attachable: EB_DOCKING_MANAGER_ATTACHABLE} a_tool then
+--				l_attachable.attach_to_docking_manager (develop_window.docking_manager)
+--			end
 
-			create l_show_cmd.make (develop_window, a_tool)
-			develop_window.commands.show_tool_commands.force (l_show_cmd, a_tool)
-			develop_window.commands.toolbarable_commands.extend (l_show_cmd)
-			auto_recycle (a_tool)
+--			l_dev_commands := develop_window.commands
+--			create l_show_cmd.make (develop_window, a_tool)
+--			l_dev_commands.show_tool_commands.force (l_show_cmd, a_tool)
+--			l_dev_commands.toolbarable_commands.extend (l_show_cmd)
+--			auto_recycle (a_tool)
 
-			l_shortcut := develop_window.preferences.misc_shortcut_data.shortcuts.item (a_shortcut_string)
-			if l_shortcut /= Void then
-				create l_accel.make_with_key_combination (l_shortcut.key, l_shortcut.is_ctrl, l_shortcut.is_alt, l_shortcut.is_shift)
-				l_accel.actions.extend (agent l_show_cmd.execute)
-				l_show_cmd.set_accelerator (l_accel)
-				l_show_cmd.set_referred_shortcut (l_shortcut)
-			end
-		end
+--			l_shortcut := develop_window.preferences.misc_shortcut_data.shortcuts.item (a_shortcut_string)
+--			if l_shortcut /= Void then
+--				create l_accel.make_with_key_combination (l_shortcut.key, l_shortcut.is_ctrl, l_shortcut.is_alt, l_shortcut.is_shift)
+--				l_accel.actions.extend (agent l_show_cmd.execute)
+--				l_show_cmd.set_accelerator (l_accel)
+--				l_show_cmd.set_referred_shortcut (l_shortcut)
+--			end
+--		end
 
-	setup_main_formatter (a_form: EB_CLASS_TEXT_FORMATTER; a_shortcut_string: STRING) is
+	setup_main_formatter (a_form: EB_CLASS_TEXT_FORMATTER; a_shortcut_string: STRING)
 			-- Setup formatter.
 		require
 			a_form_not_void: a_form /= Void
@@ -1073,7 +1103,7 @@ feature{NONE} -- Implementation
 			a_form.set_referred_shortcut (l_shortcut)
 		end
 
-	build_undo_redo_accelerators is
+	build_undo_redo_accelerators
 			-- Initialize undo / redo accelerators.
 		local
 			l_undo_accelerator: EV_ACCELERATOR
@@ -1097,7 +1127,7 @@ feature{NONE} -- Implementation
 			develop_window.window.accelerators.extend (l_redo_accelerator)
 		end
 
-	build_close_content_accelerator is
+	build_close_content_accelerator
 			-- Build content close accelerator.
 		local
 			l_acc: EV_ACCELERATOR
@@ -1113,14 +1143,14 @@ feature{NONE} -- Implementation
 			develop_window.commands.simple_shortcut_commands.extend (l_cmd)
 		end
 
-	setup_editor_close_action is
+	setup_editor_close_action
 			-- Setup editor commands in editors manager.
 			-- so that they are correctly disable when there is no editor open.
 		do
 			develop_window.editors_manager.editor_closed_actions.extend (agent (a_editor: EB_SMART_EDITOR) do develop_window.all_editor_closed end)
 		end
 
-	setup_focus_editor_accelerators is
+	setup_focus_editor_accelerators
 			-- Setup accelerators of focusing current editor.
 		local
 			l_acc: EV_ACCELERATOR
@@ -1136,7 +1166,7 @@ feature{NONE} -- Implementation
 			develop_window.window.accelerators.extend (l_acc)
 		end
 
-	setup_class_address_accelerators is
+	setup_class_address_accelerators
 			-- Setup accelerators for focus class combo box.
 		local
 			l_acc: EV_ACCELERATOR
@@ -1151,37 +1181,5 @@ feature{NONE} -- Implementation
 			l_cmd.set_referred_shortcut (l_shortcut)
 			develop_window.commands.simple_shortcut_commands.extend (l_cmd)
 		end
-
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options: "http://www.eiffel.com/licensing"
-	copying: "[
-			This file is part of Eiffel Software's Eiffel Development Environment.
-			
-			Eiffel Software's Eiffel Development Environment is free
-			software; you can redistribute it and/or modify it under
-			the terms of the GNU General Public License as published
-			by the Free Software Foundation, version 2 of the License
-			(available at the URL listed under "license" above).
-			
-			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful, but
-			WITHOUT ANY WARRANTY; without even the implied warranty
-			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the GNU General Public License for more details.
-			
-			You should have received a copy of the GNU General Public
-			License along with Eiffel Software's Eiffel Development
-			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-		]"
-	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Decoding of arbitrary objects graphs within a session of a same program."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_deserializer: SED_READER_WRITER) is
+	make (a_deserializer: SED_READER_WRITER)
 			-- Initialize current instance
 		require
 			a_deserializer_not_void: a_deserializer /= Void
@@ -36,7 +36,7 @@ feature -- Access
 	deserializer: SED_READER_WRITER
 			-- Serializer used to decode data
 
-	last_decoded_object: ?ANY
+	last_decoded_object: detachable ANY
 			-- Object decoded during last call to `decode'
 
 feature -- Status report
@@ -46,7 +46,7 @@ feature -- Status report
 
 feature -- Settings
 
-	set_deserializer (a_deserializer: like deserializer) is
+	set_deserializer (a_deserializer: like deserializer)
 			-- Set `deserializer' with `a_deserializer'.
 		require
 			a_deserializer_not_void: a_deserializer /= Void
@@ -59,11 +59,11 @@ feature -- Settings
 
 feature -- Basic operations
 
-	decode (a_is_gc_enabled: BOOLEAN) is
+	decode (a_is_gc_enabled: BOOLEAN)
 			-- Decode object graph stored in `deserializer'.
 		local
 			l_count: NATURAL_32
-			l_mem: ?like memory
+			l_mem: detachable like memory
 			l_is_collecting: BOOLEAN
 			retried: BOOLEAN
 		do
@@ -109,7 +109,7 @@ feature {NONE} -- Implementation: Access
 	object_references: SPECIAL [ANY]
 			-- Mapping between reference ID and the associated object.
 
-	missing_references: ?SPECIAL [?ARRAYED_LIST [like new_tuple]]
+	missing_references: detachable SPECIAL [detachable ARRAYED_LIST [like new_tuple]]
 			-- When decoding an object some of its references might not be decoded yet, so
 			-- we store the object index, the field position in this object and the reference id.
 
@@ -118,7 +118,7 @@ feature {NONE} -- Implementation: Access
 
 feature {NONE} -- Implementation: Settings
 
-	set_has_error is
+	set_has_error
 			-- Set `has_error' to True.
 		do
 			has_error := True
@@ -128,7 +128,7 @@ feature {NONE} -- Implementation: Settings
 
 feature {NONE} -- Cleaning
 
-	clear_internal_data is
+	clear_internal_data
 			-- Clear all allocated data
 		local
 			l: like list_stack
@@ -150,13 +150,13 @@ feature {NONE} -- Cleaning
 
 feature {NONE} -- Implementation
 
-	read_header (a_count: NATURAL_32) is
+	read_header (a_count: NATURAL_32)
 			-- Read header of serialized data which has `a_count' objects.
 		do
 			read_object_table (a_count)
 		end
 
-	read_object_table (a_count: NATURAL_32) is
+	read_object_table (a_count: NATURAL_32)
 			-- Read object table if any, which has `a_count' objects.
 		local
 			l_objs: like object_references
@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	new_dynamic_type_id (a_old_type_id: INTEGER): INTEGER is
+	new_dynamic_type_id (a_old_type_id: INTEGER): INTEGER
 			-- Given `a_old_type_id', dynamic type id in stored system, retrieve dynamic
 			-- type id in current system.
 		require
@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 			new_dynamic_type_id_non_negative: Result >= 0
 		end
 
-	new_attribute_offset (a_new_type_id, a_old_offset: INTEGER): INTEGER is
+	new_attribute_offset (a_new_type_id, a_old_offset: INTEGER): INTEGER
 			-- Given attribute offset `a_old_offset' in the stored object whose dynamic type id
 			-- is now `a_new_type_id', retrieve new offset in `a_new_type_id'.
 		require
@@ -244,7 +244,7 @@ feature {NONE} -- Implementation
 			new_attribute_offset_positive: Result > 0
 		end
 
-	decode_objects (a_count: NATURAL_32) is
+	decode_objects (a_count: NATURAL_32)
 			-- Decode `a_count' object from `deserializer' and store root object in `last_decoded_object'.
 		require
 			a_count_positive: a_count > 0
@@ -264,7 +264,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_object (is_root: BOOLEAN) is
+	decode_object (is_root: BOOLEAN)
 			-- Decode one object and store it in `last_decoded_object' if `is_root'.
 		local
 			l_dtype: INTEGER
@@ -349,7 +349,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_normal_object (an_obj: ANY; a_dtype, an_index: INTEGER) is
+	decode_normal_object (an_obj: ANY; a_dtype, an_index: INTEGER)
 			-- Decode an object of type `dtype' and index `an_index' in `an_obj'.
 		require
 			an_obj_not_void: an_obj /= Void
@@ -419,7 +419,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_tuple (an_obj: ANY; a_dtype, an_index: INTEGER) is
+	decode_tuple (an_obj: ANY; a_dtype, an_index: INTEGER)
 			-- Decode TUPLE object of type `a_dtype' and index `an_index' in `an_obj'.
 		require
 			an_obj_not_void: an_obj /= Void
@@ -432,7 +432,7 @@ feature {NONE} -- Implementation
 			i, nb: INTEGER
 		do
 			l_deser := deserializer
-			if {l_tuple: TUPLE} an_obj then
+			if attached {TUPLE} an_obj as l_tuple then
 				from
 					i := 1
 					nb := l_tuple.count + 1
@@ -471,7 +471,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	new_special_instance (a_dtype, a_item_type, a_count: INTEGER): ANY is
+	new_special_instance (a_dtype, a_item_type, a_count: INTEGER): ANY
 			-- Create new special instance of a special object whose dynamic
 			-- type is `a_dtype', whose element abstract type is `a_item_type'
 			-- and of count `a_count'.
@@ -508,7 +508,7 @@ feature {NONE} -- Implementation
 			new_special_instance_is_special: internal.is_special (Result)
 		end
 
-	decode_special (an_obj: ANY; an_index, an_item_type: INTEGER) is
+	decode_special (an_obj: ANY; an_index, an_item_type: INTEGER)
 			-- Decode SPECIAL object of index `an_index' and element type `an_item_type' in `an_obj'.
 		require
 			an_obj_not_void: an_obj /= Void
@@ -517,98 +517,98 @@ feature {NONE} -- Implementation
 		do
 			inspect an_item_type
 			when {INTERNAL}.boolean_type then
-				if {l_spec_boolean: SPECIAL [BOOLEAN]} an_obj then
+				if attached {SPECIAL [BOOLEAN]} an_obj as l_spec_boolean then
 					decode_special_boolean (l_spec_boolean)
 				else
 					check l_spec_boolean_not_void: False end
 				end
 
 			when {INTERNAL}.character_8_type then
-				if {l_spec_character_8: SPECIAL [CHARACTER_8]} an_obj then
+				if attached {SPECIAL [CHARACTER_8]} an_obj as l_spec_character_8 then
 					decode_special_character_8 (l_spec_character_8)
 				else
 					check l_spec_character_8_not_void: False end
 				end
 
 			when {INTERNAL}.character_32_type then
-				if {l_spec_character_32: SPECIAL [CHARACTER_32]} an_obj then
+				if attached {SPECIAL [CHARACTER_32]} an_obj as l_spec_character_32 then
 					decode_special_character_32 (l_spec_character_32)
 				else
 					check l_spec_character_32_not_void: False end
 				end
 
 			when {INTERNAL}.natural_8_type then
-				if {l_spec_natural_8: SPECIAL [NATURAL_8]} an_obj then
+				if attached {SPECIAL [NATURAL_8]} an_obj as l_spec_natural_8 then
 					decode_special_natural_8 (l_spec_natural_8)
 				else
 					check l_spec_natural_8_not_void: False end
 				end
 
 			when {INTERNAL}.natural_16_type then
-				if {l_spec_natural_16: SPECIAL [NATURAL_16]} an_obj then
+				if attached {SPECIAL [NATURAL_16]} an_obj as l_spec_natural_16 then
 					decode_special_natural_16 (l_spec_natural_16)
 				else
 					check l_spec_natural_16_not_void: False end
 				end
 
 			when {INTERNAL}.natural_32_type then
-				if {l_spec_natural_32: SPECIAL [NATURAL_32]} an_obj then
+				if attached {SPECIAL [NATURAL_32]} an_obj as l_spec_natural_32 then
 					decode_special_natural_32 (l_spec_natural_32)
 				else
 					check l_spec_natural_32_not_void: False end
 				end
 
 			when {INTERNAL}.natural_64_type then
-				if {l_spec_natural_64: SPECIAL [NATURAL_64]} an_obj then
+				if attached {SPECIAL [NATURAL_64]} an_obj as l_spec_natural_64 then
 					decode_special_natural_64 (l_spec_natural_64)
 				else
 					check l_spec_natural_64_not_void: False end
 				end
 
 			when {INTERNAL}.integer_8_type then
-				if {l_spec_integer_8: SPECIAL [INTEGER_8]} an_obj then
+				if attached {SPECIAL [INTEGER_8]} an_obj as l_spec_integer_8 then
 					decode_special_integer_8 (l_spec_integer_8)
 				else
 					check l_spec_integer_8_not_void: False end
 				end
 
 			when {INTERNAL}.integer_16_type then
-				if {l_spec_integer_16: SPECIAL [INTEGER_16]} an_obj then
+				if attached {SPECIAL [INTEGER_16]} an_obj as l_spec_integer_16 then
 					decode_special_integer_16 (l_spec_integer_16)
 				else
 					check l_spec_integer_16_not_void: False end
 				end
 
 			when {INTERNAL}.integer_32_type then
-				if {l_spec_integer_32: SPECIAL [INTEGER]} an_obj then
+				if attached {SPECIAL [INTEGER]} an_obj as l_spec_integer_32 then
 					decode_special_integer_32 (l_spec_integer_32)
 				else
 					check l_spec_integer_32_not_void: False end
 				end
 
 			when {INTERNAL}.integer_64_type then
-				if {l_spec_integer_64: SPECIAL [INTEGER_64]} an_obj then
+				if attached {SPECIAL [INTEGER_64]} an_obj as l_spec_integer_64 then
 					decode_special_integer_64 (l_spec_integer_64)
 				else
 					check l_spec_integer_64_not_void: False end
 				end
 
 			when {INTERNAL}.real_32_type then
-				if {l_spec_real_32: SPECIAL [REAL]} an_obj then
+				if attached {SPECIAL [REAL]} an_obj as l_spec_real_32 then
 					decode_special_real_32 (l_spec_real_32)
 				else
 					check l_spec_real_32_not_void: False end
 				end
 
 			when {INTERNAL}.real_64_type then
-				if {l_spec_real_64: SPECIAL [DOUBLE]} an_obj then
+				if attached {SPECIAL [DOUBLE]} an_obj as l_spec_real_64 then
 					decode_special_real_64 (l_spec_real_64)
 				else
 					check l_spec_real_64_not_void: False end
 				end
 
 			when {INTERNAL}.pointer_type then
-				if {l_spec_pointer: SPECIAL [POINTER]} an_obj then
+				if attached {SPECIAL [POINTER]} an_obj as l_spec_pointer then
 					decode_special_pointer (l_spec_pointer)
 				else
 					check l_spec_pointer_not_void: False end
@@ -616,7 +616,7 @@ feature {NONE} -- Implementation
 
 			else
 				check an_item_type_valid: an_item_type = {INTERNAL}.reference_type end
-				if {l_spec_any: SPECIAL [ANY]} an_obj then
+				if attached {SPECIAL [ANY]} an_obj as l_spec_any then
 					decode_special_reference (l_spec_any, an_index)
 				else
 					check l_spec_any_not_void: False end
@@ -624,7 +624,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_boolean (a_spec: SPECIAL [BOOLEAN]) is
+	decode_special_boolean (a_spec: SPECIAL [BOOLEAN])
 			-- Decode SPECIAL [BOOLEAN].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -643,7 +643,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_character_8 (a_spec: SPECIAL [CHARACTER_8]) is
+	decode_special_character_8 (a_spec: SPECIAL [CHARACTER_8])
 			-- Decode SPECIAL [CHARACTER_8].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -662,7 +662,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_character_32 (a_spec: SPECIAL [CHARACTER_32]) is
+	decode_special_character_32 (a_spec: SPECIAL [CHARACTER_32])
 			-- Decode SPECIAL [CHARACTER_32].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -681,7 +681,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_natural_8 (a_spec: SPECIAL [NATURAL_8]) is
+	decode_special_natural_8 (a_spec: SPECIAL [NATURAL_8])
 			-- Decode SPECIAL [NATURAL_8].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -700,7 +700,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_natural_16 (a_spec: SPECIAL [NATURAL_16]) is
+	decode_special_natural_16 (a_spec: SPECIAL [NATURAL_16])
 			-- Decode SPECIAL [NATURAL_16].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -719,7 +719,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_natural_32 (a_spec: SPECIAL [NATURAL_32]) is
+	decode_special_natural_32 (a_spec: SPECIAL [NATURAL_32])
 			-- Decode SPECIAL [NATURAL_32].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -738,7 +738,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_natural_64 (a_spec: SPECIAL [NATURAL_64]) is
+	decode_special_natural_64 (a_spec: SPECIAL [NATURAL_64])
 			-- Decode SPECIAL [NATURAL_64].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -757,7 +757,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_integer_8 (a_spec: SPECIAL [INTEGER_8]) is
+	decode_special_integer_8 (a_spec: SPECIAL [INTEGER_8])
 			-- Decode SPECIAL [INTEGER_8].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -776,7 +776,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_integer_16 (a_spec: SPECIAL [INTEGER_16]) is
+	decode_special_integer_16 (a_spec: SPECIAL [INTEGER_16])
 			-- Decode SPECIAL [INTEGER_16].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -795,7 +795,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_integer_32 (a_spec: SPECIAL [INTEGER]) is
+	decode_special_integer_32 (a_spec: SPECIAL [INTEGER])
 			-- Decode SPECIAL [INTEGER].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -814,7 +814,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_integer_64 (a_spec: SPECIAL [INTEGER_64]) is
+	decode_special_integer_64 (a_spec: SPECIAL [INTEGER_64])
 			-- Decode SPECIAL [INTEGER_64].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -833,7 +833,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_real_32 (a_spec: SPECIAL [REAL]) is
+	decode_special_real_32 (a_spec: SPECIAL [REAL])
 			-- Decode SPECIAL [REAL].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -852,7 +852,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_real_64 (a_spec: SPECIAL [DOUBLE]) is
+	decode_special_real_64 (a_spec: SPECIAL [DOUBLE])
 			-- Decode SPECIAL [DOUBLE].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -871,7 +871,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_pointer (a_spec: SPECIAL [POINTER]) is
+	decode_special_pointer (a_spec: SPECIAL [POINTER])
 			-- Decode SPECIAL [POINTER].
 		require
 			a_spec_not_void: a_spec /= Void
@@ -890,7 +890,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_special_reference (a_spec: SPECIAL [ANY]; an_index: INTEGER) is
+	decode_special_reference (a_spec: SPECIAL [ANY]; an_index: INTEGER)
 			-- Decode SPECIAL [ANY] whose index is `an_index'.
 		require
 			an_index_non_negative: an_index >= 0
@@ -907,7 +907,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	decode_reference (an_obj: ANY; an_obj_index, an_index: INTEGER) is
+	decode_reference (an_obj: ANY; an_obj_index, an_index: INTEGER)
 			-- Read reference and if found update `an_obj'
 			-- with found reference at `an_index' in `an_obj'.
 			-- If `an_obj' is a SPECIAL, then `an_index' is actually a SPECIAL index.
@@ -919,7 +919,7 @@ feature {NONE} -- Implementation
 			l_nat32: NATURAL_32
 			l_index: INTEGER
 			l_sub_obj: ANY
-			l_list: ?ARRAYED_LIST [like new_tuple]
+			l_list: detachable ARRAYED_LIST [like new_tuple]
 			l_tuple: like new_tuple
 			l_missing: like missing_references
 		do
@@ -951,7 +951,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_reference (an_obj, a_sub_obj: ANY; an_index: INTEGER) is
+	update_reference (an_obj, a_sub_obj: ANY; an_index: INTEGER)
 			-- Connect `a_sub_obj' to `an_obj' at `an_index' position
 			-- which can be a field, special or tuple position depending
 			-- on type of `an_obj'.
@@ -965,11 +965,11 @@ feature {NONE} -- Implementation
 			l_int := internal
 
 			if l_int.is_special (an_obj) then
-				if {l_spec: SPECIAL [ANY]} an_obj then
+				if attached {SPECIAL [ANY]} an_obj as l_spec then
 					l_spec.put (a_sub_obj, an_index)
 				end
 			elseif l_int.is_tuple (an_obj) then
-				if {l_tuple: TUPLE} an_obj then
+				if attached {TUPLE} an_obj as l_tuple then
 					l_tuple.put_reference (a_sub_obj, an_index)
 				end
 			else
@@ -977,13 +977,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	reconnect_object (an_index: INTEGER) is
+	reconnect_object (an_index: INTEGER)
 			-- Reconnect missing references to `an_index'.
 		local
 			l_missing_references: like missing_references
 			l_object_references: like object_references
 			l_tuple: like new_tuple
-			l_list: ?ARRAYED_LIST [like new_tuple]
+			l_list: detachable ARRAYED_LIST [like new_tuple]
 			l_tuple_stack: like tuple_stack
 			l_list_stack: like list_stack
 		do
@@ -1024,7 +1024,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	new_tuple: TUPLE [object_index: INTEGER; field_position: INTEGER] is
+	new_tuple: TUPLE [object_index: INTEGER; field_position: INTEGER]
 			-- Factory of TUPLE.
 		local
 			l_tuple_stack: like tuple_stack
@@ -1040,7 +1040,7 @@ feature {NONE} -- Implementation
 			new_tuple_not_void: Result /= Void
 		end
 
-	new_list: ARRAYED_LIST [like new_tuple] is
+	new_list: ARRAYED_LIST [like new_tuple]
 			-- Factory of TUPLE.
 		local
 			l_list_stack: like list_stack
@@ -1056,13 +1056,13 @@ feature {NONE} -- Implementation
 			new_list_not_void: Result /= Void
 		end
 
-	tuple_stack: ?ARRAYED_STACK [like new_tuple]
+	tuple_stack: detachable ARRAYED_STACK [like new_tuple]
 			-- Storage for `new_tuple'.
 
-	list_stack: ?ARRAYED_STACK [like new_list]
+	list_stack: detachable ARRAYED_STACK [like new_list]
 			-- Storage for `new_list'.
 
-	memory: MEMORY is
+	memory: MEMORY
 			-- Access to MEMORY features without having to create a new instance each time.
 		once
 			create Result
@@ -1075,7 +1075,7 @@ invariant
 	deserializer_not_void: deserializer /= Void
 	object_references_not_void: object_references /= Void
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog to add a library."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -52,9 +52,10 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize.
 		local
+			l_void_safe_check: EV_CHECK_BUTTON
 			l_btn: EV_BUTTON
 			vb, vb2, l_padding: EV_VERTICAL_BOX
 			hb, hb2: EV_HORIZONTAL_BOX
@@ -105,6 +106,17 @@ feature {NONE} -- Initialization
 			l_padding.extend (libraries_grid)
 
 			vb2.extend (l_padding)
+
+				-- Void-Safe check
+			if target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all then
+				create l_void_safe_check.make_with_text ("Show only Void-Safe libraries")
+				l_void_safe_check.enable_select
+				l_void_safe_check.select_actions.extend (agent on_void_safe_check_selected)
+				vb2.extend (l_void_safe_check)
+				vb2.disable_item_expand (l_void_safe_check)
+
+				void_safe_check := l_void_safe_check
+			end
 
 				-- name
 			create vb2
@@ -182,6 +194,9 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- GUI elements
 
+	void_safe_check: detachable EV_CHECK_BUTTON
+			-- Void-safe check button
+
 	libraries_grid: ES_GRID
 			-- Libraries grid
 
@@ -214,16 +229,16 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	libraries: !DS_HASH_SET [!STRING]
+	libraries: attached DS_HASH_SET [attached STRING]
 			-- A set of libraries to display in the dialog
 		require
 			is_eiffel_layout_defined: is_eiffel_layout_defined
 		local
-			l_dirs: !like lookup_directories
-			l_libraries: !DS_HASH_SET [!STRING]
-			l_dir: !KL_DIRECTORY
+			l_dirs: attached like lookup_directories
+			l_libraries: attached DS_HASH_SET [attached STRING]
+			l_dir: attached KL_DIRECTORY
 			l_path: STRING
-			l_location: !CONF_DIRECTORY_LOCATION
+			l_location: attached CONF_DIRECTORY_LOCATION
 		do
 			create Result.make_default
 			l_dirs := lookup_directories
@@ -244,15 +259,15 @@ feature {NONE} -- Access
 			end
 		end
 
-	configuration_libraries: !DS_HASH_TABLE [!CONF_SYSTEM, !STRING]
+	configuration_libraries: attached DS_HASH_TABLE [attached CONF_SYSTEM, attached STRING]
 			-- A set of libraries configurations to display in the dialog
 		require
 			is_eiffel_layout_defined: is_eiffel_layout_defined
 		local
-			l_libs: !like libraries
+			l_libs: attached like libraries
 			l_loader: CONF_LOAD
 			l_factory: CONF_PARSE_FACTORY
-			l_location: !CONF_DIRECTORY_LOCATION
+			l_location: attached CONF_DIRECTORY_LOCATION
 		do
 			l_libs := libraries
 			create Result.make (l_libs.count)
@@ -262,19 +277,19 @@ feature {NONE} -- Access
 				create l_loader.make (l_factory)
 				create l_location.make (l_libs.item_for_iteration, target)
 				l_loader.retrieve_configuration (l_location.evaluated_path)
-				if not l_loader.is_error and then {l_system: CONF_SYSTEM} l_loader.last_system and then {l_target: CONF_TARGET} l_system.library_target then
+				if not l_loader.is_error and then attached {CONF_SYSTEM} l_loader.last_system as l_system and then attached {CONF_TARGET} l_system.library_target as l_target then
 					Result.put_last (l_system, l_libs.item_for_iteration)
 				end
 				l_libs.forth
 			end
 		end
 
-	lookup_directories: !DS_ARRAYED_LIST [!TUPLE [path: !STRING; depth: INTEGER]]
+	lookup_directories: attached DS_ARRAYED_LIST [attached TUPLE [path: attached STRING; depth: INTEGER]]
 			-- A list of lookup directories
 		require
 			is_eiffel_layout_defined: is_eiffel_layout_defined
 		local
-			l_file: !FILE_NAME
+			l_file: attached FILE_NAME
 		do
 			create Result.make_default
 
@@ -283,7 +298,7 @@ feature {NONE} -- Access
 				add_lookup_directories (l_file, Result)
 			end
 			if eiffel_layout.is_user_files_supported then
-				if {l_user_file: FILE_NAME} eiffel_layout.user_priority_file_name (l_file.string, True) and then file_system.file_exists (l_user_file) then
+				if attached {FILE_NAME} eiffel_layout.user_priority_file_name (l_file.string, True) as l_user_file and then file_system.file_exists (l_user_file) then
 					add_lookup_directories (l_user_file, Result)
 				end
 			end
@@ -302,7 +317,6 @@ feature {NONE} -- Actions
 			-- Browse for a location.
 		local
 			l_loader: CONF_LOAD
-			l_factory: CONF_PARSE_FACTORY
 			l_loc: CONF_FILE_LOCATION
 			l_dir: DIRECTORY
 		do
@@ -315,24 +329,62 @@ feature {NONE} -- Actions
 			end
 
 			browse_dialog.show_modal_to_window (Current)
-			if {l_fn: STRING_32} browse_dialog.file_name and then not l_fn.is_empty then
+			if attached browse_dialog.file_name as l_fn and then not l_fn.is_empty then
 				create l_loader.make (create {CONF_PARSE_FACTORY})
 				l_loader.retrieve_configuration (l_fn)
-				if not l_loader.is_error and then {l_system: CONF_SYSTEM} l_loader.last_system and then {l_target: CONF_TARGET} l_system.library_target then
-					on_library_selected (l_system, l_fn.as_string_8.as_attached)
+				if not l_loader.is_error and then attached l_loader.last_system as l_system then
+					if not attached l_system.library_target as l_target then
+						prompts.show_error_prompt (conf_interface_names.file_is_not_a_library, Current, Void)
+					elseif (not attached void_safe_check as l_check) or else (not l_check.is_selected or else l_target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all) then
+						on_library_selected (l_system, l_fn.as_string_8)
+					else
+						prompts.show_question_prompt (conf_interface_names.add_non_void_safe_library, Current, agent on_library_selected (l_system, l_fn.as_string_8.as_attached), Void)
+					end
 				end
 			end
 		end
 
 feature {NONE} -- Action handlers
 
-	on_library_selected (a_library: !CONF_SYSTEM; a_location: !STRING)
+	on_library_selected (a_library: attached CONF_SYSTEM; a_location: attached STRING)
 			-- Called when a library is selected
 		require
 			has_library_target: a_library.library_target /= Void
 		do
 			name.set_text (a_library.library_target.name)
 			location.set_text (a_location)
+		end
+
+	on_void_safe_check_selected
+			-- Called when the Void-Safe option is selected
+		require
+			void_safe_check_attached: void_safe_check /= Void
+			libraries_grid_attached: libraries_grid /= Void
+		local
+			l_grid: like libraries_grid
+			l_row: EV_GRID_ROW
+			l_show_all: BOOLEAN
+			i, nb: INTEGER
+		do
+			l_grid := libraries_grid
+
+			l_grid.lock_update
+			l_show_all := not void_safe_check.is_selected
+			from
+				i := 1
+				nb := l_grid.row_count
+			until
+				i > nb
+			loop
+				l_row := l_grid.row (i)
+				if l_show_all or else (attached {CONF_TARGET} l_row.data as l_target and then l_target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all) then
+					l_row.show
+				else
+					l_row.hide
+				end
+				i := i + 1
+			end
+			l_grid.unlock_update
 		end
 
 	on_ok
@@ -344,7 +396,7 @@ feature {NONE} -- Action handlers
 				-- library choosen?
 			if not location.text.is_empty and not name.text.is_empty then
 				if not is_valid_group_name (name.text) then
-					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_group_name, Current, Void)
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_library_name, Current, Void)
 				elseif group_exists (name.text, target) then
 					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.group_already_exists (name.text), Current, Void)
 				else
@@ -375,50 +427,89 @@ feature {NONE} -- Basic operation
 	populate_libraries
 			-- Populates the list of libraries in the UI
 		local
-			l_libraries: !like configuration_libraries
-			l_list: !DS_ARRAYED_LIST [!STRING]
-			l_system: !CONF_SYSTEM
+			l_libraries: like configuration_libraries
+			l_sorted_keys: DS_HASH_TABLE [STRING, STRING]
+			l_list: DS_ARRAYED_LIST [STRING]
+			l_system: CONF_SYSTEM
 			l_target: CONF_TARGET
 			l_row: EV_GRID_ROW
 			l_item: EV_GRID_LABEL_ITEM
 			l_col: EV_GRID_COLUMN
 			l_name_width: INTEGER
+			l_path: STRING
+			l_key: STRING
 			l_description: STRING
+			l_void_safe_check: like void_safe_check
+			l_show_void_safe_only: BOOLEAN
 		do
+			l_void_safe_check := void_safe_check
+			l_show_void_safe_only := l_void_safe_check /= Void and then l_void_safe_check.is_selected
+
 			libraries_grid.remove_and_clear_all_rows
 			l_libraries := configuration_libraries
 
-			create l_list.make_from_linear (l_libraries.keys)
-			l_list.sort (create {DS_QUICK_SORTER [!STRING]}.make (create {KL_COMPARABLE_COMPARATOR [!STRING]}.make))
+				-- Create a table of path names indexed by target_name#library_path, used to effectively sort.
+			create l_sorted_keys.make (l_libraries.count)
+			from l_libraries.start until l_libraries.after loop
+				l_path := l_libraries.key_for_iteration
+				l_target := l_libraries.item_for_iteration.library_target
+				if l_target /= Void then
+					create l_key.make (256)
+					l_key.append_string (l_target.name)
+					l_key.append_string (once " # ")
+					l_key.append_string (l_path)
+					l_sorted_keys.force_last (l_path, l_key)
+				end
+				l_libraries.forth
+			end
+
+				-- Sort keys
+			create l_list.make_from_linear (l_sorted_keys.keys)
+			l_list.sort (create {DS_QUICK_SORTER [STRING]}.make (create {KL_COMPARABLE_COMPARATOR [STRING]}.make))
+
+				-- Build libraries list
 			libraries_grid.set_row_count_to (l_list.count)
 			from l_list.start until l_list.after loop
 				l_row := libraries_grid.row (l_list.index)
 
-				l_system := l_libraries.item (l_list.item_for_iteration)
-				l_target := l_system.library_target
-				if l_target /= Void then
-						-- Extract description
-					l_description := l_system.description
-					if l_description = Void or else l_description.is_empty then
-						l_description := l_target.description
-						if l_description = Void or else l_description.is_empty then
-							l_description := once "No description available"
-						end
-					end
-
-						-- Library name
-					create l_item.make_with_text (l_system.name)
-					l_item.set_tooltip (l_description)
-					l_row.set_item (name_column, l_item)
-					l_name_width := l_name_width.max (l_item.required_width + 10)
-
-						-- Location
-					create l_item.make_with_text (l_list.item_for_iteration)
-					l_item.set_tooltip (l_list.item_for_iteration)
-					l_row.set_item (location_column, l_item)
-
-					l_row.select_actions.extend (agent on_library_selected (l_system, l_list.item_for_iteration))
+					-- Fetch path from sortable key name
+				l_path :=  l_sorted_keys.item (l_list.item_for_iteration)
+				check
+					l_path_attached: l_path /= Void
+					l_libraries_has_l_path: l_libraries.has (l_path)
 				end
+
+				l_system := l_libraries.item (l_path)
+				l_target := l_system.library_target
+				check l_target_attached: l_target /= Void end
+
+					-- Extract description
+				l_description := l_system.description
+				if l_description = Void or else l_description.is_empty then
+					l_description := l_target.description
+					if l_description = Void or else l_description.is_empty then
+						l_description := once "No description available for library"
+					end
+				end
+
+				if l_show_void_safe_only and then l_target.options.void_safety.index /= {CONF_OPTION}.void_safety_index_all then
+						-- The library is not Void-Safe, hide it if showing only Void-Safe libraries.
+					l_row.hide
+				end
+
+					-- Library name
+				create l_item.make_with_text (l_system.name)
+				l_item.set_tooltip (l_description)
+				l_row.set_item (name_column, l_item)
+				l_name_width := l_name_width.max (l_item.required_width + 10)
+
+					-- Location
+				create l_item.make_with_text (l_path)
+				l_item.set_tooltip (l_path)
+				l_row.set_item (location_column, l_item)
+
+				l_row.select_actions.extend (agent on_library_selected (l_system, l_path))
+				l_row.set_data (l_target)
 
 				l_list.forth
 			end
@@ -429,17 +520,17 @@ feature {NONE} -- Basic operation
 			end
 		end
 
-	add_configs_in_directory (a_dir: !KL_DIRECTORY; a_depth: INTEGER; a_libraries: !DS_HASH_SET [STRING])
+	add_configs_in_directory (a_dir: attached KL_DIRECTORY; a_depth: INTEGER; a_libraries: attached DS_HASH_SET [STRING])
 			-- Add config files in `a_path' to `a_libraries'.
 		require
 			a_dir_is_readable: a_dir.is_readable
 			a_depth_big_enough: a_depth >= -1
 		local
-			l_dir_name: !DIRECTORY_NAME
+			l_dir_name: attached DIRECTORY_NAME
 			l_items: ARRAY [STRING]
 			l_count, i: INTEGER
 			l_lib_file: STRING
-			l_file_name: !FILE_NAME
+			l_file_name: attached FILE_NAME
 			l_file_string: STRING
 		do
 			l_items := a_dir.filenames
@@ -486,7 +577,7 @@ feature {NONE} -- Basic operation
 			end
 		end
 
-	add_lookup_directories (a_path: !FILE_NAME; a_list: !DS_ARRAYED_LIST [!TUPLE [path: !STRING; depth: INTEGER]])
+	add_lookup_directories (a_path: attached FILE_NAME; a_list: attached DS_ARRAYED_LIST [attached TUPLE [path: attached STRING; depth: INTEGER]])
 			-- Adds look up directories from a file located at `a_path' into `a_list'
 		require
 			not_a_path_is_empty: not a_path.is_empty
@@ -534,10 +625,10 @@ feature {NONE} -- Constants
 	name_column: INTEGER = 1
 	location_column: INTEGER = 2
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -548,21 +639,21 @@ feature {NONE} -- Constants
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

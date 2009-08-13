@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command to create a new development window."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -33,7 +33,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_style (s: INTEGER) is
+	make_with_style (s: INTEGER)
 			-- Initialize default values.
 		require
 			valid_style: s = editor_style or s = default_style
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	execute is
+	execute
 			-- Create a development window.
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
@@ -67,7 +67,7 @@ feature -- Basic operations
 			end
 		end
 
-	execute_with_stone (a_stone: STONE) is
+	execute_with_stone (a_stone: STONE)
 			-- Create a development window and process `a_stone'.
 		local
 			new_window: EB_DEVELOPMENT_WINDOW
@@ -83,7 +83,7 @@ feature -- Basic operations
 			end
 		end
 
-	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Create a new toolbar button for this command.
 		do
 			Result := Precursor (display_text)
@@ -98,13 +98,11 @@ feature -- Access
 			-- editor windows or context windows?
 			-- This modifies the menus, the pixmaps and the execution of `Current'.
 
-	default_style: INTEGER is 0
-	editor_style: INTEGER is 1
+	default_style: INTEGER = 0
+	editor_style: INTEGER = 1
 			-- The different styles that can be used to initialize `Current'.
 
-feature {NONE} -- Implementation
-
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
 			inspect style
@@ -115,7 +113,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	pixmap: EV_PIXMAP is
+	pixmap: EV_PIXMAP
 			-- Pixmaps representing the command.
 		do
 			inspect style
@@ -126,7 +124,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
 			inspect style
@@ -137,25 +135,25 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	mini_pixmap: EV_PIXMAP is
+	mini_pixmap: EV_PIXMAP
 			-- Pixmap representing the command for mini toolbars.
 		do
 			Result := pixmaps.mini_pixmaps.new_window_icon
 		end
 
-	mini_pixel_buffer: EV_PIXEL_BUFFER is
+	mini_pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command for mini toolbars.
 		do
 			Result := pixmaps.mini_pixmaps.new_window_icon_buffer
 		end
 
-	tooltip: STRING_GENERAL is
+	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
 			Result := description
 		end
 
-	tooltext: STRING_GENERAL is
+	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
 			inspect style
@@ -166,7 +164,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	is_storable (st: ANY): BOOLEAN is
+	is_storable (st: ANY): BOOLEAN
 			-- Can `st' be dropped?
 		local
 			conv_st: STONE
@@ -179,7 +177,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	description: STRING_GENERAL is
+	description: STRING_GENERAL
 			-- Description for this commane
 		do
 			inspect style
@@ -190,7 +188,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	name: STRING is
+	name: STRING
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 		do
@@ -204,14 +202,14 @@ feature {NONE} -- Implementation
 
 feature -- Obsolete
 
-	create_class_tool (a_stone: STONE) is
+	create_class_tool (a_stone: STONE)
 			-- Create a development window and process `a_stone'.
 		obsolete "use `execute_with_stone' instead"
 		do
 			execute_with_stone (a_stone)
 		end
 
-	create_new_development_window (a_stone: STONE) is
+	create_new_development_window (a_stone: STONE)
 			-- Create a development window and process `a_stone'.
 		obsolete
 			"use `execute_with_stone' instead"
@@ -219,10 +217,10 @@ feature -- Obsolete
 			execute_with_stone (a_stone)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -233,19 +231,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

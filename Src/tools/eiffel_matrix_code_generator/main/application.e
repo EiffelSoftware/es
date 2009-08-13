@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Application root."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		local
 			l_parser: ARGUMENT_PARSER
@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 			l_parser.execute (agent start (l_parser))
 		end
 
-	start (a_parser: ARGUMENT_PARSER) is
+	start (a_parser: ARGUMENT_PARSER)
 			-- Starts application after all command-line arguments have been validated.
 		require
 			a_parser_attached: a_parser /= Void
@@ -71,7 +71,7 @@ feature {NONE} -- Initialization
 									Result.set_with_named_file (a_fn)
 								else
 									create Result.make_with_size (10, 10)
-									error_manager.add_error (create {ERROR_INVALID_MATRIX_PNG}.make_with_context ([a_fn]), False)
+									error_manager.add_error (create {ERROR_INVALID_MATRIX_PNG}.make ([a_fn]), False)
 								end
 							rescue
 								retried_il := True
@@ -109,7 +109,7 @@ feature {NONE} -- Initialization
 						end
 					end
 				else
-					l_error_manager.add_error (create {ERROR_INVALID_INI_FILE}.make_with_context ([l_source_fn]), False)
+					l_error_manager.add_error (create {ERROR_INVALID_INI_FILE}.make ([l_source_fn]), False)
 				end
 			end
 
@@ -119,18 +119,24 @@ feature {NONE} -- Initialization
 			else
 				if l_error_manager.has_warnings then
 					l_error_manager.trace_warnings (l_printer)
-					io.new_line
+					io.put_new_line
 				end
 				check l_generator_attached: l_generator /= Void end
-				io.put_string ("Generation successful.%N")
+				io.put_string ("Generation successful.")
+				io.put_new_line
 				if a_parser.use_slice_mode then
 					io.put_string ("Output tiles generated into folder: '")
 					io.put_string (a_parser.png_slices_locations)
-				else
+					io.put_string ("'")
+				elseif l_cls_generator.generated_file_name /= Void then
 					io.put_string ("Output generated into file: '")
 					io.put_string (l_cls_generator.generated_file_name)
+					io.put_string ("'")
+				else
+					io.put_string ("Unknown error")
 				end
-				io.put_string ("'%N%N")
+				io.put_new_line
+				io.put_new_line
 			end
 		rescue
 			retried := True
@@ -139,7 +145,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Basic Operations
 
-	open_ini_document (a_file_name: STRING): INI_DOCUMENT is
+	open_ini_document (a_file_name: STRING): INI_DOCUMENT
 			-- Attempts to open `a_file_name' as an INI document.
 		require
 			a_file_name_attached: a_file_name /= Void
@@ -158,7 +164,7 @@ feature {NONE} -- Basic Operations
 				if l_reader.successful then
 					Result := l_reader.read_document
 				else
-					error_manager.add_error (create {ERROR_INVALID_INI_FILE}.make_with_context ([a_file_name]), False)
+					error_manager.add_error (create {ERROR_INVALID_INI_FILE}.make ([a_file_name]), False)
 				end
 			end
 			if l_file /= Void and then not l_file.is_closed then
@@ -169,7 +175,7 @@ feature {NONE} -- Basic Operations
 			retry
 		end
 
-	open_frame_file (a_file_name: STRING): STRING is
+	open_frame_file (a_file_name: STRING): STRING
 			-- Attempts to open frame file `a_file_name' and returns it's content
 		require
 			a_file_name_attached: a_file_name /= Void
@@ -195,11 +201,11 @@ feature {NONE} -- Basic Operations
 						end
 					end
 				else
-					error_manager.add_error (create {ERROR_INVALID_FRAME_FILE}.make_with_context ([a_file_name]), False)
+					error_manager.add_error (create {ERROR_INVALID_FRAME_FILE}.make ([a_file_name]), False)
 					Result := Void
 				end
 			else
-				error_manager.add_error (create {ERROR_FRAME_FILE_NOT_READABLE}.make_with_context ([a_file_name]), False)
+				error_manager.add_error (create {ERROR_FRAME_FILE_NOT_READABLE}.make ([a_file_name]), False)
 				Result := Void
 			end
 			if l_file /= Void and then not l_file.is_closed then
@@ -217,15 +223,15 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	frame_file: STRING is "matrix.e.frame"
+	frame_file: STRING = "matrix.e.frame"
 			-- File name of frame file
 
-	frame_folder: STRING is "frames";
+	frame_folder: STRING = "frames";
 			-- Sub folder where frame files are located
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -237,22 +243,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {APPLICATION}

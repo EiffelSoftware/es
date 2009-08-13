@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Resources accessed over a network"
 	legal: "See notice at end of class."
@@ -20,6 +20,8 @@ deferred class NETWORK_RESOURCE inherit
 		end
 
 	EXCEPTIONS
+		export
+			{NONE} all
 		undefine
 			is_equal
 		end
@@ -40,14 +42,16 @@ feature -- Access
 
 feature -- Status report
 
-	is_open: BOOLEAN is
+	is_open: BOOLEAN
 			-- Is resource open?
+		local
+			l_socket: like main_socket
 		do
-			Result := main_socket /= Void and then
-				(main_socket.is_open_read or main_socket.is_open_write)
+			l_socket := main_socket
+			Result := l_socket /= Void and then (l_socket.is_open_read or l_socket.is_open_write)
 		end
 
-	is_readable: BOOLEAN is
+	is_readable: BOOLEAN
 			-- Is it possible to open in read mode currently?
 		local
 			opened: BOOLEAN
@@ -81,7 +85,7 @@ feature -- Status report
 			end
 		end
 
-	is_writable: BOOLEAN is
+	is_writable: BOOLEAN
 			-- Is it possible to open in write mode currently?
 		local
 			opened: BOOLEAN
@@ -121,13 +125,13 @@ feature -- Status report
 	is_count_valid: BOOLEAN
 			-- Is value in `count' valid?
 
-	address_exists: BOOLEAN is
+	address_exists: BOOLEAN
 			-- Does address exists?
 		do
 			Result := address.is_correct
 		end
 
-	is_proxy_used: BOOLEAN is
+	is_proxy_used: BOOLEAN
 			-- Is a proxy used?
 		do
 			Result := address.is_proxy_used and is_readable
@@ -135,32 +139,21 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_read_buffer_size (n: INTEGER) is
+	set_read_buffer_size (n: INTEGER)
 			-- Set size of read buffer.
 		do
 			read_buffer_size := n
 		end
 
-	reuse_connection (other: DATA_RESOURCE) is
+	reuse_connection (other: NETWORK_RESOURCE)
 			-- Reuse connection of `other'.
-		local
-			o: like Current
 		do
-			o ?= other
-				check
-					same_type: o /= Void
-						-- Because of precondition
-				end
-			main_socket := o.main_socket
-				check
-					shared: equal (main_socket, o.main_socket)
-						-- Because of referential equality
-				end
+			main_socket := other.main_socket
 		end
 
 feature {NONE} -- Status setting
 
-	open_connection is
+	open_connection
 			-- Open the connection.
 		require
 			closed: not is_open
@@ -169,16 +162,23 @@ feature {NONE} -- Status setting
 
 feature -- Output
 
-	put (other: DATA_RESOURCE) is
+	put (other: DATA_RESOURCE)
 			-- Write out resource `other'.
+		local
+			l_main_socket: like main_socket
+			l_packet: like last_packet
 		do
+			l_main_socket := main_socket
+			check l_main_socket_attached: l_main_socket /= Void end
 			from until error or else not other.is_packet_pending loop
-				check_socket (main_socket, Write_only)
+				check_socket (l_main_socket, Write_only)
 				if not error then
 					other.read
-					main_socket.put_string (other.last_packet)
-					last_packet := other.last_packet
-					last_packet_size := last_packet.count
+					l_packet := other.last_packet
+					check l_packet_attached: l_packet /= Void end
+					l_main_socket.put_string (l_packet)
+					last_packet := l_packet
+					last_packet_size := l_packet.count
 					if last_packet_size /= other.last_packet_size then
 						error_code := Write_error
 					end
@@ -190,14 +190,20 @@ feature -- Output
 
 feature -- Input
 
-	read is
+	read
 			-- Read packet.
+		local
+			l_main_socket: like main_socket
+			l_packet: like last_packet
 		do
-			check_socket (main_socket, Read_only)
+			l_main_socket := main_socket
+			check l_main_socket: l_main_socket /= Void end
+			check_socket (l_main_socket, Read_only)
 			if not error then
-				main_socket.read_stream (read_buffer_size)
-				last_packet := main_socket.last_string
-				last_packet_size := last_packet.count
+				l_main_socket.read_stream (read_buffer_size)
+				l_packet := l_main_socket.last_string
+				last_packet := l_packet
+				last_packet_size := l_packet.count
 				bytes_transferred := bytes_transferred + last_packet_size
 				if last_packet_size = 0 or (is_count_valid and bytes_transferred = count) then
 					is_packet_pending := False
@@ -209,14 +215,15 @@ feature -- Input
 			last_packet_size := 0
 		end
 
-feature {NONE} -- Constants
+feature -- Constants
 
-	Read_only, Write_only: INTEGER is unique
-			-- Constants determinint the transfer direction for `check_socket'
+	Read_only: INTEGER = 1
+	Write_only: INTEGER = 2
+			-- Constants determining the transfer direction for `check_socket'
 
 feature {DATA_RESOURCE} -- Implementation
 
-	main_socket: NETWORK_STREAM_SOCKET
+	main_socket: detachable NETWORK_STREAM_SOCKET
 
 feature {NONE} -- Implementation
 
@@ -232,24 +239,24 @@ feature {NONE} -- Implementation
 	writable_cached: BOOLEAN
 			-- Has a value für `is_writable' been cached?
 
-	check_socket (s: NETWORK_SOCKET; transfer_mode: INTEGER) is
+	check_socket (s: NETWORK_SOCKET; transfer_mode: INTEGER)
 			-- Check, if it is possible to read from/write to `s' (depending on
 			-- `transfer_mode' within `timeout' seconds. If not, set an error.
 		require
 			no_error: not error
 			socket_exists: s /= Void
-			defined_mode: Read_only <= transfer_mode and
-						transfer_mode <= Write_only
-		local
-			m: BOOLEAN
+			defined_mode: Read_only = transfer_mode or transfer_mode = Write_only
 		do
-			m := (transfer_mode = Read_only)
-			if not s.ready_for_reading then
+			if transfer_mode = read_only then
+				if not s.ready_for_reading then
+					error_code := Connection_timeout
+				end
+			elseif not s.ready_for_writing then
 				error_code := Connection_timeout
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
@@ -260,8 +267,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
 end -- class NETWORK_RESOURCE
-

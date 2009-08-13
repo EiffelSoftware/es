@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Container in top conainter level, contain other SD_ZONEs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -31,13 +31,14 @@ feature {NONE} -- Initlization
 			default_create
 			internal_docking_manager := a_docking_manager
 			create internal_shared
+			create all_spliters_data.make (5)
 		ensure
 			set: internal_docking_manager = a_docking_manager
 		end
 
 feature -- Command
 
-	update_title_bar is
+	update_title_bar
 			-- If `Current' parent is a SD_FLOATING_ZONE, update title bar.
 		local
 			l_zone_title: SD_TITLE_BAR_REMOVEABLE
@@ -56,7 +57,7 @@ feature -- Command
 			end
 		end
 
-	set_parent_floating_zone (a_floating_zone: SD_FLOATING_ZONE) is
+	set_parent_floating_zone (a_floating_zone: SD_FLOATING_ZONE)
 			-- Set `parent_floating_zone'.
 		require
 			a_floating_zone_not_void: a_floating_zone /= Void
@@ -66,7 +67,7 @@ feature -- Command
 			set: parent_floating_zone = a_floating_zone
 		end
 
-	remove_empty_split_area is
+	remove_empty_split_area
 			-- Remove all empty split area in `inner_container' recursively.
 		local
 			l_item: SD_MIDDLE_CONTAINER
@@ -81,38 +82,51 @@ feature -- Command
 			not_has_empty_split_area:
 		end
 
-
-	save_spliter_position (a_widget: EV_WIDGET) is
+	save_spliter_position (a_widget: EV_WIDGET; a_data_name: STRING)
 			-- Save a_widget split position recursively if a_widget is SD_MIDDLE_CONTAINER.
 			-- Pre order
 			-- Post order is not possible. Because set parent split are split positin will take ecffect to its child.
 		require
 			a_widget_not_void: a_widget /= Void
+			not_empty: a_data_name /= Void and then not a_data_name.is_empty
 		local
 			l_split: SD_MIDDLE_CONTAINER
+			l_data: like spliters_data
 		do
 			l_split ?= a_widget
 			if l_split /= Void then
-				create spliters.make (1)
-				save_spliter_position_imp (l_split)
+				create l_data.make (1)
+				all_spliters_data.put (l_data, a_data_name)
+				save_spliter_position_imp (l_split, l_data)
 			end
+		ensure
+			data_saved: (attached {SD_MIDDLE_CONTAINER} a_widget as lt_widget) implies has_spliter_data (a_data_name)
 		end
 
-	restore_spliter_position (a_widget: EV_WIDGET) is
-			-- Restore a_widget split postion which just saved by save_spliter_position.
+	restore_spliter_position (a_widget: EV_WIDGET; a_data_name: STRING)
+			-- Restore a_widget split postion which saved by save_spliter_position.
+			-- `a_data_name' is the name when calling `save_spliter_position'
 		require
 			a_widget_not_void: a_widget /= Void
+			not_empty: a_data_name /= Void and then not a_data_name.is_empty
+			data_saved: (attached {SD_MIDDLE_CONTAINER} a_widget as lt_widget) implies has_spliter_data (a_data_name)
 		local
 			l_split: SD_MIDDLE_CONTAINER
+			l_data: like spliters_data
 		do
 			l_split ?= a_widget
 			if l_split /= Void then
-				spliters.start
-				restore_spliter_position_imp (l_split)
+				l_data := all_spliters_data.item (a_data_name)
+				l_data.start
+				restore_spliter_position_imp (l_split, l_data)
+				-- Remove data with `a_name'
+				all_spliters_data.remove (a_data_name)
 			end
+		ensure
+			data_cleared: (attached {SD_MIDDLE_CONTAINER} a_widget as lt_widget_2) implies not has_spliter_data (a_data_name)
 		end
 
-	update_middle_container is
+	update_middle_container
 			-- Update all middle containers, if it's minimized then use horizontal/vertical box, otherwise use real spliter area.
 		local
 			l_item: SD_MIDDLE_CONTAINER
@@ -133,7 +147,7 @@ feature -- Command
 			end
 		end
 
-	update_visible is
+	update_visible
 			-- Update container visible.
 		local
 			l_item: SD_MIDDLE_CONTAINER
@@ -147,7 +161,7 @@ feature -- Command
 			end
 		end
 
-	recover_normal_for_only_one is
+	recover_normal_for_only_one
 			-- If there is only one minimized zone, we restore it.
 		local
 			l_zone_upper: SD_UPPER_ZONE
@@ -164,7 +178,7 @@ feature -- Command
 
 feature -- Query
 
-	has_zone (a_zone: SD_ZONE): BOOLEAN is
+	has_zone (a_zone: SD_ZONE): BOOLEAN
 			-- Does `a_zone' in `Current' recursively.
 		require
 			a_zone_not_void: a_zone /= Void
@@ -176,7 +190,7 @@ feature -- Query
 			Result := has_recursive (l_widget)
 		end
 
-	zones: ARRAYED_LIST [SD_ZONE] is
+	zones: ARRAYED_LIST [SD_ZONE]
 			-- All zones in Current.
 		do
 			create Result.make (1)
@@ -188,7 +202,7 @@ feature -- Query
 	parent_floating_zone: SD_FLOATING_ZONE
 			-- If `Current' is in a SD_FLOATING_ZONE, this is parent. Otherwise it should be Void.
 
-	editor_zone_count: INTEGER is
+	editor_zone_count: INTEGER
 			-- If current have eidtor zone?
 		local
 			l_zones: like zones
@@ -206,7 +220,7 @@ feature -- Query
 			end
 		end
 
-	editor_parent: EV_CONTAINER is
+	editor_parent: EV_CONTAINER
 			-- All editor zones top level parent.
 			-- If Result Void means widget structure corrupted.
 		require
@@ -216,14 +230,21 @@ feature -- Query
 			l_parent, l_last_parent: EV_CONTAINER
 			l_list, l_all_editors: ARRAYED_LIST [SD_ZONE]
 		do
-			Result := editor_place_holder_parent
-			if Result = Void then
+			if has_place_holder_zone then
+				Result := editor_place_holder
+			else
 				l_all_editors := all_editors
 				if l_all_editors.count > 0 then
 					from
 						l_zone := l_all_editors.first
-						l_parent := l_zone.parent
-						l_last_parent := l_zone
+						if attached {EV_WIDGET} l_zone as lt_widget then
+							l_parent := lt_widget.parent
+						else
+							check not_possible: False end
+						end
+
+						l_last_parent ?= l_zone
+						check l_last_parent_not_void: l_last_parent /= Void end
 					until
 						l_parent = Void or Result /= Void
 					loop
@@ -243,13 +264,13 @@ feature -- Query
 			end
 		end
 
-	has_place_holder_zone: BOOLEAN is
+	has_place_holder_zone: BOOLEAN
 			-- If place holder zone docking?
 		do
 			Result := editor_place_holder_parent /= Void
 		end
 
-	all_editors: ARRAYED_LIST [SD_ZONE] is
+	all_editors: ARRAYED_LIST [SD_ZONE]
 			-- One editor in Current.
 		local
 			l_zones: like zones
@@ -271,9 +292,17 @@ feature -- Query
 			is_all_editors: is_all_editors (Result)
 		end
 
+	has_spliter_data (a_name: STRING): BOOLEAN
+			-- Does `all_spliters_data' has data which key is `a_name' ?
+		require
+			not_empty: a_name /= Void and then not a_name.is_empty
+		do
+			Result := all_spliters_data.has (a_name)
+		end
+
 feature {NONE} -- Implementation
 
-	is_all_editors (a_list: ARRAYED_LIST [SD_ZONE]): BOOLEAN is
+	is_all_editors (a_list: ARRAYED_LIST [SD_ZONE]): BOOLEAN
 			-- If `a_list' all eidtor type zones?
 		require
 			not_void: a_list /= Void
@@ -292,7 +321,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	has_editor (a_list: ARRAYED_LIST [SD_ZONE]): BOOLEAN is
+	has_editor (a_list: ARRAYED_LIST [SD_ZONE]): BOOLEAN
 			-- If `a_list' has editor type zone?
 		require
 			not_void: a_list /= Void
@@ -310,7 +339,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	is_all_tools (a_list: ARRAYED_LIST [SD_ZONE]): BOOLEAN is
+	is_all_tools (a_list: ARRAYED_LIST [SD_ZONE]): BOOLEAN
 	 		-- If `a_list' all tool type zones?
 	 	require
 	 		not_void: a_list /= Void
@@ -329,30 +358,39 @@ feature {NONE} -- Implementation
 	 		end
 	 	end
 
-	editor_place_holder_parent: EV_CONTAINER is
-			-- Editor place holder parent, if exits.
+	editor_place_holder_parent: EV_CONTAINER
+			-- Editor place holder parent, if exists.
 		local
-			l_zones: like zones
 			l_place_holder: SD_PLACE_HOLDER_ZONE
 		do
-			from
-				l_zones := zones
-				l_zones.start
-			until
-				l_zones.after or l_place_holder /= Void
-			loop
-				if l_zones.item.content.type = {SD_ENUMERATION}.place_holder then
-					l_place_holder ?= l_zones.item
-					check not_void: l_place_holder /= Void end
-				end
-				l_zones.forth
-			end
+			l_place_holder := editor_place_holder
 			if l_place_holder /= Void then
 				Result := l_place_holder.parent
 			end
 		end
 
-	set_all_title_bar (a_widget: EV_WIDGET) is
+	editor_place_holder: SD_PLACE_HOLDER_ZONE
+			-- Find editor place holder zone in `zones'
+		local
+			l_zones: like zones
+		do
+			from
+				l_zones := zones
+				l_zones.start
+			until
+				l_zones.after or Result /= Void
+			loop
+				if l_zones.item.content.type = {SD_ENUMERATION}.place_holder then
+					Result ?= l_zones.item
+					check not_void: Result /= Void end
+				end
+				l_zones.forth
+			end
+		ensure
+			not_void_if_exists: has_place_holder_zone implies Result /= Void
+		end
+
+	set_all_title_bar (a_widget: EV_WIDGET)
 	 		-- Set all SD_ZONE's title bar in `Current'.
 	 	require
 	 		a_widget_not_void: a_widget /= Void
@@ -394,7 +432,7 @@ feature {NONE} -- Implementation
 
 	 	end
 
-	update_visible_imp (a_middle_container: SD_MIDDLE_CONTAINER): BOOLEAN is
+	update_visible_imp (a_middle_container: SD_MIDDLE_CONTAINER): BOOLEAN
 			-- Postorder traversal
 			-- If all contained widgets are invisible container, then Result is True.
 			-- Otherwise Result is False.
@@ -415,8 +453,11 @@ feature {NONE} -- Implementation
 			if l_middle_container /= Void and then l_zone = Void then
 				l_left_all_invisible := update_visible_imp (l_middle_container)
 			else
-				check not_void: l_zone /= Void end
-				l_left_all_invisible := not l_zone.is_displayed
+				if attached {EV_WIDGET} l_zone as lt_widget then
+					l_left_all_invisible := not lt_widget.is_displayed
+				else
+					check not_possible: False end
+				end
 			end
 
 			-- Update all middle container in second widget.
@@ -426,8 +467,11 @@ feature {NONE} -- Implementation
 			if l_middle_container /= Void and then l_zone = Void then
 				l_right_all_invisible := update_visible_imp (l_middle_container)
 			else
-				check not_void: l_zone /= Void end
-				l_right_all_invisible := not l_zone.is_displayed
+				if attached {EV_WIDGET} l_zone as lt_widget_2 then
+					l_right_all_invisible := not lt_widget_2.is_displayed
+				else
+					check not_possible: False end
+				end
 			end
 
 			Result := l_left_all_invisible and l_right_all_invisible
@@ -442,7 +486,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_middle_container_imp (a_middle_container: SD_MIDDLE_CONTAINER): BOOLEAN is
+	update_middle_container_imp (a_middle_container: SD_MIDDLE_CONTAINER): BOOLEAN
 			-- Postorder traversal
 			-- If all contained widgets are minimized container, then Result is True.
 			-- Otherwise Result is False.
@@ -471,7 +515,11 @@ feature {NONE} -- Implementation
 				if l_upper_zone_left /= Void and then l_upper_zone_left.is_displayed then
 					l_left_all_minimized := l_upper_zone_left.is_minimized
 				else
-					l_left_all_minimized := not l_zone.is_displayed
+					if attached {EV_WIDGET} l_zone as lt_widget then
+						l_left_all_minimized := not lt_widget.is_displayed
+					else
+						check not_possible: False end
+					end
 				end
 			end
 
@@ -484,10 +532,20 @@ feature {NONE} -- Implementation
 			else
 				check not_void: l_zone /= Void end
 				l_upper_zone_right ?= l_zone
-				if l_upper_zone_right /= Void and then l_upper_zone_right.is_displayed then
-					l_right_all_minimized := l_upper_zone_right.is_minimized
+				if l_upper_zone_right /= Void then
+					if attached {EV_WIDGET} l_upper_zone_right as lt_widget_2 then
+						if lt_widget_2.is_displayed then
+							l_right_all_minimized := l_upper_zone_right.is_minimized
+						end
+					else
+						check not_possible: False end
+					end
 				else
-					l_right_all_minimized := not l_zone.is_displayed
+					if attached {EV_WIDGET} l_zone as lt_widget_3 then
+						l_right_all_minimized := not lt_widget_3.is_displayed
+					else
+						check not_possible: False end
+					end
 				end
 			end
 
@@ -495,7 +553,7 @@ feature {NONE} -- Implementation
 
 			l_parent ?= a_middle_container
 			if l_left_all_minimized or l_right_all_minimized then
-				-- Current should be a minized container
+				-- Current should be a minimized container
 
 				if l_parent /= Void then
 					l_is_in_first := l_parent.first = a_middle_container
@@ -503,10 +561,10 @@ feature {NONE} -- Implementation
 					if not l_parent.is_minimized then
 						-- If one child is hidden, then the splitter bar is hidden by EV_VERTICAL_SPLIT_AREA/EV_HORIZONTAL_SPLIT_AREA automatically, we don't need to change it.	
 						if l_parent.first.is_displayed and l_parent.second.is_displayed then
-							disable_item_expand (change_parent_to_minized_container (l_parent), l_left_all_minimized, l_right_all_minimized)
+							disable_item_expand (change_parent_to_minimized_container (l_parent), l_left_all_minimized, l_right_all_minimized)
 						end
 					else
-						-- When `l_parent' is minized container already and a child tool container just hidden, we should update splitter bar visible.
+						-- When `l_parent' is minimized container already and a child tool container just hidden, we should update splitter bar visible.
 						if l_parent.first.is_displayed and l_parent.second.is_displayed then
 							l_parent.set_splitter_visible (True)
 						else
@@ -531,7 +589,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	disable_item_expand (a_middle_container: SD_MIDDLE_CONTAINER; a_disable_first, a_disable_second: BOOLEAN) is
+	disable_item_expand (a_middle_container: SD_MIDDLE_CONTAINER; a_disable_first, a_disable_second: BOOLEAN)
 			-- Disable item expand.
 		require
 			not_void: a_middle_container /= Void
@@ -572,7 +630,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	change_parent_to_normal_container (a_middle_container: SD_MIDDLE_CONTAINER): SD_MIDDLE_CONTAINER is
+	change_parent_to_normal_container (a_middle_container: SD_MIDDLE_CONTAINER): SD_MIDDLE_CONTAINER
 			-- Change `a_middle_container' to normal container.
 		require
 			not_void: a_middle_container /= Void
@@ -596,7 +654,7 @@ feature {NONE} -- Implementation
 			l_first := a_middle_container.first
 			l_second := a_middle_container.second
 
-			save_spliter_position (a_middle_container)
+			save_spliter_position (a_middle_container, generating_type + ".change_parent_to_normal_container")
 
 			l_v_box ?= a_middle_container
 			l_h_box ?= a_middle_container
@@ -618,7 +676,7 @@ feature {NONE} -- Implementation
 				l_parent_middle_container.set_split_position (l_parent_split_position)
 			end
 
-			restore_spliter_position (Result)
+			restore_spliter_position (Result, generating_type + ".change_parent_to_normal_container")
 
 			if l_split_position >= Result.minimum_split_position and l_split_position <= Result.maximum_split_position then
 				Result.set_split_position (l_split_position)
@@ -628,7 +686,7 @@ feature {NONE} -- Implementation
 			not_minimized: not Result.is_minimized
 		end
 
-	change_parent_to_minized_container (a_middle_container: SD_MIDDLE_CONTAINER): SD_MIDDLE_CONTAINER is
+	change_parent_to_minimized_container (a_middle_container: SD_MIDDLE_CONTAINER): SD_MIDDLE_CONTAINER
 			-- Change `a_middle_container' to minimized container.
 		require
 			not_void: a_middle_container /= Void
@@ -652,7 +710,7 @@ feature {NONE} -- Implementation
 			l_first := a_middle_container.first
 			l_second := a_middle_container.second
 
-			save_spliter_position (a_middle_container)
+			save_spliter_position (a_middle_container, generating_type + ".change_parent_to_minimized_container")
 
 			l_v_split ?= a_middle_container
 			l_h_split ?= a_middle_container
@@ -673,7 +731,7 @@ feature {NONE} -- Implementation
 				l_parent_middle_container.set_split_position (l_parent_split_position)
 			end
 
-			restore_spliter_position (Result)
+			restore_spliter_position (Result, generating_type + ".change_parent_to_minimized_container")
 
 			Result.set_split_position (l_split_position)
 
@@ -682,7 +740,7 @@ feature {NONE} -- Implementation
 			minimized: Result.is_minimized
 		end
 
-	remove_empty_split_area_imp (a_split_area: SD_MIDDLE_CONTAINER) is
+	remove_empty_split_area_imp (a_split_area: SD_MIDDLE_CONTAINER)
 			-- Remove all empty split area in `inner_container' recursively. Postorder traversal.
 			-- The structure is a two-fork tree.
 			-- Stop at SD_ZONE level.
@@ -720,7 +778,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	up_spliter_level (a_split_area: SD_MIDDLE_CONTAINER; a_first: BOOLEAN) is
+	up_spliter_level (a_split_area: SD_MIDDLE_CONTAINER; a_first: BOOLEAN)
 			-- If SD_MIDDLE_CONTAINER not full, then prune it from its parent, insert only one child widget to parent.
 		require
 			a_split_area_not_void: a_split_area /= Void
@@ -749,7 +807,7 @@ feature {NONE} -- Implementation
 
 			l_widget_split ?= l_widget
 			if l_widget_split /= Void then
-				save_spliter_position (l_widget_split)
+				save_spliter_position (l_widget_split, generating_type + ".up_spliter_level")
 			end
 
 			l_parent.prune (a_split_area)
@@ -760,35 +818,36 @@ feature {NONE} -- Implementation
 				-- There should by only one, because Postorder, so NO recursive needed.
 				-- The split area must full, because Postorder recursive.
 
-				-- FIXIT: following If cluse is for GTK, on MsWin is not needed.
-					if l_spliter_position < l_temp_spliter.minimum_split_position then
-						l_spliter_position := l_temp_spliter.minimum_split_position
-					end
-					if l_spliter_position > l_temp_spliter.maximum_split_position then
-						l_spliter_position := l_temp_spliter.maximum_split_position
-					end
-					l_temp_spliter.set_split_position (l_spliter_position)
+				-- FIXIT: following if clause is used for GTK, on MsWin it's not needed.
+				if l_spliter_position < l_temp_spliter.minimum_split_position then
+					l_spliter_position := l_temp_spliter.minimum_split_position
+				end
+				if l_spliter_position > l_temp_spliter.maximum_split_position then
+					l_spliter_position := l_temp_spliter.maximum_split_position
+				end
+				l_temp_spliter.set_split_position (l_spliter_position)
 			end
 
 			if l_widget_split /= Void then
-				restore_spliter_position (l_widget_split)
+				restore_spliter_position (l_widget_split, generating_type + ".up_spliter_level")
 			end
 		ensure
 			a_split_area_child_pruned: a_split_area.count = 0
 			spliter_level_up_done:
 		end
 
-	save_spliter_position_imp (a_spliter: SD_MIDDLE_CONTAINER) is
+	save_spliter_position_imp (a_spliter: SD_MIDDLE_CONTAINER; a_data: like spliters_data)
 			-- Save spliter position before prune it.
 			-- Post order
 		require
 			a_spliter_not_void: a_spliter /= Void
+			not_void: a_data /= Void
 		local
 			l_left, l_right: SD_MIDDLE_CONTAINER
 			l_left_zone, l_right_zone: SD_ZONE
 		do
 			if a_spliter.full then
-				spliters.extend ([a_spliter, a_spliter.split_position])
+				a_data.extend (a_spliter.split_position)
 				debug ("docking")
 					io.put_string ("%N SD_MULIT_DOCK_AREA spliter position: save " + a_spliter.split_position.out)
 				end
@@ -797,20 +856,21 @@ feature {NONE} -- Implementation
 			l_left ?= a_spliter.first
 			l_left_zone ?= l_left
 			if l_left /= Void and then l_left_zone = Void then
-				save_spliter_position_imp (l_left)
+				save_spliter_position_imp (l_left, a_data)
 			end
 
 			l_right ?= a_spliter.second
 			l_right_zone ?= l_right
 			if l_right /= Void and then l_right_zone = Void then
-				save_spliter_position_imp (l_right)
+				save_spliter_position_imp (l_right, a_data)
 			end
 		end
 
-	restore_spliter_position_imp (a_spliter: SD_MIDDLE_CONTAINER) is
+	restore_spliter_position_imp (a_spliter: SD_MIDDLE_CONTAINER; a_data: like spliters_data)
 			-- Restore spliter position. Pre order
 		require
 			a_spliter_not_void: a_spliter /= Void
+			not_void: a_data /= Void
 		local
 			l_left, l_right: SD_MIDDLE_CONTAINER
 			l_left_zone, l_right_zone: SD_ZONE
@@ -818,7 +878,7 @@ feature {NONE} -- Implementation
 --			l_old_spliter: SD_MIDDLE_CONTAINER -- For check only
 		do
 			if a_spliter.full then
-				l_spliter_position := spliters.item.position
+				l_spliter_position := a_data.item
 				debug ("docking")
 					io.put_string ("%N SD_MULIT_DOCK_AREA spliter position: open " + l_spliter_position.out)
 				end
@@ -837,33 +897,41 @@ feature {NONE} -- Implementation
 					a_spliter.set_split_position (a_spliter.maximum_split_position)
 				end -- No need to set min_split_position, because default is min_split_position.
 
-				spliters.forth
+				a_data.forth
 			end
 
 			l_left ?= a_spliter.first
 			l_left_zone ?= l_left
 			if l_left /= Void and then l_left_zone = Void then
-				restore_spliter_position_imp (l_left)
+				restore_spliter_position_imp (l_left, a_data)
 			end
 
 			l_right ?= a_spliter.second
 			l_right_zone ?= l_right
 			if l_right /= Void and then l_right_zone = Void then
-				restore_spliter_position_imp (l_right)
+				restore_spliter_position_imp (l_right, a_data)
 			end
 		end
 
 feature {NONE} -- Implementation attributes
 
-	spliters: ARRAYED_LIST [TUPLE [middle: SD_MIDDLE_CONTAINER; position: INTEGER]]
-			-- Split areas used for save/restore spliter positions.
+	all_spliters_data: HASH_TABLE [ARRAYED_LIST [INTEGER], STRING]
+			-- All spliters data
+			-- First argument is real type
+			-- Second argument is data name which is used for finding data when `restore_spliter_data'
+
+	spliters_data: ARRAYED_LIST [INTEGER]
+			-- Split bars' positions saved which used for save/restore spliter positions.
+		do
+			-- Anchor type
+		end
 
 	internal_shared: SD_SHARED
 			-- All singletons.
 
 	internal_docking_manager: SD_DOCKING_MANAGER;
 			-- Docking manager which Current belong to.
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,7 +1,7 @@
-indexing
+note
 	description: "[
-
-		]"
+		An ESF widget permitting stones to be transported and assigned to.
+	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -15,8 +15,10 @@ inherit
 
 	ES_STONABLE
 
+	ES_STONABLE_SYNCHRONIZED_I
+
 convert
-	widget: {EV_WIDGET, !EV_WIDGET, G, !G}
+	widget: {EV_WIDGET, attached EV_WIDGET, G, attached G}
 
 feature {NONE} -- Basic operations
 
@@ -33,7 +35,7 @@ feature {NONE} -- Basic operations
         			-- Propagate the stone drop actions	
         		do
         			if is_interface_usable and is_initialized then
-        				if {l_stone: !STONE} ia_pebble and then is_stone_usable (l_stone) then
+        				if attached {STONE} ia_pebble as l_stone and then is_stone_usable (l_stone) then
         					set_stone_with_query (l_stone)
         				end
 					end
@@ -58,15 +60,15 @@ feature {NONE} -- Basic operations
 							-- Query if a pebble should be vetoed.
 						do
 							Result := ia_pebble = Void
-							if not Result and then {l_stone: STONE} ia_pebble then
+							if not Result and then attached {STONE} ia_pebble as l_stone then
 								Result := is_stone_usable (l_stone)
 							end
 						end)
 				end, Void)
         end
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -90,11 +92,11 @@ feature {NONE} -- Basic operations
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

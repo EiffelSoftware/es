@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Encoding of arbitrary objects graphs within a session of a same program."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_serializer: SED_READER_WRITER) is
+	make (a_serializer: SED_READER_WRITER)
 			-- Initialize current instance
 		require
 			a_serializer_not_void: a_serializer /= Void
@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	root_object: ?ANY is
+	root_object: detachable ANY
 			-- Root object of object graph
 		do
 			Result := traversable.root_object
@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_traversing_mode_set: BOOLEAN is
+	is_traversing_mode_set: BOOLEAN
 			-- Is traversing mode set?
 		do
 			Result := (traversable /= Void)
@@ -58,25 +58,25 @@ feature -- Status report
 
 feature -- Element change
 
-	set_breadth_first_traversing_mode is
+	set_breadth_first_traversing_mode
 			-- Change graph traversing to breadth first.
 		do
 			traversable := breadth_first_traversable
 		ensure
 			traversing_mode_set: is_traversing_mode_set
-			breadth_first_mode: internal.class_name (traversable).is_equal ("OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE")
+			breadth_first_mode: internal.class_name (traversable) ~ "OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE"
 		end
 
-	set_depth_first_traversing_mode is
+	set_depth_first_traversing_mode
 			-- Change graph traversing to depth first.
 		do
 			traversable := depth_first_traversable
 		ensure
 			traversing_mode_set: is_traversing_mode_set
-			depth_first_mode: internal.class_name (traversable).is_equal ("OBJECT_GRAPH_DEPTH_FIRST_TRAVERSABLE")
+			depth_first_mode: internal.class_name (traversable) ~ "OBJECT_GRAPH_DEPTH_FIRST_TRAVERSABLE"
 		end
 
-	set_root_object (an_object: like root_object) is
+	set_root_object (an_object: like root_object)
 			-- Make 'an_object' the root_object.
 		require
 			an_object_not_void: an_object /= Void
@@ -89,7 +89,7 @@ feature -- Element change
 			root_object_identity: root_object = traversable.root_object
 		end
 
-	set_is_for_fast_retrieval (v: like is_for_fast_retrieval) is
+	set_is_for_fast_retrieval (v: like is_for_fast_retrieval)
 			-- Set `is_for_fast_retrieval' with `v'.
 		do
 			is_for_fast_retrieval := v
@@ -97,7 +97,7 @@ feature -- Element change
 			is_for_fast_retrieval_set: is_for_fast_retrieval = v
 		end
 
-	set_serializer (a_serializer: like serializer) is
+	set_serializer (a_serializer: like serializer)
 			-- Set `serializer' with `a_serializer'.
 		require
 			a_serializer_not_void: a_serializer /= Void
@@ -110,15 +110,15 @@ feature -- Element change
 
 feature -- Basic operations
 
-	encode is
+	encode
 			-- Encode object graph starting with the root object.
 		require
 			traversing_mode_set: is_traversing_mode_set
 			root_object_set: is_root_object_set
 		local
-			l_mem: ?MEMORY
+			l_mem: detachable MEMORY
 			l_is_collecting: BOOLEAN
-			l_list: ?ARRAYED_LIST [ANY]
+			l_list: detachable ARRAYED_LIST [ANY]
 			l_list_count: NATURAL_32
 		do
 			if not {PLATFORM}.is_dotnet then
@@ -165,13 +165,13 @@ feature {NONE} -- Implementation: Access
 	object_indexes: SED_OBJECTS_TABLE
 			-- Mapping between object and their associated index.
 
-	breadth_first_traversable: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE is
+	breadth_first_traversable: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE
 			-- Return an instance of OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE.
 		once
 			Result := create {OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE}
 		end
 
-	depth_first_traversable: OBJECT_GRAPH_DEPTH_FIRST_TRAVERSABLE is
+	depth_first_traversable: OBJECT_GRAPH_DEPTH_FIRST_TRAVERSABLE
 			-- Return an instance of OBJECT_GRAPH_DEPTH_FIRST_TRAVERSABLE.
 		once
 			Result := create {OBJECT_GRAPH_DEPTH_FIRST_TRAVERSABLE}
@@ -179,7 +179,7 @@ feature {NONE} -- Implementation: Access
 
 feature {NONE} -- Implementation
 
-	write_header (a_list: ARRAYED_LIST [ANY]) is
+	write_header (a_list: ARRAYED_LIST [ANY])
 			-- Operation performed before `encoding_objects'.
 		require
 			a_list_not_void: a_list /= Void
@@ -188,7 +188,7 @@ feature {NONE} -- Implementation
 			write_object_table (a_list)
 		end
 
-	write_object_table (a_list: ARRAYED_LIST [ANY]) is
+	write_object_table (a_list: ARRAYED_LIST [ANY])
 			-- Write mapping between object's reference ID in `a_list' with
 			-- all the necessary information necessary to recreate it at a
 			-- later time.
@@ -204,7 +204,7 @@ feature {NONE} -- Implementation
 			l_dtype, l_spec_item_type: INTEGER
 			l_obj: ANY
 			l_area: SPECIAL [ANY]
-			l_array: ?ARRAY [ANY]
+			l_array: detachable ARRAY [ANY]
 		do
 			if is_for_fast_retrieval then
 					-- Mark data with information that shows we have a mapping
@@ -251,7 +251,7 @@ feature {NONE} -- Implementation
 						l_ser.write_compressed_integer_32 (l_spec_item_type)
 
 							-- Write number of elements in SPECIAL
-						if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+						if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
 							l_ser.write_compressed_integer_32 (l_abstract_spec.count)
 						else
 							check
@@ -271,7 +271,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_objects (a_list: ARRAYED_LIST [ANY]) is
+	encode_objects (a_list: ARRAYED_LIST [ANY])
 			-- Encode all objects referenced in `a_list'.
 		require
 			a_list_not_void: a_list /= Void
@@ -286,7 +286,7 @@ feature {NONE} -- Implementation
 			l_obj: ANY
 			i, nb: INTEGER
 			l_area: SPECIAL [ANY]
-			l_array: ?ARRAY [ANY]
+			l_array: detachable ARRAY [ANY]
 		do
 			l_int := internal
 			l_ser := serializer
@@ -335,7 +335,7 @@ feature {NONE} -- Implementation
 						l_ser.write_compressed_integer_32 (l_spec_item_type)
 
 							-- Store count of special
-						if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+						if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
 							l_ser.write_compressed_integer_32 (l_abstract_spec.count)
 						else
 							check l_abstract_spec_attached: False end
@@ -346,7 +346,7 @@ feature {NONE} -- Implementation
 					if l_is_for_slow_retrieval then
 						l_ser.write_natural_8 (is_tuple_flag)
 					end
-					if {l_tuple: TUPLE} l_obj then
+					if attached {TUPLE} l_obj as l_tuple then
 						encode_tuple_object (l_tuple)
 					else
 						check
@@ -362,7 +362,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_reference (an_object: ?ANY) is
+	encode_reference (an_object: detachable ANY)
 			-- Encode reference to `an_object'.
 		do
 			if an_object /= Void then
@@ -372,7 +372,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_normal_object (an_object: ANY; a_dtype: INTEGER) is
+	encode_normal_object (an_object: ANY; a_dtype: INTEGER)
 			-- Encode normal object.
 		require
 			an_object_not_void: an_object /= Void
@@ -436,7 +436,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_tuple_object (a_tuple: TUPLE) is
+	encode_tuple_object (a_tuple: TUPLE)
 			-- Encode a TUPLE object.
 		require
 			a_tuple_not_void: a_tuple /= Void
@@ -486,7 +486,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special (an_object: ANY; a_dtype, a_item_type: INTEGER) is
+	encode_special (an_object: ANY; a_dtype, a_item_type: INTEGER)
 			-- Encode an object which is a special object.
 		require
 			an_object_not_void: an_object /= Void
@@ -496,98 +496,98 @@ feature {NONE} -- Implementation
 		do
 			inspect a_item_type
 			when {INTERNAL}.boolean_type then
-				if {l_spec_boolean: SPECIAL [BOOLEAN]} an_object then
+				if attached {SPECIAL [BOOLEAN]} an_object as l_spec_boolean then
 					encode_special_boolean (l_spec_boolean)
 				else
 					check l_spec_boolean_not_void: False end
 				end
 
 			when {INTERNAL}.character_8_type then
-				if {l_spec_character_8: SPECIAL [CHARACTER_8]} an_object then
+				if attached {SPECIAL [CHARACTER_8]} an_object as l_spec_character_8 then
 					encode_special_character_8 (l_spec_character_8)
 				else
 					check l_spec_character_8_not_void: False end
 				end
 
 			when {INTERNAL}.character_32_type then
-				if {l_spec_character_32: SPECIAL [CHARACTER_32]} an_object then
+				if attached {SPECIAL [CHARACTER_32]} an_object as l_spec_character_32 then
 					encode_special_character_32 (l_spec_character_32)
 				else
 					check l_spec_character_32_not_void: False end
 				end
 
 			when {INTERNAL}.natural_8_type then
-				if {l_spec_natural_8: SPECIAL [NATURAL_8]} an_object then
+				if attached {SPECIAL [NATURAL_8]} an_object as l_spec_natural_8 then
 					encode_special_natural_8 (l_spec_natural_8)
 				else
 					check l_spec_natural_8_not_void: False end
 				end
 
 			when {INTERNAL}.natural_16_type then
-				if {l_spec_natural_16: SPECIAL [NATURAL_16]} an_object then
+				if attached {SPECIAL [NATURAL_16]} an_object as l_spec_natural_16 then
 					encode_special_natural_16 (l_spec_natural_16)
 				else
 					check l_spec_natural_16_not_void: False end
 				end
 
 			when {INTERNAL}.natural_32_type then
-				if {l_spec_natural_32: SPECIAL [NATURAL_32]} an_object then
+				if attached {SPECIAL [NATURAL_32]} an_object as l_spec_natural_32 then
 					encode_special_natural_32 (l_spec_natural_32)
 				else
 					check l_spec_natural_32_not_void: False end
 				end
 
 			when {INTERNAL}.natural_64_type then
-				if {l_spec_natural_64: SPECIAL [NATURAL_64]} an_object then
+				if attached {SPECIAL [NATURAL_64]} an_object as l_spec_natural_64 then
 					encode_special_natural_64 (l_spec_natural_64)
 				else
 					check l_spec_natural_64_not_void: False end
 				end
 
 			when {INTERNAL}.integer_8_type then
-				if {l_spec_integer_8: SPECIAL [INTEGER_8]} an_object then
+				if attached {SPECIAL [INTEGER_8]} an_object as l_spec_integer_8 then
 					encode_special_integer_8 (l_spec_integer_8)
 				else
 					check l_spec_integer_8_not_void: False end
 				end
 
 			when {INTERNAL}.integer_16_type then
-				if {l_spec_integer_16: SPECIAL [INTEGER_16]} an_object then
+				if attached {SPECIAL [INTEGER_16]} an_object as l_spec_integer_16 then
 					encode_special_integer_16 (l_spec_integer_16)
 				else
 					check l_spec_integer_16_not_void: False end
 				end
 
 			when {INTERNAL}.integer_32_type then
-				if {l_spec_integer_32: SPECIAL [INTEGER]} an_object then
+				if attached {SPECIAL [INTEGER]} an_object as l_spec_integer_32 then
 					encode_special_integer_32 (l_spec_integer_32)
 				else
 					check l_spec_integer_32_not_void: False end
 				end
 
 			when {INTERNAL}.integer_64_type then
-				if {l_spec_integer_64: SPECIAL [INTEGER_64]} an_object then
+				if attached {SPECIAL [INTEGER_64]} an_object as l_spec_integer_64 then
 					encode_special_integer_64 (l_spec_integer_64)
 				else
 					check l_spec_integer_64_not_void: False end
 				end
 
 			when {INTERNAL}.real_32_type then
-				if {l_spec_real_32: SPECIAL [REAL]} an_object then
+				if attached {SPECIAL [REAL]} an_object as l_spec_real_32 then
 					encode_special_real_32 (l_spec_real_32)
 				else
 					check l_spec_real_32_not_void: False end
 				end
 
 			when {INTERNAL}.real_64_type then
-				if {l_spec_real_64: SPECIAL [DOUBLE]} an_object then
+				if attached {SPECIAL [DOUBLE]} an_object as l_spec_real_64 then
 					encode_special_real_64 (l_spec_real_64)
 				else
 					check l_spec_real_64_not_void: False end
 				end
 
 			when {INTERNAL}.pointer_type then
-				if {l_spec_pointer: SPECIAL [POINTER]} an_object then
+				if attached {SPECIAL [POINTER]} an_object as l_spec_pointer then
 					encode_special_pointer (l_spec_pointer)
 				else
 					check l_spec_pointer_not_void: False end
@@ -597,7 +597,7 @@ feature {NONE} -- Implementation
 				check
 					a_item_type_valid: a_item_type = {INTERNAL}.reference_type
 				end
-				if {l_spec_any: SPECIAL [ANY]} an_object then
+				if attached {SPECIAL [ANY]} an_object as l_spec_any then
 					encode_special_reference (l_spec_any)
 				else
 					check l_spec_any_not_void: False end
@@ -605,7 +605,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_boolean (a_spec: SPECIAL [BOOLEAN]) is
+	encode_special_boolean (a_spec: SPECIAL [BOOLEAN])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -624,7 +624,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_character_8 (a_spec: SPECIAL [CHARACTER_8]) is
+	encode_special_character_8 (a_spec: SPECIAL [CHARACTER_8])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -643,7 +643,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_character_32 (a_spec: SPECIAL [CHARACTER_32]) is
+	encode_special_character_32 (a_spec: SPECIAL [CHARACTER_32])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -662,7 +662,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_natural_8 (a_spec: SPECIAL [NATURAL_8]) is
+	encode_special_natural_8 (a_spec: SPECIAL [NATURAL_8])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -681,7 +681,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_natural_16 (a_spec: SPECIAL [NATURAL_16]) is
+	encode_special_natural_16 (a_spec: SPECIAL [NATURAL_16])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -700,7 +700,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_natural_32 (a_spec: SPECIAL [NATURAL_32]) is
+	encode_special_natural_32 (a_spec: SPECIAL [NATURAL_32])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -719,7 +719,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_natural_64 (a_spec: SPECIAL [NATURAL_64]) is
+	encode_special_natural_64 (a_spec: SPECIAL [NATURAL_64])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -738,7 +738,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_integer_8 (a_spec: SPECIAL [INTEGER_8]) is
+	encode_special_integer_8 (a_spec: SPECIAL [INTEGER_8])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -757,7 +757,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_integer_16 (a_spec: SPECIAL [INTEGER_16]) is
+	encode_special_integer_16 (a_spec: SPECIAL [INTEGER_16])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -776,7 +776,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_integer_32 (a_spec: SPECIAL [INTEGER]) is
+	encode_special_integer_32 (a_spec: SPECIAL [INTEGER])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -795,7 +795,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_integer_64 (a_spec: SPECIAL [INTEGER_64]) is
+	encode_special_integer_64 (a_spec: SPECIAL [INTEGER_64])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -814,7 +814,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_real_32 (a_spec: SPECIAL [REAL]) is
+	encode_special_real_32 (a_spec: SPECIAL [REAL])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -833,7 +833,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_real_64 (a_spec: SPECIAL [DOUBLE]) is
+	encode_special_real_64 (a_spec: SPECIAL [DOUBLE])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -852,7 +852,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_pointer (a_spec: SPECIAL [POINTER]) is
+	encode_special_pointer (a_spec: SPECIAL [POINTER])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -871,7 +871,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	encode_special_reference (a_spec: SPECIAL [ANY]) is
+	encode_special_reference (a_spec: SPECIAL [ANY])
 			-- Encode `a_spec'.
 		require
 			a_spec_not_void: a_spec /= Void
@@ -894,7 +894,7 @@ invariant
 	serializer_not_void: serializer /= Void
 	object_indexes_not_void: object_indexes /= Void
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

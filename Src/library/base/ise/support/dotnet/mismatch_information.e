@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Original values of the attributes of a mismatched object."
 	legal: "See notice at end of class."
@@ -31,7 +31,7 @@ create {MISMATCH_CORRECTOR}
 
 feature -- Initialization
 
-	default_create is
+	default_create
 			-- Make container with default size
 		do
 			make (5)
@@ -39,18 +39,22 @@ feature -- Initialization
 
 feature -- Access
 
-	class_name: STRING is
+	class_name: STRING
 			-- Name of generating class which held attribute values
+		local
+			l_result: detachable STRING
 		do
 			check has_class_entry: has (Class_key) end
-			Result ?= item (Class_key)
+			l_result ?= item (Class_key)
+			check l_result_attached: l_result /= Void end
+			Result := l_result
 		ensure
 			result_exists: Result /= Void
 		end
 
 feature -- Output
 
-	out: STRING is
+	out: STRING
 			-- Printable representation of attributes values
 		do
 			from
@@ -83,9 +87,9 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	Class_key: STRING is "class"
+	Class_key: STRING = "class"
 
-	internal_put (value: ANY; ckey: POINTER) is
+	internal_put (value: ANY; ckey: POINTER)
 			-- Allows run-time to insert items into table
 		local
 			key: STRING
@@ -98,7 +102,7 @@ invariant
 	singleton: (create {MISMATCH_CORRECTOR}).mismatch_information /= Void implies
 		Current = (create {MISMATCH_CORRECTOR}).mismatch_information
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

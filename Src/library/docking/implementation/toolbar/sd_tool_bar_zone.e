@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Zone that hold SD_TOOL_BAR_BUTTONs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,7 +28,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_vertical: BOOLEAN; a_docking_manager: SD_DOCKING_MANAGER; a_is_menu_bar: BOOLEAN) is
+	make (a_vertical: BOOLEAN; a_docking_manager: SD_DOCKING_MANAGER; a_is_menu_bar: BOOLEAN)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -42,8 +42,12 @@ feature {NONE} -- Initialization
 			end
 
 			is_vertical := a_vertical
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				create internal_tool_bar_dot_drawer.make (lt_widget.background_color)
+			else
+				check not_possible: False end
+			end
 
-			create internal_tool_bar_dot_drawer.make (tool_bar.background_color)
 			create bar_dot.make_with_size (3, 3)
 			internal_tool_bar_dot_drawer.draw (bar_dot)
 
@@ -58,7 +62,7 @@ feature {NONE} -- Initialization
 			tool_bar_not_void: tool_bar /= Void
 		end
 
-	init_drag_area is
+	init_drag_area
 			-- Initlization of `drag_area'.
 		do
 			if not docking_manager.tool_bar_manager.is_locked then
@@ -78,7 +82,7 @@ feature {NONE} -- Initialization
 
 feature -- Command
 
-	change_direction (a_horizontal: BOOLEAN) is
+	change_direction (a_horizontal: BOOLEAN)
 			-- Change layout direction.
 		require
 			not_destroyed: not is_destroyed
@@ -146,7 +150,7 @@ feature -- Command
 			direction_changed: is_vertical = not a_horizontal
 		end
 
-	destroy_parent_containers is
+	destroy_parent_containers
 			-- Destroy related parent containers
 		require
 			not_destroyed: not is_destroyed
@@ -167,7 +171,7 @@ feature -- Command
 			end
 		end
 
-	disable_drag_area is
+	disable_drag_area
 			-- Remove drag area which is located at head.
 		require
 			not_destroyed: not is_destroyed
@@ -177,7 +181,7 @@ feature -- Command
 			create drag_area_rectangle.make (0, 0, 0, 0)
 		end
 
-	enable_drag_area is
+	enable_drag_area
 			-- Show drag area which is located at the head.
 		require
 			not_destroyed: not is_destroyed
@@ -187,12 +191,12 @@ feature -- Command
 			end
 		end
 
-	update_drag_area is
+	update_drag_area
 			--Update drag area sizes.
 		require
 			not_destroyed: not is_destroyed
 		do
-			tool_bar.need_calculate_size
+			tool_bar.set_need_calculate_size (True)
 			if not docking_manager.tool_bar_manager.is_locked then
 				set_drag_area (not is_vertical)
 			else
@@ -200,7 +204,7 @@ feature -- Command
 			end
 		end
 
-	float (a_screen_x, a_screen_y: INTEGER; a_visible: BOOLEAN) is
+	float (a_screen_x, a_screen_y: INTEGER; a_visible: BOOLEAN)
 			-- Float to `a_screen_x' and `a_screen_y'.
 		require
 			not_destroyed: not is_destroyed
@@ -215,9 +219,14 @@ feature -- Command
 			disable_drag_area
 
 			create floating_tool_bar.make (docking_manager)
-			if tool_bar.parent /= Void then
-				tool_bar.parent.prune (tool_bar)
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				if lt_widget.parent /= Void then
+					lt_widget.parent.prune (lt_widget)
+				end
+			else
+				check not_possible: False end
 			end
+
 			floating_tool_bar.extend (Current)
 
 			prune (tail_indicator)
@@ -245,11 +254,11 @@ feature -- Command
 
 			assistant.update_indicator
 		ensure
-			pruned: row /= Void implies not row.has (tool_bar)
+			pruned: row /= Void and attached {EV_WIDGET} tool_bar as lt_widget_2 implies not row.has (lt_widget_2)
 			is_floating: is_floating
 		end
 
-	dock is
+	dock
 			-- Dock to a tool bar area.
 		require
 			not_destroyed: not is_destroyed
@@ -260,13 +269,17 @@ feature -- Command
 			-- But on Gtk, we need first disable capture then enable capture,
 			-- because it's off-screen widget, it'll not have capture until it show again (in SD_TOOL_BAR_HOT_ZONE).
 			tool_bar.disable_capture
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				floating_tool_bar.prune (lt_widget)
 
-			floating_tool_bar.prune (tool_bar)
-			floating_tool_bar.destroy
-			floating_tool_bar := Void
+				floating_tool_bar.destroy
+				floating_tool_bar := Void
 
-			if tool_bar.parent /= Void then
-				tool_bar.parent.prune (tool_bar)
+				if lt_widget.parent /= Void then
+					lt_widget.parent.prune (lt_widget)
+				end
+			else
+				check not_possible: False end
 			end
 
 			if not docking_manager.tool_bar_manager.is_locked then
@@ -280,7 +293,7 @@ feature -- Command
 			pruned: floating_tool_bar =  Void
 		end
 
-	extend (a_content: SD_TOOL_BAR_CONTENT) is
+	extend (a_content: SD_TOOL_BAR_CONTENT)
 			-- Extend `a_content'.
 		require
 			not_destroyed: not is_destroyed
@@ -314,7 +327,7 @@ feature -- Command
 			set: content = a_content
 		end
 
-	set_position (a_screen_x, a_screen_y: INTEGER) is
+	set_position (a_screen_x, a_screen_y: INTEGER)
 			-- Set position when `is_floating'.
 		require
 			not_destroyed: not is_destroyed
@@ -325,18 +338,22 @@ feature -- Command
 			set: floating_tool_bar.screen_x = a_screen_x and floating_tool_bar.screen_y = a_screen_y
 		end
 
-	compute_minmum_size is
-			-- Redefine
+	compute_minmum_size
+			-- <Precursor>
 		require
 			not_destroyed: not is_destroyed
 		do
 			tool_bar.compute_minimum_size
-			if row /= Void and row.has (tool_bar) then
-				row.set_item_size (tool_bar, tool_bar.minimum_width, tool_bar.minimum_height)
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				if row /= Void and row.has (lt_widget) then
+					row.set_item_size (lt_widget, tool_bar.minimum_width, tool_bar.minimum_height)
+				end
+			else
+				check not_possible: False end
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out
 		require
 			not_destroyed: not is_destroyed
@@ -345,7 +362,7 @@ feature -- Command
 			content := Void
 		end
 
-	destroy is
+	destroy
 			-- Destroy
 			-- Called by SD_TOOL_BAR_MANAGER.destroy
 		local
@@ -371,23 +388,31 @@ feature -- Command
 			destroyed: is_destroyed
 		end
 
-	show is
+	show
 			-- Show
 		require
 			not_destroyed: not is_destroyed
 		do
-			tool_bar.show
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				lt_widget.show
+			else
+				check not_possible: False end
+			end
 		end
 
-	hide is
+	hide
 			-- Hide
 		require
 			not_destroyed: not is_destroyed
 		do
-			tool_bar.hide
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				lt_widget.hide
+			else
+				check not_possible: False end
+			end
 		end
 
-	prune (a_item: SD_TOOL_BAR_ITEM) is
+	prune (a_item: SD_TOOL_BAR_ITEM)
 			-- Prune `a_item'
 		require
 			not_destroyed: not is_destroyed
@@ -397,7 +422,7 @@ feature -- Command
 
 feature -- Query
 
-	is_floating: BOOLEAN is
+	is_floating: BOOLEAN
 			-- If Current floating?
 		require
 			not_destroyed: not is_destroyed
@@ -411,7 +436,7 @@ feature -- Query
 	customize_dialog: SD_TOOL_BAR_CUSTOMIZE_DIALOG
 			-- SD_TOOL_BAR_CUSTOMIZE_DIALOG if exists.
 
-	tool_bar: SD_TOOL_BAR
+	tool_bar: SD_GENERIC_TOOL_BAR
 			-- Tool bar which managed by Current.
 
 	is_vertical: BOOLEAN
@@ -420,7 +445,7 @@ feature -- Query
 	content: SD_TOOL_BAR_CONTENT
 			-- Content in `Current'.
 
-	tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
+	tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Tool bar items on `Current' including invisible items.
 		require
 			not_destroyed: not is_destroyed
@@ -430,18 +455,22 @@ feature -- Query
 			not_void: Result /= Void
 		end
 
-	row: SD_TOOL_BAR_ROW is
+	row: SD_TOOL_BAR_ROW
 			-- Parent which contain `Current'.
 		require
 			not_destroyed: not is_destroyed
 		do
-			Result ?= tool_bar.parent
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				Result ?= lt_widget.parent
+			else
+				check not_possible: False end
+			end
 		end
 
 	maximize_size: INTEGER
 			-- Maximize width of Current if not `is_vertical'. Maximize height of Current if `is_vertical'.
 
-	size: INTEGER is
+	size: INTEGER
 			-- Current size.
 		require
 			not_destroyed: not is_destroyed
@@ -459,19 +488,23 @@ feature -- Query
 			valid: Result >= 0
 		end
 
-	position: INTEGER is
+	position: INTEGER
 			-- X position if not `is_vertical' or Y position if `is_vertical'.
 		require
 			not_destroyed: not is_destroyed
 		do
-			if is_vertical then
-				Result := tool_bar.y_position
+			if attached {EV_WIDGET} tool_bar as lt_widget then
+				if is_vertical then
+					Result := lt_widget.y_position
+				else
+					Result := lt_widget.x_position
+				end
 			else
-				Result := tool_bar.x_position
+				check not_possible: False end
 			end
 		end
 
-	hidden_dialog_position: EV_COORDINATE is
+	hidden_dialog_position: EV_COORDINATE
 			-- Screen position for SD_TOOL_BAR_HIDDEN_ITEM_DIALOG.
 		require
 			not_destroyed: not is_destroyed
@@ -493,7 +526,7 @@ feature -- Query
 	floating_tool_bar: SD_FLOATING_TOOL_BAR_ZONE
 			-- Floating tool bar zone which contain `Current' when floating.
 
-	has (a_item: SD_TOOL_BAR_ITEM): BOOLEAN is
+	has (a_item: SD_TOOL_BAR_ITEM): BOOLEAN
 			-- If Current has `a_item'?
 		require
 			not_destroyed: not is_destroyed
@@ -501,7 +534,7 @@ feature -- Query
 			Result := tool_bar.has (a_item)
 		end
 
-	has_right_click_action (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	has_right_click_action (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- If button at `a_screen_x', `a_screen_y' has pointer actions?
 		require
 			not_destroyed: not is_destroyed
@@ -523,7 +556,7 @@ feature -- Query
 			end
 		end
 
-	has_pebble_function (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	has_pebble_function (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- If button at `a_screen_x', `a_screen_y' has pebble function?
 		require
 			not_destroyed: not is_destroyed
@@ -538,7 +571,7 @@ feature -- Query
 			end
 		end
 
-	has_drop_function (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
+	has_drop_function (a_screen_x, a_screen_y: INTEGER): BOOLEAN
 			-- If button at `a_screen_x', `a_screen_y' has drop function?
 		require
 			not_destroyed: not is_destroyed
@@ -555,7 +588,7 @@ feature -- Query
 
 feature {NONE} -- Agents
 
-	on_redraw_drag_area (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
+	on_redraw_drag_area (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER)
 			-- Handle redraw drag area.
 		require
 			not_destroyed: not is_destroyed
@@ -586,7 +619,7 @@ feature {NONE} -- Agents
 
 feature {NONE} -- Implmentation
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 			-- Hash code is index in all tool bar zones.
 		do
 			Result := docking_manager.tool_bar_manager.contents.index_of (content, 1)
@@ -601,12 +634,12 @@ feature {NONE} -- Implmentation
 	internal_tool_bar_dot_drawer: SD_TOOL_BAR_DOT_DRAWER
 			-- Tool bar dot drawer.
 
-	internal_drag_area_size: INTEGER is 10
+	internal_drag_area_size: INTEGER = 10
 			-- Drag area size.
 			-- It is width is Current is horizontal layout.
 			-- It is height is CUrrent is vertical layout.
 
-	set_drag_area (a_is_for_horizontal: BOOLEAN) is
+	set_drag_area (a_is_for_horizontal: BOOLEAN)
 			-- Set `drag_area_rectangle' and `start_x', `start_y' for tool bar.
 		require
 			not_destroyed: not is_destroyed
@@ -637,7 +670,7 @@ feature {NONE} -- Implmentation
 	internal_hidden_widget_items: DS_HASH_TABLE [SD_TOOL_BAR_WIDGET_ITEM, INTEGER]
 			-- When `is_vertical' we hide all widget tool bar items, store orignal items here.
 
-	is_need_restore_hidden_items: BOOLEAN is
+	is_need_restore_hidden_items: BOOLEAN
 			-- If need restore hidden items?
 		require
 			not_destroyed: not is_destroyed
@@ -654,7 +687,7 @@ feature {NONE} -- Implmentation
 			end
 		end
 
-	restore_hidden_widget_items is
+	restore_hidden_widget_items
 			-- Restore hidden widget items
 		require
 			not_destroyed: not is_destroyed
@@ -680,7 +713,7 @@ feature {NONE} -- Implmentation
 			end
 		end
 
-feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR, SD_TOOL_BAR_CONTENT} -- Internal issues
+feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING_TOOL_BAR_ZONE, SD_GENERIC_TOOL_BAR, SD_TOOL_BAR_CONTENT} -- Internal issues
 
 	tail_indicator: SD_TOOL_BAR_NARROW_BUTTON
 			-- Button at tail of Current, which used for show hide buttons and customize dialog.
@@ -688,7 +721,7 @@ feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING
 	docking_manager: SD_DOCKING_MANAGER
 			-- Docking manager manage Current.
 
-	extend_one_item (a_item: SD_TOOL_BAR_ITEM) is
+	extend_one_item (a_item: SD_TOOL_BAR_ITEM)
 			-- Extend `a_item' if `a_item' is_displayed.
 		require
 			not_destroyed: not is_destroyed
@@ -706,7 +739,7 @@ feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING
 			end
 		end
 
-	update_maximum_size is
+	update_maximum_size
 			-- Update `maximize_size'
 		require
 			not_destroyed: not is_destroyed
@@ -718,7 +751,7 @@ feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING
 			end
 		end
 
-	set_customize_dialog (a_dialog: like customize_dialog) is
+	set_customize_dialog (a_dialog: like customize_dialog)
 			-- Set `customize_dialog' with `a_dialog'
 		require
 			not_destroyed: not is_destroyed
@@ -737,7 +770,7 @@ invariant
 	not_void: internal_shared /= Void
 	not_void: assistant /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

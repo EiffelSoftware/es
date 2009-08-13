@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"[
 			Process launcher used in EiffelStudio.
@@ -27,7 +27,7 @@ inherit
 
 feature -- Launching parameters setting
 
-	prepare_command_line (cmd: STRING; args: LIST [STRING]; a_working_directory: STRING) is
+	prepare_command_line (cmd: STRING; args: LIST [STRING]; a_working_directory: STRING)
 			-- Prepare command line for process launching.
 			-- `cmd' is the process command to launch, `args' are possible arguments and
 			-- `a_working_directory' is the path where process will be launched.
@@ -68,7 +68,7 @@ feature -- Launching parameters setting
 				((args /= Void) implies arguments.count = args.count)
 		end
 
-	set_hidden (h: BOOLEAN) is
+	set_hidden (h: BOOLEAN)
 			-- Set `is_hidden' with `h'.
 		do
 			is_hidden := h
@@ -76,7 +76,7 @@ feature -- Launching parameters setting
 			is_hidden_set: is_hidden = h
 		end
 
-	set_buffer_size (size: INTEGER) is
+	set_buffer_size (size: INTEGER)
 			-- Set buffer_size to `size'
 		require
 			process_not_in_action: (not launched) or (launched and has_exited)
@@ -87,7 +87,7 @@ feature -- Launching parameters setting
 			buffer_size_set: buffer_size = size
 		end
 
-	set_time_interval (itv: INTEGER) is
+	set_time_interval (itv: INTEGER)
 			-- Set time interval to `itv'
 		require
 			process_not_in_action: (not launched) or (launched and has_exited)
@@ -98,7 +98,7 @@ feature -- Launching parameters setting
 			time_interval_set: time_interval = itv
 		end
 
-	set_output_handler (handler: PROCEDURE [ANY, TUPLE [STRING]]) is
+	set_output_handler (handler: PROCEDURE [ANY, TUPLE [STRING]])
 			-- Set the agent handler used when output from the child process arrives.
 		require
 			process_not_in_action: (not launched) or (launched and has_exited)
@@ -109,7 +109,7 @@ feature -- Launching parameters setting
 			output_handler_set: output_handler = handler
 		end
 
-	set_error_handler (handler: PROCEDURE [ANY, TUPLE [STRING]]) is
+	set_error_handler (handler: PROCEDURE [ANY, TUPLE [STRING]])
 			-- Set the agent handler used when error from the child process arrives.
 		require
 			process_not_in_action: (not launched) or (launched and has_exited)
@@ -120,7 +120,7 @@ feature -- Launching parameters setting
 			error_handler_set: error_handler = handler
 		end
 
-	set_on_start_handler (handler: ROUTINE [ANY, TUPLE]) is
+	set_on_start_handler (handler: ROUTINE [ANY, TUPLE])
 			-- Set a `handler' which will be called when process starts.
 			-- if `handler' is Void, on_start_handler will be disabled
 		require
@@ -131,7 +131,7 @@ feature -- Launching parameters setting
 			handler_set: on_start_handler = handler
 		end
 
-	set_on_fail_launch_handler (handler: ROUTINE [ANY, TUPLE]) is
+	set_on_fail_launch_handler (handler: ROUTINE [ANY, TUPLE])
 			-- Set a `handler' which will be called when process launch failed.
 			-- if `handler' is Void, on_launch_failed_handler will be disabled			
 		require
@@ -142,7 +142,7 @@ feature -- Launching parameters setting
 			handler_set: on_fail_launch_handler = handler
 		end
 
-	set_on_successful_launch_handler (handler: ROUTINE [ANY, TUPLE]) is
+	set_on_successful_launch_handler (handler: ROUTINE [ANY, TUPLE])
 			-- Set a `handler' which will be called when process launch successed.
 			-- if `handler' is Void, on_launch_successed_handler will be disabled						
 		require
@@ -153,7 +153,7 @@ feature -- Launching parameters setting
 			handler_set: on_successful_launch_handler = handler
 		end
 
-	set_on_exit_handler (handler: ROUTINE [ANY, TUPLE]) is
+	set_on_exit_handler (handler: ROUTINE [ANY, TUPLE])
 			-- Set a `handler' which will be called when process exits.
 			-- if `handler' is Void, on_exit_handler will be disabled						
 		require
@@ -164,7 +164,7 @@ feature -- Launching parameters setting
 			handler_set: on_exit_handler = handler
 		end
 
-	set_on_terminate_handler (handler: ROUTINE [ANY, TUPLE]) is
+	set_on_terminate_handler (handler: ROUTINE [ANY, TUPLE])
 			-- Set a `handler' which will be called when process has been terminated.
 			-- if `handler' is Void, on_terminate_handler will be disabled									
 		require
@@ -177,7 +177,7 @@ feature -- Launching parameters setting
 
 feature -- Actions
 
-	start_actions: ACTION_SEQUENCE [TUPLE] is
+	start_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be invoked when process launch starts
 			-- These actions are called before the process launch, and then
 			-- after launch, either `launchd_actions' or `launch_failed_actions' will be called.
@@ -190,7 +190,7 @@ feature -- Actions
 			result_attached: Result /= Void
 		end
 
-	launched_actions: ACTION_SEQUENCE [TUPLE] is
+	launched_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be invoked when process is launched successfully
 		do
 			if launched_actions_internal = Void then
@@ -201,7 +201,7 @@ feature -- Actions
 			result_attached: Result /= Void
 		end
 
-	launch_failed_actions: ACTION_SEQUENCE [TUPLE] is
+	launch_failed_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be invoked when process launch is failed
 		do
 			if launch_failed_actions_internal = Void then
@@ -212,7 +212,7 @@ feature -- Actions
 			result_attached: Result /= Void
 		end
 
-	terminated_actions: ACTION_SEQUENCE [TUPLE] is
+	terminated_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be invoked when process is terminated by user
 		do
 			if terminated_actions_internal = Void then
@@ -223,7 +223,7 @@ feature -- Actions
 			result_attached: Result /= Void
 		end
 
-	exited_actions: ACTION_SEQUENCE [TUPLE] is
+	exited_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be invoked when process is exited by itself
 		do
 			if exited_actions_internal = Void then
@@ -234,7 +234,7 @@ feature -- Actions
 			result_attached: Result /= Void
 		end
 
-	finished_actions: ACTION_SEQUENCE [TUPLE] is
+	finished_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be invoked when process is finished (either launch failed, terminated or exited)
 		do
 			if finished_actions_internal = Void then
@@ -247,7 +247,7 @@ feature -- Actions
 
 feature -- Control
 
-	launch (redirection_needed: BOOLEAN; use_argument: BOOLEAN) is
+	launch (redirection_needed: BOOLEAN; use_argument: BOOLEAN)
 			-- Launch process.
 			-- If `redirection_needed', redirect input, output and error of process.
 		require
@@ -320,7 +320,7 @@ feature -- Control
 			end
 		end
 
-	wait_for_exit is
+	wait_for_exit
 			-- Wait for process to exit.
 		do
 			if launched and not has_exited then
@@ -330,7 +330,7 @@ feature -- Control
 			process_has_exited: launched implies has_exited
 		end
 
-	put_string (s: STRING) is
+	put_string (s: STRING)
 			-- Sent a string to child process' input.
 		require
 			string_not_null: s /= Void
@@ -340,7 +340,7 @@ feature -- Control
 			end
 		end
 
-	terminate is
+	terminate
 			-- Terminate C compilation.
 		do
 			if is_running then
@@ -354,7 +354,7 @@ feature -- Control
 
 feature -- Unmanaged process launch
 
-	open_console_in_dir (dir: STRING) is
+	open_console_in_dir (dir: STRING)
 			-- Open console in `dir'.
 		require
 			dir_not_void: dir /= VOid
@@ -389,7 +389,37 @@ feature -- Unmanaged process launch
 			execution_environment.change_working_directory (str)
 		end
 
-	open_dir_in_file_browser (dir: STRING) is
+	open_file_in_file_browser (a_full_path: STRING)
+			-- Open directory `a_full_path' in file browser and select the file
+		require
+			dir_attached: a_full_path /= Void
+		local
+			l_cmd: STRING
+			l_platform: PLATFORM
+			l_path: STRING
+			l_index: INTEGER
+		do
+			l_cmd := preferences.misc_data.file_browser_command.twin
+			if l_cmd /= Void then
+				l_path := a_full_path.twin
+
+				create l_platform
+				if l_platform.is_windows then
+					-- We add argument to select file
+					l_path	:= "/select,%"" + l_path + "%""
+				elseif l_platform.is_unix then
+					-- "nautilus" don't accept last file name, we removed it here
+					-- We should find a way to select file in "nautilus" file browser like Windows explorer does
+					l_index := l_path.last_index_of ('/', l_path.count)
+					l_path.remove_substring (l_index, l_path.count)
+				end
+
+				l_cmd.replace_substring_all ("$target", l_path)
+				execution_environment.launch (l_cmd)
+			end
+		end
+
+	open_dir_in_file_browser (dir: STRING)
 			-- Open directory `dir' in file browser.
 		require
 			dir_attached: dir /= Void
@@ -403,9 +433,23 @@ feature -- Unmanaged process launch
 			end
 		end
 
+	open_url_in_web_browser (a_url: STRING)
+			-- Open directory `a_url' in web browser.
+		require
+			not_void: a_url /= Void
+		local
+			l_cmd: STRING
+		do
+			l_cmd := preferences.misc_data.web_browser_command.twin
+			if l_cmd /= Void then
+				l_cmd.replace_substring_all ("$url", a_url)
+				execution_environment.launch (l_cmd)
+			end
+		end
+
 feature -- Status reporting
 
-	exit_code: INTEGER is
+	exit_code: INTEGER
 			-- Exit code of process
 		require
 			process_launched: launched
@@ -414,7 +458,7 @@ feature -- Status reporting
 			Result := prc.exit_code
 		end
 
-	launched: BOOLEAN is
+	launched: BOOLEAN
 			-- Has c compiler been launched?
 		do
 			if prc /= Void then
@@ -424,7 +468,7 @@ feature -- Status reporting
 			end
 		end
 
-	has_exited: BOOLEAN is
+	has_exited: BOOLEAN
 			-- Has c compiler exited?
 		do
 			if prc /= Void then
@@ -438,13 +482,13 @@ feature -- Status reporting
 			end
 		end
 
-	is_running: BOOLEAN is
+	is_running: BOOLEAN
 			-- Is process running?
 		do
 			Result := launched and then (not has_exited)
 		end
 
-	force_terminated: BOOLEAN is
+	force_terminated: BOOLEAN
 			-- Is child process terminated by user?
 		do
 			if prc /= Void then
@@ -474,7 +518,7 @@ feature -- Status reporting
 
 feature{NONE} -- Process data storage
 
-	data_storage: EB_PROCESS_IO_STORAGE is
+	data_storage: EB_PROCESS_IO_STORAGE
 			-- Data storage used to store output and error that come from the launched process
 		deferred
 		end
@@ -494,10 +538,10 @@ feature {NONE} -- Implementation
 	on_successful_launch_handler: ROUTINE [ANY, TUPLE]
 			-- Different agent handlers
 
-	initial_time_interval: INTEGER is 100
-	initial_buffer_size: INTEGER is 128
+	initial_time_interval: INTEGER = 100
+	initial_buffer_size: INTEGER = 128
 
-	child_termination_timeout: INTEGER is 5000
+	child_termination_timeout: INTEGER = 5000
 			-- Time in milliseconds to wait when terminating child process
 
 feature{NONE} -- Implementation
@@ -524,10 +568,10 @@ feature{NONE} -- Implementation
 invariant
 	data_storage_not_void: data_storage /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -538,19 +582,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

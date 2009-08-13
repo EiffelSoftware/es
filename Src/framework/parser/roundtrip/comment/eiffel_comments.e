@@ -1,4 +1,4 @@
-indexing
+note
 	description: "List of comment strings."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -30,7 +30,7 @@ create {EIFFEL_COMMENTS}
 
 feature {NONE}
 
-	make is
+	make
 			-- Create Current.
 		do
 			list_make (2)
@@ -38,7 +38,7 @@ feature {NONE}
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is Current less than `other'?
 		local
 			different: BOOLEAN;
@@ -65,7 +65,7 @@ feature -- Comparison
 			end;
 		end;
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- Is `other' like Current?
 		local
 			i : INTEGER;
@@ -85,7 +85,7 @@ feature -- Comparison
 			end;
 		end;
 
-	merge (other: like Current) is
+	merge (other: like Current)
 		require
 			valid_other: other /= Void
 		local
@@ -102,7 +102,7 @@ feature -- Comparison
 			end;
 		end;
 
-	diff (old_templ: like Current): like Current is
+	diff (old_templ: like Current): like Current
 			-- Differences between Current and `old_templ';
 		require
 			valid_old_templ: old_templ /= Void
@@ -133,7 +133,7 @@ feature -- Comparison
 
 feature -- Debug
 
-	trace is
+	trace
 		do
 			from
 				start
@@ -147,10 +147,10 @@ feature -- Debug
 			io.error.put_new_line;
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -161,19 +161,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

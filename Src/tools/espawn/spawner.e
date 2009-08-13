@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Supports spawning of mulitple processes asynchronously with a synchronous queue.
 	]"
@@ -11,6 +11,8 @@ class
 	SPAWNER
 
 inherit
+	ANY
+	
 	THREAD_CONTROL
 		export
 			{NONE} all
@@ -21,11 +23,12 @@ create
 
 feature -- Initialization
 
-	make (a_threshold: like concurrent_threshold) is
+	make (a_threshold: like concurrent_threshold)
 			-- Initialize spawner using a maximum number threshold of processes to spawn.
 		require
 			a_threshold_positive: a_threshold > 0
 		do
+			create mutex.make
 			create internal_running_processes.make (concurrent_threshold)
 			create internal_unsuccessful_processes.make (0)
 			concurrent_threshold := a_threshold
@@ -38,7 +41,7 @@ feature -- Initialization
 
 feature -- Access
 
-	running: NATURAL_16 is
+	running: NATURAL_16
 			-- Number of running processes
 		do
 			mutex.lock
@@ -46,7 +49,7 @@ feature -- Access
 			mutex.unlock
 		end
 
-	running_processes: ARRAYED_LIST [PROCESS] is
+	running_processes: ARRAYED_LIST [PROCESS]
 			-- List of processes running at this point in time
 			-- Note: Due to thread-saftey a new list is returned for each call.
 		do
@@ -56,9 +59,11 @@ feature -- Access
 			mutex.unlock
 		ensure
 			result_attached: Result /= Void
+			result_contains_attached_items: attached {LIST [detachable ANY]} Result as l_processes and then
+				not l_processes.has (Void)
 		end
 
-	unsuccessful_processes: ARRAYED_LIST [PROCESS] is
+	unsuccessful_processes: ARRAYED_LIST [PROCESS]
 			-- List of processes that failed to execute correctly
 			-- Note: Due to thread-saftey a new list is returned for each call.
 		do
@@ -68,6 +73,8 @@ feature -- Access
 			mutex.unlock
 		ensure
 			result_attached: Result /= Void
+			result_contains_attached_items: attached {LIST [detachable ANY]} Result as l_processes and then
+				not l_processes.has (Void)
 		end
 
 feature {NONE} -- Access
@@ -77,7 +84,7 @@ feature {NONE} -- Access
 
 feature -- Status report
 
-	successful: BOOLEAN is
+	successful: BOOLEAN
 			-- Indiciates if the last run process was successful
 		do
 			mutex.lock
@@ -93,10 +100,10 @@ feature -- Status report
 
 feature {NONE} -- Status report
 
-	is_at_threshold: BOOLEAN is
+	is_at_threshold: BOOLEAN
 			-- Determines if spawer is current running a number of processes that
 			-- reaches the threshold `concurrent_threshold'
-		indexing
+		note
 			thread: safe
 		do
 			mutex.lock
@@ -107,9 +114,19 @@ feature {NONE} -- Status report
 	exit_failure: BOOLEAN
 			-- Indicates if there was a process exit failure
 
+feature {NONE} -- Helpers
+
+	execution_environment: EXECUTION_ENVIRONMENT
+			-- Access to the execution environment.
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Basic operations
 
-	reset is
+	reset
 			-- Reset spawner internals after a failure
 		require
 			not_is_running: not is_running
@@ -122,7 +139,7 @@ feature -- Basic operations
 			successful: successful
 		end
 
-	launch_process (a_process: PROCESS; a_fail_on_error: BOOLEAN) is
+	launch_process (a_process: PROCESS; a_fail_on_error: BOOLEAN)
 			-- Launches a process.
 			--
 			-- `a_process': Process to launch.
@@ -135,23 +152,23 @@ feature -- Basic operations
 				start_process (a_process, a_fail_on_error)
 				from until not is_at_threshold loop
 					yield
-					sleep (10)
+					execution_environment.sleep (10)
 				end
 			end
 		end
 
-	wait_for_exit is
+	wait_for_exit
 			-- Waits for all running processes to exit
 		do
 			from until not is_running loop
 				yield
-				sleep (10)
+				execution_environment.sleep (10)
 			end
 		end
 
 feature {NONE} -- Extension
 
-	start_process (a_process: PROCESS; a_fail_on_error: BOOLEAN) is
+	start_process (a_process: PROCESS; a_fail_on_error: BOOLEAN)
 			-- Starts the process `a_process' and returns
 			--
 			-- `a_process': Process to launch.
@@ -179,7 +196,7 @@ feature {NONE} -- Extension
 
 feature {NONE} -- Removal
 
-	remove_process (a_process: PROCESS; a_fail_on_error: BOOLEAN) is
+	remove_process (a_process: PROCESS; a_fail_on_error: BOOLEAN)
 			-- Removed the process `a_process' from the list of running processes
 			-- Note: If `a_process' returned an error result `successful' is affected.
 			--
@@ -206,39 +223,27 @@ feature {NONE} -- Removal
 
 feature {NONE} -- Implementation
 
-	mutex: MUTEX is
+	mutex: MUTEX
 			-- Global mutext for controlling access to `Current'
-		do
-			Result := internal_mutex
-			if Result = Void then
-				create Result.make
-				internal_mutex := Result
-			end
-		ensure
-			result_attached: Result /= Void
-		end
 
-feature {NONE} -- Internal implementation cache
+feature {NONE} -- Internal implementation cache			
 
-	internal_mutex: like mutex
-			-- Cached version of `mutex'
-			-- Note: Do not use directly!			
-
-	internal_unsuccessful_processes: ARRAYED_LIST [PROCESS]
+	internal_unsuccessful_processes: attached ARRAYED_LIST [PROCESS]
 			-- Cached version of `unsuccessful_processes'
 			-- Note: Do not use directly!
 
-	internal_running_processes: ARRAYED_LIST [PROCESS]
+	internal_running_processes: attached ARRAYED_LIST [PROCESS]
 			-- Cached version of `running_processes'
 			-- Note: Do not use directly!		
 
 invariant
+	mutex_attached: mutex /= Void
 	running_small_enough: running <= concurrent_threshold
 	concurrent_threshold_positive: concurrent_threshold > 0
 	internal_unsuccessful_processes_attached: internal_unsuccessful_processes /= Void
 	internal_running_processes_attached: internal_running_processes /= Void
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

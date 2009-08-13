@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Internal file information"
@@ -22,7 +22,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Creation procedure
 		do
 			make_buffered_file_info (30)
@@ -69,12 +69,18 @@ feature -- Access
 	owner_name: STRING
 			-- Name of the file owner, if available from /etc/passwd.
 			-- Otherwise, the UID
+		do
+			Result := "0"
+		end
 
 	group_name: STRING
 			-- Name of the file group, if available from /etc/group.
 			-- Otherwise, the GID
+		do
+			Result := "0"
+		end
 
-	file_name: STRING
+	file_name: detachable STRING
 			-- File name to which information applies.
 
 feature -- Status report
@@ -138,13 +144,14 @@ feature -- Status report
 
 feature -- Element change
 
-	update (f_name: STRING) is
+	update (f_name: STRING)
 			-- Update information buffer: fill it in with information
 			-- from the inode of `f_name'.
 		local
 			f: RAW_FILE
 			fi: FILE_INFO
-		do	
+			l_name: detachable SYSTEM_STRING
+		do
 			create f.make (f_name)
 			create fi.make (f_name.to_cil)
 			protection := 0
@@ -176,17 +183,17 @@ feature -- Element change
 			date := f.date
 			access_date := f.access_date
 			change_date := f.change_date
-			device := (fi.full_name.to_char_array @ 0).code - ('A').code
+			l_name := fi.full_name
+			check l_name_attached: l_name /= Void end
+			device := l_name.chars (0).code - ('A').code
 			device_type := device
 			links := 1
-			owner_name := "0"
-			group_name := "0"
 			is_owner := True
 			is_access_owner := True
 			file_name := f_name
 		end -- update
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

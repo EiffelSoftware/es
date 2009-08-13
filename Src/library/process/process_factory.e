@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A factory to generate proper process launcher on different platforms."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -10,7 +10,7 @@ class
 
 feature -- Access
 
-	process_launcher (a_file_name: STRING; args: LIST [STRING]; a_working_directory: STRING): PROCESS is
+	process_launcher (a_file_name: STRING; args: detachable LIST [STRING]; a_working_directory: detachable STRING): PROCESS
 			-- Returns a process launcher used to launch program `a_file_name' with arguments `args'
 			-- and working directory `a_working_directory'.
 			-- Use Void for `a_working_directory' if no working directory is specified.
@@ -24,7 +24,7 @@ feature -- Access
 			process_launched_created: Result /= Void
 		end
 
-	process_launcher_with_command_line (a_cmd_line: STRING; a_working_directory: STRING): PROCESS is
+	process_launcher_with_command_line (a_cmd_line: STRING; a_working_directory: detachable STRING): PROCESS
 			-- Returns a process launcher to launch command line `cmd_line' that specifies an executable and
 			-- optional arguments, using `a_working_directory' as its working directory.
 			-- Use Void for `a_working_directory' if no working directory is required.		
@@ -37,7 +37,7 @@ feature -- Access
 			process_launched_created: Result /= Void
 		end
 
-	current_process_info: PROCESS_INFO is
+	current_process_info: PROCESS_INFO
 			-- Return an object representation of current process information
 		do
 			create {PROCESS_INFO_IMP} Result
@@ -45,15 +45,14 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 end

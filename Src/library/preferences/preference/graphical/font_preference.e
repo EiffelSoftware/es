@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Font preference."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,18 +13,18 @@ inherit
 		redefine
 			set_value
 		end
-	
+
 	EV_FONT_CONSTANTS
 		undefine
 			is_equal
 		end
-		
+
 create {PREFERENCE_FACTORY}
 	make, make_from_string_value
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING
 			-- String representation of `value'.		
 		do
 			Result := generated_value
@@ -32,7 +32,7 @@ feature -- Access
 
 feature -- Status Setting
 
-	set_value (a_value: like value) is
+	set_value (a_value: EV_FONT)
 			-- Set the value with the wanted font.
 		require else
 			valid_font: a_value /= Void and then not a_value.is_destroyed
@@ -42,30 +42,30 @@ feature -- Status Setting
 			shape := a_value.shape
 			weight := a_value.weight
 			height := a_value.height_in_points
-			family := a_value.family			
+			family := a_value.family
 		end
 
-	string_type: STRING is
+	string_type: STRING
 			-- String description of this preference type.
 		once
 			Result := "FONT"
-		end	
+		end
 
 feature -- Query
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING): BOOLEAN
 			-- Is `a_string' valid for this preference type to convert into a value?
 			-- An valid string takes the form "faces-shape-weight-height-family".
 		local
 			s: STRING
 		do
 			s := a_string.twin
-			Result := s.occurrences ('-') = 4			
+			Result := s.occurrences ('-') = 4
 		end
 
 feature {PREFERENCES} -- Access
 
-	generating_preference_type: STRING is
+	generating_preference_type: STRING
 			-- The generating type of the preference for graphical representation.
 		once
 			Result := "FONT"
@@ -73,19 +73,20 @@ feature {PREFERENCES} -- Access
 
 feature {NONE} -- Implementation
 
-	face: STRING
+	face: detachable STRING
 			-- Font faces
-	shape, 
-	weight, 
-	height, 
+	shape,
+	weight,
+	height,
 	family: INTEGER
 		-- Attributes
 
-	set_value_from_string (a_value: STRING) is
+	set_value_from_string (a_value: STRING)
 			-- Parse the string value `a_value' and set `value'.
 		local
 			s: STRING
 			i: INTEGER
+			l_value: like value
 		do
 			s := a_value.twin
 			i := s.index_of('-', 1)
@@ -107,31 +108,43 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
-				create internal_value.make_with_values (family, weight, shape, height)
-				internal_value.set_height_in_points (height)
-				internal_value.preferred_families.extend (face)
-				set_value (internal_value)
+				create l_value.make_with_values (family, weight, shape, height)
+				internal_value := l_value
+				l_value.set_height_in_points (height)
+				l_value.preferred_families.extend (face)
+				set_value (l_value)
+			else
+				create internal_value
 			end
 		end
 
-	generated_value: STRING is
+	generated_value: STRING
 			-- String generated value for display and saving purposes.
 		require
 			has_value: value /= Void
 		local
 			v: STRING
+			l_value: like value
 		do
+			l_value := value
+			check attached l_value end -- implied by precondition `has_value'
+
 			create v.make (50)
-			v.append (face)
+			if attached face as l_face then
+				v.append (l_face)
+			else
+				check has_face: False end
+			end
+
 			v.append ("-")
-			inspect value.shape
+			inspect l_value.shape
 			when shape_italic then
 				v.append ("i")
 			when shape_regular then
 				v.append ("r")
 			end
 			v.append ("-")
-			inspect value.weight
+			inspect l_value.weight
 			when weight_black then
 				v.append ("black")
 			when weight_thin then
@@ -144,7 +157,8 @@ feature {NONE} -- Implementation
 			v.append ("-")
 			v.append (height.out)
 			v.append ("-")
-			inspect value.family
+
+			inspect l_value.family
 			when family_roman then
 				v.append ("roman")
 			when family_screen then
@@ -159,15 +173,14 @@ feature {NONE} -- Implementation
 			Result := v
 		end
 
-	set_shape (s: STRING) is
+	set_shape (s: STRING)
 			-- Set shape according to `s'.
 		require
 			not_void: s /= Void
 		local
 			s1: STRING
 		do
-			s1 := s
-			s1.to_lower
+			s1 := s.as_lower
 			if s1.is_equal ("i") or s1.is_equal ("italic") then
 				shape := shape_italic
 			elseif s1.is_equal ("r") or s1.is_equal ("regular") then
@@ -175,15 +188,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_weight (s: STRING) is
+	set_weight (s: STRING)
 			-- Set `weight' according to `s'.
 		require
 			not_void: s /= Void
 		local
 			s1: STRING
 		do
-			s1 := s
-			s1.to_lower
+			s1 := s.as_lower
 			if s1.is_equal ("thin") then
 				weight := weight_thin
 			elseif s1.is_equal ("regular") then
@@ -195,15 +207,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_family (s: STRING) is
+	set_family (s: STRING)
 			-- Set `family' according to `s'.
 		require
 			not_void: s /= Void
 		local
 			s1: STRING
 		do
-			s1 := s
-			s1.to_lower
+			s1 := s.as_lower
 			if s1.is_equal ("screen") then
 				family := family_screen
 			elseif s1.is_equal ("roman") then
@@ -217,7 +228,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_height (s: STRING) is
+	set_height (s: STRING)
 			-- Set `height' according to `s'
 		require
 			not_void: s /= Void
@@ -227,21 +238,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	auto_default_value: EV_FONT is
+	auto_default_value: EV_FONT
 			-- Value to use when Current is using auto by default (until real auto is set)
 		once
 			create Result
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

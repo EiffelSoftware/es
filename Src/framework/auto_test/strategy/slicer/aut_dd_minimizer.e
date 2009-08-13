@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -12,6 +12,7 @@ indexing
 class AUT_DD_MINIMIZER
 
 inherit
+	ANY
 
 	KL_SHARED_STREAMS
 		export {NONE} all end
@@ -22,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; a_player: like player; a_error_handler: like error_handler) is
+	make (a_system: like system; a_player: like player; a_error_handler: like error_handler)
 			-- Create new minimizer.
 		require
 			a_system_not_void: a_system /= Void
@@ -68,7 +69,7 @@ feature -- Access
 
 feature -- Slicing
 
-	minimize (a_witness: AUT_WITNESS; a_step_output_stream: like step_output_stream) is
+	minimize (a_witness: AUT_WITNESS; a_step_output_stream: like step_output_stream)
 			-- Minimize `a_witness' and make result available via `last_result'.
 		require
 			a_witness_not_void: a_witness /= Void
@@ -113,7 +114,7 @@ feature {NONE} -- Implementation
 	last_slice: AUT_DD_SLICE
 			-- Last slice computed
 
-	minimize_recursive (a_slice: AUT_DD_SLICE; n: INTEGER) is
+	minimize_recursive (a_slice: AUT_DD_SLICE; n: INTEGER)
 			-- Minimize `a_witness' by dividing it into `n' subsets.
 		require
 			a_slice_not_void: a_slice /= Void
@@ -165,7 +166,7 @@ feature {NONE} -- Implementation
 			last_slice_minimized: last_slice.count <= a_slice.count
 		end
 
-	test_slices (a_list: DS_LINEAR [AUT_DD_SLICE]) is
+	test_slices (a_list: DS_LINEAR [AUT_DD_SLICE])
 			-- Test all items in `a_list' and see if there is one that fails in the same
 			-- way as its witness. If there is one, make it available via `last_slice' otherwise
 			-- set `last_slice' to `Void'.
@@ -228,7 +229,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	execute_task (a_task: AUT_TASK) is
+	execute_task (a_task: AUT_TASK)
 			-- Execute task `a_task'.
 		require
 			a_task_not_void: a_task /= Void
@@ -257,4 +258,35 @@ invariant
 	step_output_stream_valid: step_output_stream /= Void and then step_output_stream.is_open_write
 	test_cache_not_void: test_cache /= Void
 
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end

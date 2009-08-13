@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Internal representation of a class. Instance of CLASS_I represent%
 		%non-compiled classes, but instance of CLASS_C already compiled%
@@ -43,7 +43,8 @@ inherit
 			group as cluster
 		redefine
 			set_changed,
-			reset_options
+			reset_options,
+			reset_class_c_information
 		end
 
 create {CONF_COMP_FACTORY}
@@ -51,7 +52,7 @@ create {CONF_COMP_FACTORY}
 
 feature -- Access
 
-	options: CONF_OPTION is
+	options: CONF_OPTION
 			-- <Precursor>
 		do
 			if options_internal /= Void then
@@ -68,7 +69,7 @@ feature -- Access
 	cluster: CLUSTER_I
 			-- Cluster to which the class belongs to
 
-	config_class: CONF_CLASS is
+	config_class: CONF_CLASS
 			-- Configuration class.
 		do
 			Result := Current
@@ -153,7 +154,7 @@ feature -- Access
 
 feature -- Status setting
 
-	set_changed (b: BOOLEAN) is
+	set_changed (b: BOOLEAN)
 			-- Assign `b' to `changed'.
 		do
 			changed := b
@@ -161,7 +162,7 @@ feature -- Status setting
 
 feature -- Setting
 
-	set_base_name (s: STRING) is
+	set_base_name (s: STRING)
 			-- Assign `s' to `base_name'.
 		require
 			s_not_void: s /= Void
@@ -174,10 +175,23 @@ feature -- Setting
 
 feature {COMPILER_EXPORTER} -- Setting
 
-	reset_options is
+	reset_options
 			-- <Precursor>
 		do
 			options_internal := Void
+		end
+
+	reset_class_c_information (cl: CLASS_C)
+			-- <Precursor>
+		do
+			Precursor {CLASS_I} (cl)
+				-- If the class used to be only in an override cluster, then its `overriden_by'
+				-- entry will also hold a compiled version of the class, and we cannot allow that,
+				-- since only the class outside the override cluster has the compiled class information.
+				-- This fixes eweasel test#config009.
+			if overriden_by /= Void then
+				overriden_by.reset_compiled_class
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -187,7 +201,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Type anchor
 
-	class_type: EIFFEL_CLASS_I is
+	class_type: EIFFEL_CLASS_I
 			-- <Precursor>
 		do
 		end
@@ -196,7 +210,7 @@ invariant
 	name_not_void: name /= Void
 	name_in_upper: name.as_upper.is_equal (name)
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

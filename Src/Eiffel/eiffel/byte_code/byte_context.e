@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Context variables for code generation and utilities.
@@ -31,7 +31,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Initialization
 		do
 			create register_server.make (c_nb_types * 2)
@@ -47,7 +47,8 @@ feature -- Initialization
 			create class_type_stack.make (10)
 			create generated_inlines.make (5)
 			create generic_wrappers.make (0)
-			create object_test_local_offset.make (0)
+			create precondition_object_test_local_offset.make (0)
+			create postcondition_object_test_local_offset.make (0)
 		end
 
 feature -- Access
@@ -57,7 +58,7 @@ feature -- Access
 			-- for the workbench otherwise generation of C code in final
 			-- mode
 
-	final_mode: BOOLEAN is
+	final_mode: BOOLEAN
 			-- Is generation of C code for finalized mode?
 		do
 			Result := not workbench_mode
@@ -90,7 +91,7 @@ feature -- Access
 	original_class_type: CLASS_TYPE
 			-- Class type we are generating
 
-	is_class_type_changed: BOOLEAN is
+	is_class_type_changed: BOOLEAN
 			-- Is `class_type' changed to the type, unrelated to `original_class_type'?
 			-- (See also: `change_class_type_contrext'.)
 		do
@@ -159,6 +160,9 @@ feature -- Access
 	saved_supplier_precondition: INTEGER
 			-- Number of the saved_supplier_precondition local.
 
+	saved_rescue_level: INTEGER
+			-- Number of the `saved_rescue_local'.
+
 	origin_has_precondition: BOOLEAN
 			-- Is Current feature have origin feature with precondition?
 			-- (This is used for cases where the origin of the
@@ -185,7 +189,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_first_precondition_block_generated (v: BOOLEAN) is
+	set_first_precondition_block_generated (v: BOOLEAN)
 			-- Set `il_external_creation' with `v'.
 		do
 			is_first_precondition_block_generated := v
@@ -193,7 +197,7 @@ feature -- Setting
 			is_first_precondition_block_generated_set: is_first_precondition_block_generated = v
 		end
 
-	set_new_precondition_block (v: BOOLEAN) is
+	set_new_precondition_block (v: BOOLEAN)
 			-- Set `il_external_creation' with `v'.
 		do
 			is_new_precondition_block := v
@@ -201,7 +205,7 @@ feature -- Setting
 			is_new_precondition_block_set: is_new_precondition_block = v
 		end
 
-	set_is_argument_protected (v: BOOLEAN) is
+	set_is_argument_protected (v: BOOLEAN)
 			-- Set `is_argument_protected' with `v'.
 		do
 			is_argument_protected := v
@@ -209,7 +213,7 @@ feature -- Setting
 			is_argument_protected_set: is_argument_protected = v
 		end
 
-	set_workbench_mode is
+	set_workbench_mode
 			-- Set `workbench_mode' to True.
 		do
 			workbench_mode := True
@@ -217,7 +221,7 @@ feature -- Setting
 			workbench_mode_set: workbench_mode
 		end
 
-	set_final_mode is
+	set_final_mode
 			-- Set `final_mode' to True.
 		do
 			workbench_mode := False
@@ -225,7 +229,7 @@ feature -- Setting
 			final_mode_set: final_mode
 		end
 
-	set_has_cpp_externals_calls (v: BOOLEAN) is
+	set_has_cpp_externals_calls (v: BOOLEAN)
 			-- Set `has_cpp_externals_calls' with `v'.
 		do
 			has_cpp_externals_calls := v
@@ -233,7 +237,7 @@ feature -- Setting
 			has_cpp_externals_calls_set: has_cpp_externals_calls = v
 		end
 
-	set_buffer (b: like buffer) is
+	set_buffer (b: like buffer)
 			-- Assign `b' to `buffer'.
 		require
 			b_not_void: b /= Void
@@ -243,7 +247,7 @@ feature -- Setting
 			buffer_set: buffer = b
 		end
 
-	set_header_buffer (b: like header_buffer) is
+	set_header_buffer (b: like header_buffer)
 			-- Assign `b' to `header_buffer'.
 		require
 			b_not_void: b /= Void
@@ -253,19 +257,25 @@ feature -- Setting
 			header_buffer_set: header_buffer = b
 		end
 
-	set_assertion_type (a: INTEGER) is
+	set_assertion_type (a: INTEGER)
 			-- Assign `a' to `assertion_type'
 		do
 			assertion_type := a
 		end
 
-	set_saved_supplier_precondition (s: INTEGER) is
+	set_saved_supplier_precondition (s: INTEGER)
 			-- Assign `s' to `saved_supplier_precondition'
 		do
 			saved_supplier_precondition := s
 		end
 
-	set_has_feature_name_stored (v: like has_feature_name_stored) is
+	set_saved_rescue_level (s: INTEGER)
+			-- Assign `s' to `saved_rescue_level'
+		do
+			saved_rescue_level := s
+		end
+
+	set_has_feature_name_stored (v: like has_feature_name_stored)
 			-- Assign `v' to `has_feature_name_stored'.
 		do
 			has_feature_name_stored := v
@@ -275,7 +285,7 @@ feature -- Setting
 
 feature -- Code generation
 
-	generate_gen_type_conversion (gtype: GEN_TYPE_A; a_level: NATURAL) is
+	generate_gen_type_conversion (gtype: GEN_TYPE_A; a_level: NATURAL)
 			-- Generate code for converting type id arrays
 			-- into single id's.
 		require
@@ -367,7 +377,7 @@ feature {NONE} -- Once features: implementation
 			-- List result types and once indexes indexed by body indexes which represent all global onces for current
 			-- generated type or for the whole system in finalized mode
 
-	add_once (storage: like onces; type: TYPE_C; code_index: INTEGER) is
+	add_once (storage: like onces; type: TYPE_C; code_index: INTEGER)
 			-- Register once routine identified by its `code_index' with result type `type' in `storage'.
 		require
 			storage_not_void: storage /= Void
@@ -384,7 +394,7 @@ feature -- C code generation: once features
 	is_once_call_optimized: BOOLEAN
 			-- Can call to a once routine be optimized by direct loading of its result from memory?
 
-	add_thread_relative_once (type: TYPE_C; code_index: INTEGER) is
+	add_thread_relative_once (type: TYPE_C; code_index: INTEGER)
 			-- Register thread-relative once routine identified by its `code_index' with result type `type'.
 		require
 			type_not_void: type /= Void
@@ -394,7 +404,7 @@ feature -- C code generation: once features
 			added: has_thread_relative_once (code_index)
 		end
 
-	add_process_relative_once (type: TYPE_C; code_index: INTEGER) is
+	add_process_relative_once (type: TYPE_C; code_index: INTEGER)
 			-- Register process-relative once routine identified by its `code_index' with result type `type'.
 		require
 			type_not_void: type /= Void
@@ -402,13 +412,13 @@ feature -- C code generation: once features
 			add_once (global_onces, type, code_index)
 		end
 
-	has_thread_relative_once (code_index: INTEGER): BOOLEAN is
+	has_thread_relative_once (code_index: INTEGER): BOOLEAN
 			-- Is once feature with `code_index' registered?
 		do
 			Result := onces.has (code_index)
 		end
 
-	thread_relative_once_index (code_index: INTEGER): INTEGER is
+	thread_relative_once_index (code_index: INTEGER): INTEGER
 			-- Index of a once routine with `code_index' counted from 0
 		require
 			final_mode: final_mode
@@ -417,7 +427,7 @@ feature -- C code generation: once features
 			Result := onces.item (code_index).second
 		end
 
-	generate_once_optimized_call_start (type_c: TYPE_C; code_index: INTEGER; is_process_relative: BOOLEAN; buf: like buffer) is
+	generate_once_optimized_call_start (type_c: TYPE_C; code_index: INTEGER; is_process_relative: BOOLEAN; buf: like buffer)
 			-- Generate beginning of optimized direct call to once routine of type `type_c' with given `code_index'
 		require
 			is_once_call_optimized: is_once_call_optimized
@@ -463,7 +473,7 @@ feature -- C code generation: once features
 			buf.put_character (',')
 		end
 
-	generate_once_data_definition (buf: like buffer) is
+	generate_once_data_definition (buf: like buffer)
 			-- Generate definition of once data fields
 		require
 			buffer_not_void: buf /= Void
@@ -502,7 +512,7 @@ feature -- C code generation: once features
 			end
 		end
 
-	generate_module_once_data_initialization (a_type_id: INTEGER) is
+	generate_module_once_data_initialization (a_type_id: INTEGER)
 			-- Generate initialization of once data fields for type identified by `a_type_id'
 		require
 			buffer_not_void: buffer /= Void
@@ -545,7 +555,7 @@ feature -- C code generation: once features
 			end
 		end
 
-	generate_system_once_data_initialization (buf: like buffer) is
+	generate_system_once_data_initialization (buf: like buffer)
 			-- Generate initialization of system-wide once data fields
 		require
 			buffer_not_void: buf /= Void
@@ -592,13 +602,13 @@ feature {NONE} -- Access: once manifest strings
 
 feature -- Access: once manifest strings
 
-	is_static_system_data_safe: BOOLEAN is
+	is_static_system_data_safe: BOOLEAN
 			-- Is it safe to use system data stored in system-wide static memory?
 		do
 			Result := final_mode and then not system.has_multithreaded
 		end
 
-	once_manifest_string_count: INTEGER is
+	once_manifest_string_count: INTEGER
 			-- Number of once manifest strings in current routine body
 		require
 			is_static_system_data_safe: is_static_system_data_safe
@@ -608,7 +618,7 @@ feature -- Access: once manifest strings
 			non_negative_result: Result >= 0
 		end
 
-	once_manifest_string_value (number: INTEGER): STRING is
+	once_manifest_string_value (number: INTEGER): STRING
 			-- Value of once manifest string `number' in current routine body
 		require
 			is_static_system_data_safe: is_static_system_data_safe
@@ -622,7 +632,7 @@ feature -- Access: once manifest strings
 			end
 		end
 
-	generate_once_manifest_string_declaration (buf: like buffer) is
+	generate_once_manifest_string_declaration (buf: like buffer)
 			-- Generate declarations for once manifest strings.
 		require
 			buffer_not_void: buf /= Void
@@ -664,7 +674,7 @@ feature -- Access: once manifest strings
 			end
 		end
 
-	generate_once_manifest_string_import (number: INTEGER) is
+	generate_once_manifest_string_import (number: INTEGER)
 			-- Generate extern declaration for `number' once manifest strings from current routine body.
 		require
 			non_negative_number: number >= 0
@@ -692,7 +702,7 @@ feature -- Access: once manifest strings
 				is_static_system_data_safe implies once_manifest_string_count = number
 		end
 
-	generate_once_manifest_string_allocation (number: INTEGER) is
+	generate_once_manifest_string_allocation (number: INTEGER)
 			-- Generate C code to allocate memory for once manifest strings in current routine body.
 		require
 			non_negative_number: number >= 0
@@ -716,7 +726,7 @@ feature -- Access: once manifest strings
 			end
 		end
 
-	make_once_string_allocation_byte_code (ba: BYTE_ARRAY; number: INTEGER) is
+	make_once_string_allocation_byte_code (ba: BYTE_ARRAY; number: INTEGER)
 			-- Generate byte code to allocate memory for once manifest strings in current routine body.
 		require
 			byte_array_not_void: ba /= Void
@@ -729,7 +739,7 @@ feature -- Access: once manifest strings
 			end
 		end
 
-	generate_once_manifest_string_initialization is
+	generate_once_manifest_string_initialization
 			-- Generate code to initialize once manifest strings.
 		local
 			buf: like buffer
@@ -778,7 +788,7 @@ feature -- Access: once manifest strings
 			end
 		end
 
-	register_once_manifest_string (value: STRING; number: INTEGER) is
+	register_once_manifest_string (value: STRING; number: INTEGER)
 			-- Register that current routine body has once manifest string
 			-- with the given `number' of the given `value'.
 		require
@@ -805,7 +815,7 @@ feature -- Access: once manifest strings
 
 feature {NONE} -- Setting: once manifest strings
 
-	set_once_manifest_string_count (number: INTEGER) is
+	set_once_manifest_string_count (number: INTEGER)
 			-- Set number of once manifest strings in current routine body to `number'.
 		require
 			positive_number: number > 0
@@ -818,7 +828,7 @@ feature {NONE} -- Setting: once manifest strings
 
 feature -- Registers
 
-	Current_register: REGISTRABLE is
+	Current_register: REGISTRABLE
 			-- An instance of Current register for local var index computation
 		do
 			if inlined_current_register /= Void then
@@ -833,12 +843,12 @@ feature -- Registers
 			create Result
 		end
 
-	Current_b: CURRENT_BL is
+	Current_b: CURRENT_BL
 		once
 			create Result
 		end
 
-	Result_register: RESULT_B is
+	Result_register: RESULT_B
 			-- An instace of Result register for local var index computation
 		once
 				-- This hack is needed because of the special treatment of
@@ -851,7 +861,7 @@ feature -- Registers
 			create {RESULT_BL} Result.make (create {NONE_A})
 		end
 
-	get_argument_register (t: TYPE_C): REGISTER is
+	get_argument_register (t: TYPE_C): REGISTER
 			-- Get a new temporary register of type `t' to hold an argument
 			-- to passed to during a feature call
 		require
@@ -864,7 +874,7 @@ feature -- Registers
 			Result_attached: Result /= Void
 		end
 
-	print_argument_register (r: REGISTER; buf: like buffer) is
+	print_argument_register (r: REGISTER; buf: like buffer)
 			-- Print a name of a register `r' to `buf'
 		require
 			r_attached: r /= Void
@@ -882,7 +892,7 @@ feature {BYTE_CONTEXT, REGISTER} -- Registers
 
 feature {REGISTER} -- Registers
 
-	register_name (t: INTEGER; n: INTEGER): STRING is
+	register_name (t: INTEGER; n: INTEGER): STRING
 			-- Name of a temporary register number `n' of type `t'.
 		require
 			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
@@ -893,7 +903,7 @@ feature {REGISTER} -- Registers
 			Result.append_integer (n)
 		end
 
-	put_register_name (t: INTEGER; n: INTEGER; buf: like buffer) is
+	put_register_name (t: INTEGER; n: INTEGER; buf: like buffer)
 			-- Put name of a temporary register number `n' of type `t' into `buf'.
 		require
 			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
@@ -904,7 +914,7 @@ feature {REGISTER} -- Registers
 			buf.put_integer (n)
 		end
 
-	register_type (t: INTEGER): TYPE_C is
+	register_type (t: INTEGER): TYPE_C
 			-- Type of register identified by `t'.
 		require
 			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
@@ -951,11 +961,11 @@ feature {REGISTER} -- Registers
 
 feature {NONE} -- Registers: implementation
 
-	register_names: SPECIAL [STRING] is
+	register_names: SPECIAL [STRING]
 			-- Names of registers indexed by their level
 		once
 				-- `c_void' is not used.
-			create Result.make (c_nb_types * 2)
+			create Result.make_filled (Void, c_nb_types * 2)
 				-- Simple registers.
 			Result.put ("ti1_", c_int8)
 			Result.put ("ti2_", c_int16)
@@ -990,7 +1000,7 @@ feature {NONE} -- Registers: implementation
 			Result.put ("ur", c_nb_types - 1 + c_ref)
 		end
 
-	register_sk_value (t: INTEGER): STRING is
+	register_sk_value (t: INTEGER): STRING
 			-- SK value associated with a register type `t'
 		require
 			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
@@ -998,7 +1008,7 @@ feature {NONE} -- Registers: implementation
 			Result := register_sk_values [t]
 		end
 
-	register_sk_values: ARRAY [STRING] is
+	register_sk_values: ARRAY [STRING]
 			-- SK values of registers indexed by their level
 		once
 			create Result.make (1, (c_nb_types - 1) * 2)
@@ -1037,7 +1047,7 @@ feature {NONE} -- Registers: implementation
 
 feature -- Access
 
-	has_chained_prec: BOOLEAN is
+	has_chained_prec: BOOLEAN
 			-- Feature has chained preconditions?
 		do
 			Result := (byte_code.precondition /= Void
@@ -1048,48 +1058,48 @@ feature -- Access
 						system.keep_assertions)
 		end
 
-	has_rescue: BOOLEAN is
+	has_rescue: BOOLEAN
 			-- Feature has a rescue clause ?
 		do
 			Result := byte_code.rescue_clause /= Void
 		end
 
-	set_origin_has_precondition (b: BOOLEAN) is
+	set_origin_has_precondition (b: BOOLEAN)
 		do
 			origin_has_precondition := b
 		end
 
-	has_postcondition: BOOLEAN is
+	has_postcondition: BOOLEAN
 			-- Do we have to generate any postcondition ?
 		do
 			Result := workbench_mode or else System.keep_assertions
 		end
 
-	has_precondition: BOOLEAN is
+	has_precondition: BOOLEAN
 			-- Do we have to generate any precondition ?
 		do
 			Result := workbench_mode or else System.keep_assertions
 		end
 
-	has_invariant: BOOLEAN is
+	has_invariant: BOOLEAN
 			-- Do we have to generate invariant checks ?
 		do
 			Result := workbench_mode or else System.keep_assertions
 		end
 
-	assertion_level: ASSERTION_I is
+	assertion_level: ASSERTION_I
 			-- Assertion level description
 		do
 			Result := associated_class.assertion_level
 		end
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 			-- Class associated with current type
 		do
 			Result := current_type.associated_class
 		end
 
-	constrained_type_in (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A is
+	constrained_type_in (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A
 			-- Constrained type `type' in the context of `context_class_type'
 		require
 			type_not_void: type /= Void
@@ -1124,7 +1134,7 @@ feature -- Access
 			result_not_formal: not Result.is_formal or Result.is_multi_constrained
 		end
 
-	real_type_in (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A is
+	real_type_in (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A
 			-- Type `type' as seen in `a_context_type'
 		require
 			type_not_void: type /= Void
@@ -1144,7 +1154,7 @@ feature -- Access
 			result_not_formal: not Result.is_formal or Result.is_multi_constrained
 		end
 
-	real_type_in_fixed (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A is
+	real_type_in_fixed (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A
 			-- Type `type' as seen in `a_context_type'
 		require
 			type_not_void: type /= Void
@@ -1156,7 +1166,7 @@ feature -- Access
 			result_not_formal: not Result.is_formal or Result.is_multi_constrained
 		end
 
-	real_type (type: TYPE_A): TYPE_A is
+	real_type (type: TYPE_A): TYPE_A
 			-- Type `type' written in `class_type' as seen in `context_class_type'
 		require
 			type_not_void: type /= Void
@@ -1171,7 +1181,7 @@ feature -- Access
 			result_not_formal: not Result.is_formal or Result.is_multi_constrained
 		end
 
-	real_type_fixed (type: TYPE_A): TYPE_A is
+	real_type_fixed (type: TYPE_A): TYPE_A
 			-- Type `type' written in `current_type' as seen in `context_class_type'
 			-- Fixed means that the possible return of a MULTI_FORMAL_A is checked and valid.
 		require
@@ -1185,7 +1195,7 @@ feature -- Access
 			result_not_formal: not Result.is_formal or Result.is_multi_constrained
 		end
 
-	creation_type (type: TYPE_A): TYPE_A is
+	creation_type (type: TYPE_A): TYPE_A
 			-- Convenience
 		require
 			type_not_void: type /= Void
@@ -1216,7 +1226,7 @@ feature -- Access
 			end
 		end
 
-	set_byte_code (bc: BYTE_CODE) is
+	set_byte_code (bc: BYTE_CODE)
 			-- Assign `bc' to byte_code.
 		require
 			good_argument: bc /= Void
@@ -1224,7 +1234,7 @@ feature -- Access
 			byte_code := bc
 		end
 
-	init (t: CLASS_TYPE) is
+	init (t: CLASS_TYPE)
 			-- Initialize byte context with `t'.
 		require
 			t_not_void: t /= Void
@@ -1259,28 +1269,19 @@ feature -- Access
 			not_is_class_type_changed: not is_class_type_changed
 		end
 
-	is_ancestor (other: CLASS_TYPE): BOOLEAN is
+	is_ancestor (other: CLASS_TYPE): BOOLEAN
 			-- Is `other' an ancestor of `context_class_type'?
-		local
-			l_class: CLASS_C
 		do
-				-- We need to set `system.current_class' since conformance require a context class
-				-- especially when you have a formal. Note that once `conform_to' takes a context
-				-- class as argument we won't need this.
-			l_class := system.current_class
-			system.set_current_class (context_class_type.associated_class)
-				-- We do `twin' because `is_conformant_to' as a side effect of modifying the object.
-			Result := context_class_type.type.is_conformant_to (other.type)
-			system.set_current_class (l_class)
+			Result := context_class_type.type.is_conformant_to (context_class_type.associated_class, other.type)
 		end
 
-	is_written_context: BOOLEAN is
+	is_written_context: BOOLEAN
 			-- Does current context match the context where the code is written?
 		do
 			Result := original_class_type = class_type
 		end
 
-	set_class_type (t: CLASS_TYPE) is
+	set_class_type (t: CLASS_TYPE)
 			-- Assign `t' to `class_type'.
 		require
 			t_not_void: t /= Void
@@ -1311,7 +1312,7 @@ feature -- Access
 	change_class_type_context (
 				new_context_class_type: CLASS_TYPE; new_context_cl_type: CL_TYPE_A;
 				new_written_class_type: CLASS_TYPE; new_written_cl_type: CL_TYPE_A)
-		is
+
 			-- Change the current `class_type' to `new_written_class_type',
 			-- not related to `original_class_type', but to `new_context_class_type'.
 			-- (Multiple calls to this feature are allowed and should
@@ -1334,7 +1335,7 @@ feature -- Access
 			is_class_type_changed: is_class_type_changed
 		end
 
-	restore_class_type_context is
+	restore_class_type_context
 			-- Restore the state of context to the one before the
 			-- earlier call to `change_class_type_context'.
 		require
@@ -1356,7 +1357,7 @@ feature -- Access
 			current_type_set: current_type = old class_type_stack.item.written_cl_type
 		end
 
-	set_current_feature (f: FEATURE_I) is
+	set_current_feature (f: FEATURE_I)
 			-- Assign `f' to `current_feature'.
 		require
 			valid_f: f /= Void
@@ -1368,7 +1369,7 @@ feature -- Access
 			original_body_index_set: original_body_index = f.body_index
 		end
 
-	set_original_body_index (new_original_body_index: like original_body_index) is
+	set_original_body_index (new_original_body_index: like original_body_index)
 			-- Set `original_body_index' to `new_original_body_index'.
 		do
 			original_body_index := new_original_body_index
@@ -1376,19 +1377,19 @@ feature -- Access
 			original_body_index_set: original_body_index = new_original_body_index
 		end
 
-	init_propagation is
+	init_propagation
 			-- Reset `propagated' to False.
 		do
 			propagated := False
 		end
 
-	set_propagated is
+	set_propagated
 			-- Signals register has been caught.
 		do
 			propagated := True
 		end
 
-	propagate_no_register: BOOLEAN is
+	propagate_no_register: BOOLEAN
 			-- Is the propagation of `No_register' allowed ?
 		do
 			Result := not (	workbench_mode
@@ -1396,7 +1397,7 @@ feature -- Access
 							assertion_level.is_precondition)
 		end
 
-	add_dt_current is
+	add_dt_current
 			-- One more time we need to compute Current's type.
 		do
 			if in_inlined_code then
@@ -1406,7 +1407,7 @@ feature -- Access
 			end
 		end
 
-	add_dftype_current is
+	add_dftype_current
 			-- On more time we need to compute Current's full dynamic type.
 		do
 			if in_inlined_code then
@@ -1416,7 +1417,7 @@ feature -- Access
 			end
 		end
 
-	set_inlined_dt_current (i: INTEGER) is
+	set_inlined_dt_current (i: INTEGER)
 			-- Set the value of `inlined_dt_current' to `i'
 		require
 			i_non_negative: i >= 0
@@ -1426,7 +1427,7 @@ feature -- Access
 			inlined_dt_current_set: inlined_dt_current = i
 		end
 
-	set_inlined_dftype_current (i: INTEGER) is
+	set_inlined_dftype_current (i: INTEGER)
 			-- Set value of `inlined_dftype_current' to `i'.
 		require
 			i_non_negative: i >= 0
@@ -1436,7 +1437,7 @@ feature -- Access
 			inlined_dftype_current_set: inlined_dftype_current = i
 		end
 
-	reset_inlined_dt_current is
+	reset_inlined_dt_current
 			-- Reset `inlined_dt_current' to 0
 		do
 			inlined_dt_current := 0
@@ -1444,7 +1445,7 @@ feature -- Access
 			inlined_dt_current_set: inlined_dt_current = 0
 		end
 
-	reset_inlined_dftype_current is
+	reset_inlined_dftype_current
 			-- Reset `inlined_dftype_current' to 0
 		do
 			inlined_dftype_current := 0
@@ -1452,7 +1453,7 @@ feature -- Access
 			inlined_dftype_current_set: inlined_dftype_current = 0
 		end
 
-	mark_current_used is
+	mark_current_used
 			-- Signals that a reference is made to Current (apart
 			-- from computing a DT) and thus needs to be pushed on
 			-- the local stack in case it'd be moved by the GC.
@@ -1467,7 +1468,7 @@ feature -- Access
 			end
 		end
 
-	mark_result_used is
+	mark_result_used
 			-- Signals that an assignment in Result is made
 			-- As a side effect, compute an index for Result in the local
 			-- variable array, if the type is a pointer one and we are not
@@ -1485,19 +1486,19 @@ feature -- Access
 			end
 		end
 
-	mark_local_used (an_index: INTEGER) is
+	mark_local_used (an_index: INTEGER)
 			-- Signals that local variable `an_index' is used
 		do
 			local_vars.force (True, an_index)
 		end
 
-	inc_label is
+	inc_label
 			-- Increment `label'
 		do
 			label := label + 1
 		end
 
-	generate_body_label is
+	generate_body_label
 			-- Generate label "body"
 			--|Note: the semi-colon is added, otherwise C compilers
 			--|complain when there are no instructions after the label.
@@ -1509,19 +1510,19 @@ feature -- Access
 			buf.put_string ("body:;")
 		end
 
-	print_body_label is
+	print_body_label
 			-- Print label "body"
 		do
 			buffer.put_string ("body")
 		end
 
-	generate_current_label_definition is
+	generate_current_label_definition
 			-- Generate current label `label'.
 		do
 			generate_label_definition (label)
 		end
 
-	generate_label_definition (l: INTEGER) is
+	generate_label_definition (l: INTEGER)
 			-- Generate label number `l'
 		require
 			label_exists: l >= 0
@@ -1536,13 +1537,13 @@ feature -- Access
 			end
 		end
 
-	print_current_label is
+	print_current_label
 			-- Print label number `label'.
 		do
 			print_label (label)
 		end
 
-	print_label (l: INTEGER) is
+	print_label (l: INTEGER)
 			-- Print label number `l'
 		require
 			label_exists: l > 0
@@ -1554,7 +1555,7 @@ feature -- Access
 			buf.put_integer (l)
 		end
 
-	set_local_index (s: STRING; r: REGISTRABLE) is
+	set_local_index (s: STRING; r: REGISTRABLE)
 			-- Record the instance `r' into the `associated_register_table'
 			-- as register named `s'.
 		require
@@ -1563,7 +1564,7 @@ feature -- Access
 			key: STRING
 		do
 			if not associated_register_table.has (s) then
-				key := s.twin
+				create key.make_from_string (s)
 				local_index_table.extend (key)
 				local_index_counter := local_index_counter + 1
 				associated_register_table.put (r, key)
@@ -1577,13 +1578,13 @@ feature -- Access
 			-- Do we need to generate GC hooks?
 			-- Computed by compute_need_gc_hooks for each instance of BYTE_CODE.
 
-	force_gc_hooks is
+	force_gc_hooks
 			-- Force usage of GC hooks
 		do
 			need_gc_hook := True
 		end
 
-	compute_need_gc_hooks (has_assertions_checking_enabled: BOOLEAN) is
+	compute_need_gc_hooks (has_assertions_checking_enabled: BOOLEAN)
 			-- Set `need_gc_hook' for current instance of BYTE_CODE
 			-- If `has_assertions_checking_enabled', `need_gc_hook' is set to True.
 		local
@@ -1681,7 +1682,7 @@ feature -- Access
 			need_gc_hook := tmp
 		end
 
-	make_from_context (other: like Current) is
+	make_from_context (other: like Current)
 			-- Save context for later restoration. This makes the
 			-- use of unanalyze possible and meaningful.
 		do
@@ -1691,7 +1692,7 @@ feature -- Access
 			associated_register_table := other.associated_register_table.twin
 		end
 
-	restore (saved_context: like Current) is
+	restore (saved_context: like Current)
 			-- Restore the saved context after an analyze followed by an
 			-- unanalyze, so that we may analyze again with different
 			-- propagations (kind of feedback).
@@ -1708,7 +1709,8 @@ feature -- Access
 			local_index_table := saved_context.local_index_table
 			local_index_counter := saved_context.local_index_counter
 			associated_register_table := saved_context.associated_register_table
-			object_test_local_offset := saved_context.object_test_local_offset
+			precondition_object_test_local_offset := saved_context.precondition_object_test_local_offset
+			postcondition_object_test_local_offset := saved_context.postcondition_object_test_local_offset
 		end
 
 	generate_dtype_declaration (is_once: BOOLEAN)
@@ -1742,7 +1744,7 @@ feature -- Access
 			end
 		end
 
-	generate_current_dtype is
+	generate_current_dtype
 			-- Generate the dynamic type of `Current'
 		do
 			if inlined_dt_current > 1 then
@@ -1756,7 +1758,7 @@ feature -- Access
 			end
 		end
 
-	generate_current_dftype is
+	generate_current_dftype
 			-- Generate the dynamic type of `Current'
 		do
 			if inlined_dftype_current > 1 then
@@ -1770,7 +1772,7 @@ feature -- Access
 			end
 		end
 
-	generate_temporary_ref_variables is
+	generate_temporary_ref_variables
 			-- Generate temporary variables under the control of the
 			-- garbage collector.
 		local
@@ -1795,7 +1797,7 @@ feature -- Access
 			end
 		end
 
-	generate_temporary_ref_macro_undefintion is
+	generate_temporary_ref_macro_undefintion
 			-- Generate #undef statements for macros being generated to access wrapped arguments.
 		local
 			i, j, nb_vars: INTEGER
@@ -1816,7 +1818,7 @@ feature -- Access
 						j > nb_vars
 					loop
 						buf.put_new_line_only
-						buf.put_string ("#undef ")
+						buf.put_string (once "#undef ")
 						put_register_name (i, j, buf)
 						j := j + 1
 					end
@@ -1825,7 +1827,7 @@ feature -- Access
 			end
 		end
 
-	generate_tmp_var (ctype, num: INTEGER) is
+	generate_tmp_var (ctype, num: INTEGER)
 			-- Generate declaration for temporary variable `num'
 			-- whose C type is `ctype'.
 		local
@@ -1878,11 +1880,10 @@ feature -- Access
 			end
 		end
 
-	generate_gc_hooks (compound_or_post: BOOLEAN) is
+	generate_gc_hooks (compound_or_post: BOOLEAN)
 			-- In case there are some local reference variables,
 			-- generate the hooks for the GC by filling the local variable
-			-- array. Unfortunately, I cannot use bzero() on the array, in
-			-- case it would be a function call--RAM.
+			-- array.
 			--| `compound_or_post' indicate the generation of hooks
 			--| for the compound or post- pre- or invariant routine. -- FREDD
 		local
@@ -1906,9 +1907,9 @@ feature -- Access
 			if nb_refs > 0 then
 				buf.put_new_line
 				if compound_or_post or else byte_code.rescue_clause = Void then
-					buf.put_string ("RTLI(")
+					buf.put_string (once "RTLI(")
 				else
-					buf.put_string ("RTXI(")
+					buf.put_string (once "RTXI(")
 				end
 				buf.put_integer (nb_refs)
 				buf.put_string (gc_rparan_semi_c)
@@ -1926,25 +1927,15 @@ feature -- Access
 						reference_type: not reg.is_current implies reg.c_type.is_pointer
 					end
 
-					if
-						((reg.is_predefined or reg.is_temporary)
-						and not (reg.is_current or reg.is_argument)
-						and not (reg.is_result and compound_or_post))
-					then
-						buf.put_local_registration (position, rname)
-					else
-						if (reg.c_type.is_bit) and (reg.is_argument) then
-								-- Clone argument if it is bit
-							buf.put_local_registration (position, rname)
-							buf.put_new_line
-							buf.put_string (rname)
-							buf.put_string (" = RTCB(")
-							buf.put_string (rname)
-							buf.put_character (')')
-							buf.put_character (';')
-						else
-							buf.put_local_registration (position, rname)
-						end
+					buf.put_local_registration (position, rname)
+					if (reg.c_type.is_bit) and (reg.is_argument) then
+							-- Clone argument if it is bit
+						buf.put_new_line
+						buf.put_string (rname)
+						buf.put_string (once " = RTCB(")
+						buf.put_string (rname)
+						buf.put_character (')')
+						buf.put_character (';')
 					end
 					position := position + 1
 					l_table.forth
@@ -1952,7 +1943,7 @@ feature -- Access
 			end
 		end
 
-	generate_feature_name (buf: GENERATION_BUFFER) is
+	generate_feature_name (buf: GENERATION_BUFFER)
 			-- Generate feature name in `buf'.
 		require
 			buf_not_void: buf /= Void
@@ -1964,7 +1955,7 @@ feature -- Access
 			end
 		end
 
-	generate_catcall_check (a_register: REGISTRABLE; a_type: TYPE_A; a_pos: INTEGER; a_like_current_optimization_ok: BOOLEAN) is
+	generate_catcall_check (a_register: REGISTRABLE; a_type: TYPE_A; a_pos: INTEGER; a_like_current_optimization_ok: BOOLEAN)
 			-- Generate catcall check at runtime for the argument at position `a_pos' against the static
 			-- type `a_type'.
 		require
@@ -1983,7 +1974,7 @@ feature -- Access
 					-- type of the expected type. However when the expected type is a formal, or an anchor
 					-- then we cannot do this optimization as the type of the formal or the anchor depends on
 					-- the actual object's type.
-				if not a_type.is_attached and then not a_type.is_formal and then not {l_anchor: LIKE_TYPE_A} a_type then
+				if not a_type.is_attached and then not a_type.is_formal and then not attached {LIKE_TYPE_A} a_type as l_anchor then
 					l_if_required := True
 					buf.put_new_line
 					buf.put_four_character ('i', 'f', ' ', '(')
@@ -2016,7 +2007,7 @@ feature -- Access
 				buf.put_integer (a_pos)
 				buf.put_two_character (',', ' ')
 				if l_optimized then
-					if {l_type_1: ATTACHABLE_TYPE_A} a_type then
+					if attached {ATTACHABLE_TYPE_A} a_type as l_type_1 then
 						if l_type_1.has_attached_mark then
 							buf.put_string ("eif_attached_type(")
 							byte_code.feature_origin (buf)
@@ -2033,7 +2024,7 @@ feature -- Access
 					end
 					buf.put_two_character (')', ';')
 				else
-					if {l_type_2: ATTACHABLE_TYPE_A} a_type then
+					if attached {ATTACHABLE_TYPE_A} a_type as l_type_2 then
 						if l_type_2.has_attached_mark then
 							buf.put_string ("eif_attached_type(")
 							l_info.generate_type_id (buf, final_mode, 0)
@@ -2060,7 +2051,7 @@ feature -- Access
 			end
 		end
 
-	make_catcall_check (ba: BYTE_ARRAY; a_type: TYPE_A; a_pos: INTEGER; a_like_current_optimization_ok: BOOLEAN) is
+	make_catcall_check (ba: BYTE_ARRAY; a_type: TYPE_A; a_pos: INTEGER; a_like_current_optimization_ok: BOOLEAN)
 			-- Generate catcall check at runtime for the argument at position `a_pos' against the static
 			-- type `a_type'.
 		require
@@ -2088,7 +2079,7 @@ feature -- Access
 					-- We sometime need to convert a type to either it associated attached/non-attached
 					-- version. First boolean is to figure out if there is an action to be taken, the
 					-- second which action.
-				if {l_type_1: ATTACHABLE_TYPE_A} a_type then
+				if attached {ATTACHABLE_TYPE_A} a_type as l_type_1 then
 					if l_type_1.has_attached_mark then
 						ba.append_boolean (True)
 						ba.append_boolean (True)
@@ -2110,7 +2101,7 @@ feature -- Access
 			end
 		end
 
-	expanded_number (arg_pos: INTEGER): INTEGER is
+	expanded_number (arg_pos: INTEGER): INTEGER
 			-- Compute the argument's ordinal position within the expanded
 			-- subset of arguments.
 		local
@@ -2135,7 +2126,7 @@ feature -- Access
 			end
 		end
 
-	remove_gc_hooks is
+	remove_gc_hooks
 			-- Pop off pushed addresses on local stack
 		local
 			vars: INTEGER
@@ -2157,7 +2148,7 @@ feature -- Access
 			end
 		end
 
-	ref_var_used: INTEGER is
+	ref_var_used: INTEGER
 			-- Number of reference variable needed for GC hooks
 		do
 			if not need_gc_hook then
@@ -2172,7 +2163,7 @@ feature -- Access
 			-- variables types, variant local integer and hector
 			-- temporary varaibles
 
-	add_local (t: TYPE_A) is
+	add_local (t: TYPE_A)
 			-- Add local type to `local_list'.
 		require
 			good_argument: t /= Void
@@ -2268,11 +2259,9 @@ feature -- C code generation: locals
 					buf.put_string (" = ")
 					if type_i.is_true_expanded then
 						type_i.c_type.generate_cast (buf)
-						buf.put_character ('(')
 						buf.put_string (l_loc_name)
 						buf.put_string (".data")
-						l_class_type.generate_expanded_overhead_size (buf)
-						buf.put_string (");")
+						buf.put_character (';')
 					else
 						type_i.c_type.generate_cast (buf)
 						buf.put_two_character ('0', ';')
@@ -2362,7 +2351,7 @@ feature -- C code generation: locals
 			end
 		end
 
-	generate_pop_debug_locals (arguments: ARRAY [TYPE_A]) is
+	generate_pop_debug_locals (arguments: ARRAY [TYPE_A])
 			-- Generate the cleaning of the locals stack used by the debugger
 			-- when stopped in a C function.
 		local
@@ -2385,13 +2374,20 @@ feature -- C code generation: locals
 
 feature -- Object test code generation
 
-	add_object_test_locals (types: ARRAY [TYPE_A]; body_id: INTEGER; c: CLASS_TYPE)
-			-- Add object test locals of types `types' from feature
-			-- of body id `body_id' in class type `c'.
+	add_object_test_locals (types: ARRAY [TYPE_A]; body_id: INTEGER; c: CLASS_TYPE; is_precondition: BOOLEAN)
+			-- Add object test locals from a precondition (if `is_precondition') or from a postcondition (otherwise)
+			-- of types `types' from feature of body id `body_id' in class type `c'.
 		require
 			different_body_id: body_id /= current_feature.body_index
 			c_attached: c /= Void
+		local
+			object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
 		do
+			if is_precondition then
+				object_test_local_offset := precondition_object_test_local_offset
+			else
+				object_test_local_offset := postcondition_object_test_local_offset
+			end
 			if types /= Void and then not object_test_local_offset.has (body_id) then
 				object_test_local_offset.force (local_list.count - types.lower + 1, body_id)
 				types.do_all (
@@ -2408,27 +2404,41 @@ feature -- Object test code generation
 			-- Position of a given object test local `l' in the list of locals.
 		require
 			l_attached: l /= Void
+		local
+			offset: INTEGER_32
 		do
 			if assertion_type = in_invariant then
 					-- Object test is declared in class invariant.
-					-- There is no dedicated byte code.
-				Result := l.position
+					-- There is no dedicated byte code, so there is no offset for object test locals.
+					-- offset := 0
 			elseif l.body_id = byte_code.body_index then
 					-- Object test is declared in the current feature.
-				Result := byte_code.local_count + l.position
-			else
-					-- Object test is in the inherited code.
+					-- Object test locals come right after the regular locals.
+				offset := byte_code.local_count
+			elseif assertion_type = in_precondition then
+					-- Object test is in the inherited precondition.
 				check
-					code_id_registered: object_test_local_offset.has (l.body_id)
+					code_id_registered: precondition_object_test_local_offset.has (l.body_id)
 				end
-				Result := object_test_local_offset [l.body_id] + l.position
+				offset := precondition_object_test_local_offset [l.body_id]
+			else
+				check assertion_type = in_postcondition end
+					-- Object test is in the inherited postcondition.
+				check
+					code_id_registered: postcondition_object_test_local_offset.has (l.body_id)
+				end
+				offset := postcondition_object_test_local_offset [l.body_id]
 			end
+			Result := offset + l.position
 		end
 
 feature {BYTE_CONTEXT} -- Object test code generation
 
-	object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
-			-- Offset of inherited object test locals indexed by code_id
+	precondition_object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
+			-- Offset of inherited precondition object test locals indexed by code_id
+
+	postcondition_object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
+			-- Offset of inherited postcondition object test locals indexed by code_id
 
 feature -- External features
 
@@ -2536,7 +2546,7 @@ feature {NONE} -- External_features
 
 feature -- Clearing
 
-	array_opt_clear is
+	array_opt_clear
 			-- Clear during the array optimization
 		do
 			class_type := Void
@@ -2544,7 +2554,7 @@ feature -- Clearing
 			class_type_stack.wipe_out
 		end
 
-	clear_feature_data is
+	clear_feature_data
 			-- Clear feature-specific data.
 		do
 			local_vars.clear_all
@@ -2568,10 +2578,11 @@ feature -- Clearing
 				-- This should not be necessary but may limit the
 				-- effect of bugs in register allocation (if any).
 			register_server.clear_all
-			object_test_local_offset.wipe_out
+			precondition_object_test_local_offset.wipe_out
+			postcondition_object_test_local_offset.wipe_out
 		end
 
-	clear_class_type_data is
+	clear_class_type_data
 			-- Clear class-type-specific data.
 		do
 			if workbench_mode then
@@ -2591,7 +2602,7 @@ feature -- Clearing
 			generated_inlines_empty: generated_inlines.is_empty
 		end
 
-	clear_system_data is
+	clear_system_data
 			-- Clear system-wide data.
 		do
 			global_onces.wipe_out
@@ -2619,7 +2630,7 @@ feature -- Debugger
 	breakpoint_nested_slots_number: INTEGER
 			-- current number of breakpoint nested slots known
 
-	set_instruction_line (l: like instruction_line) is
+	set_instruction_line (l: like instruction_line)
 			-- Assign `l' to `instruction_line' and position FIFO stack at the
 			-- beginning as a side effect, ready for usage by byte code classes.
 		do
@@ -2627,7 +2638,7 @@ feature -- Debugger
 			l.start
 		end
 
-	get_next_breakpoint_slot: INTEGER is
+	get_next_breakpoint_slot: INTEGER
 			-- increase the current number of breakpoint slots and then
 			-- return the current number of breakpoint slots. It is used
 			-- to get a "line number" when recording a breakable point
@@ -2637,7 +2648,7 @@ feature -- Debugger
 			Result := breakpoint_slots_number
 		end
 
-	get_next_breakpoint_nested_slot: INTEGER is
+	get_next_breakpoint_nested_slot: INTEGER
 			-- increase the current number of breakpoint nested slots and then
 			-- return the current number of breakpoint nested slots. It is used
 			-- to get a "line nested number" when recording a breakable nested point
@@ -2646,28 +2657,28 @@ feature -- Debugger
 			Result := breakpoint_nested_slots_number
 		end
 
-	get_breakpoint_slot: INTEGER is
+	get_breakpoint_slot: INTEGER
 			-- Return the current number of breakpoint slots. It is used
 			-- to get a "line number" when recording a breakable point
 		do
 			Result := breakpoint_slots_number
 		end
 
-	get_breakpoint_nested_slot: INTEGER is
+	get_breakpoint_nested_slot: INTEGER
 			-- Return the current number of breakpoint nested slots. It is used
 			-- to get a "line nested number" when recording a breakable nested point
 		do
 			Result := breakpoint_nested_slots_number
 		end
 
-	set_breakpoint_slot (a_number: INTEGER) is
+	set_breakpoint_slot (a_number: INTEGER)
 			-- Set the current number of breakpoint slots to `a_number'
 		do
 			breakpoint_slots_number := a_number
 			breakpoint_nested_slots_number := 0
 		end
 
-	byte_prepend (ba, array: BYTE_ARRAY) is
+	byte_prepend (ba, array: BYTE_ARRAY)
 			-- Prepend `array' to byte array `ba' and update positions in the
 			-- breakable point list (provided we are in debug mode).
 		do
@@ -2676,7 +2687,7 @@ feature -- Debugger
 
 feature -- Inlining
 
-	in_inlined_code: BOOLEAN is
+	in_inlined_code: BOOLEAN
 			-- Are we dealing with inlined code?
 		do
 			Result := inlined_current_register /= Void
@@ -2685,14 +2696,14 @@ feature -- Inlining
 	inlined_current_register: REGISTRABLE
 			-- pseudo Current register for inlined code
 
-	set_inlined_current_register (r: REGISTRABLE) is
+	set_inlined_current_register (r: REGISTRABLE)
 		do
 			inlined_current_register := r
 		end
 
 feature -- Descendants information
 
-	has_expanded_descendants_information: BOOLEAN is
+	has_expanded_descendants_information: BOOLEAN
 			-- Is information about expanded descendants available?
 		require
 			is_final_mode: final_mode
@@ -2702,7 +2713,7 @@ feature -- Descendants information
 			definition: Result = (expanded_descendants /= Void)
 		end
 
-	has_expanded_descendants (type_id: INTEGER): BOOLEAN is
+	has_expanded_descendants (type_id: INTEGER): BOOLEAN
 			-- Are there expanded descendants for class type of `type_id'?
 		require
 			is_final_mode: final_mode
@@ -2714,7 +2725,7 @@ feature -- Descendants information
 			definition: Result = expanded_descendants.item (type_id)
 		end
 
-	compute_expanded_descendants is
+	compute_expanded_descendants
 			-- Compute
 		require
 			is_final_mode: final_mode
@@ -2749,7 +2760,7 @@ feature -- Descendants information
 
 feature -- Generic code generation
 
-	record_wrapper (body_index: INTEGER; routine_id: INTEGER) is
+	record_wrapper (body_index: INTEGER; routine_id: INTEGER)
 			-- Ensure the wrapper of the routine `body_index' is generated
 			--  for the polymorphic table `routine_id'
 		require
@@ -2767,7 +2778,7 @@ feature -- Generic code generation
 			r.put (routine_id)
 		end
 
-	generic_wrapper_ids (body_index: INTEGER): ROUT_ID_SET is
+	generic_wrapper_ids (body_index: INTEGER): ROUT_ID_SET
 			-- Routine IDs of generic wrappers for a feature with `body_index' (if any)
 		do
 			Result := generic_wrappers.item (body_index)
@@ -2789,7 +2800,7 @@ feature {NONE} -- Implementation
 	class_type_stack: ARRAYED_STACK [like context_stack_type]
 			-- Class types saved due to the context change by `change_class_type_context'
 
-	context_stack_type: TUPLE [context_type: CLASS_TYPE; cl_type: CL_TYPE_A; written_type: CLASS_TYPE; written_cl_type: CL_TYPE_A] is
+	context_stack_type: TUPLE [context_type: CLASS_TYPE; cl_type: CL_TYPE_A; written_type: CLASS_TYPE; written_cl_type: CL_TYPE_A]
 		do
 		end
 
@@ -2803,10 +2814,11 @@ invariant
 	once_manifest_string_table_not_void: once_manifest_string_table /= Void
 	class_type_valid_with_current_type: class_type /= Void implies class_type.type = current_type
 	class_type_stack_not_void: class_type_stack /= Void
-	object_test_local_offset_attached: object_test_local_offset /= Void
+	precondition_object_test_local_offset_attached: precondition_object_test_local_offset /= Void
+	postconditionobject_test_local_offset_attached: postcondition_object_test_local_offset /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

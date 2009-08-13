@@ -1,4 +1,4 @@
-indexing
+note
 	description: "SD_HOT_ZONEs for SD_TAB_ZONE_UPPERs."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,8 +19,8 @@ create
 
 feature {NONE} -- Redefine
 
-	update_feedback (a_screen_x, a_screen_y: INTEGER; a_rect: EV_RECTANGLE) is
-			-- Redefine
+	update_feedback (a_screen_x, a_screen_y: INTEGER; a_rect: EV_RECTANGLE)
+			-- <Precursor>
 		local
 			l_shared: like internal_shared
 			l_icons: SD_ICONS_SINGLETON
@@ -46,8 +46,8 @@ feature {NONE} -- Redefine
 			end
 		end
 
-	apply_change (a_screen_x: INTEGER; a_screen_y: INTEGER): BOOLEAN is
-			-- Redefine
+	apply_change (a_screen_x: INTEGER; a_screen_y: INTEGER): BOOLEAN
+			-- <Precursor>
 		local
 			l_caller: SD_ZONE
 		do
@@ -87,7 +87,7 @@ feature {NONE} -- Redefine
 			end
 		end
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

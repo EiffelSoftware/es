@@ -67,18 +67,21 @@ extern "C" {
  * Structure used to give arguments to a new thread
  */
  
-typedef struct {
+typedef struct tag_rt_thr_context rt_thr_context;
+
+struct tag_rt_thr_context {
 	EIF_OBJECT current;				/* Root object of Thread creator. */
 	EIF_PROCEDURE routine;			/* routine `execute' of thread. */
-	EIF_MUTEX_TYPE *children_mutex;	/* Mutex for `join_all' */
-	int *addr_n_children;			/* Number of thread children. */
+	EIF_MUTEX_TYPE *children_mutex;	/* Mutex for `join_all'. */
+	volatile int n_children;		/* Number of direct thread children. */
+	volatile int is_alive;			/* Is Current thread still alive? */
+	volatile int is_root;			/* Is Current thread the thread that started all? */
 #ifndef EIF_NO_CONDVAR
-	EIF_COND_TYPE *children_cond;	/* For `join_all'.*/
+	EIF_COND_TYPE *children_cond;	/* For `join_all'. */
 #endif  
 	EIF_THR_TYPE *tid;				/* Thread id of new thread. */
-} start_routine_ctxt_t;
-
-
+	rt_thr_context *parent_context;	/* Context of parent thread, NULL if root class. */
+};
 
 typedef struct tag_rt_globals
 {
@@ -94,14 +97,8 @@ typedef struct tag_rt_globals
 
 		/* eif_threads.c */
 	eif_global_context_t *eif_globals;
-	start_routine_ctxt_t *eif_thr_context_cx;
-	EIF_THR_TYPE *eif_thr_id_cx;		/* thread id of current thread */
-	int n_children_cx;					/* Number or child threads */
+	rt_thr_context *eif_thr_context_cx;
 	EIF_THR_TYPE *last_child_cx;		/* Task id of the last created thread */
-	EIF_MUTEX_TYPE *children_mutex_cx;	/* Mutex for join, join_all */
-#ifndef EIF_NO_CONDVAR
-	EIF_COND_TYPE *children_cond_cx;	/* Condition variable for join, join_all */
-#endif
 #ifdef ISE_GC
 		/* Synchronizations for GC*/
 	int volatile gc_thread_status_cx;
@@ -150,7 +147,9 @@ typedef struct tag_rt_globals
 		/* sig.c */
 	int esigblk_cx;						/* By default, signals are not blocked */
 	struct s_stack sig_stk_cx;			/* Initialized by initsig() */
-
+#ifdef HAS_SIGALTSTACK
+	stack_t *c_sig_stk_cx;
+#endif
 		/* retrieve.c */
 	struct htable *rt_table_cx;
 	int32 nb_recorded_cx;
@@ -215,12 +214,13 @@ typedef struct tag_rt_globals
 	int accounting_cx;
 	int old_accounting_cx;
 	EIF_BOOLEAN eif_is_new_independent_format_cx;
+	EIF_BOOLEAN eif_is_new_recoverable_format_cx;
+	EIF_BOOLEAN eif_is_discarding_attachment_marks_cx;
 	char *account_cx;
 	unsigned int **sorted_attributes_cx;
 	char *store_stream_buffer_cx;
 	size_t store_stream_buffer_position_cx;
 	size_t store_stream_buffer_size_cx;
-	EIF_BOOLEAN eif_is_new_recoverable_format_cx;
 
 		/* option.c */
 	int eif_trace_disabled_cx;
@@ -228,15 +228,14 @@ typedef struct tag_rt_globals
 	int last_origin_cx;
 	char *last_name_cx;
 	struct htable *class_table_cx;
-#ifdef HAS_GETRUSAGE
-	struct 	prof_rusage	*init_date_cx;
+	rt_uint64 init_date_cx;
+#ifdef EIF_WINDOWS
+#elif defined(HAS_GETRUSAGE)
 #elif defined(HAS_TIMES)
-	double 	       init_date_cx;
-#elif defined(EIF_WINDOWS)
-	SYSTEMTIME 	*init_date_cx;
+	rt_uint64 rt_nb_ticks_per_second_cx;
 #else
-	time_t	*init_date_cx;
-#endif  /* HAS_GERUSAGE */
+	rt_uint64 rt_start_time_cx;
+#endif
 
 		/* memory.c */
 	EIF_INTEGER m_largest_cx;
@@ -323,10 +322,6 @@ rt_private rt_global_context_t * rt_thr_getspecific (RT_TSD_TYPE global_key) {
 
 	/* eif_threads.c */
 #define eif_thr_context		(rt_globals->eif_thr_context_cx)	/* rt_public */
-#define eif_thr_id			(rt_globals->eif_thr_id_cx)	/* rt_public */
-#define n_children			(rt_globals->n_children_cx)
-#define eif_children_mutex 	(rt_globals->children_mutex_cx)
-#define eif_children_cond 	(rt_globals->children_cond_cx)
 #define last_child			(rt_globals->last_child_cx)
 #define gc_thread_status	(rt_globals->gc_thread_status_cx)
 #define gc_thread_collection_count	(rt_globals->gc_thread_collection_count_cx)
@@ -373,6 +368,7 @@ rt_private rt_global_context_t * rt_thr_getspecific (RT_TSD_TYPE global_key) {
 	/* sig.c */
 #define esigblk				(rt_globals->esigblk_cx)		/* rt_shared */
 #define sig_stk				(rt_globals->sig_stk_cx)		/* rt_shared */
+#define c_sig_stk			(rt_globals->c_sig_stk_cx)		/* rt_private */
 
 	/* retrieve.c */
 #define rt_table						(rt_globals->rt_table_cx)
@@ -438,12 +434,13 @@ rt_private rt_global_context_t * rt_thr_getspecific (RT_TSD_TYPE global_key) {
 #define accounting						(rt_globals->accounting_cx)
 #define old_accounting					(rt_globals->old_accounting_cx)
 #define eif_is_new_independent_format	(rt_globals->eif_is_new_independent_format_cx)
+#define eif_is_new_recoverable_format	(rt_globals->eif_is_new_recoverable_format_cx)
+#define eif_is_discarding_attachment_marks	(rt_globals->eif_is_discarding_attachment_marks_cx)
 #define account							(rt_globals->account_cx)
 #define sorted_attributes				(rt_globals->sorted_attributes_cx)
 #define store_stream_buffer				(rt_globals->store_stream_buffer_cx)
 #define store_stream_buffer_position	(rt_globals->store_stream_buffer_position_cx)
 #define store_stream_buffer_size		(rt_globals->store_stream_buffer_size_cx)
-#define eif_is_new_recoverable_format	(rt_globals->eif_is_new_recoverable_format_cx)
 
 	/* option.c */
 #define eif_trace_disabled	(rt_globals->eif_trace_disabled_cx)
@@ -452,6 +449,8 @@ rt_private rt_global_context_t * rt_thr_getspecific (RT_TSD_TYPE global_key) {
 #define last_name			(rt_globals->last_name_cx)
 #define class_table			(rt_globals->class_table_cx)
 #define init_date			(rt_globals->init_date_cx)
+#define rt_nb_ticks_per_second	(rt_globals->rt_nb_ticks_per_second_cx)
+#define rt_start_time		(rt_globals->rt_start_time_cx)
 
 		/* memory.c */
 #define m_largest			(rt_globals->m_largest_cx)

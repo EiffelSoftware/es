@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Instance of an Eiffel feature: for every inherited feature there is%N%
 		%an instance of FEATURE_I with its final name, the class name where it%N%
 		%is written, the body id of its content and the routine table ids to%N%
@@ -87,7 +87,7 @@ inherit
 
 feature -- Access
 
-	feature_name: STRING is
+	feature_name: STRING
 			-- Final name of feature.
 		require
 			feature_name_id_set: feature_name_id > 0
@@ -98,7 +98,7 @@ feature -- Access
 			feature_name_not_empty: not Result.is_empty
 		end
 
-	alias_name: STRING is
+	alias_name: STRING
 			-- Alias name of feature (if any).
 		do
 			if alias_name_id > 0 then
@@ -106,7 +106,7 @@ feature -- Access
 			end
 		end
 
-	assigner_name: STRING is
+	assigner_name: STRING
 			-- Associated assigner name (if any).
 		do
 			if assigner_name_id /= 0 then
@@ -120,7 +120,7 @@ feature -- Access
 	alias_name_id: INTEGER
 			-- Id of `alias_name' in `Names_heap' table
 
-	assigner_name_id: INTEGER is
+	assigner_name_id: INTEGER
 			-- Id of `assigner_name' in `Names_heap' table
 		do
 				-- 0 (no assigner) by default
@@ -145,7 +145,7 @@ feature -- Access
 	rout_id_set: ROUT_ID_SET
 			-- Routine table to which feature belongs to.
 
-	export_status: EXPORT_I is
+	export_status: EXPORT_I
 			-- Export status of feature
 		do
 			Result := internal_export_status
@@ -175,25 +175,25 @@ feature -- Access
 			-- that gives a body.
 			-- Used for MSIL code generation only.
 
-	frozen is_origin: BOOLEAN is
+	frozen is_origin: BOOLEAN
 			-- Is feature an origin?
 		do
 			Result := feature_flags & is_origin_mask = is_origin_mask
 		end
 
-	frozen has_replicated_ast: BOOLEAN is
+	frozen has_replicated_ast: BOOLEAN
 			-- Does feature have a replicated AST?
 		do
 			Result := feature_flags & has_replicated_ast_mask = has_replicated_ast_mask
 		end
 
-	frozen is_selected: BOOLEAN is
+	frozen is_selected: BOOLEAN
 			-- Is feature from a selected branch?
 		do
 			Result := feature_flags & is_selected_mask = is_selected_mask
 		end
 
-	frozen is_replicated_directly: BOOLEAN is
+	frozen is_replicated_directly: BOOLEAN
 			-- Is feature directly replicated in class it is created in?
 			-- This flag is needed to distinguish between newly replicated features
 			-- and inherited replicated features as currently the is no way of
@@ -202,61 +202,124 @@ feature -- Access
 			Result := feature_flags & is_replicated_directly_mask = is_replicated_directly_mask
 		end
 
-	frozen from_non_conforming_parent: BOOLEAN is
+	frozen from_non_conforming_parent: BOOLEAN
 			-- Is feature inherited from a non-conforming parent?
 		do
 			Result := feature_flags & from_non_conforming_parent_mask = from_non_conforming_parent_mask
 		end
 
-	frozen is_frozen: BOOLEAN is
+	frozen is_frozen: BOOLEAN
 			-- Is feature frozen?
 		do
 			Result := feature_flags & is_frozen_mask = is_frozen_mask
 		end
 
-	frozen is_empty: BOOLEAN is
+	frozen is_empty: BOOLEAN
 			-- Is feature with an empty body?
 		do
 			Result := feature_flags & is_empty_mask = is_empty_mask
 		end
 
-	frozen is_infix: BOOLEAN is
+	frozen is_infix: BOOLEAN
 			-- Is feature an infixed one ?
 		do
 			Result := feature_flags & is_infix_mask = is_infix_mask
 		end
 
-	frozen is_prefix: BOOLEAN is
+	frozen is_prefix: BOOLEAN
 			-- Is feature a prefixed one ?
 		do
 			Result := feature_flags & is_prefix_mask = is_prefix_mask
 		end
 
-	frozen is_bracket: BOOLEAN is
+	frozen is_bracket: BOOLEAN
 			-- Is feature a bracket one ?
 		do
 			Result := feature_flags & is_bracket_mask = is_bracket_mask
 		end
 
-	frozen is_binary: BOOLEAN is
+	frozen is_binary: BOOLEAN
 			-- Is feature a binary one?
 		do
 			Result := feature_flags & is_binary_mask = is_binary_mask
 		end
 
-	frozen is_unary: BOOLEAN is
+	frozen is_unary: BOOLEAN
 			-- Is feature an unary one?
 		do
 			Result := feature_flags & is_unary_mask = is_unary_mask
 		end
 
-	frozen has_convert_mark: BOOLEAN is
+	frozen has_convert_mark: BOOLEAN
 			-- Does binary feature have a convert mark?
 		do
 			Result := feature_flags & has_convert_mark_mask = has_convert_mark_mask
 		end
 
-	has_formal: BOOLEAN is
+	frozen covariantly_redefined_features (a_base_class: CLASS_C): HASH_TABLE [FEATURE_I, CLASS_C]
+			-- Return all the covariantly redefined routines of Current
+		require
+			a_base_class_not_void: a_base_class /= Void
+			conforming_class: a_base_class.conform_to (written_class)
+		local
+			l_descendants: ARRAYED_LIST [CLASS_C]
+			l_feat: FEATURE_I
+			l_covariant_features: like covariantly_redefined_features
+		do
+			if argument_count > 0 then
+					-- If all arguments are expanded or if they are a frozen class
+					-- then it cannot be covariantly redefined
+				if
+					not arguments.for_all (agent (v: TYPE_A): BOOLEAN
+						do
+							Result := v.is_expanded or (v.has_associated_class implies v.associated_class.is_frozen)
+						end)
+				then
+					from
+						l_descendants := a_base_class.direct_descendants
+						create Result.make (l_descendants.count)
+						l_descendants.start
+					until
+						l_descendants.after
+					loop
+						if l_descendants.item.conform_to (a_base_class) then
+							l_feat := l_descendants.item.feature_of_rout_id (rout_id_set.first)
+								-- It could be Void in case of a non-conforming descendants.
+							if is_covariant_to (l_feat) then
+								Result.put (l_feat, l_descendants.item)
+							end
+							l_covariant_features := l_feat.covariantly_redefined_features (l_descendants.item)
+							if l_covariant_features /= Void and then not l_covariant_features.is_empty then
+								Result.merge (l_covariant_features)
+							end
+						end
+						l_descendants.forth
+					end
+				end
+			end
+		end
+
+	frozen is_covariant_to (other: FEATURE_I): BOOLEAN
+			-- Is `other' a covariant redefinition of Current?
+		require
+			other_not_void: other /= Void
+			subset: other.rout_id_set.has (rout_id_set.first)
+		do
+			from
+				arguments.start
+				other.arguments.start
+			until
+				arguments.after or Result
+			loop
+					-- This is not the best way to check for covariance since `is_equivalent' will
+					-- return False on thing that are not covariantly redefined.
+				Result := not arguments.item.conformance_type.is_safe_equivalent (other.arguments.item.conformance_type)
+				arguments.forth
+				other.arguments.forth
+			end
+		end
+
+	has_formal: BOOLEAN
 			-- Is formal type present in the feature signature at the top level?
 			-- (Formals used as parameters of generic class types do not count.)
 		local
@@ -287,7 +350,7 @@ feature -- Access
 			end
 		end
 
-	generic_fingerprint: STRING is
+	generic_fingerprint: STRING
 			-- Fingerprint of the feature signature that distinguishes
 			-- between formal generic and non-formal-generic types.
 		local
@@ -337,12 +400,12 @@ feature -- Access
 			end
 		end
 
-	extension: EXTERNAL_EXT_I is
+	extension: EXTERNAL_EXT_I
 			-- Encapsulation of the external extension
 		do
 		end
 
-	external_name: STRING is
+	external_name: STRING
 			-- External name
 		require
 			external_name_id_set: external_name_id > 0
@@ -353,7 +416,7 @@ feature -- Access
 			Result_not_empty: not Result.is_empty
 		end;
 
-	external_name_id: INTEGER is
+	external_name_id: INTEGER
 			-- External name of feature if any generation.
 		do
 			Result := private_external_name_id
@@ -362,7 +425,7 @@ feature -- Access
 			end
 		end
 
-	is_inline_agent: BOOLEAN is
+	is_inline_agent: BOOLEAN
 			-- is the feature an inline agent
 		do
 			Result := inline_agent_nr /= 0
@@ -371,7 +434,7 @@ feature -- Access
 	enclosing_body_id: INTEGER
 			-- The body id of the enclosing feature of an inline agent
 
-	enclosing_feature: FEATURE_I is
+	enclosing_feature: FEATURE_I
 			-- Gives the (real) feature in which this features is defined.
 			-- If the feature has no enclosing feature, a reference to itself is returned.
 		local
@@ -401,7 +464,7 @@ feature -- Access
 
 feature -- Comparison
 
-	infix "<" (other: FEATURE_I): BOOLEAN is
+	is_less alias "<" (other: FEATURE_I): BOOLEAN
 			-- Comparison of FEATURE_I based on their name.
 		local
 			l_name, l_other_name: like feature_name
@@ -415,7 +478,7 @@ feature -- Comparison
 			end
 		end
 
-	is_same_alias (other: FEATURE_I): BOOLEAN is
+	is_same_alias (other: FEATURE_I): BOOLEAN
 			-- Does current have the same alias as `other'?
 		require
 			other_not_void: other /= Void
@@ -425,7 +488,7 @@ feature -- Comparison
 				has_convert_mark = other.has_convert_mark
 		end
 
-	is_same_assigner (other: FEATURE_I; tbl: FEATURE_TABLE): BOOLEAN is
+	is_same_assigner (other: FEATURE_I; tbl: FEATURE_TABLE): BOOLEAN
 			-- Does current have the same assigner command (if any) as `other'?
 		require
 			other_not_void: other /= Void
@@ -465,7 +528,7 @@ feature -- Comparison
 
 feature -- Debugger access
 
-	number_of_breakpoint_slots: INTEGER is
+	number_of_breakpoint_slots: INTEGER
 			-- Number of breakpoint slots in feature (:::)
 			-- It includes pre/postcondition (inner & herited)
 			-- and rescue clause.
@@ -493,7 +556,7 @@ feature -- Debugger access
 			Result := Result.max (1)
 		end
 
-	first_breakpoint_slot_index: INTEGER is
+	first_breakpoint_slot_index: INTEGER
 			-- Index of the first breakpoint-slot of the body
 			-- Take into account inherited and inner assertions
 		local
@@ -522,7 +585,7 @@ feature -- Debugger access
 
 feature -- Status
 
-	to_melt_in (a_class: CLASS_C): BOOLEAN is
+	to_melt_in (a_class: CLASS_C): BOOLEAN
 			-- Has current feature to be melted in class `a_class' ?
 		require
 			good_argument: a_class /= Void
@@ -530,7 +593,7 @@ feature -- Status
 			Result := a_class.class_id = written_in or else is_replicated_directly
 		end
 
-	to_generate_in (a_class: CLASS_C): BOOLEAN is
+	to_generate_in (a_class: CLASS_C): BOOLEAN
 			-- Has current feature to be generated in class `a_class' ?
 		require
 			good_argument: a_class /= Void
@@ -538,7 +601,7 @@ feature -- Status
 			Result := a_class.class_id = written_in or else is_replicated_directly
 		end
 
-	frozen to_implement_in (a_class: CLASS_C): BOOLEAN is
+	frozen to_implement_in (a_class: CLASS_C): BOOLEAN
 			-- Does Current feature need to be exposed in interface
 			-- used for IL generation?
 		require
@@ -549,25 +612,25 @@ feature -- Status
 
 feature -- Setting
 
-	set_feature_id (i: INTEGER) is
+	set_feature_id (i: INTEGER)
 			-- Assign `i' to `feature_id'
 		do
 			feature_id := i
 		end
 
-	set_body_index (i: INTEGER) is
+	set_body_index (i: INTEGER)
 			-- Assign `i' to `body_index'.
 		do
 			body_index := i
 		end
 
-	set_pattern_id (i: INTEGER) is
+	set_pattern_id (i: INTEGER)
 			-- Assign `i' to `pattern_id'.
 		do
 			pattern_id := i
 		end
 
-	set_feature_name (s: STRING) is
+	set_feature_name (s: STRING)
 			-- Assign `s' to `feature_name'.
 			-- `set_renamed_name' is needed for C external
 			-- routines that can't be renamed.
@@ -584,7 +647,7 @@ feature -- Setting
 			feature_name_set: equal (feature_name, s)
 		end
 
-	set_feature_name_id (a_id: INTEGER; alias_id: INTEGER) is
+	set_feature_name_id (a_id: INTEGER; alias_id: INTEGER)
 			-- Assign `a_id' to `feature_name_id'.
 		require
 			valid_id: Names_heap.valid_index (a_id)
@@ -597,7 +660,7 @@ feature -- Setting
 			alias_name_id_set: alias_name_id = alias_id
 		end
 
-	set_renamed_name_id (a_id: INTEGER; alias_id: INTEGER) is
+	set_renamed_name_id (a_id: INTEGER; alias_id: INTEGER)
 			-- Assign `a_id' to `feature_name_id'.
 		require
 			valid_id: Names_heap.valid_index (a_id)
@@ -610,7 +673,7 @@ feature -- Setting
 			alias_name_id_set: alias_name_id = alias_id
 		end
 
-	set_written_in (a_class_id: like written_in) is
+	set_written_in (a_class_id: like written_in)
 			-- Assign `a_class_id' to `access_in'.
 		require
 			a_class_id_not_void: a_class_id > 0
@@ -620,7 +683,7 @@ feature -- Setting
 			written_in_set: written_in = a_class_id
 		end
 
-	set_written_feature_id (a_feature_id: like written_feature_id) is
+	set_written_feature_id (a_feature_id: like written_feature_id)
 			-- Assign `a_feature_id' to `written_feature_id'.
 		require
 			valid_feature_id: a_feature_id >= 0
@@ -630,7 +693,7 @@ feature -- Setting
 			written_feature_id_set: written_feature_id = a_feature_id
 		end
 
-	set_origin_feature_id (a_feature_id: like origin_feature_id) is
+	set_origin_feature_id (a_feature_id: like origin_feature_id)
 			-- Assign `a_feature_id' to `origin_feature_id'.
 		require
 			valid_feature_id: a_feature_id >= 0
@@ -640,7 +703,7 @@ feature -- Setting
 			origin_feature_id_set: origin_feature_id = a_feature_id
 		end
 
-	set_origin_class_id (a_class_id: like origin_class_id) is
+	set_origin_class_id (a_class_id: like origin_class_id)
 			-- Assign `a_class_id' to `origin_class_id'.
 		require
 			valid_feature_id: a_class_id >= 0
@@ -650,7 +713,7 @@ feature -- Setting
 			origin_class_id_set: origin_class_id = a_class_id
 		end
 
-	set_export_status (e: EXPORT_I) is
+	set_export_status (e: EXPORT_I)
 			-- Assign `e' to `export_status'.
 		require
 			e_not_void: e /= Void
@@ -665,7 +728,7 @@ feature -- Setting
 			export_status_set: export_status.same_as (e)
 		end
 
-	frozen set_is_origin (b: BOOLEAN) is
+	frozen set_is_origin (b: BOOLEAN)
 			-- Assign `b' to `is_origin'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_origin_mask)
@@ -673,7 +736,7 @@ feature -- Setting
 			is_origin_set: is_origin = b
 		end
 
-	frozen set_is_selected (b: BOOLEAN) is
+	frozen set_is_selected (b: BOOLEAN)
 			-- Assign `b' to `is_selected'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_selected_mask)
@@ -681,7 +744,7 @@ feature -- Setting
 			is_selected_set: is_selected = b
 		end
 
-	frozen set_has_replicated_ast (b: BOOLEAN) is
+	frozen set_has_replicated_ast (b: BOOLEAN)
 			-- Assign `b' to `has_replicated_ast'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, has_replicated_ast_mask)
@@ -689,7 +752,7 @@ feature -- Setting
 			has_replicated_ast_set: has_replicated_ast = b
 		end
 
-	frozen set_is_replicated_directly (b: BOOLEAN) is
+	frozen set_is_replicated_directly (b: BOOLEAN)
 			-- Assign `b' to `is_replicated_directly'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_replicated_directly_mask)
@@ -697,7 +760,7 @@ feature -- Setting
 			is_replicated_directly_set: is_replicated_directly = b
 		end
 
-	frozen set_from_non_conforming_parent (b: BOOLEAN) is
+	frozen set_from_non_conforming_parent (b: BOOLEAN)
 			-- Assign `b' to `from_non_conforming_parent'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, from_non_conforming_parent_mask)
@@ -705,7 +768,7 @@ feature -- Setting
 			from_non_conforming_parent_set: from_non_conforming_parent = b
 		end
 
-	frozen set_is_empty (b : BOOLEAN) is
+	frozen set_is_empty (b : BOOLEAN)
 			-- Set `is_empty' to `b'
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_empty_mask)
@@ -713,7 +776,7 @@ feature -- Setting
 			is_empty_set: is_empty = b
 		end
 
-	frozen set_is_frozen (b: BOOLEAN) is
+	frozen set_is_frozen (b: BOOLEAN)
 			-- Assign `b' to `is_frozen'.
 			--|Note: nothing to do with melted/frozen features
 		do
@@ -722,7 +785,7 @@ feature -- Setting
 			is_frozen_set: is_frozen = b
 		end
 
-	frozen set_is_infix (b: BOOLEAN) is
+	frozen set_is_infix (b: BOOLEAN)
 			-- Assign `b' to `is_infix'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_infix_mask)
@@ -730,7 +793,7 @@ feature -- Setting
 			is_infix_set: is_infix = b
 		end
 
-	frozen set_is_prefix (b: BOOLEAN) is
+	frozen set_is_prefix (b: BOOLEAN)
 			-- Assign `b' to `is_prefix'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_prefix_mask)
@@ -738,7 +801,7 @@ feature -- Setting
 			is_prefix_set: is_prefix = b
 		end
 
-	frozen set_is_bracket (b: BOOLEAN) is
+	frozen set_is_bracket (b: BOOLEAN)
 			-- Assign `b' to `is_bracket'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_bracket_mask)
@@ -746,7 +809,7 @@ feature -- Setting
 			is_bracket_set: is_bracket = b
 		end
 
-	frozen set_is_binary (b: BOOLEAN) is
+	frozen set_is_binary (b: BOOLEAN)
 			-- Assign `b' to `is_binary'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_binary_mask)
@@ -754,7 +817,7 @@ feature -- Setting
 			is_binary_set: is_binary = b
 		end
 
-	frozen set_is_unary (b: BOOLEAN) is
+	frozen set_is_unary (b: BOOLEAN)
 			-- Assign `b' to `is_unary'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_unary_mask)
@@ -762,7 +825,7 @@ feature -- Setting
 			is_unary_set: is_unary = b
 		end
 
-	frozen set_has_convert_mark (b: BOOLEAN) is
+	frozen set_has_convert_mark (b: BOOLEAN)
 			-- Assign `b' to `has_convert_mark'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, has_convert_mark_mask)
@@ -770,7 +833,7 @@ feature -- Setting
 			has_convert_mark_set: has_convert_mark = b
 		end
 
-	frozen set_is_require_else (b: BOOLEAN) is
+	frozen set_is_require_else (b: BOOLEAN)
 			-- Assign `b' to `is_require_else'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_require_else_mask)
@@ -778,7 +841,7 @@ feature -- Setting
 			is_require_else_set: is_require_else = b
 		end
 
-	frozen set_is_ensure_then (b: BOOLEAN) is
+	frozen set_is_ensure_then (b: BOOLEAN)
 			-- Assign `b' to `is_ensure_then'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_ensure_then_mask)
@@ -786,7 +849,23 @@ feature -- Setting
 			is_ensure_then_set: is_ensure_then = b
 		end
 
-	frozen set_is_fake_inline_agent (b: BOOLEAN) is
+	frozen set_has_precondition (b: BOOLEAN)
+			-- Assign `b' to `has_precondition'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, has_precondition_mask)
+		ensure
+			has_precondition_set: has_precondition = b
+		end
+
+	frozen set_has_postcondition (b: BOOLEAN)
+			-- Assign `b' to `has_postcondition'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, has_postcondition_mask)
+		ensure
+			has_postcondition_set: has_postcondition = b
+		end
+
+	frozen set_is_fake_inline_agent (b: BOOLEAN)
 			-- Assign `b' to `is_fake_inline_agent'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, is_fake_inline_agent_mask)
@@ -794,7 +873,7 @@ feature -- Setting
 			is_fake_inline_agent_set: is_fake_inline_agent = b
 		end
 
-	frozen set_has_rescue_clause (b: BOOLEAN) is
+	frozen set_has_rescue_clause (b: BOOLEAN)
 			-- Assign `b' to `has_rescue_clause'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, has_rescue_clause_mask)
@@ -802,7 +881,7 @@ feature -- Setting
 			has_rescue_clause_set: has_rescue_clause = b
 		end
 
-	set_has_property (v: BOOLEAN) is
+	set_has_property (v: BOOLEAN)
 			-- Set `has_property' to `v'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (v, has_property_mask)
@@ -810,7 +889,7 @@ feature -- Setting
 			has_property_set: has_property = v
 		end
 
-	set_has_property_getter (v: BOOLEAN) is
+	set_has_property_getter (v: BOOLEAN)
 			-- Set `has_property_getter' to `v'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (v, has_property_getter_mask)
@@ -818,7 +897,7 @@ feature -- Setting
 			has_property_getter_set: has_property_getter = v
 		end
 
-	set_has_property_setter (v: BOOLEAN) is
+	set_has_property_setter (v: BOOLEAN)
 			-- Set `has_property_setter' to `v'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (v, has_property_setter_mask)
@@ -826,7 +905,7 @@ feature -- Setting
 			has_property_setter_set: has_property_setter = v
 		end
 
-	set_rout_id_set (an_id_set: like rout_id_set) is
+	set_rout_id_set (an_id_set: like rout_id_set)
 			-- Assign `an_id_set' to `rout_id_set'.
 		require
 			an_id_set_not_void: an_id_set /= Void
@@ -836,7 +915,7 @@ feature -- Setting
 			rout_id_set: rout_id_set = an_id_set
 		end
 
-	set_private_external_name_id (n_id: like private_external_name_id) is
+	set_private_external_name_id (n_id: like private_external_name_id)
 			-- Assign `n_id' to `private_external_name_id'.
 		require
 			valid_n: n_id > 0
@@ -846,25 +925,25 @@ feature -- Setting
 			private_external_name_set: private_external_name_id = n_id
 		end
 
-	generation_class_id: INTEGER is
+	generation_class_id: INTEGER
 			-- Id of class where feature has to be generated in
 		do
 			Result := written_in
 		end
 
-	duplicate: like Current is
+	duplicate: like Current
 			-- Clone
 		do
 			Result := twin
 		end
 
-	duplicate_arguments is
+	duplicate_arguments
 			-- Do a clone of arguments (for replication)
 		do
 			-- Do nothing
 		end
 
-	set_inline_agent (a_enclosing_body_id, a_inline_agent_nr: INTEGER) is
+	set_inline_agent (a_enclosing_body_id, a_inline_agent_nr: INTEGER)
 			-- Define this feature as an inline agent
 		require
 			enclosing_body_id_valid: a_enclosing_body_id > 0
@@ -877,7 +956,7 @@ feature -- Setting
 
 feature -- Incrementality
 
-	equiv (other: FEATURE_I): BOOLEAN is
+	equiv (other: FEATURE_I): BOOLEAN
 			-- Incrementality test on instance of FEATURE_I during
 			-- second pass.
 		require
@@ -897,6 +976,7 @@ feature -- Incrementality
 				and then is_once = other.is_once
 				and then is_process_relative = other.is_process_relative
 				and then is_constant = other.is_constant
+				and then is_stable = other.is_stable
 				and then alias_name_id = other.alias_name_id
 				and then has_convert_mark = other.has_convert_mark
 				and then assigner_name_id = other.assigner_name_id
@@ -948,7 +1028,7 @@ debug ("ACTIVITY")
 end
 		end
 
-	select_table_equiv (other: FEATURE_I): BOOLEAN is
+	select_table_equiv (other: FEATURE_I): BOOLEAN
 			-- Incrementality of select table
 		require
 			good_argument: other /= Void
@@ -961,7 +1041,7 @@ end
 						and then type.is_safe_equivalent (other.type)
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is feature still valid?
 			-- Incrementality: The types of arguments and/or result
 			-- are still defined in system
@@ -972,7 +1052,7 @@ end
 			end
 		end
 
-	same_class_type (other: FEATURE_I): BOOLEAN is
+	same_class_type (other: FEATURE_I): BOOLEAN
 			-- Has `other' same resulting type than Current ?
 		require
 			good_argument: other /= Void
@@ -981,7 +1061,7 @@ end
 			Result := type.same_as (other.type)
 		end
 
-	same_interface (other: FEATURE_I): BOOLEAN is
+	same_interface (other: FEATURE_I): BOOLEAN
 			-- Has `other' same interface than Current ?
 			-- [Semnatic for second pass is `old_feat.same_interface (new)']
 		require
@@ -1021,11 +1101,14 @@ end
 
 				-- Still a once
 			Result := Result and then is_once = other.is_once
+
+				-- Of the same stability
+			Result := Result and then is_stable = other.is_stable
 		end
 
 feature -- creation of default rescue clause
 
-	create_default_rescue (def_resc_name_id: INTEGER) is
+	create_default_rescue (def_resc_name_id: INTEGER)
 			-- Create default_rescue clause if necessary
 		require
 			valid_feature_name_id : def_resc_name_id > 0
@@ -1045,7 +1128,7 @@ feature -- creation of default rescue clause
 
 feature -- Type id
 
-	written_type (class_type: CLASS_TYPE): CLASS_TYPE is
+	written_type (class_type: CLASS_TYPE): CLASS_TYPE
 			-- Written type of feature in context of
 			-- type `class_type'.
 		require
@@ -1057,99 +1140,99 @@ feature -- Type id
 
 feature -- Conveniences
 
-	assert_id_set: ASSERT_ID_SET is
+	assert_id_set: ASSERT_ID_SET
 			-- Assertions to which procedure belongs to
 			-- (To be redefined in PROCEDURE_I).
 		do
 			-- Do nothing
 		end
 
-	is_obsolete: BOOLEAN is
+	is_obsolete: BOOLEAN
 			-- Is Current feature obsolete?
 		do
 			Result := obsolete_message /= Void
 		end
 
-	obsolete_message: STRING is
+	obsolete_message: STRING
 			-- Obsolete message
 			-- (Void if Current is not obsolete)
 		do
 			-- Do nothing
 		end
 
-	has_arguments: BOOLEAN is
+	has_arguments: BOOLEAN
 			-- Has current feature some formal arguments ?
 		do
 			Result := arguments /= Void
 		end
 
-	is_replicated: BOOLEAN is
+	is_replicated: BOOLEAN
 			-- Is Current feature conceptually replicated?
 		do
 			-- Do nothing
 		end
 
-	is_routine: BOOLEAN is
+	is_routine: BOOLEAN
 			-- Is current feature a routine ?
 		do
 			-- Do nothing
 		end
 
-	is_function: BOOLEAN is
+	is_function: BOOLEAN
 			-- Is current feature a function ?
 		do
 			-- Do nothing
 		end
 
-	is_type_feature: BOOLEAN is
+	is_type_feature: BOOLEAN
 			-- Is current an instance of TYPE_FEATURE_I?
 		do
 			-- Do nothing
 		end
 
-	is_attribute: BOOLEAN is
+	is_attribute: BOOLEAN
 			-- Is current feature an attribute ?
 		do
 			-- Do nothing
 		end
 
-	is_constant: BOOLEAN is
+	is_constant: BOOLEAN
 			-- Is current feature a constant ?
 		do
 			-- Do nothing
 		end
 
-	is_once: BOOLEAN is
+	is_once: BOOLEAN
 			-- Is current feature a once one ?
 		do
 			-- Do nothing
 		end
 
-	is_do: BOOLEAN is
+	is_do: BOOLEAN
 			-- Is current feature a do one ?
 		do
 			-- Do nothing
 		end
 
-	is_deferred: BOOLEAN is
+	is_deferred: BOOLEAN
 			-- Is current feature a deferred one ?
 		do
 			-- Do nothing
 		end
 
-	is_unique: BOOLEAN is
+	is_unique: BOOLEAN
 			-- Is current feature a unique constant ?
 		do
 			-- Do nothing
 		end
 
-	is_external: BOOLEAN is
+	is_external: BOOLEAN
 			-- Is current feature an external one ?
 		do
 			-- Do nothing
 		end
 
-	has_return_value: BOOLEAN is
+	has_return_value: BOOLEAN
 			-- Does current return a value?
 		do
 			Result := is_constant or is_attribute or is_function
@@ -1157,7 +1240,7 @@ feature -- Conveniences
 			validity: Result implies (is_constant or is_attribute or is_function)
 		end
 
-	frozen is_il_external: BOOLEAN is
+	frozen is_il_external: BOOLEAN
 			-- Is current feature a C external one?
 		local
 			ext: IL_EXTENSION_I
@@ -1175,7 +1258,7 @@ feature -- Conveniences
 			not_is_c_external: Result implies not is_c_external
 		end
 
-	frozen is_c_external: BOOLEAN is
+	frozen is_c_external: BOOLEAN
 			-- Is current feature a C external one?
 		local
 			ext: EXTERNAL_EXT_I
@@ -1186,14 +1269,21 @@ feature -- Conveniences
 			not_is_il_external: Result implies not is_il_external
 		end
 
-	is_process_relative: BOOLEAN is
+	is_process_relative: BOOLEAN
 			-- Is feature process-wide (rather than thread-local)?
 			-- (Usually applies to once routines.)
 		do
 			-- False by default
 		end
 
-	has_static_access: BOOLEAN is
+	is_stable: BOOLEAN
+			-- Is feature stable, i.e. never gets Void after returning a non-void value?
+			-- (Usually applies to attributes.)
+		do
+			-- False by default
+		end
+
+	has_static_access: BOOLEAN
 			-- Can Current be access in a static manner?
 		local
 			l_ext: IL_EXTENSION_I
@@ -1213,91 +1303,91 @@ feature -- Conveniences
 			end
 		end
 
-	frozen has_precondition: BOOLEAN is
+	frozen has_precondition: BOOLEAN
 			-- Is feature declaring some preconditions ?
 		do
 			Result := feature_flags & has_precondition_mask = has_precondition_mask
 		end
 
-	frozen has_postcondition: BOOLEAN is
+	frozen has_postcondition: BOOLEAN
 			-- Is feature declaring some postconditions ?
 		do
 			Result := feature_flags & has_postcondition_mask = has_postcondition_mask
 		end
 
-	has_assertion: BOOLEAN is
+	has_assertion: BOOLEAN
 			-- Is feature declaring some pre or post conditions ?
 		do
 			Result := has_postcondition or else has_precondition
 		end
 
-	frozen is_require_else: BOOLEAN is
+	frozen is_require_else: BOOLEAN
 			-- Is precondition block of feature a redefined one ?
 		do
 			Result := feature_flags & is_require_else_mask = is_require_else_mask
 		end
 
-	frozen is_ensure_then: BOOLEAN is
+	frozen is_ensure_then: BOOLEAN
 			-- Is postcondition block of feature a redefined one ?
 		do
 			Result := feature_flags & is_ensure_then_mask = is_ensure_then_mask
 		end
 
-	frozen is_fake_inline_agent: BOOLEAN is
+	frozen is_fake_inline_agent: BOOLEAN
 			-- Is postcondition block of feature a redefined one ?
 		do
 			Result := feature_flags & is_fake_inline_agent_mask = is_fake_inline_agent_mask
 		end
 
-	frozen has_rescue_clause: BOOLEAN is
+	frozen has_rescue_clause: BOOLEAN
 			-- Has rescue clause ?
 		do
 			Result := feature_flags & has_rescue_clause_mask = has_rescue_clause_mask
 		end
 
-	is_invariant: BOOLEAN is
+	is_invariant: BOOLEAN
 			-- Is this feature the invariant feature of its eiffel class ?
 		do
 			Result := False
 		end
 
-	can_be_encapsulated: BOOLEAN is
+	can_be_encapsulated: BOOLEAN
 			-- Is current feature a feature that can be encapsulated?
 			-- Eg: attribute or constant.
 		do
 		end
 
-	redefinable: BOOLEAN is
+	redefinable: BOOLEAN
 			-- Is feature redefinable ?
 		do
 			Result := not is_frozen
 		end
 
-	undefinable: BOOLEAN is
+	undefinable: BOOLEAN
 			-- Is feature undefinable ?
 		do
 			Result := redefinable
 		end
 
-	has_property: BOOLEAN is
+	has_property: BOOLEAN
 			-- Does feature have an associated property?
 		do
 			Result := feature_flags & has_property_mask = has_property_mask
 		end
 
-	has_property_getter: BOOLEAN is
+	has_property_getter: BOOLEAN
 			-- Does feature have an associated property getter?
 		do
 			Result := feature_flags & has_property_getter_mask = has_property_getter_mask
 		end
 
-	has_property_setter: BOOLEAN is
+	has_property_setter: BOOLEAN
 			-- Does feature have an associated property setter?
 		do
 			Result := feature_flags & has_property_setter_mask = has_property_setter_mask
 		end
 
-	property_name: STRING is
+	property_name: STRING
 			-- IL property name.
 		do
 			if byte_server.has (body_index) then
@@ -1311,7 +1401,7 @@ feature -- Conveniences
 			result_attached: Result /= Void
 		end
 
-	type: TYPE_A is
+	type: TYPE_A
 			-- Result type of feature
 		do
 			Result := void_type
@@ -1319,7 +1409,7 @@ feature -- Conveniences
 			type_not_void: Result /= Void
 		end
 
-	set_type (t: like type; a: like assigner_name_id) is
+	set_type (t: like type; a: like assigner_name_id)
 			-- Assign `t' to `type' and `a' to `assigner_name_id'.
 		require
 			t_not_void: t /= Void
@@ -1330,7 +1420,7 @@ feature -- Conveniences
 			type_set: type ~ t
 		end
 
-	arguments: FEAT_ARG is
+	arguments: FEAT_ARG
 			-- Argument types
 		do
 			-- No arguments
@@ -1342,13 +1432,13 @@ feature -- Conveniences
 
 		end
 
-	set_assert_id_set (set: like assert_id_set) is
+	set_assert_id_set (set: like assert_id_set)
 			-- Assign `set' to assert_id_set.
 		do
 			-- Do nothing	
 		end
 
-	argument_count: INTEGER is
+	argument_count: INTEGER
 			-- Number of arguments of feature
 		do
 			if arguments /= Void then
@@ -1356,7 +1446,7 @@ feature -- Conveniences
 			end
 		end
 
-	written_class: CLASS_C is
+	written_class: CLASS_C
 			-- Class where feature is written in
 		require
 			good_written_in: written_in /= 0
@@ -1366,7 +1456,7 @@ feature -- Conveniences
 			written_class_not_void: Result /= Void
 		end
 
-	access_class: CLASS_C is
+	access_class: CLASS_C
 			-- Class where current feature can be accessed
 			-- through its routine id.
 			-- Useful for replication
@@ -1392,7 +1482,7 @@ feature -- Export checking
 --			Result := not export_status.is_all
 --		end
 
-	is_exported_for (client: CLASS_C): BOOLEAN is
+	is_exported_for (client: CLASS_C): BOOLEAN
 			-- Is current feature exported to class `client' ?
 		require
 			good_argument: client /= Void
@@ -1417,7 +1507,7 @@ feature -- Export checking
 			end
 		end
 
-	record_suppliers (feat_depend: FEATURE_DEPENDANCE) is
+	record_suppliers (feat_depend: FEATURE_DEPENDANCE)
 			-- Record suppliers ids in `feat_depend'
 		require
 			good_arg: feat_depend /= Void
@@ -1447,7 +1537,7 @@ feature -- Export checking
 			end
 		end
 
-	suppliers: TWO_WAY_SORTED_SET [INTEGER] is
+	suppliers: TWO_WAY_SORTED_SET [INTEGER]
 			-- Class ids of all suppliers of feature
 		require
 			has_dependance: depend_server.has (written_in)
@@ -1463,7 +1553,7 @@ feature -- Export checking
 
 feature -- Check
 
-	real_body: BODY_AS is
+	real_body: BODY_AS
 			-- Body of feature
 		local
 			feat_as: FEATURE_AS
@@ -1488,7 +1578,7 @@ feature -- Check
 			end
 		end
 
-	body: FEATURE_AS is
+	body: FEATURE_AS
 			-- Body of feature
 		require
 			not_is_inline_agent: not is_inline_agent
@@ -1529,7 +1619,7 @@ feature -- Check
 --		do
 --		end
 
-	check_local_names (a_body: BODY_AS) is
+	check_local_names (a_body: BODY_AS)
 			-- Check conflicts between local names and feature names
 			-- for an unchanged feature
 		do
@@ -1537,7 +1627,7 @@ feature -- Check
 
 feature -- IL code generation
 
-	generate_il is
+	generate_il
 			-- Generate IL code for current feature.
 		local
 			byte_code: BYTE_CODE
@@ -1551,7 +1641,7 @@ feature -- IL code generation
 			end
 		end
 
-	custom_attributes: BYTE_LIST [BYTE_NODE] is
+	custom_attributes: BYTE_LIST [BYTE_NODE]
 			-- Custom attributes of Current if any.
 		local
 			byte_code: BYTE_CODE
@@ -1564,7 +1654,7 @@ feature -- IL code generation
 			end
 		end
 
-	class_custom_attributes: BYTE_LIST [BYTE_NODE] is
+	class_custom_attributes: BYTE_LIST [BYTE_NODE]
 			-- Class custom attributes of Current if any.
 		local
 			byte_code: BYTE_CODE
@@ -1577,7 +1667,7 @@ feature -- IL code generation
 			end
 		end
 
-	interface_custom_attributes: BYTE_LIST [BYTE_NODE] is
+	interface_custom_attributes: BYTE_LIST [BYTE_NODE]
 			-- Interface custom attributes of Current if any.
 		local
 			byte_code: BYTE_CODE
@@ -1590,7 +1680,7 @@ feature -- IL code generation
 			end
 		end
 
-	property_custom_attributes: BYTE_LIST [BYTE_NODE] is
+	property_custom_attributes: BYTE_LIST [BYTE_NODE]
 			-- Custom attributes of Current if any.
 		do
 			if Byte_server.has (body_index) then
@@ -1600,7 +1690,7 @@ feature -- IL code generation
 
 feature -- Byte code computation
 
-	melt (exec: EXECUTION_UNIT) is
+	melt (exec: EXECUTION_UNIT)
 			-- Generate byte code for current feature
 			-- [To be redefined in CONSTANT_I, ATTRIBUTE_I and in EXTERNAL_I].
 		require
@@ -1631,32 +1721,40 @@ feature -- Byte code computation
 
 feature -- Polymorphism
 
- 	has_entry: BOOLEAN is
+ 	has_entry: BOOLEAN
  			-- Has feature an associated polymorphic unit ?
  		do
  			Result := True
  		end
 
-	new_poly_table (rout_id: INTEGER): POLY_TABLE [ENTRY] is
+	new_poly_table (rout_id: INTEGER): POLY_TABLE [ENTRY]
  			-- New polymorphic table
  		require
 			positive_rout_id: rout_id > 0
 			valid_rout_id: rout_id_set.has (rout_id)
+		local
+			seed: FEATURE_I
  		do
  			if not is_attribute or else not Routine_id_counter.is_attribute (rout_id) then
  					-- This is a routine.
  					-- The seed is a routine as well.
  				create {ROUT_TABLE} Result.make (rout_id)
- 			elseif system.seed_of_routine_id (rout_id).has_formal then
- 					-- This is an attribute with a seed of a formal generic type.
- 				create {GENERIC_ATTRIBUTE_TABLE} Result.make (rout_id)
  			else
- 					-- This is an attribute with a seed that is not of a formal generic type.
- 				create {ATTR_TABLE [ATTR_ENTRY]} Result.make (rout_id)
- 			end
+ 				seed := system.seed_of_routine_id (rout_id)
+	 			if seed.has_formal then
+	 					-- This is an attribute with a seed of a formal generic type that may become expanded.
+	 				create {GENERIC_ATTRIBUTE_TABLE} Result.make (rout_id, True)
+	 			elseif not  seed.type.actual_type.is_expanded then
+	 					-- This is an attribute with a seed of a non-expanded type that may require initialization.
+	 				create {GENERIC_ATTRIBUTE_TABLE} Result.make (rout_id, False)
+	 			else
+	 					-- This is an attribute with a seed that is not of a formal generic type.
+	 				create {ATTR_TABLE [ATTR_ENTRY]} Result.make (rout_id)
+	 			end
+	 		end
  		end
 
- 	new_entry (rout_id: INTEGER): ENTRY is
+ 	new_entry (rout_id: INTEGER): ENTRY
  			-- New polymorphic unit
  		require
 			rout_id_not_void: rout_id /= 0
@@ -1664,7 +1762,7 @@ feature -- Polymorphism
 			r: like new_rout_entry
  		do
  			if is_attribute and then Routine_id_counter.is_attribute (rout_id) then
- 				if has_formal or else byte_context.workbench_mode then
+ 				if byte_context.workbench_mode or else has_formal  then
 	 				r := new_rout_entry
 	 				r.set_is_attribute
 	 				Result := r
@@ -1676,7 +1774,7 @@ feature -- Polymorphism
  			end
  		end
 
- 	new_rout_entry: ROUT_ENTRY is
+ 	new_rout_entry: ROUT_ENTRY
  			-- New routine unit
  		do
  			create Result
@@ -1698,7 +1796,7 @@ feature -- Polymorphism
 			Result.set_is_deferred (is_deferred)
  		end
 
- 	new_attr_entry: ATTR_ENTRY is
+ 	new_attr_entry: ATTR_ENTRY
  			-- New attribute unit
  		require
  			is_attribute: is_attribute
@@ -1708,7 +1806,7 @@ feature -- Polymorphism
  			Result.set_feature_id (feature_id)
  		end
 
- 	poly_equiv (other: FEATURE_I): BOOLEAN is
+ 	poly_equiv (other: FEATURE_I): BOOLEAN
  			-- Is `other' equivalent to Current from polymorphic table
 			-- implementation point of view ?
  		require
@@ -1733,23 +1831,32 @@ feature -- Polymorphism
 
 feature -- Signature instantiation
 
-	instantiate (parent_type: TYPE_A) is
+	instantiated (parent_type: TYPE_A): FEATURE_I
 			-- Instantiated signature in context of `parent_type'.
 		require
 			good_argument: parent_type /= Void
 			is_solved: type.is_solved
 		local
 			i, nb: INTEGER
-			old_type: TYPE_A
+			old_type, new_type: TYPE_A
 			l_arguments: like arguments
 		do
 				-- Instantiation of the type
 			old_type := type
-			set_type (old_type.instantiated_in (parent_type), assigner_name_id)
+			new_type := old_type.instantiated_in (parent_type)
+			if new_type /= old_type then
+				Result := duplicate
+				Result.set_type (new_type, assigner_name_id)
+
+					-- Set arguments to that of `Result'
+				l_arguments := Result.arguments
+			else
+					-- Use `Current' arguments.
+				l_arguments := arguments
+			end
 				-- Instantiation of the arguments
 			from
 				i := 1
-				l_arguments := arguments
 				if l_arguments /= Void then
 					nb := l_arguments.count
 				end
@@ -1757,30 +1864,48 @@ feature -- Signature instantiation
 				i > nb
 			loop
 				old_type := l_arguments.i_th (i)
-				l_arguments.put_i_th (old_type.instantiated_in (parent_type), i)
+				new_type := old_type.instantiated_in (parent_type)
+				if old_type /= new_type then
+					if Result = Void then
+						Result := duplicate
+						l_arguments := Result.arguments
+					end
+					l_arguments.put_i_th (new_type, i)
+				end
 				i := i + 1
+			end
+				-- If no changes have been made then we can return `Current'
+			if Result = Void then
+				Result := Current
 			end
 		end
 
-	instantiation_in (descendant_type: TYPE_A) is
+	instantiation_in (descendant_type: TYPE_A): FEATURE_I
 			-- Instantiated signature in context of `descendant_type'.
 		require
 			good_argument: descendant_type /= Void
 			is_solved: type.is_solved
 		local
 			i, nb: INTEGER
-			old_type: TYPE_A
+			old_type, new_type: TYPE_A
 			l_arguments: like arguments
 			l_written_in: like written_in
 		do
 			l_written_in := written_in
 				-- Instantiation of the type
 			old_type := type
-			set_type (old_type.instantiation_in (descendant_type, l_written_in), assigner_name_id)
+			new_type := old_type.instantiation_in (descendant_type, l_written_in)
+			if new_type /= old_type then
+				Result := duplicate
+				Result.set_type (new_type, assigner_name_id)
+				l_arguments := Result.arguments
+			else
+				l_arguments := arguments
+			end
+
 				-- Instantiation of the arguments
 			from
 				i := 1
-				l_arguments := arguments
 				if l_arguments /= Void then
 					nb := l_arguments.count
 				end
@@ -1788,14 +1913,26 @@ feature -- Signature instantiation
 				i > nb
 			loop
 				old_type := l_arguments.i_th (i)
-				l_arguments.put_i_th (old_type.instantiation_in (descendant_type, l_written_in), i)
+				new_type := old_type.instantiation_in (descendant_type, l_written_in)
+				if new_type /= old_type then
+					if Result = Void then
+						Result := duplicate
+						l_arguments := Result.arguments
+					end
+					l_arguments.put_i_th (new_type, i)
+				end
 				i := i + 1
+			end
+				-- If no changes have been made then we can return `Current'
+			if Result = Void then
+					-- Return `Current' if no changes have been made.
+				Result := Current
 			end
 		end
 
 feature -- Signature checking
 
-	check_argument_names (feat_table: FEATURE_TABLE) is
+	check_argument_names (feat_table: FEATURE_TABLE)
 			-- Check argument names
 		require
 			argument_names_exists: arguments.argument_names /= Void
@@ -1853,11 +1990,14 @@ feature -- Signature checking
 			end
 		end
 
-	check_types (feat_table: FEATURE_TABLE) is
+	check_types (feat_table: FEATURE_TABLE)
 			-- Check type and arguments types. The objective is
 			-- to deal with anchored types and genericity. All anchored
 			-- types are interpreted here and generic parameter
 			-- instantiated if possible.
+			-- Make sure that `context' is already initialized for `feat_table' before calling.
+		require
+			context_initialize_for_feat_table: context.current_feature_table = feat_table and then context.current_class = feat_table.associated_class
 		local
 			solved_type: TYPE_A
 			vffd5: VFFD5
@@ -1867,6 +2007,8 @@ feature -- Signature checking
 			l_error_level: NATURAL_32
 		do
 			l_class := feat_table.associated_class
+				-- Make sure that context is already initialized for `feat_table' by caller.
+				-- This saves expensive repeated calls to `actual_type'.
 			context.initialize (l_class, l_class.actual_type, feat_table)
 			context.set_current_feature (Current)
 				-- Not that the checks is only done for real `onces'. Constants
@@ -1899,7 +2041,7 @@ feature -- Signature checking
 
 				if
 					is_infix and then
-					((argument_count /= 1) or else (type.is_void))
+					((argument_count /= 1) or else (solved_type.is_void))
 				then
 						-- Infixed features should have only one argument
 						-- and must have a return type.
@@ -1910,7 +2052,7 @@ feature -- Signature checking
 				end
 				if
 					is_prefix and then
-					((argument_count /= 0) or else (type.is_void))
+					((argument_count /= 0) or else (solved_type.is_void))
 				then
 						-- Prefixed features shouldn't have any argument
 						-- and must have a return type.
@@ -1935,7 +2077,7 @@ feature -- Signature checking
 			end
 		end
 
-	check_type_validity (a_context_class: CLASS_C) is
+	check_type_validity (a_context_class: CLASS_C)
 			-- Check type validity.
 		require
 			context_class_not_void: a_context_class /= Void
@@ -1966,7 +2108,7 @@ feature -- Signature checking
 			end
 		end
 
-	check_expanded (class_c: CLASS_C) is
+	check_expanded (class_c: CLASS_C)
 			-- Check expanded validity rules
 		require
 			class_c_not_void: class_c /= Void
@@ -2012,7 +2154,7 @@ end
 			end
 		end
 
-	check_signature (old_feature: FEATURE_I; tbl: FEATURE_TABLE) is
+	check_signature (old_feature: FEATURE_I; tbl: FEATURE_TABLE)
 			-- Check signature conformance beetween Current
 			-- and inherited feature in `inherit_info' from which Current
 			-- is a redefinition.
@@ -2091,7 +2233,7 @@ end
 				l_vtug.set_class (current_class)
 				l_vtug.set_feature (Current)
 				error_handler.insert_error (l_vtug)
-			elseif not new_type.conform_to (old_type) then
+			elseif not new_type.conform_to (current_class, old_type) then
 				create vdrd51
 				vdrd51.init (old_feature, Current)
 				Error_handler.insert_error (vdrd51)
@@ -2137,7 +2279,7 @@ end
 						l_vtug.set_class (current_class)
 						l_vtug.set_feature (Current)
 						error_handler.insert_error (l_vtug)
-					elseif not new_type.conform_to (old_type) then
+					elseif not new_type.conform_to (current_class, old_type) then
 						create vdrd53
 						vdrd53.init (old_feature, Current)
 						Error_handler.insert_error (vdrd53)
@@ -2158,7 +2300,7 @@ end
 			end
 		end
 
-	check_same_signature (old_feature: FEATURE_I) is
+	check_same_signature (old_feature: FEATURE_I)
 			-- Check signature equality beetween Current
 			-- and inherited feature in `inherit_info' from which Current
 			-- is a join.
@@ -2226,7 +2368,7 @@ end
 			end
 		end
 
-	special_arguments: ARRAY [TYPE_A] is
+	special_arguments: ARRAY [TYPE_A]
 		local
 			i, nb: INTEGER
 		do
@@ -2244,7 +2386,7 @@ end
 			end
 		end
 
-	has_same_il_signature (a_parent_type, a_written_type: CL_TYPE_A; old_feature: FEATURE_I): BOOLEAN is
+	has_same_il_signature (a_parent_type, a_written_type: CL_TYPE_A; old_feature: FEATURE_I): BOOLEAN
 			-- Is current feature defined in `a_written_type' same as `old_feature'
 			-- defined in `a_parent_type'?
 		require
@@ -2286,19 +2428,21 @@ end
 			end
 		end
 
-	solve_types (feat_tbl: FEATURE_TABLE) is
+	solve_types (feat_tbl: FEATURE_TABLE)
 			-- Evaluates signature types in context of `feat_tbl'.
 			-- | Take care of possible anchored types
+		local
+			l_solved_type: TYPE_A
 		do
-
-			set_type
-				(Result_evaluator.evaluated_type (type, feat_tbl, Current), assigner_name_id)
+			l_solved_type := Result_evaluator.evaluated_type (type, feat_tbl, Current)
+			check l_solved_type_not_void: l_solved_type /= Void end
+			set_type (l_solved_type, assigner_name_id)
 			if arguments /= Void then
 				arguments.solve_types (feat_tbl, Current)
 			end
 		end
 
-	same_signature (other: FEATURE_I): BOOLEAN is
+	same_signature (other: FEATURE_I): BOOLEAN
 			-- Has `other' same signature than Current ?
 		require
 			good_argument: other /= Void
@@ -2320,7 +2464,7 @@ end
 			end
 		end
 
-	argument_position (arg_id: INTEGER): INTEGER is
+	argument_position (arg_id: INTEGER): INTEGER
 			-- Position of argument `arg_id' in list of arguments
 			-- of current feature. 0 if none or not found.
 		require
@@ -2331,7 +2475,7 @@ end
 			end
 		end
 
-	has_argument_name (arg_id: INTEGER): BOOLEAN is
+	has_argument_name (arg_id: INTEGER): BOOLEAN
 			-- Has current feature an argument named `arg_id" ?
 		require
 			arg_id_positive: arg_id > 0
@@ -2341,7 +2485,7 @@ end
 			end
 		end
 
-	property_setter_in (class_type: CLASS_TYPE): FEATURE_I is
+	property_setter_in (class_type: CLASS_TYPE): FEATURE_I
 			-- Find an associated property setter in `class_type'.
 		require
 			class_type_attached: class_type /= Void
@@ -2362,7 +2506,7 @@ end
 			result_attached: (type.is_void or else assigner_name_id /= 0) implies Result /= Void
 		end
 
-	ancestor_property_setter_in (c: CLASS_C): FEATURE_I is
+	ancestor_property_setter_in (c: CLASS_C): FEATURE_I
 			-- Find an property setter routine in some ancestor class of the class `c'.
 		require
 			c_not_void: c /= Void
@@ -2406,7 +2550,7 @@ end
 			result_attached: (type.is_void or else assigner_name_id /= 0) implies Result /= Void
 		end
 
-	check_assigner (feature_table: FEATURE_TABLE) is
+	check_assigner (feature_table: FEATURE_TABLE)
 			-- Check if associated assigner is valid.
 		require
 			feature_table_not_void: feature_table /= Void
@@ -2428,7 +2572,7 @@ end
 				create {VFAC1} vfac.make (system.current_class, Current)
 			elseif assigner.argument_count /= argument_count + 1 then
 				create {VFAC2} vfac.make (system.current_class, Current)
-			elseif not assigner.arguments.first.actual_type.same_as (type.actual_type) then
+			elseif not assigner.arguments.first.actual_type.conform_to (system.current_class, type.actual_type) then
 				create {VFAC3} vfac.make (system.current_class, Current)
 			elseif argument_count > 0 then
 				assigner_arguments := assigner.arguments
@@ -2460,7 +2604,7 @@ end
 
 feature -- Undefinition
 
-	new_deferred: DEF_PROC_I is
+	new_deferred: DEF_PROC_I
 			-- New deferred feature for undefinition
 		require
 			not is_deferred
@@ -2509,13 +2653,13 @@ feature -- Undefinition
 			Result_is_deferred: Result.is_deferred
 		end
 
-	new_rout_id: INTEGER is
+	new_rout_id: INTEGER
 			-- New routine id
 		do
 			Result := Routine_id_counter.next_rout_id
 		end
 
-	Routine_id_counter: ROUTINE_COUNTER is
+	Routine_id_counter: ROUTINE_COUNTER
 			-- Routine id counter
 		once
 			Result := System.routine_id_counter
@@ -2523,13 +2667,13 @@ feature -- Undefinition
 
 feature -- Replication
 
-	code_id: INTEGER is
+	code_id: INTEGER
 			-- Code id for inheritance analysis
 		do
 			Result := body_index
 		end
 
-	set_code_id (i: INTEGER) is
+	set_code_id (i: INTEGER)
 			-- Assign `i' to code_id.
 		do
 			-- Do nothing
@@ -2541,7 +2685,7 @@ feature -- Replication
 			-- Do nothing
 		end
 
-	access_in: INTEGER is
+	access_in: INTEGER
 			-- Id of class where current feature can be accessed
 			-- through its routine id
 			-- Useful for replication
@@ -2549,7 +2693,7 @@ feature -- Replication
 			Result := written_in
 		end
 
-	replicated (in: INTEGER): FEATURE_I is
+	replicated (in: INTEGER): FEATURE_I
 			-- Replicated feature
 		require
 			in_not_void: in /= 0
@@ -2559,13 +2703,13 @@ feature -- Replication
 			access_in_set: Result.access_in = in
 		end
 
-	new_code_id: INTEGER is
+	new_code_id: INTEGER
 			-- New code id
 		do
 			Result := System.body_index_counter.next_id
 		end
 
-	selected: FEATURE_I is
+	selected: FEATURE_I
 			-- Selected feature (used for duplicating inherited features by resetting replication and selection status
 		require
 			do_not_use_yet: False
@@ -2575,7 +2719,7 @@ feature -- Replication
 			equivalent: Result.equiv (Current)
 		end
 
-	unselected (in: INTEGER): FEATURE_I is
+	unselected (in: INTEGER): FEATURE_I
 			-- Unselected feature
 		require
 			in_not_void: in /= 0
@@ -2584,13 +2728,13 @@ feature -- Replication
 			Result_exists: Result /= Void
 		end
 
-	is_unselected: BOOLEAN is
+	is_unselected: BOOLEAN
 			-- Is current feature an unselected one ?
 		do
 			-- Do nothing
 		end
 
-	transfer_to (other: FEATURE_I) is
+	transfer_to (other: FEATURE_I)
 			-- Transfer of datas from Current into `other'.
 		require
 			other_exists: other /= Void
@@ -2620,7 +2764,7 @@ feature -- Replication
 			other.set_body_index (body_index)
 		end
 
-	transfer_from (other: FEATURE_I) is
+	transfer_from (other: FEATURE_I)
 			-- Transfer of datas from `other' into `Current'.
 		require
 			do_not_call: False
@@ -2630,7 +2774,7 @@ feature -- Replication
 				-- `export_status' needs to be set via `set_export_status'
 			set_export_status (other.export_status)
 
-			feature_id := other.feature_id
+			--feature_id := other.feature_id
 			feature_name_id := other.feature_name_id
 			alias_name_id := other.alias_name_id
 			written_feature_id := other.written_feature_id
@@ -2647,7 +2791,7 @@ feature -- Replication
 
 feature -- Genericity
 
-	update_instantiator2 (a_class: CLASS_C) is
+	update_instantiator2 (a_class: CLASS_C)
 			-- Look for generic/expanded types in result and arguments in order
 			-- to update instantiator.
 		require
@@ -2670,7 +2814,7 @@ feature -- Genericity
 
 feature -- Pattern
 
-	pattern: PATTERN is
+	pattern: PATTERN
 			-- Feature pattern
 		do
 			create Result.make (type.meta_type)
@@ -2679,7 +2823,7 @@ feature -- Pattern
 			end
 		end
 
-	process_pattern is
+	process_pattern
 			-- Process pattern of Current feature
 		local
 			p: PATTERN_TABLE
@@ -2691,7 +2835,7 @@ feature -- Pattern
 
 feature -- Dead code removal
 
-	used: BOOLEAN is
+	used: BOOLEAN
 			-- Is feature used ?
 		do
 				-- In final mode dead code removal process is on.
@@ -2701,7 +2845,7 @@ feature -- Dead code removal
 
 feature -- Byte code access
 
-	frozen access (access_type: TYPE_A; is_qualified: BOOLEAN): ACCESS_B is
+	frozen access (access_type: TYPE_A; is_qualified: BOOLEAN): ACCESS_B
 			-- Byte code access for current feature
 		require
 			access_type_not_void: access_type /= Void
@@ -2711,7 +2855,7 @@ feature -- Byte code access
 			Result_exists: Result /= Void
 		end
 
-	frozen access_for_multi_constraint (access_type: TYPE_A; a_static_type: TYPE_A; is_qualified: BOOLEAN): ACCESS_B is
+	frozen access_for_multi_constraint (access_type: TYPE_A; a_static_type: TYPE_A; is_qualified: BOOLEAN): ACCESS_B
 			-- Creates a byte code access for a multi constraint target.
 			-- `a_static_type' is the type where the feature is from.
 			-- It is NOT a static call that will be generated, but a dynamic one. It is only needed for W_bench.
@@ -2725,7 +2869,7 @@ feature -- Byte code access
 			Result_exists: Result /= Void
 		end
 
-	access_for_feature (access_type: TYPE_A; static_type: TYPE_A; is_qualified: BOOLEAN): ACCESS_B is
+	access_for_feature (access_type: TYPE_A; static_type: TYPE_A; is_qualified: BOOLEAN): ACCESS_B
 			-- Byte code access for current feature. Dynamic binding if
 			-- `static_type' is Void, otherwise static binding on `static_type'.
 		require
@@ -2767,14 +2911,14 @@ feature -- Byte code access
 
 feature {NONE} -- log file
 
-	add_in_log (class_type: CLASS_TYPE; encoded_name: STRING) is
+	add_in_log (class_type: CLASS_TYPE; encoded_name: STRING)
 		do
 			System.used_features_log_file.add (class_type, feature_name, encoded_name)
 		end
 
 feature -- C code generation
 
-	generate (class_type: CLASS_TYPE; buffer: GENERATION_BUFFER) is
+	generate (class_type: CLASS_TYPE; buffer: GENERATION_BUFFER)
 			-- Generate feature written in `class_type' in `buffer'.
 		require
 			valid_buffer: buffer /= Void
@@ -2819,7 +2963,7 @@ feature -- C code generation
 			end
 		end
 
-	generate_header (a_type: CLASS_TYPE; buffer: GENERATION_BUFFER) is
+	generate_header (a_type: CLASS_TYPE; buffer: GENERATION_BUFFER)
 			-- Generate a header before body of feature
 		require
 			a_type_not_void: a_type /= Void
@@ -2834,7 +2978,7 @@ feature -- C code generation
 
 feature -- Debug purpose
 
-	trace is
+	trace
 			-- Debug purpose
 		do
 			io.error.put_string ("feature name: ")
@@ -2865,7 +3009,7 @@ feature -- Debug purpose
 
 feature -- Debugging
 
-	is_debuggable: BOOLEAN is
+	is_debuggable: BOOLEAN
 		local
 			wc: CLASS_C
 		do
@@ -2881,7 +3025,7 @@ feature -- Debugging
 			end
 		end
 
-	real_body_id (class_type: CLASS_TYPE): INTEGER is
+	real_body_id (class_type: CLASS_TYPE): INTEGER
 			-- Real body id at compilation time for `class_type'.
 			-- This id might be obsolete after supermelting this feature.
 			--| In latter case, new real body id is kept
@@ -2892,7 +3036,7 @@ feature -- Debugging
 			Result := execution_table.real_body_id (body_index, class_type)
 		end
 
-	real_pattern_id (class_type: CLASS_TYPE): INTEGER is
+	real_pattern_id (class_type: CLASS_TYPE): INTEGER
 			-- Real pattern id at compilation time for `class_type'.
 			-- This id might be obsolete after supermelting this feature.
 			--| In latter case, new real body id is kept
@@ -2903,10 +3047,10 @@ feature -- Debugging
 			Result := execution_table.real_pattern_id (body_index, class_type)
 		end
 
-	valid_body_id: BOOLEAN is
+	valid_body_id: BOOLEAN
 			-- Use of this routine as precondition for real_body_id.
 		do
-			Result := ((not is_attribute or else {a: ATTRIBUTE_I} Current and then a.has_body)
+			Result := ((not is_attribute or else attached {ATTRIBUTE_I} Current as a and then a.has_body)
 						and then (not is_constant)
 						and then (not is_deferred)
 						and then (not is_unique)
@@ -2917,12 +3061,12 @@ feature -- Debugging
 
 feature -- Api creation
 
-	e_feature: E_FEATURE is
+	e_feature: E_FEATURE
 		do
 			Result := api_feature (written_in)
 		end
 
-	api_feature (a_class_id: INTEGER): E_FEATURE is
+	api_feature (a_class_id: INTEGER): E_FEATURE
 			-- API representation of Current
 		require
 			a_class_id_positive: a_class_id > 0
@@ -2954,38 +3098,39 @@ feature {FEATURE_I} -- Implementation
 			-- Property of Current feature, i.e. frozen,
 			-- infix, origin, prefix, selected...
 
-	new_api_feature: E_FEATURE is
+	new_api_feature: E_FEATURE
 			-- API feature creation
 		deferred
 		ensure
 			non_void_result: Result /= Void
 		end
 
-	is_frozen_mask: NATURAL_32 is 0x0001
-	is_origin_mask: NATURAL_32 is 0x0002
-	is_empty_mask: NATURAL_32 is 0x0004
-	is_infix_mask: NATURAL_32 is 0x0008
-	is_prefix_mask: NATURAL_32 is 0x0010
-	is_require_else_mask: NATURAL_32 is 0x0020
-	is_ensure_then_mask: NATURAL_32 is 0x0040
-	has_precondition_mask: NATURAL_32 is 0x0080
-	has_postcondition_mask: NATURAL_32 is 0x0100
-	is_bracket_mask: NATURAL_32 is 0x0200
-	is_binary_mask: NATURAL_32 is 0x0400
-	is_unary_mask: NATURAL_32 is 0x0800
-	has_convert_mark_mask: NATURAL_32 is 0x1000
-	has_property_mask: NATURAL_32 is 0x2000
-	has_property_getter_mask: NATURAL_32 is 0x4000
-	has_property_setter_mask: NATURAL_32 is 0x8000
-	is_fake_inline_agent_mask: NATURAL_32 is 0x10000
-	has_rescue_clause_mask: NATURAL_32 is 0x20000
-	is_export_status_none_mask: NATURAL_32 is 0x40000
-	has_function_origin_mask: NATURAL_32 is 0x80000 -- Used in ATTRIBUTE_I
-	has_replicated_ast_mask: NATURAL_32 is 0x100000
-	has_body_mask: NATURAL_32 is 0x200000 -- Used in ATTRIBUTE_I
-	is_replicated_directly_mask: NATURAL_32 is 0x400000
-	from_non_conforming_parent_mask: NATURAL_32 is 0x800000
-	is_selected_mask: NATURAL_32 is 0x1000000
+	is_frozen_mask: NATURAL_32 = 0x0001
+	is_origin_mask: NATURAL_32 = 0x0002
+	is_empty_mask: NATURAL_32 = 0x0004
+	is_infix_mask: NATURAL_32 = 0x0008
+	is_prefix_mask: NATURAL_32 = 0x0010
+	is_require_else_mask: NATURAL_32 = 0x0020
+	is_ensure_then_mask: NATURAL_32 = 0x0040
+	has_precondition_mask: NATURAL_32 = 0x0080
+	has_postcondition_mask: NATURAL_32 = 0x0100
+	is_bracket_mask: NATURAL_32 = 0x0200
+	is_binary_mask: NATURAL_32 = 0x0400
+	is_unary_mask: NATURAL_32 = 0x0800
+	has_convert_mark_mask: NATURAL_32 = 0x1000
+	has_property_mask: NATURAL_32 = 0x2000
+	has_property_getter_mask: NATURAL_32 = 0x4000
+	has_property_setter_mask: NATURAL_32 = 0x8000
+	is_fake_inline_agent_mask: NATURAL_32 = 0x10000
+	has_rescue_clause_mask: NATURAL_32 = 0x20000
+	is_export_status_none_mask: NATURAL_32 = 0x40000
+	has_function_origin_mask: NATURAL_32 = 0x80000 -- Used in ATTRIBUTE_I
+	has_replicated_ast_mask: NATURAL_32 = 0x100000
+	has_body_mask: NATURAL_32 = 0x200000 -- Used in ATTRIBUTE_I
+	is_replicated_directly_mask: NATURAL_32 = 0x400000
+	from_non_conforming_parent_mask: NATURAL_32 = 0x800000
+	is_selected_mask: NATURAL_32 = 0x1000000
+	is_stable_mask: NATURAL_32 = 0x2000000 -- Used in ATTRIBUTE_I
 			-- Mask used for each feature property.
 
 	internal_export_status: like export_status
@@ -2993,14 +3138,14 @@ feature {FEATURE_I} -- Implementation
 			-- it is Void to save some space, what help us distinguish
 			-- is the `is_export_status_none_mask'.
 
-	export_all_status: EXPORT_ALL_I is
+	export_all_status: EXPORT_ALL_I
 		once
 			create Result
 		ensure
 			export_all_status_not_void: Result /= Void
 		end
 
-	export_none_status: EXPORT_NONE_I is
+	export_none_status: EXPORT_NONE_I
 		once
 			create Result
 		ensure
@@ -3012,7 +3157,7 @@ feature {INHERIT_TABLE, FEATURE_I} -- Access
 	private_external_name_id: INTEGER
 			-- External name id of feature if any in IL generation.
 
-	private_external_name: STRING is
+	private_external_name: STRING
 			-- External name of feature if any in IL generation.
 		require
 			valid_private_external_name_id: private_external_name_id > 0
@@ -3025,7 +3170,7 @@ feature {INHERIT_TABLE, FEATURE_I} -- Access
 
 feature {NONE} -- Debug output
 
-	debug_output: STRING is
+	debug_output: STRING
 			-- Textual representation of current feature for debugging.
 		do
 			Result := feature_name
@@ -3038,8 +3183,8 @@ invariant
 	valid_enclosing_feature: is_inline_agent implies enclosing_body_id > 0
 	valid_inline_agent_nr: is_inline_agent implies inline_agent_nr > 0 or is_fake_inline_agent
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -3052,22 +3197,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

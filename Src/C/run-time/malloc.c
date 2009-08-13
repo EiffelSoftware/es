@@ -59,7 +59,6 @@ doc:<file name="malloc.c" header="eif_malloc.h" version="$Id$" summary="Memory a
 #include "rt_gen_types.h"
 #include "rt_gen_conf.h"
 #include "eif_except.h"			/* For exception raising */
-#include "eif_size.h"			/* For macro LNGPAD */
 #include "eif_local.h"			/* For epop() */
 #include "rt_sig.h"
 #include "rt_err_msg.h"
@@ -865,10 +864,9 @@ rt_public EIF_REFERENCE sp_init (EIF_REFERENCE obj, EIF_TYPE_INDEX dftype, EIF_I
 {
 	EIF_GET_CONTEXT
 
-	EIF_INTEGER elem_size, i;
+	rt_uint_ptr elem_size, i, offset;
 	union overhead *zone;
 	EIF_TYPE_INDEX dtype = To_dtype(dftype);
-	EIF_INTEGER offset;
 	void *(*cp) (EIF_REFERENCE);
 	void *(*init) (EIF_REFERENCE, EIF_REFERENCE);
 	
@@ -876,83 +874,85 @@ rt_public EIF_REFERENCE sp_init (EIF_REFERENCE obj, EIF_TYPE_INDEX dftype, EIF_I
 	REQUIRE ("Not forwarded", !(HEADER (obj)->ov_size & B_FWD));
 	REQUIRE ("Special object", HEADER (obj)->ov_flags & EO_SPEC);
 	REQUIRE ("Special object of expanded", HEADER (obj)->ov_flags & EO_COMP);
-	REQUIRE ("Valid lower", ((lower >= 0) && (lower <= RT_SPECIAL_COUNT(obj))));
-	REQUIRE ("Valid upper", ((upper >= lower - 1) && (upper <= RT_SPECIAL_COUNT(obj))));
+	REQUIRE ("Valid lower", ((lower >= 0) && (lower <= RT_SPECIAL_CAPACITY(obj))));
+	REQUIRE ("Valid upper", ((upper >= lower - 1) && (upper <= RT_SPECIAL_CAPACITY(obj))));
 
+	if (upper >= lower) {
 #ifdef WORKBENCH
-	cp = (void *(*) (EIF_REFERENCE)) init_exp;
+		cp = (void *(*) (EIF_REFERENCE)) init_exp;
 #else
-	cp = (void *(*) (EIF_REFERENCE)) egc_exp_create [dtype];
+		cp = (void *(*) (EIF_REFERENCE)) egc_exp_create [dtype];
 #endif
-	init = (void *(*) (EIF_REFERENCE, EIF_REFERENCE)) XCreate(dtype);
+		init = (void *(*) (EIF_REFERENCE, EIF_REFERENCE)) XCreate(dtype);
 
-	elem_size = RT_SPECIAL_ELEM_SIZE(obj);
+		elem_size = RT_SPECIAL_ELEM_SIZE(obj);
 #ifndef WORKBENCH
-	if (References(dtype) > 0) {
+		if (References(dtype) > 0) {
 #endif
-		if (init) {
-			if (cp) {
-				RT_GC_PROTECT(obj);
-				for (i = lower, offset = elem_size * i; i <= upper; i++) {
-					zone = (union overhead *) (obj + offset);
-					zone->ov_size = OVERHEAD + offset;	/* For GC */
-					zone->ov_flags = EO_EXP;	/* Expanded type */
-					zone->ov_dftype = dftype;
-					zone->ov_dtype = dtype;
-					(init) (obj + OVERHEAD + offset, obj + OVERHEAD + offset);
-					(cp) (obj + OVERHEAD + offset);
-					offset += elem_size;
+			if (init) {
+				if (cp) {
+					RT_GC_PROTECT(obj);
+					for (i = lower, offset = elem_size * i; i <= upper; i++) {
+						zone = (union overhead *) (obj + offset);
+						zone->ov_size = OVERHEAD + offset;	/* For GC */
+						zone->ov_flags = EO_EXP;	/* Expanded type */
+						zone->ov_dftype = dftype;
+						zone->ov_dtype = dtype;
+						(init) (obj + OVERHEAD + offset, obj + OVERHEAD + offset);
+						(cp) (obj + OVERHEAD + offset);
+						offset += elem_size;
+					}
+					RT_GC_WEAN(obj);
+				} else {
+					RT_GC_PROTECT(obj);
+					for (i = lower, offset = elem_size * i; i <= upper; i++) {
+						zone = (union overhead *) (obj + offset);
+						zone->ov_size = OVERHEAD + offset;	/* For GC */
+						zone->ov_flags = EO_EXP;	/* Expanded type */
+						zone->ov_dftype = dftype;
+						zone->ov_dtype = dtype;
+						(init) (obj + OVERHEAD + offset, obj + OVERHEAD + offset);
+						offset += elem_size;
+					}
+					RT_GC_WEAN(obj);
 				}
-				RT_GC_WEAN(obj);
 			} else {
-				RT_GC_PROTECT(obj);
-				for (i = lower, offset = elem_size * i; i <= upper; i++) {
-					zone = (union overhead *) (obj + offset);
-					zone->ov_size = OVERHEAD + offset;	/* For GC */
-					zone->ov_flags = EO_EXP;	/* Expanded type */
-					zone->ov_dftype = dftype;
-					zone->ov_dtype = dtype;
-					(init) (obj + OVERHEAD + offset, obj + OVERHEAD + offset);
-					offset += elem_size;
+				if (cp) {
+					RT_GC_PROTECT(obj);
+					for (i = lower, offset = elem_size * i; i <= upper; i++) {
+						zone = (union overhead *) (obj + offset);
+						zone->ov_size = OVERHEAD + offset;	/* For GC */
+						zone->ov_flags = EO_EXP;	/* Expanded type */
+						zone->ov_dftype = dftype;
+						zone->ov_dtype = dtype;
+						(cp) (obj + OVERHEAD + offset);
+						offset += elem_size;
+					}
+					RT_GC_WEAN(obj);
+				} else {
+					EIF_REFERENCE exp = obj;
+					for (i = lower; i <= upper; i++, exp += elem_size) {
+						zone = (union overhead *) exp;
+						zone->ov_size = OVERHEAD + elem_size * i;	/* For GC */
+						zone->ov_flags = EO_EXP;	/* Expanded type */
+						zone->ov_dftype = dftype;
+						zone->ov_dtype = dtype;
+					}
 				}
-				RT_GC_WEAN(obj);
 			}
+#ifndef WORKBENCH
 		} else {
 			if (cp) {
 				RT_GC_PROTECT(obj);
 				for (i = lower, offset = elem_size * i; i <= upper; i++) {
-					zone = (union overhead *) (obj + offset);
-					zone->ov_size = OVERHEAD + offset;	/* For GC */
-					zone->ov_flags = EO_EXP;	/* Expanded type */
-					zone->ov_dftype = dftype;
-					zone->ov_dtype = dtype;
-					(cp) (obj + OVERHEAD + offset);
+					cp (obj + offset);
 					offset += elem_size;
 				}
 				RT_GC_WEAN(obj);
-			} else {
-				EIF_REFERENCE exp = obj;
-				for (i = lower; i <= upper; i++, exp += elem_size) {
-					zone = (union overhead *) exp;
-					zone->ov_size = OVERHEAD + elem_size * i;	/* For GC */
-					zone->ov_flags = EO_EXP;	/* Expanded type */
-					zone->ov_dftype = dftype;
-					zone->ov_dtype = dtype;
-				}
 			}
 		}
-#ifndef WORKBENCH
-	} else {
-		if (cp) {
-			RT_GC_PROTECT(obj);
-			for (i = lower, offset = elem_size * i; i <= upper; i++) {
-				cp (obj + offset);
-				offset += elem_size;
-			}
-			RT_GC_WEAN(obj);
-		}
-	}
 #endif
+	}
 
 	return obj;
 }
@@ -975,10 +975,9 @@ doc:	</routine>
 rt_public EIF_REFERENCE special_malloc (uint16 flags, EIF_TYPE_INDEX dftype, EIF_INTEGER nb, uint32 element_size, EIF_BOOLEAN atomic)
 {
 	EIF_REFERENCE result = NULL;
-	EIF_REFERENCE offset;
 	union overhead *zone;
 
-	result = spmalloc (CHRPAD((rt_uint_ptr) nb * (rt_uint_ptr) element_size) + LNGPAD(2), atomic);
+	result = spmalloc (RT_SPECIAL_MALLOC_COUNT(nb, element_size), atomic);
 
 		/* At this stage we are garanteed to have an initialized object, otherwise an
 		 * exception would have been thrown by the call to `spmalloc'. */
@@ -989,10 +988,13 @@ rt_public EIF_REFERENCE special_malloc (uint16 flags, EIF_TYPE_INDEX dftype, EIF
 	zone->ov_dftype = dftype;
 	zone->ov_dtype = To_dtype(dftype);
 
-	offset = RT_SPECIAL_INFO_WITH_ZONE(result, zone);
-
-	RT_SPECIAL_COUNT_WITH_INFO(offset) = nb;
-	RT_SPECIAL_ELEM_SIZE_WITH_INFO(offset) = element_size;
+	if (egc_has_old_special_semantic) {
+		RT_SPECIAL_COUNT(result) = nb;
+	} else {
+		RT_SPECIAL_COUNT(result) = 0;
+	}
+	RT_SPECIAL_ELEM_SIZE(result) = element_size;
+	RT_SPECIAL_CAPACITY(result) = nb;
 
 	if (flags & EO_COMP) {
 			/* It is a composite object, that is to say a special of expanded,
@@ -1056,7 +1058,7 @@ rt_public EIF_REFERENCE tuple_malloc_specific (EIF_TYPE_INDEX ftype, uint32 coun
 	uint32 t;
 	REQUIRE("Is a tuple type", To_dtype(ftype) == egc_tup_dtype);
 
-	object = spmalloc (count * sizeof(EIF_TYPED_VALUE) + LNGPAD_2, atomic);
+	object = spmalloc(RT_SPECIAL_MALLOC_COUNT(count, sizeof(EIF_TYPED_VALUE)), atomic);
 
 	if (object == NULL) {
 		eraise ("Tuple allocation", EN_MEM);	/* signals no more memory */
@@ -1065,9 +1067,15 @@ rt_public EIF_REFERENCE tuple_malloc_specific (EIF_TYPE_INDEX ftype, uint32 coun
 		union overhead * zone = HEADER(object);
 		unsigned int i;
 		EIF_TYPED_VALUE *l_item = (EIF_TYPED_VALUE *) object;
-		EIF_REFERENCE ref = RT_SPECIAL_INFO_WITH_ZONE(object, zone);
-		RT_SPECIAL_COUNT_WITH_INFO(ref) = count;
-		RT_SPECIAL_ELEM_SIZE_WITH_INFO(ref) = sizeof(EIF_TYPED_VALUE);
+		RT_SPECIAL_COUNT(object) = count;
+		RT_SPECIAL_ELEM_SIZE(object) = sizeof(EIF_TYPED_VALUE);
+		RT_SPECIAL_CAPACITY(object) = count;
+		if (!egc_has_old_special_semantic) {
+				/* If by default allocation does not clear the data of a TUPLE,
+				 * we actually need to do it otherwise we end up with TUPLE objects
+				 * with invalid data. */
+			memset(object, 0, RT_SPECIAL_VISIBLE_SIZE(object));
+		}
 			/* Mark it is a tuple object */
 		zone->ov_flags |= EO_TUPLE;
 		zone->ov_dftype = ftype;
@@ -1206,8 +1214,8 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 {
 	EIF_GET_CONTEXT
 	union overhead *zone;		/* Malloc information zone */
-	EIF_REFERENCE ref, object;
-	unsigned int count, elem_size;
+	EIF_REFERENCE object;
+	unsigned int count, elem_size, capacity;
 	rt_uint_ptr old_size, new_size;					/* New and old size of special object. */
 	rt_uint_ptr old_real_size, new_real_size;		/* Size occupied by items of special */
 #ifdef ISE_GC
@@ -1225,14 +1233,14 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 	 */
 	zone = HEADER(ptr);
 	old_size = zone->ov_size & B_SIZE;	/* Old size of array */
-	ref = RT_SPECIAL_INFO_WITH_ZONE(ptr, zone);
-	count = RT_SPECIAL_COUNT_WITH_INFO(ref);		/* Current number of elements */
-	elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(ref);
-	old_real_size = count * elem_size;	/* Size occupied by items in old special */
-	new_real_size = nbitems * elem_size;	/* Size occupied by items in new special */
-	new_size = new_real_size + LNGPAD_2;		/* New required size */
+	count = RT_SPECIAL_COUNT(ptr);		/* Current number of elements */
+	elem_size = RT_SPECIAL_ELEM_SIZE(ptr);
+	capacity = RT_SPECIAL_CAPACITY(ptr);
+	old_real_size = (rt_uint_ptr) capacity * (rt_uint_ptr) elem_size;	/* Size occupied by items in old special */
+	new_real_size = nbitems * (rt_uint_ptr) elem_size;	/* Size occupied by items in new special */
+	new_size = new_real_size + RT_SPECIAL_PADDED_DATA_SIZE;		/* New required size */
 
-	if (nbitems == count) {		/* OPTIMIZATION: Does resized object have same size? */
+	if (nbitems == capacity) {		/* OPTIMIZATION: Does resized object have same size? */
 		return ptr;				/* If so, we return unchanged `ptr'. */
 	}
 
@@ -1268,16 +1276,18 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 		zone = HEADER (object);
 		new_size = zone->ov_size & B_SIZE;	/* `xrealloc' can change the `new_size' value for padding */
 
+		CHECK("Valid_size", new_size >= new_real_size);
+
 		CHECK ("Not forwarded", !(HEADER(ptr)->ov_size & B_FWD));
 
 			/* Reset extra-items with zeros or default expanded value if any */
 		if (new_real_size > old_real_size) {
-			CHECK ("New size bigger than old one", new_size >= old_size);
+				/* When the actual memory actually increased, we need to reset
+				 * the various new element to their default value. */
 			memset (object + old_real_size, 0, new_size - old_real_size);
 			if (zone->ov_flags & EO_COMP)
 				need_expanded_initialization = EIF_TRUE;
 		} else { 	/* Smaller object requested. */
-			CHECK ("New size smaller than old one", new_size <= old_size);
 				/* We need to remove existing elements between `new_real_size'
 				 * and `new_size'. Above `new_size' it has been taken care
 				 * by `xrealloc' when moving the memory area above `new_size'
@@ -1372,9 +1382,13 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 	RT_GC_WEAN(ptr);	/* Unprotect `ptr'. No more collection is expected. */
 
 		/* Update special attributes count and element size at the end */
-	ref = RT_SPECIAL_INFO(object);
-	RT_SPECIAL_COUNT_WITH_INFO(ref) = nbitems;						/* New count */
-	RT_SPECIAL_ELEM_SIZE_WITH_INFO(ref) = elem_size; 	/* New item size */
+	if (egc_has_old_special_semantic) {
+		RT_SPECIAL_COUNT(object) = nbitems;		/* New count equal to capacity. */
+	} else {
+		RT_SPECIAL_COUNT(object) = count;		/* We preserve the count. */
+	}
+	RT_SPECIAL_ELEM_SIZE(object) = elem_size; 	/* New item size */
+	RT_SPECIAL_CAPACITY(object) = nbitems;		/* New capacity */
 
 	if (need_expanded_initialization) {
 	   		/* Case of a special object of expanded structures. */
@@ -1403,8 +1417,7 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 #endif
 
 	ENSURE ("Special object", HEADER (object)->ov_flags & EO_SPEC);
-	ENSURE ("Eiffel object", !(HEADER (object)->ov_flags & EO_C));
-	ENSURE ("Valid new size", (int)(HEADER (object)->ov_size & B_SIZE) >= new_size);
+	ENSURE ("Valid new size", (HEADER (object)->ov_size & B_SIZE) >= new_size);
 
 		/* The accounting of memory used by Eiffel is not accurate here, but it is
 		 * not easy to know at this level whether the block was merely extended or
@@ -1496,18 +1509,7 @@ doc:	</routine>
 rt_public EIF_REFERENCE cmalloc(size_t nbytes)
 {
 #ifdef ISE_GC
-	EIF_REFERENCE arena;		/* C arena allocated */
-
-	arena = eif_rt_xmalloc(nbytes, C_T, GC_OFF);
-
-		/* The C object does not use its Eiffel flags field in the header. However,
-		 * we set the EO_C bit. This will help the GC because it won't need
-		 * extra-tests to skip the C arenas referenced by Eiffel objects.
-		 */
-	if (arena)
-		HEADER(arena)->ov_flags = EO_C;		/* Clear all flags but EO_C */
-
-	return arena;
+	return eif_rt_xmalloc(nbytes, C_T, GC_OFF);
 #else
 	return (EIF_REFERENCE) eif_malloc (nbytes);
 #endif
@@ -1809,7 +1811,6 @@ rt_private EIF_REFERENCE allocate_free_list(size_t nbytes, register union overhe
 		/* Look in free list to find a suitable block. */
 
 	GC_THREAD_PROTECT(EIF_FREE_LIST_MUTEX_LOCK);
-	SIGBLOCK;				/* Critical section */
 
 #ifdef EIF_EXPENSIVE_ASSERTIONS
 	check_free_list (nbytes, hlist);
@@ -1835,28 +1836,35 @@ rt_private EIF_REFERENCE allocate_free_list(size_t nbytes, register union overhe
 			}
 #endif
 		} else {
-				/* We search in `i + 2' because if we find something in
-				 * `i + 1' then it will cause a 0-sized block to be inserted
-				 * in the free list, and as we know 0-sized block are expensive
-				 * when we want to remove them from the free-list. */
-			selected = allocate_free_list_helper (i + 2, nbytes, hlist);
-			if ((!selected) && (hlist[i + 1])) {
-					/* We could not find a free space in `i + 2' or above and there
-					 * is some space in `i + 1'. We take that space and too bad that
-					 * we will have a 0-sized block. */
-				selected = allocate_free_list_helper (i + 1, nbytes, hlist);
-				CHECK("found block", selected);
+			selected = hlist[i + 1];
+			if (selected) {
+					/* We could find a free space in `i + 1' so we take that
+					 * space and we make `set_up'believe we were asking
+					 * for `nbytes + ALIGNAMX' to avoid creation of a 0-sized block. */
+				nbytes +=ALIGNMAX;
+				CHECK("Correct size", nbytes == (selected->ov_size & B_SIZE));
+#ifdef EIF_SORTED_FREE_LIST
+				disconnect_free_list (selected, i + 1);
+#else
+					/* Remove `selected' from `hlist'. */
+				n = NEXT(selected);
+				hlist[i + 1] = n;
+				if (n) {
+					PREVIOUS(n) = NULL;
+				}
+#endif
+			} else {
+					/* Could not find in `i + 1', let's search above. Here no risk
+					 * of creating a 0-sized block.*/
+				selected = allocate_free_list_helper (i + 2, nbytes, hlist);
 			}
 		}
 	}
 
-	SIGRESUME;				/* End of critical section */
-
-	/* Now, either 'i' is NBLOCKS and 'selected' still holds a null
-	 * pointer or 'selected' holds the wanted address and 'i' is the
-	 * index in the hlist array.
-	 */
-	
+		/* Now, either 'i' is NBLOCKS and 'selected' still holds a null
+		 * pointer or 'selected' holds the wanted address and 'i' is the
+		 * index in the hlist array.
+		 */
 	if (!selected) {		/* We did not find it */
 		GC_THREAD_PROTECT(EIF_FREE_LIST_MUTEX_UNLOCK);
 		return NULL;	/* Failed */
@@ -1867,9 +1875,9 @@ rt_private EIF_REFERENCE allocate_free_list(size_t nbytes, register union overhe
 	flush;
 #endif
 
-	/* Block is ready to be set up for use of 'nbytes' (eventually after
-	 * having been split). Memory accounting is done in set_up().
-	 */
+		/* Block is ready to be set up for use of 'nbytes' (eventually after
+		 * having been split). Memory accounting is done in set_up().
+		 */
 	result = set_up(selected, nbytes);
 	GC_THREAD_PROTECT(EIF_FREE_LIST_MUTEX_UNLOCK);
 	return result;
@@ -2020,7 +2028,7 @@ rt_shared EIF_REFERENCE get_to_from_core (void)
 		 */
 	Result = allocate_from_core (eif_chunk_size - OVERHEAD - sizeof(struct chunk), e_hlist, 1);
 
-	ENSURE("block is indeed of the right size", (eif_chunk_size - OVERHEAD) == (HEADER(Result)->ov_size & B_SIZE));
+	ENSURE("block is indeed of the right size", !Result || ((eif_chunk_size - OVERHEAD) == (HEADER(Result)->ov_size & B_SIZE)));
 
 	return Result;
 }
@@ -2237,8 +2245,8 @@ rt_private union overhead *add_core(size_t nbytes, int type)
 		 * is the first and the last one in the chunk, so we set the
 		 * B_LAST bit. All the other flags are set to false.
 		 */
-	CHECK("asked not too big", asked <= 0xFFFFFFFF);
-	oldbrk->ov_size = (uint32) asked | B_LAST;
+	CHECK("asked not too big", asked <= B_SIZE);
+	oldbrk->ov_size = asked | B_LAST;
 
 	SIGRESUME;				/* Critical section ends */
 
@@ -2437,7 +2445,7 @@ rt_private EIF_REFERENCE set_up(register union overhead *selected, size_t nbytes
 	r = selected->ov_size;
 #ifdef EIF_TID 
 #ifdef EIF_THREADS
-    selected->ovs_tid = eif_thr_id; /* tid from eif_thr_context */
+    selected->ovs_tid = eif_thr_context->tid; /* tid from eif_thr_context */
 #else
     selected->ovs_tid = NULL; /* In non-MT-mode, it is NULL by convention */
 #endif  /* EIF_THREADS */
@@ -2528,15 +2536,6 @@ rt_public void eif_rt_xfree(register void * ptr)
 		(zone->ov_size & B_LAST) ? "last" : "normal",
 		(zone->ov_size & B_CTYPE) ? "C" : "Eiffel",
 		ptr, zone->ov_size & B_SIZE);
-	flush;
-	if (DEBUG & 128) {					/* Print type and class name */
-		EIF_REFERENCE obj = (EIF_REFERENCE) (zone + 1);
-		if (zone->ov_size & B_FWD)		/* Object was forwarded */
-			obj = zone->ov_fwd;
-		if (!(HEADER(obj)->ov_flags & EO_C))
-			printf("eif_rt_xfree: %s object [%d]\n",
-				System(Dtype(obj)).cn_generator, Dtype(obj));
-	}
 	flush;
 #endif
 
@@ -2717,8 +2716,9 @@ rt_shared EIF_REFERENCE xrealloc(register EIF_REFERENCE ptr, size_t nbytes, int 
 	if (i != 0)
 		nbytes += ALIGNMAX - i;		/* Pad nbytes */
 
-	if (r == nbytes) 			/* Same size, lucky us... */
+	if ((r == nbytes) || (r == nbytes + OVERHEAD)) { 			/* Same size, lucky us... */
 		return ptr;				/* That's all I wrote */
+	}
 
 	GC_THREAD_PROTECT(EIF_FREE_LIST_MUTEX_LOCK);
 	SIGBLOCK;					/* Beginning of critical section */
@@ -2790,31 +2790,19 @@ rt_shared EIF_REFERENCE xrealloc(register EIF_REFERENCE ptr, size_t nbytes, int 
 	flush;
 #endif
 
-	/* If the garbage collector is on and the object has some references, then
-	 * after attempting a coalescing we must update the count and copy the old
-	 * elemsize, since they are fetched by the garbage collector by first going
-	 * to the end of the object and then back by LNGPAD_2. Of course, this
-	 * matters only if coalescing has been done, which is indicated by a
-	 * non-zero return value from coalesc.
-	 */
-	
-	if (size_gain != 0 && gc_flag & GC_ON && zone->ov_flags & EO_REF)
-	{
-		EIF_REFERENCE old;				/* Pointer to the old count/elemsize */
-		EIF_REFERENCE o_ref;	/* POinter to new count/elemsize */
-
-		o_ref = RT_SPECIAL_INFO_WITH_ZONE(ptr, zone);
-		old = ((EIF_REFERENCE) o_ref - size_gain);
-			/* Copy old count to new location */
-		RT_SPECIAL_COUNT_WITH_INFO(o_ref) = RT_SPECIAL_COUNT_WITH_INFO(old);
-			/* And also propagate element size */
-		RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ref) = RT_SPECIAL_ELEM_SIZE_WITH_INFO (old);
-
-#ifdef DEBUG
-		dprintf(16)("realloc: progagated count = %d, elemsize = %d\n",
-			RT_SPECIAL_COUNT(ptr), RT_SPECIAL_ELEM_SIZE(ptr));
-		flush;
-#endif
+		/* If the garbage collector is on and the object is a SPECIAL, then
+		 * after attempting a coalescing we must update those information because
+		 * they are now invalid, we copy them from their old location.
+		 * Of course, this matters only if coalescing has been done, which is
+		 * indicated by a non-zero return value from coalesc.
+		 * The reason it is needed is because some other objects might still be
+		 * referring to `ptr' and thus the new `ptr' should be valid even if later,
+		 * in xrealloc, we end up allocating a new SPECIAL object.
+		 */
+	if ((size_gain != 0) && (gc_flag & GC_ON) && (zone->ov_flags & EO_SPEC)) {
+		EIF_REFERENCE l_info;	/* Pointer to new count/elemsize */
+		l_info = RT_SPECIAL_DATA(ptr);
+		memmove(l_info, ((char *) l_info - size_gain), RT_SPECIAL_DATA_SIZE);
 	}
 
 	i = zone->ov_size & B_SIZE;			/* Coalesc modified data in zone */
@@ -2885,6 +2873,7 @@ rt_shared EIF_REFERENCE xrealloc(register EIF_REFERENCE ptr, size_t nbytes, int 
 	 */
 
 	if (zone != (union overhead *) 0) {
+		CHECK("Correct size", (r & B_SIZE) <= (HEADER(zone)->ov_size & B_SIZE)); 
 		memcpy (zone, ptr, r & B_SIZE);	/* Move to new location */
 		HEADER(zone)->ov_flags = HEADER(ptr)->ov_flags;		/* Keep Eiffel flags */
 		HEADER(zone)->ov_dftype = HEADER(ptr)->ov_dftype;
@@ -3933,7 +3922,7 @@ rt_private EIF_REFERENCE eif_set(EIF_REFERENCE object, uint16 flags, EIF_TYPE_IN
 
 #ifdef EIF_TID 
 #ifdef EIF_THREADS
-    zone->ovs_tid = eif_thr_id; /* tid from eif_thr_context */
+    zone->ovs_tid = eif_thr_context->tid; /* tid from eif_thr_context */
 #else
     zone->ovs_tid = NULL; /* In non-MT-mode, it is NULL by convention */
 #endif  /* EIF_THREADS */
@@ -4008,11 +3997,13 @@ rt_private EIF_REFERENCE eif_spset(EIF_REFERENCE object, EIF_BOOLEAN in_scavenge
 	union overhead *zone = HEADER(object);		/* Malloc info zone */
 
 	SIGBLOCK;					/* Critical section */
-	memset (object, 0, zone->ov_size & B_SIZE);		/* All set with zeros */
+	if (egc_has_old_special_semantic) {
+		memset (object, 0, zone->ov_size & B_SIZE);		/* All set with zeros */
+	}
 
 #ifdef EIF_TID 
 #ifdef EIF_THREADS
-    zone->ovs_tid = eif_thr_id; /* tid from eif_thr_context */
+    zone->ovs_tid = eif_thr_context->tid; /* tid from eif_thr_context */
 #else
     zone->ovs_tid = NULL; /* In non-MT-mode, it is NULL by convention */
 #endif  /* EIF_THREADS */

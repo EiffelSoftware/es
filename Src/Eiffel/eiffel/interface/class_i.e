@@ -1,4 +1,4 @@
-indexing
+note
 	description:"[
 				Abstract class that is used for the internal representation
 				of a class. Descendants of `ABSTRACT_CLASS' represent
@@ -40,31 +40,31 @@ inherit
 
 feature -- Access
 
-	name: STRING is
+	name: STRING
 			-- Class name
 		deferred
 		end
 
-	date: INTEGER is
+	date: INTEGER
 			-- Date of last modification.
 		deferred
 		end
 
-	group: CONF_PHYSICAL_GROUP is
+	group: CONF_PHYSICAL_GROUP
 			-- Group this class belongs to.
 		deferred
 		ensure
 			group_not_void: Result /= Void
 		end
 
-	options: CONF_OPTION is
+	options: CONF_OPTION
 			-- Options of this class.
 		deferred
 		ensure
 			options_not_void: Result /= Void
 		end
 
-	target: CONF_TARGET is
+	target: CONF_TARGET
 			-- Target in which current class is being defined.
 		do
 			Result := group.target
@@ -72,31 +72,31 @@ feature -- Access
 			target_not_void: Result /= Void
 		end
 
-	config_class: CONF_CLASS is
+	config_class: CONF_CLASS
 			-- Configuration class.
 		deferred
 		ensure
 			config_class_not_void: Result /= Void
 		end
 
-	actual_class: CLASS_I is
+	actual_class: CLASS_I
 			-- Return the actual class (takes overriding into account).
 		deferred
 		ensure
 			actual_class_not_void: Result /= Void
 		end
 
-	visible: EQUALITY_TUPLE [TUPLE [class_renamed: STRING; features: EQUALITY_HASH_TABLE [STRING, STRING]]] is
+	visible: EQUALITY_TUPLE [TUPLE [class_renamed: STRING; features: EQUALITY_HASH_TABLE [STRING, STRING]]]
 			-- The visible features.
 		deferred
 		end
 
-	path: STRING is
+	path: STRING
 			-- Path of the class, relative to the group, in unix format.
 		deferred
 		end
 
-	base_name: STRING is
+	base_name: STRING
 			-- File name of the class.
 		deferred
 		end
@@ -107,7 +107,7 @@ feature -- Access
 	compiled_class: CLASS_C
 			-- Compiled class
 
-	assertion_level: ASSERTION_I is
+	assertion_level: ASSERTION_I
 			-- Assertion checking level
 		do
 			Result ?= options.assertions
@@ -115,7 +115,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	trace_level: OPTION_I is
+	trace_level: OPTION_I
 			-- Tracing level
 		do
 			if options.is_trace then
@@ -125,7 +125,7 @@ feature -- Access
 			end
 		end
 
-	profile_level: OPTION_I is
+	profile_level: OPTION_I
 			-- Profile level
 		do
 			if options.is_profile then
@@ -135,7 +135,7 @@ feature -- Access
 			end
 		end
 
-	optimize_level: OPTIMIZE_I is
+	optimize_level: OPTIMIZE_I
 			-- Optimization level
 		do
 			if options.is_optimize then
@@ -145,7 +145,7 @@ feature -- Access
 			end
 		end
 
-	debug_level: DEBUG_I is
+	debug_level: DEBUG_I
 			-- Debug level
 		local
 			l_d: HASH_TABLE [BOOLEAN, STRING]
@@ -174,7 +174,7 @@ feature -- Access
 			end
 		end
 
-	visible_level: VISIBLE_I is
+	visible_level: VISIBLE_I
 			-- Visible level
 		local
 			l_vis: EQUALITY_HASH_TABLE [STRING, STRING]
@@ -215,13 +215,13 @@ feature -- Access
 			end
 		end
 
-	is_full_class_checking: BOOLEAN is
+	is_full_class_checking: BOOLEAN
 			-- Is full class being checked, i.e. including inherited features?
 		do
 			Result := options.is_full_class_checking
 		end
 
-	is_cat_call_detection: BOOLEAN is
+	is_cat_call_detection: BOOLEAN
 			-- Is cat-call detection enabled, i.e. all feature calls are checked for potential cat-calls?
 		do
 			Result := options.is_cat_call_detection
@@ -234,20 +234,32 @@ feature -- Access
 			Result := options.is_attached_by_default
 		end
 
-	is_void_safe: BOOLEAN is
-			-- Does class use void-safe constructs?
+	is_void_safe_call: BOOLEAN
+			-- Should feature call target be attached?
 		do
-			Result := options.is_void_safe
+			Result := options.void_safety.index = {CONF_OPTION}.void_safety_index_all
+		end
+
+	is_void_safe_conformance: BOOLEAN
+			-- Should attachment status be taken into account when checking conformance?
+		do
+			Result := options.void_safety.index = {CONF_OPTION}.void_safety_index_all
+		end
+
+	is_void_safe_initialization: BOOLEAN
+			-- Should attached entities be property set before use?
+		do
+			Result := options.void_safety.index /= {CONF_OPTION}.void_safety_index_none
 		end
 
 	is_syntax_obsolete: BOOLEAN
 			-- Is obsolete syntax used in the source code?
 		do
 			inspect
-				options.syntax_level.item
+				options.syntax.index
 			when
-				{CONF_OPTION}.syntax_level_obsolete,
-				{CONF_OPTION}.syntax_level_transitional
+				{CONF_OPTION}.syntax_index_obsolete,
+				{CONF_OPTION}.syntax_index_transitional
 			then
 				Result := True
 			else
@@ -258,17 +270,17 @@ feature -- Access
 			-- Is obsolete syntax used in the source code?
 		do
 			inspect
-				options.syntax_level.item
+				options.syntax.index
 			when
-				{CONF_OPTION}.syntax_level_standard,
-				{CONF_OPTION}.syntax_level_transitional
+				{CONF_OPTION}.syntax_index_standard,
+				{CONF_OPTION}.syntax_index_transitional
 			then
 				Result := True
 			else
 			end
 		end
 
-	is_compiled: BOOLEAN is
+	is_compiled: BOOLEAN
 			-- Is the class already compiled ?
 		do
 			Result := compiled_class /= Void
@@ -276,17 +288,17 @@ feature -- Access
 			is_compiled: Result implies compiled_class /= Void
 		end
 
-	is_read_only: BOOLEAN is
+	is_read_only: BOOLEAN
 			-- Is class in read-only mode?
 		deferred
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- Is class still reachable from the configuration system?
 		deferred
 		end
 
-	is_external_class: BOOLEAN is
+	is_external_class: BOOLEAN
 			-- Is class defined outside current system.
 		do
 		end
@@ -294,7 +306,7 @@ feature -- Access
 	is_basic_class: BOOLEAN
 			-- Is `Current' a basic class referenced in BASIC_SYSTEM_I?
 
-	file_date: INTEGER is
+	file_date: INTEGER
 			-- Date of last modification date of Current.
 		do
 			Result := file_modified_date (file_name)
@@ -302,7 +314,7 @@ feature -- Access
 			file_date_valid: Result >= -1
 		end
 
-	compiled_representation: CLASS_C is
+	compiled_representation: CLASS_C
 			-- Compiled representation of `Current'
 			-- same as `compiled_class' for normal classes
 			-- Void for classes that are overriden
@@ -344,7 +356,7 @@ feature {NONE} -- Access
 
 feature -- Status report
 
-	actual_namespace: STRING is
+	actual_namespace: STRING
 			-- Associated namespace of current class. Result depends
 			-- on settings from `System.use_cluster_as_namespace' and
 			-- from `System.use_all_cluster_as_namespace'.
@@ -387,7 +399,7 @@ feature -- Status report
 			result_not_void: Result /= Void
 		end
 
-	set_actual_namespace is
+	set_actual_namespace
 			-- Compute `actual_namespace' and store its value in `internal_namespace'.
 		local
 			l_name: STRING
@@ -395,7 +407,7 @@ feature -- Status report
 			l_name := actual_namespace
 		end
 
-	file_name: FILE_NAME is
+	file_name: FILE_NAME
 			-- Full file name of the class
 		do
 			create Result.make_from_string (group.location.build_path (path, ""))
@@ -404,7 +416,7 @@ feature -- Status report
 			file_name_not_void: Result /= Void
 		end
 
-	text: STRING_32 is
+	text: STRING_32
 			-- Text of the Current lace file.
 			-- Convert to UTF-32 if possible.
 			-- Void if unreadable file
@@ -442,12 +454,12 @@ feature -- Status report
 			retry
 		end
 
-	encoding: ?ANY
+	encoding: detachable ANY
 			-- Encoding of original text.
 
 feature -- Output
 
-	append_name (st: TEXT_FORMATTER) is
+	append_name (st: TEXT_FORMATTER)
 			-- Append the name ot the current class in `a_clickable'
 		require
 			non_void_st: st /= Void
@@ -457,7 +469,7 @@ feature -- Output
 
 feature {COMPILER_EXPORTER} -- Compiled class
 
-	class_to_recompile: CLASS_C is
+	class_to_recompile: CLASS_C
 			-- Instance of a class to remcompile
 		require
 			name_exists: name /= Void
@@ -469,7 +481,7 @@ feature {COMPILER_EXPORTER} -- Compiled class
 
 feature {BASIC_SYSTEM_I} -- Setting
 
-	set_as_basic_class is
+	set_as_basic_class
 			-- Set `is_basic_class' to True.
 		do
 			is_basic_class := True
@@ -479,7 +491,7 @@ feature {BASIC_SYSTEM_I} -- Setting
 
 feature {COMPILER_EXPORTER} -- Setting
 
-	set_changed (b: BOOLEAN) is
+	set_changed (b: BOOLEAN)
 			-- Assign `b' to `changed'.
 		do
 			changed := b
@@ -487,7 +499,7 @@ feature {COMPILER_EXPORTER} -- Setting
 			changed_set: changed = b
 		end
 
-	set_compiled_class (c: CLASS_C) is
+	set_compiled_class (c: CLASS_C)
 			-- Assign `c' to `compiled_class'.
 		require
 			non_void_c: c /= Void
@@ -497,13 +509,13 @@ feature {COMPILER_EXPORTER} -- Setting
 			compiled_class = c
 		end
 
-	reset_options is
+	reset_options
 			-- Reset cached options of `Current'
 		do
 			-- By default do nothing
 		end
 
-	reset_compiled_class is
+	reset_compiled_class
 			-- Reset `compiled_class' to Void.
 		do
 			compiled_class := Void
@@ -511,21 +523,21 @@ feature {COMPILER_EXPORTER} -- Setting
 			void_compiled_class: compiled_class = Void
 		end
 
-	reset_class_c_information (cl: CLASS_C) is
+	reset_class_c_information (cl: CLASS_C)
 			-- Set Current as `lace_class' of `cl' since file has been moved to override
 			-- cluster
+		require
+			cl_not_void: cl /= Void
 		do
-				-- If `cl' not void, it means that we are handling a class which is
-				-- in the system and therefore we update its info, otherwise we do nothing.
-			if cl /= Void then
-				cl.set_original_class (Current)
-				set_compiled_class (cl)
-			end
+				-- We are handling a class which is in the system and therefore we
+				-- update its info.
+			cl.set_original_class (Current)
+			set_compiled_class (cl)
 		end
 
 feature {NONE} -- Implementation
 
-	no_debug: DEBUG_I is
+	no_debug: DEBUG_I
 			-- All debugs disabled debug level.
 		once
 			create Result
@@ -536,8 +548,8 @@ invariant
 	name_not_void: name /= Void
 	compiled_class_connection: is_compiled implies compiled_class.original_class = Current
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

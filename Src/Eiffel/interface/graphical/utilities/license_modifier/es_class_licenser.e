@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Performs license text modifications on a class.
 		
@@ -45,13 +45,13 @@ inherit
 
 feature {NONE} -- Helpers
 
-	frozen logger: !SERVICE_CONSUMER [LOGGER_S]
+	frozen logger: attached SERVICE_CONSUMER [LOGGER_S]
 			-- Access to the logger service.
 		once
 			create Result
 		end
 
-	frozen wizard_enginer: !SERVICE_CONSUMER [WIZARD_ENGINE_S]
+	frozen wizard_enginer: attached SERVICE_CONSUMER [WIZARD_ENGINE_S]
 			-- Access to the wizard engine service.
 		once
 			create Result
@@ -59,122 +59,138 @@ feature {NONE} -- Helpers
 
 feature -- Basic operatons
 
-	relicense (a_class: !CLASS_I)
+	relicense (a_class: attached CLASS_I)
 			-- Initialize a class licenser for a given class.
 			--
 			-- `a_class': The class to license.
 		local
-			l_mod: !ES_CLASS_LICENSE_MODIFIER
-			l_name: ?STRING_32
-			l_fn: ?FILE_NAME
-			l_path: ?STRING_32
+			l_mod: attached ES_CLASS_LICENSE_MODIFIER
+			l_name: detachable STRING_32
+			l_fn: detachable FILE_NAME
+			l_path: detachable STRING_32
 			l_index: INTEGER
-			l_license: ?like load_license
-			l_libraries: !LIST [!CONF_LIBRARY]
-			l_library: !CONF_LIBRARY
+			l_license: detachable like load_license
+			l_libraries: attached LIST [attached CONF_LIBRARY]
+			l_library: attached CONF_LIBRARY
 			l_uuid: UUID
-			l_parameters: !DS_HASH_TABLE [!ANY, !STRING]
+			l_parameters: attached DS_HASH_TABLE [attached ANY, attached STRING]
 			l_use_old_syntax: BOOLEAN
 			l_load_default: BOOLEAN
+			retried: BOOLEAN
 		do
-			create l_mod.make (a_class)
-			l_mod.prepare
-			if l_mod.is_prepared and then l_mod.is_ast_available then
-				l_use_old_syntax := a_class.options.syntax_level.item = {CONF_OPTION}.syntax_level_obsolete
+			if not retried then
+				create l_mod.make (a_class)
+				l_mod.prepare
+				if l_mod.is_prepared and then l_mod.is_ast_available then
+					l_use_old_syntax := a_class.options.syntax.index = {CONF_OPTION}.syntax_index_obsolete
 
-					-- Parsed successfully.
-				l_name := l_mod.license_name
-				if l_name /= Void then
-						-- Try to load the license
-					l_license := load_named_license (l_name, l_use_old_syntax)
-				else
-						-- Try to use a license file from an ECF because there was not license referene name in the class.
-					if a_class.target.system /~ a_class.universe.conf_system then
-							-- Libraries do not have variables so we need to load the configuration and fetch the variables.
-						l_uuid := a_class.target.system.uuid
-						if l_uuid /= Void then
-								-- Fetch the library reference and load the configuration.
-							l_libraries := a_class.universe.library_of_uuid (l_uuid, True)
-							if not l_libraries.is_empty then
-									-- Create the path to the license file.
-								l_library := l_libraries.first
-								l_path := l_library.location.evaluated_path.as_string_32
-							end
-						end
+						-- Parsed successfully.
+					l_name := l_mod.license_name
+					if l_name /= Void then
+							-- Try to load the license
+						l_license := load_named_license (l_name, l_use_old_syntax)
 					else
-						check system_defined: a_class.workbench.system_defined end
-						l_path := a_class.workbench.eiffel_ace.file_name.as_string_32
-					end
-
-					l_load_default := True
-					if l_path /= Void then
-						l_index := l_path.last_index_of ('.', l_path.count)
-						if l_index > 1 then
-							l_path.keep_head (l_index - 1)
-							create l_fn.make_from_string (l_path)
-							l_fn.add_extension ("lic")
-
-								-- Try to load the license
-							l_path := l_fn.string.as_string_32
-							if l_path /= Void and then (create {RAW_FILE}.make (l_path)).exists then
-								l_license := load_license (l_path, l_use_old_syntax)
-								l_load_default := False
-							end
-						end
-					end
-
-					if l_load_default then
-						check l_license_detached: l_license = Void end
-
-							-- No license was loaded, try the default
-						l_license := load_named_license (create {STRING_32}.make_from_string ("default"), l_use_old_syntax)
-					end
-				end
-
-				if l_license /= Void then
-					if not l_license.is_empty then
-						if not l_mod.is_valid_license (l_license) then
-								-- Render the invalid license template.
-							l_license := locale_formatter.translation (invalid_license_license)
-							if wizard_enginer.is_service_available then
-								create l_parameters.make_default
-								if l_use_old_syntax then
-									l_parameters.put_last ({EIFFEL_KEYWORD_CONSTANTS}.indexing_keyword, note_keyword_symbol)
-								else
-									l_parameters.put_last ({EIFFEL_KEYWORD_CONSTANTS}.note_keyword, note_keyword_symbol)
+							-- Try to use a license file from an ECF because there was not license referene name in the class.
+						if a_class.target.system /~ a_class.universe.conf_system then
+								-- Libraries do not have variables so we need to load the configuration and fetch the variables.
+							l_uuid := a_class.target.system.uuid
+							if l_uuid /= Void then
+									-- Fetch the library reference and load the configuration.
+								l_libraries := a_class.universe.library_of_uuid (l_uuid, True)
+								if not l_libraries.is_empty then
+										-- Create the path to the license file.
+									l_library := l_libraries.first
+									l_path := l_library.location.evaluated_path.as_string_32
 								end
-								l_license := wizard_enginer.service.render_template (l_license, l_parameters)
-							else
-								l_license := Void
-							end
-						end
-
-						if l_license /= Void and then l_mod.is_valid_license (l_license) then
-							l_mod.set_license (l_license)
-							if l_mod.is_dirty then
-								l_mod.commit
 							end
 						else
-							check False end
+							check system_defined: a_class.workbench.system_defined end
+							l_path := a_class.workbench.eiffel_ace.file_name.as_string_32
 						end
+
+						l_load_default := True
+						if l_path /= Void then
+							l_index := l_path.last_index_of ('.', l_path.count)
+							if l_index > 1 then
+								l_path.keep_head (l_index - 1)
+								create l_fn.make_from_string (l_path)
+								l_fn.add_extension ("lic")
+
+									-- Try to load the license
+								l_path := l_fn.string.as_string_32
+								if l_path /= Void and then (create {RAW_FILE}.make (l_path)).exists then
+									l_license := load_license (l_path, l_use_old_syntax)
+									l_load_default := False
+								end
+							end
+						end
+
+						if l_load_default then
+							check l_license_detached: l_license = Void end
+
+								-- No license was loaded, try the default
+							l_license := load_named_license (create {STRING_32}.make_from_string ("default"), l_use_old_syntax)
+						end
+					end
+
+					if l_license /= Void then
+						if not l_license.is_empty then
+							if not l_mod.is_valid_license (l_license) then
+									-- Render the invalid license template.
+								l_license := locale_formatter.translation (invalid_license_license)
+								if wizard_enginer.is_service_available then
+									create l_parameters.make_default
+									if l_use_old_syntax then
+										l_parameters.put_last ({EIFFEL_KEYWORD_CONSTANTS}.indexing_keyword, note_keyword_symbol)
+									else
+										l_parameters.put_last ({EIFFEL_KEYWORD_CONSTANTS}.note_keyword, note_keyword_symbol)
+									end
+									l_license := wizard_enginer.service.render_template (l_license, l_parameters)
+								else
+									l_license := Void
+								end
+							end
+
+							if l_license /= Void and then l_mod.is_valid_license (l_license) then
+								l_mod.set_license (l_license)
+								if l_mod.is_dirty then
+									l_mod.commit
+								end
+							else
+								check False end
+							end
+						end
+					end
+				else
+						-- The class contains sytax errors
+					if logger.is_service_available then
+							-- Log error.
+						logger.service.put_message_format_with_severity (
+							"Unable to apply license because class {1} contains syntax errors.",
+							[a_class.name],
+							{ENVIRONMENT_CATEGORIES}.editor,
+							{PRIORITY_LEVELS}.high)
 					end
 				end
 			else
-					-- The class contains sytax errors
+					-- There was an exception
 				if logger.is_service_available then
 						-- Log error.
 					logger.service.put_message_format_with_severity (
-						"Unable to apply license because class {1} contains syntax errors.",
+						"Unable to apply license to class {1} because of an internal exception.",
 						[a_class.name],
 						{ENVIRONMENT_CATEGORIES}.editor,
 						{PRIORITY_LEVELS}.high)
 				end
 			end
+		rescue
+			retried := True
+			retry
 		end
 
 feature {NONE} -- Basic operation
 
-	load_license (a_file_name: !STRING_32; a_use_old_syntax: BOOLEAN): ?STRING_32
+	load_license (a_file_name: attached STRING_32; a_use_old_syntax: BOOLEAN): detachable STRING_32
 			-- Attempt to load a license file
 			--
 			-- `a_file_name': The file name of the license file to load.
@@ -183,8 +199,8 @@ feature {NONE} -- Basic operation
 		require
 			not_a_file_name_is_empty: not a_file_name.is_empty
 		local
-			l_name: ?STRING_32
-			l_parameters: !DS_HASH_TABLE [!ANY, !STRING]
+			l_name: detachable STRING_32
+			l_parameters: attached DS_HASH_TABLE [attached ANY, attached STRING]
 			l_index: INTEGER
 			retried: BOOLEAN
 		do
@@ -232,7 +248,7 @@ feature {NONE} -- Basic operation
 			retry
 		end
 
-	load_named_license (a_name: !STRING_32; a_use_old_syntax: BOOLEAN): ?STRING_32
+	load_named_license (a_name: attached STRING_32; a_use_old_syntax: BOOLEAN): detachable STRING_32
 			-- Attempt to load a license from the licenses folder.
 			--
 			-- `a_name': The name of the license file to load.
@@ -241,9 +257,9 @@ feature {NONE} -- Basic operation
 		require
 			not_a_name_is_empty: not a_name.is_empty
 		local
-			l_fn: !FILE_NAME
-			l_user_fn: ?FILE_NAME
-			l_path: ?STRING_32
+			l_fn: attached FILE_NAME
+			l_user_fn: detachable FILE_NAME
+			l_path: detachable STRING_32
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -267,24 +283,24 @@ feature {NONE} -- Basic operation
 			not_result_is_empty: Result /= Void implies not Result.is_empty
 		end
 
-feature {NONE} -- Symbols
+feature {NONE} -- Constants: Symbols
 
-	note_keyword_symbol: !STRING = "NOTE_KEYWORD"
+	note_keyword_symbol: STRING = "NOTE_KEYWORD"
 			-- Keyword symbol in the template license file.
 
-	year_symbol: !STRING = "YEAR"
+	year_symbol: STRING = "YEAR"
 			-- Year symbol in the template license file.
 
-	reference_prefix: !STRING = "reference:"
+	reference_prefix: STRING = "reference:"
 			-- Reference prefix for named licenses.
 
 feature {NONE} -- Internationalization
 
-	invalid_license_license: !STRING = "${NOTE_KEYWORD}%N%Tlicense: %"The specified license contains syntax errors!%""
-			-- The default, invalid license.
+	invalid_license_license: STRING = "${NOTE_KEYWORD}%N%Tlicense: %"The specified license contains syntax errors!%""
+			-- Default invalid license.
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -297,22 +313,22 @@ feature {NONE} -- Internationalization
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						Toggle button for use with SD_TOOL_BAR.
 						`is_selected' is mutualy exclusive with respect to other tool bar
@@ -25,8 +25,8 @@ create
 
 feature -- Command
 
-	enable_select is
-			-- Enable select.
+	enable_select
+			-- Enable select
 
 		do
 			Precursor {SD_TOOL_BAR_TOGGLE_BUTTON}
@@ -35,7 +35,7 @@ feature -- Command
 
 feature {NONE} -- Implementation
 
-	on_pointer_press (a_relative_x, a_relative_y: INTEGER_32) is
+	on_pointer_press (a_relative_x, a_relative_y: INTEGER_32)
 			-- Handle pointer press actions
 		do
 			if not is_selected then
@@ -43,7 +43,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_pointer_release (a_relative_x, a_relative_y: INTEGER) is
+	on_pointer_release (a_relative_x, a_relative_y: INTEGER)
 			-- Handle pointer release actions
 		do
 			if not is_selected then
@@ -54,8 +54,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_other_radio_button (a_select: BOOLEAN) is
-			-- Set all other radio buttons in `tool_bar' states.
+	set_other_radio_button (a_select: BOOLEAN)
+			-- Set all other radio buttons in `tool_bar' states
 		local
 			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			l_item: SD_TOOL_BAR_RADIO_BUTTON
@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

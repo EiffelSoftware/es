@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Observer of an entity."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -9,22 +9,22 @@ indexing
 deferred class
 	OBSERVER
 
-feature -- Update 
+feature -- Update
 
-	update is
+	update
 			-- Update Current when the entity is possibly modified.
 		deferred
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

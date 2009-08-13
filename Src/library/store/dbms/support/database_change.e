@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Implmentation of DB_CHANGE"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -34,12 +34,12 @@ create {DATABASE_CHANGE}
 
 feature -- Access
 
-	last_parsed_query : STRING
+	last_parsed_query : detachable STRING
 			-- Last parsed query
 
 feature -- Element change
 
-	modify (sql: STRING) is
+	modify (sql: STRING)
 			-- Pass to active database handle a modification
 			-- query with SQL statement `sql'.
 			-- Execute `sql' statement.
@@ -48,7 +48,7 @@ feature -- Element change
 			connected: is_connected
 			descriptor_is_available: db_spec.descriptor_is_available
 		local
-			tmp_string: STRING
+			tmp_string: detachable STRING
 			temp_descriptor: INTEGER
 			parsed: BOOLEAN
 		do
@@ -91,7 +91,7 @@ feature -- Element change
 
 feature -- Status setting
 
-	set_ht (table: HASH_TABLE [ANY, STRING]) is
+	set_ht (table: like ht)
 			-- Pass map `table' to current.
 			-- Set `ht' with `table'.
 		require else
@@ -102,7 +102,7 @@ feature -- Status setting
 			ht = table
 		end
 
-	set_ht_order (list: ARRAYED_LIST [STRING]) is
+	set_ht_order (list: ARRAYED_LIST [STRING])
 			-- Pass map `list' to current.
 			-- Set `ht_order' with `list'.
 		require else
@@ -113,7 +113,7 @@ feature -- Status setting
 			ht_order = list
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

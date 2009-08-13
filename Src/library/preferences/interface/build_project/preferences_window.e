@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			A EV_TITLED_WINDOW containing a tree view of application preferences.  Provides a
 			list to view preference information and ability to edit the preferences using popup floating widgets.  Also allows
@@ -11,6 +11,8 @@ indexing
 
 class
 	PREFERENCES_WINDOW
+
+obsolete "[090514] You should use PREFERENCES_GRID_DIALOG or PREFERENCES_GRID_CONTROL to embed pref into existing UI"
 
 inherit
 	PREFERENCES_WINDOW_IMP
@@ -36,30 +38,33 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_preferences: PREFERENCES; a_obs_parent_window: EV_WINDOW) is
+	make (a_preferences: PREFERENCES; a_obs_parent_window: EV_WINDOW)
 			-- New window.  Redefined to register EiffelStudio specific preference widgets for
 			-- special preference types.
 		do
 			make_with_hidden (a_preferences, a_obs_parent_window, False)
 		end
 
-	make_with_hidden (a_preferences: PREFERENCES; a_obs_parent_window: EV_WINDOW; a_show_hidden_flag: BOOLEAN) is
+	make_with_hidden (a_preferences: PREFERENCES; a_obs_parent_window: EV_WINDOW; a_show_hidden_flag: BOOLEAN)
 			-- New window.  Redefined to register EiffelStudio specific preference widgets for
 			-- special preference types.
 		do
 			view_make_with_hidden (a_preferences, a_show_hidden_flag)
-
-			default_create
-			parent_window := Current
+			create grid
 
 			check
 				preferenese_root_is_valid_as_string_8: preferences_root.is_valid_as_string_8
 			end
 			root_node_text := preferences_root.as_string_8
+			display_update_agent := agent on_preference_changed_externally
+
+			default_create
+			parent_window := Current
+
 			set_size (640, 460)
 			set_title (preferences_title)
 			fill_list
-			create grid
+
 			default_row_height := grid.row_height
 			grid.disable_row_height_fixed
 			grid.enable_single_row_selection
@@ -81,10 +86,9 @@ feature {NONE} -- Initialization
 			resize_actions.force_extend (agent on_window_resize)
 			grid.header.pointer_double_press_actions.force_extend (agent on_header_double_clicked)
 			grid.header.item_resize_end_actions.force_extend (agent on_header_resize)
-			display_update_agent := agent on_preference_changed_externally
 		end
 
-	user_initialization is
+	user_initialization
 			-- Called by `initialize'.
 			-- Any custom user initialization that
 			-- could not be performed in `initialize',
@@ -95,13 +99,13 @@ feature {NONE} -- Initialization
 
 feature -- Status Setting
 
-	set_show_full_preference_name (a_flag: BOOLEAN) is
+	set_show_full_preference_name (a_flag: BOOLEAN)
 			-- Set 'show_full_preference_name'
 		do
 			show_full_preference_name := a_flag
 		end
 
-	set_root_icon (a_icon: EV_PIXMAP) is
+	set_root_icon (a_icon: EV_PIXMAP)
 			-- Set the root node icon
 		require
 			icon_not_void: a_icon /= Void
@@ -109,7 +113,7 @@ feature -- Status Setting
 			root_icon := a_icon
 		end
 
-	set_folder_icon (a_icon: EV_PIXMAP) is
+	set_folder_icon (a_icon: EV_PIXMAP)
 			-- Set the folder node icon
 		require
 			icon_not_void: a_icon /= Void
@@ -119,7 +123,7 @@ feature -- Status Setting
 
 feature {NONE} -- Events
 
-	on_close is
+	on_close
 			-- Close button has been pushed: apply the changes then close
 			-- the Preferences Window.
 		do
@@ -127,35 +131,35 @@ feature {NONE} -- Events
 			hide
 		end
 
-	on_preference_changed (a_pref: PREFERENCE) is
+	on_preference_changed (a_pref: PREFERENCE)
 			-- Set the preference value to the newly entered value in the edit item.
 		local
-			l_default_item: EV_GRID_LABEL_ITEM
-			l_font_pref: FONT_PREFERENCE
+			l_default_item: detachable EV_GRID_LABEL_ITEM
 		do
 			if not grid.selected_rows.is_empty then
-				l_font_pref ?= a_pref
-				if l_font_pref /= Void then
+				if attached {FONT_PREFERENCE} a_pref as l_font_pref then
 					grid.selected_rows.first.set_height (l_font_pref.value.height.max (default_row_height))
 				end
 
 				l_default_item ?= grid.selected_rows.first.item (3)
-
-				if a_pref.is_default_value then
-					l_default_item.set_text (p_default_value)
-					l_default_item.set_font (default_font)
+				if l_default_item /= Void then
+					if a_pref.is_default_value then
+						l_default_item.set_text (p_default_value)
+						l_default_item.set_font (default_font)
+					else
+						l_default_item.set_text (user_value)
+						l_default_item.set_font (non_default_font)
+					end
+					if a_pref.is_auto then
+						l_default_item.set_text (l_default_item.text + " (" + auto_value + ")")
+					end
 				else
-					l_default_item.set_text (user_value)
-					l_default_item.set_font (non_default_font)
-				end
-
-				if a_pref.is_auto then
-					l_default_item.set_text (l_default_item.text + " (" + auto_value + ")")
+					check has_default_item: False end
 				end
 			end
 		end
 
-	on_preference_changed_externally (a_pref: PREFERENCE) is
+	on_preference_changed_externally (a_pref: PREFERENCE)
 			-- Set the preference value to the newly entered value NOT changed in the edit item.
 		do
 			if grid.row_count > 0 then
@@ -163,14 +167,10 @@ feature {NONE} -- Events
 			end
 		end
 
-	set_preference_to_default (a_item: EV_GRID_LABEL_ITEM; a_pref: PREFERENCE) is
+	set_preference_to_default (a_item: EV_GRID_LABEL_ITEM; a_pref: PREFERENCE)
 			-- Set the preference value to the original default.
 		local
-			l_text_item: EV_GRID_EDITABLE_ITEM
-			l_combo_item: EV_GRID_CHOICE_ITEM
-			l_label_item: EV_GRID_LABEL_ITEM
-			l_color_item: EV_GRID_DRAWABLE_ITEM
-			l_font: FONT_PREFERENCE
+			l_item: detachable EV_GRID_ITEM
 		do
 			a_pref.reset
 			a_item.set_text (p_default_value)
@@ -179,56 +179,59 @@ feature {NONE} -- Events
 				a_item.set_text (a_item.text + " (" + auto_value + ")")
 			end
 
-			l_text_item ?= a_item.row.item (4)
-			if l_text_item /= Void then
-					-- Editable text item
-				l_text_item.set_text (a_pref.string_value)
-			else
-				l_combo_item ?= a_item.row.item (4)
-				if l_combo_item /= Void then
+			l_item := a_item.row.item (4)
+			if l_item /= Void then
+				if attached {EV_GRID_EDITABLE_ITEM} l_item as l_text_item then
+						-- Editable text item
+					l_text_item.set_text (a_pref.string_value)
+				elseif attached {EV_GRID_CHOICE_ITEM} l_item as l_combo_item then
 						-- Combo selectable item
 					l_combo_item.set_text (a_pref.string_value)
-				else
-					l_color_item ?= a_item.row.item (4)
-					if l_color_item /= Void then
-							-- Color drawable item
-						l_color_item.redraw
-					else
-						l_label_item ?= a_item.row.item (1)
-						if l_label_item /= Void and then a_pref.generating_preference_type.is_equal ("FONT") then
-								-- Font label item
-							l_font ?= a_pref
-							l_label_item ?= a_item.row.item (4)
-							l_label_item.set_text (l_font.string_value)
-							l_label_item.set_font (l_font.value)
+				elseif attached {EV_GRID_DRAWABLE_ITEM} l_item as l_color_item then
+						-- Color drawable item
+					l_color_item.redraw
+				elseif attached {EV_GRID_LABEL_ITEM} a_item.row.item (1) as l_label_item then
+					if a_pref.generating_preference_type.is_equal ("FONT") then
+							-- Font label item
+						if
+							attached {EV_GRID_LABEL_ITEM} l_item as l_font_item and
+							attached {FONT_PREFERENCE} a_pref as l_font
+						then
+							l_font_item.set_text (l_font.string_value)
+							l_font_item.set_font (l_font.value)
 						end
 					end
+				else
 				end
 			end
 		end
 
-	on_restore is
+	on_restore
 			-- Restore all preferences to their default values.
 		local
 			l_confirmation_dialog: EV_CONFIRMATION_DIALOG
 		do
 			create l_confirmation_dialog
 			l_confirmation_dialog.set_text (restore_preference_string)
-			l_confirmation_dialog.show_modal_to_window (parent_window)
-			if l_confirmation_dialog.selected_button.is_equal ((create {EV_DIALOG_CONSTANTS}).ev_ok) then
+			if parent_window /= Void then
+				l_confirmation_dialog.show_modal_to_window (parent_window)
+			else
+				l_confirmation_dialog.show
+			end
+			if l_confirmation_dialog.selected_button ~ ((create {EV_DIALOG_CONSTANTS}).ev_ok) then
 				preferences.restore_defaults
-				if selected_preference_name /= Void then
-					fill_right_list (selected_preference_name)
+				if attached selected_preference_name as s then
+					fill_right_list (s)
 				end
 			end
 		end
 
-	on_default_item_selected (a_item: EV_GRID_LABEL_ITEM; a_pref: PREFERENCE; a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_default_item_selected (a_item: EV_GRID_LABEL_ITEM; a_pref: PREFERENCE; a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- The default cloumn was clicked.
 		local
 			l_popup_menu: EV_MENU
 			l_menu_item: EV_MENU_ITEM
-			l_pref: PREFERENCE
+			l_pref: detachable PREFERENCE
 		do
 			if not a_pref.is_default_value and then a_button = 3 then
 					-- Extract `l_pref' from row data.
@@ -250,48 +253,49 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_grid_item_double_pressed (a_x, a_y, a_button: INTEGER; a_item: EV_GRID_ITEM) is
+	on_grid_item_double_pressed (a_x, a_y, a_button: INTEGER; a_item: EV_GRID_ITEM)
 			-- An item was double pressed
 		local
 			l_col_index: INTEGER
-			l_bool_preference: BOOLEAN_PREFERENCE
-			l_combo_widget: EV_GRID_CHOICE_ITEM
 		do
 			if a_item /= Void then
 				l_col_index := a_item.column.index
 				if l_col_index = 1 or l_col_index = 2 or l_col_index = 3 then
-					l_bool_preference ?= a_item.row.data
-					if l_bool_preference /= Void then
-						l_combo_widget ?= a_item.row.item (4)
-						l_combo_widget.set_text ((not l_bool_preference.value).out)
-						l_combo_widget.deactivate_actions.call ([])
-					end
-				end
-			end
-		end
-
-	on_grid_key_pressed (k: EV_KEY) is
-			-- An key was pressed
-		local
-			l_preference_widget: PREFERENCE_WIDGET
-		do
-			if k /= Void then
-				if k.code = {EV_KEY_CONSTANTS}.key_enter then
-					if not grid.selected_rows.is_empty then
-						l_preference_widget ?= grid.selected_rows.first.item (4).data
-						if l_preference_widget /= Void then
-							l_preference_widget.show
+					if attached {BOOLEAN_PREFERENCE} a_item.row.data as l_bool_preference then
+						if attached {EV_GRID_CHOICE_ITEM} a_item.row.item (4) as l_combo_widget then
+							l_combo_widget.set_text ((not l_bool_preference.value).out)
+							l_combo_widget.deactivate_actions.call ([])
+						else
+							check has_combo_widget: False end
 						end
 					end
 				end
 			end
 		end
 
-	on_description_key_pressed (a_key: EV_KEY) is
+	on_grid_key_pressed (k: EV_KEY)
+			-- An key was pressed
+		require
+			k_attached: k /= Void
+		do
+			if k /= Void then
+				if k.code = {EV_KEY_CONSTANTS}.key_enter then
+					if not grid.selected_rows.is_empty then
+						if attached grid.selected_rows.first.item (4) as l_item then
+							if attached {PREFERENCE_WIDGET} l_item.data as l_preference_widget then
+								l_preference_widget.show
+							end
+						end
+					end
+				end
+			end
+		end
+
+	on_description_key_pressed (a_key: EV_KEY)
 			-- Description text area was key pressed
 		do
 			if a_key.code = {EV_KEY_CONSTANTS}.key_tab then
-				if application.shift_pressed then
+				if attached application as l_app and then l_app.shift_pressed then
 					grid.set_focus
 				else
 					restore_button.set_focus
@@ -299,7 +303,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_window_resize is
+	on_window_resize
 			-- Dialog was resized
 		local
 			l_width: INTEGER
@@ -310,7 +314,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_header_double_clicked is
+	on_header_double_clicked
 			-- Header was double-clicked.
 		local
 			div_index: INTEGER
@@ -319,11 +323,11 @@ feature {NONE} -- Events
 			div_index := grid.header.pointed_divider_index
 			if div_index > 0 then
 				col := grid.column (div_index)
-				col.set_width (col.required_width_of_item_span (1, col.parent.row_count) + column_border_space)
+				col.set_width (col.required_width_of_item_span (1, grid.row_count) + column_border_space)
 			end
 		end
 
-	on_header_resize is
+	on_header_resize
 			-- Header was double-clicked.
 		local
 			div_index: INTEGER
@@ -338,7 +342,7 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
-	fill_list is
+	fill_list
 			-- Fill left tree.
 		local
  			it,
@@ -348,7 +352,7 @@ feature {NONE} -- Implementation
 			l_pref_name,
 			l_pref_parent_name,
 			l_pref_parent_full_name,
-			l_prev_parent_name,
+			l_prev_parent_name: detachable STRING
 			l_pref_parent_short_name: STRING
 			l_node_count,
 			l_index: INTEGER
@@ -413,10 +417,13 @@ feature {NONE} -- Implementation
 								l_parent.select_actions.extend (agent fill_right_list (l_pref_parent_name.twin))
 								if not l_pref_hash.has (l_pref_parent_name) then
 									l_pref_hash.put (l_parent, l_pref_parent_name.twin)
-									if l_prev_parent_name /= Void then
-										l_pref_hash.item (l_prev_parent_name).put_front (l_parent)
-									else
-										l_pref_hash.item (root_node_text).put_front (l_parent)
+									if
+										l_prev_parent_name /= Void and then
+										attached l_pref_hash.item (l_prev_parent_name) as l_prev_item
+									then
+										l_prev_item.put_front (l_parent)
+									elseif attached l_pref_hash.item (root_node_text) as l_pref_item then
+										l_pref_item.put_front (l_parent)
 									end
 								end
 								l_prev_parent_name := l_pref_parent_name.twin
@@ -432,7 +439,9 @@ feature {NONE} -- Implementation
 								l_parent.select_actions.extend (agent clear_edit_widget)
 								l_parent.select_actions.extend (agent fill_right_list (l_pref_parent_full_name.twin))
 								l_pref_hash.put (l_parent, l_pref_parent_full_name.twin)
-								l_pref_hash.item (root_node_text).put_front (l_parent)
+								if attached l_pref_hash.item (root_node_text) as l_pref_item then
+									l_pref_item.put_front (l_parent)
+								end
 								l_prev_parent_name := Void
 							end
 						end
@@ -444,14 +453,16 @@ feature {NONE} -- Implementation
 						end
 						it.select_actions.extend (agent clear_edit_widget)
 						it.select_actions.extend (agent fill_right_list (l_pref_name.twin))
-						l_pref_hash.item (root_node_text).put_front (it)
+						if attached l_pref_hash.item (root_node_text) as l_pref_item then
+							l_pref_item.put_front (it)
+						end
 					end
 					l_sorted_preferences.back
 				end
 			end
 		end
 
-	fill_right_list (a_pref_name: STRING) is
+	fill_right_list (a_pref_name: STRING)
 			-- Fill right list.
 		require
 			pref_name_not_void: a_pref_name /= Void
@@ -461,8 +472,8 @@ feature {NONE} -- Implementation
 			l_pref_name: STRING
 			grid_name_item,
 			grid_default_item,
-			grid_type_item: EV_GRID_LABEL_ITEM
-			l_preference: PREFERENCE
+			grid_type_item: detachable EV_GRID_LABEL_ITEM
+			l_preference: detachable PREFERENCE
 			curr_row: INTEGER
 			l_column: EV_GRID_COLUMN
 		do
@@ -489,12 +500,10 @@ feature {NONE} -- Implementation
 				if should_display_preference (l_pref_name, a_pref_name) and l_pref_name.count > a_pref_name.count then
 					l_preference := preferences.preferences.item (l_pref_name)
 
-					if show_hidden_preferences or (not show_hidden_preferences and then not l_preference.is_hidden) then
-
-						check
-							preference_not_void: l_preference /= Void
-						end
-
+					if
+						l_preference /= Void and then
+						(show_hidden_preferences or (not show_hidden_preferences and then not l_preference.is_hidden))
+					then
 						if l_preference.name /= Void then
 							create grid_name_item
 							grid.set_item (1, curr_row, grid_name_item)
@@ -503,7 +512,7 @@ feature {NONE} -- Implementation
 							else
 								grid_name_item.set_text (formatted_name (short_preference_name (l_preference.name)))
 							end
-						else
+						elseif grid_name_item /= Void then
 							grid_name_item.set_text ("")
 						end
 						add_preference_change_item (l_preference, curr_row)
@@ -557,13 +566,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rebuild_right_list is
+	rebuild_right_list
 			-- Rebuild right list.  This is used to update the values shown for the currently visible preferences
 			-- in case they have been changed external to this window.
 		local
 			grid_default_item,
-			grid_value_label_item: EV_GRID_LABEL_ITEM
-			grid_value_drawable_item: EV_GRID_DRAWABLE_ITEM
+			grid_value_label_item: detachable  EV_GRID_LABEL_ITEM
+			grid_value_drawable_item: detachable EV_GRID_DRAWABLE_ITEM
 			l_preference: PREFERENCE
 			curr_row: INTEGER
 		do
@@ -575,15 +584,19 @@ feature {NONE} -- Implementation
 			loop
 				l_preference := visible_preferences.item
 				grid_default_item ?= grid.row (curr_row).item (3)
-				if grid_default_item /= Void and then l_preference.is_default_value then
-					grid_default_item.set_text (p_default_value)
-					grid_default_item.set_font (default_font)
+				if grid_default_item /= Void then
+					if l_preference.is_default_value then
+						grid_default_item.set_text (p_default_value)
+						grid_default_item.set_font (default_font)
+					else
+						grid_default_item.set_text (user_value)
+						grid_default_item.set_font (non_default_font)
+					end
+					if l_preference.is_auto then
+						grid_default_item.set_text (grid_default_item.text + "(" + auto_value + ")")
+					end
 				else
-					grid_default_item.set_text (user_value)
-					grid_default_item.set_font (non_default_font)
-				end
-				if l_preference.is_auto then
-					grid_default_item.set_text (grid_default_item.text + "(" + auto_value + ")")
+					check has_grid_default_item: False end
 				end
 				grid_value_label_item ?= grid.row (curr_row).item (4)
 				if grid_value_label_item /= Void then
@@ -600,7 +613,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	should_display_preference (a_pref_name, b_pref_name: STRING): BOOLEAN is
+	should_display_preference (a_pref_name, b_pref_name: STRING): BOOLEAN
 			-- Should we display the preference in the right list?
 		do
 			Result := a_pref_name.substring (1, b_pref_name.count).is_equal (b_pref_name)
@@ -609,7 +622,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	wipe_out_visible_preference_change_action is
+	wipe_out_visible_preference_change_action
 			-- Wipe out the change action setup to notify Current about a change from outside
 		do
 			from
@@ -624,13 +637,13 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	destroy is
+	destroy
 			-- Destroy.
 		do
 			Precursor
 		end
 
-	pixmap_file_contents (pn: STRING): EV_PIXMAP is
+	pixmap_file_contents (pn: STRING): EV_PIXMAP
 			-- Load a pixmap in file named `pn'.
 		require
 			valid_file_name: pn /= Void
@@ -650,17 +663,17 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	show_preference_description (a_preference: PREFERENCE) is
+	show_preference_description (a_preference: PREFERENCE)
 			-- Show selected list preference in edit widget.
 		require
 			preference_not_void: a_preference /= Void
 		local
 			l_text: STRING_GENERAL
 		do
-			if a_preference.description /= Void then
+			if attached a_preference.description as d then
 					-- We know that descriptions of preference have been extacted out
 					-- from the config file.
-				l_text := try_to_translate (a_preference.description)
+				l_text := try_to_translate (d)
 			else
 				l_text := no_description_text
 			end
@@ -672,15 +685,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_preference_change_item (l_preference: PREFERENCE; row_index: INTEGER) is
+	add_preference_change_item (a_preference: PREFERENCE; row_index: INTEGER)
 			-- Add the correct preference change widget item at `row_index' of `grid'.
 		local
-			l_bool: BOOLEAN_PREFERENCE
-			l_font: FONT_PREFERENCE
-			l_color: COLOR_PREFERENCE
-			l_array: ARRAY_PREFERENCE
-			l_shortcut: SHORTCUT_PREFERENCE
-
 			l_bool_widget: BOOLEAN_PREFERENCE_WIDGET
 			l_edit_widget: STRING_PREFERENCE_WIDGET
 			l_choice_widget: CHOICE_PREFERENCE_WIDGET
@@ -688,55 +695,50 @@ feature {NONE} -- Implementation
 			l_color_widget: COLOR_PREFERENCE_WIDGET
 			l_shortcut_widget: SHORTCUT_PREFERENCE_WIDGET
 		do
-			l_bool ?= l_preference
-			if l_bool /= Void then
+			if attached {BOOLEAN_PREFERENCE} a_preference as l_bool then
 					-- Boolean
 				create l_bool_widget.make_with_preference (l_bool)
 				l_bool_widget.change_actions.extend (agent on_preference_changed)
 				grid.set_item (4, row_index, l_bool_widget.change_item_widget)
-				grid.item (4, row_index).set_data (l_bool_widget)
+				l_bool_widget.change_item_widget.set_data (l_bool_widget)
 			else
-				if l_preference.generating_preference_type.is_equal ("TEXT") then
-					create l_edit_widget.make_with_preference (l_preference)
+				if a_preference.generating_preference_type.is_equal ("TEXT") then
+					create l_edit_widget.make_with_preference (a_preference)
 					l_edit_widget.change_actions.extend (agent on_preference_changed)
 					grid.set_item (4, row_index, l_edit_widget.change_item_widget)
-					grid.item (4, row_index).set_data (l_edit_widget)
-				elseif l_preference.generating_preference_type.is_equal ("COMBO") then
-					l_array ?= l_preference
-					if l_array /= Void then
+					l_edit_widget.change_item_widget.set_data (l_edit_widget)
+				elseif a_preference.generating_preference_type.is_equal ("COMBO") then
+					if attached {ARRAY_PREFERENCE} a_preference as l_array then
 							-- Choice
 						create l_choice_widget.make_with_preference (l_array)
 						l_choice_widget.change_actions.extend (agent on_preference_changed)
 						grid.set_item (4, row_index, l_choice_widget.change_item_widget)
-						grid.item (4, row_index).set_data (l_choice_widget)
+						l_choice_widget.change_item_widget.set_data (l_choice_widget)
 					end
 				else
-					l_font ?= l_preference
-					if l_font /= Void then
+					if attached {FONT_PREFERENCE} a_preference as l_font then
 							-- Font
 						create l_font_widget.make_with_preference (l_font)
 						l_font_widget.change_actions.extend (agent on_preference_changed)
 						l_font_widget.set_caller (Current)
 						grid.set_item (4, row_index, l_font_widget.change_item_widget)
-						grid.item (4, row_index).set_data (l_font_widget)
+						l_font_widget.change_item_widget.set_data (l_font_widget)
 						grid.row (row_index).set_height (l_font.value.height.max (default_row_height))
 					else
-						l_color ?= l_preference
-						if l_color /= Void then
+						if attached {COLOR_PREFERENCE} a_preference as l_color then
 								-- Color
 							create l_color_widget.make_with_preference (l_color)
 							l_color_widget.change_actions.extend (agent on_preference_changed)
 							l_color_widget.set_caller (Current)
 							grid.set_item (4, row_index, l_color_widget.change_item_widget)
-							grid.item (4, row_index).set_data (l_color_widget)
+							l_color_widget.change_item_widget.set_data (l_color_widget)
 						else
-							l_shortcut ?= l_preference
-							if l_shortcut /= Void then
+							if attached {SHORTCUT_PREFERENCE} a_preference as l_shortcut then
 									-- Shortcut
 								create l_shortcut_widget.make_with_preference (l_shortcut)
 								l_shortcut_widget.change_actions.extend (agent on_preference_changed)
 								grid.set_item (4, row_index, l_shortcut_widget.change_item_widget)
-								grid.item (4, row_index).set_data (l_shortcut_widget)
+								l_shortcut_widget.change_item_widget.set_data (l_shortcut_widget)
 							end
 						end
 					end
@@ -744,13 +746,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	clear_edit_widget is
+	clear_edit_widget
 			-- Clear the edit widget
 		do
 			description_text.set_text ("")
 		end
 
-	short_preference_name (a_name: STRING): STRING is
+	short_preference_name (a_name: STRING): STRING
 			-- The short, non-unique name of a preference
 		require
 			name_not_void: a_name /= Void
@@ -758,7 +760,7 @@ feature {NONE} -- Implementation
 			Result := a_name.substring (a_name.last_index_of ('.', a_name.count) + 1, a_name.count)
 		end
 
-	formatted_name (a_name: STRING): STRING is
+	formatted_name (a_name: STRING): STRING
 			-- Formatted name for display
 		do
 			create Result.make_from_string (a_name)
@@ -766,7 +768,7 @@ feature {NONE} -- Implementation
 			Result.replace_substring (Result.item (1).upper.out, 1, 1)
 		end
 
-	grid_remove_and_clear_all_rows (g: EV_GRID) is
+	grid_remove_and_clear_all_rows (g: EV_GRID)
 		require
 			g /= Void
 		local
@@ -788,13 +790,13 @@ feature {NONE} -- Implementation
 			g.selected_rows.count = 0
 		end
 
-	visible_preferences: ARRAYED_LIST [PREFERENCE] is
+	visible_preferences: ARRAYED_LIST [PREFERENCE]
 			-- List of the preferences currently in view.
 		once
 			create Result.make (10)
 		end
 
-	try_to_translate (a_string: STRING_GENERAL): STRING_GENERAL is
+	try_to_translate (a_string: STRING_GENERAL): STRING_GENERAL
 			-- Try to translate `a_string'.
 		require
 			a_string_not_void: a_string /= Void
@@ -806,7 +808,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Private attributes
 
-	parent_window: EV_WINDOW
+	parent_window: detachable EV_WINDOW note option: stable attribute end
 			-- Parent window.
 
 	show_full_preference_name: BOOLEAN
@@ -815,22 +817,22 @@ feature {NONE} -- Private attributes
 	root_node_text: STRING
 			-- Text for the top level node.
 
-	selected_preference_name: STRING
+	selected_preference_name: detachable STRING
 			-- Name of preference selected in tree.  Used to programatically to update the right-side list.
 
-	root_icon: EV_PIXMAP
+	root_icon: detachable EV_PIXMAP note option: stable attribute end
 			-- Icon for root node
 
-	folder_icon: EV_PIXMAP
+	folder_icon: detachable EV_PIXMAP note option: stable attribute end
 			-- Folder icon
 
-	default_font: EV_FONT is
+	default_font: EV_FONT
 			-- Font for row when value is a default value
 		once
 			create Result
 		end
 
-	non_default_font: EV_FONT is
+	non_default_font: EV_FONT
 			-- Font for row when value is not a default value
 		once
 			create Result
@@ -840,7 +842,7 @@ feature {NONE} -- Private attributes
 	grid: EV_GRID
 		-- Grid	
 
-	column_border_space: INTEGER is 3
+	column_border_space: INTEGER = 3
 		-- Padding space for column content
 
 	default_row_height: INTEGER
@@ -849,30 +851,30 @@ feature {NONE} -- Private attributes
 	display_update_agent: PROCEDURE [ANY, TUPLE [PREFERENCE]]
 			-- Agent to be called when preference is changed outside	
 
-	resized_columns_list: ARRAY [BOOLEAN] is
+	resized_columns_list: ARRAY [BOOLEAN]
 			-- List of boolean s for each column indicating if it has been user resizedat all.
 		once
 			Result := <<False, False, False, False>>
 		end
 
-	application: EV_APPLICATION is
+	application: detachable EV_APPLICATION
 			-- Application
-		once
+		do
 			Result := (create {EV_ENVIRONMENT}).application
 		end
 
 invariant
 	has_preferences: preferences /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

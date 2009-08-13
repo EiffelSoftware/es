@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Stone representing a syntax issue."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -31,7 +31,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_syntax_message: like syntax_message) is
+	make (a_syntax_message: like syntax_message)
 			-- Create instance of SYNTAX_STONE with `a_syntax_message'.
 		require
 			a_syntax_message_not_void: a_syntax_message /= Void
@@ -48,30 +48,30 @@ feature -- Properties
 
 feature -- Access
 
-	file_name: FILE_NAME is
+	file_name: STRING
 			-- The one from SYNTAX_ERROR: where it happened
 		do
-			create Result.make_from_string (syntax_message.file_name)
+			Result := syntax_message.file_name.twin
 		ensure then
 			file_name_not_void: Result /= Void
 		end
 
-	help_text: STRING is
+	help_text: STRING
 		do
 			Result := Interface_names.h_No_help_available.twin
 		end
 
-	history_name: STRING_GENERAL is
+	history_name: STRING_GENERAL
 		do
 			Result := interface_names.err_error.as_string_32 + header
 		end
 
-	stone_signature: STRING is
+	stone_signature: STRING
 		do
 			Result := code
 		end
 
-	header: STRING_GENERAL is
+	header: STRING_GENERAL
 		do
 			Result := code.as_string_32
 			if Result = Void then
@@ -79,38 +79,38 @@ feature -- Access
 			end
 		end
 
-	line: INTEGER is
+	line: INTEGER
 			-- Line of the token involved in the syntax error
 		do
 			Result := syntax_message.line
 		end
 
-	code: STRING is "Syntax error"
+	code: STRING = "Syntax error"
 			-- Error code
 
-	stone_cursor: EV_POINTER_STYLE is
+	stone_cursor: EV_POINTER_STYLE
 			-- Cursor associated with Current stone during transport
 			-- when widget at cursor position is compatible with Current stone
 		do
 			Result := Cursors.cur_interro
 		end
 
-	x_stone_cursor: EV_POINTER_STYLE is
+	x_stone_cursor: EV_POINTER_STYLE
 			-- Cursor associated with Current stone during transport
 			-- when widget at cursor position is not compatible with Current stone
 		do
 			Result := Cursors.cur_x_interro
 		end
 
-	is_storable: BOOLEAN is
+	is_storable: BOOLEAN
 		do
 			Result := False
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -121,19 +121,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

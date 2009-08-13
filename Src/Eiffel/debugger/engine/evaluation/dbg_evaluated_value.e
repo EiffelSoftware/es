@@ -1,4 +1,4 @@
-indexing
+note
 	description : "Objects used to represents DBG_EXPRESSION_EVALUATOR 's result"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -77,15 +77,6 @@ feature -- Status report
 			Result := value /= Void and then not value.is_void
 		end
 
-	same_as (other: DBG_EVALUATED_VALUE): BOOLEAN
-			-- Do `Current' and `other' represent the same object, in the equality sense?
-		require
-			other_attached: other /= Void
-		do
-			Result := (not has_value and not other.has_value) or else (value.same_as (other.value))
-			--| FIXME: maybe we should also compare class and type values
-		end
-
 	failed: BOOLEAN assign set_failed
 			-- Does current represent a failure?
 			-- (error occurred)
@@ -112,6 +103,9 @@ feature -- Basic operation
 		do
 			v := value
 			if v /= Void then
+				if v.is_invalid_value then
+					set_failed (True)
+				end
 				if dynamic_type = Void then
 					dynamic_type := v.dynamic_class_type
 				end
@@ -164,9 +158,12 @@ feature -- Element change
 			-- Set `static_class' to `v' if possible
 		require
 			v_attached: v /= Void
+		local
+			dc: like dynamic_class
 		do
 			if static_class = Void then
-				if {dc: like dynamic_class} dynamic_class then
+				dc := dynamic_class
+				if dc /= Void then
 					if dc.conform_to (v) then
 						static_class := v
 					end
@@ -202,8 +199,8 @@ feature -- Element change
 			value := v
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -216,22 +213,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

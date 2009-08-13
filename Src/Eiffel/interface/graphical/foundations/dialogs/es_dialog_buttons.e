@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Access to all common button groups used in EiffelStudio dialogs.
 		Note: Use {ES_SHARED_DIALOG_BUTTONS} to access a shared instance. If you are using {ES_DIALOG} as a base
@@ -20,7 +20,7 @@ class
 
 feature -- Access
 
-	frozen ok_buttons: DS_HASH_SET [INTEGER]
+	frozen ok_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (1)
 			Result.put_last (ok_button)
@@ -30,7 +30,7 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen ok_cancel_buttons: DS_HASH_SET [INTEGER]
+	frozen ok_cancel_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (2)
 --			if {PLATFORM}.is_windows then
@@ -46,7 +46,7 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen yes_no_buttons: DS_HASH_SET [INTEGER]
+	frozen yes_no_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (2)
 --			if {PLATFORM}.is_windows then
@@ -62,7 +62,7 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen yes_no_cancel_buttons: DS_HASH_SET [INTEGER]
+	frozen yes_no_cancel_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (3)
 --			if {PLATFORM}.is_windows then
@@ -80,7 +80,7 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen abort_retry_ignore_buttons: DS_HASH_SET [INTEGER]
+	frozen abort_retry_ignore_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (3)
 --			if {PLATFORM}.is_windows then
@@ -98,7 +98,7 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen retry_cancel_buttons: DS_HASH_SET [INTEGER]
+	frozen retry_cancel_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (2)
 --			if {PLATFORM}.is_windows then
@@ -114,7 +114,7 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen reset_ok_cancel_buttons: DS_HASH_SET [INTEGER]
+	frozen reset_ok_cancel_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (3)
 --			if {PLATFORM}.is_windows then
@@ -132,7 +132,55 @@ feature -- Access
 			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
 		end
 
-	frozen close_buttons: DS_HASH_SET [INTEGER]
+	frozen save_cancel_buttons: attached DS_HASH_SET [INTEGER]
+		once
+			create Result.make (2)
+--			if {PLATFORM}.is_windows then
+				Result.put_last (save_button)
+				Result.put_last (cancel_button)
+--			else
+--				Result.put_last (cancel_button)
+--				Result.put_last (save_button)
+--			end
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
+			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
+		end
+
+	frozen open_cancel_buttons: attached DS_HASH_SET [INTEGER]
+		once
+			create Result.make (2)
+--			if {PLATFORM}.is_windows then
+				Result.put_last (open_button)
+				Result.put_last (cancel_button)
+--			else
+--				Result.put_last (cancel_button)
+--				Result.put_last (open_button)
+--			end
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
+			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
+		end
+
+	frozen print_cancel_buttons: attached DS_HASH_SET [INTEGER]
+		once
+			create Result.make (2)
+--			if {PLATFORM}.is_windows then
+				Result.put_last (print_button)
+				Result.put_last (cancel_button)
+--			else
+--				Result.put_last (cancel_button)
+--				Result.put_last (print_button)
+--			end
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
+			result_contains_valid_items: Result.for_all (agent is_valid_button_id)
+		end
+
+	frozen close_buttons: attached DS_HASH_SET [INTEGER]
 		once
 			create Result.make (1)
 			Result.put_last (close_button)
@@ -153,30 +201,35 @@ feature -- Query
 			Result := (a_id & button_id_mask) = a_id
 		end
 
-feature -- Result id's
+feature -- Constants
 
 	dialog_aborted_button: INTEGER = 0
 			-- Not actually a button but it indicates a default cancel.
 
-	ok_button: INTEGER = 1
-	cancel_button: INTEGER = 2
-	yes_button: INTEGER = 3
-	no_button: INTEGER = 4
-	abort_button: INTEGER = 5
-	retry_button: INTEGER = 6
-	ignore_button: INTEGER = 7
-	close_button: INTEGER = 8
-	reset_button: INTEGER = 9
-	apply_button: INTEGER = 10
+	ok_button: INTEGER     = 0x0001
+	cancel_button: INTEGER = 0x0002
+	yes_button: INTEGER    = 0x0005 -- & `ok_button'
+	no_button: INTEGER     = 0x000A -- & `cancel_button'
+	abort_button: INTEGER  = 0x0012 -- & `cancel_button'
+	retry_button: INTEGER  = 0x0020
+	ignore_button: INTEGER = 0x0040
+	close_button: INTEGER  = 0x0082 -- & `cancel_button'
+	reset_button: INTEGER  = 0x0100
+	apply_button: INTEGER  = 0x0200
+	save_button: INTEGER   = 0x0401 -- & `ok_button'
+	open_button: INTEGER   = 0x0801 -- & `ok_button'
+	print_button: INTEGER  = 0x1001 -- & `ok_button'
+
+feature {NONE} -- Constants
 
 	button_id_mask: INTEGER
 			-- Button ID mask
 		once
-			Result := 0b1111
+			Result := 0b1111111111111111
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -189,22 +242,22 @@ feature -- Result id's
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Edit the content of an object attribute"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,53 +16,53 @@ create
 
 feature -- Initialisation / Creation
 
-	set_stone(obj_stone: OBJECT_STONE) is
+	set_stone(a_address: DBG_ADDRESS)
 		do
-			object := obj_stone
+			object_address := a_address
 		end
 
 feature {NONE} -- Implementation of deferred features
 
-	start_feature is
+	start_feature
 			-- What to do to initialize the modification of an item.
 		do
 			io.put_string("EDIT AN OBJECT ATTRIBUTE%N")
 			io.put_string("----------------------------%N")
 
 			set_default_sp_bounds
-			create obj.make (object.object_address,	sp_lower, sp_upper)
+			obj := debugger_manager.object_manager.debugged_object (object_address, sp_lower, sp_upper)
 			item_list := obj.attributes
 			is_special := obj.is_special
 			set_sp_capacity (obj.max_capacity)
 		end
 
-	generic_modify_item is
+	generic_modify_item
 			-- Send the first part of the 'modify-local' request.
 		do
-			send_rqst_3(Rqst_modify_attr, item.item_number, 0, hex_to_integer (object.object_address))
+			send_rqst_3(Rqst_modify_attr, item.item_number, 0, object_address.as_pointer)
 		end
 
-	update_display is
+	update_display
 			-- Update all object tools displaying the content of the modified object.
 		local
 			call_stack_elem: CALL_STACK_ELEMENT
 			retry_clause: BOOLEAN
 		do
 			if not retry_clause then
-					-- update the object tool form of the Project tool
-				project_tool.update_object_tool
+--					-- update the object tool form of the Project tool
+--				project_tool.update_object_tool
 
-					-- update all the other object tools
-				project_tool.window_manager.object_win_mgr.update
+--					-- update all the other object tools
+--				project_tool.window_manager.object_win_mgr.update
 
-				status.reload_call_stack
-				call_stack_elem := status.current_stack_element
-				if call_stack_elem /= Void then
-					Project_tool.display_exception_stack
-				end
+				status.reload_current_call_stack
+				call_stack_elem := status.current_call_stack_element
+--				if call_stack_elem /= Void then
+--					Project_tool.display_exception_stack
+--				end
 			else -- retry_clause, something went wrong
-				if Application.is_running then
-					Application.process_termination;
+				if debugger_manager.application.is_running then
+					debugger_manager.application.process_termination;
 				end
 			end
 		rescue
@@ -76,10 +76,9 @@ feature {NONE} -- Implementation of deferred features
 
 feature {NONE} -- Private variables
 
-	object			: OBJECT_STONE
+	object_address: DBG_ADDRESS
 	obj				: DEBUGGED_OBJECT
 	is_special		: BOOLEAN
-	stone			: CLASSC_STONE
 
 feature {NONE} -- Implementation
 
@@ -92,28 +91,28 @@ feature {NONE} -- Implementation
 			-- Capacity of the last special object displayed in
 			-- the object window
 
-	set_sp_bounds (l, u: INTEGER) is
+	set_sp_bounds (l, u: INTEGER)
 			-- Set the bounds for special object inspection.
 		do
 			sp_lower := l
 			sp_upper := u
 		end
 
-	set_sp_capacity (c: INTEGER) is
+	set_sp_capacity (c: INTEGER)
 			-- Assign `c' to `sp_capacity'.
 		do
 			sp_capacity := c
 		end
 
-	set_default_sp_bounds is
+	set_default_sp_bounds
 			-- Set the default bounds for special object inspection.
 		do
 			sp_capacity := 0
 			sp_lower := 0
-			sp_upper := Application.displayed_string_size
+			sp_upper := debugger_manager.displayed_string_size
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

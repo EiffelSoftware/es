@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Object that to export update_for_pick_and_drop feature
 					which is in implementation.
@@ -21,29 +21,29 @@ inherit
 
 feature -- Command
 
-	enable_capture is
-			-- Redefine
+	enable_capture
+			-- <Precursor>
 		do
-			setter.before_enable_capture
+			internal_shared.setter.before_enable_capture
 			Precursor {EV_DRAWING_AREA}
 		end
 
-	disable_capture is
-			-- Redefine
+	disable_capture
+			-- <Precursor>
 		do
 			Precursor {EV_DRAWING_AREA}
-			setter.after_disable_capture
+			internal_shared.setter.after_disable_capture
 		end
 
 feature {EV_ANY_I} -- Implementation
 
-	create_implementation is
+	create_implementation
 			-- See `{EV_ANY}.create_implementation'.
 		do
 			create {SD_DRAWING_AREA_IMP} implementation.make (Current)
 		end
 
-	update_for_pick_and_drop (a_starting: BOOLEAN; a_pebble: ANY) is
+	update_for_pick_and_drop (a_starting: BOOLEAN; a_pebble: ANY)
 			-- Update for pick and drop.
 		require
 			not_void: a_starting implies a_pebble /= Void
@@ -52,13 +52,10 @@ feature {EV_ANY_I} -- Implementation
 
 feature {NONE} -- Implementation
 
-	setter: SD_SYSTEM_SETTER is
-			-- System setter
-		once
-			create {SD_SYSTEM_SETTER_IMP} Result
-		end
+	internal_shared: SD_SHARED
+			-- Shared singletons
 
-indexing
+;note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

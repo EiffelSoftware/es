@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A INI line  token state scanner.
 		
@@ -15,6 +15,8 @@ class
 	INI_SCANNER
 
 inherit
+	ANY
+
 	INI_SHARED_SCANNER_STATE_POOL
 		export
 			{NONE} all
@@ -25,7 +27,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize scanner for first use.
 		do
 			initial_state ?= state_pool.state ({INI_SCANNER_INITIAL_STATE})
@@ -45,7 +47,7 @@ feature -- Access
 
 feature -- Basic Operations
 
-	scan_for_next_token_info (a_line: STRING; a_index: INTEGER; a_state: like next_state) is
+	scan_for_next_token_info (a_line: STRING; a_index: INTEGER; a_state: like next_state)
 			--
 		require
 			a_line_attached: a_line /= Void
@@ -64,7 +66,7 @@ feature -- Basic Operations
 
 feature {NONE} -- Basic Operations
 
-	reset is
+	reset
 			-- Resets scanner, clearing cached information.
 		do
 			token := Void
@@ -77,7 +79,7 @@ feature {NONE} -- Basic Operations
 invariant
 	next_state_attached: next_state /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

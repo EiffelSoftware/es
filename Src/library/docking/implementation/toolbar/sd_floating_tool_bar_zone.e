@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A dialog hold SD_TOOL_BAR_ZONE when it floating."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -17,7 +17,7 @@ inherit
 			wipe_out as wipe_out_dialog
 		export
 			{NONE} all
-			{ANY} destroy, screen_x, screen_y, has_recursive, prune, set_position, set_size
+			{ANY} destroy, screen_x, screen_y, has_recursive, is_destroyed, prune, set_position, set_size, prunable
 			{ANY} lock_update, unlock_update
 			{SD_FLOATING_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR} minimum_width, minimum_height, resize_actions
 			{SD_TOOL_BAR_MANAGER, SD_TOOL_BAR_CONTENT} hide, is_displayed
@@ -35,7 +35,7 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -46,7 +46,7 @@ feature {NONE} -- Initlization
 			internal_docking_manager := a_docking_manager
 			create internal_shared
 			disable_user_resize
-			
+
 			create internal_title_bar
 
 			init_border_box
@@ -71,7 +71,7 @@ feature {NONE} -- Initlization
 			set: internal_docking_manager = a_docking_manager
 		end
 
-	init_border_box is
+	init_border_box
 			-- Initialize `internal_border_box'.
 		do
 			create {EV_VERTICAL_BOX} internal_border_box
@@ -85,7 +85,7 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	show is
+	show
 			-- Show `Current'.
 		do
 			if internal_shared.allow_window_to_back then
@@ -97,17 +97,22 @@ feature -- Command
 			shown: is_displayed
 		end
 
-	extend (a_tool_bar_zone: SD_TOOL_BAR_ZONE) is
+	extend (a_tool_bar_zone: SD_TOOL_BAR_ZONE)
 			-- Extend `a_tool_bar_zone'.
 		require
 			a_tool_bar_zone_not_void: a_tool_bar_zone /= Void
 			a_tool_bar_zone_horizontal: not a_tool_bar_zone.is_vertical
-			a_tool_bar_zone_parent_void: a_tool_bar_zone.tool_bar.parent = Void
+			a_tool_bar_zone_parent_void: attached {EV_WIDGET} a_tool_bar_zone.tool_bar as lt_widget implies lt_widget.parent = Void
 			not_extended: content = Void
 		do
 			zone := a_tool_bar_zone
 			tool_bar := a_tool_bar_zone.tool_bar
-			internal_padding_box.extend (a_tool_bar_zone.tool_bar)
+			if attached {EV_WIDGET} a_tool_bar_zone.tool_bar as lt_widget_2 then
+				internal_padding_box.extend (lt_widget_2)
+			else
+				check not_possible: False end
+			end
+
 			content := a_tool_bar_zone.content
 
 			internal_title_bar.set_content (content)
@@ -124,7 +129,7 @@ feature -- Command
 			set: zone = a_tool_bar_zone
 		end
 
-	regroup_after_customize is
+	regroup_after_customize
 			-- Initlized group divider and regroup items
 		local
 			l_group_count: INTEGER
@@ -161,7 +166,7 @@ feature -- Query
 	zone: SD_TOOL_BAR_ZONE
 			-- Tool bar zone Current managed.
 
-	has (a_tool_bar_zone: EV_WIDGET): BOOLEAN is
+	has (a_tool_bar_zone: EV_WIDGET): BOOLEAN
 			-- Has a_tool_bar_zone?
 		do
 			Result := internal_padding_box.has (a_tool_bar_zone)
@@ -173,12 +178,12 @@ feature -- Query
 	assistant: SD_FLOATING_TOOL_BAR_ZONE_ASSISTANT
 			-- Assistant to position items.
 
-	tool_bar: SD_TOOL_BAR
+	tool_bar: SD_GENERIC_TOOL_BAR
 			-- SD_TOOL_BAR where contain SD_TOOL_BAR_ITEMs.
 
 feature {NONE} -- Implementation of resize issues.
 
-	on_border_box_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_border_box_pointer_motion (a_x: INTEGER; a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle border box pointer motion.
 		local
 			l_temp_group_count: INTEGER
@@ -261,7 +266,7 @@ feature {NONE} -- Implementation of resize issues.
 			end
 		end
 
-	group_count_by_height (a_pointer_height: INTEGER): INTEGER is
+	group_count_by_height (a_pointer_height: INTEGER): INTEGER
 			-- Group count base on `a_pointer_height'.
 		require
 			valid: a_pointer_height > 0
@@ -302,7 +307,7 @@ feature {NONE} -- Implementation of resize issues.
 	last_group_count: INTEGER
 			-- Group index for last pointer motion.
 
-	on_border_pointer_motion_no_capture (a_x, a_y: INTEGER) is
+	on_border_pointer_motion_no_capture (a_x, a_y: INTEGER)
 			-- Handle pointer motion actions when not has capture.
 		require
 			not_capture: not internal_border_box.has_capture
@@ -326,29 +331,23 @@ feature {NONE} -- Implementation of resize issues.
 			end
 		end
 
-	on_border_pointer_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_border_pointer_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer press actions.
 		do
 			if a_button = 1 then
-				setter.before_enable_capture
+				internal_shared.setter.before_enable_capture
 				internal_border_box.enable_capture
 				start_width := width
 			end
 		end
 
-	on_border_pointer_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+	on_border_pointer_release (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Handle pointer release actions.
 		do
 			if internal_border_box.has_capture then
 				internal_border_box.disable_capture
-				setter.after_disable_capture
+				internal_shared.setter.after_disable_capture
 			end
-		end
-
-	setter: SD_SYSTEM_SETTER is
-			-- Smart Docking library system setter.
-		once
-			create {SD_SYSTEM_SETTER_IMP} Result
 		end
 
 	internal_pointer_direction: INTEGER
@@ -357,7 +356,7 @@ feature {NONE} -- Implementation of resize issues.
 
 feature {SD_FLOATING_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_DRAGGING_AGENTS} -- Implementation
 
-	recover_docking_state is
+	recover_docking_state
 			-- Recover to orignal docking state.
 		do
 			-- First we record floating states.
@@ -383,7 +382,7 @@ feature {SD_FLOATING_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_DRAGGING_AGENTS} -- Im
 	internal_padding_box: EV_VERTICAL_BOX
 			-- Box to show padding.
 
-	internal_border_width: INTEGER is 2
+	internal_border_width: INTEGER = 2
 			-- Border width.
 
 	internal_docking_manager: SD_DOCKING_MANAGER
@@ -394,13 +393,13 @@ feature {SD_FLOATING_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_DRAGGING_AGENTS} -- Im
 
 feature {NONE} -- Implementation
 
-	on_close_request is
+	on_close_request
 			-- Handle close request actions.
 		do
 			content.close_request_actions.call (Void)
 		end
 
-	on_customize is
+	on_customize
 			-- Handle customize actions.
 		local
 			l_dialog: SD_TOOL_BAR_HIDDEN_ITEM_DIALOG
@@ -421,7 +420,7 @@ invariant
 	internal_shared_not_void: internal_shared /= Void
 	internal_title_bar_not_void: internal_title_bar /= Void
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

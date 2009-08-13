@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -18,44 +18,47 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Make the main window
 		local
-			frame: WEL_GROUP_BOX
-			button: MY_BUTTON
-			static: WEL_STATIC
-			medit: WEL_MULTIPLE_LINE_EDIT
-			sedit: WEL_SINGLE_LINE_EDIT
-			lbox: WEL_SINGLE_SELECTION_LIST_BOX
-			sbar: WEL_SCROLL_BAR
-			color: WEL_COLOR_REF
+			l_frame: WEL_GROUP_BOX
+			l_button: MY_BUTTON
+			l_static: WEL_STATIC
+			l_medit: WEL_MULTIPLE_LINE_EDIT
+			l_sedit: WEL_SINGLE_LINE_EDIT
+			l_lbox: WEL_SINGLE_SELECTION_LIST_BOX
 		do
+			create bkgnd_ctlcolor.make_rgb (0, 255, 0)
+			create frgnd_ctlcolor.make_rgb (0, 0, 255)
 			make_top ("WEL Color Controls")
 			resize (330, 360)
-			create color.make_rgb (0, 255, 0)
-			bkgnd_ctlcolor := color
-			create color.make_rgb (0, 0, 255)
-			frgnd_ctlcolor := color
-			
-			create frame.make (Current, "Color Controls", 5, 5, 305, 275, 0)
-			frame.set_font(gui_font)
-			create static.make (Current, "Color Static", 50, 50, 100, 30, 1)
-			static.set_font(gui_font)
-			create sedit.make (Current, "Color Edit", 160, 50, 100, 30, 2)
-			sedit.set_font(gui_font)
-			create lbox.make (Current, 50, 90, 100, 100, 3)
-			lbox.set_font(gui_font)
-			lbox.add_string ("Item 1")
-			lbox.add_string ("Item 2")
-			create medit.make (Current, "Color Multiple Selection Edit", 160, 90, 100, 100, 4)
-			medit.set_font(gui_font)
+
+			create l_frame.make (Current, "Color Controls", 5, 5, 305, 275, 0)
+			frame := l_frame
+			l_frame.set_font(gui_font)
+			create l_static.make (Current, "Color Static", 50, 50, 100, 30, 1)
+			static := l_static
+			l_static.set_font(gui_font)
+			create l_sedit.make (Current, "Color Edit", 160, 50, 100, 30, 2)
+			sedit := l_sedit
+			l_sedit.set_font(gui_font)
+			create l_lbox.make (Current, 50, 90, 100, 100, 3)
+			lbox := l_lbox
+			l_lbox.set_font(gui_font)
+			l_lbox.add_string ("Item 1")
+			l_lbox.add_string ("Item 2")
+			create l_medit.make (Current, "Color Multiple Selection Edit", 160, 90, 100, 100, 4)
+			medit := l_medit
+			l_medit.set_font(gui_font)
 			create sbar.make_horizontal (Current, 50, 200, 210, 30, 5)
 
-			create button.make (Current, "Foreground Color", 30, 290, 120, 25, 6, 1)
-			button.set_font(gui_font)
+			create l_button.make (Current, "Foreground Color", 30, 290, 120, 25, 6, 1)
+			foreground_button := l_button
+			l_button.set_font(gui_font)
 
-			create button.make (Current, "Background Color", 170, 290, 120, 25, 7, 2)
-			button.set_font(gui_font)
+			create l_button.make (Current, "Background Color", 170, 290, 120, 25, 7, 2)
+			background_button := l_button
+			l_button.set_font(gui_font)
 		end
 
 feature -- Access
@@ -66,23 +69,39 @@ feature -- Access
 	frgnd_ctlcolor: WEL_COLOR_REF
 			-- Color used for the foreground of the controls
 
+	background_brush: WEL_BRUSH
+			-- background color
+		do
+			create Result.make_by_sys_color (Color_btnface + 1)
+		end
+
 feature -- Element change
 
-	set_frgnd_ctlcolor (a_color: WEL_COLOR_REF) is
+	set_frgnd_ctlcolor (a_color: WEL_COLOR_REF)
 			-- Make `a_color' the new `frgnd_ctlcolor'.
 		do
 			frgnd_ctlcolor := a_color
 		end
 
-	set_bkgnd_ctlcolor (a_color: WEL_COLOR_REF) is
+	set_bkgnd_ctlcolor (a_color: WEL_COLOR_REF)
 			-- Make `a_color' the new `bkgnd_ctlcolor'.
 		do
 			bkgnd_ctlcolor := a_color
 		end
 
+feature {NONE} -- GC tracking
+
+	frame: detachable WEL_GROUP_BOX
+	foreground_button, background_button: detachable MY_BUTTON
+	static: detachable WEL_STATIC
+	medit: detachable WEL_MULTIPLE_LINE_EDIT
+	sedit: detachable WEL_SINGLE_LINE_EDIT
+	lbox: detachable WEL_SINGLE_SELECTION_LIST_BOX
+	sbar: detachable WEL_SCROLL_BAR
+
 feature {NONE} -- Implementation
 
-	on_color_control (control: WEL_COLOR_CONTROL; paint_dc: WEL_PAINT_DC) is
+	on_color_control (control: WEL_COLOR_CONTROL; paint_dc: WEL_PAINT_DC)
 			-- Wm_ctlcolorstatic, Wm_ctlcoloredit, Wm_ctlcolorlistbox
 			-- and Wm_ctlcolorscrollbar messages.
 			-- To change its default colors, the color-control `control'
@@ -100,7 +119,7 @@ feature {NONE} -- Implementation
 			disable_default_processing
 		end
 
-	closeable: BOOLEAN is
+	closeable: BOOLEAN
 		local
 			msg_box: WEL_MSG_BOX
 		do
@@ -109,13 +128,7 @@ feature {NONE} -- Implementation
 			Result := msg_box.message_box_result = Idyes
 		end
 
-	background_brush: WEL_BRUSH is
-			-- background color
-		do
-			create Result.make_by_sys_color (Color_btnface + 1)
-		end
-
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

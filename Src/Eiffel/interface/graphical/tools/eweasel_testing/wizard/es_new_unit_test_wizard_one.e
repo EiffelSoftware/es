@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						First page of new unit test wizard
 
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_info: like wizard_information) is
+	make (an_info: like wizard_information)
 			-- Redefine
 		do
 			wizard_information := an_info
@@ -54,27 +54,27 @@ feature -- Access
 			end
 		end
 
-	title_string: !STRING_GENERAL is
+	title_string: attached STRING_GENERAL
 			-- Message string shown in title
 		do
-			if {l_string: STRING_GENERAL} interface_names.t_Welcome_to_new_unit_test_wizard then
+			if attached {STRING_GENERAL} interface_names.t_Welcome_to_new_unit_test_wizard as l_string then
 				Result := l_string
 			else
 				check not_possible: False end
 			end
 		end
 
-	message_string: !STRING_GENERAL is
+	message_string: attached STRING_GENERAL
 			-- Message string shown in the wizard
 		do
-			if {l_string: STRING_GENERAL} interface_names.t_Using_this_wizard then
+			if attached {STRING_GENERAL} interface_names.t_Using_this_wizard as l_string then
 				Result := l_string
 			else
 				check not_possible: False end
 			end
 		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

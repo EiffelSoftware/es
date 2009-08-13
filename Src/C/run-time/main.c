@@ -683,7 +683,7 @@ rt_private void notify_root_thread (void)
 	 * and send the thread id
 	 */
 	RT_GET_CONTEXT
-	dnotify_create_thread((EIF_THR_TYPE) eif_thr_id);
+	dnotify_create_thread((EIF_THR_TYPE) eif_thr_context->tid);
 }
 #endif
 #endif
@@ -758,7 +758,7 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 
 	ufill();							/* Get urgent memory chunks */
 
-#if defined (DEBUG) && ! defined (VXWORKS)
+#if defined(DEBUG) && (EIF_OS != EIF_OS_VXWORKS) && !defined(EIF_WINDOWS)
 	/* The following install signal handlers for signals USR1 and USR2. Both
 	 * raise an immediate scanning of memory and dumping of the free list usage
 	 * and other statistics. The difference is that USR1 also performrs a full
@@ -908,15 +908,24 @@ rt_public void failure(void)
 	/* NOTREACHED */
 }
 
+	/* Prevent emergency signal to be processed more than once. */
+rt_private volatile int emergency_call_success = 0;
+
 rt_private Signal_t emergency(int sig)
 {
 	/* A signal has been trapped while we were failing peacefully. The memory
 	 * must really be in a desastrous state, so print out a give-up message
 	 * and exit.
+	 * The code is protected in case `emergency' is triggered while calling `print_err_msg'
+	 * which was happening in eweasel test#vsrp208 because we got a SIGPIPE when outputs
+	 * of `ec' are redirected and closed while the compiler is not yet done.
 	 */
-	
-	print_err_msg(stderr, "\n\n%s: PANIC: caught signal #%d (%s) -- Giving up...\n",
-		egc_system_name, sig, signame(sig));
+		
+	if (!emergency_call_success) {
+		emergency_call_success = 1;
+		print_err_msg(stderr, "\n\n%s: PANIC: caught signal #%d (%s) -- Giving up...\n",
+			egc_system_name, sig, signame(sig));
+	}
 
 	exit(2);							/* Really abnormal termination */
 
@@ -930,7 +939,7 @@ rt_private Signal_t emergency(int sig)
  */
 
 rt_shared void dserver(void) {}
-rt_shared void dnotify(int evt_type, int evt_data) {}
+rt_shared void dnotify(int evt_type, rt_uint_ptr evt_data) {}
 rt_shared char dinterrupt(void) { return 0; }
 #endif
 

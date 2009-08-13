@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Formatter to display the text a class with no analysis."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,7 +28,7 @@ create
 
 feature -- Initialization
 
-	make (a_manager: like manager) is
+	make (a_manager: like manager)
 			-- Create a formatter associated with `a_manager'.
 		do
 			Precursor {EB_CLASS_TEXT_FORMATTER} (a_manager)
@@ -41,7 +41,7 @@ feature -- Properties
 	is_editable: BOOLEAN
 			-- Can the generated text be edited?
 
-	symbol: ARRAY [EV_PIXMAP] is
+	symbol: ARRAY [EV_PIXMAP]
 			-- Graphical representation of the command.
 		once
 			create Result.make (1, 2)
@@ -49,13 +49,13 @@ feature -- Properties
 			Result.put (pixmaps.icon_pixmaps.view_editor_icon, 2)
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Graphical representation of the command.
 		once
 			Result := pixmaps.icon_pixmaps.view_editor_icon_buffer
 		end
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Identifier of `Current' in menus.
 		do
 			Result := Interface_names.m_Showtext_new
@@ -70,7 +70,7 @@ feature -- Access
 
 feature -- Formatting
 
-	format is
+	format
 			-- Refresh `widget'.
 		local
 			f_name: STRING
@@ -115,29 +115,26 @@ feature -- Formatting
 
 feature -- Status setting
 
-	set_accelerator (accel: EV_ACCELERATOR) is
+	set_accelerator (accel: EV_ACCELERATOR)
 			-- Changes the accelerator.
 		do
 			Precursor {EB_CLASS_TEXT_FORMATTER} (accel)
 			accelerator.actions.put_front (agent invalidate)
 		end
 
-	set_class (a_class: CLASS_C) is
+	set_class (a_class: CLASS_C)
 			-- Associate `Current' with `a_class'.
 		do
 			set_classi (a_class.original_class)
 		end
 
-	set_stone (new_stone: CLASSI_STONE) is
+	set_stone (new_stone: STONE)
 			-- Associate `Current' with class contained in `new_stone'.
-		local
-			a_stone: CLASSI_STONE
 		do
 			force_stone (new_stone)
-			a_stone ?= new_stone
-			if a_stone /= Void then
-				if not new_stone.class_i.is_external_class then
-					set_classi (a_stone.class_i)
+			if attached {CLASSI_STONE} new_stone as l_new_stone then
+				if not l_new_stone.class_i.is_external_class then
+					set_classi (l_new_stone.class_i)
 				end
 			else
 				classi := Void
@@ -148,7 +145,7 @@ feature -- Status setting
 			end
 		end
 
-	set_classi (a_class: CLASS_I) is
+	set_classi (a_class: CLASS_I)
 			-- Associate current formatter with `a_class'.
 		do
 			classi := a_class
@@ -162,7 +159,7 @@ feature -- Status setting
 			ensure_display_in_widget_owner
 		end
 
-	force_stone (a_stone: STONE) is
+	force_stone (a_stone: STONE)
 			-- Directly set `stone' with `a_stone'
 		local
 			l_stone: CLASSI_STONE
@@ -182,23 +179,23 @@ feature {NONE} -- Properties
 	classi: CLASS_I
 			-- Class currently associated with `Current'.
 
-	capital_command_name: STRING_GENERAL is
+	capital_command_name: STRING_GENERAL
 			-- Name of the command.
 		do
 			Result := Interface_names.l_Basic_text
 		end
 
-	post_fix: STRING is "txt"
+	post_fix: STRING = "txt"
 			-- String symbol of the command, used as an extension when saving.
 
 feature {NONE} -- Implementation
 
-	generate_text is
+	generate_text
 			-- Create `formatted_text'.
 		do
 		end
 
-	create_class_cmd is
+	create_class_cmd
 			-- Create `class_cmd'.
 		require else
 			True
@@ -206,16 +203,16 @@ feature {NONE} -- Implementation
 			create class_cmd
 		end
 
-	has_breakpoints: BOOLEAN is False
+	has_breakpoints: BOOLEAN = False
 		-- Should `Current' display breakpoints?
 
-	line_numbers_allowed: BOOLEAN is True;
+	line_numbers_allowed: BOOLEAN = True;
 		-- Does it make sense to show line numbers in Current?
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -226,19 +223,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

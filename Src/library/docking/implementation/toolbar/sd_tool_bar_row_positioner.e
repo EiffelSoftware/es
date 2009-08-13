@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Objects that manage tool bar positions for a SD_TOOL_BAR_ROW.
 																				]"
@@ -15,7 +15,7 @@ create
 
 feature {NONE}  -- Initlization
 
-	make (a_tool_bar_row: SD_TOOL_BAR_ROW) is
+	make (a_tool_bar_row: SD_TOOL_BAR_ROW)
 			-- Creation method.
 		require
 			not_void: a_tool_bar_row /= Void
@@ -36,10 +36,10 @@ feature {NONE}  -- Initlization
 
 feature -- Command
 
-	position_resize_on_extend (a_new_tool_bar: SD_TOOL_BAR_ZONE; a_relative_pointer_position: INTEGER) is
+	position_resize_on_extend (a_new_tool_bar: SD_TOOL_BAR_ZONE; a_relative_pointer_position: INTEGER)
 			-- When extend `a_new_tool_bar', if not `is_enough_max_space', then resize tool bars.
 		require
-			has: has (a_new_tool_bar.tool_bar)
+			has: attached {EV_WIDGET} a_new_tool_bar.tool_bar as lt_widget implies has (lt_widget)
 		local
 			l_hot_index: INTEGER
 			l_tool_bars: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
@@ -52,7 +52,11 @@ feature -- Command
 				l_tool_bars := internal_tool_bar_row.zones
 				l_tool_bars.delete (a_new_tool_bar)
 				if l_hot_index = 0 then
-					internal_tool_bar_row.internal_set_item_position (a_new_tool_bar.tool_bar, 0)
+					if attached {EV_WIDGET} a_new_tool_bar.tool_bar as lt_widget_2 then
+						internal_tool_bar_row.internal_set_item_position (lt_widget_2, 0)
+					else
+						check not_possible: False end
+					end
 					l_last_end_position := a_new_tool_bar.size
 				end
 				from
@@ -60,11 +64,21 @@ feature -- Command
 				until
 					l_tool_bars.after
 				loop
-					internal_tool_bar_row.internal_set_item_position (l_tool_bars.item_for_iteration.tool_bar, l_last_end_position)
+					if attached {EV_WIDGET} l_tool_bars.item_for_iteration.tool_bar as lt_widget_3 then
+						internal_tool_bar_row.internal_set_item_position (lt_widget_3, l_last_end_position)
+					else
+						check not_possible: False end
+					end
+
 					l_last_end_position := l_tool_bars.item_for_iteration.position + l_tool_bars.item_for_iteration.size
 
 					if l_tool_bars.index = l_hot_index then
-						internal_tool_bar_row.internal_set_item_position (a_new_tool_bar.tool_bar, l_last_end_position)
+						if attached {EV_WIDGET} a_new_tool_bar.tool_bar as lt_widget_4 then
+							internal_tool_bar_row.internal_set_item_position (lt_widget_4, l_last_end_position)
+						else
+							check not_possible: False end
+						end
+
 						l_last_end_position := a_new_tool_bar.position + a_new_tool_bar.size
 					end
 					l_tool_bars.forth
@@ -73,7 +87,7 @@ feature -- Command
 			on_resize (internal_tool_bar_row.size)
 		end
 
-	position_resize_on_prune is
+	position_resize_on_prune
 			-- Position and resize tool bars when prune a tool bar from Current.
 		local
 			l_tool_bars: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
@@ -96,7 +110,12 @@ feature -- Command
 					l_tool_bar := l_tool_bars.item_for_iteration
 					-- User dragged tool bar out of current row
 					-- We reset orignal position.
-					l_tool_bar.row.set_item_position_relative (l_tool_bar.tool_bar, l_positions_and_sizes.item.pos)
+					if attached {EV_WIDGET} l_tool_bar.tool_bar as lt_widget then
+						l_tool_bar.row.set_item_position_relative (lt_widget, l_positions_and_sizes.item.pos)
+					else
+						check not_possible: False end
+					end
+
 					l_tool_bars.forth
 					l_positions_and_sizes.forth
 				end
@@ -105,7 +124,7 @@ feature -- Command
 			check_if_correct
 		end
 
-	check_if_correct is
+	check_if_correct
 			-- After recover last_position, if enough max space, check if current position no overlay problem.
 		local
 			l_tool_bars: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
@@ -135,7 +154,12 @@ feature -- Command
 					until
 						l_tool_bars.after
 					loop
-						internal_tool_bar_row.internal_set_item_position (l_tool_bars.item_for_iteration.tool_bar, l_last_x + l_last_width)
+						if attached {EV_WIDGET} l_tool_bars.item_for_iteration.tool_bar as lt_widget then
+							internal_tool_bar_row.internal_set_item_position (lt_widget, l_last_x + l_last_width)
+						else
+							check not_possible: False end
+						end
+
 						l_last_x := l_tool_bars.item_for_iteration.position
 						l_last_width := l_tool_bars.item_for_iteration.size
 						l_tool_bars.forth
@@ -144,7 +168,7 @@ feature -- Command
 			end
 		end
 
-	on_pointer_motion (a_relative_position: INTEGER) is
+	on_pointer_motion (a_relative_position: INTEGER)
 			-- Handle pointer motion in Current. Position dragging tool bar and others.
 		require
 			is_dragging: is_dragging
@@ -172,16 +196,25 @@ feature -- Command
 					loop
 						check non_negative: positions_and_sizes_try.item.pos >= 0 end
 						check not_outside: positions_and_sizes_try.item.pos + l_tool_bars.item (positions_and_sizes_try.index).size <= internal_tool_bar_row.size end
-						internal_tool_bar_row.internal_set_item_position (l_tool_bars.item_for_iteration.tool_bar, positions_and_sizes_try.item.pos)
+						if attached {EV_WIDGET} l_tool_bars.item_for_iteration.tool_bar as lt_widget then
+							internal_tool_bar_row.internal_set_item_position (lt_widget, positions_and_sizes_try.item.pos)
+						else
+							check not_possible: False end
+						end
+
 						l_tool_bars.forth
 						positions_and_sizes_try.forth
 					end
-					internal_tool_bar_row.internal_set_item_position (internal_mediator.caller.tool_bar, caller_position)
+					if attached {EV_WIDGET} internal_mediator.caller.tool_bar as lt_widget_2 then
+						internal_tool_bar_row.internal_set_item_position (lt_widget_2, caller_position)
+					else
+						check not_possible: False end
+					end
 				end
 			end
 		end
 
-	start_drag is
+	start_drag
 			-- Do prepare works when user start dragging.
 		local
 			l_shared: SD_SHARED
@@ -193,7 +226,7 @@ feature -- Command
 			positions_and_sizes_try := zones_last_states (True)
 		end
 
-	end_drag is
+	end_drag
 			-- Do clean works when user end dragging.
 		do
 			internal_mediator := Void
@@ -201,7 +234,7 @@ feature -- Command
 			record_positions_and_sizes (False)
 		end
 
-	on_resize (a_size: INTEGER) is
+	on_resize (a_size: INTEGER)
 			-- Handle docking manger main window resize events.
 			-- a_size is width when row is horizontal
 			-- a_size is height when row is vertical
@@ -225,7 +258,12 @@ feature -- Command
 				until
 					l_zones.after
 				loop
-					internal_tool_bar_row.internal_set_item_position (l_zones.item_for_iteration.tool_bar, l_last_end_postion)
+					if attached {EV_WIDGET} l_zones.item_for_iteration.tool_bar as lt_widget then
+						internal_tool_bar_row.internal_set_item_position (lt_widget, l_last_end_postion)
+					else
+						check not_possible: False end
+					end
+
 					l_last_end_postion := l_zones.item_for_iteration.size + l_last_end_postion
 					l_zones.forth
 				end
@@ -233,7 +271,7 @@ feature -- Command
 			internal_tool_bar_row.set_ignore_resize (False)
 		end
 
-	record_positions_and_sizes (a_except_dragged_tool_bar: BOOLEAN) is
+	record_positions_and_sizes (a_except_dragged_tool_bar: BOOLEAN)
 			-- Record position and size.
 		local
 			l_tool_bars: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
@@ -259,13 +297,13 @@ feature -- Command
 
 feature -- Query
 
-	has (a_widget: EV_WIDGET): BOOLEAN is
+	has (a_widget: EV_WIDGET): BOOLEAN
 			-- If `internal_tool_bar_row' has a_widget?
 		do
 			Result := internal_tool_bar_row.has (a_widget)
 		end
 
-	is_dragging: BOOLEAN is
+	is_dragging: BOOLEAN
 			-- If user dragging a tool bar now?
 		do
 			Result := internal_mediator /= Void
@@ -279,7 +317,7 @@ feature {NONE}  -- Implementation
 	caller_position: INTEGER
 			-- Position where we should set caller.
 
-	position_tool_bar_back_to_front (a_size: INTEGER) is
+	position_tool_bar_back_to_front (a_size: INTEGER)
 			-- Position SD_TOOL_BAR_ZONEs when there is enough space,
 			-- From right to left, or from bottom to up.
 		require
@@ -300,14 +338,22 @@ feature {NONE}  -- Implementation
 			loop
 				l_zone := l_zones.item_for_iteration
 				if l_zones.item_for_iteration.assistant.last_state.position + l_zone.size < l_last_start_position then
-					-- We can position it to orignal position.
-					internal_tool_bar_row.internal_set_item_position (l_zone.tool_bar, l_zones.item_for_iteration.assistant.last_state.position)
+					if attached {EV_WIDGET} l_zone.tool_bar as lt_widget then
+						-- We can position it to orignal position.
+						internal_tool_bar_row.internal_set_item_position (lt_widget, l_zones.item_for_iteration.assistant.last_state.position)
+					else
+						check not_possible: False end
+					end
 				else
 					l_temp_position := l_last_start_position - 1 - l_zone.size
 					if l_temp_position < 0 then
 						l_need_reposition := True
 					else
-						internal_tool_bar_row.internal_set_item_position (l_zone.tool_bar, l_temp_position)
+						if attached {EV_WIDGET} l_zone.tool_bar as lt_widget_2 then
+							internal_tool_bar_row.internal_set_item_position (lt_widget_2, l_temp_position)
+						else
+							check not_possible: False end
+						end
 					end
 				end
 				l_last_start_position := l_zone.position
@@ -315,7 +361,7 @@ feature {NONE}  -- Implementation
 			end
 		end
 
-	position_front_to_back (a_hot_index: INTEGER) is
+	position_front_to_back (a_hot_index: INTEGER)
 			-- Same as `position_back_to_front' but in different order.
  		require
 			enough_max_space: internal_sizer.is_enough_max_space (True) or internal_sizer.is_enough_space (True, 0)
@@ -377,7 +423,7 @@ feature {NONE}  -- Implementation
 			others_right_side_not_outside: a_hot_index /= positions_and_sizes_try.count implies positions_and_sizes_try.last.pos + internal_sizer.size_of (internal_tool_bar_row.zones.count) <= internal_tool_bar_row.size
 		end
 
-	put_hot_tool_bar_at (a_position: INTEGER): INTEGER is
+	put_hot_tool_bar_at (a_position: INTEGER): INTEGER
 			-- Which index we should put hot tool bar?
 			-- 0 is before 1st tool bar, 1 is after 1st tool bar, 2 is after 2nd tool bar...
 			-- a_position is relative position.
@@ -425,7 +471,7 @@ feature {NONE}  -- Implementation
 	last_hot_index: INTEGER
 			-- Last `put_hot_tool_bar_at_result'
 
-	try_set_position (a_position: INTEGER; a_hot_index: INTEGER) is
+	try_set_position (a_position: INTEGER; a_hot_index: INTEGER)
 			 -- Try to position every tool bar. `a_hot_index' is Result from `put_hot_tool_bar_at'.
 		require
 			is_dragging: is_dragging
@@ -491,7 +537,7 @@ feature {NONE}  -- Implementation
 			end
 		end
 
-	is_possible_set_position (a_hot_pointer_position: INTEGER; a_hot_index: INTEGER): BOOLEAN is
+	is_possible_set_position (a_hot_pointer_position: INTEGER; a_hot_index: INTEGER): BOOLEAN
 			-- After `try_set_position' is it possible to set postion to `positions_and_sizes_try'?
 		local
 			l_zones: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
@@ -508,7 +554,7 @@ feature {NONE}  -- Implementation
 
 		end
 
-	is_possible_set_position_enough_max_space (a_hot_pointer_position: INTEGER; a_hot_index: INTEGER): BOOLEAN is
+	is_possible_set_position_enough_max_space (a_hot_pointer_position: INTEGER; a_hot_index: INTEGER): BOOLEAN
 			-- When enough maximum space, it's possible set position base on `positions_and_sizes_try'?
 		require
 			enough_max_space: internal_sizer.is_enough_max_space (True)
@@ -542,7 +588,7 @@ feature {NONE}  -- Implementation
 			end
 		end
 
-	is_possible_set_position_not_enough_max_space (a_hot_pointer_position: INTEGER; a_hot_index: INTEGER): BOOLEAN is
+	is_possible_set_position_not_enough_max_space (a_hot_pointer_position: INTEGER; a_hot_index: INTEGER): BOOLEAN
 			-- When not enough maximum space, it's possible set position base on `positions_and_sizes_try'?			--
 		require
 			not_enough_space: not internal_sizer.is_enough_max_space (True)
@@ -585,7 +631,7 @@ feature {NONE}  -- Implementation
 			end
 		end
 
-	zones_last_states (a_except_dragged_zone: BOOLEAN): ARRAYED_LIST [TUPLE [pos: INTEGER; size: INTEGER]] is
+	zones_last_states (a_except_dragged_zone: BOOLEAN): ARRAYED_LIST [TUPLE [pos: INTEGER; size: INTEGER]]
 			-- Zone last states
 		local
 			l_zones: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
@@ -619,7 +665,7 @@ feature {NONE}  -- Implementation
 	internal_tool_bar_row: SD_TOOL_BAR_ROW
 			-- Tool bar row which Current managed.
 
-	positions_and_sizes (a_except_dragged: BOOLEAN): ARRAYED_LIST [TUPLE [pos: INTEGER; size: INTEGER]] is
+	positions_and_sizes (a_except_dragged: BOOLEAN): ARRAYED_LIST [TUPLE [pos: INTEGER; size: INTEGER]]
 			-- Position and sizes.
 		require
 			valid: a_except_dragged implies is_dragging
@@ -645,7 +691,7 @@ feature {NONE}  -- Implementation
 	internal_mediator: SD_TOOL_BAR_DOCKER_MEDIATOR;
 			-- Tool bar docker mendiator.
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Dialog which show/manage all recorded hisotry test run data.
 																					]"
@@ -62,7 +62,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	build_dialog_interface (a_container: EV_VERTICAL_BOX) is
+	build_dialog_interface (a_container: EV_VERTICAL_BOX)
 			-- <Precursor>
 		local
 			l_box, l_box_2, l_box_3: EV_BOX
@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Initialization
 
-	init_grid is
+	init_grid
 			-- Initialize `grid'
 		do
 			build_columns
@@ -149,7 +149,7 @@ feature {NONE} -- Initialization
 			enable_sorting_on_columns (all_columns)
 		end
 
-	init_service is
+	init_service
 			-- Initialize event list service
 		local
 			l_consumer: SERVICE_CONSUMER [EVENT_LIST_S]
@@ -160,7 +160,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	build_columns is
+	build_columns
 			-- Init columns of `grid'.
 		local
 			l_grid: like grid
@@ -180,7 +180,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	fill_maximum_test_run_count_with_session_data is
+	fill_maximum_test_run_count_with_session_data
 			-- Fill `maximum_test_run_count''s text with data from session data
 		local
 			l_count: NATURAL
@@ -189,15 +189,15 @@ feature {NONE} -- Initialization
 			maximum_test_run_count.set_text (l_count.out)
 		end
 
-	init_grid_row is
+	init_grid_row
 			-- Initialize `grid'.
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
-			l_data: !ES_EWEASEL_TEST_RUN_SESSION_DATA
+			l_data: attached ES_EWEASEL_TEST_RUN_SESSION_DATA
 			l_result_tool: ES_EWEASEL_TESTING_RESULT_TOOL_PANEL
 			l_consumer: SERVICE_CONSUMER [EVENT_LIST_S]
 			l_event_item: EVENT_LIST_TEST_RUN_ITEM
-			l_all_runs: !ARRAYED_LIST [ES_EWEASEL_TEST_RUN_DATA_ITEM]
+			l_all_runs: attached ARRAYED_LIST [ES_EWEASEL_TEST_RUN_DATA_ITEM]
 			l_context_uuid: ES_EWEASEL_TESTING_EVENT_LIST_CONTEXTS
 		do
 			create l_shared
@@ -225,24 +225,24 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Agents
 
-	on_before_show is
+	on_before_show
 			-- <Precursor>
 		do
 			Precursor {ES_DIALOG}
 			init_grid
 		end
 
-	on_grid_pointer_double_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_item: EV_GRID_ITEM) is
+	on_grid_pointer_double_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_item: EV_GRID_ITEM)
 			-- Handle grid pointer double press actions
 		do
 			on_show_test_run_cases
 		end
 
-	on_show_test_run_cases is
+	on_show_test_run_cases
 			-- Handle show test run cases
 		local
-			l_all_test_cases: !ARRAYED_LIST [ES_EWEASEL_TEST_CASE_ITEM]
-			l_all_test_results: !ARRAYED_LIST [ES_EWEASEL_TEST_RESULT_ITEM]
+			l_all_test_cases: attached ARRAYED_LIST [ES_EWEASEL_TEST_CASE_ITEM]
+			l_all_test_results: attached ARRAYED_LIST [ES_EWEASEL_TEST_RESULT_ITEM]
 			l_selected_rows: ARRAYED_LIST [EV_GRID_ROW]
 			l_current_row: EV_GRID_ROW
 			l_factory: ES_EWEASEL_SINGLETON_FACTORY
@@ -257,8 +257,8 @@ feature {NONE} -- Agents
 				end
 
 				l_current_row := l_selected_rows.first
-				if {l_test_result_item: EVENT_LIST_TEST_RUN_ITEM} l_current_row.data  then
-					if {l_current_data: ES_EWEASEL_TEST_RUN_DATA_ITEM} l_test_result_item.data then
+				if attached {EVENT_LIST_TEST_RUN_ITEM} l_current_row.data as l_test_result_item  then
+					if attached {ES_EWEASEL_TEST_RUN_DATA_ITEM} l_test_result_item.data as l_current_data then
 						l_all_test_results := l_current_data.test_run_data
 						l_all_test_cases := l_current_data.related_test_cases
 						put_all_test_results_to_event_list (l_all_test_results)
@@ -276,7 +276,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_remove is
+	on_remove
 			-- Handle the action that remove current selected row
 		local
 			l_row: ARRAYED_LIST [EV_GRID_ROW]
@@ -287,7 +287,7 @@ feature {NONE} -- Agents
 			until
 				l_row.after
 			loop
-				if {lt_row: EV_GRID_ROW} l_row.item then
+				if attached {EV_GRID_ROW} l_row.item as lt_row then
 					lt_row.hide
 				end
 
@@ -295,12 +295,12 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_default_ok_button is
+	on_default_ok_button
 			-- Handle default button action
 		local
 			l_index, l_count: INTEGER
 			l_grid: like grid
-			l_rows: ARRAYED_LIST [!EV_GRID_ROW]
+			l_rows: ARRAYED_LIST [attached EV_GRID_ROW]
 			l_string: STRING_32
 		do
 			from
@@ -311,7 +311,7 @@ feature {NONE} -- Agents
 			until
 				l_index > l_count
 			loop
-				if {lt_row: EV_GRID_ROW} l_grid.row (l_index) then
+				if attached {EV_GRID_ROW} l_grid.row (l_index) as lt_row then
 					-- We should first collect a list of rows, then remove the rows in another loop
 					-- since row index will be changed in `remove_data'
 
@@ -339,7 +339,7 @@ feature {NONE} -- Agents
 			testing_result_panel.test_run_result_grid_manager.session_data.set_maximum_remembered_data_count (l_string.to_natural_32)
 		end
 
-	on_remove_all is
+	on_remove_all
 			-- Handle the action that remove all data
 		local
 			l_index, l_count: INTEGER
@@ -352,7 +352,7 @@ feature {NONE} -- Agents
 			until
 				l_index > l_count
 			loop
-				if {lt_row: EV_GRID_ROW} l_grid.row (l_index) then
+				if attached {EV_GRID_ROW} l_grid.row (l_index) as lt_row then
 					lt_row.hide
 				end
 
@@ -361,13 +361,13 @@ feature {NONE} -- Agents
 
 		end
 
-	on_event_added (a_service: EVENT_LIST_S; a_item: EVENT_LIST_ITEM_I) is
+	on_event_added (a_service: EVENT_LIST_S; a_item: EVENT_LIST_ITEM_I)
 			-- Event list service hook
 		local
 			l_index: INTEGER
 			l_grid: like grid
 		do
-			if {l_item: EVENT_LIST_TEST_RUN_ITEM} a_item then
+			if attached {EVENT_LIST_TEST_RUN_ITEM} a_item as l_item then
 				l_grid := grid
 				l_index := l_grid.row_count
 				l_index := l_index + 1
@@ -376,7 +376,7 @@ feature {NONE} -- Agents
 			end
 		end
 
-	on_maximum_test_run_data_count_focus_out is
+	on_maximum_test_run_data_count_focus_out
 			-- Handle `maximum_test_run_count' focus out actions
 			-- We reset the value if end user provided invalid value
 		local
@@ -390,7 +390,7 @@ feature {NONE} -- Agents
 
 feature {NONE} -- UI implementation
 
-	all_columns: !ARRAYED_LIST [EV_GRID_COLUMN] is
+	all_columns: attached ARRAYED_LIST [EV_GRID_COLUMN]
 			-- All columns in `grid'
 		local
 			l_grid: ES_GRID
@@ -410,7 +410,7 @@ feature {NONE} -- UI implementation
 			end
 		end
 
-	all_columns_titles: !ARRAYED_LIST [STRING_GENERAL] is
+	all_columns_titles: attached ARRAYED_LIST [STRING_GENERAL]
 			-- All columns' titles
 		do
 			create Result.make (3)
@@ -434,7 +434,7 @@ feature {NONE} -- UI implementation
 	grid: ES_GRID
 			-- Grid where show test runs history
 
-	populate_event_grid_row_items (a_event_item: EVENT_LIST_ITEM_I; a_row: EV_GRID_ROW) is
+	populate_event_grid_row_items (a_event_item: EVENT_LIST_ITEM_I; a_row: EV_GRID_ROW)
 			-- Populate a event item, fill `a_row' with grid items
 		require
 			not_void: a_row /= Void
@@ -443,7 +443,7 @@ feature {NONE} -- UI implementation
 			l_item: EV_GRID_ITEM
 			l_columns: like all_columns_titles
 		do
-			if {l_data: ES_EWEASEL_TEST_RUN_DATA_ITEM} a_event_item.data then
+			if attached {ES_EWEASEL_TEST_RUN_DATA_ITEM} a_event_item.data as l_data then
 				from
 					l_columns := all_columns_titles
 					l_columns.start
@@ -471,7 +471,7 @@ feature {NONE} -- UI implementation
 			end
 		end
 
-	put_all_test_cases_to_event_list (a_list: !ARRAYED_LIST [ES_EWEASEL_TEST_CASE_ITEM]) is
+	put_all_test_cases_to_event_list (a_list: attached ARRAYED_LIST [ES_EWEASEL_TEST_CASE_ITEM])
 			-- Put `a_list''s items to event list service
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
@@ -502,7 +502,7 @@ feature {NONE} -- UI implementation
 			end
 		end
 
-	put_all_test_results_to_event_list (a_list: !ARRAYED_LIST [ES_EWEASEL_TEST_RESULT_ITEM]) is
+	put_all_test_results_to_event_list (a_list: attached ARRAYED_LIST [ES_EWEASEL_TEST_RESULT_ITEM])
 			-- Pu `a_list''s items to event list service
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
@@ -529,14 +529,14 @@ feature {NONE} -- UI implementation
 			end
 		end
 
-	remove_data (a_row: !EV_GRID_ROW) is
+	remove_data (a_row: attached EV_GRID_ROW)
 			-- Remove test result data related with `a_row'
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
-			l_session_data: !ES_EWEASEL_TEST_RUN_SESSION_DATA
+			l_session_data: attached ES_EWEASEL_TEST_RUN_SESSION_DATA
 		do
-			if {l_data: EVENT_LIST_TEST_RUN_ITEM} a_row.data then
-				if {l_inner_data: ES_EWEASEL_TEST_RUN_DATA_ITEM} l_data.data then
+			if attached {EVENT_LIST_TEST_RUN_ITEM} a_row.data as l_data then
+				if attached {ES_EWEASEL_TEST_RUN_DATA_ITEM} l_data.data as l_inner_data then
 					create l_shared
 					grid.remove_row (a_row.index)
 					l_session_data := l_shared.manager.testing_result_tool.test_run_result_grid_manager.session_data
@@ -546,7 +546,7 @@ feature {NONE} -- UI implementation
 			end
 		end
 
-	testing_result_panel: ES_EWEASEL_TESTING_RESULT_TOOL_PANEL is
+	testing_result_panel: ES_EWEASEL_TESTING_RESULT_TOOL_PANEL
 			-- Testing result tool panel
 		local
 			l_shared: ES_EWEASEL_SINGLETON_FACTORY
@@ -559,7 +559,7 @@ feature {NONE} -- UI implementation
 
 feature {NONE} -- Copy from {ES_EVENT_LIST_TOOL_PANEL_BASE} FIXIT: merge?
 
-	frozen sorting_row_comparer (a_row, a_other_row: EV_GRID_ROW; a_order: INTEGER_32; a_column: INTEGER): BOOLEAN is
+	frozen sorting_row_comparer (a_row, a_other_row: EV_GRID_ROW; a_order: INTEGER_32; a_column: INTEGER): BOOLEAN
 			-- Agent function used to determine row order.
 			--
 			-- `a_row': The primary row to check.
@@ -616,7 +616,7 @@ feature {NONE} -- Copy from {ES_EVENT_LIST_TOOL_PANEL_BASE} FIXIT: merge?
 			end
 		end
 
-	compare_rows (a_row, a_other_row: EV_GRID_ROW; a_column: INTEGER): BOOLEAN is
+	compare_rows (a_row, a_other_row: EV_GRID_ROW; a_column: INTEGER): BOOLEAN
 			-- Compares two rows from the local grid and returns an index based on their comparative result.
 			--
 			-- Note: Basic implementation handles both string and integer string checking. Items with special
@@ -675,7 +675,7 @@ feature {NONE} -- Copy from {ES_EVENT_LIST_TOOL_PANEL_BASE} FIXIT: merge?
 			-- Cached version of `grid_wrapper'
 			-- Note: Do not use directly!
 
-	frozen sort_handler (a_column_list: LIST [INTEGER]; a_comparator: AGENT_LIST_COMPARATOR [EV_GRID_ROW]) is
+	frozen sort_handler (a_column_list: LIST [INTEGER]; a_comparator: AGENT_LIST_COMPARATOR [EV_GRID_ROW])
 			-- Action to be performed when sort `a_column_list' using `a_comparator'.
 		require
 			a_column_list_attached: a_column_list /= Void
@@ -776,7 +776,7 @@ feature {NONE} -- Copy from {ES_EVENT_LIST_TOOL_PANEL_BASE} FIXIT: merge?
 			result_attached: Result /= Void
 		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

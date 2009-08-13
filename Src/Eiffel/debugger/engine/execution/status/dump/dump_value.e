@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects join all debug values: STRING, INTEGER, BOOLEAN, REFERENCES, ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -53,7 +53,7 @@ create {DUMP_VALUE_FACTORY}
 
 feature {DUMP_VALUE_FACTORY} -- Initialization
 
-	make_empty (dbg: like debugger_manager) is
+	make_empty (dbg: like debugger_manager)
 		do
 			debugger_manager := dbg
 			is_dotnet_system := debugger_manager.is_dotnet_project
@@ -67,21 +67,21 @@ feature {DUMP_VALUE_FACTORY} -- Preferences related
 	debug_output_evaluation_enabled: BOOLEAN
 			-- Is debug output enabled ?
 
-	set_debug_output_evaluation_enabled (b: like debug_output_evaluation_enabled) is
+	set_debug_output_evaluation_enabled (b: like debug_output_evaluation_enabled)
 		do
 			debug_output_evaluation_enabled := b
 		end
 
 feature {DUMP_VALUE_FACTORY} -- Restricted Initialization
 
-	set_void_value  (dtype: CLASS_C) is
+	set_void_value  (dtype: CLASS_C)
 		do
 			value_address := Void
 			type := Type_object
 			dynamic_class := dtype
 		end
 
-	set_object_value  (value: DBG_ADDRESS; dtype: CLASS_C) is
+	set_object_value  (value: DBG_ADDRESS; dtype: CLASS_C)
 			-- make a object item initialized to `value'
 		do
 			value_address := value
@@ -91,7 +91,7 @@ feature {DUMP_VALUE_FACTORY} -- Restricted Initialization
 			type /= Type_unknown
 		end
 
-	set_expanded_object_value  (addr: DBG_ADDRESS; dtype: CLASS_C) is
+	set_expanded_object_value  (addr: DBG_ADDRESS; dtype: CLASS_C)
 			-- Make an expanded object item of type `dtype'.
 		require
 			dtype_not_void: dtype /= Void
@@ -105,7 +105,7 @@ feature {DUMP_VALUE_FACTORY} -- Restricted Initialization
 			dynamic_class_set: dynamic_class = dtype
 		end
 
-	set_manifest_string_value (value: STRING; dtype: CLASS_C) is
+	set_manifest_string_value (value: STRING; dtype: CLASS_C)
 			-- make a string item initialized to `value'
 		do
 			value_string := value
@@ -115,23 +115,40 @@ feature {DUMP_VALUE_FACTORY} -- Restricted Initialization
 			type /= Type_unknown
 		end
 
-	set_exception_value  (value: EXCEPTION_DEBUG_VALUE) is
+	set_exception_value  (value: EXCEPTION_DEBUG_VALUE)
 		do
 			value_exception := value
 			type := Type_exception
 			dynamic_class := value_exception.dynamic_class
 		end
 
-	set_procedure_return_value  (value: PROCEDURE_RETURN_DEBUG_VALUE) is
+	set_procedure_return_value  (value: PROCEDURE_RETURN_DEBUG_VALUE)
 		do
 			procedure_return_value := value
 			type := Type_procedure_return
 			dynamic_class := Void
 		end
 
+feature -- Status
+
+	is_invalid_value: BOOLEAN
+			-- Is Current an invalid value?
+
+	is_valid_value: BOOLEAN
+			-- Is Current a valid value?
+		do
+			Result := not is_invalid_value
+		end
+
 feature -- change
 
-	set_icd_value_dotnet (v: like value_dotnet) is
+	invalidate_value
+			-- Mark Current as invalid value
+		do
+			is_invalid_value := True
+		end
+
+	set_icd_value_dotnet (v: like value_dotnet)
 			-- Set `value_dotnet' as `v'
 		do
 			value_dotnet := v
@@ -142,7 +159,7 @@ feature -- Dotnet access
 	is_dotnet_system: BOOLEAN
 			-- Is current related to a dotnet system ?
 
-	is_classic_system: BOOLEAN is
+	is_classic_system: BOOLEAN
 		do
 			Result := not is_dotnet_system
 		end
@@ -158,7 +175,7 @@ feature {DUMP_VALUE, DBG_EXPRESSION_EVALUATOR, DBG_EVALUATOR, APPLICATION_EXECUT
 
 feature {NONE} -- Dotnet specific
 
-	dotnet_value_class_name: STRING is
+	dotnet_value_class_name: STRING
 			-- Class name for the dotnet value
 		require
 			is_dotnet_system
@@ -169,7 +186,7 @@ feature {NONE} -- Dotnet specific
 			Result /= Void
 		end
 
-	dotnet_string_representation (min, max: INTEGER): STRING_32 is
+	dotnet_string_representation (min, max: INTEGER): STRING_32
 			-- String representation for dotnet value
 			-- with bounds from `min' and `max'.
 		require
@@ -178,7 +195,7 @@ feature {NONE} -- Dotnet specific
 			check only_dotnet: is_dotnet_value end
 		end
 
-	dotnet_generating_type_evaluated_string: STRING is
+	dotnet_generating_type_evaluated_string: STRING
 		require
 			is_stopped: debugger_manager.safe_application_is_stopped
 			is_valid_eiffel_type: dynamic_class /= Void and then not dynamic_class.is_true_external
@@ -187,17 +204,33 @@ feature {NONE} -- Dotnet specific
 			check only_dotnet: is_dotnet_value end
 		end
 
-feature -- Status report
+feature {DBG_EXPRESSION_EVALUATOR, DBG_EXPRESSION_EVALUATION} -- Status report
 
-	same_as (other: DUMP_VALUE): BOOLEAN is
-			-- Do `Current' and `other' represent the same object, in the equality sense?
+	identical_to (other: DUMP_VALUE): BOOLEAN
+			-- Do `Current' and `other' represent the same object, in the ref equality sense?
 		require
-			valid_other: other /= Void
+			other_attached: other /= Void
 		do
-			Result := type = other.type and then output_value (False).is_equal (other.output_value (False))
+			if type = other.type then
+				inspect type
+				when type_procedure_return then
+					Result := True
+				when type_object, type_exception, type_string_dotnet then
+					Result := address.is_equal (other.address)
+				when type_expanded_object then
+					Result := output_value (False).is_equal (other.output_value (False))
+					-- FIXME: this is really poor implementation ...
+				else
+					Result := output_value (False).is_equal (other.output_value (False))
+				end
+			else
+				Result := False
+			end
 		end
 
-	to_basic: DUMP_VALUE is
+feature -- Conversion
+
+	to_basic: DUMP_VALUE
 			-- Convert `Current' from a reference value to a basic value, if possible.
 			-- If impossible, return `Current'.
 		local
@@ -230,7 +263,9 @@ feature -- Status report
 			end
 		end
 
-	has_formatted_output: BOOLEAN is
+feature -- Status report
+
+	has_formatted_output: BOOLEAN
 			-- Does `Current' have an associated string representation?
 			-- yes if it is a STRING, or conform to STRING
 			-- or conform to DEBUG_OUTPUT
@@ -278,7 +313,7 @@ feature -- Status report
 			end
 		end
 
-	formatted_output: STRING_32 is
+	formatted_output: STRING_32
 			-- Output of the call to `debug_output' on `Current', if any.
 		require
 			has_formatted_output: has_formatted_output
@@ -318,7 +353,7 @@ feature -- Status report
 			not_void: Result /= Void
 		end
 
-	full_output: STRING is
+	full_output: STRING
 			-- Complete output, including string representation.
 			--| `output_value' = "This is a string"
 		do
@@ -336,9 +371,11 @@ feature -- Status report
 				print (Result)
 				print ("%N")
 			end
+		ensure
+			full_output_not_void: Result /= Void
 		end
 
-	output_for_debugger: STRING_32 is
+	output_for_debugger: STRING_32
 			-- Displayed output, including string representation.
 			--| but remove address value
 		do
@@ -354,7 +391,7 @@ feature -- Status report
 			end
 		end
 
-	hexa_output_for_debugger: STRING_32 is
+	hexa_output_for_debugger: STRING_32
 			-- Displayed output, including string representation.
 			--| but remove address value
 		do
@@ -373,7 +410,7 @@ feature -- Status report
 	last_string_representation_length: INTEGER
 			-- Length of last string_representation Result
 
-	formatted_truncated_string_representation (min, max: INTEGER): STRING_32 is
+	formatted_truncated_string_representation (min, max: INTEGER): STRING_32
 		local
 			i: INTEGER
 		do
@@ -404,7 +441,7 @@ feature -- Status report
 			end
 		end
 
-	string_representation: STRING_32 is
+	string_representation: STRING_32
 			-- Complete string value representation.
 			-- it can be Void!
 		do
@@ -413,7 +450,7 @@ feature -- Status report
 			end
 		end
 
-	truncated_string_representation (min, max: INTEGER): STRING_32 is
+	truncated_string_representation (min, max: INTEGER): STRING_32
 			-- truncated string value representation.
 			--| if max < 0 then do not truncate the upper part of the string
 		do
@@ -427,7 +464,7 @@ feature -- Status report
 
 feature {DUMP_VALUE} -- string_representation Implementation
 
-	raw_string_representation (min, max: INTEGER): STRING_32 is
+	raw_string_representation (min, max: INTEGER): STRING_32
 			-- Get the `debug_output' representation with bounds from `min' and `max'.
 			-- Special characters are not converted but '%U's are replaced by '%/1/' .
 		require
@@ -444,7 +481,7 @@ feature {DUMP_VALUE} -- string_representation Implementation
 			end
 		end
 
-	classic_string_representation (min, max: INTEGER): STRING_32 is
+	classic_string_representation (min, max: INTEGER): STRING_32
 			-- String representation for classic value
 			-- with bounds from `min' and `max'.
 		require
@@ -560,7 +597,7 @@ feature {DUMP_VALUE} -- string_representation Implementation
 			end
 		end
 
-	classic_debug_output_evaluated_string (min, max: INTEGER): STRING_32 is
+	classic_debug_output_evaluated_string (min, max: INTEGER): STRING_32
 			-- Evaluation of DEBUG_OUTPUT.debug_output: STRING on object related to Current	
 		require
 			is_classic_system
@@ -581,7 +618,7 @@ feature {DUMP_VALUE} -- string_representation Implementation
 			end
 		end
 
-	generating_type_evaluated_string: STRING is
+	generating_type_evaluated_string: STRING
 			-- Full generic type using evaluation of generating_type on the related object
 			-- WARNING: This has to be an Eiffel type (descendant of ANY to implement generating_type)
 		require
@@ -601,7 +638,7 @@ feature {DUMP_VALUE} -- string_representation Implementation
 
 feature {NONE} -- Classic specific
 
-	classic_generating_type_evaluated_string: STRING is
+	classic_generating_type_evaluated_string: STRING
 		require
 			is_stopped: debugger_manager.safe_application_is_stopped
 			is_valid_eiffel_type: dynamic_class /= Void and then not dynamic_class.is_true_external
@@ -618,7 +655,7 @@ feature {NONE} -- Classic specific
 			end
 		end
 
-	classic_feature_result_value_on_current (a_feat: FEATURE_I; a_compiled_class: CLASS_C): DUMP_VALUE is
+	classic_feature_result_value_on_current (a_feat: FEATURE_I; a_compiled_class: CLASS_C): DUMP_VALUE
 			-- Evaluation of `a_feat': STRING on object related to Current dump_value
 			--| FIXME: duplication with DBG_EVALUATOR_CLASSIC.effective_evaluate_routine...
 		local
@@ -675,7 +712,7 @@ feature {NONE} -- Classic specific
 
 feature -- Action
 
-	classic_send_value is
+	classic_send_value
 			-- send the value the application
 		require
 			is_classic_system
@@ -684,7 +721,9 @@ feature -- Action
 		do
 			inspect (type)
 			when Type_manifest_string then
-				fixme("We should handle STRING_32 on the runtime side of the debuger")
+				debug ("refactor_fixme")
+					fixme("We should handle STRING_32 on the runtime side of the debuger")
+				end
 				value_string_c := value_string.as_string_8.to_c
 				send_string_value ($value_string_c)
 			when Type_object, Type_expanded_object then
@@ -705,7 +744,7 @@ feature -- Action
 
 feature -- Access
 
-	generating_type_representation (generating_type_evaluation_enabled: BOOLEAN): STRING is
+	generating_type_representation (generating_type_evaluation_enabled: BOOLEAN): STRING
 			-- {TYPE}.generating_type string representation
 		local
 			l_generating_type_string: STRING
@@ -746,7 +785,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	output_value (format_result: BOOLEAN): STRING_32 is
+	output_value (format_result: BOOLEAN): STRING_32
 			-- String representation of the value of `Current'.
 			-- If `format_result' is True, add the " and other if needed
 			--   otherwise return the raw value's output
@@ -819,11 +858,11 @@ feature -- Access
 			not_void: Result /= Void
 		end
 
-	extra_output_details: STRING_32 is
+	extra_output_details: STRING_32
 		do
 		end
 
-	to_minimal_hexa_representation (s: STRING): STRING is
+	to_minimal_hexa_representation (s: STRING): STRING
 			-- Hexa representation of `s' representing the hexa string
 			-- from INTEGER.to_hex_string
  		require
@@ -849,7 +888,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	hexa_output_value: STRING_32 is
+	hexa_output_value: STRING_32
 			-- String representation of the value of `Current'.
 			--| True
 			--| 0x61 'a'
@@ -864,7 +903,7 @@ feature -- Access
 			not_void: Result /= Void
 		end
 
-	address: DBG_ADDRESS is
+	address: DBG_ADDRESS
 			-- If it makes sense, return the address of current object.
 			-- Void if `is_void' or if `Current' does not represent an object.
 		do
@@ -882,13 +921,13 @@ feature -- Access
 			-- Dynamic Class Type of `Current'. Void if `is_void'.
 			-- Used only in Reference dotnet context (for now)
 
-	is_void: BOOLEAN is
+	is_void: BOOLEAN
 			-- Is `Current' a Void reference?
 		do
 			Result := (type = Type_object or type = Type_string_dotnet) and (address = Void or else address.is_void)
 		end
 
-	is_basic: BOOLEAN is
+	is_basic: BOOLEAN
 			-- Is `Current' of a basic type?
 		do
 			Result := not is_type_object
@@ -899,7 +938,7 @@ feature -- Access
 
 feature -- Conversion
 
-	as_dump_value_basic: DUMP_VALUE_BASIC is
+	as_dump_value_basic: DUMP_VALUE_BASIC
 			--
 		require
 			is_basic: is_basic
@@ -909,7 +948,7 @@ feature -- Conversion
 			Result_not_void: Result /= Void
 		end
 
-	as_dump_value_dotnet: DUMP_VALUE_DOTNET is
+	as_dump_value_dotnet: DUMP_VALUE_DOTNET
 			--
 		require
 			is_dotnet_value: is_dotnet_value
@@ -921,14 +960,16 @@ feature -- Conversion
 
 feature {DBG_EVALUATOR} -- Convertor
 
-	manifest_string_to_dump_value_object: DUMP_VALUE is
+	manifest_string_to_dump_value_object: DUMP_VALUE
 			-- Current manifest string converted to an instance of STRING.
 		require
 			is_type_manifest_string
 		local
 			s: STRING_8
 		do
-			fixme ("This is a temporary safe solution for 6.1, later we'll need to redesign part of debugger's data+evaluator")
+			debug ("refactor_fixme")
+				fixme ("This is a temporary safe solution for 6.1, later we'll need to redesign part of debugger's data+evaluator")
+			end
 			s := value_string
 			if s /= Void then
 				Result := debugger_manager.expression_evaluation ("(%"" + s + "%").twin")
@@ -938,7 +979,7 @@ feature {DBG_EVALUATOR} -- Convertor
 			end
 		end
 
-feature {DEBUGGER_EXPORTER, DUMP_VALUE, DBG_EXPRESSION_EVALUATOR, DBG_EVALUATOR} -- Internal data
+feature -- Access: internal data
 
 	value_address	: like address -- string standing for the address of the object if type=Type_object
 	value_string    : STRING_32 -- String value
@@ -949,26 +990,31 @@ feature {DEBUGGER_EXPORTER, DUMP_VALUE, DBG_EXPRESSION_EVALUATOR, DBG_EVALUATOR}
 		-- type discrimant, possible values are Type_XXXX
 
 --| Useless now, using inspect on 'type' is enought
-	is_type_boolean: BOOLEAN is do end -- False
-	is_type_integer_32: BOOLEAN is do end -- False
+	is_type_boolean: BOOLEAN do end -- False
+	is_type_integer_32: BOOLEAN do end -- False
 
-	is_type_object: BOOLEAN is
+	is_type_object: BOOLEAN
 			-- Is Current value corresponding to an object or an expanded object?
 		do
 			Result := type = Type_object or type = type_expanded_object
 		end
 
-	is_type_manifest_string: BOOLEAN is do Result := type = Type_manifest_string end
+	is_type_expanded_object: BOOLEAN
+		do
+			Result := type = type_expanded_object
+		end
+
+	is_type_manifest_string: BOOLEAN do Result := type = Type_manifest_string end
 --	is_type_expanded: BOOLEAN is do Result := type = Type_expanded_object end
-	is_type_exception: BOOLEAN is do Result := type = Type_exception end
-	is_type_procedure_return: BOOLEAN is do Result := type = Type_procedure_return end
+	is_type_exception: BOOLEAN do Result := type = Type_exception end
+	is_type_procedure_return: BOOLEAN do Result := type = Type_procedure_return end
 
 feature {NONE} -- Private Constants
 
-	area_name: STRING is "area"
-	count_name: STRING is "count"
+	area_name: STRING = "area"
+	count_name: STRING = "count"
 
-	character_routines: CHARACTER_ROUTINES is
+	character_routines: CHARACTER_ROUTINES
 			-- To have a printable output of Eiffel strings that have
 			-- non-printable characters.
 		once
@@ -977,8 +1023,8 @@ feature {NONE} -- Private Constants
 			character_routines_not_void: Result /= Void
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -991,22 +1037,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class DUMP_VALUE

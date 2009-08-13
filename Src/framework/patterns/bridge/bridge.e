@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Rudimentary implementation of a bridge pattern.
 	]"
@@ -8,15 +8,20 @@ indexing
 	revision: "$Revision$"
 
 deferred class
-	BRIDGE [G -> ANY]
+	BRIDGE [G]
 
 feature {NONE} -- Access
 
-	frozen bridge: !G
+	frozen bridge: attached G
 			-- Bridge implementation.
+		require
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
+		local
+			l_result: like internal_bridge
 		do
-			if {l_bridge: G} internal_bridge then
-				Result := l_bridge
+			l_result := internal_bridge
+			if attached l_result then
+				Result := l_result
 			else
 				Result := new_bridge
 				internal_bridge := Result
@@ -27,21 +32,22 @@ feature {NONE} -- Access
 
 feature {NONE} -- Factory
 
-	new_bridge: !G
+	new_bridge: attached G
 			-- Creates a new implementation instance.
 		require
-			internal_bridge_detached: internal_bridge = Void
+			is_interface_usable: attached {USABLE_I} Current as l_usable implies l_usable.is_interface_usable
+			internal_bridge_detached: not attached internal_bridge
 		deferred
 		end
 
 feature {NONE} -- Implementation: Internal cache
 
-	frozen internal_bridge: ?like bridge
+	frozen internal_bridge: detachable like bridge
 			-- Cached version of `bridge'
 			-- Note: Do not use directly!
 
-;indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -54,22 +60,22 @@ feature {NONE} -- Implementation: Internal cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

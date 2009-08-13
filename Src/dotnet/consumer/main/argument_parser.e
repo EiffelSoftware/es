@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Argument parser for Eiffel metadata consumer."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,10 +14,6 @@ inherit
 	ARGUMENT_OPTION_PARSER
 		rename
 			make as make_parser
-		export
-			{NONE} all
-			{APPLICATION} execute
-			{ANY} is_successful
 		redefine
 			switch_groups
 		end
@@ -27,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initializes argument parser
 		do
 			make_parser (False)
@@ -37,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	assemblies: LIST [STRING] is
+	assemblies: LIST [STRING]
 			-- List of assemblies to add to cache
 		require
 			successful: is_successful
@@ -57,7 +53,7 @@ feature -- Access
 				end)
 		end
 
-	reference_paths: LIST [STRING] is
+	reference_paths: LIST [STRING]
 			-- List of assembly reference paths used in resolution
 		require
 			successful: is_successful
@@ -72,7 +68,7 @@ feature -- Access
 				end)
 		end
 
-	cache_path: STRING is
+	cache_path: STRING
 			-- A location of a cache
 		require
 			successful: is_successful
@@ -86,7 +82,7 @@ feature -- Access
 
 feature -- Status report
 
-	add_assemblies: BOOLEAN is
+	add_assemblies: BOOLEAN
 			-- Indiciate if assemblies are to be added to the cache (fake or otherwise)
 		require
 			successful: is_successful
@@ -94,7 +90,7 @@ feature -- Status report
 			Result := has_option (add_switch)
 		end
 
-	add_information_only: BOOLEAN is
+	add_information_only: BOOLEAN
 			-- Inidicate if only the assembly information should be consumed
 		require
 			successful: is_successful
@@ -102,7 +98,7 @@ feature -- Status report
 			Result := has_option (info_only_switch)
 		end
 
-	remove_assemblies: BOOLEAN is
+	remove_assemblies: BOOLEAN
 			-- Indicate if assemblies are to be removed from the cache
 		require
 			successful: is_successful
@@ -110,7 +106,7 @@ feature -- Status report
 			Result := has_option (remove_switch)
 		end
 
-	list_assemblies: BOOLEAN is
+	list_assemblies: BOOLEAN
 			-- Inidicates if contents of cache should be listed
 		require
 			successful: is_successful
@@ -118,7 +114,7 @@ feature -- Status report
 			Result := has_option (list_switch)
 		end
 
-	clean_cache: BOOLEAN is
+	clean_cache: BOOLEAN
 			-- Inidicates if contents of cache should compacted
 		require
 			successful: is_successful
@@ -126,7 +122,7 @@ feature -- Status report
 			Result := has_option (clean_switch)
 		end
 
-	show_verbose_output: BOOLEAN is
+	show_verbose_output: BOOLEAN
 			-- Inidicate if verbose information should be shown
 		require
 			successful: is_successful
@@ -134,7 +130,7 @@ feature -- Status report
 			Result := has_option (verbose_switch)
 		end
 
-	use_specified_cache: BOOLEAN is
+	use_specified_cache: BOOLEAN
 			-- Indicates if a specified assembly cache should be used
 		require
 			successful: is_successful
@@ -142,7 +138,7 @@ feature -- Status report
 			Result := has_option (output_switch)
 		end
 
-	wait_for_user_interaction: BOOLEAN is
+	wait_for_user_interaction: BOOLEAN
 			-- Inidicate if user interaction is required before exiting
 		require
 			successful: is_successful
@@ -155,13 +151,21 @@ feature {NONE} -- Usage
 	name: STRING = "Eiffel Assembly Metadata %"Consumer%""
 			-- Full name of application
 
-	Version: !STRING is
+	Version: STRING
 			-- Version number of application
 		once
-			Result := ({EMITTER}).to_cil.assembly.get_name.version.to_string
+			if
+				attached ({EMITTER}).to_cil.assembly as l_assembly and then
+				attached l_assembly.get_name as l_ass_name and then
+				attached l_ass_name.version as l_version
+			then
+				Result := l_version.to_string
+			else
+				create Result.make_from_string ("0.0.0.0")
+			end
 		end
 
-	switches: ?ARRAYED_LIST [!ARGUMENT_SWITCH]
+	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			-- Retrieve a list of switch used for a specific application
 			-- (export status {NONE})
 		once
@@ -178,7 +182,7 @@ feature {NONE} -- Usage
 
 		end
 
-	switch_groups: ?ARRAYED_LIST [!ARGUMENT_GROUP]
+	switch_groups: ARRAYED_LIST [ARGUMENT_GROUP]
 			-- Valid switch grouping
 		once
 			create Result.make (4)
@@ -207,7 +211,7 @@ feature {NONE} -- Switches
 	loose_argument_description: STRING = "Path to a valid .NET assembly";
 			-- Description of loose argument, used in usage information
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

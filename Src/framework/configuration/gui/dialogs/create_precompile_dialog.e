@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog to add a precompile library."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_target: CONF_TARGET; a_factory: like factory) is
+	make (a_target: CONF_TARGET; a_factory: like factory)
 			-- <Precursor>
 		do
 			Precursor {CREATE_LIBRARY_DIALOG} (a_target, a_factory)
@@ -38,10 +38,10 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	lookup_directories: !DS_ARRAYED_LIST [!TUPLE [path: !STRING; depth: INTEGER]]
+	lookup_directories: attached DS_ARRAYED_LIST [attached TUPLE [path: attached STRING; depth: INTEGER]]
 			-- A list of lookup directories
 		local
-			l_file: !FILE_NAME
+			l_file: attached FILE_NAME
 		do
 			create Result.make_default
 
@@ -50,7 +50,7 @@ feature {NONE} -- Access
 				add_lookup_directories (l_file, Result)
 			end
 			if eiffel_layout.is_user_files_supported then
-				if {l_user_file: FILE_NAME} eiffel_layout.user_priority_file_name (l_file.string, True) and then file_system.file_exists (l_user_file) then
+				if attached {FILE_NAME} eiffel_layout.user_priority_file_name (l_file.string, True) as l_user_file and then file_system.file_exists (l_user_file) then
 					add_lookup_directories (l_user_file, Result)
 				end
 			end
@@ -63,20 +63,20 @@ feature {NONE} -- Access
 
 feature {NONE} -- Action handlers
 
-	on_library_selected (a_library: !CONF_SYSTEM; a_location: !STRING)
+	on_library_selected (a_library: attached CONF_SYSTEM; a_location: attached STRING)
 			-- <Precursor>
 		do
 			name.set_text (a_library.library_target.name + "_precompile")
 			location.set_text (a_location)
 		end
 
-	on_ok is
+	on_ok
 			-- <Precursor>
 		do
 				-- library choosen?
 			if not location.text.is_empty and not name.text.is_empty then
 				if not is_valid_group_name (name.text) then
-					prompts.show_error_prompt (conf_interface_names.invalid_group_name, Current, Void)
+					prompts.show_error_prompt (conf_interface_names.invalid_precompile_name, Current, Void)
 				elseif group_exists (name.text, target) then
 					prompts.show_error_prompt (conf_interface_names.group_already_exists (name.text), Current, Void)
 				else
@@ -88,8 +88,8 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -102,21 +102,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

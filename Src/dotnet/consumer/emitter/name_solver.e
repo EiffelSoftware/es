@@ -1,11 +1,11 @@
-indexing
+note
 	description: "Generate unique names"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	NAME_SOLVER
 
 inherit
@@ -13,38 +13,38 @@ inherit
 
 feature -- Access
 
-	unique_feature_name (name: STRING): STRING is
+	unique_feature_name (name: STRING): STRING
 			-- Unique feature name for .NET method `name'
 		require
 			non_void_name: name /= Void
 			valid_name: not name.is_empty
 		local
 			count: INTEGER
-			l_names: like reserved_names
 		do
 			count := 2
-			l_names := reserved_names
 			Result := formatted_feature_name (name)
-			if not ub_operator_names.has (name) then
-					-- If execution ends up here then we are not dealing with
-					-- infix/prefix operators. Infix and prefixes need not be solved, unless an
-					-- infix/prefix is overloaded. In that case, execution will end up here.
-				from
-				until
-					not l_names.has (Result)
-				loop
-					trim_end_digits (Result)
-					Result.append (count.out)
-					count := count + 1
+			if attached reserved_names as l_names then
+				if not ub_operator_names.has (name) then
+						-- If execution ends up here then we are not dealing with
+						-- infix/prefix operators. Infix and prefixes need not be solved, unless an
+						-- infix/prefix is overloaded. In that case, execution will end up here.
+					from
+					until
+						not l_names.has (Result)
+					loop
+						trim_end_digits (Result)
+						Result.append (count.out)
+						count := count + 1
+					end
 				end
+				l_names.put (Result, Result)
 			end
-			l_names.put (Result, Result)
 		end
 
 	reserved_names: HASH_TABLE [STRING, STRING]
 			-- Reserved names for overload solving
 
-	ub_operator_names: HASH_TABLE [STRING, STRING] is
+	ub_operator_names: HASH_TABLE [STRING, STRING]
 			-- Operator names for mapping prefixes and infixes.
 			-- Information in this table should also correspond
 		local
@@ -79,18 +79,17 @@ feature -- Access
 
 feature {TYPE_CONSUMER} -- Element Settings
 
-	set_reserved_names (names: like reserved_names) is
+	set_reserved_names (names: like reserved_names)
 			-- Set `reserved_names' with `names' .
 		require
 			non_void_names: names /= Void
-			not_set_yet: reserved_names = Void
 		do
 			reserved_names := names
 		ensure
 			set: reserved_names = names
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

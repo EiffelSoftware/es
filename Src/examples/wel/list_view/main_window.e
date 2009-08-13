@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Main window class of the WEL example : List_view."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -33,84 +33,94 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
+		local
+			l_list_view: like list_view
+			l_list: like list
+			l_label: like label
+			l_button: like button
 		do
 			make_top (Title)
 			resize (355, 360)
 
 				-- Create the output
-			create list.make (Current, 0, 0, client_rect.width, 120, 1)
-			list.set_font(gui_font)
-			create label.make (Current, "What happens?", 0, 120, client_rect.width, 20, 0)
-			label.set_font(gui_font)
+			create l_list.make (Current, 0, 0, client_rect.width, 120, 1)
+			list := l_list
+			l_list.set_font(gui_font)
+			create l_label.make (Current, "What happens?", 0, 120, client_rect.width, 20, 0)
+				-- For GC reference
+			label := l_label
+			l_label.set_font(gui_font)
 
 				-- Create the list view.
-			create list_view.make (Current, 10, 150, client_rect.width - 20, client_rect.height - 190, -1)
-			list_view.set_item_output (label)
-			list_view.set_mess_output (list)
-			
+			create l_list_view.make (Current, 10, 150, client_rect.width - 20, client_rect.height - 190, -1)
+			list_view := l_list_view
+			l_list_view.set_item_output (l_label)
+			l_list_view.set_mess_output (l_list)
+
 				-- Create a button
-			create button.make (Current, "Style", 10, height - 55, 50, 20, 3)
-			button.set_font(gui_font)
+			create l_button.make (Current, "Style", 10, height - 55, 50, 20, 3)
+			button := l_button
+			l_button.set_font(gui_font)
 		end
 
 feature -- Access
 
-	list: WEL_SINGLE_SELECTION_LIST_BOX
+	list: detachable WEL_SINGLE_SELECTION_LIST_BOX
 
-	label: WEL_STATIC
+	label: detachable WEL_STATIC
 
-	list_view: LISTVIEW
+	list_view: detachable LISTVIEW
 
-	button: WEL_PUSH_BUTTON
+	button: detachable WEL_PUSH_BUTTON
 
 feature {NONE} -- Implementation
 
-	class_icon: WEL_ICON is
+	class_icon: WEL_ICON
 			-- Window's icon
 		once
 			create Result.make_by_id (Id_ico_application)
 		end
 
-	Title: STRING is "WEL List View"
+	Title: STRING = "WEL List View"
 			-- Window's title
 
-	class_background: WEL_BRUSH is
+	class_background: WEL_BRUSH
 			-- background color
 		once
 			create Result.make_by_sys_color (Color_background)
 		end
 
-	default_style: INTEGER is
+	default_style: INTEGER
 			-- The window do not redraw the children.
 		once
 			Result := Precursor {WEL_FRAME_WINDOW}
 				+ Ws_clipchildren + Ws_clipsiblings
 		end
 
-   	on_size (size_type, a_width, a_height: INTEGER) is
+   	on_size (size_type, a_width, a_height: INTEGER)
    			-- Wm_size message
    		do
-			if list_view /= Void then
-				list_view.resize (client_rect.width - 20, client_rect.height - 190)
+			if attached list_view as l_list_view then
+				l_list_view.resize (client_rect.width - 20, client_rect.height - 190)
 			end
-			if list /= Void then
-				list.resize (client_rect.width, 120)
+			if attached list as l_list then
+				l_list.resize (client_rect.width, 120)
 			end
-			if button /= Void then
-				button.move (10, height - 55)
+			if attached button as l_button then
+				l_button.move (10, height - 55)
 			end
 		end
 
-	on_control_id_command (control_id: INTEGER) is
+	on_control_id_command (control_id: INTEGER)
 			-- A command has been received from `control_id'.
 		do
-			if control_id = 3 then
-				list_view.change_style
+			if control_id = 3 and then attached list_view as l_list_view then
+				l_list_view.change_style
 			end
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

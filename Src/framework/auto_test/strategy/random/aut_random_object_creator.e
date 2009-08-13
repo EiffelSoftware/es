@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 
@@ -28,11 +28,12 @@ inherit
 
 create
 
-	make
+	make,
+	make_with_queue
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; an_interpreter: like interpreter; a_type: like type; a_feature_table: like feature_table) is
+	make (a_system: like system; an_interpreter: like interpreter; a_type: like type; a_feature_table: like feature_table)
 			-- Create new feature caller.
 		require
 			a_system_not_void: a_system /= Void
@@ -54,9 +55,29 @@ feature {NONE} -- Initialization
 			steps_completed: steps_completed
 		end
 
+	make_with_queue (a_system: like system; an_interpreter: like interpreter; a_type: like type; a_feature_table: like feature_table; a_queue: like queue)
+			-- Create new feature caller.
+		require
+			a_system_not_void: a_system /= Void
+			a_interpreter_not_void: an_interpreter /= Void
+			a_type_not_void: a_type /= Void
+			a_type_associated_with_class: a_type.has_associated_class
+			creation_procedure_exists: not exported_creators (a_type.associated_class, a_system).is_empty
+			a_feature_table_attached: a_feature_table /= Void
+		do
+			make (a_system, an_interpreter, a_type, a_feature_table)
+			queue := a_queue
+		ensure
+			system_set: system = a_system
+			interpreter_set: interpreter = an_interpreter
+			type_set: type = a_type
+			steps_completed: steps_completed
+			queue_set: queue = a_queue
+		end
+
 feature -- Status
 
-	has_next_step: BOOLEAN is
+	has_next_step: BOOLEAN
 			-- Is there a next step to execute?
 		do
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
@@ -89,7 +110,7 @@ feature -- Access
 
 feature -- Change
 
-	set_creation_procedure (a_creation_procedure: like creation_procedure) is
+	set_creation_procedure (a_creation_procedure: like creation_procedure)
 				-- Set `creation_procedure' to `a_creation_procedure'.
 		require
 			a_creation_procedure_not_void: a_creation_procedure /= Void
@@ -101,7 +122,7 @@ feature -- Change
 
 feature -- Execution
 
-	start is
+	start
 		do
 			steps_completed := False
 			input_creator := Void
@@ -111,7 +132,9 @@ feature -- Execution
 			receiver_void: receiver = Void
 		end
 
-	step is
+	step
+		local
+			l_type: detachable TYPE_A
 		do
 			if type.is_expanded then
 				choose_expanded_receiver
@@ -130,6 +153,11 @@ feature -- Execution
 			else
 				receiver := interpreter.variable_table.new_variable
 				interpreter.create_object (receiver, type, creation_procedure, input_creator.receivers)
+				if queue /= Void then
+					if attached {TYPE_A} interpreter.variable_table.variable_type (receiver) as l_receiver then
+						queue.mark (create {AUT_FEATURE_OF_TYPE}.make_as_creator (creation_procedure, l_receiver))
+					end
+				end
 				if not interpreter.variable_table.is_variable_defined (receiver) then
 					-- There was an error creating the object.
 					receiver := Void
@@ -138,7 +166,7 @@ feature -- Execution
 			end
 		end
 
-	cancel is
+	cancel
 		do
 			steps_completed := True
 		end
@@ -150,7 +178,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Steps
 
-	create_input_creator is
+	create_input_creator
 			-- Create `input_creator'.
 		require
 			has_creation_procedure: creation_procedure /= Void
@@ -162,7 +190,7 @@ feature {NONE} -- Steps
 			input_creator.start
 		end
 
-	choose_creation_procedure is
+	choose_creation_procedure
 			-- Choose a creation procedure (including default creation procedure)
 			-- of `type' and set `creation_procedure' to it. Note that
 			-- instead of choosing a creation procedure
@@ -187,7 +215,7 @@ feature {NONE} -- Steps
 			has_creation_procedure: creation_procedure /= Void
 		end
 
-	choose_expanded_receiver is
+	choose_expanded_receiver
 			-- Choose an expanded receiver, assign it to a new variable
 			-- and make variable available via `receiver'.
 		require
@@ -239,7 +267,7 @@ feature {NONE} -- Steps
 	last_constant: ITP_CONSTANT
 			-- Last chosen constant
 
-	choose_boolean_constant is
+	choose_boolean_constant
 			-- Choose boolean constant and set it to
 			-- `last_constant'.
 		local
@@ -256,7 +284,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_character_8_constant is
+	choose_character_8_constant
 			-- Choose CHARACTER_8 constant and set it to
 			-- `last_constant'.
 		local
@@ -269,7 +297,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_character_32_constant is
+	choose_character_32_constant
 			-- Choose CHARACTER_32 constant and set it to
 			-- `last_constant'.
 		local
@@ -282,7 +310,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_double_constant is
+	choose_double_constant
 			-- Choose double constant and set it to
 			-- `last_constant'.
 		local
@@ -320,7 +348,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_8_constant is
+	choose_integer_8_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -369,7 +397,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_16_constant is
+	choose_integer_16_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -418,7 +446,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_constant is
+	choose_integer_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -485,7 +513,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_64_constant is
+	choose_integer_64_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -534,7 +562,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_natural_8_constant is
+	choose_natural_8_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -583,7 +611,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_natural_16_constant is
+	choose_natural_16_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -633,7 +661,7 @@ feature {NONE} -- Steps
 		end
 
 
-	choose_natural_32_constant is
+	choose_natural_32_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -682,7 +710,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_natural_64_constant is
+	choose_natural_64_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -731,7 +759,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_pointer_constant is
+	choose_pointer_constant
 			-- Choose boolean constant and set it to
 			-- `last_constant'.
 		do
@@ -740,7 +768,7 @@ feature {NONE} -- Steps
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_real_constant is
+	choose_real_constant
 			-- Choose boolean constant and set it to
 			-- `last_constant'.
 		local
@@ -781,6 +809,9 @@ feature {NONE} -- Steps
 	feature_table: HASH_TABLE [ARRAY [FEATURE_I], CLASS_C]
 		-- Table used to store features in a class
 
+	queue: detachable AUT_DYNAMIC_PRIORITY_QUEUE
+			-- Queue
+
 invariant
 	system_not_void: system /= Void
 	interpreter_not_void: interpreter /= Void
@@ -788,4 +819,35 @@ invariant
 	type_has_associated_class: type.has_associated_class
 	receiver_defined: receiver /= Void implies interpreter.variable_table.is_variable_defined (receiver)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that represent a simplified ast factory which records the names of ancestors when parsing
 		a class. Once it has traversed the inheritance section parsing is aborted.
@@ -22,7 +22,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize `Current'.
 		do
 			create internal_ancestors.make_default
@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	ancestors: !DS_LINEAR [!STRING]
+	ancestors: attached DS_LINEAR [attached STRING]
 			-- Name of ancestors which were found during last parse
 		do
 			Result := internal_ancestors
@@ -43,7 +43,7 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	internal_ancestors: !DS_ARRAYED_LIST [!STRING]
+	internal_ancestors: attached DS_ARRAYED_LIST [attached STRING]
 			-- Internal storage for `ancestors'
 
 feature -- Status report
@@ -65,7 +65,7 @@ feature {NONE} -- Status report
 
 feature -- Status setting
 
-	reset is
+	reset
 			-- Remove items in `ancestors'
 		do
 			ancestors.wipe_out
@@ -75,7 +75,7 @@ feature -- Status setting
 
 feature -- Query
 
-	new_keyword_as (a_code: INTEGER_32; a_scn: EIFFEL_SCANNER): KEYWORD_AS is
+	new_keyword_as (a_code: INTEGER_32; a_scn: EIFFEL_SCANNER_SKELETON): KEYWORD_AS
 			-- <Precursor>
 		do
 			if a_code = {EIFFEL_TOKENS}.te_inherit then
@@ -92,16 +92,16 @@ feature -- Query
 			   a_code = {EIFFEL_TOKENS}.te_invariant or (is_parsing_ancestors and
 			   a_code = {EIFFEL_TOKENS}.te_indexing) then
 				is_parsing_ancestors := False
-				if {l_parser: EIFFEL_PARSER} a_scn then
+				if attached {EIFFEL_PARSER} a_scn as l_parser then
 					l_parser.abort
 				end
 			end
 		end
 
-	new_filled_id_as (a_scn: EIFFEL_SCANNER_SKELETON): ID_AS is
+	new_filled_id_as (a_scn: EIFFEL_SCANNER_SKELETON): ID_AS
 			-- <Precursor>
 		local
-			l_type: !STRING
+			l_type: attached STRING
 		do
 			if is_parsing_ancestors then
 				if not is_parsing_parent_clause  then
@@ -120,4 +120,35 @@ feature -- Query
 			is_parsing_parent_clause := False
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Shared access to the EiffelStudio ecosystem environment identifiers.
 		For more information see {ENVIRONMENT_CATEGORIES}.
@@ -13,13 +13,13 @@ class
 
 feature -- Access
 
-	categories: !ENVIRONMENT_CATEGORIES
+	categories: attached ENVIRONMENT_CATEGORIES
 			-- Environment categories
 		once
 			create Result
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

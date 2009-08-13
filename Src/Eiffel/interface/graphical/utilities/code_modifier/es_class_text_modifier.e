@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A general purpose Eiffel code class modifier, associated with an Eiffel class {CLASS_I}.
 	]"
@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 			-- `a_class': Associated context class to modify class text for.
 		local
 			l_editor: like active_editor_for_class
-			l_text: ?STRING_32
+			l_text: detachable STRING_32
 			l_encoding: ENCODING
 		do
 			context_class := a_class
@@ -73,19 +73,19 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	original_text: !STRING_32
+	original_text: attached STRING_32
 			-- Original class text.
 
-	context_class: !CLASS_I
+	context_class: attached CLASS_I
 			-- Context class.
 
-	text: !STRING_32
+	text: attached STRING_32
 			-- Modified class text, valid only when prepared.
 			-- Note: For preformance reasons, the result is not twined.
 		require
 			is_interface_usable: is_interface_usable
 		do
-			if {l_text: STRING_32} modified_data.text then
+			if attached {STRING_32} modified_data.text as l_text then
 				Result := l_text
 			else
 				create Result.make_empty
@@ -97,7 +97,7 @@ feature {NONE} -- Access
 	original_file_date: INTEGER
 			-- Last modified file date
 
-	modified_data: !ES_CLASS_TEXT_MODIFIER_DATA
+	modified_data: attached ES_CLASS_TEXT_MODIFIER_DATA
 			-- Active modified class text data
 
 feature -- Status report
@@ -130,7 +130,7 @@ feature {NONE} -- Status report
 	is_committing: BOOLEAN
 			-- Indicates if modiciations commits are being performed.
 
-	is_editor_text_ready (a_editor: EB_SMART_EDITOR): BOOLEAN is
+	is_editor_text_ready (a_editor: EB_SMART_EDITOR): BOOLEAN
 			-- If `a_editor''s text ready for reading texts?
 		local
 			l_text_displayed: SMART_TEXT
@@ -145,7 +145,7 @@ feature {NONE} -- Status report
 
 feature -- Query
 
-	initial_whitespace (a_pos: INTEGER): !STRING_32
+	initial_whitespace (a_pos: INTEGER): attached STRING_32
 			-- Retrieve the initial whitespace at a given position on `text'
 			--
 			-- `a_pos': Orginal position in `original_text' to retrieve the whitespace for.
@@ -186,7 +186,7 @@ feature -- Query
 
 feature {NONE} -- Query
 
-	active_editor_for_class (a_class: !CLASS_I): ?EB_SMART_EDITOR
+	active_editor_for_class (a_class: attached CLASS_I): detachable EB_SMART_EDITOR
 			-- Attempts to retrieve the most applicable editor for a given class.
 			--
 			-- `a_class': The class to retrieve the most applicable editor for.
@@ -214,7 +214,7 @@ feature {NONE} -- Query
 			result_is_editable: Result /= Void implies (not Result.is_read_only and then Result.allow_edition)
 		end
 
-	active_editors_for_class (a_class: !CLASS_I): !DS_ARRAYED_LIST [EB_SMART_EDITOR]
+	active_editors_for_class (a_class: attached CLASS_I): attached DS_ARRAYED_LIST [EB_SMART_EDITOR]
 			-- Retrieves all applicable editors for a given class.
 			--
 			-- `a_class': The class to retrieve the most applicable editors for.
@@ -231,7 +231,7 @@ feature {NONE} -- Query
 
 			l_windows := window_manager.windows
 			from l_windows.start until l_windows.after loop
-				if {l_dev_window: EB_DEVELOPMENT_WINDOW} l_windows.item_for_iteration then
+				if attached {EB_DEVELOPMENT_WINDOW} l_windows.item_for_iteration as l_dev_window then
 					l_editor_manager := l_dev_window.editors_manager
 					if l_editor_manager /= Void then
 						l_editors := l_editor_manager.editor_editing (a_class)
@@ -264,13 +264,13 @@ feature {NONE} -- Query
 
 feature {NONE} -- Helpers
 
-	frozen logger: !SERVICE_CONSUMER [LOGGER_S]
+	frozen logger: attached SERVICE_CONSUMER [LOGGER_S]
 			-- Access to logger service.
 		once
 			create Result
 		end
 
-	encoding_converter: !EC_ENCODING_CONVERTER
+	encoding_converter: attached EC_ENCODING_CONVERTER
 			-- Access to the encoding coverter for unicode conversions.
 		once
 			create Result
@@ -306,13 +306,14 @@ feature -- Basic operations
 			l_editor: EB_SMART_EDITOR
 			l_recent_editor: EB_SMART_EDITOR
 			l_text: SMART_TEXT
-			l_new_text: ?STRING_32
+			l_new_text: detachable STRING_32
 			l_first_line: INTEGER
 			l_line: INTEGER
 			l_col: INTEGER
 			l_line_count: INTEGER
 			l_cursor: EIFFEL_EDITOR_CURSOR
 			l_set_in_editor: BOOLEAN
+			l_was_modified: BOOLEAN
 			l_save: EB_SAVE_FILE
 		do
 			check
@@ -322,15 +323,32 @@ feature -- Basic operations
 
 			l_editors := active_editors_for_class (context_class)
 			if not l_editors.is_empty then
-					-- There are editors available, attempt to set to the active editor(s).
-				from l_editors.start until l_editors.after or l_recent_editor /= Void loop
+				from l_editors.start until l_editors.after loop
 					l_editor := l_editors.item_for_iteration
-					if l_editor.is_editable and then l_editor.text_is_fully_loaded and then l_editor.text_displayed.is_modified then
-							-- There is an editor that has been modified, make this the most recent.
-						l_recent_editor := l_editor
-					else
-						l_editors.forth
+						-- We don't use `l_editor.is_editable', because we simply load text in the editor later
+						-- `text_displayed.text_being_processed' is not a matter.
+						-- Doing this make it possible to use more than one modifiers in one procedure.
+						-- Or `text_displayed.text_being_processed' is possible set with `True' (text loading is pending on idle),
+						-- Hence the second modifier can not applied to current editor.
+					if not l_editor.is_read_only and then l_editor.allow_edition then
+							-- Fetch position information.
+						l_text := l_editor.text_displayed
+						if l_text /= Void then
+							l_was_modified := l_was_modified or else l_text.is_modified
+							if l_was_modified and then l_editor.is_editable then
+									-- This editor was modified so make it the most recent editor
+								if l_recent_editor /= Void then
+									if l_recent_editor.dev_window.window.has_focus then
+											-- There was another modified editor but this one has focus, use it.
+										l_recent_editor := l_editor
+									end
+								else
+									l_recent_editor := l_editor
+								end
+							end
+						end
 					end
+					l_editors.forth
 				end
 
 				from l_editors.start until l_editors.after loop
@@ -352,10 +370,8 @@ feature -- Basic operations
 							-- Set text, always using a merge.
 						l_new_text := merge_text (l_text.wide_text)
 						if l_new_text /= Void then
-							l_editor.no_save_before_next_load
-
 								-- Set text to `modified_data' for use in `prepare'
-							if l_recent_editor = l_editor then
+							if l_recent_editor ~ l_editor then
 									-- Set modified data text to the most recent editor
 								modified_data.text := l_new_text
 							elseif l_recent_editor = Void and then l_editors.is_last then
@@ -388,7 +404,8 @@ feature -- Basic operations
 				end
 			end
 
-			if not l_set_in_editor then
+			if not l_set_in_editor or not l_was_modified then
+					-- Save only if the text wasn't set in the editor or the editor was not modified before applying the modifications.
 				if (create {RAW_FILE}.make (context_class.file_name)).exists and then original_file_date /= context_class.file_date then
 						-- Need to use merge
 					l_new_text := context_class.text.as_attached
@@ -413,6 +430,22 @@ feature -- Basic operations
 							-- Log change
 						logger.service.put_message_format ("Modified class {1} using {2} on disk.", [context_class.name, generating_type], {ENVIRONMENT_CATEGORIES}.editor)
 					end
+				end
+			end
+
+			if not l_was_modified and then not l_editors.is_empty then
+					-- There were no pre-modifications made in the editors and there are open editors for the class.
+					-- Because there was a save operation we need to update the time stamps.
+				from l_editors.start until l_editors.after loop
+					l_editor := l_editors.item_for_iteration
+					l_text := l_editor.text_displayed
+					if l_text /= Void then
+							-- Reset the changed status to prevent automatic reloads.
+						l_text.set_changed (False, False)
+					else
+						check False end
+					end
+					l_editors.forth
 				end
 			end
 
@@ -450,7 +483,7 @@ feature -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	merge_text (a_current_text: STRING_32): ?like text
+	merge_text (a_current_text: STRING_32): detachable like text
 			-- Retrieves the merged text, using a modified source as the base.
 			--
 			-- `a_current_text': The text currently found on disk or in an editor.
@@ -542,7 +575,7 @@ feature -- Batch processing
 			not_is_dirty: not is_dirty
 		end
 
-	execute_batch_modifications (a_action: !PROCEDURE [ANY, TUPLE]; a_prepare: BOOLEAN; a_commit: BOOLEAN)
+	execute_batch_modifications (a_action: attached PROCEDURE [ANY, TUPLE]; a_prepare: BOOLEAN; a_commit: BOOLEAN)
 			-- Performs modifications in deferred-commit mode.
 			--
 			-- `a_action': Action to call during batch modifications.
@@ -564,7 +597,7 @@ feature -- Batch processing
 
 feature -- Modifications (positional)
 
-	insert_code (a_pos: INTEGER; a_code: ?STRING_GENERAL)
+	insert_code (a_pos: INTEGER; a_code: detachable STRING_GENERAL)
 			-- Inserts code at a given position.
 			--
 			-- `a_pos': Original position, in characters to insert code into.
@@ -576,7 +609,7 @@ feature -- Modifications (positional)
 			a_code_attached: a_code /= Void
 			not_a_code_is_empty: not a_code.is_empty
 		local
-			l_data: !like modified_data
+			l_data: attached like modified_data
 			l_pos: INTEGER
 		do
 			l_data := modified_data
@@ -589,7 +622,7 @@ feature -- Modifications (positional)
 			is_dirty: is_dirty
 		end
 
-	replace_code (a_start_pos: INTEGER; a_end_pos: INTEGER; a_code: ?STRING_GENERAL)
+	replace_code (a_start_pos: INTEGER; a_end_pos: INTEGER; a_code: detachable STRING_GENERAL)
 			-- Replaces a region of code at a given position.
 			--
 			-- `a_start_pos': Original position, in characters to start the code replacement.
@@ -605,7 +638,7 @@ feature -- Modifications (positional)
 			a_code_attached: a_code /= Void
 			not_a_code_is_empty: not a_code.is_empty
 		local
-			l_data: !like modified_data
+			l_data: attached like modified_data
 			l_start_pos: INTEGER
 			l_end_pos: INTEGER
 		do
@@ -633,7 +666,7 @@ feature -- Modifications (positional)
 			a_end_pos_big_enough: a_end_pos > a_start_pos
 			a_end_pos_small_enough: a_start_pos <= original_text.count
 		local
-			l_data: !like modified_data
+			l_data: attached like modified_data
 			l_start_pos: INTEGER
 			l_end_pos: INTEGER
 		do
@@ -655,13 +688,13 @@ feature {NONE} -- Factory
 		require
 			is_interface_usable: is_interface_usable
 		local
-			l_class: !like context_class
+			l_class: attached like context_class
 			l_editor: like active_editor_for_class
-			l_text: !STRING_32
+			l_text: attached STRING_32
 		do
 			l_class := context_class
 			l_editor := active_editor_for_class (l_class)
-			if l_editor = Void then
+			if l_editor = Void or else not is_editor_text_ready (l_editor) then
 					-- There's no open editor, use the class text from disk instead.
 				l_text := original_text
 			else
@@ -670,7 +703,7 @@ feature {NONE} -- Factory
 			create Result.make (l_class, l_text)
 		end
 
-;indexing
+;note
 	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Implementation of {TEST_CREATOR_I} creating manual test classes.
 	]"
@@ -22,6 +22,11 @@ inherit
 create
 	make
 
+feature {TEST_PROCESSOR_SCHEDULER_I} -- Status report
+
+	sleep_time: NATURAL = 0
+			-- <Precursor>
+
 feature {NONE} -- Status report
 
 	is_creating_new_class: BOOLEAN
@@ -41,12 +46,8 @@ feature {NONE} -- Basic operations
 			is_finished := True
 		end
 
-	print_new_class (a_file: !KL_TEXT_OUTPUT_FILE; a_class_name: !STRING)
+	print_new_class (a_file: attached KL_TEXT_OUTPUT_FILE; a_class_name: attached STRING)
 			-- Create test routine in new class
-		local
-			l_group: CONF_CLUSTER
-			l_name, l_fname, l_path: !STRING
-			l_file: RAW_FILE
 		do
 			a_file.close
 			render_class_text (a_file.name)
@@ -88,25 +89,24 @@ feature {NONE} -- Basic operations
 			retry
 		end
 
-	template_parameters: DS_HASH_TABLE [!STRING, !STRING]
+	template_parameters: DS_HASH_TABLE [attached STRING, attached STRING]
 			-- Template parameters for creating actual class text from template file.
 		local
-			l_redefine, l_body, l_indexing: !STRING
-			l_cursor: DS_LINEAR_CURSOR [!STRING]
+			l_redefine, l_body, l_indexing, l_name: STRING
+			l_cursor: DS_LINEAR_CURSOR [attached STRING]
 			l_count: INTEGER
-			l_tags: !DS_LINEAR [!STRING]
+			l_tags: attached DS_LINEAR [attached STRING]
 		do
 			create Result.make_default
-			if configuration.cluster.options.syntax_level.item = {CONF_OPTION}.syntax_level_obsolete then
+			if configuration.cluster.options.syntax.index = {CONF_OPTION}.syntax_index_obsolete then
 					-- Use old syntax
 				Result.force_last ({EIFFEL_KEYWORD_CONSTANTS}.indexing_keyword, v_note_keyword)
 			else
 					-- Use new syntax
 				Result.force_last ({EIFFEL_KEYWORD_CONSTANTS}.note_keyword, v_note_keyword)
 			end
-			if {l_class_name: !STRING} configuration.new_class_name then
-				Result.force_last (l_class_name, v_class_name)
-			end
+			l_name := configuration.new_class_name
+			Result.force_last (l_name, v_class_name)
 			if False then--configuration.is_system_level_test then
 					-- TODO: switch to system level tests
 				Result.force_last (test_set_ancestor, v_test_set_ancestor)
@@ -186,21 +186,52 @@ feature {NONE} -- Constants
 	w_wizard_service_not_available: STRING = "Could not generate class text because wizard service not available."
 	w_template_file: STRING = "Template file $1 does not exists."
 
-	v_note_keyword: !STRING = "NOTE_KEYWORD"
-	v_class_name: !STRING = "CLASS_NAME"
-	v_test_set_ancestor: !STRING = "TEST_SET_ANCESTOR"
-	v_redefine_events: !STRING = "REDEFINE_EVENTS"
-	v_test_name: !STRING = "TEST_NAME"
-	v_indexing: !STRING = "INDEXING"
+	v_note_keyword: attached STRING = "NOTE_KEYWORD"
+	v_class_name: attached STRING = "CLASS_NAME"
+	v_test_set_ancestor: attached STRING = "TEST_SET_ANCESTOR"
+	v_redefine_events: attached STRING = "REDEFINE_EVENTS"
+	v_test_name: attached STRING = "TEST_NAME"
+	v_indexing: attached STRING = "INDEXING"
 
-	test_set_ancestor: !STRING
+	test_set_ancestor: attached STRING
 		do
 			Result := {TEST_CONSTANTS}.common_test_class_ancestor_name
 		end
 
-	system_level_test_ancestor: !STRING
+	system_level_test_ancestor: attached STRING
 		do
 			Result := {TEST_CONSTANTS}.system_level_test_ancestor_name
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

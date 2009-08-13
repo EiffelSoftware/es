@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"An unix stream socket."
@@ -15,19 +15,15 @@ class
 inherit
 
 	STREAM_SOCKET
-		rename
-			address as old_socket_address,
-			cleanup as old_socket_cleanup,
-			name as old_socket_name
+		undefine
+			address_type,
+			cleanup,
+			name
 		end
 
 	UNIX_SOCKET
 		undefine
 			support_storable
-		select
-			address,
-			cleanup,
-			name
 		end
 
 create {UNIX_STREAM_SOCKET}
@@ -40,39 +36,90 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Make an unix socket stream.
 		do
 			c_reset_error
 			family := af_unix;
-			type := sock_stream;			
+			type := sock_stream;
 			make_socket
 		end;
 
-	make_client (a_peer: STRING) is
+	make_client (a_peer: STRING)
 			-- Create an unix stream client socket with peer
 			-- address set to `a_peer'.
 		require
 			valid_path: a_peer /= Void
+		local
+			l_peer_address: like peer_address
 		do
-			make;
-			create peer_address.make;
-			peer_address.set_path (a_peer.twin)
+			make
+			create l_peer_address.make
+			peer_address := l_peer_address
+			l_peer_address.set_path (a_peer.twin)
 		end;
 
-	make_server (a_name: STRING) is
+	make_server (a_name: STRING)
 			-- Create an unix stream server socket bound to local
 			-- address `a_name'.
 		require
 			valid_path: a_name /= Void and then not a_name.is_empty
+		local
+			l_address: like address
 		do
 			make;
-			create address.make;
-			address.set_path (a_name.twin);
+			create l_address.make
+			address := l_address
+			l_address.set_path (a_name.twin);
 			bind
 		end
 
-indexing
+feature
+
+	listen (queue: INTEGER)
+			-- Listen on socket for at most `queue' connections.
+		do
+			c_listen (descriptor, queue)
+		end
+
+	accept
+			-- Accept a new connection on listen socket.
+			-- Accepted service socket available in `accepted'.
+		local
+			pass_address: like address;
+			l_accepted: like accepted
+			return: INTEGER;
+		do
+			pass_address := address
+				-- Per inherited precondition
+			check pass_address_attached: pass_address /= Void end
+			pass_address := pass_address.twin
+			return := c_accept (descriptor, pass_address.socket_address.item, pass_address.count);
+			if return > 0 then
+				create l_accepted.create_from_descriptor (return);
+				accepted := l_accepted
+				l_accepted.set_peer_address (pass_address)
+			else
+				accepted := Void
+			end
+		end
+
+feature {NONE} -- Externals
+
+	c_accept (soc: INTEGER; addr: POINTER; length: INTEGER): INTEGER
+			-- External c routine to accept a socket connection
+		external
+			"C blocking"
+		end;
+
+	c_listen (soc, backlog: INTEGER)
+			-- External c routine to make socket passive and accept
+			-- at most `backlog' number of pending connections
+		external
+			"C blocking"
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that do something speciall on different operation systems"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,22 +11,31 @@ deferred class
 
 feature -- Command
 
-	before_enable_capture is
+	before_enable_capture
 			-- Do something before enable capture
 		deferred
 		end
 
-	after_disable_capture is
+	after_disable_capture
 			-- Do something after disable capture
 		deferred
 		end
 
-	is_remote_desktop: BOOLEAN is
+	is_remote_desktop: BOOLEAN
 			-- If current running in remote desktop?
 		deferred
 		end
 
-indexing
+	clear_background_for_theme (a_widget: EV_DRAWING_AREA; a_rect: EV_RECTANGLE)
+			-- Clear background
+			-- This feature will set background to theme background color/pixmap
+		require
+			a_widget_not_void: a_widget /= Void
+			a_rect_not_void: a_rect /= Void
+		deferred
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

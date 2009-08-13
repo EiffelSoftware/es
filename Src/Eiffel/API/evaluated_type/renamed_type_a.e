@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Encapsulates a renaming of features together with a type.
 		
@@ -21,7 +21,7 @@ inherit
 	TYPE_A
 		redefine
 			renaming, is_renamed_type, has_renaming, instantiated_in,
-			instantiation_in, has_associated_class,
+			instantiation_in, has_associated_class, formal_instantiation_in,
 			to_type_set, conformance_type, actual_type
 		end
 
@@ -30,7 +30,7 @@ create
 
 feature -- Initialization
 
-	make (a_type: like type; a_renaming: like renaming) is
+	make (a_type: like type; a_renaming: like renaming)
 			-- Initialize
 		require
 			a_type_not_void: a_type /= Void
@@ -46,7 +46,7 @@ feature -- Initialization
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 		do
 			Result := type.hash_code
 		end
@@ -65,23 +65,23 @@ feature -- Access
 
 feature -- Access
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 			-- Class associated to the current type.		
 		do
 			Result := type.associated_class
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	conform_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
 			-- Does Current conform to `other' ?		
 		do
-			Result := type.conform_to (other)
+			Result := type.conform_to (a_context_class, other)
 		end
 
 	--| Martins 1/23/07: instantiation*
 	--| Should we return RENAMED_TYPE_A [TYPE_A]?
 	--| Currently there seems no need for it and it might most likeley introduce bugs.
 
-	instantiated_in (a_class_type: TYPE_A): TYPE_A is
+	instantiated_in (a_class_type: TYPE_A): TYPE_A
 			-- Instantiation of Current in the context of `class_type'
 			-- assuming that Current is written in the associated class
 			-- of `class_type'.
@@ -89,14 +89,20 @@ feature -- Access
 			Result := type.instantiated_in (a_class_type)
 		end
 
-	instantiation_in (a_type: TYPE_A; a_written_id: INTEGER): TYPE_A is
+	formal_instantiation_in (a_type: TYPE_A; constraint: TYPE_A; written_id: INTEGER): TYPE_A
+			-- <Precursor>
+		do
+			Result := type.formal_instantiation_in (a_type, constraint, written_id)
+		end
+
+	instantiation_in (a_type: TYPE_A; a_written_id: INTEGER): TYPE_A
 			-- Instantiation of Current in the context of `class_type'
 			-- assuming that Current is written in the class of id `written_id'.
 		do
 			Result := type.instantiation_in (a_type, a_written_id)
 		end
 
-	create_info: CREATE_INFO is
+	create_info: CREATE_INFO
 			-- Byte code information for entity type creation
 		do
 			Result := type.create_info
@@ -125,7 +131,7 @@ feature -- Setters
 			type_set: type = a_type
 		end
 
-	set_renaming (a_renaming: RENAMING_A) is
+	set_renaming (a_renaming: RENAMING_A)
 			-- Set `renaming' to `a_renaming'
 		do
 			renaming := a_renaming
@@ -135,7 +141,7 @@ feature -- Setters
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := type.is_equivalent (other.type)
@@ -143,7 +149,7 @@ feature -- Comparison
 
 feature -- Visitor
 
-	process (v: TYPE_A_VISITOR) is
+	process (v: TYPE_A_VISITOR)
 			-- Process current element.
 		do
 			v.process_renamed_type_a (Current)
@@ -157,20 +163,20 @@ feature -- Status
 			Result := type.has_associated_class
 		end
 
-	has_renaming: BOOLEAN is
+	has_renaming: BOOLEAN
 			-- Does current type have renamed features?
 			-- This can occur in code like: "G -> A rename a as b end"
 		do
 			Result := renaming /= Void and then not renaming.is_empty
 		end
 
-	is_renamed_type: BOOLEAN is True
+	is_renamed_type: BOOLEAN = True
 		-- Is current an instance of RENAMED_TYPE_A [TYPE_A]?
 		-- An renamed type has the ability to carry a feature renaming.
 
 feature -- Output
 
-	ext_append_to (a_text_formatter: TEXT_FORMATTER; c: CLASS_C) is
+	ext_append_to (a_text_formatter: TEXT_FORMATTER; c: CLASS_C)
 			-- Append `Current' to `text'.
 			-- `f' is used to retreive the generic type or argument name as string.
 			-- This replaces the old "G#2" or "arg#1" texts in feature signature views.
@@ -188,7 +194,7 @@ feature -- Output
 
 		end
 
-	dump: STRING is
+	dump: STRING
 			-- Dumped trace
 		do
 			Result := type.dump
@@ -203,8 +209,8 @@ invariant
 	type_is_not_a_type_set: not type.is_type_set
 	no_nested_renamed_types: not type.is_renamed_type
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

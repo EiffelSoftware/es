@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tree enabled Grid representing the features of the class currently opened"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -87,7 +87,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_features_tool: like features_tool; clickable: BOOLEAN) is
+	make (a_features_tool: like features_tool; clickable: BOOLEAN)
 			-- Initialization: build the widget and the tree.
 		do
 			is_clickable := clickable
@@ -123,7 +123,7 @@ feature -- Status report
 			-- Is the class corresponding to the item loaded in the tool when
 			-- the user left-click on it.
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is current empty ?
 		do
 			Result := row_count = 0
@@ -187,7 +187,7 @@ feature -- Basic operations
 			recursive_do_all (agent update_row)
 		end
 
-	recursive_do_all (ag: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]]) is
+	recursive_do_all (ag: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
 			-- Recursively call `ag' on each row
 		local
 			r,n: INTEGER
@@ -205,7 +205,7 @@ feature -- Basic operations
 
 feature -- Basic operations
 
-	nagivate_to_feature (a_feature: !E_FEATURE)
+	nagivate_to_feature (a_feature: attached E_FEATURE)
 			-- Navigates to a feature in using a default view.
 			--
 			-- `a_feature': A feature to navigate to.
@@ -214,11 +214,11 @@ feature -- Basic operations
 		do
 			l_window := features_tool.develop_window
 			l_window.set_feature_locating (True)
-			l_window.set_stone (create {!FEATURE_STONE}.make (a_feature))
+			l_window.set_stone (create {attached FEATURE_STONE}.make (a_feature))
 			l_window.set_feature_locating (False)
 		end
 
-	nagivate_to_feature_by_name (a_feature: !STRING) is
+	nagivate_to_feature_by_name (a_feature: attached STRING)
 			-- Navigates to a feature in using a default view.
 			--
 			-- `a_feature': A feature name used to navigate to a feature.
@@ -228,15 +228,15 @@ feature -- Basic operations
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			l_window := features_tool.develop_window
-			if {l_editor: EB_SMART_EDITOR} l_window.editors_manager.current_editor then
-				if {l_formatter: EB_BASIC_TEXT_FORMATTER} l_window.pos_container then
+			if attached {EB_SMART_EDITOR} l_window.editors_manager.current_editor as l_editor then
+				if attached {EB_BASIC_TEXT_FORMATTER} l_window.pos_container as l_formatter then
 					l_window.managed_main_formatters.first.execute
 				end
 				l_editor.find_feature_named (a_feature)
 			end
 		end
 
-	nagivate_to_feature_clause (a_clause: !FEATURE_CLAUSE_AS; a_focus: BOOLEAN)
+	nagivate_to_feature_clause (a_clause: attached FEATURE_CLAUSE_AS; a_focus: BOOLEAN)
 			-- Navigates to a feature clause in the default view.
 			--
 			-- `a_clause': The feature clause to navigate too.
@@ -250,15 +250,15 @@ feature -- Basic operations
 				a_clause_is_valid: a_clause.start_position > 0
 			end
 			l_window := features_tool.develop_window
-			if {l_editor: EB_SMART_EDITOR} l_window.editors_manager.current_editor then
-				if {l_class: CLASS_I} last_class then
+			if attached {EB_SMART_EDITOR} l_window.editors_manager.current_editor as l_editor then
+				if attached {CLASS_I} last_class as l_class then
 					l_text := l_class.text
 				end
 				if l_text = Void then
 					l_text := l_editor.wide_text
 				end
 
-				if l_text /= Void and then {l_formatter: EB_BASIC_TEXT_FORMATTER} l_window.pos_container then
+				if l_text /= Void and then attached {EB_BASIC_TEXT_FORMATTER} l_window.pos_container as l_formatter then
 						-- Ensure we are in edit mode in the editor.
 
 						-- Fetch line number
@@ -283,19 +283,19 @@ feature -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	update_row (a_row: EV_GRID_ROW) is
+	update_row (a_row: EV_GRID_ROW)
 			-- Update node alias name and signature
 		require
 			a_row_attached: a_row /= Void
 		do
 			if a_row.count > 0 then
-				if {l_ef: E_FEATURE} data_from_row (a_row) then
+				if attached {E_FEATURE} data_from_row (a_row) as l_ef then
 					update_tree_item_for_e_feature (a_row, l_ef)
 				end
 			end
 		end
 
-	data_from_row (a_row: EV_GRID_ROW): ANY is
+	data_from_row (a_row: EV_GRID_ROW): ANY
 			-- Data related to `a_row'
 		do
 			if a_row /= Void then
@@ -308,7 +308,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	data_from_item (a_item: EV_GRID_ITEM): ANY is
+	data_from_item (a_item: EV_GRID_ITEM): ANY
 			-- Data related to `a_item'
 		do
 			if a_item /= Void then
@@ -318,7 +318,7 @@ feature {NONE} -- Basic operations
 
 feature -- Tree construction
 
-	ensure_first_row_visible is
+	ensure_first_row_visible
 			-- Ensure first row is visible (if any)
 		do
 			if row_count > 0 then
@@ -326,7 +326,7 @@ feature -- Tree construction
 			end
 		end
 
-	retrieve_row_recursively_by_data (a_data: ANY; a_compare_object: BOOLEAN): EV_GRID_ROW is
+	retrieve_row_recursively_by_data (a_data: ANY; a_compare_object: BOOLEAN): EV_GRID_ROW
 		require
 			a_data_not_void: a_data /= Void
 		local
@@ -352,7 +352,7 @@ feature -- Tree construction
 			end
 		end
 
-	selected_row: EV_GRID_ROW is
+	selected_row: EV_GRID_ROW
 			-- Selected row
 		local
 			lst: like  selected_rows
@@ -363,14 +363,14 @@ feature -- Tree construction
 			end
 		end
 
-	extend_item (a_grid_item: EV_GRID_ITEM) is
+	extend_item (a_grid_item: EV_GRID_ITEM)
 			-- Extend `a_grid_item' to Current grid
 			-- (in new row)
 		do
 			extended_new_row.set_item (1, a_grid_item)
 		end
 
-	extend_message_item (a_mesg: STRING_GENERAL) is
+	extend_message_item (a_mesg: STRING_GENERAL)
 			-- Extend message `a_mesg' to Current grid
 			-- (in new row)
 		require
@@ -379,13 +379,13 @@ feature -- Tree construction
 			extend_item (create {EV_GRID_LABEL_ITEM}.make_with_text (a_mesg))
 		end
 
-	extend_sub_item	(a_row: EV_GRID_ROW; a_grid_item: EV_GRID_ITEM) is
+	extend_sub_item	(a_row: EV_GRID_ROW; a_grid_item: EV_GRID_ITEM)
 			-- Extend `a_grid_item' in subrow of `a_row'
 		do
 			extended_new_subrow (a_row).set_item (1, a_grid_item)
 		end
 
-	build_tree (fcl: EIFFEL_LIST [FEATURE_CLAUSE_AS]; a_class: CLASS_C) is
+	build_tree (fcl: EIFFEL_LIST [FEATURE_CLAUSE_AS]; a_class: CLASS_C)
 			-- Build the feature tree corresponding to current class.
 		require
 			feature_clause_list_not_void: fcl /= Void
@@ -448,7 +448,7 @@ feature -- Tree construction
 			retry
 		end
 
-	build_tree_for_external (a_class: CLASS_C) is
+	build_tree_for_external (a_class: CLASS_C)
 			-- Build the feature tree corresponding to current .NET class 'a_class'.
 		require
 			a_class_not_void: a_class /= Void
@@ -519,7 +519,7 @@ feature -- Tree construction
 
 feature {NONE} -- Implementation
 
-	feature_name (a_ef: E_FEATURE): STRING is
+	feature_name (a_ef: E_FEATURE): STRING
 			-- Feature name of `a_ef' depending of the signature displayed or not.
 		require
 			a_ef_not_void: a_ef /= Void
@@ -554,20 +554,20 @@ feature {NONE} -- Implementation
 feature {NONE} -- Context menu handler
 
 	on_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA];
-					a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+					a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler for a feature
 		local
 			l_factory: EB_CONTEXT_MENU_FACTORY
 		do
 			if is_clickable then
 				l_factory := features_tool.develop_window.menus.context_menu_factory
-				if {fst: FEATURE_STONE} a_pebble then
-					if {fe: E_FEATURE} fst.e_feature and then fe.is_compiled then
+				if attached {FEATURE_STONE} a_pebble as fst then
+					if attached {E_FEATURE} fst.e_feature as fe and then fe.is_compiled then
 						l_factory.standard_compiler_item_menu (a_menu, a_target_list, a_source, a_pebble)
 					else
 						l_factory.uncompiled_feature_item_menu (a_menu, a_target_list, a_source, a_pebble, fst.feature_name)
 					end
-				elseif {fc: FEATURE_CLAUSE_AS} (data_from_row (selected_row)) then
+				elseif attached {FEATURE_CLAUSE_AS} (data_from_row (selected_row)) as fc then
 					l_factory.feature_clause_item_menu (a_menu, a_target_list, a_source, a_pebble, fc)
 				end
 			end
@@ -575,13 +575,13 @@ feature {NONE} -- Context menu handler
 
 feature {NONE} -- Event handler
 
-	on_item_right_clicked (ax,ay, ab: INTEGER; a_item: EV_GRID_ITEM) is
+	on_item_right_clicked (ax,ay, ab: INTEGER; a_item: EV_GRID_ITEM)
 			-- Action to process when Ctrl+Right click in raise
 		local
 			st: FEATURE_STONE
 		do
 			if ab = {EV_POINTER_CONSTANTS}.right and ev_application.ctrl_pressed then
-				if a_item /= Void and then {fe: E_FEATURE} data_from_item (a_item) then
+				if a_item /= Void and then attached {E_FEATURE} data_from_item (a_item) as fe then
 					create st.make (fe)
 					if st.is_valid then
 						(create {EB_CONTROL_PICK_HANDLER}).launch_stone (st)
@@ -590,49 +590,49 @@ feature {NONE} -- Event handler
 			end
 		end
 
-	evs_on_pebble_function (a_item: EV_GRID_ITEM; a_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT) is
+	evs_on_pebble_function (a_item: EV_GRID_ITEM; a_orignal_pointer_position: EV_COORDINATE; a_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT)
 		local
 			l_pebble: ANY
 		do
 			l_pebble := on_pebble_function (a_item)
 			if l_pebble = Void then
-				Precursor {EB_EDITOR_TOKEN_GRID_SUPPORT} (a_item, a_grid_support)
+				Precursor {EB_EDITOR_TOKEN_GRID_SUPPORT} (a_item, a_orignal_pointer_position, a_grid_support)
 			end
 		end
 
-	on_pebble_function (a_item: EV_GRID_ITEM): ANY is
+	on_pebble_function (a_item: EV_GRID_ITEM): ANY
 			-- Pebble associated with `a_item'
 		local
 			d: like data_from_item
 		do
 			if not ev_application.ctrl_pressed then
-				if {gf: EB_GRID_EDITOR_TOKEN_ITEM} a_item then
+				if attached {EB_GRID_EDITOR_TOKEN_ITEM} a_item as gf then
 				else
 					d := data_from_item (a_item)
-					if {ef: E_FEATURE} d  then
+					if attached {E_FEATURE} d as ef  then
 						create {FEATURE_STONE} Result.make (ef)
 					end
 				end
 			end
 		end
 
-	on_item_accept_cursor_function (a_item: EV_GRID_ITEM): EV_POINTER_STYLE is
+	on_item_accept_cursor_function (a_item: EV_GRID_ITEM): EV_POINTER_STYLE
 			-- Accept cursor computing
 		do
-			if {st: STONE} on_pebble_function (a_item) then
+			if attached {STONE} on_pebble_function (a_item) as st then
 				Result := st.stone_cursor
 			end
 		end
 
-	on_item_deny_cursor_function (a_item: EV_GRID_ITEM): EV_POINTER_STYLE is
+	on_item_deny_cursor_function (a_item: EV_GRID_ITEM): EV_POINTER_STYLE
 			-- Deny cursor computing
 		do
-			if {st: STONE} on_pebble_function (a_item) then
+			if attached {STONE} on_pebble_function (a_item) as st then
 				Result := st.X_stone_cursor
 			end
 		end
 
-	on_key_pushed (a_key: EV_KEY) is
+	on_key_pushed (a_key: EV_KEY)
 			-- If `a_key' is enter, set a stone in the development window.
 		require
 			a_key_not_void: a_key /= Void
@@ -641,13 +641,13 @@ feature {NONE} -- Event handler
 		do
 				-- When features grid is created, there is no element and therefore
 				-- no selected items.
-			if {l_row: EV_GRID_ROW} selected_row then
+			if attached {EV_GRID_ROW} selected_row as l_row then
 				l_data := data_from_row (l_row)
 			end
 			if a_key.code = {EV_KEY_CONSTANTS}.Key_enter and then l_data /= Void then
-				if {l_feature: E_FEATURE} l_data then
+				if attached {E_FEATURE} l_data as l_feature then
 					nagivate_to_feature (l_feature)
-				elseif {l_clause: FEATURE_CLAUSE_AS} l_data then
+				elseif attached {FEATURE_CLAUSE_AS} l_data as l_clause then
 					nagivate_to_feature_clause (l_clause, True)
 				end
 			end
@@ -655,14 +655,14 @@ feature {NONE} -- Event handler
 
 	button_go_to (ef: E_FEATURE; a_x: INTEGER; a_y: INTEGER; a_button: INTEGER
 						 a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE
-						 a_screen_x: INTEGER; a_screen_y: INTEGER) is
+						 a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Target `features_tool' to `ef'.
 		require
 			ef_not_void: ef /= Void
 		local
 			l_stone: FEATURE_STONE
 		do
-			if {l_ef: E_FEATURE} ef then
+			if attached {E_FEATURE} ef as l_ef then
 				if a_button = 1 then
 					nagivate_to_feature (l_ef)
 				elseif a_button = 3 then
@@ -678,17 +678,17 @@ feature {NONE} -- Event handler
 
 	button_go_to_clause (fclause: FEATURE_CLAUSE_AS; a_x: INTEGER; a_y: INTEGER; a_button: INTEGER
 						 a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE
-						 a_screen_x: INTEGER; a_screen_y: INTEGER) is
+						 a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Target `features_tool' to `fclause'.
 		require
 			fclause_not_void: fclause /= Void
 		do
-			if a_button = 1 and {l_clause: FEATURE_CLAUSE_AS} fclause then
+			if a_button = 1 and attached {FEATURE_CLAUSE_AS} fclause as l_clause then
 				nagivate_to_feature_clause (l_clause, False)
 			end
 		end
 
-	extended_folder_row (fc: FEATURE_CLAUSE_AS; n: STRING_GENERAL; a_class: CLASS_C): EV_GRID_ROW is
+	extended_folder_row (fc: FEATURE_CLAUSE_AS; n: STRING_GENERAL; a_class: CLASS_C): EV_GRID_ROW
 			-- Build the grid row corresponding to feature clause named `n'.
 		require
 			fc_not_void: fc /= Void
@@ -761,7 +761,7 @@ feature {NONE} -- Event handler
 			end
 		end
 
-	extended_folder_row_for_external (n: STRING_GENERAL; fl: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]; a_class: CLASS_C): EV_GRID_ROW is
+	extended_folder_row_for_external (n: STRING_GENERAL; fl: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]; a_class: CLASS_C): EV_GRID_ROW
 			-- Build the tree node corresponding to feature clause named `n'.
 		require
 			fl_not_void: fl /= Void
@@ -824,7 +824,7 @@ feature {NONE} -- Event handler
 
 feature {NONE} -- Tree item factory
 
-	Grid_feature_style: EB_FEATURE_EDITOR_TOKEN_STYLE is
+	Grid_feature_style: EB_FEATURE_EDITOR_TOKEN_STYLE
 			-- Feature style to generate editor token informaton of feature
 		once
 			create Result
@@ -838,7 +838,7 @@ feature {NONE} -- Tree item factory
 			result_attached: Result /= Void
 		end
 
-	add_tree_item_for_text (a_row: EV_GRID_ROW; a_text: STRING_GENERAL) is
+	add_tree_item_for_text (a_row: EV_GRID_ROW; a_text: STRING_GENERAL)
 		local
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -846,7 +846,7 @@ feature {NONE} -- Tree item factory
 			a_row.set_item (1, lab)
 		end
 
-	update_tree_item_for_e_feature (a_row: EV_GRID_ROW; ef: E_FEATURE) is
+	update_tree_item_for_e_feature (a_row: EV_GRID_ROW; ef: E_FEATURE)
 			--
 		local
 			lab: EV_GRID_LABEL_ITEM
@@ -875,7 +875,7 @@ feature {NONE} -- Tree item factory
 			end
 		end
 
-	editor_token_font_info: TUPLE [f: SPECIAL [EV_FONT]; h: INTEGER] is
+	editor_token_font_info: TUPLE [f: SPECIAL [EV_FONT]; h: INTEGER]
 			-- Info for Editor tokens
 		local
 			esw: EB_SHARED_WRITER
@@ -884,7 +884,7 @@ feature {NONE} -- Tree item factory
 			Result := [esw.label_font_table, esw.label_font_height]
 		end
 
-	add_tree_item_for_e_feature (a_row: EV_GRID_ROW; ef: E_FEATURE; pix: EV_PIXMAP) is
+	add_tree_item_for_e_feature (a_row: EV_GRID_ROW; ef: E_FEATURE; pix: EV_PIXMAP)
 		local
 			lab: EV_GRID_LABEL_ITEM
 			l_text: STRING_GENERAL
@@ -918,7 +918,7 @@ feature {NONE} -- Tree item factory
 			a_row.set_item (1, i)
 		end
 
-	add_tree_item_for_feature_name (a_row: EV_GRID_ROW; ffn: STRING; a_text: STRING_GENERAL; pix: EV_PIXMAP) is
+	add_tree_item_for_feature_name (a_row: EV_GRID_ROW; ffn: STRING; a_text: STRING_GENERAL; pix: EV_PIXMAP)
 		local
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -926,14 +926,14 @@ feature {NONE} -- Tree item factory
 			lab.set_pixmap (pix)
 			lab.set_data (a_text)
 			if is_clickable then
-				if {l_feature_name: STRING_8} ffn then
+				if attached {STRING_8} ffn as l_feature_name then
 					lab.pointer_button_press_actions.force_extend (agent nagivate_to_feature_by_name (l_feature_name))
 				end
 			end
 			a_row.set_item (1, lab)
 		end
 
-	add_tree_item_for_feature_clause (a_row: EV_GRID_ROW; fc: FEATURE_CLAUSE_AS; a_text: STRING_GENERAL; pix: EV_PIXMAP) is
+	add_tree_item_for_feature_clause (a_row: EV_GRID_ROW; fc: FEATURE_CLAUSE_AS; a_text: STRING_GENERAL; pix: EV_PIXMAP)
 		local
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -947,7 +947,7 @@ feature {NONE} -- Tree item factory
 			a_row.set_item (1, lab)
 		end
 
-	add_tree_item_for_dotnet_feature_clause (a_row: EV_GRID_ROW; fd: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]; a_text: STRING_GENERAL; pix: EV_PIXMAP) is
+	add_tree_item_for_dotnet_feature_clause (a_row: EV_GRID_ROW; fd: DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]; a_text: STRING_GENERAL; pix: EV_PIXMAP)
 		local
 			lab: EV_GRID_LABEL_ITEM
 		do
@@ -961,8 +961,8 @@ feature {NONE} -- Tree item factory
 			a_row.set_item (1, lab)
 		end
 
-;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -975,22 +975,22 @@ feature {NONE} -- Tree item factory
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ES_FEATURES_GRID

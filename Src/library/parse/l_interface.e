@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Interface with the Lexical Library classes"
@@ -17,19 +17,23 @@ deferred class L_INTERFACE inherit
 
 feature -- Initialization
 
-	build (doc: INPUT) is
+	build (doc: INPUT)
 			-- Create lexical analyzer and set `doc'
 			-- to be the input document.
 		require
 			document_exists: doc /= Void
+		local
+			l_analyzer: like analyzer
 		do
 			metalex_make;
 			obtain_analyzer;
 			make_analyzer;
-			doc.set_lexical (analyzer)
+			l_analyzer := analyzer
+			check l_analyzer_not_void: l_analyzer /= Void end
+			doc.set_lexical (l_analyzer)
 		end;
 
-	obtain_analyzer is
+	obtain_analyzer
 			-- Build lexical analyzer.
 		deferred
 		ensure
@@ -38,24 +42,28 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-	set_separator_type (type: INTEGER) is
+	set_separator_type (type: INTEGER)
 			-- Make tokens of type `type' to be separators.
+		local
+			l_analyzer: like analyzer
 		do
-			if analyzer = Void then
-				create analyzer.make
+			l_analyzer := analyzer
+			if l_analyzer = Void then
+				create l_analyzer.make
+				analyzer := l_analyzer
 			end;
-			analyzer.set_separator_type (type)
+			l_analyzer.set_separator_type (type)
 		end;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

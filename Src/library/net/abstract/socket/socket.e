@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Generic sockets"
@@ -8,13 +8,16 @@ indexing
 	date: "$Date$";
 	revision: "$Revision$"
 
-class
+deferred class
 
 	SOCKET
 
 inherit
 
 	SOCKET_RESOURCES
+		redefine
+			socket_ok, error
+		end
 
 	IO_MEDIUM
 		rename
@@ -32,71 +35,60 @@ inherit
 			{NONE} all
 		end
 
-create {SOCKET}
-
-	create_from_descriptor
-
-feature -- Initialization
-
-	create_from_descriptor (fd: INTEGER) is
-			-- Create socket from descriptor `fd'.
-		local
-			retried: BOOLEAN
-		do
-			if not retried then
-				descriptor := fd;
-				create address.make;
-				c_sock_name (descriptor, address.socket_address.item, address.count);
-				family := address.family;
-				descriptor_available := True;
-				is_open_read := True;
-				is_open_write := True
-			end
-		ensure
-			family_valid: family = address.family;
-			opened_all: is_open_write and is_open_read
-		rescue
-			if not assertion_violation then
-				is_open_read := False
-				is_open_write := False
-				retried := True
-				retry
-			end
-		end;
-
 feature -- Access
 
-	retrieved: ANY is
+	retrieved: ANY
 			-- Retrieved object structure
 			-- To access resulting object under correct type,
 			-- use assignment attempt.
 			-- Will raise an exception (code `Retrieve_exception')
 			-- if content is not a stored Eiffel structure.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
-			support_storable: support_storable
 		local
-			was_blocking: BOOLEAN
+			was_not_blocking: BOOLEAN
 		do
 			(create {MISMATCH_CORRECTOR}).mismatch_information.do_nothing
-			was_blocking := is_blocking
-			set_blocking
+			if not is_blocking then
+				was_not_blocking := True
+				set_blocking
+			end
 			Result := eif_net_retrieved (descriptor)
-			if not was_blocking then
+			if was_not_blocking then
 				set_non_blocking
 			end
 		end
 
 feature -- Status report
 
-	support_storable: BOOLEAN is
+	was_error: BOOLEAN
+			-- Indicates that there was an error during the last operation
+
+	socket_ok: BOOLEAN
+			-- No error
+		do
+			Result := Precursor and then not was_error
+		end
+
+	error: STRING
+			-- Output a related error message.
+		local
+			l_error: detachable STRING
+		do
+			if was_error then
+				l_error := socket_error
+				check l_error_attached: l_error /= Void end
+				Result := l_error
+			else
+				Result := Precursor
+			end
+		end
+
+	support_storable: BOOLEAN
 			-- Can medium be used to store an Eiffel structure?
 		do
 			Result := False
 		end
 
-	is_valid_peer_address (addr: SOCKET_ADDRESS): BOOLEAN is
+	is_valid_peer_address (addr: attached like address): BOOLEAN
 			-- Is `addr' a valid peer address?
 		require
 			address_exists: addr /= Void
@@ -104,21 +96,25 @@ feature -- Status report
 			Result := True
 		end
 
+	is_valid_family (addr: attached like address): BOOLEAN
+			-- Is `addr' the same family as Current?
+		require
+			address_exists: addr /= Void
+		do
+			Result := (addr.family = family)
+		end
+
 feature -- Element change
 
-	basic_store (object: ANY) is
+	basic_store (object: ANY)
 			-- Produce an external representation of the
 			-- entire object structure reachable from `object'.
 			-- Retrievable within current system only.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
-			support_storable: support_storable
 		do
 			eif_net_basic_store (descriptor, $object)
-		end;
+		end
 
-	general_store (object: ANY) is
+	general_store (object: ANY)
 			-- Produce an external representation of the
 			-- entire object structure reachable from `object'.
 			-- Retrievable from other systems for same platform
@@ -126,148 +122,111 @@ feature -- Element change
 			--| This feature may use a visible name of a class written
 			--| in the `visible' clause of the Ace file. This makes it
 			--| possible to overcome class name clashes.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
-			support_storable: support_storable
 		do
 			eif_net_general_store (descriptor, $object)
 		end
 
-	independent_store (object: ANY) is
+	independent_store (object: ANY)
 			-- Produce an external representation of the
 			-- entire object structure reachable from `object'.
 			-- Retrievable from other systems for the same or other
 			-- platform (machine architecture).
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
-			support_storable: support_storable
 		do
 			eif_net_independent_store (descriptor, $object)
 		end
 
 feature -- Basic commands
 
-	bind is
+	bind
 			-- Bind socket to local address in `address'.
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			valid_local_address: address /= Void
-		local
-			retried: BOOLEAN
-		do
-			if not retried then
-				c_bind (descriptor, address.socket_address.item, address.count);
-				is_open_read := True
-			end
-		rescue
-			if not assertion_violation then
-				is_open_read := False
-				retried := True
-				retry
-			end
-		end;
+		deferred
+		end
 
-	connect is
+	connect
 			-- Connect socket to peer address.
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			valid_peer_address: peer_address /= Void
-		local
-			retried: BOOLEAN
-		do
-			if not retried then
-				c_connect (descriptor, peer_address.socket_address.item, peer_address.count);
-				is_open_write := True;
-				is_open_read := True
-			end
-		rescue
-			if not assertion_violation then
-				is_open_read := False
-				is_open_write := False
-				retried := True
-				retry
-			end
-		end;
+		deferred
+		end
 
-	make_socket is
+	make_socket
 			-- Create socket descriptor.
 		require
-			valid_family: family >= 0;
-			valid_type: type >= 0;
+			valid_family: family >= 0
+			valid_type: type >= 0
 			valid_protocol: protocol >= 0
-		do
-			descriptor := c_socket (family, type, protocol);
-			if descriptor > -1 then
-				descriptor_available := True;
-				set_blocking
-			end
-		end;
+		deferred
+		end
 
-	cleanup is
+	cleanup
 			-- Cleanup socket.
 		do
 			if exists then
 				close
 			end
-		end;
+		end
 
-	close is
+	close
 			-- Close socket for all context.
-		require else
-			socket_exists: exists
 		do
 			if is_open_read or is_open_write then
-				c_shutdown (descriptor, 2)
+				shutdown
 			end
 			if exists then
 				close_socket
 			end
 		end
 
-	close_socket is
+	close_socket
 			-- Close socket for current context.
 		require
 			socket_exists: exists
-		do
-			c_close_socket (descriptor);
-			descriptor := -2;
-			descriptor_available := False;
-			is_open_read := False;
-			is_open_write := False
+		deferred
 		ensure
 			is_closed: is_closed
 		end
 
-	is_closed: BOOLEAN is
+	is_closed: BOOLEAN
 			-- Is socket closed?
-		do
-			Result := descriptor = -2
-		end;
+		deferred
+		end
 
-	descriptor_available: BOOLEAN;
+	descriptor_available: BOOLEAN
 			-- Is descriptor available?
 
-
-	family: INTEGER;
+	family: INTEGER
 			-- Socket family eg. af_inet, af_unix
 
-	protocol: INTEGER;
+	protocol: INTEGER
 			-- Protocol of the socket. default 0
 			-- means for the system to chose the default
 			-- protocol for the family chosen. eg. `udp', `tcp'.
 
-	type: INTEGER;
+	type: INTEGER
 			-- Type of socket. eg stream, datagram
 
-	address: SOCKET_ADDRESS;
+	address: detachable like address_type
 			-- Local address of socket
 
-	peer_address: like address;
+	peer_address: detachable like address
 			-- Peer address of socket
 
-	set_peer_address (addr: like address) is
+	address_type: SOCKET_ADDRESS
+			-- Type of `address' and `peer_address'
+		require
+			not_callable: False
+		local
+			l_result: detachable SOCKET_ADDRESS
+		do
+			check l_result_attached: l_result /= Void end
+			Result := l_result
+		end
+
+	set_peer_address (addr: like address)
 			-- Set peer address to `addr'.
 		require
 			address_exists: addr /= Void
@@ -276,221 +235,147 @@ feature -- Basic commands
 			peer_address := addr
 		ensure
 			address_set: peer_address = addr
-		end;
+		end
 
-	set_address (addr: like address) is
+	set_address (addr: like address)
 			-- Set local address to `addr'.
 		require
-			same_type: addr.family = family
+			add_non_void: addr /= Void
+			same_type: is_valid_family (addr)
 		do
 			address := addr
 		ensure
 			address_set: address = addr
-		end;
-
-	descriptor: INTEGER;
-			-- Socket descriptor of current socket
+		end
 
 feature -- Miscellaneous
 
-	name: STRING is
+	name: STRING
 			-- Socket name
-		require else
-			socket_exists: exists
 		do
 			create Result.make (0)
 		end
 
 feature -- Output
 
-	put_new_line, new_line is
+	put_new_line, new_line
 			-- Write a "new_line" character to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
 		do
 			put_character ('%N')
-		end;
+		end
 
-	put_string, putstring (s: STRING) is
+	put_string, putstring (s: STRING)
 			-- Write string `s' to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
 		local
 			ext: C_STRING
 		do
 			create ext.make (s)
-			c_put_stream (descriptor, ext.item, s.count)
-		end;
+			put_managed_pointer (ext.managed_data, 0, s.count)
+		end
 
-	put_managed_pointer (p: MANAGED_POINTER; start_pos, nb_bytes: INTEGER) is
+	put_managed_pointer (p: MANAGED_POINTER; start_pos, nb_bytes: INTEGER)
 			-- Put data of length `nb_bytes' pointed by `start_pos' index in `p' at
 			-- current position.
-		require else
-			p_not_void: p /= Void
-			p_large_enough: p.count >= nb_bytes + start_pos
-			nb_bytes_non_negative: nb_bytes >= 0
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			c_put_stream (descriptor, p.item + start_pos, nb_bytes)
 		end
 
-	put_character, putchar (c: CHARACTER) is
+	put_character, putchar (c: CHARACTER)
 			-- Write character `c' to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
 		do
-			c_put_char (descriptor, c)
-		end;
-
-	put_real, putreal (r: REAL) is
-			-- Write real `r' to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
-		do
-			c_put_float (descriptor, r)
-		end;
-
-	put_integer, putint, put_integer_32 (i: INTEGER) is
-			-- Write integer `i' to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
-		do
-			c_put_int (descriptor, i)
+			socket_buffer.put_character (c, 0)
+			put_managed_pointer (socket_buffer, 0, character_8_bytes)
 		end
 
-	put_integer_8 (i: INTEGER_8) is
+	put_real, putreal (r: REAL)
+			-- Write real `r' to socket.
+		do
+			socket_buffer.put_real_32 (r, 0)
+			put_managed_pointer (socket_buffer, 0, real_32_bytes)
+		end
+
+	put_double, putdouble (d: DOUBLE)
+			-- Write double `d' to socket.
+		do
+			socket_buffer.put_real_64_be (d, 0)
+			put_managed_pointer (socket_buffer, 0, real_64_bytes)
+		end
+
+	put_integer, putint, put_integer_32 (i: INTEGER)
 			-- Write integer `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
+		do
+			socket_buffer.put_integer_32_be (i, 0)
+			put_managed_pointer (socket_buffer, 0, integer_32_bytes)
+		end
+
+	put_integer_8 (i: INTEGER_8)
+			-- Write integer `i' to socket.
 		do
 			socket_buffer.put_integer_8_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, integer_8_bytes)
 		end
 
-	put_integer_16 (i: INTEGER_16) is
+	put_integer_16 (i: INTEGER_16)
 			-- Write integer `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			socket_buffer.put_integer_16_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, integer_16_bytes)
 		end
 
-	put_integer_64 (i: INTEGER_64) is
+	put_integer_64 (i: INTEGER_64)
 			-- Write integer `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			socket_buffer.put_integer_64_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, integer_64_bytes)
 		end
 
-	put_natural_8 (i: NATURAL_8) is
+	put_natural_8 (i: NATURAL_8)
 			-- Write natural `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			socket_buffer.put_natural_8_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, natural_8_bytes)
 		end
 
-	put_natural_16 (i: NATURAL_16) is
+	put_natural_16 (i: NATURAL_16)
 			-- Write natural `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			socket_buffer.put_natural_16_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, natural_16_bytes)
 		end
 
-	put_natural, put_natural_32 (i: NATURAL_32) is
+	put_natural, put_natural_32 (i: NATURAL_32)
 			-- Write natural `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			socket_buffer.put_natural_32_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, natural_32_bytes)
 		end
 
-	put_natural_64 (i: NATURAL_64) is
+	put_natural_64 (i: NATURAL_64)
 			-- Write natural `i' to socket.
-		require else
-			socket_exists: exists
-			opened_for_write: is_open_write
 		do
 			socket_buffer.put_natural_64_be (i, 0)
 			put_managed_pointer (socket_buffer, 0, natural_64_bytes)
 		end
 
-	put_boolean, putbool (b: BOOLEAN) is
+	put_boolean, putbool (b: BOOLEAN)
 			-- Write boolean `b' to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
 		do
 			if b then
 				put_character ('T')
 			else
 				put_character ('F')
 			end
-		end;
+		end
 
-	put_double, putdouble (d: DOUBLE) is
-			-- Write double `d' to socket.
-		require else
-			socket_exists: exists;
-			opened_for_write: is_open_write
-		do
-			c_put_double (descriptor, d)
-		end;
-
-	write (a_packet: PACKET) is
+	write (a_packet: PACKET)
 			-- Write packet `a_packet' to socket.
 		require
-			socket_exists: exists;
-			opened_for_write: is_open_write
+			a_packet_not_void: a_packet /= Void
+			socket_exists: exists
 		local
-			amount_sent: INTEGER;
-			ext_data: POINTER;
-			return_val: INTEGER;
-			count: INTEGER
-		do
-			from
-				ext_data := a_packet.data.item;
-				count := a_packet.count
-			until
-				count = amount_sent
-			loop
-				return_val := c_write (descriptor, ext_data, count - amount_sent);
-				if return_val > 0 then
-					ext_data := ext_data + return_val
-					amount_sent := amount_sent + return_val;
-				end
-			end
-		end;
-
-	send (a_packet: PACKET; flags: INTEGER) is
-			-- Send a packet `a_packet' of data to socket.
-		require
-			socket_exists: exists;
-			opened_for_write: is_open_write;
-			valid_packet: a_packet /= Void
-		local
-			amount_sent: INTEGER;
+			amount_sent: INTEGER
 			ext_data: POINTER
-			return_val: INTEGER;
+			return_val: INTEGER
 			count: INTEGER
 		do
 			from
@@ -499,229 +384,277 @@ feature -- Output
 			until
 				count = amount_sent
 			loop
-				return_val := c_send (descriptor, ext_data, count - amount_sent, flags);
+				return_val := c_write (descriptor, ext_data, count - amount_sent)
 				if return_val > 0 then
-					amount_sent := amount_sent + return_val;
+					ext_data := ext_data + return_val
+					amount_sent := amount_sent + return_val
+				end
+			end
+		end
+
+	send (a_packet: PACKET; flags: INTEGER)
+			-- Send a packet `a_packet' of data to socket.
+		require
+			socket_exists: exists
+			opened_for_write: is_open_write
+			valid_packet: a_packet /= Void
+		local
+			amount_sent: INTEGER
+			ext_data: POINTER
+			return_val: INTEGER
+			count: INTEGER
+		do
+			from
+				ext_data := a_packet.data.item
+				count := a_packet.count
+			until
+				count = amount_sent
+			loop
+				return_val := c_send (descriptor, ext_data, count - amount_sent, flags)
+				if return_val > 0 then
+					amount_sent := amount_sent + return_val
 					ext_data := ext_data + return_val
 				end
 			end
-		end;
+		end
 
-	exists: BOOLEAN is
+	exists: BOOLEAN
 			-- Does socket exist?
 		do
-			Result := descriptor >= 0
-		end;
+			Result := descriptor_available and then descriptor >= 0
+		ensure then
+			definition: Result implies descriptor_available
+		end
 
-	is_open_write: BOOLEAN;
+	is_open_write: BOOLEAN
 			-- Is socket opened for writing?
 
-	is_open_read: BOOLEAN;
+	is_open_read: BOOLEAN
 			-- Is socket opened for reading?
 
-	is_readable: BOOLEAN is
-			-- Is socket a readable medium?
-		do
-			Result := True
-		end;
-
-	is_executable: BOOLEAN is
+	is_executable: BOOLEAN
 			-- Is socket an executable?
 		do
 			Result := False
-		end;
+		end
 
-	is_writable: BOOLEAN is
+	is_writable: BOOLEAN
 			-- Is socket a writable medium?
 		do
 			Result := True
-		end;
+		end
 
-	readable: BOOLEAN is
+	is_readable: BOOLEAN
 			-- Is there currently any data available on socket?
 		do
-			Result := c_select_poll (descriptor) /= 0
-		end;
+			Result := readable and then c_select_poll (descriptor) /= 0
+		end
 
-	extendible: BOOLEAN is
+	readable: BOOLEAN
+		do
+			Result := exists and then is_open_read
+		end
+
+	extendible: BOOLEAN
 			-- May new items be added?
 		do
-			Result := True
+			Result := exists and then is_open_write
 		end
 
 feature -- Input
 
-	read_real, readreal is
+	read_real, readreal
 			-- Read a new real.
 			-- Make result available in `last_real'.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, real_32_bytes)
-			last_real := socket_buffer.read_real_32_be (0)
-		end;
+			if bytes_read /= real_32_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_real := socket_buffer.read_real_32_be (0)
+				was_error := False
+			end
+		end
 
-	read_double, readdouble is
+	read_double, readdouble
 			-- Read a new double.
 			-- Make result available in `last_double'.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, real_64_bytes)
-			last_double := socket_buffer.read_real_64_be (0)
-		end;
+			if bytes_read /= real_64_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_double := socket_buffer.read_real_64_be (0)
+				was_error := False
+			end
+		end
 
-	read_character, readchar is
+	read_character, readchar
 			-- Read a new character.
 			-- Make result available in `last_character'.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, character_8_bytes)
-			last_character := socket_buffer.read_character (0)
-		end;
+			if bytes_read /= character_8_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_character := socket_buffer.read_character (0)
+				was_error := False
+			end
+		end
 
-	read_boolean, readbool is
+	read_boolean, readbool
 			-- Read a new boolean.
 			-- Maker result available in `last_boolean'.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
 		do
-			read_character;
-			if last_character = 'T' then
-				last_boolean := True
-			else
-				last_boolean := False
+			read_character
+			if not was_error then
+				if last_character = 'T' then
+					last_boolean := True
+				else
+					last_boolean := False
+				end
 			end
-		end;
+		end
 
-	last_boolean: BOOLEAN;
+	last_boolean: BOOLEAN
 			-- Last boolean read by read_boolean
 
-	read_integer, readint, read_integer_32 is
+	read_integer, readint, read_integer_32
 			-- Read a new 32-bit integer.
 			-- Make result available in `last_integer'.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, integer_32_bytes)
-			last_integer := socket_buffer.read_integer_32_be (0)
-		end;
+			if bytes_read /= integer_32_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_integer := socket_buffer.read_integer_32_be (0)
+				was_error := False
+			end
+		end
 
-	read_integer_8 is
+	read_integer_8
 			-- Read a new 8-bit integer.
 			-- Make result available in `last_integer_8'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, integer_8_bytes)
-			last_integer_8 := socket_buffer.read_integer_8_be (0)
+			if bytes_read /= integer_8_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_integer_8 := socket_buffer.read_integer_8_be (0)
+				was_error := False
+			end
 		end
 
-	read_integer_16 is
+	read_integer_16
 			-- Read a new 16-bit integer.
 			-- Make result available in `last_integer_16'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, integer_16_bytes)
-			last_integer_16 := socket_buffer.read_integer_16_be (0)
+			if bytes_read /= integer_16_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_integer_16 := socket_buffer.read_integer_16_be (0)
+				was_error := False
+			end
 		end
 
-	read_integer_64 is
+	read_integer_64
 			-- Read a new 64-bit integer.
 			-- Make result available in `last_integer_64'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, integer_64_bytes)
-			last_integer_64 := socket_buffer.read_integer_64_be (0)
+			if bytes_read /= integer_64_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_integer_64 := socket_buffer.read_integer_64_be (0)
+				was_error := False
+			end
 		end
 
-	read_natural_8 is
+	read_natural_8
 			-- Read a new 8-bit natural.
 			-- Make result available in `last_natural_8'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, natural_8_bytes)
-			last_natural_8 := socket_buffer.read_natural_8_be (0)
+			if bytes_read /= natural_8_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_natural_8 := socket_buffer.read_natural_8_be (0)
+				was_error := False
+			end
 		end
 
-	read_natural_16 is
+	read_natural_16
 			-- Read a new 16-bit natural.
 			-- Make result available in `last_natural_16'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, natural_16_bytes)
-			last_natural_16 := socket_buffer.read_natural_16_be (0)
+			if bytes_read /= natural_16_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_natural_16 := socket_buffer.read_natural_16_be (0)
+				was_error := False
+			end
 		end
 
-	read_natural, read_natural_32 is
+	read_natural, read_natural_32
 			-- Read a new 32-bit natural.
 			-- Make result available in `last_natural'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, natural_32_bytes)
-			last_natural := socket_buffer.read_natural_32_be (0)
+			if bytes_read /= natural_32_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_natural := socket_buffer.read_natural_32_be (0)
+				was_error := False
+			end
 		end
 
-	read_natural_64 is
+	read_natural_64
 			-- Read a new 64-bit natural.
 			-- Make result available in `last_natural_64'.
-		require else
-			socket_exists: exists
-			opened_for_read: is_open_read
 		do
 			read_to_managed_pointer (socket_buffer, 0, natural_64_bytes)
-			last_natural_64 := socket_buffer.read_natural_64_be (0)
+			if bytes_read /= natural_64_bytes then
+				socket_error := "Peer closed connection"
+				was_error := True
+			else
+				last_natural_64 := socket_buffer.read_natural_64_be (0)
+				was_error := False
+			end
 		end
 
-	read_stream, readstream (nb_char: INTEGER) is
+	read_stream, readstream (nb_char: INTEGER)
 			-- Read a string of at most `nb_char' characters.
 			-- Make result available in `last_string'.
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
 		local
 			ext: C_STRING
 			return_val: INTEGER
 		do
 			create ext.make_empty (nb_char + 1)
-			return_val := c_read_stream (descriptor, nb_char, ext.item);
+			return_val := c_read_stream (descriptor, nb_char, ext.item)
 			bytes_read := return_val
 			if return_val >= 0 then
 				ext.set_count (return_val)
 				last_string := ext.substring (1, return_val)
 			else
-					-- All errors except EWOULDBLOCK will raise an I/O
-					-- exception
-				create last_string.make (0)
+				last_string.clear_all
 			end
-		end;
+		end
 
-	read_to_managed_pointer (p: MANAGED_POINTER; start_pos, nb_bytes: INTEGER) is
+	read_to_managed_pointer (p: MANAGED_POINTER; start_pos, nb_bytes: INTEGER)
 			-- Read at most `nb_bytes' bound bytes and make result
 			-- available in `p' at position `start_pos'.
-		require else
-			p_not_void: p /= Void
-			p_large_enough: p.count >= nb_bytes + start_pos
-			nb_bytes_non_negative: nb_bytes >= 0
-			socket_exists: exists
-			opened_for_read: is_open_read
 		local
 			l_read: INTEGER
 			l_last_read: INTEGER
@@ -732,39 +665,72 @@ feature -- Input
 				l_read = nb_bytes or l_last_read = 0
 			loop
 				l_last_read := c_read_stream (descriptor, nb_bytes - l_read,
-					p.item + start_pos + l_read);
+					p.item + start_pos + l_read)
 				l_read := l_read + l_last_read
 			end
 			bytes_read := l_read
 		end
 
-	read_line, readline is
+	read_line, readline
 			-- Read a line of characters (ended by a new_line).
-		require else
-			socket_exists: exists;
-			opened_for_read: is_open_read
+		local
+			l_last_string: like last_string
 		do
-			create last_string.make (512);
-			read_character;
+			create l_last_string.make (512)
+			read_character
 			from
 			until
 				last_character = '%N'
 			loop
-				last_string.extend (last_character);
+				l_last_string.extend (last_character)
 				read_character
 			end
-		end;
+			last_string := l_last_string
+		end
 
-	read (size: INTEGER): PACKET is
+	read_line_until (n: INTEGER)
+			-- Read a line of at most `n' characters (ended by a new_line).
+			-- If new line not read after `n' characters, set an error.
+		require
+			is_readable: readable
+		local
+			i: INTEGER
+			l_last_string: like last_string
+		do
+			from
+				create l_last_string.make (512)
+				was_error := False
+			until
+				i = n
+			loop
+				read_character
+				if was_error or else last_character = '%N' then
+					i := n - 1 -- Jump out of loop
+				else
+					l_last_string.extend (last_character)
+				end
+				i := i + 1
+			end
+			if not was_error and last_character /= '%N' then
+				socket_error := "End of line not reached after " + n.out + " read characters"
+				was_error := True
+			end
+			last_string := l_last_string
+		ensure
+			last_string_not_void: last_string /= Void
+		end
+
+	read (size: INTEGER): detachable PACKET
 			-- Read a packet of data of maximum size `size'.
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			opened_for_read: is_open_read
 		local
-			l_data, recv_packet: MANAGED_POINTER;
-			amount_read: INTEGER;
-			return_val: INTEGER;
-			ext_data: POINTER;
+			l_data: detachable MANAGED_POINTER
+			recv_packet: MANAGED_POINTER
+			amount_read: INTEGER
+			return_val: INTEGER
+			ext_data: POINTER
 		do
 			ext_data := ext_data.memory_alloc (size)
 			from
@@ -773,7 +739,7 @@ feature -- Input
 			until
 				amount_read = size or return_val = 0
 			loop
-				return_val := c_read_stream (descriptor, size - amount_read, ext_data);
+				return_val := c_read_stream (descriptor, size - amount_read, ext_data)
 				if return_val > 0 then
 					create recv_packet.make_from_pointer (ext_data, return_val)
 					if l_data = Void then
@@ -788,18 +754,20 @@ feature -- Input
 				create Result.make_from_managed_pointer (l_data)
 			end
 			bytes_read := amount_read
-		end;
+			ext_data.memory_free
+		end
 
-	receive (size, flags: INTEGER): PACKET is
+	receive (size, flags: INTEGER): detachable PACKET
 			-- Receive a packet of maximum size `size'.
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			opened_for_read: is_open_read
 		local
-			l_data, recv_packet: MANAGED_POINTER
-			amount_read: INTEGER;
-			return_val: INTEGER;
-			ext_data: POINTER;
+			l_data: detachable MANAGED_POINTER
+			recv_packet: MANAGED_POINTER
+			amount_read: INTEGER
+			return_val: INTEGER
+			ext_data: POINTER
 		do
 			ext_data := ext_data.memory_alloc (size)
 			from
@@ -807,7 +775,7 @@ feature -- Input
 			until
 				amount_read = size
 			loop
-				return_val := c_receive (descriptor, ext_data, size - amount_read, flags);
+				return_val := c_receive (descriptor, ext_data, size - amount_read, flags)
 				if return_val > 0 then
 					create recv_packet.make_from_pointer (ext_data, return_val)
 					if l_data = Void then
@@ -825,65 +793,66 @@ feature -- Input
 			if l_data /= Void then
 				create Result.make_from_managed_pointer (l_data)
 			end
-		end;
+			ext_data.memory_free
+		end
 
 feature -- socket options
 
-	enable_debug is
+	enable_debug
 			-- Enable socket system debugging.
 		require
 			socket_exists: exists
 		do
 			c_set_sock_opt_int (descriptor, level_sol_socket, sodebug, 1)
-		end;
+		end
 
-	disable_debug is
+	disable_debug
 			-- Disable socket system debugging.
 		require
 			socket_exists: exists
 		do
 			c_set_sock_opt_int (descriptor, level_sol_socket, sodebug, 0)
-		end;
+		end
 
-	debug_enabled: BOOLEAN is
+	debug_enabled: BOOLEAN
 			-- Is socket system debugging enabled?
 		require
 			socket_exists: exists
 		local
 			is_set: INTEGER
 		do
-			is_set := c_get_sock_opt_int (descriptor, level_sol_socket, sodebug);
+			is_set := c_get_sock_opt_int (descriptor, level_sol_socket, sodebug)
 			Result := is_set /= 0
-		end;
+		end
 
-	do_not_route is
+	do_not_route
 			-- Set socket to non-routing.
 		require
 			socket_exists: exists
 		do
 			c_set_sock_opt_int (descriptor, level_sol_socket, so_dont_route, 1)
-		end;
+		end
 
-	route is
+	route
 			-- Set socket to routing.
 		require
 			socket_exists: exists
 		do
 			c_set_sock_opt_int (descriptor, level_sol_socket, so_dont_route, 0)
-		end;
+		end
 
-	route_enabled: BOOLEAN is
+	route_enabled: BOOLEAN
 			-- Is routing enabled?
 		require
 			socket_exists: exists
 		local
 			is_set: INTEGER
 		do
-			is_set := c_get_sock_opt_int (descriptor, level_sol_socket, so_dont_route);
+			is_set := c_get_sock_opt_int (descriptor, level_sol_socket, so_dont_route)
 			Result := is_set /= 0
-		end;
+		end
 
-	set_receive_buf_size (s: INTEGER) is
+	set_receive_buf_size (s: INTEGER)
 			-- Set receive buffer size.
 		require
 			socket_exists: exists
@@ -891,17 +860,17 @@ feature -- socket options
 			c_set_sock_opt_int (descriptor, level_sol_socket, so_rcv_buf, s)
 		ensure
 			size_set: s = receive_buf_size
-		end;
+		end
 
-	receive_buf_size: INTEGER is
+	receive_buf_size: INTEGER
 			-- Size of receive buffer.
 		require
 			socket_exists: exists
 		do
 			Result := c_get_sock_opt_int (descriptor, level_sol_socket, so_rcv_buf)
-		end;
+		end
 
-	set_send_buf_size (s: INTEGER) is
+	set_send_buf_size (s: INTEGER)
 			-- Set the send buffer to size `s'.
 		require
 			socket_exists: exists
@@ -909,57 +878,57 @@ feature -- socket options
 			c_set_sock_opt_int (descriptor, level_sol_socket, so_snd_buf, s)
 		ensure
 			size_set: s = send_buf_size
-		end;
+		end
 
-	send_buf_size: INTEGER is
+	send_buf_size: INTEGER
 			-- Size of send buffer.
 		require
 			socket_exists: exists
 		do
 			Result := c_get_sock_opt_int (descriptor, level_sol_socket, so_snd_buf)
-		end;
+		end
 
-	is_socket_stream: BOOLEAN is
+	is_socket_stream: BOOLEAN
 			-- Is the socket a stream?
 		require
 			socket_exists: exists
 		local
 			is_soc_s: INTEGER
 		do
-			is_soc_s := c_get_sock_opt_int (descriptor, level_sol_socket, sotype);
+			is_soc_s := c_get_sock_opt_int (descriptor, level_sol_socket, sotype)
 			Result := is_soc_s = sock_stream
-		end;
+		end
 
-	set_non_blocking is
+	set_non_blocking
 			-- Set socket to non-blocking mode.
 		require
 			socket_exists: exists
 		do
-			c_set_non_blocking (descriptor);
+			c_set_non_blocking (descriptor)
 			is_blocking := False
 		ensure
 			not is_blocking
-		end;
+		end
 
-	set_blocking is
+	set_blocking
 			-- Set socket to blocking mode.
 		require
 			socket_exists: exists
 		do
-			c_set_blocking (descriptor);
+			c_set_blocking (descriptor)
 			is_blocking := True
 		ensure
 			is_blocking
-		end;
+		end
 
 	is_blocking: BOOLEAN
 			-- Is the socket blocking?
 
-	set_owner (own: INTEGER) is
+	set_owner (own: INTEGER)
 			-- Negative value sets group process id.
 			-- positive value sets process id.
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			valid_owner: own /= 0 and own /= -1
 		local
 			return_val: INTEGER
@@ -968,266 +937,184 @@ feature -- socket options
 		ensure
 			set_id: own < -1 implies own = group_id or else
 				own > 0 implies own = process_id
-		end;
+		end
 
-	is_group_id: BOOLEAN is
+	is_group_id: BOOLEAN
 			-- Is the owner id the socket group id?
 		require
 			socket_exists: exists
 		local
 			is_grp: INTEGER
 		do
-			is_grp := c_fcntl (descriptor, c_fgetown, 0);
+			is_grp := c_fcntl (descriptor, c_fgetown, 0)
 			Result := is_grp < -1
-		end;
+		end
 
-	is_process_id: BOOLEAN is
+	is_process_id: BOOLEAN
 			-- Is the owner id the socket process id?
 		require
 			socket_exists: exists
 		local
 			is_proc: INTEGER
 		do
-			is_proc := c_fcntl (descriptor, c_fgetown, 0);
+			is_proc := c_fcntl (descriptor, c_fgetown, 0)
 			Result := is_proc > 0
-		end;
+		end
 
-	group_id: INTEGER is
+	group_id: INTEGER
 			-- Group id of socket
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			group_set: is_group_id
 		do
 			Result := (c_fcntl (descriptor, c_fgetown, 0) * -1)
-		end;
+		end
 
-	process_id: INTEGER is
+	process_id: INTEGER
 			-- Process id of socket
 		require
-			socket_exists: exists;
+			socket_exists: exists
 			process_set: is_process_id
 		do
 			Result := c_fcntl (descriptor, c_fgetown, 0)
 		end
 
-feature {NONE} -- Externals
+feature {NONE} -- Implementation
 
-	socket_buffer: MANAGED_POINTER is
-			-- Buffer used to read/write basic types.
-		do
-			if internal_socket_buffer = Void then
-				create internal_socket_buffer.make (16)
-			end
-			Result := internal_socket_buffer
+	socket_error: detachable STRING
+
+	shutdown
+		deferred
 		end
 
-	internal_socket_buffer: MANAGED_POINTER
+feature {NONE} -- Externals
+
+	socket_buffer: MANAGED_POINTER
+			-- Buffer used to read/write basic types.
+		local
+			l_buffer: like internal_socket_buffer
+		do
+			l_buffer := internal_socket_buffer
+			if l_buffer = Void then
+				create l_buffer.make (16)
+				internal_socket_buffer := l_buffer
+			end
+			Result := l_buffer
+		end
+
+	internal_socket_buffer: detachable MANAGED_POINTER
 			-- Internal integer buffer
 
-	c_socket (add_family, a_type, protoc: INTEGER): INTEGER is
-			-- External c routine to create the socket descriptor
-		external
-			"C"
-		end;
-
-	c_bind (soc: INTEGER; addr: POINTER; length: INTEGER) is
-			-- External c routine to bind the socket descriptor
-			-- to a local address
-		external
-			"C"
-		end;
-
-	c_connect (soc: INTEGER; addr: POINTER; length: INTEGER) is
-			-- External c routine that connect the socket
-			-- to the peer address
-		external
-			"C blocking"
-		end;
-
-	c_shutdown (s: INTEGER; how: INTEGER) is
-			-- Shut down socket `s' with `how' modality
-			-- (0 no more receive, 1 no more send, 2 no more both)
-		external
-			"C blocking"
-		end;
-
-	c_close_socket (s: INTEGER) is
-			-- External c routine to close the socket identified
-			-- by the descriptor `s'
-		external
-			"C"
-		end;
-
-	c_sock_name (soc: INTEGER; addr: POINTER; length: INTEGER) is
-			-- External c routine that returns the socket name.
-		external
-			"C"
-		end;
-
-	c_peer_name (soc: INTEGER; addr: POINTER; length: INTEGER): INTEGER is
-			-- External routine that returns the peers socket name
-		external
-			"C"
-		end;
-
-	c_put_char (fd: INTEGER; c: CHARACTER) is
-			-- External routine to write character `c' to socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_put_int (fd: INTEGER; i: INTEGER) is
-			-- External routine to write integer `i' to socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_put_float (fd: INTEGER; r: REAL) is
-			-- External routine to write real `r' to socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_put_double (fd: INTEGER; d: DOUBLE) is
-			-- External routine to write double `d' to socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_put_stream (fd: INTEGER; s: POINTER; length: INTEGER) is
+	c_put_stream (fd: INTEGER; s: POINTER; length: INTEGER)
 			-- External routine to write stream pointed by `s' of
 			-- length `length' to socket `fd'
 		external
 			"C blocking"
-		end;
+		end
 
-	c_read_char (fd: INTEGER; a_bytes_read: TYPED_POINTER [INTEGER]): CHARACTER is
-			-- External routine to read a character from socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_read_int (fd: INTEGER; a_bytes_read: TYPED_POINTER [INTEGER]): INTEGER is
-			-- External routine to read an integer from socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_read_float (fd: INTEGER; a_bytes_read: TYPED_POINTER [INTEGER]): REAL is
-			-- external routine to read a real from socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_read_double (fd: INTEGER; a_bytes_read: TYPED_POINTER [INTEGER]): DOUBLE is
-			-- External routine to read a double from socket `fd'
-		external
-			"C blocking"
-		end;
-
-	c_read_stream (fd: INTEGER; l: INTEGER; buf: POINTER): INTEGER is
+	c_read_stream (fd: INTEGER; l: INTEGER; buf: POINTER): INTEGER
 			-- External routine to read a `l' number of characters
 			-- into buffer `buf' from socket `fd'
 		external
 			"C blocking"
-		end;
+		end
 
-	c_write (fd: INTEGER; buf: POINTER; l: INTEGER): INTEGER is
+	c_write (fd: INTEGER; buf: POINTER; l: INTEGER): INTEGER
 			-- External routine to write `l' length of data
 			-- on socket `fd'.
 		external
 			"C blocking"
-		end;
+		end
 
-	c_receive (fd: INTEGER; buf: POINTER; len: INTEGER; flags: INTEGER): INTEGER is
+	c_receive (fd: INTEGER; buf: POINTER; len: INTEGER; flags: INTEGER): INTEGER
 			-- External routine to receive at most `len' number of
 			-- bytes into buffer `buf' from socket `fd' with `flags'
 			-- options
 		external
 			"C blocking"
-		end;
+		end
 
-	c_send (fd: INTEGER; buf: POINTER; len: INTEGER; flags: INTEGER): INTEGER is
+	c_send (fd: INTEGER; buf: POINTER; len: INTEGER; flags: INTEGER): INTEGER
 			-- External routine to send at most `len' number of
 			-- bytes from buffer `buf' on socket `fd' with `flags'
 			-- options
 		external
 			"C blocking"
-		end;
+		end
 
-	c_set_sock_opt_int (fd, level, opt, val: INTEGER) is
+	c_set_sock_opt_int (fd, level, opt, val: INTEGER)
 			-- C routine to set socket options of integer type
 		external
 			"C"
-		end;
+		end
 
-	c_get_sock_opt_int (fd, level, opt: INTEGER): INTEGER is
+	c_get_sock_opt_int (fd, level, opt: INTEGER): INTEGER
 			-- C routine to get socket options of integer type
 		external
 			"C"
-		end;
+		end
 
-	c_fcntl (fd, cmd, arg: INTEGER): INTEGER is
+	c_fcntl (fd, cmd, arg: INTEGER): INTEGER
 			-- C wrapper to fcntl() routine
 		external
 			"C"
-		end;
+		end
 
-	c_set_non_blocking (fd: INTEGER) is
+	c_set_non_blocking (fd: INTEGER)
 			-- C routine to set the socket as non-blocking
 		external
 			"C"
-		end;
+		end
 
-	c_set_blocking (fd: INTEGER) is
+	c_set_blocking (fd: INTEGER)
 			-- C routine to set the socket as blocking
 		external
 			"C"
-		end;
+		end
 
-	c_syncpoll (fd: INTEGER): INTEGER is
+	c_syncpoll (fd: INTEGER): INTEGER
 			-- C routine to synchonously poll socket
 			-- (using `msg_peek' flag)
 		external
 			"C blocking"
-		end;
+		end
 
-	c_select_poll (fd: INTEGER): INTEGER is
+	c_select_poll (fd: INTEGER): INTEGER
 			-- C routine to synchronously poll socket
 			-- (using `select')
 		external
 			"C blocking"
 		end
 
-	eif_net_retrieved (file_handle: INTEGER): ANY is
+	eif_net_retrieved (file_handle: INTEGER): ANY
 			-- Object structured retrieved from file of pointer
 			-- `file_handle'
 		external
 			"C"
-		end;
+		end
 
-	eif_net_basic_store (file_handle: INTEGER; object: POINTER) is
+	eif_net_basic_store (file_handle: INTEGER; object: POINTER)
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
 			"C"
-		end;
+		end
 
-	eif_net_general_store (file_handle: INTEGER; object: POINTER) is
+	eif_net_general_store (file_handle: INTEGER; object: POINTER)
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
 			"C"
-		end;
+		end
 
-	eif_net_independent_store (file_handle: INTEGER; object: POINTER) is
+	eif_net_independent_store (file_handle: INTEGER; object: POINTER)
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
 			"C"
-		end;
+		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

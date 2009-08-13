@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Tool or window associated with a text file."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -27,14 +27,14 @@ feature -- Access
 	stone: STONE
 			-- Stone for current.
 
-	file_name: FILE_NAME
+	file_name: STRING
 			-- Name of the file being displayed.
 			-- This attribute is useful when `stone'
 			-- is Void (this case occurs after loading
 			-- a file with the "open" command, or after
 			-- saving a file with the "save as" command).
 
-	last_saving_date: INTEGER is
+	last_saving_date: INTEGER
 			-- Date of last save
 		require
 			file_name_not_void: file_name /= Void
@@ -42,17 +42,17 @@ feature -- Access
 			Result := internal_last_saving_date
 		end
 
-	changed: BOOLEAN is
+	changed: BOOLEAN
 			-- Has the content changed since last save?
 		deferred
 		end
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Does `Current' have no text loaded?
 		deferred
 		end
 
-	text: STRING_32 is
+	text: STRING_32
 			-- Text representing Current
 		deferred
 		end
@@ -66,16 +66,18 @@ feature -- Access
 
 feature -- Status Settings
 
-	set_file_name (a_filename: FILE_NAME) is
+	set_file_name (a_filename: like file_name)
 			-- Make `f' the name of the file associated with tool.
 			-- If `f' is Void, the tool is associated with no file.
+		require
+			a_file_name_valid_type: a_filename /= Void implies a_filename.same_type ("")
 		do
 			file_name := a_filename
 		ensure
 			file_name_set: equal (file_name, a_filename)
 		end
 
-	set_last_saving_date (a_timestamp: INTEGER) is
+	set_last_saving_date (a_timestamp: INTEGER)
 			--  make `a_timestamp' the value of `last_saving_date'
 		require
 			file_name_not_void: file_name /= Void
@@ -83,7 +85,7 @@ feature -- Status Settings
 			internal_last_saving_date := a_timestamp
 		end
 
-	set_stone (new_stone: STONE) is
+	set_stone (new_stone: STONE)
 			-- Make `s' the new value of stone.
 			-- Change file name as a consequence, to keep invariant.
 		local
@@ -103,7 +105,7 @@ feature -- Status Settings
 --| END FIXME
 		end
 
-	set_last_save_failed (a_fail: BOOLEAN) is
+	set_last_save_failed (a_fail: BOOLEAN)
 			-- Set `last_save_failed' with `a_fail'.
 		do
 			last_save_failed := a_fail
@@ -111,7 +113,7 @@ feature -- Status Settings
 			set: a_fail = last_save_failed
 		end
 
-	reset_stone is
+	reset_stone
 			-- Reset the stone to Void, without resetting display.
 			-- Only usable for starting to edit a file without using stones.
 		require
@@ -122,19 +124,19 @@ feature -- Status Settings
 			stone = Void
 		end
 
-	on_before_text_saved is
+	on_before_text_saved
 			-- Notify the editor that the text is about to be saved.
 		do
 		end
 
-	on_text_saved is
+	on_text_saved
 			-- Notify the editor that the text has been saved.
 		do
 		end
 
 feature {NONE} -- Status Settings
 
-	set_file_name_from_stone (s: FILED_STONE) is
+	set_file_name_from_stone (s: FILED_STONE)
 			-- Update `file_name' using information from `s'.
 		local
 			f: RAW_FILE
@@ -154,7 +156,7 @@ feature {NONE} -- Status Settings
 
 feature -- Basic Operations
 
-	show_file (f: PLAIN_TEXT_FILE) is
+	show_file (f: PLAIN_TEXT_FILE)
 			-- Display content of file `f' and its name as the title
 			-- of the ancestor tool. Forget about clicking and stones.
 		require
@@ -176,7 +178,7 @@ feature -- Basic Operations
 			no_stone: stone = Void
 		end
 
-	reset is
+	reset
 			-- Reset the window contents.
 		do
 			update_save_symbol
@@ -184,7 +186,7 @@ feature -- Basic Operations
 
 feature -- "Save command" related features
 
-	update_save_symbol is
+	update_save_symbol
 			-- Update the save symbol in tool.
 		do
 			if changed then
@@ -194,24 +196,24 @@ feature -- "Save command" related features
 			end
 		end
 
-	save_text is
+	save_text
 			-- Launch the save command.
 		do
 			save_cmd.execute
 		end
 
-	save_all is
+	save_all
 			-- Launch the save all command.
 		do
 			save_all_cmd.execute
 		end
 
-	perform_check_before_save is
+	perform_check_before_save
 			-- Perform checks, if any, before saving
 		do
 		end
 
-	check_passed: BOOLEAN is
+	check_passed: BOOLEAN
 		do
 			Result := True
 		end
@@ -233,7 +235,7 @@ feature -- Commands
 
 feature {NONE} -- Execution
 
-	take_focus is
+	take_focus
 			-- Check if a save has been by a different tool or editor.
 			-- If yes, prompt user for updating text.
 			-- This function is called when mouse cames on tool window.
@@ -249,7 +251,7 @@ feature {NONE} -- Execution
 			end
 		end
 
-	revert is
+	revert
 			-- Upload text from file associated with Current
 		local
 			f: PLAIN_TEXT_FILE
@@ -264,10 +266,10 @@ feature {NONE} -- Implementation
 	internal_last_saving_date: INTEGER;
 			-- Date of last save
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -278,19 +280,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

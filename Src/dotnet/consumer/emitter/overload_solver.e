@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Solve overloading for a given .NET type"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -26,11 +26,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize solver
 		do
 			create method_table.make (20)
 			create eiffel_names.make (50)
+			create reserved_names.make (0)
 		end
 
 feature {NONE} -- Access
@@ -38,25 +39,29 @@ feature {NONE} -- Access
 	eiffel_names: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- give hash_table of eiffel names for a dotnet type name.
 
-	key_args (args: NATIVE_ARRAY [PARAMETER_INFO]; return_type: SYSTEM_TYPE; declared_type: SYSTEM_TYPE): STRING is
+	key_args (args: detachable NATIVE_ARRAY [detachable PARAMETER_INFO]; return_type, declared_type: detachable SYSTEM_TYPE): STRING
 			-- return signature corresponding to args.
 		local
 			i: INTEGER
 		do
 			create Result.make_empty
-			from
-				i := 0
-			until
-				args = Void or else i = args.count
-			loop
-				Result.append (create {STRING}.make_from_cil (args.item (i).parameter_type.full_name))
-				i := i + 1
+			if args /= Void then
+				from
+					i := 0
+				until
+					args = Void or else i = args.count
+				loop
+					if attached args.item (i) as l_args and then attached l_args.parameter_type as l_type then
+						Result.append (create {STRING_8}.make_from_cil (l_type.full_name))
+					end
+					i := i + 1
+				end
 			end
 			if return_type /= Void then
-				Result.append (create {STRING}.make_from_cil (return_type.full_name))
+				Result.append (create {STRING_8}.make_from_cil (return_type.full_name))
 			end
 			if declared_type /= Void then
-				Result.append (create {STRING}.make_from_cil (declared_type.full_name))
+				Result.append (create {STRING_8}.make_from_cil (declared_type.full_name))
 			end
 		ensure
 			non_void_result: Result /= Void
@@ -65,17 +70,18 @@ feature {NONE} -- Access
 
 feature	-- Access
 
-	unique_eiffel_name (a_dotnet_name: SYSTEM_STRING; args: NATIVE_ARRAY [PARAMETER_INFO]; return_type: SYSTEM_TYPE; declaring_type: SYSTEM_TYPE): STRING is
+	unique_eiffel_name (a_dotnet_name: SYSTEM_STRING; args: detachable NATIVE_ARRAY [detachable PARAMETER_INFO]; return_type, declaring_type: detachable SYSTEM_TYPE): detachable STRING
 		require
 			non_void_a_dotnet_name: a_dotnet_name /= Void
-			non_void_args: args /= Void
 		do
-			Result := eiffel_names.item (a_dotnet_name).item (key_args (args, return_type, declaring_type))
+			if attached eiffel_names.item (a_dotnet_name) as l_names then
+				Result := l_names.item (key_args (args, return_type, declaring_type))
+			end
 		end
 
 feature -- Basic Operations
 
-	solve is
+	solve
 			-- Initialize `procedures' and `functions'.
 			-- Can only be called once.
 		require
@@ -166,8 +172,9 @@ feature -- Basic Operations
 					method_list.after
 				loop
 					method := method_list.item
-					if eiffel_names.has (method.dotnet_name) then
-						eiffel_names.item (method.dotnet_name).put (
+					eiffel_names.search (method.dotnet_name)
+					if eiffel_names.found and then attached eiffel_names.found_item as l_found_item then
+						l_found_item.put (
 							method.eiffel_name,
 							key_args (method.internal_method.get_parameters,
 								method.internal_method.return_type,
@@ -189,7 +196,7 @@ feature -- Basic Operations
 			solved: solved
 		end
 
-	is_unique_signature (method: METHOD_SOLVER; method_list: LIST [METHOD_SOLVER]; index: INTEGER): BOOLEAN is
+	is_unique_signature (method: METHOD_SOLVER; method_list: LIST [METHOD_SOLVER]; index: INTEGER): BOOLEAN
 			-- Are parameter types starting from index `index' in `method' unique in `method_list'?
 		require
 			non_void_method: method /= Void
@@ -197,7 +204,7 @@ feature -- Basic Operations
 			valid_list: method_list.has (method)
 			valid_index: index >= 0
 		local
-			l_name: STRING
+			l_name: detachable STRING
 			l_item_name: STRING
 			meth: METHOD_SOLVER
 			count, i: INTEGER
@@ -248,7 +255,7 @@ feature -- Status Report
 
 feature -- Element Settings
 
-	add_method (meth: METHOD_INFO) is
+	add_method (meth: METHOD_INFO)
 			-- Include `meth' in overload solving process.
 			-- Remove `get_' for properties getters.
 		require
@@ -257,13 +264,13 @@ feature -- Element Settings
 			internal_add_method (meth, False)
 		end
 
-	add_property (property: PROPERTY_INFO) is
+	add_property (property: PROPERTY_INFO)
 			-- Include `meth' in overload solving process.
 			-- Remove `get_' for properties getters.
 		require
 			non_void_property: property /= Void
 		local
-			l_meth: METHOD_INFO
+			l_meth: detachable METHOD_INFO
 		do
 			l_meth := property_getter (property)
 			if l_meth /= Void then
@@ -279,13 +286,13 @@ feature -- Element Settings
 			end
 		end
 
-	add_event (event: EVENT_INFO) is
+	add_event (event: EVENT_INFO)
 			-- Include `meth' in overload solving process.
 			-- Remove `get_' for properties getters.
 		require
 			non_void_event: event /= Void
 		local
-			l_meth: METHOD_INFO
+			l_meth: detachable METHOD_INFO
 		do
 			l_meth := event_raiser (event)
 			if l_meth /= Void then
@@ -309,7 +316,7 @@ feature -- Element Settings
 
 feature {NONE} -- Internal Statur Setting	
 
-	internal_add_method (meth: METHOD_INFO; get_property: BOOLEAN) is
+	internal_add_method (meth: METHOD_INFO; get_property: BOOLEAN)
 			-- Include `meth' in overload solving process.
 			-- Remove `get_' for properties getters.
 		require
@@ -317,10 +324,12 @@ feature {NONE} -- Internal Statur Setting
 			is_consumed_method: is_consumed_method (meth)
 		local
 			l_len: INTEGER
-			l_dn_name: SYSTEM_STRING
+			l_dn_name: detachable SYSTEM_STRING
 			name: STRING
+			l_list: SORTED_TWO_WAY_LIST [METHOD_SOLVER]
 		do
 			l_dn_name := meth.name
+			check l_dn_name_attached: l_dn_name /= Void end
 			if get_property then
 				l_len := get_prefix.length
 				if l_dn_name.length > l_len and then {SYSTEM_STRING}.compare (get_prefix, l_dn_name.substring (0, l_len), True) = 0 then
@@ -329,11 +338,12 @@ feature {NONE} -- Internal Statur Setting
 			end
 			name := l_dn_name
 			method_table.search (name)
-			if not method_table.found then
-				method_table.put (create {SORTED_TWO_WAY_LIST [METHOD_SOLVER]}.make, name)
-				method_table.item (name).extend (create {METHOD_SOLVER}.make (meth, get_property))
+			if method_table.found and then attached method_table.found_item as l_found_item then
+				l_found_item.extend (create {METHOD_SOLVER}.make (meth, get_property))
 			else
-				method_table.found_item.extend (create {METHOD_SOLVER}.make (meth, get_property))
+				create l_list.make
+				method_table.put (l_list, name)
+				l_list.extend (create {METHOD_SOLVER}.make (meth, get_property))
 			end
 		end
 
@@ -342,10 +352,10 @@ feature {NONE} -- Implementation
 	method_table: HASH_TABLE [SORTED_TWO_WAY_LIST [METHOD_SOLVER], STRING]
 			-- Table of methods
 
-	get_prefix: SYSTEM_STRING is "get_";
+	get_prefix: SYSTEM_STRING = "get_";
 			-- Get property prefix
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

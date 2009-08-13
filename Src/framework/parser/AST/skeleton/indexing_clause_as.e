@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Representation of an indexing clause"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -11,27 +11,16 @@ class
 inherit
 	EIFFEL_LIST [INDEX_AS]
 		redefine
-			process, make, first_token, last_token
+			process, first_token, last_token
 		end
 
 create
-	make
-
-create {INDEXING_CLAUSE_AS}
+	make,
 	make_filled
-
-feature -- Initialization
-
-	make (n: INTEGER) is
-			-- Allocate list with `n' items.
-			-- (`n' may be zero for empty list.)
-		do
-			Precursor {EIFFEL_LIST} (n)
-		end
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_indexing_clause_as (Current)
@@ -39,7 +28,7 @@ feature -- Visitor
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	first_token (a_list: LEAF_AS_LIST): LEAF_AS
 			-- First token in current AST node
 		do
 			if a_list = Void then
@@ -49,7 +38,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 			-- Last token in current AST node
 		do
 			if a_list = Void then
@@ -68,13 +57,13 @@ feature -- Roundtrip/Token
 
 feature -- Access
 
-	description: STRING is
+	description: STRING
 			-- Description.
 		do
 			Result := string_value (Description_header)
 		end
 
-	assembly_name: ARRAY [STRING] is
+	assembly_name: ARRAY [STRING]
 			-- Assembly name (for external classes only)
 			-- Name, Version, Culture and Public key in that order
 		local
@@ -82,7 +71,7 @@ feature -- Access
 			list: EIFFEL_LIST [ATOMIC_AS]
 			a_string: STRING_AS
 		do
-			i := find_index_as (Assembly_header)
+			i := index_as_of_tag_name (Assembly_header)
 
 			if i /= Void then
 				list := i.index_list
@@ -101,14 +90,14 @@ feature -- Access
 			end
 		end
 
-	external_name: STRING is
+	external_name: STRING
 			-- Name of entity holding current indexing clause as seen from
 			-- external world.
 		do
 			Result := string_value (External_header)
 		end
 
-	custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS] is
+	custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
 			-- Expression representing custom attributes.
 		local
 			l_list: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
@@ -124,7 +113,7 @@ feature -- Access
 			end
 		end
 
-	class_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS] is
+	class_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
 			-- Expression representing custom attributes.
 		local
 			l_list: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
@@ -140,7 +129,7 @@ feature -- Access
 			end
 		end
 
-	interface_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS] is
+	interface_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
 			-- Expression representing custom attributes.
 		local
 			l_list: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
@@ -156,7 +145,7 @@ feature -- Access
 			end
 		end
 
-	assembly_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS] is
+	assembly_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
 			-- Expression representing custom attributes for an assembly
 		local
 			l_list: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
@@ -172,13 +161,13 @@ feature -- Access
 			end
 		end
 
-	property_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS] is
+	property_custom_attributes: EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
 			-- Expression representing custom attributes for a property
 		do
 			Result := internal_custom_attributes (Property_metadata_header)
 		end
 
-	property_name: STRING is
+	property_name: STRING
 			-- Expression representing custom attributes for a property
 		local
 			i: INDEX_AS
@@ -186,7 +175,7 @@ feature -- Access
 			id: ID_AS
 			list: EIFFEL_LIST [ATOMIC_AS]
 		do
-			i := find_index_as (property_name_header)
+			i := index_as_of_tag_name (property_name_header)
 			if i /= Void then
 				list := i.index_list
 				if not list.is_empty then
@@ -205,7 +194,7 @@ feature -- Access
 			end
 		end
 
-	dotnet_constructors: ARRAYED_LIST [STRING] is
+	dotnet_constructors: ARRAYED_LIST [STRING]
 			-- Dotnet constructors indexing clause value
 		local
 			l_index: INDEX_AS
@@ -213,7 +202,7 @@ feature -- Access
 			l_string: STRING_AS
 			l_id: ID_AS
 		do
-			l_index := find_index_as (Dotnet_constructors_header)
+			l_index := index_as_of_tag_name (Dotnet_constructors_header)
 			if l_index /= Void then
 				l_list := l_index.index_list
 				if not l_list.is_empty then
@@ -239,7 +228,7 @@ feature -- Access
 			end
 		end
 
-	has_global_once: BOOLEAN is
+	has_global_once: BOOLEAN
 			-- Is current once construct used to be a global once in
 			-- multithreaded context?
 		local
@@ -248,7 +237,7 @@ feature -- Access
 			l_id: ID_AS
 			list: EIFFEL_LIST [ATOMIC_AS]
 		do
-			i := find_index_as (Once_status_header)
+			i := index_as_of_tag_name (Once_status_header)
 
 			if i /= Void then
 				list := i.index_list
@@ -270,7 +259,35 @@ feature -- Access
 			end
 		end
 
-	enum_type: STRING is
+	is_stable: BOOLEAN
+			-- Is feature marked as stable?
+			-- (Used to mark stable attributes.)
+		local
+			i: INDEX_AS
+			list: EIFFEL_LIST [ATOMIC_AS]
+		do
+			i := index_as_of_tag_name (option_header)
+			if i /= Void then
+				list := i.index_list
+				if not list.is_empty then
+					from
+						list.start
+					until
+						list.after or Result
+					loop
+						if
+							attached {STRING_AS} list.item as s and then s.value.is_equal (stable_option_value) or else
+							attached {ID_AS} list.item as id and then id.name.is_equal (stable_option_value)
+						then
+							Result := True
+						end
+						list.forth
+					end
+				end
+			end
+		end
+
+	enum_type: STRING
 			-- Is current once construct used to be a global once in
 			-- multithreaded context?
 		local
@@ -278,7 +295,7 @@ feature -- Access
 			s: STRING_AS
 			list: EIFFEL_LIST [ATOMIC_AS]
 		do
-			i := find_index_as (Enum_type_header)
+			i := index_as_of_tag_name (Enum_type_header)
 
 			if i /= Void then
 				list := i.index_list
@@ -298,64 +315,100 @@ feature -- Access
 			end
 		end
 
+feature -- Query
+
+	index_as_of_tag_name (tag: READABLE_STRING_GENERAL): detachable INDEX_AS
+			-- Find INDEX_AS object holding `tag'
+			-- Void if not found.
+		require
+			tag_not_void: tag /= Void
+			tag_not_empty: not tag.is_empty
+		local
+			i, nb: INTEGER
+			l_index: INDEX_AS
+		do
+			from
+				i := lower
+				nb := upper
+			until
+				i > nb
+			loop
+				l_index := i_th (i)
+				if l_index.tag /= Void and then l_index.tag.name ~ tag then
+					Result := l_index
+						-- Jump out of loop
+					i := nb
+				end
+				i := i + 1
+			end
+		ensure
+			found_return_same_object: Result /= Void implies Result = index_as_of_tag_name (tag)
+		end
+
 feature {NONE} -- Constants
 
-	External_header: STRING is "external_name"
+	External_header: STRING = "external_name"
 			-- Index name which holds name as seen by other languages.
 
-	Metadata_header: STRING is "metadata"
+	Metadata_header: STRING = "metadata"
 			-- Index name which holds custom attributes applied to both implementation
 			-- and interface of current class.
 
-	Class_metadata_header: STRING is "class_metadata"
+	Class_metadata_header: STRING = "class_metadata"
 			-- Index name which holds custom attributes applied to associated class only.
 
-	Interface_metadata_header: STRING is "interface_metadata"
+	Interface_metadata_header: STRING = "interface_metadata"
 			-- Index name which holds custom attributes applied to associated interface only.
 
-	Assembly_metadata_header: STRING is "assembly_metadata"
+	Assembly_metadata_header: STRING = "assembly_metadata"
 			-- Index name which holds custom attributes applied to associated assembly.
 			-- They are only taken into account for the root_class.
 
-	Property_metadata_header: STRING is "property_metadata"
+	Property_metadata_header: STRING = "property_metadata"
 			-- Index name which holds custom attributes applied to associated property.
 
-	Attribute_header: STRING is "attribute"
+	Attribute_header: STRING = "attribute"
 			-- Index name which holds custom attributes applied to both implementation
 			-- and interface of current class.
 
-	Class_attribute_header: STRING is "class_attribute"
+	Class_attribute_header: STRING = "class_attribute"
 			-- Index name which holds custom attributes applied to associated class only.
 
-	Interface_attribute_header: STRING is "interface_attribute"
+	Interface_attribute_header: STRING = "interface_attribute"
 			-- Index name which holds custom attributes applied to associated interface only.
 
-	Assembly_attribute_header: STRING is "assembly_attribute"
+	Assembly_attribute_header: STRING = "assembly_attribute"
 			-- Index name which holds custom attributes applied to associated assembly.
 			-- They are only taken into account for the root_class.
 
-	Dotnet_constructors_header: STRING is "dotnet_constructors"
+	Dotnet_constructors_header: STRING = "dotnet_constructors"
 			-- Index name which holds list of creation routines to be used as type constructors.
 
-	Description_header: STRING is "description"
+	Description_header: STRING = "description"
 			-- Index name which holds class/feature desciption.
 
-	Assembly_header: STRING is "assembly"
+	Assembly_header: STRING = "assembly"
 			-- Index name which holds name of assembly.
 
-	Once_status_header: STRING is "once_status"
+	Once_status_header: STRING = "once_status"
 			-- Index name under which globalness of a once is specified.
 
-	Property_name_header: STRING is "property"
+	option_header: STRING = "option"
+			-- Note name under which the attribute may be marked as stable.
+
+	Property_name_header: STRING = "property"
 			-- Index name which holds name of an associated property.
 
-	Enum_type_header: STRING is "enum_type"
+	Enum_type_header: STRING = "enum_type"
 			-- Type of enum elements.
 
-	global_value: STRING is "global"
+	global_value: STRING = "global"
 			-- Value name of `Once_status_header'.
 
-	obsolete_tags: HASH_TABLE [STRING, STRING] is
+	stable_option_value: STRING = "stable"
+			-- Predefined value of `option_header'.
+
+	obsolete_tags: HASH_TABLE [STRING, STRING]
 			-- Table indexed by obsoleted indexing tag, where key is new indexing tag that
 			-- should be used
 		do
@@ -370,14 +423,14 @@ feature {NONE} -- Constants
 
 feature {NONE} -- Implementation
 
-	internal_custom_attributes (tag: STRING): EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS] is
+	internal_custom_attributes (tag: STRING): EIFFEL_LIST [CUSTOM_ATTRIBUTE_AS]
 			-- Expression representing custom attributes.
 		local
 			i: INDEX_AS
 			ca: CUSTOM_ATTRIBUTE_AS
 			list: EIFFEL_LIST [ATOMIC_AS]
 		do
-			i := find_index_as (tag)
+			i := index_as_of_tag_name (tag)
 
 			if i /= Void then
 					-- Do not care if more than one element has been added
@@ -401,43 +454,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	find_index_as (tag: STRING): INDEX_AS is
-			-- Find INDEX_AS object holding `tag'
-			-- Void if not found.
-		require
-			tag_not_void: tag /= Void
-			tag_not_empty: not tag.is_empty
-		local
-			i, nb: INTEGER
-			l_index: INDEX_AS
-		do
-			from
-				i := lower
-				nb := upper
-			until
-				i > nb
-			loop
-				l_index := i_th (i)
-				if l_index.tag /= Void and then l_index.tag.name.is_equal (tag) then
-					Result := l_index
-						-- Jump out of loop
-					i := nb
-				end
-				i := i + 1
-			end
-		ensure
-			found_return_same_object: Result /= Void implies Result = find_index_as (tag)
-		end
-
-	string_value (tag: STRING): STRING is
+	string_value (tag: READABLE_STRING_GENERAL): STRING
 			-- String associated with `tag'
 			-- Void if not a string or not tag `tag'
+		require
+			tag_attached: tag /= Void
+			not_tag_is_empty: not tag.is_empty
 		local
 			i: INDEX_AS
 			list: EIFFEL_LIST [ATOMIC_AS]
 			s: STRING_AS
 		do
-			i := find_index_as (tag)
+			i := index_as_of_tag_name (tag)
 
 			if i /= Void then
 				list := i.index_list
@@ -467,7 +495,7 @@ feature -- Roundtrip
 	end_keyword_index: INTEGER
 			-- Index of keyword "end" associated with current AST node
 
-	indexing_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS is
+	indexing_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
 			-- Keyword "indexing" associated with current AST node
 		require
 			a_list_not_void: a_list /= Void
@@ -480,7 +508,7 @@ feature -- Roundtrip
 			end
 		end
 
-	end_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS is
+	end_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
 			-- Keyword "end" associated with current AST node
 		require
 			a_list_not_void: a_list /= Void
@@ -493,7 +521,7 @@ feature -- Roundtrip
 			end
 		end
 
-	set_indexing_keyword (a_keyword: KEYWORD_AS) is
+	set_indexing_keyword (a_keyword: KEYWORD_AS)
 			-- Set `indexing_keyword' with `a_keyword'.
 		do
 			if a_keyword /= Void then
@@ -503,7 +531,7 @@ feature -- Roundtrip
 			indexing_keyword_set: a_keyword /= Void implies indexing_keyword_index = a_keyword.index
 		end
 
-	set_end_keyword (a_keyword: KEYWORD_AS) is
+	set_end_keyword (a_keyword: KEYWORD_AS)
 			-- Set `end_keyword' with `a_keyword'.
 		do
 			if a_keyword /= Void then
@@ -513,10 +541,10 @@ feature -- Roundtrip
 			end_keyword_set: a_keyword /= Void implies end_keyword_index = a_keyword.index
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -527,22 +555,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
-end -- class FEATURE_LIST_AS
+end

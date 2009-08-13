@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "[
 		Facilities for adapting the exception handling mechanism.
@@ -20,10 +20,10 @@ inherit
 
 feature -- Status report
 
-	meaning (except: INTEGER): STRING is
+	meaning (except: INTEGER): detachable STRING
 			-- A message in English describing what `except' is
 		local
-			l_exception: EXCEPTION
+			l_exception: detachable EXCEPTION
 		do
 			l_exception := exception_manager.exception_from_code (except)
 			if l_exception /= Void then
@@ -31,35 +31,23 @@ feature -- Status report
 			end
 		end
 
-	assertion_violation: BOOLEAN is
+	assertion_violation: BOOLEAN
 			-- Is last exception originally due to a violated
 			-- assertion or non-decreasing variant?
-		local
-			l_exception: EXCEPTION
-			l_av: ASSERTION_VIOLATION
 		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				l_av ?= l_exception.original
-				Result := (l_av /= Void)
-			end
+			Result := attached {EXCEPTION} exception_manager.last_exception as l_exception and then
+						attached {ASSERTION_VIOLATION} l_exception.original as l_av
 		end
 
-	is_developer_exception: BOOLEAN is
+	is_developer_exception: BOOLEAN
 			-- Is the last exception originally due to
 			-- a developer exception?
-		local
-			l_exception: EXCEPTION
-			l_de: DEVELOPER_EXCEPTION
 		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				l_de ?= l_exception.original
-				Result := (l_de /= Void)
-			end
+			Result := attached {EXCEPTION} exception_manager.last_exception as l_exception and then
+						attached {DEVELOPER_EXCEPTION} l_exception.original as l_de
 		end
 
-	is_developer_exception_of_name (name: STRING): BOOLEAN is
+	is_developer_exception_of_name (name: detachable STRING): BOOLEAN
 			-- Is the last exception originally due to a developer
 			-- exception of name `name'?
 		do
@@ -68,165 +56,126 @@ feature -- Status report
 			end
 		end
 
-	developer_exception_name: STRING is
+	developer_exception_name: detachable STRING
 			-- Name of last developer-raised exception
 		require
 			applicable: is_developer_exception
-		local
-			l_exception: EXCEPTION
 		do
-			l_exception ?= exception_manager.last_exception.original
-			Result := l_exception.message
-		end
-
-	is_signal: BOOLEAN is
-			-- Is last exception originally due to an external
-			-- event (operating system signal)?
-		local
-			l_exception: EXCEPTION
-			l_sf: OPERATING_SYSTEM_SIGNAL_FAILURE
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				l_sf ?= l_exception.original
-				Result := (l_sf /= Void)
-			end
-		end
-
-	is_system_exception: BOOLEAN is
-			-- Is last exception originally due to an
-			-- external event (operating system error)?
-		local
-
-			l_sf: OPERATING_SYSTEM_FAILURE
-			l_exception, l_external: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				l_exception := l_exception.original
-				l_external := exception_manager.exception_from_code (external_exception)
-				if l_external /= Void then
-					Result := l_exception.conforms_to (l_external)
-					if not Result then
-						l_sf ?= l_exception
-						Result := (l_sf /= Void)
-					end
-				end
-			end
-		end
-
-	tag_name: STRING is
-			-- Tag of last violated assertion clause
-		local
-			l_exception: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.message
-			end
-		end
-
-	recipient_name: STRING is
-			-- Name of the routine whose execution was
-			-- interrupted by last exception
-		local
-			l_exception: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.recipient_name
-			end
-		end
-
-	class_name: STRING is
-			-- Name of the class that includes the recipient
-			-- of original form of last exception
-		local
-			l_exception: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.type_name
-			end
-		end
-
-	exception: INTEGER is
-			-- Code of last exception that occurred
-		local
-			l_exception: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.code
-			end
-		end
-
-	exception_trace: STRING is
-			-- String representation of the exception trace
-		local
-			l_exception: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.original.exception_trace
-			end
-		end
-
-	original_tag_name: STRING is
-			-- Assertion tag for original form of last
-			-- assertion violation.
-		local
-			l_exception: EXCEPTION
-		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
 				Result := l_exception.original.message
 			end
 		end
 
-	original_exception: INTEGER is
-			-- Original code of last exception that triggered
-			-- current exception
-		local
-			l_exception: EXCEPTION
+	is_signal: BOOLEAN
+			-- Is last exception originally due to an external
+			-- event (operating system signal)?
 		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.original.code
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := attached {OPERATING_SYSTEM_SIGNAL_FAILURE} l_exception.original as l_sf
 			end
 		end
 
-	original_recipient_name: STRING is
+	is_system_exception: BOOLEAN
+			-- Is last exception originally due to an
+			-- external event (operating system error)?
+		local
+			l_exception, l_external: detachable EXCEPTION
+		do
+			l_exception := exception_manager.last_exception
+			l_external := exception_manager.exception_from_code (external_exception)
+			if l_exception /= Void and then l_external /= Void then
+				Result := l_exception.original.conforms_to (l_external)
+				if not Result then
+					Result := attached {OPERATING_SYSTEM_FAILURE} l_exception.original as l_system_failure
+				end
+			end
+		end
+
+	tag_name: detachable STRING
+			-- Tag of last violated assertion clause
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.message
+			end
+		end
+
+	recipient_name: detachable STRING
 			-- Name of the routine whose execution was
-			-- interrupted by original form of last exception
-		local
-			l_exception: EXCEPTION
+			-- interrupted by last exception
 		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.original.recipient_name
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.recipient_name
 			end
 		end
 
-	original_class_name: STRING is
+	class_name: detachable STRING
 			-- Name of the class that includes the recipient
 			-- of original form of last exception
-		local
-			l_exception: EXCEPTION
 		do
-			l_exception := exception_manager.last_exception
-			if l_exception /= Void then
-				Result := l_exception.original.type_name
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.type_name
+			end
+		end
+
+	exception: INTEGER
+			-- Code of last exception that occurred
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.code
+			end
+		end
+
+	exception_trace: detachable STRING
+			-- String representation of the exception trace
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.original.exception_trace
+			end
+		end
+
+	original_tag_name: detachable STRING
+			-- Assertion tag for original form of last
+			-- assertion violation.
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.cause.original.message
+			end
+		end
+
+	original_exception: INTEGER
+			-- Original code of last exception that triggered
+			-- current exception
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.cause.original.code
+			end
+		end
+
+	original_recipient_name: detachable STRING
+			-- Name of the routine whose execution was
+			-- interrupted by original form of last exception
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.cause.original.recipient_name
+			end
+		end
+
+	original_class_name: detachable STRING
+			-- Name of the class that includes the recipient
+			-- of original form of last exception
+		do
+			if attached {EXCEPTION} exception_manager.last_exception as l_exception then
+				Result := l_exception.cause.original.type_name
 			end
 		end
 
 feature -- Status setting
 
-	catch (code: INTEGER) is
+	catch (code: INTEGER)
 			-- Make sure that any exception of code `code' will be
 			-- caught. This is the default.
 		local
-			l_type: TYPE [EXCEPTION]
+			l_type: detachable TYPE [EXCEPTION]
 		do
 			l_type := exception_manager.type_of_code (code)
 			if l_type /= Void then
@@ -234,11 +183,11 @@ feature -- Status setting
 			end
 		end
 
-	ignore (code: INTEGER) is
+	ignore (code: INTEGER)
 			-- Make sure that any exception of code `code' will be
 			-- ignored. This is not the default.
 		local
-			l_type: TYPE [EXCEPTION]
+			l_type: detachable TYPE [EXCEPTION]
 		do
 			l_type := exception_manager.type_of_code (code)
 			if l_type /= Void then
@@ -246,7 +195,7 @@ feature -- Status setting
 			end
 		end
 
-	raise (name: STRING) is
+	raise (name: detachable STRING)
 			-- Raise a developer exception of name `name'.
 		local
 			l_exception: DEVELOPER_EXCEPTION
@@ -256,31 +205,33 @@ feature -- Status setting
 			l_exception.raise
 		end
 
-	raise_retrieval_exception (name: STRING) is
+	raise_retrieval_exception (name: detachable STRING)
 			-- Raise a retrieval exception of name `name'.
 		local
-			l_exception: EXCEPTION
+			l_exception: detachable EXCEPTION
 		do
 			l_exception := exception_manager.exception_from_code (serialization_exception)
-			l_exception.set_message (name)
-			l_exception.raise
+			if l_exception /= Void then
+				l_exception.set_message (name)
+				l_exception.raise
+			end
 		end
 
-	die (code: INTEGER) is
+	die (code: INTEGER)
 			-- Terminate execution with exit status `code',
 			-- without triggering an exception.
 		do
 			{ENVIRONMENT}.exit (code)
 		end
 
-	new_die (code: INTEGER) is obsolete "Use ``die''"
+	new_die (code: INTEGER) obsolete "Use ``die''"
 			-- Terminate execution with exit status `code',
 			-- without triggering an exception.
 		do
 			die (code)
 		end
 
-	message_on_failure is
+	message_on_failure
 			-- Print an exception history table
 			-- in case of failure.
 			-- This is the default.
@@ -291,7 +242,7 @@ feature -- Status setting
 			end
 		end
 
-	no_message_on_failure is
+	no_message_on_failure
 			-- Do not print an exception history table
 			-- in case of failure.
 		do
@@ -301,7 +252,7 @@ feature -- Status setting
 			end
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

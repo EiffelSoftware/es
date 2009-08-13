@@ -1,10 +1,9 @@
-indexing
+note
 	description : "Objects that represent a cell"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author      : "$Author$"
-	date        : "$Date$"
-	revision    : "$Revision$"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	ES_OBJECTS_GRID_VALUE_CELL
@@ -28,7 +27,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize is
+	initialize
 			-- Initialize.
 		do
 			Precursor
@@ -36,20 +35,20 @@ feature {NONE} -- Initialization
 
 feature -- Query
 
-	initialize_actions is
+	initialize_actions
 			-- Setup the actions sequences when the item is shown.
 		do
 			Precursor
 			text_label.focus_out_actions.wipe_out
 			text_label.focus_out_actions.extend (agent focus_lost)
-			if button /= Void then
-				button.focus_out_actions.extend (agent focus_lost)
-				button.select_actions.extend (button_action)
-				button.select_actions.extend (agent deactivate)
+			if attached button as but then
+				but.focus_out_actions.extend (agent focus_lost)
+				but.select_actions.extend (button_action)
+				but.select_actions.extend (agent deactivate)
 			end
 		end
 
-	activate_action (popup_window: EV_POPUP_WINDOW) is
+	activate_action (popup_window: EV_POPUP_WINDOW)
 			-- `Current' has been requested to be updated via `popup_window'.
 		local
 			hb: EV_HORIZONTAL_BOX
@@ -73,16 +72,16 @@ feature -- Query
 			is_activated := True
 		end
 
-	deactivate is
+	deactivate
 			-- Cleanup from previous call to activate.
 		do
 			Precursor
 			is_activated := True
-			if button /= Void then
-				if button.parent /= Void then
-					button.parent.destroy
+			if attached button as but then
+				if but.parent /= Void then
+					but.parent.destroy
 				end
-				button.destroy
+				but.destroy
 				button := Void
 			end
 		end
@@ -99,7 +98,7 @@ feature -- Properties
 
 feature -- Change
 
-	set_button_action (v: like button_action) is
+	set_button_action (v: like button_action)
 		do
 			button_action := v
 		end
@@ -122,8 +121,8 @@ feature {NONE} -- Impl
 			Result := text_label.has_focus or (button /= Void and then button.has_focus)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -136,22 +135,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

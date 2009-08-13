@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Help provider to launch Microsoft .doc files"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -14,16 +14,19 @@ inherit
 			show_help
 		end
 
+create
+	make
+
 feature -- Access
 
-	document_protocol: !STRING_32
+	document_protocol: STRING
 			-- Document protocol used by a URI to navigate to the help accessible from the provider.
 		once
 			create Result.make_empty
 			Result.append ("DOC")
 		end
 
-	document_description: !STRING_32
+	document_description: STRING_32
 			-- Document short description
 		once
 			create Result.make_empty
@@ -32,7 +35,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	show_help (a_context_id: !STRING_GENERAL; a_section: ?HELP_CONTEXT_SECTION_I)
+	show_help (a_context_id: READABLE_STRING_GENERAL; a_section: detachable HELP_CONTEXT_SECTION_I)
 			-- <precursor>
 		do
 				-- For the moment, DOC is treated as normal URI
@@ -40,8 +43,8 @@ feature -- Basic operations
 			Precursor {ES_EIS_ENTRY_HELP_PROVIDER}(a_context_id, a_section)
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -65,11 +68,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

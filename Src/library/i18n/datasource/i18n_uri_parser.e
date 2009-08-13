@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Associates uris to I18N_DATASOURCE_MANAGERs"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,8 +10,10 @@ class
 
 feature -- Parser
 
-	parse_uri (uri: STRING_GENERAL): I18N_DATASOURCE_MANAGER is
+	parse_uri (uri: STRING_GENERAL): I18N_DATASOURCE_MANAGER
 			-- parses an uri and returns the appropriate datasource manager
+		require
+			uri_not_void: uri /= Void
 		do
 				-- for now we only know about directories, so we always return
 				-- a I18N_FILE_MANAGER
@@ -20,13 +22,13 @@ feature -- Parser
 			result_exists: Result /= Void
 		end
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

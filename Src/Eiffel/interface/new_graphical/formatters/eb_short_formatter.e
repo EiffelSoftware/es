@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Command to display the short version of a class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -25,7 +25,7 @@ create
 
 feature -- Properties
 
-	symbol: ARRAY [EV_PIXMAP] is
+	symbol: ARRAY [EV_PIXMAP]
 			-- Graphical representation of the command.
 		once
 			create Result.make (1, 2)
@@ -33,19 +33,19 @@ feature -- Properties
 			Result.put (pixmaps.icon_pixmaps.view_contracts_icon, 2)
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Graphical representation of the command.
 		once
 			Result := pixmaps.icon_pixmaps.view_contracts_icon_buffer
 		end
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Identifier of `Current' in menus.
 		do
 			Result := Interface_names.m_Showshort
 		end
 
- 	is_dotnet_formatter: BOOLEAN is
+ 	is_dotnet_formatter: BOOLEAN
  			-- Is Current able to format .NET XML types?
  		do
  			Result := True
@@ -53,13 +53,13 @@ feature -- Properties
 
 feature {NONE} -- Properties
 
-	capital_command_name: STRING_GENERAL is
+	capital_command_name: STRING_GENERAL
 			-- Name of the command.
 		do
 			Result := Interface_names.l_Short
 		end
 
-	post_fix: STRING is "sho"
+	post_fix: STRING = "sho"
 			-- String symbol of the command, used as an extension when saving.
 
 	internal_consumed_type: CONSUMED_TYPE
@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 	class_cmd: E_SHOW_FLAT
 			-- Class command that can generate the information. Not used.
 
-	create_class_cmd is
+	create_class_cmd
 			-- Create `class_cmd'.
 		require else
 			associated_class_non_void: associated_class /= Void
@@ -89,7 +89,7 @@ feature {NONE} -- Implementation
 			create class_cmd
 		end
 
-	generate_text is
+	generate_text
 		local
 			retried: BOOLEAN
 		do
@@ -124,31 +124,29 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	has_breakpoints: BOOLEAN is False
+	has_breakpoints: BOOLEAN = False
 		-- Should `Current' display breakpoints?
 
-	line_numbers_allowed: BOOLEAN is False
+	line_numbers_allowed: BOOLEAN = False
 			-- Does it make sense to show line numbers in Current?
 
 feature -- Status setting
 
-	set_stone (new_stone: CLASSI_STONE) is
+	set_stone (new_stone: STONE)
 			-- Associate `Current' with class contained in `new_stone'.
-		local
-			a_stone: CLASSC_STONE
 		do
 			stone := new_stone
-			if new_stone /= Void and then new_stone.class_i.is_external_class then
+			if attached {CLASSI_STONE} new_stone as l_new_stone and then l_new_stone.class_i.is_external_class then
 				set_dotnet_mode (True)
-				a_stone ?= new_stone
 				if
-					a_stone /= Void and then a_stone.e_class /= Void and then
-					a_stone.e_class.has_feature_table
+					attached {CLASSC_STONE} l_new_stone as l_classc_stone and then
+					l_classc_stone.e_class /= Void and then
+					l_classc_stone.e_class.has_feature_table
 				then
-					internal_consumed_type := consumed_type (a_stone.class_i)
+					internal_consumed_type := consumed_type (l_classc_stone.class_i)
 					class_i := Void
 				else
-					internal_consumed_type := consumed_type (new_stone.class_i)
+					internal_consumed_type := consumed_type (l_new_stone.class_i)
 					associated_class := Void
 				end
 			else
@@ -158,7 +156,7 @@ feature -- Status setting
 			Precursor {EB_CLASS_TEXT_FORMATTER} (new_stone)
 		end
 
-	set_classi (a_class: CLASS_I) is
+	set_classi (a_class: CLASS_I)
 			-- Associate current formatter with `a_class'.
 		require
 			a_class_not_void: a_class /= Void
@@ -170,10 +168,10 @@ feature -- Status setting
 			ensure_display_in_widget_owner
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -184,19 +182,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

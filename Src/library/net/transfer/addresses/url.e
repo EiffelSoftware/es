@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Unified resource locators"
 	legal: "See notice at end of class."
@@ -13,101 +13,109 @@ deferred class URL inherit
 
 feature {NONE} -- Initialization
 
-	make (a: STRING) is
+	make (a: STRING)
 			-- Create URL with address `a'.
 		require
 			address_specified: a /= Void and then not a.is_empty
 		do
-			address := a
+			create address.make_from_string (a)
 			port := Default_port
 			proxy_information := Void
 			analyze
 		ensure
-			address_set: address = a
+			address_set: address ~ a
 			port_set: port > 0
 			no_proxy_set: proxy_information = Void
 		end
 
 feature -- Access
 
-	service: STRING is
+	service: STRING
 			-- Name of service
 		deferred
 		end
 
 	port: INTEGER
 			-- Port used by service
-	
-	default_port: INTEGER is
+
+	default_port: INTEGER
 			-- Default port number for service
 		deferred
 		end
-	
-	proxy_host: STRING is
+
+	proxy_host: STRING
 			-- Name or address of proxy host
 		require
 			proxy_supported: is_proxy_supported
 			has_proxy: is_proxy_used
+		local
+			l_proxy_information: like proxy_information
 		do
-			Result := proxy_information.host
+			l_proxy_information := proxy_information
+			check l_proxy_information_attached: l_proxy_information /= Void end
+			Result := l_proxy_information.host
 		ensure
 			result_not_empty: Result /= Void and then not Result.is_empty
 		end
 
-	proxy_port: INTEGER is
+	proxy_port: INTEGER
 			-- Port of proxy
 		require
 			proxy_supported: is_proxy_supported
 			has_proxy: is_proxy_used
+		local
+			l_proxy_information: like proxy_information
 		do
-			Result := proxy_information.port
+			l_proxy_information := proxy_information
+			check l_proxy_information_attached: l_proxy_information /= Void end
+			Result := l_proxy_information.port
 		ensure
 			result_non_negative: Result >= 0
 		end
-			
-	location: STRING is
+
+	location: STRING
 			-- Full URL of resource
 		deferred
 		end
-			
+
 feature -- Status report
 
-	is_correct: BOOLEAN is
+	is_correct: BOOLEAN
 			-- Is URL correct?
 		deferred
 		end
-	 
-	 is_proxy_supported: BOOLEAN is
+
+	 is_proxy_supported: BOOLEAN
 			-- Are proxy connections supported?
 		deferred
 		end
-	 
-	 proxy_host_ok (host: STRING): BOOLEAN is
+
+	 proxy_host_ok (host: STRING): BOOLEAN
 	 		-- Is host name of proxy correct?
 		require
 			proxy_supported: is_proxy_supported
 		deferred
 		end
-	
-	 is_proxy_used: BOOLEAN is
+
+	 is_proxy_used: BOOLEAN
 	 		-- Is a proxy used?
 		do
 			Result := (proxy_information /= Void)
 		end
 
-	is_password_accepted: BOOLEAN is
+	is_password_accepted: BOOLEAN
 			-- Can a password be set?
 		deferred
 		end
-	 
-	has_username: BOOLEAN is
+
+	has_username: BOOLEAN
 			-- Can address contain a username?
 		deferred
 		end
-	 
+
 feature -- Status setting
 
-	set_port (port_no: INTEGER) is
+	set_port (port_no: INTEGER)
 			-- Set port to `port_no'.
 		require
 			port_non_negative: port_no >= 0
@@ -117,7 +125,7 @@ feature -- Status setting
 			port_set: port = port_no
 		end
 
-	set_proxy (host: STRING; port_no: INTEGER) is
+	set_proxy (host: STRING; port_no: INTEGER)
 			-- Set proxy host to `host' and proxy port to `port_no'.
 		require
 			proxy_supported: is_proxy_supported
@@ -131,7 +139,7 @@ feature -- Status setting
 			port_set: proxy_port = port_no
 		end
 
-	set_proxy_information (pi: PROXY_INFORMATION) is
+	set_proxy_information (pi: PROXY_INFORMATION)
 			-- Set proxy information to `pi'.
 		require
 			proxy_supported: is_proxy_supported
@@ -141,23 +149,23 @@ feature -- Status setting
 			proxy_information_set: proxy_information = pi
 		end
 
-	set_username (un: STRING) is
+	set_username (un: STRING)
 			-- Set username.
 		require
 			username_ok: has_username
 			non_empty_username: un /= Void and then not un.is_empty
 		deferred
 		end
-	 
-	set_password (pw: STRING) is
+
+	set_password (pw: STRING)
 			-- Set password.
 		require
 			password_accepted: is_password_accepted
 			non_empty_password: pw /= Void and then not pw.is_empty
 		deferred
 		end
-	 
-	reset_proxy is
+
+	reset_proxy
 			-- Reset proxy information.
 		require
 			proxy_supported: is_proxy_supported
@@ -170,7 +178,7 @@ feature -- Status setting
 
 feature {NONE} -- Basic operations
 
-	analyze is
+	analyze
 			-- Analyze URL.
 		require
 			address_specified: address /= Void and then not address.is_empty
@@ -182,15 +190,15 @@ feature {NONE} -- Implementation
 	address: STRING
 			-- Address string
 
-	proxy_information: PROXY_INFORMATION
+	proxy_information: detachable PROXY_INFORMATION
 			-- Information about the proxy to be used
-			
+
 invariant
 
 	proxy_used_definition: is_proxy_used = (proxy_information /= Void)
 	proxy_usage_constraint: is_proxy_used implies is_proxy_supported
-	
-indexing
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

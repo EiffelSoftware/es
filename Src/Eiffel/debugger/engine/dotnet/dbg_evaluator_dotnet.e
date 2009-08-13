@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 			Class used to process evaluation on dotnet system ...
 		]"
@@ -33,7 +33,7 @@ create
 
 feature -- Concrete initialization
 
-	make (dm: like debugger_manager) is
+	make (dm: like debugger_manager)
 			-- Retrieve new value for evaluation mecanism.
 		require else
 			is_dotnet_project: dm.is_dotnet_project
@@ -52,7 +52,7 @@ feature {NONE} -- Implementation
 
 	effective_evaluate_routine (addr: DBG_ADDRESS; a_target: DUMP_VALUE; f, realf: FEATURE_I;
 			ctype: CLASS_TYPE; orig_class: CLASS_C; params: LIST [DUMP_VALUE];
-			is_static_call: BOOLEAN) is
+			is_static_call: BOOLEAN)
 			-- Evaluate dotnet function
 		local
 			l_params: ARRAY [DUMP_VALUE]
@@ -85,10 +85,10 @@ feature {NONE} -- Implementation
 			if l_icdv_obj = Void then
 				dbg_error_handler.notify_error_evaluation (Debugger_names.cst_error_unable_to_get_target_object)
 			else
-				if {nat_ct: NATIVE_ARRAY_CLASS_TYPE} l_ctype then
-					if 
+				if attached {NATIVE_ARRAY_CLASS_TYPE} l_ctype as nat_ct then
+					if
 						a_target /= Void and then
-						{nat_edv: EIFNET_DEBUG_NATIVE_ARRAY_VALUE} a_target.as_dump_value_dotnet.eifnet_debug_value
+						attached {EIFNET_DEBUG_NATIVE_ARRAY_VALUE} a_target.as_dump_value_dotnet.eifnet_debug_value as nat_edv
 					then
 						internal_evaluate_function_on_native_array (nat_edv, realf, l_params)
 					else
@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 					if l_icd_function = Void then
 						dbg_error_handler.notify_error_evaluation (Debugger_names.Cst_error_unable_to_get_icd_function)
 					else
-						if {dv: DUMP_VALUE} dotnet_evaluate_icd_function (l_icdv_obj, l_icd_function, l_params, l_ctype.is_external, f.is_function) then
+						if attached dotnet_evaluate_icd_function (l_icdv_obj, l_icd_function, l_params, l_ctype.is_external, f.is_function) as dv then
 							create last_result.make_with_value (dv)
 						else
 							-- FIXME: should we return a last_result.failed?
@@ -145,7 +145,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_evaluate_function_on_native_array (nat_edv: EIFNET_DEBUG_NATIVE_ARRAY_VALUE; f: FEATURE_I; a_params: ARRAY [DUMP_VALUE]) is
+	internal_evaluate_function_on_native_array (nat_edv: EIFNET_DEBUG_NATIVE_ARRAY_VALUE; f: FEATURE_I; a_params: ARRAY [DUMP_VALUE])
 			-- Internal evaluation on NATIVE_ARRAY dotnet pseudo objects
 			-- The debugger does not fully support any evaluation on it
 			-- but we try to support as much as possible
@@ -201,7 +201,7 @@ feature {NONE} -- Implementation
 
 	effective_evaluate_function_with_name (a_addr: DBG_ADDRESS; a_target: DUMP_VALUE;
 				a_feature_name, a_external_name: STRING;
-				params: LIST [DUMP_VALUE]) is
+				params: LIST [DUMP_VALUE])
 			-- Note: this feature is used only for external function
 		local
 			l_cl: CLASS_C
@@ -253,7 +253,7 @@ feature {NONE} -- Implementation
 				else
 						--| The current feature is used only for external function
 						--| Then we pass `True' to set the `is_external' argument.
-					if {dv: DUMP_VALUE} dotnet_evaluate_icd_function (l_icdv_obj, l_icd_function, l_params, True, True) then
+					if attached dotnet_evaluate_icd_function (l_icdv_obj, l_icd_function, l_params, True, True) as dv then
 						create last_result.make_with_value (dv)
 					else
 						-- FIXME: should we return last_result.failed?
@@ -288,7 +288,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	effective_evaluate_static_function (f: FEATURE_I; ctype: CLASS_TYPE; params: LIST [DUMP_VALUE]) is
+	effective_evaluate_static_function (f: FEATURE_I; ctype: CLASS_TYPE; params: LIST [DUMP_VALUE])
 		local
 			l_params: ARRAY [DUMP_VALUE]
 			l_ctype: CLASS_TYPE
@@ -346,7 +346,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	effective_evaluate_once_function (f: FEATURE_I) is
+	effective_evaluate_once_function (f: FEATURE_I)
 		local
 			l_class_c, l_statcl: CLASS_C
 			l_icd_value: ICOR_DEBUG_VALUE
@@ -382,7 +382,7 @@ feature {NONE} -- Implementation
 
 					dbg_error_handler.notify_error_evaluation ("Once feature [" + f.feature_name + "]: not yet called")
 				elseif last_once_failed then
-					if {arv: ABSTRACT_REFERENCE_VALUE} l_adv then
+					if attached {ABSTRACT_REFERENCE_VALUE} l_adv as arv then
 						create exc_dv.make_with_value (arv)
 					else
 						create exc_dv.make_without_any_value
@@ -406,7 +406,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_empty_instance_of (a_type_i: CL_TYPE_A) is
+	create_empty_instance_of (a_type_i: CL_TYPE_A)
 			-- create an empty instance of `a_type_i'
 		local
 			l_class_c: CLASS_C
@@ -432,7 +432,7 @@ feature {NONE} -- Implementation
 							dbg_error_handler.notify_error_evaluation (Void)
 						else
 								--| At this point l_icd_value represents an instance of INTERNAL
-							if {dv: DUMP_VALUE} new_empty_instance_of_using_internal (a_type_i, l_icd_value, l_class_c) then
+							if attached new_empty_instance_of_using_internal (a_type_i, l_icd_value, l_class_c) as dv then
 								create last_result.make_with_value (dv)
 							else
 								--FIXME: should we return last_result.failed?
@@ -457,7 +457,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_special_any_instance (a_type_i: CL_TYPE_A; a_count: INTEGER) is
+	create_special_any_instance (a_type_i: CL_TYPE_A; a_count: INTEGER)
 		local
 			l_class_c: CLASS_C
 			l_icd_value: ICOR_DEBUG_VALUE
@@ -473,7 +473,7 @@ feature {NONE} -- Implementation
 						dbg_error_handler.notify_error_evaluation (Void)
 					else
 							--| At this point l_icd_value represents an instance of INTERNAL
-							if {dv: DUMP_VALUE} new_special_any_instance_using_internal (a_type_i, a_count, l_icd_value, l_class_c) then
+							if attached new_special_any_instance_using_internal (a_type_i, a_count, l_icd_value, l_class_c) as dv then
 								create last_result.make_with_value (dv)
 							else
 								-- FIXME: should we return last_result.failed?
@@ -487,7 +487,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	new_special_any_instance_using_internal (a_type_i: CL_TYPE_A; a_count: INTEGER; a_internal_value: ICOR_DEBUG_VALUE; a_internal_class_c: CLASS_C): DUMP_VALUE is
+	new_special_any_instance_using_internal (a_type_i: CL_TYPE_A; a_count: INTEGER; a_internal_value: ICOR_DEBUG_VALUE; a_internal_class_c: CLASS_C): DUMP_VALUE
 		local
 			l_dyn_type_from_str_feat_i,
 			l_new_instance_of_feat_i: FEATURE_I
@@ -505,7 +505,7 @@ feature {NONE} -- Implementation
 			Result := dotnet_evaluate_icd_function (a_internal_value, l_icd_func, <<l_dv, l_dv_count>>, False, True)
 		end
 
-	new_empty_instance_of_using_internal (a_type_i: CL_TYPE_A; a_internal_value: ICOR_DEBUG_VALUE; a_internal_class_c: CLASS_C): DUMP_VALUE is
+	new_empty_instance_of_using_internal (a_type_i: CL_TYPE_A; a_internal_value: ICOR_DEBUG_VALUE; a_internal_class_c: CLASS_C): DUMP_VALUE
 			--
 		local
 			l_dyn_type_from_str_feat_i,
@@ -525,7 +525,7 @@ feature {NONE} -- Implementation
 
 feature -- Query
 
-	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE is
+	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE
 		local
 			cse_dotnet: CALL_STACK_ELEMENT_DOTNET
 			l_curr_obj : ABSTRACT_DEBUG_VALUE
@@ -537,7 +537,7 @@ feature -- Query
 			end
 		end
 
-	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE is
+	dump_value_at_address (addr: DBG_ADDRESS): DUMP_VALUE
 			-- <Precursor>	
 		do
 			if Eifnet_debugger.know_about_kept_object (addr) then
@@ -545,7 +545,7 @@ feature -- Query
 			end
 		end
 
-	address_from_basic_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS is
+	address_from_basic_dump_value (a_target: DUMP_VALUE): DBG_ADDRESS
 		local
 			dump: DUMP_VALUE
 		do
@@ -553,7 +553,7 @@ feature -- Query
 			Result := dump.address
 		end
 
-	class_c_from_external_b_with_extension (a_external_b: EXTERNAL_B): CLASS_C is
+	class_c_from_external_b_with_extension (a_external_b: EXTERNAL_B): CLASS_C
 		local
 			exti: IL_EXTENSION_I
 			tk: INTEGER
@@ -569,26 +569,26 @@ feature -- Query
 
 feature {NONE} -- Parameters operation
 
-	parameters_reset is
+	parameters_reset
 		do
 			Precursor
 			dotnet_parameters := Void
 		end
 
-	parameters_init (n: INTEGER) is
+	parameters_init (n: INTEGER)
 		do
 			Precursor (n)
 			create dotnet_parameters.make (1, n)
 			dotnet_parameters_index := 0
 		end
 
-	parameters_push (dmp: DUMP_VALUE) is
+	parameters_push (dmp: DUMP_VALUE)
 		do
 			dotnet_parameters_index := dotnet_parameters_index + 1
 			dotnet_parameters.put (dmp, dotnet_parameters_index)
 		end
 
-	parameters_push_and_metamorphose (dmp: DUMP_VALUE) is
+	parameters_push_and_metamorphose (dmp: DUMP_VALUE)
 		local
 			l_dmp: DUMP_VALUE
 		do
@@ -600,7 +600,7 @@ feature {NONE} -- Parameters operation
 			dotnet_parameters.put (l_dmp, dotnet_parameters_index)
 		end
 
-	prepared_parameters (a_params: ARRAY [DUMP_VALUE]; with_first_empty_element: BOOLEAN): ARRAY [ICOR_DEBUG_VALUE] is
+	prepared_parameters (a_params: ARRAY [DUMP_VALUE]; with_first_empty_element: BOOLEAN): ARRAY [ICOR_DEBUG_VALUE]
 			-- Prepared param for dotnet evaluation.
 		local
 			l_param_i: INTEGER
@@ -664,28 +664,28 @@ feature {NONE} -- Properties
 
 feature {NONE} -- Bridge
 
-	last_once_available: BOOLEAN is
+	last_once_available: BOOLEAN
 		do
 			Result := eifnet_debugger.last_once_available
 		end
 
-	last_once_failed: BOOLEAN is
+	last_once_failed: BOOLEAN
 		do
 			Result := eifnet_debugger.last_once_failed
 		end
 
-	last_once_already_called: BOOLEAN is
+	last_once_already_called: BOOLEAN
 		do
 			Result := eifnet_debugger.last_once_already_called
 		end
 
-	current_icor_debug_frame: ICOR_DEBUG_FRAME is
+	current_icor_debug_frame: ICOR_DEBUG_FRAME
 			-- Current shared ICorDebugFrame encapsulated instance
 		do
 			Result := eifnet_debugger.current_stack_icor_debug_frame
 		end
 
-	new_active_icd_frame: ICOR_DEBUG_FRAME is
+	new_active_icd_frame: ICOR_DEBUG_FRAME
 			-- Default ICorDebugFrame which is the active frame
 		do
 			Result := eifnet_debugger.new_active_frame
@@ -693,7 +693,7 @@ feature {NONE} -- Bridge
 
 feature {NONE} -- Implementation
 
-	dotnet_metamorphose_basic_to_reference_value (dmp: DUMP_VALUE): DUMP_VALUE is
+	dotnet_metamorphose_basic_to_reference_value (dmp: DUMP_VALUE): DUMP_VALUE
 			-- Metamorphose basic type into corresponding "reference TYPE" type
 		local
 			icdv: ICOR_DEBUG_VALUE
@@ -708,7 +708,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	dotnet_metamorphose_basic_to_value (dmp: DUMP_VALUE): DUMP_VALUE is
+	dotnet_metamorphose_basic_to_value (dmp: DUMP_VALUE): DUMP_VALUE
 			-- Metamorphose basic type into corresponding dotnet value type
 		require
 			dmp_not_void: dmp /= Void
@@ -731,7 +731,7 @@ feature {NONE} -- Implementation
 	last_exception_trace: STRING
 
 	dotnet_evaluate_icd_function (target_icdv: ICOR_DEBUG_VALUE; func: ICOR_DEBUG_FUNCTION;
-				a_params: ARRAY [DUMP_VALUE]; is_external: BOOLEAN; expecting_result: BOOLEAN): DUMP_VALUE is
+				a_params: ARRAY [DUMP_VALUE]; is_external: BOOLEAN; expecting_result: BOOLEAN): DUMP_VALUE
 		require
 			target_icdv /= Void
 			func /= Void
@@ -772,7 +772,7 @@ feature {NONE} -- Implementation
 				if eifnet_evaluator.last_eval_aborted then
 					dbg_error_handler.notify_error_evaluation_aborted (Void)
 				elseif eifnet_evaluator.last_eval_is_exception then
-					if {arv: ABSTRACT_REFERENCE_VALUE} debug_value_from_icdv (l_result, Void) then
+					if attached {ABSTRACT_REFERENCE_VALUE} debug_value_from_icdv (l_result, Void) as arv then
 						create l_exc_dv.make_with_value (arv)
 					else
 						create l_exc_dv.make_without_any_value
@@ -790,7 +790,9 @@ feature {NONE} -- Implementation
 							l_adv := debug_value_from_icdv (l_result, Void)
 							Result := l_adv.dump_value
 						else
-							fixme("How come l_result is Void with no Error message ?")
+							debug ("refactor_fixme")
+								fixme("How come l_result is Void with no Error message ?")
+							end
 						end
 					else
 						--| This might be a procedure return
@@ -806,7 +808,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	target_icor_debug_value (addr: DBG_ADDRESS; dvalue: DUMP_VALUE): ICOR_DEBUG_VALUE is
+	target_icor_debug_value (addr: DBG_ADDRESS; dvalue: DUMP_VALUE): ICOR_DEBUG_VALUE
 		do
 				--| Get the target object : `l_icdv_obj'
 			if dvalue = Void then
@@ -827,7 +829,7 @@ feature {NONE} -- Implementation
 			valid_result: Result /= Void implies Result.item_not_null
 		end
 
-	dump_value_to_icdv (dmv: DUMP_VALUE): ICOR_DEBUG_VALUE is
+	dump_value_to_icdv (dmv: DUMP_VALUE): ICOR_DEBUG_VALUE
 			-- DUMP_VALUE converted into ICOR_DEBUG_VALUE.
 		require
 			dmv_not_void: dmv /= Void
@@ -863,7 +865,9 @@ feature {NONE} -- Implementation
 				when {DUMP_VALUE_CONSTANTS}.type_character_8 then
 					Result := eifnet_evaluator.new_char_evaluation (new_active_icd_frame, dmvb.value_character_8)
 				when {DUMP_VALUE_CONSTANTS}.type_character_32 then
-					fixme ("FIXME: when CHARACTER_32 is redesign for dotnet, change that")
+					debug ("refactor_fixme")
+						fixme ("FIXME: when CHARACTER_32 is redesign for dotnet, change that")
+					end
 					Result := eifnet_evaluator.new_u4_evaluation (new_active_icd_frame, dmvb.value_character_32.natural_32_code)
 
 				when {DUMP_VALUE_CONSTANTS}.type_real_32 then
@@ -884,7 +888,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	dump_value_to_reference_icdv (dmv: DUMP_VALUE): ICOR_DEBUG_VALUE is
+	dump_value_to_reference_icdv (dmv: DUMP_VALUE): ICOR_DEBUG_VALUE
 			-- DUMP_VALUE converted into ICOR_DEBUG_VALUE for reference TYPE Objects
 		local
 			dmvb: DUMP_VALUE_BASIC
@@ -980,7 +984,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Internal Helpers
 
-	icd_value_by_address (addr: DBG_ADDRESS): ICOR_DEBUG_VALUE is
+	icd_value_by_address (addr: DBG_ADDRESS): ICOR_DEBUG_VALUE
 			-- ICorDebugValue indexed by `addr' if exists
 		require
 			address_valid: addr /= Void and then not addr.is_void
@@ -999,7 +1003,7 @@ feature {NONE} -- Internal Helpers
 
 feature -- Helpers
 
-	debug_value_by_address (addr: DBG_ADDRESS): ABSTRACT_DEBUG_VALUE is
+	debug_value_by_address (addr: DBG_ADDRESS): ABSTRACT_DEBUG_VALUE
 			-- ABSTRACT_DEBUG_VALUE indexed by `addr' if exists
 		require
 			address_valid: addr /= Void and then not addr.is_void
@@ -1011,7 +1015,7 @@ feature -- Helpers
 
 feature {NONE} -- Debug purpose only
 
-	display_funct_info_on_object (icd_f: ICOR_DEBUG_FUNCTION) is
+	display_funct_info_on_object (icd_f: ICOR_DEBUG_FUNCTION)
 			-- Display information related to feature `icd_f'
 			-- debug purpose only
 		local
@@ -1028,7 +1032,7 @@ feature {NONE} -- Debug purpose only
 			end
 		end
 
-	display_info_on_object (icdv: ICOR_DEBUG_VALUE) is
+	display_info_on_object (icdv: ICOR_DEBUG_VALUE)
 			-- Display information related to object `icdv'
 			-- debug purpose only
 		local
@@ -1055,36 +1059,36 @@ feature {NONE} -- Debug purpose only
 			retry
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-
+			
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-
+			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
-
+			See the GNU General Public License for more details.
+			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

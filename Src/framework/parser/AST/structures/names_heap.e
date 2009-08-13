@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Correspondance between names and integers.
 		The structure is very efficient for accessing from an integer
@@ -24,18 +24,18 @@ create {SYSTEM_EXPORT, SHARED_NAMES_HEAP}
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create new instance of NAMES_HEAP
 		do
 			top_index := 1
-			create area.make (Chunk)
+			create area.make_filled (Void, Chunk)
 			create lookup_table.make (Chunk)
 			initialize_constants
 		end
 
 feature -- Access
 
-	item (i: INTEGER): STRING is
+	item (i: INTEGER): STRING
 			-- Access `i'-th element.
 		require
 			valid_index: valid_index (i)
@@ -53,7 +53,7 @@ feature -- Access
 	found: BOOLEAN
 			-- Has last search been successful?
 
-	id_of (s: STRING): INTEGER is
+	id_of (s: STRING): INTEGER
 			-- Id of `s' if inserted, otherwise 0.
 		require
 			s_not_void: s /= Void
@@ -73,19 +73,19 @@ feature -- Access
 			valid_result: Result >= 0
 		end
 
-	string_type: STRING is ""
+	string_type: STRING = ""
 			-- Manifest string used in precondition to
 			-- ensure that Current only contains STRING instances.
 
 feature -- Status report
 
-	has (i: INTEGER): BOOLEAN is
+	has (i: INTEGER): BOOLEAN
 			-- Is there an entry for ID `i'?
 		do
 			Result := valid_index (i) and then area.item (i) /= Void
 		end
 
-	valid_index (i: INTEGER): BOOLEAN is
+	valid_index (i: INTEGER): BOOLEAN
 			-- Is `i' within bounds?
 		do
 			Result := i >= 0 and then i < top_index
@@ -93,7 +93,7 @@ feature -- Status report
 
 feature -- Element change
 
-	put (s: STRING) is
+	put (s: STRING)
 			-- Insert `s' in Current if not present,
 			-- otherwise does nothing.
 			-- In both cases, `found_item' is updated
@@ -102,9 +102,7 @@ feature -- Element change
 			s_not_void: s /= Void
 			s_valid_type: s.same_type (string_type)
 		local
-			l_s: STRING
 			l_lookup_table: like lookup_table
-			l_area: like area
 			l_top_index: INTEGER
 		do
 			l_lookup_table := lookup_table
@@ -114,16 +112,13 @@ feature -- Element change
 			else
 				l_top_index := top_index
 				found_item := l_top_index
-				l_area := area
-				if l_area.count <= l_top_index then
-					l_area := l_area.aliased_resized_area (l_top_index + (l_top_index // 2).max (Chunk))
-					area := l_area
+				if area.count <= l_top_index then
+					area := area.aliased_resized_area_with_default (Void, l_top_index + (l_top_index // 2).max (Chunk))
 				end
-					-- Twin string as the heap cannot work if `s' is externally
+					-- Duplicate string as the heap cannot work if `s' is externally
 					-- modified.
-				l_s := s.twin
-				l_area.put (l_s, l_top_index)
-				l_lookup_table.put (l_top_index, l_s)
+				area.put (create {STRING}.make_from_string (s), l_top_index)
+				l_lookup_table.put (l_top_index, area [l_top_index])
 				top_index := l_top_index + 1
 			end
 		ensure
@@ -132,7 +127,7 @@ feature -- Element change
 
 feature -- Convenience
 
-	convert_to_string_array (t: ARRAY [INTEGER]): ARRAY [STRING] is
+	convert_to_string_array (t: ARRAY [INTEGER]): ARRAY [STRING]
 			-- Convert `t' an array of indexes in NAMES_HEAP into an
 			-- array of STRINGs, each string being item of Current associated
 			-- with current value in `t'.
@@ -166,16 +161,17 @@ feature {NONE} -- Implementation: access
 	top_index: INTEGER
 			-- Number of elements in Current
 
-	Chunk: INTEGER is 5000
+	Chunk: INTEGER = 5000
 			-- Default chunk size.
 
-	initialize_constants is
+	initialize_constants
 			-- Initialize Current with predefined constants value
 		do
 			put ("put") check found_item = put_name_id end
 			put ("item") check found_item = item_name_id end
 			put ("invariant") check found_item = invariant_name_id end
 			put ("make_area") check found_item = make_area_name_id end
+			put ("at") check found_item = at_name_id end
 			put ("infix %"@%"") check found_item = infix_at_name_id end
 			put ("set_area") check found_item = set_area_name_id end
 			put ("area") check found_item = area_name_id end
@@ -230,12 +226,13 @@ feature {NONE} -- Implementation: access
 			put ("to_integer_16") check found_item = to_integer_16_name_id end
 			put ("to_integer_32") check found_item = to_integer_32_name_id end
 			put ("to_integer_64") check found_item = to_integer_64_name_id end
+			put ("plus") check found_item = plus_name_id end
 			put ("infix %"+%"") check found_item = infix_plus_name_id end
 			put ("default") check found_item = default_name_id end
 			put ("bit_and") check found_item = bit_and_name_id end
-			put ("infix %"&%"") check found_item = infix_and_name_id end
+			put ("infix %"&%"") check found_item = infix_bit_and_name_id end
 			put ("bit_or") check found_item = bit_or_name_id end
-			put ("infix %"|%"") check found_item = infix_or_name_id end
+			put ("infix %"|%"") check found_item = infix_bit_or_name_id end
 			put ("bit_xor") check found_item = bit_xor_name_id end
 			put ("bit_not") check found_item = bit_not_name_id end
 			put ("bit_shift_left") check found_item = bit_shift_left_name_id end
@@ -304,8 +301,11 @@ feature {NONE} -- Implementation: access
 			put ("is_lower") check found_item = is_lower_name_id end
 			put ("is_upper") check found_item = is_upper_name_id end
 			put ("set_bit") check found_item = set_bit_name_id end
+			put ("conjuncted_semistrict") check found_item = conjuncted_semistrict_name_id end
 			put ("infix %"and then%"") check found_item = infix_and_then_name_id end
+			put ("disjuncted_semistrict") check found_item = disjuncted_semistrict_name_id end
 			put ("infix %"or else%"") check found_item = infix_or_else_name_id end
+			put ("implication") check found_item = implication_name_id end
 			put ("infix %"implies%"") check found_item = infix_implies_name_id end
 			put ("as_lower") check found_item = as_lower_name_id end
 			put ("as_upper") check found_item = as_upper_name_id end
@@ -362,6 +362,10 @@ feature {NONE} -- Implementation: access
 			put ("put_default") check found_item = put_default_name_id end
 			put ("as_attached") check found_item = as_attached_name_id end
 			put ("is_default") check found_item = is_default_name_id end
+			put ("extend") check found_item = extend_name_id end
+			put ("make_filled") check found_item = make_filled_name_id end
+			put ("make_empty") check found_item = make_empty_name_id end
+			put ("has_default") check found_item = has_default_name_id end
 		end
 
 invariant
@@ -370,8 +374,8 @@ invariant
 	top_index_positive: top_index >= 0
 	found_item_positive: found_item >= 0
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -384,22 +388,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class NAMES_HEAP

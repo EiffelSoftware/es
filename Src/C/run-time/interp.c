@@ -2,7 +2,7 @@
 	description: "The byte code interpreter."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2008, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2009, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -61,7 +61,6 @@ doc:<file name="interp.c" header="eif_interp.h" version="$Id$" summary="Byte cod
 #include "eif_main.h"
 #include "rt_gen_conf.h"
 #include "rt_gen_types.h"
-#include "eif_size.h"		/* For LNGPAD */
 #include "eif_misc.h"
 #include "rt_assert.h"
 #include "rt_wbench.h"
@@ -175,22 +174,8 @@ doc:		<access>Read/Write</access>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>Private per thread data.</synchronization>
 doc:	</attribute>
-doc:	<attribute name="saved_scur" return_type="struct stochunk *" export="private">
-doc:		<summary>Current feature context. Used in conjonction for registers synchronization.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data.</synchronization>
-doc:	</attribute>
-doc:	<attribute name="saved_stop" return_type="EIF_TYPED_VALUE *" export="private">
-doc:		<summary>Current feature context. Used in conjonction for registers synchronization.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data.</synchronization>
-doc:	</attribute>
 */
 rt_private unsigned long tagval = 0L;
-rt_private struct stochunk *saved_scur = NULL;
-rt_private EIF_TYPED_VALUE *saved_stop = NULL;
 
 /*
 doc:	<attribute name="inv_mark_table" return_type="char *" export="private">
@@ -219,10 +204,10 @@ rt_private void eif_interp_eq (EIF_TYPED_VALUE *f, EIF_TYPED_VALUE *s);			/* == 
 rt_private void eif_three_way_comparison (void);	/* Execute `three_way_comparison'. */
 rt_private void eif_interp_min_max (int code);	/* Execute `min' or `max' depending
 														   on value of `type' */
-rt_private void eif_interp_generator (void);	/* generate the name of the basic type */
+rt_private void eif_interp_generator (struct stochunk *stack_cur, EIF_TYPED_VALUE *stack_top);	/* generate the name of the basic type */
 rt_private void eif_interp_offset (void);	/* execute `offset' on character and pointer type */
 rt_private void eif_interp_bit_operations (void);	/* execute bit operations on integers */
-rt_private void eif_interp_basic_operations (void);	/* execute basic operations on basic types */
+rt_private void eif_interp_basic_operations (struct stochunk *stack_cur, EIF_TYPED_VALUE *stack_top); /* execute basic operations on basic types */
 
 /* Assertion checking */
 rt_private void icheck_inv(EIF_REFERENCE obj, struct stochunk *scur, EIF_TYPED_VALUE *stop, int where);				/* Invariant check */
@@ -234,16 +219,16 @@ rt_private EIF_TYPE_INDEX get_creation_type(int for_creation);		/* Get a creatio
 
 /* Interpreter interface */
 rt_public void exp_call(void);				/* Sets IC before calling interpret */ /* %%ss undefine */
-rt_public void xinterp(unsigned char *icval);	/* Sets IC before calling interpret */
+rt_public void xinterp(unsigned char *icval, rt_uint_ptr nb_pushed);	/* Sets IC before calling interpret */
 rt_public void xinitint(void);			/* Initialization of the interpreter */
 rt_private void interpret(int flag, int where);	/* Run the interpreter */
 
 /* Dbg evaluation */
 rt_shared int dbg_store_exception_trace (char* trace);
-rt_public EIF_TYPED_VALUE * dynamic_eval_dbg(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, EIF_TYPED_VALUE* previous_otop, int* exception_occured);
+rt_shared void dynamic_eval_dbg(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, EIF_TYPED_VALUE* previous_otop, rt_uint_ptr nb_pushed, int* exception_occured, EIF_TYPED_VALUE *result);
 
 /* Feature call and/or access  */
-rt_public void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, int is_inline_agent);
+rt_shared void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, int is_inline_agent, rt_uint_ptr nb_pushed);
 rt_private int icall(int fid, int stype, int ptype);					/* Interpreter dispatcher (in water) */
 rt_private int ipcall(int32 origin, int32 offset, int ptype);					/* Interpreter precomp dispatcher */
 rt_private void interp_access(int fid, int stype, uint32 type);			/* Access to an attribute */
@@ -268,7 +253,7 @@ rt_public EIF_TYPED_VALUE *opush(register EIF_TYPED_VALUE *val);	/* Push one val
 rt_public EIF_TYPED_VALUE *opop(void);							/* Pop last item */
 rt_private EIF_TYPED_VALUE *stack_allocate(register int size);	/* Allocates first chunk */
 rt_private int stack_extend(register int size);				/* Extend stack's size */
-rt_private void npop(register int nb_items);				/* Pop 'n' items */
+rt_private void npop(rt_uint_ptr nb);				/* Pop 'nb' items */
 rt_public EIF_TYPED_VALUE *otop(void);							/* Pointer to value at the top */
 rt_private EIF_TYPED_VALUE *oitem(uint32 n);					/* Pointer to value at position `n' down the stack */
 rt_private void stack_truncate(void);						/* Truncate stack if necessary */
@@ -303,17 +288,20 @@ rt_private void iinternal_dump(FILE *, char *);				/* Internal (compound) dumpin
 	struct stochunk * volatile scur_o
 
 
-#define SAVE(x,y,z) \
-	{								\
-		(y) = (x).st_cur;			\
-		(z) = (x).st_top;			\
-	}
-#define RESTORE(x,y,z) \
-	{								\
-		(x).st_cur = (y);			\
-		(x).st_end = (y)->sk_end;	\
-		(x).st_top = (z);			\
-	}
+#define SAVE(stack,cur,top) \
+	(cur) = (stack).st_cur;			\
+	(top) = (stack).st_top;
+
+#define RESTORE(stack,cur,top) \
+	if (top) {								\
+		(stack).st_cur = (cur);			\
+		(stack).st_top = (top);			\
+		if (cur) { (stack).st_end = (cur)->sk_end; }	\
+	} else { /* There was no chunk allocated when saving, but allocated at excution in between */ \
+		(stack).st_cur = (stack).st_hd; \
+		(stack).st_top = (stack).st_cur->sk_arena; \
+		(stack).st_end = (stack).st_cur->sk_end; \
+	} 
 
 /* Macros to handle exceptions in routine body:
  * SET_RESCUE - set rescue handler (if any)
@@ -383,7 +371,7 @@ rt_public void metamorphose_top(struct stochunk * scur, EIF_TYPED_VALUE * volati
 		sync_registers(scur, stop);
 }
 
-rt_public void xinterp(unsigned char *icval)
+rt_public void xinterp(unsigned char *icval, rt_uint_ptr nb_pushed)
 {
 	/* Starts interpretation at IC = icval. It is the interpreter entry
 	 * point for C code. When an exception occurs in the interpreted
@@ -435,6 +423,7 @@ rt_public void xinterp(unsigned char *icval)
 		RTXSC;							/* Restore stack contexts */
 		RESTORE(db_stack, dcur, dtop);	/* Restore debugger stack */
 		RESTORE(op_stack, scur, stop);	/* Restore operation stack */
+		npop (nb_pushed);				/* Removed the pushed arguments. */
 		if (se){						/* Release exception object */
 			eif_wean (se);
 		}
@@ -460,6 +449,8 @@ rt_public void xinterp(unsigned char *icval)
 	if (se){
 		set_last_exception (eif_access (se));
 		eif_wean (se);
+	} else {
+		set_last_exception ((EIF_REFERENCE) 0); /* Clean `last_exception' */
 	}
 
 	expop(&eif_stack);					/* Pop pseudo vector */
@@ -509,6 +500,8 @@ rt_public void xiinv(unsigned char *icval, int where)
 	if (se){
 		set_last_exception (eif_access (se));
 		eif_wean (se);
+	} else {
+		set_last_exception ((EIF_REFERENCE) 0); /* Clean `last_exception' */
 	}
 
 	expop(&eif_stack);					/* Pop pseudo vector */
@@ -550,6 +543,7 @@ rt_private void interpret(int flag, int where)
 	int16 volatile saved_caller_assertion_level = caller_assertion_level;	/* Saves the assertion level of the caller*/
 	unsigned char * volatile rescue = NULL;	/* Location of rescue clause */
 	jmp_buf exenv;							/* In case we have to setjmp() */
+	jmp_buf exenvo;							/* For exception during once evaluation */
 	EIF_REFERENCE saved_except_for_old = NULL;	/* Saved exception object for old expression evaluation */
 	int ex_pos;								/* Exception object local position */
 	unsigned char *IC_O;						/* Backup IC for old evaluation */
@@ -778,8 +772,8 @@ rt_private void interpret(int flag, int where)
 			RTDBGEAA(type, (icurrent->it_ref), body_id);
 			check_options(MTC eoption + icur_dtype, icur_dtype);
 			dexset(exvect);
-			scur = op_stack.st_cur;		/* Save stack context */
-			stop = op_stack.st_top;		/* needed for setjmp() and calls */
+				/* Save stack context */
+			SAVE(op_stack, scur, stop);
 			dostk();					/* Record position in calling context */
 			if (is_nested)
 				icheck_inv(MTC icurrent->it_ref, scur, stop, 0);	/* Invariant */
@@ -800,10 +794,10 @@ rt_private void interpret(int flag, int where)
 #endif
 
 			RTEAINV((char *) string, type, (icurrent->it_ref), (unsigned char)locnum, 0 /* Invariant has no body id for now */);
+			check_options(MTC eoption + icur_dtype, icur_dtype);
 			dexset(exvect);
-
-			scur = op_stack.st_cur;		/* Save stack context */
-			stop = op_stack.st_top;		/* needed for setjmp() and calls */
+				/* Save stack context */
+			SAVE(op_stack, scur, stop);
 			dostk();					/* Record position in calling context */
 			break;
 
@@ -820,12 +814,9 @@ rt_private void interpret(int flag, int where)
 		if (flag == INTERP_CMPD) {
 			if (rescue) {	/* If there is a rescue clause */
 #ifdef ISE_GC
-				l_top = loc_set.st_top;		/* Save C local stack */
-				l_cur = loc_set.st_cur;
-				ls_top = loc_stack.st_top;	/* Save loc_stack */
-				ls_cur = loc_stack.st_cur;
-				h_top = hec_stack.st_top;	/* Save hector stack */
-				h_cur = hec_stack.st_cur;
+				SAVE(loc_set, l_cur, l_top);		/* Save C local stack */
+				SAVE(loc_stack, ls_cur, ls_top);	/* Save loc_stack */
+				SAVE(hec_stack, h_cur, h_top);		/* Save hector stack */
 #endif
 				current_trace_level = trace_call_level;	/* Save trace call level */
 				if (prof_stack) saved_prof_top = prof_stack->st_top;
@@ -853,33 +844,11 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_RESCUE\n");
 #endif
-		op_stack.st_cur = scur;					/* Restore stack context */
-		op_stack.st_top = stop;
-		if (scur) op_stack.st_end = scur->sk_end;
+		RESTORE(op_stack, scur, stop);
 #ifdef ISE_GC
-		loc_set.st_cur = l_cur;
-		if (l_cur) loc_set.st_end = l_cur->sk_end;
-		loc_set.st_top = l_top;
-
-		if (ls_top){
-			loc_stack.st_cur = ls_cur;
-			if (ls_cur) loc_stack.st_end = ls_cur->sk_end;
-			loc_stack.st_top = ls_top;
-		}else if (loc_stack.st_top) { /* There was no chunk allocated when saving, but allocated at excution in between */
-			loc_stack.st_cur = loc_stack.st_hd;
-			loc_stack.st_top = loc_stack.st_cur->sk_arena;
-			loc_stack.st_end = loc_stack.st_cur->sk_end;
-		}
-
-		if (h_top) {
-			hec_stack.st_cur = h_cur;
-			if (h_cur) hec_stack.st_end = h_cur->sk_end;
-			hec_stack.st_top = h_top;
-		}else if (hec_stack.st_top) { /* There was no chunk allocated when saving, but allocated at excution in between */
-			hec_stack.st_cur = hec_stack.st_hd;
-			hec_stack.st_top = hec_stack.st_cur->sk_arena;
-			hec_stack.st_end = hec_stack.st_cur->sk_end;
-		}
+		RESTORE(loc_set, l_cur, l_top);
+		RESTORE(loc_stack, ls_cur, ls_top);
+		RESTORE(hec_stack, h_cur, h_top);
 #endif
 		sync_registers(MTC scur, stop);
 		RTEU;
@@ -1576,7 +1545,7 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_NONE_ASSIGN\n");
 #endif
-		opop();
+		(void) opop();
 		break;
 
 	/*
@@ -2003,6 +1972,7 @@ rt_private void interpret(int flag, int where)
 		{
 			EIF_REFERENCE new_obj;						/* New object */
 			unsigned long stagval;
+			unsigned char *OLD_IC;
 			EIF_BOOLEAN has_closed, is_precompiled, is_basic, is_target_closed, is_inline_agent;
 			EIF_TYPED_VALUE *aclosed_operands, *aopen_map;
 			int32 class_id, feature_id, open_count;
@@ -2030,10 +2000,12 @@ rt_private void interpret(int flag, int where)
 				closed_operands = (EIF_REFERENCE) (aclosed_operands->it_ref);
 			}
 			stagval = tagval;
+			OLD_IC = IC;
 				/* Create new object */
 			new_obj = RTLNRW(type, NULL, NULL, NULL, class_id, feature_id, open_map, is_precompiled, 
 							 is_basic, is_target_closed, is_inline_agent, closed_operands, open_count);
 			
+			IC = OLD_IC;
 			last = iget();				/* Push a new value onto the stack */
 			last->type = SK_REF;
 			last->it_ref = new_obj;		/* Now it's safe for GC to see it */
@@ -2114,12 +2086,14 @@ rt_private void interpret(int flag, int where)
 	case BC_SPCREATE:
 		{
 			EIF_REFERENCE new_obj;						/* New object */
-			EIF_BOOLEAN is_ref, is_basic, is_expanded, is_bit;
-			uint32 elem_size = 0, bit_size = 0, i = 0;
+			EIF_BOOLEAN is_ref, is_basic, is_expanded, is_bit, is_make_filled, is_make_empty;
+			uint32 elem_size = 0, bit_size = 0, i = 0, spec_type;
 			uint16 flags = 0;
-			EIF_TYPED_VALUE *nb_item;
+			EIF_TYPED_VALUE nb_item, default_item;
 			uint32 nb = 0;
 
+			is_make_filled = EIF_TEST(*IC++);
+			is_make_empty = EIF_TEST(*IC++);
 			type = get_creation_type (1);
 
 			is_ref = EIF_TEST(*IC++);
@@ -2130,7 +2104,8 @@ rt_private void interpret(int flag, int where)
 			if (is_expanded) {
 				elem_size = OVERHEAD + EIF_Size(get_int16(&IC));
 			} else {
-				switch (get_uint32(&IC) & SK_HEAD) {
+				spec_type = get_uint32(&IC);
+				switch (spec_type & SK_HEAD) {
 					case SK_CHAR: elem_size = sizeof(EIF_CHARACTER); break;
 					case SK_WCHAR: elem_size = sizeof(EIF_WIDE_CHAR); break;
 					case SK_BOOL: elem_size = sizeof(EIF_BOOLEAN); break;
@@ -2151,9 +2126,14 @@ rt_private void interpret(int flag, int where)
 				}
 			}
 
-			nb_item = opop();
-			CHECK("valid_type", (nb_item->type & SK_HEAD) == SK_INT32);
-			nb = (uint32) nb_item->it_int32;
+			memcpy(&nb_item, opop(), ITEM_SZ);
+			if (is_make_filled) {
+				memcpy(&default_item, opop(), ITEM_SZ);
+			} else {
+				memset(&default_item, 0, ITEM_SZ);
+			}
+			CHECK("valid_type", (nb_item.type & SK_HEAD) == SK_INT32);
+			nb = (uint32) nb_item.it_int32;
 
 			if (is_expanded) {
 				flags = EO_COMP;
@@ -2166,11 +2146,21 @@ rt_private void interpret(int flag, int where)
 			last->it_ref = new_obj;		/* Now it's safe for GC to see it */
 			opush (last);				/* We need to push object on stack to check invariants */
 
-			if (is_bit) {
-				bit_size = get_uint32(&IC);
-				for (i = 0; i < nb; i++) {
-					*((EIF_REFERENCE *) new_obj + i) = RTLB((uint16)bit_size);
-					RTAR(new_obj, *((EIF_REFERENCE *) new_obj + i));
+			if (is_make_filled) {
+					/* Prepare the call to `make_filled'. By pushing the computed arguments starting
+					 * with the created object. */
+				opush(last);
+				opush(&default_item);
+				opush(&nb_item);
+			} else if (is_make_empty) {
+				RT_SPECIAL_COUNT(new_obj) = 0;
+			} else {
+				if (is_bit) {
+					bit_size = get_uint32(&IC);
+					for (i = 0; i < nb; i++) {
+						*((EIF_REFERENCE *) new_obj + i) = RTLB((uint16)bit_size);
+						RTAR(new_obj, *((EIF_REFERENCE *) new_obj + i));
+					}
 				}
 			}
 		}
@@ -2185,11 +2175,13 @@ rt_private void interpret(int flag, int where)
 #endif
 		{
 			EIF_TYPED_VALUE *lower, *upper;
+			unsigned char *OLD_IC;			/* IC back-up */
 
 			upper = opop();				/* Get the upper bound */
 			lower = opop();				/* Get the lower bound */
 			last = otop();				/* Get the inspect expression value */
 			offset = get_int32(&IC);		/* Get the jump value */
+			OLD_IC = IC;
 			switch (last->type) {
 			case SK_UINT8: if (lower->it_uint32 <= (EIF_NATURAL_32) last->it_uint8 && (EIF_NATURAL_32) last->it_uint8 <= upper->it_uint32) { IC += offset; } break;
 			case SK_UINT16: if (lower->it_uint32 <= (EIF_NATURAL_32) last->it_uint16 && (EIF_NATURAL_32) last->it_uint16 <= upper->it_uint32) { IC += offset; } break;
@@ -2205,19 +2197,14 @@ rt_private void interpret(int flag, int where)
 				eif_panic(MTC "invalid inspect type");
 				/* NOTREACHED */
 			}
+				/* We have a match for the inspect value, simply pop the expression value
+				 * since we won't use it ever. */
+			if (OLD_IC != IC) {
+				(void) opop();
+			}
 		}
 		break;
 	
-	/*
-	 * End of multi-branch instruction.
-	 */
-	case BC_INSPECT:
-#ifdef DEBUG
-		dprintf(2)("BC_INSPECT\n");
-#endif
-		(void) opop();				/* Pop the inspect expression */
-		break;
-
 	/*
 	 * Unmatched inspect value.
 	 */
@@ -2225,6 +2212,8 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_INSPECT_EXCEP\n");
 #endif
+			/* There was no match, let's remove the inspect expression value. */
+		(void) opop();
 		xraise(EN_WHEN);
 		break;
 
@@ -2614,7 +2603,7 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_ARG\n");
 #endif
-		code = get_int16(&IC);				/* Get number (from 1 to argnum) */
+		code = get_int16(&IC);				/* Get number (from 1 0x0000000001ee0528to argnum) */
 		last = iget();
 		memcpy (last, arg(code), ITEM_SZ);
 		break;
@@ -2681,7 +2670,7 @@ rt_private void interpret(int flag, int where)
 	 * on basic types.
 	 */
 	case BC_BASIC_OPERATIONS:
-		eif_interp_basic_operations ();
+		eif_interp_basic_operations (scur, stop);
 		break;
 
 	/*
@@ -2950,7 +2939,7 @@ rt_private void interpret(int flag, int where)
 		{
 		uint32 i, nb_uint32 = get_uint32(&IC);
 		for (i = 0; i < nb_uint32; i++)
-			opop();
+			(void) opop();
 		}
 		break;
 
@@ -2976,7 +2965,7 @@ rt_private void interpret(int flag, int where)
 			unsigned long stagval;
 			int curr_pos;
 			EIF_TYPED_VALUE *it;
-			long elem_size;
+			rt_uint_ptr elem_size;
 			unsigned char *OLD_IC;
  
 			if (code == BC_PARRAY) {
@@ -3057,8 +3046,8 @@ rt_private void interpret(int flag, int where)
 					case SK_REAL64: *((EIF_REAL_64 *) sp_area + curr_pos) = it->it_real64; break;
 					case SK_POINTER: *((EIF_POINTER *) sp_area + curr_pos) = it->it_ptr; break;
 					case SK_EXP:
-						elem_size = *(EIF_INTEGER_32 *) (sp_area + (HEADER(sp_area)->ov_size & B_SIZE) - LNGPAD_2 + sizeof(EIF_INTEGER_32));
-						ecopy(it->it_ref, sp_area + OVERHEAD + elem_size * curr_pos);
+						elem_size = RT_SPECIAL_ELEM_SIZE(sp_area);
+						ecopy(it->it_ref, sp_area + OVERHEAD + elem_size * (rt_uint_ptr) curr_pos);
 						break;
 					case SK_REF:
 						*((EIF_REFERENCE *) sp_area + curr_pos) = it->it_ref;
@@ -3083,6 +3072,7 @@ rt_private void interpret(int flag, int where)
 			EIF_TYPED_VALUE *last;
 
 			last = otop();
+			(void) RTCV(last->it_ref);	/* Check that TUPLE is not Void. */
 			last->type = type;	/* Stored type of accessed tuple element. */
 			switch (type & SK_HEAD) {
 				case SK_BOOL: last->it_char = eif_boolean_item (last->it_ref, pos); break;
@@ -3100,7 +3090,7 @@ rt_private void interpret(int flag, int where)
 				case SK_REAL64: last->it_real64 = eif_real_64_item (last->it_ref, pos); break;
 				case SK_POINTER: last->it_ptr = eif_pointer_item (last->it_ref, pos); break;
 				default:
-					last->it_ref = eif_reference_item (last->it_ref, pos);
+					last->it_ref = eif_boxed_item (last->it_ref, pos);
 			}
 		}
 		break;
@@ -3113,6 +3103,7 @@ rt_private void interpret(int flag, int where)
 
 			source = opop();
 			tuple = opop();
+			(void) RTCV(tuple->it_ref);	/* Check that TUPLE is not Void. */
 			switch (type & SK_HEAD) {
 				case SK_BOOL: eif_put_boolean_item (tuple->it_ref, pos, source->it_char); break;
 				case SK_CHAR: eif_put_character_item (tuple->it_ref, pos, source->it_char); break;
@@ -3368,6 +3359,7 @@ rt_private void interpret(int flag, int where)
 #endif
 		{
 			unsigned long stagval;
+			unsigned char *OLD_IC;
 			int32 body_index;	/* routine body index */
 			int32 number;	/* number of the once manifest string in routine body */
 			int32 length;	/* length of once manifest string */
@@ -3380,7 +3372,9 @@ rt_private void interpret(int flag, int where)
 
 			last = iget();
 			last->type = SK_REF;
+			OLD_IC = IC;
 			RTCOMS (last->it_ref, body_index, number, (char *) string, length, 0);
+			IC = OLD_IC;
 
 			if (tagval != stagval) {
 				sync_registers(MTC scur,stop);
@@ -3421,6 +3415,7 @@ rt_private void interpret(int flag, int where)
 		{
 			EIF_REFERENCE str_obj;			  /* String object created */
 			unsigned long stagval;
+			unsigned char *OLD_IC;
 			int32 length;
  
 			stagval = tagval;
@@ -3434,7 +3429,9 @@ rt_private void interpret(int flag, int where)
 			 * run a cycle when makestr() is called...
 			 */
 
-			str_obj = makestr((char *) string, length);
+			OLD_IC = IC;
+			str_obj = RTMS_EX((char *) string, length);
+			IC = OLD_IC;
  
 			last->type = SK_REF;
 			last->it_ref = str_obj;
@@ -3516,11 +3513,7 @@ rt_private void interpret(int flag, int where)
 		dprintf(2)("BC_HOOK\n");
 #endif
 		offset = get_int32(&IC);		/* retrieve the parameter of BC_HOOK: line number */
-		saved_scur = scur;			/* save feature context */
-		saved_stop = stop;			/* save feature context */
 		dstop(dtop()->dc_exec,offset);	/* Debugger hook , dtop->dc_exec returns the current execution vector */
-		saved_scur = NULL;			/* reset feature context */
-		saved_stop = NULL;			/* reset feature context */
 		break;
 
 	/*
@@ -3532,11 +3525,7 @@ rt_private void interpret(int flag, int where)
 #endif
 		offset = get_int32(&IC);		/* retrieve the parameter of BC_NHOOK: line number */
 		offset_n = get_int32(&IC);	/* retrieve the 2nd parameter of BC_NHOOK: line number */
-		saved_scur = scur;			/* save feature context */
-		saved_stop = stop;			/* save feature context */
 		dstop_nested(dtop()->dc_exec,offset,offset_n);	/* Debugger hook - stop point reached */ /* FIXME */
-		saved_scur = NULL;			/* reset feature context */
-		saved_stop = NULL;			/* reset feature context */
 		break;
 
 	/*
@@ -3702,7 +3691,6 @@ rt_private void interpret(int flag, int where)
 				/* This is a first-time call. */
 				/* Declare variables for exception handling. */
 			struct ex_vect * exvecto;
-			jmp_buf exenvo;
 				/* Mark once routine as executed. */
 			MTOM(OResult);
 				/* Record execution vector to catch exception. */
@@ -3837,6 +3825,10 @@ rt_private void irecursive_chkinv(EIF_TYPE_INDEX dtype, EIF_REFERENCE obj, struc
 	cn_parents++;	/* We skip the annotation mark. */
 	p_type = *cn_parents++;
 	while (p_type != TERMINATOR) {
+			/* Skip any potential annotation mark on the parent clause. */
+		while (RT_HAS_ANNOTATION_TYPE(p_type)) {
+			p_type = *cn_parents++;
+		}
 			/* Call to potential parent invariant */
 		irecursive_chkinv(p_type, obj, scur, stop, where);
 			/* Iterate `cn_parents' until we reach the next parent or the end. */
@@ -3869,16 +3861,12 @@ rt_private void irecursive_chkinv(EIF_TYPE_INDEX dtype, EIF_REFERENCE obj, struc
 				last = iget();					/* Push `obj' */
 				last->type = SK_REF;
 				last->it_ref = obj;
-
-				/*IC = melt[body_id];*/
-				/*interpret(INTERP_INVA, where);*//* Interpret invariant code */
-
-				/* The proper way to start the interpretation of a melted
-		 		* invariant code is to call `xiinv' in order to initialize the
-		 		* calling context (which is not done by `interpret').
-		 		* `tagval' will therefore be set, but we have to 
-				* resynchronize the registers anyway. --ericb
-		 		*/
+					/* The proper way to start the interpretation of a melted
+					* invariant code is to call `xiinv' in order to initialize the
+					* calling context (which is not done by `interpret').
+					* `tagval' will therefore be set, but we have to 
+					* resynchronize the registers anyway. --ericb
+					*/
 				xiinv(MTC melt[body_id], where);
 
 				sync_registers(MTC scur, stop);		/* Resynchronize registers */
@@ -4254,12 +4242,18 @@ rt_private void eif_interp_eq (EIF_TYPED_VALUE *f, EIF_TYPED_VALUE *s) {
 	f->type = SK_BOOL;		/* Result is a boolean */
 }
 
-rt_private void eif_interp_generator (void)
+rt_private void eif_interp_generator (struct stochunk *stack_cur, EIF_TYPED_VALUE *stack_top)
 {
 	/* Execute the `generator' or `generating_type' function call for basic types
 	 * in melted code
 	 */
+	EIF_GET_CONTEXT
+	RT_GET_CONTEXT
 	EIF_TYPED_VALUE *first;			/* First operand */
+	unsigned char *OLD_IC = IC;
+	unsigned long stagval = tagval;	/* Tag value backup */
+
+	OLD_IC = IC;
 	
 	first = otop();				/* First operand will be replace by result */
 	switch (first->type & SK_HEAD) {
@@ -4280,6 +4274,12 @@ rt_private void eif_interp_generator (void)
 		default: eif_panic(MTC RT_BOTCHED_MSG);
 	}
 	first->type = SK_REF;
+
+	IC = OLD_IC;
+	if (tagval != stagval) {		/* previous call can call malloc which may call the interpreter for
+								   creation routines. */
+		sync_registers(stack_cur, stack_top);
+	}
 }
 
 rt_private void eif_interp_min_max (int code)
@@ -4406,7 +4406,7 @@ rt_private void eif_interp_offset(void)
 	}
 }
 
-rt_private void eif_interp_basic_operations (void)
+rt_private void eif_interp_basic_operations (struct stochunk *stack_cur, EIF_TYPED_VALUE *stack_top)
 	/* execute basic operations on basic types and put the result back on the
 	 * stack.
 	 */
@@ -4429,7 +4429,7 @@ rt_private void eif_interp_basic_operations (void)
 
 			/* `generator' and `generating_type' function calls */
 		case BC_GENERATOR:
-			eif_interp_generator ();
+			eif_interp_generator (stack_cur, stack_top);
 			break;
 
 			/* Offset operation on CHARACTER_8 and POINTER */
@@ -4617,7 +4617,7 @@ rt_private void eif_interp_bit_operations (void)
 /*
  * Function calling routines for debugger
  */
-rt_public EIF_TYPED_VALUE * dynamic_eval_dbg(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, EIF_TYPED_VALUE* previous_otop, int* exception_occured)
+rt_shared void dynamic_eval_dbg(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, EIF_TYPED_VALUE* previous_otop, rt_uint_ptr nb_pushed, int* exception_occured, EIF_TYPED_VALUE *result)
 						/* Feature ID or offset if the feature is precompiled */
 						/* Static type or origin if the feature is precompiled (entity where feature is applied) */
 						/* Dynamic type if needed on which call is being done. Mostly used for static calls in precompiled. */
@@ -4625,84 +4625,50 @@ rt_public EIF_TYPED_VALUE * dynamic_eval_dbg(int fid_or_offset, int stype_or_ori
 						/* Precompiled ? (0=no, other=yes) */
 						/* Is the call performed on a basic type? (INTEGER...) */
 						/* return the exception object if exception occurred (and set `exception_occured' to 1) */
-	{
-	/* This is the debugger dispatcher for routine calls. It is called when
-	 * the user want to dynamically evaluate a feature. Depending on the
-	 * routine's temperature, the snow version (i.e. C code) is called and the
-	 * result, if any, is left on the operational stack. The I->C pattern is
-	 * called to push the parameters on the "C stack" correctly. Otherwise,
-	 * the interpreter is called. The function returns 1 to the caller if a
-	 * resynchronization of registers is needed.
-	 * FIXME XR: I believe we save and restore things which are not needed
-	 * (in particular we save the stack context but xinterp does it too)
-	 * so if someone understands what I have written and feels like clearing it up,
-	 * they're welcome to do so (I give up: I think it works and that's enough).
-	 */
-	RT_GET_CONTEXT
+{
+		/* This is the debugger dispatcher for routine calls. It is called when
+		 * the user want to dynamically evaluate a feature. */
 	EIF_GET_CONTEXT
-	RTED;
-	int				saved_debug_mode = debug_mode;
-	uint32			type = 0;			/* Dynamic type of the result */
-	EIF_TYPED_VALUE 	*result = NULL;		/* Result of the function (NULL if none) */
-	uint32 EIF_VOLATILE db_cstack;
- 	STACK_PRESERVE;
-	RTYD; /* declares the variables used to save the run-time stacks context */
-	RTLXD;
+	jmp_buf exenv;
+	volatile int saved_debug_mode = debug_mode;
+	uint32	type = 0;			/* Dynamic type of the result */
 
-	RTLXL;
+	REQUIRE("exception_occured not null", exception_occured);
+	REQUIRE("result not null", result);
+
 	*exception_occured = 0;
-	dstart();
-	SAVE(db_stack, dcur, dtop);
-	SAVE(op_stack, scur, stop);
-	db_cstack = d_data.db_callstack_depth;
-	
 	debug_mode = 0; /* We don't want exceptions to be caught */
 
 	excatch(&exenv);
 	if (setjmp(exenv)) {
 		*exception_occured = 1;
-		result = (EIF_TYPED_VALUE*) malloc (sizeof (EIF_TYPED_VALUE));
-		memset (result, 0, sizeof(EIF_TYPED_VALUE));
 		result->it_ref = last_exception();
 		result->type = SK_REF;
 		if (result->it_ref != NULL) {
 			result->type = result->type | Dtype(result->it_ref);
 		}
-		
-		RESTORE(op_stack,scur,stop);
-		RESTORE(db_stack,dcur,dtop);
-		dpop();
-		RTLXE;
 		debug_mode = saved_debug_mode;
-		d_data.db_callstack_depth = db_cstack;
-		RTXSC;
-		in_assertion = saved_assertion; /* Corresponds to RTED */
 		exclear ();
-		return result;
-	}
-
-	dynamic_eval (fid_or_offset, stype_or_origin, dtype, is_precompiled, is_basic_type, is_static_call, 0);
-
-	if (otop()!=previous_otop) { /* a result has been pushed on the stack */
-		result = opop(); 
-		type = result->type & SK_HEAD;
-		if ((type == SK_EXP || type == SK_REF) && (result->it_ref != NULL)) {
-			result->type = type | Dtype(result->it_ref);
+	} else {
+		dynamic_eval (fid_or_offset, stype_or_origin, dtype, is_precompiled, is_basic_type, is_static_call, 0, nb_pushed);
+		if (otop() != previous_otop) { /* a result has been pushed on the stack */
+			memcpy(result, opop(), sizeof(EIF_TYPED_VALUE)); 
+			type = result->type & SK_HEAD;
+			if ((type == SK_EXP || type == SK_REF) && (result->it_ref != NULL)) {
+				result->type = type | Dtype(result->it_ref);
+			}
+		} else {
+			result->type = SK_VOID; 
 		}
+		debug_mode = saved_debug_mode;
+		expop(&eif_stack);
 	}
-
-	debug_mode = saved_debug_mode;
-
-	dpop();
-	d_data.db_callstack_depth = db_cstack;
-
-	return result;
 }
 
 /*
  * Function calling routines
  */
-rt_public void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, int is_inline_agent)
+rt_public void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, int is_inline_agent, rt_uint_ptr nb_pushed)
 						/* Feature ID or offset if the feature is precompiled */
 						/* Static type or origin if the feature is precompiled (entity where feature is applied) */
 						/* Dynamic type if needed on which call is being done. Mostly used for static calls in precompiled. */
@@ -4717,78 +4683,75 @@ rt_public void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, i
 	RTED;
 	BODY_INDEX		body_id = 0;		/* Value of selected body ID */
 	unsigned long 	stagval = tagval;	/* Save tag value */
-	unsigned char	sync_needed = 0;	/* A priori, no need for sync_registers */
 	unsigned char*	OLD_IC = IC;		/* IC back up */
 	uint32 			pid = 0;			/* Pattern id of the frozen feature */
 	int32 			rout_id = 0;		/* routine id of the requested feature */
-	struct stochunk *previous_scur = saved_scur;
-	EIF_TYPED_VALUE *previous_stop = saved_stop;
 	uint32 EIF_VOLATILE db_cstack;
 	STACK_PRESERVE;
 	RTYD; /* declares the variables used to save the run-time stacks context */
 	RTLXD;
 
 	RTLXL;
+	dstart();
 	SAVE(db_stack, dcur, dtop);
 	SAVE(op_stack, scur, stop);
 	db_cstack = d_data.db_callstack_depth;
 
-	if (is_basic_type) {
-			/* We need to create a reference to the basic type on the fly */
-		metamorphose_top(scur, stop);
-	}
-	
-	if (! is_precompiled) {
-		int stype = stype_or_origin;
-		rout_id = Routids(stype)[fid_or_offset];
-		if ((is_inline_agent) || (is_static_call)) {
-				/* For an inline agent or a static call, the call is always relative to
-				 * the type declaring the inline agent or the type target of the static call. */
-			CBodyId(body_id,rout_id,stype);
-		} else {
-			CBodyId(body_id,rout_id,Dtype(otop()->it_ref));		
-		}
-	} else {
-		int origin = stype_or_origin;
-		int offset = fid_or_offset;
-		CHECK("Not an inline agent", !is_inline_agent);
-		if (is_static_call) {
-			body_id = desc_tab[origin][dtype][offset].body_index;
-		} else {
-			body_id = desc_tab[origin][Dtype(otop()->it_ref)][offset].body_index;
-		}
-	}
 	excatch(&exenv);
 	if (setjmp(exenv)) {
 		RESTORE(op_stack,scur,stop);
 		RESTORE(db_stack,dcur,dtop);
+		dpop();
 		RTLXE;
 		d_data.db_callstack_depth = db_cstack;
 		RTXSC;
 		tagval = stagval;
 		IC = OLD_IC;					/* Restore IC back-up */
 		in_assertion = saved_assertion; /* Corresponds to RTED */
+		npop (nb_pushed);				/* Removed the pushed arguments. */
 		ereturn(MTC_NOARG);
-	}
-	if (egc_frozen [body_id]) {		/* We are below zero Celsius, i.e. ice */
-		pid = (uint32) FPatId(body_id);
-		(pattern[pid].toc)(egc_frozen[body_id]); /* Call pattern */
-		if (tagval != stagval)		/* Interpreted function called */
-			sync_needed = 1;				/* Resynchronize registers */
 	} else {
-		/* The proper way to start the interpretation of a melted feature is to call `xinterp' 
-		 * in order to initialize the calling context (which is not done by `interpret').
-		 * `tagval' will therefore be set, but we have to resynchronize the registers anyway.
-		 */
-		xinterp(MTC melt[body_id]);
-		sync_needed = 1;					/* Compulsory synchronisation */
+		if (is_basic_type) {
+				/* We need to create a reference to the basic type on the fly */
+			metamorphose_top(scur, stop);
+		}
+		
+		if (! is_precompiled) {
+			int stype = stype_or_origin;
+			rout_id = Routids(stype)[fid_or_offset];
+			if ((is_inline_agent) || (is_static_call)) {
+					/* For an inline agent or a static call, the call is always relative to
+					 * the type declaring the inline agent or the type target of the static call. */
+				CBodyId(body_id,rout_id,stype);
+			} else {
+				CBodyId(body_id,rout_id,Dtype(otop()->it_ref));		
+			}
+		} else {
+			int origin = stype_or_origin;
+			int offset = fid_or_offset;
+			CHECK("Not an inline agent", !is_inline_agent);
+			if (is_static_call) {
+				body_id = desc_tab[origin][dtype][offset].body_index;
+			} else {
+				body_id = desc_tab[origin][Dtype(otop()->it_ref)][offset].body_index;
+			}
+		}
+		if (egc_frozen [body_id]) {		/* We are below zero Celsius, i.e. ice */
+			pid = (uint32) FPatId(body_id);
+			(pattern[pid].toc)(egc_frozen[body_id]); /* Call pattern */
+		} else {
+			/* The proper way to start the interpretation of a melted feature is to call `xinterp' 
+			 * in order to initialize the calling context (which is not done by `interpret').
+			 * `tagval' will therefore be set, but we have to resynchronize the registers anyway.
+			 */
+			xinterp(MTC melt[body_id], 0);
+		}
+		IC = OLD_IC;					/* Restore IC back-up */
+
+		dpop();
+		d_data.db_callstack_depth = db_cstack;
+		expop(&eif_stack);
 	}
-	IC = OLD_IC;					/* Restore IC back-up */
-	expop(&eif_stack);
-	/* restore operational stack if needed */
-	if (sync_needed==1 && previous_scur!=NULL && previous_stop!=NULL)
-		sync_registers(previous_scur, previous_stop); 
-	d_data.db_callstack_depth = db_cstack;
 }
 
 rt_private int icall(int fid, int stype, int ptype)
@@ -4830,16 +4793,13 @@ rt_private int icall(int fid, int stype, int ptype)
 		if (tagval != stagval)		/* Interpreted function called */
 			result = 1;				/* Resynchronize registers */
 	} else {
-		/*IC = melt[body_id];*/					/* Melted byte code */
-		/*interpret(INTERP_CMPD, 0);*/		/* Interpret (tagval not set) */
-
 		/* The proper way to start the interpretation of a melted
 		 * feature is to call `xinterp' in order to initialize the
 		 * calling context (which is not done by `interpret').
 		 * `tagval' will therefore be set, but we have to 
 		 * resynchronize the registers anyway. --ericb
 		 */
-		xinterp(MTC melt[body_id]);
+		xinterp(MTC melt[body_id], 0);
 	
 		result = 1;							/* Compulsory synchronisation */
 	}
@@ -4881,16 +4841,13 @@ rt_private int ipcall(int32 origin, int32 offset, int ptype)
 		if (tagval != stagval)		/* Interpreted function called */
 			result = 1;				/* Resynchronize registers */
 	} else {
-		/*IC = melt[body_id];	*/				/* Melted byte code */
-		/*interpret(INTERP_CMPD, 0);	*/	/* Interpret (tagval not set) */
-
-		/* The proper way to start the interpretation of a melted
-		 * feature is to call `xinterp' in order to initialize the
-		 * calling context (which is not done by `interpret').
-		 * `tagval' will therefore be set, but we have to 
-		 * resynchronize the registers anyway. --ericb
-		 */
-		xinterp(MTC melt[body_id]);
+			/* The proper way to start the interpretation of a melted
+			 * feature is to call `xinterp' in order to initialize the
+			 * calling context (which is not done by `interpret').
+			 * `tagval' will therefore be set, but we have to 
+			 * resynchronize the registers anyway. --ericb
+			 */
+		xinterp(MTC melt[body_id], 0);
 	
 		result = 1;							/* Compulsory synchronisation */
 	}
@@ -5174,6 +5131,22 @@ rt_shared void call_copy (EIF_TYPE_INDEX dtype, EIF_REFERENCE Current, EIF_REFER
 	IC = OLD_IC;
 }
 
+rt_shared EIF_BOOLEAN call_is_equal (EIF_TYPE_INDEX dtype, EIF_REFERENCE Current, EIF_REFERENCE other)
+{
+	/* Save the interpreter counter and restore it after the copy
+	 * routine for `Current' with dynamic type `dtype' and argument `other'.
+	 */
+	EIF_GET_CONTEXT
+	EIF_BOOLEAN result;
+	unsigned char *OLD_IC;
+	EIF_TYPED_VALUE o;
+	OLD_IC = IC;
+	o.type = SK_REF;
+	o.it_r = other;
+	result = (FUNCTION_CAST(EIF_TYPED_VALUE, (EIF_REFERENCE, EIF_TYPED_VALUE)) wis_equal (dtype))(Current, o).it_b;
+	IC = OLD_IC;
+	return result;
+}
 rt_private void address(int32 aid)
 						/* Id of the routine in the dispath table */
 {
@@ -5588,13 +5561,15 @@ rt_private void pop_registers(void)
 	 */
 
 	RT_GET_CONTEXT
-	int nb_items;			/* Number of registers to be popped off */
+	rt_uint_ptr nb_locals, nb_args;			/* Number of registers to be popped off */
 	EIF_TYPED_VALUE *result;			/* To save the result */
 	EIF_TYPED_VALUE saved_result;		/* Save value pointed to by iresult */
-	
-	nb_items = opop()->it_int32;		/* This is the nummber of arguments */
-	nb_items += otop()->it_int32;	/* Add the number of locals */
-	nb_items += SPECIAL_REG - 1;	/* Add Current, Result and ilocnum */
+
+		/* Pop the special registers */
+	nb_args = opop()->it_uint32;		/* This is the nummber of arguments */
+	nb_locals = opop()->it_uint32;	/* Add the number of locals */
+	(void) opop(); /* Remove Result */
+	(void) opop(); /* Remove Current */
 
 	/* Using npop() may truncate the unused chunks at the tail of the stack,
 	 * which may free the chunk where results is stored if there where a lot
@@ -5603,7 +5578,7 @@ rt_private void pop_registers(void)
 	 */
 	memcpy (&saved_result, iresult, ITEM_SZ);
 
-	npop(nb_items);			/* Remove items and eventually shrink stack */
+	npop(nb_locals + nb_args);			/* Remove items and eventually shrink stack */
 
 	if (saved_result.type != SK_VOID) {	/* If Result is needed */
 		result = iget();				/* Get a new result record */
@@ -5831,9 +5806,9 @@ rt_public EIF_TYPED_VALUE *opop(void)
 	return op_stack.st_top;
 }
 
-rt_private void npop(register int nb_items)
+rt_private void npop(rt_uint_ptr nb)
 {
-	/* Removes 'nb_items' from the operational stack. Occasionaly, we also
+	/* Removes 'nb' from the operational stack. Occasionaly, we also
 	 * try to truncate the unused chunks from the tail of the stack. We do
 	 * not do that in opop() because that would create an overhead...
 	 */
@@ -5841,7 +5816,6 @@ rt_private void npop(register int nb_items)
 	EIF_TYPED_VALUE *top;			/* Current top of operational stack */
 	struct stochunk *s;		/* To walk through stack chunks */
 	EIF_TYPED_VALUE *arena;		/* Base address of current chunk */
-	rt_int_ptr nb = nb_items;
 
 	/* Optimization: try to update the top, hoping it will remain in the
 	 * same chunk. That would indeed make popping very efficient.
@@ -5865,16 +5839,19 @@ rt_private void npop(register int nb_items)
 	top = op_stack.st_top;
 	for (s = op_stack.st_cur; nb > 0; /* empty */) {
 		arena = s->sk_arena;
-		nb -= top - arena;
-		if (nb <= 0) {			/* Have we gone too far? */
-			top = arena - nb;		/* Yes, reset top correctly */
-			break;						/* Done */
+			/* Are we in the same chunk? */
+		if (nb <= (rt_uint_ptr) (top - arena)) {
+			top -= nb;
+			break;
+		} else {
+			nb -= top - arena;
+			s = s->sk_prev;					/* Look at previous chunk */
+			if (s) {
+				top = s->sk_end;			/* Top at the end of previous chunk */
+			} else {
+				break;						/* We reached the bottom */
+			}
 		}
-		s = s->sk_prev;					/* Look at previous chunk */
-		if (s)
-			top = s->sk_end;			/* Top at the end of previous chunk */
-		else
-			break;						/* We reached the bottom */
 	}
 		
 #ifdef MAY_PANIC

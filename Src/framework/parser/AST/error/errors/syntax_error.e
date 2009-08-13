@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Syntax error."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,6 +12,7 @@ inherit
 	ERROR
 		redefine
 			file_name,
+			has_associated_file,
 			process
 		end
 
@@ -20,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (s, e: INTEGER; f: like file_name; m: STRING) is
+	make (s, e: INTEGER; f: like file_name; m: STRING)
 			-- Create a new SYNTAX_ERROR.
 		require
 			f_not_void: f /= Void
@@ -36,7 +37,7 @@ feature {NONE} -- Initialization
 			error_message_set: error_message = m
 		end
 
-	init (a_parser: EIFFEL_PARSER) is
+	init (a_parser: EIFFEL_PARSER)
 			-- Initialize `line' and `column' from `a_parser'.
 		require
 			a_parser_not_void: a_parser /= Void
@@ -56,10 +57,13 @@ feature -- Properties
 	file_name: STRING
 			-- Path to file where syntax issue happened
 
-	code: STRING is "Syntax Error"
+	code: STRING = "Syntax Error"
 			-- Error code
 
-	syntax_message: STRING is
+	has_associated_file: BOOLEAN = True
+			-- Current is associated to a file/class
+
+	syntax_message: STRING
 			-- Specific syntax message.
 			-- (By default, it is empty)
 		do
@@ -70,7 +74,7 @@ feature -- Properties
 
 feature -- Visitor
 
-	process (a_visitor: ERROR_VISITOR) is
+	process (a_visitor: ERROR_VISITOR)
 		do
 			a_visitor.process_syntax_error (Current)
 		end
@@ -79,8 +83,8 @@ invariant
 	attached_file_name: file_name /= Void
 	attached_error_message: error_message /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -93,22 +97,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SYNTAX_ERROR

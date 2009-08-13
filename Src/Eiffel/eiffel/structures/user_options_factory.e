@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Handle user files."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -27,7 +27,7 @@ feature -- Access
 
 feature -- Query
 
-	mapped_uuid (a_file_path: STRING): ?UUID
+	mapped_uuid (a_file_path: STRING): detachable UUID
 			-- Retrieves a mapped UUID for a given file path
 		require
 			a_file_path_attached: a_file_path /= Void
@@ -45,7 +45,7 @@ feature -- Query
 
 feature -- Store/Retrieve
 
-	store (a_options: USER_OPTIONS) is
+	store (a_options: USER_OPTIONS)
 			-- Store user options to disk.
 			-- `successful' is True if there is no error.
 		require
@@ -94,7 +94,7 @@ feature -- Store/Retrieve
 			retry
 		end
 
-	load (a_file_path: STRING) is
+	load (a_file_path: STRING)
 			-- Retrieve content of user data associated with `a_file_path' into `last_options'.
 			-- If no such file is found, then `last_options' is set to Void.
 		require
@@ -136,7 +136,7 @@ feature -- Store/Retrieve
 			retry
 		end
 
-	remove (a_options: USER_OPTIONS; a_target: STRING) is
+	remove (a_options: USER_OPTIONS; a_target: STRING)
 			-- Remove from `a_options' options related to `a_target'.
 		require
 			a_options_not_void: a_options /= Void
@@ -147,7 +147,7 @@ feature -- Store/Retrieve
 
 feature {NONE} -- Implementation
 
-	mapping: HASH_TABLE [STRING, STRING] is
+	mapping: HASH_TABLE [STRING, STRING]
 			-- Mapping between path to a config file and its associated user option file.
 		local
 			l_file: RAW_FILE
@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	store_mapping (a_mapping: like mapping) is
+	store_mapping (a_mapping: like mapping)
 			-- Store mapping to disk.
 		require
 			a_mapping_not_void: a_mapping /= Void
@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	mapping_file_name: !STRING = "mapping.info"
+	mapping_file_name: STRING = "mapping.info"
 			-- Name of file where `mapping' is stored.
 
 end

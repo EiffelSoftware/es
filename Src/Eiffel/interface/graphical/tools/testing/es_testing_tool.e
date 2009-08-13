@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Shim class for EiffelStudio's testing tool.
 	]"
@@ -11,7 +11,6 @@ frozen class
 inherit
 	ES_STONABLE_TOOL [ES_TESTING_TOOL_PANEL]
 
-inherit {NONE}
 	ES_TOOL_ICONS_PROVIDER_I [ES_TESTING_TOOL_ICONS]
 		export
 			{NONE} all
@@ -21,12 +20,6 @@ create {NONE}
 	default_create
 
 feature -- Access
-
-	title: STRING_32
-			-- <Precursor>
-		do
-			Result :=  locale_formatter.translation (t_title)
-		end
 
 	icon: EV_PIXEL_BUFFER
 			-- <Precursor>
@@ -40,9 +33,15 @@ feature -- Access
 			Result := stock_pixmaps.tool_external_output_icon
 		end
 
+	title: attached STRING_32
+			-- <Precursor>
+		do
+			Result := locale_formatter.translation (t_tool_title)
+		end
+
 feature {NONE} -- Status report
 
-	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
 			-- <Precursor>
 		do
 			Result := True
@@ -50,7 +49,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Factory
 
-	create_tool: ES_TESTING_TOOL_PANEL
+	new_tool: attached ES_TESTING_TOOL_PANEL
 			-- <Precursor>
 		do
 			create Result.make (window, Current)
@@ -58,10 +57,10 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	t_title: STRING = "Testing Tool"
+	t_tool_title: STRING = "Testing"
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -85,10 +84,10 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

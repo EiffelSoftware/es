@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dependency view panel"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -14,31 +14,21 @@ inherit
 		rename
 			last_stone as stone
 		redefine
-			close,
-			build_docking_content
+			close
 		end
 
 create
 	make
 
-feature {NONE} -- Initialization
-
-	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
-			-- Build docking content.
-		do
-			Precursor (a_docking_manager)
-			content.drop_actions.extend (agent on_item_dropped)
-		end
-
 feature -- Access
 
-	predefined_formatters: like formatters is
+	predefined_formatters: like formatters
 			-- Predefined formatters
 		do
 			Result := develop_window.managed_dependency_formatters
 		end
 
-	no_target_message: STRING_GENERAL is
+	no_target_message: STRING_GENERAL
 			-- Message to be displayed in `output_line' when no stone is set
 		do
 			Result := interface_names.l_no_info_of_element
@@ -46,7 +36,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_stone_equal (a_stone, b_stone: STONE): BOOLEAN is
+	is_stone_equal (a_stone, b_stone: STONE): BOOLEAN
 			-- Is `a_stone' equal to `b_stone'?
 		require
 			a_stone_attached: a_stone /= Void
@@ -71,7 +61,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	pop_default_formatter is
+	pop_default_formatter
 			-- Pop the default class formatter.
 		local
 			real_index: INTEGER
@@ -80,14 +70,14 @@ feature -- Status setting
 			(formatters @ real_index).execute
 		end
 
-	close is
+	close
 			-- Redefine
 		do
 			on_deselect
 			Precursor {ES_FORMATTER_TOOL_PANEL_BASE}
 		end
 
-	set_stone (new_stone: STONE) is
+	set_stone (new_stone: STONE)
 			-- Send a stone to formatters.
 		local
 			cst: CLASSC_STONE
@@ -148,7 +138,7 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	decide_tool_to_display (a_st: STONE): EB_STONABLE_TOOL is
+	decide_tool_to_display (a_st: STONE): EB_STONABLE_TOOL
 			-- Decide which tool to display.
 		local
 			fs: FEATURE_STONE
@@ -166,7 +156,7 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	enable_dotnet_formatters (a_flag: BOOLEAN) is
+	enable_dotnet_formatters (a_flag: BOOLEAN)
 			-- Set sensitivity of formatters to 'a_flag'.
 		do
 			from
@@ -186,7 +176,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	drop_stone (st: STONE) is
+	drop_stone (st: STONE)
 			-- Set `st' in the stone manager and pop up the feature view if it is a feature stone.
 		local
 			fst: FEATURE_STONE
@@ -206,8 +196,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -220,22 +210,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 
 	description:
 		"Converts ASCII output of profiler into the internal representation."
@@ -22,7 +22,7 @@ create
 
 feature -- Creation
 
-	make (profile, translat: STRING; s_p_config: SHARED_PROF_CONFIG; a_is_final: BOOLEAN) is
+	make (profile, translat: STRING; s_p_config: SHARED_PROF_CONFIG; a_is_final: BOOLEAN)
 			-- Create the converter.
 			-- `profile' is the output file from the profile-tool,
 			-- `translat' is the name of the TRANSLAT file for this
@@ -39,7 +39,7 @@ feature -- Creation
 
 feature -- Converting
 
-	convert_profile_listing is
+	convert_profile_listing
 			-- Converts the profile-tool-output listing.
 		do
 			analyse
@@ -47,7 +47,7 @@ feature -- Converting
 
 feature {PROFILE_CONVERTER} -- analyzing
 
-	analyse is
+	analyse
 			-- Analyzes the profile output file (which should be
 			-- ASCII !)
 		do
@@ -96,7 +96,7 @@ end
 					resync_line
 				elseif token_type = Whitespace_token then
 					get_next_column
-					if column_nr > config.get_number_of_columns then
+					if column_nr > config.number_of_columns then
 						skip_line
 					end
 				else
@@ -109,7 +109,7 @@ end
 			end_analyse
 		end
 
-	init_analyse is
+	init_analyse
 			-- Initializes the analyzation process.
 		do
 			string_idx := 1
@@ -121,7 +121,7 @@ end
 			is_conversion_ok := False
 		end
 
-	end_analyse is
+	end_analyse
 			-- Reports end of analization and writes information to
 			-- disk.
 		local
@@ -172,7 +172,7 @@ end
 			is_conversion_ok := True
 		end
 
-	redo_cyclics is
+	redo_cyclics
 			-- All cycles are read, so cyclic functions can be stored.
 		local
 			number: INTEGER
@@ -188,7 +188,7 @@ end
 			end
 		end
 
-	get_next_column is
+	get_next_column
 			-- Goes on analyzing untill start of next column.
 			-- A column's contents is every character except
 			-- ' ' and '%T'.
@@ -209,7 +209,7 @@ end
 			end
 		end
 
-	record_token is
+	record_token
 			-- Records a token. If it is (by configuration) not possible
 			-- to record the token at this column, we skip the rest of
 			-- the line.
@@ -227,29 +227,29 @@ end
 			end
 		end
 
-	perform_real_token is
+	perform_real_token
 			-- Does the actual recording of a lexeme of
 			-- token_type = Real_token.
 		do
-			if config.get_function_time_column = column_nr then
-				function_time := token_string.to_real
+			if config.function_time_column = column_nr then
+				function_time := token_string.to_double
 				columns_seen := columns_seen + 1
-			elseif config.get_descendant_time_column = column_nr then
-				descendant_time := token_string.to_real
+			elseif config.descendant_time_column = column_nr then
+				descendant_time := token_string.to_double
 				columns_seen := columns_seen + 1
-			elseif config.get_percentage_column = column_nr then
-				percentage := token_string.to_real
+			elseif config.percentage_column = column_nr then
+				percentage := token_string.to_double
 				columns_seen := columns_seen + 1
 			else
 				skip_line
 			end
 		end
 
-	perform_number_token is
+	perform_number_token
 			-- Does the actual recording of a lexeme of
 			-- token_type = Number_token.
 		do
-			if config.get_number_of_calls_column = column_nr then
+			if config.number_of_calls_column = column_nr then
 				number_of_calls := token_string.to_integer
 				columns_seen := columns_seen + 1
 			else
@@ -257,7 +257,7 @@ end
 			end
 		end
 
-	perform_string_token is
+	perform_string_token
 			-- Does the actual recording of a lexeme of
 			-- token_type = String_token.
 		local
@@ -268,7 +268,7 @@ end
 			eclass: CLASS_C
 			a_group: CONF_GROUP
 		do
-			if config.get_function_name_column = column_nr then
+			if config.function_name_column = column_nr then
 				if token_string.item (1) = '<' then
 					space := token_string.index_of (' ', 1)
 					num_str := token_string.substring (space + 1, token_string.index_of (' ', space + 1))
@@ -395,18 +395,18 @@ end
 			end
 		end
 
-	perform_index_token is
+	perform_index_token
 			-- Does the actual recording of a lexeme of
 			-- token_type = Index_token.
 		do
-			if config.get_index_column = column_nr then
+			if config.index_column = column_nr then
 				columns_seen := columns_seen + 1
 			else
 				skip_line
 			end
 		end
 
-	perform_newline_token is
+	perform_newline_token
 			-- Does the actual recording of a lexeme of
 			-- token_type = Newline_token.
 		do
@@ -419,16 +419,16 @@ end
 			token_type := Newline_token
 		end
 
-	perform_profile_line is
+	perform_profile_line
 			-- Sets up a PROFILE_DATA object for storage into the
 			-- `profile_information' object.
 		local
-			total_time: REAL
+			total_time: REAL_64
 			e_data: EIFFEL_PROFILE_DATA
 			c_data: C_PROFILE_DATA
 			cy_data: CYCLE_PROFILE_DATA
 		do
-			if config.get_config_name.is_equal ("win32_ms") then
+			if config.configuration_name.is_equal ("win32_ms") then
 					-- Currently ONLY win32_ms prints total_time rather than
 					-- descendant_time only. To get the descendant_time
 					-- we subtract the function_time at this point, because
@@ -456,7 +456,7 @@ end
 			skip_line
 		end
 
-	skip_line is
+	skip_line
 			-- Reads up until just after the first appearance of
 			-- '%N'.
 		do
@@ -471,7 +471,7 @@ end
 			column_nr := 1
 		end
 
-	resync_line is
+	resync_line
 			-- Reads in the line up to first legal character.
 			-- A legal character any of the following:
 			-- digits, alphas, '.', '_', '[', ']',
@@ -492,7 +492,7 @@ end
 			end
 		end
 
-	retrieve_first_next_token is
+	retrieve_first_next_token
 			-- Checks whether the next characters can be grouped into
 			-- one of the predefined tokens (string, number, real, index,.put_new_line).
 			-- If so 'token_type' is respectively String_token, Number_token, Real_token, Index_token, Newline_token.
@@ -553,7 +553,7 @@ end
 				end
 
 					-- Remove the leading underscore if necessary.
-				if config.get_leading_underscore then
+				if config.leading_underscore then
 					if token_string.item(1) = '_' then
 						token_string := token_string.substring (2, token_string.count)
 					end
@@ -649,7 +649,7 @@ end
 
 feature {NONE} -- Commands
 
-	read_profile_file is
+	read_profile_file
 			-- reads the profile listing into memory
 		local
 			file : PLAIN_TEXT_FILE
@@ -660,7 +660,7 @@ feature {NONE} -- Commands
 			file.close
 		end
 
-	read_translat_file (filename: STRING) is
+	read_translat_file (filename: STRING)
 			-- reads the `TRANSLAT' file into memory
 		local
 			retried: BOOLEAN
@@ -669,7 +669,7 @@ feature {NONE} -- Commands
 			binary_file: RAW_FILE
 			table_name: FILE_NAME
 		do
-			if not config.get_config_name.is_equal ("eiffel") then
+			if not config.configuration_name.is_equal ("eiffel") then
 
 						-- Other profile tools use C names, so we need
 						-- Valid translation.
@@ -724,7 +724,7 @@ feature {NONE} -- Commands
 			retry
 		end
 
-	make_function_table (filename: STRING) is
+	make_function_table (filename: STRING)
 			-- creates the function table
 			-- and stores it on disk in file `filename'.
 			--| This will only be called when needed.
@@ -776,7 +776,7 @@ feature {NONE} -- Commands
 			object_file.close
 		end
 
-	get_translat_line : STRING is
+	get_translat_line : STRING
 		local
 			new_line_index : INTEGER
 		do
@@ -823,7 +823,7 @@ feature {NONE} -- Attributes
 
 	cyclics: TWO_WAY_LIST [LANGUAGE_FUNCTION]
 
-	Table_extension: STRING is "ftt"
+	Table_extension: STRING = "ftt"
 		-- Extension used to distinguish between compiler
 		-- created TRANSLAT file and function table
 
@@ -848,11 +848,11 @@ feature {NONE} -- Attributes
 	columns_of_interest: INTEGER
 		-- Columns of interest as specified by `config'
 
-	function_time: REAL
+	function_time: REAL_64
 
-	descendant_time: REAL
+	descendant_time: REAL_64
 
-	percentage: REAL
+	percentage: REAL_64
 
 	number_of_calls: INTEGER
 
@@ -860,16 +860,16 @@ feature {NONE} -- Attributes
 
 feature {NONE} -- Constants
 
-	String_token: INTEGER is 1
-	Number_token: INTEGER is 2
-	Real_token: INTEGER is 3
-	Index_token: INTEGER is 4
-	Newline_token: INTEGER is 5
-	Whitespace_token: INTEGER is 6
-	Error_token: INTEGER is 7;
+	String_token: INTEGER = 1
+	Number_token: INTEGER = 2
+	Real_token: INTEGER = 3
+	Index_token: INTEGER = 4
+	Newline_token: INTEGER = 5
+	Whitespace_token: INTEGER = 6
+	Error_token: INTEGER = 7;
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -882,22 +882,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class PROFILE_CONVERTER

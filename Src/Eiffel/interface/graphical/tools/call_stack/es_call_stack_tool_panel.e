@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Tool that displays the call stack during a debugging session."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -56,7 +56,7 @@ create
 
 feature {NONE} -- Initialization
 
-	build_tool_interface (a_widget: EV_VERTICAL_BOX) is
+	build_tool_interface (a_widget: EV_VERTICAL_BOX)
 			-- Build all the tool's widgets.
 		local
 			development_window: EB_DEVELOPMENT_WINDOW
@@ -207,7 +207,7 @@ feature {NONE} -- Initialization
 			load_preferences
 		end
 
-	update_call_stack_level_selection_mode (dbl_click_bpref: BOOLEAN_PREFERENCE) is
+	update_call_stack_level_selection_mode (dbl_click_bpref: BOOLEAN_PREFERENCE)
 			-- Update call stack level selection mode when preference select_call_stack_level_on_double_click_preference
 			-- changes.
 			-- if true then use double click
@@ -268,7 +268,7 @@ feature {NONE} -- Initialization
 			request_update
 		end
 
-	load_preferences is
+	load_preferences
 			-- Load preferences
 		require
 			grid_attached: stack_grid /= Void
@@ -293,7 +293,7 @@ feature {NONE} -- Initialization
 
 feature -- Access: Help
 
-	help_context_id: !STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		once
 			Result := "8C3CD0FE-78AA-7EC6-F36A-2233A4E26755"
@@ -313,7 +313,7 @@ feature {NONE} -- Factory
 		do
 		end
 
-	create_box_exception is
+	create_box_exception
 			-- Build `box_exception' widget
 		local
 			tb_but: like exception_dialog_button
@@ -336,7 +336,7 @@ feature {NONE} -- Factory
 			box_exception.disable_item_expand (tb_exception)
 		end
 
-	create_box_thread is
+	create_box_thread
 			-- Build `box_thread' widget
 		local
 			t_label: EV_LABEL
@@ -370,7 +370,7 @@ feature {NONE} -- Factory
 			box_thread.disable_item_expand (t_label)
 		end
 
-	create_box_replay_controls is
+	create_box_replay_controls
 			-- Build `box_replay_controls' widget
 		local
 			tb: SD_TOOL_BAR
@@ -467,7 +467,7 @@ feature {NONE} -- Commands
 
 feature {ES_CALL_STACK_TOOL} -- UI access
 
-	activate_execution_replay_mode (b: BOOLEAN; levlim: INTEGER) is
+	activate_execution_replay_mode (b: BOOLEAN; levlim: INTEGER)
 			-- Enable or disable execution replay
 		require
 			is_initialized: is_initialized
@@ -503,7 +503,7 @@ feature {ES_CALL_STACK_TOOL} -- UI access
 			end
 		end
 
-	set_execution_replay_level (lev: INTEGER; levlim: INTEGER; rep: REPLAYED_CALL_STACK_ELEMENT) is
+	set_execution_replay_level (lev: INTEGER; levlim: INTEGER; rep: REPLAYED_CALL_STACK_ELEMENT)
 			-- Set the execution replay level to `lev'
 			-- in the limits of `levlim'
 			-- i.e: refresh the stack_grid using the adapted colors
@@ -534,7 +534,7 @@ feature {ES_CALL_STACK_TOOL} -- UI access
 			end
 		end
 
-	remove_replayed_rows is
+	remove_replayed_rows
 			-- Remove all rows related to replayed call
 		local
 			r: INTEGER
@@ -553,7 +553,7 @@ feature {ES_CALL_STACK_TOOL} -- UI access
 
 feature {NONE} -- Replay helpers
 
-	replay_to_selected_row is
+	replay_to_selected_row
 			-- Replay to selected row
 		require
 			execution_replay_activated: execution_replay_activated
@@ -562,8 +562,8 @@ feature {NONE} -- Replay helpers
 			lev: INTEGER
 			l_id: STRING
 		do
-			if {l_row: EV_GRID_ROW} stack_grid.single_selected_row then
-				if {rcse: like replayed_call_stack_element_from_row} replayed_call_stack_element_from_row (l_row) then
+			if attached stack_grid.single_selected_row as l_row then
+				if attached replayed_call_stack_element_from_row (l_row) as rcse then
 					l_id := rcse.id
 				else
 					lev := level_from_row (l_row)
@@ -582,14 +582,14 @@ feature {NONE} -- Replay helpers
 
 feature -- Change
 
-	refresh is
+	refresh
 			-- Refresh call stack
 		do
 			remove_replayed_rows
 			stack_grid.clear
 		end
 
-	show is
+	show
 			-- Show tool
 		do
 			Precursor {ES_DEBUGGER_DOCKABLE_STONABLE_TOOL_PANEL}
@@ -601,7 +601,7 @@ feature -- Change
 
 feature {NONE} -- Even handlers
 
-	on_show	is
+	on_show
 			-- <Precursor>
 		do
 			Precursor
@@ -609,7 +609,7 @@ feature {NONE} -- Even handlers
 
 feature {NONE} -- Update
 
-	on_update_when_application_is_executing (dbg_stopped: BOOLEAN) is
+	on_update_when_application_is_executing (dbg_stopped: BOOLEAN)
 			-- Update when debugging
 		do
 			request_clean_stack_grid
@@ -617,7 +617,7 @@ feature {NONE} -- Update
 			refresh_threads_info
 		end
 
-	on_update_when_application_is_not_executing is
+	on_update_when_application_is_not_executing
 			-- Update when not debugging
 		do
 			request_clean_stack_grid
@@ -627,7 +627,7 @@ feature {NONE} -- Update
 			display_box_thread (False)
 		end
 
-	real_update (dbg_was_stopped: BOOLEAN) is
+	real_update (dbg_was_stopped: BOOLEAN)
 			-- Display current execution status.
 			-- dbg_was_stopped is ignore if Application/Debugger is not running			
 		local
@@ -662,7 +662,7 @@ feature {NONE} -- Update
 
 feature {ES_CALL_STACK_TOOL} -- Memory management
 
-	reset_tool is
+	reset_tool
 			-- Reset tool when debugging is terminated
 		do
 			reset_update_on_idle
@@ -680,7 +680,7 @@ feature {ES_CALL_STACK_TOOL} -- Memory management
 
 feature {NONE} -- Internal memory management
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
@@ -693,7 +693,7 @@ feature {NONE} -- Internal memory management
 
 feature {NONE} -- Implementation: Stop
 
-	display_stop_cause (arg_is_stopped: BOOLEAN) is
+	display_stop_cause (arg_is_stopped: BOOLEAN)
 			-- Fill in the `stop_cause' label with a message describing the application status.
 			-- arg_is_stopped is ignore if Application/Debugger is not running
 		local
@@ -754,7 +754,7 @@ feature {NONE} -- Implementation: Stop
 			end
 		end
 
-	open_stack_depth_dialog is
+	open_stack_depth_dialog
 			-- Display a dialog that lets the user change the maximum depth of the call stack.
 		local
 			dlg: ES_CALL_STACK_DEPTH_DIALOG
@@ -766,7 +766,7 @@ feature {NONE} -- Implementation: Stop
 
 feature {NONE} -- Implementation: Exceptions
 
-	open_exception_dialog is
+	open_exception_dialog
 			-- Open exception dialog to show the exception details
 		local
 			dlg: EB_DEBUGGER_EXCEPTION_DIALOG
@@ -783,7 +783,7 @@ feature {NONE} -- Implementation: Exceptions
 			end
 		end
 
-	display_exception is
+	display_exception
 			-- Fill in the `exception' label with a text describing the exception, if any.
 		local
 			m: STRING_32
@@ -796,7 +796,7 @@ feature {NONE} -- Implementation: Exceptions
 			exception_dialog_button.enable_sensitive
 		end
 
-	exception_value: EXCEPTION_DEBUG_VALUE is
+	exception_value: EXCEPTION_DEBUG_VALUE
 			-- Current exception value
 		local
 			l_status: APPLICATION_STATUS
@@ -809,7 +809,7 @@ feature {NONE} -- Implementation: Exceptions
 			end
 		end
 
-	fake_exception_value: EXCEPTION_DEBUG_VALUE is
+	fake_exception_value: EXCEPTION_DEBUG_VALUE
 			-- Current exception value
 		do
 			Result := exception_value
@@ -820,7 +820,7 @@ feature {NONE} -- Implementation: Exceptions
 			Result_not_void: Result /= Void
 		end
 
-	exception_short_description: STRING_32 is
+	exception_short_description: STRING_32
 			-- Text corresponding to the current exception.
 		local
 			e: like exception_value
@@ -834,7 +834,7 @@ feature {NONE} -- Implementation: Exceptions
 
 feature {NONE} -- Catcall warning access
 
-	display_catcall_message is
+	display_catcall_message
 			-- Fill in the `exception' label with a text describing the catcall, if any.
 		require
 			reason_is_catcall: debugger_manager.application_status.reason_is_catcall
@@ -847,7 +847,7 @@ feature {NONE} -- Catcall warning access
 			exception_dialog_button.disable_sensitive
 		end
 
-	catcall_message: STRING_32 is
+	catcall_message: STRING_32
 			-- Catcall warning message
 		require
 			reason_is_catcall: debugger_manager.application_status.reason_is_catcall
@@ -876,33 +876,33 @@ feature {NONE} -- Catcall warning access
 						end
 					end
 
-					Result.append_string (" for ")
+					Result.append (" for ")
 						--| Get info with compiler data
 					if f /= Void then
-						if {args: E_FEATURE_ARGUMENTS} (f.arguments) and then args.count >= rtcc.pos then
-							if {argnames: LIST [STRING]} (args.argument_names) then
+						if attached f.arguments as args and then args.count >= rtcc.pos then
+							if attached args.argument_names as argnames then
 								argnames.start
 								argnames.move (rtcc.pos - 1)
 								argname := argnames.item
 							end
 							args.start
 							args.move (rtcc.pos - 1)
-							if {typ: TYPE_A} args.item then
+							if attached args.item as typ then
 								l_static_argtypename := typ.name
 							end
 						end
 					end
-					Result.append_string (" argument#")
+					Result.append (" argument#")
 					Result.append_integer (rtcc.pos)
 
 					if argname /= Void then
-						Result.append_string (" `")
-						Result.append_string (argname)
+						Result.append (" `")
+						Result.append (argname)
 						Result.append_character (''')
 					end
 					l_max_type_id := system.class_types.count
 
-					Result.append_string (": expected ")
+					Result.append (": expected ")
 					ct := Void
 
 					l_fdtype := rtcc.expected
@@ -931,11 +931,11 @@ feature {NONE} -- Catcall warning access
 						argtypename.append_integer (l_fdtype)
 						argtypename.append_string (")")
 					end
-					Result.append_string (" ")
-					Result.append_string (argtypename)
+					Result.append (" ")
+					Result.append (argtypename)
 					argtypename := Void
 
-					Result.append_string (" but got ")
+					Result.append (" but got ")
 					l_fdtype := rtcc.actual
 						--| Try with compiler data
 					if l_fdtype - 1 = {SHARED_GEN_CONF_LEVEL}.none_type then --| -1: to convert to runtime type id
@@ -952,9 +952,9 @@ feature {NONE} -- Catcall warning access
 						argtypename := debugger_manager.application.internal_type_name_of_type (l_fdtype - 1) --| -1: to convert to runtime type id
 					end
 					if argtypename /= Void then
-						Result.append_string (argtypename)
+						Result.append (argtypename)
 					else
-						Result.append_string ("type#")
+						Result.append ("type#")
 						Result.append_integer (l_fdtype)
 					end
 					argtypename := Void
@@ -971,7 +971,7 @@ feature {NONE} -- Catcall warning access
 
 feature {NONE} -- Implementation: threads
 
-	display_box_thread (b: BOOLEAN) is
+	display_box_thread (b: BOOLEAN)
 			-- Show or hide box related to available Thread ids
 		do
 			if box_thread /= Void then
@@ -983,7 +983,7 @@ feature {NONE} -- Implementation: threads
 			end
 		end
 
-	refresh_threads_info is
+	refresh_threads_info
 			-- Refresh thread info according to debugger data
 		require
 			application_is_executing: debugger_manager.application_is_executing
@@ -1002,7 +1002,7 @@ feature {NONE} -- Implementation: threads
 			end
 		end
 
-	select_call_stack_thread (lab: EV_LABEL; x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
+	select_call_stack_thread (lab: EV_LABEL; x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- Select thread
 		local
 			m: EV_MENU
@@ -1021,7 +1021,7 @@ feature {NONE} -- Implementation: threads
 
 						create mi.make_with_text_and_action ("Show threads panel", agent
 								do
-									if {th: ES_THREADS_TOOL} eb_debugger_manager.threads_tool then
+									if attached eb_debugger_manager.threads_tool as th then
 										th.show (True)
 									end
 								end)
@@ -1064,7 +1064,7 @@ feature {NONE} -- Implementation: threads
 
 feature {NONE} -- Export call stack
 
-	save_call_stack is
+	save_call_stack
 			-- Saves the current call stack representation in a file.
 		local
 			fd: EB_FILE_SAVE_DIALOG
@@ -1111,7 +1111,7 @@ feature {NONE} -- Export call stack
 			fd.show_modal_to_window (Eb_debugger_manager.debugging_window.window)
 		end
 
-	save_call_stack_to_file (fd: EV_FILE_DIALOG) is
+	save_call_stack_to_file (fd: EV_FILE_DIALOG)
 			-- Actually saves the call stack.
 		require
 			valid_dialog: fd /= Void
@@ -1151,7 +1151,7 @@ feature {NONE} -- Export call stack
 			retry
 		end
 
-	save_call_stack_to_filename (a_fp: STRING; a_fn: STRING; is_append: BOOLEAN) is
+	save_call_stack_to_filename (a_fp: STRING; a_fn: STRING; is_append: BOOLEAN)
 			-- Save call stack into file named `a_fn'.
 			-- if the file already exists and `is_append' is True
 			-- then append the stack in the same file
@@ -1186,7 +1186,7 @@ feature {NONE} -- Export call stack
 			retry
 		end
 
-	copy_call_stack_to_clipboard is
+	copy_call_stack_to_clipboard
 		local
 			l_output: YANK_STRING_WINDOW
 			retried: BOOLEAN
@@ -1226,7 +1226,7 @@ feature {NONE} -- Export call stack
 
 feature {NONE} -- Stack grid implementation
 
-	clean_stack_grid is
+	clean_stack_grid
 			-- Clean the stack_grid
 		do
 			stack_grid.call_delayed_clean
@@ -1237,13 +1237,13 @@ feature {NONE} -- Stack grid implementation
 			stack_grid_cleaned: stack_grid.row_count = 0
 		end
 
-	request_clean_stack_grid is
+	request_clean_stack_grid
 			-- Clean the stack_grid
 		do
 			stack_grid.request_delayed_clean
 		end
 
-	populate_stack_grid (stack: EIFFEL_CALL_STACK) is
+	populate_stack_grid (stack: EIFFEL_CALL_STACK)
 			-- Fill the satck_grid with `stack' data
 		require
 			application_stopped: debugger_manager.safe_application_is_stopped
@@ -1289,7 +1289,7 @@ feature {NONE} -- Stack grid implementation
 			stack_grid.request_columns_auto_resizing
 		end
 
-	compute_stack_grid_item (c, r: INTEGER): EV_GRID_ITEM is
+	compute_stack_grid_item (c, r: INTEGER): EV_GRID_ITEM
 			-- Computed grid item corresponding to `c,r'.
 		local
 			row: EV_GRID_ROW
@@ -1320,7 +1320,7 @@ feature {NONE} -- Stack grid implementation
 			end
 		end
 
-	compute_stack_grid_row (a_row: EV_GRID_ROW) is
+	compute_stack_grid_row (a_row: EV_GRID_ROW)
 			-- Compute item for `a_row'
 		require
 			a_row_not_void: a_row /= Void
@@ -1363,6 +1363,10 @@ feature {NONE} -- Stack grid implementation
 
 					--| Break Index
 				l_breakindex_info := cse.break_index.out
+				if cse.break_nested_index > 0 then
+					l_breakindex_info.append_character ('+')
+					l_breakindex_info.append_integer (cse.break_nested_index)
+				end
 
 					--| Routine name
 				l_feature_name := cse.routine_name
@@ -1381,7 +1385,7 @@ feature {NONE} -- Stack grid implementation
 					--| Object address
 				l_obj_address_info := cse.object_address.output
 
-				if {e_cse: EIFFEL_CALL_STACK_ELEMENT} cse then
+				if attached {EIFFEL_CALL_STACK_ELEMENT} cse as e_cse then
 						--| Origin class
 					dc := e_cse.dynamic_class
 					oc := e_cse.written_class
@@ -1406,14 +1410,14 @@ feature {NONE} -- Stack grid implementation
 					end
 
 					if
-						{dotnet_cse: CALL_STACK_ELEMENT_DOTNET} e_cse
+						attached {CALL_STACK_ELEMENT_DOTNET} e_cse as dotnet_cse
 						and then dotnet_cse.dotnet_module_name /= Void
 					then
 						l_tooltip.append_string (interface_names.l_module_is (dotnet_cse.dotnet_module_name))
 					end
 				else --| It means, this is an EXTERNAL_CALL_STACK_ELEMENT
 					l_orig_class_info := ""
-					if {ext_cse: EXTERNAL_CALL_STACK_ELEMENT} cse then
+					if attached {EXTERNAL_CALL_STACK_ELEMENT} cse as ext_cse then
 						l_extra_info := ext_cse.info
 					end
 				end
@@ -1422,11 +1426,11 @@ feature {NONE} -- Stack grid implementation
 				app_exec := Debugger_manager.application
 					--| Tooltip addition
 				l_nb_stack := app_exec.status.current_call_stack.count
-				l_tooltip.prepend_string ((cse.level_in_stack).out + "/" + l_nb_stack.out + ": ")
-				l_tooltip.append_string (interface_names.l_break_index_is (l_breakindex_info))
-				l_tooltip.append_string (interface_names.l_address_is (l_obj_address_info))
+				l_tooltip.prepend ((cse.level_in_stack).out + "/" + l_nb_stack.out + ": ")
+				l_tooltip.append (interface_names.l_break_index_is (l_breakindex_info))
+				l_tooltip.append (interface_names.l_address_is (l_obj_address_info))
 				if l_extra_info /= Void then
-					l_tooltip.append_string ("%N    + " + l_extra_info)
+					l_tooltip.append ("%N    + " + l_extra_info)
 				end
 
 					--| Fill columns
@@ -1447,7 +1451,11 @@ feature {NONE} -- Stack grid implementation
 				a_row.set_item (Feature_column_index, glab)
 
 					--| Position
-				create glab.make_with_text (cse.break_index.out)
+				if cse.break_nested_index > 0 then
+					create glab.make_with_text (cse.break_index.out + "+" + cse.break_nested_index.out)
+				else
+					create glab.make_with_text (cse.break_index.out)
+				end
 				a_row.set_item (Position_column_index, glab)
 
 					--| Dynamic Type
@@ -1474,7 +1482,7 @@ feature {NONE} -- Stack grid implementation
 			end
 		end
 
-	refresh_stack_grid_row (a_row: EV_GRID_ROW; current_level: INTEGER) is
+	refresh_stack_grid_row (a_row: EV_GRID_ROW; current_level: INTEGER)
 			-- Refresh row of stack_grid regarding the `current_level' information
 		require
 			a_row /= Void
@@ -1518,7 +1526,7 @@ feature {NONE} -- Stack grid implementation
 			end
 		end
 
-	compute_replayed_stack_grid_row (a_row: EV_GRID_ROW) is
+	compute_replayed_stack_grid_row (a_row: EV_GRID_ROW)
 			-- Compute item for `a_row' when `execution_replay_activated' is True
 		require
 			a_row_not_void: a_row /= Void
@@ -1608,9 +1616,9 @@ feature {NONE} -- Stack grid implementation
 
 						--| Tooltip addition
 					l_nb_stack := app_exec.status.current_call_stack.count
-					l_tooltip.prepend_string (cse.remote_id + ": ")
-					l_tooltip.append_string (interface_names.l_break_index_is (l_breakindex_info))
-					l_tooltip.prepend_string (cse.id + "%N")
+					l_tooltip.prepend (cse.remote_id + ": ")
+					l_tooltip.append (interface_names.l_break_index_is (l_breakindex_info))
+					l_tooltip.prepend (cse.id + "%N")
 
 						--| Fill columns
 					if l_is_melted or l_has_rescue then
@@ -1689,16 +1697,16 @@ feature {NONE} -- Stack grid implementation
 
 feature {NONE} -- Stone handlers
 
-	on_stone_changed (a_old_stone: ?like stone) is
+	on_stone_changed (a_old_stone: detachable like stone)
 			-- Assign `a_stone' as new stone.
 		do
-			if {st: CALL_STACK_STONE} stone then
+			if attached {CALL_STACK_STONE} stone as st then
 				arrowed_level := st.level_number
 				stack_grid.clear
 			end
 		end
 
-	on_element_drop (st: CALL_STACK_STONE) is
+	on_element_drop (st: CALL_STACK_STONE)
 			-- Change stack level to the one described by `st'.
 		do
 			Eb_debugger_manager.launch_stone (st)
@@ -1706,7 +1714,7 @@ feature {NONE} -- Stone handlers
 
 feature {NONE} -- Grid Implementation
 
-	replayed_call_stack_element_from_row (a_row: EV_GRID_ROW): REPLAYED_CALL_STACK_ELEMENT is
+	replayed_call_stack_element_from_row (a_row: EV_GRID_ROW): REPLAYED_CALL_STACK_ELEMENT
 			-- Call stack level related to `a_row'.
 		require
 			a_row /= Void
@@ -1714,14 +1722,14 @@ feature {NONE} -- Grid Implementation
 			Result ?= a_row.data
 		end
 
-	replayed_call_stack_element_from_row_with_rt_info (a_row: EV_GRID_ROW): REPLAYED_CALL_STACK_ELEMENT is
+	replayed_call_stack_element_from_row_with_rt_info (a_row: EV_GRID_ROW): REPLAYED_CALL_STACK_ELEMENT
 			-- Call stack level related to `a_row'.
 		require
 			a_row /= Void
 		do
 			Result := replayed_call_stack_element_from_row (a_row)
 			if Result /= Void and then not Result.rt_information_available then
-				if {p: EV_GRID_ROW} a_row.parent_row then
+				if attached a_row.parent_row as p then
 					Result := replayed_call_stack_element_from_row_with_rt_info (p)
 				end
 			end
@@ -1729,7 +1737,7 @@ feature {NONE} -- Grid Implementation
 			Result_with_rt_info: Result /= Void implies Result.rt_information_available
 		end
 
-	stack_data_at (lev: INTEGER): CALL_STACK_ELEMENT is
+	stack_data_at (lev: INTEGER): CALL_STACK_ELEMENT
 			-- Stack data for level `lev'
 		do
 			if stack_data /= Void and then stack_data.valid_index (lev) then
@@ -1737,13 +1745,13 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	is_eiffel_callstack_at (lev: INTEGER): BOOLEAN is
+	is_eiffel_callstack_at (lev: INTEGER): BOOLEAN
 			-- Is stack data related to `lev' an Eiffel call stack ?
 		do
-			Result := {s: like stack_data_at} stack_data_at (lev) and then s.is_eiffel_call_stack_element
+			Result := (attached stack_data_at (lev) as s) and then s.is_eiffel_call_stack_element
 		end
 
-	level_associated_with (rep: REPLAYED_CALL_STACK_ELEMENT): INTEGER is
+	level_associated_with (rep: REPLAYED_CALL_STACK_ELEMENT): INTEGER
 			-- Level associated with replayed call stack
 		require
 			rep_not_void: rep /= Void
@@ -1753,17 +1761,17 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	level_from_row (a_row: EV_GRID_ROW): INTEGER is
+	level_from_row (a_row: EV_GRID_ROW): INTEGER
 			-- Call stack level related to `a_row'.
 		require
 			a_row /= Void
 		do
-			if {lev: INTEGER} a_row.data then
+			if attached {INTEGER} a_row.data as lev then
 				Result := lev
 			end
 		end
 
-	row_for_level (a_level: INTEGER): EV_GRID_ROW is
+	row_for_level (a_level: INTEGER): EV_GRID_ROW
 			-- Call stack row related to `a_level'.
 		local
 			row: EV_GRID_ROW
@@ -1787,7 +1795,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	on_grid_item_pointer_pressed (a_x, a_y, a_button: INTEGER; a_item: EV_GRID_ITEM) is
+	on_grid_item_pointer_pressed (a_x, a_y, a_button: INTEGER; a_item: EV_GRID_ITEM)
 			-- Action when mouse click on `stack_grid'
 		local
 			l_row: EV_GRID_ROW
@@ -1806,7 +1814,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	on_grid_item_pebble_function (a_item: EV_GRID_ITEM): CALL_STACK_STONE is
+	on_grid_item_pebble_function (a_item: EV_GRID_ITEM): CALL_STACK_STONE
 			-- Returns the call_stack_stone of row related to a_item
 		local
 			l_row: EV_GRID_ROW
@@ -1818,7 +1826,7 @@ feature {NONE} -- Grid Implementation
 					level := level_from_row (l_row)
 					if level > 0 then
 						if
-							{elem: EIFFEL_CALL_STACK_ELEMENT} Debugger_manager.application_status.current_call_stack.i_th (level) and then
+							attached {EIFFEL_CALL_STACK_ELEMENT} debugger_manager.application_status.current_call_stack.i_th (level) as elem and then
 							elem.dynamic_class /= Void and then
 							elem.dynamic_class.has_feature_table
 						then
@@ -1831,13 +1839,13 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	on_grid_item_accept_cursor_function	(a_item: EV_GRID_ITEM): EV_POINTER_STYLE is
+	on_grid_item_accept_cursor_function	(a_item: EV_GRID_ITEM): EV_POINTER_STYLE
 			-- Accept Cursor for grid item
 		do
 			Result := Cursors.cur_setstop
 		end
 
-	select_element_by_row (a_row: EV_GRID_ROW) is
+	select_element_by_row (a_row: EV_GRID_ROW)
 			-- Select element from `a_row'
 		require
 			a_row_not_void: a_row /= Void
@@ -1846,15 +1854,15 @@ feature {NONE} -- Grid Implementation
 			rst: REPLAYED_CALL_STACK_STONE
 			l: INTEGER
 		do
-			if {lev: INTEGER} level_from_row (a_row) and then is_eiffel_callstack_at (lev) then
+			if attached {INTEGER} level_from_row (a_row) as lev and then is_eiffel_callstack_at (lev) then
 				select_element_by_level (lev)
-			elseif {rep: like replayed_call_stack_element_from_row} replayed_call_stack_element_from_row (a_row) then
+			elseif attached replayed_call_stack_element_from_row (a_row) as rep then
 				if rep.rt_information_available then
 					l := level_associated_with (rep)
 					if
 						rep.replayed_break_index /= rep.break_index --| later take also into account nested index...
 					then
-						if {rep_fe: E_FEATURE} rep.e_feature then
+						if attached rep.e_feature as rep_fe then
 							create rst.make (rep_fe, [rep.replayed_break_index, rep.replayed_break_nested_index])
 							st := rst
 						end
@@ -1863,25 +1871,25 @@ feature {NONE} -- Grid Implementation
 				if l = 0 then
 						--| Change call stack element with the best stack possible
 					if
-						{pr: EV_GRID_ROW} a_row.parent_row and then
-						{rep_par: like replayed_call_stack_element_from_row} replayed_call_stack_element_from_row (pr)
+						attached a_row.parent_row as pr and then
+						attached replayed_call_stack_element_from_row (pr) as rep_par
 					then
 						if rep_par.rt_information_available then
 								--| If parent has rt_information_available
 							l := level_associated_with (rep_par)
 						else --| Else find a parent replayed call with rt_information_available
-							if {rep2: like replayed_call_stack_element_from_row} replayed_call_stack_element_from_row_with_rt_info (pr) then
+							if attached replayed_call_stack_element_from_row_with_rt_info (pr) as rep2 then
 								l := level_associated_with (rep2)
 							end
 						end
-						if {rep_par_fe: E_FEATURE} rep_par.e_feature then
+						if attached rep_par.e_feature as rep_par_fe then
 							create rst.make (rep_par_fe, [rep.break_index, rep.break_nested_index])
 							st := rst
 						end
 					end
 
 						--| And then switch to the associated feature
-					if st = Void and {fe: E_FEATURE} rep.e_feature then
+					if st = Void and attached rep.e_feature as fe then
 						create st.make (fe)
 					end
 				end
@@ -1894,7 +1902,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	select_element_by_level (level: INTEGER) is
+	select_element_by_level (level: INTEGER)
 			-- Set stone in the  develpment window.
 		require
 			valid_level: level > 0 and level <= debugger_manager.application.number_of_stack_elements
@@ -1907,7 +1915,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	key_pressed (a_key: EV_KEY) is
+	key_pressed (a_key: EV_KEY)
 			-- If `a_key' is enter, set the selected stack element as the new stone.
 		local
 			l_row: EV_GRID_ROW
@@ -1921,7 +1929,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	on_row_selected	(a_row: EV_GRID_ROW) is
+	on_row_selected	(a_row: EV_GRID_ROW)
 			-- `a_row' is selected
 		do
 			if execution_replay_activated then
@@ -1929,7 +1937,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	on_row_deselected	(a_row: EV_GRID_ROW) is
+	on_row_deselected	(a_row: EV_GRID_ROW)
 			-- `a_row' is deselected
 		do
 			if execution_replay_activated then
@@ -1937,7 +1945,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	on_row_expanded	(a_row: EV_GRID_ROW) is
+	on_row_expanded	(a_row: EV_GRID_ROW)
 			-- `a_row' is expanding
 		require
 			execution_replay_activated: execution_replay_activated
@@ -1951,14 +1959,14 @@ feature {NONE} -- Grid Implementation
 				then
 					lev := level_from_row (a_row)
 					if lev > 0 then
-						if {rcse: REPLAYED_CALL_STACK_ELEMENT } debugger_manager.application.replay_callstack_details ((-lev).out, 1) then
+						if attached debugger_manager.application.replay_callstack_details ((-lev).out, 1) as rcse then
 							a_row.insert_subrows (1, a_row.subrow_count + 1)
 							r := a_row.subrow (a_row.subrow_count)
 							fill_replayed_call_stack (r, rcse)
 						end
-					elseif {rcse2: REPLAYED_CALL_STACK_ELEMENT} a_row.data then
+					elseif attached {REPLAYED_CALL_STACK_ELEMENT} a_row.data as rcse2 then
 						if rcse2.calls_count > 0 and then rcse2.calls = Void then
-							if {rcse3: REPLAYED_CALL_STACK_ELEMENT} debugger_manager.application.replay_callstack_details (rcse2.id, 1) then
+							if attached debugger_manager.application.replay_callstack_details (rcse2.id, 1) as rcse3 then
 								rcse2.calls := rcse3.calls
 								fill_replayed_call_stack (a_row, rcse2)
 							end
@@ -1969,7 +1977,7 @@ feature {NONE} -- Grid Implementation
 			end
 		end
 
-	fill_replayed_call_stack (a_row: EV_GRID_ROW; rcse: REPLAYED_CALL_STACK_ELEMENT) is
+	fill_replayed_call_stack (a_row: EV_GRID_ROW; rcse: REPLAYED_CALL_STACK_ELEMENT)
 		local
 			r: EV_GRID_ROW
 			i: INTEGER
@@ -1978,7 +1986,7 @@ feature {NONE} -- Grid Implementation
 				a_row.set_data (rcse)
 				check a_row.subrow_count = 0 end
 				if rcse.calls_count > 0 then
-					if {subrcse: ARRAY [REPLAYED_CALL_STACK_ELEMENT]} rcse.calls then
+					if attached rcse.calls as subrcse then
 						from
 							i := subrcse.lower
 						until
@@ -2012,15 +2020,15 @@ feature {NONE} -- Constants
 
 feature {NONE} -- Implementation, cosmetic
 
-	set_focus_if_visible is
+	set_focus_if_visible
 			-- Set focus if visible
 		do
-			if content /= Void and then content.is_visible then
-				content.set_focus
+			if attached content as l_content and then l_content.is_visible then
+				l_content.set_focus
 			end
 		end
 
-	first_line_of (m: STRING_32): STRING_32 is
+	first_line_of (m: STRING_32): STRING_32
 			-- keep the first line of the exception message
 			-- the rest can be seen by double clicking on the widget
 		local
@@ -2039,7 +2047,7 @@ feature {NONE} -- Implementation, cosmetic
 			one_line: Result /= Void and then (not Result.has ('%R') and not Result.has ('%N'))
 		end
 
-	bold_this_label (is_bold: BOOLEAN; lab: EV_LABEL) is
+	bold_this_label (is_bold: BOOLEAN; lab: EV_LABEL)
 			-- Bold or unbold `lab'
 		require
 			lab_not_void: lab /= Void
@@ -2077,8 +2085,8 @@ feature {NONE} -- Implementation, cosmetic
 			-- such as display stop, threads ...
 
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -2102,11 +2110,11 @@ feature {NONE} -- Implementation, cosmetic
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CALL_STACK_TOOL

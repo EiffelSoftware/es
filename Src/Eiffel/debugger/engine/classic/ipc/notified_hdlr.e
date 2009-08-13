@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class NOTIFIED_HDLR
@@ -15,19 +15,19 @@ create
 
 feature
 
-	make is
+	make
 			-- Create Current and pass addresses to C
 		do
 			request_type := Rep_notified;
 			pass_addresses
 		end;
 
-	execute is
+	execute
 			-- register termination of the controlled application
 		local
 			retried: BOOLEAN
 			event_type: INTEGER
-			event_data: INTEGER
+			event_data: POINTER
 			s: APPLICATION_STATUS
 		do
 			if not retried then
@@ -45,8 +45,8 @@ feature
 				read_integer
 				event_type := last_integer
 
-				read_integer
-				event_data := last_integer
+				read_pointer
+				event_data := last_pointer
 
 					--|----------------------------|--
 					--| Data retrieved             |--
@@ -58,15 +58,15 @@ feature
 					event_type
 				when notif_thr_created then
 					debug ("debugger_ipc")
-						print (generator + " : Thread created: " + event_data.to_hex_string + "%N")
+						print (generator + " : Thread created: " + event_data.out + "%N")
 					end
-					s.add_thread_id (Default_pointer + event_data)
+					s.add_thread_id (event_data)
 
 				when notif_thr_exited then
 					debug ("debugger_ipc")
-						print (generator + " : Thread exited: " + event_data.to_hex_string + "%N")
+						print (generator + " : Thread exited: " + event_data.out + "%N")
 					end
-					s.remove_thread_id (Default_pointer + event_data)
+					s.remove_thread_id (event_data)
 				else
 					debug ("debugger_ipc")
 						print ("EWB notified eventType="+ event_type.out + "eventData=" + event_data.out + "%N")
@@ -83,7 +83,7 @@ feature
 			retry
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

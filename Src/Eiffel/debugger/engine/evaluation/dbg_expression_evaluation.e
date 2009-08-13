@@ -1,4 +1,4 @@
-indexing
+note
 	description : "Objects that represents a DBG_EXPRESSION evaluation ..."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_exp: like expression) is
+	make (a_exp: like expression)
 			-- Create current
 		require
 			a_exp_attached: a_exp /= Void
@@ -79,6 +79,15 @@ feature -- Evaluation: Access
 			end
 		end
 
+	values_are_equal (a_left, a_right: DUMP_VALUE): BOOLEAN
+			-- Are `a_left' and `a_right' equal using the `=' semantic?
+		require
+			a_left_attached: a_left /= Void
+			a_right_attached: a_right /= Void
+		do
+			Result := expression_evaluator.equal_evaluation_on_values (create {DBG_EVALUATED_VALUE}.make_with_value (a_left), create {DBG_EVALUATED_VALUE}.make_with_value (a_right))
+		end
+
 	short_text_from_errors: STRING_32
 			-- Short text from errors
 		require
@@ -132,22 +141,22 @@ feature -- Status report
 			Result := expression_evaluator.is_boolean_expression (fi)
 		end
 
-	has_error_evaluation: BOOLEAN is
+	has_error_evaluation: BOOLEAN
 		do
 			Result := dbg_error_handler.has_error_evaluation
 		end
 
-	has_error_expression: BOOLEAN is
+	has_error_expression: BOOLEAN
 		do
 			Result := dbg_error_handler.has_error_expression
 		end
 
-	has_error_exception: BOOLEAN is
+	has_error_exception: BOOLEAN
 		do
 			Result := dbg_error_handler.has_error_exception
 		end
 
-	has_error_syntax: BOOLEAN is
+	has_error_syntax: BOOLEAN
 		do
 			Result := dbg_error_handler.has_error_syntax
 		end
@@ -202,7 +211,7 @@ feature -- Status setting
 
 feature -- Basic operations: Evaluation
 
-	update is
+	update
 			-- Re-Evaluate `text'
 		do
 			reset_values
@@ -211,7 +220,7 @@ feature -- Basic operations: Evaluation
 			end
 		end
 
-	evaluate is
+	evaluate
 			-- Evaluate `text'
 		local
 			e: like expression
@@ -243,7 +252,7 @@ feature -- Basic operations: Evaluation
 						if ev /= Void then
 							error_occurred := ev.dbg_error_handler.error_occurred
 							if not error_occurred then
-								if {r: DBG_EVALUATED_VALUE} ev.final_result then
+								if attached ev.final_result as r then
 									value := r.value
 									static_class := r.static_class
 									dynamic_class := r.dynamic_class
@@ -260,7 +269,7 @@ feature -- Basic operations: Evaluation
 
 feature -- Basic operations: Resetting
 
-	reset_values is
+	reset_values
 			-- Reset evaluation's value
 		do
 			value := Void
@@ -277,7 +286,7 @@ feature -- Basic operations: Resetting
 			evaluator_unchanged: internal_evaluator = old internal_evaluator
 		end
 
-	reset is
+	reset
 			-- Reset Current's value
 		do
 			reset_values
@@ -288,7 +297,7 @@ feature -- Basic operations: Resetting
 
 feature -- debug output
 
-	debug_output: STRING is
+	debug_output: STRING
 			-- <Precursor>
 		do
 			create Result.make_empty
@@ -317,7 +326,7 @@ feature {NONE} -- Implementation
 			Result_attached: Result /= Void
 		end
 
-	expression_evaluator: DBG_EXPRESSION_EVALUATOR is
+	expression_evaluator: DBG_EXPRESSION_EVALUATOR
 			-- Expression_evaluator used to evaluate DBG_EXPRESSION
 		do
 			Result := internal_evaluator
@@ -327,7 +336,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_internal_evaluator (dm: DEBUGGER_MANAGER) is
+	create_internal_evaluator (dm: DEBUGGER_MANAGER)
 			-- Create internal_evaluator
 		do
 			if internal_evaluator = Void then
@@ -341,7 +350,7 @@ feature {NONE} -- Implementation
 invariant
 	expression_attached: expression /= Void
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that represent an expression line"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -33,7 +33,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_expression_evaluation (evl: DBG_EXPRESSION_EVALUATION; g: like parent_grid) is
+	make_with_expression_evaluation (evl: DBG_EXPRESSION_EVALUATION; g: like parent_grid)
 			-- Create Current line with `evl' data, and inside grid `g'
 		require
 			evaluation_attached: evl /= Void
@@ -41,31 +41,38 @@ feature {NONE} -- Initialization
 			make_with_grid (g)
 			set_expression_evaluation (evl)
 			if evl.evaluated then
-				if not evl.error_occurred then
-					last_dump_value := evl.value
-					if last_dump_value /= Void then
-						object_address := last_dump_value.address
-						object_dynamic_class := last_dump_value.dynamic_class
-					else
-						object_address := Void
-						object_dynamic_class := evl.dynamic_class
-					end
-					if object_dynamic_class = Void then
-						object_dynamic_class := evl.static_class
-					end
-					if object_dynamic_class /= Void then
-						object_is_special_value := object_dynamic_class.is_special
-								or object_dynamic_class.is_native_array
-					end
-				end
+				apply_evaluation_results (evl)
 			end
 		ensure
 			evaluation_set: expression_evaluation = evl
 		end
 
+	apply_evaluation_results (evl: DBG_EXPRESSION_EVALUATION)
+		require
+			evl_evaluated: evl.evaluated
+		do
+			if not evl.error_occurred then
+				last_dump_value := evl.value
+				if last_dump_value /= Void then
+					object_address := last_dump_value.address
+					object_dynamic_class := last_dump_value.dynamic_class
+				else
+					object_address := Void
+					object_dynamic_class := evl.dynamic_class
+				end
+				if object_dynamic_class = Void then
+					object_dynamic_class := evl.static_class
+				end
+				if object_dynamic_class /= Void then
+					object_is_special_value := object_dynamic_class.is_special
+							or object_dynamic_class.is_native_array
+				end
+			end
+		end
+
 feature -- Recycling
 
-	reset is
+	reset
 			-- Recycle data
 			-- in order to free special data (for instance dotnet references)
 		do
@@ -83,7 +90,7 @@ feature -- Refresh management
 	refresh_requested: BOOLEAN
 			-- Has a refresh operation been requested?
 
-	request_refresh is
+	request_refresh
 			-- Use this when we don't want to evaluate the expression if the grid is not displayed
 		require
 			refresh_not_requested: not refresh_requested
@@ -99,43 +106,35 @@ feature -- Refresh management
 			refresh_not_requested: not refresh_requested
 		end
 
-	refresh is
+	refresh
 			-- Effective refresh of current line
 		require else
 			has_expression: expression_evaluation /= Void
 		do
 			last_dump_value := Void
-			object_address := Void
+			object_address  := Void
 			object_dynamic_class := Void
 			internal_associated_dump_value := Void
 			clear_items_stone_properties
 
 			if
 				not evaluation_requested --| i.e: evaluate only on `grid_display_compute'
-				and then {evl: like expression_evaluation} expression_evaluation
+				and then attached expression_evaluation as evl
 				and then evl.evaluated
 			then
-				if not evl.error_occurred then
-					last_dump_value := evl.value
-					if last_dump_value /= Void then
-						object_address := last_dump_value.address
-					else
-						object_address := Void
-					end
-					object_dynamic_class := evl.dynamic_class
-				end
+				apply_evaluation_results (evl)
 			end
 			Precursor
 		end
 
-	request_evaluation (v: BOOLEAN) is
+	request_evaluation (v: BOOLEAN)
 			-- Request an evaluation on next grid display computing
 			-- (i.e: evaluate `text' only if displayed)
 		do
 			evaluation_requested := v
 		end
 
-	refresh_expression is
+	refresh_expression
 			-- Refresh expression
 			--| Moved from ES_WATCH_TOOL_PANEL
 			--| to reduce dependencies and prepare refactoring
@@ -145,7 +144,7 @@ feature -- Refresh management
 
 feature {NONE} -- Refresh implementation
 
-	process_evaluation is
+	process_evaluation
 		local
 			evl: like expression_evaluation
 		do
@@ -169,7 +168,7 @@ feature {NONE} -- Refresh implementation
 			refresh
 		end
 
-	process_evaluation_request is
+	process_evaluation_request
 		require
 			evaluation_requested: evaluation_requested
 		do
@@ -184,7 +183,7 @@ feature {NONE} -- Refresh implementation
 
 feature -- change properties
 
-	apply_cell_expression_text_properties_on (a_item: EV_GRID_LABEL_ITEM) is
+	apply_cell_expression_text_properties_on (a_item: EV_GRID_LABEL_ITEM)
 			-- Apply comestic properties on text item `a_item'
 		require
 			expression_not_void: expression_evaluation /= Void
@@ -205,7 +204,7 @@ feature -- change properties
 
 feature -- Settings
 
-	set_auto_expression	(b: like is_auto_expression) is
+	set_auto_expression	(b: like is_auto_expression)
 			-- Set `is_auto_expression' value
 		do
 			is_auto_expression := b
@@ -225,14 +224,14 @@ feature -- Properties
 	expression_evaluation: DBG_EXPRESSION_EVALUATION
 			-- Associated expression evaluation
 
-	object_name: STRING_32 is
+	object_name: STRING_32
 			-- Name associated to Current's object
 		do
 			if title /= Void then
 				Result := title
 			elseif expression.text /= Void then
 				Result := expression.text
-			elseif {oadd: like object_address} object_address then
+			elseif attached object_address as oadd then
 				Result := oadd.output
 			end
 		end
@@ -243,48 +242,50 @@ feature -- Properties
 	object_dynamic_class: CLASS_C
 			-- Dynamic class associated to expression's value
 
-	object_spec_capacity: INTEGER is
+	object_spec_count_and_capacity: TUPLE [spec_count, spec_capacity: INTEGER]
 		do
-			Result := debugger_manager.object_manager.special_object_capacity_at_address (object_address)
+			Result := debugger_manager.object_manager.special_object_count_and_capacity_at_address (object_address)
 		end
 
 feature -- Query
 
-	has_attributes_values: BOOLEAN is
+	has_attributes_values: BOOLEAN
 		do
-fixme ("find a smarter way to get a valid value")
+			debug ("refactor_fixme")
+				fixme ("find a smarter way to get a valid value")
+			end
 			Result := True
 		end
 
-	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE] is
+	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE]
 		local
 			dmp: DUMP_VALUE
 		do
 			dmp := last_dump_value
 			if dmp /= Void and then dmp.is_type_exception and then dmp.value_exception /= Void then
 				Result := dmp.value_exception.sorted_children
-			elseif {oadd: like object_address} object_address and then not oadd.is_void then
+			elseif attached object_address as oadd and then not oadd.is_void then
 				Result := debugger_manager.object_manager.sorted_attributes_at_address (oadd, object_spec_lower, object_spec_upper)
 			end
 		end
 
-	sorted_once_routines: LIST [E_FEATURE] is
+	sorted_once_routines: LIST [E_FEATURE]
 			-- <Precursor>	
 		do
-			if {cl: like object_dynamic_class} object_dynamic_class then
+			if attached object_dynamic_class as cl then
 				Result := cl.once_routines
 			end
 		end
 
-	sorted_constant_features: LIST [E_CONSTANT] is
+	sorted_constant_features: LIST [E_CONSTANT]
 			-- <Precursor>
 		do
-			if {cl: like object_dynamic_class} object_dynamic_class then
+			if attached object_dynamic_class as cl then
 				Result := cl.constant_features
 			end
 		end
 
-	object_value: STRING_32 is
+	object_value: STRING_32
 			-- Full ouput representation for related object
 		require
 			last_dump_value /= Void
@@ -292,7 +293,7 @@ fixme ("find a smarter way to get a valid value")
 			Result := last_dump_value.output_for_debugger
 		end
 
-	object_type_representation: STRING is
+	object_type_representation: STRING
 			-- Full ouput representation for related object
 		require
 			last_dump_value /= Void
@@ -300,7 +301,7 @@ fixme ("find a smarter way to get a valid value")
 			Result := last_dump_value.generating_type_representation (generating_type_evaluation_enabled)
 		end
 
-	associated_dump_value: DUMP_VALUE is
+	associated_dump_value: DUMP_VALUE
 		do
 			Result := internal_associated_dump_value
 			if Result = Void and then object_address /= Void then
@@ -313,12 +314,12 @@ fixme ("find a smarter way to get a valid value")
 
 feature -- Graphical changes
 
-	new_cell_expression: ES_OBJECTS_GRID_EXPRESSION_CELL is
+	new_cell_expression: ES_OBJECTS_GRID_EXPRESSION_CELL
 		do
 			create Result
 		end
 
-	set_expression_text (v: STRING_32) is
+	set_expression_text (v: STRING_32)
 		require else
 			is_attached_to_row: row /= Void
 		local
@@ -373,7 +374,7 @@ feature -- Graphical changes
 			grid_cell_set_text (glab, v)
 		end
 
-	update_expression_on_deactivate (a_item: ES_OBJECTS_GRID_EXPRESSION_CELL) is
+	update_expression_on_deactivate (a_item: ES_OBJECTS_GRID_EXPRESSION_CELL)
 			-- Update Current data with expression data from `a_item'
 		require
 			a_item /= Void
@@ -421,7 +422,7 @@ feature -- Graphical changes
 			end
 		end
 
-	set_error_pixmap (v: EV_PIXMAP) is
+	set_error_pixmap (v: EV_PIXMAP)
 		require
 			row.count > 0
 		local
@@ -431,7 +432,7 @@ feature -- Graphical changes
 			grid_cell_set_pixmap (gi, v)
 		end
 
-	set_expression_pixmap (v: EV_PIXMAP) is
+	set_expression_pixmap (v: EV_PIXMAP)
 		require
 			row.count > 0
 		local
@@ -441,7 +442,7 @@ feature -- Graphical changes
 			grid_cell_set_pixmap (gi, v)
 		end
 
-	show_error_dialog (txt: STRING_GENERAL) is
+	show_error_dialog (txt: STRING_GENERAL)
 		local
 			dlg: EB_DEBUGGER_EXCEPTION_DIALOG
 			edv: EXCEPTION_DEBUG_VALUE
@@ -471,7 +472,7 @@ feature -- Graphical changes
 				ax, ay, abutton: INTEGER;
 				ax_tilt, ay_tilt, apressure: DOUBLE;
 				ascreen_x, ascreen_y: INTEGER
-			) is
+			)
 		require
 			item_not_void: a_item /= Void
 		local
@@ -494,7 +495,7 @@ feature -- Graphical changes
 			end
 		end
 
-	compute_grid_display is
+	compute_grid_display
 		local
 			l_error_message: STRING_32
 			l_error_tag: STRING_32
@@ -522,7 +523,7 @@ feature -- Graphical changes
 
 					create l_tooltip.make (20)
 
-					if exp.is_context_object and then {ctxadd: DBG_ADDRESS} exp.context.associated_address then
+					if exp.is_context_object and then attached exp.context.associated_address as ctxadd then
 						if exp.name /= Void then
 							set_title (exp.name)
 						else
@@ -553,15 +554,15 @@ feature -- Graphical changes
 							l_error_message := evl.full_text_from_errors
 
 							if l_error_message /= Void then
-								l_tooltip.prepend_string ("%N%N")
-								l_tooltip.prepend_string (l_error_message)
+								l_tooltip.prepend ("%N%N")
+								l_tooltip.prepend  (l_error_message)
 							end
-							l_tooltip.prepend_string (interface_names.l_error_occurred.as_string_32)
+							l_tooltip.prepend(interface_names.l_error_occurred.as_string_32)
 							l_error_tag := expression_evaluation.short_text_from_errors
 							if l_error_tag /= Void then
 								s32 := "["
-								s32.append_string (l_error_tag)
-								s32.append_string ("] ")
+								s32.append (l_error_tag)
+								s32.append ("] ")
 							else
 								s32 := ""
 							end
@@ -579,7 +580,7 @@ feature -- Graphical changes
 							elseif evl.has_error_evaluation then
 								set_error_pixmap (pixmaps.icon_pixmaps.general_mini_error_icon)
 							end
-							if {l_exception_dump_value: DUMP_VALUE} evl.value then
+							if attached evl.value as l_exception_dump_value then
 								if l_exception_dump_value.is_type_exception then
 									if evl.has_error_exception then
 										l_title := interface_names.l_Exception_object
@@ -631,8 +632,8 @@ feature -- Graphical changes
 			end
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -656,11 +657,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

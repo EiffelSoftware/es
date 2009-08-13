@@ -1,5 +1,7 @@
-indexing
-	description: ""
+note
+	description: "[
+		Assertions commonly used in testing routines.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,7 +13,7 @@ inherit
 
 feature -- Equality
 
-	assert_equal (a_tag: STRING; expected, actual: ANY) is
+	assert_equal (a_tag: STRING; expected, actual: detachable ANY)
 			-- Check that `expected ~ actual'.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -19,7 +21,7 @@ feature -- Equality
 			assert (assert_equal_message (a_tag, expected, actual), expected ~ actual)
 		end
 
-	assert_not_equal (a_tag: STRING; expected, actual: ANY) is
+	assert_not_equal (a_tag: STRING; expected, actual: detachable ANY)
 			-- Check that `expected /~ actual'.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -27,7 +29,7 @@ feature -- Equality
 			disassert (assert_not_equal_message (a_tag, expected, actual), expected ~ actual)
 		end
 
-	assert_reference_equal (a_tag: STRING; expected, actual: ANY) is
+	assert_reference_equal (a_tag: STRING; expected, actual: detachable ANY)
 			-- Check that `expected = actual'.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -35,7 +37,7 @@ feature -- Equality
 			assert (assert_equal_message (a_tag, expected, actual), expected = actual)
 		end
 
-	assert_not_reference_equal (a_tag: STRING; expected, actual: ANY) is
+	assert_not_reference_equal (a_tag: STRING; expected, actual: detachable ANY)
 			-- Check that `expected /= actual'.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -43,7 +45,7 @@ feature -- Equality
 			disassert (assert_not_equal_message (a_tag, expected, actual), expected = actual)
 		end
 
-	assert_integers_equal (a_tag: STRING; expected, actual: INTEGER) is
+	assert_integers_equal (a_tag: STRING; expected, actual: INTEGER)
 			-- Check that `expected = actual'.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -51,7 +53,7 @@ feature -- Equality
 			assert (assert_strings_equal_message (a_tag, expected.out, actual.out), expected = actual)
 		end
 
-	assert_integers_not_equal (a_tag: STRING; expected, actual: INTEGER) is
+	assert_integers_not_equal (a_tag: STRING; expected, actual: INTEGER)
 			-- Check that `expected /= actual'.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -59,31 +61,37 @@ feature -- Equality
 			disassert (assert_strings_not_equal_message (a_tag, expected.out, actual.out), expected = actual)
 		end
 
-	assert_strings_equal (a_tag: STRING; expected, actual: STRING) is
+	assert_strings_equal (a_tag: STRING; expected, actual: detachable STRING)
 			-- Check that `expected' and `actual' are the same string.
 		require
 			a_tag_not_void: a_tag /= Void
+			expected_attached: expected /= Void
+			actual_attached: actual /= Void
 		do
-			assert (assert_strings_equal_message (a_tag, expected, actual), expected.is_equal (actual))
+			assert (assert_strings_equal_message (a_tag, expected, actual), expected.same_string (actual))
 		end
 
-	assert_strings_not_equal (a_tag: STRING; expected, actual: STRING) is
+	assert_strings_not_equal (a_tag: STRING; expected, actual: detachable STRING)
 			-- Check that `expected' and `actual' are not the same string.
 		require
 			a_tag_not_void: a_tag /= Void
+			expected_attached: expected /= Void
+			actual_attached: actual /= Void
 		do
-			disassert (assert_strings_not_equal_message (a_tag, expected, actual), expected.is_equal (actual))
+			disassert (assert_strings_not_equal_message (a_tag, expected, actual), expected.same_string (actual))
 		end
 
-	assert_strings_case_insensitive_equal (a_tag: STRING; expected, actual: STRING) is
+	assert_strings_case_insensitive_equal (a_tag: STRING; expected, actual: STRING)
 			-- Check that `expected' and `actual' are the same string (case insensitive).
 		require
 			a_tag_not_void: a_tag /= Void
+			expected_attached: expected /= Void
+			actual_attached: actual /= Void
 		do
 			assert (assert_strings_equal_message (a_tag, expected, actual), expected.is_case_insensitive_equal (actual))
 		end
 
-	assert_characters_equal (a_tag: STRING; expected, actual: CHARACTER) is
+	assert_characters_equal (a_tag: STRING; expected, actual: CHARACTER)
 			-- Check that `expected = actual'
 		require
 			a_tag_not_void: a_tag /= Void
@@ -91,7 +99,7 @@ feature -- Equality
 			assert (assert_strings_equal_message (a_tag, expected.out, actual.out), expected = actual)
 		end
 
-	assert_characters_not_equal (a_tag: STRING; expected, actual: CHARACTER) is
+	assert_characters_not_equal (a_tag: STRING; expected, actual: CHARACTER)
 			-- Check that `expected /= actual'
 		require
 			a_tag_not_void: a_tag /= Void
@@ -99,7 +107,7 @@ feature -- Equality
 			disassert (assert_strings_not_equal_message (a_tag, expected.out, actual.out), expected = actual)
 		end
 
-	assert_booleans_equal (a_tag: STRING; expected, actual: BOOLEAN) is
+	assert_booleans_equal (a_tag: STRING; expected, actual: BOOLEAN)
 			-- Check that `expected = actual'
 		require
 			a_tag_not_void: a_tag /= Void
@@ -107,7 +115,7 @@ feature -- Equality
 			assert (assert_strings_equal_message (a_tag, expected.out, actual.out), expected = actual)
 		end
 
-	assert_booleans_not_equal (a_tag: STRING; expected, actual: BOOLEAN) is
+	assert_booleans_not_equal (a_tag: STRING; expected, actual: BOOLEAN)
 			-- Check that `expected /= actual'
 		require
 			a_tag_not_void: a_tag /= Void
@@ -115,7 +123,7 @@ feature -- Equality
 			disassert (assert_strings_not_equal_message (a_tag, expected.out, actual.out), expected = actual)
 		end
 
-	assert_attached (a_tag: STRING; object: ANY) is
+	assert_attached (a_tag: STRING; object: detachable ANY)
 			-- Check that `object' is attached.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -123,7 +131,7 @@ feature -- Equality
 			assert (a_tag, object /= Void)
 		end
 
-	assert_void (a_tag: STRING; object: ANY) is
+	assert_void (a_tag: STRING; object: detachable ANY)
 			-- Check that `object' is detached.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -131,7 +139,7 @@ feature -- Equality
 			assert (a_tag, object = Void)
 		end
 
-	assert_predicate (a_tag: STRING; pred: PREDICATE [ANY, TUPLE]) is
+	assert_predicate (a_tag: STRING; pred: PREDICATE [ANY, TUPLE])
 			-- Check that `pred' evaluates to True.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -143,7 +151,7 @@ feature -- Equality
 
 feature -- Containers
 
-	assert_arrays_equal (a_tag: STRING; expected, actual: ARRAY [ANY]) is
+	assert_arrays_equal (a_tag: STRING; expected, actual: ARRAY [detachable ANY])
 			-- Check that `expected' and `actual' have the same items
 			-- in the same order (use `equal' for item comparison).
 		require
@@ -153,8 +161,8 @@ feature -- Containers
 		local
 			i, nb: INTEGER
 			i1, i2: INTEGER
-			new_tag, a_message: STRING
-			expected_item, actual_item: ANY
+			new_tag, a_message: detachable STRING
+			expected_item, actual_item: detachable ANY
 		do
 			if expected.count /= actual.count then
 				create new_tag.make (15)
@@ -187,7 +195,7 @@ feature -- Containers
 			end
 		end
 
-	assert_arrays_reference_equal (a_tag: STRING; expected, actual: ARRAY [ANY]) is
+	assert_arrays_reference_equal (a_tag: STRING; expected, actual: ARRAY [detachable ANY])
 			-- Check that `expected' and `actual' have the same items
 			-- in the same order (use '=' for item comparison).
 		require
@@ -197,8 +205,8 @@ feature -- Containers
 		local
 			i, nb: INTEGER
 			i1, i2: INTEGER
-			new_tag, a_message: STRING
-			expected_item, actual_item: ANY
+			new_tag, a_message: detachable STRING
+			expected_item, actual_item: detachable ANY
 		do
 			if expected.count /= actual.count then
 				create new_tag.make (15)
@@ -233,7 +241,7 @@ feature -- Containers
 
 feature {NONE} -- Messages
 
-	void_or_out (an_any: ANY): STRING is
+	void_or_out (an_any: detachable ANY): detachable STRING
 			-- Return `an_any.out' or Void if `an_any' is Void.
 		do
 			if an_any /= Void then
@@ -241,7 +249,7 @@ feature {NONE} -- Messages
 			end
 		end
 
-	assert_equal_message (a_tag: STRING; expected, actual: ANY): STRING is
+	assert_equal_message (a_tag: STRING; expected, actual: detachable ANY): STRING
 			-- Message stating that `expected' and `actual' should be equal.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -249,7 +257,7 @@ feature {NONE} -- Messages
 			Result := assert_strings_equal_message (a_tag, void_or_out (expected), void_or_out (actual))
 		end
 
-	assert_not_equal_message (a_tag: STRING; expected, actual: ANY): STRING is
+	assert_not_equal_message (a_tag: STRING; expected, actual: detachable ANY): STRING
 			-- Message stating that `expected' and `actual' should not be equal.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -257,7 +265,7 @@ feature {NONE} -- Messages
 			Result := assert_strings_not_equal_message (a_tag, void_or_out (expected), void_or_out (actual))
 		end
 
-	assert_strings_equal_message (a_tag: STRING; expected, actual: STRING): STRING is
+	assert_strings_equal_message (a_tag: STRING; expected, actual: detachable STRING): STRING
 			-- Message stating that `expected' and `actual' should be equal.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -280,7 +288,7 @@ feature {NONE} -- Messages
 			message_not_void: Result /= Void
 		end
 
-	assert_strings_not_equal_message (a_tag: STRING; expected, actual: STRING): STRING is
+	assert_strings_not_equal_message (a_tag: STRING; expected, actual: detachable STRING): STRING
 			-- Message stating that `expected' and `actual' should not be equal.
 		require
 			a_tag_not_void: a_tag /= Void
@@ -303,4 +311,14 @@ feature {NONE} -- Messages
 			message_not_void: Result /= Void
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

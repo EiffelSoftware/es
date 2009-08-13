@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"Batch compiler without invoking the -loop. This is the root%
 		%class for the personal version (which does allow c compilation)."
@@ -51,12 +51,19 @@ inherit
 
 	SHARED_BATCH_NAMES
 
+	CONF_DEFAULT_OPTION_SETTING
+
+	SHARED_COMPILER_PROFILE
+		rename
+			reset as reset_compiler_profile
+		end
+
 create
 	make
 
 feature -- Initialization
 
-	make is
+	make
 			-- Initialization
 		local
 			l_layout: ES_EIFFEL_LAYOUT
@@ -100,14 +107,14 @@ feature -- Initialization
 			l_eifgen_init.dispose
 		end
 
-	initialize is
+	initialize
 			-- Initialize batch compiler
 		do
 				-- Initialize compiler encoding converter.
 			(create {SHARED_ENCODING_CONVERTER}).set_encoding_converter (create {EC_ENCODING_CONVERTER})
 		end
 
-	execute is
+	execute
 			-- Analyze the command line options and
 			-- execute the appropriate command.
 		local
@@ -150,6 +157,11 @@ feature -- Initialization
 						if output_file_option then
 							create file_degree_output.make (output_file_name)
 							Eiffel_project.set_degree_output (file_degree_output)
+						end
+						if verbose_option then
+							degree_output.disable_quiet_output
+						else
+							-- By default degree output is quiet.
 						end
 
 							-- Load project
@@ -279,6 +291,9 @@ feature -- Properties
 	output_file_option: BOOLEAN
 			-- Redirect output to `output_file_name'?
 
+	verbose_option: BOOLEAN
+			-- Make compiler output verbose (default: quiet)?
+
 	output_file_name: STRING
 			-- File which Output is redirected into
 			-- if `output_file_option' is set to True.
@@ -317,7 +332,7 @@ feature -- Properties
 	is_gc_stats_enabled: BOOLEAN
 			-- Will compiler display some GC timing at the end of a compilation?
 
-	help_messages: HASH_TABLE [STRING_GENERAL, STRING] is
+	help_messages: HASH_TABLE [STRING_GENERAL, STRING]
 			-- Help message table
 		once
 			create Result.make (35)
@@ -356,10 +371,12 @@ feature -- Properties
 			Result.put (clean_help, clean_cmd_name)
 			Result.put (gui_help, gui_cmd_name)
 			Result.put (gc_stats_help, gc_stats_cmd_name)
+			Result.put (compat_help, compat_cmd_name)
+			Result.put (experiment_help, experiment_cmd_name)
 			add_help_special_cmds
 		end
 
-	loop_cmd: EWB_LOOP is
+	loop_cmd: EWB_LOOP
 			-- Loop command
 		do
 			create Result
@@ -367,13 +384,13 @@ feature -- Properties
 
 feature -- Access
 
-	is_precompiled_option: BOOLEAN is
+	is_precompiled_option: BOOLEAN
 			-- Is the current option `precompile'?
 		do
 			Result := option.is_equal ("-precompile")
 		end
 
-	is_precompiled_licensed_option: BOOLEAN is
+	is_precompiled_licensed_option: BOOLEAN
 			-- Is the current option `precompile_licensed'?
 		do
 			Result := option.is_equal ("-precompile_licensed")
@@ -381,7 +398,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_file (filename: STRING) is
+	set_file (filename: STRING)
 			-- Set the output_window file to `filename'.
 		do
 			create output_window.make (filename)
@@ -401,7 +418,7 @@ feature -- Setting
 
 feature -- Output
 
-	print_option_error is
+	print_option_error
 			-- Print the correct usage of ewb.
 		do
 			localized_print (argument (0))
@@ -409,13 +426,14 @@ feature -- Output
 			print_usage
 		end
 
-	print_usage is
+	print_usage
 			-- Print the usage of command line options.
 		do
 			localized_print (ewb_names.usage)
 			localized_print (argument (0))
-			io.put_string (" [-help | -version | -batch | -clean | -use_settings | ")
-			add_usage_special_cmds
+			io.put_string (" [-help | [-compat | -experiment] | -version |%N%T")
+			io.put_string ("-batch | -clean | -verbose | -use_settings |%N%T")
+			io.put_string ("-freeze | -finalize [-keep] | -precompile [-finalize [-keep]] | -c_compile |%N%T")
 			io.put_string ("-loop | -debug | -quick_melt | -melt | ")
 			if eiffel_layout.Has_documentation_generation then
 				io.put_string ("-clients [-filter filtername] class |%N%
@@ -442,13 +460,13 @@ feature -- Output
 				%%T-gc_stats]%N")
 		end
 
-	print_version is
+	print_version
 			-- Print Version Number
 		do
 			localized_print ("ISE " + Workbench_name + " version " + Version_number + "%N")
 		end
 
-	print_help is
+	print_help
 			-- Print the help.
 		local
 			command_list: SORTED_TWO_WAY_LIST [STRING]
@@ -482,7 +500,7 @@ feature -- Output
 			end
 		end
 
-	print_one_help (opt: STRING; txt: STRING_GENERAL) is
+	print_one_help (opt: STRING; txt: STRING_GENERAL)
 		do
 			io.put_string ("%T-")
 			io.put_string (opt)
@@ -491,7 +509,7 @@ feature -- Output
 			io.put_string (".%N")
 		end
 
-	print_gc_statistics is
+	print_gc_statistics
 			-- Display some GC statistics if `is_gc_stats_enabled'.
 		local
 			l_mem: MEMORY
@@ -500,7 +518,15 @@ feature -- Output
 		do
 			if is_gc_stats_enabled then
 				create l_mem
+					-- Get current GC stats
+				l_full_gc_info := l_mem.gc_statistics ({MEM_CONST}.full_collector)
+				l_part_gc_info := l_mem.gc_statistics ({MEM_CONST}.incremental_collector)
+
+					-- Do a full collect and coalesc, then retrieve final memory statistics
+				l_mem.full_collect
+				l_mem.full_coalesce
 				l_mem_info := l_mem.memory_statistics ({MEM_CONST}.eiffel_memory)
+
 				io.put_new_line
 				io.put_string ("                   Total |      Used |  Overhead |      Free")
 				io.put_new_line
@@ -537,14 +563,14 @@ feature -- Output
 				io.put_new_line
 
 				io.put_new_line
-				l_full_gc_info := l_mem.gc_statistics ({MEM_CONST}.full_collector)
-				io.put_string ("GC full cycle is " + l_full_gc_info.cycle_count.out + "%N")
-				io.put_string ("GC full cycle is " + l_full_gc_info.cpu_time_average.out + "%N")
+
+				io.put_string ("GC full cycle iterations   = " + l_full_gc_info.cycle_count.out + "%N")
+				io.put_string ("GC full cycle average time = " + l_full_gc_info.cpu_time_average.out + "%N")
 				io.put_new_line
 
-				l_part_gc_info := l_mem.gc_statistics ({MEM_CONST}.incremental_collector)
-				io.put_string ("GC incremental cycle is " + l_part_gc_info.cycle_count.out + "%N")
-				io.put_string ("GC incremental cycle is " + l_part_gc_info.cpu_time_average.out + "%N")
+
+				io.put_string ("GC incremental cycle iterations   = " + l_part_gc_info.cycle_count.out + "%N")
+				io.put_string ("GC incremental cycle average time = " + l_part_gc_info.cpu_time_average.out + "%N")
 				io.put_string ("CPU time " + l_part_gc_info.cpu_total_time.out + "%N")
 				io.put_string ("Kernel time " + l_part_gc_info.sys_total_time.out + "%N")
 				io.put_string ("Full Collection period " + l_mem.collection_period.out + "%N")
@@ -557,12 +583,7 @@ feature -- Output
 
 feature -- Update
 
-	add_usage_special_cmds is
-		do
-			io.put_string ("-freeze | %N%T-finalize [-keep] | -precompile [-finalize [-keep]] | -c_compile |%N%T")
-		end
-
-	add_help_special_cmds is
+	add_help_special_cmds
 		do
 			help_messages.put (freeze_help, freeze_cmd_name)
 			help_messages.put (precompile_help, precompile_cmd_name)
@@ -570,10 +591,13 @@ feature -- Update
 			Help_messages.put (c_compile_help, c_compile_cmd_name)
 		end
 
-	analyze_options is
+	analyze_options
 			-- Analyze the options entered by the user.
 		do
-					-- Default Project Options
+				-- Reset compiler_profile
+			reset_compiler_profile
+
+				-- Default Project Options
 			from
 				current_option := 1
 			until
@@ -592,7 +616,7 @@ feature -- Update
 			end
 		end
 
-	analyze_one_option is
+	analyze_one_option
 			-- Analyze current option.
 		local
 			cn, fn: STRING
@@ -603,7 +627,7 @@ feature -- Update
 			ewb_senders: EWB_SENDERS
 			ewb_callees: EWB_CALLEES
 			l_arg: STRING
-			auto_test_arguments: LINKED_LIST [STRING]
+			l_at_args: LINKED_LIST [STRING]
 		do
 			filter_name := ""
 			option := argument (current_option);
@@ -616,6 +640,8 @@ feature -- Update
 				else
 					command := loop_cmd
 				end
+			elseif option.is_equal ("-verbose") then
+				verbose_option := True
 			elseif option.is_equal ("-version") then
 				version_only := True
 			elseif option.is_equal ("-quick_melt") then
@@ -1208,18 +1234,33 @@ feature -- Update
 				else
 					option_error := True
 				end
+			elseif option.is_equal ("-compat") then
+					-- This option enables the default set of options of 6.3 and earlier if not specified
+					-- in the ECF file.
+				if is_experimental_mode then
+					option_error := True
+				else
+					set_is_63_compatible (True)
+					set_compatible_mode
+				end
+			elseif option.is_equal ("-experiment") then
+					-- This option enables the new options of the compiler that are not mainstream.
+				if is_compatible_mode then
+					option_error := True
+				else
+					set_experimental_mode
+				end
 			elseif option.is_equal ("-auto_test") then
-					-- When this option is present, all the following arguments are parsed as AutoTest specific arguments.
-				create auto_test_arguments.make
+				create l_at_args.make
 				from
 					current_option := current_option + 1
 				until
 					current_option > argument_count
 				loop
-					auto_test_arguments.extend (argument (current_option))
+					l_at_args.force (argument (current_option))
 					current_option := current_option + 1
 				end
-				create {EWB_AUTO_TEST} command.make_with_arguments (auto_test_arguments)
+				create {EWB_AUTO_TEST} command.make_with_arguments (l_at_args)
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
@@ -1240,7 +1281,7 @@ feature -- Update
 			current_option := current_option + 1
 		end
 
-	process_special_options is
+	process_special_options
 			-- Process the special option.
 		local
 			keep: BOOLEAN
@@ -1275,7 +1316,7 @@ feature -- Update
 
 feature {NONE} -- Externals
 
-	 enable_automatic_output_flushing is
+	 enable_automatic_output_flushing
 			-- Set `compiler_need_flush' to `1' so that all output are not
 			-- buffered.
 		external
@@ -1286,7 +1327,7 @@ feature {NONE} -- Externals
 
 feature {NONE} -- Onces
 
-	command_line_io: COMMAND_LINE_IO is
+	command_line_io: COMMAND_LINE_IO
 		once
 			create Result
 		end
@@ -1302,7 +1343,7 @@ feature {NONE} -- Implementation
 	config_file_name, target_name, project_path: STRING;
 			-- Name of the config file, target and path where project will be compiled.
 
-	is_eiffel_class_file_name (a_filename: STRING): BOOLEAN is
+	is_eiffel_class_file_name (a_filename: STRING): BOOLEAN
 			-- Is `a_filename' an Eiffel class file?
 			-- This checks if the filename has an 'e' extension.
 		require
@@ -1315,7 +1356,7 @@ feature {NONE} -- Implementation
 			Result := l_extension.is_equal ("." + eiffel_extension)
 		end
 
-	print_memory_value (a_value: NATURAL_64) is
+	print_memory_value (a_value: NATURAL_64)
 			-- Display `a_value' on screen.
 		local
 			l_real_64: REAL_64
@@ -1344,10 +1385,10 @@ feature {NONE} -- Implementation
 			io.put_string (l_unit)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1358,22 +1399,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ES

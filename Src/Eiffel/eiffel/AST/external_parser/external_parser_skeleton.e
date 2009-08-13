@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Lace parser skeletons"
 	legal: "See notice at end of class."
@@ -15,14 +15,14 @@ inherit
 			parse as yyparse,
 			make as make_parser_skeleton
 		redefine
-			report_error, clear_all
+			report_error, report_eof_expected_error, clear_all
 		end
 
 	EXTERNAL_SCANNER
 		rename
 			make as make_lace_scanner
 		redefine
-			reset
+			reset, report_one_error
 		end
 
 	SHARED_IL_CONSTANTS
@@ -43,7 +43,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new Lace parser.
 		do
 			make_lace_scanner
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset Parser before parsing next input source.
 			-- (This routine can be called in wrap before scanning
 			-- another input buffer.)
@@ -62,14 +62,15 @@ feature -- Initialization
 
 feature -- Parsing
 
-	parse_external (a_line: INTEGER; a_file: STRING; a_string: STRING) is
+	parse_external (a_class: like current_class; a_line, a_column: INTEGER; a_file: STRING; a_string: STRING)
 			-- Parse external clause text from `a_string' located in `a_file'.
 			-- Make result available in `root_node'.
 			-- An exception is raised if a syntax error is found.
 		do
 			file_line := a_line
+			file_column := a_column
 			root_node := Void
-			external_syntax_error := Void
+			current_class := a_class
 			input_buffer := create {YY_BUFFER}.make (a_string)
 			yy_load_input_buffer
 			filename := a_file
@@ -81,27 +82,12 @@ feature -- Parsing
 
 feature -- Access
 
-	filename: STRING
-			-- Current parsed file.
-
 	root_node: EXTERNAL_EXTENSION_AS
 			-- Result of parsing
 
-	file_line: INTEGER
-			-- Current line of parsing in class text `filename'.
-
-	external_syntax_error: SYNTAX_ERROR
-			-- Current syntax error if any.
-
-	has_error: BOOLEAN is
-			-- Did an error occcur at last parsing?	
-		do
-			Result := external_syntax_error /= Void
-		end
-
 feature -- Removal
 
-	wipe_out is
+	wipe_out
 			-- Release unused objects to garbage collector.
 		do
 			root_node := Void
@@ -110,34 +96,41 @@ feature -- Removal
 			root_node_void: root_node = Void
 		end
 
-	clear_all is
+	clear_all
 			-- Clear temporary objects so that they can be collected
 			-- by the garbage collector. (This routine is called by
 			-- `parse' before exiting.)
 		do
 		end
 
-feature {NONE} -- Actions
-
-feature {NONE} -- Keywords
-
 feature {NONE} -- Error handling
 
-	report_error (a_message: STRING) is
+	report_eof_expected_error
+		do
+			fatal_error ("Unrecognized external construct")
+		end
+
+	report_error (a_message: STRING)
 			-- A syntax error has been detected.
 		do
-			create external_syntax_error.make (file_line, position, filename, "")
-		ensure then
-			has_error: has_error
+			fatal_error (a_message)
+		end
+
+	report_one_error (a_error: ERROR)
+			-- <Precursor>
+		do
+			Precursor (a_error)
+			root_node := Void
+			abort
 		end
 
 feature {NONE} -- Constants
 
-	Argument_list_initial_size: INTEGER is 9
-	Use_list_initial_size: INTEGER is 3;
+	Argument_list_initial_size: INTEGER = 9
+	Use_list_initial_size: INTEGER = 3;
 			-- Initial capacity for lists
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

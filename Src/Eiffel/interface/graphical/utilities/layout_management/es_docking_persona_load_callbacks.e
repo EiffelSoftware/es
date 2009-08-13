@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Gobo XML callbacks used to construct an EiffelStudio layout based on a loaded persona XML file.
 	]"
@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_window: !like development_window; a_parser: !like xml_parser)
+	make (a_window: attached like development_window; a_parser: attached like xml_parser)
 			-- Initializes callbacks using an existing XML parser.
 			-- Note: Initialization will set the parser's callbacks to Current.
 			--
@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	development_window: !EB_DEVELOPMENT_WINDOW
+	development_window: attached EB_DEVELOPMENT_WINDOW
 			-- Window used to modify docking layout data.
 
 feature {NONE} -- Access
@@ -54,7 +54,7 @@ feature {NONE} -- Access
 	current_zone_size: NATURAL_8
 			-- Current zone's percentage of usage.
 
-	current_zone_tools: !DS_ARRAYED_LIST [!STRING]
+	current_zone_tools: attached DS_ARRAYED_LIST [attached STRING]
 			-- Current zone's tool identifiers.
 
 feature {NONE} -- Access: Defaults
@@ -118,17 +118,16 @@ feature {NONE} -- Basic operation
 		require
 			not_current_zone_tools_is_empty: not current_zone_tools.is_empty
 		local
-			l_zones: !like current_zone_tools
-			l_item: !STRING
-			l_type: ?TYPE [ES_TOOL [EB_TOOL]]
-			l_tool: ?ES_TOOL [EB_TOOL]
-			l_panel: EB_TOOL
-			l_first_panel: EB_TOOL
+			l_zones: attached like current_zone_tools
+			l_item: attached STRING
+			l_type: detachable TYPE [ES_TOOL [EB_TOOL]]
+			l_tool: detachable ES_TOOL [EB_TOOL]
+			l_first_tool: ES_TOOL [EB_TOOL]
 			l_first_tool_set: BOOLEAN
 			l_auto_hide: BOOLEAN
 			l_is_auto_hidden: BOOLEAN
 		do
-			if {l_tools: ES_SHELL_TOOLS} development_window.shell_tools and then l_tools.is_interface_usable then
+			if attached {ES_SHELL_TOOLS} development_window.shell_tools as l_tools and then l_tools.is_interface_usable then
 				l_zones := current_zone_tools
 				from l_zones.finish until l_zones.before loop
 					l_item := l_zones.item_for_iteration
@@ -137,7 +136,6 @@ feature {NONE} -- Basic operation
 						if l_type /= Void then
 							l_tool := l_tools.tool (l_type)
 							if l_tool /= Void and then l_tool.is_interface_usable then
-								l_panel := l_tool.panel
 								if not l_first_tool_set then
 									l_auto_hide := current_zone_style = v_auto_hide
 									if current_zone_style /= v_floating then
@@ -146,74 +144,74 @@ feature {NONE} -- Basic operation
 											-- First we pin it, then pin it again. So we can make sure the tab stub order and tab stub direction.
 											-- Docking library will add a feature to set auto hide tab stub order directly in the future. -- larryl 2007/7/13
 
-										l_is_auto_hidden := l_auto_hide and then l_panel.content.state_value = {SD_ENUMERATION}.auto_hide
+										l_is_auto_hidden := l_auto_hide and then l_tool.content.state_value = {SD_ENUMERATION}.auto_hide
 
 											-- There is not docking property for floating windows.
 										inspect current_zone_state
 										when v_bottom then
 											if l_auto_hide then
-												l_panel.content.set_auto_hide ({SD_ENUMERATION}.bottom)
+												l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 												if l_is_auto_hidden then
 														-- See above comments.
-													l_panel.content.set_auto_hide ({SD_ENUMERATION}.bottom)
+													l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 												end
 											else
-												l_panel.content.set_top ({SD_ENUMERATION}.bottom)
+												l_tool.content.set_top ({SD_ENUMERATION}.bottom)
 											end
 										when v_top then
 											if l_auto_hide then
-												l_panel.content.set_auto_hide ({SD_ENUMERATION}.top)
+												l_tool.content.set_auto_hide ({SD_ENUMERATION}.top)
 												if l_is_auto_hidden then
 														-- See above comments.
-													l_panel.content.set_auto_hide ({SD_ENUMERATION}.top)
+													l_tool.content.set_auto_hide ({SD_ENUMERATION}.top)
 												end
 											else
-												l_panel.content.set_top ({SD_ENUMERATION}.top)
+												l_tool.content.set_top ({SD_ENUMERATION}.top)
 											end
 										when v_left then
 											if l_auto_hide then
-												l_panel.content.set_auto_hide ({SD_ENUMERATION}.left)
+												l_tool.content.set_auto_hide ({SD_ENUMERATION}.left)
 												if l_is_auto_hidden then
 														-- See above comments.
-													l_panel.content.set_auto_hide ({SD_ENUMERATION}.left)
+													l_tool.content.set_auto_hide ({SD_ENUMERATION}.left)
 												end
 											else
-												l_panel.content.set_top ({SD_ENUMERATION}.left)
+												l_tool.content.set_top ({SD_ENUMERATION}.left)
 											end
 										when v_right then
 											if l_auto_hide then
-												l_panel.content.set_auto_hide ({SD_ENUMERATION}.right)
+												l_tool.content.set_auto_hide ({SD_ENUMERATION}.right)
 												if l_is_auto_hidden then
 														-- See above comments.
-													l_panel.content.set_auto_hide ({SD_ENUMERATION}.right)
+													l_tool.content.set_auto_hide ({SD_ENUMERATION}.right)
 												end
 											else
-												l_panel.content.set_top ({SD_ENUMERATION}.right)
+												l_tool.content.set_top ({SD_ENUMERATION}.right)
 											end
 										else
 											if l_auto_hide then
-												l_panel.content.set_auto_hide ({SD_ENUMERATION}.bottom)
+												l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 												if l_is_auto_hidden then
 														-- See above comments.
-													l_panel.content.set_auto_hide ({SD_ENUMERATION}.bottom)
+													l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
 												end
 											else
-												l_panel.content.set_top ({SD_ENUMERATION}.bottom)
+												l_tool.content.set_top ({SD_ENUMERATION}.bottom)
 											end
 										end
-										l_panel.content.set_split_proportion (1.0 - (current_zone_size.min (100) / 100))
+										l_tool.content.set_split_proportion (1.0 - (current_zone_size.min (100) / 100))
 									else
 											-- Default to floating.
-										l_panel.content.set_floating_width (default_floating_width)
-										l_panel.content.set_floating_height (default_floating_height)
-										l_panel.content.set_floating (default_floating_x, default_floating_y)
+										l_tool.content.set_floating_width (default_floating_width)
+										l_tool.content.set_floating_height (default_floating_height)
+										l_tool.content.set_floating (default_floating_x, default_floating_y)
 										l_tool.show (False)
 									end
 									l_first_tool_set := True
-									l_first_panel := l_panel
+									l_first_tool := l_tool
 								else
 										-- Tab other content
-									l_panel.content.set_tab_with (l_first_panel.content, True)
+									l_tool.content.set_tab_with (l_first_tool.content, True)
 								end
 							end
 						end
@@ -261,7 +259,7 @@ feature {NONE} -- Process
 	process_zone
 			-- Process a zone declaration.
 		local
-			l_attributes: !like current_attributes
+			l_attributes: attached like current_attributes
 			l_value: STRING
 			l_size: NATURAL_8
 		do
@@ -323,7 +321,7 @@ feature {NONE} -- Process
 	process_tool
 			-- Process a tool declaration.
 		local
-			l_attributes: !like current_attributes
+			l_attributes: attached like current_attributes
 			l_value: STRING
 		do
 			l_attributes := current_attributes
@@ -337,10 +335,10 @@ feature {NONE} -- Process
 
 feature {NONE} -- State transistions
 
-	tag_state_transitions: !DS_HASH_TABLE [!DS_HASH_TABLE [NATURAL_8, !STRING], NATURAL_8]
+	tag_state_transitions: attached DS_HASH_TABLE [attached DS_HASH_TABLE [NATURAL_8, attached STRING], NATURAL_8]
 			-- <Precursor>
 		local
-			l_trans: !DS_HASH_TABLE [NATURAL_8, !STRING]
+			l_trans: attached DS_HASH_TABLE [NATURAL_8, attached STRING]
 		do
 			create Result.make (8)
 
@@ -365,10 +363,10 @@ feature {NONE} -- State transistions
 			Result.put (l_trans, t_zone)
 		end
 
-	attribute_states: !DS_HASH_TABLE [!DS_HASH_TABLE [NATURAL_8, !STRING], NATURAL_8]
+	attribute_states: attached DS_HASH_TABLE [attached DS_HASH_TABLE [NATURAL_8, attached STRING], NATURAL_8]
 			-- <Precursor>
 		local
-			l_attr: !DS_HASH_TABLE [NATURAL_8, !STRING]
+			l_attr: attached DS_HASH_TABLE [NATURAL_8, attached STRING]
 		once
 			create Result.make_default
 
@@ -425,8 +423,8 @@ feature {NONE} -- Attribute values
 			-- zone@style values
 
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -450,11 +448,11 @@ feature {NONE} -- Attribute values
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

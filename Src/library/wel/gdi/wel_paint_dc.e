@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Device context used during a Wm_paint message."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -22,7 +22,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_window: WEL_WINDOW) is
+	make (a_window: WEL_WINDOW)
 			-- Makes a DC associated with `a_window'
 		require
 			a_window_not_void: a_window /= Void
@@ -35,8 +35,11 @@ feature {NONE} -- Initialization
 			window_set: window = a_window
 		end
 
-	make_by_pointer (a_window: WEL_WINDOW; a_pointer: POINTER) is
+	make_by_pointer (a_window: WEL_WINDOW; a_pointer: POINTER)
 			-- Makes a DC associated with `a_pointer' and `a_window'
+		require
+			a_window_not_void: a_window /= Void
+			a_window_exists: a_window.exists
 		do
 			window := a_window
 			hwindow := a_window.item
@@ -56,13 +59,13 @@ feature -- Access
 
 feature -- Basic operations
 
-	get is
+	get
 			-- Get the device context
 		do
 			item := cwin_begin_paint (hwindow, paint_struct.item)
 		end
 
-	release, quick_release is
+	release, quick_release
 			-- Release the device context
 		local
 			a_default_pointer: POINTER
@@ -78,12 +81,12 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Removal
 
-	destroy_item is
+	destroy_item
 			-- Delete the current device context.
 		local
 			a_default_pointer: POINTER
 		do
-				-- Protect the call to DeleteDC, because `destroy_item' can 
+				-- Protect the call to DeleteDC, because `destroy_item' can
 				-- be called by the GC so without assertions.
 			if item /= a_default_pointer then
 				unselect_all
@@ -94,7 +97,7 @@ feature {NONE} -- Removal
 
 feature {NONE} -- Externals
 
-	cwin_begin_paint (hwnd, a_paint_struct: POINTER): POINTER is
+	cwin_begin_paint (hwnd, a_paint_struct: POINTER): POINTER
 			-- SDK BeginPaint
 		external
 			"C [macro <wel.h>] (HWND, PAINTSTRUCT *): EIF_POINTER"
@@ -102,7 +105,7 @@ feature {NONE} -- Externals
 			"BeginPaint"
 		end
 
-	cwin_end_paint (hwnd, a_paint_struct: POINTER) is
+	cwin_end_paint (hwnd, a_paint_struct: POINTER)
 			-- SDK EndPaint
 		external
 			"C [macro <wel.h>] (HWND, PAINTSTRUCT *)"
@@ -110,7 +113,7 @@ feature {NONE} -- Externals
 			"EndPaint"
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

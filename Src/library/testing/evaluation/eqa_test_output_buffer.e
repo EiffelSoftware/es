@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that redirect file output into a buffer. If the output exceeds the size of the buffer,
 		only the first and the last part of the output are kept in the buffer.
@@ -33,13 +33,12 @@ feature {NONE} -- Initialization
 			-- `a_size': Buffer size limiting amount of text which will be buffered
 		require
 			a_size_greater_one: a_size > 3
-		local
-			l_split: INTEGER
 		do
 			buffer_size := a_size
 			create buffer.make (buffer_size)
 			mode := write_file
 			name := "test_output_buffer"
+			create last_string.make_empty
 		end
 
 feature -- Access
@@ -54,6 +53,7 @@ feature -- Access
 		end
 
 	content: like buffer
+			-- Not truncated content printed to buffer
 		require
 			not_truncated: not is_truncated
 		do
@@ -61,6 +61,7 @@ feature -- Access
 		end
 
 	leading_content: like buffer
+			-- First part of buffer (before truncated section)
 		require
 			truncated: is_truncated
 		local
@@ -72,6 +73,7 @@ feature -- Access
 		end
 
 	closing_content: like buffer
+			-- Second part of buffer (after truncated section)
 		require
 			truncated: is_truncated
 		local
@@ -87,7 +89,7 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	buffer: !STRING
+	buffer: STRING
 			-- Buffer containing first part of output
 
 	split_position: INTEGER
@@ -127,7 +129,7 @@ feature -- Status setting
 
 feature -- Output
 
-	put_string, putstring (a_string: STRING) is
+	put_string, putstring (a_string: STRING)
 			-- Append string to `buffer'.
 			--
 			-- `a_string': String to be appended to `buffer'.
@@ -136,7 +138,9 @@ feature -- Output
 			--|       also provide a range on the input string. That would save allocating the substring
 			--|       in the following code.
 		local
-			l_split, l_capacity, l_count, l_start, l_length, l_newpos: INTEGER
+			l_split, l_capacity, l_count, l_start, l_new_tsp: INTEGER
+			l_ccount1: INTEGER
+			l_chunk1, l_chunk2: STRING
 		do
 			if buffer.count + a_string.count > buffer_size then
 				l_split := split_position
@@ -153,11 +157,16 @@ feature -- Output
 					l_count := a_string.count
 				end
 				if truncated_start_position + l_count > buffer_size + 1 then
-					l_length := buffer_size - truncated_start_position
-					l_newpos := l_split + 1 + l_count - l_length
-					buffer.replace_substring (a_string.substring (l_start, l_start + l_length), truncated_start_position, buffer.count)
-					buffer.replace_substring (a_string.substring (l_start + l_length + 1, a_string.count), l_split + 1, l_newpos - 1)
-					truncated_start_position := l_newpos
+					l_ccount1 := buffer_size - truncated_start_position + 1
+					l_new_tsp := l_split + 1 + l_count - l_ccount1
+
+					l_chunk1 := a_string.substring (l_start, l_start + l_ccount1 - 1)
+					buffer.replace_substring (l_chunk1, truncated_start_position, buffer.count)
+
+					l_chunk2 := a_string.substring (l_start + l_ccount1, a_string.count)
+					buffer.replace_substring (l_chunk2, l_split + 1, l_new_tsp - 1)
+
+					truncated_start_position := l_new_tsp
 				else
 					buffer.replace_substring (a_string.substring (l_start, a_string.count), truncated_start_position, truncated_start_position + l_count - 1)
 					if truncated_start_position + l_count > buffer_size then
@@ -255,4 +264,14 @@ invariant
 		(truncated_start_position = 0 or truncated_start_position > split_position)
 	truncated_implies_buffer_full: is_truncated implies (buffer.count = buffer_size)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

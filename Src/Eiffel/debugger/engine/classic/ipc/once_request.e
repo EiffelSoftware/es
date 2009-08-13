@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Request for once functions' result
@@ -16,6 +16,10 @@ inherit
 			{NONE} all
 		end
 	HEXADECIMAL_STRING_CONVERTER
+		export
+			{NONE} all
+		end
+
 	EWB_REQUEST
 		rename
 			make as old_make
@@ -30,7 +34,7 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 		do
 			old_make (Rqst_inspect)
 			init_recv_c
@@ -38,7 +42,7 @@ feature -- Initialization
 
 	address: STRING
 
-	already_called (once_routine: FEATURE_I): BOOLEAN is
+	already_called (once_routine: FEATURE_I): BOOLEAN
 			-- Has `once_routine' already been called?
 		require
 			exists: once_routine /= Void
@@ -99,7 +103,7 @@ end
 			end
 		end
 
-	once_result (once_routine: FEATURE_I): ABSTRACT_DEBUG_VALUE is
+	once_result (once_routine: FEATURE_I): ABSTRACT_DEBUG_VALUE
 			-- Result of `once_routine'
 		require
 			exists: once_routine /= Void
@@ -119,7 +123,7 @@ end
 
 feature -- Implementation
 
-	once_data (once_routine: FEATURE_I): ABSTRACT_DEBUG_VALUE is
+	once_data (once_routine: FEATURE_I): ABSTRACT_DEBUG_VALUE
 			-- Fetched data related to `once_routine'
 			-- first if it has already been called
 			-- then if it failed
@@ -226,7 +230,7 @@ feature -- Implementation
 							create {EXCEPTION_DEBUG_VALUE} Result.make_without_any_value
 						end
 					else
-						if {arv: ABSTRACT_REFERENCE_VALUE} item then
+						if attached {ABSTRACT_REFERENCE_VALUE} item as arv then
 							create {EXCEPTION_DEBUG_VALUE} Result.make_with_value (arv)
 						else
 							check should_not_occurred: False end
@@ -261,7 +265,7 @@ feature -- Implementation
 			Result /= Void
 		end
 
-	once_index (once_routine: FEATURE_I): INTEGER is
+	once_index (once_routine: FEATURE_I): INTEGER
 			-- Index used in runtime to retrieve once information.
 		local
 			l_index: INTEGER
@@ -298,7 +302,7 @@ feature -- Implementation
 
 feature -- Last fetched values
 
-	clear_last_values is
+	clear_last_values
 		do
 			last_is_called := False
 			last_failed := False
@@ -314,14 +318,14 @@ feature -- Last fetched values
 
 	last_result: ABSTRACT_DEBUG_VALUE
 
-	last_exception_meaning: STRING is
+	last_exception_meaning: STRING
 		do
 			Result := exception_code_meaning (last_exception_code)
 		end
 
 feature -- Recycling
 
-	recycle is
+	recycle
 		do
 			reset_recv_value
 			clear_last_values
@@ -330,12 +334,12 @@ feature -- Recycling
 
 feature -- Impl
 
-	exception_tag_from_code (a_code: INTEGER): STRING is
+	exception_tag_from_code (a_code: INTEGER): STRING
 		do
 			Result := exception_code_meaning (a_code)
 		end
 
-	Once_indexes: HASH_TABLE [INTEGER, INTEGER] is
+	Once_indexes: HASH_TABLE [INTEGER, INTEGER]
 			-- Once indexes cached during the debugging session.
 		once
 			create Result.make (10)
@@ -343,7 +347,7 @@ feature -- Impl
 
 feature -- Contract support
 
-	feature_i (f: E_FEATURE): FEATURE_I is
+	feature_i (f: E_FEATURE): FEATURE_I
 			-- Return the feature_i associated to `f'.
 			--| For contract support only.
 		require
@@ -352,8 +356,8 @@ feature -- Contract support
 			Result := f.associated_feature_i
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -366,22 +370,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ONCE_REQUEST	

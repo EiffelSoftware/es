@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 
@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create Current and pass addresses to C
 		do
 			request_type := Rep_stopped
@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Register that the application is stopped
 			-- and parse the string passed from C.
 			-- The format of the passed string is:
@@ -49,14 +49,14 @@ feature -- Execution
 			--    assertion tag (undefined if irrelevant)
 			--
 			-- Check:
-			--		* C\ipc\app\app_proto.c:stop_rqst (..)
-			--		* C\ipc\ewb\eif_in.c:request_dispatch (..) --> case STOPPED: ..
-			--		* C\ipc\shared\rqst_idrs.c:idr_Stop (..)
+			--		* C\ipc\app\app_proto.c:stop_rqst(..)
+			--		* C\ipc\ewb\eif_in.c:request_dispatch(..) --> case STOPPED: ..
+			--		* C\ipc\shared\rqst_idrs.c:idr_Stop(..), idr_Where(..)
 		local
 			feature_name: STRING
 			origine_type_id: INTEGER
 			dynamic_type_id: INTEGER
-			offset: INTEGER
+			offset, nested: INTEGER
 			address: DBG_ADDRESS
 			stopping_reason: INTEGER
 			exception_occurred: BOOLEAN
@@ -120,6 +120,10 @@ feature -- Execution
 				read_integer
 				offset := last_integer
 
+					--| Read bp nested index in byte code.
+				read_integer
+				nested := last_integer
+
 					--| Read thread id
 				read_pointer
 				thr_id := last_pointer
@@ -161,10 +165,10 @@ feature -- Execution
 				l_status.set_active_thread_id (thr_id)
 				l_status.set_current_thread_id (thr_id)
 
-				l_status.set (feature_name, address, origine_type_id, dynamic_type_id, offset, stopping_reason)
+				l_status.set (feature_name, address, origine_type_id, dynamic_type_id, offset, nested, stopping_reason)
 				l_status.set_exception_occurred (exception_occurred)
 				if exception_occurred then
-					if {e: EXCEPTION_DEBUG_VALUE} l_app.remote_current_exception_value then
+					if attached l_app.remote_current_exception_value as e then
 						e.update_data
 						l_status.set_exception (e)
 					else
@@ -202,7 +206,7 @@ feature -- Execution
 --			retry
 		end
 
-	process_paused_state (a_pause_reason: INTEGER; a_app: APPLICATION_EXECUTION) is
+	process_paused_state (a_pause_reason: INTEGER; a_app: APPLICATION_EXECUTION)
 			-- Process paused state
 		local
 			need_to: TUPLE [stop: BOOLEAN; update_bp: BOOLEAN]
@@ -239,7 +243,8 @@ feature -- Execution
 					a_pause_reason
 				when
 					{APPLICATION_STATUS_CONSTANTS}.Pg_raise,
-					{APPLICATION_STATUS_CONSTANTS}.Pg_viol then
+					{APPLICATION_STATUS_CONSTANTS}.Pg_viol
+				then
 					need_to.stop := execution_stopped_on_exception_event (a_app)
 					need_to.update_bp := False
 				when {APPLICATION_STATUS_CONSTANTS}.Pg_break then
@@ -290,7 +295,7 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	execution_stopped_on_catcall_event (app: APPLICATION_EXECUTION): BOOLEAN is
+	execution_stopped_on_catcall_event (app: APPLICATION_EXECUTION): BOOLEAN
 			-- Do we stop execution on this catcall warning event ?
 		require
 			catcall_occurred: app.status.reason_is_catcall
@@ -335,7 +340,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	execution_stopped_on_exception_event (app: APPLICATION_EXECUTION): BOOLEAN is
+	execution_stopped_on_exception_event (app: APPLICATION_EXECUTION): BOOLEAN
 			-- Do we stop execution on this exception event ?
 		require
 			exception_occurred: app.status.exception_occurred
@@ -347,14 +352,14 @@ feature {NONE} -- Implementation
 				else
 					io.put_string ("Ignore exception")
 				end
-				if {s: STRING} (app.status.exception_type_name) then
+				if attached app.status.exception_type_name as s then
 					io.put_string (": " + s)
 				end
 				io.new_line
 			end
 		end
 
-	execution_stopped_on_breakpoint_event (app: APPLICATION_EXECUTION): TUPLE [stop: BOOLEAN; update_bp: BOOLEAN] is
+	execution_stopped_on_breakpoint_event (app: APPLICATION_EXECUTION): TUPLE [stop: BOOLEAN; update_bp: BOOLEAN]
 			-- Do we stop execution and resend breakpoints on this breakpoint event ?
 		require
 			appstat: app.status.reason = {APPLICATION_STATUS_CONSTANTS}.Pg_break
@@ -362,7 +367,7 @@ feature {NONE} -- Implementation
 			Result := execution_stopped_on_breakpoint (app)
 		end
 
-	execution_stopped_on_breakpoint (app: APPLICATION_EXECUTION): TUPLE [stop: BOOLEAN; update_bp: BOOLEAN] is
+	execution_stopped_on_breakpoint (app: APPLICATION_EXECUTION): TUPLE [stop: BOOLEAN; update_bp: BOOLEAN]
 			-- Do we stop execution and resend breakpoints on this breakpoint event ?
 		local
 			bps: LIST [BREAKPOINT]
@@ -375,15 +380,14 @@ feature {NONE} -- Implementation
 			cse: CALL_STACK_ELEMENT_CLASSIC
 		do
 			l_status ?= app.status
+			check l_status /= Void end -- implied by `STOPPED_HDLR' only for classic execution.
+
 			Result := [False, False]
 
 				--| debuggee stopped on a Breakpoint
 
 				--| Initialize the stack with a dummy first call stack element
 				--| to be able to operation on the current feature
---			if app. then
---				
---			end
 			cse := l_status.dummy_call_stack_element
 			l_status.current_call_stack.extend (cse)
 			app.set_current_execution_stack_number (1)
@@ -419,14 +423,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	cont_request: EWB_REQUEST is
+	cont_request: EWB_REQUEST
 			-- Request to relaunch the application when needed.
 		once
 			create Result.make (Rqst_cont)
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -439,22 +443,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Agents in EB_DEVELOPMENT_WINDOW"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -38,17 +38,17 @@ create
 
 feature {NONE} -- Clean up
 
-	internal_detach_entities is
+	internal_detach_entities
 			-- Detaches objects from their container
 		do
 			Precursor {EB_DEVELOPMENT_WINDOW_PART}
-			on_customized_tools_changed_agent_internal := Void
+--			on_customized_tools_changed_agent_internal := Void
 			text_observer_manager := Void
 		ensure then
-			on_customized_tools_changed_agent_internal_detached: on_customized_tools_changed_agent_internal = Void
+--			on_customized_tools_changed_agent_internal_detached: on_customized_tools_changed_agent_internal = Void
 		end
 
-	internal_recycle is
+	internal_recycle
 			-- <Precursor>
 		do
 			text_observer_manager.remove_observer (Current)
@@ -57,19 +57,11 @@ feature {NONE} -- Clean up
 
 feature -- Text observer Agents
 
-	on_text_reset is
+	on_text_reset
 			-- The main editor has just been wiped out
 			-- before loading a new file.
-		local
-			str: STRING_32
 		do
 			if not is_recycled then
-				str := develop_window.title.twin.as_string_32
-				if str @ 1 = '*' then
-					str.keep_tail (str.count - 2)
-					develop_window.set_title (str)
-				end
-
 				-- We close a UN-FOCUSED editor by pointer, we should not disable formatters if there is/are still editor(s) opened.
 				if develop_window.editors_manager.editor_count <= 0 then
 					develop_window.address_manager.disable_formatters
@@ -81,7 +73,7 @@ feature -- Text observer Agents
 			end
 		end
 
-	on_text_edited (unused: BOOLEAN) is
+	on_text_edited (unused: BOOLEAN)
 			-- The text in the editor is modified, add the '*' in the title.
 			-- Gray out the formatters.
 		local
@@ -106,7 +98,7 @@ feature -- Text observer Agents
 			end
 		end
 
-	on_text_back_to_its_last_saved_state is
+	on_text_back_to_its_last_saved_state
 			-- On text back to last saved state.
 		local
 			str: STRING_32
@@ -122,7 +114,7 @@ feature -- Text observer Agents
 			end
 		end
 
-	on_cursor_moved is
+	on_cursor_moved
 			-- The cursor has moved, reflect the change in the status bar.
 			-- And reflect location editing in the text in features tool and address bar.
 		local
@@ -145,7 +137,7 @@ feature -- Text observer Agents
 			end
 		end
 
-	on_text_fully_loaded is
+	on_text_fully_loaded
 			-- The main editor has just been reloaded.
 		do
 			if not is_recycled then
@@ -179,7 +171,7 @@ feature -- Agents
 				check l_history_manager_is_interface_usable: l_history_manager.is_interface_usable end
 				if l_history_manager.is_back_possible then
 					l_history_manager.back_command.execute
-					if {l_tool: ES_DOCKABLE_TOOL_PANEL [EV_WIDGET]} l_history_owner then
+					if attached {ES_DOCKABLE_TOOL_PANEL [EV_WIDGET]} l_history_owner as l_tool then
 						l_tool.show
 					end
 				end
@@ -199,28 +191,28 @@ feature -- Agents
 				check l_history_manager_is_interface_usable: l_history_manager.is_interface_usable end
 				if l_history_manager.is_forth_possible then
 					l_history_manager.forth_command.execute
-					if {l_tool: ES_DOCKABLE_TOOL_PANEL [EV_WIDGET]} l_history_owner then
+					if attached {ES_DOCKABLE_TOOL_PANEL [EV_WIDGET]} l_history_owner as l_tool then
 						l_tool.show
 					end
 				end
 			end
 		end
 
-	on_c_compilation_starts is
+	on_c_compilation_starts
 			-- Enable commands when freezing or finalizing starts.
 		do
 			develop_window.commands.c_workbench_compilation_cmd.disable_sensitive
 			develop_window.commands.c_finalized_compilation_cmd.disable_sensitive
 		end
 
-	on_c_compilation_stops is
+	on_c_compilation_stops
 			-- Disable commands when freezing or finalizing stops.
 		do
 			develop_window.commands.c_workbench_compilation_cmd.enable_sensitive
 			develop_window.commands.c_finalized_compilation_cmd.enable_sensitive
 		end
 
-	on_focus is
+	on_focus
 			-- Focus gained
 		require
 			not_is_recycled: not is_recycled
@@ -257,7 +249,7 @@ feature -- Agents
 			end
 		end
 
-	on_project_created is
+	on_project_created
 			-- Inform tools that the current project has been loaded or re-loaded.
 		local
 			l_builder: EB_DEVELOPMENT_WINDOW_MENU_BUILDER
@@ -274,26 +266,24 @@ feature -- Agents
 				develop_window.commands.show_profiler.enable_sensitive
 			end
 			develop_window.commands.customized_formatter_command.enable_sensitive
-			develop_window.commands.customized_tool_command.enable_sensitive
+--			develop_window.commands.customized_tool_command.enable_sensitive
 		end
 
-	on_project_loaded is
+	on_project_loaded
 			-- Inform tools that the current project has been loaded or re-loaded.
 		do
 			develop_window.cluster_manager.on_project_loaded
 			enable_commands_on_project_loaded
-			develop_window.tools.cluster_tool.on_project_loaded
-
 			develop_window.tools.breakpoints_tool.on_project_loaded
 		end
 
-	on_project_unloaded is
+	on_project_unloaded
 			-- Inform tools that the current project will soon been unloaded.
 		local
 			l_builder: EB_DEVELOPMENT_WINDOW_MENU_BUILDER
 		do
 			disable_commands_on_project_unloaded
-			develop_window.tools.cluster_tool.on_project_unloaded
+--			develop_window.tools.cluster_tool.on_project_unloaded
 			develop_window.address_manager.on_project_unloaded
 
 			create l_builder.make (develop_window)
@@ -306,51 +296,51 @@ feature -- Agents
 				develop_window.commands.show_profiler.disable_sensitive
 			end
 			develop_window.commands.customized_formatter_command.enable_sensitive
-			develop_window.commands.customized_tool_command.enable_sensitive
+--			develop_window.commands.customized_tool_command.enable_sensitive
 		end
 
-	on_customized_tools_changed (a_changed_tools: LIST [STRING]) is
-			-- Action to be performed when customized tools changes			
-		require
-			a_changed_tools_attached: a_changed_tools /= Void
-			a_changed_tools_valid: not a_changed_tools.has (Void)
-		local
-			l_tools: EB_DEVELOPMENT_WINDOW_TOOLS
-			l_customized_tools: LIST [EB_CUSTOMIZED_TOOL]
-			l_main_builder: EB_DEVELOPMENT_WINDOW_MAIN_BUILDER
-			l_unchanged_tools: LIST [EB_CUSTOMIZED_TOOL]
-		do
-			l_tools := develop_window.tools
-			create l_main_builder.make (develop_window)
-			auto_recycle (l_main_builder)
+--	on_customized_tools_changed (a_changed_tools: LIST [STRING])
+--			-- Action to be performed when customized tools changes			
+--		require
+--			a_changed_tools_attached: a_changed_tools /= Void
+--			a_changed_tools_valid: not a_changed_tools.has (Void)
+--		local
+--			l_tools: EB_DEVELOPMENT_WINDOW_TOOLS
+--			l_customized_tools: LIST [EB_CUSTOMIZED_TOOL]
+--			l_main_builder: EB_DEVELOPMENT_WINDOW_MAIN_BUILDER
+--			l_unchanged_tools: LIST [EB_CUSTOMIZED_TOOL]
+--		do
+--			l_tools := develop_window.tools
+--			create l_main_builder.make (develop_window)
+--			auto_recycle (l_main_builder)
 
-				-- Remove changed tools.
-			l_customized_tools := l_tools.customized_tools_from_tools (l_tools.customizable_tools_by_id (l_tools.customizable_tools, a_changed_tools, True))
-			l_customized_tools.do_all (agent l_main_builder.deregister_customized_tool)
+--				-- Remove changed tools.
+--			l_customized_tools := l_tools.customized_tools_from_tools (l_tools.customizable_tools_by_id (l_tools.customizable_tools, a_changed_tools, True))
+--			l_customized_tools.do_all (agent l_main_builder.deregister_customized_tool)
 
-				-- Add changed/newly added tools.
-			l_customized_tools := develop_window.customized_tool_manager.tools_by_ids (a_changed_tools, True, develop_window)
-			l_main_builder.register_customized_tools (l_customized_tools)
+--				-- Add changed/newly added tools.
+--			l_customized_tools := develop_window.customized_tool_manager.tools_by_ids (a_changed_tools, True, develop_window)
+--			l_main_builder.register_customized_tools (l_customized_tools)
 
-				-- Refresh titile/pixmap/stone handlers for unchanged tools.
-			l_unchanged_tools := l_tools.customized_tools_from_tools (l_tools.customizable_tools_by_id (l_tools.customizable_tools, a_changed_tools, False))
-			if not l_unchanged_tools.is_empty then
-				l_unchanged_tools.do_all (agent l_tools.refresh_customized_tool_appearance)
-			end
-		end
+--				-- Refresh titile/pixmap/stone handlers for unchanged tools.
+--			l_unchanged_tools := l_tools.customized_tools_from_tools (l_tools.customizable_tools_by_id (l_tools.customizable_tools, a_changed_tools, False))
+--			if not l_unchanged_tools.is_empty then
+--				l_unchanged_tools.do_all (agent l_tools.refresh_customized_tool_appearance)
+--			end
+--		end
 
-	on_customized_tools_changed_agent: PROCEDURE [ANY, TUPLE [LIST [STRING]]] is
-			-- Agent of `on_cutomized_tools_changed'
-		do
-			if on_customized_tools_changed_agent_internal = Void then
-				on_customized_tools_changed_agent_internal := agent on_customized_tools_changed
-			end
-			Result := on_customized_tools_changed_agent_internal
-		end
+--	on_customized_tools_changed_agent: PROCEDURE [ANY, TUPLE [LIST [STRING]]]
+--			-- Agent of `on_cutomized_tools_changed'
+--		do
+--			if on_customized_tools_changed_agent_internal = Void then
+--				on_customized_tools_changed_agent_internal := agent on_customized_tools_changed
+--			end
+--			Result := on_customized_tools_changed_agent_internal
+--		end
 
 feature {NONE} -- Query
 
-	active_history_owner: ?EB_HISTORY_OWNER is
+	active_history_owner: detachable EB_HISTORY_OWNER
 			-- A history owner for an active tool in the UI.
 		require
 			is_interface_usable: is_interface_usable
@@ -368,7 +358,7 @@ feature {NONE} -- Query
 				from l_tool_types.start until l_tool_types.after or Result /= Void loop
 					l_tool := l_tool_types.item_for_iteration
 					if l_tool.is_interface_usable and then l_tool.is_tool_instantiated then
-						if {l_ho: EB_HISTORY_OWNER} l_tool.panel then
+						if attached {EB_HISTORY_OWNER} l_tool.panel as l_ho then
 							if l_tool.panel.has_focus then
 								Result := l_ho
 							end
@@ -387,7 +377,7 @@ feature {NONE} -- Query
 
 feature {NONE} -- Implementation
 
-	enable_commands_on_project_created is
+	enable_commands_on_project_created
 			-- Enable commands when a new project has been created (not yet compiled)
 		do
 			develop_window.commands.system_info_cmd.enable_sensitive
@@ -403,7 +393,7 @@ feature {NONE} -- Implementation
 			develop_window.commands.new_cluster_cmd.enable_sensitive
 		end
 
-	enable_commands_on_project_loaded is
+	enable_commands_on_project_loaded
 			-- Enable commands when a new project has been created and compiled
 		do
 			if eiffel_layout.has_profiler then
@@ -423,10 +413,10 @@ feature {NONE} -- Implementation
 			develop_window.commands.c_finalized_compilation_cmd.enable_sensitive
 			develop_window.refactoring_manager.enable_sensitive
 			develop_window.commands.customized_formatter_command.enable_sensitive
-			develop_window.commands.customized_tool_command.enable_sensitive
+--			develop_window.commands.customized_tool_command.enable_sensitive
 		end
 
-	disable_commands_on_project_unloaded is
+	disable_commands_on_project_unloaded
 			-- Enable commands when a project has been closed.
 		do
 			if eiffel_layout.has_dll_generation then
@@ -449,17 +439,17 @@ feature {NONE} -- Implementation
 			develop_window.refactoring_manager.disable_sensitive
 			develop_window.refactoring_manager.forget_undo_redo
 			develop_window.commands.customized_formatter_command.disable_sensitive
-			develop_window.commands.customized_tool_command.disable_sensitive
+--			develop_window.commands.customized_tool_command.disable_sensitive
 		end
 
-	on_customized_tools_changed_agent_internal: like on_customized_tools_changed_agent
-			-- Implementation of `on_customized_tools_changed_agent'
+--	on_customized_tools_changed_agent_internal: like on_customized_tools_changed_agent
+--			-- Implementation of `on_customized_tools_changed_agent'
 
 invariant
 	not_void: not is_recycled implies develop_window /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -472,22 +462,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

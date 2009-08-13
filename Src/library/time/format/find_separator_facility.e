@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Facility to find seperators in date or time strings"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,13 +23,11 @@ inherit
 
 feature {NONE} -- Constants
 
-	Separator_characters: STRING is ":/-, ."
+	Separator_characters: STRING = ":/-, ."
 
 feature {NONE} -- Implementation
 
-	substrg, substrg2: STRING
-
-	find_separator (s: STRING; i: INTEGER): INTEGER is
+	find_separator (s: STRING; i: INTEGER): INTEGER
 			-- Position of the next separator in `s' starting at
 			-- `i'-th character.
 			-- ":", "/", "-", ",", " ", "."
@@ -88,7 +86,7 @@ feature {NONE} -- Implementation
 			not_zero: Result /= 0
 		end
 
-	extract_substrings (s: STRING; pos1, pos2: INTEGER) is
+	extracted_substrings (s: STRING; pos1, pos2: INTEGER): TUPLE [substrg, substrg2: STRING]
 			-- Extract `substrg' and `substrg2' from `s' and specified by the
 			-- range `pos1'..`pos2'.
 		require
@@ -96,20 +94,23 @@ feature {NONE} -- Implementation
 			range_correct: pos1 <= abs (pos2)
 		local
 			upper: INTEGER
+			l_substrg, l_substrg2: STRING
 		do
 			if pos2 > 0 then
-				substrg := s.substring (pos1, pos2 - 1)
-				substrg2 := s.substring (pos2, pos2)
+				l_substrg := s.substring (pos1, pos2 - 1)
+				l_substrg2 := s.substring (pos2, pos2)
 			else
 				upper := abs (pos2)
-				substrg := s.substring (pos1, upper)
-				create substrg2.make (0)
+				l_substrg := s.substring (pos1, upper)
+				create l_substrg2.make (0)
 			end
+			Result := [l_substrg, l_substrg2]
 		ensure
-			substrings_extracted: substrg /= Void and substrg2 /= Void
+			extracted_substrings_not_void: Result /= Void
+			substrings_extracted: Result.substrg /= Void and Result.substrg2 /= Void
 		end
 
-	has_separators (s: STRING): BOOLEAN is
+	has_separators (s: STRING): BOOLEAN
 			-- Does date string `s' contain any separators?
 		require
 			string_exists: s /= Void
@@ -126,12 +127,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

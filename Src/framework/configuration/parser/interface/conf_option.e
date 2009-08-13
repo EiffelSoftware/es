@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that specify configuration options."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,12 +23,47 @@ inherit
 			is_equal
 		end
 
+	CONF_DEFAULT_OPTION_SETTING
+		redefine
+			copy,
+			default_create,
+			is_equal
+		end
+
+create
+	default_create,
+	make_6_3,
+	make_6_4
+
 feature {NONE} -- Creation
 
 	default_create
+			-- Initialize options to the defaults of the current version.
 		do
-			create syntax_level
-			syntax_level.limit (3)
+			if is_63_compatible then
+				make_6_3
+			else
+				make_6_4
+			end
+		end
+
+	make_6_3
+			-- Initialize options to the defaults of 6.3.
+		do
+			create syntax.make (syntax_name, syntax_index_obsolete)
+			create void_safety.make (void_safety_name, void_safety_index_none)
+		end
+
+	make_6_4
+			-- Initialize options to the defaults of 6.4.
+		do
+			create syntax.make (syntax_name, syntax_index_transitional)
+			create void_safety.make (void_safety_name, void_safety_index_none)
+				-- Uncomment the line below once all libraries
+				-- have been converted to Void-safe.
+--				is_full_class_checking := True
+--				is_attached_by_default := True
+--				is_void_safe := True
 		end
 
 feature -- Status
@@ -60,70 +95,67 @@ feature -- Status
 	is_attached_by_default_configured: BOOLEAN
 			-- Is `is_attached_by_default' configured?
 
-	is_void_safe_configured: BOOLEAN
-			-- Is `is_void_safe' configured?
-
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is `Current' empty? No settings are set?
 		do
 			Result := not (is_profile_configured or is_trace_configured or is_optimize_configured or is_debug_configured or
 				is_warning_configured or is_msil_application_optimize_configured or is_full_class_checking_configured or
-				is_cat_call_detection_configured or is_attached_by_default_configured or is_void_safe_configured or
-				assertions /= Void or local_namespace /= Void or warnings /= Void or debugs /= Void)
+				is_cat_call_detection_configured or is_attached_by_default_configured or void_safety.is_set or
+				assertions /= Void or local_namespace /= Void or warnings /= Void or debugs /= Void or syntax.is_set)
 		end
 
 feature -- Status update
 
-	unset_profile is
+	unset_profile
 			-- Unset profile.
 		do
 			is_profile_configured := False
 			is_profile := False
 		end
 
-	unset_trace is
+	unset_trace
 			-- Unset trace.
 		do
 			is_trace_configured := False
 			is_trace := False
 		end
 
-	unset_optimize is
+	unset_optimize
 			-- Unset optimize.
 		do
 			is_optimize_configured := False
 			is_optimize := False
 		end
 
-	unset_debug is
+	unset_debug
 			-- Unset debug.
 		do
 			is_debug_configured := False
 			is_debug := False
 		end
 
-	unset_warning is
+	unset_warning
 			-- Unset warning.
 		do
 			is_warning_configured := False
 			is_warning := False
 		end
 
-	unset_msil_application_optimize is
+	unset_msil_application_optimize
 			-- Unset .NET application optimizations
 		do
 			is_msil_application_optimize_configured := False
 			is_msil_application_optimize := False
 		end
 
-	unset_full_class_checking is
+	unset_full_class_checking
 			-- Unset full class checking.
 		do
 			is_full_class_checking_configured := False
 			is_full_class_checking := False
 		end
 
-	unset_cat_call_detection is
+	unset_cat_call_detection
 			-- Unset cat call detection.
 		do
 			is_cat_call_detection_configured := False
@@ -135,13 +167,6 @@ feature -- Status update
 		do
 			is_attached_by_default_configured := False
 			is_attached_by_default := False
-		end
-
-	unset_is_void_safe
-			-- Unset `is_void_safe'.
-		do
-			is_void_safe_configured := False
-			is_void_safe := False
 		end
 
 feature -- Access, stored in configuration file
@@ -182,38 +207,55 @@ feature -- Access, stored in configuration file
 	is_attached_by_default: BOOLEAN
 			-- Is type declaration considered attached by default?
 
-	is_void_safe: BOOLEAN
-			-- Is source code void safe?
-
 	description: STRING
 			-- A description about the options.
 
-feature -- Access: syntax level
+feature -- Access: syntax
 
-	syntax_level: CONF_VALUE_CHOICE
+	syntax: CONF_VALUE_CHOICE
 			-- Expected variant of source code syntax
 
-	syntax_level_obsolete: NATURAL_8 = 0
-			-- Option value for obsolete syntax
+	syntax_index_obsolete: NATURAL_8 = 1
+			-- Option index for obsolete syntax
 
-	syntax_level_transitional: NATURAL_8 = 1
-			-- Option value for transitional syntax
+	syntax_index_transitional: NATURAL_8 = 2
+			-- Option index for transitional syntax
 
-	syntax_level_standard: NATURAL_8 = 2
-			-- Option value for standard syntax
+	syntax_index_standard: NATURAL_8 = 3
+			-- Option index for standard syntax
 
-	syntax_level_count: NATURAL_8 = 3
-			-- Total number of different values of `syntax_level'
+feature {NONE} -- Access: syntax
 
-	is_valid_syntax_level (value: NATURAL_8): BOOLEAN
-			-- Is `value' a valid syntax level?
-		do
-			inspect value
-			when syntax_level_obsolete, syntax_level_transitional, syntax_level_standard then
-				Result := True
-			else
-				-- False by default
-			end
+	syntax_name: ARRAY [READABLE_STRING_32]
+			-- Available values for `syntax' option
+		once
+			Result := <<"obsolete", "transitional", "standard">>
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- Access: void safety
+
+	void_safety: CONF_VALUE_CHOICE
+			-- Void safety option
+
+	void_safety_index_none: NATURAL_8 = 1
+			-- Option index for no void safety
+
+	void_safety_index_initialization: NATURAL_8 = 2
+			-- Option index for selective void safety
+
+	void_safety_index_all: NATURAL_8 = 3
+			-- Option index for total void safety
+
+feature {NONE} -- Access: void safety
+
+	void_safety_name: ARRAY [READABLE_STRING_32]
+			-- Available values for `void_safety' option
+		once
+			Result := <<"none", "initialization", "all">>
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Access, stored in configuration file.
@@ -226,13 +268,13 @@ feature -- Access, stored in configuration file.
 
 feature -- Access queries
 
-	is_debug_enabled (a_debug: STRING): BOOLEAN is
+	is_debug_enabled (a_debug: STRING): BOOLEAN
 			-- Is `a_debug' enabled?
 		do
 			Result := is_debug and then debugs /= Void and then debugs.item (a_debug)
 		end
 
-	is_warning_enabled (a_warning: STRING): BOOLEAN is
+	is_warning_enabled (a_warning: STRING): BOOLEAN
 			-- Is `a_warning' enabled?
 		require
 			a_warning_valid: valid_warning (a_warning)
@@ -242,7 +284,7 @@ feature -- Access queries
 
 feature {CONF_ACCESS} -- Update, stored in configuration file.
 
-	set_assertions (an_assertions: like assertions) is
+	set_assertions (an_assertions: like assertions)
 			-- Set `assertions' to `an_assertions'.
 		do
 			assertions := an_assertions
@@ -250,7 +292,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			assertions_set: assertions = an_assertions
 		end
 
-	add_debug (a_name: STRING; an_enabled: BOOLEAN) is
+	add_debug (a_name: STRING; an_enabled: BOOLEAN)
 			-- Add a debug.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -264,7 +306,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			added: debugs.has (a_name) and then debugs.item (a_name) = an_enabled
 		end
 
-	add_warning (a_name: STRING; an_enabled: BOOLEAN) is
+	add_warning (a_name: STRING; an_enabled: BOOLEAN)
 			-- Add a warning.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -279,7 +321,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			added: warnings.has (a_name) and then warnings.item (a_name) = an_enabled
 		end
 
-	set_local_namespace (a_namespace: like local_namespace) is
+	set_local_namespace (a_namespace: like local_namespace)
 			-- Set `local_namespace' from `a_namepace' and reset `namespace'.
 		do
 			if a_namespace /= Void and then a_namespace.is_empty then
@@ -296,7 +338,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			namespace_reset: namespace = Void
 		end
 
-	set_profile (a_enabled: BOOLEAN) is
+	set_profile (a_enabled: BOOLEAN)
 			-- Set `is_profile' to `a_enabled'.
 		do
 			is_profile_configured := True
@@ -306,7 +348,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_profile_configured: is_profile_configured
 		end
 
-	set_trace (a_enabled: BOOLEAN) is
+	set_trace (a_enabled: BOOLEAN)
 			-- Set `is_trace' to `a_enabled'.
 		do
 			is_trace_configured := True
@@ -316,7 +358,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_trace_configured: is_trace_configured
 		end
 
-	set_optimize (a_enabled: BOOLEAN) is
+	set_optimize (a_enabled: BOOLEAN)
 			-- Set `is_optimize' to `a_enabled'.
 		do
 			is_optimize_configured := True
@@ -326,7 +368,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_optimize_configured: is_optimize_configured
 		end
 
-	set_debug (a_enabled: BOOLEAN) is
+	set_debug (a_enabled: BOOLEAN)
 			-- Set `is_debug' to `a_enabled'.
 			-- Enables/disables debug clauses in general.
 		do
@@ -337,7 +379,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_debug_configured: is_debug_configured
 		end
 
-	set_warning (a_enabled: BOOLEAN) is
+	set_warning (a_enabled: BOOLEAN)
 			-- Set `is_warning' to `a_enabled'.
 			-- Enables/disables warning clauses in general.
 		do
@@ -348,7 +390,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_warning_configured: is_warning_configured
 		end
 
-	set_msil_application_optimize (a_enabled: BOOLEAN) is
+	set_msil_application_optimize (a_enabled: BOOLEAN)
 			-- Set `is_msil_application_optimize' to `a_enable'.
 			-- Enabled/disables .NET application optimizations in general.
 		do
@@ -359,7 +401,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_msil_application_optimize_configured: is_msil_application_optimize_configured
 		end
 
-	set_full_class_checking (a_enabled: BOOLEAN) is
+	set_full_class_checking (a_enabled: BOOLEAN)
 			-- Set `is_full_class_checking' to `a_enabled'.
 		do
 			is_full_class_checking_configured := True
@@ -369,7 +411,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_full_class_checking_configured: is_full_class_checking_configured
 		end
 
-	set_cat_call_detection (a_enabled: BOOLEAN) is
+	set_cat_call_detection (a_enabled: BOOLEAN)
 			-- Set `is_cat_call_detection' to `a_enabled'.
 		do
 			is_cat_call_detection_configured := True
@@ -389,17 +431,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			is_attached_by_default_configured: is_attached_by_default_configured
 		end
 
-	set_is_void_safe (v: BOOLEAN)
-			-- Set `is_void_safe' to `v'.
-		do
-			is_void_safe_configured := True
-			is_void_safe := v
-		ensure
-			is_void_safe_set: is_void_safe = v
-			is_void_safe_configured: is_void_safe_configured
-		end
-
-	set_description (a_description: like description) is
+	set_description (a_description: like description)
 			-- Set `description' to `a_description'.
 		do
 			description := a_description
@@ -409,21 +441,21 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 
 feature -- Duplication
 
-	copy (other: like Current) is
+	copy (other: like Current)
 			-- Update current object using fields of object attached
 			-- to `other', so as to yield equal objects.
 		do
-			if {a: like assertions} other.assertions then
+			if attached other.assertions as a then
 				assertions := a.twin
 			else
 				assertions := Void
 			end
-			if {d: like debugs} other.debugs then
+			if attached other.debugs as d then
 				debugs := d.twin
 			else
 				debugs := Void
 			end
-			if {s: like description} other.description then
+			if attached other.description as s then
 				description := s.twin
 			else
 				description := Void
@@ -444,22 +476,21 @@ feature -- Duplication
 			is_profile_configured := other.is_profile_configured
 			is_trace := other.is_trace
 			is_trace_configured := other.is_trace_configured
-			is_void_safe := other.is_void_safe
-			is_void_safe_configured := other.is_void_safe_configured
 			is_warning := other.is_warning
 			is_warning_configured := other.is_warning_configured
-			if {l: like local_namespace} other.local_namespace then
+			if attached other.local_namespace as l then
 				local_namespace := l.twin
 			else
 				local_namespace := Void
 			end
-			if {n: like namespace} other.namespace then
+			if attached other.namespace as n then
 				namespace := n.twin
 			else
 				namespace := Void
 			end
-			syntax_level := other.syntax_level.twin
-			if {w: like warnings} other.warnings then
+			void_safety := other.void_safety.twin
+			syntax := other.syntax.twin
+			if attached other.warnings as w then
 				warnings := w.twin
 			else
 				warnings := Void
@@ -489,41 +520,42 @@ feature -- Comparison
 			and then is_profile_configured = other.is_profile_configured
 			and then is_trace = other.is_trace
 			and then is_trace_configured = other.is_trace_configured
-			and then is_void_safe = other.is_void_safe
-			and then is_void_safe_configured = other.is_void_safe_configured
 			and then is_warning = other.is_warning
 			and then is_warning_configured = other.is_warning_configured
 			and then equal (local_namespace, other.local_namespace)
 			and then equal (namespace, other.namespace)
-			and then syntax_level.is_equal (other.syntax_level)
+			and then void_safety.is_equal (other.void_safety)
+			and then syntax.is_equal (other.syntax)
 			and then equal (warnings, other.warnings)
 			then
 				Result := True
 			end
 		end
 
-	is_equal_options (other: like Current): BOOLEAN is
+	is_equal_options (other: like Current): BOOLEAN
 			-- Are `current' and `other' equal considering the options that are in the compiled result?
 		do
-			Result := equal (assertions, other.assertions) and is_debug = other.is_debug and
-				is_optimize = other.is_optimize and is_profile = other.is_profile and
+			Result := equal (assertions, other.assertions) and
+				is_debug = other.is_debug and
+				is_optimize = other.is_optimize and
+				is_profile = other.is_profile and
 				is_full_class_checking = other.is_full_class_checking and
 				is_cat_call_detection = other.is_cat_call_detection and
 				is_attached_by_default = other.is_attached_by_default and
-				is_void_safe = other.is_void_safe and
 				is_trace = other.is_trace and
-				syntax_level.is_equal (other.syntax_level) and
+				void_safety.index = other.void_safety.index and
+				syntax.index = other.syntax.index and
 				equal(local_namespace, other.local_namespace) and
 				equal (debugs, other.debugs)
 		end
 
 feature -- Merging
 
-	merge (other: like Current) is
-			-- Merge with other, if the values aren't defined in `Current' take the values of `other'.
+	merge_client (other: like Current)
+			-- Merge with client options `other', if the values aren't defined in `Current' take the values of `other'.
+			-- Apply this only for options that can be overridden by the client.
 		local
 			l_tmp: like debugs
-			l_namespace: like local_namespace
 		do
 			if other /= Void then
 				if assertions = Void then
@@ -543,6 +575,41 @@ feature -- Merging
 					l_tmp.merge (warnings)
 					warnings := l_tmp
 				end
+				if not is_profile_configured then
+					is_profile_configured := other.is_profile_configured or else is_profile /~ other.is_profile
+					is_profile := other.is_profile
+				end
+				if not is_trace_configured then
+					is_trace_configured := other.is_trace_configured or else is_trace /~ other.is_trace
+					is_trace := other.is_trace
+				end
+				if not is_optimize_configured then
+					is_optimize_configured := other.is_optimize_configured or else is_optimize /~ other.is_optimize
+					is_optimize := other.is_optimize
+				end
+				if not is_debug_configured then
+					is_debug_configured := other.is_debug_configured or else is_debug /~ other.is_debug
+					is_debug := other.is_debug
+				end
+				if not is_warning_configured then
+					is_warning_configured := other.is_warning_configured or else is_warning /~ other.is_warning
+					is_warning := other.is_warning
+				end
+				if not is_msil_application_optimize_configured then
+					is_msil_application_optimize_configured := other.is_msil_application_optimize_configured or else is_msil_application_optimize /~ other.is_msil_application_optimize
+					is_msil_application_optimize := other.is_msil_application_optimize
+				end
+			end
+		end
+
+	merge (other: like Current)
+			-- Merge with other, if the values aren't defined in `Current' take the values of `other'.
+			-- Apply this to all options.
+		local
+			l_namespace: like local_namespace
+		do
+			if other /= Void then
+				merge_client (other)
 					-- Computation of `namespace' by using values in `other'.
 				if other.namespace /= Void then
 					l_namespace := other.namespace
@@ -560,59 +627,32 @@ feature -- Merging
 				else
 					namespace := Void
 				end
-				if not is_profile_configured then
-					is_profile_configured := other.is_profile_configured
-					is_profile := other.is_profile
-				end
-				if not is_trace_configured then
-					is_trace_configured := other.is_trace_configured
-					is_trace := other.is_trace
-				end
-				if not is_optimize_configured then
-					is_optimize_configured := other.is_optimize_configured
-					is_optimize := other.is_optimize
-				end
-				if not is_debug_configured then
-					is_debug_configured := other.is_debug_configured
-					is_debug := other.is_debug
-				end
-				if not is_warning_configured then
-					is_warning_configured := other.is_warning_configured
-					is_warning := other.is_warning
-				end
-				if not is_msil_application_optimize_configured then
-					is_msil_application_optimize_configured := other.is_msil_application_optimize_configured
-					is_msil_application_optimize := other.is_msil_application_optimize
-				end
 				if not is_full_class_checking_configured then
-					is_full_class_checking_configured := other.is_full_class_checking_configured
+					is_full_class_checking_configured := other.is_full_class_checking_configured or else is_full_class_checking /~ other.is_full_class_checking
 					is_full_class_checking := other.is_full_class_checking
 				end
 				if not is_cat_call_detection_configured then
-					is_cat_call_detection_configured := other.is_cat_call_detection_configured
+					is_cat_call_detection_configured := other.is_cat_call_detection_configured or else is_cat_call_detection /~ other.is_cat_call_detection
 					is_cat_call_detection := other.is_cat_call_detection
 				end
 				if not is_attached_by_default_configured then
-					is_attached_by_default_configured := other.is_attached_by_default_configured
+					is_attached_by_default_configured := other.is_attached_by_default_configured or else is_attached_by_default /~ other.is_attached_by_default
 					is_attached_by_default := other.is_attached_by_default
 				end
-				if not is_void_safe_configured then
-					is_void_safe_configured := other.is_void_safe_configured
-					is_void_safe := other.is_void_safe
-				end
-				syntax_level.set_safely (other.syntax_level)
+				void_safety.set_safely (other.void_safety)
+				syntax.set_safely (other.syntax)
 			end
 		end
 
 invariant
 	local_namespace_not_empty: local_namespace = Void or else not local_namespace.is_empty
-	syntax_level_attached: syntax_level /= Void
-	syntax_level_count_set: syntax_level.count = syntax_level_count
+	syntax_attached: syntax /= Void
+	void_safety_attached: void_safety /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -623,21 +663,21 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

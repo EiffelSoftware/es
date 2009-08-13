@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Base core for all EiffelStudio foundations widgets and tools.
 	]"
@@ -11,13 +11,7 @@ deferred class
 	ES_TOOL_FOUNDATIONS
 
 inherit
-	EB_RECYCLABLE
-
---inherit {NONE}
-	EV_SHARED_APPLICATION
-		export
-			{NONE} all
-		end
+	ES_RECYCLABLE
 
 	ES_SHARED_FONTS_AND_COLORS
 		export
@@ -25,6 +19,16 @@ inherit
 		end
 
 	ES_SHARED_LOCALE_FORMATTER
+		export
+			{NONE} all
+		end
+
+	ES_SHARED_FOUNDATION_HELPERS
+		export
+			{NONE} all
+		end
+
+	EV_SHARED_APPLICATION
 		export
 			{NONE} all
 		end
@@ -137,7 +141,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Query
 
-	is_widget_applicable_for_color_propagation (a_widget: !EV_COLORIZABLE; a_fg: BOOLEAN; a_bg: BOOLEAN): BOOLEAN
+	is_widget_applicable_for_color_propagation (a_widget: attached EV_COLORIZABLE; a_fg: BOOLEAN; a_bg: BOOLEAN): BOOLEAN
 			-- Determines if a widget is applicable for propagation of either a foreground or background color.
 			--
 			-- `a_widget': The widget to determine if the applicable colors can be propagated.
@@ -149,58 +153,26 @@ feature {NONE} -- Query
 			if a_fg then
 				Result := True
 			elseif a_bg then
-				Result := {l_cell: !EV_CELL} a_widget or
-					{l_check: !EV_CHECK_BUTTON} a_widget or
-					{l_rbutton: !EV_RADIO_BUTTON} a_widget or
-					{l_label: !EV_LABEL} a_widget or
-					{l_hbox: !EV_HORIZONTAL_BOX} a_widget or
-					{l_vbox: !EV_VERTICAL_BOX} a_widget or
-					{l_drawable: !EV_DRAWABLE} a_widget or
-					{l_separator: !EV_SEPARATOR} a_widget
+				Result := attached {EV_CELL} a_widget as l_cell or
+					attached {EV_CHECK_BUTTON} a_widget as l_check or
+					attached {EV_RADIO_BUTTON} a_widget as l_rbutton or
+					attached {EV_LABEL} a_widget as l_label or
+					attached {EV_HORIZONTAL_BOX} a_widget as l_hbox or
+					attached {EV_VERTICAL_BOX} a_widget as l_vbox or
+					attached {EV_DRAWABLE} a_widget as l_drawable or
+					attached {EV_SEPARATOR} a_widget as l_separator
 			end
 		end
 
 feature {NONE} -- Helpers
 
-	frozen interface_names: !INTERFACE_NAMES
-			-- Access to EiffelStudio's interface names
-		once
-			create Result
-		end
-
-	frozen interface_messages: !INTERFACE_MESSAGES
+	frozen interface_messages: attached INTERFACE_MESSAGES
 			-- Access to EiffelStudio's interface messages
 		once
 			create Result
 		end
 
-	frozen stock_pixmaps: !ES_PIXMAPS_16X16
-			-- Shared access to stock 16x16 EiffelStudio pixmaps
-		once
-			Result := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.as_attached
-		end
-
-	frozen mini_stock_pixmaps: !ES_PIXMAPS_10X10
-			-- Shared access to stock 10x10 EiffelStudio pixmaps
-		once
-			Result := (create {EB_SHARED_PIXMAPS}).mini_pixmaps.as_attached
-		end
-
-	frozen helpers: !EVS_HELPERS
-			-- Helpers to extend the operations of EiffelVision2
-		once
-			create Result
-		end
-
-	frozen preferences: !EB_PREFERENCES
-			-- Access to environment preferences
-		require
-			preferences_initialized: (create {EB_SHARED_PREFERENCES}).preferences /= Void
-		once
-			Result := (create {EB_SHARED_PREFERENCES}).preferences.as_attached
-		end
-
-	frozen session_manager: !SERVICE_CONSUMER [SESSION_MANAGER_S]
+	frozen session_manager: attached SERVICE_CONSUMER [SESSION_MANAGER_S]
 			-- Access to the session manager service {SESSION_MANAGER_S} consumer
 		once
 			create Result
@@ -252,7 +224,7 @@ feature {NONE} -- Basic operations
 			l_propagate: BOOLEAN
 		do
 			if a_excluded = Void or else not a_excluded.has (a_start_widget) then
-				if {l_colorizable: !EV_COLORIZABLE} a_start_widget then
+				if attached {EV_COLORIZABLE} a_start_widget as l_colorizable then
 					if a_fg_color /= Void and then is_widget_applicable_for_color_propagation (l_colorizable, True, False) then
 						l_colorizable.set_foreground_color (a_fg_color)
 						l_propagate := True
@@ -264,10 +236,10 @@ feature {NONE} -- Basic operations
 				end
 			end
 
-			if l_propagate and then {l_list: !EV_WIDGET_LIST} a_start_widget then
+			if l_propagate and then attached {EV_WIDGET_LIST} a_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if {l_widget: !EV_WIDGET} l_list.item and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 						propagate_colors (l_widget, a_fg_color, a_bg_color, a_excluded)
 					end
 					l_list.forth
@@ -296,21 +268,21 @@ feature {NONE} -- Basic operations
 				a_action.call ([a_start_widget])
 			end
 
-			if {l_list: !EV_WIDGET_LIST} a_start_widget then
+			if attached {EV_WIDGET_LIST} a_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if {l_widget: !EV_WIDGET} l_list.item and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 							-- Perform action on all child widgets
 						propagate_action (l_widget, a_action, a_excluded)
 					end
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
-			elseif {l_split: EV_SPLIT_AREA} a_start_widget then
-				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+			elseif attached {EV_SPLIT_AREA} a_start_widget as l_split then
+				if attached l_split.first as l_first and then not l_first.is_destroyed then
 					propagate_action (l_first, a_action, a_excluded)
 				end
-				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+				if attached l_split.second as l_second and then not l_second.is_destroyed then
 					propagate_action (l_second, a_action, a_excluded)
 				end
 			end
@@ -339,7 +311,7 @@ feature {NONE} -- Basic operations
 				end
 			end
 
-			if {l_window: !EV_WINDOW} a_start_widget then
+			if attached {EV_WINDOW} a_start_widget as l_window then
 				if not l_window.is_empty then
 					l_start_widget := l_window.item
 				end
@@ -347,21 +319,21 @@ feature {NONE} -- Basic operations
 				l_start_widget := a_start_widget
 			end
 
-			if {l_list: !EV_WIDGET_LIST} l_start_widget then
+			if attached {EV_WIDGET_LIST} l_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if {l_widget: !EV_WIDGET} l_list.item and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 							-- Apply addition to all child widgets
 						propagate_register_action (l_widget, a_sequence, a_action, a_excluded)
 					end
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
-			elseif {l_split: EV_SPLIT_AREA} l_start_widget then
-				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+			elseif attached {EV_SPLIT_AREA} l_start_widget as l_split then
+				if attached l_split.first as l_first and then not l_first.is_destroyed then
 					propagate_register_action (l_first, a_sequence, a_action, a_excluded)
 				end
-				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+				if attached l_split.second as l_second and then not l_second.is_destroyed then
 					propagate_register_action (l_second, a_sequence, a_action, a_excluded)
 				end
 			end
@@ -382,7 +354,7 @@ feature {NONE} -- Action Handlers
 				l_application := ev_application
 				l_widget := l_application.focused_widget
 				if l_widget /= Void and then l_widget.default_key_processing_handler /= Void then
-					l_handled := l_widget.default_key_processing_handler.item ([a_key])
+					l_handled := not l_widget.default_key_processing_handler.item ([a_key])
 				end
 				if not l_handled and then is_interface_usable then
 						-- We have to check is the interface is usable because the window may have been closed/destroyed
@@ -422,8 +394,8 @@ feature {NONE} -- Action Handlers
 		do
 		end
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -447,11 +419,11 @@ feature {NONE} -- Action Handlers
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

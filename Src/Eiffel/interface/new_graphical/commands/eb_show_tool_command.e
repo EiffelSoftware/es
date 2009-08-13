@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "Command to show/hide a tool."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -33,11 +33,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_target: EB_DEVELOPMENT_WINDOW; a_tool: EB_TOOL) is
+	make (a_target: EB_DEVELOPMENT_WINDOW; a_tool: EB_TOOL)
 			-- Creation method.
 		require
 			valid_item: a_tool /= Void
-			item_has_pixmap: a_tool.content.pixmap /= Void
+			item_has_pixmap: a_tool.pixmap /= Void
 		do
 			target_make (a_target)
 			tool := a_tool
@@ -49,52 +49,56 @@ feature -- Access
 	tool: EB_TOOL
 			-- Tool managed.
 
-	tooltip: STRING_GENERAL is
+	tooltip: STRING_GENERAL
 			-- Tooltip for Current
 		do
-			Result := interface_names.f_show_tool (tool.content.long_title)
+			Result := interface_names.f_show_tool (tool.title)
 		end
 
-	tooltext: STRING_GENERAL is
+	tooltext: STRING_GENERAL
 			-- Text for toolbar button.
 		do
-			Result := tool.content.short_title
+--			Result := tool.content.short_title
+			Result := tool.title
 		end
 
-	is_tooltext_important: BOOLEAN is
+	is_tooltext_important: BOOLEAN
 			-- Is the tooltext important shown when view is 'Selective Text'
 		do
 			Result := True
 		end
 
-	description: STRING_GENERAL is
+	description: STRING_GENERAL
 			-- Description for current command.
 		do
-			Result := interface_names.f_show_tool (tool.content.short_title)
+--			Result := interface_names.f_show_tool (tool.content.short_title)
+			Result := interface_names.f_show_tool (tool.title)
 		end
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Name as it appears in menus.
 		do
-			Result := tool.content.short_title
+--			Result := tool.content.short_title
+			Result := tool.title
 		end
 
-	name: STRING is
+	name: STRING
 			-- Name to be displayed.
 		do
-			Result := tool.title_for_pre
+--			Result := tool.title_for_pre
+			Result := tool.title.as_string_8
 		end
 
-	pixmap: EV_PIXMAP is
+	pixmap: EV_PIXMAP
 			-- Pixmap representing the item (for buttons)
 		do
-			Result := tool.content.pixmap
+			Result := tool.pixmap
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
-			Result := tool.content.pixel_buffer
+			Result := tool.pixel_buffer
 		end
 
 	mini_pixmap: EV_PIXMAP
@@ -105,14 +109,14 @@ feature -- Access
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Execute command (toggle between show and hide).
 		local
 			l_shared: SD_SHARED
 			l_x, l_y: INTEGER
 			l_window: EV_WINDOW
 		do
-			if not tool.content.is_visible then
+			if not tool.is_visible then
 				create l_shared
 				l_window := window_manager.last_focused_development_window.window
 				l_x := l_window.screen_x + l_window.width // 2 - l_shared.default_floating_window_width // 2
@@ -120,15 +124,13 @@ feature -- Execution
 
 				l_shared.set_default_screen_x (l_x)
 				l_shared.set_default_screen_y (l_y)
-
-				tool.show
 			end
-			tool.content.set_focus
+			tool.show
 		end
 
 feature -- Basic operations
 
-	new_sd_toolbar_item (a_display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+	new_sd_toolbar_item (a_display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Create a new toolbar button for this command.
 		do
 			create Result.make (Current)
@@ -139,7 +141,7 @@ feature -- Basic operations
 
 feature -- Element change
 
-	set_accelerator (a_accel: EV_ACCELERATOR) is
+	set_accelerator (a_accel: EV_ACCELERATOR)
 			-- Set `accelerator' with `a_accel'.
 		require
 			a_accel_attached: a_accel /= Void
@@ -149,7 +151,7 @@ feature -- Element change
 			accelerator_not_void: accelerator = a_accel
 		end
 
-	set_mini_pixmap (a_mini_pixmap: EV_PIXMAP) is
+	set_mini_pixmap (a_mini_pixmap: EV_PIXMAP)
 			-- Set `mini_pixmap' with `a_mini_pixmap'.
 		do
 			mini_pixmap := a_mini_pixmap
@@ -157,7 +159,7 @@ feature -- Element change
 			mini_pixmap_set: mini_pixmap = a_mini_pixmap
 		end
 
-	set_mini_pixel_buffer (a_mini_pixel_buffer: EV_PIXEL_BUFFER) is
+	set_mini_pixel_buffer (a_mini_pixel_buffer: EV_PIXEL_BUFFER)
 			-- Set `mini_pixel_buffer' with `a_mini_pixel_buffer'.
 		do
 			mini_pixel_buffer := a_mini_pixel_buffer
@@ -167,7 +169,7 @@ feature -- Element change
 
 feature -- Recyclable
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle
 		do
 			Precursor {EB_DEVELOPMENT_WINDOW_COMMAND}
@@ -176,7 +178,7 @@ feature -- Recyclable
 
 feature {NONE} -- Implementation
 
-	update_sd_tooltip (a_toogle: EB_SD_COMMAND_TOOL_BAR_BUTTON) is
+	update_sd_tooltip (a_toogle: EB_SD_COMMAND_TOOL_BAR_BUTTON)
 			-- Update tooltip of `a_toggle'.
 		local
 			l_tt: like tooltip
@@ -195,8 +197,8 @@ feature {NONE} -- Implementation
 	safety_flag: BOOLEAN;
 			-- Are we changing the `is_selected' attribute? (To prevent stack overflows)
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -209,22 +211,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_SHOW_TOOL_COMMAND

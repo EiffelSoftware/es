@@ -45,7 +45,7 @@ feature -- Access
 
 feature {NONE} -- Factory
 
-	create_tool: ES_SCHEMA_EVOLUTION_TOOL_PANEL
+	new_tool: ES_SCHEMA_EVOLUTION_TOOL_PANEL
 			-- Creates the tool for first use on the development `window'
 		do
 			create Result.make (window, Current)
@@ -76,10 +76,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

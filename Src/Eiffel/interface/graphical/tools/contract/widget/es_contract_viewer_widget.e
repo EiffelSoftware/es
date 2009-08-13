@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A widget for viewing the contracts and comments of a particular feature.
 	]"
@@ -21,13 +21,13 @@ convert
 
 feature {NONE} -- Initialization
 
-	build_widget_interface (a_widget: !EV_VERTICAL_BOX) is
+	build_widget_interface (a_widget: attached EV_VERTICAL_BOX)
 			-- Builds widget's interface.
 			-- `a_widget': The widget to initialize of build upon.
 		local
 			l_hbox: EV_HORIZONTAL_BOX
 			l_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT
-			l_auto_show_check: !EV_CHECK_BUTTON
+			l_auto_show_check: attached EV_CHECK_BUTTON
 			l_preference: BOOLEAN_PREFERENCE
 		do
 			a_widget.set_border_width (2)
@@ -51,14 +51,14 @@ feature {NONE} -- Initialization
 				-- `auto_show_check'
 			l_preference := preferences.editor_data.auto_show_feature_contract_tooltips_preference
 			if l_preference /= Void then
-				create l_auto_show_check.make_with_text (locale_formatter.translation (l_do_not_auto_show))
+				create auto_show_check.make (l_preference)
+				l_auto_show_check := auto_show_check.widget
+				l_auto_show_check.set_text (locale_formatter.translation (l_do_not_auto_show))
 				l_auto_show_check.set_tooltip (locale_formatter.translation (f_do_not_auto_show))
 				l_auto_show_check.set_foreground_color (preferences.editor_data.normal_text_color)
-
-				create auto_show_check.make (l_auto_show_check, l_preference)
-				l_hbox.extend (auto_show_check)
-				l_hbox.disable_item_expand (auto_show_check)
-				auto_recycle (l_auto_show_check)
+				l_hbox.extend (l_auto_show_check)
+				l_hbox.disable_item_expand (l_auto_show_check)
+				auto_recycle (auto_show_check)
 			end
 
 				-- Padding between the check box and edit
@@ -84,7 +84,7 @@ feature {NONE} -- Access
 
 feature -- Element change
 
-	set_context (a_class: !like context_class; a_feature: !like context_feature)
+	set_context (a_class: attached like context_class; a_feature: attached like context_feature)
 			-- Set's the contract widget's view context
 		require
 			is_interface_usable: is_interface_usable
@@ -162,7 +162,7 @@ feature {NONE} -- Basic operation
 			l_server: ASSERTION_SERVER
 			l_assertions: CHAINED_ASSERTIONS
 			l_decorator: FEAT_TEXT_FORMATTER_DECORATOR
-			l_generator: !EB_EDITOR_TOKEN_GENERATOR
+			l_generator: attached EB_EDITOR_TOKEN_GENERATOR
 			l_feature_i: FEATURE_I
 			l_feature_as: FEATURE_AS
 			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
@@ -178,7 +178,7 @@ feature {NONE} -- Basic operation
 			l_grid.lock_update
 			l_grid.clear
 
-			if {l_feature: !like context_feature} context_feature and {l_class: !like context_class} context_class then
+			if attached context_feature as l_feature and attached context_class as l_class then
 --				contract_grid.set_row_count_to (1)
 
 				create l_token_text
@@ -319,7 +319,7 @@ feature {NONE} -- Basic operation
 
 feature {NONE} -- Comment extraction
 
-	feature_comment_tokens (a_feature: !E_FEATURE; a_token_writer: !EB_EDITOR_TOKEN_GENERATOR): ARRAYED_LIST [EDITOR_TOKEN] is
+	feature_comment_tokens (a_feature: attached E_FEATURE; a_token_writer: attached EB_EDITOR_TOKEN_GENERATOR): ARRAYED_LIST [EDITOR_TOKEN]
 			-- Editor token representation of comment of `a_feature'.
 			--
 			-- `a_feature': The feature to show comments for.
@@ -364,16 +364,16 @@ feature {NONE} -- Comment extraction
 
 feature -- User interface elements
 
-	contract_grid: !ES_GRID
+	contract_grid: attached ES_GRID
 			-- The grid used to show the contracts
 
-	edit_contracts_button: !EV_BUTTON
+	edit_contracts_button: attached EV_BUTTON
 			-- Button used to edit the contracts
 
-	edit_contract_label: !EVS_LINK_LABEL
+	edit_contract_label: attached EVS_LINK_LABEL
 			-- Label used to edit contracts
 
-	auto_show_check: !ES_CHECK_BUTTON_PREFERENCED_WIDGET
+	auto_show_check: attached ES_CHECK_BUTTON_PREFERENCED_WIDGET
 			-- Option to automatially show the view widget.
 
 feature {NONE} -- Action handlers
@@ -396,7 +396,7 @@ feature {NONE} -- Action handlers
 			window.hide
 
 			if l_window /= Void and l_window.is_interface_usable then
-				if {l_tool: !ES_CONTRACT_TOOL} l_window.shell_tools.tool ({ES_CONTRACT_TOOL}) and then l_tool.is_interface_usable then
+				if attached {ES_CONTRACT_TOOL} l_window.shell_tools.tool ({ES_CONTRACT_TOOL}) as l_tool and then l_tool.is_interface_usable then
 						-- Show and activate focus on the tool.
 					create l_feature_stone.make (context_feature)
 					check l_feature_stone_is_stone_usable: l_tool.is_stone_usable (l_feature_stone) end
@@ -408,7 +408,7 @@ feature {NONE} -- Action handlers
 
 feature {NONE} -- Factory
 
-	create_widget: !EV_VERTICAL_BOX
+	create_widget: attached EV_VERTICAL_BOX
 			-- Creates a new widget, which will be initialized when `build_interface' is called.
 		do
 			create Result
@@ -427,14 +427,14 @@ feature {NONE} -- Regular expressions
 
 feature {NONE} -- Internationalization
 
-	l_do_not_auto_show: !STRING = "Pop-up automatically"
-	f_do_not_auto_show: !STRING = "Uncheck to prevent the contract viewer from being displayed automatically. Use CTRL to force the show of this information in the future."
-	l_edit_contracts: !STRING = "Edit Contracts..."
-	l_view_contracts: !STRING = "View Contracts..."
-	f_edit_contracts: !STRING = "Places the current feature in the contract editor for edition"
+	l_do_not_auto_show: STRING = "Pop-up automatically"
+	f_do_not_auto_show: STRING = "Uncheck to prevent the contract viewer from being displayed automatically. Use CTRL to force the show of this information in the future."
+	l_edit_contracts: STRING = "Edit Contracts..."
+	l_view_contracts: STRING = "View Contracts..."
+	f_edit_contracts: STRING = "Places the current feature in the contract editor for edition"
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -458,11 +458,11 @@ feature {NONE} -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "All tokens used by EIS parsers"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -10,21 +10,19 @@ class
 
 feature -- Access
 
-	ise_support_string: !STRING = "ise_support"
+	eis_string: STRING = "EIS"
 
-	eis_string: !STRING = "EIS"
+	name_string: STRING = "name"
 
-	name_string: !STRING = "name"
+	protocol_string: STRING = "protocol"
 
-	protocol_string: !STRING = "protocol"
+	source_string: STRING = "src"
 
-	source_string: !STRING = "src"
+	tag_string: STRING = "tag"
 
-	tag_string: !STRING = "tag"
+	value_assignment: STRING = "="
 
-	value_assignment: !STRING = "="
-
-	void_string: !STRING = "@@@"
+	void_string: STRING = "@@@"
 			-- Used to hold the place of value of single identifier in storage table
 
 	attribute_seperator: CHARACTER = ','
@@ -35,13 +33,13 @@ feature -- Access
 
 feature -- Built in variables
 
-	target_name_var_name: !STRING_8 = "target_name"
-	group_name_var_name: !STRING_8 = "group_name"
-	class_name_var_name: !STRING_8 = "class_name"
-	feature_name_var_name: !STRING_8 = "feature_name";
+	target_name_var_name: STRING_8 = "target_name"
+	group_name_var_name: STRING_8 = "group_name"
+	class_name_var_name: STRING_8 = "class_name"
+	feature_name_var_name: STRING_8 = "feature_name";
 
-indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -65,11 +63,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

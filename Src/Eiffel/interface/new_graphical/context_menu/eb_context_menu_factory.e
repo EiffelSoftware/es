@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Contextual menu factory"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -25,7 +25,7 @@ create
 
 feature -- Initialization
 
-	make (a_window: EB_DEVELOPMENT_WINDOW) is
+	make (a_window: EB_DEVELOPMENT_WINDOW)
 			-- Initialization
 		require
 			a_window_not_void: a_window /= Void
@@ -50,7 +50,7 @@ feature -- Status report
 
 feature -- Editor menu
 
-	editor_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_editor: EB_CLICKABLE_EDITOR) is
+	editor_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_editor: EB_CLICKABLE_EDITOR)
 			-- Setup editor menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -91,7 +91,7 @@ feature -- Editor menu
 				setup_pick_item (a_menu, a_pebble)
 				extend_separator (a_menu)
 				if a_pebble /= Void then
-					if not ({l_stone: STONE} a_pebble and then l_stone.same_as (a_editor.stone)) then
+					if not (attached {STONE} a_pebble as l_stone and then l_stone.same_as (a_editor.stone)) then
 							-- If the current stone is the same as the editor stone then we
 							-- do not need a Retarget menu.
 						extend_retarget_tool_menu (a_source, a_menu, a_pebble)
@@ -109,7 +109,7 @@ feature -- Editor menu
 
 feature -- Class Tree Menu
 
-	class_tree_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	class_tree_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu for class item in class tree
 		require
 			a_menu_not_void: a_menu /= Void
@@ -154,7 +154,7 @@ feature -- Class Tree Menu
 			end
 		end
 
-	clusters_data_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	clusters_data_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu for clusters data stone.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -175,7 +175,7 @@ feature -- Class Tree Menu
 			end
 		end
 
-	libraries_data_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	libraries_data_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu for libraries data stone.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -196,7 +196,7 @@ feature -- Class Tree Menu
 			end
 		end
 
-	assemblies_data_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	assemblies_data_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu for assemblies data stone.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -219,7 +219,7 @@ feature -- Class Tree Menu
 
 feature -- Diagram tool
 
-	diagram_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	diagram_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Setup editor menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -251,7 +251,7 @@ feature -- Diagram tool
 
 feature -- Feature tree
 
-	uncompiled_feature_item_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_name: STRING) is
+	uncompiled_feature_item_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_name: STRING)
 			-- Uncompiled feature item menu
 		require
 			a_name_not_void: a_name /= Void
@@ -259,7 +259,7 @@ feature -- Feature tree
 		do
 		end
 
-	feature_clause_item_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_clause: FEATURE_CLAUSE_AS) is
+	feature_clause_item_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_clause: FEATURE_CLAUSE_AS)
 			-- Feature clause item menu
 		require
 			a_clause_not_void: a_clause /= Void
@@ -269,7 +269,7 @@ feature -- Feature tree
 
 feature -- Favorites menus
 
-	favorites_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_item: EB_FAVORITES_TREE_ITEM) is
+	favorites_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_item: EB_FAVORITES_TREE_ITEM)
 			-- Favorites menu
 		require
 			a_menu_not_void: a_menu /= Void
@@ -290,7 +290,7 @@ feature -- Favorites menus
 
 feature -- Metrics tool
 
-	metric_domain_selector_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_selector: EB_METRIC_DOMAIN_SELECTOR) is
+	metric_domain_selector_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_selector: EB_METRIC_DOMAIN_SELECTOR)
 			-- Metrics domain selector context menu
 		do
 			if menu_displayable (a_pebble) then
@@ -304,7 +304,7 @@ feature -- Metrics tool
 			end
 		end
 
-	metric_metric_selector_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_selector: EB_METRIC_SELECTOR) is
+	metric_metric_selector_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_selector: EB_METRIC_SELECTOR)
 			-- Metrics domain selector context menu
 		local
 			l_unit: QL_METRIC_UNIT
@@ -363,7 +363,7 @@ feature -- Call stack menu
 
 feature -- Object tool, Object Viewer and Watch tool menus
 
-	object_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_objects_tool: ES_OBJECTS_TOOL_PANEL; a_grid: ES_OBJECTS_GRID) is
+	object_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_objects_tool: ES_OBJECTS_TOOL_PANEL; a_grid: ES_OBJECTS_GRID)
 			-- Object tool menu
 		local
 			l_object_stone: OBJECT_STONE
@@ -399,7 +399,7 @@ feature -- Object tool, Object Viewer and Watch tool menus
 			end
 		end
 
-	watch_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_watch_tool: ES_WATCH_TOOL_PANEL; a_grid: ES_OBJECTS_GRID) is
+	watch_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_watch_tool: ES_WATCH_TOOL_PANEL; a_grid: ES_OBJECTS_GRID)
 			-- Watch tool menu
 		local
 			l_object_stone: OBJECT_STONE
@@ -438,7 +438,7 @@ feature -- Object tool, Object Viewer and Watch tool menus
 			end
 		end
 
-	object_viewer_browser_view_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_grid: ES_OBJECTS_GRID) is
+	object_viewer_browser_view_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_grid: ES_OBJECTS_GRID)
 			-- Object viewer browser view menu.
 		do
 			if menu_displayable (a_pebble) then
@@ -456,7 +456,7 @@ feature -- Object tool, Object Viewer and Watch tool menus
 			end
 		end
 
-	extend_objects_grid_menu (a_menu: EV_MENU; a_grid: ES_OBJECTS_GRID) is
+	extend_objects_grid_menu (a_menu: EV_MENU; a_grid: ES_OBJECTS_GRID)
 			-- Objects grid specific menu
 		require
 			a_menu_not_void: a_menu /= Void
@@ -501,7 +501,7 @@ feature -- Object tool, Object Viewer and Watch tool menus
 			end
 		end
 
-	copy_to_clipboard (t: STRING_GENERAL) is
+	copy_to_clipboard (t: STRING_GENERAL)
 			-- Copy `t' to clipboard
 		do
 			if t /= Void then
@@ -511,7 +511,7 @@ feature -- Object tool, Object Viewer and Watch tool menus
 
 feature -- Search scope menu
 
-	search_scope_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	search_scope_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Search scope menu
 		do
 			if menu_displayable (a_pebble) then
@@ -527,7 +527,7 @@ feature -- Search scope menu
 
 feature -- Standard menus
 
-	standard_compiler_item_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	standard_compiler_item_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Standard compiler item menu. (class/feature/cluster)
 		do
 			if menu_displayable (a_pebble) then
@@ -545,7 +545,7 @@ feature -- Standard menus
 
 feature {NONE} -- Menu section, Granularity 2.
 
-	extend_standard_compiler_item_menu (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_standard_compiler_item_menu (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend menu items for standard cluster/class/feature.
 		local
 			l_stonec: CLASSC_STONE
@@ -588,7 +588,7 @@ feature {NONE} -- Menu section, Granularity 2.
 			end
 		end
 
-	extend_basic_diagram_menu (a_menu: EV_MENU) is
+	extend_basic_diagram_menu (a_menu: EV_MENU)
 			-- Extend menus for blank diagram area.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -598,7 +598,7 @@ feature {NONE} -- Menu section, Granularity 2.
 
 feature {NONE} -- Menu section, Granularity 1.
 
-	extend_basic_opening_menus (a_menu: EV_MENU; a_stone: STONE; a_external_editor: BOOLEAN) is
+	extend_basic_opening_menus (a_menu: EV_MENU; a_stone: STONE; a_external_editor: BOOLEAN)
 			-- Add items of basic opening operations.
 			-- |Open in new Tab
 			-- |Open in Editor
@@ -633,7 +633,7 @@ feature {NONE} -- Menu section, Granularity 1.
 				a_menu.last.select_actions.extend (agent (dev_window.commands.shell_cmd).execute_with_stone (l_stone))
 			end
 
-			if {l_cs: CLASSI_STONE} a_stone and then dev_window.commands.edit_contracts_command.is_stone_usable (l_cs) then
+			if attached {CLASSI_STONE} a_stone as l_cs and then dev_window.commands.edit_contracts_command.is_stone_usable (l_cs) then
 				l_menu_item := extend_show_tool_command (dev_window.commands.edit_contracts_command, l_cs)
 				if l_cs.class_i.is_read_only then
 					l_menu_item.disable_sensitive
@@ -644,7 +644,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_basic_editor_menus (a_menu: EV_MENU; a_editor: EB_CLICKABLE_EDITOR) is
+	extend_basic_editor_menus (a_menu: EV_MENU; a_editor: EB_CLICKABLE_EDITOR)
 			-- Add items of basic editor operations.
 			-- |Cut
 			-- |Copy
@@ -659,12 +659,16 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu: EV_MENU
 			l_cmd: EB_STANDARD_CMD
 			l_commands: ARRAYED_LIST [EB_GRAPHICAL_COMMAND]
-			is_editable: BOOLEAN
+			is_editable, l_has_selection: BOOLEAN
+			l_menu_item: EV_MENU_ITEM
+			l_unmanaged_editor: BOOLEAN
 --			l_editor_is_current_editor: BOOLEAN
 		do
 				-- The commented code below is kept so that if one wants to add one of the commented item back to the
 				-- context menu, we know in which order we should do it.
 			is_editable := a_editor.is_editable
+			l_has_selection := a_editor.has_selection
+			l_unmanaged_editor := attached {EB_GRID_EDITOR} a_editor as lt_editor
 --			l_editor_is_current_editor := a_editor = dev_window.editors_manager.current_editor
 --			a_menu.extend (dev_window.commands.undo_cmd.new_menu_item_unmanaged)
 --			if not is_editable then
@@ -677,18 +681,52 @@ feature {NONE} -- Menu section, Granularity 1.
 --			end
 --			extend_separator (a_menu)
 
-			a_menu.extend (dev_window.commands.editor_cut_cmd.new_menu_item_unmanaged)
-			if not is_editable then
-				a_menu.last.disable_sensitive
+			l_menu_item := dev_window.commands.editor_cut_cmd.new_menu_item_unmanaged
+			a_menu.extend (l_menu_item)
+			if l_unmanaged_editor then
+				l_menu_item.select_actions.wipe_out
+				l_menu_item.select_actions.extend (agent a_editor.cut_selection)
 			end
-			a_menu.extend (dev_window.commands.editor_copy_cmd.new_menu_item_unmanaged)
-			a_menu.extend (dev_window.commands.editor_paste_cmd.new_menu_item_unmanaged)
-			if not is_editable then
-				a_menu.last.disable_sensitive
+			if is_editable and then l_has_selection then
+				l_menu_item.enable_sensitive
+			else
+				l_menu_item.disable_sensitive
 			end
+
+			l_menu_item := dev_window.commands.editor_copy_cmd.new_menu_item_unmanaged
+			a_menu.extend (l_menu_item)
+			if l_unmanaged_editor then
+				l_menu_item.select_actions.wipe_out
+				l_menu_item.select_actions.extend (agent a_editor.copy_selection)
+			end
+			if l_has_selection then
+				l_menu_item.enable_sensitive
+			else
+				l_menu_item.disable_sensitive
+			end
+
+			l_menu_item := dev_window.commands.editor_paste_cmd.new_menu_item_unmanaged
+			a_menu.extend (l_menu_item)
+			if l_unmanaged_editor then
+				l_menu_item.select_actions.wipe_out
+				l_menu_item.select_actions.extend (agent a_editor.paste)
+			end
+			if is_editable then
+				l_menu_item.enable_sensitive
+			else
+				l_menu_item.disable_sensitive
+			end
+
 			extend_separator (a_menu)
-			a_menu.extend (new_menu_item (names.m_select_all))
-			a_menu.last.select_actions.extend (agent dev_window.select_all)
+
+			l_menu_item := new_menu_item (names.m_select_all)
+			a_menu.extend (l_menu_item)
+			if l_unmanaged_editor then
+				l_menu_item.select_actions.extend (agent a_editor.select_all)
+			else
+				l_menu_item.select_actions.extend (agent dev_window.select_all)
+			end
+
 --			extend_separator (a_menu)
 
 
@@ -751,6 +789,11 @@ feature {NONE} -- Menu section, Granularity 1.
 --			extend_separator (a_menu)
 			create l_menu.make_with_text (names.m_advanced)
 			a_menu.extend (l_menu)
+			if l_unmanaged_editor then
+				l_menu.disable_sensitive
+			else
+				l_menu.enable_sensitive
+			end
 
 				-- Indent Selection
 			l_cmd ?= l_commands.item
@@ -814,7 +857,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_commands.forth
 		end
 
-	extend_view_in_main_formatters_menus (a_menu: EV_MENU) is
+	extend_view_in_main_formatters_menus (a_menu: EV_MENU)
 			--|----
 			--| View -->	Basic view
 			--|				Clickable view
@@ -857,7 +900,7 @@ feature {NONE} -- Menu section, Granularity 1.
 				end
 				l_cluster_stone ?= l_editor.stone
 				create l_internal
-				if l_editor.changed or else l_cluster_stone /= Void or else (l_internal.type_of (l_editor.stone)).is_equal ({CLASSI_STONE}) then
+				if l_editor.changed or else l_cluster_stone /= Void or else l_internal.type_of (l_editor.stone) ~ {CLASSI_STONE} then
 						-- Editor is being edited, disable the view menu since selecting one
 						-- of the entry could discard the changes being made, if the editor is currently
 						-- showing a cluster or uncompiled class then no view can be attained so it is also
@@ -867,7 +910,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_class_formatter_menus (a_menu: EV_MENU; a_class_stone: CLASSC_STONE) is
+	extend_class_formatter_menus (a_menu: EV_MENU; a_class_stone: CLASSC_STONE)
 			-- Extend class formatter menus.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -875,8 +918,8 @@ feature {NONE} -- Menu section, Granularity 1.
 		local
 			l_menu, l_c_menu: EV_MENU
 			l_class_formatter: EB_CLASS_INFO_FORMATTER
-			l_customized_tools: LIST [EB_CUSTOMIZED_TOOL]
-			l_customized_tool: EB_CUSTOMIZED_TOOL
+--			l_customized_tools: LIST [EB_CUSTOMIZED_TOOL]
+--			l_customized_tool: EB_CUSTOMIZED_TOOL
 		do
 			create l_menu.make_with_text (names.m_show)
 			a_menu.extend (l_menu)
@@ -904,32 +947,32 @@ feature {NONE} -- Menu section, Granularity 1.
 
 			extend_formatter (l_c_menu, dev_window.tools.class_tool.customized_formatters, dev_window.tools.class_tool, a_class_stone)
 			extend_formatter (l_c_menu, dev_window.tools.dependency_tool.customized_formatters, dev_window.tools.dependency_tool, a_class_stone)
-			l_customized_tools := dev_window.tools.customized_tools
-			from
-				l_customized_tools.start
-			until
-				l_customized_tools.after
-			loop
-				l_customized_tool := l_customized_tools.item
-				extend_formatter (l_c_menu, l_customized_tool.formatters, l_customized_tool, a_class_stone)
-				l_customized_tools.forth
-			end
+--			l_customized_tools := dev_window.tools.customized_tools
+--			from
+--				l_customized_tools.start
+--			until
+--				l_customized_tools.after
+--			loop
+--				l_customized_tool := l_customized_tools.item
+--				extend_formatter (l_c_menu, l_customized_tool.formatters, l_customized_tool, a_class_stone)
+--				l_customized_tools.forth
+--			end
 			if l_c_menu.is_empty then
 				l_c_menu.disable_sensitive
 			end
 
 			extend_separator (l_menu)
 
-			l_menu.extend (dev_window.tools.cluster_tool.show_current_class_cluster_cmd.new_menu_item_unmanaged)
+			l_menu.extend (dev_window.commands.find_class_or_cluster_command.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
-			l_menu.last.select_actions.extend (agent (dev_window.tools.cluster_tool).show_class (a_class_stone))
+			l_menu.last.select_actions.extend (agent (dev_window.commands.find_class_or_cluster_command).execute_with_stone (a_class_stone))
 
 			l_menu.extend (dev_window.tools.diagram_tool.center_diagram_cmd.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
 			l_menu.last.select_actions.extend (agent (dev_window.tools.diagram_tool.center_diagram_cmd).execute_with_class_stone (a_class_stone))
 		end
 
-	extend_feature_formatter_menus (a_menu: EV_MENU; a_feature_stone: FEATURE_STONE) is
+	extend_feature_formatter_menus (a_menu: EV_MENU; a_feature_stone: FEATURE_STONE)
 			-- Extend class formatter menus.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -937,8 +980,8 @@ feature {NONE} -- Menu section, Granularity 1.
 		local
 			l_menu, l_c_menu: EV_MENU
 			l_feature_formatter: EB_FEATURE_INFO_FORMATTER
-			l_customized_tools: LIST [EB_CUSTOMIZED_TOOL]
-			l_customized_tool: EB_CUSTOMIZED_TOOL
+--			l_customized_tools: LIST [EB_CUSTOMIZED_TOOL]
+--			l_customized_tool: EB_CUSTOMIZED_TOOL
 		do
 			create l_menu.make_with_text (names.m_show)
 			a_menu.extend (l_menu)
@@ -966,22 +1009,22 @@ feature {NONE} -- Menu section, Granularity 1.
 
 			extend_formatter (l_c_menu, dev_window.tools.features_relation_tool.customized_formatters, dev_window.tools.features_relation_tool, a_feature_stone)
 			extend_formatter (l_c_menu, dev_window.tools.dependency_tool.customized_formatters, dev_window.tools.dependency_tool, a_feature_stone)
-			l_customized_tools := dev_window.tools.customized_tools
-			from
-				l_customized_tools.start
-			until
-				l_customized_tools.after
-			loop
-				l_customized_tool := l_customized_tools.item
-				extend_formatter (l_c_menu, l_customized_tool.formatters, l_customized_tool, a_feature_stone)
-				l_customized_tools.forth
-			end
+--			l_customized_tools := dev_window.tools.customized_tools
+--			from
+--				l_customized_tools.start
+--			until
+--				l_customized_tools.after
+--			loop
+--				l_customized_tool := l_customized_tools.item
+--				extend_formatter (l_c_menu, l_customized_tool.formatters, l_customized_tool, a_feature_stone)
+--				l_customized_tools.forth
+--			end
 			if l_c_menu.is_empty then
 				l_c_menu.disable_sensitive
 			end
 		end
 
-	extend_formatter (a_menu: EV_MENU; a_formatters: LIST [EB_FORMATTER]; a_tool: EB_TOOL; a_stone: STONE) is
+	extend_formatter (a_menu: EV_MENU; a_formatters: LIST [EB_FORMATTER]; a_tool: EB_TOOL; a_stone: STONE)
 			-- Extend formatter excution menu entries.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1000,7 +1043,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_class_refactoring_menus (a_menu: EV_MENU; a_stone: CLASSI_STONE) is
+	extend_class_refactoring_menus (a_menu: EV_MENU; a_stone: CLASSI_STONE)
 			-- Extend class refactoring menus.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1017,7 +1060,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			--| FIXME IEK There is no dialog for moving a class?
 		end
 
-	extend_feature_refactoring_menus (a_menu: EV_MENU; a_stone: FEATURE_STONE) is
+	extend_feature_refactoring_menus (a_menu: EV_MENU; a_stone: FEATURE_STONE)
 			-- Extend feature refactoring menus.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1036,7 +1079,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.pull_command).drop_feature (a_stone))
 		end
 
-	extend_debug_class_menus (a_menu: EV_MENU; a_class_c: CLASS_C) is
+	extend_debug_class_menus (a_menu: EV_MENU; a_class_c: CLASS_C)
 			-- Extend debug menu for a class.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1079,7 +1122,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			)
 		end
 
-	extend_debug_feature_menus (a_menu: EV_MENU; a_efeature: E_FEATURE) is
+	extend_debug_feature_menus (a_menu: EV_MENU; a_efeature: E_FEATURE)
 			-- Extend debug menus for a feature.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1122,7 +1165,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			)
 		end
 
-	extend_add_to_menu (a_menu: EV_MENU; a_pebble: STONE) is
+	extend_add_to_menu (a_menu: EV_MENU; a_pebble: STONE)
 			-- Extend Add to menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1177,7 +1220,11 @@ feature {NONE} -- Menu section, Granularity 1.
 						l_list.after
 					loop
 						if l_list.item.is_tool_instantiated then
-							l_menu2.extend (new_menu_item (l_list.item.tool_title))
+							if l_list.item.is_multiple_edition then
+								l_menu2.extend (new_menu_item (l_list.item.edition_title))
+							else
+								l_menu2.extend (new_menu_item (l_list.item.title))
+							end
 							l_menu2.last.select_actions.extend (agent (l_list.item).set_stone (l_class_stone))
 						end
 						l_list.forth
@@ -1186,7 +1233,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_delete_class_cluster_menu (a_menu: EV_MENU; a_pebble: STONE) is
+	extend_delete_class_cluster_menu (a_menu: EV_MENU; a_pebble: STONE)
 			-- Delete class/cluster menu
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1210,7 +1257,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_add_new_class_item (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE; a_disabled: BOOLEAN) is
+	extend_add_new_class_item (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE; a_disabled: BOOLEAN)
 			-- Extend Add new class menu to `a_menu'.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1224,7 +1271,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_add_subcluster_item (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE; a_disabled: BOOLEAN) is
+	extend_add_subcluster_item (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE; a_disabled: BOOLEAN)
 			-- Extend Add subcluster item to `a_menu'.
 			-- If `a_cluster_stone' is Void, we add simple new cluster command.
 		require
@@ -1243,7 +1290,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_add_library (a_menu: EV_MENU) is
+	extend_add_library (a_menu: EV_MENU)
 			-- Extend Add library item to `a_menu'.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1251,7 +1298,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			a_menu.extend (dev_window.commands.new_library_cmd.new_menu_item_unmanaged)
 		end
 
-	extend_add_assembly (a_menu: EV_MENU) is
+	extend_add_assembly (a_menu: EV_MENU)
 			-- Extend Add assembly item to `a_menu'.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1259,7 +1306,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			a_menu.extend (dev_window.commands.new_assembly_cmd.new_menu_item_unmanaged)
 		end
 
-	extend_search_scope_remove (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_search_scope_remove (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend search remove menu.
 		local
 			l_search_tool: ES_MULTI_SEARCH_TOOL_PANEL
@@ -1277,16 +1324,18 @@ feature {NONE} -- Menu section, Granularity 1.
 			a_menu_not_void: a_menu /= Void
 		local
 			l_menu_item: EV_MENU_ITEM
-			l_properties_tool: ES_PROPERTIES_TOOL_PANEL
+			l_tool: ES_PROPERTIES_TOOL
 			l_stone: STONE
 		do
 			l_stone ?= a_pebble
 			if l_stone /= Void then
-				l_properties_tool := dev_window.tools.properties_tool
-				if l_properties_tool.dropable (l_stone) then
-					create l_menu_item.make_with_text (l_properties_tool.menu_name)
-					l_menu_item.select_actions.extend (agent l_properties_tool.show)
-					l_menu_item.select_actions.extend (agent l_properties_tool.set_stone (l_stone))
+					-- FIXME: Properties tool needs to be converted to ESF
+				l_tool ?= dev_window.shell_tools.tool ({ES_PROPERTIES_TOOL})
+				check l_tool_attached: l_tool /= Void end
+				if l_tool.panel.dropable (l_stone) then
+					create l_menu_item.make_with_text (l_tool.title)
+					l_menu_item.select_actions.extend (agent l_tool.show (True))
+					l_menu_item.select_actions.extend (agent (l_tool.panel).set_stone (l_stone))
 					a_menu.extend (create {EV_MENU_SEPARATOR})
 					a_menu.extend (l_menu_item)
 				end
@@ -1309,7 +1358,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			end
 		end
 
-	extend_show_tool_command (a_cmd: ES_SHOW_TOOL_COMMAND; a_stone: STONE): !EV_MENU_ITEM
+	extend_show_tool_command (a_cmd: ES_SHOW_TOOL_COMMAND; a_stone: STONE): attached EV_MENU_ITEM
 			-- Extends a menu item to show a stonable tool.
 		require
 			a_cmd_is_attached: a_cmd /= Void
@@ -1317,7 +1366,7 @@ feature {NONE} -- Menu section, Granularity 1.
 			a_stone_is_usable: a_cmd.is_stone_usable (a_stone)
 			a_stone_attached: a_stone /= Void
 		local
-			l_menu_item: ?EV_MENU_ITEM
+			l_menu_item: detachable EV_MENU_ITEM
 			l_old_stone: STONE
 		do
 				-- Set the stone temporarly to retrieve the menu name, if it's based on the set stone.
@@ -1345,7 +1394,7 @@ feature {NONE} -- Menu section, Granularity 1.
 
 feature {NONE} -- Diagram menu section, Granularity 1.
 
-	extend_diagram_add_menu (a_menu: EV_MENU; a_name: STRING_GENERAL; a_pebble: ANY) is
+	extend_diagram_add_menu (a_menu: EV_MENU; a_name: STRING_GENERAL; a_pebble: ANY)
 			-- Extend Add commands in diagram.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1397,7 +1446,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 			end
 		end
 
-	extend_diagram_include_all_classes (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_diagram_include_all_classes (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend Include all classes command.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1414,7 +1463,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 			end
 		end
 
-	extend_force_right_angle (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_force_right_angle (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend Force right angle command.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1431,7 +1480,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 			end
 		end
 
-	extend_remove_anchor (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_remove_anchor (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend Remove Anchor menu item.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1460,7 +1509,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 			end
 		end
 
-	extend_diagram_delete_menu (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_diagram_delete_menu (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend diagram delete menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1497,7 +1546,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 			end
 		end
 
-	extend_remove_from_diagram (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_remove_from_diagram (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend Remove Anchor menu item.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1546,7 +1595,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 
 feature {NONE} -- Favorites menu section, Granularity 1.
 
-	extend_new_favorite_class (a_menu: EV_MENU) is
+	extend_new_favorite_class (a_menu: EV_MENU)
 			-- Extend new favorite class menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1555,7 +1604,7 @@ feature {NONE} -- Favorites menu section, Granularity 1.
 			a_menu.last.select_actions.extend (agent favorite_manager.new_favorite_class (Void))
 		end
 
-	extend_move_to_folder (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_move_to_folder (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend move to folder menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1577,7 +1626,7 @@ feature {NONE} -- Favorites menu section, Granularity 1.
 			end
 		end
 
-	extend_add_favorite_folder (a_menu: EV_MENU) is
+	extend_add_favorite_folder (a_menu: EV_MENU)
 			-- Extend "Create Folder..." menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1586,7 +1635,7 @@ feature {NONE} -- Favorites menu section, Granularity 1.
 			a_menu.last.select_actions.extend (agent favorite_manager.create_folder (Void))
 		end
 
-	extend_remove_from_favorites (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_remove_from_favorites (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend remove from favorites menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1614,7 +1663,7 @@ feature {NONE} -- Favorites menu section, Granularity 1.
 
 feature {NONE} -- Debug tool menu section, Granularity 1.
 
-	extend_sync_in_context_tool (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_sync_in_context_tool (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend Synchronize in Feature relation tool menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1631,7 +1680,7 @@ feature {NONE} -- Debug tool menu section, Granularity 1.
 			end
 		end
 
-	extend_expanded_object_view (a_menu: EV_MENU; a_pebble: ANY) is
+	extend_expanded_object_view (a_menu: EV_MENU; a_pebble: ANY)
 			-- Extend Expanded object view menu.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1658,7 +1707,7 @@ feature {NONE} -- Debug tool menu section, Granularity 1.
 
 feature {NONE} -- Metrics tool section, Granularity 1.
 
-	extend_metric_delete (a_menu: EV_MENU; a_basic: EB_METRIC) is
+	extend_metric_delete (a_menu: EV_MENU; a_basic: EB_METRIC)
 			-- Extend metric Delete.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1675,7 +1724,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			end
 		end
 
-	extend_metric_quick_metric (a_menu: EV_MENU; a_basic: EB_METRIC_BASIC) is
+	extend_metric_quick_metric (a_menu: EV_MENU; a_basic: EB_METRIC_BASIC)
 			-- Extend Quick metric.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1690,7 +1739,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_metric_panel.on_create_quick_metric (a_basic))
 		end
 
-	extend_metric_clone_metric (a_menu: EV_MENU; a_basic: EB_METRIC) is
+	extend_metric_clone_metric (a_menu: EV_MENU; a_basic: EB_METRIC)
 			-- Extend Open user defined metrics externally.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1705,7 +1754,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_metric_panel.clone_and_load_metric (a_basic.identical_new_instance))
 		end
 
-	extend_reload_metrics (a_menu: EV_MENU) is
+	extend_reload_metrics (a_menu: EV_MENU)
 			-- Extend Reload metrics
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1718,7 +1767,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_metric_panel.on_reload_metrics)
 		end
 
-	extend_import_metric_from_file (a_menu: EV_MENU) is
+	extend_import_metric_from_file (a_menu: EV_MENU)
 			-- Extend Import metrics from file.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1731,7 +1780,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_metric_panel.on_import_metrics)
 		end
 
-	extend_new_metric (a_menu: EV_MENU) is
+	extend_new_metric (a_menu: EV_MENU)
 			-- Extend New metric
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1746,7 +1795,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.extend (l_menu)
 		end
 
-	extend_metric_open_user_metric (a_menu: EV_MENU) is
+	extend_metric_open_user_metric (a_menu: EV_MENU)
 			-- Extend Open user defined metrics externally.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1759,7 +1808,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_metric_panel.on_open_user_defined_metric_file)
 		end
 
-	extend_metric_selector_move_up_and_down (a_menu: EV_MENU; a_selector: EB_METRIC_SELECTOR; a_unit: QL_METRIC_UNIT) is
+	extend_metric_selector_move_up_and_down (a_menu: EV_MENU; a_selector: EB_METRIC_SELECTOR; a_unit: QL_METRIC_UNIT)
 			-- Extend Move up and Move down menus for metric selector
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1772,7 +1821,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent a_selector.move_unit (a_unit, False))
 		end
 
-	extend_metric_selector_remove (a_menu: EV_MENU; a_pebble: ANY; a_selector: EB_METRIC_DOMAIN_SELECTOR) is
+	extend_metric_selector_remove (a_menu: EV_MENU; a_pebble: ANY; a_selector: EB_METRIC_DOMAIN_SELECTOR)
 			-- Remove and Remove all menus in metric selector
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1817,7 +1866,7 @@ feature {NONE} -- EVE Proofs menu
 
 feature {NONE} -- Implementation
 
-	setup_pick_item (a_menu: EV_MENU; a_pebble: ANY) is
+	setup_pick_item (a_menu: EV_MENU; a_pebble: ANY)
 			-- Replace name of the first menu item of `a_menu'
 			-- with right language.
 		require
@@ -1836,7 +1885,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_name (a_pebble: ANY) is
+	build_name (a_pebble: ANY)
 			-- Build name of `a_pebble'.
 		local
 			l_classi_stone: CLASSI_STONE
@@ -1889,13 +1938,13 @@ feature {NONE} -- Implementation
 
 	current_editor: EB_CLICKABLE_EDITOR
 
-	favorite_manager: EB_FAVORITES_MANAGER is
+	favorite_manager: EB_FAVORITES_MANAGER
 			-- Favorites manager
 		do
 			Result := dev_window.favorites_manager
 		end
 
-	extend_separator (a_menu: EV_MENU) is
+	extend_separator (a_menu: EV_MENU)
 			-- Extend a separator into `a_menu'.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1912,7 +1961,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	new_menu_item (a_name: STRING_GENERAL): EV_MENU_ITEM is
+	new_menu_item (a_name: STRING_GENERAL): EV_MENU_ITEM
 			-- New menu item with `a_name'.
 		do
 			if a_name /= Void then
@@ -1926,7 +1975,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Status report
 
-	is_pnd_mode: BOOLEAN is
+	is_pnd_mode: BOOLEAN
 			-- Is pnd mode? Or contextual mode.
 		do
 			Result := preferences.misc_data.is_pnd_mode
@@ -1934,7 +1983,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Recycle
 
-	internal_recycle is
+	internal_recycle
 			--
 		do
 		end
@@ -1946,37 +1995,5 @@ feature {NONE} -- Implementation
 
 invariant
 	dev_window_not_void: dev_window /= Void
-
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options: "http://www.eiffel.com/licensing"
-	copying: "[
-			This file is part of Eiffel Software's Eiffel Development Environment.
-			
-			Eiffel Software's Eiffel Development Environment is free
-			software; you can redistribute it and/or modify it under
-			the terms of the GNU General Public License as published
-			by the Free Software Foundation, version 2 of the License
-			(available at the URL listed under "license" above).
-			
-			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful, but
-			WITHOUT ANY WARRANTY; without even the implied warranty
-			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the GNU General Public License for more details.
-			
-			You should have received a copy of the GNU General Public
-			License along with Eiffel Software's Eiffel Development
-			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-		]"
-	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
 
 end

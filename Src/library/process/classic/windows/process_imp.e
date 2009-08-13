@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Process launcher on Win32"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -39,10 +39,14 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_exec_name: STRING; args: LIST[STRING]; a_working_directory: STRING) is
+	make (a_exec_name: STRING; args: detachable LIST [STRING]; a_working_directory: detachable STRING)
 		local
 			l_arg: STRING
 		do
+			create child_process.make
+			create input_buffer.make_empty
+			create input_mutex.make
+
 			create arguments.make
 			create command_line.make_from_string (a_exec_name)
 
@@ -70,8 +74,12 @@ feature{NONE} -- Initialization
 			initialize_parameter
 		end
 
-	make_with_command_line (cmd_line: STRING; a_working_directory: STRING) is
+	make_with_command_line (cmd_line: STRING; a_working_directory: detachable STRING)
 		do
+			create child_process.make
+			create input_buffer.make_empty
+			create input_mutex.make
+
 			create command_line.make_from_string (cmd_line)
 			initialize_working_directory (a_working_directory)
 			initialize_parameter
@@ -79,7 +87,7 @@ feature{NONE} -- Initialization
 
 feature -- Control
 
-	launch is
+	launch
 			-- Launch process.	
 		local
 			l_timeout: BOOLEAN
@@ -101,14 +109,18 @@ feature -- Control
 			end
 		end
 
-	terminate is
+	terminate
 			-- Terminate launched process.
+		local
+			l_process_info: detachable WEL_PROCESS_INFO
 		do
-			try_terminate_process (child_process.process_info.process_handle)
+			l_process_info := child_process.process_info
+			check l_process_info /= Void end
+			try_terminate_process (l_process_info.process_handle)
 			force_terminated := last_termination_successful
 		end
 
-	terminate_tree is
+	terminate_tree
 			-- Terminate process tree starting from current launched process.
 		local
 			l_pri, l_pri2: INTEGER
@@ -130,7 +142,7 @@ feature -- Control
 			end
 		end
 
-	wait_for_exit is
+	wait_for_exit
 			-- Wait until process has exited.
 		local
 			l_wait: BOOLEAN
@@ -138,7 +150,7 @@ feature -- Control
 			l_wait := timer.wait (0)
 		end
 
-	wait_for_exit_with_timeout (a_timeout: INTEGER) is
+	wait_for_exit_with_timeout (a_timeout: INTEGER)
 			-- Wait launched process to exit for at most `a_timeout' milliseconds.
 			-- Check `has_exited' after to see if launched process has exited.
 		local
@@ -150,7 +162,7 @@ feature -- Control
 
 feature -- Interprocess data transmission
 
-	put_string (s: STRING) is
+	put_string (s: STRING)
 			-- Send `s' into launched process as its input data.
 		do
 			append_input_buffer (s)
@@ -158,17 +170,17 @@ feature -- Interprocess data transmission
 
 feature -- Status reporting
 
-	id: INTEGER is
+	id: INTEGER
 		do
 			Result := internal_id
 		end
 
-	has_exited: BOOLEAN is
+	has_exited: BOOLEAN
 		do
 			Result := has_cleaned_up
 		end
 
-	exit_code: INTEGER is
+	exit_code: INTEGER
 		do
 			if child_process /= Void then
 				Result := child_process.last_process_result
@@ -177,37 +189,41 @@ feature -- Status reporting
 
 feature{PROCESS_TIMER} -- Process status checking
 
-	check_exit is
+	check_exit
 			-- Check if process has exited.
 		local
 			l_threads_exited: BOOLEAN
+			l_in_thread: like in_thread
+			l_out_thread: like out_thread
+			l_err_thread: like err_thread
 		do
 			if not has_exited then
+				l_in_thread := in_thread
+				l_out_thread := out_thread
+				l_err_thread := err_thread
 				if not process_has_exited then
 					process_has_exited := child_process.has_exited
 						-- If launched process exited, send signal to all listenning threads.
 					if process_has_exited then
-						if in_thread /= Void then
-							in_thread.set_exit_signal
+						if l_in_thread /= Void then
+							l_in_thread.set_exit_signal
 						end
-						if out_thread /= Void then
-							out_thread.set_exit_signal
+						if l_out_thread /= Void then
+							l_out_thread.set_exit_signal
 						end
-						if err_thread /= Void then
-							err_thread.set_exit_signal
+						if l_err_thread /= Void then
+							l_err_thread.set_exit_signal
 						end
 					end
 				else
-					l_threads_exited := ((in_thread /= Void) implies in_thread.terminated) and
-							  ((out_thread /= Void) implies out_thread.terminated) and
-							  ((err_thread /= Void) implies err_thread.terminated)
+					l_threads_exited := ((l_in_thread /= Void) implies l_in_thread.terminated) and
+							  ((l_out_thread /= Void) implies l_out_thread.terminated) and
+							  ((l_err_thread /= Void) implies l_err_thread.terminated)
 							  -- If all listenning threads exited, perform clean up.
 					if l_threads_exited then
 						if not has_cleaned_up then
 							timer.destroy
-							if input_buffer /= Void then
-								input_buffer.clear_all
-							end
+							input_buffer.clear_all
 							child_process.close_process_handle
 							child_process.close_io
 							has_cleaned_up := True
@@ -230,7 +246,7 @@ feature{NONE} -- Interprocess IO
 			-- This buffer is used temporarily to store data that can not be
 			-- consumed by launched process.
 
-	append_input_buffer (a_input:STRING) is
+	append_input_buffer (a_input:STRING)
 			-- Append `a_input' to `input_buffer'.
 		require
 			a_input_not_void: a_input /= Void
@@ -251,7 +267,7 @@ feature{PROCESS_IO_LISTENER_THREAD} -- Interprocess IO
 	last_input_bytes: INTEGER
 			-- Number of bytes in `input_buffer' wrote to process the last time
 
-	write_input_stream is
+	write_input_stream
 			-- Write at most `buffer_size' bytes of data in `input_buffer' into launched process.
 			--|Note: This feature will be used in input listening thread.
 		require
@@ -260,7 +276,8 @@ feature{PROCESS_IO_LISTENER_THREAD} -- Interprocess IO
 		local
 			l_cnt: INTEGER
 			l_left: INTEGER
-			l_str: STRING
+			l_str: detachable STRING
+			l_input_file_handle: like input_file_handle
 		do
 			input_mutex.lock
 			l_cnt := input_buffer.count
@@ -275,11 +292,13 @@ feature{PROCESS_IO_LISTENER_THREAD} -- Interprocess IO
 			end
 			input_mutex.unlock
 			if l_str /= Void then
-				input_file_handle.put_string (child_process.std_input, l_str)
+				l_input_file_handle := input_file_handle
+				check l_input_file_handle /= Void end
+				l_input_file_handle.put_string (child_process.std_input, l_str)
 			end
 		end
 
-	read_output_stream is
+	read_output_stream
 			-- Read output stream from launched process and dispatch data to `output_handler'.
 			--|Note: This feature will be used in output listening thread.
 		require
@@ -289,21 +308,30 @@ feature{PROCESS_IO_LISTENER_THREAD} -- Interprocess IO
 		local
 			succ: BOOLEAN
 			bytes_avail: INTEGER
+			l_output_handler: like output_handler
+			l_last_string: detachable STRING_8
+			l_output_file_handle: like output_file_handle
 		do
 			succ := cwin_peek_named_pipe (child_process.std_output, default_pointer, 0, default_pointer, $bytes_avail, default_pointer)
 			if succ and bytes_avail > 0 then
-				output_file_handle.read_stream (child_process.std_output, buffer_size.min (bytes_avail))
-				succ := output_file_handle.last_read_successful
+				l_output_file_handle := output_file_handle
+				check l_output_file_handle /= Void end
+				l_output_file_handle.read_stream (child_process.std_output, buffer_size.min (bytes_avail))
+				succ := l_output_file_handle.last_read_successful
 				if succ then
-					last_output_bytes := output_file_handle.last_read_bytes
-					output_handler.call ([output_file_handle.last_string])
+					l_output_handler := output_handler
+					check l_output_handler /= Void end
+					last_output_bytes := l_output_file_handle.last_read_bytes
+					l_last_string := l_output_file_handle.last_string
+					check l_last_string /= Void end
+					l_output_handler.call ([l_last_string])
 				end
 			else
 				last_output_bytes := 0
 			end
 		end
 
-	read_error_stream is
+	read_error_stream
 			-- Read output stream from launched process and dispatch data to `output_handler'.
 			--|Note: This feature will be used in error listening thread.			
 		require
@@ -313,14 +341,23 @@ feature{PROCESS_IO_LISTENER_THREAD} -- Interprocess IO
 		local
 			succ: BOOLEAN
 			bytes_avail: INTEGER
+			l_error_handler: like error_handler
+			l_last_string: detachable STRING
+			l_error_file_handle: like error_file_handle
 		do
 			succ := cwin_peek_named_pipe (child_process.std_error, default_pointer, 0, default_pointer, $bytes_avail, default_pointer)
 			if succ and bytes_avail > 0 then
-				error_file_handle.read_stream (child_process.std_error, buffer_size.min (bytes_avail))
-				succ := error_file_handle.last_read_successful
+				l_error_file_handle := error_file_handle
+				check l_error_file_handle /= Void end
+				l_error_file_handle.read_stream (child_process.std_error, buffer_size.min (bytes_avail))
+				succ := l_error_file_handle.last_read_successful
 				if succ then
-					last_error_bytes := error_file_handle.last_read_bytes
-					error_handler.call ([error_file_handle.last_string])
+					l_error_handler := error_handler
+					check l_error_handler /= Void end
+					last_error_bytes := l_error_file_handle.last_read_bytes
+					l_last_string := l_error_file_handle.last_string
+					check l_last_string /= Void end
+					l_error_handler.call ([l_last_string])
 				end
 			else
 				last_error_bytes := 0
@@ -329,7 +366,7 @@ feature{PROCESS_IO_LISTENER_THREAD} -- Interprocess IO
 
 feature{NONE} -- Implementation
 
-	cwin_peek_named_pipe (a_handle: POINTER; a_buffer:  POINTER;  buf_size: INTEGER; bytes_read: POINTER; bytes_avail: POINTER; a_integer: POINTER): BOOLEAN is
+	cwin_peek_named_pipe (a_handle: POINTER; a_buffer:  POINTER;  buf_size: INTEGER; bytes_read: POINTER; bytes_avail: POINTER; a_integer: POINTER): BOOLEAN
 			-- Peek a pipe to see whether there is data in it.
 		external
 			"C blocking macro signature (HANDLE, LPVOID, DWORD, LPDWORD, LPDWORD, LPDWORD): BOOL use <windows.h>"
@@ -337,10 +374,13 @@ feature{NONE} -- Implementation
 			"PeekNamedPipe"
 		end
 
-	initialize_child_process is
+	initialize_child_process
 			-- Initialize `child_process'.
+		local
+			l_input_file_name: like input_file_name
+			l_output_file_name: like output_file_name
+			l_error_file_name: like error_file_name
 		do
-			create child_process.make
 			if hidden then
 				child_process.run_hidden
 			end
@@ -348,22 +388,32 @@ feature{NONE} -- Implementation
 			child_process.set_output_direction (output_direction)
 			child_process.set_error_direction (error_direction)
 			if input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_file then
-				child_process.set_input_file_name (input_file_name)
+				l_input_file_name := input_file_name
+				check l_input_file_name /= Void end
+				child_process.set_input_file_name (l_input_file_name)
 			end
 			if output_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_file then
-				child_process.set_output_file_name (output_file_name)
+				l_output_file_name := output_file_name
+				check l_output_file_name /= Void end
+				child_process.set_output_file_name (l_output_file_name)
 			end
 			if error_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_file then
-				child_process.set_error_file_name (error_file_name)
+				l_error_file_name := error_file_name
+				check l_error_file_name /= Void end
+				child_process.set_error_file_name (l_error_file_name)
 			end
 		ensure
 			child_process_not_void: child_process /= Void
 		end
 
-	initialize_after_launch is
+	initialize_after_launch
 			-- Initialize when process has been launched successfully.
+		local
+			l_process_info: detachable WEL_PROCESS_INFO
 		do
-			internal_id := child_process.process_info.process_id
+			l_process_info := child_process.process_info
+			check l_process_info /= Void end
+			internal_id := l_process_info.process_id
 			process_has_exited := False
 			force_terminated := False
 			last_termination_successful := True
@@ -371,29 +421,35 @@ feature{NONE} -- Implementation
 			start_listening_threads
 		end
 
-	start_listening_threads is
+	start_listening_threads
 			-- Start listening threads.
+		local
+			l_in_thread: like in_thread
+			l_out_thread: like out_thread
+			l_err_thread: like err_thread
 		do
 			if input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_stream then
-				create input_mutex.make
 				create input_file_handle
 				create input_buffer.make (4096)
-				create in_thread.make (Current)
-				in_thread.launch
+				create l_in_thread.make (Current)
+				in_thread := l_in_thread
+				l_in_thread.launch
 			else
 				in_thread := Void
 			end
 			if output_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_agent then
 				create output_file_handle
-				create out_thread.make (Current)
-				out_thread.launch
+				create l_out_thread.make (Current)
+				out_thread := l_out_thread
+				l_out_thread.launch
 			else
 				out_thread := Void
 			end
 			if error_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_agent then
 				create error_file_handle
-				create err_thread.make (Current)
-				err_thread.launch
+				create l_err_thread.make (Current)
+				err_thread := l_err_thread
+				l_err_thread.launch
 			else
 				err_thread := Void
 			end
@@ -401,7 +457,7 @@ feature{NONE} -- Implementation
 			timer.start
 		end
 
-	try_terminate_process (handle: POINTER) is
+	try_terminate_process (handle: POINTER)
 			-- Try to terminate process `handle'.
 			-- Set `last_termination_successful' with True if succeeded.
 		require
@@ -417,7 +473,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	terminate_process_by_id (pid: INTEGER) is
+	terminate_process_by_id (pid: INTEGER)
 			-- Try to terminate process indicated by process id `pid'.
 			-- Set `last_termination_successful' with True if succeeded.
 		require
@@ -443,7 +499,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	direct_subprocess_list (parent_id: INTEGER): LIST [INTEGER] is
+	direct_subprocess_list (parent_id: INTEGER): LIST [INTEGER]
 			-- List of direct subprocess ids of process indicated by id `parent_id'.
 		local
 			p_tbl: LINKED_LIST [TUPLE [parent_id: INTEGER; process_id: INTEGER]]
@@ -466,7 +522,7 @@ feature{NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	terminate_sub_tree (pid: INTEGER; is_self: BOOLEAN) is
+	terminate_sub_tree (pid: INTEGER; is_self: BOOLEAN)
 			-- Try to termiate all sub-processes of process `pid'.
 			-- If `is_self' is True, terminate `pid' after all its child processes have
 			-- been terminated.
@@ -531,7 +587,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	adjust_debug_privilege (a_success: TYPED_POINTER [BOOLEAN]; a_privilege: INTEGER; a_previous: TYPED_POINTER [INTEGER]) is
+	adjust_debug_privilege (a_success: TYPED_POINTER [BOOLEAN]; a_privilege: INTEGER; a_previous: TYPED_POINTER [INTEGER])
 			-- Enable debug privilege `a_privilege' for process termination.
 			-- Set `a_success' to True if privilege is enabled successfully and preivous debug privilege value
 			-- is stored in `a_previous'.
@@ -577,7 +633,7 @@ feature{NONE} -- Implementation
 			]"
 		end
 
-	cwin_se_privilege_enabled: INTEGER is
+	cwin_se_privilege_enabled: INTEGER
 			-- Enable privilege constant
 		external
 			"C macro use <windows.h>"
@@ -587,9 +643,9 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	out_thread: PROCESS_OUTPUT_LISTENER_THREAD
-	err_thread: PROCESS_ERROR_LISTENER_THREAD
-	in_thread: PROCESS_INPUT_LISTENER_THREAD
+	out_thread: detachable PROCESS_OUTPUT_LISTENER_THREAD
+	err_thread: detachable PROCESS_ERROR_LISTENER_THREAD
+	in_thread: detachable PROCESS_INPUT_LISTENER_THREAD
 			-- Threads to listen to output and error from child process.
 
 	child_process: WEL_PROCESS
@@ -613,13 +669,13 @@ feature{NONE} -- Implementation
 
 	input_file_handle,
 	output_file_handle,
-	error_file_handle: FILE_HANDLE
+	error_file_handle: detachable FILE_HANDLE
 			-- Handles used	to read and write file
 
 	internal_id: INTEGER
 			-- Internal process id
 
-	environment_table_as_pointer: POINTER is
+	environment_table_as_pointer: POINTER
 			-- {POINTER} representation of `environment_variable_table'
 			-- Return `default_pointer' if `environment_variable_table' is Void or empty.
 		local
@@ -649,15 +705,14 @@ feature{NONE} -- Implementation
 			end
 		end
 
-indexing
-	library:   "EiffelProcess: Manipulation of processes with IO redirection."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 end

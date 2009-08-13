@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Unit conversion."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,12 +23,12 @@ inherit
 
 feature -- Access
 
-	Himetric_per_inch: INTEGER is   2540
+	Himetric_per_inch: INTEGER =   2540
 			-- Defined as HIMETRIC_PER_INCH in AtlWin.h
 	
 feature -- Basic Operations
 
-	map_pixel_to_loghim (x,ppli: INTEGER): INTEGER is   
+	map_pixel_to_loghim (x,ppli: INTEGER): INTEGER   
 			-- Defined as MAP_PIX_TO_LOGHIM in AtlWin.h
 		local
 			temp: INTEGER_64
@@ -37,7 +37,7 @@ feature -- Basic Operations
 			Result := integer_64_to_32 (temp // ppli)
 		end
 
-	map_loghim_to_pixel (x,ppli: INTEGER): INTEGER is 
+	map_loghim_to_pixel (x,ppli: INTEGER): INTEGER 
 			-- Defined as MAP_LOGHIM_TO_PIX in AtlWin.h
 		local
 			temp: INTEGER_64
@@ -46,10 +46,11 @@ feature -- Basic Operations
 			Result := integer_64_to_32 (temp // Himetric_per_inch)
 		end
 	
-	pixel_to_himetric (a_size_in_pixel: WEL_SIZE): WEL_SIZE is
+	pixel_to_himetric (a_size_in_pixel: WEL_SIZE): WEL_SIZE
 			-- Convert pixels into himetric.
 		require
 			non_void_size: a_size_in_pixel /= Void
+			a_size_in_pixel_exists: a_size_in_pixel.exists
 		local
 			screen_dc: WEL_SCREEN_DC
 			n_pixels_per_inch_x: INTEGER
@@ -70,10 +71,11 @@ feature -- Basic Operations
 			non_void_result: Result /= Void
 		end
 
-	himetric_to_pixel (a_size_in_himetric: WEL_SIZE): WEL_SIZE is
+	himetric_to_pixel (a_size_in_himetric: WEL_SIZE): WEL_SIZE
 			-- Convert himetric into pixels.
 		require
 			non_void_size: a_size_in_himetric /= Void
+			a_size_in_himetric_exists: a_size_in_himetric.exists
 		local
 			screen_dc: WEL_SCREEN_DC
 			n_pixels_per_inch_x: INTEGER
@@ -94,34 +96,49 @@ feature -- Basic Operations
 			non_void_result: Result /= Void
 		end
 
-	point_to_pixel (hdc: WEL_DC; pt, divisor: INTEGER): INTEGER is
+	point_to_pixel (hdc: WEL_DC; pt, divisor: INTEGER): INTEGER
 			-- Convert a size `pt/divisor' expressed in point into pixel.
+		require
+			hdc_not_void: hdc /= Void
+			hdc_exists: hdc.exists
 		do
 			Result :=  mul_div (
 				get_device_caps (hdc.item, logical_pixels_y), pt, 72 * divisor)
 		end
 
-	pixel_to_point (hdc: WEL_DC; pi: INTEGER): INTEGER is
+	pixel_to_point (hdc: WEL_DC; pi: INTEGER): INTEGER
 			-- Convert a size `pi' expressed in pixel into point.
+		require
+			hdc_not_void: hdc /= Void
+			hdc_exists: hdc.exists
 		do
 			Result :=  mul_div (pi, 72,
 				get_device_caps (hdc.item, logical_pixels_y))
 		end
 
-	point_to_logical (hdc: WEL_DC; pt, divisor: INTEGER): INTEGER is
+	point_to_logical (hdc: WEL_DC; pt, divisor: INTEGER): INTEGER
 			-- Convert a size `pt/divisor' expressed in point into logical units.
+		require
+			hdc_not_void: hdc /= Void
+			hdc_exists: hdc.exists
 		do
 			Result := pixel_to_logical (hdc, point_to_pixel (hdc, pt, divisor))
 		end
 
-	logical_to_point (hdc: WEL_DC; lo: INTEGER): INTEGER is
+	logical_to_point (hdc: WEL_DC; lo: INTEGER): INTEGER
 			-- Convert a size `lo' expressed in logical unit into point.
+		require
+			hdc_not_void: hdc /= Void
+			hdc_exists: hdc.exists
 		do
 			Result := pixel_to_point (hdc, logical_to_pixel (hdc, lo))
 		end
 
-	pixel_to_logical (hdc: WEL_DC; pi: INTEGER): INTEGER is
+	pixel_to_logical (hdc: WEL_DC; pi: INTEGER): INTEGER
 			-- Convert `pi' expressed in pixel unit into logical unit.
+		require
+			hdc_not_void: hdc /= Void
+			hdc_exists: hdc.exists
 		local
 			arr: WEL_ARRAY [WEL_POINT]
 			p1, p2: WEL_POINT
@@ -138,8 +155,11 @@ feature -- Basic Operations
 			Result := (p2.y - p1.y).abs
 		end
 
-	logical_to_pixel (hdc: WEL_DC; lo: INTEGER): INTEGER is
+	logical_to_pixel (hdc: WEL_DC; lo: INTEGER): INTEGER
 			-- Convert `lo' expressed in logical unit into pixel unit.
+		require
+			hdc_not_void: hdc /= Void
+			hdc_exists: hdc.exists
 		local
 			arr: WEL_ARRAY [WEL_POINT]
 			p1, p2: WEL_POINT
@@ -157,21 +177,21 @@ feature -- Basic Operations
 
 feature {NONE} -- Externals
 
-	cwin_dp_to_lp (dc, p: POINTER; i: INTEGER) is
+	cwin_dp_to_lp (dc, p: POINTER; i: INTEGER)
 		external
 			"C [macro <windows.h>] (HDC, LPPOINT, int)"
 		alias
 			"DPtoLP"
 		end
 
-	cwin_lp_to_dp (dc, p: POINTER; i: INTEGER) is
+	cwin_lp_to_dp (dc, p: POINTER; i: INTEGER)
 		external
 			"C [macro <windows.h>] (HDC, LPPOINT, int)"
 		alias
 			"LPtoDP"
 		end
 		
-	mul_div (i,j,k: INTEGER): INTEGER is
+	mul_div (i,j,k: INTEGER): INTEGER
 			-- Does `i * j / k' but in a safe manner where the 64 bits integer
 			-- obtained by `i * j' is not truncated.
 		external
@@ -180,7 +200,7 @@ feature {NONE} -- Externals
 			"MulDiv"
 		end
 
-	integer_32x32_to_64 (i,j: INTEGER): INTEGER_64 is
+	integer_32x32_to_64 (i,j: INTEGER): INTEGER_64
 			-- Multiplies two signed 32-bit integers, returning a 
 			-- signed 64-bit integer result. 
 		external
@@ -189,7 +209,7 @@ feature {NONE} -- Externals
 			"Int32x32To64"
 		end
 
-	get_device_caps (p: POINTER; i: INTEGER): INTEGER is
+	get_device_caps (p: POINTER; i: INTEGER): INTEGER
 			-- Retrieves device-specific information about a specified device.
 		external
 			"C [macro <windows.h>] (HDC, int): EIF_INTEGER"
@@ -197,7 +217,7 @@ feature {NONE} -- Externals
 			"GetDeviceCaps"
 		end
 
-	integer_64_to_32 (i64: INTEGER_64): INTEGER is
+	integer_64_to_32 (i64: INTEGER_64): INTEGER
 			-- Converts INTEGER_64 to INTEGER
 		external
 			"C [macro <eif_eiffel.h>]"
@@ -205,7 +225,7 @@ feature {NONE} -- Externals
 			" "
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

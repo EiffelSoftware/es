@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A contract source interface for retrieving information on contracts.
 	]"
@@ -12,12 +12,12 @@ deferred class
 
 feature -- Access
 
-	context: !ES_CONTRACT_EDITOR_CONTEXT [CLASSI_STONE]
+	context: attached ES_CONTRACT_EDITOR_CONTEXT [CLASSI_STONE]
 			-- Context associated with a contract source
 		deferred
 		end
 
-	source: !ES_CONTRACT_SOURCE_I
+	source: attached ES_CONTRACT_SOURCE_I
 			-- The actual contract source
 		deferred
 		end
@@ -31,7 +31,7 @@ feature -- Status report
 			not_read_only: Result implies not context.context_class.is_read_only
 		end
 
-;indexing
+;note
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

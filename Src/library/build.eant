@@ -22,7 +22,7 @@
 		<geant target="_build_tpl_" arguments="clean" />
 	</target>
 
-	<target name="clobber" depend="clean" >
+	<target name="clobber" >
 		<echo message="- Clobber library" />
 		<geant target="_build_tpl_" arguments="clobber" />
 	</target>
@@ -30,7 +30,6 @@
 	<target name="_build_tpl_" >
 		<argument name="_target_name" />
 		<geant target="${_target_name}" dir="net" file="build.eant" reuse_variables="true" />
-		<geant target="${_target_name}" dir="net_ipv6" file="build.eant" reuse_variables="true" />
 		<geant target="${_target_name}" dir="wel" file="build.eant" reuse_variables="true" if="${is_windows}" />
 		<geant target="${_target_name}" dir="com" file="build.eant" reuse_variables="true" if="${is_windows}" />
 		<geant target="${_target_name}" dir="vision2" file="build.eant" reuse_variables="true" />

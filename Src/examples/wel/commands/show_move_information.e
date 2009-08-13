@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -9,32 +9,25 @@ inherit
 
 feature
 
-	execute (argument: ANY) is
+	execute (argument: ANY)
 			-- Add information about Wm_move message in the
 			-- list box.
 		local
-			mi: WEL_MOVE_MESSAGE
-			lb: WEL_SINGLE_SELECTION_LIST_BOX
 			s: STRING
 		do
-			mi ?= message_information
-			lb ?= argument
-			check
-				mi_not_void: mi /= Void
-				lb_not_void: lb /= Void
+			if attached {WEL_MOVE_MESSAGE} message_information as mi and then attached {WEL_SINGLE_SELECTION_LIST_BOX} argument as lb then
+				s := "WM_MOVE: new x="
+				s.append (mi.x.out)
+
+				s.append (" new y=")
+				s.append (mi.y.out)
+
+				lb.add_string (s)
+				lb.select_item (lb.count - 1)
 			end
-
-			s := "WM_MOVE: new x="
-			s.append (mi.x.out)
-
-			s.append (" new y=")
-			s.append (mi.y.out)
-
-			lb.add_string (s)
-			lb.select_item (lb.count - 1)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

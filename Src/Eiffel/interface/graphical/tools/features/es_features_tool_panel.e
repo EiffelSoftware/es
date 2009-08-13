@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Tool for viewing the active editor's list of feature clauses and features.
 	]"
@@ -48,7 +48,7 @@ create {ES_FEATURES_TOOL}
 
 feature {NONE} -- User interface initialization
 
-    build_tool_interface (a_widget: ES_FEATURES_GRID) is
+    build_tool_interface (a_widget: ES_FEATURES_GRID)
             -- Builds the tools user interface elements.
             -- Note: This function is called prior to showing the tool for the first time.
             --
@@ -67,30 +67,31 @@ feature {NONE} -- User interface initialization
 			if session_manager.is_service_available then
 					-- Hook up events
 				l_session := session_data
-				l_session.connect_events (Current)
 
 					-- Retrieve session data and set button states
-				if {l_toggle1: !BOOLEAN_REF} l_session.value_or_default (show_alias_session_id, False) then
+				if attached {BOOLEAN_REF} l_session.value_or_default (show_alias_session_id, False) as l_toggle1 then
 					if l_toggle1.item then
 						show_alias_button.enable_select
 					else
 						show_alias_button.disable_select
 					end
 				end
-				if {l_toggle2: !BOOLEAN_REF} l_session.value_or_default (show_assigners_session_id, False) then
+				if attached {BOOLEAN_REF} l_session.value_or_default (show_assigners_session_id, False) as l_toggle2 then
 					if l_toggle2.item then
 						show_assigners_button.enable_select
 					else
 						show_assigners_button.disable_select
 					end
 				end
-				if {l_toggle3: !BOOLEAN_REF} l_session.value_or_default (show_signatures_session_id, False) then
+				if attached {BOOLEAN_REF} l_session.value_or_default (show_signatures_session_id, False) as l_toggle3 then
 					if l_toggle3.item then
 						show_signatures_button.enable_select
 					else
 						show_signatures_button.disable_select
 					end
 				end
+
+				l_session.session_connection.connect_events (Current)
 			end
 		end
 
@@ -101,8 +102,8 @@ feature {NONE} -- Clean up
 		do
 			if is_initialized then
 				if session_manager.is_service_available then
-					if session_data.is_connected (Current) then
-						session_data.disconnect_events (Current)
+					if session_data.session_connection.is_connected (Current) then
+						session_data.session_connection.disconnect_events (Current)
 					end
 				end
 			end
@@ -127,7 +128,7 @@ feature {NONE} -- Access
 
 feature -- Access: Help
 
-	help_context_id: !STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		once
 			Result := "BC9B2EF1-B4C4-773A-9BA8-97143FB2727A"
@@ -161,7 +162,7 @@ feature {ES_FEATURES_GRID} -- Status report
 
 feature {NONE} -- Status report
 
-	is_stone_sychronization_required (a_old_stone: ?STONE; a_new_stone: ?STONE): BOOLEAN
+	is_stone_sychronization_required (a_old_stone: detachable STONE; a_new_stone: detachable STONE): BOOLEAN
 			-- <Precursor>
 		do
 				-- Always update the view.
@@ -170,7 +171,7 @@ feature {NONE} -- Status report
 
 feature {ES_TOOL} -- Basic operations
 
-	select_feature_item (a_feature: ?E_FEATURE)
+	select_feature_item (a_feature: detachable E_FEATURE)
 			-- Selects a feature in the feature tree
 			--
 			-- `a_feature': The feature to select an assocated node in the feature tree.
@@ -180,7 +181,7 @@ feature {ES_TOOL} -- Basic operations
 			end
 		end
 
-	select_feature_item_by_name (a_feature: !STRING_GENERAL)
+	select_feature_item_by_name (a_feature: attached STRING_GENERAL)
 			-- Selects a feature in the feature tree, using a string name
 			--
 			-- `a_feature': The name of a feature to select an assocated node in the feature tree.
@@ -192,7 +193,7 @@ feature {ES_TOOL} -- Basic operations
 
 feature {NONE} -- Basic operations
 
-	select_feature_item_by_Data (a_data: ?ANY; a_compare_object: BOOLEAN)
+	select_feature_item_by_Data (a_data: detachable ANY; a_compare_object: BOOLEAN)
 			-- Selects a feature in the feature tree
 			--
 			-- `a_feature': The feature to select an assocated node in the feature tree.
@@ -204,12 +205,12 @@ feature {NONE} -- Basic operations
 			l_tree: like features_tree
 		do
 			l_tree := features_tree
-			if a_data /= Void and then {l_row: !EV_GRID_ROW} l_tree.retrieve_row_recursively_by_data (a_data, a_compare_object) then
+			if a_data /= Void and then attached l_tree.retrieve_row_recursively_by_data (a_data, a_compare_object) as l_row then
 				l_row.enable_select
 				if l_row.is_displayed then
 					l_row.ensure_visible
 				end
-			elseif {l_selected_row: !EV_GRID_ROW} l_tree.selected_row then
+			elseif attached l_tree.selected_row as l_selected_row then
 					-- No node located so deselect any selected node.
 				l_selected_row.disable_select
 			end
@@ -231,7 +232,7 @@ feature {NONE} -- Event handlers
 			end
 
 			if l_button /= Void then
-				if {l_toggle: !BOOLEAN_REF} a_session.value_or_default (a_id, False) then
+				if attached {BOOLEAN_REF} a_session.value_or_default (a_id, False) as l_toggle then
 					if l_toggle.item then
 						l_button.enable_select
 					else
@@ -283,7 +284,7 @@ feature {NONE} -- Action handlers
 			features_tree.update_all
 		end
 
-	on_stone_changed (a_old_stone: ?like stone)
+	on_stone_changed (a_old_stone: detachable like stone)
 			-- Called when the set stone changes.
 			-- Note: This routine can be called when `stone' is Void, to indicate a stone has been cleared.
 			--       Be sure to check `is_in_stone_synchronization' to determine if a stone has change through an explicit
@@ -296,7 +297,7 @@ feature {NONE} -- Action handlers
 		do
 			l_tree := features_tree
 
-			if {l_class_stone: !CLASSC_STONE} stone then
+			if attached {CLASSC_STONE} stone as l_class_stone then
 				l_class := l_class_stone.e_class
 
 				if l_class /= current_compiled_class or is_in_stone_synchronization then
@@ -317,11 +318,11 @@ feature {NONE} -- Action handlers
 						end
 
 						if l_class_ast /= Void then
-							if {l_row: !EV_GRID_ROW} l_tree.selected_row then
+							if attached l_tree.selected_row as l_row then
 								l_row.disable_select
 							end
 
-							if {l_clauses: !EIFFEL_LIST [FEATURE_CLAUSE_AS]} l_class_ast.features then
+							if attached l_class_ast.features as l_clauses then
 									-- Build tree from AST nodes
 								l_tree.build_tree (l_clauses, l_class)
 							else
@@ -329,12 +330,12 @@ feature {NONE} -- Action handlers
 								l_tree.extend_item (create {EV_GRID_LABEL_ITEM}.make_with_text (warning_messages.w_no_feature_to_display))
 							end
 						end
-					elseif {l_external_classc: !EXTERNAL_CLASS_C} l_class then
+					elseif attached {EXTERNAL_CLASS_C} l_class as l_external_classc then
 							-- Special processing for a .NET type since has no 'ast' in the normal
 							-- sense.
 						current_compiled_class := l_class
 
-						if {l_row2: !EV_GRID_ROW} l_tree.selected_row then
+						if attached l_tree.selected_row as l_row2 then
 							l_row2.disable_select
 						end
 						l_tree.wipe_out
@@ -421,10 +422,10 @@ invariant
 	show_signatures_button_attached: is_initialized and is_interface_usable implies
 		show_signatures_button /= Void
 
-;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -435,22 +436,22 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

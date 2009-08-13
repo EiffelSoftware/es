@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		An initialization provider to initialize all services used by the EiffelStudio and the Eiffel Compiler.
 	]"
@@ -13,7 +13,11 @@ class
 inherit
 	SERVICE_INITIALIZER
 		redefine
-			add_core_services
+			add_core_services,
+			new_output_manager_service,
+			new_testing_service,
+			register_environment_variables,
+			register_outputs
 		end
 
 --inherit {NONE}
@@ -22,82 +26,43 @@ inherit
 			{NONE} all
 		end
 
+	ES_SHARED_LOCALE_FORMATTER
+		export
+			{NONE} all
+		end
+
+	EB_SHARED_PREFERENCES
+		export
+			{NONE} all
+		end
+
 feature -- Services
 
-	add_core_services (a_container: !SERVICE_CONTAINER_S)
-			-- Adds all the core services.
-			--
-			-- `a_container': The service container to add services to.
+	add_core_services (a_container: attached SERVICE_CONTAINER_S)
+			-- <Precursor>
 		do
 			Precursor {SERVICE_INITIALIZER} (a_container)
-			a_container.register_with_activator ({FILE_NOTIFIER_S}, agent create_file_notifier_service, False)
-			a_container.register_with_activator ({HELP_PROVIDERS_S}, agent create_help_providers_service, False)
-			a_container.register_with_activator ({CODE_TEMPLATE_CATALOG_S}, agent create_code_template_catalog_service, False)
-			a_container.register_with_activator ({WIZARD_ENGINE_S}, agent create_wizard_service, False)
-			a_container.register_with_activator ({TEST_SUITE_S}, agent create_testing_servive, False)
-		end
-
-feature {NONE} -- Help registration
-
-	register_help_providers (a_service: !HELP_PROVIDERS_S)
-			-- Registers all help providers with the help providers service.
-			--
-			-- `a_service': The service interface to register the helper providers on.
-		require
-			a_service_is_interface_usable: a_service.is_interface_usable
-		local
-			l_kinds: HELP_PROVIDER_KINDS
-		do
-			create l_kinds
-			a_service.register_provider (l_kinds.eiffel_doc, {EIFFEL_DOC_HELP_PROVIDER})
-			a_service.register_provider (l_kinds.wiki, {WIKI_HELP_PROVIDER})
-			a_service.register_provider (l_kinds.raw_uri, {RAW_URI_HELP_PROVIDER})
-			a_service.register_provider (l_kinds.pdf, {PDF_HELP_PROVIDER})
-			a_service.register_provider (l_kinds.doc, {DOC_HELP_PROVIDER})
-			a_service.register_provider (l_kinds.eis_default, {EIS_DEFAULT_HELP_PROVIDER})
-		end
-
-feature {NONE} -- Code template cataloging
-
-	extend_code_template_catalog (a_service: !CODE_TEMPLATE_CATALOG_S)
-			-- Extends the build in paths to the code template catalog service.
-			--
-			-- `a_service': The service to extend with the build in catalog paths.
-		require
-			a_service_is_interface_usable: a_service.is_interface_usable
-		local
-			l_contracts: !DIRECTORY_NAME
-		do
-				-- Top level catalog
-			l_contracts := eiffel_layout.templates_path.twin
-			a_service.extend_catalog (l_contracts.string.as_attached)
-
-				-- User templates catalog
-			a_service.extend_catalog (eiffel_layout.user_templates_path.string.as_attached)
-		end
-
-feature {NONE} -- Test suite extension
-
-	register_test_suite_processors (a_service: !TEST_SUITE_S) is
-			-- Register standard test processors for test suite service.
-			--
-			-- `a_service': Service in which test processors are registered.
-		require
-			a_service_usable: a_service.is_interface_usable
-		local
-			a_registrar: TEST_PROCESSOR_REGISTRAR_I
-		do
-			a_registrar := a_service.processor_registrar
-			a_registrar.register (create {TEST_BACKGROUND_EXECUTOR}.make (a_service))
-			a_registrar.register (create {TEST_DEBUG_EXECUTOR}.make (a_service))
-			a_registrar.register (create {TEST_MANUAL_CREATOR}.make (a_service))
-			a_registrar.register (create {TEST_EXTRACTOR}.make (a_service))
-			a_registrar.register (create {TEST_GENERATOR}.make (a_service))
+			a_container.register_with_activator ({CODE_TEMPLATE_CATALOG_S}, agent new_code_template_catalog_service, False)
+			a_container.register_with_activator ({FILE_NOTIFIER_S}, agent new_file_notifier_service, False)
+			a_container.register_with_activator ({HELP_PROVIDERS_S}, agent new_help_providers_service, False)
+			--a_container.register_with_activator ({STATUS_BAR_S}, agent new_status_bar_service, False)
+			a_container.register_with_activator ({WIZARD_ENGINE_S}, agent new_wizard_service, False)
 		end
 
 feature {NONE} -- Factory
 
-	create_file_notifier_service: ?FILE_NOTIFIER_S
+	new_code_template_catalog_service: detachable CODE_TEMPLATE_CATALOG_S
+			-- Creates the code templates catalog service.
+		do
+			create {CODE_TEMPLATE_CATALOG} Result.make
+			if Result.is_interface_usable then
+				register_code_template_catalogs (Result)
+			end
+		ensure
+			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
+		end
+
+	new_file_notifier_service: detachable FILE_NOTIFIER_S
 			-- Creates the file notifier service.
 		do
 			create {FILE_NOTIFIER} Result.make
@@ -105,29 +70,42 @@ feature {NONE} -- Factory
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	create_help_providers_service: ?HELP_PROVIDERS_S
+	new_help_providers_service: detachable HELP_PROVIDERS_S
 			-- Creates the help providers service.
 		do
 			create {HELP_PROVIDERS} Result.make
-			if Result /= Void then
+			if Result.is_interface_usable then
 				register_help_providers (Result)
 			end
 		ensure
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	create_code_template_catalog_service: ?CODE_TEMPLATE_CATALOG_S
-			-- Creates the code templates catalog service.
+	new_output_manager_service: detachable OUTPUT_MANAGER_S
+			-- Creates the output manager service
 		do
-			create {CODE_TEMPLATE_CATALOG} Result.make
-			if Result /= Void then
-				extend_code_template_catalog (Result)
+			create {ES_OUTPUT_MANAGER} Result.make
+			if Result.is_interface_usable then
+				register_outputs (Result)
 			end
-		ensure
-			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	create_wizard_service: ?WIZARD_ENGINE_S
+--	new_status_bar_service: detachable STATUS_BAR_S
+--			-- Create the wizard service.
+--		do
+--			create {STATUS_BAR} Result
+--		ensure
+--			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
+--		end
+
+	new_testing_service: detachable TEST_SUITE_S
+			-- <Precursor>
+		do
+			create {TEST_SUITE} Result.make (create {ES_TEST_PROJECT_HELPER})
+			register_test_suite_processors (Result)
+		end
+
+	new_wizard_service: detachable WIZARD_ENGINE_S
 			-- Create the wizard service
 		do
 			create {WIZARD_ENGINE} Result
@@ -135,21 +113,115 @@ feature {NONE} -- Factory
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	create_testing_servive: ?TEST_SUITE_S
-			-- Create test suite service
+feature {NONE} -- Registering: Code templates
+
+	register_code_template_catalogs (a_service: CODE_TEMPLATE_CATALOG_S)
+			-- Extends the build in paths to the code template catalog service.
+			--
+			-- `a_service': The service to extend with the build in catalog paths.
+		require
+			a_service_attached: a_service /= Void
+			a_service_is_interface_usable: a_service.is_interface_usable
 		local
-			l_evapp: EV_SHARED_APPLICATION
+			l_contracts: attached DIRECTORY_NAME
 		do
-			create {TEST_SUITE} Result.make (create {ES_TEST_PROJECT_HELPER})
-			register_test_suite_processors (Result)
-			create l_evapp
-			l_evapp.ev_application.add_idle_action (agent Result.synchronize_processors)
-		ensure
-			result_not_void_implies_usable: Result /= Void implies Result.is_interface_usable
+				-- Top level catalog
+			l_contracts := eiffel_layout.templates_path.twin
+			a_service.extend_catalog (l_contracts.string.as_attached)
+
+				-- User templates catalog
+			a_service.extend_catalog (eiffel_layout.user_templates_path.string.as_attached)
+
+				-- Should add user-preference paths here.
+			-- ...
 		end
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+feature {NONE} -- Registeration: Environemtn
+
+	register_environment_variables (a_service: ENVIRONMENT_S)
+			-- <Precursor>
+		do
+				-- Add the environment variables used for the external URIs
+			a_service.set_environment_variable ("http://dev.eiffel.com", "ISE_WIKI")
+			a_service.set_environment_variable ("http://www.eiffelroom.com", "EIFFELROOM")
+			a_service.set_environment_variable ("http://doc.eiffel.com", "ISE_DOC")
+			a_service.set_environment_variable ("http://doc.eiffel.com/isedoc/uuid", "ISE_DOC_UUID")
+		end
+
+feature {NONE} -- Registration: Help
+
+	register_help_providers (a_service: HELP_PROVIDERS_S)
+			-- Registers all help providers with the help providers service.
+			--
+			-- `a_service': The service interface to register the helper providers on.
+		require
+			a_service_attached: a_service /= Void
+			a_service_is_interface_usable: a_service.is_interface_usable
+		local
+			l_kinds: HELP_PROVIDER_KINDS
+		do
+			create l_kinds
+
+			a_service.register_with_activator (agent: attached HELP_PROVIDER_I
+				do
+					create {EIFFEL_DOC_HELP_PROVIDER} Result.make (
+						agent (preferences.misc_data.internet_browser_preference).string_value)
+				end, l_kinds.eiffel_doc)
+
+			a_service.register_with_activator (agent: attached HELP_PROVIDER_I
+				do
+					create {WIKI_HELP_PROVIDER} Result.make (
+						agent (preferences.misc_data.internet_browser_preference).string_value)
+				end, l_kinds.wiki)
+
+			a_service.register_with_activator (agent: attached HELP_PROVIDER_I
+				do
+					create {RAW_URI_HELP_PROVIDER} Result.make (
+						agent (preferences.misc_data.internet_browser_preference).string_value)
+				end, l_kinds.raw_uri)
+
+			a_service.register_with_activator (agent: attached HELP_PROVIDER_I
+				do
+					create {PDF_HELP_PROVIDER} Result.make (
+						agent (preferences.misc_data.internet_browser_preference).string_value)
+				end, l_kinds.pdf)
+
+			a_service.register_with_activator (agent: attached HELP_PROVIDER_I
+				do
+					create {DOC_HELP_PROVIDER} Result.make (
+						agent (preferences.misc_data.internet_browser_preference).string_value)
+				end, l_kinds.doc)
+
+			a_service.register_with_activator (agent: attached HELP_PROVIDER_I
+				do
+					create {EIS_DEFAULT_HELP_PROVIDER} Result.make (
+						agent (preferences.misc_data.internet_browser_preference).string_value)
+				end, l_kinds.eis_default)
+		end
+
+feature {NONE} -- Registration: Output
+
+	register_outputs (a_service: attached OUTPUT_MANAGER_S)
+			-- <Precursor>
+		local
+			l_kinds: OUTPUT_MANAGER_KINDS
+		do
+			create l_kinds
+			a_service.register (create {ES_EDITOR_OUTPUT_PANE}.make_with_icon (locale_formatter.translation (lb_testing), (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_icon_buffer), l_kinds.testing)
+--			a_service.register (create {ES_EDITOR_OUTPUT_PANE}.make_with_icon (locale_formatter.translation (lb_general), (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_icon_buffer), l_kinds.general)
+--			a_service.register (create {ES_EIFFEL_COMPILER_OUTPUT_PANE}.make (locale_formatter.translation (lb_compiler)), l_kinds.eiffel_compiler)
+--			a_service.register (create {ES_C_COMPILER_OUTPUT_PANE}.make (locale_formatter.translation (lb_external_compilation)), l_kinds.c_compiler)
+		end
+
+feature {NONE} -- Internationalization
+
+	lb_general: STRING = "General"
+	lb_compiler: STRING = "Compiler"
+	lb_external_compilation: STRING = "External Compilation"
+	lb_testing: STRING = "Testing"
+
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -173,11 +245,11 @@ feature {NONE} -- Factory
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

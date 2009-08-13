@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		A generator for creating Eiffel classes from a matrix INI file.
 	]"
@@ -29,7 +29,7 @@ feature {NONE} -- Access
 
 feature {NONE} -- Basic Operations
 
-	reset is
+	reset
 			-- Resets generator
 		do
 			Precursor {MATRIX_FILE_GENERATOR}
@@ -42,7 +42,7 @@ feature {NONE} -- Basic Operations
 
 feature -- Basic Operations
 
-	generate (a_doc: INI_DOCUMENT; a_output: STRING; a_matrix: EV_PIXMAP) is
+	generate (a_doc: INI_DOCUMENT; a_output: STRING; a_matrix: EV_PIXMAP)
 			-- Generates a matrix file.
 		require
 			a_output_attached: a_output /= Void
@@ -57,7 +57,7 @@ feature -- Basic Operations
 
 feature {NONE} -- Icon generation
 
-	generate_icon (a_name: STRING; a_prefix: STRING; a_location: STRING; a_x, a_y, a_pw, a_ph: NATURAL; a_matrix: EV_PIXMAP) is
+	generate_icon (a_name: STRING; a_prefix: STRING; a_location: STRING; a_x, a_y, a_pw, a_ph: NATURAL; a_matrix: EV_PIXMAP)
 			-- Generates a single icon tile in `a_matrix'
 		require
 			a_name_attached: a_name /= Void
@@ -84,7 +84,7 @@ feature {NONE} -- Icon generation
 				end
 			end
 			if retried then
-				add_warning (create {WARNING_PNG_NOT_SAVED}.make_with_context ([l_fn]))
+				add_warning (create {WARNING_PNG_NOT_SAVED}.make ([l_fn]))
 			end
 		rescue
 			retried := True
@@ -93,7 +93,7 @@ feature {NONE} -- Icon generation
 
 feature {NONE} -- Processing
 
-	process_literal_item (a_item: INI_LITERAL; a_x: NATURAL_32; a_y: NATURAL_32) is
+	process_literal_item (a_item: INI_LITERAL; a_x: NATURAL_32; a_y: NATURAL_32)
 			-- Processes a literal from an INI matrix file.
 		do
 			generate_icon (a_item.name, icon_prefix (a_item), png_location, a_x, a_y, pixel_width, pixel_height, matrix)
@@ -101,7 +101,7 @@ feature {NONE} -- Processing
 
 feature {NONE} -- Implementation
 
-	pixel_rectangle (a_x, a_y, a_pw, a_ph: NATURAL): EV_RECTANGLE is
+	pixel_rectangle (a_x, a_y, a_pw, a_ph: NATURAL): EV_RECTANGLE
 			-- Retrieves a pixmap from matrix coordinates `a_x', `a_y'	
 		require
 			a_x_positive: a_x > 0
@@ -124,15 +124,15 @@ feature {NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	rectangle: EV_RECTANGLE is
+	rectangle: EV_RECTANGLE
 			-- Reusable rectangle for `pixmap_from_constant'.
 		once
 			create Result
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -144,22 +144,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class {MATRIX_ICON_GENERATOR}

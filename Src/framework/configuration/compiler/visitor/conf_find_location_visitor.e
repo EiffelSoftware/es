@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Visitor that looks for cluster with a certain location."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -9,7 +9,7 @@ class
 	CONF_FIND_LOCATION_VISITOR
 
 inherit
-	CONF_FIND_VISITOR [!CONF_CLUSTER]
+	CONF_FIND_VISITOR [attached CONF_CLUSTER]
 		rename
 			found_groups as found_clusters
 		end
@@ -24,7 +24,7 @@ feature -- Access
 
 feature -- Update
 
-	set_directory (a_directory: STRING) is
+	set_directory (a_directory: STRING)
 			-- Set `directory' to `a_directory'.
 		require
 			a_directory_ok: a_directory /= Void and then not a_directory.is_empty
@@ -36,13 +36,13 @@ feature -- Update
 
 feature {NONE} -- Query
 
-	is_matching (a_cluster: !CONF_CLUSTER): BOOLEAN
+	is_matching (a_cluster: attached CONF_CLUSTER): BOOLEAN
 			-- <Precursor>
 		do
 			Result := a_cluster.location.evaluated_directory.is_equal (directory)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

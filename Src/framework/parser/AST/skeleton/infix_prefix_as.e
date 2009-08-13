@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract description of an Eiffel infixed or prefixed feature name."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -27,7 +27,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize (op: STRING_AS; inf: BOOLEAN; l:KEYWORD_AS) is
+	initialize (op: STRING_AS; inf: BOOLEAN; l:KEYWORD_AS)
 			-- Create a new INFIX AST node.
 			-- `inf' is `is_infix', `l' is a start location.
 		require
@@ -39,15 +39,15 @@ feature {NONE} -- Initialization
 			internal_name.set_index (op.index)
 			if l /= Void then
 				internal_name.set_position (l.line, l.column, l.position, op.position - l.position + op.location_count)
-				infix_prefix_keyword_index := l.index
 			end
+			infix_prefix_keyword := l
 		ensure
-			infix_prefix_keyword_set: l /= Void implies infix_prefix_keyword_index = l.index
+			infix_prefix_keyword_set: infix_prefix_keyword = l
 		end
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_infix_prefix_as (Current)
@@ -55,28 +55,15 @@ feature -- Visitor
 
 feature -- Roundtrip
 
-	infix_prefix_keyword_index: INTEGER
-		-- Index of keyword "infix" or "prefix" associated with this structure.
-
-	infix_prefix_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	infix_prefix_keyword: KEYWORD_AS
 		-- Keyword "infix" or "prefix" associated with this structure.
-		require
-			a_list_not_void: a_list /= Void
-		local
-			i: INTEGER
-		do
-			i := infix_prefix_keyword_index
-			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
-			end
-		end
 
 feature -- Properties
 
 	is_infix: BOOLEAN
 			-- is the feature name an infixed notation ?
 
-	is_prefix: BOOLEAN is
+	is_prefix: BOOLEAN
 			-- Is the feature a prefix notation?
 		do
 			Result := not is_infix
@@ -84,7 +71,7 @@ feature -- Properties
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
 			Result := equal (internal_name, other.internal_name) and
@@ -97,7 +84,7 @@ feature -- Access
 	alias_name: STRING_AS
 			-- Operator name associated with the feature
 
-	visual_name: STRING is
+	visual_name: STRING
 			-- Visual name of fix operator
 		do
 			Result := alias_name.value
@@ -108,7 +95,7 @@ feature -- Access
 
 feature -- Conveniences
 
-	infix "<" (other: FEATURE_NAME): BOOLEAN is
+	is_less alias "<" (other: FEATURE_NAME): BOOLEAN
 		local
 			infix_feature: INFIX_PREFIX_AS
 			normal_feature: FEAT_NAME_ID_AS
@@ -130,21 +117,18 @@ feature -- Conveniences
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	first_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
-			if a_list /= Void and frozen_keyword_index /= 0 then
-				Result := frozen_keyword (a_list)
-			end
+			Result := frozen_keyword
 			if Result = Void or else Result.is_null then
-				if a_list /= Void and infix_prefix_keyword_index /= 0 then
-					Result := infix_prefix_keyword (a_list)
-				else
+				Result := infix_prefix_keyword
+				if Result = Void then
 					Result := alias_name.first_token (a_list)
 				end
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			Result := alias_name.last_token (a_list)
 		end
@@ -152,10 +136,10 @@ feature -- Roundtrip/Token
 invariant
 	alias_name_not_void: alias_name /= Void
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -166,22 +150,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

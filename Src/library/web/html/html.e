@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -15,14 +15,15 @@ create
 
 feature
 
-	make is
+	make
 		do
 			create options.make
+			create title_value.make_empty
 		end
 
 feature -- Routines out
 
-	out: STRING is
+	out: STRING
 		do
 			Result := "<HTML"
 			Result.append (attributes_out)
@@ -34,7 +35,7 @@ feature -- Routines out
 			Result.append ("%N</HTML>")
 		end;
 
-	body_out: STRING is
+	body_out: STRING
 		do
 			Result := ""
 			Result.append ("%N<BODY")
@@ -52,13 +53,13 @@ feature -- Routines out
 			Result.append ("%N</BODY>")
 		end;
 
-	attributes_out, body_attributes_out: STRING is
+	attributes_out, body_attributes_out: STRING
 		do
 			Result := ""
 		end
 
-	head_out: STRING is
-		do 
+	head_out: STRING
+		do
 			Result := ""
 			Result.append ("<HEAD><TITLE>")
 			if has_value (title_value) then
@@ -70,25 +71,25 @@ feature -- Routines out
 
 feature -- Wipe out
 
-	wipe_out is
+	wipe_out
 		do
 			options.wipe_out
 		end
 
-feature -- Set 
+feature -- Set
 
-	set_title (s: STRING) is
+	set_title (s: detachable STRING)
 		do
 			if s /= Void then
 				title_value := s.twin
 			else
-				title_value := Void
+				title_value := ""
 			end
 		end
 
 feature -- Add new options
 
-	add_option (an_option: STRING) is
+	add_option (an_option: STRING)
 		require
 			an_option /= Void
 		do
@@ -96,15 +97,13 @@ feature -- Add new options
 		end
 
 feature {NONE}
- 
-    has_value(s: STRING): BOOLEAN is
+
+    has_value(s: detachable STRING): BOOLEAN
             -- Has the attribute 's' a value ?
         do
-            if s = Void or else s.is_equal ("") then
-                Result := False
-            else
-                Result := True
-            end
+            Result := s /= Void and then not s.is_empty
+		ensure
+			s_not_void: Result = (s /= Void and then not s.is_empty)
         end
 
 feature {NONE}
@@ -112,7 +111,7 @@ feature {NONE}
 	title_value: STRING
 	options: LINKED_LIST [STRING];
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

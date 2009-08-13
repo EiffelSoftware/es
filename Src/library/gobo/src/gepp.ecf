@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="gepp">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="gepp" uuid="936CBD2F-6620-45C0-B495-99502A194696">
 	<target name="gepp">
 		<root class="GEPP" feature="execute"/>
 		<option trace="false" profile="false" debug="false" warning="true">
@@ -21,7 +21,12 @@
 		<setting name="msil_generation_type" value="exe"/>
 		<setting name="multithreaded" value="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<cluster name="gepp" location="$ISE_LIBRARY\library\gobo\svn\src\gepp\"/>
+		<cluster name="gepp_override" location="$ISE_LIBRARY\library\gobo\override\generated\src\gepp\"/>
 	</target>
 </system>

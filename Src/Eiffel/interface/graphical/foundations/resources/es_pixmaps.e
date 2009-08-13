@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Base class for all EiffelStudio pixmap matrix accessor classes.
 	]"
@@ -26,16 +26,16 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (a_name: !STRING)
+	make (a_name: attached STRING)
 			-- Initialize matrix from a moniker.
 			--
 			-- `a_name': An identifier/moniker used to load a pixmap image.
 		require
 			not_a_name_is_empty: not a_name.is_empty
 		local
-			l_buffer: !EV_PIXEL_BUFFER
+			l_buffer: attached EV_PIXEL_BUFFER
 		do
-			if {l_loaded_buffer: EV_PIXEL_BUFFER} resource_handler.retrieve_matrix (a_name) then
+			if attached {EV_PIXEL_BUFFER} resource_handler.retrieve_matrix (a_name) as l_loaded_buffer then
 				l_buffer := l_loaded_buffer
 			else
 				if logger.is_service_available then
@@ -53,16 +53,16 @@ feature {NONE} -- Initialization
 			make_from_buffer (l_buffer)
 		end
 
-	make_from_path (a_path: !STRING)
+	make_from_path (a_path: attached STRING)
 			-- Initialize matrix from a path.
 			--
 			-- `a_path': The path to a matrix pixmap file to load.
 		require
 			not_a_path_is_empty: not a_path.is_empty
 		local
-			l_buffer: !EV_PIXEL_BUFFER
+			l_buffer: attached EV_PIXEL_BUFFER
 		do
-			if {l_loaded_buffer: EV_PIXEL_BUFFER} resource_handler.matrix_file_name (a_path) then
+			if attached {EV_PIXEL_BUFFER} resource_handler.matrix_file_name (a_path) as l_loaded_buffer then
 				l_buffer := l_loaded_buffer
 			else
 				if logger.is_service_available then
@@ -80,7 +80,7 @@ feature {NONE} -- Initialization
 			make_from_buffer (l_buffer)
 		end
 
-	make_from_buffer (a_buffer: !like matrix_buffer)
+	make_from_buffer (a_buffer: attached like matrix_buffer)
 			-- Initializes the tool pixmaps with a loaded raw pixel buffer.
 			-- Note: the set buffer may not be the same as the supplied buffer, if the supplied buffer is
 			--       smaller than the required dimensions.
@@ -139,17 +139,16 @@ feature {NONE} -- Access
 		deferred
 		end
 
-	frozen icon_coordinates_table: !DS_HASH_TABLE [!TUPLE [x: NATURAL_8; y: NATURAL_8], STRING]
+	frozen icon_coordinates_table: HASH_TABLE [TUPLE [x: NATURAL_8; y: NATURAL_8], STRING]
 			-- Table of icon coordinates.
 			--
 			-- Key: An icon name.
 			-- Value: Icon matrix coordinates.
 		do
-			if {l_result: like icon_coordinates_table} internal_icon_coordinates_table then
+			if attached {like icon_coordinates_table} internal_icon_coordinates_table as l_result then
 				Result := l_result
 			else
-				create Result.make_default
-				Result.set_key_equality_tester (create {KL_STRING_EQUALITY_TESTER})
+				create Result.make (10)
 				populate_coordinates_table (Result)
 				internal_icon_coordinates_table := Result
 			end
@@ -157,12 +156,12 @@ feature {NONE} -- Access
 			result_consistent: Result = icon_coordinates_table
 		end
 
-	matrix_buffer: !EV_PIXEL_BUFFER
+	matrix_buffer: attached EV_PIXEL_BUFFER
 			-- Raw matrix pixel buffer
 
 feature -- Status report
 
-	has_named_icon (a_name: !STRING): BOOLEAN
+	has_named_icon (a_name: attached STRING): BOOLEAN
 			-- Indicates if a name icon if availalbe.
 			--
 			-- `a_name': The icon name. (See section Access: Icon name constants)
@@ -177,13 +176,13 @@ feature -- Status report
 
 feature {NONE} -- Helpers
 
-	resource_handler: !ES_PIXMAP_RESOURCE_HANDLER
+	resource_handler: attached ES_PIXMAP_RESOURCE_HANDLER
 			-- Access to an icon resource handler, for unified access to icon resources
 		once
 			create Result.make
 		end
 
-	frozen logger: !SERVICE_CONSUMER [LOGGER_S]
+	frozen logger: attached SERVICE_CONSUMER [LOGGER_S]
 			-- Access to the EiffelStudio logger service.
 		once
 			create Result
@@ -191,7 +190,7 @@ feature {NONE} -- Helpers
 
 feature -- Query
 
-	named_icon_buffer (a_name: !STRING): !EV_PIXEL_BUFFER
+	named_icon_buffer (a_name: attached STRING): EV_PIXEL_BUFFER
 			-- Retrieves a icon buffer given a known icon name
 			--
 			-- `a_name':
@@ -200,18 +199,16 @@ feature -- Query
 			not_a_name_is_empty: not a_name.is_empty
 			has_named_icon_a_name: has_named_icon (a_name)
 		local
-			l_coords: !TUPLE [x: NATURAL_8; y: NATURAL_8]
-			l_result: EV_PIXEL_BUFFER
+			l_coords: TUPLE [x: NATURAL_8; y: NATURAL_8]
 		do
 			l_coords := icon_coordinates_table.item (a_name)
-			l_result := matrix_buffer.sub_pixel_buffer (pixel_rectangle (l_coords.x, l_coords.y))
-			check l_result /= Void end
-			Result := l_result
+			Result := matrix_buffer.sub_pixel_buffer (pixel_rectangle (l_coords.x, l_coords.y))
 		ensure
+			named_icon_buffer_attached: Result /= Void
 			not_result_is_destroyed: not Result.is_destroyed
 		end
 
-	named_icon (a_name: !STRING): !EV_PIXMAP
+	named_icon (a_name: attached STRING): EV_PIXMAP
 			-- Retrieves a icon buffer given a known icon name
 			--
 			-- `a_name':
@@ -220,18 +217,16 @@ feature -- Query
 			not_a_name_is_empty: not a_name.is_empty
 			has_named_icon_a_name: has_named_icon (a_name)
 		local
-			l_coords: !TUPLE [x: NATURAL_8; y: NATURAL_8]
-			l_result: EV_PIXMAP
+			l_coords: TUPLE [x: NATURAL_8; y: NATURAL_8]
 		do
 			l_coords := icon_coordinates_table.item (a_name)
-			l_result := matrix_buffer.sub_pixmap (pixel_rectangle (l_coords.x, l_coords.y))
-			check l_result /= Void end
-			Result := l_result
+			Result := matrix_buffer.sub_pixmap (pixel_rectangle (l_coords.x, l_coords.y))
 		ensure
+			named_icon_attached: Result /= Void
 			not_result_is_destroyed: not Result.is_destroyed
 		end
 
-	icon_buffer_with_overlay (a_icon: EV_PIXEL_BUFFER; a_overlay: EV_PIXEL_BUFFER; a_x_offset: NATURAL_8; a_y_offset: NATURAL_8): !EV_PIXEL_BUFFER
+	icon_buffer_with_overlay (a_icon: EV_PIXEL_BUFFER; a_overlay: EV_PIXEL_BUFFER; a_x_offset: NATURAL_8; a_y_offset: NATURAL_8): attached EV_PIXEL_BUFFER
 			-- Creates a new icon with a supplied overlay.
 			--
 			-- `a_icon': The original icon to draw an overlay on top of.
@@ -259,7 +254,7 @@ feature -- Query
 			not_result_is_destroyed: not Result.is_destroyed
 		end
 
-	icon_with_overlay (a_icon: EV_PIXMAP; a_overlay: EV_PIXEL_BUFFER; a_x_offset: NATURAL_8; a_y_offset: NATURAL_8): !EV_PIXMAP
+	icon_with_overlay (a_icon: EV_PIXMAP; a_overlay: EV_PIXEL_BUFFER; a_x_offset: NATURAL_8; a_y_offset: NATURAL_8): attached EV_PIXMAP
 			-- Creates a new icon with a supplied overlay.
 			--
 			-- `a_icon': The original icon to draw an overlay on top of.
@@ -289,7 +284,7 @@ feature -- Query
 
 feature {NONE} -- Query
 
-	frozen pixel_rectangle (a_x: NATURAL_8; a_y: NATURAL_8): !EV_RECTANGLE
+	frozen pixel_rectangle (a_x: NATURAL_8; a_y: NATURAL_8): attached EV_RECTANGLE
 			-- Retrieves a rectangle from an icon matrix coordinates.
 			--
 			-- `a_x': Icon x coordinate.
@@ -301,13 +296,13 @@ feature {NONE} -- Query
 			a_y_positive: a_y > 0
 			a_y_small_enough: a_y <= height
 		local
-			l_x_offset: NATURAL_16
-			l_y_offset: NATURAL_16
-			l_border: like matrix_pixel_border
+			l_x_offset: INTEGER
+			l_y_offset: INTEGER
+			l_border: INTEGER
 		do
 			l_border := matrix_pixel_border
-			l_x_offset := ((a_x.to_natural_16 - 1) * (icon_width + l_border)) + l_border
-			l_y_offset := ((a_y.to_natural_16 - 1) * (icon_height + l_border)) + l_border
+			l_x_offset := ((a_x - 1).to_integer_32 * (icon_width + l_border)) + l_border
+			l_y_offset := ((a_y - 1).to_integer_32 * (icon_height + l_border)) + l_border
 
 			Result := rectangle
 			Result.set_x (l_x_offset)
@@ -318,7 +313,7 @@ feature {NONE} -- Query
 
 feature {NONE} -- Basic operation
 
-	frozen expand_buffer (a_buffer: !like matrix_buffer): !like matrix_buffer
+	frozen expand_buffer (a_buffer: attached like matrix_buffer): attached like matrix_buffer
 			-- Expands a pixel buffer to ensure it will fit the hard-coded dimensions set in the matrix configuration file.
 			--
 			-- `a_buffer': The pixel buffer to expand to fix the coded matrix dimensions.
@@ -339,26 +334,26 @@ feature {NONE} -- Basic operation
 			result_height_big_enough: Result.height.to_natural_32 >= matrix_pixel_height
 		end
 
-	populate_coordinates_table (a_table: !DS_HASH_TABLE [!TUPLE [x: NATURAL_8; y: NATURAL_8], STRING])
+	populate_coordinates_table (a_table: HASH_TABLE [TUPLE [x: NATURAL_8; y: NATURAL_8], STRING])
 			-- Populates a coordinates table with the coordinates for the implemented icons
 		deferred
 		end
 
 feature {NONE} -- Implementation: cache
 
-	frozen rectangle: !EV_RECTANGLE
+	frozen rectangle: attached EV_RECTANGLE
 			-- Reusable rectangle for `pixmap_from_constant'.
 		once
 			create Result
 		end
 
-	internal_icon_coordinates_table: ?like icon_coordinates_table
+	internal_icon_coordinates_table: detachable like icon_coordinates_table
 			-- Cached version of `icon_coordinates_table'
 			-- Note: Do not use directly!
 
 feature {NONE} -- Internationalization
 
-	w_could_not_load_matrix: !STRING = "Cannot read pixmap file:%N$1.%N%NPlease make sure the installation is not corrupted."
+	w_could_not_load_matrix: STRING = "Cannot read pixmap file:%N$1.%N%NPlease make sure the installation is not corrupted."
 
 invariant
 	width_positive: width > 0
@@ -369,8 +364,8 @@ invariant
 	matrix_buffer_width_big_enough: matrix_buffer.width.to_natural_32 >= matrix_pixel_width
 	matrix_buffer_height_big_enough: matrix_buffer.height.to_natural_32 >= matrix_pixel_height
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -394,11 +389,11 @@ invariant
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

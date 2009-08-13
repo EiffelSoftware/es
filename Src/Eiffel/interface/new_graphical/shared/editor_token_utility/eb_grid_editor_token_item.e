@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that represents a grid item in which pick-and-dropable editor tokens are displayed"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -52,7 +52,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_text (a_text: like text) is
+	make_with_text (a_text: like text)
 			-- Create `Current' and assign `a_text' to `text'
 		require
 			a_text_attached: a_text /= Void
@@ -63,7 +63,7 @@ feature{NONE} -- Initialization
 			text_set: text.is_equal (a_text)
 		end
 
-	initialize is
+	initialize
 		do
 			align_text_left
 			align_text_vertically_center
@@ -88,7 +88,7 @@ feature -- Access
 			-- Spacing between `text' and `pixmap' in pixels.
 			-- If both are not visible, this value does not affect appearance of `Current'.
 
-	text: STRING_32 is
+	text: STRING_32
 			-- Text of current item.
 		do
 			Result := editor_token_text.string_representation
@@ -96,7 +96,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	stone: STONE is
+	stone: STONE
 			-- Stone attached to Current item
 			-- Result `stone_internal' if `stone_function' is not set,
 			-- otherwise invoke `stone_function' to get the actual stone.			
@@ -114,7 +114,7 @@ feature -- Access
 	component_spacing: INTEGER
 			-- Space in pixel between text and the first trailer
 
-	pebble_at_position: ANY is
+	pebble_at_position: ANY
 			-- Pebble at pointer position
 			-- Void if no pebble found at that position		
 		local
@@ -176,7 +176,7 @@ feature -- Status report
 			-- A True value  means that text wil be truncated first to ensure that all (or most) part of `components'
 			-- can be displayed. A False value means that we first ensure that text is displayed mostly.
 
-	is_text_display_ensured: BOOLEAN is
+	is_text_display_ensured: BOOLEAN
 			-- Is display of `editor_token_text' ensured?
 			-- A True value means that all or most part of text in `editor_token_text' will be display first, and then `components'.
 			-- A False value means we try to display `components' first.
@@ -186,7 +186,7 @@ feature -- Status report
 			good_result: Result = not is_component_display_ensured
 		end
 
-	is_text_truncated: BOOLEAN is
+	is_text_truncated: BOOLEAN
 			-- Was text of current truncated because of lack of space the last time when it is displayed?
 		do
 			Result := editor_token_text.is_text_truncated
@@ -216,7 +216,7 @@ feature -- Setting
 			not_is_full_select_enabled: not is_full_select_enabled
 		end
 
-	set_pixmap (a_pixmap: EV_PIXMAP) is
+	set_pixmap (a_pixmap: EV_PIXMAP)
 			-- Display image of `a_pixmap' on `Current'.
 		require
 			not_destroyed: not is_destroyed
@@ -230,7 +230,7 @@ feature -- Setting
 			pixmap_set: pixmap = a_pixmap
 		end
 
-	remove_pixmap is
+	remove_pixmap
 			-- Remove image displayed on `Current'.
 		require
 			not_destroyed: not is_destroyed
@@ -243,7 +243,7 @@ feature -- Setting
 			pixmap_removed: pixmap = Void
 		end
 
-	set_spacing (a_spacing: INTEGER) is
+	set_spacing (a_spacing: INTEGER)
 			-- Assign `a_spacing' to `spacing'.
 		require
 			not_destroyed: not is_destroyed
@@ -257,7 +257,7 @@ feature -- Setting
 			spacing_set: spacing = a_spacing
 		end
 
-	set_text_with_tokens (a_tokens: LIST [EDITOR_TOKEN]) is
+	set_text_with_tokens (a_tokens: LIST [EDITOR_TOKEN])
 			-- Set `tokens' with `a_tokens'.
 		do
 			lock_update
@@ -270,7 +270,7 @@ feature -- Setting
 			try_call_setting_change_actions
 		end
 
-	set_text (a_text: like text) is
+	set_text (a_text: like text)
 			-- Set `text' with `a_text'.
 		require
 			a_text_attached: a_text /= Void
@@ -314,7 +314,7 @@ feature -- Setting
 			text_set: text.is_equal (a_text)
 		end
 
-    set_text_wrap (a_wrap: BOOLEAN) is
+    set_text_wrap (a_wrap: BOOLEAN)
             -- If `a_wrap' is True, enable text wrap, otherwise disable text wrap.
         do
             if a_wrap then
@@ -326,7 +326,7 @@ feature -- Setting
             text_wrap_set: editor_token_text.is_text_wrap_enabled = a_wrap
         end
 
-	set_overriden_fonts (a_fonts: SPECIAL [EV_FONT]; a_height: INTEGER) is
+	set_overriden_fonts (a_fonts: SPECIAL [EV_FONT]; a_height: INTEGER)
 			-- Set fonts of current tokens with `a_fonts' and according height.
 			-- If `a_fonts' is Void, tokens will be displayed in default editor token fonts.
 		do
@@ -369,7 +369,7 @@ feature -- Setting
 			adhesive_component_disabled: not is_component_adhesive_enabled
 		end
 
-	ensure_component_display is
+	ensure_component_display
 			-- Ensure display of `components'.
 			-- See `is_component_display_ensured' for more information.
 		do
@@ -378,7 +378,7 @@ feature -- Setting
 			component_display_ensured: is_component_display_ensured
 		end
 
-	ensure_text_display is
+	ensure_text_display
 			-- Ensure display of `editor_token_text'.
 			-- See `is_component_display_ensured' for more information.
 		do
@@ -387,7 +387,7 @@ feature -- Setting
 			text_display_ensured: not is_component_display_ensured
 		end
 
-	set_stone (a_stone: like stone) is
+	set_stone (a_stone: like stone)
 			-- Set `stone' with `a_stone'.
 		do
 			stone_internal := a_stone
@@ -395,7 +395,7 @@ feature -- Setting
 			stone_set: stone_internal = a_stone
 		end
 
-	set_stone_function (a_function: like stone_function) is
+	set_stone_function (a_function: like stone_function)
 			-- Set `stone_function' with `a_function'.
 		do
 			stone_function := a_function
@@ -405,7 +405,7 @@ feature -- Setting
 
 feature -- Searchable
 
-	set_image (a_image: like image) is
+	set_image (a_image: like image)
 			-- Set `image' with `a_image'.
 		require
 			a_image_attached: a_image /= Void
@@ -415,7 +415,7 @@ feature -- Searchable
 			image_set: image /= Void and then image.is_equal (a_image)
 		end
 
-	image: STRING_32 is
+	image: STRING_32
 			-- Image of current used in search
 		do
 			Result := image_internal
@@ -429,7 +429,7 @@ feature{NONE} -- Implementation
 	image_internal: like image
 			-- Implementation of `image'
 
-	internal_replace (original, new: like image) is
+	internal_replace (original, new: like image)
 			-- Replace every occurrence of `original' with `new' in `image'.
 		do
 		end
@@ -567,7 +567,7 @@ feature{NONE} -- Implementation
 	editor_token_text_internal: like editor_token_text
 			-- Internal `editor_token_text'
 
-	safe_redraw is
+	safe_redraw
 			-- Redraw current item if it's parented
 		require
 			not_destroyed: not is_destroyed
@@ -586,7 +586,7 @@ feature{NONE} -- Implementation
 
 feature {EB_GRID_EDITOR_TOKEN_ITEM} -- Implementation
 
-	editor_token_text: EB_EDITOR_TOKEN_TEXT is
+	editor_token_text: EB_EDITOR_TOKEN_TEXT
 			-- Editor token text
 		require
 			not_destroyed: not is_destroyed
@@ -594,6 +594,7 @@ feature {EB_GRID_EDITOR_TOKEN_ITEM} -- Implementation
 			Result := editor_token_text_internal
 			if Result = Void then
 				create Result
+				Result.set_y_offset (border_line_width + top_border)
 				editor_token_text_internal := Result
 			end
 		ensure
@@ -603,7 +604,7 @@ feature {EB_GRID_EDITOR_TOKEN_ITEM} -- Implementation
 
 feature -- Pick and drop
 
-	set_last_picked_item (a_index: INTEGER) is
+	set_last_picked_item (a_index: INTEGER)
 			-- Set `last_picked_item' with `a_index'.
 		do
 			check a_index <= editor_token_text.tokens.count end
@@ -611,21 +612,29 @@ feature -- Pick and drop
 			Precursor (a_index)
 		end
 
-	token_index_at_current_position: INTEGER is
+	token_index_at_position (a_coordinate: EV_COORDINATE): INTEGER
+			-- Index of token located at `a_coordinate'
+			-- 0 if no token is below that position.
+		require
+			not_void: a_coordinate /= Void
+		local
+			l_relative_position: like relative_pointer_position
+		do
+			l_relative_position := relative_position (Current, a_coordinate.x, a_coordinate.y)
+			Result := token_index_at_imp (l_relative_position)
+		end
+
+	token_index_at_current_position: INTEGER
 			-- Index of token that is current position
 			-- 0 if no token is below that position.
 		local
-			l_editor_token_text: like editor_token_text
 			l_relative_position: like relative_pointer_position
 		do
-			l_editor_token_text := editor_token_text
-			if not l_editor_token_text.tokens.is_empty then
-				l_relative_position := relative_pointer_position (Current)
-				Result := l_editor_token_text.token_index_at_position (l_relative_position.x, l_relative_position.y)
-			end
+			l_relative_position := relative_pointer_position (Current)
+			Result := token_index_at_imp (l_relative_position)
 		end
 
-	editor_token_pebble (a_index: INTEGER): ANY is
+	editor_token_pebble (a_index: INTEGER): ANY
 			-- Pebble of token item indicated by `a_index'
 			-- Void if no pebble available.
 		do
@@ -637,7 +646,7 @@ feature -- Pick and drop
 	is_pick_on_text: BOOLEAN
 			-- Did last pick happen on `editor_token_text' area?
 
-	set_is_pick_on_text (b: BOOLEAN) is
+	set_is_pick_on_text (b: BOOLEAN)
 			-- Set `is_pick_on_text' with `b'.
 		do
 			is_pick_on_text := b
@@ -645,14 +654,21 @@ feature -- Pick and drop
 			is_pick_on_text_set: is_pick_on_text = b
 		end
 
-	on_pick: ANY is
+	on_pick (a_orignal_pointer_position: EV_COORDINATE): ANY
 			-- Action to be performed when pick starts
 			-- Return value is the picked pebble if any.
 		local
 			l_index: INTEGER
 			l_stone: STONE
+			l_pointer_position: EV_COORDINATE
 		do
-			l_index := token_index_at_current_position
+			l_pointer_position := a_orignal_pointer_position.twin
+			-- `a_orignal_pointer_position' is grid virtual pointer position, but `token_index_at_position' need screen position
+			-- Adapt it to screen position. See bug#14364
+			l_pointer_position.set_y (l_pointer_position.y - parent.virtual_y_position)
+			l_pointer_position.set_x (l_pointer_position.x - parent.virtual_x_position)
+			l_index := token_index_at_position (l_pointer_position)
+
 			if l_index > 0 then
 				l_stone ?= editor_token_pebble (l_index)
 				if l_stone /= Void then
@@ -661,7 +677,7 @@ feature -- Pick and drop
 					set_last_picked_item (l_index)
 				end
 			elseif is_component_pebble_enabled then
-				l_index := component_index_at_pointer_position
+				l_index := component_index_at_position (a_orignal_pointer_position)
 				if l_index > 0 then
 					set_last_picked_item (l_index)
 					Result := pick_component (l_index)
@@ -674,7 +690,7 @@ feature -- Pick and drop
 			end
 		end
 
-	on_pick_ends is
+	on_pick_ends
 			-- Action to be performed hwne pick-and-drop finishes
 		do
 			if not is_pick_on_text then
@@ -825,42 +841,55 @@ feature{NONE} -- Implementation
 	stone_internal: like stone
 			-- Implementation of `stone' if `stone_function' is not Set.
 
-	grid_item: EV_GRID_ITEM is
+	grid_item: EV_GRID_ITEM
 			-- EV_GRID item associated with current
 		do
 			Result := Current
 		end
 
-indexing
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
-        source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+	token_index_at_imp (a_relative_position: EV_COORDINATE): INTEGER
+			-- Implementation for `token_index_at_position' and `token_index_at_current_position'
+		require
+			not_void: a_relative_position /= Void
+		local
+			l_editor_token_text: like editor_token_text
+		do
+			l_editor_token_text := editor_token_text
+			if not l_editor_token_text.tokens.is_empty then
+				Result := l_editor_token_text.token_index_at_position (a_relative_position.x, a_relative_position.y)
+			end
+		end
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Class that can format a currency value according to the rules in a CURRENCY_INFO"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,7 +13,7 @@ create
 
 feature  -- Initialization
 
-	make (a_currency_info: I18N_CURRENCY_INFO) is
+	make (a_currency_info: I18N_CURRENCY_INFO)
 			-- Initialization
 		require
 			a_currency_info_exists: a_currency_info /= Void
@@ -25,7 +25,7 @@ feature  -- Initialization
 
 feature -- Utility
 
-	format_currency (a_value: REAL_64): STRING_32 is
+	format_currency (a_value: REAL_64): STRING_32
 			-- format a_value according the `format_string'
 			--if unknoen location, result done with Prefix rules
 		do
@@ -61,13 +61,13 @@ invariant
 	currency_symbol_exist: currency_symbol /= Void
 	currency_value_formatter_exists: currency_value_formatter /= Void
 
-indexing
+note
 	library:   "Internationalization library"
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
+			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that holds all shared eis assistant access."
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -15,32 +15,32 @@ inherit
 
 feature -- Access
 
-	id_solution: !EB_SHARED_ID_SOLUTION
+	id_solution: attached EB_SHARED_ID_SOLUTION
 			-- ID solution
 		once
 			create Result
 		end
 
-	icon_factory: !EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
+	icon_factory: attached EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
 			-- Icon factory
 		once
 			create Result
 		end
 
-	eis_output: ES_EIS_ENTRY_OUTPUT	is
+	eis_output: ES_EIS_ENTRY_OUTPUT
 			-- EIS output
 			-- Entry to codes.
 		once
 			create Result
 		end
 
-	storage: !EIS_STORAGE
+	storage: attached EIS_STORAGE
 			-- Shared EIS storage
 		once
 			create Result.make
 		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Dialog that submit exception as bug report to http://supprt.eiffel.com
 	]"
@@ -56,7 +56,6 @@ feature {NONE} -- Initialization
 			l_link: EVS_LINK_LABEL
 			l_hbox: EV_HORIZONTAL_BOX
 			l_shrinkable: EV_FIXED
-			l_severity_label: EV_LABEL
 		do
 			a_container.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 
@@ -94,6 +93,7 @@ feature {NONE} -- Initialization
 			l_hbox.disable_item_expand (l_pass_label)
 			create password_text
 			register_action (password_text.change_actions, agent enable_login)
+			register_action (password_text.key_press_actions, agent on_password_key_pressed)
 			suppress_confirmation_key_close (password_text)
 			password_text.set_minimum_width (190)
 			l_hbox.extend (password_text)
@@ -135,7 +135,7 @@ feature {NONE} -- Initialization
 					l_launcher: EB_PROCESS_LAUNCHER
 				do
 					l_launcher := (create {EB_SHARED_MANAGERS}).external_launcher
-					l_launcher.open_dir_in_file_browser ("https://www2.eiffel.com/login/secure/register.aspx")
+					l_launcher.open_url_in_web_browser ("https://www2.eiffel.com/login/secure/register.aspx")
 				end)
 			l_link.align_text_left
 			l_hbox.extend (l_text)
@@ -206,15 +206,15 @@ feature {NONE} -- Initialization
 			l_vbox.extend (description_text)
 
 				-- Public bug
-			create make_public_check.make_with_text ("Make bug publically available")
+			create make_public_check.make_with_text ("Make bug publicly available")
 			l_vbox.extend (make_public_check)
 			l_vbox.disable_item_expand (make_public_check)
 
 				-- Severity
 			create l_hbox
-			create l_severity_label.make_with_text ("Severity: ")
-			l_hbox.extend (l_severity_label)
-			l_hbox.disable_item_expand (l_severity_label)
+			create severity_label.make_with_text ("Severity: ")
+			l_hbox.extend (severity_label)
+			l_hbox.disable_item_expand (severity_label)
 			create severity_critical_radio.make_with_text ("Critical")
 			l_hbox.extend (severity_critical_radio)
 			l_hbox.disable_item_expand (severity_critical_radio)
@@ -353,7 +353,7 @@ feature {NONE} -- Implementation: access
 	default_synopsis: STRING = "Enter synopsis"
 			-- Default text for the bug report synopsis
 
-	default_description: !STRING
+	default_description: attached STRING
 			-- Default text for the bug report description
 		do
 			if last_description /= Void then
@@ -375,7 +375,7 @@ feature {NONE} -- Status report
 			is_initialized: is_initialized or is_initializing
 		do
 			if session_manager.is_service_available then
-				if {l_ref: !BOOLEAN_REF} session_data.value_or_default (remembered_session_id, False) then
+				if attached {BOOLEAN_REF} session_data.value_or_default (remembered_session_id, False) as l_ref then
 					Result := l_ref.item
 				end
 			end
@@ -612,7 +612,7 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-	on_focus_in is
+	on_focus_in
 			-- When the `description_text' has the focus, we disable the default push button.
 		local
 			l_dialog: EV_DIALOG
@@ -624,7 +624,7 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-	on_focus_out is
+	on_focus_out
 			-- When the `description_text' lost focus, we enable the default push button.
 		local
 			l_dialog: EV_DIALOG
@@ -637,6 +637,14 @@ feature {NONE} -- Action handlers
 				 (not l_dialog.is_destroyed and l_dialog.has_recursive (l_button)) then
 					l_dialog.set_default_push_button (l_button)
 				end
+			end
+		end
+
+	on_password_key_pressed (a_key: EV_KEY)
+			-- When user pressed a key in `password_text'
+		do
+			if a_key /= Void and then a_key.code = {EV_KEY_CONSTANTS}.key_enter and then login_button.is_sensitive then
+				on_login
 			end
 		end
 
@@ -668,7 +676,8 @@ feature {NONE} -- User interface manipulation
 		do
 			if a_enable then
 				login_frame.disable_sensitive
-				report_frame.enable_sensitive
+				enable_report_frame_widgets
+
 				if can_submit then
 					dialog_window_buttons.item ({ES_DIALOG_BUTTONS}.ok_button).enable_sensitive
 				else
@@ -676,9 +685,51 @@ feature {NONE} -- User interface manipulation
 				end
 			else
 				login_frame.enable_sensitive
-				report_frame.disable_sensitive
+				disable_report_frame_widgets
+
 				dialog_window_buttons.item ({ES_DIALOG_BUTTONS}.ok_button).disable_sensitive
 			end
+		end
+
+	disable_report_frame_widgets
+			-- We want all widgets looks like disabled, so users can copy the title in the `synopsis_text' without login
+			-- See bug#15066
+		do
+			-- FIXIT: We should fix {ES_COLORS}.disabled_foreground_color to REAL theme color
+			report_frame.set_foreground_color (colors.disabled_foreground_color)
+
+			synopsis_text.enable_sensitive
+			synopsis_text.disable_edit
+			synopsis_text.set_foreground_color (colors.disabled_foreground_color)
+
+			description_text.disable_sensitive
+			make_public_check.disable_sensitive
+			severity_label.disable_sensitive
+			severity_critical_radio.disable_sensitive
+			severity_serious_radio.disable_sensitive
+			severity_non_critical_radio.disable_sensitive
+		end
+
+	enable_report_frame_widgets
+			-- Correspond to `disable_report_frame_widgets'
+			-- We retore widgets' "sensitive" here
+		local
+			l_color: EV_STOCK_COLORS
+		do
+			create l_color
+
+			report_frame.set_foreground_color (l_color.default_foreground_color)
+
+			synopsis_text.enable_sensitive
+			synopsis_text.enable_edit
+			synopsis_text.set_foreground_color (l_color.default_foreground_color)
+
+			description_text.enable_sensitive
+			make_public_check.enable_sensitive
+			severity_label.enable_sensitive
+			severity_critical_radio.enable_sensitive
+			severity_serious_radio.enable_sensitive
+			severity_non_critical_radio.enable_sensitive
 		end
 
 feature {NONE} -- User interface elements
@@ -688,6 +739,9 @@ feature {NONE} -- User interface elements
 
 	logged_in_label: EV_LABEL
 			-- Logged in message label
+
+	severity_label: EV_LABEL
+				-- Severity label
 
 	log_out_link: EVS_LINK_LABEL
 			-- Logged in message lable link to log ou
@@ -888,8 +942,8 @@ invariant
 	shrink_widget_attached: (is_initialized and not is_recycled) implies shrink_widget /= Void
 	shrink_interval_positive: shrink_interval > 0
 
-;indexing
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -913,11 +967,11 @@ invariant
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

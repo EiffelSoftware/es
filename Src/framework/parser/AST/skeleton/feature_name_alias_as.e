@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Feature name with alias."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -32,7 +32,7 @@ create
 
 feature {NONE} -- Creation
 
-	initialize (feature_id: ID_AS; alias_id: STRING_AS; convert_status: BOOLEAN; a_as, c_as: KEYWORD_AS) is
+	initialize (feature_id: ID_AS; alias_id: STRING_AS; convert_status: BOOLEAN; a_as, c_as: KEYWORD_AS)
 			-- Create feature name object with given characteristics.
 		require
 			feature_id_not_void: feature_id /= Void
@@ -70,7 +70,7 @@ feature {NONE} -- Creation
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_feature_name_alias_as (Current)
@@ -115,7 +115,7 @@ feature -- Access
 	alias_name: STRING_AS
 			-- Operator associated with the feature
 
-	internal_alias_name: ID_AS is
+	internal_alias_name: ID_AS
 			-- Operator associated with the feature (if any)
 			-- augmented with information about its arity in case of operator alias
 		do
@@ -131,19 +131,19 @@ feature -- Access
 
 feature -- Status report
 
-	is_bracket: BOOLEAN is
+	is_bracket: BOOLEAN
 			-- Is feature alias (if any) bracket?
 		do
 			Result := alias_name.value.item (1) = '['
 		end
 
-	is_binary: BOOLEAN is
+	is_binary: BOOLEAN
 			-- Is feature alias (if any) a binary operator?
 		do
 			Result := not is_bracket and internal_is_binary
 		end
 
-	is_unary: BOOLEAN is
+	is_unary: BOOLEAN
 			-- Is feature alias (if any) an unary operator?
 		do
 			Result := not is_bracket and not internal_is_binary
@@ -151,13 +151,13 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_is_binary is
+	set_is_binary
 			-- Mark operator as binary.
 		do
 			internal_is_binary := True
 		end
 
-	set_is_unary is
+	set_is_unary
 			-- Mark operator as unary.
 		do
 			internal_is_binary := False
@@ -165,17 +165,15 @@ feature -- Status setting
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	first_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
-			if a_list /= Void and frozen_keyword_index /= 0 then
-				Result := frozen_keyword (a_list)
-			end
+			Result := frozen_keyword
 			if Result = Void or else Result.is_null then
 				Result := feature_name.first_token (a_list)
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			if a_list = Void then
 				Result := alias_name.last_token (a_list)
@@ -190,7 +188,7 @@ feature -- Roundtrip/Token
 
 feature -- Comparison
 
-	is_equivalent (other: like Current): BOOLEAN is
+	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object?
 		do
 				-- There is no need to check whether both alias names are Bracket,
@@ -210,8 +208,8 @@ invariant
 	alias_name_not_void: alias_name /= Void
 	alias_name_not_empty: not alias_name.value.is_empty
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -224,22 +222,22 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class FEATURE_NAME_ALIAS_AS

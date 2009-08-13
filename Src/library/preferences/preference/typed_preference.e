@@ -1,4 +1,4 @@
-	indexing
+	note
 	description: "Generic PREFERENCE."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7,13 +7,13 @@
 
 deferred class
 	TYPED_PREFERENCE [G]
-	
+
 inherit
 	PREFERENCE
 
 feature {NONE} --Initialization
 
-	make (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_value: G) is
+	make (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_value: G)
 			-- New preference with `a_name' and `a_value'.
 		require
 			manager_not_void: a_manager /= Void
@@ -23,6 +23,7 @@ feature {NONE} --Initialization
 		do
 			manager := a_manager
 			name := a_name
+			internal_value := a_value
 			set_value (a_value)
 			change_actions.extend (agent update_is_auto)
 		ensure
@@ -31,7 +32,7 @@ feature {NONE} --Initialization
 			has_change_action: change_actions /= Void
 		end
 
-	make_from_string_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_value: STRING) is
+	make_from_string_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_value: STRING)
 			-- Create preference and set value based on string value `a_value'.
 		require
 			manager_not_void: a_manager /= Void
@@ -42,49 +43,62 @@ feature {NONE} --Initialization
 		do
 			manager := a_manager
 			name := a_name
-			set_value_from_string (a_value)			
+			init_value_from_string (a_value)
 			change_actions.extend (agent update_is_auto)
 		ensure
 			has_manager: manager /= Void
-			has_name: name /= Void and not name.is_empty			
+			has_name: name /= Void and not name.is_empty
 			has_change_action: change_actions /= Void
-		end		
+		end
+
+	init_value_from_string (a_value: STRING)
+			-- Set initial value from String `a_value'
+		do
+			set_value_from_string (a_value)
+		end
 
 feature -- Setting
 
-	set_value (a_value: G) is
+	set_value (a_value: G)
 			-- Set the value.
 		require
 			value_not_void: a_value /= Void
 		do
 			previous_value := value
-			internal_value := a_value			
-			if internal_change_actions /= Void then
-				internal_change_actions.call ([Current])
+			internal_value := a_value
+			if attached internal_change_actions as l_actions then
+				l_actions.call ([Current])
 			end
-			if internal_typed_change_actions /= Void then
-				internal_typed_change_actions.call ([internal_value])
+			if attached internal_typed_change_actions as l_actions then
+				l_actions.call ([internal_value])
 			end
 		ensure
 			value_set: internal_value = a_value
 		end
 
-	set_value_to_auto is
+	set_value_to_auto
 			-- Set the value to match that of `auto_preference'.
 		require
 			has_auto_preference: auto_preference /= Void
-		do			
-			set_value (auto_preference.value)
+		local
+			l_auto_preference: like auto_preference
+			l_value: like value
+		do
+			l_auto_preference := auto_preference
+			check attached l_auto_preference end -- implied by precondition `has_auto_preference'
+			l_value := l_auto_preference.value
+			check attached l_value end -- implied by invariant `attached_auto_preference_has_value' and precondition `has_auto_preference'
+			set_value (l_value)
 		ensure
-			value_set: internal_value = auto_preference.value
+			value_set: (attached auto_preference as el_auto_preference) and then internal_value = el_auto_preference.value
 		end
 
 feature -- Status Setting
-	
-	set_auto_preference (a_pref: like Current) is
+
+	set_auto_preference (a_pref: like Current)
 			-- Use value of `a_pref' for "auto" value for Current.
 		require
-			a_pref_not_void: a_pref /= Void
+			a_pref_not_void: a_pref /= Void and then a_pref.has_value
 		do
 			auto_preference := a_pref
 			a_pref.change_actions.extend (agent try_to_set_value_to_auto)
@@ -95,80 +109,92 @@ feature -- Status Setting
 
 feature -- Access
 
-	value: G is
+	value: G
 			-- Actual value.
+		local
+			l_auto_preference: like auto_preference
 		do
 			if is_auto then
-				Result := auto_preference.value
+				l_auto_preference := auto_preference
+				check attached l_auto_preference end -- implied by `is_auto' and code from `update_is_auto'
+				Result := l_auto_preference.value
 			else
 				Result := internal_value
 			end
 		end
-			
-	has_value: BOOLEAN is
+
+	has_value: BOOLEAN
 			-- Does Current have a value to use?
 		do
-			Result := value /= Void	
+			Result := value /= Void
+		ensure then
+			Result_implies_value_attached: Result implies value /= Void
 		end
-		
-	typed_change_actions: ACTION_SEQUENCE [TUPLE [G]] is
+
+	typed_change_actions: ACTION_SEQUENCE [TUPLE [G]]
 			-- Actions to be performed when `value' changes after actions of `change_actions'.
+		local
+			l_result: like internal_typed_change_actions
 		do
-			Result := internal_typed_change_actions
-			if Result = Void then
-				create Result
-				internal_typed_change_actions := Result
+			l_result := internal_typed_change_actions
+			if l_result = Void then
+				create l_result
+				internal_typed_change_actions := l_result
 			end
+			Result := l_result
+		ensure
+			Result_attached: Result /= Void
 		end
 
 feature {NONE} -- Implementation
 
-	auto_default_value: G is
+	auto_default_value: G
 			-- Value to use when Current is using auto by default (until real auto is set)
 		deferred
 		end
-		
-	try_to_set_value_to_auto is
+
+	try_to_set_value_to_auto
 			-- Set the value to match that of `auto_preference' (only if `value' was not changed manually).		
-		do			
-			if auto_preference /= Void then
-				if auto_preference.previous_value /= Void and then internal_value.is_equal (auto_preference.previous_value) then 
-					set_value_to_auto	
-				elseif auto_preference.value /= Void and then internal_value.is_equal (auto_preference.value) then					
-					set_value_to_auto				
-				end				
+		do
+			if attached auto_preference as l_auto_preference then
+				if (attached l_auto_preference.previous_value as l_previous_value) and then internal_value ~ l_previous_value then
+					set_value_to_auto
+				elseif (attached l_auto_preference.value as l_value) and then internal_value ~ l_value then
+					set_value_to_auto
+				end
 			end
-		end	
-		
-	update_is_auto is
+		end
+
+	update_is_auto
 			-- Update based on value if now the value is auto
 		do
-			is_auto := auto_preference /= Void and then internal_value.is_equal (auto_preference.value)
-		end	
-		
-	internal_typed_change_actions: like typed_change_actions
+			is_auto := (attached auto_preference as l_auto_preference) and then internal_value ~ l_auto_preference.value
+		end
+
+	internal_typed_change_actions: detachable like typed_change_actions
 			-- Storage for `typed_change_actions'.
-	
-	internal_value: like value
+
+	internal_value: G
 			-- Internal value.
-			
-feature {TYPED_PREFERENCE} -- Implementation			
-			
-	previous_value: like value
+
+feature {TYPED_PREFERENCE} -- Implementation	
+
+	previous_value: detachable like value
 			-- Value held before this one, if any.
-	
+
 invariant
 	typed_change_actions_not_void: typed_change_actions /= Void
+	attached_auto_preference_has_value: (attached auto_preference as l_auto_preference) implies l_auto_preference.has_value
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+note
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Docking manager queries."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,7 +16,7 @@ create
 
 feature {NONE}  -- Initlization
 
-	make (a_docking_manager: SD_DOCKING_MANAGER) is
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 			-- Creation method.
 		require
 			a_docking_manager_not_void: a_docking_manager /= Void
@@ -28,7 +28,7 @@ feature {NONE}  -- Initlization
 
 feature -- Querys
 
-	auto_hide_panel (a_direction: INTEGER): SD_AUTO_HIDE_PANEL is
+	auto_hide_panel (a_direction: INTEGER): SD_AUTO_HIDE_PANEL
 			-- Auto hide panel at `a_direction'.
 		require
 			a_direction_valid: a_direction = {SD_ENUMERATION}.top or a_direction = {SD_ENUMERATION}.bottom
@@ -47,7 +47,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	content_by_title (a_unique_title: STRING_GENERAL): SD_CONTENT is
+	content_by_title (a_unique_title: STRING_GENERAL): SD_CONTENT
 			-- Content by a_title.
 		require
 			a_title_not_void: a_unique_title /= Void
@@ -57,7 +57,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	contents_editors: ARRAYED_LIST [SD_CONTENT] is
+	contents_editors: ARRAYED_LIST [SD_CONTENT]
 			-- All editor type contents
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
@@ -97,15 +97,20 @@ feature -- Querys
 					l_zones.after or Result /= Void
 				loop
 					l_item := l_zones.item
-					if l_widget = l_item or l_item.has_recursive (l_widget) then
-						Result := l_item
+					if attached {EV_CONTAINER} l_item as lt_container then
+						if l_widget = lt_container or lt_container.has_recursive (l_widget) then
+							Result := l_item
+						end
+					else
+						check not_possible: False end
 					end
+
 					l_zones.forth
 				end
 			end
 		end
 
-	has_content_visible: BOOLEAN is
+	has_content_visible: BOOLEAN
 			--  Has visible contents except editor place holder content?
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
@@ -127,7 +132,7 @@ feature -- Querys
 	is_opening_tools_layout: BOOLEAN
 			-- If executing {SD_DOCKING_MANAGER_QUERY}.`open_tools_config'
 
-	content_by_title_for_restore (a_unique_title: STRING_GENERAL): SD_CONTENT is
+	content_by_title_for_restore (a_unique_title: STRING_GENERAL): SD_CONTENT
 			-- Content by a_unique_title. Result = Void if not found.
 		require
 			a_unique_title_not_void: a_unique_title /= Void
@@ -172,12 +177,12 @@ feature -- Querys
 			end
 		end
 
-	inner_container (a_zone: EV_WIDGET): SD_MULTI_DOCK_AREA is
-			-- SD_MULTI_DOCK_AREA which `a_zone' in.
+	inner_container_by_widget (a_widget: EV_WIDGET): SD_MULTI_DOCK_AREA
+			-- SD_MULTI_DOCK_AREA which has `a_widget'
 		require
-			a_zone_not_void: a_zone /= Void
+			a_zone_not_void: a_widget /= Void
 		do
-			Result := internal_inner_container (a_zone)
+			Result := internal_inner_container (a_widget)
 
 			if Result = Void then
 				Result := inner_container_main
@@ -186,23 +191,45 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	inner_container_include_hidden (a_zone: SD_ZONE): SD_MULTI_DOCK_AREA is
+	inner_container (a_zone: SD_ZONE): SD_MULTI_DOCK_AREA
+			-- SD_MULTI_DOCK_AREA which has `a_zone'
+		require
+			a_zone_not_void: a_zone /= Void
+		do
+			if attached {EV_WIDGET} a_zone as lt_widget then
+				Result := internal_inner_container (lt_widget)
+			else
+				check not_possible: False end
+			end
+
+			if Result = Void then
+				Result := inner_container_main
+			end
+		ensure
+			not_void: Result /= Void
+		end
+
+	inner_container_include_hidden (a_zone: SD_ZONE): SD_MULTI_DOCK_AREA
 			-- SD_MULTI_DOCK_AREA which `a_zone' in, also finding in widgets which are hidden by a maximized zone.
 			-- Maybe void if not found.
 		require
 			not_void: a_zone /= Void
 		do
-			Result := internal_inner_container (a_zone)
-			if Result = Void then
-				-- Maybe `a_zone' is hidden, because there is a zone maximized in that dock area.
-				Result := maximized_inner_container (a_zone)
-			end
-			if Result = Void then
-				Result := maiximized_hidden_main_container (a_zone)
+			if attached {EV_WIDGET} a_zone as lt_widget then
+				Result := internal_inner_container (lt_widget)
+				if Result = Void then
+					-- Maybe `a_zone' is hidden, because there is a zone maximized in that dock area.
+					Result := maximized_inner_container (lt_widget)
+				end
+				if Result = Void then
+					Result := maiximized_hidden_main_container (a_zone)
+				end
+			else
+				check not_possible: False end
 			end
 		end
 
-	maximized_inner_container (a_zone: EV_WIDGET): SD_MULTI_DOCK_AREA is
+	maximized_inner_container (a_zone: EV_WIDGET): SD_MULTI_DOCK_AREA
 			-- Find `a_zone' only in main areas which have maximized zone.
 			-- Maybe void if not found.
 		require
@@ -234,7 +261,7 @@ feature -- Querys
 			end
 		end
 
-	maiximized_hidden_main_container (a_zone: SD_ZONE): SD_MULTI_DOCK_AREA is
+	maiximized_hidden_main_container (a_zone: SD_ZONE): SD_MULTI_DOCK_AREA
 			-- Find the item in main area hidden widget when whole editor area maximized.
 		local
 			l_item: EV_WIDGET
@@ -242,21 +269,26 @@ feature -- Querys
 		do
 			l_item := internal_docking_manager.command.orignal_whole_item
 			if l_item /= Void then
-				check not_void_at_same_tiem: internal_docking_manager.command.orignal_editor_parent /= Void end
-				l_container ?= l_item
-				if l_container = Void then
-					if l_item = a_zone then
-						Result := inner_container_main
+				if attached {EV_WIDGET} a_zone as lt_widget then
+					check not_void_at_same_tiem: internal_docking_manager.command.orignal_editor_parent /= Void end
+					l_container ?= l_item
+
+					if l_container = Void then
+						if l_item = lt_widget then
+							Result := inner_container_main
+						end
+					else
+						if l_container.has_recursive (lt_widget) then
+							Result := inner_container_main
+						end
 					end
 				else
-					if l_container.has_recursive (a_zone) then
-						Result := inner_container_main
-					end
+					check not_possible: False end
 				end
 			end
 		end
 
-	is_main_inner_container (a_area: SD_MULTI_DOCK_AREA): BOOLEAN is
+	is_main_inner_container (a_area: SD_MULTI_DOCK_AREA): BOOLEAN
 			-- Contract support. If a_area is first one in `inner_containers'.
 		require
 			a_area_not_void: a_area /= Void
@@ -268,7 +300,7 @@ feature -- Querys
 			Result := l_areas.item = a_area
 		end
 
-	inner_container_main: SD_MULTI_DOCK_AREA is
+	inner_container_main: SD_MULTI_DOCK_AREA
 			-- Container in main window.
 		local
 			l_containers: ARRAYED_LIST [SD_MULTI_DOCK_AREA]
@@ -280,7 +312,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	zone_max_screen_x (a_zone: SD_ZONE): INTEGER is
+	zone_max_screen_x (a_zone: SD_ZONE): INTEGER
 			-- Max screen x of a_zone.
 		local
 			l_container: EV_WIDGET
@@ -289,7 +321,7 @@ feature -- Querys
 			Result := l_container.screen_x + l_container.width
 		end
 
-	container_rectangle: EV_RECTANGLE is
+	container_rectangle: EV_RECTANGLE
 			-- Rectangle area of `center_area'
 		local
 			l_center_area: EV_WIDGET
@@ -301,7 +333,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	fixed_area_rectangle: EV_RECTANGLE is
+	fixed_area_rectangle: EV_RECTANGLE
 			-- Rectangle area of `fixed_area'
 		local
 			l_widget: EV_WIDGET
@@ -310,7 +342,7 @@ feature -- Querys
 			create Result.make (l_widget.x_position, l_widget.y_position, l_widget.width, l_widget.height)
 		end
 
-	container_rectangle_screen: EV_RECTANGLE is
+	container_rectangle_screen: EV_RECTANGLE
 			-- Rectangle area of the `fixed_area' base on screen.
 		local
 			l_center_area: EV_WIDGET
@@ -321,7 +353,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	golbal_accelerators: SEQUENCE [EV_ACCELERATOR] is
+	golbal_accelerators: SEQUENCE [EV_ACCELERATOR]
 			-- Golbal accelerators.
 		local
 			l_titled_window: EV_TITLED_WINDOW
@@ -332,7 +364,24 @@ feature -- Querys
 			end
 		end
 
-	find_window_by_zone (a_zone: EV_WIDGET): EV_WINDOW is
+	find_window_by_widget (a_widget: EV_WIDGET): EV_WINDOW
+			-- Find a window which can lock_update.
+		require
+			a_zone_not_void: a_widget /= Void
+		local
+			l_main_container: SD_MULTI_DOCK_AREA
+		do
+			l_main_container := internal_docking_manager.query.inner_container_by_widget (a_widget)
+			if l_main_container.parent_floating_zone = Void then
+				Result := internal_docking_manager.main_window
+			else
+				Result := l_main_container.parent_floating_zone
+			end
+		ensure
+			not_void: Result /= Void
+		end
+
+	find_window_by_zone (a_zone: SD_ZONE): EV_WINDOW
 			-- Find a window which can lock_update.
 		require
 			a_zone_not_void: a_zone /= Void
@@ -349,13 +398,13 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	is_zone_in_same_window (a_zone_one, a_zone_two: SD_ZONE): BOOLEAN is
+	is_zone_in_same_window (a_zone_one, a_zone_two: SD_ZONE): BOOLEAN
 			-- If a_zone_one and a_zone_two in same window?
 		do
 			Result := find_window_by_zone (a_zone_one) = find_window_by_zone (a_zone_two)
 		end
 
-	floating_zones: ARRAYED_LIST [SD_FLOATING_ZONE] is
+	floating_zones: ARRAYED_LIST [SD_FLOATING_ZONE]
 			-- All floating zones in Current system.
 		local
 			l_containers: ARRAYED_LIST [SD_MULTI_DOCK_AREA]
@@ -381,7 +430,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	is_floating (a_content: SD_CONTENT): BOOLEAN is
+	is_floating (a_content: SD_CONTENT): BOOLEAN
 			-- If `a_content' floating?
 		require
 			not_void: a_content /= Void
@@ -400,14 +449,18 @@ feature -- Querys
 				loop
 					l_container := l_floating_zones.item.inner_container
 					if l_container /= Void then
-						Result := l_container.has_recursive (l_zone)
+						if attached {EV_WIDGET} l_zone as lt_widget then
+							Result := l_container.has_recursive (lt_widget)
+						else
+							check not_possible: False end
+						end
 					end
 					l_floating_zones.forth
 				end
 			end
 		end
 
-	is_title_unique (a_title: STRING_GENERAL): BOOLEAN is
+	is_title_unique (a_title: STRING_GENERAL): BOOLEAN
 			-- If `a_title' unique in all contents unique_title?
 		local
 			l_content: ARRAYED_LIST [SD_CONTENT]
@@ -426,7 +479,7 @@ feature -- Querys
 			end
 		end
 
-	has_auto_hide_zone: BOOLEAN is
+	has_auto_hide_zone: BOOLEAN
 			-- If Current we have SD_AUTO_HIDE_ZONE showing?
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -446,7 +499,7 @@ feature -- Querys
 			end
 		end
 
-	all_zones_in_widget (a_widget: EV_WIDGET): ARRAYED_LIST [SD_ZONE] is
+	all_zones_in_widget (a_widget: EV_WIDGET): ARRAYED_LIST [SD_ZONE]
 			-- All zones in `a_widget' if exist.
 		require
 			not_void: a_widget /= Void
@@ -457,7 +510,7 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	only_one_editor_zone: SD_UPPER_ZONE is
+	only_one_editor_zone: SD_UPPER_ZONE
 			-- If Current docking layout only have one editor zone (only one SD_DOCKING_ZONE_UPPER or SD_TAB_ZONE_UPPER)?
 			-- If yes, then the result is the only one editor zone.
 			-- If not only one, then result is Void.
@@ -487,7 +540,7 @@ feature -- Querys
 			valid: editor_zone_count /= 1 implies Result = Void
 		end
 
-	editor_zone_count: INTEGER is
+	editor_zone_count: INTEGER
 			-- How many editors zones (not editor content) now?
 		local
 			l_zones: ARRAYED_LIST [SD_ZONE]
@@ -507,7 +560,7 @@ feature -- Querys
 			end
 		end
 
-	docker_mediator (a_caller: SD_ZONE; a_docking_manager: SD_DOCKING_MANAGER): SD_DOCKER_MEDIATOR is
+	docker_mediator (a_caller: SD_ZONE; a_docking_manager: SD_DOCKING_MANAGER): SD_DOCKER_MEDIATOR
 			-- Factory method.
 		require
 			not_void: a_caller /= Void
@@ -536,22 +589,26 @@ feature -- Querys
 			not_void: Result /= Void
 		end
 
-	is_in_main_window (a_tool_bar: SD_TOOL_BAR): BOOLEAN is
+	is_in_main_window (a_tool_bar: SD_GENERIC_TOOL_BAR): BOOLEAN
 			-- If `a_widget' in main window?
 		do
-			Result := internal_docking_manager.tool_bar_container.top.has_recursive (a_tool_bar)
-			if not Result then
-				Result := internal_docking_manager.tool_bar_container.bottom.has_recursive (a_tool_bar)
-			end
-			if not Result then
-				Result := internal_docking_manager.tool_bar_container.left.has_recursive (a_tool_bar)
-			end
-			if not Result then
-				Result := internal_docking_manager.tool_bar_container.right.has_recursive (a_tool_bar)
+			if attached {EV_WIDGET} a_tool_bar as lt_widget then
+				Result := internal_docking_manager.tool_bar_container.top.has_recursive (lt_widget)
+				if not Result then
+					Result := internal_docking_manager.tool_bar_container.bottom.has_recursive (lt_widget)
+				end
+				if not Result then
+					Result := internal_docking_manager.tool_bar_container.left.has_recursive (lt_widget)
+				end
+				if not Result then
+					Result := internal_docking_manager.tool_bar_container.right.has_recursive (lt_widget)
+				end
+			else
+				check not_possible: False end
 			end
 		end
 
-	restore_whole_editor_area_actions: EV_NOTIFY_ACTION_SEQUENCE is
+	restore_whole_editor_area_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- When whole editor area restored automatically, actions will be invoked.
 		do
 			if internal_restore_whole_editor_area_actions = Void then
@@ -565,7 +622,7 @@ feature -- Querys
 	internal_restore_whole_editor_area_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- When whole editor area restored automatically, actions will be invoked.
 
-	restore_whole_editor_area_for_minimized_actions: EV_NOTIFY_ACTION_SEQUENCE is
+	restore_whole_editor_area_for_minimized_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- When whole editor area restored automatically for minimized editor area, actions will be invoked.
 		do
 			if internal_restore_whole_editor_area_for_minimized_actions = Void then
@@ -581,7 +638,7 @@ feature -- Querys
 
 feature -- Command
 
-	set_opening_tools_layout (a_bool: BOOLEAN) is
+	set_opening_tools_layout (a_bool: BOOLEAN)
 			-- Set `is_opening_tools_layout' with `a_bool'
 		do
 			is_opening_tools_layout := a_bool
@@ -591,11 +648,11 @@ feature -- Command
 
 feature {NONE} -- Implemnetation
 
-	internal_inner_container (a_zone: EV_WIDGET): SD_MULTI_DOCK_AREA is
+	internal_inner_container (a_widget: EV_WIDGET): SD_MULTI_DOCK_AREA
 			-- SD_MULTI_DOCK_AREA which `a_zone' in.
 			-- Maybe void if not found.
 		require
-			not_void: a_zone /= Void
+			not_void: a_widget /= Void
 		local
 			l_containers: ARRAYED_LIST [SD_MULTI_DOCK_AREA]
 		do
@@ -606,14 +663,14 @@ feature {NONE} -- Implemnetation
 				l_containers.after or Result /= Void
 			loop
 				Result := l_containers.item
-				if not Result.has_recursive (a_zone) then
+				if not Result.has_recursive (a_widget) then
 					Result := Void
 				end
 				l_containers.forth
 			end
 		end
 
-	zones_recursive (a_widget: EV_WIDGET; a_list: ARRAYED_LIST [SD_ZONE]) is
+	zones_recursive (a_widget: EV_WIDGET; a_list: ARRAYED_LIST [SD_ZONE])
 			-- Add all zones in `a_widget' to `a_list'.
 		require
 			a_widget_not_void: a_widget /= Void
@@ -644,7 +701,7 @@ feature {NONE} -- Implemnetation
 	internal_docking_manager: SD_DOCKING_MANAGER;
 			-- Docking manager which Current belong to.
 
-indexing
+note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

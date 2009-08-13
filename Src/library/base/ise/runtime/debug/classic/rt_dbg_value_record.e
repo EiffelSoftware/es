@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Abstract record for execution recording mechanism"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
@@ -23,12 +23,12 @@ feature -- Properties
 	type: INTEGER
 			-- Eiffel type of record value.
 
-	breakable_info: ?TUPLE [line: INTEGER; nested: INTEGER]
+	breakable_info: detachable TUPLE [line: INTEGER; nested: INTEGER]
 			-- breakable information
 
 feature -- Access
 
-	current_value_record: ?RT_DBG_VALUE_RECORD
+	current_value_record: detachable RT_DBG_VALUE_RECORD
 			-- Record for current value
 		deferred
 		end
@@ -38,7 +38,7 @@ feature -- Access
 			Result := generating_type + ": #" + position.out + " = " + to_string
 		end
 
-	associated_object: ?ANY
+	associated_object: detachable ANY
 			-- Associated object, if any
 		deferred
 		end
@@ -48,8 +48,10 @@ feature -- Access
 		deferred
 		end
 
-	is_same_as (other: !RT_DBG_VALUE_RECORD): BOOLEAN
+	is_same_as (other: RT_DBG_VALUE_RECORD): BOOLEAN
 			-- Is Current same as `other' ?
+		require
+			other_attached: other /= Void
 		deferred
 		ensure
 			same_type: Result implies type = other.type
@@ -57,6 +59,8 @@ feature -- Access
 
 	to_string: STRING
 		deferred
+		ensure
+			Result_attached: Result /= Void
 		end
 
 feature -- Change
@@ -76,18 +80,22 @@ feature -- Change properties
 
 feature -- Runtime
 
-	restore (val: !RT_DBG_VALUE_RECORD)
+	restore (val: RT_DBG_VALUE_RECORD)
 			-- Restore Current record
 			-- and associate the backup value to `val'
+		require
+			val_attached: val /= Void
 		deferred
 		end
 
-	revert (bak: !RT_DBG_VALUE_RECORD)
+	revert (bak: RT_DBG_VALUE_RECORD)
 			-- Revert previous `restore' using the associated `backup' value
+		require
+			bak_attached: bak /= Void
 		deferred
 		end
 
-indexing
+note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

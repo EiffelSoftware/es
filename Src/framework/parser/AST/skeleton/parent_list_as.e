@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object that represents a list of PARENT_AS nodes"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -21,7 +21,7 @@ create
 
 feature -- Visitor
 
-	process (v: AST_VISITOR) is
+	process (v: AST_VISITOR)
 			-- process current element.
 		do
 			v.process_parent_list_as (Current)
@@ -29,7 +29,7 @@ feature -- Visitor
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	first_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			if a_list = Void then
 				Result := Precursor (a_list)
@@ -38,7 +38,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS is
+	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
 			if a_list = Void then
 				Result := Precursor (a_list)
@@ -62,7 +62,7 @@ feature -- Roundtrip
 	none_id_as_index: INTEGER
 			-- 'NONE' ID_AS used for specifying non-conforming inheritance.
 
-	inherit_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS is
+	inherit_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
 			-- Keyword "inherit" associated with current AST node.
 		require
 			a_list_not_void: a_list /= Void
@@ -75,7 +75,7 @@ feature -- Roundtrip
 			end
 		end
 
-	lcurly_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS is
+	lcurly_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
 			-- Symbol '{' associated with current AST node if non-conforming inheritance is specified.
 		require
 			a_list_not_void: a_list /= Void
@@ -88,7 +88,7 @@ feature -- Roundtrip
 			end
 		end
 
-	rcurly_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS is
+	rcurly_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
 			-- Symbol '}' associated with current AST node if non-conforming inheritance is specified.
 		require
 			a_list_not_void: a_list /= Void
@@ -107,14 +107,22 @@ feature -- Roundtrip
 			a_list_not_void: a_list /= Void
 		local
 			i: INTEGER
+			l_leaf: LEAF_STUB_AS
 		do
 			i := none_id_as_index
 			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
+				l_leaf ?= a_list.i_th (i)
+					-- It is not an ID_AS, because the roundtrip parser does not store ID_AS
+					-- but LEAF_STUB_AS, so we reconstruct the associated ID_AS from the LEAF_STUB_AS.
+				if l_leaf /= Void then
+					create Result.initialize (l_leaf.literal_text (a_list))
+					Result.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
+					Result.set_index (l_leaf.index)
+				end
 			end
 		end
 
-	set_inheritance_tokens (a_inherit_keyword: like inherit_keyword; a_left_curly_symbol: like lcurly_symbol; a_none_id_as: like none_id_as; a_right_curly_symbol: like rcurly_symbol) is
+	set_inheritance_tokens (a_inherit_keyword: like inherit_keyword; a_left_curly_symbol: like lcurly_symbol; a_none_id_as: like none_id_as; a_right_curly_symbol: like rcurly_symbol)
 			-- Set tokens associated with inheritance clause.
 		do
 			if a_inherit_keyword /= Void then
@@ -136,10 +144,10 @@ feature -- Roundtrip
 			rcurly_symbol_set: a_right_curly_symbol /= Void implies rcurly_symbol_index = a_right_curly_symbol.index
 		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+note
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -150,19 +158,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

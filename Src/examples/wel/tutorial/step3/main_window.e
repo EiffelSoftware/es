@@ -1,4 +1,4 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class
@@ -17,27 +17,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Make the main window.
 		do
 			make_top ("My application")
-			create dc.make (Current)
 		end
-
-feature -- Access
-
-	dc: WEL_CLIENT_DC
-			-- Device context associated to the current
-			-- client window
 
 feature {NONE} -- Implementation
 
-	on_left_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_left_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Write `x_pos' and `y_pos' when the user presses
 			-- the left mouse button.
 		local
 			position: STRING
+			dc: WEL_CLIENT_DC
 		do
+			create dc.make (Current)
 			position := "("
 			position.append_integer (x_pos)
 			position.append (", ")
@@ -48,13 +43,13 @@ feature {NONE} -- Implementation
 			dc.release
 		end
 
-	on_right_button_down (keys, x_pos, y_pos: INTEGER) is
+	on_right_button_down (keys, x_pos, y_pos: INTEGER)
 			-- Invalidate window.
 		do
 			invalidate
 		end
 
-	closeable: BOOLEAN is
+	closeable: BOOLEAN
 			-- Does the user want to quit?
 		local
 			msg_box: WEL_MSG_BOX
@@ -65,7 +60,7 @@ feature {NONE} -- Implementation
 			Result := msg_box.message_box_result = Idyes
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

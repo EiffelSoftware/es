@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that implement {TEST_CLASS_LOCATOR_I} by traversing the parent clause and
 		analysing the inheritance structure of a potential test class.
@@ -23,7 +23,10 @@ inherit
 			process_library
 		end
 
-	SHARED_ERROR_HANDLER
+	SHARED_EIFFEL_PARSER_WRAPPER
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -39,13 +42,13 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Access
 
-	inheritance_parser: !EIFFEL_PARSER
+	inheritance_parser: attached EIFFEL_PARSER
 			-- Parser for retrieving inheritance information only
 		once
 			create Result.make_with_factory (inheritance_ast_factory)
 		end
 
-	inheritance_ast_factory: !TEST_INHERITANCE_AST_FACTORY
+	inheritance_ast_factory: attached TEST_INHERITANCE_AST_FACTORY
 			-- Factory for retrieving inheritance information from uncompiled classes
 		once
 			create Result.make
@@ -54,15 +57,15 @@ feature {NONE} -- Access
 	cached_common_ancestor: like common_ancestor
 			-- Cache for `common_ancestor'
 
-	traversed_descendants: !DS_HASH_SET [!EIFFEL_CLASS_I]
+	traversed_descendants: attached DS_HASH_SET [attached EIFFEL_CLASS_I]
 			-- Cached classes which are descendants of {TEST_SET}
 
-	traversed_helpers: !DS_HASH_SET [!EIFFEL_CLASS_I]
+	traversed_helpers: attached DS_HASH_SET [attached EIFFEL_CLASS_I]
 			-- Cached ancestors which are not descendants of {TEST_SET}
 
 feature {NONE} -- Query
 
-	is_test_class (a_class: !EIFFEL_CLASS_I): BOOLEAN
+	is_test_class (a_class: attached EIFFEL_CLASS_I): BOOLEAN
 			-- <Precursor>
 		do
 			if cached_common_ancestor = Void then
@@ -83,17 +86,15 @@ feature {NONE} -- Query
 			until
 				l_cluster = Void or Result
 			loop
-				Result := {l_tcluster: CONF_TEST_CLUSTER} l_cluster
+				Result := attached {CONF_TEST_CLUSTER} l_cluster as l_tcluster
 				l_cluster := l_cluster.parent
 			end
 		end
 
 feature {NONE} -- Basic functionality
 
-	locate_classes is
+	locate_classes
 			-- <Precursor>
-		local
-			l_list: !DS_LINEAR [!EIFFEL_CLASS_I]
 		do
 			cached_common_ancestor := common_ancestor
 			traversed_descendants.wipe_out
@@ -105,20 +106,17 @@ feature {NONE} -- Basic functionality
 
 feature {NONE} -- Implementation: uncompiled test retrieval
 
-	report_potential_test_class (a_class: !EIFFEL_CLASS_I) is
+	report_potential_test_class (a_class: attached EIFFEL_CLASS_I)
 			-- Report class as potential test class if it inherits from {TEST_SET}
 			--
 			-- `a_class': Class to be reported.
-		local
-			l_file: KL_BINARY_INPUT_FILE
-			l_class_as: !CLASS_AS
 		do
 			if is_descendant (a_class, False) then
 				project.report_test_class (a_class)
 			end
 		end
 
-	is_descendant (a_class: !EIFFEL_CLASS_I; a_cache: BOOLEAN): BOOLEAN is
+	is_descendant (a_class: attached EIFFEL_CLASS_I; a_cache: BOOLEAN): BOOLEAN
 			-- Is class descendant of {TEST_SET}?
 			--
 			-- `a_class': Class for which it should be determined whether it is a descendant of {TEST_SET}.
@@ -167,7 +165,7 @@ feature {NONE} -- Implementation: uncompiled test retrieval
 				(Result = (not traversed_helpers.has (a_class) or a_class = project.eiffel_project.system.any_class))
 		end
 
-	parents_of_class (a_class: !EIFFEL_CLASS_I): !DS_LINEAR [!EIFFEL_CLASS_I] is
+	parents_of_class (a_class: attached EIFFEL_CLASS_I): attached DS_LINEAR [attached EIFFEL_CLASS_I]
 			-- List of direct ancestors of `a_class'
 			--
 			-- `a_class': Class for which we want to retreive ancestors
@@ -176,23 +174,17 @@ feature {NONE} -- Implementation: uncompiled test retrieval
 			a_class_in_project: project.is_class_in_project (a_class)
 			factory_reset: inheritance_ast_factory.is_reset
 		local
-			l_file: KL_BINARY_INPUT_FILE
 			l_universe: UNIVERSE_I
 			l_group: CONF_GROUP
-			l_name: STRING
-			l_cursor: DS_LINEAR_CURSOR [!STRING]
-			l_list: !DS_ARRAYED_LIST [!EIFFEL_CLASS_I]
+			l_cursor: DS_LINEAR_CURSOR [attached STRING]
+			l_list: attached DS_ARRAYED_LIST [attached EIFFEL_CLASS_I]
+			l_text: STRING_32
 		do
 			l_universe := project.eiffel_project.universe
 			l_group := a_class.cluster
-			create l_file.make (a_class.file_name)
-			l_file.open_read
-			if l_file.is_open_read then
-				check
-					error_handler_empty: error_handler.error_list.is_empty and
-								error_handler.warning_list.is_empty
-				end
-				inheritance_parser.parse (l_file)
+			l_text := a_class.text
+			if l_text /= Void then
+				eiffel_parser_wrapper.parse_with_option (inheritance_parser, l_text, a_class.options, True, Void)
 				create l_list.make (inheritance_ast_factory.ancestors.count)
 				l_cursor := inheritance_ast_factory.ancestors.new_cursor
 				from
@@ -200,15 +192,13 @@ feature {NONE} -- Implementation: uncompiled test retrieval
 				until
 					l_cursor.after
 				loop
-					if {l_class: !EIFFEL_CLASS_I} l_universe.safe_class_named (l_cursor.item, l_group) then
+					if attached {EIFFEL_CLASS_I} l_universe.safe_class_named (l_cursor.item, l_group) as l_class then
 						l_list.force_last (l_class)
 					end
 					l_cursor.forth
 				end
-				l_file.close
 				inheritance_ast_factory.reset
 				inheritance_parser.reset
-				error_handler.wipe_out
 			else
 				create l_list.make (0)
 			end
@@ -217,21 +207,24 @@ feature {NONE} -- Implementation: uncompiled test retrieval
 			factory_reset: inheritance_ast_factory.is_reset
 		end
 
-	process_cluster (a_cluster: CONF_CLUSTER) is
+	process_cluster (a_cluster: CONF_CLUSTER)
 			-- <Precursor>
 		require else
 			locating: is_locating
+		local
+			l_ht: detachable HASH_TABLE [CONF_CLASS, STRING]
 		do
 				-- TODO: make this a user preference whether to look search in all clusters for tests or only
 				--       test clusters.
 			if has_tests_cluster_parent (a_cluster) then
-				if {l_ht: HASH_TABLE [CONF_CLASS, STRING]} a_cluster.classes then
+				l_ht := a_cluster.classes
+				if l_ht /= Void then
 					from
 						l_ht.start
 					until
 						l_ht.after
 					loop
-						if {l_class: !EIFFEL_CLASS_I} l_ht.item_for_iteration then
+						if attached {EIFFEL_CLASS_I} l_ht.item_for_iteration as l_class then
 							if not l_class.is_compiled then
 								report_potential_test_class (l_class)
 							end
@@ -242,7 +235,7 @@ feature {NONE} -- Implementation: uncompiled test retrieval
 			end
 		end
 
-	process_library (a_library: CONF_LIBRARY) is
+	process_library (a_library: CONF_LIBRARY)
 			-- <Precursor>
 			--
 			-- Note: if library is not read only, we will look for tests.
@@ -253,4 +246,35 @@ feature {NONE} -- Implementation: uncompiled test retrieval
 			end
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

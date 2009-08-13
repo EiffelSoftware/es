@@ -1,18 +1,18 @@
-indexing
+note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 -- Lines of the form VARIABLES ":" SUM
 -- This is the top construct of the Polynomial language
 
 class
-	LINE 
+	LINE
 
 inherit
 
 	AGGREGATE
 		export
-			{PROCESS} all
-		redefine 
+			{PROCESS, LINE} all
+		redefine
 			post_action
 		end
 
@@ -24,14 +24,14 @@ inherit
 create
 	make
 
-feature 
+feature
 
-	construct_name: STRING is
+	construct_name: STRING
 		once
 			Result := "LINE"
 		end -- construct_name
 
-	production: LINKED_LIST [CONSTRUCT] is
+	production: LINKED_LIST [CONSTRUCT]
 		local
 			var: VARIABLES
 			sum: SUM
@@ -45,24 +45,46 @@ feature
 			put (sum)
 		end -- production
 
-	post_action is
+	post_action
+		local
+			l_child: like child
 		do
 			child_start
-			child.post_action
+			l_child := child
+			if l_child /= Void then
+				l_child.post_action
+			end
 			from
 				child_finish
 			until
 				info.end_session
 			loop
 				info.set_value
-				child.post_action
+				l_child := child
+				check l_child /= Void end
+				l_child.post_action
 				io.putstring ("value: ")
 				io.putint (info.child_value)
 				io.new_line
 			end
 		end -- post_action
 
-indexing
+feature {LINE} -- Implementation
+
+	clone_node (n: like Current): like Current
+			-- <precursor>
+		do
+			create Result.make
+			Result.copy_node (n)
+		end
+
+	new_tree: like Current
+			-- <precursor>
+		do
+			create Result.make
+		end
+
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

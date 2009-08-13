@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Objects that print source code for extracted test sets.
 	]"
@@ -46,26 +46,26 @@ feature {NONE} -- Initialization
 		do
 			create class_name.make_empty
 			create used_routine_names.make_default
-			used_routine_names.set_key_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [!STRING]})
+			used_routine_names.set_key_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [attached STRING]})
 		end
 
 feature -- Access
 
-	class_name: !STRING
+	class_name: attached STRING
 			-- <Precursor>
 
-	ancestor_names: !ARRAY [!STRING]
+	ancestor_names: attached ARRAY [attached STRING]
 			-- <Precursor>
 		do
-			Result := << "EQA_EXTRACTED_TEST_SET" >>
+			Result := << extracted_ancestor_name >>
 		end
 
-	root_feature_name: !STRING = ""
+	root_feature_name: attached STRING = ""
 			-- <Precursor>
 
 feature {NONE} -- Access
 
-	used_routine_names: !DS_HASH_TABLE [NATURAL, !STRING]
+	used_routine_names: attached DS_HASH_TABLE [NATURAL, attached STRING]
 			-- Routine names which have been used in the current class
 			--
 			-- keys: routine names
@@ -74,7 +74,7 @@ feature {NONE} -- Access
 	object_counter: NATURAL
 			-- Number of objects that have been captured
 
-feature {EIFFEL_TEST_CAPTURER} -- Status report
+feature {TEST_CAPTURER} -- Status report
 
 	is_ready: BOOLEAN
 			-- <Precursor>
@@ -96,7 +96,7 @@ feature {EIFFEL_TEST_CAPTURER} -- Status report
 
 feature -- Status setting
 
-	prepare (a_file: !KI_TEXT_OUTPUT_STREAM; a_class_name: !STRING)
+	prepare (a_file: attached KI_TEXT_OUTPUT_STREAM; a_class_name: attached STRING)
 			-- Prepare printing a new axtracted application state to `a_file'.
 		require
 			not_writing: not is_writing
@@ -110,7 +110,7 @@ feature -- Status setting
 
 feature {NONE} -- Query
 
-	test_routine_name (a_feature: !E_FEATURE): !STRING
+	test_routine_name (a_feature: attached E_FEATURE): attached STRING
 			-- Valid test routine name for feature in `a_stack_element'.
 		local
 			i: INTEGER_32
@@ -209,16 +209,15 @@ feature {NONE} -- Query
 			result_not_empty: not Result.is_empty
 		end
 
-feature {EIFFEL_TEST_CAPTURER} -- Events
+feature {TEST_CAPTURER} -- Events
 
-	on_invocation_capture (a_stack_element: !TEST_CAPTURED_STACK_ELEMENT)
+	on_invocation_capture (a_stack_element: attached TEST_CAPTURED_STACK_ELEMENT)
 			-- <Precursor>
 		local
 			l_feat: E_FEATURE
 			l_name: STRING
 			l_count: NATURAL
-			l_cursor: DS_LINEAR_CURSOR [!STRING]
-			l_types: !DS_ARRAYED_LIST [!STRING]
+			l_cursor: DS_LINEAR_CURSOR [attached STRING]
 			i: INTEGER
 		do
 			l_feat := a_stack_element.called_feature
@@ -241,8 +240,9 @@ feature {EIFFEL_TEST_CAPTURER} -- Events
 			end
 			stream.indent
 
-			stream.put_line ("indexing")
+			put_indexing_keyword
 			stream.indent
+			stream.put_line ("testing: %"type/extracted%"")
 			stream.put_string ("testing: %"covers/{")
 			stream.put_string (a_stack_element.called_feature.associated_class.name)
 			stream.put_string ("}.")
@@ -346,7 +346,7 @@ feature {EIFFEL_TEST_CAPTURER} -- Events
 			stream.dedent
 		end
 
-	on_object_capture (a_object: !TEST_CAPTURED_OBJECT)
+	on_object_capture (a_object: attached TEST_CAPTURED_OBJECT)
 			-- <Precursor>
 		local
 			l_long_string: BOOLEAN
@@ -437,19 +437,18 @@ feature {NONE} -- Events
 
 feature {NONE} -- Output
 
-	put_indexing is
+	put_indexing
 			-- Append indexing clause.
 		do
-			stream.put_line ("indexing")
+			put_indexing_keyword
 			stream.indent
 			stream.put_line ("description: %"Regression tests reproducing application state of a previous execution.%"")
 			stream.put_line ("author: %"Testing tool%"")
-			stream.put_line ("testing: %"type/extracted%"")
 			stream.dedent
 			stream.put_line ("")
 		end
 
-	put_manifest_string (a_string: !STRING)
+	put_manifest_string (a_string: attached STRING)
 		local
 			i: INTEGER
 		do
@@ -465,7 +464,7 @@ feature {NONE} -- Output
 			end
 		end
 
-	put_attributes (a_table: !DS_HASH_TABLE [!STRING, !STRING])
+	put_attributes (a_table: attached DS_HASH_TABLE [attached STRING, attached STRING])
 		do
 			from
 				a_table.start
@@ -485,7 +484,7 @@ feature {NONE} -- Output
 			end
 		end
 
-	put_items (a_list: !DS_LINEAR [!STRING])
+	put_items (a_list: attached DS_LINEAR [attached STRING])
 		local
 			l_count: INTEGER
 		do
@@ -510,7 +509,7 @@ feature {NONE} -- Output
 			end
 		end
 
-	put_value (a_value: !STRING)
+	put_value (a_value: attached STRING)
 		do
 			if a_value.is_natural then
 				stream.put_character ('"')
@@ -526,4 +525,37 @@ feature {NONE} -- Constants
 
 	max_string_length: INTEGER = 80
 
+	extracted_ancestor_name: attached STRING = "EQA_EXTRACTED_TEST_SET"
+
+;note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

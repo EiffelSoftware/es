@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "[
 		Translations of class names between a storing and a retrieving
@@ -23,16 +23,26 @@ inherit
 		export
 			{NONE} replace_key, remove
 		redefine
+			default_create,
 			put, force, extend, replace,
-			clear_all
+			clear_all,
+			out
 		end
 
 create
 	default_create
 
+feature -- Initialization
+
+	default_create
+			-- Make table with current translations
+		do
+			make (0)
+		end
+
 feature -- Element change
 
-	put (new: ?STRING; key: ?STRING) is
+	put (new: STRING; key: STRING)
 			-- Insert `new' with `key' if there is no other item
 			-- associated with the same key.
 			-- Set `inserted' if and only if an insertion has
@@ -47,7 +57,7 @@ feature -- Element change
 			if inserted then add_translation (new, key) end
 		end
 
-	force (new: ?STRING; key: ?STRING) is
+	force (new: STRING; key: STRING)
 			-- Update table so that `new' will be the item associated
 			-- with `key'.
 			-- If there was an item for that key, set `found'
@@ -59,7 +69,7 @@ feature -- Element change
 			add_translation (new, key)
 		end
 
-	extend (new: ?STRING; key: ?STRING) is
+	extend (new: STRING; key: STRING)
 			-- Assuming there is no item of key `key',
 			-- insert `new' with `key'.
 			-- Set `inserted'.
@@ -68,7 +78,7 @@ feature -- Element change
 			add_translation (new, key)
 		end
 
-	replace (new: ?STRING; key: ?STRING) is
+	replace (new: STRING; key: STRING)
 			-- Replace item at `key', if present,
 			-- with `new'; do not change associated key.
 			-- Set `replaced' if and only if a replacement has been made
@@ -84,21 +94,50 @@ feature -- Element change
 
 feature -- Removal
 
-	clear_all is
+	clear_all
 			-- Reset all items to default values; reset status.
 		do
 			Precursor
 		end
 
+feature -- Output
+
+	out: STRING
+			-- Printable representation of translations
+		local
+			k: STRING
+			i: detachable STRING
+		do
+			from
+				create Result.make (25 + count * 40)
+				Result.append ("Class name translations:%N")
+				start
+			until
+				after
+			loop
+				k := key_for_iteration
+				if k /= Void then
+					Result.append (k)
+				end
+				Result.append (" -> ")
+				i := item_for_iteration
+				if i /= Void then
+					Result.append (i)
+				end
+				Result.append_character ('%N')
+				forth
+			end
+		end
+
 feature {NONE} -- Implementation
 
-	add_translation (new_name, old_name: ?STRING) is
+	add_translation (new_name, old_name: detachable STRING)
 			-- Add a translation entry mapping class `old_name' in the
 			-- storing system to class `new_name' in the retrieving system.
 		do
 		end
 
-indexing
+note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
