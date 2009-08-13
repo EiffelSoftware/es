@@ -2606,6 +2606,7 @@ eweasel/GPL.txt -text
 eweasel/INSTALL -text
 eweasel/LICENSING -text
 eweasel/README -text
+eweasel/bin/run_eweasel_keyword -text
 eweasel/compilation/README -text
 eweasel/compilation/fix_permission -text
 eweasel/compilation/install_eweasel -text
@@ -2618,10 +2619,12 @@ eweasel/doc/notes-5.0.001 -text
 eweasel/doc/output-5.0.001 -text
 eweasel/doc/proposed.doc -text
 eweasel/doc/summary.doc -text
+eweasel/results/classic/iphone-arm -text
 eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
 eweasel/tests/DONT_DELETE -text
+eweasel/tests/agent010/Ace -text
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
 eweasel/tests/attach019/Ace -text
@@ -2637,6 +2640,12 @@ eweasel/tests/attach030/Ace -text
 eweasel/tests/attach031/Ace -text
 eweasel/tests/attach032/Ace -text
 eweasel/tests/attach034/Ace -text
+eweasel/tests/attach040/Ace -text
+eweasel/tests/attach042/Ace -text
+eweasel/tests/attach043/Ace -text
+eweasel/tests/attach051/Ace -text
+eweasel/tests/attach052/Ace -text
+eweasel/tests/attach064/Ace -text
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
@@ -2689,6 +2698,7 @@ eweasel/tests/ccomp050/notes -text
 eweasel/tests/ccomp051/notes -text
 eweasel/tests/ccomp052/notes -text
 eweasel/tests/ccomp074/Ace -text
+eweasel/tests/conform007/Ace -text
 eweasel/tests/dotnet018/cas.cs -text
 eweasel/tests/dotnet018/cas.dll -text
 eweasel/tests/dotnet018/notes -text
@@ -2715,6 +2725,8 @@ eweasel/tests/dotnet090/a.dll -text
 eweasel/tests/dotnet091/a.dll -text
 eweasel/tests/dotnet102/a.dll -text
 eweasel/tests/dotnet108/Ace -text
+eweasel/tests/dotnet114/dotnet_excep_trace -text
+eweasel/tests/except036/dotnet_output -text
 eweasel/tests/exec002/notes -text
 eweasel/tests/exec003/notes -text
 eweasel/tests/exec004/notes -text
@@ -3316,6 +3328,7 @@ eweasel/tests/incr276/Ace -text
 eweasel/tests/incr288/Ace -text
 eweasel/tests/incr294/Ace1 -text
 eweasel/tests/incr294/Ace2 -text
+eweasel/tests/incr311/Ace_rev1 -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
@@ -3421,6 +3434,7 @@ eweasel/tests/melt070/test.e-rev1 -text
 eweasel/tests/melt071/notes -text
 eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
+eweasel/tests/melt091/Ace -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
@@ -3447,6 +3461,8 @@ eweasel/tests/store014/data_61 -text
 eweasel/tests/store014/data_62 -text
 eweasel/tests/store015/Ace -text
 eweasel/tests/store016/data54 -text
+eweasel/tests/store018/data -text
+eweasel/tests/store020/data -text
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text
 eweasel/tests/syntax003/notes -text
@@ -3620,6 +3636,7 @@ eweasel/tests/term134/notes -text
 eweasel/tests/term137/notes -text
 eweasel/tests/term163/Ace -text
 eweasel/tests/thread002/Ace -text
+eweasel/tests/thread010/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text
@@ -3774,6 +3791,7 @@ eweasel/tests/valid153/notes -text
 eweasel/tests/valid154/notes -text
 eweasel/tests/valid155/notes -text
 eweasel/tests/valid160/notes -text
+eweasel/tests/valid240/Ace_safe -text
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text

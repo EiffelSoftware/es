@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Shared objects."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -10,17 +10,17 @@ class
 
 feature -- Access
 
-	output: EW_EWEASEL_OUTPUT_CONTROL is
+	output: EW_EWEASEL_OUTPUT_CONTROL
 			-- Output interface
-		indexing
-            		once_status: global 
+		note
+			once_status: global 
 		do
 			Result := output_cell.item
 		end
 
 feature -- Status Setting
 
-	set_output (a_output: like output) is
+	set_output (a_output: like output)
 			-- Set the output dispatcher
 		require
 			output_not_void: a_output /= Void
@@ -28,19 +28,19 @@ feature -- Status Setting
 			output_cell.put (a_output)
 		ensure
 			output_set: output = a_output
-		end		
+		end
 
 feature {NONE} -- Implementation
 
-	output_cell: CELL [EW_EWEASEL_OUTPUT_CONTROL] is
+	output_cell: CELL [EW_EWEASEL_OUTPUT_CONTROL]
 			-- Output cell
-		indexing
-            		once_status: global 
+		note
+			once_status: global 
 		once
-			create Result	
-		end		
+			create Result.put (Void)
+		end
 
-indexing
+note
 	copyright: "[
 			Copyright (c) 1984-2007, University of Southern California and contributors.
 			All rights reserved.

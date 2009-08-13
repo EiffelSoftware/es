@@ -1,7 +1,7 @@
-indexing
+note
 	description: "Unix-specific operating system services"
 	legal: "See notice at end of class."
-	status: "See notice at end of class.";
+	status: "See notice at end of class."
 	date: "October 7, 1997"
 
 class EW_UNIX_OS
@@ -16,7 +16,7 @@ inherit
 
 	EXECUTION_ENVIRONMENT
 		export
-			{ANY} return_code ;
+			{ANY} return_code 
 			{NONE} all
 		end
 		
@@ -24,64 +24,63 @@ inherit
 
 feature -- Path names
 
-	null_file_name: STRING is "/dev/null";
+	null_file_name: STRING = "/dev/null"
 			-- File name which represents null input or output
 
-	full_file_name (dir_name, f_name: STRING): STRING is
+	full_file_name (dir_name, f_name: STRING): STRING
 			-- Full name of file in directory `dir_name'
 			-- with name `f_name'.
 		do
-			create Result.make (dir_name.count + f_name.count + 1);
+			create Result.make (dir_name.count + f_name.count + 1)
 			if not dir_name.is_empty then
-				Result.append (dir_name);
+				Result.append (dir_name)
 				if dir_name.item (dir_name.count) /= Directory_separator then
-					Result.extend (Directory_separator);
+					Result.extend (Directory_separator)
 				end
 			end
-			Result.append (f_name);
-		end;
+			Result.append (f_name)
+		end
 
-	executable_full_file_name (dir_name, f_name: STRING): STRING is
+	executable_full_file_name (dir_name, f_name: STRING): STRING
 			-- Full name of file in directory `dir_name'
 			-- with name `f_name'.
 		do
 			Result := full_file_name (dir_name, f_name)
-		end;
+		end
 
-	full_directory_name (dir_name, subdir: STRING): STRING is
+	full_directory_name (dir_name, subdir: STRING): STRING
 			-- Full name of subdirectory `subdir' of directory
 			-- `dir_name'
 		do
-			Result := full_file_name (dir_name, subdir);
-		end;
-
+			Result := full_file_name (dir_name, subdir)
+		end
 
 feature -- Pipes
 
-	new_pipe: EW_UNIX_PIPE is
+	new_pipe: EW_UNIX_PIPE
 			-- New pipe object for interprocess communication
 		local
 			read_fd, write_fd: INTEGER
 		do
-			unix_pipe ($read_fd, $write_fd);
-			create Result.make (read_fd, write_fd);
+			unix_pipe ($read_fd, $write_fd)
+			create Result.make (read_fd, write_fd)
 		ensure
-			result_exists: Result /= Void;
-		end;
+			result_exists: Result /= Void
+		end
 
 feature -- Process operations
 
-	fork_process: INTEGER is
+	fork_process: INTEGER
 			-- Fork a new process.  Return process id of new
 			-- process to the parent process and 0 to the child
 		do
-			Result := unix_fork_process;
+			Result := unix_fork_process
 		ensure
 			process_id_nonnegative: Result >= 0
-		end;
+		end
 
-	exec_process (prog_file: STRING; args: ARRAY [STRING];
-			close_nonstd_files: BOOLEAN) is
+	exec_process (prog_file: STRING; args: ARRAY [STRING]
+			close_nonstd_files: BOOLEAN)
 			-- Overlay the process with a new process,
 			-- which will execute program `prog_file' with
 			-- arguments `args'.  If `close_nonstd_files'
@@ -96,30 +95,30 @@ feature -- Process operations
 			program_name_exists: prog_file /= Void
 			arguments_exist: args /= Void
 		local
-			k, count, lower: INTEGER;
-			pname, area: ANY;
-			arguments, arg_copy, null_ptr, env_ptr: POINTER;
+			k, count, lower: INTEGER
+			pname, area: ANY
+			arguments, arg_copy, null_ptr, env_ptr: POINTER
 		do
-			count := args.count;
-			lower := args.lower;
-			pname := prog_file.to_c;
-			arguments := unix_allocate_arg_memory (count + 1);
+			count := args.count
+			lower := args.lower
+			pname := prog_file.to_c
+			arguments := unix_allocate_arg_memory (count + 1)
 			from
-				k := 1;
+				k := 1
 			until
 				k > count
 			loop
-				area := args.item (lower + k - 1).to_c;
-				arg_copy := str_dup ($area);
-				unix_set_arg_value (arguments, k - 1, arg_copy);
+				area := args.item (lower + k - 1).to_c
+				arg_copy := str_dup ($area)
+				unix_set_arg_value (arguments, k - 1, arg_copy)
 				k := k + 1
 			end
-			unix_set_arg_value (arguments, count, null_ptr);
+			unix_set_arg_value (arguments, count, null_ptr)
 			env_ptr := default_pointer
-			unix_exec_process ($pname, arguments, env_ptr, close_nonstd_files);
-		end;
+			unix_exec_process ($pname, arguments, env_ptr, close_nonstd_files)
+		end
 
-	wait_for_process_block (pid: INTEGER): INTEGER is
+	wait_for_process_block (pid: INTEGER): INTEGER
 			-- Wait for any process specified by process id
 			-- `pid' to return status.  Block until there
 			-- a process returns status.  Return the exit
@@ -132,10 +131,10 @@ feature -- Process operations
 		local
 			dummy: BOOLEAN
 		do
-			Result := unix_waitpid (pid, True, $dummy);
-		end;
+			Result := unix_waitpid (pid, True, $dummy)
+		end
 
-	wait_for_process_noblock (pid: INTEGER; status_avail_addr: POINTER): INTEGER is
+	wait_for_process_noblock (pid: INTEGER; status_avail_addr: POINTER): INTEGER
 			-- Wait for any process specified by process
 			-- id `pid' to return status.  Do not block if
 			-- no process has finished (the return value
@@ -146,10 +145,10 @@ feature -- Process operations
 			-- Return the exit or termination status of
 			-- the process that finished.
 		do
-			Result := unix_waitpid (pid, False, status_avail_addr);
-		end;
+			Result := unix_waitpid (pid, False, status_avail_addr)
+		end
 
-	send_signal (sig, pid: INTEGER) is
+	send_signal (sig, pid: INTEGER)
 			-- Send signal `sig' to the process(es) identified by
 			-- `pid'.  If signal is 0, error checking is done but
 			-- no signal is actually sent.  If `pid' > 0, send
@@ -162,17 +161,17 @@ feature -- Process operations
 		require
 			valid_signal: is_defined(sig)
 		do
-			unix_kill (pid, sig);
-		end;
+			unix_kill (pid, sig)
+		end
 
-	terminate_hard (pid: INTEGER) is
+	terminate_hard (pid: INTEGER)
 			-- Send a kill signal (SIGKILL) to the process(es)
 			-- identified by `pid'
 		do
 			send_signal (Sigkill, pid)
 		end
 
-indexing
+note
 	copyright: "[
 			Copyright (c) 1984-2007, University of Southern California and contributors.
 			All rights reserved.

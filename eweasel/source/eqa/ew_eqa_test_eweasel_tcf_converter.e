@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 						Convert eweasel testing control file to a testing control class file
 																							]"
@@ -28,7 +28,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_default is
+	make_default
 			-- Creation method which do nothing
 		do
 			prepare_catalog
@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 	catalog_converter: EW_EQA_TEST_EWEASEL_CATALOG_CONVERTER
 			-- Catalog file converter
 
-	prepare_catalog is
+	prepare_catalog
 			-- Prepare related catalog files
 		local
 			l_factory: EW_EQA_TEST_FACTORY
@@ -60,7 +60,7 @@ feature {NONE} -- Initialization
 
 feature -- Command
 
-	set_ignore_non_exist_test_cases (a_bool: BOOLEAN) is
+	set_ignore_non_exist_test_cases (a_bool: BOOLEAN)
 			-- Set `is_ignore_non_exist_test_cases' with `a_bool'
 		do
 			is_ignore_non_exist_test_cases := a_bool
@@ -68,7 +68,7 @@ feature -- Command
 			set: is_ignore_non_exist_test_cases = a_bool
 		end
 
-	append_one_test_routine (a_input_tcf: STRING; a_test_name: STRING) is
+	append_one_test_routine (a_input_tcf: STRING; a_test_name: STRING)
 			-- Convert testing instructions in `a_input_file'
 		require
 			not_void: a_input_tcf /= Void
@@ -87,7 +87,7 @@ feature -- Command
 			end
 		end
 
-	flush_to_output_file (a_output_file_name: STRING; a_class_name: STRING) is
+	flush_to_output_file (a_output_file_name: STRING; a_class_name: STRING)
 			-- Write `temp_converted' to `a_output_file'
 		require
 			not_void: a_output_file_name /= Void
@@ -95,8 +95,55 @@ feature -- Command
 			needed: is_flush_needed
 		do
 			temp_converted := test_control_file_template_content (temp_converted, a_class_name.as_upper)
-			write_content_to_template (temp_converted, a_output_file_name)
+			write_content_to_file (temp_converted, a_output_file_name)
 			temp_converted := Void
+		end
+
+feature {EW_EQA_WINDOWS_SETUP} -- Internal
+
+	write_content_to_file (a_content: STRING; a_output_file: STRING)
+			-- Writing converted strings to template file
+		require
+			not_void: a_output_file /= Void
+		local
+			l_io: IO_MEDIUM
+			l_file_name: FILE_NAME
+			l_raw_file: PLAIN_TEXT_FILE
+		do
+			create l_file_name.make_from_string (a_output_file)
+
+			-- Overwrite previous generated tcf
+			create l_raw_file.make (l_file_name)
+			if l_raw_file.exists then
+				l_raw_file.delete
+			end
+			if not l_raw_file.is_closed then
+				l_raw_file.close
+			end
+
+			l_io := create_file (l_file_name)
+			l_io.put_string (a_content)
+			l_io.close
+		end
+
+	all_eweasel_test_case_template_content (all_converted_class_content: STRING): STRING
+			--
+		require
+			all_converted_class_names_not_void: all_converted_class_content /= Void
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make (all_eweasel_test_case_template_file_name)
+			create Result.make_empty
+			if l_file.exists then
+				l_file.open_read
+				l_file.read_stream (l_file.count)
+				Result.append (l_file.last_string)
+				Result.replace_substring_all ("$TEST_CASES", all_converted_class_content)
+			else
+				Result := "Warning: template file not found"
+				print ("%NWarning: can't read file " + all_eweasel_test_case_template_file_name)
+			end
 		end
 
 feature -- Query
@@ -116,7 +163,7 @@ feature {NONE} -- Implementation
 			-- Temppoary converted testing instructions
 			-- Used by `append_one_test_routine' and `flush_to_output_file' only!
 
-	convert_class_file (a_input_file, a_output_class_name: STRING) is
+	convert_class_file (a_input_file, a_output_class_name: STRING)
 				-- Convert an old eweasel testing instruction plain text file (`a_input_file') to
 				-- new style Eiffel class testing class file (`a_output_file')
 		require
@@ -128,10 +175,10 @@ feature {NONE} -- Implementation
 		do
 			l_converted := convert_one_tcf (a_input_file, "start")
 			l_converted := test_control_file_template_content (l_converted, a_output_class_name)
-			write_content_to_template (l_converted, a_output_class_name + ".e")
+			write_content_to_file (l_converted, a_output_class_name + ".e")
 		end
 
-	convert_one_tcf (a_input_file: STRING; a_routine_name: STRING): STRING is
+	convert_one_tcf (a_input_file: STRING; a_routine_name: STRING): STRING
 			-- Convert instructions in `a_input_file' to correspond Eiffel codes
 		require
 			not_void: a_input_file /= Void
@@ -163,40 +210,15 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	write_content_to_template (a_content: STRING; a_output_file: STRING) is
-			-- Writing converted strings to template file
-		require
-			not_void: a_output_file /= Void
-		local
-			l_io: IO_MEDIUM
-			l_file_name: FILE_NAME
-			l_raw_file: RAW_FILE
-		do
-			create l_file_name.make_from_string (a_output_file)
-
-			-- Overwrite previous generated tcf
-			create l_raw_file.make (l_file_name)
-			if l_raw_file.exists then
-				l_raw_file.delete
-			end
-			if not l_raw_file.is_closed then
-				l_raw_file.close
-			end
-
-			l_io := create_file (l_file_name)
-			l_io.put_string (a_content)
-			l_io.close
-		end
-
-	create_file (a_file_name: FILE_NAME): IO_MEDIUM  is
+	create_file (a_file_name: FILE_NAME): IO_MEDIUM
 			-- Create a new {IO_MEDIUM} which file name is `a_file_name'
 			-- Callers have to close `Result' themselves
 		require
 			not_void: a_file_name /= Void
 			valid: a_file_name.is_valid
-			not_exists: not (create {RAW_FILE}.make (a_file_name)).exists
+			not_exists: not (create {PLAIN_TEXT_FILE}.make (a_file_name)).exists
 		local
-			l_file: RAW_FILE
+			l_file: PLAIN_TEXT_FILE
 		do
 			create l_file.make (a_file_name)
 			check not_exits: not l_file.exists end
@@ -206,19 +228,19 @@ feature {NONE} -- Implementation
 			Result := l_file
 		ensure
 			not_void: Result /= Void
-			created: (create {RAW_FILE}.make (a_file_name)).exists
+			created: (create {PLAIN_TEXT_FILE}.make (a_file_name)).exists
 		end
 
 	control_file: EW_EQA_TEST_CONTROL_FILE
-			--
+			-- Tcf file
 
-	test_control_file_template_content (a_tcf_content: STRING; a_class_name: STRING): STRING is
+	test_control_file_template_content (a_tcf_content: STRING; a_class_name: STRING): STRING
 			-- Default control file template content
 		require
 			not_void: a_tcf_content /= Void
 			not_void: a_class_name /= Void
 		local
-			l_file: RAW_FILE
+			l_file: PLAIN_TEXT_FILE
 		do
 			create l_file.make (tcf_content_file_name)
 			create Result.make_empty
@@ -236,7 +258,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	tcf_content_file_name: !FILE_NAME
+	tcf_content_file_name: FILE_NAME
 			-- Tcf content file name
 			-- (export status {NONE})
 		local
@@ -248,7 +270,18 @@ feature {NONE} -- Implementation
 			Result.set_file_name ("eiffel_eweasel_tcf_template.e")
 		end
 
-	convert_instruction_to_one_line (a_instruction: EW_TEST_INSTRUCTION): STRING is
+	all_eweasel_test_case_template_file_name: FILE_NAME
+			-- All eweasel test case template file name
+		local
+			l_factory: EW_EQA_TEST_FACTORY
+		do
+			create l_factory
+			create Result.make_from_string (l_factory.environment.value ("ISE_EIFFEL"))
+			Result.extend_from_array (<<"studio", "help", "defaults">>)
+			Result.set_file_name ("all_eweasel_test_case_template.e")
+		end
+
+	convert_instruction_to_one_line (a_instruction: EW_TEST_INSTRUCTION): STRING
 			-- Convert one testing instruction
 		require
 			not_void: a_instruction /= Void
@@ -331,6 +364,12 @@ feature {NONE} -- Implementation
 				l_list := broken_into_words (l_arg)
 				check count_right: l_list.count = 3 end
 				Result := "copy_bin (%"" + l_list.i_th (1) + "%", %"" + l_list.i_th (2) + "%", %"" + l_list.i_th (3) + "%")"
+			elseif l_keyword ~ copy_file_keyword then
+				l_arg := a_instruction.orig_arguments
+				check not_void: l_arg /= Void and then not l_arg.is_empty end
+				l_list := broken_into_words (l_arg)
+				check count_right: l_list.count = 3 end
+				Result := "copy_file (%"" + l_list.i_th (1) + "%", %"" + l_list.i_th (2) + "%", %"" + l_list.i_th (3) + "%")"
 			elseif l_keyword.is_equal (copy_raw_keyword) then
 				l_arg := a_instruction.orig_arguments
 				check not_void: l_arg /= Void and then not l_arg.is_empty end
@@ -515,7 +554,7 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	decorate_quote (a_string: STRING; a_decorate_head_and_tail: BOOLEAN) is
+	decorate_quote (a_string: STRING; a_decorate_head_and_tail: BOOLEAN)
 			-- Append "%%" to "%"" except starting and ending quote
 			-- If `a_include_head_and_tail'
 		require
@@ -537,7 +576,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-indexing
+note
 	copyright: "[
 			Copyright (c) 1984-2007, University of Southern California and contributors.
 			All rights reserved.

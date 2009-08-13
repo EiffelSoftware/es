@@ -188,7 +188,7 @@ feature -- Access
 	found_item: G
 			-- Item, if any, yielded by last search operation
 
-	item alias "[]", infix "@" (key: H): G assign put is
+	item alias "[]", at alias "@" (key: H): G assign put is
 			-- Item associated with `key', if present
 			-- otherwise default value of type `G'
 		local
@@ -781,9 +781,9 @@ feature -- Removal
 		local
 			default_value: G
 		do
-			content.clear_all
-			keys.clear_all
-			deleted_marks.clear_all
+--			content.clear_all
+--			keys.clear_all
+--			deleted_marks.clear_all
 			found_item := default_value
 			count := 0
 			used_slot_count := 0

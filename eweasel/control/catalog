@@ -17,6 +17,7 @@ test	date-time-duration		duration003 tcf pass time
 test	large-date-time-duration	duration004 tcf pass time
 test	time-bug-reports		time001 tcf pass time
 test	date-duration-with-leap-years	time002 tcf pass time
+test	date-time-with-epoch	time003 tcf pass time
 
 -- EiffelBase tests
 
@@ -24,6 +25,7 @@ test	array-is-equal			array001 tcf pass array
 test	array-consistency		array002 tcf pass array
 test	array-has			array003 tcf pass array
 test	array-occurrences		array004 tcf pass array
+test	array2-wipe-out			array005 tcf pass array
 
 test	list-is-equal			list001 tcf pass list
 test	list-put-extend			list002 tcf pass list
@@ -37,6 +39,10 @@ test	arrayed-list-put-*		list009 tcf pass list
 test	fixed-list-queries		list010 tcf pass list
 test	merging-compatible-arrayed-list	list011 tcf pass list
 test	sorted-two-way-list-invariant-violation	list012 tcf pass list
+test	do-all-with-index-arrayed-list	list013 tcf pass list
+test	two-way-list-merge		list014 tcf pass list
+
+test	priority-queue-basics	queue001 tcf pass queue
 
 test	disjoint-sets			set001  tcf pass set
 test	disjoint-sets-expanded		set001a tcf pass set
@@ -45,6 +51,7 @@ test	symdif-sets			set002  tcf pass set
 test	symdif-sets-heterogenous	set002a tcf pass set
 test	prune-tree-set			set003  tcf pass set
 test	linear-subset-move		set004  tcf pass set
+test	void-items-set-crash	set005  tcf pass set
 
 test	tree-is-equal			tree001 tcf pass tree
 test	tree-clone			tree002 tcf pass tree
@@ -58,6 +65,8 @@ test	replace_key_conflict_not_found	table003 tcf pass table
 test	replace_key_replace_item	table004 tcf pass table
 test	iteration-with-default-key	table005 tcf pass table
 test	infinite-loop-on-removal-then-addition	table006 tcf pass table
+
+test	recursive-delete-with-symlinks	directory001 tcf pass directory
 
 -- EiffelNet test
 test	net-out-of-descriptor	net001 tcf pass net
@@ -89,12 +98,17 @@ test	native_signal_number_in_exception	except023 tcf pass exception
 test	native_error_number_in_exception	except024 tcf pass exception
 test	native_error_number_ise_io_error	except025 tcf pass exception
 test	buffer_overflows_printing_trace		except026 tcf pass exception
-test	static_buffer_for_trace_not_thread_safe	except027 tcf pass exception
+test	static_buffer_for_trace_not_thread_safe	except027 tcf pass exception multithreaded
 test	assertion_violations_in_onces		except028 tcf pass exception
 test	exception_on_invalid_object_has_no_trace	except029 tcf pass exception
 test	incorrect_once_trace_at_first_call	except030 tcf pass exception
 test	every_trace_has_root			except031 tcf pass exception
 test	trace_has_no_pass			except032 tcf pass exception
+test	precondition-violation-infinite-loop	except033 tcf fail exception
+test	last-exception-not-cleared		except034 tcf fail exception
+test	code-compatible-io-failure		except035 tcf fail exception
+test	original_routines_in_exceptions		except036 tcf pass exception
+test	exception_cause				except037 tcf pass exception
 
 -- Non Conforming Inheritance
 test basic-non-conforming-inheritance			noncon001 tcf pass non-conforming
@@ -115,11 +129,14 @@ test non-conform-generic-class					noncon015 tcf pass non-conforming
 test non-conform-arguments						noncon016 tcf pass non-conforming
 test non-conform-infinite-loop					noncon017 tcf pass non-conforming
 test non-conform-precondition-inheritance			noncon019 tcf pass non-conforming
+test incorrect-vrle-error						noncon020 tcf pass non-conforming
+test non-conforming-reference-attribute-access	noncon021 tcf pass non-conforming
+test non-conforming-constant-access	noncon022 tcf pass non-conforming
 
 -- Replication
 test replicate-precursor				replication001 tcf pass replication
 test replicated-feature-merge				replication002 tcf fail replication
-test wrong-vupr-error					replication003 tcf pass replication
+test wrong-vdpr-error					replication003 tcf pass replication
 test vmcs-warning1					replication004 tcf pass replication
 test vmcs-warning2					replication005 tcf pass replication
 test repeated-onces					replication006 tcf pass replication
@@ -153,7 +170,6 @@ test	free-operator-reject		syntax014 tcf fail syntax
 test	long-string-constant		syntax015 tcf pass syntax
 test	strip-no-prefix-opers		syntax016 tcf fail syntax
 test	std-operator-case-sensitive	syntax017 tcf pass syntax
-
 test	syntax-disagreements-2		syntax018 tcf fail syntax
 test	illegal-multi-branch		syntax019 tcf pass syntax
 test	reserved-words-not		syntax020 tcf pass syntax
@@ -186,9 +202,15 @@ test	integer-constant-range		syntax046 tcf pass syntax
 test	multi-syntax-error			syntax047 tcf pass syntax
 test	indexing-notes-syntax		syntax048 tcf pass syntax indexing note
 test	loop-variant-syntax		syntax049 tcf pass syntax loop variant
-test	assigner-on-creation-expression	syntax050 tcf fail assigner
-test	external-dll-name		syntax051 tcf pass external
-test	attached_tuple_element		syntax052 tcf fail tuple attached
+test	assigner-on-creation-expression	syntax050 tcf fail syntax assigner
+test	external-dll-name		syntax051 tcf pass syntax external
+test	attached_tuple_element		syntax052 tcf fail syntax tuple attached
+test	obsolete-inline-agent		syntax053 tcf fail syntax
+test	invalid-manifest-type-char-constant	syntax054 tcf fail syntax
+test	note-syntax				syntax055 tcf pass syntax
+test	attached-syntax				syntax056 tcf pass syntax attached
+test	external-with-invalid-use	syntax057 tcf pass syntax
+test	bracket-expression-on-manifest-type	syntax058 tcf pass syntax bracket_expression
 
 
 -- Validity tests
@@ -310,7 +332,7 @@ test	generic-constraint-not-used	valid114 tcf fail validity
 test	two-generic-precursors		valid115 tcf fail validity
 test	invariant-result-address	valid116 tcf pass validity
 test	two-precursors-same-parent	valid117 tcf fail validity
-test	bogus-vupr2			valid118 tcf fail validity
+test	bogus-vdpr2			valid118 tcf fail validity
 test	nonconforming-generic-creation	valid119 tcf pass validity
 test	unreferenced-locals		valid120 tcf pass validity
 test	default-create-no-vd27		valid121 tcf fail validity
@@ -415,6 +437,37 @@ test	obsolete-warning-in-obsolete-feature	valid219 tcf fail validity
 test	ancestor-anchor-type			valid220 tcf pass validity
 test	vtug2-not-reported-crash			valid221 tcf pass validity
 test	invalid-redefinition			valid222 tcf pass validity
+test	void-safe-static-call			valid223 tcf pass validity attached_types
+test	vrft-in-nested-tuple-type		valid224 tcf fail validity tuple
+test	extra-vtcg-with-full-checking		valid225 tcf pass validity
+test	reference-generic-expanded-actual	valid226 tcf fail validity
+test	expanded-generic-reference-actual	valid227 tcf fail validity
+test	bogus-vevi-on-invalid-inspect		valid228 tcf fail validity
+test	bogus-vevi-on-inspect-empty-interval	valid229 tcf pass validity
+test	inline-c-external-without-alias		valid230 tcf fail validity
+test	validity-in-empty-case			valid231 tcf pass validity
+test	redefine-deferred-to-effective		valid232 tcf fail validity
+test	redefine-2-deferred-to-effective	valid233 tcf fail validity
+test	redefine-effective-to-deferred		valid234 tcf pass validity
+test	undefine-renamed-deferred		valid235 tcf pass validity
+test	undefine-redefine-to-effective		valid236 tcf fail validity
+test	effective-redefinition			valid237 tcf pass validity
+test	selecting-renamed-feature		valid238 tcf fail validity
+test	diamond-pattern-vmrc			valid239 tcf fail validity
+test	explicit-attachment-mark-convert-fail	valid240 tcf fail validity
+test	indirect-type-evaluation		valid241 tcf pass validity formal multiconstraint generic anchored_types
+test	undetected-vycp-vycq-with-generic	valid242 tcf fail validity
+test	inherited-binary-with-generic		valid243 tcf pass validity formal generic binary operator multiconstraint
+test	bogus-vuta-on-procedure-target		valid244 tcf pass validity attached void_safe
+test	explicit-anchored-expanded-creation-type valid245 tcf pass validity
+test	inherited-conversion-to-like-current	valid246 tcf pass validity
+test	undetected-vycq-error				valid247 tcf pass validity conversion
+test	infix-prefix-alias-compatibility	valid248 tcf pass validity
+test	assigner-validity-rules				valid249 tcf pass validity
+test	assigner-wrong-vbac					valid250 tcf pass validity
+test	bogus-veen-on-object-test-local		valid251 tcf pass validity
+test	undetected-vuot-error			valid252 tcf pass validity
+test	equality-of-conforming-classes		valid253 tcf pass validity equality conformance attached_types
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -426,6 +479,8 @@ test	error-in-elsif			multierr006 tcf pass multi-errors
 test	failing-to-recompile-descendant	multierr007 tcf pass multi-errors
 test	recompile-descendant-code	multierr008 tcf pass multi-errors
 test	recompile-assertion-descendant-code	multierr009 tcf pass multi-errors
+test	precondition-vdpr-fail-to-check-body	multierr010 tcf pass multi-errors
+test	binary-op-fail-to-check-second-operand	multierr011 tcf pass multi-errors
 
 -- System validity tests
 test	svalid-infix-with-conversion	svalid001 tcf pass system-validity
@@ -440,6 +495,14 @@ test	svalid-inherit-labeled-tuple	svalid009 tcf pass system-validity
 test	svalid-inherit-labeled-tuple-assign	svalid010 tcf pass system-validity
 test	conversion-take-deanchored-form	svalid011 tcf pass system-validity conversion
 test	inherited-conversion-crash		svalid012 tcf pass system-validity conversion
+test	unused-local-warning-not-repeated	svalid013 tcf fail system-validity
+test	inline-agent-inherited-crash	svalid014 tcf pass system-validity
+test	svalid-multi-constraint-inheritance	svalid015 tcf pass system-validity multiconstraint
+test	svalid-conversion-validity-error	svalid016 tcf pass system-validity
+test	svalid-inherited-invariant-not-checked	svalid017 tcf fail system-validity
+test	svalid-invalid-parent			svalid018 tcf fail system-validity conversion
+test	svalid-conversion-with-binary	svalid019 tcf fail system-validity conversion
+test	svalid-undetected-vwoe			svalid020 tcf fail system-validity conversion
 
 -- Catcall tests
 test	simple-catcall				catcall001 tcf pass catcall
@@ -614,12 +677,12 @@ test	vsrt-vtct-vcfg-die		incr158  tcf pass incrementality
 test	vtct-vcfg-vsrt-die		incr159  tcf pass incrementality
 test	alternate-vd27-and-vsrt		incr160  tcf pass incrementality
 test	missing-rescue-clause		incr161  tcf pass incrementality
-test	vupr-sneak			incr162  tcf fail incrementality
+test	vdpr-sneak			incr162  tcf fail incrementality
 test	switch-generics-tricky-vtcg	incr163  tcf fail incrementality
 test	delete-parent-vtcg-sneak	incr164  tcf pass incrementality
 test	switch-generics-tricky-vdrd	incr165  tcf pass incrementality
 test	change-external-melt		incr166  tcf pass incrementality
-test	make-synonyms-vupr-sneak	incr167  tcf fail incrementality
+test	make-synonyms-vdpr-sneak	incr167  tcf fail incrementality
 test	add-alternative-precondition	incr168  tcf fail incrementality
 test	change-created-actual-generic	incr169  tcf pass incrementality
 test	vmfn-new-deferred-ancestor	incr170  tcf pass incrementality
@@ -662,7 +725,7 @@ test	chg-indexing-tag-to-attribute	incr207  tcf fail incrementality
 test	bit-n-illegal-opcode		incr208  tcf pass incrementality
 test	external-make-precondition-true	incr209  tcf pass incrementality
 test	unexpand-class-no-conformance	incr210  tcf fail incrementality conformance
-test	uninherit-any-vupr2-sneak	incr211  tcf fail incrementality
+test	uninherit-any-vdpr2-sneak	incr211  tcf fail incrementality
 test	c-inline-change-arg-order	incr212  tcf pass incrementality
 test	chg-generic-c-inline-function	incr213  tcf pass incrementality
 test	freeze-no-c-compile-melt	incr214  tcf fail incrementality
@@ -674,7 +737,7 @@ test	remove-constraint-veen-sneak	incr220  tcf fail incrementality
 test	vuex-weasel			incr221  tcf fail incrementality
 test	change-system-name		incr222  tcf fail incrementality
 test	function-attribute-constant	incr223  tcf fail incrementality
-test	vupr-weasel			incr224  tcf fail incrementality
+test	vdpr-weasel			incr224  tcf fail incrementality
 test	change-anchor-type-finalize	incr225  tcf fail incrementality
 test	precompile-again		incr226  tcf fail incrementality
 test	remove-ace-object-clause	incr227  tcf fail incrementality
@@ -745,6 +808,47 @@ test	bogus-vmrc-2					incr292  tcf pass incrementality
 test	inherited-code-checking-crash	incr293  tcf fail incrementality
 test	invalid-root-procedure			incr294	tcf pass incrementality
 test	generic-replication-nc-crash		incr295	tcf pass incrementality
+test	consecutive-error-fix-sequence-crash	incr296	tcf pass incrementality
+test	add-empty-create-clause			incr297	tcf fail incrementality
+test	change-expanded-class-name		incr298	tcf pass incrementality
+test	add-feature-invalidate-generic-rename	incr299	tcf fail incrementality
+test	generic-call-renamed-default-create	incr300	tcf fail incrementality
+test	ececil-undefined-symbol			incr301	tcf fail incrementality
+test	pattern-of-id-crash			incr302	tcf fail incrementality
+test	add-default-create-invalid-vtec		incr303	tcf fail incrementality
+test	change-base-library-to-base-safe	incr304	tcf fail incrementality
+test	add-then-remove-vlec-via-generic	incr305	tcf fail incrementality
+test	attempt-on-expanded-then-reference	incr306	tcf fail incrementality
+test	formal-generic-constraint-rename-crash	incr307	tcf fail incrementality
+test	generic-attach-mark-change-bogus-vevi	incr308	tcf fail incrementality
+test	real-feature-id-crash			incr309	tcf fail incrementality
+test	change-class-to-deferred-vtcg-sneak	incr310	tcf fail incrementality
+test	remove-and-add-base-eats-memory		incr311	tcf fail incrementality skip
+test	generate-final-c-body-crash		incr312	tcf fail incrementality
+test	remove-convert-clause-undetected-vjar	incr313	tcf fail incrementality
+test	add-inherit-clause-undetected-vycp	incr314	tcf fail incrementality
+test	add-remove-expanded-mark-generic-class	incr315	tcf fail incrementality
+test	make-parent-expanded-call-precursor	incr316	tcf fail incrementality
+test	remove-convert-clause-crash		incr317	tcf fail incrementality
+test	remove-convert-clause-bogus-vncp	incr318	tcf fail incrementality
+test	execution-failure-after-vevi		incr319	tcf fail incrementality
+test	switch-to-conforming-inheritance	incr320	tcf fail incrementality
+test	eif-gen-conf-init-crash			incr321	tcf fail incrementality
+test	function-to-attribute-refinalize	incr322	tcf fail incrementality
+test	change-obsolete-syntax-to-transitional	incr323	tcf pass incrementality
+test	vd71-called-syntax-error		incr324	tcf pass incrementality
+test	c-syntax-error				incr325	tcf pass incrementality
+test	override-checkin-crash		incr326	tcf pass termination
+test	bogus-vfav			incr327	tcf pass incrementality
+test	vfav-sneak			incr328	tcf pass incrementality
+test	add-class-then-make-expanded	incr329	tcf pass incrementality
+test	dead-code-removal-crash		incr330	tcf pass incrementality
+test	return-value-type-mismatch	incr331	tcf pass incrementality
+test	generate-wrapper-crash		incr332	tcf pass incrementality
+test	ececil-undefined-symbol-2	incr333	tcf fail incrementality
+test	efrozen-undefined-symbol	incr334	tcf fail incrementality
+test	ececil-undefined-symbol-3	incr335	tcf fail incrementality
+test	can-be-inlined-crash		incr336	tcf fail incrementality
 
 
 -- Melting
@@ -809,7 +913,7 @@ test	melted-expanded-like-current	melt056  tcf fail melting
 test	melted-long-class-name		melt057  tcf pass melting
 test	melt-pass-bit-shift		melt058  tcf pass melting
 test	inspect-integer-64-one		melt059  tcf pass melting
-test	melted-profile-system		melt060  tcf fail melting
+test	melted-profile-system		melt060  tcf fail melting profile
 test	integer-16-minus-one		melt061  tcf pass melting
 test	melted-invariant-invalid-object	melt062  tcf fail melting
 test	melted-void-expanded-arg	melt063  tcf pass melting
@@ -820,17 +924,31 @@ test	expanded-generic-anchored-local	melt067  tcf fail melting
 test	melted-old-expanded-result	melt068  tcf pass melting
 test	expanded-list-like-current	melt069  tcf fail melting
 test	special-expanded-creation	melt070	 tcf pass melting
-test	melt-old-expression-in-redefinition melt071  tcf pass execution
-test	compare-var-attribute-addrs	melt072  tcf fail execution
-test	increment-character		melt073  tcf pass execution
-test	int64-cast-uint64		melt074  tcf pass execution
-test	character_32-inspect 	melt075  tcf pass execution
-test	invariant-check-melted-agent-callee melt076  tcf pass execution
-test	dollar-with-tuple		melt077  tcf pass execution tuple
-test	dollar-with-expanded-attribute	melt078  tcf pass execution
-test	runtime-stack-corruption	melt079  tcf pass execution
-test	nan-comparison			melt080  tcf pass execution
-test	melted-special-creation-crash	melt081  tcf pass execution
+test	melt-old-expression-in-redefinition melt071  tcf pass melting execution
+test	compare-var-attribute-addrs	melt072  tcf fail melting execution
+test	increment-character		melt073  tcf pass melting execution
+test	int64-cast-uint64		melt074  tcf pass melting execution
+test	character_32-inspect 	melt075  tcf pass melting execution
+test	invariant-check-melted-agent-callee melt076  tcf pass melting execution
+test	dollar-with-tuple		melt077  tcf pass melting execution tuple
+test	dollar-with-expanded-attribute	melt078  tcf pass melting execution
+test	runtime-stack-corruption	melt079  tcf pass melting execution
+test	nan-comparison			melt080  tcf pass melting execution
+test	melted-special-creation-crash	melt081  tcf pass melting execution
+test	melted-external-call	melt082  tcf pass melting execution
+test	melted-agent-call-on-void-target	melt083  tcf fail execution melting
+test	inherited-like-current-object-test	melt084  tcf fail execution melting
+test	melted-anchored-precursor-object-test	melt085  tcf fail execution melting
+test	melted-anchored-precursor-in-tuple	melt086  tcf fail execution melting
+test	redefined-once-with-alt-precondition	melt087  tcf fail execution melting
+test	character_32-constant		melt088  tcf fail execution melting
+test	alt-precondition-call-on-void-target	melt089  tcf fail execution melting
+test	melted-object-test-with-anchored-none	melt090  tcf fail execution melting
+test	melted-creation-crash			melt091  tcf pass execution melting
+test	melted-agent-exception-crash	melt092  tcf fail execution melting agents
+test	raise-exception-inspect-branch	melt093  tcf fail execution melting
+test	dollar-with-expanded-attribute-in-generic	melt094  tcf fail execution melting
+test	wrong-line-number-in-trace	melt095  tcf fail execution melting
 
 -- Freezing
 
@@ -863,6 +981,7 @@ test	wrong-generic-type-caching	freez026  tcf pass freezing
 test	freeze-with-unused-locals	freez027  tcf pass freezing
 test	freeze-with-conversion		freez028  tcf pass freezing
 test	object-test-with-generic-type	freez029  tcf pass freezing
+test	invariant-qualified-call-on-constant	freez030  tcf fail freezing
 
 -- Finalizing
 
@@ -933,6 +1052,20 @@ test	bad-c-inline-agent			final064 tcf pass finalizing agents
 test	inline-expanded-return		final065 tcf pass finalizing inlining
 test	wrong-generic-type-generation	final066 tcf pass finalizing inlining
 test	inline-agent-crash-final	final067 tcf pass finalizing agents
+test	change-actual-generic-to-expanded final069 tcf fail finalizing expanded generic incrementality
+test	finalize-expanded-unref-local	final070 tcf fail finalizing expanded
+test	finalize-all-classes-true	final071 tcf fail finalizing
+test	finalize-self-init-attribute	final072 tcf fail finalizing
+test	finalize-invariant-wrong-class-name	final073 tcf fail finalizing
+test	finalize-bogus-invariant-violation	final074 tcf fail finalizing
+test	finalize-external-creation-procedure	final075 tcf fail finalizing
+test	finalize-inline-attribute-body	final076 tcf fail finalizing
+test	finalize-creation-expression-corruption	final077 tcf pass finalizing
+test	finalize-inline-precursor-2	final078 tcf fail finalizing
+test	finalize-attribute-access-crash	final079 tcf pass finalizing
+test	finalize-inline-attribute-body-2	final080 tcf pass finalizing
+test	finalize-inline-external-redef-constant	final081 tcf pass finalizing
+test	finalize-inherited-agent-redef-routine	final082 tcf pass finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -945,14 +1078,21 @@ test	gc-tracking-003					runtime007	tcf pass runtime
 test	memory_leak_with_invariant_on	runtime008	tcf pass runtime
 test	missing-marking-with-no-gc		runtime009	tcf pass runtime
 test	zero-sized-objects-slowdown 	runtime010	tcf pass runtime
+test	tuple-special-twin-bug			runtime011	tcf pass runtime special
+test	overflow-special-resizing		runtime012	tcf pass runtime special manual
+test	overflow-special-expanded-resizing		runtime013	tcf pass runtime special expanded
 
 -- Thread
 test	cond-timedwait-failure		thread001	tcf pass multithreaded
 test	nested-thread-exit-failure	thread002	tcf fail multithreaded
 test	memory-leak-in-eif-thr-wait	thread003	tcf pass multithreaded
 test	creating-string-runtime-panic	thread004	tcf pass multithreaded
-test	mem-info-update-crash-after-threads	thread005	tcf pass multitheaded
-test	panic-when-too-many-allocation	thread006	tcf pass multitheaded
+test	mem-info-update-crash-after-threads	thread005	tcf pass multithreaded
+test	panic-when-too-many-allocation	thread006	tcf pass multithreaded
+test	join-with-no-children-leaks	thread007	tcf pass multithreaded
+test	memory-referers-not-thread-safe	thread008	tcf pass multithreaded
+test	exception-in-thread-failure	thread009	tcf pass multitheaded
+test	nested-thread-exit-failure-2	thread010	tcf fail multithreaded
 
 -- Execution
 
@@ -1090,8 +1230,8 @@ test	melted-memory-copy		exec131  tcf pass execution
 test	is-integer-accepts-invalid	exec132  tcf pass execution
 test	agent-lighter-tuple-arg		exec133  tcf pass execution tuple
 test	insert-hash-table-zero		exec134  tcf pass execution
-test	store-expanded-retrieve-wrong	exec135  tcf pass execution
-test	store-expanded-retrieve-dies	exec136  tcf pass execution
+test	store-expanded-retrieve-wrong	exec135  tcf pass execution storable
+test	store-expanded-retrieve-dies	exec136  tcf pass execution storable
 test	array-expanded-not-deep-equal	exec137  tcf pass execution
 test	expanded-no-default-create	exec138  tcf fail execution
 test	retr-expanded-not-deep-equal	exec139  tcf pass execution
@@ -1099,7 +1239,7 @@ test	linked-queue-linear-rep		exec140  tcf pass execution
 test	inspect-high-bit-char		exec141  tcf pass execution
 test	invariant-changes-current	exec142  tcf fail execution
 test	is-special-any-type-lies	exec143  tcf pass execution
-test	indep-store-big-array		exec144  tcf pass execution
+test	indep-store-big-array		exec144  tcf pass execution storable
 test	recursive-once-create-result	exec145  tcf pass execution
 test	frozen-floor-ceiling		exec146  tcf pass execution
 test	special-of-expanded		exec147  tcf pass execution
@@ -1146,7 +1286,7 @@ test	negative-hexadecimal		exec187  tcf pass execution
 test	integer-overflow-type		exec188  tcf pass execution
 test	global-once-feature		exec189  tcf pass execution multithreaded
 test	once-in-generic-class		exec190  tcf pass execution multithreaded
-test	once-with-exception		exec191  tcf pass execution
+test	once-with-exception		exec191  tcf pass execution multithreaded
 test	system-return-code		exec192 tcf pass execution
 test	catch-stack-overflow		exec193 tcf pass execution
 test	thread-assertion-monitoring	exec194 tcf pass execution multithreaded
@@ -1247,6 +1387,29 @@ test	wrong-formal-type-local-initialization	exec288 tcf pass execution
 test	wrong-finalized-invariant-check	exec289 tcf pass execution finalizing
 test	wrong-optimization-of-as-attached	exec290 tcf pass execution finalizing
 test	crash-on-divisible			exec291 tcf pass execution finalizing
+test	wrong-inherited-formal-type	exec292 tcf pass execution finalizing attached_types
+test	access-by-label-on-void-tuple	exec293 tcf fail execution
+test	self-init-attribute-non-void-safe	exec294 tcf fail execution
+test	check-invariant-attached-by-default	exec295 tcf fail execution
+test	self-init-attribute-void-safe		exec296 tcf fail execution
+test	check-invariant-void-safe		exec297 tcf fail execution
+test	out-wrong-for-natural-attribute		exec298 tcf fail execution
+test	invariant-crash-with-attached-parent	exec299 tcf pass execution
+test	deep-twin-expanded-type			exec300 tcf fail execution
+test	attempt-on-type-none			exec301 tcf fail execution
+test	self-init-attribute-call-to-precursor	exec302 tcf fail execution manual
+test	out-on-nan-violates-invariant		exec303 tcf fail execution
+test	operations-on-numeric-generic		exec304 tcf fail execution
+test	expanded-object-test-infinite-recursion	exec305 tcf fail execution manual
+test	expanded-generic-call-on-void-target	exec306 tcf fail execution
+test	bogus-catcall-on-basic-type-agent	exec307 tcf fail execution catcall
+test	conversion-from-basic-through-any	exec308 tcf fail execution
+test	expanded-object-test-creates-objects	exec309 tcf fail execution
+test	out-on-long-attribute-buffer-overflow	exec310 tcf fail execution
+test	profile-with-invariant				exec311 tcf fail execution profile
+test	small-eif-memory-scavenge		exec312	tcf pass execution
+test	static-access-on-like-current		exec313	tcf pass execution
+test	manifest-type-expr-generating-type	exec314	tcf pass execution
 
 
 -- Compiler termination (exception trace, panic, etc.)
@@ -1405,7 +1568,22 @@ test	formal-generic-creation-crash	term160 tcf pass termination
 test	array-with-anchor-crash		term161 tcf pass termination dotnet
 test	crash-when-calling-out-on-a-formal	term162 tcf pass termination dotnet
 test    bad_formal_types                        term163 tcf pass validity
-test    crash-in-convertion-clause 	term164 tcf pass validity
+test    crash-in-conversion-clause 	term164 tcf pass validity
+test    crash-in-checking-inherited-code	term165 tcf pass validity
+test    catcall-and-full-class-checking	term166 tcf fail termination
+test	single-constraint-with-renaming-crash	term167	tcf fail termination
+test	inline-agent-with-attribute-body	term168	tcf fail termination
+test	self-init-attribute-returning-current	term169	tcf pass termination self_init void_safe
+test	self-init-attribute-crash	term170	tcf pass termination
+test	keyword-in-multi-constraint-generic-crash	term171	tcf fail termination
+test	catcall-crash-is-covariant-to	term172	tcf fail termination catcall
+test	conversion-query-constant-attribute	term173	tcf fail termination convert
+test	create-generic-constrained-by-none	term174	tcf fail termination
+test	create-constrained-generic-crash	term175	tcf fail termination
+test	remove-syntax-error-crash		term176	tcf pass termination
+test	argument-anchors-formal-crash	term177	tcf pass termination
+test	small-eif-stack-chunk		term178	tcf pass termination skip
+test	inherit-inline-agent-with-formal	term179	tcf pass termination
 
 -- Config
 
@@ -1417,6 +1595,16 @@ test	config-remove-library			config005 tcf pass config
 test	config-debugs					config006 tcf pass config
 test	config-rename-change			config007 tcf pass config
 test	config-missing-name-attribute	config008 tcf pass config
+test	config-override-crash			config009 tcf pass config
+test	config-system-name-with-space	config010 tcf pass config
+test	config-class-file-name-mismatch	config011 tcf pass config
+test	config-root-class-file-name-mismatch	config012 tcf pass config
+test	config-class-file-name-mismatch-2		config013 tcf pass config
+test	config-class-file-name-update	config014 tcf pass config
+test	config-library-options-redefinition	config015 tcf pass config
+test	config-library-options-setting	config016 tcf pass config
+test	config-nonstandard-source-extension	config017 tcf pass config
+test	config-keyword-root-class		config018 tcf fail config
 
 -- Lace
 
@@ -1513,6 +1701,13 @@ test	expanded-generic-wrong-c-with-multiple-ancestor	ccomp074 tcf fail c_compila
 test	missing-undef-c-compiler-error	ccomp075 tcf pass c_compilation
 test	missing-protection-in-inline-c-code	ccomp076 tcf pass c_compilation
 test	bad-c-code-from-argument-anchor	ccomp077 tcf fail c_compilation
+test	bad-c-code-on-debug-clause		ccomp078 tcf pass c_compilation
+test	missing-makefile-for-precompile		ccomp079 tcf fail c_compilation
+test	bad-c-code-from-argument-anchor-2	ccomp080 tcf fail c_compilation
+test	bad-c-code-for-expanded-definition	ccomp081 tcf pass c_compilation expanded
+test	expanded-generic-object-test	ccomp082 tcf fail c_compilation expanded
+test	c-header-mismatch-3				ccomp083 tcf fail c_compilation
+test	large-real-constant-c-compile-failure		ccomp084 tcf fail c_compilation
 
 -- Storable tests
 
@@ -1533,7 +1728,11 @@ test	storable-formats-2			store014 tcf pass storable
 test	retrieve-mismatch-serialization-failure	store015 tcf pass storable exception
 test	storable-formats-3			store016 tcf pass storable
 test	storable-with-attached-type	store017 tcf pass storable attached_types
-
+test	storable-with-attached-type-by-62	store018 tcf pass storable attached_types
+test	storable-with-attached-type-1	store019 tcf pass storable attached_types
+test	storable-with-attached-type-by-63	store020 tcf pass storable attached_types
+test	storable-removing-attachment-marks	store021 tcf pass storable attached_types
+test	store-expanded-class-type-2	store022 tcf pass storable expanded
 
 -- Flat, short, flatshort tests
 
@@ -1575,6 +1774,9 @@ test	ptf-file-forth-2		lib026	 tcf pass library file
 test	ptf-read-number-routines	lib027	 tcf pass library file 	
 test	es-encoding-conversion		lib028	 tcf pass library encoding
 test	ptf-read-number-routines-2	lib029	 tcf pass library file
+test	file-type-queries-wrong		lib030	 tcf pass library file
+test	file-append-not-thread-safe	lib031	 tcf pass library file multithreaded
+
 
 
 -- TUPLE tests
@@ -1593,6 +1795,7 @@ test	wrong-label-in-inheritance		tuple012	tcf pass tuple
 test	wrong-label-in-generics			tuple013	tcf pass tuple
 test	wrong-manifest-tuple-type		tuple014	tcf fail tuple
 test	attached-tuple-element-validity	tuple015	tcf pass tuple
+test	tuple-basic-to-reference		tuple016 tcf pass tuple basic_types
 
 -- ~ operator test
 test	tilde-on-basic-type		tilde001	tcf pass tilde
@@ -1862,6 +2065,7 @@ test	roundtrip-number-denoted-character rdtp002 tcf pass fixed
 -- Tests for assertion monitoring
 test	supplier-preconditions assert001 tcf pass assertions execution
 test	use-application-options-assertions	assert002 tcf pass assertions execution
+test undefined-assertion-merge assert003 tcf pass assertions
 
 -- Multi Constraint Tests
 test	multi-constraint-basics							multicon001 tcf pass multiconstraint
@@ -1913,11 +2117,8 @@ test	multi-constraint-constrained-twice				multicon046 tcf pass multiconstraint
 test	multi-constraint-renaming-to-existing-feature	multicon047 tcf pass multiconstraint
 test	multi-constraint-any-numeric-crash				multicon048 tcf pass multiconstraint
 test	multi-constraint-parallel-renaming				multicon049 tcf pass multiconstraint
---test					multicon050 tcf pass multiconstraint
---test					multicon051 tcf pass multiconstraint
---test					multicon052 tcf pass multiconstraint
-
-
+test	multi-constraint-alias-renamed					multicon050 tcf pass multiconstraint
+test	multi-constraint-alias							multicon051 tcf pass multiconstraint system-validity
 
 -- tests for expanded types
 test	expanded-array-attached-reference-array			expanded001 tcf pass expanded
@@ -1927,6 +2128,7 @@ test	expanded-formal-multiconstraint					expanded004 tcf pass expanded
 test	expanded-formal-multiconstraint2				expanded005 tcf pass expanded
 test	wrong-type-in-expanded-generic-in-generic		expanded006 tcf pass expanded
 test	complex-expanded-generic-inheritance-crash		expanded007 tcf pass expanded
+test	expanded-with-references-crash					expanded008 tcf pass expanded
 
 
 test	filename-classname-mismatch-warning	warn001	tcf pass warning
@@ -1941,46 +2143,81 @@ test	incorrect-agent-type			agent006 tcf fail agents
 test	agent-dotnet-failure			agent007 tcf pass agents dotnet
 test	agent-on-tuple-label			agent008 tcf pass agents tuple
 test	agent-on-with-attached-operands	agent009 tcf fail agents tuple
+test	agent-calling-attribute-with-formal-type	agent010 tcf pass agents formal generic
+test	various-agent-creation-and-calls	agent011 tcf pass agents
 
 -- Tests for platform specific results
 test	print-large-pointer				platform001 tcf pass platform
 
 -- Tests for attached types and void-safe constructs
-test	object-test-semantics							attach001 tcf pass execution object_test expanded
-test	object-test-local-scope							attach002 tcf pass validity object_test scope local
-test	like-current-object-test-no-defaults			attach003 tcf fail object_test attached_types
-test	object-test-with-local-use-failure				attach004 tcf pass object_test
-test	current-is_attached-no-defaults					attach005 tcf fail attached_types
-test	anchored-attached-type-failure-no-defaults		attach006 tcf fail attached_types anchored_types
+test	object-test-semantics							attach001 tcf pass execution object_test expanded attached_types
+test	object-test-local-scope							attach002 tcf pass validity object_test scope local attached_types
+test	like-current-object-test-no-defaults			attach003 tcf pass object_test attached_types
+test	object-test-with-local-use-failure				attach004 tcf pass object_test attached_types
+test	current-is_attached-no-defaults					attach005 tcf pass attached_types
+test	anchored-attached-type-failure-no-defaults		attach006 tcf pass attached_types anchored_types
 test	attached-formal-generic							attach007 tcf pass conformance attached_types
-test	object-test-in-invariant						attach008 tcf fail object_test
+test	object-test-in-invariant						attach008 tcf pass object_test attached_types
 test	attached-basic-type								attach009 tcf pass conformance basic_types attached_types
-test	attached-generic-type-conformance				attach010 tcf fail conformance attached_types
-test	correct-attached-predicate-precedence-semantics	attach011 tcf fail object_test execution
-test	object-test-chain								attach012 tcf pass object_test execution
-test	object-test-code-generation						attach013 tcf pass object_test execution
+test	attached-generic-type-conformance				attach010 tcf pass conformance attached_types
+test	correct-attached-predicate-precedence-semantics	attach011 tcf pass object_test execution attached_types
+test	object-test-chain								attach012 tcf pass object_test execution attached_types
+test	object-test-code-generation						attach013 tcf pass object_test execution attached_types
 test	read-only-void-test-in-assertion				attach014 tcf pass attached_types scope local
 test	scope-after-combined-expression					attach015 tcf pass attached_types scope local
 test	anchored-object-test-local						attach016 tcf pass object_test attached_types anchored_types
-test	object-test-in-assertion						attach017 tcf pass object_test system-validity
-test	object-test-finalization-crash					attach018 tcf pass object_test
-test	object-test-invariant-any-to-expanded			attach019 tcf fail object_test expanded system-validity
+test	object-test-in-assertion						attach017 tcf pass object_test system-validity attached_types
+test	object-test-finalization-crash					attach018 tcf pass object_test attached_types
+test	object-test-invariant-any-to-expanded			attach019 tcf fail object_test expanded system-validity attached_types
 test	detached-type-target-conversion					attach020 tcf fail attached_types system-validity
-test	explicit-attached-formal-conformance			attach021 tcf fail attached_types system-validity conformance
-test	attached-external-check							attach022 tcf fail attached_types external generic anchored_types
-test	attached-wrong-initialization					attach023 tcf fail attached_types
-test	attached-like-feature-formal-crash				attach024 tcf fail attached_types
-test	attached-formal-constraint						attach025 tcf fail attached_types generic
-test	attached-attribute-init							attach026 tcf fail attached_types self_init
-test	redefine-attached-attribute-init				attach027 tcf fail attached_types self_init
-test	generic-attached-attribute-init					attach028 tcf fail attached_types self_init generic
-test	full-void-safe-compilation						attach029 tcf fail void_safe
-test	attribute-init-code-generation-correct			attach030 tcf fail self_init incrementality melting
-test	parent-attribute-init							attach031 tcf fail self_init
-test	like-current-is-detached						attach032 tcf fail attached_types anchored_types system-validity
-test	attached-type-creation-internal					attach033 tcf pass attached_types
-test	anchored-generic-carries-attachment				attach034 tcf fail attacched_types generic
-test	object-test-in-precondition						attach035 tcf pass object_test
+test	explicit-attached-formal-conformance			attach021 tcf pass attached_types system-validity conformance
+test	attached-external-check							attach022 tcf pass attached_types external generic anchored_types
+test	attached-wrong-initialization					attach023 tcf pass attached_types
+test	attached-like-feature-formal-crash				attach024 tcf pass attached_types
+test	attached-formal-constraint						attach025 tcf pass attached_types generic
+test	attached-attribute-init							attach026 tcf pass attached_types self_init
+test	redefine-attached-attribute-init				attach027 tcf pass attached_types self_init
+test	generic-attached-attribute-init					attach028 tcf pass attached_types self_init generic
+test	full-void-safe-compilation						attach029 tcf pass void_safe attached_types
+test	attribute-init-code-generation-correct			attach030 tcf pass self_init incrementality melting attached_types
+test	parent-attribute-init							attach031 tcf pass self_init attached_types
+test	like-current-is-detached						attach032 tcf pass attached_types anchored_types system-validity
+test	attached-type-creation-internal					attach033 tcf pass attached_types reflection
+test	anchored-generic-carries-attachment				attach034 tcf pass attached_types generic
+test	object-test-in-precondition						attach035 tcf pass object_test attached_types
+test	default-in-special-access						attach036 tcf pass special attached_types
+test	attached-type-set-in-conditional					attach037 tcf pass attached_types
+test	object-test-local-same-lower-name				attach038 tcf pass attached_types
+test	void-safe-inherited-precursor					attach039 tcf pass void_safe precursor attached_types
+test	object-test-not-visible-to-old-express				attach040 tcf pass object_test system-validity attached_types
+test	current-in-self-init-attribute					attach041 tcf pass attached_types self_init void_safe validity
+test	agent-attached-by-default					attach042 tcf pass attached_types void_safe incrementality c_compilation
+test	empty-agent-argument-attached-by-default			attach043 tcf pass attached_types void_safe
+test	attached-type-attribute-attachment				attach044 tcf pass attached_types reflection
+test	attached-inherited-argument					attach045 tcf pass attached_types void_safe scope
+test	attribute-initialization-in-rescue				attach046 tcf pass attached_types void_safe validity
+test	argument-type-correct							attach047 tcf pass attached_types
+test	operator-undetected-call-on-void-target			attach048 tcf pass attached_types
+test	scope-with-non-boolean-operator					attach049 tcf fail void_safe object_test scope attached_types
+test	vevi-missed-for-once-routine					attach050 tcf pass void_safe attached_types
+test	detach-to-attach-assignment						attach051 tcf pass void_safe validity dotnet attached_types
+test	same-object-test-local-failure					attach052 tcf pass void_safe attached_types
+test	various-object-tests							attach053 tcf pass void_safe attached_types
+test	recursive-once-function-call-on-void-target		attach054 tcf fail void_safe attached_types
+test	bogus-vevi-when-inherit-expanded				attach055 tcf fail void_safe attached_types
+test	stable-attribute-redeclaration					attach056 tcf pass stable attribute redeclaration validity
+test	stable-attribute-caps							attach057 tcf pass stable attribute attached_types
+test	void-safety-level								attach058 tcf pass void_safe validity dotnet attached_types
+test	voidness-cap-in-assertion						attach059 tcf pass void_safe scope
+test	like-current-void-safety						attach060 tcf pass void_safe anchored_types
+test	object-test-in-inherited-assertions				attach061 tcf pass void_safe object_test fixed
+test	detaching-attached-variable-in-loop				attach062 tcf pass void_safe scope validity
+test	void-assigned-to-stable-attribute				attach063 tcf pass void_safe stable attribute validity
+test	void-assigned-to-object-test-with-create		attach064 tcf pass void_safe object_test
+test	object-test-code-generation				attach065 tcf pass object_test
+test	detachable-for-attached-constraint			attach066 tcf pass void_safe attached_types generic conformance validity
+test	call-on-detachable-generic				attach067 tcf pass void_safe attached_types generic validity
+test	conversion-from-cap-attached				attach068 tcf pass void_safe attached_types conversion
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -1989,7 +2226,13 @@ test	catcall-checking-conformance	conform003 tcf pass conformance
 test	tuple-conformance-broken	conform004 tcf pass conformance
 test	reverse-assignment-on-attached-target-broken	conform005 tcf pass conformance
 test	manifest-tuple-type-conformance	conform006 tcf pass conformance
+test	attached-agent-procedure-conformance	conform007 tcf fail conformance attached_types
+test	attached-formal-creation	conform008 tcf pass conformance attached_types
 
+-- Test for Reflection
+test	basic-type-internal				reflection001 tcf pass reflection
+test	basic-type-internal-violation	reflection002 tcf pass reflection
+ 
 -- .NET specific test
 if DOTNET test expanded-object-conversion	dotnet001	tcf pass dotnet
 test tuple-insertions-assertions		dotnet002	tcf pass dotnet tuple
@@ -2094,8 +2337,8 @@ if DOTNET test ca-custom-attribute-with-create dotnet100	tcf fail dotnet custom_
 if DOTNET test application-optimizations-enabled dotnet101	tcf pass dotnet optimization
 if DOTNET test system-object-remapped-in-mscorlib-only dotnet102	tcf pass dotnet consumer
 if DOTNET test consumable-attribute-usage-in-eiffel dotnet103	tcf fail dotnet consumer consumable custom_attributes
-if DOTNET test generic-creation-with-external-ctor	dotnet104	tcf pass constructor generic external creation
-if DOTNET test overridden-cluster-namespace-preserved	dotnet105	tcf pass namespace
+if DOTNET test generic-creation-with-external-ctor	dotnet104	tcf pass dotnet constructor generic external creation
+if DOTNET test overridden-cluster-namespace-preserved	dotnet105	tcf pass dotnet namespace
 if DOTNET test equal-on-dotnet-string-and-eiffel-string dotnet106	tcf pass dotnet
 if DOTNET test renaming-native-dotnet-feature-with-redefine-default-create dotnet107 tcf pass dotnet
 test anchored-creation-crash		dotnet108 tcf pass dotnet
@@ -2103,4 +2346,5 @@ test object-test-assertion-crash	dotnet109 tcf pass dotnet
 test dotnet-polymorphism			dotnet110 tcf pass dotnet
 if DOTNET test assigner-name-incrementality	dotnet111 tcf pass dotnet
 test dotnet-special-handling-crash	dotnet112 tcf pass dotnet
-
+if DOTNET test  dotnet-object-test-basic-type	dotnet113 tcf pass dotnet attached_types
+if DOTNET test  dotnet-array-data-copy	dotnet114 tcf pass dotnet

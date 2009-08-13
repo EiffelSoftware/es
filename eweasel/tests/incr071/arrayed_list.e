@@ -18,8 +18,9 @@ class ARRAYED_LIST [G] inherit
 		rename
 			force as force_i_th,
 			item as array_item,
-			infix "@" as array_infix_at,
+			at as array_infix_at,
 			make as array_make,
+			make_filled as array_make_filled,
 			put as put_i_th,
 			count as array_count,
 			index_set as array_index_set,
@@ -47,14 +48,14 @@ class ARRAYED_LIST [G] inherit
 			valid_index, put_i_th,
 			force, is_inserted, copy
 		redefine
-			first, last, swap, wipe_out, i_th, infix "@",
+			first, last, swap, wipe_out, i_th, at,
 			go_i_th, move, prunable, start, finish,
 			count, prune, remove,
 			put_left, merge_left,
 			merge_right, duplicate, prune_all, has, search,
 			append
 		select
-			count, index_set, i_th, infix "@"
+			count, index_set, i_th, at
 		end
 
 create
@@ -114,7 +115,7 @@ feature -- Access
 			Result := area.item (index - 1)
 		end
 
-	i_th, infix "@" (i: INTEGER): like item is
+	i_th, at alias "@" (i: INTEGER): like item is
 			-- Item at `i'-th position
 		do
 			Result := area.item (i - 1)
@@ -589,7 +590,7 @@ feature {NONE} -- Implementation
 			index_large_enough: pos >= 1
 		do
 			if count + 1 > capacity then
-				auto_resize (lower, count + 1)
+				grow (count + 1)
 			end
 			set_count (count + 1)
 			subcopy (Current, pos , count - 1 , pos + 1)

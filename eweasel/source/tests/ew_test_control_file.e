@@ -1,4 +1,4 @@
-indexing
+note
 	description: "An Eiffel test control file"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -23,20 +23,20 @@ create
 feature -- Creation
 
 	make (fn: STRING; parent: EW_TEST_CONTROL_FILE;
-	  table: HASH_TABLE [EW_TEST_INSTRUCTION, STRING]; add_end: BOOLEAN) is
+	  table: HASH_TABLE [EW_TEST_INSTRUCTION, STRING]; needs_end: BOOLEAN)
 			-- Create `Current' from file named `fn'
 			-- included by `inc_parent' (Void if none) using
 			-- `table' as the command to instruction
-			-- translation table.  If `add_end' is true,
-			-- add an implicit test_end instruction to the
-			-- end of the file if one is not present
+			-- translation table.  If `needs_end' is true,
+			-- it is an error if there is no test_end instruction
+			-- in the file
 		require
 			file_name_not_void: fn /= Void
 		do
 			file_name := fn;
 			include_parent := parent;
 			command_table := table;
-			implicit_end := add_end;
+			test_end_required := needs_end;
 		end;
 
 feature -- Status
@@ -57,7 +57,7 @@ feature -- Status
 
 feature -- Parsing and execution
 
-	parse_and_execute (env: EW_TEST_ENVIRONMENT) is
+	parse_and_execute (env: EW_TEST_ENVIRONMENT)
 			-- Parse `Current' in the environment `env'.
 			-- Execute the resulting instructions if
 			-- successful.  In either case, `last_ok' is
@@ -82,7 +82,7 @@ feature -- Parsing and execution
 			end
 		end;
 
-	parse (env: EW_TEST_ENVIRONMENT) is
+	parse (env: EW_TEST_ENVIRONMENT)
 			-- Parse `Current' in the environment `env'.
 			-- Set `last_ok' to indicate whether parsing
 			-- was successful.  If successful, `instructions'
@@ -125,7 +125,7 @@ feature -- Parsing and execution
 
 feature {NONE} -- Implementation
 
-	parse_existing_file (tcf: RAW_FILE) is
+	parse_existing_file (tcf: RAW_FILE)
 			-- Parse test control file `tcf' and set
 			-- `Current' to represent it.  Set `last_ok'
 			-- to indicate whether file was parsed
@@ -136,23 +136,33 @@ feature {NONE} -- Implementation
 		local
 			line: STRING;
 			err: EW_PARSE_ERROR;
+			missing_newline: BOOLEAN
 		do
 			from
 				tcf.open_read;
 				line_number := 0;
+				has_test_end := False
 				create instructions.make;
 			until
 				tcf.end_of_file or parse_error
 			loop
-				tcf.readline;
+				tcf.read_line;
+				line_number := line_number + 1;
 				if not tcf.end_of_file then
-					line_number := line_number + 1;
-					create line.make (tcf.laststring.count);
-					line.append (tcf.laststring);
+					create line.make (tcf.last_string.count);
+					line.append (tcf.last_string);
 					parse_line (line);
 					if not parse_error and last_instruction /= Void then
 						instructions.extend (last_instruction);
 					end
+				elseif not tcf.last_string.is_empty then
+					create line.make (tcf.last_string.count);
+					line.append (tcf.last_string);
+					parse_line (line);
+					if not parse_error and last_instruction /= Void then
+						instructions.extend (last_instruction);
+					end
+					missing_newline := True
 				end
 			end;
 			tcf.close;
@@ -160,18 +170,20 @@ feature {NONE} -- Implementation
 				create err.make (file_name, line_number, line, environment.substitute (line), last_instruction.failure_explanation);
 				add_error (err);
 				last_ok := False;
+			elseif test_end_required and not has_test_end then
+				create err.make (file_name, line_number + 1, "", "", "no " + Test_end_keyword + " instruction found");
+				add_error (err);
+				last_ok := False;
+			elseif missing_newline then
+				create err.make (file_name, line_number, line, environment.substitute (line), "missing newline at end of file");
+				add_error (err);
+				last_ok := False;
 			else
-				if implicit_end and not equal (tcf.laststring, Test_end_name) then
-					create line.make (Test_end_name.count);
-					line.append (Test_end_name);
-					parse_line (line);
-					instructions.extend (last_instruction);
-				end;
 				last_ok := True;
 			end
 		end;
 
-	parse_line (line: STRING) is
+	parse_line (line: STRING)
 			-- Parse test control file line and set
 			-- `last_instruction' with the corresponding
 			-- test instruction, if any.  Also, set `parse_error'
@@ -205,6 +217,9 @@ feature {NONE} -- Implementation
 				check
 					known_command: command_table.has (cmd)
 				end;
+				if cmd.is_equal (Test_end_keyword) then
+					has_test_end := True
+				end
 				inst := command_table.item (cmd).twin
 				arguments := rest;
 				inst.initialize (Current);
@@ -213,7 +228,7 @@ feature {NONE} -- Implementation
 			end
 		end;
 
-	add_error (err: EW_ERROR) is
+	add_error (err: EW_ERROR)
 		do
 			if errors = Void then
 				create errors.make;
@@ -223,13 +238,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	Comment_start: STRING is "--";
-
-	Test_end_name: STRING is "test_end";
+	Comment_start: STRING = "--";
 
 feature {EW_TEST_INSTRUCTION} -- Modification
 
-	add_errors (list: EW_ERROR_LIST) is
+	add_errors (list: EW_ERROR_LIST)
 		do
 			if errors = Void then
 				create errors.make;
@@ -260,12 +273,15 @@ feature {EW_TEST_INSTRUCTION} -- State
 	line_number: INTEGER;
 			-- Number of line being processed
 
+	has_test_end: BOOLEAN
+			-- Has a test_end instruction been encountered
+			-- yet while parsing test control file?
 
 feature {NONE} -- State
 
-	implicit_end: BOOLEAN;
-			-- Should an implicit test end instruction be added
-			-- as the last instruction if not already present?
+	test_end_required: BOOLEAN;
+			-- Is it an error if the file has no test end 
+			-- instruction?
 
 feature {EW_TEST_INSTRUCTION} -- State
 
@@ -275,7 +291,7 @@ feature {EW_TEST_INSTRUCTION} -- State
 	last_instruction: EW_TEST_INSTRUCTION;
 			--
 
-indexing
+note
 	copyright: "[
 			Copyright (c) 1984-2007, University of Southern California and contributors.
 			All rights reserved.
