@@ -1,8 +1,8 @@
 /*
 indexing
 	description: "C features for NS_VIEW"
-	date: "$Date$"
-	revision: "$Revision$"
+	date: "$Date: 2009-05-02 15:51:07 +0200 (Sa, 02 Mai 2009) $"
+	revision: "$Revision: 78491 $"
 	copyright:	"Copyright (c) 2009, Daniel Furrer"
 */
 
