@@ -59,12 +59,17 @@ feature -- Element change
 			description_set: description.is_equal (a_text)
 		end
 
-	set_from_context
-			-- Use data from `ev_context'.
+	use_data_from_context
+			-- Use data from `ev_context' to set `class_c', `e_feature', `line', and `column'.
 		do
 			set_class (ep_context.current_class)
 			set_feature (ep_context.current_feature)
 			set_position (ep_context.line_number, ep_context.column_number)
+		ensure
+			class_set: class_c = ep_context.current_class
+			--feature_set:
+			line_set: line = ep_context.line_number
+			column_set: column = ep_context.column_number
 		end
 
 feature -- Output
@@ -94,14 +99,14 @@ feature -- Output
 		end
 
 	trace (a_text_formatter: TEXT_FORMATTER) is
-			-- Display full error message in `a_text_formatter'.
+			-- <Precursor>
 		do
 			build_explain (a_text_formatter)
 			a_text_formatter.add_new_line
 		end
 
 	trace_single_line (a_text_formatter: TEXT_FORMATTER) is
-			-- Display short error, single line message in `a_text_formatter'.
+			-- <Precursor>
 		do
 			a_text_formatter.add_error (Current, code)
 			a_text_formatter.add (":")

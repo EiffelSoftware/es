@@ -21,7 +21,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_class: CLASS_C; a_feature: FEATURE_I; a_error_list: LIST [EP_ERROR])
-			-- Initialize item.
+			-- <Precursor>
 		require
 			a_class_not_void: a_class /= Void
 			a_feature_not_void: a_feature /= Void

@@ -210,7 +210,7 @@ feature {NONE} -- Implementation
 			end
 
 			if {PLATFORM}.is_unix then
-					-- Run Boogie via Mono
+					-- On Linux, run Boogie via Mono
 				l_arguments.put_front (l_executable)
 				l_executable := "mono"
 			end

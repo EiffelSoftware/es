@@ -15,10 +15,15 @@ inherit
 feature {NONE} -- Initialization
 
 	initialize (a_class: CLASS_C; a_feature: FEATURE_I)
-			-- Initalize context.
+			-- Initalize event item.
+			--
+			-- `a_class': Class associated with event.
+			-- `a_feature': Feature associated with event.
 		do
 			context_class := a_class
 			context_feature := a_feature
+			category := {ENVIRONMENT_CATEGORIES}.none
+			priority := {PRIORITY_LEVELS}.normal
 		ensure
 			context_class_set: context_class = a_class
 			context_feature_set: context_feature = a_feature
@@ -43,15 +48,9 @@ feature -- Access
 
 	frozen category: NATURAL_8
 			-- <Precursor>
-		once
-			Result := {ENVIRONMENT_CATEGORIES}.none
-		end
 
 	frozen priority: INTEGER_8
 			-- <Precursor>
-		once
-			Result := {PRIORITY_LEVELS}.normal
-		end
 
 feature -- Status report
 
@@ -75,19 +74,15 @@ feature -- Element change
 		end
 
 	set_category (a_category: like category)
-			-- Sets a new category.
-			--
-			-- `a_category': An event list category, see {ENVIRONMENT_CATEGORIES}.
+			-- <Precursor>
 		do
--- Merge64:
+			category := a_category
 		end
 
 	set_priority (a_priority: like priority)
-			-- Sets a new priority.
-			--
-			-- `a_priority': An event list category, see {PRIORITY_LEVELS}.
+			-- <Precursor>
 		do
--- Merge64:
+			priority := a_priority
 		end
 
 feature -- Basic operations

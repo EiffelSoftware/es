@@ -238,13 +238,14 @@ feature {NONE} -- Implementation
 		end
 
 -- TODO: move file someplace else
--- TODO: this should go into the Delivery somewhere...
 	background_theory_file_name: !STRING is
 			-- File to include for the background theory
+			-- Default path is 'EiffelStudio xy/studio/tools/eve_proofs/eve_proofs_theory.bpl'
 		local
 			l_path: DIRECTORY_NAME
 			l_file_name: FILE_NAME
 			l_file: RAW_FILE
+			l_dev_location: STRING
 			ee: EXECUTION_ENVIRONMENT
 		once
 			l_path := eiffel_layout.tools_path.twin
@@ -258,8 +259,16 @@ feature {NONE} -- Implementation
 					Result := l_result
 				end
 			else
+					-- The file is not in the normal delivery location.
+					-- If this is a development environment, it could be located in the SVN checkout of the delivery.
 				create ee
-				if {l_result2: STRING} (ee.get("EIFFEL_SRC") + "/framework/eve_proofs/eve_proofs_theory.bpl") then
+				l_dev_location := ee.get("EIFFEL_SRC") + "/Delivery/studio/tools/eve_proofs/eve_proofs_theory.bpl"
+				create l_file.make (l_dev_location)
+				if not l_file.exists then
+					l_dev_location := ee.get("EIFFEL_SRC") + "/../Delivery/studio/tools/eve_proofs/eve_proofs_theory.bpl"
+				end
+
+				if {l_result2: STRING} (l_dev_location) then
 					Result := l_result2
 				end
 			end

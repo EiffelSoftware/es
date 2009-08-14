@@ -23,7 +23,7 @@ create
 feature -- Access
 
 	tag: STRING
-			-- Tag which is violated
+			-- Assertion tag which is violated
 
 	associated_feature: E_FEATURE
 			-- Feature associated with error
@@ -51,8 +51,7 @@ feature -- Element change
 feature -- Output
 
 	build_explain (a_text_formatter: TEXT_FORMATTER)
-			-- Build specific explanation image for current error
-			-- in `error_window'.
+			-- <Precursor>
 		do
 			if description /= Void then
 				a_text_formatter.add (description)
@@ -90,7 +89,7 @@ feature -- Output
 		end
 
 	trace_single_line (a_text_formatter: TEXT_FORMATTER) is
-			-- Display short error, single line message in `a_text_formatter'.
+			-- <Precursor>
 		do
 			Precursor {EP_ERROR} (a_text_formatter)
 			if tag /= Void then

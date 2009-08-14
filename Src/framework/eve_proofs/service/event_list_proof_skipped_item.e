@@ -21,7 +21,11 @@ create
 feature {NONE} -- Initialization
 
 	make (a_class: CLASS_C; a_feature: FEATURE_I; a_reason: STRING)
-			-- Initialize event item.
+			-- Initalize event item.
+			--
+			-- `a_class': Class associated with event.
+			-- `a_feature': Feature associated with event.
+			-- `a_reason': Reason for skipping a proof.
 		require
 			a_class_not_void: a_class /= Void
 			a_reason_not_void: a_reason /= Void
@@ -38,7 +42,7 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	reason: STRING
-			-- <Precursor>
+			-- Reason for skipping proof
 
 	description: STRING_32
 			-- <Precursor>

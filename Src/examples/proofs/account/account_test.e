@@ -6,8 +6,8 @@ indexing
 class
 	ACCOUNT_TEST
 
---create
---	make
+create
+	make
 
 feature {NONE} -- Initialization
 

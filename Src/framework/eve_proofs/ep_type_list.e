@@ -80,7 +80,8 @@ feature {NONE} -- Implementation
 	is_same_type (a_type: TYPE_A; a_other_type: TYPE_A): BOOLEAN
 			-- Is `a_type' and `a_other_type' same type?
 		do
---Merge64:			Result := a_type.is_conformant_to (a_other_type) and then a_other_type.is_conformant_to (a_type)
+				-- TODO: do we have a real context class?
+			Result := a_type.is_conformant_to (a_other_type.associated_class, a_other_type) and then a_other_type.is_conformant_to (a_other_type.associated_class, a_type)
 		end
 
 end
