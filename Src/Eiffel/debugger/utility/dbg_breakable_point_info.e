@@ -35,6 +35,9 @@ feature -- Access
 
 	text: STRING assign set_text
 
+	ast: AST_EIFFEL assign set_ast
+			-- added for AutoFix
+
 feature -- Change
 
 	set_class_c (v: like class_c)
@@ -54,6 +57,13 @@ feature -- Change
 		do
 			text := v
 		end
+
+	set_ast (v: like ast)
+			-- Set `ast' to `v'
+		do
+		    ast := v
+		end
+
 
 feature -- Status report
 

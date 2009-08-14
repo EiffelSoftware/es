@@ -106,7 +106,7 @@
 	<target name="bench" extends="common">
 		<description>Eiffel Studio</description>
 		<root class="EB_KERNEL" feature="make"/>
-		<option>
+		<option trace="false">
 			<warning name="once_in_generic" enabled="false"/>
 		</option>
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
@@ -181,13 +181,20 @@
 			</condition>
 		</library>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
-		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf" readonly="false"/>
+		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf" readonly="false">
+			<option trace="false">
+			</option>
+		</library>
 		<library name="testing_library" location="$ISE_LIBRARY\library\testing\testing.ecf" readonly="false"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf" readonly="false"/>
 		<library name="uri_launcher" location="$EIFFEL_SRC\framework\uri_launcher\uri_launcher.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
-		<cluster name="auto_fix" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\"/>
+		<cluster name="auto_fix" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\">
+			<option trace="false">
+			</option>
+			<cluster name="error" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\error\"/>
+		</cluster>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>

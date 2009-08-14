@@ -141,6 +141,7 @@ feature {NONE} -- Registrations: Testing
 			a_registrar.register (create {TEST_MANUAL_CREATOR}.make (a_service))
 			a_registrar.register (create {TEST_EXTRACTOR}.make (a_service))
 			a_registrar.register (create {TEST_GENERATOR}.make (a_service))
+			a_registrar.register (create {AFX_FIX_PROPOSER}.make (a_service))
 		end
 
 ;note

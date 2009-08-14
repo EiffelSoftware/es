@@ -289,7 +289,7 @@ feature {NONE} -- Element change
 				if l_line = 0 then
 					l_line := l_as.start_location.line
 				end
-				l_info.add_point (current_source_class, l_line, s)
+				l_info.add_point (l_as, current_source_class, l_line, s)
 			end
 		end
 
@@ -323,7 +323,7 @@ feature {NONE} -- Element change
 				if l_line = 0 then
 					l_line := l_as.start_location.line
 				end
-				l_info.add_nested_point (current_source_class, l_line, s)
+				l_info.add_nested_point (l_as, current_source_class, l_line, s)
 			end
 		end
 

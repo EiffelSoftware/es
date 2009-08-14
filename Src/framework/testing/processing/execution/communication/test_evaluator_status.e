@@ -102,7 +102,7 @@ feature {TEST_RESULT_RECEIVER} -- Status setting
 			status := listening_status_code
 			if not is_finished then
 				if not is_expecting_outcome then
-					is_finished := execution_assigner.has_next
+					is_finished := not execution_assigner.has_next
 				end
 				is_termination_forced := False
 			end
@@ -173,6 +173,8 @@ feature {TEST_RESULT_RECEIVER} -- Status setting
 					-- otherwise it would be safer to create a copy of if.
 				status_queue.first.outcome := a_outcome
 				assign_next
+				io.put_string ("put_outcome")
+				io.put_new_line
 			end
 			queue_mutex.unlock
 		end
@@ -193,6 +195,8 @@ feature {NONE} -- Status setting
 			else
 				status_queue.put_first ([l_next, Void, {NATURAL} 1])
 			end
+			io.put_string ("assign_next: Result -> " + l_next.out)
+			io.put_new_line
 		ensure
 			finished_or_expecting_outcome: is_finished or is_expecting_outcome
 		end
@@ -213,9 +217,13 @@ feature {TEST_EXECUTOR_I} -- Basic operations
 				if Result.outcome /= Void then
 					status_queue.remove_last
 				end
+				io.put_string ("fetch_progress: success")
+				io.put_new_line
 			else
 				l_zero := 0
 				Result := [l_zero, Void, l_zero]
+				io.put_string ("fetch_progress: bad")
+				io.put_new_line
 			end
 			queue_mutex.unlock
 		end
@@ -226,4 +234,35 @@ feature {NONE} -- Constants
 	connected_status_code: NATURAL = 2
 	disconnected_status_code: NATURAL = 3
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

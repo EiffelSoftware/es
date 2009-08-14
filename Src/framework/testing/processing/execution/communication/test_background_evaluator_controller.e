@@ -75,6 +75,7 @@ feature -- Status setting
 			process := process_factory.process_launcher (executable, a_args, working_directory)
 
 			process.enable_launch_in_new_process_group
+
 			process.set_separate_console (False)
 			process.set_hidden (True)
 
@@ -84,7 +85,9 @@ feature -- Status setting
 			process.redirect_output_to_agent (
 				agent (a_string: STRING)
 					do
-
+					    debug("auto_fix")
+					    	io.put_string (a_string)
+					    end
 					end)
 			process.redirect_error_to_same_as_output
 
