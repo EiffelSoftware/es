@@ -32,7 +32,7 @@ feature -- Access
 	conf: AFX_FIX_PROPOSER_CONF_I
 			-- configuration of the session
 
-	error_handler: AFX_ERROR_HANDLER_I
+	error_handler: AFX_ERROR_PRINTER
 			-- error reporter
 
 

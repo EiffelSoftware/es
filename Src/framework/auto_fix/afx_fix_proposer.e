@@ -68,7 +68,9 @@ feature -- Process
 		do
 				-- create and share the session information
 			create l_error_handler.make_standard
-			l_error_handler.redirect_to_default_file
+			l_error_handler.config (a_conf)
+			l_error_handler.start_logging
+
 			create l_session.make (a_conf, Current, l_error_handler)
 			set_session (l_session)
 

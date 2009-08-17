@@ -381,6 +381,12 @@ feature{NONE} -- Implementation
 	Total_steps: INTEGER = 2
 			-- total number of steps of applier
 
+	Step_names: ARRAY[STRING]
+			-- names of each step
+		once
+		    Result := <<"Collect_involved_classes_step", "Backup_modify_compile_and_restore_step">>
+		end
+
 	categorize_fix_positions (a_table: HASH_TABLE [DS_ARRAYED_LIST[AFX_EXCEPTION_POSITION], CLASS_C])
 			-- categorize fixes according to their classes
 		local

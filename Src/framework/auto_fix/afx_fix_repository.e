@@ -99,6 +99,10 @@ feature -- Operation
 		local
 		    l_is_successful: BOOLEAN
 		    l_exception_position: AFX_EXCEPTION_POSITION
+
+		    l_session: like session
+		    l_error_handler: AFX_ERROR_PRINTER
+		    l_msg: STRING
 		do
 		    l_is_successful := True
 		    from
@@ -111,11 +115,12 @@ feature -- Operation
 	            l_exception_position.resolve_e_feature
 
 	            if l_exception_position.e_feature /= Void then
-
-		            l_exception_position.resolve_breakpoint_info
-	            	if l_exception_position.breakpoint_info = Void then
-	            	    l_is_successful := False
-	            	end
+					if l_exception_position.breakpoint_slot > 0 then
+    		            l_exception_position.resolve_breakpoint_info
+    	            	if l_exception_position.breakpoint_info = Void then
+    	            	    l_is_successful := False
+    	            	end
+					end
 	        	else
 	        	    l_is_successful := False
 	        	end
@@ -124,6 +129,20 @@ feature -- Operation
 		    end
 
 		    set_health_state (l_is_successful)
+
+		    	--logging
+		    l_session := session
+		    check l_session /= Void end
+		    l_error_handler := l_session.error_handler
+		    create l_msg.make_empty
+		    l_msg.append_string (exception_positions.count.out + " exception positions info resolved ")
+		    if l_is_successful then
+		        l_msg.append ("successfully.")
+			    l_error_handler.report_info_message (l_msg)
+		    else
+		        l_msg.append ("unsuccessfully.")
+			    l_error_handler.report_error_message (l_msg)
+		    end
 		end
 
 	mark_relevant_exception_positions
@@ -154,19 +173,24 @@ feature -- Operation
 		            i = l_exception_positions.count
 		        loop
 		            l_fp := l_exception_positions.at(i)
-	            	if i = 1 then
-   		       	        if exception.exception.code /= {EXCEP_CONST}.Precondition
-   		       	        		and then not (l_fp.e_feature.associated_class ~ l_class) then
-   		       	        		    -- the top feature at call stack is relevant, if not precondition violation and it's not the test case class
-   		       	        	l_fp.is_relevant := True
-   		       	        	l_has_relevant_fp := True
-   		       	        end
-   		       	    else
-   		       	        if not (l_fp.e_feature.associated_class ~ l_class) then
-   		       	        	l_fp.is_relevant := True
-   		       	        	l_has_relevant_fp := True
-   		       	        end
-	            	end
+		            if l_fp.breakpoint_slot > 0 then
+    	            	if i = 1 then
+       		       	        if exception.exception.code /= {EXCEP_CONST}.Precondition
+       		       	        		and then l_fp.e_feature.associated_class /~ l_class then
+       		       	        		    -- the top feature at call stack is relevant, if not precondition violation and it's not the test case class
+       		       	        	l_fp.is_relevant := True
+       		       	        	l_has_relevant_fp := True
+       		       	        end
+       		       	    else
+       		       	        if l_fp.e_feature.associated_class /~ l_class then
+       		       	        	l_fp.is_relevant := True
+       		       	        	l_has_relevant_fp := True
+       		       	        end
+    	            	end
+    	            else
+    	            		-- external routines are always irrelevant
+    	                l_fp.is_relevant := False
+    	            end
 
 	            	i := i + 1
 		        end -- loop
@@ -175,25 +199,6 @@ feature -- Operation
 		    	-- we only continue if there is some relevant fix position to work on.
 		    set_health_state (l_has_relevant_fp)
 		end
-
---	resolve_fix_positions
---			-- compute the positions where fixes should be applied
---		local
---		    l_exception_positions: like exception_positions
---		    l_exception_pos: AFX_EXCEPTION_POSITION
---		    l_fix_position: AST_EIFFEL
---		do
---		    l_exception_positions := exception_positions
-
---		    from
---		        l_exception_positions.start
---		    until
---		        l_exception_positions.after or not is_healthy
---		    loop
---		        l_exception_pos := l_exception_positions.item_for_iteration
---		        l_exception_pos.resolve_fix_position
---		    end
---		end
 
 	collect_relevant_objects_at_fix_positions
 			-- for each fix position, collect all the possible relevant objects
@@ -345,7 +350,7 @@ feature -- Operation
 			    l_position := l_exception_positions.item_for_iteration
 
 					-- only relevant classes
-				if l_position.is_relevant then
+				if l_position.is_relevant and then not involved_classes.has (l_position.e_feature.associated_class) then
 				    involved_classes.force_last (l_position.e_feature.associated_class)
 				end
 
@@ -546,7 +551,9 @@ feature -- Operation
 			        l_file.read_new_line
 
 			        guaranteed_file_copy (l_line_to, l_line_from)
-			        l_file_system.delete_file (l_line_to)
+
+			        	-- backup files should not be deleted, unless the module has been extensively tested
+--			        l_file_system.delete_file (l_line_to)
 			        i := i + 1
 			    end
 
@@ -564,6 +571,7 @@ feature -- Operation
 
 --    		    l_session.error_handler.raise_error ("Error creating %"copied_file_list.log%" file.")
     		else
+    		    	-- list of copied files is not deleted, in case when manually restore is needed
 				l_file_system.delete_file (l_log_file_name)
 			end
 

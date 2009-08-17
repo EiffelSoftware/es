@@ -28,10 +28,13 @@ feature -- Creation
 
 	make (a_class_name, a_routine_name: READABLE_STRING_8; a_breakpoint_slot: INTEGER)
 			-- initialize
+			-- Note: for some external routines, the breakpoint slot index info is missing from the trace.
+			-- We allow an exception position object to be created, just to keep the sequence of the call stack,
+			-- but these frames will be marked irrelevant later.
 		require
 		    class_name_not_empty: not a_class_name.is_empty
 		    routine_name_not_empty: not a_routine_name.is_empty
-		    breakpoint_slot_positive: a_breakpoint_slot > 0
+		    breakpoint_slot_positive: a_breakpoint_slot >= 0
 		do
 			class_name := a_class_name
 			routine_name := a_routine_name
@@ -50,11 +53,12 @@ feature -- status report
 		do
 		    Result := (class_name /= Void and then not class_name.is_empty)
 		    		and then (routine_name /= Void and then not routine_name.is_empty)
-		    		and then (breakpoint_slot > 0)
 		end
 
 	is_resolved: BOOLEAN
 			-- is everything resolved successfully?
+		require
+		    is_relevant: is_relevant
 		do
 		    Result := e_feature /= Void and then breakpoint_info /= Void and then not relevant_objects.is_empty
 		end
@@ -109,7 +113,6 @@ feature -- Operation
 
 	resolve_e_feature
 			-- resolve e_feature
-			-- TODO: check the class_name look-up procedure
 		local
 		    l_test_suite: TEST_SUITE_S
 		    l_list_class_i: LIST [CLASS_I]
@@ -119,7 +122,7 @@ feature -- Operation
 		    l_test_suite := test_suite.service
 
 		    	-- resolve class_c according to class_name
-		    l_list_class_i := l_test_suite.eiffel_project.system.system.universe.classes_with_name(class_name)
+		    l_list_class_i := l_test_suite.eiffel_project.system.system.universe.compiled_classes_with_name(class_name)
 		    create l_list_class_c.make (l_list_class_i.count)
 		    from
 		        l_list_class_i.start
@@ -131,7 +134,9 @@ feature -- Operation
 		        end
 		        l_list_class_i.forth
 		    end
-		    check l_list_class_c.count = 1 end
+
+		    -- TODO: check the situations where several classes are found having the same name
+		    --		 and select the proper class
 
 				-- resolve e_feature according to class_c and feature_name
 	        l_class_c := l_list_class_c.at (1)
@@ -145,6 +150,7 @@ feature -- Operation
 			-- TODO: should we take into account also the nested breakpoint index?
 		require
 		    e_feature_resolved: e_feature /= Void
+		    breakpoint_slot_valid: breakpoint_slot > 0
 		local
 		    l_points: ARRAYED_LIST [DBG_BREAKABLE_POINT_INFO]
 		do

@@ -16,7 +16,16 @@ inherit
 
 	SHARED_TEST_SERVICE
 
+	ES_SHARED_PROMPT_PROVIDER
+
 	EXCEPTIONS
+
+	DATE_TIME
+		undefine
+		    is_equal,
+		    out,
+		    copy
+		end
 
 create
 
@@ -57,7 +66,23 @@ feature -- Initialization
 
 feature -- Operation
 
-	redirect_to_default_file
+	config (a_conf: AFX_FIX_PROPOSER_CONF_I)
+			-- config the error printer using `a_conf'
+			-- TODO: really use `a_conf'
+		do
+			enable_benchmarking
+			redirect_all_to_file (Void)
+		end
+
+	start_logging
+			-- start logging information
+		do
+		    set_start_time_now
+		    is_logging := True
+		    report_info_message ("Fix proposer started at " + start_time.out)
+		end
+
+	redirect_all_to_file (a_name: detachable STRING)
 			-- redirect the output of the error printer to
 			-- a file at the default location on disk, and with default file name
 		local
@@ -66,33 +91,53 @@ feature -- Operation
 			l_log_directory_name: DIRECTORY_NAME
 			l_log_file_name: FILE_NAME
 		    l_file: detachable KL_TEXT_OUTPUT_FILE
+		    l_error_msg: STRING
 		do
-		    report_info_message ("Start redirecting error printer to default file...")
 		    is_last_redirection_successful := False
+		    create l_error_msg.make_empty
 
-			l_test_suite := test_suite.service
-			l_project_directory := l_test_suite.eiffel_project.project_directory
-			l_log_directory_name := l_project_directory.testing_results_path.twin
-			l_log_directory_name.extend ("auto_fix")
+			if a_name /= Void then
+    		    create l_log_file_name.make
+    		    if l_log_file_name.is_file_name_valid (a_name) then
+    		        l_log_file_name.make_from_string (a_name)
+    		    else
+    		        l_error_msg.append_string ("Invalid log file name!%N")
+    		        l_log_file_name := Void
+    			end
+    		end
 
-			create l_log_file_name.make_from_string (l_log_directory_name)
-			l_log_file_name.set_file_name ("auto_fix")
-			l_log_file_name.add_extension ("log")
+			if l_log_file_name = Void then
+    			l_test_suite := test_suite.service
+    			l_project_directory := l_test_suite.eiffel_project.project_directory
+    			l_log_directory_name := l_project_directory.testing_results_path.twin
+    			l_log_directory_name.extend ("auto_fix")
 
-			create l_file.make (l_log_file_name)
-			l_file.recursive_open_write
-			if l_file.is_open_write then
-				set_error_file (l_file)
-				set_info_file (l_file)
-				set_warning_file (l_file)
-				set_debug_file (l_file)
-
-				is_last_redirection_successful := True
-
-				report_info_message ("Done. Error printer redirected to: " + l_log_file_name)
-			else
-			    report_error_message ("Failed to redirect error printer...")
+    			create l_log_file_name.make_from_string (l_log_directory_name)
+    			l_log_file_name.set_file_name ("auto_fix")
+    			l_log_file_name.add_extension ("log")
 			end
+
+			if l_log_file_name /= Void then
+    			create l_file.make (l_log_file_name)
+    			l_file.recursive_open_write
+    			if l_file.is_open_write then
+    				set_error_file (l_file)
+    				set_info_file (l_file)
+    				set_warning_file (l_file)
+    				set_debug_file (l_file)
+
+    				l_error_msg.append_string ("Logging into file: " + l_log_file_name)
+    				is_last_redirection_successful := True
+    			end
+    		end
+
+    		if not is_last_redirection_successful then
+    		    l_error_msg.append_string ("Logging into std.out and std.error.")
+    		end
+
+    		check not l_error_msg.is_empty end
+    		prompts.show_info_prompt (l_error_msg, Void, Void)
+
 		end
 
 	close
@@ -132,23 +177,30 @@ feature -- Access
 	debug_file: KI_TEXT_OUTPUT_STREAM
 			-- file to log debug info
 
-	start_time: DT_DATE_TIME
+	start_time: DATE_TIME
 			-- Time when auto_fix processor was started
 
-	duration_to_now: DT_DATE_TIME_DURATION
-			-- time elapsed since the `start_time'
+	duration_in_fine_seconds_str: STRING
+			-- duration to now in milliseconds
 		require
 		    start_time_not_void: start_time /= Void
 		local
-		    l_time_now: DT_DATE_TIME
-		    l_system_clock: DT_SHARED_SYSTEM_CLOCK
+		    l_now: DATE_TIME
+		    l_fine_milli_seconds_count: INTEGER
+		    l_count: INTEGER
+		    l_str: STRING
 		do
-		    create l_system_clock
-		    l_time_now := l_system_clock.system_clock.date_time_now
-		    Result := l_time_now.duration (start_time)
-		    Result.set_time_canonical
+		    create l_now.make_now
+		    l_fine_milli_seconds_count := (l_now.relative_duration (start_time).fine_seconds_count * 1000).truncated_to_integer
+		    l_str := l_fine_milli_seconds_count.out
+		    if l_count <= 10 then
+			    create Result.make_filled (' ', 10 - l_str.count)
+			else
+			    create Result.make_empty
+		    end
+		    Result.append_string (l_str)
 		ensure
-		    Result_not_void: Result /= Void
+		    result_valid: Result /= Void and then not Result.is_empty
 		end
 
 feature -- Error report
@@ -182,29 +234,63 @@ feature -- Error message report
 	report_error_message (a_msg: STRING)
 			-- report an error message
 		do
-		    error_file.put_line (a_msg)
-		    error_file.flush
+		    report_message_to_file (error_file, a_msg, Error_message_type_char)
 		end
 
 	report_warning_message (a_msg: STRING)
 			-- report a warning message
 		do
-		    warning_file.put_line (a_msg)
-		    warning_file.flush
+		    report_message_to_file (warning_file, a_msg, Warning_message_type_char)
 		end
 
 	report_info_message (a_msg: STRING)
 		do
-		    info_file.put_line (a_msg)
-		    info_file.flush
+		    report_message_to_file (info_file, a_msg, Info_message_type_char)
 		end
 
 	report_debug_info_message (a_msg: STRING)
 		do
-		    debug_file.put_line (a_msg)
-		    debug_file.flush
+		    report_message_to_file (debug_file, a_msg, Debug_info_message_type_char)
 		end
 
+	report_message_to_file (a_file: like error_file; a_msg: STRING; a_type: CHARACTER)
+			-- report the message to file, with possible prefix
+			-- if `a_msg' extends across multiple lines, appropriate indent should be inserted for lines other than the first
+		require
+		    msg_not_empty: not a_msg.is_empty
+		local
+		    l_prefix: STRING
+		    l_indent: STRING
+		    l_out: STRING
+		    l_lines: LIST[STRING_8]
+		    l_line_no: INTEGER
+		do
+		    if is_logging then
+    				-- prepare the prefix
+    		    create l_prefix.make_filled (a_type, 1)
+    		    l_prefix.append_character (' ')
+    		    if is_benchmarking then
+    		        l_prefix.append_string ("[" + duration_in_fine_seconds_str + "] ")
+    		    end
+    		    create l_indent.make_filled (' ', l_prefix.count)
+
+    			l_lines := a_msg.split ('%N')
+
+    				-- first line
+    			check l_lines.count >= 1 end
+    		    l_prefix.append_string (l_lines[1]+"%N")
+
+    		    	-- following lines
+    			from l_line_no := 2
+    			until l_line_no > l_lines.count
+    			loop
+    			    l_prefix.append (l_indent + l_lines.item_for_iteration + "%N")
+    			end
+
+    			a_file.put_string (l_prefix)
+    		    a_file.flush
+    		end
+		end
 
 feature -- Pre-emptive error report
 
@@ -215,6 +301,9 @@ feature -- Pre-emptive error report
 		end
 
 feature -- Status report
+
+	is_logging: BOOLEAN
+			-- is error printer logging information?
 
 	is_verbose: BOOLEAN
 			-- Is `info_file' set to something other than
@@ -240,6 +329,12 @@ feature -- Status report
 			-- is last redirection successful
 
 feature -- Setting
+
+	set_start_time_now
+			-- set start time to be now
+		do
+		    create start_time.make_now
+		end
 
 	enable_benchmarking
 			-- start logging the execution time
@@ -361,7 +456,23 @@ feature -- Setting
 			debug_file_set: debug_file = null_output_stream
 		end
 
+feature -- Constants
 
+	Error_message_type_char: CHARACTER = 'X'
+			-- prefix for error messages
+
+	Warning_message_type_char: CHARACTER = '!'
+			-- prefix for warning messages
+
+	Info_message_type_char: CHARACTER = 'i'
+			-- prefix for info messages
+
+	Debug_info_message_type_char: CHARACTER = '-'
+			-- prefix for debug info messages
+
+	Std_log_file_name: STRING = "std"
+
+	Null_log_file_name: STRING = "null"
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
