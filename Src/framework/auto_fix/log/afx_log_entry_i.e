@@ -1,33 +1,32 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {AFX_LOG_ENTRY_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AFX_SESSION
-
-create
-    make
-
-feature -- Initialization
-
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
+deferred class
+	AFX_LOG_ENTRY_I
 
 feature -- Access
 
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
+	code: INTEGER
+			-- error type code
+		deferred
+		end
 
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
+	message: STRING
+			-- error message
+		deferred
+		end
+		
+feature -- Logging
 
-;note
+	log (a_logger: AFX_LOGGING_EVENT_OBSERVER_I)
+			-- log current entry to `a_logger'
+		deferred
+		end
+
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

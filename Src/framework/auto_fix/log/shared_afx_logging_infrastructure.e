@@ -1,33 +1,20 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {SHARED_AFX_LOGGING_INFRASTRUCTURE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
+	SHARED_AFX_LOGGING_INFRASTRUCTURE
 
-create
-    make
+inherit
+	SHARED_AFX_LOGGING_EVENT
 
-feature -- Initialization
+	SHARED_AFX_LOG_ENTRY_FACTORY
 
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
+	AFX_LOGGING_MESSAGE_CONSTANT_I
 
-feature -- Access
-
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
-
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
-
-;note
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

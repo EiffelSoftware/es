@@ -53,7 +53,7 @@ feature -- execution
 		do
 		    l_session := session
 		    check l_session /= Void end
-		    l_error_handler := session.error_handler
+--		    l_error_handler := session.error_handler
 
 		    if not is_cancel_requested and repository.is_healthy then
 				inspect
@@ -96,7 +96,7 @@ feature -- execution
 --					repository.restore_involved_classes
 
 				else
-					l_error_handler.report_error_message ("Bad applier step code: " + current_step.out)
+--					l_error_handler.report_error_message ("Bad applier step code: " + current_step.out)
 				end
 
     		    current_step := current_step + 1

@@ -1,33 +1,21 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {AFX_LOGGING_MESSAGE_CONSTANT_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
+	AFX_LOGGING_MESSAGE_CONSTANT_I
 
-create
-    make
+feature -- Message Constants
 
-feature -- Initialization
-
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
-
-feature -- Access
-
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
-
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
-
-;note
+	Msg_processor_started: STRING = "AutoFix processor started."
+	
+--	Logging_message_constant: TUPLE = ["AutoFix processor started."]
+--		once
+--		    Result := [Proposer_started: "AutoFix processor started."]
+--		end
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

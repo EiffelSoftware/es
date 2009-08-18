@@ -1,33 +1,39 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {SHARED_AFX_LOGGING_EVENT}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
-
-create
-    make
-
-feature -- Initialization
-
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
+	SHARED_AFX_LOGGING_EVENT
 
 feature -- Access
 
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
+	logging_event: EVENT_TYPE [TUPLE [info: AFX_LOG_ENTRY_I]]
+			-- logging event of autoFix process
+		do
+		    Result := logging_event_cell.item
+		end
 
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
+	set_logging_event (an_event: like logging_event)
+			-- set the shared logging event
+		do
+		    logging_event_cell.put (an_event)
+		ensure
+		    logging_event_cell_set: an_event = logging_event
+		end
 
-;note
+feature{NONE} -- Implementation
+
+	logging_event_cell: CELL [EVENT_TYPE [TUPLE [info: AFX_LOG_ENTRY_I]]]
+			-- internal storage for logging event
+		once
+		    create Result.put (create {EVENT_TYPE [TUPLE [info: AFX_LOG_ENTRY_I]]})
+		ensure
+		    logging_event_cell_not_void: Result /= Void
+		end
+
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

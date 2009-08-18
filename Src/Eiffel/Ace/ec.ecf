@@ -193,7 +193,8 @@
 		<cluster name="auto_fix" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\">
 			<option trace="false">
 			</option>
-			<cluster name="error" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\error\"/>
+			<cluster name="log" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\log\"/>
+			<cluster name="deleted" location="f:\eiffelstudio\reconstructed\64dev\src\framework\auto_fix\deleted\"/>
 		</cluster>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>

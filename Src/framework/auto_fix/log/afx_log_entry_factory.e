@@ -1,33 +1,39 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {AFX_LOG_ENTRY_FACTORY}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
+	AFX_LOG_ENTRY_FACTORY
 
-create
-    make
+feature -- factory methods
 
-feature -- Initialization
-
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
+	make_error_entry(a_msg: STRING): AFX_LOG_ENTRY_ERROR
+			-- make an {AFX_LOG_ENTRY_ERROR} object
 		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
+		    create Result.make (a_msg)
 		end
 
-feature -- Access
+	make_warning_entry (a_msg: STRING): AFX_LOG_ENTRY_WARNING
+			-- make an {AFX_LOG_ENTRY_WARNING} object
+		do
+		    create Result.make (a_msg)
+		end
 
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
+	make_info_entry (a_msg: STRING): AFX_LOG_ENTRY_INFO
+			-- make an {AFX_LOG_ENTRY_INFO} object
+		do
+		    create Result.make (a_msg)
+		end
 
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
+	make_debug_entry (a_msg: STRING): AFX_LOG_ENTRY_DEBUG
+			-- make an {AFX_LOG_ENTRY_DEBUG} object
+		do
+		    create Result.make (a_msg)
+		end
 
-;note
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

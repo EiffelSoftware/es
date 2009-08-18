@@ -133,15 +133,15 @@ feature -- Operation
 		    	--logging
 		    l_session := session
 		    check l_session /= Void end
-		    l_error_handler := l_session.error_handler
+--		    l_error_handler := l_session.error_handler
 		    create l_msg.make_empty
 		    l_msg.append_string (exception_positions.count.out + " exception positions info resolved ")
 		    if l_is_successful then
 		        l_msg.append ("successfully.")
-			    l_error_handler.report_info_message (l_msg)
+--			    l_error_handler.report_info_message (l_msg)
 		    else
 		        l_msg.append ("unsuccessfully.")
-			    l_error_handler.report_error_message (l_msg)
+--			    l_error_handler.report_error_message (l_msg)
 		    end
 		end
 
@@ -176,13 +176,15 @@ feature -- Operation
 		            if l_fp.breakpoint_slot > 0 then
     	            	if i = 1 then
        		       	        if exception.exception.code /= {EXCEP_CONST}.Precondition
-       		       	        		and then l_fp.e_feature.associated_class /~ l_class then
+       		       	        		and then l_fp.e_feature.associated_class /~ l_class
+       		       	        		and then l_fp.e_feature.associated_class.is_modifiable then
        		       	        		    -- the top feature at call stack is relevant, if not precondition violation and it's not the test case class
        		       	        	l_fp.is_relevant := True
        		       	        	l_has_relevant_fp := True
        		       	        end
        		       	    else
-       		       	        if l_fp.e_feature.associated_class /~ l_class then
+       		       	        if l_fp.e_feature.associated_class /~ l_class
+       		       	        		and then l_fp.e_feature.associated_class.is_modifiable then
        		       	        	l_fp.is_relevant := True
        		       	        	l_has_relevant_fp := True
        		       	        end
@@ -448,7 +450,7 @@ feature -- Operation
     			else
     			    prompts.show_warning_prompt ("Cannot create list of changed files, autoFix quitting...",
 						    					Void, Void)
-    			    l_session.error_handler.raise_error ("Error creating %"copied_file_list.log%" file.")
+--    			    l_session.error_handler.raise_error ("Error creating %"copied_file_list.log%" file.")
     			end
     		end
 

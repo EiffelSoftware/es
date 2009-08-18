@@ -37,6 +37,8 @@ inherit
 
 	SHARED_AFX_FIX_REPOSITORY
 
+	SHARED_AFX_LOGGING_INFRASTRUCTURE
+
 	ES_SHARED_PROMPT_PROVIDER
 
 inherit{NONE}
@@ -63,17 +65,29 @@ feature -- Process
 	start_process_internal (a_conf: like conf_type)
 			-- <Precursor>
 		local
+		    l_log_file: AFX_LOG_FILE
+		    l_log_event: like logging_event
 		    l_error_handler: AFX_ERROR_PRINTER
 		    l_session: AFX_SESSION
 		do
-				-- create and share the session information
-			create l_error_handler.make_standard
-			l_error_handler.config (a_conf)
-			l_error_handler.start_logging
+		    	-- config the log file
+		    create l_log_file.make_standard
+		    l_log_file.enable_benchmarking (True)
+		    l_log_file.config (a_conf)
+		    l_log_file.start_logging
 
-			create l_session.make (a_conf, Current, l_error_handler)
+		    	-- create logging event and subscribe listeners
+		    create l_log_event
+		    l_log_event.subscribe (agent l_log_file.log)
+
+		    	-- share the logging event
+		    set_logging_event (l_log_event)
+
+				-- share the session info
+			create l_session.make (a_conf, Current)
 			set_session (l_session)
 
+				-- initialize shared codec
 			codec.set_test_count ((a_conf.failing_tests.count + a_conf.regression_tests.count).to_natural_32)
 
 			create generator_task.make
@@ -81,6 +95,9 @@ feature -- Process
 
 			is_running := True
 			is_compiled := False
+
+				-- logging
+			logging_event.publish ([log_entry_factory.make_info_entry (Msg_processor_started)])
 		end
 
 	proceed_process

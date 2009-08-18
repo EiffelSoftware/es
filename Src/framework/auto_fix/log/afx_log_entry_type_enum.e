@@ -1,33 +1,27 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {AFX_LOG_ENTRY_TYPE_ENUM}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
-
-create
-    make
-
-feature -- Initialization
-
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
+	AFX_LOG_ENTRY_TYPE_ENUM
 
 feature -- Access
 
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
+	Type_error: INTEGER = 1
+			-- type for error
 
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
+	Type_warning: INTEGER = 2
+			-- type for warning
 
-;note
+	Type_info: INTEGER = 3
+			-- type for info
+
+	Type_debug: INTEGER = 4
+			-- type for debug
+
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

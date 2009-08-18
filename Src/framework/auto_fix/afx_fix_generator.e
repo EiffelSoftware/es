@@ -52,11 +52,11 @@ feature -- execution
 		    l_session: like session
 		    l_error_handler: AFX_ERROR_PRINTER
 		do
-				-- logging
-			l_session := session
-			check l_session /= Void end
-			l_error_handler := l_session.error_handler
-			l_error_handler.report_info_message ("Generator task started.")
+--				-- logging
+--			l_session := session
+--			check l_session /= Void end
+--			l_error_handler := l_session.error_handler
+--			l_error_handler.report_info_message ("Generator task started.")
 
 		    l_repository := repository
 		    l_exception := l_repository.exception
@@ -78,12 +78,12 @@ feature -- execution
 		do
 		    l_session := session
 		    check l_session /= Void end
-		    l_error_handler := session.error_handler
+--		    l_error_handler := session.error_handler
 
 		    if not is_cancel_requested and repository.is_healthy then
 		        if current_step >= 1 and current_step <= Total_steps then
 
-		            l_error_handler.report_info_message ("Generator step started: " + Step_names[current_step])
+--		            l_error_handler.report_info_message ("Generator step started: " + Step_names[current_step])
     				inspect
     					current_step
     				when Resolve_exception_position_info_step then
@@ -96,9 +96,9 @@ feature -- execution
     					repository.generate_and_register_fixes
     				end
 
-    				l_error_handler.report_info_message ("Generator step finished: " + Step_names[current_step])
+--    				l_error_handler.report_info_message ("Generator step finished: " + Step_names[current_step])
     			else
-    			    l_error_handler.report_error_message ("Bad generator step code: " + current_step.out)
+--    			    l_error_handler.report_error_message ("Bad generator step code: " + current_step.out)
 		        end
 
     		    current_step := current_step + 1
@@ -128,18 +128,18 @@ feature -- execution
 		    l_error_handler: AFX_ERROR_HANDLER_I
 		    l_msg: STRING
 		do
-		    l_session := session
-		    check l_session /= Void end
-		    l_error_handler := session.error_handler
+--		    l_session := session
+--		    check l_session /= Void end
+--		    l_error_handler := session.error_handler
 
-		    	-- logging
-		    create l_msg.make_from_string ("Generator task stops ")
-		    if attached repository as l_repos and then l_repos.is_healthy then
-		        l_msg.append_string ("successfully.")
-		    else
-		        l_msg.append_string ("unsuccessfully.")
-		    end
-		    l_error_handler.report_info_message (l_msg)
+--		    	-- logging
+--		    create l_msg.make_from_string ("Generator task stops ")
+--		    if attached repository as l_repos and then l_repos.is_healthy then
+--		        l_msg.append_string ("successfully.")
+--		    else
+--		        l_msg.append_string ("unsuccessfully.")
+--		    end
+--		    l_error_handler.report_info_message (l_msg)
 		end
 
 	cancel

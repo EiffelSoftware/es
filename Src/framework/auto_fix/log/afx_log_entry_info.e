@@ -1,31 +1,43 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {AFX_LOG_ENTRY_INFO}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
+	AFX_LOG_ENTRY_INFO
+
+inherit
+	AFX_LOG_ENTRY_I
 
 create
     make
 
-feature -- Initialization
+feature
 
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
+    make (a_msg: STRING)
+    		-- create a new object
+    	do
+    	    code := {AFX_LOG_ENTRY_TYPE_ENUM}.Type_info
+    	    message := a_msg
+    	end
+
 
 feature -- Access
 
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
+	code: INTEGER
+			-- <Precursor>
 
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
+	message: STRING
+			-- <Precurosr>
+
+feature -- Logging
+
+	log (a_logger: AFX_LOGGING_EVENT_OBSERVER_I)
+			-- <Precursor>
+		do
+			a_logger.log_info (Current)
+		end
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

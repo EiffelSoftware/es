@@ -1,33 +1,36 @@
 note
-	description: "Summary description for {AFX_SESSION}."
+	description: "Summary description for {AFX_LOG_FILE_CONSTANT_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SESSION
+	AFX_LOG_FILE_CONSTANT_I
 
-create
-    make
+feature -- Constants
 
-feature -- Initialization
+	Error_message_type_char: CHARACTER = 'X'
+			-- prefix for error messages
 
-	make (a_conf: like conf; a_proposer: like fix_proposer)
-			-- initialize object
-		do
-		    conf := a_conf
-		    fix_proposer := a_proposer
-		end
+	Warning_message_type_char: CHARACTER = '!'
+			-- prefix for warning messages
 
-feature -- Access
+	Info_message_type_char: CHARACTER = 'i'
+			-- prefix for info messages
 
-	fix_proposer: AFX_FIX_PROPOSER
-			-- running fix proposer process
+	Debug_info_message_type_char: CHARACTER = '-'
+			-- prefix for debug info messages
 
-	conf: AFX_FIX_PROPOSER_CONF_I
-			-- configuration of the session
+	Default_log_directory: STRING = "auto_fix"
+			-- default log directory
 
-;note
+	Default_log_file_name: STRING = "auto_fix"
+			-- default log file name
+
+	Default_log_file_extension: STRING = "log"
+			-- default log file extension
+
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
