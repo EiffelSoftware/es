@@ -1164,11 +1164,12 @@ feature{NONE} -- Process scheduling
 						normal_response_not_void: normal_response /= Void
 					end
 					if normal_response.exception /= Void then
-						if normal_response.exception.code = Class_invariant then
+						if normal_response.is_class_invariant_violation_on_exit then
+							mark_invalid_objects
+						end
 --							stop
 --							log_line ("-- Proxy has terminated interpreter due to class invariant violation.")
 --							failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
-						end
 					end
 				end
 			else
@@ -2305,6 +2306,23 @@ feature -- Predicate evaluation
 			typed_object_pool.mark_invalid_object (a_index, l_class)
 			if configuration.is_precondition_checking_enabled then
 				predicate_pool.remove_variable (create {ITP_VARIABLE}.make (a_index))
+			end
+		end
+
+	mark_invalid_objects is
+			-- Mark objects from `last_request' as invalid because there is a class invariant violation.
+		do
+			if attached {AUT_CALL_BASED_REQUEST} last_request as l_request then
+				mark_invalid_object (l_request.target.index)
+				if l_request.argument_list /= Void then
+					l_request.argument_list.do_all (
+						agent (a_expr: ITP_EXPRESSION)
+							do
+								if attached {ITP_VARIABLE} a_expr as l_variable then
+									mark_invalid_object (l_variable.index)
+								end
+							end)
+				end
 			end
 		end
 
