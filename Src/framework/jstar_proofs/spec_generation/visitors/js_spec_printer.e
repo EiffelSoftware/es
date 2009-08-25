@@ -143,6 +143,8 @@ feature -- Spec node processing
 
 	process_true (true_node: JS_TRUE_NODE)
 		do
+				-- Outputting a space here is crucial for detecting whether or not an assertion was supplied by the user.
+			append (" ")
 		end
 
 	process_type_judgement (type_judgement: JS_TYPE_JUDGEMENT_NODE)

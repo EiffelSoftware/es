@@ -142,37 +142,29 @@ feature {NONE}
 
 	collect_spec_of_routine (as_creation_procedure: BOOLEAN; a_feature_as: !FEATURE_AS; a_feature_i: !FEATURE_I)
 		local
-			comments: EIFFEL_COMMENTS
-			region: ERT_TOKEN_REGION
 			where: STRING
-			what: STRING
+			precond_comments: EIFFEL_COMMENTS
+			postcond_comments: EIFFEL_COMMENTS
+			region: ERT_TOKEN_REGION
+			static_spec: STRING
+			dynamic_spec: STRING
 		do
-			output.put_line (routine_signature (as_creation_procedure, a_feature_i) + " :")
-
-			output.indent
+			where := a_feature_i.written_class.name_in_upper + "." + a_feature_i.feature_name
 
 			if {b: !BODY_AS} a_feature_as.body and then {r: !ROUTINE_AS} b.content then
 
-				where := a_feature_i.written_class.name_in_upper + "." + a_feature_i.feature_name
-
-					-- Get the precondition
+					-- Get the precondition comments
 				if {pre: !REQUIRE_AS} r.precondition then
 					create region.make (pre.first_token (match_list).index, r.routine_body.first_token (match_list).index)
-					comments := match_list.extract_comment (region)
-
-					what := where + " precondition"
-					output.put_line ("{" + assertion_from_comments (comments, what, a_feature_i) + "}")
+					precond_comments := match_list.extract_comment (region)
 				else
 					error (where + ": precondition missing")
 				end
 
-					-- Get the postcondition
+					-- Get the postcondition comments
 				if {post: !ENSURE_AS} r.postcondition then
 					create region.make (post.first_token (match_list).index, r.end_keyword.first_token (match_list).index)
-					comments := match_list.extract_comment (region)
-
-					what := where + " postcondition"
-					output.put_line ("{" + assertion_from_comments (comments, what, a_feature_i) + "};")
+					postcond_comments := match_list.extract_comment (region)
 				else
 					error (where + ": postcondition missing")
 				end
@@ -180,10 +172,104 @@ feature {NONE}
 				error (where + ": spec missing")
 			end
 
-			output.unindent
+			static_spec := static_spec_of_routine (precond_comments, postcond_comments, where, a_feature_i).string
+			dynamic_spec := dynamic_spec_of_routine (precond_comments, postcond_comments, where, a_feature_i).string
+
+			if equal (static_spec, "") and then equal (dynamic_spec, "") then
+				error (where + ": spec missing")
+			else
+				if not equal (static_spec, "") then
+					output.put_line ("static " + routine_signature (as_creation_procedure, a_feature_i) + " :")
+					output.indent
+					output.append_lines (static_spec + ";")
+					output.unindent
+				end
+				if not equal (dynamic_spec, "") then
+					output.put_line (routine_signature (as_creation_procedure, a_feature_i) + " :")
+					output.indent
+					output.append_lines (dynamic_spec + ";")
+					output.unindent
+				end
+			end
+
 		end
 
-	assertion_from_comments (a_comments: EIFFEL_COMMENTS; what: STRING; where: !FEATURE_I): STRING
+	static_spec_of_routine (pre: EIFFEL_COMMENTS; post: EIFFEL_COMMENTS; where: STRING; a_feature_i: !FEATURE_I): JS_OUTPUT_BUFFER
+		do
+			Result := spec_from_comments ("SLS", pre, post, where, a_feature_i)
+		end
+
+	dynamic_spec_of_routine (pre: EIFFEL_COMMENTS; post: EIFFEL_COMMENTS; where: STRING; a_feature_i: !FEATURE_I): JS_OUTPUT_BUFFER
+		local
+			sl_spec: JS_OUTPUT_BUFFER
+			sld_spec: JS_OUTPUT_BUFFER
+		do
+			sl_spec := spec_from_comments ("SL", pre, post, where, a_feature_i)
+			sld_spec := spec_from_comments ("SLD", pre, post, where, a_feature_i)
+			if sl_spec.string.is_empty then
+				Result := sld_spec
+			elseif sld_spec.string.is_empty then
+				Result := sl_spec
+			else
+				sl_spec.append_lines ("andalso " + sld_spec.string)
+				Result := sl_spec
+			end
+		end
+
+	spec_from_comments (tag: STRING; pre: EIFFEL_COMMENTS; post: EIFFEL_COMMENTS; where: STRING; a_feature_i: !FEATURE_I): JS_OUTPUT_BUFFER
+		local
+			i: INTEGER
+			comment_tag_list: LINKED_LIST [STRING]
+			comment_tag: STRING
+			pre_with_comment_tag: STRING
+			post_with_comment_tag: STRING
+			is_spec_empty: BOOLEAN
+		do
+			create Result.make
+			is_spec_empty := True
+
+			create comment_tag_list.make
+			from i := 9 until i = 0 loop
+				comment_tag_list.put_front (tag.twin + i.out)
+				i := i - 1
+			end
+			comment_tag_list.put_front (tag.twin)
+
+			from
+				comment_tag_list.start
+			until
+				comment_tag_list.off
+			loop
+				comment_tag := comment_tag_list.item
+				pre_with_comment_tag := assertion_from_comments (comment_tag, pre, where.twin + " " + comment_tag + " precondition", a_feature_i)
+				post_with_comment_tag := assertion_from_comments (comment_tag, post, where.twin + " " + comment_tag + " postcondition", a_feature_i)
+
+				if pre_with_comment_tag.is_empty and then post_with_comment_tag.is_empty then
+					-- Do nothing: the most common case
+				elseif not pre_with_comment_tag.is_empty and then not post_with_comment_tag.is_empty then
+					if not is_spec_empty then
+						Result.put_new_line
+						Result.put_indentation
+						Result.put ("andalso ")
+					else
+						is_spec_empty := False
+						Result.put_indentation
+					end
+					Result.put ("{" + pre_with_comment_tag + "}")
+					Result.put_new_line
+					Result.put_indentation
+					Result.put ("{" + post_with_comment_tag + "}")
+				elseif pre_with_comment_tag.is_empty then
+					error (where.twin + " " + comment_tag + " precondition missing")
+				elseif post_with_comment_tag.is_empty then
+					error (where.twin + " " + comment_tag + " postcondition missing")
+				end
+
+				comment_tag_list.forth
+			end
+		end
+
+	assertion_from_comments (comment_tag: STRING; a_comments: EIFFEL_COMMENTS; what: STRING; where: !FEATURE_I): STRING
 		local
 			sl_prefix: STRING
 			l_string: STRING
@@ -191,7 +277,7 @@ feature {NONE}
 			l_assertion: JS_ASSERTION_NODE
 			l_final_assertion: JS_ASSERTION_NODE
 		do
-			sl_prefix := "SL--"
+			sl_prefix := comment_tag.twin + "--"
 
 			from
 				a_comments.start
@@ -232,7 +318,7 @@ feature {NONE}
 				l_final_assertion.accept (spec_printer)
 				Result := spec_printer.output
 			else
-				error (what + " missing")
+				Result := ""
 			end
 		end
 
