@@ -1,21 +1,21 @@
 indexing
-	description: "Summary description for {JS_COMBINE_WAND_NODE}."
+	description: "Summary description for {JS_STAR_NODE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	JS_COMBINE_WAND_NODE
+	JS_STAR_NODE
 
 inherit
-	JS_COMBINE_NODE
+	JS_ASSERTION_NODE
 
 create
 	make
 
 feature
 
-	make (l: JS_ASSERTION_NODE; r: JS_ASSERTION_NODE)
+	make (l, r: JS_ASSERTION_NODE)
 		do
 			left_assertion := l
 			right_assertion := r
@@ -27,7 +27,7 @@ feature
 
 	accept (v: JS_SPEC_VISITOR)
 		do
-			v.process_combine_wand (Current)
+			v.process_star (Current)
 		end
-		
+
 end

@@ -1,18 +1,18 @@
 indexing
-	description: "Summary description for {JS_PURE_TYPE_JUDGEMENT_NODE}."
+	description: "Summary description for {JS_TYPE_JUDGEMENT_NODE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	JS_PURE_TYPE_JUDGEMENT_NODE
+	JS_TYPE_JUDGEMENT_NODE
 
 inherit
-	JS_PURE_NODE
+	JS_ASSERTION_NODE
 
 create
 	make
-	
+
 feature
 
 	make (a: JS_ARGUMENT_NODE; t: JS_TYPE_NODE)
@@ -27,7 +27,7 @@ feature
 
 	accept (v: JS_SPEC_VISITOR)
 		do
-			v.process_pure_type_judgement (Current)
+			v.process_type_judgement (Current)
 		end
-
+		
 end

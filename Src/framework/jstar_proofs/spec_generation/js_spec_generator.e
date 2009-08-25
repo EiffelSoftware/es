@@ -188,45 +188,49 @@ feature {NONE}
 			sl_prefix: STRING
 			l_string: STRING
 			sl_assertion: STRING
-			l_assertion: JS_SPEC_NODE
+			l_assertion: JS_ASSERTION_NODE
+			l_final_assertion: JS_ASSERTION_NODE
 		do
 			sl_prefix := "SL--"
 
 			from
 				a_comments.start
-				sl_assertion := Void
+				l_final_assertion := Void
 			until
 				a_comments.off
 			loop
 				l_string := a_comments.item.content
-				if l_string.count > sl_prefix.count and then equal (l_string.substring (1, sl_prefix.count), sl_prefix) then
-					if sl_assertion = Void then
-						sl_assertion := l_string.substring (sl_prefix.count + 1, l_string.count)
+				if l_string.count >= sl_prefix.count and then equal (l_string.substring (1, sl_prefix.count), sl_prefix) then
+					sl_assertion := l_string.substring (sl_prefix.count + 1, l_string.count)
+
+					assertion_parser.reset
+					assertion_parser.set_input_buffer (create {YY_BUFFER}.make (sl_assertion))
+					assertion_parser.parse
+					if assertion_parser.error_count = 0 then
+						l_assertion := assertion_parser.assertion
+
+						-- Substitute variables, types & void
+						spec_adapter.with_feature_context (where)
+						l_assertion.accept (spec_adapter)
+
+						if l_final_assertion = Void then
+							l_final_assertion := l_assertion
+						else
+							l_final_assertion := create {JS_STAR_NODE}.make (l_final_assertion, l_assertion)
+						end
+
 					else
-						error (what + " defined more than once")
+						error ("Error parsing " + what + ": " + sl_assertion)
 					end
 				end
 				a_comments.forth
 			end
 
-			if sl_assertion /= Void then
-				assertion_parser.reset
-				assertion_parser.set_input_buffer (create {YY_BUFFER}.make (sl_assertion))
-				assertion_parser.parse
-				if assertion_parser.error_count = 0 then
-					l_assertion := assertion_parser.assertion
-
-					-- Substitute variables, types & void
-					spec_adapter.with_feature_context (where)
-					l_assertion.accept (spec_adapter)
-
-					-- Now pretty print the AST
-					spec_printer.reset
-					l_assertion.accept (spec_printer)
-					Result := spec_printer.output
-				else
-					error ("Error parsing " + what)
-				end
+			if l_final_assertion /= Void then
+				-- Now pretty print the AST
+				spec_printer.reset
+				l_final_assertion.accept (spec_printer)
+				Result := spec_printer.output
 			else
 				error (what + " missing")
 			end

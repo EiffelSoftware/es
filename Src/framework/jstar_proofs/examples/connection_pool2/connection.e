@@ -11,10 +11,10 @@ feature
 
 	close
 		require
-			--SL-- |
+			--SL-- True
 		deferred
 		ensure
-			--SL-- |
+			--SL-- True
 		end
 
 end

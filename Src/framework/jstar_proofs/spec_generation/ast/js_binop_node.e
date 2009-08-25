@@ -1,33 +1,36 @@
 indexing
-	description: "Summary description for {JS_PURE_INEQUALITY_NODE}."
+	description: "Summary description for {JS_BINOP_NODE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	JS_PURE_INEQUALITY_NODE
+	JS_BINOP_NODE
 
 inherit
-	JS_PURE_NODE
+	JS_ASSERTION_NODE
 
 create
 	make
-	
+
 feature
 
-	make (a1: JS_ARGUMENT_NODE; a2: JS_ARGUMENT_NODE)
+	make (a1: JS_ARGUMENT_NODE; o: STRING; a2: JS_ARGUMENT_NODE)
 		do
 			left_argument := a1
+			operator := o
 			right_argument := a2
 		end
 
 	left_argument: JS_ARGUMENT_NODE
 
+	operator: STRING
+
 	right_argument: JS_ARGUMENT_NODE
 
 	accept (v: JS_SPEC_VISITOR)
 		do
-			v.process_pure_inequality (Current)
+			v.process_binop (Current)
 		end
-
+		
 end

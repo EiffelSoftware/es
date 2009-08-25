@@ -50,8 +50,9 @@ feature
 			logic_and_abstraction_locator.process_class (c)
 			logic_file_name := logic_and_abstraction_locator.logic_file_name
 			abs_file_name := logic_and_abstraction_locator.abstraction_file_name
-
 			l_output_file_name := file_system.pathname (directory, "Output")
+			file_system.delete_file (l_output_file_name)
+
 			jstar_runner.run (dot_file_directory, jimple_code_file_name, specs_file_name, logic_file_name, abs_file_name, l_output_file_name)
 			jstar_output_file_name := l_output_file_name
 			cfg_file_name := "icfg.dot"

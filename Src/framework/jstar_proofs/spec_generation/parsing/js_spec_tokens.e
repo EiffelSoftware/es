@@ -24,8 +24,14 @@ feature -- Access
 				Result := "EOF token"
 			when -1 then
 				Result := "Error token"
+			when BANG then
+				Result := "BANG"
+			when CMPLE then
+				Result := "CMPLE"
 			when CMPLT then
 				Result := "CMPLT"
+			when CMPGE then
+				Result := "CMPGE"
 			when CMPGT then
 				Result := "CMPGT"
 			when CMPNE then
@@ -40,6 +46,8 @@ feature -- Access
 				Result := "EQUALS"
 			when ERROR_TOK then
 				Result := "ERROR_TOK"
+			when FALSE_TOK then
+				Result := "FALSE_TOK"
 			when IDENTIFIER then
 				Result := "IDENTIFIER"
 			when INTEGER_CONSTANT then
@@ -54,8 +62,6 @@ feature -- Access
 				Result := "MAPSTO"
 			when MULT then
 				Result := "MULT"
-			when OR_TOK then
-				Result := "OR_TOK"
 			when OROR then
 				Result := "OROR"
 			when QUESTIONMARK then
@@ -68,8 +74,8 @@ feature -- Access
 				Result := "R_PAREN"
 			when SEMICOLON then
 				Result := "SEMICOLON"
-			when WAND then
-				Result := "WAND"
+			when TRUE_TOK then
+				Result := "TRUE_TOK"
 			else
 				Result := yy_character_token_name (a_token)
 			end
@@ -77,28 +83,31 @@ feature -- Access
 
 feature -- Token codes
 
-	CMPLT: INTEGER is 258
-	CMPGT: INTEGER is 259
-	CMPNE: INTEGER is 260
-	COLON: INTEGER is 261
-	COMMA: INTEGER is 262
-	DOT: INTEGER is 263
-	EQUALS: INTEGER is 264
-	ERROR_TOK: INTEGER is 265
-	IDENTIFIER: INTEGER is 266
-	INTEGER_CONSTANT: INTEGER is 267
-	L_BRACE: INTEGER is 268
-	L_BRACKET: INTEGER is 269
-	L_PAREN: INTEGER is 270
-	MAPSTO: INTEGER is 271
-	MULT: INTEGER is 272
-	OR_TOK: INTEGER is 273
-	OROR: INTEGER is 274
-	QUESTIONMARK: INTEGER is 275
-	R_BRACE: INTEGER is 276
-	R_BRACKET: INTEGER is 277
-	R_PAREN: INTEGER is 278
-	SEMICOLON: INTEGER is 279
-	WAND: INTEGER is 280
+	BANG: INTEGER is 258
+	CMPLE: INTEGER is 259
+	CMPLT: INTEGER is 260
+	CMPGE: INTEGER is 261
+	CMPGT: INTEGER is 262
+	CMPNE: INTEGER is 263
+	COLON: INTEGER is 264
+	COMMA: INTEGER is 265
+	DOT: INTEGER is 266
+	EQUALS: INTEGER is 267
+	ERROR_TOK: INTEGER is 268
+	FALSE_TOK: INTEGER is 269
+	IDENTIFIER: INTEGER is 270
+	INTEGER_CONSTANT: INTEGER is 271
+	L_BRACE: INTEGER is 272
+	L_BRACKET: INTEGER is 273
+	L_PAREN: INTEGER is 274
+	MAPSTO: INTEGER is 275
+	MULT: INTEGER is 276
+	OROR: INTEGER is 277
+	QUESTIONMARK: INTEGER is 278
+	R_BRACE: INTEGER is 279
+	R_BRACKET: INTEGER is 280
+	R_PAREN: INTEGER is 281
+	SEMICOLON: INTEGER is 282
+	TRUE_TOK: INTEGER is 283
 
 end

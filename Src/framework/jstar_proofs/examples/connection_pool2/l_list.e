@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 	sl_predicate: "[
-		LList(x, {list=l; lastremoved=r}) = | x.<L_LIST.my_head> |-> _z * sll(_z, {last=Void; list=l}) * x.<L_LIST.my_size> |-> length(l) * x.<L_LIST.my_removed_item> |-> r
+		LList(x, {list=l; lastremoved=r}) = x.<L_LIST.my_head> |-> _z * sll(_z, {last=Void; list=l}) * x.<L_LIST.my_size> |-> length(l) * x.<L_LIST.my_removed_item> |-> r
 	]"
 	js_logic: "l_list.logic"
 	js_abstraction: "l_list.abs"
@@ -19,19 +19,19 @@ feature {NONE} -- Creation
 
 	init
 		require
-			--SL-- |
+			--SL-- True
 		do
 			my_head := Void
 			my_size := 0
 		ensure
-			--SL-- | LList$(Current, {list=empty(); lastremoved=_r})
+			--SL-- LList$(Current, {list=empty(); lastremoved=_r})
 		end
 
 feature
 
 	add (e: G)
 		require
-			--SL-- | LList$(Current, {list=_s; lastremoved=_r})
+			--SL-- LList$(Current, {list=_s; lastremoved=_r})
 		local
 			l_new_node: LIST_NODE [G]
 		do
@@ -39,12 +39,12 @@ feature
 			my_head := l_new_node
 			my_size := my_size + 1
 		ensure
-			--SL-- | LList$(Current, {list=cons(e, _s); lastremoved=_r})
+			--SL-- LList$(Current, {list=cons(e, _s); lastremoved=_r})
 		end
 
 	remove_first
 		require
-			--SL-- | LList$(Current, {list=cons(_x, _xs); lastremoved=_r})
+			--SL-- LList$(Current, {list=cons(_x, _xs); lastremoved=_r})
 		local
 			l_removed_node: LIST_NODE [G]
 		do
@@ -53,25 +53,25 @@ feature
 			my_removed_item := l_removed_node.item
 			my_size := my_size - 1
 		ensure
-			--SL-- | LList$(Current, {list=_xs; lastremoved=_x})
+			--SL-- LList$(Current, {list=_xs; lastremoved=_x})
 		end
 
 	removed_item: G
 		require
-			--SL-- | LList$(Current, {list=_l; lastremoved=_r})
+			--SL-- LList$(Current, {list=_l; lastremoved=_r})
 		do
 			Result := my_removed_item
 		ensure
-			--SL-- Result = _r | LList$(Current, {list=_l; lastremoved=_r})
+			--SL-- Result = _r * LList$(Current, {list=_l; lastremoved=_r})
 		end
 
 	size: INTEGER
 		require
-			--SL-- | LList$(Current, {list=_l; lastremoved=_r})
+			--SL-- LList$(Current, {list=_l; lastremoved=_r})
 		do
 			Result := my_size
 		ensure
-			--SL-- Result = length(_l) | LList$(Current, {list=_l; lastremoved=_r})
+			--SL-- Result = length(_l) * LList$(Current, {list=_l; lastremoved=_r})
 		end
 
 feature {NONE} -- Implementation

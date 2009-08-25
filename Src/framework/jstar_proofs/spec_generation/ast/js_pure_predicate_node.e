@@ -8,7 +8,7 @@ class
 	JS_PURE_PREDICATE_NODE
 
 inherit
-	JS_PURE_NODE
+	JS_ASSERTION_NODE
 
 create
 	make
@@ -29,5 +29,5 @@ feature
 		do
 			v.process_pure_predicate (Current)
 		end
-		
+
 end

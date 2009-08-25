@@ -21,13 +21,18 @@ INT     "-"?{DIGIT}+
 
 [ \t]+      -- Whitespace. Do nothing.
 
-"<"         { last_token := CMPLT }
-">"         { last_token := CMPGT }
-"/="        { last_token := CMPNE }
+"!"         { last_token := BANG }
+"<="        { last_token := CMPLE; last_string_value := text }
+"<"         { last_token := CMPLT; last_string_value := text }
+">="        { last_token := CMPGE; last_string_value := text }
+">"         { last_token := CMPGT; last_string_value := text }
+"/="        { last_token := CMPNE; last_string_value := text }
 ":"         { last_token := COLON }
 ","         { last_token := COMMA }
 "."         { last_token := DOT }
-"="         { last_token := EQUALS }
+"="         { last_token := EQUALS; last_string_value := text }
+"False"     { last_token := FALSE_TOK }
+"True"      { last_token := TRUE_TOK }
 {ID}        { last_token := IDENTIFIER; last_string_value := text }
 {INT}       { last_token := INTEGER_CONSTANT; last_string_value := text }
 "{"         { last_token := L_BRACE }
@@ -35,7 +40,6 @@ INT     "-"?{DIGIT}+
 "("         { last_token := L_PAREN }
 "|->"       { last_token := MAPSTO }
 "*"         { last_token := MULT }
-"|"         { last_token := OR_TOK }
 "||"        { last_token := OROR }
 "?"         { last_token := QUESTIONMARK }
 "}"         { last_token := R_BRACE }
@@ -43,7 +47,6 @@ INT     "-"?{DIGIT}+
 ")"         { last_token := R_PAREN }
 ";"         { last_token := SEMICOLON }
 -- TODO: STRING_CONSTANT
-"-*"        { last_token := WAND }
 
 .           { last_token := ERROR_TOK }
 

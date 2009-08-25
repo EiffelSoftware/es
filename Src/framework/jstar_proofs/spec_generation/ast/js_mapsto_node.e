@@ -1,14 +1,14 @@
 indexing
-	description: "Summary description for {JS_SPATIAL_MAPSTO_NODE}."
+	description: "Summary description for {JS_MAPSTO_NODE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	JS_SPATIAL_MAPSTO_NODE
+	JS_MAPSTO_NODE
 
 inherit
-	JS_SPATIAL_NODE
+	JS_ASSERTION_NODE
 
 create
 	make
@@ -30,7 +30,7 @@ feature
 
 	accept (v: JS_SPEC_VISITOR)
 		do
-			v.process_spatial_mapsto (Current)
+			v.process_mapsto (Current)
 		end
-		
+
 end

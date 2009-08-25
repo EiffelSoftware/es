@@ -34,7 +34,7 @@ feature {NONE} -- Implementation
 	yy_execute_action (yy_act: INTEGER) is
 			-- Execute semantic action.
 		do
-if yy_act <= 13 then
+if yy_act <= 14 then
 if yy_act <= 7 then
 if yy_act <= 4 then
 if yy_act <= 2 then
@@ -49,7 +49,7 @@ else
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 24")
 end
- last_token := CMPLT 
+ last_token := BANG 
 end
 else
 if yy_act = 3 then
@@ -57,13 +57,13 @@ if yy_act = 3 then
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 25")
 end
- last_token := CMPGT 
+ last_token := CMPLE; last_string_value := text 
 else
 --|#line 26 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 26")
 end
- last_token := CMPNE 
+ last_token := CMPLT; last_string_value := text 
 end
 end
 else
@@ -73,151 +73,175 @@ if yy_act = 5 then
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 27")
 end
- last_token := COLON 
+ last_token := CMPGE; last_string_value := text 
 else
 --|#line 28 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 28")
 end
- last_token := COMMA 
+ last_token := CMPGT; last_string_value := text 
 end
 else
 --|#line 29 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 29")
 end
- last_token := DOT 
+ last_token := CMPNE; last_string_value := text 
 end
 end
 else
-if yy_act <= 10 then
+if yy_act <= 11 then
 if yy_act <= 9 then
 if yy_act = 8 then
 --|#line 30 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 30")
 end
- last_token := EQUALS 
+ last_token := COLON 
 else
 --|#line 31 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 31")
 end
- last_token := IDENTIFIER; last_string_value := text 
+ last_token := COMMA 
 end
 else
+if yy_act = 10 then
 --|#line 32 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 32")
 end
- last_token := INTEGER_CONSTANT; last_string_value := text 
-end
+ last_token := DOT 
 else
-if yy_act <= 12 then
-if yy_act = 11 then
 --|#line 33 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 33")
 end
- last_token := L_BRACE 
+ last_token := EQUALS; last_string_value := text 
+end
+end
 else
+if yy_act <= 13 then
+if yy_act = 12 then
 --|#line 34 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 34")
 end
- last_token := L_BRACKET 
-end
+ last_token := FALSE_TOK 
 else
 --|#line 35 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 35")
 end
- last_token := L_PAREN 
-end
-end
+ last_token := TRUE_TOK 
 end
 else
-if yy_act <= 19 then
-if yy_act <= 16 then
-if yy_act <= 15 then
-if yy_act = 14 then
 --|#line 36 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 36")
 end
- last_token := MAPSTO 
+ last_token := IDENTIFIER; last_string_value := text 
+end
+end
+end
 else
+if yy_act <= 21 then
+if yy_act <= 18 then
+if yy_act <= 16 then
+if yy_act = 15 then
 --|#line 37 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 37")
 end
- last_token := MULT 
-end
+ last_token := INTEGER_CONSTANT; last_string_value := text 
 else
 --|#line 38 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 38")
 end
- last_token := OR_TOK 
+ last_token := L_BRACE 
 end
 else
-if yy_act <= 18 then
 if yy_act = 17 then
 --|#line 39 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 39")
 end
- last_token := OROR 
+ last_token := L_BRACKET 
 else
 --|#line 40 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 40")
 end
- last_token := QUESTIONMARK 
+ last_token := L_PAREN 
+end
 end
 else
+if yy_act <= 20 then
+if yy_act = 19 then
 --|#line 41 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 41")
 end
- last_token := R_BRACE 
-end
-end
+ last_token := MAPSTO 
 else
-if yy_act <= 22 then
-if yy_act <= 21 then
-if yy_act = 20 then
 --|#line 42 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 42")
 end
- last_token := R_BRACKET 
+ last_token := MULT 
+end
 else
 --|#line 43 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 43")
 end
- last_token := R_PAREN 
+ last_token := OROR 
+end
 end
 else
+if yy_act <= 25 then
+if yy_act <= 23 then
+if yy_act = 22 then
 --|#line 44 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 44")
 end
- last_token := SEMICOLON 
+ last_token := QUESTIONMARK 
+else
+--|#line 45 "lexer.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 45")
+end
+ last_token := R_BRACE 
 end
 else
-if yy_act <= 24 then
-if yy_act = 23 then
+if yy_act = 24 then
 --|#line 46 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 46")
 end
- last_token := WAND 
+ last_token := R_BRACKET 
 else
+--|#line 47 "lexer.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 47")
+end
+ last_token := R_PAREN 
+end
+end
+else
+if yy_act <= 27 then
+if yy_act = 26 then
 --|#line 48 "lexer.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 48")
+end
+ last_token := SEMICOLON 
+else
+--|#line 51 "lexer.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'lexer.l' at line 51")
 end
  last_token := ERROR_TOK 
 end
@@ -244,13 +268,16 @@ feature {NONE} -- Table templates
 	yy_nxt_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    4,    5,    6,    4,    7,    8,    9,   10,   11,
+			    0,    4,    5,    6,    7,    4,    8,    9,   10,   11,
 			   12,   13,   14,   15,   16,   17,   18,   19,   20,   21,
-			   22,   23,   24,   25,   26,   28,   31,   34,   32,   31,
-			   29,   29,   27,   29,   31,   30,   27,   31,   35,   35,
-			   35,   31,   33,   35,   31,    3,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,   35,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,   35,   35,   35,   35,   35, yy_Dummy>>)
+			   22,   23,   24,   25,   26,   22,   22,   22,   22,   22,
+			   22,   27,   28,   29,   38,   35,   45,   44,   43,   42,
+			   41,   40,   31,   30,   37,   36,   34,   33,   31,   32,
+			   31,   30,   46,   46,   46,   46,   39,    3,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46, yy_Dummy>>)
 		end
 
 	yy_chk_template: SPECIAL [INTEGER] is
@@ -258,29 +285,34 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,   11,   21,   32,   25,   31,
-			   11,   29,   27,   14,   21,   13,    5,   31,    3,    0,
-			    0,   21,   25,    0,   31,   35,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,   35,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,   35,   35,   35,   35,   35, yy_Dummy>>)
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,   28,   47,   43,   41,   40,   38,
+			   37,   36,   31,   30,   24,   23,   20,   18,   15,   14,
+			   12,    5,    3,    0,    0,    0,   28,   46,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46, yy_Dummy>>)
 		end
 
 	yy_base_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,   38,   45,   34,   45,   45,   45,   45,
-			   45,   18,   45,   19,   21,   45,   45,   45,   45,   45,
-			   45,   22,   45,   45,   45,   19,   45,   30,   45,   19,
-			   45,   25,   10,   45,   45,   45, yy_Dummy>>)
+			    0,    0,    0,   52,   57,   49,   57,   57,   57,   57,
+			   57,   57,   37,   57,   32,   35,   57,   57,   30,   57,
+			   29,   57,    0,   20,   16,   57,   57,   57,   24,   57,
+			   41,   29,   57,   57,   57,    0,   14,   10,   21,   57,
+			    9,   11,   57,   10,    0,    0,   57,   33, yy_Dummy>>)
 		end
 
 	yy_def_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,   35,    1,   35,   35,   35,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,   35,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,   35,   35,   35,   35,   35,
-			   35,   35,   35,   35,   35,    0, yy_Dummy>>)
+			    0,   46,    1,   46,   46,   46,   46,   46,   46,   46,
+			   46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
+			   46,   46,   47,   47,   47,   46,   46,   46,   46,   46,
+			   46,   46,   46,   46,   46,   47,   47,   47,   46,   46,
+			   47,   47,   46,   47,   47,   47,    0,   46, yy_Dummy>>)
 		end
 
 	yy_ec_template: SPECIAL [INTEGER] is
@@ -289,17 +321,17 @@ feature {NONE} -- Table templates
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
 			    3,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    2,    1,    1,    1,    4,    1,    1,    1,
-			    5,    6,    7,    1,    8,    9,   10,   11,   12,   12,
-			   12,   12,   12,   12,   12,   12,   12,   12,   13,   14,
-			   15,   16,   17,   18,    1,   19,   19,   19,   19,   19,
-			   19,   19,   19,   19,   19,   19,   19,   19,   19,   19,
-			   19,   19,   19,   19,   19,   19,   19,   19,   19,   19,
-			   19,   20,    1,   21,    1,   19,    1,   19,   19,   19,
+			    1,    1,    2,    4,    1,    1,    5,    1,    1,    1,
+			    6,    7,    8,    1,    9,   10,   11,   12,   13,   13,
+			   13,   13,   13,   13,   13,   13,   13,   13,   14,   15,
+			   16,   17,   18,   19,    1,   20,   20,   20,   20,   20,
+			   21,   20,   20,   20,   20,   20,   20,   20,   20,   20,
+			   20,   20,   20,   20,   22,   20,   20,   20,   20,   20,
+			   20,   23,    1,   24,    1,   20,    1,   25,   20,   20,
 
-			   19,   19,   19,   19,   19,   19,   19,   19,   19,   19,
-			   19,   19,   19,   19,   19,   19,   19,   19,   19,   19,
-			   19,   19,   19,   22,   23,   24,    1,    1,    1,    1,
+			   20,   26,   20,   20,   20,   20,   20,   20,   27,   20,
+			   20,   20,   20,   20,   28,   29,   20,   30,   20,   20,
+			   20,   20,   20,   31,   32,   33,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -319,30 +351,32 @@ feature {NONE} -- Table templates
 	yy_meta_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1, yy_Dummy>>)
+			    0,    1,    1,    1,    1,    2,    1,    1,    1,    1,
+			    1,    1,    1,    2,    1,    1,    1,    1,    1,    1,
+			    2,    2,    2,    1,    1,    2,    2,    2,    2,    2,
+			    2,    1,    1,    1, yy_Dummy>>)
 		end
 
 	yy_accept_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,   26,   24,    1,   25,   13,   21,   15,
-			    6,   24,    7,   24,   10,    5,   22,    2,    8,    3,
-			   18,    9,   12,   20,   11,   16,   19,    1,   23,   10,
-			    4,    9,    0,   17,   14,    0, yy_Dummy>>)
+			    0,    0,    0,   29,   27,    1,   28,    2,   18,   25,
+			   20,    9,   27,   10,   27,   15,    8,   26,    4,   11,
+			    6,   22,   14,   14,   14,   17,   24,   16,   27,   23,
+			    1,   15,    7,    3,    5,   14,   14,   14,    0,   21,
+			   14,   14,   19,   14,   13,   12,    0, yy_Dummy>>)
 		end
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 45
+	yyJam_base: INTEGER is 57
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 35
+	yyJam_state: INTEGER is 46
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 36
+	yyTemplate_mark: INTEGER is 47
 			-- Mark between normal states and templates
 
 	yyNull_equiv_class: INTEGER is 1
@@ -361,10 +395,10 @@ feature {NONE} -- Constants
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 25
+	yyNb_rules: INTEGER is 28
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 26
+	yyEnd_of_buffer: INTEGER is 29
 			-- End of buffer rule code
 
 	yyLine_used: BOOLEAN is false

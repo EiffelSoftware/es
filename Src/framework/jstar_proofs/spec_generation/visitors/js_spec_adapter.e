@@ -73,22 +73,14 @@ feature {NONE} -- Implementation
 
 feature -- Node processing
 
-	process_assertion (assertion: JS_ASSERTION_NODE)
+	process_binop (binop: JS_BINOP_NODE)
 		do
-			process_list (assertion.pure_list)
-			process_list (assertion.spatial_list)
+			binop.left_argument.accept (Current)
+			binop.right_argument.accept (Current)
 		end
 
-	process_combine_oror (combine_oror: JS_COMBINE_OROR_NODE)
+	process_false (false_node: JS_FALSE_NODE)
 		do
-			combine_oror.left_assertion.accept (Current)
-			combine_oror.right_assertion.accept (Current)
-		end
-
-	process_combine_wand (combine_wand: JS_COMBINE_WAND_NODE)
-		do
-			combine_wand.left_assertion.accept (Current)
-			combine_wand.right_assertion.accept (Current)
 		end
 
 	process_field_sig (field_sig: JS_FIELD_SIG_NODE)
@@ -137,6 +129,19 @@ feature -- Node processing
 		do
 		end
 
+	process_mapsto (mapsto: JS_MAPSTO_NODE)
+		do
+			mapsto.object.accept (Current)
+			mapsto.field_signature.accept (Current)
+			mapsto.value.accept (Current)
+		end
+
+	process_or (or_node: JS_OR_NODE)
+		do
+			or_node.left_assertion.accept (Current)
+			or_node.right_assertion.accept (Current)
+		end
+
 	process_param (param: JS_PARAM_NODE)
 		do
 		end
@@ -146,44 +151,30 @@ feature -- Node processing
 			pred_def.body.accept (Current)
 		end
 
-	process_pure_equality (pure_equality: JS_PURE_EQUALITY_NODE)
-		do
-			pure_equality.left_argument.accept (Current)
-			pure_equality.right_argument.accept (Current)
-		end
-
-	process_pure_inequality (pure_inequality: JS_PURE_INEQUALITY_NODE)
-		do
-			pure_inequality.left_argument.accept (Current)
-			pure_inequality.right_argument.accept (Current)
-		end
-
 	process_pure_predicate (pure_predicate: JS_PURE_PREDICATE_NODE)
 		do
 			process_list (pure_predicate.argument_list)
 		end
 
-	process_pure_type_judgement (pure_type_judgement: JS_PURE_TYPE_JUDGEMENT_NODE)
-		do
-			pure_type_judgement.argument.accept (Current)
-			pure_type_judgement.type.accept (Current)
-		end
-
-	process_spatial_combine (spatial_combine: JS_SPATIAL_COMBINE_NODE)
-		do
-			spatial_combine.combine_content.accept (Current)
-		end
-
-	process_spatial_mapsto (spatial_mapsto: JS_SPATIAL_MAPSTO_NODE)
-		do
-			spatial_mapsto.object.accept (Current)
-			spatial_mapsto.field_signature.accept (Current)
-			spatial_mapsto.value.accept (Current)
-		end
-
 	process_spatial_predicate (spatial_predicate: JS_SPATIAL_PRED_NODE)
 		do
 			process_list (spatial_predicate.argument_list)
+		end
+
+	process_star (star: JS_STAR_NODE)
+		do
+			star.left_assertion.accept (Current)
+			star.right_assertion.accept (Current)
+		end
+
+	process_true (true_node: JS_TRUE_NODE)
+		do
+		end
+
+	process_type_judgement (type_judgement: JS_TYPE_JUDGEMENT_NODE)
+		do
+			type_judgement.argument.accept (Current)
+			type_judgement.type.accept (Current)
 		end
 
 	process_type (type: JS_TYPE_NODE)

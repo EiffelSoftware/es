@@ -8,7 +8,7 @@ class
 	JS_SPATIAL_PRED_NODE
 
 inherit
-	JS_SPATIAL_NODE
+	JS_ASSERTION_NODE
 
 create
 	make
@@ -29,5 +29,5 @@ feature
 		do
 			v.process_spatial_predicate (Current)
 		end
-		
+
 end

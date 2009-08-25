@@ -9,15 +9,11 @@ deferred class
 
 feature
 
-	process_assertion (assertion: JS_ASSERTION_NODE)
+	process_binop (binop: JS_BINOP_NODE)
 		deferred
 		end
 
-	process_combine_oror (combine_oror: JS_COMBINE_OROR_NODE)
-		deferred
-		end
-
-	process_combine_wand (combine_wand: JS_COMBINE_WAND_NODE)
+	process_false (false_node: JS_FALSE_NODE)
 		deferred
 		end
 
@@ -41,6 +37,14 @@ feature
 		deferred
 		end
 
+	process_mapsto (mapsto: JS_MAPSTO_NODE)
+		deferred
+		end
+
+	process_or (or_node: JS_OR_NODE)
+		deferred
+		end
+
 	process_param (param: JS_PARAM_NODE)
 		deferred
 		end
@@ -49,31 +53,23 @@ feature
 		deferred
 		end
 
-	process_pure_equality (pure_equality: JS_PURE_EQUALITY_NODE)
-		deferred
-		end
-
-	process_pure_inequality (pure_inequality: JS_PURE_INEQUALITY_NODE)
-		deferred
-		end
-
 	process_pure_predicate (pure_predicate: JS_PURE_PREDICATE_NODE)
 		deferred
 		end
 
-	process_pure_type_judgement (pure_type_judgement: JS_PURE_TYPE_JUDGEMENT_NODE)
-		deferred
-		end
-
-	process_spatial_combine (spatial_combine: JS_SPATIAL_COMBINE_NODE)
-		deferred
-		end
-
-	process_spatial_mapsto (spatial_mapsto: JS_SPATIAL_MAPSTO_NODE)
-		deferred
-		end
-
 	process_spatial_predicate (spatial_predicate: JS_SPATIAL_PRED_NODE)
+		deferred
+		end
+
+	process_star (star: JS_STAR_NODE)
+		deferred
+		end
+
+	process_true (true_node: JS_TRUE_NODE)
+		deferred
+		end
+
+	process_type_judgement (type_judgement: JS_TYPE_JUDGEMENT_NODE)
 		deferred
 		end
 
