@@ -44,12 +44,23 @@ feature
 		end
 
 	process_class (c: !CLASS_C)
+		local
+			extends_clause: STRING
+			parent_classes: FIXED_LIST [CLASS_C]
+			parent_class: CLASS_C
 		do
 			output.reset
 
-			-- TODO: issue a warning if c uses inheritance
-
-			output.put_line ("class " + c.name_in_upper + " extends ANY {")
+			parent_classes := c.conforming_parents_classes
+			extends_clause := ""
+			if parent_classes.count > 1 then
+				-- TODO: Multiple inheritance
+				unsupported ("Multiple inheritance")
+			elseif parent_classes.count = 1 then
+				parent_class := parent_classes.at (1)
+				extends_clause := "extends " + parent_class.name_in_upper + " "
+			end
+			output.put_line ("class " + c.name_in_upper + " " + extends_clause + "{")
 			output.put_new_line
 
 			output.indent

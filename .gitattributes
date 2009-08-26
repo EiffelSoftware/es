@@ -2552,6 +2552,8 @@ Src/framework/jstar_proofs/examples/connection_pool2/l_list.abs -text
 Src/framework/jstar_proofs/examples/connection_pool2/l_list.logic -text
 Src/framework/jstar_proofs/examples/connection_pool2/list_node.abs -text
 Src/framework/jstar_proofs/examples/connection_pool2/list_node.logic -text
+Src/framework/jstar_proofs/examples/sum_visitor/sum_visitor.abs -text
+Src/framework/jstar_proofs/examples/sum_visitor/sum_visitor.logic -text
 Src/framework/jstar_proofs/spec_generation/jstar_grammar.txt -text
 Src/framework/jstar_proofs/spec_generation/parsing/lexer.l -text
 Src/framework/parser_extension/parser_extension.lic -text

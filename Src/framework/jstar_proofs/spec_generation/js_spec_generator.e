@@ -31,9 +31,13 @@ feature
 	process_class (a_class: !CLASS_C)
 		local
 			l_supplier: CLASS_C
+			considered: HASH_TABLE [BOOLEAN, INTEGER]
+				-- The keys are class ids. This makes sure that no class is emitted twice.
 		do
 			output.reset
 
+			create considered.make (10)
+			considered.put (True, a_class.class_id)
 				-- First collect specs from supplier classes of `a_class' (excluding `a_class' itself) that are not expanded or external (e.g. INTEGER_32).
 			from
 				a_class.suppliers.start
@@ -41,18 +45,13 @@ feature
 				a_class.suppliers.off
 			loop
 				l_supplier := a_class.suppliers.item.supplier
-				if
-					l_supplier /= Void and then
-					l_supplier.class_id /= a_class.class_id and then
-					not l_supplier.is_expanded and then
-					not l_supplier.is_external
-				then
-					collect_spec_of_class (l_supplier)
-				end
+				process_class_if_needed (l_supplier, considered)
 				a_class.suppliers.forth
 			end
-				-- Now collect the specs from `a_class' itself.
-			collect_spec_of_class (a_class)
+				-- Next: collect specs from ancestor classes that are not expanded or external.
+				-- TODO: non-conforming ancestors.
+			considered.remove (a_class.class_id)
+			process_class_and_parents_if_needed (a_class, considered, create {HASH_TABLE [BOOLEAN, INTEGER]}.make (10))
 		end
 
 	generated_specs: !STRING
@@ -73,6 +72,38 @@ feature {NONE}
 	spec_adapter: JS_SPEC_ADAPTER
 
 	spec_printer: JS_SPEC_PRINTER
+
+	process_class_and_parents_if_needed (a_class: CLASS_C; emitted: HASH_TABLE [BOOLEAN, INTEGER]; visited: HASH_TABLE [BOOLEAN, INTEGER])
+		do
+			if not visited.has_key (a_class.class_id) then
+				visited.put (True, a_class.class_id)
+				from
+					a_class.conforming_parents.start
+				until
+					a_class.conforming_parents.off
+				loop
+					process_class_and_parents_if_needed (a_class.conforming_parents.item.associated_class, emitted, visited)
+					a_class.conforming_parents.forth
+				end
+				process_class_if_needed (a_class, emitted)
+			end
+		end
+
+	process_class_if_needed (a_class: CLASS_C; considered: HASH_TABLE [BOOLEAN, INTEGER])
+		do
+			if
+				a_class /= Void and then
+				not a_class.is_expanded and then
+				not a_class.is_external and then
+				not a_class.is_class_any and then
+				not a_class.is_class_none and then
+				not considered.has_key (a_class.class_id)
+			then
+				considered.put (True, a_class.class_id)
+				collect_spec_of_class (a_class)
+			end
+			-- TODO: Specs of ANY
+		end
 
 	collect_spec_of_class (a_class: !CLASS_C)
 			-- Collects the shallow spec of a class, i.e. the suppliers of `a_class' are not considered.
@@ -102,9 +133,12 @@ feature {NONE}
 		local
 			l_content: STRING
 			l_predicate_def: JS_SPEC_NODE
+			predicate_tags: ARRAY [STRING]
+			qualifier: STRING
 		do
-			-- TODO: implement a way to "define" or "export" a predicate,
-			--       possibly with tags, i.e. sl_predicate_export and sl_predicate_define
+			predicate_tags := <<"SL_PREDICATE", "SL_PREDICATE_DEFINE", "SL_PREDICATE_EXPORT">>
+			predicate_tags.compare_objects
+
 			if a_indexing_clause /= Void then
 				from
 					a_indexing_clause.start
@@ -113,7 +147,7 @@ feature {NONE}
 				loop
 					if
 						{l_index_as: !INDEX_AS} a_indexing_clause.item and then
-						equal (l_index_as.tag.name.as_upper, "SL_PREDICATE")
+						predicate_tags.has (l_index_as.tag.name.as_upper)
 					then
 						l_content := l_index_as.content_as_string
 						l_content := l_content.substring (2, l_content.count - 1)
@@ -130,7 +164,12 @@ feature {NONE}
 							-- Now output the pretty printed definition
 							spec_printer.reset
 							l_predicate_def.accept (spec_printer)
-							output.put_line ("define " + spec_printer.output + ";%N")
+							if equal (l_index_as.tag.name.as_upper, "SL_PREDICATE_EXPORT") then
+								qualifier := "export"
+							else
+								qualifier := "define"
+							end
+							output.put_line (qualifier + " " + spec_printer.output + ";%N")
 						else
 							error ("Error parsing predicate definition: " + l_content)
 						end
