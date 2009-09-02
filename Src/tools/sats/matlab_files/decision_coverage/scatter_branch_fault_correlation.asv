@@ -78,7 +78,8 @@ for i=1:number_of_class
     if is_normalized_fault == true
         ylim([0, 1]);
     end    
-    text (0.2, 0.8, ['r=', num2str(r(1, 2))]);
+    text (0.1, 0.8, ['r=', num2str(r(1, 2))]);
+
     title (classes{selected_classes(i)});
     xlabel ('Branch');
     ylabel ('Faults');

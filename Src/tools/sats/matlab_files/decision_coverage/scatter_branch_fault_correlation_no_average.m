@@ -1,4 +1,4 @@
-function [X,Y] = scatter_branch_fault_correlation (classes, faults, branches, normalized_faults, normalized_branches, start_time, end_time, time_unit, selected_classes, is_normalized_fault, is_normalized_branch)
+function [X,Y] = scatter_branch_fault_correlation_no_average (classes, faults, branches, normalized_faults, normalized_branches, start_time, end_time, time_unit, selected_classes, is_normalized_fault, is_normalized_branch)
 % Scatter the correlation between branch coverage and detected faults.
 
 X={};
@@ -39,10 +39,16 @@ for v=1:number_of_class
         end
     end
     
-    mb = median (nbranch_tbl, 2);
-    mf = median (nfault_tbl, 2);
-    X = horzcat (X, mb);
-    Y = horzcat (Y, mf);
+    nnb = [];
+    nnf = [];
+    for j=1:number_of_session
+        nnb = vertcat (nnb, nbranch_tbl(:, j));
+        nnf = vertcat (nnf, nfault_tbl(:, j));
+    end
+    %mb = median (nbranch_tbl, 2);
+    %mf = median (nfault_tbl, 2);
+    X = horzcat (X, nnb);
+    Y = horzcat (Y, nnf);
         
 %    cmf = zeros (101, 1);
 %     
@@ -79,6 +85,7 @@ for i=1:number_of_class
         ylim([0, 1]);
     end    
     text (0.2, 0.8, ['r=', num2str(r(1, 2))]);
+
     title (classes{selected_classes(i)});
     xlabel ('Branch');
     ylabel ('Faults');

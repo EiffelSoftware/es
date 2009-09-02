@@ -28,7 +28,7 @@ for i=start_index:end_index
     faults = horzcat (faults, [fault_id, visited_times, first_visit_time, first_visit_test_case_index]);
     
     % Load one branch file.
-    branch_file_name = [base_directory_name, filesep, int2str(i), filesep, 'branches.txt'];
+    branch_file_name = [base_directory_name, filesep, int2str(i), filesep, 'adapted_branches.txt'];
     [branch_id, bvisited_times, bfirst_visit_time, bfirst_visit_test_case_index]=textread(branch_file_name, '%d\t%d\t%d\t%d', 'headerlines', 1);    
     bfirst_visit_time(find (bfirst_visit_time==0), 1) = 1;
     branches = horzcat (branches, [branch_id, bvisited_times, bfirst_visit_time, bfirst_visit_test_case_index]);

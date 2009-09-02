@@ -89,7 +89,7 @@ end
 xlabel (time_label);
 xlim ([0, 360]);
 set(gca,'XTick',[0:30:360])
-ylim ([0.3, 0.9]);
+ylim ([0.5, 1.1]);
 %Setup Y-axis label.
 ylabel ('Branch coverage level', 'FontSize', 12);
 
