@@ -67,6 +67,9 @@ class AnalyzedResult(object):
         self.valid_tc_gen_by_time = {}
         self.valid_tc_gen_speed_by_time = {}
         self.ps_success_rate_by_time = {}
+        self.count_precond_features = 0
+        self.precond_features_with_valid_tc = []
+        self.precond_features_without_valid_tc = []
     
     @classmethod
     def init_from_file(cls, filepath):
@@ -179,7 +182,29 @@ class AnalyzedResult(object):
                 ret.ps_success_rate_by_time[1] = 1
             else:
                 ret.ps_success_rate_by_time[i] = ret.ps_success_rate_by_time[i-1]
-
+        
+        # count_precond_features, precond_features_with_valid_tc and precond_features_without_valid_tc
+        pattern = re.compile("--\[Feature statistics\]\n((.+\n)*)\n")
+        match = re.search(pattern, contents)
+        if not match:
+            raise MyError("'%s': missing [Feature statistics]" % fn)
+        for line in match.group(1).split('\n')[1:-1]:
+            pattern = re.compile("([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)")
+            match = re.search(pattern, line)
+            if not match:
+                raise MyError("%s:'%s': wrong feature_stats-line format" % (fn, line))
+            if match.group(3) != 'has_precondition':
+                continue
+            ret.count_precond_features += 1
+            iter_feature_id = match.group(1) + ':' + match.group(2)
+            iter_time_last_valid_tc = int(match.group(12))
+            if iter_time_last_valid_tc / 60.0 >= options['cut-time']:
+                continue
+            if iter_time_last_valid_tc == -1:
+                ret.precond_features_without_valid_tc.append(iter_feature_id)
+            else:
+                ret.precond_features_with_valid_tc.append(iter_feature_id)
+        
         return ret
     
     @classmethod
@@ -226,6 +251,21 @@ class AnalyzedResult(object):
                 ret.ps_success_rate_by_time[i] = cls.compute_median(iter_list)
             else:
                 ret.ps_success_rate_by_time[i] = cls.compute_mean(iter_list)
+        
+        # count_precond_features
+        ret.count_precond_features = list_of_ar[0].count_precond_features
+        
+        # precond_features_with_valid_tc
+        iter_list = []
+        for ar in list_of_ar:
+            iter_list.extend(ar.precond_features_with_valid_tc)
+        ret.precond_features_with_valid_tc = list(set(iter_list))
+        
+        # precond_features_without_valid_tc
+        iter_list = []
+        for ar in list_of_ar:
+            iter_list.extend(ar.precond_features_without_valid_tc)
+        ret.precond_features_without_valid_tc = list(set(iter_list))
         
         return ret
     
@@ -306,10 +346,12 @@ def main(argv=None):
         options['outfolder'] = args[1]
         options['analysis_outfolder'] = os.path.join(options["outfolder"], "analysis")
         options['graphs_outfolder'] = os.path.join(options["outfolder"], "graphs")
+        options['tables_outfolder'] = os.path.join(options["outfolder"], "tables")
         try:
             os.makedirs(options["outfolder"])
             os.makedirs(options["analysis_outfolder"])
             os.makedirs(options["graphs_outfolder"])
+            os.makedirs(options["tables_outfolder"])
         except OSError, exc:
             if exc.errno == errno.EEXIST:
                 pass
@@ -406,15 +448,56 @@ def main(argv=None):
             for k, v in j['avg'].ps_success_rate_by_time.iteritems():
                 iter_fp.write("%s\t%s\n" % (k, v))
             iter_fp.close()
+            
+            # write precond_features_with_valid_tc
+            iter_outfile = os.path.join(iter_outfolder, 'precond_features_with_valid_tc.txt')
+            iter_fp = open(iter_outfile, 'w')
+            for v in j['avg'].precond_features_with_valid_tc:
+                iter_fp.write("%s\n" % (v))
+            iter_fp.close()
+            
+            # write precond_features_without_valid_tc
+            iter_outfile = os.path.join(iter_outfolder, 'precond_features_without_valid_tc.txt')
+            iter_fp = open(iter_outfile, 'w')
+            for v in j['avg'].precond_features_without_valid_tc:
+                iter_fp.write("%s\n" % (v))
+            iter_fp.close()
+    
+    
+    # write tables
+    # table precond_features
+    iter_outfile = os.path.join(options['tables_outfolder'], 'precond_features.txt')
+    iter_fp = open(iter_outfile, 'w')
+    # ugly hack, should be somewhere else...
+    precond_features_increase_by_class = {}
+    for iter_test_main_class in sorted(processed_results.keys()):
+        i = processed_results[iter_test_main_class]
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "precond_features: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        iter_or = i['or']['avg']
+        iter_ps = i['ps']['avg']
+        iter_count_pf = iter_or.count_precond_features
+        iter_or_untested_pf = 100.0 * float(len(iter_or.precond_features_without_valid_tc)) / float(iter_count_pf)
+        iter_ps_untested_pf = 100.0 * float(len(iter_ps.precond_features_without_valid_tc)) / float(iter_count_pf)
+        iter_increase = 100.0 * float(iter_or_untested_pf - iter_ps_untested_pf) / float(iter_or_untested_pf)
+        iter_fp.write("%s & %s & %s & %s & %s\\\\\n" %
+                (iter_test_main_class,
+                iter_count_pf,
+                iter_or_untested_pf,
+                iter_or_untested_pf,
+                iter_increase))
+        precond_features_increase_by_class[iter_test_main_class] = iter_increase
+    iter_fp.close()
     
     
     # write matlab script for graph generation
     matlab_fp = open(os.path.join(options['outfolder'], 'gen_graphs.m'), 'w')
     test_main_classes = sorted(processed_results.keys())
     
-    # graph normalized_overhead
+    # graph relative_speed
     matlab_fp.write("\n")
-    matlab_fp.write("%% normalized_overhead\n")
+    matlab_fp.write("%% relative_speed\n")
     matlab_fp.write("h = newplot;\n")
     matlab_fp.write("hold on;\n")
     matlab_fp.write("x = 1:1:60;\n")
@@ -425,14 +508,14 @@ def main(argv=None):
         if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
             matlab_fp.write("data_or = dlmread('%s', '\\t');\n" % iter_file_or)
         else:
-            print >> sys.stderr, "normalized_overhead: '%s_or' not found, ignoring class." % iter_test_main_class
+            print >> sys.stderr, "relative_speed: '%s_or' not found, ignoring class." % iter_test_main_class
             continue
         
         iter_file_ps = os.path.join("analysis", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
         if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
             matlab_fp.write("data_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
-            print >> sys.stderr, "normalized_overhead: '%s_ps' not found, ignoring class." % iter_test_main_class
+            print >> sys.stderr, "relative_speed: '%s_ps' not found, ignoring class." % iter_test_main_class
             continue
         
         matlab_fp.write("y = [y;(data_ps(:,2)./data_or(:,2) - 1)'];\n")
@@ -445,9 +528,9 @@ def main(argv=None):
     matlab_fp.write("plot(h, x, yspecial, 'LineWidth', 2);\n")
     matlab_fp.write("legend({'median\_all' 'mean\_max' 'mean\_min'});\n")
     matlab_fp.write("xlabel(h, 'Duration of test run (minutes)');\n")
-    matlab_fp.write("ylabel(h, 'Normalized overhead');\n")
-    matlab_fp.write("title(h, 'Normalized overhead by time (all classes)');\n")
-    matlab_fp.write("saveas(h, 'graphs/normalized_overhead_all_classes.png', 'png');\n")
+    matlab_fp.write("ylabel(h, 'Relative speed');\n")
+    matlab_fp.write("title(h, 'Relative speed by time (all classes)');\n")
+    matlab_fp.write("saveas(h, 'graphs/relative_speed_all_classes.png', 'png');\n")
     matlab_fp.write("hold off;\n")
     matlab_fp.write("\n")
 
@@ -601,9 +684,23 @@ def main(argv=None):
     matlab_fp.write("saveas(h, 'graphs/distinct_faults.png', 'png');\n")
     matlab_fp.write("\n")
 
+    # graph precond_features_increase
+    matlab_fp.write("\n")
+    matlab_fp.write("%% precond_features_increase\n")
+    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("precond_features_increase_by_class = [")
+    for v in precond_features_increase_by_class.values():
+        matlab_fp.write("%s," % v)
+    matlab_fp.write("];\n")
+    matlab_fp.write("hist(h, precond_features_increase_by_class, 50);\n")
+    matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
+    matlab_fp.write("ylabel(h, '# classes');\n")
+    matlab_fp.write("title(h, 'Class distribution by increase in tested precond\_features');\n")
+    matlab_fp.write("saveas(h, 'graphs/precond_features_increase.png', 'png');\n")
+    matlab_fp.write("\n")
 
     matlab_fp.close()
-
+    
 
 if __name__ == "__main__":
     sys.exit(main())
