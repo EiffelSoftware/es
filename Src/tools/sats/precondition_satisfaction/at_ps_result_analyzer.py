@@ -16,19 +16,32 @@ Options:
   --cut-time <mins>   Analyze first `mins' minutes of logfiles.
                       Error if they are shorter.
                       Default: 60 mins.
+  --feature-hardness <float>
+                      Set threshold over which a feature is considered hard
+                      to test (# invalid_tc / # total_tc).
+                      Must be between 0.0 and 1.0, default: 0.2
   --median                              Use median for all, default mean.
+  --median-count-faults                 Use median, default mean.
   --median-faults-by-time               Use median, default mean.
   --median-valid-tc-gen-by-time         Use median, default mean.
   --median-valid-tc-gen-speed-by-time   Use median, default mean.
   --median-ps-success-rate              Use median, default mean.
+  --median-count-valid-tc-by-feature    Use median, default mean.
+  --median-count-invalid-tc-by-feature  Use median, default mean.
+  --median-feature-hardness             Use median, default mean.
 '''
 options = {
     'cut-time': 60,
+    'feature-hardness': 0.2,
     'median': False,
+    'median-count-faults': False,
     'median-faults-by-time': False,
     'median-valid-tc-gen-by-time': False,
     'median-valid-tc-gen-speed-by-time': False,
     'median-ps-success-rate': False,
+    'median-feature-hardness': False,
+    'median-count-valid-tc-by-feature': False,
+    'median-count-invalid-tc-by-feature': False,
 }
 
 
@@ -62,6 +75,7 @@ class AnalyzedResult(object):
         self.classes_under_test = []
         self.last_timestamp = 0
         
+        self.count_faults = 0
         self.faults_by_time = {}
         self.distinct_faults = []
         self.valid_tc_gen_by_time = {}
@@ -70,6 +84,9 @@ class AnalyzedResult(object):
         self.count_precond_features = 0
         self.precond_features_with_valid_tc = []
         self.precond_features_without_valid_tc = []
+        self.count_valid_tc_by_feature = {}
+        self.count_invalid_tc_by_feature = {}
+        self.hardness_by_feature = {}
     
     @classmethod
     def init_from_file(cls, filepath):
@@ -108,7 +125,7 @@ class AnalyzedResult(object):
             raise MyWarning("'%s' too short duration, ignoring." % fn)
         ret.last_timestamp = match.group(1)
 
-        # faults_by_time and distinct_faults
+        # count_faults, faults_by_time and distinct_faults
         pattern = re.compile("--\[Faults\].*\n((.+\n)*)\n")
         match = re.search(pattern, contents)
         if not match:
@@ -126,9 +143,10 @@ class AnalyzedResult(object):
                 times[iter_time_minute] += 1
             else:
                 times[iter_time_minute] = 1
-            iter_fault_id = match.group(2) + ':' + match.group(3) + ':' + match.group(4) + ':' + match.group(6)
+            iter_fault_id = match.group(2) + ':' + match.group(3) + ':' + match.group(4) + ':' + str(match.group(5)) + ':' + match.group(6)
             if not iter_fault_id in ret.distinct_faults:
                 ret.distinct_faults.append(iter_fault_id)
+        ret.count_faults = len(ret.distinct_faults)
         # for fault/time curve, cap at options['cut-time'] minutes
         sum_count = 0
         for i in range(1, options['cut-time']+1):
@@ -183,7 +201,9 @@ class AnalyzedResult(object):
             else:
                 ret.ps_success_rate_by_time[i] = ret.ps_success_rate_by_time[i-1]
         
-        # count_precond_features, precond_features_with_valid_tc and precond_features_without_valid_tc
+        # count_precond_features, precond_features_with_valid_tc,
+        # precond_features_without_valid_tc, count_valid_tc_by_feature,
+        # count_invalid_tc_by_feature and hardness_by_feature
         pattern = re.compile("--\[Feature statistics\]\n((.+\n)*)\n")
         match = re.search(pattern, contents)
         if not match:
@@ -193,10 +213,22 @@ class AnalyzedResult(object):
             match = re.search(pattern, line)
             if not match:
                 raise MyError("%s:'%s': wrong feature_stats-line format" % (fn, line))
+            
+            iter_feature_id = match.group(1) + ':' + match.group(2) + ':' + match.group(3)
+            iter_valid_tc = int(match.group(4)) + int(match.group(5)) + int(match.group(6))
+            iter_invalid_tc = int(match.group(7))
+            iter_total_tc = iter_valid_tc + iter_invalid_tc
+            if iter_total_tc > 0:
+                iter_hardness = float(iter_invalid_tc) / float(iter_valid_tc + iter_invalid_tc)
+            else:
+                iter_hardness = 0
+            ret.count_valid_tc_by_feature[iter_feature_id] = iter_valid_tc
+            ret.count_invalid_tc_by_feature[iter_feature_id] = iter_invalid_tc
+            ret.hardness_by_feature[iter_feature_id] = iter_hardness
+            
             if match.group(3) != 'has_precondition':
                 continue
             ret.count_precond_features += 1
-            iter_feature_id = match.group(1) + ':' + match.group(2)
             iter_time_last_valid_tc = int(match.group(12))
             if iter_time_last_valid_tc / 60.0 >= options['cut-time']:
                 continue
@@ -213,6 +245,13 @@ class AnalyzedResult(object):
             raise MyError("'%s': not a list" % (list_of_ar))
         ret = cls()
         len_list_of_ar = len(list_of_ar)
+        
+        # count_faults
+        iter_list = map(lambda x: x.count_faults, list_of_ar)
+        if options['median-count-faults']:
+            ret.count_faults = cls.compute_median(iter_list)
+        else:
+            ret.count_faults = cls.compute_mean(iter_list)
         
         # faults_by_time
         for i in range(1, options['cut-time']+1):
@@ -267,6 +306,54 @@ class AnalyzedResult(object):
             iter_list.extend(ar.precond_features_without_valid_tc)
         ret.precond_features_without_valid_tc = list(set(iter_list))
         
+        # count_valid_tc_by_feature
+        # first, fill the holes
+        all_features = set()
+        for ar in list_of_ar:
+            all_features.update(ar.count_valid_tc_by_feature.keys())
+        for iter_feat in all_features:
+            for ar in list_of_ar:
+                if not iter_feat in ar.count_valid_tc_by_feature.keys():
+                    ar.count_valid_tc_by_feature[iter_feat] = 0
+            # second, compute the average
+            iter_list = map(lambda x: x.count_valid_tc_by_feature[iter_feat], list_of_ar)
+            if options['median-count-valid-tc-by-feature']:
+                ret.count_valid_tc_by_feature[iter_feat] = cls.compute_median(iter_list)
+            else:
+                ret.count_valid_tc_by_feature[iter_feat] = cls.compute_mean(iter_list)
+        
+        # count_invalid_tc_by_feature
+        # first, fill the holes
+        all_features = set()
+        for ar in list_of_ar:
+            all_features.update(ar.count_invalid_tc_by_feature.keys())
+        for iter_feat in all_features:
+            for ar in list_of_ar:
+                if not iter_feat in ar.count_invalid_tc_by_feature.keys():
+                    ar.count_invalid_tc_by_feature[iter_feat] = 0
+            # second, compute the average
+            iter_list = map(lambda x: x.count_invalid_tc_by_feature[iter_feat], list_of_ar)
+            if options['median-count-invalid-tc-by-feature']:
+                ret.count_invalid_tc_by_feature[iter_feat] = cls.compute_median(iter_list)
+            else:
+                ret.count_invalid_tc_by_feature[iter_feat] = cls.compute_mean(iter_list)
+        
+        # hardness_by_feature
+        # first, fill the holes
+        all_features = set()
+        for ar in list_of_ar:
+            all_features.update(ar.hardness_by_feature.keys())
+        for iter_feat in all_features:
+            for ar in list_of_ar:
+                if not iter_feat in ar.hardness_by_feature.keys():
+                    ar.hardness_by_feature[iter_feat] = 0
+            # second, compute the average
+            iter_list = map(lambda x: x.hardness_by_feature[iter_feat], list_of_ar)
+            if options['median-feature-hardness']:
+                ret.hardness_by_feature[iter_feat] = cls.compute_median(iter_list)
+            else:
+                ret.hardness_by_feature[iter_feat] = cls.compute_mean(iter_list)
+        
         return ret
     
     @classmethod
@@ -293,11 +380,16 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv[1:], "h",
                     ["help", "cut-time=",
+                            "feature-hardness=",
                             "median",
+                            "median-count-faults",
                             "median-faults-by-time",
                             "median-valid-tc-gen-by-time",
                             "median-valid-tc-gen-speed-by-time",
-                            "median-ps-success-rate"])
+                            "median-ps-success-rate",
+                            "median-count-valid-tc-by-feature",
+                            "median-count-invalid-tc-by-feature",
+                            "median-feature-hardness"])
         except getopt.error, msg:
             raise Usage(msg)
         
@@ -318,21 +410,43 @@ def main(argv=None):
                 except ValueError, err:
                     raise Usage("arg must be positive integer ('%s')." % value)
             
+            if option in ("--feature-hardness"):
+                try:
+                    val = float(value)
+                    if val >= 0.0 and val <= 1.0:
+                        options['feature-hardness'] = val
+                    else:
+                        raise ValueError
+                except ValueError, err:
+                    raise Usage("arg must be between 0.0 and 1.0 ('%s')." % value)
+            
             if option in ("--median"):
                 options['median'] = True
+                options['median-count-faults'] = True
                 options['median-faults-by-time'] = True
                 options['median-valid-tc-gen-by-time'] = True
                 options['median-valid-tc-gen-speed-by-time'] = True
                 options['median-ps-success-rate'] = True
+                options['median-count-valid-tc-by-feature'] = True
+                options['median-count-invalid-tc-by-feature'] = True
+                options['median-feature-hardness'] = True
             
             if option in ("--median-faults-by-time"):
                 options['median-faults-by-time'] = True
+            if option in ("--median-count-faults"):
+                options['median-count-faults'] = True
             if option in ("--median-valid-tc-gen-by-time"):
                 options['median-valid-tc-gen-by-time'] = True
             if option in ("--median-valid-tc-gen-speed-by-time"):
                 options['median-valid-tc-gen-speed-by-time'] = True
             if option in ("--median-ps-success-rate"):
                 options['median-ps-success-rate'] = True
+            if option in ("--median-count-valid-tc-by-feature"):
+                options['median-count-valid-tc-by-feature'] = True
+            if option in ("--median-count-invalid-tc-by-feature"):
+                options['median-count-invalid-tc-by-feature'] = True
+            if option in ("--median-feature-hardness"):
+                options['median-feature-hardness'] = True
         
         # arguments processing
         if len(args) != 2:
@@ -688,16 +802,184 @@ def main(argv=None):
     matlab_fp.write("\n")
     matlab_fp.write("%% precond_features_increase\n")
     matlab_fp.write("h = newplot;\n")
-    matlab_fp.write("precond_features_increase_by_class = [")
+    matlab_fp.write("y = [")
     for v in precond_features_increase_by_class.values():
         matlab_fp.write("%s," % v)
     matlab_fp.write("];\n")
-    matlab_fp.write("hist(h, precond_features_increase_by_class, 50);\n")
+    matlab_fp.write("hist(h, y, 50);\n")
     matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
     matlab_fp.write("ylabel(h, '# classes');\n")
     matlab_fp.write("title(h, 'Class distribution by increase in tested precond\_features');\n")
     matlab_fp.write("saveas(h, 'graphs/precond_features_increase.png', 'png');\n")
     matlab_fp.write("\n")
+    
+    # graph faults_increase_ps_over_or
+    matlab_fp.write("\n")
+    matlab_fp.write("%% faults_increase_ps_over_or\n")
+    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("y = [")
+    # ugly hack, should be somewhere else...
+    faults_increase_ps_over_or_by_class = {}
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "faults_increase_ps_over_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        iter_increase = 100.0 * float(i['ps']['avg'].count_faults) / float(i['or']['avg'].count_faults)
+        matlab_fp.write("%s," % iter_increase)
+        faults_increase_ps_over_or_by_class[iter_test_main_class] = iter_increase
+    matlab_fp.write("];\n")
+    matlab_fp.write("hist(h, y, 50);\n")
+    matlab_fp.write("xlabel(h, '% increase of number of found faults (ps over or)');\n")
+    matlab_fp.write("ylabel(h, '# classes');\n")
+    matlab_fp.write("title(h, 'Class distribution by increase in number of found fauls (ps over or)');\n")
+    matlab_fp.write("saveas(h, 'graphs/found_faults_increase.png', 'png');\n")
+    matlab_fp.write("\n")
+    
+    # graph rel_speed_vs_faults_discovery_increase
+    matlab_fp.write("\n")
+    matlab_fp.write("%% rel_speed_vs_faults_discovery_increase\n")
+    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("xraw = [];\n")
+    matlab_fp.write("y = [];\n")
+    for iter_test_main_class in test_main_classes:
+        iter_file_or = os.path.join("analysis", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+            matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
+        else:
+            print >> sys.stderr, "rel_speed_vs_faults_discovery_increase: '%s_or' not found, ignoring class." % iter_test_main_class
+            continue
+        iter_file_ps = os.path.join("analysis", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+            matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
+        else:
+            print >> sys.stderr, "rel_speed_vs_faults_discovery_increase: '%s_ps' not found, ignoring class." % iter_test_main_class
+            continue
+        matlab_fp.write("xraw = [xraw;(speed_ps(:,2)./speed_or(:,2) - 1)'];\n")
+        matlab_fp.write("y = [y;%s];\n" % faults_increase_ps_over_or_by_class[iter_test_main_class])
+    matlab_fp.write("x = mean(xraw,2);\n")
+    matlab_fp.write("scatter(x, y);\n")
+    matlab_fp.write("ylabel(h, '% increase of number of found faults (ps over or)');\n")
+    matlab_fp.write("xlabel(h, 'Relative speed');\n")
+    matlab_fp.write("title(h, 'Relative speed vs. increase in faults discovery');\n")
+    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_faults_discovery_increase.png', 'png');\n")
+    matlab_fp.write("\n")
+
+    # graph rel_speed_vs_precond_features_increase
+    matlab_fp.write("\n")
+    matlab_fp.write("%% rel_speed_vs_precond_features_increase\n")
+    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("xraw = [];\n")
+    matlab_fp.write("y = [];\n")
+    for iter_test_main_class in test_main_classes:
+        iter_file_or = os.path.join("analysis", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+            matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
+        else:
+            print >> sys.stderr, "rel_speed_vs_precond_features_increase: '%s_or' not found, ignoring class." % iter_test_main_class
+            continue
+        iter_file_ps = os.path.join("analysis", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+            matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
+        else:
+            print >> sys.stderr, "rel_speed_vs_precond_features_increase: '%s_ps' not found, ignoring class." % iter_test_main_class
+            continue
+        matlab_fp.write("xraw = [xraw;(speed_ps(:,2)./speed_or(:,2) - 1)'];\n")
+        matlab_fp.write("y = [y;%s];\n" % precond_features_increase_by_class[iter_test_main_class])
+    matlab_fp.write("x = mean(xraw,2);\n")
+    matlab_fp.write("scatter(x, y);\n")
+    matlab_fp.write("ylabel(h, '% increase of tested precond\_features');\n")
+    matlab_fp.write("xlabel(h, 'Relative speed');\n")
+    matlab_fp.write("title(h, 'Relative speed vs. increase in tested precond\_features');\n")
+    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_precond_features_increase.png', 'png');\n")
+    matlab_fp.write("\n")
+
+    # graph rel_speed_vs_success_rate
+    matlab_fp.write("\n")
+    matlab_fp.write("%% rel_speed_vs_success_rate\n")
+    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("xraw = [];\n")
+    matlab_fp.write("yraw = [];\n")
+    for iter_test_main_class in test_main_classes:
+        iter_file_or = os.path.join("analysis", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+            matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
+        else:
+            print >> sys.stderr, "rel_speed_vs_success_rate: '%s_or' not found, ignoring class." % iter_test_main_class
+            continue
+        iter_file_ps = os.path.join("analysis", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+            matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
+        else:
+            print >> sys.stderr, "rel_speed_vs_success_rate: '%s_ps' not found, ignoring class." % iter_test_main_class
+            continue
+        
+        iter_file_ps = os.path.join("analysis", iter_test_main_class, "ps", "ps_success_rate_by_time.txt")
+        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+            matlab_fp.write("ps_success_rate = dlmread('%s', '\\t');\n" % iter_file_ps)
+        else:
+            print >> sys.stderr, "rel_speed_vs_success_rate: '%s_ps' not found, ignoring class." % iter_test_main_class
+            continue
+        
+        matlab_fp.write("xraw = [xraw;(speed_ps(:,2)./speed_or(:,2) - 1)'];\n")
+        matlab_fp.write("yraw = [yraw;ps_success_rate(:,2)'];\n")
+    matlab_fp.write("x = mean(xraw,2);\n")
+    matlab_fp.write("y = mean(yraw,2);\n")
+    matlab_fp.write("scatter(x, y);\n")
+    matlab_fp.write("ylabel(h, 'Mean success rate');\n")
+    matlab_fp.write("xlabel(h, 'Relative speed');\n")
+    matlab_fp.write("title(h, 'Relative speed vs. mean success rate');\n")
+    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_success_rate.png', 'png');\n")
+    matlab_fp.write("\n")
+
+    # graph precond_features_increase_vs_faults_discovery_increase
+    matlab_fp.write("\n")
+    matlab_fp.write("%% precond_features_increase_vs_faults_discovery_increase\n")
+    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("x = [")
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "faults_increase_ps_over_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        matlab_fp.write("%s," % precond_features_increase_by_class[iter_test_main_class])
+    matlab_fp.write("];\n")
+    matlab_fp.write("y = [")
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "faults_increase_ps_over_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        matlab_fp.write("%s," % faults_increase_ps_over_or_by_class[iter_test_main_class])
+    matlab_fp.write("];\n")
+    matlab_fp.write("scatter(x, y);\n")
+    matlab_fp.write("ylabel(h, '% increase of number of found faults (ps over or)');\n")
+    matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
+    matlab_fp.write("title(h, 'Increase in tested precond\_features vs. increase in faults discovery');\n")
+    matlab_fp.write("saveas(h, 'graphs/precond_features_increase_vs_faults_discovery_increase.png', 'png');\n")
+    matlab_fp.write("\n")
+    
+    # # graph hard_features_vs_nbr_valid_tc_increase
+    # matlab_fp.write("\n")
+    # matlab_fp.write("%% hard_features_vs_nbr_valid_tc_increase\n")
+    # matlab_fp.write("h = newplot;\n")
+    # matlab_fp.write("x = [")
+    # for iter_test_main_class, i in processed_results.iteritems():
+    #     if not 'or' in i.keys() or not 'ps' in i.keys():
+    #         print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' or/ps not found, ignoring class." % iter_test_main_class
+    #         continue
+    #     matlab_fp.write("%s," % precond_features_increase_by_class[iter_test_main_class])
+    # matlab_fp.write("];\n")
+    # matlab_fp.write("y = [")
+    # for iter_test_main_class, i in processed_results.iteritems():
+    #     if not 'or' in i.keys() or not 'ps' in i.keys():
+    #         print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' or/ps not found, ignoring class." % iter_test_main_class
+    #         continue
+    #     matlab_fp.write("%s," % faults_increase_ps_over_or_by_class[iter_test_main_class])
+    # matlab_fp.write("];\n")
+    # matlab_fp.write("scatter(x, y);\n")
+    # matlab_fp.write("ylabel(h, '% increase of number of found faults (ps over or)');\n")
+    # matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
+    # matlab_fp.write("title(h, 'Increase in tested precond\_features vs. increase in faults discovery');\n")
+    # matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase.png', 'png');\n")
+    # matlab_fp.write("\n")
 
     matlab_fp.close()
     
