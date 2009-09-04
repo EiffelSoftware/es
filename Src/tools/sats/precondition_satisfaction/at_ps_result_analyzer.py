@@ -22,6 +22,7 @@ Options:
                       to test (# invalid_tc / # total_tc).
                       Must be between 0.0 and 1.0, default: 0.9
   --pdf               Save graphs as PDF, default png.
+  --eps               Save graphs as EPS, default png.
   --median                              Use median for all, default mean.
   --median-count-faults                 Use median, default mean.
   --median-faults-by-time               Use median, default mean.
@@ -36,6 +37,7 @@ options = {
     'cut-time': 60,
     'feature-hardness': 0.9,
     'pdf': False,
+    'eps': False,
     'graph_format': 'png',
     'median': False,
     'median-count-faults': False,
@@ -387,6 +389,7 @@ def main(argv=None):
                     ["help", "cut-time=",
                             "feature-hardness=",
                             "pdf",
+                            "eps",
                             "median",
                             "median-count-faults",
                             "median-faults-by-time",
@@ -429,6 +432,9 @@ def main(argv=None):
             if option in ("--pdf"):
                 options['pdf'] = True
                 options['graph_format'] = 'pdf'
+            if option in ("--eps"):
+                options['eps'] = True
+                options['graph_format'] = 'eps'
             
             if option in ("--median"):
                 options['median'] = True
