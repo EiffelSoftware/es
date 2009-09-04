@@ -434,7 +434,7 @@ def main(argv=None):
                 options['graph_format'] = 'pdf'
             if option in ("--eps"):
                 options['eps'] = True
-                options['graph_format'] = 'eps'
+                options['graph_format'] = 'epsc2'
             
             if option in ("--median"):
                 options['median'] = True
@@ -701,7 +701,7 @@ def main(argv=None):
     matlab_fp.write("xlabel(h, 'Duration of test run (minutes)');\n")
     matlab_fp.write("ylabel(h, 'Relative speed');\n")
     matlab_fp.write("title(h, 'Relative speed by time (all classes)');\n")
-    matlab_fp.write("saveas(h, 'graphs/relative_speed_all_classes.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/relative_speed_all_classes', '%s');\n" % (options['graph_format']))
     matlab_fp.write("hold off;\n")
     matlab_fp.write("\n")
 
@@ -709,7 +709,7 @@ def main(argv=None):
     # matlab_fp.write("\n")
     # matlab_fp.write("%% faults_by_time\n")
     # for iter_test_main_class in test_main_classes:
-    #     iter_outpath = os.path.join("graphs", "faults_by_time", "%s.%s" % (iter_test_main_class, options['graph_format']))
+    #     iter_outpath = os.path.join("graphs", "faults_by_time", "%s" % (iter_test_main_class))
     #     try:
     #         os.makedirs(os.path.join(options['graphs_outfolder'], 'faults_by_time'))
     #     except OSError, exc:
@@ -769,14 +769,14 @@ def main(argv=None):
     matlab_fp.write("xlabel(h, 'Duration of test run (minutes)');\n")
     matlab_fp.write("ylabel(h, 'PS success rate');\n")
     matlab_fp.write("title(h, 'PS success rate by time (all classes)');\n")
-    matlab_fp.write("saveas(h, 'graphs/ps_success_rate_by_time.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/ps_success_rate_by_time', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
     
     # graph faults_by_time + ps_success_rate_by_time
     matlab_fp.write("\n")
     matlab_fp.write("%% faults_by_time + ps_success_rate_by_time\n")
     for iter_test_main_class in test_main_classes:
-        iter_outpath = os.path.join("graphs", "faults_by_time-ps_success_rate_by_time", "%s.%s" % (iter_test_main_class, options['graph_format']))
+        iter_outpath = os.path.join("graphs", "faults_by_time-ps_success_rate_by_time", "%s" % (iter_test_main_class))
         try:
             os.makedirs(os.path.join(options['graphs_outfolder'], 'faults_by_time-ps_success_rate_by_time'))
         except OSError, exc:
@@ -852,7 +852,7 @@ def main(argv=None):
     # matlab_fp.write("ylabel(h, 'PS success rate');\n")
     matlab_fp.write("title(h, 'Normalized fraction of distinct faults (all classes, sorted)');\n")
     matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("saveas(h, 'graphs/distinct_faults.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/distinct_faults', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
 
     # graph precond_features_increase
@@ -867,7 +867,7 @@ def main(argv=None):
     matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
     matlab_fp.write("ylabel(h, '# classes');\n")
     matlab_fp.write("title(h, 'Class distribution by increase in tested precond\_features');\n")
-    matlab_fp.write("saveas(h, 'graphs/precond_features_increase.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/precond_features_increase', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
     
     # graph faults_increase_ps_over_or
@@ -889,7 +889,7 @@ def main(argv=None):
     matlab_fp.write("xlabel(h, '% increase of number of found faults (ps over or)');\n")
     matlab_fp.write("ylabel(h, '# classes');\n")
     matlab_fp.write("title(h, 'Class distribution by increase in number of found fauls (ps over or)');\n")
-    matlab_fp.write("saveas(h, 'graphs/found_faults_increase.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/found_faults_increase', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
     
     # graph rel_speed_vs_faults_discovery_increase
@@ -918,7 +918,7 @@ def main(argv=None):
     matlab_fp.write("ylabel(h, '% increase of number of found faults (ps over or)');\n")
     matlab_fp.write("xlabel(h, 'Relative speed');\n")
     matlab_fp.write("title(h, 'Relative speed vs. increase in faults discovery');\n")
-    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_faults_discovery_increase.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_faults_discovery_increase', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
 
     # graph rel_speed_vs_precond_features_increase
@@ -947,7 +947,7 @@ def main(argv=None):
     matlab_fp.write("ylabel(h, '% increase of tested precond\_features');\n")
     matlab_fp.write("xlabel(h, 'Relative speed');\n")
     matlab_fp.write("title(h, 'Relative speed vs. increase in tested precond\_features');\n")
-    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_precond_features_increase.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_precond_features_increase', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
 
     # graph rel_speed_vs_success_rate
@@ -985,7 +985,7 @@ def main(argv=None):
     matlab_fp.write("ylabel(h, 'Mean success rate');\n")
     matlab_fp.write("xlabel(h, 'Relative speed');\n")
     matlab_fp.write("title(h, 'Relative speed vs. mean success rate');\n")
-    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_success_rate.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/rel_speed_vs_success_rate', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
 
     # graph precond_features_increase_vs_faults_discovery_increase
@@ -1010,7 +1010,7 @@ def main(argv=None):
     matlab_fp.write("ylabel(h, '% increase of number of found faults (ps over or)');\n")
     matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
     matlab_fp.write("title(h, 'Increase in tested precond\_features vs. increase in faults discovery');\n")
-    matlab_fp.write("saveas(h, 'graphs/precond_features_increase_vs_faults_discovery_increase.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/precond_features_increase_vs_faults_discovery_increase', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
     
     # graph hard_features_vs_nbr_valid_tc_increase
@@ -1053,7 +1053,7 @@ def main(argv=None):
     matlab_fp.write("ylabel(h, 'Increase in nbr of valid TCs');\n")
     matlab_fp.write("xlabel(h, 'hard to test features');\n")
     matlab_fp.write("title(h, 'Increase in valid TCs for hard-to-test features');\n")
-    matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
 
     # graph hard_features_vs_nbr_valid_tc_bar
@@ -1088,7 +1088,7 @@ def main(argv=None):
     matlab_fp.write("ylabel(h, 'Nbr of valid TCs');\n")
     matlab_fp.write("xlabel(h, 'Hard to test features');\n")
     # matlab_fp.write("title(h, 'Increase in valid TCs for hard-to-test features');\n")
-    matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_bar.%s', '%s');\n" % (options['graph_format'], options['graph_format']))
+    matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_bar', '%s');\n" % (options['graph_format']))
     matlab_fp.write("\n")
 
     matlab_fp.close()
