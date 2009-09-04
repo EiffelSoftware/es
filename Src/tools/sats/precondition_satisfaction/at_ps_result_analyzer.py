@@ -956,30 +956,40 @@ def main(argv=None):
     matlab_fp.write("saveas(h, 'graphs/precond_features_increase_vs_faults_discovery_increase.png', 'png');\n")
     matlab_fp.write("\n")
     
-    # # graph hard_features_vs_nbr_valid_tc_increase
-    # matlab_fp.write("\n")
-    # matlab_fp.write("%% hard_features_vs_nbr_valid_tc_increase\n")
-    # matlab_fp.write("h = newplot;\n")
-    # matlab_fp.write("x = [")
-    # for iter_test_main_class, i in processed_results.iteritems():
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     matlab_fp.write("%s," % precond_features_increase_by_class[iter_test_main_class])
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("y = [")
-    # for iter_test_main_class, i in processed_results.iteritems():
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     matlab_fp.write("%s," % faults_increase_ps_over_or_by_class[iter_test_main_class])
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("scatter(x, y);\n")
-    # matlab_fp.write("ylabel(h, '% increase of number of found faults (ps over or)');\n")
-    # matlab_fp.write("xlabel(h, '% increase of tested precond\_features');\n")
-    # matlab_fp.write("title(h, 'Increase in tested precond\_features vs. increase in faults discovery');\n")
-    # matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase.png', 'png');\n")
-    # matlab_fp.write("\n")
+    # graph hard_features_vs_nbr_valid_tc_increase
+    matlab_fp.write("\n")
+    matlab_fp.write("%% hard_features_vs_nbr_valid_tc_increase\n")
+    matlab_fp.write("h = newplot;\n")
+    # compute some more data first
+    valid_tc_increase_by_hard_feature = {}
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        for iter_feat in i['or']['avg'].hardness_by_feature.keys():
+            if i['or']['avg'].hardness_by_feature[iter_feat] < options['feature-hardness']:
+                continue
+            if iter_feat in valid_tc_increase_by_hard_feature.keys():
+                print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' duplicate from another run, ignoring." % iter_feat
+                continue
+            if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature.keys():
+                print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' found in or but not in ps." % iter_feat
+                continue
+            iter_divisor = float(i['or']['avg'].count_valid_tc_by_feature[iter_feat])
+            if iter_divisor != 0:
+                valid_tc_increase_by_hard_feature[iter_feat] = 100.0 * float(i['ps']['avg'].count_valid_tc_by_feature[iter_feat] - i['or']['avg'].count_valid_tc_by_feature[iter_feat]) / iter_divisor
+            else:
+                valid_tc_increase_by_hard_feature[iter_feat] = 100
+    matlab_fp.write("y = [")
+    for val in valid_tc_increase_by_hard_feature.values():
+        matlab_fp.write("%s," % val)
+    matlab_fp.write("];\n")
+    matlab_fp.write("bar(sort(y));\n")
+    matlab_fp.write("ylabel(h, '% increase in nbr of valid TCs');\n")
+    matlab_fp.write("xlabel(h, 'hard to test features');\n")
+    matlab_fp.write("title(h, '% increase in valid TCs for hard-to-test features');\n")
+    matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase.png', 'png');\n")
+    matlab_fp.write("\n")
 
     matlab_fp.close()
     
