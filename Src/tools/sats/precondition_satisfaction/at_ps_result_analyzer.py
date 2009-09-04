@@ -7,6 +7,7 @@ import errno
 import getopt
 import re
 import math
+from operator import itemgetter
 
 
 help_message = '''[options] <input_folder> <output_folder>
@@ -19,7 +20,7 @@ Options:
   --feature-hardness <float>
                       Set threshold over which a feature is considered hard
                       to test (# invalid_tc / # total_tc).
-                      Must be between 0.0 and 1.0, default: 0.2
+                      Must be between 0.0 and 1.0, default: 0.9
   --median                              Use median for all, default mean.
   --median-count-faults                 Use median, default mean.
   --median-faults-by-time               Use median, default mean.
@@ -32,7 +33,7 @@ Options:
 '''
 options = {
     'cut-time': 60,
-    'feature-hardness': 0.2,
+    'feature-hardness': 0.9,
     'median': False,
     'median-count-faults': False,
     'median-faults-by-time': False,
@@ -214,18 +215,19 @@ class AnalyzedResult(object):
             if not match:
                 raise MyError("%s:'%s': wrong feature_stats-line format" % (fn, line))
             
-            iter_feature_id = match.group(1) + ':' + match.group(2) + ':' + match.group(3)
-            iter_valid_tc = int(match.group(4)) + int(match.group(5)) + int(match.group(6))
-            iter_invalid_tc = int(match.group(7))
-            iter_total_tc = iter_valid_tc + iter_invalid_tc
-            if iter_total_tc > 0:
-                iter_hardness = float(iter_invalid_tc) / float(iter_valid_tc + iter_invalid_tc)
-            else:
-                iter_hardness = 0
-            ret.count_valid_tc_by_feature[iter_feature_id] = iter_valid_tc
-            ret.count_invalid_tc_by_feature[iter_feature_id] = iter_invalid_tc
-            ret.hardness_by_feature[iter_feature_id] = iter_hardness
-            
+            iter_class_name = match.group(1)
+            iter_feature_id = iter_class_name + ':' + match.group(2) + ':' + match.group(3)
+            if iter_class_name in ret.classes_under_test:
+                iter_valid_tc = int(match.group(4)) + int(match.group(5)) + int(match.group(6))
+                iter_invalid_tc = int(match.group(7))
+                iter_total_tc = iter_valid_tc + iter_invalid_tc
+                if iter_total_tc > 0:
+                    iter_hardness = float(iter_invalid_tc) / float(iter_valid_tc + iter_invalid_tc)
+                else:
+                    iter_hardness = 0
+                ret.count_valid_tc_by_feature[iter_feature_id] = iter_valid_tc
+                ret.count_invalid_tc_by_feature[iter_feature_id] = iter_invalid_tc
+                ret.hardness_by_feature[iter_feature_id] = iter_hardness
             if match.group(3) != 'has_precondition':
                 continue
             ret.count_precond_features += 1
@@ -578,16 +580,23 @@ def main(argv=None):
             iter_fp.close()
     
     
+    # comes in handy
+    test_main_classes = sorted(processed_results.keys())
+    
+    
     # write tables
-    # table precond_features
-    iter_outfile = os.path.join(options['tables_outfolder'], 'precond_features.txt')
+    # table precond_features_sorted_name
+    iter_outfile = os.path.join(options['tables_outfolder'], 'precond_features_sorted_name.txt')
     iter_fp = open(iter_outfile, 'w')
     # ugly hack, should be somewhere else...
-    precond_features_increase_by_class = {}
+    precond_features_count_by_class = {}
+    precond_features_untested_perc_or_by_class = {}
+    precond_features_untested_perc_ps_by_class = {}
+    precond_features_increase_perc_by_class = {}
     for iter_test_main_class in sorted(processed_results.keys()):
         i = processed_results[iter_test_main_class]
         if not 'or' in i.keys() or not 'ps' in i.keys():
-            print >> sys.stderr, "precond_features: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            print >> sys.stderr, "precond_features_sorted_name: '%s' or/ps not found, ignoring class." % iter_test_main_class
             continue
         iter_or = i['or']['avg']
         iter_ps = i['ps']['avg']
@@ -595,19 +604,53 @@ def main(argv=None):
         iter_or_untested_pf = 100.0 * float(len(iter_or.precond_features_without_valid_tc)) / float(iter_count_pf)
         iter_ps_untested_pf = 100.0 * float(len(iter_ps.precond_features_without_valid_tc)) / float(iter_count_pf)
         iter_increase = 100.0 * float(iter_or_untested_pf - iter_ps_untested_pf) / float(iter_or_untested_pf)
-        iter_fp.write("%s & %s & %s & %s & %s\\\\\n" %
-                (iter_test_main_class,
+        iter_fp.write("%s & %i & %.2f & %.2f & %.2f\\\\\n" %
+                (iter_test_main_class.replace('_', '\_'),
                 iter_count_pf,
                 iter_or_untested_pf,
                 iter_or_untested_pf,
                 iter_increase))
-        precond_features_increase_by_class[iter_test_main_class] = iter_increase
+        precond_features_count_by_class[iter_test_main_class] = iter_count_pf
+        precond_features_untested_perc_or_by_class[iter_test_main_class] = iter_or_untested_pf
+        precond_features_untested_perc_ps_by_class[iter_test_main_class] = iter_ps_untested_pf
+        precond_features_increase_perc_by_class[iter_test_main_class] = iter_increase
+    iter_fp.close()
+    
+    # table precond_features_sorted_incr
+    iter_outfile = os.path.join(options['tables_outfolder'], 'precond_features_sorted_incr.txt')
+    iter_fp = open(iter_outfile, 'w')
+    # sort reversed by percentual increase
+    for iter_class, iter_precond_feat_incr in sorted(precond_features_increase_perc_by_class.items(), key=itemgetter(1), reverse=True):
+        iter_fp.write("%s & %i & %.2f & %.2f & %.2f\\\\\n" %
+                (iter_class.replace('_', '\_'),
+                precond_features_count_by_class[iter_class],
+                precond_features_untested_perc_or_by_class[iter_class],
+                precond_features_untested_perc_ps_by_class[iter_class],
+                precond_features_increase_perc_by_class[iter_class]))
+    iter_fp.close()
+    
+    # table tested_main_classes
+    iter_outfile = os.path.join(options['tables_outfolder'], 'tested_main_classes.txt')
+    iter_fp = open(iter_outfile, 'w')
+    for iter_class in sorted(processed_results.keys()):
+        iter_fp.write("%s\\\\\n" % iter_class.replace('_', '\_'))
+    iter_fp.close()
+    
+    # table tested_main_classes_two_cols
+    iter_outfile = os.path.join(options['tables_outfolder'], 'tested_main_classes_two_cols.txt')
+    iter_fp = open(iter_outfile, 'w')
+    test_main_classes_zipped = dict(zip(range(1,len(test_main_classes)+1), test_main_classes))
+    test_main_classes_cut_at = int(math.ceil(len(test_main_classes_zipped) / 2.0))
+    for iter_index in range(1, test_main_classes_cut_at+1):
+        iter_fp.write("%s & " % test_main_classes_zipped[iter_index].replace('_', '\_'))
+        if (iter_index + test_main_classes_cut_at) in test_main_classes_zipped.keys():
+            iter_fp.write("%s " % test_main_classes_zipped[iter_index + test_main_classes_cut_at].replace('_', '\_'))
+        iter_fp.write("\\\\\n")
     iter_fp.close()
     
     
     # write matlab script for graph generation
     matlab_fp = open(os.path.join(options['outfolder'], 'gen_graphs.m'), 'w')
-    test_main_classes = sorted(processed_results.keys())
     
     # graph relative_speed
     matlab_fp.write("\n")
@@ -803,7 +846,7 @@ def main(argv=None):
     matlab_fp.write("%% precond_features_increase\n")
     matlab_fp.write("h = newplot;\n")
     matlab_fp.write("y = [")
-    for v in precond_features_increase_by_class.values():
+    for v in precond_features_increase_perc_by_class.values():
         matlab_fp.write("%s," % v)
     matlab_fp.write("];\n")
     matlab_fp.write("hist(h, y, 50);\n")
@@ -884,7 +927,7 @@ def main(argv=None):
             print >> sys.stderr, "rel_speed_vs_precond_features_increase: '%s_ps' not found, ignoring class." % iter_test_main_class
             continue
         matlab_fp.write("xraw = [xraw;(speed_ps(:,2)./speed_or(:,2) - 1)'];\n")
-        matlab_fp.write("y = [y;%s];\n" % precond_features_increase_by_class[iter_test_main_class])
+        matlab_fp.write("y = [y;%s];\n" % precond_features_increase_perc_by_class[iter_test_main_class])
     matlab_fp.write("x = mean(xraw,2);\n")
     matlab_fp.write("scatter(x, y);\n")
     matlab_fp.write("ylabel(h, '% increase of tested precond\_features');\n")
@@ -940,7 +983,7 @@ def main(argv=None):
         if not 'or' in i.keys() or not 'ps' in i.keys():
             print >> sys.stderr, "faults_increase_ps_over_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
             continue
-        matlab_fp.write("%s," % precond_features_increase_by_class[iter_test_main_class])
+        matlab_fp.write("%s," % precond_features_increase_perc_by_class[iter_test_main_class])
     matlab_fp.write("];\n")
     matlab_fp.write("y = [")
     for iter_test_main_class, i in processed_results.iteritems():
@@ -969,26 +1012,69 @@ def main(argv=None):
         for iter_feat in i['or']['avg'].hardness_by_feature.keys():
             if i['or']['avg'].hardness_by_feature[iter_feat] < options['feature-hardness']:
                 continue
-            if iter_feat in valid_tc_increase_by_hard_feature.keys():
-                print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' duplicate from another run, ignoring." % iter_feat
-                continue
+            iter_feat_dest = iter_feat
+            while iter_feat_dest in valid_tc_increase_by_hard_feature.keys():
+                iter_feat_dest += 'd'
+            # if iter_feat in valid_tc_increase_by_hard_feature.keys():
+            #     print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' duplicate from another run, ignoring." % iter_feat
+            #     continue
             if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature.keys():
                 print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' found in or but not in ps." % iter_feat
                 continue
             iter_divisor = float(i['or']['avg'].count_valid_tc_by_feature[iter_feat])
+            # if iter_divisor = 0:
+            #     iter_divisor = 0.01
+            # valid_tc_increase_by_hard_feature[iter_feat_dest] = float(i['ps']['avg'].count_valid_tc_by_feature[iter_feat] - i['or']['avg'].count_valid_tc_by_feature[iter_feat]) / iter_divisor
+            # else:
+            #     valid_tc_increase_by_hard_feature[iter_feat_dest] = 1
             if iter_divisor != 0:
-                valid_tc_increase_by_hard_feature[iter_feat] = 100.0 * float(i['ps']['avg'].count_valid_tc_by_feature[iter_feat] - i['or']['avg'].count_valid_tc_by_feature[iter_feat]) / iter_divisor
+                valid_tc_increase_by_hard_feature[iter_feat_dest] = float(i['ps']['avg'].count_valid_tc_by_feature[iter_feat] - i['or']['avg'].count_valid_tc_by_feature[iter_feat]) / iter_divisor
             else:
-                valid_tc_increase_by_hard_feature[iter_feat] = 100
+                valid_tc_increase_by_hard_feature[iter_feat_dest] = 7
     matlab_fp.write("y = [")
     for val in valid_tc_increase_by_hard_feature.values():
         matlab_fp.write("%s," % val)
     matlab_fp.write("];\n")
     matlab_fp.write("bar(sort(y));\n")
-    matlab_fp.write("ylabel(h, '% increase in nbr of valid TCs');\n")
+    matlab_fp.write("ylabel(h, 'Increase in nbr of valid TCs');\n")
     matlab_fp.write("xlabel(h, 'hard to test features');\n")
-    matlab_fp.write("title(h, '% increase in valid TCs for hard-to-test features');\n")
+    matlab_fp.write("title(h, 'Increase in valid TCs for hard-to-test features');\n")
     matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase.png', 'png');\n")
+    matlab_fp.write("\n")
+
+    # graph hard_features_vs_nbr_valid_tc_bar
+    matlab_fp.write("\n")
+    matlab_fp.write("%% hard_features_vs_nbr_valid_tc_bar\n")
+    matlab_fp.write("h = newplot;\n")
+    # compute some more data first
+    valid_tc_or_by_hard_feature = {}
+    valid_tc_ps_by_hard_feature = {}
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "hard_features_vs_nbr_valid_tc_bar: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        for iter_feat in i['or']['avg'].hardness_by_feature.keys():
+            if i['or']['avg'].hardness_by_feature[iter_feat] < options['feature-hardness']:
+                continue
+            iter_feat_dest = iter_feat
+            while iter_feat_dest in valid_tc_or_by_hard_feature.keys():
+                iter_feat_dest += 'd'
+            if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature.keys():
+                print >> sys.stderr, "hard_features_vs_nbr_valid_tc_bar: '%s' found in or but not in ps." % iter_feat
+                continue
+            valid_tc_or_by_hard_feature[iter_feat_dest] = i['or']['avg'].count_valid_tc_by_feature[iter_feat]
+            valid_tc_ps_by_hard_feature[iter_feat_dest] = i['ps']['avg'].count_valid_tc_by_feature[iter_feat]
+    matlab_fp.write("y = [")
+    for iter_feat in valid_tc_or_by_hard_feature.keys():
+        matlab_fp.write("%s,%s;" % (valid_tc_or_by_hard_feature[iter_feat], valid_tc_ps_by_hard_feature[iter_feat]))
+    matlab_fp.write("];\n")
+    matlab_fp.write("y = sortrows(y, -1);\n")
+    matlab_fp.write("bar(y, 'stacked');\n")
+    matlab_fp.write("legend({'or' 'ps'});\n")
+    matlab_fp.write("ylabel(h, 'Nbr of valid TCs');\n")
+    matlab_fp.write("xlabel(h, 'Hard to test features');\n")
+    # matlab_fp.write("title(h, 'Increase in valid TCs for hard-to-test features');\n")
+    matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_bar.png', 'png');\n")
     matlab_fp.write("\n")
 
     matlab_fp.close()
