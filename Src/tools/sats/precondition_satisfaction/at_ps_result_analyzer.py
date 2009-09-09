@@ -854,13 +854,14 @@ def main(argv=None):
         iter_fp.write("%s ^ %.2f ^ %.2f\\\\\n" % (iter_test_main_class.replace('_', '\_'), i['or']['avg'].time_spent_on_invalid_tc_as_percentage, i['ps']['avg'].time_spent_on_invalid_tc_as_percentage))
     iter_fp.close()
     
+    
     # write matlab script for graph generation
     matlab_fp = open(os.path.join(options['outfolder'], 'gen_graphs.m'), 'w')
     
     # graph line_speed_all_classes
     matlab_fp.write("\n")
     matlab_fp.write("%% line_speed_all_classes\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("hold on;\n")
     matlab_fp.write("x = 1:1:60;\n")
     matlab_fp.write("y = [];\n")
@@ -888,22 +889,36 @@ def main(argv=None):
     matlab_fp.write("[C,Imin] = min(ymean);\n")
     matlab_fp.write("[C,Imax] = max(ymean);\n")
     matlab_fp.write("yspecial = [yspecial; y(Imax,:); y(Imin,:)];\n")
-    matlab_fp.write("classlines = plot(h, x, y, 'y-');\n")
-    matlab_fp.write("speciallines = plot(h, x, yspecial(1,:), 'g-', x, yspecial(2,:), 'b-', x, yspecial(3,:), 'r-', 'LineWidth', 2);\n")
+    matlab_fp.write("classlines = plot(x, y, 'y-');\n")
+    matlab_fp.write("speciallines = plot(x, yspecial(1,:), 'g-', x, yspecial(2,:), 'b-', x, yspecial(3,:), 'r-', 'LineWidth', 2);\n")
     matlab_fp.write("legendnames = strvcat('All classes', 'Median of all classes', classnames(Imax,:), classnames(Imin,:));\n")
     matlab_fp.write("legend([classlines(1); speciallines], legendnames, 'Location', 'SouthEast');\n")
-    matlab_fp.write("xlabel(h, 'Duration of test run (minutes)');\n")
-    matlab_fp.write("ylabel(h, 'Relative speed');\n")
+    matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
+    matlab_fp.write("ylabel('Relative speed');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Relative speed of all classes');\n")
-    matlab_fp.write("saveas(h, 'graphs/line_speed_all_classes', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Relative speed of all classes');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/line_speed_all_classes', '%s');\n" % (options['graph_format']))
     matlab_fp.write("hold off;\n")
+    matlab_fp.write("close(f);\n")
+    matlab_fp.write("f = figure;\n")
+    matlab_fp.write("hold on;\n")
+    matlab_fp.write("classlines = plot(x, y);\n")
+    matlab_fp.write("speciallines = plot(x, yspecial(1,:), 'g-', x, yspecial(2,:), 'b-', x, yspecial(3,:), 'r-', 'LineWidth', 2);\n")
+    matlab_fp.write("legendnames = strvcat('Median of all classes', classnames(Imax,:), classnames(Imin,:));\n")
+    matlab_fp.write("legend(speciallines, legendnames, 'Location', 'SouthEast');\n")
+    matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
+    matlab_fp.write("ylabel('Relative speed');\n")
+    if options['title']:
+        matlab_fp.write("title('Relative speed of all classes');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/line_speed_all_classes_colors', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("hold off;\n")
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # graph line_ps_success_rate_all_classes
     matlab_fp.write("\n")
     matlab_fp.write("%% line_ps_success_rate_all_classes\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("x = 1:1:60;\n")
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
@@ -915,12 +930,13 @@ def main(argv=None):
             continue
         
         matlab_fp.write("y = [y;data_ps(:,2)'];\n")
-    matlab_fp.write("plot(h, x, y);\n")
-    matlab_fp.write("xlabel(h, 'Duration of test run (minutes)');\n")
-    matlab_fp.write("ylabel(h, 'PS success rate');\n")
+    matlab_fp.write("plot(x, y);\n")
+    matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
+    matlab_fp.write("ylabel('PS success rate');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'PS success rate of all classes');\n")
-    matlab_fp.write("saveas(h, 'graphs/line_ps_success_rate_all_classes', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('PS success rate of all classes');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/line_ps_success_rate_all_classes', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # graph line_faults-ps_success_rate
@@ -958,32 +974,33 @@ def main(argv=None):
             print >> sys.stderr, "line_faults-ps_success_rate: '%s_ps_success_rate_by_time' not found, ignoring class." % iter_test_main_class
             continue
         
-        matlab_fp.write("h = newplot;\n")
+        matlab_fp.write("f = figure;\n")
         matlab_fp.write("hold on;\n")
         matlab_fp.write("x = 1:1:60;\n")
         matlab_fp.write("y1 = [faults_data_or(:,2)'; faults_data_ps(:,2)'];\n")
         matlab_fp.write("y2 = success_rate_data_ps(:,2)';\n")
         matlab_fp.write("labels = {'ps' 'or' 'success\_rate'};\n")
-        matlab_fp.write("plot(h, x, y1(2,:), '-b', 'LineWidth', 2);\n")
-        matlab_fp.write("[AX,H1,H2] = plotyy(h, x, y1(1,:), x, y2);\n")
+        matlab_fp.write("plot(x, y1(2,:), '-b', 'LineWidth', 2);\n")
+        matlab_fp.write("[AX,H1,H2] = plotyy(x, y1(1,:), x, y2);\n")
         # matlab_fp.write("set(H1,'LineStyle','-g');\n")
         matlab_fp.write("set(H2,'LineStyle','--');\n")
         matlab_fp.write("set(get(AX(1),'Ylabel'),'String','Number of found faults');\n")
         matlab_fp.write("ylim(AX(1), [0 max(y1(:))*1.1]);\n")
         matlab_fp.write("set(get(AX(2),'Ylabel'),'String','PS success rate');\n")
         matlab_fp.write("ylim(AX(2), [0 1]);\n")
-        matlab_fp.write("xlabel(h, 'Duration of test run (minutes)');\n")
+        matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
         matlab_fp.write("legend(labels, 'Location', 'SouthEast');\n")
         if options['title']:
-            matlab_fp.write("title(h, 'Number of found faults + PS success rate -- %s');\n" % iter_test_main_class.replace('_', '\_'))
-        matlab_fp.write("saveas(h, '%s', '%s');\n" % (iter_outpath, options['graph_format']))
+            matlab_fp.write("title('Number of found faults + PS success rate -- %s');\n" % iter_test_main_class.replace('_', '\_'))
+        matlab_fp.write("saveas(gcf, '%s', '%s');\n" % (iter_outpath, options['graph_format']))
         matlab_fp.write("hold off;\n")
+        matlab_fp.write("close(f);\n")
         matlab_fp.write("\n")
     
     # graph bar_distinct_faults
     matlab_fp.write("\n")
     matlab_fp.write("%% bar_distinct_faults\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("y = [];\n")
     matlab_fp.write("classnames = [];\n")
     for iter_test_main_class, i in processed_results.iteritems():
@@ -1000,20 +1017,33 @@ def main(argv=None):
         matlab_fp.write("classnames = strvcat(classnames, '%s');\n" % iter_test_main_class.replace('_', '\_'))
     # sort rows of y ascending by third column, then descending by first column
     matlab_fp.write("y(:,4) = sum(y,2);\n")
-    matlab_fp.write("y = sortrows(y,[-4]);\n")
-    matlab_fp.write("bar(h, y(:,1:3), 'stacked');\n")
-    matlab_fp.write("xlabel(h, 'Class under test');\n")
-    matlab_fp.write("ylabel(h, 'Number of distinct faults');\n")
+    matlab_fp.write("[y,sortindex] = sortrows(y,[-4]);\n")
+    matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
+    matlab_fp.write("xlabel('Class under test');\n")
+    matlab_fp.write("ylabel('Number of distinct faults');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Number of distinct faults for each class under test');\n")
+        matlab_fp.write("title('Number of distinct faults for each class under test');\n")
     matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("saveas(h, 'graphs/bar_distinct_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
+    matlab_fp.write("f = figure;\n");
+    matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
+    matlab_fp.write("xlabel('Class under test');\n")
+    matlab_fp.write("ylabel('Number of distinct faults');\n")
+    if options['title']:
+        matlab_fp.write("title('Number of distinct faults for each class under test');\n")
+    matlab_fp.write("legend({'both' 'or' 'ps'});\n")
+    matlab_fp.write("set(gca, 'XTick', 1:size(y,1))\n");
+    matlab_fp.write("set(gca, 'XTickLabel', classnames(sortindex,:));\n");
+    matlab_fp.write("xticklabel_rotate;\n");
+    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_with_names', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # graph bar_distinct_faults_norm
     matlab_fp.write("\n")
     matlab_fp.write("%% bar_distinct_faults_norm\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("y = [];\n")
     matlab_fp.write("classnames = [];\n")
     for iter_test_main_class, i in processed_results.iteritems():
@@ -1030,54 +1060,70 @@ def main(argv=None):
         matlab_fp.write("y = [y;%f,%f,%f];\n" % (iter_normed_df_inter, iter_normed_df_diff_or, iter_normed_df_diff_ps))
         matlab_fp.write("classnames = strvcat(classnames, '%s');\n" % iter_test_main_class.replace('_', '\_'))
     # sort rows of y ascending by third column, then descending by first column
-    matlab_fp.write("y = sortrows(y,[3 -1]);\n")
-    matlab_fp.write("bar(h, y, 'stacked');\n")
+    matlab_fp.write("[y,sortindex] = sortrows(y,[3 -1]);\n")
+    matlab_fp.write("bar(y, 'stacked');\n")
     matlab_fp.write("ylim([0 1.15]);\n")
-    matlab_fp.write("xlabel(h, 'Class under test');\n")
-    matlab_fp.write("ylabel(h, 'Discovery distribution of distinct faults');\n")
+    matlab_fp.write("xlabel('Class under test');\n")
+    matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Discovery distribution of distinct faults for each class under test');\n")
+        matlab_fp.write("title('Discovery distribution of distinct faults for each class under test');\n")
     matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("saveas(h, 'graphs/bar_distinct_faults_norm', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_norm', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
+    matlab_fp.write("f = figure;\n");
+    matlab_fp.write("bar(y, 'stacked');\n")
+    matlab_fp.write("ylim([0 1.15]);\n")
+    matlab_fp.write("xlabel('Class under test');\n")
+    matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
+    if options['title']:
+        matlab_fp.write("title('Discovery distribution of distinct faults for each class under test');\n")
+    matlab_fp.write("legend({'both' 'or' 'ps'});\n")
+    matlab_fp.write("set(gca, 'XTick', 1:size(y,1))\n");
+    matlab_fp.write("set(gca, 'XTickLabel', classnames(sortindex,:));\n");
+    matlab_fp.write("xticklabel_rotate;\n");
+    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_norm_with_names', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
     ### pf(_untested) does not make sense anymore
     # # graph bar_pf
     # matlab_fp.write("\n")
     # matlab_fp.write("%% bar_pf\n")
-    # matlab_fp.write("h = newplot;\n")
+    # matlab_fp.write("f = figure;\n")
     # matlab_fp.write("y = [")
     # for v in precond_features_untested_increase_perc_by_class.values():
     #     matlab_fp.write("%s," % v)
     # matlab_fp.write("];\n")
-    # matlab_fp.write("hist(h, y, 50);\n")
-    # matlab_fp.write("xlabel(h, '% increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("ylabel(h, 'Number of classes');\n")
+    # matlab_fp.write("hist(y, 50);\n")
+    # matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
+    # matlab_fp.write("ylabel('Number of classes');\n")
     # if options['title']:
-    #     matlab_fp.write("title(h, 'Class distribution by increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(h, 'graphs/bar_pf', '%s');\n" % (options['graph_format']))
+    #     matlab_fp.write("title('Class distribution by increase in number of tested precondition-equipped features');\n")
+    # matlab_fp.write("saveas(gcf, 'graphs/bar_pf', '%s');\n" % (options['graph_format']))
+    # matlab_fp.write("close(f);\n")
     # matlab_fp.write("\n")
 
     # graph bar_pf
     matlab_fp.write("\n")
     matlab_fp.write("%% bar_pf\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("y = [")
     for v in precond_features_tested_increase_perc_by_class.values():
         matlab_fp.write("%s," % v)
     matlab_fp.write("];\n")
-    matlab_fp.write("hist(h, y, 50);\n")
-    matlab_fp.write("xlabel(h, '% increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("ylabel(h, 'Number of classes');\n")
+    matlab_fp.write("hist(y, 50);\n")
+    matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
+    matlab_fp.write("ylabel('Number of classes');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Class distribution by increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("saveas(h, 'graphs/bar_pf', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Class distribution by increase in number of tested precondition-equipped features');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/bar_pf', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # # graph bar_coverage_in_ps_of_untested_pf_in_or
     # matlab_fp.write("\n")
     # matlab_fp.write("%% bar_coverage_in_ps_of_untested_pf_in_or\n")
-    # matlab_fp.write("h = newplot;\n")
+    # matlab_fp.write("f = figure;\n")
     # matlab_fp.write("y = [")
     # for iter_test_main_class, i in processed_results.iteritems():
     #     if not 'or' in i.keys() or not 'ps' in i.keys():
@@ -1089,18 +1135,19 @@ def main(argv=None):
     #     iter_cov = 100 * float(len(i['ps']['avg'].precond_features_with_valid_tc) - len(i['or']['avg'].precond_features_with_valid_tc)) / iter_divisor
     #     matlab_fp.write("%s," % iter_cov)
     # matlab_fp.write("];\n")
-    # matlab_fp.write("hist(h, y, 50);\n")
-    # matlab_fp.write("xlabel(h, '% of untestable features in or newly tested in ps');\n")
-    # matlab_fp.write("ylabel(h, 'Number of classes');\n")
+    # matlab_fp.write("hist(y, 50);\n")
+    # matlab_fp.write("xlabel('% of untestable features in or newly tested in ps');\n")
+    # matlab_fp.write("ylabel('Number of classes');\n")
     # if options['title']:
-    #     matlab_fp.write("title(h, 'Class distribution by increase in number of newly tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(h, 'graphs/bar_coverage_in_ps_of_untested_pf_in_or', '%s');\n" % (options['graph_format']))
+    #     matlab_fp.write("title('Class distribution by increase in number of newly tested precondition-equipped features');\n")
+    # matlab_fp.write("saveas(gcf, 'graphs/bar_coverage_in_ps_of_untested_pf_in_or', '%s');\n" % (options['graph_format']))
+    # matlab_fp.write("close(f);\n")
     # matlab_fp.write("\n")
     
     # graph bar_faults
     matlab_fp.write("\n")
     matlab_fp.write("%% bar_faults\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("y = [")
     # ugly hack, should be somewhere else...
     faults_increase_ps_over_or_by_class = {}
@@ -1112,18 +1159,19 @@ def main(argv=None):
         matlab_fp.write("%s," % iter_increase)
         faults_increase_ps_over_or_by_class[iter_test_main_class] = iter_increase
     matlab_fp.write("];\n")
-    matlab_fp.write("hist(h, y, 50);\n")
-    matlab_fp.write("xlabel(h, '% increase in number of found faults');\n")
-    matlab_fp.write("ylabel(h, 'Number of classes');\n")
+    matlab_fp.write("hist(y, 50);\n")
+    matlab_fp.write("xlabel('% increase in number of found faults');\n")
+    matlab_fp.write("ylabel('Number of classes');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Class distribution by increase in number of found faults');\n")
-    matlab_fp.write("saveas(h, 'graphs/bar_faults', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Class distribution by increase in number of found faults');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/bar_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # graph scatter_speed_vs_faults
     matlab_fp.write("\n")
     matlab_fp.write("%% scatter_speed_vs_faults\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("xraw = [];\n")
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
@@ -1146,18 +1194,19 @@ def main(argv=None):
     if options["hvlines"]:
         matlab_fp.write("hline(0, 'r-.');\n")
         matlab_fp.write("vline(0, 'r-.');\n")
-    matlab_fp.write("ylabel(h, '% increase in number of found faults');\n")
-    matlab_fp.write("xlabel(h, 'Relative speed');\n")
+    matlab_fp.write("ylabel('% increase in number of found faults');\n")
+    matlab_fp.write("xlabel('Relative speed');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Relative speed vs. increase in number of found faults');\n")
-    matlab_fp.write("saveas(h, 'graphs/scatter_speed_vs_faults', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Relative speed vs. increase in number of found faults');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
     ### pf(_untested) does not make sense anymore
     # # graph scatter_speed_vs_pf
     # matlab_fp.write("\n")
     # matlab_fp.write("%% scatter_speed_vs_pf\n")
-    # matlab_fp.write("h = newplot;\n")
+    # matlab_fp.write("f = figure;\n")
     # matlab_fp.write("xraw = [];\n")
     # matlab_fp.write("y = [];\n")
     # for iter_test_main_class in test_main_classes:
@@ -1180,17 +1229,18 @@ def main(argv=None):
     # if options["hvlines"]:
     #     # matlab_fp.write("hline(0, 'r-.');\n")
     #     matlab_fp.write("vline(0, 'r-.');\n")
-    # matlab_fp.write("ylabel(h, '% increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("xlabel(h, 'Relative speed');\n")
+    # matlab_fp.write("ylabel('% increase in number of tested precondition-equipped features');\n")
+    # matlab_fp.write("xlabel('Relative speed');\n")
     # if options['title']:
-    #     matlab_fp.write("title(h, 'Relative speed vs. increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(h, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph_format']))
+    #     matlab_fp.write("title('Relative speed vs. increase in number of tested precondition-equipped features');\n")
+    # matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph_format']))
+    # matlab_fp.write("close(f);\n")
     # matlab_fp.write("\n")
     
     # graph scatter_speed_vs_pf
     matlab_fp.write("\n")
     matlab_fp.write("%% scatter_speed_vs_pf\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("xraw = [];\n")
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
@@ -1213,17 +1263,18 @@ def main(argv=None):
     if options["hvlines"]:
         # matlab_fp.write("hline(0, 'r-.');\n")
         matlab_fp.write("vline(0, 'r-.');\n")
-    matlab_fp.write("ylabel(h, '% increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("xlabel(h, 'Relative speed');\n")
+    matlab_fp.write("ylabel('% increase in number of tested precondition-equipped features');\n")
+    matlab_fp.write("xlabel('Relative speed');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Relative speed vs. increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("saveas(h, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Relative speed vs. increase in number of tested precondition-equipped features');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
     # graph scatter_success_rate_vs_speed
     matlab_fp.write("\n")
     matlab_fp.write("%% scatter_success_rate_vs_speed\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("xraw = [];\n")
     matlab_fp.write("yraw = [];\n")
     for iter_test_main_class in test_main_classes:
@@ -1254,18 +1305,19 @@ def main(argv=None):
     matlab_fp.write("scatter(x, y);\n")
     if options["hvlines"]:
         matlab_fp.write("hline(0, 'r-.');\n")
-    matlab_fp.write("xlabel(h, 'Mean success rate');\n")
-    matlab_fp.write("ylabel(h, 'Relative speed');\n")
+    matlab_fp.write("xlabel('Mean success rate');\n")
+    matlab_fp.write("ylabel('Relative speed');\n")
     if options['title']:
-       matlab_fp.write("title(h, 'Mean success rate vs. relative speed');\n")
-    matlab_fp.write("saveas(h, 'graphs/scatter_success_rate_vs_speed', '%s');\n" % (options['graph_format']))
+       matlab_fp.write("title('Mean success rate vs. relative speed');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_success_rate_vs_speed', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
     ### pf(_untested) does not make sense anymore
     # # graph scatter_pf_vs_faults
     # matlab_fp.write("\n")
     # matlab_fp.write("%% scatter_pf_vs_faults\n")
-    # matlab_fp.write("h = newplot;\n")
+    # matlab_fp.write("f = figure;\n")
     # matlab_fp.write("x = [")
     # for iter_test_main_class, i in processed_results.iteritems():
     #     if not 'or' in i.keys() or not 'ps' in i.keys():
@@ -1284,17 +1336,18 @@ def main(argv=None):
     # if options["hvlines"]:
     #     matlab_fp.write("hline(0, 'r-.');\n")
     #     matlab_fp.write("vline(0, 'r-.');\n")
-    # matlab_fp.write("ylabel(h, '% increase in number of found faults');\n")
-    # matlab_fp.write("xlabel(h, '% increase in number of tested precondition-equipped features');\n")
+    # matlab_fp.write("ylabel('% increase in number of found faults');\n")
+    # matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
     # if options['title']:
-    #     matlab_fp.write("title(h, 'Increase in number of found faults vs. increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(h, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph_format']))
+    #     matlab_fp.write("title('Increase in number of found faults vs. increase in number of tested precondition-equipped features');\n")
+    # matlab_fp.write("saveas(gcf, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph_format']))
+    # matlab_fp.write("close(f);\n")
     # matlab_fp.write("\n")
     
     # graph scatter_pf_vs_faults
     matlab_fp.write("\n")
     matlab_fp.write("%% scatter_pf_vs_faults\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     matlab_fp.write("x = [")
     for iter_test_main_class, i in processed_results.iteritems():
         if not 'or' in i.keys() or not 'ps' in i.keys():
@@ -1313,18 +1366,19 @@ def main(argv=None):
     if options["hvlines"]:
         matlab_fp.write("hline(0, 'r-.');\n")
         matlab_fp.write("vline(0, 'r-.');\n")
-    matlab_fp.write("ylabel(h, '% increase in number of found faults');\n")
-    matlab_fp.write("xlabel(h, '% increase in number of tested precondition-equipped features');\n")
+    matlab_fp.write("ylabel('% increase in number of found faults');\n")
+    matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Increase in number of found faults vs. increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("saveas(h, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Increase in number of found faults vs. increase in number of tested precondition-equipped features');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     ### graph not needed
     # # graph hard_features_vs_nbr_valid_tc_increase
     # matlab_fp.write("\n")
     # matlab_fp.write("%% hard_features_vs_nbr_valid_tc_increase\n")
-    # matlab_fp.write("h = newplot;\n")
+    # matlab_fp.write("f = figure;\n")
     # # compute some more data first
     # valid_tc_increase_by_hard_feature = {}
     # for iter_test_main_class, i in processed_results.iteritems():
@@ -1358,17 +1412,18 @@ def main(argv=None):
     #     matlab_fp.write("%s," % val)
     # matlab_fp.write("];\n")
     # matlab_fp.write("bar(sort(y));\n")
-    # matlab_fp.write("ylabel(h, 'Increase in nbr of valid TCs');\n")
-    # matlab_fp.write("xlabel(h, 'hard to test features');\n")
+    # matlab_fp.write("ylabel('Increase in nbr of valid TCs');\n")
+    # matlab_fp.write("xlabel('hard to test features');\n")
     # if options['title']:
-    #     matlab_fp.write("title(h, 'Increase in valid TCs for hard-to-test features');\n")
-    # matlab_fp.write("saveas(h, 'graphs/hard_features_vs_nbr_valid_tc_increase', '%s');\n" % (options['graph_format']))
+    #     matlab_fp.write("title('Increase in valid TCs for hard-to-test features');\n")
+    # matlab_fp.write("saveas(gcf, 'graphs/hard_features_vs_nbr_valid_tc_increase', '%s');\n" % (options['graph_format']))
+    # matlab_fp.write("close(f);\n")
     # matlab_fp.write("\n")
 
     # graph bar_hf
     matlab_fp.write("\n")
     matlab_fp.write("%% bar_hf\n")
-    matlab_fp.write("h = newplot;\n")
+    matlab_fp.write("f = figure;\n")
     # compute some more data first
     valid_tc_or_by_hard_feature = {}
     valid_tc_ps_by_hard_feature = {}
@@ -1394,11 +1449,12 @@ def main(argv=None):
     matlab_fp.write("y = sortrows(y, -1);\n")
     matlab_fp.write("bar(y, 'stacked');\n")
     matlab_fp.write("legend({'or' 'ps'});\n")
-    matlab_fp.write("ylabel(h, 'Number of valid test cases');\n")
-    matlab_fp.write("xlabel(h, 'Hard-to-test feature');\n")
+    matlab_fp.write("ylabel('Number of valid test cases');\n")
+    matlab_fp.write("xlabel('Hard-to-test feature');\n")
     if options['title']:
-        matlab_fp.write("title(h, 'Number of valid test cases for hard-to-test features');\n")
-    matlab_fp.write("saveas(h, 'graphs/bar_hf', '%s');\n" % (options['graph_format']))
+        matlab_fp.write("title('Number of valid test cases for hard-to-test features');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/bar_hf', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
     matlab_fp.close()
