@@ -1,70 +1,74 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_EXCEPTION_CALL_STACK_FRAME_RESCUE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+	AFX_EXCEPTION_CALL_STACK_FRAME_RESCUE
 
 inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
+	AFX_EXCEPTION_CALL_STACK_FRAME_I
+
+feature -- status report
+
+	is_relevant: BOOLEAN = False
+			-- <Precursor>
+
+	is_resolved: BOOLEAN
+			-- <Precursor>
+		do
+		    check False end
 		end
-
-feature -- Status report
-
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
 
 feature -- Access
 
-	ancestor_names: attached ARRAY [attached STRING]
+	class_name: detachable STRING_8
+			-- <Precursor>
+
+	routine_name: detachable STRING_8
+			-- <Precursor>
+
+	origin_class_name: detachable STRING_8
+			-- <Precursor>
+
+	breakpoint_slot_index: INTEGER
+			-- <Precursor>
+
+	e_feature: detachable E_FEATURE
+			-- <Precursor>
+
+	breakpoint_info: detachable DBG_BREAKABLE_POINT_INFO
+			-- <Precursor>
+
+feature -- Set status
+
+	set_relevant (an_is_relevant: BOOLEAN)
 			-- <Precursor>
 		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
+		    -- do nothing
 		end
 
-feature -- Basic operation
+feature{AFX_EXCEPTION_POSITION_RESOLVER_I} --Setting
 
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
+	set_context_feature (a_context: like e_feature)
 			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
 		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
-
-		    write_test_evaluator (a_file, l_tests)
+		    -- do nothing
 		end
 
-
-	put_class_header
+	set_breakpoint_info (an_info: like breakpoint_info)
 			-- <Precursor>
 		do
-		    Precursor
+		    -- do nothing
+		end
 
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+feature -- Operating
+
+	resolve_exception_position_info
+			-- <Precursor>
+		do
+		    check False end
 		end
 
 note

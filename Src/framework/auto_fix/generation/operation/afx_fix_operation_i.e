@@ -1,70 +1,34 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_FIX_OPERATION_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
-
-inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
-		end
-
-feature -- Status report
-
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
+deferred class
+	AFX_FIX_OPERATION_I
 
 feature -- Access
 
-	ancestor_names: attached ARRAY [attached STRING]
-			-- <Precursor>
-		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
+	prologue (an_id: INTEGER): STRING
+			-- the code to be inserted before the fix position
+		deferred
 		end
 
-feature -- Basic operation
-
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
-
-		    write_test_evaluator (a_file, l_tests)
+	epilogue (an_id: INTEGER): STRING
+			-- the code to be inserted after the fix position
+		deferred
 		end
 
+	last_operation_report: STRING
+			-- result of build_operation_result
+		deferred
+		end
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
+feature -- Operation
 
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+	build_operation_report
+			-- the operation report for users
+		deferred
 		end
 
 note

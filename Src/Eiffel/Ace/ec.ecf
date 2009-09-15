@@ -195,6 +195,15 @@
 			</option>
 			<cluster name="log" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\log\"/>
 			<cluster name="deleted" location="f:\eiffelstudio\reconstructed\64dev\src\framework\auto_fix\deleted\"/>
+			<cluster name="generation" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\generation\">
+				<cluster name="position" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\generation\position\"/>
+				<cluster name="operation" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\generation\operation\"/>
+				<cluster name="position_collector" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\generation\position_collector\"/>
+				<cluster name="tuner" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\generation\tuner\"/>
+				<cluster name="fix" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\generation\fix\"/>
+			</cluster>
+			<cluster name="exception_explanation" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\exception_explanation\"/>
+			<cluster name="fixing_target" location="F:\EiffelStudio\ReConstructed\64dev\Src\framework\auto_fix\fixing_target\"/>
 		</cluster>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>

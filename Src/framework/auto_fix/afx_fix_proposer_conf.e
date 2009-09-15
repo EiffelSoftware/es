@@ -17,12 +17,14 @@ inherit
 		    is_interface_usable
 		end
 
+	SHARED_AFX_TEST_ID
+
 create
     make
 
 feature -- Creation
 
-	make (a_selected_tests: attached DS_LINEAR[attached TEST_I]; a_all_tests: attached DS_LINEAR[attached TEST_I])
+	make (a_selected_tests: attached like tests; a_all_tests: attached like tests)
 			-- create a new conf
 		require
 		    a_selected_tests_not_empty: not a_selected_tests.is_empty
@@ -33,6 +35,7 @@ feature -- Creation
 			create failing_tests.make(1)
 			create regression_tests.make(a_all_tests.count)
 
+			reset_global_test_id
 			prepare_failing_tests(a_selected_tests, a_all_tests)
 			prepare_regression_tests(a_all_tests)
 		end
@@ -49,22 +52,22 @@ feature -- Status report
 
 feature -- Access
 
-	failing_tests: DS_ARRAYED_LIST [attached TEST_I]
+	failing_tests: DS_ARRAYED_LIST [AFX_TEST]
 			-- <Precursor>
 
-	regression_tests: DS_ARRAYED_LIST [attached TEST_I]
+	regression_tests: DS_ARRAYED_LIST [AFX_TEST]
 			-- <Precursor>
 
 feature -- Implementation
 
-	prepare_regression_tests(a_tests: like tests)
+	prepare_regression_tests(a_tests: attached like tests)
 			-- get all the successful tests from `a_tests' and use them as `regression_tests'
 		do
 			a_tests.do_all (
-				agent (a_test: attached TEST_I)
+				agent (a_test: TEST_I)
 					do
         		        if a_test.is_interface_usable and then a_test.is_outcome_available and then a_test.passed then
-        	                regression_tests.force_last(a_test)
+        	                regression_tests.force_last(create {AFX_TEST}.make (a_test))
         		        end
 		        	end
 			)
@@ -80,7 +83,7 @@ feature -- Implementation
 				agent (a_test: attached TEST_I)
 					do
         		        if a_test.is_interface_usable and then a_test.is_outcome_available and then a_test.failed then
-        	                failing_tests.force_last(a_test)
+        	                failing_tests.force_last(create {AFX_TEST}.make (a_test))
         		        end
 		        	end
 			)
@@ -91,7 +94,7 @@ feature -- Implementation
     				agent (a_test: attached TEST_I)
     					do
             		        if a_test.is_interface_usable and then a_test.is_outcome_available and then a_test.failed then
-            	                failing_tests.force_last(a_test)
+            	                failing_tests.force_last(create {AFX_TEST}.make (a_test))
             		        end
     		        	end
     			)

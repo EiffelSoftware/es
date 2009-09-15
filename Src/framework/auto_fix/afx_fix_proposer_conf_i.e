@@ -12,12 +12,12 @@ inherit
 
 feature -- Access
 
-	failing_tests: DS_LINEAR [attached TEST_I]
+	failing_tests: DS_LINEAR [AFX_TEST]
 			-- failing tests which reveal the bugs
 		deferred
 		end
 
-	regression_tests: DS_LINEAR [attached TEST_I]
+	regression_tests: DS_LINEAR [AFX_TEST]
 			-- regression tests for fix validation
 		deferred
 		end

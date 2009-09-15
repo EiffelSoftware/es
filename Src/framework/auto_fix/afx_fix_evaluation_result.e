@@ -14,7 +14,7 @@ inherit
 		    width as test_count
 		end
 
-	AFX_SHARED_TEST_ID_CODEC
+	SHARED_AFX_EVALUATION_ID_CODEC
 		undefine
 		    is_equal,
 		    copy
@@ -23,102 +23,96 @@ inherit
 create
     make
 
+feature -- Access
+
+	last_good_fix_collection:DS_LINEAR [AFX_FIX_INFO_I]
+			-- collection of good fixes during last collcting
+		do
+		    if internal_good_fix_collection = Void then
+		        create internal_good_fix_collection.make_default
+		    end
+
+		    Result := internal_good_fix_collection
+		end
+
 feature -- Status report
 
-	get_test_index (n: NATURAL_32): NATURAL_32
-			-- get the test index of the `n'-th element
+	is_fix_good_for_tests (a_fix: AFX_FIX_INFO_I; a_tests: DS_LINEAR [AFX_TEST]): BOOLEAN
+			-- did `a_fix' passed all tests in `a_tests'?
 		local
-		    l_test_count: NATURAL_32
-		do
-		    if n \\ l_test_count = 0 then
-		        Result := l_test_count
-		    else
-		        Result := n \\ l_test_count
-		    end
-		end
-
-	get_fix_index (n:NATURAL_32): NATURAL_32
-			-- get the fix index of the `n'-th element
-		local
-		    l_test_count: NATURAL_32
-		do
-		    l_test_count := test_count.to_natural_32
-
-		    if n \\ l_test_count = 0 then
-		        Result := n // l_test_count
-		    else
-		        Result := n // l_test_count + 1
-		    end
-		end
-
-	is_fix_good_for_test (a_fix_index: NATURAL_32; a_min_test_id, a_max_test_id: NATURAL_32): BOOLEAN
-			-- did fix at position `a_fix_index' passed all the tests with their id in the range [`a_min_test_id', `a_max_test_id']?
-		require
-		    valid_test_id: a_min_test_id > 0 and a_max_test_id <= test_count.to_natural_32
-		    correct_order: a_min_test_id <= a_max_test_id
-		local
-		    l_test_index: NATURAL_32
+		    l_test_id: INTEGER
+		    l_fix_id: INTEGER
 		    l_result: detachable EQA_TEST_RESULT
 		do
 		    Result := True
-		    from l_test_index := a_min_test_id
-		    until l_test_index > a_max_test_id or not Result
+		    l_fix_id := a_fix.fix_id
+
+		    from a_tests.start
+		    until a_tests.after or not Result
 		    loop
-		        l_result := item(a_fix_index.to_integer_32, l_test_index.to_integer_32)
+		        l_test_id := a_tests.item_for_iteration.test_id
+
+		        l_result := item (l_fix_id, l_test_id)
 		        if l_result = Void or else not l_result.is_pass then
 		            Result := False
 		        end
+
+		        a_tests.forth
 		    end
 		end
 
-	collect_fixes_good_for_tests (a_fix_set: DS_LINEAR [AFX_FIX_INFO_I]; a_min_test_id, a_max_test_id: NATURAL_32): DS_LINEAR [AFX_FIX_INFO_I]
-			-- select from `a_fix_set' the fixes that passed all tests in the range of [a_min_test_id, a_max_test_id],
-			-- put the selected fixes in the result list
-		require
-		    fix_set_not_empty: not a_fix_set.is_empty
-		    valid_test_id: a_min_test_id > 0 and a_max_test_id <= test_count.to_natural_32
-		    correct_order: a_min_test_id <= a_max_test_id
+	collect_fixes_good_for_tests (a_fixes: DS_LINEAR [AFX_FIX_INFO_I]; a_tests: DS_LINEAR [AFX_TEST])
+			-- select from `a_fixes' the fixes that passed all tests in `a_tests'
 		local
+		    l_list: DS_ARRAYED_LIST[AFX_FIX_INFO_I]
 		    l_fix: AFX_FIX_INFO_I
-		    l_test_index, l_fix_index: NATURAL_32
+		    l_fix_id: INTEGER
+		    l_test_id: INTEGER
 		    l_is_good: BOOLEAN
 		    l_result: detachable EQA_TEST_RESULT
-		    l_list: DS_ARRAYED_LIST[AFX_FIX_INFO_I]
+
+--		    l_test: AFX_TEST
+--		    l_test_index, l_fix_index: NATURAL_32
 		do
 		    create l_list.make_default
 
-		    from a_fix_set.start
-		    until a_fix_set.after
+		    from a_fixes.start
+		    until a_fixes.after
 		    loop
-		        l_fix := a_fix_set.item_for_iteration
-		        l_fix_index := l_fix.id.to_natural_32
+		        l_fix := a_fixes.item_for_iteration
+		        l_fix_id := l_fix.fix_id
+
 		        l_is_good := True
 
-		        from
-		            l_test_index := a_min_test_id
-		        until
-		            l_test_index > a_max_test_id or not l_is_good
+		        from a_tests.start
+		        until a_tests.after or not l_is_good
 		        loop
-    		        l_result := item(l_fix_index.to_integer_32, l_test_index.to_integer_32)
+		            l_test_id := a_tests.item_for_iteration.test_id
+
+    		        l_result := item(l_fix_id, l_test_id)
     		        if l_result = Void or else not l_result.is_pass then
     		            l_is_good := False
     		        end
 
-    		        l_test_index := l_test_index + 1
+    		        a_tests.forth
 		        end
 
 		        if l_is_good then
 		            l_list.force_last (l_fix)
 		        end
 
-		        a_fix_set.forth
+		        a_fixes.forth
 		    end
 
-		    Result := l_list
+		    internal_good_fix_collection := l_list
 		end
 
+feature{NONE} -- Implementation
 
-note
+	internal_good_fix_collection: detachable DS_ARRAYED_LIST [AFX_FIX_INFO_I]
+			-- internal storage for fix collection
+
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

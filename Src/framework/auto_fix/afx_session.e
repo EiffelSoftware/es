@@ -27,6 +27,14 @@ feature -- Access
 	conf: AFX_FIX_PROPOSER_CONF_I
 			-- configuration of the session
 
+feature -- Progress
+
+	progress (a_progress: REAL)
+			-- report progress to fix proposer
+		do
+		    fix_proposer.update_progress (a_progress)
+		end
+		
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

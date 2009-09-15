@@ -1,73 +1,67 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_FIXING_TARGET_VARIABLE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+deferred class
+	AFX_FIXING_TARGET_VARIABLE
 
 inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
+	AFX_FIXING_TARGET_I
+
+feature -- Initialization
+
+	make (a_rep: like representation; a_type: like type; a_context: like context_feature)
+			-- initialize a new object
+		require
+		    rep_not_empty: not a_rep.is_empty
+		do
+		    representation := a_rep.twin
+		    type := a_type
+		    context_feature := a_context
 		end
-
-feature -- Status report
-
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
 
 feature -- Access
 
-	ancestor_names: attached ARRAY [attached STRING]
+	context_feature: E_FEATURE
+			-- <Precursor>
+
+	representation: STRING
+			-- <Precursor>
+
+	type: TYPE_A
+			-- <Precursor>
+
+	tunning_operations: DS_LINEAR [AFX_FIX_OPERATION_TUNNING]
 			-- <Precursor>
 		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
-		end
-
-feature -- Basic operation
-
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
+		    if internal_tunning_operations = Void then
+				create internal_tunning_operations.make_default
 		    end
 
-		    write_test_evaluator (a_file, l_tests)
+		    Result := internal_tunning_operations
 		end
 
+feature -- Operation
 
-	put_class_header
+	register_tunning_operations (a_operations: like tunning_operations)
 			-- <Precursor>
 		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+		    if internal_tunning_operations = Void then
+		    	create internal_tunning_operations.make_from_linear (a_operations)
+		    else
+		    	internal_tunning_operations.wipe_out
+		    	internal_tunning_operations.append_last (a_operations)
+		    end
 		end
 
-note
+feature -- Impelementation
+
+	internal_tunning_operations: detachable DS_ARRAYED_LIST [AFX_FIX_OPERATION_TUNNING]
+			-- internal storage for tunning operations
+
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

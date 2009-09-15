@@ -1,71 +1,35 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {SHARED_AFX_INTERNAL_PROGRESS_CONSTANT}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+	SHARED_AFX_INTERNAL_PROGRESS_CONSTANT
 
-inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
-		end
+feature -- Proposer
 
-feature -- Status report
+	Start_phase_finished_fraction: REAL = 0.05
+	Fix_synthesizer_finished_fraction: REAL = 0.45
+	System_adjuster_finished_fraction: REAL = 0.6
+	Fix_evaluation_phase_i_finished_fraction: REAL = 0.9
+	Fix_evaluation_phase_ii_finished_fraction: REAL = 0.95
 
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
+feature -- Synthesizer
 
-	test_count: NATURAL
-			-- number of tests
-
-feature -- Access
-
-	ancestor_names: attached ARRAY [attached STRING]
-			-- <Precursor>
-		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
-		end
-
-feature -- Basic operation
-
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
-
-		    write_test_evaluator (a_file, l_tests)
-		end
+	Failure_explanation_phase_fraction: REAL = 0.05
+		-- added together, we should have "Fix_synthesizer_finished_fraction - Start_phase_finished_fraction"
+	Position_collection_phase_fraction: REAL = 0.1
+	Fixing_target_collection_phase_fraction: REAL = 0.1
+	Tune_generation_phase_fraction: REAL = 0.1
+	Fix_registration_phase_fraction: REAL = 0.1
 
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
+invariant
 
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
-		end
+	Start_phase_finished_fraction = Failure_explanation_phase_fraction
+	Fix_synthesizer_finished_fraction - Start_phase_finished_fraction = Position_collection_phase_fraction + Fixing_target_collection_phase_fraction
+		+ Tune_generation_phase_fraction + Fix_registration_phase_fraction
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

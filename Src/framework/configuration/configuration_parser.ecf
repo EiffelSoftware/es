@@ -36,6 +36,7 @@
 				</condition>
 			</file_rule>
 			<cluster name="implementation" location="$|implementation\" recursive="true"/>
+			<cluster name="test" location="F:\EiffelStudio\ReConstructed\override\"/>
 		</cluster>
 	</target>
 </system>

@@ -21,6 +21,8 @@ inherit
 
 	ES_SHARED_PROMPT_PROVIDER
 
+	EXCEPTIONS
+
 	DATE_TIME
 		undefine
 		    is_equal,
@@ -86,6 +88,7 @@ feature -- Start/Finish logging
 		    l_file: KI_TEXT_OUTPUT_STREAM
 		do
 		    create l_files.make (4)
+		    l_files.compare_references
 		    if error_file /= Void then l_files.put (error_file) end
 		    if warning_file /= Void then l_files.put (warning_file) end
 		    if info_file /= Void then l_files.put (info_file) end
@@ -96,7 +99,7 @@ feature -- Start/Finish logging
 		    loop
 		        l_file := l_files.item
 	            l_file.flush
-		        if l_file /~ std.error and then l_file /~ std.output and then l_file.is_open_write then
+		        if l_file /= std.error and then l_file /= std.output and then l_file.is_open_write then
 		            l_file.close
 		        end
 		        l_files.forth
@@ -138,6 +141,7 @@ feature -- Message logging
 			-- report an error message
 		do
 		    log_message (error_file, a_msg, Error_message_type_char)
+		    raise (a_msg)
 		end
 
 	log_warning_message (a_msg: STRING)
@@ -409,7 +413,8 @@ feature{NONE} -- Implementation
     			from l_line_no := 2
     			until l_line_no > l_lines.count
     			loop
-    			    l_prefix.append (l_indent + l_lines.item_for_iteration + "%N")
+    			    l_prefix.append (l_indent + l_lines.i_th (l_line_no) + "%N")
+    			    l_line_no := l_line_no + 1
     			end
 
     			a_file.put_string (l_prefix)

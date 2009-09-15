@@ -1,73 +1,71 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_INTEGER_NUMBER_TUNER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+	AFX_INTEGER_NUMBER_TUNER
 
 inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
-		end
+	AFX_OBJECT_TUNER
 
-feature -- Status report
+create
+    make
 
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
+feature -- Initialization
 
-	test_count: NATURAL
-			-- number of tests
+    make
+    		-- initialize
+    	do
+    	    create last_tunes_internal.make_default
+    	end
 
 feature -- Access
 
-	ancestor_names: attached ARRAY [attached STRING]
-			-- <Precursor>
-		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
-		end
+    last_tunes: DS_LINEAR [AFX_FIX_OPERATION_TUNNING]
+    		-- <Precursor>
+    	do
+    	    Result := last_tunes_internal
+    	end
 
-feature -- Basic operation
+feature -- Operations
 
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
+    generate_tunes (a_target: AFX_FIXING_TARGET_I)
+    		-- <Precursor>
+    	local
+		    l_feature: E_FEATURE
+		    l_rep: STRING
+		    l_type: TYPE_A
+    	    l_tunes: like last_tunes_internal
+    	    l_tune: AFX_FIX_OPERATION_TUNNING
+    	do
+		    l_feature := a_target.context_feature
+		    l_rep := a_target.representation
+		    l_type := a_target.type
 
-		    write_test_evaluator (a_file, l_tests)
-		end
+    	    l_tunes := last_tunes_internal
+    	    if not l_tunes.is_empty then
+	    	    l_tunes.wipe_out
+    	    end
 
+			if not (attached {AFX_FIXING_TARGET_VARIABLE_ARGUMENT} a_target) then
+					-- we cannot assign to argument of integer type
+    			create l_tune.make (l_rep + " := " + l_rep + " + 1 ")
+    			l_tunes.force_last (l_tune)
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
+    			create l_tune.make (l_rep + " := " + l_rep + " - 1 ")
+    			l_tunes.force_last (l_tune)
 			end
-		end
+    	end
 
-note
+feature -- Implementation
+
+	last_tunes_internal: DS_ARRAYED_LIST [AFX_FIX_OPERATION_TUNNING]
+			-- internal storage for `last_tunes'
+
+
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -8,11 +8,62 @@ class
 	SHARED_AFX_LOGGING_INFRASTRUCTURE
 
 inherit
-	SHARED_AFX_LOGGING_EVENT
+
+	SHARED_AFX_LOGGING_SERVICE
 
 	SHARED_AFX_LOG_ENTRY_FACTORY
 
 	AFX_LOGGING_MESSAGE_CONSTANT_I
+
+feature -- Logging
+
+	log_info (a_msg: STRING)
+			-- log an info
+		local
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
+		do
+		    l_logging_service := logging_service
+		    l_entry_factory := log_entry_factory
+
+		    l_logging_service.log (l_entry_factory.make_info_entry (a_msg))
+		end
+
+	log_debug (a_msg: STRING)
+			-- log a debug info
+		local
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
+		do
+		    l_logging_service := logging_service
+		    l_entry_factory := log_entry_factory
+
+		    l_logging_service.log (l_entry_factory.make_debug_entry (a_msg))
+		end
+
+	log_error (a_msg: STRING)
+			-- log an error
+		local
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
+		do
+		    l_logging_service := logging_service
+		    l_entry_factory := log_entry_factory
+
+		    l_logging_service.log (l_entry_factory.make_error_entry (a_msg))
+		end
+
+	log_warning (a_msg: STRING)
+			-- log a warning
+		local
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
+		do
+		    l_logging_service := logging_service
+		    l_entry_factory := log_entry_factory
+
+		    l_logging_service.log (l_entry_factory.make_warning_entry (a_msg))
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

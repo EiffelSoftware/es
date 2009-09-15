@@ -1,71 +1,56 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_FIX_INFO_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+deferred class
+	AFX_FIX_INFO_I
 
-inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
+feature -- Access
+
+	fix_id: INTEGER assign set_fix_id
+			-- unique id of the fix
+		deferred
+		end
+
+	last_fix_report: STRING
+			-- fix report built last time
+		deferred
 		end
 
 feature -- Status report
 
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
-
-feature -- Access
-
-	ancestor_names: attached ARRAY [attached STRING]
-			-- <Precursor>
+	is_valid_id: BOOLEAN
+			-- is `fix_id' valid?
 		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
+		    Result := fix_id > 0
 		end
 
-feature -- Basic operation
+feature -- Operation
 
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
+	apply (a_modifier: AFX_FIX_WRITER)
+			-- apply the fix
+		deferred
+		end
 
-		    write_test_evaluator (a_file, l_tests)
+	build_fix_report
+			-- build fix report
+		deferred
+		end
+
+feature{AFX_FIX_REPOSITORY} -- Setting
+
+	set_fix_id (an_id: INTEGER)
+			-- set the id of the fix
+		require
+		    valid_id: an_id > 0
+		deferred
+		ensure
+		    is_valid_id: is_valid_id
 		end
 
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
-		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

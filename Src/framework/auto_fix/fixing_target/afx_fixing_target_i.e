@@ -1,70 +1,63 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_FIXING_TARGET_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+deferred class
+	AFX_FIXING_TARGET_I
 
 inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
+    ANY
+    	redefine
+    	    is_equal
+    	end
+
+feature -- Access
+
+	context_feature: E_FEATURE
+			-- context feature where the target was used
+		deferred
+		end
+
+	representation: STRING
+			-- representation of the fixing target in the code
+		deferred
+		end
+
+	type: TYPE_A
+			-- type of the fixing target
+		deferred
+		end
+
+	tunning_operations: DS_LINEAR [AFX_FIX_OPERATION_TUNNING]
+			-- tunning operations for this target
+		deferred
+		end
+
+	same_as (a_target: AFX_FIXING_TARGET_I): BOOLEAN
+			-- are the current and `a_target' the same?
+		do
+		    Result := a_target /= Void
+		    		and then representation ~ a_target.representation
+		    		and then type.same_as (a_target.type)
 		end
 
 feature -- Status report
 
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
-
-feature -- Access
-
-	ancestor_names: attached ARRAY [attached STRING]
+	is_equal (a_target: like Current): BOOLEAN
 			-- <Precursor>
 		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
-		end
-
-feature -- Basic operation
-
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
+		    if a_target /= Void and then context_feature = a_target.context_feature and then representation ~ a_target.representation then
+		        Result := True
 		    end
-
-		    write_test_evaluator (a_file, l_tests)
 		end
 
+feature{AFX_FIXING_TARGET_TUNING_SERVICE} -- Tune
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+	register_tunning_operations (a_operations: like tunning_operations)
+			-- register possible tunning operations with this target
+		deferred
 		end
 
 note

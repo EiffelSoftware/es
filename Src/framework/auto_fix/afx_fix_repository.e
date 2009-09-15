@@ -8,575 +8,77 @@ class
 	AFX_FIX_REPOSITORY
 
 inherit
-
-    AFX_OBJECT_TUNER_FACTORY
-
-    KL_SHARED_FILE_SYSTEM
-
-    ES_SHARED_PROMPT_PROVIDER
-
-    AFX_SHARED_SESSION
-
-    SHARED_TEST_SERVICE
-
-    AFX_SHARED_TEST_ID_CODEC
-
-    SHARED_FIX_ID
+    SHARED_AFX_FIX_ID
 
 create
     make
 
-feature
+feature -- Initialization
 
-    make (an_exception: AFX_TEST_INVOCATION_EXCEPTION)
-    		-- initialize object
-    	do
-    	    exception := an_exception
-    	    create exception_positions.make_default
-    	    create fix_operations.make_default
-    	    create fixes.make_default
-    	    create involved_classes.make_default
-
-    	    	-- reset global fix id
-    	    reset_global_fix_id
-
-    	    is_healthy := True
-    	end
-
+	make (a_size: INTEGER)
+			-- Initialize a new object
+		require
+		    positive_size: a_size > 0
+		do
+		    create storage.make (a_size)
+		end
 feature -- Access
 
-	exception: AFX_TEST_INVOCATION_EXCEPTION
-			-- the exception to be solved
+	storage: HASH_TABLE [DS_ARRAYED_LIST[AFX_FIX_INFO_I], INTEGER]
+			-- the storage where all fixes are registered.
+			-- Fixes are categorized according to the class_id of the class where they are to be used.
 
-	exception_positions: DS_ARRAYED_LIST[AFX_EXCEPTION_POSITION]
-			-- the exception positions in the exception trace
+	fixes: DS_LINEAR [AFX_FIX_INFO_I]
+			-- list of all fixes
+		local
+		    l_list: DS_ARRAYED_LIST[AFX_FIX_INFO_I]
+		do
+	        create l_list.make_default
 
-	fix_operations: DS_ARRAYED_LIST [AFX_FIX_OPERATION_I]
-			-- the possible fix operations
+		    from storage.start
+		    until storage.after
+		    loop
+		        l_list.append_last (storage.item_for_iteration)
+		        storage.forth
+		    end
 
-	fixes: DS_ARRAYED_LIST [AFX_FIX_INFO_I]
-			-- all the possible fixes, whose `exception_position' and `fix_operation' are coming from the above two lists
-
-	involved_classes: DS_ARRAYED_LIST [CLASS_C]
-			-- the classes change when these fixes are all applied
+		    Result := l_list
+		end
 
 feature -- Status report
 
-	is_healthy: BOOLEAN assign set_health_state
-			-- is the repository in good condition?
-
-	is_last_copy_successful: BOOLEAN
-			-- is last class file successfully copied?
-
-feature -- Set state
-
-	set_health_state (a_state: BOOLEAN)
-			-- set the health state of repository
+	is_empty: BOOLEAN
+			-- has the repository any fixes?
 		do
-		    is_healthy := a_state
+		    Result := storage.is_empty
 		end
 
 feature -- Operation
 
-	get_exception_positions
-			-- put basic exception position in the program into `exception_positions'
-		require
-		    exception_is_analysable: exception.is_analysable
-		    fix_positions_empty: exception_positions.is_empty
-		    is_healthy: is_healthy
+	start_registration
+			-- get ready to accept fix registration
 		do
-		    exception.get_exception_position (exception_positions)
-
-		    if exception_positions.is_empty then
-		        set_health_state (False)
-		    end
+		    storage.wipe_out
+		    reset_global_fix_id
 		end
 
-	resolve_exception_position_info
-			-- resolve detailed location according to the exception trace
-		require
-		    is_healthy: is_healthy
+	register_fix (a_fix: AFX_FIX_INFO_I; a_class_id: INTEGER)
+			-- register a fix
 		local
-		    l_is_successful: BOOLEAN
-		    l_exception_position: AFX_EXCEPTION_POSITION
-
-		    l_session: like session
-		    l_error_handler: AFX_ERROR_PRINTER
-		    l_msg: STRING
+		    l_list: DS_ARRAYED_LIST[AFX_FIX_INFO_I]
 		do
-		    l_is_successful := True
-		    from
-		        exception_positions.start
-		    until
-		        exception_positions.after or not l_is_successful
-		    loop
-		        l_exception_position := exception_positions.item_for_iteration
-
-	            l_exception_position.resolve_e_feature
-
-	            if l_exception_position.e_feature /= Void then
-					if l_exception_position.breakpoint_slot > 0 then
-    		            l_exception_position.resolve_breakpoint_info
-    	            	if l_exception_position.breakpoint_info = Void then
-    	            	    l_is_successful := False
-    	            	end
-					end
-	        	else
-	        	    l_is_successful := False
-	        	end
-
-		        exception_positions.forth
-		    end
-
-		    set_health_state (l_is_successful)
-
-		    	--logging
-		    l_session := session
-		    check l_session /= Void end
---		    l_error_handler := l_session.error_handler
-		    create l_msg.make_empty
-		    l_msg.append_string (exception_positions.count.out + " exception positions info resolved ")
-		    if l_is_successful then
-		        l_msg.append ("successfully.")
---			    l_error_handler.report_info_message (l_msg)
-		    else
-		        l_msg.append ("unsuccessfully.")
---			    l_error_handler.report_error_message (l_msg)
-		    end
-		end
-
-	mark_relevant_exception_positions
-			-- mark which fix positions are relevant
-			-- we don't eliminate the irrelevant ones, since they may be useful in identifying involved objects
-			-- TODOMP: distinguish library classes from application classes
-		require
-		    is_healthy: is_healthy
-		local
-		    l_exception_positions: like exception_positions
-		    l_class: attached CLASS_C
-		    i: INTEGER
-		    l_fp: AFX_EXCEPTION_POSITION
-		    l_has_relevant_fp: BOOLEAN
-		do
-		    l_exception_positions := exception_positions
-
-		    if not l_exception_positions.is_empty then
-
-		        	-- the class of the test case
-		        l_class := l_exception_positions.last.e_feature.associated_class
-
-		        	-- mark all positions relevant, except for those in test-case classes
-		        from
-		            i := 1
-		        until
-		            	-- skip the test case feature
-		            i = l_exception_positions.count
-		        loop
-		            l_fp := l_exception_positions.at(i)
-		            if l_fp.breakpoint_slot > 0 then
-    	            	if i = 1 then
-       		       	        if exception.exception.code /= {EXCEP_CONST}.Precondition
-       		       	        		and then l_fp.e_feature.associated_class /~ l_class
-       		       	        		and then l_fp.e_feature.associated_class.is_modifiable then
-       		       	        		    -- the top feature at call stack is relevant, if not precondition violation and it's not the test case class
-       		       	        	l_fp.is_relevant := True
-       		       	        	l_has_relevant_fp := True
-       		       	        end
-       		       	    else
-       		       	        if l_fp.e_feature.associated_class /~ l_class
-       		       	        		and then l_fp.e_feature.associated_class.is_modifiable then
-       		       	        	l_fp.is_relevant := True
-       		       	        	l_has_relevant_fp := True
-       		       	        end
-    	            	end
-    	            else
-    	            		-- external routines are always irrelevant
-    	                l_fp.is_relevant := False
-    	            end
-
-	            	i := i + 1
-		        end -- loop
-		    end
-
-		    	-- we only continue if there is some relevant fix position to work on.
-		    set_health_state (l_has_relevant_fp)
-		end
-
-	collect_relevant_objects_at_fix_positions
-			-- for each fix position, collect all the possible relevant objects
-		local
-		    l_exception_positions: like exception_positions
-			l_caller_index: INTEGER
-			l_callee_index: INTEGER
-			l_caller_position: AFX_EXCEPTION_POSITION
-			l_callee_position: detachable AFX_EXCEPTION_POSITION
-		do
-		    l_exception_positions := exception_positions
-
-			from
-			    l_caller_index := l_exception_positions.count - 1 		-- skip the test case feature
-			until
-			    l_caller_index = 0
-			loop
-			    l_caller_position := l_exception_positions.at (l_caller_index)
-			    if l_caller_position.is_relevant then
-			    		-- compute the callee
-		            l_callee_index := l_caller_index - 1
-		            if l_callee_index > 0 then
-		                l_callee_position := l_exception_positions.at (l_callee_index)
-		            else
-		                l_callee_position := Void
-		            end
-
-		            	-- compute relevant objects in caller
-		            l_caller_position.collect_relevant_objects (l_callee_position)
-			    end
-
-			    l_caller_index := l_caller_index - 1
-			end
-		end
-
-	generate_and_register_fixes
-			-- generate possible fixes to tune relevant objects
-		local
-		    l_exception_positions: like exception_positions
-		    l_position: AFX_EXCEPTION_POSITION
-		    l_feature: E_FEATURE
-		    l_relevant_obj: HASH_TABLE[TYPE_A, STRING]
-		    l_obj_name: STRING
-		    l_obj_type: TYPE_A
-			l_tuner: detachable AFX_OBJECT_TUNER
-			l_operations: DS_LINEAR [AFX_FIX_OPERATION_INSERTION]
-			l_remove_index: INTEGER
-		do
-		    l_exception_positions := exception_positions
-
-		    from
-		        l_exception_positions.start
-		    until
-		        l_exception_positions.after
-		    loop
-		        l_position := l_exception_positions.item_for_iteration
-
-				if l_position.is_relevant then
-    		        l_relevant_obj := l_position.relevant_objects
-    		        l_feature := l_position.e_feature
-
-    				from
-    				    l_relevant_obj.start
-    				until
-    				    l_relevant_obj.after
-    				loop
-    				    l_obj_name := l_relevant_obj.key_for_iteration
-    				    l_obj_type := l_relevant_obj.item_for_iteration
-
-    						-- get suitable object tuner for the objects
-    					if l_obj_type.is_integer or else l_obj_type.is_natural then
-    						l_tuner := integer_number_tuner
-    					elseif l_obj_type.is_real_32 or else l_obj_type.is_real_64 then
-    					    l_tuner := real_number_tuner
-    					elseif l_obj_type.is_reference then
-    					    l_tuner := reference_tuner
-    					elseif l_obj_type.is_boolean then
-    					    l_tuner := boolean_tuner
-    					else	-- other types not supported yet
-    					    l_tuner := Void
-    					end
-
-    						-- register the fixes generated by the tuner
-    					if l_tuner /= Void then
-    					    l_tuner.generate_tunes (l_obj_name, l_obj_type, l_feature)
-    					    l_operations := l_tuner.last_tunes
-
-    						fix_operations.append_last (l_operations)
-    					    register_fixes (l_position, l_operations)
-    					end
-
-    				    l_relevant_obj.forth
-    				end	-- loop
-				end	-- l_position.is_relevant
-
-				exception_positions.forth
-		    end
-
---				-- leave only 2 fixes for testing purpose
---			from l_remove_index := fixes.count
---			until l_remove_index <= 2
---			loop
---			    fixes.remove (l_remove_index)
---			    l_remove_index := l_remove_index - 1
---			end
-
-		    	-- we only continue if there is some fix generated
-		    if fixes.is_empty then
-		        set_health_state (False)
-		    else
-				codec.set_fix_count (fixes.count.to_natural_32)
-		    end
-		end
-
-	register_fixes (a_position: AFX_EXCEPTION_POSITION; an_op_list: DS_LINEAR [AFX_FIX_OPERATION_INSERTION])
-			-- register fixes as tuples of fix position and fix operations
-		local
-		    l_simple_fix: AFX_SIMPLE_FIX_INFO
-		do
-		    from
-		        an_op_list.start
-		    until
-		        an_op_list.after
-		    loop
-		        create l_simple_fix.make (a_position, an_op_list.item_for_iteration)
-		        a_position.fix_operations.force_last (l_simple_fix)
-				fixes.force_last (l_simple_fix)
-
-				an_op_list.forth
-		    end
-
-		end
-
-	collect_involved_classes
-			-- collect the classes which would be modified during autoFixing
-		require
-		    is_healthy: is_healthy
-		local
-		    l_exception_positions: like exception_positions
-		    l_position: AFX_EXCEPTION_POSITION
-		do
-		    l_exception_positions := exception_positions
-
-			from
-			    l_exception_positions.start
-			until
-			    l_exception_positions.after
-			loop
-			    l_position := l_exception_positions.item_for_iteration
-
-					-- only relevant classes
-				if l_position.is_relevant and then not involved_classes.has (l_position.e_feature.associated_class) then
-				    involved_classes.force_last (l_position.e_feature.associated_class)
-				end
-
-			    l_exception_positions.forth
-			end
-		ensure
-		    non_empty_classes_list: not involved_classes.is_empty
-		end
-
-	backup_involved_classes
-			-- backup involved class files
-		require
-		local
-		    l_session: like session
-		    l_involved_classes: like involved_classes
-		    l_position: AFX_EXCEPTION_POSITION
-		    l_class_c: CLASS_C
-			l_file_system: KL_FILE_SYSTEM
-			l_project_directory: PROJECT_DIRECTORY
-			l_autofix_backup_directory_name: DIRECTORY_NAME
-			l_old_file_name: FILE_NAME
-			l_new_file_name: FILE_NAME
-			l_log_file_name: FILE_NAME
-			l_file: detachable KL_TEXT_OUTPUT_FILE
-			l_retried: BOOLEAN
-		do
-		    if not l_retried then
-    		    l_session := session
-    		    check l_session /= Void end
-    			l_file_system := file_system
-
-    				-- prepare backup directory name
-    			l_project_directory := test_suite.service.eiffel_project.project_directory
-    			l_autofix_backup_directory_name := l_project_directory.backup_path.twin
-    			l_autofix_backup_directory_name.extend ("auto_fix")
-
-    				-- prepare the logging file
-    			create l_log_file_name.make_from_string (l_autofix_backup_directory_name)
-    			l_log_file_name.set_file_name ("copied_file_list")
-    			l_log_file_name.add_extension ("log")
-
-    			create l_file.make (l_log_file_name)
-    			l_file.recursive_open_write
-    			if l_file.is_open_write then
-
-        			l_involved_classes := involved_classes
-        			check l_involved_classes /= Void and then not l_involved_classes.is_empty end
-
-       			    	-- number of files
-       			    l_file.put_integer (l_involved_classes.count)
-       			    l_file.put_new_line
-
-       			    is_last_copy_successful := True
-
-           			from
-           			    l_involved_classes.start
-           			until
-           			    l_involved_classes.after or not is_last_copy_successful
-           			loop
-           			    l_class_c := l_involved_classes.item_for_iteration
-
-           					-- old file name (including file path)
-           				create l_old_file_name.make_from_string (l_class_c.file_name)
-
-           					-- new file name
-           				create l_new_file_name.make_from_string (l_autofix_backup_directory_name)
-           				l_new_file_name.set_file_name (l_class_c.external_name)
-           				l_new_file_name.add_extension ("bak")
-
-           					-- copy
-           				guaranteed_file_copy (l_old_file_name, l_new_file_name)
-
-						if is_last_copy_successful then
-               					-- log copy
-               				l_file.put_string (l_old_file_name)
-               				l_file.put_new_line
-               				l_file.put_string ("---> " + l_new_file_name)
-               				l_file.put_new_line
-
-               			    l_involved_classes.forth
-						end
-        			end
-
-    				l_file.flush
-    				l_file.close
-    				l_file := Void
-
-    					-- when not successful, delete the log file also
-    				if not is_last_copy_successful then
-    				    prompts.show_warning_prompt ("Cannot backup file " + l_old_file_name + ", autoFix quitting...",
-						    					Void, Void)
-    				    l_file_system.delete_file (l_log_file_name)
-    				    set_health_state (False)
-    				end
-    			else
-    			    prompts.show_warning_prompt ("Cannot create list of changed files, autoFix quitting...",
-						    					Void, Void)
---    			    l_session.error_handler.raise_error ("Error creating %"copied_file_list.log%" file.")
-    			end
-    		end
-
-    	rescue
-    	    l_retried := True
-
-			if l_file /= Void then l_file.close end
-    		l_file_system.delete_file (l_log_file_name)
-
-			set_health_state (False)
-
-			retry
-		end
-
-	guaranteed_file_copy (a_from, a_to: STRING)
-			-- make sure the file copy really happens, and update the `is_last_copy_successful' state
-		local
-			l_file_system: KL_FILE_SYSTEM
-			l_file: KL_TEXT_INPUT_FILE
-			l_file_length: INTEGER
-		do
-		    is_last_copy_successful := False
-
-		    l_file_system := file_system
-
-   			create l_file.make (a_from)
-   			l_file.open_read
-   			if l_file.is_open_read then
-   			    	-- source file exists
-   				l_file.close
-   			    l_file_length := l_file.count
-
-   				l_file_system.copy_file (a_from, a_to)
-
-   				create l_file.make (a_to)
-   				l_file.open_read
-   				if l_file.is_open_read then
-   				    	-- dest file exists
-   				    l_file.close
-
-   				    if l_file_length = l_file.count then
-   				        is_last_copy_successful := True
-   				    end
-   				end
-   			end
-		end
-
-	restore_involved_classes
-			-- copy the backed up class files back to their positions
-		local
-		    l_session: like session
-		    l_exception_positions: like exception_positions
-		    l_position: AFX_EXCEPTION_POSITION
-		    l_class_c: CLASS_C
-			l_file_system: KL_FILE_SYSTEM
-			l_project_directory: PROJECT_DIRECTORY
-			l_autofix_backup_directory_name: DIRECTORY_NAME
-			l_old_file_name: FILE_NAME
-			l_new_file_name: FILE_NAME
-			l_log_file_name: FILE_NAME
-			l_file: KL_TEXT_INPUT_FILE
-			l_line_from, l_line_to: STRING
-			l_line_no: STRING
-			l_no_of_files: INTEGER
-			i: INTEGER
-		do
-		    l_session := session
-		    check l_session /= Void end
-			l_file_system := file_system
-
-				-- prepare backup directory name
-			l_project_directory := test_suite.service.eiffel_project.project_directory
-			l_autofix_backup_directory_name := l_project_directory.backup_path.twin
-			l_autofix_backup_directory_name.extend ("auto_fix")
-
-				-- open the log file
-			create l_log_file_name.make_from_string (l_autofix_backup_directory_name)
-			l_log_file_name.set_file_name ("copied_file_list")
-			l_log_file_name.add_extension ("log")
-
-			check is_last_copy_successful = True end
-
-			create l_file.make (l_log_file_name)
-			l_file.open_read
-			if l_file.is_open_read then
-				l_file.read_line
-				l_line_no := l_file.last_string.twin
-				l_no_of_files := l_line_no.to_integer
-
-			    from i := 1
-			    until i > l_no_of_files or not is_last_copy_successful
-			    loop
-			        l_file.read_line
-			        l_line_from := l_file.last_string.twin
-			        l_file.read_new_line
-
-			        l_file.read_line
-			        l_line_to := l_file.last_string.twin
-			        l_line_to := l_line_to.substring (6, l_line_to.count)
-			        l_file.read_new_line
-
-			        guaranteed_file_copy (l_line_to, l_line_from)
-
-			        	-- backup files should not be deleted, unless the module has been extensively tested
---			        l_file_system.delete_file (l_line_to)
-			        i := i + 1
-			    end
-
-				l_file.close
-				l_file := Void
+		    check a_fix.fix_id = 0 end
+		    a_fix.set_fix_id (global_fix_id)
+		    step_global_fix_id
+
+		    if storage.has_key (a_class_id) then
+				l_list := storage.found_item
+				l_list.force_last (a_fix)
 			else
-			    	-- backup log file destroyed. Warn user of possible manual restore
-				is_last_copy_successful := False
-			end
-
-			if not is_last_copy_successful then
-    		    prompts.show_warning_prompt ("Cannot restore changed files...",
-					    					Void, Void)
---				set_health_state (False)
-
---    		    l_session.error_handler.raise_error ("Error creating %"copied_file_list.log%" file.")
-    		else
-    		    	-- list of copied files is not deleted, in case when manually restore is needed
-				l_file_system.delete_file (l_log_file_name)
-			end
-
+			    create l_list.make_default
+			    l_list.force_last (a_fix)
+			    storage.put (l_list, a_class_id)
+		    end
 		end
 
 ;note

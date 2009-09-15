@@ -1,70 +1,51 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_FIX_OPERATION_SKIPPING}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+	AFX_FIX_OPERATION_SKIPPING
 
 inherit
-	TEST_EVALUATOR_SOURCE_WRITER
+	AFX_FIX_OPERATION_CONDITIONING
 		rename
-		    write_source as write_test_evaluator
+		    make as make_conditioning
 		redefine
-		    put_class_header,
-		    ancestor_names
+		    prologue,
+		    build_operation_report
 		end
 
-feature -- Status report
+create
+    make
 
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
+feature -- Initialization
 
-	test_count: NATURAL
-			-- number of tests
+	make
+			-- initialize a new operation
+		do
+		    make_conditioning ("False")
+		end
 
 feature -- Access
 
-	ancestor_names: attached ARRAY [attached STRING]
+	prologue (an_id: INTEGER): STRING
 			-- <Precursor>
 		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
+		    Result := "if not (create {AFX_FIX_SELECTION_ARBITOR}).is_fix_active(" + an_id.out + ") then%N"
 		end
 
-feature -- Basic operation
+feature -- Operation
 
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
+	build_operation_report
+			-- the operation report for users
 		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
+		    l_report: STRING
 		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
+		    create l_report.make_empty
+		    l_report.append ("Deletion.")
 
-		    write_test_evaluator (a_file, l_tests)
-		end
-
-
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+			last_operation_report := l_report
 		end
 
 note

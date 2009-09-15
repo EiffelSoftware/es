@@ -18,7 +18,13 @@ feature -- Access
 			-- error message
 		deferred
 		end
-		
+
+	message_report: STRING
+			-- formatted message report to user
+		do
+		    Result := message
+		end
+
 feature -- Logging
 
 	log (a_logger: AFX_LOGGING_EVENT_OBSERVER_I)

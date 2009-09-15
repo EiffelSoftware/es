@@ -19,11 +19,11 @@ inherit
 create
     make
 
-feature
+feature -- Initialization
 
 	make (a_class: like context_class)
 			-- <Precursor>
-			-- always use class text from disk file
+			-- we always use the text from the CLASS_AS, which should be conform with the information in the AST.
 		local
 			l_text: detachable STRING_32
 			l_editor: like active_editor_for_class
@@ -32,36 +32,68 @@ feature
 		do
 			context_class := a_class
 
-			debug ("autofix")
-					-- text from editor and that from disk are different
-    			l_editor := active_editor_for_class (a_class)
-    			if l_editor /= Void and then is_editor_text_ready (l_editor) then
-    				l_editor_text := l_editor.wide_text
-    				l_encoding := l_editor.encoding
-    			end
-    		end
-
 				-- text
 			l_text := a_class.text
 			check l_text /= Void end
-
-				-- encoding
-			l_encoding ?= a_class.encoding
-			if l_encoding /= Void then
-				encoding_converter.detected_encoding := l_encoding
-			else
-				encoding_converter.detected_encoding := (create {EC_ENCODINGS}).default_encoding
-			end
 
 			original_text := l_text
 			original_file_date := a_class.file_date
 			modified_data := new_modified_data
 		end
 
+feature -- Operation
+
+	tailing_whitespace (a_pos: INTEGER): attached STRING_32
+			-- Retrieve the tailing whitespace at a given position on `text'
+			--
+			-- `a_pos': Orginal position in `original_text' to retrieve the whitespace for.
+			-- `Result': The initial whitespace string.
+		require
+			is_interface_usable: is_interface_usable
+			a_pos_non_negative: a_pos > 0
+			a_pos_small_enough: a_pos < text.count
+		local
+			l_text: like text
+			l_count: INTEGER
+			l_pos: INTEGER
+			i: INTEGER
+		do
+			l_text := text
+			l_count := l_text.count
+			l_pos := modified_data.adjusted_position (a_pos) + 1
+			from i := l_pos
+			until i > l_count or not l_text.item (i).is_space or l_text.item (i) = '%N'
+			loop
+				i := i + 1
+			end
+
+			if i <= l_count and then l_text.item (i) = "%N" then
+			    i := i + 1
+			end
+
+
+
+			if i > l_pos then
+				Result := l_text.substring (l_pos, i - 1)
+				from
+					i := 1
+					l_pos := Result.count
+				until
+					i > l_pos
+				loop
+					if not Result.item (i).is_space then
+							-- Replace any characters with spaces.
+						Result.put (' ', i)
+					end
+					i := i + 1
+				end
+			else
+				create Result.make_empty
+			end
+		end
+
 	new_modified_data: attached like modified_data
 			-- <Precursor>
-			-- We need to be sure the modifier reads class text from disk file,
-			-- rather than from editor, where "%R%N"s are trimed to "%N"s and therefore may result in ast mismatch later.
 		local
 			l_class: attached like context_class
 			l_text: attached STRING_32

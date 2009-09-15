@@ -1,70 +1,38 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {SHARED_AFX_FIX_REPOSITORY_NEW}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
-
-inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
-		end
-
-feature -- Status report
-
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
+	SHARED_AFX_FIX_REPOSITORY_NEW
 
 feature -- Access
 
-	ancestor_names: attached ARRAY [attached STRING]
-			-- <Precursor>
+	repository: detachable AFX_FIX_REPOSITORY
+			-- current effective repository
 		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
+		    Result := repository_cell.item
 		end
 
-feature -- Basic operation
+feature{AFX_FIX_PROPOSER} -- Setting
 
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
+	set_repository (a_repository: like repository)
+			-- set `a_repository' to be current
 		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
-
-		    write_test_evaluator (a_file, l_tests)
+		    repository_cell.put (a_repository)
+		ensure
+		    repository_set: repository = a_repository
 		end
 
+feature{NONE} -- Implementation
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+	repository_cell: CELL [detachable AFX_FIX_REPOSITORY]
+			-- once cell
+		once
+		    create Result.put (Void)
+		ensure
+		    repository_cell_not_void: Result /= Void
 		end
 
 note

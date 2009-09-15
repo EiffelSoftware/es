@@ -1,70 +1,45 @@
 note
-	description: "Summary description for {AFX_FIX_EVALUATOR_SOURCE_WRITER}."
+	description: "Summary description for {AFX_LOGGING_SERVICE_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AFX_FIX_EVALUATOR_SOURCE_WRITER
+deferred class
+	AFX_LOGGING_SERVICE_I
 
-inherit
-	TEST_EVALUATOR_SOURCE_WRITER
-		rename
-		    write_source as write_test_evaluator
-		redefine
-		    put_class_header,
-		    ancestor_names
+feature -- Logging
+
+	log (an_entry: AFX_LOG_ENTRY_I)
+			-- log an entry
+		deferred
 		end
 
 feature -- Status report
 
-	is_start_redefined: BOOLEAN
-			-- is feature `start' redefined?
-
-	test_count: NATURAL
-			-- number of tests
-
-feature -- Access
-
-	ancestor_names: attached ARRAY [attached STRING]
-			-- <Precursor>
-		do
-			Result := << "AFX_FIX_EVALUATION_ROOT" >>
+	has_registered (an_observer: AFX_LOGGING_EVENT_OBSERVER_I): BOOLEAN
+			-- has the observer been subscribed to the service?
+		deferred
 		end
 
-feature -- Basic operation
+feature -- Registration
 
-	write_fix_evaluator (a_file: attached KI_TEXT_OUTPUT_STREAM; a_list: detachable DS_LINEAR [AFX_TEST])
-			-- <Precursor>
-		local
-		    l_tests: detachable DS_ARRAYED_LIST [TEST_I]
-		do
-		    if a_list /= Void then
-			    test_count := a_list.count.to_natural_32
-			    create l_tests.make_default
-			    a_list.do_all (
-			    	agent (a_test_list: DS_ARRAYED_LIST [TEST_I]; a_test: AFX_TEST)
-			    		do
-			    		    a_test_list.force_last (a_test.test)
-			    		end (l_tests, ?)
-			    	)
-		    end
-
-		    write_test_evaluator (a_file, l_tests)
+	register_observer (an_observer: AFX_LOGGING_EVENT_OBSERVER_I)
+			-- register an observer
+		require
+		    observer_not_registered: not has_registered (an_observer)
+		deferred
 		end
 
+	unregister_observer (an_observer: AFX_LOGGING_EVENT_OBSERVER_I)
+			-- unregister an observer
+		require
+		    observer_registered: has_registered (an_observer)
+		deferred
+		end
 
-	put_class_header
-			-- <Precursor>
-		do
-		    Precursor
-
-			if test_count /= 0 then
-    			stream.indent
-    			stream.put_line ("test_count: NATURAL = " + test_count.out)
-    			stream.dedent
-    			stream.put_line ("")
-			end
+	unregister_all
+			-- unregister all observers
+		deferred
 		end
 
 note

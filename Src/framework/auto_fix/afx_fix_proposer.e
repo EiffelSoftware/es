@@ -14,7 +14,7 @@ inherit
 		end
 
 	TEST_EXECUTOR
-		export{AFX_FIX_APPLIER}
+		export {AFX_SYSTEM_ADJUSTER}
 			compile_project,
 			last_compilation_successful
 		undefine
@@ -31,15 +31,21 @@ inherit
 		    retrieve_results
 		end
 
-	AFX_SHARED_TEST_ID_CODEC
+	SHARED_AFX_EVALUATION_ID_CODEC
 
-	AFX_SHARED_SESSION
-
-	SHARED_AFX_FIX_REPOSITORY
+	SHARED_AFX_SESSION
 
 	SHARED_AFX_LOGGING_INFRASTRUCTURE
 
 	ES_SHARED_PROMPT_PROVIDER
+
+	SHARED_AFX_FIX_ID
+
+	SHARED_AFX_TEST_ID
+
+	SHARED_AFX_FIX_REPOSITORY_NEW
+
+	SHARED_AFX_INTERNAL_PROGRESS_CONSTANT
 
 inherit{NONE}
 
@@ -55,8 +61,6 @@ inherit{NONE}
 		    conf_type
 		end
 
-
-
 create
     make
 
@@ -65,10 +69,10 @@ feature -- Process
 	start_process_internal (a_conf: like conf_type)
 			-- <Precursor>
 		local
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
 		    l_log_file: AFX_LOG_FILE
-		    l_log_event: like logging_event
-		    l_error_handler: AFX_ERROR_PRINTER
-		    l_session: AFX_SESSION
+		    l_session: like session
 		do
 		    	-- config the log file
 		    create l_log_file.make_standard
@@ -76,167 +80,209 @@ feature -- Process
 		    l_log_file.config (a_conf)
 		    l_log_file.start_logging
 
-		    	-- create logging event and subscribe listeners
-		    create l_log_event
-		    l_log_event.subscribe (agent l_log_file.log)
-
-		    	-- share the logging event
-		    set_logging_event (l_log_event)
+				-- register the log file
+		    l_logging_service := logging_service
+		    if not l_logging_service.has_registered (l_log_file) then
+			    l_logging_service.register_observer (l_log_file)
+		    end
 
 				-- share the session info
 			create l_session.make (a_conf, Current)
 			set_session (l_session)
 
-				-- initialize shared codec
-			codec.set_test_count ((a_conf.failing_tests.count + a_conf.regression_tests.count).to_natural_32)
+				-- prepare fix repository
+		    set_repository (create {AFX_FIX_REPOSITORY}.make (5))
 
-			create generator_task.make
-			generator_task.start
+				-- starting synthesis
+			create fix_synthesizer.make
+			fix_synthesizer.start
 
+			is_successful := True
 			is_running := True
 			is_compiled := False
 
+--			internal_progress := Start_phase_finished_fraction
+
 				-- logging
-			logging_event.publish ([log_entry_factory.make_info_entry (Msg_processor_started)])
+			log_info (Msg_started_fix_proposer)
 		end
 
 	proceed_process
 			-- <Precursor>
 		local
-		    l_potential_fixes, l_valid_fixes: DS_LINEAR [AFX_FIX_INFO_I]
-		    l_fix: AFX_FIX_INFO_I
-		    l_output: STRING
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
+		    l_potential_fixes: DS_LINEAR [AFX_FIX_INFO_I]
 		do
-		        if attached generator_task as l_generator then
-		            if is_stop_requested then
-		                	-- TODO: anything else here ??
-		                generator_task := Void
-		            else
-    		        	if l_generator.is_finished then
-    			            l_generator.stop
-
-    			            if l_generator.is_successful and then repository.is_healthy then
-    			                create applier_task.make
-    			                applier_task.start
-    			            else
-    			                is_finished := True
-    			            end
-
-    			          	generator_task := Void
-    			        else
-    			            l_generator.step
-    			        end
-		            end
-
-			    elseif attached applier_task as l_applier then
-		            if is_stop_requested then
-		                	-- TODO: anything else here ??
-		                applier_task := Void
-		            else
-    			        if l_applier.is_finished then
-    			            l_applier.stop
-
-    			            if l_applier.is_successful and repository.is_healthy then
-    			                	-- prepare for fix evaluation
-    			                start_effectiveness_checking
-    							is_checking_effectiveness := True
-    						else
-    						    is_finished := True
-    			            end
-
-    			            applier_task := Void
-    			        else
-    			            l_applier.step
-    			        end
-    			    end
-			    elseif is_checking_effectiveness then
-			        	-- synchronize evaluators, retrieve results, and cancel process when `is_stop_requested'
-					syncronize_evaluators
-
-					if not is_stop_requested and then evaluators.is_empty then
-	   						-- collect effective fixes when evaluation finishes
-   					    l_potential_fixes := collect_potential_fixes
-   					    if not l_potential_fixes.is_empty then
-   					        prompts.show_info_prompt ("Effectiveness-check finished, starting validity checking...", Void, Void)
-   					        	-- start fix validation
-   					        start_validity_checking (l_potential_fixes)
-   					        is_checking_validity := True
-   					    else
-   					        prompts.show_info_prompt ("Effectiveness-check finished, no potential fix found.", Void, Void)
-   					        is_finished := True
-   					    end
-
-							-- effectiveness checking finished
-				        is_checking_effectiveness := False
-    				end
-			    elseif is_checking_validity then
-			        	-- synchronize evaluators, retrieve results, and cancel process when `is_stop_requested'
-					syncronize_evaluators
-
-					if not is_stop_requested and then evaluators.is_empty then
-	   						-- collect effective fixes when evaluation finishes
-   					    l_valid_fixes := collect_valid_fixes
-
-   					    create l_output.make_empty
-						from l_valid_fixes.start
-						until l_valid_fixes.after
-						loop
-						    l_fix := l_valid_fixes.item_for_iteration
-						    l_output.append (l_fix.fix_report + "%N")
-
-						    l_valid_fixes.forth
-						end
-
-						if l_output.is_empty then
-						    l_output := "No valid fix found."
-						else
-						    l_output := "Valid fix found: %N" + l_output
-						end
-						prompts.show_info_prompt (l_output, Void, Void)
-
-						is_checking_validity := False
-
-        					-- autoFix finished !!!
-    				    is_finished := True
-    				end
-		        end
-
+		    if attached fix_synthesizer as l_synthesizer then
 		        if is_stop_requested then
-		            is_finished := True
+		            fix_synthesizer := Void
+		        else
+		            if not l_synthesizer.is_finished then
+		                l_synthesizer.step
+		            else
+		                l_synthesizer.stop
+
+		                if l_synthesizer.is_successful then
+		                	create system_adjuster
+		                else
+		                    is_successful := False
+		                end
+
+		                fix_synthesizer := Void
+		            end
 		        end
+
+		    elseif attached system_adjuster as l_adjuster then
+		        if not is_stop_requested then
+    		        	-- adjust the system
+    	            l_adjuster.apply_compile_and_restore
+
+    	            if l_adjuster.is_successful then
+    	                l_logging_service := logging_service
+    	                l_entry_factory := log_entry_factory
+    	                l_logging_service.log (l_entry_factory.make_info_entry (Msg_starting_fix_evaluation))
+
+    	                	-- preparation
+    	                prepare_for_evaluation
+
+    	                	-- evaluate all fixes over failing tests
+    	                tests_under_evaluation := session.conf.failing_tests
+    	                fixes_under_evaluation := repository.fixes
+    	                start_evaluation
+
+							-- update progress step
+    	                delta_progress := (Fix_evaluation_phase_i_finished_fraction - System_adjuster_finished_fraction)
+    	                				/ (tests_under_evaluation.count * fixes_under_evaluation.count)
+
+    					is_checking_effectiveness := True
+    	            else
+    	                is_successful := False
+    	            end
+		        end
+
+		        	-- reset `system_adjuster' to Void anyway after this step is over
+    	        system_adjuster := Void
+
+		    elseif is_checking_effectiveness then
+		        	-- synchronize evaluators, retrieve results, and cancel process when `is_stop_requested'
+				syncronize_evaluators
+
+				if not is_stop_requested and then evaluators.is_empty then
+   						-- collect effective fixes when evaluation finishes
+   					evaluation_results.collect_fixes_good_for_tests (fixes_under_evaluation, tests_under_evaluation)
+				    l_potential_fixes := evaluation_results.last_good_fix_collection
+
+	                l_logging_service := logging_service
+	                l_entry_factory := log_entry_factory
+				    if not l_potential_fixes.is_empty then
+    	                l_logging_service.log (l_entry_factory.make_info_entry (Msg_starting_fix_validation))
+
+							-- evaluate potential fixes over regression tests
+				        fixes_under_evaluation := l_potential_fixes
+				        tests_under_evaluation := session.conf.regression_tests
+				        start_evaluation
+
+							-- update progress step
+    	                delta_progress := (Fix_evaluation_phase_ii_finished_fraction - Fix_evaluation_phase_i_finished_fraction)
+    	                				/ (tests_under_evaluation.count * fixes_under_evaluation.count)
+
+				        is_checking_validity := True
+				    else
+				        l_logging_service.log (l_entry_factory.make_info_entry (Msg_no_fix_to_be_validated))
+				        is_finished := True
+				    end
+
+						-- effectiveness checking finished
+			        is_checking_effectiveness := False
+    			end
+		    elseif is_checking_validity then
+				syncronize_evaluators
+
+				if not is_stop_requested and then evaluators.is_empty then
+   						-- collect effective fixes when evaluation finishes
+   					evaluation_results.collect_fixes_good_for_tests (fixes_under_evaluation, tests_under_evaluation)
+				    valid_fixes := evaluation_results.last_good_fix_collection
+
+					is_checking_validity := False
+
+        				-- autoFix finished !!!
+    			    is_finished := True
+    			end
+		    end
+
+			if not is_successful then
+					-- log
+			    is_finished := True
+			end
+
+	        if is_stop_requested then
+	            is_finished := True
+	        end
 		end
 
 	stop_process
 			-- <Precursor>
+		local
+		    l_logging_service: like logging_service
+		    l_entry_factory: like log_entry_factory
+		    l_report: STRING
 		do
+		    l_logging_service := logging_service
+		    l_entry_factory := log_entry_factory
+
+		    	-- build report
+		    l_report := build_proposer_report
+
+				-- report to user
+			prompts.show_info_prompt (l_report, Void, Void)
+			l_logging_service.log (l_entry_factory.make_info_entry (Msg_proposer_report_pre + l_report))
+
 			test_map := old_test_map
 			is_running := False
 			is_finished := False
 			is_stop_requested := False
 			is_compiled := False
+			is_successful := False
+			internal_progress := 0
 
+			valid_fixes := Void
 			evaluation_results := Void
+			l_logging_service.log (l_entry_factory.make_info_entry (Msg_finished_fix_proposer))
+
+				-- finish logging
+			l_logging_service.unregister_all
 		end
 
 	abort
 			-- <Precursor>
+			-- introduced in {TEST_EXECUTOR} to set internal data structure to meaningful state before stop.
+			-- not used here, since no information should be reported unless the whole process has finished successfully.
 		do
-
 		end
 
 feature -- Access
 
-	generator_task: detachable AFX_FIX_GENERATOR
-			-- fix generator
+	fix_synthesizer: detachable AFX_FIX_SYNTHESIZER
+			-- synthesizer task
 
-	applier_task: detachable AFX_FIX_APPLIER
-			-- fix applier
+	system_adjuster: detachable AFX_SYSTEM_ADJUSTER
+			-- adjuster to adjust the system and apply the fixes
 
 	old_test_map: like test_map
 			-- original test map
 
 	evaluation_results: detachable AFX_FIX_EVALUATION_RESULT
 			-- storage for evaluation results
+
+	fixes_under_evaluation: DS_LINEAR [AFX_FIX_INFO_I]
+			-- fixes currently been evaluated
+
+	tests_under_evaluation: DS_LINEAR [AFX_TEST]
+			-- tests currently been evaluate
+
+	valid_fixes: detachable DS_LINEAR [AFX_FIX_INFO_I]
+			-- fixes passed all the tests
 
 feature -- Status report
 
@@ -252,192 +298,120 @@ feature -- Status report
 	is_finished: BOOLEAN
 			-- is process finished?
 
-feature -- Operation
+	is_successful: BOOLEAN
+			-- is processing successful so far?
 
-	start_effectiveness_checking
-			-- launch executors to see whether a fix can eliminate the failure
+feature{AFX_SESSION} -- Progress report
+
+	update_progress (a_delta: REAL)
+			-- update the progress of process
+		do
+		    internal_progress := (internal_progress + a_delta).min(1.0)
+		    log_info ("Internal_progress = " + internal_progress.out)
+		end
+
+feature -- Implementation
+
+	prepare_for_evaluation
+			-- prepare the executor for fix evaluation
+		local
+		    l_conf: AFX_FIX_PROPOSER_CONF_I
+		    l_fix_count: INTEGER
+		    l_test_count: INTEGER
+		do
+		    l_conf := session.conf
+
+		    old_test_map := test_map
+
+			l_test_count := l_conf.failing_tests.count + l_conf.regression_tests.count
+			l_fix_count := repository.fixes.count
+
+		    check global_test_id = l_test_count + 1 end
+		    check global_fix_id = l_fix_count + 1 end
+
+				-- shared evaluation id codec
+		    codec.set_fix_count (l_fix_count.to_natural_32)
+		    codec.set_test_count (l_test_count.to_natural_32)
+
+		    evaluator_count := l_conf.evaluator_count
+
+		    	-- `evaluation_results' for all evaluations
+		    create evaluation_results.make (l_fix_count, l_test_count)
+
+		    log_info (Msg_ready_for_evaluation_1 + l_fix_count.out + Msg_ready_for_evaluation_2 + l_test_count.out + Msg_ready_for_evaluation_3)
+		end
+
+	start_evaluation
+			-- prepare for evaluating the effect of fixes in `a_fixes' to tests in `a_tests'
 		local
 		    l_session: like session
 		    l_conf: AFX_FIX_PROPOSER_CONF_I
-		    l_cursor: DS_LINEAR_CURSOR [attached TEST_I]
-		    l_list: attached DS_ARRAYED_LIST[attached TEST_I]
-		    l_sorter: DS_QUICK_SORTER [attached TEST_I]
-		    l_comparator: TAG_COMPARATOR [attached TEST_I]
-		    l_repository: like repository
-		    l_codec: AFX_TEST_ID_CODEC
+		    l_tests: DS_LINEAR [AFX_TEST]
 		    l_fixes: DS_LINEAR [AFX_FIX_INFO_I]
-
-		    l_test_index: INTEGER
-		    l_fix_index: INTEGER
-
-		    l_fix_count: INTEGER
-		    l_test_count: INTEGER
-
+		    l_codec: AFX_EVALUATION_ID_CODEC
+		    l_evaluation_id_list: DS_ARRAYED_LIST[NATURAL]
+		    l_test: AFX_TEST
+		    l_fix: AFX_FIX_INFO_I
 		    l_test_id: NATURAL
-		    l_test_id_list: DS_ARRAYED_LIST[NATURAL]
+		    l_fix_id: NATURAL
+		    l_evaluation_id: NATURAL
 		do
-			l_session := session
-			check l_session /= VOid end
-			l_conf := l_session.conf
+		    l_session := session
+		    check l_session /= Void end
+		    l_conf := l_session.conf
 
-			create l_test_id_list.make_default
+		    l_tests := tests_under_evaluation
+		    l_fixes := fixes_under_evaluation
 
-				-- save the old test map, so that they can be restored after evaluation
-		    old_test_map := test_map
-
-		    	-- TODO: do we need to sort tests ??
-		    create l_list.make_from_linear (l_conf.failing_tests)
-		    create l_comparator.make (l_conf.sorter_prefix)
-		    create l_sorter.make (l_comparator)
-		    l_list.sort (l_sorter)
-
-				-- list of all fixes
-			l_repository := repository
-			check l_repository /= Void end
-			l_fixes := l_repository.fixes
-
-				-- test id encoder
+				-- evaluation id encoder
 			l_codec := codec
 			check l_codec.is_valid end
-
-				-- although only failing tests are run in this step, the test id is computed on the basis of all tests and fixes
-			l_test_count := l_conf.failing_tests.count + l_conf.regression_tests.count
-			l_fix_count := l_fixes.count
-
-			check l_test_count = codec.test_count.to_integer_32 and l_fix_count = codec.fix_count.to_integer_32 end
 
 				-- prepare test_map with customized test id
 				-- one test for each [test, fix] tuple
 				-- only FAILING tests would be considered now
 				-- all fixes are considered
-		    create test_map.make (l_list.count * l_fix_count)
+		    create test_map.make (l_tests.count * l_fixes.count)
+		    create l_evaluation_id_list.make (l_tests.count * l_fixes.count)
+
 		    from
-		        l_cursor := l_list.new_cursor
-		        l_cursor.start
-		        l_test_index := 1
+		        l_tests.start
 		    until
-		        l_cursor.after
+		        l_tests.after
 		    loop
+		        l_test := l_tests.item_for_iteration
+		        l_test_id := l_test.test_id.to_natural_32
 		        from
 		            l_fixes.start
 		        until
 		            l_fixes.after
 		        loop
-		            l_fix_index := l_fixes.item_for_iteration.id
-		            l_codec.encode_test_id (l_test_index.to_natural_32, l_fix_index.to_natural_32)
-		            l_test_id := l_codec.last_test_id
-			        test_map.force_last (l_cursor.item, l_test_id)
-			        l_test_id_list.force_last (l_test_id)
+		            l_fix := l_fixes.item_for_iteration
+		            l_fix_id := l_fix.fix_id.to_natural_32
+
+		            l_codec.encode_evaluation_id (l_test_id, l_fix_id)
+		            l_evaluation_id := l_codec.last_evaluation_id
+			        test_map.put (l_test.test, l_evaluation_id)
+			        l_evaluation_id_list.force_last (l_evaluation_id)
 
 			        l_fixes.forth
 		        end
-		        l_cursor.forth
-		        l_test_index := l_test_index + 1
+		        l_tests.forth
 		    end
+		    create assigner.make_from_list (l_evaluation_id_list)
 
-		    create assigner.make_from_list (l_test_id_list)
-
-		    	-- `evaluation_results' for all evaluations
-		    create evaluation_results.make(l_fix_count.to_integer_32, l_test_count.to_integer_32)
-
-		    evaluator_count := l_conf.evaluator_count
 		    initialize_evaluators
 
 		    completed_tests_count := 0
-		end
 
-	start_validity_checking (a_potential_fixes: DS_LINEAR [AFX_FIX_INFO_I])
-			-- launch executors to see whether potential fixes can pass the regression test
-		local
-		    l_session: like session
-		    l_conf: AFX_FIX_PROPOSER_CONF_I
-		    l_cursor: DS_LINEAR_CURSOR [attached TEST_I]
-		    l_list: attached DS_ARRAYED_LIST[attached TEST_I]
-		    l_sorter: DS_QUICK_SORTER [attached TEST_I]
-		    l_comparator: TAG_COMPARATOR [attached TEST_I]
-		    l_repository: like repository
-		    l_codec: AFX_TEST_ID_CODEC
-		    l_fixes: DS_LINEAR [AFX_FIX_INFO_I]
-
-		    l_test_index_offset: INTEGER
-		    l_fix_index: INTEGER
-		    l_test_index: INTEGER
-
-		    l_fix_count: INTEGER
-		    l_test_count: INTEGER
-
-		    l_test_id: NATURAL
-		    l_test_id_list: DS_ARRAYED_LIST[NATURAL]
-		do
-			l_session := session
-			check l_session /= VOid end
-			l_conf := l_session.conf
-
-				-- index offset of regression tests
-			l_test_index_offset := l_conf.failing_tests.count
-
-		    	-- sort tests
-		    create l_list.make_from_linear (l_conf.regression_tests)
-		    create l_comparator.make (l_conf.sorter_prefix)
-		    create l_sorter.make (l_comparator)
-		    l_list.sort (l_sorter)
-
-				-- list of all fixes
-			l_repository := repository
-			check l_repository /= Void end
-			l_fixes := l_repository.fixes
-
-				-- test id encoder
-			l_codec := codec
-			check l_codec /= Void end
-
-				-- although only failing tests are run in this step, the test id is computed on the basis of all tests and fixes
-			l_test_count := l_conf.failing_tests.count + l_conf.regression_tests.count
-			l_fix_count := l_fixes.count
-
-				-- prepare test_map with customized test id
-				-- one test for each [test, fix] tuple
-				-- only REGRESSION tests are considered now
-				-- only fixes in `a_potential_fixes' are considered
-		    create test_map.make (l_list.count * a_potential_fixes.count)
-		    create l_test_id_list.make (l_list.count * a_potential_fixes.count)
-		    from
-		        l_cursor := l_list.new_cursor
-		        l_cursor.start
-		        l_test_index := l_test_index_offset + 1
-		    until
-		        l_cursor.after
-		    loop
-		        from
-		            a_potential_fixes.start
-		        until
-		            a_potential_fixes.after
-		        loop
-		            l_fix_index := a_potential_fixes.item_for_iteration.id
-		            l_codec.encode_test_id (l_test_index.to_natural_32, l_fix_index.to_natural_32)
-		            l_test_id := l_codec.last_test_id
-			        test_map.force_last (l_cursor.item, l_test_id)
-			        l_test_id_list.force_last (l_test_id)
-
-			        a_potential_fixes.forth
-		        end
-		        l_cursor.forth
-		        l_test_index := l_test_index + 1
-		    end
-
-		    create assigner.make_from_list (l_test_id_list)
-
-		    evaluator_count := l_conf.evaluator_count
-		    initialize_evaluators
-
-		    completed_tests_count := 0
+		    log_info ((l_tests.count * l_fixes.count).out + Msg_evaluations_started)
 		end
 
 	retrieve_results (a_evaluator: attached TEST_EVALUATOR_CONTROLLER)
 			-- <Precursor>
 		local
 			l_tuple: attached TUPLE [index: NATURAL; outcome: detachable EQA_TEST_RESULT; attempts: NATURAL]
-			l_codec: detachable AFX_TEST_ID_CODEC
+			l_codec: detachable AFX_EVALUATION_ID_CODEC
 			l_done, l_terminate: BOOLEAN
 			l_test: detachable TEST_I
 			l_outcome: EQA_TEST_RESULT
@@ -456,9 +430,9 @@ feature -- Operation
 				    	-- decode test index and fix index
 				    l_codec := codec
 				    check l_codec /= Void end
-				    l_codec.decode_test_id (l_id)
-				    l_test_index := l_codec.last_test_index
-				    l_fix_index := l_codec.last_fix_index
+				    l_codec.decode_evaluation_id (l_id)
+				    l_test_index := l_codec.last_test_id
+				    l_fix_index := l_codec.last_fix_id
 
 					test_map.search (l_id)
 					if test_map.found and not assigner.is_aborted (l_id) then
@@ -470,6 +444,10 @@ feature -- Operation
 
 								-- put result into `evaluation_results'
 							evaluation_results[l_fix_index.to_integer_32, l_test_index.to_integer_32] := l_outcome
+							update_progress (delta_progress)
+
+							log_info (Msg_evaluation_result_1 + l_fix_index.out + Msg_evaluation_result_2 + l_test_index.out
+										+ Msg_evaluation_result_3 + (l_outcome /= Void and then l_outcome.is_pass).out)
 						end
 					else
 							-- If map does not contain test, we could terminate here. However if the evaluator has
@@ -488,70 +466,43 @@ feature -- Operation
 			end
 		end
 
-feature -- Implementation
-
-	collect_potential_fixes: DS_LINEAR [AFX_FIX_INFO_I]
-			-- collect the fixes which removed the failure
+	build_proposer_report: STRING
+			-- build the report of proposer processor
+		require
+		    is_finished: is_finished
 		local
-		    l_session: like session
-		    l_conf: AFX_FIX_PROPOSER_CONF_I
-		    l_min_test_index, l_max_test_index: NATURAL_32
-		    l_repository: like repository
+		    l_output: STRING
+		    l_valid_fixes: detachable like valid_fixes
+		    l_fix: AFX_FIX_INFO_I
 		do
-		    l_session := session
-		    check l_session /= Void end
-		    l_conf := l_session.conf
+		    create l_output.make_empty
+		    l_valid_fixes := valid_fixes
 
-		    l_min_test_index := 1
-		    l_max_test_index := l_conf.failing_tests.count.to_natural_32
+		    if is_stop_requested then
+		        l_output := "Fix proposer canceled by user."
+		    elseif not is_successful then
+		        l_output := "Internal error, fix proposer failed."
+		    elseif l_valid_fixes = Void or else l_valid_fixes.is_empty then
+		        l_output := "Fix proposer did not find any valid fixes."
+		    else
+		        check valid_fixes /= Void and then not valid_fixes.is_empty end
+		        l_output.append (l_valid_fixes.count.out + " valid fix(es) found:%N")
 
-		    l_repository := repository
-		    check l_repository /= Void end
+    		    from l_valid_fixes.start
+    		    until l_valid_fixes.after
+    		    loop
+    		        l_fix := l_valid_fixes.item_for_iteration
+    		        l_fix.build_fix_report
+    		        l_output.append (l_fix.last_fix_report)
+    		        l_valid_fixes.forth
+    		    end
+		    end
 
-		    Result := evaluation_results.collect_fixes_good_for_tests (l_repository.fixes, l_min_test_index, l_max_test_index)
+			Result := l_output
 		end
 
-	collect_valid_fixes: DS_LINEAR [AFX_FIX_INFO_I]
-			-- collect and return the valid fixes
-		local
-		    l_session: like session
-		    l_conf: AFX_FIX_PROPOSER_CONF_I
-		    l_min_test_index, l_max_test_index: NATURAL_32
-		    l_repository: like repository
-		do
-		    l_session := session
-		    check l_session /= Void end
-		    l_conf := l_session.conf
-
-				-- check the results of all tests
-		    l_min_test_index := 1
-		    l_max_test_index := (l_conf.failing_tests.count + l_conf.regression_tests.count).to_natural_32
-
-		    l_repository := repository
-		    check l_repository /= Void end
-
-		    Result := evaluation_results.collect_fixes_good_for_tests (l_repository.fixes, l_min_test_index, l_max_test_index)
-		end
-
---feature {NONE} -- Status report
-
---	relaunch_evaluators: BOOLEAN = True
---			-- <Precursor>
-
---feature {NONE} -- Status setting
-
---	compile_project
---			-- <Precursor>
---		do
---			Precursor
---				-- TODO: copy wkbench executable to separate directory
---		end
-
-feature -- To be removed
-
-	arbitor: AFX_FIX_SELECTION_ARBITOR
-
-	evaluator: AFX_FIX_EVALUATION_ROOT
+	delta_progress: REAL
+			-- delta progress we are making for each step
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
