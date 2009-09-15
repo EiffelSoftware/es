@@ -328,6 +328,8 @@ feature {NONE} -- Steps
 		do
 			if target /= Void and then interpreter.variable_table.is_variable_defined (target) then
 				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
+			elseif type /= Void then
+				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, type))
 			end
 			steps_completed := True
 		ensure

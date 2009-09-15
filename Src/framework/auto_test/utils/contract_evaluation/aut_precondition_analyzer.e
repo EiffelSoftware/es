@@ -161,6 +161,9 @@ feature{NONE} -- Process
 				loop
 					nested_list.force_last (create {DS_LINKED_STACK [BOOLEAN]}.make)
 					safe_process (l_parameters.item_for_iteration)
+					if l_parameters.index < l_parameters.count then
+						text.append (", ")
+					end
 					l_parameters.forth
 					nested_list.remove_last
 				end
