@@ -90,7 +90,13 @@ feature {NONE} -- Implementation
 			a_set_not_void: a_set /= Void
 			a_stream_not_void: a_stream /= Void
 			a_stream_open_write: a_stream.is_open_write
+
+		local
+			cs: DS_LINEAR_CURSOR [AUT_TEST_CASE_RESULT]
+			response_printer: AUT_RESPONSE_LOG_PRINTER
+
 		do
+
 			a_stream.put_string ("test cases total: ")
 			a_stream.put_integer (a_set.total_count)
 			a_stream.put_new_line
@@ -110,6 +116,21 @@ feature {NONE} -- Implementation
 			a_stream.put_string ("invalid test cases: ")
 			a_stream.put_integer (a_set.invalid_count)
 			a_stream.put_new_line
+
+
+		    from
+  				cs := a_set.unique_failure_list.new_cursor
+				cs.start
+			until
+				cs.off
+			loop
+				if cs.item.is_fail then
+				    create response_printer.make (a_stream)
+			        cs.item.witness.item (cs.item.witness.count).response.process (response_printer)
+				end
+				cs.forth
+			end
+
 		end
 
 invariant

@@ -124,6 +124,7 @@ feature -- Execution
 				   parameter_loader.get_next_creation_probability then
 				    i := 0
 				else
+					-- The original probability
 					i := (random.item  \\ 5)
 				end
 

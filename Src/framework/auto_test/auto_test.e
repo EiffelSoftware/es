@@ -71,6 +71,7 @@ feature -- Execution
 			r2:REAL_64
 
 
+
 		do
 
 			project_helper := a_project_helper
@@ -389,6 +390,10 @@ feature{NONE} -- Test case generation and execution
 			if elapsed_minutes /= times_duration_logged then
 				interpreter.log_line (time_passed_mark + duration.second_count.out)
 				times_duration_logged := times_duration_logged + 1
+			end
+            elapsed_minutes := duration.second_count \\ 20
+			if (elapsed_minutes = 0) then
+			   interpreter.log_line (time_passed_mark + duration.second_count.out)
 			end
 
 			time_left := time_out - duration

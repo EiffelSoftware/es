@@ -81,6 +81,9 @@ feature -- Access
 			Result := unique_failure_list.count
 		end
 
+	unique_failure_list: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT]
+	    	-- List of unique failures contained in set (using heuristics from witness)
+
 
 feature {NONE} -- Status update
 
@@ -148,8 +151,7 @@ feature {NONE} -- Status update
 			end
 		end
 
-	unique_failure_list: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT]
-			-- List of unique failures contained in set (using heuristics from witness)
+
 
 invariant
 

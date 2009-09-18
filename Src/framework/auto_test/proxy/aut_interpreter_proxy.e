@@ -114,6 +114,7 @@ feature {NONE} -- Initialization
 			proxy_start_time := system_clock.date_time_now
 			error_handler := a_error_handler
 			timeout := default_timeout
+			-------------------------------------------Changed
 			set_is_logging_enabled (True)
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name

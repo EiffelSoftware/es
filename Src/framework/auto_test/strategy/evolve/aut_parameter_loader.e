@@ -486,6 +486,11 @@ load_configuration is
 
 			end
 
+			-- If both methods to call the features are true give preference to the method invocation
+		--	if is_evolving_method_call and is_sequential_method_invocation then
+		--		is_sequential_method_invocation := false
+		--	end
+
 		end
 
 

@@ -55,7 +55,13 @@ feature -- Process
 
 	process_normal_response (a_response: AUT_NORMAL_RESPONSE) is
 			-- Process `a_response'.
+		local
+			time_now: DT_DATE_TIME
+			shared_system_clock: DT_SHARED_SYSTEM_CLOCK
 		do
+			create shared_system_clock
+			time_now := shared_system_clock.system_clock.date_time_now
+
 			print_line (multi_line_value_start_tag)
 			print_lines_with_prefix (a_response.text, <<response_prefix>>)
 			print_line (multi_line_value_end_tag)
@@ -66,6 +72,7 @@ feature -- Process
 				print_line (a_response.exception.class_name)
 				print_line (a_response.exception.tag_name)
 				print_line (multi_line_value_start_tag)
+				print_line ("Time="+ time_now.out)
 				print_lines_with_prefix (a_response.exception.trace, <<response_prefix>>)
 				print_line (multi_line_value_end_tag)
 			else
@@ -78,9 +85,15 @@ feature -- Process
 			-- Process `a_response'.
 		local
 			l_prefixes: ARRAY [STRING]
+			time_now: DT_DATE_TIME
+			shared_system_clock: DT_SHARED_SYSTEM_CLOCK
 		do
+			create shared_system_clock
+			time_now := shared_system_clock.system_clock.date_time_now
+
 			l_prefixes := <<response_prefix>>
 			print_line (multi_line_value_start_tag)
+			--print_line ("Time=" + time_now.millisecond.out)
 			print_lines_with_prefix (a_response.text, l_prefixes)
 			print_line (multi_line_value_end_tag)
 			print_lines_with_prefix (a_response.text, <<response_prefix>>)

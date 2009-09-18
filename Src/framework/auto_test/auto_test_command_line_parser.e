@@ -75,10 +75,7 @@ feature -- Status report
 			-- Should test cases be minimized via ddmin?
 
     is_evolution_enabled: BOOLEAN
-			-- Should use evolutionary algorithm
-
-	is_generate_alleles: BOOLEAN
-			-- Generate alleles for a given set of classes for the evolutionary algorithm 			
+			-- Should use evolutionary algorithm			
 
 	proxy_time_out: INTEGER
 			-- Proxy time out in second

@@ -179,7 +179,7 @@ feature {NONE} -- Steps
 			class_ := type.associated_class
 			l_exported_creators := exported_creators (class_, system)
 			count := l_exported_creators.count
-			
+
 			if (parameter_loader.is_evolving_method_call) then
 				i:= (parameter_loader.get_next_method_call \\ count) + 1
 			else
@@ -290,17 +290,14 @@ feature {NONE} -- Steps
 		local
 			i: INTEGER
 		do
-			if parameter_loader.is_evolving_primitive then
-				create {ITP_CONSTANT} last_constant.make (parameter_loader.get_next_boolean)
+			random.forth
+			i := (random.item  \\ 2)
+			if i = 0 then
+				create {ITP_CONSTANT} last_constant.make (False)
 			else
-				random.forth
-				i := (random.item  \\ 2)
-				if i = 0 then
-					create {ITP_CONSTANT} last_constant.make (False)
-				else
-					create {ITP_CONSTANT} last_constant.make (True)
-				end
+				create {ITP_CONSTANT} last_constant.make (True)
 			end
+
 		ensure
 			last_constant_not_void: last_constant /= Void
 		end
