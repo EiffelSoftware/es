@@ -474,7 +474,7 @@ feature {NONE} -- Steps
 			i: INTEGER
 		do
 			random.forth
-			i := (random.item  \\ 17)
+			i := (random.item  \\ 27)
 			if i = 0 then
 				create last_constant.make (-1)
 			elseif i = 1 then
