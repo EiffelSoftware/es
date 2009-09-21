@@ -817,10 +817,12 @@ feature -- Process
 			until
 				a_precondition_violation.after
 			loop
-				a_output_stream.put_character ('%T')
-				a_output_stream.put_string (a_precondition_violation.key_for_iteration)
-				a_output_stream.put_character ('%T')
-				a_output_stream.put_integer (a_precondition_violation.item_for_iteration)
+				if a_precondition_violation.key_for_iteration /= Void and then a_precondition_violation.item_for_iteration /= Void then
+					a_output_stream.put_character ('%T')
+					a_output_stream.put_string (a_precondition_violation.key_for_iteration)
+					a_output_stream.put_character ('%T')
+					a_output_stream.put_integer (a_precondition_violation.item_for_iteration)
+				end
 				a_precondition_violation.forth
 			end
 			a_output_stream.put_character ('%N')

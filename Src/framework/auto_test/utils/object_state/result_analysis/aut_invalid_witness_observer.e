@@ -102,7 +102,7 @@ feature -- handler
 			l_list: LIST [AUT_WITNESS]
 		do
 			l_feature := feature_under_test (a_witness)
-			if a_witness.is_invalid then
+			if a_witness.is_invalid or a_witness.is_bad_response then
 				if not tested_features.has (l_feature) then
 					if witnesses.has (l_feature) then
 						l_list := witnesses.item (l_feature)

@@ -145,6 +145,9 @@ feature {NONE} -- Reporting
 				report_event (l_last_response)
 
 				last_response_text.wipe_out
+			else
+				create {AUT_BAD_RESPONSE} l_last_response.make ("")
+				report_event (l_last_response)
 			end
 
 				-- Now we parse the newly found request line.
