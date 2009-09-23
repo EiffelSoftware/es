@@ -34,8 +34,6 @@ Options:
   --draw-titles         Print the title on each graph.
   --draw-each-class     Draw the faults + ps success rate graphs for each
                         individual class (slows down graph generation).
-  --aggregate-faults    Aggregate faults instead of averaging them accross
-                        test runs.
   --aggregate-features  Aggregate the features with valid test case instead of
                         averaging them accross test runs.
   --mean                Use mean for all average computations, default median.
@@ -50,7 +48,6 @@ options = {
     'draw-classnames': False,
     'draw-titles': False,
     'draw-each-class': False,
-    'aggregate-faults': False,
     'aggregate-features': False,
     'mean': False,
     'sanity': True,
@@ -126,6 +123,10 @@ class AnalyzedResult(object):
         self.count_invalid_tc_by_feature = {}
         self.hardness_by_feature = {}
         self.time_spent_on_invalid_tc_as_percentage = 0
+        
+        # used by the avg objects
+        self.count_precond_features_with_valid_tc = 0
+        self.count_precond_features_without_valid_tc = 0
     
     @classmethod
     def init_from_file(cls, filepath):
@@ -382,6 +383,20 @@ class AnalyzedResult(object):
                 print "expected %i, but got %i valid + %i invalid = %i" % (len(ret.aggregated_precond_features), len(ret.aggregated_precond_features_with_valid_tc), len(ret.aggregated_precond_features_without_valid_tc), len(ret.aggregated_precond_features_with_valid_tc) + len(ret.aggregated_precond_features_without_valid_tc))
                 raise MyError("assertion failure")
         
+        # count_precond_features_with_valid_tc
+        if options['aggregate-features']:
+            ret.count_precond_features_with_valid_tc = len(ret.aggregated_precond_features_with_valid_tc)
+        else:
+            iter_list = map(lambda x: len(x.aggregated_precond_features_with_valid_tc), list_of_ar)
+            ret.count_precond_features_with_valid_tc = compute_avg(iter_list)
+        
+        # count_precond_features_without_valid_tc
+        if options['aggregate-features']:
+            ret.count_precond_features_without_valid_tc = len(ret.aggregated_precond_features_without_valid_tc)
+        else:
+            iter_list = map(lambda x: len(x.aggregated_precond_features_without_valid_tc), list_of_ar)
+            ret.count_precond_features_without_valid_tc = compute_avg(iter_list)
+        
         # count_valid_tc_by_feature
         # first, fill the holes
         all_features = set()
@@ -443,7 +458,6 @@ def main(argv=None):
                      "draw-classnames",
                      "draw-titles",
                      "draw-each-class",
-                     "aggregate-faults",
                      "aggregate-features",
                      "mean",
                      "no-sanity",
@@ -486,6 +500,8 @@ def main(argv=None):
             
             if option in ("--graph-format"):
                 if value in ("png", "eps", "pdf"):
+                    if value == "eps":
+                        value = "epsc2" # embedded postscript color level 2
                     options["graph-format"] = value
                 else:
                     raise Usage("arg must be 'png', 'eps' or 'pdf' ('%s')." % value)
@@ -498,9 +514,6 @@ def main(argv=None):
                 options["draw-titles"] = True
             if option in ("--draw-each-class"):
                 options["draw-each-class"] = True
-            
-            if option in ("--aggregate-faults"):
-                options["aggregate-faults"] = True
             
             if option in ("--aggregate-features"):
                 options["aggregate-features"] = True
@@ -684,8 +697,8 @@ def main(argv=None):
         iter_or = i['or']['avg']
         iter_ps = i['ps']['avg']
         iter_count_pf = len(iter_or.aggregated_precond_features)
-        iter_or_untested_pf = 100.0 * float(len(iter_or.aggregated_precond_features_without_valid_tc)) / float(iter_count_pf)
-        iter_ps_untested_pf = 100.0 * float(len(iter_ps.aggregated_precond_features_without_valid_tc)) / float(iter_count_pf)
+        iter_or_untested_pf = 100.0 * float(iter_or.count_precond_features_without_valid_tc) / float(iter_count_pf)
+        iter_ps_untested_pf = 100.0 * float(iter_ps.count_precond_features_without_valid_tc) / float(iter_count_pf)
         precond_features_count_by_class[iter_test_main_class] = iter_count_pf
         precond_features_untested_perc_or_by_class[iter_test_main_class] = iter_or_untested_pf
         precond_features_untested_perc_ps_by_class[iter_test_main_class] = iter_ps_untested_pf
@@ -1029,29 +1042,29 @@ def main(argv=None):
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
-    # # graph bar_coverage_in_ps_of_untested_pf_in_or
-    # matlab_fp.write("\n")
-    # matlab_fp.write("%% bar_coverage_in_ps_of_untested_pf_in_or\n")
-    # matlab_fp.write("f = figure;\n")
-    # matlab_fp.write("y = [")
-    # for iter_test_main_class, i in processed_results.iteritems():
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "bar_coverage_in_ps_of_untested_pf_in_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     iter_divisor = float(len(i['or']['avg'].aggregated_precond_features_without_valid_tc))
-    #     if iter_divisor == 0:
-    #         continue
-    #     iter_cov = 100 * float(len(i['ps']['avg'].aggregated_precond_features_with_valid_tc) - len(i['or']['avg'].aggregated_precond_features_with_valid_tc)) / iter_divisor
-    #     matlab_fp.write("%s," % iter_cov)
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("hist(y, 50);\n")
-    # matlab_fp.write("xlabel('% of untestable features in or newly tested in ps');\n")
-    # matlab_fp.write("ylabel('Number of classes');\n")
-    # if options['draw-titles']:
-    #     matlab_fp.write("title('Class distribution by increase in number of newly tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(gcf, 'graphs/bar_coverage_in_ps_of_untested_pf_in_or', '%s');\n" % (options['graph-format']))
-    # matlab_fp.write("close(f);\n")
-    # matlab_fp.write("\n")
+    # graph bar_coverage_in_ps_of_untested_pf_in_or
+    matlab_fp.write("\n")
+    matlab_fp.write("%% bar_coverage_in_ps_of_untested_pf_in_or\n")
+    matlab_fp.write("f = figure;\n")
+    matlab_fp.write("y = [")
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "bar_coverage_in_ps_of_untested_pf_in_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        iter_divisor = float(i['or']['avg'].count_precond_features_without_valid_tc)
+        if iter_divisor == 0:
+            continue
+        iter_cov = 100 * float(i['ps']['avg'].count_precond_features_with_valid_tc - i['or']['avg'].count_precond_features_with_valid_tc) / iter_divisor
+        matlab_fp.write("%s," % iter_cov)
+    matlab_fp.write("];\n")
+    matlab_fp.write("hist(y, 50);\n")
+    matlab_fp.write("xlabel('% of untestable features in or newly tested in ps');\n")
+    matlab_fp.write("ylabel('Number of classes');\n")
+    if options['draw-titles']:
+        matlab_fp.write("title('Class distribution by increase in number of newly tested precondition-equipped features');\n")
+    matlab_fp.write("saveas(gcf, 'graphs/bar_coverage_in_ps_of_untested_pf_in_or', '%s');\n" % (options['graph-format']))
+    matlab_fp.write("close(f);\n")
+    matlab_fp.write("\n")
     
     # graph bar_faults
     matlab_fp.write("\n")
@@ -1066,8 +1079,7 @@ def main(argv=None):
             continue
         iter_divisor = float(i['or']['avg'].count_faults)
         if iter_divisor == 0:
-            iter_increase = 0
-            ### TODO: IS THIS OK?
+            continue
         else:
             iter_increase = 100 * (float(i['ps']['avg'].count_faults) / iter_divisor - 1)
         matlab_fp.write("%s," % iter_increase)
@@ -1089,6 +1101,8 @@ def main(argv=None):
     matlab_fp.write("xraw = [];\n")
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
+        if iter_test_main_class not in faults_increase_ps_over_or_by_class:
+            continue
         iter_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
         if os.path.exists(os.path.join(options['outpath'], iter_file_or)):
             matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
@@ -1198,6 +1212,8 @@ def main(argv=None):
     matlab_fp.write("f = figure;\n")
     matlab_fp.write("x = [")
     for iter_test_main_class, i in processed_results.iteritems():
+        if iter_test_main_class not in faults_increase_ps_over_or_by_class:
+            continue
         if not 'or' in i.keys() or not 'ps' in i.keys():
             print >> sys.stderr, "scatter_pf_vs_faults: '%s' or/ps not found, ignoring class." % iter_test_main_class
             continue
@@ -1205,6 +1221,8 @@ def main(argv=None):
     matlab_fp.write("];\n")
     matlab_fp.write("y = [")
     for iter_test_main_class, i in processed_results.iteritems():
+        if iter_test_main_class not in faults_increase_ps_over_or_by_class:
+            continue
         if not 'or' in i.keys() or not 'ps' in i.keys():
             print >> sys.stderr, "scatter_pf_vs_faults: '%s' or/ps not found, ignoring class." % iter_test_main_class
             continue
