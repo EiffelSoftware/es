@@ -13,53 +13,50 @@ from operator import itemgetter
 help_message = '''[options] <input_folder> <output_folder>
 
 Options:
-  -h,--help           Display this help screen.
-  --cut-time <mins>   Analyze first `mins' minutes of logfiles.
-                      Error if they are shorter.
-                      Default: 60 mins.
+  -h,--help             Display this help screen.
+  --cut-time <mins>     Analyze first `mins' minutes of logfiles.
+                        Show warning and ignore if they are shorter.
+                        Default: 60 mins.
+  --testruns <nbr>      The expected number of test runs for or/ps. The
+                        superfluous filenames are written to a file, but they
+                        are analyzed anyway. Move or delete them if you do not
+                        want to have them analyzed. Default: 30.
   --feature-hardness <float>
-                      Set threshold over which a feature is considered hard
-                      to test (# invalid_tc / # total_tc).
-                      Must be between 0.0 and 1.0, default: 0.9
-  --pdf               Save graphs as PDF, default png.
-  --eps               Save graphs as EPS, default png.
-  --hvlines           Draw hline/vline on scatter plots. Needs files from
-                      http://www.mathworks.com/matlabcentral/fileexchange/1039
-  --title             Print a title on each graph.
-  --testruns <nbr>    The expected number of test runs for or/ps. The
-                      superfluous filenames are written to a file, but they
-                      are still analyzed. Move or delete them if you do not
-                      want to analyze them.
-  --median                              Use median for all, default mean.
-  --median-count-faults                 Use median, default mean.
-  --median-faults-by-time               Use median, default mean.
-  --median-valid-tc-gen-by-time         Use median, default mean.
-  --median-valid-tc-gen-speed-by-time   Use median, default mean.
-  --median-ps-success-rate              Use median, default mean.
-  --median-count-valid-tc-by-feature    Use median, default mean.
-  --median-count-invalid-tc-by-feature  Use median, default mean.
-  --median-feature-hardness             Use median, default mean.
-  --median-time-spent-on-invalid-tc     Use median, default mean.
+                        Set threshold over which a feature is considered hard
+                        to test (# invalid_tc / # total_tc).
+                        Must be between 0.0 and 1.0, default: 0.9
+  --graph-format        File format to save the graphs as. Choices are "png",
+                        "eps" or "pdf". Default: png.
+  --draw-hvlines        Draw hline/vline on scatter plots. Needs files from
+                        http://mathworks.com/matlabcentral/fileexchange/1039
+  --draw-classnames     Draw class names on some graphs. Needs file from
+                        http://mathworks.com/matlabcentral/fileexchange/3486
+  --draw-titles         Print the title on each graph.
+  --draw-each-class     Draw the faults + ps success rate graphs for each
+                        individual class (slows down graph generation).
+  --aggregate-faults    Aggregate faults instead of averaging them accross
+                        test runs.
+  --aggregate-features  Aggregate the features with valid test case instead of
+                        averaging them accross test runs.
+  --mean                Use mean for all average computations, default median.
+  --no-sanity           Disable sanity checks.
 '''
 options = {
     'cut-time': 60,
+    'testruns': 30,
     'feature-hardness': 0.9,
-    'pdf': False,
-    'eps': False,
-    'graph_format': 'png',
-    'hvlines': False,
-    'title': False,
-    'testruns': 15,
-    'median': False,
-    'median-count-faults': False,
-    'median-faults-by-time': False,
-    'median-valid-tc-gen-by-time': False,
-    'median-valid-tc-gen-speed-by-time': False,
-    'median-ps-success-rate': False,
-    'median-feature-hardness': False,
-    'median-count-valid-tc-by-feature': False,
-    'median-count-invalid-tc-by-feature': False,
-    'median-time-spent-on-invalid-tc': False,
+    'graph-format': 'png',
+    'draw-hvlines': False,
+    'draw-classnames': False,
+    'draw-titles': False,
+    'draw-each-class': False,
+    'aggregate-faults': False,
+    'aggregate-features': False,
+    'mean': False,
+    'sanity': True,
+    'analysis_outfolder': 'analysis_data',
+    'graphs_outfolder': 'graphs',
+    'tables_outfolder': 'tables',
 }
 
 
@@ -79,15 +76,37 @@ class MyWarning(MyException):
     pass
 
 
+def compute_mean(list_of_values):
+    if not isinstance(list_of_values, list):
+        raise MyError("'%s': not a list" % (list_of_values))
+    return sum(list_of_values) / float(len(list_of_values))
+
+def compute_median(list_of_values):
+    if not isinstance(list_of_values, list):
+        raise MyError("'%s': not a list" % (list_of_values))
+    n = len(list_of_values)
+    sorted_copy = sorted(list_of_values)
+    if n & 1:         # There is an odd number of elements
+        return sorted_copy[n // 2]
+    else:
+        return (sorted_copy[n // 2 - 1] + sorted_copy[n // 2]) / 2.0
+
+def compute_avg(list_of_values):
+    if options['mean']:
+        func = compute_mean
+    else:
+        func = compute_median
+    return func(list_of_values)
+
+
 class AnalyzedResult(object):
     '''Holds analysis of a result file.'''
     
     def __init__(self):
         # meta info
         self.filename = ""
-        self.test_mode = ""
-        self.test_main_class = ""
-        self.test_duration_mins = 0
+        self.strategy = ""
+        self.group_leader = ""
         self.test_nbr = 0
         
         self.classes_under_test = []
@@ -99,10 +118,10 @@ class AnalyzedResult(object):
         self.valid_tc_gen_by_time = {}
         self.valid_tc_gen_speed_by_time = {}
         self.ps_success_rate_by_time = {}
-        self.precond_features = []
-        self.precond_features_with_valid_tc = []
-        self.precond_features_with_valid_tc_after_cut_time = []
-        self.precond_features_without_valid_tc = []
+        self.aggregated_precond_features = []
+        self.aggregated_precond_features_with_valid_tc = []
+        self.aggregated_precond_features_with_valid_tc_after_cut_time = []
+        self.aggregated_precond_features_without_valid_tc = []
         self.count_valid_tc_by_feature = {}
         self.count_invalid_tc_by_feature = {}
         self.hardness_by_feature = {}
@@ -119,9 +138,8 @@ class AnalyzedResult(object):
         if not match:
             raise MyWarning("'%s' does not match filename pattern, ignoring." % fn)
         ret.filename = fn
-        ret.test_mode = match.group(2)
-        ret.test_main_class = match.group(3)
-        ret.test_duration_mins = int(match.group(4))
+        ret.strategy = match.group(2)
+        ret.group_leader = match.group(3)
         ret.test_nbr = int(match.group(5))
         
         # read file in
@@ -225,9 +243,9 @@ class AnalyzedResult(object):
             else:
                 ret.ps_success_rate_by_time[i] = ret.ps_success_rate_by_time[i-1]
         
-        # precond_features, precond_features_with_valid_tc,
-        # precond_features_with_valid_tc_after_cut_time,
-        # precond_features_without_valid_tc, count_valid_tc_by_feature,
+        # aggregated_precond_features, aggregated_precond_features_with_valid_tc,
+        # aggregated_precond_features_with_valid_tc_after_cut_time,
+        # aggregated_precond_features_without_valid_tc, count_valid_tc_by_feature,
         # count_invalid_tc_by_feature, hardness_by_feature
         # time_spent_on_invalid_tc_as_percentage
         pattern = re.compile("--\[Feature statistics\]\n((.+\n)*)\n")
@@ -243,7 +261,14 @@ class AnalyzedResult(object):
             
             iter_class_name = match.group(1)
             iter_feature_name = match.group(2)
-            if iter_feature_name in ['standard_is_equal', 'conforms_to', 'same_type', 'deep_copy', 'is_deep_equal', 'copy', 'standard_copy', 'is_equal']:
+            if iter_feature_name in ('standard_is_equal',
+                                     'conforms_to',
+                                     'same_type',
+                                     'deep_copy',
+                                     'is_deep_equal',
+                                     'copy',
+                                     'standard_copy',
+                                     'is_equal'):
                 continue
             if iter_class_name not in ret.classes_under_test:
                 continue
@@ -262,35 +287,36 @@ class AnalyzedResult(object):
             ret.hardness_by_feature[iter_feature_id] = iter_hardness
             if match.group(3) != 'has_precondition':
                 continue
-            ret.precond_features.append(iter_feature_id)
+            ret.aggregated_precond_features.append(iter_feature_id)
             iter_time_first_valid_tc = int(match.group(12))
             if iter_time_first_valid_tc / 60.0 >= options['cut-time']:
-                ret.precond_features_with_valid_tc_after_cut_time.append(iter_feature_id)
-                ret.precond_features_without_valid_tc.append(iter_feature_id)
+                ret.aggregated_precond_features_with_valid_tc_after_cut_time.append(iter_feature_id)
+                ret.aggregated_precond_features_without_valid_tc.append(iter_feature_id)
             elif iter_time_first_valid_tc == -1:
-                ret.precond_features_without_valid_tc.append(iter_feature_id)
+                ret.aggregated_precond_features_without_valid_tc.append(iter_feature_id)
             else:
-                ret.precond_features_with_valid_tc.append(iter_feature_id)
+                ret.aggregated_precond_features_with_valid_tc.append(iter_feature_id)
         ret.time_spent_on_invalid_tc_as_percentage = 100.0 * float(time_spent_on_invalid_tc_sum) / ret.last_timestamp
         
         # sanity check on the number of tested and untested features
-        assert(len(ret.precond_features) == len(ret.precond_features_with_valid_tc) + len(ret.precond_features_without_valid_tc))
-        pattern = re.compile("--\[Untested features\].*\n((.+\n)*)\n")
-        match = re.search(pattern, contents)
-        if not match:
-            raise MyError("'%s': missing [Untested features]" % fn)
-        untested_features_in_cus = []
-        for line in match.group(1).split('\n')[1:-1]:
-            pattern = re.compile("([^\t]+)\t([^\t]+)\t.*")
-            match = re.search(pattern, line)
+        if options['sanity']:
+            assert(len(ret.aggregated_precond_features) == len(ret.aggregated_precond_features_with_valid_tc) + len(ret.aggregated_precond_features_without_valid_tc))
+            pattern = re.compile("--\[Untested features\].*\n((.+\n)*)\n")
+            match = re.search(pattern, contents)
             if not match:
-                raise MyError("%s:'%s': wrong untested_feature-line format" % (fn, line))
-            if match.group(1) in ret.classes_under_test:
-                untested_features_in_cus.append(match.group(1) + ":" + match.group(2))
-        if len(untested_features_in_cus) != len(ret.precond_features_without_valid_tc) - len(ret.precond_features_with_valid_tc_after_cut_time):
-            print untested_features_in_cus
-            print ret.precond_features_without_valid_tc
-            raise MyError("%s: # untested features: expected %s, got %s." % (ret.filename, len(untested_features_in_cus), len(ret.precond_features_without_valid_tc)))
+                raise MyError("'%s': missing [Untested features]" % fn)
+            untested_features_in_cus = []
+            for line in match.group(1).split('\n')[1:-1]:
+                pattern = re.compile("([^\t]+)\t([^\t]+)\t.*")
+                match = re.search(pattern, line)
+                if not match:
+                    raise MyError("%s:'%s': wrong untested_feature-line format" % (fn, line))
+                if match.group(1) in ret.classes_under_test:
+                    untested_features_in_cus.append(match.group(1) + ":" + match.group(2))
+            if len(untested_features_in_cus) != len(ret.aggregated_precond_features_without_valid_tc) - len(ret.aggregated_precond_features_with_valid_tc_after_cut_time):
+                print untested_features_in_cus
+                print ret.aggregated_precond_features_without_valid_tc
+                raise MyError("%s: # untested features: expected %s, got %s." % (ret.filename, len(untested_features_in_cus), len(ret.aggregated_precond_features_without_valid_tc) - len(ret.aggregated_precond_features_with_valid_tc_after_cut_time)))
         
         return ret
     
@@ -303,18 +329,12 @@ class AnalyzedResult(object):
         
         # count_faults
         iter_list = map(lambda x: x.count_faults, list_of_ar)
-        if options['median-count-faults']:
-            ret.count_faults = cls.compute_median(iter_list)
-        else:
-            ret.count_faults = cls.compute_mean(iter_list)
+        ret.count_faults = compute_avg(iter_list)
         
         # faults_by_time
         for i in range(1, options['cut-time']+1):
             iter_list = map(lambda x: x.faults_by_time[i], list_of_ar)
-            if options['median-faults-by-time']:
-                ret.faults_by_time[i] = cls.compute_median(iter_list)
-            else:
-                ret.faults_by_time[i] = cls.compute_mean(iter_list)
+            ret.faults_by_time[i] = compute_avg(iter_list)
         
         # distinct_faults
         iter_list = []
@@ -325,50 +345,42 @@ class AnalyzedResult(object):
         # valid_tc_gen_by_time
         for i in range(1, options['cut-time']+1):
             iter_list = map(lambda x: x.valid_tc_gen_by_time[i], list_of_ar)
-            if options['median-valid-tc-gen-by-time']:
-                ret.valid_tc_gen_by_time[i] = cls.compute_median(iter_list)
-            else:
-                ret.valid_tc_gen_by_time[i] = cls.compute_mean(iter_list)
+            ret.valid_tc_gen_by_time[i] = compute_avg(iter_list)
 
         # valid_tc_gen_speed_by_time
         for i in range(1, options['cut-time']+1):
             iter_list = map(lambda x: x.valid_tc_gen_speed_by_time[i], list_of_ar)
-            if options['median-valid-tc-gen-speed-by-time']:
-                ret.valid_tc_gen_speed_by_time[i] = cls.compute_median(iter_list)
-            else:
-                ret.valid_tc_gen_speed_by_time[i] = cls.compute_mean(iter_list)
+            ret.valid_tc_gen_speed_by_time[i] = compute_avg(iter_list)
         
         # ps_success_rate_by_time
         for i in range(1, options['cut-time']+1):
             iter_list = map(lambda x: x.ps_success_rate_by_time[i], list_of_ar)
-            if options['median-ps-success-rate']:
-                ret.ps_success_rate_by_time[i] = cls.compute_median(iter_list)
-            else:
-                ret.ps_success_rate_by_time[i] = cls.compute_mean(iter_list)
+            ret.ps_success_rate_by_time[i] = compute_avg(iter_list)
         
-        # precond_features
+        # aggregated_precond_features
         iter_list = []
         for ar in list_of_ar:
-            iter_list.extend(ar.precond_features)
-        ret.precond_features = list(set(iter_list))
+            iter_list.extend(ar.aggregated_precond_features)
+        ret.aggregated_precond_features = list(set(iter_list))
         
-        # precond_features_with_valid_tc
+        # aggregated_precond_features_with_valid_tc
         iter_list = []
         for ar in list_of_ar:
-            iter_list.extend(ar.precond_features_with_valid_tc)
-        ret.precond_features_with_valid_tc = list(set(iter_list))
+            iter_list.extend(ar.aggregated_precond_features_with_valid_tc)
+        ret.aggregated_precond_features_with_valid_tc = list(set(iter_list))
         
-        # precond_features_without_valid_tc
+        # aggregated_precond_features_without_valid_tc
         iter_list = []
         for ar in list_of_ar:
-            iter_list.extend(ar.precond_features_without_valid_tc)
-        ret.precond_features_without_valid_tc = list(set(iter_list) - set(ret.precond_features_with_valid_tc))
+            iter_list.extend(ar.aggregated_precond_features_without_valid_tc)
+        ret.aggregated_precond_features_without_valid_tc = list(set(iter_list) - set(ret.aggregated_precond_features_with_valid_tc))
         
         # sanity check
-        if len(ret.precond_features) != len(ret.precond_features_with_valid_tc) + len(ret.precond_features_without_valid_tc):
-            print ar.filename
-            print "expected %i, but got %i valid + %i invalid = %i" % (len(ret.precond_features), len(ret.precond_features_with_valid_tc), len(ret.precond_features_without_valid_tc), len(ret.precond_features_with_valid_tc) + len(ret.precond_features_without_valid_tc))
-            raise MyError("assertion failure")
+        if options['sanity']:
+            if len(ret.aggregated_precond_features) != len(ret.aggregated_precond_features_with_valid_tc) + len(ret.aggregated_precond_features_without_valid_tc):
+                print ar.filename
+                print "expected %i, but got %i valid + %i invalid = %i" % (len(ret.aggregated_precond_features), len(ret.aggregated_precond_features_with_valid_tc), len(ret.aggregated_precond_features_without_valid_tc), len(ret.aggregated_precond_features_with_valid_tc) + len(ret.aggregated_precond_features_without_valid_tc))
+                raise MyError("assertion failure")
         
         # count_valid_tc_by_feature
         # first, fill the holes
@@ -381,10 +393,7 @@ class AnalyzedResult(object):
                     ar.count_valid_tc_by_feature[iter_feat] = 0
             # second, compute the average
             iter_list = map(lambda x: x.count_valid_tc_by_feature[iter_feat], list_of_ar)
-            if options['median-count-valid-tc-by-feature']:
-                ret.count_valid_tc_by_feature[iter_feat] = cls.compute_median(iter_list)
-            else:
-                ret.count_valid_tc_by_feature[iter_feat] = cls.compute_mean(iter_list)
+            ret.count_valid_tc_by_feature[iter_feat] = compute_avg(iter_list)
         
         # count_invalid_tc_by_feature
         # first, fill the holes
@@ -397,10 +406,7 @@ class AnalyzedResult(object):
                     ar.count_invalid_tc_by_feature[iter_feat] = 0
             # second, compute the average
             iter_list = map(lambda x: x.count_invalid_tc_by_feature[iter_feat], list_of_ar)
-            if options['median-count-invalid-tc-by-feature']:
-                ret.count_invalid_tc_by_feature[iter_feat] = cls.compute_median(iter_list)
-            else:
-                ret.count_invalid_tc_by_feature[iter_feat] = cls.compute_mean(iter_list)
+            ret.count_invalid_tc_by_feature[iter_feat] = compute_avg(iter_list)
         
         # hardness_by_feature
         # first, fill the holes
@@ -413,36 +419,14 @@ class AnalyzedResult(object):
                     ar.hardness_by_feature[iter_feat] = 0
             # second, compute the average
             iter_list = map(lambda x: x.hardness_by_feature[iter_feat], list_of_ar)
-            if options['median-feature-hardness']:
-                ret.hardness_by_feature[iter_feat] = cls.compute_median(iter_list)
-            else:
-                ret.hardness_by_feature[iter_feat] = cls.compute_mean(iter_list)
+            ret.hardness_by_feature[iter_feat] = compute_avg(iter_list)
         
         # time_spent_on_invalid_tc_as_percentage
         iter_list = map(lambda x: x.time_spent_on_invalid_tc_as_percentage, list_of_ar)
-        if options['median-time-spent-on-invalid-tc']:
-            ret.time_spent_on_invalid_tc_as_percentage = cls.compute_median(iter_list)
-        else:
-            ret.time_spent_on_invalid_tc_as_percentage = cls.compute_mean(iter_list)
+        ret.time_spent_on_invalid_tc_as_percentage = compute_avg(iter_list)
         
         return ret
-    
-    @classmethod
-    def compute_mean(cls, list_of_values):
-        if not isinstance(list_of_values, list):
-            raise MyError("'%s': not a list" % (list_of_values))
-        return sum(list_of_values) / float(len(list_of_values))
 
-    @classmethod
-    def compute_median(cls, list_of_values):
-        if not isinstance(list_of_values, list):
-            raise MyError("'%s': not a list" % (list_of_values))
-        n = len(list_of_values)
-        sorted_copy = sorted(list_of_values)
-        if n & 1:         # There is an odd number of elements
-            return sorted_copy[n // 2]
-        else:
-            return (sorted_copy[n // 2 - 1] + sorted_copy[n // 2]) / 2.0
 
 def main(argv=None):
     if argv is None:
@@ -450,31 +434,25 @@ def main(argv=None):
     try:
         try:
             opts, args = getopt.getopt(argv[1:], "h",
-                    ["help", "cut-time=",
-                            "feature-hardness=",
-                            "pdf",
-                            "eps",
-                            "hvlines",
-                            "title",
-                            "testruns",
-                            "median",
-                            "median-count-faults",
-                            "median-faults-by-time",
-                            "median-valid-tc-gen-by-time",
-                            "median-valid-tc-gen-speed-by-time",
-                            "median-ps-success-rate",
-                            "median-count-valid-tc-by-feature",
-                            "median-count-invalid-tc-by-feature",
-                            "median-feature-hardness",
-                            "median-time-spent-on-invalid-tc"])
+                    ["help",
+                     "cut-time=",
+                     "testruns=",
+                     "feature-hardness=",
+                     "graph-format=",
+                     "draw-hvlines",
+                     "draw-classnames",
+                     "draw-titles",
+                     "draw-each-class",
+                     "aggregate-faults",
+                     "aggregate-features",
+                     "mean",
+                     "no-sanity",
+                     ])
         except getopt.error, msg:
             raise Usage(msg)
         
         # option processing
         for option, value in opts:
-            # if option == "-v":
-            #     verbose = True
-            
             if option in ("-h", "--help"):
                 raise Usage(help_message)
             
@@ -482,6 +460,15 @@ def main(argv=None):
                 try:
                     if int(value) > 0:
                         options['cut-time'] = int(value)
+                    else:
+                        raise ValueError
+                except ValueError, err:
+                    raise Usage("arg must be positive integer ('%s')." % value)
+            
+            if option in ("--testruns"):
+                try:
+                    if int(value) > 0:
+                        options['testruns'] = int(value)
                     else:
                         raise ValueError
                 except ValueError, err:
@@ -497,77 +484,51 @@ def main(argv=None):
                 except ValueError, err:
                     raise Usage("arg must be between 0.0 and 1.0 ('%s')." % value)
             
-            if option in ("--pdf"):
-                options['pdf'] = True
-                options['graph_format'] = 'pdf'
-            if option in ("--eps"):
-                options['eps'] = True
-                options['graph_format'] = 'epsc2'
+            if option in ("--graph-format"):
+                if value in ("png", "eps", "pdf"):
+                    options["graph-format"] = value
+                else:
+                    raise Usage("arg must be 'png', 'eps' or 'pdf' ('%s')." % value)
             
-            if option in ("--hvlines"):
-                options["hvlines"] = True
+            if option in ("--draw-hvlines"):
+                options["draw-hvlines"] = True
+            if option in ("--draw-classnames"):
+                options["draw-classnames"] = True
+            if option in ("--draw-titles"):
+                options["draw-titles"] = True
+            if option in ("--draw-each-class"):
+                options["draw-each-class"] = True
             
-            if option in ("--title"):
-                options["title"] = True
+            if option in ("--aggregate-faults"):
+                options["aggregate-faults"] = True
             
-            if option in ("--testruns"):
-                try:
-                    if int(value) > 0:
-                        options['testruns'] = int(value)
-                    else:
-                        raise ValueError
-                except ValueError, err:
-                    raise Usage("arg must be positive integer ('%s')." % value)
+            if option in ("--aggregate-features"):
+                options["aggregate-features"] = True
             
-            if option in ("--median"):
-                options['median'] = True
-                options['median-count-faults'] = True
-                options['median-faults-by-time'] = True
-                options['median-valid-tc-gen-by-time'] = True
-                options['median-valid-tc-gen-speed-by-time'] = True
-                options['median-ps-success-rate'] = True
-                options['median-count-valid-tc-by-feature'] = True
-                options['median-count-invalid-tc-by-feature'] = True
-                options['median-feature-hardness'] = True
-                options['median-time-spent-on-invalid-tc'] = True
+            if option in ("--mean"):
+                options['mean'] = True
             
-            if option in ("--median-faults-by-time"):
-                options['median-faults-by-time'] = True
-            if option in ("--median-count-faults"):
-                options['median-count-faults'] = True
-            if option in ("--median-valid-tc-gen-by-time"):
-                options['median-valid-tc-gen-by-time'] = True
-            if option in ("--median-valid-tc-gen-speed-by-time"):
-                options['median-valid-tc-gen-speed-by-time'] = True
-            if option in ("--median-ps-success-rate"):
-                options['median-ps-success-rate'] = True
-            if option in ("--median-count-valid-tc-by-feature"):
-                options['median-count-valid-tc-by-feature'] = True
-            if option in ("--median-count-invalid-tc-by-feature"):
-                options['median-count-invalid-tc-by-feature'] = True
-            if option in ("--median-feature-hardness"):
-                options['median-feature-hardness'] = True
-            if option in ("--median-time-spent-on-invalid-tc"):
-                options['median-time-spent-on-invalid-tc'] = True
+            if option in ("--no-sanity"):
+                options['sanity'] = False
         
         # arguments processing
         if len(args) != 2:
             raise Usage(help_message)
         
         if os.path.isdir(args[0]):
-            options['infolder'] = args[0]
+            options['inpath'] = args[0]
         else:
             raise Usage("arg must be a folder ('%s')." % args[0])
         
-        options['outfolder'] = args[1]
-        options['analysis_outfolder'] = os.path.join(options["outfolder"], "analysis_data")
-        options['graphs_outfolder'] = os.path.join(options["outfolder"], "graphs")
-        options['tables_outfolder'] = os.path.join(options["outfolder"], "tables")
+        options['outpath'] = args[1]
+        options['analysis_outpath'] = os.path.join(options["outpath"], options["analysis_outfolder"])
+        options['graphs_outpath'] = os.path.join(options["outpath"], options["graphs_outfolder"])
+        options['tables_outpath'] = os.path.join(options["outpath"], options["tables_outfolder"])
         try:
-            os.makedirs(options["outfolder"])
-            os.makedirs(options["analysis_outfolder"])
-            os.makedirs(options["graphs_outfolder"])
-            os.makedirs(options["tables_outfolder"])
+            os.makedirs(options["outpath"])
+            os.makedirs(options["analysis_outpath"])
+            os.makedirs(options["graphs_outpath"])
+            os.makedirs(options["tables_outpath"])
         except OSError, exc:
             if exc.errno == errno.EEXIST:
                 pass
@@ -579,16 +540,13 @@ def main(argv=None):
         return 2
     
     
-    # debug output
-    #print >> sys.stderr, "Options: %s" % options
-    
     # run the beef
-    # format: processed_results[main_class][test_mode][test_nbr/'avg']
+    # format: processed_results[group_leader][strategy][test_nbr/'avg']
     processed_results = {}
     try:
-        for fn in os.listdir(options['infolder']):
+        for fn in os.listdir(options['inpath']):
             try:
-                ar = AnalyzedResult.init_from_file(os.path.join(options['infolder'], fn))
+                ar = AnalyzedResult.init_from_file(os.path.join(options['inpath'], fn))
             except MyWarning, err:
                 print >> sys.stderr, err
                 continue
@@ -597,13 +555,14 @@ def main(argv=None):
                 return 3
             
             # update the list of processed cases
-            if not ar.test_main_class in processed_results:
-                processed_results[ar.test_main_class] = {}
-            if not ar.test_mode in processed_results[ar.test_main_class]:
-                processed_results[ar.test_main_class][ar.test_mode] = {}
-            if ar.test_nbr in processed_results[ar.test_main_class][ar.test_mode]:
-                raise MyError("Should not happen")
-            processed_results[ar.test_main_class][ar.test_mode][ar.test_nbr] = ar
+            if not ar.group_leader in processed_results:
+                processed_results[ar.group_leader] = {}
+            if not ar.strategy in processed_results[ar.group_leader]:
+                processed_results[ar.group_leader][ar.strategy] = {}
+            if options['sanity']:
+                if ar.test_nbr in processed_results[ar.group_leader][ar.strategy]:
+                    raise MyError("Should not happen")
+            processed_results[ar.group_leader][ar.strategy][ar.test_nbr] = ar
             
     except OSError, err:
         print >> sys.stderr, err
@@ -611,19 +570,18 @@ def main(argv=None):
     
     
     # calculate the averages
-    for test_main_class, i in processed_results.iteritems():
-        for test_mode, j in i.iteritems():
-            avg = AnalyzedResult.init_by_avg(j.values())
-            j['avg'] = avg
+    for group_leader, i in processed_results.iteritems():
+        for strategy, j in i.iteritems():
+            j['avg'] = AnalyzedResult.init_by_avg(j.values())
     
     
     # write output
     for test_main_class, i in processed_results.iteritems():
-        for test_mode, j in i.iteritems():
+        for strategy, j in i.iteritems():
             # create directories
-            iter_outfolder = os.path.join(options['analysis_outfolder'], test_main_class, test_mode)
+            iter_outpath = os.path.join(options['analysis_outpath'], test_main_class, strategy)
             try:
-                os.makedirs(iter_outfolder)
+                os.makedirs(iter_outpath)
             except OSError, exc:
                 if exc.errno == errno.EEXIST:
                     pass
@@ -631,51 +589,51 @@ def main(argv=None):
                     raise
             
             # write faults_by_time
-            iter_outfile = os.path.join(iter_outfolder, 'faults_by_time.txt')
+            iter_outfile = os.path.join(iter_outpath, 'faults_by_time.txt')
             iter_fp = open(iter_outfile, 'w')
             for k, v in j['avg'].faults_by_time.iteritems():
                 iter_fp.write("%s\t%s\n" % (k, v))
             iter_fp.close()
             
             # write distinct_faults
-            iter_outfile = os.path.join(iter_outfolder, 'distinct_faults.txt')
+            iter_outfile = os.path.join(iter_outpath, 'distinct_faults.txt')
             iter_fp = open(iter_outfile, 'w')
             for v in j['avg'].distinct_faults:
                 iter_fp.write("%s\n" % (v))
             iter_fp.close()
-
+            
             # write valid_tc_gen_by_time
-            iter_outfile = os.path.join(iter_outfolder, 'valid_tc_gen_by_time.txt')
+            iter_outfile = os.path.join(iter_outpath, 'valid_tc_gen_by_time.txt')
             iter_fp = open(iter_outfile, 'w')
             for k, v in j['avg'].valid_tc_gen_by_time.iteritems():
                 iter_fp.write("%s\t%s\n" % (k, v))
             iter_fp.close()
             
             # write valid_tc_gen_speed_by_time
-            iter_outfile = os.path.join(iter_outfolder, 'valid_tc_gen_speed_by_time.txt')
+            iter_outfile = os.path.join(iter_outpath, 'valid_tc_gen_speed_by_time.txt')
             iter_fp = open(iter_outfile, 'w')
             for k, v in j['avg'].valid_tc_gen_speed_by_time.iteritems():
                 iter_fp.write("%s\t%s\n" % (k, v))
             iter_fp.close()
             
             # write ps_success_rate_by_time
-            iter_outfile = os.path.join(iter_outfolder, 'ps_success_rate_by_time.txt')
+            iter_outfile = os.path.join(iter_outpath, 'ps_success_rate_by_time.txt')
             iter_fp = open(iter_outfile, 'w')
             for k, v in j['avg'].ps_success_rate_by_time.iteritems():
                 iter_fp.write("%s\t%s\n" % (k, v))
             iter_fp.close()
             
-            # write precond_features_with_valid_tc
-            iter_outfile = os.path.join(iter_outfolder, 'precond_features_with_valid_tc.txt')
+            # write aggregated_precond_features_with_valid_tc
+            iter_outfile = os.path.join(iter_outpath, 'aggregated_precond_features_with_valid_tc.txt')
             iter_fp = open(iter_outfile, 'w')
-            for v in j['avg'].precond_features_with_valid_tc:
+            for v in j['avg'].aggregated_precond_features_with_valid_tc:
                 iter_fp.write("%s\n" % (v))
             iter_fp.close()
             
-            # write precond_features_without_valid_tc
-            iter_outfile = os.path.join(iter_outfolder, 'precond_features_without_valid_tc.txt')
+            # write aggregated_precond_features_without_valid_tc
+            iter_outfile = os.path.join(iter_outpath, 'aggregated_precond_features_without_valid_tc.txt')
             iter_fp = open(iter_outfile, 'w')
-            for v in j['avg'].precond_features_without_valid_tc:
+            for v in j['avg'].aggregated_precond_features_without_valid_tc:
                 iter_fp.write("%s\n" % (v))
             iter_fp.close()
     
@@ -685,7 +643,7 @@ def main(argv=None):
     
     
     # write the superfluous test runs to file
-    iter_outfile = os.path.join(options['analysis_outfolder'], '_superfluous_testruns.txt')
+    iter_outfile = os.path.join(options['analysis_outpath'], '_superfluous_testruns.txt')
     iter_fp = open(iter_outfile, 'w')
     for iter_test_main_class, i in processed_results.iteritems():
         if 'or' in i.keys():
@@ -698,7 +656,7 @@ def main(argv=None):
     
     
     # write comparison on nbr of valid test runs
-    iter_outfile = os.path.join(options['analysis_outfolder'], '_count_valid_test_runs.txt')
+    iter_outfile = os.path.join(options['analysis_outpath'], '_count_valid_test_runs.txt')
     iter_fp = open(iter_outfile, 'w')
     for iter_test_main_class, i in processed_results.iteritems():
         iter_len_or = 0
@@ -713,59 +671,6 @@ def main(argv=None):
     
     # write tables
     
-    ### pf(_untested) does not make sense anymore
-    # # table untested_precond_features_sorted_name
-    # iter_outfile = os.path.join(options['tables_outfolder'], 'untested_precond_features_sorted_name.txt')
-    # iter_fp = open(iter_outfile, 'w')
-    # # ugly hack, should be somewhere else...
-    # precond_features_count_by_class = {}
-    # precond_features_untested_perc_or_by_class = {}
-    # precond_features_untested_perc_ps_by_class = {}
-    # precond_features_untested_increase_perc_by_class = {}
-    # for iter_test_main_class in sorted(processed_results.keys()):
-    #     i = processed_results[iter_test_main_class]
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "untested_precond_features_sorted_name: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     iter_or = i['or']['avg']
-    #     iter_ps = i['ps']['avg']
-    #     iter_count_pf = len(iter_or.precond_features)
-    #     iter_or_untested_pf = 100.0 * float(len(iter_or.precond_features_without_valid_tc)) / float(iter_count_pf)
-    #     iter_ps_untested_pf = 100.0 * float(len(iter_ps.precond_features_without_valid_tc)) / float(iter_count_pf)
-    #     if iter_or_untested_pf == 0:
-    #         if iter_ps_untested_pf == 0:
-    #             iter_increase = 0
-    #         else:
-    #             print >> sys.stderr, "untested_precond_features_sorted_name: '%s' or==0, but ps!=0..." % iter_test_main_class
-    #     else:
-    #         iter_increase = 100.0 * (1 - float(iter_ps_untested_pf) / float(iter_or_untested_pf))
-    #     iter_fp.write("%s & %i & %.2f & %.2f & %.2f\\\\\n" %
-    #             (iter_test_main_class.replace('_', '\_'),
-    #             iter_count_pf,
-    #             iter_or_untested_pf,
-    #             iter_ps_untested_pf,
-    #             iter_increase))
-    #     precond_features_count_by_class[iter_test_main_class] = iter_count_pf
-    #     precond_features_untested_perc_or_by_class[iter_test_main_class] = iter_or_untested_pf
-    #     precond_features_untested_perc_ps_by_class[iter_test_main_class] = iter_ps_untested_pf
-    #     precond_features_untested_increase_perc_by_class[iter_test_main_class] = iter_increase
-    # iter_fp.close()
-    
-    ### pf(_untested) does not make sense anymore
-    # # table untested_precond_features_sorted_incr
-    # iter_outfile = os.path.join(options['tables_outfolder'], 'untested_precond_features_sorted_incr.txt')
-    # iter_fp = open(iter_outfile, 'w')
-    # # sort reversed by percentual increase
-    # for iter_class, iter_precond_feat_incr in sorted(precond_features_untested_increase_perc_by_class.items(), key=itemgetter(1), reverse=True):
-    #     iter_fp.write("%s & %i & %.2f & %.2f & %.2f\\\\\n" %
-    #             (iter_class.replace('_', '\_'),
-    #             precond_features_count_by_class[iter_class],
-    #             precond_features_untested_perc_or_by_class[iter_class],
-    #             precond_features_untested_perc_ps_by_class[iter_class],
-    #             precond_features_untested_increase_perc_by_class[iter_class]))
-    # iter_fp.close()
-    
-    
     # calculate some values
     # ugly hack, should be somewhere else...
     precond_features_count_by_class = {}
@@ -778,15 +683,15 @@ def main(argv=None):
             continue
         iter_or = i['or']['avg']
         iter_ps = i['ps']['avg']
-        iter_count_pf = len(iter_or.precond_features)
-        iter_or_untested_pf = 100.0 * float(len(iter_or.precond_features_without_valid_tc)) / float(iter_count_pf)
-        iter_ps_untested_pf = 100.0 * float(len(iter_ps.precond_features_without_valid_tc)) / float(iter_count_pf)
+        iter_count_pf = len(iter_or.aggregated_precond_features)
+        iter_or_untested_pf = 100.0 * float(len(iter_or.aggregated_precond_features_without_valid_tc)) / float(iter_count_pf)
+        iter_ps_untested_pf = 100.0 * float(len(iter_ps.aggregated_precond_features_without_valid_tc)) / float(iter_count_pf)
         precond_features_count_by_class[iter_test_main_class] = iter_count_pf
         precond_features_untested_perc_or_by_class[iter_test_main_class] = iter_or_untested_pf
         precond_features_untested_perc_ps_by_class[iter_test_main_class] = iter_ps_untested_pf
     
     # table tested_precond_features_sorted_incr
-    iter_outfile = os.path.join(options['tables_outfolder'], 'tested_precond_features_sorted_incr.txt')
+    iter_outfile = os.path.join(options['tables_outpath'], 'tested_precond_features_sorted_incr.txt')
     iter_fp = open(iter_outfile, 'w')
     # ugly hack, should be somewhere else...
     precond_features_tested_perc_or_by_class = {}
@@ -810,14 +715,14 @@ def main(argv=None):
     iter_fp.close()
     
     # table classes_under_test
-    iter_outfile = os.path.join(options['tables_outfolder'], 'classes_under_test.txt')
+    iter_outfile = os.path.join(options['tables_outpath'], 'classes_under_test.txt')
     iter_fp = open(iter_outfile, 'w')
     for iter_class in sorted(processed_results.keys()):
         iter_fp.write("%s\\\\\n" % iter_class.replace('_', '\_'))
     iter_fp.close()
     
     # table classes_under_test_two_cols
-    iter_outfile = os.path.join(options['tables_outfolder'], 'classes_under_test_two_cols.txt')
+    iter_outfile = os.path.join(options['tables_outpath'], 'classes_under_test_two_cols.txt')
     iter_fp = open(iter_outfile, 'w')
     test_main_classes_zipped = dict(zip(range(1,len(test_main_classes)+1), test_main_classes))
     test_main_classes_cut_at = int(math.ceil(len(test_main_classes_zipped) / 2.0))
@@ -829,7 +734,7 @@ def main(argv=None):
     iter_fp.close()
     
     # table time_spent_on_invalid_tc
-    iter_outfile = os.path.join(options['tables_outfolder'], 'time_spent_on_invalid_tc.txt')
+    iter_outfile = os.path.join(options['tables_outpath'], 'time_spent_on_invalid_tc.txt')
     iter_fp = open(iter_outfile, 'w')
     # first, calculate overall averages
     time_invalid_tc_or = []
@@ -839,12 +744,8 @@ def main(argv=None):
             time_invalid_tc_or.append(i['or']['avg'].time_spent_on_invalid_tc_as_percentage)
         if 'ps' in i.keys():
             time_invalid_tc_ps.append(i['ps']['avg'].time_spent_on_invalid_tc_as_percentage)
-    if options['median-time-spent-on-invalid-tc']:
-        time_invalid_tc_or_avg = AnalyzedResult.compute_median(time_invalid_tc_or)
-        time_invalid_tc_ps_avg = AnalyzedResult.compute_median(time_invalid_tc_ps)
-    else:
-        time_invalid_tc_or_avg = AnalyzedResult.compute_mean(time_invalid_tc_or)
-        time_invalid_tc_ps_avg = AnalyzedResult.compute_mean(time_invalid_tc_ps)
+    time_invalid_tc_or_avg = compute_avg(time_invalid_tc_or)
+    time_invalid_tc_ps_avg = compute_avg(time_invalid_tc_ps)
     iter_fp.write("Average ^ %.2f ^ %.2f\\\\\n" % (time_invalid_tc_or_avg, time_invalid_tc_ps_avg))
     for iter_test_main_class in sorted(processed_results.keys()):
         i = processed_results[iter_test_main_class]
@@ -854,9 +755,34 @@ def main(argv=None):
         iter_fp.write("%s ^ %.2f ^ %.2f\\\\\n" % (iter_test_main_class.replace('_', '\_'), i['or']['avg'].time_spent_on_invalid_tc_as_percentage, i['ps']['avg'].time_spent_on_invalid_tc_as_percentage))
     iter_fp.close()
     
+    # table TC in hard features and average
+    # first, some computations
+    valid_tc_or_by_hard_feature = {}
+    valid_tc_ps_by_hard_feature = {}
+    for iter_test_main_class, i in processed_results.iteritems():
+        if not 'or' in i.keys() or not 'ps' in i.keys():
+            print >> sys.stderr, "tc_hard_features: '%s' or/ps not found, ignoring class." % iter_test_main_class
+            continue
+        for iter_feat in i['or']['avg'].hardness_by_feature.keys():
+            if i['or']['avg'].hardness_by_feature[iter_feat] < options['feature-hardness']:
+                continue
+            iter_feat_dest = iter_feat
+            while iter_feat_dest in valid_tc_or_by_hard_feature.keys():
+                iter_feat_dest += 'd'
+            if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature.keys():
+                print >> sys.stderr, "tc_hard_features: '%s' found in or but not in ps." % iter_feat
+                continue
+            valid_tc_or_by_hard_feature[iter_feat_dest] = i['or']['avg'].count_valid_tc_by_feature[iter_feat]
+            valid_tc_ps_by_hard_feature[iter_feat_dest] = i['ps']['avg'].count_valid_tc_by_feature[iter_feat]
+    iter_outfile = os.path.join(options['tables_outpath'], 'tc_hard_features.txt')
+    iter_fp = open(iter_outfile, 'w')
+    iter_fp.close()
+    
+    ####################$###################################################################################################
+    
     
     # write matlab script for graph generation
-    matlab_fp = open(os.path.join(options['outfolder'], 'gen_graphs.m'), 'w')
+    matlab_fp = open(os.path.join(options['outpath'], 'gen_graphs.m'), 'w')
     
     # graph line_speed_all_classes
     matlab_fp.write("\n")
@@ -869,14 +795,14 @@ def main(argv=None):
     matlab_fp.write("yspecial = [];\n")
     for iter_test_main_class in test_main_classes:
         iter_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_or)):
             matlab_fp.write("data_or = dlmread('%s', '\\t');\n" % iter_file_or)
         else:
             print >> sys.stderr, "line_speed_all_classes: '%s_or' not found, ignoring class." % iter_test_main_class
             continue
         
         iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_ps)):
             matlab_fp.write("data_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
             print >> sys.stderr, "line_speed_all_classes: '%s_ps' not found, ignoring class." % iter_test_main_class
@@ -895,9 +821,9 @@ def main(argv=None):
     matlab_fp.write("legend([classlines(1); speciallines], legendnames, 'Location', 'SouthEast');\n")
     matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
     matlab_fp.write("ylabel('Relative speed');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Relative speed of all classes');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/line_speed_all_classes', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/line_speed_all_classes', '%s');\n" % (options['graph-format']))
     matlab_fp.write("hold off;\n")
     matlab_fp.write("close(f);\n")
     matlab_fp.write("f = figure;\n")
@@ -908,9 +834,9 @@ def main(argv=None):
     matlab_fp.write("legend(speciallines, legendnames, 'Location', 'SouthEast');\n")
     matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
     matlab_fp.write("ylabel('Relative speed');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Relative speed of all classes');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/line_speed_all_classes_colors', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/line_speed_all_classes_colors', '%s');\n" % (options['graph-format']))
     matlab_fp.write("hold off;\n")
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
@@ -923,7 +849,7 @@ def main(argv=None):
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
         iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "ps_success_rate_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_ps)):
             matlab_fp.write("data_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
             print >> sys.stderr, "line_ps_success_rate_all_classes: '%s_ps' not found, ignoring class." % iter_test_main_class
@@ -933,69 +859,70 @@ def main(argv=None):
     matlab_fp.write("plot(x, y);\n")
     matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
     matlab_fp.write("ylabel('PS success rate');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('PS success rate of all classes');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/line_ps_success_rate_all_classes', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/line_ps_success_rate_all_classes', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # graph line_faults-ps_success_rate
-    matlab_fp.write("\n")
-    matlab_fp.write("%% line_faults-ps_success_rate\n")
-    for iter_test_main_class in test_main_classes:
-        iter_outpath = os.path.join("graphs", "line_faults-ps_success_rate", "%s" % (iter_test_main_class))
-        try:
-            os.makedirs(os.path.join(options['graphs_outfolder'], 'line_faults-ps_success_rate'))
-        except OSError, exc:
-            if exc.errno == errno.EEXIST:
-                pass
+    if options["draw-each-class"]:
+        matlab_fp.write("\n")
+        matlab_fp.write("%% line_faults-ps_success_rate\n")
+        for iter_test_main_class in test_main_classes:
+            iter_outpath = os.path.join("graphs", "line_faults-ps_success_rate", "%s" % (iter_test_main_class))
+            try:
+                os.makedirs(os.path.join(options['graphs_outpath'], 'line_faults-ps_success_rate'))
+            except OSError, exc:
+                if exc.errno == errno.EEXIST:
+                    pass
+                else:
+                    raise
+            matlab_fp.write("\n")
+        
+            iter_faults_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "faults_by_time.txt")
+            if os.path.exists(os.path.join(options['outpath'], iter_faults_file_or)):
+                matlab_fp.write("faults_data_or = dlmread('%s', '\\t');\n" % iter_faults_file_or)
             else:
-                raise
-        matlab_fp.write("\n")
+                print >> sys.stderr, "line_faults-ps_success_rate: '%s_or_faults' not found, ignoring class." % iter_test_main_class
+                continue
         
-        iter_faults_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "faults_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_faults_file_or)):
-            matlab_fp.write("faults_data_or = dlmread('%s', '\\t');\n" % iter_faults_file_or)
-        else:
-            print >> sys.stderr, "line_faults-ps_success_rate: '%s_or_faults' not found, ignoring class." % iter_test_main_class
-            continue
+            iter_faults_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "faults_by_time.txt")
+            if os.path.exists(os.path.join(options['outpath'], iter_faults_file_ps)):
+                matlab_fp.write("faults_data_ps = dlmread('%s', '\\t');\n" % iter_faults_file_ps)
+            else:
+                print >> sys.stderr, "line_faults-ps_success_rate: '%s_ps_faults' not found, ignoring class." % iter_test_main_class
+                continue
         
-        iter_faults_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "faults_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_faults_file_ps)):
-            matlab_fp.write("faults_data_ps = dlmread('%s', '\\t');\n" % iter_faults_file_ps)
-        else:
-            print >> sys.stderr, "line_faults-ps_success_rate: '%s_ps_faults' not found, ignoring class." % iter_test_main_class
-            continue
+            iter_success_rate_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "ps_success_rate_by_time.txt")
+            if os.path.exists(os.path.join(options['outpath'], iter_success_rate_file_ps)):
+                matlab_fp.write("success_rate_data_ps = dlmread('%s', '\\t');\n" % iter_success_rate_file_ps)
+            else:
+                print >> sys.stderr, "line_faults-ps_success_rate: '%s_ps_success_rate_by_time' not found, ignoring class." % iter_test_main_class
+                continue
         
-        iter_success_rate_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "ps_success_rate_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_success_rate_file_ps)):
-            matlab_fp.write("success_rate_data_ps = dlmread('%s', '\\t');\n" % iter_success_rate_file_ps)
-        else:
-            print >> sys.stderr, "line_faults-ps_success_rate: '%s_ps_success_rate_by_time' not found, ignoring class." % iter_test_main_class
-            continue
-        
-        matlab_fp.write("f = figure;\n")
-        matlab_fp.write("hold on;\n")
-        matlab_fp.write("x = 1:1:60;\n")
-        matlab_fp.write("y1 = [faults_data_or(:,2)'; faults_data_ps(:,2)'];\n")
-        matlab_fp.write("y2 = success_rate_data_ps(:,2)';\n")
-        matlab_fp.write("labels = {'ps' 'or' 'success\_rate'};\n")
-        matlab_fp.write("plot(x, y1(2,:), '-b', 'LineWidth', 2);\n")
-        matlab_fp.write("[AX,H1,H2] = plotyy(x, y1(1,:), x, y2);\n")
-        # matlab_fp.write("set(H1,'LineStyle','-g');\n")
-        matlab_fp.write("set(H2,'LineStyle','--');\n")
-        matlab_fp.write("set(get(AX(1),'Ylabel'),'String','Number of found faults');\n")
-        matlab_fp.write("ylim(AX(1), [0 max(y1(:))*1.1]);\n")
-        matlab_fp.write("set(get(AX(2),'Ylabel'),'String','PS success rate');\n")
-        matlab_fp.write("ylim(AX(2), [0 1]);\n")
-        matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
-        matlab_fp.write("legend(labels, 'Location', 'SouthEast');\n")
-        if options['title']:
-            matlab_fp.write("title('Number of found faults + PS success rate -- %s');\n" % iter_test_main_class.replace('_', '\_'))
-        matlab_fp.write("saveas(gcf, '%s', '%s');\n" % (iter_outpath, options['graph_format']))
-        matlab_fp.write("hold off;\n")
-        matlab_fp.write("close(f);\n")
-        matlab_fp.write("\n")
+            matlab_fp.write("f = figure;\n")
+            matlab_fp.write("hold on;\n")
+            matlab_fp.write("x = 1:1:60;\n")
+            matlab_fp.write("y1 = [faults_data_or(:,2)'; faults_data_ps(:,2)'];\n")
+            matlab_fp.write("y2 = success_rate_data_ps(:,2)';\n")
+            matlab_fp.write("labels = {'ps' 'or' 'success\_rate'};\n")
+            matlab_fp.write("plot(x, y1(2,:), '-b', 'LineWidth', 2);\n")
+            matlab_fp.write("[AX,H1,H2] = plotyy(x, y1(1,:), x, y2);\n")
+            # matlab_fp.write("set(H1,'LineStyle','-g');\n")
+            matlab_fp.write("set(H2,'LineStyle','--');\n")
+            matlab_fp.write("set(get(AX(1),'Ylabel'),'String','Number of found faults');\n")
+            matlab_fp.write("ylim(AX(1), [0 max(y1(:))*1.1]);\n")
+            matlab_fp.write("set(get(AX(2),'Ylabel'),'String','PS success rate');\n")
+            matlab_fp.write("ylim(AX(2), [0 1]);\n")
+            matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
+            matlab_fp.write("legend(labels, 'Location', 'SouthEast');\n")
+            if options['draw-titles']:
+                matlab_fp.write("title('Number of found faults + PS success rate -- %s');\n" % iter_test_main_class.replace('_', '\_'))
+            matlab_fp.write("saveas(gcf, '%s', '%s');\n" % (iter_outpath, options['graph-format']))
+            matlab_fp.write("hold off;\n")
+            matlab_fp.write("close(f);\n")
+            matlab_fp.write("\n")
     
     # graph bar_distinct_faults
     matlab_fp.write("\n")
@@ -1021,23 +948,23 @@ def main(argv=None):
     matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
     matlab_fp.write("xlabel('Class under test');\n")
     matlab_fp.write("ylabel('Number of distinct faults');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Number of distinct faults for each class under test');\n")
     matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
-    matlab_fp.write("f = figure;\n");
-    matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
-    matlab_fp.write("xlabel('Class under test');\n")
-    matlab_fp.write("ylabel('Number of distinct faults');\n")
-    if options['title']:
-        matlab_fp.write("title('Number of distinct faults for each class under test');\n")
-    matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("set(gca, 'XTick', 1:size(y,1))\n");
-    matlab_fp.write("set(gca, 'XTickLabel', classnames(sortindex,:));\n");
-    matlab_fp.write("xticklabel_rotate;\n");
-    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_with_names', '%s');\n" % (options['graph_format']))
-    matlab_fp.write("close(f);\n")
+    if options['draw-classnames']:
+        matlab_fp.write("f = figure;\n");
+        matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
+        matlab_fp.write("xlabel('Class under test');\n")
+        matlab_fp.write("ylabel('Number of distinct faults');\n")
+        if options['draw-titles']:
+            matlab_fp.write("title('Number of distinct faults for each class under test');\n")
+        matlab_fp.write("set(gca, 'XTick', 1:size(y,1));\n")
+        matlab_fp.write("set(gca, 'XTickLabel', classnames(sortindex,:));\n")
+        matlab_fp.write("xticklabel_rotate;\n")
+        matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_with_names', '%s');\n" % (options['graph-format']))
+        matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
     # graph bar_distinct_faults_norm
@@ -1065,43 +992,25 @@ def main(argv=None):
     matlab_fp.write("ylim([0 1.15]);\n")
     matlab_fp.write("xlabel('Class under test');\n")
     matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Discovery distribution of distinct faults for each class under test');\n")
     matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_norm', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_norm', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
-    matlab_fp.write("f = figure;\n");
-    matlab_fp.write("bar(y, 'stacked');\n")
-    matlab_fp.write("ylim([0 1.15]);\n")
-    matlab_fp.write("xlabel('Class under test');\n")
-    matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
-    if options['title']:
-        matlab_fp.write("title('Discovery distribution of distinct faults for each class under test');\n")
-    matlab_fp.write("legend({'both' 'or' 'ps'});\n")
-    matlab_fp.write("set(gca, 'XTick', 1:size(y,1))\n");
-    matlab_fp.write("set(gca, 'XTickLabel', classnames(sortindex,:));\n");
-    matlab_fp.write("xticklabel_rotate;\n");
-    matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_norm_with_names', '%s');\n" % (options['graph_format']))
-    matlab_fp.write("close(f);\n")
+    if options['draw-classnames']:
+        matlab_fp.write("f = figure;\n");
+        matlab_fp.write("bar(y, 'stacked');\n")
+        matlab_fp.write("ylim([0 1.15]);\n")
+        matlab_fp.write("xlabel('Class under test');\n")
+        matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
+        if options['draw-titles']:
+            matlab_fp.write("title('Discovery distribution of distinct faults for each class under test');\n")
+        matlab_fp.write("set(gca, 'XTick', 1:size(y,1));\n")
+        matlab_fp.write("set(gca, 'XTickLabel', classnames(sortindex,:));\n")
+        matlab_fp.write("xticklabel_rotate;\n")
+        matlab_fp.write("saveas(gcf, 'graphs/bar_distinct_faults_norm_with_names', '%s');\n" % (options['graph-format']))
+        matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
-
-    ### pf(_untested) does not make sense anymore
-    # # graph bar_pf
-    # matlab_fp.write("\n")
-    # matlab_fp.write("%% bar_pf\n")
-    # matlab_fp.write("f = figure;\n")
-    # matlab_fp.write("y = [")
-    # for v in precond_features_untested_increase_perc_by_class.values():
-    #     matlab_fp.write("%s," % v)
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("hist(y, 50);\n")
-    # matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("ylabel('Number of classes');\n")
-    # if options['title']:
-    #     matlab_fp.write("title('Class distribution by increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(gcf, 'graphs/bar_pf', '%s');\n" % (options['graph_format']))
-    # matlab_fp.write("close(f);\n")
-    # matlab_fp.write("\n")
 
     # graph bar_pf
     matlab_fp.write("\n")
@@ -1114,9 +1023,9 @@ def main(argv=None):
     matlab_fp.write("hist(y, 50);\n")
     matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
     matlab_fp.write("ylabel('Number of classes');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Class distribution by increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/bar_pf', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_pf', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
@@ -1129,18 +1038,18 @@ def main(argv=None):
     #     if not 'or' in i.keys() or not 'ps' in i.keys():
     #         print >> sys.stderr, "bar_coverage_in_ps_of_untested_pf_in_or: '%s' or/ps not found, ignoring class." % iter_test_main_class
     #         continue
-    #     iter_divisor = float(len(i['or']['avg'].precond_features_without_valid_tc))
+    #     iter_divisor = float(len(i['or']['avg'].aggregated_precond_features_without_valid_tc))
     #     if iter_divisor == 0:
     #         continue
-    #     iter_cov = 100 * float(len(i['ps']['avg'].precond_features_with_valid_tc) - len(i['or']['avg'].precond_features_with_valid_tc)) / iter_divisor
+    #     iter_cov = 100 * float(len(i['ps']['avg'].aggregated_precond_features_with_valid_tc) - len(i['or']['avg'].aggregated_precond_features_with_valid_tc)) / iter_divisor
     #     matlab_fp.write("%s," % iter_cov)
     # matlab_fp.write("];\n")
     # matlab_fp.write("hist(y, 50);\n")
     # matlab_fp.write("xlabel('% of untestable features in or newly tested in ps');\n")
     # matlab_fp.write("ylabel('Number of classes');\n")
-    # if options['title']:
+    # if options['draw-titles']:
     #     matlab_fp.write("title('Class distribution by increase in number of newly tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(gcf, 'graphs/bar_coverage_in_ps_of_untested_pf_in_or', '%s');\n" % (options['graph_format']))
+    # matlab_fp.write("saveas(gcf, 'graphs/bar_coverage_in_ps_of_untested_pf_in_or', '%s');\n" % (options['graph-format']))
     # matlab_fp.write("close(f);\n")
     # matlab_fp.write("\n")
     
@@ -1155,16 +1064,21 @@ def main(argv=None):
         if not 'or' in i.keys() or not 'ps' in i.keys():
             print >> sys.stderr, "bar_faults: '%s' or/ps not found, ignoring class." % iter_test_main_class
             continue
-        iter_increase = 100 * (float(i['ps']['avg'].count_faults) / float(i['or']['avg'].count_faults) - 1)
+        iter_divisor = float(i['or']['avg'].count_faults)
+        if iter_divisor == 0:
+            iter_increase = 0
+            ### TODO: IS THIS OK?
+        else:
+            iter_increase = 100 * (float(i['ps']['avg'].count_faults) / iter_divisor - 1)
         matlab_fp.write("%s," % iter_increase)
         faults_increase_ps_over_or_by_class[iter_test_main_class] = iter_increase
     matlab_fp.write("];\n")
     matlab_fp.write("hist(y, 50);\n")
     matlab_fp.write("xlabel('% increase in number of found faults');\n")
     matlab_fp.write("ylabel('Number of classes');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Class distribution by increase in number of found faults');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/bar_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_faults', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
@@ -1176,13 +1090,13 @@ def main(argv=None):
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
         iter_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_or)):
             matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
         else:
             print >> sys.stderr, "scatter_speed_vs_faults: '%s_or' not found, ignoring class." % iter_test_main_class
             continue
         iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_ps)):
             matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
             print >> sys.stderr, "scatter_speed_vs_faults: '%s_ps' not found, ignoring class." % iter_test_main_class
@@ -1191,52 +1105,17 @@ def main(argv=None):
         matlab_fp.write("y = [y;%s];\n" % faults_increase_ps_over_or_by_class[iter_test_main_class])
     matlab_fp.write("x = mean(xraw,2);\n")
     matlab_fp.write("scatter(x, y);\n")
-    if options["hvlines"]:
+    if options['draw-hvlines']:
         matlab_fp.write("hline(0, 'r-.');\n")
         matlab_fp.write("vline(0, 'r-.');\n")
     matlab_fp.write("ylabel('% increase in number of found faults');\n")
     matlab_fp.write("xlabel('Relative speed');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Relative speed vs. increase in number of found faults');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_faults', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
-    ### pf(_untested) does not make sense anymore
-    # # graph scatter_speed_vs_pf
-    # matlab_fp.write("\n")
-    # matlab_fp.write("%% scatter_speed_vs_pf\n")
-    # matlab_fp.write("f = figure;\n")
-    # matlab_fp.write("xraw = [];\n")
-    # matlab_fp.write("y = [];\n")
-    # for iter_test_main_class in test_main_classes:
-    #     iter_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
-    #     if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
-    #         matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
-    #     else:
-    #         print >> sys.stderr, "scatter_speed_vs_pf: '%s_or' not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
-    #     if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
-    #         matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
-    #     else:
-    #         print >> sys.stderr, "scatter_speed_vs_pf: '%s_ps' not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     matlab_fp.write("xraw = [xraw;(speed_ps(:,2)./speed_or(:,2) - 1)'];\n")
-    #     matlab_fp.write("y = [y;%s];\n" % precond_features_untested_increase_perc_by_class[iter_test_main_class])
-    # matlab_fp.write("x = mean(xraw,2);\n")
-    # matlab_fp.write("scatter(x, y);\n")
-    # if options["hvlines"]:
-    #     # matlab_fp.write("hline(0, 'r-.');\n")
-    #     matlab_fp.write("vline(0, 'r-.');\n")
-    # matlab_fp.write("ylabel('% increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("xlabel('Relative speed');\n")
-    # if options['title']:
-    #     matlab_fp.write("title('Relative speed vs. increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph_format']))
-    # matlab_fp.write("close(f);\n")
-    # matlab_fp.write("\n")
-    
     # graph scatter_speed_vs_pf
     matlab_fp.write("\n")
     matlab_fp.write("%% scatter_speed_vs_pf\n")
@@ -1245,13 +1124,13 @@ def main(argv=None):
     matlab_fp.write("y = [];\n")
     for iter_test_main_class in test_main_classes:
         iter_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_or)):
             matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
         else:
             print >> sys.stderr, "scatter_speed_vs_pf: '%s_or' not found, ignoring class." % iter_test_main_class
             continue
         iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_ps)):
             matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
             print >> sys.stderr, "scatter_speed_vs_pf: '%s_ps' not found, ignoring class." % iter_test_main_class
@@ -1260,14 +1139,14 @@ def main(argv=None):
         matlab_fp.write("y = [y;%s];\n" % precond_features_tested_increase_perc_by_class[iter_test_main_class])
     matlab_fp.write("x = mean(xraw,2);\n")
     matlab_fp.write("scatter(x, y);\n")
-    if options["hvlines"]:
+    if options['draw-hvlines']:
         # matlab_fp.write("hline(0, 'r-.');\n")
         matlab_fp.write("vline(0, 'r-.');\n")
     matlab_fp.write("ylabel('% increase in number of tested precondition-equipped features');\n")
     matlab_fp.write("xlabel('Relative speed');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Relative speed vs. increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_speed_vs_pf', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
@@ -1279,20 +1158,20 @@ def main(argv=None):
     matlab_fp.write("yraw = [];\n")
     for iter_test_main_class in test_main_classes:
         iter_file_or = os.path.join("analysis_data", iter_test_main_class, "or", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_or)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_or)):
             matlab_fp.write("speed_or = dlmread('%s', '\\t');\n" % iter_file_or)
         else:
             print >> sys.stderr, "scatter_success_rate_vs_speed: '%s_or' not found, ignoring class." % iter_test_main_class
             continue
         iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "valid_tc_gen_speed_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_ps)):
             matlab_fp.write("speed_ps = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
             print >> sys.stderr, "scatter_success_rate_vs_speed: '%s_ps' not found, ignoring class." % iter_test_main_class
             continue
         
         iter_file_ps = os.path.join("analysis_data", iter_test_main_class, "ps", "ps_success_rate_by_time.txt")
-        if os.path.exists(os.path.join(options['outfolder'], iter_file_ps)):
+        if os.path.exists(os.path.join(options['outpath'], iter_file_ps)):
             matlab_fp.write("ps_success_rate = dlmread('%s', '\\t');\n" % iter_file_ps)
         else:
             print >> sys.stderr, "scatter_success_rate_vs_speed: '%s_ps' not found, ignoring class." % iter_test_main_class
@@ -1303,47 +1182,16 @@ def main(argv=None):
     matlab_fp.write("x = mean(xraw,2);\n")
     matlab_fp.write("y = mean(yraw,2);\n")
     matlab_fp.write("scatter(x, y);\n")
-    if options["hvlines"]:
+    if options['draw-hvlines']:
         matlab_fp.write("hline(0, 'r-.');\n")
     matlab_fp.write("xlabel('Mean success rate');\n")
     matlab_fp.write("ylabel('Relative speed');\n")
-    if options['title']:
+    if options['draw-titles']:
        matlab_fp.write("title('Mean success rate vs. relative speed');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/scatter_success_rate_vs_speed', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_success_rate_vs_speed', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
 
-    ### pf(_untested) does not make sense anymore
-    # # graph scatter_pf_vs_faults
-    # matlab_fp.write("\n")
-    # matlab_fp.write("%% scatter_pf_vs_faults\n")
-    # matlab_fp.write("f = figure;\n")
-    # matlab_fp.write("x = [")
-    # for iter_test_main_class, i in processed_results.iteritems():
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "scatter_pf_vs_faults: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     matlab_fp.write("%s," % precond_features_untested_increase_perc_by_class[iter_test_main_class])
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("y = [")
-    # for iter_test_main_class, i in processed_results.iteritems():
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "scatter_pf_vs_faults: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     matlab_fp.write("%s," % faults_increase_ps_over_or_by_class[iter_test_main_class])
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("scatter(x, y);\n")
-    # if options["hvlines"]:
-    #     matlab_fp.write("hline(0, 'r-.');\n")
-    #     matlab_fp.write("vline(0, 'r-.');\n")
-    # matlab_fp.write("ylabel('% increase in number of found faults');\n")
-    # matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
-    # if options['title']:
-    #     matlab_fp.write("title('Increase in number of found faults vs. increase in number of tested precondition-equipped features');\n")
-    # matlab_fp.write("saveas(gcf, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph_format']))
-    # matlab_fp.write("close(f);\n")
-    # matlab_fp.write("\n")
-    
     # graph scatter_pf_vs_faults
     matlab_fp.write("\n")
     matlab_fp.write("%% scatter_pf_vs_faults\n")
@@ -1363,85 +1211,21 @@ def main(argv=None):
         matlab_fp.write("%s," % faults_increase_ps_over_or_by_class[iter_test_main_class])
     matlab_fp.write("];\n")
     matlab_fp.write("scatter(x, y);\n")
-    if options["hvlines"]:
+    if options['draw-hvlines']:
         matlab_fp.write("hline(0, 'r-.');\n")
         matlab_fp.write("vline(0, 'r-.');\n")
     matlab_fp.write("ylabel('% increase in number of found faults');\n")
     matlab_fp.write("xlabel('% increase in number of tested precondition-equipped features');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Increase in number of found faults vs. increase in number of tested precondition-equipped features');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/scatter_pf_vs_faults', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
     
-    ### graph not needed
-    # # graph hard_features_vs_nbr_valid_tc_increase
-    # matlab_fp.write("\n")
-    # matlab_fp.write("%% hard_features_vs_nbr_valid_tc_increase\n")
-    # matlab_fp.write("f = figure;\n")
-    # # compute some more data first
-    # valid_tc_increase_by_hard_feature = {}
-    # for iter_test_main_class, i in processed_results.iteritems():
-    #     if not 'or' in i.keys() or not 'ps' in i.keys():
-    #         print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' or/ps not found, ignoring class." % iter_test_main_class
-    #         continue
-    #     for iter_feat in i['or']['avg'].hardness_by_feature_in_cus.keys():
-    #         if i['or']['avg'].hardness_by_feature_in_cus[iter_feat] < options['feature-hardness']:
-    #             continue
-    #         iter_feat_dest = iter_feat
-    #         while iter_feat_dest in valid_tc_increase_by_hard_feature.keys():
-    #             iter_feat_dest += 'd'
-    #         # if iter_feat in valid_tc_increase_by_hard_feature.keys():
-    #         #     print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' duplicate from another run, ignoring." % iter_feat
-    #         #     continue
-    #         if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature_in_cus.keys():
-    #             print >> sys.stderr, "hard_features_vs_nbr_valid_tc_increase: '%s' found in or but not in ps." % iter_feat
-    #             continue
-    #         iter_divisor = float(i['or']['avg'].count_valid_tc_by_feature_in_cus[iter_feat])
-    #         # if iter_divisor = 0:
-    #         #     iter_divisor = 0.01
-    #         # valid_tc_increase_by_hard_feature[iter_feat_dest] = float(i['ps']['avg'].count_valid_tc_by_feature_in_cus[iter_feat] - i['or']['avg'].count_valid_tc_by_feature_in_cus[iter_feat]) / iter_divisor
-    #         # else:
-    #         #     valid_tc_increase_by_hard_feature[iter_feat_dest] = 1
-    #         if iter_divisor != 0:
-    #             valid_tc_increase_by_hard_feature[iter_feat_dest] = float(i['ps']['avg'].count_valid_tc_by_feature_in_cus[iter_feat] - i['or']['avg'].count_valid_tc_by_feature_in_cus[iter_feat]) / iter_divisor
-    #         else:
-    #             valid_tc_increase_by_hard_feature[iter_feat_dest] = 7
-    # matlab_fp.write("y = [")
-    # for val in valid_tc_increase_by_hard_feature.values():
-    #     matlab_fp.write("%s," % val)
-    # matlab_fp.write("];\n")
-    # matlab_fp.write("bar(sort(y));\n")
-    # matlab_fp.write("ylabel('Increase in nbr of valid TCs');\n")
-    # matlab_fp.write("xlabel('hard to test features');\n")
-    # if options['title']:
-    #     matlab_fp.write("title('Increase in valid TCs for hard-to-test features');\n")
-    # matlab_fp.write("saveas(gcf, 'graphs/hard_features_vs_nbr_valid_tc_increase', '%s');\n" % (options['graph_format']))
-    # matlab_fp.write("close(f);\n")
-    # matlab_fp.write("\n")
-
     # graph bar_hf
     matlab_fp.write("\n")
     matlab_fp.write("%% bar_hf\n")
     matlab_fp.write("f = figure;\n")
-    # compute some more data first
-    valid_tc_or_by_hard_feature = {}
-    valid_tc_ps_by_hard_feature = {}
-    for iter_test_main_class, i in processed_results.iteritems():
-        if not 'or' in i.keys() or not 'ps' in i.keys():
-            print >> sys.stderr, "bar_hf: '%s' or/ps not found, ignoring class." % iter_test_main_class
-            continue
-        for iter_feat in i['or']['avg'].hardness_by_feature.keys():
-            if i['or']['avg'].hardness_by_feature[iter_feat] < options['feature-hardness']:
-                continue
-            iter_feat_dest = iter_feat
-            while iter_feat_dest in valid_tc_or_by_hard_feature.keys():
-                iter_feat_dest += 'd'
-            if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature.keys():
-                print >> sys.stderr, "bar_hf: '%s' found in or but not in ps." % iter_feat
-                continue
-            valid_tc_or_by_hard_feature[iter_feat_dest] = i['or']['avg'].count_valid_tc_by_feature[iter_feat]
-            valid_tc_ps_by_hard_feature[iter_feat_dest] = i['ps']['avg'].count_valid_tc_by_feature[iter_feat]
     matlab_fp.write("y = [")
     for iter_feat in valid_tc_or_by_hard_feature.keys():
         matlab_fp.write("%s,%s;" % (valid_tc_or_by_hard_feature[iter_feat], valid_tc_ps_by_hard_feature[iter_feat]))
@@ -1451,12 +1235,12 @@ def main(argv=None):
     matlab_fp.write("legend({'or' 'ps'});\n")
     matlab_fp.write("ylabel('Number of valid test cases');\n")
     matlab_fp.write("xlabel('Hard-to-test feature');\n")
-    if options['title']:
+    if options['draw-titles']:
         matlab_fp.write("title('Number of valid test cases for hard-to-test features');\n")
-    matlab_fp.write("saveas(gcf, 'graphs/bar_hf', '%s');\n" % (options['graph_format']))
+    matlab_fp.write("saveas(gcf, 'graphs/bar_hf', '%s');\n" % (options['graph-format']))
     matlab_fp.write("close(f);\n")
     matlab_fp.write("\n")
-
+    
     matlab_fp.close()
     
 
