@@ -958,7 +958,8 @@ def main(argv=None):
     # sort rows of y ascending by third column, then descending by first column
     matlab_fp.write("y(:,4) = sum(y,2);\n")
     matlab_fp.write("[y,sortindex] = sortrows(y,[-4]);\n")
-    matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
+    matlab_fp.write("h = bar(y(:,1:3), 'stacked');\n")
+    matlab_fp.write("set(h(3),'facecolor', [0.7 0.4 0.2], 'edgecolor', [0.7 0.4 0.2]);\n")
     matlab_fp.write("xlabel('Class under test');\n")
     matlab_fp.write("ylabel('Number of distinct faults');\n")
     if options['draw-titles']:
@@ -968,7 +969,8 @@ def main(argv=None):
     matlab_fp.write("close(f);\n")
     if options['draw-classnames']:
         matlab_fp.write("f = figure;\n");
-        matlab_fp.write("bar(y(:,1:3), 'stacked');\n")
+        matlab_fp.write("h = bar(y(:,1:3), 'stacked');\n")
+        matlab_fp.write("set(h(3),'facecolor', [0.7 0.4 0.2], 'edgecolor', [0.7 0.4 0.2]);\n")
         matlab_fp.write("xlabel('Class under test');\n")
         matlab_fp.write("ylabel('Number of distinct faults');\n")
         if options['draw-titles']:
@@ -1001,7 +1003,8 @@ def main(argv=None):
         matlab_fp.write("classnames = strvcat(classnames, '%s');\n" % iter_test_main_class.replace('_', '\_'))
     # sort rows of y ascending by third column, then descending by first column
     matlab_fp.write("[y,sortindex] = sortrows(y,[3 -1]);\n")
-    matlab_fp.write("bar(y, 'stacked');\n")
+    matlab_fp.write("h = bar(y, 'stacked');\n")
+    matlab_fp.write("set(h(3),'facecolor', [0.7 0.4 0.2], 'edgecolor', [0.7 0.4 0.2]);\n")
     matlab_fp.write("ylim([0 1.15]);\n")
     matlab_fp.write("xlabel('Class under test');\n")
     matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
@@ -1012,7 +1015,8 @@ def main(argv=None):
     matlab_fp.write("close(f);\n")
     if options['draw-classnames']:
         matlab_fp.write("f = figure;\n");
-        matlab_fp.write("bar(y, 'stacked');\n")
+        matlab_fp.write("h = bar(y, 'stacked');\n")
+        matlab_fp.write("set(h(3),'facecolor', [0.7 0.4 0.2], 'edgecolor', [0.7 0.4 0.2]);\n")
         matlab_fp.write("ylim([0 1.15]);\n")
         matlab_fp.write("xlabel('Class under test');\n")
         matlab_fp.write("ylabel('Discovery distribution of distinct faults');\n")
@@ -1249,7 +1253,8 @@ def main(argv=None):
         matlab_fp.write("%s,%s;" % (valid_tc_or_by_hard_feature[iter_feat], valid_tc_ps_by_hard_feature[iter_feat]))
     matlab_fp.write("];\n")
     matlab_fp.write("y = sortrows(y, -1);\n")
-    matlab_fp.write("bar(y, 'stacked');\n")
+    matlab_fp.write("h = bar(y, 'stacked');\n")
+    matlab_fp.write("set(h(2),'facecolor', [0.7 0.4 0.2], 'edgecolor', [0.7 0.4 0.2]);\n")
     matlab_fp.write("legend({'or' 'ps'});\n")
     matlab_fp.write("ylabel('Number of valid test cases');\n")
     matlab_fp.write("xlabel('Hard-to-test feature');\n")
