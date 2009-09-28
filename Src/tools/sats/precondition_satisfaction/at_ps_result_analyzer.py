@@ -682,6 +682,26 @@ def main(argv=None):
     iter_fp.close()
     
     
+    # write list of faults
+    all_faults = set()
+    or_faults = set()
+    ps_faults = set()
+    for iter_test_main_class, i in processed_results.iteritems():
+        iter_df_or = set(i['or']['avg'].distinct_faults)
+        iter_df_ps = set(i['ps']['avg'].distinct_faults)
+        or_faults |= iter_df_or
+        ps_faults |= iter_df_ps
+        all_faults |= iter_df_or | iter_df_ps
+    iter_outfile = os.path.join(options['analysis_outpath'], '_list_of_faults.txt')
+    iter_fp = open(iter_outfile, 'w')
+    for fault in all_faults:
+        iter_fp.write("%s\n" % (fault))
+    iter_fp.close()
+    # print "total: %i" % len(all_faults)
+    # print "or only: %i" % len(or_faults - ps_faults)
+    # print "ps only: %i" % len(ps_faults - or_faults)
+    
+    
     # write tables
     
     # calculate some values
@@ -783,14 +803,8 @@ def main(argv=None):
             iter_feat_dest = iter_feat
             while iter_feat_dest in valid_tc_or_by_hard_feature.keys():
                 iter_feat_dest += 'd'
-            # if iter_feat not in i['ps']['avg'].count_valid_tc_by_feature.keys():
-            #     print >> sys.stderr, "tc_hard_features: '%s' found in or but not in ps." % iter_feat
-            #     continue
             valid_tc_or_by_hard_feature[iter_feat_dest] = i['or']['avg'].count_valid_tc_by_feature[iter_feat]
             valid_tc_ps_by_hard_feature[iter_feat_dest] = i['ps']['avg'].count_valid_tc_by_feature[iter_feat]
-    # iter_outfile = os.path.join(options['tables_outpath'], 'tc_hard_features.txt')
-    # iter_fp = open(iter_outfile, 'w')
-    # iter_fp.close()
     
     # table untested_routines_in_or
     iter_outfile = os.path.join(options['tables_outpath'], 'untested_routines_in_or.txt')
@@ -862,8 +876,8 @@ def main(argv=None):
     matlab_fp.write("[C,Imin] = min(ymean);\n")
     matlab_fp.write("[C,Imax] = max(ymean);\n")
     matlab_fp.write("yspecial = [yspecial; y(Imax,:); y(Imin,:)];\n")
-    matlab_fp.write("classlines = plot(x, y, 'y-');\n")
-    matlab_fp.write("speciallines = plot(x, yspecial(1,:), 'g--', x, yspecial(2,:), 'b-', x, yspecial(3,:), 'r-.', 'LineWidth', 2);\n")
+    matlab_fp.write("classlines = plot(x, y, 'y-', 'Color', [1 1 0]);\n")
+    matlab_fp.write("speciallines = plot(x, yspecial(1,:), 'g-', x, yspecial(2,:), 'b--', x, yspecial(3,:), 'r-.', 'LineWidth', 2);\n")
     matlab_fp.write("legendnames = strvcat('All classes', 'Median of all classes', classnames(Imax,:), classnames(Imin,:));\n")
     matlab_fp.write("legend([classlines(1); speciallines], legendnames, 'Location', 'SouthEast');\n")
     matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
@@ -904,10 +918,10 @@ def main(argv=None):
             print >> sys.stderr, "line_ps_success_rate_all_classes: '%s_ps' not found, ignoring class." % iter_test_main_class
             continue
         
-        matlab_fp.write("y = [y;data_ps(:,2)'];\n")
+        matlab_fp.write("y = [y;(100*data_ps(:,2))'];\n")
     matlab_fp.write("plot(x, y);\n")
     matlab_fp.write("xlabel('Duration of test run (minutes)');\n")
-    matlab_fp.write("ylabel('Success rate');\n")
+    matlab_fp.write("ylabel('Success rate (%)');\n")
     if options['draw-titles']:
         matlab_fp.write("title('Success rate of all classes');\n")
     matlab_fp.write("saveas(gcf, 'graphs/line_ps_success_rate_all_classes', '%s');\n" % (options['graph-format']))
@@ -973,6 +987,7 @@ def main(argv=None):
             matlab_fp.write("hold off;\n")
             matlab_fp.write("close(f);\n")
             matlab_fp.write("\n")
+    
     
     # graph bar_distinct_faults
     matlab_fp.write("\n")
@@ -1305,12 +1320,8 @@ def main(argv=None):
     matlab_fp.write("f = figure;\n")
     matlab_fp.write("set(gca,'FontSize', 12);\n")
     matlab_fp.write("y = [")
-    # i = 1
     for iter_feat in valid_tc_or_by_hard_feature.keys():
         matlab_fp.write("%s,%s;" % (valid_tc_or_by_hard_feature[iter_feat], valid_tc_ps_by_hard_feature[iter_feat]))
-        # if iter_feat in ("LX_SYMBOL_CLASS:replace_at:has_precondition","TWO_WAY_CURSOR_TREE:put_left:has_precondition","LINKED_CURSOR_TREE:parent_tree:has_precondition","LX_SYMBOL_CLASS:item_for_iteration:has_precondition","LX_SYMBOL_CLASS:remove_at:has_precondition","DS_LEFT_LEANING_RED_BLACK_TREE:key_for_iteration:has_precondition"):
-        #     print "suspect: %s, or: %.4f, ps: %.4f" % (iter_feat, valid_tc_or_by_hard_feature[iter_feat], valid_tc_ps_by_hard_feature[iter_feat])
-        # i+=1
     matlab_fp.write("];\n")
     matlab_fp.write("y = sortrows(y, [-1 -2]);\n")
     matlab_fp.write("h = bar(y, 'stacked');\n")
