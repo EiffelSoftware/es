@@ -3106,6 +3106,10 @@ Src/tools/resource_bench/bin/rb.exe -text
 Src/tools/resource_bench/rb.ico svneol=native#unset
 Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
+Src/tools/sats/precondition_satisfaction/matlab_files/gen_fault_frequency_hist.m -text
+Src/tools/sats/precondition_satisfaction/matlab_files/gen_faults_graph.m -text
+Src/tools/sats/precondition_satisfaction/matlab_files/hline.m -text
+Src/tools/sats/precondition_satisfaction/matlab_files/vline.m -text
 Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 eweasel/BUGS -text
