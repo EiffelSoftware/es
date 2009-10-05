@@ -81,7 +81,8 @@ feature {NONE} -- Implementation
 			-- Is `a_type' and `a_other_type' same type?
 		do
 				-- TODO: do we have a real context class?
-			Result := a_type.is_conformant_to (a_other_type.associated_class, a_other_type) and then a_other_type.is_conformant_to (a_other_type.associated_class, a_type)
+			Result := a_type.same_as (a_other_type)
+--			Result := a_type.is_conformant_to (a_other_type.associated_class, a_other_type) and then a_other_type.is_conformant_to (a_other_type.associated_class, a_type)
 		end
 
 end

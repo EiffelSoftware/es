@@ -888,7 +888,7 @@ feature {NONE} -- Implementation
 			elseif l_feature_name.is_equal ("postcondition") then
 				l_arguments.append (l_heap + ", " + l_old_heap + ", ")
 				if l_is_function then
-					l_arguments_suffix := ", Result"
+					l_arguments_suffix := ", " + name_mapper.result_name
 					l_boogie_function := "function.postcondition_" + l_open_argument_count.out
 				else
 					l_arguments_suffix := ""

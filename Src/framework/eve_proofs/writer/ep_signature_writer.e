@@ -58,8 +58,11 @@ feature -- Basic operations
 
 			output.put_comment_line ("Frame condition")
 			output.put_line ("modifies Heap;")
-			frame_extractor.build_frame_condition (a_feature)
-			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+
+			if not ignore_framing (a_feature) then
+				frame_extractor.build_frame_condition (a_feature)
+				output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+			end
 
 			write_precondition_predicate (a_feature)
 			write_postcondition_predicate (a_feature)
@@ -89,8 +92,10 @@ feature -- Basic operations
 			output.put_comment_line ("Frame condition")
 
 			output.put_line ("modifies Heap;")
-			frame_extractor.build_frame_condition (a_feature)
-			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+			if not ignore_framing (a_feature) then
+				frame_extractor.build_frame_condition (a_feature)
+				output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+			end
 
 -- TODO: not necessary anymore?
 --			output.put_comment_line ("Creation routine condition")
@@ -433,6 +438,35 @@ feature {NONE} -- Implementation
 			end
 			output.put (");")
 			output.put_new_line
+		end
+
+	ignore_framing (a_feature: !FEATURE_I): BOOLEAN
+			-- Is framing ignored for this feature?
+		local
+			l_indexing_clause: INDEXING_CLAUSE_AS
+			l_index: INDEX_AS
+			l_bool: BOOL_AS
+			l_found: BOOLEAN
+		do
+			Result := False
+			l_indexing_clause := a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes
+			if l_indexing_clause /= Void then
+				from
+					l_indexing_clause.start
+				until
+					l_indexing_clause.after or l_found
+				loop
+					l_index := l_indexing_clause.item
+					if l_index.tag.name.as_lower.is_equal ("ignore_framing") then
+						l_found := True
+						l_bool ?= l_index.index_list.first
+						if l_bool /= Void then
+							Result := l_bool.value
+						end
+					end
+					l_indexing_clause.forth
+				end
+			end
 		end
 
 end
