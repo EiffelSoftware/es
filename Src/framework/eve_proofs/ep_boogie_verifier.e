@@ -166,6 +166,7 @@ feature {NONE} -- Implementation
 			l_registry_value: WEL_REGISTRY_KEY_VALUE
 			l_executable: STRING
 			l_error: EP_GENERAL_ERROR
+			l_path_string: STRING
 			l_path: DIRECTORY_NAME
 			l_file_name: FILE_NAME
 			l_file: RAW_FILE
@@ -192,6 +193,21 @@ feature {NONE} -- Implementation
 				create l_file.make (l_file_name.string)
 				if l_file.exists then
 					l_executable := l_file_name.string
+				end
+			end
+
+				-- 2.1. Delivery of development version
+			if l_executable.is_empty then
+				create l_ee
+				l_path_string := l_ee.get("EIFFEL_SRC") + "/Delivery/studio/tools/boogie/bin/Boogie.exe"
+				create l_file.make (l_path_string)
+				if not l_file.exists then
+					l_path_string := l_ee.get("EIFFEL_SRC") + "/../Delivery/studio/tools/boogie/bin/Boogie.exe"
+					create l_file.make (l_path_string)
+				end
+
+				if l_file.exists then
+					l_executable := l_path_string
 				end
 			end
 
