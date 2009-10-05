@@ -11,6 +11,7 @@ inherit
 	ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE
 		redefine
 			build_tool_interface,
+			on_before_initialize,
 			on_after_initialized,
 			internal_recycle,
 			create_right_tool_bar_items,
@@ -31,6 +32,15 @@ create {ES_PROOF_TOOL}
 	make
 
 feature {NONE} -- Initialization
+
+	on_before_initialize
+			-- <Precursor>
+		do
+			Precursor
+
+				-- We want the tool to synchronize with the event list, when first initialized.
+			is_event_list_synchronized_on_initialized := True
+		end
 
 	on_after_initialized
 			-- <Precursor>
