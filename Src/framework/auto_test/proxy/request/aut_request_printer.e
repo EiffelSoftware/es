@@ -146,8 +146,8 @@ feature {AUT_REQUEST} -- Processing
 				-- Create nodes to store created object into object pool.
 			l_compound.extend (new_store_variable_byte_code (1, a_request.target.index))
 
-				-- Print request into `output_stream'.
-			print_execute_request (l_compound, execute_request_flag, extra_data_for_predicate_evaluation (a_request))
+				-- Print request into `output_stream'.			
+			print_execute_request (l_compound, execute_request_flag, extra_data_for_execute_request (a_request))
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
@@ -237,7 +237,7 @@ feature {AUT_REQUEST} -- Processing
 			end
 
 				-- Dump request into `output_stream'.
-			print_execute_request (l_compound, execute_request_flag, extra_data_for_predicate_evaluation (a_request))
+			print_execute_request (l_compound, execute_request_flag, extra_data_for_execute_request (a_request))
 		end
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
@@ -623,6 +623,77 @@ feature{NONE} -- Implementation
 			-- Name of feature to check invariant of an object in interpreter.
 
 feature{NONE} -- Precondition satisfaction
+
+	extra_data_for_execute_request (a_request: AUT_CALL_BASED_REQUEST): detachable ANY is
+			-- Extract data for `a_request'
+		require
+			a_request_attached: a_request /= Void
+		local
+			l_config: TEST_GENERATOR_CONF_I
+			l_array: ARRAY [detachable ANY]
+		do
+--			if is_extra_data_needed then
+				create l_array.make (1, 10)
+				l_config := interpreter.configuration
+
+					-- Setup data for precondition satisfaction.
+				if l_config.is_precondition_checking_enabled then
+					setup_extra_data_for_precondition_satisfaction (a_request, l_array)
+				end
+
+--				if l_config.is_test_case_serialization_enabled then
+					setup_extra_data_for_test_case_serialization (a_request, l_array)
+--				end
+--			end
+			Result := l_array
+		end
+
+	setup_extra_data_for_test_case_serialization (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY]) is
+			-- Set up extra data for test case serialization for `a_request' in `a_data'.
+		require
+			a_request_attached: a_request /= Void
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			l_operands: SPECIAL [INTEGER]
+		do
+			if
+				a_data /= Void and then
+				interpreter.configuration.is_precondition_checking_enabled and then
+				a_request.feature_id > 0 and then
+				relevant_predicate_with_operand_table.has (a_request.feature_id)
+			then
+				a_data.put (
+					[a_request.target_type.associated_class.name,
+					a_request.feature_to_call.feature_name,
+					a_request.test_case_index,
+					a_request.operand_indexes],
+					extra_data_index_test_case_serialization)
+			end
+		end
+
+	setup_extra_data_for_precondition_satisfaction (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY]) is
+			-- Set up extra data for precondition satisfaction for `a_request' in `a_data'.
+		require
+			a_request_attached: a_request /= Void
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			l_operands: SPECIAL [INTEGER]
+		do
+			if
+				a_data /= Void and then
+				interpreter.configuration.is_precondition_checking_enabled and then
+				a_request.feature_id > 0 and then
+				relevant_predicate_with_operand_table.has (a_request.feature_id)
+			then
+				a_data.put ([a_request.feature_id, a_request.operand_indexes], extra_data_index_precondition_satisfaction)
+			end
+		end
 
 	extra_data_for_predicate_evaluation (a_request: AUT_CALL_BASED_REQUEST): TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]] is
 			-- Extra data used for predicate evaluation.

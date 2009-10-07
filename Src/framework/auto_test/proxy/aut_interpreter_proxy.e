@@ -137,6 +137,7 @@ feature {NONE} -- Initialization
 			proxy_failure_log_file.open_write
 
 			create response_printer.make_with_prefix (proxy_log_file, interpreter_log_prefix)
+			response_printer.set_configuration (configuration)
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
@@ -1379,7 +1380,7 @@ feature {NONE} -- Logging
 		do
 			if is_test_case_index_logging_enabled then
 	            test_case_count := test_case_count + 1
-	            last_request.set_test_case_index (test_case_count)
+	            a_request.set_test_case_index (test_case_count)
 			end
 			log_line ("-- test case No." + test_case_count.out)
 		ensure
