@@ -453,7 +453,9 @@ feature -- Execution
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
 			end
 			create l_request.make (system, a_receiver, a_type, a_procedure, l_arg_list)
-			l_request.set_feature_id (a_feature.id)
+			if a_feature /= Void then
+				l_request.set_feature_id (a_feature.id)
+			end
 			last_operands := l_request.operand_indexes
 
 			log_test_case_index (l_request)

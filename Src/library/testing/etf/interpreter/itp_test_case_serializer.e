@@ -307,8 +307,6 @@ feature{NONE} -- Implementation
 	serialized_objects (a_objects: SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): STRING is
 			-- Serialized version of objects whose ID are specified by `a_objects' starting from
 			-- position `a_lower' and ending at position `a_upper'.
-			-- In the result, all '%N' is replaced with "%%N", and all '%R' is replaced with "%%R" so the serialized data
-			-- appear in a single line in the log file.
 		local
 			l: SPECIAL [detachable ANY]
 			i: INTEGER
@@ -325,8 +323,6 @@ feature{NONE} -- Implementation
 				i := i + 1
 			end
 			Result := serialize (l)
-			Result.replace_substring_all ("%R", "%%R")
-			Result.replace_substring_all ("%N", "%%N")
 		end
 
 	serialize (a_object: ANY): STRING is
