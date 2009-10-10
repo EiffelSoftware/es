@@ -32,8 +32,22 @@ feature -- Access
 				a_type.is_boolean
 			then
 				Result.extend (a_type.associated_class.feature_named ("item"))
+			elseif
+				not a_type.is_formal and then
+				(a_type.conform_to (system.any_class.compiled_class, system.string_8_class.compiled_class.actual_type) or else
+				 a_type.conform_to (system.any_class.compiled_class, system.string_32_class.compiled_class.actual_type))
+			then
+				Result.extend (a_type.associated_class.feature_named ("out"))
 			else
-				Result := features_of_type (a_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query, agent is_exported_to_any>>))
+				Result := features_of_type (
+					a_type,
+					anded_feature_agents (<<
+						ored_feature_agents (<<
+							agent is_boolean_query,
+							agent is_integer_query>>),
+					agent is_argumentless_query,
+					agent is_exported_to_any,
+					agent is_non_any_feature>>))
 			end
 		end
 
@@ -124,6 +138,14 @@ feature -- Feature criteria
 			a_feature_attached: a_feature /= Void
 		do
 			Result := a_feature.export_status.is_exported_to (system.any_class.compiled_class)
+		end
+
+	is_non_any_feature (a_feature: FEATURE_I): BOOLEAN is
+			-- Is `a_feature' not written in class ANY?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.e_feature.written_class.class_id /= system.any_class.compiled_class.class_id
 		end
 
 	ored_feature_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN] is

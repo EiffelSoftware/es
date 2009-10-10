@@ -82,6 +82,12 @@ feature {NONE} -- Initialization
 				-- Initialize predicate related data structure.
 			initialize_predicates
 
+				-- Initialize supported query name table.
+			initialize_supported_query_name_table
+
+				-- Create test case serializer.
+			create test_case_serializer.make (Current)
+
 			start (l_port, (create {INET_ADDRESS_FACTORY}).create_loopback)
 				-- Close log file.
 			log_file.close
@@ -141,6 +147,14 @@ feature -- Status report
 				a_type = type_request_flag or else
 				a_type = precondition_evaluation_request_flag or else
 				a_type = predicate_evaluation_request_flag
+		end
+
+feature -- Access
+
+	variable_at_index (a_index: INTEGER): detachable ANY
+			-- Object in `store' at position `a_index'.
+		do
+			Result := store.variable_value (a_index)
 		end
 
 feature {NONE} -- Handlers
@@ -214,6 +228,12 @@ feature {NONE} -- Handlers
 		local
 			l_bcode: STRING
 			l_predicate_results: TUPLE [INTEGER, detachable like evaluated_predicate_results]
+			i: INTEGER
+			l_object_summary: ARRAYED_LIST [STRING]
+			l_upper: INTEGER
+			l_lower: INTEGER
+			l_canned_objects: STRING
+			l_serializer: like test_case_serializer
 		do
 			if attached {TUPLE [l_byte_code: STRING; l_data: detachable ANY]} last_request as l_last_request then
 				l_bcode := l_last_request.l_byte_code
@@ -228,18 +248,27 @@ feature {NONE} -- Handlers
 						pointer_for_byte_code (l_bcode),
 						l_bcode.count)
 
+						-- Test case serialization: retrieve pre-TC state.
+					retrieve_test_case_prestate (l_last_request.l_data)
+
 						-- Run the feature with newly injected byte-code.
 					execute_protected
 					log_message ("report_execute_request end%N")
 
-						-- Evaluat relevant predicates.
+						-- Evaluate relevant predicates.
 					if is_last_protected_execution_successfull and then is_predicate_evaluation_enabled then
-						if attached {TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]} l_last_request.l_data as l_feature_data then
-							l_predicate_results :=  [l_feature_data.feature_id, evaluated_predicate_results (l_feature_data.feature_id, l_feature_data.operands)]
-						else
-							l_predicate_results := Void
+						if attached {detachable ARRAY [detachable ANY]} l_last_request.l_data as l_extra_data then
+							if attached {TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]} l_extra_data.item (extra_data_index_precondition_satisfaction) as l_feature_data then
+								l_predicate_results :=  [l_feature_data.feature_id, evaluated_predicate_results (l_feature_data.feature_id, l_feature_data.operands)]
+							else
+								l_predicate_results := Void
+							end
 						end
 					end
+
+						-- Test case serialization.
+					retrieve_post_test_case_state
+					log_test_case_serialization
 				end
 			else
 				report_error (invalid_request_format_error)
@@ -376,7 +405,7 @@ feature {NONE} -- Logging
 			log_message ("</call_result>%N")
 		end
 
-feature {NONE} -- IO Buffer
+feature -- IO Buffer
 
 	output_buffer: STRING_8
 			-- Buffer used to store standard output from Current process
@@ -602,12 +631,6 @@ feature {NONE} -- Byte code
 			store.assign_value (a_object, a_index)
 		end
 
-	variable_at_index (a_index: INTEGER): detachable ANY
-			-- Object in `store' at position `a_index'.
-		do
-			Result := store.variable_value (a_index)
-		end
-
 	eif_override_byte_code_of_body (a_body_id: INTEGER; a_pattern_id: INTEGER; a_byte_code: POINTER; a_length: INTEGER)
 			-- Store `a_byte_code' of `a_length' byte long for feature with `a_body_id'.
 		require
@@ -677,7 +700,10 @@ feature{NONE} -- Invariant checking
 			invariant_violating_object_index := a_index
 		end
 
-feature{NONE} -- Object state checking
+feature -- Object state checking
+
+	last_exception_trace: detachable STRING
+			-- Last exception trace
 
 	report_precondition_evaluation_request is
 			-- Report and precondition evaluation request.
@@ -700,6 +726,97 @@ feature{NONE} -- Object state checking
 				last_response := [Void, output_buffer, error_buffer]
 				refresh_last_response_flag
 				send_response_to_socket
+			end
+		end
+
+	record_object_queries (a_object_index: INTEGER; a_object: ANY) is
+			-- Record queries of object with `a_object_index' in object pool into `query_values' and `query_status'.
+			-- If there the specified object is invariant-violating, `a_queries' is not changed,
+			-- and no error will be reported.
+		do
+			execute_protected_for_query_recording (a_object)
+		end
+
+	object_summary (a_object_index: INTEGER): STRING is
+			-- Summary of `a_object_index'
+		require
+			a_object_index_valid: a_object_index > 0
+		local
+			o: detachable ANY
+			l_retried: BOOLEAN
+			l_values: like query_values
+			l_status: like query_status
+			l_queries: LINKED_LIST [STRING]
+			l_value: STRING
+		do
+			if not l_retried then
+				create Result.make (256)
+				initialize_query_value_holders
+				o := variable_at_index (a_object_index)
+				if o /= Void then
+					check_invariant (a_object_index, o)
+				end
+				record_object_queries (a_object_index, o)
+				Result.append ("-- v_" + a_object_index.out)
+				if o = Void then
+					Result.append (" is Void.%N")
+				else
+					Result.append (": " + o.generating_type)
+					Result.append ("%N")
+
+					l_values := query_values
+					l_status := query_status
+					l_queries := supported_query_names (o)
+					if l_values.count = l_status.count and then l_values.count = l_queries.count then
+						from
+							l_values.start
+							l_status.start
+							l_queries.start
+						until
+							l_values.after
+						loop
+							Result.append ("--    ")
+							Result.append (l_queries.item_for_iteration)
+							Result.append (" = ")
+							if l_status.item_for_iteration then
+								l_value := l_values.item_for_iteration.twin
+								l_value.replace_substring_all ("%N", "%%N")
+								l_value.replace_substring_all ("%R", "%%R")
+								Result.append (l_value)
+								Result.append ("%N")
+							else
+								Result.append ("__error__%N")
+							end
+							l_values.forth
+							l_status.forth
+							l_queries.forth
+						end
+					end
+				end
+			else
+				create Result.make (64)
+			end
+		ensure
+			result_attached: Result /= Void
+		rescue
+			l_retried := True
+			retry
+		end
+
+
+	initialize_query_value_holders is
+			-- Initialize `query_values' and `query_status'.
+		do
+			if query_values = Void then
+				create query_values.make
+			else
+				query_values.wipe_out
+			end
+
+			if query_status = Void then
+				create query_status.make
+			else
+				query_status.wipe_out
 			end
 		end
 
@@ -1232,6 +1349,70 @@ feature -- Predicate evaluation
 
 	primitive_types: HASH_TABLE [INTEGER, STRING]
 			-- Names for primitive types
+
+feature -- Test case serialization
+
+	test_case_serializer: ITP_TEST_CASE_SERIALIZER
+			-- Test case serializer
+
+	is_test_case_serialization_enabled: BOOLEAN is True
+			-- Is test case serialization enabled?
+
+	supported_query_names (o: ANY): LINKED_LIST [STRING] is
+			-- Suported query names for `o' for state retrieval
+		require
+			o_attached: o /= Void
+		deferred
+		ensure
+			result_attached: Result /= Void
+		end
+
+	initialize_supported_query_name_table is
+			-- Initialize `supported_query_name_table'.
+		deferred
+		end
+
+	supported_query_name_table: HASH_TABLE [LINKED_LIST [STRING], INTEGER]
+			-- Table for supported query names
+			-- Key is an integer representing different types,
+			-- Value is a list of supported query names.
+
+	retrieve_test_case_prestate (a_data: detachable ANY) is
+			-- Retrieve prestate of operands for the test case to be executed next.
+			-- Store serialized objects in `serialized_objects' and
+			-- object state information on `objects_summary'.
+		local
+			l_serializer: like test_case_serializer
+		do
+			l_serializer := test_case_serializer
+			l_serializer.set_is_test_case_valid (False)
+
+			if is_test_case_serialization_enabled then
+				if attached {detachable ARRAY [detachable ANY]} a_data as l_extra_data then
+					l_serializer.setup_test_case (l_extra_data.item (extra_data_index_test_case_serialization))
+
+					if l_serializer.is_test_case_valid then
+						l_serializer.retrieve_pre_state
+					end
+				end
+			end
+		end
+
+	retrieve_post_test_case_state is
+			-- Retrieve post test case state.		
+		do
+			if is_test_case_serialization_enabled and then test_case_serializer.is_test_case_valid then
+				test_case_serializer.retrieve_post_state
+			end
+		end
+
+	log_test_case_serialization is
+			-- Log serialization of the last test case into log file.
+		do
+			if is_test_case_serialization_enabled and then test_case_serializer.is_test_case_valid then
+				log_message (test_case_serializer.string_representation)
+			end
+		end
 
 invariant
 	log_file_open_write: log_file.is_open_write

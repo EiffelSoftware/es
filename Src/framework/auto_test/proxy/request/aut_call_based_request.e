@@ -71,6 +71,11 @@ feature -- Access
 		deferred
 		end
 
+	operand_types: SPECIAL [STRING] is
+			-- Typss of operands
+		deferred
+		end
+
 feature -- Status report
 
 	is_setup_ready: BOOLEAN

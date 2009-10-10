@@ -118,6 +118,48 @@ feature -- Access
 			end
 		end
 
+	operand_types: SPECIAL [STRING] is
+			-- Typss of operands
+		local
+			l_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			l_target_type: TYPE_A
+			i: INTEGER
+		do
+			l_target_type := target_type
+			l_count := 1
+			if is_feature_query then
+				l_count := l_count + 1
+			end
+			if argument_list /= Void then
+				l_count := l_count + argument_list.count
+			end
+
+			create Result.make (l_count)
+			Result.put (l_target_type.name, 0)
+
+			if argument_count > 0 then
+				l_args := feature_to_call.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					Result.put (l_args.item_for_iteration.instantiation_in (l_target_type, l_target_type.associated_class.class_id).actual_type.name, i)
+					l_args.forth
+					i := i + 1
+				end
+				l_args.go_to (l_cursor)
+			end
+
+			if is_feature_query then
+				Result.put (feature_to_call.type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).actual_type.name, l_count - 1)
+			end
+		end
+
 feature -- Settings
 
 	set_target_type (a_type: like target_type)

@@ -48,6 +48,14 @@ feature -- AutoTest socket reponse flags
 	object_is_void_flag: NATURAL_8 = 4
 			-- Flag to indicate that the object involed in state query is void
 
+feature -- Index for extra data
+
+	extra_data_index_precondition_satisfaction: INTEGER is 1
+			-- Index for precondition satisfaction
+
+	extra_data_index_test_case_serialization: INTEGER is 2
+			-- Index for test case serialization on the fly
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

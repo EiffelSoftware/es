@@ -284,6 +284,13 @@ feature -- Object State Exploration
 		deferred
 		end
 
+feature -- Test case serialization
+
+	is_test_case_serialization_enabled: BOOLEAN is
+			-- Is test case serialization enabled?
+		deferred
+		end
+
 feature -- Types under test
 
 	types_under_test: DS_LIST [CL_TYPE_A]

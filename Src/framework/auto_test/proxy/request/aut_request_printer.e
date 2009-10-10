@@ -631,20 +631,24 @@ feature{NONE} -- Precondition satisfaction
 		local
 			l_config: TEST_GENERATOR_CONF_I
 			l_array: ARRAY [detachable ANY]
+			l_is_extra_data_needed: BOOLEAN
 		do
---			if is_extra_data_needed then
-				create l_array.make (1, 10)
-				l_config := interpreter.configuration
+			l_config := interpreter.configuration
+			l_is_extra_data_needed :=
+				l_config.is_precondition_checking_enabled or
+				l_config.is_test_case_serialization_enabled
 
+			if l_is_extra_data_needed then
+				create l_array.make (1, 2)
 					-- Setup data for precondition satisfaction.
 				if l_config.is_precondition_checking_enabled then
 					setup_extra_data_for_precondition_satisfaction (a_request, l_array)
 				end
 
---				if l_config.is_test_case_serialization_enabled then
+				if l_config.is_test_case_serialization_enabled then
 					setup_extra_data_for_test_case_serialization (a_request, l_array)
---				end
---			end
+				end
+			end
 			Result := l_array
 		end
 
@@ -658,18 +662,31 @@ feature{NONE} -- Precondition satisfaction
 			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
 			l_variable: ITP_VARIABLE
 			l_operands: SPECIAL [INTEGER]
+			l_is_creation: BOOLEAN
+			l_is_query: BOOLEAN
 		do
 			if
 				a_data /= Void and then
-				interpreter.configuration.is_precondition_checking_enabled and then
-				a_request.feature_id > 0 and then
-				relevant_predicate_with_operand_table.has (a_request.feature_id)
+				interpreter.configuration.is_test_case_serialization_enabled and then
+				a_request.feature_id > 0
 			then
+				if attached {AUT_CREATE_OBJECT_REQUEST} a_request as l_request then
+					l_is_creation := True
+				end
+
+				if attached {AUT_INVOKE_FEATURE_REQUEST} a_request as l_request then
+					l_is_query := l_request.receiver /= Void
+				end
+
 				a_data.put (
 					[a_request.target_type.associated_class.name,
 					a_request.feature_to_call.feature_name,
 					a_request.test_case_index,
-					a_request.operand_indexes],
+					a_request.operand_indexes,
+					a_request.operand_types,
+					a_request.argument_count,
+					l_is_creation,
+					l_is_query],
 					extra_data_index_test_case_serialization)
 			end
 		end

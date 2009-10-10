@@ -70,6 +70,7 @@ feature{NONE} -- Initialization
 			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
 			l_integer_bound_option: AP_STRING_OPTION
 			l_use_random_cursor_option: AP_FLAG
+			l_test_case_serialization_option: AP_FLAG
 			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
@@ -231,6 +232,10 @@ feature{NONE} -- Initialization
 			create l_use_random_cursor_option.make_with_long_form ("use-random-cursor")
 			l_use_random_cursor_option.set_description ("When searching in predicate pool, should random cursor be used? Default is False.")
 			parser.options.force_last (l_use_random_cursor_option)
+
+			create l_test_case_serialization_option.make_with_long_form ("serialization")
+			l_test_case_serialization_option.set_description ("Enable test case serialization. When enabled, Default is False.")
+			parser.options.force_last (l_test_case_serialization_option)
 
 			parser.parse_list (a_arguments)
 
@@ -483,6 +488,10 @@ feature{NONE} -- Initialization
 				is_random_cursor_used := l_use_random_cursor_option.was_found
 			end
 
+			if not error_handler.has_error then
+				is_test_case_serialization_enabled := l_test_case_serialization_option.was_found
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -696,6 +705,10 @@ feature -- Status report
 
 	is_random_cursor_used: BOOLEAN
 			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+
+	is_test_case_serialization_enabled: BOOLEAN
+			-- Is test case serialization enabled?
 			-- Default: False
 
 feature {NONE} -- Constants

@@ -191,6 +191,8 @@ feature -- Execution
 
 				l_conf.set_is_random_cursor_used (l_ap.is_random_cursor_used)
 
+				l_conf.set_is_test_case_serialization_enabled (l_ap.is_test_case_serialization_enabled)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

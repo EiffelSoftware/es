@@ -93,6 +93,38 @@ feature -- Access
 			end
 		end
 
+	operand_types: SPECIAL [STRING] is
+			-- Typss of operands
+		local
+			l_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			l_target_type: TYPE_A
+			i: INTEGER
+		do
+			l_target_type := target_type
+			l_count := argument_list.count + 1
+
+			create Result.make (l_count)
+			Result.put (l_target_type.name, 0)
+
+			if argument_count > 0 then
+				l_args := creation_procedure.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					Result.put (l_args.item_for_iteration.instantiation_in (l_target_type, l_target_type.associated_class.class_id).actual_type.name, i)
+					l_args.forth
+					i := i + 1
+				end
+				l_args.go_to (l_cursor)
+			end
+		end
+
 feature -- Processing
 
 	process (a_processor: AUT_REQUEST_PROCESSOR)

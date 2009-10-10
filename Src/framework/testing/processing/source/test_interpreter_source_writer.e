@@ -129,6 +129,9 @@ feature -- Basic operations
 				-- Generate predicate related routines
 			put_predicate_related_routines
 
+				-- Generate routines for test case serialization
+			put_test_case_serialization_routines (a_type_list)
+
 			put_class_footer
 			stream := Void
 		end
@@ -259,10 +262,9 @@ feature {NONE} -- Implementation
 
 feature -- Object state retrieval
 
-	put_object_state_routines (a_types: attached DS_LINEAR [STRING]) is
-			-- Generate routines to support object state retrieval.
-			-- Note: If the recording from byte-code works, this feature should be removed.
-			-- This is a walkaround for the moment. 4.10.2009 Jasonw
+	topologically_sorted_classes_info (a_types: attached DS_LINEAR [STRING]): LINKED_LIST [TUPLE [class_name: STRING; type: TYPE_A; type_name: STRING]] is
+			-- Information of classes from `a_types', topologically sorted by inheritance relation.
+			-- The most specific class appears at the beginning of the list.
 		local
 			l_class_info: LINKED_LIST [TUPLE [a_class_name: STRING; a_type: TYPE_A; a_type_name: STRING]]
 			l_class: CLASS_C
@@ -275,59 +277,80 @@ feature -- Object state retrieval
 			l_sorted_classes: DS_ARRAYED_LIST [CLASS_C]
 			l_class_type: STRING
 		do
-			if configuration.is_object_state_retrieval_enabled or else configuration.is_precondition_checking_enabled then
-					-- Get the list of classes whose state should be recorded.
-				create l_processed.make (50)
-				l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
-					agent (a, b: CLASS_C): BOOLEAN do Result := a.class_id = b.class_id end))
-				from
-					a_types.start
-				until
-					a_types.after
-				loop
-					l_classi := universe.classes_with_name (a_types.item_for_iteration.as_upper)
-					if not l_classi.is_empty  then
-						l_class := l_classi.first.compiled_representation
-						l_list := l_class.suppliers.classes.twin
-						l_list.extend (l_class)
-						from
-							l_list.start
-						until
-							l_list.after
-						loop
-							if not l_processed.has (l_list.item_for_iteration) then
-								l_processed.force_last (l_list.item_for_iteration)
-								l_class_name := l_list.item_for_iteration.name_in_upper
-								l_type := l_list.item_for_iteration.actual_type
-							end
-							l_list.forth
+				-- Get the list of classes whose state should be recorded.
+			create l_processed.make (50)
+			l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
+				agent (a, b: CLASS_C): BOOLEAN do Result := a.class_id = b.class_id end))
+			from
+				a_types.start
+			until
+				a_types.after
+			loop
+				l_classi := universe.classes_with_name (a_types.item_for_iteration.as_upper)
+				if not l_classi.is_empty  then
+					l_class := l_classi.first.compiled_representation
+					l_list := l_class.suppliers.classes.twin
+					l_list.extend (l_class)
+					from
+						l_list.start
+					until
+						l_list.after
+					loop
+						if not l_processed.has (l_list.item_for_iteration) then
+							l_processed.force_last (l_list.item_for_iteration)
+							l_class_name := l_list.item_for_iteration.name_in_upper
+							l_type := l_list.item_for_iteration.actual_type
 						end
+						l_list.forth
 					end
-					a_types.forth
 				end
+				a_types.forth
+			end
 
-					-- Topologically sort classes, so more specific classes
-					-- appear first.
-				create l_class_info.make
-				l_sorted_classes := topologically_sorted_classes (l_processed)
-				from
-					l_sorted_classes.start
-				until
-					l_sorted_classes.after
-				loop
-					l_class_name := l_sorted_classes.item_for_iteration.name_in_upper
-					l_type := l_sorted_classes.item_for_iteration.actual_type
-					l_class_type := full_type_name (l_class_name, root_class)
-					check l_class_name /= Void end
-					check l_type /= Void end
-					if l_class_type /= Void then
-						l_class_info.extend ([l_class_name, l_type, l_class_type])
-					end
-					l_sorted_classes.forth
+				-- Topologically sort classes, so more specific classes
+				-- appear first.
+			create l_class_info.make
+			l_sorted_classes := topologically_sorted_classes (l_processed)
+			from
+				l_sorted_classes.start
+			until
+				l_sorted_classes.after
+			loop
+				l_class_name := l_sorted_classes.item_for_iteration.name_in_upper
+				l_type := l_sorted_classes.item_for_iteration.actual_type
+				l_class_type := full_type_name (l_class_name, root_class)
+				check l_class_name /= Void end
+				check l_type /= Void end
+				if l_class_type /= Void then
+					l_class_info.extend ([l_class_name, l_type, l_class_type])
 				end
+				l_sorted_classes.forth
+			end
+			Result := l_class_info
+		end
+
+	is_object_state_retrieval_needed: BOOLEAN is
+			-- Is object state retrieval needed?
+		do
+			Result :=
+				configuration.is_object_state_retrieval_enabled or
+				configuration.is_precondition_checking_enabled or
+				configuration.is_test_case_serialization_enabled
+		end
+
+	put_object_state_routines (a_types: attached DS_LINEAR [STRING]) is
+			-- Generate routines to support object state retrieval.
+			-- Note: If the recording from byte-code works, this feature should be removed.
+			-- This is a walkaround for the moment. 4.10.2009 Jasonw
+		local
+			l_class_info: LINKED_LIST [TUPLE [a_class_name: STRING; a_type: TYPE_A; a_type_name: STRING]]
+		do
+			if is_object_state_retrieval_needed then
+				l_class_info := topologically_sorted_classes_info (a_types)
 
 					-- Generate routines to record states.
 				put_record_queries_routine (l_class_info)
+
 				from
 					l_class_info.start
 				until
@@ -827,6 +850,17 @@ feature -- Predicate evaluation
 		do
 			create l_writer.make (configuration, stream)
 			l_writer.generate_predicates
+		end
+
+feature -- Test case serialization
+
+	put_test_case_serialization_routines (a_types: DS_LINEAR [STRING]) is
+			-- Generate routines for test case serialization.
+		local
+			l_writer: AUT_TEST_CASE_SERIALIZATION_WRITER
+		do
+			create l_writer.make (configuration, stream, topologically_sorted_classes_info (a_types))
+			l_writer.generate
 		end
 
 note

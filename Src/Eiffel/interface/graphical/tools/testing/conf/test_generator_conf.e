@@ -286,7 +286,10 @@ feature -- Access: cache
 			-- Cache for `integer_upper_bound'
 
 	is_random_cursor_used_cache: BOOLEAN
-			-- Cache for `is_random_cursor_used'			
+			-- Cache for `is_random_cursor_used'
+
+	is_test_case_serialization_enabled_cache: BOOLEAN
+			-- Cache for `is_test_case_serialization_enabled'			
 
 feature -- Status report
 
@@ -430,6 +433,16 @@ feature -- Object State Exploration
 			Result := is_citadel_test_generation_enabled_cache
 		ensure then
 			result_set: Result = is_citadel_test_generation_enabled_cache
+		end
+
+feature -- Test case serialization
+
+	is_test_case_serialization_enabled: BOOLEAN is
+			-- Is test case serialization enabled?
+		do
+			Result := is_test_case_serialization_enabled_cache
+		ensure then
+			result_set: Result = is_test_case_serialization_enabled_cache
 		end
 
 feature -- Status setting
@@ -677,6 +690,14 @@ feature -- Status setting
 			is_random_cursor_used_cache := b
 		ensure
 			is_random_cursor_used_set: is_random_cursor_used = b
+		end
+
+	set_is_test_case_serialization_enabled (b: BOOLEAN) is
+			-- Set `is_test_case_serialization_enabled' with `b'.
+		do
+			is_test_case_serialization_enabled_cache := b
+		ensure
+			is_test_case_serialization_enabled_set: is_test_case_serialization_enabled = b
 		end
 
 note
