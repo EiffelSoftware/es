@@ -667,15 +667,14 @@ feature{NONE} -- Precondition satisfaction
 		do
 			if
 				a_data /= Void and then
-				interpreter.configuration.is_test_case_serialization_enabled and then
-				a_request.feature_id > 0
+				interpreter.configuration.is_test_case_serialization_enabled
 			then
 				if attached {AUT_CREATE_OBJECT_REQUEST} a_request as l_request then
 					l_is_creation := True
 				end
 
-				if attached {AUT_INVOKE_FEATURE_REQUEST} a_request as l_request then
-					l_is_query := l_request.receiver /= Void
+				if attached {AUT_INVOKE_FEATURE_REQUEST} a_request as q_request then
+					l_is_query := q_request.receiver /= Void
 				end
 
 				a_data.put (
