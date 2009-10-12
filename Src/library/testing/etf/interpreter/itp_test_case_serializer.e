@@ -10,6 +10,8 @@ class
 inherit
 	ITP_SHARED_CONSTANTS
 
+	EQA_TEST_CASE_SERIALIZATION_UTILITY
+
 create
 	make
 
@@ -123,12 +125,14 @@ feature -- Access
 				Result.append ("</object_state>%N")
 
 					-- Synthesize serialization
-				Result.append ("<data>%N<![CDATA[%N")
+				Result.append ("<data_length>")
+				Result.append (object_serialization.count.out)
+				Result.append ("</data_length>%N")
+				Result.append ("<data><![CDATA[")
 				if object_serialization /= Void then
 					Result.append (object_serialization)
 				end
-				Result.append ("%N]]>%N</data>%N")
-
+				Result.append ("]]></data>%N")
 				Result.append ("%N</serialization>%N")
 			else
 				create Result.make_empty
@@ -244,13 +248,15 @@ feature -- Basic operations
 			l_upper: INTEGER
 		do
 			if is_test_case_valid then
+
 				if is_creation then
 					l_lower := 1
+					l_upper := argument_count
 				else
 					l_lower := 0
+					l_upper := l_lower + argument_count
 				end
-				l_upper := l_lower + argument_count - 1
-				object_serialization := serialized_objects (operands, l_lower, l_upper)
+				object_serialization := objects_as_string (operands, l_lower, l_upper)
 			else
 				object_serialization := Void
 			end
@@ -304,7 +310,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	serialized_objects (a_objects: SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): STRING is
+	objects_as_string (a_objects: SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): STRING is
 			-- Serialized version of objects whose ID are specified by `a_objects' starting from
 			-- position `a_lower' and ending at position `a_upper'.
 		local
@@ -322,32 +328,8 @@ feature{NONE} -- Implementation
 				l.put (l_interpreter.variable_at_index (a_objects.item (i)), i - a_lower)
 				i := i + 1
 			end
-			Result := serialize (l)
+			Result := serialized_object (l)
 		end
-
-	serialize (a_object: ANY): STRING is
-	        -- Serialize `a_object'.
-	    require
-	        a_object_not_void: a_object /= Void
-	    local
-	        l_sed_rw: SED_MEMORY_READER_WRITER
-	        l_sed_ser: SED_INDEPENDENT_SERIALIZER
-	        l_cstring: C_STRING
-	        l_cnt: INTEGER
-	    do
-	        create l_sed_rw.make
-	        l_sed_rw.set_for_writing
-	        create l_sed_ser.make (l_sed_rw)
-	        l_sed_ser.set_root_object (a_object)
-	        l_sed_ser.encode
-	            -- the `count' gives us the number of bytes
-	            -- we have to read and put into the string.
-	        l_cnt := l_sed_rw.count
-	        create l_cstring.make_by_pointer_and_count (l_sed_rw.buffer.item, l_cnt)
-	        Result := l_cstring.substring (1, l_cnt)
-	    ensure
-	        serialize_not_void: Result /= Void
-	    end
 
 invariant
 	interpreter_attached: interpreter /= Void

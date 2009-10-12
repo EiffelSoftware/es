@@ -1408,8 +1408,13 @@ feature -- Test case serialization
 
 	log_test_case_serialization is
 			-- Log serialization of the last test case into log file.
+		local
+			l_f: RAW_FILE
 		do
 			if is_test_case_serialization_enabled and then test_case_serializer.is_test_case_valid then
+				create l_f.make_open_read_append ("/home/jasonw/temp/log.txt")
+				l_f.put_string (test_case_serializer.string_representation)
+				l_f.close
 				log_message (test_case_serializer.string_representation)
 			end
 		end
