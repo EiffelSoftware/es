@@ -84,6 +84,7 @@ feature {NONE} -- Initialization
 			a_system: like system;
 			an_interpreter_log_filename: STRING;
 			a_proxy_log_filename: STRING;
+			a_serialization_file_name: STRING;
 			a_error_handler: like error_handler;
 			a_config: like configuration)
 			-- Create a new proxy for the interpreter found at `an_executable_file_name'.
@@ -92,6 +93,7 @@ feature {NONE} -- Initialization
 			a_system_not_void: a_system /= Void
 			an_interpreter_log_filename_not_void: an_interpreter_log_filename /= Void
 			a_proxy_log_filename_not_void: a_proxy_log_filename /= Void
+			a_serialization_file_name_attached: a_serialization_file_name /= Void
 			a_error_handler_not_void: a_error_handler /= Void
 			interpreter_root_class_attached: interpreter_root_class /= Void
 		local
@@ -129,6 +131,7 @@ feature {NONE} -- Initialization
 			executable_file_name := an_executable_file_name
 			melt_path := file_system.dirname (executable_file_name)
 			interpreter_log_filename := an_interpreter_log_filename
+			test_case_serialization_filename := a_serialization_file_name.twin
 			create proxy_log_file.make (a_proxy_log_filename)
 			proxy_log_file.open_write
 
@@ -158,6 +161,7 @@ feature {NONE} -- Initialization
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
 			proxy_log_file_created: proxy_log_file /= Void
+			test_case_serialization_filename_set: test_case_serialization_filename.is_equal (a_serialization_file_name)
 			error_handler_set: error_handler = a_error_handler
 			timeout_set: timeout = default_timeout
 			is_logging_enabled: is_logging_enabled
@@ -1098,7 +1102,11 @@ feature{NONE} -- Process scheduling
 
 				-- We need `injected_feature_body_id'-1 because the underlying C array is 0-based.
 			l_body_id := injected_feature_body_id - 1
-			create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+			if configuration.is_test_case_serialization_enabled then
+				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, test_case_serialization_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+			else
+				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+			end
 
 			l_workdir := system.lace.directory_name
 			create process.make (executable_file_name, arguments, l_workdir)
@@ -1414,6 +1422,9 @@ feature {NONE} -- Implementation
 
 	interpreter_log_filename: STRING
 			-- File name of the interpreters log
+
+	test_case_serialization_filename: STRING
+			-- Name of the file to store serialized test cases
 
 	melt_path: STRING
 			-- Path where melt file of test client resides

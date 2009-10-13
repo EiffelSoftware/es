@@ -98,6 +98,7 @@ feature -- Generation
 					system,
 					file_system.pathname (a_log_dirname, "interpreter_log.txt"),
 					file_system.pathname (a_log_dirname, "proxy_log.txt"),
+					file_system.pathname (a_log_dirname, "serialization.txt"),
 					session.error_handler,
 					a_config)
 				l_new.add_observer (session.error_handler)

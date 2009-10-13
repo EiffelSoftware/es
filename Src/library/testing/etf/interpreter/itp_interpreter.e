@@ -43,8 +43,9 @@ feature {NONE} -- Initialization
 			l_log_filename: STRING
 			l_server_url: STRING
 			l_port: INTEGER
+			l_tc_serialization_file_name: STRING
 		do
-			if argument_count /= 5 then
+			if argument_count < 5 then
 				check Wrong_number_of_arguments: False end
 			end
 				-- Read command line argument
@@ -53,6 +54,13 @@ feature {NONE} -- Initialization
 			byte_code_feature_body_id := argument (3).to_integer
 			byte_code_feature_pattern_id := argument (4).to_integer
 			l_log_filename := argument (5)
+
+				-- Setup file to store serialized test case.
+			if argument_count = 6 then
+				l_tc_serialization_file_name := argument (6)
+			else
+				l_tc_serialization_file_name := ""
+			end
 
 				-- Redirect standard output to `output_buffer'.
 			create output_buffer.make (buffer_size)
@@ -76,6 +84,15 @@ feature {NONE} -- Initialization
 				die (1)
 			end
 
+				-- Create file for serialized test cases.
+			if not l_tc_serialization_file_name.is_empty then
+				create test_case_serialization_file.make_open_append (l_tc_serialization_file_name)
+				if not test_case_serialization_file.is_open_write then
+					report_error ("could not open test case serialization file '" + l_tc_serialization_file_name + "'.")
+					die (1)
+				end
+			end
+
 				-- Initialize precondition table.
 			initialize_precondition_table
 
@@ -89,8 +106,14 @@ feature {NONE} -- Initialization
 			create test_case_serializer.make (Current)
 
 			start (l_port, (create {INET_ADDRESS_FACTORY}).create_loopback)
+
 				-- Close log file.
 			log_file.close
+
+				-- Close test case serialization file.
+			if test_case_serialization_file /= Void then
+				test_case_serialization_file.close
+			end
 		end
 
 	start (a_port: INTEGER; a_server_url: INET_ADDRESS)
@@ -1352,11 +1375,11 @@ feature -- Predicate evaluation
 
 feature -- Test case serialization
 
+	test_case_serialization_file: detachable RAW_FILE
+			-- File to store serialized test cases.
+
 	test_case_serializer: ITP_TEST_CASE_SERIALIZER
 			-- Test case serializer
-
-	is_test_case_serialization_enabled: BOOLEAN is True
-			-- Is test case serialization enabled?
 
 	supported_query_names (o: ANY): LINKED_LIST [STRING] is
 			-- Suported query names for `o' for state retrieval
@@ -1387,13 +1410,11 @@ feature -- Test case serialization
 			l_serializer := test_case_serializer
 			l_serializer.set_is_test_case_valid (False)
 
-			if is_test_case_serialization_enabled then
-				if attached {detachable ARRAY [detachable ANY]} a_data as l_extra_data then
-					l_serializer.setup_test_case (l_extra_data.item (extra_data_index_test_case_serialization))
+			if attached {detachable ARRAY [detachable ANY]} a_data as l_extra_data then
+				l_serializer.setup_test_case (l_extra_data.item (extra_data_index_test_case_serialization))
 
-					if l_serializer.is_test_case_valid then
-						l_serializer.retrieve_pre_state
-					end
+				if l_serializer.is_test_case_valid then
+					l_serializer.retrieve_pre_state
 				end
 			end
 		end
@@ -1401,21 +1422,16 @@ feature -- Test case serialization
 	retrieve_post_test_case_state is
 			-- Retrieve post test case state.		
 		do
-			if is_test_case_serialization_enabled and then test_case_serializer.is_test_case_valid then
+			if test_case_serializer.is_test_case_valid then
 				test_case_serializer.retrieve_post_state
 			end
 		end
 
 	log_test_case_serialization is
 			-- Log serialization of the last test case into log file.
-		local
-			l_f: RAW_FILE
 		do
-			if is_test_case_serialization_enabled and then test_case_serializer.is_test_case_valid then
-				create l_f.make_open_read_append ("/home/jasonw/temp/log.txt")
-				l_f.put_string (test_case_serializer.string_representation)
-				l_f.close
-				log_message (test_case_serializer.string_representation)
+			if test_case_serializer.is_test_case_valid then
+				test_case_serialization_file.put_string (test_case_serializer.string_representation)
 			end
 		end
 
