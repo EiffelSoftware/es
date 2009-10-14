@@ -221,23 +221,53 @@ feature -- Basic operations
 				l_operands := operands
 				l_interpreter := interpreter
 				from
-					l_upper := argument_count
-					if is_query then
+					if is_creation then
 						i := 1
+						l_upper := argument_count
 					else
 						i := 0
+						l_upper := argument_count
 					end
 					create l_summary .make (l_upper - i + 1)
 				until
 					i > l_upper
 				loop
-					l_summary.put (l_interpreter.object_summary (l_operands.item (i)) , i)
+					l_summary.put (commented_string (l_interpreter.object_summary (l_operands.item (i))) , i)
 					i := i + 1
 				end
 				object_summary := l_summary
 			else
 				object_summary := Void
 			end
+		end
+
+	commented_string (a_string: STRING): STRING is
+			-- A commented version of `a_string', with every line lead by "--"
+		require
+			a_string_attached: a_string /= Void
+		local
+			l_lines: LIST [STRING]
+			l_header: STRING
+			l_line: STRING
+		do
+			l_header := "--"
+			l_lines := a_string.split ('%N')
+			create Result.make (a_string.count + 10)
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				l_line := l_lines.item_for_iteration
+				if not l_line.is_empty then
+					l_line.prepend (l_header)
+					l_line.extend ('%N')
+					Result.append (l_line)
+				end
+				l_lines.forth
+			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 	retrieve_object_serialization is

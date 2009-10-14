@@ -770,22 +770,21 @@ feature -- Object state checking
 			l_values: like query_values
 			l_status: like query_status
 			l_queries: LINKED_LIST [STRING]
-			l_value: STRING
+			l_value: detachable STRING
 		do
 			if not l_retried then
 				create Result.make (256)
 				initialize_query_value_holders
 				o := variable_at_index (a_object_index)
-				if o /= Void then
-					check_invariant (a_object_index, o)
-				end
-				record_object_queries (a_object_index, o)
-				Result.append ("-- v_" + a_object_index.out)
+				Result.append (" v_" + a_object_index.out)
 				if o = Void then
-					Result.append (" is Void.%N")
+					Result.append (": [[Void]], [[]]%N")
 				else
-					Result.append (": " + o.generating_type)
-					Result.append ("%N")
+					check_invariant (a_object_index, o)
+					Result.append (": [[" + o.generating_type + "]], [[")
+					Result.append (supported_query_types (o))
+					Result.append ("]]%N")
+					record_object_queries (a_object_index, o)
 
 					l_values := query_values
 					l_status := query_status
@@ -798,17 +797,18 @@ feature -- Object state checking
 						until
 							l_values.after
 						loop
-							Result.append ("--    ")
+							Result.append ("|")
 							Result.append (l_queries.item_for_iteration)
 							Result.append (" = ")
 							if l_status.item_for_iteration then
-								l_value := l_values.item_for_iteration.twin
-								l_value.replace_substring_all ("%N", "%%N")
-								l_value.replace_substring_all ("%R", "%%R")
+								l_value := l_values.item_for_iteration
+								if l_value = Void then
+									l_value := "[[Void]]"
+								end
 								Result.append (l_value)
 								Result.append ("%N")
 							else
-								Result.append ("__error__%N")
+								Result.append ("[[Error]]%N")
 							end
 							l_values.forth
 							l_status.forth
@@ -818,6 +818,8 @@ feature -- Object state checking
 				end
 			else
 				create Result.make (64)
+				Result.append (" v_" + a_object_index.out)
+				Result.append (": [[Invariant_violation]], [[]]%N")
 			end
 		ensure
 			result_attached: Result /= Void
@@ -976,21 +978,9 @@ feature -- Object state checking
 			-- Record the query "out" of `a_any'.
 		local
 			l_retried: BOOLEAN
-			l_result: detachable ANY
-			l_str_result: detachable STRING
 		do
 			if not l_retried then
-				l_result := a_any.out
-				if l_result = Void then
-					l_str_result := Void
-				else
-					if reference_type_output_format = value_as_string then
-						l_str_result := l_result.out
-					elseif reference_type_output_format = value_as_address then
-						l_str_result := ($l_result).out
-					end
-				end
-				query_values.extend (l_str_result)
+				query_values.extend (a_any.out)
 				query_status.extend (True)
 			end
 		rescue
@@ -1390,6 +1380,15 @@ feature -- Test case serialization
 			result_attached: Result /= Void
 		end
 
+	supported_query_types (o: ANY): STRING is
+			-- Suported query types for `o' for state retrieval
+		require
+			o_attached: o /= Void
+		deferred
+		ensure
+			result_attached: Result /= Void
+		end
+
 	initialize_supported_query_name_table is
 			-- Initialize `supported_query_name_table'.
 		deferred
@@ -1399,6 +1398,16 @@ feature -- Test case serialization
 			-- Table for supported query names
 			-- Key is an integer representing different types,
 			-- Value is a list of supported query names.
+
+	supported_query_type_table: HASH_TABLE [STRING, INTEGER]
+			-- Table for type of supported query names.
+			-- Key is an integer representing different types,
+			-- Value is a string containing the query types, for example,
+			-- if there are 4 queries supported for a type, the first 3 queries are
+			-- of type INTEGER and then fourth query is of type BOOLEAN, the string
+			-- will be "iiib".
+			-- 'i' for INTEGER types
+			-- 'b' for BOOLEAN types
 
 	retrieve_test_case_prestate (a_data: detachable ANY) is
 			-- Retrieve prestate of operands for the test case to be executed next.

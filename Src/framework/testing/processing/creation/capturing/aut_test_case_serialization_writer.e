@@ -52,6 +52,7 @@ feature -- Generation
 			-- Generate routines needed by test case serialization.
 		do
 			generate_supported_query_names_routine
+			generate_supported_query_type_routine
 			generate_initialize_supported_query_name_table_routine
 		end
 
@@ -60,6 +61,9 @@ feature -- Generation
 		local
 			l_cursor: CURSOR
 			l_queries: LIST [FEATURE_I]
+			l_signature: STRING
+			l_feat: E_FEATURE
+			l_type: TYPE_A
 		do
 			stream.indent
 			stream.put_line ("initialize_supported_query_name_table is")
@@ -73,7 +77,11 @@ feature -- Generation
 			stream.put_string ("create supported_query_name_table.make (")
 			stream.put_string ((class_info.count + 1).out)
 			stream.put_line (")")
+			stream.put_string ("create supported_query_type_table.make (")
+			stream.put_string ((class_info.count + 1).out)
+			stream.put_line (")")
 			stream.put_line ("supported_query_name_table.put (create {LINKED_LIST [STRING]}.make, 0)")
+			stream.put_line ("supported_query_type_table.put (%"%", 0)")
 
 			if configuration.is_test_case_serialization_enabled then
 				l_cursor := class_info.cursor
@@ -82,19 +90,47 @@ feature -- Generation
 				until
 					class_info.after
 				loop
+					stream.put_string ("%T-- For class ")
+					stream.put_line (class_info.item_for_iteration.class_name)
 					stream.put_line ("create l.make")
 					l_queries := supported_queries_of_type (class_info.item.type)
+					create l_signature.make (64)
 					from
 						l_queries.start
 					until
 						l_queries.after
 					loop
 						stream.put_string ("l.extend (%"")
+						l_feat := l_queries.item_for_iteration.e_feature
+
+						l_type := l_feat.type.instantiation_in (l_feat.associated_class.actual_type, l_feat.associated_class.class_id).actual_type
+						if l_type.is_boolean then
+							l_signature.extend ('b')
+						elseif l_type.is_integer then
+							l_signature.extend ('i')
+						elseif l_type.is_real_32 or l_type.is_real_64 then
+							l_signature.extend ('f')
+						elseif l_type.is_character or l_type.is_character_32 then
+							l_signature.extend ('c')
+						elseif l_type.is_pointer then
+							l_signature.extend ('p')
+						elseif
+							(l_type.conform_to (system.any_class.compiled_class, system.string_8_class.compiled_class.actual_type) or else
+				 			 l_type.conform_to (system.any_class.compiled_class, system.string_32_class.compiled_class.actual_type)) then
+							l_signature.extend ('s')
+						else
+							l_signature.extend ('r')
+						end
 						stream.put_string (l_queries.item_for_iteration.feature_name)
 						stream.put_line ("%")")
 						l_queries.forth
 					end
 					stream.put_string ("supported_query_name_table.put (l, ")
+					stream.put_string (class_info.index.out)
+					stream.put_line (")")
+					stream.put_string ("supported_query_type_table.put (%"")
+					stream.put_string (l_signature)
+					stream.put_string ("%", ")
 					stream.put_string (class_info.index.out)
 					stream.put_line (")")
 					stream.put_line ("")
@@ -151,6 +187,58 @@ feature -- Generation
 					class_info.go_to (l_cursor)
 				else
 					stream.put_line ("Result := supported_query_name_table.item (0)")
+				end
+				stream.dedent
+			end
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
+	generate_supported_query_type_routine is
+			-- Generate the routine `supported_query_names'.
+		local
+			l_cursor: CURSOR
+		do
+			stream.indent
+			stream.put_line ("supported_query_types (o: ANY): STRING is")
+			stream.indent
+			stream.put_line ("do")
+			if configuration.is_test_case_serialization_enabled then
+				stream.indent
+				if not class_info.is_empty then
+					l_cursor := class_info.cursor
+					from
+						class_info.start
+					until
+						class_info.after
+					loop
+						if class_info.index = 1 then
+							stream.put_string ("if ")
+						else
+							stream.put_string ("elseif ")
+						end
+						stream.put_string ("attached {")
+						stream.put_string (class_info.item.type_name)
+						stream.put_string ("} o as l_")
+						stream.put_string (class_info.index.out)
+						stream.put_line (" then")
+						stream.indent
+						stream.put_string ("Result := supported_query_type_table.item (")
+						stream.put_string (class_info.index.out)
+						stream.put_line (")")
+						stream.dedent
+						class_info.forth
+					end
+					stream.put_line ("else")
+					stream.indent
+					stream.put_line ("Result := supported_query_type_table.item (0)")
+					stream.dedent
+					stream.put_line ("end")
+					class_info.go_to (l_cursor)
+				else
+					stream.put_line ("Result := supported_query_type_table.item (0)")
 				end
 				stream.dedent
 			end

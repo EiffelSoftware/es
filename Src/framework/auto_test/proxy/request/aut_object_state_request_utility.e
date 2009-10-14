@@ -29,7 +29,8 @@ feature -- Access
 				a_type.is_real_64 or else
 				a_type.is_character or else
 				a_type.is_character_32 or else
-				a_type.is_boolean
+				a_type.is_boolean or else
+				a_type.is_pointer
 			then
 				Result.extend (a_type.associated_class.feature_named ("item"))
 			elseif
