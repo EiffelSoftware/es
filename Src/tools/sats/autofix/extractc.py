@@ -29,6 +29,8 @@ Options
                      test cases, only feature under test is available.
                      Default: "feat-under-test".
     --code           Include exception code in test case file name. Default: False
+    --recipient      Include recipient name (class and feature) in test case file name.
+                     Default: False
 '''
 
 options = {
@@ -39,7 +41,8 @@ options = {
     'output-folder': "",
     'prefix': 'TC',
     'name': 'feat-under-test',
-    'code': True
+    'code': True,
+    'recipient': False
 }
 tc_id = 1
 
@@ -171,10 +174,14 @@ def test_case_file_name (class_under_test, feature_under_test, type_of_tc, index
         
     if options['bpslot']:
         fname = fname + "_b" + str(type_of_tc['bpslot'])
+    
+    if options['recipient']:
+        fname = fname + "__REC_" + type_of_tc['class'] + "__" + type_of_tc['feature'] + "_"
         
     if options['tag']:
-        if type_of_tc[5] == "":
-            fname = fname + "_noname"
+        fname = fname + "__TAG_"
+        if type_of_tc['tag'] == "":
+            fname = fname + "noname"
         else:
             fname = fname + type_of_tc['tag']
         
@@ -187,7 +194,7 @@ def test_case_file_name (class_under_test, feature_under_test, type_of_tc, index
 # Return value is a dictionary containing the following keys: type, code, bpslot, class, feature, tag]
 # type is a string containing one of the following value: "pass", "failed", "invalid",
 # code is an integer, representing the exception code, 0 in a passing test case.
-# bpslot is an integer, representing the breakpoint slot of the exception, 0 in a passing test case.
+# bpslot is an integer, representing the breakpoint slot of the exception, 0 in a passing test case. The breakpoint is the breakpoint of the recipient.
 # class and feature are strings representing the recipient of the exception, both are empty strings in a passing test case.
 # tag is the tag name of the failed assertion. It is an empty string in a passing test case.
 def test_case_type (a_trace):
@@ -207,6 +214,9 @@ def test_case_type (a_trace):
         if invariant_violation_on_entry or (rec_feature_name.find('execute_byte_code')==0 and except_code == 3):            
             tctype = 'invalid'       
         else:
+            reg = re.compile ("@([0-9]+)", re.MULTILINE)
+            m = reg.search (a_trace)
+            bpslot = int(m.group(1))            
             tctype = 'failed'
     else:
         tctype = 'pass'
@@ -319,7 +329,8 @@ opts, args = getopt.getopt(sys.argv[1:], "h",
          "bpslot",
          "failed-only",
          "prefix=",
-         "name="
+         "name=",
+         "recipient"
          ])
 # Parse command line options.
 for option, value in opts:
@@ -338,6 +349,8 @@ for option, value in opts:
             options['name'] = value
     elif option in ('--code'):
         options['code'] = True
+    elif option in ('--recipient'):
+        options['recipient'] = True
 
 options['input-folder'] = args[0]
 options['output-folder'] = args[1]
