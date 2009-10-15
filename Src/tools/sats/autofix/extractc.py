@@ -80,9 +80,7 @@ feature{NONE} -- Implementation
     serialized_data: STRING
             -- Serialized test case
         do
-            Result := "{
-$(SERIALIZED_DATA)
-            }"
+            Result := "{___$(SERIALIZED_DATA)}___"
         end
 end
 
