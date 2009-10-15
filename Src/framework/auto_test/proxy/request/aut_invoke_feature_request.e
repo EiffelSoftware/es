@@ -148,7 +148,7 @@ feature -- Access
 				until
 					l_args.after
 				loop
-					Result.put (l_args.item_for_iteration.instantiation_in (l_target_type, l_target_type.associated_class.class_id).actual_type.name, i)
+					Result.put (l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).name, i)
 					l_args.forth
 					i := i + 1
 				end
@@ -156,7 +156,7 @@ feature -- Access
 			end
 
 			if is_feature_query then
-				Result.put (feature_to_call.type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).actual_type.name, l_count - 1)
+				Result.put (feature_to_call.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).name, l_count - 1)
 			end
 		end
 
