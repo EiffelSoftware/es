@@ -3,7 +3,7 @@ note
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
-	sl_predicate_export: "Ast(x, {content=y}) = y = const(_v) * x.<CONST_NODE.value> |-> _v"
+	sl_predicate_export: "Ast(x, {content=y}) = x.<CONST_NODE.value> |-> _v * y = const(_v)"
 
 class
 	CONST_NODE
@@ -29,11 +29,11 @@ feature
 
 	accept (v: VISITOR)
 		require else
-			--SLS-- Current: CONST_NODE * Visitor(v, {context=_z}) * Ast(Current, {content=_x})
+			--SLS-- Current: CONST_NODE * Ast(Current, {content=_x}) * Visitor(v, {context=_z})
 		do
 			v.visit_const (Current)
 		ensure then
-			--SLS-- Visited(v, {content=_x; context=_z; ast=Current})
+			--SLS-- Visited(v, {context=_z; ast=Current; content=_x})
 		end
 
 end

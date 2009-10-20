@@ -32,11 +32,11 @@ feature
 
 	accept (v: VISITOR)
 		require else
-			--SLS-- Current: PLUS_NODE * Visitor(v, {context=_z}) * Ast(Current, {content=_x})
+			--SLS-- Current: PLUS_NODE * Ast(Current, {content=_x}) * Visitor(v, {context=_z})
 		do
 			v.visit_plus (Current)
 		ensure then
-			--SLS-- Visited(v, {content=_x; context=_z; ast=Current})
+			--SLS-- Visited(v, {context=_z; ast=Current; content=_x})
 		end
 
 end

@@ -11,10 +11,10 @@ feature
 
 	accept (v: VISITOR)
 		require
-			--SL-- Visitor(v, {context=_z}) * Ast(Current, {content=_x})
+			--SL-- Ast(Current, {content=_x}) * Visitor(v, {context=_z})
 		deferred
 		ensure
-			--SL-- Visited(v, {content=_x; context=_z; ast=Current})
+			--SL-- Visited(v, {context=_z; ast=Current; content=_x})
 		end
 
 end

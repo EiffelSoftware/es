@@ -1,5 +1,5 @@
 indexing
-	description : "visitor application root class"
+	description : "bank_account application root class"
 	date        : "$Date$"
 	revision    : "$Revision$"
 
@@ -16,8 +16,7 @@ feature {NONE} -- Initialization
 
 	make
 		local
-			s: SUM_VISITOR
-			c: CLIENT
+			client: CLIENT
 		do
 			--| Add your code here
 		end

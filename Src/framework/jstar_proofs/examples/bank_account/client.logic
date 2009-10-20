@@ -1,0 +1,29 @@
+// Numeric rules
+
+rule fifty_bigger_than_zero:
+ | |- numeric_const(50) > numeric_const(0)
+if
+ | |-
+
+rule hundred_bigger_than_zero:
+ | |- numeric_const(100) > numeric_const(0)
+if
+ | |-
+
+rule two_hundred_bigger_than_zero:
+ | |- numeric_const(200) > numeric_const(0)
+if
+ | |-
+
+rule fifty_less_than_hundred:
+ | |- numeric_const(50) < numeric_const(100)
+if
+ | |-
+
+
+// Bank account rule
+
+rule same_bank_account:
+ | BA(?v1, {bal=?b1}) |- BA(?v1, {bal=?b2})
+if
+BA(?v1, {bal=?b1}) | |- ?b1=?b2
