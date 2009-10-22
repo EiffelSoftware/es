@@ -1,6 +1,6 @@
 %{
---class JS_ASSERTION_PARSER
-class JS_PREDICATE_DEFINITION_PARSER
+class JS_ASSERTION_PARSER
+--class JS_PREDICATE_DEFINITION_PARSER
 
 inherit
     YY_PARSER_SKELETON
@@ -44,8 +44,8 @@ create
 %left OROR
 %left MULT
 
---%start formula
-%start predicate_definition
+%start formula
+--%start predicate_definition
 
 %type <JS_PRED_DEF_NODE> predicate_definition
 %type <LINKED_LIST [JS_PARAM_NODE]> param_list
@@ -75,7 +75,7 @@ param_list_non_empty: param                                   { create $$.make; 
                     | param SEMICOLON param_list_non_empty    { $3.put_front ($1); $$ := $3 }
                     ;
        
-param: IDENTIFIER EQUALS variable   { create $$.make ($1, $3) }
+param: IDENTIFIER COLON variable   { create $$.make ($1, $3) }
      ;
 
 formula: TRUE_TOK                                        { create {JS_TRUE_NODE} $$.make; assertion := $$ }
@@ -121,7 +121,7 @@ fldlist: fld_equality                     { create $$.make; $$.put_front ($1) }
        | fld_equality SEMICOLON fldlist   { $3.put_front ($1); $$ := $3 }
        ;
 
-fld_equality: IDENTIFIER EQUALS argument   { create $$.make ($1, $3) }
+fld_equality: IDENTIFIER COLON argument   { create $$.make ($1, $3) }
             ;
 
 type: IDENTIFIER optional_type_params    { create $$.make ($1) }

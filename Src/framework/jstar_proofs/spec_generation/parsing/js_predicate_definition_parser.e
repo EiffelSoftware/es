@@ -360,11 +360,12 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'parser.y' at line 78")
 end
 
-create yyval4.make (yyvs2.item (yyvsp2 - 1), yyvs9.item (yyvsp9)) 
+create yyval4.make (yyvs2.item (yyvsp2), yyvs9.item (yyvsp9)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp4 := yyvsp4 + 1
-	yyvsp2 := yyvsp2 -2
+	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -1
 	yyvsp9 := yyvsp9 -1
 	if yyvsp4 >= yyvsc4 then
 		if yyvs4 = Void then
@@ -1007,11 +1008,12 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'parser.y' at line 124")
 end
 
-create yyval10.make (yyvs2.item (yyvsp2 - 1), yyvs7.item (yyvsp7)) 
+create yyval10.make (yyvs2.item (yyvsp2), yyvs7.item (yyvsp7)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp10 := yyvsp10 + 1
-	yyvsp2 := yyvsp2 -2
+	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -1
 	yyvsp7 := yyvsp7 -1
 	if yyvsp10 >= yyvsc10 then
 		if yyvs10 = Void then
@@ -1251,10 +1253,10 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			    3,    2,    1,    1,    2,    9,    2,    1,    5,    1,
-			    1,    2,    5,    4,    2,    2,    1,    1,    1,    1,
+			    1,    2,    5,    4,    2,    1,    1,    1,    1,    1,
 			    1,    2,    2,    1,    1,    6,    7,    9,    9,    5,
 			    6,    2,   11,   10,    1,    2,    1,    1,    2,    1,
-			    1,    2,    2,    2,    2,    2,    2,    1,    2,    1,
+			    1,    2,    2,    2,    2,    2,    2,    1,    1,    1,
 			    1,    2,    8,    8,    7,    1,    6,    6,    2,   13,
 			    2,   12,    7,    7,   11,    1,    1,    1,    8,    2,
 			    1,    1,    1,    8,    8,    1,    1,    7,   12,    1,
@@ -1297,10 +1299,10 @@ feature {NONE} -- Table templates
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			   64,   61,   -5,   63, -32768,   65, -32768,   59,   51,   56,
-			   62,   60,   49,   43,   23,   -5, -32768,   56, -32768,   23,
-			   47, -32768,   50, -32768,   53,  -16,   48, -32768, -32768, -32768,
-			    3,   55,   42,   38,   -8,   45,   23,   23, -32768,   58,
+			   66,   57,   -5,   64, -32768,   65, -32768,   61,   51,   55,
+			   62,   63,   49,   44,   23,   -5, -32768,   55, -32768,   23,
+			   47, -32768,   50, -32768,   52,  -16,   48, -32768, -32768, -32768,
+			    3,   59,   42,   38,   -8,   45,   23,   23, -32768,   58,
 			   13, -32768, -32768, -32768, -32768, -32768,   -8, -32768,   -8, -32768,
 			   47,   39,   35, -32768,   40,   -8,   26, -32768,   34,   28,
 			   27, -32768, -32768, -32768, -32768,   -8,    1,   -8,   18,   32,
@@ -1312,8 +1314,8 @@ feature {NONE} -- Table templates
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			 -32768, -32768,   68, -32768,  -17, -32768,  -52,   19,  -34,    2,
-			   33, -32768,   44, -32768, -32768,   -1, yyDummy>>)
+			 -32768, -32768,   68, -32768,  -17, -32768,  -52,   17,  -34,    2,
+			   36, -32768,   43, -32768, -32768,   -2, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
@@ -1326,9 +1328,9 @@ feature {NONE} -- Table templates
 			   83,   54,   84,   54,   82,   81,   77,   23,   22,   21,
 			   20,   80,   19,   76,   75,   71,    3,   37,   70,   69,
 			   67,   18,   45,   44,   43,   42,   41,   40,   65,   39,
-			   38,   66,   31,   58,   55,   50,   49,   48,   35,   34,
-			   17,   11,   15,   16,   14,    7,    9,   10,    6,    1,
-			    2,   85,    0,   64,   61,   29,   74, yyDummy>>)
+			   38,   66,   31,   58,   55,   50,   49,   35,   48,   34,
+			   11,   17,   15,   16,   14,    7,    2,   10,    9,    6,
+			   85,    1,    0,   61,   74,   29,   64, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
@@ -1341,9 +1343,9 @@ feature {NONE} -- Table templates
 			   25,   65,    7,   67,   10,   15,   70,   14,   15,   16,
 			   17,   26,   19,   11,   26,   18,   23,   21,   20,   15,
 			   10,   28,    4,    5,    6,    7,    8,    9,   19,   11,
-			   12,   26,   15,    5,   19,   27,   24,   12,   15,   19,
-			   27,   15,   12,   24,   12,   10,   17,   26,   15,   15,
-			   19,   82,   -1,   50,   40,   17,   67, yyDummy>>)
+			   12,   26,   15,    5,   19,   27,   24,   15,    9,   19,
+			   15,   27,    9,   24,   12,   10,   19,   26,   17,   15,
+			   82,   15,   -1,   40,   67,   17,   50, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks

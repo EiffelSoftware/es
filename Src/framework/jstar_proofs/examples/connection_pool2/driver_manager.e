@@ -14,7 +14,7 @@ feature
 			--SL-- True
 		deferred
 		ensure
-			--SL-- Current.<DRIVER_MANAGER.last_connection> |-> _x * DBConnection(_x, {connection=sql(Current, url, user, password)})
+			--SL-- Current.<DRIVER_MANAGER.last_connection> |-> _x * DBConnection(_x, {connection:sql(Current, url, user, password)})
 		end
 
 	last_connection: CONNECTION
