@@ -79,12 +79,56 @@ feature{NONE} -- Implementation
     
     serialized_data: STRING
             -- Serialized test case
+        local
+            l_array: ARRAY [NATURAL_8]
         do
-            Result := "{___$(SERIALIZED_DATA)}___"
+            l_array := <<
+$(SERIALIZED_INT_DATA)>>
+            
+            Result := string_from_array (l_array)
         end
+        
+    string_from_array (a_array: ARRAY [NATURAL_8]): STRING is
+            -- String from `a_array'.
+        local
+            l_lower, l_upper: INTEGER
+            i: INTEGER
+            j: INTEGER
+        do
+            l_lower := a_array.lower
+            l_upper := a_array.upper
+            create Result.make_filled (' ', l_upper - l_lower + 1)
+            from
+                j := 1
+                i := l_lower
+            until
+                i > l_upper
+            loop
+                Result.put (a_array.item (i).to_character_8, j)
+                i := i + 1
+                j := j + 1
+            end
+        end
+        
 end
 
 '''
+#Return a list of integers, each representing a character in string a_str.
+def int_list_representation (a_str):
+    l = ''
+    i = 0
+    cnt = len(a_str)
+    for c in a_str:
+        l = l + str(ord(c))
+
+        if i<cnt-1:
+            l = l + ', '
+        i = i + 1
+        
+        if i % 30 == 0:
+            l = l + '\n'
+        
+    return l
         
 # Return the generated test case file in a 3-tuple <text, tc_type, tc_file_name>
 # text is the content of the test case file.
@@ -122,6 +166,7 @@ def print_test_case (body, index_of_tc):
         text = text.replace('$(GENERATION_TYPE)', 'AutoTest test case serialization')
         text = text.replace('$(SUMMARY)', class_name + '.' + feature_name)
         text = text.replace('$(TYPES)', types + newline_char())
+        text = text.replace('$(SERIALIZED_INT_DATA)', int_list_representation (data))
         text = text.replace('$(SERIALIZED_DATA)', data)
 #        text = text.replace('$(CLASS_NAME)', tclass_name)
         text = text.replace('$(STATE_SUMMARY)', object_state)
@@ -328,7 +373,8 @@ opts, args = getopt.getopt(sys.argv[1:], "h",
          "failed-only",
          "prefix=",
          "name=",
-         "recipient"
+         "recipient",
+         "code"
          ])
 # Parse command line options.
 for option, value in opts:
