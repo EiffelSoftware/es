@@ -4,8 +4,11 @@ import getopt
 import os
 from time import time
 
-help_message = '''[options] <input_folder> <output_folder>
+help_message = '''extractc [options] <input_folder> <output_folder>
+This script generates Eiffel classes representing test cases from log files 
+in <input_folder> into folder <output_folder>.
 
+Arguments:
 <input_folder> is the folder containing files storing serialized test cases.
 <output_folder> is the folder to store deserialized test cases.
 
@@ -380,6 +383,7 @@ opts, args = getopt.getopt(sys.argv[1:], "h",
 for option, value in opts:
     if option in ('-h', '--help'):
         print help_message
+        sys.exit(0)
     elif option in ('--tag'):
         options['tag'] = True
     elif option in ('--bpslot'):
