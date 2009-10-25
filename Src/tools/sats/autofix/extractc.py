@@ -204,35 +204,46 @@ def test_case_file_name (class_under_test, feature_under_test, type_of_tc, index
     fname = options['prefix'] + "__"
     
     if options['name'] == 'feat-under-test':
-        fname = fname + class_under_test + "__" + feature_under_test + "__"
+        fname = fname + class_under_test + "__" + feature_under_test
     else:
-        fname = fname + type_of_tc['class'] + "__" + type_of_tc['feature'] + "__"
+        fname = fname + type_of_tc['class'] + "__" + type_of_tc['feature']
     
     if type_of_tc['type'] == 'pass':
-        fname = fname + "S"
+        fname = fname + "__S"
     elif type_of_tc['type'] == 'failed':
-        fname = fname + "F"
+        fname = fname + "__F"
     else:
-        fname = fname + "I"
+        fname = fname + "__I"
         
     if options['code']:
-        fname = fname + "_c" + str(type_of_tc['code'])
+        fname = fname + "__c" + str(type_of_tc['code'])
         
     if options['bpslot']:
-        fname = fname + "_b" + str(type_of_tc['bpslot'])
+        fname = fname + "__b" + str(type_of_tc['bpslot'])
     
     if options['recipient']:
-        fname = fname + "__REC_" + type_of_tc['class'] + "__" + type_of_tc['feature'] + "_"
+        rcname = type_of_tc['class']
+        if rcname == '':
+            rcname = class_under_test
+            
+        rfname = type_of_tc['feature']
+        if rfname =='':
+            rfname = feature_under_test
+            
+        fname = fname + "__REC_" + rcname + "__" + rfname
         
     if options['tag']:
         fname = fname + "__TAG_"
         if type_of_tc['tag'] == "":
             fname = fname + "noname"
         else:
-            fname = fname + type_of_tc['tag']
+            tn = type_of_tc['tag']
+            tn = tn.replace(' ', '_')
+            tn = tn.replace(':',  '_')
+            fname = fname + tn
         
     tm = str(int(time()))    
-    fname = fname + "_" + str(tm) + str (index_of_tc)
+    fname = fname + "__" + str(tm) + str (index_of_tc)
     
     return fname
     
