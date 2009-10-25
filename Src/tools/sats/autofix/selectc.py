@@ -2,6 +2,8 @@ import sys
 import re
 import getopt
 import os
+import random
+import shutil
 from time import time
 
 help_message = '''
@@ -23,9 +25,11 @@ help_message = '''
                                         'b': break point slot. 0 for successful test cases.
                                         's': test case status.
                                         't': Tag of the exception. 'noname' for successful test cases.
-                                        Default: 'fscbrt'
+                                        'x': Suffix of the file name.
+                                        Default: 'fscbrtx'
     --count <l>                   Number of test cases for each unique test case. <l> specified the number. -1 means keep all test cases.
-                                        Default: -1.                                     
+                                        Default: 1
+    --recursive                     Store test cases in folders according to the feature under test. Default: False
 '''
 
 # Default values for command line options
@@ -36,8 +40,9 @@ options={
     'bpslot': -1, 
     'status': 'sf', 
     'unique': 'r', 
-    'name': 'fscbrt', 
-    'count': -1
+    'name': 'fscbrtx', 
+    'count': 1, 
+    'recursive': False
 }
 
 # Dictionary  of found test cases. Key is the identifier of a test case, value is a list of files for test cases of the same identifier.
@@ -67,12 +72,15 @@ def traverse_folder (a_folder):
 #  status: Status of the test case, 'S' for a successful test case, 'F' for a failed one.
 #  prefix: Prefix of the test case file name, default is 'TC'.
 #  id: Identifier to determine uniqueness of a fault.
+#  full_path: Full path of the test case.
+# suffix: A random number to distinguish test case file names.
 def test_case_info (a_full_path):
     tcinfo = {}    
     
     # Parse test case file name to retrieve information about the test case.
     parts = os.path.basename (a_full_path).split('__')
     tcinfo['prefix'] = parts[0]
+    tcinfo['suffix'] = parts[len(parts)-1]
     parts.pop(0)
     parts.pop(len(parts)-1)
         
@@ -83,7 +91,7 @@ def test_case_info (a_full_path):
     while i < len(parts):
         p = parts[i]
         if p == 'S' or p == 'F':
-            tcinfo['status'] = p
+            tcinfo['status'] = p.lower()
         elif p.startswith('REC_'):
             tcinfo['recipient_class'] = p[4:]
             tcinfo['recipient'] = parts[i+1]
@@ -104,14 +112,136 @@ def test_case_info (a_full_path):
     
     id = id + '_' + str(tcinfo['code']) + '_' + str(tcinfo['bpslot']) + "_" + tcinfo['tag']
     tcinfo['id'] = id
+    tcinfo['full_path'] = a_full_path
     return tcinfo
     
     
 # Analyze test case stored in file a_full_path.
 def analyze_test_case (a_full_path):
+    global test_cases
     tcinfo = test_case_info(a_full_path)    
     is_matched = True # Should current test case specified by tcinfo be considered?
     
+    is_matched = (options['bpslot'] == -1 or options['bpslots'] == tcinfo['bpslot']) and\
+                (options['code']==-1 or options['code']==tcinfo['code']) and\
+                (options['status'].find(tcinfo['status'])>=0)
+    if is_matched:        
+        key = tcinfo['id']
+        if test_cases.has_key(key):
+            cases = test_cases[key]
+            if options['count'] == -1 or options['count'] > len(cases):
+                cases.append(tcinfo)                
+            else:
+                i = random.randint (0, len(cases) - 1)
+                cases[i] = tcinfo                                
+        else:
+            test_cases[key] = [tcinfo]
+        
+# Create folder (if not already exists) based on `a_output_folder' to store test cases for
+# a_feature in a_class. 
+# Return the feature folder.
+def create_folder_for_feature (a_class, a_feature, a_output_folder):
+    # Create folder for a_class.
+    class_dir_name = a_class
+    class_dir_path = os.path.join(a_output_folder, class_dir_name)
+    if not os.path.isdir(class_dir_path):
+        os.makedirs(class_dir_path)
     
-traverse_folder ('/home/jasonw/temp')
-print ('finished.')
+    # Create folder for a_feature.
+    feature_dir_name = a_feature
+    feature_dir_path = os.path.join(class_dir_path, feature_dir_name)                                                
+    if not os.path.isdir(feature_dir_path):
+        os.makedirs(feature_dir_path)
+                            
+    return feature_dir_path
+    
+# Return a base file name for the test case specified by a_test_case.
+# Base name contains the description of a test case, such as feature under test, exception code, break point slot,
+# but does not include random number to avoid name clashes.
+def test_case_file_base_name (a_test_case):
+    base_name = a_test_case['prefix']
+    
+    config = options['name'].lower()
+    base_name = a_test_case['prefix']
+    
+    for l in config:
+        if l=='f':
+            base_name = base_name + "__" + a_test_case['class']
+            base_name = base_name + "__" + a_test_case['feature']
+        elif l=='r':
+            base_name = base_name + "__REC_" + a_test_case['recipient_class'] + "__" + a_test_case['recipient']
+        elif l=='c':
+            base_name = base_name + "__c" + str(a_test_case['code'])
+        elif l=='b':
+            base_name = base_name + "__b" + str(a_test_case['bpslot'])
+        elif l=='s':
+            base_name = base_name + "__" + a_test_case['status'].upper()
+        elif l=='t':
+            base_name = base_name + "__TAG_" + a_test_case['tag']
+        elif l=='x':
+            base_name = base_name + "__" + a_test_case['suffix']
+    
+    return base_name
+    
+# Store test cases specified by a_test_cases in output folder.
+# a_test_cases is a list of test case information, see test_case_info for details.
+def print_test_cases (a_test_cases):
+    i = 1
+    c = len(a_test_cases)
+    for tc in a_test_cases:
+        tc_file_name = test_case_file_base_name (tc) + ".e"
+        if options['recursive']:
+            full_dest_path = os.path.join (create_folder_for_feature (tc['class'],  tc['feature'],  options['output-folder']),  tc_file_name)
+        else:
+            full_dest_path = os.path.join (options['output-folder'],  tc_file_name)
+            
+        shutil.copyfile(tc['full_path'], full_dest_path)
+        i = i + 1
+
+# Analyze command line options and arguments
+opts, args = getopt.getopt(sys.argv[1:], "h",
+        ["help",
+         "code=",
+         "bpslot=",
+         "status=",
+         "unique=",
+         "name=", 
+         "count=", 
+         "recursive"
+         ])
+         
+# Parse command line options.
+for option, value in opts:
+    if option in ('-h', '--help'):
+        print help_message
+        sys.exit(0)
+    elif option in ('--code'):
+        options['code'] = int(value)
+        
+    elif option in ('--bpslot'):
+        options['bpslot'] = int(value)
+        
+    elif option in ('--status'):
+        options['status'] = value
+        
+    elif option in ('--unique'):
+        options['unique'] = value
+        
+    elif option in ('--name'):
+        options['name'] = value
+        
+    elif option in ('--count'):
+        options['count'] = int(value)
+    elif option in ('--recursive'):
+        options['recursive'] = True
+
+options['input-folder'] = args[0]
+options['output-folder'] = args[1]
+
+traverse_folder (options['input-folder'])
+
+for tcs in test_cases.values():
+    print_test_cases (tcs)
+    
+print('finished.')
+    
