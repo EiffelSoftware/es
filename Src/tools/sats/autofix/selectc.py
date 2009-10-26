@@ -13,7 +13,7 @@ help_message = '''
     --bpslot <b>                Select test cases with breakpoint slot <b>. If <b> is -1, this option 
                                         is disables. Default: -1.
     --status  <s>                    Select test cases with type <s>. <s> is a string consisting of letter 's' or 'f'.
-                                        ''s' means successful test cases, 'f' means failed test cases. Default: 'sf'.
+                                        ''s' means successful test cases, 'f' means failed test cases. Default: 'f'.
     --unique  <u>               Routine to identify unique test cases. <u> can be either 'f' or 'r'.
                                         'f' means feature under test, 'r' means recipient. Default: 'r'.
     --name <n>                  Name of the output test cases. <n> is a format string, consisting only letters [frcbst].
@@ -38,7 +38,7 @@ options={
     'output-folder': '', 
     'code': -1, 
     'bpslot': -1, 
-    'status': 'sf', 
+    'status': 'f', 
     'unique': 'r', 
     'name': 'fscbrtx', 
     'count': 1, 
@@ -80,13 +80,25 @@ def test_case_info (a_full_path):
     # Parse test case file name to retrieve information about the test case.
     parts = os.path.basename (a_full_path).split('__')
     tcinfo['prefix'] = parts[0]
-    tcinfo['suffix'] = parts[len(parts)-1]
+    suf = parts[len(parts)-1]
+    tcinfo['suffix'] = suf[0:len(suf)-2]
+    
     parts.pop(0)
     parts.pop(len(parts)-1)
         
     tcinfo['class'] = parts[0]
     tcinfo['feature'] = parts[1]
-    
+    tcinfo['recipient_class'] = tcinfo['class']
+    tcinfo['recipient'] = tcinfo['feature']
+    tcinfo['bpslot'] = 0
+    tcinfo['code'] = 0
+    tcinfo['tag'] = "noname"
+    tcinfo['status'] = "S"
+    tcinfo['prefix'] = "TC"
+    tcinfo['full_path'] = ""
+    tcinfo['id'] = ""
+    tcinfo['sufix'] = ""
+
     i = 2
     while i < len(parts):
         p = parts[i]
