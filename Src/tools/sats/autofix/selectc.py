@@ -7,6 +7,14 @@ import shutil
 from time import time
 
 help_message = '''
+Select test cases with given criteria.
+Usage: selectc [options] <input-folder> <output-folder>
+
+Arguments:
+<input-folder> is the folder containing the test cases.
+<output-folder> is the folder to store selected test cases. Selected test cases will be copied from <input-folder> to <output-folder>.
+
+Options:
     -h, --help                      Display this message.
     --code <c>                   Select test cases with exception code <c>, if <c> is -1, this option
                         i               is disabled. Default: -1.
