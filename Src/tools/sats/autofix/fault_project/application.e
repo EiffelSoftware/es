@@ -50,7 +50,7 @@ feature
 			-- Can fix
 
 	tc2: TC__TWO_WAY_SORTED_SET__duplicate__F__c3__b2__REC_TWO_WAY_SORTED_SET__duplicate__TAG_readable__1256547952341725
-			-- Can fix
+			-- Can fix, wrong postconditions.
 
 	tc3: TC__ARRAYED_CIRCULAR__duplicate__F__c3__b1__REC_ARRAYED_CIRCULAR__new_chain__TAG_at_least_one__1256547823247256
 			-- Can fix
