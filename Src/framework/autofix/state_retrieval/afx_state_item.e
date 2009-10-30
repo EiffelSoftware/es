@@ -33,6 +33,11 @@ feature -- Access
 		deferred
 		end
 
+	text: STRING
+			-- Expression text of current item
+		deferred
+		end
+
 	type: detachable TYPE_A
 			-- Type of current state
 			-- Should be a deanchered and resolved generic type.

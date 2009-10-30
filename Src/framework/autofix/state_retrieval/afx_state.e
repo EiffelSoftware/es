@@ -10,13 +10,7 @@ class
 inherit
 	HASH_TABLE [AFX_STATE_ITEM, STRING]
 
-feature
-	f (a: like item) is
-			--
-		local
-			l: like a
-		do
-
-		end
+create
+	make
 
 end
