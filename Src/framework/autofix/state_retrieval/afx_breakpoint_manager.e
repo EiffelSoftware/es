@@ -24,7 +24,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	breakpoints: HASH_TABLE [AFX_STATE, BREAKPOINT_LOCATION]
+	breakpoints: HASH_TABLE [AFX_STATE_MODEL, BREAKPOINT_LOCATION]
 			-- Breakpoints where the debuggee should be stopped and expressions should be evaluated.
 			-- Key is the breakpoint, value is the state consisting expressions to be evaluated
 			-- at the breakpoint.
@@ -35,18 +35,40 @@ feature -- Access
 
 feature -- Basic operations
 
-	set_breakpoints (a_state: AFX_STATE; a_feature: FEATURE_I)
+	set_hit_action_with_agent (a_state: AFX_STATE_MODEL; a_action: PROCEDURE [ANY, TUPLE [AFX_CONCRETE_STATE]]; a_feature: FEATURE_I)
+			-- Set `a_action' to all break points to `a_feature'.
+		local
+			l_bp_location: BREAKPOINT_LOCATION
+			l_slot_count: INTEGER
+			i: INTEGER
+			l_act_list: LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I]
+			l_action:AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
+		do
+			l_slot_count := a_feature.number_of_breakpoint_slots
+			from
+				i := 1
+			until
+				i > l_slot_count
+			loop
+				create l_act_list.make
+				create l_action.make (a_state)
+				l_action.on_hit_actions.extend (a_action)
+				l_act_list.extend (l_action)
+				l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, i, False)
+				hit_actions.put (l_act_list, l_bp_location)
+				i := i + 1
+			end
+		end
+
+	set_breakpoints (a_state: AFX_STATE_MODEL; a_feature: FEATURE_I)
 			-- Set breakpoints in all breakpoints slots in in `a_feature' to evaluate
 			-- expressions in `a_state'.
 		local
 			l_bp_location: BREAKPOINT_LOCATION
 			l_slot_count: INTEGER
 			i: INTEGER
-			l_act_list: LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I]
-			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 		do
 			breakpoints.wipe_out
-			hit_actions.wipe_out
 
 			l_slot_count := a_feature.number_of_breakpoint_slots
 			from
@@ -56,10 +78,6 @@ feature -- Basic operations
 			loop
 				l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, i, False)
 				breakpoints.put (a_state, l_bp_location)
-				create l_action.make (a_state)
-				create l_act_list.make
-				l_act_list.extend (l_action)
-				hit_actions.put (l_act_list, l_bp_location)
 				i := i + 1
 			end
 		end

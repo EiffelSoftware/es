@@ -10,6 +10,7 @@ class
 inherit
 	AFX_STATE_ITEM
 		redefine
+			name,
 			type
 		end
 
@@ -29,6 +30,7 @@ feature{NONE} -- Initialization
 	make_with_text (a_class: like class_; a_feature: like feature_; a_text: like text)
 			-- Initialize Current.
 		do
+			name := ""
 			set_class (a_class)
 			set_feature (a_feature)
 			set_text (a_text)
@@ -41,6 +43,7 @@ feature{NONE} -- Initialization
 	make_with_expression (a_class: like class_; a_feature: like feature_; a_expression: like expression)
 			-- Initialize Current.
 		do
+			name := ""
 			set_class (a_class)
 			set_feature (a_feature)
 			set_expression (a_expression)
@@ -51,6 +54,7 @@ feature{NONE} -- Initialization
 	make (a_class: like class_; a_feature: like feature_; a_expression: like expression; a_type: like type)
 			-- Initialize Current.
 		do
+			name := ""
 			set_class (a_class)
 			set_feature (a_feature)
 			set_expression (a_expression)
@@ -66,20 +70,31 @@ feature -- Access
 	expression: detachable EXPR_AS
 			-- Expression AST node of current item
 
-	value: detachable ANY
-			-- Value current item
-		do
-		end
-
 	name: STRING
 			-- Name of current item
-		do
-		end
 
 
 	type: detachable TYPE_A
 			-- Type of current state
 			-- Should be a deanchered and resolved generic type.
+
+feature -- Access
+
+	hash_code: INTEGER
+			-- Hash code value
+		local
+			s: STRING
+		do
+			if hash_code_cache = 0 then
+				create s.make (name.count + text.count + 1)
+				s.append (s)
+				s.append_character (':')
+				s.append (text)
+				hash_code_cache := s.hash_code
+			end
+
+			Result := hash_code_cache
+		end
 
 feature -- Status report
 
@@ -114,7 +129,7 @@ feature -- Debug output
 			create Result.make (32)
 			Result.append (name)
 			Result.append (once " : ")
-			Result.append (value.out)
+			Result.append (text)
 		end
 
 feature -- Setting
@@ -139,6 +154,15 @@ feature -- Setting
 			type := a_type
 		ensure
 			type_set: type = a_type
+		end
+
+	set_name (a_name: like name)
+			-- Set `name' with `a_name'.
+			-- Make a new copy of `a_name'.
+		do
+			create name.make_from_string (a_name)
+		ensure
+			name_set: name.is_equal (a_name)
 		end
 
 feature{NONE} -- Implementation
@@ -178,5 +202,12 @@ feature{NONE} -- Implementation
 				expression := l_parser.expression_node
 			end
 		end
+
+feature{NONE} -- Implementation
+
+	hash_code_cache: INTEGER
+			-- Cache for `hash_code'
+
+invariant
 
 end

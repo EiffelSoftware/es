@@ -12,6 +12,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	HASHABLE
+
 feature -- Access
 
 	feature_: FEATURE_I
@@ -26,11 +28,6 @@ feature -- Access
 		ensure
 			result_attached: Result /= Void
 			result_valid: not Result.is_empty
-		end
-
-	value: detachable ANY
-			-- Value current item
-		deferred
 		end
 
 	text: STRING
