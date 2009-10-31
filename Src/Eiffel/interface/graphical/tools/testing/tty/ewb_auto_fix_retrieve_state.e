@@ -47,11 +47,13 @@ feature -- Execute
 			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 		do
 			create l_bp_manager.make
-			create l_state.make_with_basic_argumentless_query (config.state_test_case_class_c)
+			create l_state.make_with_basic_argumentless_query (config.state_class_under_test)
 			create l_action.make (l_state)
-			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_feature_i_under_test)
-			l_bp_manager.set_breakpoints (l_state, config.state_feature_i_under_test)
+			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_feature_under_test)
+			l_bp_manager.set_breakpoints (l_state, config.state_feature_under_test)
 			l_bp_manager.toggle_breakpoints (True)
+			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
+			debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
 			start_debugger
 			l_bp_manager.toggle_breakpoints (False)
 		end
@@ -88,11 +90,18 @@ feature{NONE} -- Implementation
 			until
 				a_state.after
 			loop
-				io.put_string (a_state.key_for_iteration.name + " : " + a_state.item_for_iteration.value.output_for_debugger + "%N")
+				io.put_string (a_state.key_for_iteration.name + " = " + a_state.item_for_iteration.value.output_for_debugger + "%N")
 				a_state.forth
 			end
 		end
 
+	on_application_stopped (a_dm: DEBUGGER_MANAGER)
+			-- Action to be performed when application is stopped in the debugger
+		do
+			if a_dm.application_is_executing or a_dm.application_is_stopped then
+				a_dm.application.kill
+			end
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

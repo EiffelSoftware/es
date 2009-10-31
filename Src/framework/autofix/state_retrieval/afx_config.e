@@ -60,40 +60,24 @@ feature -- Access
 			end
 		end
 
-	state_test_case_class_c: detachable CLASS_C
+	state_class_under_test: detachable CLASS_C
 			-- CLASS_C for `state_test_case_class'
 			-- Void if no such class exists.
-		local
-			l_classes: LIST [CLASS_I]
 		do
-			if state_test_case_class /= Void then
-				l_classes := universe.classes_with_name (state_test_case_class)
-				if not l_classes.is_empty then
-					Result := l_classes.first.compiled_representation
-				end
+			if state_test_case_class_cache = Void then
+				calculate_recipient
 			end
+			Result := state_class_under_test_cache
 		end
 
-	state_feature_under_test: STRING
-			-- Name of the feature under test, used for state retrieval
-		do
-			if state_feature_under_test_cache = Void then
-				Result := once "generated_test_1"
-			else
-				Result := state_feature_under_test_cache
-			end
-		end
-
-	state_feature_i_under_test: detachable FEATURE_I
+	state_feature_under_test: detachable FEATURE_I
 			-- FEATURE_I for `state_feature_under_test',
 			-- Void if no such feature exists.
-		local
-			l_class: detachable CLASS_C
 		do
-			l_class := state_test_case_class_c
-			if l_class /= Void then
-				Result := l_class.feature_named (state_feature_under_test)
+			if state_test_case_class_cache = Void then
+				calculate_recipient
 			end
+			Result := state_feature_under_test_cache
 		end
 
 	output_directory: STRING is
@@ -136,11 +120,14 @@ feature{NONE} -- Implementation
 	state_test_case_class_cache: detachable STRING
 			-- Cache for `state_test_case_class'
 
-	state_feature_under_test_cache: detachable STRING
-			-- Cache `state_feature_under_test'
-
 	should_retrieve_state_cache: BOOLEAN
 			-- Cache for `should_retrieve_state'
+
+	state_class_under_test_cache: like state_class_under_test
+			-- Cache for `state_class_c_under_test'
+
+	state_feature_under_test_cache: like state_feature_under_test
+			-- Cache for `state_feature_under_test'
 
 	test_case_class_name: STRING is
 			-- Name of the test case class
@@ -165,6 +152,36 @@ feature{NONE} -- Implementation
 					Result := l_class.name.twin
 				end
 				i := i + 1
+			end
+		end
+
+	calculate_recipient is
+			-- Calculate recipient feature and its associated class.
+		local
+			l_classes: LIST [CLASS_I]
+			l_tc_class: CLASS_C
+			l_class_name: STRING
+			l_index: INTEGER
+			l_index2: INTEGER
+			l_index3: INTEGER
+			l_recipient_class: STRING
+			l_recipient_feature: STRING
+		do
+			if state_test_case_class_cache = Void then
+				l_classes := universe.classes_with_name (state_test_case_class)
+				if not l_classes.is_empty then
+					l_tc_class := l_classes.first.compiled_representation
+					l_class_name := l_tc_class.name
+					l_index := l_class_name.substring_index (once "__REC_", 1)
+					if l_index > 0 then
+						l_index2 := l_class_name.substring_index (once "__", l_index + 6)
+						l_index3 := l_class_name.substring_index (once "__", l_index2 + 2)
+						l_recipient_class := l_class_name.substring (l_index + 6, l_index2 - 1)
+						l_recipient_feature := l_class_name.substring (l_index2 + 2, l_index3 - 1)
+						state_class_under_test_cache := universe.classes_with_name (l_recipient_class).first.compiled_representation
+						state_feature_under_test_cache := state_class_under_test_cache.feature_named (l_recipient_feature.as_lower)
+					end
+				end
 			end
 		end
 
