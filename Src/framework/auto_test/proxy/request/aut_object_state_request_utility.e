@@ -16,6 +16,8 @@ inherit
 			system
 		end
 
+	AUT_AGENT_UTILITY [FEATURE_I]
+
 feature -- Access
 
 	supported_queries_of_type (a_type: TYPE_A): LIST [FEATURE_I] is
@@ -42,8 +44,8 @@ feature -- Access
 			else
 				Result := features_of_type (
 					a_type,
-					anded_feature_agents (<<
-						ored_feature_agents (<<
+					anded_agents (<<
+						ored_agents (<<
 							agent is_boolean_query,
 							agent is_integer_query>>),
 					agent is_argumentless_query,
@@ -147,55 +149,6 @@ feature -- Feature criteria
 			a_feature_attached: a_feature /= Void
 		do
 			Result := a_feature.e_feature.written_class.class_id /= system.any_class.compiled_class.class_id
-		end
-
-	ored_feature_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN] is
-			-- Agent to ored result of agents in `a_agents'
-		require
-			a_agents_attached: a_agents /= Void
-		do
-			Result := agent (a_feat: FEATURE_I; a_agts: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): BOOLEAN
-				local
-					i: INTEGER
-				do
-					from
-						i := a_agts.lower
-					until
-						i > a_agts.upper or else Result
-					loop
-						Result := a_agts.item (i).item ([a_feat])
-						i := i + 1
-					end
-
-				end
-				(?, a_agents)
-		ensure
-			result_attached: Result /= Void
-		end
-
-	anded_feature_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN] is
-			-- Agent to anded result of agents in `a_agents'
-		require
-			a_agents_attached: a_agents /= Void
-		do
-			Result := agent (a_feat: FEATURE_I; a_agts: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): BOOLEAN
-				local
-					i: INTEGER
-				do
-					Result := True
-					from
-						i := a_agts.lower
-					until
-						i > a_agts.upper or not Result
-					loop
-						Result := a_agts.item (i).item ([a_feat])
-						i := i + 1
-					end
-
-				end
-				(?, a_agents)
-		ensure
-			result_attached: Result /= Void
 		end
 
 note

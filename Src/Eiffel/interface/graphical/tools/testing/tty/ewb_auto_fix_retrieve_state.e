@@ -45,10 +45,25 @@ feature -- Execute
 			l_bp_manager: AFX_BREAKPOINT_MANAGER
 			l_state: AFX_STATE_SKELETON
 			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
+
+			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
 		do
 			create l_bp_manager.make
 			create l_state.make_with_basic_argumentless_query (config.state_recipient_class)
 			create l_action.make (l_state)
+
+			create l_gen.make
+			l_gen.generate (config.state_recipient_class, config.state_recipient)
+			io.put_string ("--------------------------------------------%N")
+			from
+				l_gen.accesses.start
+			until
+				l_gen.accesses.after
+			loop
+				io.put_string (l_gen.accesses.item_for_iteration.text + "%N")
+				l_gen.accesses.forth
+			end
+			io.put_string ("--------------------------------------------%N%N")
 			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
 			l_bp_manager.set_breakpoints (l_state, config.state_recipient)
 			l_bp_manager.toggle_breakpoints (True)
