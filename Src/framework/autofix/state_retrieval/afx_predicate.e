@@ -5,26 +5,29 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_STATE_ITEM_VALUE
+	AFX_PREDICATE
+
+inherit
+	HASHABLE
 
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_state: like state_item; a_value: like value)
+	make (a_expr: like expression; a_value: like value)
 			-- Initialize Current.
 		do
-			set_state_item (a_state)
+			set_state_item (a_expr)
 			set_value (a_value)
 		ensure
-			state_item_set: state_item = a_state
+			state_item_set: expression = a_expr
 			value_set: value = a_value
 		end
 
 feature -- Access
 
-	state_item: AFX_STATE_ITEM
+	expression: AFX_EXPRESSION
 			-- State item whose value is stored in Current
 
 	value: DUMP_VALUE
@@ -42,20 +45,30 @@ feature -- Access
 feature -- Status report
 
 	has_error: BOOLEAN
-			-- Was there an error when `state_item' was evaluated?
+			-- Was there an error when `expression' was evaluated?
 			-- If True, `value' is not defined.
 		do
 
 		end
 
+feature -- Access
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := expression.hash_code
+		ensure then
+			good_result: Result = expression.hash_code
+		end
+
 feature -- Setting
 
-	set_state_item (a_state: like state_item)
-			-- Set `state_item' with `a_state'.
+	set_state_item (a_state: like expression)
+			-- Set `expression' with `a_state'.
 		do
-			state_item := a_state
+			expression := a_state
 		ensure
-			state_item_set: state_item = a_state
+			state_item_set: expression = a_state
 		end
 
 	set_value (a_value: like value)

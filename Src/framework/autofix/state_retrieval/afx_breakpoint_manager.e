@@ -24,7 +24,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	breakpoints: HASH_TABLE [AFX_STATE_MODEL, BREAKPOINT_LOCATION]
+	breakpoints: HASH_TABLE [AFX_STATE_SKELETON, BREAKPOINT_LOCATION]
 			-- Breakpoints where the debuggee should be stopped and expressions should be evaluated.
 			-- Key is the breakpoint, value is the state consisting expressions to be evaluated
 			-- at the breakpoint.
@@ -35,7 +35,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	set_hit_action_with_agent (a_state: AFX_STATE_MODEL; a_action: PROCEDURE [ANY, TUPLE [AFX_CONCRETE_STATE]]; a_feature: FEATURE_I)
+	set_hit_action_with_agent (a_state: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: AFX_STATE]]; a_feature: FEATURE_I)
 			-- Set `a_action' to all break points to `a_feature'.
 		local
 			l_bp_location: BREAKPOINT_LOCATION
@@ -60,7 +60,7 @@ feature -- Basic operations
 			end
 		end
 
-	set_breakpoints (a_state: AFX_STATE_MODEL; a_feature: FEATURE_I)
+	set_breakpoints (a_state: AFX_STATE_SKELETON; a_feature: FEATURE_I)
 			-- Set breakpoints in all breakpoints slots in in `a_feature' to evaluate
 			-- expressions in `a_state'.
 		local

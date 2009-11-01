@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_STATE_MODEL
+	AFX_STATE_SKELETON
 
 inherit
-	LINKED_LIST [AFX_STATE_ITEM]
+	DS_HASH_SET [AFX_EXPRESSION]
 
 	AUT_OBJECT_STATE_REQUEST_UTILITY
 		undefine
@@ -33,9 +33,10 @@ feature{NONE} -- Initialization
 			-- qureies of basic types in `a_class'.
 		local
 			l_queries: LIST [FEATURE_I]
-			l_item: AFX_EXPR_STATE_ITEM
+			l_item: AFX_AST_EXPRESSION
 		do
 			l_queries := supported_queries_of_type (a_class.actual_type)
+			make (l_queries.count)
 			from
 				l_queries.start
 			until
@@ -43,7 +44,7 @@ feature{NONE} -- Initialization
 			loop
 				create l_item.make_with_text (a_class, l_queries.item_for_iteration, l_queries.item_for_iteration.feature_name)
 				l_item.set_name (l_queries.item_for_iteration.feature_name)
-				extend (l_item)
+				force_last (l_item)
 				l_queries.forth
 			end
 		end

@@ -43,7 +43,7 @@ feature -- Execute
 			-- Execute current command.
 		local
 			l_bp_manager: AFX_BREAKPOINT_MANAGER
-			l_state: AFX_STATE_MODEL
+			l_state: AFX_STATE_SKELETON
 			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 		do
 			create l_bp_manager.make
@@ -80,17 +80,17 @@ feature{NONE} -- Implementation
 			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
 
-	on_hit (a_state: AFX_CONCRETE_STATE) is
+	on_hit (a_breakpoint: BREAKPOINT; a_state: AFX_STATE) is
 			--
 		do
 			io.put_string ("===================================================%N")
-			io.put_string ("BP_" + a_state.breakpoint.breakable_line_number.out + "%N")
+			io.put_string ("BP_" + a_breakpoint.breakable_line_number.out + "%N")
 			from
 				a_state.start
 			until
 				a_state.after
 			loop
-				io.put_string (a_state.key_for_iteration.name + " = " + a_state.item_for_iteration.value.output_for_debugger + "%N")
+				io.put_string (a_state.item_for_iteration.expression.name + " = " + a_state.item_for_iteration.value.output_for_debugger + "%N")
 				a_state.forth
 			end
 		end

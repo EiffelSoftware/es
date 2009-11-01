@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EXPR_STATE_ITEM
+	AFX_AST_EXPRESSION
 
 inherit
-	AFX_STATE_ITEM
+	AFX_EXPRESSION
 		redefine
 			name,
 			type

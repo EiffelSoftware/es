@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_STATE_ITEM
+	AFX_EXPRESSION
 
 inherit
 	SHARED_TYPES
