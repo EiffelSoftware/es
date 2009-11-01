@@ -8,7 +8,7 @@ class
 	AFX_CONFIG
 
 inherit
-	SHARED_WORKBENCH
+	AFX_UTILITY
 
 	SHARED_EXEC_ENVIRONMENT
 
@@ -50,36 +50,6 @@ feature -- Access
 			end
 		end
 
-	state_test_case_class: STRING
-			-- Name of the test case class used for state retrieval
-		do
-			if state_test_case_class_cache = Void then
-				Result := test_case_class_name
-			else
-				Result := state_test_case_class_cache
-			end
-		end
-
-	state_class_under_test: detachable CLASS_C
-			-- CLASS_C for `state_test_case_class'
-			-- Void if no such class exists.
-		do
-			if state_test_case_class_cache = Void then
-				calculate_recipient
-			end
-			Result := state_class_under_test_cache
-		end
-
-	state_feature_under_test: detachable FEATURE_I
-			-- FEATURE_I for `state_feature_under_test',
-			-- Void if no such feature exists.
-		do
-			if state_test_case_class_cache = Void then
-				calculate_recipient
-			end
-			Result := state_feature_under_test_cache
-		end
-
 	output_directory: STRING is
 			-- Directory for output
 		local
@@ -87,6 +57,59 @@ feature -- Access
 		do
 			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.testing_results_path)
 			l_path.extend ("auto_fix")
+		end
+
+feature -- State retrieval related
+
+	state_test_case_class_name: detachable STRING
+			-- Name of the test case class used for state retrieval
+			-- A test case class name starts with "TC__".
+		do
+			if state_test_case_class_name_cache = Void then
+				state_test_case_class_name_cache := first_test_case_class_name
+			end
+			Result := state_test_case_class_name_cache
+		end
+
+	state_class_under_test: detachable CLASS_C
+			-- CLASS_C for `state_test_case_class_name'
+			-- Void if no such class exists.
+		local
+			l_feat: like state_feature_under_test
+		do
+			l_feat := state_feature_under_test
+			if l_feat /= Void then
+				Result := l_feat.access_class
+			end
+		end
+
+	state_feature_under_test: detachable FEATURE_I
+			-- FEATURE_I for `state_feature_under_test',
+			-- Void if no such feature exists.
+		do
+			if state_test_case_class_name_cache = Void then
+				analyze_test_case_class_name
+			end
+			Result := state_feature_under_test_cache
+		end
+
+	state_recipient_class: detachable CLASS_C
+			-- Class containing the feature `state_feature_under_test'
+			-- Void if no such class exists.
+		do
+			if state_recipient /= Void then
+				Result := state_recipient.access_class
+			end
+		end
+
+	state_recipient: detachable FEATURE_I
+			-- Recipient feature of the exception in a failed test case.
+			-- In a passing test case, same as `state_feature_under_test'.
+		do
+			if state_recipient_cache = Void then
+				analyze_test_case_class_name
+			end
+			Result := state_recipient_cache
 		end
 
 feature -- Status report
@@ -109,6 +132,22 @@ feature -- Setting
 			should_retrieve_state_set: should_retrieve_state = b
 		end
 
+	set_state_recipient (a_recipient: like state_recipient)
+			-- Set `state_recipient' with `a_recipient'.
+		do
+			state_recipient_cache := a_recipient
+		ensure
+			state_recipient_set: state_recipient = a_recipient
+		end
+
+	set_state_feature_under_test (a_feature_under_test: like state_feature_under_test)
+			-- Set `state_feature_under_test' with `a_feature_under_test'.
+		do
+			state_feature_under_test_cache := a_feature_under_test
+		ensure
+			state_feature_under_test_set: state_feature_under_test = a_feature_under_test
+		end
+
 feature{NONE} -- Implementation
 
 	working_directory_cache: detachable STRING
@@ -117,20 +156,26 @@ feature{NONE} -- Implementation
 	state_output_file_cache: detachable STRING
 			-- Cache for `state_output_file'
 
-	state_test_case_class_cache: detachable STRING
-			-- Cache for `state_test_case_class'
+	state_test_case_class_name_cache: detachable STRING
+			-- Cache for `state_test_case_class_name'
 
 	should_retrieve_state_cache: BOOLEAN
 			-- Cache for `should_retrieve_state'
 
-	state_class_under_test_cache: like state_class_under_test
-			-- Cache for `state_class_c_under_test'
-
 	state_feature_under_test_cache: like state_feature_under_test
 			-- Cache for `state_feature_under_test'
 
-	test_case_class_name: STRING is
+	state_recipient_cache: detachable FEATURE_I
+			-- Cache for `state_recipient'
+
+feature{NONE} -- Implementation
+
+	first_test_case_class_name: detachable STRING is
 			-- Name of the test case class
+			-- Search for a class whose name starts with "TC__", it is a naming convention
+			-- for test cases. The first found class is returned.
+			-- Note: If there are more than one test case classes in a probject, there is no
+			-- guarantee which one will be returned.
 		local
 			l_classes: CLASS_C_SERVER
 			i: INTEGER
@@ -143,9 +188,8 @@ feature{NONE} -- Implementation
 			n := l_classes.count
 
 			from
-				Result := ""
 			until
-				i = n or else not Result.is_empty
+				i = n or else Result /= Void
 			loop
 				l_class := l_classes.item (i)
 				if l_class.name.starts_with (once "TC__") then
@@ -155,33 +199,16 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	calculate_recipient is
-			-- Calculate recipient feature and its associated class.
+	analyze_test_case_class_name
+			-- Analyze `state_test_case_class_name' to find out
+			-- tested feature, and (in case of a failed test case, recipient of the exception'.
 		local
-			l_classes: LIST [CLASS_I]
-			l_tc_class: CLASS_C
-			l_class_name: STRING
-			l_index: INTEGER
-			l_index2: INTEGER
-			l_index3: INTEGER
-			l_recipient_class: STRING
-			l_recipient_feature: STRING
+			l_tc_info: AFX_TEST_CASE_INFO
 		do
-			if state_test_case_class_cache = Void then
-				l_classes := universe.classes_with_name (state_test_case_class)
-				if not l_classes.is_empty then
-					l_tc_class := l_classes.first.compiled_representation
-					l_class_name := l_tc_class.name
-					l_index := l_class_name.substring_index (once "__REC_", 1)
-					if l_index > 0 then
-						l_index2 := l_class_name.substring_index (once "__", l_index + 6)
-						l_index3 := l_class_name.substring_index (once "__", l_index2 + 2)
-						l_recipient_class := l_class_name.substring (l_index + 6, l_index2 - 1)
-						l_recipient_feature := l_class_name.substring (l_index2 + 2, l_index3 - 1)
-						state_class_under_test_cache := universe.classes_with_name (l_recipient_class).first.compiled_representation
-						state_feature_under_test_cache := state_class_under_test_cache.feature_named (l_recipient_feature.as_lower)
-					end
-				end
+			if state_test_case_class_name /= Void then
+				create l_tc_info.make (state_test_case_class_name)
+				state_feature_under_test_cache := feature_from_class (l_tc_info.class_under_test, l_tc_info.feature_under_test)
+				state_recipient_cache := feature_from_class (l_tc_info.recipient_class, l_tc_info.recipient)
 			end
 		end
 

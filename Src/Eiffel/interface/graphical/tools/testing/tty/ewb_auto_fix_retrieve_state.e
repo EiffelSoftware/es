@@ -47,10 +47,10 @@ feature -- Execute
 			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 		do
 			create l_bp_manager.make
-			create l_state.make_with_basic_argumentless_query (config.state_class_under_test)
+			create l_state.make_with_basic_argumentless_query (config.state_recipient_class)
 			create l_action.make (l_state)
-			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_feature_under_test)
-			l_bp_manager.set_breakpoints (l_state, config.state_feature_under_test)
+			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
+			l_bp_manager.set_breakpoints (l_state, config.state_recipient)
 			l_bp_manager.toggle_breakpoints (True)
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
 			debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
