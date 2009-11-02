@@ -75,4 +75,12 @@ feature -- Setting
 			class_set: class_ = a_class
 		end
 
+	set_name (a_name: like name)
+			-- Set `name' with `a_name'.
+			-- Make a new copy of `a_name'.
+		deferred
+		ensure
+			good_result: name.is_equal (a_name)
+		end
+
 end

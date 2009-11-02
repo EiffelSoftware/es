@@ -161,8 +161,6 @@ feature -- Setting
 			-- Make a new copy of `a_name'.
 		do
 			create name.make_from_string (a_name)
-		ensure
-			name_set: name.is_equal (a_name)
 		end
 
 feature{NONE} -- Implementation

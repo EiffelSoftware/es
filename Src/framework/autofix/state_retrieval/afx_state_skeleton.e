@@ -24,7 +24,8 @@ inherit
 
 create
 	make,
-	make_with_basic_argumentless_query
+	make_with_basic_argumentless_query,
+	make_with_accesses
 
 feature{NONE} -- Initialization
 
@@ -47,6 +48,27 @@ feature{NONE} -- Initialization
 				force_last (l_item)
 				l_queries.forth
 			end
+		end
+
+	make_with_accesses (a_accesses: LIST [AFX_ACCESS])
+			-- Initialize Current with `a_accesses'.
+		local
+			l_cursor: CURSOR
+			l_expr: AFX_EXPRESSION
+		do
+			make (a_accesses.count)
+			l_cursor := a_accesses.cursor
+			from
+				a_accesses.start
+			until
+				a_accesses.after
+			loop
+				l_expr := a_accesses.item_for_iteration.expression
+				l_expr.set_name (l_expr.text)
+				force_last (l_expr)
+				a_accesses.forth
+			end
+			a_accesses.go_to (l_cursor)
 		end
 
 end

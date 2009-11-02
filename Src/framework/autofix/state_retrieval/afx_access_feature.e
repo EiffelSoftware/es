@@ -19,7 +19,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_context_class: like context_class; a_context_feature: like context_feature; a_feat: like feature_; a_args: LIST [AFX_ACCESS])
+	make (a_context_class: like context_class; a_context_feature: like context_feature; a_feat: like feature_; a_args: like arguments)
 			-- Initialize Current with accessed feature `a_feat'.
 		require
 			a_args_valid: a_args.count = a_feat.argument_count
@@ -43,7 +43,7 @@ feature -- Access
 	type: TYPE_A
 			-- Type of current access
 		do
-			Result := feature_.type
+			Result := actual_type_from_formal_type (feature_.type, feature_.access_class)
 		end
 
 	text: STRING
@@ -72,8 +72,11 @@ feature -- Access
 			end
 		end
 
-	length: INTEGER is 1
+	length: INTEGER is
 			-- Length of current access
+		do
+			Result := 1
+		end
 
 feature -- Status report
 

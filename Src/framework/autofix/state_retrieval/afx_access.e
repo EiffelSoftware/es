@@ -35,6 +35,7 @@ feature -- Access
 		deferred
 		ensure
 			result_attached: Result /= Void
+			result_not_formal: not Result.is_formal
 		end
 
 	text: STRING
@@ -49,6 +50,14 @@ feature -- Access
 		deferred
 		ensure
 			good_result: Result >= 1
+		end
+
+	expression: AFX_EXPRESSION
+			-- Expression representation
+		do
+			create {AFX_AST_EXPRESSION} Result.make_with_text (context_class, context_feature, text)
+		ensure
+			good_result: Result.type.same_as (type)
 		end
 
 feature -- Status report
@@ -70,6 +79,16 @@ feature -- Status report
 
 	is_feature: BOOLEAN
 			-- Is Current access a feature?
+		do
+		end
+
+	is_argument: BOOLEAN
+			-- Is Current access an argument?
+		do
+		end
+
+	is_nested: BOOLEAN
+			-- Is Current access nested?
 		do
 		end
 
@@ -109,6 +128,23 @@ feature -- Setting
 			context_feature := a_feature
 		ensure
 			context_feature_set: context_feature = a_feature
+		end
+
+feature{NONE} -- Implementation
+
+	actual_type_from_formal_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A
+			-- If `a_type' is formal, return its actual type in context of `a_context'
+			-- otherwise return `a_type' itself.
+		do
+			if a_type.is_formal then
+				if attached {FORMAL_A} a_type as l_formal then
+					Result := l_formal.constrained_type (a_context)
+				end
+			else
+				Result := a_type
+			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 end
