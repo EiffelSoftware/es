@@ -208,8 +208,17 @@ feature {NONE} -- Implementation
 
 	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
 			-- Process `a_request'.
+		local
+			l_state_response: AUT_OBJECT_STATE_RESPONSE
+			l_normal_response: AUT_NORMAL_RESPONSE
 		do
-			to_implement ("Implement if you want to do something with the object state. 19.06.2009 Jasonw")
+			if last_response.is_bad then
+				create l_state_response.make_with_bad
+			else
+				l_normal_response ?= last_response
+				create l_state_response.make_from_normal_response (l_normal_response)
+			end
+			a_request.set_response (l_state_response)
 		end
 
 	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)

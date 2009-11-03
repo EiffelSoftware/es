@@ -12,7 +12,8 @@ inherit
 		rename
 			make as old_make
 		redefine
-			process
+			process,
+			is_bad
 		end
 
 	AUT_SHARED_CONSTANTS
@@ -21,7 +22,8 @@ create
 	make,
 	make_from_normal_response,
 	make_with_void,
-	make_with_class_invariant_violation
+	make_with_class_invariant_violation,
+	make_with_bad
 
 feature{NONE} -- Initialization
 
@@ -126,6 +128,12 @@ feature{NONE} -- Initialization
 			set_is_class_invariant_violated (True)
 		end
 
+	make_with_bad
+			-- Initialize current response for a bad one.
+		do
+			create query_results.make (0)
+			is_bad := True
+		end
 
 feature -- State report
 
@@ -135,6 +143,9 @@ feature -- State report
 
 	is_void: BOOLEAN
 			-- Does current state response represent an Void object?
+
+	is_bad: BOOLEAN
+			-- Does current a bad response?
 
 feature -- Access
 

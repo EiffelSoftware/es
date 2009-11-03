@@ -832,7 +832,7 @@ feature -- Execution
 			l_request: AUT_OBJECT_STATE_REQUEST
 		do
 			l_type := variable_table.variable_type (a_variable)
-			create l_request.make (system, a_variable)
+			create l_request.make (system, a_variable, variable_table.variable_type (a_variable))
 			if l_type /= none_type then
 				l_request.set_queries (supported_queries_of_type (l_type))
 			else

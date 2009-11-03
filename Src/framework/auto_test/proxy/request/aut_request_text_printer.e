@@ -132,8 +132,11 @@ feature {AUT_REQUEST} -- Processing
 			-- Process `a_request'.
 		do
 			if configuration.is_object_state_request_logged then
-				output_stream.put_string (":state ")
-				output_stream.put_line (a_request.variable.name (variable_name_prefix))
+				output_stream.put_string (once ":state ")
+				output_stream.put_string (a_request.variable.name (variable_name_prefix))
+				output_stream.put_string (once " {")
+				output_stream.put_string (a_request.type.name)
+				output_stream.put_line (once "}")
 			end
 		end
 

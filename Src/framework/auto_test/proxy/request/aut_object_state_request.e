@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; a_variable: like variable)
+	make (a_system: like system; a_variable: like variable; a_type: like type)
 			-- Create new request.
 		require
 			a_system_not_void: a_system /= Void
@@ -26,16 +26,21 @@ feature {NONE} -- Initialization
 		do
 			make_old (a_system)
 			variable := a_variable
+			type := a_type
 			create {LINKED_LIST [STRING]} query_names.make
 		ensure
 			system_set: system = a_system
 			variable_set: variable = a_variable
+			type_set: type = a_type
 		end
 
 feature -- Access
 
 	variable: ITP_VARIABLE
 			-- Variable that the type is aksed of
+
+	type: TYPE_A
+			-- Type of `variable'
 
 	query_names: LIST [STRING]
 			-- List of names of queries whose values are to be

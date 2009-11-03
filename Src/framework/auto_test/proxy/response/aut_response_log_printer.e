@@ -121,7 +121,7 @@ feature -- Process
 				l_void := object_state_void_value
 				print_line (multi_line_value_start_tag)
 				l_results := a_response.query_results
-				if not a_response.is_void and then not a_response.is_class_invariant_violated then
+				if not a_response.is_void and then not a_response.is_class_invariant_violated and then not a_response.is_bad then
 					create l_state.make (64)
 					from
 						l_results.start

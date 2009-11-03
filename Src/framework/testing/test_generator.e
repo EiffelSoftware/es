@@ -1116,6 +1116,7 @@ feature -- Log processor
 				create log_processors_internal.make (5)
 				log_processors_internal.compare_objects
 				log_processors_internal.extend (create{AUT_RESULT_ANALYZER}.make (system, configuration, session), "ps")
+				log_processors_internal.extend (create{AUT_OBJECT_STATE_LOG_PROCESSOR}.make (system, configuration, session), "state")
 			end
 			Result := log_processors_internal
 		end

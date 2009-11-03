@@ -162,7 +162,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_load_log_option)
 
 			create l_state_option.make_with_long_form ("state")
-			l_state_option.set_description ("Parameters to enable object state monitoring. The format is comma separated name-value pairs. The supported parameters are target=true/false,argument=true/false")
+			l_state_option.set_description ("Parameters to enable object state monitoring. The format is comma separated names. The supported parameters are target, argument and result. For example: %"target,argument%" means only retrieve state for target and argument objects.")
 			parser.options.force_last (l_state_option)
 
 			create l_precondition_option.make ('p', "precondition")
@@ -178,7 +178,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_object_state_exploration)
 
 			create l_log_processor_op.make_with_long_form ("log-processor")
-			l_log_processor_op.set_description ("Processor for the log file specified with the " + l_load_log_option.name + " option.")
+			l_log_processor_op.set_description ("Processor for the log file specified with the " + l_load_log_option.name + " option. Supported processors are: 1) ps: precondition satisfaction processor 2) state: object state processor.")
 			parser.options.force_last (l_log_processor_op)
 
 			create l_log_processor_output_op.make_with_long_form ("log-processor-output")

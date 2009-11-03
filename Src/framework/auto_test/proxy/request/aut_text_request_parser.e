@@ -112,6 +112,8 @@ feature -- Parsing
 			type_keyword_count: INTEGER
 			execute_keyword_count: INTEGER
 			state_keyword_count: INTEGER
+			l_var_name: STRING
+			l_var_type: TYPE_A
 		do
 			if end_of_input then
 				report_and_set_error_at_position ("Expected something, not end of input. Don't be so stingy!", position)
@@ -166,7 +168,16 @@ feature -- Parsing
 						else
 							parse_identifier
 							if not has_error then
-								report_object_state_request (last_string.twin)
+								l_var_name := last_string.twin
+								skip_whitespace
+								if not has_error then
+									parse_type_name_in_braces
+									l_var_type := base_type (last_string.twin)
+									if not has_error then
+										report_object_state_request (l_var_name, l_var_type)
+									end
+								end
+
 							end
 						end
 					else
@@ -256,11 +267,12 @@ feature {NONE} -- Handlers
 		deferred
 		end
 
-	report_object_state_request (a_variable_name: STRING)
-			-- Report state request for variable named `a_variable_name'.
+	report_object_state_request (a_variable_name: STRING; a_type: TYPE_A)
+			-- Report state request for variable named `a_variable_name' of `a_type'.
 		require
 			a_variable_name_not_void: a_variable_name /= Void
 			a_variable_name_valid: is_valid_entity_name (a_variable_name)
+			a_type_attached: a_type /= Void
 		deferred
 		end
 

@@ -18,15 +18,9 @@ feature{NONE} -- Initialization
 			a_config_attached: a_config /= Void
 		local
 			l_pairs: LIST [STRING]
-			l_settings: HASH_TABLE [PROCEDURE [ANY, TUPLE [STRING]], STRING]
-			l_index: INTEGER
-			l_name: STRING
-			l_value: STRING
 			l_str: STRING
 		do
-			initialize_property_settint_table
 			l_pairs := a_config.split (',')
-			create l_settings.make (l_pairs.count)
 			if not l_pairs.is_empty then
 				from
 					l_pairs.start
@@ -34,20 +28,14 @@ feature{NONE} -- Initialization
 					l_pairs.after
 				loop
 					l_str := l_pairs.item
-					l_index := l_str.index_of ('=', 1)
-					if l_index > 0 then
-						l_name := l_str.substring (1, l_index - 1)
-						l_value := l_str.substring (l_index + 1, l_str.count)
-						l_name.left_adjust
-						l_name.right_adjust
-						l_name.to_lower
-						l_value.left_adjust
-						l_value.right_adjust
-						l_value.to_lower
+					if l_str.is_case_insensitive_equal (once "target") then
+						set_is_target_object_state_retrieval_enabled (True)
 
-						if property_setting_table.has (l_name) then
-							property_setting_table.item (l_name).call ([l_value])
-						end
+					elseif l_str.is_case_insensitive_equal (once "argument") then
+						set_is_argument_object_state_retrieval_enabled (True)
+
+					elseif l_str.is_case_insensitive_equal (once "result") then
+						set_is_query_result_object_state_retrieval_enabled (True)
 					end
 					l_pairs.forth
 				end
@@ -89,47 +77,6 @@ feature -- Setting
 			is_query_result_object_state_retrieval_enabled := b
 		ensure
 			is_query_result_object_state_retrieval_enabled_set: is_query_result_object_state_retrieval_enabled = b
-		end
-
-feature{NONE} -- Config setting
-
-	set_target_object_state_retrieval_property (a_value: STRING) is
-			-- Set `is_target_object_state_retrieval_enabled' according to `a_value'.
-		do
-			if a_value.is_boolean then
-				set_is_target_object_state_retrieval_enabled (a_value.to_boolean)
-			end
-		end
-
-	set_argument_object_state_retrieval_property (a_value: STRING) is
-			-- Set `is_argument_object_state_retrieval_enabled' according to `a_value'.
-		do
-			if a_value.is_boolean then
-				set_is_argument_object_state_retrieval_enabled (a_value.to_boolean)
-			end
-		end
-
-	set_query_result_object_state_retrieval_property (a_value: STRING) is
-			-- Set `is_query_result_object_state_retrieval_enabled' according to `a_value'.
-		do
-			if a_value.is_boolean then
-				set_is_query_result_object_state_retrieval_enabled (a_value.to_boolean)
-			end
-		end
-
-	property_setting_table: HASH_TABLE [PROCEDURE [ANY, TUPLE [STRING]], STRING];
-			-- Table for agents to set properties
-			-- `[agent to set property, property name]
-
-	initialize_property_settint_table is
-			-- Initialize `property_setting_table'.
-		do
-			create property_setting_table.make (2)
-			property_setting_table.put (agent set_target_object_state_retrieval_property, "target")
-			property_setting_table.put (agent set_argument_object_state_retrieval_property, "argument")
-			property_setting_table.put (agent set_query_result_object_state_retrieval_property, "result")
-		ensure
-			property_setting_table_attached: property_setting_table /= Void
 		end
 
 note
