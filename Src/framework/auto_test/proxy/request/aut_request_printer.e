@@ -681,6 +681,7 @@ feature{NONE} -- Precondition satisfaction
 					[a_request.target_type.associated_class.name,
 					a_request.feature_to_call.feature_name,
 					a_request.test_case_index,
+					a_request.start_time,
 					a_request.operand_indexes,
 					a_request.operand_types,
 					a_request.argument_count,

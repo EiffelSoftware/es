@@ -13,7 +13,6 @@ inherit
 	ANY
 
 	EXCEPTIONS
-		export {NONE} all end
 
 	ARGUMENTS
 		export {NONE} all end
@@ -45,7 +44,7 @@ feature {NONE} -- Initialization
 			l_port: INTEGER
 			l_tc_serialization_file_name: STRING
 		do
-			if argument_count < 5 then
+			if argument_count < 6 then
 				check Wrong_number_of_arguments: False end
 			end
 				-- Read command line argument
@@ -54,11 +53,14 @@ feature {NONE} -- Initialization
 			byte_code_feature_body_id := argument (3).to_integer
 			byte_code_feature_pattern_id := argument (4).to_integer
 			l_log_filename := argument (5)
+			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
-			if argument_count = 6 then
-				l_tc_serialization_file_name := argument (6)
+			if argument_count = 8 then
+				only_serialize_failed_test_case := argument (7).to_boolean
+				l_tc_serialization_file_name := argument (8)
 			else
+				only_serialize_failed_test_case := True
 				l_tc_serialization_file_name := ""
 			end
 
@@ -172,6 +174,13 @@ feature -- Status report
 				a_type = predicate_evaluation_request_flag
 		end
 
+	should_generate_log: BOOLEAN
+			-- Should interpreter log be generated?
+
+	only_serialize_failed_test_case: BOOLEAN
+			-- Should only failed test cases be serialized?
+			-- Only has effect when serialization is enabled.
+
 feature -- Access
 
 	variable_at_index (a_index: INTEGER): detachable ANY
@@ -258,6 +267,7 @@ feature {NONE} -- Handlers
 			l_canned_objects: STRING
 			l_serializer: like test_case_serializer
 		do
+			is_failing_test_case := False
 			if attached {TUPLE [l_byte_code: STRING; l_data: detachable ANY]} last_request as l_last_request then
 				l_bcode := l_last_request.l_byte_code
 				if l_bcode.count = 0 then
@@ -336,11 +346,13 @@ feature {NONE} -- Error Reporting
 			a_reason_attached: a_reason /= Void
 			not_a_reason_is_empty: not a_reason.is_empty
 		do
-			log_file.put_string ("<error type='internal'>%N")
-			log_file.put_string ("%T<reason>%N<![CDATA[%N")
-			log_file.put_string (a_reason)
-			log_file.put_string ("]]>%N</reason>%N")
-			log_file.put_string ("</error>%N")
+			if should_generate_log then
+				log_file.put_string ("<error type='internal'>%N")
+				log_file.put_string ("%T<reason>%N<![CDATA[%N")
+				log_file.put_string (a_reason)
+				log_file.put_string ("]]>%N</reason>%N")
+				log_file.put_string ("</error>%N")
+			end
 		end
 
 feature {NONE} -- Logging
@@ -365,7 +377,9 @@ feature {NONE} -- Logging
 		require
 			a_message_not_void: a_message /= Void
 		do
-			log_file.put_string (a_message)
+			if should_generate_log then
+				log_file.put_string (a_message)
+			end
 		end
 
 	report_trace
@@ -598,6 +612,7 @@ feature {NONE} -- Byte code
 			-- Execute `procedure' in a protected way.
 		local
 			failed: BOOLEAN
+			fault_id: STRING
 		do
 			is_last_protected_execution_successfull := False
 			if not failed then
@@ -607,6 +622,11 @@ feature {NONE} -- Byte code
 		rescue
 			failed := True
 			report_trace
+
+				-- Book keeps found faults.
+			if not is_last_invariant_violated then
+				is_failing_test_case := not (recipient_name.is_equal (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition)
+			end
 --			if exception = Class_invariant then
 --					-- A class invariant cannot be recovered from since we
 --					-- don't know how many and what objects are now invalid
@@ -696,11 +716,16 @@ feature{NONE} -- Error message
 
 	invalid_request_type_error: STRING = "Request type is invalid."
 
-feature{NONE} -- Invariant checking
+feature{ITP_TEST_CASE_SERIALIZER} -- Invariant checking
 
 	is_last_invariant_violated: BOOLEAN
 			-- Is the class invariant violated when `check_invariant' is invoked
 			-- the last time?
+
+	is_failing_test_case: BOOLEAN
+			-- Is current test case failing, meaning that it reveals a fault?
+
+feature{NONE} -- Invariant checking
 
 	invariant_violating_object_index: INTEGER
 			-- Index of the object which violates it class invariant
@@ -1439,7 +1464,7 @@ feature -- Test case serialization
 	log_test_case_serialization is
 			-- Log serialization of the last test case into log file.
 		do
-			if test_case_serializer.is_test_case_valid then
+			if test_case_serializer.is_test_case_valid and then (only_serialize_failed_test_case implies is_failing_test_case) then
 				test_case_serialization_file.put_string (test_case_serializer.string_representation)
 			end
 		end

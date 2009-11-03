@@ -210,13 +210,15 @@ feature {NONE} -- Implementation
 			-- Process `a_request'.
 		local
 			l_state_response: AUT_OBJECT_STATE_RESPONSE
-			l_normal_response: AUT_NORMAL_RESPONSE
 		do
-			if last_response.is_bad then
-				create l_state_response.make_with_bad
+			if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
+				if attached {AUT_OBJECT_STATE_RESPONSE} l_normal_response as l_sresponse then
+					l_state_response := l_sresponse
+				else
+					create l_state_response.make_from_normal_response (l_normal_response)
+				end
 			else
-				l_normal_response ?= last_response
-				create l_state_response.make_from_normal_response (l_normal_response)
+				create l_state_response.make_with_bad
 			end
 			a_request.set_response (l_state_response)
 		end

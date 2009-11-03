@@ -191,7 +191,16 @@ feature -- Execution
 
 				l_conf.set_is_random_cursor_used (l_ap.is_random_cursor_used)
 
+					-- Set test case serialization arguments.
 				l_conf.set_is_test_case_serialization_enabled (l_ap.is_test_case_serialization_enabled)
+				l_conf.set_is_passing_test_case_serialization_enabled (l_ap.is_passing_test_cases_serialization_enabled)
+				l_conf.set_is_failing_test_case_serialization_enabled (l_ap.is_failing_test_cases_serialization_enabled)
+
+				l_conf.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
+
+				l_conf.set_is_on_the_fly_test_case_generation_enabled (l_ap.is_on_the_fly_test_case_generation_enabled)
+
+				l_conf.set_is_proxy_log_disabled (l_ap.is_proxy_log_disabled)
 
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then

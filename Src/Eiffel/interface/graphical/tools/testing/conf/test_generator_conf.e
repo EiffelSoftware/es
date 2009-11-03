@@ -46,6 +46,7 @@ feature {NONE} -- Initialization
 			is_slicing_enabled_cache := a_preference.autotest_slice_minimization.value
 			is_ddmin_enabled_cache := a_preference.autotest_ddmin_minimization.value
 			is_html_output_cache := a_preference.autotest_html_statistics.value
+			is_on_the_fly_test_case_generation_enabled_cache := True
 		end
 
 feature -- Access
@@ -197,6 +198,32 @@ feature -- Access
 			good_result: Result = is_random_cursor_used_cache
 		end
 
+	is_interpreter_log_enabled: BOOLEAN
+			-- Should messages from the interpreter be logged?
+			-- Default: False
+		do
+			Result := is_interpreter_log_enabled_cache
+		ensure then
+			good_result: Result = is_interpreter_log_enabled_cache
+		end
+
+	is_on_the_fly_test_case_generation_enabled: BOOLEAN
+			-- Is test case generation on the fly enabled?
+		do
+			Result := is_on_the_fly_test_case_generation_enabled_cache
+		ensure then
+			good_result: Result = is_on_the_fly_test_case_generation_enabled_cache
+		end
+
+	is_proxy_log_disabled: BOOLEAN
+			-- Should proxy log be disabled?
+			-- Default: False
+		do
+			Result := is_proxy_log_disabled_cache
+		ensure then
+			good_result: Result = is_proxy_log_disabled_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -289,7 +316,22 @@ feature -- Access: cache
 			-- Cache for `is_random_cursor_used'
 
 	is_test_case_serialization_enabled_cache: BOOLEAN
-			-- Cache for `is_test_case_serialization_enabled'			
+			-- Cache for `is_test_case_serialization_enabled'	
+
+	is_passing_test_case_serialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_serialization_enabled_cache'
+
+	is_failing_test_case_serialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_serialization_enabled_cache'
+
+	is_interpreter_log_enabled_cache: BOOLEAN
+			-- Cache for `is_interpreter_log_enabled'
+
+	is_on_the_fly_test_case_generation_enabled_cache: BOOLEAN
+			-- Cache for `on_the_fly_test_case_generation_enabled_cache'	
+
+	is_proxy_log_disabled_cache: BOOLEAN
+			-- Cache for `is_proxy_log_disabled'			
 
 feature -- Status report
 
@@ -443,6 +485,20 @@ feature -- Test case serialization
 			Result := is_test_case_serialization_enabled_cache
 		ensure then
 			result_set: Result = is_test_case_serialization_enabled_cache
+		end
+
+	is_passing_test_case_serialization_enabled: BOOLEAN is
+			-- Is passing test case serialization enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+		do
+			Result := is_passing_test_case_serialization_enabled_cache
+		end
+
+	is_failing_test_case_serialization_enabled: BOOLEAN is
+			-- Is failing test case serialization enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+		do
+			Result := is_failing_test_case_serialization_enabled_cache
 		end
 
 feature -- Status setting
@@ -698,6 +754,46 @@ feature -- Status setting
 			is_test_case_serialization_enabled_cache := b
 		ensure
 			is_test_case_serialization_enabled_set: is_test_case_serialization_enabled = b
+		end
+
+	set_is_passing_test_case_serialization_enabled (b: BOOLEAN) is
+			-- Set `is_passing_test_case_serialization_enabled' with `b'.
+		do
+			is_passing_test_case_serialization_enabled_cache := b
+		ensure
+			is_passing_test_case_serialization_enabled_set: is_passing_test_case_serialization_enabled = b
+		end
+
+	set_is_failing_test_case_serialization_enabled (b: BOOLEAN) is
+			-- Set `is_failing_test_case_serialization_enabled' with `b'.
+		do
+			is_failing_test_case_serialization_enabled_cache := b
+		ensure
+			is_failing_test_case_serialization_enabled_set: is_failing_test_case_serialization_enabled = b
+		end
+
+	set_is_interpreter_log_enabled (b: BOOLEAN)
+			-- Set `is_interpreter_log_enabled' with `b'.
+		do
+			is_interpreter_log_enabled_cache := b
+		ensure
+			is_interpreter_log_enabled_set: is_interpreter_log_enabled = b
+		end
+
+	set_is_on_the_fly_test_case_generation_enabled (b: BOOLEAN)
+			-- Set `on_the_fly_test_case_generation_enabled' with `b'.
+		do
+			is_on_the_fly_test_case_generation_enabled_cache := b
+		ensure
+			on_the_fly_test_case_generation_enabled_set: is_on_the_fly_test_case_generation_enabled = b
+		end
+
+	set_is_proxy_log_disabled (b: BOOLEAN)
+			-- Set `is_proxy_log_disabled' with `b'.
+		do
+			is_proxy_log_disabled_cache := b
+		ensure
+			is_proxy_log_disabled_set: is_proxy_log_disabled = b
 		end
 
 note

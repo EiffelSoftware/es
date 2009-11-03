@@ -70,7 +70,10 @@ feature{NONE} -- Initialization
 			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
 			l_integer_bound_option: AP_STRING_OPTION
 			l_use_random_cursor_option: AP_FLAG
-			l_test_case_serialization_option: AP_FLAG
+			l_test_case_serialization_option: AP_STRING_OPTION
+			l_interpreter_log_enabled: AP_FLAG
+			l_on_the_fly_tc_flag: AP_FLAG
+			l_disable_proxy_log_flag: AP_FLAG
 			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
@@ -234,8 +237,20 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_use_random_cursor_option)
 
 			create l_test_case_serialization_option.make_with_long_form ("serialization")
-			l_test_case_serialization_option.set_description ("Enable test case serialization. When enabled, Default is False.")
+			l_test_case_serialization_option.set_description ("Enable test case serialization. The value is a string consisting of letter 's' or 'f', indicating passing and failing test cases, respectively. Default: not enabled")
 			parser.options.force_last (l_test_case_serialization_option)
+
+			create l_interpreter_log_enabled.make_with_long_form ("interpreter-logged")
+			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Default: False.")
+			parser.options.force_last (l_interpreter_log_enabled)
+
+			create l_on_the_fly_tc_flag.make_with_long_form ("on-the-fly-tc")
+			l_on_the_fly_tc_flag.set_description ("Is on-the-fly test case generation enabled? Default: False")
+			parser.options.force_last (l_on_the_fly_tc_flag)
+
+			create l_disable_proxy_log_flag.make_with_long_form ("disable-proxy-log")
+			l_disable_proxy_log_flag.set_description ("Should proxy log be disabled? Default: False")
+			parser.options.force_last (l_disable_proxy_log_flag)
 
 			parser.parse_list (a_arguments)
 
@@ -490,6 +505,22 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				is_test_case_serialization_enabled := l_test_case_serialization_option.was_found
+				if is_test_case_serialization_enabled then
+					is_passing_test_cases_serialization_enabled := l_test_case_serialization_option.parameter.index_of ('s', 1) > 0
+					is_failing_test_cases_serialization_enabled := l_test_case_serialization_option.parameter.index_of ('f', 1) > 0
+				end
+			end
+
+			if not error_handler.has_error then
+				is_interpreter_log_enabled := l_interpreter_log_enabled.was_found
+			end
+
+			if not error_handler.has_error then
+				is_on_the_fly_test_case_generation_enabled := l_on_the_fly_tc_flag.was_found
+			end
+
+			if not error_handler.has_error then
+				is_proxy_log_disabled := l_disable_proxy_log_flag.was_found
 			end
 
 --			if parser.parameters.count = 0 then
@@ -709,6 +740,28 @@ feature -- Status report
 
 	is_test_case_serialization_enabled: BOOLEAN
 			-- Is test case serialization enabled?
+			-- Default: False
+
+	is_passing_test_cases_serialization_enabled: BOOLEAN
+			-- Is test case serialization for passing test cases enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+			-- Default: False
+
+	is_failing_test_cases_serialization_enabled: BOOLEAN
+			-- Is test case serialization for failing test cases enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+			-- Default: False
+
+	is_interpreter_log_enabled: BOOLEAN
+			-- Is the messages from the interpreter logged?
+			-- Default: False
+
+	is_on_the_fly_test_case_generation_enabled: BOOLEAN
+			-- Is on-the-fly test case generation enabled?
+			-- Default: False
+
+	is_proxy_log_disabled: BOOLEAN
+			-- Should proxy log be disabled?
 			-- Default: False
 
 feature {NONE} -- Constants

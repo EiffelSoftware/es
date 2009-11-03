@@ -143,18 +143,18 @@ def print_test_case (body, index_of_tc):
     for l in body:
         s = s + l
         
-    p = re.compile ("<class>(.*)</class>.*<test\_case>(.*)</test\_case>.*<types>(.*)</types>.*<trace>(.*)</trace>.*<object\_state>(.*)</object\_state>.*<data_length>(.*)</data_length>.*<data>(.*)</data>", re.MULTILINE | re.DOTALL)
+    p = re.compile ("<class>(.*)</class>.*<time>(.*)</time>.*<test\_case>(.*)</test\_case>.*<types>(.*)</types>.*<trace>(.*)</trace>.*<object\_state>(.*)</object\_state>.*<data_length>(.*)</data_length>.*<data>(.*)</data>", re.MULTILINE | re.DOTALL)
     m = p.search (s)    
-    trace = m.group(4)
+    trace = m.group(5)
     tc_type = test_case_type (trace)
     if tc_type['type'] in ('pass', 'failed'):
         class_name = strip_heading_trailing_newline (m.group(1)) 
-        test_case= strip_heading_trailing_newline (m.group(2))
-        types = strip_heading_trailing_newline (m.group(3))    
-        object_state = m.group(5)
-        data_length = m.group(6)
+        test_case= strip_heading_trailing_newline (m.group(3))
+        types = strip_heading_trailing_newline (m.group(4))    
+        object_state = m.group(6)
+        data_length = m.group(7)
         #data = strip_heading_trailing_newline (strip_heading_trailing_newline (m.group(7)).lstrip('<![CDATA').rstrip(']]>'))    
-        data = m.group(7)
+        data = m.group(8)
         data = data.lstrip('<![CDATA')
         data = data.rstrip("]]>")
         p2 = re.compile ("\.(.+)")

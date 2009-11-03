@@ -78,74 +78,8 @@ feature -- Access
 		deferred
 		end
 
-	max_precondition_search_tries: INTEGER
-			-- Max times to search for an object combination satisfying precondition of a feature.
-			-- 0 means search until a satisfying object combination is found.
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	max_precondition_search_time: INTEGER
-			-- Maximal time (in second) that can be spent in searching for
-			-- objects satisfying precondition of a feature
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	max_candidate_count: INTEGER
-			-- Max number of returned candidates that satisfy the precondition
-			-- of the feature to call.
-			-- 0 means no limit.
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	object_selection_for_precondition_satisfaction_rate: INTEGER
-			-- Possibility [0-100] under which smart object selection for precondition satisfaction
-			-- is used.
-			-- Only have effect when precondition evaluation is enabled.
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	smt_enforce_old_value_rate: INTEGER is
-			-- Possibility [0-100] to enforce SMT solver to choose an already used value.
-			-- Default is 25
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	smt_use_predefined_value_rate: INTEGER is
-			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers.
-			-- Default is 25
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	integer_lower_bound: INTEGER is
-			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
-			-- Default is -512.
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	integer_upper_bound: INTEGER is
-			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
-			-- Default is 512.
-		require
-			usable: is_interface_usable
-		deferred
-		end
-
-	is_random_cursor_used: BOOLEAN is
-			-- When searching in predicate pool, should random cursor be used?
+	is_interpreter_log_enabled: BOOLEAN
+			-- Should messages from the interpreter be logged?
 			-- Default: False
 		require
 			usable: is_interface_usable
@@ -196,6 +130,21 @@ feature -- Status report
 		deferred
 		end
 
+	is_on_the_fly_test_case_generation_enabled: BOOLEAN
+			-- Is test case generation on the fly enabled?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_proxy_log_disabled: BOOLEAN
+			-- Should proxy log be disabled?
+			-- Default: False
+		require
+			usable: is_interface_usable
+		deferred
+		end
+		
 feature -- Object state retrieval
 
 	is_target_state_retrieved: BOOLEAN is
@@ -277,6 +226,80 @@ feature -- Precondition satisfaction
 		deferred
 		end
 
+	max_precondition_search_tries: INTEGER
+			-- Max times to search for an object combination satisfying precondition of a feature.
+			-- 0 means search until a satisfying object combination is found.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	max_precondition_search_time: INTEGER
+			-- Maximal time (in second) that can be spent in searching for
+			-- objects satisfying precondition of a feature
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	max_candidate_count: INTEGER
+			-- Max number of returned candidates that satisfy the precondition
+			-- of the feature to call.
+			-- 0 means no limit.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	object_selection_for_precondition_satisfaction_rate: INTEGER
+			-- Possibility [0-100] under which smart object selection for precondition satisfaction
+			-- is used.
+			-- Only have effect when precondition evaluation is enabled.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	smt_enforce_old_value_rate: INTEGER is
+			-- Possibility [0-100] to enforce SMT solver to choose an already used value.
+			-- Default is 25
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	smt_use_predefined_value_rate: INTEGER is
+			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers.
+			-- Default is 25
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	integer_lower_bound: INTEGER is
+			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is -512.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	integer_upper_bound: INTEGER is
+			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is 512.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_random_cursor_used: BOOLEAN is
+			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Object State Exploration
 
 	is_object_state_exploration_enabled: BOOLEAN is
@@ -288,6 +311,18 @@ feature -- Test case serialization
 
 	is_test_case_serialization_enabled: BOOLEAN is
 			-- Is test case serialization enabled?
+		deferred
+		end
+
+	is_passing_test_case_serialization_enabled: BOOLEAN is
+			-- Is passing test case serialization enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+		deferred
+		end
+
+	is_failing_test_case_serialization_enabled: BOOLEAN is
+			-- Is failing test case serialization enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
 		deferred
 		end
 

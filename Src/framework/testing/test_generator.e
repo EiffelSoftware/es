@@ -317,33 +317,35 @@ feature {NONE} -- Basic operations
 									l_task.cancel
 								else
 									l_task.step
-									l_repo := session.result_repository_builder.result_repository
-									l_witnesses := l_repo.witnesses
-										-- TODO: it is possible that more than one witness is added per `step', so we need to
-										--       check for the last `k' witnesses added (Arno: 05/03/2009)
-									if not l_witnesses.is_empty and then l_witnesses.last /= last_witness then
-										l_witness := l_witnesses.last
-										if l_witness.is_fail then
-												-- If no minimization algorithm is provided, we disable test creation.
-											if
-												session.options.is_minimization_enabled and then
-												not session.used_witnesses.there_exists (agent {AUT_WITNESS}.is_same_bug (l_witness))
-											then
-												l_minimize_task := minimize_task
-												if l_minimize_task = Void then
-													l_itp := new_interpreter
-													if l_itp /= Void then
-														create l_minimize_task.make (l_itp, system, l_error_handler)
-														minimize_task := l_minimize_task
+									if configuration.is_on_the_fly_test_case_generation_enabled then
+										l_repo := session.result_repository_builder.result_repository
+										l_witnesses := l_repo.witnesses
+											-- TODO: it is possible that more than one witness is added per `step', so we need to
+											--       check for the last `k' witnesses added (Arno: 05/03/2009)
+										if not l_witnesses.is_empty and then l_witnesses.last /= last_witness then
+											l_witness := l_witnesses.last
+											if l_witness.is_fail then
+													-- If no minimization algorithm is provided, we disable test creation.
+												if
+													session.options.is_minimization_enabled and then
+													not session.used_witnesses.there_exists (agent {AUT_WITNESS}.is_same_bug (l_witness))
+												then
+													l_minimize_task := minimize_task
+													if l_minimize_task = Void then
+														l_itp := new_interpreter
+														if l_itp /= Void then
+															create l_minimize_task.make (l_itp, system, l_error_handler)
+															minimize_task := l_minimize_task
+														end
+													end
+													if l_minimize_task /= Void then
+														l_minimize_task.set_witness (l_witness)
+														l_minimize_task.start
 													end
 												end
-												if l_minimize_task /= Void then
-													l_minimize_task.set_witness (l_witness)
-													l_minimize_task.start
-												end
 											end
+											last_witness := l_witness
 										end
-										last_witness := l_witness
 									end
 								end
 							else
@@ -582,7 +584,9 @@ feature{NONE} -- Test case generation and execution
 
 				l_session := session
 				l_error_handler := l_session.error_handler
-				l_itp.add_observer (l_session.result_repository_builder)
+				if configuration.is_on_the_fly_test_case_generation_enabled then
+					l_itp.add_observer (l_session.result_repository_builder)
+				end
 				l_itp.set_is_logging_enabled (True)
 
 				create l_strategy.make (l_itp, system, l_session.error_handler)

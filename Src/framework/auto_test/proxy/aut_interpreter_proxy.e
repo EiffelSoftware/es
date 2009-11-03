@@ -901,15 +901,17 @@ feature -- Execution
 	parse_object_state_response is
 			-- Parse response from the last object state request.
 		local
-			l_response: AUT_OBJECT_STATE_RESPONSE
-			l_features: LIST [STRING]
-			l_table: HASH_TABLE [detachable STRING, STRING]
+--			l_response: AUT_OBJECT_STATE_RESPONSE
+--			l_features: LIST [STRING]
+--			l_table: HASH_TABLE [detachable STRING, STRING]
 		do
 			if attached {AUT_OBJECT_STATE_REQUEST} last_request as l_request then
 				retrieve_object_state_response
-				l_features := l_request.query_names
-				create l_table.make (l_features.count)
-				l_features.do_all (agent l_table.force (Void, ?))
+--				l_features := l_request.query_names
+--				create l_table.make (l_features.count)
+--				l_features.do_all (agent l_table.force (Void, ?))
+				check last_response /= Void end
+				report_event (last_response)
 				if is_logging_enabled then
 					last_response.process (response_printer)
 				end
@@ -1103,9 +1105,9 @@ feature{NONE} -- Process scheduling
 				-- We need `injected_feature_body_id'-1 because the underlying C array is 0-based.
 			l_body_id := injected_feature_body_id - 1
 			if configuration.is_test_case_serialization_enabled then
-				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, test_case_serialization_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, configuration.is_interpreter_log_enabled.out , (not configuration.is_passing_test_case_serialization_enabled).out, test_case_serialization_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 			else
-				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, configuration.is_interpreter_log_enabled.out, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 			end
 
 			l_workdir := system.lace.directory_name

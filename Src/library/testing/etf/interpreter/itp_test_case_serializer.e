@@ -49,6 +49,11 @@ feature -- Access
 				Result.append (class_name)
 				Result.append ("%N</class>%N")
 
+					-- Synthesize time.
+				Result.append ("<time>")
+				Result.append (time.out)
+				Result.append ("</time>%N")
+
 					-- Synthesize test case body.
 				Result.append ("<test_case>%N")
 
@@ -144,7 +149,7 @@ feature -- Access
 feature -- Status report
 
 	is_test_case_valid: BOOLEAN
-			-- Is the last test case set by `setup_test_case' valid?			
+			-- Is the last test case set by `setup_test_case' valid?
 
 feature -- Basic operations
 
@@ -154,10 +159,11 @@ feature -- Basic operations
 			-- otherwise, set `is_test_case_valid' to False'.
 		do
 				-- Check if `a_test_case' contains correct information.
-			if attached{detachable TUPLE [class_name: STRING; feature_name: STRING; test_case_index: INTEGER; operands: SPECIAL [INTEGER]; types: SPECIAL [STRING]; argument_count: INTEGER; is_creation: BOOLEAN; is_query: BOOLEAN]} a_test_case as l_tc then
+			if attached{detachable TUPLE [class_name: STRING; feature_name: STRING; test_case_index: INTEGER; time: INTEGER; operands: SPECIAL [INTEGER]; types: SPECIAL [STRING]; argument_count: INTEGER; is_creation: BOOLEAN; is_query: BOOLEAN]} a_test_case as l_tc then
 				class_name := l_tc.class_name
 				feature_name := l_tc.feature_name
 				test_case_index := l_tc.test_case_index
+				time := l_tc.time
 				operands := l_tc.operands
 				types := l_tc.types
 				argument_count := l_tc.argument_count
@@ -302,6 +308,9 @@ feature{NONE} -- Implementation
 
 	test_case_index: INTEGER
 			-- Test case index
+
+	time: INTEGER
+			-- Time in millisecond relative to the starting of current test session
 
 	operands: detachable SPECIAL [INTEGER]
 			-- Object index of operands for the test case
