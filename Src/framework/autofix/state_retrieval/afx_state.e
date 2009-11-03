@@ -9,6 +9,9 @@ class
 
 inherit
 	DS_HASH_SET [AFX_PREDICATE]
+		redefine
+			make
+		end
 
 	REFACTORING_HELPER
 		undefine
@@ -18,6 +21,17 @@ inherit
 
 create
 	make
+
+feature{NONE} -- Initialization
+
+	make (n: INTEGER) is
+			-- Create an empty container and allocate
+			-- memory space for at least `n' items.
+			-- Set equality tester to {AFX_PREDICATE_EQUALITY_TESTER}.
+		do
+			Precursor (n)
+			set_equality_tester (create {AFX_PREDICATE_EQUALITY_TESTER})
+		end
 
 feature -- Access
 

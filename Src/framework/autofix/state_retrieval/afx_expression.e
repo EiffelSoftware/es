@@ -22,14 +22,6 @@ feature -- Access
 	class_: CLASS_C
 			-- Context lass of `feature_'
 
-	name: STRING
-			-- Name of current item
-		deferred
-		ensure
-			result_attached: Result /= Void
-			result_valid: not Result.is_empty
-		end
-
 	text: STRING
 			-- Expression text of current item
 		deferred
@@ -40,13 +32,6 @@ feature -- Access
 			-- Should be a deanchered and resolved generic type.
 		deferred
 		end
-
---	body: STRING
---			-- String representation of the expression of current item.
---		deferred
---		ensure
---			result_attached: Result /= Void
---		end
 
 feature -- Status report
 
@@ -73,14 +58,6 @@ feature -- Setting
 			class_ := a_class
 		ensure
 			class_set: class_ = a_class
-		end
-
-	set_name (a_name: like name)
-			-- Set `name' with `a_name'.
-			-- Make a new copy of `a_name'.
-		deferred
-		ensure
-			good_result: name.is_equal (a_name)
 		end
 
 end

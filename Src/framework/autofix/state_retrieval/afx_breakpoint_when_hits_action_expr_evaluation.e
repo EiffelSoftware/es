@@ -53,7 +53,7 @@ feature -- Basic operations
 				l_exprs.after
 			loop
 				l_value := a_dm.expression_evaluation (l_exprs.item_for_iteration.text)
-				create l_state_value.make (l_exprs.item_for_iteration, l_value)
+				create l_state_value.make (l_exprs.item_for_iteration, expression_value_from_dump (l_value))
 				l_concrete_state.force_last (l_state_value)
 				l_exprs.forth
 			end
@@ -70,6 +70,20 @@ feature -- Basic operations
 				l_actions.forth
 			end
 			l_actions.go_to (l_cursor)
+		end
+
+	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE): AFX_EXPRESSION_VALUE
+			-- Expression value from `a_dump_value'
+		do
+			if a_dump_value = Void or else a_dump_value.is_invalid_value then
+				create {AFX_NONSENSICAL_VALUE} Result
+
+			elseif a_dump_value.is_type_boolean then
+				create {AFX_BOOLEAN_VALUE} Result.make (a_dump_value.output_for_debugger.to_boolean)
+
+			elseif a_dump_value.is_type_integer_32 then
+				create {AFX_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
+			end
 		end
 
 end

@@ -59,6 +59,7 @@ feature -- Execute
 			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
 			l_bp_manager.set_breakpoints (l_state, config.state_recipient)
 			l_bp_manager.toggle_breakpoints (True)
+
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
 			debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
 			start_debugger
@@ -88,7 +89,7 @@ feature{NONE} -- Implementation
 		end
 
 	on_hit (a_breakpoint: BREAKPOINT; a_state: AFX_STATE) is
-			--
+			-- Action to be performed when `a_breakpoint' is hit and `a_state' is retrieved
 		do
 			io.put_string ("===================================================%N")
 			io.put_string ("BP_" + a_breakpoint.breakable_line_number.out + "%N")
@@ -97,7 +98,7 @@ feature{NONE} -- Implementation
 			until
 				a_state.after
 			loop
-				io.put_string (a_state.item_for_iteration.expression.name + " = " + a_state.item_for_iteration.value.output_for_debugger + "%N")
+				io.put_string (a_state.item_for_iteration.expression.text + " = " + a_state.item_for_iteration.value.out + "%N")
 				a_state.forth
 			end
 		end

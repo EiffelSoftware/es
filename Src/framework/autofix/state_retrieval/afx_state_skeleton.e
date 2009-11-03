@@ -38,16 +38,18 @@ feature{NONE} -- Initialization
 		do
 			l_queries := supported_queries_of_type (a_class.actual_type)
 			make (l_queries.count)
+			set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+
 			from
 				l_queries.start
 			until
 				l_queries.after
 			loop
 				create l_item.make_with_text (a_class, l_queries.item_for_iteration, l_queries.item_for_iteration.feature_name)
-				l_item.set_name (l_queries.item_for_iteration.feature_name)
 				force_last (l_item)
 				l_queries.forth
 			end
+
 		end
 
 	make_with_accesses (a_accesses: LIST [AFX_ACCESS])
@@ -57,6 +59,8 @@ feature{NONE} -- Initialization
 			l_expr: AFX_EXPRESSION
 		do
 			make (a_accesses.count)
+			set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+
 			l_cursor := a_accesses.cursor
 			from
 				a_accesses.start
@@ -64,7 +68,6 @@ feature{NONE} -- Initialization
 				a_accesses.after
 			loop
 				l_expr := a_accesses.item_for_iteration.expression
-				l_expr.set_name (l_expr.text)
 				force_last (l_expr)
 				a_accesses.forth
 			end

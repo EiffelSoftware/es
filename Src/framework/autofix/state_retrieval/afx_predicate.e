@@ -30,7 +30,7 @@ feature -- Access
 	expression: AFX_EXPRESSION
 			-- State item whose value is stored in Current
 
-	value: DUMP_VALUE
+	value: AFX_EXPRESSION_VALUE
 			-- Value
 
 	type: detachable TYPE_A
@@ -38,7 +38,7 @@ feature -- Access
 			-- If `has_error', return Void.
 		do
 			if not has_error then
-				Result := value.dynamic_class.actual_type
+				Result := value.type
 			end
 		end
 
