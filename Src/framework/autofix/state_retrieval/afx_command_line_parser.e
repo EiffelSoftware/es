@@ -49,15 +49,15 @@ feature -- Basic operations
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
 
-			create l_retrieve_state_option.make ('s', "state")
+			create l_retrieve_state_option.make ('s', "retrieve-state")
 			l_retrieve_state_option.set_description ("Retrieve system state at specified break points.")
 			l_parser.options.force_last (l_retrieve_state_option)
 
-			create l_recipient.make_with_long_form ("s-recipient")
+			create l_recipient.make_with_long_form ("recipient")
 			l_recipient.set_description ("Specify the recipient of the exception in the test case. The format is CLASS_NAME.feature_name. If this option is provided while the <feature_under_test> option is not provided, the value of <feature_under_test> will be set to current value as well.")
 			l_parser.options.force_last (l_recipient)
 
-			create l_feat_under_test.make_with_long_form ("s-feature-under-test")
+			create l_feat_under_test.make_with_long_form ("feature-under-test")
 			l_feat_under_test.set_description ("Specify the feature under test. The format is CLASS_NAME.feature_name. When presents, its value will overwrite the one which is set by <recipient>.")
 			l_parser.options.force_last (l_feat_under_test)
 
