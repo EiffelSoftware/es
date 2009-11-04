@@ -34,7 +34,7 @@ feature -- Access
 			-- Tool title.
 			-- Note: Do not call `tool.title' as it will create the tool unnecessarily!
 		do
-			Result := "Proof Assistant"
+			Result := "ProveIt"
 		end
 
 feature {NONE} -- Factory
