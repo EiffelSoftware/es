@@ -441,45 +441,6 @@ feature{NONE} -- Generation
 			end
 		end
 
-	final_argument_index (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): INTEGER is
-			-- 1-based argument index of an argument `a_name' in feature `a_feature'.
-			-- Resolve `a_name' in case that the argument name changes in inherited features.
-			-- If there is no argument called `a_name' in `a_feature', return 0.
-		local
-			l_round: INTEGER
-			l_arg_count: INTEGER
-			l_feature: detachable FEATURE_I
-			i: INTEGER
-		do
-			from
-				l_round := 1
-				l_feature := a_feature
-				l_arg_count := l_feature.argument_count
-			until
-				l_round > 2 or else Result > 0
-			loop
-				from
-					i := 1
-				until
-					Result > 0 or else i > l_arg_count
-				loop
-					if l_feature.arguments.item_name (i).is_case_insensitive_equal (a_name) then
-						Result := i
-					else
-						i := i + 1
-					end
-				end
-
-				if l_round = 1 then
-					l_feature := a_written_class.feature_of_rout_id_set (a_feature.rout_id_set)
-					if l_feature = Void then
-						l_round := l_round + 1
-					end
-				end
-				l_round := l_round + 1
-			end
-		end
-
 	normalized_string (a_string: STRING): STRING is
 			-- Normalized version of `a_string'.
 			-- Normalization means remoing all leading and trailing

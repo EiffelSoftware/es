@@ -88,6 +88,30 @@ feature -- Access
 			end
 		end
 
+	postcondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable AUT_EXPRESSION] is
+			-- List of postcondition of `a_feature' in `a_context_class'
+		local
+			l_asserts: LINKED_LIST [TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]]
+			l_data: TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]
+			l_assert: AUT_EXPRESSION
+			l_expressions: like predicate_assertions
+		do
+			create Result.make
+			l_asserts := contracts_of_feature_action.item ([a_feature, a_feature.body])
+			from
+				l_asserts.start
+			until
+				l_asserts.after
+			loop
+				l_data := l_asserts.item_for_iteration
+				if l_data.postcondition /= Void and then l_data.postcondition.assertions /= Void then
+					l_expressions := predicate_assertions (l_data.postcondition, l_data.written_in_feature.written_class, a_context_class)
+					Result.append (l_expressions)
+				end
+				l_asserts.forth
+			end
+		end
+
 feature{NONE} -- Implementation
 
 	record_ancestors_of_class (a_class: CLASS_C; a_ancestors: LIST [CLASS_C]; a_processed: detachable SEARCH_TABLE [INTEGER])

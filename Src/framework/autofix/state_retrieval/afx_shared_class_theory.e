@@ -1,0 +1,178 @@
+note
+	description: "Summary description for {AFX_SHARED_CLASS_THEORY}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	AFX_SHARED_CLASS_THEORY
+
+inherit
+	AFX_UTILITY
+
+	AFX_SMTLIB_CONSTANTS
+
+feature -- Access
+
+	class_theories: HASH_TABLE [AFX_CLASS_THEORY, CLASS_C]
+			-- Storage for class theories
+			-- Key is the class, value is the theory for that class
+		once
+			create Result.make (20)
+		end
+
+	smtlib_generator: AFX_SMTLIB_GENERATOR
+			-- SMTLIB generator
+		once
+			create Result.make
+		end
+
+feature -- Basic operations
+
+	resolved_class_theory (a_class: CLASS_C): AFX_CLASS_THEORY
+			-- SMTLIB theory for `a_class' with all qualified call resolved.
+		local
+			l_statements: LINKED_LIST [STRING]
+			l_processed: like class_with_prefix_set
+		do
+			l_processed := class_with_prefix_set
+
+			create Result.make (a_class)
+			resolved_class_theory_internal (create {AFX_CLASS_WITH_PREFIX}.make (a_class, ""), Result, l_processed)
+
+				-- Generate dummy function for expression "Void"
+			smtlib_generator.initialize_for_generation
+			smtlib_generator.generate_void_function
+			smtlib_generator.last_statements.do_all (agent (Result.functions).extend)
+		end
+
+feature{NONE} -- Implementation
+
+	class_with_prefix_set: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]
+			-- New set for class with prefix
+		do
+			create Result.make (5)
+			Result.set_equality_tester (class_with_prefix_equality_tester)
+		end
+
+
+	generate_class_theory (a_class: CLASS_C)
+			-- Generate class theory for `a_class' and store result in `class_theories'.
+		require
+			a_class_not_generated: not class_theories.has (a_class)
+		local
+			l_theory: AFX_CLASS_THEORY
+		do
+			create l_theory.make (a_class)
+
+				-- Generate functions.
+			smtlib_generator.initialize_for_generation
+			smtlib_generator.generate_functions (a_class)
+			smtlib_generator.last_statements.do_all (agent (l_theory.functions).extend)
+
+				-- Generate class invariant axioms.
+			smtlib_generator.initialize_for_generation
+			smtlib_generator.generate_invariant_axioms (a_class)
+			smtlib_generator.last_statements.do_all (agent (l_theory.axioms).extend)
+
+			smtlib_generator.initialize_for_generation
+			smtlib_generator.generate_current_function (a_class)
+			smtlib_generator.last_statements.do_all (agent (l_theory.functions).extend)
+
+			class_theories.put (l_theory, a_class)
+		ensure
+			a_class_generated: class_theories.has (a_class)
+		end
+
+	resolved_smt_statement (a_stmt: STRING; a_class_with_prefix: AFX_CLASS_WITH_PREFIX): TUPLE [resolved: STRING; mentioned_prefixes: like class_with_prefix_set]
+			-- Resolve SMTLIB statement `a_stmt' by solving all qualified calls in the context
+			-- of `a_class_with_prefix'. This means that all functions and axioms in the resolved
+			-- statement will be prefixed with `a_class_with_prefix'.
+			-- The resolved statement will be returned through `resolved'.
+			-- `mentioned_prefixes' contains all the prefixes are present in `a_stmt'.
+		local
+			l_mentioned_prefixes: like class_with_prefix_set
+			l_resolved: STRING
+			l_start_index, l_end_index, l_separator_index: INTEGER
+			l_done: BOOLEAN
+			l_section: STRING
+			l_prefix: STRING
+			l_class: STRING
+		do
+			l_mentioned_prefixes := class_with_prefix_set
+			create l_resolved.make (a_stmt.count)
+			from
+				l_end_index := -1
+			until
+				l_done
+			loop
+				l_start_index := a_stmt.substring_index (smtlib_prefix_opener, l_end_index + 2)
+				if l_start_index > 0 then
+						-- Separate the prefix section.
+					l_resolved.append (a_stmt.substring (l_end_index + 2, l_start_index - 1))
+					l_end_index := a_stmt.substring_index (smtlib_prefix_closer, l_start_index + 2)
+					check l_end_index > 0 end
+					l_section := a_stmt.substring (l_start_index + 2, l_end_index - 1)
+
+						-- Analyze the prefix and class part in the section.
+					l_separator_index := l_section.index_of (':', 1)
+					l_prefix := l_section.substring (1, l_separator_index - 1)
+					l_class := l_section.substring (l_separator_index + 1, l_section.count)
+
+						-- Generate resolved string.
+					l_resolved.append (a_class_with_prefix.prefix_)
+					l_resolved.append (l_prefix)
+					if l_class.is_empty  then
+						l_class := a_class_with_prefix.class_.name
+					end
+					l_mentioned_prefixes.force_last (create {AFX_CLASS_WITH_PREFIX}.make_with_class_name (l_class, a_class_with_prefix.prefix_ + l_prefix))
+				else
+					l_done := True
+				end
+			end
+			l_resolved.append (a_stmt.substring (l_end_index + 2, a_stmt.count))
+			Result := [l_resolved, l_mentioned_prefixes]
+		end
+
+	resolved_class_theory_internal (a_class_with_prefix: AFX_CLASS_WITH_PREFIX; a_theory: AFX_CLASS_THEORY; a_processed: like class_with_prefix_set)
+			-- SMT theory for `a_class' with prefix `a_prefix'
+		local
+			l_theory: AFX_CLASS_THEORY
+			l_statements: LINKED_LIST [STRING]
+			l_resolved: TUPLE [a_statement: STRING; a_mentioned_class: like class_with_prefix_set]
+			l_new: like class_with_prefix_set
+
+			l_class: CLASS_C
+		do
+			if not a_processed.has (a_class_with_prefix) then
+				a_processed.force_last (a_class_with_prefix)
+				l_class := a_class_with_prefix.class_
+
+					-- Generate theory for `l_class' if not yet generated.
+				if not class_theories.has (l_class) then
+					generate_class_theory (l_class)
+				end
+
+					-- Resolve statements in the theory of `l_class'.
+					-- Remove all prefixes.
+				l_theory := class_theories.item (l_class)
+				create l_statements.make
+				l_theory.statements.do_all (agent l_statements.extend)
+				l_new := class_with_prefix_set
+				from
+					l_statements.start
+				until
+					l_statements.after
+				loop
+					l_resolved := resolved_smt_statement (l_statements.item_for_iteration, a_class_with_prefix)
+					a_theory.extend (l_resolved.a_statement)
+					l_resolved.a_mentioned_class.subtraction (a_processed).do_all (agent l_new.force_last)
+					l_statements.forth
+				end
+
+					-- Process newly discovered classes.
+				l_new.do_all (agent resolved_class_theory_internal (?, a_theory, a_processed))
+			end
+		end
+
+end
