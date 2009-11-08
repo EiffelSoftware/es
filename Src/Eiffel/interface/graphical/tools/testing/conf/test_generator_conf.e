@@ -215,14 +215,23 @@ feature -- Access
 			good_result: Result = is_on_the_fly_test_case_generation_enabled_cache
 		end
 
-	is_proxy_log_disabled: BOOLEAN
-			-- Should proxy log be disabled?
-			-- Default: False
+	proxy_log_options: STRING
+			-- Proxy log options.
 		do
-			Result := is_proxy_log_disabled_cache
+			Result := is_proxy_log_options_cache
 		ensure then
-			good_result: Result = is_proxy_log_disabled_cache
+			good_result: Result = is_proxy_log_options_cache
 		end
+
+	is_console_output_enabled: BOOLEAN
+			-- Is console output enabled?
+			-- Default: True
+		do
+			Result := is_console_output_enabled_cache
+		ensure then
+			good_result: Result = is_console_output_enabled_cache
+		end
+
 
 feature -- Access: cache
 
@@ -282,9 +291,6 @@ feature -- Access: cache
 	is_citadel_test_generation_enabled_cache: like is_citadel_test_generation_enabled assign set_is_citadel_test_generation_enabled
 			-- Cache for `is_citadel_test_generation_enabled'
 
-	is_object_state_request_logged_cache: like is_object_state_request_logged
-			-- Cache for `is_object_state_request_logged'
-
 	max_candidate_count_cache: like max_candidate_count
 			-- Cache for `max_candidate_count'
 
@@ -315,9 +321,6 @@ feature -- Access: cache
 	is_random_cursor_used_cache: BOOLEAN
 			-- Cache for `is_random_cursor_used'
 
-	is_test_case_serialization_enabled_cache: BOOLEAN
-			-- Cache for `is_test_case_serialization_enabled'	
-
 	is_passing_test_case_serialization_enabled_cache: BOOLEAN
 			-- Cache for `is_passing_test_case_serialization_enabled_cache'
 
@@ -330,8 +333,11 @@ feature -- Access: cache
 	is_on_the_fly_test_case_generation_enabled_cache: BOOLEAN
 			-- Cache for `on_the_fly_test_case_generation_enabled_cache'	
 
-	is_proxy_log_disabled_cache: BOOLEAN
-			-- Cache for `is_proxy_log_disabled'			
+	is_proxy_log_options_cache: STRING
+			-- Cache for `is_proxy_log_options'	
+
+	is_console_output_enabled_cache: BOOLEAN
+			-- Cache for `is_console_output_enabled'		
 
 feature -- Status report
 
@@ -406,14 +412,6 @@ feature -- Object state retrieval
 			Result := object_state_config /= Void and then object_state_config.is_query_result_object_state_retrieval_enabled
 		end
 
-	is_object_state_request_logged: BOOLEAN
-			-- Should object state request be logged?
-		do
-			Result := is_object_state_request_logged_cache
-		ensure then
-			good_result: Result = is_object_state_request_logged_cache
-		end
-
 feature -- Precondition satisfaction
 
 	is_precondition_checking_enabled: BOOLEAN is
@@ -478,14 +476,6 @@ feature -- Object State Exploration
 		end
 
 feature -- Test case serialization
-
-	is_test_case_serialization_enabled: BOOLEAN is
-			-- Is test case serialization enabled?
-		do
-			Result := is_test_case_serialization_enabled_cache
-		ensure then
-			result_set: Result = is_test_case_serialization_enabled_cache
-		end
 
 	is_passing_test_case_serialization_enabled: BOOLEAN is
 			-- Is passing test case serialization enabled?
@@ -660,14 +650,6 @@ feature -- Status setting
 			good_result: max_precondition_search_time = a_time
 		end
 
-	set_is_state_request_logged (b: BOOLEAN) is
-			-- Set `is_object_state_request_logged' with `b'.
-		do
-			is_object_state_request_logged_cache := b
-		ensure
-			is_state_request_logged_cache_set: is_object_state_request_logged_cache = b
-		end
-
 	set_max_candidate_count (a_count: like max_candidate_count) is
 			-- Set `is_object_state_request_logged' with `a_count'.
 		do
@@ -748,14 +730,6 @@ feature -- Status setting
 			is_random_cursor_used_set: is_random_cursor_used = b
 		end
 
-	set_is_test_case_serialization_enabled (b: BOOLEAN) is
-			-- Set `is_test_case_serialization_enabled' with `b'.
-		do
-			is_test_case_serialization_enabled_cache := b
-		ensure
-			is_test_case_serialization_enabled_set: is_test_case_serialization_enabled = b
-		end
-
 	set_is_passing_test_case_serialization_enabled (b: BOOLEAN) is
 			-- Set `is_passing_test_case_serialization_enabled' with `b'.
 		do
@@ -788,12 +762,20 @@ feature -- Status setting
 			on_the_fly_test_case_generation_enabled_set: is_on_the_fly_test_case_generation_enabled = b
 		end
 
-	set_is_proxy_log_disabled (b: BOOLEAN)
-			-- Set `is_proxy_log_disabled' with `b'.
+	set_proxy_log_options (b: like proxy_log_options)
+			-- Set `proxy_log_options' with `b'.
 		do
-			is_proxy_log_disabled_cache := b
+			is_proxy_log_options_cache := b.twin
 		ensure
-			is_proxy_log_disabled_set: is_proxy_log_disabled = b
+			proxy_log_options_set: proxy_log_options ~ b
+		end
+
+	set_is_console_output_enabled (b: BOOLEAN)
+			-- Set `is_console_output_enabled'.
+		do
+			is_console_output_enabled_cache := b
+		ensure
+			is_console_output_enabled_set: is_console_output_enabled = b
 		end
 
 note

@@ -1,5 +1,4 @@
 note
-
 	description:
 
 		"AutoTest command line parser"
@@ -61,7 +60,6 @@ feature{NONE} -- Initialization
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
 			l_max_precondition_time_op: AP_INTEGER_OPTION
 			l_prepare_citadel_tests_option: AP_STRING_OPTION
-			l_object_state_logged_option: AP_FLAG
 			l_candidate_count_option: AP_INTEGER_OPTION
 			l_pool_statistics_logged_option: AP_FLAG
 			l_linear_constraint_solver_option: AP_STRING_OPTION
@@ -71,9 +69,10 @@ feature{NONE} -- Initialization
 			l_integer_bound_option: AP_STRING_OPTION
 			l_use_random_cursor_option: AP_FLAG
 			l_test_case_serialization_option: AP_STRING_OPTION
-			l_interpreter_log_enabled: AP_FLAG
+			l_interpreter_log_enabled: AP_STRING_OPTION
 			l_on_the_fly_tc_flag: AP_FLAG
-			l_disable_proxy_log_flag: AP_FLAG
+			l_proxy_log_option: AP_STRING_OPTION
+			l_console_log_option: AP_STRING_OPTION
 			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
@@ -200,10 +199,6 @@ feature{NONE} -- Initialization
 			l_prepare_citadel_tests_option.set_description ("Generate, from an existing proxy log given as next parameter, tests which CITADEL can use.")
 			parser.options.force_last (l_prepare_citadel_tests_option)
 
-			create l_object_state_logged_option.make_with_long_form ("object-state-logged")
-			l_object_state_logged_option.set_description ("Should object state request be logged. Default: False.")
-			parser.options.force_last (l_object_state_logged_option)
-
 			create l_candidate_count_option.make_with_long_form ("max-candidates")
 			l_candidate_count_option.set_description ("Max number of candidates that satisfy the precondition of the feature to call. 0 means no limit, default is 100.")
 			parser.options.force_last (l_candidate_count_option)
@@ -237,20 +232,24 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_use_random_cursor_option)
 
 			create l_test_case_serialization_option.make_with_long_form ("serialization")
-			l_test_case_serialization_option.set_description ("Enable test case serialization. The value is a string consisting of letter 's' or 'f', indicating passing and failing test cases, respectively. Default: not enabled")
+			l_test_case_serialization_option.set_description ("Enable test case serialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
 			parser.options.force_last (l_test_case_serialization_option)
 
-			create l_interpreter_log_enabled.make_with_long_form ("interpreter-logged")
-			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Default: False.")
+			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
+			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Valid options are: on, off. Default: off.")
 			parser.options.force_last (l_interpreter_log_enabled)
 
 			create l_on_the_fly_tc_flag.make_with_long_form ("on-the-fly-tc")
 			l_on_the_fly_tc_flag.set_description ("Is on-the-fly test case generation enabled? Default: False")
 			parser.options.force_last (l_on_the_fly_tc_flag)
 
-			create l_disable_proxy_log_flag.make_with_long_form ("disable-proxy-log")
-			l_disable_proxy_log_flag.set_description ("Should proxy log be disabled? Default: False")
-			parser.options.force_last (l_disable_proxy_log_flag)
+			create l_proxy_log_option.make_with_long_form ("proxy-log")
+			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state.")
+			parser.options.force_last (l_proxy_log_option)
+
+			create l_console_log_option.make_with_long_form ("console-log")
+			l_console_log_option.set_description ("Enable or disable console output. Valid options are: on, off. Default: on")
+			parser.options.force_last (l_console_log_option)
 
 			parser.parse_list (a_arguments)
 
@@ -434,10 +433,6 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				is_object_state_request_logged := l_object_state_logged_option.was_found
-			end
-
-			if not error_handler.has_error then
 				if l_candidate_count_option.was_found then
 					max_candidate_count := l_candidate_count_option.parameter
 				else
@@ -504,15 +499,37 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				is_test_case_serialization_enabled := l_test_case_serialization_option.was_found
-				if is_test_case_serialization_enabled then
-					is_passing_test_cases_serialization_enabled := l_test_case_serialization_option.parameter.index_of ('s', 1) > 0
-					is_failing_test_cases_serialization_enabled := l_test_case_serialization_option.parameter.index_of ('f', 1) > 0
+				is_passing_test_cases_serialization_enabled := False
+				is_failing_test_cases_serialization_enabled := False
+				if l_test_case_serialization_option.was_found then
+					l_strs := l_test_case_serialization_option.parameter.as_lower.split (',')
+					from
+						l_strs.start
+					until
+						l_strs.after
+					loop
+						if l_strs.item_for_iteration.is_equal ("passing") then
+							is_passing_test_cases_serialization_enabled := True
+						elseif l_strs.item_for_iteration.is_equal ("failing") then
+							is_failing_test_cases_serialization_enabled := True
+						end
+						l_strs.forth
+					end
 				end
 			end
 
 			if not error_handler.has_error then
-				is_interpreter_log_enabled := l_interpreter_log_enabled.was_found
+				is_interpreter_log_enabled := False
+				if l_interpreter_log_enabled.was_found then
+					is_interpreter_log_enabled := l_interpreter_log_enabled.parameter.is_case_insensitive_equal ("on")
+				end
+			end
+
+			if not error_handler.has_error then
+				is_console_log_enabled := True
+				if l_console_log_option.was_found then
+					is_console_log_enabled := l_console_log_option.parameter.is_case_insensitive_equal ("on")
+				end
 			end
 
 			if not error_handler.has_error then
@@ -520,7 +537,11 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				is_proxy_log_disabled := l_disable_proxy_log_flag.was_found
+				if l_proxy_log_option.was_found then
+					proxy_log_options := l_proxy_log_option.parameter
+				else
+					proxy_log_options := ""
+				end
 			end
 
 --			if parser.parameters.count = 0 then
@@ -692,10 +713,6 @@ feature -- Status report
 	prepare_citadel_tests: BOOLEAN
 			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
 
-	is_object_state_request_logged: BOOLEAN
-			-- Should object state request be logged?
-			-- Default: False
-
 	max_candidate_count: INTEGER
 			-- Max number of candidates that satisfy the precondition of
 			-- the feature to call.
@@ -738,10 +755,6 @@ feature -- Status report
 			-- When searching in predicate pool, should random cursor be used?
 			-- Default: False
 
-	is_test_case_serialization_enabled: BOOLEAN
-			-- Is test case serialization enabled?
-			-- Default: False
-
 	is_passing_test_cases_serialization_enabled: BOOLEAN
 			-- Is test case serialization for passing test cases enabled?
 			-- Only has effect if `is_test_case_serialization_enabled' is True.
@@ -760,9 +773,13 @@ feature -- Status report
 			-- Is on-the-fly test case generation enabled?
 			-- Default: False
 
-	is_proxy_log_disabled: BOOLEAN
-			-- Should proxy log be disabled?
-			-- Default: False
+	proxy_log_options: STRING
+			-- Proxy log options:
+			-- Default: passing,failing,invalid,bad,error,type,expr-assign
+
+	is_console_log_enabled: BOOLEAN
+			-- Should console output be enabled?
+			-- Default: True
 
 feature {NONE} -- Constants
 

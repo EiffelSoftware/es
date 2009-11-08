@@ -30,6 +30,8 @@ feature -- Access
 
 	interpreter_exception_message: STRING = "status: exception"
 
+	interpreter_type_message_prefix: STRING = "-- Types for TC No."
+
 	proxy_has_started_and_connected_message: STRING = "-- Proxy has started and connected to interpreter."
 			-- Message printed to the log when a new interpreter is started
 
@@ -51,6 +53,18 @@ feature -- Access
 	object_state_invariant_violation: STRING is "invariant_violation"
 
 	object_is_void: STRING is "object_is_void"
+
+	test_case_start_tag: STRING is "TC start"
+			-- Log tag for test case start
+
+	test_case_end_tag: STRING is "TC end"
+			-- Log tag for test case end
+
+	start_request_tag: STRING is "start"
+
+	time_stamp_header: STRING is "-- time stamp: "
+
+	test_case_index_header: STRING is "-- test case No."
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

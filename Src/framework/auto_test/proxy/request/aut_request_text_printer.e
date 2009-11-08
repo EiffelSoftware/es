@@ -131,13 +131,11 @@ feature {AUT_REQUEST} -- Processing
 	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
 			-- Process `a_request'.
 		do
-			if configuration.is_object_state_request_logged then
-				output_stream.put_string (once ":state ")
-				output_stream.put_string (a_request.variable.name (variable_name_prefix))
-				output_stream.put_string (once " {")
-				output_stream.put_string (a_request.type.name)
-				output_stream.put_line (once "}")
-			end
+			output_stream.put_string (once ":state ")
+			output_stream.put_string (a_request.variable.name (variable_name_prefix))
+			output_stream.put_string (once " {")
+			output_stream.put_string (a_request.type.name)
+			output_stream.put_line (once "}")
 		end
 
 	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)

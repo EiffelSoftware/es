@@ -137,14 +137,21 @@ feature -- Status report
 		deferred
 		end
 
-	is_proxy_log_disabled: BOOLEAN
-			-- Should proxy log be disabled?
-			-- Default: False
+	proxy_log_options: STRING
+			-- Proxy_log_options
 		require
 			usable: is_interface_usable
 		deferred
 		end
-		
+
+	is_console_output_enabled: BOOLEAN
+			-- Is console output enabled?
+			-- Default: True
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Object state retrieval
 
 	is_target_state_retrieved: BOOLEAN is
@@ -181,13 +188,6 @@ feature -- Object state retrieval
 					is_target_state_retrieved or else
 					is_argument_state_retrieved or else
 					is_query_result_state_retrieved
-		end
-
-	is_object_state_request_logged: BOOLEAN
-			-- Should object state request be logged?
-		require
-			usable: is_interface_usable
-		deferred
 		end
 
 feature -- Precondition satisfaction
@@ -309,11 +309,6 @@ feature -- Object State Exploration
 
 feature -- Test case serialization
 
-	is_test_case_serialization_enabled: BOOLEAN is
-			-- Is test case serialization enabled?
-		deferred
-		end
-
 	is_passing_test_case_serialization_enabled: BOOLEAN is
 			-- Is passing test case serialization enabled?
 			-- Only has effect if `is_test_case_serialization_enabled' is True.
@@ -324,6 +319,12 @@ feature -- Test case serialization
 			-- Is failing test case serialization enabled?
 			-- Only has effect if `is_test_case_serialization_enabled' is True.
 		deferred
+		end
+
+	is_test_case_serialization_enabled: BOOLEAN
+			-- Is test case serialization enabled?
+		do
+			Result := is_passing_test_case_serialization_enabled or is_failing_test_case_serialization_enabled
 		end
 
 feature -- Types under test
