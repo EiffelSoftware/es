@@ -38,7 +38,7 @@ feature -- Access
 	skeleton: AFX_STATE_SKELETON
 			-- Skeleton of current state
 		do
-			create Result.make (count)
+			create Result.make_basic (Void, Void, count)
 			do_all (agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
 				do
 					a_skeleton.force_last (a_pred.expression)

@@ -31,6 +31,8 @@ inherit
 
 	AFX_SMTLIB_CONSTANTS
 
+	SHARED_SERVER
+
 create
 	make
 
@@ -68,9 +70,16 @@ feature -- Basic operations
 			l_axiom: STRING
 			l_stmt: STRING
 			l_paran_needed: BOOLEAN
+			l_regexp: RX_PCRE_REGULAR_EXPRESSION
+			l_ast_text: STRING
 		do
 			create l_contract_extractor
 			l_inv := l_contract_extractor.invariant_of_class (a_class)
+
+				-- Use regular expression to filter out assertions with object test.
+			fixme ("Implement support for object test. 9.11.2009 Jasonw")
+			create l_regexp.make
+			l_regexp.compile ("attached.+as")
 			from
 				l_inv.start
 			until
@@ -78,16 +87,20 @@ feature -- Basic operations
 			loop
 				create l_axiom.make (128)
 				l_axiom.append (smtlib_axiom_header)
-				l_stmt := smt_of_expression (l_inv.item_for_iteration.ast, a_class, l_inv.item_for_iteration.written_class, Void)
-				l_paran_needed := l_stmt.item (1) /= '('
-				if l_paran_needed then
-					l_axiom.append_character ('(')
+				l_ast_text := l_inv.item_for_iteration.ast.text (match_list_server.item (l_inv.item_for_iteration.written_class.class_id))
+				l_regexp.match (l_ast_text)
+				if not l_regexp.has_matched then
+					l_stmt := smt_of_expression (l_inv.item_for_iteration.ast, a_class, l_inv.item_for_iteration.written_class, Void)
+					l_paran_needed := l_stmt.item (1) /= '('
+					if l_paran_needed then
+						l_axiom.append_character ('(')
+					end
+					l_axiom.append (l_stmt)
+					if l_paran_needed then
+						l_axiom.append_character (')')
+					end
+					last_statements.extend (l_axiom)
 				end
-				l_axiom.append (l_stmt)
-				if l_paran_needed then
-					l_axiom.append_character (')')
-				end
-				last_statements.extend (l_axiom)
 				l_inv.forth
 			end
 		end
@@ -100,7 +113,7 @@ feature -- Basic operations
 			last_statements.extend (smt_of_expression (a_expr, a_class, a_written_class, a_feature))
 		end
 
-	smt_of_expression (a_expr: EXPR_AS; a_class: CLASS_C; a_witten_class: CLASS_C; a_feature: detachable FEATURE_I): STRING
+	smt_of_expression (a_expr: EXPR_AS; a_class: CLASS_C; a_written_class: CLASS_C; a_feature: detachable FEATURE_I): STRING
 			-- Generate SMTLIB statement from `a_expr' which appear in `a_class', and `a_feature'.
 			-- `a_feature' can be Void, for example, if `a_expr' comes from class invariants.
 			-- Store result in `last_statements'.
@@ -115,7 +128,7 @@ feature -- Basic operations
 			create last_nested_prefix.make (64)
 			last_type := none_type
 			output_buffer := last_string
-			current_written_class := a_witten_class
+			set_current_written_class (a_written_class)
 
 			a_expr.process (Current)
 			Result := last_string.twin
@@ -172,6 +185,36 @@ feature -- Basic operations
 			l_feats.go_to (l_cursor)
 		end
 
+	generate_argument_function (a_feature: FEATURE_I; a_class: CLASS_C)
+			-- Generate arguments of `a_feature' as functions,
+			-- store result in `last_statement'.
+		local
+			i: INTEGER
+			c: INTEGER
+			l_type: TYPE_A
+			l_name: STRING
+			l_stmt: STRING
+		do
+			from
+				i := 1
+				c := a_feature.argument_count
+			until
+				i > c
+			loop
+				l_name := a_feature.arguments.item_name (i)
+				l_type := a_feature.arguments.i_th (i).instantiation_in (a_class.actual_type, a_class.class_id).actual_type
+				create l_stmt.make (64)
+				l_stmt.append (smtlib_function_header)
+				l_stmt.append (once "((")
+				l_stmt.append (l_name)
+				l_stmt.append_character (' ')
+				l_stmt.append (smt_type (l_type))
+				l_stmt.append (once "))")
+				last_statements.extend (l_stmt)
+				i := i + 1
+			end
+		end
+
 	generate_function (a_feature: FEATURE_I; a_class: CLASS_C)
 			-- Generate the SMTLIB function for `a_feature' in `a_class'.
 			-- Store result in `last_statement'. Update `needed_theory' when necessary.
@@ -211,7 +254,7 @@ feature -- Basic operations
 			last_statements.extend (l_stmt)
 		end
 
-	generate (a_theory: AFX_CLASS_THEORY; a_prefix: STRING)
+	generate (a_theory: AFX_THEORY; a_prefix: STRING)
 			-- Generate theories in `a_theory' into SMT-LIB format
 			-- and store result in `functions' and `axioms'.
 			-- Every function is prefixed with `a_prefix'.
@@ -250,6 +293,14 @@ feature{NONE} -- Implementation
 			context_feature := a_feature
 		ensure
 			context_feature_set: context_feature = a_feature
+		end
+
+	set_current_written_class (a_class: like current_written_class)
+			-- Set `current_written_class' with `a_class'.
+		do
+			current_written_class := a_class
+		ensure
+			current_written_class_set: current_written_class = a_class
 		end
 
 	smt_prefix (a_prefix: STRING; a_class: CLASS_C): STRING
@@ -395,16 +446,26 @@ feature -- Process
 	process_result_as (l_as: RESULT_AS)
 		do
 			check context_feature /= Void end
-			output_buffer.append (smt_prefix ("", context_class))
+			if nested_level = 0 then
+				output_buffer.append (smt_prefix ("", context_class))
+			end
 			output_buffer.append (once "Result")
 			last_type := context_feature.type
+			if nested_level > 0 then
+				nested_prefix.replace (last_type)
+			end
 		end
 
 	process_current_as (l_as: CURRENT_AS)
 		do
-			output_buffer.append (smt_prefix ("", context_class))
+			if nested_level = 0 then
+				output_buffer.append (smt_prefix ("", context_class))
+			end
 			output_buffer.append (once "Current")
 			last_type := context_class.actual_type
+			if nested_level > 0 then
+				nested_prefix.replace (last_type)
+			end
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -414,11 +475,13 @@ feature -- Process
 			l_name := l_as.access_name.as_lower
 			check_name (l_name)
 			if nested_level = 0 then
+					-- Needed for routine arguments.
 				output_buffer.append (smt_prefix ("", context_class))
 			end
 			output_buffer.append (final_name)
 
 			if l_as.internal_parameters /= Void then
+				nested_prefix.remove
 				check nested_level = 0 end
 				output_buffer.append (once " (")
 				safe_process (l_as.internal_parameters)
@@ -464,7 +527,9 @@ feature -- Process
 				last_nested_prefix.wipe_out
 			end
 			l_as.message.process (Current)
-			nested_prefix.remove
+			if not nested_prefix.is_empty then
+				nested_prefix.remove
+			end
 		end
 
 end

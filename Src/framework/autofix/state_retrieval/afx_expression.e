@@ -33,6 +33,14 @@ feature -- Access
 		deferred
 		end
 
+	ast: EXPR_AS
+			-- AST node for `text'
+		deferred
+		end
+
+	written_class: CLASS_C
+			-- Class where `ast' is written
+
 feature -- Status report
 
 	is_valid: BOOLEAN
@@ -58,6 +66,14 @@ feature -- Setting
 			class_ := a_class
 		ensure
 			class_set: class_ = a_class
+		end
+
+	set_written_class (a_written_class: like written_class)
+			-- Set `written_class_' with `a_written_class'.
+		do
+			written_class := a_written_class
+		ensure
+			written_class_set: written_class = a_written_class
 		end
 
 end

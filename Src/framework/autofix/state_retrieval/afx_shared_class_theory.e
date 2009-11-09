@@ -14,7 +14,7 @@ inherit
 
 feature -- Access
 
-	class_theories: HASH_TABLE [AFX_CLASS_THEORY, CLASS_C]
+	class_theories: HASH_TABLE [AFX_THEORY, CLASS_C]
 			-- Storage for class theories
 			-- Key is the class, value is the theory for that class
 		once
@@ -29,7 +29,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	resolved_class_theory (a_class: CLASS_C): AFX_CLASS_THEORY
+	resolved_class_theory (a_class: CLASS_C): AFX_THEORY
 			-- SMTLIB theory for `a_class' with all qualified call resolved.
 		local
 			l_statements: LINKED_LIST [STRING]
@@ -46,6 +46,54 @@ feature -- Basic operations
 			smtlib_generator.last_statements.do_all (agent (Result.functions).extend)
 		end
 
+	expressions_with_theory (a_exprs: LINEAR [AFX_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
+			-- Expressions and their supporting theories for `a_exprs' in the context of `a_class' and `a_feature'.
+			-- If `a_feature' is Void, it means that `a_exprs' are for `a_class', not for a particular feature.
+			-- `exprs' are the SMTLIB expressions for `a_exprs', `theory' are the support theories.
+		local
+			l_smt_gen: like smtlib_generator
+			l_processed: like class_with_prefix_set
+			l_theory: AFX_THEORY
+			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: like class_with_prefix_set]
+			l_base_prefix: AFX_CLASS_WITH_PREFIX
+			l_generated_exprs: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]
+			l_raw_text: STRING
+		do
+			l_smt_gen := smtlib_generator
+			l_processed := class_with_prefix_set
+			create l_base_prefix.make (a_class, "")
+			create l_generated_exprs.make (20)
+			l_generated_exprs.set_key_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+
+			create l_theory.make_with_feature (a_class, a_feature)
+			l_theory.append (resolved_class_theory (a_class))
+
+				-- Process expressions.
+			from
+				a_exprs.start
+			until
+				a_exprs.after
+			loop
+				l_smt_gen.initialize_for_generation
+				l_smt_gen.generate_expression (a_exprs.item_for_iteration.ast, a_class, a_exprs.item_for_iteration.written_class, a_feature)
+				l_raw_text := l_smt_gen.last_statements.first
+				l_resolved := resolved_smt_statement (l_raw_text, l_base_prefix)
+				l_generated_exprs.force_last (create{AFX_SMTLIB_EXPR}.make (l_resolved.resolved_str), a_exprs.item_for_iteration)
+
+				l_resolved.mentioned_classes.do_all (agent resolved_class_theory_internal (?, l_theory, l_processed))
+				a_exprs.forth
+			end
+
+				-- Generate argument functions.
+			if a_feature /= Void then
+				l_smt_gen.initialize_for_generation
+				l_smt_gen.generate_argument_function (a_feature, a_class)
+				l_smt_gen.last_statements.do_all (agent l_theory.extend)
+			end
+
+			Result := [l_generated_exprs, l_theory]
+		end
+
 feature{NONE} -- Implementation
 
 	class_with_prefix_set: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]
@@ -55,13 +103,12 @@ feature{NONE} -- Implementation
 			Result.set_equality_tester (class_with_prefix_equality_tester)
 		end
 
-
 	generate_class_theory (a_class: CLASS_C)
 			-- Generate class theory for `a_class' and store result in `class_theories'.
 		require
 			a_class_not_generated: not class_theories.has (a_class)
 		local
-			l_theory: AFX_CLASS_THEORY
+			l_theory: AFX_THEORY
 		do
 			create l_theory.make (a_class)
 
@@ -134,10 +181,10 @@ feature{NONE} -- Implementation
 			Result := [l_resolved, l_mentioned_prefixes]
 		end
 
-	resolved_class_theory_internal (a_class_with_prefix: AFX_CLASS_WITH_PREFIX; a_theory: AFX_CLASS_THEORY; a_processed: like class_with_prefix_set)
+	resolved_class_theory_internal (a_class_with_prefix: AFX_CLASS_WITH_PREFIX; a_theory: AFX_THEORY; a_processed: like class_with_prefix_set)
 			-- SMT theory for `a_class' with prefix `a_prefix'
 		local
-			l_theory: AFX_CLASS_THEORY
+			l_theory: AFX_THEORY
 			l_statements: LINKED_LIST [STRING]
 			l_resolved: TUPLE [a_statement: STRING; a_mentioned_class: like class_with_prefix_set]
 			l_new: like class_with_prefix_set

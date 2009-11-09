@@ -21,12 +21,12 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_class: like context_class; a_feature: like context_feature; a_index: INTEGER)
+	make (a_class: like context_class; a_feature: like context_feature; a_written_class: like written_class; a_index: INTEGER)
 			-- Initialize Current with the `a_index'-th argument in `a_feature'.
 		require
 			a_index_valid: a_index >= 1 and a_index <= a_feature.argument_count
 		do
-			make_with_class_feature (a_class, a_feature)
+			make_with_class_feature (a_class, a_feature, a_written_class)
 			index := a_index
 			text := a_feature.arguments.item_name (index).as_lower
 			type :=

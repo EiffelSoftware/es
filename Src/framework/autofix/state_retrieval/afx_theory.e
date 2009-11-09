@@ -5,13 +5,16 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_CLASS_THEORY
+	AFX_THEORY
 
 inherit
 	AFX_SMTLIB_CONSTANTS
 
+	DEBUG_OUTPUT
+
 create
-	make
+	make,
+	make_with_feature
 
 feature{NONE} -- Initializatoin
 
@@ -25,10 +28,25 @@ feature{NONE} -- Initializatoin
 			class_set: class_ = a_class
 		end
 
+	make_with_feature (a_class: like class_; a_feature: FEATURE_I)
+			-- Initialize Current.
+		do
+			feature_ := a_feature
+			make (a_class)
+		ensure
+			class_set: class_ = a_class
+			feature_set: feature_ = a_feature
+		end
+
 feature -- Access
 
 	class_: CLASS_C
 			-- Class from which current theroy is extracted
+
+	feature_: detachable FEATURE_I
+			-- Feature from which current theory is extracted.
+			-- If Void, it means that Current theory is for `class_',
+			-- not for a particular feature.
 
 	functions: LINKED_LIST [STRING]
 			-- List of functions
@@ -45,6 +63,28 @@ feature -- Access
 			axioms.do_all (agent Result.extend)
 		ensure
 			good_result: Result.count = functions.count + axioms.count
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (2048)
+			Result.append ("Theory for ")
+			Result.append (class_.name)
+			if feature_ /= Void then
+				Result.append_character ('.')
+				Result.append (feature_.feature_name)
+			end
+			Result.append (":%N")
+
+			statements.do_all (
+				agent (a_item: STRING; a_result: STRING)
+					do
+						a_result.append (a_item)
+						a_result.append_character ('%N')
+					end (?, Result))
 		end
 
 feature -- Status report
@@ -71,6 +111,14 @@ feature -- Basic operations
 			else
 				axioms.extend (a_statement)
 			end
+		end
+
+	append (other: like Current)
+			-- Append `other' into Current. Do not change `class_' and `feature_'.
+			-- Note: May result in invalid theories if `other' are built from a
+			-- different class/feature.
+		do
+			other.statements.do_all (agent extend)
 		end
 
 end

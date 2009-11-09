@@ -12,14 +12,16 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make_with_class_feature (a_class: like context_class; a_feature: like context_feature)
+	make_with_class_feature (a_class: like context_class; a_feature: like context_feature; a_written_class: like written_class)
 			-- Initialize `context_class' with `a_class' and `context_feature' with `a_feature'.
 		do
 			context_class := a_class
 			context_feature := a_feature
+			written_class := a_written_class
 		ensure
 			context_class_set: context_class = a_class
 			context_feature_set: context_feature = a_feature
+			written_class_set: written_class = a_written_class
 		end
 
 feature -- Access
@@ -29,6 +31,9 @@ feature -- Access
 
 	context_feature: FEATURE_I
 			-- Feature in which current is accessed
+
+	written_class: CLASS_C
+			-- Class where `text' is written
 
 	type: TYPE_A
 			-- Type of current access
@@ -55,7 +60,7 @@ feature -- Access
 	expression: AFX_EXPRESSION
 			-- Expression representation
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (context_class, context_feature, text)
+			create {AFX_AST_EXPRESSION} Result.make_with_text (context_class, context_feature, text, written_class)
 		ensure
 			good_result: Result.type.same_as (type)
 		end
@@ -128,6 +133,14 @@ feature -- Setting
 			context_feature := a_feature
 		ensure
 			context_feature_set: context_feature = a_feature
+		end
+
+	set_written_class (a_written_class: like written_class)
+			-- Set `written_class_' with `a_written_class'.
+		do
+			written_class := a_written_class
+		ensure
+			written_class_set: written_class = a_written_class
 		end
 
 feature{NONE} -- Implementation

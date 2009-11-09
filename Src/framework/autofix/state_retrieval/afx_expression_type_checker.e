@@ -27,6 +27,7 @@ feature -- Type checking
 			-- Store type of `a_expr_as' in `last_type'.
 		do
 			init (ast_context)
+			ast_context.set_is_ignoring_export (True)
 			ast_context.initialize (a_context_class, a_context_class.actual_type, a_context_class.feature_table)
 			expression_or_instruction_type_check_and_code (a_feature, a_expr_as)
 		end

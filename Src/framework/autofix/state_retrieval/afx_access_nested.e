@@ -31,7 +31,7 @@ feature{NONE} -- Initialization
 		do
 			left := a_left
 			right := a_right
-			make_feature (a_left.context_class, a_left.context_feature, a_right.feature_, a_right.arguments)
+			make_feature (a_left.context_class, a_left.context_feature, a_right.feature_, a_right.arguments, a_left.written_class)
 
 			create text.make (left.text.count + right.text.count + 1)
 			if not left.is_current then

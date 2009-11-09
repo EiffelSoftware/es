@@ -197,7 +197,7 @@ feature{NONE} -- Implementation
 
 			if a_feature.argument_count = 0 then
 				create l_list.make
-				create l_feat_acc.make (context_class, context_feature, a_feature, l_list)
+				create l_feat_acc.make (context_class, context_feature, a_feature, l_list, context_feature.written_class)
 				create l_nested.make (a_prefix, l_feat_acc)
 				if a_veto_agent.item ([l_nested]) then
 					Result.extend (l_nested)
@@ -222,7 +222,7 @@ feature{NONE} -- Implementation
 							if l_arg_index = a_feature.argument_count then
 								create l_list.make
 								l_args.do_all (agent l_list.extend)
-								create l_feat_acc.make (context_class, context_feature, a_feature, l_list)
+								create l_feat_acc.make (context_class, context_feature, a_feature, l_list, context_feature.written_class)
 								create l_nested.make (a_prefix, l_feat_acc)
 								if a_veto_agent.item ([l_nested]) then
 									Result.extend (l_nested)
@@ -256,9 +256,9 @@ feature{NONE} -- Implementation
 		do
 				-- Setup the initial accesses.
 			create l_new.make (initial_capacity)
-			l_new.extend (create {AFX_ACCESS_CURRENT}.make (a_class, a_feature))
+			l_new.extend (create {AFX_ACCESS_CURRENT}.make (a_class, a_feature, a_feature.written_class))
 			if not a_feature.type.is_void then
-				l_new.extend (create {AFX_ACCESS_RESULT}.make (a_class, a_feature))
+				l_new.extend (create {AFX_ACCESS_RESULT}.make (a_class, a_feature, a_feature.written_class))
 			end
 
 			from
@@ -266,7 +266,7 @@ feature{NONE} -- Implementation
 			until
 				i > a_feature.argument_count
 			loop
-				l_new.extend (create {AFX_ACCESS_ARGUMENT}.make (a_class, a_feature, i))
+				l_new.extend (create {AFX_ACCESS_ARGUMENT}.make (a_class, a_feature, a_feature.written_class, i))
 				i := i + 1
 			end
 
@@ -310,7 +310,7 @@ feature{NONE} -- Implementation
 			expression_veto_agents.put (
 				anded_agents (
 					<<ored_agents (
-						<<result_expression_veto_agent,
+						<<--result_expression_veto_agent,
 					  	  current_expression_veto_agent,
 					  	  argument_expression_veto_agent>>),
 					feature_not_from_any_veto_agent>>),
@@ -318,10 +318,12 @@ feature{NONE} -- Implementation
 
 			expression_veto_agents.put (
 				anded_agents (
-					<<feature_expression_veto_agent, feature_not_from_any_veto_agent, nested_not_on_basic_veto_agent, feature_with_few_arguments_veto_agent (1)>>), 2)
+					<<feature_expression_veto_agent, feature_not_from_any_veto_agent, nested_not_on_basic_veto_agent, feature_with_few_arguments_veto_agent (0)>>), 2)
 
 			final_expression_veto_agent :=
-				ored_agents (<<integer_expression_veto_agent, boolean_expression_veto_agent>>)
+				ored_agents (<<
+					--integer_expression_veto_agent,
+					boolean_expression_veto_agent>>)
 		end
 
 end

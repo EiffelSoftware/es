@@ -26,33 +26,36 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_text (a_class: like class_; a_feature: like feature_; a_text: like text)
+	make_with_text (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class)
 			-- Initialize Current.
 		do
 			set_class (a_class)
 			set_feature (a_feature)
 			set_text (a_text)
+			set_written_class (a_written_class)
 			parse_text
 			if not has_syntax_error then
 				check_type
 			end
 		end
 
-	make_with_expression (a_class: like class_; a_feature: like feature_; a_expression: like expression)
+	make_with_expression (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
 			-- Initialize Current.
 		do
 			set_class (a_class)
+			set_written_class (a_written_class)
 			set_feature (a_feature)
 			set_expression (a_expression)
 			set_text ("")
 			check_type
 		end
 
-	make (a_class: like class_; a_feature: like feature_; a_expression: like expression; a_type: like type)
+	make (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_type: like type; a_written_class: like written_class)
 			-- Initialize Current.
 		do
 			set_class (a_class)
 			set_feature (a_feature)
+			set_written_class (a_written_class)
 			set_expression (a_expression)
 			set_type (a_type)
 			has_syntax_error := a_expression = Void
@@ -61,9 +64,9 @@ feature{NONE} -- Initialization
 feature -- Access
 
 	text: STRING_8
-			-- A text form representing `expression'
+			-- A text form representing `ast'
 
-	expression: detachable EXPR_AS
+	ast: detachable EXPR_AS
 			-- Expression AST node of current item
 
 	type: detachable TYPE_A
@@ -95,13 +98,13 @@ feature -- Status report
 			-- Does `text' contain syntex error?
 
 	is_boolean_type: BOOLEAN is
-			-- Is `expression' of boolean type?
+			-- Is `ast' of boolean type?
 		do
 			Result := is_valid and then type /= Void and then type.is_boolean
 		end
 
 	is_integer_type: BOOLEAN is
-			-- Is `expression' of integer type?
+			-- Is `ast' of integer type?
 		do
 			Result := is_valid and then type /= Void and then type.is_integer
 		end
@@ -116,12 +119,12 @@ feature -- Debug output
 
 feature -- Setting
 
-	set_expression (a_expression: like expression)
-			-- Set `expression' with `a_expression'.
+	set_expression (a_expression: like ast)
+			-- Set `ast' with `a_expression'.
 		do
-			expression := a_expression
+			ast := a_expression
 		ensure
-			expression_set: expression = a_expression
+			expression_set: ast = a_expression
 		end
 
 	set_text (a_text: like text)
@@ -149,30 +152,30 @@ feature{NONE} -- Implementation
 		end
 
 	check_type is
-			-- Check type of `expression', store type in `type'.
+			-- Check type of `ast', store type in `type'.
 		require
 			syntax_correct: not has_syntax_error
 		do
-			expression_type_checker.check_expression (expression, class_, feature_)
+			expression_type_checker.check_expression (ast, class_, feature_)
 			type := expression_type_checker.last_type
 		end
 
 	parse_text is
-			-- Parse `text' and set `expression' with the parsing result.
+			-- Parse `text' and set `ast' with the parsing result.
 			-- Set `has_syntax_error' to True if `text' contains syntax error.
 		local
 			l_parser: like expression_parser
 		do
-				-- Parse `text' into `expression'.
+				-- Parse `text' into `ast'.
 			l_parser := expression_parser
 			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
 			l_parser.parse_from_string (once "check " + text, class_)
 			set_has_syntax_error (l_parser.syntax_error)
 
 			if has_syntax_error then
-				expression := Void
+				ast := Void
 			else
-				expression := l_parser.expression_node
+				ast := l_parser.expression_node
 			end
 		end
 

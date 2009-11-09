@@ -19,12 +19,12 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_context_class: like context_class; a_context_feature: like context_feature; a_feat: like feature_; a_args: like arguments)
+	make (a_context_class: like context_class; a_context_feature: like context_feature; a_feat: like feature_; a_args: like arguments; a_written_class: like written_class)
 			-- Initialize Current with accessed feature `a_feat'.
 		require
 			a_args_valid: a_args.count = a_feat.argument_count
 		do
-			make_with_class_feature (a_context_class, a_context_feature)
+			make_with_class_feature (a_context_class, a_context_feature, a_written_class)
 			feature_ := a_feat
 			arguments := a_args
 		ensure

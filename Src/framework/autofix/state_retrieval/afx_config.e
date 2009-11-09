@@ -192,7 +192,10 @@ feature{NONE} -- Implementation
 				i = n or else Result /= Void
 			loop
 				l_class := l_classes.item (i)
-				if l_class.name.starts_with (once "TC__") then
+				if l_class /= Void then
+--					io.put_string ("--> " + l_class.name + "%N")
+				end
+				if l_class /= Void and then l_class.already_compiled and then l_class.name.starts_with (once "TC__") then
 					Result := l_class.name.twin
 				end
 				i := i + 1
