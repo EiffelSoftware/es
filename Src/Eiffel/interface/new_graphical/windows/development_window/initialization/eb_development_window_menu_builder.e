@@ -973,6 +973,11 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			auto_recycle (l_command_menu_item)
 			l_tools_menu.extend (l_command_menu_item)
 
+				-- AutoTest command
+			l_command_menu_item := develop_window.commands.test_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_tools_menu.extend (l_command_menu_item)
+
 			rebuild_tools_menu
 		end
 
