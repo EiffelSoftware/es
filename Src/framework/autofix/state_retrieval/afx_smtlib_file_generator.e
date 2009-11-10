@@ -118,10 +118,10 @@ feature{NONE} -- Implementation
 			last_smtlib.append ("%N)))")
 		end
 
-	append_line (a_content: STRING)
+	append_line (a_content: AFX_SMTLIB_EXPR)
 			-- Append `a_content' into `last_smtlib' in its own line.
 		do
-			last_smtlib.append (a_content)
+			last_smtlib.append (a_content.expression)
 			last_smtlib.append_character ('%N')
 		end
 

@@ -317,8 +317,12 @@ feature{NONE} -- Implementation
 					 	 1)
 
 			expression_veto_agents.put (
-				anded_agents (
-					<<feature_expression_veto_agent, feature_not_from_any_veto_agent, nested_not_on_basic_veto_agent, feature_with_few_arguments_veto_agent (0)>>), 2)
+				anded_agents (<<
+					feature_expression_veto_agent,
+					feature_not_from_any_veto_agent,
+					nested_not_on_basic_veto_agent,
+					feature_not_obsolete_veto_agent,
+					feature_with_few_arguments_veto_agent (0)>>), 2)
 
 			final_expression_veto_agent :=
 				ored_agents (<<

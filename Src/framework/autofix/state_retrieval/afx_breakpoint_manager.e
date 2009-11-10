@@ -15,14 +15,24 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make (a_class: like class_; a_feature: like feature_) is
 			-- Initialize Current.
 		do
+			class_ := a_class
+			feature_ := a_feature
 			create breakpoints.make (initial_capacity)
 			create hit_actions.make (initial_capacity)
 		end
 
 feature -- Access
+
+	class_: CLASS_C
+			-- Class from which Current state is derived
+
+	feature_: detachable FEATURE_I
+			-- Feature from which Current state is derived
+			-- If Void, it means that Current state is derived for the whole class,
+			-- instead of particular feature.
 
 	breakpoints: HASH_TABLE [AFX_STATE_SKELETON, BREAKPOINT_LOCATION]
 			-- Breakpoints where the debuggee should be stopped and expressions should be evaluated.
@@ -51,7 +61,7 @@ feature -- Basic operations
 				i > l_slot_count
 			loop
 				create l_act_list.make
-				create l_action.make (a_state)
+				create l_action.make (a_state, class_, feature_)
 				l_action.on_hit_actions.extend (a_action)
 				l_act_list.extend (l_action)
 				l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, i, False)

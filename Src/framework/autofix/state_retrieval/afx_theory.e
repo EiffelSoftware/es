@@ -48,13 +48,13 @@ feature -- Access
 			-- If Void, it means that Current theory is for `class_',
 			-- not for a particular feature.
 
-	functions: LINKED_LIST [STRING]
+	functions: LINKED_LIST [AFX_SMTLIB_EXPR]
 			-- List of functions
 
-	axioms: LINKED_LIST [STRING]
+	axioms: LINKED_LIST [AFX_SMTLIB_EXPR]
 			-- List of axioms
 
-	statements: LINKED_LIST [STRING]
+	statements: LINKED_LIST [AFX_SMTLIB_EXPR]
 			-- All statements consisting both `functions' and `axioms'
 			-- A new copy of `functions' and `axioms'.
 		do
@@ -80,9 +80,9 @@ feature -- Status report
 			Result.append (":%N")
 
 			statements.do_all (
-				agent (a_item: STRING; a_result: STRING)
+				agent (a_item: AFX_SMTLIB_EXPR; a_result: STRING)
 					do
-						a_result.append (a_item)
+						a_result.append (a_item.expression)
 						a_result.append_character ('%N')
 					end (?, Result))
 		end
@@ -107,9 +107,19 @@ feature -- Basic operations
 			a_statement_valid: is_statement_valid (a_statement)
 		do
 			if a_statement.starts_with (smtlib_function_header) then
-				functions.extend (a_statement)
+				functions.extend (create {AFX_SMTLIB_EXPR}.make (a_statement))
 			else
-				axioms.extend (a_statement)
+				axioms.extend (create {AFX_SMTLIB_EXPR}.make (a_statement))
+			end
+		end
+
+	extend_statement (a_stmt: AFX_SMTLIB_EXPR)
+			-- Extend `a_stmt' into Current.
+		do
+			if a_stmt.expression.starts_with (smtlib_function_header) then
+				functions.extend (a_stmt)
+			else
+				axioms.extend (a_stmt)
 			end
 		end
 
@@ -118,7 +128,19 @@ feature -- Basic operations
 			-- Note: May result in invalid theories if `other' are built from a
 			-- different class/feature.
 		do
-			other.statements.do_all (agent extend)
+			other.statements.do_all (agent extend_statement)
+		end
+
+	extend_function_with_string (a_str: STRING)
+			-- Extend `a_str' as a function.
+		do
+			functions.extend (create {AFX_SMTLIB_EXPR}.make (a_str))
+		end
+
+	extend_axiom_with_string (a_str: STRING)
+			-- Extend `a_str' as an axiom.
+		do
+			axioms.extend (create {AFX_SMTLIB_EXPR}.make (a_str))
 		end
 
 end

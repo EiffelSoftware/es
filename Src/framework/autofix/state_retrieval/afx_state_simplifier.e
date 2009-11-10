@@ -18,7 +18,6 @@ feature -- Basic operations
 			-- Simplify `a_state', store result in `last_state'.
 			-- `last_state' is simplified from `a_state' by doing the following:
 			-- 1. Remove all tautologies from `a_state'.
-			-- 2. Remove all expressions which can be implied by others.
 		local
 			l_kept_exprs: DS_HASH_SET [AFX_EXPRESSION]
 			l_done: BOOLEAN
@@ -31,18 +30,18 @@ feature -- Basic operations
 				-- Remove all tautology expressions.
 			a_state.do_if (agent l_kept_exprs.force_last, agent is_expression_non_tautology (?, a_state))
 
-				-- Remove expressions that can be implied by others.
-			from
-			until
-				l_done
-			loop
-				l_implied_expr := implied_expression (l_kept_exprs, a_state)
-				if l_implied_expr /= Void then
-					l_kept_exprs.remove (l_implied_expr)
-				else
-					l_done := True
-				end
-			end
+--				-- Remove expressions that can be implied by others.
+--			from
+--			until
+--				l_done
+--			loop
+--				l_implied_expr := implied_expression (l_kept_exprs, a_state)
+--				if l_implied_expr /= Void then
+--					l_kept_exprs.remove (l_implied_expr)
+--				else
+--					l_done := True
+--				end
+--			end
 
 				-- Construct `last_state'.
 			create l_expr_list.make

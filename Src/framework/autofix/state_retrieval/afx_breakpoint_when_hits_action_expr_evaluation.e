@@ -15,9 +15,11 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_expressions: like expressions) is
+	make (a_expressions: like expressions; a_class: like class_; a_feature: like feature_) is
 			-- Initialize Current.
 		do
+			class_ := a_class
+			feature_ := a_feature
 			expressions := a_expressions
 			create on_hit_actions.make
 		ensure
@@ -32,6 +34,14 @@ feature -- Access
 	on_hit_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [a_breakpoint: BREAKPOINT; a_state: AFX_STATE]]]
 			-- List of actions to be performed when current is hit
 
+	class_: CLASS_C
+			-- Class from which Current state is derived
+
+	feature_: detachable FEATURE_I
+			-- Feature from which Current state is derived
+			-- If Void, it means that Current state is derived for the whole class,
+			-- instead of particular feature.
+
 feature -- Basic operations
 
 	execute (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER)
@@ -44,7 +54,7 @@ feature -- Basic operations
 			l_cursor: CURSOR
 		do
 			l_exprs := expressions
-			create l_concrete_state.make (l_exprs.count)
+			create l_concrete_state.make (l_exprs.count, class_, feature_)
 
 				-- Evaluate `expressions'.
 			from
@@ -83,6 +93,9 @@ feature -- Basic operations
 
 			elseif a_dump_value.is_type_integer_32 then
 				create {AFX_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
+
+			else
+				
 			end
 		end
 

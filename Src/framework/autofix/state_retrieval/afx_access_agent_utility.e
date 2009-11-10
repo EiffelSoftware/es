@@ -92,6 +92,19 @@ feature -- Expression veto agents
 					end
 		end
 
+	feature_not_obsolete_veto_agent: FUNCTION [ANY, TUPLE [AFX_ACCESS], BOOLEAN]
+			-- An agent to select non-obsolete feature
+		do
+			Result :=
+				agent (a_access: AFX_ACCESS): BOOLEAN
+					do
+						Result := True
+						if attached {AFX_ACCESS_FEATURE} a_access as l_feat then
+							Result := not l_feat.feature_.is_obsolete
+						end
+					end
+		end
+
 	nested_not_on_basic_veto_agent: FUNCTION [ANY, TUPLE [AFX_ACCESS], BOOLEAN]
 			-- An agent to select nested access, but not on basic types.
 		do

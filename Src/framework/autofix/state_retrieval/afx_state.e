@@ -9,8 +9,8 @@ class
 
 inherit
 	DS_HASH_SET [AFX_PREDICATE]
-		redefine
-			make
+		rename
+			make as make_set
 		end
 
 	REFACTORING_HELPER
@@ -24,21 +24,31 @@ create
 
 feature{NONE} -- Initialization
 
-	make (n: INTEGER) is
+	make (n: INTEGER; a_class: like class_; a_feature: like feature_) is
 			-- Create an empty container and allocate
 			-- memory space for at least `n' items.
-			-- Set equality tester to {AFX_PREDICATE_EQUALITY_TESTER}.
+			-- Set equality tester to {AFX_PREDICATE_EQUALITY_TESTER}.			
 		do
-			Precursor (n)
+			class_ := a_class
+			feature_ := a_feature
+			make_set (n)
 			set_equality_tester (create {AFX_PREDICATE_EQUALITY_TESTER})
 		end
 
 feature -- Access
 
+	class_: CLASS_C
+			-- Class from which Current state is derived
+
+	feature_: detachable FEATURE_I
+			-- Feature from which Current state is derived
+			-- If Void, it means that Current state is derived for the whole class,
+			-- instead of particular feature.
+
 	skeleton: AFX_STATE_SKELETON
 			-- Skeleton of current state
 		do
-			create Result.make_basic (Void, Void, count)
+			create Result.make_basic (class_, feature_, count)
 			do_all (agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
 				do
 					a_skeleton.force_last (a_pred.expression)

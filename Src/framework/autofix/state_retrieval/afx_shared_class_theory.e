@@ -43,7 +43,7 @@ feature -- Basic operations
 				-- Generate dummy function for expression "Void"
 			smtlib_generator.initialize_for_generation
 			smtlib_generator.generate_void_function
-			smtlib_generator.last_statements.do_all (agent (Result.functions).extend)
+			smtlib_generator.last_statements.do_all (agent Result.extend_function_with_string)
 		end
 
 	expressions_with_theory (a_exprs: LINEAR [AFX_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
@@ -115,16 +115,17 @@ feature{NONE} -- Implementation
 				-- Generate functions.
 			smtlib_generator.initialize_for_generation
 			smtlib_generator.generate_functions (a_class)
-			smtlib_generator.last_statements.do_all (agent (l_theory.functions).extend)
+			smtlib_generator.last_statements.do_all (agent l_theory.extend_function_with_string)
+
+				-- Generate function for "Current".
+			smtlib_generator.initialize_for_generation
+			smtlib_generator.generate_current_function (a_class)
+			smtlib_generator.last_statements.do_all (agent l_theory.extend_function_with_string)
 
 				-- Generate class invariant axioms.
 			smtlib_generator.initialize_for_generation
 			smtlib_generator.generate_invariant_axioms (a_class)
-			smtlib_generator.last_statements.do_all (agent (l_theory.axioms).extend)
-
-			smtlib_generator.initialize_for_generation
-			smtlib_generator.generate_current_function (a_class)
-			smtlib_generator.last_statements.do_all (agent (l_theory.functions).extend)
+			smtlib_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
 
 			class_theories.put (l_theory, a_class)
 		ensure
@@ -185,7 +186,7 @@ feature{NONE} -- Implementation
 			-- SMT theory for `a_class' with prefix `a_prefix'
 		local
 			l_theory: AFX_THEORY
-			l_statements: LINKED_LIST [STRING]
+			l_statements: LINKED_LIST [AFX_SMTLIB_EXPR]
 			l_resolved: TUPLE [a_statement: STRING; a_mentioned_class: like class_with_prefix_set]
 			l_new: like class_with_prefix_set
 
@@ -211,7 +212,7 @@ feature{NONE} -- Implementation
 				until
 					l_statements.after
 				loop
-					l_resolved := resolved_smt_statement (l_statements.item_for_iteration, a_class_with_prefix)
+					l_resolved := resolved_smt_statement (l_statements.item_for_iteration.expression, a_class_with_prefix)
 					a_theory.extend (l_resolved.a_statement)
 					l_resolved.a_mentioned_class.subtraction (a_processed).do_all (agent l_new.force_last)
 					l_statements.forth

@@ -141,8 +141,6 @@ feature -- Access
 
 	simplified: like Current
 			-- Simplified version of Current
-			-- All predicates that can be derived by others
-			-- are removed.
 		local
 			l_simplifer: AFX_STATE_SIMPLIFIER
 		do
