@@ -23,12 +23,12 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	smtlib_file_directory: STRING is "/home/jasonw/temp"
+	smtlib_file_directory: STRING is "/tmp"
 
-	smtlib_file_path: STRING is "/home/jasonw/temp/temp.smt"
+	smtlib_file_path: STRING is "/tmp/autofix.smt"
 			-- Full path of the generated smtlib file
 
-	z3_command: STRING is "/bin/sh -c %"wine /home/jasonw/apps/z3/bin/z3.exe /smt: temp.smt%""
+	z3_command: STRING is "/bin/sh -c %"/home/jasonw/apps/z3/bin/z3.exe /smt: autofix.smt%""
 			-- Command to launch Z3 SMT solver
 
 	generate_smtlib_file (a_content: STRING)

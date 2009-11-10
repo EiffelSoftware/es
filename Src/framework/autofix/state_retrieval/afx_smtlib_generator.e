@@ -497,7 +497,7 @@ feature -- Process
 
 	process_bool_as (l_as: BOOL_AS)
 		do
-			output_buffer.append (l_as.value.out)
+			output_buffer.append (l_as.value.out.as_lower)
 			last_type := boolean_type
 		end
 

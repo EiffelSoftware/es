@@ -10,7 +10,6 @@ class
 inherit
 	AFX_EXPRESSION_VALUE
 		redefine
-			item,
 			is_nonsensical
 		end
 
@@ -22,8 +21,11 @@ feature -- Access
 			Result := none_type
 		end
 
-	item: STRING is "nonsensical"
+	item: STRING
 			-- Value item in current
+		do
+			Result := {AUT_SHARED_CONSTANTS}.nonsensical
+		end
 
 feature -- Status report
 

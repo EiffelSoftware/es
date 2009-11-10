@@ -66,6 +66,8 @@ feature -- Access
 
 	test_case_index_header: STRING is "-- test case No."
 
+	nonsensical: STRING is "nonsensical"
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

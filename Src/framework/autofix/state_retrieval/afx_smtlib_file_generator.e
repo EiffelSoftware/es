@@ -27,30 +27,24 @@ feature -- Basic operations
 	generate_for_tautology_checking (a_expr: AFX_EXPRESSION; a_state: AFX_STATE_SKELETON)
 			-- Generate SMTLIB to check if `a_expr' is a tautology in the context of `a_state'.
 			-- Store result in `last_smtlib'.
-		require
-			a_expr_in_a_state: a_state.has (a_expr)
 		do
-			generate (create {AFX_SMTLIB_EXPR}.make (a_expr.text), a_state.theory)
+			generate (a_expr.as_smtlib_expression, a_state.theory)
 		end
 
-	generate_for_implied_checking (a_expr: AFX_EXPRESSION; a_exprs: LIST [AFX_EXPRESSION]; a_state: AFX_STATE_SKELETON)
-			-- Generate SMTLIB to check if `a_expr' can be implied from `a_exprs' in the context of `a_state'.
+	generate_for_implied_checking (a_exprs1: LINEAR [AFX_EXPRESSION]; a_exprs2: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY)
+			-- Generate SMTLIB to check if `a_expr2' can be implied from `a_exprs1' in the context of `a_theory'.
 			-- Store result in `last_smtlib'.
-		require
-			a_state_has_a_expr: a_state.has (a_expr)
-			a_state_has_a_exprs: a_exprs.for_all (agent a_state.has)
 		local
-			l_exprs: LINKED_LIST [AFX_SMTLIB_EXPR]
+			l_exprs1: LINKED_LIST [AFX_SMTLIB_EXPR]
+			l_exprs2: LINKED_LIST [AFX_SMTLIB_EXPR]
 		do
-			create l_exprs.make
-			a_exprs.do_all (
-				agent (a_exp: AFX_EXPRESSION; a_list: LINKED_LIST [AFX_SMTLIB_EXPR])
-					do
-						a_list.extend (create {AFX_SMTLIB_EXPR}.make (a_exp.text))
-					end (?, l_exprs))
+			l_exprs1 := expressions_to_smtlib_expressions (a_exprs1)
+			l_exprs2 := expressions_to_smtlib_expressions (a_exprs2)
 
-			generate (smt_implied_expression (smt_connected_expression (l_exprs, "and"), create{AFX_SMTLIB_EXPR}.make (a_expr.text)), a_state.theory)
+			generate (smt_implied_expression (smt_connected_expression (l_exprs1, "and"), smt_connected_expression (l_exprs2, "and")), a_theory)
 		end
+
+feature -- Access
 
 	smt_implied_expression (a_left: AFX_SMTLIB_EXPR; a_right: AFX_SMTLIB_EXPR): AFX_SMTLIB_EXPR
 			-- SMTLIB expression for the implication: `a_left' implies `a_right'
@@ -89,6 +83,17 @@ feature -- Basic operations
 			end
 			l_content.append (once ")%N")
 			create Result.make (l_content)
+		end
+
+	expressions_to_smtlib_expressions (a_exprs: LINEAR [AFX_EXPRESSION]): LINKED_LIST [AFX_SMTLIB_EXPR]
+			-- Expressions to SMTLIB expressions.
+		do
+			create {LINKED_LIST [AFX_SMTLIB_EXPR]} Result.make
+			a_exprs.do_all (
+				agent (a_exp: AFX_EXPRESSION; a_list: LINKED_LIST [AFX_SMTLIB_EXPR])
+					do
+						a_list.extend (a_exp.as_smtlib_expression)
+					end (?, Result))
 		end
 
 feature{NONE} -- Implementation

@@ -54,6 +54,8 @@ feature{NONE} -- Initialization
 						-- We only report those queries whose value have been retrieved.
 					if a_status.item then
 						query_results.force (a_values.item, a_query_names.item)
+					else
+						query_results.force (nonsensical, a_query_names.item)
 					end
 					a_values.forth
 					a_status.forth

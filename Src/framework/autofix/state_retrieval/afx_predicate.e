@@ -42,6 +42,13 @@ feature -- Access
 			end
 		end
 
+	as_expression: AFX_EXPRESSION
+			-- Current as an expression in the form of
+			-- "expression = value"
+		do
+			create {AFX_AST_EXPRESSION} Result.make_with_text (expression.class_, expression.feature_, expression.text + once " = " + value.out.as_lower, expression.written_class)
+		end
+
 feature -- Status report
 
 	has_error: BOOLEAN

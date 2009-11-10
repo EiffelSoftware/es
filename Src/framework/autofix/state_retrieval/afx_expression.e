@@ -41,6 +41,21 @@ feature -- Access
 	written_class: CLASS_C
 			-- Class where `ast' is written
 
+	as_smtlib_expression: AFX_SMTLIB_EXPR
+			-- SMTLIB expression for Current.
+		local
+			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]]
+			l_shared_theory: AFX_SHARED_CLASS_THEORY
+			l_raw_text: STRING
+		do
+			create l_shared_theory
+			l_shared_theory.smtlib_generator.initialize_for_generation
+			l_shared_theory.smtlib_generator.generate_expression (ast, class_, written_class, feature_)
+			l_raw_text := l_shared_theory.smtlib_generator.last_statements.first
+			l_resolved := l_shared_theory.resolved_smt_statement (l_raw_text, create {AFX_CLASS_WITH_PREFIX}.make (class_, ""))
+			create Result.make (l_resolved.resolved_str)
+		end
+
 feature -- Status report
 
 	is_valid: BOOLEAN

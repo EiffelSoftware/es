@@ -7,6 +7,9 @@ note
 class
 	AFX_STATE_SIMPLIFIER
 
+inherit
+	AFX_SHARED_SMTLIB_GENERATOR
+
 feature -- Access
 
 	last_state: detachable AFX_STATE_SKELETON
@@ -17,7 +20,7 @@ feature -- Basic operations
 	simplify (a_state: like last_state)
 			-- Simplify `a_state', store result in `last_state'.
 			-- `last_state' is simplified from `a_state' by doing the following:
-			-- 1. Remove all tautologies from `a_state'.
+			-- Remove all tautologies from `a_state'.
 		local
 			l_kept_exprs: DS_HASH_SET [AFX_EXPRESSION]
 			l_done: BOOLEAN
@@ -29,19 +32,6 @@ feature -- Basic operations
 
 				-- Remove all tautology expressions.
 			a_state.do_if (agent l_kept_exprs.force_last, agent is_expression_non_tautology (?, a_state))
-
---				-- Remove expressions that can be implied by others.
---			from
---			until
---				l_done
---			loop
---				l_implied_expr := implied_expression (l_kept_exprs, a_state)
---				if l_implied_expr /= Void then
---					l_kept_exprs.remove (l_implied_expr)
---				else
---					l_done := True
---				end
---			end
 
 				-- Construct `last_state'.
 			create l_expr_list.make
@@ -76,6 +66,7 @@ feature{NONE} -- Implementation
 			l_exprs: like a_expressions
 			l_expr: AFX_EXPRESSION
 			l_list: LINKED_LIST [AFX_EXPRESSION]
+			l_single_list: LINKED_LIST [AFX_EXPRESSION]
 		do
 			from
 				l_exprs := a_expressions.twin
@@ -88,7 +79,9 @@ feature{NONE} -- Implementation
 				l_exprs.remove (l_expr)
 				create l_list.make
 				l_exprs.do_all (agent l_list.extend)
-				smtlib_generator.generate_for_implied_checking (l_expr, l_list, a_state)
+				create l_single_list.make
+				l_single_list.extend (l_expr)
+				smtlib_generator.generate_for_implied_checking (l_list, l_single_list, a_state.theory)
 				if z3_launcher.is_unsat (smtlib_generator.last_smtlib) then
 					Result := l_expr
 				else
@@ -98,20 +91,6 @@ feature{NONE} -- Implementation
 			end
 		ensure
 			good_result: Result /= Void implies a_expressions.has (Result)
-		end
-
-feature{NONE} -- Implementation
-
-	z3_launcher: AFX_SMTLIB_LAUNCHER
-			-- Z3 launcher
-		once
-			create Result
-		end
-
-	smtlib_generator: AFX_SMTLIB_FILE_GENERATOR
-			-- Z3 SMTLIB file generator
-		once
-			create Result
 		end
 
 end

@@ -19,6 +19,18 @@ inherit
 			is_equal
 		end
 
+	AFX_SMTLIB_LAUNCHER
+		undefine
+			copy,
+			is_equal
+		end
+
+	AFX_SHARED_SMTLIB_GENERATOR
+		undefine
+			copy,
+			is_equal
+		end
+
 create
 	make
 
@@ -35,6 +47,50 @@ feature{NONE} -- Initialization
 			set_equality_tester (create {AFX_PREDICATE_EQUALITY_TESTER})
 		end
 
+	make_from_object_state (a_state: HASH_TABLE [STRING, STRING]; a_class: like class_; a_feature: like feature_)
+			-- Initialize Current with queries and values from `a_state' for `a_class' and `a_feature'.
+			-- Key of `a_state' is query name, value is the result of the query.
+		do
+			make (a_state.count, a_class, a_feature)
+			from
+				a_state.start
+			until
+				a_state.after
+			loop
+				force_last (predicate_from_expression_and_value (a_state.key_for_iteration, a_state.item_for_iteration, a_class, a_feature))
+				a_state.forth
+			end
+		end
+
+	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_PREDICATE
+			-- Predicate from `a_expression' and its `a_value'
+		local
+			l_expr: AFX_AST_EXPRESSION
+			l_value: AFX_EXPRESSION_VALUE
+			l_written_class: CLASS_C
+		do
+			if a_feature /= Void then
+				l_written_class := a_feature.written_class
+			else
+				l_written_class := a_class
+			end
+
+			create l_expr.make_with_text (a_class, a_feature, a_expression, l_written_class)
+
+			if a_value = Void then
+				create {AFX_VOID_VALUE} l_value.make
+			else
+				if a_value.is_boolean then
+					create {AFX_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
+				elseif a_value.is_integer then
+					create {AFX_INTEGER_VALUE} l_value.make (a_value.to_integer)
+				elseif a_value.is_equal ({AUT_SHARED_CONSTANTS}.nonsensical) then
+					create {AFX_NONSENSICAL_VALUE} l_value
+				end
+			end
+			create Result.make (l_expr, l_value)
+		end
+
 feature -- Access
 
 	class_: CLASS_C
@@ -49,20 +105,39 @@ feature -- Access
 			-- Skeleton of current state
 		do
 			create Result.make_basic (class_, feature_, count)
-			do_all (agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
-				do
-					a_skeleton.force_last (a_pred.expression)
-				end (?, Result))
+			do_all (
+				agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
+					do
+						a_skeleton.force_last (a_pred.expression)
+					end (?, Result))
 		ensure
 			good_result: Result.count = count
+		end
+
+	skeleton_with_value: AFX_STATE_SKELETON
+			-- Skeleton consisting of predicate rewritten as expression
+			-- in Current.
+		do
+			create Result.make_basic (class_, feature_, count)
+			do_all (
+				agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
+					do
+						a_skeleton.force_last (a_pred.as_expression)
+					end (?, Result))
 		end
 
 feature -- Status report
 
 	implication alias "implies" (other: AFX_STATE): BOOLEAN
 			-- Does Current implies `other'?
+		local
+			l_skeleton: AFX_STATE_SKELETON
+			l_other_skeleton: AFX_STATE_SKELETON
 		do
-			to_implement ("Implment this feature. 2009.11.1 Jasonw.")
+			l_skeleton := skeleton_with_value
+			l_other_skeleton := other.skeleton_with_value
+			smtlib_generator.generate_for_implied_checking (l_skeleton.linear_representation, l_other_skeleton.linear_representation, l_skeleton.theory)
+			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
 		end
 
 end

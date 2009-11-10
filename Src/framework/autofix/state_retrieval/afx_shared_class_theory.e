@@ -94,7 +94,7 @@ feature -- Basic operations
 			Result := [l_generated_exprs, l_theory]
 		end
 
-feature{NONE} -- Implementation
+feature -- Access
 
 	class_with_prefix_set: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]
 			-- New set for class with prefix
