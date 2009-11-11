@@ -19,6 +19,10 @@ inherit
 
 	SHARED_BENCH_NAMES
 
+	AUT_CONTRACT_EXTRACTOR
+
+	AFX_SHARED_CLASS_THEORY
+
 create
 	make
 
@@ -45,25 +49,126 @@ feature -- Execute
 			l_bp_manager: AFX_BREAKPOINT_MANAGER
 			l_state: AFX_STATE_SKELETON
 			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
-
 			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
+
+			l_smt_generator:AFX_SMTLIB_GENERATOR
+			l_inv: LINKED_LIST [AUT_EXPRESSION]
+			l_theory: AFX_THEORY
+			l_smt_expr: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]
+
+			l_test_state_implication: BOOLEAN
+			l_build_theory: BOOLEAN
+			l_retrieve_system_state: BOOLEAN
 		do
-			create l_bp_manager.make
+			if l_build_theory then
+				l_theory := resolved_class_theory (first_class_starts_with_name ("LINKED_LIST"))
+				io.put_string ("=====================================================================%N")
+				from
+					l_theory.functions.start
+				until
+					l_theory.functions.after
+				loop
+					io.put_string (l_theory.functions.item_for_iteration.expression + "%N")
+					l_theory.functions.forth
+				end
+				io.put_string ("%N%N")
+				from
+					l_theory.axioms.start
+				until
+					l_theory.axioms.after
+				loop
+					io.put_string (l_theory.axioms.item_for_iteration.expression + "%N")
+					l_theory.axioms.forth
+				end
+			end
 
-			create l_gen.make
-			l_gen.generate (config.state_recipient_class, config.state_recipient)
-			create l_state.make_with_accesses (l_gen.accesses)
-			create l_action.make (l_state)
-			debugger_manager.breakpoints_manager.remove_user_breakpoints_in_feature (config.state_recipient.e_feature)
+--			create l_smt_generator.make
+----			l_smt_generator.generate_functions (config.state_recipient_class)
+--			l_inv := invariant_of_class (config.state_recipient_class)
+--			from
+--				l_inv.start
+--			until
+--				l_inv.after
+--			loop
+--				l_smt_generator.generate_expression (l_inv.item_for_iteration.ast, config.state_recipient_class, l_inv.item_for_iteration.written_class, Void)
+--				l_inv.forth
+--			end
+--			from
+--				l_smt_generator.last_statements.start
+--			until
+--				l_smt_generator.last_statements.after
+--			loop
+--				io.put_string (l_smt_generator.last_statements.item_for_iteration + "%N")
+--				l_smt_generator.last_statements.forth
+--			end
 
-			l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
-			l_bp_manager.set_breakpoints (l_state, config.state_recipient)
-			l_bp_manager.toggle_breakpoints (True)
+			l_retrieve_system_state := True
+			if l_retrieve_system_state then
+				create l_bp_manager.make (config.state_recipient_class, config.state_recipient)
 
-			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
-			debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
-			start_debugger
-			l_bp_manager.toggle_breakpoints (False)
+				create l_gen.make
+				l_gen.generate (config.state_recipient_class, config.state_recipient)
+				create l_state.make_with_accesses (config.state_recipient_class, config.state_recipient, l_gen.accesses)
+				l_state := l_state.simplified
+				l_theory := l_state.theory
+
+				l_smt_expr := l_state.smtlib_expressions
+				io.put_string ("============================================================%N")
+				io.put_string (l_theory.debug_output)
+				io.put_string ("%N%N")
+				from
+					l_smt_expr.start
+				until
+					l_smt_expr.after
+				loop
+					io.put_string (l_smt_expr.item_for_iteration.expression + "%N")
+					l_smt_expr.forth
+				end
+
+
+				create l_action.make (l_state, config.state_recipient_class, config.state_recipient)
+				debugger_manager.breakpoints_manager.remove_user_breakpoints_in_feature (config.state_recipient.e_feature)
+
+				l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
+				l_bp_manager.set_breakpoints (l_state, config.state_recipient)
+				l_bp_manager.toggle_breakpoints (True)
+
+				debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
+				debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
+				start_debugger
+				l_bp_manager.toggle_breakpoints (False)
+			end
+
+--			l_test_state_implication := True
+			if l_test_state_implication then
+				test_state_implication
+			end
+		end
+
+	test_state_implication
+			-- Test state implication
+		local
+			l_s1, l_s2: AFX_STATE
+			l_pred1, l_pred2: AFX_PREDICATE
+			l_expr1, l_expr2: AFX_AST_EXPRESSION
+			l_value1: AFX_INTEGER_VALUE
+			l_value2: AFX_BOOLEAN_VALUE
+		do
+			create l_s1.make (1, config.state_recipient_class, config.state_recipient)
+			create l_s2.make (1, config.state_recipient_class, config.state_recipient)
+
+			create l_expr1.make_with_text (config.state_recipient_class, config.state_recipient, "index", config.state_recipient_class)
+			create l_expr2.make_with_text (config.state_recipient_class, config.state_recipient, "index > 0", config.state_recipient_class)
+
+			create l_value1.make (5)
+			create l_value2.make (True)
+			create l_pred1.make (l_expr1, l_value1)
+			create l_pred2.make (l_expr2, l_value2)
+
+			l_s1.force_last (l_pred1)
+			l_s2.force_last (l_pred2)
+
+			io.put_string ("s1 -> s2 = " + (l_s1 implies l_s2).out + "%N")
 		end
 
 feature{NONE} -- Implementation
