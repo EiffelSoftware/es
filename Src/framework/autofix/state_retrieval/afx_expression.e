@@ -65,6 +65,14 @@ feature -- Status report
 		deferred
 		end
 
+	is_predicate: BOOLEAN
+			-- Is Current a predicate?
+		do
+			Result := type.is_boolean
+		ensure
+			good_result: Result = type.is_boolean
+		end
+
 feature -- Setting
 
 	set_feature (a_feature: like feature_)

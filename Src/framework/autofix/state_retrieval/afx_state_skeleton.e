@@ -214,4 +214,7 @@ feature{NONE} -- Implementation
 			theory_cache := l_data.theory
 		end
 
+invariant
+	all_predicates: for_all (agent (a_expr: AFX_EXPRESSION): BOOLEAN do Result := a_expr.is_predicate end)
+	
 end

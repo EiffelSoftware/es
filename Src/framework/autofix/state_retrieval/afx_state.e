@@ -125,7 +125,7 @@ feature -- Access
 			do_all (
 				agent (a_pred: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
 					do
-						a_skeleton.force_last (a_pred.as_expression)
+						a_skeleton.force_last (a_pred.as_predicate)
 					end (?, Result))
 		end
 
