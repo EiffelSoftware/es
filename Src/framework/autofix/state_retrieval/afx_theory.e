@@ -67,6 +67,21 @@ feature -- Access
 			good_result: Result.count = functions.count + axioms.count
 		end
 
+	union alias "+" (other: like Current): like Current is
+			-- Clone of current set to which all items
+			-- of `other' have been added
+		require
+			other_from_same_context: is_from_same_context (other)
+		do
+			create Result.make_with_feature (class_, feature_)
+
+			functions.do_all (agent Result.extend_function)
+			other.functions.do_all (agent Result.extend_function)
+
+			axioms.do_all (agent Result.extend_axiom)
+			other.axioms.do_all (agent Result.extend_axiom)
+		end
+
 feature -- Status report
 
 	debug_output: STRING
@@ -97,6 +112,16 @@ feature -- Status report
 			Result :=
 				a_string.starts_with (smtlib_function_header) or
 				a_string.starts_with (smtlib_axiom_header)
+		end
+
+	is_from_same_context (other: like Current): BOOLEAN
+			-- Is `other' from the same context as Current?
+		do
+			if class_.class_id = other.class_.class_id then
+				Result :=
+					((feature_ = Void) = (other.feature_ = Void)) or
+					(feature_ /= Void and then other.feature_ /= Void and then feature_.equiv (other.feature_))
+			end
 		end
 
 feature -- Basic operations

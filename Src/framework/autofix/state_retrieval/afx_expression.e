@@ -56,6 +56,19 @@ feature -- Access
 			create Result.make (l_resolved.resolved_str)
 		end
 
+	as_skeleton: AFX_STATE_SKELETON
+			-- Skeleton representation for Current
+		require
+			is_predicate: is_predicate
+		local
+			l_exprs: LINKED_LIST [AFX_EXPRESSION]
+		do
+			create l_exprs.make
+			l_exprs.extend (Current)
+			
+			create Result.make_with_expressions (class_, feature_, l_exprs)
+		end
+
 feature -- Status report
 
 	is_valid: BOOLEAN

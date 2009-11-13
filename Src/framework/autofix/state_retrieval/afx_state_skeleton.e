@@ -148,11 +148,11 @@ feature -- Access
 	simplified: like Current
 			-- Simplified version of Current
 		local
-			l_simplifer: AFX_STATE_SIMPLIFIER
+			l_simplifer: AFX_STATE_SKELETON_SIMPLIFIER
 		do
 			create l_simplifer
 			l_simplifer.simplify (Current)
-			Result := l_simplifer.last_state
+			Result := l_simplifer.last_skeleton
 		end
 
 	linear_representation: LINEAR [AFX_EXPRESSION]
@@ -165,16 +165,75 @@ feature -- Access
 			Result := l_list
 		end
 
+	slices (n: INTEGER): LINKED_LIST [AFX_STATE_SKELETON]
+			-- Split current skeleton into `n' approximately equally large slices
+			-- and return those slices.
+		require
+			n_positive: n > 0
+		local
+			l_slice_size: INTEGER
+			i, j: INTEGER
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_cur_slice: LINKED_LIST [AFX_EXPRESSION]
+		do
+			l_slice_size := count // n
+			from
+				create l_cur_slice.make
+				l_cursor := new_cursor
+				l_cursor.start
+				i := 0
+				j := 1
+			until
+				l_cursor.after
+			loop
+				l_cur_slice.extend (l_cursor.item)
+				i := i + 1
+				if i = l_slice_size and then j < n then
+					Result.extend (create{like Current}.make_with_expressions (class_, feature_, l_cur_slice))
+					create l_cur_slice.make
+					i := 0
+					j := j + 1
+				end
+				l_cursor.forth
+			end
+		ensure
+			good_result: Result.count = n
+		end
+
+	minimal_premises (a_predicate: AFX_EXPRESSION): detachable like Current
+			-- The minimal subset of Current which implies `a_predicate'
+			-- If no such subset is found, return Void.
+		require
+			a_predicate_valid: a_predicate.is_predicate
+		do
+			Result := minimal_premises_with_context (a_predicate, Void)
+		ensure
+			good_result: Result /= Void implies Result.count <= count
+		end
+
+	minimal_premises_with_context (a_predicate: AFX_EXPRESSION; a_context: detachable like Current): detachable like Current
+			-- The minimal subset of Current which, when accompanied with `a_context,
+			-- implies `a_predicate': Result ^ a_context -> a_predicate
+			-- If no such subset is found, return Void.
+		require
+			a_predicate_valid: a_predicate.is_predicate
+		local
+			l_simplifier: AFX_STATE_SKELETON_SIMPLIFIER
+		do
+			create l_simplifier
+			l_simplifier.minimize_premises (Current, a_predicate, a_context)
+			Result := l_simplifier.last_skeleton
+		ensure
+			good_result: Result /= Void implies Result.count <= count
+		end
+
 feature -- Status report
 
 	implication alias "implies" (other: like Current): BOOLEAN
 			-- Does Current implies `other'?
-			-- The `theory' will be used to support the reasoning.
-		local
-			l_skeleton: AFX_STATE_SKELETON
-			l_other_skeleton: AFX_STATE_SKELETON
+			-- `theory' in Current and `other' will be used to support the reasoning.
 		do
-			smtlib_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory)
+			smtlib_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory + other.theory)
 			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
 		end
 
@@ -216,5 +275,5 @@ feature{NONE} -- Implementation
 
 invariant
 	all_predicates: for_all (agent (a_expr: AFX_EXPRESSION): BOOLEAN do Result := a_expr.is_predicate end)
-	
+
 end

@@ -106,6 +106,8 @@ feature -- Access
 
 	skeleton: AFX_STATE_SKELETON
 			-- Skeleton of current state
+		require
+			all_expressions_boolean: for_all (agent (a_equation: AFX_EQUATION): BOOLEAN do Result := a_equation.expression.is_predicate end)
 		do
 			create Result.make_basic (class_, feature_, count)
 			do_all (
@@ -118,7 +120,7 @@ feature -- Access
 		end
 
 	skeleton_with_value: AFX_STATE_SKELETON
-			-- Skeleton consisting of predicate rewritten as expression
+			-- Skeleton consisting of predicate rewritten as predicates
 			-- in Current.
 		do
 			create Result.make_basic (class_, feature_, count)
