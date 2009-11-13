@@ -22,6 +22,12 @@ inherit
 			copy
 		end
 
+	AFX_SHARED_SMTLIB_GENERATOR
+		undefine
+			is_equal,
+			copy
+		end
+
 create
 	make_with_basic_argumentless_query,
 	make_with_accesses,
@@ -157,6 +163,19 @@ feature -- Access
 			create l_list.make
 			do_all (agent l_list.extend)
 			Result := l_list
+		end
+
+feature -- Status report
+
+	implication alias "implies" (other: like Current): BOOLEAN
+			-- Does Current implies `other'?
+			-- The `theory' will be used to support the reasoning.
+		local
+			l_skeleton: AFX_STATE_SKELETON
+			l_other_skeleton: AFX_STATE_SKELETON
+		do
+			smtlib_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory)
+			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
 		end
 
 feature -- Setting

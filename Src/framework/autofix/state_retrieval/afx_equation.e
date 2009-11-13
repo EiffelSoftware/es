@@ -5,13 +5,16 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_PREDICATE
+	AFX_EQUATION
 
 inherit
 	HASHABLE
 
 create
 	make
+
+convert
+	to_state: {AFX_STATE}
 
 feature{NONE} -- Initialization
 
@@ -49,6 +52,32 @@ feature -- Access
 			create {AFX_AST_EXPRESSION} Result.make_with_text (expression.class_, expression.feature_, expression.text + once " = " + value.out.as_lower, expression.written_class)
 		end
 
+	class_: CLASS_C
+			-- Context class for `expression'
+		do
+			Result := expression.class_
+		ensure
+			good_result: Result = expression.class_
+		end
+
+	feature_: detachable FEATURE_I
+			-- Context feature for `expression'
+		do
+			Result := expression.feature_
+		ensure
+			good_result: Result = expression.feature_
+		end
+
+feature -- Conversion
+
+	to_state: AFX_STATE
+			-- State representation for Current.
+			-- The returned state only contains Current as the only predicate.
+		do
+			create Result.make (1, class_, feature_)
+			Result.force_last (Current)
+		end
+
 feature -- Status report
 
 	has_error: BOOLEAN
@@ -58,7 +87,7 @@ feature -- Status report
 
 		end
 
-feature -- Access
+feature -- Hash code
 
 	hash_code: INTEGER
 			-- Hash code value

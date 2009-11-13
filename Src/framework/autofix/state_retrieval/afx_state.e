@@ -8,7 +8,7 @@ class
 	AFX_STATE
 
 inherit
-	DS_HASH_SET [AFX_PREDICATE]
+	DS_HASH_SET [AFX_EQUATION]
 		rename
 			make as make_set
 		end
@@ -33,6 +33,9 @@ inherit
 
 create
 	make
+
+convert
+	skeleton: {AFX_STATE_SKELETON}
 
 feature{NONE} -- Initialization
 
@@ -62,7 +65,7 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_PREDICATE
+	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_EQUATION
 			-- Predicate from `a_expression' and its `a_value'
 		local
 			l_expr: AFX_AST_EXPRESSION
@@ -106,7 +109,7 @@ feature -- Access
 		do
 			create Result.make_basic (class_, feature_, count)
 			do_all (
-				agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
+				agent (a_pred: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
 					do
 						a_skeleton.force_last (a_pred.expression)
 					end (?, Result))
@@ -120,7 +123,7 @@ feature -- Access
 		do
 			create Result.make_basic (class_, feature_, count)
 			do_all (
-				agent (a_pred: AFX_PREDICATE; a_skeleton: AFX_STATE_SKELETON)
+				agent (a_pred: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
 					do
 						a_skeleton.force_last (a_pred.as_expression)
 					end (?, Result))
@@ -130,14 +133,9 @@ feature -- Status report
 
 	implication alias "implies" (other: AFX_STATE): BOOLEAN
 			-- Does Current implies `other'?
-		local
-			l_skeleton: AFX_STATE_SKELETON
-			l_other_skeleton: AFX_STATE_SKELETON
+			-- The theory of `Current' will be used to support the reasoning.
 		do
-			l_skeleton := skeleton_with_value
-			l_other_skeleton := other.skeleton_with_value
-			smtlib_generator.generate_for_implied_checking (l_skeleton.linear_representation, l_other_skeleton.linear_representation, l_skeleton.theory)
-			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
+			Result := skeleton_with_value implies other.skeleton_with_value
 		end
 
 end

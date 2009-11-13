@@ -8,14 +8,14 @@ class
 	AFX_PREDICATE_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [AFX_PREDICATE]
+	KL_EQUALITY_TESTER [AFX_EQUATION]
 		redefine
 			test
 		end
 
 feature -- Status report
 
-	test (v, u: AFX_PREDICATE): BOOLEAN
+	test (v, u: AFX_EQUATION): BOOLEAN
 		do
 			if v = u then
 				Result := True

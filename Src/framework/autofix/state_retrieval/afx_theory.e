@@ -22,8 +22,10 @@ feature{NONE} -- Initializatoin
 			-- Initialize Current.
 		do
 			class_ := a_class
-			create functions.make
-			create axioms.make
+			create functions.make (50)
+			create axioms.make (50)
+			functions.set_equality_tester (create {AFX_SMTLIB_EXPR_EQUALITY_TESTER})
+			axioms.set_equality_tester (create {AFX_SMTLIB_EXPR_EQUALITY_TESTER})
 		ensure
 			class_set: class_ = a_class
 		end
@@ -48,19 +50,19 @@ feature -- Access
 			-- If Void, it means that Current theory is for `class_',
 			-- not for a particular feature.
 
-	functions: LINKED_LIST [AFX_SMTLIB_EXPR]
+	functions: DS_HASH_SET [AFX_SMTLIB_EXPR]
 			-- List of functions
 
-	axioms: LINKED_LIST [AFX_SMTLIB_EXPR]
+	axioms: DS_HASH_SET [AFX_SMTLIB_EXPR]
 			-- List of axioms
 
-	statements: LINKED_LIST [AFX_SMTLIB_EXPR]
+	statements: DS_HASH_SET [AFX_SMTLIB_EXPR]
 			-- All statements consisting both `functions' and `axioms'
 			-- A new copy of `functions' and `axioms'.
 		do
-			create Result.make
-			functions.do_all (agent Result.extend)
-			axioms.do_all (agent Result.extend)
+			create Result.make (functions.count + axioms.count)
+			functions.do_all (agent Result.force_last)
+			axioms.do_all (agent Result.force_last)
 		ensure
 			good_result: Result.count = functions.count + axioms.count
 		end
@@ -107,9 +109,9 @@ feature -- Basic operations
 			a_statement_valid: is_statement_valid (a_statement)
 		do
 			if a_statement.starts_with (smtlib_function_header) then
-				functions.extend (create {AFX_SMTLIB_EXPR}.make (a_statement))
+				extend_function_with_string (a_statement)
 			else
-				axioms.extend (create {AFX_SMTLIB_EXPR}.make (a_statement))
+				extend_axiom_with_string (a_statement)
 			end
 		end
 
@@ -117,9 +119,9 @@ feature -- Basic operations
 			-- Extend `a_stmt' into Current.
 		do
 			if a_stmt.expression.starts_with (smtlib_function_header) then
-				functions.extend (a_stmt)
+				extend_function (a_stmt)
 			else
-				axioms.extend (a_stmt)
+				extend_axiom (a_stmt)
 			end
 		end
 
@@ -134,13 +136,24 @@ feature -- Basic operations
 	extend_function_with_string (a_str: STRING)
 			-- Extend `a_str' as a function.
 		do
-			functions.extend (create {AFX_SMTLIB_EXPR}.make (a_str))
+			extend_function (create {AFX_SMTLIB_EXPR}.make (a_str))
 		end
 
 	extend_axiom_with_string (a_str: STRING)
 			-- Extend `a_str' as an axiom.
 		do
-			axioms.extend (create {AFX_SMTLIB_EXPR}.make (a_str))
+			extend_axiom (create {AFX_SMTLIB_EXPR}.make (a_str))
 		end
 
+	extend_function (a_expr: AFX_SMTLIB_EXPR)
+			-- Extend `a_expr' into `functions'.
+		do
+			functions.force_last (a_expr)
+		end
+
+	extend_axiom (a_expr: AFX_SMTLIB_EXPR)
+			-- Extend `a_expr' into `axioms'.
+		do
+			axioms.force_last (a_expr)
+		end
 end

@@ -39,6 +39,15 @@ feature -- Basic operations
 			create last_state.make_with_expressions (a_state.class_, a_state.feature_, l_expr_list)
 		end
 
+	minimize_premises (a_state: AFX_STATE; a_predicate: AFX_EXPRESSION)
+			-- Store the smallest state (containing possibly fewer predicates than `a_state') that implies `a_predicate'
+			-- in `last_state'. If no such state is found, set `last_state' to Void.
+		require
+			a_predicate_valid: a_predicate.type.is_boolean
+		do
+
+		end
+
 feature{NONE} -- Implementation
 
 	is_expression_tautology (a_expr: AFX_EXPRESSION; a_state: like last_state): BOOLEAN

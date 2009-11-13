@@ -49,7 +49,7 @@ feature -- Basic operations
 			l_exprs: like expressions
 			l_value: DUMP_VALUE
 			l_concrete_state: AFX_STATE
-			l_state_value: AFX_PREDICATE
+			l_state_value: AFX_EQUATION
 			l_actions: like on_hit_actions
 			l_cursor: CURSOR
 		do
@@ -95,7 +95,7 @@ feature -- Basic operations
 				create {AFX_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
 
 			else
-				
+
 			end
 		end
 

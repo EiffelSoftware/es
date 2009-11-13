@@ -7,6 +7,12 @@ note
 class
 	AFX_SMTLIB_EXPR
 
+inherit
+	HASHABLE
+		redefine
+			is_equal
+		end
+
 create
 	make
 
@@ -24,5 +30,22 @@ feature -- Access
 
 	expression: STRING
 			-- SMTLIB expression
+
+feature -- Access
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := expression.hash_code
+		end
+
+feature -- Equality
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := expression ~ other.expression
+		end
 
 end

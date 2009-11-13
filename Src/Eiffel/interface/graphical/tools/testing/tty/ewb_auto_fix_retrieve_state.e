@@ -149,7 +149,7 @@ feature -- Execute
 			-- Test state implication
 		local
 			l_s1, l_s2: AFX_STATE
-			l_pred1, l_pred2: AFX_PREDICATE
+			l_pred1, l_pred2: AFX_EQUATION
 			l_expr1, l_expr2: AFX_AST_EXPRESSION
 			l_value1: AFX_INTEGER_VALUE
 			l_value2: AFX_BOOLEAN_VALUE
