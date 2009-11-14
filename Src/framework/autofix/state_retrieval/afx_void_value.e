@@ -34,4 +34,12 @@ feature -- Access
 	item: ANY
 			-- Value item in current
 
+feature -- Process
+
+	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_void_value (Current)
+		end
+
 end

@@ -50,4 +50,12 @@ feature{NONE} -- Implementation
 	item_cache: BOOLEAN
 			-- Cache for `item'
 
+feature -- Process
+
+	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_boolean_value (Current)
+		end
+
 end

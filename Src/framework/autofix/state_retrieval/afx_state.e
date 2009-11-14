@@ -65,35 +65,6 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_EQUATION
-			-- Predicate from `a_expression' and its `a_value'
-		local
-			l_expr: AFX_AST_EXPRESSION
-			l_value: AFX_EXPRESSION_VALUE
-			l_written_class: CLASS_C
-		do
-			if a_feature /= Void then
-				l_written_class := a_feature.written_class
-			else
-				l_written_class := a_class
-			end
-
-			create l_expr.make_with_text (a_class, a_feature, a_expression, l_written_class)
-
-			if a_value = Void then
-				create {AFX_VOID_VALUE} l_value.make
-			else
-				if a_value.is_boolean then
-					create {AFX_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
-				elseif a_value.is_integer then
-					create {AFX_INTEGER_VALUE} l_value.make (a_value.to_integer)
-				elseif a_value.is_equal ({AUT_SHARED_CONSTANTS}.nonsensical) then
-					create {AFX_NONSENSICAL_VALUE} l_value
-				end
-			end
-			create Result.make (l_expr, l_value)
-		end
-
 feature -- Access
 
 	class_: CLASS_C
@@ -138,6 +109,37 @@ feature -- Status report
 			-- The theory of `Current' will be used to support the reasoning.
 		do
 			Result := skeleton_with_value implies other.skeleton_with_value
+		end
+
+feature{NONE} -- Implementation
+
+	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_EQUATION
+			-- Predicate from `a_expression' and its `a_value'
+		local
+			l_expr: AFX_AST_EXPRESSION
+			l_value: AFX_EXPRESSION_VALUE
+			l_written_class: CLASS_C
+		do
+			if a_feature /= Void then
+				l_written_class := a_feature.written_class
+			else
+				l_written_class := a_class
+			end
+
+			create l_expr.make_with_text (a_class, a_feature, a_expression, l_written_class)
+
+			if a_value = Void then
+				create {AFX_VOID_VALUE} l_value.make
+			else
+				if a_value.is_boolean then
+					create {AFX_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
+				elseif a_value.is_integer then
+					create {AFX_INTEGER_VALUE} l_value.make (a_value.to_integer)
+				elseif a_value.is_equal ({AUT_SHARED_CONSTANTS}.nonsensical) then
+					create {AFX_NONSENSICAL_VALUE} l_value
+				end
+			end
+			create Result.make (l_expr, l_value)
 		end
 
 end

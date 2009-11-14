@@ -14,7 +14,6 @@ inherit
 			out
 		end
 
-
 feature -- Access
 
 	type: TYPE_A
@@ -58,11 +57,31 @@ feature -- Status report
 		do
 		end
 
+	is_random: BOOLEAN
+			-- Does current represent a random value?
+		do
+		end
+
+	is_deterministic: BOOLEAN
+			-- Does current represent a deterministic value?
+		do
+			Result := not is_random
+		ensure
+			good_result: Result = not is_random
+		end
+
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
 			Result := type.is_equivalent (other.type) and then item ~ other.item
+		end
+
+feature -- Process
+
+	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+			-- Process Current using `a_visitor'.
+		deferred
 		end
 
 end

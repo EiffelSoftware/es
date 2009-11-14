@@ -48,8 +48,12 @@ feature -- Access
 	as_predicate: AFX_EXPRESSION
 			-- Current as an expression in the form of
 			-- "expression = value"
+		local
+			l_gen: AFX_EQUATION_TO_EXPRESSION_GENERATOR
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (expression.class_, expression.feature_, expression.text + once " = " + value.out.as_lower, expression.written_class)
+			create l_gen
+			l_gen.generate (Current)
+			Result := l_gen.last_expression
 		ensure
 			result_is_predicate: Result.is_predicate
 		end

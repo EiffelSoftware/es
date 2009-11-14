@@ -32,4 +32,12 @@ feature -- Status report
 	is_nonsensical: BOOLEAN is True
 			-- Is current a nonsensical value?
 
+feature -- Process
+
+	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_nonsensical_value (Current)
+		end
+
 end

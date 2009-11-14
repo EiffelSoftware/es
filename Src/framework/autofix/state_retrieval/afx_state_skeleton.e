@@ -9,6 +9,22 @@ class
 
 inherit
 	DS_HASH_SET [AFX_EXPRESSION]
+		redefine
+			force_new,
+			append,
+			put,
+			put_new,
+			put_last,
+			force,
+			force_last,
+			extend,
+			extend_last,
+			append_last,
+			merge,
+			intersect,
+			subtract,
+			symdif
+		end
 
 	AUT_OBJECT_STATE_REQUEST_UTILITY
 		undefine
@@ -235,6 +251,164 @@ feature -- Status report
 		do
 			smtlib_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory + other.theory)
 			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
+		end
+
+feature -- Element change
+
+	put (v: like item) is
+			-- Add `v' to set, replacing any existing item.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			force_last (v)
+		end
+
+	put_new (v: like item) is
+			-- Add `v' to set.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			force_last (v)
+		end
+
+	put_last (v: like item) is
+			-- Add `v' at the end of set if not already included,
+			-- or replace it otherwise.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			force_last (v)
+		end
+
+	force (v: like item) is
+			-- Add `v' to set, replacing any existing item.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			force_last (v)
+		end
+
+	force_new (v: like item) is
+			-- Add `v' to set.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			force_last (v)
+		end
+
+	force_last (v: like item) is
+			-- Add `v' at the end of set if not already included,
+			-- or replace it otherwise.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			force_last (v)
+		end
+
+	extend (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	extend_last (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- If items of `other' were not included yet, insert
+			-- them at last position if implementation permits.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	append (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	append_last (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- If items of `other' were not included yet, insert
+			-- them at last position if implementation permits.
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+feature -- Basic operations
+
+	merge (other: DS_SET [like item]) is
+			-- Add all items of `other' to current set.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	intersect (other: DS_SET [like item]) is
+			-- Remove all items not included in `other'.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Move all cursors `off'.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	subtract (other: DS_SET [like item]) is
+			-- Remove all items also included in `other'.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Move all cursors `off'.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	symdif (other: DS_SET [like item]) is
+			-- Add items of `other' which are not included
+			-- in current set and remove those which are.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Move all cursors `off'.
+		do
+			clear_cache
+		end
+
+	clear_cache
+			-- Clear cached data, for example, calculated theory
+			-- becuase of element change.
+		do
+			theory_cache := Void
 		end
 
 feature -- Setting
