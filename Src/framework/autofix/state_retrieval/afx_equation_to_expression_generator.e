@@ -91,6 +91,16 @@ feature -- Process
 			process_deterministic_value (a_value)
 		end
 
+
+	process_random_integer_value (a_value: AFX_RANDOM_INTEGER_VALUE)
+			-- Process `a_value'.
+		local
+			l_text: STRING
+		do
+			l_text := "(" + expression_text + " >= " + min_integer_value.out + ") and (" + expression_text + " <= " + max_integer_value.out + ")"
+			create {AFX_AST_EXPRESSION} last_expression.make_with_text (class_, feature_, l_text, written_class)
+		end
+
 	process_nonsensical_value (a_value: AFX_NONSENSICAL_VALUE)
 			-- Process `a_value'.
 		do
@@ -103,5 +113,18 @@ feature -- Process
 			check should_not_happen: False end
 		end
 
+feature{NONE} -- Implementation
+
+	max_integer_value: INTEGER
+			-- Max integer value
+		do
+			Result := {INTEGER_32}.max_value
+		end
+
+	min_integer_value: INTEGER
+			-- Min integer value
+		do
+			Result := {INTEGER_32}.min_value
+		end
 
 end

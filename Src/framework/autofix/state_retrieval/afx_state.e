@@ -31,6 +31,12 @@ inherit
 			is_equal
 		end
 
+	REFACTORING_HELPER
+		undefine
+			copy,
+			is_equal
+		end
+
 create
 	make
 
@@ -102,6 +108,32 @@ feature -- Access
 					end (?, Result))
 		end
 
+	padded (a_skeleton: AFX_STATE_SKELETON): like Current
+			-- State containing all predicates in `a_skeleton'.
+			-- Predicates in `a_skeleton' but not presented in Current
+			-- will be assigned to a random value in the returned state.
+		require
+			current_is_subset: skeleton.is_subset (a_skeleton)
+		local
+			l_diff: like a_skeleton
+		do
+				-- Copy existing equations into Result.
+			create Result.make (a_skeleton.count, class_, feature_)
+			do_all (agent Result.force_last)
+
+				-- Generate random values for expression not appearing in Current.
+			l_diff := a_skeleton.subtraction (Result.skeleton)
+			if not l_diff.is_empty then
+				l_diff.do_all (
+					agent (a_expr: AFX_EXPRESSION; a_state: like Current)
+						do
+							a_state.force_last (a_expr.equation_with_random_value)
+						end (?, Result))
+			end
+		ensure
+			result_is_padded: Result.skeleton.is_subset (a_skeleton) and a_skeleton.is_subset (Result.skeleton)
+		end
+
 feature -- Status report
 
 	implication alias "implies" (other: AFX_STATE): BOOLEAN
@@ -128,6 +160,7 @@ feature{NONE} -- Implementation
 
 			create l_expr.make_with_text (a_class, a_feature, a_expression, l_written_class)
 
+			fixme ("Refactoring the following ugly if statement.")
 			if a_value = Void then
 				create {AFX_VOID_VALUE} l_value.make
 			else

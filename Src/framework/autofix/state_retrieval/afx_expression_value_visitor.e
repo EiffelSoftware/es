@@ -24,6 +24,11 @@ feature -- Process
 		deferred
 		end
 
+	process_random_integer_value (a_value: AFX_RANDOM_INTEGER_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
 	process_nonsensical_value (a_value: AFX_NONSENSICAL_VALUE)
 			-- Process `a_value'.
 		deferred
