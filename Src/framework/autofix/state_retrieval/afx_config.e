@@ -50,6 +50,7 @@ feature -- Access
 			end
 		end
 
+
 	output_directory: STRING is
 			-- Directory for output
 		local

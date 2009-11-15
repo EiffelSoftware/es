@@ -32,6 +32,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			config := a_config
+			create daikon_generator.make
 		ensure
 			config_set: config = a_config
 		end
@@ -40,6 +41,9 @@ feature -- Access
 
 	config: AFX_CONFIG
 			-- Config for AutoFix ocmmand line
+
+feature
+	daikon_generator : AFX_DAIKON_GENERATOR
 
 feature -- Execute
 
@@ -62,7 +66,7 @@ feature -- Execute
 		do
 			if l_build_theory then
 				l_theory := resolved_class_theory (first_class_starts_with_name ("LINKED_LIST"))
-				io.put_string ("=====================================================================%N")
+				io.put_string ("============================EXECUTE=========================================%N")
 				from
 					l_theory.functions.start
 				until
@@ -82,26 +86,6 @@ feature -- Execute
 				end
 			end
 
---			create l_smt_generator.make
-----			l_smt_generator.generate_functions (config.state_recipient_class)
---			l_inv := invariant_of_class (config.state_recipient_class)
---			from
---				l_inv.start
---			until
---				l_inv.after
---			loop
---				l_smt_generator.generate_expression (l_inv.item_for_iteration.ast, config.state_recipient_class, l_inv.item_for_iteration.written_class, Void)
---				l_inv.forth
---			end
---			from
---				l_smt_generator.last_statements.start
---			until
---				l_smt_generator.last_statements.after
---			loop
---				io.put_string (l_smt_generator.last_statements.item_for_iteration + "%N")
---				l_smt_generator.last_statements.forth
---			end
-
 			l_retrieve_system_state := True
 			if l_retrieve_system_state then
 				create l_bp_manager.make (config.state_recipient_class, config.state_recipient)
@@ -113,7 +97,7 @@ feature -- Execute
 				l_theory := l_state.theory
 
 				l_smt_expr := l_state.smtlib_expressions
-				io.put_string ("============================================================%N")
+				io.put_string ("=======================EXECUTE2=====================================%N")
 				io.put_string (l_theory.debug_output)
 				io.put_string ("%N%N")
 				from
@@ -137,12 +121,15 @@ feature -- Execute
 				debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
 				start_debugger
 				l_bp_manager.toggle_breakpoints (False)
+
 			end
 
 --			l_test_state_implication := True
 			if l_test_state_implication then
 				test_state_implication
 			end
+			io.put_string (daikon_generator.print_declarations)
+			io.put_string (daikon_generator.print_trace)
 		end
 
 	test_state_implication
@@ -195,7 +182,23 @@ feature{NONE} -- Implementation
 
 	on_hit (a_breakpoint: BREAKPOINT; a_state: AFX_STATE) is
 			-- Action to be performed when `a_breakpoint' is hit and `a_state' is retrieved
+			-- Due to the naming convention the class and the feature_name cannot be void
+		require
+			class_name:a_state.class_.name /= void
+			feature_name:a_state.feature_.feature_name /= void
+		local
+
 		do
+
+			daikon_generator.add_state (a_state,a_breakpoint.breakable_line_number.out)
+
+
+			if a_state.feature_ = void then
+			    io.put_string ("============== "+ a_state.class_.name +" =====================================%N")
+			else
+				io.put_string ("============== "+ a_state.feature_.feature_name +" =====================================%N")
+			end
+
 			io.put_string ("===================================================%N")
 			io.put_string ("BP_" + a_breakpoint.breakable_line_number.out + "%N")
 			from
