@@ -262,7 +262,7 @@ feature -- Element change
 			-- Do not move cursors.
 		do
 			clear_cache
-			force_last (v)
+			Precursor (v)
 		end
 
 	put_new (v: like item) is
@@ -272,7 +272,7 @@ feature -- Element change
 			-- Do not move cursors.
 		do
 			clear_cache
-			force_last (v)
+			Precursor (v)
 		end
 
 	put_last (v: like item) is
@@ -283,7 +283,7 @@ feature -- Element change
 			-- Do not move cursors.
 		do
 			clear_cache
-			force_last (v)
+			Precursor (v)
 		end
 
 	force (v: like item) is
@@ -294,7 +294,7 @@ feature -- Element change
 			-- Do not move cursors.
 		do
 			clear_cache
-			force_last (v)
+			Precursor (v)
 		end
 
 	force_new (v: like item) is
@@ -305,7 +305,7 @@ feature -- Element change
 			-- Do not move cursors.
 		do
 			clear_cache
-			force_last (v)
+			Precursor (v)
 		end
 
 	force_last (v: like item) is
@@ -317,7 +317,7 @@ feature -- Element change
 			-- Do not move cursors.
 		do
 			clear_cache
-			force_last (v)
+			Precursor (v)
 		end
 
 	extend (other: DS_LINEAR [like item]) is
@@ -402,13 +402,7 @@ feature -- Basic operations
 			-- Move all cursors `off'.
 		do
 			clear_cache
-		end
-
-	clear_cache
-			-- Clear cached data, for example, calculated theory
-			-- becuase of element change.
-		do
-			theory_cache := Void
+			Precursor (other)
 		end
 
 feature -- Setting
@@ -445,6 +439,13 @@ feature{NONE} -- Implementation
 			l_data := (create {AFX_SHARED_CLASS_THEORY}).expressions_with_theory (linear_representation, class_, feature_)
 			smtlib_expressions_cache := l_data.exprs
 			theory_cache := l_data.theory
+		end
+
+	clear_cache
+			-- Clear cached data, for example, calculated theory
+			-- becuase of element change.
+		do
+			theory_cache := Void
 		end
 
 invariant
