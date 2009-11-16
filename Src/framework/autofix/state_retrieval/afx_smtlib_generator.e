@@ -266,9 +266,22 @@ feature{NONE} -- Implementation
 
 	context_class: CLASS_C
 			-- Context class
+		do
+			if nested_prefix.is_empty then
+				Result := initial_context_class
+			else
+				Result := nested_prefix.item.associated_class
+			end
+		end
+
+	initial_context_class: like context_class
+			-- Initial context class
 
 	context_feature: detachable FEATURE_I
 			-- Context feature
+
+--	initial_context_feature: like context_feature
+--			-- Initial context feature
 
 	last_string: STRING
 			-- Last string used to store temparary result
@@ -282,9 +295,9 @@ feature{NONE} -- Implementation
 	set_context_class (a_class: like context_class)
 			-- Set `context_class' with `a_class'.
 		do
-			context_class := a_class
+			initial_context_class := a_class
 		ensure
-			context_class_set: context_class = a_class
+			initial_context_class_set: initial_context_class = a_class
 		end
 
 	set_context_feature (a_feature: like context_feature)
@@ -298,9 +311,9 @@ feature{NONE} -- Implementation
 	set_current_written_class (a_class: like current_written_class)
 			-- Set `current_written_class' with `a_class'.
 		do
-			current_written_class := a_class
+			initial_written_class := a_class
 		ensure
-			current_written_class_set: current_written_class = a_class
+			initial_written_class_set: initial_written_class = a_class
 		end
 
 	smt_prefix (a_prefix: STRING; a_class: CLASS_C): STRING
@@ -344,6 +357,16 @@ feature{NONE} -- Implementation
 
 	current_written_class: detachable CLASS_C
 			-- Written class for currently processed item
+		do
+			if nested_prefix.is_empty then
+				Result := initial_written_class
+			else
+				Result := nested_prefix.item.associated_class
+			end
+		end
+
+	initial_written_class: like current_written_class
+			-- Initial written class
 
 	output_buffer: STRING
 			-- Output buffer
@@ -387,9 +410,6 @@ feature{NONE} -- Implementation
 			else
 				final_name := a_name.twin
 				last_type := last_type.associated_class.feature_named (final_name).type.instantiated_in (last_type)
-			end
-			if nested_level > 0 then
-				nested_prefix.replace (last_type)
 			end
 		end
 
@@ -451,9 +471,6 @@ feature -- Process
 			end
 			output_buffer.append (once "Result")
 			last_type := context_feature.type
-			if nested_level > 0 then
-				nested_prefix.replace (last_type)
-			end
 		end
 
 	process_current_as (l_as: CURRENT_AS)
@@ -463,9 +480,6 @@ feature -- Process
 			end
 			output_buffer.append (once "Current")
 			last_type := context_class.actual_type
-			if nested_level > 0 then
-				nested_prefix.replace (last_type)
-			end
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -514,13 +528,15 @@ feature -- Process
 	process_nested_as (l_as: NESTED_AS)
 		local
 			l_nested_prefix: STRING
+			l_index: INTEGER
 		do
 			l_nested_prefix := last_nested_prefix
-			nested_prefix.extend (Void)
 			output_buffer := last_nested_prefix
 			l_as.target.process (Current)
+			l_index := last_nested_prefix.substring_index (once "}}", 1)
+			last_nested_prefix.remove_substring (1, l_index + 1)
+			nested_prefix.extend (last_type)
 			last_nested_prefix.append_character ('.')
-
 			if nested_level = 1 then
 				output_buffer := last_string
 				output_buffer.append (smt_prefix (last_nested_prefix, nested_prefix.item.associated_class))

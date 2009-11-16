@@ -135,6 +135,8 @@ feature -- Setting
 
 	set_type (a_type: like type)
 			-- Set `type' with `a_type'.
+		require
+			type_attached: type /= Void
 		do
 			type := a_type
 		ensure
@@ -158,6 +160,8 @@ feature{NONE} -- Implementation
 		do
 			expression_type_checker.check_expression (ast, class_, feature_)
 			type := expression_type_checker.last_type
+		ensure
+			type_attached: type /= Void
 		end
 
 	parse_text is
