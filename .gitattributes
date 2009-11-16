@@ -2943,6 +2943,7 @@ Src/library/process/classic/windows/wel_process_toolhelp_constants.e -text
 Src/library/process/process-safe.lic -text
 Src/library/process/process.lic -text
 Src/library/process/tests/tests.lic -text
+Src/library/scoopli/support/scoop_base.ecf.noany -text
 Src/library/testing/testing-safe.lic -text
 Src/library/testing/testing.lic -text
 Src/library/testing/tests/tests.lic -text

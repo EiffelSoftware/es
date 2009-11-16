@@ -126,6 +126,15 @@
 		</library>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="resources" location="$EIFFEL_SRC\framework\resources\resources.ecf"/>
+		<library name="scoop2scoopli" location="$EIFFEL_SRC\library\scoop2scoopli\scoop2scoopli.ecf">
+			<option debug="true">
+				<debug name="scoop" enabled="true"/>
+				<debug name="scoop_client" enabled="true"/>
+				<debug name="scoop_client_assertions" enabled="true"/>
+				<debug name="scoop_client_assertions_ext" enabled="true"/>
+			</option>
+		</library>
+		<library name="scoopli" location="$EIFFEL_SRC\library\scoopli\scoopli.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>

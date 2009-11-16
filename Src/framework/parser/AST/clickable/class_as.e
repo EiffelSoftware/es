@@ -508,6 +508,17 @@ feature -- Attributes
 	date: INTEGER
 			-- Date of file when last parsed.
 
+--	enclosing_routine_list: SCOOP_ENCLOSING_ROUTINE_LIST
+--			-- list of objects that represent SCOOP enclosing routines.
+--			-- added for SCOOP by paedde
+
+	feature_table: FEATURE_TABLE
+			-- feature table created in degree 4
+			-- added for SCOOP by paedde
+
+--	separate_local_attribute_list: LINKED_LIST [STRING]
+--		-- list of attribute identifiers of separate type.
+
 feature -- Status report
 
 	is_class: BOOLEAN = True
@@ -871,6 +882,26 @@ feature -- Comparison
 				is_deferred = other.is_deferred and then
 				is_expanded = other.is_expanded and then
 				is_separate = other.is_separate
+		end
+
+--feature {SCOOP_AST_ITERATOR_PASS_2} -- SCOOP
+
+--	set_enclosing_routine_list (list: SCOOP_ENCLOSING_ROUTINE_LIST) is
+--			-- set a enclosing routine list
+--		require
+--			list_not_void: list /= Void
+--		do
+--			enclosing_routine_list := list
+--		end
+
+feature {DEGREE_SCOOP} -- SCOOP
+
+	set_feature_table (a_feature_table: FEATURE_TABLE) is
+			-- set a feature table
+		require
+			a_feature_table_not_void: a_feature_table /= Void
+		do
+			feature_table := a_feature_table
 		end
 
 feature {ABSTRACT_CLASS_C} -- Update

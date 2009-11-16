@@ -62,6 +62,10 @@ feature -- Attributes
 	is_separate: BOOLEAN
 			-- Is current type used with `separate' keyword?
 
+	explicit_processor_specification: EXPLICIT_PROCESSOR_SPECIFICATION_AS
+			-- Separate processor
+			-- added for SCOOP by paedde
+
 feature -- Roundtrip
 
 	expanded_keyword_index: INTEGER
@@ -164,6 +168,13 @@ feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
 			-- Assign `s' to `class_name'.
 		do
 			class_name := s
+		end
+
+	set_explicit_processor_specification (s: like explicit_processor_specification)
+			-- Assign `s' to `explicit_processor_specification'.
+			-- added for SCOOP by paedde
+		do
+			explicit_processor_specification := s
 		end
 
 	dump: STRING

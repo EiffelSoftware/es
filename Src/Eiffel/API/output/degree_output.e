@@ -96,7 +96,7 @@ feature -- Start output features
 			-- Put message indicating the start of a degree
 			-- with `total_nbr' passes to be done.
 		require
-			valid_degree_nbr: degree_nbr >= -5 and then degree_nbr <= 6
+			valid_degree_nbr: degree_nbr >= -5 and then degree_nbr <= 7
 			positive_total_nbr: total_nbr >= 0
 		do
 			total_number := total_nbr;
@@ -112,10 +112,12 @@ feature -- Start output features
 	degree_short_description (a_degree: INTEGER): STRING
 			-- Short description for `a_degree'.
 		require
-			a_degree_valid: a_degree >= -3 and then a_degree <= 6
+			a_degree_valid: a_degree >= -3 and then a_degree <= 7
 		do
 			inspect
 				a_degree
+			when 7 then
+				Result := once "Creating SCOOP Classes"
 			when 6 then
 				Result := once "Examining System"
 			when 5 then
@@ -143,14 +145,17 @@ feature -- Start output features
 	degree_description (a_degree: INTEGER): STRING
 			-- Description for the currently processed degree.
 		require
-			a_degree_valid: a_degree >= -3 and then a_degree <= 6
+			a_degree_valid: a_degree >= -3 and then a_degree <= 7
 		local
 			l_degree_str: STRING
 		do
 			create Result.make (35)
 			l_degree_str := degree_short_description (a_degree)
-			if a_degree /= 0 then
+			if a_degree /= 0 and a_degree /= 7 then
 				Result.append (Degree_output_string + a_degree.out + ": ")
+			end
+			if a_degree = 7 then
+				Result.append (Degree_output_string + "SCOOP" + ": ")
 			end
 			Result.append (l_degree_str)
 		ensure
@@ -272,7 +277,21 @@ feature -- Output on per class
 			display_degree (degree_message(6), 1, a_cluster.name + a_path)
 		end
 
-	put_degree_5 (a_class: CLASS_C; nbr_to_go: INTEGER)
+	put_degree_scoop (a_class: CLASS_C; nbr_to_go: INTEGER) is
+			-- Put message to indicate that `a_class' is being
+			-- compiled during degree scoop with `nbr_to_go'
+			-- classes to go out of `total_nbr'..
+		require
+			class_not_void: a_class /= Void
+			positive_nbr_to_go: nbr_to_go >= 0
+			in_degree_5to4: current_degree = 7
+		do
+			total_number := nbr_to_go + processed
+			display_degree (degree_message(4), nbr_to_go, a_class.name)
+			processed := processed + 1;
+		end
+
+	put_degree_5 (a_class: CLASS_C; nbr_to_go: INTEGER) is
 			-- Put message to indicate that `a_class' is being
 			-- compiled during degree five with `nbr_to_go'
 			-- classes to go.

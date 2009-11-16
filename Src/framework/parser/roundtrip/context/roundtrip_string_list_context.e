@@ -61,6 +61,27 @@ feature -- Operation
 			Result := byte_count
 		end
 
+	get_cursor: LINKED_LIST_CURSOR[STRING] is
+			-- Return the current position
+		do
+			Result := ctxt.cursor
+		end
+
+	insert_after_cursor (s: STRING; c: LINKED_LIST_CURSOR[STRING]) is
+			-- Insert `s' after `c'.
+		do
+			ctxt.go_to (c)
+			ctxt.put_right (s)
+			byte_count := byte_count + s.count
+		end
+
+	finish is
+			-- Move cursor to last position.
+		do
+			ctxt.finish
+		end
+
+
 feature{NONE} -- Implementation
 
 	ctxt: LINKED_LIST [STRING]

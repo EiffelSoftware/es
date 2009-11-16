@@ -3878,6 +3878,14 @@ feature {NONE} -- Implementation
 			process_eiffel_list (l_as)
 		end
 
+	process_explicit_processor_specification_as (l_as: EXPLICIT_PROCESSOR_SPECIFICATION_AS) is
+			-- Process `l_as'.
+			-- added for SCOOP by paedde
+		do
+			safe_process (l_as.entity)
+			safe_process (l_as.handler)
+		end
+
 feature -- Expression visitor
 
 	expr_type (a_expr: EXPR_AS): TYPE_A

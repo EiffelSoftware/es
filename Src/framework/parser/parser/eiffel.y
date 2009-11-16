@@ -76,7 +76,7 @@ create
 %token <KEYWORD_AS> TE_BIT TE_CHECK TE_CLASS TE_CONVERT
 %token <KEYWORD_AS> TE_CREATE TE_DEBUG TE_DO TE_ELSE TE_ELSEIF
 %token <KEYWORD_AS> TE_ENSURE TE_EXPANDED TE_EXPORT TE_EXTERNAL TE_FEATURE
-%token <KEYWORD_AS> TE_FROM TE_IF TE_IMPLIES TE_INDEXING TE_INHERIT
+%token <KEYWORD_AS> TE_FROM TE_IF TE_HANDLER TE_IMPLIES TE_INDEXING TE_INHERIT
 %token <KEYWORD_AS> TE_INSPECT TE_INVARIANT TE_LIKE TE_LOCAL
 %token <KEYWORD_AS> TE_LOOP TE_NOT TE_NOTE TE_OBSOLETE TE_OLD TE_ONCE
 %token <KEYWORD_AS> TE_ONCE_STRING TE_OR TE_REDEFINE TE_REFERENCE TE_RENAME
@@ -129,6 +129,7 @@ create
 %type <DEBUG_AS>			Debug
 %type <ELSIF_AS>			Elseif_part
 %type <ENSURE_AS>			Postcondition
+%type <EXPLICIT_PROCESSOR_SPECIFICATION_AS>	Explicit_processor_specification Processor -- added for SCOOP by paedde
 %type <EXPORT_ITEM_AS>		New_export_item
 %type <EXPR_AS>				Bracket_target Expression Factor Qualified_expression Qualified_factor Typed_expression
 %type <EXTERNAL_AS>			External
@@ -1609,14 +1610,40 @@ Non_class_type: TE_EXPANDED Attached_class_type
 						once "Make an expanded version of the base class associated with this type."))
 				end
 			}
-	|	TE_SEPARATE Class_or_tuple_type
+	|	TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
+			-- added for SCOOP by paedde
 			{
-				last_class_type ?= $2
+				last_class_type ?= $3
 				if last_class_type /= Void then
 					last_class_type.set_is_separate (True, $1)
+					last_class_type.set_explicit_processor_specification ($2)
 					last_class_type := Void
 				end
-				$$ := $2
+				$$ := $3
+			}
+	|	TE_BANG TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
+			-- added for SCOOP by paedde
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark ($1, True, False)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
+			}
+	|	TE_QUESTION TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
+			-- added for SCOOP by paedde
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark ($1, False, True)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
 			}
 	|	TE_BIT Integer_constant
 			{ $$ := ast_factory.new_bits_as ($2, $1) }
@@ -1911,6 +1938,30 @@ Named_parameter_list: TE_ID TE_COLON Type TE_RSQURE
 				last_identifier_list := Void
 			}
 	;
+
+Explicit_processor_specification: -- Empty
+			-- added for SCOOP by paedde
+			-- { $$ := Void }
+	|	TE_LT Processor TE_GT
+			{
+				$$ := $2
+			}
+	;
+
+Processor:	TE_ID
+			-- added for SCOOP by paedde
+			{
+				$$ := ast_factory.new_explicit_processor_specification_as($1, Void)
+			}
+	|	TE_ID TE_DOT TE_ID
+			{
+				if $3.name.is_equal ("handler") then
+					$$ := ast_factory.new_explicit_processor_specification_as($1, $3)
+				else
+					report_one_error (create {SYNTAX_ERROR}.make (token_line ($1), token_column ($3), filename, "Invalid explicit processor specification. Hint: Perhaps you meant '.handler'?"))
+				end
+			}
+	;
 			
 
 -- Formal generics
@@ -2060,6 +2111,41 @@ Single_constraint: -- Empty
 Constraint_type:
 		Class_or_tuple_type
 			{ $$ := $1 }
+	|	TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
+			-- added for SCOOP by paedde
+			{
+				last_class_type ?= $3
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $1)
+					last_class_type.set_explicit_processor_specification ($2)
+					last_class_type := Void
+				end
+				$$ := $3
+			}
+	|	TE_BANG TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
+			-- added for SCOOP by paedde
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark ($1, True, False)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
+			}
+	|	TE_QUESTION TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
+			-- added for SCOOP by paedde
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark ($1, False, True)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
+			}
 	|	TE_LIKE Identifier_as_lower
 			{
 				report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, $2, Void))

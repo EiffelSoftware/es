@@ -180,17 +180,24 @@ feature -- Special checking
 							-- Expanded type cannot be based on a class with external ancestor.
 						create {VTEC3} l_vtec
 					end
-					if l_vtec /= Void then
-							-- Report error.
-						l_vtec.set_class (current_class)
-						l_vtec.set_feature (current_feature)
-						if a_type_node /= Void then
-							l_vtec.set_location (a_type_node.start_location)
-						end
-						error_handler.insert_error (l_vtec)
-						l_has_error := True
-					end
 				end
+
+				if workbench.is_degree_scoop_processing and then
+				   l_vtec = Void and a_type.is_expanded and a_type.is_separate then
+					create {VTEC4} l_vtec
+				end
+
+				if l_vtec /= Void then
+						-- Report error.
+					l_vtec.set_class (current_class)
+					l_vtec.set_feature (current_feature)
+					if a_type_node /= Void then
+						l_vtec.set_location (a_type_node.start_location)
+					end
+					error_handler.insert_error (l_vtec)
+					l_has_error := True
+				end
+
 				if not l_has_error then
 					if not a_type.good_generics then
 						l_vtug := a_type.error_generics

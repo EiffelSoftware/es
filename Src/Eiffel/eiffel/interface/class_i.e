@@ -467,7 +467,7 @@ feature -- Output
 			st.add_class (Current)
 		end
 
-feature {COMPILER_EXPORTER} -- Compiled class
+feature {COMPILER_EXPORTER, DEGREE_5TO4} -- Compiled class
 
 	class_to_recompile: CLASS_C
 			-- Instance of a class to remcompile

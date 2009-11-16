@@ -1,0 +1,256 @@
+indexing
+	description: "Summary description for {SCOOP_GENERICS_VISITOR}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	SCOOP_GENERICS_VISITOR
+
+inherit
+	SCOOP_CONTEXT_AST_PRINTER
+		redefine
+			process_class_type_as,
+			process_generic_class_type_as,
+			process_named_tuple_type_as,
+			process_formal_dec_as,
+			process_id_as,
+			process_like_cur_as,
+			process_like_id_as
+		end
+	SCOOP_WORKBENCH
+	SCOOP_CLASS_NAME
+
+create
+	make_with_context
+
+feature -- Initialisation
+
+	make_with_context(a_context: ROUNDTRIP_CONTEXT)
+			-- Initialise and reset flags
+		require
+			a_context_not_void: a_context /= Void
+		do
+			context := a_context
+		end
+
+feature -- Access
+
+	process_internal_generics (l_as: TYPE_LIST_AS; set_prefix, without_constraints: BOOLEAN) is
+			-- Process `l_as'.
+		do
+			is_set_prefix := set_prefix
+			is_print_without_constraints := without_constraints
+			if l_as /= Void then
+				last_index := l_as.start_position - 1
+				safe_process (l_as)
+			end
+		end
+
+	process_class_internal_generics(l_as: EIFFEL_LIST [FORMAL_DEC_AS]; set_prefix, without_generics: BOOLEAN) is
+			-- Process `l_as'.
+		do
+			is_set_prefix := set_prefix
+			is_print_without_constraints := without_generics
+			if l_as /= Void then
+				last_index := l_as.start_position - 1
+				safe_process (l_as)
+			end
+		end
+
+	process_type_internal_generics(l_as: TYPE_LIST_AS; set_prefix, without_generics: BOOLEAN) is
+			-- Process `l_as'.
+		do
+			is_set_prefix := set_prefix
+			is_print_without_constraints := without_generics
+			if l_as /= Void then
+				last_index := l_as.start_position - 1
+				safe_process (l_as)
+			end
+		end
+
+	process_type_locals(l_as: TYPE_LIST_AS; set_prefix, without_generics: BOOLEAN) is
+			-- Process `l_as' for proxy type visitor.
+			-- replace like_id_as with 'implementation_'.
+		do
+			is_set_prefix := set_prefix
+			is_print_without_constraints := without_generics
+			is_print_proxy_locals := true
+			if l_as /= Void then
+				last_index := l_as.start_position - 1
+				safe_process (l_as)
+			end
+			is_print_proxy_locals := false
+		end
+
+	get_last_index: INTEGER is
+			-- Returns the last processed index
+		do
+			Result := last_index
+		ensure
+			valid_index: last_index > 0
+		end
+
+
+feature {NONE} -- Visitor implementation
+
+	process_id_as (l_as: ID_AS) is
+		do
+			process_leading_leaves (l_as.index)
+	--		process_class_name (l_as, is_set_prefix, context, match_list)
+			process_class_name (l_as, false, context, match_list)
+			if l_as /= Void then
+				last_index := l_as.index
+			end
+		end
+
+	l_process_id_as (l_as: ID_AS; is_separate: BOOLEAN) is
+		do
+			process_leading_leaves (l_as.index)
+	--		process_class_name (l_as, is_set_prefix, context, match_list)
+			process_class_name (l_as, false, context, match_list)
+			if l_as /= Void then
+				last_index := l_as.index
+			end
+		end
+
+	process_class_type_as (l_as: CLASS_TYPE_AS) is
+		do
+			safe_process (l_as.lcurly_symbol (match_list))
+
+				-- generic separate type should be attached.
+			if not l_as.is_separate then
+				safe_process (l_as.attachment_mark (match_list))
+			end
+
+			safe_process (l_as.expanded_keyword (match_list))
+
+		--	if l_as.is_separate then
+		--		l_process_id_as (l_as.class_name, true)
+		--	else
+				l_process_id_as (l_as.class_name, false)
+		--	end
+
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
+		local
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+		do
+			safe_process (l_as.lcurly_symbol (match_list))
+
+				-- generic separate type should be attached.
+			if not l_as.is_separate then
+				safe_process (l_as.attachment_mark (match_list))
+			end
+
+			safe_process (l_as.expanded_keyword (match_list))
+
+	--		if l_as.is_separate then
+	--			l_process_id_as (l_as.class_name, true)
+	--		else
+				l_process_id_as (l_as.class_name, false)
+	--		end
+
+			if l_as.internal_generics /= Void then
+				context.add_string (" ")
+				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+				l_generics_visitor.process_internal_generics (l_as.internal_generics, is_set_prefix, is_print_without_constraints)
+				last_index := l_generics_visitor.get_last_index
+			end
+
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS) is
+		do
+			safe_process (l_as.lcurly_symbol (match_list))
+
+				-- generic separate type should be attached.
+			if not l_as.is_separate then
+				safe_process (l_as.attachment_mark (match_list))
+			end
+
+		--	if l_as.is_separate then
+		--		l_process_id_as (l_as.class_name, true)
+		--	else
+				l_process_id_as (l_as.class_name, false)
+		--	end
+
+			safe_process (l_as.parameters)
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_formal_dec_as (l_as: FORMAL_DEC_AS) is
+		do
+			safe_process (l_as.formal)
+			if not is_print_without_constraints then
+				safe_process (l_as.constrain_symbol (match_list))
+				safe_process (l_as.constraints)
+				safe_process (l_as.create_keyword (match_list))
+				safe_process (l_as.creation_feature_list)
+				safe_process (l_as.end_keyword (match_list))
+			else
+				-- skip the constraints and creation part
+				if l_as.has_constraint then
+					last_index := l_as.end_position
+				end
+			end
+		end
+
+	process_like_cur_as (l_as: LIKE_CUR_AS) is
+		do
+			if is_print_proxy_locals then
+				safe_process (l_as.lcurly_symbol (match_list))
+				safe_process (l_as.attachment_mark (match_list))
+				safe_process (l_as.like_keyword (match_list))
+
+				-- replace current with implementation
+				context.add_string (" implementation_")
+				last_index := l_as.current_keyword.index
+
+				safe_process (l_as.rcurly_symbol (match_list))
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_like_id_as (l_as: LIKE_ID_AS) is
+		local
+			l_proxy_type_locals_visitor: SCOOP_PROXY_TYPE_LOCALS_PRINTER
+		do
+			if is_print_proxy_locals then
+				if l_as.lcurly_symbol_index > 0 then
+					process_leading_leaves (l_as.lcurly_symbol_index)
+				else
+					process_leading_leaves (l_as.like_keyword_index)
+				end
+				l_proxy_type_locals_visitor := scoop_visitor_factory.new_proxy_type_local_printer (context)
+				l_proxy_type_locals_visitor.process_type (l_as)
+				if l_as.rcurly_symbol_index > 0 then
+					last_index := l_as.rcurly_symbol_index
+				else
+					last_index := l_as.anchor.index
+				end
+			else
+				Precursor (l_as)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	is_set_prefix: BOOLEAN
+			-- indicates if prefix should be printed or not.
+
+	is_print_without_constraints: BOOLEAN
+			-- Prints a 'FORMAL_DEC_AS' without constraints
+			-- necessary to create an attribute of a generic class type.
+
+	is_print_proxy_locals: BOOLEAN
+			-- Print generics as locals of proxy printer.
+
+invariant
+	invariant_clause: True -- Your invariant here
+
+end

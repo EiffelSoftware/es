@@ -16,6 +16,12 @@ feature {NONE} -- Access
 			create Result.make
 		end
 
+	Degree_SCOOP: DEGREE_SCOOP
+			-- Degree SCOOP
+		once
+			create Result.make
+		end
+
 	Degree_4: DEGREE_4
 			-- Degree 4
 		once

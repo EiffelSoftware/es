@@ -309,6 +309,20 @@ feature -- IL code generation
 		do
 		end
 
+feature -- SCOOP Processor access
+	processor_tag : !PROCESSOR_TAG_TYPE
+		do
+			create Result.make_current
+		end
+
+	set_processor_tag (a_proc_tag_t : !PROCESSOR_TAG_TYPE)
+		do
+			attr_processor_tag := a_proc_tag_t.twin
+		end
+
+feature {TYPE_A}
+	attr_processor_tag : PROCESSOR_TAG_TYPE
+
 feature -- Properties
 
 	has_renaming: BOOLEAN
@@ -542,7 +556,7 @@ feature -- Properties
 	is_separate: BOOLEAN
 			-- Is the current actual type a separate one ?
 		do
-			-- Do nothing
+			Result := not processor_tag.is_current
 		end
 
 	is_none: BOOLEAN

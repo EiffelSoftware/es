@@ -2283,6 +2283,16 @@ end
 						create vdrd53
 						vdrd53.init (old_feature, Current)
 						Error_handler.insert_error (vdrd53)
+					elseif False and then not ( -- new SCOOP redeclaration rules page 187
+						          new_type.conform_to (current_class, old_type) and then
+						          -- ((not old_type.conform_to (new_type) or not old_type.is_attached) implies not new_type.is_attached) and then
+						          -- (not new_type.is_attached implies True) and then -- True here should be no calls occur on new_type in the post condition
+						          -- (new_type.processor_tag.is_equal (old_type.processor_tag) or else new_type.processor_tag.top)
+						          True
+						         ) then
+						create vdrd53
+						vdrd53.init (old_feature, Current)
+						Error_handler.insert_error (vdrd53)
 					end
 
 					i := i + 1

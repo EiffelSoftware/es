@@ -923,7 +923,7 @@ feature -- Access
 		end
 
 	new_class_type_as (n: ID_AS; g: TYPE_LIST_AS): CLASS_TYPE_AS
-			-- New CLASS_TYPE AST node
+			-- New CLASS_TYPE AST node			
 		do
 			if n /= Void then
 				if g /= Void then
@@ -1277,6 +1277,19 @@ feature -- Access
 			-- New ENSURE AST node
 		do
 			create Result.make (a, k_as)
+		end
+
+	new_explicit_processor_specification_as (e: ID_AS; h: ID_AS): EXPLICIT_PROCESSOR_SPECIFICATION_AS
+			-- New EXPLICIT_PROCESSOR_SPECIFICATION AST node
+			-- added for SCOOP by paedde
+		do
+			if e /= Void then
+				if h /= Void then
+					create Result.initialize_with_handler (e, h)
+				else
+					create Result.initialize (e)
+				end
+			end
 		end
 
 	new_ensure_then_as (a: EIFFEL_LIST [TAGGED_AS]; k_as, l_as: KEYWORD_AS): ENSURE_THEN_AS

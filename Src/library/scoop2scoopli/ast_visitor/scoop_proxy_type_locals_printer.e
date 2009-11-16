@@ -1,0 +1,257 @@
+indexing
+	description: "Summary description for {SCOOP_PROXY_TYPE_LOCALS_PRINTER}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	SCOOP_PROXY_TYPE_LOCALS_PRINTER
+
+inherit
+	SCOOP_PROXY_TYPE_VISITOR
+		redefine
+			process_like_cur_as,
+			process_like_id_as,
+			process_generic_class_type_as
+		end
+
+create
+	make_with_context
+
+feature {NONE} -- Roundtrip: process nodes
+
+	process_like_id_as (l_as: LIKE_ID_AS) is
+		local
+			l_feature_i: FEATURE_I
+			l_type_a: TYPE_A
+			l_formal_a: FORMAL_A
+			l_name: STRING
+		do
+			if class_as.feature_table.has (l_as.anchor.name) then
+				l_feature_i := class_as.feature_table.item (l_as.anchor.name)
+				l_type_a := l_feature_i.type
+
+				evaluate_like_id_type_flags (l_type_a.is_expanded, l_type_a.is_separate)
+			end
+
+			-- process lcurly symbol
+			safe_process (l_as.lcurly_symbol (match_list))
+
+			-- process attachment mark
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+			-- process anchor
+			process_leading_leaves (l_as.anchor.index)
+			if l_type_a.is_formal then
+
+				l_formal_a ?= l_type_a
+				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
+				process_class_name_str (l_name, false, context, match_list)
+			else
+				-- get class name of actual type
+
+				-- process actual type a
+				l_type_a := l_type_a.actual_type
+
+				process_actual_type_a (l_type_a)
+
+
+			end
+
+			-- process rcurly symbol
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_like_cur_as (l_as: LIKE_CUR_AS) is
+		do
+			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
+			evaluate_like_current_type_flags
+
+			-- process lcurly symbol
+			safe_process (l_as.lcurly_symbol (match_list))
+
+			-- process attachment mark
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+			-- process like keyword
+			safe_process (l_as.like_keyword (match_list))
+
+--			if is_print_with_prefix then
+--				-- SCOOP proxy class
+--				safe_process (l_as.current_keyword)
+--			else
+				-- original / client class
+				-- print 'implementation' instead of 'current'
+				context.add_string (" implementation_")
+				last_index := l_as.current_keyword.end_position
+--			end
+
+			-- process rcurly symbol
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
+		local
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+		do
+			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
+			evaluate_generic_class_type_flags (l_as.is_expanded, l_as.is_separate)
+
+			-- process lcurly symbol
+			safe_process (l_as.lcurly_symbol (match_list))
+
+			-- process attachment mark
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+			-- skip expanded_keyword
+			if l_as.is_expanded then
+				last_index := l_as.expanded_keyword_index
+			end
+
+			-- process class name
+			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
+			if l_as.class_name /= Void then
+				last_index := l_as.class_name.end_position
+			end
+
+			-- process internal generics			
+			-- no `SCOOP_SEPARATE__' prefix.
+			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+			l_generics_visitor.process_type_locals (l_as.internal_generics, false, not is_filter_detachable)
+			if l_as.internal_generics /= Void then
+				last_index := l_as.internal_generics.end_position
+			end
+
+			-- process rcurly symbol
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+feature {NONE} -- TYPE_A implementation
+
+	process_actual_type_a (l_type_a: TYPE_A) is
+		require
+			l_type_a /= Void
+		local
+			is_formal_generic: BOOLEAN
+			i, nb: INTEGER
+			l_name: STRING
+			l_formal_a: FORMAL_A
+		do
+			if l_type_a.is_formal then
+				-- it is a formal generic parameter
+				l_formal_a ?= l_type_a
+				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
+				process_class_name_str (l_name, false, context, match_list)
+			elseif l_type_a.has_generics then
+				-- formal generic or with explicit type
+				from
+					i := 1
+					nb := l_type_a.generics.count
+				until
+					i > nb
+				loop
+					if l_type_a.generics.item (i).is_formal then
+						is_formal_generic := true
+					end
+
+					i := i + 1
+				end
+
+				if is_formal_generic then
+					-- print out current name
+					create l_name.make_from_string (l_type_a.associated_class.name_in_upper)
+					process_class_name_str (l_name, false, context, match_list)
+
+					-- get current formal generic parameters
+					context.add_string ("[")
+					from
+						i := 1
+						nb := l_type_a.generics.count
+					until
+						i > nb
+					loop
+						if l_type_a.generics.item (i).is_formal then
+							l_formal_a ?= l_type_a.generics.item (i)
+							if l_formal_a.has_attached_mark then
+								context.add_string ("!")
+							elseif l_formal_a.has_detachable_mark then
+								context.add_string ("?")
+							end
+							create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
+							process_class_name_str (l_name, false, context, match_list)
+						else
+							process_class_name_str (l_type_a.generics.item (i).name, false, context, match_list)
+						end
+
+						if i < nb then
+							context.add_string (", ")
+						end
+						i := i + 1
+					end
+					context.add_string ("]")
+				elseif l_type_a.is_like_current then
+					context.add_string ("[like implementation_]")
+				else
+					-- just print out the actual type
+					process_class_name_str (l_type_a.actual_type.name, false, context, match_list)
+				end
+			else
+				-- just print out the actual type
+				process_class_name_str (l_type_a.actual_type.name, false, context, match_list)
+			end
+		end
+
+feature {NONE} -- Feature implementation
+
+	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+			-- the flags are set dependant on the situation
+		do
+			if is_separate and not is_expanded then
+				is_print_with_prefix := true
+			else
+				is_print_with_prefix := false
+			end
+			is_filter_detachable := true
+		end
+
+	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+			-- the flags are set dependant on the situation
+		do
+			if is_separate and not is_expanded then
+				is_print_with_prefix := true
+			else
+				is_print_with_prefix := false
+			end
+			is_filter_detachable := true
+		end
+
+	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
+			-- the flags are set dependant on the situation
+		do
+			if is_separate then
+				is_print_with_prefix := true
+			else
+				is_print_with_prefix := false
+			end
+			is_filter_detachable := true
+		end
+
+	evaluate_like_current_type_flags is
+			-- the flags are set dependant on the situation
+		do
+			is_print_with_prefix := true
+			is_filter_detachable := true
+		end
+
+	 evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
+			-- the flags are set dependant on the situation
+		do
+			if is_separate and not is_expanded then
+				is_print_with_prefix := true
+			else
+				is_print_with_prefix := false
+			end
+			is_filter_detachable := true
+		end
+
+end

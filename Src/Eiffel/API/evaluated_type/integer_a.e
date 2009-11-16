@@ -123,6 +123,8 @@ feature -- IL code generation
 			end
 		end
 
+
+
 feature {COMPILER_EXPORTER}
 
 	is_numeric: BOOLEAN = True

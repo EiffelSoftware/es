@@ -707,6 +707,7 @@ end
 				loop
 					l_table := missing_classes.item_for_iteration
 					l_name := missing_classes.key_for_iteration
+
 					from
 						l_table.start
 					until
@@ -1224,6 +1225,11 @@ end
 					class_compiled: l_class.is_compiled
 				end
 				remove_class (l_class.compiled_class)
+
+				-- remove scoop classes
+				-- added for SCOOP by paedde
+				degree_scoop.remove_scoop_classes (l_class.name)
+
 				real_removed_classes.forth
 			end
 
@@ -1340,6 +1346,7 @@ end
 			l_vis: CONF_FIND_LOCATION_VISITOR
 			l_loc: CONF_DIRECTORY_LOCATION
 			l_cluster: CONF_CLUSTER
+			l_override: CONF_OVERRIDE
 		do
 			l_path := project_location.eifgens_cluster_path
 			create l_vis.make
@@ -1353,6 +1360,23 @@ end
 					l_cluster.set_recursive (True)
 					l_cluster.set_internal (True)
 					a_target.add_cluster (l_cluster)
+				end
+			end
+
+			-- add also the scoop cluster, if we compile not the first time
+			-- added for SCOOP by peadde
+			if workbench.is_degree_scoop_processing and then workbench.is_degree_scoop_processed then
+				-- get new path
+				l_vis.set_directory (degree_scoop.get_scoop_cluster_path)
+				if l_vis.found_clusters.is_empty then
+					create l_dir.make (degree_scoop.get_scoop_cluster_path)
+					if l_dir.exists then
+						l_loc := a_factory.new_location_from_path (degree_scoop.get_scoop_cluster_path, a_target)
+						l_override := a_factory.new_override ("scoop_override_cluster", l_loc, a_target)
+						l_override.set_recursive (true)
+						l_override.set_internal (true)
+						a_target.add_override (l_override)
+					end
 				end
 			end
 		end
@@ -1704,7 +1728,11 @@ feature -- Recompilation
 				l_il_env.register_environment_variable
 			end
 
-
+				-- Reset SCOOP environment
+				-- added for SCOOP by peadde
+		--	if not workbench.is_degree_scoop_processed then
+		--		degree_scoop.reset_scoop_processing
+		--	end
 
 				-- Recompilation initialization
 			init_recompilation
@@ -1748,7 +1776,6 @@ feature -- Recompilation
 
 				recheck_missing_classes
 
-
 					-- Perform parsing of Eiffel code
 				debug ("timing")
 					print_memory_statistics
@@ -1764,11 +1791,21 @@ feature -- Recompilation
 					create d1.make_now
 				end
 
-debug ("ACTIVITY")
-	io.error.put_string ("%Tnew_class = ")
-	io.error.put_boolean (new_class)
-	io.error.put_new_line
-end
+				debug ("ACTIVITY")
+					io.error.put_string ("%Tnew_class = ")
+					io.error.put_boolean (new_class)
+					io.error.put_new_line
+				end
+
+				-- Class ast has been generated. Now traverse it and find SCOOP funcionality.
+				-- Class generation is done after degree 3 - after type checking.
+				-- Added for SCOOP by paedde.
+				if degree_scoop.is_degree_scoop_needed and not workbench.is_degree_scoop_processed then
+					workbench.set_is_degree_scoop_processing (True)
+				elseif workbench.is_degree_scoop_processed then
+					workbench.set_is_degree_scoop_processing (False)
+				end
+
 					-- Check generic validity on old classes
 					-- generic parameters cannot be new classes
 				if not first_compilation and then new_class then
@@ -1817,13 +1854,13 @@ end
 				process_removed_classes
 				real_removed_classes.wipe_out
 
-debug ("ACTIVITY")
-	io.error.put_string ("%Tmoved = ")
-	io.error.put_boolean (moved)
-	io.error.put_string ("%N%Tupdate_sort = ")
-	io.error.put_boolean (update_sort)
-	io.error.put_new_line
-end
+				debug ("ACTIVITY")
+					io.error.put_string ("%Tmoved = ")
+					io.error.put_boolean (moved)
+					io.error.put_string ("%N%Tupdate_sort = ")
+					io.error.put_boolean (update_sort)
+					io.error.put_new_line
+				end
 					-- Topological sort and building of the conformance
 					-- table (if new classes have been added by first pass)
 				update_sort := update_sort or else moved
@@ -1864,6 +1901,15 @@ end
 					create d1.make_now
 				end
 
+	-- temporarily inserted for SCOOP class generation before type checking
+					-- Start SCOOP class creation if needed
+--					-- Added for SCOOP by paedde.
+--				if workbench.is_degree_scoop_processing and not workbench.is_degree_scoop_processed then
+--					-- create new client and proxy classes.
+--					-- generate an internal error to restart compilation.
+--					process_degree_scoop
+--				end
+
 					-- Compute the root type
 				compute_root_type
 				if
@@ -1887,6 +1933,15 @@ end
 
 					-- Byte code production and type checking
 				process_degree_3
+
+--	Uncomment this part for regular SCOOP class generation
+					-- Start SCOOP class creation if needed
+					-- Added for SCOOP by paedde.
+				if workbench.is_degree_scoop_processing and not workbench.is_degree_scoop_processed then
+					-- create new client and proxy classes.
+					-- generate an internal error to restart compilation.
+					process_degree_scoop
+				end
 
 					-- Reset built in processor so that any referenced CLASS_AS object is garbage collected.
 				built_in_processor.reset_all
@@ -2078,6 +2133,29 @@ end
 			-- reporting all VTCT errors.
 		do
 			degree_5.post_degree_5_execute
+		end
+
+	process_degree_scoop
+			-- Process Degree SCOOP.
+			-- added for SCOOP by paedde
+		do
+				-- Start SCOOP client- and proxy class generation
+			degree_scoop.set_degree_5 (Degree_5)
+			Degree_scoop.execute
+
+			debug ("SCOOP")
+				io.error.put_string ("SCOOP: SCOOP processing finished.")
+				io.error.put_new_line
+			end
+
+			-- flag current scoop compilation as processed
+			workbench.set_is_degree_scoop_processed (true)
+
+			-- create error to restart compilation
+			error_handler.insert_error (create {INTERNAL_ERROR}.make("SCOOP internal error to restart compilation"))
+
+			-- restart compilation
+			error_handler.raise_error
 		end
 
 	process_degree_4

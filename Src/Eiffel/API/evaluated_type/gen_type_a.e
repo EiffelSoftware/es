@@ -1219,6 +1219,7 @@ feature -- Primitives
 			-- Check generic parameters
 		local
 			i, count: INTEGER
+			our_param, arg_param : TYPE_A
 			gen_type: GEN_TYPE_A
 			gen_type_generics: like generics
 		do
@@ -1233,8 +1234,18 @@ feature -- Primitives
 					until
 						i > count or else not Result
 					loop
-						Result := gen_type_generics.item (i).
-							conform_to (a_context_class, generics.item (i))
+						our_param := generics.item (i)
+						arg_param := gen_type_generics.item (i)
+
+						Result := arg_param.conform_to (a_context_class, our_param)
+						-- SCOOP restricted generics
+												and then (workbench.is_degree_scoop_processing implies
+						            ((not our_param.is_attached and not arg_param.is_attached) or --condition 1
+						             our_param.conform_to (a_context_class, arg_param)))                            --condition 2, from pages 199,200 resp
+						               -- combined with the first formula
+						               -- this should mean the types are
+						               -- exactly equal
+						               -- (basically a <= b and b <= a implies a = b)
 						i := i + 1
 					end
 				end

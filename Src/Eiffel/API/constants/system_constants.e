@@ -215,7 +215,7 @@ feature {AUXILIARY_FILES} -- Versioning
 			-- We use `0000' because it is replaced by the actual svn revision number
 			-- when doing a delivery.
 		do
-			Result := 0000
+			Result := 81475
 		end
 
 	Version_tag: INTEGER = 0x026
