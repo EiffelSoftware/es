@@ -280,9 +280,6 @@ feature{NONE} -- Implementation
 	context_feature: detachable FEATURE_I
 			-- Context feature
 
---	initial_context_feature: like context_feature
---			-- Initial context feature
-
 	last_string: STRING
 			-- Last string used to store temparary result
 
