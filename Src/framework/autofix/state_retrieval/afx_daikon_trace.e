@@ -7,10 +7,16 @@ note
 class
 	AFX_DAIKON_TRACE
 	inherit
-		any
+		ANY
 		   redefine
-		   	out
-		   	end
+		     out
+		   end
+
+		REFACTORING_HELPER
+		   undefine
+		  	 out
+		   end
+
 	create
 	   make
 feature --Constructor
@@ -34,9 +40,11 @@ feature{NONE} -- Implementation
 
 	get_value (equation : AFX_EQUATION):STRING is
 			-- Return the right representation for each type
+			-- Use visitor
 		do
-			if (equation.type.name.has_substring ("BOOLEAN")) then
-				if (equation.value.out.has_substring ("True")) then
+            fixme("use a visitor to print the values.")
+			if (equation.value.out.is_boolean) then
+				if (equation.value.out.to_boolean) then
 					result:= "1"
 				else
 					result:= "0"

@@ -51,8 +51,6 @@ feature -- Declaration
    			-- print all declarations
    		do
    		   result := declaration_header
-   		   io.put_string ("Size of the state " + daikon_state_list.count.out)
-
    		   from
    		   	  daikon_state_list.start
    		   until
@@ -89,9 +87,9 @@ feature -- Declaration
    		      result := result +  daikon_state_list.item_for_iteration.name
 
    		   	  if daikon_state_list.isfirst then
-   		   		result := result + ":::ENTER"
+   		   		result := result + ":::ENTER%N"
    		   	  elseif daikon_state_list.islast then
-   		   		result := result + ":::EXIT1"
+   		   		result := result + ":::EXIT1%N"
    		   	  else
    		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
    		   		result := result + "ppt-type point%N"
