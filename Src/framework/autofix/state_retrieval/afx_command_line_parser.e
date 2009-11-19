@@ -18,16 +18,16 @@ feature{NONE} -- Initialization
 	make_with_arguments (a_args: LINKED_LIST [STRING]; a_system: SYSTEM_I)
 			-- Initialize Current with arguments `a_args'.
 		do
-			create options.make (a_system)
+			create config.make (a_system)
 			arguments := a_args
 		ensure
 			arguments_set: arguments = a_args
-			options_set: options.eiffel_system = a_system
+			options_set: config.eiffel_system = a_system
 		end
 
 feature -- Access
 
-	options: AFX_CONFIG
+	config: AFX_CONFIG
 			-- AutoFix command line options
 
 	arguments: LINKED_LIST [STRING]
@@ -36,13 +36,15 @@ feature -- Access
 feature -- Basic operations
 
 	parse
-			-- Parse `arguments' and store result in `options'.
+			-- Parse `arguments' and store result in `config'.
 		local
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
 			l_retrieve_state_option: AP_FLAG
 			l_recipient: AP_STRING_OPTION
 			l_feat_under_test: AP_STRING_OPTION
+			l_analyze_test_case_option: AP_STRING_OPTION
+			l_max_test_case_no_option: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -61,19 +63,38 @@ feature -- Basic operations
 			l_feat_under_test.set_description ("Specify the feature under test. The format is CLASS_NAME.feature_name. When presents, its value will overwrite the one which is set by <recipient>.")
 			l_parser.options.force_last (l_feat_under_test)
 
+			create l_analyze_test_case_option.make_with_long_form ("analyze-tc")
+			l_analyze_test_case_option.set_description ("Analyze test cases storeing in the folder specified by the parameter.")
+			l_parser.options.force_last (l_analyze_test_case_option)
+
+			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
+			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
+			l_parser.options.force_last (l_max_test_case_no_option)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
-				-- Setup `options'.
-			options.set_should_retrieve_state (l_retrieve_state_option.was_found)
+				-- Setup `config'.
+			config.set_should_retrieve_state (l_retrieve_state_option.was_found)
 
 			if l_recipient.was_found then
-				options.set_state_recipient (feature_from_string (l_recipient.parameter))
-				options.set_state_feature_under_test (options.state_recipient)
+				config.set_state_recipient (feature_from_string (l_recipient.parameter))
+				config.set_state_feature_under_test (config.state_recipient)
 			end
 
 			if l_feat_under_test.was_found then
-				options.set_state_feature_under_test (feature_from_string (l_feat_under_test.parameter))
+				config.set_state_feature_under_test (feature_from_string (l_feat_under_test.parameter))
+			end
+
+			config.set_should_analyze_test_cases (l_analyze_test_case_option.was_found)
+			if config.should_analyze_test_cases then
+				config.set_test_case_path (l_analyze_test_case_option.parameter)
+			end
+
+			if l_max_test_case_no_option.was_found then
+				config.set_max_test_case_number (l_max_test_case_no_option.parameter)
+			else
+				config.set_max_test_case_number (0)
 			end
 		end
 

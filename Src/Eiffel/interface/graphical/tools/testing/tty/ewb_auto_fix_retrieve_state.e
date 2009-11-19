@@ -23,6 +23,8 @@ inherit
 
 	AFX_SHARED_CLASS_THEORY
 
+	TEST_GENERATOR_ROUTINES
+
 create
 	make
 
@@ -63,6 +65,9 @@ feature -- Execute
 			l_test_state_implication: BOOLEAN
 			l_build_theory: BOOLEAN
 			l_retrieve_system_state: BOOLEAN
+			l: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+			l_test_postcondition_generation: BOOLEAN
+			l_test_daikon_generation: BOOLEAN
 		do
 			if l_build_theory then
 				l_theory := resolved_class_theory (first_class_starts_with_name ("LINKED_LIST"))
@@ -128,8 +133,17 @@ feature -- Execute
 			if l_test_state_implication then
 				test_state_implication
 			end
-			io.put_string (daikon_generator.print_declarations)
-			io.put_string (daikon_generator.print_trace)
+
+			l_test_daikon_generation := True
+			if l_test_daikon_generation then
+				io.put_string (daikon_generator.print_declarations)
+				io.put_string (daikon_generator.print_trace)
+			end
+
+--			l_test_postcondition_generation := True
+			if l_test_postcondition_generation then
+				test_postcondition_generation
+			end
 		end
 
 	test_state_implication
@@ -140,6 +154,7 @@ feature -- Execute
 			l_expr1, l_expr2: AFX_AST_EXPRESSION
 			l_value1: AFX_INTEGER_VALUE
 			l_value2: AFX_BOOLEAN_VALUE
+			l_value3: AFX_RANDOM_BOOLEAN_VALUE
 		do
 			create l_s1.make (1, config.state_recipient_class, config.state_recipient)
 			create l_s2.make (1, config.state_recipient_class, config.state_recipient)
@@ -149,13 +164,31 @@ feature -- Execute
 
 			create l_value1.make (5)
 			create l_value2.make (True)
+
+			create l_value3.make
 			create l_pred1.make (l_expr1, l_value1)
-			create l_pred2.make (l_expr2, l_value2)
+			create l_pred2.make (l_expr2, l_value3)
 
 			l_s1.force_last (l_pred1)
 			l_s2.force_last (l_pred2)
 
-			io.put_string ("s1 -> s2 = " + (l_s1 implies l_s2).out + "%N")
+--			io.put_string ("s1 -> s2 = " + (l_s1 implies l_s2).out + "%N")
+
+			io.put_string (l_pred2.as_predicate.text + "%N")
+		end
+
+	test_postcondition_generation
+		local
+			l_generator: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+			l_feature: FEATURE_I
+			l_routines: TEST_SERVICE_ROUTINES
+		do
+			create l_routines
+			set_contracts_of_feature_action (agent l_routines.contracts_of_feature)
+			create l_generator
+			l_feature := config.state_recipient_class.feature_named ("before")
+			l_generator.generate (config.state_recipient_class, l_feature)
+			io.put_string (l_generator.last_postcondition + "%N")
 		end
 
 feature{NONE} -- Implementation

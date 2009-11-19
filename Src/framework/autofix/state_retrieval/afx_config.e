@@ -113,6 +113,15 @@ feature -- State retrieval related
 			Result := state_recipient_cache
 		end
 
+feature -- Test case analysis
+
+	test_case_path: detachable STRING
+			-- Full path of the folder storing test cases
+
+	max_test_case_number: INTEGER
+			-- Max number of test cases
+			-- Default: 0
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN
@@ -122,6 +131,9 @@ feature -- Status report
 		ensure
 			result_set: Result = should_retrieve_state_cache
 		end
+
+	should_analyze_test_cases: BOOLEAN
+			-- Should test case be analyzed?
 
 feature -- Setting
 
@@ -147,6 +159,31 @@ feature -- Setting
 			state_feature_under_test_cache := a_feature_under_test
 		ensure
 			state_feature_under_test_set: state_feature_under_test = a_feature_under_test
+		end
+
+	set_should_analyze_test_cases (b: BOOLEAN)
+			-- Set `should_analyze_test_cases' with `b'.
+		do
+			should_analyze_test_cases := b
+		ensure
+			should_analyze_test_cases_set: should_analyze_test_cases = b
+		end
+
+	set_test_case_path (a_path: like test_case_path)
+			-- Set `test_case_path' with `a_path'.
+			-- Make a copy of `a_path'.
+		do
+			create test_case_path.make_from_string (a_path)
+		ensure
+			test_case_path_set: test_case_path ~ a_path
+		end
+
+	set_max_test_case_number (b: INTEGER)
+			-- Set `max_test_case_number' with `b'.
+		do
+			max_test_case_number := b
+		ensure
+			max_test_case_number_set: max_test_case_number = b
 		end
 
 feature{NONE} -- Implementation

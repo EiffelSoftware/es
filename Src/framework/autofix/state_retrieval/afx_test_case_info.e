@@ -7,6 +7,12 @@ note
 class
 	AFX_TEST_CASE_INFO
 
+inherit
+	HASHABLE
+		redefine
+			is_equal
+		end
+
 create
 	make
 
@@ -46,6 +52,9 @@ feature -- Access
 			-- Tag of the failing assertion in case of a failed test case.
 			-- In a passing test case, "noname"
 
+	id: STRING
+			-- Identifier of Current test case
+
 feature -- Status report
 
 	is_passing: BOOLEAN
@@ -57,6 +66,23 @@ feature -- Status report
 			Result := not is_passing
 		ensure
 			good_result: Result = not is_passing
+		end
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := id ~ other.id
+		end
+
+feature -- Access
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := id.hash_code
+		ensure then
+			good_result: Result = id.hash_code
 		end
 
 feature{NONE} -- Implementation
@@ -137,6 +163,17 @@ feature{NONE} -- Implementation
 				l_parts.forth
 
 			end
+
+			create id.make (128)
+			id.append (recipient_class)
+			id.append_character ('.')
+			id.append (recipient)
+			id.append_character ('.')
+			id.append (exception_code.out)
+			id.append_character ('.')
+			id.append (breakpoint_slot.out)
+			id.append_character ('.')
+			id.append (tag)
 		end
 
 end
