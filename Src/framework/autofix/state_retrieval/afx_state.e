@@ -37,6 +37,12 @@ inherit
 			is_equal
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			copy,
+			is_equal
+		end
+
 create
 	make
 
@@ -132,6 +138,39 @@ feature -- Access
 			end
 		ensure
 			result_is_padded: Result.skeleton.is_subset (a_skeleton) and a_skeleton.is_subset (Result.skeleton)
+		end
+
+	item_with_expression (a_expr: STRING): detachable AFX_EQUATION
+			-- Equation whose expression has text `a_expr'
+			-- Void if no such equation is found.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
+		do
+			l_cursor := new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after or Result /= Void
+			loop
+				if l_cursor.item.expression.text ~ a_expr then
+					Result := l_cursor.item
+				end
+				l_cursor.forth
+			end
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (512)
+			do_all (
+				agent (a_equation: AFX_EQUATION; a_string: STRING)
+					do
+						a_string.append (a_equation.debug_output)
+						a_string.append_character ('%N')
+					end (?, Result))
 		end
 
 feature -- Status report

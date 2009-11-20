@@ -43,7 +43,8 @@ feature -- Basic operations
 			l_retrieve_state_option: AP_FLAG
 			l_recipient: AP_STRING_OPTION
 			l_feat_under_test: AP_STRING_OPTION
-			l_analyze_test_case_option: AP_STRING_OPTION
+			l_build_tc_option: AP_STRING_OPTION
+			l_analyze_tc_option: AP_FLAG
 			l_max_test_case_no_option: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
@@ -63,13 +64,17 @@ feature -- Basic operations
 			l_feat_under_test.set_description ("Specify the feature under test. The format is CLASS_NAME.feature_name. When presents, its value will overwrite the one which is set by <recipient>.")
 			l_parser.options.force_last (l_feat_under_test)
 
-			create l_analyze_test_case_option.make_with_long_form ("analyze-tc")
-			l_analyze_test_case_option.set_description ("Analyze test cases storeing in the folder specified by the parameter.")
-			l_parser.options.force_last (l_analyze_test_case_option)
+			create l_build_tc_option.make_with_long_form ("build-tc")
+			l_build_tc_option.set_description ("Build current project to contain test cases storing in the folder specified by the parameter.")
+			l_parser.options.force_last (l_build_tc_option)
 
 			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
 			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
 			l_parser.options.force_last (l_max_test_case_no_option)
+
+			create l_analyze_tc_option.make_with_long_form ("analyze-tc")
+			l_analyze_tc_option.set_description ("Analyze test cases in current project. This assumes that the test cases are already built with the build-tc command.")
+			l_parser.options.force_last (l_analyze_tc_option)
 
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
@@ -86,9 +91,9 @@ feature -- Basic operations
 				config.set_state_feature_under_test (feature_from_string (l_feat_under_test.parameter))
 			end
 
-			config.set_should_analyze_test_cases (l_analyze_test_case_option.was_found)
-			if config.should_analyze_test_cases then
-				config.set_test_case_path (l_analyze_test_case_option.parameter)
+			config.set_should_build_test_cases (l_build_tc_option.was_found)
+			if config.should_build_test_cases then
+				config.set_test_case_path (l_build_tc_option.parameter)
 			end
 
 			if l_max_test_case_no_option.was_found then
@@ -96,6 +101,8 @@ feature -- Basic operations
 			else
 				config.set_max_test_case_number (0)
 			end
+
+			config.set_should_analyze_test_cases (l_analyze_tc_option.was_found)
 		end
 
 feature{NONE} -- Implementation

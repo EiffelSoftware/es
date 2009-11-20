@@ -17,6 +17,8 @@ feature{NONE} -- Initialization
 
 	make (a_expressions: like expressions; a_class: like class_; a_feature: like feature_) is
 			-- Initialize Current.
+		require
+			a_expressions_attached: a_expressions /= Void
 		do
 			class_ := a_class
 			feature_ := a_feature
@@ -94,8 +96,13 @@ feature -- Basic operations
 			elseif a_dump_value.is_type_integer_32 then
 				create {AFX_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
 
-			else
+			elseif a_dump_value.is_void then
+				create {AFX_VOID_VALUE} Result.make
 
+			elseif a_dump_value.is_type_object then
+				create {AFX_ANY_VALUE} Result.make (a_dump_value.output_for_debugger)
+			else
+				check False end
 			end
 		end
 

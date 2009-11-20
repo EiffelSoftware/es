@@ -137,7 +137,7 @@ ${MAKE_BODY}
 		
 feature
 
-	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN)
+	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER)
 		do
 			do_nothing
 		end
@@ -157,7 +157,7 @@ end
 				l_retried: BOOLEAN
 			do
 				if not l_retried then
-					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING})
+					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER})
 					create l_tc
 					l_tc.generated_test_1
 				end

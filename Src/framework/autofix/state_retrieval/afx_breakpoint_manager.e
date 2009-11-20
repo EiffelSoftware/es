@@ -45,8 +45,12 @@ feature -- Access
 
 feature -- Basic operations
 
-	set_hit_action_with_agent (a_state: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: AFX_STATE]]; a_feature: FEATURE_I)
+	set_hit_action_with_agent (a_skeleton: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: AFX_STATE]]; a_feature: FEATURE_I)
 			-- Set `a_action' to all break points to `a_feature'.
+			-- Every time when the breakpoint is hit, all expressions in `a_skeleton' are evaluated and
+			-- their values are passed to `a_action' through the argument `a_state'.
+		require
+			a_skeleton_attached: a_skeleton /= Void
 		local
 			l_bp_location: BREAKPOINT_LOCATION
 			l_slot_count: INTEGER
@@ -61,7 +65,7 @@ feature -- Basic operations
 				i > l_slot_count
 			loop
 				create l_act_list.make
-				create l_action.make (a_state, class_, feature_)
+				create l_action.make (a_skeleton, class_, feature_)
 				l_action.on_hit_actions.extend (a_action)
 				l_act_list.extend (l_action)
 				l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, i, False)
@@ -70,8 +74,8 @@ feature -- Basic operations
 			end
 		end
 
-	set_breakpoints (a_state: AFX_STATE_SKELETON; a_feature: FEATURE_I)
-			-- Set breakpoints in all breakpoints slots in in `a_feature' to evaluate
+	set_all_breakpoints_in_feature (a_state: AFX_STATE_SKELETON; a_feature: FEATURE_I)
+			-- Set breakpoints in all breakpoints slots in `a_feature' to evaluate
 			-- expressions in `a_state'.
 		local
 			l_bp_location: BREAKPOINT_LOCATION
@@ -79,7 +83,6 @@ feature -- Basic operations
 			i: INTEGER
 		do
 			breakpoints.wipe_out
-
 			l_slot_count := a_feature.number_of_breakpoint_slots
 			from
 				i := 1
@@ -90,6 +93,17 @@ feature -- Basic operations
 				breakpoints.put (a_state, l_bp_location)
 				i := i + 1
 			end
+		end
+
+	set_breakpoint (a_state: AFX_STATE_SKELETON; a_feature: FEATURE_I; a_bpslot: INTEGER)
+			-- Set breakpoint at slot `a_bpslot' in `a_feature' to evaluate expressions
+			-- in `a_state'.
+		local
+			l_bp_location: BREAKPOINT_LOCATION
+		do
+			breakpoints.wipe_out
+			l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, a_bpslot, False)
+			breakpoints.put (a_state, l_bp_location)
 		end
 
 	toggle_breakpoints (b: BOOLEAN)

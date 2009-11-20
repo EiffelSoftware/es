@@ -113,6 +113,12 @@ feature -- Process
 			check should_not_happen: False end
 		end
 
+	process_any_value (a_value: AFX_ANY_VALUE)
+			-- Process `a_value'.
+		do
+			process_deterministic_value (a_value)
+		end
+
 feature{NONE} -- Implementation
 
 	max_integer_value: INTEGER

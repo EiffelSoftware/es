@@ -132,8 +132,11 @@ feature -- Status report
 			result_set: Result = should_retrieve_state_cache
 		end
 
-	should_analyze_test_cases: BOOLEAN
+	should_build_test_cases: BOOLEAN
 			-- Should test case be analyzed?
+
+	should_analyze_test_cases: BOOLEAN
+			-- Should test cases first be built?
 
 feature -- Setting
 
@@ -161,12 +164,12 @@ feature -- Setting
 			state_feature_under_test_set: state_feature_under_test = a_feature_under_test
 		end
 
-	set_should_analyze_test_cases (b: BOOLEAN)
-			-- Set `should_analyze_test_cases' with `b'.
+	set_should_build_test_cases (b: BOOLEAN)
+			-- Set `should_build_test_cases' with `b'.
 		do
-			should_analyze_test_cases := b
+			should_build_test_cases := b
 		ensure
-			should_analyze_test_cases_set: should_analyze_test_cases = b
+			should_analyze_test_cases_set: should_build_test_cases = b
 		end
 
 	set_test_case_path (a_path: like test_case_path)
@@ -184,6 +187,14 @@ feature -- Setting
 			max_test_case_number := b
 		ensure
 			max_test_case_number_set: max_test_case_number = b
+		end
+
+	set_should_analyze_test_cases (b: BOOLEAN)
+			-- Set `should_analyze_test_cases' with `b'.
+		do
+			should_analyze_test_cases := b
+		ensure
+			should_analyze_test_case_set: should_analyze_test_cases = b
 		end
 
 feature{NONE} -- Implementation

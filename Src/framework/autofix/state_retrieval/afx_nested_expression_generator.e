@@ -310,7 +310,7 @@ feature{NONE} -- Implementation
 			expression_veto_agents.put (
 				anded_agents (
 					<<ored_agents (
-						<<--result_expression_veto_agent,
+						<<result_expression_veto_agent,
 					  	  current_expression_veto_agent,
 					  	  argument_expression_veto_agent>>),
 					feature_not_from_any_veto_agent>>),
@@ -326,7 +326,7 @@ feature{NONE} -- Implementation
 
 			final_expression_veto_agent :=
 				ored_agents (<<
-					--integer_expression_veto_agent,
+					integer_expression_veto_agent,
 					boolean_expression_veto_agent>>)
 		end
 

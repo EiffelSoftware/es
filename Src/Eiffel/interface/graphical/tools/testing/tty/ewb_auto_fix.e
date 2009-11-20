@@ -55,7 +55,8 @@ feature -- Properties
 			l_parser: AFX_COMMAND_LINE_PARSER
 			l_config: AFX_CONFIG
 			l_retrieve_state_cmd: EWB_AUTO_FIX_RETRIEVE_STATE
-			l_analyze_tc_cmd: EWB_AUTO_FIX_TEST_CASE_ANALYZE_CMD
+			l_build_tc_cmd: EWB_AFX_BUILD_TEST_CASE_CMD
+			l_analyze_tc_cmd: EWB_AFX_ANALYZE_TEST_CASE_CMD
 		do
 			create l_parser.make_with_arguments (autofix_arguments, system)
 			l_parser.parse
@@ -64,6 +65,11 @@ feature -- Properties
 			if l_config.should_retrieve_state then
 				create l_retrieve_state_cmd.make (l_config)
 				l_retrieve_state_cmd.execute
+			end
+
+			if l_config.should_build_test_cases then
+				create l_build_tc_cmd.make (l_config)
+				l_build_tc_cmd.execute
 			end
 
 			if l_config.should_analyze_test_cases then

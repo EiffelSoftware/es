@@ -119,7 +119,7 @@ feature -- Execute
 				debugger_manager.breakpoints_manager.remove_user_breakpoints_in_feature (config.state_recipient.e_feature)
 
 				l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
-				l_bp_manager.set_breakpoints (l_state, config.state_recipient)
+				l_bp_manager.set_all_breakpoints_in_feature (l_state, config.state_recipient)
 				l_bp_manager.toggle_breakpoints (True)
 
 				debugger_manager.set_should_menu_be_raised_when_application_stopped (False)

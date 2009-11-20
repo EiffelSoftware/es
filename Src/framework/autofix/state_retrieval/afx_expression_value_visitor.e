@@ -39,4 +39,9 @@ feature -- Process
 		deferred
 		end
 
+	process_any_value (a_value: AFX_ANY_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
 end

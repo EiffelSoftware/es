@@ -10,6 +10,8 @@ class
 inherit
 	HASHABLE
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -72,6 +74,17 @@ feature -- Access
 			Result := expression.feature_
 		ensure
 			good_result: Result = expression.feature_
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (64)
+			Result.append (expression.text)
+			Result.append (once " : ")
+			Result.append (value.out)
 		end
 
 feature -- Conversion

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EWB_AUTO_FIX_TEST_CASE_ANALYZE_CMD
+	EWB_AFX_BUILD_TEST_CASE_CMD
 
 inherit
 	SHARED_WORKBENCH
@@ -31,7 +31,7 @@ feature{NONE} -- Initialization
 	make (a_config: AFX_CONFIG)
 			-- Initialize Current.
 		require
-			analyze_test_case_set: a_config.should_analyze_test_cases
+			analyze_test_case_set: a_config.should_build_test_cases
 		do
 			config := a_config
 
@@ -71,40 +71,6 @@ feature -- Basic operations
 			-- Execute.
 		do
 			build_project
-		end
-
-	build_project
-			-- Build project consisting test cases.
-		local
-			l_genreator: AFX_TEST_CASE_RUNNER_GENERATOR
-			l_file: PLAIN_TEXT_FILE
-			l_root_class_folder: STRING
-		do
-			l_root_class_folder := system.root_type.associated_class.group.location.evaluated_path
-			find_test_cases
-
-				-- Rewrite system root class.
-			create l_genreator.make (system, config, failing_test_cases, passing_test_cases)
-			l_genreator.generate
-			create l_file.make_create_read_write  (system.root_type.associated_class.file_name)
-			l_file.put_string (l_genreator.last_class_text)
-			l_file.close
-
-				-- Copy test case classes into `system'.
-			from
-				failing_test_cases.start
-			until
-				failing_test_cases.after
-			loop
-				failing_test_cases.item_for_iteration.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
-				failing_test_cases.forth
-			end
-
-			temp_passing_test_cases.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
-
-			eiffel_project.quick_melt
-			eiffel_project.freeze
-			eiffel_project.call_finish_freezing_and_wait (True)
 		end
 
 feature{NONE} -- Implementation
@@ -203,6 +169,51 @@ feature{NONE} -- Implementation
 			l_source_file.copy_to (l_dest_file)
 			l_source_file.close
 			l_dest_file.close
+		end
+
+	build_project
+			-- Build project consisting test cases by copying all test cases specified in
+			-- `config'.`test_case_path' into currently loaded project and rewriting the root
+			-- class to execute all those test cases.
+			-- C compile current porject after copying and rewriting.
+		local
+			l_genreator: AFX_TEST_CASE_RUNNER_GENERATOR
+			l_file: PLAIN_TEXT_FILE
+			l_root_class_folder: STRING
+		do
+			l_root_class_folder := root_class.group.location.evaluated_path
+			find_test_cases
+
+				-- Rewrite system root class.
+			create l_genreator.make (system, config, failing_test_cases, passing_test_cases)
+			l_genreator.generate
+			create l_file.make_create_read_write  (root_class.file_name)
+			l_file.put_string (l_genreator.last_class_text)
+			l_file.close
+
+				-- Copy failing test case classes into `system'.
+			from
+				failing_test_cases.start
+			until
+				failing_test_cases.after
+			loop
+				failing_test_cases.item_for_iteration.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
+				failing_test_cases.forth
+			end
+
+				-- Copy passing test cases into `system'.
+			temp_passing_test_cases.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
+
+				-- Recompile current project.
+			eiffel_project.quick_melt
+			eiffel_project.freeze
+			eiffel_project.call_finish_freezing_and_wait (True)
+		end
+
+	root_class: CLASS_C
+			-- Root class in `system'.
+		do
+			Result := system.root_type.associated_class
 		end
 
 note

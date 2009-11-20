@@ -48,7 +48,8 @@ create
 	make_with_basic_argumentless_query,
 	make_with_accesses,
 	make_with_expressions,
-	make_basic
+	make_basic,
+	make_with_text
 
 convert
 	linear_representation: {LINEAR [AFX_EXPRESSION]}
@@ -101,6 +102,20 @@ feature{NONE} -- Initialization
 		do
 			make_basic (a_class, a_feature, a_expressions.count)
 			a_expressions.do_all (agent force_last)
+		end
+
+	make_with_text (a_class: like class_; a_feature: like feature_; a_expressions: LIST [STRING])
+			-- Initialize current with a list of literal expressions in `a_expressions'.
+		do
+			make_basic (a_class, a_feature, a_expressions.count)
+			from
+				a_expressions.start
+			until
+				a_expressions.after
+			loop
+				force_last (create {AFX_AST_EXPRESSION}.make_with_text (class_, feature_, a_expressions.item_for_iteration, class_))
+				a_expressions.forth
+			end
 		end
 
 	make_basic (a_class: like class_; a_feature: like feature_; a_count: INTEGER)
