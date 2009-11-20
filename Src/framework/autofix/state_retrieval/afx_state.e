@@ -159,6 +159,20 @@ feature -- Access
 			end
 		end
 
+	to_hash_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
+			-- Hash table representation of Current
+			-- Key is the text of the equations,
+			-- value is the value associated in those equations.
+		do
+			create Result.make (count)
+			Result.compare_objects
+			do_all (
+				agent (a_equation: AFX_EQUATION; a_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING])
+					do
+						a_table.force (a_equation.value, a_equation.expression.text)
+					end (?, Result))
+		end
+
 feature -- Status report
 
 	debug_output: STRING

@@ -19,7 +19,7 @@ feature -- creator
 
 feature -- Declaration
 
-   	add_state(a_state: AFX_STATE; break_point: STRING ) is
+   	add_state (a_state: AFX_STATE; break_point: STRING) is
    			-- add traces for a breakpoint
    		local
    			daikon_state : AFX_DAIKON_STATE
@@ -28,7 +28,7 @@ feature -- Declaration
    			a_daikon_trace : AFX_DAIKON_TRACE
    		do
    			--CLASS_NAME.feature_name.bpslot:::POINT
-   			name := generate_state_name(a_state, break_point)
+   			name := generate_state_name (a_state, break_point)
    			create daikon_state.make (name,break_point)
 
    			from

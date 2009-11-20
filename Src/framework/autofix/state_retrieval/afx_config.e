@@ -258,7 +258,7 @@ feature{NONE} -- Implementation
 			l_tc_info: AFX_TEST_CASE_INFO
 		do
 			if state_test_case_class_name /= Void then
-				create l_tc_info.make (state_test_case_class_name)
+				create l_tc_info.make_with_string (state_test_case_class_name)
 				state_feature_under_test_cache := feature_from_class (l_tc_info.class_under_test, l_tc_info.feature_under_test)
 				state_recipient_cache := feature_from_class (l_tc_info.recipient_class, l_tc_info.recipient)
 			end

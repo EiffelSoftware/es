@@ -40,7 +40,7 @@ feature -- Access
 	test_case_info_from_string (a_string: STRING): AFX_TEST_CASE_INFO
 			-- Test case information analyzed from `a_string'
 		do
-			create Result.make (a_string)
+			create Result.make_with_string (a_string)
 		end
 
 feature -- Equality tester

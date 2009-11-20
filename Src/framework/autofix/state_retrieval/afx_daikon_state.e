@@ -6,17 +6,19 @@ note
 
 class
 	AFX_DAIKON_STATE
-	create
-		make
+
+create
+	make
+
 feature -- creation
-	make (state_name : STRING; b_point:STRING) is
-			-- create the state with a unique name
+
+	make (state_name: STRING; b_point: STRING)
+			-- Create the state with a unique name.
 		do
 			create declaration_list.make
 			create trace_list.make
 			name := state_name
 			break_point := b_point
-
 		end
 
 	add_ordered_declaration ( declaration : AFX_DAIKON_DECLARATION ) is

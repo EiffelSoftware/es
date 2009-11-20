@@ -129,7 +129,7 @@ feature{NONE} -- Implementation
 			l_tc_info: AFX_TEST_CASE_INFO
 			l_list: ARRAYED_LIST [STRING]
 		do
-			create l_tc_info.make (a_test_case_name)
+			create l_tc_info.make_with_string (a_test_case_name)
 
 			if l_tc_info.is_failing then
 				if failing_test_cases.has (l_tc_info) then

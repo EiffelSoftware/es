@@ -34,6 +34,8 @@ feature{NONE} -- Initialization
 			analyze_test_case_set: a_config.should_build_test_cases
 		do
 			config := a_config
+			create test_case_start_actions.make
+			create test_case_breakpoint_hit_actions.make
 		ensure
 			config_set: config = a_config
 		end
@@ -43,6 +45,16 @@ feature -- Access
 	config: AFX_CONFIG
 			-- Config for AutoFix ocmmand line	
 
+	test_case_start_actions: ACTION_SEQUENCE[TUPLE [AFX_TEST_CASE_INFO]]
+			-- Actions to be performed when a test case is to be analyzed.
+			-- The information about the test case is passed as the argument to the agent.
+
+	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER]]
+			-- Actions to be performed when a breakpoint is hit in a test case.
+			-- `a_tc' is the test case currently analyzed.
+			-- `a_state' is the state evaluated at the breakpoint.
+			-- `a_bpslot' is the breakpoint slot number.
+
 feature -- Basic operations
 
 	execute
@@ -50,6 +62,41 @@ feature -- Basic operations
 		do
 			debug_project
 		end
+
+feature{NONE} -- Access
+
+	current_test_case_breakpoint_manager: detachable AFX_BREAKPOINT_MANAGER
+			-- Breakpoint manager for current test case
+
+	root_class: CLASS_C
+			-- Root class in `system'.
+		do
+			Result := system.root_type.associated_class
+		end
+
+	mark_test_case_feature_name: STRING = "mark_test_case"
+			-- Name of feature to indicate that a new test case is about to run
+
+	test_case_info_skeleton (a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
+			-- State skeleton containing expressions to retrieve test case information from `a_feature'
+		local
+			l_exprs: LINKED_LIST [STRING]
+		do
+			create l_exprs.make
+			l_exprs.extend (expr_a_recipient_class)
+			l_exprs.extend (expr_a_recipient)
+			l_exprs.extend (expr_a_exception_code)
+			l_exprs.extend (expr_a_bpslot)
+			l_exprs.extend (expr_a_tag)
+			l_exprs.extend (expr_a_passing)
+			l_exprs.extend (expr_a_test_case_number)
+			create Result.make_with_text (a_class, a_feature, l_exprs)
+		end
+
+	current_test_case_info: detachable AFX_TEST_CASE_INFO
+			-- Information about currently analyzed test case
+
+feature{NONE} -- Implementation
 
 	debug_project
 			-- Debug current project to retrieve system states from test cases.
@@ -63,7 +110,6 @@ feature -- Basic operations
 			debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
 			remove_breakpoint (root_class)
 
-
 				-- Setup breakpoint handling for the routine which indicates
 				-- a new test case is to be executed.
 			l_mark_tc_feat := root_class.feature_named (mark_test_case_feature_name)
@@ -73,39 +119,72 @@ feature -- Basic operations
 			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, l_mark_tc_feat, 1)
 			l_new_tc_bp_manager.toggle_breakpoints (True)
 			debugger_manager.observer_provider.application_stopped_actions.extend (agent on_application_stopped)
+
+				-- Start debugger.
 			start_debugger
 		end
 
-	test_case_info_skeleton (a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
-			-- State skeleton containing expressions to retrieve test case information from `a_feature'
+	start_debugger
+		require
+			debugger_manager /= Void
 		local
-			l_exprs: LINKED_LIST [STRING]
+			ctlr: DEBUGGER_CONTROLLER
+			wdir: STRING
+			param: DEBUGGER_EXECUTION_PARAMETERS
 		do
-			create l_exprs.make
-			l_exprs.extend ("a_recipient_class")
-			l_exprs.extend ("a_recipient")
-			l_exprs.extend ("a_exception_code")
-			l_exprs.extend ("a_bpslot")
-			l_exprs.extend ("a_tag")
-			l_exprs.extend ("a_passing")
-			l_exprs.extend ("a_test_case_number")
-			create Result.make_with_text (a_class, a_feature, l_exprs)
+			if wdir = Void or else wdir.is_empty then
+				wdir := Eiffel_project.lace.directory_name
+						--Execution_environment.current_working_directory
+			end
+			ctlr := debugger_manager.controller
+			create param
+			param.set_arguments ("")
+			param.set_working_directory (config.working_directory)
+			debugger_manager.set_execution_ignoring_breakpoints (False)
+			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
+
+	remove_breakpoint (a_class: CLASS_C)
+			-- Remove user break points in `a_class'.
+		do
+			debugger_manager.breakpoints_manager.remove_user_breakpoints_in_class (a_class)
+		end
+
+feature{NONE} -- Constants
+
+	expr_a_recipient_class: STRING is "a_recipient_class"
+	expr_a_recipient: STRING is "a_recipient"
+	expr_a_exception_code: STRING is "a_exception_code"
+	expr_a_bpslot: STRING is "a_bpslot"
+	expr_a_tag: STRING is "a_tag"
+	expr_a_passing: STRING is "a_passing"
+	expr_a_test_case_number: STRING is "a_test_case_number"
+
+feature{NONE} -- Actions
 
 	on_new_test_case_found (a_breakpoint: BREAKPOINT; a_state: AFX_STATE)
 			-- Action to be performed when `a_breakpoint' is hit
 		local
 			l_recipient_class: CLASS_C
 			l_recipient: FEATURE_I
+			l_exception_code: INTEGER
+			l_bpslot: INTEGER
+			l_tag: STRING
+			l_passing: BOOLEAN
 			l_skeleton: AFX_STATE_SKELETON
 			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
+			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
 		do
-			l_recipient_class := first_class_starts_with_name (a_state.item_with_expression (once "a_recipient_class").value.out)
-			l_recipient := l_recipient_class.feature_named (a_state.item_with_expression (once "a_recipient").value.out)
+			l_table := a_state.to_hash_table
+			l_recipient_class := first_class_starts_with_name (l_table.item (expr_a_recipient_class).out)
+			l_recipient := l_recipient_class.feature_named (l_table.item (expr_a_recipient).out)
+			l_exception_code := l_table.item (expr_a_exception_code).out.to_integer
+			l_bpslot := l_table.item (expr_a_bpslot).out.to_integer
+			l_tag := l_table.item (expr_a_tag).out
+			l_passing := l_table.item (expr_a_passing).out.to_boolean
 
-			io.put_string ("-----------------------------------%N")
-			io.put_string (a_state.debug_output)
-			io.put_string ("%N%N")
+			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing)
+			test_case_start_actions.call ([current_test_case_info])
 
 				-- Dispose breakpoint manager for the last test case.
 			if current_test_case_breakpoint_manager /= Void then
@@ -129,27 +208,7 @@ feature -- Basic operations
 			-- `a_breakpoint' is a break point in a test case.
 			-- `a_state' stores the values of all evaluated expressions'.
 		do
-			io.put_string ("BP_" + a_breakpoint.breakable_line_number.out + "%N")
-			io.put_string (a_state.debug_output)
-			io.put_string ("%N%N")
-		end
-
-	current_test_case_breakpoint_manager: detachable AFX_BREAKPOINT_MANAGER
-			-- Breakpoint manager for current test case
-
-	root_class: CLASS_C
-			-- Root class in `system'.
-		do
-			Result := system.root_type.associated_class
-		end
-
-	mark_test_case_feature_name: STRING = "mark_test_case"
-			-- Name of feature to indicate that a new test case is about to run
-
-	remove_breakpoint (a_class: CLASS_C)
-			-- Remove user break points in `a_class'.
-		do
-			debugger_manager.breakpoints_manager.remove_user_breakpoints_in_class (a_class)
+			test_case_breakpoint_hit_actions.call ([current_test_case_info, a_state, a_breakpoint.breakable_line_number])
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -162,26 +221,6 @@ feature -- Basic operations
 					a_dm.controller.resume_workbench_application
 				end
 			end
-		end
-
-	start_debugger
-		require
-			debugger_manager /= Void
-		local
-			ctlr: DEBUGGER_CONTROLLER
-			wdir: STRING
-			param: DEBUGGER_EXECUTION_PARAMETERS
-		do
-			if wdir = Void or else wdir.is_empty then
-				wdir := Eiffel_project.lace.directory_name
-						--Execution_environment.current_working_directory
-			end
-			ctlr := debugger_manager.controller
-			create param
-			param.set_arguments ("")
-			param.set_working_directory (config.working_directory)
-			debugger_manager.set_execution_ignoring_breakpoints (False)
-			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
 
 note

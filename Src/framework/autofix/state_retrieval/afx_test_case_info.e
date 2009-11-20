@@ -10,18 +10,33 @@ class
 inherit
 	HASHABLE
 		redefine
-			is_equal
+			is_equal,
+			out
 		end
 
 create
-	make
+	make,
+	make_with_string
 
 feature{NONE} -- Initialization
 
-	make (a_tc_name: STRING)
+	make_with_string (a_tc_name: STRING)
 			-- Initialize Current with a test case name `a_tc_name'.
 		do
 			initialize (a_tc_name)
+		end
+
+	make (a_class_under_test: STRING; a_feature_under_test: STRING; a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN)
+			-- Initialize Current.
+		do
+			class_under_test := a_class_under_test.twin
+			feature_under_test := a_feature_under_test.twin
+			recipient_class := a_recipient_class.twin
+			recipient := a_recipient.twin
+			exception_code := a_exception_code
+			breakpoint_slot := a_bpslot
+			tag := a_tag.twin
+			is_passing := a_passing
 		end
 
 feature -- Access
@@ -54,6 +69,45 @@ feature -- Access
 
 	id: STRING
 			-- Identifier of Current test case
+
+	out: STRING
+			-- New string containing terse printable representation
+			-- of current object
+		do
+			create Result.make (128)
+
+			Result.append ("Class under test: ")
+			Result.append (class_under_test)
+			Result.append_character ('%N')
+
+			Result.append ("Feature under test: ")
+			Result.append (feature_under_test)
+			Result.append_character ('%N')
+
+			Result.append ("Recipient class: ")
+			Result.append (recipient_class)
+			Result.append_character ('%N')
+
+			Result.append ("Recipient: ")
+			Result.append (recipient)
+			Result.append_character ('%N')
+
+			Result.append ("Exception code: ")
+			Result.append (exception_code.out)
+			Result.append_character ('%N')
+
+			Result.append ("Breakpoint slot: ")
+			Result.append (breakpoint_slot.out)
+			Result.append_character ('%N')
+
+			Result.append ("Tag: ")
+			Result.append (tag)
+			Result.append_character ('%N')
+
+			Result.append ("Passing: ")
+			Result.append (is_passing.out)
+			Result.append_character ('%N')
+		end
 
 feature -- Status report
 
