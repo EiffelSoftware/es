@@ -18,6 +18,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	AFX_SHARED_EXPR_TYPE_CHECKER
+
 create
 	make
 
@@ -253,6 +255,7 @@ feature{NONE} -- Implementation
 			l_level: INTEGER
 			l_veto: FUNCTION [ANY, TUPLE [AFX_ACCESS], BOOLEAN]
 			i: INTEGER
+			l_locals: HASH_TABLE [LOCAL_INFO, INTEGER]
 		do
 				-- Setup the initial accesses.
 			create l_new.make (initial_capacity)
@@ -261,6 +264,7 @@ feature{NONE} -- Implementation
 				l_new.extend (create {AFX_ACCESS_RESULT}.make (a_class, a_feature, a_feature.written_class))
 			end
 
+				-- Generate arguments.
 			from
 				i := 1
 			until
@@ -268,6 +272,19 @@ feature{NONE} -- Implementation
 			loop
 				l_new.extend (create {AFX_ACCESS_ARGUMENT}.make (a_class, a_feature, a_feature.written_class, i))
 				i := i + 1
+			end
+
+				-- Generate locals.
+			l_locals := expression_type_checker.local_info (a_class, a_feature)
+			if not l_locals.is_empty then
+				from
+					l_locals.start
+				until
+					l_locals.after
+				loop
+					l_new.extend (create {AFX_ACCESS_LOCAL}.make (a_class, a_feature, a_feature.written_class, l_locals.key_for_iteration))
+					l_locals.forth
+				end
 			end
 
 			l_level := 1
@@ -312,7 +329,8 @@ feature{NONE} -- Implementation
 					<<ored_agents (
 						<<result_expression_veto_agent,
 					  	  current_expression_veto_agent,
-					  	  argument_expression_veto_agent>>),
+					  	  argument_expression_veto_agent,
+					  	  local_expression_veto_agent>>),
 					feature_not_from_any_veto_agent>>),
 					 	 1)
 

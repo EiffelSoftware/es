@@ -32,6 +32,24 @@ feature -- Type checking
 			expression_or_instruction_type_check_and_code (a_feature, a_expr_as)
 		end
 
+	local_info (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [LOCAL_INFO, INTEGER]
+			-- Local information for `a_feature' in `a_class'.
+		do
+			init (ast_context)
+			ast_context.set_is_ignoring_export (True)
+			ast_context.initialize (a_class, a_class.actual_type, a_class.feature_table)
+			current_feature := a_feature
+			if a_feature.is_routine then
+				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
+					context.locals.wipe_out
+					check_locals (l_routine)
+				end
+				Result := context.locals
+			else
+				create Result.make (0)
+			end
+		end
+
 feature{NONE} -- Implementation
 
 	expression_or_instruction_type_check_and_code (a_feature: FEATURE_I; an_ast: AST_EIFFEL)
@@ -52,6 +70,14 @@ feature{NONE} -- Implementation
 			l_cl := context.current_class
 			l_error_level := error_level
 			if current_feature /= Void then
+					-- Setup local variables.
+				if a_feature.is_routine then
+					if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
+						context.locals.wipe_out
+						check_locals (l_routine)
+					end
+				end
+
 				l_wc := current_feature.written_class
 				if l_wc /= l_cl then
 						--| The context's feature is an inherited feature
