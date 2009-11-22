@@ -33,6 +33,10 @@ inherit
 
 	SHARED_SERVER
 
+	AFX_SHARED_EXPR_TYPE_CHECKER
+
+	SHARED_NAMES_HEAP
+
 create
 	make
 
@@ -413,6 +417,8 @@ feature{NONE} -- Implementation
 			l_feat: detachable FEATURE_I
 			l_found: BOOLEAN
 			i: INTEGER
+			l_locals: HASH_TABLE [LOCAL_INFO, INTEGER]
+			l_done: BOOLEAN
 		do
 			if last_prefix.is_empty then
 					-- Check if `a_name' is a feature name.
@@ -435,8 +441,21 @@ feature{NONE} -- Implementation
 						final_name := context_feature.arguments.item_name (i)
 						last_type := context_feature.arguments.i_th (i).instantiation_in (context_class.actual_type, context_class.class_id).actual_type
 					else
-							-- Must be a local
-						fixme ("Handle local variables. 6.11.2009 Jasonw")
+							-- Must be a local.
+						check context_feature /= Void end
+						l_locals := expression_type_checker.local_info (context_class, context_feature)
+						final_name := a_name.twin
+						from
+							l_locals.start
+						until
+							l_locals.after or else l_done
+						loop
+							if final_name.is_case_insensitive_equal (names_heap.item (l_locals.key_for_iteration)) then
+								last_type := l_locals.item_for_iteration.type.instantiation_in (context_class.actual_type, context_class.class_id).actual_type
+								l_done := True
+							end
+							l_locals.forth
+						end
 					end
 				end
 			else
