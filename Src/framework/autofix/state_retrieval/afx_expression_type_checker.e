@@ -65,7 +65,7 @@ feature{NONE} -- Implementation
 			l_ctx: AST_CONTEXT
 			l_error_level: like error_level
 		do
-			fixme ("Routine taken from debugger related classes.")
+			fixme ("Routine adapted from debugger related classes. 22.11.2009 Jason")
 			reset
 			is_byte_node_enabled := True
 			current_feature := a_feature
@@ -96,6 +96,8 @@ feature{NONE} -- Implementation
 					context.init_attribute_scopes
 					context.init_local_scopes
 					type_a_checker.init_for_checking (a_feature, l_wc, Void, error_handler)
+					inherited_type_a_checker.init_for_checking (a_feature, l_wc, Void, Void)
+
 					an_ast.process (Current)
 					reset
 					set_is_inherited (True)
@@ -104,6 +106,7 @@ feature{NONE} -- Implementation
 				context.init_attribute_scopes
 				context.init_local_scopes
 				type_a_checker.init_for_checking (a_feature, l_cl, Void, error_handler)
+				inherited_type_a_checker.init_for_checking (a_feature, l_wc, Void, Void)
 			end
 			if l_error_level = error_level then
 				an_ast.process (Current)

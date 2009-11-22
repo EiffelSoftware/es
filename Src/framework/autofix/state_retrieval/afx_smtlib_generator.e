@@ -62,6 +62,41 @@ feature -- Basic operations
 			last_string.wipe_out
 		end
 
+	generate_postcondition_as_invariant_axioms (a_class: CLASS_C)
+			-- Generate SMTLIB axioms for some of the postconditions in `a_class'
+			-- as if they are class invariants and store results in `last_statements'.
+		local
+			l_inv_gen: AFX_POSTCONDITION_AS_INVARIANT_GENERATOR
+			l_inv: DS_HASH_SET [AFX_EXPRESSION]
+			l_stmt: STRING
+			l_paran_needed: BOOLEAN
+			l_axiom: STRING
+		do
+			create l_inv_gen
+			l_inv_gen.generate (a_class)
+			l_inv := l_inv_gen.last_invariants
+			from
+				l_inv.start
+			until
+				l_inv.after
+			loop
+				create l_axiom.make (128)
+				l_axiom.append (smtlib_axiom_header)
+				l_stmt := smt_of_expression (l_inv.item_for_iteration.ast, a_class, l_inv.item_for_iteration.written_class, Void)
+				l_paran_needed := l_stmt.item (1) /= '('
+				if l_paran_needed then
+					l_axiom.append_character ('(')
+				end
+				l_axiom.append (l_stmt)
+				if l_paran_needed then
+					l_axiom.append_character (')')
+				end
+				last_statements.extend (l_axiom)
+				io.put_string ("YI: " + l_axiom + "%N")
+				l_inv.forth
+			end
+		end
+
 	generate_invariant_axioms (a_class: CLASS_C)
 			-- Generate SMTLIB axioms for invariants in `a_class' and store results in `last_statements'.
 		local

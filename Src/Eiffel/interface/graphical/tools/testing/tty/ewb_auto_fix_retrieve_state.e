@@ -23,8 +23,6 @@ inherit
 
 	AFX_SHARED_CLASS_THEORY
 
-	TEST_GENERATOR_ROUTINES
-
 create
 	make
 
@@ -134,7 +132,7 @@ feature -- Execute
 				test_state_implication
 			end
 
-			l_test_daikon_generation := True
+--			l_test_daikon_generation := True
 			if l_test_daikon_generation then
 				io.put_string (daikon_generator.print_declarations)
 				io.put_string (daikon_generator.print_trace)
@@ -181,10 +179,7 @@ feature -- Execute
 		local
 			l_generator: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_feature: FEATURE_I
-			l_routines: TEST_SERVICE_ROUTINES
 		do
-			create l_routines
-			set_contracts_of_feature_action (agent l_routines.contracts_of_feature)
 			create l_generator
 			l_feature := config.state_recipient_class.feature_named ("before")
 			l_generator.generate (config.state_recipient_class, l_feature)

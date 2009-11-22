@@ -127,6 +127,11 @@ feature -- Access
 			smtlib_generator.generate_invariant_axioms (a_class)
 			smtlib_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
 
+				-- Generate postconditions as class invariant axioms.
+			smtlib_generator.initialize_for_generation
+			smtlib_generator.generate_postcondition_as_invariant_axioms (a_class)
+			smtlib_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
+
 			class_theories.put (l_theory, a_class)
 		ensure
 			a_class_generated: class_theories.has (a_class)

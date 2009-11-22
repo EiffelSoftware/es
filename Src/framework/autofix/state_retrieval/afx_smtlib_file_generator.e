@@ -104,7 +104,8 @@ feature{NONE} -- Implementation
 			last_smtlib.append ("[
 				(benchmark example
 				:status unsat
-				:logic QF_UFLIA%N
+				:logic QF_UFLIA
+				
 			]")
 		end
 

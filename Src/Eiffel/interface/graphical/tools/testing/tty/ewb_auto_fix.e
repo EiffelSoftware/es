@@ -10,6 +10,8 @@ class
 inherit
 	EWB_CMD
 
+	TEST_GENERATOR_ROUTINES
+
 create
 	make_with_arguments
 
@@ -57,7 +59,11 @@ feature -- Properties
 			l_retrieve_state_cmd: EWB_AUTO_FIX_RETRIEVE_STATE
 			l_build_tc_cmd: EWB_AFX_BUILD_TEST_CASE_CMD
 			l_analyze_tc_cmd: EWB_AFX_ANALYZE_TEST_CASE_CMD
+			l_routines: TEST_SERVICE_ROUTINES
 		do
+			create l_routines
+			set_contracts_of_feature_action (agent l_routines.contracts_of_feature)
+
 			create l_parser.make_with_arguments (autofix_arguments, system)
 			l_parser.parse
 			l_config := l_parser.config

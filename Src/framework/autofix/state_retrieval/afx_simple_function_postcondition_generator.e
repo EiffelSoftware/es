@@ -14,6 +14,13 @@ inherit
 
 	REFACTORING_HELPER
 
+	AST_ITERATOR
+		redefine
+			process_object_test_as,
+			process_static_access_as,
+			process_nested_as
+		end
+
 feature -- Access
 
 	last_postcondition: detachable STRING
@@ -59,11 +66,11 @@ feature -- Generation
 							if l_do.compound.count = 1 then
 								if attached {ASSIGN_AS} l_do.compound.first as l_assign then
 									if attached {RESULT_AS} l_assign.target as l_result then
-										l_text := l_assign.original_text (match_list_server.item (a_feature.written_class.class_id))
-
-										fixme ("Does not support qualified call for the moment. 17.11.2009 Jason")
-										if not l_text.has ('.') then
-											l_text.replace_substring_all (":=", "= (")
+										is_suitable := True
+										l_assign.source.process (Current)
+										if is_suitable then
+											l_text := l_assign.source.original_text (match_list_server.item (a_feature.written_class.class_id))
+											l_text.prepend ("Result = (")
 											l_text.append (once ")")
 											last_postcondition.append (l_text)
 										end
@@ -75,6 +82,29 @@ feature -- Generation
 				end
 
 			end
+		end
+
+feature{NONE} -- Implementation
+
+	is_suitable: BOOLEAN
+			-- Is Current process AST suitable for a postcondition?
+
+feature{NONE} -- Process
+
+	process_object_test_as (l_as: OBJECT_TEST_AS)
+		do
+			is_suitable := False
+		end
+
+	process_static_access_as (l_as: STATIC_ACCESS_AS)
+		do
+			is_suitable := False
+		end
+
+	process_nested_as (l_as: NESTED_AS)
+		do
+			is_suitable := False
+			fixme ("Does not support qualified call for the moment. 17.11.2009 Jason")
 		end
 
 note
