@@ -64,6 +64,9 @@ feature -- Access
 			-- found, a randomly selected subset will be kept.
 			-- 0 means no upper bound.
 			-- Default: 0
+		do
+			Result := config.max_test_case_number
+		end
 
 feature -- Basic operations
 
@@ -142,7 +145,7 @@ feature{NONE} -- Implementation
 				l_list := temp_passing_test_cases
 			end
 
-			if max_test_case_number = 0 then
+			if max_test_case_number = 0 or else l_list.count < max_test_case_number then
 				l_list.extend (a_test_case_name)
 			else
 				random.forth
