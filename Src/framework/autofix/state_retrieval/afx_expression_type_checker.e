@@ -41,11 +41,14 @@ feature -- Type checking
 			current_feature := a_feature
 			if a_feature.is_routine then
 				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
-					context.locals.wipe_out
-					check_locals (l_routine)
+					if l_routine.locals /= Void then
+						context.locals.wipe_out
+						check_locals (l_routine)
+						Result := context.locals
+					end
 				end
-				Result := context.locals
-			else
+			end
+			if Result = Void then
 				create Result.make (0)
 			end
 		end
@@ -71,10 +74,12 @@ feature{NONE} -- Implementation
 			l_error_level := error_level
 			if current_feature /= Void then
 					-- Setup local variables.
+				context.locals.wipe_out
 				if a_feature.is_routine then
 					if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
-						context.locals.wipe_out
-						check_locals (l_routine)
+						if l_routine.locals /= Void then
+							check_locals (l_routine)
+						end
 					end
 				end
 
