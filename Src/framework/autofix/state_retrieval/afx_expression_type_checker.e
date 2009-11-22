@@ -38,6 +38,7 @@ feature -- Type checking
 			init (ast_context)
 			ast_context.set_is_ignoring_export (True)
 			ast_context.initialize (a_class, a_class.actual_type, a_class.feature_table)
+			ast_context.set_written_class (a_feature.written_class)
 			current_feature := a_feature
 			if a_feature.is_routine then
 				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then

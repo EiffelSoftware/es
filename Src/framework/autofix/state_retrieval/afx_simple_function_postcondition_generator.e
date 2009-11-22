@@ -40,6 +40,8 @@ feature -- Generation
 
 				-- Only generate postcondition for functions
 			l_done := a_feature.type.is_void
+
+				-- Only generate postcondition for argumentless functions.
 			if not l_done then
 				fixme ("Only generate postconditions for argumentless functions. 17.11.2009 Jason")
 				l_done := a_feature.argument_count /= 0
@@ -49,15 +51,17 @@ feature -- Generation
 			if not l_done then
 				l_done := a_feature.is_attribute
 			end
+
+				-- Only generate postcondition for functions without preconditions.
 			if not l_done then
 				l_done := a_feature.has_precondition
 			end
 
 				-- Only generate postcondition if `a_feature' does not have any postcondition yet.
-			if not l_done then
-				create l_contract_extractor
-				l_done := not l_contract_extractor.postcondition_of_feature (a_feature, a_class).is_empty
-			end
+--			if not l_done then
+--				create l_contract_extractor
+--				l_done := not l_contract_extractor.postcondition_of_feature (a_feature, a_class).is_empty
+--			end
 
 			if not l_done then
 				if attached {BODY_AS} a_feature.body.body as l_body then

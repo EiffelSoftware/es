@@ -96,7 +96,6 @@ feature -- Basic operations
 					l_axiom.append_character (')')
 				end
 				last_statements.extend (l_axiom)
-				io.put_string ("YI: " + l_axiom + "%N")
 				l_inv.forth
 			end
 		end

@@ -125,29 +125,31 @@ feature{NONE} -- Implementation
 		do
 			l_posts := postcondition_of_feature (a_feature, context_class)
 
-			if l_posts.is_empty and then not a_feature.has_postcondition then
-				context_feature := a_feature
-				current_written_class := context_class
-				create l_post_gen
-				l_post_gen.generate (context_class, a_feature)
-				l_post_str := l_post_gen.last_postcondition
-				if l_post_str /= Void and then not l_post_str.is_empty then
-					generate_invariant_from_string (l_post_str)
-				end
-			else
-				context_feature := a_feature
-				from
-					l_posts.start
-				until
-					l_posts.after
-				loop
-					if l_posts.item_for_iteration /= Void then
-						current_written_class := l_posts.item_for_iteration.written_class
-						generate_invariant_from_string (l_posts.item_for_iteration.text)
-					end
-					l_posts.forth
-				end
+--			if l_posts.is_empty and then not a_feature.has_postcondition then
+				-- Generate simple postcondition if the feature body is
+				-- a single assignment to Result.
+			context_feature := a_feature
+			current_written_class := context_class
+			create l_post_gen
+			l_post_gen.generate (context_class, a_feature)
+			l_post_str := l_post_gen.last_postcondition
+			if l_post_str /= Void and then not l_post_str.is_empty then
+				generate_invariant_from_string (l_post_str)
 			end
+--			else
+
+			from
+				l_posts.start
+			until
+				l_posts.after
+			loop
+				if l_posts.item_for_iteration /= Void then
+					current_written_class := l_posts.item_for_iteration.written_class
+					generate_invariant_from_string (l_posts.item_for_iteration.text)
+				end
+				l_posts.forth
+			end
+--		end
 		end
 
 --	generate_invariant_from_postcondition (a_expression: AUT_EXPRESSION)
