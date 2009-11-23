@@ -72,8 +72,16 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
-		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false"/>
-		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf" readonly="false"/>
+		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true"/>
+			</option>
+		</library>
+		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf" readonly="false">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true"/>
+			</option>
+		</library>
 		<library name="serializer" location="$ISE_LIBRARY\library\schema_evolution\serializer_lib\serializer.ecf"/>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
