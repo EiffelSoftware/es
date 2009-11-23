@@ -157,13 +157,6 @@ feature {NONE} -- Content implementation
 			end
 			safe_process (l_as.colon_symbol (match_list))
 
-			if a_feature_name.has_substring ("option_sign") then
-				io.put_string ("CharRef: ")
-				io.put_string (universe.classes_with_name ("CHARACTER_REF").out)
-				io.new_line
-				do_nothing
-			end
-
 			-- process type of feature
 			l_type_signature.process_type (l_as.type)
 			if l_as.type /= Void then
