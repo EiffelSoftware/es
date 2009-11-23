@@ -78,7 +78,7 @@ feature {NONE} -- Roundtrip: process nodes
 			is_scoop_string: BOOLEAN
 		do
 			if l_as.name.is_equal (scoop_string) then
-				is_scoop_string := true
+				is_scoop_string := false -- hack to see if this fixes STRING_8 always being processed despite SCOOP_BASIC_TYPE
 			end
 
 			process_leading_leaves (l_as.index)
