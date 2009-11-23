@@ -23,11 +23,7 @@ feature -- List access
 	has_class (a_class: CLASS_C): BOOLEAN is
 			-- query based on a class_c
 		do
-			if class_list.has (a_class) then
-				Result := true
-			else
-				Result := false
-			end
+			Result := class_list.has (a_class)
 		end
 
 	has (a_class_name: STRING): BOOLEAN is
@@ -50,8 +46,7 @@ feature -- List access
 	extend (a_class: CLASS_C) is
 			-- extends the list with a new element
 		do
-			if not has (a_class.name_in_upper) and then not a_class.is_class_any and then
-			not a_class.is_basic then
+			if not has (a_class.name_in_upper) then
 				class_list.extend (a_class)
 			end
 		end
