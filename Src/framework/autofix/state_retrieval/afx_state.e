@@ -25,7 +25,7 @@ inherit
 			is_equal
 		end
 
-	AFX_SHARED_SMTLIB_GENERATOR
+	AFX_SOLVER_FACTORY
 		undefine
 			copy,
 			is_equal

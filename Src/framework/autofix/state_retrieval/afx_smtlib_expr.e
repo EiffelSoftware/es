@@ -8,9 +8,11 @@ class
 	AFX_SMTLIB_EXPR
 
 inherit
-	HASHABLE
+	AFX_SOLVER_EXPR
 		redefine
-			is_equal
+			is_smtlib,
+			is_axiom,
+			is_function
 		end
 
 create
@@ -26,26 +28,21 @@ feature{NONE} -- Initialization
 			expression_set: expression ~ a_expr
 		end
 
-feature -- Access
+feature -- Status report
 
-	expression: STRING
-			-- SMTLIB expression
+	is_smtlib: BOOLEAN = True
+			-- Is current expression in SMTLIB format?
 
-feature -- Access
-
-	hash_code: INTEGER
-			-- Hash code value
+	is_axiom: BOOLEAN
+			-- Is current expression an axiom?
 		do
-			Result := expression.hash_code
+			Result := expression.starts_with ({AFX_SMTLIB_CONSTANTS}.smtlib_axiom_header)
 		end
 
-feature -- Equality
-
-	is_equal (other: like Current): BOOLEAN
-			-- Is `other' attached to an object considered
-			-- equal to current object?
+	is_function: BOOLEAN
+			-- Is current expression a function declaration?
 		do
-			Result := expression ~ other.expression
+			Result := expression.starts_with ({AFX_SMTLIB_CONSTANTS}.smtlib_function_header)
 		end
 
 end

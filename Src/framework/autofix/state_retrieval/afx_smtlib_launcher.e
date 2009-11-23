@@ -7,6 +7,9 @@ note
 class
 	AFX_SMTLIB_LAUNCHER
 
+inherit
+	AFX_SOLVER_LAUNCHER
+
 feature -- Basic operations
 
 	is_unsat (a_content: STRING): BOOLEAN

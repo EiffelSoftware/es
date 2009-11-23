@@ -8,7 +8,7 @@ class
 	AFX_STATE_SKELETON_SIMPLIFIER
 
 inherit
-	AFX_SHARED_SMTLIB_GENERATOR
+	AFX_SOLVER_FACTORY
 
 feature -- Access
 
@@ -62,8 +62,8 @@ feature{NONE} -- Implementation
 		require
 			a_expr_in_a_state: a_skeleton.has (a_expr)
 		do
-			smtlib_generator.generate_for_tautology_checking (a_expr, a_skeleton)
-			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
+			solver_file_generator.generate_for_tautology_checking (a_expr, a_skeleton)
+			Result := solver_launcher.is_unsat (solver_file_generator.last_content)
 		end
 
 	is_expression_non_tautology (a_expr: AFX_EXPRESSION; a_skeleton: like last_skeleton): BOOLEAN
@@ -97,8 +97,8 @@ feature{NONE} -- Implementation
 				l_exprs.do_all (agent l_list.extend)
 				create l_single_list.make
 				l_single_list.extend (l_expr)
-				smtlib_generator.generate_for_implied_checking (l_list, l_single_list, a_skeleton.theory)
-				if z3_launcher.is_unsat (smtlib_generator.last_smtlib) then
+				solver_file_generator.generate_for_implied_checking (l_list, l_single_list, a_skeleton.theory)
+				if solver_launcher.is_unsat (solver_file_generator.last_content) then
 					Result := l_expr
 				else
 					l_exprs.force_last (l_expr)

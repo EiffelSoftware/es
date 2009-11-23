@@ -5,17 +5,17 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SMTLIB_EXPR_EQUALITY_TESTER
+	AFX_SOLVER_EXPR_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [AFX_SMTLIB_EXPR]
+	KL_EQUALITY_TESTER [AFX_SOLVER_EXPR]
 		redefine
 			test
 		end
 
 feature -- Status report
 
-	test (v, u: AFX_SMTLIB_EXPR): BOOLEAN
+	test (v, u: AFX_SOLVER_EXPR): BOOLEAN
 		do
 			if v = u then
 				Result := True

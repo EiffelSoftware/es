@@ -16,6 +16,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	AFX_SOLVER_FACTORY
+
 feature -- Access
 
 	feature_: FEATURE_I
@@ -43,7 +45,7 @@ feature -- Access
 	written_class: CLASS_C
 			-- Class where `ast' is written
 
-	as_smtlib_expression: AFX_SMTLIB_EXPR
+	as_solver_expression: AFX_SOLVER_EXPR
 			-- SMTLIB expression for Current.
 		local
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]]
@@ -55,7 +57,7 @@ feature -- Access
 			l_shared_theory.smtlib_generator.generate_expression (ast, class_, written_class, feature_)
 			l_raw_text := l_shared_theory.smtlib_generator.last_statements.first
 			l_resolved := l_shared_theory.resolved_smt_statement (l_raw_text, create {AFX_CLASS_WITH_PREFIX}.make (class_, ""))
-			create Result.make (l_resolved.resolved_str)
+			Result := new_solver_expression_from_string (l_resolved.resolved_str)
 		end
 
 	as_skeleton: AFX_STATE_SKELETON

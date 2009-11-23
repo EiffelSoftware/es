@@ -34,9 +34,9 @@ feature{NONE} -- Initialization
 			analyze_test_case_set: a_config.should_build_test_cases
 		do
 			config := a_config
-			create test_case_start_actions.make
-			create test_case_breakpoint_hit_actions.make
-			create application_exited_actions.make
+			create test_case_start_actions
+			create test_case_breakpoint_hit_actions
+			create application_exited_actions
 		ensure
 			config_set: config = a_config
 		end

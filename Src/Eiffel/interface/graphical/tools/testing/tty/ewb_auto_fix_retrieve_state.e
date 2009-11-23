@@ -58,7 +58,7 @@ feature -- Execute
 			l_smt_generator:AFX_SMTLIB_GENERATOR
 			l_inv: LINKED_LIST [AUT_EXPRESSION]
 			l_theory: AFX_THEORY
-			l_smt_expr: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]
+			l_smt_expr: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
 
 			l_test_state_implication: BOOLEAN
 			l_build_theory: BOOLEAN

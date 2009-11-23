@@ -38,7 +38,7 @@ inherit
 			copy
 		end
 
-	AFX_SHARED_SMTLIB_GENERATOR
+	AFX_SOLVER_FACTORY
 		undefine
 			is_equal,
 			copy
@@ -157,7 +157,7 @@ feature -- Status report
 
 feature -- Access
 
-	smtlib_expressions: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]
+	smtlib_expressions: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
 			-- Table of SMTLIB representation for items in Current skeleton
 			-- Key is items in Current, value is its SMTLIB representation.
 		do
@@ -264,8 +264,8 @@ feature -- Status report
 			-- Does Current implies `other'?
 			-- `theory' in Current and `other' will be used to support the reasoning.
 		do
-			smtlib_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory + other.theory)
-			Result := z3_launcher.is_unsat (smtlib_generator.last_smtlib)
+			solver_file_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory + other.theory)
+			Result := solver_launcher.is_unsat (solver_file_generator.last_content)
 		end
 
 feature -- Element change
@@ -449,7 +449,7 @@ feature{NONE} -- Implementation
 	calculate_smtlib_expressions
 			-- Calculate `smtlib_expressions'.
 		local
-			l_data: TUPLE [exprs: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
+			l_data: TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
 		do
 			l_data := (create {AFX_SHARED_CLASS_THEORY}).expressions_with_theory (linear_representation, class_, feature_)
 			smtlib_expressions_cache := l_data.exprs

@@ -12,6 +12,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	AFX_SOLVER_FACTORY
+
 create
 	make,
 	make_with_feature
@@ -24,8 +26,8 @@ feature{NONE} -- Initializatoin
 			class_ := a_class
 			create functions.make (50)
 			create axioms.make (50)
-			functions.set_equality_tester (create {AFX_SMTLIB_EXPR_EQUALITY_TESTER})
-			axioms.set_equality_tester (create {AFX_SMTLIB_EXPR_EQUALITY_TESTER})
+			functions.set_equality_tester (create {AFX_SOLVER_EXPR_EQUALITY_TESTER})
+			axioms.set_equality_tester (create {AFX_SOLVER_EXPR_EQUALITY_TESTER})
 		ensure
 			class_set: class_ = a_class
 		end
@@ -50,13 +52,13 @@ feature -- Access
 			-- If Void, it means that Current theory is for `class_',
 			-- not for a particular feature.
 
-	functions: DS_HASH_SET [AFX_SMTLIB_EXPR]
+	functions: DS_HASH_SET [AFX_SOLVER_EXPR]
 			-- List of functions
 
-	axioms: DS_HASH_SET [AFX_SMTLIB_EXPR]
+	axioms: DS_HASH_SET [AFX_SOLVER_EXPR]
 			-- List of axioms
 
-	statements: DS_HASH_SET [AFX_SMTLIB_EXPR]
+	statements: DS_HASH_SET [AFX_SOLVER_EXPR]
 			-- All statements consisting both `functions' and `axioms'
 			-- A new copy of `functions' and `axioms'.
 		do
@@ -97,7 +99,7 @@ feature -- Status report
 			Result.append (":%N")
 
 			statements.do_all (
-				agent (a_item: AFX_SMTLIB_EXPR; a_result: STRING)
+				agent (a_item: AFX_SOLVER_EXPR; a_result: STRING)
 					do
 						a_result.append (a_item.expression)
 						a_result.append_character ('%N')
@@ -140,7 +142,7 @@ feature -- Basic operations
 			end
 		end
 
-	extend_statement (a_stmt: AFX_SMTLIB_EXPR)
+	extend_statement (a_stmt: AFX_SOLVER_EXPR)
 			-- Extend `a_stmt' into Current.
 		do
 			if a_stmt.expression.starts_with (smtlib_function_header) then
@@ -161,22 +163,22 @@ feature -- Basic operations
 	extend_function_with_string (a_str: STRING)
 			-- Extend `a_str' as a function.
 		do
-			extend_function (create {AFX_SMTLIB_EXPR}.make (a_str))
+			extend_function (new_solver_expression_from_string (a_str))
 		end
 
 	extend_axiom_with_string (a_str: STRING)
 			-- Extend `a_str' as an axiom.
 		do
-			extend_axiom (create {AFX_SMTLIB_EXPR}.make (a_str))
+			extend_axiom (new_solver_expression_from_string (a_str))
 		end
 
-	extend_function (a_expr: AFX_SMTLIB_EXPR)
+	extend_function (a_expr: AFX_SOLVER_EXPR)
 			-- Extend `a_expr' into `functions'.
 		do
 			functions.force_last (a_expr)
 		end
 
-	extend_axiom (a_expr: AFX_SMTLIB_EXPR)
+	extend_axiom (a_expr: AFX_SOLVER_EXPR)
 			-- Extend `a_expr' into `axioms'.
 		do
 			axioms.force_last (a_expr)

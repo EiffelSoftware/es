@@ -12,6 +12,8 @@ inherit
 
 	AFX_SMTLIB_CONSTANTS
 
+	AFX_SOLVER_FACTORY
+
 feature -- Access
 
 	class_theories: HASH_TABLE [AFX_THEORY, CLASS_C]
@@ -46,7 +48,7 @@ feature -- Basic operations
 			smtlib_generator.last_statements.do_all (agent Result.extend_function_with_string)
 		end
 
-	expressions_with_theory (a_exprs: LINEAR [AFX_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
+	expressions_with_theory (a_exprs: LINEAR [AFX_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
 			-- Expressions and their supporting theories for `a_exprs' in the context of `a_class' and `a_feature'.
 			-- If `a_feature' is Void, it means that `a_exprs' are for `a_class', not for a particular feature.
 			-- `exprs' are the SMTLIB expressions for `a_exprs', `theory' are the support theories.
@@ -56,7 +58,7 @@ feature -- Basic operations
 			l_theory: AFX_THEORY
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: like class_with_prefix_set]
 			l_base_prefix: AFX_CLASS_WITH_PREFIX
-			l_generated_exprs: DS_HASH_TABLE [AFX_SMTLIB_EXPR, AFX_EXPRESSION]
+			l_generated_exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
 			l_raw_text: STRING
 		do
 			l_smt_gen := smtlib_generator
@@ -78,8 +80,7 @@ feature -- Basic operations
 				l_smt_gen.generate_expression (a_exprs.item_for_iteration.ast, a_class, a_exprs.item_for_iteration.written_class, a_feature)
 				l_raw_text := l_smt_gen.last_statements.first
 				l_resolved := resolved_smt_statement (l_raw_text, l_base_prefix)
-				l_generated_exprs.force_last (create{AFX_SMTLIB_EXPR}.make (l_resolved.resolved_str), a_exprs.item_for_iteration)
-
+				l_generated_exprs.force_last (new_solver_expression_from_string (l_resolved.resolved_str), a_exprs.item_for_iteration)
 				l_resolved.mentioned_classes.do_all (agent resolved_class_theory_internal (?, l_theory, l_processed))
 				a_exprs.forth
 			end
@@ -191,7 +192,7 @@ feature -- Access
 			-- SMT theory for `a_class' with prefix `a_prefix'
 		local
 			l_theory: AFX_THEORY
-			l_statements: LINKED_LIST [AFX_SMTLIB_EXPR]
+			l_statements: LINKED_LIST [AFX_SOLVER_EXPR]
 			l_resolved: TUPLE [a_statement: STRING; a_mentioned_class: like class_with_prefix_set]
 			l_new: like class_with_prefix_set
 
