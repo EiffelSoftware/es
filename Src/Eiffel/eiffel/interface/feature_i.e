@@ -718,6 +718,9 @@ feature -- Setting
 		require
 			e_not_void: e /= Void
 		do
+			if Current = system.any_class.compiled_class.feature_named ("default_create") then
+				do_nothing
+			end
 			if e.is_all or e.is_none then
 				internal_export_status := Void
 				feature_flags := feature_flags.set_bit_with_mask (e.is_none, is_export_status_none_mask)

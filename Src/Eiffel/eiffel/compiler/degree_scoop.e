@@ -8,6 +8,12 @@ class
 	DEGREE_SCOOP
 
 inherit
+		-- for updating the root file to be the SCOOP_STARTER
+	CONF_ACCESS
+
+		-- for updating ANY to export `default_create' unrestricted
+	COMPILER_EXPORTER
+
 	DEGREE
 		redefine
 			make
@@ -118,9 +124,12 @@ feature {SYSTEM_I} -- Processing
 				io.error.put_string ("SCOOP: Processing classes.")
 			end
 
+			setup_starter_class
+
 			-- iterate over all classes and create the new proxy- and client classes.
 			from i := 1 until i > scoop_classes.count loop
 				a_class := scoop_classes.item (i)
+
 
 				l_degree_output.put_degree_scoop (a_class, count - i + 1)
 
@@ -129,6 +138,10 @@ feature {SYSTEM_I} -- Processing
 					io.error.put_new_line
 				end
 
+					-- set feature table in workbench
+					-- was computed in degree 4.
+
+
 					-- reset workbench
 				scoop_workbench_objects.reset
 
@@ -136,17 +149,19 @@ feature {SYSTEM_I} -- Processing
 				set_current_class_c (a_class)
 				set_current_class_as (a_class.ast)
 
-					-- set feature table in workbench
-					-- was computed in degree 4.
+
 				if a_class.feature_table /= Void then
 					a_class.ast.set_feature_table (a_class.feature_table)
 				end
 
-				-- create original classes
-				process_separate_client_creation (a_class)
 
-				-- creation of proxy classes
-				process_separate_proxy_creation (a_class)
+				if not is_basic_type (a_class.name_in_upper) and not a_class.is_basic then
+					-- create original classes
+					process_separate_client_creation (a_class)
+
+					-- creation of proxy classes
+					process_separate_proxy_creation (a_class)
+				end
 
 				-- force system to check class again
 				workbench.add_class_to_recompile (a_class.original_class)
@@ -155,7 +170,13 @@ feature {SYSTEM_I} -- Processing
 				i := i + 1
 			end
 
-				-- degree output
+			system.any_class.compiled_class.feature_named ("default_create").set_export_status (create {EXPORT_ALL_I})
+
+			if not system.is_explicit_root ("SCOOP_STARTER", "make") then
+				system.add_explicit_root (Void, "SCOOP_STARTER", "make")
+			end
+
+
 			l_degree_output.put_end_degree
 		end
 
@@ -332,7 +353,9 @@ feature {NONE} -- Implementation
 			from i := 1 until i > l_classes.count loop
 				l_class ?= l_classes.item (i)
 
-				if l_class /= Void and then not is_basic_type (l_class.name_in_upper) then
+				if l_class /= Void and then
+				   not l_class.is_basic and
+				   not is_basic_type (l_class.name_in_upper) then
 					l_scoop_classes.extend (l_class)
 				end
 
@@ -453,6 +476,112 @@ feature {NONE} -- Implementation
 --			end
 --		end
 
+	setup_starter_class
+		local
+			starter : SCOOP_STARTER_CLASS
+			root : CONF_ROOT
+			root_class : STRING
+		do
+			create starter
+
+			root := universe.lace.target.root
+
+			root_class := root.class_type_name
+			starter.create_starter_class (root_class, "make")
+
+			print_to_file (starter.get_context , "SCOOP_STARTER" , true)
+
+			root.set_class_type_name ("SCOOP_STARTER")
+			root.set_feature_name ("make")
+
+
+		end
+
+--	any_class_c : CLASS_C
+
+--	process_any_printer
+--			-- Process client class of input class.
+--		local
+--			l_match_list: LEAF_AS_LIST
+--			l_printer: SCOOP_ANY_ROUNDTRIP
+--		do
+--			debug ("SCOOP")
+--				io.error.put_string ("SCOOP: removing {NONE} from ANY's `default_create'.")
+--				io.error.put_new_line
+--			end
+
+--				-- reset workbench
+--			scoop_workbench_objects.reset
+
+--				-- set current processed class in workbench
+--			set_current_class_c (any_class_c)
+--			set_current_class_as (any_class_c.ast)
+
+--				-- set feature table in workbench
+--				-- was computed in degree 4.
+--			if any_class_c.feature_table /= Void then
+--				any_class_c.ast.set_feature_table (any_class_c.feature_table)
+--			end
+
+
+--				-- create proxy visitor to process.
+--			l_match_list := match_list_server.item (any_class_c.class_id)
+--			create l_printer.make_with_default_context
+
+--			l_printer.setup (class_as , l_match_list, true, false)
+
+--			l_printer.process
+
+
+--				-- print_content to file.
+--			print_to_file (l_printer.text, any_class_c, true)
+
+--			workbench.add_class_to_recompile (any_class_c.original_class)
+--			any_class_c.set_changed (True)
+--		end
+
+
+--	id_printer (a_class_c : CLASS_C)
+--			-- Process client class of input class.
+--		local
+--			l_match_list: LEAF_AS_LIST
+--			l_printer: AST_ROUNDTRIP_PRINTER_VISITOR
+--		do
+--			debug ("SCOOP")
+--				io.error.put_string ("SCOOP: removing {NONE} from ANY's `default_create'.")
+--				io.error.put_new_line
+--			end
+
+--				-- reset workbench
+--			scoop_workbench_objects.reset
+
+--				-- set current processed class in workbench
+--			set_current_class_c (a_class_c)
+--			set_current_class_as (a_class_c.ast)
+
+--				-- set feature table in workbench
+--				-- was computed in degree 4.
+--			if a_class_c.feature_table /= Void then
+--				a_class_c.ast.set_feature_table (a_class_c.feature_table)
+--			end
+
+
+--				-- create proxy visitor to process.
+--			l_match_list := match_list_server.item (a_class_c.class_id)
+--			create l_printer.make_with_default_context
+
+--			l_printer.setup (class_as , l_match_list, true, false)
+
+--			l_printer.process_ast_node (class_as)
+
+
+--				-- print_content to file.
+--			print_to_file (l_printer.text, a_class_c, true)
+
+--			workbench.add_class_to_recompile (a_class_c.original_class)
+--			a_class_c.set_changed (True)
+--		end
+
 	process_separate_client_creation (a_class_c: CLASS_C) is
 			-- Process client class of input class.
 		local
@@ -475,7 +604,7 @@ feature {NONE} -- Implementation
 			end
 
 				-- print_content to file.
-			print_to_file (l_printer.get_context, a_class_c, true)
+			print_to_file (l_printer.get_context, a_class_c.name, true)
 		end
 
 	process_separate_proxy_creation (a_class_c: CLASS_C) is
@@ -489,10 +618,6 @@ feature {NONE} -- Implementation
 				io.error.put_new_line
 			end
 
-			if a_class_c.name.has_substring ("ARGUMENTS") then
-				do_nothing
-			end
-
 				-- create proxy visitor to process.
 			l_match_list := match_list_server.item (a_class_c.class_id)
 			l_printer := scoop_visitor_factory.new_proxy_printer
@@ -504,10 +629,10 @@ feature {NONE} -- Implementation
 			end
 
 				-- print_content to file.
-			print_to_file (l_printer.get_context, a_class_c, false)
+			print_to_file (l_printer.get_context, a_class_c.name, false)
 		end
 
-	print_to_file (a_context: STRING; a_class_c: CLASS_c; is_client_and_not_proxy: BOOLEAN) is
+	print_to_file (a_context, a_class_name: STRING; is_client_and_not_proxy: BOOLEAN) is
 			-- Print text of a_class_node.
 		local
 			file: PLAIN_TEXT_FILE
@@ -518,7 +643,7 @@ feature {NONE} -- Implementation
 			create l_file_name.make
 
 			l_file_name.set_directory (scoop_directory.name)
-			l_local_file_name := a_class_c.name.as_lower
+			l_local_file_name := a_class_name.as_lower
 
 			if not is_client_and_not_proxy then
 				l_local_file_name := scoop_proxy_prefix + l_local_file_name
@@ -538,7 +663,7 @@ feature {NONE} -- Implementation
 				else
 					io.error.put_string ("SCOOP: Client class '")
 				end
-				io.error.put_string (a_class_c.name.as_lower + "' saved in '" + l_file_name + "'.")
+				io.error.put_string (a_class_name.as_lower + "' saved in '" + l_file_name + "'.")
 				io.error.put_new_line
 			end
 		end
@@ -557,4 +682,35 @@ feature {NONE} -- Implementation
 invariant
 	scoop_directory_not_void: scoop_directory /= Void
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end
