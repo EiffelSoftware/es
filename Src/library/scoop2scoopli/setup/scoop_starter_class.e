@@ -9,7 +9,7 @@ class
 
 feature
 
-	create_starter_class (root_class: STRING) is
+	create_starter_class (root_class, root_create: STRING) is
 			-- Generate root class `SCOOP_STARTER'.
 		do
 			context := create {ROUNDTRIP_STRING_LIST_CONTEXT}.make
@@ -40,11 +40,11 @@ feature
 			context.add_string ("%T%T%Tio.put_string (%"%%N%")")
 
 			-- add a call
-			context.add_string ("%T%T%Ta_root_object." + a_universe.root_creation.name + "_scoop_separate_" +
+			context.add_string ("%T%T%Ta_root_object." + root_create + "_scoop_separate_" +
 								root_class.as_lower + " (Current)%N%T%Tend%N")
 
 			-- add root_object attribute
-			context.add_string ("%Troot_object: SCOOP_SEPARATE__" + root_class.as_upper)
+			context.add_string ("%Troot_object: SCOOP_SEPARATE__" + root_class.as_upper + "%N")
 
 			-- add class end keyword
 			context.add_string ("end")
