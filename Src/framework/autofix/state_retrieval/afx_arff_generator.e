@@ -15,16 +15,31 @@ feature{NONE} -- Initialization
 	make
 			-- Initialize.
 		do
-			create file_table.make (5)
-			file_table.compare_objects
+--			create file_table.make (5)
+--			file_table.compare_objects
 		end
 
 feature -- Access
 
-	on_test_case_start (a_tc_info: AFX_TEST_CASE_INFO)
+	on_test_case_start (a_tc: AFX_TEST_CASE_INFO)
 			-- Action to perform when test case `a_tc_info' starts.
+		local
+			l_file_name: STRING
+			l_file_path: FILE_NAME
 		do
+--			l_file_name := output_file_name (a_tc, 0)
+--			if last_file_name = Void or else not (last_file_name ~ l_file_name) then
+--				last_file_name := l_file_name
+--				if output_file /= Void and then not output_file.is_closed then
+--					output_file.close
+--				end
 
+--				create l_file_path.make_from_string (output_folder)
+--				l_file_path.set_file_name (l_file_name + ".arff")
+--				create output_file.make_create_read_write (l_file_path)
+--				output_file.open_write
+--				put_header (output_file, l_file_name, a_state)
+--			end
 		end
 
 	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
@@ -32,56 +47,67 @@ feature -- Access
 			-- `a_state' is the set of expressions with their evaluated values.
 		local
 			l_file_name: STRING
-			l_file: PLAIN_TEXT_FILE
 			l_file_path: FILE_NAME
 		do
 			l_file_name := output_file_name (a_tc, a_bpslot)
-			if file_table.has (l_file_name) then
-				l_file := file_table.item (l_file_name)
-			else
+			if last_file_name = Void or else not (last_file_name ~ l_file_name) then
+				last_file_name := l_file_name
+				close_output_file
+
 				create l_file_path.make_from_string (output_folder)
 				l_file_path.set_file_name (l_file_name + ".arff")
-				create l_file.make_create_read_write (l_file_path)
-				file_table.force (l_file, l_file_name)
-				put_header (l_file, l_file_name, a_state)
+				create output_file.make_create_read_write (l_file_path)
+				output_file.open_write
+				put_header (output_file, l_file_name, a_state)
 			end
-			put_data (l_file, a_state)
+
+			put_data (output_file, a_bpslot, a_state)
 		end
 
-	put_data (a_file: PLAIN_TEXT_FILE; a_state: AFX_STATE)
-			-- Store `a_state' in `a_file'.
+	on_application_exited
+			-- Action to perform when application exited in debugger
+		do
+			close_output_file
+		end
+
+	put_data (a_file: PLAIN_TEXT_FILE; a_bpslot: INTEGER; a_state: AFX_STATE)
+			-- Store `a_state' which is retrieved at breakpoint `a_bpslot' in `a_file'.
 		local
 			l_value: AFX_EXPRESSION_VALUE
 			i: INTEGER
 			l_count: INTEGER
 		do
-			from
-				i := 1
-				l_count := a_state.count
-				a_state.start
-			until
-				a_state.after
-			loop
-				l_value := a_state.item_for_iteration.value
-				if l_value.is_boolean then
-					a_file.put_string (l_value.out)
-					if i < l_count then
-						a_file.put_character (',')
+			a_file.put_integer (a_bpslot)
+			if not a_state.is_empty then
+				a_file.put_character (',')
+				from
+					i := 1
+					l_count := a_state.count
+					a_state.start
+				until
+					a_state.after
+				loop
+					l_value := a_state.item_for_iteration.value
+					if l_value.is_boolean then
+						a_file.put_string (l_value.out)
+						if i < l_count then
+							a_file.put_character (',')
+						end
+
+					elseif l_value.is_nonsensical then
+						a_file.put_character ('?')
+						if i < l_count then
+							a_file.put_character (',')
+						end
+
+					elseif l_value.is_integer then
+
+					else
+						check False end
 					end
-
-				elseif l_value.is_nonsensical then
-					a_file.put_character ('?')
-					if i < l_count then
-						a_file.put_character (',')
-					end
-
-				elseif l_value.is_integer then
-
-				else
-					check False end
+					i := i + 1
+					a_state.forth
 				end
-				i := i + 1
-				a_state.forth
 			end
 			a_file.put_character ('%N')
 			a_file.flush
@@ -94,6 +120,7 @@ feature -- Access
 			l_expr: AFX_EXPRESSION
 		do
 			a_file.put_string ("@RELATION " + a_relation_name + "%N")
+			a_file.put_string ("@ATTRIBUTE%Tbpslot%TNUMERIC%N")
 			from
 				a_state.start
 			until
@@ -115,32 +142,32 @@ feature -- Access
 				end
 				a_state.forth
 			end
-
 			a_file.put_string ("@DATA%N")
 		end
 
-	close_files
-			-- Close files in `file_table'.
+	close_output_File
+			-- Close `output_file'.
 		do
-			from
-				file_table.start
-			until
-				file_table.after
-			loop
-				file_table.item_for_iteration.close
-				file_table.forth
+			if output_file /= Void and then not output_file.is_closed then
+				output_file.close
 			end
 		end
 
 feature{NONE} -- Implementation
 
-	output_folder: STRING = "/tmp"
+	last_file_name: detachable STRING
+			-- File name for the last analyzed test case
+
+	output_file: detachable PLAIN_TEXT_FILE
+			-- File used to store output
+
+	output_folder: STRING = "/home/jasonw/temp/arff"
 			-- Folder to store all generated ARFF files.
 
-	file_table: HASH_TABLE [PLAIN_TEXT_FILE, STRING]
-			-- Table for output files
-			-- Key is the test case info plus the breakpoint slot number.
-			-- Value is the file used to store results.
+--	file_table: HASH_TABLE [PLAIN_TEXT_FILE, STRING]
+--			-- Table for output files
+--			-- Key is the test case info plus the breakpoint slot number.
+--			-- Value is the file used to store results.
 
 	output_file_name (a_tc: AFX_TEST_CASE_INFO; a_bpslot: INTEGER): STRING
 			-- Name of the file used to store data retrieved breakpoint `a_bpslot'
@@ -161,8 +188,8 @@ feature{NONE} -- Implementation
 			Result.append (a_tc.breakpoint_slot.out)
 			Result.append (once "__TAG_")
 			Result.append (a_tc.tag)
-			Result.append ("__bp_")
-			Result.append (a_bpslot.out)
+--			Result.append ("__bp_")
+--			Result.append (a_bpslot.out)
 		end
 
 end

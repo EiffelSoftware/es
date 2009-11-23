@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 			config := a_config
 			create test_case_start_actions.make
 			create test_case_breakpoint_hit_actions.make
+			create application_exited_actions.make
 		ensure
 			config_set: config = a_config
 		end
@@ -55,11 +56,19 @@ feature -- Access
 			-- `a_state' is the state evaluated at the breakpoint.
 			-- `a_bpslot' is the breakpoint slot number.
 
+	application_exited_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be performed when application exited in debugger
+
 feature -- Basic operations
 
 	execute
 			-- Execute.
+		local
+			l_arff_gen: AFX_ARFF_GENERATOR
 		do
+			create l_arff_gen.make
+			test_case_breakpoint_hit_actions.extend (agent l_arff_gen.on_test_case_breakpoint_hit)
+			application_exited_actions.extend (agent l_arff_gen.on_application_exited)
 			debug_project
 		end
 
@@ -104,6 +113,8 @@ feature{NONE} -- Implementation
 			l_new_tc_bp_manager: AFX_BREAKPOINT_MANAGER
 			l_mark_tc_feat: FEATURE_I
 			l_tc_info_skeleton: AFX_STATE_SKELETON
+			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
+			l_app_exited_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 		do
 				-- Initialize debugger.
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
@@ -118,10 +129,18 @@ feature{NONE} -- Implementation
 			l_new_tc_bp_manager.set_hit_action_with_agent (l_tc_info_skeleton, agent on_new_test_case_found, l_mark_tc_feat)
 			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, l_mark_tc_feat, 1)
 			l_new_tc_bp_manager.toggle_breakpoints (True)
-			debugger_manager.observer_provider.application_stopped_actions.extend (agent on_application_stopped)
+			l_app_stop_agent := agent on_application_stopped
+			l_app_exited_agent := agent on_application_exited
+			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
+			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 				-- Start debugger.
 			start_debugger
+
+				-- Clean up debugger.
+			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
+			debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exited_agent)
+			remove_breakpoint (root_class)
 		end
 
 	start_debugger
@@ -221,6 +240,12 @@ feature{NONE} -- Actions
 					a_dm.controller.resume_workbench_application
 				end
 			end
+		end
+
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
+			-- Action to be performed when application exited.
+		do
+			application_exited_actions.call (Void)
 		end
 
 note
