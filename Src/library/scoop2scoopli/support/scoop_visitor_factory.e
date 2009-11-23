@@ -58,6 +58,12 @@ feature -- Support visitors
 			Result.setup (class_as, match_list, true, true)
 		end
 
+	new_type_visitor: SCOOP_TYPE_VISITOR
+		do
+			create Result
+			Result.setup (class_as, match_list, true, true)
+		end
+
 feature -- Client class generation
 
 	new_client_printer: SCOOP_SEPARATE_CLIENT_PRINTER is
@@ -166,16 +172,6 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_ISP_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
-			Result := l_visitor
-		end
-
-	new_client_type_expr_visitor: SCOOP_CLIENT_TYPE_EXPR_VISITOR is
-			-- Create a `SCOOP_CLIENT_TYPE_EXPR_VISITOR' object.
-		local
-			l_visitor: SCOOP_CLIENT_TYPE_EXPR_VISITOR
-		do
-			create l_visitor
 			l_visitor.setup (class_as, match_list, true, true)
 			Result := l_visitor
 		end

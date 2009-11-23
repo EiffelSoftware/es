@@ -7,6 +7,8 @@ indexing
 class
 	SCOOP_CLIENT_TYPE_EXPR_VISITOR
 
+obsolete "This class is obsolete, use SCOOP_TYPE_VISITOR instead"
+
 inherit
 	AST_ROUNDTRIP_ITERATOR
 		export
@@ -57,19 +59,19 @@ feature {NONE} -- Visitor implementation: access_as nodes
 	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
 		do
 			last_index := l_as.feature_name.index - 1
-			evaluate_id (l_as.feature_name)
+			evaluate_separateness (l_as)
 		end
 
 	process_access_inv_as (l_as: ACCESS_INV_AS) is
 		do
 			last_index := l_as.dot_symbol_index
-			evaluate_id (l_as.feature_name)
+			evaluate_separateness (l_as)
 		end
 
 	process_access_id_as (l_as: ACCESS_ID_AS) is
 		do
 			last_index := l_as.feature_name.index - 1
-			evaluate_id (l_as.feature_name)
+			evaluate_separateness (l_as)
 		end
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS) is
@@ -83,7 +85,7 @@ feature {NONE} -- Visitor implementation: access_as nodes
 
 			-- process feature name
 			last_index := l_as.dot_symbol_index
-			evaluate_id (l_as.feature_name)
+			evaluate_separateness (l_as)
 		end
 
 	process_current_as (l_as: CURRENT_AS) is
@@ -124,7 +126,7 @@ feature {NONE} -- Visitor implementation: Separate type
 
 feature {NONE} -- Implementation
 
-	evaluate_id (l_as: ID_AS) is
+	evaluate_separateness (l_as: ACCESS_AS) is
 			-- evaluates the separated state of the entity behind id
 		local
 			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
@@ -133,11 +135,11 @@ feature {NONE} -- Implementation
 			create l_type_expr_visitor
 			l_type_expr_visitor.setup (parsed_class, match_list, true, true)
 			if last_base_class /= Void then
-				l_type_expr_visitor.evaluate_type_from_expr (l_as, last_base_class)
+				l_type_expr_visitor.evaluate_call_type_in_class (l_as, last_base_class)
 			else
-				l_type_expr_visitor.evaluate_type_from_expr (l_as, class_c)
+				l_type_expr_visitor.evaluate_call_type_in_workbench (l_as)
 			end
-			is_separate := l_type_expr_visitor.is_last_type_separate
+			is_separate := l_type_expr_visitor.is_expression_separate
 		end
 
 	is_separate: BOOLEAN

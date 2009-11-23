@@ -109,13 +109,11 @@ feature {NONE} -- Node implementation
 			end
 
 			-- process internal parameters and add current if target is of separate type.
-			increase_nested_level
 			process_internal_parameters(l_as.internal_parameters)
-			decrease_nested_level
 
-			-- get 'is_separate' information about current call for next expr
-			if not is_print_without_caller then
-				set_current_level_is_separate (evaluate_id(l_as.feature_name))
+			update_current_level_with_call (l_as)
+			if is_print_without_caller then
+				set_current_level_is_separate(false)
 			end
 		end
 
@@ -146,9 +144,7 @@ feature {NONE} -- Node implementation
 				last_index := l_as.internal_parameters.start_position - 1
 			end
 
-			increase_nested_level
 			process_internal_parameters(l_as.internal_parameters)
-			decrease_nested_level
 			last_index := l_as.end_position
 		end
 
