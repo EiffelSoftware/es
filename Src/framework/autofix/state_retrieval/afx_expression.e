@@ -53,9 +53,9 @@ feature -- Access
 			l_raw_text: STRING
 		do
 			create l_shared_theory
-			l_shared_theory.smtlib_generator.initialize_for_generation
-			l_shared_theory.smtlib_generator.generate_expression (ast, class_, written_class, feature_)
-			l_raw_text := l_shared_theory.smtlib_generator.last_statements.first
+			l_shared_theory.solver_expression_generator.initialize_for_generation
+			l_shared_theory.solver_expression_generator.generate_expression (ast, class_, written_class, feature_)
+			l_raw_text := l_shared_theory.solver_expression_generator.last_statements.first
 			l_resolved := l_shared_theory.resolved_smt_statement (l_raw_text, create {AFX_CLASS_WITH_PREFIX}.make (class_, ""))
 			Result := new_solver_expression_from_string (l_resolved.resolved_str)
 		end

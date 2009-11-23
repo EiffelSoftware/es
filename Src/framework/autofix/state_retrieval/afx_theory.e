@@ -8,7 +8,7 @@ class
 	AFX_THEORY
 
 inherit
-	AFX_SMTLIB_CONSTANTS
+	AFX_SOLVER_CONSTANTS
 
 	DEBUG_OUTPUT
 
@@ -111,9 +111,7 @@ feature -- Status report
 	is_statement_valid (a_string: STRING): BOOLEAN
 			-- Is `a_string' a valid statement?
 		do
-			Result :=
-				a_string.starts_with (smtlib_function_header) or
-				a_string.starts_with (smtlib_axiom_header)
+			Result := True
 		end
 
 	is_from_same_context (other: like Current): BOOLEAN

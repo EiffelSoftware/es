@@ -36,13 +36,13 @@ feature -- Status report
 	is_axiom: BOOLEAN
 			-- Is current expression an axiom?
 		do
-			Result := expression.starts_with ({AFX_SMTLIB_CONSTANTS}.smtlib_axiom_header)
+			Result := expression.starts_with ({AFX_SOLVER_CONSTANTS}.smtlib_axiom_header)
 		end
 
 	is_function: BOOLEAN
 			-- Is current expression a function declaration?
 		do
-			Result := expression.starts_with ({AFX_SMTLIB_CONSTANTS}.smtlib_function_header)
+			Result := expression.starts_with ({AFX_SOLVER_CONSTANTS}.smtlib_function_header)
 		end
 
 end

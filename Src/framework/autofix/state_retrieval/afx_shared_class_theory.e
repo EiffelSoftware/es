@@ -10,7 +10,7 @@ class
 inherit
 	AFX_UTILITY
 
-	AFX_SMTLIB_CONSTANTS
+	AFX_SOLVER_CONSTANTS
 
 	AFX_SOLVER_FACTORY
 
@@ -21,12 +21,6 @@ feature -- Access
 			-- Key is the class, value is the theory for that class
 		once
 			create Result.make (20)
-		end
-
-	smtlib_generator: AFX_SMTLIB_GENERATOR
-			-- SMTLIB generator
-		once
-			create Result.make
 		end
 
 feature -- Basic operations
@@ -43,9 +37,9 @@ feature -- Basic operations
 			resolved_class_theory_internal (create {AFX_CLASS_WITH_PREFIX}.make (a_class, ""), Result, l_processed)
 
 				-- Generate dummy function for expression "Void"
-			smtlib_generator.initialize_for_generation
-			smtlib_generator.generate_void_function
-			smtlib_generator.last_statements.do_all (agent Result.extend_function_with_string)
+			solver_expression_generator.initialize_for_generation
+			solver_expression_generator.generate_void_function
+			solver_expression_generator.last_statements.do_all (agent Result.extend_function_with_string)
 		end
 
 	expressions_with_theory (a_exprs: LINEAR [AFX_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
@@ -53,7 +47,7 @@ feature -- Basic operations
 			-- If `a_feature' is Void, it means that `a_exprs' are for `a_class', not for a particular feature.
 			-- `exprs' are the SMTLIB expressions for `a_exprs', `theory' are the support theories.
 		local
-			l_smt_gen: like smtlib_generator
+			l_smt_gen: like solver_expression_generator
 			l_processed: like class_with_prefix_set
 			l_theory: AFX_THEORY
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: like class_with_prefix_set]
@@ -61,7 +55,7 @@ feature -- Basic operations
 			l_generated_exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
 			l_raw_text: STRING
 		do
-			l_smt_gen := smtlib_generator
+			l_smt_gen := solver_expression_generator
 			l_processed := class_with_prefix_set
 			create l_base_prefix.make (a_class, "")
 			create l_generated_exprs.make (20)
@@ -89,6 +83,7 @@ feature -- Basic operations
 			if a_feature /= Void then
 				l_smt_gen.initialize_for_generation
 				l_smt_gen.generate_argument_function (a_feature, a_class)
+				l_smt_gen.generate_local_function (a_feature, a_class)
 				l_smt_gen.last_statements.do_all (agent l_theory.extend)
 			end
 
@@ -114,24 +109,24 @@ feature -- Access
 			create l_theory.make (a_class)
 
 				-- Generate functions.
-			smtlib_generator.initialize_for_generation
-			smtlib_generator.generate_functions (a_class)
-			smtlib_generator.last_statements.do_all (agent l_theory.extend_function_with_string)
+			solver_expression_generator.initialize_for_generation
+			solver_expression_generator.generate_functions (a_class)
+			solver_expression_generator.last_statements.do_all (agent l_theory.extend_function_with_string)
 
 				-- Generate function for "Current".
-			smtlib_generator.initialize_for_generation
-			smtlib_generator.generate_current_function (a_class)
-			smtlib_generator.last_statements.do_all (agent l_theory.extend_function_with_string)
+			solver_expression_generator.initialize_for_generation
+			solver_expression_generator.generate_current_function (a_class)
+			solver_expression_generator.last_statements.do_all (agent l_theory.extend_function_with_string)
 
 				-- Generate class invariant axioms.
-			smtlib_generator.initialize_for_generation
-			smtlib_generator.generate_invariant_axioms (a_class)
-			smtlib_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
+			solver_expression_generator.initialize_for_generation
+			solver_expression_generator.generate_invariant_axioms (a_class)
+			solver_expression_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
 
 				-- Generate postconditions as class invariant axioms.
-			smtlib_generator.initialize_for_generation
-			smtlib_generator.generate_postcondition_as_invariant_axioms (a_class)
-			smtlib_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
+			solver_expression_generator.initialize_for_generation
+			solver_expression_generator.generate_postcondition_as_invariant_axioms (a_class)
+			solver_expression_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
 
 			class_theories.put (l_theory, a_class)
 		ensure
@@ -160,11 +155,11 @@ feature -- Access
 			until
 				l_done
 			loop
-				l_start_index := a_stmt.substring_index (smtlib_prefix_opener, l_end_index + 2)
+				l_start_index := a_stmt.substring_index (expr_prefix_opener, l_end_index + 2)
 				if l_start_index > 0 then
 						-- Separate the prefix section.
 					l_resolved.append (a_stmt.substring (l_end_index + 2, l_start_index - 1))
-					l_end_index := a_stmt.substring_index (smtlib_prefix_closer, l_start_index + 2)
+					l_end_index := a_stmt.substring_index (expr_prefix_closer, l_start_index + 2)
 					check l_end_index > 0 end
 					l_section := a_stmt.substring (l_start_index + 2, l_end_index - 1)
 

@@ -12,6 +12,8 @@ inherit
 
 	TEST_GENERATOR_ROUTINES
 
+	AFX_SHARED_SESSION
+
 create
 	make_with_arguments
 
@@ -60,6 +62,7 @@ feature -- Properties
 			l_build_tc_cmd: EWB_AFX_BUILD_TEST_CASE_CMD
 			l_analyze_tc_cmd: EWB_AFX_ANALYZE_TEST_CASE_CMD
 			l_routines: TEST_SERVICE_ROUTINES
+			l_initializer: AFX_INITIALIZER
 		do
 			create l_routines
 			set_contracts_of_feature_action (agent l_routines.contracts_of_feature)
@@ -67,6 +70,11 @@ feature -- Properties
 			create l_parser.make_with_arguments (autofix_arguments, system)
 			l_parser.parse
 			l_config := l_parser.config
+
+			set_autofix_config (l_config)
+
+			create l_initializer
+			l_initializer.prepare (l_config)
 
 			if l_config.should_retrieve_state then
 				create l_retrieve_state_cmd.make (l_config)

@@ -15,6 +15,15 @@ feature -- Access
 	last_skeleton: detachable AFX_STATE_SKELETON
 			-- Last state simplified by `simplify'
 
+	tautologies (a_skeleton: like last_skeleton): like last_skeleton
+			-- Tautology expressions from `a_skeleton'
+		do
+			create Result.make_with_expressions (
+				a_skeleton.class_,
+				a_skeleton.feature_,
+				solver_launcher.valid_expressions (a_skeleton.linear_representation, a_skeleton.theory))
+		end
+
 feature -- Basic operations
 
 	simplify (a_skeleton: like last_skeleton)
@@ -22,20 +31,19 @@ feature -- Basic operations
 			-- `last_skeleton' is simplified from `a_skeleton' by doing the following:
 			-- Remove all tautologies from `a_skeleton'.
 		local
-			l_kept_exprs: DS_HASH_SET [AFX_EXPRESSION]
-			l_done: BOOLEAN
-			l_implied_expr: detachable AFX_EXPRESSION
 			l_expr_list: LINKED_LIST [AFX_EXPRESSION]
+			l_tautologies: like last_skeleton
 		do
-			create l_kept_exprs.make (a_skeleton.count)
-			l_kept_exprs.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
-
-				-- Remove all tautology expressions.
-			a_skeleton.do_if (agent l_kept_exprs.force_last, agent is_expression_non_tautology (?, a_skeleton))
-
-				-- Construct `last_skeleton'.
+			l_tautologies := tautologies (a_skeleton)
 			create l_expr_list.make
-			l_kept_exprs.do_all (agent l_expr_list.extend)
+
+			a_skeleton.do_if (
+				agent l_expr_list.extend,
+				agent (a_expr: AFX_EXPRESSION; a_tau: AFX_STATE_SKELETON): BOOLEAN
+						do
+							Result := not a_tau.has (a_expr)
+						end (?, l_tautologies))
+
 			create last_skeleton.make_with_expressions (a_skeleton.class_, a_skeleton.feature_, l_expr_list)
 		end
 

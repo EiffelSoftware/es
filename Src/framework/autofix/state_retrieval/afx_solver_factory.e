@@ -29,7 +29,19 @@ feature -- Solver input file generator
 			if is_for_smtlib then
 				Result := smtlib_file_generator
 			else
-				check False end
+				Result := bpl_generator
+			end
+		end
+
+feature -- Solver expression generator
+
+	solver_expression_generator: AFX_SOLVER_EXPRESSION_GENERATOR
+			-- SMTLIB generator
+		do
+			if is_for_smtlib then
+				Result := smtlib_expression_generator
+			else
+				Result := boogie_expression_generator
 			end
 		end
 
@@ -41,7 +53,7 @@ feature -- Solver launcher
 			if is_for_smtlib then
 				Result := z3_launcher
 			else
-				check False end
+				Result := boogie_launcher
 			end
 		end
 
@@ -78,13 +90,13 @@ feature{NONE} -- Implementation
 	is_for_boogie_cell: CELL [BOOLEAN]
 			-- Cell to store value for `is_for_boogie'
 		once
-			create Result.put (False)
+			create Result.put (True)
 		end
 
 	is_for_smtlib_cell: CELL [BOOLEAN]
 			-- Cell to store value for `is_for_smtlib'
 		once
-			create Result.put (True)
+			create Result.put (False)
 		end
 
 	smtlib_file_generator: AFX_SMTLIB_FILE_GENERATOR
@@ -93,10 +105,34 @@ feature{NONE} -- Implementation
 			create Result
 		end
 
+	bpl_generator: AFX_BPL_GENERATOR
+			-- Boogie PL generator
+		once
+			create Result
+		end
+
 	z3_launcher: AFX_SMTLIB_LAUNCHER
 			-- Z3 launcher
 		once
 			create Result
+		end
+
+	boogie_launcher: AFX_BOOGIE_LAUNCHER
+			-- Z3 launcher
+		once
+			create Result
+		end
+
+	smtlib_expression_generator: AFX_SMTLIB_GENERATOR
+			-- SMTLIB generator
+		once
+			create Result.make
+		end
+
+	boogie_expression_generator: AFX_BOOGIE_EXPRESSION_GENERATOR
+			-- Boogie BPL code generator
+		once
+			create Result.make
 		end
 
 end

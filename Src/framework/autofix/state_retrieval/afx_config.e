@@ -50,14 +50,33 @@ feature -- Access
 			end
 		end
 
-
 	output_directory: STRING is
 			-- Directory for output
 		local
 			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.testing_results_path)
-			l_path.extend ("auto_fix")
+			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.fixing_results_path)
+			Result := l_path
+		end
+
+	log_directory: STRING is
+			-- Directory for AutoFix logs
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("log")
+			Result := l_path
+		end
+
+	data_directory: STRING is
+			-- Directory for AutoFix data
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("data")
+			Result := l_path
 		end
 
 feature -- State retrieval related

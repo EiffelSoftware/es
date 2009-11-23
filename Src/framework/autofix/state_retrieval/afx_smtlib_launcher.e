@@ -17,7 +17,7 @@ feature -- Basic operations
 		local
 			l_output: STRING
 		do
-			generate_smtlib_file (a_content)
+			generate_file (a_content)
 			l_output := z3_output
 			l_output.replace_substring_all ("%R", "")
 			l_output.replace_substring_all ("%N", "")
@@ -34,7 +34,7 @@ feature{NONE} -- Implementation
 	z3_command: STRING is "/bin/sh -c %"/home/jasonw/apps/z3/bin/z3.exe /smt: autofix.smt%""
 			-- Command to launch Z3 SMT solver
 
-	generate_smtlib_file (a_content: STRING)
+	generate_file (a_content: STRING)
 			-- Generate SMTLIB file at `smtlib_file_path' containing
 			-- `a_content'.
 		local
