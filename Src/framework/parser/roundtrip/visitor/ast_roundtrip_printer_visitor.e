@@ -204,7 +204,9 @@ feature{NONE} -- Implementation
 		require
 			l_as_in_list: l_as.index >= start_index and then l_as.index <= end_index
 		do
-			context.add_string (l_as.text (match_list))
+			if l_as.is_text_available (match_list) then
+				context.add_string (l_as.text (match_list))
+			end
 		end
 
 invariant
