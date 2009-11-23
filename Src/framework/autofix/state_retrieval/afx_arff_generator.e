@@ -15,32 +15,9 @@ feature{NONE} -- Initialization
 	make
 			-- Initialize.
 		do
---			create file_table.make (5)
---			file_table.compare_objects
 		end
 
-feature -- Access
-
-	on_test_case_start (a_tc: AFX_TEST_CASE_INFO)
-			-- Action to perform when test case `a_tc_info' starts.
-		local
-			l_file_name: STRING
-			l_file_path: FILE_NAME
-		do
---			l_file_name := output_file_name (a_tc, 0)
---			if last_file_name = Void or else not (last_file_name ~ l_file_name) then
---				last_file_name := l_file_name
---				if output_file /= Void and then not output_file.is_closed then
---					output_file.close
---				end
-
---				create l_file_path.make_from_string (output_folder)
---				l_file_path.set_file_name (l_file_name + ".arff")
---				create output_file.make_create_read_write (l_file_path)
---				output_file.open_write
---				put_header (output_file, l_file_name, a_state)
---			end
-		end
+feature -- Actions
 
 	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
@@ -49,6 +26,7 @@ feature -- Access
 			l_file_name: STRING
 			l_file_path: FILE_NAME
 		do
+				-- Decide the file to store `a_state'.
 			l_file_name := output_file_name (a_tc, a_bpslot)
 			if last_file_name = Void or else not (last_file_name ~ l_file_name) then
 				last_file_name := l_file_name
@@ -61,6 +39,7 @@ feature -- Access
 				put_header (output_file, l_file_name, a_state)
 			end
 
+				-- Store data.
 			put_data (output_file, a_bpslot, a_state)
 		end
 
@@ -69,6 +48,8 @@ feature -- Access
 		do
 			close_output_file
 		end
+
+feature{NONE} -- Implementation
 
 	put_data (a_file: PLAIN_TEXT_FILE; a_bpslot: INTEGER; a_state: AFX_STATE)
 			-- Store `a_state' which is retrieved at breakpoint `a_bpslot' in `a_file'.
@@ -164,11 +145,6 @@ feature{NONE} -- Implementation
 	output_folder: STRING = "/home/jasonw/temp/arff"
 			-- Folder to store all generated ARFF files.
 
---	file_table: HASH_TABLE [PLAIN_TEXT_FILE, STRING]
---			-- Table for output files
---			-- Key is the test case info plus the breakpoint slot number.
---			-- Value is the file used to store results.
-
 	output_file_name (a_tc: AFX_TEST_CASE_INFO; a_bpslot: INTEGER): STRING
 			-- Name of the file used to store data retrieved breakpoint `a_bpslot'
 			-- in test case `a_tc'
@@ -188,8 +164,6 @@ feature{NONE} -- Implementation
 			Result.append (a_tc.breakpoint_slot.out)
 			Result.append (once "__TAG_")
 			Result.append (a_tc.tag)
---			Result.append ("__bp_")
---			Result.append (a_bpslot.out)
 		end
 
 end
