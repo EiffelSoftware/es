@@ -66,13 +66,14 @@ feature -- Output
 			Result.set_output_default
 		end
 
-	out (a_caller_: SCOOP_SEPARATE_TYPE): SCOOP_SEPARATE__STRING_8 is -- should it return SEPARATE_STRING?
+	out (a_caller_: SCOOP_SEPARATE_TYPE): STRING_8 -- SCOOP_SEPARATE__STRING_8 is -- should it return SEPARATE_STRING?
 		local
 			a_function_to_evaluate: FUNCTION [ANY, TUPLE, STRING_8]
  		do
-			a_function_to_evaluate := agent implementation_.out
-			scoop_synchronous_execute (a_caller_, a_function_to_evaluate) -- Call the feature with auxiliary arguments.
-			Result ?= a_function_to_evaluate.last_result
+			Result := implementation_.out
+--			a_function_to_evaluate := agent implementation_.out
+--			scoop_synchronous_execute (a_caller_, a_function_to_evaluate) -- Call the feature with auxiliary arguments.
+--			Result ?= a_function_to_evaluate.last_result
 		end
 
 
