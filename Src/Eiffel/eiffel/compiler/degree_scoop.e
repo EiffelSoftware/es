@@ -171,6 +171,7 @@ feature {SYSTEM_I} -- Processing
 			end
 
 			system.any_class.compiled_class.feature_named ("default_create").set_export_status (create {EXPORT_ALL_I})
+--			system.force_rebuild
 
 			if not system.is_explicit_root ("SCOOP_STARTER", "make") then
 				system.add_explicit_root (Void, "SCOOP_STARTER", "make")
@@ -493,8 +494,6 @@ feature {NONE} -- Implementation
 
 			root.set_class_type_name ("SCOOP_STARTER")
 			root.set_feature_name ("make")
-
-
 		end
 
 --	any_class_c : CLASS_C
