@@ -10,15 +10,25 @@ class
 inherit
 	AFX_EXPRESSION
 		redefine
-			type
+			type,
+			is_equal
 		end
 
 	SHARED_EIFFEL_PARSER
+		undefine
+			is_equal
+		end
 
 	AFX_SHARED_EXPR_TYPE_CHECKER
+		undefine
+			is_equal
+		end
 
 	SHARED_SERVER
-
+		undefine
+			is_equal
+		end
+		
 create
 	make,
 	make_with_text,
@@ -107,6 +117,13 @@ feature -- Status report
 			-- Is `ast' of integer type?
 		do
 			Result := is_valid and then type /= Void and then type.is_integer
+		end
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := text ~ other.text
 		end
 
 feature -- Debug output

@@ -178,12 +178,8 @@ feature -- Access
 
 	simplified: like Current
 			-- Simplified version of Current
-		local
-			l_simplifer: AFX_STATE_SKELETON_SIMPLIFIER
 		do
-			create l_simplifer
-			l_simplifer.simplify (Current)
-			Result := l_simplifer.last_skeleton
+			Result := solver_launcher.simplified_skeleton (Current)
 		end
 
 	linear_representation: LINEAR [AFX_EXPRESSION]
@@ -248,12 +244,8 @@ feature -- Access
 			-- If no such subset is found, return Void.
 		require
 			a_predicate_valid: a_predicate.is_predicate
-		local
-			l_simplifier: AFX_STATE_SKELETON_SIMPLIFIER
 		do
-			create l_simplifier
-			l_simplifier.minimize_premises (Current, a_predicate, a_context)
-			Result := l_simplifier.last_skeleton
+			Result := solver_launcher.minimized_premises (Current, a_predicate, a_context)
 		ensure
 			good_result: Result /= Void implies Result.count <= count
 		end
@@ -264,8 +256,7 @@ feature -- Status report
 			-- Does Current implies `other'?
 			-- `theory' in Current and `other' will be used to support the reasoning.
 		do
-			solver_file_generator.generate_for_implied_checking (linear_representation, other.linear_representation, theory + other.theory)
-			Result := solver_launcher.is_unsat (solver_file_generator.last_content)
+			Result := solver_launcher.has_implication (linear_representation, other.linear_representation, theory + other.theory)
 		end
 
 feature -- Element change

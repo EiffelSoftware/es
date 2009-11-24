@@ -5,24 +5,24 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SMTLIB_LAUNCHER
+	AFX_SMTLIB_FACILITY
 
 inherit
-	AFX_SOLVER_LAUNCHER
+	AFX_SOLVER_FACILITY
 
-feature -- Basic operations
+--feature -- Basic operations
 
-	is_unsat (a_content: STRING): BOOLEAN
-			-- Is the SMTLIB content `a_content' unsatisfiable?
-		local
-			l_output: STRING
-		do
-			generate_file (a_content)
-			l_output := z3_output
-			l_output.replace_substring_all ("%R", "")
-			l_output.replace_substring_all ("%N", "")
-			Result := l_output.is_equal ("unsat")
-		end
+--	is_unsat (a_content: STRING): BOOLEAN
+--			-- Is the SMTLIB content `a_content' unsatisfiable?
+--		local
+--			l_output: STRING
+--		do
+--			generate_file (a_content)
+--			l_output := z3_output
+--			l_output.replace_substring_all ("%R", "")
+--			l_output.replace_substring_all ("%N", "")
+--			Result := l_output.is_equal ("unsat")
+--		end
 
 feature{NONE} -- Implementation
 
@@ -70,6 +70,19 @@ feature{NONE} -- Implementation
 			-- Append `a_output' into `output_buffer'.
 		do
 			output_buffer.append (a_output)
+		end
+
+	solver_output (a_content: STRING): STRING
+			-- Output from the solver for input `a_content'
+		do
+		end
+
+	solver_output_for_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, AFX_EXPRESSION]
+			-- Output from the solver for checking `a_expressions' in the context of `a_solver_input'.
+			-- `a_solver_input' is the input fed to the underlying theorem prover.
+			-- Result is a table, key is the expression, value is the solver output for that expression':
+			-- output can be either "verified" or "error".
+		do
 		end
 
 end

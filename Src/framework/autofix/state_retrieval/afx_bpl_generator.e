@@ -10,6 +10,8 @@ class
 inherit
 	AFX_SOLVER_FILE_GENERATOR
 
+	AFX_SOLVER_CONSTANTS
+
 feature -- Access
 
 	implied_expression (a_left: AFX_SOLVER_EXPR; a_right: AFX_SOLVER_EXPR): AFX_SOLVER_EXPR
@@ -75,7 +77,7 @@ feature{NONE} -- Implementation
 			until
 				a_formulae.after
 			loop
-				generate_formula_with_name (a_formulae.item_for_iteration, "afx_formula_" + a_formulae.index.out)
+				generate_formula_with_name (a_formulae.item_for_iteration, boogie_procedure_name_header + a_formulae.index.out)
 				a_formulae.forth
 			end
 		end

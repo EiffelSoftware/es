@@ -19,12 +19,6 @@ inherit
 			is_equal
 		end
 
-	AFX_SMTLIB_LAUNCHER
-		undefine
-			copy,
-			is_equal
-		end
-
 	AFX_SOLVER_FACTORY
 		undefine
 			copy,

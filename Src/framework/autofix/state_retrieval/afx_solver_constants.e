@@ -26,6 +26,15 @@ feature -- Boogie
 	boogie_axiom_header: STRING = "axiom "
 			-- Header for a Boogie axiom
 
+	boogie_procedure_name_header: STRING = "proc.ANY.afx_formula_"
+			-- Header for BPL procedure
+
+	boogie_verified_tag: STRING = "verified"
+			-- String to indicate that a procedure/function is verfied.
+
+	boogie_error_tag: STRING = "error"
+			-- String to indicate that a procedure/function is not verified.
+
 feature -- Access
 
 	solver_function_header: STRING

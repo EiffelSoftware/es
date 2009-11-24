@@ -47,7 +47,7 @@ feature -- Solver expression generator
 
 feature -- Solver launcher
 
-	solver_launcher: AFX_SOLVER_LAUNCHER
+	solver_launcher: AFX_SOLVER_FACILITY
 			-- Z3 launcher
 		do
 			if is_for_smtlib then
@@ -111,13 +111,13 @@ feature{NONE} -- Implementation
 			create Result
 		end
 
-	z3_launcher: AFX_SMTLIB_LAUNCHER
+	z3_launcher: AFX_SMTLIB_FACILITY
 			-- Z3 launcher
 		once
 			create Result
 		end
 
-	boogie_launcher: AFX_BOOGIE_LAUNCHER
+	boogie_launcher: AFX_BOOGIE_FACILITY
 			-- Z3 launcher
 		once
 			create Result
