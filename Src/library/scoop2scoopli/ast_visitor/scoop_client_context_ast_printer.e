@@ -277,7 +277,6 @@ feature {NONE} -- Calls processing
 
 	process_result_as (l_as: RESULT_AS)
 		do
-			-- process node
 			Precursor (l_as)
 			update_current_level_with_call (l_as)
 		end
@@ -302,8 +301,6 @@ feature {NONE} -- Calls processing
 			-- decrease current nested level
 			remove_current_level
 		end
-
-
 
 feature {NONE} -- Expressions processing
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)

@@ -11,7 +11,7 @@ inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
 		redefine
 			process_body_as,
-			process_access_feat_as,
+			-- process_access_feat_as,
 			process_precursor_as,
 			process_ensure_as,
 			process_routine_as
@@ -77,7 +77,12 @@ feature {NONE} -- Node implementation
 				-- process 'l_as'
 			safe_process (l_as.obsolete_keyword (match_list))
 			safe_process (l_as.obsolete_message)
-			safe_process (l_as.precondition)
+			-- TODO: remove comment: we do not need to process the precondition as it is already checked by means of the locking requestor and the wait condition wrapper.
+			-- safe_process (l_as.precondition)
+			if l_as.precondition /= Void then
+				last_index := l_as.precondition.last_token (match_list).index
+			end
+
 			safe_process (l_as.internal_locals)
 			safe_process (l_as.routine_body)
 			safe_process (l_as.postcondition)
@@ -90,32 +95,32 @@ feature {NONE} -- Node implementation
 			safe_process (l_as.end_keyword)
 		end
 
-	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
-		local
-			is_print_without_caller: BOOLEAN
-		do
-			safe_process (l_as.feature_name)
+--	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
+--		local
+--			is_print_without_caller: BOOLEAN
+--		do
+--			safe_process (l_as.feature_name)
 
-			-- if processing preconditions append ".implementation_" if the target is separate.
-			if class_c.feature_table.has (l_as.feature_name.name.as_lower) then
-					if class_c.feature_table.item (l_as.feature_name.name.as_lower).type.is_separate then
-						context.add_string (".implementation_")
-						is_print_without_caller := true
-					end
-			elseif fo.arguments.is_separate_argument(l_as.feature_name.name.as_lower) then
-				-- current argument list contains actual feature name with separate type
-				context.add_string (".implementation_")
-				is_print_without_caller := true
-			end
+--			-- if processing preconditions append ".implementation_" if the target is separate.
+--			if class_c.feature_table.has (l_as.feature_name.name.as_lower) then
+--					if class_c.feature_table.item (l_as.feature_name.name.as_lower).type.is_separate then
+--						context.add_string (".implementation_")
+--						is_print_without_caller := true
+--					end
+--			elseif fo.arguments.is_separate_argument(l_as.feature_name.name.as_lower) then
+--				-- current argument list contains actual feature name with separate type
+--				context.add_string (".implementation_")
+--				is_print_without_caller := true
+--			end
 
-			-- process internal parameters and add current if target is of separate type.
-			process_internal_parameters(l_as.internal_parameters)
+--			-- process internal parameters and add current if target is of separate type.
+--			process_internal_parameters(l_as.internal_parameters)
 
-			update_current_level_with_call (l_as)
-			if is_print_without_caller then
-				set_current_level_is_separate(false)
-			end
-		end
+--			update_current_level_with_call (l_as)
+--			if is_print_without_caller then
+--				set_current_level_is_separate(false)
+--			end
+--		end
 
 	process_precursor_as (l_as: PRECURSOR_AS) is
 		local
@@ -144,6 +149,7 @@ feature {NONE} -- Node implementation
 				last_index := l_as.internal_parameters.start_position - 1
 			end
 
+			update_current_level_with_call (l_as)
 			process_internal_parameters(l_as.internal_parameters)
 			last_index := l_as.end_position
 		end

@@ -13,7 +13,10 @@ inherit
 			make,
 			process_body_as,
 			process_tagged_as,
-			process_access_feat_as
+			process_access_feat_as,
+			process_access_assert_as,
+			process_static_access_as,
+			process_result_as
 		end
 
 create
@@ -25,9 +28,6 @@ feature -- Initialisation
 			-- Initialise and reset flags
 		do
 			Precursor (a_ctxt)
-
-			-- Reset some values
-			is_print_with_processor_postfix := false
 		end
 
 feature -- Access
@@ -92,9 +92,7 @@ feature {NONE} -- Node implementation
 					i > fo.preconditions.wait_conditions.count
 				loop
 					context.add_string ("%N%T%T%T%Tand then (")
-					is_print_with_processor_postfix := true
 					safe_process (fo.preconditions.wait_conditions.i_th (i).get_tagged_as)
-					is_print_with_processor_postfix := false
 					context.add_string (")")
 					i := i + 1
 				end
@@ -111,28 +109,63 @@ feature {NONE} -- Node implementation
 			safe_process (l_as.expr)
 		end
 
+feature {NONE}
 	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
 		do
 			safe_process (l_as.feature_name)
 
-			-- if processing preconditions append ".implementation_" if the target is separate.
-			if class_c.feature_table.has (l_as.feature_name.name.as_lower) then
-					if class_c.feature_table.item (l_as.feature_name.name.as_lower).type.is_separate then
-						context.add_string (".implementation_")
-					end
-			elseif fo.arguments.is_separate_argument(l_as.feature_name.name.as_lower) then
-				-- current argument list contains actual feature name with separate type
+			update_current_level_with_call (l_as)
+
+			if current_level.type.is_separate then
 				context.add_string (".implementation_")
+				set_current_level_is_separate (false)
 			end
 
-			safe_process (l_as.internal_parameters)
+			process_internal_parameters(l_as.internal_parameters)
+		end
+
+	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
+		do
+			safe_process (l_as.feature_name)
+
+			update_current_level_with_call (l_as)
+
+			if current_level.type.is_separate then
+				context.add_string (".implementation_")
+				set_current_level_is_separate (false)
+			end
+
+			process_internal_parameters(l_as.internal_parameters)
+		end
+
+	process_static_access_as (l_as: STATIC_ACCESS_AS)
+		do
+			safe_process (l_as.feature_keyword (match_list))
+			safe_process (l_as.class_type)
+			safe_process (l_as.dot_symbol (match_list))
+			safe_process (l_as.feature_name)
+
+			update_current_level_with_call (l_as)
+
+			if current_level.type.is_separate then
+				context.add_string (".implementation_")
+				set_current_level_is_separate (false)
+			end
+
+			-- process internal parameters and add current if target is of separate type.
+			process_internal_parameters(l_as.internal_parameters)
+		end
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			Precursor (l_as)
+			if current_level.type.is_separate then
+				context.add_string (".implementation_")
+				set_current_level_is_separate (false)
+			end
 		end
 
 feature {NONE} -- Implementation
-
-	is_print_with_processor_postfix: BOOLEAN
-		-- indicates that a postfix '.processor' is added to an id_as element
-
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
 		-- feature object of current processed feature.
 
