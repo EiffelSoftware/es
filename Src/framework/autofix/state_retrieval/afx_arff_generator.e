@@ -12,10 +12,17 @@ create
 
 feature{NONE} -- Initialization
 
-	make
+	make (a_config: like config)
 			-- Initialize.
 		do
+			config := a_config
+			last_file_name := Void
 		end
+
+feature -- Access
+
+	config: AFX_CONFIG
+			-- AutoFix configuration
 
 feature -- Actions
 
@@ -57,6 +64,7 @@ feature{NONE} -- Implementation
 			l_value: AFX_EXPRESSION_VALUE
 			i: INTEGER
 			l_count: INTEGER
+			l_value_ignored: BOOLEAN
 		do
 			a_file.put_integer (a_bpslot)
 			if not a_state.is_empty then
@@ -68,23 +76,21 @@ feature{NONE} -- Implementation
 				until
 					a_state.after
 				loop
+					l_value_ignored := False
 					l_value := a_state.item_for_iteration.value
-					if l_value.is_boolean then
+					if l_value.is_boolean or l_value.is_integer then
 						a_file.put_string (l_value.out)
-						if i < l_count then
-							a_file.put_character (',')
-						end
-
 					elseif l_value.is_nonsensical then
 						a_file.put_character ('?')
+					else
+						l_value_ignored := True
+						check False end
+					end
+
+					if (not l_value_ignored) and then i < l_count then
 						if i < l_count then
 							a_file.put_character (',')
 						end
-
-					elseif l_value.is_integer then
-
-					else
-						check False end
 					end
 					i := i + 1
 					a_state.forth
@@ -108,19 +114,17 @@ feature{NONE} -- Implementation
 				a_state.after
 			loop
 				l_expr := a_state.item_for_iteration.expression
+				a_file.put_string ("@ATTRIBUTE%T")
+				a_file.put_string (l_expr.text)
+				a_file.put_string ("%T")
 				if l_expr.type.is_boolean then
-					a_file.put_string ("@ATTRIBUTE%T")
-					a_file.put_string (l_expr.text)
-					a_file.put_string ("%T")
-					if l_expr.type.is_boolean then
-						a_file.put_string ("{True,False}")
-	--				elseif l_expr.type.is_integer then
-	--					a_file.put_string ("NUMERIC")
-					else
-						check False end
-					end
-					a_file.put_string ("%N")
+					a_file.put_string ("{True,False}")
+				elseif l_expr.type.is_integer then
+					a_file.put_string ("NUMERIC")
+				else
+					check False end
 				end
+				a_file.put_string ("%N")
 				a_state.forth
 			end
 			a_file.put_string ("@DATA%N")
@@ -142,8 +146,11 @@ feature{NONE} -- Implementation
 	output_file: detachable PLAIN_TEXT_FILE
 			-- File used to store output
 
-	output_folder: STRING = "/home/jasonw/temp/arff"
+	output_folder: STRING
 			-- Folder to store all generated ARFF files.
+		do
+			Result := config.data_directory
+		end
 
 	output_file_name (a_tc: AFX_TEST_CASE_INFO; a_bpslot: INTEGER): STRING
 			-- Name of the file used to store data retrieved breakpoint `a_bpslot'

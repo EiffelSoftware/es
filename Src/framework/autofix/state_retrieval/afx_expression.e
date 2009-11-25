@@ -99,6 +99,62 @@ feature -- Access
 			value_is_random: Result.value.is_random
 		end
 
+feature --Logic operations
+
+	anded alias "and" (other: like Current): like Current
+			-- Anded expression with `other': Current and other
+		require
+			current_is_predicate: is_predicate
+			other_is_predicate: other.is_predicate
+			same_context: has_same_context (other)
+		do
+			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") and (" + other.text + ")", written_class)
+		ensure
+			same_context: has_same_context (Result)
+			text_correct: Result.text ~ "(" + text + ") and (" + other.text + ")"
+			result_is_predicate: Result.is_predicate
+		end
+
+	ored alias "or" (other: like Current): like Current
+			-- Ored expression with `other': Current or other
+		require
+			current_is_predicate: is_predicate
+			other_is_predicate: other.is_predicate
+			same_context: has_same_context (other)
+		do
+			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") or (" + other.text + ")", written_class)
+		ensure
+			same_context: has_same_context (Result)
+			text_correct: Result.text ~ "(" + text + ") or (" + other.text + ")"
+			result_is_predicate: Result.is_predicate
+		end
+
+	negated alias "not": like Current
+			-- Negation: not Current
+		require
+			current_is_predicate: is_predicate
+		do
+			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "not (" + text + ")", written_class)
+		ensure
+			same_context: has_same_context (Result)
+			text_correct: Result.text ~ "not (" + text + ")"
+			result_is_predicate: Result.is_predicate
+		end
+
+	implication alias "implies" (other: like Current): like Current
+			-- Implication expression with `other': Current implies other
+		require
+			current_is_predicate: is_predicate
+			other_is_predicate: other.is_predicate
+			same_context: has_same_context (other)
+		do
+			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") implies (" + other.text + ")", written_class)
+		ensure
+			same_context: has_same_context (Result)
+			text_correct: Result.text ~ "(" + text + ") implies (" + other.text + ")"
+			result_is_predicate: Result.is_predicate
+		end
+
 feature -- Status report
 
 	is_valid: BOOLEAN
@@ -114,6 +170,20 @@ feature -- Status report
 			Result := type.is_boolean
 		ensure
 			good_result: Result = type.is_boolean
+		end
+
+	has_same_context (other: like Current): BOOLEAN
+			-- Does `other' have the same context as Current?
+		do
+			Result := class_.class_id = other.class_.class_id
+			if Result then
+				Result :=
+					(feature_ = Void implies other.feature_ = Void) and
+					(feature_ /= Void implies other.feature_ /= Void)
+				if Result and then feature_ /= Void then
+					Result := feature_.equiv (other.feature_)
+				end
+			end
 		end
 
 feature -- Setting

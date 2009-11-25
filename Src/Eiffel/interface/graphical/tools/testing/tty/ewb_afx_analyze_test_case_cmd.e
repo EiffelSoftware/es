@@ -63,16 +63,23 @@ feature -- Basic operations
 
 	execute
 			-- Execute.
-		local
-			l_arff_gen: AFX_ARFF_GENERATOR
 		do
-			create l_arff_gen.make
-			test_case_breakpoint_hit_actions.extend (agent l_arff_gen.on_test_case_breakpoint_hit)
-			application_exited_actions.extend (agent l_arff_gen.on_application_exited)
-			debug_project
+				-- Setup ARFF file generation.
+			if config.is_arff_generation_enabled then
+				create arff_generator.make (config)
+				test_case_breakpoint_hit_actions.extend (agent arff_generator.on_test_case_breakpoint_hit)
+				application_exited_actions.extend (agent arff_generator.on_application_exited)
+			end
+
+				-- Start test case analysis
+			analyze_test_cases
 		end
 
 feature{NONE} -- Access
+
+	arff_generator: detachable AFX_ARFF_GENERATOR
+			-- Generator for ARFF file,
+			-- ARFF file is used for Weka tool
 
 	current_test_case_breakpoint_manager: detachable AFX_BREAKPOINT_MANAGER
 			-- Breakpoint manager for current test case
@@ -167,6 +174,12 @@ feature{NONE} -- Implementation
 			-- Remove user break points in `a_class'.
 		do
 			debugger_manager.breakpoints_manager.remove_user_breakpoints_in_class (a_class)
+		end
+
+	analyze_test_cases
+			-- Analyze test cases.
+		do
+			debug_project
 		end
 
 feature{NONE} -- Constants

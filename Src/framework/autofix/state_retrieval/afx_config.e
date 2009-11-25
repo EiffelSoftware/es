@@ -141,6 +141,11 @@ feature -- Test case analysis
 			-- Max number of test cases
 			-- Default: 0
 
+	is_arff_generation_enabled: BOOLEAN
+			-- Should ARFF file be generated during test case analysis?
+			-- ARFF is used by the Weka machine learning tool.
+			-- Default: False
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN
@@ -214,6 +219,14 @@ feature -- Setting
 			should_analyze_test_cases := b
 		ensure
 			should_analyze_test_case_set: should_analyze_test_cases = b
+		end
+
+	set_is_arff_generation_enabled (b: BOOLEAN)
+			-- Set `is_arff_generation_enabled' with `b'.
+		do
+			is_arff_generation_enabled := b
+		ensure
+			is_arff_generation_enabled_set: is_arff_generation_enabled = b
 		end
 
 feature{NONE} -- Implementation
