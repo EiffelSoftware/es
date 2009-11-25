@@ -23,8 +23,6 @@ feature{NONE} -- Initialization
 
 	make (a_config: AFX_CONFIG)
 			-- Initialize Current.
-		require
-			analyze_test_case_set: a_config.should_build_test_cases
 		do
 			config := a_config
 
