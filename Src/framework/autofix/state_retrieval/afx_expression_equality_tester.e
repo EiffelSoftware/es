@@ -26,7 +26,7 @@ feature -- Status report
 			else
 					-- Case sensitive comparison is used here,
 					-- although insensitive comparion also suffice.
-				Result := v.text ~ u.text
+				Result := v ~ u
 			end
 		end
 

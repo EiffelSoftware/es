@@ -59,8 +59,8 @@ feature -- Properties
 			l_parser: AFX_COMMAND_LINE_PARSER
 			l_config: AFX_CONFIG
 			l_retrieve_state_cmd: EWB_AUTO_FIX_RETRIEVE_STATE
-			l_build_tc_cmd: EWB_AFX_BUILD_TEST_CASE_CMD
-			l_analyze_tc_cmd: EWB_AFX_ANALYZE_TEST_CASE_CMD
+			l_build_tc_cmd: AFX_TEST_CASE_APP_BUILDER
+			l_analyze_tc_cmd: AFX_TEST_CASE_APP_ANALYZER
 			l_routines: TEST_SERVICE_ROUTINES
 			l_initializer: AFX_INITIALIZER
 		do

@@ -14,6 +14,12 @@ inherit
 			out
 		end
 
+	AFX_UTILITY
+		undefine
+			is_equal,
+			out
+		end
+
 create
 	make,
 	make_with_string
@@ -54,6 +60,22 @@ feature -- Access
 	recipient: STRING
 			-- Name of the recipient in case of a failed test case.
 			-- In a passing test case, same as `feature_under_test'.
+
+	recipient_class_: CLASS_C
+			-- Class for `recipient_class'
+		do
+			Result := first_class_starts_with_name (recipient_class)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	recipient_feature_: FEATURE_I
+			-- Feature for `recipient'
+		do
+			Result := recipient_class_.feature_named (recipient)
+		ensure
+			result_attached: Result /= Void
+		end
 
 	breakpoint_slot: INTEGER
 			-- Breakpoint slot of the exception in case of a failed test case.

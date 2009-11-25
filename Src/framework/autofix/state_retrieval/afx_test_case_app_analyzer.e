@@ -5,23 +5,14 @@ note
 	revision: "$Revision$"
 
 class
-	EWB_AFX_ANALYZE_TEST_CASE_CMD
+	AFX_TEST_CASE_APP_ANALYZER
 
 inherit
 	SHARED_WORKBENCH
 
-	SHARED_EXEC_ENVIRONMENT
-	SHARED_EIFFEL_PROJECT
-	PROJECT_CONTEXT
-	SYSTEM_CONSTANTS
-
 	SHARED_DEBUGGER_MANAGER
 
-	SHARED_BENCH_NAMES
-
 	AFX_SHARED_CLASS_THEORY
-
-	AUT_SHARED_RANDOM
 
 create
 	make
@@ -206,6 +197,7 @@ feature{NONE} -- Actions
 			l_skeleton: AFX_STATE_SKELETON
 			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
 			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
+			l_state_generator: AFX_RELEVANT_STATE_EXPRESSION_GENERATOR
 		do
 			l_table := a_state.to_hash_table
 			l_recipient_class := first_class_starts_with_name (l_table.item (expr_a_recipient_class).out)

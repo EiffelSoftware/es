@@ -44,6 +44,12 @@ inherit
 			copy
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			is_equal,
+			copy
+		end
+
 create
 	make_with_basic_argumentless_query,
 	make_with_accesses,
@@ -257,6 +263,20 @@ feature -- Status report
 			-- `theory' in Current and `other' will be used to support the reasoning.
 		do
 			Result := solver_launcher.has_implication (linear_representation, other.linear_representation, theory + other.theory)
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (1024)
+			do_all (
+				agent (a_item: like item; a_str: STRING)
+					do
+						a_str.append (a_item.text)
+						a_str.append_character ('%N')
+					end (?, Result))
 		end
 
 feature -- Element change

@@ -1955,6 +1955,7 @@ Src/Eiffel/doc/debugging/debugger_files/image002.gif -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/rt_exception_manager.cs -text
+Src/Eiffel/interface/graphical/tools/testing/tty/ewb_auto_fix_retrieve_state.e.orig -text
 Src/Eiffel/interface/shared/buffer/command_scanner.l -text
 Src/README.txt -text
 Src/build/build.ico -text
