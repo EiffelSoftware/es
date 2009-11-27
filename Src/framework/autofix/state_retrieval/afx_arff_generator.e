@@ -33,16 +33,9 @@ feature -- Actions
 			l_file_name: STRING
 			l_file_path: FILE_NAME
 			l_tbl: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
-			l_spot: AFX_EXCEPTION_SPOT
-			l_finder: AFX_IMPLICATION_FINDER
-			l_gen: AFX_IMPLICATION_GENERATOR
 		do
-			create l_spot.make_with_test_case_info (a_tc)
 			create l_tbl.make (1000)
 			l_tbl.compare_objects
-
---			create l_gen.make
---			l_gen.generate (l_spot, l_tbl)
 
 				-- Decide the file to store `a_state'.
 			l_file_name := output_file_name (a_tc, a_bpslot)

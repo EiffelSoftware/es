@@ -26,6 +26,8 @@ feature{NONE} -- Initialization
 			create test_case_start_actions
 			create test_case_breakpoint_hit_actions
 			create application_exited_actions
+			create state_models.make (5)
+			state_models.compare_objects
 		ensure
 			config_set: config = a_config
 		end
@@ -58,6 +60,11 @@ feature -- Basic operations
 				create arff_generator.make (config)
 				test_case_breakpoint_hit_actions.extend (agent arff_generator.on_test_case_breakpoint_hit)
 				application_exited_actions.extend (agent arff_generator.on_application_exited)
+			end
+
+			debug
+				 -- Output retrieved state.
+				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
 			end
 
 				-- Start test case analysis
@@ -183,7 +190,7 @@ feature{NONE} -- Constants
 
 feature{NONE} -- Actions
 
-	on_new_test_case_found (a_breakpoint: BREAKPOINT; a_state: AFX_STATE)
+	on_new_test_case_found (a_breakpoint: BREAKPOINT; a_test_case_info: AFX_STATE)
 			-- Action to be performed when `a_breakpoint' is hit
 		local
 			l_recipient_class: CLASS_C
@@ -192,12 +199,12 @@ feature{NONE} -- Actions
 			l_bpslot: INTEGER
 			l_tag: STRING
 			l_passing: BOOLEAN
-			l_skeleton: AFX_STATE_SKELETON
-			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
 			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
-			l_state_generator: AFX_RELEVANT_STATE_EXPRESSION_GENERATOR
+			l_recipient_id: STRING
+			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
+			l_spot: AFX_EXCEPTION_SPOT
 		do
-			l_table := a_state.to_hash_table
+			l_table := a_test_case_info.to_hash_table
 			l_recipient_class := first_class_starts_with_name (l_table.item (expr_a_recipient_class).out)
 			l_recipient := l_recipient_class.feature_named (l_table.item (expr_a_recipient).out)
 			l_exception_code := l_table.item (expr_a_exception_code).out.to_integer
@@ -206,6 +213,16 @@ feature{NONE} -- Actions
 			l_passing := l_table.item (expr_a_passing).out.to_boolean
 
 			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing)
+
+				-- Generate state model for current test case.
+			l_recipient_id := l_recipient_class.name + "." + l_recipient.feature_name
+			if not state_models.has (l_recipient_id) then
+				create l_spot_analyzer
+				l_spot_analyzer.analyze (current_test_case_info, debugger_manager, a_breakpoint)
+				state_models.put (l_spot_analyzer.last_spot, l_recipient_id)
+			end
+			l_spot := state_models.item (l_recipient_id)
+
 			test_case_start_actions.call ([current_test_case_info])
 
 				-- Dispose breakpoint manager for the last test case.
@@ -214,14 +231,9 @@ feature{NONE} -- Actions
 				remove_breakpoint (current_test_case_breakpoint_manager.class_)
 			end
 
-				-- Setup breakpoint manager for the next test case.
-			create l_gen.make
-			l_gen.generate (l_recipient_class, l_recipient)
-			create l_skeleton.make_with_accesses (l_recipient_class, l_recipient, l_gen.accesses)
 			create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
-
-			current_test_case_breakpoint_manager.set_hit_action_with_agent (l_skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
-			current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_skeleton, l_recipient)
+			current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
+			current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
 			current_test_case_breakpoint_manager.toggle_breakpoints (True)
 		end
 
@@ -249,6 +261,51 @@ feature{NONE} -- Actions
 			-- Action to be performed when application exited.
 		do
 			application_exited_actions.call (Void)
+		end
+
+feature{NONE} -- Implication
+
+	state_models: HASH_TABLE [AFX_EXCEPTION_SPOT, STRING]
+			-- Set of state models that are already met
+			-- Keys are state identifier in the form of "RECIPIENT_CLASS.recipient"
+			-- Values are the models.
+
+	on_test_case_breakpoint_hit_print_state (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
+			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
+			-- `a_state' is the set of expressions with their evaluated values.
+		local
+			l_sorter: DS_QUICK_SORTER [AFX_EQUATION]
+			l_equations: DS_ARRAYED_LIST [AFX_EQUATION]
+		do
+			create l_equations.make (a_state.count)
+			a_state.do_all (agent l_equations.force_last)
+
+			create l_sorter.make (equation_tester)
+			l_sorter.sort (l_equations)
+
+			check current_test_case_info /= Void end
+			io.put_string ("------------------------------------------------------%N")
+			
+			if current_test_case_info.id /= Void then
+				io.put_string (current_test_case_info.id + " ")
+			end
+			io.put_string (a_tc.recipient_class + "." + a_tc.recipient + "@" + a_bpslot.out + "%N")
+			l_equations.do_all (
+				agent (a_equation: AFX_EQUATION)
+					do
+						io.put_string (a_equation.debug_output + "%N")
+					end)
+
+			io.put_string ("%N")
+		end
+
+	equation_tester: AGENT_BASED_EQUALITY_TESTER [AFX_EQUATION] is
+			-- Tester to decide the order of two equations.
+		do
+			create Result.make (agent (a, b: AFX_EQUATION): BOOLEAN
+				do
+					Result := a.expression.text < b.expression.text
+				end)
 		end
 
 note

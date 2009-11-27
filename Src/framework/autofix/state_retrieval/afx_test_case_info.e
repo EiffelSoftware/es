@@ -30,6 +30,8 @@ feature{NONE} -- Initialization
 			-- Initialize Current with a test case name `a_tc_name'.
 		do
 			initialize (a_tc_name)
+		ensure
+			id_attached: id /= Void
 		end
 
 	make (a_class_under_test: STRING; a_feature_under_test: STRING; a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN)
@@ -43,6 +45,9 @@ feature{NONE} -- Initialization
 			breakpoint_slot := a_bpslot
 			tag := a_tag.twin
 			is_passing := a_passing
+			initialize_id
+		ensure
+			id_attached: id /= Void
 		end
 
 feature -- Access
@@ -239,7 +244,12 @@ feature{NONE} -- Implementation
 				l_parts.forth
 
 			end
+			initialize_id
+		end
 
+	initialize_id
+			-- Initialize `id'.
+		do
 			create id.make (128)
 			id.append (recipient_class)
 			id.append_character ('.')

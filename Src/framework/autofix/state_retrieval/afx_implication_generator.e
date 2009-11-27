@@ -16,33 +16,25 @@ inherit
 
 feature -- Generation
 
-	generate (a_spot: AFX_EXCEPTION_SPOT; a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION])
+	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION])
 			-- <Precursor>
 		local
 			l_implications: DS_HASH_SET [AFX_IMPLICATION_EXPR]
-			l_rank: AFX_EXPR_RANK
-			l_expr: AFX_EXPRESSION
+			l_exprs: DS_HASH_SET [AFX_EXPRESSION]
 		do
 				-- Find implications from source code.
 			l_implications := possible_implications (a_spot.recipient_class_, atomic_predicates (a_spot.recipient_class_, a_spot.recipient_))
+			create l_exprs.make (l_implications.count)
+			l_exprs.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
 
-				-- Insert found implications into `a_expression'.
-			from
-				l_implications.start
-			until
-				l_implications.after
-			loop
-				create l_rank.make ({AFX_EXPR_RANK}.rank_implication)
-				l_expr := l_implications.item_for_iteration.as_expression
-				if a_expressions.has (l_expr) then
-					if a_expressions.item (l_expr) < l_rank then
-						a_expressions.replace (l_rank, l_expr)
-					end
-				else
-					a_expressions.put (l_rank, l_expr)
-				end
-				l_implications.forth
-			end
+			l_implications.do_all (
+				agent (a_imp: AFX_IMPLICATION_EXPR; a_store: DS_HASH_SET [AFX_EXPRESSION])
+					do
+						a_store.force_last (a_imp.as_expression)
+					end (?, l_exprs))
+
+			update_expressions_with_ranking (a_expressions, l_exprs, {AFX_EXPR_RANK}.rank_implication)
+
 		end
 
 feature{NONE} -- Implementation
@@ -266,14 +258,6 @@ feature{NONE} -- Implementation
 		ensure
 			good_result: Result.count = 4
 		end
-
---	implications_in_normal_form: HASH_TABLE [AFX_IMPLICATION_EXPR, AFX_IMPLICATION_EXPR]
---			-- Implicaitons in normal form
---			-- Key and value are the same.
-
---	implications: LINKED_LIST [AFX_IMPLICATION_EXPR]
---			-- Implications that are constructed
---			-- Element order is important
 
 	atomic_predicates (a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
 			-- List of predicates that are used as atomic terms

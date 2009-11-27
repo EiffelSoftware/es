@@ -9,8 +9,14 @@ class
 
 inherit
 	HASHABLE
+		undefine
+			out
+		end
 
 	DEBUG_OUTPUT
+		redefine
+			out
+		end
 
 create
 	make
@@ -78,7 +84,7 @@ feature -- Access
 
 feature -- Status report
 
-	debug_output: STRING
+	out, debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
 			create Result.make (64)

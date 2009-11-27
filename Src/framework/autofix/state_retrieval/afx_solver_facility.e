@@ -350,7 +350,7 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
-	max_proof_obligation_per_file: INTEGER = 100
+	max_proof_obligation_per_file: INTEGER = 80
 			-- The maximum number of proof obligations
 			-- in a Boogie file.
 			-- This is introduced because if there are too many obligations
