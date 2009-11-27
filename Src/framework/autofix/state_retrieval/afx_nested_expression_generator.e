@@ -76,7 +76,7 @@ feature -- Basic operations
 			final_expression_veto_agent_set: final_expression_veto_agent = a_agent
 		end
 
-	generate (a_class: CLASS_C; a_feature: detachable FEATURE_I)
+	generate (a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Generate accesses for `a_feature' in `a_class' and
 			-- store results in `accesses'.
 		local
@@ -86,6 +86,7 @@ feature -- Basic operations
 			l_veto: FUNCTION [ANY, TUPLE [AFX_ACCESS], BOOLEAN]
 			l_accesses: like accesses
 		do
+			fixme ("a_feature needs to be attached now, but is not necessary. 27.11.2009 Jasonw")
 			context_class := a_class
 			context_feature := a_feature
 
@@ -247,7 +248,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	initial_accesses (a_class: CLASS_C; a_feature: FEATURE_I): like accesses
+	initial_accesses (a_class: CLASS_C; a_feature: detachable FEATURE_I): like accesses
 			-- Initial accesses including possibly Current, Result, locals, arguments.
 		local
 			l_new: ARRAYED_LIST [AFX_ACCESS]
@@ -259,6 +260,7 @@ feature{NONE} -- Implementation
 		do
 				-- Setup the initial accesses.
 			create l_new.make (initial_capacity)
+
 			l_new.extend (create {AFX_ACCESS_CURRENT}.make (a_class, a_feature, a_feature.written_class))
 			if not a_feature.type.is_void then
 				l_new.extend (create {AFX_ACCESS_RESULT}.make (a_class, a_feature, a_feature.written_class))

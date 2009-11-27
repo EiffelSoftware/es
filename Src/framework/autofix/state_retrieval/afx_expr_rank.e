@@ -41,7 +41,11 @@ feature -- Constants
 	rank_basic: INTEGER is 1000
 			-- Basic ranking value, used as the default value
 			-- for argumentless boolean queires
-	
+
+	rank_implication: INTEGER is 100
+			-- Ranking for implications that are found in source code
+			-- as well as their mutations
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

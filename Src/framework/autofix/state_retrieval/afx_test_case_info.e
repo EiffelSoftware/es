@@ -69,7 +69,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	recipient_feature_: FEATURE_I
+	recipient_: FEATURE_I
 			-- Feature for `recipient'
 		do
 			Result := recipient_class_.feature_named (recipient)

@@ -103,10 +103,10 @@ feature{NONE} -- Initialization
 			a_accesses.go_to (l_cursor)
 		end
 
-	make_with_expressions (a_class: like class_; a_feature: like feature_; a_expressions: LIST [AFX_EXPRESSION])
+	make_with_expressions (a_class: like class_; a_feature: like feature_; a_expressions: LINEAR [AFX_EXPRESSION])
 			-- Initialize current with `a_expressions'.
 		do
-			make_basic (a_class, a_feature, a_expressions.count)
+			make_basic (a_class, a_feature, 20)
 			a_expressions.do_all (agent force_last)
 		end
 

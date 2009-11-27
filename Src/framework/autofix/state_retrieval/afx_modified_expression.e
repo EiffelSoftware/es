@@ -24,6 +24,11 @@ feature{NONE} -- Initialization
 		do
 			original_expression := a_expr
 			is_negated := a_negated
+			if is_negated then
+				text := "not (" + a_expr.text + ")"
+			else
+				text := a_expr.text.twin
+			end
 		ensure
 			original_expression_set: original_expression = a_expr
 			is_negated_set: is_negated = a_negated
@@ -41,11 +46,25 @@ feature -- Access
 			end
 		end
 
+	original_expression: AFX_EXPRESSION
+			-- The original expression
+
+	negated alias "not": like Current
+			-- Negation: not Current
+		do
+			create Result.make (original_expression, not is_negated)
+		ensure
+			good_result: Current ~ not Result
+		end
+
+	text: STRING
+			-- Text of current expression
+
 feature -- Status report
 
 	is_negated: BOOLEAN
 			-- Does current expression start with
-			-- a negation?
+			-- a negation?			
 
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
@@ -53,10 +72,16 @@ feature -- Status report
 		do
 			Result :=
 				is_negated = other.is_negated and then
-				Current ~ other
+				Current.original_expression ~ other.original_expression
 		end
 
-feature -- Setting
+	has_same_context (other: like Current): BOOLEAN
+			-- Does `other' have the same context as Current?
+		do
+			Result := original_expression.has_same_context (other.original_expression)
+		end
+
+feature{NONE} -- Setting
 
 	set_is_negated (b: BOOLEAN)
 			-- Set `is_negated' with `b'.
@@ -65,12 +90,6 @@ feature -- Setting
 		ensure
 			is_negated_set: is_negated = b
 		end
-
-feature{NONE} -- Implementation
-
-	original_expression: AFX_EXPRESSION
-			-- The original expression
-
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

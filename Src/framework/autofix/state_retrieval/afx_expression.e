@@ -21,7 +21,7 @@ inherit
 feature -- Access
 
 	feature_: FEATURE_I
-			-- Feature returning the integer
+			-- Feature returning to which current expression belongs
 
 	class_: CLASS_C
 			-- Context lass of `feature_'

@@ -74,7 +74,37 @@ feature -- Access
 				valid_expressions (a_skeleton.linear_representation, a_skeleton.theory))
 		end
 
-	valid_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LIST [AFX_EXPRESSION]
+	expression_validity (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [BOOLEAN]
+			-- Validity status of `a_expressions' in the context of `a_theory'.
+			-- Result is a list of status, True means the corresponding expression in `a_expressions'
+			-- is valid, otherwise, is not valid.
+		local
+			i: INTEGER
+			l_temp_exprs: LINKED_LIST [AFX_EXPRESSION]
+		do
+			create l_temp_exprs.make
+			create Result.make
+			from
+				i := 1
+				a_expressions.start
+			until
+				a_expressions.after
+			loop
+				l_temp_exprs.extend (a_expressions.item_for_iteration)
+				if i \\ max_proof_obligation_per_file = 0 then
+					Result.append (expression_validity_internal (l_temp_exprs, a_theory))
+					l_temp_exprs.wipe_out
+				end
+				i := i + 1
+				a_expressions.forth
+			end
+
+			if not l_temp_exprs.is_empty then
+				Result.append (expression_validity_internal (l_temp_exprs, a_theory))
+			end
+		end
+
+	valid_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [AFX_EXPRESSION]
 			-- List of valid formulae from `a_expressions' in the context of `a_theory'
 		local
 			l_generator: like solver_file_generator
@@ -82,39 +112,21 @@ feature -- Access
 			l_expr_list: LINKED_LIST [AFX_EXPRESSION]
 			l_expr: AFX_EXPRESSION
 			l_output: HASH_TABLE [STRING, AFX_EXPRESSION]
+			l_validity: like expression_validity
 		do
-				-- Build solver input.
-			create l_list.make
-			create l_expr_list.make
+			create Result.make
+			l_validity := expression_validity (a_expressions, a_theory)
 			from
 				a_expressions.start
+				l_validity.start
 			until
-				a_expressions.after
+				l_validity.after
 			loop
-				l_expr := a_expressions.item_for_iteration
-				if l_expr.is_predicate then
-					l_expr_list.extend (l_expr)
-					l_list.extend (l_expr.as_solver_expression)
+				if l_validity.item_for_iteration then
+					Result.extend (a_expressions.item_for_iteration)
 				end
 				a_expressions.forth
-			end
-
-				-- Generate solver input file and start the solver.
-			l_generator := solver_file_generator
-			l_generator.generate_formulae (l_list, a_theory)
-			l_output := solver_output_for_expressions (l_expr_list, l_generator.last_content)
-
-				-- Build final result.
-			create {LINKED_LIST [AFX_EXPRESSION]} Result.make
-			from
-				l_output.start
-			until
-				l_output.after
-			loop
-				if l_output.item_for_iteration.is_equal (boogie_verified_tag) then
-					Result.extend (l_output.key_for_iteration)
-				end
-				l_output.forth
+				l_validity.forth
 			end
 		end
 
@@ -174,6 +186,116 @@ feature -- Access
 			end
 		end
 
+	predicates_with_satisfiability (a_predicates: DS_HASH_SET [AFX_EXPRESSION]; a_satisfiability: NATURAL_8; a_theory: AFX_THEORY): DS_HASH_SET [AFX_EXPRESSION]
+			-- Predicates in `a_predicates' of `a_satisfiability' in the context of `a_theory'
+		require
+			a_satisfiability_valid: is_satisfiability_valid (a_satisfiability)
+		local
+			l_pred_status: like predicate_satisfiability
+		do
+			l_pred_status := predicate_satisfiability (a_predicates, a_theory)
+			create Result.make (a_predicates.count)
+			Result.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+
+			from
+				l_pred_status.start
+			until
+				l_pred_status.after
+			loop
+				if a_satisfiability = predicate_any_satisfiable or else l_pred_status.item_for_iteration = a_satisfiability then
+					Result.force_last (l_pred_status.key_for_iteration)
+				end
+				l_pred_status.forth
+			end
+		end
+
+	predicate_satisfiability (a_predicates: DS_HASH_SET [AFX_EXPRESSION]; a_theory: AFX_THEORY): HASH_TABLE [NATURAL_8, AFX_EXPRESSION]
+			-- Predicate satisfiability table for predicates in `a_predicates'
+			-- Key is the predicate, value is the satisfiacbility of that predicate:
+			-- 0: Satisfiable
+			-- 1: Valid
+			-- 2: Contradictary			
+		local
+			l_normal_preds: LINKED_LIST [AFX_EXPRESSION]
+			l_exprs: LINKED_LIST [AFX_EXPRESSION]
+			l_validity: LINKED_LIST [BOOLEAN]
+			l_valid: BOOLEAN
+			l_negation_valid: BOOLEAN
+			l_satis: NATURAL_8
+			l_expr: AFX_EXPRESSION
+			l_negated_expr: AFX_EXPRESSION
+			l_skeleton: AFX_STATE_SKELETON
+			l_count: INTEGER
+		do
+			create l_normal_preds.make
+			create l_exprs.make
+			create l_validity.make
+
+			from
+				a_predicates.start
+			until
+				a_predicates.after
+			loop
+				l_normal_preds.extend (a_predicates.item_for_iteration)
+				l_exprs.extend (a_predicates.item_for_iteration)
+				l_exprs.extend (not a_predicates.item_for_iteration)
+				a_predicates.forth
+				l_count := l_count + 1
+			end
+
+			l_validity := expression_validity (l_exprs, a_theory)
+
+			create Result.make (l_count)
+			Result.compare_objects
+
+			from
+				l_validity.start
+				l_normal_preds.start
+			until
+				l_normal_preds.after
+			loop
+				l_valid := l_validity.item_for_iteration
+				l_validity.forth
+				l_negation_valid := l_validity.item_for_iteration
+				l_validity.forth
+
+				if l_valid then
+					l_satis := predicate_valid
+				elseif l_negation_valid then
+					l_satis := predicate_contradictory
+				else
+					l_satis := predicate_satisfiable
+				end
+				check not Result.has (l_normal_preds.item_for_iteration) end
+				Result.put (l_satis, l_normal_preds.item_for_iteration)
+				l_normal_preds.forth
+			end
+		end
+
+feature -- Constants
+
+	is_satisfiability_valid (s: NATURAL_8): BOOLEAN
+			-- Is `s' a valid satisfiability level?
+		do
+			Result :=
+				s = predicate_valid or
+				s = predicate_contradictory or
+				s = predicate_satisfiable or
+				s = predicate_any_satisfiable
+		end
+
+	predicate_valid: NATURAL_8 = 1
+			-- Predicate valid flag
+
+	predicate_contradictory: NATURAL_8 = 2
+			-- Predicate contradictory flag
+
+	predicate_satisfiable: NATURAL_8 = 0
+			-- Predicate satisfiable flag	
+
+	predicate_any_satisfiable: NATURAL_8 = 10
+			-- Predicate satisfiable flag for any situation	
+
 feature{NONE} -- Implementation
 
 	generate_file (a_content: STRING)
@@ -226,6 +348,57 @@ feature{NONE} -- Implementation
 			-- Result is a table, key is the expression, value is the solver output for that expression':
 			-- output can be either "verified" or "error".
 		deferred
+		end
+
+	max_proof_obligation_per_file: INTEGER = 100
+			-- The maximum number of proof obligations
+			-- in a Boogie file.
+			-- This is introduced because if there are too many obligations
+			-- in one file, Boogie will easily crash.
+
+	expression_validity_internal (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [BOOLEAN]
+			-- Validity status of `a_expressions' in the context of `a_theory'.
+			-- Result is a list of status, True means the corresponding expression in `a_expressions'
+			-- is valid, otherwise, is not valid.
+		local
+			l_generator: like solver_file_generator
+			l_list: LINKED_LIST [AFX_SOLVER_EXPR]
+			l_expr_list: LINKED_LIST [AFX_EXPRESSION]
+			l_expr: AFX_EXPRESSION
+			l_output: HASH_TABLE [STRING, AFX_EXPRESSION]
+			i: INTEGER
+		do
+				-- Build solver input.
+			create l_list.make
+			create l_expr_list.make
+			from
+				a_expressions.start
+			until
+				a_expressions.after
+			loop
+				l_expr := a_expressions.item_for_iteration
+				if l_expr.is_predicate then
+					l_expr_list.extend (l_expr)
+					l_list.extend (l_expr.as_solver_expression)
+				end
+				a_expressions.forth
+			end
+
+				-- Generate solver input file and start the solver.
+			l_generator := solver_file_generator
+			l_generator.generate_formulae (l_list, a_theory)
+			l_output := solver_output_for_expressions (l_expr_list, l_generator.last_content)
+
+				-- Build final result.
+			create Result.make
+			from
+				a_expressions.start
+			until
+				a_expressions.after
+			loop
+				Result.extend (l_output.item (a_expressions.item_for_iteration) ~ boogie_verified_tag)
+				a_expressions.forth
+			end
 		end
 
 end

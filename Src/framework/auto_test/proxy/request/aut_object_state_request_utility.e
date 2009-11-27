@@ -106,6 +106,8 @@ feature -- Access
 			l_feature := a_written_class.feature_named (a_feature_name)
 			if l_feature /= Void then
 				Result := a_context_class.feature_of_rout_id (l_feature.rout_id_set.first)
+			else
+				Result := a_context_class.feature_named (a_feature_name)
 			end
 		end
 
