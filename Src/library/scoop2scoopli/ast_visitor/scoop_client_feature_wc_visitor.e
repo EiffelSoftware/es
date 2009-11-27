@@ -16,7 +16,8 @@ inherit
 			process_access_feat_as,
 			process_access_assert_as,
 			process_static_access_as,
-			process_result_as
+			process_result_as,
+			process_binary_as
 		end
 
 create
@@ -32,7 +33,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
+	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT)
 			-- Process `l_as': the locking requester to the original feature.
 		require
 			l_fo_not_void: l_fo /= Void
@@ -51,7 +52,7 @@ feature -- Access
 
 feature {NONE} -- Node implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_body_as (l_as: BODY_AS)
 		local
 			i: INTEGER
 			r_as: ROUTINE_AS
@@ -102,7 +103,7 @@ feature {NONE} -- Node implementation
 			end
 		end
 
-	process_tagged_as (l_as: TAGGED_AS) is
+	process_tagged_as (l_as: TAGGED_AS)
 		do
 			-- print only expression of the wait condition
 			last_index := l_as.expr.start_position - 1
@@ -110,7 +111,14 @@ feature {NONE} -- Node implementation
 		end
 
 feature {NONE}
-	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
+	process_binary_as (l_as: BINARY_AS)
+		do
+			safe_process (l_as.left)
+			safe_process (l_as.operator (match_list))
+			safe_process (l_as.right)
+		end
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		do
 			safe_process (l_as.feature_name)
 

@@ -11,7 +11,6 @@ inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
 		redefine
 			process_body_as,
-			-- process_access_feat_as,
 			process_precursor_as,
 			process_ensure_as,
 			process_routine_as
@@ -95,33 +94,6 @@ feature {NONE} -- Node implementation
 			safe_process (l_as.end_keyword)
 		end
 
---	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
---		local
---			is_print_without_caller: BOOLEAN
---		do
---			safe_process (l_as.feature_name)
-
---			-- if processing preconditions append ".implementation_" if the target is separate.
---			if class_c.feature_table.has (l_as.feature_name.name.as_lower) then
---					if class_c.feature_table.item (l_as.feature_name.name.as_lower).type.is_separate then
---						context.add_string (".implementation_")
---						is_print_without_caller := true
---					end
---			elseif fo.arguments.is_separate_argument(l_as.feature_name.name.as_lower) then
---				-- current argument list contains actual feature name with separate type
---				context.add_string (".implementation_")
---				is_print_without_caller := true
---			end
-
---			-- process internal parameters and add current if target is of separate type.
---			process_internal_parameters(l_as.internal_parameters)
-
---			update_current_level_with_call (l_as)
---			if is_print_without_caller then
---				set_current_level_is_separate(false)
---			end
---		end
-
 	process_precursor_as (l_as: PRECURSOR_AS) is
 		local
 			l_parent: STRING
@@ -136,7 +108,7 @@ feature {NONE} -- Node implementation
 				context.add_string (l_parent + "_enclosing_routine ")
 			else
 					-- get name of parent base class		
-				l_parent := get_precursor_parent (fo.feature_name)
+				l_parent := precursor_parent (fo.feature_name)
 				if l_parent /= Void then
 					context.add_string (l_parent.as_lower + "_enclosing_routine ")
 				else
@@ -197,7 +169,7 @@ feature {NONE} -- Node implementation
 
 feature {NONE} -- Node implementation
 
-	get_precursor_parent (a_feature_name: STRING): STRING is
+	precursor_parent (a_feature_name: STRING): STRING is
 			-- returns the parent of a precursor feature.
 			-- traverses the redefining list of the parents.
 		local
