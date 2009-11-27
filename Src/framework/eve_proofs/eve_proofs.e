@@ -81,6 +81,10 @@ feature -- Basic operations
 				-- Add background theory
 			verifier.add_file_content (background_theory_file_name)
 
+-- MML test
+				-- Add MML theory
+			verifier.add_file_content ("C:/Temp/mml.bpl")
+
 				-- Generate Boogie code for classes
 			put_output_message (names.message_generating_boogie_code)
 			from
@@ -208,10 +212,15 @@ feature {NONE} -- Implementation
 			until
 				l_list.is_empty
 			loop
-				-- TODO: do this different
-				pure_marker.traverse_feature (l_list.first)
+-- MML test
+				if l_list.first.written_class.name.starts_with ("MML") then
+					feature_list.mark_feature_generated (l_list.first)
+				else
+					-- TODO: do this different
+					pure_marker.traverse_feature (l_list.first)
 
-				boogie_generator.process_feature (l_list.first)
+					boogie_generator.process_feature (l_list.first)
+				end
 			end
 
 			verifier.add_buffer_content (boogie_generator.output, "Referenced features")

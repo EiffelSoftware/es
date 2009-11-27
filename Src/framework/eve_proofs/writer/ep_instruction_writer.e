@@ -311,28 +311,17 @@ feature -- Processing
 		local
 			l_head_label, l_end_label: STRING
 			l_until_expression, l_until_side_effect: STRING
-			l_invariant_asserts, l_invariant_assumes, l_invariant_side_effect: STRING
---			l_variant_expression, l_variant_side_effect, l_var_local, l_last_var_local: STRING
+			l_invariants, l_invariant_side_effect: STRING
 			l_assert: ASSERT_B
 		do
 			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Loop --- " + file_location(a_node))
 
-			create_new_label ("loop_head")
-			l_head_label := last_label
-			create_new_label ("loop_end")
-			l_end_label := last_label
-
+				-- From
 			safe_process (a_node.from_part)
 
-			expression_writer.reset
-			a_node.stop.process (expression_writer)
-			locals.append (expression_writer.locals)
-			l_until_expression := expression_writer.expression.string
-			l_until_side_effect := expression_writer.side_effect.string
-
-			create l_invariant_asserts.make_empty
-			create l_invariant_assumes.make_empty
+				-- Invariants preprocessing
+			create l_invariants.make_empty
 			create l_invariant_side_effect.make_empty
 			if a_node.invariant_part /= Void then
 				from
@@ -345,76 +334,39 @@ feature -- Processing
 					expression_writer.reset
 					l_assert.process (expression_writer)
 					locals.append (expression_writer.locals)
-					l_invariant_asserts.append ("    assert (")
-					l_invariant_asserts.append (expression_writer.expression.string)
-					l_invariant_asserts.append ("); // ")
-					l_invariant_asserts.append (assert_location ("loop", l_assert))
-					l_invariant_asserts.append ("%N")
-					l_invariant_assumes.append ("    assume (")
-					l_invariant_assumes.append (expression_writer.expression.string)
-					l_invariant_assumes.append (");%N")
+					l_invariants.append (output.indentation)
+					l_invariants.append ("invariant (")
+					l_invariants.append (expression_writer.expression.string)
+					l_invariants.append ("); // ")
+					l_invariants.append (assert_location ("loop", l_assert))
+					l_invariants.append ("%N")
 					l_invariant_side_effect := expression_writer.side_effect.string
 					a_node.invariant_part.forth
 				end
 			end
 
---			if a_node.variant_part /= Void then
---				create l_variant_expression.make_empty
---				create l_variant_side_effect.make_empty
---				expression_writer.reset
---				a_node.variant_part.process (expression_writer)
---				locals.append (expression_writer.locals)
---				l_variant_expression.append (expression_writer.expression.string)
---				l_variant_side_effect := expression_writer.side_effect.string
---				l_var_local := "temp_var_" + current_label_number.out
---				l_last_var_local := "temp_last_var_" + current_label_number.out
---				locals.extend ([l_var_local, "int"])
---				locals.extend ([l_last_var_local, "int"])
---			end
+				-- Until
+			expression_writer.reset
+			a_node.stop.process (expression_writer)
+			locals.append (expression_writer.locals)
+			l_until_expression := expression_writer.expression.string
+			l_until_side_effect := expression_writer.side_effect.string
 
-			output.put (l_invariant_side_effect)
-			output.put (l_invariant_asserts)
+				-- TODO: this should always be empty
+			output.put_line (l_invariant_side_effect)
 
---			if a_node.variant_part /= Void then
---				output.put (l_variant_side_effect)
---				output.put_line (l_var_local + " := " + l_variant_expression + ";")
---				output.put ("assert " + l_var_local + ">= 0; // ")
---				output.put (assert_location ("var_nn", a_node.variant_part))
---				output.put_new_line
---			end
+				-- TODO: this should always be empty
+			output.put_line (l_until_side_effect)
+			output.put_line ("while (!(" + l_until_expression + "))");
 
-			output.put (l_until_side_effect)
-			output.put_line ("goto " + l_head_label + ", " + l_end_label + ";")
-			output.put_new_line
+			output.put (l_invariants)
 
-			output.put ("  " + l_head_label + ":%N")
-			output.put_line ("assume (!(" + l_until_expression + "));")
-			output.put (l_invariant_assumes)
-
+				-- Body
+			output.put_line ("{")
+			output.indent
 			safe_process (a_node.compound)
-
-			output.put (l_invariant_side_effect)
-			output.put (l_invariant_asserts)
-
---			if a_node.variant_part /= Void then
---				output.put_line (l_last_var_local + " := " + l_var_local + ";")
---				output.put (l_variant_side_effect)
---				output.put_line (l_var_local + " := " + l_variant_expression + ";")
---				output.put ("assert " + l_last_var_local + "> " + l_var_local + "; // ")
---				output.put (assert_location ("var_sm", a_node.variant_part))
---				output.put_new_line
---				output.put ("assert " + l_var_local + ">= 0; // ")
---				output.put (assert_location ("var_nn", a_node.variant_part))
---				output.put_new_line
---			end
-
-			output.put (l_until_side_effect)
-			output.put_line ("goto " + l_head_label + ", " + l_end_label + ";")
-			output.put_new_line
-
-			output.put ("  " + l_end_label + ":%N")
-
-			output.put_line ("assume (" + l_until_expression + ");")
+			output.unindent
+			output.put_line ("}")
 		end
 
 	process_retry_b (a_node: RETRY_B)

@@ -40,6 +40,7 @@ feature -- Element change
 			if
 				not l_type.is_like and then
 				not l_type.is_expanded and then
+				not l_type.is_formal and then
 				not types_generated.there_exists (agent is_same_type (?, l_type)) and then
 				not types_needed.there_exists (agent is_same_type (?, l_type))
 			then
@@ -55,12 +56,14 @@ feature -- Basic operations
 			from
 				types_needed.start
 			until
-				types_needed.after
+				types_needed.off
 			loop
 				if is_same_type (a_type, types_needed.item_for_iteration) then
 					types_needed.remove
 				end
-				types_needed.forth
+				if not types_needed.off then
+					types_needed.forth
+				end
 			end
 			types_generated.extend (a_type)
 		ensure

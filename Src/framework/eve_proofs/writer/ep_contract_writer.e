@@ -59,6 +59,9 @@ feature -- Access
 	expression_writer: EP_EXPRESSION_WRITER
 			-- Writer used to generate contracts
 
+	mml_writer: EP_MML_WRITER
+			-- Writer used to process mml contracts
+
 	fail_reason: STRING
 			-- Reason generation of contracts failed
 
@@ -90,6 +93,10 @@ feature -- Element change
 			-- Set `expression_writer' to `a_expression_writer'.
 		do
 			expression_writer := a_expression_writer
+
+				-- TODO: move someplace else
+			create mml_writer.make (expression_writer.name_mapper, expression_writer.old_handler)
+			mml_writer.set_processing_contract
 		ensure
 			expression_writer_set: expression_writer = a_expression_writer
 		end
@@ -108,6 +115,11 @@ feature -- Basic operations
 			has_weakened_preconditions := False
 			is_generation_failed := False
 			fail_reason := Void
+
+-- MML test
+			if mml_writer /= Void then
+				mml_writer.reset
+			end
 		ensure
 			current_feature_void: current_feature = Void
 			preconditions_reset: preconditions.is_empty
@@ -202,12 +214,22 @@ feature {NONE} -- Implementation
 				loop
 					l_assert ?= a_assertion.item_for_iteration
 					check l_assert /= Void end
-					expression_writer.reset
-					expression_writer.set_processing_contract
-					l_assert.expr.process (expression_writer)
-					expression_writer.set_not_processing_contract
 
-					a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
+-- MML test
+						-- Check if it is an MML contract, and process it differently
+					if l_assert.tag /= Void and then l_assert.tag.starts_with ("mml") then
+						mml_writer.reset
+						l_assert.expr.process (mml_writer)
+
+						a_list.extend ([l_assert.tag, mml_writer.expression.string, a_class_id, l_assert.line_number])
+					else
+						expression_writer.reset
+						expression_writer.set_processing_contract
+						l_assert.expr.process (expression_writer)
+						expression_writer.set_not_processing_contract
+
+						a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
+					end
 
 					a_assertion.forth
 				end
@@ -364,12 +386,19 @@ feature {NONE} -- Implementation
 				loop
 					l_assert ?= l_list.item
 					check l_assert /= Void end
-					expression_writer.reset
-					expression_writer.set_processing_contract
-					l_assert.expr.process (expression_writer)
-					expression_writer.set_not_processing_contract
+-- MML test
+					if l_assert.tag /= Void and then l_assert.tag.starts_with ("mml") then
+						mml_writer.reset
+						l_assert.expr.process (mml_writer)
+						invariants.extend ([l_assert.tag, mml_writer.expression.string, a_class.class_id, l_assert.line_number])
+					else
+						expression_writer.reset
+						expression_writer.set_processing_contract
+						l_assert.expr.process (expression_writer)
+						expression_writer.set_not_processing_contract
 
-					invariants.extend ([l_assert.tag, expression_writer.expression.string, a_class.class_id, l_assert.line_number])
+						invariants.extend ([l_assert.tag, expression_writer.expression.string, a_class.class_id, l_assert.line_number])
+					end
 
 					l_list.forth
 				end

@@ -64,8 +64,9 @@ feature -- Basic operations
 				output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 			end
 
-			write_precondition_predicate (a_feature)
-			write_postcondition_predicate (a_feature)
+-- MML test
+--			write_precondition_predicate (a_feature)
+--			write_postcondition_predicate (a_feature)
 -- TODO: refactor
 			if feature_list.is_pure (a_feature) and a_feature.has_return_value then
 				write_functional_predicate (a_feature)
@@ -260,7 +261,9 @@ feature {NONE} -- Implementation
 					l_item := contract_writer.preconditions.item
 					output.put_indentation
 					-- TODO: remove "free" when predicate testing is done
-					output.put ("free requires ")
+--					output.put ("free requires ")
+-- MML TEST
+					output.put ("requires ")
 					output.put (l_item.expression)
 					output.put ("; // ")
 					output.put (assert_location ("pre", l_item))

@@ -77,7 +77,7 @@ feature -- Execution
 					create l_test_info.make (l_prefs.preferences.testing_tool_data)
 					l_config := l_test_info.generator_conf.deep_twin
 					l_config.set_ddmin_enabled (False)
-					l_config.set_slicing_enabled (False)
+					l_config.set_slicing_enabled (True)
 					l_config.set_html_output (False)
 					l_config.set_time_out (1)
 					l_config.set_cluster (universe.cluster_of_name (universe.system.root_type.associated_class.group.name))

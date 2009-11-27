@@ -152,12 +152,14 @@ feature -- Basic operations
 			from
 				features_needed.start
 			until
-				features_needed.after
+				features_needed.off
 			loop
 				if is_same_feature (features_needed.item_for_iteration, a_feature) then
 					features_needed.remove
 				end
-				features_needed.forth
+				if not features_needed.off then
+					features_needed.forth
+				end
 			end
 			features_generated.extend (a_feature)
 		ensure
