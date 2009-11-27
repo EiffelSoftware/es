@@ -197,16 +197,19 @@ feature {NONE} -- Roundtrip: process nodes
 
 	process_class_type_as (l_as: CLASS_TYPE_AS) is
 		do
+			-- TODO:
 			context.add_string ("?????????")
 		end
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
 		do
+			-- TODO:
 			context.add_string ("?????????")
 		end
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS) is
 		do
+			-- TODO:
 			context.add_string ("?????????")
 		end
 

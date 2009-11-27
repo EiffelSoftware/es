@@ -61,7 +61,7 @@ feature -- Operation
 			Result := byte_count
 		end
 
-	get_cursor: LINKED_LIST_CURSOR[STRING] is
+	cursor_to_current_position: LINKED_LIST_CURSOR[STRING] is
 			-- Return the current position
 		do
 			Result := ctxt.cursor

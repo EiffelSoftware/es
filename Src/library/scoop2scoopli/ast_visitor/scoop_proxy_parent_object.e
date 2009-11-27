@@ -82,7 +82,7 @@ feature -- Context change
 			-- add a rename keyword if there isnt one
 			if not has_rename_clause then
 				a_string_context.insert_after_cursor ("%N%T%Trename", parent_cursor)
-				set_rename_cursor (a_string_context.get_cursor)
+				set_rename_cursor (a_string_context.cursor_to_current_position)
 				has_rename_clause := true
 			else
 				l_string.append (",")
@@ -92,7 +92,7 @@ feature -- Context change
 			-- the rename statement
 			l_string.append ("%N%T%T%T" + an_old_name + " as " + a_new_name)
 			a_string_context.insert_after_cursor (l_string, rename_cursor)
-			set_rename_cursor (a_string_context.get_cursor)
+			set_rename_cursor (a_string_context.cursor_to_current_position)
 
 			-- set the end keyword if needed
 			if not has_changes then
@@ -114,7 +114,7 @@ feature -- Context change
 			-- add a redefine keyword if there isnt one
 			if not has_redefine_clause then
 				a_string_context.insert_after_cursor ("%N%T%Tredefine", parent_cursor)
-				set_redefine_cursor (a_string_context.get_cursor)
+				set_redefine_cursor (a_string_context.cursor_to_current_position)
 				has_redefine_clause := true
 			else
 				l_string.append (",")
@@ -124,7 +124,7 @@ feature -- Context change
 			-- the redefine statement
 			l_string.append ("%N%T%T%T" + a_feature_name)
 			a_string_context.insert_after_cursor (l_string, redefine_cursor)
-			set_redefine_cursor (a_string_context.get_cursor)
+			set_redefine_cursor (a_string_context.cursor_to_current_position)
 
 			-- set the end keyword if needed
 			if not has_changes then

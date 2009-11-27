@@ -96,7 +96,7 @@ feature {NONE} -- Visitor implementation
 
 				-- process type
 				safe_process (l_as.type)
-				parent_object.set_parent_cursor (l_string_context.get_cursor)
+				parent_object.set_parent_cursor (l_string_context.cursor_to_current_position)
 
 				-- process internal renaming
 				safe_process (l_as.internal_renaming)
@@ -108,10 +108,10 @@ feature {NONE} -- Visitor implementation
 					context.add_string ("%N%T%T%Timplementation_ as implementation_" + l_as.type.class_name.name.as_lower + "_")
 
 					-- mark rename clause
-					parent_object.set_rename_cursor (l_string_context.get_cursor)
+					parent_object.set_rename_cursor (l_string_context.cursor_to_current_position)
 				elseif l_as.internal_renaming /= Void then
 					-- mark rename clause
-					parent_object.set_rename_cursor (l_string_context.get_cursor)
+					parent_object.set_rename_cursor (l_string_context.cursor_to_current_position)
 				end
 
 				-- process internal exports
@@ -128,7 +128,7 @@ feature {NONE} -- Visitor implementation
 					context.add_string ("%N%T%Tredefine")
 				end
 				context.add_string ("%N%T%T%Timplementation_")
-				parent_object.set_redefine_cursor (l_string_context.get_cursor)
+				parent_object.set_redefine_cursor (l_string_context.cursor_to_current_position)
 
 				-- process internal selection
 				safe_process (l_as.internal_selecting)
