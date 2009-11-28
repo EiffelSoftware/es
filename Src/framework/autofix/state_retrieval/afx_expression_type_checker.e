@@ -38,11 +38,13 @@ feature -- Type checking
 			init (ast_context)
 			ast_context.set_is_ignoring_export (True)
 			ast_context.initialize (a_class, a_class.actual_type, a_class.feature_table)
+			ast_context.set_current_feature (a_feature)
 			ast_context.set_written_class (a_feature.written_class)
 			current_feature := a_feature
 			if a_feature.is_routine then
 				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
 					if l_routine.locals /= Void then
+						type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
 						context.locals.wipe_out
 						check_locals (l_routine)
 						Result := context.locals
@@ -79,6 +81,8 @@ feature{NONE} -- Implementation
 				if a_feature.is_routine then
 					if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
 						if l_routine.locals /= Void then
+							context.set_current_feature (a_feature)
+							context.set_written_class (a_feature.written_class)
 							check_locals (l_routine)
 						end
 					end
@@ -112,6 +116,8 @@ feature{NONE} -- Implementation
 			if l_error_level = error_level then
 				an_ast.process (Current)
 			end
+			check error_handler.error_list.count = 0 end
+			error_handler.wipe_out
 		end
 
 end

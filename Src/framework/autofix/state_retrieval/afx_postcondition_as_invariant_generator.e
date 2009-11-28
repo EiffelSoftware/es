@@ -193,7 +193,7 @@ feature{NONE} -- Process
 		do
 			if is_suitable_as_invariant then
 				is_result_mentioned := True
-				text.append (context_feature.feature_name)
+				text.append (context_feature.written_class.feature_of_body_index (context_feature.body_index).feature_name)
 			end
 		end
 

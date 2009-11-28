@@ -35,6 +35,12 @@ feature -- Basic operations
 			fixme ("The following hack is for the sake of debugging speed, we don't search for implications for known classes every time. 28.11.2009 Jasonw")
 			if a_tc.recipient_class ~ "INTERACTIVE_LIST" then
 				update_expressions_with_ranking (l_ranking, implications_for_ACTIVE_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "ARRAYED_CIRCULAR" then
+				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_CIRCULAR (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "ARRAY" then
+				update_expressions_with_ranking (l_ranking, implications_for_ARRAY (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "ARRAYED_LIST" then
+				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
 			else
 					-- Generate implications.
 				create l_implication_gen
@@ -46,6 +52,86 @@ feature -- Basic operations
 		end
 
 feature{NONE} -- Implementation
+
+	implications_for_ARRAY (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+		local
+			l_expressions: ARRAY [STRING]
+		do
+			l_expressions := <<>>
+			Result := implications_for_class (l_expressions, a_class, a_feature)
+		end
+
+	implications_for_ARRAYED_LIST (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+		local
+			l_expressions: ARRAY [STRING]
+		do
+			l_expressions := <<
+				"(is_empty) implies (after)",
+				"(is_empty) implies (before)",
+				"(is_empty) implies (not (after))",
+				"(is_empty) implies (not (before))",
+				"(not (after)) implies (not (off))",
+				"(not (after)) implies (off)",
+				"(not (before)) implies (not (off))",
+				"(not (before)) implies (off)",
+				"(not (is_empty)) implies (after)",
+				"(not (is_empty)) implies (all_default)",
+				"(not (is_empty)) implies (before)",
+				"(not (is_empty)) implies (isfirst)",
+				"(not (is_empty)) implies (islast)",
+				"(not (is_empty)) implies (not (after))",
+				"(not (is_empty)) implies (not (all_default))",
+				"(not (is_empty)) implies (not (before))",
+				"(not (is_empty)) implies (not (isfirst))",
+				"(not (is_empty)) implies (not (islast))",
+				"(not (is_empty)) implies (not (off))",
+				"(not (is_empty)) implies (not (readable))",
+				"(not (is_empty)) implies (not (writable))",
+				"(not (is_empty)) implies (off)",
+				"(not (is_empty)) implies (readable)",
+				"(not (is_empty)) implies (writable)",
+				"(not (isfirst)) implies (is_empty)",
+				"(not (isfirst)) implies (not (is_empty))",
+				"(not (islast)) implies (is_empty)",
+				"(not (islast)) implies (not (is_empty))",
+				"(off) implies (after)",
+				"(off) implies (not (after))">>
+			Result := implications_for_class (l_expressions, a_class, a_feature)
+		end
+
+	implications_for_ARRAYED_CIRCULAR (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+		local
+			l_expressions: ARRAY [STRING]
+		do
+			l_expressions := <<
+				"(not (after)) implies (is_empty)",
+				"(not (after)) implies (not (is_empty))",
+				"(not (after)) implies (not (off))",
+				"(not (after)) implies (off)",
+				"(not (before)) implies (is_empty)",
+				"(not (before)) implies (not (is_empty))",
+				"(not (before)) implies (not (off))",
+				"(not (before)) implies (off)",
+				"(not (is_empty)) implies (isfirst)",
+				"(not (is_empty)) implies (islast)",
+				"(not (is_empty)) implies (not (isfirst))",
+				"(not (is_empty)) implies (not (islast))",
+				"(not (is_empty)) implies (not (readable))",
+				"(not (is_empty)) implies (not (writable))",
+				"(not (is_empty)) implies (readable)",
+				"(not (is_empty)) implies (writable)",
+				"(not (isfirst)) implies (is_empty)",
+				"(not (isfirst)) implies (not (is_empty))",
+				"(not (islast)) implies (is_empty)",
+				"(not (islast)) implies (not (is_empty))",
+				"(not (off)) implies (exhausted)",
+				"(not (off)) implies (not (exhausted))",
+				"(not (writable)) implies (not (readable))",
+				"(not (writable)) implies (readable)",
+				"(off) implies (after)",
+				"(off) implies (not (after))">>
+			Result := implications_for_class (l_expressions, a_class, a_feature)
+		end
 
 	implications_for_ACTIVE_LIST (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
 		local
