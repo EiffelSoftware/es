@@ -41,6 +41,8 @@ feature -- Basic operations
 				update_expressions_with_ranking (l_ranking, implications_for_ARRAY (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
 			elseif a_tc.recipient_class ~ "ARRAYED_LIST" then
 				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "BINARY_SEARCH_TREE_SET" then
+				update_expressions_with_ranking (l_ranking, implications_for_BINARY_SEARCH_TREE_SET (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
 			else
 					-- Generate implications.
 				create l_implication_gen
@@ -60,6 +62,23 @@ feature{NONE} -- Implementation
 			l_expressions := <<>>
 			Result := implications_for_class (l_expressions, a_class, a_feature)
 		end
+
+	implications_for_BINARY_SEARCH_TREE_SET (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+		local
+			l_expressions: ARRAY [STRING]
+		do
+			l_expressions := <<
+				"(not (after)) implies (not (off))",
+				"(not (after)) implies (off)",
+				"(not (before)) implies (not (off))",
+				"(not (before)) implies (off)",
+				"(not (is_empty)) implies (not (off))",
+				"(not (is_empty)) implies (off)">>
+			Result := implications_for_class (l_expressions, a_class, a_feature)
+		end
+
+
+
 
 	implications_for_ARRAYED_LIST (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
 		local
