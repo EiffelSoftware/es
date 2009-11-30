@@ -38,6 +38,8 @@ feature -- Access
 			i: INTEGER
 			l_last: INTEGER
 			l_lower, l_upper: INTEGER
+			l_var_tbl: HASH_TABLE [INTEGER, INTEGER]
+			l_var_id: INTEGER
 		do
 			if is_test_case_valid then
 				l_last := operands.count - 1
@@ -97,14 +99,19 @@ feature -- Access
 				Result.append ("<types>%N")
 				from
 					i := 0
+					create l_var_tbl.make (5)
 				until
 					i > l_last
 				loop
-					Result.append ("v_")
-					Result.append (operands.item (i).out)
-					Result.append (": ")
-					Result.append (types.item (i))
-					Result.append ("%N")
+					l_var_id := operands.item (i)
+					if not l_var_tbl.has (l_var_id) then
+						l_var_tbl.put (l_var_id, l_var_id)
+						Result.append ("v_")
+						Result.append (l_var_id.out)
+						Result.append (": ")
+						Result.append (types.item (i))
+						Result.append ("%N")
+					end
 					i := i + 1
 				end
 				Result.append ("</types>%N")
