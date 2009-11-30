@@ -29,7 +29,8 @@ inherit
 			process_verbatim_string_as,
 			process_unary_as,
 			process_binary_as,
-			process_paran_as
+			process_paran_as,
+			process_precursor_as
 		end
 
 	SHARED_SERVER
@@ -199,11 +200,13 @@ feature{NONE} -- Process
 
 	process_nested_as (l_as: NESTED_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
@@ -246,11 +249,13 @@ feature{NONE} -- Process
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
 	process_real_as (l_as: REAL_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
@@ -263,16 +268,19 @@ feature{NONE} -- Process
 
 	process_char_as (l_as: CHAR_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
 	process_string_as (l_as: STRING_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
 		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
 			is_suitable_as_invariant := False
 		end
 
@@ -303,6 +311,12 @@ feature{NONE} -- Process
 				l_as.expr.process (Current)
 				text.append_character (')')
 			end
+		end
+
+	process_precursor_as (l_as: PRECURSOR_AS)
+		do
+			fixme ("Support this later. 11.30.2009 Jasonw")
+			is_suitable_as_invariant := False
 		end
 
 end
