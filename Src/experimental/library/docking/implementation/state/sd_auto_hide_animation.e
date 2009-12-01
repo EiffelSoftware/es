@@ -115,7 +115,7 @@ feature {SD_AUTO_HIDE_STATE} -- Command
 					create l_closing_timer.make_with_interval ({SD_SHARED}.Auto_hide_delay)
 					internal_closing_timer := l_closing_timer
 					l_closing_timer.actions.extend (agent on_timer_for_close)
-					ev_application.pointer_motion_actions.extend (agent on_pointer_motion)
+					ev_application.pointer_motion_actions.extend (agent on_pointer_motion ({EV_WIDGET} ?, {INTEGER} ?, {INTEGER} ?))
 					internal_motion_procedure := ev_application.pointer_motion_actions.last
 					-- First, put the zone in a fixed, make a animation here.
 
