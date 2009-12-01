@@ -43,7 +43,7 @@ feature -- Status report
 
 feature -- Access
 
-	response: AUT_RESPONSE
+	response: AUT_RESPONSE assign set_response
 			-- Interpreter's response to current request;
 			-- Void if request is without response.
 
@@ -74,7 +74,7 @@ feature -- Access
 		ensure
 			time_set: time = a_time
 		end
-		
+
 	start_time: INTEGER
 			-- Start time in millisecond relative to current AutoTest run
 

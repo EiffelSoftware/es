@@ -6,6 +6,7 @@
 			<assertions/>
 		</option>
 		<setting name="multithreaded" value="true"/>
+		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
@@ -30,7 +31,6 @@
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
-		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
 			<condition>
 				<platform value="windows"/>
@@ -55,6 +55,40 @@
 			<file_rule>
 				<exclude>/Clib$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/boolean_state_transition_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/model_transformation$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/state_transition_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/boolean_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/query_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/query_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/boolean_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/model_transformation$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/strategies$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/behavior_constructor$</exclude>
+			</file_rule>
+			<cluster name="query_model" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\query_model\"/>
+			<cluster name="boolean_model" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\boolean_model\"/>
+			<cluster name="model_transformation" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\model_transformation\"/>
+			<cluster name="behavior_constructor" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\behavior_constructor\"/>
 		</cluster>
 	</target>
 </system>

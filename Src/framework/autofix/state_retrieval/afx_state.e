@@ -13,16 +13,22 @@ inherit
 			make as make_set
 		end
 
-	REFACTORING_HELPER
+	HASHABLE
 		undefine
-			copy,
-			is_equal
+		    copy,
+		    is_equal
 		end
 
 	AFX_SOLVER_FACTORY
 		undefine
-			copy,
-			is_equal
+		    is_equal,
+		    copy
+		end
+
+	AFX_HASH_CALCULATOR
+		undefine
+		    is_equal,
+		    copy
 		end
 
 	REFACTORING_HELPER
@@ -38,7 +44,7 @@ inherit
 		end
 
 create
-	make
+	make, make_chaos, make_from_object_state
 
 convert
 	skeleton: {AFX_STATE_SKELETON}
@@ -69,6 +75,13 @@ feature{NONE} -- Initialization
 				force_last (predicate_from_expression_and_value (a_state.key_for_iteration, a_state.item_for_iteration, a_class, a_feature))
 				a_state.forth
 			end
+		end
+
+	make_chaos (a_class: like class_)
+			-- create a chaos state
+		do
+		    make (1, a_class, Void)
+		    is_chaos := True
 		end
 
 feature -- Access
@@ -180,8 +193,8 @@ feature -- Status report
 						a_string.append_character ('%N')
 					end (?, Result))
 		end
-
-feature -- Status report
+	is_chaos: BOOLEAN
+			-- does this state stand for a chaos (the state before object creation)?
 
 	implication alias "implies" (other: AFX_STATE): BOOLEAN
 			-- Does Current implies `other'?
@@ -191,6 +204,22 @@ feature -- Status report
 		end
 
 feature{NONE} -- Implementation
+
+	key_to_hash: DS_LINEAR[INTEGER]
+			-- <Precursor>
+		local
+		    l_list: DS_ARRAYED_LIST[INTEGER]
+		do
+		    create l_list.make (count)
+			from start
+			until after
+			loop
+			    l_list.force_last (item_for_iteration.hash_code)
+				forth
+			end
+
+			Result := l_list
+		end
 
 	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_EQUATION
 			-- Predicate from `a_expression' and its `a_value'
