@@ -144,8 +144,8 @@ feature{NONE} -- Process constructs
 		    l_from_part: EIFFEL_LIST [INSTRUCTION_AS]
 		    l_compound: EIFFEL_LIST [INSTRUCTION_AS]
 		    l_ast_post: attached TUPLE [start_position: INTEGER; end_position: INTEGER]
-		    l_start_pos, l_end_pos: INTEGER
-		    l_leading_ws, l_tailing_ws: STRING_32
+		    l_end_pos: INTEGER
+		    l_tailing_ws: STRING_32
 		do
 			if last_found = Void and then is_same_as_target (l_as) then
 		    	last_found := l_as

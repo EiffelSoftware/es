@@ -48,8 +48,6 @@ feature -- Status report
 			-- is there a target with the name `a_name'?
 		require
 		    name_not_empty: not a_name.is_empty
-		local
-		    l_table: like local_variable_targets
 		do
 		    a_name.to_lower
 		    found_target := Void

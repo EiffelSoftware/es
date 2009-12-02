@@ -26,9 +26,7 @@ feature -- Initialization
 			-- we always use the text from the CLASS_AS, which should be conform with the information in the AST.
 		local
 			l_text: detachable STRING_32
-			l_editor: like active_editor_for_class
 			l_editor_text: detachable STRING_32
-			l_encoding: ENCODING
 		do
 			context_class := a_class
 

@@ -366,7 +366,6 @@ feature{NONE} -- Implementation
 		local
 		    l_now: TIME
 		    l_fine_milli_seconds_count: INTEGER
-		    l_count: INTEGER
 		    l_str: STRING
 		do
 		    create l_now.make_now
@@ -390,7 +389,6 @@ feature{NONE} -- Implementation
 		local
 		    l_prefix: STRING
 		    l_indent: STRING
-		    l_out: STRING
 		    l_lines: LIST[STRING_8]
 		    l_line_no: INTEGER
 		do

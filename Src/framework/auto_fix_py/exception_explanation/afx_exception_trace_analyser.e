@@ -20,7 +20,6 @@ feature -- Operation
 		local
 		    l_logging_service: like logging_service
 		    l_entry_factory: like log_entry_factory
-			i: INTEGER	-- index inside the trace
 			l_trace: STRING
 			l_trace_lines: LIST [STRING]
 			l_line: STRING
@@ -151,7 +150,6 @@ feature{NONE} -- Implementation
 		    l_word: STRING
 		    l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
 		    l_bad_format: BOOLEAN
-		    l_origin_found: BOOLEAN
 		    i: INTEGER
 		do
 		    l_logging_service := logging_service

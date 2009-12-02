@@ -70,7 +70,6 @@ feature -- Process
 			-- <Precursor>
 		local
 		    l_logging_service: like logging_service
-		    l_entry_factory: like log_entry_factory
 		    l_log_file: AFX_LOG_FILE
 		    l_session: like session
 		do

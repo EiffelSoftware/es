@@ -40,7 +40,6 @@ feature -- Operations
 		    l_rep: STRING
 		    l_type: TYPE_A
     	    l_tunes: like last_tunes_internal
-    	    l_feature_names: LIST [STRING]
     	    l_feature_table: FEATURE_TABLE
     	    l_creators: HASH_TABLE [EXPORT_I, STRING]
     	    l_next_feature: FEATURE_I

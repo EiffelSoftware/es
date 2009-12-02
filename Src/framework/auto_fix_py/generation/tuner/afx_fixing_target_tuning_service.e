@@ -20,7 +20,6 @@ feature -- Operation
 		    l_rep: STRING
 		    l_type: TYPE_A
 		    l_tuner: AFX_OBJECT_TUNER
-		    l_factory: AFX_OBJECT_TUNER_FACTORY
 		    l_tunes: DS_LINEAR [AFX_FIX_OPERATION_TUNNING]
 		do
 		    l_feature := a_target.context_feature

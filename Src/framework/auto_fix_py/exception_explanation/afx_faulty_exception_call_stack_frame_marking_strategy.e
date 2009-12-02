@@ -25,7 +25,6 @@ feature -- Operation
 		    l_class: attached CLASS_C
 		    l_cur_class: attached CLASS_C
 		    i: INTEGER
-		    l_has_relevant_frame: BOOLEAN
 		    l_count_relevant_frames: INTEGER
 		do
 		    l_logging_service := logging_service
