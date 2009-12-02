@@ -177,6 +177,8 @@ feature {SYSTEM_I} -- Processing
 				system.add_explicit_root (Void, "SCOOP_STARTER", "make")
 			end
 
+			-- add the scoopli library if not already done
+			add_scoopli_library
 
 			l_degree_output.put_end_degree
 		end
@@ -269,7 +271,7 @@ feature {NONE} -- Cluster handling implementation
 		end
 
 	group_exists (a_group: STRING; a_target: CONF_TARGET): BOOLEAN is
-			-- Check if 'a_target' or any child of 'a_target' already has 'a_group'.
+			-- Check if `a_target' or any child of `a_target' already has `a_group'.
 		require
 			a_group_ok: a_group /= Void and then not a_group.is_empty
 		local
@@ -289,6 +291,65 @@ feature {NONE} -- Cluster handling implementation
 		do
 			if scoop_directory.exists and then not scoop_directory.is_empty then
 				scoop_directory.delete_content
+			end
+		end
+
+	add_scoopli_library () is
+			-- Checks if scoopli is already in the library of `a_target'
+			-- and adds it if necessary in the configuration file.
+			-- It gets included in the system with the next recompilation of the system.
+			-- added for SCOOP by peadde.
+		local
+			l_target, l_new_target: CONF_TARGET
+			l_load: CONF_LOAD
+			l_conf_system, l_system: CONF_SYSTEM
+			l_parse_vis: CONF_PARSE_VISITOR
+			l_state: CONF_STATE
+			l_groups: HASH_TABLE [CONF_GROUP, STRING_8]
+			l_name, l_location: STRING
+			l_factory: CONF_COMP_FACTORY
+			l_file_location: CONF_FILE_LOCATION
+			l_library: CONF_LIBRARY
+
+		do
+			l_target := universe.target
+
+			-- Create strings for class and location
+			create l_name.make_from_string ("scoopli")
+			create l_location.make_from_string ("$ISE_LIBRARY\library\scoopli\scoopli.ecf")
+						-- "location.text: $ISE_LIBRARY\library\scoopli\scoopli.ecf"
+
+			-- get current groups
+			l_groups := l_target.groups
+			-- test if the scoopli library is not already in the current loaded configuration
+			if not group_exists (l_name, l_target) then
+
+				-- the scoopli library is not jet included in the libraries
+				-- to get the library when recompiling its necessary to add
+				-- it in the configuration file.
+				create l_factory
+				create l_load.make (l_factory)
+				l_load.retrieve_configuration (l_target.system.file_name)
+				l_conf_system := l_load.last_system
+				l_new_target := l_conf_system.targets.item (l_target.name)
+				-- parse target: is necessary to add a new library
+				l_state := universe.conf_state_from_target (l_new_target)
+				create l_parse_vis.make_build (l_state, l_new_target, l_factory)
+				l_new_target.process (l_parse_vis)
+
+				-- create now scoopli library entry
+				l_file_location := l_factory.new_location_from_full_path (l_location.as_string_8, l_new_target)
+				-- create new library
+				l_library := l_factory.new_library (l_name.as_string_8, l_file_location, l_new_target)
+				l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING_8]}.make (0))
+				-- create new temporary conf system
+				l_system := l_factory.new_system_generate_uuid ("scoopli_tmp")
+				l_system.set_application_target (l_new_target)
+				-- add library to target
+				l_library.set_library_target (l_factory.new_target ("scoopli_tmp", l_system))
+				l_new_target.add_library (l_library)
+				-- save the configuration
+				l_new_target.system.store
 			end
 		end
 

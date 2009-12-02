@@ -44,7 +44,7 @@ feature -- Basic SCOOP changes
 			last_index := l_as.start_position - 1
 
 			-- process INFIX_PREFIX_AS node
-			if l_as.frozen_keyword.index > 0 then
+			if l_as.frozen_keyword /= void and then l_as.frozen_keyword.index > 0 then
 				safe_process (l_as.frozen_keyword)
 			else
 				process_leading_leaves (l_as.infix_prefix_keyword.index)
