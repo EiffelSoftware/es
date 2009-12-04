@@ -677,7 +677,7 @@ feature {NONE} -- Call evaluation visits
 
 	process_access_inv_as (l_as: ACCESS_INV_AS)
 		do
-			update_interface(type_of_qualified_query(l_as.feature_name.name))
+			update_interface(type_of_unqualified_query(l_as.feature_name.name))
 		end
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
