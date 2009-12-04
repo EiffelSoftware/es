@@ -43,6 +43,7 @@ inherit
 			process_address_as,
 			process_assign_as,
 			process_if_as,
+			process_elseif_as,
 			process_object_test_as,
 			process_inline_agent_creation_as
 		end
@@ -975,20 +976,20 @@ feature {NONE} -- Eiffel list processing
 					safe_process (l_as.item)
 					if i <= l_count then
 						safe_process (l_as.separator_list_i_th (i, match_list))
-						if
-							{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
-							{l_type_declaration_list: EIFFEL_LIST [TYPE_DEC_AS]} l_as or
-							{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
-						then
-							reset_current_levels_layer
-						end
-						if
-							{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
-							{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
-						then
-							reset_current_object_tests_layer
-						end
 						i := i + 1
+					end
+					if
+						{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
+						{l_type_declaration_list: EIFFEL_LIST [TYPE_DEC_AS]} l_as or
+						{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+					then
+						reset_current_levels_layer
+					end
+					if
+						{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
+						{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+					then
+						reset_current_object_tests_layer
 					end
 					l_as.forth
 				end
@@ -1212,8 +1213,28 @@ feature {NONE} -- Object test handling
 
 	process_if_as (l_as: IF_AS)
 		do
+			safe_process (l_as.if_keyword (match_list))
+			safe_process (l_as.condition)
+			safe_process (l_as.then_keyword (match_list))
 			add_object_tests_layer
-			Precursor (l_as)
+			safe_process (l_as.compound)
+			remove_current_object_tests_layer
+			safe_process (l_as.elsif_list)
+			safe_process (l_as.else_keyword (match_list))
+			add_object_tests_layer
+			safe_process (l_as.else_part)
+			remove_current_object_tests_layer
+			reset_current_object_tests_layer
+			safe_process (l_as.end_keyword)
+		end
+
+	process_elseif_as (l_as: ELSIF_AS)
+		do
+			safe_process (l_as.elseif_keyword (match_list))
+			safe_process (l_as.expr)
+			safe_process (l_as.then_keyword (match_list))
+			add_object_tests_layer
+			safe_process (l_as.compound)
 			remove_current_object_tests_layer
 		end
 
