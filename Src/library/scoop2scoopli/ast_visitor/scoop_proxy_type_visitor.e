@@ -41,7 +41,7 @@ feature -- Access
 			-- print out the TYPE_AS as defined below
 		do
 			if l_as /= Void then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
 		end
@@ -51,7 +51,7 @@ feature -- Access
 			-- used to print out internal generics and other types nodes
 		do
 			if l_as /= Void then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
 		end
@@ -132,10 +132,9 @@ feature {NONE} -- Roundtrip: process nodes
 			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
 
 			-- process class name
+			process_leading_leaves (l_as.class_name.index)
 			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
-			if l_as.class_name /= Void then
-				last_index := l_as.class_name.end_position
-			end
+			last_index := l_as.class_name.index
 
 			-- process parameters
 			-- types of parameters will be treated like current
