@@ -14,6 +14,8 @@ inherit
 
 	AFX_SHARED_CLASS_THEORY
 
+	AFX_DEBUGGER_HELPER
+
 create
 	make
 
@@ -26,8 +28,8 @@ feature{NONE} -- Initialization
 			create test_case_start_actions
 			create test_case_breakpoint_hit_actions
 			create application_exited_actions
-			create state_models.make (5)
-			state_models.compare_objects
+			create exception_spots.make (5)
+			exception_spots.compare_objects
 		ensure
 			config_set: config = a_config
 		end
@@ -102,6 +104,7 @@ feature{NONE} -- Access
 			l_exprs.extend (expr_a_tag)
 			l_exprs.extend (expr_a_passing)
 			l_exprs.extend (expr_a_test_case_number)
+			l_exprs.extend (expr_a_dry_run)
 			create Result.make_with_text (a_class, a_feature, l_exprs)
 		end
 
@@ -121,8 +124,7 @@ feature{NONE} -- Implementation
 		do
 				-- Initialize debugger.
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
-			debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
-			remove_breakpoint (root_class)
+			remove_breakpoint (debugger_manager, root_class)
 
 				-- Setup breakpoint handling for the routine which indicates
 				-- a new test case is to be executed.
@@ -138,38 +140,12 @@ feature{NONE} -- Implementation
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 				-- Start debugger.
-			start_debugger
+			start_debugger (debugger_manager, config.working_directory)
 
 				-- Clean up debugger.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
 			debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exited_agent)
-			remove_breakpoint (root_class)
-		end
-
-	start_debugger
-		require
-			debugger_manager /= Void
-		local
-			ctlr: DEBUGGER_CONTROLLER
-			wdir: STRING
-			param: DEBUGGER_EXECUTION_PARAMETERS
-		do
-			if wdir = Void or else wdir.is_empty then
-				wdir := Eiffel_project.lace.directory_name
-						--Execution_environment.current_working_directory
-			end
-			ctlr := debugger_manager.controller
-			create param
-			param.set_arguments ("")
-			param.set_working_directory (config.working_directory)
-			debugger_manager.set_execution_ignoring_breakpoints (False)
-			ctlr.debug_application (param, {EXEC_MODES}.run)
-		end
-
-	remove_breakpoint (a_class: CLASS_C)
-			-- Remove user break points in `a_class'.
-		do
-			debugger_manager.breakpoints_manager.remove_user_breakpoints_in_class (a_class)
+			remove_breakpoint (debugger_manager, root_class)
 		end
 
 	analyze_test_cases
@@ -180,13 +156,14 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Constants
 
-	expr_a_recipient_class: STRING is "a_recipient_class"
-	expr_a_recipient: STRING is "a_recipient"
-	expr_a_exception_code: STRING is "a_exception_code"
-	expr_a_bpslot: STRING is "a_bpslot"
-	expr_a_tag: STRING is "a_tag"
-	expr_a_passing: STRING is "a_passing"
-	expr_a_test_case_number: STRING is "a_test_case_number"
+	expr_a_recipient_class: STRING = "a_recipient_class"
+	expr_a_recipient: STRING = "a_recipient"
+	expr_a_exception_code: STRING = "a_exception_code"
+	expr_a_bpslot: STRING = "a_bpslot"
+	expr_a_tag: STRING = "a_tag"
+	expr_a_passing: STRING = "a_passing"
+	expr_a_test_case_number: STRING = "a_test_case_number"
+	expr_a_dry_run: STRING = "a_dry_run"
 
 feature{NONE} -- Actions
 
@@ -200,8 +177,6 @@ feature{NONE} -- Actions
 			l_tag: STRING
 			l_passing: BOOLEAN
 			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
-			l_recipient_id: STRING
-			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
 			l_spot: AFX_EXCEPTION_SPOT
 		do
 			l_table := a_test_case_info.to_hash_table
@@ -211,30 +186,28 @@ feature{NONE} -- Actions
 			l_bpslot := l_table.item (expr_a_bpslot).out.to_integer
 			l_tag := l_table.item (expr_a_tag).out
 			l_passing := l_table.item (expr_a_passing).out.to_boolean
+			set_is_current_test_case_dry_run (l_table.item (expr_a_dry_run).out.to_boolean)
 
 			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing)
 
-				-- Generate state model for current test case.
-			l_recipient_id := l_recipient_class.name + "." + l_recipient.feature_name
-			if not state_models.has (l_recipient_id) then
-				create l_spot_analyzer
-				l_spot_analyzer.analyze (current_test_case_info, debugger_manager, a_breakpoint)
-				state_models.put (l_spot_analyzer.last_spot, l_recipient_id)
+
+			if is_current_test_case_dry_run then
+			else
+				l_spot := exception_spots.item (current_test_case_info.id)
+
+				test_case_start_actions.call ([current_test_case_info])
+
+					-- Dispose breakpoint manager for the last test case.
+				if current_test_case_breakpoint_manager /= Void then
+					current_test_case_breakpoint_manager.toggle_breakpoints (False)
+					remove_breakpoint (debugger_manager, current_test_case_breakpoint_manager.class_)
+				end
+
+				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
+				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
+				current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
+				current_test_case_breakpoint_manager.toggle_breakpoints (True)
 			end
-			l_spot := state_models.item (l_recipient_id)
-
-			test_case_start_actions.call ([current_test_case_info])
-
-				-- Dispose breakpoint manager for the last test case.
-			if current_test_case_breakpoint_manager /= Void then
-				current_test_case_breakpoint_manager.toggle_breakpoints (False)
-				remove_breakpoint (current_test_case_breakpoint_manager.class_)
-			end
-
-			create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
-			current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
-			current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
-			current_test_case_breakpoint_manager.toggle_breakpoints (True)
 		end
 
 	on_breakpoint_hit_in_test_case (a_breakpoint: BREAKPOINT; a_state: AFX_STATE)
@@ -252,6 +225,9 @@ feature{NONE} -- Actions
 				if a_dm.application_status.reason_is_catcall or a_dm.application_status.reason_is_overflow then
 					a_dm.application.kill
 				else
+					if a_dm.application_status.exception_occurred and then is_current_test_case_dry_run then
+						collect_exception_info
+					end
 					a_dm.controller.resume_workbench_application
 				end
 			end
@@ -263,12 +239,57 @@ feature{NONE} -- Actions
 			application_exited_actions.call (Void)
 		end
 
+	collect_exception_info
+			-- Collect information about the current exception.
+		local
+			l_stack_level: INTEGER
+			l_old_stack_level: INTEGER
+			l_app: APPLICATION_EXECUTION
+			l_value: DUMP_VALUE
+			l_stack_ele: CALL_STACK_ELEMENT
+			l_recipient_id: STRING
+			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
+		do
+				-- Generate state model for current test case.
+			l_recipient_id := current_test_case_info.id
+			if not exception_spots.has (l_recipient_id) then
+				create l_spot_analyzer
+				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)
+				exception_spots.put (l_spot_analyzer.last_spot, l_recipient_id)
+			end
+
+			l_stack_level := call_stack_index (debugger_manager, test_case_routine_header)
+			if l_stack_level > 0 then
+				l_app := debugger_manager.application
+				l_old_stack_level := l_app.current_execution_stack_number
+				l_app.set_current_execution_stack_number (l_stack_level)
+				l_stack_ele := debugger_manager.application_status.current_call_stack_element
+				l_value := debugger_manager.expression_evaluation ("exception_trace")
+				l_app.set_current_execution_stack_number (l_old_stack_level)
+			end
+		end
+
 feature{NONE} -- Implication
 
-	state_models: HASH_TABLE [AFX_EXCEPTION_SPOT, STRING]
+	is_current_test_case_dry_run: BOOLEAN
+			-- Is current test case a dry-run?
+			-- In a dry-run, the system states are not retrieved.
+
+	set_is_current_test_case_dry_run (b: BOOLEAN)
+			-- Set `is_current_test_case_dry_run' with `b'.
+		do
+			is_current_test_case_dry_run := b
+		ensure
+			is_current_test_case_dry_run_set: is_current_test_case_dry_run = b
+		end
+
+	test_case_routine_header: STRING = "generated_test_1"
+			-- Header for the routine which is used to execute feature under test
+
+	exception_spots: HASH_TABLE [AFX_EXCEPTION_SPOT, STRING]
 			-- Set of state models that are already met
-			-- Keys are state identifier in the form of "RECIPIENT_CLASS.recipient"
-			-- Values are the models.
+			-- Keys are test case info id, check {AFX_TEST_CASE_INFO}.`id' for details.
+			-- Values are the associated exception spots.
 
 	on_test_case_breakpoint_hit_print_state (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
@@ -285,7 +306,12 @@ feature{NONE} -- Implication
 
 			check current_test_case_info /= Void end
 			io.put_string ("------------------------------------------------------%N")
-			
+
+			if a_tc.is_passing then
+				io.put_string ("P ")
+			else
+				io.put_string ("F ")
+			end
 			if current_test_case_info.id /= Void then
 				io.put_string (current_test_case_info.id + " ")
 			end

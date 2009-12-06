@@ -260,12 +260,6 @@ feature{NONE} -- Implementation
 			id.append (breakpoint_slot.out)
 			id.append_character ('.')
 			id.append (tag)
-			id.append_character ('.')
-			if is_passing then
-				id.append_character ('S')
-			else
-				id.append_character ('F')
-			end
 		end
 
 end

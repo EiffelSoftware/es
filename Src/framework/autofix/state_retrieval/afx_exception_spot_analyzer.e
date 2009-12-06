@@ -17,9 +17,9 @@ feature -- Access
 
 feature -- Basic operations
 
-	analyze (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_breakpoint: BREAKPOINT)
+	analyze (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER)
 			-- Generate `last_spot' for text case `a_tc' in the context
-			-- given by the debugger `a_dm' and the breakpoint `a_breakpoint'.			
+			-- given by the debugger `a_dm'.			
 		local
 			l_ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
 			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
@@ -51,6 +51,7 @@ feature -- Basic operations
 
 			create last_spot.make (a_tc)
 			last_spot.set_ranking (l_ranking)
+			last_spot.set_trace (a_dm.application_status.exception_text)
 		end
 
 feature{NONE} -- Implementation

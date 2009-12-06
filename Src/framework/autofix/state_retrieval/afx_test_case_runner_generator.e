@@ -59,18 +59,19 @@ feature -- Generation
 			create l_test_executors.make (4096 * 4)
 			create l_run_list.make (4096)
 			from
-				i := 1
 				failing_test_cases.start
 			until
 				failing_test_cases.after
 			loop
 					-- Append failing test cases for a fault.
 				l_tests := failing_test_cases.item_for_iteration
-				l_tests.do_all (agent append_test_case_executor (l_test_executors, ?, failing_test_cases.key_for_iteration, False))
+				check not l_tests.is_empty end
+				append_test_case_executor (l_test_executors, l_tests.first, failing_test_cases.key_for_iteration, False, True)
+				l_tests.do_all (agent append_test_case_executor (l_test_executors, ?, failing_test_cases.key_for_iteration, False, False))
 
 					-- Append passing test cases for the same fault.
 				l_tests := passing_test_cases.item (failing_test_cases.key_for_iteration)
-				l_tests.do_all (agent append_test_case_executor (l_test_executors, ?, failing_test_cases.key_for_iteration, True))
+				l_tests.do_all (agent append_test_case_executor (l_test_executors, ?, failing_test_cases.key_for_iteration, True, False))
 				failing_test_cases.forth
 			end
 
@@ -92,9 +93,11 @@ feature -- Generation
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_test_executors)
 		end
 
-	append_test_case_executor (a_string: STRING; a_test_case_name: STRING; a_test_info: AFX_TEST_CASE_INFO; a_passing: BOOLEAN)
+	append_test_case_executor (a_string: STRING; a_test_case_name: STRING; a_test_info: AFX_TEST_CASE_INFO; a_passing: BOOLEAN; a_dry_run: BOOLEAN)
 			-- Append test case named `a_test_case_name' as the `test_case_number'-th test case
 			-- into `a_string'.
+			-- `a_dry_run' indicates whether the states of the system should be retrieved when the test case is executed:
+			-- True means should; False means should not.
 		local
 			l_test_case: STRING
 		do
@@ -108,6 +111,7 @@ feature -- Generation
 			l_test_case.replace_substring_all ("${BPSLOT}", a_test_info.breakpoint_slot.out)
 			l_test_case.replace_substring_all ("${TAG}", a_test_info.tag)
 			l_test_case.replace_substring_all ("${PASSING}", a_passing.out)
+			l_test_case.replace_substring_all ("${DRY_RUN}", a_dry_run.out)
 
 			a_string.append (l_test_case)
 			a_string.append_character ('%N')
@@ -137,7 +141,8 @@ ${MAKE_BODY}
 		
 feature
 
-	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER)
+	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER; a_dry_run: BOOLEAN)
+			-- If `a_dry_run' is True, states of the current system should not be retrieved.
 		do
 			do_nothing
 		end
@@ -157,7 +162,7 @@ end
 				l_retried: BOOLEAN
 			do
 				if not l_retried then
-					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER})
+					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER}, ${DRY_RUN})
 					create l_tc
 					l_tc.generated_test_1
 				end

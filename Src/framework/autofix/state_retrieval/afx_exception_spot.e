@@ -22,7 +22,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current with `a_info.
 		do
 			test_case_info := a_info
-			id := test_case_info.id
+			set_trace ("")
 		end
 
 feature -- Access
@@ -98,6 +98,9 @@ feature -- Access
 
 	id: STRING
 			-- Identifier of current spot	
+		do
+			Result := test_case_info.id
+		end
 
 	hash_code: INTEGER
 			-- Hash code value
@@ -106,6 +109,9 @@ feature -- Access
 		ensure then
 			good_result: Result = id.hash_code
 		end
+
+	trace: STRING
+			-- Trace of the exception
 
 feature -- Status report
 
@@ -125,6 +131,13 @@ feature -- Setting
 			create skeleton.make_with_expressions (recipient_class_, recipient_, keys_from_hash_table (ranking))
 		ensure
 			ranking_set: ranking = a_ranking
+		end
+
+	set_trace (a_trace: STRING)
+			-- Set `trace' with `a_trace'.
+			-- Make a new copy of `a_trace'.
+		do
+			create trace.make_from_string (a_trace)
 		end
 
 feature{NONE} -- Implementation
