@@ -167,6 +167,75 @@ feature -- Basic operations
 			feature_generated: feature_list.features_generated.has (a_feature)
 		end
 
+	process_generic_feature (a_feature: !FEATURE_I; a_type: !TYPE_A)
+			-- Generate code for `a_feature'.
+		do
+			ep_context.set_current_class (a_feature.written_class)
+			ep_context.set_current_feature (a_feature)
+			ep_context.set_location (a_feature.body.start_location)
+
+			output.put_comment_line ("Feature " + a_feature.feature_name + " from generic class " + a_type.associated_class.name_in_upper)
+			output.put_comment_line ("--------------------------------------")
+			output.put_new_line
+
+			if a_feature.is_attribute then
+					-- Generate field name
+				attribute_writer.write_generic_attribute (a_feature, a_type)
+				output.put (attribute_writer.output.string)
+
+			elseif a_feature.is_constant then
+					-- Generate function and axiom
+				constant_writer.write_constant (a_feature)
+				output.put (constant_writer.output.string)
+
+			else
+				if a_feature.has_return_value and then feature_list.is_pure (a_feature) then
+						-- It's a pure function, so generate functional representation
+					function_writer.write_generic_functional_representation (a_feature, a_type)
+					output.put (function_writer.output.string)
+				end
+
+					-- Generate precondition predicate
+-- MML TEST
+--				function_writer.write_precondition_predicate (a_feature)
+--				output.put (function_writer.output.string)
+
+					-- Generate postcondition predicate
+-- MML TEST
+--				function_writer.write_postcondition_predicate (a_feature)
+--				output.put (function_writer.output.string)
+
+					-- Generate signature
+				signature_writer.write_generic_feature_signature (a_feature, a_type)
+				output.put (signature_writer.output.string)
+
+					-- Generate implementation
+				if is_generating_implementation then
+					if feature_list.is_creation_routine_already_generated (a_feature) then
+						output.put_comment_line ("Implementation already done for feature as creation routine")
+					elseif a_feature.is_deferred then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is deferred")
+					elseif a_feature.is_external then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is external")
+					elseif is_feature_proof_done (a_feature) then
+						try_generate_implementation (a_feature, False)
+					else
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "indexing value")
+						output.put_comment_line ("Implementation ignored (proof skipped)")
+					end
+				end
+
+			end
+			output.put_new_line
+
+			feature_list.mark_feature_generated (a_feature)
+		ensure
+			feature_not_needed: not feature_list.features_needed.has (a_feature)
+			feature_generated: feature_list.features_generated.has (a_feature)
+		end
+
 	process_creation_routine (a_feature: !FEATURE_I)
 			-- Generate code for creation routine `a_feature' for creation of class `a_class'.
 		do
@@ -208,6 +277,49 @@ feature -- Basic operations
 			feature_not_needed: not feature_list.creation_routines_needed.has (a_feature)
 			feature_generated: feature_list.creation_routines_generated.has (a_feature)
 		end
+
+	process_generic_creation_routine (a_feature: !FEATURE_I; a_type: !TYPE_A)
+			-- Generate code for creation routine `a_feature' for creation of class `a_class'.
+		do
+			ep_context.set_current_class (a_feature.written_class)
+			ep_context.set_current_feature (a_feature)
+			ep_context.set_location (a_feature.body.start_location)
+
+			output.put_comment_line ("Creation routine " + a_feature.feature_name + " from generic class " + a_type.associated_class.name_in_upper)
+			output.put_comment_line ("--------------------------------------")
+			output.put_new_line
+
+				-- Generate signature
+			signature_writer.write_generic_creation_routine_signature (a_feature, a_type)
+			output.put (signature_writer.output.string)
+
+				-- Generate implementation
+			if is_generating_implementation then
+				if is_feature_proof_done (a_feature) then
+					if a_feature.is_deferred then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is deferred")
+					elseif a_feature.is_external then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is external")
+					else
+						try_generate_implementation (a_feature, True)
+					end
+				else
+						-- TODO: internationalization
+					event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "indexing value")
+					output.put_comment_line ("Implementation ignored (proof skipped)")
+				end
+			end
+
+			output.put_new_line
+
+--			feature_list.mark_generic_creation_routine_as_generated (a_feature, a_type)
+		ensure
+			feature_not_needed: not feature_list.creation_routines_needed.has (a_feature)
+			feature_generated: feature_list.creation_routines_generated.has (a_feature)
+		end
+
 
 feature {NONE} -- Implementation
 

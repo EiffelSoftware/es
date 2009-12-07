@@ -152,6 +152,10 @@ feature {NONE} -- Implementation
 
 			current_class := l_class.compiled_class
 			current_feature := current_class.feature_named (l_feature_name)
+
+			check current_class /= Void end
+			check current_feature /= Void end
+
 			create {LINKED_LIST [EP_ERROR]}current_feature_errors.make
 		end
 

@@ -37,6 +37,30 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
+	generic_boogie_type_for_type (a_type, a_generic_derivation: TYPE_A): STRING
+			-- Boogie type for type `a_type'
+		require
+			type_not_void: a_type /= Void
+		local
+			l_type: TYPE_A
+			l_formal: FORMAL_A
+		do
+			if a_type.is_like then
+				l_type := a_type.actual_type
+			else
+				l_type := a_type
+			end
+			check not l_type.is_like end
+			if l_type.is_formal then
+				l_formal ?= l_type
+				Result := boogie_type_for_type (a_generic_derivation.generics.item (l_formal.position))
+			else
+				Result := boogie_type_for_type (a_type)
+			end
+		ensure
+			result_not_void: Result /= Void
+		end
+
 	boogie_type_for_class (a_class: CLASS_C): STRING
 			-- Boogie type for class `a_class'
 		require

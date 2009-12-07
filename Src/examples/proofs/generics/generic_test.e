@@ -2,7 +2,6 @@ indexing
 	description: "Summary description for {GENERIC_TEST}."
 	date: "$Date$"
 	revision: "$Revision$"
-	proof: False
 
 class
 	GENERIC_TEST

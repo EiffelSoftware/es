@@ -143,6 +143,14 @@ feature -- Element change
 			name_mapper_set: name_mapper = a_mapper
 		end
 
+	set_last_target_type (a_type: like last_target_type)
+			-- Set `last_target_type' to `a_type'.
+		do
+			last_target_type := a_type
+		ensure
+			last_target_type_set: last_target_type = a_type
+		end
+
 	reset
 			-- Reset expression writer for a new expression.
 		do
@@ -449,8 +457,15 @@ feature {BYTE_NODE} -- Visitors
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 
-			feature_list.record_creation_routine_needed (l_attached_feature)
-			l_creation_routine_name := name_generator.creation_routine_name (l_attached_feature)
+			if l_type.has_generics then
+					-- Generic class
+				feature_list.record_generic_creation_routine_needed (l_attached_feature, l_type)
+				l_creation_routine_name := name_generator.generic_creation_routine_name (l_attached_feature, l_type)
+			else
+					-- Non-generic class
+				feature_list.record_creation_routine_needed (l_attached_feature)
+				l_creation_routine_name := name_generator.creation_routine_name (l_attached_feature)
+			end
 
 				-- TODO: create new local, register local
 			create_new_local (l_type)
@@ -876,7 +891,8 @@ feature {NONE} -- Implementation
 			elseif {l_wtf2: EP_OLD_HEAP_HANDLER} old_handler then
 				l_old_heap := "old_heap"
 			else
-				check false end
+--				check false end
+				l_old_heap := "old-heap"
 			end
 
 				-- Construct arguments
@@ -962,17 +978,30 @@ feature {NONE} -- Implementation
 			l_function_name, l_procedure_name, l_field_name: STRING
 			l_temp_expression, l_arguments: STRING
 		do
-			feature_list.record_feature_needed (a_feature)
+			if last_target_type /= Void and then last_target_type.has_generics then
+				feature_list.record_generic_feature_needed (a_feature, last_target_type)
+			else
+				feature_list.record_feature_needed (a_feature)
+			end
 			if is_processing_contract then
 				feature_list.record_feature_used_in_contract (a_feature)
 			end
 
 			if a_feature.is_attribute then
-				l_field_name := name_generator.attribute_name (a_feature)
+				if last_target_type /= Void and then last_target_type.has_generics then
+					l_field_name := name_generator.generic_attribute_name (a_feature, last_target_type)
+				else
+					l_field_name := name_generator.attribute_name (a_feature)
+				end
 				expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
 			else
-				l_function_name := name_generator.functional_feature_name (a_feature)
-				l_procedure_name := name_generator.procedural_feature_name (a_feature)
+				if last_target_type /= Void and then last_target_type.has_generics then
+					l_function_name := name_generator.generic_functional_feature_name (a_feature, last_target_type)
+					l_procedure_name := name_generator.generic_procedural_feature_name (a_feature, last_target_type)
+				else
+					l_function_name := name_generator.functional_feature_name (a_feature)
+					l_procedure_name := name_generator.procedural_feature_name (a_feature)
+				end
 
 					-- Store expression
 				l_temp_expression := expression.string

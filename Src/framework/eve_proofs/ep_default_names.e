@@ -22,12 +22,33 @@ feature -- Access
 			Result := "field." + l_class_name + "." + mangled_feature_name (a_feature)
 		end
 
+	generic_attribute_name (a_feature: !FEATURE_I; a_type: !TYPE_A): STRING
+			-- Name of attribute `a_feature' as used in Boogie code
+		require
+			is_attribute: a_feature.is_attribute
+			is_generic: a_type.has_generics
+		local
+			l_class_name: STRING
+		do
+			l_class_name := type_name (a_type)
+			Result := "field." + l_class_name + "." + mangled_feature_name (a_feature)
+		end
+
 	functional_feature_name (a_feature: !FEATURE_I): STRING
 			-- Functional name of `a_feature' as used in Boogie code
 		local
 			l_class_name: STRING
 		do
 			l_class_name := a_feature.written_class.name_in_upper
+			Result := "fun." + l_class_name + "." + mangled_feature_name (a_feature)
+		end
+
+	generic_functional_feature_name (a_feature: !FEATURE_I; a_type: !TYPE_A): STRING
+			-- Functional name of `a_feature' as used in Boogie code
+		local
+			l_class_name: STRING
+		do
+			l_class_name := type_name (a_type)
 			Result := "fun." + l_class_name + "." + mangled_feature_name (a_feature)
 		end
 
@@ -40,12 +61,32 @@ feature -- Access
 			Result := "proc." + l_class_name + "." + mangled_feature_name (a_feature)
 		end
 
+	generic_procedural_feature_name (a_feature: !FEATURE_I; a_type: !TYPE_A): STRING
+			-- Procedural name of `a_feature' as used in Boogie code
+		local
+			l_class_name: STRING
+		do
+			l_class_name := type_name (a_type)
+			Result := "proc." + l_class_name + "." + mangled_feature_name (a_feature)
+		end
+
 	creation_routine_name (a_feature: !FEATURE_I): STRING
 			-- Name of creation routine `a_feature' as used in Boogie code
 		local
 			l_class_name: STRING
 		do
 			l_class_name := a_feature.written_class.name_in_upper
+			Result := "create." + l_class_name + "." + mangled_feature_name (a_feature)
+		end
+
+	generic_creation_routine_name (a_feature: !FEATURE_I; a_type: !TYPE_A): STRING
+			-- Name of creation routine `a_feature' as used in Boogie code
+		require
+			a_type.has_generics
+		local
+			l_class_name: STRING
+		do
+			l_class_name := type_name (a_type)
 			Result := "create." + l_class_name + "." + mangled_feature_name (a_feature)
 		end
 

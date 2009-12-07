@@ -60,6 +60,9 @@ feature -- Access
 	name_mapper: !EP_NAME_MAPPER
 			-- Name mapper used to resolve names
 
+	current_type: TYPE_A
+			-- Current target type
+
 feature -- Basic operations
 
 	build_frame_condition (a_feature: !FEATURE_I)
@@ -69,6 +72,52 @@ feature -- Basic operations
 			l_count: INTEGER
 			l_arguments: STRING
 		do
+			current_type := Void
+			if feature_list.is_pure (a_feature) then
+				last_frame_condition := "Heap == old(Heap)"
+			else
+				visited_features.wipe_out
+				modified_attributes.wipe_out
+				target := name_mapper.current_name
+				process_feature_postcondition (a_feature)
+				if modified_attributes.is_empty then
+						-- No contracts, we assume no side-effects on existing objects
+					last_frame_condition := "(forall<alpha> $o: ref, $f: Field alpha :: { Heap[$o, $f] } $o != Void && IsAllocated(old(Heap), $o) ==> (old(Heap)[$o, $f] == Heap[$o, $f]))"
+				else
+					last_frame_condition := "(forall<alpha> $o: ref, $f: Field alpha :: { Heap[$o, $f] } $o != Void && IsAllocated(old(Heap), $o)"
+					from
+						modified_attributes.start
+					until
+						modified_attributes.after
+					loop
+						l_item := modified_attributes.item_for_iteration
+
+							-- TODO: refactor
+						if l_item.field.starts_with ("$agent$") then
+							l_count := l_item.field.substring (8, 8).to_integer
+							l_arguments := l_item.field.substring (10, l_item.field.count)
+							last_frame_condition.append (" && (!agent.modifies_" + l_count.out + "(Heap, old(Heap), " + l_item.target + l_arguments + ", $o, $f))")
+						else
+							last_frame_condition.append (" && (!($o == " + l_item.target + " && $f == " + l_item.field + "))")
+						end
+
+						modified_attributes.forth
+					end
+					last_frame_condition.append (" ==> (old(Heap)[$o, $f] == Heap[$o, $f]))")
+				end
+			end
+		ensure
+			frame_condition_built: not last_frame_condition.is_empty
+		end
+
+	build_generic_frame_condition (a_feature: !FEATURE_I; a_type: !TYPE_A)
+			-- Build frame condition for feature `a_feature'.
+		local
+			l_item: TUPLE [target: STRING; field: STRING]
+			l_count: INTEGER
+			l_arguments: STRING
+		do
+			current_type := a_type
 			if feature_list.is_pure (a_feature) then
 				last_frame_condition := "Heap == old(Heap)"
 			else
@@ -228,7 +277,11 @@ feature {NONE} -- Visitors
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 
-			l_boogie_name := name_generator.attribute_name (l_attached_feature)
+			if current_type /= Void and then current_type.has_generics then
+				l_boogie_name := name_generator.generic_attribute_name (l_attached_feature, current_type)
+			else
+				l_boogie_name := name_generator.attribute_name (l_attached_feature)
+			end
 
 			if in_target then
 					-- Follow target
@@ -312,7 +365,10 @@ feature {NONE} -- Visitors
 			l_last_target, l_field: STRING
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
+			l_last_target_type: TYPE_A
 		do
+			l_last_target_type := current_type
+			current_type := a_node.target.type
 				-- TODO: make check more generic, see also EP_EXPRESSION_WRITER.process_nested
 			if
 				{l_access_exp: ACCESS_EXPR_B} a_node.target and then
@@ -333,6 +389,7 @@ feature {NONE} -- Visitors
 
 				target := l_last_target
 			end
+			current_type := l_last_target_type
 		end
 
 	process_result_b (a_node: RESULT_B)

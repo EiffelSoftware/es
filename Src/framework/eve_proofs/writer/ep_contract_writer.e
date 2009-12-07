@@ -39,6 +39,9 @@ feature -- Access
 	current_feature: FEATURE_I
 			-- Feature which is currently being processed
 
+	current_generic_type: TYPE_A
+			-- Generic type whose feature is currently being processed
+
 	preconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]
 			-- List of generated preconditions
 
@@ -79,6 +82,8 @@ feature -- Element change
 			-- Set `current_feature' to `a_feature'.
 		do
 			current_feature := a_feature
+				-- TODO: fix
+			current_generic_type := Void
 
 			if byte_server.has (current_feature.code_id) then
 				byte_code := byte_server.item (current_feature.code_id)
@@ -87,6 +92,15 @@ feature -- Element change
 			end
 		ensure
 			current_feature_set: current_feature = a_feature
+		end
+
+	set_generic_type (a_type: TYPE_A)
+			-- Set `current_generic_type' to `a_type'.
+		do
+			current_generic_type := a_type
+
+		ensure
+			current_feature_set: current_generic_type = a_type
 		end
 
 	set_expression_writer (a_expression_writer: EP_EXPRESSION_WRITER)
@@ -145,7 +159,10 @@ feature -- Basic operations
 				-- Set up byte context
 			Context.clear_feature_data
 			Context.clear_class_type_data
-			if not current_feature.written_class.is_generic then
+
+			if current_generic_type /= Void then
+				Context.init (current_generic_type.associated_class_type (current_generic_type.generic_derivation))
+			elseif not current_feature.written_class.is_generic then
 				Context.init (current_feature.written_class.types.first)
 			end
 			Context.set_current_feature (current_feature)
@@ -225,6 +242,7 @@ feature {NONE} -- Implementation
 					else
 						expression_writer.reset
 						expression_writer.set_processing_contract
+						expression_writer.set_last_target_type (current_generic_type)
 						l_assert.expr.process (expression_writer)
 						expression_writer.set_not_processing_contract
 

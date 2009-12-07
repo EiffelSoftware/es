@@ -162,8 +162,8 @@ feature {NONE} -- Implementation
 			l_arguments: LINKED_LIST [STRING]
 			l_process_factory: PROCESS_FACTORY
 			l_process: PROCESS
-			l_registry: WEL_REGISTRY
-			l_registry_value: WEL_REGISTRY_KEY_VALUE
+--			l_registry: WEL_REGISTRY
+--			l_registry_value: WEL_REGISTRY_KEY_VALUE
 			l_executable: STRING
 			l_error: EP_GENERAL_ERROR
 			l_path_string: STRING
@@ -212,13 +212,13 @@ feature {NONE} -- Implementation
 			end
 
 				-- 3. Windows only: Look in registry
-			if l_executable.is_empty and {PLATFORM}.is_windows then
-				create l_registry
-				l_registry_value := l_registry.open_key_value ("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SpecSharp", "InstallDir")
-				if l_registry_value /= Void then
-					l_executable := l_registry_value.string_value + "Boogie.exe"
-				end
-			end
+--			if l_executable.is_empty and {PLATFORM}.is_windows then
+--				create l_registry
+--				l_registry_value := l_registry.open_key_value ("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SpecSharp", "InstallDir")
+--				if l_registry_value /= Void then
+--					l_executable := l_registry_value.string_value + "Boogie.exe"
+--				end
+--			end
 
 				-- 4. Just launch it an hope for the best (i.e. it's in the PATH)
 			if l_executable.is_empty then

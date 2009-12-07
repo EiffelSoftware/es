@@ -101,6 +101,70 @@ feature -- Basic operations
 			output.put_new_line
 		end
 
+	write_generic_functional_representation (a_feature: !FEATURE_I; a_type: !TYPE_A)
+			-- Write functional representation of `a_feature'.
+		require
+			is_query: not a_feature.type.is_void
+		local
+			l_function_name, l_arguments, l_type: STRING
+			l_argument_name, l_full_function: STRING
+			i: INTEGER
+		do
+			output.reset
+
+			l_function_name := name_generator.generic_functional_feature_name (a_feature, a_type)
+			l_full_function := l_function_name.twin
+			l_arguments := "heap: HeapType, current: ref"
+			l_full_function.append ("(heap, current")
+			from
+				i := 1
+			until
+				i > a_feature.argument_count
+			loop
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
+				l_arguments.append (", ")
+				l_arguments.append (l_argument_name)
+				l_arguments.append (": ")
+				l_arguments.append (type_mapper.generic_boogie_type_for_type (a_feature.arguments.i_th (i), a_type))
+
+				l_full_function.append (", ")
+				l_full_function.append (l_argument_name)
+
+				i := i + 1
+			end
+			l_full_function.append (")")
+			l_type := type_mapper.generic_boogie_type_for_type (a_feature.type, a_type)
+
+			output.put_comment_line ("Functional representation of query")
+			output.put_line ("function " + l_function_name + "(" + l_arguments + ") returns (" + l_type + ");")
+
+			name_mapper.set_current_feature (a_feature)
+			name_mapper.set_current_name ("current")
+			name_mapper.set_target_name ("current")
+			name_mapper.set_heap_name ("heap")
+			name_mapper.set_result_name (l_full_function)
+
+			expression_writer.reset
+
+			contract_writer.reset
+			contract_writer.set_feature (a_feature)
+			contract_writer.set_expression_writer (expression_writer)
+			contract_writer.set_generic_type (a_type)
+			contract_writer.generate_contracts
+
+			if contract_writer.is_generation_failed then
+					-- TODO: improve message
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "(function axiom) " + contract_writer.fail_reason)
+				output.put_comment_line ("Axiom ignored (skipped due to exception)")
+			else
+				output.put_line ("axiom (forall " + l_arguments + " ::")
+				output.put_line ("             { " + l_full_function + " } // Trigger")
+				output.put_line ("        (" + contract_writer.full_precondition + ") ==> (" + contract_writer.full_postcondition + "));")
+			end
+
+			output.put_new_line
+		end
+
 	write_postcondition_predicate (a_feature: !FEATURE_I)
 			-- TODO: move someplace else
 			-- TODO: REFACTOR!

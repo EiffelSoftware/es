@@ -21,6 +21,11 @@ feature {NONE} -- Implementation
 			create {LINKED_LIST [!FEATURE_I]} features_needed.make
 			create {LINKED_LIST [!FEATURE_I]} features_generated.make
 			create {LINKED_LIST [!FEATURE_I]} features_used_in_contracts.make
+
+			create {LINKED_LIST [!TUPLE [!FEATURE_I, !TYPE_A]]} generic_features_needed.make
+			create {LINKED_LIST [!TUPLE [!FEATURE_I, !TYPE_A]]} generic_creation_routines_needed.make
+			create {LINKED_LIST [!TUPLE [!FEATURE_I, !TYPE_A]]} generic_features_generated.make
+			create {LINKED_LIST [!TUPLE [!FEATURE_I, !TYPE_A]]} generic_creation_routines_generated.make
 		end
 
 feature -- Access
@@ -41,6 +46,18 @@ feature -- Access
 			-- List of features used in contracts
 			-- This list is used to determine which referenced features should
 			-- be marked as pure when their signature is printed
+
+	generic_creation_routines_needed: !LIST [!TUPLE [!FEATURE_I, !TYPE_A]]
+			-- List of generic creation routines which still need to be generated
+
+	generic_features_needed: !LIST [!TUPLE [!FEATURE_I, !TYPE_A]]
+			-- List of generic features which still need to be generated
+
+	generic_creation_routines_generated: !LIST [!TUPLE [!FEATURE_I, !TYPE_A]]
+			-- List of generic creation routines have already been generated
+
+	generic_features_generated: !LIST [!TUPLE [!FEATURE_I, !TYPE_A]]
+			-- List of generic features have already been generated
 
 feature -- Status report
 
@@ -134,6 +151,36 @@ feature -- Element change
 			--not features_generated.has (a_feature) implies features_needed.has (a_feature)
 		end
 
+
+	record_generic_creation_routine_needed (a_feature: !FEATURE_I; a_type: !TYPE_A)
+			-- Record that `a_feature' is needed as a generic creation routine.
+		do
+			if
+				not generic_creation_routines_needed.there_exists (agent is_same_generic_feature (?, a_feature, a_type)) and then
+				not generic_creation_routines_generated.there_exists (agent is_same_generic_feature (?, a_feature, a_type))
+			then
+				generic_creation_routines_needed.extend ([a_feature, a_type])
+			end
+		ensure
+			-- not working, as we are checking over routine ids and not object identities
+			--not creation_routines_generated.has (a_feature) implies creation_routines_needed.has (a_feature)
+		end
+
+	record_generic_feature_needed (a_feature: !FEATURE_I; a_type: !TYPE_A)
+			-- Record that `a_feature' is needed as a generic creation routine.
+		do
+			if
+				not generic_features_needed.there_exists (agent is_same_generic_feature (?, a_feature, a_type)) and then
+				not generic_features_generated.there_exists (agent is_same_generic_feature (?, a_feature, a_type))
+			then
+				generic_features_needed.extend ([a_feature, a_type])
+			end
+		ensure
+			-- not working, as we are checking over routine ids and not object identities
+			--not creation_routines_generated.has (a_feature) implies creation_routines_needed.has (a_feature)
+		end
+
+
 feature -- Basic operations
 
 	mark_creation_routine_as_generated (a_feature: !FEATURE_I)
@@ -175,6 +222,11 @@ feature -- Basic operations
 			features_needed.wipe_out
 			features_generated.wipe_out
 			features_used_in_contracts.wipe_out
+
+			generic_creation_routines_needed.wipe_out
+			generic_features_needed.wipe_out
+			generic_creation_routines_generated.wipe_out
+			generic_features_generated.wipe_out
 		end
 
 feature {NONE} -- Implementation
@@ -183,6 +235,12 @@ feature {NONE} -- Implementation
 			-- Has `a_feature' routine id `a_routine_id'?
 		do
 			Result := a_feature.rout_id_set.first = a_other_feature.rout_id_set.first and then a_feature.written_in = a_other_feature.written_in
+		end
+
+	is_same_generic_feature (a_feature: !TUPLE[f: !FEATURE_I; t: !TYPE_A]; a_other_feature: !FEATURE_I; a_other_type: !TYPE_A): BOOLEAN
+			-- Has `a_feature' routine id `a_routine_id'?
+		do
+			Result := is_same_feature (a_feature.f, a_other_feature) and then a_feature.t.same_as (a_other_type)
 		end
 
 end

@@ -190,6 +190,7 @@ feature {NONE} -- Implementation
 			-- Generate Boogie code for all referenced features.
 		local
 			l_list: !LIST [!FEATURE_I]
+			l_generic_list: !LIST [!TUPLE [c: !FEATURE_I; t: !TYPE_A]]
 		do
 			boogie_generator.reset
 			boogie_generator.omit_implementation
@@ -222,6 +223,27 @@ feature {NONE} -- Implementation
 					boogie_generator.process_feature (l_list.first)
 				end
 			end
+
+
+			from
+				l_generic_list := feature_list.generic_creation_routines_needed
+				l_generic_list.start
+			until
+				l_generic_list.off
+			loop
+				boogie_generator.process_generic_creation_routine (l_generic_list.item.c, l_generic_list.item.t)
+				l_generic_list.forth
+			end
+			from
+				l_generic_list := feature_list.generic_features_needed
+				l_generic_list.start
+			until
+				l_generic_list.off
+			loop
+				boogie_generator.process_generic_feature (l_generic_list.item.c, l_generic_list.item.t)
+				l_generic_list.forth
+			end
+
 
 			verifier.add_buffer_content (boogie_generator.output, "Referenced features")
 		end
