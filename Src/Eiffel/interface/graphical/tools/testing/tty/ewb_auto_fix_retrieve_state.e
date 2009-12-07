@@ -134,8 +134,8 @@ feature -- Execute
 
 --			l_test_daikon_generation := True
 			if l_test_daikon_generation then
-				io.put_string (daikon_generator.print_declarations)
-				io.put_string (daikon_generator.print_trace)
+				io.put_string (daikon_generator.declarations)
+				io.put_string (daikon_generator.traces)
 			end
 
 --			l_test_postcondition_generation := True
@@ -218,7 +218,7 @@ feature{NONE} -- Implementation
 
 		do
 
-			daikon_generator.add_state (a_state,a_breakpoint.breakable_line_number.out)
+			daikon_generator.add_state (a_state,a_breakpoint.breakable_line_number.out,false)
 
 
 			if a_state.feature_ = void then

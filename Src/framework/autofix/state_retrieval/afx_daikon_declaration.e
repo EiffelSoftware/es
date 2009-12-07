@@ -24,9 +24,10 @@ feature -- Constructor
 			var_kind := "variable"
  			dec_type := equation.expression.text
  			rep_type := get_rep_type (equation.type)
- 			flags := "non_null"
+ 			-- flags := "non_null"
 
  			variable_name := equation.expression.text
+ 			remove_space(variable_name)
 		end
 
 feature -- Set
@@ -43,7 +44,6 @@ feature -- Set
 			result := result + "%T%T var-kind "+ var_kind + "%N"
 			result := result + "%T%T dec-type "+ dec_type + "%N"
 			result := result + "%T%T rep-type "+ rep_type + "%N"
-			result := result + "%T%T flags "+ flags + "%N"
 
 		end
 
@@ -56,21 +56,38 @@ feature {NONE} -- Implementation
 			--boolean, int, hashcode, double, or java.lang.String or hashcode
 
 		do
-			if (type.name.has_substring ("INTEGER") ) then
+			if (type.is_integer or type.is_natural) then
 				result :="int";
 
-			elseif (type.name.has_substring ("DOUBLE") )  then
+			elseif (type.is_real_32 or type.is_real_64 )  then
 				result :="double";
 
-			elseif (type.name.has_substring ("BOOLEAN") )  then
+			elseif (type.is_boolean )  then
 				result :="boolean";
-
-			elseif (type.name.has_substring ("STRING") )  then
-				result :="java.lang.String";
 			else
 				result :="hashcode"
 			end
 		end
+
+  	remove_space(str:STRING) is
+   			--
+   		local
+   			i :INTEGER
+   		do
+   			from
+   				i := 1
+   			until
+   				i = str.count
+   			loop
+   				if (str.at (i).is_space) then
+   					str.remove_substring (i,i)
+   				end
+   				i := i + 1
+
+   			end
+
+   		end
+
 
 	variable_name : STRING
 		-- The variable name for the declaration

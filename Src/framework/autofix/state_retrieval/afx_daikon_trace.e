@@ -23,8 +23,12 @@ feature --Constructor
 
 	make (equation : AFX_EQUATION) is
 			-- create the trace with the current variable
+		local
+			expression_str:STRING
 		do
-			output := equation.expression.text +"%N"
+			expression_str := equation.expression.text
+			remove_space(expression_str)
+			output := expression_str +"%N"
 			output := output + get_value(equation) +"%N"
 			output := output + "1%N"
 
@@ -42,20 +46,42 @@ feature{NONE} -- Implementation
 			-- Return the right representation for each type
 			-- Use visitor
 		do
-            fixme("use a visitor to print the values.")
 			if (equation.value.out.is_boolean) then
 				if (equation.value.out.to_boolean) then
 					result:= "1"
 				else
 					result:= "0"
 				end
-			else
+			elseif(equation.value.out.is_integer or equation.value.out.is_natural
+			           or equation.value.out.is_real ) then
+
 				result := equation.value.out
+			else
+				result := equation.value.out.hash_code.out
 			end
 		end
 
-
    output : STRING
    	-- the trace
+
+   	remove_space(str:STRING) is
+   			--
+   		local
+   			i :INTEGER
+   		do
+   			from
+   				i := 1
+   			until
+   				i = str.count
+   			loop
+   				if (str.at (i).is_space) then
+   					str.remove_substring (i,i)
+   				end
+   				i := i + 1
+
+   			end
+
+   		end
+
 
 end

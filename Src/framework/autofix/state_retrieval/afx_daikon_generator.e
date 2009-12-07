@@ -18,8 +18,23 @@ feature -- creator
 		end
 
 feature -- Declaration
+	is_failing_tc : BOOLEAN
+		-- is the test case a fail
 
-   	add_state (a_state: AFX_STATE; break_point: STRING) is
+	number_states:INTEGER is
+			--
+		do
+			Result := daikon_state_list.count
+		end
+
+	restart is
+			--
+		do
+			create daikon_state_list.make
+		end
+
+
+   	add_state (a_state: AFX_STATE; break_point: STRING; is_failing : BOOLEAN ) is
    			-- add traces for a breakpoint
    		local
    			daikon_state : AFX_DAIKON_STATE
@@ -28,7 +43,8 @@ feature -- Declaration
    			a_daikon_trace : AFX_DAIKON_TRACE
    		do
    			--CLASS_NAME.feature_name.bpslot:::POINT
-   			name := generate_state_name (a_state, break_point)
+   			is_failing_tc := is_failing
+   			name := generate_state_name (a_state, break_point, is_failing)
    			create daikon_state.make (name,break_point)
 
    			from
@@ -43,11 +59,11 @@ feature -- Declaration
 				a_state.forth
 			end
 
-   			daikon_state_list.put_right  (daikon_state)
+   			daikon_state_list.put_left  (daikon_state)
 
    		end
 
-   	print_declarations : STRING is
+   	declarations : STRING is
    			-- print all declarations
    		do
    		   result := declaration_header
@@ -56,26 +72,52 @@ feature -- Declaration
    		   until
    		   	  daikon_state_list.after
    		   loop
-   		   	result := result + "ppt " + daikon_state_list.item_for_iteration.name
+
 
    		   	if daikon_state_list.isfirst then
+   		   		--ENTER
+   		   		result := result + "ppt " + daikon_state_list.item_for_iteration.name
    		   		result := result + first_state_definition
-   		   	elseif daikon_state_list.islast then
-   		   		result := result + last_state_definition
-   		   	else
+   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
+				result := result + "%N"
+
+				--BPSLOT
+				result := result + "ppt " + daikon_state_list.item_for_iteration.name
    		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
    		   		result := result + "ppt-type point%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
+				result := result + "%N"
+
+   		   	elseif daikon_state_list.islast then
+   		   		--BPSLOT
+				result := result + "ppt " + daikon_state_list.item_for_iteration.name
+   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
+   		   		result := result + "ppt-type point%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
+				result := result + "%N"
+
+   		   		--EXIT
+   		   		result := result + "ppt " + daikon_state_list.item_for_iteration.name
+   		   		result := result + last_state_definition
+   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
+				result := result + "%N"
+
+   		   	else
+   		   		--NORMAL
+   		   		result := result + "ppt " + daikon_state_list.item_for_iteration.name
+   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
+   		   		result := result + "ppt-type point%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
+				result := result + "%N"
    		   	end
 
-   		   	result := result + daikon_state_list.item_for_iteration.print_declaration
 
-			  result := result + "%N"
    		   	  daikon_state_list.forth
    		   end
 
    		end
 
-   	print_trace : STRING is
+   	traces : STRING is
    			-- print all traces
    		do
    			result := ""
@@ -84,19 +126,43 @@ feature -- Declaration
    		   until
    		   	  daikon_state_list.after
    		   loop
-   		      result := result +  daikon_state_list.item_for_iteration.name
+
 
    		   	  if daikon_state_list.isfirst then
+   		   	  	--ENTER
+   		   	  	result := result +  daikon_state_list.item_for_iteration.name
    		   		result := result + ":::ENTER%N"
-   		   	  elseif daikon_state_list.islast then
-   		   		result := result + ":::EXIT1%N"
-   		   	  else
+   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   	    result := result + "%N"
+
+   		   	    --BPSLOT
+   		   	    result := result +  daikon_state_list.item_for_iteration.name
    		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + "ppt-type point%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   	    result := result + "%N"
+
+   		   	  elseif daikon_state_list.islast then
+   		   	  	--BSLOT
+   		   	  	result := result +  daikon_state_list.item_for_iteration.name
+   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   	    result := result + "%N"
+
+   		   	    --EXIT
+   		   	  	result := result +  daikon_state_list.item_for_iteration.name
+   		   		result := result + ":::EXIT1%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   	    result := result + "%N"
+
+   		   	  else
+   		   	  	result := result +  daikon_state_list.item_for_iteration.name
+   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
+   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   	    result := result + "%N"
    		   	  end
 
-   		   	  result := result + daikon_state_list.item_for_iteration.print_trace
-   		   	  result := result + "%N"
+
+
    		   	  daikon_state_list.forth
    		   end
 
@@ -118,10 +184,15 @@ feature {NONE} -- Implementation
 		-- List of declarations for
 
 
-	generate_state_name (a_state: AFX_STATE ; break_point : STRING) : STRING is
+	generate_state_name (a_state: AFX_STATE ; break_point : STRING; is_failing : BOOLEAN) : STRING is
 			-- generate the naming of a state
 		do
-			result := a_state.class_.name + "." + a_state.feature_.feature_name+ "()"
+			if (is_failing) then
+				result := "F_"+a_state.class_.name + "." + a_state.feature_.feature_name+"()"
+			else
+				result := "P_"+a_state.class_.name + "." + a_state.feature_.feature_name+"()"
+			end
+
 		end
 
 
