@@ -10,6 +10,8 @@ deferred class
 inherit
 	DEBUG_OUTPUT
 
+	AFX_UTILITY
+
 feature{NONE} -- Initialization
 
 	make_with_class_feature (a_class: like context_class; a_feature: like context_feature; a_written_class: like written_class)
@@ -141,23 +143,6 @@ feature -- Setting
 			written_class := a_written_class
 		ensure
 			written_class_set: written_class = a_written_class
-		end
-
-feature{NONE} -- Implementation
-
-	actual_type_from_formal_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A
-			-- If `a_type' is formal, return its actual type in context of `a_context'
-			-- otherwise return `a_type' itself.
-		do
-			if a_type.is_formal then
-				if attached {FORMAL_A} a_type as l_formal then
-					Result := l_formal.constrained_type (a_context)
-				end
-			else
-				Result := a_type
-			end
-		ensure
-			result_attached: Result /= Void
 		end
 
 end
