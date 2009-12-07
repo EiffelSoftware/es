@@ -8248,6 +8248,7 @@ feature {NONE} -- Agents
 			l_array_of_opens: ARRAY_CONST_B
 			l_operand_node: OPERAND_B
 			l_is_qualified_call: BOOLEAN
+			l_type_proc, l_first_arg_proc: attached PROCESSOR_TAG_TYPE
 		do
 				-- When the agent is a qualified call, we need to remove the anchors because otherwise
 				-- we cannot create the proper agent type, see eweasel test#exec271.
@@ -8281,6 +8282,25 @@ feature {NONE} -- Agents
 				-- Type of the first actual generic parameter of the routine type
 				-- should always be attached.
 			l_type := a_target_type.as_attached_in (context.current_class)
+
+
+				-- SCOOP: If this agent was on a separate target, then we have to make sure the
+	 			-- first argument of the generic PROCEDURE is the un-separate version
+	 			-- of the target's type.
+				-- 		
+				-- We twin the target type to avoid mangling it's processor.
+				-- We also twin the processor it has, because we're going to give
+				-- it to the resulting PROCEDURE type, so we don't want them
+				-- to have the same reference.
+			l_type_proc := l_type.processor_tag.duplicate
+			l_type := l_type.twin
+
+			if l_type.is_separate and then
+			   not l_type_proc.is_current then
+				create l_first_arg_proc.make_current
+				l_type.set_processor_tag (l_first_arg_proc)
+			end
+
 			l_generics.put (l_type, 1)
 
 			if a_has_args then
@@ -8430,6 +8450,10 @@ feature {NONE} -- Agents
 
 				-- Type of an agent is always attached.
 			l_result_type := l_result_type.as_attached_in (context.current_class)
+
+				-- In SCOOP, the generated PROCEDURE must have the same target processor as the
+ 				-- original target.
+ 			l_result_type.set_processor_tag (l_type_proc)
 
 			if is_byte_node_enabled then
 				create l_routine_creation
