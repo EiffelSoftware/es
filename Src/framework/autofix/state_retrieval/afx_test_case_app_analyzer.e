@@ -94,6 +94,10 @@ feature -- Basic operations
 				application_exited_actions.extend (agent arff_generator.on_application_exited)
 			end
 
+			if config.is_daikon_enabled then
+				-- Add Daikon related staff.
+			end
+
  				-- Output retrieved state.
 				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
 			debug

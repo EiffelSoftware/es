@@ -146,6 +146,10 @@ feature -- Test case analysis
 			-- ARFF is used by the Weka machine learning tool.
 			-- Default: False
 
+	is_daikon_enabled: BOOLEAN
+			-- Should Daikon be used to infer invariants on system states?
+			-- Default: False
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN
@@ -227,6 +231,14 @@ feature -- Setting
 			is_arff_generation_enabled := b
 		ensure
 			is_arff_generation_enabled_set: is_arff_generation_enabled = b
+		end
+
+	set_is_daikon_enabled (b: BOOLEAN)
+			-- Set `is_daikon_enabled' with `b'.
+		do
+			is_daikon_enabled := b
+		ensure
+			is_daikon_enabled_set: is_daikon_enabled = b
 		end
 
 feature{NONE} -- Implementation

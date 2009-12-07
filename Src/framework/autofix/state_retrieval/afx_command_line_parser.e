@@ -47,6 +47,7 @@ feature -- Basic operations
 			l_analyze_tc_option: AP_FLAG
 			l_max_test_case_no_option: AP_INTEGER_OPTION
 			l_arff_option: AP_FLAG
+			l_daikon_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -81,6 +82,10 @@ feature -- Basic operations
 			l_arff_option.set_description ("Enable ARFF file generation during test case analysis. ARFF is a format used by the Weka machine learning tool. Default: False")
 			l_parser.options.force_last (l_arff_option)
 
+			create l_daikon_option.make_with_long_form ("daikon")
+			l_daikon_option.set_description ("Enable Daikon to infer invariants on system states. Default: False")
+			l_parser.options.force_last (l_daikon_option)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
@@ -108,8 +113,10 @@ feature -- Basic operations
 			end
 
 			config.set_is_arff_generation_enabled (l_arff_option.was_found)
-			
+
 			config.set_should_analyze_test_cases (l_analyze_tc_option.was_found)
+
+			config.set_is_daikon_enabled (l_daikon_option.was_found)
 		end
 
 feature{NONE} -- Implementation
