@@ -1611,7 +1611,6 @@ Non_class_type: TE_EXPANDED Attached_class_type
 				end
 			}
 	|	TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			-- added for SCOOP by paedde
 			{
 				last_class_type ?= $3
 				if last_class_type /= Void then
@@ -1621,8 +1620,18 @@ Non_class_type: TE_EXPANDED Attached_class_type
 				end
 				$$ := $3
 			}
+	|	TE_ATTACHED TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark (extract_keyword ($1), True, False)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
+			}
 	|	TE_BANG TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			-- added for SCOOP by paedde
 			{
 				last_class_type ?= $4
 				if last_class_type /= Void then
@@ -1632,9 +1641,24 @@ Non_class_type: TE_EXPANDED Attached_class_type
 					last_class_type := Void
 				end
 				$$ := $4
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
+			}
+	|	TE_DETACHABLE TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark (extract_keyword ($1), False, True)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
 			}
 	|	TE_QUESTION TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			-- added for SCOOP by paedde
 			{
 				last_class_type ?= $4
 				if last_class_type /= Void then
@@ -1644,6 +1668,11 @@ Non_class_type: TE_EXPANDED Attached_class_type
 					last_class_type := Void
 				end
 				$$ := $4
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
 			}
 	|	TE_BIT Integer_constant
 			{ $$ := ast_factory.new_bits_as ($2, $1) }
@@ -2122,8 +2151,18 @@ Constraint_type:
 				end
 				$$ := $3
 			}
+	|	TE_ATTACHED TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark (extract_keyword ($1), True, False)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
+			}
 	|	TE_BANG TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			-- added for SCOOP by paedde
 			{
 				last_class_type ?= $4
 				if last_class_type /= Void then
@@ -2133,9 +2172,24 @@ Constraint_type:
 					last_class_type := Void
 				end
 				$$ := $4
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
+			}
+	|	TE_DETACHABLE TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
+			{
+				last_class_type ?= $4
+				if last_class_type /= Void then
+					last_class_type.set_is_separate (True, $2)
+					last_class_type.set_attachment_mark (extract_keyword ($1), False, True)
+					last_class_type.set_explicit_processor_specification ($3)
+					last_class_type := Void
+				end
+				$$ := $4
 			}
 	|	TE_QUESTION TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			-- added for SCOOP by paedde
 			{
 				last_class_type ?= $4
 				if last_class_type /= Void then
@@ -2145,6 +2199,11 @@ Constraint_type:
 					last_class_type := Void
 				end
 				$$ := $4
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
+						once "Use the `detachable' keyword instead of ?."))
+				end
 			}
 	|	TE_LIKE Identifier_as_lower
 			{
