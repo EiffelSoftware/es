@@ -718,9 +718,11 @@ feature -- Setting
 		require
 			e_not_void: e /= Void
 		do
-			if Current = system.any_class.compiled_class.feature_named ("default_create") then
-				do_nothing
-			end
+				-- This is a terrible hack to work around the serialization of the FEATURE_I
+				-- class for ANY, thus forgetting the fact that we loosen the export status
+				-- at the end of `DEGREE_SCOOP.execute'
+			(Current = system.any_class.compiled_class.feature_named ("default_create")).do_nothing
+
 			if e.is_all or e.is_none then
 				internal_export_status := Void
 				feature_flags := feature_flags.set_bit_with_mask (e.is_none, is_export_status_none_mask)
