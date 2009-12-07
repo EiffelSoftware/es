@@ -59,7 +59,7 @@ feature{NONE} -- Initialization
 			class_ := a_class
 			feature_ := a_feature
 			make_set (n)
-			set_equality_tester (create {AFX_PREDICATE_EQUALITY_TESTER})
+			set_equality_tester (create {AFX_EQUATION_EQUALITY_TESTER})
 		end
 
 	make_from_object_state (a_state: HASH_TABLE [STRING, STRING]; a_class: like class_; a_feature: like feature_)

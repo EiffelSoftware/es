@@ -38,7 +38,7 @@ feature -- status report
     		        until
     		            u.after or not Result
     		        loop
-    		            Result := predicate_equality_tester.test (u.item_for_iteration, v.item_for_iteration)
+    		            Result := equation_equality_tester.test (u.item_for_iteration, v.item_for_iteration)
     		            u.forth
     		            v.forth
     		        end
@@ -48,7 +48,7 @@ feature -- status report
 
 feature{NONE} -- implementation
 
-	predicate_equality_tester: AFX_PREDICATE_EQUALITY_TESTER
+	equation_equality_tester: AFX_EQUATION_EQUALITY_TESTER
 			-- equality tester for predicates
 		once
 		    create Result
