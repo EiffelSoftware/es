@@ -170,7 +170,6 @@ feature {SYSTEM_I} -- Processing
 				i := i + 1
 			end
 
-			system.any_class.compiled_class.feature_named ("default_create").set_export_status (create {EXPORT_ALL_I})
 --			system.force_rebuild
 
 			if not system.is_explicit_root ("SCOOP_STARTER", "make") then
