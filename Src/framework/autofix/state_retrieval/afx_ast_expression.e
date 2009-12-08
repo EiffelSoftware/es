@@ -28,11 +28,11 @@ inherit
 		undefine
 			is_equal
 		end
-		
+
 create
 	make,
 	make_with_text,
-	make_with_expression
+	make_with_type
 
 feature{NONE} -- Initialization
 
@@ -49,26 +49,44 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	make_with_expression (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
+	make (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
 			-- Initialize Current.
+		local
+			l_printer: AFX_AST_PRINTER
+			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
 		do
 			set_class (a_class)
-			set_written_class (a_written_class)
 			set_feature (a_feature)
+			set_written_class (a_written_class)
 			set_expression (a_expression)
-			set_text ("")
-			check_type
+			has_syntax_error := a_expression = Void
+			if not has_syntax_error then
+				check_type
+				create l_printer
+				create l_context.make
+				l_printer.print_in_context (a_expression, l_context)
+				set_text (l_context.string_representation)
+			else
+				set_text ("")
+			end
 		end
 
-	make (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_type: like type; a_written_class: like written_class)
+	make_with_type (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class; a_type: like type)
 			-- Initialize Current.
+		local
+			l_printer: AFX_AST_PRINTER
+			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
 		do
 			set_class (a_class)
 			set_feature (a_feature)
 			set_written_class (a_written_class)
 			set_expression (a_expression)
+			has_syntax_error := False
 			set_type (a_type)
-			has_syntax_error := a_expression = Void
+			create l_printer
+			create l_context.make
+			l_printer.print_in_context (a_expression, l_context)
+			set_text (l_context.string_representation)
 		end
 
 feature -- Access
@@ -153,7 +171,7 @@ feature -- Setting
 	set_type (a_type: like type)
 			-- Set `type' with `a_type'.
 		require
-			type_attached: type /= Void
+			type_attached: a_type /= Void
 		do
 			type := a_type
 		ensure

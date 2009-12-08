@@ -68,4 +68,61 @@ feature -- Equality tester
 			create Result.make (agent (a, b: AFX_CLASS_WITH_PREFIX): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
+feature -- AST text
+
+	text_of_ast (a_ast: AST_EIFFEL): STRING
+			-- Text of `a_ast', the text is in the form which is similar to flat view.
+		local
+			l_printer: AFX_AST_PRINTER
+			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
+		do
+			create l_context.make
+			create l_printer
+			l_printer.print_in_context (a_ast, l_context)
+			Result := l_context.string_representation
+		end
+
+feature -- Equation transformation
+
+	equation_in_normal_form (a_equation: AFX_EQUATION): AFX_EQUATION
+			-- Equation in normal form of `a_equation'.
+			-- Transformation only happens if `a_equation'.`expression' is in form of "prefix.ABQ",
+			-- otherwise, return `a_equation' itself.
+		local
+			l_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+			l_expr: AFX_AST_EXPRESSION
+			l_text: STRING
+			l_ori_expr: AFX_EXPRESSION
+			l_value: AFX_BOOLEAN_VALUE
+		do
+			l_ori_expr := a_equation.expression
+			if l_ori_expr.is_predicate then
+				create l_analyzer
+				l_analyzer.analyze (l_ori_expr)
+				if l_analyzer.is_matched then
+					create l_text.make (l_ori_expr.text.count)
+					if attached l_analyzer.prefix_expression as l_prefix then
+						l_text.append (l_prefix.text)
+						l_text.append_character ('.')
+					end
+					l_text.append (l_analyzer.argumentless_boolean_query.text)
+					create l_expr.make_with_text (l_ori_expr.class_, l_ori_expr.feature_, l_text, l_ori_expr.written_class)
+					if attached {AFX_BOOLEAN_VALUE} a_equation.value as l_temp_value then
+						if l_temp_value.is_deterministic and then l_analyzer.negation_count \\ 2 = 1 then
+							create l_value.make (not l_temp_value.item)
+						else
+							l_value := l_temp_value
+						end
+					else
+						check should_not_happen: False end
+					end
+					create Result.make (l_expr, l_value)
+				else
+					Result := a_equation
+				end
+			else
+				Result := a_equation
+			end
+		end
+
 end
