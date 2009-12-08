@@ -816,7 +816,7 @@ feature {NONE} -- Roundtrip: implementation
 				i := i + 1
 			end
 			context.add_string (")")
-			last_index := a_list.end_position
+			last_index := a_list.last_token (match_list).index
 		end
 
 feature {NONE} -- SCOOP Implementation

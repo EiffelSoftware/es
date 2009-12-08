@@ -75,7 +75,7 @@ feature {NONE} -- Visitor implementation
 
 					context.add_string ("%N%N%T")
 					-- process frozen key word
-					last_index := l_feature_name.start_position
+					last_index := l_feature_name.first_token (match_list).index
 					safe_process (l_feature_name.frozen_keyword)
 
 					-- get feature name
@@ -147,7 +147,7 @@ feature {NONE} -- Content implementation
 			ex_as: EXTERNAL_AS
 			once_as: ONCE_AS
 		do
-			last_index := l_as.start_position - 1
+			last_index := l_as.first_token (match_list).index - 1
 
 			-- create internal arguments
 			if l_as.internal_arguments /= Void then
@@ -160,7 +160,7 @@ feature {NONE} -- Content implementation
 			-- process type of feature
 			l_type_signature.process_type (l_as.type)
 			if l_as.type /= Void then
-				last_index := l_as.type.end_position
+				last_index := l_as.type.last_token (match_list).index
 				context.add_string (" ")
 			end
 
@@ -251,7 +251,7 @@ feature {NONE} -- Content implementation
 					scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
 					-- create agent feature
-					last_index := l_feature_name.start_position - 1
+					last_index := l_feature_name.first_token (match_list).index - 1
 					context.add_string ("%N%N%T")
 
 					-- set feature name
@@ -261,7 +261,6 @@ feature {NONE} -- Content implementation
 					context.add_string (" (a_caller_: SCOOP_SEPARATE_TYPE): ")
 
 					-- set type
-					last_index := l_as.body.type.start_position
 					l_type_attribute_wrapper.process_type (l_as.body.type)
 
 					-- keyword is and local declaration
@@ -306,7 +305,6 @@ feature {NONE} -- Content implementation
 					context.add_string  ("_scoop_separate_" + class_as.class_name.name.as_lower + ": ")
 
 					-- result type (original / client type)
-					last_index := l_as.body.type.start_position - 1
 					l_type_locals.process_type (l_as.body.type)
 --					process_result_type (l_as.body.type, true, l_type_signature)
 
@@ -318,6 +316,7 @@ feature {NONE} -- Content implementation
 					-- no is_keyword, no body, skip indexing clause
 					i := i + 1
 				end
+				last_index := l_as.last_token (match_list).index
 				scoop_workbench_objects.set_current_proxy_feature_name (Void)
 			end
 		end
@@ -348,7 +347,6 @@ feature {NONE} -- Content implementation
 				l_feature_name_str := l_feature_name_visitor.get_feature_name
 				scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
-				last_index := l_feature_name.start_position - 1
 				context.add_string ("%N%N%T")
 
 				-- set feature name
@@ -358,7 +356,6 @@ feature {NONE} -- Content implementation
 				context.add_string (" (a_caller_: SCOOP_SEPARATE_TYPE): ")
 
 				-- set type
-				last_index := l_as.body.type.start_position
 				l_type_attribute_wrapper.process_type (l_as.body.type)
 
 				-- keyword is and local declaration
@@ -400,29 +397,29 @@ feature {NONE} -- Content implementation
 				context.add_string ("%N%T%Tend%N%N%T")
 
 				-- Create wrapper for attribute. Necessary for agent creation.
-				last_index := l_feature_name.start_position - 1
+				last_index := l_feature_name.first_token (match_list).index - 1
 				safe_process (l_feature_name)
 				context.add_string  ("_scoop_separate_" + class_as.class_name.name.as_lower + ": ")
 
 				-- result type
-				last_index := l_as.body.type.start_position - 1
 				l_type_locals.process_type (l_as.body.type)
 --				safe_process (l_as.body.type)
 --				process_result_type (l_as.body.type, true, l_type_signature)
 
 				-- body
 				context.add_string ("%N%T%T%T-- Wrapper for constant `")
-				last_index := l_feature_name.start_position - 1
+				last_index := l_feature_name.first_token (match_list).index - 1
 				safe_process (l_feature_name)
 				context.add_string ( "'.")
 				context.add_string ("%N%T%Tis do%N%T%T%TResult := implementation_.")
-				last_index := l_feature_name.start_position - 1
+				last_index := l_feature_name.first_token (match_list).index - 1
 				safe_process (l_feature_name)
 				context.add_string ("%N%T%Tend")
 
 				-- no is_keyword, no body, skip indexing clause
 				i := i + 1
 			end
+			last_index := l_as.last_token (match_list).index
 			scoop_workbench_objects.set_current_proxy_feature_name (Void)
 		end
 
@@ -839,7 +836,7 @@ feature -- Test
 			-- now append the arguments of the current feature
 			if l_as.body.internal_arguments /= Void and then
 				l_as.body.internal_arguments.arguments /= Void then
-				last_index := l_as.body.internal_arguments.start_position
+				last_index := l_as.body.internal_arguments.first_token (match_list).index - 1
 				safe_process (l_as.body.internal_arguments.arguments)
 			end
 			context.add_string (")")
