@@ -819,8 +819,10 @@ feature -- Test
 			assigner_not_void: an_assigner_name /= Void
 		local
 			l_last_index: INTEGER
+			l_args : FORMAL_ARGU_DEC_LIST_AS
 		do
 			l_last_index := last_index
+			l_args := l_as.body.internal_arguments
 
 			-- create a call to a wrapper feature
 			context.add_string ("%N%N%T")
@@ -834,10 +836,11 @@ feature -- Test
 			-- second argument `a_caller_: SCOOP_SEPARATE_TYPE'.
 			context.add_string ("; a_caller_: SCOOP_SEPARATE_TYPE; ")
 			-- now append the arguments of the current feature
-			if l_as.body.internal_arguments /= Void and then
-				l_as.body.internal_arguments.arguments /= Void then
-				last_index := l_as.body.internal_arguments.first_token (match_list).index - 1
-				safe_process (l_as.body.internal_arguments.arguments)
+			if l_args /= Void and then
+				l_args.arguments /= Void then
+				last_index := l_args.first_token (match_list).index -- - 1
+
+				safe_process (l_args.arguments)
 			end
 			context.add_string (")")
 
@@ -857,9 +860,9 @@ feature -- Test
 
 				-- print argument list
 				context.add_string (" (a_caller_, " + an_assigner_name + "_arg_1_")
-				if l_as.body.internal_arguments /= Void then
+				if l_args /= Void then
 					context.add_string (", ")
-					process_formal_argument_list_with_auxiliary_variables (l_as.body.internal_arguments, false, false)
+					process_formal_argument_list_with_auxiliary_variables (l_args, false, false)
 				end
 				context.add_string (")")
 			end
