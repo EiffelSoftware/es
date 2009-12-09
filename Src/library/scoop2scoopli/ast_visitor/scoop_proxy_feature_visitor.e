@@ -842,7 +842,6 @@ feature -- Test
 			context.add_string (")")
 
 			-- create is keyword and comment
-			context.add_string (" is")
 			context.add_string ("%N%T%T%T-- Wrapper for assign call")
 
 			if l_as.is_deferred then
