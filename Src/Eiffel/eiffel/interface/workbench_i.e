@@ -222,6 +222,79 @@ feature -- Additional implementation for SCOOP
 			is_degree_scoop_processed := false
 		end
 
+	add_scoopli_library
+			-- Add SCOOP library to current target if necessary.
+		local
+			l_location: CONF_FILE_LOCATION
+			l_factory: CONF_PARSE_FACTORY
+			l_library: CONF_LIBRARY
+			l_system: CONF_SYSTEM
+			l_target: CONF_TARGET
+		do
+			-- Test whether the SCOOP library has already been added.
+
+			if universe.group_of_name ("scoopli") = Void then
+				-- the scoopli library is not jet included in the libraries
+				-- to get the library when recompiling its necessary to add
+				-- it in the configuration file.
+
+				-- Create a factory for configurations.
+				create l_factory
+
+				-- Evaluate the current target configuration.
+				l_target := universe.target
+
+				-- Create a new system configuration for the SCOOP library.
+				l_system := l_factory.new_system_generate_uuid ("scoopli")
+				l_system.set_application_target (l_target)
+
+				-- Create a new library configuration for the SCOOP library.
+				l_location := l_factory.new_location_from_full_path ("$ISE_LIBRARY\library\scoopli\scoopli.ecf", l_target)
+				l_library := l_factory.new_library ("scoopli", l_location, l_target)
+				l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
+				l_library.set_library_target (l_factory.new_target ("scoopli", l_system))
+
+				-- Add the library configuration for the SCOOP library to the current target configuration.
+				l_target.add_library (l_library)
+
+				-- Save the updated current target configuration.
+				l_target.system.store
+			end
+		end
+
+	remove_scoopli_library
+			-- Remove the SCOOP library from the current target, if it exists.
+		do
+			if universe.group_of_name ("scoopli") /= Void then
+				universe.target.remove_library ("scoopli")
+				universe.target.system.store
+			end
+		end
+
+	original_root: CONF_ROOT
+
+	add_scoop_root
+		local
+			l_factory: CONF_PARSE_FACTORY
+		do
+			original_root := universe.target.root
+			create l_factory
+			universe.target.set_root (l_factory.new_root (Void, "SCOOP_STARTER", "make", false))
+			universe.target.system.store
+		end
+
+	remove_scoop_root
+		do
+			universe.target.set_root (original_root)
+			universe.target.system.store
+		end
+
+	remove_scoop_override_cluster
+		do
+			universe.target.remove_override ("scoop_override_cluster")
+			universe.target.system.store
+		end
+
 feature -- Conveniences
 
 	set_system (s: like system)
@@ -385,6 +458,13 @@ feature -- Commands
 					-- added for SCOOP by paedde
 				reset_scoop_processing
 			end
+
+			-- Added for SCOOP: Add the SCOOP library if necessary.
+			if is_degree_scoop_processed then
+				add_scoopli_library
+				add_scoop_root
+			end
+
 			not_actions_successful := False
 			if retried = 0 and then (system = Void or else system.automatic_backup) then
 					-- Even if backup is not enabled, we will always create a BACKUP
@@ -403,6 +483,7 @@ feature -- Commands
 				not degree_6_done and then
 				(retried = 0 or else retried = 1 and then (missing_class_error))
 			then
+
 				if not forbid_degree_6 then
 					Lace.recompile
 				end
@@ -424,6 +505,7 @@ feature -- Commands
 					if Lace.has_group_changed or missing_class_error or compilation_modes.is_discover then
 						system.set_rebuild (True)
 					end
+
 					System.recompile
 
 					process_actions (universe.conf_system.all_post_compile_action)
@@ -458,6 +540,13 @@ feature -- Commands
 				--| directory)
 			if system /= Void and then system.automatic_backup then
 				save_ending_backup_info
+			end
+
+			-- Added for SCOOP: Remove SCOOP library if necessary.
+			if is_degree_scoop_processed then
+				remove_scoopli_library
+				remove_scoop_root
+				remove_scoop_override_cluster
 			end
 		ensure
 			increment_compilation_counter:
@@ -735,7 +824,7 @@ feature {NONE} -- Implementation
 			-- Was there a problem during running the pre and post compile actions?
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -748,22 +837,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end
