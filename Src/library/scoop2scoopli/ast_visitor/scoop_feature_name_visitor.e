@@ -175,12 +175,30 @@ feature {NONE} -- Visitor implementation
 		end
 
 	process_feat_name_id_as (l_as: FEAT_NAME_ID_AS) is
+		local
+			is_sep :BOOLEAN
+			i: INTEGER
 		do
-			-- skip frozen keyword
+			-- skip frozen keyword + whitespace after it.
 			if l_as.is_frozen then
-				last_index := l_as.feature_name.index - 1
-			end
+				last_index := l_as.frozen_keyword.index+1
+				from
+					i := 1
+					is_sep := true
+				until
+					is_sep = false
+				loop
+					last_index := l_as.frozen_keyword.index+i
+					if match_list.i_th (last_index).is_separator then
+						i := i+1
+						is_sep := true
+					else
+						last_index := last_index-1
+						is_sep := false
+					end
 
+				end
+			end
 			safe_process (l_as.feature_name)
 		end
 

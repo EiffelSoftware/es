@@ -408,12 +408,14 @@ feature {NONE} -- Content implementation
 
 				-- body
 				context.add_string ("%N%T%T%T-- Wrapper for constant `")
-				last_index := l_feature_name.first_token (match_list).index - 1
-				safe_process (l_feature_name)
+--				last_index := l_feature_name.first_token (match_list).index - 1
+				context.add_string (l_feature_name_str)
+--				safe_process (l_feature_name)
 				context.add_string ( "'.")
 				context.add_string ("%N%T%Tis do%N%T%T%TResult := implementation_.")
-				last_index := l_feature_name.first_token (match_list).index - 1
-				safe_process (l_feature_name)
+--				last_index := l_feature_name.first_token (match_list).index - 1
+				context.add_string (l_feature_name_str)
+--				safe_process (l_feature_name)
 				context.add_string ("%N%T%Tend")
 
 				-- no is_keyword, no body, skip indexing clause

@@ -22,41 +22,49 @@ feature {NONE} -- Roundtrip: process nodes
 
 	process_like_id_as (l_as: LIKE_ID_AS) is
 		local
+			iterator: SCOOP_CONTEXT_AST_PRINTER
 			l_feature_i: FEATURE_I
 			l_type_a: TYPE_A
 			l_formal_a: FORMAL_A
 			l_name: STRING
 		do
-			if class_as.feature_table.has (l_as.anchor.name) then
-				l_feature_i := class_as.feature_table.item (l_as.anchor.name)
-				l_type_a := l_feature_i.type
+--			if class_as.feature_table.has (l_as.anchor.name) then
+--				l_feature_i := class_as.feature_table.item (l_as.anchor.name)
+--				l_type_a := l_feature_i.type
 
-				evaluate_like_id_type_flags (l_type_a.is_expanded, l_type_a.is_separate)
-			end
+--				evaluate_like_id_type_flags (l_type_a.is_expanded, l_type_a.is_separate)
+--			end
 
 			-- process lcurly symbol
 			safe_process (l_as.lcurly_symbol (match_list))
+			safe_process (l_as.like_keyword (match_list))
+			safe_process (l_as.anchor)
+--			create iterator
+--			iterator.setup (class_as, match_list, true, true)
+--			iterator.set_context (context)
+--			iterator.process_ast_node (l_as.anchor)
+
 
 			-- process attachment mark
-			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+--			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+--			last_index := l_as.like_keyword (match_list).index
+--			-- process anchor
+--			process_leading_leaves (l_as.anchor.index)
+--			if l_type_a.is_formal then
 
-			-- process anchor
-			process_leading_leaves (l_as.anchor.index)
-			if l_type_a.is_formal then
+--				l_formal_a ?= l_type_a
+--				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
+--				process_class_name_str (l_name, false, context, match_list)
+--			else
+--				-- get class name of actual type
 
-				l_formal_a ?= l_type_a
-				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
-				process_class_name_str (l_name, false, context, match_list)
-			else
-				-- get class name of actual type
+--				-- process actual type a
+--				l_type_a := l_type_a.actual_type
 
-				-- process actual type a
-				l_type_a := l_type_a.actual_type
-
-				process_actual_type_a (l_type_a)
+--				process_actual_type_a (l_type_a)
 
 
-			end
+--			end
 
 			-- process rcurly symbol
 			safe_process (l_as.rcurly_symbol (match_list))
@@ -132,6 +140,7 @@ feature {NONE} -- TYPE_A implementation
 		require
 			l_type_a /= Void
 		local
+			ast_rdtrip: SCOOP_CONTEXT_AST_PRINTER
 			is_formal_generic: BOOLEAN
 			i, nb: INTEGER
 			l_name: STRING
@@ -163,7 +172,7 @@ feature {NONE} -- TYPE_A implementation
 					process_class_name_str (l_name, false, context, match_list)
 
 					-- get current formal generic parameters
-					context.add_string ("[")
+				--	context.add_string ("[")
 					from
 						i := 1
 						nb := l_type_a.generics.count
@@ -188,12 +197,19 @@ feature {NONE} -- TYPE_A implementation
 						end
 						i := i + 1
 					end
-					context.add_string ("]")
+				--	context.add_string ("]")
 				elseif l_type_a.is_like_current then
 					context.add_string ("[like implementation_]")
 				else
 					-- just print out the actual type
-					process_class_name_str (l_type_a.actual_type.name, false, context, match_list)
+
+					create ast_rdtrip
+					ast_rdtrip.setup (class_as, match_list, true, true)
+					ast_rdtrip.set_context (context)
+					if feature_as.body.type /= void then
+						ast_rdtrip.process_ast_node (feature_as.body.type)
+					end
+				--	process_class_name_str (l_type_a.actual_type., false, context, match_list)
 				end
 			else
 				-- just print out the actual type
