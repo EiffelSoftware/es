@@ -1362,23 +1362,6 @@ end
 					a_target.add_cluster (l_cluster)
 				end
 			end
-
-			-- add also the scoop cluster, if we compile not the first time
-			-- added for SCOOP by peadde
-			if workbench.is_degree_scoop_processing and then workbench.is_degree_scoop_processed then
-				-- get new path
-				l_vis.set_directory (degree_scoop.get_scoop_cluster_path)
-				if l_vis.found_clusters.is_empty then
-					create l_dir.make (degree_scoop.get_scoop_cluster_path)
-					if l_dir.exists then
-						l_loc := a_factory.new_location_from_path (degree_scoop.get_scoop_cluster_path, a_target)
-						l_override := a_factory.new_override ("scoop_override_cluster", l_loc, a_target)
-						l_override.set_recursive (true)
-						l_override.set_internal (true)
-						a_target.add_override (l_override)
-					end
-				end
-			end
 		end
 
 	eifgens_cluster: detachable CONF_CLUSTER

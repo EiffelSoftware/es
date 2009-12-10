@@ -174,7 +174,7 @@ feature {SYSTEM_I} -- Processing
 			l_degree_output.put_end_degree
 		end
 
-feature {SYSTEM_I} -- SYSTEM_I support
+feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 
 	is_missing_class_ignored (a_class_name: STRING): BOOLEAN is
 			-- returns true if a missing class message should be ignored.

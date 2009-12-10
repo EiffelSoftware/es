@@ -289,10 +289,33 @@ feature -- Additional implementation for SCOOP
 			universe.target.system.store
 		end
 
+	add_scoop_override_cluster
+		local
+			l_dir: DIRECTORY
+			l_loc: CONF_DIRECTORY_LOCATION
+			l_override: CONF_OVERRIDE
+			l_factory: CONF_PARSE_FACTORY
+		do
+			if not universe.target.overrides.has ("scoop_override_cluster") then
+				create l_dir.make (degree_scoop.get_scoop_cluster_path)
+				if l_dir.exists then
+					create l_factory
+					l_loc := l_factory.new_location_from_path (degree_scoop.get_scoop_cluster_path, universe.target)
+					l_override := l_factory.new_override ("scoop_override_cluster", l_loc, universe.target)
+					l_override.set_recursive (true)
+					l_override.set_internal (true)
+					universe.target.add_override (l_override)
+					universe.target.system.store
+				end
+			end
+		end
+
 	remove_scoop_override_cluster
 		do
-			universe.target.remove_override ("scoop_override_cluster")
-			universe.target.system.store
+			if universe.target.overrides.has ("scoop_override_cluster") then
+				universe.target.remove_override ("scoop_override_cluster")
+				universe.target.system.store
+			end
 		end
 
 feature -- Conveniences
@@ -459,10 +482,11 @@ feature -- Commands
 				reset_scoop_processing
 			end
 
-			-- Added for SCOOP: Add the SCOOP library if necessary.
+			-- Added for SCOOP: Change the configuration for the newly generated code.
 			if is_degree_scoop_processed then
 				add_scoopli_library
 				add_scoop_root
+				add_scoop_override_cluster
 			end
 
 			not_actions_successful := False
@@ -542,7 +566,7 @@ feature -- Commands
 				save_ending_backup_info
 			end
 
-			-- Added for SCOOP: Remove SCOOP library if necessary.
+			-- Added for SCOOP: Revert the changes to the configuration.
 			if is_degree_scoop_processed then
 				remove_scoopli_library
 				remove_scoop_root
