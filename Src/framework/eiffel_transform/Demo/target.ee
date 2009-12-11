@@ -1,0 +1,13 @@
+class
+	ETR_DUMMY
+
+feature
+	test(a_var: INTEGER) is
+			-- test
+		do
+			if (a_var > 0) then
+				io.put_integer(9) -- goal: make this print only if a_var>0
+			end
+			io.put_integer(1)
+		end
+end

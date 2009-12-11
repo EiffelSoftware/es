@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="eiffel_transform_library" uuid="9F257BAC-B486-4a60-9E17-5A8A970B527B" library_target="eiffel_transform">
+	<target name="eiffel_transform">
+		<root all_classes="true"/>
+		<option warning="false">
+			<assertions/>
+		</option>
+		<setting name="multithreaded" value="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
+		<cluster name="eiffel_transform" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>	
+			<file_rule>
+				<exclude>/Demo$</exclude>
+			</file_rule>	
+		</cluster>
+	</target>
+</system>
