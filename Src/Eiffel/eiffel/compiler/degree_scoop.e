@@ -193,12 +193,6 @@ feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 			delete_scoop_cluster_content
 		end
 
-	get_scoop_cluster_path: STRING is
-			-- returns the path of the scoop cluster as string
-		do
-			Result := get_cluster_path.string
-		end
-
 	remove_scoop_classes (a_class_name: STRING) is
 			-- removes scoop client and proxy class from cluster if there are any
 		local
@@ -225,12 +219,27 @@ feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 			end
 		end
 
+	scoop_override_cluster_path: STRING is
+			-- returns the path of the scoop cluster
+		local
+			l_scoop_path: DIRECTORY_NAME
+		do
+			-- create with home directory
+			create l_scoop_path.make_from_string (workbench.project_location.eifgens_path.string)
+			-- add project target cluster
+			l_scoop_path.set_subdirectory (workbench.project_location.target)
+			-- add cluster 'cluster'
+			l_scoop_path.set_subdirectory ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+
+			Result := l_scoop_path.string
+		end
+
 feature {NONE} -- Cluster handling implementation
 
 	create_directory_name is
 			-- creates the scoop directory cluster name
 		do
-			create scoop_directory.make (get_scoop_cluster_path.string)
+			create scoop_directory.make (scoop_override_cluster_path)
 		end
 
 	create_directory is
@@ -246,20 +255,6 @@ feature {NONE} -- Cluster handling implementation
 			scoop_directory_not_void: scoop_directory /= void
 		end
 
-	get_cluster_path: DIRECTORY_NAME is
-			-- returns the path of the scoop cluster
-		local
-			l_scoop_path: DIRECTORY_NAME
-		do
-			-- create with home directory
-			create l_scoop_path.make_from_string (workbench.project_location.eifgens_path.string)
-			-- add project target cluster
-			l_scoop_path.set_subdirectory (workbench.project_location.target)
-			-- add cluster 'cluster'
-			l_scoop_path.set_subdirectory ("scoop_cluster")
-
-			Result := l_scoop_path
-		end
 
 	delete_scoop_cluster_content is
 			-- delete the content of the project cluster

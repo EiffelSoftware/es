@@ -189,7 +189,7 @@ feature -- Additional properties
 			end
 		end
 
-feature {SYSTEM_I, AST_FEATURE_CHECKER_GENERATOR, CL_TYPE_A, FEATURE_I, TYPE_A_CHECKER} -- Additional properties for SCOOP
+feature {SYSTEM_I, AST_FEATURE_CHECKER_GENERATOR, CL_TYPE_A, FEATURE_I, TYPE_A_CHECKER, LACE_I} -- Additional properties for SCOOP
 
 	is_degree_scoop_processing: BOOLEAN
 			-- remebers SCOOP processing for compilation steps.
@@ -211,19 +211,54 @@ feature {SYSTEM_I, AST_FEATURE_CHECKER_GENERATOR, CL_TYPE_A, FEATURE_I, TYPE_A_C
 			is_degree_scoop_processed := a_value
 		end
 
-feature -- Additional implementation for SCOOP
-
+feature {NONE} -- Added for SCOOP
 	reset_scoop_processing is
-			-- resets SCOOP flags
-			-- added for SCOOP by paedde
+			-- Reset SCOOP flags.
 		do
-			-- reset flags
 			is_degree_scoop_processing := false
 			is_degree_scoop_processed := false
 		end
 
-	add_scoopli_library
-			-- Add SCOOP library to current target if necessary.
+	add_scoop_override_cluster
+			-- Add SCOOP override cluster to the universe target, if necessary.
+		local
+			l_loc: CONF_DIRECTORY_LOCATION
+			l_override: CONF_OVERRIDE
+			l_factory: CONF_PARSE_FACTORY
+		do
+			-- Test whether the SCOOP override cluster has already been added.
+			if not universe.target.overrides.has ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name) then
+				-- The SCOOP override cluster has not been added yet. Add the SCOOP override cluster.
+
+				-- Create a factory for configurations.
+				create l_factory
+
+				-- Create a new override for the SCOOP override cluster.
+				l_loc := l_factory.new_location_from_path (degree_scoop.scoop_override_cluster_path, universe.target)
+				l_override := l_factory.new_override ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name, l_loc, universe.target)
+				l_override.set_recursive (true)
+				l_override.set_internal (true)
+
+				-- Add the override to the universe target.
+				universe.target.add_override (l_override)
+
+				-- Save the updated universe target configuration.
+				universe.target.system.store
+			end
+		end
+
+	remove_scoop_override_cluster
+			-- Remove the SCOOP override cluster from the universe target.
+		do
+			-- Remove the override for the SCOOP override cluster.
+			universe.target.remove_override ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+
+			-- Save the updated universe target configuration.
+			universe.target.system.store
+		end
+
+	add_scoop_library
+			-- Add the SCOOP library to the universe target, if necessary.
 		local
 			l_location: CONF_FILE_LOCATION
 			l_factory: CONF_PARSE_FACTORY
@@ -232,11 +267,90 @@ feature -- Additional implementation for SCOOP
 			l_target: CONF_TARGET
 		do
 			-- Test whether the SCOOP library has already been added.
+			if universe.group_of_name ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name) = Void then
+				-- The SCOOP library has not been added yet. Add the SCOOP library.
 
-			if universe.group_of_name ("scoopli") = Void then
-				-- the scoopli library is not jet included in the libraries
-				-- to get the library when recompiling its necessary to add
-				-- it in the configuration file.
+				-- Create a factory for configurations.
+				create l_factory
+
+				-- Evaluate the universe target configuration.
+				l_target := universe.target
+
+				-- Create a new system configuration for the SCOOP library.
+				l_system := l_factory.new_system_generate_uuid ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name)
+				l_system.set_application_target (l_target)
+
+				-- Create a new library configuration for the SCOOP library.
+				l_location := l_factory.new_location_from_full_path ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_path, l_target)
+				l_library := l_factory.new_library ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name, l_location, l_target)
+				l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
+				l_library.set_library_target (l_factory.new_target ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name, l_system))
+
+				-- Add the library configuration for the SCOOP library.
+				l_target.add_library (l_library)
+
+				-- Save the updated universe target configuration.
+				l_target.system.store
+			end
+		end
+
+	remove_scoop_library
+			-- Remove the SCOOP library from the universe target.
+		do
+			-- Remove the SCOOP library.
+			universe.target.remove_library ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name)
+
+			-- Save the updated universe target configuration.
+			universe.target.system.store
+		end
+
+	original_root: CONF_ROOT
+		-- The root of the universe target before it got changed for SCOOP.
+
+	force_scoop_root
+			-- Make sure the root of the universe target points to the SCOOP starter class.
+		local
+			l_factory: CONF_PARSE_FACTORY
+		do
+			-- Preserve the original root. This is necessary to revert it later on.
+			original_root := universe.target.root
+
+			-- Create a factory for configurations.
+			create l_factory
+
+			-- Set the root.
+			universe.target.set_root (l_factory.new_root (Void, {SCOOP_SYSTEM_CONSTANTS}.scoop_starter_class_name, {SCOOP_SYSTEM_CONSTANTS}.scoop_starter_feature_name, false))
+
+			-- Save the updated universe target configuration.
+			universe.target.system.store
+		ensure
+			original_root_set: original_root = old universe.target.root
+		end
+
+	revert_scoop_root
+			-- Revert the root of the universe target to the original root.
+		require
+			original_root_set: original_root /= Void
+		do
+			-- Revert the root.
+			universe.target.set_root (original_root)
+
+			-- Save the updated universe target configuration.
+			universe.target.system.store
+		end
+
+	add_thread_library
+			-- Add the SCOOP library to the universe target, if necessary.
+		local
+			l_location: CONF_FILE_LOCATION
+			l_factory: CONF_PARSE_FACTORY
+			l_library: CONF_LIBRARY
+			l_system: CONF_SYSTEM
+			l_target: CONF_TARGET
+		do
+			-- Test whether the thread library has already been added.
+			if universe.group_of_name ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name) = Void then
+				-- The thread library has not been added yet. Add the thread library.
 
 				-- Create a factory for configurations.
 				create l_factory
@@ -244,17 +358,17 @@ feature -- Additional implementation for SCOOP
 				-- Evaluate the current target configuration.
 				l_target := universe.target
 
-				-- Create a new system configuration for the SCOOP library.
-				l_system := l_factory.new_system_generate_uuid ("scoopli")
+				-- Create a new system configuration for the thread library.
+				l_system := l_factory.new_system_generate_uuid ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name)
 				l_system.set_application_target (l_target)
 
-				-- Create a new library configuration for the SCOOP library.
-				l_location := l_factory.new_location_from_full_path ("$ISE_LIBRARY\library\scoopli\scoopli.ecf", l_target)
-				l_library := l_factory.new_library ("scoopli", l_location, l_target)
+				-- Create a new library configuration for the thread library.
+				l_location := l_factory.new_location_from_full_path ({SCOOP_SYSTEM_CONSTANTS}.thread_library_path, l_target)
+				l_library := l_factory.new_library ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name, l_location, l_target)
 				l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
-				l_library.set_library_target (l_factory.new_target ("scoopli", l_system))
+				l_library.set_library_target (l_factory.new_target ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name, l_system))
 
-				-- Add the library configuration for the SCOOP library to the current target configuration.
+				-- Add the library configuration for the thread library to the current target configuration.
 				l_target.add_library (l_library)
 
 				-- Save the updated current target configuration.
@@ -262,60 +376,39 @@ feature -- Additional implementation for SCOOP
 			end
 		end
 
-	remove_scoopli_library
-			-- Remove the SCOOP library from the current target, if it exists.
+	remove_thread_library
+			-- Remove the SCOOP library from the universe target.
 		do
-			if universe.group_of_name ("scoopli") /= Void then
-				universe.target.remove_library ("scoopli")
+			-- Remove the thread library.
+			universe.target.remove_library ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name)
+
+			-- Save the updated universe target configuration.
+			universe.target.system.store
+		end
+
+	enable_multithreading
+			-- Enable multithreading in the universe target, if necessary.
+		do
+			-- Check whether multithreading has already been activated.
+			if not universe.target.setting_multithreaded then
+				-- Multithrading has not been activated.
+
+				-- Enable multithreading.
+				universe.target.add_setting ({CONF_CONSTANTS}.s_multithreaded, {SCOOP_SYSTEM_CONSTANTS}.multithreading_enabled_setting)
+
+				-- Save the updated current target configuration.
 				universe.target.system.store
 			end
 		end
 
-	original_root: CONF_ROOT
-
-	add_scoop_root
-		local
-			l_factory: CONF_PARSE_FACTORY
+	remove_multithreading_setting
+			-- Remove the multithreading setting in the universe target, if necessary.
 		do
-			original_root := universe.target.root
-			create l_factory
-			universe.target.set_root (l_factory.new_root (Void, "SCOOP_STARTER", "make", false))
+			-- Remove the multithreading setting.
+			universe.target.settings.remove ({CONF_CONSTANTS}.s_multithreaded)
+
+			-- Save the updated current target configuration.
 			universe.target.system.store
-		end
-
-	remove_scoop_root
-		do
-			universe.target.set_root (original_root)
-			universe.target.system.store
-		end
-
-	add_scoop_override_cluster
-		local
-			l_dir: DIRECTORY
-			l_loc: CONF_DIRECTORY_LOCATION
-			l_override: CONF_OVERRIDE
-			l_factory: CONF_PARSE_FACTORY
-		do
-			if not universe.target.overrides.has ("scoop_override_cluster") then
-				create l_dir.make (degree_scoop.get_scoop_cluster_path)
-				if l_dir.exists then
-					create l_factory
-					l_loc := l_factory.new_location_from_path (degree_scoop.get_scoop_cluster_path, universe.target)
-					l_override := l_factory.new_override ("scoop_override_cluster", l_loc, universe.target)
-					l_override.set_recursive (true)
-					l_override.set_internal (true)
-					universe.target.add_override (l_override)
-					universe.target.system.store
-				end
-			end
-		end
-
-	remove_scoop_override_cluster
-		do
-			if universe.target.overrides.has ("scoop_override_cluster") then
-				universe.target.remove_override ("scoop_override_cluster")
-				universe.target.system.store
-			end
 		end
 
 feature -- Conveniences
@@ -484,9 +577,11 @@ feature -- Commands
 
 			-- Added for SCOOP: Change the configuration for the newly generated code.
 			if is_degree_scoop_processed then
-				add_scoopli_library
-				add_scoop_root
 				add_scoop_override_cluster
+				add_scoop_library
+				force_scoop_root
+				add_thread_library
+				enable_multithreading
 			end
 
 			not_actions_successful := False
@@ -566,11 +661,13 @@ feature -- Commands
 				save_ending_backup_info
 			end
 
-			-- Added for SCOOP: Revert the changes to the configuration.
+			 -- Added for SCOOP: Revert the changes to the configuration.
 			if is_degree_scoop_processed then
-				remove_scoopli_library
-				remove_scoop_root
 				remove_scoop_override_cluster
+				remove_scoop_library
+				revert_scoop_root
+				remove_thread_library
+				remove_multithreading_setting
 			end
 		ensure
 			increment_compilation_counter:
@@ -625,6 +722,14 @@ feature -- Commands
 				end
 				retry
 			else
+				-- Added for SCOOP: Revert the changes to the configuration.
+				if is_degree_scoop_processed then
+					remove_scoop_override_cluster
+					remove_scoop_library
+					revert_scoop_root
+					remove_thread_library
+					remove_multithreading_setting
+				end
 				stop_compilation
 			end
 		end
