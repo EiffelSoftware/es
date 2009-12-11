@@ -1765,6 +1765,7 @@ feature -- Recompilation
 					create d1.make_now
 				end
 				process_degree_5
+
 				debug ("timing")
 					create d2.make_now
 					print ("Degree 5 duration: ")
@@ -1884,15 +1885,6 @@ feature -- Recompilation
 					create d1.make_now
 				end
 
-	-- temporarily inserted for SCOOP class generation before type checking
-					-- Start SCOOP class creation if needed
---					-- Added for SCOOP by paedde.
---				if workbench.is_degree_scoop_processing and not workbench.is_degree_scoop_processed then
---					-- create new client and proxy classes.
---					-- generate an internal error to restart compilation.
---					process_degree_scoop
---				end
-
 					-- Compute the root type
 				compute_root_type
 				if
@@ -1917,7 +1909,6 @@ feature -- Recompilation
 					-- Byte code production and type checking
 				process_degree_3
 
---	Uncomment this part for regular SCOOP class generation
 					-- Start SCOOP class creation if needed
 					-- Added for SCOOP by paedde.
 				if workbench.is_degree_scoop_processing and not workbench.is_degree_scoop_processed then
