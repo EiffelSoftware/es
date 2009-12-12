@@ -113,6 +113,9 @@ feature -- Access
 	trace: STRING
 			-- Trace of the exception
 
+	recipient_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE
+			-- AST structure of `recipient_'
+
 feature -- Status report
 
 	is_equal (other: like Current): BOOLEAN
@@ -138,6 +141,14 @@ feature -- Setting
 			-- Make a new copy of `a_trace'.
 		do
 			create trace.make_from_string (a_trace)
+		end
+
+	set_recipient_ast_structure (a_structure: like recipient_ast_structure)
+			-- Set `recipient_ast_structure' with `a_structure'.
+		do
+			recipient_ast_structure := a_structure
+		ensure
+			recipient_ast_structure_set: recipient_ast_structure = a_structure
 		end
 
 feature{NONE} -- Implementation

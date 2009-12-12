@@ -24,6 +24,9 @@ feature -- Basic operations
 			l_ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
 			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
 			l_implication_gen: AFX_IMPLICATION_GENERATOR
+			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
+			l_nodes: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+			l_rewriter: AFX_FAILING_ASSERTION_REWRITER
 		do
 			create l_ranking.make (50)
 			l_ranking.compare_objects
@@ -49,9 +52,18 @@ feature -- Basic operations
 				l_implication_gen.generate (a_tc, l_ranking)
 			end
 
+				-- Analyze AST structure of the recipient feature.
+			create l_structure_gen
+			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
+
+				-- Failing assertion rewritting
+--			create l_rewriter
+--			l_rewriter.rewrite (a_tc, l_structure_gen.structure, a_dm.application_status.exception_text)
+
 			create last_spot.make (a_tc)
 			last_spot.set_ranking (l_ranking)
 			last_spot.set_trace (a_dm.application_status.exception_text)
+			last_spot.set_recipient_ast_structure (l_structure_gen.structure)
 		end
 
 feature{NONE} -- Implementation
