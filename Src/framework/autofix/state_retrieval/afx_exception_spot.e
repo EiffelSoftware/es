@@ -119,6 +119,11 @@ feature -- Access
 	failing_assertion: AFX_EXPRESSION
 			-- Failing assertion
 
+	failing_assertion_break_point_slot: INTEGER
+			-- Break point slot for `failing_assertion'
+			-- If the exception is a precondition violation, this is the break point slot for the failing routine call in recipient.
+			-- Otherwise, this is equal to `test_case_info'.`break_point_slot'.
+
 	feature_of_failing_assertion: FEATURE_I
 			-- Feature which contains `failing_assertion'.
 			-- If the exception is a precondition violation, `feature_of_failing_assertion' will be
@@ -182,6 +187,14 @@ feature -- Setting
 			-- Set `actual_arguments_in_failing_assertion' with `a_table'.
 		do
 			actual_arguments_in_failing_assertion := a_table
+		end
+
+	set_failing_assertion_break_point_slot (i: INTEGER)
+			-- Set `failing_assertion_break_point_slot' with `'i'.
+		do
+			failing_assertion_break_point_slot := i
+		ensure
+			failing_assertion_break_point_slot_set: failing_assertion_break_point_slot = i
 		end
 
 feature{NONE} -- Implementation

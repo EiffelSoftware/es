@@ -27,11 +27,15 @@ feature -- Access
 			-- If the exception is a precondition violation, `feature_of_assertion' is the feature containing the precondition.
 			-- Otherwise, `feature_of_assertion' is the same as the recipient of the exception.
 
+	assertion_break_point_slot: INTEGER
+			-- Break point slot for `assertion'.
+			-- If the exception is a precondition violation, this is the break point slot for the failing routine call in recipient.
+			-- Otherwise, this is equal to `test_case_info'.`break_point_slot'.
+
 	actual_argument_expressions: HASH_TABLE [AFX_EXPRESSION, INTEGER]
 			-- Expressions that are mentioned as actual arguments in the failing routine if the exception is a precondition violation.
 			-- For other types of exception, this hashtalbe is empty.
 			-- Key is the argument index, value is the mentioned expression for that argument.
-
 
 feature -- Basic operations
 
@@ -49,6 +53,7 @@ feature -- Basic operations
 				analyze_precondtion_violation (a_tc, a_structure, a_trace)
 			else
 				feature_of_assertion := a_tc.recipient_
+				assertion_break_point_slot := a_tc.breakpoint_slot
 				if a_tc.exception_code = {EXCEP_CONST}.check_instruction then
 					if attached {TAGGED_AS} a_structure.relevant_ast (a_tc.breakpoint_slot) as l_check_ast then
 						create l_failing_expr.make (l_check_ast, a_tc.recipient_class_, a_tc.recipient_class_)
@@ -86,7 +91,6 @@ feature{NONE} -- Implementation
 			l_reg: RX_PCRE_REGULAR_EXPRESSION
 			l_target_expression: STRING
 			l_feature_call_end_position: INTEGER
---			l_failing_feati: FEATURE_I
 			l_failing_classc: CLASS_C
 			l_failing_feature: TUPLE [a_class: STRING; a_feature: STRING]
 
@@ -102,7 +106,8 @@ feature{NONE} -- Implementation
 			l_arg_expr: AFX_AST_EXPRESSION
 		do
 			fixme ("This is an unsound heuristic to handle general cases for the sake of easy implementation. May not generate correct result in some cases. 12.12.2009 Jasonw")
-			l_culprit_ast := a_structure.node_at_break_point (exception_break_point_in_recipient (a_tc, a_trace))
+			assertion_break_point_slot := exception_break_point_in_recipient (a_tc, a_trace)
+			l_culprit_ast := a_structure.node_at_break_point (assertion_break_point_slot)
 			l_culprit_text := l_culprit_ast.ast.ast.text (match_list_server.item (l_culprit_ast.written_class.class_id)).twin
 			l_culprit_text.replace_substring_all ("%N", "")
 			l_culprit_text.replace_substring_all ("%R", "")
