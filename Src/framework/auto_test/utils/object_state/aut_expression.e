@@ -62,6 +62,9 @@ feature -- Access
 			Result := ast.text (match_list_server.item (written_class.class_id))
 		end
 
+	tag: detachable STRING
+			-- Tag for current expression
+
 feature -- Status report
 
 	is_require_else: BOOLEAN
@@ -143,6 +146,17 @@ feature -- Setting
 			is_require_else := b
 		ensure
 			is_require_else_set: is_require_else = b
+		end
+
+	set_tag (a_tag: like tag)
+			-- Set `tag' with `a_tag'.
+			-- Make a new copy from `a_tag'.
+		do
+			if a_tag = Void then
+				tag := Void
+			else
+				tag := a_tag.twin
+			end
 		end
 
 feature{NONE} -- Implementation

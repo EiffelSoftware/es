@@ -116,6 +116,21 @@ feature -- Access
 	recipient_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE
 			-- AST structure of `recipient_'
 
+	failing_assertion: AFX_EXPRESSION
+			-- Failing assertion
+
+	feature_of_failing_assertion: FEATURE_I
+			-- Feature which contains `failing_assertion'.
+			-- If the exception is a precondition violation, `feature_of_failing_assertion' will be
+			-- the feature where `failing_assertion' is written, otherwise,
+			-- `feature_of_failing_assertion' will be the recipient of the exception.
+
+	actual_arguments_in_failing_assertion: HASH_TABLE [AFX_EXPRESSION, INTEGER]
+			-- Expressions used as routine arguments and mentioned in `failing_assertion'.
+			-- This is only used in case of precondition violation, for other types of exceptions
+			-- this table is empty.
+			-- Key is the argument index, value is the mentioned expression used as actual argument.
+
 feature -- Status report
 
 	is_equal (other: like Current): BOOLEAN
@@ -149,6 +164,24 @@ feature -- Setting
 			recipient_ast_structure := a_structure
 		ensure
 			recipient_ast_structure_set: recipient_ast_structure = a_structure
+		end
+
+	set_failing_assertion (a_assertion: like failing_assertion)
+			-- Set `failing_assertion' with `a_assertion'.
+		do
+			failing_assertion := a_assertion
+		end
+
+	set_feature_of_failing_assertion (a_feature: like feature_of_failing_assertion)
+			-- Set `feature_of_failing_assertion' with `a_feature'.
+		do
+			feature_of_failing_assertion := a_feature
+		end
+
+	set_actual_arguments_in_failing_assertion (a_table: like actual_arguments_in_failing_assertion)
+			-- Set `actual_arguments_in_failing_assertion' with `a_table'.
+		do
+			actual_arguments_in_failing_assertion := a_table
 		end
 
 feature{NONE} -- Implementation

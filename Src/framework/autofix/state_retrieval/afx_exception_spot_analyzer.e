@@ -20,50 +20,14 @@ feature -- Basic operations
 	analyze (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER)
 			-- Generate `last_spot' for text case `a_tc' in the context
 			-- given by the debugger `a_dm'.			
-		local
-			l_ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
-			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
-			l_implication_gen: AFX_IMPLICATION_GENERATOR
-			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
-			l_nodes: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
-			l_rewriter: AFX_FAILING_ASSERTION_REWRITER
 		do
-			create l_ranking.make (50)
-			l_ranking.compare_objects
-
-				-- Generate basic expressions such as argumentless boolean queries.
-			create l_basic_expr_gen
-			l_basic_expr_gen.generate (a_tc, l_ranking)
-
-			fixme ("The following hack is for the sake of debugging speed, we don't search for implications for known classes every time. 28.11.2009 Jasonw")
-			if a_tc.recipient_class ~ "INTERACTIVE_LIST" then
-				update_expressions_with_ranking (l_ranking, implications_for_ACTIVE_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "ARRAYED_CIRCULAR" then
-				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_CIRCULAR (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "ARRAY" then
-				update_expressions_with_ranking (l_ranking, implications_for_ARRAY (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "ARRAYED_LIST" then
-				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "BINARY_SEARCH_TREE_SET" then
-				update_expressions_with_ranking (l_ranking, implications_for_BINARY_SEARCH_TREE_SET (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			else
-					-- Generate implications.
-				create l_implication_gen
-				l_implication_gen.generate (a_tc, l_ranking)
-			end
-
-				-- Analyze AST structure of the recipient feature.
-			create l_structure_gen
-			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
-
-				-- Failing assertion rewritting
---			create l_rewriter
---			l_rewriter.rewrite (a_tc, l_structure_gen.structure, a_dm.application_status.exception_text)
-
 			create last_spot.make (a_tc)
-			last_spot.set_ranking (l_ranking)
 			last_spot.set_trace (a_dm.application_status.exception_text)
-			last_spot.set_recipient_ast_structure (l_structure_gen.structure)
+
+				-- Analyze different aspects of the failure.
+			analyze_state_predicates (a_tc, a_dm, last_spot)
+			analyze_ast_structure (a_tc, a_dm, last_spot)
+			analyze_failing_assertion (a_Tc, a_dm, last_spot.recipient_ast_structure, last_spot)
 		end
 
 feature{NONE} -- Implementation
@@ -89,9 +53,6 @@ feature{NONE} -- Implementation
 				"(not (is_empty)) implies (off)">>
 			Result := implications_for_class (l_expressions, a_class, a_feature)
 		end
-
-
-
 
 	implications_for_ARRAYED_LIST (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
 		local
@@ -222,6 +183,78 @@ feature{NONE} -- Implementation
 				Result.force_last (l_expr)
 				i := i + 1
 			end
+		end
+
+feature{NONE} -- Implementation
+
+	analyze_state_predicates (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
+			-- Analyze predicates that should be included in state for current exception, and
+			-- set those predicates into `a_spot'.
+			-- `a_tc' includes basic information of the current exception.
+			-- `a_dm' is a debugger manager.
+		local
+			l_ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
+			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
+			l_implication_gen: AFX_IMPLICATION_GENERATOR
+		do
+			create l_ranking.make (50)
+			l_ranking.compare_objects
+
+				-- Generate basic expressions such as argumentless boolean queries.
+			create l_basic_expr_gen
+			l_basic_expr_gen.generate (a_tc, l_ranking)
+
+			fixme ("The following hack is for the sake of debugging speed, we don't search for implications for known classes every time. 28.11.2009 Jasonw")
+			if a_tc.recipient_class ~ "INTERACTIVE_LIST" then
+				update_expressions_with_ranking (l_ranking, implications_for_ACTIVE_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "ARRAYED_CIRCULAR" then
+				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_CIRCULAR (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "ARRAY" then
+				update_expressions_with_ranking (l_ranking, implications_for_ARRAY (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "ARRAYED_LIST" then
+				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			elseif a_tc.recipient_class ~ "BINARY_SEARCH_TREE_SET" then
+				update_expressions_with_ranking (l_ranking, implications_for_BINARY_SEARCH_TREE_SET (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+			else
+					-- Generate implications.
+				create l_implication_gen
+				l_implication_gen.generate (a_tc, l_ranking)
+			end
+
+			a_spot.set_ranking (l_ranking)
+		end
+
+	analyze_ast_structure (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
+			-- Analyze AST structure of the recipient, and
+			-- set the information into `a_spot'.
+			-- `a_tc' includes basic information of the current exception.
+			-- `a_dm' is a debugger manager.
+		local
+			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
+		do
+				-- Analyze AST structure of the recipient feature.
+			create l_structure_gen
+			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
+
+			a_spot.set_recipient_ast_structure (l_structure_gen.structure)
+		end
+
+	analyze_failing_assertion (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_spot: like last_spot)
+			-- Analyze failing assertion of the exception, and
+			-- set the information into `a_spot'.
+			-- `a_tc' includes basic information of the current exception.
+			-- `a_dm' is a debugger manager.
+			-- `a_ast_structure' is the AST structure of the recipient of the exception.
+		local
+			l_rewriter: AFX_FAILING_ASSERTION_REWRITER
+		do
+				 -- Failing assertion rewritting
+			create l_rewriter
+			l_rewriter.rewrite (a_tc, a_ast_structure, a_dm.application_status.exception_text)
+
+			a_spot.set_failing_assertion (l_rewriter.assertion)
+			a_spot.set_feature_of_failing_assertion (l_rewriter.feature_of_assertion)
+			a_spot.set_actual_arguments_in_failing_assertion (l_rewriter.actual_argument_expressions)
 		end
 
 	update_expressions_with_ranking (a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]; a_new_exprs: DS_HASH_SET [AFX_EXPRESSION]; a_ranking: INTEGER)

@@ -156,6 +156,7 @@ feature{NONE} -- Implementation
 			a_asserts_attached: a_asserts /= Void
 		local
 			l_cursor: CURSOR
+			l_expr: AUT_EXPRESSION
 		do
 			create Result.make
 			l_cursor := a_asserts.cursor
@@ -164,7 +165,9 @@ feature{NONE} -- Implementation
 			until
 				a_asserts.after
 			loop
-				Result.extend(create {AUT_EXPRESSION}.make (a_asserts.item, a_written_class, a_context_class))
+				create l_expr.make (a_asserts.item.expr, a_written_class, a_context_class)
+				l_expr.set_tag (a_asserts.item.tag.name)
+				Result.extend(l_expr)
 				a_asserts.forth
 			end
 			a_asserts.go_to (l_cursor)
@@ -180,6 +183,7 @@ feature{NONE} -- Implementation
 		local
 			l_tags: EIFFEL_LIST [TAGGED_AS]
 			l_tag: TAGGED_AS
+			l_expr: AUT_EXPRESSION
 		do
 			create Result.make
 			l_tags := a_assert_list.assertions
@@ -190,7 +194,9 @@ feature{NONE} -- Implementation
 					l_tags.after
 				loop
 					l_tag := l_tags.item_for_iteration
-					Result.extend (create {AUT_EXPRESSION}.make (l_tag.expr, a_written_class, a_context_class))
+					create l_expr.make (l_tag.expr, a_written_class, a_context_class)
+					l_expr.set_tag (l_tag.tag.name)
+					Result.extend (l_expr)
 					l_tags.forth
 				end
 			end

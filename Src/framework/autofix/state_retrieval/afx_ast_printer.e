@@ -32,7 +32,8 @@ inherit
 			process_parameter_list_as,
 			process_paran_as,
 			process_binary_as,
-			process_unary_as
+			process_unary_as,
+			process_nested_as
 		end
 
 	REFACTORING_HELPER
@@ -151,8 +152,9 @@ feature -- Roundtrip: process leaf
 			append_string (l_as.access_name)
 
 			if attached l_as.parameters as l_para then
-				append_string (" ")
+				append_string (" (")
 				safe_process (l_para)
+				append_string (")")
 			end
 		end
 
@@ -203,6 +205,13 @@ feature -- Roundtrip: process leaf
 			l_as.expr.process (Current)
 		end
 
+	process_nested_as (l_as: NESTED_AS)
+		do
+			l_as.target.process (Current)
+			append_string (".")
+			l_as.message.process (Current)
+		end
+
 feature{NONE} -- Implementation
 
 	context: ROUNDTRIP_CONTEXT
@@ -213,7 +222,5 @@ feature{NONE} -- Implementation
 		do
 			context.add_string (a_str)
 		end
-
-
 
 end
