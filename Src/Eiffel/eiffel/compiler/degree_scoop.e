@@ -306,6 +306,42 @@ feature -- Element Change and Removal
 			count := 0
 		end
 
+	print_to_file (a_context, a_class_name: STRING; is_client_and_not_proxy: BOOLEAN) is
+			-- Print text of a_class_node.
+		local
+			file: PLAIN_TEXT_FILE
+			l_local_file_name : STRING
+			l_file_name: FILE_NAME
+		do
+				-- prepare path
+			create l_file_name.make
+
+			l_file_name.set_directory (scoop_directory.name)
+			l_local_file_name := a_class_name.as_lower
+
+			if not is_client_and_not_proxy then
+				l_local_file_name := scoop_proxy_prefix + l_local_file_name
+			end
+			l_file_name.set_file_name (l_local_file_name)
+			l_file_name.add_extension ("e")
+
+				-- create file
+			create file.make_create_read_write (l_file_name.string)
+
+			file.put_string (a_context.string_representation)
+			file.close
+
+			debug ("SCOOP")
+				if not is_client_and_not_proxy then
+					io.error.put_string ("SCOOP: Proxy class 'SCOOP_SEPARATE__")
+				else
+					io.error.put_string ("SCOOP: Client class '")
+				end
+				io.error.put_string (a_class_name.as_lower + "' saved in '" + l_file_name + "'.")
+				io.error.put_new_line
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	collect_needed_classes is
@@ -602,41 +638,6 @@ feature {NONE} -- Implementation
 			print_to_file (l_printer.get_context, a_class_c.name, false)
 		end
 
-	print_to_file (a_context, a_class_name: STRING; is_client_and_not_proxy: BOOLEAN) is
-			-- Print text of a_class_node.
-		local
-			file: PLAIN_TEXT_FILE
-			l_local_file_name : STRING
-			l_file_name: FILE_NAME
-		do
-				-- prepare path
-			create l_file_name.make
-
-			l_file_name.set_directory (scoop_directory.name)
-			l_local_file_name := a_class_name.as_lower
-
-			if not is_client_and_not_proxy then
-				l_local_file_name := scoop_proxy_prefix + l_local_file_name
-			end
-			l_file_name.set_file_name (l_local_file_name)
-			l_file_name.add_extension ("e")
-
-				-- create file
-			create file.make_create_read_write (l_file_name.string)
-
-			file.put_string (a_context.string_representation)
-			file.close
-
-			debug ("SCOOP")
-				if not is_client_and_not_proxy then
-					io.error.put_string ("SCOOP: Proxy class 'SCOOP_SEPARATE__")
-				else
-					io.error.put_string ("SCOOP: Client class '")
-				end
-				io.error.put_string (a_class_name.as_lower + "' saved in '" + l_file_name + "'.")
-				io.error.put_new_line
-			end
-		end
 
 feature {NONE} -- Implementation
 
