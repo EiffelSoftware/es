@@ -576,7 +576,7 @@ feature -- Commands
 			end
 
 			-- Added for SCOOP: Change the configuration for the newly generated code.
-			if is_degree_scoop_processed then
+			if retried = 1 and is_degree_scoop_processed then
 				add_scoop_override_cluster
 				add_scoop_library
 				force_scoop_root
