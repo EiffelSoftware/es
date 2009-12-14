@@ -50,7 +50,7 @@ feature -- Basic operations
 				l_bpslot := relevant_ast.first.breakpoint_slot
 			end
 
-			create l_tran.make (Void, Void)
+			create l_tran.make_with_node (Void, Void)
 			create l_snippets.make
 			l_snippets.extend (l_tran)
 			generate_fixes (l_snippets)
