@@ -1,6 +1,6 @@
 note
 	description: "Ensure that some AST conforms to a context"
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -29,9 +29,9 @@ feature -- Access
 	target_context: ETR_CONTEXT
 			-- target contexts of this ast
 
-	has_errors: BOOLEAN
+	is_checking_only: BOOLEAN
 
-	last_error: STRING
+	is_conforming: BOOLEAN
 
 feature	-- Creation
 
@@ -41,8 +41,20 @@ feature	-- Creation
 			context_not_void: a_target_context /= void
 		do
 			target_context := a_target_context
-			has_errors := false
-			last_error := void
+			is_checking_only := false
+			is_conforming := true
+		end
+
+	set_checking_only(b: BOOLEAN) is
+			-- set is_checking_only to b
+		do
+			is_checking_only := b
+		end
+
+	reset is
+			-- reset internal states
+		do
+			is_conforming := true
 		end
 
 feature -- Roundtrip
@@ -89,18 +101,22 @@ feature -- Roundtrip
 
 			-- search for a class with this name in the target context
 			-- ugly slow inverse lookup
+			fixme("Reduce classes to look through. Maybe to a cluster or so?")
 			matching_classes := target_context.universe.classes_with_name (l_as.class_name.name)
 
-			check
-				matching_classes.count=1
-				-- otherwise not found or multiple (how can this be? which to pick?)
-			end
+			if matching_classes.count/=1 then
+				is_conforming := false
+			else
+				cid := matching_classes.first.compiled_class.class_id
 
-			cid := matching_classes.first.compiled_class.class_id
-
-			-- set new id if different
-			if cid /= l_as.class_id  then
-				l_as.set_class_id (cid)
+				-- set new id if different
+				if cid /= l_as.class_id  then
+					if not is_checking_only then
+						l_as.set_class_id (cid)
+					else
+						is_conforming := false
+					end
+				end
 			end
 		end
 

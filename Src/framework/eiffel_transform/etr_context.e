@@ -1,6 +1,6 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform"
-	author: ""
+	description: "Context of an AST that is to be modified by EiffelTransform. PLACEHOLDER."
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,6 +8,7 @@ class
 	ETR_CONTEXT
 inherit
 -- overkill: just have all shared stuff in here. to be changed.
+-- this is just a placeholder
 	SHARED_SERVER
 
 	SHARED_DEGREES
@@ -16,26 +17,6 @@ inherit
 		end
 
 	SHARED_WORKBENCH
-
---create
---	make_with_system
-
--- things we certainly need in here:
--- names_heap
--- some access to class_id's and feature_id's
--- possibly degrees and compiled class to mark changes
-
-feature -- Access
-
---feature -- Creation
-
---	make_with_system(a_system: SYSTEM_I) is
---			-- make with a_system
---		require
---			non_void: a_system /= void
---		do
---			system := a_system
---		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

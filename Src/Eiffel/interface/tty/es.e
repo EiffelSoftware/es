@@ -1261,10 +1261,7 @@ feature -- Update
 				current_option := argument_count + 1
 				create {EWB_AUTO_FIX} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-eiffel_transform") then
-				create l_at_args.make
-				l_at_args := arguments_in_range (current_option + 1, argument_count)
-				current_option := argument_count + 1
-				create {EWB_EIFFEL_TRANSFORM} command.make_with_arguments (l_at_args)
+				create {EWB_EIFFEL_TRANSFORM} command
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then

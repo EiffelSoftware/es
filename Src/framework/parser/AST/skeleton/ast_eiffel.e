@@ -15,6 +15,17 @@ inherit
 			{NONE} all
 		end
 
+feature -- Identification
+
+	path: AST_PATH
+			-- path to this ast node from the root
+
+	set_path(a_path: like path) is
+			-- set path
+		do
+			path := a_path
+		end
+
 feature -- Visitor
 
 	process (v: AST_VISITOR)

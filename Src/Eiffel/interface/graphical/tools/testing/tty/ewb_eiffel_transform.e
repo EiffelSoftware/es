@@ -1,6 +1,6 @@
 note
 	description: "Entry point for tests of EiffelTransform"
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,30 +18,9 @@ inherit
 
 	SHARED_EIFFEL_PARSER
 
-	ETR_SHARED_BASIC_OPS
+	ETR_SHARED
 
 	REFACTORING_HELPER
-
-create
-	make_with_arguments
-
-feature {NONE} -- Initialization
-
-	make_with_arguments (a_arguments: LINKED_LIST [STRING])
-			-- Initialize `auto_test_arguments' with `a_arguments'.
-		require
-			a_arguments_attached: a_arguments /= Void
-		do
-			create {LINKED_LIST [STRING]} etr_arguments.make
-			a_arguments.do_all (agent etr_arguments.extend)
-		ensure
-			arguments_set: etr_arguments /= Void and then etr_arguments.count = a_arguments.count
-		end
-
-feature -- Access
-
-	etr_arguments: LINKED_LIST [STRING];
-			-- Arguments to AutoFix command line
 
 feature -- Properties
 
@@ -60,80 +39,6 @@ feature -- Properties
 			Result := 'e'
 		end
 
-	sample_use_1(a_context: ETR_CONTEXT) is
-			-- sample usage 1
-		local
-			l_class_file: KL_BINARY_INPUT_FILE
-		do
-			-- sample use 1
-			-- replace whole class node by another (conforming) one
-
-			create l_class_file.make (system.project_location.location+"\target.ee")
-			l_class_file.open_read
-			eiffel_parser.parse (l_class_file)
-			l_class_file.close
-
-			adjust_for_context(eiffel_parser.root_node, a_context)
-			replace_class_in_context (eiffel_parser.root_node, a_context)
-			mark_ast_changed (eiffel_parser.root_node, a_context)
-		end
-
-	sample_use_2(a_context: ETR_CONTEXT) is
-			-- sample usage 2
-		local
-			cond: EXPR_AS
-			da: DO_AS
-			instr: INSTRUCTION_AS
-			res: IF_AS
-			target_class: CLASS_I
-			original_ast: CLASS_AS
-			cid: INTEGER
-		do
-			-- sample use 2
-			-- encapsulates the first instruction in some feature with an if branch
-			-- this is still way too ugly/complicated
-			-- some of this to be put into the library with easier usage
-
-			-- retrieve the existing ast
-			target_class := universe.compiled_classes_with_name("ETR_DUMMY").first
-			cid :=target_class.compiled_class.class_id
-			original_ast := ast_server.item (cid)
-
-			-- lets get some instruction to apply the transformer
-			-- this can of course be done more elegantly/general
-			-- its just for a simple demo
-			da ?= original_ast.features.first.features.first.body.as_routine.routine_body
-			instr := da.compound.first
-
-			-- create a condition from text
-			cond := new_expr("a_var>0",void)
-
-			-- we could also assemble the AST ourselves:
---			cond := create {BIN_GT_AS}.initialize ( create {EXPR_CALL_AS}.initialize (
---																						create {ACCESS_ID_AS}.initialize (
---																															create {ID_AS}.initialize_from_id (system.names.id_of("a_var")),
---																															void)),
---																						create {INTEGER_CONSTANT}.make_with_value(0), void)
-
-			-- assemble an IF_AS node:
-			-- if cond then instr end
-			res := if_wrap(single_instr_list (instr), cond, a_context)
-			-- replace the first instruction
-			-- the new first instruction in the do-body will be the new branch
-			to_implement("An elegant way to replace/modify instructions. By id or so?")
-			da.compound.put_i_th (res, 1)
-
-			-- lets insert something to test
-			da.compound.extend(new_instr ("io.put_integer(42)",void))
-
-			replace_class_in_context (original_ast, a_context)
-
-			-- make sure it conforms (will be put into the operator later)
-			adjust_for_context (original_ast, a_context)
-
-			mark_ast_changed (original_ast, a_context)
-		end
-
 	reparse_class_by_name(a_class: STRING) is
 			-- DEBUG. set class to reparse + remelt
 		local
@@ -145,11 +50,51 @@ feature -- Properties
 			restore_ast (ast_server.item (cid), create {ETR_CONTEXT})
 		end
 
+	path_test is
+			-- test ast identifiers
+		local
+			da: DO_AS
+			target_class: CLASS_I
+			original_ast, working_ast: CLASS_AS
+			instr: INSTRUCTION_AS
+			string_path: STRING
+			found_node, parent_node: AST_EIFFEL
+		do
+			-- retrieve some existing ast
+			target_class := universe.compiled_classes_with_name("ETR_DUMMY").first
+			original_ast := target_class.compiled_class.ast
+
+			-- duplicate it and index it
+			duplicate_ast (original_ast)
+			working_ast ?= duplicated_ast
+			index_ast (working_ast)
+
+			-- get some instruction
+			da ?= working_ast.features.first.features.first.body.as_routine.routine_body
+			instr := da.compound.first
+
+			-- store its path
+			string_path := instr.path.as_string
+
+			-- find this node from the root and the string
+			found_node := find_node (create {AST_PATH}.make_from_string(working_ast, string_path))
+
+			check
+				equal: found_node = instr
+			end
+
+			-- fetch its parent container (1 level above)
+			-- the EIFFEL_LIST of the do-body in this case
+			parent_node := find_node (create {AST_PATH}.make_from_child(found_node, 1))
+		end
+
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
 		local
 			context: ETR_CONTEXT
+--			old_ast: CLASS_AS
 		do
 			-- make sure we're in the test project
 			check
@@ -163,8 +108,11 @@ feature -- Properties
 			-- later we can just restore it because we duplicated (todo)
 			reparse_class_by_name("ETR_DUMMY")
 
+			path_test
+
 --			sample_use_1(context)
-			sample_use_2(context)
+--			sample_use_2_new(context)
+--			sample_use_3(context)
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

@@ -1,11 +1,11 @@
 note
 	description: "Summary description for {ETR_SHARED_HELPERS}."
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_SHARED_HELPERS
+	ETR_SHARED
 inherit
 	REFACTORING_HELPER
 		export
@@ -16,9 +16,67 @@ inherit
 			{NONE} all
 		end
 
+feature -- Constants
+
+	path_initializer: ETR_AST_PATH_INITIALIZER is
+			-- initalizes path information
+		once
+			create Result
+		end
+
+	ast_locator: ETR_AST_LOCATOR is
+			-- locates a node given a path
+		once
+			create Result
+		end
+
 feature -- Access
 
+	find_node(a_path: AST_PATH): AST_EIFFEL is
+			-- finds a node from a path
+		require
+			non_void: a_path /= void
+			valid: a_path.is_valid
+			root_set: a_path.root /= void
+		do
+			ast_locator.find_from_root (a_path)
 
+			Result := ast_locator.found_node
+		end
+
+	duplicate_ast(an_ast: AST_EIFFEL) is
+			-- duplicate an_ast
+			-- result in duplicated_ast
+		require
+			non_void: an_ast /= void
+		do
+			-- is cloning the way to go?
+			-- alternative would be:
+			-- print + reparse (are some ids lost? adjust for context again?)
+			-- 		needs facility to print ast without matchlist
+			-- recreating from scratch
+			--		very dependant on ast structure
+
+			duplicated_ast := an_ast.deep_twin
+		end
+
+	index_ast(an_ast: AST_EIFFEL) is
+			-- indexes and ast with path information
+			-- using an_ast as root
+		require
+			non_void: an_ast /= void
+		do
+			path_initializer.process_from_root(an_ast)
+		end
+
+	duplicated_ast: AST_EIFFEL
+			-- Result of duplicate_ast
+
+	basic_operators: ETR_BASIC_OPS is
+			-- basic mutation operators
+		once
+			create Result
+		end
 
 	new_instr(an_instr: STRING; class_context: ABSTRACT_CLASS_C): INSTRUCTION_AS is
 			-- parse an instruction in the context of a compiled class
@@ -39,13 +97,17 @@ feature -- Access
 			Result := expression_parser.expression_node
 		end
 
-	end_keyword: KEYWORD_AS is
-			-- simple end keyword with no location or text information
-		once
-			create Result.make_null
-			Result.set_code ({EIFFEL_TOKENS}.te_end)
-		ensure
-			Result.is_end_keyword
+	conforms_to_context(an_ast: AST_EIFFEL; a_context: ETR_CONTEXT):BOOLEAN is
+			-- check if an_ast is valid in a_context
+		require
+			non_void: an_ast /= void and a_context /= void
+		local
+			visitor: ETR_CONTEXT_VISITOR
+		do
+			create visitor.make_with_context (a_context)
+			visitor.set_checking_only (true)
+			an_ast.process (visitor)
+			Result := visitor.is_conforming
 		end
 
 feature {NONE} -- Internal
@@ -53,21 +115,20 @@ feature {NONE} -- Internal
 	compiled_class(a_class_node: CLASS_AS; a_context: ETR_CONTEXT):CLASS_C is
 			-- get compiled class of a_class_node by id
 			-- has to conform to context
---		require
---			class conforms to context
+		require
+			conforming: conforms_to_context(a_class_node, a_context)
 		do
 			Result := a_context.system.class_of_id (a_class_node.class_id)
 		ensure
 			Result /= void
 		end
 
-
 feature -- Operations
 
 	replace_class_in_context(a_class: CLASS_AS; a_context: ETR_CONTEXT) is
-			-- replace ast of a class in context
---		require
---			class conforms to context
+			-- replace ast of a class in context (by id)
+		require
+			conforming: conforms_to_context(a_class, a_context)
 		do
 			a_context.system.ast_server.remove (a_class.class_id)
 			a_context.system.ast_server.put (a_class)
@@ -125,7 +186,10 @@ feature -- Operations
 			create visitor.make_with_context (a_context)
 			an_ast.process (visitor)
 
-			to_implement("Error reporting")
+			check
+				visitor.is_conforming
+			end
+			to_implement("Proper error handlin")
 		end
 
 	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [INSTRUCTION_AS] is

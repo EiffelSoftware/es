@@ -1,25 +1,67 @@
 note
 	description: "Summary description for {ETR_TRANSFORMABLE}."
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_TRANSFORMABLE
+inherit
+	ETR_SHARED
+		export
+			{NONE} all
+		end
 create
-	make
+	make_with_path,
+	make_with_node
 
-feature -- attributes
+-- todo:
+-- helper functions (as_expr etc)
 
-	ast_node: AST_EIFFEL
+feature -- Access
+
+	scope: AST_PATH
 	context: ETR_CONTEXT
+
+	target_node: AST_EIFFEL is
+			-- target of scope, computed lazily
+		do
+			if internal_taget_node=void then
+				compute_target_node
+			end
+			Result := internal_taget_node
+		end
+
+feature {NONE} -- Implementation
+
+	internal_taget_node: AST_EIFFEL
+
+	compute_target_node is
+			-- compute internal_taget_node
+		do
+			internal_taget_node := find_node(scope)
+		end
 
 feature -- creation
 
-	make(a_node: like ast_node; a_context: like context) is
-			-- create with 'a_node' and 'a_context'
+	make_with_node(a_node: like target_node; a_context: like context) is
+			-- make with node and context
+		require
+			non_void: a_node /= void and a_context /= void
+			has_path: a_node.path /= void
+			valid_path: a_node.path.is_valid
 		do
-			ast_node := a_node
+			internal_taget_node := a_node
+			context := a_context
+			scope := a_node.path
+		end
+
+	make_with_path(a_scope: like scope; a_context: like context) is
+			-- create with 'a_node' and 'a_context'
+		require
+			non_void: a_scope /= void and a_context /= void
+		do
+			scope := a_scope
 			context := a_context
 		end
 note
