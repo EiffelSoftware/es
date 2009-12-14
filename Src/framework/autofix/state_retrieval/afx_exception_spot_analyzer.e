@@ -22,6 +22,7 @@ feature -- Basic operations
 			-- given by the debugger `a_dm'.			
 		local
 			l_fix_gen: AFX_WRAP_FIX_SKELETON
+			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
 		do
 			create last_spot.make (a_tc)
 			last_spot.set_trace (a_dm.application_status.exception_text)
@@ -34,6 +35,10 @@ feature -- Basic operations
 --			create l_fix_gen.make (last_spot, last_spot.failing_assertion)
 --			l_fix_gen.relevant_ast.extend (last_spot.recipient_ast_structure.surrounding_instruction (last_spot.failing_assertion_break_point_slot).parent)
 --			l_fix_gen.generate
+
+			create l_gen.make (last_spot)
+			l_gen.generate
+			l_gen.fixes.do_all (agent {AFX_FIX_SKELETON}.generate)
 		end
 
 feature{NONE} -- Implementation

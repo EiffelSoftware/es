@@ -89,6 +89,12 @@ feature -- Status report
 			Result := attached parent as l_parent
 		end
 
+	is_feature_node: BOOLEAN
+			-- Does current represent a feature node?
+			-- This means that `ast' is the DO_AS node for `feature_'
+		do
+		end
+
 feature -- Status report
 
 	debug_output: STRING

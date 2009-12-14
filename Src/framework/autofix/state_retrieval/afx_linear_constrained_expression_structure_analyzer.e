@@ -22,4 +22,13 @@ feature -- Basic operations
 			fixme ("Not supported for the moment. 14.12.2009 Jasonw")
 			is_matched := False
 		end
+
+feature -- Visitor
+
+	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+			-- Process Current with `a_visitor'.
+		do
+			a_visitor.process_linear_constrained_structure_analyzer (Current)
+		end
+
 end

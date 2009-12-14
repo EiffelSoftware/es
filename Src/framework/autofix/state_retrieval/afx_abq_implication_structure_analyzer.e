@@ -37,6 +37,8 @@ feature -- Basic operations
 				l_written_class := a_expression.written_class
 				create l_left.make_with_type (l_class, l_feature, l_implies.left, l_written_class, l_type)
 				create l_right.make_with_type (l_class, l_feature, l_implies.right, l_written_class, l_type)
+				premise := l_left
+				consequent := l_right
 
 					-- Analyze premise part of the implication.
 				create l_abq_analyzer
@@ -57,14 +59,6 @@ feature -- Basic operations
 					consequent_prefix_expression := l_abq_analyzer.prefix_expression
 					consequent_argumentless_boolean_query := l_abq_analyzer.argumentless_boolean_query
 				end
-
-				if is_matched then
-					io.put_string ("OKOK: " + a_expression.text + " : ")
-					io.put_string (premise_negation_count.out + ", ")
-					io.put_string (consequent_negation_count.out + " ")
-					io.put_string (premise_argumentless_boolean_query.text + " -> " + consequent_argumentless_boolean_query.text + "%N")
-
-				end
 			end
 		end
 
@@ -83,6 +77,10 @@ feature -- Access
 			-- The final argumentless boolean query in the premise part of the analyzed expression			
 			-- Only has effect if `is_matched' is True.
 
+	premise: detachable AFX_EXPRESSION
+			-- Premise expression
+			-- Only has effect if `is_matched' is True.
+
 	consequent_negation_count: INTEGER
 			-- Number of outer negations of the consequent part of the analyzed expression
 			-- Only has effect if `is_matched' is True.
@@ -95,5 +93,17 @@ feature -- Access
 	consequent_argumentless_boolean_query: detachable AFX_EXPRESSION
 			-- The final argumentless boolean query in the consequent part of the analyzed expression			
 			-- Only has effect if `is_matched' is True.
+
+	consequent: detachable AFX_EXPRESSION
+			-- Consequent
+			-- Only has effect if `is_matched' is True.
+
+feature -- Visitor
+
+	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+			-- Process Current with `a_visitor'.
+		do
+			a_visitor.process_abq_implication_structure_analyzer (Current)
+		end
 
 end

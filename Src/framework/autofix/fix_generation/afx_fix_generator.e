@@ -13,7 +13,7 @@ feature -- Access
 			-- Exception spot containing information
 			-- of the failure
 
-	fixes: LINKED_LIST [AFX_FIX]
+	fixes: LINKED_LIST [AFX_FIX_SKELETON]
 			-- Fixes generated for `exception_spot' by
 			-- the last `generate'.
 

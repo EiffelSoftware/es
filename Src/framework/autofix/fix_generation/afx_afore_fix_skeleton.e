@@ -51,9 +51,8 @@ feature -- Basic operations
 				l_bpslot := relevant_ast.first.breakpoint_slot
 			end
 
-			create l_tran.make_with_node (Void, Void)
 			create l_snippets.make
-			l_snippets.extend (l_tran)
+			l_snippets.extend (Void)
 			generate_fixes (l_snippets)
 		end
 
@@ -79,7 +78,7 @@ feature{NONE} -- Implementation
 					l_fix_text.append ("%Nend%N")
 				end
 
-				l_fix := fix_with_text (l_fix_text)
+				l_fix := fix_with_text ("%N" + l_fix_text)
 
 				io.put_string (l_fix.text)
 				io.put_string ("%N-------------------------------------------%N")
@@ -114,7 +113,7 @@ feature{NONE} -- Implementation
 			create Result
 			Result.set_exception_spot (exception_spot)
 			Result.set_text (feature_body_compound_ast.text (l_match_list))
-			l_match_list.undo_modifications
+			l_match_list.remove_modifications
 		end
 
 end

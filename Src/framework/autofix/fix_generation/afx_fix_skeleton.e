@@ -87,6 +87,13 @@ feature -- Setting
 			postcondition_set: postcondition = a_postcondition
 		end
 
+	set_relevant_ast (a_asts: like relevant_ast)
+			-- Set `relevant_ast' with `a_asts'.
+		do
+			relevant_ast.wipe_out
+			relevant_ast.append (a_asts)
+		end
+
 feature -- Basic operations
 
 	generate

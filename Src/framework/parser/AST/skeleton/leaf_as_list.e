@@ -641,6 +641,14 @@ feature -- Modifier operation
 			Result := modifier_list.has (a_modifier)
 		end
 
+	remove_modifications
+			-- Remove all modifications.
+		do
+			undo_modifications
+			modifier_list.wipe_out
+			modifier_applied := True
+		end
+
 feature -- Comment extraction
 
 	extract_comment (a_region: ERT_TOKEN_REGION): EIFFEL_COMMENTS

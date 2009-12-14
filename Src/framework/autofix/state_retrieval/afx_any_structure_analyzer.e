@@ -20,4 +20,13 @@ feature -- Basic operations
 			is_matched := True
 		end
 
+feature -- Visitor
+
+	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+			-- Process Current with `a_visitor'.
+		do
+			a_visitor.process_any_structure_analyzer (Current)
+		end
+
+
 end

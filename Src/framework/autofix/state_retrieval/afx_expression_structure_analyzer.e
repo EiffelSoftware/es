@@ -27,4 +27,11 @@ feature -- Basic operations
 		deferred
 		end
 
+feature -- Visitor
+
+	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+			-- Process Current with `a_visitor'.
+		deferred
+		end
+
 end

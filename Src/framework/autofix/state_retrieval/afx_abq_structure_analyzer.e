@@ -130,4 +130,13 @@ feature{NONE} -- Implementation
 			ast := l_ast
 		end
 
+feature -- Visitor
+
+	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+			-- Process Current with `a_visitor'.
+		do
+			a_visitor.process_abq_structure_analyzer (Current)
+		end
+
+
 end

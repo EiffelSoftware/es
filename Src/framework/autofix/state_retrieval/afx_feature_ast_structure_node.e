@@ -9,6 +9,9 @@ class
 
 inherit
 	AFX_AST_STRUCTURE_NODE
+		redefine
+			is_feature_node
+		end
 
 create
 	make
@@ -194,6 +197,12 @@ feature -- Access
 				end
 			end
 		end
+
+feature -- Status report
+
+	is_feature_node: BOOLEAN = True
+			-- Does current represent a feature node?
+			-- This means that `ast' is the DO_AS node for `feature_'
 
 feature -- Setting
 
