@@ -326,11 +326,15 @@ feature {NONE} -- Expressions processing
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 			l_is_left_expression_separate, l_is_right_expression_separate: BOOLEAN
+			l_left_type : TYPE_A
 		do
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
-
+				-- This doesn't handle the convert clauses where the types may be `converted'
+				--
+				-- TODO: Handle such a case.
 			l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.left, flattened_object_tests_layers, flattened_inline_agents_layers)
 			l_is_left_expression_separate := l_type_expression_visitor.is_expression_separate
+			l_left_type := l_type_expression_visitor.expression_type
 
 			add_object_tests_layer
 			add_multiple_to_current_object_tests_layer (l_type_expression_visitor.object_test_context_update)
@@ -543,7 +547,7 @@ feature {NONE} -- Expressions processing
 					safe_process (l_as.left)
 					-- process infix operator
 					l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-					l_feature_name_visitor.process_infix_str (l_as.operator_ast.name)
+					l_feature_name_visitor.process_infix_str (l_as.operator_ast.name) --
 					context.add_string ("." + l_feature_name_visitor.get_feature_name)
 					last_index := l_as.operator_index
 
