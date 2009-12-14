@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	ERT_BRANCH_VISITOR
+	ETR_BRANCH_VISITOR
 inherit
 	AST_ITERATOR
 		undefine

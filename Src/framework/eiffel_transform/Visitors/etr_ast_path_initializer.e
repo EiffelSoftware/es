@@ -7,7 +7,7 @@ note
 class
 	ETR_AST_PATH_INITIALIZER
 inherit
-	ERT_BRANCH_VISITOR
+	ETR_BRANCH_VISITOR
 
 feature -- Creation
 
