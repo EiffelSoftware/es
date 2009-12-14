@@ -31,6 +31,10 @@ feature -- Status report
 	is_afore: BOOLEAN = True
 			-- Is Current an afore fix skeleton?
 
+	is_guard_ignorable: BOOLEAN
+			-- Is `guard' ignorable?
+			-- If True, the generated fix may not contain if-statement.
+
 feature -- Basic operations
 
 	generate
@@ -47,7 +51,7 @@ feature -- Basic operations
 				l_bpslot := relevant_ast.first.breakpoint_slot
 			end
 
-			create l_tran.make (Void, Void)
+			create l_tran.make_with_node (Void, Void)
 			create l_snippets.make
 			l_snippets.extend (l_tran)
 			generate_fixes (l_snippets)

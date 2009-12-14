@@ -182,6 +182,18 @@ feature -- Access
 
 feature -- Status report
 
+	is_chaos: BOOLEAN
+			-- does this state stand for a chaos (the state before object creation)?
+
+	implication alias "implies" (other: AFX_STATE): BOOLEAN
+			-- Does Current implies `other'?
+			-- The theory of `Current' will be used to support the reasoning.
+		do
+			Result := skeleton_with_value implies other.skeleton_with_value
+		end
+
+feature -- Status report
+
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
@@ -192,15 +204,6 @@ feature -- Status report
 						a_string.append (a_equation.debug_output)
 						a_string.append_character ('%N')
 					end (?, Result))
-		end
-	is_chaos: BOOLEAN
-			-- does this state stand for a chaos (the state before object creation)?
-
-	implication alias "implies" (other: AFX_STATE): BOOLEAN
-			-- Does Current implies `other'?
-			-- The theory of `Current' will be used to support the reasoning.
-		do
-			Result := skeleton_with_value implies other.skeleton_with_value
 		end
 
 feature{NONE} -- Implementation

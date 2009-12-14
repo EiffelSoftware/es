@@ -37,6 +37,10 @@ feature -- Access
 			-- For other types of exception, this hashtalbe is empty.
 			-- Key is the argument index, value is the mentioned expression for that argument.
 
+	target_expression: detachable AFX_EXPRESSION
+			-- Target expression of `feature_of_failing_assertion'
+			-- Void means that `feature_of_failing_assertion' is a unqualified call.
+
 feature -- Basic operations
 
 	rewrite (a_tc: AFX_TEST_CASE_INFO; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
@@ -125,6 +129,15 @@ feature{NONE} -- Implementation
 				-- Get target expression of the failing call.
 			l_target_expression := l_reg.captured_substring (1)
 			l_feature_call_end_position := l_reg.captured_end_position (5)
+			if l_target_expression.is_empty then
+				target_expression := Void
+			else
+				check l_target_expression.count > 1 end
+				if l_target_expression.ends_with (".") then
+					l_target_expression.remove_tail (1)
+				end
+				create {AFX_AST_EXPRESSION} target_expression.make_with_text (a_tc.recipient_class_, a_tc.recipient_, l_target_expression, a_tc.recipient_class_)
+			end
 
 				-- Collect expressions used as arguments.
 			l_failing_classc := first_class_starts_with_name (l_failing_feature.a_class)

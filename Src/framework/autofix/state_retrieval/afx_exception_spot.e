@@ -136,7 +136,37 @@ feature -- Access
 			-- this table is empty.
 			-- Key is the argument index, value is the mentioned expression used as actual argument.
 
+	target_expression_of_failing_feature: detachable AFX_EXPRESSION
+			-- Target expression of `feature_of_failing_assertion'
+			-- Void means that `feature_of_failing_assertion' is a unqualified call.
+
 feature -- Status report
+
+	is_precondition_violation: BOOLEAN
+			-- Does current represent a precondition violation?
+		do
+			Result := exception_code = {EXCEP_CONST}.precondition
+		end
+
+	is_postcondition_violation: BOOLEAN
+			-- Does current represent a postcondition violation?
+		do
+			Result := exception_code = {EXCEP_CONST}.postcondition
+		end
+
+	is_class_invariant_violation: BOOLEAN
+			-- Does current represent a class invariant violation?
+		do
+			Result := exception_code = {EXCEP_CONST}.class_invariant
+		end
+
+	is_check_violation: BOOLEAN
+			-- Does current represent a check violation?
+		do
+			Result := exception_code = {EXCEP_CONST}.check_instruction
+		end
+
+feature -- Equality
 
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
@@ -195,6 +225,14 @@ feature -- Setting
 			failing_assertion_break_point_slot := i
 		ensure
 			failing_assertion_break_point_slot_set: failing_assertion_break_point_slot = i
+		end
+
+	set_target_expression_of_failing_feature (a_expr: like target_expression_of_failing_feature)
+			-- Set `target_expression_of_failing_feature'.
+		do
+			target_expression_of_failing_feature := a_expr
+		ensure
+			target_expression_of_failing_feature_set: target_expression_of_failing_feature = a_expr
 		end
 
 feature{NONE} -- Implementation

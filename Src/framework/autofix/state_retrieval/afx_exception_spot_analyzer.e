@@ -262,6 +262,7 @@ feature{NONE} -- Implementation
 			a_spot.set_feature_of_failing_assertion (l_rewriter.feature_of_assertion)
 			a_spot.set_actual_arguments_in_failing_assertion (l_rewriter.actual_argument_expressions)
 			a_spot.set_failing_assertion_break_point_slot (l_rewriter.assertion_break_point_slot)
+			a_spot.set_target_expression_of_failing_feature (l_rewriter.target_expression)
 		end
 
 	update_expressions_with_ranking (a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]; a_new_exprs: DS_HASH_SET [AFX_EXPRESSION]; a_ranking: INTEGER)

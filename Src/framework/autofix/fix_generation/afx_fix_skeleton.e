@@ -17,6 +17,12 @@ feature -- Access
 	exception_spot: AFX_EXCEPTION_SPOT
 			-- Exception related information
 
+	precondition: AFX_STATE
+			-- Fix precondition
+
+	postcondition: AFX_STATE
+			-- Fix postcondition
+
 	guard_condition: detachable AFX_EXPRESSION
 			-- Expression used as guard in the generated fix.
 			-- If attached, generate fix like: (p is this guard):
@@ -63,6 +69,22 @@ feature -- Setting
 			guard_condition := a_condition
 		ensure
 			guard_condition_set: guard_condition = a_condition
+		end
+
+	set_precondition (a_precondition: like precondition)
+			-- Set `precondition' with `a_precondition'.
+		do
+			precondition := a_precondition
+		ensure
+			precondition_set: precondition = a_precondition
+		end
+
+	set_postcondition (a_postcondition: like postcondition)
+			-- Set `postcondition' with `a_postcondition'.
+		do
+			postcondition := a_postcondition
+		ensure
+			postcondition_set: postcondition = a_postcondition
 		end
 
 feature -- Basic operations
