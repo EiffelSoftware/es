@@ -19,7 +19,8 @@ feature -- Basic type declaration
 			   or else a_name.is_equal ("CONSOLE")
 			   or else a_name.is_equal ("MISMATCH_INFORMATION")
 			   or else a_name.is_equal ("TUPLE")
-			   or else a_name.is_equal ("COMPARABLE")
+			   -- or else a_name.is_equal ("COMPARABLE")
+			   -- or else a_name.is_equal ("PART_COMPARABLE")
 			   or else a_name.is_equal ("ROUTINE")
 			   or else a_name.is_equal ("FUNCTION")
 			   or else a_name.is_equal ("PROCEDURE")
@@ -38,8 +39,8 @@ feature -- Basic type declaration
    			   or else a_name.is_equal ("PLATFORM")
    			   or else a_name.is_equal ("OPERATING_ENVIRONMENT")
    			   or else a_name.is_equal ("BIT_REF")
-   			   or else a_name.is_equal ("CELL")
-   			   or else a_name.is_equal ("CURSOR")
+   			   -- or else a_name.is_equal ("CELL")
+   			   -- or else a_name.is_equal ("CURSOR")
    			   or else a_name.is_equal ("DISPOSABLE")
    			   or else a_name.is_equal ("TYPE")
    			   or else a_name.is_equal ("SYSTEM_STRING_FACTORY")
@@ -49,24 +50,34 @@ feature -- Basic type declaration
    			   or else a_name.is_equal ("FILE_COMPARER")
    			   or else a_name.is_equal ("INTERNAL_HELPER")
    			   or else a_name.is_equal ("ISE_RUNTIME")
-   			   or else a_name.is_equal ("MATH_CONST")
+   			   --or else a_name.is_equal ("MATH_CONST")
+   			   --or else a_name.is_equal ("DOUBLE_MATH")
    			   or else a_name.is_equal ("NATIVE_ARRAY")
    			   or else a_name.is_equal ("NUMERIC_INFORMATION")
    			   or else a_name.is_equal ("OBJECT_GRAPH_TRAVERSABLE")
 
+   			   or else a_name.is_equal ("NUMERIC")
 
 				or else a_name.is_equal ("ARRAY")
+--				or else a_name.is_equal ("CHAIN")
+--				or else a_name.is_equal ("TABLE")
+--				or else a_name.is_equal ("INDEXABLE")
+--				or else a_name.is_equal ("INTEGER_INTERVAL")
+
 				or else a_name.is_equal ("STRING")
 				or else a_name.is_equal ("STRING_HANDLER")
 				or else a_name.is_equal ("TO_SPECIAL")
 				or else a_name.is_equal ("HASHABLE")
 				or else a_name.is_equal ("MISMATCH_CORRECTOR")
-				or else a_name.is_equal ("PART_COMPARABLE")
+
 				or else a_name.is_equal ("REFACTORING_HELPER")
 				or else a_name.is_equal ("DEBUG_OUTPUT")
-				or else a_name.is_equal ("CONTAINER")
+				-- or else a_name.is_equal ("CONTAINER")
 				or else a_name.is_equal ("INTERNAL")
 				or else a_name.is_equal ("EXCEP_CONST")
+
+				or else a_name.is_equal ("POINTER")
+				or else a_name.is_equal ("POINTER_REF")
 
 				-- added by paedde
 				or else a_name.is_equal ("NONE")
@@ -79,7 +90,7 @@ feature -- Basic type declaration
 				-- basic classes: we have here the problem that e.g. INTEGER_32_REF has some infix / prefix features
 				-- INTEGER_32 from elk inherits from INTEGER_32_REF and uses the original feature declaration.
 				or else a_name.is_equal ("HASHABLE")
-				or else a_name.is_equal ("PART_COMPARABLE")
+--				or else a_name.is_equal ("PART_COMPARABLE")
 				or else a_name.is_equal ("INTERNAL")
 				or else a_name.is_equal ("INTEGER_32")
 			then
