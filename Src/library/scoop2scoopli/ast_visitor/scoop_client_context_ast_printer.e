@@ -547,8 +547,10 @@ feature {NONE} -- Expressions processing
 					safe_process (l_as.left)
 					-- process infix operator
 					l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-					l_feature_name_visitor.process_infix_str (l_as.operator_ast.name) --
-					context.add_string ("." + l_feature_name_visitor.get_feature_name)
+					-- l_feature_name_visitor.process_infix_str (l_as.operator_ast.name)
+					-- context.add_string ("." + l_feature_name_visitor.get_feature_name)
+					convert_infix (l_left_type, l_as.operator_ast.name)
+
 					last_index := l_as.operator_index
 
 					-- add brackets for non-infix call
@@ -569,6 +571,13 @@ feature {NONE} -- Expressions processing
 					remove_current_levels_layer
 				end
 			end
+		end
+
+	convert_infix (l_type : TYPE_A; symb : STRING)
+		local
+			l_feature : FEATURE_I
+		do
+			l_feature := l_type.associated_class.feature_table.alias_item (symb)
 		end
 
 	process_unary_as (l_as: UNARY_AS)

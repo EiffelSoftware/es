@@ -81,11 +81,11 @@ feature {NONE} -- Visitor implementation
 					-- get feature name
 					l_feature_name_visitor.process_feature_name (l_feature_name, false)
 					l_feature_name_str := l_feature_name_visitor.get_feature_name
-					l_feature_name_visitor.process_feature_name (l_feature_name, true)
+					--l_feature_name_visitor.process_feature_name (l_feature_name, true)
 					l_feature_declaration_name := l_feature_name_visitor.get_feature_name
 
 					-- get original feature name
-					l_feature_name_visitor.process_original_feature_name (l_feature_name, true)
+					--l_feature_name_visitor.process_original_feature_name (l_feature_name, true)
 					l_original_feature_alias_name := l_feature_name_visitor.get_feature_name
 					l_feature_name_visitor.process_original_feature_name (l_feature_name, false)
 					l_original_feature_name := l_feature_name_visitor.get_feature_name

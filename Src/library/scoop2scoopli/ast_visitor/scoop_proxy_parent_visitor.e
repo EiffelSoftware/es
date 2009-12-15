@@ -206,8 +206,6 @@ feature {NONE} -- Visitor implementation
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
 		do
-			Precursor (l_as)
-
 			-- Create rename statement for assigner wrapper features
 			-- if the current rename statement renames a feature which
 			-- is used as assigner in a parent class. If the current
@@ -223,18 +221,35 @@ feature {NONE} -- Visitor implementation
 
 			-- get original old name
 			l_feature_name_visitor.process_original_feature_name (l_as.old_name, false)
-			l_original_old_name := l_feature_name_visitor.get_feature_name
+			l_original_old_name := l_feature_name_visitor.get_feature_name.twin
 			l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
-			l_original_old_alias_name := l_feature_name_visitor.get_feature_name
+			l_original_old_alias_name := l_feature_name_visitor.get_feature_name.twin
+
+			-- get old and new name (with infix replacement)
+			l_feature_name_visitor.process_feature_name (l_as.old_name, false)
+			l_old_name := l_feature_name_visitor.get_feature_name
+			l_feature_name_visitor.process_feature_name (l_as.new_name, false)
+			l_new_name := l_feature_name_visitor.get_feature_name
+
+			if not l_old_name.is_empty and not l_new_name.is_empty then
+				context.add_string ("%N%T%T%T")
+				context.add_string (l_old_name)
+				context.add_string (" ")
+				safe_process (l_as.as_keyword (match_list))
+				context.add_string (" ")
+				context.add_string (l_new_name)
+
+					-- FIXME: this is terribly brittle I think, there must
+					-- be some better way to consume unwanted syntax?
+				if l_as.new_name.alias_name = Void then
+					last_index := last_index + 3
+				else
+					last_index := last_index + 4
+				end
+			end
 
 			-- check if old name is a feature with assigner in current parent or an ancestor
 			if l_assign_finder.has_current_or_parents_feature_with_assigner (l_original_old_name, l_original_old_alias_name, l_class_c) then
-
-				-- get old and new name (with infix replacement)
-				l_feature_name_visitor.process_feature_name (l_as.old_name, false)
-				l_old_name := l_feature_name_visitor.get_feature_name
-				l_feature_name_visitor.process_feature_name (l_as.new_name, false)
-				l_new_name := l_feature_name_visitor.get_feature_name
 
 				-- create rename statement
 				create l_str.make_from_string (",%N%T%T%T" + l_old_name + "_scoop_separate_assigner_")
