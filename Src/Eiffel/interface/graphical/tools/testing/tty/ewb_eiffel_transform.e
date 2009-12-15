@@ -95,13 +95,12 @@ feature -- Properties
 			-- else
 			--   io.putint(8)
 			-- end
-			ast_modifier.replace (  instr1.path,
-									basic_operators.new_if_then_branch (
-																			new_expr("a_var > 0",a_context), -- condition
-																			create {ETR_TRANSFORMABLE}.make_with_node(instr1,a_context), -- if_part
-																			new_instr("io.putint(8)",a_context) -- else_part
-																		)
-								 )
+			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a_context), -- condition
+												create {ETR_TRANSFORMABLE}.make_with_node(instr1,a_context), -- if_part
+												new_instr("io.putint(8)",a_context) -- else_part
+											)
+
+			ast_modifier.replace(instr1.path,basic_operators.transformation_result)
 
 			-- output should be:
 			-- branch taken: 0 1 1.5 2.5 3 followed by

@@ -30,7 +30,12 @@ feature {NONE} -- Implementation
 
 feature -- Transform
 
-	new_if_then_branch(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE):ETR_TRANSFORMABLE is
+	transformation_result: detachable ETR_TRANSFORMABLE
+		-- result of transformation
+		-- should this be detachable ?
+		-- decide how to handle transformations that 'dont work'
+
+	if_then_wrap(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE) is
 			-- create node with: if a_test then if_part else else_part end
 			-- use context from a_test
 		local
@@ -40,6 +45,8 @@ feature -- Transform
 			else_part_dup: like else_part
 		do
 			-- todo: error/incompatibility handling
+
+			transformation_result := void
 
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
@@ -69,7 +76,7 @@ feature -- Transform
 				-- index it as well
 				index_ast_from_root (result_node)
 
-				create Result.make_with_node (result_node, a_test.context)
+				create transformation_result.make_with_node (result_node, a_test.context)
 			end
 
 			-- what happens if there is some mismatch between contained nodes in the transformables?
