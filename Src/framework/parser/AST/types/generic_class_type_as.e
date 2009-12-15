@@ -61,7 +61,11 @@ feature -- Roundtrip/Token
 
 	last_token (a_list: LEAF_AS_LIST): LEAF_AS
 		do
-			Result := Precursor (a_list)
+			-- Fixed for SCOOP: Calling the precursor does not work for generic class types. It will return the class name as the last token.
+			if a_list /= Void and rcurly_symbol_index /= 0 then
+				Result := rcurly_symbol (a_list)
+			end
+
 			if Result = Void then
 				Result := internal_generics.last_token (a_list)
 				if Result = Void then
