@@ -127,7 +127,7 @@ feature -- Access
 			if l_as.internal_arguments /= void then
 				context.add_string ("; ")
 				-- process internal arguments
-				last_index := l_as.internal_arguments.start_position - 1
+				last_index := l_as.internal_arguments.first_token (match_list).index - 1
 				safe_process (l_as.internal_arguments)
 			end
 
@@ -145,7 +145,7 @@ feature {NONE} -- Visitor implementation
 				safe_process (l_as.tag)
 				safe_process (l_as.colon_symbol (match_list))
 			else
-				last_index := l_as.expr.start_position - 1
+				last_index := l_as.expr.first_token (match_list).index - 1
 			end
 			safe_process (l_as.expr)
 		end
@@ -156,7 +156,7 @@ feature {NONE} -- Visitor implementation
 			if not is_print_with_prefix then
 				safe_process (l_as.lparan_symbol (match_list))
 			else
-				last_index := l_as.arguments.start_position - 1
+				last_index := l_as.arguments.first_token (match_list).index - 1
 			end
 			safe_process (l_as.arguments)
 			if not is_print_with_prefix then

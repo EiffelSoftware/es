@@ -7,6 +7,8 @@ indexing
 class
 	SCOOP_PROXY_TYPE_ORIGINAL_PRINTER
 
+obsolete "This class is obsolete. It is not used."
+
 inherit
 	SCOOP_PROXY_TYPE_VISITOR
 		redefine
@@ -34,7 +36,7 @@ feature {NONE} -- Roundtrip: process nodes
 
 			-- print 'implementation' instead of 'current'
 			context.add_string (" implementation_")
-			last_index := l_as.current_keyword.end_position
+			last_index := l_as.current_keyword.last_token (match_list).index
 
 			-- process rcurly symbol
 			safe_process (l_as.rcurly_symbol (match_list))

@@ -39,7 +39,7 @@ feature -- Access
 			context.add_string (class_c.name.as_lower + "_enclosing_routine ")
 
 			-- process body
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
@@ -90,7 +90,7 @@ feature {NONE} -- Node implementation
 
 				-- process end keyword
 			context.add_string ("%N%T%T")
-			last_index := l_as.end_keyword.start_position - 1
+			last_index := l_as.end_keyword.first_token (match_list).index - 1
 			safe_process (l_as.end_keyword)
 		end
 
@@ -98,7 +98,7 @@ feature {NONE} -- Node implementation
 		local
 			l_parent: STRING
 		do
-			last_index := l_as.start_position - 1
+			last_index := l_as.first_token (match_list).index - 1
 
 				-- print normal call to inherited feature
 			context.add_string ("%N%T%T%T" + fo.feature_name + "_scoop_separate_")
@@ -118,12 +118,12 @@ feature {NONE} -- Node implementation
 				end
 			end
 			if l_as.internal_parameters /= void then
-				last_index := l_as.internal_parameters.start_position - 1
+				last_index := l_as.internal_parameters.first_token (match_list).index - 1
 			end
 
 			update_current_level_with_call (l_as)
 			process_internal_parameters(l_as.internal_parameters)
-			last_index := l_as.end_position
+			last_index := l_as.last_token (match_list).index
 		end
 
 	process_ensure_as (l_as: ENSURE_AS) is
@@ -156,14 +156,14 @@ feature {NONE} -- Node implementation
 				i > fo.postconditions.immediate_postconditions.count
 			loop
 				a_post_condition := fo.postconditions.immediate_postconditions.i_th (i).get_tagged_as
-				last_index := a_post_condition.start_position - 1
+				last_index := a_post_condition.first_token (match_list).index - 1
 				context.add_string ("%N%T%T%T")
 				safe_process (a_post_condition)
 				i := i + 1
 			end
 
 			if l_as /= Void then
-				last_index := l_as.end_position
+				last_index := l_as.last_token (match_list).index
 			end
 		end
 

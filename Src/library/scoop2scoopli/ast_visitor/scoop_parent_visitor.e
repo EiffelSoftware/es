@@ -65,14 +65,14 @@ feature {NONE} -- Visitor implementation
 	process_parent_list_as (l_as: PARENT_LIST_AS) is
 			-- Process `l_as'.
 		do
-			last_index := l_as.start_position - 1
+			last_index := l_as.first_token (match_list).index - 1
 			process_eiffel_list (l_as)
 		end
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS) is
 			-- Process `l_as'.
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%T%T")
 			Precursor (l_as)
 		end
@@ -80,7 +80,7 @@ feature {NONE} -- Visitor implementation
 	process_export_clause_as (l_as: EXPORT_CLAUSE_AS) is
 			-- Process `l_as'.
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%T%T")
 			Precursor (l_as)
 		end
@@ -88,7 +88,7 @@ feature {NONE} -- Visitor implementation
 	process_undefine_clause_as (l_as: UNDEFINE_CLAUSE_AS) is
 			-- Process `l_as'.
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%T%T")
 			Precursor (l_as)
 		end
@@ -96,7 +96,7 @@ feature {NONE} -- Visitor implementation
 	process_redefine_clause_as (l_as: REDEFINE_CLAUSE_AS) is
 			-- Process `l_as'.
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%T%T")
 			Precursor (l_as)
 		end
@@ -104,7 +104,7 @@ feature {NONE} -- Visitor implementation
 	process_select_clause_as (l_as: SELECT_CLAUSE_AS) is
 			-- Process `l_as'.
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%T%T")
 			Precursor (l_as)
 		end

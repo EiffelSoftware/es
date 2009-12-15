@@ -78,11 +78,11 @@ feature {NONE} -- Visitor implementation
 			-- set current processed parent
 			current_processed_parent := l_as
 
-			last_index := l_as.type.start_position - 1
+			last_index := l_as.type.first_token (match_list).index - 1
 			-- skip parent if it is 'ANY'
 			if l_as.type.class_name.name.is_equal ("ANY") then
 				-- skip complete parent_clause
-				last_index := l_as.end_position
+				last_index := l_as.last_token (match_list).index
 			else
 				context.add_string ("%N%T")
 				l_string_context ?= context
@@ -147,7 +147,7 @@ feature {NONE} -- Visitor implementation
 				if l_as.end_keyword_index > 0 then
 					last_index := l_as.end_keyword_index
 				else
-					last_index := l_as.type.end_position
+					last_index := l_as.type.last_token (match_list).index
 				end
 			end
 		end

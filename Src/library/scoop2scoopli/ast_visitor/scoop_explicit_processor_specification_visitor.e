@@ -57,7 +57,7 @@ feature -- Access
 
 			-- remeber leaf list index
 			l_last_index := last_index
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 
 			-- process type as
 			safe_process (l_as)

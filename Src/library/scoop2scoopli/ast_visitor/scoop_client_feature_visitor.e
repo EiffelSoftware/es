@@ -46,7 +46,7 @@ feature {NONE} -- Visitor implementation
 			set_current_feature_as (l_as)
 
 			if l_as.is_attribute or l_as.is_constant then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				context.add_string ("%N%N%T")
 				safe_process (l_as.feature_names)
 				safe_process (l_as.body)
@@ -92,7 +92,7 @@ feature {NONE} -- Visitor implementation
 					end
 
 					-- identify frozen key word
-					last_index := l_as.feature_names.i_th (i).start_position
+					last_index := l_as.feature_names.i_th (i).first_token (match_list).index
 					if l_as.feature_names.i_th (i).is_frozen and then
 					   l_as.feature_names.i_th (i).frozen_keyword.index /= 0 then
 						l_feature_object.is_feature_frozen.set_item (true)
@@ -157,7 +157,7 @@ feature {NONE} -- Visitor implementation
 							context.add_string ("frozen ")
 						end
 						context.add_string (l_feature_object.feature_alias_name + " ")
-						last_index := l_as.body.start_position - 1
+						last_index := l_as.body.first_token (match_list).index - 1
 
 						safe_process (l_as.body)
 
@@ -210,7 +210,7 @@ feature {NONE} -- Implementation
 
 			context.add_string ("%N%N%T" + an_original_feature_name + " ")
 
-			last_index := l_as.body.start_position - 1
+			last_index := l_as.body.first_token (match_list).index - 1
 
 			safe_process (l_as.body.internal_arguments)
 			safe_process (l_as.body.colon_symbol (match_list))
@@ -251,7 +251,7 @@ feature {NONE} -- Implementation
 					loop
 						l_type_dec := l_argument_list.arguments.i_th (i)
 
-						last_index := l_type_dec.start_position - 1
+						last_index := l_type_dec.first_token (match_list).index - 1
 						process_identifier_list (l_type_dec.id_list)
 
 						if i < nb then

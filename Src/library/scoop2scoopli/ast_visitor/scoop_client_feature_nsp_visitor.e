@@ -32,7 +32,7 @@ feature -- Access
 								class_c.name.as_lower + "_non_separate_postcondition ")
 
 			-- process body
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
@@ -75,7 +75,7 @@ feature {NONE} -- Node implementation
 				an_assertion_object := fo.postconditions.non_separate_postconditions.i_th (i)
 
 				-- process postcondition
-				last_index := an_assertion_object.get_tagged_as.start_position - 1
+				last_index := an_assertion_object.get_tagged_as.first_token (match_list).index - 1
 				safe_process (an_assertion_object.get_tagged_as)
 
 				-- iterate all separate argumetns

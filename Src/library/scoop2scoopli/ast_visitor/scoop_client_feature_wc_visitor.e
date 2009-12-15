@@ -46,7 +46,7 @@ feature -- Access
 			context.add_string ("%N%N%T" + fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition ")
 
 			-- process body
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
@@ -63,7 +63,7 @@ feature {NONE} -- Node implementation
 			if l_as.type /= Void then
 				safe_process (l_as.colon_symbol (match_list))
 				context.add_string (" BOOLEAN ")
-				last_index := l_as.type.end_position
+				last_index := l_as.type.last_token (match_list).index
 			else
 				context.add_string (": BOOLEAN ")
 			end
@@ -106,7 +106,7 @@ feature {NONE} -- Node implementation
 	process_tagged_as (l_as: TAGGED_AS)
 		do
 			-- print only expression of the wait condition
-			last_index := l_as.expr.start_position - 1
+			last_index := l_as.expr.first_token (match_list).index - 1
 			safe_process (l_as.expr)
 		end
 

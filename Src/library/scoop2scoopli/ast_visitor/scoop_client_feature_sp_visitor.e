@@ -11,9 +11,7 @@ class
 inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
 		redefine
-			process_body_as,
-			process_formal_argu_dec_list_as,
-			process_type_dec_as
+			process_body_as
 		end
 	SCOOP_WORKBENCH
 
@@ -36,7 +34,7 @@ feature -- Access
 								class_c.name.as_lower + "_separate_postcondition ")
 
 			-- process body
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
@@ -98,64 +96,44 @@ feature {NONE} -- Node implementation
 
 	process_formal_argument_list_as_actual_argument_list_with_prefix (l_as: BODY_AS; a_prefix: STRING) is
 			-- prints internal arguments as an actual argument list,
-			-- sets 'a_prefix' as a fist as a first argument.
+			-- sets 'a_prefix' as a first argument.
+		local
+			i, j: INTEGER
+			l_formal_arguments: EIFFEL_LIST[TYPE_DEC_AS]
+			l_formal_arguments_group: TYPE_DEC_AS
 		do
 			context.add_string ("(")
-
-			-- set flags for processing internal arguments
-			is_print_with_prefix := true
-			is_print_as_actual_argument_list := true
 
 			-- set prefix
 			context.add_string (a_prefix)
 
 			if l_as.internal_arguments /= void then
-				context.add_string (", ")
-				-- process internal arguments
-				last_index := l_as.internal_arguments.start_position - 1
-				safe_process (l_as.internal_arguments)
+				last_index := l_as.internal_arguments.first_token (match_list).index
+				from
+					l_formal_arguments := l_as.internal_arguments.arguments
+					i := 1
+				until
+					i > l_formal_arguments.count
+				loop
+					l_formal_arguments_group := l_formal_arguments.i_th (i)
+					from
+						j := 1
+					until
+						j > l_formal_arguments_group.id_list.count
+					loop
+						context.add_string (", ")
+						context.add_string (l_formal_arguments_group.item_name (j))
+						j := j + 1
+					end
+					i := i + 1
+				end
+				last_index := l_as.internal_arguments.last_token (match_list).index
 			end
-
-			-- reset flags
-			is_print_as_actual_argument_list := false
-			is_print_with_prefix := false
 
 			context.add_string (")")
 		end
 
-	process_formal_argu_dec_list_as (l_as: FORMAL_ARGU_DEC_LIST_AS) is
-			-- Process `l_as'.
-		do
-			if not is_print_with_prefix then
-				safe_process (l_as.lparan_symbol (match_list))
-			else
-				last_index := l_as.arguments.start_position - 1
-			end
-			safe_process (l_as.arguments)
-
-			if not is_print_with_prefix then
-				safe_process (l_as.rparan_symbol (match_list))
-			end
-		end
-
-	process_type_dec_as (l_as: TYPE_DEC_AS) is
-		do
-			process_identifier_list (l_as.id_list)
-			if not is_print_as_actual_argument_list then
-				safe_process (l_as.colon_symbol (match_list))
-				safe_process (l_as.type)
-			end
-		end
-
 feature {NONE} -- Implementation
-
-	is_print_with_prefix: BOOLEAN
-		-- prints the 'formal_argu_dec_list_as' with a prefix as first argument.
-		-- the argument list is processed without the l- and rparan_sympbol.
-
-	is_print_as_actual_argument_list: BOOLEAN
-		-- prints the 'type_dec_as' as actual argument list.
-
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
 		-- feature object of current processed feature.
 

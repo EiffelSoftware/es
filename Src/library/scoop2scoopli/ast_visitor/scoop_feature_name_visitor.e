@@ -45,7 +45,7 @@ feature -- Access
 		require
 			a_feature_name_not_void: a_feature_name /= Void
 		do
-			reset_visitor (a_feature_name.start_position)
+			reset_visitor (a_feature_name.first_token (match_list).index)
 
 			-- set flag
 			is_with_alias := l_is_with_alias
@@ -59,7 +59,7 @@ feature -- Access
 		require
 			a_feature_name_not_void: a_feature_name /= Void
 		do
-			reset_visitor (a_feature_name.start_position)
+			reset_visitor (a_feature_name.first_token (match_list).index)
 
 			-- set flag
 			is_with_alias := l_is_with_alias
@@ -78,7 +78,7 @@ feature -- Access
 		require
 			a_feature_name_not_void: a_feature_name /= Void
 		do
-			reset_visitor (a_feature_name.start_position)
+			reset_visitor (a_feature_name.first_token (match_list).index)
 
 			-- set flag
 			is_with_alias := true
@@ -91,7 +91,7 @@ feature -- Access
 			-- add now the non-infix notation
 			if has_processed_infix_prefix_node then
 				context.add_string (", ")
-				last_index := a_feature_name.start_position
+				last_index := a_feature_name.first_token (match_list).index
 
 				-- process it now infix notation
 				safe_process (a_feature_name)
@@ -103,7 +103,7 @@ feature -- Access
 		require
 			l_as_not_void: l_as /= Void
 		do
-			reset_visitor (l_as.start_position)
+			reset_visitor (l_as.first_token (match_list).index)
 
 			-- process node
 			safe_process (l_as)
@@ -130,7 +130,7 @@ feature -- Access
 		require
 			l_as_not_void: l_as /= Void
 		do
-			reset_visitor (l_as.start_position)
+			reset_visitor (l_as.first_token (match_list).index)
 
 			-- set flag
 			is_with_alias := true
@@ -253,7 +253,7 @@ feature {NONE} -- Visitor implementation
 
 feature {NONE} -- Implementation
 
-	reset_visitor (a_start_position: INTEGER) is
+	reset_visitor (a_start_index: INTEGER) is
 			-- resets the processed attributes
 		do
 			-- reset context
@@ -266,8 +266,8 @@ feature {NONE} -- Implementation
 			has_prefix := false
 			id_prefix := Void
 
-			-- set start position index
-			last_index := a_start_position
+			-- set start index
+			last_index := a_start_index - 1
 		end
 
 feature {NONE} -- Implementation

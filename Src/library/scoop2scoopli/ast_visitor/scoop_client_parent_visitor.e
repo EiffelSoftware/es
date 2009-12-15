@@ -50,14 +50,14 @@ feature {NONE} -- Visitor implementation
 
 	process_parent_as (l_as: PARENT_AS) is
 		do
-			last_index := l_as.type.start_position - 1
+			last_index := l_as.type.first_token (match_list).index - 1
 			current_parent_c := get_parent_class_c_by_name (l_as.type.class_name.name)
 --			if l_as.type.class_name.name.as_upper.is_equal ("ANY") then
 
 --					-- Replace `ANY' with `SCOOP_SEPARATE_CLIENT'.
 --				context.add_string ("SCOOP_SEPARATE_CLIENT")
 --				-- skipe the rest of the parent clause
---				last_index := l_as.end_position
+--				last_index := l_as.last_token (match_list).index
 --			else
 				context.add_string ("%N%T")
 
@@ -117,7 +117,7 @@ feature {NONE} -- Visitor implementation
 			if not is_rename_clause then
 				-- creates comma separated a list of non-infix and infix feature name
 				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 
 				-- process INFIX_PREFIX_AS node
 				if l_as.is_frozen and then l_as.frozen_keyword.index > 0 then

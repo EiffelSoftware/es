@@ -88,7 +88,7 @@ feature {NONE} -- Roundtrip: process nodes
 			-- since we produce only override classes we skip the indexing part
 			-- safe_process (l_as.internal_top_indexes)
 			if l_as.internal_top_indexes /= Void then
-				last_index := l_as.internal_top_indexes.end_position
+				last_index := l_as.internal_top_indexes.last_token (match_list).index
 			end
 
 			safe_process (l_as.frozen_keyword (match_list))
@@ -105,7 +105,7 @@ feature {NONE} -- Roundtrip: process nodes
 			process_leading_leaves (l_as.class_name.index)
 			process_class_name (l_as.class_name, true, context, match_list)
 			if l_as.class_name /= Void then
-				last_index := l_as.class_name.end_position
+				last_index := l_as.class_name.last_token (match_list).index
 			end
 
 			-- process internal generics
@@ -177,7 +177,7 @@ feature {NONE} -- Roundtrip: process nodes
 
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%N")
 			safe_process (l_as.feature_keyword)
 			safe_process (l_as.clients)
@@ -192,7 +192,7 @@ feature {NONE} -- Roundtrip: process nodes
 
 			l_feature_visitor := scoop_visitor_factory.new_proxy_feature_visitor (context)
 			l_feature_visitor.process_feature(l_as)
-			last_index := l_as.end_position
+			last_index := l_as.last_token (match_list).index
 		end
 
 	process_class_type_as (l_as: CLASS_TYPE_AS) is
@@ -298,7 +298,7 @@ feature {NONE} -- Roundtrip: process nodes
 		do
 			-- skip it
 			if l_as.full_assertion_list /= Void then
-				last_index := l_as.end_position
+				last_index := l_as.last_token (match_list).index
 			end
 		end
 
@@ -330,7 +330,7 @@ feature {NONE} -- Roundtrip: implementation
 				if class_as.features /= Void then
 					last_index := class_as.features.index - 1
 				elseif class_as.internal_invariant /= Void then
-					last_index := class_as.internal_invariant.start_position - 1
+					last_index := class_as.internal_invariant.first_token (match_list).index - 1
 				elseif class_as.internal_bottom_indexes /= Void then
 					last_index := class_as.internal_bottom_indexes.index -1
 				else
@@ -406,10 +406,10 @@ feature {NONE} -- Roundtrip: implementation
 					context.add_string ("%N%N%T" + a_feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 					if l_feature_as.body.internal_arguments /= Void then
 						-- print type with prefix
-						last_index := l_feature_as.body.internal_arguments.start_position
+						last_index := l_feature_as.body.internal_arguments.first_token (match_list).index
 						process_formal_argument_list_with_a_caller (l_feature_as.body.internal_arguments)
 					--	safe_process (l_feature_as.body.internal_arguments)
-					--	last_index := l_feature_as.body.internal_arguments.end_position
+					--	last_index := l_feature_as.body.internal_arguments.last_token (match_list).index
 					else
 						context.add_string ("(a_caller_: SCOOP_SEPARATE_TYPE) ") --CLIENT) ")
 					end

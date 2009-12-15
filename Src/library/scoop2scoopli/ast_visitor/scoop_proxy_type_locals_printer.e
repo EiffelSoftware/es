@@ -91,7 +91,7 @@ feature {NONE} -- Roundtrip: process nodes
 				-- original / client class
 				-- print 'implementation' instead of 'current'
 				context.add_string (" implementation_")
-				last_index := l_as.current_keyword.end_position
+				last_index := l_as.current_keyword.last_token (match_list).index
 --			end
 
 			-- process rcurly symbol
@@ -119,7 +119,7 @@ feature {NONE} -- Roundtrip: process nodes
 			-- process class name
 			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
 			if l_as.class_name /= Void then
-				last_index := l_as.class_name.end_position
+				last_index := l_as.class_name.last_token (match_list).index
 			end
 
 			-- process internal generics			
@@ -127,7 +127,7 @@ feature {NONE} -- Roundtrip: process nodes
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
 			l_generics_visitor.process_type_locals (l_as.internal_generics, false, not is_filter_detachable)
 			if l_as.internal_generics /= Void then
-				last_index := l_as.internal_generics.end_position
+				last_index := l_as.internal_generics.last_token (match_list).index
 			end
 
 			-- process rcurly symbol

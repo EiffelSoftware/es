@@ -41,7 +41,7 @@ feature -- Access
 		do
 			fo := l_fo
 
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 

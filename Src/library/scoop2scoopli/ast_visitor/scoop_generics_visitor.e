@@ -42,7 +42,7 @@ feature -- Access
 			is_set_prefix := set_prefix
 			is_print_without_constraints := without_constraints
 			if l_as /= Void then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
 		end
@@ -53,7 +53,7 @@ feature -- Access
 			is_set_prefix := set_prefix
 			is_print_without_constraints := without_generics
 			if l_as /= Void then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
 		end
@@ -64,7 +64,7 @@ feature -- Access
 			is_set_prefix := set_prefix
 			is_print_without_constraints := without_generics
 			if l_as /= Void then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
 		end
@@ -77,7 +77,7 @@ feature -- Access
 			is_print_without_constraints := without_generics
 			is_print_proxy_locals := true
 			if l_as /= Void then
-				last_index := l_as.start_position - 1
+				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
 			is_print_proxy_locals := false
@@ -194,7 +194,7 @@ feature {NONE} -- Visitor implementation
 			else
 				-- skip the constraints and creation part
 				if l_as.has_constraint then
-					last_index := l_as.end_position
+					last_index := l_as.last_token (match_list).index
 				end
 			end
 		end

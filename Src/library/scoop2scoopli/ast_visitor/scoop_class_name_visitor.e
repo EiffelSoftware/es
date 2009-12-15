@@ -44,9 +44,9 @@ feature {SCOOP_CLASS_NAME} -- Access
 		do
 			is_print_both := true
 			is_set_prefix := true
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			process_eiffel_list (l_as)
-			last_index := l_as.end_position - 1
+			last_index := l_as.last_token (match_list).index - 1
 		end
 
 	process_id (l_as: ID_AS; a_set_prefix: BOOLEAN) is
@@ -54,9 +54,9 @@ feature {SCOOP_CLASS_NAME} -- Access
 		do
 			is_print_both := false
 			is_set_prefix := a_set_prefix
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
-			last_index := l_as.end_position
+			last_index := l_as.last_token (match_list).index
 		end
 
 	process_id_str (l_class_name: STRING; a_set_prefix: BOOLEAN) is

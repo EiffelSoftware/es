@@ -52,7 +52,7 @@ feature -- Access
 			context.add_string (fo.feature_name + " ")
 
 			-- process body
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
@@ -92,7 +92,7 @@ feature {NONE} -- Node implementation
 			safe_process (l_as.precondition)
 
 			if l_as.internal_locals /= Void then
-				last_index := l_as.internal_locals.end_position
+				last_index := l_as.internal_locals.last_token (match_list).index
 			end
 
 			if feature_as.body.type /= Void then
@@ -103,7 +103,7 @@ feature {NONE} -- Node implementation
 				process_routine_as_procedure
 			end
 
-			last_index := l_as.end_position - 1
+			last_index := l_as.last_token (match_list).index - 1
 			context.add_string ("%N%T%T")
 			safe_process (l_as.end_keyword)
 		end
@@ -133,14 +133,14 @@ feature {NONE} -- Node implementation
 				loop
 					context.add_string ("%N%T%T%T")
 					l_tagged_as := fo.preconditions.non_separate_preconditions.i_th (i).get_tagged_as
-					last_index := l_tagged_as.start_position - 1
+					last_index := l_tagged_as.first_token (match_list).index - 1
 					safe_process (l_tagged_as)
 					i := i + 1
 				end
 			end
 
 			if l_as /= Void then
-				last_index := l_as.end_position
+				last_index := l_as.last_token (match_list).index
 			end
 		end
 
@@ -292,14 +292,14 @@ feature {NONE} -- Implementation
 				until
 					i >= l_as.arguments.count
 				loop
-					last_index := l_as.arguments.i_th (i).start_position - 1
+					last_index := l_as.arguments.i_th (i).first_token (match_list).index - 1
 					process_identifier_list (l_as.arguments.i_th (i).id_list)
 					context.add_string (", ")
 					i := i + 1
 				end
 
 				if i = l_as.arguments.count then
-					last_index := l_as.arguments.i_th (i).start_position - 1
+					last_index := l_as.arguments.i_th (i).first_token (match_list).index - 1
 					process_identifier_list (l_as.arguments.i_th (i).id_list)
 				end
 			end
@@ -315,7 +315,7 @@ feature {NONE} -- Implementation
 			until
 				i >= fo.arguments.separate_arguments.count
 			loop
-				last_index := fo.arguments.separate_arguments.i_th (i).start_position - 1
+				last_index := fo.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
 				is_print_with_processor_postfix := with_processor
 				process_identifier_list (fo.arguments.separate_arguments.i_th (i).id_list)
 				is_print_with_processor_postfix := false
@@ -324,7 +324,7 @@ feature {NONE} -- Implementation
 			end
 
 			if i = fo.arguments.separate_arguments.count then
-				last_index := fo.arguments.separate_arguments.i_th (i).start_position - 1
+				last_index := fo.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
 				is_print_with_processor_postfix := with_processor
 				process_identifier_list (fo.arguments.separate_arguments.i_th (i).id_list)
 				is_print_with_processor_postfix := false

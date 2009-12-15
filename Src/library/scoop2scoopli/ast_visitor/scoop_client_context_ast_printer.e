@@ -786,7 +786,7 @@ feature {NONE} -- Instructions processing
 					-- process internal parameter: first: 'Current'
 					add_prefix_current_cc := true
 					if l_as.call.internal_parameters /= Void then
-						last_index := l_as.call.internal_parameters.start_position
+						last_index := l_as.call.internal_parameters.first_token (match_list).index
 					end
 					process_internal_parameters(l_as.call.internal_parameters)
 					add_prefix_current_cc := false
@@ -798,7 +798,7 @@ feature {NONE} -- Instructions processing
 
 				context.add_string (", Void, Void, Void)")
 				if l_as.call /= Void and then not (l_as.call.internal_parameters /= Void) then
-					last_index := l_as.call.end_position
+					last_index := l_as.call.last_token (match_list).index
 				end
 			end
 
@@ -946,7 +946,7 @@ feature {NONE} -- Instructions processing
 					-- process internal parameter: first: 'Current'
 					add_prefix_current_cc := true
 					if l_as.call.internal_parameters /= Void then
-						last_index := l_as.call.internal_parameters.start_position
+						last_index := l_as.call.internal_parameters.first_token (match_list).index
 					end
 					process_internal_parameters(l_as.call.internal_parameters)
 					add_prefix_current_cc := false
@@ -957,7 +957,7 @@ feature {NONE} -- Instructions processing
 				end
 				context.add_string (", Void, Void, Void)")
 				if l_as.call /= Void then
-					last_index := l_as.call.end_position
+					last_index := l_as.call.last_token (match_list).index
 				end
 			end
 		end

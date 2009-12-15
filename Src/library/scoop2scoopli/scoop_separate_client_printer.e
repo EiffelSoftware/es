@@ -49,7 +49,7 @@ feature {NONE} -- Roundtrip: process nodes
 			-- since we produce only override classes we skip the indexing part
 			-- safe_process (l_as.internal_top_indexes)
 			if l_as.internal_top_indexes /= Void then
-				last_index := l_as.internal_top_indexes.end_position
+				last_index := l_as.internal_top_indexes.last_token (match_list).index
 			end
 
 			safe_process (l_as.frozen_keyword (match_list))
@@ -120,7 +120,7 @@ feature {NONE} -- Roundtrip: process nodes
 
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
 		do
-			last_index := l_as.start_position
+			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%N")
 			safe_process (l_as.feature_keyword)
 			process_clients (l_as.clients)
@@ -185,7 +185,7 @@ feature {NONE} -- Roundtrip: process nodes
 
 			l_feature_visitor := scoop_visitor_factory.new_client_feature_visitor (context)
 			l_feature_visitor.process_feature(l_as)
-			last_index := l_as.end_position
+			last_index := l_as.last_token (match_list).index
 		end
 
 feature {NONE} -- Implementation

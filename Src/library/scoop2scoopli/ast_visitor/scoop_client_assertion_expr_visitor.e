@@ -58,8 +58,8 @@ feature -- Access
 					-- new expression, reset.
 				reset_assertion_evaluation
 
-					-- set start position
-				last_index := l_as.start_position - 1
+					-- set start index
+				last_index := l_as.first_token (match_list).index - 1
 
 					-- process expression
 				safe_process (l_as)

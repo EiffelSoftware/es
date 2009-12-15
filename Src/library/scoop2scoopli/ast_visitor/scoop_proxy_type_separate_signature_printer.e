@@ -7,6 +7,8 @@ indexing
 class
 	SCOOP_PROXY_TYPE_SEPARATE_SIGNATURE_PRINTER
 
+obsolete "This class should not be in use."
+
 inherit
 	SCOOP_PROXY_TYPE_VISITOR
 		redefine
@@ -41,7 +43,7 @@ feature {NONE} -- Visitor implementation
 
 			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
 			if l_as.class_name /= Void then
-				last_index := l_as.class_name.end_position
+				last_index := l_as.class_name.last_token (match_list).index
 			end
 
 			-- process rcurly symbol

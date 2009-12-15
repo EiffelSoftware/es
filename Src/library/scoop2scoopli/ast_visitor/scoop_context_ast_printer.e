@@ -41,7 +41,7 @@ feature -- Basic SCOOP changes
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 		do
 			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-			last_index := l_as.start_position - 1
+			last_index := l_as.first_token (match_list).index - 1
 
 			-- process INFIX_PREFIX_AS node
 			if l_as.frozen_keyword /= void and then l_as.frozen_keyword.index > 0 then
@@ -239,7 +239,7 @@ feature -- Debug
 			context := create {ROUNDTRIP_STRING_LIST_CONTEXT}.make
 
 				-- process the node
-			last_index := l_as.start_position - 1
+			last_index := l_as.first_token (match_list).index - 1
 			safe_process (l_as)
 
 				-- set original context
