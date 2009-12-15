@@ -8,7 +8,7 @@ class
 	AFX_STATE_SKELETON
 
 inherit
-	DS_HASH_SET [AFX_EXPRESSION]
+	AFX_HASH_SET [AFX_EXPRESSION]
 		redefine
 			force_new,
 			append,

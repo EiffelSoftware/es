@@ -18,6 +18,11 @@ inherit
 			out
 		end
 
+	AFX_UTILITY
+		undefine
+			out
+		end
+
 create
 	make
 
@@ -82,6 +87,31 @@ feature -- Access
 			good_result: Result = expression.feature_
 		end
 
+	equation_with_value_negated: like Current
+			-- A new equation with the value part being negated.
+			-- For example "is_empty = True" becomes "is_empty = False".
+		require
+			expression_is_predicate: expression.is_predicate
+		local
+			l_new_value: AFX_BOOLEAN_VALUE
+		do
+			if attached {AFX_BOOLEAN_VALUE} value as l_bool then
+				create l_new_value.make (not l_bool.item)
+				create Result.make (expression, l_new_value)
+			end
+		end
+
+	equation_with_expression_negated: like Current
+			-- A new equation with the expression part being negated.
+			-- For example "is_empty = True" becomes "not (is_empty) = True".
+		require
+			expression_is_predicate: expression.is_predicate
+		do
+			if attached {AFX_BOOLEAN_VALUE} value as l_bool then
+				create Result.make (not expression, l_bool)
+			end
+		end
+
 feature -- Status report
 
 	out, debug_output: STRING
@@ -101,6 +131,14 @@ feature -- Conversion
 		do
 			create Result.make (1, class_, feature_)
 			Result.force_last (Current)
+		end
+
+	to_normal_form: like Current
+			-- Turn current into normal form
+		require
+			expression_is_predicate: expression.is_predicate
+		do
+			Result := equation_in_normal_form (Current)
 		end
 
 feature -- Status report

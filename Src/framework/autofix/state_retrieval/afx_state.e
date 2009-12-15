@@ -8,7 +8,7 @@ class
 	AFX_STATE
 
 inherit
-	DS_HASH_SET [AFX_EQUATION]
+	AFX_HASH_SET [AFX_EQUATION]
 		rename
 			make as make_set
 		end
