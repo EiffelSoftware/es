@@ -1,6 +1,6 @@
 note
 	description: "Locates a node based on a root and a path expression"
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -31,11 +31,11 @@ feature -- Creation
 			path := a_path
 			current_position := path.as_array.lower
 
-			if path.as_string.is_equal ("1") then
+			if path.is_equal (path.root.path) then
 				found := true
-				found_node := a_path.root
+				found_node := path.root
 			else
-				a_path.root.process (Current)
+				path.root.process (Current)
 			end
 		end
 
@@ -46,26 +46,26 @@ feature {NONE} -- Implementation
 		local
 			n: INTEGER
 			next_br_number: INTEGER
-			next: AST_EIFFEL
 		do
-			n := br.count
-			-- convert from odd-numbering to normal
-			-- 1->1, 3->2, 5->3, 7->4 ...
-			next_br_number := (next_branch+1)//2
+			if attached path as p then
+				n := br.count
+				next_br_number := next_branch
 
-			if current_position = path.as_array.upper-1 then
-				if next_br_number <= br.count then
-					found_node ?= br.item (next_br_number)
-					found := true
+				if current_position = p.as_array.upper-1 then
+					if next_br_number <= br.count then
+						found_node ?= br.item (next_br_number)
+						found := true
+					end
+				elseif current_position < p.as_array.upper then
+					current_position := current_position+1
+					if attached {AST_EIFFEL}br.item (next_br_number) as next then
+						safe_process (next)
+					end
 				end
-			elseif current_position < path.as_array.upper then
-				current_position := current_position+1
-				next ?= br.item (next_br_number)
-				safe_process (next)
 			end
 		end
 
-	path: AST_PATH
+	path: detachable AST_PATH
 	current_position: INTEGER
 		-- current positin in a path
 
@@ -83,16 +83,18 @@ feature -- Roundtrip
 		local
 			next_br_number: INTEGER
 		do
-			next_br_number := (next_branch+1)//2
+			if attached path as p then
+				next_br_number := next_branch
 
-			if current_position = path.as_array.upper-1 then
-				if next_br_number <= l_as.count then
-					found_node := l_as.i_th (next_br_number)
-					found := true
+				if current_position = p.as_array.upper-1 then
+					if next_br_number <= l_as.count then
+						found_node := l_as.i_th (next_br_number)
+						found := true
+					end
+				elseif current_position < p.as_array.upper then
+					current_position := current_position+1
+					safe_process(l_as.i_th (next_br_number))
 				end
-			elseif current_position < path.as_array.upper then
-				current_position := current_position+1
-				safe_process(l_as.i_th (next_br_number))
 			end
 		end
 note

@@ -50,15 +50,14 @@ feature -- Properties
 			restore_ast (ast_server.item (cid), create {ETR_CONTEXT})
 		end
 
-	path_test is
+	test(a_context: ETR_CONTEXT) is
 			-- test ast identifiers
 		local
 			da: DO_AS
 			target_class: CLASS_I
 			original_ast, working_ast: CLASS_AS
-			instr: INSTRUCTION_AS
-			string_path: STRING
-			found_node, parent_node: AST_EIFFEL
+			instr1,instr2: INSTRUCTION_AS
+			cid: INTEGER
 		do
 			-- retrieve some existing ast
 			target_class := universe.compiled_classes_with_name("ETR_DUMMY").first
@@ -67,25 +66,53 @@ feature -- Properties
 			-- duplicate it and index it
 			duplicate_ast (original_ast)
 			working_ast ?= duplicated_ast
-			index_ast (working_ast)
+			index_ast_from_root (working_ast)
 
 			-- get some instruction
 			da ?= working_ast.features.first.features.first.body.as_routine.routine_body
-			instr := da.compound.first
+			instr1 := da.compound.i_th (1)
+			instr2 := da.compound.i_th (2)
 
-			-- store its path
-			string_path := instr.path.as_string
+			-- existing instructions:
+			-- 1. io.putint(1)
+			-- 2. io.putint(2)
 
-			-- find this node from the root and the string
-			found_node := find_node (create {AST_PATH}.make_from_string(working_ast, string_path))
+			-- insert after the last item
+			ast_modifier.insert_after (da.compound.last.path, new_instr("io.putint(3)",a_context))
 
-			check
-				equal: found_node = instr
+			-- insert before the first item
+			ast_modifier.insert_before (da.compound.first.path, new_instr("io.putint(0)",a_context))
+
+			-- insert after the instr1
+			ast_modifier.insert_after (instr1.path, new_instr("io.putreal (1.5)",a_context))
+
+			-- replace old instr2
+			ast_modifier.replace (instr2.path, new_instr("io.putreal (2.5)",a_context))
+
+			-- replace instr1 by
+			-- if a_var>0 then
+			--   instr1
+			-- else
+			--   io.putint(8)
+			-- end
+			ast_modifier.replace (  instr1.path,
+									basic_operators.new_if_then_branch (
+																			new_expr("a_var > 0",a_context), -- condition
+																			create {ETR_TRANSFORMABLE}.make_with_node(instr1,a_context), -- if_part
+																			new_instr("io.putint(8)",a_context) -- else_part
+																		)
+								 )
+
+			-- output should be:
+			-- branch taken: 0 1 1.5 2.5 3 followed by
+			-- not taken: 0 8 1.5 2.5 3
+
+			-- save changes to class ETR_DUMMY
+			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty then
+				cid :=t.first.compiled_class.class_id
+				replace_class_in_context (working_ast, a_context)
+				mark_ast_changed (working_ast, a_context)
 			end
-
-			-- fetch its parent container (1 level above)
-			-- the EIFFEL_LIST of the do-body in this case
-			parent_node := find_node (create {AST_PATH}.make_from_child(found_node, 1))
 		end
 
 
@@ -108,7 +135,7 @@ feature -- Properties
 			-- later we can just restore it because we duplicated (todo)
 			reparse_class_by_name("ETR_DUMMY")
 
-			path_test
+			test(context)
 
 --			sample_use_1(context)
 --			sample_use_2_new(context)

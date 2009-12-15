@@ -34,7 +34,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	internal_taget_node: AST_EIFFEL
+	internal_taget_node: detachable AST_EIFFEL
 
 	compute_target_node is
 			-- compute internal_taget_node

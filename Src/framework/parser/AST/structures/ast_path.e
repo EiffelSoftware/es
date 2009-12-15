@@ -11,11 +11,8 @@ inherit
 		redefine
 			is_equal
 		end
-
 create
 	make_from_parent,
-	make_after,
-	make_before,
 	make_as_root,
 	make_from_string,
 	make_from_child
@@ -30,8 +27,6 @@ feature -- Access
 
 	branch_id: INTEGER
 			-- id of the branch
-			-- odd numbering for normal nodes
-			-- even numbers are used for insertion
 
 	as_string: STRING
 
@@ -50,6 +45,11 @@ feature -- Access
 
 	is_valid: BOOLEAN
 
+	has_prefix(a_prefix: like as_string):BOOLEAN is
+			-- does current have a_prefix?
+		do
+			Result := as_string.starts_with (a_prefix)
+		end
 feature -- Hashing
 
 	hash_code: INTEGER
@@ -175,21 +175,11 @@ feature -- Creation
 		do
 			root := a_parent.path.root
 
-			branch_id := a_branch_number * 2 -1
+			branch_id := a_branch_number
 
 			as_string := a_parent.path.as_string + separator.out + branch_id.out
 
 			is_valid := true
-		end
-
-	make_after(other: like root) is
-			-- make after another
-		require
-			non_void: other /= void
-			has_path: other.path /= void
-			valid: other.path.is_valid
-		do
-			-- to implement
 		end
 
 	make_as_root(a_root: like root) is
@@ -199,16 +189,7 @@ feature -- Creation
 			as_string := "1"
 
 			is_valid := true
-		end
-
-	make_before(other: like root) is
-			-- make before another
-		require
-			non_void: other /= void
-			has_path: other.path /= void
-			valid: other.path.is_valid
-		do
-			-- to implement
+			branch_id := 0
 		end
 
 invariant

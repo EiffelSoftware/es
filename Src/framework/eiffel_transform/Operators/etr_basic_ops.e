@@ -22,7 +22,7 @@ feature {NONE} -- Implementation
 	end_keyword: KEYWORD_AS is
 			-- simple end keyword with no location or text information
 		once
-			create Result.make_null 
+			create Result.make_null
 			Result.set_code ({EIFFEL_TOKENS}.te_end)
 		ensure
 			Result.is_end_keyword
@@ -30,65 +30,51 @@ feature {NONE} -- Implementation
 
 feature -- Transform
 
---	boolean_replace(a_transformable: ETR_TRANSFORMABLE; a_cond: BOOLEAN):ETR_TRANSFORMABLE is
---			-- replace all boolean expressions created by comparison operators in a_transformable by a_cond
---		local
---			replacer: ETR_AST_REPLACER
---		do
-
---		end
-
-	if_wrap(a_transformable:ETR_TRANSFORMABLE; a_condition: ETR_TRANSFORMABLE):ETR_TRANSFORMABLE is
-			-- Wrap a_transformable with cond
-			-- result has context of a_transformable!
-			-- todo: some compability checks?
+	new_if_then_branch(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE):ETR_TRANSFORMABLE is
+			-- create node with: if a_test then if_part else else_part end
+			-- use context from a_test
 		local
-			if_part: EIFFEL_LIST[INSTRUCTION_AS]
-			instr: INSTRUCTION_AS
-			if_node: IF_AS
-			condition_node: EXPR_AS
-			body_node: AST_EIFFEL
+			if_part_node, else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
+			result_node: IF_AS
+			if_part_dup: like if_part
+			else_part_dup: like else_part
 		do
-			-- compatibility checks
-			-- todo: find more elegant way for this
-			condition_node ?= a_condition.target_node
-			if condition_node = void then
-				-- todo: output error (incompatible)
+			-- todo: error/incompatibility handling
+
+			if attached {EXPR_AS}a_test.target_node as condition then
+				if attached if_part then
+					duplicate_ast (if_part.target_node)
+					-- check if its a single instruction or multiple
+					if attached {INSTRUCTION_AS}duplicated_ast as instr then
+						if_part_node := single_instr_list (instr)
+					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
+						if_part_node := instrs
+					end
+				end
+
+				if attached else_part then
+					duplicate_ast (else_part.target_node)
+					-- check if its a single instruction or multiple
+					if attached {INSTRUCTION_AS}duplicated_ast as instr then
+						else_part_node := single_instr_list (instr)
+					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
+						else_part_node := instrs
+					end
+				end
+
+				-- assemble new IF_AS
+				create result_node.initialize (condition, if_part_node, void, else_part_node, end_keyword, void, void, void)
+
+				adjust_for_context (result_node, a_test.context)
+				-- index it as well
+				index_ast_from_root (result_node)
+
+				create Result.make_with_node (result_node, a_test.context)
 			end
 
-			-- check if it's EIFFEL_LIST[INSTRUCTION_AS] or INSTRUCTION_AS
-			if a_transformable.target_node ~ if_part then
-				if_part ?= a_transformable.target_node
-			elseif a_transformable.target_node ~ instr then
-				instr ?= a_transformable.target_node
-				if_part := single_instr_list (instr)
-			else
-				-- todo: output error (incompatible)
-			end
-
-			-- assemble new IF_AS
-			create if_node.initialize (condition_node, if_part, void, void, end_keyword, void, void, void)
-
-			-- reindex it
-			index_ast (if_node)
-			-- make adjustments for context
-			adjust_for_context (if_node, a_transformable.context)
-
-			-- create new ETR_TRANSFORMABLE
-			create Result.make_with_node (if_node, a_transformable.context)
+			-- what happens if there is some mismatch between contained nodes in the transformables?
+			-- return void or some special null-transformable?
 		end
-
---	replace(a_transformable: ETR_TRANSFORMABLE; a_position: AST_PATH) is
---			-- move a_transformable to a_position in its context, replacing anything thats there
---		do
-
---		end
-
---	insert(a_transformable: ETR_TRANSFORMABLE; a_position: AST_PATH) is
---			-- insert a_transformable at a_position in its context
---		do
-
---		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

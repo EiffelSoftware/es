@@ -17,7 +17,7 @@ inherit
 
 feature -- Identification
 
-	path: AST_PATH
+	path: detachable AST_PATH
 			-- path to this ast node from the root
 
 	set_path(a_path: like path) is

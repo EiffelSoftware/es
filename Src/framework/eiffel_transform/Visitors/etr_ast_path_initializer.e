@@ -8,11 +8,15 @@ class
 	ETR_AST_PATH_INITIALIZER
 inherit
 	ETR_BRANCH_VISITOR
+	ETR_SHARED
+		export
+			{NONE} all
+		end
 
 feature -- Creation
 
 	process_from_root(a_root: AST_EIFFEL) is
-			-- process
+			-- process from a_root
 		require
 			root_set: a_root /= void
 		do
@@ -20,12 +24,19 @@ feature -- Creation
 			a_root.process (Current)
 		end
 
+	process_from(a_node: AST_EIFFEL) is
+			-- process from a_path
+		require
+			node_set: a_node /= void
+		do
+			a_node.process(Current)
+		end
+
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
+	process_n_way_branch(a_parent: AST_EIFFEL; br: TUPLE[AST_EIFFEL]) is
 			-- process an n-way branch
 		local
-			node: AST_EIFFEL
 			i: INTEGER
 		do
 			from
@@ -33,12 +44,17 @@ feature {NONE} -- Implementation
 			until
 				i>br.count
 			loop
-				node ?= br.item (i)
-				if node /= void then
-					node.set_path (create {AST_PATH}.make_from_parent (a_parent, i))
-					node.process (Current)
-				end
+				if attached {AST_EIFFEL}br.item (i) as item then
+					if attached item.path then
+						-- update it
+						item.path.make_from_parent (a_parent, i)
+					else
+						-- create
+						item.set_path (create {AST_PATH}.make_from_parent (a_parent, i))
+					end
 
+					item.process (Current)
+				end
 				i:=i+1
 			end
 		end

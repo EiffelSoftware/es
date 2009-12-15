@@ -18,6 +18,12 @@ inherit
 
 feature -- Constants
 
+	ast_modifier: ETR_AST_MODIFIER is
+			-- inserts into ast nodes & replaces
+		do
+			create Result
+		end
+
 	path_initializer: ETR_AST_PATH_INITIALIZER is
 			-- initalizes path information
 		once
@@ -32,6 +38,18 @@ feature -- Constants
 
 feature -- Access
 
+	ast_parent(an_ast: AST_EIFFEL): AST_EIFFEL is
+			-- gets the parent of an_ast using paths
+		require
+			ast_attached: an_ast /= void
+		local
+			parent_path: AST_PATH
+		do
+			create parent_path.make_from_child (an_ast, 1)
+
+			Result := find_node (parent_path)
+		end
+
 	find_node(a_path: AST_PATH): AST_EIFFEL is
 			-- finds a node from a path
 		require
@@ -44,23 +62,7 @@ feature -- Access
 			Result := ast_locator.found_node
 		end
 
-	duplicate_ast(an_ast: AST_EIFFEL) is
-			-- duplicate an_ast
-			-- result in duplicated_ast
-		require
-			non_void: an_ast /= void
-		do
-			-- is cloning the way to go?
-			-- alternative would be:
-			-- print + reparse (are some ids lost? adjust for context again?)
-			-- 		needs facility to print ast without matchlist
-			-- recreating from scratch
-			--		very dependant on ast structure
-
-			duplicated_ast := an_ast.deep_twin
-		end
-
-	index_ast(an_ast: AST_EIFFEL) is
+	index_ast_from_root(an_ast: AST_EIFFEL) is
 			-- indexes and ast with path information
 			-- using an_ast as root
 		require
@@ -69,7 +71,16 @@ feature -- Access
 			path_initializer.process_from_root(an_ast)
 		end
 
-	duplicated_ast: AST_EIFFEL
+	reindex_ast(an_ast: AST_EIFFEL) is
+			-- indexes and ast with path information
+		require
+			non_void: an_ast /= void
+		do
+			path_initializer.process_from(an_ast)
+		end
+
+
+	duplicated_ast: detachable AST_EIFFEL
 			-- Result of duplicate_ast
 
 	basic_operators: ETR_BASIC_OPS is
@@ -78,23 +89,22 @@ feature -- Access
 			create Result
 		end
 
-	new_instr(an_instr: STRING; class_context: ABSTRACT_CLASS_C): INSTRUCTION_AS is
+	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
 			-- parse an instruction in the context of a compiled class
-			-- todo: make this use ETR_CONTEXT
-		local
-			body: DO_AS
 		do
 			entity_feature_parser.parse_from_string ("feature parse_instr_dummy_feature is do "+an_instr+" end",void)
-			body ?= entity_feature_parser.feature_node.body.as_routine.routine_body
-			Result := body.compound.first
+			if attached {DO_AS}entity_feature_parser.feature_node.body.as_routine.routine_body as body then
+				index_ast_from_root (body.compound.first)
+				create Result.make_with_node (body.compound.first, a_context)
+			end
 		end
 
-	new_expr(an_expr: STRING; class_context: ABSTRACT_CLASS_C): EXPR_AS is
+	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
 			-- parse an expression in the context of a compiled class
-			-- todo: make this use ETR_CONTEXT
 		do
 			expression_parser.parse_from_string("check "+an_expr,void)
-			Result := expression_parser.expression_node
+			index_ast_from_root (expression_parser.expression_node)
+			create Result.make_with_node (expression_parser.expression_node, a_context)
 		end
 
 	conforms_to_context(an_ast: AST_EIFFEL; a_context: ETR_CONTEXT):BOOLEAN is
@@ -124,6 +134,22 @@ feature {NONE} -- Internal
 		end
 
 feature -- Operations
+
+	duplicate_ast(an_ast: AST_EIFFEL) is
+			-- duplicate an_ast
+			-- result in duplicated_ast
+		require
+			non_void: an_ast /= void
+		do
+			-- is cloning the way to go?
+			-- alternative would be:
+			-- print + reparse (are some ids lost? adjust for context again?)
+			-- 		needs facility to print ast without matchlist
+			-- recreating from scratch
+			--		very dependant on ast structure
+
+			duplicated_ast := an_ast.deep_twin
+		end
 
 	replace_class_in_context(a_class: CLASS_AS; a_context: ETR_CONTEXT) is
 			-- replace ast of a class in context (by id)
