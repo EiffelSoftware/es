@@ -23,26 +23,14 @@ feature{NONE} -- Initialization
 
 	make (a_config: AFX_CONFIG)
 			-- Initialize Current.
-		local
-			pass_file_n:FILE_NAME
-			fail_file_n:FILE_NAME
+
 		do
 			config := a_config
 			create test_case_start_actions
 			create test_case_breakpoint_hit_actions
 			create application_exited_actions
 			create exception_spots.make (5)
-			create daikon_generator.make
 			exception_spots.compare_objects
-			create daikon_fail_states.make (100)
-			create daikon_pass_states.make (100)
-
-			create pass_file_n.make_from_string (config.data_directory)
-			create fail_file_n.make_from_string (config.data_directory)
-			pass_file_n.extend ("pass.dtrace")
-			fail_file_n.extend ("fail.dtrace")
-			pass_file_name := pass_file_n.out
-			fail_file_name := fail_file_n.out
 
 		ensure
 			config_set: config = a_config
@@ -66,26 +54,13 @@ feature -- Access
 	application_exited_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when application exited in debugger
 
-	daikon_generator: AFX_DAIKON_GENERATOR
-			-- Daikon generator
-
-	daikon_pass_states:  DS_ARRAYED_LIST [STRING]
-			-- List of pass states
-
-	daikon_fail_states:  DS_ARRAYED_LIST [STRING]
-			-- List of fail states
-
-	daikon_pass_result: STRING
-			-- Result from running Daikon
-
-	daikon_fail_result: STRING
-			-- Result from running Daikon
 
 
 feature -- Basic operations
 
 	execute
 			-- Execute.
+
 		do
 				-- Setup ARFF file generation.
 			if config.is_arff_generation_enabled then
@@ -95,7 +70,10 @@ feature -- Basic operations
 			end
 
 			if config.is_daikon_enabled then
-				-- Add Daikon related staff.
+				create daikon_facility.make(config)
+				test_case_start_actions.extend (agent daikon_facility.on_new_test_case_found)
+				test_case_breakpoint_hit_actions.extend (agent daikon_facility.on_test_case_breakpoint_hit )
+				application_exited_actions.extend (agent daikon_facility.on_application_exited)
 			end
 
  				-- Output retrieved state.
@@ -108,9 +86,7 @@ feature -- Basic operations
 				-- Start test case analysis
 			analyze_test_cases
 
-			store_daikon_state
-			write_daikon_to_file
-			load_daikon_result
+
 
 
 
@@ -118,15 +94,14 @@ feature -- Basic operations
 
 feature{NONE} -- Access
 
-	pass_file_name: STRING
-			-- File used to store Daikon dtrace
 
-	fail_file_name: STRING
-			-- File used to store Daikon dtrace
 
 	arff_generator: detachable AFX_ARFF_GENERATOR
 			-- Generator for ARFF file,
 			-- ARFF file is used for Weka tool
+
+	daikon_facility: detachable AFX_DAIKON_FACILITY
+			-- Daikon Facility
 
 	current_test_case_breakpoint_manager: detachable AFX_BREAKPOINT_MANAGER
 			-- Breakpoint manager for current test case
@@ -162,55 +137,6 @@ feature{NONE} -- Access
 
 feature{NONE} -- Implementation
 
-	write_daikon_to_file is
-			-- Write the pass and fail declaration and trace to file
-		local
-			pass_file:PLAIN_TEXT_FILE
-			fail_file:PLAIN_TEXT_FILE
-		do
-
-			create pass_file.make_open_write (pass_file_name)
-				--Save to file
-			from
-				daikon_pass_states.start
-			until
-				daikon_pass_states.after
-			loop
-				pass_file.put_string (daikon_pass_states.item_for_iteration)
-				--io.put_string (daikon_pass_states.item_for_iteration)
-				daikon_pass_states.forth
-			end
-			pass_file.close
-
-			create fail_file.make_create_read_write (fail_file_name)
-			--Save to file
-			from
-				daikon_fail_states.start
-			until
-				daikon_fail_states.after
-			loop
-				fail_file.put_string (daikon_fail_states.item_for_iteration)
-				--io.put_string (daikon_fail_states.item_for_iteration)
-				daikon_fail_states.forth
-			end
-			fail_file.close
-		end
-
-	load_daikon_result is
-			-- load the result from the Daikon execution
-		local
-			shell : AFX_BOOGIE_FACILITY
-			pass_CMD : STRING
-			fail_CMD : STRING
-		do
-			create shell
-			pass_cmd := "/usr/bin/java daikon.Daikon " + pass_file_name
-			fail_cmd := "/usr/bin/java daikon.Daikon " + fail_file_name
-			daikon_fail_result := shell.output_from_program (fail_cmd, void)
-			daikon_pass_result := shell.output_from_program (pass_cmd, void)
-			io.put_string ("Received from Daikon FAIL " + daikon_fail_result)
-			io.put_string ("Received from Daikon PASS " + daikon_pass_result)
-		end
 
 
 	debug_project
@@ -290,7 +216,6 @@ feature{NONE} -- Actions
 
 			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing)
 
-
 			if is_current_test_case_dry_run then
 			else
 				l_spot := exception_spots.item (current_test_case_info.id)
@@ -307,26 +232,6 @@ feature{NONE} -- Actions
 				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
 				current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
 				current_test_case_breakpoint_manager.toggle_breakpoints (True)
-
-			store_daikon_state
-
-			end
-		end
-
-	store_daikon_state is
-			--
-		local
-			daikon_state : STRING
-
-		do
-				if daikon_generator.number_states > 0 then
-				daikon_state := daikon_generator.declarations + daikon_generator.traces
-				if daikon_generator.is_failing_tc then
-					daikon_fail_states.put_right (daikon_state)
-				else
-					daikon_pass_states.put_right (daikon_state)
-				end
-				daikon_generator.restart
 			end
 		end
 
@@ -427,17 +332,6 @@ feature{NONE} -- Implication
 			l_sorter.sort (l_equations)
 
 			check current_test_case_info /= Void end
-
-			daikon_generator.add_state (a_state,a_bpslot.out,a_tc.is_failing)
-
-			if a_tc.is_passing then
-				io.put_string ("P ")
-			else
-				io.put_string ("F ")
-			end
-			if current_test_case_info.id /= Void then
-				io.put_string (current_test_case_info.id + " ")
-			end
 
 			--io.put_string (a_tc.recipient_class + "." + a_tc.recipient + "@" + a_bpslot.out + "%N")
 			l_equations.do_all (
