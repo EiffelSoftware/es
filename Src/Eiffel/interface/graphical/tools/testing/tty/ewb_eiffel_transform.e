@@ -22,6 +22,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	ETR_COMPILATION_HELPER
+
 feature -- Properties
 
 	name: STRING
@@ -37,17 +39,6 @@ feature -- Properties
 	abbreviation: CHARACTER
 		do
 			Result := 'e'
-		end
-
-	reparse_class_by_name(a_class: STRING) is
-			-- DEBUG. set class to reparse + remelt
-		local
-			target_class: CLASS_I
-			cid: INTEGER
-		do
-			target_class := universe.compiled_classes_with_name(a_class).first
-			cid := target_class.compiled_class.class_id
-			restore_ast (ast_server.item (cid), create {ETR_CONTEXT})
 		end
 
 	test(a_context: ETR_CONTEXT) is
@@ -96,7 +87,7 @@ feature -- Properties
 			--   io.putint(8)
 			-- end
 			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a_context), -- condition
-												create {ETR_TRANSFORMABLE}.make_with_node(instr1,a_context), -- if_part
+												create {ETR_TRANSFORMABLE}.make_from_node(instr1,a_context), -- if_part
 												new_instr("io.putint(8)",a_context) -- else_part
 											)
 
@@ -109,8 +100,8 @@ feature -- Properties
 			-- save changes to class ETR_DUMMY
 			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty then
 				cid :=t.first.compiled_class.class_id
-				replace_class_in_context (working_ast, a_context)
-				mark_ast_changed (working_ast, a_context)
+				replace_class_with (original_ast,working_ast)
+				mark_class_changed (working_ast)
 			end
 		end
 
@@ -131,14 +122,9 @@ feature -- Properties
 			create context
 
 			-- reparse to have the original ast
-			-- later we can just restore it because we duplicated (todo)
 			reparse_class_by_name("ETR_DUMMY")
 
 			test(context)
-
---			sample_use_1(context)
---			sample_use_2_new(context)
---			sample_use_3(context)
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

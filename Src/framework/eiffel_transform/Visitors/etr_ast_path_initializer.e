@@ -16,7 +16,7 @@ inherit
 feature -- Creation
 
 	process_from_root(a_root: AST_EIFFEL) is
-			-- process from a_root
+			-- process from `a_root'
 		require
 			root_set: a_root /= void
 		do
@@ -25,7 +25,7 @@ feature -- Creation
 		end
 
 	process_from(a_node: AST_EIFFEL) is
-			-- process from a_path
+			-- process starting at `a_node'
 		require
 			node_set: a_node /= void
 		do
@@ -34,8 +34,8 @@ feature -- Creation
 
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br: TUPLE[AST_EIFFEL]) is
-			-- process an n-way branch
+	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
+			-- process an n-way branch with parent `a_parent' and branches `br'
 		local
 			i: INTEGER
 		do
@@ -62,6 +62,7 @@ feature {NONE} -- Implementation
 feature -- Roundtrip
 
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
+			-- process an EIFFEL_LIST
 		local
 			l_cursor: INTEGER
 			i: INTEGER

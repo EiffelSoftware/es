@@ -20,8 +20,7 @@ inherit
 feature -- Operations
 
 	insert_after(a_path: AST_PATH; a_transformable: ETR_TRANSFORMABLE) is
-			-- insert after node after a_path
-			-- a_path has to point to an item of an EIFFEL_LIST
+			-- insert `a_transformable' after `a_path'
 		local
 			l_done: BOOLEAN
 			l_parent: AST_EIFFEL
@@ -55,8 +54,7 @@ feature -- Operations
 		end
 
 	insert_before(a_path: AST_PATH; a_transformable: ETR_TRANSFORMABLE) is
-			-- insert after node after a_path
-			-- a_path has to point to an item of an EIFFEL_LIST
+			-- insert `a_transformable' before `a_path'
 		local
 			l_done: BOOLEAN
 			l_parent: AST_EIFFEL
@@ -95,8 +93,7 @@ feature -- Operations
 
 
 	replace(a_path: AST_PATH; a_transformable: ETR_TRANSFORMABLE) is
-			-- replace node at a_path
-			-- for now only works in instruction lists
+			-- replace `a_transformable' at `a_path'
 		local
 			-- supported:
 			l_parent_list: EIFFEL_LIST[INSTRUCTION_AS]

@@ -12,12 +12,13 @@ inherit
 feature -- Access
 
 	found: BOOLEAN
-	found_node: AST_EIFFEL
+	found_node: detachable AST_EIFFEL
+		-- note: path may be followed correctly but ending branch might be void
 
 feature -- Creation
 
 	find_from_root(a_path: AST_PATH) is
-			-- find a node by traversing from a_root
+			-- starting from the root find a node by following `a_path'
 		require
 			non_void: a_path /= void
 			path_valid: a_path.is_valid
@@ -42,7 +43,7 @@ feature -- Creation
 feature {NONE} -- Implementation
 
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
-			-- process an n-way branch
+			-- process an n-way branch with parent `a_parent' and branches `br'
 		local
 			n: INTEGER
 			next_br_number: INTEGER
@@ -53,7 +54,11 @@ feature {NONE} -- Implementation
 
 				if current_position = p.as_array.upper-1 then
 					if next_br_number <= br.count then
-						found_node ?= br.item (next_br_number)
+						if attached {AST_EIFFEL}br.item (next_br_number) as item then
+							found_node := item
+						else
+							found_node := void
+						end
 						found := true
 					end
 				elseif current_position < p.as_array.upper then
@@ -67,7 +72,7 @@ feature {NONE} -- Implementation
 
 	path: detachable AST_PATH
 	current_position: INTEGER
-		-- current positin in a path
+		-- current positin in `path'
 
 	next_branch: INTEGER is
 			-- next branch to take
@@ -80,6 +85,7 @@ feature {NONE} -- Implementation
 feature -- Roundtrip
 
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
+			-- process an EIFFEL_LIST
 		local
 			next_br_number: INTEGER
 		do

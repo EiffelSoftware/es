@@ -31,23 +31,16 @@ feature {NONE} -- Implementation
 feature -- Transform
 
 	transformation_result: detachable ETR_TRANSFORMABLE
-		-- result of transformation
-		-- should this be detachable ?
-		-- decide how to handle transformations that 'dont work'
+		-- result of last transformation
 
 	if_then_wrap(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE) is
-			-- create node with: if a_test then if_part else else_part end
-			-- use context from a_test
+			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with context from `a_test'
 		local
 			if_part_node, else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
 			result_node: IF_AS
 			if_part_dup: like if_part
 			else_part_dup: like else_part
 		do
-			-- todo: error/incompatibility handling
-
-			transformation_result := void
-
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
 					duplicate_ast (if_part.target_node)
@@ -72,15 +65,13 @@ feature -- Transform
 				-- assemble new IF_AS
 				create result_node.initialize (condition, if_part_node, void, else_part_node, end_keyword, void, void, void)
 
-				adjust_for_context (result_node, a_test.context)
 				-- index it as well
 				index_ast_from_root (result_node)
 
-				create transformation_result.make_with_node (result_node, a_test.context)
+				create transformation_result.make_from_node (result_node, a_test.context)
+			else
+				transformation_result := new_invalid_transformable
 			end
-
-			-- what happens if there is some mismatch between contained nodes in the transformables?
-			-- return void or some special null-transformable?
 		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

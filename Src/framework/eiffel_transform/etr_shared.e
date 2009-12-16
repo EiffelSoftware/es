@@ -19,27 +19,36 @@ inherit
 feature -- Constants
 
 	ast_modifier: ETR_AST_MODIFIER is
-			-- inserts into ast nodes & replaces
+			-- shared instance of ETR_AST_MODIFIER
 		do
 			create Result
 		end
 
 	path_initializer: ETR_AST_PATH_INITIALIZER is
-			-- initalizes path information
+			-- shared instance of ETR_AST_PATH_INITIALIZER
 		once
 			create Result
 		end
 
 	ast_locator: ETR_AST_LOCATOR is
-			-- locates a node given a path
+			-- shared instance of ETR_AST_LOCATOR
+		once
+			create Result
+		end
+
+	basic_operators: ETR_BASIC_OPS is
+			-- shared instance of ETR_BASIC_OPS
 		once
 			create Result
 		end
 
 feature -- Access
 
-	ast_parent(an_ast: AST_EIFFEL): AST_EIFFEL is
-			-- gets the parent of an_ast using paths
+	duplicated_ast: detachable AST_EIFFEL
+			-- Result of `duplicate_ast'
+
+	ast_parent(an_ast: AST_EIFFEL): detachable AST_EIFFEL is
+			-- gets the parent of `an_ast' using paths
 		require
 			ast_attached: an_ast /= void
 		local
@@ -50,8 +59,8 @@ feature -- Access
 			Result := find_node (parent_path)
 		end
 
-	find_node(a_path: AST_PATH): AST_EIFFEL is
-			-- finds a node from a path
+	find_node(a_path: AST_PATH): detachable AST_EIFFEL is
+			-- finds a node from `a_path'
 		require
 			non_void: a_path /= void
 			valid: a_path.is_valid
@@ -62,9 +71,36 @@ feature -- Access
 			Result := ast_locator.found_node
 		end
 
+feature -- New
+
+	new_invalid_transformable: ETR_TRANSFORMABLE is
+			-- create an invalid transformable
+		do
+			create Result.make_invalid
+		end
+
+	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
+			-- create a new instruction from `an_instr' with context `a_context'
+		do
+			entity_feature_parser.parse_from_string ("feature new_instr_dummy_feature is do "+an_instr+" end",void)
+			if attached {DO_AS}entity_feature_parser.feature_node.body.as_routine.routine_body as body then
+				index_ast_from_root (body.compound.first)
+				create Result.make_from_node (body.compound.first, a_context)
+			end
+		end
+
+	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
+			-- create a new exression from `an_expr' with context `a_context'
+		do
+			expression_parser.parse_from_string("check "+an_expr,void)
+			index_ast_from_root (expression_parser.expression_node)
+			create Result.make_from_node (expression_parser.expression_node, a_context)
+		end
+
+feature -- Operations
+
 	index_ast_from_root(an_ast: AST_EIFFEL) is
-			-- indexes and ast with path information
-			-- using an_ast as root
+			-- indexes and ast with root `an_ast'
 		require
 			non_void: an_ast /= void
 		do
@@ -72,72 +108,15 @@ feature -- Access
 		end
 
 	reindex_ast(an_ast: AST_EIFFEL) is
-			-- indexes and ast with path information
+			-- reindexes `an_ast'
 		require
 			non_void: an_ast /= void
 		do
 			path_initializer.process_from(an_ast)
 		end
 
-
-	duplicated_ast: detachable AST_EIFFEL
-			-- Result of duplicate_ast
-
-	basic_operators: ETR_BASIC_OPS is
-			-- basic mutation operators
-		once
-			create Result
-		end
-
-	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
-			-- parse an instruction in the context of a compiled class
-		do
-			entity_feature_parser.parse_from_string ("feature parse_instr_dummy_feature is do "+an_instr+" end",void)
-			if attached {DO_AS}entity_feature_parser.feature_node.body.as_routine.routine_body as body then
-				index_ast_from_root (body.compound.first)
-				create Result.make_with_node (body.compound.first, a_context)
-			end
-		end
-
-	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
-			-- parse an expression in the context of a compiled class
-		do
-			expression_parser.parse_from_string("check "+an_expr,void)
-			index_ast_from_root (expression_parser.expression_node)
-			create Result.make_with_node (expression_parser.expression_node, a_context)
-		end
-
-	conforms_to_context(an_ast: AST_EIFFEL; a_context: ETR_CONTEXT):BOOLEAN is
-			-- check if an_ast is valid in a_context
-		require
-			non_void: an_ast /= void and a_context /= void
-		local
-			visitor: ETR_CONTEXT_VISITOR
-		do
-			create visitor.make_with_context (a_context)
-			visitor.set_checking_only (true)
-			an_ast.process (visitor)
-			Result := visitor.is_conforming
-		end
-
-feature {NONE} -- Internal
-
-	compiled_class(a_class_node: CLASS_AS; a_context: ETR_CONTEXT):CLASS_C is
-			-- get compiled class of a_class_node by id
-			-- has to conform to context
-		require
-			conforming: conforms_to_context(a_class_node, a_context)
-		do
-			Result := a_context.system.class_of_id (a_class_node.class_id)
-		ensure
-			Result /= void
-		end
-
-feature -- Operations
-
 	duplicate_ast(an_ast: AST_EIFFEL) is
-			-- duplicate an_ast
-			-- result in duplicated_ast
+			-- duplicates `an_ast' and stores the result in `duplicated_ast'
 		require
 			non_void: an_ast /= void
 		do
@@ -151,75 +130,8 @@ feature -- Operations
 			duplicated_ast := an_ast.deep_twin
 		end
 
-	replace_class_in_context(a_class: CLASS_AS; a_context: ETR_CONTEXT) is
-			-- replace ast of a class in context (by id)
-		require
-			conforming: conforms_to_context(a_class, a_context)
-		do
-			a_context.system.ast_server.remove (a_class.class_id)
-			a_context.system.ast_server.put (a_class)
-		end
-
-	-- not sure if this belongs in here/in the library
-	mark_for_reparse(a_class: CLASS_AS; a_context: ETR_CONTEXT) is
-			-- mark class as not parsed
-			-- will be done next melt
-		local
-			l_compiled_class: CLASS_C
-		do
-			l_compiled_class := compiled_class(a_class, a_context)
-
-			l_compiled_class.set_changed (true)
-			a_context.degree_5.insert_new_class (l_compiled_class)
-			a_context.degree_4.insert_class (l_compiled_class)
-			a_context.degree_3.insert_class (l_compiled_class)
-			a_context.degree_2.insert_class (l_compiled_class)
-			a_context.degree_1.insert_class (l_compiled_class)
-		end
-
-	-- not sure if this belongs in here/in the library
-	mark_ast_changed(a_class: CLASS_AS; a_context: ETR_CONTEXT) is
-			-- mark ast as changed (degrees <=4)
-		local
-			l_compiled_class: CLASS_C
-		do
-			l_compiled_class := compiled_class(a_class, a_context)
-
-			l_compiled_class.set_changed (true)
-			a_context.degree_4.insert_class (l_compiled_class)
-			a_context.degree_3.insert_class (l_compiled_class)
-			a_context.degree_2.insert_class (l_compiled_class)
-			a_context.degree_1.insert_class (l_compiled_class)
-		end
-
-	-- not sure if this belongs in here/in the library	
-	restore_ast(a_class: CLASS_AS; a_context: ETR_CONTEXT) is
-			-- restore original ast
-			-- i.e. reparse
-			-- todo: make this not require the whole melting process
-		do
-			mark_for_reparse(a_class, a_context)
-			a_context.system.eiffel_project.quick_melt
-		end
-
-	adjust_for_context(an_ast: AST_EIFFEL; a_context: ETR_CONTEXT) is
-			-- make sure an_ast is valid in a_context
-		require
-			none_void: an_ast /= void and a_context /= void
-		local
-			visitor: ETR_CONTEXT_VISITOR
-		do
-			create visitor.make_with_context (a_context)
-			an_ast.process (visitor)
-
-			check
-				visitor.is_conforming
-			end
-			to_implement("Proper error handlin")
-		end
-
-	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [INSTRUCTION_AS] is
-			-- create list with a single instruction
+	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [like instr] is
+			-- creates list with a single instruction `instr'
 		require
 			instr_not_void: instr/=void
 		do

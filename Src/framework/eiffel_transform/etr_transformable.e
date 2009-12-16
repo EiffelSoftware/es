@@ -12,57 +12,41 @@ inherit
 			{NONE} all
 		end
 create
-	make_with_path,
-	make_with_node
-
--- todo:
--- helper functions (as_expr etc)
+	make_from_node,
+	make_invalid
 
 feature -- Access
 
-	scope: AST_PATH
+	path: AST_PATH
 	context: ETR_CONTEXT
+	target_node: AST_EIFFEL
 
-	target_node: AST_EIFFEL is
-			-- target of scope, computed lazily
-		do
-			if internal_taget_node=void then
-				compute_target_node
-			end
-			Result := internal_taget_node
-		end
-
-feature {NONE} -- Implementation
-
-	internal_taget_node: detachable AST_EIFFEL
-
-	compute_target_node is
-			-- compute internal_taget_node
-		do
-			internal_taget_node := find_node(scope)
-		end
+	is_valid: BOOLEAN
 
 feature -- creation
 
-	make_with_node(a_node: like target_node; a_context: like context) is
-			-- make with node and context
+	make_from_node(a_node: like target_node; a_context: like context) is
+			-- make with `a_node' and `a_context'
 		require
 			non_void: a_node /= void and a_context /= void
 			has_path: a_node.path /= void
 			valid_path: a_node.path.is_valid
 		do
-			internal_taget_node := a_node
+			target_node := a_node
 			context := a_context
-			scope := a_node.path
+			path := a_node.path
+
+			is_valid := true
 		end
 
-	make_with_path(a_scope: like scope; a_context: like context) is
-			-- create with 'a_node' and 'a_context'
-		require
-			non_void: a_scope /= void and a_context /= void
+	make_invalid is
+			-- make and mark as invalid
 		do
-			scope := a_scope
-			context := a_context
+			path := void
+			context := void
+			target_node := void
+
+			is_valid := false
 		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -6,17 +6,6 @@ note
 
 class
 	ETR_CONTEXT
-inherit
--- overkill: just have all shared stuff in here. to be changed.
--- this is just a placeholder
-	SHARED_SERVER
-
-	SHARED_DEGREES
-		export
-			{ANY} all
-		end
-
-	SHARED_WORKBENCH
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

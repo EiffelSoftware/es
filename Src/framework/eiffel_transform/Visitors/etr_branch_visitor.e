@@ -91,7 +91,7 @@ inherit
 feature {NONE} -- Implementation
 
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
-			-- process an n-way branch
+			-- process an n-way branch with parent `a_parent' and branches `br'
 		deferred
 		end
 
