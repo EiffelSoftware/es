@@ -55,8 +55,8 @@ feature
 
 			jstar_runner.run (dot_file_directory, jimple_code_file_name, specs_file_name, logic_file_name, abs_file_name, l_output_file_name)
 			jstar_output_file_name := l_output_file_name
-			cfg_file_name := "icfg.dot"
-			execution_file_name := "execution.dot"
+			cfg_file_name := ".icfg.dot"
+			execution_file_name := ".execution_core.dot"
 		end
 
 	timed_out: BOOLEAN

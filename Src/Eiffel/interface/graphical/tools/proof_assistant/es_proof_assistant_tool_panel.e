@@ -14,6 +14,9 @@ inherit
 	EXCEPTIONS
 	export {NONE} all end
 
+	KL_SHARED_FILE_SYSTEM
+	export {NONE} all end
+
 create
 	make
 
@@ -114,34 +117,73 @@ feature {NONE}
 			req.execute (preferences.misc_data.external_editor_cli (a_file_name, 1))
 		end
 
+	open_web_browser_for_file (a_file_name: STRING)
+		local
+			req: COMMAND_EXECUTOR
+		do
+			create req
+			req.execute (preferences.misc_data.web_browser_command.twin + " " + a_file_name)
+		end
+
 	show_dot_file (window_title: STRING; filename_agent: FUNCTION [ANY, TUPLE, STRING])
 		local
 			l_filename: STRING
 			l_process_factory: PROCESS_FACTORY
 			l_arguments: ARRAYED_LIST [STRING]
 			l_process: PROCESS
+			l_executable_name: STRING
+			l_map_name: STRING
+			l_image_name: STRING
+			l_html_name: STRING
+			l_absolute_html_file_name: STRING
+			l_absolute_map_file_name: STRING
+			l_html_file: KL_TEXT_OUTPUT_FILE
 		do
 			l_filename := filename_agent.item ([jstar_proofs])
 
 			if l_filename = Void then
 				create_text_window (window_title, "Unavailable")
 			else
+				l_map_name := "execution.map"
+				l_image_name := "execution.gif"
+				l_html_name := "execution.html"
+
+				-- Invoke dot
 				create l_process_factory
-				create l_arguments.make_from_array (<<l_filename>>)
-				l_process := l_process_factory.process_launcher ("dotty", l_arguments, jstar_proofs.dot_file_directory)
+				create l_arguments.make_from_array (<<"-Tcmapx", "-o" + l_map_name, "-Tgif", "-o" + l_image_name, l_filename>>)
+				l_executable_name := solved_path ("dot")
+				l_process := l_process_factory.process_launcher (l_executable_name, l_arguments, jstar_proofs.dot_file_directory)
 				l_process.redirect_output_to_agent (agent (o: STRING) do end)
 				l_process.redirect_error_to_same_as_output
-				l_process.set_on_fail_launch_handler (agent cannot_start_dotty)
+				l_process.set_on_fail_launch_handler (agent cannot_start_dot)
 				l_process.launch
+				if l_process.launched then
+					l_process.wait_for_exit
+				end
+
+				-- Set up the html file
+				l_absolute_html_file_name := file_system.pathname (jstar_proofs.dot_file_directory, l_html_name)
+				l_absolute_map_file_name := file_system.pathname (jstar_proofs.dot_file_directory, l_map_name)
+				create l_html_file.make (l_absolute_html_file_name)
+				l_html_file.open_write
+				l_html_file.put_string ("<html><img src=%"" + l_image_name + "%" usemap=%"#main%"/>")
+				l_html_file.close
+				file_system.concat_files (l_absolute_html_file_name, l_absolute_map_file_name)
+				l_html_file.open_append
+				l_html_file.put_string ("</html>")
+				l_html_file.close
+
+				-- Invoke the browser
+				open_web_browser_for_file (l_absolute_html_file_name)
 			end
 		end
 
-	cannot_start_dotty
+	cannot_start_dot
 		local
 			l_error_prompt: ES_ERROR_PROMPT
 		do
 			create l_error_prompt.make_standard ("")
-			l_error_prompt.set_title ("Could not execute dotty - make sure it's in your PATH")
+			l_error_prompt.set_title ("Could not execute dot - make sure it's installed and in your PATH")
 			l_error_prompt.show_on_active_window
 		end
 
@@ -209,6 +251,41 @@ feature {NONE} -- Unused, but possibly handy
 		do
 			create_text_window (window_title, source.item ([jstar_proofs]))
 		end
+
+
+	solved_path (a_executable_name: STRING): STRING
+           -- Solved path of `a_executable_name'.
+           -- If in Windows, Result will be equal to `a_executable_name'.
+       local
+           l_prc_factory: PROCESS_FACTORY
+           l_prc: PROCESS
+       do
+           if {PLATFORM}.is_windows then
+               Result := a_executable_name.twin
+           else
+               Result := output_from_program ("/bin/sh -c %"which " + a_executable_name + "%"", Void)
+               Result.replace_substring_all ("%N", "")
+           end
+       end
+
+
+   output_from_program (a_command: STRING; a_working_directory: STRING): STRING
+           -- Output from the execution of `a_command' in (possibly) `a_working_directory'.
+           -- Note: You may need to prune the final new line character.
+       local
+           l_prc_factory: PROCESS_FACTORY
+           l_prc: PROCESS
+           l_buffer: STRING
+       do
+           create l_prc_factory
+           l_prc := l_prc_factory.process_launcher_with_command_line (a_command, a_working_directory)
+           create Result.make (1024)
+           l_prc.redirect_output_to_agent (agent Result.append ({STRING}?))
+           l_prc.launch
+           if l_prc.launched then
+               l_prc.wait_for_exit
+           end
+       end
 
 ;indexing
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

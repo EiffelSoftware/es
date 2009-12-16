@@ -129,4 +129,39 @@ feature {NONE}
 			l_exception.raise
 		end
 
+
+	solved_path (a_executable_name: STRING): STRING
+           -- Solved path of `a_executable_name'.
+           -- If in Windows, Result will be equal to `a_executable_name'.
+       local
+           l_prc_factory: PROCESS_FACTORY
+           l_prc: PROCESS
+       do
+           if {PLATFORM}.is_windows then
+               Result := a_executable_name.twin
+           else
+               Result := output_from_program ("/bin/sh -c %"which " + a_executable_name + "%"", Void)
+               Result.replace_substring_all ("%N", "")
+           end
+       end
+
+
+   output_from_program (a_command: STRING; a_working_directory: STRING): STRING
+           -- Output from the execution of `a_command' in (possibly) `a_working_directory'.
+           -- Note: You may need to prune the final new line character.
+       local
+           l_prc_factory: PROCESS_FACTORY
+           l_prc: PROCESS
+           l_buffer: STRING
+       do
+           create l_prc_factory
+           l_prc := l_prc_factory.process_launcher_with_command_line (a_command, a_working_directory)
+           create Result.make (1024)
+           l_prc.redirect_output_to_agent (agent Result.append ({STRING}?))
+           l_prc.launch
+           if l_prc.launched then
+               l_prc.wait_for_exit
+           end
+       end
+
 end
