@@ -16,6 +16,11 @@ inherit
 			process_feature_as
 		end
 
+	SCOOP_BASIC_TYPE
+		export
+			{NONE} all
+		end
+
 create
 	make_with_context
 
@@ -731,20 +736,22 @@ feature -- Test
 	process_result_conversion_code (l_as: TYPE_AS) is
 		-- Generate code that sets Result's processor_ to supplier's processor if necessary.
 		local
-			a_class_c: CLASS_C
-			l_type_visitor: SCOOP_TYPE_VISITOR
+			l_type : TYPE_A
+			l_type_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
 			create l_type_visitor
-			a_class_c := l_type_visitor.evaluate_class_from_type (l_as, class_c)
-			if a_class_c /= Void then
-				if not a_class_c.is_expanded
-					and not l_type_visitor.is_formal
-					and not l_type_visitor.is_tuple_type
-				then
-					context.add_string ("%N%T%T%Tif Result /= void and then (Result.implementation_ /= void or else Result.processor_ /= void) then")
-					context.add_string ("%N%T%T%T%Tif Result.processor_ = void then Result.set_processor_ (processor_) end")
-					context.add_string ("%N%T%T%Telse%N%T%T%T%TResult := void%N%T%T%Tend%N%T%T")
-				end
+			l_type_visitor.resolve_type_in_workbench (l_as)
+			l_type := l_type_visitor.resolved_type
+
+			if l_type /= Void
+			   and then not l_type.is_expanded
+			   and not is_basic_type (l_type.associated_class.name_in_upper)
+			   and not l_type.is_formal
+			   and not l_type.is_tuple
+			then
+				context.add_string ("%N%T%T%Tif Result /= void and then (Result.implementation_ /= void or else Result.processor_ /= void) then")
+				context.add_string ("%N%T%T%T%Tif Result.processor_ = void then Result.set_processor_ (processor_) end")
+				context.add_string ("%N%T%T%Telse%N%T%T%T%TResult := void%N%T%T%Tend%N%T%T")
 			end
 		end
 
