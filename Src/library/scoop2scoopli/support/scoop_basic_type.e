@@ -45,15 +45,8 @@ feature -- Basic type declaration
 			   or else a_name.is_equal ("ROUTINE")
 			   or else a_name.is_equal ("FUNCTION")
 			   or else a_name.is_equal ("PROCEDURE")
-			   or else a_name.is_equal ("SYSTEM_STRING")
 
 			   or else a_name.is_equal ("ARGUMENTS")
-			   or else a_name.is_equal ("STRING")
-			   or else a_name.is_equal ("STRING_8")
-			   or else a_name.is_equal ("READABLE_STRING_8")
-			   or else a_name.is_equal ("READABLE_STRING_GENERAL")
-			   or else a_name.is_equal ("STRING_GENERAL")
-			   or else a_name.is_equal ("STRING_SEARCHER")
 
    			   or else a_name.is_equal ("RT_DBG_INTERNAL")
    			   or else a_name.is_equal ("RT_EXTENSION_COMMON")
@@ -94,16 +87,50 @@ feature -- Basic type declaration
 				or else a_name.is_equal ("BOUNDED")
 				or else a_name.is_equal ("BOX")
 				or else a_name.is_equal ("CONTAINER")
-				or else a_name.is_equal ("FINITE")
 				or else a_name.is_equal ("COLLECTION")
 				or else a_name.is_equal ("BAG")
---				or else a_name.is_equal ("CHAIN")
+				or else a_name.is_equal ("CHAIN")
+				or else a_name.is_equal ("DYNAMIC_CHAIN")
+				or else a_name.is_equal ("LIST")
+				or else a_name.is_equal ("DYNAMIC_LIST")
 				or else a_name.is_equal ("TABLE")
+				or else a_name.is_equal ("DISPENSER")
+				or else a_name.is_equal ("TRAVERSABLE")
+				or else a_name.is_equal ("BILINEAR")
+				or else a_name.is_equal ("COUNTABLE")
+				or else a_name.is_equal ("QUEUE")
 
---				or else a_name.is_equal ("INTEGER_INTERVAL")
+				or else a_name.is_equal ("LINKED_QUEUE")
 
+				or else a_name.is_equal ("COUNTABLE_SEQUENCE")
+				or else a_name.is_equal ("SEQUENCE")
+				or else a_name.is_equal ("RANDOM")
+
+
+				or else a_name.is_equal ("LINKED_LIST")
+				or else a_name.is_equal ("ARRAYED_LIST")
+
+				or else a_name.is_equal ("FINITE")
+				or else a_name.is_equal ("INFINITE")
+
+				or else a_name.is_equal ("CURSOR_STRUCTURE")
+
+				or else a_name.is_equal ("UNBOUNDED")
+				or else a_name.is_equal ("SET")
+				or else a_name.is_equal ("ACTIVE")
+
+				or else a_name.is_equal ("LINEAR")
+
+				or else a_name.is_equal ("INTEGER_INTERVAL")
+
+				or else a_name.is_equal ("STRING_8")
+				or else a_name.is_equal ("READABLE_STRING_8")
+				or else a_name.is_equal ("READABLE_STRING_GENERAL")
+				or else a_name.is_equal ("STRING_GENERAL")
+				or else a_name.is_equal ("STRING_SEARCHER")
 				or else a_name.is_equal ("STRING")
 				or else a_name.is_equal ("STRING_HANDLER")
+				or else a_name.is_equal ("SYSTEM_STRING")
 
 				or else a_name.is_equal ("SPECIAL")
 				or else a_name.is_equal ("TO_SPECIAL")
@@ -113,7 +140,6 @@ feature -- Basic type declaration
 
 				or else a_name.is_equal ("REFACTORING_HELPER")
 
-				-- or else a_name.is_equal ("CONTAINER")
 
 				or else a_name.is_equal ("INTERNAL")
 				or else a_name.is_equal ("EXCEP_CONST")
