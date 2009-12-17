@@ -45,11 +45,18 @@ feature
 
 	process_class (c: !CLASS_C)
 		local
+			abstract_clause: STRING
 			extends_clause: STRING
 			parent_classes: FIXED_LIST [CLASS_C]
 			parent_class: CLASS_C
 		do
 			output.reset
+
+			if c.is_deferred then
+				abstract_clause := "abstract "
+			else
+				abstract_clause := ""
+			end
 
 			parent_classes := c.conforming_parents_classes
 			extends_clause := ""
@@ -60,7 +67,7 @@ feature
 				parent_class := parent_classes.at (1)
 				extends_clause := "extends " + parent_class.name_in_upper + " "
 			end
-			output.put_line ("class " + c.name_in_upper + " " + extends_clause + "{")
+			output.put_line (abstract_clause + "class " + c.name_in_upper + " " + extends_clause + "{")
 			output.put_new_line
 
 			output.indent
@@ -197,18 +204,25 @@ feature {NONE}
 		do
 			-- First do the signature
 			output.put_indentation
+			if a_feature.is_deferred then
+				output.put ("abstract ")
+			end
 			output.put (routine_signature (as_creation_routine, a_feature))
 			output.put_new_line
 
-			-- Now print the opening brace
-			output.put_line ("{")
-			output.indent
+			if not a_feature.is_deferred then
+				-- Now print the opening brace
+				output.put_line ("{")
+				output.indent
 
-			process_routine_body (a_feature)
+				process_routine_body (a_feature)
 
-			output.unindent
-			-- Finally print the closing brace
-			output.put_line ("}")
+				output.unindent
+				-- Finally print the closing brace
+				output.put_line ("}")
+			else
+				output.put_line (";")
+			end
 
 			output.put_new_line
 		end
