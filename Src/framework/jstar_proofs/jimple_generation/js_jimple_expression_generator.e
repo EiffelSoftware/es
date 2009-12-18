@@ -75,11 +75,13 @@ create
 
 feature
 
-	make
+	make (ig: JS_JIMPLE_INSTRUCTION_GENERATOR)
 		do
+			instruction_generator := ig
 			expression := ""
 			create side_effect.make
 			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} temporaries.make
+			reset_target
 		end
 
 	reset
@@ -89,6 +91,13 @@ feature
 			side_effect.reset
 			temporaries.wipe_out
 			reset_target
+		end
+
+	reset_expression_and_target_and_new_side_effect
+		do
+			create side_effect.make
+			reset_target
+			expression := ""
 		end
 
 	reset_temporary_number
@@ -295,9 +304,9 @@ feature -- Processing
 			-- Process `a_node'.
 		do
 			if a_node.value then
-				expression := "true"
+				expression := "1"
 			else
-				expression := "false"
+				expression := "0"
 			end
 			target := expression
 		end
@@ -541,10 +550,35 @@ feature -- Processing
 
 	process_un_not_b (a_node: UN_NOT_B)
 			-- Process `a_node'.
+		local
+			false_label: STRING
+			end_label: STRING
+			inner_expression: STRING
+			temporary: STRING
 		do
-			safe_process (a_node.expr)
+			instruction_generator.create_new_label ("false")
+			false_label := instruction_generator.last_label
+			instruction_generator.create_new_label ("end")
+			end_label := instruction_generator.last_label
 
-			unsupported ("Negation")
+			safe_process (a_node.expr)
+			inner_expression := expression
+
+			create_new_temporary
+			temporary := last_temporary
+			temporaries.extend ([temporary, "int"])
+
+			side_effect.put_line ("if " + inner_expression + " == 1 goto " + false_label + ";")
+			side_effect.put_line (temporary.twin + " = 1;")
+			side_effect.put_line ("goto " + end_label + ";")
+
+			side_effect.put_line (false_label + ":")
+			side_effect.put_line (temporary.twin + " = 0;")
+
+			side_effect.put_line (end_label + ":")
+
+			expression := temporary
+			target := temporary
 		end
 
 	process_un_old_b (a_node: UN_OLD_B)
@@ -576,12 +610,12 @@ feature -- Queries
 
 	temporaries: LINKED_LIST [TUPLE [name: STRING; type: STRING]]
 
+	side_effect: !JS_OUTPUT_BUFFER
+
 feature {NONE} -- Implementation
 
 	expression: STRING
 			-- The single variable or literal denoting the result of the expression.
-
-	side_effect: !JS_OUTPUT_BUFFER
 
 	target: STRING
 			-- The target (a variable or literal) of attribute lookups or routine calls.
@@ -658,10 +692,16 @@ feature {NONE} -- Implementation
 			Result := Result + ">"
 		end
 
+feature {NONE}
+
+	instruction_generator: JS_JIMPLE_INSTRUCTION_GENERATOR
+
 feature {NONE} -- Numbering of temporaries
 
 	current_temporary_number: INTEGER
 			-- Current temporary number
+
+feature {JS_JIMPLE_GENERATOR}
 
 	create_new_temporary
 			-- Create a new temporary name.

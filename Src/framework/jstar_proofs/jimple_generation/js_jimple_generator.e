@@ -201,6 +201,7 @@ feature {NONE}
 		local
 			l_argument_name, l_argument_type: STRING
 			at_least_one_arg: BOOLEAN
+			l_ensures_clause_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
 		do
 			-- First do the signature
 			output.put_indentation
@@ -210,8 +211,13 @@ feature {NONE}
 			output.put (routine_signature (as_creation_routine, a_feature))
 			output.put_new_line
 
+			process_require_clauses (a_feature)
+
+			l_ensures_clause_expression_writer := process_old_expressions (a_feature)
+			process_ensure_clauses (a_feature, l_ensures_clause_expression_writer)
+
 			if not a_feature.is_deferred then
-				-- Now print the opening brace
+				-- Print the opening brace
 				output.put_line ("{")
 				output.indent
 
@@ -226,6 +232,317 @@ feature {NONE}
 
 			output.put_new_line
 		end
+
+
+	process_require_clauses (a_feature: !FEATURE_I)
+		local
+			l_byte_code: BYTE_CODE
+		do
+			-- TODO: is this the correct way to see if a feature has (possibly inherited) preconditions?
+			if a_feature.has_precondition or a_feature.assert_id_set /= Void then
+				output.put_line ("requires {")
+				output.indent
+
+				l_byte_code := byte_server.item (a_feature.body_index)
+
+				build_instructions_for_require_clauses (a_feature)
+
+				output.put_comment_line ("Declaration of registers and temporaries")
+				declare_registers (l_byte_code, a_feature)
+
+				declare_temporaries (instruction_writer.temporaries)
+				output.put_new_line
+
+				output.put_comment_line ("Initialization of registers")
+				initialize_registers (l_byte_code, a_feature)
+				output.put_new_line
+
+				output.put_comment_line ("The meat of the requires clauses")
+				output.append_lines (instruction_writer.output_instructions)
+
+				output.unindent
+				output.put_line ("}")
+			end
+		end
+
+	process_ensure_clauses (a_feature: !FEATURE_I; a_ensures_clause_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR)
+		local
+			l_byte_code: BYTE_CODE
+		do
+			if a_feature.has_postcondition or a_feature.assert_id_set /= Void then
+				output.put_line ("ensures {")
+				output.indent
+
+				l_byte_code := byte_server.item (a_feature.body_index)
+
+				build_instructions_for_ensure_clauses (a_feature, a_ensures_clause_expression_writer)
+
+				output.put_comment_line ("Declaration of registers and temporaries")
+				declare_registers (l_byte_code, a_feature)
+
+				declare_temporaries (instruction_writer.temporaries)
+				output.put_new_line
+
+				output.put_comment_line ("Initialization of registers")
+				initialize_registers (l_byte_code, a_feature)
+				output.put_new_line
+
+				output.put_comment_line ("The meat of the ensures clauses")
+				output.append_lines (instruction_writer.output_instructions)
+
+				output.unindent
+				output.put_line ("}")
+			end
+		end
+
+		build_instructions_for_ensure_clauses (a_feature: !FEATURE_I; a_ensures_clause_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR)
+		local
+			l_byte_code: BYTE_CODE
+			last_clause_set_result: STRING
+			l_postcondition_clauses: ASSERTION_BYTE_CODE
+			l_inherited_assertion: INHERITED_ASSERTION
+			l_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
+			l_false_label, l_end_label: STRING
+		do
+			l_byte_code := byte_server.item (a_feature.body_index)
+				-- Set up byte context
+			Context.clear_feature_data
+			Context.clear_class_type_data
+			Context.init (a_feature.written_class.types.first)
+			Context.set_current_feature (a_feature)
+			Context.set_byte_code (l_byte_code)
+			l_byte_code.setup_local_variables (False)
+
+			instruction_writer.reset
+			instruction_writer.set_feature (a_feature)
+			instruction_writer.create_new_label ("false")
+			l_false_label := instruction_writer.last_label
+			instruction_writer.create_new_label ("end")
+			l_end_label := instruction_writer.last_label
+
+			l_expression_writer := a_ensures_clause_expression_writer
+
+			if a_feature.has_postcondition then
+				l_postcondition_clauses := l_byte_code.postcondition
+				last_clause_set_result := build_instructions_for_conjoined_assertion_clauses (l_postcondition_clauses, l_expression_writer)
+				instruction_writer.output.put_line ("if " + last_clause_set_result + " == 0 goto " + l_false_label + ";")
+			end
+
+			if a_feature.assert_id_set /= Void and then not a_feature.assert_id_set.is_empty then
+				l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
+				l_inherited_assertion := Context.inherited_assertion
+				from
+					l_inherited_assertion.postcondition_start
+				until
+					l_inherited_assertion.postcondition_after
+				loop
+					l_postcondition_clauses := l_inherited_assertion.postcondition_list.item_for_iteration
+
+					last_clause_set_result := build_instructions_for_conjoined_assertion_clauses (l_postcondition_clauses, l_expression_writer)
+					instruction_writer.output.put_line ("if " + last_clause_set_result + " == 0 goto " + l_false_label + ";")
+
+					l_inherited_assertion.precondition_forth
+				end
+			end
+
+			instruction_writer.temporaries.extend (["$res","int"])
+			instruction_writer.output.put_line ("$res = 1;")
+			instruction_writer.output.put_line ("goto " + l_end_label + ";")
+			instruction_writer.output.put_line (l_false_label.twin + ":")
+			instruction_writer.output.put_line ("$res = 0;")
+			instruction_writer.output.put_line (l_end_label.twin + ":")
+		end
+
+	process_old_expressions (a_feature: !FEATURE_I): JS_JIMPLE_EXPRESSION_GENERATOR
+		local
+			l_byte_code: BYTE_CODE
+			l_postcondition_clauses: ASSERTION_BYTE_CODE
+			l_inherited_assertion: INHERITED_ASSERTION
+			l_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
+			l_old_clause_generator: JS_JIMPLE_OLD_CLAUSE_GENERATOR
+			l_old_expression_side_effects: LINKED_LIST [!JS_OUTPUT_BUFFER]
+		do
+			l_byte_code := byte_server.item (a_feature.body_index)
+				-- Set up byte context
+			Context.clear_feature_data
+			Context.clear_class_type_data
+			Context.init (a_feature.written_class.types.first)
+			Context.set_current_feature (a_feature)
+			Context.set_byte_code (l_byte_code)
+			l_byte_code.setup_local_variables (False)
+
+			-- It's extremely important that we do the instatiate l_expression_writer to a JS_JIMPLE_ENSURE_CLAUSE_GENERATOR
+			create {JS_JIMPLE_ENSURE_CLAUSE_GENERATOR} l_expression_writer.make (instruction_writer)
+			create l_old_clause_generator.make (l_expression_writer)
+
+			if a_feature.has_postcondition then
+				l_postcondition_clauses := l_byte_code.postcondition
+				process_old_expressions_in_conjoined_ensures_clauses (l_postcondition_clauses, l_old_clause_generator)
+			end
+
+			if a_feature.assert_id_set /= Void and then not a_feature.assert_id_set.is_empty then
+				l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
+				l_inherited_assertion := Context.inherited_assertion
+				from
+					l_inherited_assertion.postcondition_start
+				until
+					l_inherited_assertion.postcondition_after
+				loop
+					l_postcondition_clauses := l_inherited_assertion.postcondition_list.item_for_iteration
+					process_old_expressions_in_conjoined_ensures_clauses (l_postcondition_clauses, l_old_clause_generator)
+					l_inherited_assertion.postcondition_forth
+				end
+			end
+
+			-- Loop through and print the old clauses.
+			from
+				l_old_expression_side_effects := l_old_clause_generator.old_expression_side_effects
+				l_old_expression_side_effects.start
+			until
+				l_old_expression_side_effects.off
+			loop
+				output.put_line ("old {")
+				output.indent
+
+				output.put_comment_line ("Declaration of registers and temporaries")
+				declare_registers (l_byte_code, a_feature)
+
+				declare_temporaries (l_expression_writer.temporaries)
+				output.put_new_line
+
+				output.put_comment_line ("Initialization of registers")
+				initialize_registers (l_byte_code, a_feature)
+				output.put_new_line
+
+				output.put_comment_line ("The meat of the old expression")
+				output.append_lines (l_old_expression_side_effects.item.string)
+
+				output.unindent
+				output.put_line ("}")
+				l_old_expression_side_effects.forth
+			end
+
+			Result := l_expression_writer
+		end
+
+	process_old_expressions_in_conjoined_ensures_clauses (a_postcondition_clauses: ASSERTION_BYTE_CODE; a_old_clause_generator: JS_JIMPLE_OLD_CLAUSE_GENERATOR)
+		local
+			l_postcondition_clause: ASSERT_B
+		do
+			from
+				a_postcondition_clauses.start
+			until
+				a_postcondition_clauses.off
+			loop
+				l_postcondition_clause ?= a_postcondition_clauses.item_for_iteration
+				check l_postcondition_clause /= Void end
+
+				l_postcondition_clause.process (a_old_clause_generator)
+
+				a_postcondition_clauses.forth
+			end
+		end
+
+	build_instructions_for_require_clauses (a_feature: !FEATURE_I)
+		local
+			l_byte_code: BYTE_CODE
+			last_clause_set_result: STRING
+			l_precondition_clauses: ASSERTION_BYTE_CODE
+			l_inherited_assertion: INHERITED_ASSERTION
+			l_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
+			l_true_label, l_end_label: STRING
+		do
+			l_byte_code := byte_server.item (a_feature.body_index)
+				-- Set up byte context
+			Context.clear_feature_data
+			Context.clear_class_type_data
+			Context.init (a_feature.written_class.types.first)
+			Context.set_current_feature (a_feature)
+			Context.set_byte_code (l_byte_code)
+			l_byte_code.setup_local_variables (False)
+
+			instruction_writer.reset
+			instruction_writer.set_feature (a_feature)
+			instruction_writer.create_new_label ("true")
+			l_true_label := instruction_writer.last_label
+			instruction_writer.create_new_label ("end")
+			l_end_label := instruction_writer.last_label
+
+			create l_expression_writer.make (instruction_writer)
+
+			if a_feature.has_precondition then
+				l_precondition_clauses := l_byte_code.precondition
+				last_clause_set_result := build_instructions_for_conjoined_assertion_clauses (l_precondition_clauses, l_expression_writer)
+				instruction_writer.output.put_line ("if " + last_clause_set_result + " == 1 goto " + l_true_label + ";")
+			end
+
+			if a_feature.assert_id_set /= Void and then not a_feature.assert_id_set.is_empty then
+				l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
+				l_inherited_assertion := Context.inherited_assertion
+				from
+					l_inherited_assertion.precondition_start
+				until
+					l_inherited_assertion.precondition_after
+				loop
+					l_precondition_clauses := l_inherited_assertion.precondition_list.item_for_iteration
+
+					last_clause_set_result := build_instructions_for_conjoined_assertion_clauses (l_precondition_clauses, l_expression_writer)
+					instruction_writer.output.put_line ("if " + last_clause_set_result + " == 1 goto " + l_true_label + ";")
+
+					l_inherited_assertion.precondition_forth
+				end
+			end
+
+			instruction_writer.temporaries.extend (["$res","int"])
+			instruction_writer.output.put_line ("$res = 0;")
+			instruction_writer.output.put_line ("goto " + l_end_label + ";")
+			instruction_writer.output.put_line (l_true_label.twin + ":")
+			instruction_writer.output.put_line ("$res = 1;")
+			instruction_writer.output.put_line (l_end_label.twin + ":")
+		end
+
+	build_instructions_for_conjoined_assertion_clauses (a_assertion_clauses: ASSERTION_BYTE_CODE; a_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR): STRING
+		local
+			l_assertion_clause: ASSERT_B
+			l_false_label, l_end_label: STRING
+			l_temp_result: STRING
+		do
+			instruction_writer.create_new_label ("false")
+			l_false_label := instruction_writer.last_label
+			instruction_writer.create_new_label ("end")
+			l_end_label := instruction_writer.last_label
+
+			from
+				a_assertion_clauses.start
+			until
+				a_assertion_clauses.off
+			loop
+				l_assertion_clause ?= a_assertion_clauses.item_for_iteration
+				check l_assertion_clause /= Void end
+
+				a_expression_writer.reset_expression_and_target_and_new_side_effect
+				l_assertion_clause.process (a_expression_writer)
+
+				instruction_writer.temporaries.append (a_expression_writer.temporaries)
+				instruction_writer.output.append_lines (a_expression_writer.side_effect_string)
+				instruction_writer.output.put_line ("if " + a_expression_writer.expression_string + " == 0 goto " + l_false_label + ";")
+
+				a_assertion_clauses.forth
+			end
+
+			a_expression_writer.create_new_temporary
+			l_temp_result := a_expression_writer.last_temporary
+
+			instruction_writer.temporaries.extend ([l_temp_result,"int"])
+			instruction_writer.output.put_line (l_temp_result.twin + " = 1;")
+			instruction_writer.output.put_line ("goto " + l_end_label + ";")
+			instruction_writer.output.put_line (l_false_label.twin + ":")
+			instruction_writer.output.put_line (l_temp_result.twin + " = 0;")
+			instruction_writer.output.put_line (l_end_label.twin + ":")
+
+			Result := l_temp_result
+		end
+
 
 	process_routine_body (a_feature: !FEATURE_I)
 		local
@@ -270,7 +587,7 @@ feature {NONE}
 			if not t.is_void then
 				output.put_line (type_string (t) + " " + name_for_result + ";")
 			end
-			declare_temporaries
+			declare_temporaries (instruction_writer.temporaries)
 			output.put_new_line
 
 			output.put_comment_line ("Initialization of registers and locals")
@@ -372,18 +689,18 @@ feature {NONE}
 			end
 		end
 
-	declare_temporaries
+	declare_temporaries (temps: LIST [TUPLE [name: STRING; type: STRING]])
 		local
 			temp: TUPLE [name: STRING; type: STRING]
 		do
 			from
-				instruction_writer.temporaries.start
+				temps.start
 			until
-				instruction_writer.temporaries.after
+				temps.after
 			loop
-				temp := instruction_writer.temporaries.item
+				temp := temps.item
 				output.put_line (temp.type + " " + temp.name + ";")
-				instruction_writer.temporaries.forth
+				temps.forth
 			end
 		end
 

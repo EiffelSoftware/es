@@ -32,7 +32,7 @@ feature
 	make
 		do
 			create output.make
-			create expression_writer.make
+			create expression_writer.make (Current)
 			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} temporaries.make
 		end
 
@@ -265,15 +265,15 @@ feature -- Node processing
 			check false end
 		end
 
+	output: !JS_OUTPUT_BUFFER
+
 feature {NONE}
 
 	current_feature: FEATURE_I
 
-	output: !JS_OUTPUT_BUFFER
-
 	expression_writer: !JS_JIMPLE_EXPRESSION_GENERATOR
 
-feature {NONE} -- Label handling
+feature -- Label handling
 
 	current_label_number: INTEGER
 			-- Current label number
