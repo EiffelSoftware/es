@@ -47,7 +47,7 @@ feature -- Access
 				Precursor (l_as)
 				scoop_workbench_objects.append_parent_redefine_list (parent_redefine_list)
 			else
-					-- inherit 'SCOOP_SEPARATE__ANY' if (conforming) parent list contains no elemets.
+					-- inherit 'SCOOP_SEPARATE__ANY' if (conforming) parent list contains no elements.
 				context.add_string ("%N%Ninherit%N%TSCOOP_SEPARATE__ANY")
 					-- rename and redefine 'implementation_'
 				if parsed_class.is_expanded then
@@ -177,7 +177,7 @@ feature {NONE} -- Visitor implementation
 			create l_scoop_separate_str.make_from_string (" SCOOP_SEPARATE__")
 			process_leading_leaves (l_as.index)
 
-			if not is_basic_type (l_as.name) then
+			if not is_special_class (l_as.name) then
 				if is_process_export_clause then
 					-- print client and proxy class name when printing export clause
 					context.add_string (l_scoop_separate_str)

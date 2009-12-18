@@ -411,6 +411,39 @@ feature {NONE} -- Added for SCOOP
 			universe.target.system.store
 		end
 
+--	replace_base_precompile
+--		local
+--			l_factory: CONF_PARSE_FACTORY
+--			l_original_base_precompile: CONF_PRECOMPILE
+--			l_new_base_precompile: CONF_PRECOMPILE
+--			l_precomp_r: PRECOMP_R
+--			l_project_location: PROJECT_DIRECTORY
+--		do
+--			if universe.target.precompile /= Void and then universe.target.precompile.location.original_file.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_precompile_filename) then
+--				l_original_base_precompile := universe.target.precompile
+
+--				create l_factory
+--				l_new_base_precompile :=
+--					l_factory.new_precompile (
+--						"base_pre",
+--						l_original_base_precompile.location.original_directory + l_original_base_precompile.location.directory_separator.out + {SCOOP_SYSTEM_CONSTANTS}.base_mt_precompile_filename,
+--						universe.target
+--					)
+--				l_new_base_precompile.set_library_target (l_original_base_precompile.library_target)
+
+--				universe.target.set_precompile (l_new_base_precompile)
+--				universe.target.system.store
+
+--				if universe.target.precompile.eifgens_location /= Void then
+--					create l_project_location.make (universe.target.precompile.eifgens_location.evaluated_path, universe.target.precompile.library_target.name)
+--				else
+--					create l_project_location.make (universe.target.precompile.location.build_path ("", ""), universe.target.precompile.library_target.name)
+--				end
+--				create l_precomp_r
+--				l_precomp_r.retrieve_precompiled (l_project_location)
+--			end
+--		end
+
 feature -- Conveniences
 
 	set_system (s: like system)

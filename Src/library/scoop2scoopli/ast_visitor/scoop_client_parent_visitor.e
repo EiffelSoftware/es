@@ -39,7 +39,7 @@ feature -- Access
 			if l_as /= Void then
 				Precursor (l_as)
 			else
-				if not is_basic_type (parsed_class.class_name.name.as_upper) then
+				if not is_special_class (parsed_class.class_name.name.as_upper) then
 						-- inherit from 'SCOOP_SEPARATE_CLIENT'.
 					context.add_string ("%N%Ninherit%N%TSCOOP_SEPARATE_CLIENT")
 				end
@@ -93,7 +93,7 @@ feature {NONE} -- Visitor implementation
 		do
 			process_leading_leaves (l_as.index)
 
-			if not is_basic_type (l_as.name) then
+			if not is_special_class (l_as.name) then
 				if is_process_export_clause then
 					-- print client and proxy class name when printing export clause
 					context.add_string (" SCOOP_SEPARATE__")

@@ -9,7 +9,7 @@ class
 
 feature -- Basic type declaration
 
-	is_basic_type (a_name: STRING): BOOLEAN is
+	is_special_class (a_name: STRING): BOOLEAN is
 			-- Is `a_class_type' a special type (such as ARRAY, STRING, HASHABLE, that are treated as special by EiffelStudio)?
 			-- Such classes should not inherit from SCOOP_SEPARATE_CLIENT, otherwise EiffelStudio reports a library error.
 		require

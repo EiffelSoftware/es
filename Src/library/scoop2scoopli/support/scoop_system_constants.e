@@ -35,6 +35,12 @@ feature --scoop system constants
 
 	multithreading_enabled_setting: STRING is "true"
 
+	base_precompile_filename: STRING is "base.ecf"
+
+	base_mt_precompile_filename: STRING is "base-mt.ecf"
+
+	base_library_name: STRING is "base"
+
 feature {NONE}
 
 indexing

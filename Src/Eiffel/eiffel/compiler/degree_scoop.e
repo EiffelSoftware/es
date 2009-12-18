@@ -155,7 +155,7 @@ feature {SYSTEM_I} -- Processing
 				end
 
 
-				if not is_basic_type (a_class.name_in_upper) and not a_class.is_basic then
+				if not is_special_class (a_class.name_in_upper) and not a_class.is_basic then
 					-- create original classes
 					process_separate_client_creation (a_class)
 
@@ -364,12 +364,9 @@ feature {NONE} -- Implementation
 			from i := 1 until i > l_classes.count loop
 				l_class ?= l_classes.item (i)
 
-				if l_class /= Void and then
-				   not l_class.is_basic and
-				   not is_basic_type (l_class.name_in_upper) then
+				if l_class /= Void and then not l_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
 					l_scoop_classes.extend (l_class)
 				end
-
 				i := i + 1
 			end
 

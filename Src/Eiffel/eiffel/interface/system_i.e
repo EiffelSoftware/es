@@ -1346,7 +1346,6 @@ end
 			l_vis: CONF_FIND_LOCATION_VISITOR
 			l_loc: CONF_DIRECTORY_LOCATION
 			l_cluster: CONF_CLUSTER
-			l_override: CONF_OVERRIDE
 		do
 			l_path := project_location.eifgens_cluster_path
 			create l_vis.make

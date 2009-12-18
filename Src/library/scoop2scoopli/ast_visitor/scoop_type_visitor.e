@@ -84,7 +84,7 @@ feature -- Access
 			end
 
 			-- check: it cannot be separate be if it is of basic type
-			if last_class_c /= Void and then is_basic_type (last_class_c.name_in_upper) then
+			if last_class_c /= Void and then is_special_class (last_class_c.name_in_upper) then
 				is_separate := false
 			end
 
