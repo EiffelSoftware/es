@@ -71,9 +71,14 @@ feature -- Basic operations
 				test_case_breakpoint_hit_actions.extend (agent arff_generator.on_test_case_breakpoint_hit)
 				application_exited_actions.extend (agent arff_generator.on_application_exited)
 			end
+			is_mocking := True
 
 			if config.is_daikon_enabled then
-				create daikon_facility.make (config)
+				if is_mocking then
+					create {AFX_DAIKON_FACILITY_MOCK} daikon_facility.make (config)
+				else
+					create daikon_facility.make (config)
+				end
 				test_case_start_actions.extend (agent daikon_facility.on_new_test_case_found)
 				test_case_breakpoint_hit_actions.extend (agent daikon_facility.on_test_case_breakpoint_hit)
 				application_exited_actions.extend (agent daikon_facility.on_application_exited)
@@ -102,7 +107,11 @@ feature -- Basic operations
 
 feature{NONE} -- Access
 
-
+	is_mocking: BOOLEAN
+			-- Is Current run a mock run?
+			-- A mock run will stopping target application execution at the first failing test case,
+			-- and load the prestored state invariants.
+			-- Note: This is to save debugging time. To be removed in final code.
 
 	arff_generator: detachable AFX_ARFF_GENERATOR
 			-- Generator for ARFF file,
@@ -144,8 +153,6 @@ feature{NONE} -- Access
 			-- Information about currently analyzed test case
 
 feature{NONE} -- Implementation
-
-
 
 	debug_project
 			-- Debug current project to retrieve system states from test cases.
@@ -243,8 +250,6 @@ feature{NONE} -- Actions
 			end
 		end
 
-
-
 	on_breakpoint_hit_in_test_case (a_breakpoint: BREAKPOINT; a_state: AFX_STATE)
 			-- Action to be performed when `a_breakpoint' is hit.
 			-- `a_breakpoint' is a break point in a test case.
@@ -263,7 +268,14 @@ feature{NONE} -- Actions
 					if a_dm.application_status.exception_occurred and then is_current_test_case_dry_run then
 						collect_exception_info
 					end
-					a_dm.controller.resume_workbench_application
+					if is_mocking then
+						if attached {AFX_DAIKON_FACILITY_MOCK} daikon_facility as l_daikon then
+							l_daikon.on_new_test_case_found (current_test_case_info)
+						end
+						a_dm.application.kill
+					else
+						a_dm.controller.resume_workbench_application
+					end
 				end
 			end
 		end

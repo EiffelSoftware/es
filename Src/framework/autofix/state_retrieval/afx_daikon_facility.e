@@ -18,21 +18,11 @@ feature{NONE} -- Initialization
 	make (a_config: like config)
 			-- Initialize set the file names to store the daikon declaration
 			-- and create the tables to store the daikon decl and trace.
-		local
-			pass_file_n:FILE_NAME
-			fail_file_n:FILE_NAME
 		do
 			config := a_config
 			create daikon_generator.make
 			create daikon_fail_states.make (100)
 			create daikon_pass_states.make (100)
-
-			create pass_file_n.make_from_string (a_config.data_directory)
-			create fail_file_n.make_from_string (a_config.data_directory)
-			pass_file_n.extend ("pass.dtrace")
-			fail_file_n.extend ("fail.dtrace")
-			pass_file_name := pass_file_n.out
-			fail_file_name := fail_file_n.out
 		end
 
 feature -- Access
@@ -61,16 +51,14 @@ feature -- Actions
 				end
 			end
 
-			daikon_generator.add_state (a_state,a_bpslot.out,a_tc.is_failing)
+			daikon_generator.add_state (a_state, a_bpslot.out, a_tc.is_failing)
 		end
 
-
-	on_new_test_case_found (tc_info :AFX_TEST_CASE_INFO) is
+	on_new_test_case_found (tc_info: AFX_TEST_CASE_INFO) is
 			-- Store the current
 		do
 			store_daikon_state
 		end
-
 
 	on_application_exited
 			-- Execute daikon
@@ -83,15 +71,37 @@ feature -- Actions
 				-- Run and load daikon output
 			load_daikon_result
 
-				--Set the daikon output
+				-- Set the daikon output
 			create pass_result.make_from_string (daikon_pass_result, pass_test_case_info)
 			create fail_result.make_from_string (daikon_fail_result, fail_test_case_info)
 
+				-- Store Daikon output into files for cacheing.
+			store_invariant_in_file (daikon_pass_result, daikon_result_file_name (pass_test_case_info))
+			store_invariant_in_file (daikon_fail_result, daikon_result_file_name (fail_test_case_info))
+
+				-- Put results into server.
 			state_server.put_state_for_fault (fail_test_case_info, [pass_result, fail_result])
 		end
 
-
 feature{NONE} -- Implementation
+
+	daikon_result_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
+			-- Full file path for the file to store Daikon output
+		local
+			l_path: FILE_NAME
+			l_name: STRING
+		do
+			create l_path.make_from_string (config.daikon_directory)
+			l_name := a_tc.id
+			if a_tc.is_passing then
+				l_name := l_name + "__S.invariant"
+			else
+				l_name := l_name + "__F.invariant"
+			end
+			l_path.set_file_name (l_name)
+			Result := l_path
+		end
+
 	config: AFX_CONFIG
 			-- AutoFix configuration
 
@@ -110,12 +120,6 @@ feature{NONE} -- Implementation
 	daikon_fail_result: STRING
 			-- Result from running Daikon
 
-	pass_file_name: STRING
-			-- File used to store Daikon dtrace
-
-	fail_file_name: STRING
-			-- File used to store Daikon dtrace
-
 	pass_test_case_info: detachable AFX_TEST_CASE_INFO
 			-- Information about a pass test case
 
@@ -129,9 +133,9 @@ feature{NONE} -- Implementation
 			pass_file:PLAIN_TEXT_FILE
 			fail_file:PLAIN_TEXT_FILE
 		do
+			create pass_file.make_open_write (pass_file_name (pass_test_case_info))
 
-			create pass_file.make_open_write (pass_file_name)
-				--Save to file
+				--Save to file.
 			from
 				daikon_pass_states.start
 			until
@@ -142,8 +146,9 @@ feature{NONE} -- Implementation
 			end
 			pass_file.close
 
-			create fail_file.make_create_read_write (fail_file_name)
-			--Save to file
+			create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
+
+				--Save to file.
 			from
 				daikon_fail_states.start
 			until
@@ -155,29 +160,24 @@ feature{NONE} -- Implementation
 			fail_file.close
 		end
 
-
 	load_daikon_result is
-			-- load the result from the Daikon execution
+			-- Load the result from the Daikon execution
 		local
 			shell : AFX_BOOGIE_FACILITY
 			pass_CMD : STRING
 			fail_CMD : STRING
 		do
 			create shell
-			pass_cmd := "/usr/bin/java daikon.Daikon " + pass_file_name
-			fail_cmd := "/usr/bin/java daikon.Daikon " + fail_file_name
+			pass_cmd := "/usr/bin/java daikon.Daikon " + pass_file_name (pass_test_case_info)
+			fail_cmd := "/usr/bin/java daikon.Daikon " + fail_file_name (fail_test_case_info)
 			daikon_fail_result := shell.output_from_program (fail_cmd, void)
 			daikon_pass_result := shell.output_from_program (pass_cmd, void)
-			--io.put_string ("Received from Daikon FAIL " + daikon_fail_result)
-			--io.put_string ("Received from Daikon PASS " + daikon_pass_result)
 		end
-
 
 	store_daikon_state is
 			-- Store the current state for Daikon
 		local
 			daikon_state : STRING
-
 		do
 			if daikon_generator.number_states > 0 then
 				daikon_state := daikon_generator.declarations + daikon_generator.traces
@@ -189,4 +189,37 @@ feature{NONE} -- Implementation
 				daikon_generator.restart
 			end
 		end
+
+	store_invariant_in_file (a_invariant: STRING; a_file: STRING)
+			-- Store invariants from `a_invariant' into `a_file'.
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_create_read_write (a_file)
+			l_file.put_string (a_invariant)
+			l_file.close
+		end
+
+	pass_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
+			-- Faull path for the file to store passing test case states
+			-- for fault indicated in `a_Tc'
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (config.daikon_directory)
+			l_path.set_file_name (a_tc.id + "__S.dtrace")
+			Result := l_path
+		end
+
+	fail_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
+			-- Faull path for the file to store failing test case states
+			-- for fault indicated in `a_Tc'
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (config.daikon_directory)
+			l_path.set_file_name (a_tc.id + "__F.dtrace")
+			Result := l_path
+		end
+
 end

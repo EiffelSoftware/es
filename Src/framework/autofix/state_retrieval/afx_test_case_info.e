@@ -166,6 +166,16 @@ feature -- Access
 			good_result: Result = id.hash_code
 		end
 
+feature -- Setting
+
+	set_is_passing (b: BOOLEAN)
+			-- Set `is_passing' with `b'.
+		do
+			is_passing := b
+		ensure
+			is_passing_set: is_passing = b
+		end
+
 feature{NONE} -- Implementation
 
 	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]

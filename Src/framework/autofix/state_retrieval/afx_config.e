@@ -79,6 +79,16 @@ feature -- Access
 			Result := l_path
 		end
 
+	daikon_directory: STRING is
+			-- Directory to store daikon related data
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("daikon")
+			Result := l_path
+		end
+
 feature -- State retrieval related
 
 	state_test_case_class_name: detachable STRING

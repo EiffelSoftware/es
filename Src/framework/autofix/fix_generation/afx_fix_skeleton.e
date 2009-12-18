@@ -16,6 +16,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	SHARED_EIFFEL_PARSER
+
 feature -- Access
 
 	exception_spot: AFX_EXCEPTION_SPOT
@@ -162,8 +164,7 @@ feature -- Basic operations
 				until
 					fixes.after
 				loop
-					io.put_string ("------------------------------------------------%N")
-					io.put_string (fixes.item_for_iteration.text + "%N")
+					print_fix (fixes.item_for_iteration.text)
 					fixes.forth
 				end
 			end
@@ -515,6 +516,23 @@ feature{NONE} -- Implementation
 
 				i := i + 1
 			end
+		end
+
+	print_fix (a_fix: STRING)
+			-- Print `a_fix'.
+		local
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+			l_feature_text: STRING
+		do
+			l_feature_text := "feature bar do " + a_fix + " end"
+			entity_feature_parser.parse_from_string (l_feature_text, Void)
+			create l_output.make_with_indentation_string ("%T")
+			create l_printer.make_with_output (l_output)
+			l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+			io.put_string ("------------------------------------------------%N")
+			io.put_string (l_output.string_representation)
+			io.put_string ("")
 		end
 
 end
