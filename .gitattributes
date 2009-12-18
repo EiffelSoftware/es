@@ -2124,6 +2124,7 @@ Src/examples/obsolete/vision2/test_all_widgets/pixmaps/vision_tower.xpm -text sv
 Src/examples/preferences/display.png -text
 Src/examples/preferences/graphics.png -text
 Src/examples/proofs/formatter/formatter.aps -text
+Src/examples/scoop/baboon_crossing/Readme.txt -text
 Src/examples/thread/fancy/fancy.ico svneol=native#unset
 Src/examples/vision2/edraw/nocolor.png -text
 Src/examples/vision2/edraw/toolbar/arc.png -text
