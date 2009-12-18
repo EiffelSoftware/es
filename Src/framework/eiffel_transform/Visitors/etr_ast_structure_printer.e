@@ -160,10 +160,6 @@ feature {NONE} -- Implementation
 			output := an_output
 		end
 
-feature -- Output
-
-	output: ETR_AST_STRUCTURE_OUTPUT
-
 	process_block (l_as: AST_EIFFEL)
 			-- process as block
 		do
@@ -194,6 +190,16 @@ feature -- Output
 				output.exit_block
 				output.exit_child
 			end
+		end
+
+feature -- Output
+
+	output: ETR_AST_STRUCTURE_OUTPUT
+
+	print_ast_to_output(an_ast: detachable AST_EIFFEL)
+			-- prints `an_ast' to `output'
+		do
+			process_child (an_ast)
 		end
 
 feature -- Roundtrip: Atomic

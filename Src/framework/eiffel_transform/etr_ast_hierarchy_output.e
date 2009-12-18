@@ -36,8 +36,8 @@ feature -- Operations
 	enter_child(a_name: STRING)
 			-- Enters a new child with name `a_name'
 		do
-			current_indentation := current_indentation + indentation_string
 			context.add_string (current_indentation.twin+a_name+"%N")
+			current_indentation := current_indentation + indentation_string
 		end
 
 	exit_child
