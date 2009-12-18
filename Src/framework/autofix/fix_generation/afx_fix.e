@@ -15,6 +15,9 @@ feature -- Access
 	text: STRING
 			-- Text of the feature body containing current fix
 
+	ranking: AFX_FIX_RANKING
+			-- Ranking for current fix
+
 feature -- Setting
 
 	set_text (a_text: STRING)
@@ -27,6 +30,12 @@ feature -- Setting
 			-- Set `exception_spot' with `a_spot'.
 		do
 			exception_spot := a_spot
+		end
+
+	set_ranking (a_ranking: like ranking)
+			-- Set `ranking' with `a_ranking'.
+		do
+			ranking := a_ranking
 		end
 
 end

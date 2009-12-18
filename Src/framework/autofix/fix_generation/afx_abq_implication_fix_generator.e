@@ -32,7 +32,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	generate_afore_fixes (a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE])
+	generate_afore_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
 			-- Generate afore fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local
@@ -58,7 +58,7 @@ feature{NONE} -- Implementation
 				--		ensure: q
 				-- end
 			fixes.extend (new_afore_fix_skeleton (
-				exception_spot, a_fixing_location, l_premise, (not l_consequent).equation (l_value), l_consequent.equation (l_value)))
+				exception_spot, a_fixing_location.instructions, l_premise, (not l_consequent).equation (l_value), l_consequent.equation (l_value), a_fixing_location.scope_level))
 
 				-- Generate fix: (p -> q is the failing assertion)
 				-- if p then
@@ -68,7 +68,7 @@ feature{NONE} -- Implementation
 				-- end
 		end
 
-	generate_wrapping_fixes (a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE])
+	generate_wrapping_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
 			-- Generate wrapping fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local
@@ -95,7 +95,7 @@ feature{NONE} -- Implementation
 					--			ensure: q
 					-- end
 				fixes.extend (new_wrapping_fix_skeleton (
-					exception_spot, a_fixing_location, l_failing_assert, l_premise.equation (l_value), l_consequent.equation (l_value)))
+					exception_spot, a_fixing_location.instructions, l_failing_assert, l_premise.equation (l_value), l_consequent.equation (l_value), a_fixing_location.scope_level))
 
 					-- Generate fix: (p -> q is the failing assertion)
 					-- if p -> q then
@@ -106,7 +106,7 @@ feature{NONE} -- Implementation
 					--			ensure: delayed
 					-- end
 				fixes.extend (new_wrapping_fix_skeleton (
-					exception_spot, a_fixing_location, l_failing_assert, l_premise.equation (l_value), Void))
+					exception_spot, a_fixing_location.instructions, l_failing_assert, l_premise.equation (l_value), Void, a_fixing_location.scope_level))
 			end
 		end
 end

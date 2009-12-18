@@ -35,8 +35,16 @@ feature -- Access
 	exception_spot: AFX_EXCEPTION_SPOT
 			-- Exception spot containing information of the failing
 
-	fixing_locations: LINKED_LIST [LINKED_LIST [AFX_AST_STRUCTURE_NODE]]
+	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
 			-- List of fixing locations
+
+feature -- Constants
+
+	afore_skeleton_complexity: INTEGER is 1
+			-- Complexity level for afore fix skeleton
+
+	wrapping_skeleton_complexity: INTEGER is 2
+			-- Complexity level for wrapping fix skeleton
 
 feature -- Basic operations
 
@@ -52,14 +60,22 @@ feature{NONE} -- Implementation
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
 			a_guard: detachable AFX_EXPRESSION;
 			a_precondition: detachable AFX_STATE;
-			a_postcondition: detachable AFX_STATE): AFX_AFORE_FIX_SKELETON
+			a_postcondition: detachable AFX_STATE;
+			a_scope_level: INTEGER): AFX_AFORE_FIX_SKELETON
 				-- New afore fix sekelton.
+		local
+			l_ranking: AFX_FIX_RANKING
 		do
 			create Result.make (a_spot)
 			Result.set_guard_condition (a_guard)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_relevant_ast (a_fixing_location)
+
+			create l_ranking
+			l_ranking.set_fix_skeleton_complexity (afore_skeleton_complexity)
+			l_ranking.set_scope_levels (a_scope_level)
+			Result.set_ranking (l_ranking)
 		end
 
 	new_wrapping_fix_skeleton (
@@ -67,13 +83,21 @@ feature{NONE} -- Implementation
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
 			a_guard: detachable AFX_EXPRESSION;
 			a_precondition: detachable AFX_STATE;
-			a_postcondition: detachable AFX_STATE): AFX_WRAP_FIX_SKELETON
+			a_postcondition: detachable AFX_STATE;
+			a_scope_level: INTEGER): AFX_WRAP_FIX_SKELETON
 				-- New afore fix sekelton.
+		local
+			l_ranking: AFX_FIX_RANKING
 		do
 			create Result.make (a_spot, a_guard)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_relevant_ast (a_fixing_location)
+
+			create l_ranking
+			l_ranking.set_fix_skeleton_complexity (wrapping_skeleton_complexity)
+			l_ranking.set_scope_levels (a_scope_level)
+			Result.set_ranking (l_ranking)
 		end
 
 end

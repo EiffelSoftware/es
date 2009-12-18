@@ -37,62 +37,53 @@ feature -- Status report
 
 feature -- Basic operations
 
-	generate
-			-- Generate fixes and store result in `fixes'.
+	relevant_break_points: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
+			-- Relevant break points, one for passing runs, one for failing runs.
+			-- Those break points will be used to infer state invariants.
 		local
-			l_bpslot: INTEGER
-			l_snippets: LINKED_LIST [ETR_TRANSFORMABLE]
-			l_tran: ETR_TRANSFORMABLE
+			l_passing_bpslot: INTEGER
+			l_failing_bpslot: INTEGER
 		do
 				-- Decide the break point slot at which states in passing and failing runs should be compared.
 			if relevant_ast.is_empty then
-				l_bpslot := exception_spot.recipient_ast_structure.last_breakpoint_slot_number + 1
+				l_passing_bpslot := exception_spot.recipient_ast_structure.last_breakpoint_slot_number + 1
 			else
-				l_bpslot := relevant_ast.first.breakpoint_slot
+				l_passing_bpslot := exception_spot.recipient_ast_structure.first_node_with_break_point(relevant_ast.first).breakpoint_slot
 			end
-
-			create l_snippets.make
-			l_snippets.extend (Void)
-			generate_fixes (l_snippets)
+			l_failing_bpslot := l_passing_bpslot
+			Result := [l_passing_bpslot, l_failing_bpslot]
 		end
 
 feature{NONE} -- Implementation
 
-	generate_fixes (a_trans: LINKED_LIST [ETR_TRANSFORMABLE])
-			-- Generate `fixes' from `a_trans'.
-			-- `a_trans' is a list of transformable snippets containing the actual fixes.
-			-- A standalone fix will be generated from a transformable.
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]])
+			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
-			l_fix: AFX_FIX
 		do
-			create fixes.make
 			from
-				a_trans.start
+				a_snippets.start
 			until
-				a_trans.after
+				a_snippets.after
 			loop
-				l_fix_text := "%Ndo_nothing%N"
+				l_fix_text := a_snippets.item_for_iteration.snippet.twin
 				if attached {AFX_EXPRESSION} guard_condition as l_guard then
 					l_fix_text.prepend ("if " + l_guard.text + " then%N%T%T")
 					l_fix_text.append ("%Nend%N")
 				end
-
-				l_fix := fix_with_text ("%N" + l_fix_text)
-
-				io.put_string (l_fix.text)
-				io.put_string ("%N-------------------------------------------%N")
-				a_trans.forth
+				fixes.extend (fix_with_text ("%N" + l_fix_text, a_snippets.item_for_iteration.ranking))
+				a_snippets.forth
 			end
 		end
 
-	fix_with_text (a_text: STRING): AFX_FIX
+	fix_with_text (a_text: STRING; a_snippet_ranking: INTEGER): AFX_FIX
 			-- New text of `exception_spot'.`recipient_' with fix `a_fix' applied.
 		local
 			l_after_do: BOOLEAN
 			l_anchor_as: AST_EIFFEL
 			l_written_class: CLASS_C
 			l_match_list: LEAF_AS_LIST
+			l_ranking: like ranking
 		do
 			l_written_class := exception_spot.recipient_.written_class
 			l_match_list := match_list_server.item (l_written_class.class_id)
@@ -114,6 +105,8 @@ feature{NONE} -- Implementation
 			Result.set_exception_spot (exception_spot)
 			Result.set_text (feature_body_compound_ast.text (l_match_list))
 			l_match_list.remove_modifications
+			l_ranking := ranking.twin
+			l_ranking.set_snippet_complexity (a_snippet_ranking)
 		end
 
 end

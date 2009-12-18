@@ -186,6 +186,11 @@ feature -- Status report
 			end
 		end
 
+	is_true_expression: BOOLEAN
+			-- Does current expression' represent "True"?
+		do
+		end
+
 feature -- Setting
 
 	set_feature (a_feature: like feature_)

@@ -24,7 +24,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	generate_afore_fixes (a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE])
+	generate_afore_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
 			-- Generate afore fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local
@@ -43,14 +43,14 @@ feature{NONE} -- Implementation
 				--		require: not p
 				--		ensure: p
 			fixes.extend (new_afore_fix_skeleton (
-				exception_spot, a_fixing_location, Void, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value)))
+				exception_spot, a_fixing_location.instructions, Void, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value), a_fixing_location.scope_level))
 
 				-- Generate fix: (p is the failing assertion)
 				-- snippet
 				--		require: not p
 				--		ensure: delayed
 			fixes.extend (new_afore_fix_skeleton (
-				exception_spot, a_fixing_location, Void, l_negated_failing_assert.equation (l_value), Void))
+				exception_spot, a_fixing_location.instructions, Void, l_negated_failing_assert.equation (l_value), Void, a_fixing_location.scope_level))
 
 			if not a_fixing_location.is_empty then
 					-- Generate fix: (p is the failing assertion)
@@ -60,7 +60,7 @@ feature{NONE} -- Implementation
 					--		require: not p
 					--		ensure: p
 				fixes.extend (new_afore_fix_skeleton (
-					exception_spot, a_fixing_location, l_negated_failing_assert, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value)))
+					exception_spot, a_fixing_location.instructions, l_negated_failing_assert, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value), a_fixing_location.scope_level))
 
 					-- Generate fix: (p is the failing assertion)
 					-- if not p then
@@ -69,11 +69,11 @@ feature{NONE} -- Implementation
 					--		require: not p
 					--		ensure: delayed
 				fixes.extend (new_afore_fix_skeleton (
-					exception_spot, a_fixing_location, l_negated_failing_assert, l_negated_failing_assert.equation (l_value), Void))
+					exception_spot, a_fixing_location.instructions, l_negated_failing_assert, l_negated_failing_assert.equation (l_value), Void, a_fixing_location.scope_level))
 			end
 		end
 
-	generate_wrapping_fixes (a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE])
+	generate_wrapping_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
 			-- Generate wrapping fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local
@@ -96,7 +96,7 @@ feature{NONE} -- Implementation
 					--			ensure: p
 					-- end
 				fixes.extend (new_wrapping_fix_skeleton (
-					exception_spot, a_fixing_location, l_failing_assert, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value)))
+					exception_spot, a_fixing_location.instructions, l_failing_assert, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value), a_fixing_location.scope_level))
 
 					-- Generate fix: (p is the failing assertion)
 					-- if p then
@@ -107,7 +107,7 @@ feature{NONE} -- Implementation
 					--			ensure: delayed
 					-- end
 				fixes.extend (new_wrapping_fix_skeleton (
-					exception_spot, a_fixing_location, l_failing_assert, l_negated_failing_assert.equation (l_value), Void))
+					exception_spot, a_fixing_location.instructions, l_failing_assert, l_negated_failing_assert.equation (l_value), Void, a_fixing_location.scope_level))
 			end
 		end
 

@@ -58,9 +58,12 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	fixing_locations: LINKED_LIST [LINKED_LIST [AFX_AST_STRUCTURE_NODE]]
+	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
 			-- List of ASTs which will be involved in a fix.
-			-- Item in the outer list is a list of ASTs, they represent the ASTs whilch will be involved in a fix.
+			-- Item in the inner list `instructions' is a list of ASTs, they represent the ASTs whilch will be involved in a fix.
+			-- `scope_level' is the scope level difference from `instructions' to the failing point. If `instructions' are in
+			-- the same basic block as the failing point, `scope_level' will be 1. `scope_level' will be increased by 1, every time,
+			-- `instructions' goes away for the failing point. `scope_leve' is used for fix ranking.
 			-- The outer list is needed because there may be more than one fixing locations.
 
 	assertion_structure_analyzer: LINKED_LIST [AFX_EXPRESSION_STRUCTURE_ANALYZER]
@@ -84,12 +87,14 @@ feature{NONE} -- Implementation
 			l_spot: like exception_spot
 			l_node: detachable AFX_AST_STRUCTURE_NODE
 			l_nlist: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+			l_scope_level: INTEGER
 		do
 			create fixing_locations.make
 			l_spot := exception_spot
 			if l_spot.is_precondition_violation  or l_spot.is_check_violation then
 					-- Generate possible fixing locations:
 				from
+					l_scope_level := 1
 					l_node := l_spot.recipient_ast_structure.surrounding_instruction (l_spot.failing_assertion_break_point_slot)
 				until
 					l_node = Void or else l_node.is_feature_node
@@ -97,20 +102,21 @@ feature{NONE} -- Implementation
 						-- The fixing location which only contains the instruction in trouble.
 					create l_nlist.make
 					l_nlist.extend (l_node)
-					fixing_locations.extend (l_nlist)
+					fixing_locations.extend ([l_scope_level, l_nlist])
 
 						-- The fixing locations containing all the instructions which appear
 						-- in the same basic block as the instruction in trouble.						
 					if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_spot.recipient_ast_structure.instructions_in_block_as (l_node) as l_list and then l_list.count > 1 then
 						create l_nlist.make
 						l_nlist.append (l_list)
-						fixing_locations.extend (l_nlist)
+						fixing_locations.extend ([l_scope_level, l_nlist])
 					end
 					l_node := l_node.parent
+					l_scope_level := l_scope_level + 1
 				end
 			elseif l_spot.is_postcondition_violation or l_spot.is_class_invariant_violation then
 					-- The only fix location is right before the end of the feature body.
-				fixing_locations.extend (create {LINKED_LIST [AFX_AST_STRUCTURE_NODE]}.make)
+				fixing_locations.extend ([1, create {LINKED_LIST [AFX_AST_STRUCTURE_NODE]}.make])
 			else
 				check not_supported: False end
 			end

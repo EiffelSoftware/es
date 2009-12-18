@@ -180,6 +180,32 @@ feature -- Access
 					end (?, Result))
 		end
 
+	only_predicates: like Current
+			-- A subset of current which only contains equations of boolean type
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
+			l_non_predicates: LINKED_LIST [AFX_EQUATION]
+		do
+			create l_non_predicates.make
+			Result := cloned_object
+
+				-- Collect all non-predicates from Current into `l_non_predicates'.
+			from
+				l_cursor := Result.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if not l_cursor.item.expression.is_predicate then
+					l_non_predicates.extend (l_cursor.item)
+				end
+				l_cursor.forth
+			end
+
+				-- Only keep predicates in Result.
+			l_non_predicates.do_all (agent Result.remove)
+		end
+
 feature -- Status report
 
 	is_chaos: BOOLEAN

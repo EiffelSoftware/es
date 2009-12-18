@@ -16,6 +16,8 @@ inherit
 
 	AFX_DEBUGGER_HELPER
 
+	AFX_SHARED_STATE_SERVER
+
 create
 	make
 
@@ -60,7 +62,8 @@ feature -- Basic operations
 
 	execute
 			-- Execute.
-
+		local
+			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
 		do
 				-- Setup ARFF file generation.
 			if config.is_arff_generation_enabled then
@@ -70,14 +73,12 @@ feature -- Basic operations
 			end
 
 			if config.is_daikon_enabled then
-				create daikon_facility.make(config)
+				create daikon_facility.make (config)
 				test_case_start_actions.extend (agent daikon_facility.on_new_test_case_found)
-				test_case_breakpoint_hit_actions.extend (agent daikon_facility.on_test_case_breakpoint_hit )
+				test_case_breakpoint_hit_actions.extend (agent daikon_facility.on_test_case_breakpoint_hit)
 				application_exited_actions.extend (agent daikon_facility.on_application_exited)
 			end
 
- 				-- Output retrieved state.
-				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
 			debug
 				 -- Output retrieved state.
 				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
@@ -86,10 +87,17 @@ feature -- Basic operations
 				-- Start test case analysis
 			analyze_test_cases
 
-
-
-
-
+				-- Generate fixes.
+			from
+				exception_spots.start
+			until
+				exception_spots.after
+			loop
+				create l_gen.make (exception_spots.item_for_iteration)
+				l_gen.generate
+				l_gen.fixes.do_all (agent {AFX_FIX_SKELETON}.generate)
+				exception_spots.forth
+			end
 		end
 
 feature{NONE} -- Access

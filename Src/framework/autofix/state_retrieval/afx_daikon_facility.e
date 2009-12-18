@@ -7,6 +7,9 @@ note
 class
 	AFX_DAIKON_FACILITY
 
+inherit
+	AFX_SHARED_STATE_SERVER
+
 create
 	make
 
@@ -33,6 +36,7 @@ feature{NONE} -- Initialization
 		end
 
 feature -- Access
+
 	pass_result: AFX_DAIKON_RESULT
 			-- Result of all pass test cases
 
@@ -62,7 +66,7 @@ feature -- Actions
 
 
 	on_new_test_case_found (tc_info :AFX_TEST_CASE_INFO) is
-		-- Store the current
+			-- Store the current
 		do
 			store_daikon_state
 		end
@@ -72,14 +76,18 @@ feature -- Actions
 			-- Execute daikon
 		do
 			store_daikon_state
+
 				--write daikon files
 			write_daikon_to_file
+
 				-- Run and load daikon output
 			load_daikon_result
 
 				--Set the daikon output
 			create pass_result.make_from_string (daikon_pass_result, pass_test_case_info)
 			create fail_result.make_from_string (daikon_fail_result, fail_test_case_info)
+
+			state_server.put_state_for_fault (fail_test_case_info, [pass_result, fail_result])
 		end
 
 
@@ -115,7 +123,7 @@ feature{NONE} -- Implementation
 			-- Information about a fail test case
 
 
-write_daikon_to_file is
+	write_daikon_to_file is
 			-- Write the pass and fail declaration and trace to file
 		local
 			pass_file:PLAIN_TEXT_FILE

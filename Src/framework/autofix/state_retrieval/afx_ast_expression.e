@@ -11,7 +11,8 @@ inherit
 	AFX_EXPRESSION
 		redefine
 			type,
-			is_equal
+			is_equal,
+			is_true_expression
 		end
 
 	SHARED_EIFFEL_PARSER
@@ -142,6 +143,12 @@ feature -- Status report
 			-- equal to current object?
 		do
 			Result := text ~ other.text
+		end
+
+	is_true_expression: BOOLEAN
+			-- Does current expression' represent "True"?
+		do
+			Result := attached {STRING} text as l_text and then l_text.is_case_insensitive_equal ("True")
 		end
 
 feature -- Debug output
