@@ -23,8 +23,6 @@ feature -- Creation
 			non_void: a_path /= void
 			path_valid: a_path.is_valid
 			has_root: a_path.root /= void
-		local
-			split_list: LIST[STRING]
 		do
 			found := false
 			found_node := void
@@ -45,16 +43,14 @@ feature {NONE} -- Implementation
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
 			-- process an n-way branch with parent `a_parent' and branches `br'
 		local
-			n: INTEGER
-			next_br_number: INTEGER
+			l_next_br_number: INTEGER
 		do
 			if attached path as p then
-				n := br.count
-				next_br_number := next_branch
+				l_next_br_number := next_branch
 
 				if current_position = p.as_array.upper-1 then
-					if next_br_number <= br.count then
-						if attached {AST_EIFFEL}br.item (next_br_number) as item then
+					if l_next_br_number <= br.count then
+						if attached {AST_EIFFEL}br.item (l_next_br_number) as item then
 							found_node := item
 						else
 							found_node := void
@@ -63,7 +59,7 @@ feature {NONE} -- Implementation
 					end
 				elseif current_position < p.as_array.upper then
 					current_position := current_position+1
-					if attached {AST_EIFFEL}br.item (next_br_number) as next then
+					if attached {AST_EIFFEL}br.item (l_next_br_number) as next then
 						safe_process (next)
 					end
 				end

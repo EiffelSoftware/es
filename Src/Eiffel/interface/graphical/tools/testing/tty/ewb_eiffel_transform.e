@@ -41,6 +41,43 @@ feature -- Properties
 			Result := 'e'
 		end
 
+	printer_test is
+			-- print some test class
+		local
+			l_class_file: KL_BINARY_INPUT_FILE
+			l_output_file: KL_BINARY_OUTPUT_FILE
+			l_class_ast: CLASS_AS
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+--			l_output: ETR_AST_HIERARCHY_OUTPUT
+			l_parser: EIFFEL_PARSER
+		do
+			create l_parser.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
+
+			-- setup class to parse
+			l_parser.set_syntax_version ({CONF_OPTION}.syntax_index_transitional)
+			create l_class_file.make (system.project_location.location + "\syntax_demo.ee")
+
+			l_class_file.open_read
+
+			-- parse the class (no matchlist is generated)
+			l_parser.parse (l_class_file)
+			l_class_file.close
+
+			l_class_ast := l_parser.root_node
+
+			create l_output.make
+
+			create l_printer.make_with_output (l_output)
+			l_class_ast.process (l_printer)
+
+			create l_output_file.make (system.project_location.location + "\syntax_demo.duplicated.ee")
+			l_output_file.open_write
+			l_output_file.put_string (l_output.string_representation)
+			l_output_file.close
+		end
+
+
 	test(a_context: ETR_CONTEXT) is
 			-- test ast identifiers
 		local
@@ -87,15 +124,18 @@ feature -- Properties
 			--   io.putint(8)
 			-- end
 			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a_context), -- condition
-												create {ETR_TRANSFORMABLE}.make_from_node(instr1,a_context), -- if_part
+												create {ETR_TRANSFORMABLE}.make_from_ast(instr1,a_context), -- if_part
 												new_instr("io.putint(8)",a_context) -- else_part
 											)
 
 			ast_modifier.replace(instr1.path,basic_operators.transformation_result)
 
+			-- remove the last item (io.putint(3))
+			ast_modifier.remove(da.compound.last.path)
+
 			-- output should be:
-			-- branch taken: 0 1 1.5 2.5 3 followed by
-			-- not taken: 0 8 1.5 2.5 3
+			-- branch taken: 0 1 1.5 2.5 followed by
+			-- not taken: 0 8 1.5 2.5
 
 			-- save changes to class ETR_DUMMY
 			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty then
@@ -109,9 +149,8 @@ feature -- Properties
 	execute
 			-- Action performed when invoked from the
 			-- command line.
-		local
-			context: ETR_CONTEXT
---			old_ast: CLASS_AS
+--		local
+--			context: ETR_CONTEXT
 		do
 			-- make sure we're in the test project
 			check
@@ -119,14 +158,16 @@ feature -- Properties
 			end
 
 			-- at the moment this contains the whole universe + more
-			create context
+--			create context
+
+			printer_test
 
 			-- reparse to have the original ast
-			reparse_class_by_name("ETR_DUMMY")
+--			reparse_class_by_name("ETR_DUMMY")
 
-			test(context)
+--			test(context)
 
-			eiffel_project.quick_melt
+--			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")
 		end
 

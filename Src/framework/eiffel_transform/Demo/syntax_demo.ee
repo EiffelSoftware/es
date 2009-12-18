@@ -1,0 +1,163 @@
+frozen expanded class
+	ETR_DUMMY[reference T -> {detachable HASHABLE rename a as b, c as d end, LIST} create make, make_empty end]
+inherit
+	A1
+		rename
+			x as y,
+			bla as bla_new
+		redefine
+			a,
+			b,
+			c
+		end
+	A2
+		export
+			{NONE} all
+			{B,C} fun
+		redefine
+			is_equal
+		end
+	A3
+		undefine
+			c
+		select
+			id
+		end
+	A4
+create {NONE}
+		make,
+		make_empty
+create {ANY}
+		make2
+convert
+	bla: {INTEGER,STRING},
+	bla2: {INTEGER,STRING}
+	
+feature
+	uniq_str: STRING is unique
+	
+	some_str: separate detachable STRING
+
+	test, altname(a_var,a_var2: INTEGER; a_var3:STRING) is
+			-- test
+		obsolete
+			"bliblablo"
+		require
+			bla: a_var /= 42
+		local
+			l_local: like current
+			l_tuple: TUPLE[A,B,STRING]
+			b: bit 5
+		do
+			Precursor{B}.make
+		
+			Result := create {SOMECLASS}.make_empty
+			
+			create bla.make
+			
+			if (a>5).out /= void then
+				
+			end
+			
+			var := 5*(3+1)+(1+1)*(4*4)
+			
+			a := arr[5]
+			b:= << 1,2,3,4 >>
+		
+			io.putint(1) -- goal: make this print only if a_var>0
+			io.putint(2)
+			
+			classa.classb.classc[4].fun()
+						
+			io.puttuple([2,3,"bla"])
+			
+			check
+				valid: a_var3 /= void
+			end
+			
+			if strip (a,b,c) then
+
+			end
+			
+			feature {SOMECLASS}.bla(5)
+			
+			io.putfun(agent fun("a",?,2,b))
+			
+			if a_var>0 then
+				io.putint(42)
+			elseif attached {ETR_DUMMY}dettable as d then
+				io.putstr("attached",1,2,3)
+			else
+				attr := 8
+			end
+			
+			from
+				i := 5
+			until
+				i > 10
+			loop
+				i := i+1
+			end
+			
+			inspect
+				i
+			when 1..3 then
+				io.putint (0)
+			else
+				io.putint (1)
+			end
+		ensure then
+			valid
+		rescue
+			i:=i+1
+			retry
+		end
+		
+	const:CHARACTER is 'b'
+		
+	attr: SOME[STRING] assign set_attr
+	
+	unminus alias "-", min alias "+": like attr
+		do
+			result := 5
+		end
+	
+	addition alias "+" convert (other:INTEGER): INTEGER
+		do
+			result := 42
+			list.for_all (agent (x: INTEGER): BOOLEAN do Result := (x > 0) end(?,2))
+		end
+		
+	feat(a:INTEGER) is
+		deferred
+		end
+		
+	ext (arg: INTEGER): POINTER
+		external
+			"C inline use <io.h>"
+		alias
+			"(EIF_POINTER) _fun($arg)"
+		end
+		
+	ext2: STRING
+		external
+			"builtin"
+		ensure
+			a>b
+		end
+		
+	frozen infix "or" (other: like Current): like Current is
+		require
+			other_valid: other /= Void
+		do
+		
+		end
+		
+	prefix "not": like Current is
+		do
+
+		end
+	
+invariant
+	yes: true
+end

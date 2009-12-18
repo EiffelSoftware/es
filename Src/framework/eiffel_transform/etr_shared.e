@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ETR_SHARED_HELPERS}."
+	description: "Shared components of EiffelTransform"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -11,10 +11,10 @@ inherit
 		export
 			{NONE} all
 		end
-	SHARED_EIFFEL_PARSER
-		export
-			{NONE} all
-		end
+--	SHARED_EIFFEL_PARSER
+--		export
+--			{NONE} all
+--		end
 
 feature -- Constants
 
@@ -42,21 +42,27 @@ feature -- Constants
 			create Result
 		end
 
+	syntax_version: NATURAL_8 is
+			-- syntax version used
+		once
+			Result := {CONF_OPTION}.syntax_index_transitional
+		end
+
 feature -- Access
 
 	duplicated_ast: detachable AST_EIFFEL
 			-- Result of `duplicate_ast'
 
 	ast_parent(an_ast: AST_EIFFEL): detachable AST_EIFFEL is
-			-- gets the parent of `an_ast' using paths
+			-- finds the parent of `an_ast' using paths
 		require
 			ast_attached: an_ast /= void
 		local
-			parent_path: AST_PATH
+			l_parent_path: AST_PATH
 		do
-			create parent_path.make_from_child (an_ast, 1)
+			create l_parent_path.make_from_child (an_ast, 1)
 
-			Result := find_node (parent_path)
+			Result := find_node (l_parent_path)
 		end
 
 	find_node(a_path: AST_PATH): detachable AST_EIFFEL is
@@ -71,6 +77,24 @@ feature -- Access
 			Result := ast_locator.found_node
 		end
 
+feature {NONE} -- Implementation
+
+	internal_expr_parser: EIFFEL_PARSER
+			-- internal parser used to handle expressions
+		once
+			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			Result.set_expression_parser
+			Result.set_syntax_version(syntax_version)
+		end
+
+	internal_instr_parser: EIFFEL_PARSER
+			-- internal parser used to handle instructions
+		once
+			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			Result.set_feature_parser
+			Result.set_syntax_version(syntax_version)
+		end
+
 feature -- New
 
 	new_invalid_transformable: ETR_TRANSFORMABLE is
@@ -81,20 +105,34 @@ feature -- New
 
 	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
 			-- create a new instruction from `an_instr' with context `a_context'
+		require
+			instr_attached: an_instr /= void
+			context_attached: a_context /= void
 		do
-			entity_feature_parser.parse_from_string ("feature new_instr_dummy_feature is do "+an_instr+" end",void)
-			if attached {DO_AS}entity_feature_parser.feature_node.body.as_routine.routine_body as body then
+			internal_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
+
+			if attached internal_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 				index_ast_from_root (body.compound.first)
-				create Result.make_from_node (body.compound.first, a_context)
+				create Result.make_from_ast (body.compound.first, a_context)
+			else
+				create Result.make_invalid
 			end
 		end
 
 	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
 			-- create a new exression from `an_expr' with context `a_context'
+		require
+			expr_attached: an_expr /= void
+			context_attached: a_context /= void
 		do
-			expression_parser.parse_from_string("check "+an_expr,void)
-			index_ast_from_root (expression_parser.expression_node)
-			create Result.make_from_node (expression_parser.expression_node, a_context)
+			internal_expr_parser.parse_from_string("check "+an_expr,void)
+
+			if attached internal_expr_parser.expression_node then
+				index_ast_from_root (internal_expr_parser.expression_node)
+				create Result.make_from_ast (internal_expr_parser.expression_node, a_context)
+			else
+				create Result.make_invalid
+			end
 		end
 
 feature -- Operations

@@ -1,87 +1,59 @@
 note
-	description: "Summary description for {ETR_TRANSFORMABLE}."
+	description: "Prints an ast structure to a hierarchy tree"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_TRANSFORMABLE
+	ETR_AST_HIERARCHY_OUTPUT
 inherit
-	ETR_SHARED
-		export
-			{NONE} all
+	ETR_AST_STRING_OUTPUT
+		redefine
+			enter_block,
+			exit_block,
+			enter_child,
+			exit_child,
+			append_string
 		end
 create
-	make_from_ast,
-	make_invalid,
-	make_from_ast_list
+	make,
+	make_with_indentation_string
 
-feature -- Access
+feature -- Operations
 
-	path: detachable AST_PATH is
-			-- path of `Current'
+	enter_block
+			-- Enters a new indentation-block
 		do
-			if attached target_node then
-				Result := target_node.path
+			-- unused
+		end
+
+	exit_block
+			-- Exits an indentation-block
+		do
+			-- unused
+		end
+
+	enter_child(a_name: STRING)
+			-- Enters a new child with name `a_name'
+		do
+			current_indentation := current_indentation + indentation_string
+			context.add_string (current_indentation.twin+a_name+"%N")
+		end
+
+	exit_child
+			-- Exits a child
+		do
+			if current_indentation.count >= indentation_string.count then
+				current_indentation.remove_tail (indentation_string.count)
 			end
 		end
 
-	context: detachable ETR_CONTEXT
-	target_node: detachable AST_EIFFEL
-
-	is_valid: BOOLEAN
-
-feature -- creation
-
-	make_from_ast(a_node: like target_node; a_context: like context) is
-			-- make with `a_node' and `a_context'
-		require
-			non_void: a_node /= void and a_context /= void
-			has_path: a_node.path /= void
-			valid_path: a_node.path.is_valid
+	append_string(a_string: STRING)
+			-- Appends `a_string' to the output
 		do
-			target_node := a_node
-			context := a_context
-
-			is_valid := true
+			-- unused
 		end
 
-	make_from_ast_list(a_list: LIST[like target_node]; a_context: like context) is
-			-- make with `a_list' and `a_context'
-		require
-			non_void: a_list /= void and a_context /= void
-		local
-			l_eiffel_list: EIFFEL_LIST[AST_EIFFEL]
-		do
-			-- duplicate all items
-			-- since we're gonna change their paths!
-			from
-				a_list.start
-				create l_eiffel_list.make (a_list.count)
-			until
-				a_list.after
-			loop
-				duplicate_ast (a_list.item)
-
-				l_eiffel_list.extend (duplicated_ast)
-				a_list.forth
-			end
-
-			-- reindex it
-			index_ast_from_root(l_eiffel_list)
-
-			target_node := l_eiffel_list
-			context := a_context
-			is_valid := true
-		end
-
-	make_invalid is
-			-- make and mark as invalid
-		do
-			context := void
-			target_node := void
-			is_valid := false
-		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

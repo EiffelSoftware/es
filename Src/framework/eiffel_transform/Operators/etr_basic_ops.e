@@ -33,22 +33,25 @@ feature -- Transform
 	transformation_result: detachable ETR_TRANSFORMABLE
 		-- result of last transformation
 
-	if_then_wrap(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE) is
-			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with context from `a_test'
+	if_then_wrap_in_context(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT) is
+			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with `a_context'
+		require
+			test_not_void: a_test /= void
+			context_not_void: a_context /= void
 		local
-			if_part_node, else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
-			result_node: IF_AS
-			if_part_dup: like if_part
-			else_part_dup: like else_part
+			l_if_part_node, l_else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
+			l_result_node: IF_AS
+			l_if_part_dup: like if_part
+			l_else_part_dup: like else_part
 		do
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
 					duplicate_ast (if_part.target_node)
 					-- check if its a single instruction or multiple
 					if attached {INSTRUCTION_AS}duplicated_ast as instr then
-						if_part_node := single_instr_list (instr)
+						l_if_part_node := single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
-						if_part_node := instrs
+						l_if_part_node := instrs
 					end
 				end
 
@@ -56,22 +59,30 @@ feature -- Transform
 					duplicate_ast (else_part.target_node)
 					-- check if its a single instruction or multiple
 					if attached {INSTRUCTION_AS}duplicated_ast as instr then
-						else_part_node := single_instr_list (instr)
+						l_else_part_node := single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
-						else_part_node := instrs
+						l_else_part_node := instrs
 					end
 				end
 
 				-- assemble new IF_AS
-				create result_node.initialize (condition, if_part_node, void, else_part_node, end_keyword, void, void, void)
+				create l_result_node.initialize (condition, l_if_part_node, void, l_else_part_node, end_keyword, void, void, void)
 
 				-- index it as well
-				index_ast_from_root (result_node)
+				index_ast_from_root (l_result_node)
 
-				create transformation_result.make_from_node (result_node, a_test.context)
+				create transformation_result.make_from_ast (l_result_node, a_context)
 			else
 				transformation_result := new_invalid_transformable
 			end
+		end
+
+	if_then_wrap(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE) is
+			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with context from `a_test'
+		require
+			test_not_void: a_test /= void
+		do
+			if_then_wrap_in_context(a_test, if_part, else_part, a_test.context)
 		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

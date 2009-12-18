@@ -85,7 +85,9 @@ inherit
 			process_export_clause_as,
 			process_undefine_clause_as,
 			process_redefine_clause_as,
-			process_select_clause_as
+			process_select_clause_as,
+			process_feature_name_alias_as,
+			process_address_as
 		end
 
 feature {NONE} -- Implementation
@@ -110,7 +112,7 @@ feature -- Roundtrip
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
 		do
-			process_n_way_branch(l_as,[l_as.class_type, l_as.internal_parameters])
+			process_n_way_branch(l_as,[l_as.class_type, l_as.parameters])
 		end
 
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS)
@@ -121,6 +123,11 @@ feature -- Roundtrip
 	process_tuple_as (l_as: TUPLE_AS)
 		do
 			process_n_way_branch(l_as,[l_as.expressions])
+		end
+
+	process_feature_name_alias_as (l_as: FEATURE_NAME_ALIAS_AS)
+		do
+			process_n_way_branch(l_as,[l_as.feature_name, l_as.alias_name])
 		end
 
 	process_array_as (l_as: ARRAY_AS)
@@ -135,12 +142,12 @@ feature -- Roundtrip
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		do
-			process_n_way_branch(l_as,[l_as.internal_parameters])
+			process_n_way_branch(l_as,[l_as.parameters])
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS)
 		do
-			process_n_way_branch(l_as,[l_as.parent_base_class, l_as.internal_parameters])
+			process_n_way_branch(l_as,[l_as.parent_base_class, l_as.parameters])
 		end
 
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
@@ -201,6 +208,11 @@ feature -- Roundtrip
 	process_expr_call_as (l_as: EXPR_CALL_AS)
 		do
 			process_n_way_branch(l_as,[l_as.call])
+		end
+
+	process_address_as (l_as: ADDRESS_AS)
+		do
+			process_n_way_branch(l_as,[l_as.feature_name])
 		end
 
 	process_expr_address_as (l_as: EXPR_ADDRESS_AS)
@@ -333,7 +345,7 @@ feature -- Roundtrip
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
 		do
-			process_n_way_branch(l_as,[l_as.class_name, l_as.internal_generics])
+			process_n_way_branch(l_as,[l_as.class_name, l_as.generics])
 		end
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)

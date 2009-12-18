@@ -8,6 +8,7 @@
 		<setting name="multithreaded" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<cluster name="eiffel_transform" location=".\" recursive="true">
 			<file_rule>

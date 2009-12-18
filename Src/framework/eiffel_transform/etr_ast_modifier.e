@@ -21,6 +21,9 @@ feature -- Operations
 
 	insert_after(a_path: AST_PATH; a_transformable: ETR_TRANSFORMABLE) is
 			-- insert `a_transformable' after `a_path'
+		require
+			non_void: a_path /= void and a_transformable /= void
+			path_valid: a_path.is_valid
 		local
 			l_done: BOOLEAN
 			l_parent: AST_EIFFEL
@@ -55,6 +58,9 @@ feature -- Operations
 
 	insert_before(a_path: AST_PATH; a_transformable: ETR_TRANSFORMABLE) is
 			-- insert `a_transformable' before `a_path'
+		require
+			non_void: a_path /= void and a_transformable /= void
+			path_valid: a_path.is_valid
 		local
 			l_done: BOOLEAN
 			l_parent: AST_EIFFEL
@@ -91,9 +97,63 @@ feature -- Operations
 			end
 		end
 
+	remove(a_path: AST_PATH) is
+			-- remove item at `a_path'
+		require
+			non_void: a_path /= void
+			path_valid: a_path.is_valid
+		local
+			-- supported:
+			l_parent_list: EIFFEL_LIST[INSTRUCTION_AS]
+			l_parent: AST_EIFFEL
+			-- also needed: binary + unary operators, conditions in loops + branches
+			-- + contracts etcetc
+			l_position: INTEGER
+		do
+			-- position in parent:
+			l_position := a_path.branch_id
+
+			-- get parent
+			l_parent := ast_parent (find_node (a_path))
+
+			-- replace in supported parents
+			if attached {EIFFEL_LIST[INSTRUCTION_AS]}l_parent as par then
+				replace_in_instr_list(par, l_position, void)
+				reindex_ast (par)
+			elseif attached {BINARY_AS}l_parent as par then
+
+			elseif attached {UNARY_AS}l_parent as par then
+
+			elseif attached {IF_AS}l_parent as par then
+
+			elseif attached {ELSIF_AS}l_parent as par then
+
+			elseif attached {LOOP_AS}l_parent as par then
+
+            end
+		end
+
+	replace_in_instr_list(a_list: EIFFEL_LIST[INSTRUCTION_AS]; a_position:INTEGER; an_instruction: detachable INSTRUCTION_AS) is
+			-- replace item at `a_position' in `a_list' by `an_instruction'
+		require
+			non_void: a_list /= void
+			pos_valid: a_position > 0 and a_position <= a_list.count
+		do
+			if attached an_instruction then
+				a_list.put_i_th (an_instruction, a_position)
+			else
+				-- an_instruction = void
+				-- delete item
+				a_list.go_i_th (a_position)
+				a_list.remove
+			end
+		end
 
 	replace(a_path: AST_PATH; a_transformable: ETR_TRANSFORMABLE) is
 			-- replace `a_transformable' at `a_path'
+		require
+			non_void: a_path /= void and a_transformable /= void
+			path_valid: a_path.is_valid
 		local
 			-- supported:
 			l_parent_list: EIFFEL_LIST[INSTRUCTION_AS]
@@ -110,7 +170,7 @@ feature -- Operations
 
 			-- replace in supported parents
 			if attached {EIFFEL_LIST[INSTRUCTION_AS]}l_parent as par and attached {INSTRUCTION_AS}a_transformable.target_node as instr then
-				par.put_i_th (instr, l_position)
+				replace_in_instr_list(par, l_position, instr)
 				reindex_ast (par)
 			elseif attached {BINARY_AS}l_parent as par then
 
