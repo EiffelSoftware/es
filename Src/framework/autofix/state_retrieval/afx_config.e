@@ -119,6 +119,16 @@ feature -- Access
 			Result := l_path
 		end
 
+	theory_directory: STRING
+			-- Directory to store theory related files
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("theory")
+			Result := l_path
+		end
+
 feature -- State retrieval related
 
 	state_test_case_class_name: detachable STRING

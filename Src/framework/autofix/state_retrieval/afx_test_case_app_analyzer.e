@@ -82,7 +82,7 @@ feature -- Basic operations
 				application_exited_actions.extend (agent daikon_facility.on_application_exited)
 			end
 
-			debug
+			debug ("autofix")
 				 -- Output retrieved state.
 				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
 			end
@@ -298,7 +298,7 @@ feature{NONE} -- Actions
 				-- Generate state model for current test case.
 			l_recipient_id := current_test_case_info.id
 			if not exception_spots.has (l_recipient_id) then
-				create l_spot_analyzer
+				create l_spot_analyzer.make (config)
 				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)
 				exception_spots.put (l_spot_analyzer.last_spot, l_recipient_id)
 			end
@@ -351,12 +351,11 @@ feature{NONE} -- Implication
 
 			check current_test_case_info /= Void end
 
-			--io.put_string (a_tc.recipient_class + "." + a_tc.recipient + "@" + a_bpslot.out + "%N")
+			io.put_string (a_tc.recipient_class + "." + a_tc.recipient + "@" + a_bpslot.out + "%N")
 			l_equations.do_all (
 				agent (a_equation: AFX_EQUATION)
 					do
-						--io.put_string (a_equation.debug_output + "%N")
-						--io.put_string ("AGENT %N")
+						io.put_string (a_equation.debug_output + "%N")
 					end)
 
 			io.put_string ("%N")

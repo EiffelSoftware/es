@@ -153,7 +153,7 @@ feature -- Setting
 			-- Make a new copy from `a_tag'.
 		do
 			if a_tag = Void then
-				tag := Void
+				tag := "noname"
 			else
 				tag := a_tag.twin
 			end

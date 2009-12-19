@@ -166,7 +166,12 @@ feature{NONE} -- Implementation
 				a_asserts.after
 			loop
 				create l_expr.make (a_asserts.item.expr, a_written_class, a_context_class)
-				l_expr.set_tag (a_asserts.item.tag.name)
+				if attached {ID_AS} a_asserts.item.tag as l_tag then
+					l_expr.set_tag (l_tag.name)
+				else
+					l_expr.set_tag (Void)
+				end
+
 				Result.extend(l_expr)
 				a_asserts.forth
 			end
@@ -195,7 +200,12 @@ feature{NONE} -- Implementation
 				loop
 					l_tag := l_tags.item_for_iteration
 					create l_expr.make (l_tag.expr, a_written_class, a_context_class)
-					l_expr.set_tag (l_tag.tag.name)
+					if attached {ID_AS} l_tag.tag as l_atag then
+						l_expr.set_tag (l_atag.name)
+					else
+						l_expr.set_tag (Void)
+					end
+
 					Result.extend (l_expr)
 					l_tags.forth
 				end

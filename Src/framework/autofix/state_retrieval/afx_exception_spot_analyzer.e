@@ -10,10 +10,24 @@ class
 inherit
 	REFACTORING_HELPER
 
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_config: like config)
+			-- Initialize.
+		do
+			config := a_config
+		end
+
 feature -- Access
 
 	last_spot: AFX_EXCEPTION_SPOT
 			-- Last analyzed exception spot
+
+	config: AFX_CONFIG
+			-- Config for current AutoFix session
 
 feature -- Basic operations
 
@@ -165,15 +179,13 @@ feature{NONE} -- Implementation
 			Result := implications_for_class (l_expressions, a_class, a_feature)
 		end
 
-	implications_for_class (a_implications: ARRAY [STRING]; a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+	implications_for_class (a_implications: ARRAY [STRING]; a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
 			-- Implications and their rankings for `a_class'
 		local
 			i: INTEGER
 			l_expr: AFX_AST_EXPRESSION
 		do
-			create Result.make (40)
-			Result.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
-
+			create Result.make_basic (a_class, a_feature, a_implications.count)
 			from
 				i := a_implications.lower
 			until
@@ -187,6 +199,17 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
+	implication_file_path (a_tc: AFX_TEST_CASE_INFO): PLAIN_TEXT_FILE
+			-- File which stores the possible implication candidates used
+			-- in state model for the fault specified in `a_tc'.
+		local
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make_from_string (config.theory_directory)
+			l_file_name.set_file_name (a_tc.id + ".implications")
+			create Result.make (l_file_name)
+		end
+
 	analyze_state_predicates (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
 			-- Analyze predicates that should be included in state for current exception, and
 			-- set those predicates into `a_spot'.
@@ -196,6 +219,7 @@ feature{NONE} -- Implementation
 			l_ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
 			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
 			l_implication_gen: AFX_IMPLICATION_GENERATOR
+			l_imp_file: PLAIN_TEXT_FILE
 		do
 			create l_ranking.make (50)
 			l_ranking.compare_objects
@@ -204,24 +228,91 @@ feature{NONE} -- Implementation
 			create l_basic_expr_gen
 			l_basic_expr_gen.generate (a_tc, l_ranking)
 
-			fixme ("The following hack is for the sake of debugging speed, we don't search for implications for known classes every time. 28.11.2009 Jasonw")
-			if a_tc.recipient_class ~ "INTERACTIVE_LIST" then
-				update_expressions_with_ranking (l_ranking, implications_for_ACTIVE_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "ARRAYED_CIRCULAR" then
-				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_CIRCULAR (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "ARRAY" then
-				update_expressions_with_ranking (l_ranking, implications_for_ARRAY (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "ARRAYED_LIST" then
-				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
-			elseif a_tc.recipient_class ~ "BINARY_SEARCH_TREE_SET" then
-				update_expressions_with_ranking (l_ranking, implications_for_BINARY_SEARCH_TREE_SET (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+
+			l_imp_file := implication_file_path (a_tc)
+			if l_imp_file.exists then
+				update_expressions_with_ranking (l_ranking, implications_from_file (a_tc, l_imp_file), {AFX_EXPR_RANK}.rank_implication)
 			else
 					-- Generate implications.
 				create l_implication_gen
 				l_implication_gen.generate (a_tc, l_ranking)
+				store_implications_in_file (l_implication_gen.implications, l_imp_file)
 			end
 
+--			fixme ("The following hack is for the sake of debugging speed, we don't search for implications for known classes every time. 28.11.2009 Jasonw")
+--			if a_tc.recipient_class ~ "INTERACTIVE_LIST" then
+--				update_expressions_with_ranking (l_ranking, implications_for_ACTIVE_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+--			elseif a_tc.recipient_class ~ "ARRAYED_CIRCULAR" then
+--				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_CIRCULAR (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+--			elseif a_tc.recipient_class ~ "ARRAY" then
+--				update_expressions_with_ranking (l_ranking, implications_for_ARRAY (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+--			elseif a_tc.recipient_class ~ "ARRAYED_LIST" then
+--				update_expressions_with_ranking (l_ranking, implications_for_ARRAYED_LIST (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+--			elseif a_tc.recipient_class ~ "BINARY_SEARCH_TREE_SET" then
+--				update_expressions_with_ranking (l_ranking, implications_for_BINARY_SEARCH_TREE_SET (a_tc.recipient_class_, a_tc.recipient_), {AFX_EXPR_RANK}.rank_implication)
+--			else
+--					-- Generate implications.
+--				create l_implication_gen
+--				l_implication_gen.generate (a_tc, l_ranking)
+--				store_implications_in_file (l_implication_gen.implications, l_imp_file)
+--			end
+
 			a_spot.set_ranking (l_ranking)
+		end
+
+	store_implications_in_file (a_implications: DS_HASH_SET [AFX_IMPLICATION_EXPR]; a_file: PLAIN_TEXT_FILE)
+			-- Store `a_implications' in `a_file'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AFX_IMPLICATION_EXPR]
+		do
+			a_file.create_read_write
+			from
+				l_cursor := a_implications.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				a_file.put_string (l_cursor.item.text)
+				a_file.put_character ('%N')
+				l_cursor.forth
+			end
+			a_file.close
+		end
+
+	implications_from_file (a_tc: AFX_TEST_CASE_INFO; a_file: PLAIN_TEXT_FILE): AFX_STATE_SKELETON
+			-- Implications loaded from `a_file' for test case `a_tc'
+		local
+			l_imps: LINKED_LIST [STRING]
+			l_array: ARRAY [STRING]
+			i: INTEGER
+		do
+			create l_imps.make
+			a_file.open_read
+			from
+				a_file.read_line
+			until
+				a_file.after
+			loop
+				if not a_file.last_string.is_empty then
+					l_imps.extend (a_file.last_string.twin)
+				end
+				a_file.read_line
+			end
+			a_file.close
+
+			create l_array.make (1, l_imps.count)
+			from
+				i := 1
+				l_imps.start
+			until
+				l_imps.after
+			loop
+				l_array.put (l_imps.item_for_iteration, i)
+				i := i + 1
+				l_imps.forth
+			end
+
+			Result := implications_for_class (l_array, a_tc.recipient_class_, a_tc.recipient_)
 		end
 
 	analyze_ast_structure (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)

@@ -163,7 +163,7 @@ feature -- Basic operations
 				generate_fixes_from_snippet (l_snippets)
 			end
 
-			debug
+			debug ("autofix")
 				from
 					fixes.start
 				until
