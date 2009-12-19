@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: AFX_EXPRESSION)
+	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: AFX_EXPRESSION; a_config: like config)
 			-- Initialize.
 		require
 			a_guard_condition_attached: a_guard_condition /= Void
@@ -27,6 +27,7 @@ feature{NONE} -- Initialization
 			create relevant_ast.make
 			create fixes.make
 			set_guard_condition (a_guard_condition)
+			config := a_config
 		end
 
 feature -- Access

@@ -18,12 +18,13 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT)
+	make (a_spot: AFX_EXCEPTION_SPOT; a_config: like config)
 			-- Initialize.
 		do
 			exception_spot := a_spot
 			create relevant_ast.make
 			create fixes.make
+			config := a_config
 		end
 
 feature -- Status report

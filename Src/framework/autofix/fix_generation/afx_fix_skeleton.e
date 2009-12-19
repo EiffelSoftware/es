@@ -55,6 +55,9 @@ feature -- Access
 		deferred
 		end
 
+	config: AFX_CONFIG
+			-- Config for current AutoFix session
+
 feature -- Access
 
 	ranking: AFX_FIX_RANKING
@@ -332,6 +335,7 @@ feature{NONE} -- Implementation
 						end
 					end (?, ?, l_source_state))
 			create Result.make
+
 			Result.extend ([create {DS_LINKED_LIST [STRING]}.make_from_array (<<"do_nothing">>), 0])
 		ensure
 			result_attached: Result /= Void

@@ -99,6 +99,26 @@ feature -- Access
 			Result := l_path
 		end
 
+	backward_model_directory: STRING
+			-- Directory to store backward state transition models
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (model_directory)
+			l_path.extend ("backward_model")
+			Result := l_path
+		end
+
+	forward_model_directory: STRING
+			-- Directory to store forward state transition models
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (model_directory)
+			l_path.extend ("forward_model")
+			Result := l_path
+		end
+
 feature -- State retrieval related
 
 	state_test_case_class_name: detachable STRING

@@ -17,7 +17,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: like exception_spot)
+	make (a_spot: like exception_spot; a_config: like config)
 			-- Initialize.
 		do
 			exception_spot := a_spot
@@ -79,6 +79,9 @@ feature{NONE} -- Implementation
 			assertion_structure_analyzer.extend (create {AFX_ANY_STRUCTURE_ANALYZER})
 		end
 
+	config: AFX_CONFIG
+			-- Config for Current AutoFix session
+
 feature{NONE} -- Implementation
 
 	generate_relevant_asts
@@ -129,7 +132,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ABQ_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
 			l_generator.generate
 			fixes.append (l_generator.fixes)
 		end
@@ -139,7 +142,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ABQ_IMPLICATION_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
 			l_generator.generate
 			fixes.append (l_generator.fixes)
 		end
@@ -149,7 +152,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_LINEAR_CONSTRAINT_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
 			l_generator.generate
 			fixes.append (l_generator.fixes)
 		end
@@ -159,7 +162,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ANY_STRUCTURE_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
 			l_generator.generate
 			fixes.append (l_generator.fixes)
 		end

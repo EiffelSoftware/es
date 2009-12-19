@@ -12,7 +12,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_spot: like exception_spot; a_analyzer: like structure_analyzer; a_fixing_locations: like fixing_locations)
+	make (a_spot: like exception_spot; a_analyzer: like structure_analyzer; a_fixing_locations: like fixing_locations; a_config: like config)
 			-- Initialize.
 		require
 			a_spot_has_failing_assertion: a_spot.failing_assertion /= Void
@@ -37,6 +37,9 @@ feature -- Access
 
 	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
 			-- List of fixing locations
+
+	config: AFX_CONFIG
+			-- Config for current AutoFix session
 
 feature -- Constants
 
@@ -66,7 +69,7 @@ feature{NONE} -- Implementation
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
-			create Result.make (a_spot)
+			create Result.make (a_spot, config)
 			Result.set_guard_condition (a_guard)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
@@ -89,7 +92,7 @@ feature{NONE} -- Implementation
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
-			create Result.make (a_spot, a_guard)
+			create Result.make (a_spot, a_guard, config)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_relevant_ast (a_fixing_location)

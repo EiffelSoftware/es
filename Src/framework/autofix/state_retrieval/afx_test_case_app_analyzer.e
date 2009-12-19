@@ -56,8 +56,6 @@ feature -- Access
 	application_exited_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when application exited in debugger
 
-
-
 feature -- Basic operations
 
 	execute
@@ -98,7 +96,7 @@ feature -- Basic operations
 			until
 				exception_spots.after
 			loop
-				create l_gen.make (exception_spots.item_for_iteration)
+				create l_gen.make (exception_spots.item_for_iteration, config)
 				l_gen.generate
 				l_gen.fixes.do_all (agent {AFX_FIX_SKELETON}.generate)
 				exception_spots.forth
