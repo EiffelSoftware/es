@@ -18,6 +18,8 @@ inherit
 
 	AFX_SHARED_STATE_SERVER
 
+	SHARED_EIFFEL_PARSER
+
 create
 	make
 
@@ -62,6 +64,7 @@ feature -- Basic operations
 			-- Execute.
 		local
 			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
+			l_fixes: LINKED_LIST [AFX_FIX]
 		do
 				-- Setup ARFF file generation.
 			if config.is_arff_generation_enabled then
@@ -91,6 +94,7 @@ feature -- Basic operations
 			analyze_test_cases
 
 				-- Generate fixes.
+			create l_fixes.make
 			from
 				exception_spots.start
 			until
@@ -98,8 +102,20 @@ feature -- Basic operations
 			loop
 				create l_gen.make (exception_spots.item_for_iteration, config)
 				l_gen.generate
-				l_gen.fixes.do_all (agent {AFX_FIX_SKELETON}.generate)
+				from
+					l_gen.fixes.start
+				until
+					l_gen.fixes.after
+				loop
+					l_gen.fixes.item_for_iteration.generate
+					l_fixes.append (l_gen.fixes.item_for_iteration.fixes)
+					l_gen.fixes.forth
+				end
 				exception_spots.forth
+			end
+
+			debug ("autofix")
+				store_fixes (l_fixes)
 			end
 		end
 
@@ -368,6 +384,82 @@ feature{NONE} -- Implication
 				do
 					Result := a.expression.text < b.expression.text
 				end)
+		end
+
+feature -- Logging
+
+	store_fixes (a_fixes: LINKED_LIST [AFX_FIX])
+			-- Store fixes in to files.
+		local
+			l_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
+			l_sorter: DS_QUICK_SORTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
+		do
+				-- Sort fixes ascendingly according to their ranking.
+			create l_data.make (a_fixes.count)
+			a_fixes.do_all (
+				agent (a_fix: AFX_FIX; a_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]])
+					do
+						a_data.force_last ([a_fix, a_fix.ranking.score])
+					end (?, l_data))
+
+			create l_sorter.make (
+				create {AGENT_BASED_EQUALITY_TESTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]}.make (
+					agent (a, b: TUPLE [fix: AFX_FIX; ranking: DOUBLE]): BOOLEAN
+						do
+							Result := a.ranking < b.ranking
+						end))
+			l_sorter.sort (l_data)
+
+				-- Output fixes into files.			
+			l_data.do_all_with_index (agent store_fix_in_file)
+		end
+
+	store_fix_in_file (a_fix: TUPLE [fix: AFX_FIX; ranking: DOUBLE]; a_id: INTEGER)
+			-- Store `a_fix' as the `a_id'-th fix into a file.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
+			l_lines: LIST [STRING]
+		do
+			create l_file_name.make_from_string (config.fix_directory)
+			l_file_name.set_file_name ("fix" + a_id.out + ".txt")
+			create l_file.make_create_read_write (l_file_name)
+
+				-- Print patched feature text.
+			l_file.put_string (formated_fix (a_fix.fix))
+			l_file.put_string (once "%N%N")
+
+				-- Print information about current fix.
+			l_lines := a_fix.fix.information.split ('%N')
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				l_file.put_string (once "-- ")
+				l_file.put_string (l_lines.item_for_iteration)
+				l_file.put_string (once "%N")
+				l_lines.forth
+			end
+			l_file.close
+		end
+
+	formated_fix (a_fix: AFX_FIX): STRING
+			-- Pretty printed feature text for `a_fix'
+		local
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+			l_feat_text: STRING
+		do
+			if a_fix.feature_text.has_substring ("should not happen") then
+				Result := a_fix.feature_text.twin
+			else
+				entity_feature_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
+				create l_output.make_with_indentation_string ("%T")
+				create l_printer.make_with_output (l_output)
+				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+				Result := l_output.string_representation
+			end
 		end
 
 note

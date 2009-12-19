@@ -169,7 +169,6 @@ feature -- Basic operations
 			debug ("autofix")
 					-- Print out all the fix candidates.
 				fixes.do_all (agent print_fix)
-				store_fixes
 			end
 		end
 
@@ -343,12 +342,11 @@ feature{NONE} -- Implementation
 						end
 					end (?, ?, l_source_state))
 
---			l_fixes := state_transitions_from_model (l_source_state, l_target_state, l_class, Void, Void)
+			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_spot.recipient_class_, Void, Void)
 			create Result.make
-			Result.extend ([create {DS_ARRAYED_LIST [STRING]}.make_from_array (<<"do_nothing">>), 1])
---			l_fixes.do_all (
---				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])
---					do a_list.extend ([a_fix.call_sequence, a_fix.rank]) end (?, Result))
+			l_fixes.do_all (
+				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])
+					do a_list.extend ([a_fix.call_sequence, a_fix.rank]) end (?, Result))
 		ensure
 			result_attached: Result /= Void
 		end
@@ -555,62 +553,6 @@ feature{NONE} -- Implementation
 			io.put_string ("%N")
 			io.put_string (l_feat_text)
 			io.put_string ("%N")
-		end
-
-	store_fixes
-			-- Store fixes in to files.
-		local
-			l_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
-			l_sorter: DS_QUICK_SORTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
-		do
-				-- Sort fixes ascendingly according to their ranking.
-			create l_data.make (fixes.count)
-			fixes.do_all (
-				agent (a_fix: AFX_FIX; a_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]])
-					do
-						a_data.force_last ([a_fix, a_fix.ranking.score])
-					end (?, l_data))
-
-			create l_sorter.make (
-				create {AGENT_BASED_EQUALITY_TESTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]}.make (
-					agent (a, b: TUPLE [fix: AFX_FIX; ranking: DOUBLE]): BOOLEAN
-						do
-							Result := a.ranking < b.ranking
-						end))
-			l_sorter.sort (l_data)
-
-				-- Output fixes into files.			
-			l_data.do_all_with_index (agent store_fix_in_file)
-		end
-
-	store_fix_in_file (a_fix: TUPLE [fix: AFX_FIX; ranking: DOUBLE]; a_id: INTEGER)
-			-- Store `a_fix' as the `a_id'-th fix into a file.
-		local
-			l_file: PLAIN_TEXT_FILE
-			l_file_name: FILE_NAME
-			l_lines: LIST [STRING]
-		do
-			create l_file_name.make_from_string (config.fix_directory)
-			l_file_name.set_file_name ("fix" + a_id.out + ".txt")
-			create l_file.make_create_read_write (l_file_name)
-
-				-- Print patched feature text.
-			l_file.put_string (a_fix.fix.feature_text)
-			l_file.put_string (once "%N%N")
-
-				-- Print information about current fix.
-			l_lines := a_fix.fix.information.split ('%N')
-			from
-				l_lines.start
-			until
-				l_lines.after
-			loop
-				l_file.put_string (once "-- ")
-				l_file.put_string (l_lines.item_for_iteration)
-				l_file.put_string (once "%N")
-				l_lines.forth
-			end
-			l_file.close
 		end
 
 end

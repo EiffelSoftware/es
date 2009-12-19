@@ -129,9 +129,7 @@ feature -- Status report
 				Result.append ("Void%N")
 			end
 
-			Result.append ("Ranking: " + ranking.score.out + "%N%N")
-			Result.append (feature_text)
-			Result.append_character ('%N')
+			Result.append ("Ranking: " + ranking.score.out + "%N")
 		end
 
 end
