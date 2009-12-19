@@ -16,6 +16,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	AFX_SHARED_BEHAVIOR_CONSTRUCTOR
+
 	SHARED_EIFFEL_PARSER
 
 feature -- Access
@@ -308,6 +310,7 @@ feature{NONE} -- Implementation
 			l_class: CLASS_C
 			l_feature: detachable FEATURE_I
 			l_empty: LINKED_LIST [STRING]
+			l_fixes: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
 		do
 			l_source_state := hash_table_to_ds_hash_table (a_source_state)
 			l_target_state := hash_table_to_ds_hash_table (a_target_state)
@@ -334,9 +337,12 @@ feature{NONE} -- Implementation
 							data.force (l_dummy_state, key)
 						end
 					end (?, ?, l_source_state))
-			create Result.make
 
-			Result.extend ([create {DS_LINKED_LIST [STRING]}.make_from_array (<<"do_nothing">>), 0])
+			l_fixes := state_transitions_from_model (l_source_state, l_target_state, l_class, Void, Void)
+			create Result.make
+			l_fixes.do_all (
+				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])
+					do a_list.extend ([a_fix.call_sequence, a_fix.rank]) end (?, Result))
 		ensure
 			result_attached: Result /= Void
 		end

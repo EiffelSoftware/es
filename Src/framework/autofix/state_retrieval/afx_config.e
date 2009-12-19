@@ -105,7 +105,7 @@ feature -- Access
 			l_path: FILE_NAME
 		do
 			create l_path.make_from_string (model_directory)
-			l_path.extend ("backward_model")
+			l_path.extend ({AFX_BACKWARD_STATE_TRANSITION_MODEL}.model_directory)
 			Result := l_path
 		end
 
@@ -115,7 +115,7 @@ feature -- Access
 			l_path: FILE_NAME
 		do
 			create l_path.make_from_string (model_directory)
-			l_path.extend ("forward_model")
+			l_path.extend ({AFX_FORWARD_STATE_TRANSITION_MODEL}.model_directory)
 			Result := l_path
 		end
 

@@ -59,20 +59,15 @@ feature -- Process
 			l_log_parser: AUT_LOG_PARSER
 
 -- Model serialization
-			l_using_forward_model: BOOLEAN
 			l_formal_type_manager: AFX_FORMAL_TYPE_MANAGER
 			l_class_name: STRING
 			l_file_name: FILE_NAME
 			l_boolean_model: AFX_BOOLEAN_MODEL
 			l_transition_list: DS_LINEAR [AFX_BOOLEAN_MODEL_TRANSITION]
-
+			l_model_repository_directory: DIRECTORY_NAME
 			l_model_factory: AFX_STATE_TRANSITION_MODEL_FACTORY
-			l_model: AFX_STATE_TRANSITION_MODEL_I
+			l_forward_model, l_backward_model: AFX_STATE_TRANSITION_MODEL_I
 			l_model_dir: DIRECTORY_NAME
--- Model deserialization
-			l_factory: AFX_BEHAVIOR_CONSTRUCTOR_FACTORY
-			l_constructor: AFX_BEHAVIOR_CONSTRUCTOR_I
-			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
 		do
 				-- formal type manager
 			create l_formal_type_manager.make_default
@@ -86,64 +81,41 @@ feature -- Process
 			l_log_parser.parse_stream (l_log_stream)
 			l_log_stream.close
 
-			l_using_forward_model := False
-if True then
 -- Model serialization
 				-- file name
 			l_class_name := class_name_from_file_name (configuration.log_file_path)
-			create model_repository_directory.make_from_string (directory_name_from_file_name (configuration.log_file_path))
-			l_model_dir := model_repository_directory.twin
+			create l_model_repository_directory.make_from_string (directory_name_from_file_name (configuration.log_file_path))
 
-				-- boolean model to forward state transition model
+				-- boolean model to state transition model
 			create l_model_factory
-			if l_using_forward_model then
-    			l_model := l_model_factory.create_forward_model_with_size (100)
-    		else
-    			l_model := l_model_factory.create_backward_model_with_size (100)
-			end
+   			l_forward_model := l_model_factory.create_forward_model_with_size (100)
+   			l_backward_model := l_model_factory.create_backward_model_with_size (100)
 
 				-- construct boolean model
 			create l_boolean_model.make_from_query_model (last_model)
 			l_transition_list := l_boolean_model.to_transition_list
 
-			l_transition_list.do_all (agent l_model.summarize_transition)
-			l_model.optimize_model
-			l_model_dir.extend (l_model.model_directory)
+			l_transition_list.do_all (agent l_forward_model.summarize_transition)
+			l_transition_list.do_all (agent l_backward_model.summarize_transition )
+			l_backward_model.optimize_model
+
+			l_model_dir := l_model_repository_directory.twin
+			l_model_dir.extend (l_forward_model.model_directory)
 			create l_file_name.make_from_string (l_model_dir)
 			l_file_name.set_file_name (l_class_name)
 			l_file_name.add_extension ("xml")
-			l_model.save_to_file (l_file_name)
+			l_forward_model.save_to_file (l_file_name)
 
-			print (l_file_name)
+			l_model_dir := l_model_repository_directory.twin
+			l_model_dir.extend (l_backward_model.model_directory)
+			create l_file_name.make_from_string (l_model_dir)
+			l_file_name.set_file_name (l_class_name)
+			l_file_name.add_extension ("xml")
+			l_forward_model.save_to_file (l_file_name)
 
-else
--- Model deserialization
-			create l_factory
-			if l_using_forward_model then
-    			l_constructor := l_factory.create_forward_constructor
-    		else
-    			l_constructor := l_factory.create_backward_constructor
-			end
-			l_constructor.reset_constructor (prepare_available_objects, prepare_destination_requirement, last_list_class, Void, Void)
-
-			create l_loader.make_with_directory ("F:\state_log")
-			l_loader.load_state_transition_model (l_constructor)
-			if l_loader.is_successful and then l_constructor.state_transition_model.is_good then
-				l_constructor.state_transition_model.save_to_file ("F:\state_log\output.xml")
-    			l_constructor.construct_behavior
-    			if not l_constructor.call_sequences.is_empty then
-    				print (l_constructor.call_sequences_as_string)
-    			end
-    		else
-    		    print ("Error loading the model.")
-			end
-end
 		end
 
 feature{NONE} -- Testing
-
-	model_repository_directory: DIRECTORY_NAME
-			-- Model repository directory.
 
 	class_name_from_file_name (a_file_name: STRING): STRING
 			-- Parse the class name from `a_file_name'.
@@ -169,53 +141,6 @@ feature{NONE} -- Testing
 		    l_last_index := a_file_name.last_index_of ('\', a_file_name.count)
 		    l_directory_name := a_file_name.substring (1, l_last_index - 1)
 		    Result := l_directory_name
-		end
-
-feature -- Experiment
-
-	prepare_available_objects: DS_HASH_TABLE[AFX_STATE, STRING]
-			-- prepare available objects which can be used for behavior construction
-		local
-		    l_query_name, l_value: STRING
-		    l_query_value_table: HASH_TABLE [STRING, STRING]
-		    l_state: AFX_STATE
-		    l_class: CLASS_C
-		do
-		    create Result.make_default
-
-		    create l_query_value_table.make (5)
-		    l_query_value_table.force ("False", "before")
-		    l_query_value_table.force ("False", "off")
-		    l_query_value_table.force ("0", "index")
-		    l_query_value_table.force ("False", "is_first")
-		    l_query_value_table.force ("False", "after")
-		    l_query_value_table.force ("False", "is_last")
-
-			check last_list_class /= Void end
-		    create l_state.make_from_object_state (l_query_value_table, last_list_class, Void)
-
-		    Result.force (l_state, "l_list")
-		end
-
-	prepare_destination_requirement: DS_HASH_TABLE[AFX_STATE, STRING]
-			-- prepare the requirement for destination objects
-		local
-		    l_query_name, l_value: STRING
-		    l_query_value_table: HASH_TABLE [STRING, STRING]
-		    l_state: AFX_STATE
-		    l_class: CLASS_C
-		do
-		    create Result.make_default
-
-		    create l_query_value_table.make (5)
-		    l_query_name := "before"
-		    l_value := "True"
-		    l_query_value_table.force (l_value, l_query_name)
-
-		    check last_list_class /= Void end
-		    create l_state.make_from_object_state (l_query_value_table, last_list_class, Void)
-
-		    Result.force (l_state, "l_list")
 		end
 
 feature{NONE} -- Process

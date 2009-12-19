@@ -15,9 +15,7 @@ feature -- Access
 	prepare (a_config: AFX_CONFIG)
 		local
 			l_file_name: FILE_NAME
-			l_file: KL_TEXT_OUTPUT_FILE
 			l_dir: KL_DIRECTORY
-			l_error_handler: AUT_ERROR_HANDLER
 		do
 			create l_file_name.make_from_string (a_config.log_directory)
 			create l_dir.make (l_file_name)
@@ -31,6 +29,14 @@ feature -- Access
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
 
+			prepare_model_repository (a_config)
+		end
+
+	prepare_model_repository (a_config: AFX_CONFIG)
+		local
+			l_file_name: FILE_NAME
+			l_dir: KL_DIRECTORY
+		do
 			create l_file_name.make_from_string (a_config.model_directory)
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
@@ -42,6 +48,7 @@ feature -- Access
 			create l_file_name.make_from_string (a_config.backward_model_directory)
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
+
 		end
 
 end
