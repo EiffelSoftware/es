@@ -562,28 +562,32 @@ feature{NONE} -- Deserialization mplementation
 			else
 			    l_class_name := a_element.attribute_by_name ("name").value
 			    l_class := first_class_starts_with_name (l_class_name)
-			    check l_class /= Void end
-			    l_class_id := l_class.class_id
-			    create l_outline.make_for_class (l_class, a_extractor)
+			    if l_class /= Void then
+    			    check l_class /= Void end
+    			    l_class_id := l_class.class_id
+    			    create l_outline.make_for_class (l_class, a_extractor)
 
-    			from a_element.start
-    			until a_element.after
-    			loop
-    			    if attached {XM_ELEMENT} a_element.item_for_iteration as lt_element then
-    			        check lt_element.name ~ xml_property_name end
-    			        if not lt_element.has_attribute_by_name ("name") then
-    			            error_message := "Missing class outline property name."
-    			            raise (error_message)
-    			        else
-    			            l_property_name := lt_element.attribute_by_name ("name").value
-    			            create l_predicate.make_from_xml_string (l_property_name, l_class)
-							l_outline.force (l_predicate)
-    			        end
-    			    end
-    			    a_element.forth
-    			end
+        			from a_element.start
+        			until a_element.after
+        			loop
+        			    if attached {XM_ELEMENT} a_element.item_for_iteration as lt_element then
+        			        check lt_element.name ~ xml_property_name end
+        			        if not lt_element.has_attribute_by_name ("name") then
+        			            error_message := "Missing class outline property name."
+        			            raise (error_message)
+        			        else
+        			            l_property_name := lt_element.attribute_by_name ("name").value
+        			            create l_predicate.make_from_xml_string (l_property_name, l_class)
+    							l_outline.force (l_predicate)
+        			        end
+        			    end
+        			    a_element.forth
+        			end
 
-    			l_outline_table.force (l_outline, l_class_id)
+        			l_outline_table.force (l_outline, l_class_id)
+        		else
+        		    -- class not in current system, skip the node
+        		end
 			end
 		end
 
@@ -673,7 +677,7 @@ feature{NONE} -- Deserialization mplementation
 			            end
 			            a_manager.force (l_class_mutation_summary, lt_class.class_id)
 			        else
-			            raise ("Bad class name in mutation category.")
+			            -- skip class not in the system
 			        end
 			    end
 			    a_element.forth
@@ -702,7 +706,7 @@ feature{NONE} -- Deserialization mplementation
     		    	    a_element.forth
     		    	end
 		        else
-		            raise ("Bad summary class name.")
+		            -- skip class not in the system
 		        end
 		    end
 		end
@@ -732,8 +736,9 @@ feature{NONE} -- Deserialization mplementation
 		        l_model_summary.set_class (a_class)
 		        l_model_summary.set_feature (l_feature)
 
+		        is_all_operand_class_present := True
 		        from a_element.start
-		        until a_element.after
+		        until a_element.after or not is_all_operand_class_present
 		        loop
 		            if attached {XM_ELEMENT} a_element.item_for_iteration as lt_element then
     		            check lt_element.name ~ xml_operand_summary_name end
@@ -744,12 +749,14 @@ feature{NONE} -- Deserialization mplementation
 		        end
 
 		        	-- insert new loaded summary into manager
-		        if attached a_manager.value (a_class.class_id) as lt_summary_table then
-		            lt_summary_table.force (l_model_summary, l_feature.feature_id)
-		        else
-    		        create l_summary_table.make_default
-    		        l_summary_table.force (l_model_summary, l_feature.feature_id)
-			        a_manager.force (l_summary_table, a_class.class_id)
+		        if is_all_operand_class_present then
+    		        if attached a_manager.value (a_class.class_id) as lt_summary_table then
+    		            lt_summary_table.force (l_model_summary, l_feature.feature_id)
+    		        else
+        		        create l_summary_table.make_default
+        		        l_summary_table.force (l_model_summary, l_feature.feature_id)
+    			        a_manager.force (l_summary_table, a_class.class_id)
+    		        end
 		        end
 		    end
 		end
@@ -801,7 +808,8 @@ feature{NONE} -- Deserialization mplementation
 
     				a_summary.force_last (l_summary)
 				else
-				    raise ("Bad class name in boolean state transition.")
+				    is_all_operand_class_present := False
+				    -- operand class not in system, skip the feature call.
 		        end
 
 		    end
@@ -854,6 +862,10 @@ feature{NONE} -- Deserialization mplementation
 		        a_outline.forth
 		    end
 		end
+
+feature{NONE} -- Implementation
+
+	is_all_operand_class_present: BOOLEAN
 
 feature{NONE} -- XML constants
 

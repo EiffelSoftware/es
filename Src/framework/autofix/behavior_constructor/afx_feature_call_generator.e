@@ -72,6 +72,7 @@ feature -- Generator interface
 		    is_configured: is_configured
 		local
 		    l_str: STRING
+		    l_name: STRING
 		    l_feature: FEATURE_I
 		do
 		    l_feature := a_transition.feature_
@@ -80,22 +81,23 @@ feature -- Generator interface
 		    	-- target object
 		    a_config.start
 		    l_str := a_config.item_for_iteration.twin
+		    if not l_str.is_empty then
+    		    l_str.append_character ('.')
+		    end
 		    a_config.forth
-
-		    l_str.append_character ('.')
 		    l_str.append (l_feature.feature_name)
 
 		    if l_feature.argument_count /= 0 then
     		    check not a_config.after end
 
     		    l_str.append (" (")
-    		    l_str.append (a_config.item_for_iteration.twin)
+    		    l_str.append (interpretated_operand_name (a_config.item_for_iteration.twin))
 
     		    from a_config.forth
     		    until a_config.after
     		    loop
     		    	l_str.append (", ")
-    		    	l_str.append (a_config.item_for_iteration.twin)
+    		    	l_str.append (interpretated_operand_name (a_config.item_for_iteration))
     		    	a_config.forth
     		    end
 
@@ -203,6 +205,14 @@ feature{NONE} -- Implementation
 		    end
 
 		    Result := l_options
+		end
+
+	interpretated_operand_name (a_name: STRING): STRING
+			-- Operand name interpretated, i.e. "" --> "Current".
+		do
+		    if a_name.is_empty then
+		        Result := once "Current"
+		    end
 		end
 
 end

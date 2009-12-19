@@ -217,6 +217,7 @@ feature{NONE} -- Implementation
 				        l_array[l_index + 1] := 1
 				        l_have_more := True
 				    end
+				    l_index := l_index + 1
 				end
 
 				if l_have_more then

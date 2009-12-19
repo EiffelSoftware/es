@@ -52,13 +52,17 @@ feature{NONE} -- Implementation
 		        create {AFX_BACKWARD_BEHAVIOR_CONSTRUCTOR}l_constructor.make
 		        l_constructor_list.force_last (l_constructor)
 
-		        l_constructor.reset_constructor (a_objects, a_dest_objects, a_context_class, a_class_set, a_criteria)
     			create l_loader.make
-    			l_loader.load_state_transition_model (l_constructor)
+    			l_loader.load_state_transition_model (l_constructor, a_objects, a_dest_objects)
+    			if not l_loader.is_successful then
+    			    check error_in_model_loading: False end
+    			end
+		        l_constructor.reset_constructor (a_objects, a_dest_objects, a_context_class, a_class_set, a_criteria)
     		else
     		    l_constructor := l_constructor_list.first
 		        l_constructor.reset_constructor (a_objects, a_dest_objects, a_context_class, a_class_set, a_criteria)
 		    end
+		    Result := l_constructor
 		end
 
 ---- Model deserialization

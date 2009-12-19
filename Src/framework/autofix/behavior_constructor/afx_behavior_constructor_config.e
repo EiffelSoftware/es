@@ -7,6 +7,10 @@ note
 class
 	AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
 
+inherit
+
+    AFX_SHARED_BOOLEAN_STATE_OUTLINE_MANAGER
+
 create
     make
 
@@ -18,11 +22,15 @@ feature -- Initialization
 		require
 		    dest_subset_of_objects: -- all names in `a_dest_objects' should also be in `an_objects'
 		local
-		    l_class: CLASS_C
+		    l_class, l_outlined_class: CLASS_C
+			l_type, l_outlined_type: TYPE_A
 		    l_name: STRING
 		    l_obj_boolean, l_dest_boolean: AFX_BOOLEAN_STATE
 		    l_obj_state, l_dest_state: AFX_STATE
+		    l_new_state: AFX_STATE
 		    l_class_set: like class_set
+		    l_classes: DS_LINEAR[CLASS_C]
+		    l_found_conformance: BOOLEAN
 		do
 		    debug("auto-fix")
 		    		-- each dest object name should also appear in `an_objects'
@@ -45,9 +53,31 @@ feature -- Initialization
 		        l_name := an_objects.key_for_iteration
 
 		        l_class := l_obj_state.class_
-		        create l_obj_boolean.make_for_class (l_class)
-		        l_obj_boolean.interpretate (l_obj_state)
-		        add_usable_object (l_obj_boolean, l_name)
+		        l_type := l_class.actual_type.actual_type
+		        if boolean_state_outline_manager.boolean_class_outline (l_class) /= Void then
+			        create l_obj_boolean.make_for_class (l_class)
+    		        l_obj_boolean.interpretate (l_obj_state)
+    		        add_usable_object (l_obj_boolean, l_name)
+    		    else
+-- object-model conformance testing
+					l_found_conformance := False
+    		        l_classes := boolean_state_outline_manager.registered_classes
+    		        from l_classes.start
+    		        until l_classes.after or l_found_conformance
+    		        loop
+    		            l_outlined_class := l_classes.item_for_iteration
+    		            l_outlined_type := l_outlined_class.actual_type.actual_type
+    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
+							create l_new_state.make_from_state (l_obj_state, l_outlined_type)
+        			        create l_obj_boolean.make_for_class (l_outlined_class)
+            		        l_obj_boolean.interpretate (l_new_state)
+            		        add_usable_object (l_obj_boolean, l_name)
+            		        l_found_conformance := True
+    		            end
+    		            l_classes.forth
+    		        end
+-- object-model conformance testing
+		        end
 
 		        an_objects.forth
 		    end
@@ -62,9 +92,31 @@ feature -- Initialization
 		        l_class_set.force (l_dest_state.class_)
 
 		        	-- {AFX_STATE} to {AFX_BOOLEAN_STATE}
-		        create l_dest_boolean.make_for_class (l_dest_state.class_)
-		        l_dest_boolean.interpretate (l_dest_state)
-		        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
+		        l_class := l_dest_state.class_
+		        if boolean_state_outline_manager.boolean_class_outline (l_class) /= Void then
+			        create l_dest_boolean.make_for_class (l_class)
+			        l_dest_boolean.interpretate (l_dest_state)
+			        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
+    		    else
+-- object-model conformance testing
+					l_found_conformance := False
+    		        l_classes := boolean_state_outline_manager.registered_classes
+    		        from l_classes.start
+    		        until l_classes.after or l_found_conformance
+    		        loop
+    		            l_outlined_class := l_classes.item_for_iteration
+    		            l_outlined_type := l_outlined_class.actual_type.actual_type
+    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
+							create l_new_state.make_from_state (l_dest_state, l_outlined_type)
+        			        create l_dest_boolean.make_for_class (l_outlined_class)
+            		        l_dest_boolean.interpretate (l_new_state)
+            		        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
+            		        l_found_conformance := True
+    		            end
+    		            l_classes.forth
+    		        end
+-- object-model conformance testing
+			    end
 
 		        a_dest_objects.forth
 		    end

@@ -26,12 +26,13 @@ feature -- Initializer
 
 	make_for_class (a_class: like class_)
 			-- Initialize
+		require
+		    class_boolean_outline_registered: boolean_state_outline_manager.boolean_class_outline (a_class) /= Void
 		local
 		    l_outline: AFX_BOOLEAN_STATE_OUTLINE
 		    l_size: INTEGER
 		do
 			l_outline := get_effective_boolean_outline (a_class)
-			check l_outline /= Void and then l_outline.class_.class_id = a_class.class_id end
 			boolean_state_outline := l_outline
 
 			l_size := boolean_state_outline.count
@@ -44,7 +45,7 @@ feature -- Access
 	query_state: detachable AFX_STATE
 			-- Original query-based state.
 
-	boolean_state_outline: AFX_BOOLEAN_STATE_OUTLINE
+	boolean_state_outline: detachable AFX_BOOLEAN_STATE_OUTLINE
 			-- Boolean outline related with class.
 
 	properties_true: AFX_BIT_VECTOR assign set_properties_true

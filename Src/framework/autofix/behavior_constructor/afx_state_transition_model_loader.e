@@ -14,6 +14,8 @@ inherit
 
     KL_SHARED_STRING_EQUALITY_TESTER
 
+    AFX_UTILITY
+
 create
     make, make_with_directory
 
@@ -64,14 +66,12 @@ feature -- Setting
 
 feature -- Operation
 
-	load_state_transition_model (a_constructor: AFX_BEHAVIOR_CONSTRUCTOR_I)
+	load_state_transition_model (a_constructor: AFX_BEHAVIOR_CONSTRUCTOR_I; a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
+					a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
 			-- Load the state transition model for `a_constructor'.
 			-- Fixme: find all relevant models from the repository and merge them
-		require
-		    config_good: a_constructor.config.is_good
 		local
 		    l_model: AFX_STATE_TRANSITION_MODEL_I
-		    l_state_list: DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING]
 		    l_name_set: DS_HASH_SET[STRING]
 		    l_class_name: detachable STRING
 		    l_file_name: FILE_NAME
@@ -80,15 +80,10 @@ feature -- Operation
 		    l_model := a_constructor.state_transition_model
 
 		    	-- get class name set from destination object states
-		    l_state_list := a_constructor.config.destination
-		    create l_name_set.make (l_state_list.count)
+		    create l_name_set.make (a_objects.count + a_dest_objects.count)
 		    l_name_set.set_equality_tester (string_equality_tester)
-		    from l_state_list.start
-		    until l_state_list.after
-		    loop
-		    	l_name_set.force (l_state_list.item_for_iteration.class_.name)
-		    	l_state_list.forth
-		    end
+		    class_name_from_objects (a_objects, l_name_set)
+		    class_name_from_objects (a_dest_objects, l_name_set)
 
 			l_class_name := first_class_with_model_available (l_model, l_name_set)
 			if l_class_name = Void then
@@ -101,6 +96,17 @@ feature -- Operation
 		end
 
 feature{NONE} -- Implementation
+
+	class_name_from_objects (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8]; a_name_set: DS_HASH_SET[STRING])
+		local
+		do
+		    from a_objects.start
+		    until a_objects.after
+		    loop
+		        a_name_set.force (a_objects.item_for_iteration.class_.name)
+		        a_objects.forth
+		    end
+		end
 
 	first_class_with_model_available (a_model: AFX_STATE_TRANSITION_MODEL_I; a_name_list: DS_LINEAR[STRING]): detachable STRING
 			-- First class name in `a_name_list' which stands for a model usable for `a_model'.
@@ -142,7 +148,70 @@ feature{NONE} -- Implementation
     			    end
     			    a_name_list.forth
     			end
+
+					-- Name matching failed, resort to conformance testing.
+				Result := first_conformance_model (l_model_set, a_name_list)
     		end
+		end
+
+	first_conformance_model (a_model_set: DS_HASH_SET[STRING]; a_name_list: DS_LINEAR[STRING]): detachable STRING
+			-- First model conformance to a class in `a_name_list'.
+		local
+		    l_model_types, l_class_types: DS_LINKED_LIST[TYPE_A]
+		    l_model_type, l_class_type: TYPE_A
+		    l_name: STRING
+		do
+		    create l_model_types.make
+		    from a_model_set.start
+		    until a_model_set.after
+		    loop
+		        l_name := a_model_set.item_for_iteration
+		        if attached first_class_starts_with_name (l_name) as lt_class then
+		            l_model_types.force_last (lt_class.actual_type.actual_type)
+		        end
+		        a_model_set.forth
+		    end
+
+		    create l_class_types.make
+		    from a_name_list.start
+		    until a_name_list.after
+		    loop
+		        l_name := a_name_list.item_for_iteration
+		        if attached first_class_starts_with_name (l_name) as lt_class then
+		            l_class_types.force_last (lt_class.actual_type.actual_type)
+		        end
+		        a_name_list.forth
+		    end
+
+		    from l_class_types.start
+		    until l_class_types.after or Result /= Void
+		    loop
+		        l_class_type := l_class_types.item_for_iteration
+		        from l_model_types.start
+		        until l_model_types.after or Result /= Void
+		        loop
+		            l_model_type := l_model_types.item_for_iteration
+		            if l_model_type.is_conformant_to (l_model_type.associated_class, l_class_type) then
+		                Result := l_model_type.associated_class.name
+		            end
+		            l_model_types.forth
+		        end
+		        l_class_types.forth
+		    end
+--    		        l_classes := boolean_state_outline_manager.registered_classes
+--    		        from l_classes.start
+--    		        until l_classes.after
+--    		        loop
+--    		            l_outlined_class := l_classes.item_for_iteration
+--    		            l_outlined_type := l_outlined_class.actual_type.actual_type
+--    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
+--							create l_new_state.make_from_state (l_obj_state, l_outlined_type)
+--        			        create l_obj_boolean.make_for_class (l_outlined_class)
+--            		        l_obj_boolean.interpretate (l_new_state)
+--            		        add_usable_object (l_obj_boolean, l_name)
+--    		            end
+--    		            l_classes.forth
+--    		        end
 		end
 
 	file_name_from_class_name (a_model: AFX_STATE_TRANSITION_MODEL_I; a_class_name: STRING): FILE_NAME

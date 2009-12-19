@@ -282,6 +282,16 @@ feature -- Status report
 			Result := skeleton_with_value implies other.skeleton_with_value
 		end
 
+feature -- Setting
+
+    set_class (a_class: like class_)
+		    -- set `class_' with `a_class'.
+    	do
+    		class_ := a_class
+    	ensure
+    		class_set: class_ = a_class
+    	end
+
 feature -- Status report
 
 	debug_output: STRING

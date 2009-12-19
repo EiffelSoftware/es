@@ -19,6 +19,11 @@ inherit
     	    is_equal, copy
     	end
 
+    AFX_SHARED_SESSION
+    	undefine
+    	    is_equal, copy
+    	end
+
 create
     make, make_default
 
@@ -55,6 +60,31 @@ feature -- Setting
 		end
 
 feature -- Query
+
+	registered_classes: DS_LINEAR[CLASS_C]
+			-- All classes with outlines extracted using `a_extractor'.
+		local
+		    l_list: DS_ARRAYED_LIST[CLASS_C]
+		    l_class_ids: DS_BILINEAR[INTEGER]
+		    l_system: SYSTEM_I
+		do
+		    l_system := autofix_config.eiffel_system
+		    create l_list.make_default
+
+		    if attached value (effective_extractor) as lt_table then
+		        l_class_ids := lt_table.keys
+		        from l_class_ids.start
+		        until l_class_ids.after
+		        loop
+		            if attached l_system.class_of_id (l_class_ids.item_for_iteration) as lt_class then
+						l_list.force_last (lt_class)
+		            end
+		            l_class_ids.forth
+		        end
+		    end
+
+		    Result := l_list
+		end
 
 	boolean_class_outline (a_class: CLASS_C): detachable AFX_BOOLEAN_STATE_OUTLINE
 			-- Query the boolean outline for `a_class', extracted using `a_extractor'.

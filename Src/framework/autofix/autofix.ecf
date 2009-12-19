@@ -13,6 +13,7 @@
 		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
 		<library name="debugger" location="$EIFFEL_SRC\Eiffel\debugger\debugger.ecf" readonly="false" use_application_options="true"/>
 		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
+		<library name="eiffel_transform" location="$EIFFEL_SRC\framework\eiffel_transform\eiffel_transform.ecf" readonly="false"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
 		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
 		<library name="gobo_argument" location="$ISE_LIBRARY\library\gobo\gobo_argument.ecf"/>
@@ -32,7 +33,6 @@
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
-		<library name="eiffel_transform" location="$EIFFEL_SRC\framework\eiffel_transform\eiffel_transform.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
 			<condition>
 				<platform value="windows"/>
@@ -90,11 +90,15 @@
 			<file_rule>
 				<exclude>^/program_fix$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/exception_explanation$</exclude>
+			</file_rule>
 			<cluster name="query_model" location="$EIFFEL_SRC\framework\autofix\query_model\"/>
 			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\autofix\boolean_model\"/>
 			<cluster name="model_transformation" location="$EIFFEL_SRC\framework\autofix\model_transformation\"/>
 			<cluster name="behavior_constructor" location="$EIFFEL_SRC\framework\autofix\behavior_constructor\"/>
 			<cluster name="program_fix" location="$EIFFEL_SRC\framework\autofix\program_fix\"/>
+			<cluster name="exception_explanation" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\exception_explanation\"/>
 		</cluster>
 	</target>
 </system>

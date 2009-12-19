@@ -32,8 +32,6 @@ feature -- Operation
 
 	extract_boolean_class_outline (a_class: CLASS_C): detachable AFX_BOOLEAN_STATE_OUTLINE
 			-- Extract the boolean outline for `a_class'.
-		require
-		    a_class_registered: State_outline_manager.is_registered (a_class.class_id)
 		local
 			l_outline: AFX_QUERY_STATE_OUTLINE
 			l_manager: like State_outline_manager
@@ -69,6 +67,8 @@ feature -- Operation
 
         		        l_outline.forth
         		    end
+        		else
+        		    -- no boolean class outline available
     		    end
 		    end
 		end
