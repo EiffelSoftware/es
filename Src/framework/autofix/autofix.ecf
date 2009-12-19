@@ -94,7 +94,7 @@
 			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\autofix\boolean_model\"/>
 			<cluster name="model_transformation" location="$EIFFEL_SRC\framework\autofix\model_transformation\"/>
 			<cluster name="behavior_constructor" location="$EIFFEL_SRC\framework\autofix\behavior_constructor\"/>
-			<cluster name="program_fix" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\program_fix\"/>
+			<cluster name="program_fix" location="$EIFFEL_SRC\framework\autofix\program_fix\"/>
 		</cluster>
 	</target>
 </system>
