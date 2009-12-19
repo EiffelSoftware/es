@@ -7,11 +7,11 @@ note
 deferred class
 	AFX_QUERY_MODEL_TRANSITION_SELECTOR_I
 
-feature -- operation
+feature -- Status report
 
-	should_select (a_transition: AFX_QUERY_MODEL_TRANSITION): BOOLEAN
-			-- should `a_transition' be selected?
+	is_suitable (a_transition: AFX_QUERY_MODEL_TRANSITION): BOOLEAN
+			-- Is `a_transition' suitable to be used as source in model construction?
 		deferred
 		end
-		
+
 end

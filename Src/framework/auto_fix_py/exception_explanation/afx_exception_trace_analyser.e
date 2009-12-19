@@ -242,7 +242,7 @@ feature{NONE} -- Implementation
 				if l_bad_format then
 					l_logging_service.log (l_entry_factory.make_error_entry (Err_bad_exception_trace_frame_format_pre + l_string))
 				else
-				    create {AFX_EXCEPTION_CALL_STACK_FRAME}l_frame.make (l_class_name, l_origin_class_name, l_feature_name, l_bkpt_slot_index)
+				    create {AFX_EXCEPTION_CALL_STACK_FRAME}l_frame.make (l_class_name, l_origin_class_name, l_feature_name, l_bkpt_slot_index, 0)
 				    l_logging_service.log (l_entry_factory.make_info_entry (Msg_finished_analysing_exception_trace_frame_pre + l_string))
 				end
 		    end

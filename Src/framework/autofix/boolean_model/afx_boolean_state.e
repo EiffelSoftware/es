@@ -8,7 +8,6 @@ class
 	AFX_BOOLEAN_STATE
 
 inherit
-    AFX_BIT_VECTOR
 
 	AFX_HASH_CALCULATOR
     	undefine is_equal, copy	end
@@ -16,78 +15,78 @@ inherit
     AFX_EXPRESSION_VALUE_VISITOR
     	undefine is_equal, copy end
 
-	AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_FACTORY
-    	undefine is_equal, copy end
+	AFX_SHARED_BOOLEAN_STATE_OUTLINE_MANAGER
+
+	DEBUG_OUTPUT
 
 create
     make_for_class
 
-feature -- initialize
+feature -- Initializer
 
 	make_for_class (a_class: like class_)
-			-- initialize
+			-- Initialize
 		local
-		    l_extractor: AFX_BOOLEAN_STATE_OUTLINE_SIMPLE_EXTRACTOR
 		    l_outline: AFX_BOOLEAN_STATE_OUTLINE
 		    l_size: INTEGER
 		do
-			l_extractor := get_simple_extractor
-			l_outline := boolean_state_outline_manager.boolean_class_outline (a_class, l_extractor)
+			l_outline := get_effective_boolean_outline (a_class)
 			check l_outline /= Void and then l_outline.class_.class_id = a_class.class_id end
 			boolean_state_outline := l_outline
 
 			l_size := boolean_state_outline.count
 			create properties_true.make (l_size)
 			create properties_false.make (l_size)
-			create properties_random.make (l_size)
 		end
 
-feature -- access
+feature -- Access
 
 	query_state: detachable AFX_STATE
-			-- original query-based state
+			-- Original query-based state.
 
 	boolean_state_outline: AFX_BOOLEAN_STATE_OUTLINE
-			-- boolean outline related with this state
+			-- Boolean outline related with class.
 
 	properties_true: AFX_BIT_VECTOR assign set_properties_true
-			-- properties evaluated 'True' on this state
+			-- Properties MAY evaluate 'True' on this state.
 
 	properties_false: AFX_BIT_VECTOR assign set_properties_false
-			-- properties evaluated 'False' on this state
+			-- Properties MAY evaluate 'False' on this state.
 
-	properties_random: AFX_BIT_VECTOR assign set_properties_random
-			-- properties with random value on this state
-			-- possibly due to the missing of corresponding query value or propagation of inaccuracy
-
-feature -- status report
+feature -- Status report
 
 	class_: CLASS_C
-			-- target class of this boolean state
+			-- Class of this boolean state.
 		do
 		    Result := boolean_state_outline.class_
 		end
 
 	extractor: AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I
-			-- extractor used to extract this boolean state
+			-- Extractor used to extract this boolean state.
 		do
 		    Result := boolean_state_outline.extractor
 		end
 
+	size, count: INTEGER
+			-- Size of boolean state, i.e. count of boolean properties.
+		do
+		    Result := properties_true.count
+		end
+
 	is_comparable_state (a_state: like Current): BOOLEAN
-			-- is `Current' comparable with `a_state'?
+			-- Is `Current' comparable with `a_state'?
 		do
 		    Result := Current.boolean_state_outline = a_state.boolean_state_outline
 		end
 
 	is_query_state_available: BOOLEAN
-			-- is the original query state available?
+			-- Is the original query state available?
 		do
 		    Result := query_state /= Void
 		end
 
 	is_chaos: BOOLEAN
-			-- is this state standing for a 'chaos'?
+			-- Is this a chaos state?
 		require
 		    is_query_state_available: is_query_state_available
 		do
@@ -96,119 +95,131 @@ feature -- status report
 		    end
 		end
 
-	is_conforming_to (a_condition: like Current): BOOLEAN
-			-- does `Current' satisfying the requirement of 'a_condition'?
-		local
+	is_satisfactory_to (a_condition: like Current): BOOLEAN
+			-- Is `Current' state satisfactory to the requirement of 'a_condition'?
+	    	-- If the `properties_true' and `properties_false' of current states are SUPER sets of those of `a_condition', return `True';
+	    	-- Otherwise, return `False'.
 		do
-		    	-- if the `properties_true' and `properties_false' of current states are
-		    	-- super sets of those of `a_condition', return `True'
 		    Result := a_condition.properties_true.is_subset_of (properties_true)
 		    		and then a_condition.properties_false.is_subset_of (properties_false)
 		end
 
-	is_suitable_as_source (a_summary: AFX_BOOLEAN_STATE_TRANSITION_SUMMARY): BOOLEAN
-			-- is current state suitable to be used as the source of `a_summary', i.e. satisfying the 'pre-*' requirements of `a_summary'
-		require
-		    same_class: class_.class_id = a_summary.class_.class_id
+	to_string: STRING
+			-- Generate a string representation.
 		local
-			l_set, l_cleared: AFX_BIT_VECTOR
+		    l_outline: AFX_BOOLEAN_STATE_OUTLINE
+		    l_predicate: AFX_PREDICATE_EXPRESSION
+		    l_index: INTEGER
 		do
-		    Result := a_summary.pre_true.is_subset_of (properties_true)
-		    		and then a_summary.pre_false.is_subset_of (properties_false)
+		    Result := ""
+		    Result.append (class_.name)
+		    Result.append ("%N")
+		    if is_chaos then
+		        Result.append ("<<chaos>>%N")
+		    else
+		        l_outline := boolean_state_outline
+		        from
+		        	l_index := 0
+		        	l_outline.start
+		        until l_outline.after
+		        loop
+		            l_predicate := l_outline.item_for_iteration
+		            Result.append (l_predicate.to_string)
+
+		            	-- A property is only shown to be True or False if it is only set
+		            	-- 		in `properties_true' or `properties_false'
+		            if properties_true.is_bit_set (l_index) then
+		                if not properties_false.is_bit_set (l_index) then
+		                    Result.append (": True%N")
+		                else
+		                    Result.append (": *%N")
+		                end
+		            elseif properties_false.is_bit_set (l_index) then
+		                Result.append (": False%N")
+		            else
+		                Result.append (": *%N")
+		            end
+
+		            l_index := l_index + 1
+		            l_outline.forth
+		        end
+		    end
 		end
 
-feature -- setters
+	debug_output: STRING
+			-- <Precursor>
+		do
+		    Result := to_string
+		end
+
+feature -- Setters
 
 	set_properties_true (a_vector: like properties_true)
-			-- set `properties_true'
+			-- Set `properties_true' to be `a_vector'.
 		do
 		    properties_true := a_vector
 		end
 
 	set_properties_false (a_vector: like properties_false)
-			-- set `properties_false'
+			-- Set `properties_false' to be `a_vector'
 		do
 		    properties_false := a_vector
 		end
 
-	set_properties_random (a_vector: like properties_random)
-			-- set `properties_random'
-		do
-		    properties_random := a_vector
-		end
-
-feature -- state transition
+feature -- State comparison
 
 	properties_negated_true (a_dest: like Current): AFX_BIT_VECTOR
-			-- properties negated to be `True', during transition from `Current' to `a_dest'
+			-- Properties negated to be `True', during transition from `Current' to `a_dest'.
 		require
 		    is_comparable: is_comparable_state (a_dest)
 		    non_chaotic: not is_chaos and not a_dest.is_chaos
-		local
-		    l_vector: AFX_BIT_VECTOR
 		do
-		    	-- properties from `False' to `True'
-		    l_vector := properties_false.bit_and (a_dest.properties_true)
-		    Result := l_vector
+		    Result := properties_false.bit_and (a_dest.properties_true)
 		end
 
 	properties_negated_false (a_dest: like Current): AFX_BIT_VECTOR
-			-- properties negated to be `False', during transition from `Current' to `a_dest'
+			-- Properties negated to be `False', during transition from `Current' to `a_dest'.
 		require
 		    is_comparable: is_comparable_state (a_dest)
 		    non_chaotic: not is_chaos and not a_dest.is_chaos
-		local
-		    l_vector: AFX_BIT_VECTOR
 		do
-		    	-- properties from `True' to `False'
-		    l_vector := properties_true.bit_and (a_dest.properties_false)
-		    Result := l_vector
+		    Result := properties_true.bit_and (a_dest.properties_false)
 		end
 
 	properties_unchanged_false (a_dest: like Current): AFX_BIT_VECTOR
-			-- properties remained `False', during transition from `Current' to `a_dest'
+			-- Properties remained `False', during transition from `Current' to `a_dest'.
 		require
 		    is_comparable: is_comparable_state (a_dest)
 		    non_chaotic: not is_chaos and not a_dest.is_chaos
-		local
-		    l_vector: AFX_BIT_VECTOR
 		do
-		    	-- properties remained `False'
-		    l_vector := properties_false.bit_and (a_dest.properties_false)
-		    Result := l_vector
+		    Result := properties_false.bit_and (a_dest.properties_false)
 		end
 
 	properties_unchanged_true (a_dest: like Current): AFX_BIT_VECTOR
-			-- properties remained `True', during transition from `Current' to `a_dest'
+			-- Properties stayed `True', during transition from `Current' to `a_dest'.
 		require
 		    is_comparable: is_comparable_state (a_dest)
 		    non_chaotic: not is_chaos and not a_dest.is_chaos
-		local
-		    l_vector: AFX_BIT_VECTOR
 		do
-		    	-- properties remained `True'
-		    l_vector := properties_true.bit_and (a_dest.properties_true)
-		    Result := l_vector
+		    Result := properties_true.bit_and (a_dest.properties_true)
 		end
 
-feature -- construction
+feature -- Query state interpretation
 
 	interpretate (a_state: AFX_STATE)
-			-- put `a_state' into boolean encoding
+			-- Interpretate `a_state' into boolean state.
 		require
 		    same_class: class_.class_id = a_state.class_.class_id
 		local
 		    l_outline: like boolean_state_outline
 		    l_predicate: AFX_PREDICATE_EXPRESSION
 		    l_exp: AFX_EXPRESSION
-		    l_val: AFX_EXPRESSION_VALUE
 		    l_table: DS_HASH_TABLE[AFX_EXPRESSION_VALUE, AFX_EXPRESSION]
 		    l_index: INTEGER
 		do
 		    query_state := a_state
 
 		    if not is_chaos then
-
     		    	-- put each pair of value and expression from `a_state' into hashtable
     		    create l_table.make (a_state.count)
     		    l_table.set_key_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
@@ -229,7 +240,7 @@ feature -- construction
     		        l_predicate := l_outline.item_for_iteration
     		        l_exp := l_predicate.expression
 
-        		    if attached l_table.item (l_exp) as l_value then
+        		    if attached l_table.value (l_exp) as l_value then
     		        		-- prepare for visiting
         		        last_property := l_predicate
         		        last_property_index := l_index
@@ -238,9 +249,6 @@ feature -- construction
         		        l_value.process (Current)
 
         		        last_property := Void
-        		    else
-        		        	-- value is missing in current query state, mark it as ''random''
-        		        properties_random.set_bit (l_index)
         		    end
 
     				l_index := l_index + 1
@@ -252,13 +260,13 @@ feature -- construction
 		end
 
 
-feature{NONE} -- visitor features
+feature{NONE} -- Visitor
 
 	last_property: detachable AFX_PREDICATE_EXPRESSION
-			-- last unprocessed predicate
+			-- Last unprocessed predicate.
 
 	last_property_index: INTEGER
-			-- index of last unprocessed predicate in the boolean outline
+			-- Index of last unprocessed predicate in the boolean outline.
 
 	process_boolean_value (a_value: AFX_BOOLEAN_VALUE)
 			-- Process `a_value'.
@@ -266,7 +274,7 @@ feature{NONE} -- visitor features
 			l_property: like last_property
 			l_bool: BOOLEAN
 		do
-		    check last_property /= Void and then last_property.expression.is_predicate end
+		    check last_property /= Void and then last_property.is_predicate end
 
 			l_property := last_property
 			l_bool := l_property.predicator.item([a_value.item])
@@ -280,9 +288,7 @@ feature{NONE} -- visitor features
 	process_random_boolean_value (a_value: AFX_RANDOM_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		do
-		    check last_property /= Void and then last_property.expression.is_predicate end
-
-			properties_random.set_bit (last_property_index)
+		    check last_property /= Void and then last_property.is_predicate end
 		end
 
 	process_integer_value (a_value: AFX_INTEGER_VALUE)
@@ -291,7 +297,7 @@ feature{NONE} -- visitor features
 			l_property: like last_property
 			l_bool: BOOLEAN
 		do
-		    check last_property /= Void and then last_property.expression.is_predicate end
+		    check last_property /= Void and then last_property.is_predicate end
 
 			l_property := last_property
 			l_bool := l_property.predicator.item([a_value.item])
@@ -305,23 +311,19 @@ feature{NONE} -- visitor features
 	process_random_integer_value (a_value: AFX_RANDOM_INTEGER_VALUE)
 			-- Process `a_value'.
 		do
-		    check last_property /= Void and then last_property.expression.is_predicate end
-
-			properties_random.set_bit (last_property_index)
+		    check last_property /= Void and then last_property.is_predicate end
 		end
 
 	process_nonsensical_value (a_value: AFX_NONSENSICAL_VALUE)
 			-- Process `a_value'.
 		do
-		    check last_property /= Void and then last_property.expression.is_predicate end
-
-			properties_random.set_bit (last_property_index)
+		    check last_property /= Void and then last_property.is_predicate end
 		end
 
 	process_void_value (a_value: AFX_VOID_VALUE)
 			-- Process `a_value'.
 		do
-				-- should not happen, we have filtered out the queries returning reference values.
+			-- should not happen, we have filtered out the queries returning reference values.
 		end
 
 	process_any_value (a_value: AFX_ANY_VALUE)
@@ -329,41 +331,23 @@ feature{NONE} -- visitor features
 		do
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
+
+	get_effective_boolean_outline (a_class: like class_): AFX_BOOLEAN_STATE_OUTLINE
+			-- Get the currently working boolean outline for `a_class'.
+		do
+			Result := boolean_state_outline_manager.boolean_class_outline (a_class)
+		end
 
 	key_to_hash: DS_LINEAR[INTEGER]
 			-- <Precursor>
 		local
-		    l_size: INTEGER
-		    l_index: INTEGER
 		    l_list: DS_ARRAYED_LIST[INTEGER]
-		    l_storage: like storage
 		do
-		    if count \\ 32 = 0 then
-		        l_size := count // 32
-		    else
-		        l_size := count // 32 + 1
-		    end
-
-		    create l_list.make (l_size)
-		    l_storage := storage
-			from l_index := 0
-			until l_index = l_size
-			loop
-				l_list.force_last (l_storage.item (l_index).as_integer_32)
-
-				l_index := l_index + 1
-			end
-
+		    create l_list.make (3)
+		    l_list.force_last (properties_true.hash_code)
+		    l_list.force_last (properties_false.hash_code)
 			Result := l_list
 		end
-
-invariant
-    properties_vectors_no_intersection:
-    		properties_true.bit_and (properties_false).count_of_set_bits = 0
-    			and then properties_false.bit_and (properties_random).count_of_set_bits = 0
-    			and then properties_true.bit_and (properties_random).count_of_set_bits = 0
-
-    same_class: query_state /= Void implies query_state.class_.class_id = boolean_state_outline.class_.class_id
 
 end

@@ -29,6 +29,11 @@ feature -- Access
 		deferred
 		end
 
+	nested_breakpoint_slot_index: INTEGER
+			-- nested index of the breakpoint slot
+		deferred
+		end
+
 	e_feature: detachable E_FEATURE assign set_context_feature
 			-- E_FEATURE of the feature `class_name'.`feature_name'
 		deferred

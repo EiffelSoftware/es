@@ -26,12 +26,13 @@ create
 
 feature -- Creation
 
-	make (a_class_name, a_origin_class_name, a_routine_name: STRING_8; a_breakpoint_slot_index: INTEGER)
+	make (a_class_name, a_origin_class_name, a_routine_name: STRING_8; a_breakpoint_slot_index: INTEGER; a_nested_breakpoint_slot_index: INTEGER)
 			-- initialize
 		require
 		    class_name_not_empty: not a_class_name.is_empty
 		    routine_name_not_empty: not a_routine_name.is_empty
 		    valid_breakpoint_slot_index: a_breakpoint_slot_index > 0
+		    nested_breakpoint_slot_index_valid_or_default: a_nested_breakpoint_slot_index >= 0
 		do
 			class_name := a_class_name
 			if not a_origin_class_name.is_empty then
@@ -41,6 +42,7 @@ feature -- Creation
 			end
 			routine_name := a_routine_name
 			breakpoint_slot_index := a_breakpoint_slot_index
+			nested_breakpoint_slot_index := a_nested_breakpoint_slot_index
 
 			is_relevant := True
 		end
@@ -70,10 +72,13 @@ feature -- Access
 	breakpoint_slot_index: INTEGER
 			-- <Precursor>
 
+	nested_breakpoint_slot_index: INTEGER
+			-- <Precursor>
+
 	e_feature: detachable E_FEATURE
 			-- <Precursor>
 
-	breakpoint_info: detachable DBG_BREAKABLE_POINT_INFO
+	breakpoint_info: detachable DBG_BREAKABLE_POINT_INFO assign set_breakpoint_info
 			-- <Precursor>
 
 feature -- Set status
@@ -185,7 +190,7 @@ feature{NONE} -- Implementation
 		                    	-- we do not differentiate nested breakpoints, since we don't have nested breakpoint slot index from the exception trace.
 		                    	-- Here, we just get the information of the first breakpoint slot with given index.
 		                    	-- As a result, instructions would be the level where we work
-		                    breakpoint_info := l_point
+		                    set_breakpoint_info (l_point)
 		                end
 		            end
 		            l_points.forth

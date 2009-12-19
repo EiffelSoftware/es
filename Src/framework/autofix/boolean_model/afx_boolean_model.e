@@ -9,12 +9,15 @@ class
 
 inherit
     DS_HASH_TABLE [DS_HASH_TABLE[DS_HASH_SET[AFX_BOOLEAN_MODEL_TRANSITION], AFX_BOOLEAN_MODEL_STATE], AFX_BOOLEAN_MODEL_STATE]
-    	redefine make, make_default end
+    	redefine
+    		make,
+    		make_default
+    	end
 
 create
     make, make_default, make_from_query_model
 
-feature -- initialization
+feature -- Initialization
 
 	make (a_size: INTEGER)
 			-- <Precursor>
@@ -47,10 +50,10 @@ feature -- initialization
 		    			end (?, Current))
 		end
 
-feature -- operations
+feature -- Operations
 
 	add_transition (a_transition: AFX_BOOLEAN_MODEL_TRANSITION)
-			-- add a new transition to the model
+			-- Add a new transition to the model.
 		local
 		    l_src, l_des: AFX_BOOLEAN_MODEL_STATE
 		    h_table: DS_HASH_TABLE[DS_HASH_SET[AFX_BOOLEAN_MODEL_TRANSITION], AFX_BOOLEAN_MODEL_STATE]
@@ -59,17 +62,15 @@ feature -- operations
 		    l_src := a_transition.boolean_source
 		    l_des := a_transition.boolean_destination
 
-		    search (l_src)
-		    if attached found_item as l_table then
-		        l_table.search (l_des)
-		        if attached l_table.found_item as l_set then
-			        l_set.force (a_transition)
+		    if attached value(l_src) as lt_table then
+		        if attached lt_table.value (l_des) as lt_set then
+			        lt_set.force (a_transition)
 		        else
 		            	-- add transition
 		            create h_set.make_default
 		            h_set.set_equality_tester (boolean_model_transition_equality_tester)
 		            h_set.force (a_transition)
-		            l_table.force (h_set, l_des)
+		            lt_table.force (h_set, l_des)
 		        end
 		    else
 		        	-- add transition
@@ -86,14 +87,10 @@ feature -- operations
 		end
 
 	to_transition_list: DS_LINEAR [AFX_BOOLEAN_MODEL_TRANSITION]
-			-- return the list of all transitions
+			-- Return the list of all transitions.
 		local
-		    l_transition: AFX_BOOLEAN_MODEL_TRANSITION
-		    l_state: AFX_BOOLEAN_MODEL_STATE
 		    l_tbl_array: ARRAY [DS_HASH_TABLE [DS_HASH_SET [AFX_BOOLEAN_MODEL_TRANSITION], AFX_BOOLEAN_MODEL_STATE]]
-		    l_table: DS_HASH_TABLE[DS_HASH_SET[AFX_BOOLEAN_MODEL_TRANSITION], AFX_BOOLEAN_MODEL_STATE]
 		    l_set_list: DS_ARRAYED_LIST [DS_HASH_SET[AFX_BOOLEAN_MODEL_TRANSITION]]
-		    l_set: DS_HASH_SET[AFX_BOOLEAN_MODEL_TRANSITION]
 		    l_trans_list: DS_ARRAYED_LIST[AFX_BOOLEAN_MODEL_TRANSITION]
 		do
 		    l_tbl_array := to_array
@@ -123,14 +120,16 @@ feature -- operations
 		    Result := l_trans_list
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	boolean_model_state_equality_tester: AFX_BOOLEAN_MODEL_STATE_EQUALITY_TESTER
+			-- Shared boolean model state equality tester.
 		once
 		    create Result
 		end
 
 	boolean_model_transition_equality_tester: AFX_BOOLEAN_MODEL_TRANSITION_EQUALITY_TESTER
+			-- Shared boolean model transition equality tester
 		once
 		    create Result
 		end

@@ -9,12 +9,14 @@ class
 
 inherit
     KL_EQUALITY_TESTER [AFX_QUERY_MODEL_STATE]
-    	redefine test end
+    	redefine
+    		test
+    	end
 
 create
     default_create
 
-feature -- equality
+feature -- Equality
 
 	test (u, v: AFX_QUERY_MODEL_STATE): BOOLEAN
 			-- <Precursor>
@@ -23,7 +25,7 @@ feature -- equality
 			    Result := True
 			elseif u = Void or v = Void then
 			    Result := False
-			elseif u.hash_code = v.hash_code and then u.count = v.count then
+			elseif u.count = v.count and then u.hash_code = v.hash_code then
 			    Result := True
 			    from
 			    	u.start
@@ -38,10 +40,10 @@ feature -- equality
 			end
 		end
 
-feature{NONE} --implementation
+feature{NONE} --Implementation
 
 	state_equality_tester: AFX_STATE_EQUALITY_TESTER
-			-- state equality tester
+			-- State equality tester.
 		once
 		    create Result
 		end

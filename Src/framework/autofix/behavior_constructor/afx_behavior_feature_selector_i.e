@@ -7,9 +7,10 @@ note
 deferred class
 	AFX_BEHAVIOR_FEATURE_SELECTOR_I
 
-feature -- operation
+feature -- Operation
 
-	is_satisfactory (a_class: CLASS_C; a_feature: FEATURE_I; a_context_class: CLASS_C): BOOLEAN
+	is_suitable (a_class: CLASS_C; a_feature: FEATURE_I; a_context_class: CLASS_C): BOOLEAN
+			-- Is `a_feature' from `a_class' suitable to be used in a fix in `a_context_class'?
 		deferred
 		end
 

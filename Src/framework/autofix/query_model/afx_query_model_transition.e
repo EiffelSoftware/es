@@ -16,69 +16,90 @@ inherit
 			is_equal
 		end
 
+	DEBUG_OUTPUT
+		undefine
+		    copy,
+		    is_equal
+		end
+
 create
     make
 
-feature -- initialization
+feature -- Initialization
 
 	make (a_feature_call: AUT_CALL_BASED_REQUEST)
-			-- initialize
+			-- Initialize
 		do
 		    feature_call := a_feature_call
 		end
 
-feature -- status report
+feature -- Access
 
 	feature_call: AUT_CALL_BASED_REQUEST
-			-- feature call as the transition label
+			-- Feature call as the transition label.
 
 	source: detachable AFX_QUERY_MODEL_STATE assign set_source
-			-- source state
+			-- Source state.
 
 	destination: detachable AFX_QUERY_MODEL_STATE assign set_destination
-			-- destination state
+			-- Destination state.
 
-	transition_distance: INTEGER
-			-- distance cost of this transition
+feature -- Status report
 
 	is_ready: BOOLEAN
-			-- is transition ready for use?
+			-- Is transition good for use?
 		do
 		    Result := source /= Void and destination /= Void
 		end
 
-	is_object_creation: BOOLEAN
-			-- is this transition an object creation?
-		do
-		    Result := attached {AUT_CREATE_OBJECT_REQUEST} feature_call
-		end
-
 	is_about_same_feature (a_transition: like Current): BOOLEAN
-			-- are `Current' and  `a_transition' about the same feature?
+			-- Are `Current' and  `a_transition' about the same feature?
 		do
 		    Result := feature_call.class_of_target_type.class_id = a_transition.feature_call.class_of_target_type.class_id
 		    		and then feature_call.feature_to_call.feature_id = a_transition.feature_call.feature_to_call.feature_id
 		end
 
-feature -- setter
+	debug_output: STRING
+			-- <Precursor>
+		do
+		    create Result.make (1024)
+		    Result.append (feature_call.target_type.associated_class.name)
+		    Result.append (".")
+		    Result.append (feature_call.feature_to_call.feature_name)
+		    Result.append ("%N")
+		    if attached source then
+		        Result.append ("--Src--%N")
+		    	Result.append (source.debug_output)
+		    	Result.append ("%N")
+		    end
+		    if attached destination then
+		        Result.append ("--Des--%N")
+		    	Result.append (destination.debug_output)
+		    	Result.append ("%N")
+		    end
+		end
+
+feature -- Setter
 
 	set_source (a_src: attached like source)
-			-- set source
+			-- Set source to be `a_src'.
 		require
-		    type_conforming: -- types of `a_src' should be type conforming to that of `feature_call'
+		    	-- types of `a_src' should be type conforming to that of `feature_call'
+		    type_conforming:
 		do
 		    source := a_src
 		end
 
 	set_destination (a_dest: attached like destination)
-			-- set destination
+			-- Set destination to be `a_dest'
 		require
-		    type_conforming: -- types of `a_dest' should be type conforming to that of `feature_call'
+		    	-- types of `a_dest' should be type conforming to that of `feature_call'
+		    type_conforming:
 		do
 		    destination := a_dest
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	key_to_hash: DS_LINEAR[INTEGER]
 			-- <Precursor>

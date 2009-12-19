@@ -7,15 +7,18 @@ note
 class
 	AFX_BOOLEAN_STATE_TRANSITION_SUMMARY
 
-create
-	make_for_transition_operand, make_for_two_states
+inherit
+    AFX_HASH_CALCULATOR
 
-feature -- initialize
+create
+	make_for_transition_operand, make_for_two_states, make_with_outline
+
+feature -- Initialize
 
 	make_for_two_states (a_src, a_dest: AFX_BOOLEAN_STATE)
-			-- initialize
+			-- Initialize.
 		require
-		    states_from_same_boolean_state_outline: a_src.boolean_state_outline = a_dest.boolean_state_outline
+		    same_boolean_state_outline: a_src.boolean_state_outline = a_dest.boolean_state_outline
     	local
     	    l_start, l_end: AFX_BOOLEAN_STATE
     	    l_size: INTEGER
@@ -25,6 +28,7 @@ feature -- initialize
 
     	    l_size := a_src.count
     	    boolean_state_outline := a_src.boolean_state_outline
+    	    class_ := l_end.class_
 
     	    if a_src.is_chaos then
     	        is_source_chaos := True
@@ -53,20 +57,10 @@ feature -- initialize
 				post_negated := (a_src.properties_false & a_dest.properties_true) | (a_src.properties_true & a_dest.properties_false)
 				post_unchanged := (a_src.properties_true & a_dest.properties_true) | (a_src.properties_false & a_dest.properties_false)
     	    end
-
---				post_negated_true := a_src.properties_false & a_dest.properties_true
---				post_negated_false := a_src.properties_true & a_dest.properties_false
---				post_unchanged_true := a_src.properties_true & a_dest.properties_true
---				post_unchanged_false := a_src.properties_false & a_dest.properties_false
---				create post_negated_true.make (l_size)
---				create post_negated_false.make (l_size)
---				create post_unchanged_true.make (l_size)
---				create post_unchanged_false.make (l_size)
---			post_unknown := a_dest.properties_random.twin
 		end
 
     make_for_transition_operand (a_transition: AFX_BOOLEAN_MODEL_TRANSITION; an_index: INTEGER)
-    		-- initialize
+    		-- Initialize.
     	require
     	    valid_index: 1 <= an_index and an_index <= a_transition.boolean_destination.count
     	local
@@ -77,71 +71,89 @@ feature -- initialize
     	    make_for_two_states (l_start, l_end)
     	end
 
-feature -- access
+    make_with_outline (a_outline: like boolean_state_outline)
+    		-- Initialize.
+    	do
+    	    boolean_state_outline := a_outline
+    	    class_ := a_outline.class_
+    	    create pre_true.make (a_outline.count)
+    	    create pre_false.make (a_outline.count)
+    	    create post_set_true.make (a_outline.count)
+    	    create post_set_false.make (a_outline.count)
+    	    create post_negated.make (a_outline.count)
+    	    create post_unchanged.make (a_outline.count)
+
+--			pre_true := a_pre_true
+--			pre_false := a_pre_false
+--			post_set_true := a_post_set_true
+--			post_set_false := a_post_set_false
+--			post_negated := a_post_negated
+--			post_unchanged := a_post_unchanged
+--			is_source_chaos := l_is_source_chaos
+    	end
+
+feature -- Access
 
 	class_: CLASS_C
-			-- associated_class
+			-- Class.
 
 	boolean_state_outline: AFX_BOOLEAN_STATE_OUTLINE
-			-- boolean outline related with this state transition summary
+			-- Boolean state outline related with `class_'.
 
-	is_source_chaos: BOOLEAN
-			-- is the source state a chaos?
+	is_source_chaos: BOOLEAN assign set_source_chaos
+			-- Is the source a chaos state?
 
-feature -- state transition summary
+feature -- State transition summary
 
 	pre_true: AFX_BIT_VECTOR
-			-- predicates ALWAYS evaluated `True' before feature call
+			-- Properties ALWAYS `True' before transition.
 
 	pre_false: AFX_BIT_VECTOR
-			-- predicates ALWAYS evaluated `False' before feature call
+			-- Properties ALWAYS `False' before transition.
 
 	post_set_true: AFX_BIT_VECTOR
-			-- predicates ALWAYS set `True' after feature call
+			-- Properties ALWAYS `True' after transition.
 
 	post_set_false: AFX_BIT_VECTOR
-			-- predicates ALWAYS set `False' after feature call
-
-	post_negated: AFX_BIT_VECTOR
-			-- predicates ALWAYS negated
+			-- Properties ALWAYS `False' after transition.
 
 	post_unchanged: AFX_BIT_VECTOR
-			-- predicates ALWAYS unchanged
+			-- Properties ALWAYS unchanged.
 
---	post_negated_true: AFX_BIT_VECTOR
---			-- predicates ALWAYS negated to be `True' after feature call
+	post_negated: AFX_BIT_VECTOR
+			-- Properties ALWAYS negated.
 
---	post_negated_false: AFX_BIT_VECTOR
---			-- predicates ALWAYS negated to be `False' after feature call
+feature{AFX_STATE_TRANSITION_MODEL_SERIALIZER} -- Setting
 
---	post_unchanged_true: AFX_BIT_VECTOR
---			-- predicates ALWAYS remain `True' after feature call
+	set_source_chaos (a_flag: BOOLEAN)
+			-- Set `is_source_chaos' to be `a_flag'.
+		do
+		    is_source_chaos := a_flag
+		end
 
---	post_unchanged_false: AFX_BIT_VECTOR
---			-- predicates ALWAYS remain `False' after feature call
-
---	post_unknown: AFX_BIT_VECTOR
---			-- predicates MAY/MAY NOT be changed
-
-feature -- status report
+feature -- Status report
 
 	is_combinable (a_summary: like Current): BOOLEAN
-			-- is current summary combinable with `a_summary'?
+			-- Is `Current' combinable with `a_summary'?
 		do
 		    	-- same `boolean_state_outline' implies same class and same extractor
 		    Result := boolean_state_outline = a_summary.boolean_state_outline
 		end
 
-feature -- update summary
+	is_enabled_at (a_boolean_state: AFX_BOOLEAN_STATE): BOOLEAN
+			-- Is `Current' enabled at `a_boolean_state'?
+			-- Fixme: When model is not precise enough, it is difficult to judge.
+		do
+		    print ("Fixme: AFX_BOOLEAN_STATE_TRANSITION_SUMMARY.is_enabled_at%N")
+		    Result := True
+		end
+
+feature -- Update summary
 
 	update (a_summary: like Current)
-			-- update current summary to reflect also `a_summary'
+			-- Update `Current' to reflect also `a_summary'.
 		require
 		    is_combinable: is_combinable (a_summary)
---		local
---		    l_pre_true, l_pre_false, l_post_set_true, l_post_set_false, l_post_negated_true, l_post_negated_false: like post_negated_true
---		    l_post_unchanged_true, l_post_unchanged_false, l_post_unknown: like post_negated_true
---		    l_pre_set, l_pre_cleared, l_negated, l_unchanged, l_unknown, l_set, l_clear: like post_negated_true
 		do
 		    pre_true := pre_true & a_summary.pre_true
 		    pre_false := pre_false & a_summary.pre_false
@@ -150,54 +162,24 @@ feature -- update summary
 		    post_set_false := post_set_false & a_summary.post_set_false
 		    post_negated := post_negated & a_summary.post_negated
 		    post_unchanged := post_unchanged & a_summary.post_unchanged
-
---		    post_negated_true := post_negated_true & a_summary.post_negated_true
---		    post_negated_false := post_negated_false & a_summary.post_negated_false
---		    post_unchanged_true := post_unchanged_true & a_summary.post_unchanged_true
---		    post_unchanged_false := post_unchanged_false & a_summary.post_unchanged_false
---		    post_unknown := post_unknown | a_summary.post_unknown
 		end
 
---		    	-- intersection of the two `pre_true's
---		    l_pre_set := pre_true & a_summary.pre_true
+feature{NONE} -- Implementation
 
---		    	-- intersection of the two `pre_false's
---		    l_pre_cleared := pre_false & a_summary.pre_false
+	key_to_hash: DS_LINEAR[INTEGER]
+			-- <Precursor>
+		local
+		    l_list: DS_ARRAYED_LIST [INTEGER]
+		do
+		    create l_list.make (7)
+		    l_list.force_last (class_.hash_code)
+		    l_list.force_last (pre_true.hash_code)
+		    l_list.force_last (pre_false.hash_code)
+		    l_list.force_last (post_set_true.hash_code)
+		    l_list.force_last (post_set_false.hash_code)
+		    l_list.force_last (post_negated.hash_code)
+		    l_list.force_last (post_unchanged.hash_code)
 
---		    	-- intersection of the two `post_negated_true's
---		    l_negated := post_negated_true & a_summary.post_negated_true
-
---		    	-- intersection of the two `post_unchanged_false's
---		    l_unchanged := post_unchanged_false & a_summary.post_unchanged_false
-
---				-- union of the two `unknown's
---		    l_unknown := (l_negated | l_unchanged).bit_not
-
---				-- intersection of the two `post_set_true's
---			l_set := post_set_true & a_summary.post_set_true
-
---				-- intersection of the two `post_set_false's
---			l_clear := post_set_false & a_summary.post_set_false
-
---				-- no intersection between `post_set_true' and `post_set_false'
---			check (l_set & l_clear).count_of_set_bits = 0 end
---				-- no intersection between `post_negated_true' and `post_unchanged_false'
---		    check (l_negated & l_unchanged).count_of_set_bits = 0 end
---		    	-- `old unknown' and `a_summary.unknown' are subsets of `unknown'
---		    check ((unknown | a_summary.unknown).set_minus(l_unknown)).count_of_set_bits = 0 end
-
---			pre_true := l_pre_set
---			pre_false := l_pre_cleared
---		    post_negated_true := l_negated
---		    post_unchanged_false := l_unchanged
---		    unknown := l_unknown
---		    post_set_true := l_set
---		    post_set_false := l_clear
-
---	feature_: FEATURE_I
---			-- associated feature
-
---	boolean_state_outline: AFX_BOOLEAN_STATE_OUTLINE
---			-- boolean state outline
-
+		    Result := l_list
+		end
 end

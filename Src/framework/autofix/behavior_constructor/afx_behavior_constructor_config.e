@@ -10,11 +10,11 @@ class
 create
     make
 
-feature -- initialize
+feature -- Initialization
 
-	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING]; a_dest_objects: DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING];
-				a_class_set: detachable like class_set; a_context_class: CLASS_C)
-			-- initialize
+	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING]; a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING]; a_context_class: CLASS_C;
+				a_class_set: detachable like class_set)
+			-- Initialize.
 		require
 		    dest_subset_of_objects: -- all names in `a_dest_objects' should also be in `an_objects'
 		local
@@ -22,6 +22,7 @@ feature -- initialize
 		    l_name: STRING
 		    l_obj_boolean, l_dest_boolean: AFX_BOOLEAN_STATE
 		    l_obj_state, l_dest_state: AFX_STATE
+		    l_class_set: like class_set
 		do
 		    debug("auto-fix")
 		    		-- each dest object name should also appear in `an_objects'
@@ -51,13 +52,28 @@ feature -- initialize
 		        an_objects.forth
 		    end
 
-		    destination := a_dest_objects
+				-- interprete destination objects into boolean states
+		    create l_class_set.make (a_dest_objects.count)
+		    create destination.make (a_dest_objects.count)
+		    from a_dest_objects.start
+		    until a_dest_objects.after
+		    loop
+		        l_dest_state := a_dest_objects.item_for_iteration
+		        l_class_set.force (l_dest_state.class_)
+
+		        	-- {AFX_STATE} to {AFX_BOOLEAN_STATE}
+		        create l_dest_boolean.make_for_class (l_dest_state.class_)
+		        l_dest_boolean.interpretate (l_dest_state)
+		        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
+
+		        a_dest_objects.forth
+		    end
 
 				-- classes from which we will select the features
 		    if a_class_set /= Void then
 		        class_set := a_class_set
 		    else
-		        class_set := get_relevant_classes
+		        class_set := l_class_set
 		    end
 
 		    context_class := a_context_class
@@ -66,31 +82,31 @@ feature -- initialize
 		    is_good := True
 		end
 
-feature -- access
+feature -- Access
 
 	is_good: BOOLEAN
-			-- is configuration good?
+			-- Is configuration good?
 
 	usable_objects: DS_HASH_TABLE [DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING], INTEGER]
-			-- objects can be used to accomplish the work
-			-- first key: class id; second key: variable name
+			-- Objects can be used to accomplish the work.
+			-- First key: class id; second key: variable name.
 
 	destination: DS_HASH_TABLE [AFX_BOOLEAN_STATE, STRING]
-			-- boolean requirement for destination objects
+			-- Boolean requirement for destination objects.
 
 	class_set: DS_HASH_SET [CLASS_C]
-			-- set of classes from which we will select the features
+			-- Set of classes from which we will select the features.
 
 	context_class: CLASS_C
-			-- context class where the generated feature call sequence would be used
+			-- Context class where the generated feature call sequence would be used.
 
 	maximum_length: INTEGER assign set_maximum_length
-			-- maximum length of feature call sequences
+			-- Maximum number of feature calls in one fix.
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	add_usable_object (a_state: AFX_BOOLEAN_STATE; a_name: STRING)
-			-- add an usable object to `usable_objects'
+			-- Add an object `a_name' with its state `a_state' to `usable_objects'.
 		local
 		    l_table: like usable_objects
 		    l_tbl: DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING]
@@ -109,115 +125,15 @@ feature{NONE} -- implementation
 		    end
 		end
 
-	get_relevant_classes: DS_HASH_SET [CLASS_C]
-			-- get the set of relevant classes according to `destination' requirement
-		require
-		    destination_not_empty: destination /= Void and then not destination.is_empty
-		local
-		    l_set: DS_HASH_SET [CLASS_C]
-		    l_class: CLASS_C
-		    l_state: AFX_BOOLEAN_STATE
-		do
-		    create l_set.make (destination.count)
-		    from destination.start
-		    until destination.after
-		    loop
-		        l_state := destination.item_for_iteration
-		        l_class := l_state.class_
-		        l_set.force (l_class)
-
-		        destination.forth
-		    end
-		    Result := l_set
-		end
-
 	set_maximum_length (a_maximum: INTEGER)
-			-- set the maximum length of feature call sequences
+			-- Set the `maximum_length' to be `a_maximum'.
 		require
 		    maximum_gt_0: a_maximum > 0
 		do
 		    maximum_length := a_maximum
 		end
 
-	default_maximum_length: INTEGER is 3
-			-- default maximum length of feature call sequences
+	default_maximum_length: INTEGER = 3
+			-- Default maximum length.
 
-
-
---	source: DS_ARRAYED_LIST[AFX_BOOLEAN_STATE]
---			-- source states
-
---	make (a_src, a_dest: DS_ARRAYED_LIST [AFX_STATE]; an_obj_list: DS_ARRAYED_LIST [TUPLE[state: AFX_STATE; name: STRING]];
---				a_class_set: detachable like class_set; a_context_class: CLASS_C)
---			-- initialized
---		require
---		    src_dest_same_count: a_src.count = a_dest.count
---		    obj_list_longer: a_src.count < an_obj_list.count
---		    obj_list_start_with_src: 	-- `an_obj_list' starts with `a_src'
---		local
---		    l_class: CLASS_C
---		    l_name: STRING
---		    l_src_boolean, l_dest_boolean: AFX_BOOLEAN_STATE
---		    l_src_state, l_dest_state: AFX_STATE
---		do
---		    create source.make (a_src.count)
---		    create destination.make (a_dest.count)
---		    create usable_objects.make (an_obj_list.count)
-
---		    	-- interpretate src's and dest's into boolean states
---		    from
---		    	a_src.start
---		    	a_dest.start
---		    	an_obj_list.start
---		    until
---		        a_src.after
---		    loop
---		        l_src_state := an_obj_list.item_for_iteration.state
---		        l_name := an_obj_list.item_for_iteration.name
---		        check l_src_state = a_src.item_for_iteration end
---		        l_dest_state := a_dest.item_for_iteration
---		        check l_src_state.class_.class_id = l_dest_state.class_.class_id end
-
---		        l_class := l_src_state.class_
---		        create l_src_boolean.make_for_class (l_class)
---		        l_src_boolean.interpretate (l_src_state)
---		        create l_dest_boolean.make_for_class (l_class)
---		        l_dest_boolean.interpretate (l_dest_state)
-
---		        source.force_last (l_src_boolean)
---		        destination.force_last (l_dest_boolean)
---		        add_usable_object (l_src_boolean, l_name)
-
---		        a_src.forth
---		        a_dest.forth
---		        an_obj_list.forth
---		    end
-
---		    	-- interpretate other usable objects into boolean states
---		    from
---		    until
---		        an_obj_list.after
---		    loop
---		        l_src_state := an_obj_list.item_for_iteration.state
---		        l_name := an_obj_list.item_for_iteration.name
---		        l_class := l_src_state.class_
---		        create l_src_boolean.make_for_class (l_class)
---		        l_src_boolean.interpretate (l_src_state)
---		        add_usable_object (l_src_boolean, l_name)
---		        an_obj_list.forth
---		    end
-
---				-- classes from which we will select the features
---		    if a_class_set /= Void then
---		        class_set := a_class_set
---		    else
---		        class_set := get_relevant_classes
---		    end
-
---		    context_class := a_context_class
-
---			set_maximum_length (default_maximum_length)
---		    is_good := True
---		end
-invariant
 end

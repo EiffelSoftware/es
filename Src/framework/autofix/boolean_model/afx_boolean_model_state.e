@@ -9,7 +9,9 @@ class
 
 inherit
     DS_ARRAYED_LIST [AFX_BOOLEAN_STATE]
-    	rename make as make_list end
+    	rename
+    		make as make_list
+    	end
 
 	AFX_HASH_CALCULATOR
     	undefine
@@ -17,19 +19,16 @@ inherit
     		copy
     	end
 
---    AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_FACTORY
-
 create
     make
 
-feature -- initialize
+feature -- Initialization
 
 	make (a_query_model_state: like query_model_state)
-			-- make a boolean model state
+			-- Initialize
 		local
 		    l_query_state: AFX_STATE
 		    l_boolean_state: AFX_BOOLEAN_STATE
-		    l_outline: AFX_BOOLEAN_STATE_OUTLINE
 		do
 		    query_model_state := a_query_model_state
 		    make_list (a_query_model_state.count)
@@ -48,17 +47,17 @@ feature -- initialize
 		    is_good := True
 		end
 
-feature -- access
+feature -- Access
 
 	query_model_state: AFX_QUERY_MODEL_STATE
-			-- associated query model state
+			-- Associated query model state.
 
 feature -- Status report
 
 	is_good: BOOLEAN
-			-- is this boolean model state good for use?
+			-- Is this boolean model state good for use?
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	key_to_hash: DS_LINEAR[INTEGER]
 			-- <Precursor>

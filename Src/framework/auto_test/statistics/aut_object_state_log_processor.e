@@ -19,9 +19,12 @@ inherit
 			process_object_state_request
 		end
 
-	AFX_SHARED_BOOLEAN_STATE_OUTLINE_MANAGER
+	AFX_SHARED_FORMAL_TYPE_MANAGER
 
-	AFX_SHARED_BOOLEAN_MODEL_STATE_TRANSITION_SUMMARY_MANAGER
+	AFX_UTILITY
+		undefine
+		    system
+		end
 
 create
 	make
@@ -55,12 +58,26 @@ feature -- Process
 			l_output_file: KL_TEXT_OUTPUT_FILE
 			l_log_parser: AUT_LOG_PARSER
 
--- experiment variables
+-- Model serialization
+			l_using_forward_model: BOOLEAN
+			l_formal_type_manager: AFX_FORMAL_TYPE_MANAGER
+			l_class_name: STRING
+			l_file_name: FILE_NAME
 			l_boolean_model: AFX_BOOLEAN_MODEL
-			l_summary_manager: AFX_BOOLEAN_MODEL_STATE_TRANSITION_SUMMARY_MANAGER
 			l_transition_list: DS_LINEAR [AFX_BOOLEAN_MODEL_TRANSITION]
-			l_manager: AFX_BOOLEAN_STATE_OUTLINE_MANAGER
+
+			l_model_factory: AFX_STATE_TRANSITION_MODEL_FACTORY
+			l_model: AFX_STATE_TRANSITION_MODEL_I
+			l_model_dir: DIRECTORY_NAME
+-- Model deserialization
+			l_factory: AFX_BEHAVIOR_CONSTRUCTOR_FACTORY
+			l_constructor: AFX_BEHAVIOR_CONSTRUCTOR_I
+			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
 		do
+				-- formal type manager
+			create l_formal_type_manager.make_default
+			set_formal_type_manager (l_formal_type_manager)
+
 				-- Load log file.
 			create l_log_stream.make (configuration.log_file_path)
 			l_log_stream.open_read
@@ -69,22 +86,149 @@ feature -- Process
 			l_log_parser.parse_stream (l_log_stream)
 			l_log_stream.close
 
--- experiment code
-			create l_manager.make_default
-			set_boolean_state_manager (l_manager)
-				-- boolean model
+			l_using_forward_model := False
+if True then
+-- Model serialization
+				-- file name
+			l_class_name := class_name_from_file_name (configuration.log_file_path)
+			create model_repository_directory.make_from_string (directory_name_from_file_name (configuration.log_file_path))
+			l_model_dir := model_repository_directory.twin
+
+				-- boolean model to forward state transition model
+			create l_model_factory
+			if l_using_forward_model then
+    			l_model := l_model_factory.create_forward_model_with_size (100)
+    		else
+    			l_model := l_model_factory.create_backward_model_with_size (100)
+			end
+
+				-- construct boolean model
 			create l_boolean_model.make_from_query_model (last_model)
 			l_transition_list := l_boolean_model.to_transition_list
-				-- summary manager
-			create l_summary_manager.make_default
-			set_state_transition_summary_manager (l_summary_manager)
-			l_transition_list.do_all (agent l_summary_manager.summarize_transition)
+
+			l_transition_list.do_all (agent l_model.summarize_transition)
+			l_model.optimize_model
+			l_model_dir.extend (l_model.model_directory)
+			create l_file_name.make_from_string (l_model_dir)
+			l_file_name.set_file_name (l_class_name)
+			l_file_name.add_extension ("xml")
+			l_model.save_to_file (l_file_name)
+
+			print (l_file_name)
+
+else
+-- Model deserialization
+			create l_factory
+			if l_using_forward_model then
+    			l_constructor := l_factory.create_forward_constructor
+    		else
+    			l_constructor := l_factory.create_backward_constructor
+			end
+			l_constructor.reset_constructor (prepare_available_objects, prepare_destination_requirement, last_list_class, Void, Void)
+
+			create l_loader.make_with_directory ("F:\state_log")
+			l_loader.load_state_transition_model (l_constructor)
+			if l_loader.is_successful and then l_constructor.state_transition_model.is_good then
+				l_constructor.state_transition_model.save_to_file ("F:\state_log\output.xml")
+    			l_constructor.construct_behavior
+    			if not l_constructor.call_sequences.is_empty then
+    				print (l_constructor.call_sequences_as_string)
+    			end
+    		else
+    		    print ("Error loading the model.")
+			end
+end
+		end
+
+feature{NONE} -- Testing
+
+	model_repository_directory: DIRECTORY_NAME
+			-- Model repository directory.
+
+	class_name_from_file_name (a_file_name: STRING): STRING
+			-- Parse the class name from `a_file_name'.
+		local
+		    l_pre_str, l_post_str: STRING
+		    l_start_pos, l_end_pos: INTEGER
+		do
+		    l_pre_str := "ps_"
+		    l_post_str := "_state_log"
+		    l_start_pos := a_file_name.substring_index (l_pre_str, 1)
+		    l_end_pos := a_file_name.substring_index (l_post_str, 1)
+		    l_start_pos := l_start_pos + l_pre_str.count
+		    l_end_pos := l_end_pos - 1
+		    Result := a_file_name.substring (l_start_pos, l_end_pos)
+		end
+
+	directory_name_from_file_name (a_file_name: STRING): STRING
+			-- Parse the directory name from `a_file_name'.
+		local
+		    l_last_index: INTEGER
+		    l_directory_name: STRING
+		do
+		    l_last_index := a_file_name.last_index_of ('\', a_file_name.count)
+		    l_directory_name := a_file_name.substring (1, l_last_index - 1)
+		    Result := l_directory_name
+		end
+
+feature -- Experiment
+
+	prepare_available_objects: DS_HASH_TABLE[AFX_STATE, STRING]
+			-- prepare available objects which can be used for behavior construction
+		local
+		    l_query_name, l_value: STRING
+		    l_query_value_table: HASH_TABLE [STRING, STRING]
+		    l_state: AFX_STATE
+		    l_class: CLASS_C
+		do
+		    create Result.make_default
+
+		    create l_query_value_table.make (5)
+		    l_query_value_table.force ("False", "before")
+		    l_query_value_table.force ("False", "off")
+		    l_query_value_table.force ("0", "index")
+		    l_query_value_table.force ("False", "is_first")
+		    l_query_value_table.force ("False", "after")
+		    l_query_value_table.force ("False", "is_last")
+
+			check last_list_class /= Void end
+		    create l_state.make_from_object_state (l_query_value_table, last_list_class, Void)
+
+		    Result.force (l_state, "l_list")
+		end
+
+	prepare_destination_requirement: DS_HASH_TABLE[AFX_STATE, STRING]
+			-- prepare the requirement for destination objects
+		local
+		    l_query_name, l_value: STRING
+		    l_query_value_table: HASH_TABLE [STRING, STRING]
+		    l_state: AFX_STATE
+		    l_class: CLASS_C
+		do
+		    create Result.make_default
+
+		    create l_query_value_table.make (5)
+		    l_query_name := "before"
+		    l_value := "True"
+		    l_query_value_table.force (l_value, l_query_name)
+
+		    check last_list_class /= Void end
+		    create l_state.make_from_object_state (l_query_value_table, last_list_class, Void)
+
+		    Result.force (l_state, "l_list")
 		end
 
 feature{NONE} -- Process
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 			-- <Precursor>
+		local
+		    l_feature: FEATURE_I
+		    l_type: TYPE_A
+		    l_class: CLASS_C
+		    l_list: CLASS_C
+		    l_wclass: CLASS_C
+		    l_formal_type: TYPE_A
 		do
 			Precursor (a_request)
 			process_call_based_request (a_request)
@@ -107,14 +251,22 @@ feature{NONE} -- Process
 		    l_state: AFX_STATE
 		    l_model_state: AFX_QUERY_MODEL_STATE
 		    l_is_good: BOOLEAN
+		    l_context_class: CLASS_C
 		do
 			Precursor (a_request)
 
 				-- variable information
+			l_type := a_request.type
+			check l_type /= Void end
 			l_class := a_request.type.associated_class
+
+-- for testing
 			check l_class /= Void end
---			l_type := a_request.type
---			check l_type /= Void end
+			if last_list_class = Void and l_class /= Void and then l_class.name ~ "DS_LINKED_LIST" then
+			    last_list_class := l_class
+			end
+--
+
 			l_var_index := a_request.variable.index
 			check l_var_index >= 0 end
 
@@ -125,23 +277,24 @@ feature{NONE} -- Process
 
 						-- create state
 					l_results := l_response.query_results
---					create l_state.make_for_type (l_results.count, l_type)
-					create l_state.make_from_object_state (l_results, l_class, Void)
---					l_state.construct_from_query_result (l_results)
+					create l_state.make_from_object_state (l_results, l_type.associated_class, Void)
 
 				    	-- source state of feature call, just put the state into `mock_heap'
 					mock_heap.force (l_state, l_var_index)
 
 					if attached last_call_based_request as l_call_request then
-						if expected_object_states.last.o_id = l_var_index and then expected_object_states.last.o_class.class_id = l_class.class_id then
+						if expected_object_states.first.ob_id = l_var_index then
+--									and then (l_type.is_conformant_to (last_call_based_request.target_type.associated_class, expected_object_states.first.ob_type)
+--											or else expected_object_states.first.ob_type.valid_generic (last_call_based_request.target_type.associated_class, l_type)) then
 							l_is_good := True
 
 								-- one more relevant state available, remove it from expecting list
-							expected_object_states.remove_last
+							expected_object_states.remove_first
 
 							if expected_object_states.is_empty then
-									-- all expected states have been reported, start constructing the transition
 							    check last_transition /= Void end
+								debug("autofix") print (last_call_based_request.feature_to_call.feature_name + "(Before)%N") end
+									-- all expected states have been reported, start constructing the transition
 							    create l_model_state.make (last_call_based_request.operand_indexes.count)
 							    l_model_state.extract_state (mock_heap, last_call_based_request, False)
 								last_transition.set_destination (l_model_state)
@@ -183,80 +336,55 @@ feature{NONE} -- implementation
 		local
 		    l_state: AFX_QUERY_MODEL_STATE
 		    l_transition: AFX_QUERY_MODEL_TRANSITION
-		do
-		    create l_state.make (a_request.operand_indexes.count)
-		    l_state.extract_state (mock_heap, a_request, True)
-
-			create l_transition.make (a_request)
-			l_transition.set_source (l_state)
-
-				-- transition to be finished
-			last_call_based_request := a_request
-			last_transition := l_transition
-			extract_expected_object_states (a_request)
-		end
-
-
-	extract_expected_object_states (a_request: AUT_CALL_BASED_REQUEST)
-			-- extract the list of operand types and ids.
-			-- stored in the order the object states would be queried, which is in reverse to the original order
-		local
-		    l_expected_object_states: like expected_object_states
-		    i: INTEGER
-		    l_count: INTEGER
-		    l_target_type: TYPE_A
-		    l_indexes: SPECIAL[INTEGER]
+		    l_formal_type_manager: like formal_type_manager
+		    l_type_array: DS_ARRAYED_LIST[TYPE_A]
+		    l_index_array: SPECIAL[INTEGER]
 		    l_index: INTEGER
-		    l_class: CLASS_C
-		    l_args: FEAT_ARG
 		do
-		    l_target_type := a_request.target_type
+			if a_request.response.is_normal and then not a_request.response.is_exception then
+    		    l_formal_type_manager := formal_type_manager
+    			l_type_array := l_formal_type_manager.query_feature_formal_types (a_request.feature_to_call, a_request.target_type)
+    			l_index_array := a_request.operand_indexes
+    			check operand_index_type_match: l_type_array.count = l_index_array.count end
 
-		    l_expected_object_states := expected_object_states
-		    	-- reset `expected_object_states'
-		    l_expected_object_states.wipe_out
+    		    create l_state.make (l_index_array.count)
 
-		    l_count := a_request.operand_indexes.count
-		    l_expected_object_states.resize (l_count)
+    			debug("autofix") print (a_request.feature_to_call.feature_name + "(Before)%N") end
+    		    l_state.extract_state (mock_heap, a_request, True)
 
-		    l_indexes := a_request.operand_indexes
+    			create l_transition.make (a_request)
+    			l_transition.set_source (l_state)
 
-		    	-- receiver if any
-		    if attached {AUT_INVOKE_FEATURE_REQUEST} a_request as l_request and then l_request.is_feature_query then
-		        l_count := l_count - 1
-		        l_expected_object_states.force_last ([l_request.feature_to_call.type.actual_type
-		        			.instantiation_in (l_target_type, l_target_type.associated_class.class_id).associated_class,
-		        			l_indexes [l_count]])
---    		        l_class_id := l_args.item_for_iteration.actual_type
---    		        		.instantiation_in (l_target_type, l_target_type.associated_class.class_id).associated_class.class_id
-		    end
+    				-- transition to be finished
+    			last_call_based_request := a_request
+    			last_transition := l_transition
 
-				-- argument objects
-			l_args := a_request.feature_to_call.arguments
-			if l_args /= Void then
-    		    from
-    		        l_args.finish
-    		        i := l_count - 1
-    		    until
-    		        l_args.before
-    		    loop
-    				l_class := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).associated_class
-    				check i >= 0 end
-    		        l_index := l_indexes[i]
-    		        l_expected_object_states.force_last ([l_class, l_index])
+    				-- put the <type, id> pair into `expected_object_states'
+    			expected_object_states.wipe_out
+    			from
+    				l_index := 0
+    				l_type_array.start
+    			until
+    			    l_index = l_index_array.count
+    			loop
+    			    expected_object_states.force_last ([l_type_array.item_for_iteration, l_index_array.item (l_index)])
 
-    		        l_args.back
-    		        i := i - 1
-    		    end
-    		    check i = 0 end
+    			    l_index := l_index + 1
+    			    l_type_array.forth
+    			end
+    		else
+    			last_call_based_request := Void
+    			last_transition := Void
+    		    expected_object_states.wipe_out
 			end
-
-				-- target object
-			l_expected_object_states.force_last ([a_request.target_type.associated_class, a_request.target.index])
 		end
 
 	last_call_based_request: detachable AUT_CALL_BASED_REQUEST
 			-- last call based request
+
+	is_last_call_based_requeset_suitable: BOOLEAN
+			-- is `last_call_based_request' going to be used to build the model?
+			-- if not, the object states are only used to update the `mock_heap' and no transition will be constructed for this the request
 
 	last_transition: detachable AFX_QUERY_MODEL_TRANSITION
 			-- most recently constructed transition
@@ -268,10 +396,11 @@ feature{NONE} -- implementation
 			-- mock heap to cache responses to object state requests.
 			-- the key of the hash table is the index of variable.
 
-	expected_object_states: DS_ARRAYED_LIST [TUPLE[o_class: CLASS_C; o_id: INTEGER] ]
-			-- list for logging the object states expected to finish the last call transition
+	expected_object_states: DS_ARRAYED_LIST [TUPLE[ob_type: TYPE_A; ob_id: INTEGER] ]
+			-- list of expected object states to finish the last call transition
 
-
+	last_list_class: detachable CLASS_C
+			-- cached class object for testing
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

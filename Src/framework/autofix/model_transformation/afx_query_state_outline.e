@@ -19,17 +19,10 @@ inherit
 create
     make_for_state
 
-feature{AFX_STATE_OUTLINE_MANAGER} -- initialization
-
---	make_for_class (n: INTEGER; a_class: like class_)
---			-- initialize
---		do
---		    make (n)
---		    class_ := a_class
---		end
+feature{NONE} -- Initialization
 
 	make_for_state (a_state: AFX_STATE)
-			-- initialize
+			-- Initialize.
 		require
 		    not_chaos: not a_state.is_chaos
 		do
@@ -48,13 +41,10 @@ feature{AFX_STATE_OUTLINE_MANAGER} -- initialization
 		    same_size: count = a_state.count
 		end
 
-feature -- status report
-
---	type: TYPE_A
---			-- the type of objects to which this outline is going to be applied
+feature -- Status report
 
 	class_: CLASS_C
-			-- the class to the objects of which the outline will be applied
+			-- Class which the outline is for.
 
 	hash_code: INTEGER
 			-- <Precursor>
@@ -63,26 +53,17 @@ feature -- status report
 		end
 
 	is_for_class (a_class: CLASS_C): BOOLEAN
-			-- is current outline for `a_class'?
+			-- Is current outline for `a_class'?
 		do
 		    Result := class_.class_id = a_class.class_id
 		ensure
 		    definition: Result = (class_.class_id = a_class.class_id)
 		end
 
-feature -- operation
-
---	accommodate_predicates (a_list: DS_LINEAR [AFX_EXPRESSION])
---		require
---			all_expressions_boolean: a_list.for_all (agent (an_expression: AFX_EXPRESSION): BOOLEAN do Result := an_expression.is_predicate end)
---		do
---			a_list.do_all (agent (an_expression: AFX_EXPRESSION)
---									do if not has (an_expression) then put (an_expression) end end )
---		end
-
+feature -- Operation
 
 	accommodate (a_state: AFX_STATE)
-			-- adjust the outline to accommodate `a_state'
+			-- Accommodate `a_state' into outline.
 		require
 		    is_for_same_class: is_for_class (a_state.class_)
 		    not_chaos: not a_state.is_chaos
@@ -100,7 +81,4 @@ feature -- operation
 		        a_state.forth
 		    end
 		end
-
-
-
 end

@@ -15,68 +15,24 @@ inherit
     	end
 
 create
-    make_default
+    make, make_default
 
-feature -- statur report
+feature -- Query
 
 	class_outline (a_class: CLASS_C): AFX_QUERY_STATE_OUTLINE
-			-- query the state outline for `a_class'
+			-- Query the query state outline for `a_class'.
 		require
 		    registered: is_registered (a_class.class_id)
 		do
---		    search (a_class.class_id)
---		    check found_outline /= Void end
-		    Result := item (a_class.class_id)
+		    Result := value (a_class.class_id)
 		    check Result /= Void end
 		end
 
---	last_outline: AFX_STATE_OUTLINE
---			-- last outline
-
---	projection_types: DS_HASH_SET [TYPE_A]
---			-- the set of types, onto which we will project our model
-
-feature -- operations
-
---	register_extractor (an_extractor: AFX_STATE_OUTLINE_EXTRACTOR)
---			-- register an extractor at this manager
---		require
---		    not_registered: not is_registered (an_extractor)
---		local
---		    l_table: DS_HASH_TABLE [AFX_STATE_OUTLINE, INTEGER]
---		do
---		    create l_table.make_default
---		    put (l_table, an_extractor)
---		ensure
---		    registered: is_registered (an_extractor)
---		end
-
---	class_outline (an_extractor: AFX_STATE_OUTLINE_EXTRACTOR; a_class: CLASS_C): like last_outline
---			-- query for the outline of `a_class', extracted by using `an_extractor'
---		require
---		    extractor_registered: is_registered (an_extractor)
---		local
---		    l_found: BOOLEAN
---		    l_outline: like last_outline
---		    l_id: INTEGER
---		do
---		    l_id := a_class.class_id
---		    search (an_extractor)
---		    check found_outline /= Void end
---		    if not found_outline.has (l_id) then
---		        l_outline := an_extractor.extract_class_outline (a_class)
---		        found_outline.put (l_outline, l_id)
---		        last_outline := l_outline
---		    else
---		        found_outline.search (l_id)
---		        last_outline := found_outline.found_item
---		    end
---		ensure
---			outline_ready: last_outline /= Void
---		end
+feature -- Register
 
 	register (a_state: AFX_QUERY_MODEL_STATE)
-			-- register/update the outline for each component `AFX_STATE'
+			-- Register the query model state of `a_state'.
+			-- Either a new outline would be created for its class, or existing outline would be updated.
 		local
 		    l_state: AFX_STATE
 		    l_class: CLASS_C
@@ -91,7 +47,7 @@ feature -- operations
 		            l_class := l_state.class_
 		            l_id := l_class.class_id
         		    if is_registered (l_id) then
-        		        item (l_id).accommodate (l_state)
+        		        value (l_id).accommodate (l_state)
         		    else
         		        register_new (l_state)
         		    end
@@ -101,10 +57,10 @@ feature -- operations
 		    end
 		end
 
-feature{NONE} --implementation
+feature{NONE} --Implementation
 
 	register_new (a_state: AFX_STATE)
-			-- register an outline for `a_state'
+			-- Register `a_state' as from an unregistered class.
 		require
 		    not_registered: not is_registered (a_state.class_.class_id)
 		local
@@ -115,10 +71,6 @@ feature{NONE} --implementation
 		ensure
 		    registered: is_registered (a_state.class_.class_id)
 		end
-
-
-
-
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

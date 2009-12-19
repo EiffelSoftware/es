@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="autofix_library" uuid="197D2624-6547-4BAB-904B-131A4FA4EA73" library_target="autofix">
 	<target name="autofix">
 		<root all_classes="true"/>
-		<option warning="false">
+		<option warning="false" is_attached_by_default="false" void_safety="none">
 			<assertions/>
 		</option>
 		<setting name="multithreaded" value="true"/>
@@ -23,6 +23,7 @@
 		<library name="gobo_time" location="$ISE_LIBRARY\library\gobo\gobo_time.ecf"/>
 		<library name="gobo_tools" location="$ISE_LIBRARY\library\gobo\gobo_tools.ecf"/>
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
@@ -86,10 +87,14 @@
 			<file_rule>
 				<exclude>^/behavior_constructor$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/program_fix$</exclude>
+			</file_rule>
 			<cluster name="query_model" location="$EIFFEL_SRC\framework\autofix\query_model\"/>
 			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\autofix\boolean_model\"/>
 			<cluster name="model_transformation" location="$EIFFEL_SRC\framework\autofix\model_transformation\"/>
 			<cluster name="behavior_constructor" location="$EIFFEL_SRC\framework\autofix\behavior_constructor\"/>
+			<cluster name="program_fix" location="f:\eiffelstudio\modelbased\64dev\src\framework\autofix\program_fix\"/>
 		</cluster>
 	</target>
 </system>

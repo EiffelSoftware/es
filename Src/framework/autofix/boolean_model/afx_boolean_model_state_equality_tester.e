@@ -13,11 +13,10 @@ inherit
 			test
 		end
 
-
 create
 	default_create
 
-feature -- equality
+feature -- Equality
 
 	test (u, v: detachable AFX_BOOLEAN_MODEL_STATE): BOOLEAN
 			-- <Precursor>
@@ -45,7 +44,7 @@ feature -- equality
 		    end
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	boolean_state_equality_tester: AFX_BOOLEAN_STATE_EQUALITY_TESTER
 			-- boolean state equality tester

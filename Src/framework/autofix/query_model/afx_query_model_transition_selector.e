@@ -13,14 +13,16 @@ inherit
 create
     default_create
 
-feature -- operation
+feature -- Status report
 
-	should_select (a_transition: AFX_QUERY_MODEL_TRANSITION): BOOLEAN
+	is_suitable (a_transition: AFX_QUERY_MODEL_TRANSITION): BOOLEAN
 			-- <Precursor>
 		do
 		    Result := True
-		    if a_transition.source = Void or else a_transition.destination = Void
-		    		or else not a_transition.source.is_good or else not a_transition.destination.is_good then
+		    if a_transition.source = Void
+		    		or else a_transition.destination = Void
+		    		or else not a_transition.source.is_good
+		    		or else not a_transition.destination.is_good then
 		        Result := False
 		    end
 		end

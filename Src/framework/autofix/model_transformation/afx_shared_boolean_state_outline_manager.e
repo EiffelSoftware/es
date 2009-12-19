@@ -7,28 +7,28 @@ note
 class
 	AFX_SHARED_BOOLEAN_STATE_OUTLINE_MANAGER
 
-feature -- access
+feature -- Access
 
 	boolean_state_outline_manager: detachable AFX_BOOLEAN_STATE_OUTLINE_MANAGER
-			-- current state outline manager
+			-- Shared boolean state outline manager.
 		do
 		    Result := boolean_manager_cell.item
 		end
 
-feature --setting
+feature --Setting
 
 	set_boolean_state_manager (a_manager: like boolean_state_outline_manager)
-			-- set `a_manager' to be current manager
+			-- Set the shared boolean state outline manager to be `a_manager'.
 		do
 		    boolean_manager_cell.put (a_manager)
 		ensure
 		    manager_set: a_manager = boolean_state_outline_manager
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	boolean_manager_cell: CELL[detachable AFX_BOOLEAN_STATE_OUTLINE_MANAGER]
-			-- once cell
+			-- Internal storage for shared boolean state outline manager.
 		once
 		    create Result.put (Void)
 		ensure

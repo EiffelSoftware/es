@@ -37,6 +37,18 @@ inherit
 			is_equal
 		end
 
+	SHARED_TYPES
+		undefine
+		    copy,
+		    is_equal
+		end
+
+	UC_SHARED_STRING_EQUALITY_TESTER
+		undefine
+		    copy,
+		    is_equal
+		end
+
 	DEBUG_OUTPUT
 		undefine
 			copy,
@@ -44,7 +56,7 @@ inherit
 		end
 
 create
-	make, make_chaos, make_from_object_state
+	make, make_chaos, make_from_object_state, make_from_expression_value, make_from_state
 
 convert
 	skeleton: {AFX_STATE_SKELETON}
@@ -75,6 +87,58 @@ feature{NONE} -- Initialization
 				force_last (predicate_from_expression_and_value (a_state.key_for_iteration, a_state.item_for_iteration, a_class, a_feature))
 				a_state.forth
 			end
+		end
+
+	make_from_expression_value (a_exp_val: HASH_TABLE [AFX_EXPRESSION_VALUE, AFX_AST_EXPRESSION]; a_class: like class_; a_feature: like feature_)
+			-- Initialize a new state from a list of expression-value pairs
+		local
+		    l_equation: AFX_EQUATION
+		do
+		    make (a_exp_val.count, a_class, a_feature)
+		    from a_exp_val.start
+		    until a_exp_val.after
+		    loop
+		        create l_equation.make (a_exp_val.key_for_iteration, a_exp_val.item_for_iteration)
+		        force_last (l_equation)
+		        a_exp_val.forth
+		    end
+		end
+
+	make_from_state (a_state: like Current; a_type: TYPE_A)
+			-- Initialize a new state from `a_state', extracting only those predicates conforming to `a_type'
+		local
+		    l_type: TYPE_A
+		    l_equation: AFX_EQUATION
+		    l_feature_table: FEATURE_TABLE
+		    l_feature_name_set: DS_HASH_SET[STRING]
+		    l_feature: FEATURE_I
+		do
+		    make_set (a_state.count)
+		    class_ := a_type.associated_class
+
+		    	-- get feature names in the filtering set
+		    l_feature_table := class_.feature_table
+		    create l_feature_name_set.make_default
+		    l_feature_name_set.set_equality_tester (string_equality_tester)
+		    from l_feature_table.start
+		    until l_feature_table.after
+		    loop
+		        l_feature := l_feature_table.item_for_iteration
+		        if l_feature.type /= void_type and then l_feature.argument_count = 0 then
+    		    	l_feature_name_set.force (l_feature.feature_name)
+		        end
+		        l_feature_table.forth
+		    end
+
+		    from a_state.start
+		    until a_state.after
+		    loop
+		        l_equation := a_state.item_for_iteration
+				if l_feature_name_set.has (l_equation.expression.text) then
+				    force (l_equation)
+				end
+		        a_state.forth
+		    end
 		end
 
 	make_chaos (a_class: like class_)

@@ -7,28 +7,28 @@ note
 class
 	AFX_SHARED_QUERY_STATE_OUTLINE_MANAGER
 
-feature -- access
+feature -- Access
 
 	state_outline_manager: detachable AFX_QUERY_STATE_OUTLINE_MANAGER
-			-- current state outline manager
+			-- Shared query state outline manager.
 		do
 		    Result := manager_cell.item
 		end
 
-feature --setting
+feature --Setting
 
 	set_state_manager (a_manager: like state_outline_manager)
-			-- set `a_manager' to be current manager
+			-- Set shared query state outline manager to be `a_manager'.
 		do
 		    manager_cell.put (a_manager)
 		ensure
 		    manager_set: a_manager = state_outline_manager
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	manager_cell: CELL[detachable AFX_QUERY_STATE_OUTLINE_MANAGER]
-			-- once cell
+			-- Storage for shared query state outline manager.
 		once
 		    create Result.put (Void)
 		ensure

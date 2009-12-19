@@ -13,10 +13,10 @@ inherit
 create
     make
 
-feature
+feature -- Initialization
 
     make (a_query_model_transition: like query_model_transition)
-    		-- initialize
+    		-- Initialize.
     	require
     	    query_model_transition_ready: a_query_model_transition.is_ready
     	local
@@ -26,39 +26,32 @@ feature
 
 			l_source := a_query_model_transition.source
 			l_dest := a_query_model_transition.destination
-			check l_source /= Void and then l_dest /= Void end
 			create boolean_source.make (l_source)
 			create boolean_destination.make (l_dest)
     	end
 
-feature -- access
+feature -- Access
 
 	query_model_transition: AFX_QUERY_MODEL_TRANSITION
-			-- query model transition
+			-- Query model transition.
 
 	boolean_source: AFX_BOOLEAN_MODEL_STATE
-			-- boolean source model state
+			-- Source boolean model state.
 
 	boolean_destination: AFX_BOOLEAN_MODEL_STATE
-			-- boolean dest model state
+			-- Destination boolean model state.
 
-feature -- status report
+feature -- Status report
 
 	class_: CLASS_C
-			-- associated class of this transition
+			-- Associated class of this transition.
 		require
 		    query_model_transition_ready: query_model_transition.is_ready
 		do
 		    Result := query_model_transition.feature_call.class_of_target_type
 		end
 
-	is_object_creation: BOOLEAN
-			-- is this an object creation?
-		do
-		    Result := query_model_transition.is_object_creation
-		end
-
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	key_to_hash: DS_LINEAR[INTEGER]
 			-- <Precursor>

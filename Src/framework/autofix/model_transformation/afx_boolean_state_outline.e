@@ -9,7 +9,9 @@ class
 
 inherit
     DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
-    	redefine default_capacity end
+    	redefine
+    		default_capacity
+    	end
 
     HASHABLE
     	undefine
@@ -20,27 +22,25 @@ inherit
 create
     make_for_class
 
-feature -- initialize
+feature -- Initialize
 
 	make_for_class (a_class: like class_; an_extractor: like extractor)
-			-- create a boolean state outline for a class
+			-- Initialize.
 		do
 			make_default
 		    class_ := a_class
 			extractor := an_extractor
-
-			create last_predicate_indexes.make_default
 		end
 
-feature -- access
+feature -- Access
 
 	class_: CLASS_C
-			-- related class
+			-- Class of the outline.
 
 	extractor: AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I
-			-- extractor
+			-- Extractor.
 
-feature -- status report
+feature -- Status report
 
 	hash_code: INTEGER
 			-- <Precursor>
@@ -54,86 +54,92 @@ feature -- status report
 			Result := 25
 		end
 
-feature -- boolean outline queries
+feature -- Query
 
-	get_predicate_indexes (a_exp_set: DS_HASH_SET[AFX_AST_EXPRESSION]): BOOLEAN
-			-- query the indexes of expressions in the boolean representation
-			-- NOTE: only boolean queries supported now
+	predicate_at_position (a_index: INTEGER): AFX_PREDICATE_EXPRESSION
+			-- The `a_index'-th predicate expression.
+		require
+		    index_in_range: 0 <= a_index and a_index < count
+		local
+		    l_index: INTEGER
+		do
+		    from
+		    	l_index := 0
+		    	start
+		    until after or Result /= Void
+		    loop
+		        if l_index = a_index then
+		            Result := item_for_iteration
+		        end
+		    	l_index := l_index + 1
+		    	forth
+		    end
+		end
+
+	index_from_string (a_string: STRING; a_is_xml: BOOLEAN): INTEGER
+			-- Index in the outline according to its string representation.
+			-- `a_is_xml' indicates whether `a_string' is an xml string.
+			-- Result -1 implies no predicate was found.
+		local
+			l_index: INTEGER
+			l_predicate: AFX_PREDICATE_EXPRESSION
+		do
+		    Result := -1
+
+		    from
+		        l_index := 0
+		        start
+		    until
+		        after or Result /= -1
+		    loop
+
+		        if not a_is_xml and then a_string ~ item_for_iteration.to_string then
+		            Result := l_index
+		        elseif a_is_xml and then a_string ~ item_for_iteration.to_xml_string then
+		            Result := l_index
+		        end
+
+		        l_index := l_index + 1
+		        forth
+		    end
+		end
+
+	query_predicate_indexes (a_exp_set: DS_HASH_SET[AFX_AST_EXPRESSION]): DS_HASH_SET[INTEGER]
+			-- Query the indexes of expressions in the boolean representation.
+			-- NOTE: only boolean queries supported now.
 		require
 		    all_expression_predicates: a_exp_set.for_all (agent {AFX_AST_EXPRESSION}.is_predicate)
 		local
 		    l_ok: BOOLEAN
 		    l_exp: AFX_AST_EXPRESSION
 		    l_index, l_count: INTEGER
-		    l_set: like last_predicate_indexes
+		    l_set: DS_HASH_SET[INTEGER]
 		do
-		    l_set := last_predicate_indexes
-		    l_set.wipe_out
+		    create l_set.make_default
 
 		    l_count := count
-		    Result := True
+		    l_ok := True
 		    from
 		        l_index := 0
 		        start
 		    until
-		        after or not Result
+		        after or not l_ok
 		    loop
 		        l_exp := item_for_iteration.expression
 		        if a_exp_set.has (l_exp) then
 		            l_set.force (l_index)
 		        else
 		        		-- Abort: expression not in the boolean outline
-		            Result := False
+		            l_ok := False
 		        end
 		        l_index := l_index + 1
 		        forth
 		    end
-		end
 
-	get_predicate_expression (an_array: DS_LINEAR[INTEGER]): DS_LINEAR[AFX_PREDICATE_EXPRESSION]
-			-- get the list of predicate expressions at certain outline position
-		require
-		    an_array_in_ascendant_order: --
---		    every_integer_in_the_list_is_within_range_of_count_of_boolean_outline: --
-		local
-			l_index, l_bit_index, l_count, l_count_finished: INTEGER
-			l_array: DS_ARRAYED_LIST[AFX_PREDICATE_EXPRESSION]
-			l_exp: AFX_PREDICATE_EXPRESSION
-		do
-		    create l_array.make (an_array.count)
-		    from
-		    		-- start boolean state outline
-		    	start
-		    	l_bit_index := 0
-
-		    		-- start the array of expression indexes
-		    	an_array.start
-		    until
-		        an_array.after
-		    loop
-		        	-- find the predicate expression for current array item
-		        from
-		        	l_index := an_array.item_for_iteration
-		        	check l_index < count end
-		        until after or l_bit_index = l_index
-		        loop
-		            forth
-		            l_bit_index := l_bit_index + 1
-		        end
-
-		        if l_bit_index = l_index then
-		            l_array.force_last (item_for_iteration)
-		        else
-		            check False end
-		        end
-
-		        an_array.forth
+		    if not l_ok then
+		        l_set.wipe_out
 		    end
+		    Result := l_set
 		end
-
-feature -- boolean outline queries implementation
-
-	last_predicate_indexes: DS_HASH_SET[INTEGER]
-			-- storage for `get_predicate_indexes'
 
 end

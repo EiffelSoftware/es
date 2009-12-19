@@ -35,6 +35,9 @@ feature -- Access
 	breakpoint_slot_index: INTEGER
 			-- <Precursor>
 
+	nested_breakpoint_slot_index: INTEGER
+			-- <Precursor>
+
 	e_feature: detachable E_FEATURE
 			-- <Precursor>
 
