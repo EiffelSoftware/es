@@ -129,6 +129,16 @@ feature -- Access
 			Result := l_path
 		end
 
+	fix_directory: STRING
+			-- Directory to store generated fixes
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("fix")
+			Result := l_path
+		end
+
 feature -- State retrieval related
 
 	state_test_case_class_name: detachable STRING

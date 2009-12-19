@@ -57,7 +57,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]])
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
@@ -72,13 +72,14 @@ feature{NONE} -- Implementation
 					l_fix_text.prepend ("if " + l_guard.text + " then%N%T%T")
 					l_fix_text.append ("%Nend%N")
 				end
-				fixes.extend (fix_with_text ("%N" + l_fix_text, a_snippets.item_for_iteration.ranking))
+				fixes.extend (fix_with_text ("%N" + l_fix_text, a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
 				a_snippets.forth
 			end
 		end
 
-	fix_with_text (a_text: STRING; a_snippet_ranking: INTEGER): AFX_FIX
+	fix_with_text (a_text: STRING; a_snippet_ranking: INTEGER; a_precondition: AFX_STATE; a_postcondition: AFX_STATE): AFX_FIX
 			-- New text of `exception_spot'.`recipient_' with fix `a_fix' applied.
+			-- `a_precondition' and `a_postcondition' are used to provide better logging information.
 		local
 			l_after_do: BOOLEAN
 			l_anchor_as: AST_EIFFEL
@@ -102,12 +103,16 @@ feature{NONE} -- Implementation
 			end
 
 				-- Build result fix.
-			create Result
+			create Result.make (exception_spot)
 			Result.set_exception_spot (exception_spot)
 			Result.set_text (feature_body_compound_ast.text (l_match_list))
+			Result.set_feature_text (feature_as_ast.text (l_match_list))
+			Result.set_precondition (a_precondition)
+			Result.set_postcondition (a_postcondition)
 			l_match_list.remove_modifications
 			l_ranking := ranking.twin
 			l_ranking.set_snippet_complexity (a_snippet_ranking)
+			Result.set_ranking (l_ranking)
 		end
 
 end

@@ -68,6 +68,7 @@ feature{NONE} -- Implementation
 			l_ctx: AST_CONTEXT
 			l_error_level: like error_level
 		do
+			error_handler.wipe_out
 			fixme ("Routine adapted from debugger related classes. 22.11.2009 Jason")
 			reset
 			is_byte_node_enabled := True

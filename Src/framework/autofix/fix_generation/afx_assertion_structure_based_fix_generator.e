@@ -17,11 +17,13 @@ feature{NONE} -- Initialization
 		require
 			a_spot_has_failing_assertion: a_spot.failing_assertion /= Void
 			a_analyzer_is_matched: a_analyzer.is_matched
+			a_config_attached: a_config /= Void
 		do
 			create fixes.make
 			structure_analyzer := a_analyzer
 			exception_spot := a_spot
 			fixing_locations := a_fixing_locations.twin
+			config := a_config
 		end
 
 feature -- Access

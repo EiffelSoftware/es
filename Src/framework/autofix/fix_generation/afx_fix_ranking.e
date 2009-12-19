@@ -11,16 +11,27 @@ feature -- Access
 
 	relevant_instructions: INTEGER
 			-- Number of relevant instructions in a fix
+			-- Small is better.
 
 	scope_levels: INTEGER
 			-- Distance from the fix to the failing point
+			-- Small is better.
 
 	fix_skeleton_complexity: INTEGER
 			-- Complexity level of the fix skeleton
 			-- For example, afore fix skeleton is simpler than wrapping fix skeleton
+			-- Small is better.
 
 	snippet_complexity: INTEGER
 			-- Snippet complexity
+			-- Small is better.
+
+	score: DOUBLE
+			-- Final ranking for a fix.
+			-- Small is better.
+		do
+			Result := scope_levels * 1.0 + relevant_instructions * 0.75 + fix_skeleton_complexity * 0.5 + snippet_complexity * 0.25
+		end
 
 feature -- Setting
 

@@ -29,6 +29,14 @@ feature -- Access
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
 
+			create l_file_name.make_from_string (a_config.theory_directory)
+			create l_dir.make (l_file_name)
+			l_dir.recursive_create_directory
+
+			create l_file_name.make_from_string (a_config.fix_directory)
+			create l_dir.make (l_file_name)
+			l_dir.recursive_create_directory
+
 			prepare_model_repository (a_config)
 		end
 
@@ -46,10 +54,6 @@ feature -- Access
 			l_dir.recursive_create_directory
 
 			create l_file_name.make_from_string (a_config.backward_model_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-			create l_file_name.make_from_string (a_config.theory_directory)
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
 		end

@@ -21,6 +21,7 @@ feature{NONE} -- Initialization
 			-- Initialize.
 		do
 			exception_spot := a_spot
+			config := a_config
 		end
 
 feature -- Basic operations

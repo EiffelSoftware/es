@@ -22,6 +22,7 @@ feature{NONE} -- Initialization
 			-- Initialize.
 		require
 			a_guard_condition_attached: a_guard_condition /= Void
+			a_config_attached: a_config /= Void
 		do
 			exception_spot := a_spot
 			create relevant_ast.make
@@ -56,7 +57,7 @@ feature -- Status report
 
 feature{NONE} -- Implementation
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]])
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
@@ -67,13 +68,14 @@ feature{NONE} -- Implementation
 				a_snippets.after
 			loop
 				l_fix_text := a_snippets.item_for_iteration.snippet.twin
-				fixes.extend (fix_with_text ("%N" + l_fix_text + "%N", a_snippets.item_for_iteration.ranking))
+				fixes.extend (fix_with_text ("%N" + l_fix_text + "%N", a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
 				a_snippets.forth
 			end
 		end
 
-	fix_with_text (a_else_part: detachable STRING; a_snippet_ranking: INTEGER): AFX_FIX
+	fix_with_text (a_else_part: detachable STRING; a_snippet_ranking: INTEGER; a_precondition: AFX_STATE; a_postcondition: AFX_STATE): AFX_FIX
 			-- New text of `exception_spot'.`recipient_' with fix `a_fix' applied.
+			-- `a_precondition' and `a_postcondition' are used to provide better logging information.
 		local
 			l_written_class: CLASS_C
 			l_match_list: LEAF_AS_LIST
@@ -107,12 +109,16 @@ feature{NONE} -- Implementation
 			l_last_as.append_text (l_else_text, l_match_list)
 
 				-- Build result fix.
-			create Result
+			create Result.make (exception_spot)
 			Result.set_exception_spot (exception_spot)
 			Result.set_text (feature_body_compound_ast.text (l_match_list))
+			Result.set_feature_text (feature_as_ast.text (l_match_list))
+			Result.set_precondition (a_precondition)
+			Result.set_postcondition (a_postcondition)
 			l_match_list.remove_modifications
 			l_ranking := ranking.twin
 			l_ranking.set_snippet_complexity (a_snippet_ranking)
+			Result.set_ranking (l_ranking)
 		end
 
 end

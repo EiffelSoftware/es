@@ -151,27 +151,25 @@ feature -- Basic operations
 
 			create fixes.make
 			if l_postcondition.is_empty then
-				create l_fix
+				create l_fix.make (exception_spot)
 				l_fix.set_text ("")
+				l_fix.set_feature_text ("should not happen.")
 				l_fix.set_ranking (ranking.twin)
+				l_fix.set_precondition (l_precondition)
+				l_fix.set_postcondition (l_postcondition)
 				fixes.extend (l_fix)
 			else
 					-- Get all combinations of premises that we want to include in a fix.
 				l_pre_hie := state_hierarchy (l_precondition)
 				l_post_hie:= state_hierarchy (l_postcondition)
 				l_snippets := fix_snippets (l_pre_hie, l_post_hie)
-				generate_fixes_from_snippet (l_snippets)
+				generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition)
 			end
 
 			debug ("autofix")
-				from
-					fixes.start
-				until
-					fixes.after
-				loop
-					print_fix (fixes.item_for_iteration.text)
-					fixes.forth
-				end
+					-- Print out all the fix candidates.
+				fixes.do_all (agent print_fix)
+				store_fixes
 			end
 		end
 
@@ -224,8 +222,16 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]])
+	feature_as_ast: FEATURE_AS
+			-- AST for feature `exception_spot'.`recipient_'
+		do
+			Result := exception_spot.recipient_.e_feature.ast
+		end
+
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
+			-- `a_precondition' and `a_postcondition' are not directly used for fix generation,
+			-- they are passed to the actually generated fixes to provide better logging information.
 		deferred
 		end
 
@@ -249,7 +255,7 @@ feature{NONE} -- Implementation
 				l_imp_parts.forth
 			end
 
-			debug
+			debug ("autofix")
 				io.put_string ("== Original State =============================%N")
 				io.put_string (a_state.debug_output + "%N")
 				io.put_string ("== Hierarchy =============================%N")
@@ -301,7 +307,6 @@ feature{NONE} -- Implementation
 			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
-
 	state_transitions (a_source_state: HASH_TABLE [AFX_STATE, STRING]; a_target_state: HASH_TABLE [AFX_STATE, STRING]): LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]
 			-- List of transitions to direct state from `a_source_state' to `a_target_state'
 		local
@@ -338,11 +343,12 @@ feature{NONE} -- Implementation
 						end
 					end (?, ?, l_source_state))
 
-			l_fixes := state_transitions_from_model (l_source_state, l_target_state, l_class, Void, Void)
+--			l_fixes := state_transitions_from_model (l_source_state, l_target_state, l_class, Void, Void)
 			create Result.make
-			l_fixes.do_all (
-				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])
-					do a_list.extend ([a_fix.call_sequence, a_fix.rank]) end (?, Result))
+			Result.extend ([create {DS_ARRAYED_LIST [STRING]}.make_from_array (<<"do_nothing">>), 1])
+--			l_fixes.do_all (
+--				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])
+--					do a_list.extend ([a_fix.call_sequence, a_fix.rank]) end (?, Result))
 		ensure
 			result_attached: Result /= Void
 		end
@@ -528,21 +534,83 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	print_fix (a_fix: STRING)
+	print_fix (a_fix: AFX_FIX)
 			-- Print `a_fix'.
 		local
 			l_printer: ETR_AST_STRUCTURE_PRINTER
 			l_output: ETR_AST_STRING_OUTPUT
-			l_feature_text: STRING
+			l_feat_text: STRING
 		do
-			l_feature_text := "feature bar do " + a_fix + " end"
-			entity_feature_parser.parse_from_string (l_feature_text, Void)
-			create l_output.make_with_indentation_string ("%T")
-			create l_printer.make_with_output (l_output)
-			l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+			if a_fix.feature_text.has_substring ("should not happen") then
+				l_feat_text := a_fix.feature_text
+			else
+				entity_feature_parser.parse_from_string (a_fix.text , Void)
+				create l_output.make_with_indentation_string ("%T")
+				create l_printer.make_with_output (l_output)
+				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+				l_feat_text := l_output.string_representation
+			end
 			io.put_string ("------------------------------------------------%N")
-			io.put_string (l_output.string_representation)
-			io.put_string ("")
+			io.put_string (a_fix.information)
+			io.put_string ("%N")
+			io.put_string (l_feat_text)
+			io.put_string ("%N")
+		end
+
+	store_fixes
+			-- Store fixes in to files.
+		local
+			l_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
+			l_sorter: DS_QUICK_SORTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
+		do
+				-- Sort fixes ascendingly according to their ranking.
+			create l_data.make (fixes.count)
+			fixes.do_all (
+				agent (a_fix: AFX_FIX; a_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]])
+					do
+						a_data.force_last ([a_fix, a_fix.ranking.score])
+					end (?, l_data))
+
+			create l_sorter.make (
+				create {AGENT_BASED_EQUALITY_TESTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]}.make (
+					agent (a, b: TUPLE [fix: AFX_FIX; ranking: DOUBLE]): BOOLEAN
+						do
+							Result := a.ranking < b.ranking
+						end))
+			l_sorter.sort (l_data)
+
+				-- Output fixes into files.			
+			l_data.do_all_with_index (agent store_fix_in_file)
+		end
+
+	store_fix_in_file (a_fix: TUPLE [fix: AFX_FIX; ranking: DOUBLE]; a_id: INTEGER)
+			-- Store `a_fix' as the `a_id'-th fix into a file.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
+			l_lines: LIST [STRING]
+		do
+			create l_file_name.make_from_string (config.fix_directory)
+			l_file_name.set_file_name ("fix" + a_id.out + ".txt")
+			create l_file.make_create_read_write (l_file_name)
+
+				-- Print patched feature text.
+			l_file.put_string (a_fix.fix.feature_text)
+			l_file.put_string (once "%N%N")
+
+				-- Print information about current fix.
+			l_lines := a_fix.fix.information.split ('%N')
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				l_file.put_string (once "-- ")
+				l_file.put_string (l_lines.item_for_iteration)
+				l_file.put_string (once "%N")
+				l_lines.forth
+			end
+			l_file.close
 		end
 
 end
