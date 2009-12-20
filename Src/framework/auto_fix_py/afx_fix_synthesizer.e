@@ -74,6 +74,7 @@ feature -- execution
 		local
 		    l_failing_tests: DS_LINEAR[AFX_TEST]
 		    l_failure_explainer: AFX_FAILURE_EXPLAINER
+		    l_marking_strategy: AFX_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY_I
 --		    l_explanation: detachable DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
 		do
 		    	-- get failing test from session
@@ -87,8 +88,12 @@ feature -- execution
 			    	end
 
         		    create l_failure_explainer
-        		    l_failure_explainer.explain (failing_test)
-        			exception_call_stack_frames.append_last (l_failure_explainer.last_exception_explanation)
+        		    l_failure_explainer.explain (failing_test.test.outcomes.last.test_response.exception.trace)
+
+        		    create {AFX_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY}l_marking_strategy
+        		    l_marking_strategy.mark (failing_test.test.outcomes.last.test_response.exception, l_failure_explainer.last_exception_explanation)
+
+        			exception_call_stack_frames.append_last (l_marking_strategy.last_marking_result)
         			check not exception_call_stack_frames.is_empty end
 
 					is_analysing := True
@@ -139,7 +144,7 @@ feature -- execution
             		    l_frame := exception_call_stack_frames.item_for_iteration
     		        	if l_frame.is_relevant then
             					-- collect fix positions for this frame and put the result into `fix_positions'
-            				fix_position_collector.config (l_frame.e_feature.ast, l_frame)
+            				fix_position_collector.config (l_frame.origin_feature.e_feature.ast, l_frame)
             				fix_position_collector.collect_fix_positions
             				l_fix_positions := fix_position_collector.last_collection
             				check l_fix_positions /= Void end
@@ -159,7 +164,7 @@ feature -- execution
 	    			elseif not fix_positions.after then
         				l_position := fix_positions.item_for_iteration
 
-        				fixing_target_collector.collect_fixing_targets (l_position.exception_position.e_feature, l_position.ast_position)
+        				fixing_target_collector.collect_fixing_targets (l_position.exception_position.origin_feature.e_feature, l_position.ast_position)
         				l_target_collection := fixing_target_collector.last_collection
 
         				l_position.register_fixing_targets (l_target_collection)
@@ -208,7 +213,7 @@ feature -- execution
         					    l_tune := l_tunes.item_for_iteration
 
         						create {AFX_FIX_INFO_SIMPLE}l_fix.make (l_position, l_tune)
-        						repository.register_fix (l_fix, l_position.exception_position.e_feature.written_in)
+        						repository.register_fix (l_fix, l_position.exception_position.origin_feature.written_in)
 
         					    l_tunes.forth
         					end

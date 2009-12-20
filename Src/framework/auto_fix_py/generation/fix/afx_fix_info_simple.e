@@ -41,7 +41,7 @@ feature -- Operation
 	apply (a_modifier: AFX_FIX_WRITER)
 			-- <Precursor>
 		require else
-		    same_class_name: fix_position.exception_position.class_name ~ a_modifier.context_class.name
+		    same_class_name: fix_position.exception_position.context_class_name ~ a_modifier.context_class.name
 		    is_valid_id: is_valid_id
 		local
 		    l_absolute_position: TUPLE[start_position: INTEGER; end_position: INTEGER]
