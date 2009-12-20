@@ -20,6 +20,8 @@ inherit
 
 	SHARED_EIFFEL_PARSER
 
+	UC_SHARED_STRING_EQUALITY_TESTER
+
 feature -- Access
 
 	exception_spot: AFX_EXCEPTION_SPOT
@@ -298,12 +300,6 @@ feature{NONE} -- Implementation
 				l_failing_state := l_failing_state.only_predicates
 				Result := l_passing_state.subtraction (l_failing_state)
 			end
-		end
-
-	string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
-			-- Equality tester for string
-		do
-			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
 	state_transitions (a_source_state: HASH_TABLE [AFX_STATE, STRING]; a_target_state: HASH_TABLE [AFX_STATE, STRING]): LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]

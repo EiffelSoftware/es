@@ -55,8 +55,19 @@ inherit
 			is_equal
 		end
 
+	AFX_CONSTANTS
+		undefine
+			copy,
+			is_equal
+		end
+
 create
-	make, make_chaos, make_from_object_state, make_from_expression_value, make_from_state
+	make,
+	make_chaos,
+	make_from_object_state,
+	make_from_expression_value,
+	make_from_state,
+	make_from_string
 
 convert
 	skeleton: {AFX_STATE_SKELETON}
@@ -146,6 +157,51 @@ feature{NONE} -- Initialization
 		do
 		    make (1, a_class, Void)
 		    is_chaos := True
+		end
+
+	make_from_string (a_class: like class_; a_feature: like feature_; a_data: STRING)
+			-- Make current state from `a_data'.
+		local
+			l_lines: LIST [STRING]
+			l_text: STRING
+			l_parts: LIST [STRING]
+			l_expr: AFX_AST_EXPRESSION
+			l_value: AFX_EXPRESSION_VALUE
+			l_expr_str: STRING
+			l_value_str: STRING
+		do
+			fixme ("Only support boolean and integer values for the moment. 20.12.2009 Jasonw")
+			l_lines := a_data.split ('%N')
+			make (l_lines.count, class_, feature_)
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				l_text := l_lines.item_for_iteration
+				l_text.replace_substring_all (once "%R", once "")
+				if not l_text.is_empty then
+					l_parts := string_slices (l_text, equation_separator)
+					check l_parts.count = 2 end
+					l_expr_str := l_parts.first
+					l_expr_str.left_adjust
+					l_expr_str.right_adjust
+					l_value_str := l_parts.last
+					l_value_str.left_adjust
+					l_value_str.right_adjust
+
+					create l_expr.make_with_text (a_class, a_feature, l_parts.first, a_class)
+					if l_value_str.is_integer then
+						create {AFX_INTEGER_VALUE} l_value.make (l_value_str.to_integer)
+					elseif l_value_str.is_boolean then
+						create {AFX_BOOLEAN_VALUE} l_value.make (l_value_str.to_boolean)
+					else
+						check not_supported: False end
+					end
+					force_last (create {AFX_EQUATION}.make (l_expr, l_value))
+				end
+				l_lines.forth
+			end
 		end
 
 feature -- Access
@@ -292,6 +348,23 @@ feature -- Setting
     		class_set: class_ = a_class
     	end
 
+    keep_if (a_test: PREDICATE [ANY, TUPLE [equation: AFX_EQUATION]])
+    		-- Keep equations only if they satisfy `a_test'.
+    		-- Remove those equations which does not satisfy `a_test'.
+    	local
+    		l_list: LINKED_LIST [AFX_EQUATION]
+    	do
+			create l_list.make
+			do_if (
+				agent l_list.extend,
+				agent (a_equ: AFX_EQUATION; t: PREDICATE [ANY, TUPLE [equation: AFX_EQUATION]]): BOOLEAN
+					do
+						Result := not t.item ([a_equ])
+					end (?, a_test))
+
+			l_list.do_all (agent remove)
+    	end
+    	
 feature -- Status report
 
 	debug_output: STRING

@@ -229,5 +229,32 @@ feature -- Math operations
 				j := j + 1
 			end
 		end
-	
+
+feature -- String manipulation
+
+	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
+			-- Split `a_string' on `a_separater', return slices.
+		local
+			l_index1, l_index2: INTEGER
+			l_part: STRING
+			l_done: BOOLEAN
+			l_spe_count: INTEGER
+		do
+			create {LINKED_LIST [STRING]} Result.make
+			from
+				l_spe_count := a_separater.count
+			until
+				l_done
+			loop
+				l_index2 := a_string.substring_index (a_separater, l_index1 + 1)
+				if l_index2 = 0 then
+					l_index2 := a_string.count + 1
+					l_done := True
+				end
+				l_part := a_string.substring (l_index1 + 1, l_index2 - 1)
+				Result.extend (l_part)
+				l_index1 := l_index2 + l_spe_count - 1
+			end
+		end
+
 end

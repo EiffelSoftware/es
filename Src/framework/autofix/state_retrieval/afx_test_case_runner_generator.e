@@ -7,6 +7,12 @@ note
 class
 	AFX_TEST_CASE_RUNNER_GENERATOR
 
+inherit
+	AFX_UTILITY
+		rename
+			system as old_system
+		end
+
 create
 	make
 
@@ -100,7 +106,9 @@ feature -- Generation
 			-- True means should; False means should not.
 		local
 			l_test_case: STRING
+			l_slices: LIST [STRING]
 		do
+			l_slices := string_slices (a_test_case_name, "__")
 			l_test_case := execute_test_case_body.twin
 			l_test_case.prepend ("%T")
 			l_test_case.replace_substring_all ("${TEST_CASE_NUMBER}", test_case_number.out)
@@ -112,6 +120,7 @@ feature -- Generation
 			l_test_case.replace_substring_all ("${TAG}", a_test_info.tag)
 			l_test_case.replace_substring_all ("${PASSING}", a_passing.out)
 			l_test_case.replace_substring_all ("${DRY_RUN}", a_dry_run.out)
+			l_test_case.replace_substring_all ("${UUID}", l_slices.last)
 
 			a_string.append (l_test_case)
 			a_string.append_character ('%N')
@@ -141,7 +150,7 @@ ${MAKE_BODY}
 		
 feature
 
-	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER; a_dry_run: BOOLEAN)
+	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER; a_dry_run: BOOLEAN; a_uuid: STRING)
 			-- If `a_dry_run' is True, states of the current system should not be retrieved.
 		do
 			do_nothing
@@ -162,7 +171,7 @@ end
 				l_retried: BOOLEAN
 			do
 				if not l_retried then
-					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER}, ${DRY_RUN})
+					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER}, ${DRY_RUN}, "${UUID}")
 					create l_tc
 					l_tc.generated_test_1
 				end

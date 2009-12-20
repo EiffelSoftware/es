@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 			create exception_spots.make (5)
 			exception_spots.compare_objects
 
+			create test_case_execution_status.make (config)
 		ensure
 			config_set: config = a_config
 		end
@@ -62,18 +63,24 @@ feature -- Basic operations
 
 	execute
 			-- Execute.
-		local
-			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
-			l_fixes: LINKED_LIST [AFX_FIX]
 		do
+			is_mocking := False
+
+				-- Setup test case execution status collector.
+			test_case_start_actions.extend (agent test_case_execution_status.on_test_case_start (?, is_mocking))
+			if not is_mocking then
+				test_case_breakpoint_hit_actions.extend (agent test_case_execution_status.on_break_point_hit)
+				application_exited_actions.extend (agent test_case_execution_status.on_application_exited)
+			end
+
 				-- Setup ARFF file generation.
 			if config.is_arff_generation_enabled then
 				create arff_generator.make (config)
 				test_case_breakpoint_hit_actions.extend (agent arff_generator.on_test_case_breakpoint_hit)
 				application_exited_actions.extend (agent arff_generator.on_application_exited)
 			end
-			is_mocking := True
 
+				-- Setup Daikon.
 			if config.is_daikon_enabled then
 				if is_mocking then
 					create {AFX_DAIKON_FACILITY_MOCK} daikon_facility.make (config)
@@ -94,29 +101,7 @@ feature -- Basic operations
 			analyze_test_cases
 
 				-- Generate fixes.
-			create l_fixes.make
-			from
-				exception_spots.start
-			until
-				exception_spots.after
-			loop
-				create l_gen.make (exception_spots.item_for_iteration, config)
-				l_gen.generate
-				from
-					l_gen.fixes.start
-				until
-					l_gen.fixes.after
-				loop
-					l_gen.fixes.item_for_iteration.generate
-					l_fixes.append (l_gen.fixes.item_for_iteration.fixes)
-					l_gen.fixes.forth
-				end
-				exception_spots.forth
-			end
-
-			debug ("autofix")
-				store_fixes (l_fixes)
-			end
+			generate_fixes
 		end
 
 feature{NONE} -- Access
@@ -160,6 +145,7 @@ feature{NONE} -- Access
 			l_exprs.extend (expr_a_passing)
 			l_exprs.extend (expr_a_test_case_number)
 			l_exprs.extend (expr_a_dry_run)
+			l_exprs.extend (expr_a_uuid)
 			create Result.make_with_text (a_class, a_feature, l_exprs)
 		end
 
@@ -219,6 +205,7 @@ feature{NONE} -- Constants
 	expr_a_passing: STRING = "a_passing"
 	expr_a_test_case_number: STRING = "a_test_case_number"
 	expr_a_dry_run: STRING = "a_dry_run"
+	expr_a_uuid: STRING = "a_uuid"
 
 feature{NONE} -- Actions
 
@@ -233,6 +220,7 @@ feature{NONE} -- Actions
 			l_passing: BOOLEAN
 			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
 			l_spot: AFX_EXCEPTION_SPOT
+			l_uuid: STRING
 		do
 			l_table := a_test_case_info.to_hash_table
 			l_recipient_class := first_class_starts_with_name (l_table.item (expr_a_recipient_class).out)
@@ -241,9 +229,10 @@ feature{NONE} -- Actions
 			l_bpslot := l_table.item (expr_a_bpslot).out.to_integer
 			l_tag := l_table.item (expr_a_tag).out
 			l_passing := l_table.item (expr_a_passing).out.to_boolean
+			l_uuid := l_table.item (expr_a_uuid).out
 			set_is_current_test_case_dry_run (l_table.item (expr_a_dry_run).out.to_boolean)
 
-			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing)
+			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
 
 			if is_current_test_case_dry_run then
 			else
@@ -269,6 +258,14 @@ feature{NONE} -- Actions
 			-- `a_breakpoint' is a break point in a test case.
 			-- `a_state' stores the values of all evaluated expressions'.
 		do
+			a_state.keep_if (
+				agent (a_equation: AFX_EQUATION): BOOLEAN
+					do
+						Result :=
+							a_equation.value.is_integer or
+							a_equation.value.is_boolean
+					end)
+
 			test_case_breakpoint_hit_actions.call ([current_test_case_info, a_state, a_breakpoint.breakable_line_number])
 		end
 
@@ -283,9 +280,11 @@ feature{NONE} -- Actions
 						collect_exception_info
 					end
 					if is_mocking then
+							-- Mocking is designed for ease of debugging.
 						if attached {AFX_DAIKON_FACILITY_MOCK} daikon_facility as l_daikon then
 							l_daikon.on_new_test_case_found (current_test_case_info)
 						end
+						test_case_execution_status.on_test_case_start (currenT_test_case_info, is_mocking)
 						a_dm.application.kill
 					else
 						a_dm.controller.resume_workbench_application
@@ -386,7 +385,42 @@ feature{NONE} -- Implication
 				end)
 		end
 
-feature -- Logging
+	test_case_execution_status: AFX_TEST_CASE_EXECUTION_STATUS_COLLECTOR
+			-- Test case execution status
+			-- Include both passing and failing test cases.
+
+feature -- Fix generation
+
+	generate_fixes
+			-- Generate candidate fixes.
+		local
+			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
+			l_fixes: LINKED_LIST [AFX_FIX]
+		do
+			create l_fixes.make
+			from
+				exception_spots.start
+			until
+				exception_spots.after
+			loop
+				create l_gen.make (exception_spots.item_for_iteration, config)
+				l_gen.generate
+				from
+					l_gen.fixes.start
+				until
+					l_gen.fixes.after
+				loop
+					l_gen.fixes.item_for_iteration.generate
+					l_fixes.append (l_gen.fixes.item_for_iteration.fixes)
+					l_gen.fixes.forth
+				end
+				exception_spots.forth
+			end
+
+			debug ("autofix")
+				store_fixes (l_fixes)
+			end
+		end
 
 	store_fixes (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Store fixes in to files.

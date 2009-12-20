@@ -34,7 +34,7 @@ feature{NONE} -- Initialization
 			id_attached: id /= Void
 		end
 
-	make (a_class_under_test: STRING; a_feature_under_test: STRING; a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN)
+	make (a_class_under_test: STRING; a_feature_under_test: STRING; a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_uuid: STRING)
 			-- Initialize Current.
 		do
 			class_under_test := a_class_under_test.twin
@@ -46,6 +46,7 @@ feature{NONE} -- Initialization
 			tag := a_tag.twin
 			is_passing := a_passing
 			initialize_id
+			uuid := a_uuid.twin
 		ensure
 			id_attached: id /= Void
 		end
@@ -97,6 +98,9 @@ feature -- Access
 	id: STRING
 			-- Identifier of Current test case
 
+	uuid: STRING
+			-- A sequence of digits serving as a universal identifier of current test case
+
 	out: STRING
 			-- New string containing terse printable representation
 			-- of current object
@@ -134,6 +138,20 @@ feature -- Access
 			Result.append ("Passing: ")
 			Result.append (is_passing.out)
 			Result.append_character ('%N')
+		end
+
+	first_break_point_slot: INTEGER
+			-- Index of the first break point slot.
+			-- Include those of pre/post conditions.
+		do
+			Result := 1
+		end
+
+	last_break_point_slot: INTEGER
+			-- Index of the last break point slot.
+			-- Include those of pre/post conditions.
+		do
+			Result := recipient_.number_of_breakpoint_slots
 		end
 
 feature -- Status report
@@ -177,30 +195,6 @@ feature -- Setting
 		end
 
 feature{NONE} -- Implementation
-
-	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
-			-- Split `a_string' on `a_separater', return slices.
-		local
-			l_index1, l_index2: INTEGER
-			l_part: STRING
-			l_done: BOOLEAN
-		do
-			create {LINKED_LIST [STRING]} Result.make
-			from
-
-			until
-				l_done
-			loop
-				l_index2 := a_string.substring_index (a_separater, l_index1 + 1)
-				if l_index2 = 0 then
-					l_index2 := a_string.count + 1
-					l_done := True
-				end
-				l_part := a_string.substring (l_index1 + 1, l_index2 - 1)
-				Result.extend (l_part)
-				l_index1 := l_index2 + 1
-			end
-		end
 
 	initialize (a_class_name: STRING)
 			-- Initialize with `a_class_name'
@@ -249,6 +243,8 @@ feature{NONE} -- Implementation
 
 					elseif l_part.starts_with (once "TAG_") then
 						tag := l_part.substring (5, l_part.count)
+					elseif l_part.item (1).is_digit then
+						uuid := l_part.twin
 					end
 				end
 				l_parts.forth

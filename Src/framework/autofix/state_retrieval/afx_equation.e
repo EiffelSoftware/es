@@ -23,6 +23,11 @@ inherit
 			out
 		end
 
+	AFX_CONSTANTS
+		undefine
+			out
+		end
+
 create
 	make
 
@@ -119,7 +124,7 @@ feature -- Status report
 		do
 			create Result.make (64)
 			Result.append (expression.text)
-			Result.append (once " : ")
+			Result.append (equation_separator)
 			Result.append (value.out)
 		end
 
