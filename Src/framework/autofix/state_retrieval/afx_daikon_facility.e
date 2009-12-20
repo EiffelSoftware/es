@@ -168,10 +168,20 @@ feature{NONE} -- Implementation
 			fail_CMD : STRING
 		do
 			create shell
-			pass_cmd := "/usr/bin/java daikon.Daikon " + pass_file_name (pass_test_case_info)
-			fail_cmd := "/usr/bin/java daikon.Daikon " + fail_file_name (fail_test_case_info)
+			pass_cmd := daikon_command + " " + pass_file_name (pass_test_case_info)
+			fail_cmd := daikon_command + " " + fail_file_name (fail_test_case_info)
 			daikon_fail_result := shell.output_from_program (fail_cmd, void)
 			daikon_pass_result := shell.output_from_program (pass_cmd, void)
+		end
+
+	daikon_command: STRING
+			-- Command to launch daikon
+		do
+			if {PLATFORM}.is_windows then
+				Result := "java daikon.Daikon"
+			else
+				Result := "/usr/bin/java daikon.Daikon"
+			end
 		end
 
 	store_daikon_state is

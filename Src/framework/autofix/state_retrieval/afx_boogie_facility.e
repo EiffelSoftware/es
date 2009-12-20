@@ -42,18 +42,26 @@ feature{NONE} -- Implementation
 
 	raw_solver_output (a_content: STRING): STRING
 			-- Output from the solver for input `a_content'
+		do
+			generate_file (a_content)
+			Result := output_from_program (boogie_command, Void)
+		end
+
+	boogie_command: STRING
+			-- Command to launch Boogie
 		local
 			l_boogie_path: STRING
 			l_input_path: STRING
-			l_cmd: STRING
 		do
-			generate_file (a_content)
-			l_boogie_path := solved_path ("`which Boogie.exe`")
-			l_boogie_path.replace_substring_all ("\", "\\")
-			l_input_path := solved_path (output_file_path)
-			l_input_path.replace_substring_all ("\", "\\")
-			l_cmd := "/usr/bin/wine " + l_boogie_path + " /trace " + l_input_path
-			Result := output_from_program (l_cmd, Void)
+			if {PLATFORM}.is_windows then
+				Result := "Boogie.exe /trace " + output_file_path
+			else
+				l_boogie_path := solved_path ("`which Boogie.exe`")
+				l_boogie_path.replace_substring_all ("\", "\\")
+				l_input_path := solved_path (output_file_path)
+				l_input_path.replace_substring_all ("\", "\\")
+				Result := "/usr/bin/wine " + l_boogie_path + " /trace " + l_input_path
+			end
 		end
 
 	solver_output_for_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, AFX_EXPRESSION]
