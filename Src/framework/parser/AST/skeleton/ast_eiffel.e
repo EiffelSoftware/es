@@ -20,7 +20,7 @@ feature -- Identification
 	path: detachable AST_PATH
 			-- path to this ast node from the root
 
-	set_path(a_path: like path) is
+	set_path(a_path: like path)
 			-- set path
 		do
 			path := a_path

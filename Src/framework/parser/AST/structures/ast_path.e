@@ -15,7 +15,8 @@ create
 	make_from_parent,
 	make_as_root,
 	make_from_string,
-	make_from_child
+	make_from_child,
+	make_from_other
 
 feature -- Constants
 
@@ -30,7 +31,7 @@ feature -- Access
 
 	as_string: STRING
 
-	as_array: ARRAY[INTEGER] is
+	as_array: ARRAY[INTEGER]
 			-- Current in array representation
 			-- lazy initialization
 		require
@@ -45,11 +46,34 @@ feature -- Access
 
 	is_valid: BOOLEAN
 
-	has_prefix(a_prefix: like as_string):BOOLEAN is
+	has_prefix(a_prefix: like as_string):BOOLEAN
 			-- does current have a_prefix?
 		do
 			Result := as_string.starts_with (a_prefix)
 		end
+
+--feature -- Operations
+
+--	is_after alias ">" (other:like Current): BOOLEAN
+--				-- is `Current' after `other'
+--		do
+
+--		end
+
+--	is_before alias "<" (other:like Current): BOOLEAN
+--				-- is `Current' before `other'
+--		do
+
+--		end
+
+--	set_root(a_root: like root)
+--			-- set `root' to `a_root'
+--		require
+--			non_void: a_root /= void
+--		do
+--			root := a_root
+--		end
+
 feature -- Hashing
 
 	hash_code: INTEGER
@@ -58,11 +82,11 @@ feature -- Hashing
 			Result := as_string.hash_code
 		end
 
-feature {NONE} -- Internal
+feature {NONE}-- Internal
 
 	internal_as_array: like as_array
 
-	init_array_representation is
+	init_array_representation
 			-- init as_array
 		require
 			valid: is_valid
@@ -87,7 +111,7 @@ feature {NONE} -- Internal
 
 feature -- Validation
 
-	is_valid_path_expr(a_string_rep: like as_string):BOOLEAN is
+	is_valid_path_expr(a_string_rep: like as_string):BOOLEAN
 			-- check if a_string_rep is a valid path expression
 		local
 			split_list: LIST[STRING]
@@ -99,11 +123,10 @@ feature -- Validation
 				Result := true
 				split_list.start
 			until
-				split_list.after
+				split_list.after or not Result
 			loop
 				if not split_list.item.is_integer or else split_list.item.to_integer<=0 then
 					Result := false
-					split_list.finish
 				else
 					split_list.forth
 				end
@@ -112,7 +135,7 @@ feature -- Validation
 
 feature -- Comparison
 
-	is_equal(other: like Current):BOOLEAN is
+	is_equal(other: like Current):BOOLEAN
 			-- is other equal to current?
 		do
 			Result := as_string.is_equal (other.as_string)
@@ -120,7 +143,19 @@ feature -- Comparison
 
 feature -- Creation
 
-	make_from_string(a_root: like root; a_string_rep: like as_string) is
+	make_from_other(an_other: like current)
+			-- make from `an_other'
+		require
+			non_void: an_other /= void
+		do
+			root := an_other.root
+			as_string := an_other.as_string
+			is_valid := an_other.is_valid
+
+			branch_id := an_other.branch_id
+		end
+
+	make_from_string(a_root: like root; a_string_rep: like as_string)
 			-- make from a string
 		require
 			non_void: a_root /= void and a_string_rep /= void
@@ -129,10 +164,12 @@ feature -- Creation
 			as_string := a_string_rep
 			is_valid := is_valid_path_expr(as_string)
 
-			branch_id := as_string.split (separator).last.to_integer
+			if is_valid then
+				branch_id := as_string.split (separator).last.to_integer
+			end
 		end
 
-	make_from_child(a_child: like root; level: INTEGER) is
+	make_from_child(a_child: like root; level: INTEGER)
 			-- make current as parent of child, n levels down
 		require
 			non_void: a_child /= void
@@ -166,7 +203,7 @@ feature -- Creation
 			end
 		end
 
-	make_from_parent(a_parent: like root; a_branch_number: INTEGER) is
+	make_from_parent(a_parent: like root; a_branch_number: INTEGER)
 			-- make from parent
 		require
 			non_void: a_parent /= void
@@ -182,7 +219,7 @@ feature -- Creation
 			is_valid := true
 		end
 
-	make_as_root(a_root: like root) is
+	make_as_root(a_root: like root)
 			-- make as root
 		do
 			root := a_root

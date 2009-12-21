@@ -28,7 +28,7 @@ feature {NONE} -- Implementation
 			Result.is_end_keyword
 		end
 
-feature -- Transform
+feature -- Transformations
 
 	transformation_result: detachable ETR_TRANSFORMABLE
 		-- result of last transformation
@@ -71,7 +71,7 @@ feature -- Transform
 				-- index it as well
 				index_ast_from_root (l_result_node)
 
-				create transformation_result.make_from_ast (l_result_node, a_context)
+				create transformation_result.make_from_ast (l_result_node, a_context, false)
 			else
 				transformation_result := new_invalid_transformable
 			end
@@ -83,6 +83,40 @@ feature -- Transform
 			test_not_void: a_test /= void
 		do
 			if_then_wrap_in_context(a_test, if_part, else_part, a_test.context)
+		end
+
+feature -- Modifications
+
+	insert_after(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+			-- Insert `a_new_trans' after `a_reference'
+		require
+			non_void: a_reference /= void and a_new_trans /= void
+		do
+			create Result.make_insert_after (a_reference, a_new_trans)
+		end
+
+	insert_before(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+			-- Insert `a_new_trans' before `a_reference'
+		require
+			non_void: a_reference /= void and a_new_trans /= void
+		do
+			create Result.make_insert_before (a_reference, a_new_trans)
+		end
+
+	delete(a_reference: AST_EIFFEL): ETR_AST_MODIFICATION
+			-- Delete `a_reference'
+		require
+			non_void: a_reference /= void
+		do
+			create Result.make_delete (a_reference)
+		end
+
+	replace(a_reference: AST_EIFFEL; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+				-- Replace `a_reference' by `a_replacement'
+		require
+			non_void: a_reference /= void and a_replacement /= void
+		do
+			create Result.make_replace (a_reference, a_replacement)
 		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

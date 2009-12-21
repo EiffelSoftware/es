@@ -11,38 +11,28 @@ inherit
 		export
 			{NONE} all
 		end
---	SHARED_EIFFEL_PARSER
---		export
---			{NONE} all
---		end
 
 feature -- Constants
 
-	ast_modifier: ETR_AST_MODIFIER is
-			-- shared instance of ETR_AST_MODIFIER
-		do
-			create Result
-		end
-
-	path_initializer: ETR_AST_PATH_INITIALIZER is
+	path_initializer: ETR_AST_PATH_INITIALIZER
 			-- shared instance of ETR_AST_PATH_INITIALIZER
 		once
 			create Result
 		end
 
-	ast_locator: ETR_AST_LOCATOR is
+	ast_locator: ETR_AST_LOCATOR
 			-- shared instance of ETR_AST_LOCATOR
 		once
 			create Result
 		end
 
-	basic_operators: ETR_BASIC_OPS is
+	basic_operators: ETR_BASIC_OPS
 			-- shared instance of ETR_BASIC_OPS
 		once
 			create Result
 		end
 
-	syntax_version: NATURAL_8 is
+	syntax_version: NATURAL_8
 			-- syntax version used
 		once
 			Result := {CONF_OPTION}.syntax_index_transitional
@@ -53,26 +43,47 @@ feature -- Access
 	duplicated_ast: detachable AST_EIFFEL
 			-- Result of `duplicate_ast'
 
-	ast_parent(an_ast: AST_EIFFEL): detachable AST_EIFFEL is
-			-- finds the parent of `an_ast' using paths
+	ast_parent(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
+			-- finds a parent from `a_path' and root `a_root'
 		require
-			ast_attached: an_ast /= void
+			non_void: a_path /= void and a_root /= void
+			path_non_void: a_root.path /= void
+			path_valid: a_path.is_valid and a_root.path.is_valid
+			not_root: a_path.as_array.count>1
 		local
 			l_parent_path: AST_PATH
+			l_parent_string: STRING
+			i: INTEGER
 		do
-			create l_parent_path.make_from_child (an_ast, 1)
+			-- construct path of parent
+			from
+				i := a_path.as_array.lower
+				create l_parent_string.make_empty
+			until
+				i > a_path.as_array.upper-1
+			loop
+				if i /= a_path.as_array.upper-1 then
+					l_parent_string := l_parent_string + a_path.as_array[i].out + {AST_PATH}.separator.out
+				else
+					l_parent_string := l_parent_string + a_path.as_array[i].out
+				end
+				i := i+1
+			end
 
-			Result := find_node (l_parent_path)
+			-- find the parent
+			create l_parent_path.make_from_string (a_root, l_parent_string)
+			ast_locator.find_from_root (l_parent_path)
+			Result := ast_locator.found_node
 		end
 
-	find_node(a_path: AST_PATH): detachable AST_EIFFEL is
-			-- finds a node from `a_path'
+	find_node(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
+			-- finds a node from `a_path' and root `a_root'
 		require
-			non_void: a_path /= void
-			valid: a_path.is_valid
-			root_set: a_path.root /= void
+			non_void: a_path /= void and a_root /= void
+			path_non_void: a_root.path /= void
+			path_valid: a_path.is_valid and a_root.path.is_valid
 		do
-			ast_locator.find_from_root (a_path)
+			ast_locator.find_with_root (a_path, a_root)
 
 			Result := ast_locator.found_node
 		end
@@ -103,7 +114,7 @@ feature -- New
 			create Result.make_invalid
 		end
 
-	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
+	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
 			-- create a new instruction from `an_instr' with context `a_context'
 		require
 			instr_attached: an_instr /= void
@@ -112,14 +123,14 @@ feature -- New
 			internal_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
 			if attached internal_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
-				index_ast_from_root (body.compound.first)
-				create Result.make_from_ast (body.compound.first, a_context)
+--				index_ast_from_root (body.compound.first)
+				create Result.make_from_ast (body.compound.first, a_context, false)
 			else
 				create Result.make_invalid
 			end
 		end
 
-	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE is
+	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
 			-- create a new exression from `an_expr' with context `a_context'
 		require
 			expr_attached: an_expr /= void
@@ -128,8 +139,8 @@ feature -- New
 			internal_expr_parser.parse_from_string("check "+an_expr,void)
 
 			if attached internal_expr_parser.expression_node then
-				index_ast_from_root (internal_expr_parser.expression_node)
-				create Result.make_from_ast (internal_expr_parser.expression_node, a_context)
+--				index_ast_from_root (internal_expr_parser.expression_node)
+				create Result.make_from_ast (internal_expr_parser.expression_node, a_context, false)
 			else
 				create Result.make_invalid
 			end
@@ -137,7 +148,7 @@ feature -- New
 
 feature -- Operations
 
-	index_ast_from_root(an_ast: AST_EIFFEL) is
+	index_ast_from_root(an_ast: AST_EIFFEL)
 			-- indexes and ast with root `an_ast'
 		require
 			non_void: an_ast /= void
@@ -153,7 +164,7 @@ feature -- Operations
 			path_initializer.process_from(an_ast)
 		end
 
-	duplicate_ast(an_ast: AST_EIFFEL) is
+	duplicate_ast(an_ast: AST_EIFFEL)
 			-- duplicates `an_ast' and stores the result in `duplicated_ast'
 		require
 			non_void: an_ast /= void
@@ -168,7 +179,7 @@ feature -- Operations
 			duplicated_ast := an_ast.deep_twin
 		end
 
-	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [like instr] is
+	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [like instr]
 			-- creates list with a single instruction `instr'
 		require
 			instr_not_void: instr/=void

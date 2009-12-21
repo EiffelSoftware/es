@@ -92,7 +92,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
+	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
 			-- process an n-way branch with parent `a_parent' and branches `br'
 		deferred
 		end
@@ -330,7 +330,7 @@ feature -- Roundtrip
 
 	process_formal_dec_as (l_as: FORMAL_DEC_AS)
 		do
-			process_n_way_branch(l_as,[l_as.constraints, l_as.creation_feature_list])
+			process_n_way_branch(l_as,[l_as.formal, l_as.constraints, l_as.creation_feature_list])
 		end
 
 	process_constraining_type_as (l_as: CONSTRAINING_TYPE_AS)

@@ -41,15 +41,15 @@ feature -- Properties
 			Result := 'e'
 		end
 
-	printer_test is
+	printer_test
 			-- print some test class
 		local
 			l_class_file: KL_BINARY_INPUT_FILE
 			l_output_file: KL_BINARY_OUTPUT_FILE
 			l_class_ast: CLASS_AS
 			l_printer: ETR_AST_STRUCTURE_PRINTER
-			l_output: ETR_AST_STRING_OUTPUT
---			l_output: ETR_AST_HIERARCHY_OUTPUT
+--			l_output: ETR_AST_STRING_OUTPUT
+			l_output: ETR_AST_HIERARCHY_OUTPUT
 			l_parser: EIFFEL_PARSER
 		do
 			create l_parser.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
@@ -65,11 +65,12 @@ feature -- Properties
 			l_class_file.close
 
 			l_class_ast := l_parser.root_node
+			index_ast_from_root (l_class_ast)
 
 			create l_output.make
 
 			create l_printer.make_with_output (l_output)
-			l_class_ast.process (l_printer)
+			l_printer.print_ast_to_output(l_class_ast)
 
 			create l_output_file.make (system.project_location.location + "\syntax_demo.duplicated.ee")
 			l_output_file.open_write
@@ -77,45 +78,60 @@ feature -- Properties
 			l_output_file.close
 		end
 
+	print_ast_to_console(an_ast: AST_EIFFEL)
+			-- prints an ast to console
+		local
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+		do
+			create l_output.make
+			create l_printer.make_with_output (l_output)
+			l_printer.print_ast_to_output(an_ast)
+			io.putstring (l_output.string_representation)
+		end
 
-	test(a_context: ETR_CONTEXT) is
+	test(a_context: ETR_CONTEXT)
 			-- test ast identifiers
 		local
 			da: DO_AS
 			target_class: CLASS_I
-			original_ast, working_ast: CLASS_AS
+			original_ast: CLASS_AS
 			instr1,instr2: INSTRUCTION_AS
-			cid: INTEGER
+			modifier: ETR_AST_MODIFIER
+			root_transformable: ETR_TRANSFORMABLE
 		do
+			create modifier.make
+
 			-- retrieve some existing ast
 			target_class := universe.compiled_classes_with_name("ETR_DUMMY").first
 			original_ast := target_class.compiled_class.ast
 
-			-- duplicate it and index it
-			duplicate_ast (original_ast)
-			working_ast ?= duplicated_ast
-			index_ast_from_root (working_ast)
+			-- create transformable
+			-- this creates a copy of an `original_ast' with path indexes
+			create root_transformable.make_from_ast (original_ast, a_context, true)
 
-			-- get some instruction
-			da ?= working_ast.features.first.features.first.body.as_routine.routine_body
-			instr1 := da.compound.i_th (1)
-			instr2 := da.compound.i_th (2)
+			-- get some instructions
+			if attached {CLASS_AS}root_transformable.target_node as cls then
+				da ?= cls.features.first.features.first.body.as_routine.routine_body
+				instr1 := da.compound.i_th (1)
+				instr2 := da.compound.i_th (2)
+			end
 
 			-- existing instructions:
 			-- 1. io.putint(1)
 			-- 2. io.putint(2)
 
-			-- insert after the last item
-			ast_modifier.insert_after (da.compound.last.path, new_instr("io.putint(3)",a_context))
+			-- insert before instr1
+			modifier.add (basic_operators.insert_before (instr1, new_instr("io.putint(0)",a_context)))
 
-			-- insert before the first item
-			ast_modifier.insert_before (da.compound.first.path, new_instr("io.putint(0)",a_context))
+			-- insert after instr2
+			modifier.add (basic_operators.insert_after (instr2, new_instr("io.putint(3)",a_context)))
 
-			-- insert after the instr1
-			ast_modifier.insert_after (instr1.path, new_instr("io.putreal (1.5)",a_context))
+--			-- insert after the instr1
+			modifier.add (basic_operators.insert_after (instr1, new_instr("io.putreal (1.5)",a_context)))
 
-			-- replace old instr2
-			ast_modifier.replace (instr2.path, new_instr("io.putreal (2.5)",a_context))
+--			-- replace old instr2
+			modifier.add (basic_operators.replace (instr2, new_instr("io.putreal (2.5)",a_context)))
 
 			-- replace instr1 by
 			-- if a_var>0 then
@@ -124,33 +140,99 @@ feature -- Properties
 			--   io.putint(8)
 			-- end
 			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a_context), -- condition
-												create {ETR_TRANSFORMABLE}.make_from_ast(instr1,a_context), -- if_part
+												create {ETR_TRANSFORMABLE}.make_from_ast(instr1,a_context,true), -- if_part
 												new_instr("io.putint(8)",a_context) -- else_part
 											)
 
-			ast_modifier.replace(instr1.path,basic_operators.transformation_result)
+			modifier.add (basic_operators.replace(instr1,basic_operators.transformation_result))
 
 			-- remove the last item (io.putint(3))
-			ast_modifier.remove(da.compound.last.path)
+			-- this would fail because the original node is no longer present
+--			modifier.add (basic_operators.delete(da.compound.last))
+
+			-- apply changes, create a new copy of the ast with the changes
+			modifier.apply_with_context (a_context)
+
+--			print_ast_to_console (working_ast.features.first.features.first)
 
 			-- output should be:
-			-- branch taken: 0 1 1.5 2.5 followed by
-			-- not taken: 0 8 1.5 2.5
+			-- branch taken: 0 1 1.5 2.5 3 followed by
+			-- not taken: 0 8 1.5 2.5 3
 
 			-- save changes to class ETR_DUMMY
-			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty then
-				cid :=t.first.compiled_class.class_id
-				replace_class_with (original_ast,working_ast)
-				mark_class_changed (working_ast)
+			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty and attached {CLASS_AS}modifier.modified_ast.target_node as new_ast then
+				replace_class_with (original_ast,new_ast)
+				mark_class_changed (new_ast)
 			end
 		end
 
+	test2(a_context: ETR_CONTEXT)
+			-- test ast identifiers
+		local
+			da: DO_AS
+			target_class: CLASS_I
+			original_ast: CLASS_AS
+			instr1,instr2: INSTRUCTION_AS
+			modifier: ETR_AST_MODIFIER
+			root_transformable: ETR_TRANSFORMABLE
+			mod1, mod2, mod3, mod4, mod5: ETR_AST_MODIFICATION
+		do
+			create modifier.make
+
+			-- retrieve some existing ast
+			target_class := universe.compiled_classes_with_name("ETR_DUMMY").first
+			original_ast := target_class.compiled_class.ast
+
+			-- create transformable
+			-- this creates a copy of an `original_ast' with path indexes
+			create root_transformable.make_from_ast (original_ast, a_context, true)
+
+			-- get some instructions
+			if attached {CLASS_AS}root_transformable.target_node as cls then
+				da ?= cls.features.first.features.first.body.as_routine.routine_body
+				instr1 := da.compound.i_th (1)
+				instr2 := da.compound.i_th (2)
+			end
+
+			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a_context), -- condition
+												create {ETR_TRANSFORMABLE}.make_from_ast(instr1,a_context,true), -- if_part
+												new_instr("io.putint(8)",a_context) -- else_part
+											)
+
+			-- create some modifications
+			mod1 := basic_operators.insert_before (instr1, new_instr("io.putint(0)",a_context))
+			mod2 := basic_operators.insert_after (instr2, new_instr("io.putint(3)",a_context))
+			mod3 := basic_operators.insert_after (instr1, new_instr("io.putreal (1.5)",a_context))
+			mod4 := basic_operators.replace (instr2, new_instr("io.putreal (2.5)",a_context))
+			mod5 := basic_operators.replace(instr1,basic_operators.transformation_result)
+
+			-- add them to the "transaction set"
+			modifier.add (mod1); modifier.add (mod2); modifier.add (mod3)
+			modifier.add (mod4); modifier.add (mod5)
+
+			-- apply changes, creates a new copy of the ast with the changes (reset implicit)
+			modifier.apply_with_context (a_context)
+
+			-- we dont want this ast, create a new one
+			-- only using modifier 1 and 2
+			modifier.add (mod1); modifier.add (mod2)
+
+			-- apply the changes
+			modifier.apply_with_context (a_context)
+
+			-- save changes to class ETR_DUMMY
+			-- using modifier.modified_ast as new class node
+			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty and attached {CLASS_AS}modifier.modified_ast.target_node as new_ast then
+				replace_class_with (original_ast,new_ast)
+				mark_class_changed (new_ast)
+			end
+		end
 
 	execute
 			-- Action performed when invoked from the
 			-- command line.
---		local
---			context: ETR_CONTEXT
+		local
+			context: ETR_CONTEXT
 		do
 			-- make sure we're in the test project
 			check
@@ -158,16 +240,17 @@ feature -- Properties
 			end
 
 			-- at the moment this contains the whole universe + more
---			create context
+			create context
 
 			printer_test
 
 			-- reparse to have the original ast
---			reparse_class_by_name("ETR_DUMMY")
+			reparse_class_by_name("ETR_DUMMY")
 
 --			test(context)
+			test2(context)
 
---			eiffel_project.quick_melt
+			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")
 		end
 

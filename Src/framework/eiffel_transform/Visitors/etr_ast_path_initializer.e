@@ -15,7 +15,7 @@ inherit
 
 feature -- Creation
 
-	process_from_root(a_root: AST_EIFFEL) is
+	process_from_root(a_root: AST_EIFFEL)
 			-- process from `a_root'
 		require
 			root_set: a_root /= void
@@ -24,7 +24,7 @@ feature -- Creation
 			a_root.process (Current)
 		end
 
-	process_from(a_node: AST_EIFFEL) is
+	process_from(a_node: AST_EIFFEL)
 			-- process starting at `a_node'
 		require
 			node_set: a_node /= void
@@ -34,7 +34,7 @@ feature -- Creation
 
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
+	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
 			-- process an n-way branch with parent `a_parent' and branches `br'
 		local
 			i: INTEGER

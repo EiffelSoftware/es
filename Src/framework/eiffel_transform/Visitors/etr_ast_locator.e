@@ -17,8 +17,29 @@ feature -- Access
 
 feature -- Creation
 
-	find_from_root(a_path: AST_PATH) is
-			-- starting from the root find a node by following `a_path'
+	find_with_root(a_path: AST_PATH; a_root: AST_EIFFEL)
+			-- starting from `a_root' find a node by following `a_path'
+		require
+			non_void: a_path /= void and a_root /= void
+			path_non_void: a_root.path /= void
+			path_valid: a_path.is_valid and a_root.path.is_valid
+		do
+			found := false
+			found_node := void
+
+			path := a_path
+			current_position := path.as_array.lower
+
+			if path.is_equal (a_root.path) then
+				found := true
+				found_node := a_root
+			else
+				a_root.process (Current)
+			end
+		end
+
+	find_from_root(a_path: AST_PATH)
+			-- starting from `a_path's root find a node by following `a_path'
 		require
 			non_void: a_path /= void
 			path_valid: a_path.is_valid
@@ -40,7 +61,7 @@ feature -- Creation
 
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL]) is
+	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
 			-- process an n-way branch with parent `a_parent' and branches `br'
 		local
 			l_next_br_number: INTEGER
@@ -70,7 +91,7 @@ feature {NONE} -- Implementation
 	current_position: INTEGER
 		-- current positin in `path'
 
-	next_branch: INTEGER is
+	next_branch: INTEGER
 			-- next branch to take
 		require
 			in_range: current_position<path.as_array.upper

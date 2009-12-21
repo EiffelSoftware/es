@@ -18,7 +18,7 @@ create
 
 feature -- Access
 
-	path: detachable AST_PATH is
+	path: detachable AST_PATH
 			-- path of `Current'
 		do
 			if attached target_node then
@@ -33,23 +33,33 @@ feature -- Access
 
 feature -- creation
 
-	make_from_ast(a_node: like target_node; a_context: like context) is
+	make_from_ast(a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
 			-- make with `a_node' and `a_context'
 		require
 			non_void: a_node /= void and a_context /= void
 			has_path: a_node.path /= void
 			valid_path: a_node.path.is_valid
 		do
-			target_node := a_node
+			if duplicate then
+				duplicate_ast (a_node)
+				target_node := duplicated_ast
+			else
+				target_node := a_node
+			end
+
 			context := a_context
+
+			-- index it
+			index_ast_from_root (target_node)
 
 			is_valid := true
 		end
 
-	make_from_ast_list(a_list: LIST[like target_node]; a_context: like context) is
+	make_from_ast_list(a_list: LIST[like target_node]; a_context: like context; duplicate: BOOLEAN)
 			-- make with `a_list' and `a_context'
 		require
 			non_void: a_list /= void and a_context /= void
+			not_empty: not a_list.is_empty
 		local
 			l_eiffel_list: EIFFEL_LIST[AST_EIFFEL]
 		do
@@ -61,9 +71,13 @@ feature -- creation
 			until
 				a_list.after
 			loop
-				duplicate_ast (a_list.item)
+				if duplicate then
+					duplicate_ast (a_list.item)
+					l_eiffel_list.extend (duplicated_ast)
+				else
+					l_eiffel_list.extend (a_list.item)
+				end
 
-				l_eiffel_list.extend (duplicated_ast)
 				a_list.forth
 			end
 
@@ -75,13 +89,15 @@ feature -- creation
 			is_valid := true
 		end
 
-	make_invalid is
+	make_invalid
 			-- make and mark as invalid
 		do
 			context := void
 			target_node := void
 			is_valid := false
 		end
+invariant
+	valid_target: is_valid implies (attached target_node and attached context)
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -12,7 +12,7 @@ inherit
 	SHARED_DEGREES
 
 feature -- Operations
-	reparse_class_by_name(a_class: STRING) is
+	reparse_class_by_name(a_class: STRING)
 			-- reparse class with name `a_class'
 		require
 			non_void: a_class /= void
@@ -25,7 +25,7 @@ feature -- Operations
 			restore_ast (ast_server.item (cid))
 		end
 
-	replace_class_with(an_original_class,a_class: CLASS_AS) is
+	replace_class_with(an_original_class,a_class: CLASS_AS)
 			-- replace `an_original_class' by `a_class'
 		require
 			non_void: a_class /= void and an_original_class /= void
@@ -37,7 +37,7 @@ feature -- Operations
 			ast_server.put (a_class)
 		end
 
-	mark_for_reparse(a_class: CLASS_AS) is
+	mark_for_reparse(a_class: CLASS_AS)
 			-- mark a `a_class' for reparsing
 		require
 			non_void: a_class /= void
@@ -52,7 +52,7 @@ feature -- Operations
 			end
 		end
 
-	mark_class_changed(a_class: CLASS_AS) is
+	mark_class_changed(a_class: CLASS_AS)
 			-- marks `a_class' as changed
 		require
 			non_void: a_class /= void
@@ -66,7 +66,7 @@ feature -- Operations
 			end
 		end
 
-	restore_ast(a_class: CLASS_AS) is
+	restore_ast(a_class: CLASS_AS)
 			-- recreate `a_class' from source code
 		require
 			non_void: a_class /= void
