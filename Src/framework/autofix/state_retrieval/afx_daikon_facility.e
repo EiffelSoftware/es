@@ -38,16 +38,18 @@ feature -- Actions
 	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
+		require
+			a_tc_attached: a_tc /= Void
 		do
 			if pass_test_case_info = void then
 				if (a_tc.is_passing) then
-					pass_test_case_info := a_tc
+					set_pass_test_case_info (a_tc)
 				end
 			end
 
 			if fail_test_case_info = void then
 				if (a_tc.is_failing) then
-					fail_test_case_info := a_tc
+					set_fail_test_case_info (a_tc)
 				end
 			end
 
@@ -56,6 +58,8 @@ feature -- Actions
 
 	on_new_test_case_found (tc_info: AFX_TEST_CASE_INFO) is
 			-- Store the current
+		require
+			tc_info_attached: tc_info /= Void
 		do
 			store_daikon_state
 		end
@@ -81,6 +85,28 @@ feature -- Actions
 
 				-- Put results into server.
 			state_server.put_state_for_fault (fail_test_case_info, [pass_result, fail_result])
+		end
+
+feature -- Setting
+
+	set_pass_test_case_info (a_tc: like pass_test_case_info)
+			-- Set `pass_test_case_info' with `a_tc'.
+		require
+			a_tc_attached: a_tc /= Void
+		do
+			pass_test_case_info := a_tc
+		ensure
+			pass_test_case_info_set: pass_test_case_info = a_tc
+		end
+
+	set_fail_test_case_info (a_tc: like fail_test_case_info)
+			-- Set `fail_test_case_info' with `a_tc'.
+		require
+			a_tc_attached: a_tc /= Void
+		do
+			fail_test_case_info := a_tc
+		ensure
+			fail_test_case_info_set: fail_test_case_info = a_tc
 		end
 
 feature{NONE} -- Implementation
@@ -213,6 +239,8 @@ feature{NONE} -- Implementation
 	pass_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
 			-- Faull path for the file to store passing test case states
 			-- for fault indicated in `a_Tc'
+		require
+			a_tc_attached: a_tc /= Void
 		local
 			l_path: FILE_NAME
 		do

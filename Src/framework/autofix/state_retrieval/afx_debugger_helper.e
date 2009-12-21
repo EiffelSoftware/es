@@ -41,7 +41,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	start_debugger (a_dm: DEBUGGER_MANAGER; a_working_directory: STRING)
+	start_debugger (a_dm: DEBUGGER_MANAGER; a_arguments: STRING; a_working_directory: STRING)
 			-- Start `a_dm', which is a debugger manager by launching
 			-- the debuggee in `a_working_directory'.
 		require
@@ -57,7 +57,7 @@ feature -- Basic operations
 			end
 			ctlr := a_dm.controller
 			create param
-			param.set_arguments ("")
+			param.set_arguments (a_arguments)
 			param.set_working_directory (a_working_directory)
 			a_dm.set_execution_ignoring_breakpoints (False)
 			ctlr.debug_application (param, {EXEC_MODES}.run)

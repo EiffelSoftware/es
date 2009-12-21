@@ -10,6 +10,8 @@ class
 inherit
 	AFX_CONSTANTS
 
+	REFACTORING_HELPER
+
 create
 	make
 
@@ -109,7 +111,7 @@ feature -- Actions
 			l_uuid := a_tc.uuid
 			check status.has (l_uuid) end
 			l_status := status.item (l_uuid)
-
+			check l_status.info.uuid ~ a_tc.uuid end
 				-- Only store pre-/post state of current test case.
 			if a_bpslot = l_status.first_break_point_slot then
 				l_status.set_pre_state (a_state.cloned_object)
@@ -121,7 +123,24 @@ feature -- Actions
 
 	on_application_exited
 			-- Action to be performed when application exited
+		local
+			l_keys: LINKED_LIST [STRING]
 		do
+			fixme("Remove test case execution status without pre state, this should not happen. 21.12.2009 Jasonw")
+			create l_keys.make
+			from
+				status.start
+			until
+				status.after
+			loop
+				if attached {AFX_STATE} status.item_for_iteration.pre_state as l_pre_state then
+				else
+					l_keys.extend (status.key_for_iteration)
+				end
+				status.forth
+			end
+			l_keys.do_all (agent status.remove)
+
 			store_in_file
 		end
 

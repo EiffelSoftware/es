@@ -58,12 +58,12 @@ feature -- Generation
 			i: INTEGER
 			l_test_case: STRING
 			l_test_executors: STRING
-			l_run_list: STRING
+			l_run_list: LINKED_LIST [STRING]
 		do
 			test_case_number := 1
 			l_root_class_name := system.root_type.associated_class.name.twin
 			create l_test_executors.make (4096 * 4)
-			create l_run_list.make (4096)
+			create l_run_list.make
 			from
 				failing_test_cases.start
 			until
@@ -86,16 +86,14 @@ feature -- Generation
 			until
 				i = test_case_number
 			loop
-				l_run_list.append ("%Texecute_test_case_")
-				l_run_list.append (i.out)
-				l_run_list.append_character ('%N')
+				l_run_list.extend ("execute_test_case_" + i.out)
 				i := i + 1
 			end
 
 			last_class_text := root_class_body.twin
 			last_class_text.replace_substring_all ("${CLASS_NAME}", l_root_class_name)
 			last_class_text.replace_substring_all ("${CREATOR}", system.root_creation_name)
-			last_class_text.replace_substring_all ("${MAKE_BODY}", l_run_list)
+			last_class_text.replace_substring_all ("${INITIALIZE_TEST_CASES}", feature_for_initialize_test_cases (l_run_list))
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_test_executors)
 		end
 
@@ -131,6 +129,30 @@ feature -- Generation
 
 feature{NONE} -- Implementation
 
+	feature_for_initialize_test_cases (a_test_cases: LINKED_LIST [STRING]): STRING
+			-- Feature text for `initialize_test_cases' to setup `a_test_cases'.
+		do
+			create Result.make (2048)
+			Result.append ("%Tinitialize_test_cases%N")
+			Result.append ("%T%T%T-- Initialize `test_cases'.%N")
+			Result.append ("%T%Tdo%N")
+			Result.append ("%T%T%Tcreate test_cases.make%N")
+			from
+				a_test_cases.start
+			until
+				a_test_cases.after
+			loop
+				Result.append ("%T%T%Ttest_cases.extend (agent ")
+				Result.append (a_test_cases.item_for_iteration)
+				Result.append (")%N")
+				a_test_cases.forth
+			end
+
+			Result.append ("%T%Tend%N")
+		end
+
+feature{NONE} -- Implementation
+
 	test_case_number: INTEGER
 		-- The number for the next generated test case executor.
 
@@ -139,26 +161,27 @@ feature{NONE} -- Implementation
 class
 	${CLASS_NAME}
 	
-create
-	${CREATOR}
+inherit
+	AFX_INTERPRETER
 	
-feature
-	${CREATOR}
-		do
-${MAKE_BODY}
-		end
+create
+	make
 		
-feature
+		
+feature{NONE} -- Implementation
 
 	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER; a_dry_run: BOOLEAN; a_uuid: STRING)
 			-- If `a_dry_run' is True, states of the current system should not be retrieved.
 		do
 			do_nothing
 		end
-		
-feature
+
+${INITIALIZE_TEST_CASES}
+
+feature{NONE} -- Implementation
 
 ${TEST_CASES}
+
 end
 
 	]"

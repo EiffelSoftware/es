@@ -27,7 +27,8 @@ feature{NONE} -- Initialization
 
 	make (a_config: AFX_CONFIG)
 			-- Initialize Current.
-
+		local
+			l: AFX_INTERPRETER
 		do
 			config := a_config
 			create test_case_start_actions
@@ -64,7 +65,7 @@ feature -- Basic operations
 	execute
 			-- Execute.
 		do
-			is_mocking := False
+			is_mocking := True
 
 				-- Setup test case execution status collector.
 			test_case_start_actions.extend (agent test_case_execution_status.on_test_case_start (?, is_mocking))
@@ -92,10 +93,10 @@ feature -- Basic operations
 				application_exited_actions.extend (agent daikon_facility.on_application_exited)
 			end
 
-			debug ("autofix")
-				 -- Output retrieved state.
-				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
-			end
+--			debug ("autofix")
+--				 -- Output retrieved state.
+--				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
+--			end
 
 				-- Start test case analysis
 			analyze_test_cases
@@ -181,7 +182,7 @@ feature{NONE} -- Implementation
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 				-- Start debugger.
-			start_debugger (debugger_manager, config.working_directory)
+			start_debugger (debugger_manager, "--analyze-tc", config.working_directory)
 
 				-- Clean up debugger.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
@@ -221,6 +222,7 @@ feature{NONE} -- Actions
 			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
 			l_spot: AFX_EXCEPTION_SPOT
 			l_uuid: STRING
+			l: LIST [INTEGER]
 		do
 			l_table := a_test_case_info.to_hash_table
 			l_recipient_class := first_class_starts_with_name (l_table.item (expr_a_recipient_class).out)
@@ -244,12 +246,14 @@ feature{NONE} -- Actions
 				if current_test_case_breakpoint_manager /= Void then
 					current_test_case_breakpoint_manager.toggle_breakpoints (False)
 					remove_breakpoint (debugger_manager, current_test_case_breakpoint_manager.class_)
+					l := debugger_manager.breakpoints_manager.breakpoints_set_for (l_recipient.e_feature, True)
 				end
 
 				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
 				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
 				current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
 				current_test_case_breakpoint_manager.toggle_breakpoints (True)
+				l := debugger_manager.breakpoints_manager.breakpoints_set_for (l_recipient.e_feature, True)
 			end
 		end
 
@@ -318,15 +322,15 @@ feature{NONE} -- Actions
 				exception_spots.put (l_spot_analyzer.last_spot, l_recipient_id)
 			end
 
-			l_stack_level := call_stack_index (debugger_manager, test_case_routine_header)
-			if l_stack_level > 0 then
-				l_app := debugger_manager.application
-				l_old_stack_level := l_app.current_execution_stack_number
-				l_app.set_current_execution_stack_number (l_stack_level)
-				l_stack_ele := debugger_manager.application_status.current_call_stack_element
-				l_value := debugger_manager.expression_evaluation ("exception_trace")
-				l_app.set_current_execution_stack_number (l_old_stack_level)
-			end
+--			l_stack_level := call_stack_index (debugger_manager, test_case_routine_header)
+--			if l_stack_level > 0 then
+--				l_app := debugger_manager.application
+--				l_old_stack_level := l_app.current_execution_stack_number
+--				l_app.set_current_execution_stack_number (l_stack_level)
+--				l_stack_ele := debugger_manager.application_status.current_call_stack_element
+--				l_value := debugger_manager.expression_evaluation ("exception_trace")
+--				l_app.set_current_execution_stack_number (l_old_stack_level)
+--			end
 		end
 
 feature{NONE} -- Implication
@@ -417,9 +421,7 @@ feature -- Fix generation
 				exception_spots.forth
 			end
 
-			debug ("autofix")
-				store_fixes (l_fixes)
-			end
+			store_fixes (l_fixes)
 		end
 
 	store_fixes (a_fixes: LINKED_LIST [AFX_FIX])
