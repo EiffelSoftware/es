@@ -68,6 +68,28 @@ feature -- Current FEATURE_AS access
 			current_feature_as := a_feature
 		end
 
+feature -- Current FEATURE_CLAUSE_AS access
+
+	current_feature_clause_as: FEATURE_CLAUSE_AS
+		-- Current processed feature_clause_as
+
+	set_current_feature_clause_as (a_feature_clause: FEATURE_CLAUSE_AS) is
+			-- Setter for 'current_feature_clause_as'
+		do
+			current_feature_clause_as := a_feature_clause
+		end
+
+feature -- Current FEATURE_CLAUSE_AS access
+
+	is_first_feature: BOOLEAN
+		-- Indicates the first occurence of a feature in a feature clause
+
+	set_is_first_feature (a_value: BOOLEAN) is
+			-- Setter for 'is_first_feature'
+		do
+			is_first_feature := a_value
+		end
+
 feature -- SCOOP_SEPARATE_CLASS_LIST access
 
 	scoop_classes: SCOOP_SEPARATE_CLASS_LIST

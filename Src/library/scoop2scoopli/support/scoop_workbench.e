@@ -76,6 +76,42 @@ feature -- FEATURE_AS access
 			scoop_workbench_objects.set_current_feature_as (Void)
 		end
 
+feature {SCOOP_SEPARATE_PROXY_PRINTER, SCOOP_PROXY_FEATURE_VISITOR} -- FEATURE_CLAUSE_AS access
+
+	feature_clause_as: FEATURE_CLAUSE_AS is
+			-- Current processed feature clause
+		require
+			feature_clause_as_not_void: feature_clause_as /= Void
+		do
+			Result := scoop_workbench_objects.current_feature_clause_as
+		end
+
+	set_current_feature_clause_as (a_feature_clause: FEATURE_CLAUSE_AS) is
+			-- Setter for 'feature_clause_as'
+		do
+			scoop_workbench_objects.set_current_feature_clause_as (a_feature_clause)
+		end
+
+	set_current_feature_clause_as_void is
+			-- Setter for 'feature_clause_as'
+		do
+			scoop_workbench_objects.set_current_feature_clause_as (Void)
+		end
+
+feature {SCOOP_SEPARATE_PROXY_PRINTER, SCOOP_PROXY_FEATURE_VISITOR} -- FEATURE_CLAUSE_AS access
+
+	is_first_feature: BOOLEAN is
+			-- Indicates the first occurance of a feature in a feature clause.
+		do
+			Result := scoop_workbench_objects.is_first_feature
+		end
+
+	set_is_first_feature (a_value: BOOLEAN) is
+			-- Setter for 'is_first_feature'
+		do
+			scoop_workbench_objects.set_is_first_feature (a_value)
+		end
+
 feature -- FEATURE_TABLE access
 
 	feature_table: FEATURE_TABLE is

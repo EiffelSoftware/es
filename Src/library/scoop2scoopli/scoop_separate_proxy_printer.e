@@ -177,19 +177,31 @@ feature {NONE} -- Roundtrip: process nodes
 
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
 		do
+			-- remember the current feature clause
+			set_current_feature_clause_as (l_as)
+			-- process feature clause
 			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%N")
 			safe_process (l_as.feature_keyword)
 			safe_process (l_as.clients)
+			-- process feature clause comment
+			if l_as.features /= Void then
+				process_leading_leaves (l_as.features.first_token (match_list).index)
+			else
+				process_leading_leaves (l_as.last_token (match_list).index + 1)
+			end
+			-- set value for pretty printing
+			set_is_first_feature (true)
+			-- process features
 			safe_process (l_as.features)
+			-- reset the current feature clause
+			set_current_feature_clause_as_void
 		end
 
 	process_feature_as (l_as: FEATURE_AS) is
 		local
 			l_feature_visitor: SCOOP_PROXY_FEATURE_VISITOR
 		do
-			process_leading_leaves (l_as.feature_names.index)
-
 			l_feature_visitor := scoop_visitor_factory.new_proxy_feature_visitor (context)
 			l_feature_visitor.process_feature(l_as)
 			last_index := l_as.last_token (match_list).index

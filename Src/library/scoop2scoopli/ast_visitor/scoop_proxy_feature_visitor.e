@@ -73,7 +73,11 @@ feature {NONE} -- Visitor implementation
 				loop
 					l_feature_name := l_as.feature_names.i_th (i)
 
-					context.add_string ("%N%N%T")
+					if not is_first_feature then
+						context.add_string ("%N%N%T")
+					else
+						set_is_first_feature (false)
+					end
 					-- process frozen key word
 					last_index := l_feature_name.first_token (match_list).index
 					safe_process (l_feature_name.frozen_keyword)
@@ -252,7 +256,11 @@ feature {NONE} -- Content implementation
 
 					-- create agent feature
 					last_index := l_feature_name.first_token (match_list).index - 1
-					context.add_string ("%N%N%T")
+					if not is_first_feature then
+						context.add_string ("%N%N%T")
+					else
+						set_is_first_feature (false)
+					end
 
 					-- set feature name
 					context.add_string (l_feature_name_str)
@@ -348,7 +356,11 @@ feature {NONE} -- Content implementation
 				l_feature_name_str := l_feature_name_visitor.get_feature_name
 				scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
-				context.add_string ("%N%N%T")
+				if not is_first_feature then
+					context.add_string ("%N%N%T")
+				else
+					set_is_first_feature (false)
+				end
 
 				-- set feature name
 				context.add_string (l_feature_name_str)
@@ -831,6 +843,9 @@ feature
 			l_last_index := last_index
 			l_args := l_as.body.internal_arguments
 
+			-- create a new feature clause with export status {NONE}
+			context.add_string ("%N%Nfeature {NONE} -- Assign mediator feature of feature '" + l_feature_name + "'")
+
 			-- create a call to a wrapper feature
 			context.add_string ("%N%N%T")
 			context.add_string (l_feature_name)
@@ -877,7 +892,20 @@ feature
 			-- end keyword
 			context.add_string ("%N%T%Tend")
 
+			-- reset the feature clause: print out the original to get also the
+			-- original export state.
+			context.add_string ("%N%N")
+			last_index := feature_clause_as.first_token (match_list).index
+			safe_process (feature_clause_as.feature_keyword)
+
+			if feature_clause_as.features /= Void then
+				process_leading_leaves (feature_clause_as.features.first_token (match_list).index)
+			else
+				process_leading_leaves (feature_clause_as.last_token (match_list).index + 1)
+			end
+
 			-- set index back
+			set_is_first_feature (true)
 			last_index := l_last_index
 		end
 
