@@ -6,6 +6,8 @@ note
 
 class
 	ETR_AST_MODIFICATION
+inherit
+	COMPARABLE
 create {ETR_BASIC_OPS,ETR_AST_MODIFIER}
 	make_replace,
 	make_insert_after,
@@ -22,10 +24,40 @@ feature -- Access
 	new_transformable: detachable ETR_TRANSFORMABLE
 	ref_ast: AST_EIFFEL
 
+	is_less alias "<" (other: like Current): BOOLEAN
+			-- Compares the branch_id's of the target_path's only!
+		do
+			Result := ref_ast.path.branch_id < other.ref_ast.path.branch_id
+		end
+
+feature {ETR_MODIFYING_PRINTER} -- Printing
+
+	list_parent: detachable AST_PATH
+	replacement_text: detachable STRING
+	branch_id: INTEGER
+
+	set_branch_id(a_branch_id: like branch_id)
+			-- set `branch_id' to `a_branch_id'
+		do
+			branch_id := a_branch_id
+		end
+
+	set_list_parent(a_parent: like list_parent)
+			-- set `list_parent' to `a_parent'
+		do
+			list_parent := a_parent
+		end
+
+	set_replacement_text(a_text: like replacement_text)
+			-- set `replacement_text' to `a_text'
+		do
+			replacement_text := a_text
+		end
+
 feature {NONE} -- Creation
 
-	make_replace(a_reference: AST_EIFFEL; a_replacement: ETR_TRANSFORMABLE)
-				-- Replace `a_reference' by `a_replacement'
+	make_replace(a_reference: like ref_ast; a_replacement: like new_transformable)
+			-- Replace `a_reference' by `a_replacement'
 		do
 			is_replace := true
 
@@ -33,8 +65,8 @@ feature {NONE} -- Creation
 			new_transformable := a_replacement
 		end
 
-	make_insert_before(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE)
-				-- Insert `a_new_trans' before `a_reference'
+	make_insert_before(a_reference: like ref_ast; a_new_trans: like new_transformable)
+			-- Insert `a_new_trans' before `a_reference'
 		do
 			is_insert_before := true
 
@@ -42,8 +74,8 @@ feature {NONE} -- Creation
 			new_transformable := a_new_trans
 		end
 
-	make_insert_after(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE)
-				-- Insert `a_new_trans' after `a_reference'
+	make_insert_after(a_reference: like ref_ast; a_new_trans: like new_transformable)
+			-- Insert `a_new_trans' after `a_reference'
 		do
 			is_insert_after := true
 
@@ -51,8 +83,8 @@ feature {NONE} -- Creation
 			new_transformable := a_new_trans
 		end
 
-	make_delete(a_reference: AST_EIFFEL;)
-				-- Delete `a_transformable'
+	make_delete(a_reference: like ref_ast;)
+			-- Delete `a_transformable'
 		do
 			is_delete := true
 

@@ -52,28 +52,6 @@ feature -- Access
 			Result := as_string.starts_with (a_prefix)
 		end
 
---feature -- Operations
-
---	is_after alias ">" (other:like Current): BOOLEAN
---				-- is `Current' after `other'
---		do
-
---		end
-
---	is_before alias "<" (other:like Current): BOOLEAN
---				-- is `Current' before `other'
---		do
-
---		end
-
---	set_root(a_root: like root)
---			-- set `root' to `a_root'
---		require
---			non_void: a_root /= void
---		do
---			root := a_root
---		end
-
 feature -- Hashing
 
 	hash_code: INTEGER

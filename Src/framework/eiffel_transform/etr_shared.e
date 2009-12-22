@@ -88,9 +88,16 @@ feature -- Access
 			Result := ast_locator.found_node
 		end
 
-feature {NONE} -- Implementation
+feature -- Parser
 
-	internal_expr_parser: EIFFEL_PARSER
+	etr_class_parser: EIFFEL_PARSER
+			-- internal parser used to handle classes
+		once
+			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			Result.set_syntax_version ({CONF_OPTION}.syntax_index_transitional)
+		end
+
+	etr_expr_parser: EIFFEL_PARSER
 			-- internal parser used to handle expressions
 		once
 			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
@@ -98,7 +105,7 @@ feature {NONE} -- Implementation
 			Result.set_syntax_version(syntax_version)
 		end
 
-	internal_instr_parser: EIFFEL_PARSER
+	etr_instr_parser: EIFFEL_PARSER
 			-- internal parser used to handle instructions
 		once
 			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
@@ -120,10 +127,9 @@ feature -- New
 			instr_attached: an_instr /= void
 			context_attached: a_context /= void
 		do
-			internal_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
+			etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
-			if attached internal_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
---				index_ast_from_root (body.compound.first)
+			if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 				create Result.make_from_ast (body.compound.first, a_context, false)
 			else
 				create Result.make_invalid
@@ -136,11 +142,10 @@ feature -- New
 			expr_attached: an_expr /= void
 			context_attached: a_context /= void
 		do
-			internal_expr_parser.parse_from_string("check "+an_expr,void)
+			etr_expr_parser.parse_from_string("check "+an_expr,void)
 
-			if attached internal_expr_parser.expression_node then
---				index_ast_from_root (internal_expr_parser.expression_node)
-				create Result.make_from_ast (internal_expr_parser.expression_node, a_context, false)
+			if attached etr_expr_parser.expression_node then
+				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)
 			else
 				create Result.make_invalid
 			end
