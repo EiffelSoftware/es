@@ -103,6 +103,11 @@ feature -- Basic operations
 
 				-- Generate fixes.
 			generate_fixes
+--			create fixes.make
+
+				-- Validate generated fixes.
+			validate_fixes
+
 		end
 
 feature{NONE} -- Access
@@ -182,7 +187,7 @@ feature{NONE} -- Implementation
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 				-- Start debugger.
-			start_debugger (debugger_manager, "--analyze-tc", config.working_directory)
+			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory)
 
 				-- Clean up debugger.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
@@ -285,10 +290,11 @@ feature{NONE} -- Actions
 					end
 					if is_mocking then
 							-- Mocking is designed for ease of debugging.
-						if attached {AFX_DAIKON_FACILITY_MOCK} daikon_facility as l_daikon then
-							l_daikon.on_new_test_case_found (current_test_case_info)
-						end
-						test_case_execution_status.on_test_case_start (currenT_test_case_info, is_mocking)
+--						if attached {AFX_DAIKON_FACILITY_MOCK} daikon_facility as l_daikon then
+--							l_daikon.on_new_test_case_found (current_test_case_info)
+--						end
+						test_case_start_actions.call ([current_test_case_info])
+--						test_case_execution_status.on_test_case_start (current_test_case_info, is_mocking)
 						a_dm.application.kill
 					else
 						a_dm.controller.resume_workbench_application
@@ -395,6 +401,9 @@ feature{NONE} -- Implication
 
 feature -- Fix generation
 
+	fixes: LINKED_LIST [AFX_FIX]
+			-- Generated fixes
+
 	generate_fixes
 			-- Generate candidate fixes.
 		local
@@ -422,6 +431,20 @@ feature -- Fix generation
 			end
 
 			store_fixes (l_fixes)
+			fixes := l_fixes
+		end
+
+	validate_fixes
+			-- Validate `fixes'.
+		local
+			l_validator: AFX_FIX_VALIDATOR
+			l_spot: AFX_EXCEPTION_SPOT
+		do
+			check not exception_spots.is_empty end
+			exception_spots.start
+			l_spot := exception_spots.item_for_iteration
+			create l_validator.make (config, l_spot, fixes, test_case_execution_status.status)
+			l_validator.validate
 		end
 
 	store_fixes (a_fixes: LINKED_LIST [AFX_FIX])

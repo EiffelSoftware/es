@@ -139,6 +139,16 @@ feature -- Access
 			Result := l_path
 		end
 
+	interpreter_log_path: STRING
+			-- Full path to the interpreter log file
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (log_directory)
+			l_path.set_file_name ("interpreter_log.txt")
+			Result := l_path
+		end
+
 feature -- State retrieval related
 
 	state_test_case_class_name: detachable STRING

@@ -19,7 +19,13 @@ feature -- Basic operations
 			-- Generate fixes into `fixes'.
 		do
 			fixing_locations.do_all (agent generate_afore_fixes)
-			fixing_locations.do_all (agent generate_wrapping_fixes)
+			fixing_locations.do_if (
+				agent generate_wrapping_fixes,
+					-- Only generate fix if the wrapped ast is not empty.
+				agent (data: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+					do
+						Result := not data.instructions.is_empty
+					end)
 		end
 
 feature{NONE} -- Implementation

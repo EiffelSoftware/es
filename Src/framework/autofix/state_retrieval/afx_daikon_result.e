@@ -46,7 +46,7 @@ feature {NONE} -- Implementation
 				end
 
 				if list_tokens.item_for_iteration.has_substring (" == ") then
-					states.put ( build_equation (list_tokens.item_for_iteration) )
+					states.force_last (build_equation (list_tokens.item_for_iteration))
 				end
 
 				if list_tokens.item_for_iteration.has_substring ("========") then

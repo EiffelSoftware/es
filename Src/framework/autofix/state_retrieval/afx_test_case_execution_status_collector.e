@@ -23,12 +23,6 @@ feature{NONE} -- Initialization
 			set_config (a_config)
 			create status.make (50)
 			status.compare_objects
-
---			create passing_status.make (50)
---			passing_status.compare_objects
-
---			create failing_status.make (50)
---			failing_status.compare_objects
 		end
 
 feature -- Access
@@ -36,14 +30,6 @@ feature -- Access
 	status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
 			-- Table of test case status (including both passing and failing test cases)
 			-- Key is test case uuid, value is the execution status of that test case.
-
---	passing_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
---			-- Table of only passing test case status
---			-- Key is test case uuid, value is the execution status of that test case.
-
---	failing_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
---			-- Table of only failing test case status
---			-- Key is test case uuid, value is the execution status of that test case.
 
 	test_case_info: AFX_TEST_CASE_INFO
 			-- Information of the fault
@@ -91,12 +77,6 @@ feature -- Actions
 				check not status.has (l_uuid) end
 				status.put (l_status, l_uuid)
 			end
-
---			if a_tc.is_passing then
---				passing_status.put (l_status, l_uuid)
---			else
---				failing_status.put (l_status, l_uuid)
---			end
 		end
 
 	on_break_point_hit (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
@@ -208,6 +188,7 @@ feature{NONE} -- Impelemntation
 							create l_post_state.make_from_string (l_tcstatus.recipient_class_, l_tcstatus.recipient_, l_data.post_state)
 						end
 						create l_single_status.make_with_data (l_tcstatus, l_pre_state, l_post_state, l_status.key_for_iteration)
+						status.put (l_single_status, l_status.key_for_iteration)
 						l_status.forth
 					end
 				else

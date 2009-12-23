@@ -91,6 +91,9 @@ feature{NONE} -- Implementation
 			a_postcondition: detachable AFX_STATE;
 			a_scope_level: INTEGER): AFX_WRAP_FIX_SKELETON
 				-- New afore fix sekelton.
+		require
+			a_fixing_location_attached: a_fixing_location /= Void
+			not_a_fixing_location_is_empty: not a_fixing_location.is_empty
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
