@@ -832,7 +832,11 @@ feature -- Roundtrip: Access
 		do
 			output.append_string(".")
 			l_as.feature_name.process (Current)
-			process_child(l_as.parameters)
+			if attached {EIFFEL_LIST [EXPR_AS]} l_as.parameters as l_list then
+				output.append_string (once " (")
+				process_child(l_list)
+				output.append_string (once ")")
+			end
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
