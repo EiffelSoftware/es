@@ -98,6 +98,8 @@ feature{NONE} -- Implementation
 				execute_test_case_for_validation
 			elseif last_request_type = request_melt_feature_type then
 				execute_melting_request
+			else
+				check should_not_happen: False end
 			end
 		end
 
@@ -109,9 +111,9 @@ feature{NONE} -- Implementation
 			if attached {AFX_EXECUTE_TEST_CASE_REQUEST} last_request as l_exec_request then
 				log_message ("-- Received UUID: " + l_exec_request.test_case_uuid + "%N")
 				if test_cases.has (l_exec_request.test_case_uuid) then
---					l_agent := test_cases.item (l_exec_request.test_case_uuid)
---					l_agent.call (Void)
-					demo
+					l_agent := test_cases.item (l_exec_request.test_case_uuid)
+					l_agent.call (Void)
+					socket.put_natural_32 (exception_count)
 				else
 					log_message ("-- Cannot find test case with UUID: " + l_exec_request.test_case_uuid + "%N")
 				end
@@ -123,24 +125,23 @@ feature{NONE} -- Implementation
 		do
 			if attached {AFX_MELT_FEATURE_REQUEST} last_request as l_request then
 				log_message ("-- Melt feature with body_id = " + l_request.body_id.out + ", pattern_id = " + l_request.pattern_id.out + ", byte_code length = " + l_request.byte_code.count.out + "%N")
---				eif_override_byte_code_of_body (l_request.body_id, l_request.pattern_id, pointer_for_byte_code (l_request.byte_code), l_request.byte_code.count)
+				eif_override_byte_code_of_body (l_request.body_id, l_request.pattern_id, pointer_for_byte_code (l_request.byte_code), l_request.byte_code.count)
 			else
 				log_message ("-- Cannot interpreter melt feature request.%N")
 			end
 		end
 
-	demo
-		do
-			io.put_string ("OK%N")
-		end
-
 	exit_validation
 			-- Exit validation
+		local
+			l: STRING
 		do
 			should_quit := True
 			log_message ("-- Exit validation.%N")
 			socket.close
 		end
+
+	exception_count: NATURAL_32
 
 feature{NONE} -- Implementation
 
@@ -200,6 +201,8 @@ feature{NONE} -- Interprocess communication
 					log_message ("-- Received request type: " + request_type_name (last_request_type) + "%N")
 					if attached {like last_request} socket.retrieved as l_request then
 						last_request := l_request
+					else
+						log_message ("Cannot interpreter request.%N")
 					end
 				end
 			end

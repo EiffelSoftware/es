@@ -29,6 +29,7 @@
 		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="parser_extension" location="$EIFFEL_SRC\framework\parser_extension\parser_extension.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf"/>

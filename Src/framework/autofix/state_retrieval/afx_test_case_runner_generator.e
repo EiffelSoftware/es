@@ -224,6 +224,7 @@ end
 					l_tc.generated_test_1
 				end
 			rescue
+				exception_count := exception_count + 1
 				l_retried := True
 				retry
 			end

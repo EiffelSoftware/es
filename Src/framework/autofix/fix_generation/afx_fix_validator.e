@@ -14,6 +14,10 @@ inherit
 
 	AFX_INTERPRETER_CONSTANTS
 
+	AFX_MELT_FEATURE_FACILITY
+
+	AFX_UTILITY
+
 create
 	make
 
@@ -52,33 +56,92 @@ feature -- Actions
 
 	on_application_launched (a_dm: DEBUGGER_MANAGER)
 			-- Action to perform when the application is launched
+		local
+			l_good_fix: INTEGER
+			l_exception_count: NATURAL_32
 		do
 			if attached {like socket} socket_listener.wait_for_connection (5000) as l_socket then
 				socket := l_socket
 
 				if not test_case_execution_status.is_empty then
 					from
-						test_case_execution_status.start
+						fixes.start
 					until
-						test_case_execution_status.after
+						fixes.after
 					loop
-						send_execute_test_case_request (test_case_execution_status.key_for_iteration)
-						test_case_execution_status.forth
+						io.put_string (fixes.index.out + " / " + fixes.count.out + "   ")
+						send_melt_feature_request (fixes.item_for_iteration)
+
+						if is_last_fix_valid then
+							l_exception_count := exception_count
+							from
+								test_case_execution_status.start
+							until
+								test_case_execution_status.after
+							loop
+								send_execute_test_case_request (test_case_execution_status.key_for_iteration)
+								test_case_execution_status.forth
+							end
+							io.put_string ("Failed: " + (exception_count.to_integer_32 - l_exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (exception_count.to_integer_32 - l_exception_count.to_integer_32)).out + "%N")
+							if exception_count = l_exception_count then
+--								io.put_string ("====================================================%N")
+								l_good_fix := l_good_fix + 1
+								io.put_string ("Good fix No." + l_good_fix.out + "%N")
+								io.put_string (formated_fix (fixes.item_for_iteration))
+--								io.put_string ("Ranking: " + fixes.item_for_iteration.ranking.score.out + "%N")
+--								io.put_string (fixes.item_for_iteration.feature_text)
+--								io.put_string ("%N")
+							end
+						end
+						fixes.forth
 					end
---					from
---						fixes.start
---					until
---						fixes.after
---					loop
---						socket.put_natural_32 (2)
---						socket.independent_store ("Validating fix No." + fixes.index.out + "%N")
---						fixes.forth
---					end
 				end
 				send_exit_request
 				cleanup
+				process.wait_for_exit
 			end
 		end
+
+	formated_fix (a_fix: AFX_FIX): STRING
+			-- Pretty printed feature text for `a_fix'
+		local
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+			l_feat_text: STRING
+		do
+			if a_fix.feature_text.has_substring ("should not happen") then
+				Result := a_fix.feature_text.twin
+			else
+				entity_feature_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
+				create l_output.make_with_indentation_string ("%T")
+				create l_printer.make_with_output (l_output)
+				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+				Result := l_output.string_representation
+			end
+		end
+
+--	on_application_exited (a_dm: DEBUGGER_MANAGER)
+--			-- Action to perform when the application is exited
+--		do
+
+--		end
+
+--	on_application_stopped (a_dm: DEBUGGER_MANAGER)
+--			-- Action to be performed when application is stopped in the debugger
+--		do
+--			if a_dm.application_is_executing or a_dm.application_is_stopped then
+
+--				if a_dm.application_status.reason_is_catcall or a_dm.application_status.reason_is_overflow then
+--					a_dm.application.kill
+--				else
+--					io.put_string (a_dm.application_status.exception_text + "%N")
+--					exception_count := exception_count + 1
+--					a_dm.controller.resume_workbench_application
+--				end
+--			end
+--		end
+
+feature{NONE} -- Requests for interpreter
 
 	send_exit_request
 			-- Send an exit request to the interpreter.
@@ -96,28 +159,47 @@ feature -- Actions
 			create l_request.make (a_uuid)
 			socket.put_natural_32 (request_execute_test_case_type)
 			socket.independent_store (l_request)
+			socket.read_natural_32
+			exception_count := socket.last_natural
 		end
 
-	on_application_exited (a_dm: DEBUGGER_MANAGER)
-			-- Action to perform when the application is exited
+	send_melt_feature_request (a_fix: AFX_FIX)
+			-- Send request the the interpreter to melt `a_fix' for the feature under fix.
+		local
+			l_class: EIFFEL_CLASS_C
+			l_feat: FEATURE_I
+			l_request: AFX_MELT_FEATURE_REQUEST
+			l_byte_code: STRING
+			l_body_id: INTEGER
+			l_pattern_id: INTEGER
+			l_data: TUPLE [byte_code: STRING; last_bpslot: INTEGER]
 		do
+			l_class ?= a_fix.recipient_class
+			l_feat := a_fix.recipient_
+			l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text)
+			is_last_fix_valid := not l_data.byte_code.is_empty
+			if is_last_fix_valid then
+				last_breakpoint_slot := l_data.last_bpslot
+				l_body_id := l_feat.real_body_id (l_class.types.first) - 1
+				l_pattern_id := l_feat.real_pattern_id (l_class.types.first)
 
-		end
-
-	on_application_stopped (a_dm: DEBUGGER_MANAGER)
-			-- Action to be performed when application is stopped in the debugger
-		do
-			if a_dm.application_is_executing or a_dm.application_is_stopped then
-
-				if a_dm.application_status.reason_is_catcall or a_dm.application_status.reason_is_overflow then
-					a_dm.application.kill
-				else
-					a_dm.controller.resume_workbench_application
-				end
+				create l_request.make (l_body_id, l_pattern_id, l_data.byte_code)
+				socket.put_natural_32 (request_melt_feature_type)
+				socket.independent_store (l_request)
 			end
 		end
 
+	is_last_fix_valid: BOOLEAN
+			-- Is last tried fix a valid Eiffel piece of code?
+
+	last_breakpoint_slot: INTEGER
+			-- Last break point slot
+
+	exception_count: NATURAL_32
+
 feature -- Basic operations
+
+	process: PROCESS
 
 	validate
 			-- Validate `fixes'.
@@ -125,27 +207,34 @@ feature -- Basic operations
 			l_launch_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_exit_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
+			l_fac: PROCESS_FACTORY
 		do
 				-- Setup debugger manipulation agents.
-			l_launch_agent := agent on_application_launched
-			l_exit_agent := agent on_application_exited
-			l_stop_agent := agent on_application_stopped
-			debugger_manager.observer_provider.application_launched_actions.extend (l_launch_agent)
-			debugger_manager.observer_provider.application_exited_actions.extend (l_exit_agent)
-			debugger_manager.observer_provider.application_stopped_actions.extend (l_stop_agent)
+--			l_launch_agent := agent on_application_launched
+--			l_exit_agent := agent on_application_exited
+--			l_stop_agent := agent on_application_stopped
+--			debugger_manager.observer_provider.application_launched_actions.extend (l_launch_agent)
+--			debugger_manager.observer_provider.application_exited_actions.extend (l_exit_agent)
+--			debugger_manager.observer_provider.application_stopped_actions.extend (l_stop_agent)
 
 				-- Start server for IPC.
 			establish_socket
 
 				-- Launch debugger.
 			if socket_listener.is_listening then
-				start_debugger (debugger_manager, "--validate-fix " + config.interpreter_log_path + " true " + port.out,  config.working_directory)
+				create l_fac
+
+				process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out , config.working_directory)
+				process.launch
+				check process.launched end
+				on_application_launched (debugger_manager)
+--				start_debugger (debugger_manager, "--validate-fix " + config.interpreter_log_path + " true " + port.out,  config.working_directory)
 			end
 
 				-- Remove debugger manipulation agents.
-			debugger_manager.observer_provider.application_launched_actions.prune_all (l_launch_agent)
-			debugger_manager.observer_provider.application_exited_actions.prune_all (l_exit_agent)
-			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_stop_agent)
+--			debugger_manager.observer_provider.application_launched_actions.prune_all (l_launch_agent)
+--			debugger_manager.observer_provider.application_exited_actions.prune_all (l_exit_agent)
+--			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_stop_agent)
 		end
 
 feature{NONE} -- Inter-process communication
