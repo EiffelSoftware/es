@@ -89,6 +89,8 @@ feature -- Generation
 			last_class_text.replace_substring_all ("${CREATOR}", system.root_creation_name)
 			last_class_text.replace_substring_all ("${INITIALIZE_TEST_CASES}", feature_for_initialize_test_cases (test_cases))
 			last_class_text.replace_substring_all ("${EXECUTE_TEST_CASES}", feature_for_execute_test_cases)
+			last_class_text.replace_substring_all ("${RETRIEVE_PRE_STATE}", feature_for_retrieve_pre_state)
+			last_class_text.replace_substring_all ("${RETRIEVE_POST_STATE}", feature_for_retrieve_post_state)
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_test_executors)
 		end
 
@@ -174,6 +176,22 @@ feature{NONE} -- Implementation
 			Result.append ("%T%Tend%N")
 		end
 
+	feature_for_retrieve_pre_state: STRING
+			-- Feature test for `retrieve_pre_state'
+		do
+			create Result.make (512)
+			Result.append ("retrieve_pre_state (a_operands: SPECIAL [detachable ANY])%N")
+			Result.append ("do end%N")
+		end
+
+	feature_for_retrieve_post_state: STRING
+			-- Feature test for `retrieve_pre_state'
+		do
+			create Result.make (512)
+			Result.append ("retrieve_post_state (a_operands: SPECIAL [detachable ANY])%N")
+			Result.append ("do end%N")
+		end
+
 feature{NONE} -- Implementation
 
 	test_case_number: INTEGER
@@ -201,6 +219,10 @@ feature{NONE} -- Implementation
 
 ${INITIALIZE_TEST_CASES}
 
+${RETRIEVE_PRE_STATE}
+
+${RETRIEVE_POST_STATE}
+
 ${EXECUTE_TEST_CASES}
 
 feature{NONE} -- Implementation
@@ -221,7 +243,10 @@ end
 				if not l_retried then
 					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER}, ${DRY_RUN}, "${UUID}")
 					create l_tc
+					l_tc.setup
+					retrieve_pre_state (l_tc.operands)
 					l_tc.generated_test_1
+					retrieve_post_state (l_tc.operands)
 				end
 			rescue
 				exception_count := exception_count + 1

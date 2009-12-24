@@ -58,17 +58,21 @@ inherit
 
 feature -- Test routines
 
+    setup
+        local
+            data: STRING
+        do
+            data := serialized_data
+            operands ?= deserialized_object (data)
+        end
+
     $(test_feature_name)
         note
             testing: "$(GENERATION_TYPE)"
             testing: "$(SUMMARY)"
         local
-            data: STRING
-            operands: SPECIAL [detachable ANY]
             $(TYPES)
         do
-            data := serialized_data
-            operands ?= deserialized_object (data)
             $(BODY)
         end
         

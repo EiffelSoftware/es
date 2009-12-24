@@ -10,6 +10,8 @@ class
 inherit
 	SHARED_WORKBENCH
 
+	SHARED_EIFFEL_PARSER
+
 feature -- Access
 
 	first_class_starts_with_name (a_class_name: STRING): detachable CLASS_C
@@ -254,6 +256,27 @@ feature -- String manipulation
 				l_part := a_string.substring (l_index1 + 1, l_index2 - 1)
 				Result.extend (l_part)
 				l_index1 := l_index2 + l_spe_count - 1
+			end
+		end
+
+feature -- Fix
+
+
+	formated_fix (a_fix: AFX_FIX): STRING
+			-- Pretty printed feature text for `a_fix'
+		local
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+			l_feat_text: STRING
+		do
+			if a_fix.feature_text.has_substring ("should not happen") then
+				Result := a_fix.feature_text.twin
+			else
+				entity_feature_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
+				create l_output.make_with_indentation_string ("%T")
+				create l_printer.make_with_output (l_output)
+				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+				Result := l_output.string_representation
 			end
 		end
 

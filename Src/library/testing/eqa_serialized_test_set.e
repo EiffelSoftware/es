@@ -12,6 +12,12 @@ inherit
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
+feature -- Access
+
+	operands: SPECIAL [detachable ANY];
+			-- Operands for the feature under test
+			-- target of the feature call is of index 0, followed by arguments to the feature
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

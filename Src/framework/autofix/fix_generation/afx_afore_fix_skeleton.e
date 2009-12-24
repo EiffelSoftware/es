@@ -103,7 +103,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Build result fix.
-			create Result.make (exception_spot)
+			create Result.make (exception_spot, next_fix_id)
 			Result.set_exception_spot (exception_spot)
 			Result.set_text (feature_body_compound_ast.text (l_match_list))
 			Result.set_feature_text (feature_as_ast.text (l_match_list))

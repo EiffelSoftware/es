@@ -29,6 +29,7 @@ feature{NONE} -- Implementation
 				elseif argument (1).is_case_insensitive_equal ("--validate-fix") then
 						-- Validate fix candidates.
 					port := argument (4).to_integer
+					exception_count := 0
 					validate_fixes
 				end
 				close_log_file
@@ -44,6 +45,16 @@ feature{NONE} -- Implementation
 
 	execute_test_cases
 			-- Run test cases and do analysis to support fix generation.
+		deferred
+		end
+
+	retrieve_pre_state (a_operands: SPECIAL [detachable ANY])
+			-- Retrieve prestate of `a_operands'.
+		deferred
+		end
+
+	retrieve_post_state (a_operands: SPECIAL [detachable ANY])
+			-- Retrieve post of `a_operands'.
 		deferred
 		end
 
@@ -110,14 +121,28 @@ feature{NONE} -- Implementation
 		do
 			if attached {AFX_EXECUTE_TEST_CASE_REQUEST} last_request as l_exec_request then
 				log_message ("-- Received UUID: " + l_exec_request.test_case_uuid + "%N")
-				if test_cases.has (l_exec_request.test_case_uuid) then
-					l_agent := test_cases.item (l_exec_request.test_case_uuid)
-					l_agent.call (Void)
-					socket.put_natural_32 (exception_count)
+				if l_exec_request.test_case_uuid.is_empty then
+						-- Execute all registered test cases.
+					from
+						test_cases.start
+					until
+						test_cases.after
+					loop
+						l_agent := test_cases.item (l_exec_request.test_case_uuid)
+						l_agent.call (Void)
+						test_cases.forth
+					end
 				else
-					log_message ("-- Cannot find test case with UUID: " + l_exec_request.test_case_uuid + "%N")
+						-- Execute a single test case.
+					if test_cases.has (l_exec_request.test_case_uuid) then
+						l_agent := test_cases.item (l_exec_request.test_case_uuid)
+						l_agent.call (Void)
+					else
+						log_message ("-- Cannot find test case with UUID: " + l_exec_request.test_case_uuid + "%N")
+					end
 				end
 			end
+			socket.put_natural_32 (exception_count)
 		end
 
 	execute_melting_request
@@ -129,6 +154,7 @@ feature{NONE} -- Implementation
 			else
 				log_message ("-- Cannot interpreter melt feature request.%N")
 			end
+			socket.put_natural_32 (0)
 		end
 
 	exit_validation

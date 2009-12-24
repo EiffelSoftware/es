@@ -23,17 +23,45 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_config: like config; a_spot: like exception_spot; a_fixes: like fixes; a_status: like test_case_execution_status)
+	make (a_config: like config; a_spot: like exception_spot; a_fixes: LINKED_LIST [AFX_FIX]; a_status: like test_case_execution_status)
 			-- Initialize Current to validate fix candidates `a_fixes'.
 		require
 			a_config_attached: a_config /= Void
 			a_spot_attached: a_spot /= Void
 			a_status_attached: a_status /= Void
+		local
+			l_fix: AFX_FIX
 		do
 			config := a_config
-			fixes := a_fixes
 			exception_spot := a_spot
 			test_case_execution_status := a_status
+
+				-- Setup `test_cases'.
+			create test_cases.make
+			from
+				test_case_execution_status.start
+			until
+				test_case_execution_status.after
+			loop
+				test_cases.extend (test_case_execution_status.key_for_iteration)
+				test_case_execution_status.forth
+			end
+
+				-- Setup `fixes' and `melted_fixes'.
+			create fixes.make (a_fixes.count)
+			create melted_fixes.make
+			from
+				a_fixes.start
+			until
+				a_fixes.after
+			loop
+				l_fix := a_fixes.item_for_iteration
+				if attached {AFX_MELTED_FIX} melted_fix_from_fix (l_fix) as l_melted then
+					fixes.put (l_fix, l_fix.id)
+					melted_fixes.extend (l_melted)
+				end
+				a_fixes.forth
+			end
 		end
 
 feature -- Access
@@ -44,127 +72,117 @@ feature -- Access
 	exception_spot: AFX_EXCEPTION_SPOT
 			-- Exception spot
 
-	fixes: LINKED_LIST [AFX_FIX]
+	fixes: HASH_TABLE [AFX_FIX, INTEGER]
 			-- Fix candidates to validate
+			-- Key is fix ID, value is the fix associated with that ID
 
 	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
 			-- Execution status for test cases related to the fault
 			-- Key is uuid of a test case, value is the execution status of that test case
 
+	test_cases: LINKED_LIST [STRING]
+			-- Universal IDs for test cases used to validate fix candidates
+
 feature -- Actions
 
+	worker: AFX_FIX_VALIDATION_THREAD
+			-- Worker thread to validate fix candidates
 
-	on_application_launched (a_dm: DEBUGGER_MANAGER)
-			-- Action to perform when the application is launched
-		local
-			l_good_fix: INTEGER
-			l_exception_count: NATURAL_32
+	max_test_case_execution_time: INTEGER is 5
+			-- Max time in second to allow a test case to execute
+
+feature{NONE} -- Actions
+
+	good_fix_count: INTEGER
+			-- Number of good fixes validated so far
+
+	on_fix_validation_start (a_melted_fix: AFX_MELTED_FIX)
+			-- Action to be performed when `a_melted_fix' is about to be validated
 		do
-			if attached {like socket} socket_listener.wait_for_connection (5000) as l_socket then
-				socket := l_socket
-
-				if not test_case_execution_status.is_empty then
-					from
-						fixes.start
-					until
-						fixes.after
-					loop
-						io.put_string (fixes.index.out + " / " + fixes.count.out + "   ")
-						send_melt_feature_request (fixes.item_for_iteration)
-
-						if is_last_fix_valid then
-							l_exception_count := exception_count
-							from
-								test_case_execution_status.start
-							until
-								test_case_execution_status.after
-							loop
-								send_execute_test_case_request (test_case_execution_status.key_for_iteration)
-								test_case_execution_status.forth
-							end
-							io.put_string ("Failed: " + (exception_count.to_integer_32 - l_exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (exception_count.to_integer_32 - l_exception_count.to_integer_32)).out + "%N")
-							if exception_count = l_exception_count then
---								io.put_string ("====================================================%N")
-								l_good_fix := l_good_fix + 1
-								io.put_string ("Good fix No." + l_good_fix.out + "%N")
-								io.put_string (formated_fix (fixes.item_for_iteration))
---								io.put_string ("Ranking: " + fixes.item_for_iteration.ranking.score.out + "%N")
---								io.put_string (fixes.item_for_iteration.feature_text)
---								io.put_string ("%N")
-							end
-						end
-						fixes.forth
-					end
-				end
-				send_exit_request
-				cleanup
-				process.wait_for_exit
-			end
+			io.put_string ("Strat validate fix No. " + a_melted_fix.id.out + ",  " + melted_fixes.count.out + " to go.  ")
 		end
 
-	formated_fix (a_fix: AFX_FIX): STRING
-			-- Pretty printed feature text for `a_fix'
-		local
-			l_printer: ETR_AST_STRUCTURE_PRINTER
-			l_output: ETR_AST_STRING_OUTPUT
-			l_feat_text: STRING
+	on_fix_validation_end (a_melted_fix: AFX_MELTED_FIX; a_exception_count: NATURAL_32)
+			-- Action to be performed when `a_melted_fix' is about to be validated
 		do
-			if a_fix.feature_text.has_substring ("should not happen") then
-				Result := a_fix.feature_text.twin
-			else
-				entity_feature_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
-				create l_output.make_with_indentation_string ("%T")
-				create l_printer.make_with_output (l_output)
-				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
-				Result := l_output.string_representation
+			io.put_string ("Failed: " + (a_exception_count.to_integer_32 - exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)).out + "  " + a_exception_count.out + ", " + exception_count.out + "%N")
+			if exception_count = a_exception_count then
+				io.put_string ("====================================================%N")
+				good_fix_count := good_fix_count + 1
+				io.put_string ("Good fix No." + good_fix_count.out + "%N")
+				io.put_string (formated_fix (fixes.item (a_melted_fix.id)))
+				io.put_string ("Ranking: " + fixes.item (a_melted_fix.id).ranking.score.out + "%N")
+				io.put_string ("%N")
 			end
+			exception_count := a_exception_count
 		end
 
---	on_application_exited (a_dm: DEBUGGER_MANAGER)
---			-- Action to perform when the application is exited
---		do
-
---		end
-
---	on_application_stopped (a_dm: DEBUGGER_MANAGER)
---			-- Action to be performed when application is stopped in the debugger
---		do
---			if a_dm.application_is_executing or a_dm.application_is_stopped then
-
---				if a_dm.application_status.reason_is_catcall or a_dm.application_status.reason_is_overflow then
---					a_dm.application.kill
---				else
---					io.put_string (a_dm.application_status.exception_text + "%N")
---					exception_count := exception_count + 1
---					a_dm.controller.resume_workbench_application
---				end
---			end
---		end
+	on_test_case_execution_time_out
+			-- Action to be performed when test case execution timed out
+		do
+			check process /= Void end
+			process.terminate_tree
+			process.wait_for_exit
+		end
 
 feature{NONE} -- Requests for interpreter
 
-	send_exit_request
-			-- Send an exit request to the interpreter.
-		do
-			socket.put_natural_32 (request_exit_type)
-			socket.independent_store (create {AFX_INTERPRETER_REQUEST})
-		end
+	timer: AFX_TIMER_THREAD
+			-- Timer to control test case execution time out.
 
-	send_execute_test_case_request (a_uuid: STRING)
-			-- Send and execute test case request to the interpreter
-			-- to execute the test case specified by `a_uuid'.
+	exception_count: NATURAL_32
+			-- Number of exceptions that are encountered so far
+
+	process: PROCESS
+		-- Process for the interpreter
+
+	melted_fixes: LINKED_LIST [AFX_MELTED_FIX]
+			-- Melted fixes for fixes in `fixes'
+
+feature -- Basic operations
+
+	validate_left_fixes
+			-- Validate fixes in `melted_fixes'.
 		local
-			l_request: AFX_EXECUTE_TEST_CASE_REQUEST
+			l_fac: PROCESS_FACTORY
 		do
-			create l_request.make (a_uuid)
-			socket.put_natural_32 (request_execute_test_case_type)
-			socket.independent_store (l_request)
-			socket.read_natural_32
-			exception_count := socket.last_natural
+			if not melted_fixes.is_empty then
+				exception_count := 0
+				cleanup
+				establish_socket
+
+				if socket_listener.is_listening then
+					create l_fac
+					process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out , config.working_directory)
+					process.launch
+					check process.launched end
+
+					if attached {like socket} socket_listener.wait_for_connection (5000) as l_socket then
+						socket := l_socket
+
+						create timer.make (agent on_test_case_execution_time_out)
+						timer.set_timeout (0)
+						timer.start
+
+						create worker.make (melted_fixes, max_test_case_execution_time, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
+						worker.execute
+					end
+				end
+			end
 		end
 
-	send_melt_feature_request (a_fix: AFX_FIX)
-			-- Send request the the interpreter to melt `a_fix' for the feature under fix.
+	validate
+			-- Validate `fixes'.
+		do
+			from until
+				melted_fixes.is_empty
+			loop
+				validate_left_fixes
+			end
+		end
+
+	melted_fix_from_fix (a_fix: AFX_FIX): detachable AFX_MELTED_FIX
+			-- Melted fix from `a_fix'
 		local
 			l_class: EIFFEL_CLASS_C
 			l_feat: FEATURE_I
@@ -177,64 +195,11 @@ feature{NONE} -- Requests for interpreter
 			l_class ?= a_fix.recipient_class
 			l_feat := a_fix.recipient_
 			l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text)
-			is_last_fix_valid := not l_data.byte_code.is_empty
-			if is_last_fix_valid then
-				last_breakpoint_slot := l_data.last_bpslot
+			if not l_data.byte_code.is_empty then
 				l_body_id := l_feat.real_body_id (l_class.types.first) - 1
 				l_pattern_id := l_feat.real_pattern_id (l_class.types.first)
-
-				create l_request.make (l_body_id, l_pattern_id, l_data.byte_code)
-				socket.put_natural_32 (request_melt_feature_type)
-				socket.independent_store (l_request)
+				create Result.make (a_fix.id, l_body_id, l_pattern_id, l_data.byte_code, l_data.last_bpslot)
 			end
-		end
-
-	is_last_fix_valid: BOOLEAN
-			-- Is last tried fix a valid Eiffel piece of code?
-
-	last_breakpoint_slot: INTEGER
-			-- Last break point slot
-
-	exception_count: NATURAL_32
-
-feature -- Basic operations
-
-	process: PROCESS
-
-	validate
-			-- Validate `fixes'.
-		local
-			l_launch_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
-			l_exit_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
-			l_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
-			l_fac: PROCESS_FACTORY
-		do
-				-- Setup debugger manipulation agents.
---			l_launch_agent := agent on_application_launched
---			l_exit_agent := agent on_application_exited
---			l_stop_agent := agent on_application_stopped
---			debugger_manager.observer_provider.application_launched_actions.extend (l_launch_agent)
---			debugger_manager.observer_provider.application_exited_actions.extend (l_exit_agent)
---			debugger_manager.observer_provider.application_stopped_actions.extend (l_stop_agent)
-
-				-- Start server for IPC.
-			establish_socket
-
-				-- Launch debugger.
-			if socket_listener.is_listening then
-				create l_fac
-
-				process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out , config.working_directory)
-				process.launch
-				check process.launched end
-				on_application_launched (debugger_manager)
---				start_debugger (debugger_manager, "--validate-fix " + config.interpreter_log_path + " true " + port.out,  config.working_directory)
-			end
-
-				-- Remove debugger manipulation agents.
---			debugger_manager.observer_provider.application_launched_actions.prune_all (l_launch_agent)
---			debugger_manager.observer_provider.application_exited_actions.prune_all (l_exit_agent)
---			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_stop_agent)
 		end
 
 feature{NONE} -- Inter-process communication

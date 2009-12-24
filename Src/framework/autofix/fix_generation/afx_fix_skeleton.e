@@ -22,6 +22,8 @@ inherit
 
 	UC_SHARED_STRING_EQUALITY_TESTER
 
+	AFX_FIX_ID_SERVER
+
 feature -- Access
 
 	exception_spot: AFX_EXCEPTION_SPOT
@@ -153,7 +155,7 @@ feature -- Basic operations
 
 			create fixes.make
 			if l_postcondition.is_empty then
-				create l_fix.make (exception_spot)
+				create l_fix.make (exception_spot, next_fix_id)
 				l_fix.set_text ("")
 				l_fix.set_feature_text ("should not happen.")
 				l_fix.set_ranking (ranking.twin)

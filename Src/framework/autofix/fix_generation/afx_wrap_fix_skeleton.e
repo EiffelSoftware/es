@@ -109,7 +109,7 @@ feature{NONE} -- Implementation
 			l_last_as.append_text (l_else_text, l_match_list)
 
 				-- Build result fix.
-			create Result.make (exception_spot)
+			create Result.make (exception_spot, next_fix_id)
 			Result.set_exception_spot (exception_spot)
 			Result.set_text (feature_body_compound_ast.text (l_match_list))
 			Result.set_feature_text (feature_as_ast.text (l_match_list))

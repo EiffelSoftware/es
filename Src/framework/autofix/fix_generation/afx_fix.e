@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: like exception_spot)
+	make (a_spot: like exception_spot; a_id: INTEGER)
 			-- Initialize.
 		require
 			a_spot_attached: a_spot /= Void
@@ -23,6 +23,7 @@ feature{NONE} -- Initialization
 			exception_spot := a_spot
 			text := ""
 			feature_text := ""
+			id := a_id
 		end
 
 feature -- Access
@@ -56,6 +57,9 @@ feature -- Access
 		do
 			Result := exception_spot.recipient_class_
 		end
+
+	id: INTEGER
+			-- ID of current fix
 
 feature -- Setting
 
