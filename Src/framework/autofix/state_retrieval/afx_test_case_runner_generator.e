@@ -9,9 +9,11 @@ class
 
 inherit
 	AFX_UTILITY
-		rename
-			system as old_system
+		undefine
+			system
 		end
+
+	AUT_OBJECT_STATE_REQUEST_UTILITY
 
 create
 	make
@@ -62,6 +64,7 @@ feature -- Generation
 			i: INTEGER
 			l_test_case: STRING
 			l_test_executors: STRING
+			l_tc_info: AFX_TEST_CASE_INFO
 		do
 			test_case_number := 1
 			l_root_class_name := system.root_type.associated_class.name.twin
@@ -69,6 +72,7 @@ feature -- Generation
 			create test_cases.make
 			from
 				failing_test_cases.start
+				l_tc_info := failing_test_cases.key_for_iteration
 			until
 				failing_test_cases.after
 			loop
@@ -89,8 +93,7 @@ feature -- Generation
 			last_class_text.replace_substring_all ("${CREATOR}", system.root_creation_name)
 			last_class_text.replace_substring_all ("${INITIALIZE_TEST_CASES}", feature_for_initialize_test_cases (test_cases))
 			last_class_text.replace_substring_all ("${EXECUTE_TEST_CASES}", feature_for_execute_test_cases)
-			last_class_text.replace_substring_all ("${RETRIEVE_PRE_STATE}", feature_for_retrieve_pre_state)
-			last_class_text.replace_substring_all ("${RETRIEVE_POST_STATE}", feature_for_retrieve_post_state)
+			last_class_text.replace_substring_all ("${RETRIEVE_OPERAND_STATES}", feature_for_operand_states (l_tc_info.recipient_, l_tc_info.recipient_class_))
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_test_executors)
 		end
 
@@ -176,20 +179,140 @@ feature{NONE} -- Implementation
 			Result.append ("%T%Tend%N")
 		end
 
-	feature_for_retrieve_pre_state: STRING
-			-- Feature test for `retrieve_pre_state'
+feature{NONE} -- Stats retrieval
+
+	feature_for_operand_states (a_feature: FEATURE_I; a_context_class: CLASS_C): STRING
+			-- Text for feature `operand_states'
+		local
+			l_types: like operand_types_of_feature
 		do
+			l_types := operand_types_of_feature (a_feature, a_context_class)
 			create Result.make (512)
-			Result.append ("retrieve_pre_state (a_operands: SPECIAL [detachable ANY])%N")
-			Result.append ("do end%N")
+			Result.append ("%Toperand_states (a_operands: SPECIAL [detachable ANY]):  like state_type%N")
+			Result.append ("%T%Tlocal%N")
+			Result.append ("%T%T%Tl_queries: HASH_TABLE [HASH_TABLE [FUNCTION [ANY, TUPLE, ANY], STRING], INTEGER]%N")
+			Result.append ("%T%T%Tl_tbl: HASH_TABLE [FUNCTION [ANY, TUPLE, ANY], STRING]%N")
+			Result.append ("%T%Tdo%N")
+			Result.append ("%T%T%Tcreate l_queries.make (a_operands.count)%N")
+			from
+				l_types.start
+			until
+				l_types.after
+			loop
+				Result.append (code_to_setup_queries_for_type (l_types.item_for_iteration, l_types.index - 1))
+				l_types.forth
+			end
+			Result.append ("%T%T%TResult := object_states (l_queries)%N")
+			Result.append ("%T%Tend%N")
 		end
 
-	feature_for_retrieve_post_state: STRING
-			-- Feature test for `retrieve_pre_state'
+	code_to_setup_queries_for_type (a_type: TYPE_A; a_operand_id: INTEGER): STRING
+			-- Code piece to setup queries for operand at `a_operand_id' position and of type `a_type'
+		require
+			a_type_has_class: a_type.has_associated_class
+		local
+			l_3tabs: STRING
+			l_4tabs: STRING
+			l_queries: LIST [FEATURE_I]
+			l_opt_name: STRING
+			l_feat_name: STRING
 		do
-			create Result.make (512)
-			Result.append ("retrieve_post_state (a_operands: SPECIAL [detachable ANY])%N")
-			Result.append ("do end%N")
+			l_queries := queries_of_type (a_type)
+			l_3tabs := "%T%T%T"
+			l_4tabs := "%T%T%T%T"
+			l_opt_name := "l_operand_" + a_operand_id.out
+
+			create Result.make (256)
+			Result.append (l_3tabs)
+			Result.append ("if attached {")
+			Result.append (a_type.actual_type.name)
+			Result.append ("} a_operands.item (")
+			Result.append (a_operand_id.out)
+			Result.append (") as ")
+			Result.append (l_opt_name)
+			Result.append (" then%N")
+			Result.append (l_4tabs)
+			Result.append ("create l_tbl.make (")
+			Result.append (l_queries.count.out)
+			Result.append (")%N")
+			Result.append (l_4tabs)
+			Result.append ("l_tbl.compare_objects%N")
+			Result.append (l_4tabs)
+			Result.append ("l_queries.put (l_tbl, ")
+			Result.append (a_operand_id.out)
+			Result.append (")%N")
+			from
+				l_queries.start
+			until
+				l_queries.after
+			loop
+				l_feat_name := l_queries.item_for_iteration.feature_name.as_lower
+				Result.append (l_4tabs)
+				Result.append ("l_tbl.put (agent ")
+				if a_type.is_basic then
+					Result.append ("(l_value: ")
+					Result.append (a_type.name)
+					Result.append ("): ")
+					Result.append (a_type.name)
+					Result.append (" do Result := l_value end (")
+					Result.append (l_opt_name)
+					Result.append (")")
+				else
+
+					Result.append (l_opt_name)
+					Result.append_character ('.')
+					Result.append (l_feat_name)
+				end
+				Result.append (", %"")
+				Result.append (l_feat_name)
+				Result.append ("%")%N")
+				l_queries.forth
+			end
+
+			Result.append (l_3tabs)
+			Result.append ("else%N")
+			Result.append (l_4tabs)
+			Result.append ("create l_tbl.make (0)%N")
+			Result.append (l_4tabs)
+			Result.append ("l_tbl.compare_objects%N")
+			Result.append (l_4tabs)
+			Result.append ("l_queries.put (l_tbl, ")
+			Result.append (a_operand_id.out)
+			Result.append (")%N")
+			Result.append (l_3tabs)
+			Result.append ("end%N")
+		end
+
+	operand_types_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [TYPE_A]
+			-- Types of operands of `a_feature', starting from the target,
+			-- followed by arguments
+		local
+			l_args: FEAT_ARG
+			l_type: TYPE_A
+		do
+			create Result.make
+			Result.extend (a_context_class.actual_type)
+			a_feature.arguments.do_all (agent Result.extend)
+
+			from
+				Result.start
+			until
+				Result.after
+			loop
+				l_type := Result.item_for_iteration
+				l_type := l_type.actual_type.instantiation_in (a_context_class.actual_type, a_context_class.class_id)
+				l_type := actual_type_from_formal_type (l_type, a_context_class)
+				Result.replace (l_type)
+				Result.forth
+			end
+		end
+
+	queries_of_type (a_type: TYPE_A): LIST [FEATURE_I]
+			-- List of query names from `a_type' used in state modeling
+		require
+			a_type_has_class: a_type.has_associated_class
+		do
+			Result := supported_queries_of_type (a_type)
 		end
 
 feature{NONE} -- Implementation
@@ -219,9 +342,7 @@ feature{NONE} -- Implementation
 
 ${INITIALIZE_TEST_CASES}
 
-${RETRIEVE_PRE_STATE}
-
-${RETRIEVE_POST_STATE}
+${RETRIEVE_OPERAND_STATES}
 
 ${EXECUTE_TEST_CASES}
 

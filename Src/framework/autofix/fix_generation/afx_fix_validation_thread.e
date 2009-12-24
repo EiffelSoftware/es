@@ -118,12 +118,37 @@ feature{NONE} -- Impelmentation
 			-- to execute the test case specified by `a_uuid'.
 		local
 			l_request: AFX_EXECUTE_TEST_CASE_REQUEST
+			l_response: detachable ANY
 		do
 			create l_request.make (a_uuid)
 			socket.put_natural_32 (request_execute_test_case_type)
 			socket.independent_store (l_request)
 			socket.read_natural_32
 			exception_count := socket.last_natural_32
+			l_response := socket.retrieved
+			if attached {HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]} l_response as l_post_state then
+				io.put_string ("Post state:%N")
+				from
+					l_post_state.start
+				until
+					l_post_state.after
+				loop
+					io.put_string ("Operand " + l_post_state.key_for_iteration.out + "%N")
+					if attached {HASH_TABLE [STRING, STRING]} l_post_state.item_for_iteration as l_state then
+						from
+							l_state.start
+						until
+							l_state.after
+						loop
+							io.put_string (l_state.key_for_iteration + " == " + l_state.item_for_iteration + "%N")
+							l_state.forth
+						end
+					end
+					l_post_state.forth
+				end
+			elseif attached {STRING} l_response as l_str and then l_str ~ void_state then
+				io.put_string ("Post state: Void%N")
+			end
 		end
 
 	send_exit_request

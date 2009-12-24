@@ -18,4 +18,9 @@ feature -- Access
 	request_melt_feature_type: NATURAL_32 = 3
 			-- Type id of an melt feature request
 
+feature -- Strings
+
+	void_state: STRING = "void state"
+		-- String to indicate a void state
+
 end

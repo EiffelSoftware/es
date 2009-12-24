@@ -30,6 +30,7 @@ feature{NONE} -- Implementation
 						-- Validate fix candidates.
 					port := argument (4).to_integer
 					exception_count := 0
+					is_validating_fixes := True
 					validate_fixes
 				end
 				close_log_file
@@ -48,13 +49,39 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
+feature{NONE} -- Stats retrieval
+
+	last_pre_state: detachable like state_type
+			-- Last retrieved pre state
+
+	last_post_state: detachable like state_type
+			-- Last retrieved post state
+
+	is_validating_fixes: BOOLEAN
+			-- Is validating fixes?
+
 	retrieve_pre_state (a_operands: SPECIAL [detachable ANY])
 			-- Retrieve prestate of `a_operands'.
-		deferred
+		do
+			-- Not needed for the moment.
 		end
 
 	retrieve_post_state (a_operands: SPECIAL [detachable ANY])
 			-- Retrieve post of `a_operands'.
+		local
+			l_retried: BOOLEAN
+		do
+			if is_validating_fixes and then not l_retried then
+				last_post_state := operand_states (a_operands)
+			end
+		rescue
+			l_retried := True
+			last_post_state := Void
+			retry
+		end
+
+	operand_states (a_operands: SPECIAL [detachable ANY]): like state_type
+			-- Operand states of `a_operands'
 		deferred
 		end
 
@@ -119,6 +146,8 @@ feature{NONE} -- Implementation
 		local
 			l_agent: PROCEDURE [ANY, TUPLE]
 		do
+			last_pre_state := Void
+			last_post_state := Void
 			if attached {AFX_EXECUTE_TEST_CASE_REQUEST} last_request as l_exec_request then
 				log_message ("-- Received UUID: " + l_exec_request.test_case_uuid + "%N")
 				if l_exec_request.test_case_uuid.is_empty then
@@ -143,6 +172,11 @@ feature{NONE} -- Implementation
 				end
 			end
 			socket.put_natural_32 (exception_count)
+			if attached {like state_type} last_post_state as l_post then
+				socket.independent_store (l_post)
+			else
+				socket.independent_store (void_state)
+			end
 		end
 
 	execute_melting_request
@@ -322,6 +356,62 @@ feature{NONE} -- Melting
 			]"
 		end
 
+feature{NONE} -- State retrieval
+
+	object_states (a_queries: HASH_TABLE [HASH_TABLE [FUNCTION [ANY, TUPLE, ANY], STRING], INTEGER]): like state_type
+			-- States evaluated from `a_queries'
+		require
+			a_queries_attached: a_queries /= Void
+		local
+			l_queries: HASH_TABLE [FUNCTION [ANY, TUPLE, ANY], STRING]
+			l_values: HASH_TABLE [STRING, STRING]
+		do
+			create Result.make (a_queries.count)
+			from
+				a_queries.start
+			until
+				a_queries.after
+			loop
+				l_queries := a_queries.item_for_iteration
+				create l_values.make (l_queries.count)
+				l_values.compare_objects
+				Result.put (l_values, a_queries.key_for_iteration)
+
+				from
+					l_queries.start
+				until
+					l_queries.after
+				loop
+					l_values.put (value_of_query (l_queries.item_for_iteration), l_queries.key_for_iteration)
+					l_queries.forth
+				end
+				a_queries.forth
+			end
+		end
+
+	value_of_query (a_query: FUNCTION [ANY, TUPLE, ANY]): STRING
+			-- Evaluated value of `a_query'
+		local
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+				if attached {ANY} a_query.item (Void) as l_value then
+					Result := l_value.out
+				else
+					Result := once "Void"
+				end
+			end
+		rescue
+			l_retried := True
+			Result := once "nonsensical"
+			retry
+		end
+
+	state_type: HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]
+			-- Type anchor for state
+			-- Inner table: key is query name, value is its evaluation value, "nonsensical" if an exception
+			-- happend during evaluation.
+			-- Outer table: key is operand index, 0 is the target, followed by arguments.
 
 end
 

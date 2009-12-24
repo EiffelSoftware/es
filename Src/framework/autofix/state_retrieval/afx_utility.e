@@ -58,6 +58,9 @@ feature -- Type related
 			else
 				Result := a_type
 			end
+			if Result.has_generics then
+				Result := Result.associated_class.constraint_actual_type
+			end
 		ensure
 			result_attached: Result /= Void
 		end
