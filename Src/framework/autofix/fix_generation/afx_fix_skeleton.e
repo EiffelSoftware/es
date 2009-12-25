@@ -64,6 +64,11 @@ feature -- Access
 	config: AFX_CONFIG
 			-- Config for current AutoFix session
 
+	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
+			-- Table of test case execution status
+			-- Key is the UUID of a test case, value is the execution status
+			-- assoicated with that test case
+
 feature -- Access
 
 	ranking: AFX_FIX_RANKING
@@ -138,7 +143,6 @@ feature -- Basic operations
 			l_contracts: TUPLE [precondition: AFX_STATE; postcondition: AFX_STATE]
 			l_precondition: AFX_STATE
 			l_postcondition: AFX_STATE
---			l_fixes: LINKED_LIST [TUPLE [fix: STRING; ranking: INTEGER]]
 			l_pre_hie: like state_hierarchy
 			l_post_hie: like state_hierarchy
 			l_premises: ARRAY [AFX_EXPRESSION]

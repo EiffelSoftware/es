@@ -80,7 +80,9 @@ feature -- Test routines
 $(STATE_SUMMARY)
 
 -- Exception trace
+    exception_trace_string: STRING = "[
 $(TRACE)
+]"
 
 feature{NONE} -- Implementation
     

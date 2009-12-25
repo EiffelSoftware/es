@@ -112,8 +112,8 @@ feature -- Setting
 
 	set_pre_state (a_state: like pre_state)
 			-- Set `pre_state' with `a_state'.
-		require
-			a_state_attached: a_state /= Void
+--		require
+--			a_state_attached: a_state /= Void
 		do
 			pre_state := a_state
 		ensure

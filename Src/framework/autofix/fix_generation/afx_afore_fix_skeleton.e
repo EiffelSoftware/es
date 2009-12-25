@@ -18,13 +18,14 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_config: like config)
+	make (a_spot: AFX_EXCEPTION_SPOT; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
 			-- Initialize.
 		do
 			exception_spot := a_spot
 			create relevant_ast.make
 			create fixes.make
 			config := a_config
+			test_case_execution_status := a_test_case_execution_status
 		end
 
 feature -- Status report
@@ -109,6 +110,7 @@ feature{NONE} -- Implementation
 			Result.set_feature_text (feature_as_ast.text (l_match_list))
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
+			Result.set_pre_fix_execution_status (test_case_execution_status)
 			l_match_list.remove_modifications
 			l_ranking := ranking.twin
 			l_ranking.set_snippet_complexity (a_snippet_ranking)

@@ -100,7 +100,7 @@ feature -- Basic operations
 				create {AFX_VOID_VALUE} Result.make
 
 			elseif a_dump_value.is_type_object then
-				create {AFX_ANY_VALUE} Result.make (a_dump_value.output_for_debugger)
+				create {AFX_ANY_VALUE} Result.make (a_dump_value.string_representation)
 			else
 				check False end
 			end

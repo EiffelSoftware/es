@@ -91,10 +91,13 @@ feature -- Actions
 	max_test_case_execution_time: INTEGER is 5
 			-- Max time in second to allow a test case to execute
 
-feature{NONE} -- Actions
-
-	good_fix_count: INTEGER
+	valid_fix_count: INTEGER
 			-- Number of good fixes validated so far
+
+	should_quit: BOOLEAN
+			-- Should fix validation be stopped?
+
+feature{NONE} -- Actions
 
 	on_fix_validation_start (a_melted_fix: AFX_MELTED_FIX)
 			-- Action to be performed when `a_melted_fix' is about to be validated
@@ -108,11 +111,17 @@ feature{NONE} -- Actions
 			io.put_string ("Failed: " + (a_exception_count.to_integer_32 - exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)).out + "  " + a_exception_count.out + ", " + exception_count.out + "%N")
 			if exception_count = a_exception_count then
 				io.put_string ("====================================================%N")
-				good_fix_count := good_fix_count + 1
-				io.put_string ("Good fix No." + good_fix_count.out + "%N")
+				valid_fix_count := valid_fix_count + 1
+				io.put_string ("Good fix No." + valid_fix_count.out + "%N")
 				io.put_string (formated_fix (fixes.item (a_melted_fix.id)))
 				io.put_string ("Ranking: " + fixes.item (a_melted_fix.id).ranking.score.out + "%N")
 				io.put_string ("%N")
+
+					-- Maximal number of valid fixes have already been found, terminate fix validation.
+				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number < valid_fix_count then
+					worker.set_should_quit (True)
+					should_quit := True
+				end
 			end
 			exception_count := a_exception_count
 		end
@@ -164,8 +173,9 @@ feature -- Basic operations
 						timer.set_timeout (0)
 						timer.start
 
-						create worker.make (melted_fixes, max_test_case_execution_time, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
+						create worker.make (fixes, melted_fixes, max_test_case_execution_time, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
 						worker.execute
+						cleanup
 					end
 				end
 			end
@@ -175,7 +185,7 @@ feature -- Basic operations
 			-- Validate `fixes'.
 		do
 			from until
-				melted_fixes.is_empty
+				melted_fixes.is_empty or else should_quit
 			loop
 				validate_left_fixes
 			end
@@ -192,8 +202,8 @@ feature -- Basic operations
 			l_pattern_id: INTEGER
 			l_data: TUPLE [byte_code: STRING; last_bpslot: INTEGER]
 		do
-			l_class ?= a_fix.recipient_class
-			l_feat := a_fix.recipient_
+			l_class ?= a_fix.recipient_written_class
+			l_feat := a_fix.origin_recipient
 			l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text)
 			if not l_data.byte_code.is_empty then
 				l_body_id := l_feat.real_body_id (l_class.types.first) - 1

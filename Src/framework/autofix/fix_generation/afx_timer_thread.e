@@ -94,12 +94,12 @@ feature -- Status setting
 	set_should_quit (b: BOOLEAN)
 			-- Set `should_quit' to `b'.
 		do
-			mutex.lock
+--			mutex.lock
 			should_quit := b
 			if is_launched then
 				condition_variable.signal
 			end
-			mutex.unlock
+--			mutex.unlock
 		end
 
 	reset_timer

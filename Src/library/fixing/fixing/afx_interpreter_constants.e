@@ -23,4 +23,7 @@ feature -- Strings
 	void_state: STRING = "void state"
 		-- String to indicate a void state
 
+	nonsensical: STRING = "nonsensical"
+		-- String to represent a nonsensical value
+
 end

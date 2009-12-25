@@ -56,6 +56,11 @@ feature -- Index for extra data
 	extra_data_index_test_case_serialization: INTEGER is 2
 			-- Index for test case serialization on the fly
 
+feature -- Strings
+
+	nonsensical: STRING is "nonsensical"
+			-- Nonsensical value
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

@@ -75,6 +75,18 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	recipient_written_class: CLASS_C
+			-- Written class of `recipient_'
+		do
+			Result := recipient_.written_class
+		end
+
+	origin_recipient: FEATURE_I
+			-- The original version of `recipient_' in `recipient_written_class'
+		do
+			Result := recipient_written_class.feature_of_rout_id_set (recipient_.rout_id_set)
+		end
+
 	recipient_: FEATURE_I
 			-- Feature for `recipient'
 		do
@@ -192,6 +204,15 @@ feature -- Setting
 			is_passing := b
 		ensure
 			is_passing_set: is_passing = b
+		end
+
+	set_uuid (a_uuid: STRING)
+			-- Set `uuid' with `a_uuid'.
+			-- Create a new copy of `a_uuid'.
+		require
+			a_uuid_attached: a_uuid /= Void
+		do
+			uuid := a_uuid.twin
 		end
 
 feature{NONE} -- Implementation

@@ -68,6 +68,18 @@ feature -- Access
 			Result := test_case_info.recipient_
 		end
 
+	origin_recipient: FEATURE_I
+			-- Origin recipient
+		do
+			Result := test_case_info.origin_recipient
+		end
+
+	recipient_written_class: CLASS_C
+			-- Written class of `recipient'
+		do
+			Result := test_case_info.recipient_written_class
+		end
+
 	test_case_breakpoint_slot: INTEGER
 			-- Breakpoint slot of the exception in case of a failed test case.
 			-- In a passing test case, 0.

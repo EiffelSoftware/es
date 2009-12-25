@@ -152,6 +152,7 @@ feature{NONE} -- Access
 			l_exprs.extend (expr_a_test_case_number)
 			l_exprs.extend (expr_a_dry_run)
 			l_exprs.extend (expr_a_uuid)
+			l_exprs.extend (expr_a_trace)
 			create Result.make_with_text (a_class, a_feature, l_exprs)
 		end
 
@@ -212,8 +213,94 @@ feature{NONE} -- Constants
 	expr_a_test_case_number: STRING = "a_test_case_number"
 	expr_a_dry_run: STRING = "a_dry_run"
 	expr_a_uuid: STRING = "a_uuid"
+	expr_a_trace: STRING = "a_trace"
 
 feature{NONE} -- Actions
+
+	recipient_from_trace (a_origin_recipient: STRING; a_written_class: STRING; a_trace: STRING): TUPLE [recipient_class: STRING; recipient: STRING]
+			-- Recipient feature along with its associated class from exception trace `a_trace'
+		local
+			l_lines: LIST [STRING]
+			l_line: STRING
+			i: INTEGER
+			l_trace_lines: STRING
+			l_done: BOOLEAN
+			l_analyzer: AFX_EXCEPTION_TRACE_ANALYSER
+			l_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+			l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+			l_ori_class: STRING
+			l_ori_feature: STRING
+			l_context_class: STRING
+			l_context_feature: STRING
+		do
+			l_lines := a_trace.split ('%N')
+			from
+				i := 1
+				l_lines.start
+			until
+				i > 7
+			loop
+				l_lines.remove
+				i := i + 1
+			end
+
+			create l_trace_lines.make (a_trace.count)
+			from
+				l_lines.start
+			until
+				l_lines.after or l_done
+			loop
+				l_line := l_lines.item_for_iteration
+				l_line.keep_tail (l_line.count - 2)
+				l_line.left_adjust
+				if l_line.is_empty then
+					l_done := True
+				else
+					l_trace_lines.append (l_line)
+					l_trace_lines.append_character ('%N')
+					l_lines.forth
+				end
+			end
+
+			create l_analyzer
+			l_analyzer.analyse (l_trace_lines)
+			l_frames := l_analyzer.last_relevant_exception_frames
+
+			from
+				l_done := False
+				l_frames.start
+			until
+				l_frames.after or else l_done
+			loop
+				l_frame := l_frames.item_for_iteration
+				if attached {STRING} l_frame.context_class_name as l_cclass then
+					l_context_class := l_cclass
+				else
+					check should_not_happen: False end
+				end
+
+				if attached {STRING} l_frame.feature_name as l_feat_name then
+					l_context_feature := l_feat_name
+				else
+					check should_not_happen: False end
+				end
+
+				if attached {STRING} l_frame.origin_class_name as l_oclass then
+					l_ori_class := l_oclass
+				else
+					l_ori_class := l_context_class
+				end
+				l_ori_feature := l_context_feature
+
+				if l_ori_class ~ a_written_class and then l_ori_feature ~ a_origin_recipient then
+					l_done := True
+					Result := [l_context_class, l_context_feature]
+				end
+				l_frames.forth
+			end
+		ensure
+			result_attached: Result /= Void
+		end
 
 	on_new_test_case_found (a_breakpoint: BREAKPOINT; a_test_case_info: AFX_STATE)
 			-- Action to be performed when `a_breakpoint' is hit
@@ -227,7 +314,8 @@ feature{NONE} -- Actions
 			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
 			l_spot: AFX_EXCEPTION_SPOT
 			l_uuid: STRING
-			l: LIST [INTEGER]
+			l_trace: STRING
+			l_data: like recipient_from_trace
 		do
 			l_table := a_test_case_info.to_hash_table
 			l_recipient_class := first_class_starts_with_name (l_table.item (expr_a_recipient_class).out)
@@ -237,9 +325,20 @@ feature{NONE} -- Actions
 			l_tag := l_table.item (expr_a_tag).out
 			l_passing := l_table.item (expr_a_passing).out.to_boolean
 			l_uuid := l_table.item (expr_a_uuid).out
+			l_trace := l_table.item (expr_a_trace).out
 			set_is_current_test_case_dry_run (l_table.item (expr_a_dry_run).out.to_boolean)
 
-			create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
+			if l_passing then
+				check not exception_spots.is_empty end
+				exception_spots.start
+				current_test_case_info := exception_spots.item_for_iteration.test_case_info.deep_twin
+				current_test_case_info.set_is_passing (True)
+				current_test_case_info.set_uuid (l_uuid)
+			else
+				l_data := recipient_from_trace (l_recipient.feature_name.as_lower, l_recipient_class.name_in_upper, l_trace)
+				create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_data.recipient_class, l_data.recipient, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
+--				create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
+			end
 
 			if is_current_test_case_dry_run then
 			else
@@ -251,14 +350,14 @@ feature{NONE} -- Actions
 				if current_test_case_breakpoint_manager /= Void then
 					current_test_case_breakpoint_manager.toggle_breakpoints (False)
 					remove_breakpoint (debugger_manager, current_test_case_breakpoint_manager.class_)
-					l := debugger_manager.breakpoints_manager.breakpoints_set_for (l_recipient.e_feature, True)
 				end
 
+				l_recipient_class := current_test_case_info.recipient_written_class
+				l_recipient := current_test_case_info.origin_recipient
 				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
 				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
 				current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
 				current_test_case_breakpoint_manager.toggle_breakpoints (True)
-				l := debugger_manager.breakpoints_manager.breakpoints_set_for (l_recipient.e_feature, True)
 			end
 		end
 
@@ -408,34 +507,18 @@ feature -- Fix generation
 			-- Generate candidate fixes.
 		local
 			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
-			l_fixes: LINKED_LIST [AFX_FIX]
 		do
-			create l_fixes.make
-			from
-				exception_spots.start
-			until
-				exception_spots.after
-			loop
-				create l_gen.make (exception_spots.item_for_iteration, config)
-				l_gen.generate
-				from
-					l_gen.fixes.start
-				until
-					l_gen.fixes.after
-				loop
-					l_gen.fixes.item_for_iteration.generate
-					l_fixes.append (l_gen.fixes.item_for_iteration.fixes)
-					l_gen.fixes.forth
-				end
-				exception_spots.forth
-			end
-
-			store_fixes (l_fixes)
-			fixes := l_fixes
+			create fixes.make
+			check exception_spots.count = 1 end
+			exception_spots.start
+			create l_gen.make (exception_spots.item_for_iteration, config, test_case_execution_status.status)
+			l_gen.generate
+			fixes.append (l_gen.fixes)
+			store_fixes (fixes)
 		end
 
 	validate_fixes
-			-- Validate `fixes'.
+			-- Validate `fix_skeletons'.
 		local
 			l_validator: AFX_FIX_VALIDATOR
 			l_spot: AFX_EXCEPTION_SPOT

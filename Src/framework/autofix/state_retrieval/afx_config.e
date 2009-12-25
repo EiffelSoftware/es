@@ -220,6 +220,14 @@ feature -- Test case analysis
 			-- Should Daikon be used to infer invariants on system states?
 			-- Default: False
 
+feature -- Fix generation
+
+	max_valid_fix_number: INTEGER
+			-- Maximal number of valid fixes
+			-- Stop after found this number of fixes.
+			-- 0 means not bounded.
+			-- Default: 0
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN
@@ -309,6 +317,14 @@ feature -- Setting
 			is_daikon_enabled := b
 		ensure
 			is_daikon_enabled_set: is_daikon_enabled = b
+		end
+
+	set_max_valid_fix_number (i: INTEGER)
+			-- Set `max_valid_fix_number' with `i'.
+		do
+			max_valid_fix_number := i
+		ensure
+			max_valid_fix_number_set: max_valid_fix_number = i
 		end
 
 feature{NONE} -- Implementation

@@ -403,7 +403,7 @@ feature{NONE} -- State retrieval
 			end
 		rescue
 			l_retried := True
-			Result := once "nonsensical"
+			Result := nonsensical
 			retry
 		end
 

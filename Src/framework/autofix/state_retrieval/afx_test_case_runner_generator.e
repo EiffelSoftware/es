@@ -334,7 +334,7 @@ create
 		
 feature{NONE} -- Implementation
 
-	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER; a_dry_run: BOOLEAN; a_uuid: STRING)
+	mark_test_case (a_recipient_class: STRING; a_recipient: STRING; a_exception_code: INTEGER; a_bpslot: INTEGER; a_tag: STRING; a_passing: BOOLEAN; a_test_case_number: INTEGER; a_dry_run: BOOLEAN; a_uuid: STRING; a_trace: STRING)
 			-- If `a_dry_run' is True, states of the current system should not be retrieved.
 		do
 			do_nothing
@@ -362,8 +362,8 @@ end
 				l_retried: BOOLEAN
 			do
 				if not l_retried then
-					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER}, ${DRY_RUN}, "${UUID}")
 					create l_tc
+					mark_test_case ("${RECIPIENT_CLASS}", "${RECIPIENT}", ${EXCEPTION_CODE}, ${BPSLOT}, "${TAG}", ${PASSING}, ${TEST_CASE_NUMBER}, ${DRY_RUN}, "${UUID}", l_tc.exception_trace_string)					
 					l_tc.setup
 					retrieve_pre_state (l_tc.operands)
 					l_tc.generated_test_1

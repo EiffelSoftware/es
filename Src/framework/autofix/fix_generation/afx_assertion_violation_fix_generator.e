@@ -17,23 +17,24 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: like exception_spot; a_config: like config)
+	make (a_spot: like exception_spot; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
 			-- Initialize.
 		do
 			exception_spot := a_spot
 			config := a_config
+			test_case_execution_status := a_test_case_execution_status
 		end
 
 feature -- Basic operations
 
 	generate
 			-- Generate fixes for `exception_spot' and
-			-- store result in `fixes'.
+			-- store result in `fix_skeletons'.
 		local
 			l_done: BOOLEAN
 		do
 				-- Initialize.
-			create fixes.make
+			create fix_skeletons.make
 			initialize_assertion_structure_analyzer
 
 				-- Generate fixing locations.
@@ -55,6 +56,17 @@ feature -- Basic operations
 				assertion_structure_analyzer.forth
 			end
 
+				-- Generate actual fixes.
+			create fixes.make
+			from
+				fix_skeletons.start
+			until
+				fix_skeletons.after
+			loop
+				fix_skeletons.item_for_iteration.generate
+				fixes.append (fix_skeletons.item_for_iteration.fixes)
+				fix_skeletons.forth
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -82,6 +94,11 @@ feature{NONE} -- Implementation
 
 	config: AFX_CONFIG
 			-- Config for Current AutoFix session
+
+	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
+			-- Table of test case execution status
+			-- Key is the UUID of a test case, value is the execution status
+			-- assoicated with that test case
 
 feature{NONE} -- Implementation
 
@@ -133,9 +150,9 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ABQ_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
 			l_generator.generate
-			fixes.append (l_generator.fixes)
+			fix_skeletons.append (l_generator.fixes)
 		end
 
 	process_abq_implication_structure_analyzer (a_analyzer: AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER)
@@ -143,9 +160,9 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ABQ_IMPLICATION_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
 			l_generator.generate
-			fixes.append (l_generator.fixes)
+			fix_skeletons.append (l_generator.fixes)
 		end
 
 	process_linear_constrained_structure_analyzer (a_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER)
@@ -153,9 +170,9 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_LINEAR_CONSTRAINT_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
 			l_generator.generate
-			fixes.append (l_generator.fixes)
+			fix_skeletons.append (l_generator.fixes)
 		end
 
 	process_any_structure_analyzer (a_analyzer: AFX_ANY_STRUCTURE_ANALYZER)
@@ -163,9 +180,9 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ANY_STRUCTURE_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config)
+			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
 			l_generator.generate
-			fixes.append (l_generator.fixes)
+			fix_skeletons.append (l_generator.fixes)
 		end
 
 end

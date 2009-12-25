@@ -174,7 +174,8 @@ feature{NONE} -- Implementation
 		do
 				-- Analyze AST structure of the recipient feature.
 			create l_structure_gen
-			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
+			l_structure_gen.generate (a_tc.recipient_written_class, a_tc.origin_recipient)
+--			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
 
 			a_spot.set_recipient_ast_structure (l_structure_gen.structure)
 		end
