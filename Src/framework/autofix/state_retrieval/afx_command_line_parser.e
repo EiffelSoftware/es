@@ -50,6 +50,9 @@ feature -- Basic operations
 			l_daikon_option: AP_FLAG
 			l_max_valid_fix_option: AP_INTEGER_OPTION
 			l_max_tc_time: AP_INTEGER_OPTION
+			l_fix_skeleton: AP_STRING_OPTION
+			l_skeleton_types: LIST [STRING]
+			l_mocking_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -96,6 +99,14 @@ feature -- Basic operations
 			l_max_tc_time.set_description ("Maximal time in second to allow a test case to execute. Default: 5")
 			l_parser.options.force_last (l_max_tc_time)
 
+			create l_fix_skeleton.make_with_long_form ("skeleton")
+			l_fix_skeleton.set_description ("Only allow certion type of fix to be generated, value is a comma separated string list, possible types are: %"afore%", %"wrap%". Default: both.")
+			l_parser.options.force_last (l_fix_skeleton)
+
+			create l_mocking_option.make ('m', "mocking")
+			l_mocking_option.set_description ("Enable mocking mode. When in mocking mode, the tool will use pregenerated data files instead of doing time-consuming on-the-fly data analysis. Only works if those data files are up to date. Default: False.")
+			l_parser.options.force_last (l_mocking_option)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
@@ -133,6 +144,27 @@ feature -- Basic operations
 			else
 				config.set_max_test_case_execution_time (5)
 			end
+
+			if l_fix_skeleton.was_found then
+				l_skeleton_types := l_fix_skeleton.parameter.split (',')
+				from
+					l_skeleton_types.start
+				until
+					l_skeleton_types.after
+				loop
+					if l_skeleton_types.item_for_iteration.is_case_insensitive_equal ("afore") then
+						config.set_is_afore_fix_enabled (True)
+					elseif l_skeleton_types.item_for_iteration.is_case_insensitive_equal ("wrap") then
+						config.set_is_wrapping_fix_enabled (True)
+					end
+					l_skeleton_types.forth
+				end
+			else
+				config.set_is_afore_fix_enabled (True)
+				config.set_is_wrapping_fix_enabled (True)
+			end
+
+			config.set_is_mocking_mode_enabled (l_mocking_option.was_found)
 
 			config.set_is_arff_generation_enabled (l_arff_option.was_found)
 

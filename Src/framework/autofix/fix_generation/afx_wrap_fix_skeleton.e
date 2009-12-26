@@ -48,6 +48,8 @@ feature -- Access
 				l_failing_bpslot := exception_spot.recipient_ast_structure.first_node_with_break_point (relevant_ast.first).breakpoint_slot
 				l_passing_bpslot := exception_spot.recipient_ast_structure.next_break_point (l_failing_bpslot)
 			end
+
+
 			Result := [l_passing_bpslot, l_failing_bpslot]
 		end
 
@@ -63,13 +65,17 @@ feature{NONE} -- Implementation
 		local
 			l_fix_text: STRING
 		do
+				-- Insert a care where the else-branch is empty.
+			fixes.extend (fix_with_text (Void, a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
 			from
 				a_snippets.start
 			until
 				a_snippets.after
 			loop
 				l_fix_text := a_snippets.item_for_iteration.snippet.twin
-				fixes.extend (fix_with_text ("%N" + l_fix_text + "%N", a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
+				if not l_fix_text.is_empty then
+					fixes.extend (fix_with_text ("%N" + l_fix_text + "%N", a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
+				end
 				a_snippets.forth
 			end
 		end

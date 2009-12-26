@@ -18,14 +18,19 @@ feature -- Basic operations
 	generate
 			-- Generate fixes into `fixes'.
 		do
-			fixing_locations.do_all (agent generate_afore_fixes)
-			fixing_locations.do_if (
-				agent generate_wrapping_fixes,
-					-- Only generate fix if the wrapped ast is not empty.
-				agent (data: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
-					do
-						Result := not data.instructions.is_empty
-					end)
+			if config.is_afore_fix_enabled then
+				fixing_locations.do_all (agent generate_afore_fixes)
+			end
+
+			if config.is_wrapping_fix_enabled then
+				fixing_locations.do_if (
+					agent generate_wrapping_fixes,
+						-- Only generate fix if the wrapped ast is not empty.
+					agent (data: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+						do
+							Result := not data.instructions.is_empty
+						end)
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -48,15 +53,27 @@ feature{NONE} -- Implementation
 				-- snippet
 				--		require: not p
 				--		ensure: p
-			fixes.extend (new_afore_fix_skeleton (
-				exception_spot, a_fixing_location.instructions, Void, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value), a_fixing_location.scope_level))
+			fixes.extend (
+				new_afore_fix_skeleton (
+					exception_spot,
+					a_fixing_location.instructions,
+					Void,
+					l_negated_failing_assert.equation (l_value),
+					l_failing_assert.equation (l_value),
+					a_fixing_location.scope_level))
 
 				-- Generate fix: (p is the failing assertion)
 				-- snippet
-				--		require: not p
-				--		ensure: delayed
-			fixes.extend (new_afore_fix_skeleton (
-				exception_spot, a_fixing_location.instructions, Void, l_negated_failing_assert.equation (l_value), Void, a_fixing_location.scope_level))
+				--		require: F_inv
+				--		ensure:  S_inv - F_inv
+			fixes.extend (
+				new_afore_fix_skeleton (
+					exception_spot,
+					a_fixing_location.instructions,
+					Void,
+					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
+					create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
+					a_fixing_location.scope_level))
 
 			if not a_fixing_location.is_empty then
 					-- Generate fix: (p is the failing assertion)
@@ -65,17 +82,29 @@ feature{NONE} -- Implementation
 					-- end
 					--		require: not p
 					--		ensure: p
-				fixes.extend (new_afore_fix_skeleton (
-					exception_spot, a_fixing_location.instructions, l_negated_failing_assert, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value), a_fixing_location.scope_level))
+				fixes.extend (
+					new_afore_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_negated_failing_assert,
+						l_negated_failing_assert.equation (l_value),
+						l_failing_assert.equation (l_value),
+						a_fixing_location.scope_level))
 
 					-- Generate fix: (p is the failing assertion)
 					-- if not p then
 					-- 		snippet
 					-- end
-					--		require: not p
-					--		ensure: delayed
-				fixes.extend (new_afore_fix_skeleton (
-					exception_spot, a_fixing_location.instructions, l_negated_failing_assert, l_negated_failing_assert.equation (l_value), Void, a_fixing_location.scope_level))
+					--		require: F_inv
+					--		ensure:  S_inv - F_inv
+				fixes.extend (
+					new_afore_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_negated_failing_assert,
+						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
+						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
+						a_fixing_location.scope_level))
 			end
 		end
 
@@ -99,21 +128,34 @@ feature{NONE} -- Implementation
 					-- else
 					--		snippet
 					--			require: not p
-					--			ensure: p
+					--			ensure: S_inv - F_inv
 					-- end
-				fixes.extend (new_wrapping_fix_skeleton (
-					exception_spot, a_fixing_location.instructions, l_failing_assert, l_negated_failing_assert.equation (l_value), l_failing_assert.equation (l_value), a_fixing_location.scope_level))
+				fixes.extend (
+					new_wrapping_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_failing_assert,
+						l_negated_failing_assert.equation (l_value),
+						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
+						a_fixing_location.scope_level))
+
 
 					-- Generate fix: (p is the failing assertion)
 					-- if p then
 					--		a_fixing_locaiton
 					-- else
 					--		snippet
-					--			require: not p
-					--			ensure: delayed
+					--			require: F_inv
+					--			ensure: S_inv - F_inv
 					-- end
-				fixes.extend (new_wrapping_fix_skeleton (
-					exception_spot, a_fixing_location.instructions, l_failing_assert, l_negated_failing_assert.equation (l_value), Void, a_fixing_location.scope_level))
+				fixes.extend (
+					new_wrapping_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_failing_assert,
+						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
+						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
+						a_fixing_location.scope_level))
 			end
 		end
 

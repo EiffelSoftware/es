@@ -140,9 +140,9 @@ feature -- Basic operations
 		local
 			l_passing_bpslot: INTEGER
 			l_failing_bpslot: INTEGER
-			l_contracts: TUPLE [precondition: AFX_STATE; postcondition: AFX_STATE]
-			l_precondition: AFX_STATE
-			l_postcondition: AFX_STATE
+			l_contracts: like actual_fix_contracts
+			l_precondition: detachable AFX_STATE
+			l_postcondition: detachable AFX_STATE
 			l_pre_hie: like state_hierarchy
 			l_post_hie: like state_hierarchy
 			l_premises: ARRAY [AFX_EXPRESSION]
@@ -152,21 +152,13 @@ feature -- Basic operations
 			l_snippets: like fix_snippets
 			l_fix: AFX_FIX
 		do
+			create fixes.make
+
 				-- Decide precondition and postcondition for the fix.
 			l_contracts := actual_fix_contracts
 			l_precondition := l_contracts.precondition
 			l_postcondition := l_contracts.postcondition
-
-			create fixes.make
-			if l_postcondition.is_empty then
-				create l_fix.make (exception_spot, next_fix_id)
-				l_fix.set_text ("")
-				l_fix.set_feature_text ("should not happen.")
-				l_fix.set_ranking (ranking.twin)
-				l_fix.set_precondition (l_precondition)
-				l_fix.set_postcondition (l_postcondition)
-				fixes.extend (l_fix)
-			else
+			if l_precondition /= Void and then l_postcondition /= Void and then not l_postcondition.is_empty then
 					-- Get all combinations of premises that we want to include in a fix.
 				l_pre_hie := state_hierarchy (l_precondition)
 				l_post_hie:= state_hierarchy (l_postcondition)
@@ -174,27 +166,51 @@ feature -- Basic operations
 				generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition)
 			end
 
-			debug ("autofix")
-					-- Print out all the fix candidates.
-				fixes.do_all (agent print_fix)
-			end
+--			if l_postcondition.is_empty then
+--				create l_fix.make (exception_spot, next_fix_id)
+--				l_fix.set_text ("")
+--				l_fix.set_feature_text ("should not happen.")
+--				l_fix.set_ranking (ranking.twin)
+--				l_fix.set_precondition (l_precondition)
+--				l_fix.set_postcondition (l_postcondition)
+--				fixes.extend (l_fix)
+--			else
+--					-- Get all combinations of premises that we want to include in a fix.
+--				l_pre_hie := state_hierarchy (l_precondition)
+--				l_post_hie:= state_hierarchy (l_postcondition)
+--				l_snippets := fix_snippets (l_pre_hie, l_post_hie)
+--				generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition)
+--			end
+
+--			debug ("autofix")
+--					-- Print out all the fix candidates.
+--				fixes.do_all (agent print_fix)
+--			end
 		end
 
 feature{NONE} -- Implementation
 
-	actual_fix_contracts: TUPLE [precondition: AFX_STATE; postcondition: AFX_STATE]
+	actual_fix_contracts: TUPLE [precondition: detachable AFX_STATE; postcondition: detachable AFX_STATE]
 			-- Actual pre-/postconditions for current fix
 			-- `precondition' or `postcondition' may be empty.
 		local
-			l_precondition: AFX_STATE
-			l_postcondition: AFX_STATE
+			l_precondition: detachable AFX_STATE
+			l_postcondition: detachable AFX_STATE
 			l_bpslots: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
 		do
+			l_bpslots := relevant_break_points
+
 				-- Calculate actual precondition for current fix:
 				-- 1. If the precondition is given, use the given one;
-				-- 2. otherwise, use an empty precondition
+				-- 2. otherwise, use an empty precondition				
 			if attached {AFX_STATE} precondition as l_pre then
-				l_precondition := l_pre
+				if attached {AFX_DELAYED_STATE} l_pre as l_delayed_pre then
+					l_delayed_pre.set_invariants_in_passing_runs (passing_state (l_bpslots.passing_bpslot))
+					l_delayed_pre.set_invariants_in_failing_runs (failing_state (l_bpslots.failing_bpslot))
+					l_precondition := l_delayed_pre.actual_state
+				else
+					l_precondition := l_pre
+				end
 			else
 				create l_precondition.make (10, exception_spot.recipient_class_, exception_spot.recipient_)
 			end
@@ -203,14 +219,15 @@ feature{NONE} -- Implementation
 				-- 1. If the postcondition is given, use the given one;
 				-- 2. otherwise, calculate the postcodition from two break points.
 			if attached {AFX_STATE} postcondition as l_post then
-				l_postcondition := l_post
-			else
-				l_bpslots := relevant_break_points
-				if attached {AFX_STATE} state_invariant_difference (l_bpslots.passing_bpslot, l_bpslots.failing_bpslot) as l_diff then
-					l_postcondition := l_diff
+				if attached {AFX_DELAYED_STATE} l_post as l_delayed_post then
+					l_delayed_post.set_invariants_in_passing_runs (passing_state (l_bpslots.passing_bpslot))
+					l_delayed_post.set_invariants_in_failing_runs (failing_state (l_bpslots.failing_bpslot))
+					l_postcondition := l_delayed_post.actual_state
 				else
-					create l_postcondition.make (10, exception_spot.recipient_class_, exception_spot.recipient_)
+					l_postcondition := l_post
 				end
+			else
+				Result := Void
 			end
 
 			Result := [l_precondition, l_postcondition]
@@ -283,6 +300,34 @@ feature{NONE} -- Implementation
 					end
 					Result.forth
 				end
+			end
+		end
+
+	passing_state (a_passing_bpslot: INTEGER): detachable AFX_STATE
+			-- State invariant (containg only predicates) from passing test cases at break point `a_passing_bpslot'.
+			-- If no data is associated with the break point, return Void.
+		local
+			l_passing_state: AFX_STATE
+			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
+		do
+			l_state := state_server.state_for_fault (exception_spot.test_case_info)
+			l_passing_state := l_state.passing.daikon_table.item (a_passing_bpslot)
+			if l_passing_state /= Void then
+				Result := l_passing_state.only_predicates
+			end
+		end
+
+	failing_state (a_failing_bpslot: INTEGER): detachable AFX_STATE
+			-- State invariant (containg only predicates) from failing test cases at break point `a_failing_bpslot'.
+			-- If no data is associated with the break point, return Void.
+		local
+			l_failing_state: AFX_STATE
+			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
+		do
+			l_state := state_server.state_for_fault (exception_spot.test_case_info)
+			l_failing_state := l_state.failing.daikon_table.item (a_failing_bpslot)
+			if l_failing_state /= Void then
+				Result := l_failing_state.only_predicates
 			end
 		end
 
@@ -377,11 +422,8 @@ feature{NONE} -- Implementation
 	call_sequences (a_source_state: like state_hierarchy; a_target_state: like state_hierarchy): HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], AFX_EXPRESSION]
 			-- Possible call sequences to change the system from `a_source_state' to `a_target_state'.
 		local
-			l_source: HASH_TABLE [AFX_STATE, STRING]
+			l_source: detachable HASH_TABLE [AFX_STATE, STRING]
 		do
-			fixme ("We ingore `a_source_state' for the moment. 18.12.2009 Jasonw")
-			create l_source.make (0)
-			l_source.compare_objects
 			create Result.make (10)
 			from
 				a_target_state.start
@@ -389,6 +431,11 @@ feature{NONE} -- Implementation
 				a_target_state.after
 			loop
 				check a_target_state.key_for_iteration /= Void end
+				l_source := a_source_state.item (a_target_state.key_for_iteration)
+				if l_source = Void then
+					create l_source.make (0)
+					l_source.compare_objects
+				end
 				Result.force (state_transitions (l_source, a_target_state.item_for_iteration), a_target_state.key_for_iteration)
 				a_target_state.forth
 			end
@@ -432,6 +479,7 @@ feature{NONE} -- Implementation
 			l_fix: STRING
 			l_data: TUPLE [seq: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]; premise: AFX_EXPRESSION]
 			l_premise: AFX_EXPRESSION
+			l_finished: BOOLEAN
 		do
 			create Result.make
 			c := a_candidates.count
@@ -468,18 +516,23 @@ feature{NONE} -- Implementation
 						create l_fix.make (1024)
 						l_ranking := 0
 						from
+							l_finished := False
 							j := 1
 						until
-							j > c
+							j > c or else l_finished
 						loop
 							l_data := l_array.item (j)
 							l_premise := l_data.premise
-							l_fix.append (text_of_fix (l_premise, l_data.seq.item_for_iteration.transitions))
-							l_ranking := l_ranking + l_data.seq.item_for_iteration.ranking
-							j := j + 1
+							l_finished := l_data.seq.item_for_iteration.transitions.is_empty
+							if not l_finished then
+								l_fix.append (text_of_fix (l_premise, l_data.seq.item_for_iteration.transitions))
+								l_ranking := l_ranking + l_data.seq.item_for_iteration.ranking
+								j := j + 1
+							end
 						end
-						Result.extend ([l_fix, l_ranking])
-						l_array.item (i).seq.forth
+						if not l_finished then
+							Result.extend ([l_fix, l_ranking])
+						end
 					else
 						i := i + 1
 					end

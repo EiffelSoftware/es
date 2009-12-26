@@ -232,6 +232,21 @@ feature -- Fix generation
 			-- 0 means not bounded.
 			-- Default: 0
 
+	is_afore_fix_enabled: BOOLEAN
+			-- Should fix of afore type be generated?
+			-- Default: True
+
+	is_wrapping_fix_enabled: BOOLEAN
+			-- Should fix of wrapping type be generated?
+			-- Default: True
+
+	is_mocking_mode_enabled: BOOLEAN
+			-- Is mocking mode enabled during fix analysis and generation?
+			-- When in mocking mode, the tool will use pregenerated data files
+			-- instead of doing time-consuming on-the-fly data analysis.
+			-- Only works if those data files are up to date.
+			-- Default: False
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN
@@ -337,6 +352,30 @@ feature -- Setting
 			max_test_case_execution_time := t
 		ensure
 			max_test_case_execution_time_set: max_test_case_execution_time = t
+		end
+
+	set_is_afore_fix_enabled (b: BOOLEAN)
+			-- Set `is_afore_fix_enabled' with `b'.
+		do
+			is_afore_fix_enabled := b
+		ensure
+			is_afore_fix_enabled_set: is_afore_fix_enabled = b
+		end
+
+	set_is_wrapping_fix_enabled (b: BOOLEAN)
+			-- Set `is_wrapping_fix_enabled' with `b'.
+		do
+			is_wrapping_fix_enabled := b
+		ensure
+			is_wrapping_fix_enabled_set: is_wrapping_fix_enabled = b
+		end
+
+	set_is_mocking_mode_enabled (b: BOOLEAN)
+			-- Set `is_mocking_mode_enabled' with `b'.
+		do
+			is_mocking_mode_enabled := b
+		ensure
+			is_mocking_mode_enabled_set: is_mocking_mode_enabled = b
 		end
 
 feature{NONE} -- Implementation

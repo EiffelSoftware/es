@@ -67,7 +67,7 @@ feature -- Basic operations
 	execute
 			-- Execute.
 		do
-			is_mocking := True
+			is_mocking := config.is_mocking_mode_enabled
 
 				-- Setup test case execution status collector.
 			test_case_start_actions.extend (agent test_case_execution_status.on_test_case_start (?, is_mocking))
@@ -509,6 +509,9 @@ feature -- Fix generation
 			-- Generate candidate fixes.
 		local
 			l_gen: AFX_ASSERTION_VIOLATION_FIX_GENERATOR
+			l_text_equal_fixes: HASH_TABLE [INTEGER, STRING]
+			l_fix: AFX_FIX
+			l_text: STRING
 		do
 			create fixes.make
 			check exception_spots.count = 1 end
@@ -516,6 +519,25 @@ feature -- Fix generation
 			create l_gen.make (exception_spots.item_for_iteration, config, test_case_execution_status.status)
 			l_gen.generate
 			fixes.append (l_gen.fixes)
+
+				-- Remove syntactially equivalent fixes.
+			create l_text_equal_fixes.make (fixes.count)
+			l_text_equal_fixes.compare_objects
+			from
+				fixes.start
+			until
+				fixes.after
+			loop
+				l_fix := fixes.item_for_iteration
+				l_text := l_fix.text
+				if l_text_equal_fixes.has (l_text) then
+					fixes.remove
+				else
+					l_text_equal_fixes.put (1, l_text)
+					fixes.forth
+				end
+			end
+
 			store_fixes (fixes)
 		end
 

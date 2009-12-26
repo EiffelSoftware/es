@@ -364,7 +364,13 @@ feature -- Access
 feature -- Status report
 
 	is_chaos: BOOLEAN
-			-- does this state stand for a chaos (the state before object creation)?
+			-- Does this state stand for a chaos (the state before object creation)?
+
+	is_delayed: BOOLEAN
+			-- Is Current state delayed?
+			-- Delayed state means that its actual values are to be instantiated
+		do
+		end
 
 	implication alias "implies" (other: AFX_STATE): BOOLEAN
 			-- Does Current implies `other'?
