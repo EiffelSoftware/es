@@ -128,7 +128,8 @@ feature{NONE} -- Actions
 				io.put_string ("%N")
 
 					-- Maximal number of valid fixes have already been found, terminate fix validation.
-				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number < valid_fix_count then
+				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number = valid_fix_count then
+					timer.set_timeout (0)
 					worker.set_should_quit (True)
 					should_quit := True
 				end
@@ -141,8 +142,10 @@ feature{NONE} -- Actions
 			-- Action to be performed when test case execution timed out
 		do
 			check process /= Void end
-			process.terminate_tree
-			process.wait_for_exit
+			if process.is_running then
+				process.terminate_tree
+				process.wait_for_exit
+			end
 		end
 
 feature{NONE} -- Requests for interpreter
@@ -186,6 +189,13 @@ feature -- Basic operations
 
 						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
 						worker.execute
+						if process.is_running then
+							process.wait_for_exit_with_timeout (5000)
+						end
+						if process.is_running then
+							process.terminate_tree
+							process.wait_for_exit_with_timeout (5000)
+						end
 						cleanup
 					end
 				end

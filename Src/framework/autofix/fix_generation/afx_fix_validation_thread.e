@@ -169,46 +169,51 @@ feature -- Execution
 		local
 			l_fix: AFX_MELTED_FIX
 			l_origin_fix: AFX_FIX
+			l_retried: BOOLEAN
 		do
-			timer.set_timeout (0)
-			timer.start
+			if not l_retried then
+				timer.set_timeout (0)
+				timer.start
 
-			from
-				melted_fixes.start
-			until
-				should_quit or else socket.is_closed
-			loop
-				l_fix := melted_fixes.item_for_iteration
-				l_origin_fix := fixes.item (l_fix.id)
-				on_fix_validation_start.call ([l_fix])
-				timer.set_timeout (max_test_case_time)
-
-					-- Melt feature body with fix.
-				send_melt_feature_request (l_fix)
-
-					-- Execute all registered test cases.
-				create last_test_case_execution_state.make (test_cases.count)
 				from
-					test_cases.start
+					melted_fixes.start
 				until
-					test_cases.after
+					should_quit or else socket.is_closed
 				loop
+					l_fix := melted_fixes.item_for_iteration
+					l_origin_fix := fixes.item (l_fix.id)
+					on_fix_validation_start.call ([l_fix])
 					timer.set_timeout (max_test_case_time)
-					send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix)
-					timer.set_timeout (0)
-					test_cases.forth
-				end
-				l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
-				on_fix_validation_end.call ([l_fix, exception_count])
-				melted_fixes.remove
-				if not should_quit then
-					set_should_quit (melted_fixes.after)
-				end
-			end
 
-			send_exit_request
-			timer.set_should_quit (True)
-			timer.set_timeout (0)
+						-- Melt feature body with fix.
+					send_melt_feature_request (l_fix)
+
+						-- Execute all registered test cases.
+					create last_test_case_execution_state.make (test_cases.count)
+					from
+						test_cases.start
+					until
+						test_cases.after
+					loop
+						timer.set_timeout (max_test_case_time)
+						send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix)
+						timer.set_timeout (0)
+						test_cases.forth
+					end
+					l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
+					on_fix_validation_end.call ([l_fix, exception_count])
+					melted_fixes.remove
+					if not should_quit then
+						set_should_quit (melted_fixes.after)
+					end
+				end
+				send_exit_request
+				timer.set_should_quit (True)
+				timer.set_timeout (0)
+			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 feature{NONE} -- Implementation
