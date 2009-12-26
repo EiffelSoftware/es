@@ -179,6 +179,8 @@ feature{NONE} -- Impelemntation
 					loop
 						l_data := l_status.item_for_iteration
 						l_tcstatus := l_data.tc_info
+						l_pre_state := Void
+						l_post_state := Void
 						if l_data.pre_state /= Void then
 							create l_pre_state.make_from_string (l_tcstatus.recipient_class_, l_tcstatus.recipient_, l_data.pre_state)
 						else

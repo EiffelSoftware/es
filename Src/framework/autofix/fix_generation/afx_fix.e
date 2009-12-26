@@ -18,6 +18,11 @@ inherit
 			is_equal
 		end
 
+	REFACTORING_HELPER
+		undefine
+			is_equal
+		end
+
 create
 	make
 
@@ -100,6 +105,74 @@ feature -- Access
 			-- Key is test case UUID, value is the execution status
 			-- associated with that test case
 
+	impact_on_passing_test_cases: DOUBLE
+			-- Impact of current fix on passing test cases.
+			-- Calculated from `pre_fix_execution_status' and `post_fix_execution_status'.
+			-- Value is the mean of the distances between the post states of all passing test cases.
+			-- The smaller the value, the better.
+		local
+			l_pre_status: AFX_TEST_CASE_EXECUTION_STATUS
+			l_post_status: AFX_TEST_CASE_EXECUTION_STATUS
+			l_done: BOOLEAN
+			l_passing_tc: INTEGER
+			l_distance_sum: DOUBLE
+		do
+			fixme ("Bettern impact formula is needed. 26.12.2009 Jasonw")
+			if
+				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]} pre_fix_execution_status as l_pre and then
+				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]} post_fix_execution_status as l_post
+			then
+				from
+					l_pre.start
+				until
+					l_pre.after or l_done
+				loop
+					l_pre_status := l_pre.item_for_iteration
+					l_post_status := l_post.item (l_pre.key_for_iteration)
+					if  attached {AFX_STATE} l_pre_status.post_state as l_pre_post then
+						l_passing_tc := l_passing_tc + 1
+						if attached {AFX_STATE} l_post_status.post_state as l_post_post then
+								-- Current test case is passing before and after current fix.
+							l_distance_sum := l_distance_sum + l_pre_status.post_state_distance (l_post_status).to_double
+						else
+								-- Current test case passed before current fix and failed current fix.
+							l_done := True
+							Result := max_impact_on_passing_test_cases
+						end
+					else
+						-- Current test case failed before current fix.
+					end
+					l_pre.forth
+				end
+				if not l_done then
+					if l_passing_tc = 0 then
+						Result := 0
+					else
+						Result := l_distance_sum / l_passing_tc.to_double
+					end
+				end
+			else
+				Result := max_impact_on_passing_test_cases
+			end
+		end
+
+	max_impact_on_passing_test_cases: DOUBLE = 10000.0
+			-- Max impact on passing test cases
+
+	skeleton_type: NATURAL_8
+			-- Type of fix skeleton
+
+feature -- Constants
+
+	afore_skeleton_type: NATURAL_8 = 1
+	wrapping_skeleton_type: NATURAL_8 = 2
+			-- Fix skeleton type constants
+
+feature -- Status report
+
+	is_valid: BOOLEAN
+			-- Is current a valid fix?
+
 feature -- Equality
 
 	is_equal (other: like Current): BOOLEAN
@@ -169,24 +242,22 @@ feature -- Setting
 			post_fix_execution_status_set: post_fix_execution_status = a_status
 		end
 
-	synchonize_pre_state
-			-- Synchronize pre exeuction state between `pre_fix_execution_status' and `post_fix_execution_status'.
+	set_is_valid (b: BOOLEAN)
+			-- Set `is_valid' with `b'.
 		do
-			if
-				attached {like pre_fix_execution_status} pre_fix_execution_status as l_pre and then
-				attached {like post_fix_execution_status} post_fix_execution_status as l_post
-			then
-				from
-					l_pre.start
-				until
-					l_pre.after
-				loop
-					if l_post.has (l_pre.key_for_iteration) then
-						l_post.item (l_pre.key_for_iteration).set_pre_state (l_pre.item_for_iteration.pre_state)
-					end
-					l_pre.forth
-				end
-			end
+			is_valid := b
+		ensure
+			is_valid_set: is_valid = b
+		end
+
+	set_skeleton_type (t: NATURAL_8)
+			-- Set `skeleton_type' with `t'.
+		require
+			t_valid: t = afore_skeleton_type or t = wrappinG_skeleton_type
+		do
+			skeleton_type := t
+		ensure
+			skeleton_type_set: skeleton_type = t
 		end
 
 feature -- Status report
@@ -220,6 +291,28 @@ feature -- Status report
 			end
 
 			Result.append ("Ranking: " + ranking.score.out + "%N")
+		end
+
+feature{NONE} -- Implementation
+
+	synchonize_pre_state
+			-- Synchronize pre exeuction state between `pre_fix_execution_status' and `post_fix_execution_status'.
+		do
+			if
+				attached {like pre_fix_execution_status} pre_fix_execution_status as l_pre and then
+				attached {like post_fix_execution_status} post_fix_execution_status as l_post
+			then
+				from
+					l_pre.start
+				until
+					l_pre.after
+				loop
+					if l_post.has (l_pre.key_for_iteration) then
+						l_post.item (l_pre.key_for_iteration).set_pre_state (l_pre.item_for_iteration.pre_state)
+					end
+					l_pre.forth
+				end
+			end
 		end
 
 end

@@ -220,6 +220,10 @@ feature -- Test case analysis
 			-- Should Daikon be used to infer invariants on system states?
 			-- Default: False
 
+	max_test_case_execution_time: INTEGER
+			-- Maximal time in second to allow a test case to execute
+			-- Default: 5
+
 feature -- Fix generation
 
 	max_valid_fix_number: INTEGER
@@ -325,6 +329,14 @@ feature -- Setting
 			max_valid_fix_number := i
 		ensure
 			max_valid_fix_number_set: max_valid_fix_number = i
+		end
+
+	set_max_test_case_execution_time (t: INTEGER)
+			-- Set `max_test_case_execution_time' with `t'.
+		do
+			max_test_case_execution_time := t
+		ensure
+			max_test_case_execution_time_set: max_test_case_execution_time = t
 		end
 
 feature{NONE} -- Implementation

@@ -20,6 +20,8 @@ inherit
 
 	SHARED_EIFFEL_PARSER
 
+	AFX_UTILITY
+
 create
 	make
 
@@ -532,58 +534,8 @@ feature -- Fix generation
 
 	store_fixes (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Store fixes in to files.
-		local
-			l_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
-			l_sorter: DS_QUICK_SORTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]
 		do
-				-- Sort fixes ascendingly according to their ranking.
-			create l_data.make (a_fixes.count)
-			a_fixes.do_all (
-				agent (a_fix: AFX_FIX; a_data: DS_ARRAYED_LIST [TUPLE [fix: AFX_FIX; ranking: DOUBLE]])
-					do
-						a_data.force_last ([a_fix, a_fix.ranking.score])
-					end (?, l_data))
-
-			create l_sorter.make (
-				create {AGENT_BASED_EQUALITY_TESTER [TUPLE [fix: AFX_FIX; ranking: DOUBLE]]}.make (
-					agent (a, b: TUPLE [fix: AFX_FIX; ranking: DOUBLE]): BOOLEAN
-						do
-							Result := a.ranking < b.ranking
-						end))
-			l_sorter.sort (l_data)
-
-				-- Output fixes into files.			
-			l_data.do_all_with_index (agent store_fix_in_file)
-		end
-
-	store_fix_in_file (a_fix: TUPLE [fix: AFX_FIX; ranking: DOUBLE]; a_id: INTEGER)
-			-- Store `a_fix' as the `a_id'-th fix into a file.
-		local
-			l_file: PLAIN_TEXT_FILE
-			l_file_name: FILE_NAME
-			l_lines: LIST [STRING]
-		do
-			create l_file_name.make_from_string (config.fix_directory)
-			l_file_name.set_file_name ("fix" + a_id.out + ".txt")
-			create l_file.make_create_read_write (l_file_name)
-
-				-- Print patched feature text.
-			l_file.put_string (formated_fix (a_fix.fix))
-			l_file.put_string (once "%N%N")
-
-				-- Print information about current fix.
-			l_lines := a_fix.fix.information.split ('%N')
-			from
-				l_lines.start
-			until
-				l_lines.after
-			loop
-				l_file.put_string (once "-- ")
-				l_file.put_string (l_lines.item_for_iteration)
-				l_file.put_string (once "%N")
-				l_lines.forth
-			end
-			l_file.close
+			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False))
 		end
 
 note

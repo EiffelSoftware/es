@@ -62,6 +62,8 @@ feature{NONE} -- Initialization
 				end
 				a_fixes.forth
 			end
+
+			create valid_fixes.make
 		end
 
 feature -- Access
@@ -83,13 +85,13 @@ feature -- Access
 	test_cases: LINKED_LIST [STRING]
 			-- Universal IDs for test cases used to validate fix candidates
 
+	valid_fixes: LINKED_LIST [AFX_FIX]
+			-- List of valid fixed found so far
+
 feature -- Actions
 
 	worker: AFX_FIX_VALIDATION_THREAD
 			-- Worker thread to validate fix candidates
-
-	max_test_case_execution_time: INTEGER is 5
-			-- Max time in second to allow a test case to execute
 
 	valid_fix_count: INTEGER
 			-- Number of good fixes validated so far
@@ -107,14 +109,22 @@ feature{NONE} -- Actions
 
 	on_fix_validation_end (a_melted_fix: AFX_MELTED_FIX; a_exception_count: NATURAL_32)
 			-- Action to be performed when `a_melted_fix' is about to be validated
+		local
+			l_fix: AFX_FIX
 		do
 			io.put_string ("Failed: " + (a_exception_count.to_integer_32 - exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)).out + "  " + a_exception_count.out + ", " + exception_count.out + "%N")
 			if exception_count = a_exception_count then
+				l_fix := fixes.item (a_melted_fix.id)
+				l_fix.ranking.set_impact_on_passing_test_cases (l_fix.impact_on_passing_test_cases)
+				l_fix.set_is_valid (True)
+				store_fix_in_file (config.fix_directory, l_fix, True)
+
 				io.put_string ("====================================================%N")
 				valid_fix_count := valid_fix_count + 1
 				io.put_string ("Good fix No." + valid_fix_count.out + "%N")
-				io.put_string (formated_fix (fixes.item (a_melted_fix.id)))
-				io.put_string ("Ranking: " + fixes.item (a_melted_fix.id).ranking.score.out + "%N")
+				io.put_string (formated_fix (l_fix))
+				io.put_string ("Ranking: " + l_fix.ranking.score.out + "%N")
+				io.put_string ("Impact on passing test cases: " + l_fix.ranking.impact_on_passing_test_cases.out + "%N")
 				io.put_string ("%N")
 
 					-- Maximal number of valid fixes have already been found, terminate fix validation.
@@ -122,6 +132,7 @@ feature{NONE} -- Actions
 					worker.set_should_quit (True)
 					should_quit := True
 				end
+				valid_fixes.extend (fixes.item (a_melted_fix.id))
 			end
 			exception_count := a_exception_count
 		end
@@ -173,7 +184,7 @@ feature -- Basic operations
 						timer.set_timeout (0)
 						timer.start
 
-						create worker.make (fixes, melted_fixes, max_test_case_execution_time, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
+						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
 						worker.execute
 						cleanup
 					end

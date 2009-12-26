@@ -73,6 +73,18 @@ feature -- Equality tester
 			create Result.make (agent (a, b: AFX_CLASS_WITH_PREFIX): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
+	equation_equality_tester: AFX_EQUATION_EQUALITY_TESTER
+			-- Equality tester for equations
+		once
+			create Result
+		end
+
+	expression_equality_tester: AFX_EXPRESSION_EQUALITY_TESTER
+			-- Equality tester for expressions
+		once
+			create Result
+		end
+
 feature -- AST text
 
 	text_of_ast (a_ast: AST_EIFFEL): STRING
@@ -281,6 +293,83 @@ feature -- Fix
 				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
 				Result := l_output.string_representation
 			end
+		end
+
+feature -- Logging
+
+	store_fix_in_file (a_directory: STRING; a_fix: AFX_FIX; a_validated: BOOLEAN)
+			-- Store `a_fix' as the `a_id'-th fix into a file in directory `a_directory'
+			-- `a_validated' indicates if `a_fix' has been validated.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
+			l_lines: LIST [STRING]
+		do
+			create l_file_name.make_from_string (a_directory)
+			l_file_name.set_file_name (fix_file_name (a_fix, a_validated))
+			create l_file.make_create_read_write (l_file_name)
+
+				-- Print patched feature text.
+			l_file.put_string (formated_fix (a_fix))
+			l_file.put_string (once "%N%N")
+
+				-- Print information about current fix.
+			l_lines := a_fix.information.split ('%N')
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				l_file.put_string (once "-- ")
+				l_file.put_string (l_lines.item_for_iteration)
+				l_file.put_string (once "%N")
+				l_lines.forth
+			end
+			l_file.close
+		end
+
+	fix_file_name (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
+			-- File name to store `a_fix'.
+			-- `a_validated' indicates if `a_fix' has been validated.
+		local
+			l_fdouble: FORMAT_DOUBLE
+			l_rank: STRING
+		do
+			create Result.make (64)
+			Result.append (once "fix_")
+			if a_validated then
+				if a_fix.is_valid then
+					Result.append (once "S_")
+				else
+					Result.append (once "F_")
+				end
+			else
+				Result.append (once "U_")
+			end
+			create l_fdouble.make (6, 3)
+			Result.append ("SYN_")
+			l_rank := l_fdouble.formatted (a_fix.ranking.score)
+			l_rank.left_adjust
+			Result.append (l_rank)
+			Result.append (once "__")
+			Result.append ("SEM_")
+			l_rank := l_fdouble.formatted (a_fix.ranking.impact_on_passing_test_cases)
+			l_rank.left_adjust
+			Result.append (l_rank)
+			Result.append (once "__")
+
+			inspect
+				a_fix.skeleton_type
+			when {AFX_FIX}.afore_skeleton_type then
+				Result.append ("AFOR")
+			when {AFX_FIX}.wrapping_skeleton_type then
+				Result.append ("WRAP")
+			else
+				Result.append ("NONE")
+			end
+			Result.append (once "__")
+			Result.append (a_fix.id.out)
+			Result.append (".txt")
 		end
 
 end

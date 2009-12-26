@@ -26,6 +26,12 @@ feature -- Access
 			-- Snippet complexity
 			-- Small is better.
 
+	impact_on_passing_test_cases: DOUBLE
+			-- Impact of the fix on passing test cases.
+			-- This value measures how much the post state of passing test cases
+			-- changes after applying the fix.
+			-- The smaller the value, the better
+
 	score: DOUBLE
 			-- Final ranking for a fix.
 			-- Small is better.
@@ -63,6 +69,14 @@ feature -- Setting
 			-- Set `snippet_complexity' with `c'.
 		do
 			snippet_complexity := c
+		end
+
+	set_impact_on_passing_test_cases (v: DOUBLE)
+			-- Set `impact_on_passing_test_cases' with `v'.
+		do
+			impact_on_passing_test_cases := v
+		ensure
+			impact_on_passing_test_cases_set: impact_on_passing_test_cases = v
 		end
 
 end

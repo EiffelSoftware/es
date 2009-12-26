@@ -70,7 +70,7 @@ create
 	make_from_string
 
 convert
-	skeleton: {AFX_STATE_SKELETON}
+	predicate_skeleton: {AFX_STATE_SKELETON}
 
 feature{NONE} -- Initialization
 
@@ -215,6 +215,19 @@ feature -- Access
 			-- instead of particular feature.
 
 	skeleton: AFX_STATE_SKELETON
+			-- Expression skeleton of Current
+		do
+			create Result.make_basic (class_, feature_, count)
+			do_all (
+				agent (equation: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+					do
+						a_skeleton.force_last (equation.expression)
+					end (?, Result))
+		ensure
+			good_result: Result.count = count
+		end
+
+	predicate_skeleton: AFX_STATE_SKELETON
 			-- Skeleton of current state
 		require
 			all_expressions_boolean: for_all (agent (a_equation: AFX_EQUATION): BOOLEAN do Result := a_equation.expression.is_predicate end)
@@ -241,12 +254,27 @@ feature -- Access
 					end (?, Result))
 		end
 
+	projection_by_skeleton (a_skeleton: AFX_STATE_SKELETON): like Current
+			-- Projection of Current only containing expressions in `a_skeleton'
+		local
+			l_removed: LINKED_LIST [AFX_EQUATION]
+			l_equation: AFX_EQUATION
+		do
+			Result := cloned_object
+			Result.do_if (
+				agent Result.remove,
+				agent (a_equation: AFX_EQUATION; a_ske: AFX_STATE_SKELETON): BOOLEAN
+					do
+						Result := not a_ske.has (a_equation.expression)
+					end (?, a_skeleton))
+		end
+
 	padded (a_skeleton: AFX_STATE_SKELETON): like Current
 			-- State containing all predicates in `a_skeleton'.
 			-- Predicates in `a_skeleton' but not presented in Current
 			-- will be assigned to a random value in the returned state.
 		require
-			current_is_subset: skeleton.is_subset (a_skeleton)
+			current_is_subset: predicate_skeleton.is_subset (a_skeleton)
 		local
 			l_diff: like a_skeleton
 		do
@@ -255,7 +283,7 @@ feature -- Access
 			do_all (agent Result.force_last)
 
 				-- Generate random values for expression not appearing in Current.
-			l_diff := a_skeleton.subtraction (Result.skeleton)
+			l_diff := a_skeleton.subtraction (Result.predicate_skeleton)
 			if not l_diff.is_empty then
 				l_diff.do_all (
 					agent (a_expr: AFX_EXPRESSION; a_state: like Current)
@@ -264,10 +292,10 @@ feature -- Access
 						end (?, Result))
 			end
 		ensure
-			result_is_padded: Result.skeleton.is_subset (a_skeleton) and a_skeleton.is_subset (Result.skeleton)
+			result_is_padded: Result.predicate_skeleton.is_subset (a_skeleton) and a_skeleton.is_subset (Result.predicate_skeleton)
 		end
 
-	item_with_expression (a_expr: STRING): detachable AFX_EQUATION
+	item_with_expression_text (a_expr: STRING): detachable AFX_EQUATION
 			-- Equation whose expression has text `a_expr'
 			-- Void if no such equation is found.
 		local
@@ -280,6 +308,27 @@ feature -- Access
 				l_cursor.after or Result /= Void
 			loop
 				if l_cursor.item.expression.text ~ a_expr then
+					Result := l_cursor.item
+				end
+				l_cursor.forth
+			end
+		end
+
+	item_with_expression (a_expr: AFX_EXPRESSION): detachable AFX_EQUATION
+			-- Equation whose expression is `a_expr'
+			-- Void if no such equation is found.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
+			l_equality_tester: FUNCTION [ANY, TUPLE [AFX_EXPRESSION, AFX_EXPRESSION], BOOLEAN]
+		do
+			l_equality_tester := agent expression_equality_tester.test
+			l_cursor := new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after or Result /= Void
+			loop
+				if l_equality_tester.item ([l_cursor.item.expression, a_expr]) then
 					Result := l_cursor.item
 				end
 				l_cursor.forth
@@ -302,28 +351,14 @@ feature -- Access
 
 	only_predicates: like Current
 			-- A subset of current which only contains equations of boolean type
-		local
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
-			l_non_predicates: LINKED_LIST [AFX_EQUATION]
 		do
-			create l_non_predicates.make
 			Result := cloned_object
-
-				-- Collect all non-predicates from Current into `l_non_predicates'.
-			from
-				l_cursor := Result.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				if not l_cursor.item.expression.is_predicate then
-					l_non_predicates.extend (l_cursor.item)
-				end
-				l_cursor.forth
-			end
-
-				-- Only keep predicates in Result.
-			l_non_predicates.do_all (agent Result.remove)
+			Result.do_if (
+				agent Result.remove,
+				agent (a_equation: AFX_EQUATION): BOOLEAN
+					do
+						Result := not a_equation.expression.is_predicate
+					end)
 		end
 
 feature -- Status report
@@ -364,7 +399,7 @@ feature -- Setting
 
 			l_list.do_all (agent remove)
     	end
-    	
+
 feature -- Status report
 
 	debug_output: STRING

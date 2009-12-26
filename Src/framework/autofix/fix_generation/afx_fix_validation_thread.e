@@ -39,9 +39,9 @@ create
 feature{NONE} -- Initialization
 
 	make (
+		a_config: like config
 		a_fixes: like fixes;
 		a_melted_fixes: like melted_fixes;
-		a_max_tc_time: INTEGER;
 		a_fix_start_agent: like on_fix_validation_start;
 		a_fix_end_agent: like on_fix_validation_end;
 		a_timer: like timer; a_socket: like socket; a_test_cases: like test_cases)
@@ -49,15 +49,18 @@ feature{NONE} -- Initialization
 		do
 			fixes := a_fixes
 			melted_fixes := a_melted_fixes
-			max_test_case_time := a_max_tc_time
 			on_fix_validation_start := a_fix_start_agent
 			on_fix_validation_end := a_fix_end_agent
 			timer := a_timer
 			socket := a_socket
 			test_cases := a_test_cases.twin
+			config := a_config
 		end
 
 feature -- Access
+
+	config: AFX_CONFIG
+			-- Config of curren AutoFix session
 
 	fixes: HASH_TABLE [AFX_FIX, INTEGER]
 			-- Fix candidates to validate
@@ -68,6 +71,9 @@ feature -- Access
 
 	max_test_case_time: INTEGER
 			-- Max time in second to allow a test case to execute
+		do
+			Result := config.max_test_case_execution_time
+		end
 
 	test_cases: LINKED_LIST [STRING]
 			-- Universal IDs for test cases used to validate fix candidats.

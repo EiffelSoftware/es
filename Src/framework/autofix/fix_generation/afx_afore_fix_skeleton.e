@@ -111,6 +111,7 @@ feature{NONE} -- Implementation
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_pre_fix_execution_status (test_case_execution_status)
+			Result.set_skeleton_type ({AFX_FIX}.afore_skeleton_type)
 			l_match_list.remove_modifications
 			l_ranking := ranking.twin
 			l_ranking.set_snippet_complexity (a_snippet_ranking)

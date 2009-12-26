@@ -13,6 +13,11 @@ inherit
 			is_equal
 		end
 
+	AFX_STATE_DISTANCE_CALCULATOR
+		undefine
+			is_equal
+		end
+
 create
 	make,
 	make_with_data
@@ -77,6 +82,15 @@ feature -- Access
 			end
 			check l_pre_str /= Void end
 			Result := [info, l_pre_str, l_post_str]
+		end
+
+	post_state_distance (other: like Current): INTEGER
+			-- Distance between `post_state' and `other'.`post_state'
+		require
+			post_state_attached: post_state /= Void
+			other_post_state_attached: other.post_state /= Void
+		do
+			Result := distance (post_state, other.post_state)
 		end
 
 feature -- Status report

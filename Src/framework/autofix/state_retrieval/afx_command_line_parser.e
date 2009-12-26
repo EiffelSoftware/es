@@ -49,6 +49,7 @@ feature -- Basic operations
 			l_arff_option: AP_FLAG
 			l_daikon_option: AP_FLAG
 			l_max_valid_fix_option: AP_INTEGER_OPTION
+			l_max_tc_time: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -91,6 +92,10 @@ feature -- Basic operations
 			l_max_test_case_no_option.set_description ("Maximal number of valid fix, stop after found this number of valid fixes. 0 means not bounded. Default: 0.")
 			l_parser.options.force_last (l_max_valid_fix_option)
 
+			create l_max_tc_time.make_with_long_form ("max-tc-execution-time")
+			l_max_tc_time.set_description ("Maximal time in second to allow a test case to execute. Default: 5")
+			l_parser.options.force_last (l_max_tc_time)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
@@ -121,6 +126,12 @@ feature -- Basic operations
 				config.set_max_valid_fix_number (l_max_valid_fix_option.parameter)
 			else
 				config.set_max_valid_fix_number (0)
+			end
+
+			if l_max_tc_time.was_found then
+				config.set_max_test_case_execution_time (l_max_tc_time.parameter)
+			else
+				config.set_max_test_case_execution_time (5)
 			end
 
 			config.set_is_arff_generation_enabled (l_arff_option.was_found)
