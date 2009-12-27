@@ -43,6 +43,7 @@ feature -- Basic operations
 	print_in_context (a_ast: AST_EIFFEL; a_context: ROUNDTRIP_CONTEXT)
 			-- Print the text of `a_ast' into `a_context'.
 		do
+			fixme ("This class should be removed. Need to refactor its descendants. 27.12.2009 Jasonw")
 			context := a_context
 			a_ast.process (Current)
 		end
