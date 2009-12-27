@@ -159,33 +159,24 @@ feature -- Basic operations
 			l_precondition := l_contracts.precondition
 			l_postcondition := l_contracts.postcondition
 			if l_precondition /= Void and then l_postcondition /= Void and then not l_postcondition.is_empty then
-					-- Get all combinations of premises that we want to include in a fix.
-				l_pre_hie := state_hierarchy (l_precondition)
-				l_post_hie:= state_hierarchy (l_postcondition)
-				l_snippets := fix_snippets (l_pre_hie, l_post_hie)
-				generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition)
+
+					-- Postcondition are too large, we need to shrink it.
+				if l_postcondition.count > config.max_fix_postcondition_assertion then
+					l_postcondition := state_shrinker.shrinked_state (l_postcondition, config.max_fix_postcondition_assertion, exception_spot)
+				end
+
+					-- We only proceed if the postcondition is small enough.
+				if l_postcondition.count <= config.max_fix_postcondition_assertion then
+						-- Get all combinations of premises that we want to include in a fix.
+					l_pre_hie := state_hierarchy (l_precondition)
+					l_post_hie:= state_hierarchy (l_postcondition)
+					l_snippets := fix_snippets (l_pre_hie, l_post_hie)
+					generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition, False)
+				else
+						-- When the postcondition is too large, we just shortcut the original code, without trying to change the state.
+					generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition, True)
+				end
 			end
-
---			if l_postcondition.is_empty then
---				create l_fix.make (exception_spot, next_fix_id)
---				l_fix.set_text ("")
---				l_fix.set_feature_text ("should not happen.")
---				l_fix.set_ranking (ranking.twin)
---				l_fix.set_precondition (l_precondition)
---				l_fix.set_postcondition (l_postcondition)
---				fixes.extend (l_fix)
---			else
---					-- Get all combinations of premises that we want to include in a fix.
---				l_pre_hie := state_hierarchy (l_precondition)
---				l_post_hie:= state_hierarchy (l_postcondition)
---				l_snippets := fix_snippets (l_pre_hie, l_post_hie)
---				generate_fixes_from_snippet (l_snippets, l_precondition, l_postcondition)
---			end
-
---			debug ("autofix")
---					-- Print out all the fix candidates.
---				fixes.do_all (agent print_fix)
---			end
 		end
 
 feature{NONE} -- Implementation
@@ -223,8 +214,10 @@ feature{NONE} -- Implementation
 					l_delayed_post.set_invariants_in_passing_runs (passing_state (l_bpslots.passing_bpslot))
 					l_delayed_post.set_invariants_in_failing_runs (failing_state (l_bpslots.failing_bpslot))
 					l_postcondition := l_delayed_post.actual_state
+					io.put_string ("")
 				else
 					l_postcondition := l_post
+					io.put_string ("")
 				end
 			else
 				Result := Void
@@ -252,10 +245,11 @@ feature{NONE} -- Implementation
 			Result := exception_spot.recipient_.e_feature.ast
 		end
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE)
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE; a_ignore_state_change: BOOLEAN)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 			-- `a_precondition' and `a_postcondition' are not directly used for fix generation,
 			-- they are passed to the actually generated fixes to provide better logging information.
+			-- `a_ignore_state_change' indicates whether the fix generator try to change the state.
 		deferred
 		end
 

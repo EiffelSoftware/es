@@ -58,23 +58,25 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE)
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE; a_ignore_state_change: BOOLEAN)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
 		do
-			from
-				a_snippets.start
-			until
-				a_snippets.after
-			loop
-				l_fix_text := a_snippets.item_for_iteration.snippet.twin
-				if attached {AFX_EXPRESSION} guard_condition as l_guard then
-					l_fix_text.prepend ("if " + l_guard.text + " then%N%T%T")
-					l_fix_text.append ("%Nend%N")
+			if not a_ignore_state_change then
+				from
+					a_snippets.start
+				until
+					a_snippets.after
+				loop
+					l_fix_text := a_snippets.item_for_iteration.snippet.twin
+					if attached {AFX_EXPRESSION} guard_condition as l_guard then
+						l_fix_text.prepend ("if " + l_guard.text + " then%N%T%T")
+						l_fix_text.append ("%Nend%N")
+					end
+					fixes.extend (fix_with_text ("%N" + l_fix_text, a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
+					a_snippets.forth
 				end
-				fixes.extend (fix_with_text ("%N" + l_fix_text, a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
-				a_snippets.forth
 			end
 		end
 

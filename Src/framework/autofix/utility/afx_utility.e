@@ -384,4 +384,12 @@ feature -- AST
 			create Result.make_with_indentation_string ("%T")
 		end
 
+feature -- State
+
+	state_shrinker: AFX_STATE_SHRINKER
+			-- State shrinker
+		once
+			create Result
+		end
+
 end

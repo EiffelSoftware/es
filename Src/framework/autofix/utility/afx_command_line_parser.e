@@ -54,6 +54,7 @@ feature -- Basic operations
 			l_skeleton_types: LIST [STRING]
 			l_mocking_option: AP_FLAG
 			l_freeze_option: AP_FLAG
+			l_max_fix_postcondition: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -112,6 +113,10 @@ feature -- Basic operations
 			l_freeze_option.set_description ("Freeze project before auto-fixing? Default: False")
 			l_parser.options.force_last (l_freeze_option)
 
+			create l_max_fix_postcondition.make ('p', "max-fix-postcondition-assertion")
+			l_max_fix_postcondition.set_description ("Maximal number of assertions that can appear as fix postcondition. If there are too many fix postcondition assertions, the number of possible fixes are very large, the fix generation will be extremely time-consuming. Default: 10.")
+			l_parser.options.force_last (l_max_fix_postcondition)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
@@ -169,8 +174,14 @@ feature -- Basic operations
 				config.set_is_wrapping_fix_enabled (True)
 			end
 
+			if l_max_fix_postcondition.was_found then
+				config.set_max_fix_postcondition_assertion (l_max_fix_postcondition.parameter)
+			else
+				config.set_max_fix_postcondition_assertion (6)
+			end
+
 			config.set_should_freeze (l_freeze_option.was_found)
-			
+
 			config.set_is_mocking_mode_enabled (l_mocking_option.was_found)
 
 			config.set_is_arff_generation_enabled (l_arff_option.was_found)

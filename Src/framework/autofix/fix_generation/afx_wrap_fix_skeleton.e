@@ -40,13 +40,19 @@ feature -- Access
 		local
 			l_passing_bpslot: INTEGER
 			l_failing_bpslot: INTEGER
+			l_last_wrapped_bpslot: INTEGER
+			l_last_node: detachable AFX_AST_STRUCTURE_NODE
 		do
 				-- Decide the break point slot at which states in passing and failing runs should be compared.
 			if relevant_ast.is_empty then
 				check should_not_happen: False end
 			else
 				l_failing_bpslot := exception_spot.recipient_ast_structure.first_node_with_break_point (relevant_ast.first).breakpoint_slot
-				l_passing_bpslot := exception_spot.recipient_ast_structure.next_break_point (l_failing_bpslot)
+				if attached {AFX_AST_STRUCTURE_NODE} exception_spot.recipient_ast_structure.last_node_with_break_point (relevant_ast.last) as l_node then
+					l_passing_bpslot := exception_spot.recipient_ast_structure.next_break_point (l_node.breakpoint_slot)
+				else
+					l_passing_bpslot := exception_spot.recipient_.number_of_breakpoint_slots
+				end
 			end
 
 
@@ -60,23 +66,27 @@ feature -- Status report
 
 feature{NONE} -- Implementation
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE)
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE; a_ignore_state_change: BOOLEAN)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
 		do
 				-- Insert a care where the else-branch is empty.
-			fixes.extend (fix_with_text (Void, a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
-			from
-				a_snippets.start
-			until
-				a_snippets.after
-			loop
-				l_fix_text := a_snippets.item_for_iteration.snippet.twin
-				if not l_fix_text.is_empty then
-					fixes.extend (fix_with_text ("%N" + l_fix_text + "%N", a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
+			fixes.extend (fix_with_text (Void, 0, a_precondition, a_postcondition))
+
+				-- Insert fixes which tries to change state.
+			if not a_ignore_state_change and then a_snippets /= Void then
+				from
+					a_snippets.start
+				until
+					a_snippets.after
+				loop
+					l_fix_text := a_snippets.item_for_iteration.snippet.twin
+					if not l_fix_text.is_empty then
+						fixes.extend (fix_with_text ("%N" + l_fix_text + "%N", a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))
+					end
+					a_snippets.forth
 				end
-				a_snippets.forth
 			end
 		end
 

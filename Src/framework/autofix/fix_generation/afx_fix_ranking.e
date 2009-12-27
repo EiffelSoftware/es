@@ -79,10 +79,10 @@ feature -- Constants
 	relevant_instructions_weight: DOUBLE = 0.15
 			-- Weight of `relevant_instructions' in final syntax ranking calculation
 
-	skeleton_complexity_weight: DOUBLE = 0.2
+	skeleton_complexity_weight: DOUBLE = 0.25
 			-- Weight of `skeleton_complexity' in final syntax ranking calculation
 
-	snippet_complexity_weight: DOUBLE = 0.5
+	snippet_complexity_weight: DOUBLE = 0.25
 			-- Weight of `snippet_complexity' in final syntax ranking calculation
 
 feature -- Setting

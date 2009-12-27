@@ -251,6 +251,12 @@ feature -- Fix generation
 			-- Maximal time in second to allow a test case to execute
 			-- Default: 5
 
+	max_fix_postcondition_assertion: INTEGER
+			-- Maximal number of assertions that can appear as fix postcondition.
+			-- If there are too many fix postcondition assertions, the number of possible fixes are very large,
+			-- the fix generation will be extremely time-consuming.
+			-- Default: 10
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN
@@ -388,6 +394,14 @@ feature -- Setting
 			should_freeze := b
 		ensure
 			should_freeze_set: should_freeze = b
+		end
+
+	set_max_fix_postcondition_assertion (i: INTEGER)
+			-- Set `max_fix_postcondition_assertion' with `i'.
+		do
+			max_fix_postcondition_assertion := i
+		ensure
+			max_fix_postcondition_assertion_set: max_fix_postcondition_assertion = i
 		end
 
 feature{NONE} -- Implementation

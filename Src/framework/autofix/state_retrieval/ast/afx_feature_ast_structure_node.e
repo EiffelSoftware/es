@@ -143,6 +143,45 @@ feature -- Access
 			end
 		end
 
+	last_node_with_break_point (a_node: AFX_AST_STRUCTURE_NODE): detachable AFX_AST_STRUCTURE_NODE
+			-- Last node in `a_node' (possibly is `a_node' which has an associated break point.
+			-- Void if no such node is found.
+		local
+			l_trunks: LINKED_LIST [LINKED_LIST [AFX_AST_STRUCTURE_NODE]]
+			l_cursor: CURSOR
+			l_children: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+			l_cur2: CURSOR
+		do
+			l_trunks := a_node.children
+			if l_trunks /= Void and then not l_trunks.is_empty then
+				l_cursor := l_trunks.cursor
+				from
+					l_trunks.finish
+				until
+					l_trunks.before or else Result /= Void
+				loop
+					l_children := l_trunks.item_for_iteration
+					l_cur2 := l_children.cursor
+					from
+						l_children.finish
+					until
+						l_children.before or else Result /= Void
+					loop
+						Result := last_node_with_break_point (l_children.item_for_iteration)
+						l_children.forth
+					end
+					l_children.go_to (l_cur2)
+
+					l_trunks.back
+				end
+				l_trunks.go_to (l_cursor)
+			else
+				if a_node.has_breakpoint then
+					Result := a_node
+				end
+			end
+		end
+
 	first_node_with_break_point (a_node: AFX_AST_STRUCTURE_NODE): detachable AFX_AST_STRUCTURE_NODE
 			-- First node in `a_node' (possibly is `a_node') which has an associated break point.
 			-- Void if no such node is found.
