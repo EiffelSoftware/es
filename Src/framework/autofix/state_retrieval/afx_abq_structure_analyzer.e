@@ -42,7 +42,7 @@ feature -- Basic operations
 					create {AFX_AST_EXPRESSION} prefix_expression.make_with_text (
 						expression.class_,
 						expression.feature_,
-						text_of_ast (l_nested.target),
+						text_from_ast (l_nested.target),
 						expression.written_class)
 
 					if attached {ACCESS_FEAT_AS} l_nested.message as l_access then

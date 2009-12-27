@@ -220,9 +220,9 @@ feature -- Test case analysis
 			-- Should Daikon be used to infer invariants on system states?
 			-- Default: False
 
-	max_test_case_execution_time: INTEGER
-			-- Maximal time in second to allow a test case to execute
-			-- Default: 5
+	should_freeze: BOOLEAN
+			-- Should project be freezed before auto-fixing?
+			-- Default: False
 
 feature -- Fix generation
 
@@ -246,6 +246,10 @@ feature -- Fix generation
 			-- instead of doing time-consuming on-the-fly data analysis.
 			-- Only works if those data files are up to date.
 			-- Default: False
+
+	max_test_case_execution_time: INTEGER
+			-- Maximal time in second to allow a test case to execute
+			-- Default: 5
 
 feature -- Status report
 
@@ -376,6 +380,14 @@ feature -- Setting
 			is_mocking_mode_enabled := b
 		ensure
 			is_mocking_mode_enabled_set: is_mocking_mode_enabled = b
+		end
+
+	set_should_freeze (b: BOOLEAN)
+			-- Set `should_freeze' with `b'.
+		do
+			should_freeze := b
+		ensure
+			should_freeze_set: should_freeze = b
 		end
 
 feature{NONE} -- Implementation

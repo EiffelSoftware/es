@@ -123,7 +123,7 @@ feature{NONE} -- Actions
 				valid_fix_count := valid_fix_count + 1
 				io.put_string ("Good fix No." + valid_fix_count.out + "%N")
 				io.put_string (formated_fix (l_fix))
-				io.put_string ("Ranking: " + l_fix.ranking.score.out + "%N")
+				io.put_string ("Ranking: " + l_fix.ranking.syntax_score.out + "%N")
 				io.put_string ("Impact on passing test cases: " + l_fix.ranking.impact_on_passing_test_cases.out + "%N")
 				io.put_string ("%N")
 

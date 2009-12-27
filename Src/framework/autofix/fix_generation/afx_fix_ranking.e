@@ -32,12 +32,58 @@ feature -- Access
 			-- changes after applying the fix.
 			-- The smaller the value, the better
 
-	score: DOUBLE
-			-- Final ranking for a fix.
+	syntax_score: DOUBLE
+			-- Syntax ranking for a fix, which describe how large is
+			-- the syntax change when the fix is applied to the original feature.
 			-- Small is better.
 		do
-			Result := scope_levels * 1.0 + relevant_instructions * 0.75 + fix_skeleton_complexity * 0.5 + snippet_complexity * 0.25
+			Result :=
+				(scope_levels            / max_scope_levels)          * max_scope_levels +
+				(relevant_instructions   / max_relevant_instructions) * relevant_instructions_weight +
+				(fix_skeleton_complexity / max_skeleton_complexity)   * skeleton_complexity_weight +
+				(snippet_complexity      / max_snippet_complexity)    * snippet_complexity_weight
 		end
+
+	semantics_score: DOUBLE
+			-- Sementics ranking for a fix, which describe how large is the change
+			-- of the post state of all the passing test cases when the fix is applied.
+			-- Ideally, the fix should not change the output of the passing test cases.
+			-- Small is better.
+		do
+			Result := impact_on_passing_test_cases
+		end
+
+feature -- Constants
+
+	max_scope_levels: INTEGER = 5
+			-- Max value for `scope_levels'
+			-- Note: this is an empirical value which works in most of the cases.
+			-- The actual `scope_levels' can be larger than this.
+
+	max_relevant_instructions: INTEGER = 10
+			-- Max value for `relevant_instructions'
+			-- Note: this is an empirical value which works in most of the cases.
+			-- The actual `relevant_instructions' can be larger than this.
+
+	max_skeleton_complexity: INTEGER = 2
+			-- Max value for `skeleton_complexity'
+
+	max_snippet_complexity: INTEGER = 5
+			-- Max value for `snippet_complexity'
+			-- Note: this is an empirical value which works in most of the cases.
+			-- The actual `snippet_complexity' can be larger than this.	
+
+	scope_levels_weight: DOUBLE = 0.15
+			-- Weight of `scope_levels' in final syntax ranking calculation
+
+	relevant_instructions_weight: DOUBLE = 0.15
+			-- Weight of `relevant_instructions' in final syntax ranking calculation
+
+	skeleton_complexity_weight: DOUBLE = 0.2
+			-- Weight of `skeleton_complexity' in final syntax ranking calculation
+
+	snippet_complexity_weight: DOUBLE = 0.5
+			-- Weight of `snippet_complexity' in final syntax ranking calculation
 
 feature -- Setting
 

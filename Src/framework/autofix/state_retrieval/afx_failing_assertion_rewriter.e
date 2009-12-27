@@ -49,8 +49,6 @@ feature -- Basic operations
 			-- `a_structure' stores the AST sturcture of `a_tc'.recipient_'.
 		local
 			l_failing_expr: detachable AUT_EXPRESSION
-			l_ast_printer: AFX_AST_PRINTER
-			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
 		do
 			create actual_argument_expressions.make (2)
 			if a_tc.exception_code = {EXCEP_CONST}.precondition then
@@ -73,13 +71,10 @@ feature -- Basic operations
 				end
 				assertion := Void
 				if l_failing_expr /= Void then
-					create l_context.make
-					create l_ast_printer
-					l_ast_printer.print_in_context (l_failing_expr.ast, l_context)
 					create {AFX_AST_EXPRESSION} assertion.make_with_text (
 						a_tc.recipient_class_,
 						a_tc.recipient_,
-						l_context.string_representation,
+						text_from_ast (l_failing_expr.ast),
 						l_failing_expr.written_class)
 				end
 			end

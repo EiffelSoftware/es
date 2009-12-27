@@ -85,20 +85,6 @@ feature -- Equality tester
 			create Result
 		end
 
-feature -- AST text
-
-	text_of_ast (a_ast: AST_EIFFEL): STRING
-			-- Text of `a_ast', the text is in the form which is similar to flat view.
-		local
-			l_printer: AFX_AST_PRINTER
-			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
-		do
-			create l_context.make
-			create l_printer
-			l_printer.print_in_context (a_ast, l_context)
-			Result := l_context.string_representation
-		end
-
 feature -- Equation transformation
 
 	equation_in_normal_form (a_equation: AFX_EQUATION): AFX_EQUATION
@@ -348,7 +334,7 @@ feature -- Logging
 			end
 			create l_fdouble.make (6, 3)
 			Result.append ("SYN_")
-			l_rank := l_fdouble.formatted (a_fix.ranking.score)
+			l_rank := l_fdouble.formatted (a_fix.ranking.syntax_score)
 			l_rank.left_adjust
 			Result.append (l_rank)
 			Result.append (once "__")
@@ -370,6 +356,32 @@ feature -- Logging
 			Result.append (once "__")
 			Result.append (a_fix.id.out)
 			Result.append (".txt")
+		end
+
+feature -- AST
+
+	text_from_ast (a_ast: AST_EIFFEL): STRING
+			-- Text from `a_ast'
+		require
+			a_ast_attached: a_ast /= Void
+		do
+			ast_printer_output.reset
+			ast_printer.print_ast_to_output (a_ast)
+			Result := ast_printer_output.string_representation
+		end
+
+	ast_printer: ETR_AST_STRUCTURE_PRINTER
+			-- AST printer
+		local
+			l_output: ETR_AST_STRING_OUTPUT
+		once
+			create Result.make_with_output (ast_printer_output)
+		end
+
+	ast_printer_output: ETR_AST_STRING_OUTPUT
+			-- Output for `ast_printer'
+		once
+			create Result.make_with_indentation_string ("%T")
 		end
 
 end

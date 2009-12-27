@@ -290,7 +290,7 @@ feature -- Status report
 				Result.append ("Void%N")
 			end
 
-			Result.append ("Ranking: " + ranking.score.out + "%N")
+			Result.append ("Ranking: " + ranking.syntax_score.out + "%N")
 		end
 
 feature{NONE} -- Implementation

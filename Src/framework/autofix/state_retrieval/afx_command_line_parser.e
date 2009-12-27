@@ -53,6 +53,7 @@ feature -- Basic operations
 			l_fix_skeleton: AP_STRING_OPTION
 			l_skeleton_types: LIST [STRING]
 			l_mocking_option: AP_FLAG
+			l_freeze_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -106,6 +107,10 @@ feature -- Basic operations
 			create l_mocking_option.make ('m', "mocking")
 			l_mocking_option.set_description ("Enable mocking mode. When in mocking mode, the tool will use pregenerated data files instead of doing time-consuming on-the-fly data analysis. Only works if those data files are up to date. Default: False.")
 			l_parser.options.force_last (l_mocking_option)
+
+			create l_freeze_option.make ('f', "freeze")
+			l_freeze_option.set_description ("Freeze project before auto-fixing? Default: False")
+			l_parser.options.force_last (l_freeze_option)
 
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
@@ -164,6 +169,8 @@ feature -- Basic operations
 				config.set_is_wrapping_fix_enabled (True)
 			end
 
+			config.set_should_freeze (l_freeze_option.was_found)
+			
 			config.set_is_mocking_mode_enabled (l_mocking_option.was_found)
 
 			config.set_is_arff_generation_enabled (l_arff_option.was_found)

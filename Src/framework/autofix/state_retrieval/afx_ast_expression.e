@@ -30,6 +30,11 @@ inherit
 			is_equal
 		end
 
+	AFX_UTILITY
+		undefine
+			is_equal
+		end
+
 create
 	make,
 	make_with_text,
@@ -52,9 +57,6 @@ feature{NONE} -- Initialization
 
 	make (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
 			-- Initialize Current.
-		local
-			l_printer: AFX_AST_PRINTER
-			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
 		do
 			set_class (a_class)
 			set_feature (a_feature)
@@ -63,10 +65,7 @@ feature{NONE} -- Initialization
 			has_syntax_error := a_expression = Void
 			if not has_syntax_error then
 				check_type
-				create l_printer
-				create l_context.make
-				l_printer.print_in_context (a_expression, l_context)
-				set_text (l_context.string_representation)
+				set_text (text_from_ast (a_expression))
 			else
 				set_text ("")
 			end
@@ -74,9 +73,6 @@ feature{NONE} -- Initialization
 
 	make_with_type (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class; a_type: like type)
 			-- Initialize Current.
-		local
-			l_printer: AFX_AST_PRINTER
-			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
 		do
 			set_class (a_class)
 			set_feature (a_feature)
@@ -84,10 +80,7 @@ feature{NONE} -- Initialization
 			set_expression (a_expression)
 			has_syntax_error := False
 			set_type (a_type)
-			create l_printer
-			create l_context.make
-			l_printer.print_in_context (a_expression, l_context)
-			set_text (l_context.string_representation)
+			set_text (text_from_ast (a_expression))
 		end
 
 feature -- Access
@@ -200,7 +193,7 @@ feature{NONE} -- Implementation
 		require
 			syntax_correct: not has_syntax_error
 		do
-			expression_type_checker.check_expression (ast, class_, feature_)
+			expression_type_checker.check_expression (ast, class_, feature_, has_old_expression)
 			type := expression_type_checker.last_type
 		ensure
 			type_attached: type /= Void
@@ -210,10 +203,11 @@ feature{NONE} -- Implementation
 			-- Parse `text' and set `ast' with the parsing result.
 			-- Set `has_syntax_error' to True if `text' contains syntax error.
 		local
-			l_parser: like expression_parser
+			l_parser: like parser
 		do
 				-- Parse `text' into `ast'.
-			l_parser := expression_parser
+			l_parser := parser
+			l_parser.set_has_old_expression (False)
 			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
 			l_parser.parse_from_string (once "check " + text, class_)
 			set_has_syntax_error (l_parser.syntax_error)
@@ -221,6 +215,7 @@ feature{NONE} -- Implementation
 			if has_syntax_error then
 				ast := Void
 			else
+				has_old_expression := l_parser.has_old_expression
 				ast := l_parser.expression_node
 			end
 		end
@@ -230,6 +225,14 @@ feature{NONE} -- Implementation
 	hash_code_cache: INTEGER
 			-- Cache for `hash_code'
 
-invariant
+	has_old_expression: BOOLEAN
+			-- Does `text' contain old expression?
+
+	parser: AFX_EIFFEL_PARSER
+			-- Parser used for parsing expressions
+		once
+			create Result.make_with_factory (create {AFX_EXPRESSION_AST_FACTORY})
+			Result.set_expression_parser
+		end
 
 end

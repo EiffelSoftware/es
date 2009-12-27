@@ -22,14 +22,15 @@ inherit
 
 feature -- Type checking
 
-	check_expression (a_expr_as: EXPR_AS; a_context_class: CLASS_C; a_feature: FEATURE_I) is
+	check_expression (a_expr_as: EXPR_AS; a_context_class: CLASS_C; a_feature: FEATURE_I; a_in_postcondition: BOOLEAN) is
 			-- Type check `a_expr_as' in the context of `a_feature'.
 			-- Store type of `a_expr_as' in `last_type'.
+			-- `a_in_postcondition' indicates if `an_ast' in in postcondition.	
 		do
 			init (ast_context)
 			ast_context.set_is_ignoring_export (True)
 			ast_context.initialize (a_context_class, a_context_class.actual_type, a_context_class.feature_table)
-			expression_or_instruction_type_check_and_code (a_feature, a_expr_as)
+			expression_or_instruction_type_check_and_code (a_feature, a_expr_as, a_in_postcondition)
 		end
 
 	local_info (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [LOCAL_INFO, INTEGER]
@@ -58,8 +59,9 @@ feature -- Type checking
 
 feature{NONE} -- Implementation
 
-	expression_or_instruction_type_check_and_code (a_feature: FEATURE_I; an_ast: AST_EIFFEL)
-			-- Type check `an_ast' in the context of `a_feature'.			
+	expression_or_instruction_type_check_and_code (a_feature: FEATURE_I; an_ast: AST_EIFFEL; a_in_postcondition: BOOLEAN)
+			-- Type check `an_ast' in the context of `a_feature'.	
+			-- `a_in_postcondition' indicates if `an_ast' in in postcondition.		
 		require
 			an_ast_not_void: an_ast /= Void
 		local
@@ -71,6 +73,9 @@ feature{NONE} -- Implementation
 			error_handler.wipe_out
 			fixme ("Routine adapted from debugger related classes. 22.11.2009 Jason")
 			reset
+			if a_in_postcondition then
+				set_is_checking_postcondition (True)
+			end
 			is_byte_node_enabled := True
 			current_feature := a_feature
 
@@ -106,6 +111,9 @@ feature{NONE} -- Implementation
 
 					an_ast.process (Current)
 					reset
+					if a_in_postcondition then
+						set_is_checking_postcondition (True)
+					end
 					set_is_inherited (True)
 					context.restore (l_ctx)
 				end

@@ -95,21 +95,20 @@ feature -- Basic operations
 				application_exited_actions.extend (agent daikon_facility.on_application_exited)
 			end
 
---			debug ("autofix")
---				 -- Output retrieved state.
---				test_case_breakpoint_hit_actions.extend (agent on_test_case_breakpoint_hit_print_state)
---			end
+				-- Compile project			
+			compile_project
 
 				-- Start test case analysis
 			analyze_test_cases
 
 				-- Generate fixes.
 			generate_fixes
---			create fixes.make
+
+				-- Store fixes in files.
+			store_fixes (fixes)
 
 				-- Validate generated fixes.
 			validate_fixes
-
 		end
 
 feature{NONE} -- Access
@@ -420,6 +419,7 @@ feature{NONE} -- Actions
 			l_stack_ele: CALL_STACK_ELEMENT
 			l_recipient_id: STRING
 			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
+			l_expr: AFX_AST_EXPRESSION
 		do
 				-- Generate state model for current test case.
 			l_recipient_id := current_test_case_info.id
@@ -427,6 +427,7 @@ feature{NONE} -- Actions
 				create l_spot_analyzer.make (config)
 				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)
 				exception_spots.put (l_spot_analyzer.last_spot, l_recipient_id)
+				create l_expr.make_with_text (l_spot_analyzer.last_spot.recipient_class_, l_spot_analyzer.last_spot.recipient_, "index = old index + 1", l_spot_analyzer.last_spot.recipient_written_class)
 			end
 
 --			l_stack_level := call_stack_index (debugger_manager, test_case_routine_header)
@@ -438,6 +439,16 @@ feature{NONE} -- Actions
 --				l_value := debugger_manager.expression_evaluation ("exception_trace")
 --				l_app.set_current_execution_stack_number (l_old_stack_level)
 --			end
+		end
+
+	compile_project
+			-- Compile interpreter when needed.
+		do
+			if config.should_freeze then
+				eiffel_project.quick_melt
+				eiffel_project.freeze
+				eiffel_project.call_finish_freezing_and_wait (True)
+			end
 		end
 
 feature{NONE} -- Implication
@@ -537,8 +548,6 @@ feature -- Fix generation
 					fixes.forth
 				end
 			end
-
-			store_fixes (fixes)
 		end
 
 	validate_fixes
