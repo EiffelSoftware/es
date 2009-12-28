@@ -8,10 +8,11 @@ class
 	ETR_MODIFYING_PRINTER
 inherit
 	ETR_AST_STRUCTURE_PRINTER
+		rename
+			process as process_or_replace
 		redefine
-			process_binary_as,
+			process_or_replace,
 			process_eiffel_list
-			-- todo: if_as, loop_as, unary_as ...
 		end
 	ETR_SHARED
 		export
@@ -24,23 +25,28 @@ feature {NONE} -- Implementation
 
 	location: AST_PATH
 	replacement_text: STRING
+	replacement_disabled: BOOLEAN
 
 	repl_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
 	del_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
 	ins_hash: HASH_TABLE[SORTABLE_ARRAY[ETR_AST_MODIFICATION],AST_PATH]
 
-	process_or_replace(l_as: AST_EIFFEL)
-			-- process `l_as' and replace if applicable
+	process_or_replace (l_as: AST_EIFFEL)
+			-- process `l_as' and check for replacement
 		local
 			l_mod: ETR_AST_MODIFICATION
 		do
-			l_mod := repl_hash.item (l_as.path)
+			output.enter_block
+			if attached l_as then
+				l_mod := repl_hash.item (l_as.path)
+			end
 
-			if attached l_mod then
+			if attached l_mod and not replacement_disabled then
 				output.append_string (l_mod.replacement_text)
 			else
-				process_child (l_as)
+				Precursor(l_as)
 			end
+			output.exit_block
 		end
 
 	mini_printer: ETR_AST_STRUCTURE_PRINTER
@@ -139,7 +145,7 @@ feature {NONE} -- Creation
 			until
 				modifications.after
 			loop
-				modifications.item.set_branch_id (modifications.item.ref_ast.path.branch_id)
+				modifications.item.set_branch_id (modifications.item.ref_ast.branch_id)
 				if modifications.item.is_delete then
 					del.extend (modifications.item)
 				elseif modifications.item.is_replace then
@@ -164,7 +170,7 @@ feature {NONE} -- Creation
 					check false end
 				end
 
-				repl_hash.extend (repl.item, repl.item.ref_ast.path)
+				repl_hash.extend (repl.item, repl.item.ref_ast)
 				repl.forth
 			end
 
@@ -175,7 +181,7 @@ feature {NONE} -- Creation
 			until
 				del.after
 			loop
-				del_hash.extend (del.item, del.item.ref_ast.path)
+				del_hash.extend (del.item, del.item.ref_ast)
 				del.forth
 			end
 
@@ -188,7 +194,7 @@ feature {NONE} -- Creation
 			until
 				ins.after
 			loop
-				l_parent := parent_path(ins.item.ref_ast.path)
+				l_parent := parent_path(ins.item.ref_ast)
 				ins.item.set_list_parent(l_parent)
 				l_parent_set.put (l_parent)
 				ins.forth
@@ -280,73 +286,73 @@ feature -- Roundtrip
 			l_list_copy: like l_as
 			l_target: AST_EIFFEL
 			l_changed_items: LINKED_LIST[AST_EIFFEL]
+			l_mod: ETR_AST_MODIFICATION
 		do
-			-- shallow copy of original list
-			-- because we're gonna reorder it!
-			fixme("Is this ok?")
-			l_list_copy := l_as.twin
-			create l_changed_items.make
+			if attached l_as then
+				l_mod := repl_hash.item (l_as.path)
+			end
 
-			-- get the items to be inserted in this list sorted by branch_id
-			l_mods_arr := ins_hash[l_list_copy.path]
+			if attached l_mod then
+				output.append_string (l_mod.replacement_text)
+			else
+				-- shallow copy of original list
+				-- because we're gonna reorder it!
+				fixme("Is this ok?")
+				l_list_copy := l_as.twin
+				create l_changed_items.make
 
-			if attached l_mods_arr and not l_mods_arr.is_empty then
-				-- first pass: do insertions and deletions
-				from
-					l_list_copy.start
-					i:=l_mods_arr.lower
-				until
-					l_list_copy.after or i > l_mods_arr.upper
-				loop
-					-- check for insertion here
-					-- we always have a reference node, so index must fit
-					if l_list_copy.index = l_mods_arr[i].branch_id then
-						l_target := l_mods_arr[i].new_transformable.target_node
-						if l_mods_arr[i].is_insert_after then
-							l_list_copy.put_right(l_target)
-							shift_after_insert(l_mods_arr, l_list_copy.index+1)
-						else -- insert before
-							l_list_copy.put_left(l_target)
-							shift_after_insert(l_mods_arr, l_list_copy.index)
+				-- get the items to be inserted in this list sorted by branch_id
+				l_mods_arr := ins_hash[l_list_copy.path]
+
+				if attached l_mods_arr and not l_mods_arr.is_empty then
+					-- first pass: do insertions and deletions
+					from
+						l_list_copy.start
+						i:=l_mods_arr.lower
+					until
+						l_list_copy.after or i > l_mods_arr.upper
+					loop
+						-- check for insertion here
+						-- we always have a reference node, so index must fit
+						if l_list_copy.index = l_mods_arr[i].branch_id then
+							l_target := l_mods_arr[i].new_transformable.target_node
+							if l_mods_arr[i].is_insert_after then
+								l_list_copy.put_right(l_target)
+								shift_after_insert(l_mods_arr, l_list_copy.index+1)
+							else -- insert before
+								l_list_copy.put_left(l_target)
+								shift_after_insert(l_mods_arr, l_list_copy.index)
+							end
+							l_changed_items.extend (l_target)
+							i:=i+1
+						else
+							l_list_copy.forth
 						end
-						l_changed_items.extend (l_target)
-						i:=i+1
-					else
-						l_list_copy.forth
 					end
 				end
-			end
 
-			-- second pass, process and check for deletion/replacement
-			from
-				l_list_copy.start
-				l_changed_items.compare_references
-			until
-				l_list_copy.after
-			loop
-				-- ignore new nodes
-				if l_changed_items.has (l_list_copy.item) then
-					process_child (l_list_copy.item)
-				elseif not attached del_hash.item(l_list_copy.item.path) then
-					-- don't delete, replace eventually
-					process_or_replace (l_list_copy.item)
-				else
-					-- else don't print, i.e. delete	
+				-- second pass, process and check for deletion/replacement
+				from
+					l_list_copy.start
+					l_changed_items.compare_references
+				until
+					l_list_copy.after
+				loop
+					if l_changed_items.has (l_list_copy.item) then
+						-- don't do operations on new nodes$
+						replacement_disabled := true
+						process_child(l_list_copy.item)
+						replacement_disabled := false
+					elseif not attached del_hash.item(l_list_copy.item.path) then
+						-- don't delete, replace eventually
+						process_child (l_list_copy.item)
+					else
+						-- else don't print, i.e. delete	
+					end
+
+					l_list_copy.forth
 				end
-
-				l_list_copy.forth
 			end
-		end
-
-	process_binary_as (l_as: BINARY_AS)
-		do
-			process_or_replace(l_as.left)
-
-			output.append_string (" ")
-			output.append_string (l_as.op_name.name)
-			output.append_string (" ")
-
-			process_or_replace(l_as.right)
 		end
 
 note

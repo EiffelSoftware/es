@@ -85,9 +85,9 @@ feature -- Transformations
 			if_then_wrap_in_context(a_test, if_part, else_part, a_test.context)
 		end
 
-feature -- Modifications
+feature -- Modifications (path-reference)
 
-	insert_after(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	insert_after(a_reference: AST_PATH; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 			-- Insert `a_new_trans' after `a_reference'
 		require
 			non_void: a_reference /= void and a_new_trans /= void
@@ -95,7 +95,7 @@ feature -- Modifications
 			create Result.make_insert_after (a_reference, a_new_trans)
 		end
 
-	insert_before(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	insert_before(a_reference: AST_PATH; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 			-- Insert `a_new_trans' before `a_reference'
 		require
 			non_void: a_reference /= void and a_new_trans /= void
@@ -103,7 +103,7 @@ feature -- Modifications
 			create Result.make_insert_before (a_reference, a_new_trans)
 		end
 
-	delete(a_reference: AST_EIFFEL): ETR_AST_MODIFICATION
+	delete(a_reference: AST_PATH): ETR_AST_MODIFICATION
 			-- Delete `a_reference'
 		require
 			non_void: a_reference /= void
@@ -111,13 +111,105 @@ feature -- Modifications
 			create Result.make_delete (a_reference)
 		end
 
-	replace(a_reference: AST_EIFFEL; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	replace(a_reference: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 				-- Replace `a_reference' by `a_replacement'
 		require
 			non_void: a_reference /= void and a_replacement /= void
 		do
 			create Result.make_replace (a_reference, a_replacement)
 		end
+
+--	list_prepend(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--				-- Replace `a_reference' by `a_replacement'
+--		require
+--			non_void: a_reference /= void and a_replacement /= void
+--		do
+--			create Result.make_prepend (a_reference, a_replacement)
+--		end
+
+--	list_append(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--				-- Replace `a_reference' by `a_replacement'
+--		require
+--			non_void: a_reference /= void and a_replacement /= void
+--		do
+--			create Result.make_append (a_reference, a_replacement)
+--		end
+
+--	list_puth_ith(a_list: AST_PATH; a_position: INTEGER; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--				-- Replace `a_reference' by `a_replacement'
+--		require
+--			non_void: a_reference /= void and a_replacement /= void
+--		do
+--			create Result.make_put_ith (a_reference, a_replacement)
+--		end
+
+--feature -- Modifications (ast-reference)
+
+--	insert_after_a(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--			-- Insert `a_new_trans' after `a_reference'
+--		require
+--			non_void: a_reference /= void and a_new_trans /= void
+--		do
+--			create Result.make_insert_after (a_reference, a_new_trans)
+--		end
+
+--	insert_before_a(a_reference: AST_EIFFEL; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--			-- Insert `a_new_trans' before `a_reference'
+--		require
+--			non_void: a_reference /= void and a_new_trans /= void
+--		do
+--			create Result.make_insert_before (a_reference, a_new_trans)
+--		end
+
+--	delete_a(a_reference: AST_EIFFEL): ETR_AST_MODIFICATION
+--			-- Delete `a_reference'
+--		require
+--			non_void: a_reference /= void
+--		do
+--			create Result.make_delete (a_reference)
+--		end
+
+--	replace_a(a_reference: AST_EIFFEL; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--				-- Replace `a_reference' by `a_replacement'
+--		require
+--			non_void: a_reference /= void and a_replacement /= void
+--		do
+--			create Result.make_replace (a_reference, a_replacement)
+--		end
+
+--feature -- Modifications (transformable-reference)
+
+--	insert_after_t(a_reference: ETR_TRANSFORMABLE; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--			-- Insert `a_new_trans' after `a_reference'
+--		require
+--			non_void: a_reference /= void and a_new_trans /= void
+--		do
+--			create Result.make_insert_after (a_reference.target_node, a_new_trans)
+--		end
+
+--	insert_before_t(a_reference: ETR_TRANSFORMABLE; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--			-- Insert `a_new_trans' before `a_reference'
+--		require
+--			non_void: a_reference /= void and a_new_trans /= void
+--		do
+--			create Result.make_insert_before (a_reference.target_node, a_new_trans)
+--		end
+
+--	delete_t(a_reference: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--			-- Delete `a_reference'
+--		require
+--			non_void: a_reference /= void
+--		do
+--			create Result.make_delete (a_reference.target_node)
+--		end
+
+--	replace_t(a_reference: ETR_TRANSFORMABLE; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+--				-- Replace `a_reference' by `a_replacement'
+--		require
+--			non_void: a_reference /= void and a_replacement /= void
+--		do
+--			create Result.make_replace (a_reference.target_node, a_replacement)
+--		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -8,11 +8,14 @@ class
 	ETR_AST_MODIFICATION
 inherit
 	COMPARABLE
-create {ETR_BASIC_OPS,ETR_AST_MODIFIER}
+create {ETR_BASIC_OPS}
 	make_replace,
 	make_insert_after,
 	make_insert_before,
-	make_delete
+	make_delete--,
+--	make_list_prepend,
+--	make_list_append,
+--	make_list_put_ith
 
 feature -- Access
 
@@ -20,14 +23,17 @@ feature -- Access
 	is_insert_before: BOOLEAN
 	is_insert_after: BOOLEAN
 	is_delete: BOOLEAN
+--	is_list_prepend: BOOLEAN
+--	is_list_append: BOOLEAN
+--	is_list_put_ith: BOOLEAN
 
 	new_transformable: detachable ETR_TRANSFORMABLE
-	ref_ast: AST_EIFFEL
+	ref_ast: AST_PATH
 
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compares the branch_id's of the target_path's only!
 		do
-			Result := ref_ast.path.branch_id < other.ref_ast.path.branch_id
+			Result := ref_ast.branch_id < other.ref_ast.branch_id
 		end
 
 feature {ETR_MODIFYING_PRINTER} -- Printing

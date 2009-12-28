@@ -121,11 +121,33 @@ create
 
 feature {NONE} -- Implementation
 
+	internal_safe_process (l_as: AST_EIFFEL)
+			-- Process `l_as'. Nothing if `l_as' is Void.
+		do
+			if l_as /= Void then
+				process(l_as)
+			end
+		end
+
+	process(l_as: AST_EIFFEL)
+			-- Process `l_as'
+		do
+			l_as.process (Current)
+		end
+
 	internal_enter_child_ast(an_ast: AST_EIFFEL) is
 			-- enter `an_ast'
 		do
 --			output.enter_child (an_ast.path.as_string+" "+an_ast.generating_type)
 			output.enter_child (an_ast.generating_type)
+		end
+
+	process_child_list (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING)
+			-- process `l_as' and use `separator' for string output
+		do
+			internal_enter_child_ast (l_as)
+			process_list_with_separator (l_as, separator)
+			output.exit_child
 		end
 
 	process_list_with_separator (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING)
@@ -182,7 +204,7 @@ feature {NONE} -- Implementation
 		do
 			if attached l_as then
 				output.enter_block
-				l_as.process (Current)
+				process(l_as)
 				output.exit_block
 			end
 		end
@@ -192,7 +214,7 @@ feature {NONE} -- Implementation
 		do
 			if attached l_as then
 				internal_enter_child_ast(l_as)
-				l_as.process (Current)
+				process(l_as)
 				output.exit_child
 			end
 		end
@@ -201,11 +223,11 @@ feature {NONE} -- Implementation
 			-- process as child and block
 		do
 			if attached l_as then
-				internal_enter_child_ast(l_as)
 				output.enter_block
-				l_as.process (Current)
-				output.exit_block
+				internal_enter_child_ast (l_as)
+				process(l_as)
 				output.exit_child
+				output.exit_block
 			end
 		end
 
@@ -334,7 +356,7 @@ feature -- Roundtrip: Instructions
 	process_creation_as (l_as: CREATION_AS)
 		do
 			output.append_string ("create ")
-			l_as.target.process (Current)
+			process(l_as.target)
 			if attached l_as.type then
 				output.append_string("{")
 				process_child (l_as.type)
@@ -420,9 +442,9 @@ feature -- Roundtrip: Inheritance
 
 	process_rename_as (l_as: RENAME_AS)
 		do
-			l_as.old_name.process (Current)
+			process(l_as.old_name)
 			output.append_string (" as ")
-			l_as.new_name.process (Current)
+			process (l_as.new_name)
 		end
 
 	process_export_item_as (l_as: EXPORT_ITEM_AS)
@@ -448,12 +470,10 @@ feature -- Roundtrip: Inheritance
 
 			if attached l_as.renaming then
 				output.append_string ("rename%N")
-				internal_enter_child_ast(l_as.renaming)
 				output.enter_block
-				process_list_with_separator (l_as.renaming, ",%N")
+				process_child_list(l_as.renaming, ",%N")
 				output.append_string ("%N")
 				output.exit_block
-				output.exit_child
 			end
 
 			if attached l_as.exports then
@@ -463,32 +483,26 @@ feature -- Roundtrip: Inheritance
 
 			if attached l_as.undefining then
 				output.append_string ("undefine%N")
-				internal_enter_child_ast(l_as.undefining)
 				output.enter_block
-				process_list_with_separator (l_as.undefining, ",%N")
+				process_child_list (l_as.undefining, ",%N")
 				output.append_string ("%N")
 				output.exit_block
-				output.exit_child
 			end
 
 			if attached l_as.redefining then
 				output.append_string ("redefine%N")
-				internal_enter_child_ast(l_as.redefining)
 				output.enter_block
-				process_list_with_separator (l_as.redefining, ",%N")
+				process_child_list (l_as.redefining, ",%N")
 				output.append_string ("%N")
 				output.exit_block
-				output.exit_child
 			end
 
 			if attached l_as.selecting then
 				output.append_string ("select%N")
-				internal_enter_child_ast(l_as.selecting)
 				output.enter_block
-				process_list_with_separator (l_as.selecting, "%N")
+				process_child_list (l_as.selecting, "%N")
 				output.append_string ("%N")
 				output.exit_block
-				output.exit_child
 			end
 
 			if attached l_as.renaming or attached l_as.exports or attached l_as.undefining or attached l_as.redefining or attached l_as.selecting then
@@ -541,7 +555,7 @@ feature -- Roundtrip: Types
 	process_bits_as (l_as: BITS_AS)
 		do
 			output.append_string ("bit ")
-			l_as.bits_value.process (Current)
+			process(l_as.bits_value)
 		end
 
 	process_class_type_as (l_as: CLASS_TYPE_AS)
@@ -571,11 +585,10 @@ feature -- Roundtrip: Types
 				output.append_string ("detachable ")
 			end
 
+
 			process_child(l_as.class_name)
 			output.append_string ("[")
-			internal_enter_child_ast(l_as.generics)
-			process_list_with_separator (l_as.generics, ", ")
-			output.exit_child
+			process_child_list (l_as.generics, ", ")
 			output.append_string ("]")
 		end
 
@@ -610,7 +623,7 @@ feature -- Roundtrip: Types
 			end
 
 			output.append_string ("like ")
-			l_as.anchor.process (Current)
+			process(l_as.anchor)
 		end
 
 	process_like_cur_as (l_as: LIKE_CUR_AS)
@@ -632,7 +645,7 @@ feature -- Roundtrip: Types
 				output.append_string ("reference ")
 			end
 
-			safe_process (l_as.name)
+			internal_safe_process (l_as.name)
 		end
 
 feature -- Roundtrip: Expressions
@@ -691,9 +704,7 @@ feature -- Roundtrip: Expressions
 	process_array_as (l_as: ARRAY_AS)
 		do
 			output.append_string ("<< ")
-			internal_enter_child_ast(l_as.expressions)
-			process_list_with_separator (l_as.expressions, ", ")
-			output.exit_child
+			process_child_list (l_as.expressions, ", ")
 			output.append_string (" >>")
 		end
 
@@ -702,9 +713,7 @@ feature -- Roundtrip: Expressions
 			process_child(l_as.target)
 			output.append_string ("[")
 
-			internal_enter_child_ast(l_as.operands)
-			process_list_with_separator (l_as.operands, ", ")
-			output.exit_child
+			process_child_list (l_as.operands, ", ")
 
 			output.append_string ("]")
 		end
@@ -726,16 +735,14 @@ feature -- Roundtrip: Expressions
 	process_tuple_as (l_as: TUPLE_AS)
 		do
 			output.append_string ("[")
-			internal_enter_child_ast(l_as.expressions)
-			process_list_with_separator (l_as.expressions, ", ")
-			output.exit_child
+			process_child_list (l_as.expressions, ", ")
 			output.append_string ("]")
 		end
 
 	process_tagged_as (l_as: TAGGED_AS)
 		do
 			if attached l_as.tag then
-				l_as.tag.process (Current)
+				process(l_as.tag)
 				output.append_string(": ")
 			end
 
@@ -800,9 +807,7 @@ feature -- Roundtrip: Access
 			output.append_string (l_as.feature_name.name)
 			if attached l_as.parameters then
 				output.append_string ("(")
-				internal_enter_child_ast(l_as.parameters)
-				process_list_with_separator (l_as.parameters, ", ")
-				output.exit_child
+				process_child_list (l_as.parameters, ", ")
 				output.append_string (")")
 			end
 		end
@@ -831,11 +836,11 @@ feature -- Roundtrip: Access
 	process_access_inv_as (l_as: ACCESS_INV_AS)
 		do
 			output.append_string(".")
-			l_as.feature_name.process (Current)
-			if attached {EIFFEL_LIST [EXPR_AS]} l_as.parameters as l_list then
-				output.append_string (once " (")
-				process_child(l_list)
-				output.append_string (once ")")
+			process(l_as.feature_name)
+			if attached l_as.parameters as l_para then
+				output.append_string (" (")
+				process_child_list(l_para, ", ")
+				output.append_string (")")
 			end
 		end
 
@@ -845,9 +850,7 @@ feature -- Roundtrip: Access
 
 			if attached l_as.parameters as l_para then
 				output.append_string (" (")
-				internal_enter_child_ast(l_para)
-				process_list_with_separator (l_para, ", ")
-				output.exit_child
+				process_child_list(l_para, ", ")
 				output.append_string (")")
 			end
 		end
@@ -857,9 +860,7 @@ feature -- Roundtrip: Inheritance clauses
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
 		do
 			output.append_string (" rename ")
-			internal_enter_child_ast(l_as.content)
-			process_list_with_separator (l_as.content, ", ")
-			output.exit_child
+			process_child_list(l_as.content, ", ")
 			output.append_string (" end ")
 		end
 
@@ -901,7 +902,7 @@ feature -- Roundtrip: Misc
 				output.append_string ("infix ")
 			end
 
-			l_as.alias_name.process (Current)
+			process(l_as.alias_name)
 		end
 
 	process_formal_dec_as (l_as: FORMAL_DEC_AS)
@@ -913,18 +914,14 @@ feature -- Roundtrip: Misc
 			if l_as.constraints.count>1 then
 				output.append_string ("{")
 			end
-			internal_enter_child_ast(l_as.constraints)
-			process_list_with_separator (l_as.constraints, ", ")
-			output.exit_child
+			process_child_list (l_as.constraints, ", ")
 			if l_as.constraints.count>1 then
 				output.append_string ("}")
 			end
 
 			if attached l_as.creation_feature_list then
 				output.append_string (" create ")
-				internal_enter_child_ast(l_as.creation_feature_list)
-				process_list_with_separator (l_as.creation_feature_list, ", ")
-				output.exit_child
+				process_child_list(l_as.creation_feature_list, ", ")
 				output.append_string (" end")
 			end
 		end
@@ -949,12 +946,10 @@ feature -- Roundtrip: Misc
 
 			if attached l_as.locals then
 				output.append_string ("local%N")
-				internal_enter_child_ast(l_as.locals)
 				output.enter_block
-				process_list_with_separator (l_as.locals, "%N")
-				output.exit_block
-				output.exit_child
+				process_child_list (l_as.locals, "%N")
 				output.append_string ("%N")
+				output.exit_block
 			end
 
 			process_child(l_as.routine_body)
@@ -971,7 +966,7 @@ feature -- Roundtrip: Misc
 
 	process_constant_as (l_as: CONSTANT_AS)
 		do
-			safe_process  (l_as.value)
+			internal_safe_process  (l_as.value)
 		end
 
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
@@ -994,9 +989,7 @@ feature -- Roundtrip: Misc
 		do
 			process_child(l_as.feature_name)
 			output.append_string (": {")
-			internal_enter_child_ast(l_as.conversion_types)
-			process_list_with_separator (l_as.conversion_types, ", ")
-			output.exit_child
+			process_child_list(l_as.conversion_types, ", ")
 			output.append_string ("}")
 		end
 
@@ -1006,7 +999,7 @@ feature -- Roundtrip: Misc
 				output.append_string("frozen ")
 			end
 
-			l_as.feature_name.process (Current)
+			process(l_as.feature_name)
 
 			if attached l_as.alias_name then
 				output.append_string (" alias ")
@@ -1020,7 +1013,7 @@ feature -- Roundtrip: Misc
 				output.append_string("frozen ")
 			end
 
-			l_as.feature_name.process (Current)
+			process(l_as.feature_name)
 
 			if attached l_as.alias_name then
 				output.append_string (" alias ")
@@ -1039,9 +1032,7 @@ feature -- Roundtrip: Misc
 		do
 			if attached l_as.arguments then
 				output.append_string ("(")
-				internal_enter_child_ast(l_as.arguments)
-				process_list_with_separator (l_as.arguments, "; ")
-				output.exit_child
+				process_child_list(l_as.arguments, "; ")
 				output.append_string (")")
 			end
 
@@ -1074,10 +1065,7 @@ feature -- Roundtrip: Misc
 
 	process_feature_as (l_as: FEATURE_AS)
 		do
-			internal_enter_child_ast(l_as.feature_names)
-			process_list_with_separator (l_as.feature_names, ", ")
-			output.exit_child
-
+			process_child_list(l_as.feature_names, ", ")
 			process_child(l_as.body)
 		end
 
@@ -1093,9 +1081,7 @@ feature -- Roundtrip: Misc
 			-- Process `l_as'.
 		do
 			output.append_string("{")
-			internal_enter_child_ast(l_as)
-			process_list_with_separator (l_as, ", ")
-			output.exit_child
+			process_child_list(l_as, ", ")
 			output.append_string ("}")
 		end
 
@@ -1124,9 +1110,7 @@ feature -- Roundtrip: Misc
 
 			if attached l_as.generics then
 				output.append_string ("[")
-				internal_enter_child_ast(l_as.generics)
-				process_list_with_separator (l_as.generics, ", ")
-				output.exit_child
+				process_child_list (l_as.generics, ", ")
 				output.append_string ("]")
 			end
 			output.append_string("%N")
@@ -1146,12 +1130,10 @@ feature -- Roundtrip: Misc
 
 			if attached l_as.convertors as c and then not c.is_empty  then
 				output.append_string ("convert%N")
-				internal_enter_child_ast(c)
 				output.enter_block
-				process_list_with_separator (c, ",%N")
-				output.exit_block
-				output.exit_child
+				process_child_list(c, ",%N")
 				output.append_string ("%N")
+				output.exit_block
 			end
 
 			output.append_string("%N")
@@ -1180,20 +1162,16 @@ feature -- Roundtrip: Misc
 			process_child(l_as.clients)
 			output.append_string ("%N")
 
-			internal_enter_child_ast(l_as.feature_list)
 			output.enter_block
-			process_list_with_separator (l_as.feature_list, ",%N")
+			process_child_list (l_as.feature_list, ",%N")
 			output.append_string ("%N")
 			output.exit_block
-			output.exit_child
 		end
 
 	process_client_as (l_as: CLIENT_AS)
 		do
 			output.append_string ("{")
-			internal_enter_child_ast(l_as.clients)
-			process_list_with_separator (l_as.clients, ", ")
-			output.exit_child
+			process_child_list (l_as.clients, ", ")
 			output.append_string ("}")
 		end
 
@@ -1230,7 +1208,7 @@ feature -- Roundtrip: Routine body
 			if l_as.is_built_in then
 				output.append_string ("%"built_in%"")
 			else
-				l_as.language_name.language_name.process (Current)
+				process(l_as.language_name.language_name)
 			end
 			output.exit_block
 			output.append_string ("%N")
@@ -1254,9 +1232,7 @@ feature -- Roundtrip: Agents
 
 			if attached l_as.operands then
 				output.append_string ("(")
-				internal_enter_child_ast(l_as.operands)
-				process_list_with_separator (l_as.operands, ", ")
-				output.exit_child
+				process_child_list (l_as.operands, ", ")
 				output.append_string (")")
 			end
 			output.exit_block
@@ -1270,9 +1246,7 @@ feature -- Roundtrip: Agents
 			process_child(l_as.feature_name)
 			if attached l_as.operands then
 				output.append_string ("(")
-				internal_enter_child_ast(l_as.operands)
-				process_list_with_separator (l_as.operands, ", ")
-				output.exit_child
+				process_child_list(l_as.operands, ", ")
 				output.append_string (")")
 			end
 		end

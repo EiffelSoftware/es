@@ -75,11 +75,11 @@ feature -- Properties
 											)
 
 			-- create some modifications
-			mod1 := basic_operators.insert_before (instr1, new_instr("io.putint(0)",a_context))
-			mod2 := basic_operators.insert_after (instr2, new_instr("io.putint(3)",a_context))
-			mod3 := basic_operators.insert_after (instr1, new_instr("io.putreal (1.5)",a_context))
-			mod4 := basic_operators.replace (instr2, new_instr("io.putreal (2.5)",a_context))
-			mod5 := basic_operators.replace(instr1,basic_operators.transformation_result)
+			mod1 := basic_operators.insert_before (instr1.path, new_instr("io.putint(0)",a_context))
+			mod2 := basic_operators.insert_after (instr2.path, new_instr("io.putint(3)",a_context))
+			mod3 := basic_operators.insert_after (instr1.path, new_instr("io.putreal (1.5)",a_context))
+			mod4 := basic_operators.replace (instr2.path, new_instr("io.putreal (2.5)",a_context))
+			mod5 := basic_operators.replace (instr1.path, basic_operators.transformation_result)
 
 			-- add them to the "transaction set"
 			modifier.add (mod1); modifier.add (mod2); modifier.add (mod3)
