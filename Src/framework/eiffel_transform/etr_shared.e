@@ -153,6 +153,34 @@ feature -- New
 
 feature -- Operations
 
+	parent_path(a_path: AST_PATH): AST_PATH
+			-- constructs the path of `a_path's parent
+		require
+			non_void: a_path /= void
+			path_valid: a_path.is_valid
+			not_root: a_path.as_array.count>1
+		local
+			l_parent_string: STRING
+			i: INTEGER
+		do
+			-- construct path of parent
+			from
+				i := a_path.as_array.lower
+				create l_parent_string.make_empty
+			until
+				i > a_path.as_array.upper-1
+			loop
+				if i /= a_path.as_array.upper-1 then
+					l_parent_string := l_parent_string + a_path.as_array[i].out + {AST_PATH}.separator.out
+				else
+					l_parent_string := l_parent_string + a_path.as_array[i].out
+				end
+				i := i+1
+			end
+
+			create Result.make_from_string (a_path.root, l_parent_string)
+		end
+
 	index_ast_from_root(an_ast: AST_EIFFEL)
 			-- indexes and ast with root `an_ast'
 		require

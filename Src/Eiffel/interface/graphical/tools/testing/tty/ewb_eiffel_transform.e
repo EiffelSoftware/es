@@ -50,7 +50,7 @@ feature -- Properties
 			instr1,instr2: INSTRUCTION_AS
 			modifier: ETR_AST_MODIFIER
 			root_transformable: ETR_TRANSFORMABLE
-			mod1, mod2, mod3, mod4, mod5: ETR_AST_MODIFICATION
+			mod1, mod2, mod3, mod4, mod5, mod6: ETR_AST_MODIFICATION
 		do
 			create modifier.make
 
@@ -79,11 +79,14 @@ feature -- Properties
 			mod2 := basic_operators.insert_after (instr2.path, new_instr("io.putint(3)",a_context))
 			mod3 := basic_operators.insert_after (instr1.path, new_instr("io.putreal (1.5)",a_context))
 			mod4 := basic_operators.replace (instr2.path, new_instr("io.putreal (2.5)",a_context))
-			mod5 := basic_operators.replace (instr1.path, basic_operators.transformation_result)
+--			mod5 := basic_operators.replace (instr1.path, basic_operators.transformation_result)
+			mod5 := basic_operators.list_put_ith (da.compound.path, 1, basic_operators.transformation_result)
+			mod6 := basic_operators.list_append (da.compound.path, new_instr("io.putint(9)",a_context))
+
 
 			-- add them to the "transaction set"
 			modifier.add (mod1); modifier.add (mod2); modifier.add (mod3)
-			modifier.add (mod4); modifier.add (mod5)
+			modifier.add (mod4); modifier.add (mod5); modifier.add (mod6)
 
 			-- apply changes, creates a new copy of the ast with the changes (reset implicit)
 			modifier.apply_with_context (root_transformable.target_node, a_context)

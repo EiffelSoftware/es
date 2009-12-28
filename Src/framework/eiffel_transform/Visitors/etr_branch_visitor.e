@@ -87,7 +87,9 @@ inherit
 			process_redefine_clause_as,
 			process_select_clause_as,
 			process_feature_name_alias_as,
-			process_address_as
+			process_address_as,
+			process_feat_name_id_as,
+			process_external_as
 		end
 
 feature {NONE} -- Implementation
@@ -98,6 +100,18 @@ feature {NONE} -- Implementation
 		end
 
 feature -- Roundtrip
+
+	process_external_as (l_as: EXTERNAL_AS)
+			-- Process `l_as'.
+		do
+			process_n_way_branch(l_as,[l_as.language_name, l_as.alias_name_literal])
+		end
+
+	process_feat_name_id_as (l_as: FEAT_NAME_ID_AS)
+			-- Process `l_as'.
+		do
+			process_n_way_branch(l_as,[l_as.feature_name, l_as.alias_name])
+		end
 
 	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
 			-- Process `l_as'.
@@ -187,7 +201,7 @@ feature -- Roundtrip
 
 	process_tagged_as (l_as: TAGGED_AS)
 		do
-			process_n_way_branch(l_as,[l_as.expr])
+			process_n_way_branch(l_as,[l_as.tag, l_as.expr])
 		end
 
 	process_variant_as (l_as: VARIANT_AS)
@@ -242,11 +256,7 @@ feature -- Roundtrip
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		do
-			if l_as.is_attached_keyword then
-				process_n_way_branch(l_as,[l_as.type, l_as.expression, l_as.name])
-			else
-				process_n_way_branch(l_as,[l_as.name, l_as.type, l_as.expression])
-			end
+			process_n_way_branch(l_as,[l_as.type, l_as.expression, l_as.name])
 		end
 
 	process_feature_as (l_as: FEATURE_AS)
@@ -296,7 +306,7 @@ feature -- Roundtrip
 
 	process_loop_as (l_as: LOOP_AS)
 		do
-			process_n_way_branch(l_as,[l_as.from_part, l_as.invariant_part, l_as.stop, l_as.compound, l_as.variant_part])
+			process_n_way_branch(l_as,[l_as.from_part, l_as.full_invariant_list, l_as.stop, l_as.compound, l_as.variant_part])
 		end
 
 	process_attribute_as (l_as: ATTRIBUTE_AS)
@@ -320,7 +330,7 @@ feature -- Roundtrip
 		end
 	process_class_as (l_as: CLASS_AS)
 		do
-			process_n_way_branch (l_as,[l_as.top_indexes, l_as.class_name, l_as.generics, l_as.parents, l_as.creators, l_as.convertors, l_as.features, l_as.invariant_part, l_as.bottom_indexes])
+			process_n_way_branch (l_as,[l_as.top_indexes, l_as.class_name, l_as.generics, l_as.obsolete_message, l_as.parents, l_as.creators, l_as.convertors, l_as.features, l_as.invariant_part, l_as.bottom_indexes])
 		end
 
 	process_parent_as (l_as: PARENT_AS)
@@ -449,13 +459,8 @@ feature -- Roundtrip
 
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
 			-- Process `l_as'.
-		local
-			l_list: EIFFEL_LIST [EXPR_AS]
 		do
-			l_list := l_as.parameters
-			if l_list /= Void and then not l_list.is_empty then
-				process_n_way_branch(l_as,[l_as.parameters])
-			end
+			process_n_way_branch(l_as,[l_as.parameters])
 		end
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)

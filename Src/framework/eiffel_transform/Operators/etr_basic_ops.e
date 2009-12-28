@@ -119,29 +119,29 @@ feature -- Modifications (path-reference)
 			create Result.make_replace (a_reference, a_replacement)
 		end
 
---	list_prepend(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
---				-- Replace `a_reference' by `a_replacement'
---		require
---			non_void: a_reference /= void and a_replacement /= void
---		do
---			create Result.make_prepend (a_reference, a_replacement)
---		end
+	list_prepend(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+				-- Append `a_replacement' to `a_list'
+		require
+			non_void: a_list /= void and a_replacement /= void
+		do
+			create Result.make_list_prepend (a_list, a_replacement)
+		end
 
---	list_append(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
---				-- Replace `a_reference' by `a_replacement'
---		require
---			non_void: a_reference /= void and a_replacement /= void
---		do
---			create Result.make_append (a_reference, a_replacement)
---		end
+	list_append(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+				-- Prepend `a_replacement' to `a_list'
+		require
+			non_void: a_list /= void and a_replacement /= void
+		do
+			create Result.make_list_append (a_list, a_replacement)
+		end
 
---	list_puth_ith(a_list: AST_PATH; a_position: INTEGER; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
---				-- Replace `a_reference' by `a_replacement'
---		require
---			non_void: a_reference /= void and a_replacement /= void
---		do
---			create Result.make_put_ith (a_reference, a_replacement)
---		end
+	list_put_ith(a_list: AST_PATH; a_position: INTEGER; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+				-- Replace item at position `a_positin' in `a_list' by `a_replacement'
+		require
+			non_void: a_list /= void and a_replacement /= void
+		do
+			create Result.make_list_put_ith (a_list, a_position, a_replacement)
+		end
 
 --feature -- Modifications (ast-reference)
 

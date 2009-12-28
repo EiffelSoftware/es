@@ -8,14 +8,14 @@ class
 	ETR_AST_MODIFICATION
 inherit
 	COMPARABLE
-create {ETR_BASIC_OPS}
+create {ETR_BASIC_OPS,ETR_MODIFYING_PRINTER}
 	make_replace,
 	make_insert_after,
 	make_insert_before,
-	make_delete--,
---	make_list_prepend,
---	make_list_append,
---	make_list_put_ith
+	make_delete,
+	make_list_prepend,
+	make_list_append,
+	make_list_put_ith
 
 feature -- Access
 
@@ -23,12 +23,17 @@ feature -- Access
 	is_insert_before: BOOLEAN
 	is_insert_after: BOOLEAN
 	is_delete: BOOLEAN
---	is_list_prepend: BOOLEAN
---	is_list_append: BOOLEAN
---	is_list_put_ith: BOOLEAN
+	is_list_prepend: BOOLEAN
+	is_list_append: BOOLEAN
+	is_list_put_ith: BOOLEAN
 
 	new_transformable: detachable ETR_TRANSFORMABLE
 	ref_ast: AST_PATH
+
+	list_position: INTEGER
+
+
+feature {COMPARABLE} -- Sorting
 
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compares the branch_id's of the target_path's only!
@@ -38,7 +43,7 @@ feature -- Access
 
 feature {ETR_MODIFYING_PRINTER} -- Printing
 
-	list_parent: detachable AST_PATH
+--	list_parent: detachable AST_PATH
 	replacement_text: detachable STRING
 	branch_id: INTEGER
 
@@ -48,11 +53,11 @@ feature {ETR_MODIFYING_PRINTER} -- Printing
 			branch_id := a_branch_id
 		end
 
-	set_list_parent(a_parent: like list_parent)
-			-- set `list_parent' to `a_parent'
-		do
-			list_parent := a_parent
-		end
+--	set_list_parent(a_parent: like list_parent)
+--			-- set `list_parent' to `a_parent'
+--		do
+--			list_parent := a_parent
+--		end
 
 	set_replacement_text(a_text: like replacement_text)
 			-- set `replacement_text' to `a_text'
@@ -61,6 +66,34 @@ feature {ETR_MODIFYING_PRINTER} -- Printing
 		end
 
 feature {NONE} -- Creation
+
+	make_list_put_ith(a_list: like ref_ast; a_position: like list_position; a_replacement: like new_transformable)
+			-- Replace item at position `a_positin' in `a_list' by `a_replacement'
+		do
+			is_list_put_ith := true
+			list_position := a_position
+
+			ref_ast := a_list
+			new_transformable := a_replacement
+		end
+
+	make_list_append(a_list: like ref_ast; a_replacement: like new_transformable)
+			-- Append `a_replacement' to `a_list'
+		do
+			is_list_append := true
+
+			ref_ast := a_list
+			new_transformable := a_replacement
+		end
+
+	make_list_prepend(a_list: like ref_ast; a_replacement: like new_transformable)
+			-- Prepend `a_replacement' to `a_list'
+		do
+			is_list_prepend := true
+
+			ref_ast := a_list
+			new_transformable := a_replacement
+		end
 
 	make_replace(a_reference: like ref_ast; a_replacement: like new_transformable)
 			-- Replace `a_reference' by `a_replacement'
@@ -75,6 +108,7 @@ feature {NONE} -- Creation
 			-- Insert `a_new_trans' before `a_reference'
 		do
 			is_insert_before := true
+			branch_id := a_reference.branch_id
 
 			ref_ast := a_reference
 			new_transformable := a_new_trans
@@ -84,6 +118,7 @@ feature {NONE} -- Creation
 			-- Insert `a_new_trans' after `a_reference'
 		do
 			is_insert_after := true
+			branch_id := a_reference.branch_id
 
 			ref_ast := a_reference
 			new_transformable := a_new_trans

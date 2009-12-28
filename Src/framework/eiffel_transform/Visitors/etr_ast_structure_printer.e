@@ -129,6 +129,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	processing_needed(an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
+			-- should `an_ast' be processed
+		do
+			Result := attached an_ast
+		end
+
 	process(l_as: AST_EIFFEL)
 			-- Process `l_as'
 		do
@@ -324,7 +330,7 @@ feature -- Roundtrip: Instructions
 
 			process_child (l_as.case_list)
 
-			if attached l_as.else_part then
+			if processing_needed (l_as.else_part, l_as, 3) then
 				output.append_string ("else%N")
 				process_child_block (l_as.else_part)
 			end
@@ -357,7 +363,7 @@ feature -- Roundtrip: Instructions
 		do
 			output.append_string ("create ")
 			process(l_as.target)
-			if attached l_as.type then
+			if processing_needed (l_as.type, l_as, 2) then
 				output.append_string("{")
 				process_child (l_as.type)
 				output.append_string("}")
@@ -393,7 +399,7 @@ feature -- Roundtrip: Instructions
 			output.append_string (" then%N")
 			process_child_block (l_as.compound)
 			process_child (l_as.elsif_list)
-			if attached l_as.else_part then
+			if processing_needed (l_as.else_part, l_as, 4) then
 				output.append_string("else%N")
 				process_child_block (l_as.else_part)
 			end
@@ -413,15 +419,15 @@ feature -- Roundtrip: Instructions
 			output.append_string("from%N")
 			process_child_block(l_as.from_part)
 
-			if attached l_as.full_invariant_list as l and then not l.is_empty then
+			if processing_needed (l_as.full_invariant_list, l_as, 2) then
 				output.append_string ("invariant%N")
-				process_child_block(l)
+				process_child_block(l_as.full_invariant_list)
 				output.append_string ("%N")
 			end
 
-			if attached l_as.variant_part as v then
+			if processing_needed (l_as.variant_part, l_as, 5) then
 				output.append_string ("variant%N")
-				process_child_block(v)
+				process_child_block(l_as.variant_part)
 				output.append_string ("%N")
 			end
 
@@ -431,7 +437,7 @@ feature -- Roundtrip: Instructions
 
 			output.append_string ("loop%N")
 
-			if attached l_as.compound then
+			if processing_needed (l_as.compound, l_as, 4) then
 				process_child_block(l_as.compound)
 			end
 
@@ -461,6 +467,8 @@ feature -- Roundtrip: Inheritance
 		end
 
 	process_parent_as (l_as: PARENT_AS)
+		local
+			was_processed: BOOLEAN
 		do
 			process_child(l_as.type)
 
@@ -468,44 +476,49 @@ feature -- Roundtrip: Inheritance
 
 			output.enter_block
 
-			if attached l_as.renaming then
+			if processing_needed (l_as.renaming, l_as, 2) then
 				output.append_string ("rename%N")
 				output.enter_block
 				process_child_list(l_as.renaming, ",%N")
 				output.append_string ("%N")
 				output.exit_block
+				was_processed := true
 			end
 
-			if attached l_as.exports then
+			if processing_needed (l_as.exports, l_as, 3) then
 				output.append_string ("export%N")
 				process_child_block (l_as.exports)
+				was_processed := true
 			end
 
-			if attached l_as.undefining then
+			if processing_needed (l_as.undefining, l_as, 4) then
 				output.append_string ("undefine%N")
 				output.enter_block
 				process_child_list (l_as.undefining, ",%N")
 				output.append_string ("%N")
 				output.exit_block
+				was_processed := true
 			end
 
-			if attached l_as.redefining then
+			if processing_needed (l_as.redefining, l_as, 5) then
 				output.append_string ("redefine%N")
 				output.enter_block
 				process_child_list (l_as.redefining, ",%N")
 				output.append_string ("%N")
 				output.exit_block
+				was_processed := true
 			end
 
-			if attached l_as.selecting then
+			if processing_needed (l_as.selecting, l_as, 6) then
 				output.append_string ("select%N")
 				output.enter_block
 				process_child_list (l_as.selecting, "%N")
 				output.append_string ("%N")
 				output.exit_block
+				was_processed := true
 			end
 
-			if attached l_as.renaming or attached l_as.exports or attached l_as.undefining or attached l_as.redefining or attached l_as.selecting then
+			if was_processed then
 				output.append_string ("end%N")
 			end
 
@@ -741,7 +754,7 @@ feature -- Roundtrip: Expressions
 
 	process_tagged_as (l_as: TAGGED_AS)
 		do
-			if attached l_as.tag then
+			if processing_needed (l_as.tag, l_as, 1) then
 				process(l_as.tag)
 				output.append_string(": ")
 			end
@@ -782,7 +795,7 @@ feature -- Roundtrip: Expressions
 		do
 			if l_as.is_attached_keyword then
 				output.append_string ("attached ")
-				if attached l_as.type then
+				if processing_needed (l_as.type, l_as, 1) then
 					output.append_string ("{")
 					process_child (l_as.type)
 					output.append_string ("}")
@@ -805,7 +818,7 @@ feature -- Roundtrip: Access
 			process_child(l_as.class_type)
 			output.append_string ("}.")
 			output.append_string (l_as.feature_name.name)
-			if attached l_as.parameters then
+			if processing_needed (l_as.parameters, l_as, 2) then
 				output.append_string ("(")
 				process_child_list (l_as.parameters, ", ")
 				output.append_string (")")
@@ -815,7 +828,7 @@ feature -- Roundtrip: Access
 	process_precursor_as (l_as: PRECURSOR_AS)
 		do
 			output.append_string ("precursor ")
-			if attached l_as.parent_base_class then
+			if processing_needed (l_as.parent_base_class,l_as,1) then
 				output.append_string ("{")
 				process_child(l_as.parent_base_class)
 				output.append_string ("}")
@@ -837,9 +850,9 @@ feature -- Roundtrip: Access
 		do
 			output.append_string(".")
 			process(l_as.feature_name)
-			if attached l_as.parameters as l_para then
+			if processing_needed (l_as.parameters,l_as,2) then
 				output.append_string (" (")
-				process_child_list(l_para, ", ")
+				process_child_list(l_as.parameters, ", ")
 				output.append_string (")")
 			end
 		end
@@ -848,9 +861,9 @@ feature -- Roundtrip: Access
 		do
 			output.append_string (l_as.access_name)
 
-			if attached l_as.parameters as l_para then
+			if processing_needed (l_as.parameters,l_as,2) then
 				output.append_string (" (")
-				process_child_list(l_para, ", ")
+				process_child_list(l_as.parameters, ", ")
 				output.append_string (")")
 			end
 		end
@@ -919,7 +932,7 @@ feature -- Roundtrip: Misc
 				output.append_string ("}")
 			end
 
-			if attached l_as.creation_feature_list then
+			if processing_needed (l_as.creation_feature_list, l_as, 3) then
 				output.append_string (" create ")
 				process_child_list(l_as.creation_feature_list, ", ")
 				output.append_string (" end")
@@ -936,7 +949,7 @@ feature -- Roundtrip: Misc
 
 	process_routine_as (l_as: ROUTINE_AS)
 		do
-			if attached l_as.obsolete_message then
+			if processing_needed (l_as.obsolete_message, l_as, 1) then
 				output.append_string ("obsolete%N")
 				process_block (l_as.obsolete_message)
 				output.append_string ("%N")
@@ -944,7 +957,7 @@ feature -- Roundtrip: Misc
 
 			process_child (l_as.precondition)
 
-			if attached l_as.locals then
+			if processing_needed (l_as.locals, l_as, 3) then
 				output.append_string ("local%N")
 				output.enter_block
 				process_child_list (l_as.locals, "%N")
@@ -956,7 +969,7 @@ feature -- Roundtrip: Misc
 
 			process_child (l_as.postcondition)
 
-			if attached l_as.rescue_clause then
+			if processing_needed (l_as.rescue_clause, l_as, 6) then
 				output.append_string("rescue%N")
 				process_child_block (l_as.rescue_clause)
 			end
@@ -1001,7 +1014,7 @@ feature -- Roundtrip: Misc
 
 			process(l_as.feature_name)
 
-			if attached l_as.alias_name then
+			if processing_needed (l_as.alias_name,l_as,2) then
 				output.append_string (" alias ")
 				process_child (l_as.alias_name)
 			end
@@ -1015,7 +1028,7 @@ feature -- Roundtrip: Misc
 
 			process(l_as.feature_name)
 
-			if attached l_as.alias_name then
+			if processing_needed (l_as.alias_name, l_as, 2) then
 				output.append_string (" alias ")
 				process_child (l_as.alias_name)
 			end
@@ -1030,20 +1043,20 @@ feature -- Roundtrip: Misc
 
 	process_body_as (l_as: BODY_AS)
 		do
-			if attached l_as.arguments then
+			if processing_needed (l_as.arguments, l_as, 1) then
 				output.append_string ("(")
 				process_child_list(l_as.arguments, "; ")
 				output.append_string (")")
 			end
 
-			if attached l_as.type then
+			if processing_needed (l_as.type, l_as, 2) then
 				output.append_string (":")
 				process_child (l_as.type)
 			end
 
 			if l_as.is_constant then
 				output.append_string(" is ")
-			elseif attached l_as.assigner then
+			elseif processing_needed (l_as.assigner, l_as, 3) then
 				output.append_string (" assign ")
 				process_child (l_as.assigner)
 			elseif l_as.is_unique then
@@ -1052,7 +1065,7 @@ feature -- Roundtrip: Misc
 				output.append_string("%N")
 			end
 
-			if attached l_as.content then
+			if processing_needed (l_as.content, l_as, 4) then
 				output.enter_block
 				process_child_block(l_as.content)
 				output.exit_block
@@ -1108,7 +1121,7 @@ feature -- Roundtrip: Misc
 			output.enter_block
 			process_child(l_as.class_name)
 
-			if attached l_as.generics then
+			if processing_needed (l_as.generics, l_as, 3) then
 				output.append_string ("[")
 				process_child_list (l_as.generics, ", ")
 				output.append_string ("]")
@@ -1116,22 +1129,22 @@ feature -- Roundtrip: Misc
 			output.append_string("%N")
 			output.exit_block
 
-			if attached l_as.obsolete_message then
+			if processing_needed (l_as.obsolete_message, l_as, 4) then
 				output.append_string("obsolete")
 				process_child_block(l_as.obsolete_message)
 			end
 
-			if attached l_as.parents as p and then not p.is_empty  then
+			if processing_needed (l_as.parents, l_as, 5)  then
 				output.append_string ("inherit%N")
-				process_child_block (p)
+				process_child_block (l_as.parents)
 			end
 
 			process_child (l_as.creators)
 
-			if attached l_as.convertors as c and then not c.is_empty  then
+			if processing_needed (l_as.convertors, l_as, 7)  then
 				output.append_string ("convert%N")
 				output.enter_block
-				process_child_list(c, ",%N")
+				process_child_list(l_as.convertors, ",%N")
 				output.append_string ("%N")
 				output.exit_block
 			end
@@ -1213,7 +1226,7 @@ feature -- Roundtrip: Routine body
 			output.exit_block
 			output.append_string ("%N")
 
-			if attached l_as.alias_name_literal then
+			if processing_needed (l_as.alias_name_literal, l_as, 2) then
 				output.append_string ("alias%N")
 				process_block (l_as.alias_name_literal)
 				output.append_string ("%N")
@@ -1244,7 +1257,7 @@ feature -- Roundtrip: Agents
 
 			process_child(l_as.target)
 			process_child(l_as.feature_name)
-			if attached l_as.operands then
+			if processing_needed (l_as.operands,l_as,3) then
 				output.append_string ("(")
 				process_child_list(l_as.operands, ", ")
 				output.append_string (")")
@@ -1254,7 +1267,7 @@ feature -- Roundtrip: Agents
 	process_operand_as (l_as: OPERAND_AS)
 		do
 			if l_as.is_open then
-				if attached l_as.class_type then
+				if processing_needed (l_as.class_type, l_as, 1) then
 					output.append_string ("{")
 					process_child (l_as.class_type)
 					output.append_string ("}")
