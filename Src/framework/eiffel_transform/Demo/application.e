@@ -20,8 +20,8 @@ feature {NONE} -- Initialization
 			dummy: ETR_DUMMY
 		do
 			create dummy
-			dummy.test (1)
 			dummy.test (-1)
+			dummy.test (1)
 			io.read_line
 		end
 		

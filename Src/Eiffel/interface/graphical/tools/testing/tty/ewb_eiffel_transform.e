@@ -50,7 +50,7 @@ feature -- Properties
 			instr1,instr2: INSTRUCTION_AS
 			modifier: ETR_AST_MODIFIER
 			root_transformable: ETR_TRANSFORMABLE
-			mod1, mod2, mod3, mod4, mod5, mod6: ETR_AST_MODIFICATION
+			mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8: ETR_AST_MODIFICATION
 		do
 			create modifier.make
 
@@ -69,24 +69,29 @@ feature -- Properties
 				instr2 := da.compound.i_th (2)
 			end
 
-			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a_context), -- condition
-												create {ETR_TRANSFORMABLE}.make_from_ast(instr1,a_context,true), -- if_part
-												new_instr("io.putint(8)",a_context) -- else_part
-											)
+			-- else part is branch 4 of IF_AS
+			mod1 := basic_operators.list_append (create {AST_PATH}.make_from_parent(instr1, 4), new_instr("io.putint(2)",a_context))
 
-			-- create some modifications
-			mod1 := basic_operators.insert_before (instr1.path, new_instr("io.putint(0)",a_context))
-			mod2 := basic_operators.insert_after (instr2.path, new_instr("io.putint(3)",a_context))
-			mod3 := basic_operators.insert_after (instr1.path, new_instr("io.putreal (1.5)",a_context))
-			mod4 := basic_operators.replace (instr2.path, new_instr("io.putreal (2.5)",a_context))
---			mod5 := basic_operators.replace (instr1.path, basic_operators.transformation_result)
-			mod5 := basic_operators.list_put_ith (da.compound.path, 1, basic_operators.transformation_result)
-			mod6 := basic_operators.list_append (da.compound.path, new_instr("io.putint(9)",a_context))
+			mod2 := basic_operators.list_append (da.compound.path, new_instr("io.putint(7)",a_context))
+			mod3 := basic_operators.list_append (da.compound.path, new_instr("io.putint(8)",a_context))
+			mod4 := basic_operators.list_append (da.compound.path, new_instr("io.putint(9)",a_context))
+			mod5 := basic_operators.list_prepend (da.compound.path, new_instr("io.putint(-1)",a_context))
+			mod6 := basic_operators.list_prepend (da.compound.path, new_instr("io.putint(-2)",a_context))
+			mod7 := basic_operators.list_prepend (da.compound.path, new_instr("io.putint(-3)",a_context))
+
+			-- replace instr 2
+			mod8 := basic_operators.list_put_ith (da.compound.path, 2, new_instr("io.putint(4)",a_context))
 
 
 			-- add them to the "transaction set"
-			modifier.add (mod1); modifier.add (mod2); modifier.add (mod3)
-			modifier.add (mod4); modifier.add (mod5); modifier.add (mod6)
+			modifier.add (mod1);
+			modifier.add (mod2);
+ 			modifier.add (mod3)
+			modifier.add (mod4);
+			modifier.add (mod5);
+			modifier.add (mod6)
+			modifier.add (mod7);
+			modifier.add (mod8)
 
 			-- apply changes, creates a new copy of the ast with the changes (reset implicit)
 			modifier.apply_with_context (root_transformable.target_node, a_context)

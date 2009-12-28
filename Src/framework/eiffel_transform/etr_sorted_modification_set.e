@@ -1,5 +1,5 @@
 note
-	description: "Set of modifications, grouped by parent and sorted by branch id."
+	description: "Set of modifications, grouped by parent and insertions sorted by branch id."
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -60,7 +60,9 @@ feature -- Operations
 					i:=i+1
 				end
 
-				l_sorted_array.sort
+				if not l_par_items.is_empty and then (l_par_items.first.is_insert_after or l_par_items.first.is_insert_before) then
+					l_sorted_array.sort
+				end
 			end
 
 			Result := l_sorted_array

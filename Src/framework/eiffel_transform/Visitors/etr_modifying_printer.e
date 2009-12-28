@@ -41,22 +41,29 @@ feature {NONE} -- Implementation
 			Result := attached an_ast or else app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent, a_branch))
 		end
 
-	process_or_replace (l_as: AST_EIFFEL)
+	process_or_replace (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and check for replacement
 		local
 			l_mod: ETR_AST_MODIFICATION
+			l_path: AST_PATH
 		do
-			output.enter_block
-			if attached l_as then
-				l_mod := repl_hash.item (l_as.path)
-			end
+			if attached a_parent then
+				create l_path.make_from_parent (a_parent, a_branch)
 
-			if attached l_mod and not replacement_disabled then
-				output.append_string (l_mod.replacement_text)
-			else
-				Precursor(l_as)
+				output.enter_block
+				if attached l_as then
+					l_mod := repl_hash.item (l_path)
+				end
+
+				if attached l_mod and not replacement_disabled then
+					output.append_string (l_mod.replacement_text)
+				else
+					Precursor(l_as, a_parent, a_branch)
+				end
+				output.exit_block
+			elseif attached l_as then
+				Precursor(l_as, a_parent, a_branch)
 			end
-			output.exit_block
 		end
 
 	mini_printer: ETR_AST_STRUCTURE_PRINTER
@@ -161,19 +168,18 @@ feature {NONE} -- Creation
 			until
 				app.after
 			loop
-				app_hash.extend(modifications.item)
-				app_prep_hash.extend (modifications.item, modifications.item.ref_ast)
+				app_hash.extend(app.item)
+				app_prep_hash.extend (app.item, app.item.ref_ast)
 				app.forth
 			end
-
 			from
 				prep.start
 				create prep_hash.make
 			until
 				prep.after
 			loop
-				prep_hash.extend(modifications.item)
-				app_prep_hash.extend (modifications.item, modifications.item.ref_ast)
+				prep_hash.extend(prep.item)
+				app_prep_hash.extend (prep.item, prep.item.ref_ast)
 				prep.forth
 			end
 
@@ -221,10 +227,10 @@ feature -- Roundtrip
 
 	process_eiffel_list (l_as: EIFFEL_LIST[AST_EIFFEL])
 		do
-			process_list_with_separator (l_as, void)
+			process_list_with_separator (l_as, void, l_as, 1)
 		end
 
-	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING)
+	process_list_with_separator (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and use `separator' for string output
 		local
 			l_mods_arr: ARRAY[ETR_AST_MODIFICATION]
@@ -233,9 +239,15 @@ feature -- Roundtrip
 			l_target: AST_EIFFEL
 			l_changed_items: LINKED_LIST[AST_EIFFEL]
 			l_mod: ETR_AST_MODIFICATION
+			l_path: AST_PATH
 		do
+
+
 			if attached l_as then
-				l_mod := repl_hash.item (l_as.path)
+				l_mod := repl_hash.item (l_path)
+				l_path := l_as.path
+			else
+				create l_path.make_from_parent (a_parent, a_branch)
 			end
 
 			if attached l_mod then
@@ -244,7 +256,7 @@ feature -- Roundtrip
 				-- shallow copy of original list
 				-- because we're gonna reorder it!
 				fixme("Is this ok?")
-				if attached l_as.twin then
+				if attached l_as then
 					l_list_copy := l_as.twin
 				else
 					create l_list_copy.make (0)
@@ -253,7 +265,7 @@ feature -- Roundtrip
 				create l_changed_items.make
 
 				-- get the items to be inserted in this list sorted by branch_id
-				l_mods_arr := ins_hash[l_list_copy.path]
+				l_mods_arr := ins_hash[l_path]
 
 				if attached l_mods_arr and not l_mods_arr.is_empty then
 					-- first pass: do insertions and deletions
@@ -288,22 +300,24 @@ feature -- Roundtrip
 				-- print prepends
 				-- don't replace in new items
 				replacement_disabled := true
-				l_mods_arr := prep_hash[l_as.path]
+				l_mods_arr := prep_hash[l_path]
 				if attached l_mods_arr then
 					-- print prepends
+					-- reverse order so first prepend
+					-- gets printed last
 					from
-						i := l_mods_arr.lower
+						i := l_mods_arr.upper
 					until
-						i > l_mods_arr.upper
+						i < l_mods_arr.lower
 					loop
-						process_child (l_mods_arr[i].new_transformable.target_node)
+						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
 
 						if num_printed>0 and attached separator then
 							output.append_string(separator)
 						end
 
-						num_printed:=i+1
-						i := i+1
+						num_printed:=num_printed+1
+						i := i-1
 					end
 				end
 				replacement_disabled := false
@@ -320,18 +334,18 @@ feature -- Roundtrip
 						if l_changed_items.has (l_list_copy.item) then
 						-- don't do operations on new nodes
 						replacement_disabled := true
-						process_child(l_list_copy.item)
+						process_child(l_list_copy.item, void, 0)
 						replacement_disabled := false
 						else
 							-- don't delete, replace eventually
-							process_child (l_list_copy.item)
+							process_child (l_list_copy.item, void, 0)
 						end
 
 						if num_printed>0 and attached separator then
 							output.append_string(separator)
 						end
 
-						num_printed:=i+1
+						num_printed:=num_printed+1
 					end
 					-- else don't print, i.e. delete
 
@@ -341,21 +355,21 @@ feature -- Roundtrip
 				-- print appends
 				-- don't replace in new items
 				replacement_disabled := true
-				l_mods_arr := app_hash[l_as.path]
+				l_mods_arr := app_hash[l_path]
 				if attached l_mods_arr then
-					-- print prepends
+					-- print appends
 					from
 						i := l_mods_arr.lower
 					until
 						i > l_mods_arr.upper
 					loop
-						process_child (l_mods_arr[i].new_transformable.target_node)
+						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
 
 						if num_printed>0 and attached separator then
 							output.append_string(separator)
 						end
 
-						num_printed:=i+1
+						num_printed:=num_printed+1
 						i := i+1
 					end
 				end

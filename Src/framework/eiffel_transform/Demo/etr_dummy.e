@@ -5,8 +5,10 @@ feature
 	test(a_var: INTEGER) is
 			-- test
 		do
-			io.putint(1) -- goal: make this print only if a_var>0
-			io.putint(2)
+			if a_var > 0 then
+				io.putint(1)
+			end
+			io.putint(4)
 		end
 		
 	bslssda: INTEGER

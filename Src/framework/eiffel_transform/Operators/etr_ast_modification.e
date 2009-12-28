@@ -33,7 +33,7 @@ feature -- Access
 	list_position: INTEGER
 
 
-feature {COMPARABLE} -- Sorting
+feature {COMPARABLE, ARRAY} -- Sorting
 
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compares the branch_id's of the target_path's only!
@@ -43,7 +43,6 @@ feature {COMPARABLE} -- Sorting
 
 feature {ETR_MODIFYING_PRINTER} -- Printing
 
---	list_parent: detachable AST_PATH
 	replacement_text: detachable STRING
 	branch_id: INTEGER
 
@@ -52,12 +51,6 @@ feature {ETR_MODIFYING_PRINTER} -- Printing
 		do
 			branch_id := a_branch_id
 		end
-
---	set_list_parent(a_parent: like list_parent)
---			-- set `list_parent' to `a_parent'
---		do
---			list_parent := a_parent
---		end
 
 	set_replacement_text(a_text: like replacement_text)
 			-- set `replacement_text' to `a_text'
@@ -68,7 +61,7 @@ feature {ETR_MODIFYING_PRINTER} -- Printing
 feature {NONE} -- Creation
 
 	make_list_put_ith(a_list: like ref_ast; a_position: like list_position; a_replacement: like new_transformable)
-			-- Replace item at position `a_positin' in `a_list' by `a_replacement'
+			-- Replace item at position `a_position' in `a_list' by `a_replacement'
 		do
 			is_list_put_ith := true
 			list_position := a_position

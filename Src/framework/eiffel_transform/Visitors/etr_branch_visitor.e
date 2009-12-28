@@ -89,7 +89,8 @@ inherit
 			process_feature_name_alias_as,
 			process_address_as,
 			process_feat_name_id_as,
-			process_external_as
+			process_external_as,
+			process_infix_prefix_as
 		end
 
 feature {NONE} -- Implementation
@@ -102,21 +103,23 @@ feature {NONE} -- Implementation
 feature -- Roundtrip
 
 	process_external_as (l_as: EXTERNAL_AS)
-			-- Process `l_as'.
 		do
-			process_n_way_branch(l_as,[l_as.language_name, l_as.alias_name_literal])
+			process_n_way_branch(l_as,[l_as.language_name.language_name, l_as.alias_name_literal])
 		end
 
 	process_feat_name_id_as (l_as: FEAT_NAME_ID_AS)
-			-- Process `l_as'.
 		do
 			process_n_way_branch(l_as,[l_as.feature_name, l_as.alias_name])
 		end
 
 	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
-			-- Process `l_as'.
 		do
 			process_n_way_branch(l_as,[l_as.body, l_as.operands])
+		end
+
+	process_infix_prefix_as (l_as: INFIX_PREFIX_AS)
+		do
+			process_n_way_branch(l_as,[l_as.alias_name])
 		end
 
 	process_custom_attribute_as (l_as: CUSTOM_ATTRIBUTE_AS)
@@ -151,7 +154,7 @@ feature -- Roundtrip
 
 	process_body_as (l_as: BODY_AS)
 		do
-			process_n_way_branch(l_as,[l_as.arguments, l_as.type, l_as.assigner, l_as.content])
+			process_n_way_branch(l_as,[l_as.arguments, l_as.type, l_as.assigner, l_as.content, l_as.indexing_clause])
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -186,7 +189,7 @@ feature -- Roundtrip
 
 	process_routine_as (l_as: ROUTINE_AS)
 		do
-			process_n_way_branch(l_as,[l_as.precondition, l_as.locals, l_as.routine_body, l_as.postcondition, l_as.rescue_clause])
+			process_n_way_branch(l_as,[l_as.obsolete_message, l_as.precondition, l_as.locals, l_as.routine_body, l_as.postcondition, l_as.rescue_clause])
 		end
 
 	process_constant_as (l_as: CONSTANT_AS)
@@ -246,7 +249,7 @@ feature -- Roundtrip
 
 	process_binary_as (l_as: BINARY_AS)
 		do
-			process_n_way_branch(l_as,[l_as.left, l_as.right])
+			process_n_way_branch(l_as,[l_as.left, l_as.op_name, l_as.right])
 		end
 
 	process_bracket_as (l_as: BRACKET_AS)
