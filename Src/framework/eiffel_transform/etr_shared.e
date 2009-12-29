@@ -113,6 +113,28 @@ feature -- Parser
 			Result.set_syntax_version(syntax_version)
 		end
 
+	reparsed_root: AST_EIFFEL
+
+	reparse_printed_ast(a_root_type: AST_EIFFEL; a_printed_ast: STRING)
+			-- parse an ast of type `a_root_type'
+		do
+			if attached {CLASS_AS}a_root_type then
+				etr_class_parser.parse_from_string (a_printed_ast,void)
+				reparsed_root := etr_class_parser.root_node
+			elseif attached {INSTRUCTION_AS}a_root_type then
+				etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
+
+				if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+					reparsed_root := body.compound.first
+				end
+			elseif attached {EXPR_AS}a_root_type then
+				etr_expr_parser.parse_from_string (a_printed_ast,void)
+				reparsed_root := etr_expr_parser.expression_node
+			else
+				reparsed_root := void
+			end
+		end
+
 feature -- New
 
 	new_invalid_transformable: ETR_TRANSFORMABLE is

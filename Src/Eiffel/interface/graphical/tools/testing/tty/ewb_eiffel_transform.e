@@ -41,69 +41,65 @@ feature -- Properties
 			Result := 'e'
 		end
 
-	test(a_context: ETR_CONTEXT)
-			-- test ast identifiers
+	test
+			-- test context transformations
 		local
-			da: DO_AS
-			target_class: CLASS_I
-			original_ast: CLASS_AS
-			instr1,instr2: INSTRUCTION_AS
+			a1,a2: CLASS_I
+			a1_ast,a2_ast: CLASS_AS
+			a1_trans, a2_trans: ETR_TRANSFORMABLE
+			a1_context, a2_context: ETR_CONTEXT
+			l_target_path: AST_PATH
+			l_target_node: AST_EIFFEL
 			modifier: ETR_AST_MODIFIER
-			root_transformable: ETR_TRANSFORMABLE
-			mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8: ETR_AST_MODIFICATION
+			mod1: ETR_AST_MODIFICATION
+
+			a2_snippet: ETR_TRANSFORMABLE
 		do
+			-- goal:
+			-- do a transformation in class a1
+			-- transform it to the context of class a2
+			-- apply it
+
+			-- 1. do transformations in a1 as normal
 			create modifier.make
 
 			-- retrieve some existing ast
-			target_class := universe.compiled_classes_with_name("ETR_DUMMY").first
-			original_ast := target_class.compiled_class.ast
+			a1 := universe.compiled_classes_with_name("A1").first
+			a1_ast := a1.compiled_class.ast
+			a2 := universe.compiled_classes_with_name("A2").first
+			a2_ast := a2.compiled_class.ast
 
-			-- create transformable
-			-- this creates a copy of an `original_ast' with path indexes
-			create root_transformable.make_from_ast (original_ast, a_context, true)
+			-- create contexts
+			create a1_context.make_from_class (a1.compiled_class.eiffel_class_c)
+			create a2_context.make_from_class (a2.compiled_class.eiffel_class_c)
 
-			-- get some instructions
-			if attached {CLASS_AS}root_transformable.target_node as cls then
-				da ?= cls.features.first.features.first.body.as_routine.routine_body
-				instr1 := da.compound.i_th (1)
-				instr2 := da.compound.i_th (2)
-			end
+			-- create transformables
+			create a1_trans.make_from_ast (a1_ast, a1_context, true)
+			create a2_trans.make_from_ast (a2_ast, a2_context, true)
 
-			-- else part is branch 4 of IF_AS
-			mod1 := basic_operators.list_append (create {AST_PATH}.make_from_parent(instr1, 4), new_instr("io.putint(2)",a_context))
+			-- second instruction of the second feature which is the putstring statement
+			create l_target_path.make_from_string (a1_trans.target_node, "1.8.1.2.2.2.4.4.1.2")
 
-			mod2 := basic_operators.list_append (da.compound.path, new_instr("io.putint(7)",a_context))
-			mod3 := basic_operators.list_append (da.compound.path, new_instr("io.putint(8)",a_context))
-			mod4 := basic_operators.list_append (da.compound.path, new_instr("io.putint(9)",a_context))
-			mod5 := basic_operators.list_prepend (da.compound.path, new_instr("io.putint(-1)",a_context))
-			mod6 := basic_operators.list_prepend (da.compound.path, new_instr("io.putint(-2)",a_context))
-			mod7 := basic_operators.list_prepend (da.compound.path, new_instr("io.putint(-3)",a_context))
+			l_target_node := find_node(l_target_path, a1_trans.target_node)
 
-			-- replace instr 2
-			mod8 := basic_operators.list_put_ith (da.compound.path, 2, new_instr("io.putint(4)",a_context))
+			fixme("Allow creation of ETR_TRANSFORMABLE using path only!")
 
+			-- wrap 2nd instruction with if and apply
+			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a1_context), -- condition
+												create {ETR_TRANSFORMABLE}.make_from_ast (l_target_node, a1_context, true), -- if_part
+												new_instr("io.putint(0)",a1_context) -- else_part
+											)
 
-			-- add them to the "transaction set"
-			modifier.add (mod1);
-			modifier.add (mod2);
- 			modifier.add (mod3)
-			modifier.add (mod4);
-			modifier.add (mod5);
-			modifier.add (mod6)
-			modifier.add (mod7);
-			modifier.add (mod8)
+			fixme("This should be done automatically in the application phase")
+			basic_operators.transform_to_context (basic_operators.transformation_result, a2_context)
+			a2_snippet := basic_operators.transformation_result
 
-			-- apply changes, creates a new copy of the ast with the changes (reset implicit)
-			modifier.apply_with_context (root_transformable.target_node, a_context)
+			mod1 := basic_operators.list_put_ith (parent_path (l_target_path), 2, a2_snippet)
+			modifier.add (mod1)
+			modifier.apply_with_context (a2_trans.target_node, a2_context)
 
-			-- apply some of them again. they should not be affected by previous application!
---			modifier.add (mod1); modifier.add (mod2)
---			modifier.apply_with_context (root_transformable.target_node, a_context)
-
-			-- save changes to class ETR_DUMMY
-			-- using modifier.modified_ast as new class node
-			if attached universe.compiled_classes_with_name("ETR_DUMMY") as t and then not t.is_empty and attached {CLASS_AS}modifier.modified_ast.target_node as new_ast then
-				replace_class_with (original_ast,new_ast)
+			if attached {CLASS_AS}modifier.modified_ast.target_node as new_ast then
+				replace_class_with (a2_ast,new_ast)
 				mark_class_changed (new_ast)
 			end
 		end
@@ -114,17 +110,13 @@ feature -- Properties
 		local
 			context: ETR_CONTEXT
 		do
-			-- make sure we're in the test project
-			check
-				not universe.compiled_classes_with_name("ETR_DUMMY").is_empty
-			end
-
 			-- at the moment this contains the whole universe + more
 			create context
 
 			-- reparse to have the original ast and not use a modified one from storage
-			reparse_class_by_name("ETR_DUMMY")
-			test(context)
+			reparse_class_by_name("A1")
+			reparse_class_by_name("A2")
+			test
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

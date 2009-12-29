@@ -17,11 +17,17 @@ feature {NONE} -- Initialization
 	make
 			-- Run application
 		local
-			dummy: ETR_DUMMY
+			a1: A1
+			a2: A2
 		do
-			create dummy
-			dummy.test (-1)
-			dummy.test (1)
+			create a1
+			create a2
+		
+			a1.test(1)
+			a1.test(-1)
+			a2.test(1)
+			a2.test(-1)
+			
 			io.read_line
 		end
 		

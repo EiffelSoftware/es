@@ -16,6 +16,8 @@ inherit
 		export
 			{NONE} all
 		end
+	COMPILER_EXPORTER
+
 
 feature {NONE} -- Implementation
 
@@ -30,8 +32,87 @@ feature {NONE} -- Implementation
 
 feature -- Transformations
 
-	transformation_result: detachable ETR_TRANSFORMABLE
+	transformation_result: ETR_TRANSFORMABLE
 		-- result of last transformation
+
+	transform_to_context(a_transformable: ETR_TRANSFORMABLE; a_target_context: ETR_CONTEXT)
+			-- transform `a_transformable' into `a_target_context'
+		require
+			non_void: a_transformable /= void and a_target_context /= void
+			valid_transformable: a_transformable.is_valid
+		local
+			source_feature,target_feature: E_FEATURE
+			source_class,target_class: EIFFEL_CLASS_C
+			source_written_in_features: LIST[E_FEATURE]
+			cur_feat: E_FEATURE
+			renamed_features: LINKED_LIST[TUPLE[STRING, EIFFEL_CLASS_C,EIFFEL_CLASS_C]]
+
+			l_transformer: ETR_CONTEXT_TRANSFORMER
+			l_output: ETR_AST_STRING_OUTPUT
+		do
+			-- default result
+			create transformation_result.make_invalid
+
+			source_class := a_transformable.context.written_class
+			target_class := a_target_context.written_class
+
+			if a_target_context.is_feature and a_transformable.context.is_feature then
+				-- feature to feature transformation
+				-- todo
+
+				source_feature := a_transformable.context.written_feature
+				target_feature := a_target_context.written_feature
+			else
+				-- class to class transformation
+
+				fixme("May not consider generic features or inline agents")
+
+				-- loop through features that were written in the source class
+				-- for features with return value:
+				-- check if there is a corresponding feature in the target class
+				from
+					source_written_in_features := source_class.written_in_features
+					source_written_in_features.start
+					create renamed_features.make
+				until
+					source_written_in_features.after
+				loop
+					cur_feat := source_written_in_features.item
+					if cur_feat.has_return_value and attached target_class.feature_of_feature_id (cur_feat.feature_id) as new_feat then
+						-- matching feature id's
+						-- check if type matches
+						if attached {CL_TYPE_A}cur_feat.type as old_type and attached {CL_TYPE_A}new_feat.type as new_type then
+							-- we only care for class ids, attachment-marks etc don't change naming
+							if old_type.class_id /= new_type.class_id then
+								-- check if it conforms
+								if new_type.conform_to (source_class, new_type) then
+									-- store for checking
+									renamed_features.extend ([cur_feat.name, old_type.associated_class.eiffel_class_c, new_type.associated_class.eiffel_class_c])
+								end
+							end
+						end
+					end
+
+					source_written_in_features.forth
+				end
+
+				if not renamed_features.is_empty then
+					-- now visit the ETR_TRANSFORMABLE
+					-- and search for c.fun
+					-- if c.fun have the same feature ids but different name ids then perform the renaming
+					create l_output.make
+					create l_transformer.make(l_output, renamed_features)
+					-- print the ast to output
+					l_transformer.print_ast_to_output (a_transformable.target_node)
+					-- reparse it
+					reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
+
+					if attached reparsed_root then
+						create transformation_result.make_from_ast(reparsed_root, a_target_context, false)
+					end
+				end
+			end
+		end
 
 	if_then_wrap_in_context(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT) is
 			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with `a_context'
@@ -136,7 +217,7 @@ feature -- Modifications (path-reference)
 		end
 
 	list_put_ith(a_list: AST_PATH; a_position: INTEGER; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
-				-- Replace item at position `a_positin' in `a_list' by `a_replacement'
+				-- Replace item at position `a_position' in `a_list' by `a_replacement'
 		require
 			non_void: a_list /= void and a_replacement /= void
 		do
