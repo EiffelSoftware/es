@@ -1092,7 +1092,11 @@ feature -- Roundtrip: Misc
 		end
 
 	process_class_as (l_as: CLASS_AS)
+		local
+			strout: ETR_AST_STRING_OUTPUT
 		do
+			strout ?= output
+
 			if l_as.is_deferred then
 				output.append_string("deferred ")
 			end

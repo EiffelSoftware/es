@@ -4,9 +4,9 @@ class
 feature
 	c: C2
 
-	test(a_var: INTEGER) is
+	test(a_var_a2: INTEGER; arg_c: C2)
 		do
 			create c
-			io.putstring(c.str)
+			io.putstring(c.str+"++%N"+arg_c.str)
 		end
 end

@@ -96,6 +96,8 @@ feature -- Operations
 	append_string(a_string: STRING)
 			-- Appends `a_string' to the output
 		do
+			-- fixme("Eventually add support for adding multiple lines at once, it's however only needed for the modifying printer")
+
 			if last_was_newline then
 				context.add_string (current_indentation.twin)
 			end

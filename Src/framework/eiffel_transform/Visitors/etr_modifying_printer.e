@@ -54,7 +54,6 @@ feature {NONE} -- Implementation
 			end
 
 			if attached l_path then
-				output.enter_block
 				if attached l_as then
 					l_mod := repl_hash.item (l_path)
 				end
@@ -64,7 +63,6 @@ feature {NONE} -- Implementation
 				else
 					Precursor(l_as, a_parent, a_branch)
 				end
-				output.exit_block
 			end
 		end
 
@@ -312,11 +310,11 @@ feature -- Roundtrip
 					until
 						i < l_mods_arr.lower
 					loop
-						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
-
 						if num_printed>0 and attached separator then
 							output.append_string(separator)
 						end
+
+						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
 
 						num_printed:=num_printed+1
 						i := i-1
@@ -333,6 +331,10 @@ feature -- Roundtrip
 					l_list_copy.after
 				loop
 					if not attached del_hash.item(l_list_copy.item.path) then
+						if num_printed>0 and attached separator then
+							output.append_string(separator)
+						end
+
 						if l_changed_items.has (l_list_copy.item) then
 						-- don't do operations on new nodes
 						replacement_disabled := true
@@ -341,10 +343,6 @@ feature -- Roundtrip
 						else
 							-- don't delete, replace eventually
 							process_child (l_list_copy.item, void, 0)
-						end
-
-						if num_printed>0 and attached separator then
-							output.append_string(separator)
 						end
 
 						num_printed:=num_printed+1
@@ -365,11 +363,11 @@ feature -- Roundtrip
 					until
 						i > l_mods_arr.upper
 					loop
-						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
-
 						if num_printed>0 and attached separator then
 							output.append_string(separator)
 						end
+
+						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
 
 						num_printed:=num_printed+1
 						i := i+1

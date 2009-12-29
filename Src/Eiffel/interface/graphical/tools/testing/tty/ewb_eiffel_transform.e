@@ -52,6 +52,7 @@ feature -- Properties
 			l_target_node: AST_EIFFEL
 			modifier: ETR_AST_MODIFIER
 			mod1: ETR_AST_MODIFICATION
+			a1_feat, a2_feat: E_FEATURE
 
 			a2_snippet: ETR_TRANSFORMABLE
 		do
@@ -68,10 +69,14 @@ feature -- Properties
 			a1_ast := a1.compiled_class.ast
 			a2 := universe.compiled_classes_with_name("A2").first
 			a2_ast := a2.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("test").e_feature
+			a2_feat := a2.compiled_class.feature_named ("test").e_feature
 
 			-- create contexts
-			create a1_context.make_from_class (a1.compiled_class.eiffel_class_c)
-			create a2_context.make_from_class (a2.compiled_class.eiffel_class_c)
+			create a1_context.make_from_feature (a1_feat)
+			create a2_context.make_from_feature (a2_feat)
+--			create a1_context.make_from_class (a1.compiled_class.eiffel_class_c)
+--			create a2_context.make_from_class (a2.compiled_class.eiffel_class_c)
 
 			-- create transformables
 			create a1_trans.make_from_ast (a1_ast, a1_context, true)
@@ -85,7 +90,7 @@ feature -- Properties
 			fixme("Allow creation of ETR_TRANSFORMABLE using path only!")
 
 			-- wrap 2nd instruction with if and apply
-			basic_operators.if_then_wrap 	(	new_expr("a_var > 0",a1_context), -- condition
+			basic_operators.if_then_wrap 	(	new_expr("a_var_a1 > 0",a1_context), -- condition
 												create {ETR_TRANSFORMABLE}.make_from_ast (l_target_node, a1_context, true), -- if_part
 												new_instr("io.putint(0)",a1_context) -- else_part
 											)
