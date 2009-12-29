@@ -47,9 +47,13 @@ feature {NONE} -- Implementation
 			l_mod: ETR_AST_MODIFICATION
 			l_path: AST_PATH
 		do
-			if attached a_parent then
+			if attached l_as then
+				l_path := l_as.path
+			elseif attached a_parent then
 				create l_path.make_from_parent (a_parent, a_branch)
+			end
 
+			if attached l_path then
 				output.enter_block
 				if attached l_as then
 					l_mod := repl_hash.item (l_path)
@@ -61,8 +65,6 @@ feature {NONE} -- Implementation
 					Precursor(l_as, a_parent, a_branch)
 				end
 				output.exit_block
-			elseif attached l_as then
-				Precursor(l_as, a_parent, a_branch)
 			end
 		end
 
