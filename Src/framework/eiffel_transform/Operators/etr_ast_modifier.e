@@ -45,7 +45,7 @@ feature -- Operations
 			modifications.wipe_out
 			output.reset
 		end
-		
+
 	apply_with_context(a_root: AST_EIFFEL; a_context: ETR_CONTEXT)
 			-- apply all in `modifications' and use `a_context' and `a_root'
 		require
@@ -64,24 +64,6 @@ feature -- Operations
 			else
 				create modified_ast.make_invalid
 			end
-
---			if attached {CLASS_AS}a_root as cls then
---				etr_class_parser.parse_from_string (output.string_representation,void)
-
---				create modified_ast.make_from_ast (etr_class_parser.root_node, a_context, false)
---			elseif attached {INSTRUCTION_AS}a_root as instr then
---				etr_instr_parser.parse_from_string (output.string_representation,void)
-
---				if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
---					create modified_ast.make_from_ast (body.compound.first, a_context, false)
---				end
---			elseif attached {EXPR_AS}a_root as expr then
---				etr_expr_parser.parse_from_string (output.string_representation,void)
-
---				create modified_ast.make_from_ast (etr_expr_parser.expression_node, a_context, false)
---			else
---				create modified_ast.make_invalid
---			end
 
 			-- reset the modifications list and output
 			reset

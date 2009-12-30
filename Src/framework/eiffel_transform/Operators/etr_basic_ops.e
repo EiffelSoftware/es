@@ -42,19 +42,17 @@ feature -- Transformations
 			valid_transformable: a_transformable.is_valid
 		local
 			source_feature,target_feature: E_FEATURE
-			source_class,target_class: EIFFEL_CLASS_C
+			source_class,target_class: CLASS_C
 			source_written_in_features: LIST[E_FEATURE]
 			cur_feat: E_FEATURE
-			changed_feature_types: LINKED_LIST[TUPLE[STRING, EIFFEL_CLASS_C,EIFFEL_CLASS_C]]
-					-- feature name, old type, new_type
-			changed_arguments: LINKED_LIST[TUPLE[STRING,detachable STRING,detachable EIFFEL_CLASS_C,detachable EIFFEL_CLASS_C]]
-					-- old arg name, new arg name, old type, new type
+			changed_feature_types: LINKED_LIST[ETR_CT_CHANGED_FEATURE]
+			changed_arguments: LINKED_LIST[ETR_CT_CHANGED_ARGUMENT]
 			source_arg, target_arg: TYPE_A
 
 			l_transformer: ETR_CONTEXT_TRANSFORMER
 			l_output: ETR_AST_STRING_OUTPUT
 			l_old_name, l_new_name: STRING
-			l_old_type, l_new_type: EIFFEL_CLASS_C
+			l_old_type, l_new_type: CLASS_C
 			l_index: INTEGER
 			l_arg_changed_type,l_arg_changed_name: BOOLEAN
 		do
@@ -85,7 +83,7 @@ feature -- Transformations
 						-- we only care for class ids, attachment-marks etc don't change naming
 						if old_type.class_id /= new_type.class_id then
 							-- store for checking
-							changed_feature_types.extend ([cur_feat.name, old_type.associated_class.eiffel_class_c, new_type.associated_class.eiffel_class_c])
+							changed_feature_types.extend (create {ETR_CT_CHANGED_FEATURE}.make(cur_feat.name, old_type.associated_class, new_type.associated_class))
 						end
 					end
 				end
@@ -125,8 +123,8 @@ feature -- Transformations
 
 						-- check for changed type
 						if source_arg.associated_class.class_id /= target_arg.associated_class.class_id then
-							l_old_type := source_arg.associated_class.eiffel_class_c
-							l_new_type := target_arg.associated_class.eiffel_class_c
+							l_old_type := source_arg.associated_class
+							l_new_type := target_arg.associated_class
 
 							l_arg_changed_type := true
 						end
@@ -140,11 +138,11 @@ feature -- Transformations
 						end
 
 						if l_arg_changed_type and l_arg_changed_name then
-							changed_arguments.extend ([l_old_name, l_new_name, l_old_type, l_new_type])
+							changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name_type(l_old_name, l_new_name, l_old_type, l_new_type))
 						elseif l_arg_changed_type then
-							changed_arguments.extend ([l_old_name, void, l_old_type, l_new_type])
+							changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_type(l_old_name, l_old_type, l_new_type))
 						elseif l_arg_changed_name then
-							changed_arguments.extend ([l_old_name, l_new_name, void, void])
+							changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name(l_old_name, l_new_name))
 						end
 					end
 
@@ -166,7 +164,7 @@ feature -- Transformations
 			end
 		end
 
-	if_then_wrap_in_context(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT) is
+	generate_conditional(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT) is
 			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with `a_context'
 		require
 			test_not_void: a_test /= void
@@ -208,14 +206,6 @@ feature -- Transformations
 			else
 				transformation_result := new_invalid_transformable
 			end
-		end
-
-	if_then_wrap(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE) is
-			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with context from `a_test'
-		require
-			test_not_void: a_test /= void
-		do
-			if_then_wrap_in_context(a_test, if_part, else_part, a_test.context)
 		end
 
 feature -- Modifications (path-reference)

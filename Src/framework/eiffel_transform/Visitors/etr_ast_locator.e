@@ -17,7 +17,7 @@ feature -- Access
 
 feature -- Creation
 
-	find_with_root(a_path: AST_PATH; a_root: AST_EIFFEL)
+	find_from_root(a_path: AST_PATH; a_root: AST_EIFFEL)
 			-- starting from `a_root' find a node by following `a_path'
 		require
 			non_void: a_path /= void and a_root /= void
@@ -38,7 +38,7 @@ feature -- Creation
 			end
 		end
 
-	find_from_root(a_path: AST_PATH)
+	find(a_path: AST_PATH)
 			-- starting from `a_path's root find a node by following `a_path'
 		require
 			non_void: a_path /= void

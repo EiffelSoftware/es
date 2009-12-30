@@ -1,61 +1,30 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform. PLACEHOLDER."
+	description: "Represents a changed feature to be processed by ETR_CONTEXT_TRANSFORMER"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_CONTEXT
-inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
-create
-	make_from_class,
-	make_from_feature,
-	make_empty
+	ETR_CT_CHANGED_FEATURE
+create {ETR_BASIC_OPS}
+	make
 
-feature --Access
-	written_class: detachable CLASS_C
-	written_feature: detachable E_FEATURE
+feature  -- Access
 
-	is_feature: BOOLEAN
-			-- does `Current' represent the context of a feature
-
-	is_empty: BOOLEAN
-			-- is `Current' an empty context
+	old_type,new_type:CLASS_C
+	feature_name:STRING
 
 feature {NONE} -- Creation
 
-	make_from_class(a_class: like written_class)
-			-- make with `a_class'
-		require
-			non_void: a_class /= void
+	make(a_name: like feature_name; an_old_type: like old_type; a_new_type: like new_type)
+			-- make with `a_name', `an_old_type' and `a_new_type'
 		do
-			written_class := a_class
+			feature_name := a_name
+
+			old_type := an_old_type
+			new_type := a_new_type
 		end
 
-	make_from_feature(a_feature: like written_feature)
-			-- make with `a_feature'
-		require
-			non_void: a_feature /= void
-			good_written_class: a_feature.written_in /= 0
-		do
-			written_feature := a_feature
-			written_class := a_feature.written_class
-
-			is_feature := true
-		end
-
-	make_empty
-			-- make with `is_empty' set to true
-		do
-			is_empty := true
-		end
-invariant
-	valid_class: not is_empty implies attached written_class
-	valid_feature: is_feature implies attached written_feature
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

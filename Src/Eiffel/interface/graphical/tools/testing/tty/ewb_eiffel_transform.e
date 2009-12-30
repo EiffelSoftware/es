@@ -90,12 +90,13 @@ feature -- Properties
 			fixme("Allow creation of ETR_TRANSFORMABLE using path only!")
 
 			-- wrap 2nd instruction with if and apply
-			basic_operators.if_then_wrap 	(	new_expr("a_var_a1 > 0",a1_context), -- condition
-												create {ETR_TRANSFORMABLE}.make_from_ast (l_target_node, a1_context, true), -- if_part
-												new_instr("io.putint(0)",a1_context) -- else_part
-											)
+			basic_operators.generate_conditional 	(	new_expr("a_var_a1 > 0",a1_context), -- condition
+														create {ETR_TRANSFORMABLE}.make_from_ast (l_target_node, a1_context, true), -- if_part
+														new_instr("io.putint(0)",a1_context), -- else_part
+														a1_context -- final context
+													)
 
-			fixme("This should be done automatically in the application phase")
+			fixme("Should this be done automatically in apply_with_context?")
 			basic_operators.transform_to_context (basic_operators.transformation_result, a2_context)
 			a2_snippet := basic_operators.transformation_result
 
@@ -112,12 +113,7 @@ feature -- Properties
 	execute
 			-- Action performed when invoked from the
 			-- command line.
-		local
-			context: ETR_CONTEXT
 		do
-			-- at the moment this contains the whole universe + more
-			create context
-
 			-- reparse to have the original ast and not use a modified one from storage
 			reparse_class_by_name("A1")
 			reparse_class_by_name("A2")

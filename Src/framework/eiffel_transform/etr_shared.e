@@ -72,7 +72,7 @@ feature -- Access
 
 			-- find the parent
 			create l_parent_path.make_from_string (a_root, l_parent_string)
-			ast_locator.find_from_root (l_parent_path)
+			ast_locator.find (l_parent_path)
 			Result := ast_locator.found_node
 		end
 
@@ -83,7 +83,7 @@ feature -- Access
 			path_non_void: a_root.path /= void
 			path_valid: a_path.is_valid and a_root.path.is_valid
 		do
-			ast_locator.find_with_root (a_path, a_root)
+			ast_locator.find_from_root (a_path, a_root)
 
 			Result := ast_locator.found_node
 		end
@@ -94,7 +94,7 @@ feature -- Parser
 			-- internal parser used to handle classes
 		once
 			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
-			Result.set_syntax_version ({CONF_OPTION}.syntax_index_transitional)
+			Result.set_syntax_version (syntax_version)
 		end
 
 	etr_expr_parser: EIFFEL_PARSER

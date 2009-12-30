@@ -28,17 +28,16 @@ feature -- Access
 	is_list_put_ith: BOOLEAN
 
 	new_transformable: detachable ETR_TRANSFORMABLE
-	ref_ast: AST_PATH
+	location: AST_PATH
 
 	list_position: INTEGER
-
 
 feature {COMPARABLE, ARRAY} -- Sorting
 
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compares the branch_id's of the target_path's only!
 		do
-			Result := ref_ast.branch_id < other.ref_ast.branch_id
+			Result := location.branch_id < other.location.branch_id
 		end
 
 feature {ETR_MODIFYING_PRINTER} -- Printing
@@ -60,69 +59,69 @@ feature {ETR_MODIFYING_PRINTER} -- Printing
 
 feature {NONE} -- Creation
 
-	make_list_put_ith(a_list: like ref_ast; a_position: like list_position; a_replacement: like new_transformable)
+	make_list_put_ith(a_list: like location; a_position: like list_position; a_replacement: like new_transformable)
 			-- Replace item at position `a_position' in `a_list' by `a_replacement'
 		do
 			is_list_put_ith := true
 			list_position := a_position
 
-			ref_ast := a_list
+			location := a_list
 			new_transformable := a_replacement
 		end
 
-	make_list_append(a_list: like ref_ast; a_replacement: like new_transformable)
+	make_list_append(a_list: like location; a_replacement: like new_transformable)
 			-- Append `a_replacement' to `a_list'
 		do
 			is_list_append := true
 
-			ref_ast := a_list
+			location := a_list
 			new_transformable := a_replacement
 		end
 
-	make_list_prepend(a_list: like ref_ast; a_replacement: like new_transformable)
+	make_list_prepend(a_list: like location; a_replacement: like new_transformable)
 			-- Prepend `a_replacement' to `a_list'
 		do
 			is_list_prepend := true
 
-			ref_ast := a_list
+			location := a_list
 			new_transformable := a_replacement
 		end
 
-	make_replace(a_reference: like ref_ast; a_replacement: like new_transformable)
+	make_replace(a_reference: like location; a_replacement: like new_transformable)
 			-- Replace `a_reference' by `a_replacement'
 		do
 			is_replace := true
 
-			ref_ast := a_reference
+			location := a_reference
 			new_transformable := a_replacement
 		end
 
-	make_insert_before(a_reference: like ref_ast; a_new_trans: like new_transformable)
+	make_insert_before(a_reference: like location; a_new_trans: like new_transformable)
 			-- Insert `a_new_trans' before `a_reference'
 		do
 			is_insert_before := true
 			branch_id := a_reference.branch_id
 
-			ref_ast := a_reference
+			location := a_reference
 			new_transformable := a_new_trans
 		end
 
-	make_insert_after(a_reference: like ref_ast; a_new_trans: like new_transformable)
+	make_insert_after(a_reference: like location; a_new_trans: like new_transformable)
 			-- Insert `a_new_trans' after `a_reference'
 		do
 			is_insert_after := true
 			branch_id := a_reference.branch_id
 
-			ref_ast := a_reference
+			location := a_reference
 			new_transformable := a_new_trans
 		end
 
-	make_delete(a_reference: like ref_ast;)
+	make_delete(a_reference: like location;)
 			-- Delete `a_transformable'
 		do
 			is_delete := true
 
-			ref_ast := a_reference
+			location := a_reference
 		end
 
 note

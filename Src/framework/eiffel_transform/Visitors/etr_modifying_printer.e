@@ -137,14 +137,14 @@ feature {NONE} -- Creation
 			until
 				modifications.after
 			loop
-				modifications.item.set_branch_id (modifications.item.ref_ast.branch_id)
+				modifications.item.set_branch_id (modifications.item.location.branch_id)
 				if modifications.item.is_delete then
 					del.extend (modifications.item)
 				elseif modifications.item.is_replace then
 					repl.extend (modifications.item)
 				elseif modifications.item.is_list_put_ith then
 					-- convert to replace!
-					if attached {EIFFEL_LIST[AST_EIFFEL]}find_node (modifications.item.ref_ast, modifications.item.ref_ast.root) as list and then list.count>=modifications.item.list_position then
+					if attached {EIFFEL_LIST[AST_EIFFEL]}find_node (modifications.item.location, modifications.item.location.root) as list and then list.count>=modifications.item.list_position then
 						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, modifications.item.new_transformable))
 					else
 						check false end
@@ -169,7 +169,7 @@ feature {NONE} -- Creation
 				app.after
 			loop
 				app_hash.extend(app.item)
-				app_prep_hash.extend (app.item, app.item.ref_ast)
+				app_prep_hash.extend (app.item, app.item.location)
 				app.forth
 			end
 			from
@@ -179,7 +179,7 @@ feature {NONE} -- Creation
 				prep.after
 			loop
 				prep_hash.extend(prep.item)
-				app_prep_hash.extend (prep.item, prep.item.ref_ast)
+				app_prep_hash.extend (prep.item, prep.item.location)
 				prep.forth
 			end
 
@@ -196,7 +196,7 @@ feature {NONE} -- Creation
 					check false end
 				end
 
-				repl_hash.extend (repl.item, repl.item.ref_ast)
+				repl_hash.extend (repl.item, repl.item.location)
 				repl.forth
 			end
 
@@ -207,7 +207,7 @@ feature {NONE} -- Creation
 			until
 				del.after
 			loop
-				del_hash.extend (del.item, del.item.ref_ast)
+				del_hash.extend (del.item, del.item.location)
 				del.forth
 			end
 

@@ -17,12 +17,12 @@ create
 
 feature {NONE} -- Implementation
 
-	changed_feature_hash: HASH_TABLE[TUPLE[EIFFEL_CLASS_C,EIFFEL_CLASS_C],STRING]
-	changed_args_hash: HASH_TABLE[TUPLE[STRING,detachable STRING,detachable EIFFEL_CLASS_C,detachable EIFFEL_CLASS_C],STRING]
+	changed_feature_hash: HASH_TABLE[ETR_CT_CHANGED_FEATURE,STRING]
+	changed_args_hash: HASH_TABLE[ETR_CT_CHANGED_ARGUMENT,STRING]
 
 feature {NONE} -- Creation
 
-	make(an_output: like output; a_changed_feature_list: LIST[TUPLE[STRING, EIFFEL_CLASS_C,EIFFEL_CLASS_C]]; a_changed_argument_list: LIST[TUPLE[STRING,detachable STRING,detachable EIFFEL_CLASS_C,detachable EIFFEL_CLASS_C]])
+	make(an_output: like output; a_changed_feature_list: LIST[ETR_CT_CHANGED_FEATURE]; a_changed_argument_list: LIST[ETR_CT_CHANGED_ARGUMENT])
 			-- make with `an_output', `a_changed_feature_list', `a_source' and `a_target'
 		do
 			if not (a_changed_feature_list.is_empty and a_changed_argument_list.is_empty) then
@@ -34,9 +34,7 @@ feature {NONE} -- Creation
 				until
 					a_changed_feature_list.after
 				loop
-					if attached {STRING}a_changed_feature_list.item.item(1) as name and attached {EIFFEL_CLASS_C}a_changed_feature_list.item.item(2) as old_type and attached {EIFFEL_CLASS_C}a_changed_feature_list.item.item(3) as new_type then
-						changed_feature_hash.extend([old_type,new_type],name)
-					end
+					changed_feature_hash.extend(a_changed_feature_list.item,a_changed_feature_list.item.feature_name)
 
 					a_changed_feature_list.forth
 				end
@@ -47,9 +45,7 @@ feature {NONE} -- Creation
 				until
 					a_changed_argument_list.after
 				loop
-					if attached {STRING}a_changed_argument_list.item.item (1) as org_name then
-						changed_args_hash.extend(a_changed_argument_list.item, org_name)
-					end
+					changed_args_hash.extend(a_changed_argument_list.item, a_changed_argument_list.item.feature_name)
 
 					a_changed_argument_list.forth
 				end
@@ -59,13 +55,13 @@ feature {NONE} -- Creation
 feature -- Roundtrip
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
-			changed_args: TUPLE[STRING,detachable STRING,detachable EIFFEL_CLASS_C,detachable EIFFEL_CLASS_C]
+			changed_args: ETR_CT_CHANGED_ARGUMENT
 		do
 			changed_args := changed_args_hash[l_as.access_name]
 
 			-- check for changed argument name
-			if attached changed_args and then attached {STRING}changed_args.item (2) as new_name then
-				output.append_string (new_name)
+			if attached changed_args and then changed_args.is_changed_name then
+				output.append_string (changed_args.new_name)
 			else
 				output.append_string (l_as.access_name)
 			end
@@ -80,8 +76,8 @@ feature -- Roundtrip
 	process_nested_as (l_as: NESTED_AS)
 		local
 			old_feature,new_feature: FEATURE_I
-			changed_types: TUPLE[EIFFEL_CLASS_C,EIFFEL_CLASS_C]
-			changed_args: TUPLE[STRING,detachable STRING,detachable EIFFEL_CLASS_C,detachable EIFFEL_CLASS_C]
+			changed_types: ETR_CT_CHANGED_FEATURE
+			changed_args: ETR_CT_CHANGED_ARGUMENT
 		do
 			if attached {ACCESS_ID_AS}l_as.target as target and attached {ACCESS_FEAT_AS}l_as.message as msg then
 				-- check for changed feature types that need renaming
@@ -93,29 +89,27 @@ feature -- Roundtrip
 				changed_types := changed_feature_hash[target.access_name]
 				changed_args := changed_args_hash[target.access_name]
 
-				if attached changed_types and then attached {EIFFEL_CLASS_C}changed_types.item (1) as old_type and then attached {EIFFEL_CLASS_C}changed_types.item (2) as new_type then
+				if attached changed_types then
 					process_child (l_as.target, l_as, 1)
 					output.append_string (".")
 
 					-- now look up feature id's of the message and print the new name
 					fixme("Error handling needed")
-					old_feature := old_type.feature_named (msg.access_name)
-					new_feature := new_type.feature_of_feature_id (old_feature.feature_id)
+					old_feature := changed_types.old_type.feature_named (msg.access_name)
+					new_feature := changed_types.new_type.feature_of_feature_id (old_feature.feature_id)
 
 					output.append_string (new_feature.feature_name)
 				elseif attached changed_args then
-					if attached {STRING}changed_args.item (2) as new_name then
-						-- name changed, print the new one
-						output.append_string (new_name)
+					if changed_args.is_changed_name then
+						output.append_string (changed_args.new_name)
 					else
 						process_child (l_as.target, l_as, 1)
 					end
 					output.append_string (".")
 
-					if attached {EIFFEL_CLASS_C}changed_args.item (3) as old_type and then attached {EIFFEL_CLASS_C}changed_args.item (4) as new_type then
-						-- type changed, do renaming
-						old_feature := old_type.feature_named (msg.access_name)
-						new_feature := new_type.feature_of_feature_id (old_feature.feature_id)
+					if changed_args.is_changed_type then
+						old_feature := changed_args.old_type.feature_named (msg.access_name)
+						new_feature := changed_args.new_type.feature_of_feature_id (old_feature.feature_id)
 
 						output.append_string (new_feature.feature_name)
 					else

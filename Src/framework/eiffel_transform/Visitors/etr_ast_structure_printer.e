@@ -1059,9 +1059,7 @@ feature -- Roundtrip: Misc
 			end
 
 			if processing_needed (l_as.content, l_as, 4) then
-				output.enter_block
 				process_child_block(l_as.content, l_as, 4)
-				output.exit_block
 			end
 
 			output.append_string("%N")

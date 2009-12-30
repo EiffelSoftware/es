@@ -79,9 +79,9 @@ feature -- Operations
 			l_path_index: AST_PATH
 		do
 			if a_modification.is_insert_after or a_modification.is_insert_before then
-				l_path_index := parent_path(a_modification.ref_ast)
+				l_path_index := parent_path(a_modification.location)
 			else -- append/prepend
-				l_path_index := a_modification.ref_ast
+				l_path_index := a_modification.location
 			end
 
 			-- check if parent group exists
