@@ -13,6 +13,84 @@ inherit
 		end
 	ETR_ERROR_HANDLER
 
+feature -- Typing
+
+	explicit_type_from_type_as (a_type: TYPE_AS; a_context: ETR_CONTEXT): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			context_non_void: a_context /= void
+			context_non_empty: not a_context.is_empty
+		local
+			l_type_gen: AST_TYPE_A_GENERATOR
+			l_generated_type, l_resolved_type: TYPE_A
+			l_type_a_checker: TYPE_A_CHECKER
+		do
+			create l_type_gen
+			create l_type_a_checker
+
+			l_generated_type := l_type_gen.evaluate_type (a_type, a_context.written_class)
+			l_type_a_checker.init_for_checking (a_context.written_feature, a_context.written_class, void, void)
+			l_resolved_type := l_type_a_checker.solved(l_generated_type, void)
+
+			Result := l_resolved_type.actual_type
+
+			if not Result.is_explicit then
+				-- recurse
+				Result := explicit_type (Result, a_context)
+			end
+		ensure
+			is_explicit: Result.is_explicit and Result.associated_class /= void
+		end
+
+	explicit_type (a_type: TYPE_A; a_context: ETR_CONTEXT): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			context_non_void: a_context /= void
+			context_non_empty: not a_context.is_empty
+		local
+			l_type_a_checker: TYPE_A_CHECKER
+			l_resolved_type: TYPE_A
+		do
+			if a_type.is_formal then
+				if attached {FORMAL_A} a_type as l_formal then
+					Result :=  l_formal.constraints (a_context.written_class)
+
+					if attached {TYPE_SET_A}Result as typeset then
+						Result := typeset.first
+
+						if typeset.count>1 then
+							check
+								not_supported: false
+							end
+						end
+					end
+				end
+			elseif a_type.has_like_current then
+				Result := a_context.written_class.actual_type
+			elseif a_type.has_like then
+				create l_type_a_checker
+				l_type_a_checker.init_for_checking (a_context.written_feature, a_context.written_class, void, void)
+				l_resolved_type := l_type_a_checker.solved(a_type, void)
+				Result := l_resolved_type.actual_type
+			else
+				Result := a_type
+			end
+
+			if Result.has_generics then
+				Result := Result.associated_class.constraint_actual_type
+			end
+
+			if not Result.is_explicit then
+				-- recurse
+				Result := explicit_type (Result, a_context)
+			end
+		ensure
+			is_explicit: Result.is_explicit
+			has_associated_class: Result.associated_class /= void
+		end
+
 feature -- Constants
 
 	path_initializer: ETR_AST_PATH_INITIALIZER
@@ -67,19 +145,8 @@ feature -- Access
 	duplicated_ast: detachable AST_EIFFEL
 			-- Result of `duplicate_ast'
 
-	find_node(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
-			-- finds a node from `a_path' and root `a_root'
-		require
-			non_void: a_path /= void and a_root /= void
-			path_non_void: a_root.path /= void
-			path_valid: a_path.is_valid and a_root.path.is_valid
-		do
-			ast_locator.find_from_root (a_path, a_root)
-
-			if ast_locator.found then
-				Result := ast_locator.found_node
-			end
-		end
+	reparsed_root: detachable AST_EIFFEL
+			-- Result of `reparse_printed_ast'
 
 feature -- Parser
 
@@ -109,13 +176,13 @@ feature -- Parser
 			Result.set_syntax_version(syntax_version)
 		end
 
-	reparsed_root: AST_EIFFEL
-
 	reparse_printed_ast(a_root_type: AST_EIFFEL; a_printed_ast: STRING)
 			-- parse an ast of type `a_root_type'
 		require
 			non_void: a_root_type /= void and a_printed_ast /= void
 		do
+			to_implement("Instruction list!")
+
 			reset_errors
 			reparsed_root := void
 			if attached {CLASS_AS}a_root_type then
@@ -154,8 +221,14 @@ feature -- New
 		require
 			instr_attached: an_instr /= void
 			context_attached: a_context /= void
+		local
+			context_class: CLASS_C
 		do
 			reset_errors
+
+			if not a_context.is_empty then
+				context_class := a_context.written_class
+			end
 
 			fixme("Command/Query-separation")
 			etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
@@ -175,7 +248,15 @@ feature -- New
 		require
 			expr_attached: an_expr /= void
 			context_attached: a_context /= void
+		local
+			context_class: CLASS_C
 		do
+			reset_errors
+
+			if not a_context.is_empty then
+				context_class := a_context.written_class
+			end
+
 			fixme("Command/Query-separation")
 			etr_expr_parser.parse_from_string("check "+an_expr,void)
 
@@ -259,6 +340,20 @@ feature -- Operations
 			Result.extend (instr)
 		ensure
 			one: Result.count = 1
+		end
+
+	find_node(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
+			-- finds a node from `a_path' and root `a_root'
+		require
+			non_void: a_path /= void and a_root /= void
+			path_non_void: a_root.path /= void
+			path_valid: a_path.is_valid and a_root.path.is_valid
+		do
+			ast_locator.find_from_root (a_path, a_root)
+
+			if ast_locator.found then
+				Result := ast_locator.found_node
+			end
 		end
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -17,8 +17,8 @@ inherit
 			{NONE} all
 		end
 	COMPILER_EXPORTER
+	SHARED_NAMES_HEAP
 	ETR_ERROR_HANDLER
-
 
 feature {NONE} -- Implementation
 
@@ -47,114 +47,200 @@ feature -- Transformations
 			source_written_in_features: LIST[E_FEATURE]
 			cur_feat: E_FEATURE
 			changed_feature_types: LINKED_LIST[ETR_CT_CHANGED_FEATURE]
-			changed_arguments: LINKED_LIST[ETR_CT_CHANGED_ARGUMENT]
-			source_arg, target_arg: TYPE_A
-
+			changed_args_locals: LINKED_LIST[ETR_CT_CHANGED_ARG_LOCAL]
+			constraint_renamings: LINKED_LIST[ETR_CT_RENAMED_CONSTRAINT_FEATURES]
+			source_local, target_local: TYPE_A
 			l_transformer: ETR_CONTEXT_TRANSFORMER
 			l_output: ETR_AST_STRING_OUTPUT
-			l_old_name, l_new_name: STRING
-			l_old_type, l_new_type: CLASS_C
-			l_index: INTEGER
+			l_original_name, l_old_name, l_new_name: STRING
 			l_arg_changed_type,l_arg_changed_name: BOOLEAN
+			l_local_changed_type, l_local_changed_name: BOOLEAN
+			l_index: INTEGER
+			l_arg_type_count: INTEGER
+			l_old_associated_class, l_new_associated_class: CLASS_C
+			l_old_explicit_type, l_new_explicit_type: TYPE_A
+
+			source_renaming, target_renaming: RENAMING_A
 		do
 			reset_errors
 
 			if not a_transformable.context.is_empty and not a_target_context.is_empty then
+				create changed_args_locals.make
+				create changed_feature_types.make
+				create constraint_renamings.make
+
 				source_class := a_transformable.context.written_class
 				target_class := a_target_context.written_class
 
-				-- class to class transformation
-				fixme("May not consider generic features or inline agents")
+				source_feature := a_transformable.context.written_feature.e_feature
+				target_feature := a_target_context.written_feature.e_feature
 
+				-- class to class transformation
 				-- loop through features that were written in the source class
 				-- for features with return value:
 				-- check if there is a corresponding feature in the target class
 				from
 					source_written_in_features := source_class.written_in_features
 					source_written_in_features.start
-					create changed_feature_types.make
 				until
 					source_written_in_features.after
 				loop
 					cur_feat := source_written_in_features.item
 					if cur_feat.has_return_value and attached target_class.feature_of_feature_id (cur_feat.feature_id) as new_feat then
-						-- matching feature id's
+						source_renaming := void
+						target_renaming := void
+
+						-- get explicit types
+						l_old_explicit_type := explicit_type (cur_feat.type, a_transformable.context)
+						l_new_explicit_type := explicit_type (new_feat.type, a_target_context)
+
+						-- check for renaming
+						if attached {RENAMED_TYPE_A[TYPE_A]}l_old_explicit_type as ren then
+							source_renaming := ren.renaming
+						end
+						if attached {RENAMED_TYPE_A[TYPE_A]}l_new_explicit_type as ren then
+							target_renaming := ren.renaming
+						end
+
 						-- check if type matches
-						if attached {CL_TYPE_A}cur_feat.type as old_type and attached {CL_TYPE_A}new_feat.type as new_type then
-							-- we only care for class ids, attachment-marks etc don't change naming
-							if old_type.class_id /= new_type.class_id then
-								-- store for checking
-								changed_feature_types.extend (create {ETR_CT_CHANGED_FEATURE}.make(cur_feat.name, old_type.associated_class, new_type.associated_class))
-							end
+						if l_old_explicit_type.associated_class.class_id /= l_new_explicit_type.associated_class.class_id then
+							changed_feature_types.extend (create {ETR_CT_CHANGED_FEATURE}.make(cur_feat.name, l_old_explicit_type.associated_class, l_new_explicit_type.associated_class))
+						end
+
+						if source_renaming /= void or target_renaming /= void then
+							constraint_renamings.extend (create {ETR_CT_RENAMED_CONSTRAINT_FEATURES}.make(cur_feat.name, source_renaming, target_renaming))
 						end
 					end
 
 					source_written_in_features.forth
 				end
 
-				if a_target_context.is_feature and a_transformable.context.is_feature then
-					-- feature to feature transformation
-
-					source_feature := a_transformable.context.written_feature
-					target_feature := a_target_context.written_feature
-
-					-- check for renamed arguments and changed types
+				-- check for renamed arguments and changed types
+				-- their are matched strictly by position!
+				-- which may give completely wrong results
+				if source_feature.has_arguments and target_feature.has_arguments then
 					from
 						source_feature.arguments.start
-						create changed_arguments.make
+						target_feature.arguments.start
 					until
-						source_feature.arguments.after
+						source_feature.arguments.after or target_feature.arguments.after
 					loop
-						-- match arguments by position
-						source_arg := source_feature.arguments.item
+						l_arg_changed_name := false
+						l_arg_changed_type := false
+						source_renaming := void
+						target_renaming := void
 
-						target_arg := void
+						-- get explicit types
+						l_old_explicit_type := explicit_type (source_feature.arguments.item, a_transformable.context)
+						l_new_explicit_type := explicit_type (target_feature.arguments.item, a_target_context)
 
-						l_index := source_feature.arguments.index
-
-						if target_feature.argument_count >= l_index then
-							target_arg := target_feature.arguments.i_th (l_index)
+						-- check for renaming
+						if attached {RENAMED_TYPE_A[TYPE_A]}l_old_explicit_type as ren then
+							source_renaming := ren.renaming
+						end
+						if attached {RENAMED_TYPE_A[TYPE_A]}l_new_explicit_type as ren then
+							target_renaming := ren.renaming
 						end
 
-						fixme("How do we decide if a conversion even makes sense? Just let compilation fail?")
+						-- check for changed type
+						if l_old_explicit_type.associated_class.class_id /= l_new_explicit_type.associated_class.class_id then
+							l_arg_changed_type := true
+						end
 
-						if attached target_arg then
-							l_arg_changed_name := false
-							l_arg_changed_type := false
+						-- check for changed name
+						l_index := source_feature.arguments.index
+						l_old_name := source_feature.argument_names.i_th (l_index)
+						l_new_name := target_feature.argument_names.i_th (l_index)
 
-							-- check for changed type
-							if source_arg.associated_class.class_id /= target_arg.associated_class.class_id then
-								l_old_type := source_arg.associated_class
-								l_new_type := target_arg.associated_class
+						if not l_old_name.is_equal (l_new_name) then
+							l_arg_changed_name := true
+						end
 
-								l_arg_changed_type := true
-							end
+						if l_arg_changed_type and l_arg_changed_name then
+							changed_args_locals.extend (create {ETR_CT_CHANGED_ARG_LOCAL}.make_changed_name_type(l_old_name, l_new_name, l_old_explicit_type.associated_class, l_new_explicit_type.associated_class))
+						elseif l_arg_changed_type then
+							changed_args_locals.extend (create {ETR_CT_CHANGED_ARG_LOCAL}.make_changed_type(l_old_name, l_old_explicit_type.associated_class, l_new_explicit_type.associated_class))
+						elseif l_arg_changed_name then
+							changed_args_locals.extend (create {ETR_CT_CHANGED_ARG_LOCAL}.make_changed_name(l_old_name, l_new_name))
+						end
 
-							-- check for changed name
-							l_old_name := source_feature.argument_names.i_th (l_index)
-							l_new_name := target_feature.argument_names.i_th (l_index)
-
-							if not l_old_name.is_equal (l_new_name) then
-								l_arg_changed_name := true
-							end
-
-							if l_arg_changed_type and l_arg_changed_name then
-								changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name_type(l_old_name, l_new_name, l_old_type, l_new_type))
-							elseif l_arg_changed_type then
-								changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_type(l_old_name, l_old_type, l_new_type))
-							elseif l_arg_changed_name then
-								changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name(l_old_name, l_new_name))
-							end
+						if source_renaming /= void or target_renaming /= void then
+							constraint_renamings.extend (create {ETR_CT_RENAMED_CONSTRAINT_FEATURES}.make(l_old_name, source_renaming, target_renaming))
 						end
 
 						source_feature.arguments.forth
+						target_feature.arguments.forth
+					end
+				end
+
+				-- check for renamed locals and changed types
+				if attached source_feature.locals and attached target_feature.locals then
+					from
+						source_feature.locals.start
+						target_feature.locals.start
+					until
+						source_feature.locals.after or target_feature.locals.after
+					loop
+						source_renaming := void
+						target_renaming := void
+
+						-- get explicit types
+						l_old_explicit_type := explicit_type_from_type_as (source_feature.locals.item.type, a_transformable.context)
+						l_new_explicit_type := explicit_type_from_type_as (target_feature.locals.item.type, a_target_context)
+
+						-- check for renaming
+						if attached {RENAMED_TYPE_A[TYPE_A]}l_old_explicit_type as ren then
+							source_renaming := ren.renaming
+						end
+						if attached {RENAMED_TYPE_A[TYPE_A]}l_new_explicit_type as ren then
+							target_renaming := ren.renaming
+						end
+
+						-- check for changed type
+						-- check for changed type
+						if l_old_explicit_type.associated_class.class_id /= l_new_explicit_type.associated_class.class_id then
+							l_local_changed_type := true
+						end
+
+						-- loop over associated names
+						from
+							source_feature.locals.item.id_list.start
+							target_feature.locals.item.id_list.start
+						until
+							source_feature.locals.item.id_list.after or target_feature.locals.item.id_list.after
+						loop
+							l_old_name := names_heap.item (source_feature.locals.item.id_list.item)
+
+							if source_feature.locals.item.id_list.item /= target_feature.locals.item.id_list.item then
+								-- name changed
+								l_new_name := names_heap.item (target_feature.locals.item.id_list.item)
+
+								if l_local_changed_type then
+									changed_args_locals.extend (create {ETR_CT_CHANGED_ARG_LOCAL}.make_changed_name_type(l_old_name, l_new_name, l_old_explicit_type.associated_class, l_new_explicit_type.associated_class))
+								else
+									changed_args_locals.extend (create {ETR_CT_CHANGED_ARG_LOCAL}.make_changed_name(l_old_name, l_new_name))
+								end
+							elseif l_local_changed_type then
+								changed_args_locals.extend (create {ETR_CT_CHANGED_ARG_LOCAL}.make_changed_type(l_old_name, l_old_explicit_type.associated_class, l_new_explicit_type.associated_class))
+							end
+
+							if source_renaming /= void or target_renaming /= void then
+								constraint_renamings.extend (create {ETR_CT_RENAMED_CONSTRAINT_FEATURES}.make(l_old_name, source_renaming, target_renaming))
+							end
+
+							source_feature.locals.item.id_list.forth
+							target_feature.locals.item.id_list.forth
+						end
+
+						source_feature.locals.forth
+						target_feature.locals.forth
 					end
 				end
 
 				-- now visit the ETR_TRANSFORMABLE
 				-- and perform replacements
 				create l_output.make
-				create l_transformer.make(l_output, changed_feature_types, changed_arguments)
+				create l_transformer.make(l_output, changed_feature_types, changed_args_locals, constraint_renamings)
 				-- print the ast to output
 				l_transformer.print_ast_to_output (a_transformable.target_node)
 				-- reparse it
@@ -162,6 +248,9 @@ feature -- Transformations
 
 				if attached reparsed_root then
 					create transformation_result.make_from_ast(reparsed_root, a_target_context, false)
+				else
+					set_error("transform_to_context: Failed to reparse result of transformation")
+					create transformation_result.make_invalid
 				end
 			end
 		end

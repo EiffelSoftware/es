@@ -3,13 +3,20 @@ class
 inherit
 	C1
 		rename
-			somestring as str
+			c1_a as c2_a,
+			c1_b as c2_b
 		redefine
-			str
+			c2_a,
+			c2_b
 		end
 feature
-	str:STRING
+	c2_a:STRING
 		do
-			Result := "This is str in class C2%N"
+			Result := "This is c2_a%N"
+		end
+		
+	c2_b:STRING
+		do
+			Result := "This is c2_b%N"
 		end
 end

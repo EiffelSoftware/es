@@ -1,59 +1,31 @@
 note
-	description: "Represents a changed argument to be processed by ETR_CONTEXT_TRANSFORMER"
+	description: "Respresents renamings in constraints to be used by ETR_CONTEXT_TRANSFORMER"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_CT_CHANGED_ARGUMENT
+	ETR_CT_RENAMED_CONSTRAINT_FEATURES
 create {ETR_BASIC_OPS}
-	make_changed_type,
-	make_changed_name,
-	make_changed_name_type
+	make
 
 feature  -- Access
 
 	feature_name: STRING
-
-	old_type,new_type:detachable CLASS_C
-	new_name:detachable STRING
-
-	is_changed_type:BOOLEAN
-	is_changed_name:BOOLEAN
+	source_renaming, target_renaming: detachable RENAMING_A
 
 feature {NONE} -- Creation
 
-	make_changed_type(a_feature_name: like feature_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
-			-- make with `an_old_type' and `a_new_type'
+	make(a_feature_name: like feature_name; a_source_renaming: like source_renaming; a_target_renaming: like target_renaming)
+			-- make with `feature_name', `a_source_renaming' and `a_target_renaming'
+		require
+			name_non_void: a_feature_name /= void
+			one_set: a_source_renaming /= void or a_target_renaming /= void
 		do
 			feature_name := a_feature_name
-			old_type := an_old_type
-			new_type := a_new_type
-
-			is_changed_type := true
+			source_renaming := a_source_renaming
+			target_renaming := a_target_renaming
 		end
-
-	make_changed_name(a_feature_name: like feature_name; a_new_name: attached like new_name)
-			-- make with `an_old_name' and `a_new_name'
-		do
-			feature_name := a_feature_name
-			new_name := a_new_name
-
-			is_changed_name := true
-		end
-
-	make_changed_name_type(a_feature_name: like feature_name; a_new_name: attached like new_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
-			-- make with `an_old_type', `a_new_type', `an_old_name' and `a_new_name'
-		do
-			feature_name := a_feature_name
-			old_type := an_old_type
-			new_type := a_new_type
-			new_name := a_new_name
-
-			is_changed_type := true
-			is_changed_name := true
-		end
-
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

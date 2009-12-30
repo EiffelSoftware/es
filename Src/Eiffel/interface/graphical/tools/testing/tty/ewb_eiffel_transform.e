@@ -46,68 +46,33 @@ feature -- Properties
 		local
 			a1,a2: CLASS_I
 			a1_ast,a2_ast: CLASS_AS
-			a1_trans, a2_trans: ETR_TRANSFORMABLE
 			a1_context, a2_context: ETR_CONTEXT
-			l_target_path: AST_PATH
-			l_target_node: AST_EIFFEL
-			modifier: ETR_AST_MODIFIER
-			mod1: ETR_AST_MODIFICATION
-			a1_feat, a2_feat: E_FEATURE
-
-			a2_snippet: ETR_TRANSFORMABLE
+			a1_feat, a2_feat: FEATURE_I
+			a1_instr, a2_instr: ETR_TRANSFORMABLE
 		do
-			-- goal:
-			-- do a transformation in class a1
-			-- transform it to the context of class a2
-			-- apply it
-
-			-- 1. do transformations in a1 as normal
-			create modifier.make
-
-			-- retrieve some existing ast
+			-- create contexts
 			a1 := universe.compiled_classes_with_name("A1").first
 			a1_ast := a1.compiled_class.ast
 			a2 := universe.compiled_classes_with_name("A2").first
 			a2_ast := a2.compiled_class.ast
-			a1_feat := a1.compiled_class.feature_named ("test").e_feature
-			a2_feat := a2.compiled_class.feature_named ("test").e_feature
+			a1_feat := a1.compiled_class.feature_named ("test")
+			a2_feat := a2.compiled_class.feature_named ("test")
 
 			-- create contexts
 			create a1_context.make_from_feature (a1_feat)
 			create a2_context.make_from_feature (a2_feat)
---			create a1_context.make_from_class (a1.compiled_class.eiffel_class_c)
---			create a2_context.make_from_class (a2.compiled_class.eiffel_class_c)
 
-			-- create transformables
-			create a1_trans.make_from_ast (a1_ast, a1_context, true)
-			create a2_trans.make_from_ast (a2_ast, a2_context, true)
+			-- code snippet in `a1_context'
+--			a1_instr := new_instr("io.putstring(a1.generating_type)", a1_context)
+--			a1_instr := new_instr("io.putstring(io.putstring(arg_c1_a1.c1_b))", a1_context)
+			a1_instr := new_instr("io.putstring(a_c.c1_a)", a1_context)
 
-			-- second instruction of the second feature which is the putstring statement
-			create l_target_path.make_from_string (a1_trans.target_node, "1.8.1.2.2.2.4.4.1.2")
+			-- transform to `a2_context'
+			basic_operators.transform_to_context (a1_instr, a2_context)
+			a2_instr := basic_operators.transformation_result
 
-			l_target_node := find_node(l_target_path, a1_trans.target_node)
-
-			fixme("Allow creation of ETR_TRANSFORMABLE using path only!")
-
-			-- wrap 2nd instruction with if and apply
-			basic_operators.generate_conditional 	(	new_expr("a_var_a1 > 0",a1_context), -- condition
-														create {ETR_TRANSFORMABLE}.make_from_ast (l_target_node, a1_context, true), -- if_part
-														new_instr("io.putint(0)",a1_context), -- else_part
-														a1_context -- final context
-													)
-
-			fixme("Should this be done automatically in apply_with_context?")
-			basic_operators.transform_to_context (basic_operators.transformation_result, a2_context)
-			a2_snippet := basic_operators.transformation_result
-
-			mod1 := basic_operators.list_put_ith (parent_path (l_target_path), 2, a2_snippet)
-			modifier.add (mod1)
-			modifier.apply_with_context (a2_trans.target_node, a2_context)
-
-			if attached {CLASS_AS}modifier.modified_ast.target_node as new_ast then
-				replace_class_with (a2_ast,new_ast)
-				mark_class_changed (a2_ast)
-			end
+			-- print transformed instruction
+			io.put_string (ast_to_string(a2_instr.target_node))
 		end
 
 	execute
@@ -115,8 +80,8 @@ feature -- Properties
 			-- command line.
 		do
 			-- reparse to have the original ast and not use a modified one from storage
-			reparse_class_by_name("A1")
-			reparse_class_by_name("A2")
+--			reparse_class_by_name("A1")
+--			reparse_class_by_name("A2")
 			test
 
 			eiffel_project.quick_melt

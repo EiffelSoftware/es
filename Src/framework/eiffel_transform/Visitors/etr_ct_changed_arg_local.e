@@ -1,46 +1,59 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform. PLACEHOLDER."
+	description: "Represents a changed argument or local variable to be processed by ETR_CONTEXT_TRANSFORMER"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_CONTEXT
-inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
-create
-	make_from_feature,
-	make_empty
+	ETR_CT_CHANGED_ARG_LOCAL
+create {ETR_BASIC_OPS}
+	make_changed_type,
+	make_changed_name,
+	make_changed_name_type
 
-feature --Access
-	written_class: detachable CLASS_C
-	written_feature: detachable FEATURE_I
+feature  -- Access
 
-	is_empty: BOOLEAN
-			-- is `Current' an empty context
+	feature_name: STRING
+
+	old_type,new_type:detachable CLASS_C
+	new_name:detachable STRING
+
+	is_changed_type:BOOLEAN
+	is_changed_name:BOOLEAN
 
 feature {NONE} -- Creation
 
-	make_from_feature(a_feature: like written_feature)
-			-- make with `a_feature'
-		require
-			non_void: a_feature /= void
-			good_written_class: a_feature.written_in /= 0
+	make_changed_type(a_feature_name: like feature_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
+			-- make with `an_old_type' and `a_new_type'
 		do
-			written_feature := a_feature
-			written_class := a_feature.written_class
+			feature_name := a_feature_name
+			old_type := an_old_type
+			new_type := a_new_type
+
+			is_changed_type := true
 		end
 
-	make_empty
-			-- make with `is_empty' set to true
+	make_changed_name(a_feature_name: like feature_name; a_new_name: attached like new_name)
+			-- make with `an_old_name' and `a_new_name'
 		do
-			is_empty := true
+			feature_name := a_feature_name
+			new_name := a_new_name
+
+			is_changed_name := true
 		end
-invariant
-	valid_class: not is_empty implies (attached written_class and attached written_feature)
+
+	make_changed_name_type(a_feature_name: like feature_name; a_new_name: attached like new_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
+			-- make with `an_old_type', `a_new_type', `an_old_name' and `a_new_name'
+		do
+			feature_name := a_feature_name
+			old_type := an_old_type
+			new_type := a_new_type
+			new_name := a_new_name
+
+			is_changed_type := true
+			is_changed_name := true
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

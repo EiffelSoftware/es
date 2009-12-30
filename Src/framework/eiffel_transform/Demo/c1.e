@@ -2,8 +2,13 @@ class
 	C1
 
 feature
-	somestring:STRING
+	c1_a:STRING
 		do
-			Result := "This is somestring in class C1%N"
+			Result := "This is c1_a%N"
+		end
+		
+	c1_b:STRING
+		do
+			Result := "This is c1_b%N"
 		end
 end
