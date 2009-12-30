@@ -47,10 +47,10 @@ feature{NONE} -- Initialization
 		do
 			set_class (a_class)
 			set_feature (a_feature)
-			set_text (a_text)
 			set_written_class (a_written_class)
 			parse_text
 			if not has_syntax_error then
+				set_text (text_from_ast (ast))
 				check_type
 			end
 		end

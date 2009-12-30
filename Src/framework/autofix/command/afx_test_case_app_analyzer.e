@@ -420,9 +420,17 @@ feature{NONE} -- Actions
 			l_recipient_id: STRING
 			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
 			l_expr: AFX_AST_EXPRESSION
+
+			l_linear: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
+			l_exp: AFX_AST_EXPRESSION
 		do
 				-- Generate state model for current test case.
 			l_recipient_id := current_test_case_info.id
+			create l_exp.make_with_text (current_test_case_info.recipient_class_, current_test_case_info.recipient_, "start_index > 0 and start_index <= index_of(item, count) + 1", current_test_case_info.recipient_class_)
+			create l_linear
+			l_linear.analyze (l_exp)
+			check l_linear.is_matched end
+
 			if not exception_spots.has (l_recipient_id) then
 				create l_spot_analyzer.make (config)
 				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)
