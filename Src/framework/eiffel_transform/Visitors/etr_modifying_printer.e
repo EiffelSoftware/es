@@ -66,27 +66,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	mini_printer: ETR_AST_STRUCTURE_PRINTER
-			-- prints small ast fragments to text
-		once
-			create Result.make_with_output(mini_printer_output)
-		end
-
-	mini_printer_output: ETR_AST_STRING_OUTPUT
-			-- output used for `mini_printer'
-		once
-			create Result.make
-		end
-
-	ast_to_string(an_ast: AST_EIFFEL): STRING
-			-- prints `an_ast' to text using `mini_printer'
-		do
-			mini_printer_output.reset
-			mini_printer.print_ast_to_output(an_ast)
-
-			Result := mini_printer_output.string_representation
-		end
-
 	shift_after_insert(mods_arr: ARRAY[ETR_AST_MODIFICATION]; pos: INTEGER)
 			-- shifts locations after an insertion at `pos'
 		local
@@ -145,7 +124,7 @@ feature {NONE} -- Creation
 				elseif modifications.item.is_list_put_ith then
 					-- convert to replace!
 					if attached {EIFFEL_LIST[AST_EIFFEL]}find_node (modifications.item.location, modifications.item.location.root) as list and then list.count>=modifications.item.list_position then
-						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, modifications.item.new_transformable))
+						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, ast_to_string(modifications.item.new_transformable.target_node)))
 					else
 						check false end
 					end
@@ -190,12 +169,6 @@ feature {NONE} -- Creation
 			until
 				repl.after
 			loop
-				if attached ast_to_string(repl.item.new_transformable.target_node) as rep_str then
-					repl.item.set_replacement_text(rep_str)
-				else
-					check false end
-				end
-
 				repl_hash.extend (repl.item, repl.item.location)
 				repl.forth
 			end
@@ -230,7 +203,7 @@ feature -- Roundtrip
 			process_list_with_separator (l_as, void, l_as, 1)
 		end
 
-	process_list_with_separator (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
+	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and use `separator' for string output
 		local
 			l_mods_arr: ARRAY[ETR_AST_MODIFICATION]
@@ -241,8 +214,6 @@ feature -- Roundtrip
 			l_mod: ETR_AST_MODIFICATION
 			l_path: AST_PATH
 		do
-
-
 			if attached l_as then
 				l_mod := repl_hash.item (l_path)
 				l_path := l_as.path
@@ -255,7 +226,6 @@ feature -- Roundtrip
 			else
 				-- shallow copy of original list
 				-- because we're gonna reorder it!
-				fixme("Is this ok?")
 				if attached l_as then
 					l_list_copy := l_as.twin
 				else
@@ -321,7 +291,6 @@ feature -- Roundtrip
 					end
 				end
 				replacement_disabled := false
-
 
 				-- second pass, process and check for deletion/replacement
 				from

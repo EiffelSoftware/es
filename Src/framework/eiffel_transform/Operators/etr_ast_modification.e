@@ -32,6 +32,8 @@ feature -- Access
 
 	list_position: INTEGER
 
+	replacement_text: detachable STRING
+
 feature {COMPARABLE, ARRAY} -- Sorting
 
 	is_less alias "<" (other: like Current): BOOLEAN
@@ -42,19 +44,13 @@ feature {COMPARABLE, ARRAY} -- Sorting
 
 feature {ETR_MODIFYING_PRINTER} -- Printing
 
-	replacement_text: detachable STRING
+
 	branch_id: INTEGER
 
 	set_branch_id(a_branch_id: like branch_id)
 			-- set `branch_id' to `a_branch_id'
 		do
 			branch_id := a_branch_id
-		end
-
-	set_replacement_text(a_text: like replacement_text)
-			-- set `replacement_text' to `a_text'
-		do
-			replacement_text := a_text
 		end
 
 feature {NONE} -- Creation
@@ -87,13 +83,13 @@ feature {NONE} -- Creation
 			new_transformable := a_replacement
 		end
 
-	make_replace(a_reference: like location; a_replacement: like new_transformable)
+	make_replace(a_reference: like location; a_replacement: like replacement_text)
 			-- Replace `a_reference' by `a_replacement'
 		do
 			is_replace := true
 
 			location := a_reference
-			new_transformable := a_replacement
+			replacement_text := a_replacement
 		end
 
 	make_insert_before(a_reference: like location; a_new_trans: like new_transformable)

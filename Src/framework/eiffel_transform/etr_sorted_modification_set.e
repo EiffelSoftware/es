@@ -37,7 +37,7 @@ feature -- Operations
 			from
 				par_groups.start
 			until
-				par_groups.after
+				par_groups.after or l_par_items /= void
 			loop
 				if attached {AST_PATH}par_groups.item.item(1) as path and then attached {LINKED_LIST[ETR_AST_MODIFICATION]}par_groups.item.item(2) as list and then path.is_equal(a_path) then
 					l_par_items := list
@@ -63,9 +63,9 @@ feature -- Operations
 				if not l_par_items.is_empty and then (l_par_items.first.is_insert_after or l_par_items.first.is_insert_before) then
 					l_sorted_array.sort
 				end
-			end
 
-			Result := l_sorted_array
+				Result := l_sorted_array
+			end
 		end
 
 	extend (a_modification: ETR_AST_MODIFICATION)

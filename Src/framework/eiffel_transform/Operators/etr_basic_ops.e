@@ -17,6 +17,7 @@ inherit
 			{NONE} all
 		end
 	COMPILER_EXPORTER
+	ETR_ERROR_HANDLER
 
 
 feature {NONE} -- Implementation
@@ -56,111 +57,112 @@ feature -- Transformations
 			l_index: INTEGER
 			l_arg_changed_type,l_arg_changed_name: BOOLEAN
 		do
-			-- default result
-			create transformation_result.make_invalid
+			reset_errors
 
-			source_class := a_transformable.context.written_class
-			target_class := a_target_context.written_class
+			if not a_transformable.context.is_empty and not a_target_context.is_empty then
+				source_class := a_transformable.context.written_class
+				target_class := a_target_context.written_class
 
-			-- class to class transformation
-			fixme("May not consider generic features or inline agents")
+				-- class to class transformation
+				fixme("May not consider generic features or inline agents")
 
-			-- loop through features that were written in the source class
-			-- for features with return value:
-			-- check if there is a corresponding feature in the target class
-			from
-				source_written_in_features := source_class.written_in_features
-				source_written_in_features.start
-				create changed_feature_types.make
-			until
-				source_written_in_features.after
-			loop
-				cur_feat := source_written_in_features.item
-				if cur_feat.has_return_value and attached target_class.feature_of_feature_id (cur_feat.feature_id) as new_feat then
-					-- matching feature id's
-					-- check if type matches
-					if attached {CL_TYPE_A}cur_feat.type as old_type and attached {CL_TYPE_A}new_feat.type as new_type then
-						-- we only care for class ids, attachment-marks etc don't change naming
-						if old_type.class_id /= new_type.class_id then
-							-- store for checking
-							changed_feature_types.extend (create {ETR_CT_CHANGED_FEATURE}.make(cur_feat.name, old_type.associated_class, new_type.associated_class))
-						end
-					end
-				end
-
-				source_written_in_features.forth
-			end
-
-			if a_target_context.is_feature and a_transformable.context.is_feature then
-				-- feature to feature transformation
-
-				source_feature := a_transformable.context.written_feature
-				target_feature := a_target_context.written_feature
-
-				-- check for renamed arguments and changed types
+				-- loop through features that were written in the source class
+				-- for features with return value:
+				-- check if there is a corresponding feature in the target class
 				from
-					source_feature.arguments.start
-					create changed_arguments.make
+					source_written_in_features := source_class.written_in_features
+					source_written_in_features.start
+					create changed_feature_types.make
 				until
-					source_feature.arguments.after
+					source_written_in_features.after
 				loop
-					-- match arguments by position
-					source_arg := source_feature.arguments.item
-
-					target_arg := void
-
-					l_index := source_feature.arguments.index
-
-					if target_feature.argument_count >= l_index then
-						target_arg := target_feature.arguments.i_th (l_index)
-					end
-
-					fixme("How do we decide if a conversion even makes sense? Just let compilation fail?")
-
-					if attached target_arg then
-						l_arg_changed_name := false
-						l_arg_changed_type := false
-
-						-- check for changed type
-						if source_arg.associated_class.class_id /= target_arg.associated_class.class_id then
-							l_old_type := source_arg.associated_class
-							l_new_type := target_arg.associated_class
-
-							l_arg_changed_type := true
-						end
-
-						-- check for changed name
-						l_old_name := source_feature.argument_names.i_th (l_index)
-						l_new_name := target_feature.argument_names.i_th (l_index)
-
-						if not l_old_name.is_equal (l_new_name) then
-							l_arg_changed_name := true
-						end
-
-						if l_arg_changed_type and l_arg_changed_name then
-							changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name_type(l_old_name, l_new_name, l_old_type, l_new_type))
-						elseif l_arg_changed_type then
-							changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_type(l_old_name, l_old_type, l_new_type))
-						elseif l_arg_changed_name then
-							changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name(l_old_name, l_new_name))
+					cur_feat := source_written_in_features.item
+					if cur_feat.has_return_value and attached target_class.feature_of_feature_id (cur_feat.feature_id) as new_feat then
+						-- matching feature id's
+						-- check if type matches
+						if attached {CL_TYPE_A}cur_feat.type as old_type and attached {CL_TYPE_A}new_feat.type as new_type then
+							-- we only care for class ids, attachment-marks etc don't change naming
+							if old_type.class_id /= new_type.class_id then
+								-- store for checking
+								changed_feature_types.extend (create {ETR_CT_CHANGED_FEATURE}.make(cur_feat.name, old_type.associated_class, new_type.associated_class))
+							end
 						end
 					end
 
-					source_feature.arguments.forth
+					source_written_in_features.forth
 				end
-			end
 
-			-- now visit the ETR_TRANSFORMABLE
-			-- and perform replacements
-			create l_output.make
-			create l_transformer.make(l_output, changed_feature_types, changed_arguments)
-			-- print the ast to output
-			l_transformer.print_ast_to_output (a_transformable.target_node)
-			-- reparse it
-			reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
+				if a_target_context.is_feature and a_transformable.context.is_feature then
+					-- feature to feature transformation
 
-			if attached reparsed_root then
-				create transformation_result.make_from_ast(reparsed_root, a_target_context, false)
+					source_feature := a_transformable.context.written_feature
+					target_feature := a_target_context.written_feature
+
+					-- check for renamed arguments and changed types
+					from
+						source_feature.arguments.start
+						create changed_arguments.make
+					until
+						source_feature.arguments.after
+					loop
+						-- match arguments by position
+						source_arg := source_feature.arguments.item
+
+						target_arg := void
+
+						l_index := source_feature.arguments.index
+
+						if target_feature.argument_count >= l_index then
+							target_arg := target_feature.arguments.i_th (l_index)
+						end
+
+						fixme("How do we decide if a conversion even makes sense? Just let compilation fail?")
+
+						if attached target_arg then
+							l_arg_changed_name := false
+							l_arg_changed_type := false
+
+							-- check for changed type
+							if source_arg.associated_class.class_id /= target_arg.associated_class.class_id then
+								l_old_type := source_arg.associated_class
+								l_new_type := target_arg.associated_class
+
+								l_arg_changed_type := true
+							end
+
+							-- check for changed name
+							l_old_name := source_feature.argument_names.i_th (l_index)
+							l_new_name := target_feature.argument_names.i_th (l_index)
+
+							if not l_old_name.is_equal (l_new_name) then
+								l_arg_changed_name := true
+							end
+
+							if l_arg_changed_type and l_arg_changed_name then
+								changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name_type(l_old_name, l_new_name, l_old_type, l_new_type))
+							elseif l_arg_changed_type then
+								changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_type(l_old_name, l_old_type, l_new_type))
+							elseif l_arg_changed_name then
+								changed_arguments.extend (create {ETR_CT_CHANGED_ARGUMENT}.make_changed_name(l_old_name, l_new_name))
+							end
+						end
+
+						source_feature.arguments.forth
+					end
+				end
+
+				-- now visit the ETR_TRANSFORMABLE
+				-- and perform replacements
+				create l_output.make
+				create l_transformer.make(l_output, changed_feature_types, changed_arguments)
+				-- print the ast to output
+				l_transformer.print_ast_to_output (a_transformable.target_node)
+				-- reparse it
+				reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
+
+				if attached reparsed_root then
+					create transformation_result.make_from_ast(reparsed_root, a_target_context, false)
+				end
 			end
 		end
 
@@ -169,12 +171,17 @@ feature -- Transformations
 		require
 			test_not_void: a_test /= void
 			context_not_void: a_context /= void
+			a_test_valid: a_test.is_valid
+			if_part_valid: attached if_part implies if_part.is_valid
+			else_part_valid: attached else_part implies else_part.is_valid
 		local
 			l_if_part_node, l_else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
 			l_result_node: IF_AS
 			l_if_part_dup: like if_part
 			l_else_part_dup: like else_part
 		do
+			reset_errors
+
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
 					duplicate_ast (if_part.target_node)
@@ -183,6 +190,8 @@ feature -- Transformations
 						l_if_part_node := single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
 						l_if_part_node := instrs
+					else
+						set_error("generate_conditional: contained ast of if_part is of incompatible type ("+if_part.target_node.generating_type+")")
 					end
 				end
 
@@ -193,18 +202,18 @@ feature -- Transformations
 						l_else_part_node := single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
 						l_else_part_node := instrs
+					else
+						set_error("generate_conditional: contained ast of else_part is of incompatible type ("+else_part.target_node.generating_type+")")
 					end
 				end
 
-				-- assemble new IF_AS
-				create l_result_node.initialize (condition, l_if_part_node, void, l_else_part_node, end_keyword, void, void, void)
-
-				-- index it as well
-				index_ast_from_root (l_result_node)
-
-				create transformation_result.make_from_ast (l_result_node, a_context, false)
+				if not has_errors then
+					-- assemble new IF_AS and transformable
+					create l_result_node.initialize (condition, l_if_part_node, void, l_else_part_node, end_keyword, void, void, void)
+					create transformation_result.make_from_ast (l_result_node, a_context, false)
+				end
 			else
-				transformation_result := new_invalid_transformable
+				set_error("generate_conditional: contained ast of a_test is not of type EXPR_AS (but  "+a_test.target_node.generating_type+")")
 			end
 		end
 
@@ -235,6 +244,14 @@ feature -- Modifications (path-reference)
 		end
 
 	replace(a_reference: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+				-- Replace `a_reference' by `a_replacement'
+		require
+			non_void: a_reference /= void and a_replacement /= void
+		do
+			create Result.make_replace (a_reference, ast_to_string(a_replacement.target_node))
+		end
+
+	replace_with_string(a_reference: AST_PATH; a_replacement: STRING): ETR_AST_MODIFICATION
 				-- Replace `a_reference' by `a_replacement'
 		require
 			non_void: a_reference /= void and a_replacement /= void

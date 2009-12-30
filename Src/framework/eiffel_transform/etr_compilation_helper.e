@@ -8,8 +8,8 @@ class
 	ETR_COMPILATION_HELPER
 inherit
 	SHARED_SERVER
-
 	SHARED_DEGREES
+	ETR_SHARED
 
 feature -- Operations
 	reparse_class_by_name(a_class: STRING)
@@ -29,12 +29,19 @@ feature -- Operations
 			-- replace `an_original_class' by `a_class'
 		require
 			non_void: a_class /= void and an_original_class /= void
+		local
+			l_class_str: STRING
+			l_parser: EIFFEL_PARSER
 		do
-			-- make sure ids are equal
-			a_class.set_class_id (an_original_class.class_id)
+			-- Ugly hack: have to reparse class because the wrong ast factory might have been used
+			l_class_str := ast_to_string (a_class)
+
+			create l_parser.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			l_parser.parse_from_string (l_class_str, system.class_of_id (an_original_class.class_id))
 
 			ast_server.remove (an_original_class.class_id)
-			ast_server.put (a_class)
+			l_parser.root_node.set_class_id (an_original_class.class_id)
+			ast_server.put (l_parser.root_node)
 		end
 
 	mark_for_reparse(a_class: CLASS_AS)

@@ -106,7 +106,7 @@ feature -- Properties
 
 			if attached {CLASS_AS}modifier.modified_ast.target_node as new_ast then
 				replace_class_with (a2_ast,new_ast)
-				mark_class_changed (new_ast)
+				mark_class_changed (a2_ast)
 			end
 		end
 

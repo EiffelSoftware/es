@@ -25,7 +25,7 @@ feature {NONE} -- Creation
 
 feature -- Access
 
-	modified_ast: ETR_TRANSFORMABLE
+	modified_ast: detachable ETR_TRANSFORMABLE
 
 	modifications: LIST[ETR_AST_MODIFICATION]
 
@@ -53,6 +53,9 @@ feature -- Operations
 		local
 			l_printer: ETR_MODIFYING_PRINTER
 		do
+			fixme("root -> transformable")
+
+			reset_errors
 			-- pick parser depending on root node
 			create l_printer.make (output, modifications)
 			l_printer.print_ast_to_output (a_root)
@@ -63,6 +66,7 @@ feature -- Operations
 				create modified_ast.make_from_ast (reparsed_root, a_context, false)
 			else
 				create modified_ast.make_invalid
+				set_error("apply_with_context: Modification resulted in unparsable text")
 			end
 
 			-- reset the modifications list and output

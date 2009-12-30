@@ -153,7 +153,17 @@ feature {NONE} -- Implementation
 			output.exit_child
 		end
 
-	process_list_with_separator (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
+	process_child_block_list (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
+			-- process `l_as' and use `separator' for string output
+		do
+			internal_enter_child_ast (l_as)
+			output.enter_block
+			process_list_with_separator (l_as, separator, a_parent, a_branch)
+			output.exit_block
+			output.exit_child
+		end
+
+	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and use `separator' for string output
 		local
 			l_cursor: INTEGER
@@ -166,7 +176,7 @@ feature {NONE} -- Implementation
 					l_as.after
 				loop
 					process_child (l_as.item, l_as, l_as.index)
-					if l_as.index /= l_as.count then
+					if attached separator and l_as.index /= l_as.count then
 						output.append_string(separator)
 					end
 					l_as.forth
@@ -392,9 +402,10 @@ feature -- Roundtrip: Instructions
 			output.append_string (" then%N")
 			process_child_block (l_as.compound, l_as, 2)
 			process_child (l_as.elsif_list, l_as, 3)
+
 			if processing_needed (l_as.else_part, l_as, 4) then
 				output.append_string("else%N")
-				process_list_with_separator (l_as.else_part, void, l_as, 4)
+				process_child_block_list(l_as.else_part, void, l_as, 4)
 			end
 			output.append_string ("end%N")
 		end
@@ -404,7 +415,7 @@ feature -- Roundtrip: Instructions
 			output.append_string ("elseif ")
 			process_child(l_as.expr, l_as, 1)
 			output.append_string (" then%N")
-			process_child_block(l_as.compound, l_as, 2)
+			process_child_block_list(l_as.compound, void, l_as, 2)
 		end
 
 	process_loop_as (l_as: LOOP_AS)
@@ -414,7 +425,7 @@ feature -- Roundtrip: Instructions
 
 			if processing_needed (l_as.full_invariant_list, l_as, 2) then
 				output.append_string ("invariant%N")
-				process_child_block(l_as.full_invariant_list, l_as, 2)
+				process_child_block_list(l_as.full_invariant_list, void, l_as, 2)
 				output.append_string ("%N")
 			end
 
@@ -431,7 +442,7 @@ feature -- Roundtrip: Instructions
 			output.append_string ("loop%N")
 
 			if processing_needed (l_as.compound, l_as, 4) then
-				process_child_block(l_as.compound, l_as, 4)
+				process_child_block_list(l_as.compound, void, l_as, 4)
 			end
 
 			output.append_string ("end%N")
@@ -480,7 +491,7 @@ feature -- Roundtrip: Inheritance
 
 			if processing_needed (l_as.exports, l_as, 3) then
 				output.append_string ("export%N")
-				process_child_block (l_as.exports, l_as, 3)
+				process_child_block_list(l_as.exports, void, l_as, 3)
 				was_processed := true
 			end
 
@@ -528,7 +539,7 @@ feature -- Roundtrip: Contracts
 	process_invariant_as (l_as: INVARIANT_AS)
 		do
 			output.append_string ("invariant%N")
-			process_child_block (l_as.full_assertion_list, l_as, 1)
+			process_child_block_list(l_as.full_assertion_list, void, l_as, 1)
 		end
 
 	process_require_as (l_as: REQUIRE_AS)
@@ -772,9 +783,9 @@ feature -- Roundtrip: Expressions
 		do
 			process_child (l_as.left, l_as, 1)
 			output.append_string (" ")
-			output.append_string (l_as.op_name.name)
+			process_child (l_as.op_name, l_as, 2)
 			output.append_string (" ")
-			process_child (l_as.right, l_as, 2)
+			process_child (l_as.right, l_as, 3)
 		end
 
 	process_unary_as (l_as: UNARY_AS)

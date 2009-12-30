@@ -37,8 +37,6 @@ feature -- creation
 			-- make with `a_node' and `a_context'
 		require
 			non_void: a_node /= void and a_context /= void
-			has_path: a_node.path /= void
-			valid_path: a_node.path.is_valid
 		do
 			if duplicate then
 				duplicate_ast (a_node)
@@ -59,7 +57,6 @@ feature -- creation
 			-- make with `a_list' and `a_context'
 		require
 			non_void: a_list /= void and a_context /= void
-			not_empty: not a_list.is_empty
 		local
 			l_eiffel_list: EIFFEL_LIST[AST_EIFFEL]
 		do

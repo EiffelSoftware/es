@@ -11,6 +11,7 @@ inherit
 		export
 			{NONE} all
 		end
+	ETR_ERROR_HANDLER
 
 feature -- Constants
 
@@ -38,43 +39,33 @@ feature -- Constants
 			Result := {CONF_OPTION}.syntax_index_transitional
 		end
 
+feature -- Output
+
+	mini_printer: ETR_AST_STRUCTURE_PRINTER
+			-- prints small ast fragments to text
+		once
+			create Result.make_with_output(mini_printer_output)
+		end
+
+	mini_printer_output: ETR_AST_STRING_OUTPUT
+			-- output used for `mini_printer'
+		once
+			create Result.make
+		end
+
+	ast_to_string(an_ast: AST_EIFFEL): STRING
+			-- prints `an_ast' to text using `mini_printer'
+		do
+			mini_printer_output.reset
+			mini_printer.print_ast_to_output(an_ast)
+
+			Result := mini_printer_output.string_representation
+		end
+
 feature -- Access
 
 	duplicated_ast: detachable AST_EIFFEL
 			-- Result of `duplicate_ast'
-
-	ast_parent(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
-			-- finds a parent from `a_path' and root `a_root'
-		require
-			non_void: a_path /= void and a_root /= void
-			path_non_void: a_root.path /= void
-			path_valid: a_path.is_valid and a_root.path.is_valid
-			not_root: a_path.as_array.count>1
-		local
-			l_parent_path: AST_PATH
-			l_parent_string: STRING
-			i: INTEGER
-		do
-			-- construct path of parent
-			from
-				i := a_path.as_array.lower
-				create l_parent_string.make_empty
-			until
-				i > a_path.as_array.upper-1
-			loop
-				if i /= a_path.as_array.upper-1 then
-					l_parent_string := l_parent_string + a_path.as_array[i].out + {AST_PATH}.separator.out
-				else
-					l_parent_string := l_parent_string + a_path.as_array[i].out
-				end
-				i := i+1
-			end
-
-			-- find the parent
-			create l_parent_path.make_from_string (a_root, l_parent_string)
-			ast_locator.find (l_parent_path)
-			Result := ast_locator.found_node
-		end
 
 	find_node(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
 			-- finds a node from `a_path' and root `a_root'
@@ -85,7 +76,9 @@ feature -- Access
 		do
 			ast_locator.find_from_root (a_path, a_root)
 
-			Result := ast_locator.found_node
+			if ast_locator.found then
+				Result := ast_locator.found_node
+			end
 		end
 
 feature -- Parser
@@ -93,14 +86,16 @@ feature -- Parser
 	etr_class_parser: EIFFEL_PARSER
 			-- internal parser used to handle classes
 		once
-			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
+--			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
 			Result.set_syntax_version (syntax_version)
 		end
 
 	etr_expr_parser: EIFFEL_PARSER
 			-- internal parser used to handle expressions
 		once
-			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
+--			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
 			Result.set_expression_parser
 			Result.set_syntax_version(syntax_version)
 		end
@@ -108,7 +103,8 @@ feature -- Parser
 	etr_instr_parser: EIFFEL_PARSER
 			-- internal parser used to handle instructions
 		once
-			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
+			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
+--			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
 			Result.set_feature_parser
 			Result.set_syntax_version(syntax_version)
 		end
@@ -117,31 +113,41 @@ feature -- Parser
 
 	reparse_printed_ast(a_root_type: AST_EIFFEL; a_printed_ast: STRING)
 			-- parse an ast of type `a_root_type'
+		require
+			non_void: a_root_type /= void and a_printed_ast /= void
 		do
+			reset_errors
+			reparsed_root := void
 			if attached {CLASS_AS}a_root_type then
 				etr_class_parser.parse_from_string (a_printed_ast,void)
-				reparsed_root := etr_class_parser.root_node
+
+				if etr_class_parser.error_count>0 then
+					set_error("reparse_printed_ast: Class parsing failed")
+				else
+					reparsed_root := etr_class_parser.root_node
+				end
 			elseif attached {INSTRUCTION_AS}a_root_type then
 				etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
-
-				if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
-					reparsed_root := body.compound.first
+				if etr_instr_parser.error_count>0 then
+					set_error("reparse_printed_ast: Instruction parsing failed")
+				else
+					if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+						reparsed_root := body.compound.first
+					end
 				end
 			elseif attached {EXPR_AS}a_root_type then
 				etr_expr_parser.parse_from_string (a_printed_ast,void)
-				reparsed_root := etr_expr_parser.expression_node
+				if etr_expr_parser.error_count>0 then
+					set_error("reparse_printed_ast: Expression parsing failed")
+				else
+					reparsed_root := etr_expr_parser.expression_node
+				end
 			else
-				reparsed_root := void
+				set_error("reparse_printed_ast: Root of type "+a_root_type.generating_type+" is not supported")
 			end
 		end
 
 feature -- New
-
-	new_invalid_transformable: ETR_TRANSFORMABLE is
-			-- create an invalid transformable
-		do
-			create Result.make_invalid
-		end
 
 	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
 			-- create a new instruction from `an_instr' with context `a_context'
@@ -149,12 +155,18 @@ feature -- New
 			instr_attached: an_instr /= void
 			context_attached: a_context /= void
 		do
+			reset_errors
+
+			fixme("Command/Query-separation")
 			etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
-			if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
-				create Result.make_from_ast (body.compound.first, a_context, false)
-			else
+			if etr_instr_parser.error_count>0 then
+				set_error("new_instr: Parsing failed")
 				create Result.make_invalid
+			else
+				if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+					create Result.make_from_ast (body.compound.first, a_context, false)
+				end
 			end
 		end
 
@@ -164,12 +176,14 @@ feature -- New
 			expr_attached: an_expr /= void
 			context_attached: a_context /= void
 		do
+			fixme("Command/Query-separation")
 			etr_expr_parser.parse_from_string("check "+an_expr,void)
 
-			if attached etr_expr_parser.expression_node then
-				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)
-			else
+			if etr_expr_parser.error_count>0 then
+				set_error("new_expr: Parsing failed")
 				create Result.make_invalid
+			else
+				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)
 			end
 		end
 
@@ -201,6 +215,8 @@ feature -- Operations
 			end
 
 			create Result.make_from_string (a_path.root, l_parent_string)
+		ensure
+			Result.is_valid
 		end
 
 	index_ast_from_root(an_ast: AST_EIFFEL)
