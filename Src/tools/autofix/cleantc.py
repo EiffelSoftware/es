@@ -4,6 +4,7 @@ import getopt
 import os
 from time import time
 import shutil
+from tcutility import test_case_info,  is_folder_contain_test_cases,  recursive_folders,  is_file_contain_text
 
 help_message = '''cleantc [options] <input-folder> <out-folder>
 This script selects test cases inside <input-dolfer> which do not contain failing test cases, and put
@@ -14,139 +15,51 @@ Arguments:
 <output-folder> is the folder to store result.
 
 Options
-    -h,--help        Display this help screen.
-    --keep-extreme-int Keep test cases related to extreme (minimal, maximal) integers. 
-                         Default: False
-    --keep-void-on-target Keep test cases related to void-on-target.
-                             Default: False
-    --keep-seg-fault     Keep test cases related to segmentation violation.
-                        Default: False
-    --min-passing <n>   Remove faults which have less than `n'  number of passing test cases. Default: 0
-    --min-failing <n>   Remove faults which have less than 'n' number of failing test cases. Default: 1
+    -h,--help                            Display this help screen.
+    --keep-extreme-int             Keep test cases related to extreme (minimal, maximal) integers. 
+                                             Default: False
+    --keep-void-on-target         Keep test cases related to void-on-target.
+                                             Default: False
+    --keep-seg-fault                  Keep test cases related to segmentation violation.
+                                            Default: False
+    --keep-mismatch               Keep test cases related to type mismatch.
+                                            Default: False
+    --keep-no-more-memory    Keep test cases related to No more memory.
+                                            Default: False
+    --min-passing <n>            Remove faults which have less than `n'  number of passing test cases. Default: 0
+    --min-failing <n>              Remove faults which have less than 'n' number of failing test cases. Default: 1
 '''
 
 options = {
     'input-folder': "", 
     'output-folder': "", 
-    'extreme-int': True,
-    'void-on-target': True,
-    'seg-fault': True, 
+    'keep-extreme-int': False,
+    'keep-void-on-target': False,
+    'keep-seg-fault': False, 
+    'keep-mismatch': False, 
+    'keep-no-more-memory': False, 
     'min-passing': 0, 
     'min-failing': 1
 }
-
-# Find all recursive folders starting from `a_base'.
-def recursive_folders (a_base):
-    result=[]
-    for fn in os.listdir(a_base):        
-        if not (fn=='.' or fn =='..'):
-            l_path = os.path.join(a_base,  fn)
-            if os.path.isdir(l_path):
-                result.append (l_path)
-                result.extend (recursive_folders(l_path))
-            else:
-                pass
-    return result
-    
-# Return true if the given folder `a_folder' contains test cases.
-def  is_folder_contain_test_cases (a_folder):
-    assert os.path.isdir (a_folder)
-    for fn in os.listdir(a_folder):
-        if not (fn=='.' or fn =='..'):
-            l_path = os.path.join (a_folder,  fn)
-            if os.path.isfile(l_path):
-                ext = os.path.splitext(fn)[1]
-                if ext=='.e':
-                    return True
-            
-    return False
-    
-# Return a dictionary on information about a test case specified with the file name in a_full_path.
-# The returned dictionary has the following keys:
-#  class, feature: class and feature under test.
-#  recipient_class, recipient: Recipient of the exception, same as class, feature in a successful test case.
-#  bpslot: break point slot of the exception, 0 in a successful test case.
-#  code: 0 in a successful test case.
-#  tag: Tag of the failing assertion, 'noname' in a successful test case.
-#  status: Status of the test case, 's' for a successful test case, 'f' for a failed one.
-#  prefix: Prefix of the test case file name, default is 'TC'.
-#  id: Identifier to determine uniqueness of a fault.
-#  full_path: Full path of the test case.
-# suffix: A random number to distinguish test case file names.
-def test_case_info (a_full_path):
-    tcinfo = {}    
-    
-    # Parse test case file name to retrieve information about the test case.
-    parts = os.path.basename (a_full_path).split('__')
-    tcinfo['prefix'] = parts[0]
-    suf = parts[len(parts)-1]
-    tcinfo['suffix'] = suf[0:len(suf)-2]
-    
-    parts.pop(0)
-    parts.pop(len(parts)-1)
-        
-    tcinfo['class'] = parts[0]
-    tcinfo['feature'] = parts[1]
-    tcinfo['recipient_class'] = tcinfo['class']
-    tcinfo['recipient'] = tcinfo['feature']
-    tcinfo['bpslot'] = 0
-    tcinfo['code'] = 0
-    tcinfo['tag'] = "noname"
-    tcinfo['status'] = "S"
-    tcinfo['prefix'] = "TC"
-    tcinfo['full_path'] = ""
-    tcinfo['id'] = ""
-    tcinfo['sufix'] = ""
-
-    i = 2
-    while i < len(parts):
-        p = parts[i]
-        if p == 'S' or p == 'F':
-            tcinfo['status'] = p.lower()
-        elif p.startswith('REC_'):
-            tcinfo['recipient_class'] = p[4:]
-            tcinfo['recipient'] = parts[i+1]
-            i = i + 1
-        elif p.startswith('TAG_'):
-            tcinfo['tag'] = p[4:] 
-        elif p.startswith('c'):
-            tcinfo['code'] = int(p[1:])
-        elif p.startswith('b'):
-            tcinfo['bpslot'] = int(p[1:])
-        i = i + 1
-        
-    # Build up unique fault identifier string.
-    id = tcinfo['recipient_class'] + "_" + tcinfo['recipient']    
-    id = id + '_' + str(tcinfo['code']) + '_' + str(tcinfo['bpslot']) + "_" + tcinfo['tag']
-    tcinfo['id'] = id
-    tcinfo['full_path'] = a_full_path
-    return tcinfo
-            
-# Return true if `a_file' contains any of the strings in `a_keywords'.
-def is_file_contain_text (a_file,  a_keywords):
-    file = open (a_file)
-    content = file.read()
-    result = False
-    for key in a_keywords:
-        if content.find(key) > -1:
-            result = True
-            break
-            
-    file.close()
-    return result
-    
+                
 # Return true if the test case specified by `a_tcinfo' should be kept.
 def is_failing_test_case_satisfied (a_tcinfo):
     keywords=[]
-    if options['extreme-int'] == True:
+    if not options['keep-extreme-int']:
         keywords.append('2147483647')
         keywords.append('-2147483648')
         
-    if options['void-on-target']==True:
+    if not options['keep-void-on-target']:
         keywords.append('Void call target')
         
-    if options['seg-fault']==True:
+    if not options['keep-seg-fault']:
         keywords.append('Segmentation fault')
+
+    if not options['keep-mismatch']:
+        keywords.append('Mismatch')
+        
+    if not options['keep-no-more-memory']:
+        keywords.append('No more memory')
 
     return not is_file_contain_text (a_tcinfo['full_path'], keywords)
     
@@ -155,7 +68,7 @@ def is_failing_test_case_satisfied (a_tcinfo):
 # `index' is used if there are more than one fault in a routine.
 def create_folder (a_passing_tcs,  a_failing_tcs,  index):
     # 1. Remove all test cases which does not satisfy the given options
-    # 2. Only create folder when the left test cases still satisfy the given options.
+    # 2. Only create folder when the left test cases still satisfy the given options.    
     if len(a_passing_tcs) >= options ['min-passing']:
         valid_failing_tcs=filter (is_failing_test_case_satisfied,  a_failing_tcs)
         if len (valid_failing_tcs) > options ['min-failing']:
@@ -166,6 +79,8 @@ def create_folder (a_passing_tcs,  a_failing_tcs,  index):
             folder_name = os.path.join(folder_name,  tcinfo['class'],  tcinfo['feature'])            
             if index > 0:
                 folder_name = folder_name + "__" + str(index)
+                
+            print ("Process folder: " + folder_name)
                 
             # Create target folder and copy test cases into it.
             os.makedirs(folder_name)
@@ -215,11 +130,14 @@ def process_folder (a_folder):
     
 # Analyze command line options and arguments
 opts, args = getopt.getopt(sys.argv[1:], "h",
-        ["keep-extreme-int",
+        ["help", 
+         "keep-extreme-int",
          "keep-void-on-target",
          "keep-seg-fault", 
+         "keep-mismatch", 
          "min-passing", 
-         "min-failing"
+         "min-failing", 
+         "keep-no-more-memory"
          ])
 # Parse command line options.
 for option, value in opts:
@@ -227,15 +145,19 @@ for option, value in opts:
         print help_message
         sys.exit(0)
     elif option in ('--keep-extreme-int'):
-        options['extreme-int'] = False
+        options['extreme-int'] = True
     elif option in ('--keep-void-on-target'):
-        options['void-on-target'] = False
+        options['void-on-target'] = True
     elif option in ('--keep-seg-fault'):
-        options['seg-fault'] = False
+        options['seg-fault'] = True
+    elif option in ('--keep-mismatch'):
+        options['keep-mismatch'] = True
     elif option in ('--min-passing'):
         options['min-passing'] = int(value)
     elif option in ('--min-failing'):
         options['min-failing'] = int(value)
+    elif option in ('--keep-no-more-memory'):
+        options['keep-no-more-memory']=True
 
 options['input-folder'] = args[0]
 options['output-folder'] = args[1]
