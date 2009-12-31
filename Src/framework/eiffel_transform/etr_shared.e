@@ -1,9 +1,9 @@
 note
 	description: "Shared components of EiffelTransform"
 	author: "$Author$"
+
 	date: "$Date$"
 	revision: "$Revision$"
-
 class
 	ETR_SHARED
 inherit
@@ -20,7 +20,7 @@ feature -- Typing
 		require
 			type_non_void: a_type /= void
 			context_non_void: a_context /= void
-			context_non_empty: not a_context.is_empty
+			has_feature_context: a_context.is_feature
 		local
 			l_type_gen: AST_TYPE_A_GENERATOR
 			l_generated_type, l_resolved_type: TYPE_A
@@ -40,7 +40,8 @@ feature -- Typing
 				Result := explicit_type (Result, a_context)
 			end
 		ensure
-			is_explicit: Result.is_explicit and Result.associated_class /= void
+			is_explicit: Result.is_explicit
+			has_associated_class: Result.associated_class /= void
 		end
 
 	explicit_type (a_type: TYPE_A; a_context: ETR_CONTEXT): TYPE_A
@@ -49,9 +50,6 @@ feature -- Typing
 			type_non_void: a_type /= void
 			context_non_void: a_context /= void
 			context_non_empty: not a_context.is_empty
-		local
-			l_type_a_checker: TYPE_A_CHECKER
-			l_resolved_type: TYPE_A
 		do
 			if a_type.is_formal then
 				if attached {FORMAL_A} a_type as l_formal then
@@ -70,10 +68,7 @@ feature -- Typing
 			elseif a_type.has_like_current then
 				Result := a_context.written_class.actual_type
 			elseif a_type.has_like then
-				create l_type_a_checker
-				l_type_a_checker.init_for_checking (a_context.written_feature, a_context.written_class, void, void)
-				l_resolved_type := l_type_a_checker.solved(a_type, void)
-				Result := l_resolved_type.actual_type
+				Result := a_type.actual_type
 			else
 				Result := a_type
 			end

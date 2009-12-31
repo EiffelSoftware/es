@@ -6,7 +6,7 @@ feature {NONE} -- Initialization
 	make
 			-- Run application
 		local
-			a1: A1
+			a1: A1[C1]
 			a2: A2[C2]
 			c1: C1
 			c2: C2

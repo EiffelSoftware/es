@@ -1,5 +1,5 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform. PLACEHOLDER."
+	description: "Context of an AST that is to be modified by EiffelTransform."
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,6 +12,7 @@ inherit
 			{NONE} all
 		end
 create
+	make_from_class,
 	make_from_feature,
 	make_empty
 
@@ -19,10 +20,21 @@ feature --Access
 	written_class: detachable CLASS_C
 	written_feature: detachable FEATURE_I
 
+	is_feature: BOOLEAN
+			-- does `Current' represent the context of a feature
+
 	is_empty: BOOLEAN
 			-- is `Current' an empty context
 
 feature {NONE} -- Creation
+
+	make_from_class(a_class: like written_class)
+			-- make with `a_class'
+		require
+			non_void: a_class /= void
+		do
+			written_class := a_class
+		end
 
 	make_from_feature(a_feature: like written_feature)
 			-- make with `a_feature'
@@ -32,6 +44,8 @@ feature {NONE} -- Creation
 		do
 			written_feature := a_feature
 			written_class := a_feature.written_class
+
+			is_feature := true
 		end
 
 	make_empty
@@ -40,7 +54,8 @@ feature {NONE} -- Creation
 			is_empty := true
 		end
 invariant
-	valid_class: not is_empty implies (attached written_class and attached written_feature)
+	valid_class: not is_empty implies attached written_class
+	valid_feature: is_feature implies attached written_feature
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

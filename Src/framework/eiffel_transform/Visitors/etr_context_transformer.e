@@ -10,7 +10,10 @@ inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
 			process_nested_as,
-			process_access_feat_as
+			process_access_feat_as,
+			process_id_as,
+			process_instr_call_as,
+			process_expr_call_as
 		end
 	SHARED_NAMES_HEAP
 create
@@ -21,6 +24,24 @@ feature {NONE} -- Implementation
 	changed_feature_hash: HASH_TABLE[ETR_CT_CHANGED_FEATURE,STRING]
 	changed_args_hash: HASH_TABLE[ETR_CT_CHANGED_ARG_LOCAL,STRING]
 	constraint_renaming_hash: HASH_TABLE[ETR_CT_RENAMED_CONSTRAINT_FEATURES,STRING]
+
+	rename_next: BOOLEAN
+	last_was_unqualified_or_current: BOOLEAN
+	next_new_name: STRING
+
+	next_access_name_id(a_message: CALL_AS): INTEGER
+			-- name id of next access as
+		do
+			if attached {ACCESS_AS}a_message as l_msg_access_as then
+				Result := names_heap.id_of (l_msg_access_as.access_name)
+			elseif attached {NESTED_AS}a_message as l_msg_nested_as then
+				Result := names_heap.id_of (l_msg_nested_as.target.access_name)
+			else
+				-- nothing which can be renamed
+				-- i.e. NESTED_EXPR_AS
+				Result :=-1
+			end
+		end
 
 feature {NONE} -- Creation
 
@@ -63,18 +84,38 @@ feature {NONE} -- Creation
 			end
 		end
 
-feature -- Roundtrip
+feature {AST_EIFFEL} -- Roundtrip
+	process_instr_call_as (l_as: INSTR_CALL_AS)
+		do
+			last_was_unqualified_or_current := true
+			process_child (l_as.call, l_as, 1)
+			output.append_string("%N")
+		end
+
+	process_expr_call_as (l_as: EXPR_CALL_AS)
+		do
+			last_was_unqualified_or_current := true
+			process_child (l_as.call, l_as, 1)
+		end
+
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
-			changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
+			l_changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
 		do
-			changed_arguments := changed_args_hash[l_as.access_name]
-
-			-- check for changed argument name
-			if attached changed_arguments and then changed_arguments.is_changed_name then
-				output.append_string (changed_arguments.new_name)
-			else
+			if rename_next then
+				output.append_string (next_new_name)
+				rename_next := false
+			elseif not last_was_unqualified_or_current then
 				output.append_string (l_as.access_name)
+			else
+				l_changed_arguments := changed_args_hash[l_as.access_name]
+
+				-- check for changed argument name
+				if attached l_changed_arguments and then l_changed_arguments.is_changed_name then
+					output.append_string (l_changed_arguments.new_name)
+				else
+					output.append_string (l_as.access_name)
+				end
 			end
 
 			if processing_needed (l_as.parameters,l_as,1) then
@@ -84,88 +125,99 @@ feature -- Roundtrip
 			end
 		end
 
+	process_id_as (l_as: ID_AS)
+		local
+			l_changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
+		do
+			if rename_next then
+				output.append_string (next_new_name)
+				rename_next := false
+			else
+				output.append_string (l_as.name)
+			end
+		end
+
 	process_nested_as (l_as: NESTED_AS)
 		local
-			old_feature,new_feature: FEATURE_I
-			changed_features: ETR_CT_CHANGED_FEATURE
-			changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
-			renamings: ETR_CT_RENAMED_CONSTRAINT_FEATURES
-			old_feat_name, new_feat_name: STRING
-			old_feat_name_id, new_feat_name_id: INTEGER
+			l_old_feature,l_new_feature: FEATURE_I
+			l_changed_features: ETR_CT_CHANGED_FEATURE
+			l_changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
+			l_renamings: ETR_CT_RENAMED_CONSTRAINT_FEATURES
+			l_old_msg_name, l_new_msg_name: STRING
+			l_old_msg_name_id, l_new_msg_name_id, l_next_access_name_id: INTEGER
 		do
-			if attached {ACCESS_ID_AS}l_as.target as target and attached {ACCESS_FEAT_AS}l_as.message as msg then
-				-- check for changed feature types that need renaming
-				check
-					not target.is_qualified and msg.is_qualified
+			fixme("Disable renaming if we're in the wrong context!")
+			process_child (l_as.target, l_as, 1)
+			output.append_string (".")
+
+			if not last_was_unqualified_or_current then
+				process_child (l_as.message, l_as, 2)
+			else
+				if not attached {CURRENT_AS}l_as.target then
+					last_was_unqualified_or_current := false
 				end
 
-				changed_features := changed_feature_hash[target.access_name]
-				changed_arguments := changed_args_hash[target.access_name]
-				renamings := constraint_renaming_hash[target.access_name]
+				l_changed_features := changed_feature_hash[l_as.target.access_name]
+				l_changed_arguments := changed_args_hash[l_as.target.access_name]
+				l_renamings := constraint_renaming_hash[l_as.target.access_name]
 
-				-- consider renamings
-				-- we have to get the old feature name before the renamings!
-				if attached renamings and then attached renamings.source_renaming then
-					old_feat_name_id := renamings.source_renaming.renamed (target.feature_name.name_id)
-					old_feat_name := names_heap.item (old_feat_name_id)
-				else
-					old_feat_name := msg.access_name
-				end
+				-- we have to get the old message name before the renamings!
+				-- this might not be possible for things like NESTED_EXPR_AS
+				-- but in that case there's nothing to rename anyway
+				l_next_access_name_id := next_access_name_id(l_as.message)
 
-				if attached changed_features then
-					process_child (l_as.target, l_as, 1)
-					output.append_string (".")
-
-					-- now look up feature id's of the message and print the new name
-					-- consider possible renamings
-					old_feature := changed_features.old_type.feature_named (old_feat_name)
-					new_feature := changed_features.new_type.feature_of_feature_id (old_feature.feature_id)
-
-					-- we have to get the new name of the feature
-					if attached renamings and then attached renamings.target_renaming then
-						new_feat_name_id := renamings.target_renaming.new_name (new_feature.feature_name_id)
-						new_feat_name := names_heap.item (new_feat_name_id)
+				if l_next_access_name_id>0 then
+					if attached l_renamings and then attached l_renamings.source_renaming then
+						l_old_msg_name_id := l_renamings.source_renaming.renamed (l_next_access_name_id)
+						l_old_msg_name := names_heap.item (l_old_msg_name_id)
 					else
-						new_feat_name := new_feature.feature_name
+						l_old_msg_name := names_heap.item (l_next_access_name_id)
 					end
 
-					output.append_string (new_feat_name)
-				elseif attached changed_arguments then
-					if changed_arguments.is_changed_name then
-						output.append_string (changed_arguments.new_name)
-					else
-						process_child (l_as.target, l_as, 1)
-					end
-					output.append_string (".")
-
-					if changed_arguments.is_changed_type then
-						old_feature := changed_arguments.old_type.feature_named (old_feat_name)
-						new_feature := changed_arguments.new_type.feature_of_feature_id (old_feature.feature_id)
+					if attached l_changed_features then
+						-- now look up feature id's of the message and print the new name
+						-- consider possible renamings
+						l_old_feature := l_changed_features.old_type.feature_named (l_old_msg_name)
+						l_new_feature := l_changed_features.new_type.feature_of_feature_id (l_old_feature.feature_id)
 
 						-- we have to get the new name of the feature
-						if attached renamings and then attached renamings.target_renaming then
-							new_feat_name_id := renamings.target_renaming.new_name (new_feature.feature_name_id)
-							new_feat_name := names_heap.item (new_feat_name_id)
+						if attached l_renamings and then attached l_renamings.target_renaming then
+							l_new_msg_name_id := l_renamings.target_renaming.new_name (l_new_feature.feature_name_id)
+							l_new_msg_name := names_heap.item (l_new_msg_name_id)
 						else
-							new_feat_name := new_feature.feature_name
+							l_new_msg_name := l_new_feature.feature_name
 						end
 
-						output.append_string (new_feat_name)
+						rename_next := true
+						next_new_name := l_new_msg_name
+						process_child (l_as.message, l_as, 2)
+					elseif attached l_changed_arguments then
+						if l_changed_arguments.is_changed_type then
+							l_old_feature := l_changed_arguments.old_type.feature_named (l_old_msg_name)
+							l_new_feature := l_changed_arguments.new_type.feature_of_feature_id (l_old_feature.feature_id)
+
+							-- we have to get the new name of the feature
+							if attached l_renamings and then attached l_renamings.target_renaming then
+								l_new_msg_name_id := l_renamings.target_renaming.new_name (l_new_feature.feature_name_id)
+								l_new_msg_name := names_heap.item (l_new_msg_name_id)
+							else
+								l_new_msg_name := l_new_feature.feature_name
+							end
+
+							rename_next := true
+							next_new_name := l_new_msg_name
+							process_child (l_as.message, l_as, 2)
+						else
+							process_child (l_as.message, l_as, 2)
+						end
 					else
 						process_child (l_as.message, l_as, 2)
 					end
 				else
-					process_child (l_as.target, l_as, 1)
-					output.append_string (".")
 					process_child (l_as.message, l_as, 2)
 				end
-			else
-				process_child (l_as.target, l_as, 1)
-				output.append_string (".")
-				process_child (l_as.message, l_as, 2)
 			end
 		end
-
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

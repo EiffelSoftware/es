@@ -63,9 +63,14 @@ feature -- Properties
 			create a2_context.make_from_feature (a2_feat)
 
 			-- code snippet in `a1_context'
---			a1_instr := new_instr("io.putstring(a1.generating_type)", a1_context)
---			a1_instr := new_instr("io.putstring(io.putstring(arg_c1_a1.c1_b))", a1_context)
-			a1_instr := new_instr("io.putstring(a_c.c1_a)", a1_context)
+			a1_instr := new_instr(	"if true then%N"+
+									"io.putstring(c.c1_a_renamed)%N"+ -- feature type change
+									"io.putstring(Current.c.c1_b)%N"+ -- fake qualified call
+									"io.putstring(io.putstring(arg_c1_a1.c1_b))%N"+ -- argument type and name change
+									"io.putstring(a_c.c1_a_renamed.out)%N"+ -- local type change
+									"io.putstring(other.arg_c1_a1.c1_b)%N"+ -- same name, no renaming
+									"io.putstring(a1.generating_type)%N"+ -- Current changed
+									"end", a1_context )
 
 			-- transform to `a2_context'
 			basic_operators.transform_to_context (a1_instr, a2_context)
