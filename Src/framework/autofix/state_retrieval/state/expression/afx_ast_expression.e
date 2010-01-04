@@ -48,7 +48,7 @@ feature{NONE} -- Initialization
 			set_class (a_class)
 			set_feature (a_feature)
 			set_written_class (a_written_class)
-			parse_text
+			parse_text (a_text)
 			if not has_syntax_error then
 				set_text (text_from_ast (ast))
 				check_type
@@ -199,17 +199,19 @@ feature{NONE} -- Implementation
 			type_attached: type /= Void
 		end
 
-	parse_text is
-			-- Parse `text' and set `ast' with the parsing result.
-			-- Set `has_syntax_error' to True if `text' contains syntax error.
+	parse_text (a_text: STRING) is
+			-- Parse `a_text' and set `ast' with the parsing result.
+			-- Set `has_syntax_error' to True if `a_text' contains syntax error.
+		require
+			a_text_attached: a_text /= Void
 		local
 			l_parser: like parser
 		do
-				-- Parse `text' into `ast'.
+				-- Parse `a_text' into `ast'.
 			l_parser := parser
 			l_parser.set_has_old_expression (False)
 			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
-			l_parser.parse_from_string (once "check " + text, class_)
+			l_parser.parse_from_string (once "check " + a_text, class_)
 			set_has_syntax_error (l_parser.syntax_error)
 
 			if has_syntax_error then

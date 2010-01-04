@@ -16,6 +16,10 @@ inherit
 
 	AUT_SHARED_RANDOM
 
+	SHARED_SERVER
+
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 create
 	make
 
@@ -82,6 +86,12 @@ feature{NONE} -- Implementation
 			-- List of name of passing test cases in `test_case_folder'.
 
 feature{NONE} -- Implementation
+
+	root_class: CLASS_C
+			-- Root class in `system'.
+		do
+			Result := system.root_type.associated_class
+		end
 
 	find_test_cases
 			-- Find all test cases in specified
@@ -178,10 +188,14 @@ feature{NONE} -- Implementation
 			l_root_class_folder := root_class.group.location.evaluated_path
 			find_test_cases
 
+				-- Reference classes that are mentioned in failing test cases in the interpreter
+				-- project, then compile the project.
+			compile_project_with_mentioned_types
+
 				-- Rewrite system root class.
 			create l_genreator.make (system, config, failing_test_cases, passing_test_cases)
 			l_genreator.generate
-			create l_file.make_create_read_write  (root_class.file_name)
+			create l_file.make_create_read_write (root_class.file_name)
 			l_file.put_string (l_genreator.last_class_text)
 			l_file.close
 
@@ -199,15 +213,97 @@ feature{NONE} -- Implementation
 			temp_passing_test_cases.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
 
 				-- Recompile current project.
+			freeze_and_c_compile
+		end
+
+	freeze_and_c_compile
+			-- Freeze and C compile project.
+		do
 			eiffel_project.quick_melt
 			eiffel_project.freeze
 			eiffel_project.call_finish_freezing_and_wait (True)
 		end
 
-	root_class: CLASS_C
-			-- Root class in `system'.
+	compile_project_with_mentioned_types
+			-- Compile project after adding types that are mentioned in failing test cases.
+		local
+			l_type_feat: E_FEATURE
+			l_tc_info: AFX_TEST_CASE_INFO
+			l_list: LEAF_AS_LIST
+			l_feat_text: STRING
+			l_tc_file: PLAIN_TEXT_FILE
+			l_tc_path: FILE_NAME
+			l_types: DS_HASH_SET [STRING]
 		do
-			Result := system.root_type.associated_class
+			failing_test_cases.start
+
+				-- Find out types used
+			l_tc_info := failing_test_cases.key_for_iteration
+			create l_tc_path.make_from_string (config.test_case_path)
+			l_tc_path.set_file_name (failing_test_cases.item_for_iteration.first + ".e")
+
+			l_types := types_from_file (l_tc_path)
+
+
+			l_feat_text := "types_mentioned_in_test_cases local l_type: TYPE [detachable ANY] do%N"
+			from
+				l_types.start
+			until
+				l_types.after
+			loop
+				l_feat_text.append ("%T%T%Tl_type := {" + l_types.item_for_iteration + "}%N")
+				l_types.forth
+			end
+			l_feat_text.append ("end%N")
+
+			l_list := match_list_server.item (root_class.class_id)
+			if attached {FEATURE_I} root_class.feature_named ("types_mentioned_in_test_cases") as l_feat then
+				l_feat.e_feature.ast.replace_text (l_feat_text, l_list)
+			else
+				root_class.ast.end_keyword.replace_text (l_feat_text + "%N" + "end%N", l_list)
+			end
+			rewrite_class (root_class, root_class.ast.text (l_list))
+			freeze_and_c_compile
+		end
+
+	rewrite_class (a_class: CLASS_C; a_new_text: STRING)
+			-- Rewrite the text of `a_class' with `a_new_text' in file.
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_create_read_write (a_class.file_name)
+			l_file.put_string (a_new_text)
+			l_file.close
+		end
+
+	types_from_file (a_file: STRING): DS_HASH_SET [STRING]
+			-- Types mentioned in test case in `a_file'.
+			-- `a_file' is the full path to a test case file.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_line: STRING
+			l_reg: RX_PCRE_REGULAR_EXPRESSION
+			l_type: STRING
+		do
+			create Result.make (5)
+			Result.set_equality_tester (string_equality_tester)
+			create l_reg.make
+			l_reg.compile ("-- v_[0-9]+.*\[\[(.+)\]\], \[\[(.*)\]\]")
+
+			create l_file.make_open_read (a_file)
+			from
+				l_file.read_line
+			until
+				l_file.after
+			loop
+				l_line := l_file.last_string.twin
+				l_reg.match (l_line)
+				if l_reg.has_matched then
+					Result.force_last (l_reg.captured_substring (1))
+				end
+				l_file.read_line
+			end
+			l_file.close
 		end
 
 note

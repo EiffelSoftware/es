@@ -56,7 +56,7 @@ feature -- Access
 feature -- Generation
 
 	generate
-			-- Generate the class body for the root class in `system',
+			-- Generate the class body for the root class `a_root_class' in `system',
 			-- store result in `last_class_text'.
 		local
 			l_root_class_name: STRING
@@ -292,7 +292,9 @@ feature{NONE} -- Stats retrieval
 		do
 			create Result.make
 			Result.extend (a_context_class.actual_type)
-			a_feature.arguments.do_all (agent Result.extend)
+			if attached{FEAT_ARG} a_feature.arguments as l_argus then
+				l_argus.do_all (agent Result.extend)
+			end
 
 			from
 				Result.start

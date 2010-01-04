@@ -157,6 +157,7 @@ def print_test_case (body, index_of_tc):
         class_name = strip_heading_trailing_newline (m.group(1)) 
         test_case= strip_heading_trailing_newline (m.group(3))
         types = strip_heading_trailing_newline (m.group(4))    
+        types = re.sub ("\[like (.+)\] ",  "",  types)
         object_state = m.group(6)
         data_length = m.group(7)
         #data = strip_heading_trailing_newline (strip_heading_trailing_newline (m.group(7)).lstrip('<![CDATA').rstrip(']]>'))    
