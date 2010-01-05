@@ -29,10 +29,8 @@ feature -- Access
 	class_: CLASS_C
 			-- Class from which Current state is derived
 
-	feature_: detachable FEATURE_I
-			-- Feature from which Current state is derived
-			-- If Void, it means that Current state is derived for the whole class,
-			-- instead of particular feature.
+	feature_: FEATURE_I
+			-- Feature from which break points are put
 
 	breakpoints: HASH_TABLE [AFX_STATE_SKELETON, BREAKPOINT_LOCATION]
 			-- Breakpoints where the debuggee should be stopped and expressions should be evaluated.
@@ -45,7 +43,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	set_hit_action_with_agent (a_skeleton: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: AFX_STATE]]; a_feature: FEATURE_I)
+	set_hit_action_with_agent (a_skeleton: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: AFX_STATE]])
 			-- Set `a_action' to all break points to `a_feature'.
 			-- Every time when the breakpoint is hit, all expressions in `a_skeleton' are evaluated and
 			-- their values are passed to `a_action' through the argument `a_state'.
@@ -58,7 +56,7 @@ feature -- Basic operations
 			l_act_list: LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I]
 			l_action:AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 		do
-			l_slot_count := a_feature.number_of_breakpoint_slots
+			l_slot_count := feature_.number_of_breakpoint_slots
 			from
 				i := 1
 			until
@@ -68,13 +66,13 @@ feature -- Basic operations
 				create l_action.make (a_skeleton, class_, feature_)
 				l_action.on_hit_actions.extend (a_action)
 				l_act_list.extend (l_action)
-				l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, i, False)
+				l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, i, False)
 				hit_actions.put (l_act_list, l_bp_location)
 				i := i + 1
 			end
 		end
 
-	set_all_breakpoints_in_feature (a_state: AFX_STATE_SKELETON; a_feature: FEATURE_I)
+	set_all_breakpoints (a_state: AFX_STATE_SKELETON)
 			-- Set breakpoints in all breakpoints slots in `a_feature' to evaluate
 			-- expressions in `a_state'.
 		local
@@ -82,28 +80,31 @@ feature -- Basic operations
 			l_slot_count: INTEGER
 			i: INTEGER
 		do
-			breakpoints.wipe_out
-			l_slot_count := a_feature.number_of_breakpoint_slots
+			l_slot_count := feature_.number_of_breakpoint_slots
 			from
 				i := 1
 			until
 				i > l_slot_count
 			loop
-				l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, i, False)
-				breakpoints.put (a_state, l_bp_location)
+				set_breakpoint (a_state, i)
 				i := i + 1
 			end
 		end
 
-	set_breakpoint (a_state: AFX_STATE_SKELETON; a_feature: FEATURE_I; a_bpslot: INTEGER)
-			-- Set breakpoint at slot `a_bpslot' in `a_feature' to evaluate expressions
+	set_breakpoint (a_state: AFX_STATE_SKELETON; a_bpslot: INTEGER)
+			-- Set breakpoint at slot `a_bpslot' in `feature_' to evaluate expressions
 			-- in `a_state'.
 		local
 			l_bp_location: BREAKPOINT_LOCATION
 		do
-			breakpoints.wipe_out
-			l_bp_location := breakpoints_manager.breakpoint_location (a_feature.e_feature, a_bpslot, False)
+			l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, a_bpslot, False)
 			breakpoints.put (a_state, l_bp_location)
+		end
+
+	clear_breakpoints
+			-- Clear `breakpoints'.
+		do
+			breakpoints.wipe_out
 		end
 
 	toggle_breakpoints (b: BOOLEAN)
@@ -135,13 +136,14 @@ feature -- Basic operations
 						l_actions.do_all (agent (l_bp_manager.breakpoint_at (l_bp, False)).add_when_hits_action)
 					end
 				else
-					l_bp_manager.disable_user_breakpoint (l_routine, l_bpslot)
+					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
 					if l_actions /= Void then
 						l_actions.do_all (agent (l_bp_manager.breakpoint_at (l_bp, False)).remove_when_hits_action)
 					end
 				end
 				l_bps.forth
 			end
+			l_bp_manager.notify_breakpoints_changes
 		end
 
 feature{NONE} -- Implementation

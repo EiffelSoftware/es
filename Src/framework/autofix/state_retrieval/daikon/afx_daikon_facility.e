@@ -94,7 +94,7 @@ feature -- Setting
 		require
 			a_tc_attached: a_tc /= Void
 		do
-			pass_test_case_info := a_tc
+			pass_test_case_info_internal := a_tc
 		ensure
 			pass_test_case_info_set: pass_test_case_info = a_tc
 		end
@@ -148,10 +148,19 @@ feature{NONE} -- Implementation
 
 	pass_test_case_info: detachable AFX_TEST_CASE_INFO
 			-- Information about a pass test case
+		do
+			if attached {AFX_TEST_CASE_INFO} pass_test_case_info_internal as l_pass_info then
+				Result := l_pass_info
+			else
+				if attached {AFX_TEST_CASE_INFO} fail_test_case_info as l_fail_info then
+					Result := l_fail_info.deep_twin
+					Result.set_is_passing (True)
+				end
+			end
+		end
 
 	fail_test_case_info: detachable AFX_TEST_CASE_INFO
 			-- Information about a fail test case
-
 
 	write_daikon_to_file is
 			-- Write the pass and fail declaration and trace to file
@@ -259,5 +268,8 @@ feature{NONE} -- Implementation
 			l_path.set_file_name (a_tc.id + "__F.dtrace")
 			Result := l_path
 		end
+
+	pass_test_case_info_internal: like pass_test_case_info
+			-- Storage for `pass_test_case_info'
 
 end

@@ -37,29 +37,29 @@ feature -- creation
 	print_declaration : STRING is
 			-- return the state declaration
 		do
-			result := ""
+			create Result.make (1024)
 			from
 				declaration_list.start
 			until
 
 				declaration_list.after
 			loop
-				result := result + declaration_list.item_for_iteration.out
+				Result.append (declaration_list.item_for_iteration.out)
 				declaration_list.forth
 			end
 		end
 
-	print_trace : STRING is
+	trace_as_string : STRING is
 			-- return the state declaration
 		do
-			result := ""
+			create Result.make (1024)
 			from
 				trace_list.start
 			until
 
 				trace_list.after
 			loop
-				result := result + trace_list.item_for_iteration.out
+				Result.append (trace_list.item_for_iteration.out)
 				trace_list.forth
 			end
 

@@ -33,9 +33,8 @@ feature -- Basic operations
 			constraints := structure_analyzer.constraints
 			create relevant_constraints.make
 			relevant_constraints.merge (constraints)
-			
-				-- Uncomment the following to continue.
---			collect_relevant_constraints
+
+			collect_relevant_constraints
 		end
 
 feature{NONE} -- Implementation
@@ -66,6 +65,8 @@ feature{NONE} -- Implementation
 			l_rev_components: DS_HASH_SET [AFX_EXPRESSION]
 			l_done: BOOLEAN
 			l_removed: LINKED_LIST [AFX_EXPRESSION]
+			l_cir: ARRAYED_CIRCULAR [ANY]
+			l_cursor: CURSOR
 		do
 			create l_asserts.make (20)
 			l_asserts.set_equality_tester (expression_equality_tester)
@@ -126,7 +127,7 @@ feature{NONE} -- Implementation
 					until
 						l_temp.after
 					loop
-						if not l_temp.item_for_iteration.components.is_disjoint (l_rev_components) then
+						if not l_temp.item_for_iteration.components.is_subset (l_rev_components) then
 							l_removed.extend (l_temp.key_for_iteration)
 							l_rev_components.append (l_temp.item_for_iteration.components)
 							relevant_constraints.merge (l_temp.item_for_iteration)

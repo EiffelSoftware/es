@@ -66,7 +66,8 @@ feature -- Declaration
    	declarations : STRING is
    			-- print all declarations
    		do
-   		   result := declaration_header
+			create Result.make (1024 * 200)
+   		   Result.append (declaration_header)
    		   from
    		   	  daikon_state_list.start
    		   until
@@ -76,43 +77,53 @@ feature -- Declaration
 
    		   	if daikon_state_list.isfirst then
    		   		--ENTER
-   		   		result := result + "ppt " + daikon_state_list.item_for_iteration.name
-   		   		result := result + first_state_definition
-   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
-				result := result + "%N"
+   		   		Result.append (once "ppt ")
+   		   		Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (first_state_definition)
+   		   		Result.append (daikon_state_list.item_for_iteration.print_declaration)
+				Result.append (once "%N")
 
 				--BPSLOT
-				result := result + "ppt " + daikon_state_list.item_for_iteration.name
-   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + "ppt-type point%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
-				result := result + "%N"
+				Result.append (once "ppt ")
+				Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (once ":::")
+   		   		Result.append (daikon_state_list.item_for_iteration.break_point)
+   		   		Result.append (once "%N")
+   		   		Result.append (once "ppt-type point%N")
+   		   		Result.append (daikon_state_list.item_for_iteration.print_declaration)
+				Result.append (once "%N")
 
    		   	elseif daikon_state_list.islast then
    		   		--BPSLOT
-				result := result + "ppt " + daikon_state_list.item_for_iteration.name
-   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + "ppt-type point%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
-				result := result + "%N"
+				Result.append (once "ppt ")
+				Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (once ":::")
+   		   		Result.append (daikon_state_list.item_for_iteration.break_point)
+   		   		Result.append (once "%N")
+   		   		Result.append (once "ppt-type point%N")
+   		   		Result.append (daikon_state_list.item_for_iteration.print_declaration)
+				Result.append (once "%N")
 
    		   		--EXIT
-   		   		result := result + "ppt " + daikon_state_list.item_for_iteration.name
-   		   		result := result + last_state_definition
-   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
-				result := result + "%N"
+   		   		Result.append (once "ppt ")
+   		   		Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (last_state_definition)
+   		   		Result.append (daikon_state_list.item_for_iteration.print_declaration)
+				Result.append (once "%N")
 
    		   	else
    		   		--NORMAL
-   		   		result := result + "ppt " + daikon_state_list.item_for_iteration.name
-   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + "ppt-type point%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_declaration
-				result := result + "%N"
+   		   		Result.append (once "ppt ")
+   		   		Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (once ":::")
+   		   		Result.append (daikon_state_list.item_for_iteration.break_point)
+   		   		Result.append (once "%N")
+   		   		Result.append (once "ppt-type point%N")
+   		   		Result.append (daikon_state_list.item_for_iteration.print_declaration)
+				Result.append (once "%N")
    		   	end
 
-
-   		   	  daikon_state_list.forth
+  		   	  daikon_state_list.forth
    		   end
 
    		end
@@ -120,7 +131,7 @@ feature -- Declaration
    	traces : STRING is
    			-- print all traces
    		do
-   			result := ""
+   			create Result.make (1024 * 100)
    		from
    		   	  daikon_state_list.start
    		   until
@@ -130,34 +141,38 @@ feature -- Declaration
 
    		   	  if daikon_state_list.isfirst then
    		   	  	--ENTER
-   		   	  	result := result +  daikon_state_list.item_for_iteration.name
-   		   		result := result + ":::ENTER%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_trace
-   		   	    result := result + "%N"
+   		   	  	Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (once ":::ENTER%N")
+   		   		Result.append (daikon_state_list.item_for_iteration.trace_as_string)
+   		   	    Result.append (once "%N")
 
    		   	    --BPSLOT
-   		   	    result := result +  daikon_state_list.item_for_iteration.name
-   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_trace
-   		   	    result := result + "%N"
+   		   	    Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (once ":::")
+   		   		Result.append (daikon_state_list.item_for_iteration.break_point)
+   		   		Result.append (once "%N")
+   		   		Result.append (daikon_state_list.item_for_iteration.trace_as_string)
+   		   	    Result.append (once "%N")
 
    		   	  elseif daikon_state_list.islast then
    		   	  	--BSLOT
-   		   	  	result := result +  daikon_state_list.item_for_iteration.name
-   		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_trace
-   		   	    result := result + "%N"
+   		   	  	Result.append (daikon_state_list.item_for_iteration.name)
+   		   		Result.append (":::")
+   		   		Result.append (daikon_state_list.item_for_iteration.break_point)
+   		   		Result.append (once "%N")
+   		   		Result.append (daikon_state_list.item_for_iteration.trace_as_string)
+   		   	    Result.append ("%N")
 
    		   	    --EXIT
    		   	  	result := result +  daikon_state_list.item_for_iteration.name
    		   		result := result + ":::EXIT1%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   		result := result + daikon_state_list.item_for_iteration.trace_as_string
    		   	    result := result + "%N"
 
    		   	  else
    		   	  	result := result +  daikon_state_list.item_for_iteration.name
    		   		result := result + ":::" + daikon_state_list.item_for_iteration.break_point + "%N"
-   		   		result := result + daikon_state_list.item_for_iteration.print_trace
+   		   		result := result + daikon_state_list.item_for_iteration.trace_as_string
    		   	    result := result + "%N"
    		   	  end
 

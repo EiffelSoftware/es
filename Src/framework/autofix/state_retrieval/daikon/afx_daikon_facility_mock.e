@@ -29,16 +29,20 @@ feature -- Actions
 
 	on_new_test_case_found (tc_info: AFX_TEST_CASE_INFO) is
 			-- Store the current
+		local
+			l_tc_info: AFX_TEST_CASE_INFO
 		do
 			if pass_test_case_info = Void or fail_test_case_info = Void then
 				if tc_info.is_passing then
-					pass_test_case_info := tc_info
-					fail_test_case_info := tc_info.twin
-					fail_test_case_info.set_is_passing (False)
+					set_pass_test_case_info (tc_info)
+					l_tc_info := tc_info.twin
+					l_tc_info.set_is_passing (False)
+					set_fail_test_case_info (l_tc_info)
 				else
-					fail_test_case_info := tc_info
-					pass_test_case_info := tc_info.twin
-					pass_test_case_info.set_is_passing (True)
+					set_fail_test_case_info (tc_info)
+					l_tc_info := tc_info.twin
+					l_tc_info.set_is_passing (True)
+					set_pass_test_case_info (l_tc_info)
 				end
 			end
 		end

@@ -129,7 +129,12 @@ feature -- Access
 			-- AST structure of `recipient_'
 
 	failing_assertion: AFX_EXPRESSION
-			-- Failing assertion
+			-- Failing assertion, rewritten in the context of the recipient.
+
+	original_failing_assertion: AFX_EXPRESSION
+			-- Original assertion for `failing_assertion'.
+			-- Different from `failing_assertion' in precondition violations,
+			-- same as `failing_assertion' in other types of assertion violations.
 
 	failing_assertion_break_point_slot: INTEGER
 			-- Break point slot for `failing_assertion'
@@ -217,6 +222,12 @@ feature -- Setting
 			-- Set `failing_assertion' with `a_assertion'.
 		do
 			failing_assertion := a_assertion
+		end
+
+	set_original_failing_assertion (a_assertion: like original_failing_assertion)
+			-- Set `original_failing_assertion' with `a_assertion'.
+		do
+			original_failing_assertion := a_assertion
 		end
 
 	set_feature_of_failing_assertion (a_feature: like feature_of_failing_assertion)

@@ -194,6 +194,7 @@ feature{NONE} -- Implementation
 			l_rewriter.rewrite (a_tc, a_ast_structure, a_dm.application_status.exception_text)
 
 			a_spot.set_failing_assertion (l_rewriter.assertion)
+			a_spot.set_original_failing_assertion (l_rewriter.original_assertion)
 			a_spot.set_feature_of_failing_assertion (l_rewriter.feature_of_assertion)
 			a_spot.set_actual_arguments_in_failing_assertion (l_rewriter.actual_argument_expressions)
 			a_spot.set_failing_assertion_break_point_slot (l_rewriter.assertion_break_point_slot)

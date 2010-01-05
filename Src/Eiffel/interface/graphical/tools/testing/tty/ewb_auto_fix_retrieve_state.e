@@ -116,8 +116,8 @@ feature -- Execute
 				create l_action.make (l_state, config.state_recipient_class, config.state_recipient)
 				debugger_manager.breakpoints_manager.remove_user_breakpoints_in_feature (config.state_recipient.e_feature)
 
-				l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit, config.state_recipient)
-				l_bp_manager.set_all_breakpoints_in_feature (l_state, config.state_recipient)
+				l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit)
+				l_bp_manager.set_all_breakpoints (l_state)
 				l_bp_manager.toggle_breakpoints (True)
 
 				debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
@@ -248,7 +248,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

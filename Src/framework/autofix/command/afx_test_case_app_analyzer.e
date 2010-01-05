@@ -180,8 +180,8 @@ feature{NONE} -- Implementation
 			l_mark_tc_feat := root_class.feature_named (mark_test_case_feature_name)
 			create l_new_tc_bp_manager.make (root_class, l_mark_tc_feat)
 			l_tc_info_skeleton := test_case_info_skeleton (root_class, l_mark_tc_feat)
-			l_new_tc_bp_manager.set_hit_action_with_agent (l_tc_info_skeleton, agent on_new_test_case_found, l_mark_tc_feat)
-			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, l_mark_tc_feat, 1)
+			l_new_tc_bp_manager.set_hit_action_with_agent (l_tc_info_skeleton, agent on_new_test_case_found)
+			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, 1)
 			l_new_tc_bp_manager.toggle_breakpoints (True)
 			l_app_stop_agent := agent on_application_stopped
 			l_app_exited_agent := agent on_application_exited
@@ -274,28 +274,30 @@ feature{NONE} -- Actions
 				l_frames.after or else l_done
 			loop
 				l_frame := l_frames.item_for_iteration
-				if attached {STRING} l_frame.context_class_name as l_cclass then
-					l_context_class := l_cclass
-				else
-					check should_not_happen: False end
-				end
+				if l_frame /= Void then
+					if attached {STRING} l_frame.context_class_name as l_cclass then
+						l_context_class := l_cclass
+					else
+						check should_not_happen: False end
+					end
 
-				if attached {STRING} l_frame.feature_name as l_feat_name then
-					l_context_feature := l_feat_name
-				else
-					check should_not_happen: False end
-				end
+					if attached {STRING} l_frame.feature_name as l_feat_name then
+						l_context_feature := l_feat_name
+					else
+						check should_not_happen: False end
+					end
 
-				if attached {STRING} l_frame.origin_class_name as l_oclass then
-					l_ori_class := l_oclass
-				else
-					l_ori_class := l_context_class
-				end
-				l_ori_feature := l_context_feature
+					if attached {STRING} l_frame.origin_class_name as l_oclass then
+						l_ori_class := l_oclass
+					else
+						l_ori_class := l_context_class
+					end
+					l_ori_feature := l_context_feature
 
-				if l_ori_class ~ a_written_class and then l_ori_feature ~ a_origin_recipient then
-					l_done := True
-					Result := [l_context_class, l_context_feature]
+					if l_ori_class ~ a_written_class and then l_ori_feature ~ a_origin_recipient then
+						l_done := True
+						Result := [l_context_class, l_context_feature]
+					end
 				end
 				l_frames.forth
 			end
@@ -338,10 +340,11 @@ feature{NONE} -- Actions
 			else
 				l_data := recipient_from_trace (l_recipient.feature_name.as_lower, l_recipient_class.name_in_upper, l_trace)
 				create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_data.recipient_class, l_data.recipient, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
---				create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_recipient_class.name, l_recipient.feature_name, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
 			end
 
 			if is_current_test_case_dry_run then
+					-- Remove break points possibly set before.
+				remove_breakpoint (debugger_manager, current_test_case_info.recipient_written_class)
 			else
 				l_spot := exception_spots.item (current_test_case_info.id)
 
@@ -356,9 +359,10 @@ feature{NONE} -- Actions
 				l_recipient_class := current_test_case_info.recipient_written_class
 				l_recipient := current_test_case_info.origin_recipient
 				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
-				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case, l_recipient)
-				current_test_case_breakpoint_manager.set_all_breakpoints_in_feature (l_spot.skeleton, l_recipient)
+				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case)
+				current_test_case_breakpoint_manager.set_all_breakpoints (l_spot.skeleton)
 				current_test_case_breakpoint_manager.toggle_breakpoints (True)
+				check debugger_manager.breakpoints_manager.is_breakpoint_enabled (l_recipient.e_feature, 1) end
 			end
 		end
 
@@ -420,17 +424,9 @@ feature{NONE} -- Actions
 			l_recipient_id: STRING
 			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
 			l_expr: AFX_AST_EXPRESSION
-
-			l_linear: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
-			l_exp: AFX_AST_EXPRESSION
 		do
 				-- Generate state model for current test case.
 			l_recipient_id := current_test_case_info.id
-			create l_exp.make_with_text (current_test_case_info.recipient_class_, current_test_case_info.recipient_, "start_index > 0 and start_index <= index_of(item, count) + 1", current_test_case_info.recipient_class_)
-			create l_linear
-			l_linear.analyze (l_exp)
-			check l_linear.is_matched end
-
 			if not exception_spots.has (l_recipient_id) then
 				create l_spot_analyzer.make (config)
 				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)

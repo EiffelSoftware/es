@@ -96,7 +96,7 @@ feature -- Actions
 			if a_bpslot = l_status.first_break_point_slot then
 				l_status.set_pre_state (a_state.cloned_object)
 			elseif a_bpslot = l_status.last_break_point_slot then
-				check l_status.is_passing end
+				check l_status.is_passing implies a_tc.exception_code = {EXCEP_CONST}.class_invariant end
 				l_status.set_post_state (a_state.cloned_object)
 			end
 		end

@@ -41,19 +41,19 @@ feature -- Basic operations
 			generate_relevant_asts
 
 				-- Analyze structure type of the failing assertion.			
-			assertion_structure_analyzer.do_all (agent {AFX_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_spot.failing_assertion))
+			assertion_structure_analyzers.do_all (agent {AFX_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_spot.failing_assertion))
 
 				-- Generate fixes according to structure type of the failing assertion.
 			from
-				assertion_structure_analyzer.start
+				assertion_structure_analyzers.start
 			until
-				assertion_structure_analyzer.after or l_done
+				assertion_structure_analyzers.after or l_done
 			loop
-				if assertion_structure_analyzer.item_for_iteration.is_matched then
-					assertion_structure_analyzer.item_for_iteration.process (Current)
+				if assertion_structure_analyzers.item_for_iteration.is_matched then
+					assertion_structure_analyzers.item_for_iteration.process (Current)
 					l_done := True
 				end
-				assertion_structure_analyzer.forth
+				assertion_structure_analyzers.forth
 			end
 
 				-- Generate actual fixes.
@@ -79,17 +79,18 @@ feature{NONE} -- Implementation
 			-- `instructions' goes away for the failing point. `scope_leve' is used for fix ranking.
 			-- The outer list is needed because there may be more than one fixing locations.
 
-	assertion_structure_analyzer: LINKED_LIST [AFX_EXPRESSION_STRUCTURE_ANALYZER]
+	assertion_structure_analyzers: LINKED_LIST [AFX_EXPRESSION_STRUCTURE_ANALYZER]
 			-- List of assertion structure analyzers
 			-- The fix syntax for assertions with different structures are different.
 
 	initialize_assertion_structure_analyzer
-			-- Analyze `assertion_structure_analyzer'.
+			-- Analyze `assertion_structure_analyzers'.
 		do
-			create assertion_structure_analyzer.make
-			assertion_structure_analyzer.extend (create {AFX_ABQ_STRUCTURE_ANALYZER})
-			assertion_structure_analyzer.extend (create {AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER})
-			assertion_structure_analyzer.extend (create {AFX_ANY_STRUCTURE_ANALYZER})
+			create assertion_structure_analyzers.make
+			assertion_structure_analyzers.extend (create {AFX_ABQ_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {AFX_ANY_STRUCTURE_ANALYZER})
 		end
 
 	config: AFX_CONFIG

@@ -67,6 +67,7 @@ feature -- Basic operations
 			-- Remove user break points in `a_class' through debugger manager `a_dm'.
 		do
 			a_dm.breakpoints_manager.remove_user_breakpoints_in_class (a_class)
+			a_dm.breakpoints_manager.notify_breakpoints_changes
 		end
 
 end

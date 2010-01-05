@@ -10,6 +10,8 @@ class
 inherit
 	AFX_UTILITY
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -40,6 +42,29 @@ feature -- Access
 			-- Normally, if a component appears more often, it is more likely to be a contrained component.
 			-- For example, in assertion "i >= 0 and i <= count", `i' appear 2 times, so it is more likely
 			-- to be a contrained component.
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		local
+			l_cursor: CURSOR
+		do
+			create Result.make (1024)
+			l_cursor := occurrence_frequency.cursor
+			from
+				occurrence_frequency.start
+			until
+				occurrence_frequency.after
+			loop
+				Result.append (occurrence_frequency.key_for_iteration.text)
+				Result.append (once " : ")
+				Result.append (occurrence_frequency.item_for_iteration.out)
+				Result.append (once "%N")
+				occurrence_frequency.forth
+			end
+			occurrence_frequency.go_to (l_cursor)
+		end
 
 feature -- Basic operations
 

@@ -852,7 +852,7 @@ feature -- Roundtrip: Access
 
 	process_access_inv_as (l_as: ACCESS_INV_AS)
 		do
-			output.append_string(".")
+--			output.append_string(".")
 			process(l_as.feature_name, l_as, 1)
 			if processing_needed (l_as.parameters,l_as,2) then
 				output.append_string (" (")
@@ -1285,7 +1285,7 @@ feature -- Roundtrip: Agents
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

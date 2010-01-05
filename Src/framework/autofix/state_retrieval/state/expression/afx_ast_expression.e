@@ -52,6 +52,8 @@ feature{NONE} -- Initialization
 			if not has_syntax_error then
 				set_text (text_from_ast (ast))
 				check_type
+			else
+				check should_not_happen: False end
 			end
 		end
 
@@ -67,7 +69,7 @@ feature{NONE} -- Initialization
 				check_type
 				set_text (text_from_ast (a_expression))
 			else
-				set_text ("")
+				check should_not_happen: False end
 			end
 		end
 
