@@ -17,9 +17,10 @@ create
 
 feature{NONE} -- Initialization
 
-	make
+	make (a_expression: like expression)
 			-- Initialize Current.
 		do
+			expression := a_expression
 			create components.make (5)
 			components.set_equality_tester (expression_equality_tester)
 			create occurrence_frequency.make (5)
@@ -27,6 +28,10 @@ feature{NONE} -- Initialization
 		end
 
 feature -- Access
+
+	expression: detachable AFX_EXPRESSION
+			-- Expression from which `components' come
+			-- If Void, items in `components' may come from multiple assertions.
 
 	components: DS_HASH_SET [AFX_EXPRESSION]
 			-- Distinct components in the last analyzed expression.

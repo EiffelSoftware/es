@@ -14,6 +14,8 @@ inherit
 
 	AFX_SOLVER_CONSTANTS
 
+	AFX_UTILITY
+
 feature -- Basic operations
 
 	has_implication (a_list1: LINEAR [AFX_EXPRESSION]; a_list2: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): BOOLEAN
@@ -269,24 +271,6 @@ feature -- Access
 				check not Result.has (l_normal_preds.item_for_iteration) end
 				Result.put (l_satis, l_normal_preds.item_for_iteration)
 				l_normal_preds.forth
-			end
-		end
-
-	output_from_program (a_command: STRING; a_working_directory: detachable STRING): STRING
-			-- Output from the execution of `a_command' in (possibly) `a_working_directory'.
-			-- Note: You may need to prune the final new line character.
-		local
-			l_prc_factory: PROCESS_FACTORY
-			l_prc: PROCESS
-			l_buffer: STRING
-		do
-			create l_prc_factory
-			l_prc := l_prc_factory.process_launcher_with_command_line (a_command, a_working_directory)
-			create Result.make (1024)
-			l_prc.redirect_output_to_agent (agent Result.append ({STRING}?))
-			l_prc.launch
-			if l_prc.launched then
-				l_prc.wait_for_exit
 			end
 		end
 

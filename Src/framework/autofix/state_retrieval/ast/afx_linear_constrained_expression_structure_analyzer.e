@@ -36,7 +36,7 @@ feature -- Basic operations
 			-- the structure of `a_expression' matches current analyzer.
 			-- Only matched a linearly constrained expression
 		do
-			create constraints.make
+			create constraints.make (a_expression)
 			class_ := a_expression.class_
 			feature_ := a_expression.feature_
 			written_class := a_expression.written_class
