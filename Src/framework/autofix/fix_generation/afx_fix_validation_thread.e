@@ -44,7 +44,7 @@ feature{NONE} -- Initialization
 		a_melted_fixes: like melted_fixes;
 		a_fix_start_agent: like on_fix_validation_start;
 		a_fix_end_agent: like on_fix_validation_end;
-		a_timer: like timer; a_socket: like socket; a_test_cases: like test_cases)
+		a_timer: like timer; a_socket: like socket; a_test_cases: like test_cases; a_passing_test_cases: like passing_test_cases)
 			-- Initialize Current.
 		do
 			fixes := a_fixes
@@ -54,6 +54,7 @@ feature{NONE} -- Initialization
 			timer := a_timer
 			socket := a_socket
 			test_cases := a_test_cases.twin
+			passing_test_cases := a_passing_test_cases.twin
 			config := a_config
 		end
 
@@ -76,7 +77,11 @@ feature -- Access
 		end
 
 	test_cases: LINKED_LIST [STRING]
-			-- Universal IDs for test cases used to validate fix candidats.
+			-- Universal IDs for test cases used to validate fix candidates.
+
+	passing_test_cases: LINKED_LIST [STRING]
+			-- Universal IDs for passing test cases used to validate fix candidates.
+			-- This should be a subset of `test_cases'.
 
 	exception_count: NATURAL_32
 			-- Number of exceptions when executing test cases.
@@ -123,25 +128,28 @@ feature{NONE} -- Impelmentation
 			socket.read_natural_32
 		end
 
-	send_execute_test_case_request (a_uuid: STRING; a_fix: AFX_FIX)
+	send_execute_test_case_request (a_uuid: STRING; a_fix: AFX_FIX; a_retrieve_post_state: BOOLEAN)
 			-- Send and execute test case request to the interpreter
 			-- to execute the test case specified by `a_uuid' to validate fix `a_fix'
+			-- If `a_retrieve_post_state' is True, retrieve state after test case execution.
 		local
 			l_request: AFX_EXECUTE_TEST_CASE_REQUEST
 			l_response: detachable ANY
 		do
-			create l_request.make (a_uuid)
+			create l_request.make (a_uuid, a_retrieve_post_state)
 			socket.put_natural_32 (request_execute_test_case_type)
 			socket.independent_store (l_request)
 			socket.read_natural_32
 			exception_count := socket.last_natural_32
 
 				-- Get post state from the interpreter.
-			l_response := socket.retrieved
-			if attached {HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]} l_response as l_post_state then
-				set_last_post_execution_state (l_post_state, a_uuid, a_fix)
-			elseif attached {STRING} l_response as l_str and then l_str ~ void_state then
-				set_last_post_execution_state (Void, a_uuid, a_fix)
+			if a_retrieve_post_state then
+				l_response := socket.retrieved
+				if attached {HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]} l_response as l_post_state then
+					set_last_post_execution_state (l_post_state, a_uuid, a_fix)
+				elseif attached {STRING} l_response as l_str and then l_str ~ void_state then
+					set_last_post_execution_state (Void, a_uuid, a_fix)
+				end
 			end
 		end
 
@@ -170,6 +178,7 @@ feature -- Execution
 			l_fix: AFX_MELTED_FIX
 			l_origin_fix: AFX_FIX
 			l_retried: BOOLEAN
+			l_exception_count: NATURAL_32
 		do
 			if not l_retried then
 				timer.set_timeout (0)
@@ -189,6 +198,7 @@ feature -- Execution
 					send_melt_feature_request (l_fix)
 
 						-- Execute all registered test cases.
+					l_exception_count := exception_count
 					create last_test_case_execution_state.make (test_cases.count)
 					from
 						test_cases.start
@@ -196,12 +206,28 @@ feature -- Execution
 						test_cases.after
 					loop
 						timer.set_timeout (max_test_case_time)
-						send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix)
+						send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix, False)
 						timer.set_timeout (0)
 						test_cases.forth
 					end
+
+						-- We found a fix which passes all test cases, re-execute all passing test cases to retrieve post states.
+					if exception_count = l_exception_count then
+						from
+							passing_test_cases.start
+						until
+							passing_test_cases.after
+						loop
+							timer.set_timeout (max_test_case_time)
+							send_execute_test_case_request (passing_test_cases.item_for_iteration, l_origin_fix, True)
+							timer.set_timeout (0)
+							passing_test_cases.forth
+						end
+					end
+
 					l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
 					on_fix_validation_end.call ([l_fix, exception_count])
+
 					melted_fixes.remove
 					if not should_quit then
 						set_should_quit (melted_fixes.after)

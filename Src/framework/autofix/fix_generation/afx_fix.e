@@ -135,7 +135,7 @@ feature -- Access
 								-- Current test case is passing before and after current fix.
 							l_distance_sum := l_distance_sum + l_pre_status.post_state_distance (l_post_status).to_double
 						else
-								-- Current test case passed before current fix and failed current fix.
+								-- Current test case passed before current fix and failed after current fix.
 							l_done := True
 							Result := max_impact_on_passing_test_cases
 						end

@@ -38,12 +38,16 @@ feature{NONE} -- Initialization
 
 				-- Setup `test_cases'.
 			create test_cases.make
+			create passing_test_cases.make
 			from
 				test_case_execution_status.start
 			until
 				test_case_execution_status.after
 			loop
 				test_cases.extend (test_case_execution_status.key_for_iteration)
+				if test_case_execution_status.item_for_iteration.info.is_passing then
+					passing_test_cases.extend (test_case_execution_status.key_for_iteration)
+				end
 				test_case_execution_status.forth
 			end
 
@@ -84,6 +88,10 @@ feature -- Access
 
 	test_cases: LINKED_LIST [STRING]
 			-- Universal IDs for test cases used to validate fix candidates
+
+	passing_test_cases: LINKED_LIST [STRING]
+			-- Universal IDs for passing test cases used to validate fix candidates
+			-- This should be a subset of `test_cases'
 
 	valid_fixes: LINKED_LIST [AFX_FIX]
 			-- List of valid fixed found so far
@@ -187,7 +195,7 @@ feature -- Basic operations
 						timer.set_timeout (0)
 						timer.start
 
-						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases)
+						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases, passing_test_cases)
 						worker.execute
 						if process.is_running then
 							process.wait_for_exit_with_timeout (5000)

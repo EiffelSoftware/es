@@ -71,12 +71,14 @@ feature{NONE} -- Stats retrieval
 		local
 			l_retried: BOOLEAN
 		do
+			last_post_state := Void
 			if is_validating_fixes and then not l_retried then
-				last_post_state := operand_states (a_operands)
+				if should_retrieve_post_state then
+					last_post_state := operand_states (a_operands)
+				end
 			end
 		rescue
 			l_retried := True
-			last_post_state := Void
 			retry
 		end
 
@@ -150,6 +152,7 @@ feature{NONE} -- Implementation
 			last_post_state := Void
 			if attached {AFX_EXECUTE_TEST_CASE_REQUEST} last_request as l_exec_request then
 				log_message ("-- Received UUID: " + l_exec_request.test_case_uuid + "%N")
+				should_retrieve_post_state := l_exec_request.should_retrieve_post_state
 				if l_exec_request.test_case_uuid.is_empty then
 						-- Execute all registered test cases.
 					from
@@ -172,10 +175,14 @@ feature{NONE} -- Implementation
 				end
 			end
 			socket.put_natural_32 (exception_count)
-			if attached {like state_type} last_post_state as l_post then
-				socket.independent_store (l_post)
-			else
-				socket.independent_store (void_state)
+
+				-- If post execution state is retrieved, send it back.
+			if should_retrieve_post_state then
+				if attached {like state_type} last_post_state as l_post then
+					socket.independent_store (l_post)
+				else
+					socket.independent_store (void_state)
+				end
 			end
 		end
 
@@ -412,6 +419,9 @@ feature{NONE} -- State retrieval
 			-- Inner table: key is query name, value is its evaluation value, "nonsensical" if an exception
 			-- happend during evaluation.
 			-- Outer table: key is operand index, 0 is the target, followed by arguments.
+
+	should_retrieve_post_state: BOOLEAN
+			-- Should post state be retrieved?
 
 end
 
