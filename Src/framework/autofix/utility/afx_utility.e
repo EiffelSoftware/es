@@ -388,6 +388,25 @@ feature -- AST
 			create Result.make_with_indentation_string ("%T")
 		end
 
+	ast_from_text (a_text: STRING): AST_EIFFEL
+			-- AST node from `a_text'
+			-- `a_text' must be able to be parsed in to a single AST node.
+		local
+			l_text: STRING
+		do
+			l_text := "feature foo do " + a_text + "%Nend"
+			entity_feature_parser.parse_from_string (l_text, Void)
+
+			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
+				if attached {DO_AS} l_routine.routine_body as l_do then
+					if l_do.compound.count = 1 then
+						Result := l_do.compound.first
+					end
+				end
+			end
+			check Result /= Void end
+		end
+
 feature -- State
 
 	state_shrinker: AFX_STATE_SHRINKER
@@ -568,8 +587,11 @@ feature -- Feature related
 					i > l_count
 				loop
 					Result.put (i, a_feature.arguments.item_name (i))
+					i := i + 1
 				end
 			end
 		end
+
+
 
 end

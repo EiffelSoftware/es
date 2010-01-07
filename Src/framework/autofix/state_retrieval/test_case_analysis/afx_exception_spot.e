@@ -147,6 +147,10 @@ feature -- Access
 			-- the feature where `failing_assertion' is written, otherwise,
 			-- `feature_of_failing_assertion' will be the recipient of the exception.
 
+	class_of_feature_of_failing_assertion: CLASS_C
+			-- Class of `feature_of_failing_assertion'.
+			-- Not necessarily the written class of `feature_of_failing_assertion'
+
 	actual_arguments_in_failing_assertion: HASH_TABLE [AFX_EXPRESSION, INTEGER]
 			-- Expressions used as routine arguments and mentioned in `failing_assertion'.
 			-- This is only used in case of precondition violation, for other types of exceptions
@@ -234,6 +238,12 @@ feature -- Setting
 			-- Set `feature_of_failing_assertion' with `a_feature'.
 		do
 			feature_of_failing_assertion := a_feature
+		end
+
+	set_class_of_feature_of_failing_assertion (a_class: like class_of_feature_of_failing_assertion)
+			-- Set `class_of_feature_of_failing_assertion' with `a_class'.
+		do
+			class_of_feature_of_failing_assertion := a_class
 		end
 
 	set_actual_arguments_in_failing_assertion (a_table: like actual_arguments_in_failing_assertion)

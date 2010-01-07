@@ -33,9 +33,13 @@ feature -- Basic operations
 			-- Generate fixes into `fixes'.
 		local
 			l_solutions: like constrained_solutions
+			l_structure_analyzer: like structure_analyzer
 		do
 				-- Analyze the linear constrained problem.
-			constraints := structure_analyzer.constraints
+			create l_structure_analyzer
+			l_structure_analyzer.analyze (exception_spot.original_failing_assertion)
+			constraints := l_structure_analyzer.constraints
+
 			create relevant_constraints.make (Void)
 			relevant_constraints.merge (constraints)
 			collect_relevant_constraints
@@ -131,8 +135,8 @@ feature{NONE} -- Implementation
 			create l_asserts.make (20)
 			l_asserts.set_equality_tester (expression_equality_tester)
 
-			l_feat := exception_spot.recipient_
-			l_class := exception_spot.recipient_class_
+			l_feat := exception_spot.feature_of_failing_assertion
+			l_class := exception_spot.class_of_feature_of_failing_assertion
 			if exception_spot.is_precondition_violation then
 					-- Collect all precondion assertions and class invariant assertions.
 				l_asserts.append (precondition_expressions (l_class, l_feat))
@@ -321,6 +325,7 @@ feature{NONE} -- Implementation
 			l_fix_skeleton: AFX_IMMEDIATE_AFORE_FIX_SKELETON
 			l_ranking: AFX_FIX_RANKING
 			l_text: STRING
+			l_old_free_text: STRING
 		do
 				-- Generate fix: (p is the failing assertion)
 				-- if not p then
@@ -332,16 +337,11 @@ feature{NONE} -- Implementation
 			else
 				l_old_ast := a_fixing_location.instructions.first.ast.ast
 			end
-			l_text := "feature foo do " + a_solution.constrained_expression.text + " := " + a_solved_expression.text + "%Nend"
-			entity_feature_parser.parse_from_string (l_text, Void)
 
-			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
-				if attached {DO_AS} l_routine.routine_body as l_do then
-					if l_do.compound.count = 1 then
-						l_new_ast := l_do.compound.first
-					end
-				end
-			end
+			fixme ("The above method of removing old expression is not should. Refactoring is needed. 7.1.2009 Jasonw")
+			l_old_free_text := a_solved_expression.text.twin
+			l_old_free_text.replace_substring_all ("old ", "")
+			l_new_ast := ast_from_text (a_solution.constrained_expression.text + " := " + l_old_free_text)
 			check l_new_ast /= Void end
 
 				-- Construct ranking for fix skeleton.
@@ -421,12 +421,6 @@ feature{NONE} -- Implementation
 		do
 			create Result.make
 
-				-- Analyze the linear constrained problem.
-			constraints := structure_analyzer.constraints
-			create relevant_constraints.make (Void)
-			relevant_constraints.merge (constraints)
-			collect_relevant_constraints
-
 				-- Solve the linear constrained problem.
 			from
 				a_constrain_possibilities.start
@@ -450,7 +444,7 @@ feature{NONE} -- Implementation
 					solve_and_append_solution (True, l_constrained_expr, constrained_expressions, l_arguments, l_solutions)
 					solve_and_append_solution (False, l_constrained_expr, constrained_expressions, l_arguments, l_solutions)
 
---					create l_sol.make_with_text (l_constrained_expr.class_, l_constrained_expr.feature_, "0", l_constrained_expr.class_)
+--					create l_sol.make_with_text (l_constrained_expr.class_, l_constrained_expr.feature_, "1", l_constrained_expr.class_)
 --					l_solutions.force_last (l_sol)
 --					create l_sol.make_with_text (l_constrained_expr.class_, l_constrained_expr.feature_, "count", l_constrained_expr.class_)
 --					l_solutions.force_last (l_sol)

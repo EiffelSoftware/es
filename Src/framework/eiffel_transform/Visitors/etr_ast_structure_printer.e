@@ -365,13 +365,16 @@ feature -- Roundtrip: Instructions
 	process_creation_as (l_as: CREATION_AS)
 		do
 			output.append_string ("create ")
-			process(l_as.target, l_as, 1)
+
 			if processing_needed (l_as.type, l_as, 2) then
 				output.append_string("{")
 				process_child (l_as.type, l_as, 2)
-				output.append_string("}")
+				output.append_string("} ")
 			end
-
+			process(l_as.target, l_as, 1)
+			if processing_needed (l_as.call, l_as, 3) then
+				output.append_string (".")
+			end
 			process_child (l_as.call, l_as, 3)
 			output.append_string("%N")
 		end

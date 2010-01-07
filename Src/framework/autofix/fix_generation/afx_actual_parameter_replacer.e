@@ -7,6 +7,11 @@ note
 class
 	AFX_ACTUAL_PARAMETER_REPLACER
 
+inherit
+	AFX_UTILITY
+
+	REFACTORING_HELPER
+
 feature -- Access
 
 	last_ast: AST_EIFFEL
@@ -19,8 +24,82 @@ feature -- Basic operation
 			-- Every invocation to `a_feature' in `a_ast' will have its `a_arg_index'-th actual argument
 			-- replaced with `a_new_arg'
 			-- `a_ast' is considered to be written in `a_written_class'.
+		local
+			l_new_arg_text: STRING
+			l_ast_text: STRING
+			l_index: INTEGER
+			l_paran_count: INTEGER
+			l_arguments: LINKED_LIST [STRING]
+			l_cur_arg: STRING
+			c: CHARACTER
+			l_start_index: INTEGER
+			l_end_index: INTEGER
+			l_str: STRING
 		do
+			fixme ("This is a hacky implementation. Reimplmentation needed. 7.1.2010 Jasonw")
+			l_new_arg_text := text_from_ast (a_new_arg)
+			l_ast_text := text_from_ast (a_ast)
 
+				-- Collect all actual argument in the feature invocation.
+			l_index := l_ast_text.substring_index (a_feature.feature_name + " (", 1)
+			check l_index > 0 end
+			l_paran_count := 1
+			create l_arguments.make
+			l_start_index := l_index + a_feature.feature_name.count + 2
+			from
+				create l_cur_arg.make (10)
+				l_index := l_start_index
+			until
+				l_paran_count = 0
+			loop
+				c := l_ast_text.item (l_index)
+				if c = ',' then
+					if l_paran_count = 1 then
+						l_cur_arg.left_adjust
+						l_cur_arg.right_adjust
+						l_arguments.extend (l_cur_arg)
+						create l_cur_arg.make (10)
+					else
+						l_cur_arg.append_character (c)
+					end
+				elseif c = '(' then
+					l_cur_arg.append_character (c)
+					l_paran_count := l_paran_count + 1
+				elseif c = ')' then
+					l_paran_count := l_paran_count - 1
+					if l_paran_count = 0 then
+						l_cur_arg.left_adjust
+						l_cur_arg.right_adjust
+						l_arguments.extend (l_cur_arg.twin)
+						l_end_index := l_index - 1
+					end
+				else
+					l_cur_arg.append_character (c)
+				end
+				if l_paran_count /= 0 then
+					l_index := l_index + 1
+				end
+			end
+
+				-- Construct actual arguments with replacements.
+			create l_str.make (32)
+			from
+				l_arguments.start
+			until
+				l_arguments.after
+			loop
+				if l_arguments.index = a_arg_index then
+					l_str.append (l_new_arg_text)
+				else
+					l_str.append (l_arguments.item_for_iteration)
+				end
+				if l_arguments.index < l_arguments.count then
+					l_str.append (once ", ")
+				end
+				l_arguments.forth
+			end
+			l_ast_text.replace_substring (l_str, l_start_index, l_end_index)
+			last_ast := ast_from_text (l_ast_text)
 		end
 
 end

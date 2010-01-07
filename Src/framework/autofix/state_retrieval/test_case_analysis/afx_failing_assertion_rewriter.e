@@ -32,6 +32,9 @@ feature -- Access
 			-- If the exception is a precondition violation, `feature_of_assertion' is the feature containing the precondition.
 			-- Otherwise, `feature_of_assertion' is the same as the recipient of the exception.
 
+	class_of_feature_of_assertion: detachable CLASS_C
+			-- Context class of `feature_of_assertion'
+
 	assertion_break_point_slot: INTEGER
 			-- Break point slot for `assertion'.
 			-- If the exception is a precondition violation, this is the break point slot for the failing routine call in recipient.
@@ -60,6 +63,7 @@ feature -- Basic operations
 				analyze_precondtion_violation (a_tc, a_structure, a_trace)
 			else
 				feature_of_assertion := a_tc.recipient_
+				class_of_feature_of_assertion := a_tc.recipient_class_
 				assertion_break_point_slot := a_tc.breakpoint_slot
 				if a_tc.exception_code = {EXCEP_CONST}.check_instruction then
 					if attached {TAGGED_AS} a_structure.relevant_ast (a_tc.breakpoint_slot) as l_check_ast then
@@ -143,6 +147,7 @@ feature{NONE} -- Implementation
 				-- Collect expressions used as arguments.
 			l_failing_classc := first_class_starts_with_name (l_failing_feature.a_class)
 			feature_of_assertion := l_failing_classc.feature_named (l_failing_feature.a_feature)
+			class_of_feature_of_assertion := l_failing_classc
 			create l_calling_args.make (feature_of_assertion.argument_count)
 			if feature_of_assertion.argument_count > 0 then
 				from
