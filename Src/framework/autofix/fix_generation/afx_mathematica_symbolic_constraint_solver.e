@@ -152,7 +152,9 @@ feature{NONE} -- Implementation
 					create l_conditions.make
 					create l_valuations.make (0)
 					l_valuations.compare_objects
-					create l_expr.make_with_text (a_function.class_, a_function.feature_, l_value, a_function.written_class)
+					if not l_value.has_substring ("infinity") then
+						create l_expr.make_with_text (a_function.class_, a_function.feature_, l_value, a_function.written_class)
+					end
 					last_solutions.put ([l_conditions, l_valuations], l_expr)
 					l_solution.forth
 				end

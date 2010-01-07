@@ -18,6 +18,8 @@ inherit
 
 	AFX_SOLVER_FACTORY
 
+	AFX_UTILITY
+
 feature -- Access
 
 	feature_: FEATURE_I
@@ -187,8 +189,43 @@ feature -- Status report
 		end
 
 	is_true_expression: BOOLEAN
-			-- Does current expression' represent "True"?
+			-- Does current expression represent "True"?
 		do
+		end
+
+	is_false_expression: BOOLEAN
+			-- Does current expression represent "False"?
+		do
+		end
+
+	is_result: BOOLEAN
+			-- Does current expression "Result"?
+		do
+			Result := text.is_case_insensitive_equal ("Result")
+		end
+
+	is_attribute: BOOLEAN
+			-- Does current expression represent an attribute in `class_'?
+		do
+			if attached {FEATURE_I} class_.feature_named (text) as l_feat then
+				Result := l_feat.is_attribute
+			end
+		end
+
+	is_argument: BOOLEAN
+			-- Does current expression represent a formal argument in `feature_'?
+		do
+			if attached {FEATURE_I} feature_ as l_feat then
+				Result := arguments_of_feature (l_feat).has (text)
+			end
+		end
+
+	is_local: BOOLEAN
+			-- Does current expression represent a local in `feature_'?
+		do
+			if attached {FEATURE_I} feature_ as l_feat then
+				Result := local_names_of_feature (l_feat).has (text)
+			end
 		end
 
 feature -- Setting

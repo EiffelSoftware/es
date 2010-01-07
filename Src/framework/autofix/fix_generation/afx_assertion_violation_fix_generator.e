@@ -75,7 +75,7 @@ feature{NONE} -- Implementation
 			-- List of ASTs which will be involved in a fix.
 			-- Item in the inner list `instructions' is a list of ASTs, they represent the ASTs whilch will be involved in a fix.
 			-- `scope_level' is the scope level difference from `instructions' to the failing point. If `instructions' are in
-			-- the same basic block as the failing point, `scope_level' will be 1. `scope_level' will be increased by 1, every time,
+			-- the same basic block as the failing point, `scope_level' will be 1. `scope_level' will be increased by 1, every time
 			-- `instructions' goes away for the failing point. `scope_leve' is used for fix ranking.
 			-- The outer list is needed because there may be more than one fixing locations.
 

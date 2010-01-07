@@ -43,12 +43,6 @@ inherit
 		    is_equal
 		end
 
-	UC_SHARED_STRING_EQUALITY_TESTER
-		undefine
-		    copy,
-		    is_equal
-		end
-
 	DEBUG_OUTPUT
 		undefine
 			copy,

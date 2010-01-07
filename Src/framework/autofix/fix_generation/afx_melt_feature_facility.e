@@ -46,7 +46,7 @@ feature -- Basic operations
 			l_old_ast: detachable FEATURE_AS
 			l_last_bpslot: INTEGER
 		do
-			fixme ("Coded copied from ETEST_EVALUATOR_BYTE_CODE_FACTORY, refactoring needed. 23.12.2009 Jasonw")
+			fixme ("Coded adapted from ETEST_EVALUATOR_BYTE_CODE_FACTORY, refactoring needed. 23.12.2009 Jasonw")
 			if attached feature_as_with_text (a_text, a_written_class) as l_feature then
 				l_body_id := a_feature.body_index
 				l_old_ast := a_feature.body
@@ -55,6 +55,7 @@ feature -- Basic operations
 				l_ast_context := a_written_class.ast_context
 				l_ast_context.initialize (a_written_class, a_written_class.actual_type, a_written_class.feature_table)
 				l_ast_context.set_current_feature (a_feature)
+				l_ast_context.set_written_class (a_written_class)
 				l_feature_checker := feature_checker
 				l_feature_checker.init (l_ast_context)
 				l_feature_checker.type_check_and_code (a_feature, True, False)

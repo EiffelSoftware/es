@@ -32,12 +32,7 @@ feature -- Basic operations
 	generate
 			-- Generate fixes into `fixes'.
 		local
-			l_maximizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
-			l_minimizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
-			l_possibilities: like constrain_possibilities
-			l_constrained_exprs: DS_HASH_SET [AFX_EXPRESSION]
-			l_arguments: LINKED_LIST [AFX_EXPRESSION]
-			l_solutions: DS_HASH_SET [AFX_EXPRESSION]
+			l_solutions: like constrained_solutions
 		do
 				-- Analyze the linear constrained problem.
 			constraints := structure_analyzer.constraints
@@ -46,40 +41,10 @@ feature -- Basic operations
 			collect_relevant_constraints
 
 				-- Solve the linear constrained problem.
-			l_possibilities := constrain_possibilities
-			create l_solutions.make (10)
-			l_solutions.set_equality_tester (expression_equality_tester)
-			from
-				l_possibilities.start
-			until
-				l_possibilities.after
-			loop
-					-- Generate solutions for every constrain possibility because it cannot be decided
-					-- for sure, which expression is constrained, and which ones are constraining.
-				l_constrained_exprs := l_possibilities.item_for_iteration.constrained_expressions
-				from
-					l_constrained_exprs.start
-				until
-					l_constrained_exprs.after
-				loop
-					create l_arguments.make
-					l_arguments.extend (l_constrained_exprs.item_for_iteration)
-						-- Get a maximized solution and a minimized solution.
-					solve_and_append_solution (True, l_constrained_exprs.item_for_iteration, constrained_expressions, l_arguments, l_solutions)
-					solve_and_append_solution (False, l_constrained_exprs.item_for_iteration, constrained_expressions, l_arguments, l_solutions)
-					l_constrained_exprs.forth
-				end
-				l_possibilities.forth
-			end
+			l_solutions := constrained_solutions (constrain_possibilities)
 
---			from
---				l_solutions.start
---			until
---				l_solutions.after
---			loop
---				io.put_string (l_solutions.item_for_iteration.text + "%N")
---				l_solutions.forth
---			end
+				-- Generate fixes.
+			l_solutions.do_all (agent generate_fix_for_constrained_solution)
 		end
 
 feature{NONE} -- Implementation
@@ -282,6 +247,225 @@ feature{NONE} -- Implementation
 			loop
 				a_solutions.force_last (l_solver.last_solutions.key_for_iteration)
 				l_solver.last_solutions.forth
+			end
+		end
+
+	type_anchor: TUPLE [constrained_expression: AFX_EXPRESSION; solution: AFX_EXPRESSION; constrained_expressions: DS_HASH_SET [AFX_EXPRESSION]; constraining_expressions: DS_HASH_SET [AFX_EXPRESSION]]
+			-- Anchor type
+			-- `constrained_expression' is the expression considered as the solving target, `constrained_expression' must be one of `constrained_expressions'.
+			-- `solution' is the solution for `constrained_expression' under the constraints.
+			-- `constrained_expressions' and `constraining_expressions' are used for supporting data.
+
+	generate_fix_for_constrained_solution (a_solution: like type_anchor)
+			-- Generate fixes for `a_solution'.
+		local
+			l_solution_text: STRING
+			l_solution_expr: AFX_AST_EXPRESSION
+			l_constrained_expr: AFX_EXPRESSION
+		do
+				-- Rewrite the solution in the context of the recipient.
+			create l_solution_text.make (64)
+			if attached {AFX_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not l_target_expr.is_for_boogie then
+				l_solution_text.append (l_target_expr.text)
+				l_solution_text.append (".")
+			end
+			l_solution_text.append (a_solution.solution.text)
+			create l_solution_expr.make_with_text (exception_spot.recipient_class_, exception_spot.recipient_, l_solution_text, exception_spot.recipient_class_)
+
+				-- Generate different types of fixes depending on the type of the constrained expressoin.
+			l_constrained_expr := a_solution.constrained_expression
+			if exception_spot.is_precondition_violation then
+				if config.is_wrapping_fix_enabled then
+					fixing_locations.do_if (
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: AFX_EXPRESSION)
+							do
+								generate_wraping_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
+							end (?, a_solution, l_solution_expr),
+
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+							do
+								Result := a_location.scope_level = 1 and a_location.instrus.count = 1
+							end)
+				end
+			elseif
+				l_constrained_expr.is_attribute or
+				l_constrained_expr.is_local or
+				l_constrained_expr.is_result
+			then
+				if config.is_afore_fix_enabled then
+					fixing_locations.do_if (
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: AFX_EXPRESSION)
+							do
+								generate_afore_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
+							end (?, a_solution, l_solution_expr),
+
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+							do
+								Result := a_location.scope_level = 1 and a_location.instrus.count <=1
+							end)
+				end
+			else
+					-- Give up.
+			end
+		end
+
+	generate_afore_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+			-- Generate afore fixes for precondition violation for `a_fixing_location'.
+		require
+			scope_level_valid: a_fixing_location.scope_level = 1
+			instructions_valid: a_fixing_location.instructions.count <= 1
+		local
+			l_new_exp: AFX_AST_EXPRESSION
+			l_old_ast: detachable AST_EIFFEL
+			l_new_ast: AST_EIFFEL
+			l_fix_skeleton: AFX_IMMEDIATE_AFORE_FIX_SKELETON
+			l_ranking: AFX_FIX_RANKING
+			l_text: STRING
+		do
+				-- Generate fix: (p is the failing assertion)
+				-- if not p then
+				-- 		snippet
+				-- end
+				-- original code
+			if a_fixing_location.instructions.is_empty then
+				l_old_ast := Void
+			else
+				l_old_ast := a_fixing_location.instructions.first.ast.ast
+			end
+			l_text := "feature foo do " + a_solution.constrained_expression.text + " := " + a_solved_expression.text + "%Nend"
+			entity_feature_parser.parse_from_string (l_text, Void)
+
+			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
+				if attached {DO_AS} l_routine.routine_body as l_do then
+					if l_do.compound.count = 1 then
+						l_new_ast := l_do.compound.first
+					end
+				end
+			end
+			check l_new_ast /= Void end
+
+				-- Construct ranking for fix skeleton.
+			create l_ranking
+			l_ranking.set_fix_skeleton_complexity (afore_skeleton_complexity)
+			l_ranking.set_relevant_instructions (a_fixing_location.instructions.count)
+			l_ranking.set_scope_levels (1)
+			l_ranking.set_snippet_complexity (1)
+
+				-- Construct fix skeleton.
+			create l_fix_skeleton.make (exception_spot, config, test_case_execution_status)
+			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion.negated)
+			l_fix_skeleton.set_original_ast (l_old_ast)
+			l_fix_skeleton.set_new_ast (l_new_ast)
+			l_fix_skeleton.set_ranking (l_ranking)
+
+			fixes.extend (l_fix_skeleton)
+		end
+
+	generate_wraping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+			-- Generate wrapping fixes for precondition violation for `a_fixing_location'.
+		require
+			scope_level_valid: a_fixing_location.scope_level = 1
+			instructions_valid: a_fixing_location.instructions.count = 1
+		local
+			l_arg_index: INTEGER
+			l_actual_argument: AFX_EXPRESSION
+			l_replacer: AFX_ACTUAL_PARAMETER_REPLACER
+			l_old_ast: AST_EIFFEL
+			l_new_ast: AST_EIFFEL
+			l_fix_skeleton: AFX_IMMEDIATE_WRAP_FIX_SKELETON
+			l_ranking: AFX_FIX_RANKING
+		do
+				-- Generate fix: (p is the failing assertion)
+				-- if p then
+				-- 		original code
+				-- else
+				-- 		snippet (same as original code except that the constrained expression is replaced by the solution expression.)
+				-- end
+
+				-- Get the new ast node with actual argument replaced with the linear constrained solution.
+			check a_solution.constrained_expression.is_argument end
+			l_arg_index := arguments_of_feature (exception_spot.feature_of_failing_assertion).item (a_solution.constrained_expression.text)
+			l_actual_argument := exception_spot.actual_arguments_in_failing_assertion.item (l_arg_index)
+			l_old_ast := a_fixing_location.instructions.first.ast.ast
+			create l_replacer
+			l_replacer.replace (l_old_ast, exception_spot.feature_of_failing_assertion, l_arg_index, a_solved_expression.ast, exception_spot.recipient_written_class)
+			l_new_ast := l_replacer.last_ast
+
+				-- Construct ranking for fix skeleton.
+			create l_ranking
+			l_ranking.set_fix_skeleton_complexity (wrapping_skeleton_complexity)
+			l_ranking.set_relevant_instructions (1)
+			l_ranking.set_scope_levels (1)
+			l_ranking.set_snippet_complexity (1)
+
+				-- Construct fix skeleton.
+			create l_fix_skeleton.make (exception_spot, exception_spot.failing_assertion, config, test_case_execution_status)
+			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion)
+			l_fix_skeleton.set_original_ast (l_old_ast)
+			l_fix_skeleton.set_new_ast (l_new_ast)
+			l_fix_skeleton.set_ranking (l_ranking)
+
+			fixes.extend (l_fix_skeleton)
+		end
+
+	constrained_solutions (a_constrain_possibilities: like constrain_possibilities): LINKED_LIST [like type_anchor]
+			-- A list of solutions for constrained problems defined in `a_constrain_possibilities'
+		local
+			l_maximizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
+			l_minimizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
+			l_constrained_exprs: DS_HASH_SET [AFX_EXPRESSION]
+			l_arguments: LINKED_LIST [AFX_EXPRESSION]
+			l_solutions: DS_HASH_SET [AFX_EXPRESSION]
+			l_constrained_expr: AFX_EXPRESSION
+			l_sol: AFX_AST_EXPRESSION
+		do
+			create Result.make
+
+				-- Analyze the linear constrained problem.
+			constraints := structure_analyzer.constraints
+			create relevant_constraints.make (Void)
+			relevant_constraints.merge (constraints)
+			collect_relevant_constraints
+
+				-- Solve the linear constrained problem.
+			from
+				a_constrain_possibilities.start
+			until
+				a_constrain_possibilities.after
+			loop
+					-- Generate solutions for every constrain possibility because it cannot be decided
+					-- for sure, which expression is constrained, and which ones are constraining.
+				l_constrained_exprs := a_constrain_possibilities.item_for_iteration.constrained_expressions
+				create l_solutions.make (10)
+				l_solutions.set_equality_tester (expression_equality_tester)
+				from
+					l_constrained_exprs.start
+				until
+					l_constrained_exprs.after
+				loop
+					l_constrained_expr := l_constrained_exprs.item_for_iteration
+					create l_arguments.make
+					l_arguments.extend (l_constrained_expr)
+						-- Get a maximized solution and a minimized solution.
+					solve_and_append_solution (True, l_constrained_expr, constrained_expressions, l_arguments, l_solutions)
+					solve_and_append_solution (False, l_constrained_expr, constrained_expressions, l_arguments, l_solutions)
+
+--					create l_sol.make_with_text (l_constrained_expr.class_, l_constrained_expr.feature_, "0", l_constrained_expr.class_)
+--					l_solutions.force_last (l_sol)
+--					create l_sol.make_with_text (l_constrained_expr.class_, l_constrained_expr.feature_, "count", l_constrained_expr.class_)
+--					l_solutions.force_last (l_sol)
+
+					from
+						l_solutions.start
+					until
+						l_solutions.after
+					loop
+						Result.extend ([l_constrained_expr, l_solutions.item_for_iteration, a_constrain_possibilities.item_for_iteration.constrained_expressions, a_constrain_possibilities.item_for_iteration.constraining_expressions])
+						l_solutions.forth
+					end
+					l_constrained_exprs.forth
+				end
+				a_constrain_possibilities.forth
 			end
 		end
 

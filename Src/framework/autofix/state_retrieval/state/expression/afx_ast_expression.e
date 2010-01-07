@@ -12,7 +12,8 @@ inherit
 		redefine
 			type,
 			is_equal,
-			is_true_expression
+			is_true_expression,
+			is_false_expression
 		end
 
 	SHARED_EIFFEL_PARSER
@@ -141,9 +142,15 @@ feature -- Status report
 		end
 
 	is_true_expression: BOOLEAN
-			-- Does current expression' represent "True"?
+			-- Does current expression represent "True"?
 		do
 			Result := attached {STRING} text as l_text and then l_text.is_case_insensitive_equal ("True")
+		end
+
+	is_false_expression: BOOLEAN
+			-- Does current expression represent "False"?
+		do
+			Result := attached {STRING} text as l_text and then l_text.is_case_insensitive_equal ("False")
 		end
 
 feature -- Debug output
