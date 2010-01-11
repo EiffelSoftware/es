@@ -66,7 +66,7 @@ feature -- Operations
 				create modified_ast.make_from_ast (reparsed_root, a_context, false)
 			else
 				create modified_ast.make_invalid
-				set_error("apply_with_context: Modification resulted in unparsable text")
+				add_error("apply_with_context: Modification resulted in unparsable text")
 			end
 
 			-- reset the modifications list and output

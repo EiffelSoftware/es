@@ -15,12 +15,10 @@ inherit
 
 feature -- Typing
 
-	explicit_type_from_type_as (a_type: TYPE_AS; a_context: ETR_CONTEXT): TYPE_A
+	explicit_type_from_type_as_int (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
 			-- returns the explicit type of `a_type' in `a_context'
 		require
 			type_non_void: a_type /= void
-			context_non_void: a_context /= void
-			has_feature_context: a_context.is_feature
 		local
 			l_type_gen: AST_TYPE_A_GENERATOR
 			l_generated_type, l_resolved_type: TYPE_A
@@ -29,31 +27,44 @@ feature -- Typing
 			create l_type_gen
 			create l_type_a_checker
 
-			l_generated_type := l_type_gen.evaluate_type (a_type, a_context.written_class)
-			l_type_a_checker.init_for_checking (a_context.written_feature, a_context.written_class, void, void)
+			l_generated_type := l_type_gen.evaluate_type (a_type, a_written_class)
+			l_type_a_checker.init_for_checking (a_feature, a_written_class, void, void)
 			l_resolved_type := l_type_a_checker.solved(l_generated_type, void)
 
 			Result := l_resolved_type.actual_type
 
 			if not Result.is_explicit then
 				-- recurse
-				Result := explicit_type (Result, a_context)
+				Result := explicit_type_in_written_class (Result, a_written_class)
 			end
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void
 		end
 
-	explicit_type (a_type: TYPE_A; a_context: ETR_CONTEXT): TYPE_A
+	explicit_type_from_type_as (a_type: TYPE_AS; a_context: ETR_FEATURE_CONTEXT): TYPE_A
 			-- returns the explicit type of `a_type' in `a_context'
 		require
 			type_non_void: a_type /= void
 			context_non_void: a_context /= void
-			context_non_empty: not a_context.is_empty
+		do
+			fixme("Support changes in context!")
+
+			Result := explicit_type_from_type_as_int(a_type, a_context.class_context.written_class, a_context.original_written_feature)
+		ensure
+			is_explicit: Result.is_explicit
+			has_associated_class: Result.associated_class /= void
+		end
+
+	explicit_type_in_written_class (a_type: TYPE_A; a_written_class: CLASS_C): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			written_class_non_void: a_written_class /= void
 		do
 			if a_type.is_formal then
 				if attached {FORMAL_A} a_type as l_formal then
-					Result :=  l_formal.constraints (a_context.written_class)
+					Result :=  l_formal.constraints (a_written_class)
 
 					if attached {TYPE_SET_A}Result as typeset then
 						Result := typeset.first
@@ -66,7 +77,7 @@ feature -- Typing
 					end
 				end
 			elseif a_type.has_like_current then
-				Result := a_context.written_class.actual_type
+				Result := a_written_class.actual_type
 			elseif a_type.has_like then
 				Result := a_type.actual_type
 			else
@@ -79,8 +90,21 @@ feature -- Typing
 
 			if not Result.is_explicit then
 				-- recurse
-				Result := explicit_type (Result, a_context)
+				Result := explicit_type_in_written_class (Result, a_written_class)
 			end
+		ensure
+			is_explicit: Result.is_explicit
+			has_associated_class: Result.associated_class /= void
+		end
+
+	explicit_type (a_type: TYPE_A; a_context: ETR_CLASS_CONTEXT): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			context_non_void: a_context /= void
+			context_non_empty: not a_context.is_empty
+		do
+			Result := explicit_type_in_written_class(a_type, a_context.written_class)
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void
@@ -162,7 +186,7 @@ feature -- Parser
 			Result.set_syntax_version(syntax_version)
 		end
 
-	etr_instr_parser: EIFFEL_PARSER
+	etr_feat_parser: EIFFEL_PARSER
 			-- internal parser used to handle instructions
 		once
 			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
@@ -184,28 +208,36 @@ feature -- Parser
 				etr_class_parser.parse_from_string (a_printed_ast,void)
 
 				if etr_class_parser.error_count>0 then
-					set_error("reparse_printed_ast: Class parsing failed")
+					add_error("reparse_printed_ast: Class parsing failed")
 				else
 					reparsed_root := etr_class_parser.root_node
 				end
-			elseif attached {INSTRUCTION_AS}a_root_type then
-				etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
-				if etr_instr_parser.error_count>0 then
-					set_error("reparse_printed_ast: Instruction parsing failed")
+			elseif attached {FEATURE_AS}a_root_type then
+				etr_feat_parser.parse_from_string ("feature "+a_printed_ast,void)
+
+				if etr_feat_parser.error_count>0 then
+					add_error("reparse_printed_ast: Feature parsing failed")
 				else
-					if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+					reparsed_root := etr_feat_parser.feature_node
+				end
+			elseif attached {INSTRUCTION_AS}a_root_type then
+				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
+				if etr_feat_parser.error_count>0 then
+					add_error("reparse_printed_ast: Instruction parsing failed")
+				else
+					if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 						reparsed_root := body.compound.first
 					end
 				end
 			elseif attached {EXPR_AS}a_root_type then
 				etr_expr_parser.parse_from_string (a_printed_ast,void)
 				if etr_expr_parser.error_count>0 then
-					set_error("reparse_printed_ast: Expression parsing failed")
+					add_error("reparse_printed_ast: Expression parsing failed")
 				else
 					reparsed_root := etr_expr_parser.expression_node
 				end
 			else
-				set_error("reparse_printed_ast: Root of type "+a_root_type.generating_type+" is not supported")
+				add_error("reparse_printed_ast: Root of type "+a_root_type.generating_type+" is not supported")
 			end
 		end
 
@@ -216,23 +248,17 @@ feature -- New
 		require
 			instr_attached: an_instr /= void
 			context_attached: a_context /= void
-		local
-			context_class: CLASS_C
 		do
 			reset_errors
 
-			if not a_context.is_empty then
-				context_class := a_context.written_class
-			end
-
 			fixme("Command/Query-separation")
-			etr_instr_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
+			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
-			if etr_instr_parser.error_count>0 then
-				set_error("new_instr: Parsing failed")
+			if etr_feat_parser.error_count>0 then
+				add_error("new_instr: Parsing failed")
 				create Result.make_invalid
 			else
-				if attached etr_instr_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 					create Result.make_from_ast (body.compound.first, a_context, false)
 				end
 			end
@@ -243,20 +269,14 @@ feature -- New
 		require
 			expr_attached: an_expr /= void
 			context_attached: a_context /= void
-		local
-			context_class: CLASS_C
 		do
 			reset_errors
-
-			if not a_context.is_empty then
-				context_class := a_context.written_class
-			end
 
 			fixme("Command/Query-separation")
 			etr_expr_parser.parse_from_string("check "+an_expr,void)
 
 			if etr_expr_parser.error_count>0 then
-				set_error("new_expr: Parsing failed")
+				add_error("new_expr: Parsing failed")
 				create Result.make_invalid
 			else
 				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)
@@ -351,7 +371,7 @@ feature -- Operations
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

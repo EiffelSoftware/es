@@ -6,7 +6,7 @@ note
 
 class
 	ETR_CT_CHANGED_ARG_LOCAL
-create {ETR_BASIC_OPS}
+create
 	make_changed_type,
 	make_changed_name,
 	make_changed_name_type
@@ -55,7 +55,7 @@ feature {NONE} -- Creation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -5,59 +5,61 @@ note
 	revision: "$Revision$"
 
 class
-	ETR_CONTEXT
+	ETR_CLASS_CONTEXT
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
+	ETR_CONTEXT
 create
-	make_from_class,
-	make_from_feature,
-	make_empty
+	make
 
 feature --Access
 	written_class: detachable CLASS_C
-	written_feature: detachable FEATURE_I
+	written_in_features: LIST[ETR_FEATURE_CONTEXT]
 
-	is_feature: BOOLEAN
-			-- does `Current' represent the context of a feature
+	-- fixme: add feature by name
+	class_features_by_name: HASH_TABLE[ETR_FEATURE_CONTEXT, STRING]
 
-	is_empty: BOOLEAN
-			-- is `Current' an empty context
+	feature_of_id(an_id: INTEGER): ETR_FEATURE_CONTEXT
+			-- gets feature with the id `an_id' in the current context
+		local
+			l_feat_i: FEATURE_I
+		do
+			-- todo:
+			-- lookup internal features
+			-- then in written_class
+
+			l_feat_i := written_class.feature_of_feature_id (an_id)
+
+			if attached l_feat_i then
+				create Result.make(l_feat_i, Current)
+			end
+		end
 
 feature {NONE} -- Creation
 
-	make_from_class(a_class: like written_class)
-			-- make with `a_class'
+	make(a_written_class: like written_class)
+			-- make with `a_written_class'
 		require
-			non_void: a_class /= void
+			non_void: a_written_class /= void
+		local
+			l_written_in: LIST [E_FEATURE]
 		do
-			written_class := a_class
-		end
+			written_class := a_written_class
 
-	make_from_feature(a_feature: like written_feature)
-			-- make with `a_feature'
-		require
-			non_void: a_feature /= void
-			good_written_class: a_feature.written_in /= 0
-		do
-			written_feature := a_feature
-			written_class := a_feature.written_class
-
-			is_feature := true
+			-- add features			
+			-- fixme: lazy init?!
+			from
+				create {LINKED_LIST[ETR_FEATURE_CONTEXT]}written_in_features.make
+				l_written_in := a_written_class.written_in_features
+				l_written_in.start
+			until
+				l_written_in.after
+			loop
+				written_in_features.extend(create {ETR_FEATURE_CONTEXT}.make(l_written_in.item.associated_feature_i, Current))
+				l_written_in.forth
+			end
 		end
-
-	make_empty
-			-- make with `is_empty' set to true
-		do
-			is_empty := true
-		end
-invariant
-	valid_class: not is_empty implies attached written_class
-	valid_feature: is_feature implies attached written_feature
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

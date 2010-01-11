@@ -41,12 +41,12 @@ feature -- Properties
 			Result := 'e'
 		end
 
-	test
+	test_context_transformation
 			-- test context transformations
 		local
 			a1,a2: CLASS_I
 			a1_ast,a2_ast: CLASS_AS
-			a1_context, a2_context: ETR_CONTEXT
+			a1_context, a2_context: ETR_FEATURE_CONTEXT
 			a1_feat, a2_feat: FEATURE_I
 			a1_instr, a2_instr: ETR_TRANSFORMABLE
 		do
@@ -59,8 +59,8 @@ feature -- Properties
 			a2_feat := a2.compiled_class.feature_named ("test")
 
 			-- create contexts
-			create a1_context.make_from_feature (a1_feat)
-			create a2_context.make_from_feature (a2_feat)
+			create a1_context.make (a1_feat, void)
+			create a2_context.make (a2_feat, void)
 
 			-- code snippet in `a1_context'
 			a1_instr := new_instr(	"if true then%N"+
@@ -70,6 +70,7 @@ feature -- Properties
 									"io.putstring(a_c.c1_a_renamed.out)%N"+ -- local type change
 									"io.putstring(other.arg_c1_a1.c1_b)%N"+ -- same name, no renaming
 									"io.putstring(a1.generating_type)%N"+ -- Current changed
+									"io.putstring(str_a1)%N"+ -- renamed local
 									"end", a1_context )
 
 			-- transform to `a2_context'
@@ -80,21 +81,64 @@ feature -- Properties
 			io.put_string (ast_to_string(a2_instr.target_node))
 		end
 
+	test2
+			-- test renaming
+		local
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			a1_context: ETR_FEATURE_CONTEXT
+			a1_feat: FEATURE_I
+			a1_instr: ETR_TRANSFORMABLE
+			trans: ETR_TRANSFORMABLE
+			renamer: ETR_ARG_RENAMER
+		do
+			create renamer
+
+			-- create contexts
+			a1 := universe.compiled_classes_with_name("A1").first
+			a1_ast := a1.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("test")
+
+			-- create contexts
+			create a1_context.make (a1_feat, void)
+			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
+
+
+			renamer.rename_argument (trans, 2, "new_arg_name")
+
+			-- code snippet in `a1_context'
+			a1_instr := new_instr(	"if true then%N"+
+									"io.putstring(c.c1_a_renamed)%N"+ -- feature type change
+									"io.putstring(Current.c.c1_b)%N"+ -- fake qualified call
+									"io.putstring(io.putstring(arg_c1_a1.c1_b))%N"+ -- argument type and name change
+									"io.putstring(a_c.c1_a_renamed.out)%N"+ -- local type change
+									"io.putstring(other.arg_c1_a1.c1_b)%N"+ -- same name, no renaming
+									"io.putstring(a1.generating_type)%N"+ -- Current changed
+									"io.putstring(str_a1)%N"+ -- renamed local
+									"end", a1_context )
+
+			-- transform to new context with renaming
+			basic_operators.transform_to_context (trans, renamer.transformation_result.context)
+
+			io.put_string (ast_to_string(basic_operators.transformation_result.target_node))
+		end
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
 		do
-			-- reparse to have the original ast and not use a modified one from storage
+			-- reparse to have the original ast and don't use a modified one from storage
 --			reparse_class_by_name("A1")
 --			reparse_class_by_name("A2")
-			test
+--			test_context_transformation
+			test2
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

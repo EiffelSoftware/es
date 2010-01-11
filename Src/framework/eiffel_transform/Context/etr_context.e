@@ -1,28 +1,29 @@
 note
-	description: "Error handling for EiffelTransform classes"
+	description: "Context of an AST that is to be modified by EiffelTransform."
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_ERROR_HANDLER
-
-feature -- Error handling
-	has_errors: BOOLEAN
-	last_error: detachable STRING
-
-	reset_errors
-			-- set `has_errors' to false
-		do
-			has_errors := false
+	ETR_CONTEXT
+inherit
+	REFACTORING_HELPER
+		export
+			{NONE} all
 		end
+create
+	make_empty
 
-	add_error(an_error_message: attached like last_error)
-			-- set `last_error' to `an_error_message'
+feature --Access
+	is_empty: BOOLEAN
+			-- is `Current' an empty context
+
+feature {NONE} -- Creation
+
+	make_empty
+			-- make with `is_empty' set to true
 		do
-			-- fixme: use error-chain
-			has_errors := true
-			last_error := an_error_message
+			is_empty := true
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

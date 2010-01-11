@@ -1,28 +1,39 @@
 note
-	description: "Error handling for EiffelTransform classes"
+	description: "Represents an argument or local with a name and a type"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_ERROR_HANDLER
+	ETR_CONTEXT_TYPED_VAR
+create
+	make
 
-feature -- Error handling
-	has_errors: BOOLEAN
-	last_error: detachable STRING
+feature {NONE} -- Creation
 
-	reset_errors
-			-- set `has_errors' to false
+	make(a_name: like name; a_type: like type)
+			-- make with `a_name' and `a_type'
+		require
+			name_set: a_name /= void
+			type_set: a_type /= void
+			type_explicit: a_type.is_explicit
 		do
-			has_errors := false
+			name := a_name
+			type := a_type
 		end
 
-	add_error(an_error_message: attached like last_error)
-			-- set `last_error' to `an_error_message'
+feature -- Access
+	name: STRING
+	type: TYPE_A
+
+feature -- Modification
+
+	set_name(a_new_name: like name)
+			-- set `name' to `a_new_name'
+		require
+			non_void: a_new_name /= void
 		do
-			-- fixme: use error-chain
-			has_errors := true
-			last_error := an_error_message
+			name := a_new_name
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

@@ -13,7 +13,8 @@ inherit
 			process_access_feat_as,
 			process_id_as,
 			process_instr_call_as,
-			process_expr_call_as
+			process_expr_call_as,
+			process_type_dec_as
 		end
 	SHARED_NAMES_HEAP
 create
@@ -41,6 +42,38 @@ feature {NONE} -- Implementation
 				-- i.e. NESTED_EXPR_AS
 				Result :=-1
 			end
+		end
+
+	process_identifier_list_with_renaming (l_as: IDENTIFIER_LIST)
+			-- process `l_as'
+		local
+			l_cursor: INTEGER
+			l_name: STRING
+			l_changed: ETR_CT_CHANGED_ARG_LOCAL
+		do
+			-- process the id's list
+			-- which is not an ast but an array of indexes into the names heap
+			from
+				l_cursor := l_as.index
+				l_as.start
+			until
+				l_as.after
+			loop
+				l_name := names_heap.item (l_as.item)
+				l_changed := changed_args_hash[l_name]
+				if attached l_changed and then l_changed.is_changed_name then
+					output.append_string(l_changed.new_name)
+				else
+					output.append_string(l_name)
+				end
+
+				if l_as.index /= l_as.count then
+					output.append_string(", ")
+				end
+
+				l_as.forth
+			end
+			l_as.go_i_th (l_cursor)
 		end
 
 feature {NONE} -- Creation
@@ -85,6 +118,14 @@ feature {NONE} -- Creation
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_type_dec_as (l_as: TYPE_DEC_AS)
+		do
+			process_identifier_list_with_renaming (l_as.id_list)
+			output.append_string(": ")
+			process_child(l_as.type, l_as, 1)
+		end
+
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
 			last_was_unqualified_or_current := true
@@ -219,7 +260,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

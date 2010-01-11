@@ -8,6 +8,7 @@ feature
 		local
 			a_c: like c
 			a1: like Current
+			str_a1: STRING
 		do
 			create c
 			create a_c
