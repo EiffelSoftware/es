@@ -1,64 +1,61 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform."
+	description: "Creates a setter for an attribute"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_CLASS_CONTEXT
+	ETR_SETTER_GENERATOR
 inherit
-	ETR_CONTEXT
-create
-	make
-
-feature --Access
-	written_class: detachable CLASS_C
-	written_in_features: LIST[ETR_FEATURE_CONTEXT]
-
-	-- fixme: add feature by name
-	class_features_by_name: HASH_TABLE[ETR_FEATURE_CONTEXT, STRING]
-
-	feature_of_id(an_id: INTEGER): ETR_FEATURE_CONTEXT
-			-- gets feature with the id `an_id' in the current context
-		local
-			l_feat_i: FEATURE_I
-		do
-			-- todo:
-			-- lookup internal features
-			-- then in written_class
-
-			l_feat_i := written_class.feature_of_feature_id (an_id)
-
-			if attached l_feat_i then
-				create Result.make(l_feat_i, Current)
-			end
+	ETR_SHARED
+		export
+			{NONE} all
 		end
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		end
+	ETR_ERROR_HANDLER
 
-feature {NONE} -- Creation
+feature -- Operation
+	transformation_result: ETR_TRANSFORMABLE
+			-- result of last transformation
 
-	make(a_written_class: like written_class)
-			-- make with `a_written_class'
+	generate_setter(an_attribute: ETR_TRANSFORMABLE)
+			-- generates a setter for `an_attribute'
 		require
-			non_void: a_written_class /= void
+			non_void: an_attribute /= void
+			valid_trans: an_attribute.is_valid
 		local
-			l_written_in: LIST [E_FEATURE]
+			l_attr_name: STRING
+			l_setter_string: STRING
 		do
-			written_class := a_written_class
+			reset_errors
 
-			-- add features			
-			-- fixme: lazy init?!
-			from
-				create {LINKED_LIST[ETR_FEATURE_CONTEXT]}written_in_features.make
-				l_written_in := a_written_class.written_in_features
-				l_written_in.start
-			until
-				l_written_in.after
-			loop
-				written_in_features.extend(create {ETR_FEATURE_CONTEXT}.make(l_written_in.item.associated_feature_i, Current))
-				l_written_in.forth
+			if attached {FEATURE_AS}an_attribute.target_node as l_attribute then
+				if l_attribute.is_attribute then
+					l_attr_name := l_attribute.feature_name.name
+
+					-- as easy as possible:
+					l_setter_string := 	"feature set_"+l_attr_name+"(a_"+l_attr_name+": like "+l_attr_name+")%N"+
+										"%Tdo%N"+
+										"%T%T"+l_attr_name+" := a_"+l_attr_name+"%N"+
+										"%Tend%N"
+
+					etr_feat_parser.parse_from_string (l_setter_string,void)
+
+					if etr_feat_parser.error_count=0 then
+						-- fixme: create a new feature context!
+						create transformation_result.make_from_ast (etr_feat_parser.feature_node, an_attribute.context.class_context, false)
+					else
+						add_error("generate_setter: Feature parsing failed")
+					end
+				else
+					add_error("generate_setter: Feature is not an attribute")
+				end
+			else
+				add_error("generate_setter: Transformable does not contain a routine-node")
 			end
-
-			class_context := Current
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

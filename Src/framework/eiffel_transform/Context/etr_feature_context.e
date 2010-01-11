@@ -38,8 +38,6 @@ feature -- Access
 	arg_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
 	local_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
 
-	class_context: ETR_CLASS_CONTEXT
-
 feature {NONE} -- Creation
 	make_from_other(a_other: like Current)
 			-- make from `a_other'
@@ -99,7 +97,7 @@ feature {NONE} -- Creation
 		do
 			-- compute explicit type
 			if a_written_feature.has_return_value then
-				type := explicit_type_in_written_class (a_written_feature.type, a_written_feature.written_class)
+				type := explicit_type (a_written_feature.type, a_written_feature.written_class)
 				has_return_value := true
 			end
 
@@ -117,7 +115,7 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.arguments.after or l_e_feat.argument_names.after
 				loop
-					l_expl_type := explicit_type_in_written_class (l_e_feat.arguments.item, l_e_feat.written_class)
+					l_expl_type := explicit_type (l_e_feat.arguments.item, l_e_feat.written_class)
 					l_name := l_e_feat.argument_names.item
 					l_arg_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type))
 
@@ -150,7 +148,7 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.locals.after
 				loop
-					l_expl_type := explicit_type_from_type_as_int (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
+					l_expl_type := explicit_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
 
 					-- add a local for each name
 					from

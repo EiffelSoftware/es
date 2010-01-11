@@ -15,6 +15,9 @@ create
 	make_empty
 
 feature --Access
+
+	class_context: detachable ETR_CLASS_CONTEXT
+
 	is_empty: BOOLEAN
 			-- is `Current' an empty context
 

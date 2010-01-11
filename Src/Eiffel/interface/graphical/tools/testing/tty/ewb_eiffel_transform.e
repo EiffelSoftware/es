@@ -124,6 +124,33 @@ feature -- Properties
 			io.put_string (ast_to_string(basic_operators.transformation_result.target_node))
 		end
 
+	test3
+			-- test setter creation
+		local
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			a1_context: ETR_FEATURE_CONTEXT
+			a1_feat: FEATURE_I
+			a1_instr: ETR_TRANSFORMABLE
+			trans: ETR_TRANSFORMABLE
+			setter_gen: ETR_SETTER_GENERATOR
+		do
+			create setter_gen
+
+			-- create contexts
+			a1 := universe.compiled_classes_with_name("A1").first
+			a1_ast := a1.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("c")
+
+			-- create contexts
+			create a1_context.make (a1_feat, void)
+			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
+
+			setter_gen.generate_setter (trans)
+
+			io.put_string (ast_to_string(setter_gen.transformation_result.target_node))
+		end
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
@@ -132,7 +159,8 @@ feature -- Properties
 --			reparse_class_by_name("A1")
 --			reparse_class_by_name("A2")
 --			test_context_transformation
-			test2
+--			test2
+			test3
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

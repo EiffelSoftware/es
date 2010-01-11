@@ -17,7 +17,7 @@ inherit
 		end
 	ETR_ERROR_HANDLER
 
-feature
+feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
 			-- result of last transformation
 
@@ -43,13 +43,13 @@ feature
 
 						transformation_result := basic_operators.transformation_result
 					else
-						add_error("rename_argument: No local with name "+a_new_name)
+						add_error("rename_local: No local with name "+a_new_name)
 					end
 				else
-					add_error("rename_argument: Feature has no locals")
+					add_error("rename_local: Feature has no locals")
 				end
 			else
-				add_error("rename_argument: a_function does not have a feature-context")
+				add_error("rename_local: a_function does not have a feature-context")
 			end
 		end
 
@@ -110,13 +110,13 @@ feature
 
 						transformation_result := basic_operators.transformation_result
 					else
-						add_error("rename_argument: No argument at position "+an_argument_position.out)
+						add_error("rename_argument_at_position: No argument at position "+an_argument_position.out)
 					end
 				else
-					add_error("rename_argument: Feature has no argument")
+					add_error("rename_argument_at_position: Feature has no argument")
 				end
 			else
-				add_error("rename_argument: a_function does not have a feature-context")
+				add_error("rename_argument_at_position: a_function does not have a feature-context")
 			end
 		end
 

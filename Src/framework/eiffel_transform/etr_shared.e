@@ -15,7 +15,7 @@ inherit
 
 feature -- Typing
 
-	explicit_type_from_type_as_int (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
+	explicit_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
 			-- returns the explicit type of `a_type' in `a_context'
 		require
 			type_non_void: a_type /= void
@@ -35,28 +35,14 @@ feature -- Typing
 
 			if not Result.is_explicit then
 				-- recurse
-				Result := explicit_type_in_written_class (Result, a_written_class)
+				Result := explicit_type (Result, a_written_class)
 			end
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void
 		end
 
-	explicit_type_from_type_as (a_type: TYPE_AS; a_context: ETR_FEATURE_CONTEXT): TYPE_A
-			-- returns the explicit type of `a_type' in `a_context'
-		require
-			type_non_void: a_type /= void
-			context_non_void: a_context /= void
-		do
-			fixme("Support changes in context!")
-
-			Result := explicit_type_from_type_as_int(a_type, a_context.class_context.written_class, a_context.original_written_feature)
-		ensure
-			is_explicit: Result.is_explicit
-			has_associated_class: Result.associated_class /= void
-		end
-
-	explicit_type_in_written_class (a_type: TYPE_A; a_written_class: CLASS_C): TYPE_A
+	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C): TYPE_A
 			-- returns the explicit type of `a_type' in `a_context'
 		require
 			type_non_void: a_type /= void
@@ -90,21 +76,8 @@ feature -- Typing
 
 			if not Result.is_explicit then
 				-- recurse
-				Result := explicit_type_in_written_class (Result, a_written_class)
+				Result := explicit_type (Result, a_written_class)
 			end
-		ensure
-			is_explicit: Result.is_explicit
-			has_associated_class: Result.associated_class /= void
-		end
-
-	explicit_type (a_type: TYPE_A; a_context: ETR_CLASS_CONTEXT): TYPE_A
-			-- returns the explicit type of `a_type' in `a_context'
-		require
-			type_non_void: a_type /= void
-			context_non_void: a_context /= void
-			context_non_empty: not a_context.is_empty
-		do
-			Result := explicit_type_in_written_class(a_type, a_context.written_class)
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void
