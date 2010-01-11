@@ -855,7 +855,6 @@ feature -- Roundtrip: Access
 
 	process_access_inv_as (l_as: ACCESS_INV_AS)
 		do
---			output.append_string(".")
 			process(l_as.feature_name, l_as, 1)
 			if processing_needed (l_as.parameters,l_as,2) then
 				output.append_string (" (")

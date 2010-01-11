@@ -35,9 +35,8 @@ feature -- Access
 	arguments: detachable ARRAY[ETR_CONTEXT_TYPED_VAR]
 	locals: detachable ARRAY[ETR_CONTEXT_TYPED_VAR]
 
-	-- fixme: add hashtables for lookup by name!
---	arg_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED, STRING]
---	local_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED, STRING]
+	arg_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
+	local_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
 
 	class_context: ETR_CLASS_CONTEXT
 
@@ -60,11 +59,13 @@ feature {NONE} -- Creation
 			if a_other.has_arguments then
 				from
 					create arguments.make (1, a_other.arguments.count)
+					create arg_by_name.make (a_other.arguments.count)
 					l_index := 1
 				until
 					l_index > a_other.arguments.count
 				loop
 					arguments[l_index] := a_other.arguments[l_index].twin
+					arg_by_name.extend (arguments[l_index], arguments[l_index].name)
 					l_index := l_index + 1
 				end
 			end
@@ -72,11 +73,13 @@ feature {NONE} -- Creation
 			if a_other.has_locals then
 				from
 					create locals.make (1, a_other.locals.count)
+					create local_by_name.make (a_other.arguments.count)
 					l_index := 1
 				until
 					l_index > a_other.locals.count
 				loop
 					locals[l_index] := a_other.locals[l_index].twin
+					local_by_name.extend (locals[l_index], locals[l_index].name)
 					l_index := l_index + 1
 				end
 			end
@@ -127,10 +130,12 @@ feature {NONE} -- Creation
 
 					from
 						create arguments.make (1, l_arg_list.count)
+						create arg_by_name.make (l_arg_list.count)
 						l_arg_list.start
 					until
 						l_arg_list.after
 					loop
+						arg_by_name.extend (l_arg_list.item, l_arg_list.item.name)
 						arguments[l_arg_list.index] := l_arg_list.item
 						l_arg_list.forth
 					end
@@ -166,10 +171,12 @@ feature {NONE} -- Creation
 
 					from
 						create locals.make (1, l_local_list.count)
+						create local_by_name.make (l_local_list.count)
 						l_local_list.start
 					until
 						l_local_list.after
 					loop
+						local_by_name.extend (l_local_list.item, l_local_list.item.name)
 						locals[l_local_list.index] := l_local_list.item
 						l_local_list.forth
 					end

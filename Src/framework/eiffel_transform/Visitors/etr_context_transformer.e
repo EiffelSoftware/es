@@ -14,7 +14,8 @@ inherit
 			process_id_as,
 			process_instr_call_as,
 			process_expr_call_as,
-			process_type_dec_as
+			process_type_dec_as,
+			process_creation_as
 		end
 	SHARED_NAMES_HEAP
 create
@@ -137,6 +138,26 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			last_was_unqualified_or_current := true
 			process_child (l_as.call, l_as, 1)
+		end
+
+	process_creation_as (l_as: CREATION_AS)
+		do
+			last_was_unqualified_or_current := true
+
+			output.append_string ("create ")
+
+			if processing_needed (l_as.type, l_as, 2) then
+				output.append_string("{")
+				process_child (l_as.type, l_as, 2)
+				output.append_string("} ")
+			end
+
+			process(l_as.target, l_as, 1)
+			if processing_needed (l_as.call, l_as, 3) then
+				output.append_string (".")
+			end
+			process_child (l_as.call, l_as, 3)
+			output.append_string("%N")
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)

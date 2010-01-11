@@ -90,7 +90,7 @@ feature -- Properties
 			a1_feat: FEATURE_I
 			a1_instr: ETR_TRANSFORMABLE
 			trans: ETR_TRANSFORMABLE
-			renamer: ETR_ARG_RENAMER
+			renamer: ETR_RENAMER
 		do
 			create renamer
 
@@ -104,7 +104,8 @@ feature -- Properties
 			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
 
 
-			renamer.rename_argument (trans, 2, "new_arg_name")
+			renamer.rename_argument_at_position (trans, 2, "new_arg_name")
+			renamer.rename_local (renamer.transformation_result, "a_c", "a_renamed_local_c")
 
 			-- code snippet in `a1_context'
 			a1_instr := new_instr(	"if true then%N"+
