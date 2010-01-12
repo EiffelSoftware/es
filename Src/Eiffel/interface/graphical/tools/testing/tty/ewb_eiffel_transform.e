@@ -184,12 +184,41 @@ feature -- Properties
 			io.put_string (ast_to_string(setter_gen.transformation_result.target_node))
 		end
 
+
+
+	test_ec_gen
+			-- test setter creation
+		local
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			a1_context: ETR_CLASS_CONTEXT
+			a1_feat: FEATURE_I
+			a1_instr: ETR_TRANSFORMABLE
+			trans: ETR_TRANSFORMABLE
+			ec_gen: ETR_EFFECTIVE_CLASS_GENERATOR
+		do
+			create ec_gen
+
+			-- create contexts
+			a1 := universe.compiled_classes_with_name("DEF_B").first
+			a1_ast := a1.compiled_class.ast
+
+			-- create contexts
+			create a1_context.make (a1.compiled_class)
+			create trans.make_from_ast (a1_ast, a1_context, false)
+
+			ec_gen.generate_effective (trans)
+
+			io.put_string (ast_to_string(ec_gen.transformation_result.target_node))
+		end
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
 		do
 			-- reparse to have the original ast and don't use a modified one from storage
-			test_ass_attempt_replacing
+--			test_ass_attempt_replacing
+			test_ec_gen
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

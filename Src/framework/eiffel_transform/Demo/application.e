@@ -10,7 +10,9 @@ feature {NONE} -- Initialization
 			a2: A2[C2]
 			c1: C1
 			c2: C2
+			e: EFF
 		do
+			create e
 			create a1
 			create a2
 			create c1
