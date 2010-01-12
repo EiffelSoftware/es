@@ -509,8 +509,45 @@ feature {NONE} -- Roundtrip: Implementation
 					process_formal_argument_list_as_actual_argument_list (l_feature_as.body.internal_arguments, false)
 				end
 				context.add_string ("%N%T%Tend")
+			else
+				process_parent_creation_feature (l_feature_i)
 			end
 		end
+
+	process_parent_creation_feature (featr : FEATURE_I)
+		local
+			lock_passing_possible : BOOLEAN
+		do
+			context.add_string ("%N%Nfeature -- creation instruction wrapper")
+			context.add_string ("%N%N%T" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
+
+			process_formal_arguments_with_caller (featr.arguments)
+
+			context.add_string ("%N%T%T%T-- Wrapper for parent creation procedure `" + featr.feature_name + "'.%N%T%T")
+			context.add_string ("%N%T%Tdo")
+			context.add_string ("%N%T%T%Tscoop_asynchronous_execute (a_caller_, ")
+			context.add_string ("agent effective_" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
+
+			process_formal_arguments_as_actual_arguments (featr.arguments, false)
+
+			context.add_string (")")
+			context.add_string ("%N%T%Tend")
+
+				-- 'effective_feature_name_scoop_separate_class_name'
+			context.add_string ("%N%N%Teffective_" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
+
+			process_flattened_formal_arguments (featr.arguments, false)
+
+			context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + featr.feature_name + "'.")
+			context.add_string ("%N%T%Tdo%N%T%T%Tcreate implementation_." + featr.feature_name)
+			context.add_string (" ")
+
+			process_formal_arguments_as_actual_arguments (featr.arguments, false)
+
+			context.add_string ("%N%T%Tend")
+		end
+
+
 
 	process_auxiliary_local_variables (a_feature: FEATURE_AS; a_feature_name: STRING): BOOLEAN is
 		-- Generate auxiliary local variables for formal arguments.
@@ -672,6 +709,49 @@ feature {NONE} -- Roundtrip: Implementation
 			Result := Result -- and not is_lock_passing_ignored
 		end
 
+	process_formal_arguments_with_auxiliary_variables (a_args: FEAT_ARG; with_a_caller, with_brackets: BOOLEAN) is
+			-- Process `a_list' as if it is list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
+			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
+			-- Addes brackets before and after the list if desired.
+		local
+			i : INTEGER
+			t : TYPE_A
+			a_prefix: STRING
+		do
+			if with_brackets then
+				context.add_string ("(")
+			end
+
+			if with_a_caller then
+				context.add_string ("a_caller_, ")
+			end
+
+			from
+				i := 1
+
+			until
+				i > a_args.count
+			loop
+				t := a_args [i]
+
+				if not t.is_formal and then not t.is_expanded and then
+				   not t.is_tuple then
+					a_prefix := "aux_scoop_"
+				else
+					a_prefix := ""
+				end
+
+				context.add_string (", ")
+				context.add_string (a_prefix + arg_number_name (i))
+
+				i := i + 1
+			end
+
+			if with_brackets then
+				context.add_string (")")
+			end
+		end
+
 	process_formal_argument_list_with_auxiliary_variables (a_list: FORMAL_ARGU_DEC_LIST_AS; with_a_caller, with_brackets: BOOLEAN) is
 			-- Process `a_list' as if it is list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
 			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
@@ -732,6 +812,34 @@ feature {NONE} -- Roundtrip: Implementation
 			end
 		end
 
+	process_flattened_formal_arguments (a_args: FEAT_ARG; with_a_caller: BOOLEAN) is
+			-- Process `a_list'. Substitute anchored types with flattened types.
+			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
+		local
+			i : INTEGER
+		do
+			context.add_string ("(")
+
+			if with_a_caller then
+				context.add_string ("a_caller_: SCOOP_SEPARATE_TYPE; ")
+			end
+
+			from
+				i := 1
+			until
+				i > a_args.count
+			loop
+				context.add_string (arg_number_name (i) + ": " +  separate_type_string (a_args[i]))
+
+				if i /= a_args.count then
+					context.add_string (";")
+				end
+
+				i := i + 1
+			end
+			context.add_string (")")
+		end
+
 	process_flattened_formal_argument_list (a_list: FORMAL_ARGU_DEC_LIST_AS; with_a_caller: BOOLEAN) is
 			-- Process `a_list'. Substitute anchored types with flattened types.
 			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
@@ -780,6 +888,35 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string (")")
 		end
 
+	process_formal_arguments_as_actual_arguments (a_args: FEAT_ARG; with_a_caller: BOOLEAN) is
+			-- Process `a_list' as if it is list of actual arguments.
+			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
+		local
+			i : INTEGER
+		do
+			context.add_string ("(")
+
+			if with_a_caller then
+				context.add_string ("a_caller_")
+			end
+
+			from
+				i := 1
+			until
+				i > a_args.count
+			loop
+				context.add_string (arg_number_name (i))
+
+				if i /= a_args.count then
+					context.add_string (",")
+				end
+
+				i := i + 1
+			end
+
+			context.add_string (")")
+		end
+
 	process_formal_argument_list_as_actual_argument_list (a_list: FORMAL_ARGU_DEC_LIST_AS; with_a_caller: BOOLEAN) is
 			-- Process `a_list' as if it is list of actual arguments.
 			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
@@ -815,6 +952,47 @@ feature {NONE} -- Roundtrip: Implementation
 				i := i + 1
 			end
 			context.add_string (")")
+		end
+
+	process_formal_arguments_with_caller  (a_args: FEAT_ARG)
+			-- Process `a_list'.
+			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument.
+		local
+			i : INTEGER
+			l_scoop_type_visitor: SCOOP_TYPE_VISITOR
+		do
+			create l_scoop_type_visitor
+
+			context.add_string ("(a_caller_: SCOOP_SEPARATE_TYPE ")
+
+			from
+				i  := 1
+			until
+				i > a_args.count
+			loop
+				context.add_string ("; " + arg_number_name (i) + ": " + separate_type_string (a_args [i]))
+				i := i + 1
+			end
+
+			context.add_string (")")
+		end
+
+	separate_type_string (a : TYPE_A) : STRING
+		do
+			Result := ""
+
+			if a.is_separate then
+				Result := Result + "SCOOP_SEPARATE__"
+			end
+
+			Result := Result + a.associated_class.name_in_upper
+			  -- FIXME: I'm not sure if this is the proper way to rip off the
+			  -- `separate' tag from the type. I'm not sure what it does for generics.
+		end
+
+	arg_number_name (i : INTEGER) : STRING
+		do
+			Result := "arg___" + i.out
 		end
 
 	process_formal_argument_list_with_a_caller  (a_list: FORMAL_ARGU_DEC_LIST_AS) is
