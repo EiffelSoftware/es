@@ -124,7 +124,9 @@ feature -- Basic type declaration
 				or else a_name.is_equal ("INTEGER_INTERVAL")
 
 				or else a_name.is_equal ("STRING_8")
+				or else a_name.is_equal ("STRING_32")
 				or else a_name.is_equal ("READABLE_STRING_8")
+				or else a_name.is_equal ("READABLE_STRING_32")
 				or else a_name.is_equal ("READABLE_STRING_GENERAL")
 				or else a_name.is_equal ("STRING_GENERAL")
 				or else a_name.is_equal ("STRING_SEARCHER")
