@@ -7,22 +7,55 @@ note
 class
 	ETR_ERROR_HANDLER
 
-feature -- Error handling
+feature -- Output
 	has_errors: BOOLEAN
 	last_error: detachable STRING
+	errors: detachable LIST[attached like last_error]
+
+feature {NONE} -- Implementation
 
 	reset_errors
 			-- set `has_errors' to false
 		do
+			if attached errors then
+				errors.wipe_out
+			end
+
 			has_errors := false
+		end
+
+	add_errors(a_list: attached like errors)
+			-- add errors
+		do
+			if not attached errors then
+				create {LINKED_LIST[attached like last_error]}errors.make
+			end
+
+			from
+				a_list.start
+			until
+				a_list.after
+			loop
+				errors.extend (a_list.item)
+				a_list.forth
+			end
+
+			if not a_list.is_empty then
+				last_error := a_list.last
+				has_errors := true
+			end
 		end
 
 	add_error(an_error_message: attached like last_error)
 			-- set `last_error' to `an_error_message'
 		do
-			-- fixme: use error-chain
+			if not attached errors then
+				create {LINKED_LIST[like last_error]}errors.make
+			end
+
 			has_errors := true
 			last_error := an_error_message
+			errors.extend (last_error)
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

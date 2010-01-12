@@ -81,7 +81,40 @@ feature -- Properties
 			io.put_string (ast_to_string(a2_instr.target_node))
 		end
 
-	test2
+	test_ass_attempt_replacing
+			-- test context transformations
+		local
+			a1,a2: CLASS_I
+			a1_ast,a2_ast: CLASS_AS
+			a1_context, a2_context: ETR_FEATURE_CONTEXT
+			a1_feat, a2_feat: FEATURE_I
+			a1_instr, a2_instr: ETR_TRANSFORMABLE
+--			tc_expr: ETR_TRANSFORMABLE
+--			checker: ETR_TYPE_CHECKER
+			repl: ETR_ASSIGNMENT_ATTEMPT_REPLACER
+			a2_trans: ETR_TRANSFORMABLE
+		do
+			-- create contexts
+			a1 := universe.compiled_classes_with_name("A1").first
+			a1_ast := a1.compiled_class.ast
+			a2 := universe.compiled_classes_with_name("A2").first
+			a2_ast := a2.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("test")
+			a2_feat := a2.compiled_class.feature_named ("test")
+
+			-- create contexts
+			create a1_context.make (a1_feat, void)
+			create a2_context.make (a2_feat, void)
+
+			create repl
+			a2_trans := create {ETR_TRANSFORMABLE}.make_from_ast(a2_ast, create {ETR_CLASS_CONTEXT}.make(a2.compiled_class),true)
+			repl.replace_assignment_attempts (a2_trans)
+
+			-- print transformed instruction
+			io.put_string (ast_to_string(repl.transformation_result.target_node))
+		end
+
+	test_ren
 			-- test renaming
 		local
 			a1: CLASS_I
@@ -124,7 +157,7 @@ feature -- Properties
 			io.put_string (ast_to_string(basic_operators.transformation_result.target_node))
 		end
 
-	test3
+	test_setter_gen
 			-- test setter creation
 		local
 			a1: CLASS_I
@@ -156,11 +189,7 @@ feature -- Properties
 			-- command line.
 		do
 			-- reparse to have the original ast and don't use a modified one from storage
---			reparse_class_by_name("A1")
---			reparse_class_by_name("A2")
---			test_context_transformation
---			test2
-			test3
+			test_ass_attempt_replacing
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

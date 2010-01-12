@@ -84,37 +84,49 @@ feature {NONE} -- Creation
 		do
 			make_with_output(an_output)
 
-			from
-				create constraint_renaming_hash.make(a_constraint_renaming_list.count)
-				a_constraint_renaming_list.start
-			until
-				a_constraint_renaming_list.after
-			loop
-				constraint_renaming_hash.extend(a_constraint_renaming_list.item,a_constraint_renaming_list.item.feature_name)
+			if attached a_constraint_renaming_list then
+				from
+					create constraint_renaming_hash.make(a_constraint_renaming_list.count)
+					a_constraint_renaming_list.start
+				until
+					a_constraint_renaming_list.after
+				loop
+					constraint_renaming_hash.extend(a_constraint_renaming_list.item,a_constraint_renaming_list.item.feature_name)
 
-				a_constraint_renaming_list.forth
+					a_constraint_renaming_list.forth
+				end
+			else
+				create constraint_renaming_hash.make(0)
 			end
 
-			from
-				create changed_feature_hash.make(a_changed_feature_list.count)
-				a_changed_feature_list.start
-			until
-				a_changed_feature_list.after
-			loop
-				changed_feature_hash.extend(a_changed_feature_list.item,a_changed_feature_list.item.feature_name)
+			if attached a_changed_feature_list then
+				from
+					create changed_feature_hash.make(a_changed_feature_list.count)
+					a_changed_feature_list.start
+				until
+					a_changed_feature_list.after
+				loop
+					changed_feature_hash.extend(a_changed_feature_list.item,a_changed_feature_list.item.feature_name)
 
-				a_changed_feature_list.forth
+					a_changed_feature_list.forth
+				end
+			else
+				create changed_feature_hash.make (0)
 			end
 
-			from
-				create changed_args_hash.make(a_changed_argument_list.count)
-				a_changed_argument_list.start
-			until
-				a_changed_argument_list.after
-			loop
-				changed_args_hash.extend(a_changed_argument_list.item, a_changed_argument_list.item.feature_name)
+			if attached a_changed_argument_list then
+				from
+					create changed_args_hash.make(a_changed_argument_list.count)
+					a_changed_argument_list.start
+				until
+					a_changed_argument_list.after
+				loop
+					changed_args_hash.extend(a_changed_argument_list.item, a_changed_argument_list.item.feature_name)
 
-				a_changed_argument_list.forth
+					a_changed_argument_list.forth
+				end
+			else
+				create changed_args_hash.make (1)
 			end
 		end
 

@@ -105,21 +105,13 @@ feature -- Transformations
 			l_source_class_context, l_target_class_context: ETR_CLASS_CONTEXT
 		do
 			reset_errors
+			transformation_result := void
 
 			l_source_context := a_transformable.context
 
 			if not l_source_context.is_empty and not a_target_context.is_empty then
-				if attached {ETR_CLASS_CONTEXT}l_source_context as l_src then
-					l_source_class_context := l_src
-				elseif attached {ETR_FEATURE_CONTEXT}l_source_context as l_src then
-					l_source_class_context := l_src.class_context
-				end
-
-				if attached {ETR_CLASS_CONTEXT}a_target_context as l_src then
-					l_target_class_context := l_src
-				elseif attached {ETR_FEATURE_CONTEXT}a_target_context as l_src then
-					l_target_class_context := l_src.class_context
-				end
+				l_source_class_context := l_source_context.class_context
+				l_target_class_context := a_target_context.class_context
 
 				create l_changed_args_locals.make
 				create l_changed_feature_types.make
@@ -224,7 +216,7 @@ feature -- Transformations
 		end
 
 	generate_conditional(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT)
-			-- create node corresponding to if `a_test' then `if_part' else `else_part' end with `a_context'
+			-- create node corresponding to if `a_test' then `if_part' else `else_part' in a `a_context'
 		require
 			test_not_void: a_test /= void
 			context_not_void: a_context /= void
@@ -234,18 +226,17 @@ feature -- Transformations
 		local
 			l_if_part_node, l_else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
 			l_result_node: IF_AS
-			l_if_part_dup: like if_part
-			l_else_part_dup: like else_part
+			l_test_node: EXPR_AS
 		do
 			reset_errors
+			transformation_result := void
 
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
-					duplicate_ast (if_part.target_node)
 					-- check if its a single instruction or multiple
-					if attached {INSTRUCTION_AS}duplicated_ast as instr then
+					if attached {INSTRUCTION_AS}if_part.target_node as instr then
 						l_if_part_node := single_instr_list (instr)
-					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
+					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}if_part.target_node as instrs then
 						l_if_part_node := instrs
 					else
 						add_error("generate_conditional: contained ast of if_part is of incompatible type ("+if_part.target_node.generating_type+")")
@@ -253,11 +244,10 @@ feature -- Transformations
 				end
 
 				if attached else_part then
-					duplicate_ast (else_part.target_node)
 					-- check if its a single instruction or multiple
-					if attached {INSTRUCTION_AS}duplicated_ast as instr then
+					if attached {INSTRUCTION_AS}else_part.target_node as instr then
 						l_else_part_node := single_instr_list (instr)
-					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}duplicated_ast as instrs then
+					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}else_part.target_node as instrs then
 						l_else_part_node := instrs
 					else
 						add_error("generate_conditional: contained ast of else_part is of incompatible type ("+else_part.target_node.generating_type+")")
@@ -265,8 +255,28 @@ feature -- Transformations
 				end
 
 				if not has_errors then
+					-- Transform all parts to a_context
+					if attached if_part then
+						transform_to_context (if_part, a_context)
+						if attached {EIFFEL_LIST[INSTRUCTION_AS]}transformation_result.target_node as l_if_part then
+							l_if_part_node := l_if_part
+						end
+					end
+
+					if attached else_part then
+						transform_to_context (else_part, a_context)
+						if attached {EIFFEL_LIST[INSTRUCTION_AS]}transformation_result.target_node as l_else_part then
+							l_else_part_node := l_else_part
+						end
+					end
+
+					transform_to_context (a_test, a_context)
+					if attached {EXPR_AS}transformation_result.target_node as l_test then
+						l_test_node := l_test
+					end
+
 					-- assemble new IF_AS and transformable
-					create l_result_node.initialize (condition, l_if_part_node, void, l_else_part_node, end_keyword, void, void, void)
+					create l_result_node.initialize (l_test_node, l_if_part_node, void, l_else_part_node, end_keyword, void, void, void)
 					create transformation_result.make_from_ast (l_result_node, a_context, false)
 				end
 			else

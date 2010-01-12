@@ -142,6 +142,15 @@ feature -- Access
 
 feature -- Parser
 
+	restore_syntax_versions
+			-- Restores the syntax versions of the parsers
+		do
+			-- for some reason they get wiped sometimes ?!?!
+			etr_class_parser.set_syntax_version (syntax_version)
+			etr_expr_parser.set_syntax_version (syntax_version)
+			etr_feat_parser.set_syntax_version (syntax_version)
+		end
+
 	etr_class_parser: EIFFEL_PARSER
 			-- internal parser used to handle classes
 		once
@@ -173,10 +182,9 @@ feature -- Parser
 		require
 			non_void: a_root_type /= void and a_printed_ast /= void
 		do
-			to_implement("Instruction list!")
-
 			reset_errors
 			reparsed_root := void
+			
 			if attached {CLASS_AS}a_root_type then
 				etr_class_parser.parse_from_string (a_printed_ast,void)
 
@@ -202,8 +210,17 @@ feature -- Parser
 						reparsed_root := body.compound.first
 					end
 				end
+			elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}a_root_type then
+				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
+				if etr_feat_parser.error_count>0 then
+					add_error("reparse_printed_ast: Instruction-list parsing failed")
+				else
+					if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+						reparsed_root := body.compound
+					end
+				end
 			elseif attached {EXPR_AS}a_root_type then
-				etr_expr_parser.parse_from_string (a_printed_ast,void)
+				etr_expr_parser.parse_from_string ("check "+a_printed_ast,void)
 				if etr_expr_parser.error_count>0 then
 					add_error("reparse_printed_ast: Expression parsing failed")
 				else

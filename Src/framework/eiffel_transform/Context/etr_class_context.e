@@ -15,8 +15,7 @@ feature --Access
 	written_class: detachable CLASS_C
 	written_in_features: LIST[ETR_FEATURE_CONTEXT]
 
-	-- fixme: add feature by name
-	class_features_by_name: HASH_TABLE[ETR_FEATURE_CONTEXT, STRING]
+	written_in_features_by_name: HASH_TABLE[ETR_FEATURE_CONTEXT, STRING]
 
 	feature_of_id(an_id: INTEGER): ETR_FEATURE_CONTEXT
 			-- gets feature with the id `an_id' in the current context
@@ -42,6 +41,7 @@ feature {NONE} -- Creation
 			non_void: a_written_class /= void
 		local
 			l_written_in: LIST [E_FEATURE]
+			l_feat_context: ETR_FEATURE_CONTEXT
 		do
 			written_class := a_written_class
 
@@ -50,11 +50,14 @@ feature {NONE} -- Creation
 			from
 				create {LINKED_LIST[ETR_FEATURE_CONTEXT]}written_in_features.make
 				l_written_in := a_written_class.written_in_features
+				create written_in_features_by_name.make(l_written_in.count)
 				l_written_in.start
 			until
 				l_written_in.after
 			loop
-				written_in_features.extend(create {ETR_FEATURE_CONTEXT}.make(l_written_in.item.associated_feature_i, Current))
+				create l_feat_context.make (l_written_in.item.associated_feature_i, Current)
+				written_in_features.extend(l_feat_context)
+				written_in_features_by_name.extend(l_feat_context, l_feat_context.name)
 				l_written_in.forth
 			end
 

@@ -1,11 +1,11 @@
 note
-	description: "Creates a setter for an attribute"
+	description: "Replaces all assignment attempts by object tests"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_SETTER_GENERATOR
+	ETR_ASSIGNMENT_ATTEMPT_REPLACER
 inherit
 	ETR_SHARED
 		export
@@ -17,44 +17,28 @@ inherit
 		end
 	ETR_ERROR_HANDLER
 
-feature -- Operation
+feature -- Operations
 	transformation_result: ETR_TRANSFORMABLE
 			-- result of last transformation
 
-	generate_setter(an_attribute: ETR_TRANSFORMABLE)
-			-- generates a setter for `an_attribute'
-		require
-			non_void: an_attribute /= void
-			valid_trans: an_attribute.is_valid
+	replace_assignment_attempts(a_transformable: ETR_TRANSFORMABLE)
+			-- replaces assignment attempts in `a_transformable'
 		local
-			l_attr_name: STRING
-			l_setter_string: STRING
+			l_visitor: ETR_ASS_ATTMPT_REPL_VISITOR
+			l_output: ETR_AST_STRING_OUTPUT
 		do
 			reset_errors
+			transformation_result := void
 
-			if attached {FEATURE_AS}an_attribute.target_node as l_attribute then
-				if l_attribute.is_attribute then
-					l_attr_name := l_attribute.feature_name.name
+			create l_output.make
+			create l_visitor.make (l_output, a_transformable.context.class_context)
+			l_visitor.print_ast_to_output (a_transformable.target_node)
+			reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
 
-					-- as easy as possible:
-					l_setter_string := 	"feature set_"+l_attr_name+"(a_"+l_attr_name+": like "+l_attr_name+")%N"+
-										"%Tdo%N"+
-										"%T%T"+l_attr_name+" := a_"+l_attr_name+"%N"+
-										"%Tend%N"
-
-					etr_feat_parser.parse_from_string (l_setter_string,void)
-
-					if etr_feat_parser.error_count=0 then
-						-- fixme: create a new feature context!
-						create transformation_result.make_from_ast (etr_feat_parser.feature_node, an_attribute.context.class_context, false)
-					else
-						add_error("generate_setter: Feature parsing failed")
-					end
-				else
-					add_error("generate_setter: Feature is not an attribute")
-				end
+			if reparsed_root = void then
+				add_error("replace_assignment_attempts: Reparsing of modified ast failed")
 			else
-				add_error("generate_setter: Transformable does not contain a feature-node")
+				create transformation_result.make_from_ast (reparsed_root, a_transformable.context, false)
 			end
 		end
 note

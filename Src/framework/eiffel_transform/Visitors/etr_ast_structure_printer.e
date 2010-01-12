@@ -110,7 +110,8 @@ inherit
 			process_address_result_as,
 			process_un_strip_as,
 			process_converted_expr_as,
-			process_infix_prefix_as
+			process_infix_prefix_as,
+			process_reverse_as
 		end
 	REFACTORING_HELPER
 		export
@@ -358,6 +359,14 @@ feature -- Roundtrip: Instructions
 		do
 			process_child (l_as.target, l_as, 1)
 			output.append_string(" := ")
+			process_child (l_as.source, l_as, 2)
+			output.append_string("%N")
+		end
+
+	process_reverse_as (l_as: REVERSE_AS)
+		do
+			process_child (l_as.target, l_as, 1)
+			output.append_string(" ?= ")
 			process_child (l_as.source, l_as, 2)
 			output.append_string("%N")
 		end
