@@ -8,10 +8,6 @@ class
 	ETR_BASIC_OPS
 inherit
 	ETR_SHARED
-		export
-			{NONE} all
-		end
-
 	REFACTORING_HELPER
 		export
 			{NONE} all
@@ -59,7 +55,7 @@ feature {NONE} -- Implementation
 			l_changed_type, l_changed_name: BOOLEAN
 		do
 			-- check for changed type
-			if an_old_var.type.associated_class.class_id /= a_new_var.type.associated_class.class_id then
+			if an_old_var.resolved_type.associated_class.class_id /= a_new_var.resolved_type.associated_class.class_id then
 				l_changed_type := true
 			end
 
@@ -69,9 +65,9 @@ feature {NONE} -- Implementation
 			end
 
 			if l_changed_type and l_changed_name then
-				create Result.make_changed_name_type(an_old_var.name, a_new_var.name, an_old_var.type.associated_class, a_new_var.type.associated_class)
+				create Result.make_changed_name_type(an_old_var.name, a_new_var.name, an_old_var.resolved_type.associated_class, a_new_var.resolved_type.associated_class)
 			elseif l_changed_type then
-				create Result.make_changed_type(an_old_var.name, an_old_var.type.associated_class, a_new_var.type.associated_class)
+				create Result.make_changed_type(an_old_var.name, an_old_var.resolved_type.associated_class, a_new_var.resolved_type.associated_class)
 			elseif l_changed_name then
 				create Result.make_changed_name(an_old_var.name, a_new_var.name)
 			end
@@ -163,7 +159,7 @@ feature -- Transformations
 								l_changed_args_locals.extend (l_changed_var)
 							end
 
-							l_constraint_renaming := extract_renamings (l_cur_old_arg.name, l_cur_old_arg.type, l_cur_new_arg.type)
+							l_constraint_renaming := extract_renamings (l_cur_old_arg.name, l_cur_old_arg.resolved_type, l_cur_new_arg.resolved_type)
 							if attached l_constraint_renaming then
 								l_constraint_renaming_list.extend (l_constraint_renaming)
 							end
@@ -187,7 +183,7 @@ feature -- Transformations
 								l_changed_args_locals.extend (l_changed_var)
 							end
 
-							l_constraint_renaming := extract_renamings (l_cur_old_local.name, l_cur_old_local.type, l_cur_new_local.type)
+							l_constraint_renaming := extract_renamings (l_cur_old_local.name, l_cur_old_local.resolved_type, l_cur_new_local.resolved_type)
 							if attached l_constraint_renaming then
 								l_constraint_renaming_list.extend (l_constraint_renaming)
 							end

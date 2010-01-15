@@ -8,9 +8,6 @@ class
 	ETR_TRANSFORMABLE
 inherit
 	ETR_SHARED
-		export
-			{NONE} all
-		end
 create
 	make_from_ast,
 	make_invalid,
@@ -96,7 +93,7 @@ feature -- creation
 invariant
 	valid_target: is_valid implies (attached target_node and attached context)
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

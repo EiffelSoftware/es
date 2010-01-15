@@ -8,9 +8,6 @@ class
 	ETR_SETTER_GENERATOR
 inherit
 	ETR_SHARED
-		export
-			{NONE} all
-		end
 	REFACTORING_HELPER
 		export
 			{NONE} all

@@ -1,0 +1,354 @@
+note
+	description: "Extracts a method"
+	author: "$Author$"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	ETR_METHOD_EXTRACTOR
+inherit
+	ETR_SHARED
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		end
+	ETR_ERROR_HANDLER
+
+feature {NONE} -- Implementation
+
+	extracted_arguments, extracted_results, used_locals, extracted_new_locals, obsolete_locals: LINKED_LIST[STRING]
+
+	vars_used: ARRAY[LIST[STRING]]
+	var_def: ARRAY[HASH_TABLE[INTEGER,STRING]]
+
+	context: ETR_FEATURE_CONTEXT
+
+	block_start, block_end: INTEGER
+
+	extract_results
+			-- find locals that were used after the block and defined within
+			-- -> results of the extraced method
+		local
+			l_cur_var_used: LIST[STRING]
+			l_current_instr: like block_start
+			l_cur_var_def: INTEGER
+		do
+			from
+				create extracted_results.make
+				l_current_instr := block_end+1
+			until
+				l_current_instr > vars_used.upper
+			loop
+				from
+					l_cur_var_used := vars_used[l_current_instr]
+					l_cur_var_used.start
+				until
+					l_cur_var_used.after
+				loop
+					if not extracted_results.has (l_cur_var_used.item) then
+						l_cur_var_def := (var_def[l_current_instr])[l_cur_var_used.item]
+
+						if l_cur_var_def >= block_start and l_cur_var_def <= block_end then
+							-- a variable used after the block is defined within
+							-- it's a result!
+							extracted_results.extend (l_cur_var_used.item)
+						end
+					end
+
+					l_cur_var_used.forth
+				end
+
+				l_current_instr := l_current_instr + 1
+			end
+		end
+
+	extract_arguments
+			-- find variables that were used in the block
+			--   but their definitions were before
+			--   or they were arguments
+			-- -> arguments of the extracted method
+		local
+			l_cur_var_used: LIST[STRING]
+			l_current_instr: like block_start
+			l_cur_var_def: INTEGER
+		do
+			from
+				create extracted_arguments.make
+				create used_locals.make
+				l_current_instr := block_start
+			until
+				l_current_instr > block_end
+			loop
+				from
+					l_cur_var_used := vars_used[l_current_instr]
+					l_cur_var_used.start
+				until
+					l_cur_var_used.after
+				loop
+					if not extracted_arguments.has (l_cur_var_used.item) then
+						-- all used arguments will be arguments of the new method
+						if attached context.arg_by_name[l_cur_var_used.item] then
+							extracted_arguments.extend (l_cur_var_used.item)
+						else
+							used_locals.extend (l_cur_var_used.item)
+							l_cur_var_def := (var_def[l_current_instr])[l_cur_var_used.item]
+							if l_cur_var_def < block_start  then
+								-- if the variable was defined before the block
+								-- it's an argument of the extracted method
+								extracted_arguments.extend (l_cur_var_used.item)
+							end
+						end
+					end
+
+					l_cur_var_used.forth
+				end
+
+				l_current_instr := l_current_instr + 1
+			end
+		end
+
+	extract_new_locals
+			-- find locals that were used in the block but were not used
+			-- afterwards (=locals in the extracted method)
+			-- = used locals - extracted arguments - extracted results
+		do
+			from
+				used_locals.start
+				create extracted_new_locals.make
+			until
+				used_locals.after
+			loop
+				-- if its not a result and not an argument
+				-- we need it as local
+				if not extracted_arguments.has (used_locals.item) and not extracted_results.has (used_locals.item) then
+					extracted_new_locals.extend (used_locals.item)
+				end
+
+				used_locals.forth
+			end
+		end
+
+	extract_obsolete_locals
+			-- find obsolete locals
+			-- only used in the extracted block
+		local
+			l_cur_var_used: LIST[STRING]
+			l_current_instr: like block_start
+			l_rest_used_locals: like used_locals
+			l_index: INTEGER
+		do
+			-- loop over part of feature that is not extracted
+			-- and gather used locals
+
+			from
+				l_current_instr := vars_used.lower
+				create l_rest_used_locals.make
+			until
+				l_current_instr > vars_used.upper
+			loop
+				-- skip block
+				if l_current_instr=block_start then
+					l_current_instr:=block_end
+				else
+					from
+						l_cur_var_used := vars_used[l_current_instr]
+						l_cur_var_used.start
+					until
+						l_cur_var_used.after
+					loop
+						if not l_rest_used_locals.has (l_cur_var_used.item) then
+							l_rest_used_locals.extend (l_cur_var_used.item)
+						end
+
+						l_cur_var_used.forth
+					end
+					l_current_instr := l_current_instr + 1
+				end
+			end
+
+			-- compute obsolete locals
+			-- basically: all locals - gathered locals
+			from
+				l_index := context.locals.lower
+				create obsolete_locals.make
+			until
+				l_index > context.locals.upper
+			loop
+				if not l_rest_used_locals.has (context.locals[l_index].name) then
+					-- make sure the local was not defined either!
+					-- does't make sense but not our concern...
+					-- it would fail to compile
+					-- (check the last instruction)
+					if not  var_def[var_def.upper].has (context.locals[l_index].name) then
+						obsolete_locals.extend (context.locals[l_index].name)
+					end
+				end
+
+				l_index := l_index + 1
+			end
+		end
+
+	compute_extracted_method(a_start_path, a_end_path: AST_PATH; a_feature_name: STRING; a_feature_body: EIFFEL_LIST[INSTRUCTION_AS])
+			-- puts things together to create the extracted method
+		local
+			l_feature_output_text: STRING
+			l_ex_printer: ETR_EXTRACTED_METHOD_PRINTER
+			l_body_output: ETR_AST_STRING_OUTPUT
+		do
+			create l_feature_output_text.make_empty
+			l_feature_output_text.append (a_feature_name)
+			if not extracted_arguments.is_empty then
+				-- print arguments
+				l_feature_output_text.append ("(")
+				from
+					extracted_arguments.start
+				until
+					extracted_arguments.after
+				loop
+					-- get type (local or argument)
+					-- and print the unresolved version
+					if attached {ETR_CONTEXT_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
+						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context))
+					elseif attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
+						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context))
+					end
+
+					extracted_arguments.forth
+
+					if not extracted_arguments.after then
+						l_feature_output_text.append ("; ")
+					end
+				end
+				l_feature_output_text.append (")")
+			end
+
+			if not extracted_results.is_empty then
+				-- add first result, ignore rest
+				if extracted_results.count>1 then
+					check
+						not_supported: false
+					end
+				end
+
+				-- get type (local) (fixme: or result)
+				-- and print the unresolved version
+				if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
+					l_feature_output_text.append (": " + print_type (l_arg.original_type, context))
+				end
+			end
+
+			l_feature_output_text.append ("%N")
+
+			if not extracted_new_locals.is_empty then
+				l_feature_output_text.append ("local%N")
+				from
+					extracted_new_locals.start
+				until
+					extracted_new_locals.after
+				loop
+					if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
+						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context)+"%N")
+					end
+
+					extracted_new_locals.forth
+				end
+			end
+
+			l_feature_output_text.append ("do%N")
+			-- print only block range
+			-- replace result variable by "Result"
+			create l_body_output.make
+			create l_ex_printer.make (l_body_output, extracted_results, a_start_path, a_end_path)
+			l_ex_printer.print_feature_body(a_feature_body)
+			l_feature_output_text.append (l_body_output.string_representation)
+			l_feature_output_text.append ("end")
+
+			reparse_printed_ast (context.original_written_feature.e_feature.ast, l_feature_output_text)
+			create extracted_method.make_from_ast (reparsed_root, context.class_context, false)
+		end
+
+	compute_original_method
+		do
+			-- fixme: todo
+		end
+
+feature -- Operations
+	extracted_method: ETR_TRANSFORMABLE
+			-- extracted method
+
+	old_method: ETR_TRANSFORMABLE
+			-- original method with the extracted part replaced by a call to the extracted method
+
+	extract_method(a_feature: ETR_TRANSFORMABLE; a_start_path, a_end_path: AST_PATH; a_feature_name: STRING)
+			-- extracts a method with name `a_feature_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
+		local
+			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
+			l_feature_body: EIFFEL_LIST[INSTRUCTION_AS]
+		do
+			reset_errors
+
+			-- check if valid context and valid ast!
+			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
+				context := l_ft_ctxt
+				if attached {FEATURE_AS}a_feature.target_node as l_fn and then attached {DO_AS}l_fn.body.as_routine.routine_body as body then
+					l_feature_body := body.compound
+				elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}a_feature.target_node as body then
+					l_feature_body := body
+				else
+					add_error("extract_method: Incompatible transformable provided")
+				end
+
+				if not has_errors then
+					-- find out what locals are defined/used where
+					create l_use_def_gen.make (context)
+					l_use_def_gen.generate_chain (a_feature.target_node, a_start_path, a_end_path)
+
+					vars_used := l_use_def_gen.vars_used
+					var_def := l_use_def_gen.var_def
+					block_start := l_use_def_gen.block_start_position
+					block_end := l_use_def_gen.block_end_position
+
+					extract_arguments
+					extract_results
+					extract_new_locals
+					extract_obsolete_locals
+
+					compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_feature_body)
+					compute_original_method
+				end
+			else
+				add_error("extract_method: No feature context provided")
+			end
+		end
+note
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

@@ -8,9 +8,6 @@ class
 	ETR_EFFECTIVE_CLASS_GENERATOR
 inherit
 	ETR_SHARED
-		export
-			{NONE} all
-		end
 	REFACTORING_HELPER
 		export
 			{NONE} all
@@ -20,7 +17,7 @@ feature -- Operations
 	transformation_result: ETR_TRANSFORMABLE
 			-- result of last transformation
 
-	generate_effective(a_class: ETR_TRANSFORMABLE)
+	generate_effective_class(a_class: ETR_TRANSFORMABLE)
 			-- creates an effective class from `a_class'
 		local
 			l_ft: FEATURE_TABLE

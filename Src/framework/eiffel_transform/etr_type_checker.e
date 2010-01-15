@@ -27,8 +27,6 @@ inherit
 	ETR_SHARED
 		rename
 			basic_operators as etr_basic_ops
-		export
-			{NONE} all
 		end
 
 feature -- Type checking

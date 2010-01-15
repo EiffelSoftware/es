@@ -13,12 +13,96 @@ inherit
 		end
 	ETR_ERROR_HANDLER
 
-feature -- Typing
+feature {NONE} -- Typing
 
-	explicit_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
-			-- returns the explicit type of `a_type' in `a_context'
+	print_type (a_type: TYPE_A; a_context: ETR_FEATURE_CONTEXT): STRING
+			-- Prints `a_type' so it's parsable
 		require
 			type_non_void: a_type /= void
+			context_set: a_context /= void
+		local
+			l_gen_count: INTEGER
+			l_index: INTEGER
+		do
+			create Result.make_empty
+
+			-- print attachment marks etc
+			if attached {ATTACHABLE_TYPE_A}a_type as l_att_type then
+				-- print attachment marks
+				if l_att_type.has_attached_mark then
+					Result.append_character ('!')
+				elseif l_att_type.has_detachable_mark then
+					Result.append_character ('?')
+				end
+			end
+
+			-- print keywords
+			if attached {CL_TYPE_A}a_type as l_cl_type then
+				if l_cl_type.has_expanded_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_expanded_keyword)
+					Result.append_character (' ')
+				elseif l_cl_type.has_reference_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_reference_keyword)
+					Result.append_character (' ')
+				elseif l_cl_type.has_separate_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_separate_keyword)
+					Result.append_character (' ')
+				end
+			end
+
+			if a_type.is_formal then
+				if attached {FORMAL_A}a_type as l_formal then
+					Result.append(a_context.class_context.written_class.generics[l_formal.position].formal.name.name)
+				end
+			elseif a_type.is_like_current then
+				Result.append("like Current")
+			elseif a_type.is_like_argument then
+				if attached {LIKE_ARGUMENT}a_type as l_like_arg then
+					Result.append("like "+a_context.arguments[l_like_arg.position].name)
+				end
+			elseif a_type.is_like then
+				if attached {LIKE_FEATURE}a_type as l_like_feat then
+					Result.append("like "+l_like_feat.feature_name)
+				end
+			elseif a_type.has_generics then
+				if attached {GEN_TYPE_A}a_type as l_gen then
+					Result.append (l_gen.associated_class.name_in_upper)
+
+					-- recursively print generics
+					l_gen_count := l_gen.generics.count
+
+					if l_gen_count>0 then
+						Result.append("[")
+					end
+
+					from
+						l_index := 1
+					until
+						l_index > l_gen_count
+					loop
+						Result.append (print_type(l_gen.generics[l_index],a_context))
+						if l_index /= l_gen_count then
+							Result.append(",")
+						end
+						l_index := l_index+1
+					end
+
+					if l_gen_count>0 then
+						Result.append("]")
+					end
+				end
+			elseif attached {CL_TYPE_A}a_type as l_cl_t then
+				Result.append (l_cl_t.associated_class.name_in_upper)
+			else
+				Result := a_type.dump -- can't handle, just use debug-dump
+			end
+		end
+
+	written_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
+			-- returns the type of `a_type' as it was written
+		require
+			type_non_void: a_type /= void
+			context_set: a_written_class /= void and a_feature /= void
 		local
 			l_type_gen: AST_TYPE_A_GENERATOR
 			l_generated_type, l_resolved_type: TYPE_A
@@ -31,7 +115,19 @@ feature -- Typing
 			l_type_a_checker.init_for_checking (a_feature, a_written_class, void, void)
 			l_resolved_type := l_type_a_checker.solved(l_generated_type, void)
 
-			Result := l_resolved_type.actual_type
+			Result := l_resolved_type
+		end
+
+	explicit_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			context_set: a_written_class /= void and a_feature /= void
+		local
+			l_written_type: TYPE_A
+		do
+			l_written_type := written_type_from_type_as(a_type, a_written_class, a_feature)
+			Result := l_written_type.actual_type
 
 			if not Result.is_explicit then
 				-- recurse
@@ -83,7 +179,7 @@ feature -- Typing
 			has_associated_class: Result.associated_class /= void
 		end
 
-feature -- Constants
+feature {NONE} -- Constants
 
 	path_initializer: ETR_AST_PATH_INITIALIZER
 			-- shared instance of ETR_AST_PATH_INITIALIZER
@@ -109,7 +205,7 @@ feature -- Constants
 			Result := {CONF_OPTION}.syntax_index_transitional
 		end
 
-feature -- Output
+feature {NONE} -- Output
 
 	mini_printer: ETR_AST_STRUCTURE_PRINTER
 			-- prints small ast fragments to text
@@ -132,7 +228,7 @@ feature -- Output
 			Result := mini_printer_output.string_representation
 		end
 
-feature -- Access
+feature {NONE} -- Access
 
 	duplicated_ast: detachable AST_EIFFEL
 			-- Result of `duplicate_ast'
@@ -140,7 +236,7 @@ feature -- Access
 	reparsed_root: detachable AST_EIFFEL
 			-- Result of `reparse_printed_ast'
 
-feature -- Parser
+feature {NONE} -- Parser
 
 	restore_syntax_versions
 			-- Restores the syntax versions of the parsers
@@ -184,7 +280,7 @@ feature -- Parser
 		do
 			reset_errors
 			reparsed_root := void
-			
+
 			if attached {CLASS_AS}a_root_type then
 				etr_class_parser.parse_from_string (a_printed_ast,void)
 
@@ -231,7 +327,7 @@ feature -- Parser
 			end
 		end
 
-feature -- New
+feature {NONE} -- New
 
 	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
 			-- create a new instruction from `an_instr' with context `a_context'
@@ -273,7 +369,7 @@ feature -- New
 			end
 		end
 
-feature -- Operations
+feature {NONE} -- Operations
 
 	parent_path(a_path: AST_PATH): AST_PATH
 			-- constructs the path of `a_path's parent

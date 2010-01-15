@@ -82,7 +82,7 @@ feature -- Properties
 		end
 
 	test_ass_attempt_replacing
-			-- test context transformations
+			-- test assignment attempt replacing
 		local
 			a1,a2: CLASS_I
 			a1_ast,a2_ast: CLASS_AS
@@ -184,10 +184,8 @@ feature -- Properties
 			io.put_string (ast_to_string(setter_gen.transformation_result.target_node))
 		end
 
-
-
 	test_ec_gen
-			-- test setter creation
+			-- test effective class generation
 		local
 			a1: CLASS_I
 			a1_ast: CLASS_AS
@@ -207,9 +205,37 @@ feature -- Properties
 			create a1_context.make (a1.compiled_class)
 			create trans.make_from_ast (a1_ast, a1_context, false)
 
-			ec_gen.generate_effective (trans)
+			ec_gen.generate_effective_class (trans)
 
 			io.put_string (ast_to_string(ec_gen.transformation_result.target_node))
+		end
+
+	test_me
+			-- test method extraction
+		local
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			a1_context: ETR_FEATURE_CONTEXT
+			a1_feat: FEATURE_I
+			a1_instr: ETR_TRANSFORMABLE
+			trans: ETR_TRANSFORMABLE
+			mex: ETR_METHOD_EXTRACTOR
+		do
+			create mex
+
+			a1 := universe.compiled_classes_with_name("M_EX").first
+			a1_ast := a1.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("test")
+
+			create a1_context.make (a1_feat, void)
+			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
+
+			mex.extract_method (trans,
+								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,"1.2.4.4.1.2"),
+								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,"1.2.4.4.1.2"),
+								"extracted")
+
+			io.put_string (ast_to_string(mex.extracted_method.target_node))
 		end
 
 	execute
@@ -218,7 +244,8 @@ feature -- Properties
 		do
 			-- reparse to have the original ast and don't use a modified one from storage
 --			test_ass_attempt_replacing
-			test_ec_gen
+--			test_ec_gen
+			test_me
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

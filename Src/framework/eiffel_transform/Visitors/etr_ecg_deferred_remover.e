@@ -11,12 +11,10 @@ inherit
 		redefine
 			process_deferred_as,
 			process_feature_as,
-			process_body_as
+			process_body_as,
+			process_routine_as
 		end
 	ETR_SHARED
-		export
-			{NONE} all
-		end
 create
 	make_with_output
 
@@ -32,6 +30,21 @@ feature -- Output
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_routine_as (l_as: ROUTINE_AS)
+		do
+			-- don't print locals or contracts
+
+			if processing_needed (l_as.obsolete_message, l_as, 1) then
+				output.append_string ("obsolete%N")
+				process_block (l_as.obsolete_message, l_as, 1)
+				output.append_string ("%N")
+			end
+
+			process_child(l_as.routine_body, l_as, 4)
+
+			output.append_string("end%N")
+		end
 
 	process_body_as (l_as: BODY_AS)
 		local

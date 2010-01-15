@@ -251,7 +251,7 @@ feature -- Output
 			process_child (an_ast, void, 0)
 		end
 
-feature -- Roundtrip: Atomic
+feature {AST_EIFFEL} -- Roundtrip: Atomic
 
 	process_bit_const_as (l_as: BIT_CONST_AS)
 		do
@@ -307,7 +307,7 @@ feature -- Roundtrip: Atomic
 			output.append_string ("unique")
 		end
 
-feature -- Roundtrip: Instructions
+feature {AST_EIFFEL} -- Roundtrip: Instructions
 
 	process_case_as (l_as: CASE_AS)
 		do
@@ -351,6 +351,7 @@ feature -- Roundtrip: Instructions
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
 		do
 			process_child (l_as.target, l_as, 1)
+			output.append_string(" := ")
 			process_child (l_as.source, l_as, 2)
 			output.append_string("%N")
 		end
@@ -460,7 +461,7 @@ feature -- Roundtrip: Instructions
 			output.append_string ("end%N")
 		end
 
-feature -- Roundtrip: Inheritance
+feature {AST_EIFFEL} -- Roundtrip: Inheritance
 
 	process_rename_as (l_as: RENAME_AS)
 		do
@@ -541,7 +542,7 @@ feature -- Roundtrip: Inheritance
 			output.exit_block
 		end
 
-feature -- Roundtrip: Contracts
+feature {AST_EIFFEL} -- Roundtrip: Contracts
 
 	process_variant_as (l_as: VARIANT_AS)
 		do
@@ -579,7 +580,7 @@ feature -- Roundtrip: Contracts
 			process_child_block (l_as.full_assertion_list, l_as, 1)
 		end
 
-feature -- Roundtrip: Types
+feature {AST_EIFFEL} -- Roundtrip: Types
 
 	process_bits_as (l_as: BITS_AS)
 		do
@@ -677,7 +678,7 @@ feature -- Roundtrip: Types
 			process (l_as.name, l_as, 1)
 		end
 
-feature -- Roundtrip: Expressions
+feature {AST_EIFFEL} -- Roundtrip: Expressions
 
 	process_converted_expr_as (l_as: CONVERTED_EXPR_AS)
 		do
@@ -826,7 +827,7 @@ feature -- Roundtrip: Expressions
 			end
 		end
 
-feature -- Roundtrip: Access
+feature {AST_EIFFEL} -- Roundtrip: Access
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
 		do
@@ -883,7 +884,7 @@ feature -- Roundtrip: Access
 			end
 		end
 
-feature -- Roundtrip: Inheritance clauses
+feature {AST_EIFFEL} -- Roundtrip: Inheritance clauses
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
 		do
@@ -916,7 +917,7 @@ feature -- Roundtrip: Inheritance clauses
 			process_child(l_as.content, l_as, 1)
 		end
 
-feature -- Roundtrip: Misc
+feature {AST_EIFFEL} -- Roundtrip: Misc
 
 	process_infix_prefix_as (l_as: INFIX_PREFIX_AS)
 		do
@@ -1201,7 +1202,7 @@ feature -- Roundtrip: Misc
 			output.append_string ("}")
 		end
 
-feature -- Roundtrip: Routine body
+feature {AST_EIFFEL} -- Roundtrip: Routine body
 
 	process_attribute_as (l_as: ATTRIBUTE_AS)
 		do
@@ -1218,7 +1219,7 @@ feature -- Roundtrip: Routine body
 	process_do_as (l_as: DO_AS)
 		do
 			output.append_string ("do%N")
-			process_child_block (l_as.compound, l_as, 1)
+			process_child_block_list (l_as.compound, void, l_as, 1)
 		end
 
 	process_once_as (l_as: ONCE_AS)
@@ -1246,7 +1247,7 @@ feature -- Roundtrip: Routine body
 			end
 		end
 
-feature -- Roundtrip: Agents
+feature {AST_EIFFEL} -- Roundtrip: Agents
 
 	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
 		do

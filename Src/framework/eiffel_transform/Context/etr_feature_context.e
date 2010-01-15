@@ -9,9 +9,6 @@ class
 inherit
 	ETR_CONTEXT
 	ETR_SHARED
-		export
-			{NONE} all
-		end
 	SHARED_NAMES_HEAP
 		export
 			{NONE} all
@@ -94,6 +91,7 @@ feature {NONE} -- Creation
 			l_expl_type: TYPE_A
 			l_e_feat: E_FEATURE
 			l_name: STRING
+			l_written_type: TYPE_A
 		do
 			-- compute explicit type
 			if a_written_feature.has_return_value then
@@ -117,7 +115,7 @@ feature {NONE} -- Creation
 				loop
 					l_expl_type := explicit_type (l_e_feat.arguments.item, l_e_feat.written_class)
 					l_name := l_e_feat.argument_names.item
-					l_arg_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type))
+					l_arg_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type,l_e_feat.arguments.item))
 
 					l_e_feat.argument_names.forth
 					l_e_feat.arguments.forth
@@ -148,7 +146,9 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.locals.after
 				loop
-					l_expl_type := explicit_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
+					l_written_type := written_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
+--					l_expl_type := explicit_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
+					l_expl_type := explicit_type (l_written_type, a_written_feature.written_class)
 
 					-- add a local for each name
 					from
@@ -157,7 +157,7 @@ feature {NONE} -- Creation
 						l_e_feat.locals.item.id_list.after
 					loop
 						l_name := names_heap.item (l_e_feat.locals.item.id_list.item)
-						l_local_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type))
+						l_local_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type,l_written_type))
 						l_e_feat.locals.item.id_list.forth
 					end
 

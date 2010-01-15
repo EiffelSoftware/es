@@ -8,9 +8,6 @@ class
 	ETR_RENAMER
 inherit
 	ETR_SHARED
-		export
-			{NONE} all
-		end
 	REFACTORING_HELPER
 		export
 			{NONE} all

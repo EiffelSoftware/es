@@ -11,20 +11,21 @@ create
 
 feature {NONE} -- Creation
 
-	make(a_name: like name; a_type: like type)
+	make(a_name: like name; a_res_type: like resolved_type; a_org_type: like original_type)
 			-- make with `a_name' and `a_type'
 		require
 			name_set: a_name /= void
-			type_set: a_type /= void
-			type_explicit: a_type.is_explicit
+			type_set: a_res_type /= void and a_org_type  /= void
+			type_explicit: a_res_type.is_explicit
 		do
 			name := a_name
-			type := a_type
+			resolved_type := a_res_type
+			original_type := a_org_type
 		end
 
 feature -- Access
 	name: STRING
-	type: TYPE_A
+	resolved_type, original_type: TYPE_A
 
 feature -- Modification
 

@@ -11,7 +11,9 @@ feature {NONE} -- Initialization
 			c1: C1
 			c2: C2
 			e: EFF
+			me: M_EX
 		do
+			create me
 			create e
 			create a1
 			create a2
