@@ -16,7 +16,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	extracted_arguments, extracted_results, used_locals, extracted_new_locals, obsolete_locals: LINKED_LIST[STRING]
+	extracted_arguments, extracted_results, used_locals, extracted_new_locals, obsolete_locals, changed_arguments: LINKED_LIST[STRING]
 
 	vars_used: ARRAY[LIST[STRING]]
 	var_def: ARRAY[HASH_TABLE[INTEGER,STRING]]
@@ -35,6 +35,7 @@ feature {NONE} -- Implementation
 		do
 			from
 				create extracted_results.make
+				extracted_results.compare_objects
 				l_current_instr := block_end+1
 			until
 				l_current_instr > vars_used.upper
@@ -60,11 +61,57 @@ feature {NONE} -- Implementation
 
 				l_current_instr := l_current_instr + 1
 			end
+
+			-- check if result was defined within extracted block
+			if context.has_return_value then
+				l_current_instr := vars_used.count
+				l_cur_var_def := (var_def[l_current_instr])["result"]
+
+				if attached l_cur_var_def and then (l_cur_var_def >= block_start and l_cur_var_def <= block_end) then
+					extracted_results.extend("result")
+				end
+			end
+		end
+
+	extract_changed_arguments
+			-- find arguments that have to be written to
+			-- have to copy them as locals!
+		local
+			l_current_instr: INTEGER
+			l_cur_var: STRING
+			l_cur_pos: INTEGER
+		do
+			-- go over all variable definitions
+			-- and see if one inside the block is an argument
+			from
+				create changed_arguments.make
+				changed_arguments.compare_objects
+				l_current_instr := block_start
+			until
+				l_current_instr > block_end
+			loop
+				from
+					var_def[l_current_instr].start
+				until
+					var_def[l_current_instr].after
+				loop
+					l_cur_pos := var_def[l_current_instr].item_for_iteration
+					if l_cur_pos>=block_start and l_cur_pos<=block_end then
+						l_cur_var := var_def[l_current_instr].key_for_iteration
+						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) then
+							changed_arguments.extend(var_def[l_current_instr].key_for_iteration)
+						end
+					end
+					var_def[l_current_instr].forth
+				end
+
+				l_current_instr := l_current_instr + 1
+			end
 		end
 
 	extract_arguments
 			-- find variables that were used in the block
-			--   but their definitions were before
+			--   but their definitions MIGHT have been before
 			--   or they were arguments
 			-- -> arguments of the extracted method
 		local
@@ -74,7 +121,9 @@ feature {NONE} -- Implementation
 		do
 			from
 				create extracted_arguments.make
+				extracted_arguments.compare_objects
 				create used_locals.make
+				used_locals.compare_objects
 				l_current_instr := block_start
 			until
 				l_current_instr > block_end
@@ -90,7 +139,10 @@ feature {NONE} -- Implementation
 						if attached context.arg_by_name[l_cur_var_used.item] then
 							extracted_arguments.extend (l_cur_var_used.item)
 						else
-							used_locals.extend (l_cur_var_used.item)
+							if not l_cur_var_used.item.is_equal ("result") and not used_locals.has (l_cur_var_used.item) then
+								used_locals.extend (l_cur_var_used.item)
+							end
+
 							l_cur_var_def := (var_def[l_current_instr])[l_cur_var_used.item]
 							if l_cur_var_def < block_start  then
 								-- if the variable was defined before the block
@@ -115,6 +167,7 @@ feature {NONE} -- Implementation
 			from
 				used_locals.start
 				create extracted_new_locals.make
+				extracted_new_locals.compare_objects
 			until
 				used_locals.after
 			loop
@@ -143,6 +196,7 @@ feature {NONE} -- Implementation
 			from
 				l_current_instr := vars_used.lower
 				create l_rest_used_locals.make
+				l_rest_used_locals.compare_objects
 			until
 				l_current_instr > vars_used.upper
 			loop
@@ -166,20 +220,28 @@ feature {NONE} -- Implementation
 				end
 			end
 
+			-- the results will still be used!
+			from
+				extracted_results.start
+			until
+				extracted_results.after
+			loop
+				l_rest_used_locals.extend (extracted_results.item)
+				extracted_results.forth
+			end
+
 			-- compute obsolete locals
 			-- basically: all locals - gathered locals
 			from
 				l_index := context.locals.lower
 				create obsolete_locals.make
+				obsolete_locals.compare_objects
 			until
 				l_index > context.locals.upper
 			loop
 				if not l_rest_used_locals.has (context.locals[l_index].name) then
-					-- make sure the local was not defined either!
-					-- does't make sense but not our concern...
-					-- it would fail to compile
-					-- (check the last instruction)
-					if not  var_def[var_def.upper].has (context.locals[l_index].name) then
+					-- make sure the local was not defined either
+					if not var_def[var_def.upper].has (context.locals[l_index].name) then
 						obsolete_locals.extend (context.locals[l_index].name)
 					end
 				end
@@ -205,12 +267,14 @@ feature {NONE} -- Implementation
 				until
 					extracted_arguments.after
 				loop
-					-- get type (local or argument)
+					-- get type (local, argument or result)
 					-- and print the unresolved version
 					if attached {ETR_CONTEXT_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
 						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context))
 					elseif attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
 						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context))
+					elseif extracted_arguments.item.is_equal ("result") then
+						l_feature_output_text.append ("a_result: " + print_type (context.unresolved_type, context))
 					end
 
 					extracted_arguments.forth
@@ -230,16 +294,18 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				-- get type (local) (fixme: or result)
+				-- get type (local)
 				-- and print the unresolved version
 				if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
 					l_feature_output_text.append (": " + print_type (l_arg.original_type, context))
+				elseif extracted_results.first.is_equal ("result") then
+					l_feature_output_text.append (": " + print_type (context.unresolved_type, context))
 				end
 			end
 
 			l_feature_output_text.append ("%N")
 
-			if not extracted_new_locals.is_empty then
+			if not extracted_new_locals.is_empty and not changed_arguments.is_empty then
 				l_feature_output_text.append ("local%N")
 				from
 					extracted_new_locals.start
@@ -252,13 +318,35 @@ feature {NONE} -- Implementation
 
 					extracted_new_locals.forth
 				end
+
+				from
+					changed_arguments.start
+				until
+					changed_arguments.after
+				loop
+					if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
+						l_feature_output_text.append ("l_"+l_arg.name + ": " + print_type (l_arg.original_type, context)+"%N")
+					end
+
+					changed_arguments.forth
+				end
 			end
 
 			l_feature_output_text.append ("do%N")
+			-- changed arguments, assign to locals
+			from
+				changed_arguments.start
+			until
+				changed_arguments.after
+			loop
+				l_feature_output_text.append ("l_"+changed_arguments.item+":="+changed_arguments.item+"%N")
+				changed_arguments.forth
+			end
+
 			-- print only block range
 			-- replace result variable by "Result"
 			create l_body_output.make
-			create l_ex_printer.make (l_body_output, extracted_results, a_start_path, a_end_path)
+			create l_ex_printer.make (l_body_output, extracted_results, changed_arguments, a_start_path, a_end_path)
 			l_ex_printer.print_feature_body(a_feature_body)
 			l_feature_output_text.append (l_body_output.string_representation)
 			l_feature_output_text.append ("end")
@@ -283,24 +371,23 @@ feature -- Operations
 			-- extracts a method with name `a_feature_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
 		local
 			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
-			l_feature_body: EIFFEL_LIST[INSTRUCTION_AS]
+			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
 		do
 			reset_errors
 
 			-- check if valid context and valid ast!
 			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
 				context := l_ft_ctxt
-				if attached {FEATURE_AS}a_feature.target_node as l_fn and then attached {DO_AS}l_fn.body.as_routine.routine_body as body then
-					l_feature_body := body.compound
-				elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}a_feature.target_node as body then
-					l_feature_body := body
+				if attached {EIFFEL_LIST[INSTRUCTION_AS]}find_node (parent_path (a_start_path), a_start_path.root) as instrs then
+					l_instr_list := instrs
 				else
-					add_error("extract_method: Incompatible transformable provided")
+					add_error("extract_method: Start path is not an instruction")
 				end
 
 				if not has_errors then
 					-- find out what locals are defined/used where
 					create l_use_def_gen.make (context)
+
 					l_use_def_gen.generate_chain (a_feature.target_node, a_start_path, a_end_path)
 
 					vars_used := l_use_def_gen.vars_used
@@ -309,11 +396,12 @@ feature -- Operations
 					block_end := l_use_def_gen.block_end_position
 
 					extract_arguments
+					extract_changed_arguments
 					extract_results
 					extract_new_locals
 					extract_obsolete_locals
 
-					compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_feature_body)
+					compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_instr_list)
 					compute_original_method
 				end
 			else

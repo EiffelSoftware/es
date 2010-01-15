@@ -25,6 +25,7 @@ feature -- Access
 	has_arguments: BOOLEAN
 	has_locals: BOOLEAN
 
+	unresolved_type: detachable TYPE_A
 	type: detachable TYPE_A
 	name: STRING
 
@@ -95,6 +96,7 @@ feature {NONE} -- Creation
 		do
 			-- compute explicit type
 			if a_written_feature.has_return_value then
+				unresolved_type := a_written_feature.type
 				type := explicit_type (a_written_feature.type, a_written_feature.written_class)
 				has_return_value := true
 			end

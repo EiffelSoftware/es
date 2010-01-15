@@ -88,9 +88,6 @@ feature -- Properties
 			a1_ast,a2_ast: CLASS_AS
 			a1_context, a2_context: ETR_FEATURE_CONTEXT
 			a1_feat, a2_feat: FEATURE_I
-			a1_instr, a2_instr: ETR_TRANSFORMABLE
---			tc_expr: ETR_TRANSFORMABLE
---			checker: ETR_TYPE_CHECKER
 			repl: ETR_ASSIGNMENT_ATTEMPT_REPLACER
 			a2_trans: ETR_TRANSFORMABLE
 		do
@@ -164,7 +161,6 @@ feature -- Properties
 			a1_ast: CLASS_AS
 			a1_context: ETR_FEATURE_CONTEXT
 			a1_feat: FEATURE_I
-			a1_instr: ETR_TRANSFORMABLE
 			trans: ETR_TRANSFORMABLE
 			setter_gen: ETR_SETTER_GENERATOR
 		do
@@ -190,8 +186,6 @@ feature -- Properties
 			a1: CLASS_I
 			a1_ast: CLASS_AS
 			a1_context: ETR_CLASS_CONTEXT
-			a1_feat: FEATURE_I
-			a1_instr: ETR_TRANSFORMABLE
 			trans: ETR_TRANSFORMABLE
 			ec_gen: ETR_EFFECTIVE_CLASS_GENERATOR
 		do
@@ -210,14 +204,13 @@ feature -- Properties
 			io.put_string (ast_to_string(ec_gen.transformation_result.target_node))
 		end
 
-	test_me
+	test_me(method_name: STRING; a_start, a_end: STRING)
 			-- test method extraction
 		local
 			a1: CLASS_I
 			a1_ast: CLASS_AS
 			a1_context: ETR_FEATURE_CONTEXT
 			a1_feat: FEATURE_I
-			a1_instr: ETR_TRANSFORMABLE
 			trans: ETR_TRANSFORMABLE
 			mex: ETR_METHOD_EXTRACTOR
 		do
@@ -225,14 +218,14 @@ feature -- Properties
 
 			a1 := universe.compiled_classes_with_name("M_EX").first
 			a1_ast := a1.compiled_class.ast
-			a1_feat := a1.compiled_class.feature_named ("test")
+			a1_feat := a1.compiled_class.feature_named (method_name)
 
 			create a1_context.make (a1_feat, void)
 			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
 
 			mex.extract_method (trans,
-								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,"1.2.4.4.1.2"),
-								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,"1.2.4.4.1.2"),
+								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_start),
+								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_end),
 								"extracted")
 
 			io.put_string (ast_to_string(mex.extracted_method.target_node))
@@ -245,7 +238,15 @@ feature -- Properties
 			-- reparse to have the original ast and don't use a modified one from storage
 --			test_ass_attempt_replacing
 --			test_ec_gen
-			test_me
+			test_me("test", "1.2.4.4.1.2", "1.2.4.4.1.2")
+			test_me("test2", "1.2.4.4.1.3", "1.2.4.4.1.3")
+			test_me("test3", "1.2.4.4.1.3", "1.2.4.4.1.4")
+			test_me("test4", "1.2.4.4.1.1.4.1", "1.2.4.4.1.1.4.4")
+			test_me("test5", "1.2.4.4.1.2", "1.2.4.4.1.4")
+
+			-- the following is not working yet
+			-- need more complex use-def chain
+--			test_me("test6", "1.2.4.4.1.2", "1.2.4.4.1.2")
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

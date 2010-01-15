@@ -16,11 +16,11 @@ inherit
 			process_creation_as,
 			process_if_as,
 --			process_elseif_as,
---			process_loop_as,
+			process_loop_as,
 			process_nested_as,
 			process_access_feat_as,
-			process_expr_call_as
---			process_id_as
+			process_expr_call_as,
+			process_result_as
 		end
 create
 	make
@@ -36,6 +36,8 @@ feature -- Access
 	block_start_position, block_end_position: INTEGER
 
 feature {NONE} -- Implementation
+
+	result_str:STRING is "result"
 
 	context: ETR_FEATURE_CONTEXT
 		-- which feature are we in
@@ -72,45 +74,34 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	intersection_merge_definitions (a_defs: LIST[like current_var_defs]): like current_var_defs
+	union_merge_definitions (a_defs: LIST[like current_var_defs]): like current_var_defs
 			-- merges `a_defs' into a new table
 		local
 			l_first: like current_var_defs
-			l_exists: BOOLEAN
-			l_lowest: INTEGER
 		do
 			create Result.make (20)
 
-			if attached a_defs.first then
-				l_first := a_defs.first
-
-				-- loop over first item
+			from
+				a_defs.start
+			until
+				a_defs.after
+			loop
 				from
-					l_first.start
+					a_defs.item.start
 				until
-					l_first.after
+					a_defs.item.after
 				loop
-					-- check if this item exists in all others
-					from
-						l_exists := True
-						l_lowest := l_first.item_for_iteration
-						a_defs.go_i_th (2)
-					until
-						a_defs.after or not l_exists
-					loop
-						l_exists := a_defs.item.has (l_first.key_for_iteration)
-						if l_first.item_for_iteration < l_lowest then
-							l_lowest := l_first.item_for_iteration
+					if not Result.has(a_defs.item.key_for_iteration) then
+						Result.extend(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
+					elseif attached Result[a_defs.item.key_for_iteration] as old_item then
+						if a_defs.item.item_for_iteration<old_item then
+							Result.force(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
 						end
-						a_defs.forth
 					end
 
-					if l_exists then
-						Result.extend (l_lowest, l_first.key_for_iteration)
-					end
-
-					l_first.forth
+					a_defs.item.forth
 				end
+				a_defs.forth
 			end
 		end
 
@@ -188,8 +179,6 @@ feature {AST_EIFFEL} -- Roundtrip
 --			safe_process(l_as.compound)
 --			-- store them
 --			var_used_list.extend (temp_vars_used)
---			-- invalidate for debugging
---			temp_vars_used := void
 --		end
 
 --	process_inspect_as (l_as: INSPECT_AS)
@@ -225,8 +214,6 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process(l_as.call)
 			-- store them
 			var_used_list.extend (temp_vars_used)
-			-- invalidate for debugging
-			temp_vars_used := void
 		end
 
 	process_expr_call_as (l_as: EXPR_CALL_AS)
@@ -234,18 +221,6 @@ feature {AST_EIFFEL} -- Roundtrip
 			last_was_unqualified := true
 			safe_process (l_as.call)
 		end
-
---	process_id_as (l_as: ID_AS)
---		do
---			-- if were in an unqualified call
---			-- the id might be a local/argument that is used
---			if last_was_unqualified then
---				if attached context.arg_by_name[l_as.name] or attached context.local_by_name[l_as.name] then
---					-- local or argument is being used!
---					temp_vars_used.extend (l_as.name)
---				end
---			end
---		end
 
 	process_assign_as (l_as: ASSIGN_AS)
 		local
@@ -274,28 +249,36 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process(l_as.source)
 			-- store them
 			var_used_list.extend (temp_vars_used)
-
-			-- invalidate for debugging
-			temp_vars_used := void
 		end
 
 	process_creation_as (l_as: CREATION_AS)
+		local
+			l_target_is_local: BOOLEAN
 		do
 			current_instruction := current_instruction+1
 			check_ref_paths(l_as)
+
+			-- if next is a local then add to variable definition
+			if is_next_call_local (l_as.target) then
+				-- in current_instruction next_local_name was defined
+				current_var_defs.force (current_instruction, next_local_name)
+				l_target_is_local := true
+			end
+
+			safe_process(l_as.type)
+
 			-- store defined variables for this instruction
 			var_def_list.extend (current_var_defs.twin)
-			last_was_unqualified := true
 
 			-- clear used variables
 			create temp_vars_used.make
-			-- and gather new ones			
-			safe_process(l_as.type)
-			safe_process(l_as.call)
+			-- and gather new ones
+			if not l_target_is_local then
+				safe_process(l_as.call)
+			end
+
 			-- store them
 			var_used_list.extend (temp_vars_used)
-			-- invalidate for debugging
-			temp_vars_used := void
 		end
 
 	process_nested_as (l_as: NESTED_AS)
@@ -305,6 +288,12 @@ feature {AST_EIFFEL} -- Roundtrip
 			last_was_unqualified := false
 
 			safe_process (l_as.message)
+		end
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			-- result is being used
+			temp_vars_used.extend (result_str)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -351,7 +340,6 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process(l_as.else_part)
 			l_else_part_defs := current_var_defs
 
-			-- only keep defined variables if they were defined in both branches!
 			create l_merge_list.make
 			l_merge_list.extend (l_if_part_defs)
 			l_merge_list.extend (l_else_part_defs)
@@ -360,7 +348,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				block_end_position := current_instruction
 			end
 
-			current_var_defs := intersection_merge_definitions (l_merge_list)
+			current_var_defs := union_merge_definitions (l_merge_list)
 		end
 
 --	process_elseif_as (l_as: ELSIF_AS)
@@ -381,23 +369,40 @@ feature {AST_EIFFEL} -- Roundtrip
 --			safe_process(l_as.compound)
 --		end
 
---	process_loop_as (l_as: LOOP_AS)
---		do
---			current_instruction := current_instruction+1
---			-- store defined variables for this instruction
---			var_def_list.extend (current_var_defs.twin)
---			-- clear used variables
---			create temp_vars_used.make
---			-- and gather new ones			
---			safe_process(l_as.from_part)
---			-- store them
---			var_used_list.extend (temp_vars_used)
---			-- invalidate for debugging
---			temp_vars_used := void
+	process_loop_as (l_as: LOOP_AS)
+		local
+			l_merge_list: LINKED_LIST[like current_var_defs]
+		do
+			create l_merge_list.make
+			current_instruction := current_instruction+1
+			if start_path.is_equal (l_as.path) then
+				block_start_position := current_instruction
+			end
+			-- store defined variables for this instruction
+			var_def_list.extend (current_var_defs.twin)
 
---			safe_process(l_as.stop)
---			safe_process(l_as.compound)
---		end
+			safe_process(l_as.from_part)
+			l_merge_list.extend (current_var_defs.twin)
+
+			-- invalidate for debugging
+			temp_vars_used := void
+
+			-- clear used variables
+			create temp_vars_used.make
+			-- and gather new ones	
+			safe_process(l_as.stop)
+			-- store them
+			var_used_list.extend (temp_vars_used)
+			safe_process(l_as.compound)
+
+			if end_path.is_equal (l_as.path) then
+				block_end_position := current_instruction
+			end
+
+			l_merge_list.extend (current_var_defs)
+
+			current_var_defs :=  union_merge_definitions (l_merge_list)
+		end
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

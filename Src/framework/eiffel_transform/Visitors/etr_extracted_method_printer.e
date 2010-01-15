@@ -14,7 +14,9 @@ inherit
 			process_nested_as,
 			process_access_feat_as,
 			process_expr_call_as,
-			process_list_with_separator
+			process_list_with_separator,
+			process_assign_as,
+			process_result_as
 		end
 	ETR_SHARED
 create
@@ -30,20 +32,25 @@ feature -- Operation
 
 feature {NONE} -- Creation
 
-	make(a_output: like output; a_result_list: like results; a_start_path: like start_path; a_end_path: like end_path)
+	make(a_output: like output; a_result_list: like results; a_changed_args_list: like changed_arguments; a_start_path: like start_path; a_end_path: like end_path)
 			-- make with `a_output', `a_result_list', `a_start_path' and `a_end_path'
 		require
-			none_void: a_output /= void and a_result_list /= void and a_start_path /= void and a_end_Path /= void
+			none_void: a_output /= void and a_result_list /= void and a_start_path /= void and a_end_path /= void and a_changed_args_list /= void
 			single_result: a_result_list.count<=1
 			same_parent: parent_path (a_start_path).is_equal (parent_path (a_end_path))
 		do
 			make_with_output (a_output)
 
+			changed_arguments := a_changed_args_list
+			changed_arguments.compare_objects
 			results := a_result_list
+			results.compare_objects
 			start_path := a_start_path
 			end_path := a_end_path
 
 			instr_list_parent := parent_path (start_path)
+
+			result_is_argument := results.has ("result")
 		end
 
 feature {NONE} -- Implementation
@@ -87,8 +94,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	result_is_argument: BOOLEAN
+	result_redefined: BOOLEAN
+
 	last_was_unqualified: BOOLEAN
 			-- presently in an unqualified call
+
+	changed_arguments: LIST[STRING]
+			-- arguments that have been "converted" to locals
 
 	results: LIST[STRING]
 			-- which variables are a result
@@ -97,6 +110,27 @@ feature {NONE} -- Implementation
 			-- range of methods to extract
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_assign_as (l_as: ASSIGN_AS)
+		do
+			if attached {RESULT_AS}l_as.target then
+				result_redefined := True
+			end
+
+			process_child (l_as.target, l_as, 1)
+			output.append_string(" := ")
+			process_child (l_as.source, l_as, 2)
+			output.append_string("%N")
+		end
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			if result_redefined then
+				output.append_string ("result")
+			else
+				output.append_string ("a_result")
+			end
+		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
@@ -141,8 +175,10 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			-- if were in an unqualified call
 			-- the id might be the Result
-			if last_was_unqualified and l_as.access_name.is_equal (results.first) then
+			if last_was_unqualified and (not results.is_empty and then l_as.access_name.is_equal (results.first)) then
 				output.append_string ("Result")
+			elseif changed_arguments.has (l_as.access_name) then
+				output.append_string ("l_"+l_as.access_name)
 			else
 				output.append_string (l_as.access_name)
 			end
