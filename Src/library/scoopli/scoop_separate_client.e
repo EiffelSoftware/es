@@ -119,6 +119,12 @@ feature {NONE} -- Termination
 			scoop_scheduler.stop_execution
 		end
 
+feature 	-- Type conversion proxy
+
+	proxy_: SCOOP_SEPARATE__ANY
+			-- Added by `damienm' 5.Nov 2009
+      deferred
+      end
 
 
 end -- class SCOOP_SEPARATE_CLIENT

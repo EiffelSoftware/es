@@ -15,6 +15,7 @@ inherit
 			process_id_as,
 			process_infix_prefix_as,
 			process_rename_as
+
 		end
 
 	SCOOP_BASIC_TYPE
@@ -42,9 +43,129 @@ feature -- Access
 				if not is_special_class (parsed_class.class_name.name.as_upper) then
 						-- inherit from 'SCOOP_SEPARATE_CLIENT'.
 					context.add_string ("%N%Ninherit%N%TSCOOP_SEPARATE_CLIENT")
+					context.add_string ("%N%T%Tredefine proxy_ end") -- added by damienm
 				end
 			end
 		end
+
+	compute_ancestors_names(l_as: CLASS_AS; overwrites: HASH_TABLE[STRING,STRING]): LINKED_LIST[STRING] is
+			-- gets all ancestors of a class, without duplicates
+			require
+				has_class_as: l_as /= void
+			local
+				l_ancestors: LINKED_LIST[STRING]
+				l_parent: CLASS_AS
+				l_string: STRING
+				i: INTEGER
+				formal_type: STRING
+				n_overwrites: HASH_TABLE[STRING,STRING]
+			do
+				if result = void then
+				  create result.make
+				end
+				create	n_overwrites.make (0)
+
+				if l_as.internal_conforming_parents /= Void and not l_as.internal_conforming_parents.is_empty then
+					from
+						l_as.internal_conforming_parents.start
+					until
+						l_as.internal_conforming_parents.after
+					loop
+
+						-- current ancestor	
+						l_parent := get_class_as_by_name (l_as.internal_conforming_parents.item.type.class_name.name)
+
+						-- generate generics for ancestors from current class
+						l_string := ""
+						l_string.append_string (l_as.internal_conforming_parents.item.type.class_name.name)
+						if l_as.internal_conforming_parents.item.type.generics /= Void then
+							l_string.append_string ("[")
+							from
+								i := 1
+								l_as.internal_conforming_parents.item.type.generics.start
+							until
+								l_as.internal_conforming_parents.item.type.generics.after
+							loop
+
+								-- get formal generic type from the ancestor, only interesting if it is of type `FORMAL_AS'
+								formal_type  := l_parent.generics.i_th (i).name.name
+
+								-- print generics and store them for potention overwrites
+								if {type: CLASS_TYPE_AS} l_as.internal_conforming_parents.item.type.generics.item then
+									l_string.append_string (type.class_name.name)
+--									n_overwrites.force (formal_type, type.class_name.name)
+									n_overwrites.force (type.class_name.name,formal_type)
+								elseif {type: FORMAL_AS} l_as.internal_conforming_parents.item.type.generics.item then
+									if overwrites.has_key (type.name.name) then
+										l_string.append_string (overwrites.item (type.name.name))
+
+										-- propagate the change
+--										n_overwrites.force (formal_type, overwrites.key (type.name.name))
+										n_overwrites.force (overwrites.item (type.name.name),formal_type)
+									else
+										l_string.append_string (type.name.name)
+--										n_overwrites.force (formal_type, type.name.name)
+										n_overwrites.force (type.name.name,formal_type)
+									end
+								end
+
+								if not l_as.internal_conforming_parents.item.type.generics.islast then
+									l_string.append_string (",")
+								end
+								i := i+1
+								l_as.internal_conforming_parents.item.type.generics.forth
+
+							end
+							l_string.append_string ("]")
+						end
+
+						-- go up one layer of the hierarchy
+						l_ancestors := compute_ancestors_names (l_parent, n_overwrites)
+
+						-- merge lists (eliminating duplicates)
+						if not l_ancestors.is_empty then
+							from
+								l_ancestors.start
+							until
+								l_ancestors.after
+							loop
+								if not has_string (result, l_ancestors.item) then
+									result.extend (l_ancestors.item)
+								end
+								l_ancestors.forth
+							end
+						end
+
+						-- put current ancestor on the list if he is not in the list yet
+						if not has_string (result, l_string) then
+							result.extend (l_string)
+						end
+						l_as.internal_conforming_parents.forth
+					end
+				end
+
+			end
+
+--	get_class_as(name: STRING): CLASS_AS is
+--			-- gets class_as from a class name
+--			local
+--				a_class : CLASS_C
+--				i: INTEGER
+--			do
+--				from
+--					i := 1
+--				until
+--					i > system.classes.sorted_classes.count
+--				loop
+--					a_class := system.classes.sorted_classes.item (i)
+--					if a_class /= Void then
+--						if a_class.name_in_upper.is_equal (name.as_upper) then
+--							Result := a_class.ast
+--						end
+--					end
+--					i := i + 1
+--				end
+--			end
 
 feature {NONE} -- Visitor implementation
 
@@ -71,7 +192,6 @@ feature {NONE} -- Visitor implementation
 				safe_process (l_as.internal_renaming)
 				safe_process (l_as.internal_exports)
 				safe_process (l_as.internal_undefining)
-
 				if l_as.internal_redefining /= Void then
 					safe_process (l_as.internal_redefining)
 					insert_infix_prefix_redefine_list (false)
@@ -79,12 +199,19 @@ feature {NONE} -- Visitor implementation
 					insert_infix_prefix_redefine_list (true)
 				end
 
+
 				safe_process (l_as.internal_selecting)
 
-				if l_as.end_keyword_index > 0 then
+--				if l_as.end_keyword_index > 0 then
 					context.add_string ("%N%T%T")
+--				end
+				if l_as.end_keyword (match_list) /= void then
+					safe_process (l_as.end_keyword (match_list))
+				else
+					-- always needs an end since the input from proxy_
+					context.add_string ("end")
 				end
-				safe_process (l_as.end_keyword (match_list))
+
 --			end
 		end
 
@@ -280,15 +407,25 @@ feature {NONE} -- Visitor implementation
 		local
 			i, nb: INTEGER
 		do
-			if infix_prefix_redefine_list /= Void and then not infix_prefix_redefine_list.is_empty then
 
-				if is_insert_with_rename_keyword then
-					context.add_string ("%N%T%Tredefine")
-				else
-					-- add comma
-					context.add_string (", ")
+			if is_insert_with_rename_keyword then
+				context.add_string ("%N%T%Tredefine")
+				if not class_as.is_deferred then
+					-- No need to redefine proxy_ when class is deferred
+					context.add_string ("%N%T%T%T proxy_")
+				end
+			else
+				if not class_as.is_deferred then
+					-- No need to redefine proxy_ when class is deferred
+					context.add_string (", proxy_")
 				end
 
+			end
+
+
+			if infix_prefix_redefine_list /= Void and then not infix_prefix_redefine_list.is_empty then
+
+				context.add_string (", ")
 				from
 					i := 1
 					nb := infix_prefix_redefine_list.count
@@ -310,7 +447,30 @@ feature {NONE} -- Visitor implementation
 		end
 
 
+
 feature {NONE} -- Implementation
+
+
+	has_string(a_list: LINKED_LIST[STRING]; a_item: STRING): BOOLEAN is
+		 --`a_item' in `a_list' already?
+		do
+			result := false
+			from
+				a_list.start
+			until
+				a_list.after
+			loop
+				if a_list.item.is_equal (a_item) then
+					result := true
+				end
+				a_list.forth
+			end
+		end
+
+--	n_overwrites,overwrites: HASH_TABLE[STRING,STRING]
+--			-- Stores overwrites for generics
+--			-- used by `compute_ancesotrs'
+
 
 	is_rename_clause: BOOLEAN
 			-- Indicates that the rename clause is processed

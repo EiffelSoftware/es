@@ -198,7 +198,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.feature_keyword)
 			safe_process (l_as.clients)
 			-- process feature clause comment
-			if l_as.features /= Void then
+			if not l_as.features.is_empty then
 				process_leading_leaves (l_as.features.first_token (match_list).index)
 			else
 				process_leading_leaves (l_as.last_token (match_list).index + 1)
@@ -357,17 +357,19 @@ feature {NONE} -- Roundtrip: Implementation
 			-- creator & convertor
 			if not class_as.is_deferred then
 				-- creator
-				context.add_string ("%N%Ncreate%N%Tmake_from_local, set_processor_")
+				-- context.add_string ("%N%Ncreate%N%Tmake_from_local, set_processor_")
+				context.add_string ("%N%Ncreate%N%Tset_processor_")
 
-				-- convertor
-				context.add_string ("%N%Nconvert%N%Tmake_from_local ({" + class_as.class_name.name.as_upper)
+--				-- convertor Removed by `damienm', conversion is done on client side
 
-				-- formal paramters
-				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, true, true)
+--				context.add_string ("%N%Nconvert%N%Tmake_from_local ({" + class_as.class_name.name.as_upper)
 
-				-- convertor end
-				context.add_string ("})")
+--				-- formal paramters
+--				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+--				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, true, true)
+
+--				-- convertor end
+--				context.add_string ("})")
 			end
 
 			-- skip original creators and convertors

@@ -58,8 +58,6 @@ feature -- FEATURE_AS access
 
 	feature_as: FEATURE_AS is
 			-- Current feature_as
-		require
-			feature_as_not_void: feature_as /= Void
 		do
 			Result := scoop_workbench_objects.current_feature_as
 		end
@@ -176,9 +174,9 @@ feature -- System support
 			from
 				i := 1
 			until
-				i > system.classes.count
+				i > system.classes.sorted_classes.count
 			loop
-				a_class := system.classes.item (i)
+				a_class := system.classes.sorted_classes.item (i)
 				if a_class /= Void then
 					if a_class.name_in_upper.is_equal (a_class_name.as_upper) then
 						Result := a_class.ast
