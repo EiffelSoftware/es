@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="scoopli_test" uuid="8F54A7B7-020E-47F6-89E1-4A0A022A6AAD">
+	<target name="client_to_proxy_conversion">
+		<root class="SCOOP_STARTER" feature="make"/>
+		<setting name="multithreaded" value="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
+		<cluster name="project" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+		</cluster>
+		<override name="scoop_override_cluster" location="C:\EiffelSoftware\EVE_new\Src\library\scoop2scoopli\tests\client_to_proxy_conversion\EIFGENs\client_to_proxy_conversion\scoop_override_cluster\" recursive="true"/>
+	</target>
+</system>
