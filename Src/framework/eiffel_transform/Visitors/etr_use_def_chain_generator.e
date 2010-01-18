@@ -9,13 +9,11 @@ class
 inherit
 	AST_ITERATOR
 		redefine
---			process_case_as,
---			process_inspect_as,
+			process_inspect_as,
 			process_instr_call_as,
 			process_assign_as,
 			process_creation_as,
 			process_if_as,
---			process_elseif_as,
 			process_loop_as,
 			process_nested_as,
 			process_access_feat_as,
@@ -85,38 +83,42 @@ feature {NONE} -- Implementation
 		do
 			create Result.make (20)
 
-			from
-				a_defs.start
-			until
-				a_defs.after
-			loop
+			if a_defs.is_empty then
+				Result := current_var_defs
+			else
 				from
-					a_defs.item.start
+					a_defs.start
 				until
-					a_defs.item.after
+					a_defs.after
 				loop
-					if not Result.has(a_defs.item.key_for_iteration) then
-						Result.extend(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
-					elseif attached Result[a_defs.item.key_for_iteration] as old_item then
-						if old_item.first<a_defs.item.item_for_iteration.first then
-							l_low := old_item.first
-						else
-							l_low := a_defs.item.item_for_iteration.first
-						end
-						if old_item.second>a_defs.item.item_for_iteration.second then
-							l_high := old_item.second
-						else
-							l_high := a_defs.item.item_for_iteration.second
+					from
+						a_defs.item.start
+					until
+						a_defs.item.after
+					loop
+						if not Result.has(a_defs.item.key_for_iteration) then
+							Result.extend(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
+						elseif attached Result[a_defs.item.key_for_iteration] as old_item then
+							if old_item.first<a_defs.item.item_for_iteration.first then
+								l_low := old_item.first
+							else
+								l_low := a_defs.item.item_for_iteration.first
+							end
+							if old_item.second>a_defs.item.item_for_iteration.second then
+								l_high := old_item.second
+							else
+								l_high := a_defs.item.item_for_iteration.second
+							end
+
+							if l_low = old_item.first or l_high = old_item.second then
+								Result.force(create {PAIR[INTEGER,INTEGER]}.make(l_low, l_high), a_defs.item.key_for_iteration)
+							end
 						end
 
-						if l_low = old_item.first or l_high = old_item.second then
-							Result.force(create {PAIR[INTEGER,INTEGER]}.make(l_low, l_high), a_defs.item.key_for_iteration)
-						end
+						a_defs.item.forth
 					end
-
-					a_defs.item.forth
+					a_defs.forth
 				end
-				a_defs.forth
 			end
 		end
 
@@ -131,6 +133,62 @@ feature {NONE} -- Implementation
 				block_end_position := current_instruction
 			end
 		end
+
+	process_case_list(l_as: EIFFEL_LIST[CASE_AS])
+		local
+			l_prev_var_def: like current_var_defs
+			l_cursor: INTEGER
+		do
+			l_prev_var_def := current_var_defs.twin
+			from
+				l_cursor := l_as.index
+				l_as.start
+			until
+				l_as.after
+			loop
+				-- restore defined variables
+				current_var_defs := l_prev_var_def.twin
+
+				-- process the compound and store defs
+				safe_process(l_as.item.compound)
+				caselist_defs.extend(current_var_defs)
+				l_as.forth
+			end
+			l_as.go_i_th(l_cursor)
+		end
+
+	process_elseif_list(l_as: EIFFEL_LIST[ELSIF_AS])
+		local
+			l_prev_var_def: like current_var_defs
+			l_cursor: INTEGER
+		do
+			l_prev_var_def := current_var_defs.twin
+			from
+				l_cursor := l_as.index
+				l_as.start
+			until
+				l_as.after
+			loop
+				current_instruction := current_instruction+1
+				-- restore defined variables
+				current_var_defs := l_prev_var_def.twin
+				var_def_list.extend (l_prev_var_def.twin)
+				-- clear used variables
+				create {LINKED_LIST[STRING]}temp_vars_used.make
+				-- and gather new ones			
+				safe_process(l_as.item.expr)
+				-- store them
+				var_used_list.extend (temp_vars_used)
+
+				-- process the compound and store defs
+				safe_process(l_as.item.compound)
+				elseif_defs.extend(current_var_defs)
+				l_as.forth
+			end
+			l_as.go_i_th(l_cursor)
+		end
+
+	elseif_defs, caselist_defs: LINKED_LIST[like current_var_defs]
 
 feature {NONE} -- creation
 
@@ -181,39 +239,49 @@ feature -- Operation
 
 feature {AST_EIFFEL} -- Roundtrip
 
---	process_case_as (l_as: CASE_AS)
---		do
---			current_instruction := current_instruction+1
---			-- store defined variables for this instruction
---			var_def_list.extend (current_var_defs.twin)
+	process_inspect_as (l_as: INSPECT_AS)
+		local
+			l_merge_list: LINKED_LIST[like current_var_defs]
+			l_previous_defs: like current_var_defs
+		do
+			current_instruction := current_instruction+1
+			if start_path.is_equal (l_as.path) then
+				block_start_position := current_instruction
+			end
+			-- store defined variables for this instruction
+			l_previous_defs := current_var_defs
+			var_def_list.extend (current_var_defs)
 
---			-- clear used variables
---			create temp_vars_used.make
---			-- and gather new ones			
---			safe_process(l_as.interval)
---			safe_process(l_as.compound)
---			-- store them
---			var_used_list.extend (temp_vars_used)
---		end
+			-- clear used variables
+			create {LINKED_LIST[STRING]}temp_vars_used.make
+			-- and gather new ones			
+			safe_process(l_as.switch)
+			-- store them
+			var_used_list.extend (temp_vars_used)
 
---	process_inspect_as (l_as: INSPECT_AS)
---		do
---			current_instruction := current_instruction+1
---			-- store defined variables for this instruction
---			var_def_list.extend (current_var_defs.twin)
+			create l_merge_list.make
 
---			-- clear used variables
---			create temp_vars_used.make
---			-- and gather new ones			
---			safe_process(l_as.switch)
---			-- store them
---			var_used_list.extend (temp_vars_used)
---			-- invalidate for debugging
---			temp_vars_used := void
+			-- process case list part
+			if attached l_as.case_list then
+				current_var_defs := l_previous_defs.twin
+				create caselist_defs.make
+				process_case_list(l_as.case_list)
+				l_merge_list.append (caselist_defs)
+			end
 
---			safe_process(l_as.case_list)
---			safe_process(l_as.else_part)
---		end
+			-- process else part
+			if attached l_as.else_part then
+				current_var_defs := l_previous_defs.twin
+				l_as.else_part.process (Current)
+				l_merge_list.extend (current_var_defs)
+			end
+
+			if end_path.is_equal (l_as.path) then
+				block_end_position := current_instruction
+			end
+
+			current_var_defs := union_merge_definitions (l_merge_list)
+		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
@@ -328,15 +396,15 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_if_as (l_as: IF_AS)
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
-			l_previous_defs, l_if_part_defs, l_else_part_defs: like current_var_defs
+			l_previous_defs: like current_var_defs
 		do
 			current_instruction := current_instruction+1
 			if start_path.is_equal (l_as.path) then
 				block_start_position := current_instruction
 			end
 			-- store defined variables for this instruction
-			l_previous_defs := current_var_defs.twin
-			var_def_list.extend (l_previous_defs)
+			l_previous_defs := current_var_defs
+			var_def_list.extend (current_var_defs)
 
 			-- clear used variables
 			create {LINKED_LIST[STRING]}temp_vars_used.make
@@ -345,17 +413,29 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- store them
 			var_used_list.extend (temp_vars_used)
 
-			safe_process(l_as.compound)
-			l_if_part_defs := current_var_defs.twin
-			current_var_defs := l_previous_defs.twin
-			-- for now elsif is not supported!
---			safe_process(l_as.elsif_list)
-			safe_process(l_as.else_part)
-			l_else_part_defs := current_var_defs
-
 			create l_merge_list.make
-			l_merge_list.extend (l_if_part_defs)
-			l_merge_list.extend (l_else_part_defs)
+
+			-- process if part
+			if attached l_as.compound then
+				current_var_defs := l_previous_defs.twin
+				l_as.compound.process (Current)
+				l_merge_list.extend (current_var_defs)
+			end
+
+			-- process else-if part
+			if attached l_as.elsif_list then
+				current_var_defs := l_previous_defs.twin
+				create elseif_defs.make
+				process_elseif_list(l_as.elsif_list)
+				l_merge_list.append (elseif_defs)
+			end
+
+			-- process else part
+			if attached l_as.else_part then
+				current_var_defs := l_previous_defs.twin
+				l_as.else_part.process (Current)
+				l_merge_list.extend (current_var_defs)
+			end
 
 			if end_path.is_equal (l_as.path) then
 				block_end_position := current_instruction
@@ -363,24 +443,6 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			current_var_defs := union_merge_definitions (l_merge_list)
 		end
-
---	process_elseif_as (l_as: ELSIF_AS)
---		do
---			current_instruction := current_instruction+1
---			-- store defined variables for this instruction
---			var_def_list.extend (current_var_defs.twin)
-
---			-- clear used variables
---			create temp_vars_used.make
---			-- and gather new ones			
---			safe_process(l_as.expr)
---			-- store them
---			var_used_list.extend (temp_vars_used)
---			-- invalidate for debugging
---			temp_vars_used := void
-
---			safe_process(l_as.compound)
---		end
 
 	process_loop_as (l_as: LOOP_AS)
 		local

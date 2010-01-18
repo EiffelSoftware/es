@@ -120,6 +120,7 @@ feature {NONE} -- Implementation
 			l_cur_var_used: LIST[STRING]
 			l_current_instr: like block_start
 			l_cur_var_def: INTEGER
+			l_cur_defs: HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]
 		do
 			from
 				create extracted_arguments.make
@@ -130,6 +131,20 @@ feature {NONE} -- Implementation
 			until
 				l_current_instr > block_end
 			loop
+				from
+					l_cur_defs := var_def[l_current_instr]
+					l_cur_defs.start
+				until
+					l_cur_defs.after
+				loop
+					-- if the variable was defined here store it as "used"
+					if l_cur_defs.item_for_iteration.first = l_current_instr and not used_locals.has (l_cur_defs.key_for_iteration) then
+						used_locals.extend (l_cur_defs.key_for_iteration)
+					end
+
+					l_cur_defs.forth
+				end
+
 				from
 					l_cur_var_used := vars_used[l_current_instr]
 					l_cur_var_used.start
@@ -165,8 +180,7 @@ feature {NONE} -- Implementation
 		end
 
 	extract_new_locals
-			-- find locals that were used in the block but were not used
-			-- afterwards (=locals in the extracted method)
+			-- find locals that were used in the block
 			-- = used locals - extracted arguments - extracted results
 		do
 			from
