@@ -14,11 +14,13 @@ inherit
 			process_nested_as,
 			process_access_feat_as,
 			process_expr_call_as,
-			process_list_with_separator,
-			process_assign_as,
-			process_result_as
+			process_list_with_separator
 		end
 	ETR_SHARED
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
 create
 	make
 
@@ -106,24 +108,11 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Roundtrip
 
-	process_assign_as (l_as: ASSIGN_AS)
-		do
-			process_child (l_as.target, l_as, 1)
-			output.append_string(" := ")
-			process_child (l_as.source, l_as, 2)
-			output.append_string("%N")
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		do
-			output.append_string ("result")
-		end
-
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
 			last_was_unqualified := true
 			process_child (l_as.call, l_as, 1)
-			output.append_string("%N")
+			output.append_string(ti_new_line)
 		end
 
 	process_expr_call_as (l_as: EXPR_CALL_AS)
@@ -135,25 +124,13 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_creation_as (l_as: CREATION_AS)
 		do
 			last_was_unqualified := true
-			output.append_string ("create ")
-
-			if processing_needed (l_as.type, l_as, 2) then
-				output.append_string("{")
-				process_child (l_as.type, l_as, 2)
-				output.append_string("} ")
-			end
-			process(l_as.target, l_as, 1)
-			if processing_needed (l_as.call, l_as, 3) then
-				output.append_string (".")
-			end
-			process_child (l_as.call, l_as, 3)
-			output.append_string("%N")
+			Precursor {ETR_AST_STRUCTURE_PRINTER}(l_as)
 		end
 
 	process_nested_as (l_as: NESTED_AS)
 		do
 			process_child (l_as.target, l_as, 1)
-			output.append_string (".")
+			output.append_string (ti_dot)
 			last_was_unqualified := false
 			process_child (l_as.message, l_as, 2)
 		end
@@ -163,7 +140,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- if were in an unqualified call
 			-- the id might be the Result
 			if last_was_unqualified and (not results.is_empty and then l_as.access_name.is_equal (results.first)) then
-				output.append_string ("Result")
+				output.append_string (ti_result)
 			elseif changed_arguments.has (l_as.access_name) then
 				output.append_string ("l_"+l_as.access_name)
 			else
@@ -171,9 +148,9 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 
 			if processing_needed (l_as.parameters,l_as,1) then
-				output.append_string (" (")
-				process_child_list(l_as.parameters, ", ", l_as, 1)
-				output.append_string (")")
+				output.append_string (ti_space+ti_l_parenthesis)
+				process_child_list(l_as.parameters, ti_comma+ti_space, l_as, 1)
+				output.append_string (ti_r_parenthesis)
 			end
 		end
 

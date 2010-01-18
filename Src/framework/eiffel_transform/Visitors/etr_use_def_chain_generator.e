@@ -20,6 +20,10 @@ inherit
 			process_expr_call_as,
 			process_result_as
 		end
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
 create
 	make
 
@@ -34,8 +38,6 @@ feature -- Access
 	block_start_position, block_end_position: INTEGER
 
 feature {NONE} -- Implementation
-
-	result_str:STRING is "result"
 
 	context: ETR_FEATURE_CONTEXT
 		-- which feature are we in
@@ -70,7 +72,7 @@ feature {NONE} -- Implementation
 					Result := True
 				end
 			elseif attached {RESULT_AS}a_call as l_res then
-				next_local_name := "result"
+				next_local_name := ti_result
 				Result := True
 			end
 		end
@@ -376,7 +378,7 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_result_as (l_as: RESULT_AS)
 		do
 			-- result is being used
-			temp_vars_used.extend (result_str)
+			temp_vars_used.extend (ti_result)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)

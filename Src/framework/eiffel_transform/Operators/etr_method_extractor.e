@@ -13,6 +13,10 @@ inherit
 			{NONE} all
 		end
 	ETR_ERROR_HANDLER
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Implementation
 
@@ -67,9 +71,9 @@ feature {NONE} -- Implementation
 			-- check if result was defined within extracted block
 			if context.has_return_value then
 				l_current_instr := vars_used.count
-				if attached (var_def[l_current_instr])["result"] as l_pair then
+				if attached (var_def[l_current_instr])[ti_result] as l_pair then
 					if l_pair.first >= block_start and l_pair.first <= block_end then
-						extracted_results.extend("result")
+						extracted_results.extend(ti_result)
 					end
 				end
 			end
@@ -100,7 +104,7 @@ feature {NONE} -- Implementation
 					l_cur_pos := var_def[l_current_instr].item_for_iteration.first
 					if l_cur_pos>=block_start and l_cur_pos<=block_end then
 						l_cur_var := var_def[l_current_instr].key_for_iteration
-						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) and not l_cur_var.is_equal ("result") then
+						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) and not l_cur_var.is_equal (ti_result) then
 							changed_arguments.extend(var_def[l_current_instr].key_for_iteration)
 						end
 					end
@@ -156,7 +160,7 @@ feature {NONE} -- Implementation
 						if attached context.arg_by_name[l_cur_var_used.item] then
 							extracted_arguments.extend (l_cur_var_used.item)
 						else
-							if not l_cur_var_used.item.is_equal ("result") and not used_locals.has (l_cur_var_used.item) then
+							if not l_cur_var_used.item.is_equal (ti_result) and not used_locals.has (l_cur_var_used.item) then
 								used_locals.extend (l_cur_var_used.item)
 							end
 
@@ -303,11 +307,11 @@ feature {NONE} -- Implementation
 				extracted_arguments.extend(extracted_results.first)
 			end
 
-			l_result_is_arg := extracted_arguments.has ("result")
+			l_result_is_arg := extracted_arguments.has (ti_result)
 
 			if not extracted_arguments.is_empty then
 				-- print arguments
-				l_feature_output_text.append ("(")
+				l_feature_output_text.append (ti_l_parenthesis)
 				from
 					extracted_arguments.start
 				until
@@ -316,20 +320,20 @@ feature {NONE} -- Implementation
 					-- get type (local, argument or result)
 					-- and print the unresolved version
 					if attached {ETR_CONTEXT_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context))
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context))
 					elseif attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context))
-					elseif extracted_arguments.item.is_equal ("result") then
-						l_feature_output_text.append ("a_result: " + print_type (context.unresolved_type, context))
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context))
+					elseif extracted_arguments.item.is_equal (ti_result) then
+						l_feature_output_text.append ("a_"+ti_result + ti_colon + ti_space + print_type (context.unresolved_type, context))
 					end
 
 					extracted_arguments.forth
 
 					if not extracted_arguments.after then
-						l_feature_output_text.append ("; ")
+						l_feature_output_text.append (ti_semi_colon+ti_space)
 					end
 				end
-				l_feature_output_text.append (")")
+				l_feature_output_text.append (ti_r_parenthesis)
 			end
 
 			if not extracted_results.is_empty then
@@ -343,23 +347,23 @@ feature {NONE} -- Implementation
 				-- get type (local)
 				-- and print the unresolved version
 				if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
-					l_feature_output_text.append (": " + print_type (l_arg.original_type, context))
-				elseif extracted_results.first.is_equal ("result") then
-					l_feature_output_text.append (": " + print_type (context.unresolved_type, context))
+					l_feature_output_text.append (ti_colon + ti_space + print_type (l_arg.original_type, context))
+				elseif extracted_results.first.is_equal (ti_result) then
+					l_feature_output_text.append (ti_colon + ti_space + print_type (context.unresolved_type, context))
 				end
 			end
 
-			l_feature_output_text.append ("%N")
+			l_feature_output_text.append (ti_new_line)
 
 			if not extracted_new_locals.is_empty or not changed_arguments.is_empty then
-				l_feature_output_text.append ("local%N")
+				l_feature_output_text.append (ti_local_keyword+ti_new_line)
 				from
 					extracted_new_locals.start
 				until
 					extracted_new_locals.after
 				loop
 					if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ": " + print_type (l_arg.original_type, context)+"%N")
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context)+ti_new_line)
 					end
 
 					extracted_new_locals.forth
@@ -371,30 +375,30 @@ feature {NONE} -- Implementation
 					changed_arguments.after
 				loop
 					if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
-						l_feature_output_text.append ("l_"+l_arg.name + ": " + print_type (l_arg.original_type, context)+"%N")
+						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context)+ti_new_line)
 					end
 
 					changed_arguments.forth
 				end
 			end
 
-			l_feature_output_text.append ("do%N")
+			l_feature_output_text.append (ti_do_keyword+ti_new_line)
 			-- changed arguments, assign to locals
 			from
 				changed_arguments.start
 			until
 				changed_arguments.after
 			loop
-				l_feature_output_text.append ("l_"+changed_arguments.item+":="+changed_arguments.item+"%N")
+				l_feature_output_text.append ("l_"+changed_arguments.item+ti_assign+changed_arguments.item+ti_new_line)
 				changed_arguments.forth
 			end
 
 			-- pre-initialized result
 			if is_result_possibly_undef or l_result_is_arg then
-				if extracted_results.first.is_equal ("result") then
-					l_feature_output_text.append ("result := a_"+extracted_results.first+"%N")
+				if extracted_results.first.is_equal (ti_result) then
+					l_feature_output_text.append (ti_result+ti_assign+"a_"+extracted_results.first+ti_new_line)
 				else
-					l_feature_output_text.append ("result := "+extracted_results.first+"%N")
+					l_feature_output_text.append (ti_result+ti_assign+extracted_results.first+ti_new_line)
 				end
 			end
 
@@ -404,7 +408,7 @@ feature {NONE} -- Implementation
 			create l_ex_printer.make (l_body_output, extracted_results, changed_arguments, a_start_path, a_end_path)
 			l_ex_printer.print_feature_body(a_feature_body)
 			l_feature_output_text.append (l_body_output.string_representation)
-			l_feature_output_text.append ("end")
+			l_feature_output_text.append (ti_end_keyword)
 
 			reparse_printed_ast (context.original_written_feature.e_feature.ast, l_feature_output_text)
 			create extracted_method.make_from_ast (reparsed_root, context.class_context, false)
@@ -419,7 +423,7 @@ feature {NONE} -- Implementation
 		do
 			l_call_text := a_extracted_feature_name
 			if not extracted_arguments.is_empty then
-				l_call_text.append ("(")
+				l_call_text.append (ti_l_parenthesis)
 				from
 					extracted_arguments.start
 				until
@@ -430,18 +434,18 @@ feature {NONE} -- Implementation
 					extracted_arguments.forth
 
 					if not extracted_arguments.after then
-						l_call_text.append (", ")
+						l_call_text.append (ti_comma+ti_space)
 					end
 				end
-				l_call_text.append (")")
+				l_call_text.append (ti_r_parenthesis)
 			end
 
 			if not extracted_results.is_empty then
-				l_instr_text := extracted_results.first + " := " + l_call_text
+				l_instr_text := extracted_results.first + ti_assign + l_call_text
 			else
 				l_instr_text := l_call_text
 			end
-			l_instr_text := l_instr_text + "%N"
+			l_instr_text := l_instr_text + ti_new_line
 
 			create l_feat_output.make
 			create l_old_method_printer.make (l_feat_output, obsolete_locals, a_start_path, a_end_path, l_instr_text)

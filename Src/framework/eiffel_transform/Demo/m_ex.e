@@ -109,13 +109,6 @@ feature
 			f2 := l1
 		end
 		
-	ex(arg1,l1: INTEGER): INTEGER
-		do
-			result := l1
-			if arg1>0 then
-				Result := arg1
-			end		
-		end
 	f2: INTEGER
 
 end

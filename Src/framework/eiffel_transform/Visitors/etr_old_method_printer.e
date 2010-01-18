@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 				if not obsolete_locals.has(l_cur_name) then
 					if not is_locals_first_pass then
 						if l_printed>0 then
-							output.append_string(", ")
+							output.append_string(ti_comma+ti_space)
 						end
 						output.append_string(l_cur_name)
 					end
@@ -144,9 +144,9 @@ feature {NONE} -- Implementation
 	process_routine_as (l_as: ROUTINE_AS)
 		do
 			if processing_needed (l_as.obsolete_message, l_as, 1) then
-				output.append_string ("obsolete%N")
+				output.append_string (ti_obsolete_keyword+ti_New_line)
 				process_block (l_as.obsolete_message, l_as, 1)
-				output.append_string ("%N")
+				output.append_string (ti_New_line)
 			end
 
 			process_child (l_as.precondition, l_as, 2)
@@ -158,11 +158,10 @@ feature {NONE} -- Implementation
 
 				is_locals_first_pass := false
 				if has_locals then
-
-					output.append_string ("local%N")
+					output.append_string (ti_local_keyword+ti_New_line)
 					output.enter_block
-					process_child_list (l_as.locals, "%N", l_as, 3)
-					output.append_string ("%N")
+					process_child_list (l_as.locals, ti_New_line, l_as, 3)
+					output.append_string (ti_New_line)
 					output.exit_block
 				end
 			end
@@ -172,11 +171,11 @@ feature {NONE} -- Implementation
 			process_child (l_as.postcondition, l_as, 5)
 
 			if processing_needed (l_as.rescue_clause, l_as, 6) then
-				output.append_string("rescue%N")
+				output.append_string(ti_rescue_keyword+ti_New_line)
 				process_child_block (l_as.rescue_clause, l_as, 6)
 			end
 
-			output.append_string("end%N")
+			output.append_string(ti_End_keyword+ti_New_line)
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
@@ -185,7 +184,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			process_identifier_list (l_as.id_list)
 			if is_id_list_non_empty and not is_locals_first_pass then
-				output.append_string(": ")
+				output.append_string(ti_colon+ti_space)
 				process_child(l_as.type, l_as, 1)
 			end
 		end
