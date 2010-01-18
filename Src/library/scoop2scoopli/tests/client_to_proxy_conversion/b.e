@@ -1,14 +1,4 @@
 class
-	A[F,G]
-
-inherit 
-	X[F,G]
-	
-
-feature
-
-end
-class
 	B[H]
 inherit
 	A[INTEGER, H]
