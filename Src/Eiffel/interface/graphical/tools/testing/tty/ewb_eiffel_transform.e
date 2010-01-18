@@ -243,10 +243,7 @@ feature -- Properties
 			test_me("test3", "1.2.4.4.1.3", "1.2.4.4.1.4")
 			test_me("test4", "1.2.4.4.1.1.4.1", "1.2.4.4.1.1.4.4")
 			test_me("test5", "1.2.4.4.1.2", "1.2.4.4.1.4")
-
-			-- the following is not working yet
-			-- need more complex use-def chain
---			test_me("test6", "1.2.4.4.1.2", "1.2.4.4.1.2")
+			test_me("test6", "1.2.4.4.1.2", "1.2.4.4.1.2")
 
 			eiffel_project.quick_melt
 			io.put_string ("System melted with modified AST%N")

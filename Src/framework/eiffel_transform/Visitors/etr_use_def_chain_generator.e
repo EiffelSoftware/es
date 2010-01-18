@@ -27,10 +27,10 @@ create
 
 feature -- Access
 
-	var_def: ARRAY[HASH_TABLE[INTEGER,STRING]]
-		-- var_def[i][var_name] = j -> in instruction i var_name was defined in instruction j
+	var_def: ARRAY[like current_var_defs]
+		-- var_def[i][var_name] = {j,k} -> in instruction i var_name was defined between instruction j and k
 
-	vars_used: ARRAY[LIST[STRING]]
+	vars_used: ARRAY[like temp_vars_used]
 		-- vars_used[i] = {a,b} -> in instruction i vars a and b were used
 
 	block_start_position, block_end_position: INTEGER
@@ -45,7 +45,7 @@ feature {NONE} -- Implementation
 	current_instruction: INTEGER
 		-- number of instruction currently processed
 
-	current_var_defs: HASH_TABLE[INTEGER,STRING]
+	current_var_defs: HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]
 
 	var_def_list: LINKED_LIST[like current_var_defs]
 		-- temporary list-form of var_def
@@ -53,7 +53,7 @@ feature {NONE} -- Implementation
 	var_used_list: LINKED_LIST[LIST[STRING]]
 		-- temporary list-form of var_used
 
-	temp_vars_used: LINKED_LIST[STRING]
+	temp_vars_used: LIST[STRING]
 		-- currently used variables
 
 	last_was_unqualified: BOOLEAN
@@ -71,6 +71,9 @@ feature {NONE} -- Implementation
 					next_local_name := l_acc_id.access_name
 					Result := True
 				end
+			elseif attached {RESULT_AS}a_call as l_res then
+				next_local_name := "result"
+				Result := True
 			end
 		end
 
@@ -78,6 +81,7 @@ feature {NONE} -- Implementation
 			-- merges `a_defs' into a new table
 		local
 			l_first: like current_var_defs
+			l_low, l_high: INTEGER
 		do
 			create Result.make (20)
 
@@ -94,8 +98,19 @@ feature {NONE} -- Implementation
 					if not Result.has(a_defs.item.key_for_iteration) then
 						Result.extend(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
 					elseif attached Result[a_defs.item.key_for_iteration] as old_item then
-						if a_defs.item.item_for_iteration<old_item then
-							Result.force(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
+						if old_item.first<a_defs.item.item_for_iteration.first then
+							l_low := old_item.first
+						else
+							l_low := a_defs.item.item_for_iteration.first
+						end
+						if old_item.second>a_defs.item.item_for_iteration.second then
+							l_high := old_item.second
+						else
+							l_high := a_defs.item.item_for_iteration.second
+						end
+
+						if l_low = old_item.first or l_high = old_item.second then
+							Result.force(create {PAIR[INTEGER,INTEGER]}.make(l_low, l_high), a_defs.item.key_for_iteration)
 						end
 					end
 
@@ -209,7 +224,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			var_def_list.extend (current_var_defs.twin)
 
 			-- clear used variables
-			create temp_vars_used.make
+			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones			
 			safe_process(l_as.call)
 			-- store them
@@ -232,7 +247,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- if next is a local then add to variable definition
 			if is_next_call_local (l_as.target) then
 				-- in current_instruction next_local_name was defined
-				current_var_defs.force (current_instruction, next_local_name)
+				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
 				l_target_is_local := true
 			end
 
@@ -240,7 +255,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			var_def_list.extend (current_var_defs.twin)
 
 			-- clear used variables
-			create temp_vars_used.make
+			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones
 			if not l_target_is_local then
 				safe_process(l_as.target)
@@ -261,7 +276,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- if next is a local then add to variable definition
 			if is_next_call_local (l_as.target) then
 				-- in current_instruction next_local_name was defined
-				current_var_defs.force (current_instruction, next_local_name)
+				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
 				l_target_is_local := true
 			end
 
@@ -271,7 +286,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			var_def_list.extend (current_var_defs.twin)
 
 			-- clear used variables
-			create temp_vars_used.make
+			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones
 			if not l_target_is_local then
 				safe_process(l_as.call)
@@ -324,17 +339,15 @@ feature {AST_EIFFEL} -- Roundtrip
 			var_def_list.extend (l_previous_defs)
 
 			-- clear used variables
-			create temp_vars_used.make
+			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones			
 			safe_process(l_as.condition)
 			-- store them
 			var_used_list.extend (temp_vars_used)
-			-- invalidate for debugging
-			temp_vars_used := void
 
 			safe_process(l_as.compound)
 			l_if_part_defs := current_var_defs.twin
-			current_var_defs := l_previous_defs
+			current_var_defs := l_previous_defs.twin
 			-- for now elsif is not supported!
 --			safe_process(l_as.elsif_list)
 			safe_process(l_as.else_part)
@@ -388,7 +401,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			temp_vars_used := void
 
 			-- clear used variables
-			create temp_vars_used.make
+			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones	
 			safe_process(l_as.stop)
 			-- store them

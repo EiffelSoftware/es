@@ -49,8 +49,6 @@ feature {NONE} -- Creation
 			end_path := a_end_path
 
 			instr_list_parent := parent_path (start_path)
-
-			result_is_argument := results.has ("result")
 		end
 
 feature {NONE} -- Implementation
@@ -94,9 +92,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	result_is_argument: BOOLEAN
-	result_redefined: BOOLEAN
-
 	last_was_unqualified: BOOLEAN
 			-- presently in an unqualified call
 
@@ -113,10 +108,6 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_assign_as (l_as: ASSIGN_AS)
 		do
-			if attached {RESULT_AS}l_as.target then
-				result_redefined := True
-			end
-
 			process_child (l_as.target, l_as, 1)
 			output.append_string(" := ")
 			process_child (l_as.source, l_as, 2)
@@ -125,11 +116,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_result_as (l_as: RESULT_AS)
 		do
-			if result_redefined then
-				output.append_string ("result")
-			else
-				output.append_string ("a_result")
-			end
+			output.append_string ("result")
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)

@@ -19,11 +19,13 @@ feature {NONE} -- Implementation
 	extracted_arguments, extracted_results, used_locals, extracted_new_locals, obsolete_locals, changed_arguments: LINKED_LIST[STRING]
 
 	vars_used: ARRAY[LIST[STRING]]
-	var_def: ARRAY[HASH_TABLE[INTEGER,STRING]]
+	var_def: ARRAY[HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]]
 
 	context: ETR_FEATURE_CONTEXT
 
 	block_start, block_end: INTEGER
+
+	is_result_possibly_undef: BOOLEAN
 
 	extract_results
 			-- find locals that were used after the block and defined within
@@ -31,7 +33,6 @@ feature {NONE} -- Implementation
 		local
 			l_cur_var_used: LIST[STRING]
 			l_current_instr: like block_start
-			l_cur_var_def: INTEGER
 		do
 			from
 				create extracted_results.make
@@ -46,13 +47,14 @@ feature {NONE} -- Implementation
 				until
 					l_cur_var_used.after
 				loop
-					if not extracted_results.has (l_cur_var_used.item) then
-						l_cur_var_def := (var_def[l_current_instr])[l_cur_var_used.item]
-
-						if l_cur_var_def >= block_start and l_cur_var_def <= block_end then
-							-- a variable used after the block is defined within
-							-- it's a result!
+					if not extracted_results.has (l_cur_var_used.item) and attached (var_def[l_current_instr])[l_cur_var_used.item] as l_pair then
+						if l_pair.first >= block_start and l_pair.first <= block_end then
 							extracted_results.extend (l_cur_var_used.item)
+						elseif l_pair.second >= block_start and l_pair.second <= block_end then
+							-- the result has to be an argument too
+							-- not sure it's assigned to!
+							extracted_results.extend (l_cur_var_used.item)
+							is_result_possibly_undef := true
 						end
 					end
 
@@ -65,10 +67,10 @@ feature {NONE} -- Implementation
 			-- check if result was defined within extracted block
 			if context.has_return_value then
 				l_current_instr := vars_used.count
-				l_cur_var_def := (var_def[l_current_instr])["result"]
-
-				if attached l_cur_var_def and then (l_cur_var_def >= block_start and l_cur_var_def <= block_end) then
-					extracted_results.extend("result")
+				if attached (var_def[l_current_instr])["result"] as l_pair then
+					if l_pair.first >= block_start and l_pair.first <= block_end then
+						extracted_results.extend("result")
+					end
 				end
 			end
 		end
@@ -95,10 +97,10 @@ feature {NONE} -- Implementation
 				until
 					var_def[l_current_instr].after
 				loop
-					l_cur_pos := var_def[l_current_instr].item_for_iteration
+					l_cur_pos := var_def[l_current_instr].item_for_iteration.first
 					if l_cur_pos>=block_start and l_cur_pos<=block_end then
 						l_cur_var := var_def[l_current_instr].key_for_iteration
-						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) then
+						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) and not l_cur_var.is_equal ("result") then
 							changed_arguments.extend(var_def[l_current_instr].key_for_iteration)
 						end
 					end
@@ -143,11 +145,14 @@ feature {NONE} -- Implementation
 								used_locals.extend (l_cur_var_used.item)
 							end
 
-							l_cur_var_def := (var_def[l_current_instr])[l_cur_var_used.item]
-							if l_cur_var_def < block_start  then
+							if attached (var_def[l_current_instr])[l_cur_var_used.item] as l_pair then
+								l_cur_var_def := l_pair.first
+
+								if l_cur_var_def < block_start  then
 								-- if the variable was defined before the block
 								-- it's an argument of the extracted method
 								extracted_arguments.extend (l_cur_var_used.item)
+								end
 							end
 						end
 					end
@@ -256,9 +261,17 @@ feature {NONE} -- Implementation
 			l_feature_output_text: STRING
 			l_ex_printer: ETR_EXTRACTED_METHOD_PRINTER
 			l_body_output: ETR_AST_STRING_OUTPUT
+			l_result_is_arg: BOOLEAN
 		do
 			create l_feature_output_text.make_empty
 			l_feature_output_text.append (a_feature_name)
+
+			if is_result_possibly_undef then
+				extracted_arguments.extend(extracted_results.first)
+			end
+
+			l_result_is_arg := extracted_arguments.has ("result")
+
 			if not extracted_arguments.is_empty then
 				-- print arguments
 				l_feature_output_text.append ("(")
@@ -305,7 +318,7 @@ feature {NONE} -- Implementation
 
 			l_feature_output_text.append ("%N")
 
-			if not extracted_new_locals.is_empty and not changed_arguments.is_empty then
+			if not extracted_new_locals.is_empty or not changed_arguments.is_empty then
 				l_feature_output_text.append ("local%N")
 				from
 					extracted_new_locals.start
@@ -343,6 +356,15 @@ feature {NONE} -- Implementation
 				changed_arguments.forth
 			end
 
+			-- pre-initialized result
+			if is_result_possibly_undef or l_result_is_arg then
+				if extracted_results.first.is_equal ("result") then
+					l_feature_output_text.append ("result := a_"+extracted_results.first+"%N")
+				else
+					l_feature_output_text.append ("result := "+extracted_results.first+"%N")
+				end
+			end
+
 			-- print only block range
 			-- replace result variable by "Result"
 			create l_body_output.make
@@ -355,7 +377,7 @@ feature {NONE} -- Implementation
 			create extracted_method.make_from_ast (reparsed_root, context.class_context, false)
 		end
 
-	compute_original_method
+	compute_old_method
 		do
 			-- fixme: todo
 		end
@@ -374,6 +396,7 @@ feature -- Operations
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
 		do
 			reset_errors
+			is_result_possibly_undef := false
 
 			-- check if valid context and valid ast!
 			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
@@ -402,7 +425,7 @@ feature -- Operations
 					extract_obsolete_locals
 
 					compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_instr_list)
-					compute_original_method
+					compute_old_method
 				end
 			else
 				add_error("extract_method: No feature context provided")
