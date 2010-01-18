@@ -194,6 +194,7 @@ feature {NONE} -- Implementation
 			l_current_instr: like block_start
 			l_rest_used_locals: like used_locals
 			l_index: INTEGER
+			l_is_def: BOOLEAN
 		do
 			-- loop over part of feature that is not extracted
 			-- and gather used locals
@@ -221,8 +222,8 @@ feature {NONE} -- Implementation
 
 						l_cur_var_used.forth
 					end
-					l_current_instr := l_current_instr + 1
 				end
+				l_current_instr := l_current_instr + 1
 			end
 
 			-- the results will still be used!
@@ -231,7 +232,10 @@ feature {NONE} -- Implementation
 			until
 				extracted_results.after
 			loop
-				l_rest_used_locals.extend (extracted_results.item)
+				if not l_rest_used_locals.has(extracted_results.item) then
+					l_rest_used_locals.extend (extracted_results.item)
+				end
+
 				extracted_results.forth
 			end
 
@@ -245,8 +249,23 @@ feature {NONE} -- Implementation
 				l_index > context.locals.upper
 			loop
 				if not l_rest_used_locals.has (context.locals[l_index].name) then
+					l_is_def := false
 					-- make sure the local was not defined either
-					if not var_def[var_def.upper].has (context.locals[l_index].name) then
+					if attached (var_def[var_def.upper])[context.locals[l_index].name] as l_def then
+						-- no definitions after the block
+						if l_def.first > block_end or l_def.second > block_end then
+							l_is_def := true
+						end
+					end
+
+					if block_start>1 and then attached (var_def[block_start-1])[context.locals[l_index].name] as l_def then
+						-- no definitions before the block
+						if l_def.first < block_start or l_def.second < block_start then
+							l_is_def := true
+						end
+					end
+
+					if not l_is_def then
 						obsolete_locals.extend (context.locals[l_index].name)
 					end
 				end
@@ -377,9 +396,45 @@ feature {NONE} -- Implementation
 			create extracted_method.make_from_ast (reparsed_root, context.class_context, false)
 		end
 
-	compute_old_method
+	compute_old_method(a_start_path, a_end_path: AST_PATH; a_extracted_feature_name: STRING; a_feature_ast: FEATURE_AS)
+		local
+			l_old_method_printer: ETR_OLD_METHOD_PRINTER
+			l_feat_output: ETR_AST_STRING_OUTPUT
+			l_instr_text: STRING
+			l_call_text: STRING
 		do
-			-- fixme: todo
+			l_call_text := a_extracted_feature_name
+			if not extracted_arguments.is_empty then
+				l_call_text.append ("(")
+				from
+					extracted_arguments.start
+				until
+					extracted_arguments.after
+				loop
+					l_call_text.append (extracted_arguments.item)
+
+					extracted_arguments.forth
+
+					if not extracted_arguments.after then
+						l_call_text.append (", ")
+					end
+				end
+				l_call_text.append (")")
+			end
+
+			if not extracted_results.is_empty then
+				l_instr_text := extracted_results.first + " := " + l_call_text
+			else
+				l_instr_text := l_call_text
+			end
+			l_instr_text := l_instr_text + "%N"
+
+			create l_feat_output.make
+			create l_old_method_printer.make (l_feat_output, obsolete_locals, a_start_path, a_end_path, l_instr_text)
+			l_old_method_printer.print_feature (a_feature_ast)
+
+			reparse_printed_ast (a_feature_ast, l_feat_output.string_representation)
+			create old_method.make_from_ast (reparsed_root, context, false)
 		end
 
 feature -- Operations
@@ -394,6 +449,7 @@ feature -- Operations
 		local
 			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
+			l_feat_ast: FEATURE_AS
 		do
 			reset_errors
 			is_result_possibly_undef := false
@@ -405,6 +461,10 @@ feature -- Operations
 					l_instr_list := instrs
 				else
 					add_error("extract_method: Start path is not an instruction")
+				end
+
+				if attached {FEATURE_AS}a_feature.target_node as l_ft then
+					l_feat_ast := l_ft
 				end
 
 				if not has_errors then
@@ -425,7 +485,7 @@ feature -- Operations
 					extract_obsolete_locals
 
 					compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_instr_list)
-					compute_old_method
+					compute_old_method (a_start_path, a_end_path, a_feature_name, l_feat_ast)
 				end
 			else
 				add_error("extract_method: No feature context provided")

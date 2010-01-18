@@ -227,8 +227,10 @@ feature -- Properties
 								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_start),
 								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_end),
 								"extracted")
-
+			io.put_string ("=== "+method_name+" EXTRACTED ===%N")
 			io.put_string (ast_to_string(mex.extracted_method.target_node))
+			io.put_string ("=== "+method_name+" OLD ===%N")
+			io.put_string (ast_to_string(mex.old_method.target_node))
 		end
 
 	execute

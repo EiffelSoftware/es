@@ -67,7 +67,7 @@ feature {NONE} -- Implementation
 				-- check if parents match
 				-- i.e. parent instruction list is a prefix of current path
 				-- and not entirely contained
-				if l_as.path.as_string.starts_with (instr_list_parent.as_string) and l_as.path.as_array.count=instr_list_parent.as_array.count then
+				if l_instr_list.path.is_equal(instr_list_parent) then
 					from
 						l_first_instr := start_path.as_array[start_path.as_array.upper]
 						l_last_instr := end_path.as_array[end_path.as_array.upper]
