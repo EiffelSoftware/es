@@ -15,27 +15,8 @@
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<cluster name="scoop2scoopli" location=".\" recursive="true">
 			<file_rule>
-				<exclude>/dotnet$</exclude>
-				<condition>
-					<dotnet value="false"/>
-				</condition>
+				<exclude>/tests$</exclude>
 			</file_rule>
-			<file_rule>
-				<exclude>/classic$</exclude>
-				<condition>
-					<dotnet value="true"/>
-				</condition>
-			</file_rule>
-			<file_rule>
-				<exclude>^/visitor$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/support$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/scoopli_stub$</exclude>
-			</file_rule>
-			<cluster name="support" location="$EIFFEL_SRC\library\scoop2scoopli\support\"/>
 		</cluster>
 	</target>
 </system>
