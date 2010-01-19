@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="scoop2scoopli" uuid="15653F10-738E-11DD-AD8B-0800200C9A66" library_target="scoop2scoopli">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="scoop2scoopli" uuid="15653F10-738E-11DD-AD8B-0800200C9A66" library_target="scoop2scoopli">
 	<target name="scoop2scoopli">
 		<description>scoop2scoopli</description>
 		<file_rule>
