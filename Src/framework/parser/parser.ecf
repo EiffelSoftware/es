@@ -17,7 +17,7 @@
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
 		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
-		<library name="scoop" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf"/>
+		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf"/>
 		<cluster name="parser" location=".\" recursive="true"/>
 	</target>
 </system>
