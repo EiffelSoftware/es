@@ -18,6 +18,7 @@ feature {NONE} -- Creation
 		do
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
 			create modified_ast.make_invalid
+			create output.make
 		end
 
 feature -- Access
@@ -26,7 +27,18 @@ feature -- Access
 
 	modifications: LIST[ETR_AST_MODIFICATION]
 
+	output: ETR_AST_STRING_OUTPUT
+			-- string output of printer
+
 feature -- Operations
+
+	add_list(a_list: like modifications)
+			-- add `a_list' to `modifications'
+		require
+			list_attached: a_list /= void
+		do
+			modifications.append (a_list)
+		end
 
 	add(a_modification: ETR_AST_MODIFICATION)
 			-- add `a_modification' to `modifications'
@@ -66,12 +78,6 @@ feature -- Operations
 
 			-- reset the modifications list and output
 			reset
-		end
-
-	output: ETR_AST_STRING_OUTPUT
-			-- string output of printer
-		once
-			create Result.make
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

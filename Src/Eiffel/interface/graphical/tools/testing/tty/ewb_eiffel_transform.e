@@ -84,31 +84,33 @@ feature -- Properties
 	test_ass_attempt_replacing
 			-- test assignment attempt replacing
 		local
-			a1,a2: CLASS_I
-			a1_ast,a2_ast: CLASS_AS
-			a1_context, a2_context: ETR_FEATURE_CONTEXT
-			a1_feat, a2_feat: FEATURE_I
+			a2: CLASS_I
+			a2_ast: CLASS_AS
+			a2_context: ETR_FEATURE_CONTEXT
+			a2_feat: FEATURE_I
 			repl: ETR_ASSIGNMENT_ATTEMPT_REPLACER
 			a2_trans: ETR_TRANSFORMABLE
+			mod: ETR_AST_MODIFIER
 		do
 			-- create contexts
-			a1 := universe.compiled_classes_with_name("A1").first
-			a1_ast := a1.compiled_class.ast
 			a2 := universe.compiled_classes_with_name("A2").first
 			a2_ast := a2.compiled_class.ast
-			a1_feat := a1.compiled_class.feature_named ("test")
 			a2_feat := a2.compiled_class.feature_named ("test")
 
 			-- create contexts
-			create a1_context.make (a1_feat, void)
 			create a2_context.make (a2_feat, void)
 
 			create repl
 			a2_trans := create {ETR_TRANSFORMABLE}.make_from_ast(a2_ast, create {ETR_CLASS_CONTEXT}.make(a2.compiled_class),true)
 			repl.replace_assignment_attempts (a2_trans)
 
+			-- apply the modifications
+			create mod.make
+			mod.add_list(repl.replacements)
+			mod.apply_to (a2_trans)
+
 			-- print transformed instruction
-			io.put_string (ast_to_string(repl.transformation_result.target_node))
+			io.put_string (ast_to_string(mod.modified_ast.target_node))
 		end
 
 	test_ren
@@ -246,9 +248,6 @@ feature -- Properties
 			test_me("test4", "1.2.4.4.1.1.4.1", "1.2.4.4.1.1.4.4")
 			test_me("test5", "1.2.4.4.1.2", "1.2.4.4.1.4")
 			test_me("test6", "1.2.4.4.1.2", "1.2.4.4.1.2")
-
-			eiffel_project.quick_melt
-			io.put_string ("System melted with modified AST%N")
 		end
 
 note

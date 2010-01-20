@@ -15,28 +15,19 @@ inherit
 	ETR_ERROR_HANDLER
 
 feature -- Operations
-	transformation_result: ETR_TRANSFORMABLE
-			-- result of last transformation
+	replacements: LIST[ETR_AST_MODIFICATION]
+			-- modifications resulting from this operator
 
 	replace_assignment_attempts(a_transformable: ETR_TRANSFORMABLE)
 			-- replaces assignment attempts in `a_transformable'
 		local
 			l_visitor: ETR_ASS_ATTMPT_REPL_VISITOR
-			l_output: ETR_AST_STRING_OUTPUT
 		do
 			reset_errors
-			transformation_result := void
 
-			create l_output.make
-			create l_visitor.make (l_output, a_transformable.context.class_context)
-			l_visitor.print_ast_to_output (a_transformable.target_node)
-			reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
-
-			if reparsed_root = void then
-				add_error("replace_assignment_attempts: Reparsing of modified ast failed")
-			else
-				create transformation_result.make_from_ast (reparsed_root, a_transformable.context, false)
-			end
+			create l_visitor.make (a_transformable.context.class_context)
+			a_transformable.target_node.process (l_visitor)
+			replacements := l_visitor.modifications
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

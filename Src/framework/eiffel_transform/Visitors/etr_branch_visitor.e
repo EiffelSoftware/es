@@ -90,7 +90,9 @@ inherit
 			process_address_as,
 			process_feat_name_id_as,
 			process_external_as,
-			process_infix_prefix_as
+			process_infix_prefix_as,
+			process_formal_as,
+			process_like_id_as
 		end
 
 feature {NONE} -- Implementation
@@ -101,6 +103,11 @@ feature {NONE} -- Implementation
 		end
 
 feature -- Roundtrip
+
+	process_like_id_as (l_as: LIKE_ID_AS)
+		do
+			process_n_way_branch(l_as,[l_as.anchor])
+		end
 
 	process_external_as (l_as: EXTERNAL_AS)
 		do
@@ -496,8 +503,13 @@ feature -- Roundtrip
 			process_n_way_branch(l_as,[l_as.content])
 		end
 
+	process_formal_as (l_as: FORMAL_AS)
+		do
+			process_n_way_branch(l_as,[l_as.name])
+		end
+
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -80,6 +80,8 @@ feature {NONE} -- Implementation
 				else
 					Precursor(l_as, a_parent, a_branch)
 				end
+			else
+				Precursor(l_as, a_parent, a_branch)
 			end
 		end
 

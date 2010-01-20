@@ -7,16 +7,12 @@ note
 class
 	ETR_ASS_ATTMPT_REPL_VISITOR
 inherit
-	ETR_AST_STRUCTURE_PRINTER
+	AST_ITERATOR
 		redefine
 			process_reverse_as,
 			process_feature_as
 		end
 	ETR_SHARED
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 create
 	make
 
@@ -30,22 +26,23 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Creation
 
-	make(an_output: like output; a_class_context: like class_context)
+	make(a_class_context: like class_context)
 		do
-			make_with_output(an_output)
-
 			class_context := a_class_context
-
 			create type_checker
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
 		end
+
+feature -- Access
+
+	modifications: LIST[ETR_AST_MODIFICATION]
 
 feature {AST_EIFFEL} -- Roundtrip
 
 	process_feature_as (l_as: FEATURE_AS)
 		do
 			current_feature := l_as.feature_name.name
-			process_child_list(l_as.feature_names, ", ", l_as, 1)
-			process_child(l_as.body, l_as, 2)
+			l_as.body.process (Current)
 		end
 
 	process_reverse_as (l_as: REVERSE_AS)
@@ -55,6 +52,8 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_printed_type: STRING
 			l_target_string: STRING
 			l_source_string: STRING
+			l_replacement: STRING
+			l_mod: ETR_AST_MODIFICATION
 		do
 			l_feat_context := class_context.written_in_features_by_name[current_feature]
 
@@ -67,22 +66,17 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_target_string := ast_to_string (l_as.target)
 				l_source_string := ast_to_string (l_as.source)
 
-				output.append_string("if attached {"+l_printed_type+"}"+l_target_string+" as "+"l_etr_ot_local then%N")
-				output.enter_block
-				output.append_string (l_target_string+" := l_etr_ot_local%N")
-				output.exit_block
-				output.append_string ("else%N")
-				output.enter_block
-				output.append_string (l_target_string+" := void%N")
-				output.exit_block
-				output.append_string ("end%N")
+				create l_replacement.make_empty
+
+				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_target_string+" as "+"l_etr_ot_local then%N")
+				l_replacement.append_string (l_target_string+" := l_etr_ot_local%N")
+				l_replacement.append_string ("else%N")
+				l_replacement.append_string (l_target_string+" := void%N")
+				l_replacement.append_string ("end%N")
+
+				modifications.extend (basic_operators.replace_with_string (l_as.path, l_replacement))
 			else
 				fixme("Print error")
-
-				process_child (l_as.target, l_as, 1)
-				output.append_string(" ?= ")
-				process_child (l_as.source, l_as, 2)
-				output.append_string("%N")
 			end
 		end
 
