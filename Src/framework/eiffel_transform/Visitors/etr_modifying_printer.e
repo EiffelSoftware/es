@@ -34,8 +34,28 @@ feature {NONE} -- Implementation
 
 	processing_needed(an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
 			-- should `an_ast' be processed
+		local
+			l_cursor: INTEGER
 		do
-			Result := attached an_ast or else app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent, a_branch))
+			if attached {EIFFEL_LIST[AST_EIFFEL]}an_ast as l_list then
+				-- don't process if all items in the list are to be removed
+				from
+					l_cursor := l_list.index
+					l_list.start
+				until
+					Result or l_list.after
+				loop
+					if not del_hash.has (l_list.item.path) then
+						Result := true
+					end
+
+					l_list.forth
+				end
+				l_list.go_i_th (l_cursor)
+
+			elseif attached an_ast or else app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent, a_branch)) then
+				Result := True
+			end
 		end
 
 	process_or_replace (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)

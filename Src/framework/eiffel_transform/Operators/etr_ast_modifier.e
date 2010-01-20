@@ -43,27 +43,25 @@ feature -- Operations
 			output.reset
 		end
 
-	apply_with_context(a_root: AST_EIFFEL; a_context: ETR_CONTEXT)
-			-- apply all in `modifications' and use `a_context' and `a_root'
+	apply_to(a_transformable: ETR_TRANSFORMABLE)
+			-- apply to `a_transformable'
 		require
-			non_void: a_context /= void and a_root /= void
+			non_void: a_transformable /= void and a_transformable.is_valid /= void
 		local
 			l_printer: ETR_MODIFYING_PRINTER
 		do
-			fixme("root -> transformable")
-
 			reset_errors
 			-- pick parser depending on root node
 			create l_printer.make (output, modifications)
-			l_printer.print_ast_to_output (a_root)
+			l_printer.print_ast_to_output (a_transformable.target_node)
 
-			reparse_printed_ast(a_root, output.string_representation)
+			reparse_printed_ast(a_transformable.target_node, output.string_representation)
 
 			if attached reparsed_root then
-				create modified_ast.make_from_ast (reparsed_root, a_context, false)
+				create modified_ast.make_from_ast (reparsed_root, a_transformable.context, false)
 			else
 				create modified_ast.make_invalid
-				add_error("apply_with_context: Modification resulted in unparsable text")
+				add_error("apply_to: Modification resulted in unparsable text")
 			end
 
 			-- reset the modifications list and output

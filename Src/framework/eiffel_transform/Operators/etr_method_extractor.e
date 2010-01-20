@@ -475,7 +475,7 @@ feature -- Operations
 			-- check if valid context and valid ast!
 			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
 				context := l_ft_ctxt
-				if attached {EIFFEL_LIST[INSTRUCTION_AS]}find_node (parent_path (a_start_path), a_start_path.root) as instrs then
+				if attached {EIFFEL_LIST[INSTRUCTION_AS]}find_node (a_start_path.parent_path, a_start_path.root) as instrs then
 					l_instr_list := instrs
 				else
 					add_error("extract_method: Start path is not an instruction")

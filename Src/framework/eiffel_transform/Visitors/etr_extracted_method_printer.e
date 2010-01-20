@@ -39,7 +39,7 @@ feature {NONE} -- Creation
 		require
 			none_void: a_output /= void and a_result_list /= void and a_start_path /= void and a_end_path /= void and a_changed_args_list /= void
 			single_result: a_result_list.count<=1
-			same_parent: parent_path (a_start_path).is_equal (parent_path (a_end_path))
+			same_parent: a_start_path.parent_path.is_equal (a_end_path.parent_path)
 		do
 			make_with_output (a_output)
 
@@ -50,7 +50,7 @@ feature {NONE} -- Creation
 			start_path := a_start_path
 			end_path := a_end_path
 
-			instr_list_parent := parent_path (start_path)
+			instr_list_parent := start_path.parent_path
 		end
 
 feature {NONE} -- Implementation

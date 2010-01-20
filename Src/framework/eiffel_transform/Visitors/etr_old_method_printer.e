@@ -33,7 +33,7 @@ feature {NONE} -- Creation
 			-- make with `a_output', `a_obsolete_list', `a_start_path' and `a_end_path'
 		require
 			none_void: a_output /= void and a_obsolete_list /= void and a_start_path /= void and a_end_path /= void and a_repl_text /= void
-			same_parent: parent_path (a_start_path).is_equal (parent_path (a_end_path))
+			same_parent: a_start_path.parent_path.is_equal (a_end_path.parent_path)
 		do
 			make_with_output (a_output)
 
@@ -43,7 +43,7 @@ feature {NONE} -- Creation
 			end_path := a_end_path
 			replacement_text := a_repl_text
 
-			instr_list_parent := parent_path (start_path)
+			instr_list_parent := start_path.parent_path
 		end
 
 feature {NONE} -- Implementation

@@ -6,11 +6,6 @@ note
 
 class
 	ETR_CONTEXT
-inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 create
 	make_empty
 

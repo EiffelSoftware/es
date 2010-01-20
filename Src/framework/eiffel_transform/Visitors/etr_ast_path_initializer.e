@@ -42,13 +42,7 @@ feature {NONE} -- Implementation
 				i>br.count
 			loop
 				if attached {AST_EIFFEL}br.item (i) as item then
-					if attached item.path then
-						-- update it
-						item.path.make_from_parent (a_parent, i)
-					else
-						-- create
-						item.set_path (create {AST_PATH}.make_from_parent (a_parent, i))
-					end
+					item.set_path (create {AST_PATH}.make_from_parent (a_parent, i))
 
 					item.process (Current)
 				end

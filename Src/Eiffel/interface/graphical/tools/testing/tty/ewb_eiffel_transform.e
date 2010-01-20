@@ -238,8 +238,8 @@ feature -- Properties
 			-- command line.
 		do
 			-- reparse to have the original ast and don't use a modified one from storage
---			test_ass_attempt_replacing
---			test_ec_gen
+			test_ass_attempt_replacing
+			test_ec_gen
 			test_me("test", "1.2.4.4.1.2", "1.2.4.4.1.2")
 			test_me("test2", "1.2.4.4.1.3", "1.2.4.4.1.3")
 			test_me("test3", "1.2.4.4.1.3", "1.2.4.4.1.4")

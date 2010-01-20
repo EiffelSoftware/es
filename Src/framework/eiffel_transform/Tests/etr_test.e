@@ -104,12 +104,12 @@ feature -- Test routines
 			-- the condition
 			mod2 := basic_operators.replace (create {AST_PATH}.make_from_parent(conditional.target_node, 1), new_expr ("a>b",context))
 			modifier.add(mod1); modifier.add (mod2)
-			modifier.apply_with_context (conditional.target_node, context)
+			modifier.apply_to (conditional)
 
 			-- change operator to >=
 			mod1 := basic_operators.replace_with_string (create {AST_PATH}.make_from_string(modifier.modified_ast.target_node, "1.1.2"), ">=")
 			modifier.add (mod1)
-			modifier.apply_with_context (modifier.modified_ast.target_node, context)
+			modifier.apply_to (modifier.modified_ast)
 
 			-- reference
 			reparse_printed_ast (modifier.modified_ast.target_node,
@@ -135,7 +135,7 @@ feature {NONE} -- Helpers
 			Result := l_ast1_str.is_equal (l_ast2_str)
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

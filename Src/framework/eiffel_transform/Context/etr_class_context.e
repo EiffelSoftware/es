@@ -14,22 +14,57 @@ create
 feature --Access
 	written_class: detachable CLASS_C
 	written_in_features: LIST[ETR_FEATURE_CONTEXT]
+		do
+			if not attached internal_written_in_features then
+				init_features
+			end
+			Result := internal_written_in_features
+		end
 
 	written_in_features_by_name: HASH_TABLE[ETR_FEATURE_CONTEXT, STRING]
+		do
+			if not attached internal_written_in_features_by_name then
+				init_features
+			end
+			Result := internal_written_in_features_by_name
+		end
 
 	feature_of_id(an_id: INTEGER): ETR_FEATURE_CONTEXT
 			-- gets feature with the id `an_id' in the current context
 		local
 			l_feat_i: FEATURE_I
 		do
-			-- todo:
-			-- lookup internal features
-			-- then in written_class
-
 			l_feat_i := written_class.feature_of_feature_id (an_id)
 
 			if attached l_feat_i then
 				create Result.make(l_feat_i, Current)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	internal_written_in_features: like written_in_features
+
+	internal_written_in_features_by_name: like written_in_features_by_name
+
+	init_features
+			-- init internal feature tables
+		local
+			l_written_in: LIST [E_FEATURE]
+			l_feat_context: ETR_FEATURE_CONTEXT
+		do
+			from
+				create {LINKED_LIST[ETR_FEATURE_CONTEXT]}internal_written_in_features.make
+				l_written_in := written_class.written_in_features
+				create internal_written_in_features_by_name.make(l_written_in.count)
+				l_written_in.start
+			until
+				l_written_in.after
+			loop
+				create l_feat_context.make (l_written_in.item.associated_feature_i, Current)
+				internal_written_in_features.extend(l_feat_context)
+				internal_written_in_features_by_name.extend(l_feat_context, l_feat_context.name)
+				l_written_in.forth
 			end
 		end
 
@@ -39,28 +74,8 @@ feature {NONE} -- Creation
 			-- make with `a_written_class'
 		require
 			non_void: a_written_class /= void
-		local
-			l_written_in: LIST [E_FEATURE]
-			l_feat_context: ETR_FEATURE_CONTEXT
 		do
 			written_class := a_written_class
-
-			-- add features			
-			-- fixme: lazy init?!
-			from
-				create {LINKED_LIST[ETR_FEATURE_CONTEXT]}written_in_features.make
-				l_written_in := a_written_class.written_in_features
-				create written_in_features_by_name.make(l_written_in.count)
-				l_written_in.start
-			until
-				l_written_in.after
-			loop
-				create l_feat_context.make (l_written_in.item.associated_feature_i, Current)
-				written_in_features.extend(l_feat_context)
-				written_in_features_by_name.extend(l_feat_context, l_feat_context.name)
-				l_written_in.forth
-			end
-
 			class_context := Current
 		end
 note

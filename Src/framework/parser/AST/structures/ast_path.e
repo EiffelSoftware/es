@@ -52,6 +52,21 @@ feature -- Access
 			Result := as_string.starts_with (a_prefix)
 		end
 
+	parent_path: AST_PATH
+			-- the path of `Current's parent
+		require
+			valid: is_valid
+			not_root: as_array.count>1
+		do
+			if not attached internal_parent_path then
+				init_parent_path
+			end
+
+			Result := internal_parent_path
+		ensure
+			Result.is_valid
+		end
+
 feature -- Hashing
 
 	hash_code: INTEGER
@@ -61,6 +76,32 @@ feature -- Hashing
 		end
 
 feature {NONE}-- Internal
+
+	internal_parent_path: like Current
+
+	init_parent_path
+			-- init `parent_path'
+		local
+			l_parent_string: STRING
+			i: INTEGER
+		do
+			-- construct path of parent
+			from
+				i := Current.as_array.lower
+				create l_parent_string.make_empty
+			until
+				i > Current.as_array.upper-1
+			loop
+				if i /= Current.as_array.upper-1 then
+					l_parent_string := l_parent_string + Current.as_array[i].out + {AST_PATH}.separator.out
+				else
+					l_parent_string := l_parent_string + Current.as_array[i].out
+				end
+				i := i+1
+			end
+
+			create internal_parent_path.make_from_string (Current.root, l_parent_string)
+		end
 
 	internal_as_array: like as_array
 
@@ -119,7 +160,7 @@ feature -- Comparison
 			Result := as_string.is_equal (other.as_string)
 		end
 
-feature -- Creation
+feature {NONE} -- Creation
 
 	make_from_other(an_other: like current)
 			-- make from `an_other'
@@ -211,7 +252,7 @@ invariant
 	consistent: is_valid implies is_valid_path_expr(as_string)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

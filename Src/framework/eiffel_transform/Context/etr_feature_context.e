@@ -46,7 +46,6 @@ feature {NONE} -- Creation
 			has_locals := a_other.has_locals
 			has_return_value := a_other.has_return_value
 
-			fixme("Ok to just twin the type?")
 			if a_other.has_return_value then
 				type := a_other.type.twin
 			end
