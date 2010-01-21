@@ -19,6 +19,8 @@ create
 
 feature -- Access
 
+	is_modified: BOOLEAN
+
 	original_written_feature: FEATURE_I
 
 	has_return_value: BOOLEAN
@@ -35,6 +37,24 @@ feature -- Access
 
 	arg_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
 	local_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
+
+	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
+
+	has_feature_named(a_name: STRING): BOOLEAN
+			-- is there a feature with `a_name' in this context
+		require
+			name_attached: a_name /= void
+		do
+			Result := attached class_context.written_class.feature_named (a_name)
+		end
+
+feature -- Operation
+
+	set_modified
+			-- set `is_modified' to `true'
+		do
+			is_modified := true
+		end
 
 feature {NONE} -- Creation
 	make_from_other(a_other: like Current)
@@ -82,6 +102,9 @@ feature {NONE} -- Creation
 			original_written_feature := a_other.original_written_feature
 			create class_context.make(original_written_feature.written_class)
 			feature_id := a_other.feature_id
+			is_modified := a_other.is_modified
+
+			object_test_locals := a_other.object_test_locals.twin
 		end
 
 	make(a_written_feature: like original_written_feature; a_class_context: detachable like class_context)
@@ -92,6 +115,7 @@ feature {NONE} -- Creation
 			l_e_feat: E_FEATURE
 			l_name: STRING
 			l_written_type: TYPE_A
+			l_ot_extractor: ETR_OBJECT_TEST_LOCAL_EXTRACTOR
 		do
 			-- compute explicit type
 			if a_written_feature.has_return_value then
@@ -191,6 +215,12 @@ feature {NONE} -- Creation
 			else
 				create class_context.make(a_written_feature.written_class)
 			end
+
+			-- init object test locals
+			create {LINKED_LIST[ETR_OBJECT_TEST_LOCAL]}object_test_locals.make
+			create l_ot_extractor.make (Current)
+			-- root = FEATURE_AS
+			l_ot_extractor.process_from_root (a_written_feature.e_feature.ast)
 		end
 invariant
 	locals_valid: has_locals implies attached locals

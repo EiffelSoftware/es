@@ -299,6 +299,7 @@ feature {NONE} -- Implementation
 			l_ex_printer: ETR_EXTRACTED_METHOD_PRINTER
 			l_body_output: ETR_AST_STRING_OUTPUT
 			l_result_is_arg: BOOLEAN
+			l_type_found: BOOLEAN
 		do
 			create l_feature_output_text.make_empty
 			l_feature_output_text.append (a_feature_name)
@@ -325,6 +326,27 @@ feature {NONE} -- Implementation
 						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context))
 					elseif extracted_arguments.item.is_equal (ti_result) then
 						l_feature_output_text.append ("a_"+ti_result + ti_colon + ti_space + print_type (context.unresolved_type, context))
+					else
+						-- it might be an object-test local
+						from
+							context.object_test_locals.start
+						until
+							context.object_test_locals.after or l_type_found
+						loop
+							if context.object_test_locals.item.name.is_equal (extracted_arguments.item) then
+								if a_start_path.is_child_of (context.object_test_locals.item.scope) then
+									l_feature_output_text.append (extracted_arguments.item + ti_colon + ti_space + print_type (context.object_test_locals.item.type, context))
+									l_type_found := true
+								end
+							end
+
+							context.object_test_locals.forth
+						end
+
+						if not l_type_found then
+							add_error("compute_extracted_method: Can't determine type of "+extracted_arguments.item)
+						end
+
 					end
 
 					extracted_arguments.forth
@@ -389,8 +411,13 @@ feature {NONE} -- Implementation
 			until
 				changed_arguments.after
 			loop
-				l_feature_output_text.append ("l_"+changed_arguments.item+ti_assign+changed_arguments.item+ti_new_line)
-				changed_arguments.forth
+				if extracted_results.has (changed_arguments.item) then
+					l_feature_output_text.append (ti_result+ti_assign+changed_arguments.item+ti_new_line)
+					changed_arguments.remove
+				else
+					l_feature_output_text.append ("l_"+changed_arguments.item+ti_assign+changed_arguments.item+ti_new_line)
+					changed_arguments.forth
+				end
 			end
 
 			-- pre-initialized result

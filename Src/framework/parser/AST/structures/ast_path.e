@@ -52,7 +52,7 @@ feature -- Access
 			Result := as_string.starts_with (a_prefix)
 		end
 
-	parent_path: AST_PATH
+	parent_path: like Current
 			-- the path of `Current's parent
 		require
 			valid: is_valid
@@ -65,6 +65,16 @@ feature -- Access
 			Result := internal_parent_path
 		ensure
 			Result.is_valid
+		end
+
+	is_child_of(a_other: like Current): BOOLEAN
+			-- is `Current' a child of `a_other'
+		require
+			valid: is_valid
+			other_set: a_other /= void
+			other_valid: a_other.is_valid
+		do
+			Result := as_string.starts_with (a_other.as_string)
 		end
 
 feature -- Hashing
@@ -222,18 +232,17 @@ feature {NONE} -- Creation
 			end
 		end
 
-	make_from_parent(a_parent: like root; a_branch_number: INTEGER)
+	make_from_parent(a_parent_path: like Current; a_branch_number: INTEGER)
 			-- make from parent
 		require
-			non_void: a_parent /= void
-			has_path: a_parent.path /= void
-			valid: a_parent.path.is_valid
+			non_void: a_parent_path /= void
+			valid: a_parent_path.is_valid
 		do
-			root := a_parent.path.root
+			root := a_parent_path.root
 
 			branch_id := a_branch_number
 
-			as_string := a_parent.path.as_string + separator.out + branch_id.out
+			as_string := a_parent_path.as_string + separator.out + branch_id.out
 
 			is_valid := true
 		end

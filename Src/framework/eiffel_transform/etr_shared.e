@@ -282,6 +282,7 @@ feature {NONE} -- Parser
 			reparsed_root := void
 
 			if attached {CLASS_AS}a_root_type then
+				etr_class_parser.set_syntax_version(syntax_version)
 				etr_class_parser.parse_from_string (a_printed_ast,void)
 
 				if etr_class_parser.error_count>0 then
@@ -290,6 +291,7 @@ feature {NONE} -- Parser
 					reparsed_root := etr_class_parser.root_node
 				end
 			elseif attached {FEATURE_AS}a_root_type then
+				etr_feat_parser.set_syntax_version(syntax_version)
 				etr_feat_parser.parse_from_string ("feature "+a_printed_ast,void)
 
 				if etr_feat_parser.error_count>0 then
@@ -298,6 +300,7 @@ feature {NONE} -- Parser
 					reparsed_root := etr_feat_parser.feature_node
 				end
 			elseif attached {INSTRUCTION_AS}a_root_type then
+				etr_feat_parser.set_syntax_version(syntax_version)
 				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
 				if etr_feat_parser.error_count>0 then
 					add_error("reparse_printed_ast: Instruction parsing failed")
@@ -307,6 +310,7 @@ feature {NONE} -- Parser
 					end
 				end
 			elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}a_root_type then
+				etr_feat_parser.set_syntax_version(syntax_version)
 				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
 				if etr_feat_parser.error_count>0 then
 					add_error("reparse_printed_ast: Instruction-list parsing failed")
@@ -316,6 +320,7 @@ feature {NONE} -- Parser
 					end
 				end
 			elseif attached {EXPR_AS}a_root_type then
+				etr_expr_parser.set_syntax_version(syntax_version)
 				etr_expr_parser.parse_from_string ("check "+a_printed_ast,void)
 				if etr_expr_parser.error_count>0 then
 					add_error("reparse_printed_ast: Expression parsing failed")

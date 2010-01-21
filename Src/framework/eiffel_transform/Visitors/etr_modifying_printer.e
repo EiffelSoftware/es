@@ -53,7 +53,7 @@ feature {NONE} -- Implementation
 				end
 				l_list.go_i_th (l_cursor)
 
-			elseif attached an_ast or else app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent, a_branch)) then
+			elseif attached an_ast or else app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch)) then
 				Result := True
 			end
 		end
@@ -67,7 +67,7 @@ feature {NONE} -- Implementation
 			if attached l_as then
 				l_path := l_as.path
 			elseif attached a_parent then
-				create l_path.make_from_parent (a_parent, a_branch)
+				create l_path.make_from_parent (a_parent.path, a_branch)
 			end
 
 			if attached l_path then
@@ -237,7 +237,7 @@ feature -- Roundtrip
 				l_mod := repl_hash.item (l_path)
 				l_path := l_as.path
 			else
-				create l_path.make_from_parent (a_parent, a_branch)
+				create l_path.make_from_parent (a_parent.path, a_branch)
 			end
 
 			if attached l_mod then

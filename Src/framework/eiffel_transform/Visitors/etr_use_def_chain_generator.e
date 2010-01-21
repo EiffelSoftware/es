@@ -18,7 +18,8 @@ inherit
 			process_nested_as,
 			process_access_feat_as,
 			process_expr_call_as,
-			process_result_as
+			process_result_as,
+			process_object_test_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -77,7 +78,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	union_merge_definitions (a_defs: LIST[like current_var_defs]): like current_var_defs
+	union_merge_definitions (a_previous_defs: like current_var_defs; a_defs: LIST[like current_var_defs]): like current_var_defs
 			-- merges `a_defs' into a new table
 		local
 			l_first: like current_var_defs
@@ -99,7 +100,11 @@ feature {NONE} -- Implementation
 						a_defs.item.after
 					loop
 						if not Result.has(a_defs.item.key_for_iteration) then
-							Result.extend(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
+							if attached a_previous_defs[a_defs.item.key_for_iteration] as l_prev then
+								Result.extend(create {PAIR[INTEGER,INTEGER]}.make(l_prev.first, a_defs.item.item_for_iteration.second), a_defs.item.key_for_iteration)
+							else
+								Result.extend(a_defs.item.item_for_iteration, a_defs.item.key_for_iteration)
+							end
 						elseif attached Result[a_defs.item.key_for_iteration] as old_item then
 							if old_item.first<a_defs.item.item_for_iteration.first then
 								l_low := old_item.first
@@ -174,13 +179,13 @@ feature {NONE} -- Implementation
 				current_instruction := current_instruction+1
 				-- restore defined variables
 				current_var_defs := l_prev_var_def.twin
-				var_def_list.extend (l_prev_var_def.twin)
 				-- clear used variables
 				create {LINKED_LIST[STRING]}temp_vars_used.make
 				-- and gather new ones			
 				safe_process(l_as.item.expr)
 				-- store them
 				var_used_list.extend (temp_vars_used)
+				var_def_list.extend (current_var_defs)
 
 				-- process the compound and store defs
 				safe_process(l_as.item.compound)
@@ -282,7 +287,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				block_end_position := current_instruction
 			end
 
-			current_var_defs := union_merge_definitions (l_merge_list)
+			current_var_defs := union_merge_definitions (l_previous_defs, l_merge_list)
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
@@ -305,6 +310,14 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			last_was_unqualified := true
 			safe_process (l_as.call)
+		end
+
+	process_object_test_as (l_as: OBJECT_TEST_AS)
+		do
+			if attached l_as.name then
+				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), l_as.name.name)
+			end
+			Precursor(l_as)
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)
@@ -386,9 +399,13 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- if were in an unqualified call
 			-- the id might be a local/argument that is used
 			if last_was_unqualified then
-				if attached context.arg_by_name[l_as.access_name] or attached context.local_by_name[l_as.access_name] then
+--				if attached context.arg_by_name[l_as.access_name] or attached context.local_by_name[l_as.access_name] or context.object_test_locals.has (l_as.access_name) then
+				-- fixme: is this ok?
+				if not context.has_feature_named(l_as.access_name) then
 					-- local or argument is being used!
 					temp_vars_used.extend (l_as.access_name)
+--				end
+--					
 				end
 			end
 
@@ -404,16 +421,15 @@ feature {AST_EIFFEL} -- Roundtrip
 			if start_path.is_equal (l_as.path) then
 				block_start_position := current_instruction
 			end
-			-- store defined variables for this instruction
-			l_previous_defs := current_var_defs
-			var_def_list.extend (current_var_defs)
-
 			-- clear used variables
 			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones			
 			safe_process(l_as.condition)
 			-- store them
 			var_used_list.extend (temp_vars_used)
+			-- store defined variables for this instruction
+			l_previous_defs := current_var_defs
+			var_def_list.extend (current_var_defs)
 
 			create l_merge_list.make
 
@@ -443,12 +459,13 @@ feature {AST_EIFFEL} -- Roundtrip
 				block_end_position := current_instruction
 			end
 
-			current_var_defs := union_merge_definitions (l_merge_list)
+			current_var_defs := union_merge_definitions (l_previous_defs, l_merge_list)
 		end
 
 	process_loop_as (l_as: LOOP_AS)
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
+			l_prev_var_def: like current_var_defs
 		do
 			create l_merge_list.make
 			current_instruction := current_instruction+1
@@ -456,7 +473,8 @@ feature {AST_EIFFEL} -- Roundtrip
 				block_start_position := current_instruction
 			end
 			-- store defined variables for this instruction
-			var_def_list.extend (current_var_defs.twin)
+			l_prev_var_def := current_var_defs.twin
+			var_def_list.extend (l_prev_var_def)
 
 			safe_process(l_as.from_part)
 			l_merge_list.extend (current_var_defs.twin)
@@ -478,7 +496,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			l_merge_list.extend (current_var_defs)
 
-			current_var_defs :=  union_merge_definitions (l_merge_list)
+			current_var_defs :=  union_merge_definitions (l_prev_var_def, l_merge_list)
 		end
 
 note

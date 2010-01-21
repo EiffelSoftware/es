@@ -68,7 +68,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 				create l_replacement.make_empty
 
-				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_target_string+" as "+"l_etr_ot_local then%N")
+				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_source_string+" as "+"l_etr_ot_local then%N")
 				l_replacement.append_string (l_target_string+" := l_etr_ot_local%N")
 				l_replacement.append_string ("else%N")
 				l_replacement.append_string (l_target_string+" := void%N")

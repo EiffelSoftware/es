@@ -100,9 +100,9 @@ feature -- Test routines
 			conditional := basic_operators.transformation_result
 
 			-- the else-part
-			mod1 := basic_operators.list_append(create {AST_PATH}.make_from_parent(conditional.target_node, 4), new_instr ("b:=b-a",context))
+			mod1 := basic_operators.list_append(create {AST_PATH}.make_from_parent(conditional.target_node.path, 4), new_instr ("b:=b-a",context))
 			-- the condition
-			mod2 := basic_operators.replace (create {AST_PATH}.make_from_parent(conditional.target_node, 1), new_expr ("a>b",context))
+			mod2 := basic_operators.replace (create {AST_PATH}.make_from_parent(conditional.target_node.path, 1), new_expr ("a>b",context))
 			modifier.add(mod1); modifier.add (mod2)
 			modifier.apply_to (conditional)
 

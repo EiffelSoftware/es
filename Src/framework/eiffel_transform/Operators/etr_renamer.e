@@ -34,6 +34,7 @@ feature -- Operation
 						-- create new changed context
 						create l_resulting_context.make_from_other (l_feat_context)
 						l_resulting_context.local_by_name[an_old_name].set_name (a_new_name)
+						l_resulting_context.set_modified
 
 						-- transform to the new context
 						basic_operators.transform_to_context (a_function, l_resulting_context)
@@ -66,6 +67,7 @@ feature -- Operation
 						-- create new changed context
 						create l_resulting_context.make_from_other (l_feat_context)
 						l_resulting_context.arg_by_name[an_old_name].set_name (a_new_name)
+						l_resulting_context.set_modified
 
 						-- transform to the new context
 						basic_operators.transform_to_context (a_function, l_resulting_context)
@@ -101,6 +103,7 @@ feature -- Operation
 						-- create new changed context
 						create l_resulting_context.make_from_other (l_feat_context)
 						l_resulting_context.arguments[an_argument_position].set_name (a_new_name)
+						l_resulting_context.set_modified
 
 						-- transform to the new context
 						basic_operators.transform_to_context (a_function, l_resulting_context)

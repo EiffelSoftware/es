@@ -109,6 +109,23 @@ feature
 			f2 := l1
 		end
 		
+	test7(arg1: STRING): INTEGER
+			-- hidden result
+		local
+			l1: INTEGER
+		do
+			if attached arg1.count as cnt then				
+				l1 := 5
+				-- ex start
+				if l1>5 then
+					l1 := cnt
+				end
+				-- ex end
+			end
+			
+			f2 := l1
+		end
+		
 	f2: INTEGER
 
 end

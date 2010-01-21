@@ -37,37 +37,33 @@ feature -- Type checking
 		require
 			non_void: a_transformable /= void
 			valid: a_transformable.is_valid
+			has_context: not a_transformable.context.is_empty
 		do
 			reset_errors
 
-			if attached {ETR_FEATURE_CONTEXT}a_transformable.context as l_context then
-				check_ast_type(a_transformable.target_node, l_context)
-			else
-				add_error("check_transformable: No feature context")
-			end
+			check_ast_type(a_transformable.target_node, a_transformable.context)
 		end
 
-	check_expr_type (an_expr: EXPR_AS; a_context: ETR_FEATURE_CONTEXT)
-			-- Type check `an_expr' in the context of `a_feature'.
-			-- Store type of `a_expr_as' in `last_type'.
-		require
-			non_void: an_expr /= void and a_context /= void
-		do
-			init (ast_context)
-			ast_context.set_is_ignoring_export (True)
-			ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type, a_context.class_context.written_class.feature_table)
-			expression_or_instruction_type_check_and_code (a_context.original_written_feature, an_expr)
-		end
-
-	check_ast_type (an_ast: AST_EIFFEL; a_context: ETR_FEATURE_CONTEXT)
+	check_ast_type (an_ast: AST_EIFFEL; a_context: ETR_CONTEXT)
 			-- Type check `an_ast' in the context of `a_feature'.
 			-- Store type of `a_expr_as' in `last_type'.
 		require
 			non_void: an_ast /= void and a_context /= void
+			not_empty: not a_context.is_empty
+		do
+			check_ast_type_at (an_ast, a_context, void)
+		end
+
+	check_ast_type_at (an_ast: AST_EIFFEL; a_context: ETR_CONTEXT; a_path: detachable AST_PATH)
+			-- Type check `an_ast' in the context of `a_feature'.
+			-- Store type of `a_expr_as' in `last_type'.
+		require
+			non_void: an_ast /= void and a_context /= void
+			not_empty: not a_context.is_empty
+			valid: attached a_path implies a_path.is_valid
 		local
-			l_expr: EXPR_AS
-			l_expr_trans: ETR_TRANSFORMABLE
 			l_ast_string: STRING
+			l_feat: FEATURE_I
 		do
 			reset_errors
 
@@ -77,16 +73,53 @@ feature -- Type checking
 			if etr_expr_parser.error_count > 0 then
 				add_error("check_ast_type: Cannot parse an_ast as EXPR_AS")
 			else
-				l_expr := etr_expr_parser.expression_node
-
 				init (ast_context)
 				ast_context.set_is_ignoring_export (True)
 				ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type, a_context.class_context.written_class.feature_table)
-				expression_or_instruction_type_check_and_code (a_context.original_written_feature, l_expr)
+
+				if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
+					l_feat := l_feat_context.original_written_feature
+					init_object_test_locals (l_feat_context, a_path)
+				end
+
+				expression_or_instruction_type_check_and_code (l_feat, etr_expr_parser.expression_node)
 			end
 		end
 
 feature {NONE} -- Implementation
+
+	init_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: AST_PATH)
+			-- init with object test locals from `a_feature_context'
+		local
+			l_local_info: LOCAL_INFO
+			l_cur_local: ETR_OBJECT_TEST_LOCAL
+			l_ot_id: ID_AS
+		do
+			if attached a_path then
+				from
+					a_feature_context.object_test_locals.start
+				until
+					a_feature_context.object_test_locals.after
+				loop
+					l_cur_local := a_feature_context.object_test_locals.item
+					if a_path.is_child_of (l_cur_local.scope) then
+						create l_local_info
+						l_local_info.set_type (l_cur_local.type)
+						l_local_info.set_is_used (True)
+						create l_ot_id.initialize(l_cur_local.name)
+						context.add_object_test_local (l_local_info, l_ot_id)
+						context.add_object_test_expression_scope (l_ot_id)
+
+						check
+							attached context.object_test_local (names_heap.id_of (l_cur_local.name))
+						end
+
+					end
+
+					a_feature_context.object_test_locals.forth
+				end
+			end
+		end
 
 	expression_or_instruction_type_check_and_code (a_feature: FEATURE_I; an_ast: AST_EIFFEL)
 			-- Type check `an_ast' in the context of `a_feature'		

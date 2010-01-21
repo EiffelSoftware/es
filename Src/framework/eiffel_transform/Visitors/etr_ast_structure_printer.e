@@ -417,7 +417,7 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			output.append_string (ti_if_keyword+ti_Space)
 			process_child (l_as.condition, l_as, 1)
 			output.append_string (ti_Space+ti_then_keyword+ti_New_line)
-			process_child_block (l_as.compound, l_as, 2)
+			process_child_block_list (l_as.compound, void, l_as, 2)
 			process_child (l_as.elsif_list, l_as, 3)
 
 			if processing_needed (l_as.else_part, l_as, 4) then

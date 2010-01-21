@@ -29,8 +29,16 @@ feature
 			list: LIST[X]
 			linked_list: LINKED_LIST[C2]
 			weird_list: LINKED_LIST[LIST[TUPLE[detachable ARRAY[like c],attached X,TUPLE]]]
+			str: STRING
+			i : INTEGER
 		do
-			--c ?= c.c2_b
+			if attached {STRING}c as l_c then
+				str ?= l_c
+				if attached l_c.count as cnt then
+					i?= cnt
+				end
+			end
+			c ?= c.c2_b
 			linked_list ?= list
 			list ?= linked_list
 			weird_list ?= linked_list
