@@ -7,12 +7,11 @@ note
 class
 	ETR_ASSIGNMENT_ATTEMPT_REPLACER
 inherit
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all
 		end
-	ETR_ERROR_HANDLER
+	ETR_SHARED_ERROR_HANDLER
 
 feature -- Operations
 	replacements: LIST[ETR_AST_MODIFICATION]
@@ -23,8 +22,6 @@ feature -- Operations
 		local
 			l_visitor: ETR_ASS_ATTMPT_REPL_VISITOR
 		do
-			reset_errors
-
 			create l_visitor.make (a_transformable.context.class_context)
 			a_transformable.target_node.process (l_visitor)
 			replacements := l_visitor.modifications

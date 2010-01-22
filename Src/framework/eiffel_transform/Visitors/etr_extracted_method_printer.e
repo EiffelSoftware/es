@@ -16,7 +16,6 @@ inherit
 			process_expr_call_as,
 			process_list_with_separator
 		end
-	ETR_SHARED
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all

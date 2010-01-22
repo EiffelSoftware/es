@@ -5,8 +5,6 @@ note
 	revision: "$Revision$"
 class
 	ETR_SORTED_MODIFICATION_SET
-inherit
-	ETR_SHARED
 create {ETR_AST_STRUCTURE_PRINTER}
 	make
 

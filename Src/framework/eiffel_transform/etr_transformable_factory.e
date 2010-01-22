@@ -1,76 +1,57 @@
 note
-	description: "Iterates over all nodes and creates path-indexes"
+	description: "Summary description for {ETR_TRANSFORMABLE_FACTORY}."
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_PATH_INITIALIZER
+	ETR_TRANSFORMABLE_FACTORY
 inherit
-	ETR_BRANCH_VISITOR
-
-feature -- Creation
-
-	process_from_root(a_root: AST_EIFFEL)
-			-- process from `a_root'
-		require
-			root_set: a_root /= void
-		do
-			a_root.set_path (create {AST_PATH}.make_as_root(a_root))
-			a_root.process (Current)
+	ETR_SHARED_ERROR_HANDLER
+	REFACTORING_HELPER
+		export
+			{NONE} all
 		end
+	ETR_SHARED_PARSERS
 
-	process_from(a_node: AST_EIFFEL)
-			-- process starting at `a_node'
+feature -- New
+
+	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
+			-- create a new instruction from `an_instr' with context `a_context'
 		require
-			node_set: a_node /= void
+			instr_attached: an_instr /= void
+			context_attached: a_context /= void
 		do
-			a_node.process(Current)
-		end
+			fixme("Command/Query-separation")
+			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
-feature {NONE} -- Implementation
-
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
-		local
-			i: INTEGER
-		do
-			from
-				i:=1
-			until
-				i>br.count
-			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
-					item.set_path (create {AST_PATH}.make_from_parent (a_parent.path, i))
-
-					item.process (Current)
+			if etr_feat_parser.error_count>0 then
+				error_handler.add_error("new_instr: Parsing failed")
+				create Result.make_invalid
+			else
+				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+					create Result.make_from_ast (body.compound.first, a_context, false)
 				end
-				i:=i+1
 			end
 		end
 
-feature -- Roundtrip
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
+	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
+			-- create a new exression from `an_expr' with context `a_context'
+		require
+			expr_attached: an_expr /= void
+			context_attached: a_context /= void
 		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_as.item.set_path (create {AST_PATH}.make_from_parent (l_as.path, i))
-				l_as.item.process (Current)
-				l_as.forth
-				i:=i+1
+			fixme("Command/Query-separation")
+			etr_expr_parser.parse_from_string("check "+an_expr,void)
+
+			if etr_expr_parser.error_count>0 then
+				error_handler.add_error("new_expr: Parsing failed")
+				create Result.make_invalid
+			else
+				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)
 			end
-			l_as.go_i_th (l_cursor)
 		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -7,7 +7,8 @@ note
 class
 	ETR_TRANSFORMABLE
 inherit
-	ETR_SHARED
+	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_AST_TOOLS
 create
 	make_from_ast,
 	make_invalid,
@@ -36,8 +37,8 @@ feature -- creation
 			non_void: a_node /= void and a_context /= void
 		do
 			if duplicate then
-				duplicate_ast (a_node)
-				target_node := duplicated_ast
+				ast_tools.duplicate_ast (a_node)
+				target_node := ast_tools.duplicated_ast
 			else
 				target_node := a_node
 			end
@@ -45,7 +46,7 @@ feature -- creation
 			context := a_context
 
 			-- index it
-			index_ast_from_root (target_node)
+			path_tools.index_ast_from_root (target_node)
 
 			is_valid := true
 		end
@@ -66,8 +67,8 @@ feature -- creation
 				a_list.after
 			loop
 				if duplicate then
-					duplicate_ast (a_list.item)
-					l_eiffel_list.extend (duplicated_ast)
+					ast_tools.duplicate_ast (a_list.item)
+					l_eiffel_list.extend (ast_tools.duplicated_ast)
 				else
 					l_eiffel_list.extend (a_list.item)
 				end
@@ -76,7 +77,7 @@ feature -- creation
 			end
 
 			-- reindex it
-			index_ast_from_root(l_eiffel_list)
+			path_tools.index_ast_from_root(l_eiffel_list)
 
 			target_node := l_eiffel_list
 			context := a_context

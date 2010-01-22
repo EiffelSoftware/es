@@ -1,76 +1,54 @@
 note
-	description: "Iterates over all nodes and creates path-indexes"
+	description: "Summary description for {ETR_PATH_TOOLS}."
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_PATH_INITIALIZER
+	ETR_PATH_TOOLS
 inherit
-	ETR_BRANCH_VISITOR
-
-feature -- Creation
-
-	process_from_root(a_root: AST_EIFFEL)
-			-- process from `a_root'
-		require
-			root_set: a_root /= void
-		do
-			a_root.set_path (create {AST_PATH}.make_as_root(a_root))
-			a_root.process (Current)
-		end
-
-	process_from(a_node: AST_EIFFEL)
-			-- process starting at `a_node'
-		require
-			node_set: a_node /= void
-		do
-			a_node.process(Current)
-		end
+	ETR_SHARED_PATH_TOOLS
 
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
-		local
-			i: INTEGER
-		do
-			from
-				i:=1
-			until
-				i>br.count
-			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
-					item.set_path (create {AST_PATH}.make_from_parent (a_parent.path, i))
+	ast_locator: ETR_AST_LOCATOR
+			-- shared instance of ETR_AST_LOCATOR
+		once
+			create Result
+		end
 
-					item.process (Current)
-				end
-				i:=i+1
+feature -- Operations
+
+	find_node(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
+			-- finds a node from `a_path' and root `a_root'
+		require
+			non_void: a_path /= void and a_root /= void
+			path_non_void: a_root.path /= void
+			path_valid: a_path.is_valid and a_root.path.is_valid
+		do
+			ast_locator.find_from_root (a_path, a_root)
+
+			if ast_locator.found then
+				Result := ast_locator.found_node
 			end
 		end
 
-feature -- Roundtrip
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
+	index_ast_from_root(an_ast: AST_EIFFEL)
+			-- indexes and ast with root `an_ast'
+		require
+			non_void: an_ast /= void
 		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_as.item.set_path (create {AST_PATH}.make_from_parent (l_as.path, i))
-				l_as.item.process (Current)
-				l_as.forth
-				i:=i+1
-			end
-			l_as.go_i_th (l_cursor)
+			path_initializer.process_from_root(an_ast)
 		end
+
+	reindex_ast(an_ast: AST_EIFFEL) is
+			-- reindexes `an_ast'
+		require
+			non_void: an_ast /= void
+		do
+			path_initializer.process_from(an_ast)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

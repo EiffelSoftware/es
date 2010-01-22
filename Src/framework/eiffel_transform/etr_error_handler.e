@@ -1,75 +1,47 @@
 note
-	description: "Iterates over all nodes and creates path-indexes"
+	description: "Error handling for EiffelTransform classes"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_PATH_INITIALIZER
-inherit
-	ETR_BRANCH_VISITOR
+	ETR_ERROR_HANDLER
 
-feature -- Creation
+feature -- Access
+	has_errors: BOOLEAN
+	last_error: detachable STRING
+	errors: detachable LIST[attached like last_error]
 
-	process_from_root(a_root: AST_EIFFEL)
-			-- process from `a_root'
-		require
-			root_set: a_root /= void
+	error_count: INTEGER
+			-- Number of errors
 		do
-			a_root.set_path (create {AST_PATH}.make_as_root(a_root))
-			a_root.process (Current)
-		end
-
-	process_from(a_node: AST_EIFFEL)
-			-- process starting at `a_node'
-		require
-			node_set: a_node /= void
-		do
-			a_node.process(Current)
-		end
-
-feature {NONE} -- Implementation
-
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
-		local
-			i: INTEGER
-		do
-			from
-				i:=1
-			until
-				i>br.count
-			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
-					item.set_path (create {AST_PATH}.make_from_parent (a_parent.path, i))
-
-					item.process (Current)
-				end
-				i:=i+1
+			if attached errors then
+				Result := errors.count
 			end
 		end
 
-feature -- Roundtrip
+feature -- Operations
 
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
+	reset_errors
+			-- set `has_errors' to false
 		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_as.item.set_path (create {AST_PATH}.make_from_parent (l_as.path, i))
-				l_as.item.process (Current)
-				l_as.forth
-				i:=i+1
+			if attached errors then
+				errors.wipe_out
 			end
-			l_as.go_i_th (l_cursor)
+
+			has_errors := false
+		end
+
+	add_error(an_error_message: attached like last_error)
+			-- set `last_error' to `an_error_message'
+		do
+			if not attached errors then
+				create {LINKED_LIST[like last_error]}errors.make
+			end
+
+			has_errors := true
+			last_error := an_error_message
+			errors.extend (last_error)
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

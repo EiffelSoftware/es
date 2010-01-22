@@ -9,20 +9,15 @@ class
 
 inherit
 	EWB_CMD
-
 	SHARED_SERVER
-
 	COMPILER_EXPORTER
-
 	SHARED_DEGREES
-
 	SHARED_EIFFEL_PARSER
-
-	ETR_SHARED
-
+	ETR_SHARED_OPERATORS
 	REFACTORING_HELPER
-
 	ETR_COMPILATION_HELPER
+	ETR_SHARED_TRANSFORMABLE_FACTORY
+	ETR_SHARED_BASIC_OPERATORS
 
 feature -- Properties
 
@@ -63,7 +58,7 @@ feature -- Properties
 			create a2_context.make (a2_feat, void)
 
 			-- code snippet in `a1_context'
-			a1_instr := new_instr(	"if true then%N"+
+			a1_instr := transformable_factory.new_instr(	"if true then%N"+
 									"io.putstring(c.c1_a_renamed)%N"+ -- feature type change
 									"io.putstring(Current.c.c1_b)%N"+ -- fake qualified call
 									"io.putstring(io.putstring(arg_c1_a1.c1_b))%N"+ -- argument type and name change
@@ -78,7 +73,7 @@ feature -- Properties
 			a2_instr := basic_operators.transformation_result
 
 			-- print transformed instruction
-			io.put_string (ast_to_string(a2_instr.target_node))
+			io.put_string (ast_tools.ast_to_string(a2_instr.target_node))
 		end
 
 	test_ass_attempt_replacing
@@ -110,7 +105,7 @@ feature -- Properties
 			mod.apply_to (a2_trans)
 
 			-- print transformed instruction
-			io.put_string (ast_to_string(mod.modified_ast.target_node))
+			io.put_string (ast_tools.ast_to_string(mod.modified_ast.target_node))
 		end
 
 	test_ren
@@ -122,10 +117,7 @@ feature -- Properties
 			a1_feat: FEATURE_I
 			a1_instr: ETR_TRANSFORMABLE
 			trans: ETR_TRANSFORMABLE
-			renamer: ETR_RENAMER
 		do
-			create renamer
-
 			-- create contexts
 			a1 := universe.compiled_classes_with_name("A1").first
 			a1_ast := a1.compiled_class.ast
@@ -140,7 +132,7 @@ feature -- Properties
 			renamer.rename_local (renamer.transformation_result, "a_c", "a_renamed_local_c")
 
 			-- code snippet in `a1_context'
-			a1_instr := new_instr(	"if true then%N"+
+			a1_instr := transformable_factory.new_instr(	"if true then%N"+
 									"io.putstring(c.c1_a_renamed)%N"+ -- feature type change
 									"io.putstring(Current.c.c1_b)%N"+ -- fake qualified call
 									"io.putstring(io.putstring(arg_c1_a1.c1_b))%N"+ -- argument type and name change
@@ -153,7 +145,7 @@ feature -- Properties
 			-- transform to new context with renaming
 			basic_operators.transform_to_context (trans, renamer.transformation_result.context)
 
-			io.put_string (ast_to_string(basic_operators.transformation_result.target_node))
+			io.put_string (ast_tools.ast_to_string(basic_operators.transformation_result.target_node))
 		end
 
 	test_setter_gen
@@ -179,7 +171,7 @@ feature -- Properties
 
 			setter_gen.generate_setter (trans)
 
-			io.put_string (ast_to_string(setter_gen.transformation_result.target_node))
+			io.put_string (ast_tools.ast_to_string(setter_gen.transformation_result.target_node))
 		end
 
 	test_ec_gen
@@ -203,7 +195,7 @@ feature -- Properties
 
 			ec_gen.generate_effective_class (trans)
 
-			io.put_string (ast_to_string(ec_gen.transformation_result.target_node))
+			io.put_string (ast_tools.ast_to_string(ec_gen.transformation_result.target_node))
 		end
 
 	test_me(method_name: STRING; a_start, a_end: STRING)
@@ -214,10 +206,7 @@ feature -- Properties
 			a1_context: ETR_FEATURE_CONTEXT
 			a1_feat: FEATURE_I
 			trans: ETR_TRANSFORMABLE
-			mex: ETR_METHOD_EXTRACTOR
 		do
-			create mex
-
 			a1 := universe.compiled_classes_with_name("M_EX").first
 			a1_ast := a1.compiled_class.ast
 			a1_feat := a1.compiled_class.feature_named (method_name)
@@ -225,14 +214,14 @@ feature -- Properties
 			create a1_context.make (a1_feat, void)
 			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
 
-			mex.extract_method (trans,
+			method_extractor.extract_method (trans,
 								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_start),
 								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_end),
 								"extracted")
 			io.put_string ("=== "+method_name+" EXTRACTED ===%N")
-			io.put_string (ast_to_string(mex.extracted_method.target_node))
+			io.put_string (ast_tools.ast_to_string(method_extractor.extracted_method.target_node))
 			io.put_string ("=== "+method_name+" OLD ===%N")
-			io.put_string (ast_to_string(mex.old_method.target_node))
+			io.put_string (ast_tools.ast_to_string(method_extractor.old_method.target_node))
 		end
 
 	test_typechecker
@@ -243,7 +232,6 @@ feature -- Properties
 			a1_feat: FEATURE_I
 			trans, expr: ETR_TRANSFORMABLE
 			tc: ETR_TYPE_CHECKER
-			renamer: ETR_RENAMER
 		do
 			a1 := universe.compiled_classes_with_name("M_EX").first
 			a1_ast := a1.compiled_class.ast
@@ -252,10 +240,9 @@ feature -- Properties
 			create a1_context.make (a1_feat, void)
 			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
 
-			create renamer
 			renamer.rename_argument (trans, "arg1", "arg1_new")
 
-			expr := new_expr ("arg1_new", renamer.transformation_result.context)
+			expr := transformable_factory.new_expr ("arg1_new", renamer.transformation_result.context)
 
 			create tc
 			tc.check_transformable (expr)

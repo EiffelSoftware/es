@@ -98,7 +98,7 @@ feature
 	test6(arg1: INTEGER): INTEGER
 			-- hidden result
 		local
-			l1: INTEGER
+			l1: like arg1
 		do
 			l1 := 5
 			-- ex start

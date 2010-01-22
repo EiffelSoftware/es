@@ -7,12 +7,12 @@ note
 class
 	ETR_RENAMER
 inherit
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all
 		end
-	ETR_ERROR_HANDLER
+	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_BASIC_OPERATORS
 
 feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
@@ -26,8 +26,6 @@ feature -- Operation
 		local
 			l_resulting_context: ETR_FEATURE_CONTEXT
 		do
-			reset_errors
-
 			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
 				if l_feat_context.has_arguments then
 					if attached l_feat_context.local_by_name[an_old_name] then
@@ -41,13 +39,13 @@ feature -- Operation
 
 						transformation_result := basic_operators.transformation_result
 					else
-						add_error("rename_local: No local with name "+a_new_name)
+						error_handler.add_error("rename_local: No local with name "+a_new_name)
 					end
 				else
-					add_error("rename_local: Feature has no locals")
+					error_handler.add_error("rename_local: Feature has no locals")
 				end
 			else
-				add_error("rename_local: a_function does not have a feature-context")
+				error_handler.add_error("rename_local: a_function does not have a feature-context")
 			end
 		end
 
@@ -59,8 +57,6 @@ feature -- Operation
 		local
 			l_resulting_context: ETR_FEATURE_CONTEXT
 		do
-			reset_errors
-
 			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
 				if l_feat_context.has_arguments then
 					if attached l_feat_context.arg_by_name[an_old_name] then
@@ -74,13 +70,13 @@ feature -- Operation
 
 						transformation_result := basic_operators.transformation_result
 					else
-						add_error("rename_argument: No argument with name "+a_new_name)
+						error_handler.add_error("rename_argument: No argument with name "+a_new_name)
 					end
 				else
-					add_error("rename_argument: Feature has no argument")
+					error_handler.add_error("rename_argument: Feature has no argument")
 				end
 			else
-				add_error("rename_argument: a_function does not have a feature-context")
+				error_handler.add_error("rename_argument: a_function does not have a feature-context")
 			end
 		end
 
@@ -93,8 +89,6 @@ feature -- Operation
 		local
 			l_resulting_context: ETR_FEATURE_CONTEXT
 		do
-			reset_errors
-
 			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
 				if l_feat_context.has_arguments then
 					if l_feat_context.arguments.count >= an_argument_position then
@@ -110,13 +104,13 @@ feature -- Operation
 
 						transformation_result := basic_operators.transformation_result
 					else
-						add_error("rename_argument_at_position: No argument at position "+an_argument_position.out)
+						error_handler.add_error("rename_argument_at_position: No argument at position "+an_argument_position.out)
 					end
 				else
-					add_error("rename_argument_at_position: Feature has no argument")
+					error_handler.add_error("rename_argument_at_position: Feature has no argument")
 				end
 			else
-				add_error("rename_argument_at_position: a_function does not have a feature-context")
+				error_handler.add_error("rename_argument_at_position: a_function does not have a feature-context")
 			end
 		end
 

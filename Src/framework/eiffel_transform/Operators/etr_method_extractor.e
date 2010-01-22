@@ -7,16 +7,18 @@ note
 class
 	ETR_METHOD_EXTRACTOR
 inherit
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all
 		end
-	ETR_ERROR_HANDLER
+	ETR_SHARED_ERROR_HANDLER
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
 		end
+	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_PARSERS
 
 feature {NONE} -- Implementation
 
@@ -320,12 +322,18 @@ feature {NONE} -- Implementation
 				loop
 					-- get type (local, argument or result)
 					-- and print the unresolved version
-					if attached {ETR_CONTEXT_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context))
-					elseif attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context))
+					if attached {ETR_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context))
+					elseif attached {ETR_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
+						if l_arg.original_type.is_like_argument then
+							-- use resolved type if like argument (might not be valid)
+							l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.resolved_type, context))
+						else
+							l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context))
+						end
+
 					elseif extracted_arguments.item.is_equal (ti_result) then
-						l_feature_output_text.append ("a_"+ti_result + ti_colon + ti_space + print_type (context.unresolved_type, context))
+						l_feature_output_text.append ("a_"+ti_result + ti_colon + ti_space + type_checker.print_type (context.unresolved_type, context))
 					else
 						-- it might be an object-test local
 						from
@@ -335,7 +343,7 @@ feature {NONE} -- Implementation
 						loop
 							if context.object_test_locals.item.name.is_equal (extracted_arguments.item) then
 								if a_start_path.is_child_of (context.object_test_locals.item.scope) then
-									l_feature_output_text.append (extracted_arguments.item + ti_colon + ti_space + print_type (context.object_test_locals.item.type, context))
+									l_feature_output_text.append (extracted_arguments.item + ti_colon + ti_space + type_checker.print_type (context.object_test_locals.item.type, context))
 									l_type_found := true
 								end
 							end
@@ -344,7 +352,7 @@ feature {NONE} -- Implementation
 						end
 
 						if not l_type_found then
-							add_error("compute_extracted_method: Can't determine type of "+extracted_arguments.item)
+							error_handler.add_error("compute_extracted_method: Can't determine type of "+extracted_arguments.item)
 						end
 
 					end
@@ -368,10 +376,10 @@ feature {NONE} -- Implementation
 
 				-- get type (local)
 				-- and print the unresolved version
-				if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
-					l_feature_output_text.append (ti_colon + ti_space + print_type (l_arg.original_type, context))
+				if attached {ETR_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
+					l_feature_output_text.append (ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context))
 				elseif extracted_results.first.is_equal (ti_result) then
-					l_feature_output_text.append (ti_colon + ti_space + print_type (context.unresolved_type, context))
+					l_feature_output_text.append (ti_colon + ti_space + type_checker.print_type (context.unresolved_type, context))
 				end
 			end
 
@@ -384,8 +392,8 @@ feature {NONE} -- Implementation
 				until
 					extracted_new_locals.after
 				loop
-					if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context)+ti_new_line)
+					if attached {ETR_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context)+ti_new_line)
 					end
 
 					extracted_new_locals.forth
@@ -396,8 +404,8 @@ feature {NONE} -- Implementation
 				until
 					changed_arguments.after
 				loop
-					if attached {ETR_CONTEXT_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
-						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + print_type (l_arg.original_type, context)+ti_new_line)
+					if attached {ETR_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
+						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context)+ti_new_line)
 					end
 
 					changed_arguments.forth
@@ -437,8 +445,8 @@ feature {NONE} -- Implementation
 			l_feature_output_text.append (l_body_output.string_representation)
 			l_feature_output_text.append (ti_end_keyword)
 
-			reparse_printed_ast (context.original_written_feature.e_feature.ast, l_feature_output_text)
-			create extracted_method.make_from_ast (reparsed_root, context.class_context, false)
+			parsing_helper.reparse_printed_ast (context.original_written_feature.e_feature.ast, l_feature_output_text)
+			create extracted_method.make_from_ast (parsing_helper.reparsed_root, context.class_context, false)
 		end
 
 	compute_old_method(a_start_path, a_end_path: AST_PATH; a_extracted_feature_name: STRING; a_feature_ast: FEATURE_AS)
@@ -478,8 +486,8 @@ feature {NONE} -- Implementation
 			create l_old_method_printer.make (l_feat_output, obsolete_locals, a_start_path, a_end_path, l_instr_text)
 			l_old_method_printer.print_feature (a_feature_ast)
 
-			reparse_printed_ast (a_feature_ast, l_feat_output.string_representation)
-			create old_method.make_from_ast (reparsed_root, context, false)
+			parsing_helper.reparse_printed_ast (a_feature_ast, l_feat_output.string_representation)
+			create old_method.make_from_ast (parsing_helper.reparsed_root, context, false)
 		end
 
 feature -- Operations
@@ -495,24 +503,25 @@ feature -- Operations
 			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
 			l_feat_ast: FEATURE_AS
+			l_error_count: INTEGER
 		do
-			reset_errors
 			is_result_possibly_undef := false
+			l_error_count := error_handler.error_count
 
 			-- check if valid context and valid ast!
 			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
 				context := l_ft_ctxt
-				if attached {EIFFEL_LIST[INSTRUCTION_AS]}find_node (a_start_path.parent_path, a_start_path.root) as instrs then
+				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.find_node (a_start_path.parent_path, a_start_path.root) as instrs then
 					l_instr_list := instrs
 				else
-					add_error("extract_method: Start path is not an instruction")
+					error_handler.add_error("extract_method: Start path is not an instruction")
 				end
 
 				if attached {FEATURE_AS}a_feature.target_node as l_ft then
 					l_feat_ast := l_ft
 				end
 
-				if not has_errors then
+				if l_error_count = error_handler.error_count then
 					-- find out what locals are defined/used where
 					create l_use_def_gen.make (context)
 
@@ -533,7 +542,7 @@ feature -- Operations
 					compute_old_method (a_start_path, a_end_path, a_feature_name, l_feat_ast)
 				end
 			else
-				add_error("extract_method: No feature context provided")
+				error_handler.add_error("extract_method: No feature context provided")
 			end
 		end
 note

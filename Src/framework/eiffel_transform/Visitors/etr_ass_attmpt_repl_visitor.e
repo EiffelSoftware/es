@@ -12,13 +12,17 @@ inherit
 			process_reverse_as,
 			process_feature_as
 		end
-	ETR_SHARED
+	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		end
 create
 	make
 
 feature {NONE} -- Implementation
-
-	type_checker: ETR_TYPE_CHECKER
 
 	class_context: ETR_CLASS_CONTEXT
 
@@ -29,7 +33,6 @@ feature {NONE} -- Creation
 	make(a_class_context: like class_context)
 		do
 			class_context := a_class_context
-			create type_checker
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
 		end
 
@@ -60,11 +63,11 @@ feature {AST_EIFFEL} -- Roundtrip
 			if attached l_feat_context then
 				type_checker.check_ast_type (l_as.target, l_feat_context)
 				l_target_type := type_checker.last_type
-				l_printed_type := print_type(l_target_type,class_context.written_in_features_by_name[current_feature])
+				l_printed_type := type_checker.print_type(l_target_type,class_context.written_in_features_by_name[current_feature])
 
 				-- print object-test version
-				l_target_string := ast_to_string (l_as.target)
-				l_source_string := ast_to_string (l_as.source)
+				l_target_string := ast_tools.ast_to_string (l_as.target)
+				l_source_string := ast_tools.ast_to_string (l_as.source)
 
 				create l_replacement.make_empty
 

@@ -14,7 +14,7 @@ inherit
 			process_body_as,
 			process_routine_as
 		end
-	ETR_SHARED
+	ETR_SHARED_TYPE_CHECKER
 create
 	make_with_output
 
@@ -61,7 +61,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			if processing_needed (l_as.type, l_as, 2) then
 				output.append_string (":")
 				-- always print the fully explicit type to be sure it's valid in the new context
-				l_resolved_type := explicit_type_from_type_as (l_as.type, context.written_class, context.written_class.feature_of_feature_id (context.feature_id))
+				l_resolved_type := type_checker.explicit_type_from_type_as (l_as.type, context.written_class, context.written_class.feature_of_feature_id (context.feature_id))
 
 				if attached {CL_TYPE_A}l_resolved_type as l_class_type then
 					output.append_string (l_class_type.associated_class.name_in_upper)

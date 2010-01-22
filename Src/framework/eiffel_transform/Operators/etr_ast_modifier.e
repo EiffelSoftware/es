@@ -7,7 +7,8 @@ note
 class
 	ETR_AST_MODIFIER
 inherit
-	ETR_SHARED
+	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_PARSERS
 create
 	make
 
@@ -62,18 +63,17 @@ feature -- Operations
 		local
 			l_printer: ETR_MODIFYING_PRINTER
 		do
-			reset_errors
 			-- pick parser depending on root node
 			create l_printer.make (output, modifications)
 			l_printer.print_ast_to_output (a_transformable.target_node)
 
-			reparse_printed_ast(a_transformable.target_node, output.string_representation)
+			parsing_helper.reparse_printed_ast(a_transformable.target_node, output.string_representation)
 
-			if attached reparsed_root then
-				create modified_ast.make_from_ast (reparsed_root, a_transformable.context, false)
+			if attached parsing_helper.reparsed_root then
+				create modified_ast.make_from_ast (parsing_helper.reparsed_root, a_transformable.context, false)
 			else
 				create modified_ast.make_invalid
-				add_error("apply_to: Modification resulted in unparsable text")
+				error_handler.add_error("apply_to: Modification resulted in unparsable text")
 			end
 
 			-- reset the modifications list and output

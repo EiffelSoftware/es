@@ -9,7 +9,7 @@ class
 inherit
 	SHARED_SERVER
 	SHARED_DEGREES
-	ETR_SHARED
+	ETR_SHARED_AST_TOOLS
 
 feature -- Operations
 	reparse_class_by_name(a_class: STRING)
@@ -34,7 +34,7 @@ feature -- Operations
 			l_parser: EIFFEL_PARSER
 		do
 			-- Ugly hack: have to reparse class because the wrong ast factory might have been used
-			l_class_str := ast_to_string (a_class)
+			l_class_str := ast_tools.ast_to_string (a_class)
 
 			create l_parser.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
 			l_parser.parse_from_string (l_class_str, system.class_of_id (an_original_class.class_id))
@@ -83,7 +83,7 @@ feature -- Operations
 			system.eiffel_project.quick_melt
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

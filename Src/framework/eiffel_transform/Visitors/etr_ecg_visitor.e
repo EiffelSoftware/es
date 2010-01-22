@@ -12,7 +12,6 @@ inherit
 			process_class_as,
 			process_deferred_as
 		end
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all

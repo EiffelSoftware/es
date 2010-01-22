@@ -1,76 +1,44 @@
 note
-	description: "Iterates over all nodes and creates path-indexes"
+	description: "EiffelTransform Operators"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_PATH_INITIALIZER
-inherit
-	ETR_BRANCH_VISITOR
+	ETR_SHARED_OPERATORS
 
-feature -- Creation
+feature {NONE} -- Operators
 
-	process_from_root(a_root: AST_EIFFEL)
-			-- process from `a_root'
-		require
-			root_set: a_root /= void
-		do
-			a_root.set_path (create {AST_PATH}.make_as_root(a_root))
-			a_root.process (Current)
+	assignment_attempt_reaplacer: ETR_ASSIGNMENT_ATTEMPT_REPLACER
+			-- shared instance of ETR_ASSIGNMENT_ATTEMPT_REPLACER
+		once
+			create Result
 		end
 
-	process_from(a_node: AST_EIFFEL)
-			-- process starting at `a_node'
-		require
-			node_set: a_node /= void
-		do
-			a_node.process(Current)
+	effective_class_generator: ETR_EFFECTIVE_CLASS_GENERATOR
+			-- shared instance of ETR_EFFECTIVE_CLASS_GENERATOR
+		once
+			create Result
 		end
 
-feature {NONE} -- Implementation
-
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
-		local
-			i: INTEGER
-		do
-			from
-				i:=1
-			until
-				i>br.count
-			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
-					item.set_path (create {AST_PATH}.make_from_parent (a_parent.path, i))
-
-					item.process (Current)
-				end
-				i:=i+1
-			end
+	renamer: ETR_RENAMER
+			-- shared instance of ETR_RENAMER
+		once
+			create Result
 		end
 
-feature -- Roundtrip
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
-		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_as.item.set_path (create {AST_PATH}.make_from_parent (l_as.path, i))
-				l_as.item.process (Current)
-				l_as.forth
-				i:=i+1
-			end
-			l_as.go_i_th (l_cursor)
+	setter_generator: ETR_SETTER_GENERATOR
+			-- shared instance of ETR_SETTER_GENERATOR
+		once
+			create Result
 		end
+
+	method_extractor: ETR_METHOD_EXTRACTOR
+			-- shared instance of ETR_METHOD_EXTRACTOR
+		once
+			create Result
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

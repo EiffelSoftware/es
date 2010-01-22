@@ -1,61 +1,68 @@
 note
-	description: "Error handling for EiffelTransform classes"
-	author: "$Author$"
+	description: "Summary description for {ETR_AST_TOOLS}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_ERROR_HANDLER
-
-feature -- Output
-	has_errors: BOOLEAN
-	last_error: detachable STRING
-	errors: detachable LIST[attached like last_error]
+	ETR_AST_TOOLS
 
 feature {NONE} -- Implementation
 
-	reset_errors
-			-- set `has_errors' to false
-		do
-			if attached errors then
-				errors.wipe_out
-			end
-
-			has_errors := false
+	shared_printer: ETR_AST_STRUCTURE_PRINTER
+			-- prints small ast fragments to text
+		once
+			create Result.make_with_output(shared_printer_output)
 		end
 
-	add_errors(a_list: attached like errors)
-			-- add errors
-		do
-			if not attached errors then
-				create {LINKED_LIST[attached like last_error]}errors.make
-			end
-
-			from
-				a_list.start
-			until
-				a_list.after
-			loop
-				errors.extend (a_list.item)
-				a_list.forth
-			end
-
-			if not a_list.is_empty then
-				last_error := a_list.last
-				has_errors := true
-			end
+	shared_printer_output: ETR_AST_STRING_OUTPUT
+			-- output used for `mini_printer'
+		once
+			create Result.make
 		end
 
-	add_error(an_error_message: attached like last_error)
-			-- set `last_error' to `an_error_message'
-		do
-			if not attached errors then
-				create {LINKED_LIST[like last_error]}errors.make
-			end
+feature -- Access
 
-			has_errors := true
-			last_error := an_error_message
-			errors.extend (last_error)
+	duplicated_ast: detachable AST_EIFFEL
+			-- Result of `duplicate_ast'
+
+feature -- Output
+
+	ast_to_string(an_ast: AST_EIFFEL): STRING
+			-- prints `an_ast' to text using `mini_printer'
+		do
+			shared_printer_output.reset
+			shared_printer.print_ast_to_output(an_ast)
+
+			Result := shared_printer_output.string_representation
+		end
+
+feature -- Operations
+
+	duplicate_ast(an_ast: AST_EIFFEL)
+			-- duplicates `an_ast' and stores the result in `duplicated_ast'
+		require
+			non_void: an_ast /= void
+		do
+			-- is cloning the way to go?
+			-- alternative would be:
+			-- print + reparse (are some ids lost? adjust for context again?)
+			-- 		needs facility to print ast without matchlist
+			-- recreating from scratch
+			--		very dependant on ast structure
+
+			duplicated_ast := an_ast.deep_twin
+		end
+
+	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [like instr]
+			-- creates list with a single instruction `instr'
+		require
+			instr_not_void: instr/=void
+		do
+			create Result.make (1)
+			Result.extend (instr)
+		ensure
+			one: Result.count = 1
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

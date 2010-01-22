@@ -7,12 +7,12 @@ note
 class
 	ETR_SETTER_GENERATOR
 inherit
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all
 		end
-	ETR_ERROR_HANDLER
+	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_PARSERS
 
 feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
@@ -27,8 +27,6 @@ feature -- Operation
 			l_attr_name: STRING
 			l_setter_string: STRING
 		do
-			reset_errors
-
 			if attached {FEATURE_AS}an_attribute.target_node as l_attribute then
 				if l_attribute.is_attribute then
 					l_attr_name := l_attribute.feature_name.name
@@ -45,13 +43,13 @@ feature -- Operation
 						-- fixme: create a new feature context!
 						create transformation_result.make_from_ast (etr_feat_parser.feature_node, an_attribute.context.class_context, false)
 					else
-						add_error("generate_setter: Feature parsing failed")
+						error_handler.add_error("generate_setter: Feature parsing failed")
 					end
 				else
-					add_error("generate_setter: Feature is not an attribute")
+					error_handler.add_error("generate_setter: Feature is not an attribute")
 				end
 			else
-				add_error("generate_setter: Transformable does not contain a feature-node")
+				error_handler.add_error("generate_setter: Transformable does not contain a feature-node")
 			end
 		end
 note

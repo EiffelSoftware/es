@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ETR_CONTEXT_TYPED_VAR
+	ETR_TYPED_VAR
 create
 	make
 

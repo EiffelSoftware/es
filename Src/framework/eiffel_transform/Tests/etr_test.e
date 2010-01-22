@@ -12,7 +12,10 @@ class
 
 inherit
 	EQA_TEST_SET
-	ETR_SHARED
+	ETR_SHARED_TRANSFORMABLE_FACTORY
+	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_PARSERS
+	ETR_SHARED_BASIC_OPERATORS
 
 feature -- Test routines
 
@@ -71,14 +74,17 @@ feature -- Test routines
 		do
 			create context.make_empty
 
-			basic_operators.generate_conditional (new_expr ("b>a",context), new_instr ("a:=a-b",context), new_expr ("b>a",context), context)
-			assert("Error 1 not caught", basic_operators.has_errors)
+			error_handler.reset_errors
+			basic_operators.generate_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_expr ("b>a",context), context)
+			assert("Error 1 not caught", error_handler.has_errors)
 
-			basic_operators.generate_conditional (new_instr ("a:=a-b",context), new_instr ("a:=a-b",context), new_instr ("a:=a-b",context), context)
-			assert("Error 2 not caught", basic_operators.has_errors)
+			error_handler.reset_errors
+			basic_operators.generate_conditional (transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_instr ("a:=a-b",context), context)
+			assert("Error 2 not caught", error_handler.has_errors)
 
-			basic_operators.generate_conditional (new_expr ("b>a",context), new_instr ("a:=a-b",context), new_instr ("a:=a-b",context), context)
-			assert("Invalid error or error not reset", not basic_operators.has_errors)
+			error_handler.reset_errors
+			basic_operators.generate_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context),transformable_factory. new_instr ("a:=a-b",context), context)
+			assert("Invalid error or error not reset", not error_handler.has_errors)
 		end
 
 	test_ast_modification_valid
@@ -96,13 +102,13 @@ feature -- Test routines
 			create modifier.make
 
 			-- create conditional
-			basic_operators.generate_conditional (new_expr ("b>a",context), new_instr ("a:=a-b",context), void, context)
+			basic_operators.generate_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context), void, context)
 			conditional := basic_operators.transformation_result
 
 			-- the else-part
-			mod1 := basic_operators.list_append(create {AST_PATH}.make_from_parent(conditional.target_node.path, 4), new_instr ("b:=b-a",context))
+			mod1 := basic_operators.list_append(create {AST_PATH}.make_from_parent(conditional.target_node.path, 4), transformable_factory.new_instr ("b:=b-a",context))
 			-- the condition
-			mod2 := basic_operators.replace (create {AST_PATH}.make_from_parent(conditional.target_node.path, 1), new_expr ("a>b",context))
+			mod2 := basic_operators.replace (create {AST_PATH}.make_from_parent(conditional.target_node.path, 1), transformable_factory.new_expr ("a>b",context))
 			modifier.add(mod1); modifier.add (mod2)
 			modifier.apply_to (conditional)
 
@@ -112,14 +118,14 @@ feature -- Test routines
 			modifier.apply_to (modifier.modified_ast)
 
 			-- reference
-			reparse_printed_ast (modifier.modified_ast.target_node,
+			parsing_helper.reparse_printed_ast (modifier.modified_ast.target_node,
 			"if a >= b then %N"+
 				"a := a - b %N"+
 			"else %N"+
 				"b := b - a %N"+
 			"end")
 
-			assert("Invalid result", are_asts_equal(reparsed_root, modifier.modified_ast.target_node))
+			assert("Invalid result", are_asts_equal(parsing_helper.reparsed_root, modifier.modified_ast.target_node))
 		end
 
 feature {NONE} -- Helpers
@@ -129,8 +135,8 @@ feature {NONE} -- Helpers
 		local
 			l_ast1_str, l_ast2_str: STRING
 		do
-			l_ast1_str := ast_to_string (an_ast)
-			l_ast2_str := ast_to_string (another_ast)
+			l_ast1_str := ast_tools.ast_to_string (an_ast)
+			l_ast2_str := ast_tools.ast_to_string (another_ast)
 
 			Result := l_ast1_str.is_equal (l_ast2_str)
 		end

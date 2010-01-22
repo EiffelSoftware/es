@@ -6,8 +6,6 @@ note
 
 class
 	ETR_OBJECT_TEST_LOCAL
-inherit
-	ETR_SHARED
 create
 	make
 

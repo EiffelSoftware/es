@@ -7,11 +7,12 @@ note
 class
 	ETR_EFFECTIVE_CLASS_GENERATOR
 inherit
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all
 		end
+	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_PARSERS
 
 feature -- Operations
 	transformation_result: ETR_TRANSFORMABLE
@@ -54,13 +55,9 @@ feature -- Operations
 			create l_output.make
 			create l_visitor.make (l_output, l_new_features)
 			l_visitor.print_ast_to_output(a_class.target_node)
-			reparse_printed_ast (a_class.target_node, l_output.string_representation)
+			parsing_helper.reparse_printed_ast (a_class.target_node, l_output.string_representation)
 
-			check
-				no_errors: not has_errors
-			end
-
-			create transformation_result.make_from_ast (reparsed_root, a_class.context, false)
+			create transformation_result.make_from_ast (parsing_helper.reparsed_root, a_class.context, false)
 		end
 
 

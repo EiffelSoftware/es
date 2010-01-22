@@ -23,10 +23,186 @@ inherit
 		export
 			{NONE} all
 		end
-	ETR_ERROR_HANDLER
-	ETR_SHARED
+	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_PARSERS
 		rename
-			basic_operators as etr_basic_ops
+			error_handler as etr_error_handler
+		end
+
+feature -- Output
+
+	print_type (a_type: TYPE_A; a_context: ETR_FEATURE_CONTEXT): STRING
+			-- Prints `a_type' so it's parsable
+		require
+			type_non_void: a_type /= void
+			context_set: a_context /= void
+		local
+			l_gen_count: INTEGER
+			l_index: INTEGER
+		do
+			create Result.make_empty
+
+			-- print attachment marks etc
+			if attached {ATTACHABLE_TYPE_A}a_type as l_att_type then
+				-- print attachment marks
+				if l_att_type.has_attached_mark then
+					Result.append_character ('!')
+				elseif l_att_type.has_detachable_mark then
+					Result.append_character ('?')
+				end
+			end
+
+			-- print keywords
+			if attached {CL_TYPE_A}a_type as l_cl_type then
+				if l_cl_type.has_expanded_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_expanded_keyword)
+					Result.append_character (' ')
+				elseif l_cl_type.has_reference_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_reference_keyword)
+					Result.append_character (' ')
+				elseif l_cl_type.has_separate_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_separate_keyword)
+					Result.append_character (' ')
+				end
+			end
+
+			if a_type.is_formal then
+				if attached {FORMAL_A}a_type as l_formal then
+					Result.append(a_context.class_context.written_class.generics[l_formal.position].formal.name.name)
+				end
+			elseif a_type.is_like_current then
+				Result.append("like Current")
+			elseif a_type.is_like_argument then
+				if attached {LIKE_ARGUMENT}a_type as l_like_arg then
+					Result.append("like "+a_context.arguments[l_like_arg.position].name)
+				end
+			elseif a_type.is_like then
+				if attached {LIKE_FEATURE}a_type as l_like_feat then
+					Result.append("like "+l_like_feat.feature_name)
+				end
+			elseif a_type.has_generics then
+				if attached {GEN_TYPE_A}a_type as l_gen then
+					Result.append (l_gen.associated_class.name_in_upper)
+
+					-- recursively print generics
+					l_gen_count := l_gen.generics.count
+
+					if l_gen_count>0 then
+						Result.append("[")
+					end
+
+					from
+						l_index := 1
+					until
+						l_index > l_gen_count
+					loop
+						Result.append (print_type(l_gen.generics[l_index],a_context))
+						if l_index /= l_gen_count then
+							Result.append(",")
+						end
+						l_index := l_index+1
+					end
+
+					if l_gen_count>0 then
+						Result.append("]")
+					end
+				end
+			elseif attached {CL_TYPE_A}a_type as l_cl_t then
+				Result.append (l_cl_t.associated_class.name_in_upper)
+			elseif a_type.is_type_set then
+				if attached {TYPE_SET_A}a_type as l_set then
+					Result := print_type (l_set.first, a_context)
+				end
+			elseif a_type.has_renaming then
+				if attached {RENAMED_TYPE_A[TYPE_A]}a_type as l_ren then
+					Result := print_type(l_ren.actual_type, a_context)
+				end
+			else
+				Result := a_type.dump -- can't handle, just use debug-dump
+			end
+		end
+
+feature -- Type evaluation
+
+	written_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
+			-- returns the type of `a_type' as it was written
+		require
+			type_non_void: a_type /= void
+			context_set: a_written_class /= void and a_feature /= void
+		local
+			l_type_gen: AST_TYPE_A_GENERATOR
+			l_generated_type, l_resolved_type: TYPE_A
+			l_type_a_checker: TYPE_A_CHECKER
+		do
+			create l_type_gen
+			create l_type_a_checker
+
+			l_generated_type := l_type_gen.evaluate_type (a_type, a_written_class)
+			l_type_a_checker.init_for_checking (a_feature, a_written_class, void, void)
+			l_resolved_type := l_type_a_checker.solved(l_generated_type, void)
+
+			Result := l_resolved_type
+		end
+
+	explicit_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			context_set: a_written_class /= void and a_feature /= void
+		local
+			l_written_type: TYPE_A
+		do
+			l_written_type := written_type_from_type_as(a_type, a_written_class, a_feature)
+			Result := l_written_type.actual_type
+
+			if not Result.is_explicit then
+				-- recurse
+				Result := explicit_type (Result, a_written_class)
+			end
+		ensure
+			is_explicit: Result.is_explicit
+			has_associated_class: Result.associated_class /= void
+		end
+
+	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C): TYPE_A
+			-- returns the explicit type of `a_type' in `a_context'
+		require
+			type_non_void: a_type /= void
+			written_class_non_void: a_written_class /= void
+		do
+			if a_type.is_formal then
+				if attached {FORMAL_A} a_type as l_formal then
+					Result :=  l_formal.constraints (a_written_class)
+
+					if attached {TYPE_SET_A}Result as typeset then
+						Result := typeset.first
+
+						if typeset.count>1 then
+							check
+								not_supported: false
+							end
+						end
+					end
+				end
+			elseif a_type.has_like_current then
+				Result := a_written_class.actual_type
+			elseif a_type.has_like then
+				Result := a_type.actual_type
+			else
+				Result := a_type
+			end
+
+			if Result.has_generics then
+				Result := Result.associated_class.constraint_actual_type
+			end
+
+			if not Result.is_explicit then
+				-- recurse
+				Result := explicit_type (Result, a_written_class)
+			end
+		ensure
+			is_explicit: Result.is_explicit
+			has_associated_class: Result.associated_class /= void
 		end
 
 feature -- Type checking
@@ -39,8 +215,6 @@ feature -- Type checking
 			valid: a_transformable.is_valid
 			has_context: not a_transformable.context.is_empty
 		do
-			reset_errors
-
 			check_ast_type_at(a_transformable.target_node, a_transformable.context, a_transformable.path)
 		end
 
@@ -65,13 +239,11 @@ feature -- Type checking
 			l_ast_string: STRING
 			l_feat: FEATURE_I
 		do
-			reset_errors
-
 			-- reparse the ast as expression, so it can be type-checked correctly
-			l_ast_string := ast_to_string(an_ast)
+			l_ast_string := ast_tools.ast_to_string(an_ast)
 			etr_expr_parser.parse_from_string("check "+l_ast_string,void)
 			if etr_expr_parser.error_count > 0 then
-				add_error("check_ast_type: Cannot parse an_ast as EXPR_AS")
+				etr_error_handler.add_error("check_ast_type: Cannot parse an_ast as EXPR_AS")
 			else
 				init (ast_context)
 				ast_context.set_is_ignoring_export (True)
@@ -126,7 +298,7 @@ feature {NONE} -- Implementation
 		local
 			l_index: INTEGER
 			l_local_info: LOCAL_INFO
-			l_cur_local: ETR_CONTEXT_TYPED_VAR
+			l_cur_local: ETR_TYPED_VAR
 		do
 			if a_feature_context.has_locals then
 				from
@@ -149,7 +321,7 @@ feature {NONE} -- Implementation
 		local
 			l_index: INTEGER
 			l_local_info: LOCAL_INFO
-			l_cur_arg: ETR_CONTEXT_TYPED_VAR
+			l_cur_arg: ETR_TYPED_VAR
 		do
 			if a_feature_context.has_arguments then
 				from
@@ -197,7 +369,7 @@ feature {NONE} -- Implementation
 				an_expr.process (Current)
 			end
 			if error_handler.error_list.count>0 then
-				add_error("expression_or_instruction_type_check_and_code: Type checker returned error "+error_handler.error_list.last.generating_type)
+				etr_error_handler.add_error("expression_or_instruction_type_check_and_code: Type checker returned error "+error_handler.error_list.last.generating_type)
 			end
 			error_handler.wipe_out
 		end

@@ -14,7 +14,6 @@ inherit
 			process_list_with_separator,
 			process_routine_as
 		end
-	ETR_SHARED
 create
 	make
 

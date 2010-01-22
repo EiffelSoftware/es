@@ -7,7 +7,6 @@ note
 class
 	ETR_BASIC_OPS
 inherit
-	ETR_SHARED
 	REFACTORING_HELPER
 		export
 			{NONE} all
@@ -17,7 +16,9 @@ inherit
 		export
 			{NONE} all
 		end
-	ETR_ERROR_HANDLER
+	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_PARSERS
 
 feature {NONE} -- Implementation
 
@@ -49,7 +50,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_renamed_name_or_type(an_old_var, a_new_var: ETR_CONTEXT_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
+	check_renamed_name_or_type(an_old_var, a_new_var: ETR_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
 				-- checks for changed name or type of local/arg
 		local
 			l_changed_type, l_changed_name: BOOLEAN
@@ -92,15 +93,14 @@ feature -- Transformations
 			l_constraint_renaming: ETR_CT_RENAMED_CONSTRAINT_FEATURES
 			l_changed_var: ETR_CT_CHANGED_ARG_LOCAL
 			l_old_feat: ETR_FEATURE_CONTEXT
-			l_cur_old_arg, l_cur_new_arg: ETR_CONTEXT_TYPED_VAR
-			l_cur_old_local, l_cur_new_local: ETR_CONTEXT_TYPED_VAR
+			l_cur_old_arg, l_cur_new_arg: ETR_TYPED_VAR
+			l_cur_old_local, l_cur_new_local: ETR_TYPED_VAR
 			l_index: INTEGER
 			l_transformer: ETR_CONTEXT_TRANSFORMER
 			l_output: ETR_AST_STRING_OUTPUT
 
 			l_source_class_context, l_target_class_context: ETR_CLASS_CONTEXT
 		do
-			reset_errors
 			transformation_result := void
 
 			l_source_context := a_transformable.context
@@ -201,12 +201,12 @@ feature -- Transformations
 			-- print the ast to output
 			l_transformer.print_ast_to_output (a_transformable.target_node)
 			-- reparse it
-			reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
+			parsing_helper.reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
 
-			if attached reparsed_root then
-				create transformation_result.make_from_ast(reparsed_root, a_target_context, false)
+			if attached parsing_helper.reparsed_root then
+				create transformation_result.make_from_ast(parsing_helper.reparsed_root, a_target_context, false)
 			else
-				add_error("transform_to_context: Failed to reparse result of transformation")
+				error_handler.add_error("transform_to_context: Failed to reparse result of transformation")
 				create transformation_result.make_invalid
 			end
 		end
@@ -223,34 +223,36 @@ feature -- Transformations
 			l_if_part_node, l_else_part_node: EIFFEL_LIST[INSTRUCTION_AS]
 			l_result_node: IF_AS
 			l_test_node: EXPR_AS
+			l_error_count: INTEGER
 		do
-			reset_errors
+			l_error_count := error_handler.error_count
+
 			transformation_result := void
 
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
 					-- check if its a single instruction or multiple
 					if attached {INSTRUCTION_AS}if_part.target_node as instr then
-						l_if_part_node := single_instr_list (instr)
+						l_if_part_node := ast_tools.single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}if_part.target_node as instrs then
 						l_if_part_node := instrs
 					else
-						add_error("generate_conditional: contained ast of if_part is of incompatible type ("+if_part.target_node.generating_type+")")
+						error_handler.add_error("generate_conditional: contained ast of if_part is of incompatible type ("+if_part.target_node.generating_type+")")
 					end
 				end
 
 				if attached else_part then
 					-- check if its a single instruction or multiple
 					if attached {INSTRUCTION_AS}else_part.target_node as instr then
-						l_else_part_node := single_instr_list (instr)
+						l_else_part_node := ast_tools.single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}else_part.target_node as instrs then
 						l_else_part_node := instrs
 					else
-						add_error("generate_conditional: contained ast of else_part is of incompatible type ("+else_part.target_node.generating_type+")")
+						error_handler.add_error("generate_conditional: contained ast of else_part is of incompatible type ("+else_part.target_node.generating_type+")")
 					end
 				end
 
-				if not has_errors then
+				if l_error_count = error_handler.error_count then
 					-- Transform all parts to a_context
 					if attached if_part then
 						transform_to_context (if_part, a_context)
@@ -276,7 +278,7 @@ feature -- Transformations
 					create transformation_result.make_from_ast (l_result_node, a_context, false)
 				end
 			else
-				add_error("generate_conditional: contained ast of a_test is not of type EXPR_AS (but  "+a_test.target_node.generating_type+")")
+				error_handler.add_error("generate_conditional: contained ast of a_test is not of type EXPR_AS (but  "+a_test.target_node.generating_type+")")
 			end
 		end
 
@@ -311,7 +313,7 @@ feature -- Modifications (path-reference)
 		require
 			non_void: a_reference /= void and a_replacement /= void
 		do
-			create Result.make_replace (a_reference, ast_to_string(a_replacement.target_node))
+			create Result.make_replace (a_reference, ast_tools.ast_to_string(a_replacement.target_node))
 		end
 
 	replace_with_string(a_reference: AST_PATH; a_replacement: STRING): ETR_AST_MODIFICATION

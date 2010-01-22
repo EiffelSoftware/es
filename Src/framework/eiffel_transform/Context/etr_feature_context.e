@@ -8,11 +8,11 @@ class
 	ETR_FEATURE_CONTEXT
 inherit
 	ETR_CONTEXT
-	ETR_SHARED
 	SHARED_NAMES_HEAP
 		export
 			{NONE} all
 		end
+	ETR_SHARED_TYPE_CHECKER
 create
 	make,
 	make_from_other
@@ -32,11 +32,11 @@ feature -- Access
 	name: STRING
 
 	feature_id: INTEGER
-	arguments: detachable ARRAY[ETR_CONTEXT_TYPED_VAR]
-	locals: detachable ARRAY[ETR_CONTEXT_TYPED_VAR]
+	arguments: detachable ARRAY[ETR_TYPED_VAR]
+	locals: detachable ARRAY[ETR_TYPED_VAR]
 
-	arg_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
-	local_by_name: detachable HASH_TABLE[ETR_CONTEXT_TYPED_VAR, STRING]
+	arg_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
+	local_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
 
 	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
 
@@ -110,7 +110,7 @@ feature {NONE} -- Creation
 	make(a_written_feature: like original_written_feature; a_class_context: detachable like class_context)
 			-- make with `a_written_feature' and `a_class_context'
 		local
-			l_arg_list,l_local_list: LINKED_LIST[ETR_CONTEXT_TYPED_VAR]
+			l_arg_list,l_local_list: LINKED_LIST[ETR_TYPED_VAR]
 			l_expl_type: TYPE_A
 			l_e_feat: E_FEATURE
 			l_name: STRING
@@ -120,7 +120,7 @@ feature {NONE} -- Creation
 			-- compute explicit type
 			if a_written_feature.has_return_value then
 				unresolved_type := a_written_feature.type
-				type := explicit_type (a_written_feature.type, a_written_feature.written_class)
+				type := type_checker.explicit_type (a_written_feature.type, a_written_feature.written_class)
 				has_return_value := true
 			end
 
@@ -138,9 +138,9 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.arguments.after or l_e_feat.argument_names.after
 				loop
-					l_expl_type := explicit_type (l_e_feat.arguments.item, l_e_feat.written_class)
+					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, l_e_feat.written_class)
 					l_name := l_e_feat.argument_names.item
-					l_arg_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type,l_e_feat.arguments.item))
+					l_arg_list.extend (create {ETR_TYPED_VAR}.make(l_name, l_expl_type,l_e_feat.arguments.item))
 
 					l_e_feat.argument_names.forth
 					l_e_feat.arguments.forth
@@ -171,8 +171,8 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.locals.after
 				loop
-					l_written_type := written_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
-					l_expl_type := explicit_type (l_written_type, a_written_feature.written_class)
+					l_written_type := type_checker.written_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
+					l_expl_type := type_checker.explicit_type (l_written_type, a_written_feature.written_class)
 
 					-- add a local for each name
 					from
@@ -181,7 +181,7 @@ feature {NONE} -- Creation
 						l_e_feat.locals.item.id_list.after
 					loop
 						l_name := names_heap.item (l_e_feat.locals.item.id_list.item)
-						l_local_list.extend (create {ETR_CONTEXT_TYPED_VAR}.make(l_name, l_expl_type,l_written_type))
+						l_local_list.extend (create {ETR_TYPED_VAR}.make(l_name, l_expl_type,l_written_type))
 						l_e_feat.locals.item.id_list.forth
 					end
 
