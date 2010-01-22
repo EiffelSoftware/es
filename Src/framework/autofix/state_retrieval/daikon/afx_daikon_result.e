@@ -12,7 +12,7 @@ class
 
 feature
 	make_from_string (daikon_output :STRING; a_tc_info : AFX_TEST_CASE_INFO) is
-			--
+			--Create a Daikon result from a Daikon output and a test case information
 		do
 			create daikon_table.make (1000)
 			test_case_info := a_tc_info
@@ -27,7 +27,7 @@ daikon_table: HASH_TABLE[AFX_STATE , INTEGER]
 feature {NONE} -- Implementation
 
      build_table (daikon_output : STRING) is
-			--
+			--Parses the result of a Daikon File.
 		local
 			list_tokens :LIST[STRING]
 			states : AFX_STATE
@@ -62,12 +62,11 @@ feature {NONE} -- Implementation
 				list_tokens.forth
 
 			end
-
 		end
 
 
      build_equation ( str :STRING ) :AFX_EQUATION is
-     		--
+     		--Takes a line output from Daikon and builds an AFX_Equation
 		local
 			expression : AFX_AST_EXPRESSION
 			expression_boolean_value : AFX_BOOLEAN_VALUE
@@ -91,13 +90,12 @@ feature {NONE} -- Implementation
      		end
 
 			result := equation
-
      	end
 
 
      	state_name ( str :STRING ) :INTEGER is
-     		--
-
+     		-- Filter the state name ENTER and EXIT1
+     		-- are considered special states.
 		local
 			tokens :LIST[STRING]
      	do

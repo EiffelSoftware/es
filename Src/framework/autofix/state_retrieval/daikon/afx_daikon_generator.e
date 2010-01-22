@@ -12,7 +12,7 @@ class
 
 feature -- creator
 	make is
-		--
+		--Initialize the list of states
 		do
 			create daikon_state_list.make
 		end
@@ -22,13 +22,13 @@ feature -- Declaration
 		-- is the test case a fail
 
 	number_states:INTEGER is
-			--
+			-- Returns the number of states
 		do
 			Result := daikon_state_list.count
 		end
 
 	restart is
-			--
+			-- Restart the list of states
 		do
 			create daikon_state_list.make
 		end
@@ -66,7 +66,7 @@ feature -- Declaration
    	declarations : STRING is
    			-- print all declarations
    		do
-			create Result.make (1024 * 200)
+		   create Result.make (1024 * 200)
    		   Result.append (declaration_header)
    		   from
    		   	  daikon_state_list.start

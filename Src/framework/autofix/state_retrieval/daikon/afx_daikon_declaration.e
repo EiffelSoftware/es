@@ -83,7 +83,6 @@ feature {NONE} -- Implementation
    					str.remove_substring (i,i)
    				end
    				i := i + 1
-
    			end
 
    		end
@@ -103,8 +102,6 @@ feature {NONE} -- Implementation
 
  	flags : STRING
  		--is_param , no_dups ,not_ordered,classname ,to_string, non_null
-
-
 
 invariant
 	invariant_clause: True -- Your invariant here
