@@ -189,7 +189,7 @@ feature -- Additional properties
 			end
 		end
 
-feature {SYSTEM_I, AST_FEATURE_CHECKER_GENERATOR, CL_TYPE_A, FEATURE_I, TYPE_A_CHECKER, LACE_I} -- Additional properties for SCOOP
+feature -- Additional properties for SCOOP
 
 	is_degree_scoop_processing: BOOLEAN
 			-- remebers SCOOP processing for compilation steps.
@@ -986,7 +986,7 @@ feature {NONE} -- Implementation
 			-- Was there a problem during running the pre and post compile actions?
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -2915,7 +2915,7 @@ feature -- Properties
 			-- Is class deferred ?
 
 	is_separate_client: BOOLEAN
-			-- Is class having a spearate client?
+			-- Is class having a separate client?
 			-- Added for Scoop by paedde
 
 	is_interface: BOOLEAN
@@ -4682,7 +4682,7 @@ invariant
 	-- has_ast: has_ast
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -1225,11 +1225,6 @@ end
 					class_compiled: l_class.is_compiled
 				end
 				remove_class (l_class.compiled_class)
-
-				-- remove scoop classes
-				-- added for SCOOP by paedde
-				degree_scoop.remove_scoop_classes (l_class.name)
-
 				real_removed_classes.forth
 			end
 
@@ -1709,12 +1704,6 @@ feature -- Recompilation
 				create l_il_env.make (clr_runtime_version)
 				l_il_env.register_environment_variable
 			end
-
-				-- Reset SCOOP environment
-				-- added for SCOOP by peadde
-		--	if not workbench.is_degree_scoop_processed then
-		--		degree_scoop.reset_scoop_processing
-		--	end
 
 				-- Recompilation initialization
 			init_recompilation
@@ -6202,7 +6191,7 @@ feature {NONE} -- External features
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
