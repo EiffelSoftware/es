@@ -93,6 +93,14 @@ feature {NONE} -- Typing
 				end
 			elseif attached {CL_TYPE_A}a_type as l_cl_t then
 				Result.append (l_cl_t.associated_class.name_in_upper)
+			elseif a_type.is_type_set then
+				if attached {TYPE_SET_A}a_type as l_set then
+					Result := print_type (l_set.first, a_context)
+				end
+			elseif a_type.has_renaming then
+				if attached {RENAMED_TYPE_A[TYPE_A]}a_type as l_ren then
+					Result := print_type(l_ren.actual_type, a_context)
+				end
 			else
 				Result := a_type.dump -- can't handle, just use debug-dump
 			end

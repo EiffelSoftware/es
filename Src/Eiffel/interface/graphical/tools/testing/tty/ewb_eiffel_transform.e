@@ -235,13 +235,43 @@ feature -- Properties
 			io.put_string (ast_to_string(mex.old_method.target_node))
 		end
 
+	test_typechecker
+		local
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			a1_context: ETR_FEATURE_CONTEXT
+			a1_feat: FEATURE_I
+			trans, expr: ETR_TRANSFORMABLE
+			tc: ETR_TYPE_CHECKER
+			renamer: ETR_RENAMER
+		do
+			a1 := universe.compiled_classes_with_name("M_EX").first
+			a1_ast := a1.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("test")
+
+			create a1_context.make (a1_feat, void)
+			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
+
+			create renamer
+			renamer.rename_argument (trans, "arg1", "arg1_new")
+
+			expr := new_expr ("arg1_new", renamer.transformation_result.context)
+
+			create tc
+			tc.check_transformable (expr)
+		end
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
 		do
 			-- reparse to have the original ast and don't use a modified one from storage
+			test_ren
+			test_setter_gen
+			test_context_transformation
 			test_ass_attempt_replacing
 			test_ec_gen
+			test_typechecker
 			test_me("test", "1.2.4.4.1.2", "1.2.4.4.1.2")
 			test_me("test2", "1.2.4.4.1.3", "1.2.4.4.1.3")
 			test_me("test3", "1.2.4.4.1.3", "1.2.4.4.1.4")
