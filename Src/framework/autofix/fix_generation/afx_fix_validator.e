@@ -18,6 +18,8 @@ inherit
 
 	AFX_UTILITY
 
+	AFX_SHARED_EVENT_ACTIONS
+
 create
 	make
 
@@ -113,26 +115,32 @@ feature{NONE} -- Actions
 			-- Action to be performed when `a_melted_fix' is about to be validated
 		do
 			io.put_string ("Strat validate fix No. " + a_melted_fix.id.out + ",  " + melted_fixes.count.out + " to go.  ")
+			event_actions.notify_on_fix_candidate_validation_starts (fixes.item (a_melted_fix.id))
 		end
 
 	on_fix_validation_end (a_melted_fix: AFX_MELTED_FIX; a_exception_count: NATURAL_32)
 			-- Action to be performed when `a_melted_fix' is about to be validated
 		local
 			l_fix: AFX_FIX
+			l_valid: BOOLEAN
+			l_fix_text: STRING
 		do
 			io.put_string ("Failed: " + (a_exception_count.to_integer_32 - exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)).out + "  " + a_exception_count.out + ", " + exception_count.out + "%N")
-			if exception_count = a_exception_count then
+			l_valid := exception_count = a_exception_count
+			if l_valid then
 				l_fix := fixes.item (a_melted_fix.id)
 				l_fix.ranking.set_impact_on_passing_test_cases (l_fix.impact_on_passing_test_cases)
 				l_fix.set_is_valid (True)
+				l_fix_text := formated_fix (l_fix)
+				valid_fix_count := valid_fix_count + 1
 				store_fix_in_file (config.fix_directory, l_fix, True)
+				store_string_in_file (config.valid_fix_directory, "f" + valid_fix_count.out + ".e", l_fix_text)
 
 				io.put_string ("====================================================%N")
-				valid_fix_count := valid_fix_count + 1
 				io.put_string ("Good fix No." + valid_fix_count.out + "%N")
-				io.put_string (formated_fix (l_fix))
+				io.put_string (l_fix_text)
 				io.put_string ("Ranking: " + l_fix.ranking.syntax_score.out + "%N")
-				io.put_string ("Impact on passing test cases: " + l_fix.ranking.impact_on_passing_test_cases.out + "%N")
+				io.put_string ("Semantics ranking: " + l_fix.ranking.semantics_score.out + "%N")
 				io.put_string ("%N")
 
 					-- Maximal number of valid fixes have already been found, terminate fix validation.
@@ -143,6 +151,7 @@ feature{NONE} -- Actions
 				end
 				valid_fixes.extend (fixes.item (a_melted_fix.id))
 			end
+			event_actions.notify_on_fix_candidate_validation_ends (fixes.item (a_melted_fix.id), l_valid)
 			exception_count := a_exception_count
 		end
 
@@ -183,6 +192,7 @@ feature -- Basic operations
 				establish_socket
 
 				if socket_listener.is_listening then
+					event_actions.notify_on_interpreter_starts (port)
 					create l_fac
 					process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out , config.working_directory)
 					process.launch
@@ -206,6 +216,8 @@ feature -- Basic operations
 						end
 						cleanup
 					end
+				else
+					event_actions.notify_on_interpreter_start_failed (port)
 				end
 			end
 		end
@@ -213,6 +225,9 @@ feature -- Basic operations
 	validate
 			-- Validate `fixes'.
 		do
+			fixes.start
+			store_string_in_file (config.valid_fix_directory, "fx.e", formated_feature (fixes.item_for_iteration.recipient_))
+
 			from until
 				melted_fixes.is_empty or else should_quit
 			loop
@@ -239,6 +254,14 @@ feature -- Basic operations
 				l_pattern_id := l_feat.real_pattern_id (l_class.types.first)
 				create Result.make (a_fix.id, l_body_id, l_pattern_id, l_data.byte_code, l_data.last_bpslot)
 			end
+		end
+
+	set_logger (a_logger: like logger)
+			-- Set `logger' with `a_logger'.
+		do
+			logger := a_logger
+		ensure
+			logger_set: logger = a_logger
 		end
 
 feature{NONE} -- Inter-process communication
@@ -295,6 +318,26 @@ feature{NONE} -- Inter-process communication
 			if socket.exists and then not socket.is_closed then
 				socket.close
 			end
+		end
+
+feature{NONE} -- Logging
+
+	logger: detachable AFX_PROXY_LOGGER
+			-- Logger for logging
+
+feature{NONE} -- Implementation
+
+	store_string_in_file (a_directory: STRING; a_file_name: STRING; a_content: STRING)
+			-- Create a file named `a_file_name' in `a_directory' and store `a_content' in it.
+		local
+			l_path: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_path.make_from_string (a_directory)
+			l_path.set_file_name (a_file_name)
+			create l_file.make_create_read_write (l_path)
+			l_file.put_string (a_content)
+			l_file.close
 		end
 
 end

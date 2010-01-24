@@ -72,6 +72,8 @@ feature{NONE} -- Initialization
 			-- Create an empty container and allocate
 			-- memory space for at least `n' items.
 			-- Set equality tester to {AFX_PREDICATE_EQUALITY_TESTER}.			
+		require
+			a_class_attached: a_class /= Void
 		do
 			class_ := a_class
 			feature_ := a_feature
@@ -82,6 +84,8 @@ feature{NONE} -- Initialization
 	make_from_object_state (a_state: HASH_TABLE [STRING, STRING]; a_class: like class_; a_feature: like feature_)
 			-- Initialize Current with queries and values from `a_state' for `a_class' and `a_feature'.
 			-- Key of `a_state' is query name, value is the result of the query.
+		require
+			a_class_attached: a_class /= Void
 		do
 			make (a_state.count, a_class, a_feature)
 			from
@@ -96,6 +100,8 @@ feature{NONE} -- Initialization
 
 	make_from_expression_value (a_exp_val: HASH_TABLE [AFX_EXPRESSION_VALUE, AFX_AST_EXPRESSION]; a_class: like class_; a_feature: like feature_)
 			-- Initialize a new state from a list of expression-value pairs
+		require
+			a_class_attached: a_class /= Void
 		local
 		    l_equation: AFX_EQUATION
 		do
@@ -111,6 +117,8 @@ feature{NONE} -- Initialization
 
 	make_from_state (a_state: like Current; a_type: TYPE_A)
 			-- Initialize a new state from `a_state', extracting only those predicates conforming to `a_type'
+		require
+			class_exists: a_state.class_ /= Void
 		local
 		    l_type: TYPE_A
 		    l_equation: AFX_EQUATION
@@ -166,7 +174,7 @@ feature{NONE} -- Initialization
 		do
 			fixme ("Only support boolean and integer values for the moment. 20.12.2009 Jasonw")
 			l_lines := a_data.split ('%N')
-			make (l_lines.count, class_, feature_)
+			make (l_lines.count, a_class, a_feature)
 			from
 				l_lines.start
 			until

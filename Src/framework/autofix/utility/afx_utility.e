@@ -16,6 +16,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	SHARED_SERVER
+
 feature -- Access
 
 	first_class_starts_with_name (a_class_name: STRING): detachable CLASS_C
@@ -266,6 +268,21 @@ feature -- String manipulation
 
 feature -- Fix
 
+	formated_feature (a_feature: FEATURE_I): STRING
+			-- Pretty printed feature `a_feature'
+		local
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_output: ETR_AST_STRING_OUTPUT
+			l_feat_text: STRING
+			l_match_list: LEAF_AS_LIST
+		do
+			l_match_list := match_list_server.item (a_feature.written_class.class_id)
+			entity_feature_parser.parse_from_string ("feature " + a_feature.e_feature.ast.original_text (l_match_list), Void)
+			create l_output.make_with_indentation_string ("%T")
+			create l_printer.make_with_output (l_output)
+			l_printer.print_ast_to_output (a_feature.e_feature.ast)
+			Result := l_output.string_representation
+		end
 
 	formated_fix (a_fix: AFX_FIX): STRING
 			-- Pretty printed feature text for `a_fix'
@@ -318,8 +335,8 @@ feature -- Logging
 			l_file.close
 		end
 
-	fix_file_name (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
-			-- File name to store `a_fix'.
+	fix_signature (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
+			-- Signature of `a_fix'
 			-- `a_validated' indicates if `a_fix' has been validated.
 		local
 			l_fdouble: FORMAT_DOUBLE
@@ -357,6 +374,17 @@ feature -- Logging
 			else
 				Result.append ("NONE")
 			end
+		end
+
+	fix_file_name (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
+			-- File name to store `a_fix'.
+			-- `a_validated' indicates if `a_fix' has been validated.
+		local
+			l_fdouble: FORMAT_DOUBLE
+			l_rank: STRING
+		do
+			create Result.make (64)
+			Result.append (fix_signature (a_fix, a_validated))
 			Result.append (once "__")
 			Result.append (a_fix.id.out)
 			Result.append (".txt")

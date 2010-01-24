@@ -21,6 +21,21 @@ feature{NONE} -- Implementation
 	make
 			-- Initialize.
 		do
+				-- Command line options:
+				-- In fixing mode: --analyze-tc <log_file_path> <is_append>
+				-- In validating mode: --validate-tc <log_file_path> <is_append> <port_number>
+				-- In checking mode: --check-tc <log_file_path> <is_append> [test_case_uuid[,test_case_uuid]]
+				--
+				-- Modes:
+				-- fixing mode: In this mode, AutoFix will execute all test cases, extracts state invariants and generate fix candidates.
+				-- validating mode: In this mode, AutoFix will execute all test cases against every fix candidate to find out valid fixes.
+				-- checking mode: In this mode, only one
+				-- Arguments:
+				-- log_file_path: full path log file
+				-- is_append: if true, the existing log file is appended with new data; otherwise, overwrite the original log file
+				-- port_number: port number used for socket communication.
+				-- test_case_uuid: Comma separated universal IDs of test cases to be executed. If not present, the first failing test case will be executed.
+
 			if argument_count >= 3 then
 				create_log_file (argument (2), argument (3).to_boolean)
 				if argument (1).is_case_insensitive_equal ("--analyze-tc") then
@@ -32,6 +47,8 @@ feature{NONE} -- Implementation
 					exception_count := 0
 					is_validating_fixes := True
 					validate_fixes
+				elseif argument (1).is_case_insensitive_equal ("--check-fault") then
+
 				end
 				close_log_file
 			end
@@ -47,6 +64,62 @@ feature{NONE} -- Implementation
 	execute_test_cases
 			-- Run test cases and do analysis to support fix generation.
 		deferred
+		end
+
+
+	validate_fixes
+			-- Validate generated candidate fixes
+		local
+			l_section: INTEGER
+		do
+			initialize_test_cases
+			log_message ("-- Start validating fixes.%N")
+			create socket.make_client_by_address_and_port ((create {INET_ADDRESS_FACTORY}).create_loopback, port)
+			socket.connect
+			log_message ("-- Socket connection established at port " + port.out + "%N")
+			main_validation_loop
+			l_section := 1
+		rescue
+			if l_section = 0 then
+				log_message ("-- Failed to establish socket connection with port " + port.out + "%N")
+			end
+
+			if attached {STRING} exception_trace as l_trace then
+				log_message (l_trace)
+			end
+			die (1)
+		end
+
+	check_test_cases (a_uuids: STRING)
+			-- Check test cases whose uuid are specified by a comma separated string `a_uuids'.
+			-- If `a_uuids' is empty, the first failing test case is executed.
+		local
+			l_agent: detachable PROCEDURE [ANY, TUPLE]
+			l_uuids: LIST [STRING]
+			l_id: STRING
+		do
+			if a_uuids.is_empty then
+				create {LINKED_LIST [STRING]} l_uuids.make
+				l_uuids.extend (first_failing_test_case_uuid)
+			else
+				l_uuids := a_uuids.split (',')
+				from
+					l_uuids.start
+				until
+					l_uuids.after
+				loop
+					l_id := l_uuids.item_for_iteration
+					l_id.left_adjust
+					l_id.right_adjust
+					l_agent := test_cases.item (l_id)
+					if l_agent /= Void then
+						l_agent.call (Void)
+					else
+						log_message ("Test case with uuid %"" + l_id + "%" is not defined.")
+					end
+					l_uuids.forth
+				end
+			end
 		end
 
 feature{NONE} -- Stats retrieval
@@ -92,29 +165,6 @@ feature{NONE} -- Implementation
 	initialize_test_cases
 			-- Initialize `test_cases'.
 		deferred
-		end
-
-	validate_fixes
-			-- Validate generated candidate fixes
-		local
-			l_section: INTEGER
-		do
-			initialize_test_cases
-			log_message ("-- Start validating fixes.%N")
-			create socket.make_client_by_address_and_port ((create {INET_ADDRESS_FACTORY}).create_loopback, port)
-			socket.connect
-			log_message ("-- Socket connection established at port " + port.out + "%N")
-			main_validation_loop
-			l_section := 1
-		rescue
-			if l_section = 0 then
-				log_message ("-- Failed to establish socket connection with port " + port.out + "%N")
-			end
-
-			if attached {STRING} exception_trace as l_trace then
-				log_message (l_trace)
-			end
-			die (1)
 		end
 
 	main_validation_loop
@@ -422,6 +472,11 @@ feature{NONE} -- State retrieval
 
 	should_retrieve_post_state: BOOLEAN
 			-- Should post state be retrieved?
+
+	first_failing_test_case_uuid: STRING
+			-- UUID of the first failing test case
+		deferred
+		end
 
 end
 

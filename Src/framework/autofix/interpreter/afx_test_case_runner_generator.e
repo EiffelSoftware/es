@@ -92,6 +92,7 @@ feature -- Generation
 			last_class_text.replace_substring_all ("${CLASS_NAME}", l_root_class_name)
 			last_class_text.replace_substring_all ("${CREATOR}", system.root_creation_name)
 			last_class_text.replace_substring_all ("${INITIALIZE_TEST_CASES}", feature_for_initialize_test_cases (test_cases))
+			last_class_text.replace_substring_all ("${FIRST_FAILING_TEST_CASE_UUID}", feature_for_first_test_case_uuid (failing_test_cases))
 			last_class_text.replace_substring_all ("${EXECUTE_TEST_CASES}", feature_for_execute_test_cases)
 			last_class_text.replace_substring_all ("${RETRIEVE_OPERAND_STATES}", feature_for_operand_states (l_tc_info.recipient_, l_tc_info.recipient_class_))
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_test_executors)
@@ -177,6 +178,21 @@ feature{NONE} -- Implementation
 				test_cases.forth
 			end
 			Result.append ("%T%Tend%N")
+		end
+
+	feature_for_first_test_case_uuid (a_failing_test_cases: like failing_test_cases): STRING
+			-- Feature text to return the UUID of the first failing test case from `a_failing_test_cases'
+		local
+			l_cursor: CURSOR
+		do
+			create Result.make (128)
+			Result.append ("%Tfirst_failing_test_case_uuid: STRING%N%T%Tdo%N")
+			Result.append ("%T%T%TResult := %"")
+			l_cursor := a_failing_test_cases.cursor
+			a_failing_test_cases.start
+			Result.append (a_failing_test_cases.key_for_iteration.uuid)
+			a_failing_test_cases.go_to (l_cursor)
+			Result.append ("%"%N%T%Tend%N%N")
 		end
 
 feature{NONE} -- Stats retrieval
@@ -345,6 +361,8 @@ feature{NONE} -- Implementation
 ${INITIALIZE_TEST_CASES}
 
 ${RETRIEVE_OPERAND_STATES}
+
+${FIRST_FAILING_TEST_CASE_UUID}
 
 ${EXECUTE_TEST_CASES}
 

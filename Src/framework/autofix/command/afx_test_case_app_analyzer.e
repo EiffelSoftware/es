@@ -22,6 +22,8 @@ inherit
 
 	AFX_UTILITY
 
+	AFX_SHARED_EVENT_ACTIONS
+
 create
 	make
 
@@ -67,6 +69,7 @@ feature -- Basic operations
 	execute
 			-- Execute.
 		do
+			initialize_logging
 			is_mocking := config.is_mocking_mode_enabled
 
 				-- Setup test case execution status collector.
@@ -95,20 +98,30 @@ feature -- Basic operations
 				application_exited_actions.extend (agent daikon_facility.on_application_exited)
 			end
 
+			event_actions.notify_on_session_starts
+
 				-- Compile project			
 			compile_project
 
 				-- Start test case analysis
+			event_actions.notify_on_test_case_analysis_starts
 			analyze_test_cases
+			event_actions.notify_on_test_case_analysis_ends
 
 				-- Generate fixes.
+			event_actions.notify_on_fix_generation_starts
 			generate_fixes
 
 				-- Store fixes in files.
 			store_fixes (fixes)
+			event_actions.notify_on_fix_generation_ends (fixes.count)
 
 				-- Validate generated fixes.
+			event_actions.notify_on_fix_validation_starts
 			validate_fixes
+			event_actions.notify_on_fix_validation_ends
+
+			event_actions.notify_on_session_ends
 		end
 
 feature{NONE} -- Access
@@ -348,6 +361,7 @@ feature{NONE} -- Actions
 			else
 				l_spot := exception_spots.item (current_test_case_info.id)
 
+				event_actions.notify_on_new_test_case_found (current_test_case_info)
 				test_case_start_actions.call ([current_test_case_info])
 
 					-- Dispose breakpoint manager for the last test case.
@@ -380,6 +394,7 @@ feature{NONE} -- Actions
 					end)
 
 			test_case_breakpoint_hit_actions.call ([current_test_case_info, a_state, a_breakpoint.breakable_line_number])
+			event_actions.notify_on_break_point_hit (current_test_case_info, a_breakpoint.breakable_line_number)
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -564,6 +579,7 @@ feature -- Fix generation
 			exception_spots.start
 			l_spot := exception_spots.item_for_iteration
 			create l_validator.make (config, l_spot, fixes, test_case_execution_status.status)
+			l_validator.set_logger (logger)
 			l_validator.validate
 		end
 
@@ -571,6 +587,31 @@ feature -- Fix generation
 			-- Store fixes in to files.
 		do
 			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False))
+		end
+
+feature -- Logging
+
+	logger: AFX_PROXY_LOGGER;
+			-- Logger to log proxy messages
+
+	initialize_logging
+			-- Initialize logging.
+		do
+			create logger.make (config)
+			event_actions.session_start_actions.extend (agent logger.on_sesson_starts)
+			event_actions.session_end_actions.extend (agent logger.on_session_ends)
+			event_actions.test_case_analysis_start_actions.extend (agent logger.on_test_case_analyzing_starts)
+			event_actions.test_case_analysis_end_actions.extend (agent logger.on_test_case_analyzing_ends)
+			event_actions.fix_generation_start_actions.extend (agent logger.on_fix_generation_starts)
+			event_actions.fix_generation_end_actions.extend (agent logger.on_fix_generation_ends)
+			event_actions.fix_validation_start_actions.extend (agent logger.on_fix_validation_starts)
+			event_actions.fix_validation_end_actions.extend (agent logger.on_fix_validation_ends)
+			event_actions.new_test_case_found_actions.extend (agent logger.on_new_test_case_found)
+			event_actions.break_point_hit_actions.extend (agent logger.on_break_point_hits)
+			event_actions.fix_candidate_validation_start_actions.extend (agent logger.on_fix_candidate_validation_starts)
+			event_actions.fix_candidate_validation_end_actions.extend (agent logger.on_fix_candidate_validation_ends)
+			event_actions.interpreter_start_actions.extend (agent logger.on_interpreter_starts)
+			event_actions.interpreter_start_failed_actions.extend (agent logger.on_interpreter_start_failed)
 		end
 
 note

@@ -17,8 +17,8 @@ feature -- Access
 		require
 			a_state1_attached: a_state1 /= Void
 			a_state2_attached: a_state2 /= Void
-			same_class_context: a_state1.class_ ~ a_state2.class_
-			same_feature_context: a_state1.feature_ ~ a_state2.feature_
+--			same_class_context: a_state1.class_ ~ a_state2.class_
+--			same_feature_context: a_state1.feature_ ~ a_state2.feature_
 		local
 			s1, s2: AFX_STATE
 			l_common_skeleton: AFX_STATE_SKELETON

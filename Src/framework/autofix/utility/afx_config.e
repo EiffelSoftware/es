@@ -139,6 +139,16 @@ feature -- Access
 			Result := l_path
 		end
 
+	valid_fix_directory: STRING
+			-- Directory to store generated fixes
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("valid_fix")
+			Result := l_path
+		end
+
 	interpreter_log_path: STRING
 			-- Full path to the interpreter log file
 		local
@@ -146,6 +156,16 @@ feature -- Access
 		do
 			create l_path.make_from_string (log_directory)
 			l_path.set_file_name ("interpreter_log.txt")
+			Result := l_path
+		end
+
+	proxy_log_path: STRING
+			-- Full path to the proxy log file
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (log_directory)
+			l_path.set_file_name ("proxy_log.txt")
 			Result := l_path
 		end
 

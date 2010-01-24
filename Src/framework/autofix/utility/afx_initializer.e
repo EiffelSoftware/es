@@ -37,6 +37,10 @@ feature -- Access
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
 
+			create l_file_name.make_from_string (a_config.valid_fix_directory)
+			create l_dir.make (l_file_name)
+			l_dir.recursive_create_directory
+
 			prepare_model_repository (a_config)
 		end
 
