@@ -34,22 +34,24 @@ feature -- Access
 				l_cursor.after
 			loop
 				l_analyzer.analyze (l_cursor.item.expression)
-				check l_analyzer.is_matched end
-				if attached {AFX_EXPRESSION} l_analyzer.prefix_expression as l_pre then
-					l_prefix := l_pre.text.twin
-					l_expression := l_analyzer.argumentless_boolean_query
-				else
-					l_prefix := ""
-					l_expression := l_cursor.item.expression
+--				check l_analyzer.is_matched end
+				if l_analyzer.is_matched then
+					if attached {AFX_EXPRESSION} l_analyzer.prefix_expression as l_pre then
+						l_prefix := l_pre.text.twin
+						l_expression := l_analyzer.argumentless_boolean_query
+					else
+						l_prefix := ""
+						l_expression := l_cursor.item.expression
+					end
+					if Result.has (l_prefix) then
+						l_state := Result.item (l_prefix)
+					else
+						create l_state.make (10, l_expression.class_, l_expression.feature_)
+						Result.put (l_state, l_prefix)
+					end
+					create l_equation.make (l_expression, l_cursor.item.value)
+					l_state.force_last (l_equation)
 				end
-				if Result.has (l_prefix) then
-					l_state := Result.item (l_prefix)
-				else
-					create l_state.make (10, l_expression.class_, l_expression.feature_)
-					Result.put (l_state, l_prefix)
-				end
-				create l_equation.make (l_expression, l_cursor.item.value)
-				l_state.force_last (l_equation)
 				l_cursor.forth
 			end
 		end

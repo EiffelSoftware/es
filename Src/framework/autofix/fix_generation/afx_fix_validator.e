@@ -158,6 +158,7 @@ feature{NONE} -- Actions
 	on_test_case_execution_time_out
 			-- Action to be performed when test case execution timed out
 		do
+			event_actions.notify_on_test_case_execution_time_out
 			check process /= Void end
 			if process.is_running then
 				process.terminate_tree
@@ -225,13 +226,15 @@ feature -- Basic operations
 	validate
 			-- Validate `fixes'.
 		do
-			fixes.start
-			store_string_in_file (config.valid_fix_directory, "fx.e", formated_feature (fixes.item_for_iteration.recipient_))
+			if not fixes.is_empty then
+				fixes.start
+				store_string_in_file (config.valid_fix_directory, "fx.e", formated_feature (fixes.item_for_iteration.recipient_))
 
-			from until
-				melted_fixes.is_empty or else should_quit
-			loop
-				validate_left_fixes
+				from until
+					melted_fixes.is_empty or else should_quit
+				loop
+					validate_left_fixes
+				end
 			end
 		end
 

@@ -55,6 +55,8 @@ feature -- Basic operations
 			l_mocking_option: AP_FLAG
 			l_freeze_option: AP_FLAG
 			l_max_fix_postcondition: AP_INTEGER_OPTION
+			l_model_xml_option: AP_STRING_OPTION
+			l_path_name: FILE_NAME
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -117,6 +119,10 @@ feature -- Basic operations
 			l_max_fix_postcondition.set_description ("Maximal number of assertions that can appear as fix postcondition. If there are too many fix postcondition assertions, the number of possible fixes are very large, the fix generation will be extremely time-consuming. Default: 10.")
 			l_parser.options.force_last (l_max_fix_postcondition)
 
+			create l_model_xml_option.make_with_long_form ("model-dir")
+			l_model_xml_option.set_description ("The directory to store XML files for behavior models. Default: EIFGENs/target/AutoFix/model")
+			l_parser.options.force_last (l_model_xml_option)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
@@ -178,6 +184,14 @@ feature -- Basic operations
 				config.set_max_fix_postcondition_assertion (l_max_fix_postcondition.parameter)
 			else
 				config.set_max_fix_postcondition_assertion (6)
+			end
+
+			if l_model_xml_option.was_found then
+				config.set_model_directory (l_model_xml_option.parameter)
+			else
+				create l_path_name.make_from_string (config.output_directory)
+				l_path_name.extend ("model")
+				config.set_model_directory (l_path_name)
 			end
 
 			config.set_should_freeze (l_freeze_option.was_found)

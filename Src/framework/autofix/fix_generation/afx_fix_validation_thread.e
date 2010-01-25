@@ -190,6 +190,7 @@ feature -- Execution
 					should_quit or else socket.is_closed
 				loop
 					l_fix := melted_fixes.item_for_iteration
+					melted_fixes.remove
 					l_origin_fix := fixes.item (l_fix.id)
 					on_fix_validation_start.call ([l_fix])
 					timer.set_timeout (max_test_case_time)
@@ -228,7 +229,6 @@ feature -- Execution
 					l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
 					on_fix_validation_end.call ([l_fix, exception_count])
 
-					melted_fixes.remove
 					if not should_quit then
 						set_should_quit (melted_fixes.after)
 					end

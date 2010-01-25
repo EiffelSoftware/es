@@ -48,16 +48,16 @@ feature -- Basic operations
 					premise_negation_count := l_abq_analyzer.negation_count
 					premise_prefix_expression := l_abq_analyzer.prefix_expression
 					premise_argumentless_boolean_query := l_abq_analyzer.argumentless_boolean_query
-				end
 
-					-- Analyze consequent part of the implication.
-				create l_abq_analyzer
-				l_abq_analyzer.analyze (l_right)
-				is_matched := l_abq_analyzer.is_matched
-				if is_matched then
-					consequent_negation_count := l_abq_analyzer.negation_count
-					consequent_prefix_expression := l_abq_analyzer.prefix_expression
-					consequent_argumentless_boolean_query := l_abq_analyzer.argumentless_boolean_query
+						-- Analyze consequent part of the implication.
+					create l_abq_analyzer
+					l_abq_analyzer.analyze (l_right)
+					is_matched := l_abq_analyzer.is_matched
+					if is_matched then
+						consequent_negation_count := l_abq_analyzer.negation_count
+						consequent_prefix_expression := l_abq_analyzer.prefix_expression
+						consequent_argumentless_boolean_query := l_abq_analyzer.argumentless_boolean_query
+					end
 				end
 			end
 		end

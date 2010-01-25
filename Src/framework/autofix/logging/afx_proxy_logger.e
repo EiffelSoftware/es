@@ -164,6 +164,12 @@ feature -- Actions
 			log_time_stamp (interpreter_start_failed_message + a_port.out)
 		end
 
+	on_test_case_execution_time_out
+			-- Action to be performed when test case execution during validation times out.
+		do
+			log_time_stamp (test_case_execution_time_out_message)
+		end
+
 feature -- Constants
 
 	session_start_message: STRING = "AutoFix session starts"
@@ -189,6 +195,8 @@ feature -- Constants
 	interpreter_start_message: STRING = "Interpreter starts at port "
 
 	interpreter_start_failed_message: STRING = "Interpreter failed to start at port "
+
+	test_case_execution_time_out_message: STRING = "Test case execution times out"
 
 feature{NONE} -- Implementation
 

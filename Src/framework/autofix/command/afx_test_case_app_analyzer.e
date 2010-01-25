@@ -612,6 +612,7 @@ feature -- Logging
 			event_actions.fix_candidate_validation_end_actions.extend (agent logger.on_fix_candidate_validation_ends)
 			event_actions.interpreter_start_actions.extend (agent logger.on_interpreter_starts)
 			event_actions.interpreter_start_failed_actions.extend (agent logger.on_interpreter_start_failed)
+			event_actions.test_case_execution_time_out_actions.extend (agent logger.on_test_case_execution_time_out)
 		end
 
 note

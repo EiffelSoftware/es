@@ -89,15 +89,8 @@ feature -- Access
 			Result := l_path
 		end
 
-	model_directory: STRING is
-			-- Directory for state transition summary.
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("model")
-			Result := l_path
-		end
+	model_directory: STRING
+		-- Directory for state transition summary.
 
 	backward_model_directory: STRING
 			-- Directory to store backward state transition models
@@ -422,6 +415,12 @@ feature -- Setting
 			max_fix_postcondition_assertion := i
 		ensure
 			max_fix_postcondition_assertion_set: max_fix_postcondition_assertion = i
+		end
+
+	set_model_directory (a_directory: like model_directory)
+			-- Set `model_directory' with `a_directory'.
+		do
+			model_directory := a_directory.twin
 		end
 
 feature{NONE} -- Implementation

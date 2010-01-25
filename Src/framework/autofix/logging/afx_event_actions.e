@@ -35,6 +35,8 @@ feature{NONE} -- Initialization
 
 			create interpreter_start_actions
 			create interpreter_start_failed_actions
+
+			create test_case_execution_time_out_actions
 		end
 
 feature -- Access
@@ -84,6 +86,9 @@ feature -- Access
 	interpreter_start_failed_actions: ACTION_SEQUENCE [TUPLE [a_port: INTEGER]]
 			-- Actions to be performed when the interpreter start failed
 			-- `a_port' is the port number used for inter-process communication.
+
+	test_case_execution_time_out_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be performed when test case execution during validation times out
 
 feature -- actions
 
@@ -170,5 +175,11 @@ feature -- actions
 			-- Cal actions in `interpreter_start_failed_actions'.
 		do
 			interpreter_start_failed_actions.call ([a_port])
+		end
+
+	notify_on_test_case_execution_time_out
+			-- Call actions in `test_case_execution_time_out_actions'.
+		do
+			test_case_execution_time_out_actions.call (Void)
 		end
 end

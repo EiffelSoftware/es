@@ -67,7 +67,7 @@ feature -- Basic operations
 				assertion_break_point_slot := a_tc.breakpoint_slot
 				if a_tc.exception_code = {EXCEP_CONST}.check_instruction then
 					if attached {TAGGED_AS} a_structure.relevant_ast (a_tc.breakpoint_slot) as l_check_ast then
-						create l_failing_expr.make (l_check_ast, a_tc.recipient_class_, a_tc.recipient_class_)
+						create l_failing_expr.make (l_check_ast.expr, a_tc.recipient_class_, a_tc.recipient_class_)
 					else
 						check should_not_happen: False end
 					end

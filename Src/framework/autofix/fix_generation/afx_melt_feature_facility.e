@@ -35,7 +35,7 @@ feature -- Basic operations
 		require
 			a_written_class_attached: a_written_class /= Void
 			a_feature_attached: a_feature /= Void
-			a_written_class_valid: a_written_class.types.count = 1
+--			a_written_class_valid: a_written_class.types.count = 1
 		local
 			l_feature_checker: like feature_checker
 			l_context: like context
@@ -45,6 +45,8 @@ feature -- Basic operations
 			l_body_id: INTEGER
 			l_old_ast: detachable FEATURE_AS
 			l_last_bpslot: INTEGER
+			l_cursor: CURSOR
+			l_type: detachable CLASS_TYPE
 		do
 			fixme ("Coded adapted from ETEST_EVALUATOR_BYTE_CODE_FACTORY, refactoring needed. 23.12.2009 Jasonw")
 			if attached feature_as_with_text (a_text, a_written_class) as l_feature then
@@ -63,7 +65,27 @@ feature -- Basic operations
 					l_last_bpslot := l_feature_checker.break_point_slot_count
 					l_context := context
 					l_byte_array := byte_array
-					l_context.init (a_written_class.types.first)
+					if a_written_class.types.count > 1 then
+						fixme ("In case of a generic class, use the reference derivation, which won't be correct sometimes. 25.1.2010 Jasonw")
+						l_cursor := a_written_class.types.cursor
+						from
+							a_written_class.types.start
+						until
+							a_written_class.types.after
+						loop
+							if a_written_class.types.item.is_reference then
+								l_type := a_written_class.types.item
+							end
+							a_written_class.types.forth
+						end
+						if l_type = Void then
+							l_type := a_written_class.types.first
+						end
+						a_written_class.types.go_to (l_cursor)
+					else
+						l_type := a_written_class.types.first
+					end
+					l_context.init (l_type)
 					l_context.set_byte_code (l_byte_code)
 					l_context.set_current_feature (a_feature)
 					l_context.set_workbench_mode

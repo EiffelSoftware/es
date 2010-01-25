@@ -60,7 +60,9 @@ feature {NONE} -- Implementation
 				end
 
 				list_tokens.forth
-
+			end
+			if states /= Void and then not daikon_table.has (current_key) then
+				daikon_table.put (states.cloned_object, current_key)
 			end
 		end
 

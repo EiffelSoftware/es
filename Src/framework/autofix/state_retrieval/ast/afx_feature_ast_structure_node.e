@@ -233,6 +233,8 @@ feature -- Access
 					Result := l_elsif.expr
 				elseif attached {INSPECT_AS} l_node.ast.ast as l_inspect then
 					Result := l_inspect.switch
+				else
+					Result := l_node.ast.ast
 				end
 			end
 		end

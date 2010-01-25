@@ -219,6 +219,7 @@ feature{NONE} -- Implementation
 					if test_cases.has (l_exec_request.test_case_uuid) then
 						l_agent := test_cases.item (l_exec_request.test_case_uuid)
 						l_agent.call (Void)
+						log_message ("-- Finished test case UUID: " + l_exec_request.test_case_uuid + "%N")
 					else
 						log_message ("-- Cannot find test case with UUID: " + l_exec_request.test_case_uuid + "%N")
 					end

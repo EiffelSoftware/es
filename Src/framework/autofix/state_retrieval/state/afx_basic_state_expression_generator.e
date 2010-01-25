@@ -19,7 +19,7 @@ feature -- Generation
 			l_skeleton: AFX_STATE_SKELETON
 		do
 			create l_gen.make
-			l_gen.generate (a_spot.recipient_class_, a_spot.recipient_)
+			l_gen.generate (a_spot.recipient_written_class, a_spot.recipient_)
 			update_expressions_with_ranking (
 				a_expressions,
 				l_gen.accesses_as_skeleton (a_spot.recipient_class_, a_spot.recipient_),
