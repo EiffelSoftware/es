@@ -111,6 +111,8 @@ def autofix(a_folder):
     os.system ('rm ~/.es/64/session/*' + options['target'] + '.dbg.ses')
     current_dir = os.getcwd()
     os.chdir(a_folder) 
+    shutil.rmtree(os.path.join(options['project-folder'],  'EIFGENs',  options['target'],  'AutoFix',  'fix'),  ignore_errors=True)
+    shutil.rmtree(os.path.join(options['project-folder'],  'EIFGENs',  options['target'],  'AutoFix',  'valid_fix'),  ignore_errors=True)
     ec_cmd = options['ec'] + " -config " +  options['config'] + " -target " + options['target']  + " -auto_fix --analyze-tc --daikon --skeleton afore,wrap -f --max-tc-execution-time 30 --max-valid-fix " + str(options['valid-fix-number'])  + " --model-dir " + options['model-folder']
 
     logfile = open(options['log-file'], 'w')
@@ -164,3 +166,5 @@ folders.sort()
 map(process_project, folders)
 
 print("Finished.")
+
+#python /home/jasonw/sats64/Src/tools/autofix/evaluate_autofix.py --batch --ec /home/jasonw/Eiffel64_79451/studio/spec/linux-x86-64/bin/ecp  /home/jasonw/projects/state_models /media/Data/ubuntu/test_cases/tc_projects_tem

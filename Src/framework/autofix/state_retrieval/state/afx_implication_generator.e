@@ -28,7 +28,8 @@ feature -- Generation
 			l_exprs: DS_HASH_SET [AFX_EXPRESSION]
 		do
 				-- Find implications from source code.
-			l_implications := possible_implications (a_spot.recipient_class_, atomic_predicates (a_spot.recipient_class_, a_spot.recipient_))
+			l_implications := possible_implications (a_spot.recipient_written_class, atomic_predicates (a_spot.recipient_written_class, a_spot.recipient_))
+--			l_implications := possible_implications (a_spot.recipient_class_, atomic_predicates (a_spot.recipient_class_, a_spot.recipient_))
 			implications := l_implications
 			create l_exprs.make (l_implications.count)
 			l_exprs.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})

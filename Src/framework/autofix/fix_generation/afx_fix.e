@@ -117,7 +117,7 @@ feature -- Access
 			l_passing_tc: INTEGER
 			l_distance_sum: DOUBLE
 		do
-			fixme ("Bettern impact formula is needed. 26.12.2009 Jasonw")
+			fixme ("Better impact formula is needed. 26.12.2009 Jasonw")
 			if
 				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]} pre_fix_execution_status as l_pre and then
 				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]} post_fix_execution_status as l_post
@@ -129,18 +129,21 @@ feature -- Access
 				loop
 					l_pre_status := l_pre.item_for_iteration
 					l_post_status := l_post.item (l_pre.key_for_iteration)
-					if  attached {AFX_STATE} l_pre_status.post_state as l_pre_post then
-						l_passing_tc := l_passing_tc + 1
-						if attached {AFX_STATE} l_post_status.post_state as l_post_post then
-								-- Current test case is passing before and after current fix.
-							l_distance_sum := l_distance_sum + l_pre_status.post_state_distance (l_post_status).to_double
+					fixme ("l_pre_status and l_post_status should always be attached. 26.1.2010 Jasonw")
+					if l_pre_status /= Void and then l_post_status /= Void then
+						if  attached {AFX_STATE} l_pre_status.post_state as l_pre_post then
+							l_passing_tc := l_passing_tc + 1
+							if attached {AFX_STATE} l_post_status.post_state as l_post_post then
+									-- Current test case is passing before and after current fix.
+								l_distance_sum := l_distance_sum + l_pre_status.post_state_distance (l_post_status).to_double
+							else
+									-- Current test case passed before current fix and failed after current fix.
+								l_done := True
+								Result := max_impact_on_passing_test_cases
+							end
 						else
-								-- Current test case passed before current fix and failed after current fix.
-							l_done := True
-							Result := max_impact_on_passing_test_cases
+							-- Current test case failed before current fix.
 						end
-					else
-						-- Current test case failed before current fix.
 					end
 					l_pre.forth
 				end

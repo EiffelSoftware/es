@@ -55,6 +55,7 @@ feature -- Basic operations
 				a_feature.tmp_ast_server.body_force (l_feature, l_body_id)
 
 				l_ast_context := a_written_class.ast_context
+				l_ast_context.clear_feature_context
 				l_ast_context.initialize (a_written_class, a_written_class.actual_type, a_written_class.feature_table)
 				l_ast_context.set_current_feature (a_feature)
 				l_ast_context.set_written_class (a_written_class)
@@ -71,7 +72,7 @@ feature -- Basic operations
 						from
 							a_written_class.types.start
 						until
-							a_written_class.types.after
+							a_written_class.types.after or l_type /= Void
 						loop
 							if a_written_class.types.item.is_reference then
 								l_type := a_written_class.types.item

@@ -197,6 +197,7 @@ feature{NONE} -- Implementation
 			-- Execute test case specified by `last_request' for validation.
 		local
 			l_agent: PROCEDURE [ANY, TUPLE]
+			l_except_count: NATURAL_32
 		do
 			last_pre_state := Void
 			last_post_state := Void
@@ -210,8 +211,12 @@ feature{NONE} -- Implementation
 					until
 						test_cases.after
 					loop
+						l_except_count := exception_count
 						l_agent := test_cases.item (l_exec_request.test_case_uuid)
 						l_agent.call (Void)
+						if l_except_count /= exception_count and then attached {STRING} exception_trace as l_trace then
+							log_message (l_trace)
+						end
 						test_cases.forth
 					end
 				else

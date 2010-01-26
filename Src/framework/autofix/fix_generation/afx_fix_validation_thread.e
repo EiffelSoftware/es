@@ -238,6 +238,8 @@ feature -- Execution
 				timer.set_timeout (0)
 			end
 		rescue
+			timer.set_should_quit (True)
+			timer.set_timeout (0)
 			l_retried := True
 			retry
 		end

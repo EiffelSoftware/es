@@ -304,6 +304,9 @@ feature{NONE} -- Implementation
 		do
 			l_state := state_server.state_for_fault (exception_spot.test_case_info)
 			l_passing_state := l_state.passing.daikon_table.item (a_passing_bpslot)
+			if l_passing_state = Void then
+				l_passing_state := l_state.passing.daikon_table.item (exception_spot.recipient_.number_of_breakpoint_slots)
+			end
 			if l_passing_state /= Void then
 				Result := l_passing_state.only_predicates
 			end

@@ -50,6 +50,9 @@ feature -- Access
 				l_failing_bpslot := exception_spot.recipient_ast_structure.first_node_with_break_point (relevant_ast.first).breakpoint_slot
 				if attached {AFX_AST_STRUCTURE_NODE} exception_spot.recipient_ast_structure.last_node_with_break_point (relevant_ast.last) as l_node then
 					l_passing_bpslot := exception_spot.recipient_ast_structure.next_break_point (l_node.breakpoint_slot)
+					if l_passing_bpslot = 0 then
+						l_passing_bpslot := exception_spot.recipient_.number_of_breakpoint_slots
+					end
 				else
 					l_passing_bpslot := exception_spot.recipient_.number_of_breakpoint_slots
 				end

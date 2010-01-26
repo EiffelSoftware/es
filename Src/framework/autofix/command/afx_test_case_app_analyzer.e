@@ -401,7 +401,9 @@ feature{NONE} -- Actions
 			-- Action to be performed when application is stopped in the debugger
 		do
 			if a_dm.application_is_executing or a_dm.application_is_stopped then
-				if a_dm.application_status.reason_is_catcall or a_dm.application_status.reason_is_overflow then
+				if a_dm.application_status.reason_is_catcall then
+					a_dm.controller.resume_workbench_application
+				elseif a_dm.application_status.reason_is_overflow then
 					a_dm.application.kill
 				else
 					if a_dm.application_status.exception_occurred and then is_current_test_case_dry_run then
@@ -438,7 +440,6 @@ feature{NONE} -- Actions
 			l_stack_ele: CALL_STACK_ELEMENT
 			l_recipient_id: STRING
 			l_spot_analyzer: AFX_EXCEPTION_SPOT_ANALYZER
-			l_expr: AFX_AST_EXPRESSION
 		do
 				-- Generate state model for current test case.
 			l_recipient_id := current_test_case_info.id
@@ -446,7 +447,6 @@ feature{NONE} -- Actions
 				create l_spot_analyzer.make (config)
 				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)
 				exception_spots.put (l_spot_analyzer.last_spot, l_recipient_id)
-				create l_expr.make_with_text (l_spot_analyzer.last_spot.recipient_class_, l_spot_analyzer.last_spot.recipient_, "index = old index + 1", l_spot_analyzer.last_spot.recipient_written_class)
 			end
 
 --			l_stack_level := call_stack_index (debugger_manager, test_case_routine_header)

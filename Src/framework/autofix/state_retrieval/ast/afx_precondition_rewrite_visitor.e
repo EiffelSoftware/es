@@ -32,6 +32,9 @@ feature -- Basic operation
 			-- Store result in `assertion'.
 		do
 			target_prefix := a_target_prefix.twin
+			if not target_prefix.ends_with (".") then
+				target_prefix.append_character ('.')
+			end
 			actual_argument_table := a_actual_argument_table
 			current_feature := a_feature
 			written_class := a_written_class

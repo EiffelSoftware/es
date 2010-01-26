@@ -87,6 +87,7 @@ feature{NONE} -- Implementation
 				if a_feature.is_routine then
 					if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
 						if l_routine.locals /= Void then
+							type_a_checker.init_for_checking (a_feature, a_feature.written_class, Void, error_handler)
 							context.set_current_feature (a_feature)
 							context.set_written_class (a_feature.written_class)
 							check_locals (l_routine)

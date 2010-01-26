@@ -113,6 +113,7 @@ feature{NONE} -- Implementation
 			l_failing_precondition: AUT_EXPRESSION
 			l_rewriter: AFX_PRECONDITION_REWRITE_VISITOR
 			l_arg_expr: AFX_AST_EXPRESSION
+			l_square_level: INTEGER
 		do
 			fixme ("This is an unsound heuristic to handle general cases for the sake of easy implementation. May not generate correct result in some cases. 12.12.2009 Jasonw")
 			assertion_break_point_slot := exception_break_point_in_recipient (a_tc, a_trace)
@@ -167,19 +168,29 @@ feature{NONE} -- Implementation
 						l_paran_level := l_paran_level - 1
 						if l_paran_level = 0 then
 							l_done := True
+							l_cur_arg.left_adjust
+							l_cur_arg.right_adjust
+							if not l_cur_arg.is_empty then
+								l_calling_args.put (l_cur_arg, l_calling_args.count + 1)
+							end
 						else
 							l_cur_arg.extend (c)
 						end
-						if not l_cur_arg.is_empty then
+					elseif c = '[' then
+						l_square_level := l_square_level + 1
+						l_cur_arg.extend (c)
+					elseif c = ']' then
+						l_square_level := l_square_level - 1
+						l_cur_arg.extend (c)
+					elseif c = ',' then
+						if l_square_level = 0 then
 							l_cur_arg.left_adjust
 							l_cur_arg.right_adjust
 							l_calling_args.put (l_cur_arg, l_calling_args.count + 1)
+							create l_cur_arg.make (32)
+						else
+							l_cur_arg.extend (c)
 						end
-					elseif c = ',' then
-						l_cur_arg.left_adjust
-						l_cur_arg.right_adjust
-						l_calling_args.put (l_cur_arg, l_calling_args.count + 1)
-						create l_cur_arg.make (32)
 					else
 						if l_paran_level > 0 then
 							l_cur_arg.extend (c)

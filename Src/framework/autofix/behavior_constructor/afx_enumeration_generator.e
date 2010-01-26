@@ -113,7 +113,7 @@ feature -- Enumerate
 			-- Save the result in `last_enumeration_list'.
 		require
 		    possibilities_not_empty: not a_possibilities.is_empty
-		    sets_not_empty: a_possibilities.for_all (agent (a_set: DS_HASH_SET[G]): BOOLEAN do Result := not a_set.is_empty end)
+--		    sets_not_empty: a_possibilities.for_all (agent (a_set: DS_HASH_SET[G]): BOOLEAN do Result := not a_set.is_empty end)
 		local
 		    l_enumeration_list: like last_enumeration_list
 			l_total_count, l_partial_count, l_index: INTEGER
@@ -124,40 +124,43 @@ feature -- Enumerate
 			l_bit_vector: AFX_BIT_VECTOR
 		do
 		    create l_enumeration_list.make_default
-			l_total_count := a_possibilities.count
 
-			from l_partial_count := 1
-			until l_partial_count = l_total_count + 1
-			loop
-			    generate_combination (l_partial_count, l_total_count)
-			    l_possible_combinations := possible_combinations
+		    if a_possibilities.for_all (agent (a_set: DS_HASH_SET[G]): BOOLEAN do Result := not a_set.is_empty end) then
+				l_total_count := a_possibilities.count
 
-			    from l_possible_combinations.start
-			    until l_possible_combinations.after
-			    loop
-			        l_bit_vector := l_possible_combinations.item_for_iteration
-			        create l_picked_positions.make (l_bit_vector.count_of_set_bits)
+				from l_partial_count := 1
+				until l_partial_count = l_total_count + 1
+				loop
+				    generate_combination (l_partial_count, l_total_count)
+				    l_possible_combinations := possible_combinations
 
-			        from l_index := 0
-			        until l_index = l_total_count
-			        loop
-			            if l_bit_vector.is_bit_set (l_index) then
-			                	-- index of bit vector starts from 0, while arrayed list from 1
-			                l_picked_positions.force_last (a_possibilities.item (l_index + 1))
-			            end
-			            l_index := l_index + 1
-			        end
-			        check l_picked_positions.count = l_partial_count end
+				    from l_possible_combinations.start
+				    until l_possible_combinations.after
+				    loop
+				        l_bit_vector := l_possible_combinations.item_for_iteration
+				        create l_picked_positions.make (l_bit_vector.count_of_set_bits)
 
-						-- generate partial enumeration and save the result into local enumeration list
-					enumerate_fully (l_picked_positions)
-					l_enumeration_list.append_last (last_enumeration_list)
+				        from l_index := 0
+				        until l_index = l_total_count
+				        loop
+				            if l_bit_vector.is_bit_set (l_index) then
+				                	-- index of bit vector starts from 0, while arrayed list from 1
+				                l_picked_positions.force_last (a_possibilities.item (l_index + 1))
+				            end
+				            l_index := l_index + 1
+				        end
+				        check l_picked_positions.count = l_partial_count end
 
-			        l_possible_combinations.forth
-			    end
+							-- generate partial enumeration and save the result into local enumeration list
+						enumerate_fully (l_picked_positions)
+						l_enumeration_list.append_last (last_enumeration_list)
 
-			    l_partial_count := l_partial_count + 1
-			end
+				        l_possible_combinations.forth
+				    end
+
+				    l_partial_count := l_partial_count + 1
+				end
+		    end
 
 			last_enumeration_list := l_enumeration_list
 		end

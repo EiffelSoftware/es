@@ -60,6 +60,8 @@ feature -- Basic operations
 			param.set_arguments (a_arguments)
 			param.set_working_directory (a_working_directory)
 			a_dm.set_execution_ignoring_breakpoints (False)
+			a_dm.set_catcall_detection_in_console (False)
+			a_dm.set_catcall_detection_in_debugger (False)
 			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
 

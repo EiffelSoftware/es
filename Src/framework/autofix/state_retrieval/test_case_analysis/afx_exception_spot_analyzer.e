@@ -161,7 +161,8 @@ feature{NONE} -- Implementation
 				l_imps.forth
 			end
 
-			Result := implications_for_class (l_array, a_tc.recipient_class_, a_tc.recipient_)
+			Result := implications_for_class (l_array, a_tc.recipient_written_class, a_tc.recipient_)
+--			Result := implications_for_class (l_array, a_tc.recipient_class_, a_tc.recipient_)
 		end
 
 	analyze_ast_structure (a_tc: AFX_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
