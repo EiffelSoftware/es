@@ -1,6 +1,25 @@
-indexing
-	description: "Summary description for {SCOOP_CLIENT_CONTEXT_AST_PRINTER}."
-	author: ""
+note
+	description: "[
+					Roundtrip visitor to simply iterate an AST tree and do nothing.
+					Usage:
+						There are two things that you have to do:
+							1. invoke `set_parsed_class' to set on which class this visitor should work
+							2. invoke `set_match_list' bacause a LEAF_AS_LIST is needed for roundtrip visiting
+						And two things you may need to do:
+							1. invoke `set_will_process_leading_leaves' to let the visitor process leading breaks and optional semicolons
+							2. invoke `set_will_process_trailing_leaves' to let the visitor process trailing breaks
+						or you can call `setup' to do all the things at one time.
+						See also note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Note: 1. Always `call process_ast_node' to process an AST node, do not use process_xxx directly.
+						  2. `process_leading_leaves' and `process_trailing_leaves' are designed to deal with
+						  	 non-attached terminals (For more information, see `LEAF_AS_LIST') to make sure they can be
+						  	 processed correctly. Before we process every attached terminal, we check if there is any
+						  	 non-attached terminal that has not been processed, if so, we process those terminals first. And after we
+						  	 have process the last attached-terminal, we check any non-attached terminals have been left, if so,
+						  	 we process thoes as well.
+				]"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -1429,4 +1448,37 @@ feature {NONE} -- Auxiliary Features
 				end
 			end
 		end
-end
+
+note
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end -- SCOOP_CLIENT_CONTEXT_AST_PRINTER

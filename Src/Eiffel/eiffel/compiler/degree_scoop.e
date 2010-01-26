@@ -1,6 +1,6 @@
-indexing
-	description: "Summary description for {DEGREE_SCOOP}."
-	author: ""
+note
+	description: "Degree 'SCOOP' during Eiffel compilation. Starts Proxy- and Client class creation."
+	legal: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -651,7 +651,7 @@ invariant
 	scoop_directory_not_void: scoop_directory /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -681,4 +681,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-end
+
+end -- class DEGREE_SCOOP
