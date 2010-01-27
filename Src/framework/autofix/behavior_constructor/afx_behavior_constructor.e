@@ -159,26 +159,17 @@ feature{NONE} -- Operation
 		    l_tbl: DS_HASH_TABLE[AFX_STATE_TRANSITION_SUMMARY, INTEGER]
 		    l_transition: AFX_STATE_TRANSITION_SUMMARY
 		    l_options: DS_ARRAYED_LIST[AFX_STATE_TRANSITION_SUMMARY]
---		    l_backward_model: like state_transition_model
---		    l_forward_model: like state_transition_model
 		    l_destinations: DS_HASH_TABLE [AFX_BOOLEAN_STATE, STRING]
 		    l_boolean_state: AFX_BOOLEAN_STATE
 		    l_property_index, l_property_count: INTEGER
 		    l_is_interesting, l_value: BOOLEAN
 		    l_name: STRING
 		    l_class_id: INTEGER
---		    l_size, l_property_index: INTEGER
---		    l_summary_manager: detachable AFX_FORWARD_STATE_TRANSITION_MODEL
---		    l_summary_set: DS_HASH_SET [AFX_STATE_TRANSITION_SUMMARY]
---		    l_summary_list: DS_ARRAYED_LIST[AFX_STATE_TRANSITION_SUMMARY]
---		    l_summary: AFX_STATE_TRANSITION_SUMMARY
 		do
 		    l_config := config
 		    check l_config /= Void end
 			l_mutators := internal_list_of_feature_options
 			l_model := state_transition_model
---			l_backward_model := get_backward_state_transition_model
---			l_forward_model := get_forward_state_transition_model
 			from
     		    l_is_possible := True
     			l_destinations := l_config.destination
@@ -214,7 +205,7 @@ feature{NONE} -- Operation
         				    loop
         				        l_transition := l_tbl.item_for_iteration
 
-								if l_transition.is_mutator_to (l_property_index, l_value) then
+								if l_transition.count = 1 and then l_transition.is_mutator_to (l_property_index, l_value) then
 								    l_options.force_last (l_transition)
 								end
 

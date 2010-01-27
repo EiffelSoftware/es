@@ -27,14 +27,14 @@ feature -- Initialization.
 			-- Initialize.
 		do
 		    set_default_model_repository_directory
-		    is_successful := True
+		    is_successful := False
 		end
 
 	make_with_directory (a_directory: STRING)
 			-- Initialize.
 		do
 		    create model_repository_directory.make_from_string (a_directory)
-		    is_successful := True
+		    is_successful := False
 		end
 
 feature -- Access
@@ -80,22 +80,24 @@ feature -- Operation
 		    l_class_name: detachable STRING
 		    l_file_name: FILE_NAME
 		do
-			is_successful := True
-		    l_model := state_transition_model
+			if not is_successful then
+    		    l_model := state_transition_model
+    		    l_model.clear_summary
 
-		    	-- get class name set from destination object states
-		    create l_name_set.make (a_objects.count + a_dest_objects.count)
-		    l_name_set.set_equality_tester (string_equality_tester)
-		    class_name_from_objects (a_dest_objects, l_name_set)
-		    class_name_from_objects (a_objects, l_name_set)
+    		    	-- get class name set from destination object states
+    		    create l_name_set.make (a_objects.count + a_dest_objects.count)
+    		    l_name_set.set_equality_tester (string_equality_tester)
+    		    class_name_from_objects (a_dest_objects, l_name_set)
+    		    class_name_from_objects (a_objects, l_name_set)
 
-			l_class_name := first_class_with_model_available (l_model, l_name_set)
-			if l_class_name = Void then
-			    is_successful := False
-			else
-    			l_file_name := file_name_from_class_name (l_model, l_class_name)
-    			l_model.load_from_file (l_file_name)
-    			is_successful := l_model.is_good
+    			l_class_name := first_class_with_model_available (l_model, l_name_set)
+    			if l_class_name = Void then
+    			    is_successful := False
+    			else
+        			l_file_name := file_name_from_class_name (l_model, l_class_name)
+        			l_model.load_from_file (l_file_name)
+        			is_successful := l_model.is_good
+    			end
 			end
 		end
 
