@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_BEHAVIOR_CONSTRUCTOR_I}."
+	description: "Summary description for {AFX_BEHAVIOR_CONSTRUCTOR}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_BEHAVIOR_CONSTRUCTOR_I
+	AFX_BEHAVIOR_CONSTRUCTOR
 
 inherit
     AFX_SHARED_STATE_TRANSITION_MODEL

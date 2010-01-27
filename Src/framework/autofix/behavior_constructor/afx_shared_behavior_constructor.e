@@ -25,7 +25,7 @@ feature -- Query
 			-- Query the call sequences transit `a_objects' to `a_dest_objects'.
 		local
 		    l_config: AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
-		    l_constructor: AFX_BEHAVIOR_CONSTRUCTOR_I
+		    l_constructor: AFX_BEHAVIOR_CONSTRUCTOR
 			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
 		do
    			create l_loader.make
@@ -42,7 +42,7 @@ feature -- Query
 
 feature -- Access
 
-	constructor: AFX_BEHAVIOR_CONSTRUCTOR_I
+	constructor: AFX_BEHAVIOR_CONSTRUCTOR
 			-- Shared behavior constructor.
 		once
 		    create Result
