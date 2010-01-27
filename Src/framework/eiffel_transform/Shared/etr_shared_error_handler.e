@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ETR_SHARED_ERROR_HANDLER}."
-	author: ""
+	description: "Shared error handler"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

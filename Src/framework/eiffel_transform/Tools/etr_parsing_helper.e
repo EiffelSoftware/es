@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ETR_PARSING_HELPER}."
-	author: ""
+	description: "Helper functions for parsing"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -20,7 +20,7 @@ inherit
 	ETR_SHARED_PATH_TOOLS
 	ETR_SHARED_PARSERS
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation (Attributes)
 
 	extracted_arguments, extracted_results, used_locals, extracted_new_locals, obsolete_locals, changed_arguments: LINKED_LIST[STRING]
 
@@ -32,6 +32,8 @@ feature {NONE} -- Implementation
 	block_start, block_end: INTEGER
 
 	is_result_possibly_undef: BOOLEAN
+
+feature {NONE} -- Implementation (Extraction)	
 
 	extract_results
 			-- find locals that were used after the block and defined within
@@ -294,6 +296,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {NONE} -- Implementation (Printing)
+
 	compute_extracted_method(a_start_path, a_end_path: AST_PATH; a_feature_name: STRING; a_feature_body: EIFFEL_LIST[INSTRUCTION_AS])
 			-- puts things together to create the extracted method
 		local
@@ -445,7 +449,7 @@ feature {NONE} -- Implementation
 			l_feature_output_text.append (l_body_output.string_representation)
 			l_feature_output_text.append (ti_end_keyword)
 
-			parsing_helper.reparse_printed_ast (context.original_written_feature.e_feature.ast, l_feature_output_text)
+			parsing_helper.reparse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text)
 			create extracted_method.make_from_ast (parsing_helper.reparsed_root, context.class_context, false)
 		end
 

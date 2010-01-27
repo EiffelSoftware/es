@@ -1,13 +1,13 @@
 note
-	description: "Summary description for {ETR_SHARED_CONSTANTS}."
-	author: ""
+	description: "Shared constants"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_SHARED_CONSTANTS
-	
-feature -- Constants
+
+feature {NONE} -- Constants
 
 	syntax_version: NATURAL_8
 			-- syntax version used

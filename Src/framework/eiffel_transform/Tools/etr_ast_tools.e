@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ETR_AST_TOOLS}."
-	author: ""
+	description: "Some tools to use with AST's"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

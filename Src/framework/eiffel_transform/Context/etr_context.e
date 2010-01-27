@@ -11,6 +11,13 @@ create
 
 feature --Access
 
+	feature_context: detachable ETR_FEATURE_CONTEXT
+		do
+			if attached {ETR_FEATURE_CONTEXT}Current as l_res then
+				Result := l_res
+			end
+		end
+
 	class_context: detachable ETR_CLASS_CONTEXT
 
 	is_empty: BOOLEAN

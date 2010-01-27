@@ -399,13 +399,9 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- if were in an unqualified call
 			-- the id might be a local/argument that is used
 			if last_was_unqualified then
---				if attached context.arg_by_name[l_as.access_name] or attached context.local_by_name[l_as.access_name] or context.object_test_locals.has (l_as.access_name) then
-				-- fixme: is this ok?
 				if not context.has_feature_named(l_as.access_name) then
 					-- local or argument is being used!
 					temp_vars_used.extend (l_as.access_name)
---				end
---					
 				end
 			end
 

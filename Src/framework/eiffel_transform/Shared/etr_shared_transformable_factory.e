@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ETR_SHARED_TRANSFORMABLE_FACTORY}."
-	author: ""
+	description: "Shared transformable factory."
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

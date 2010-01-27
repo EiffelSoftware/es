@@ -142,7 +142,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			if attached l_as.name and attached current_branch_scope then
 				if attached l_as.type then
-					l_type := type_checker.explicit_type_from_type_as (l_as.type, context.class_context.written_class, context.original_written_feature)
+					l_type := type_checker.explicit_type_from_type_as (l_as.type, context.class_context.written_class, context.written_feature)
 				else
 					create l_type_checker
 					l_type_checker.check_ast_type_at (l_as.expression, context, current_path)

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ETR_SHARED_PATH_OPERATIONS}."
+	description: "Shared path tools"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"

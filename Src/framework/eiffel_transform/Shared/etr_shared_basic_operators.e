@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ETR_SHARED_BASIC_OPERATORS}."
-	author: ""
+	description: "Shared basic operators"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

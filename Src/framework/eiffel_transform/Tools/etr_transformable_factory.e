@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ETR_TRANSFORMABLE_FACTORY}."
+	description: "Transformable factory"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,13 +16,18 @@ inherit
 
 feature -- New
 
+	new_invalid: ETR_TRANSFORMABLE
+			-- create a new invalid transformable
+		do
+			create Result.make_invalid
+		end
+
 	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
 			-- create a new instruction from `an_instr' with context `a_context'
 		require
 			instr_attached: an_instr /= void
 			context_attached: a_context /= void
 		do
-			fixme("Command/Query-separation")
 			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
 			if etr_feat_parser.error_count>0 then
@@ -41,7 +46,6 @@ feature -- New
 			expr_attached: an_expr /= void
 			context_attached: a_context /= void
 		do
-			fixme("Command/Query-separation")
 			etr_expr_parser.parse_from_string("check "+an_expr,void)
 
 			if etr_expr_parser.error_count>0 then

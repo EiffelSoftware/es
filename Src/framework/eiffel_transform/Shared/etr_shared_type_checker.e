@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ETR_SHARED_TYPE_CHECKER}."
-	author: ""
+	description: "Shared type checker"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

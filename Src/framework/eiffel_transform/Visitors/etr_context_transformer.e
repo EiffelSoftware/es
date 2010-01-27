@@ -220,7 +220,6 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_old_msg_name, l_new_msg_name: STRING
 			l_old_msg_name_id, l_new_msg_name_id, l_next_access_name_id: INTEGER
 		do
-			fixme("Disable renaming if we're in the wrong context!")
 			process_child (l_as.target, l_as, 1)
 			output.append_string (".")
 

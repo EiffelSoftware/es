@@ -24,7 +24,7 @@ feature {NONE} -- Creation
 		end
 
 feature -- Access
-	name: STRING
+	name: STRING assign set_name
 	resolved_type, original_type: TYPE_A
 
 feature -- Modification

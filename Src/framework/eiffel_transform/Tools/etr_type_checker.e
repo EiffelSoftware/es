@@ -250,7 +250,7 @@ feature -- Type checking
 				ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type, a_context.class_context.written_class.feature_table)
 
 				if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
-					l_feat := l_feat_context.original_written_feature
+					l_feat := l_feat_context.written_feature
 					init_object_test_locals (l_feat_context, a_path)
 				end
 
@@ -281,11 +281,6 @@ feature {NONE} -- Implementation
 						create l_ot_id.initialize(l_cur_local.name)
 						context.add_object_test_local (l_local_info, l_ot_id)
 						context.add_object_test_expression_scope (l_ot_id)
-
-						check
-							attached context.object_test_local (names_heap.id_of (l_cur_local.name))
-						end
-
 					end
 
 					a_feature_context.object_test_locals.forth
@@ -353,7 +348,7 @@ feature {NONE} -- Implementation
 			ast_context.locals.wipe_out
 
 			if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
-				l_feat := l_feat_context.original_written_feature
+				l_feat := l_feat_context.written_feature
 				current_feature := l_feat
 
 				init_locals(l_feat_context)

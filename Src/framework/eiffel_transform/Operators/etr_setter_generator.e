@@ -40,7 +40,6 @@ feature -- Operation
 					etr_feat_parser.parse_from_string (l_setter_string,void)
 
 					if etr_feat_parser.error_count=0 then
-						-- fixme: create a new feature context!
 						create transformation_result.make_from_ast (etr_feat_parser.feature_node, an_attribute.context.class_context, false)
 					else
 						error_handler.add_error("generate_setter: Feature parsing failed")

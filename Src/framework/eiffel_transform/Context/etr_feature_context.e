@@ -21,7 +21,7 @@ feature -- Access
 
 	is_modified: BOOLEAN
 
-	original_written_feature: FEATURE_I
+	written_feature: FEATURE_I
 
 	has_return_value: BOOLEAN
 	has_arguments: BOOLEAN
@@ -99,15 +99,15 @@ feature {NONE} -- Creation
 				end
 			end
 
-			original_written_feature := a_other.original_written_feature
-			create class_context.make(original_written_feature.written_class)
+			written_feature := a_other.written_feature
+			create class_context.make(written_feature.written_class)
 			feature_id := a_other.feature_id
 			is_modified := a_other.is_modified
 
-			object_test_locals := a_other.object_test_locals.twin
+			object_test_locals := a_other.object_test_locals.deep_twin
 		end
 
-	make(a_written_feature: like original_written_feature; a_class_context: detachable like class_context)
+	make(a_written_feature: like written_feature; a_class_context: detachable like class_context)
 			-- make with `a_written_feature' and `a_class_context'
 		local
 			l_arg_list,l_local_list: LINKED_LIST[ETR_TYPED_VAR]
@@ -208,7 +208,7 @@ feature {NONE} -- Creation
 			feature_id := a_written_feature.feature_id
 
 			-- store original written feature
-			original_written_feature := a_written_feature
+			written_feature := a_written_feature
 
 			if attached a_class_context then
 				class_context := a_class_context

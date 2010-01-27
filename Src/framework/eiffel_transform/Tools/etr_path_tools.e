@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ETR_PATH_TOOLS}."
+	description: "Helper function for path operations"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"

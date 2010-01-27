@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ETR_TRANSFORMABLE}."
+	description: "Transformable AST and context"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"

@@ -125,7 +125,6 @@ feature -- Transformations
 					l_old_feat := l_source_class_context.written_in_features.item
 
 					-- try to find matching feature
-					-- fixme: add fun: matching_feature
 					if l_old_feat.has_return_value and attached l_target_class_context.feature_of_id (l_old_feat.feature_id) as l_new_feat then
 						-- check if type matches
 						if l_old_feat.type.associated_class.class_id /= l_new_feat.type.associated_class.class_id then
