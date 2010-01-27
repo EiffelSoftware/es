@@ -8,6 +8,8 @@ class
 	AFX_STATE_TRANSITION_MODEL_LOADER
 
 inherit
+    AFX_SHARED_STATE_TRANSITION_MODEL
+
     EXCEPTIONS
 
     AFX_SHARED_SESSION
@@ -61,14 +63,16 @@ feature -- Setting
 			-- Set `model_repository_directory' to be default.
 		do
 		    create model_repository_directory.make_from_string (autofix_config.model_directory)
+--			create model_repository_directory.make_from_string ("F:\EiffelStudio\ModelBased\Project\EIFGENs\project\AutoFix\model")
 		    is_model_repository_directory_default := True
 		end
 
 feature -- Operation
 
-	load_state_transition_model (a_constructor: AFX_BEHAVIOR_CONSTRUCTOR_I; a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
-					a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
-			-- Load the state transition model for `a_constructor'.
+	load_state_transition_model (
+				a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
+				a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
+			-- Load the state transition model.
 			-- Fixme: find all relevant models from the repository and merge them
 		local
 		    l_model: AFX_STATE_TRANSITION_MODEL_I
@@ -77,13 +81,13 @@ feature -- Operation
 		    l_file_name: FILE_NAME
 		do
 			is_successful := True
-		    l_model := a_constructor.state_transition_model
+		    l_model := state_transition_model
 
 		    	-- get class name set from destination object states
 		    create l_name_set.make (a_objects.count + a_dest_objects.count)
 		    l_name_set.set_equality_tester (string_equality_tester)
-		    class_name_from_objects (a_objects, l_name_set)
 		    class_name_from_objects (a_dest_objects, l_name_set)
+		    class_name_from_objects (a_objects, l_name_set)
 
 			l_class_name := first_class_with_model_available (l_model, l_name_set)
 			if l_class_name = Void then
@@ -117,11 +121,11 @@ feature{NONE} -- Implementation
 		    l_model_set: DS_HASH_SET[STRING]
 		do
 		    l_repository_name := model_repository_directory.twin
-		    l_repository_name.extend (a_model.model_directory)
+--		    l_repository_name.extend (a_model.model_directory)
 
 		    create l_repository.make (l_repository_name)
 		    if l_repository.exists then
-    		    	-- collect the set of all models
+    		    	-- Collect the set of all models.
     		    l_repository.open_read
     		    create l_model_set.make_default
     		    l_model_set.set_equality_tester (string_equality_tester)
@@ -149,8 +153,10 @@ feature{NONE} -- Implementation
     			    a_name_list.forth
     			end
 
-					-- Name matching failed, resort to conformance testing.
-				Result := first_conformance_model (l_model_set, a_name_list)
+				if Result = Void then
+    					-- Name matching failed, resort to conformance testing.
+    				Result := first_conformance_model (l_model_set, a_name_list)
+				end
     		end
 		end
 
@@ -191,27 +197,15 @@ feature{NONE} -- Implementation
 		        until l_model_types.after or Result /= Void
 		        loop
 		            l_model_type := l_model_types.item_for_iteration
-		            if l_model_type.is_conformant_to (l_model_type.associated_class, l_class_type) then
+--		            if l_model_type.is_conformant_to (l_model_type.associated_class, l_class_type) then
+					if l_class_type.is_conformant_to (l_class_type.associated_class, l_model_type) then
+					    	-- If the object class is conforming to the model, ...
 		                Result := l_model_type.associated_class.name
 		            end
 		            l_model_types.forth
 		        end
 		        l_class_types.forth
 		    end
---    		        l_classes := boolean_state_outline_manager.registered_classes
---    		        from l_classes.start
---    		        until l_classes.after
---    		        loop
---    		            l_outlined_class := l_classes.item_for_iteration
---    		            l_outlined_type := l_outlined_class.actual_type.actual_type
---    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
---							create l_new_state.make_from_state (l_obj_state, l_outlined_type)
---        			        create l_obj_boolean.make_for_class (l_outlined_class)
---            		        l_obj_boolean.interpretate (l_new_state)
---            		        add_usable_object (l_obj_boolean, l_name)
---    		            end
---    		            l_classes.forth
---    		        end
 		end
 
 	file_name_from_class_name (a_model: AFX_STATE_TRANSITION_MODEL_I; a_class_name: STRING): FILE_NAME
@@ -221,7 +215,7 @@ feature{NONE} -- Implementation
 		    l_file_name: FILE_NAME
 		do
 		    l_dir_name := model_repository_directory.twin
-		    l_dir_name.extend (a_model.model_directory)
+--		    l_dir_name.extend (a_model.model_directory)
 
 		    create l_file_name.make_from_string (l_dir_name)
 		    l_file_name.set_file_name (a_class_name)

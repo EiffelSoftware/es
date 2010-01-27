@@ -384,7 +384,8 @@ feature{NONE} -- Implementation
 						end
 					end (?, ?, l_source_state))
 
-			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_spot.recipient_class_, Void, Void)
+			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_spot.recipient_class_,
+					{AFX_BEHAVIOR_CONSTRUCTOR_CONFIG}.model_guidance_style_relaxed, Void, Void, False)
 			create Result.make
 			l_fixes.do_all (
 				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])

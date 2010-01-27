@@ -20,10 +20,10 @@ feature -- Status report
 		deferred
 		end
 
-	model_directory: STRING
-			-- Directory in model repository.
-		deferred
-		end
+--	model_directory: STRING
+--			-- Directory in model repository.
+--		deferred
+--		end
 
 feature -- Operation
 
@@ -59,16 +59,4 @@ feature -- Serialization
 		deferred
 		end
 
-feature -- Initialization
-
-	initialize_boolean_state_outline_manager
-			-- Initialize boolean state outline manager.
-		local
-		    l_manager: AFX_BOOLEAN_STATE_OUTLINE_MANAGER
-		do
-		    if boolean_state_outline_manager = Void then
-		        create l_manager.make_default
-		        set_boolean_state_manager (l_manager)
-		    end
-		end
 end

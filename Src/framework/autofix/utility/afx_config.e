@@ -92,26 +92,6 @@ feature -- Access
 	model_directory: STRING
 		-- Directory for state transition summary.
 
-	backward_model_directory: STRING
-			-- Directory to store backward state transition models
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (model_directory)
-			l_path.extend ({AFX_BACKWARD_STATE_TRANSITION_MODEL}.model_directory)
-			Result := l_path
-		end
-
-	forward_model_directory: STRING
-			-- Directory to store forward state transition models
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (model_directory)
-			l_path.extend ({AFX_FORWARD_STATE_TRANSITION_MODEL}.model_directory)
-			Result := l_path
-		end
-
 	theory_directory: STRING
 			-- Directory to store theory related files
 		local

@@ -16,7 +16,10 @@ create
 
 feature -- Initialization
 
-	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING]; a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING]; a_context_class: CLASS_C;
+	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING];
+				a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING];
+				a_context_class: CLASS_C;
+				a_guidance_style: like model_guidance_style;
 				a_class_set: detachable like class_set)
 			-- Initialize.
 		require
@@ -55,27 +58,28 @@ feature -- Initialization
 		        l_class := l_obj_state.class_
 		        l_type := l_class.actual_type.actual_type
 		        if boolean_state_outline_manager.boolean_class_outline (l_class) /= Void then
+		            	-- Only objects with summary information would be used in fixing.
 			        create l_obj_boolean.make_for_class (l_class)
     		        l_obj_boolean.interpretate (l_obj_state)
     		        add_usable_object (l_obj_boolean, l_name)
     		    else
 -- object-model conformance testing
-					l_found_conformance := False
-    		        l_classes := boolean_state_outline_manager.registered_classes
-    		        from l_classes.start
-    		        until l_classes.after or l_found_conformance
-    		        loop
-    		            l_outlined_class := l_classes.item_for_iteration
-    		            l_outlined_type := l_outlined_class.actual_type.actual_type
-    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
-							create l_new_state.make_from_state (l_obj_state, l_outlined_type)
-        			        create l_obj_boolean.make_for_class (l_outlined_class)
-            		        l_obj_boolean.interpretate (l_new_state)
-            		        add_usable_object (l_obj_boolean, l_name)
-            		        l_found_conformance := True
-    		            end
-    		            l_classes.forth
-    		        end
+--					l_found_conformance := False
+--    		        l_classes := boolean_state_outline_manager.registered_classes
+--    		        from l_classes.start
+--    		        until l_classes.after or l_found_conformance
+--    		        loop
+--    		            l_outlined_class := l_classes.item_for_iteration
+--    		            l_outlined_type := l_outlined_class.actual_type.actual_type
+--    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
+--							create l_new_state.make_from_state (l_obj_state, l_outlined_type)
+--        			        create l_obj_boolean.make_for_class (l_outlined_class)
+--            		        l_obj_boolean.interpretate (l_new_state)
+--            		        add_usable_object (l_obj_boolean, l_name)
+--            		        l_found_conformance := True
+--    		            end
+--    		            l_classes.forth
+--    		        end
 -- object-model conformance testing
 		        end
 
@@ -89,7 +93,6 @@ feature -- Initialization
 		    until a_dest_objects.after
 		    loop
 		        l_dest_state := a_dest_objects.item_for_iteration
-		        l_class_set.force (l_dest_state.class_)
 
 		        	-- {AFX_STATE} to {AFX_BOOLEAN_STATE}
 		        l_class := l_dest_state.class_
@@ -97,31 +100,32 @@ feature -- Initialization
 			        create l_dest_boolean.make_for_class (l_class)
 			        l_dest_boolean.interpretate (l_dest_state)
 			        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
+    		        l_class_set.force (l_class)
     		    else
 -- object-model conformance testing
-					l_found_conformance := False
-    		        l_classes := boolean_state_outline_manager.registered_classes
-    		        from l_classes.start
-    		        until l_classes.after or l_found_conformance
-    		        loop
-    		            l_outlined_class := l_classes.item_for_iteration
-    		            l_outlined_type := l_outlined_class.actual_type.actual_type
-    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
-							create l_new_state.make_from_state (l_dest_state, l_outlined_type)
-        			        create l_dest_boolean.make_for_class (l_outlined_class)
-            		        l_dest_boolean.interpretate (l_new_state)
-            		        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
-            		        l_found_conformance := True
-    		            end
-    		            l_classes.forth
-    		        end
+--					l_found_conformance := False
+--    		        l_classes := boolean_state_outline_manager.registered_classes
+--    		        from l_classes.start
+--    		        until l_classes.after or l_found_conformance
+--    		        loop
+--    		            l_outlined_class := l_classes.item_for_iteration
+--    		            l_outlined_type := l_outlined_class.actual_type.actual_type
+--    		            if l_outlined_type.is_conformant_to (l_class, l_type) then
+--							create l_new_state.make_from_state (l_dest_state, l_outlined_type)
+--        			        create l_dest_boolean.make_for_class (l_outlined_class)
+--            		        l_dest_boolean.interpretate (l_new_state)
+--            		        destination.force (l_dest_boolean, a_dest_objects.key_for_iteration)
+--            		        l_found_conformance := True
+--    		            end
+--    		            l_classes.forth
+--    		        end
 -- object-model conformance testing
 			    end
 
 		        a_dest_objects.forth
 		    end
 
-				-- classes from which we will select the features
+				-- Set of classes from which we will select the features.
 		    if a_class_set /= Void then
 		        class_set := a_class_set
 		    else
@@ -129,6 +133,7 @@ feature -- Initialization
 		    end
 
 		    context_class := a_context_class
+		    model_guidance_style := a_guidance_style
 
 			set_maximum_length (default_maximum_length)
 		    is_good := True
@@ -140,11 +145,11 @@ feature -- Access
 			-- Is configuration good?
 
 	usable_objects: DS_HASH_TABLE [DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING], INTEGER]
-			-- Objects can be used to accomplish the work.
+			-- Objects can be used to accomplish the state transition.
 			-- First key: class id; second key: variable name.
 
 	destination: DS_HASH_TABLE [AFX_BOOLEAN_STATE, STRING]
-			-- Boolean requirement for destination objects.
+			-- State requirements for the objects after transition.
 
 	class_set: DS_HASH_SET [CLASS_C]
 			-- Set of classes from which we will select the features.
@@ -154,6 +159,27 @@ feature -- Access
 
 	maximum_length: INTEGER assign set_maximum_length
 			-- Maximum number of feature calls in one fix.
+
+	model_guidance_style: INTEGER assign set_model_guidance_style
+			-- Style in which the model would be used to guide the fix generation.
+			-- It can only take one of the following three values.
+
+feature -- Constants
+
+	Model_guidance_style_restriced: INTEGER = 1
+			-- In restrict style, only feasible feature calls would be generated,
+			-- 		where the operand objects have to satisfy the preconditions of the features;
+
+	Model_guidance_style_relaxed: INTEGER = 2
+			-- In relaxed style, infeasible feature calls are also possible to be generated,
+			--		where the operand objects cannot explictly violate the preconditions of the features;
+
+	Model_guidance_style_free: INTEGER = 3
+			-- In free style, all feature call sequences are possible,
+			--		since the preconditions of the features are simply ignored.
+
+	default_maximum_length: INTEGER = 3
+			-- Default maximum length.
 
 feature{NONE} -- Implementation
 
@@ -185,7 +211,14 @@ feature{NONE} -- Implementation
 		    maximum_length := a_maximum
 		end
 
-	default_maximum_length: INTEGER = 3
-			-- Default maximum length.
+	set_model_guidance_style (a_guidance_style: INTEGER)
+			-- Set the model guidance style.
+		require
+		    valid_guidance_style: a_guidance_style = Model_guidance_style_restriced |
+		    					a_guidance_style = Model_guidance_style_relaxed |
+		    					a_guidance_style = Model_guidance_style_free
+		do
+		    model_guidance_style := a_guidance_style
+		end
 
 end

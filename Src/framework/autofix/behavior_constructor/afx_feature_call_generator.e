@@ -15,6 +15,7 @@ class
 	AFX_FEATURE_CALL_GENERATOR
 
 inherit
+	KL_SHARED_STRING_EQUALITY_TESTER
 
     SHARED_TYPES
 
@@ -23,24 +24,30 @@ create
 
 feature -- Generator interface
 
-	generate_feasible_feature_call_configurations (a_state: AFX_BEHAVIOR_STATE; a_transition: AFX_STATE_TRANSITION_SUMMARY)
+	generate_feasible_feature_call_configurations (
+				a_state: AFX_BEHAVIOR_STATE;
+				a_transition: AFX_STATE_TRANSITION_SUMMARY)
 			-- Generate feasible feature call configurations for `a_transition', using the objects available at `a_state',
 			-- `last_feasible_configurations' contains all the feasible configurations.
 			-- If no feasible configuration can be found, `last_feasible_configurations' is set to Void.
 		local
 		    l_options: DS_ARRAYED_LIST[DS_HASH_SET[STRING]]
 		    l_enumeration_generator: like Enumeration_generator
+		    l_conf_enumeration: DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
+		    l_conf: DS_ARRAYED_LIST[STRING]
+		    l_conf_list: like last_behavior_operand_configurations
 		do
 		    heap := a_state.mock_heap
 			transition := a_transition
 
 		    l_options := find_suitable_objects_for_operands
 
-			last_feasible_configurations := Void
 		    if not l_options.is_empty and then l_options.count = a_transition.count then
 		    	l_enumeration_generator := Enumeration_generator
 		    	l_enumeration_generator.enumerate_fully (l_options)
-		    	last_feasible_configurations := l_enumeration_generator.last_enumeration_list
+		    	internal_behavior_operand_configurations := l_enumeration_generator.last_enumeration_list
+		    else
+		        internal_behavior_operand_configurations := Void
 		    end
 		end
 
@@ -51,9 +58,9 @@ feature -- Generator interface
 		    is_configured: is_configured
 		    last_feature_call_feasible: is_last_feature_call_feasible
 		local
-		    l_configurations: like last_feasible_configurations
+		    l_configurations: like last_behavior_operand_configurations
 		do
-		    l_configurations := last_feasible_configurations
+		    l_configurations := last_behavior_operand_configurations
 		    create Result.make (l_configurations.count)
 
 			from l_configurations.start
@@ -63,7 +70,7 @@ feature -- Generator interface
 			    l_configurations.forth
 			end
 		ensure
-		    same_size: last_feasible_configurations.count = Result.count
+		    same_size: last_behavior_operand_configurations.count = Result.count
 		end
 
 	construct_feature_call (a_transition: like transition; a_config: DS_ARRAYED_LIST[STRING]): STRING
@@ -91,13 +98,13 @@ feature -- Generator interface
     		    check not a_config.after end
 
     		    l_str.append (" (")
-    		    l_str.append (interpretated_operand_name (a_config.item_for_iteration.twin))
+    		    l_str.append (a_config.item_for_iteration.twin)
 
     		    from a_config.forth
     		    until a_config.after
     		    loop
     		    	l_str.append (", ")
-    		    	l_str.append (interpretated_operand_name (a_config.item_for_iteration))
+    		    	l_str.append (a_config.item_for_iteration)
     		    	a_config.forth
     		    end
 
@@ -111,15 +118,28 @@ feature -- Generator interface
 
 feature -- Access
 
-	last_feasible_configurations: detachable DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
-			-- Feasible operand configurations for `transition'.
+--	last_feasible_configurations: detachable DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
+--			-- Feasible operand configurations for `transition'.
+
+	last_behavior_operand_configurations: DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
+			-- Possible feature operand configurations.
+		do
+		    if internal_behavior_operand_configurations = Void then
+		        create internal_behavior_operand_configurations.make_default
+		    end
+
+		    Result := internal_behavior_operand_configurations
+		end
+
+	internal_behavior_operand_configurations: detachable DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
+			-- Internal storage for `last_behavior_operand_configurations'.
 
 feature -- Status report
 
 	is_last_feature_call_feasible: BOOLEAN
 			-- Is there a feasible configuration for the last transition and state?
 		do
-		    Result := last_feasible_configurations /= Void and then not last_feasible_configurations.is_empty
+		    Result := internal_behavior_operand_configurations /= Void and then not internal_behavior_operand_configurations.is_empty
 		end
 
 	is_configured: BOOLEAN
@@ -146,7 +166,7 @@ feature{NONE} -- Implementation
 
 	find_suitable_objects_for_operands: DS_ARRAYED_LIST[DS_HASH_SET[STRING]]
 			-- Find all suitable operand combinations for the `transition'.
-			-- Each set contains all candidates for one operand position.
+			-- Each hash set contains all candidates for one operand position.
 			-- When there is no valid combination, an empty list will be returned.
 		require
 		    is_configured: is_configured
@@ -157,34 +177,31 @@ feature{NONE} -- Implementation
 		    l_state_summary: AFX_BOOLEAN_STATE_TRANSITION_SUMMARY
 		    l_class: CLASS_C
 		    l_var_set: DS_HASH_SET[STRING]
-		    l_state: AFX_BOOLEAN_STATE
 		    l_name: STRING
 		do
 		    l_transition := transition
-
-				-- one set for each operand
-		    create l_options.make (l_transition.count)
 		    l_is_feasible := True
 
+				-- One set of suitable operands for each operand position.
+		    create l_options.make (l_transition.count)
 		    from l_transition.start
 		    until l_transition.after or not l_is_feasible
 		    loop
 		        l_state_summary := l_transition.item_for_iteration
 		        l_class := l_state_summary.class_
 
-		        	-- collect satisfactory objects into a set
 		        create l_var_set.make_default
+		        l_var_set.set_equality_tester (string_equality_tester)
+
 		        if attached heap.value (l_class.class_id) as lt_tbl then
 		            from lt_tbl.start
 		            until lt_tbl.after
 		            loop
-		                l_state := lt_tbl.item_for_iteration
 		                l_name := lt_tbl.key_for_iteration
-						if l_state_summary.is_enabled_at (l_state) then
-						    	-- Fixme: in postcondition guided approach, objects does not need to satisfy the requirements,
-						    	--			since we don't restrict the order of generated feature calls
-							l_var_set.force (l_name)
-						end
+
+		                	-- At current stage, we collect all the objects of proper type.
+		                	-- Whether they make the feature call sequence feasible is going to be checked during ranking.
+						l_var_set.put (l_name)
 
 		                lt_tbl.forth
 		            end
@@ -199,7 +216,6 @@ feature{NONE} -- Implementation
 		        l_transition.forth
 		    end
 
-		       	-- return empty list while the call is not feasible
 		    if not l_is_feasible then
 		        l_options.wipe_out
 		    end

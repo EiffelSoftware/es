@@ -36,7 +36,7 @@ feature -- Access
 
 feature -- Serialization
 
-	save_summary_manager (a_manager: AFX_FORWARD_STATE_TRANSITION_MODEL;
+	save_summary_manager (a_manager: AFX_STATE_TRANSITION_MODEL;
 					a_file: KL_TEXT_OUTPUT_FILE)
 			-- Save `a_manager' into `a_file'.
 		local
@@ -63,39 +63,39 @@ feature -- Serialization
 		    a_file.put_string (l_string)
 		end
 
-	save_postcondition_guided_summary_manager (a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL;
-					a_file: KL_TEXT_OUTPUT_FILE)
-			-- Save `a_manager' into `a_file'.
-		local
-		    l_string: STRING
-		do
-		    save_xml_header (a_file)
+--	save_postcondition_guided_summary_manager (a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL;
+--					a_file: KL_TEXT_OUTPUT_FILE)
+--			-- Save `a_manager' into `a_file'.
+--		local
+--		    l_string: STRING
+--		do
+--		    save_xml_header (a_file)
 
-		    	-- start of root node
-		    l_string := "<"
-		    l_string.append (xml_backward_state_transition_model_name)
-		    l_string.append (">%N")
-		    a_file.put_string (l_string)
+--		    	-- start of root node
+--		    l_string := "<"
+--		    l_string.append (xml_backward_state_transition_model_name)
+--		    l_string.append (">%N")
+--		    a_file.put_string (l_string)
 
-		    save_class_outline_collection_from_extractor (a_manager,
-		    		{AFX_BOOLEAN_STATE_OUTLINE_SIMPLE_EXTRACTOR},
-		    		a_file)
+--		    save_class_outline_collection_from_extractor (a_manager,
+--		    		{AFX_BOOLEAN_STATE_OUTLINE_SIMPLE_EXTRACTOR},
+--		    		a_file)
 
-		    save_class_summary_categorized_collection (a_manager,
-		    		{AFX_BOOLEAN_STATE_OUTLINE_SIMPLE_EXTRACTOR},
-		    		a_file)
+--		    save_class_summary_categorized_collection (a_manager,
+--		    		{AFX_BOOLEAN_STATE_OUTLINE_SIMPLE_EXTRACTOR},
+--		    		a_file)
 
-		    	-- end of root node
-		    l_string := "</"
-		    l_string.append (xml_backward_state_transition_model_name)
-		    l_string.append (">%N")
-		    a_file.put_string (l_string)
-		end
+--		    	-- end of root node
+--		    l_string := "</"
+--		    l_string.append (xml_backward_state_transition_model_name)
+--		    l_string.append (">%N")
+--		    a_file.put_string (l_string)
+--		end
 
 
 feature -- Deserialization
 
-	load_summary_manager (a_document: XM_DOCUMENT; a_manager: AFX_FORWARD_STATE_TRANSITION_MODEL)
+	load_summary_manager (a_document: XM_DOCUMENT; a_manager: AFX_STATE_TRANSITION_MODEL)
 			-- Load information from `a_element' into `a_manager'
 		local
 		    l_root_element: XM_ELEMENT
@@ -116,26 +116,26 @@ feature -- Deserialization
 		    end
 		end
 
-	load_postcondition_guided_summary_manager (a_document: XM_DOCUMENT; a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL)
-			-- Load information from `a_element' into `a_manager'
-		local
-		    l_root_element: XM_ELEMENT
-		do
-		    if not a_document.has_element_by_name (xml_backward_state_transition_model_name) then
-			    raise ("Missing summary root.")
-		    else
-		        l_root_element := a_document.element_by_name (xml_backward_state_transition_model_name)
-		        if not l_root_element.has_element_by_name (xml_class_outline_collection_name) or else
-		        		not l_root_element.has_element_by_name (xml_class_summary_categorized_collection_name) then
-		        	raise ("Bad summary structure")
-		        else
-		            load_class_outline_collection (l_root_element.element_by_name (xml_class_outline_collection_name),
-		            		a_manager.boolean_state_outline_manager)
-		            load_class_summary_categorized_collection (l_root_element.element_by_name (xml_class_summary_categorized_collection_name),
-		            		a_manager)
-		        end
-		    end
-		end
+--	load_postcondition_guided_summary_manager (a_document: XM_DOCUMENT; a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL)
+--			-- Load information from `a_element' into `a_manager'
+--		local
+--		    l_root_element: XM_ELEMENT
+--		do
+--		    if not a_document.has_element_by_name (xml_backward_state_transition_model_name) then
+--			    raise ("Missing summary root.")
+--		    else
+--		        l_root_element := a_document.element_by_name (xml_backward_state_transition_model_name)
+--		        if not l_root_element.has_element_by_name (xml_class_outline_collection_name) or else
+--		        		not l_root_element.has_element_by_name (xml_class_summary_categorized_collection_name) then
+--		        	raise ("Bad summary structure")
+--		        else
+--		            load_class_outline_collection (l_root_element.element_by_name (xml_class_outline_collection_name),
+--		            		a_manager.boolean_state_outline_manager)
+--		            load_class_summary_categorized_collection (l_root_element.element_by_name (xml_class_summary_categorized_collection_name),
+--		            		a_manager)
+--		        end
+--		    end
+--		end
 
 feature{NONE} -- Serialization implementation
 
@@ -217,7 +217,7 @@ feature{NONE} -- Serialization implementation
 			a_file.put_string (l_string)
 		end
 
-	save_class_summary_collection (a_class_summary_collection: AFX_FORWARD_STATE_TRANSITION_MODEL;
+	save_class_summary_collection (a_class_summary_collection: AFX_STATE_TRANSITION_MODEL;
 					a_file: KL_TEXT_OUTPUT_FILE)
 			-- Save `a_transition_summary' into `a_file'
 		local
@@ -275,103 +275,103 @@ feature{NONE} -- Serialization implementation
 		    a_file.put_string (l_string)
 		end
 
-	save_class_summary_categorized_collection (a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL;
-					a_extractor_type: TYPE[AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I];
-					a_file: KL_TEXT_OUTPUT_FILE)
-			-- Save the transition summaries into `a_file'
-		local
-		    l_system: SYSTEM_I
-		    l_outline_manager: AFX_BOOLEAN_STATE_OUTLINE_MANAGER
-		    l_string: STRING
-		    l_class_id, l_property_index: INTEGER
-		    l_class: CLASS_C
-		    l_class_name: STRING
-		    l_class_mutation_summary: DS_HASH_TABLE [ TUPLE [true_summary, false_summary: AFX_FORWARD_STATE_TRANSITION_MODEL], INTEGER]
-		    l_true_summary, l_false_summary: AFX_FORWARD_STATE_TRANSITION_MODEL
-		    l_outline: AFX_BOOLEAN_STATE_OUTLINE
-		    l_predicate: AFX_PREDICATE_EXPRESSION
-		do
-		    l_system := System
-		    l_outline_manager := a_manager.boolean_state_outline_manager
+--	save_class_summary_categorized_collection (a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL;
+--					a_extractor_type: TYPE[AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I];
+--					a_file: KL_TEXT_OUTPUT_FILE)
+--			-- Save the transition summaries into `a_file'
+--		local
+--		    l_system: SYSTEM_I
+--		    l_outline_manager: AFX_BOOLEAN_STATE_OUTLINE_MANAGER
+--		    l_string: STRING
+--		    l_class_id, l_property_index: INTEGER
+--		    l_class: CLASS_C
+--		    l_class_name: STRING
+--		    l_class_mutation_summary: DS_HASH_TABLE [ TUPLE [true_summary, false_summary: AFX_FORWARD_STATE_TRANSITION_MODEL], INTEGER]
+--		    l_true_summary, l_false_summary: AFX_FORWARD_STATE_TRANSITION_MODEL
+--		    l_outline: AFX_BOOLEAN_STATE_OUTLINE
+--		    l_predicate: AFX_PREDICATE_EXPRESSION
+--		do
+--		    l_system := System
+--		    l_outline_manager := a_manager.boolean_state_outline_manager
 
-			l_string := "<"
-			l_string.append (xml_class_summary_categorized_collection_name)
-			l_string.append (">%N")
-			a_file.put_string (l_string)
+--			l_string := "<"
+--			l_string.append (xml_class_summary_categorized_collection_name)
+--			l_string.append (">%N")
+--			a_file.put_string (l_string)
 
-			from a_manager.start
-			until a_manager.after
-			loop
-			    l_class_mutation_summary := a_manager.item_for_iteration
-			    l_class_id := a_manager.key_for_iteration
+--			from a_manager.start
+--			until a_manager.after
+--			loop
+--			    l_class_mutation_summary := a_manager.item_for_iteration
+--			    l_class_id := a_manager.key_for_iteration
 
-				l_class := l_system.class_of_id (l_class_id)
-			    l_class_name := l_class.name
+--				l_class := l_system.class_of_id (l_class_id)
+--			    l_class_name := l_class.name
 
-			    l_string := "<"
-			    l_string.append (xml_class_category_name)
-			    l_string.append (" name = %"")
-			    l_string.append (l_class_name)
-			    l_string.append ("%">%N")
-			    a_file.put_string (l_string)
+--			    l_string := "<"
+--			    l_string.append (xml_class_category_name)
+--			    l_string.append (" name = %"")
+--			    l_string.append (l_class_name)
+--			    l_string.append ("%">%N")
+--			    a_file.put_string (l_string)
 
-			    from l_class_mutation_summary.start
-			    until l_class_mutation_summary.after
-			    loop
-			        l_true_summary := l_class_mutation_summary.item_for_iteration.true_summary
-			        l_false_summary := l_class_mutation_summary.item_for_iteration.false_summary
-			        l_property_index := l_class_mutation_summary.key_for_iteration
+--			    from l_class_mutation_summary.start
+--			    until l_class_mutation_summary.after
+--			    loop
+--			        l_true_summary := l_class_mutation_summary.item_for_iteration.true_summary
+--			        l_false_summary := l_class_mutation_summary.item_for_iteration.false_summary
+--			        l_property_index := l_class_mutation_summary.key_for_iteration
 
-					l_outline := l_outline_manager.boolean_class_outline (l_class)
-					l_predicate := l_outline.predicate_at_position (l_property_index)
+--					l_outline := l_outline_manager.boolean_class_outline (l_class)
+--					l_predicate := l_outline.predicate_at_position (l_property_index)
 
-						-- "True" mutators
-					l_string := "<"
-					l_string.append (xml_property_category_name)
-					l_string.append (" name = %"")
-					l_string.append (l_predicate.to_xml_string)
-					l_string.append ("%" set_to = %"True%">%N")
-					a_file.put_string (l_string)
+--						-- "True" mutators
+--					l_string := "<"
+--					l_string.append (xml_property_category_name)
+--					l_string.append (" name = %"")
+--					l_string.append (l_predicate.to_xml_string)
+--					l_string.append ("%" set_to = %"True%">%N")
+--					a_file.put_string (l_string)
 
-					save_class_summary_collection (l_true_summary, a_file)
---					l_true_summary.save_transition_summary (a_file)
+--					save_class_summary_collection (l_true_summary, a_file)
+----					l_true_summary.save_transition_summary (a_file)
 
-					l_string := "</"
-					l_string.append (xml_property_category_name)
-					l_string.append (">%N")
-					a_file.put_string (l_string)
+--					l_string := "</"
+--					l_string.append (xml_property_category_name)
+--					l_string.append (">%N")
+--					a_file.put_string (l_string)
 
-						-- "False" mutators
-					l_string := "<"
-					l_string.append (xml_property_category_name)
-					l_string.append (" name = %"")
-					l_string.append (l_predicate.to_xml_string)
-					l_string.append ("%" set_to = %"False%">%N")
-					a_file.put_string (l_string)
+--						-- "False" mutators
+--					l_string := "<"
+--					l_string.append (xml_property_category_name)
+--					l_string.append (" name = %"")
+--					l_string.append (l_predicate.to_xml_string)
+--					l_string.append ("%" set_to = %"False%">%N")
+--					a_file.put_string (l_string)
 
-					save_class_summary_collection (l_false_summary, a_file)
---					l_false_summary.save_transition_summary (a_file)
+--					save_class_summary_collection (l_false_summary, a_file)
+----					l_false_summary.save_transition_summary (a_file)
 
-					l_string := "</"
-					l_string.append (xml_property_category_name)
-					l_string.append (">%N")
-					a_file.put_string (l_string)
+--					l_string := "</"
+--					l_string.append (xml_property_category_name)
+--					l_string.append (">%N")
+--					a_file.put_string (l_string)
 
-			        l_class_mutation_summary.forth
-			    end
+--			        l_class_mutation_summary.forth
+--			    end
 
-			    l_string := "</"
-			    l_string.append (xml_class_category_name)
-			    l_string.append (">%N")
-			    a_file.put_string (l_string)
-			    a_manager.forth
-			end
+--			    l_string := "</"
+--			    l_string.append (xml_class_category_name)
+--			    l_string.append (">%N")
+--			    a_file.put_string (l_string)
+--			    a_manager.forth
+--			end
 
-			l_string := "</"
-			l_string.append (xml_class_summary_categorized_collection_name)
-			l_string.append (">%N")
-			a_file.put_string (l_string)
-		end
+--			l_string := "</"
+--			l_string.append (xml_class_summary_categorized_collection_name)
+--			l_string.append (">%N")
+--			a_file.put_string (l_string)
+--		end
 
 	save_boolean_model_state_transition_summary (a_summary: AFX_STATE_TRANSITION_SUMMARY;
 				a_file: KL_TEXT_OUTPUT_FILE)
@@ -591,7 +591,7 @@ feature{NONE} -- Deserialization mplementation
 			end
 		end
 
-	load_class_summary_collection (a_element: XM_ELEMENT; a_manager: AFX_FORWARD_STATE_TRANSITION_MODEL)
+	load_class_summary_collection (a_element: XM_ELEMENT; a_manager: AFX_STATE_TRANSITION_MODEL)
 			-- Process class summary collection at `a_element'.
 		require
 		    node_name: a_element.name ~ xml_class_summary_collection_name
@@ -608,83 +608,83 @@ feature{NONE} -- Deserialization mplementation
 			end
 		end
 
-	load_class_summary_categorized_collection (a_element: XM_ELEMENT; a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL)
-			-- Load information from `a_element' into `a_manager'
-		require
-		    node_name: a_element.name ~ xml_class_summary_categorized_collection_name
-		    outline_extractor_ready: a_manager.boolean_state_outline_manager /= Void
-		local
-		    l_class_id: INTEGER
-		    l_summary, l_last_summary: AFX_FORWARD_STATE_TRANSITION_MODEL
-		    l_class_mutation_summary: DS_HASH_TABLE [TUPLE [true_summary: AFX_FORWARD_STATE_TRANSITION_MODEL; false_summary: AFX_FORWARD_STATE_TRANSITION_MODEL], INTEGER_32]
-			l_class_name, l_property_name, l_last_property_name: STRING
-			l_property_index: INTEGER
-			l_property_value, l_last_property_value: BOOLEAN
-			l_outline: AFX_BOOLEAN_STATE_OUTLINE
-			l_element: XM_ELEMENT
-		do
-			from a_element.start
-			until a_element.after
-			loop
-			    if attached {XM_ELEMENT} a_element.item_for_iteration as lt_element then
-			        check lt_element.name ~ xml_class_category_name end
+--	load_class_summary_categorized_collection (a_element: XM_ELEMENT; a_manager: AFX_BACKWARD_STATE_TRANSITION_MODEL)
+--			-- Load information from `a_element' into `a_manager'
+--		require
+--		    node_name: a_element.name ~ xml_class_summary_categorized_collection_name
+--		    outline_extractor_ready: a_manager.boolean_state_outline_manager /= Void
+--		local
+--		    l_class_id: INTEGER
+--		    l_summary, l_last_summary: AFX_FORWARD_STATE_TRANSITION_MODEL
+--		    l_class_mutation_summary: DS_HASH_TABLE [TUPLE [true_summary: AFX_FORWARD_STATE_TRANSITION_MODEL; false_summary: AFX_FORWARD_STATE_TRANSITION_MODEL], INTEGER_32]
+--			l_class_name, l_property_name, l_last_property_name: STRING
+--			l_property_index: INTEGER
+--			l_property_value, l_last_property_value: BOOLEAN
+--			l_outline: AFX_BOOLEAN_STATE_OUTLINE
+--			l_element: XM_ELEMENT
+--		do
+--			from a_element.start
+--			until a_element.after
+--			loop
+--			    if attached {XM_ELEMENT} a_element.item_for_iteration as lt_element then
+--			        check lt_element.name ~ xml_class_category_name end
 
-			        if not lt_element.has_attribute_by_name ("name") then
-			            raise ("Missing mutation class name.")
-			        end
+--			        if not lt_element.has_attribute_by_name ("name") then
+--			            raise ("Missing mutation class name.")
+--			        end
 
-			        l_class_name := lt_element.attribute_by_name ("name").value
-			        if attached first_class_starts_with_name (l_class_name) as lt_class then
-        			    create l_class_mutation_summary.make_default
-			            l_outline := boolean_state_outline_manager.boolean_class_outline (lt_class)
+--			        l_class_name := lt_element.attribute_by_name ("name").value
+--			        if attached first_class_starts_with_name (l_class_name) as lt_class then
+--        			    create l_class_mutation_summary.make_default
+--			            l_outline := boolean_state_outline_manager.boolean_class_outline (lt_class)
 
-			            from lt_element.start
-			            until lt_element.after
-			            loop
-			                if attached {XM_ELEMENT} lt_element.item_for_iteration as lt_element2 then
-			                    check lt_element2.name ~ xml_property_category_name end
-			                    if not lt_element2.has_attribute_by_name ("name") or else not lt_element2.has_attribute_by_name ("set_to") then
-			                        raise ("Missing property category attribute.")
-			                    end
-			                    if not lt_element2.has_element_by_name (xml_class_summary_collection_name) then
-			                        raise ("Missing class summary collection.")
-			                    end
+--			            from lt_element.start
+--			            until lt_element.after
+--			            loop
+--			                if attached {XM_ELEMENT} lt_element.item_for_iteration as lt_element2 then
+--			                    check lt_element2.name ~ xml_property_category_name end
+--			                    if not lt_element2.has_attribute_by_name ("name") or else not lt_element2.has_attribute_by_name ("set_to") then
+--			                        raise ("Missing property category attribute.")
+--			                    end
+--			                    if not lt_element2.has_element_by_name (xml_class_summary_collection_name) then
+--			                        raise ("Missing class summary collection.")
+--			                    end
 
-			                    l_element := lt_element2.element_by_name (xml_class_summary_collection_name)
-			                    l_property_name := lt_element2.attribute_by_name ("name").value
-			                    l_property_value := lt_element2.attribute_by_name ("set_to").value.to_boolean
-								create l_summary.make_default
-			                    if l_property_value then
-			                        check l_last_property_name = Void and not l_last_property_value end
-			                        load_class_summary_collection (l_element, l_summary)
-			                        l_last_property_name := l_property_name
-			                        l_last_property_value := l_property_value
-			                        l_last_summary := l_summary
-			                    else
-			                        check l_last_property_name ~ l_property_name and l_last_property_value end
-			                        load_class_summary_collection (l_element, l_summary)
+--			                    l_element := lt_element2.element_by_name (xml_class_summary_collection_name)
+--			                    l_property_name := lt_element2.attribute_by_name ("name").value
+--			                    l_property_value := lt_element2.attribute_by_name ("set_to").value.to_boolean
+--								create l_summary.make_default
+--			                    if l_property_value then
+--			                        check l_last_property_name = Void and not l_last_property_value end
+--			                        load_class_summary_collection (l_element, l_summary)
+--			                        l_last_property_name := l_property_name
+--			                        l_last_property_value := l_property_value
+--			                        l_last_summary := l_summary
+--			                    else
+--			                        check l_last_property_name ~ l_property_name and l_last_property_value end
+--			                        load_class_summary_collection (l_element, l_summary)
 
-										-- the property name read here has been converted back to common characters, i.e. not &lt; or &gt;
-									l_property_index := l_outline.index_from_string (l_property_name, False)
-									check l_property_index /= -1 end
-									l_class_mutation_summary.force ([l_last_summary, l_summary], l_property_index)
+--										-- the property name read here has been converted back to common characters, i.e. not &lt; or &gt;
+--									l_property_index := l_outline.index_from_string (l_property_name, False)
+--									check l_property_index /= -1 end
+--									l_class_mutation_summary.force ([l_last_summary, l_summary], l_property_index)
 
-			                        l_last_property_name := Void
-			                        l_last_property_value := l_property_value
-			                    end
-			                end
-			                lt_element.forth
-			            end
-			            a_manager.force (l_class_mutation_summary, lt_class.class_id)
-			        else
-			            -- skip class not in the system
-			        end
-			    end
-			    a_element.forth
-			end
-		end
+--			                        l_last_property_name := Void
+--			                        l_last_property_value := l_property_value
+--			                    end
+--			                end
+--			                lt_element.forth
+--			            end
+--			            a_manager.force (l_class_mutation_summary, lt_class.class_id)
+--			        else
+--			            -- skip class not in the system
+--			        end
+--			    end
+--			    a_element.forth
+--			end
+--		end
 
-	load_class_summary (a_element: XM_ELEMENT; a_manager: AFX_FORWARD_STATE_TRANSITION_MODEL)
+	load_class_summary (a_element: XM_ELEMENT; a_manager: AFX_STATE_TRANSITION_MODEL)
 			-- Load class summary.
 		require
 		    node_name: a_element.name ~ xml_class_summary_name
@@ -712,7 +712,7 @@ feature{NONE} -- Deserialization mplementation
 		end
 
 	load_boolean_model_state_transition_summary (a_element: XM_ELEMENT;
-					a_manager: AFX_FORWARD_STATE_TRANSITION_MODEL;
+					a_manager: AFX_STATE_TRANSITION_MODEL;
 					a_class: CLASS_C)
 			-- Load boolean model state transition summary.
 		require

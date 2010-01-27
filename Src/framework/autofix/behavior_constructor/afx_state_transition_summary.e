@@ -78,6 +78,40 @@ feature -- Status report
 		    		and then count = a_summary.count
 		end
 
+	is_property_preserving: BOOLEAN
+			-- Is the transition property preserving, i.e. is the feature a query?
+		local
+		    l_yes: BOOLEAN
+		do
+		    l_yes := True
+
+		    from start
+		    until after or not l_yes
+		    loop
+		        l_yes := item_for_iteration.is_property_preserving
+		        forth
+		    end
+
+		    Result := l_yes
+		end
+
+	is_mutator_to (a_index: INTEGER; a_value: BOOLEAN): BOOLEAN
+			-- Is the transition a mutator to the target object?
+			-- To be more specific, does the transition mutate the `a_index'-th property of the target to be `a_value'?
+		local
+		    l_target: AFX_BOOLEAN_STATE_TRANSITION_SUMMARY
+		do
+		    l_target := first
+		    if l_target.post_unchanged.is_bit_set (a_index) then
+		        Result := False
+		    elseif a_value and then l_target.post_set_false.is_bit_set (a_index)
+		    		or not a_value and then l_target.post_set_true.is_bit_set (a_index)then
+		        Result := False
+		    else
+		    	Result := True
+		    end
+		end
+
 feature -- Update
 
 	update (a_summary: like Current)

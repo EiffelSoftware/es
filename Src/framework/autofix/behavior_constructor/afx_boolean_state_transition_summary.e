@@ -136,12 +136,18 @@ feature -- Status report
 	is_combinable (a_summary: like Current): BOOLEAN
 			-- Is `Current' combinable with `a_summary'?
 		do
-		    	-- same `boolean_state_outline' implies same class and same extractor
 		    Result := boolean_state_outline = a_summary.boolean_state_outline
 		end
 
+	is_property_preserving: BOOLEAN
+			-- Is the transition property_preserving on this state?
+			-- That is: does all the properties stay the same during the transition?
+		do
+		    Result := post_unchanged.count_of_set_bits = post_unchanged.count
+		end
+
 	is_enabled_at (a_boolean_state: AFX_BOOLEAN_STATE): BOOLEAN
-			-- Is `Current' enabled at `a_boolean_state'?
+			-- Is the transition enabled at `a_boolean_state'?
 			-- Fixme: When model is not precise enough, it is difficult to judge.
 		do
 		    print ("Fixme: AFX_BOOLEAN_STATE_TRANSITION_SUMMARY.is_enabled_at%N")

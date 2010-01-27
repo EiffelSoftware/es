@@ -21,6 +21,15 @@ inherit
 
 	AFX_SHARED_FORMAL_TYPE_MANAGER
 
+		-- For local testing only
+	KL_SHARED_STRING_EQUALITY_TESTER
+
+	KL_SHARED_FILE_SYSTEM
+
+	AFX_SHARED_BEHAVIOR_CONSTRUCTOR
+
+	AFX_SHARED_SESSION
+
 	AFX_UTILITY
 		undefine
 		    system
@@ -58,18 +67,25 @@ feature -- Process
 			l_output_file: KL_TEXT_OUTPUT_FILE
 			l_log_parser: AUT_LOG_PARSER
 
--- Model serialization
 			l_formal_type_manager: AFX_FORMAL_TYPE_MANAGER
-			l_class_name: STRING
-			l_file_name: FILE_NAME
 			l_boolean_model: AFX_BOOLEAN_MODEL
 			l_transition_list: DS_LINEAR [AFX_BOOLEAN_MODEL_TRANSITION]
-			l_model_repository_directory: DIRECTORY_NAME
-			l_model_factory: AFX_STATE_TRANSITION_MODEL_FACTORY
-			l_forward_model, l_backward_model: AFX_STATE_TRANSITION_MODEL_I
-			l_model_dir: DIRECTORY_NAME
+			l_state_transition_model: AFX_STATE_TRANSITION_MODEL
+			l_repository_dir_name: DIRECTORY_NAME
+			l_repository_dir: KL_DIRECTORY
+			l_class_name: STRING
+			l_file_name: FILE_NAME
+
+			l_is_testing_behavior_construction: BOOLEAN
+			l_model_dir_name: DIRECTORY_NAME
+			l_model_dir: KL_DIRECTORY
+			l_model_file_name: FILE_NAME
 		do
-				-- formal type manager
+
+l_is_testing_behavior_construction := False
+if not l_is_testing_behavior_construction then
+
+				-- Formal type manager.
 			create l_formal_type_manager.make_default
 			set_formal_type_manager (l_formal_type_manager)
 
@@ -81,38 +97,184 @@ feature -- Process
 			l_log_parser.parse_stream (l_log_stream)
 			l_log_stream.close
 
--- Model serialization
-				-- file name
-			l_class_name := class_name_from_file_name (configuration.log_file_path)
-			create l_model_repository_directory.make_from_string (directory_name_from_file_name (configuration.log_file_path))
-
-				-- boolean model to state transition model
-			create l_model_factory
-   			l_forward_model := l_model_factory.create_forward_model_with_size (100)
-   			l_backward_model := l_model_factory.create_backward_model_with_size (100)
-
-				-- construct boolean model
+				-- Construct state transition model.
+   			create l_state_transition_model.make (100)
 			create l_boolean_model.make_from_query_model (last_model)
 			l_transition_list := l_boolean_model.to_transition_list
+			l_transition_list.do_all (agent l_state_transition_model.summarize_transition)
 
-			l_transition_list.do_all (agent l_forward_model.summarize_transition)
-			l_transition_list.do_all (agent l_backward_model.summarize_transition )
-			l_backward_model.optimize_model
+				-- Create model directory.
+				-- We don't same the model into the project directory to avoid the risk of being cleared.
+--			create l_repository_dir_name.make_from_string (system.eiffel_project.project_directory.fixing_results_path)
+			create l_repository_dir_name.make_from_string (directory_name_from_file_name (configuration.log_file_path))
+			l_repository_dir_name.extend ("model")
+			create l_repository_dir.make (l_repository_dir_name)
+			if not l_repository_dir.exists then
+			    l_repository_dir.recursive_create_directory
+			end
 
-			l_model_dir := l_model_repository_directory.twin
-			l_model_dir.extend (l_forward_model.model_directory)
-			create l_file_name.make_from_string (l_model_dir)
+				-- Save state transition model into file.
+			l_class_name := class_name_from_file_name (configuration.log_file_path)
+			create l_file_name.make_from_string (l_repository_dir_name)
 			l_file_name.set_file_name (l_class_name)
 			l_file_name.add_extension ("xml")
-			l_forward_model.save_to_file (l_file_name)
 
-			l_model_dir := l_model_repository_directory.twin
-			l_model_dir.extend (l_backward_model.model_directory)
-			create l_file_name.make_from_string (l_model_dir)
+			io.putstring ("Saving model to: ")
+			io.putstring (l_file_name)
+			l_state_transition_model.save_to_file (l_file_name)
+			io.putstring (" ...... Done!%N")
+else
+				-- Local testing.
+			l_class_name := class_name_from_file_name (configuration.log_file_path)
+
+				-- From file name...
+			create l_repository_dir_name.make_from_string (directory_name_from_file_name (configuration.log_file_path))
+			l_repository_dir_name.extend ("model")
+			create l_file_name.make_from_string (l_repository_dir_name)
 			l_file_name.set_file_name (l_class_name)
 			l_file_name.add_extension ("xml")
-			l_forward_model.save_to_file (l_file_name)
 
+				-- Make sure the model directory exists.
+			create l_model_dir_name.make_from_string (system.eiffel_project.project_directory.fixing_results_path)
+			l_model_dir_name.extend ("model")
+			create l_model_dir.make (l_model_dir_name)
+			if not l_model_dir.exists then
+			    l_model_dir.recursive_create_directory
+			end
+
+				-- To file name...
+			create l_model_file_name.make_from_string (l_model_dir_name)
+			l_model_file_name.set_file_name (l_class_name)
+			l_model_file_name.add_extension ("xml")
+
+				-- Copy the model to project directory.
+			file_system.copy_file (l_file_name, l_model_file_name)
+
+				-- Test behavior construction.
+			test_behavior_construction
+end
+		end
+
+feature{NONE} -- Process
+
+	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
+			-- <Precursor>
+		local
+		    l_feature: FEATURE_I
+		    l_type: TYPE_A
+		    l_class: CLASS_C
+		    l_list: CLASS_C
+		    l_wclass: CLASS_C
+		    l_formal_type: TYPE_A
+		do
+			Precursor (a_request)
+			process_call_based_request (a_request)
+		end
+
+	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
+			-- <Precursor>
+		do
+			Precursor (a_request)
+			process_call_based_request (a_request)
+		end
+
+	state_from_query_result (a_state: HASH_TABLE [STRING_8, STRING_8]; a_class: CLASS_C; a_feature: detachable FEATURE_I)
+				: detachable AFX_STATE
+			-- Construct a afx_state object from the query result.
+			-- Workaround: the state report may be meshy, this makes it possible to ignore the bad-formed states.
+			-- 			Maybe this is overkilling, but since the expressions may contain also implications,
+			--			there seems to be no easy way to check the validity without using exception handling.
+		local
+		    l_retried: BOOLEAN
+		do
+		    if not l_retried then
+		        create Result.make_from_object_state (a_state, a_class, a_feature)
+		    else
+		        Result := Void
+		    end
+		rescue
+		    l_retried := True
+		    retry
+		end
+
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+		    l_type: TYPE_A
+		    l_class: CLASS_C
+		    l_var_index: INTEGER
+		    l_results: HASH_TABLE [detachable STRING, STRING]
+		    l_state: AFX_STATE
+		    l_model_state: AFX_QUERY_MODEL_STATE
+		    l_is_good: BOOLEAN
+		    l_context_class: CLASS_C
+		do
+			Precursor (a_request)
+
+				-- variable information
+			l_type := a_request.type
+			check l_type /= Void end
+			l_class := a_request.type.associated_class
+
+			l_var_index := a_request.variable.index
+			check l_var_index >= 0 end
+
+			l_is_good := False
+			if attached {AUT_OBJECT_STATE_RESPONSE} a_request.response as l_response then
+			    if not (l_response.is_bad or l_response.is_error)  then
+			        fixme ("check for the conditions where the response may be useless")
+
+						-- create state
+					l_results := l_response.query_results
+					l_state := state_from_query_result (l_results, l_type.associated_class, Void)
+					if l_state /= Void then
+    				    	-- source state of feature call, just put the state into `mock_heap'
+    					mock_heap.force (l_state, l_var_index)
+
+    					if attached last_call_based_request as l_call_request then
+    						if expected_object_states.first.ob_id = l_var_index then
+    							l_is_good := True
+
+    								-- one more relevant state available, remove it from expecting list
+    							expected_object_states.remove_first
+
+    							if expected_object_states.is_empty then
+    							    check last_transition /= Void end
+    								debug("autofix") print (last_call_based_request.feature_to_call.feature_name + "(Before)%N") end
+    									-- all expected states have been reported, start constructing the transition
+    							    create l_model_state.make (last_call_based_request.operand_indexes.count)
+    							    l_model_state.extract_state (mock_heap, last_call_based_request, False)
+    								last_transition.set_destination (l_model_state)
+    								last_model.add_transition (last_transition)
+
+    									-- prepare for next transition
+    								last_call_based_request := Void
+    								last_transition := Void
+    							end
+    						else
+    								-- unexpected object state, error
+    							l_is_good := False
+    						end
+    					else		-- not (attached last_call_based_request as l_call_request)
+    					    l_is_good := True
+    					end
+					end
+				else 		-- not not (l_response.is_bad or l_response.is_error)
+				    l_is_good := False
+			    end
+			else		-- not attached {AUT_OBJECT_STATE_RESPONSE} a_request.response as l_response
+				l_is_good := False
+			end
+
+			if not l_is_good then
+			    	-- remove current state from heap
+			    mock_heap.remove (l_var_index)
+
+			    	-- discard unfinished work
+				last_call_based_request := Void
+				last_transition := Void
+				expected_object_states.wipe_out
+			end
 		end
 
 feature{NONE} -- Testing
@@ -143,115 +305,52 @@ feature{NONE} -- Testing
 		    Result := l_directory_name
 		end
 
-feature{NONE} -- Process
-
-	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
-			-- <Precursor>
+	test_behavior_construction
+			-- Testing scaffold for behavior construction.
 		local
-		    l_feature: FEATURE_I
-		    l_type: TYPE_A
+		    l_class_name: STRING
 		    l_class: CLASS_C
-		    l_list: CLASS_C
-		    l_wclass: CLASS_C
-		    l_formal_type: TYPE_A
+		    l_before_property, l_after_property: HASH_TABLE [STRING, STRING]
+		    l_before_state, l_after_state: AFX_STATE
+		    l_before_objects, l_after_objects: DS_HASH_TABLE [AFX_STATE, STRING]
+		    l_fixes: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
+		    l_config: AFX_CONFIG
+		    l_str: STRING
 		do
-			Precursor (a_request)
-			process_call_based_request (a_request)
-		end
+		    l_class_name := class_name_from_file_name (configuration.log_file_path)
+		    l_class := first_class_starts_with_name (l_class_name)
 
-	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
-			-- <Precursor>
-		do
-			Precursor (a_request)
-			process_call_based_request (a_request)
-		end
+		    create l_before_property.make (3)
+		    l_before_property.force ("False", "before")
+		    l_before_property.force ("False", "after")
+		    l_before_property.force ("False", "off")
+		    create l_before_state.make_from_object_state (l_before_property, l_class, Void)
+		    create l_before_objects.make (1)
+		    l_before_objects.set_key_equality_tester (string_equality_tester)
+		    l_before_objects.force (l_before_state, "obj")
 
-	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
-			-- Process `a_request'.
-		local
-		    l_type: TYPE_A
-		    l_class: CLASS_C
-		    l_var_index: INTEGER
-		    l_results: HASH_TABLE [detachable STRING, STRING]
-		    l_state: AFX_STATE
-		    l_model_state: AFX_QUERY_MODEL_STATE
-		    l_is_good: BOOLEAN
-		    l_context_class: CLASS_C
-		do
-			Precursor (a_request)
+		    create l_after_property.make (3)
+		    l_after_property.force ("True", "off")
+		    l_after_property.force ("True", "before")
+		    create l_after_state.make_from_object_state (l_after_property, l_class, Void)
+			create l_after_objects.make (1)
+			l_after_objects.set_key_equality_tester (string_equality_tester)
+			l_after_objects.force (l_after_state, "obj")
 
-				-- variable information
-			l_type := a_request.type
-			check l_type /= Void end
-			l_class := a_request.type.associated_class
+				-- Shared autofix configuration.
+			create l_config.make (system)
+			set_autofix_config (l_config)
 
--- for testing
-			check l_class /= Void end
-			if last_list_class = Void and l_class /= Void and then l_class.name ~ "DS_LINKED_LIST" then
-			    last_list_class := l_class
-			end
---
+		    l_fixes := state_transitions_from_model (l_before_objects, l_after_objects, l_class,
+		    		{AFX_BEHAVIOR_CONSTRUCTOR_CONFIG}.model_guidance_style_relaxed, Void, Void, True)
 
-			l_var_index := a_request.variable.index
-			check l_var_index >= 0 end
-
-			l_is_good := False
-			if attached {AUT_OBJECT_STATE_RESPONSE} a_request.response as l_response then
-			    if not (l_response.is_bad or l_response.is_error)  then
-			        fixme ("check for the conditions where the response may be useless")
-
-						-- create state
-					l_results := l_response.query_results
-					create l_state.make_from_object_state (l_results, l_type.associated_class, Void)
-
-				    	-- source state of feature call, just put the state into `mock_heap'
-					mock_heap.force (l_state, l_var_index)
-
-					if attached last_call_based_request as l_call_request then
-						if expected_object_states.first.ob_id = l_var_index then
---									and then (l_type.is_conformant_to (last_call_based_request.target_type.associated_class, expected_object_states.first.ob_type)
---											or else expected_object_states.first.ob_type.valid_generic (last_call_based_request.target_type.associated_class, l_type)) then
-							l_is_good := True
-
-								-- one more relevant state available, remove it from expecting list
-							expected_object_states.remove_first
-
-							if expected_object_states.is_empty then
-							    check last_transition /= Void end
-								debug("autofix") print (last_call_based_request.feature_to_call.feature_name + "(Before)%N") end
-									-- all expected states have been reported, start constructing the transition
-							    create l_model_state.make (last_call_based_request.operand_indexes.count)
-							    l_model_state.extract_state (mock_heap, last_call_based_request, False)
-								last_transition.set_destination (l_model_state)
-								last_model.add_transition (last_transition)
-
-									-- prepare for next transition
-								last_call_based_request := Void
-								last_transition := Void
-							end
-						else
-								-- unexpected object state, error
-							l_is_good := False
-						end
-					else		-- not (attached last_call_based_request as l_call_request)
-					    l_is_good := True
-					end
-				else 		-- not not (l_response.is_bad or l_response.is_error)
-				    l_is_good := False
-			    end
-			else		-- not attached {AUT_OBJECT_STATE_RESPONSE} a_request.response as l_response
-				l_is_good := False
-			end
-
-			if not l_is_good then
-			    	-- remove current state from heap
-			    mock_heap.remove (l_var_index)
-
-			    	-- discard unfinished work
-				last_call_based_request := Void
-				last_transition := Void
-				expected_object_states.wipe_out
-			end
+		    l_str := ""
+		    from l_fixes.start
+		    until l_fixes.after
+		    loop
+		        l_str.append (l_fixes.item_for_iteration.out)
+		        l_fixes.forth
+		    end
 		end
 
 feature{NONE} -- implementation
@@ -305,30 +404,27 @@ feature{NONE} -- implementation
 		end
 
 	last_call_based_request: detachable AUT_CALL_BASED_REQUEST
-			-- last call based request
+			-- Last call based request.
 
 	is_last_call_based_requeset_suitable: BOOLEAN
-			-- is `last_call_based_request' going to be used to build the model?
-			-- if not, the object states are only used to update the `mock_heap' and no transition will be constructed for this the request
+			-- Is `last_call_based_request' going to be used to build the model?
+			-- If not, the object states are only used to update the `mock_heap' and no transition will be added into the model.
 
 	last_transition: detachable AFX_QUERY_MODEL_TRANSITION
-			-- most recently constructed transition
+			-- Most recently constructed transition.
 
 	last_model: AFX_QUERY_MODEL
-			-- constructed model
+			-- Constructed query model.
 
 	mock_heap: DS_HASH_TABLE [AFX_STATE, INTEGER]
-			-- mock heap to cache responses to object state requests.
-			-- the key of the hash table is the index of variable.
+			-- Mock heap to cache responses to object state requests.
+			-- The key of the hash table is the index of variable.
 
 	expected_object_states: DS_ARRAYED_LIST [TUPLE[ob_type: TYPE_A; ob_id: INTEGER] ]
-			-- list of expected object states to finish the last call transition
-
-	last_list_class: detachable CLASS_C
-			-- cached class object for testing
+			-- List of expected object states to finish the last call transition.
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

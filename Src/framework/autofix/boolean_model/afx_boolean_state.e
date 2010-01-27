@@ -74,12 +74,6 @@ feature -- Status report
 		    Result := properties_true.count
 		end
 
-	is_comparable_state (a_state: like Current): BOOLEAN
-			-- Is `Current' comparable with `a_state'?
-		do
-		    Result := Current.boolean_state_outline = a_state.boolean_state_outline
-		end
-
 	is_query_state_available: BOOLEAN
 			-- Is the original query state available?
 		do
@@ -87,7 +81,7 @@ feature -- Status report
 		end
 
 	is_chaos: BOOLEAN
-			-- Is this a chaos state?
+			-- Is the state chaos?
 		require
 		    is_query_state_available: is_query_state_available
 		do
@@ -96,14 +90,60 @@ feature -- Status report
 		    end
 		end
 
+feature -- State comparison
+
+	is_comparable_state (a_state: like Current): BOOLEAN
+			-- Is `Current' comparable with `a_state'?
+		do
+		    Result := Current.boolean_state_outline = a_state.boolean_state_outline
+		end
+
+	is_conforming_to (a_state: like Current; a_guidance_style: INTEGER): BOOLEAN
+			-- Is the state conforming to `a_state', in `a_guidance_style'?
+			-- Use different conformance criteria for different model guidance style.
+		do
+            if a_guidance_style = {AFX_BEHAVIOR_CONSTRUCTOR_CONFIG}.Model_guidance_style_restriced then
+                Result := is_satisfactory_to (a_state)
+            elseif a_guidance_style = {AFX_BEHAVIOR_CONSTRUCTOR_CONFIG}.Model_guidance_style_relaxed then
+                Result := number_of_contradictions_to (a_state) = 0
+            elseif a_guidance_style = {AFX_BEHAVIOR_CONSTRUCTOR_CONFIG}.Model_guidance_style_free then
+            	Result := True
+            end
+		end
+
 	is_satisfactory_to (a_condition: like Current): BOOLEAN
-			-- Is `Current' state satisfactory to the requirement of 'a_condition'?
-	    	-- If the `properties_true' and `properties_false' of current states are SUPER sets of those of `a_condition', return `True';
-	    	-- Otherwise, return `False'.
+			-- Is the state satisfactory to the requirement of 'a_condition'?
+			-- All the requirements from `a_condition' SHOULD be satisfied to make the state "satisfactory".
 		do
 		    Result := a_condition.properties_true.is_subset_of (properties_true)
 		    		and then a_condition.properties_false.is_subset_of (properties_false)
 		end
+
+	number_of_contradictions_to (a_condition: like Current): INTEGER
+			-- Number of contradictory properties between the state and `a_condition'.
+			-- The numer is calculated in an optimistic way, such that only properties explictly negated will be counted.
+			-- As long as the property is "unknown" in one state, it is not calculated.
+		do
+		    Result := (a_condition.properties_true & properties_false).count_of_set_bits +
+		    			(a_condition.properties_false & properties_true).count_of_set_bits
+		end
+
+	distance_between (a_state: like Current): INTEGER
+			-- Distance between two states.
+			-- Properties with explictly the same values contribute 0;
+			-- Properties with explictly the different values are counted 4 for each;
+			-- Properties with one "unknown" value contributes 1 for each.
+		local
+		    properties_unknown_current, properties_unknown_state: like properties_true
+		do
+		    properties_unknown_current := (properties_true | properties_false).bit_not
+		    properties_unknown_state := (a_state.properties_false | a_state.properties_true).bit_not
+
+		    Result := number_of_contradictions_to (a_state) * 4 +
+		    			(properties_unknown_current | properties_unknown_state).count_of_set_bits
+		end
+
+feature -- Representation
 
 	to_string: STRING
 			-- Generate a string representation.
@@ -221,7 +261,7 @@ feature -- Query state interpretation
 		    query_state := a_state
 
 		    if not is_chaos then
-    		    	-- put each pair of value and expression from `a_state' into hashtable
+    		    	-- Put each pair of (value, expression) from `a_state' into hashtable.
     		    create l_table.make (a_state.count)
     		    l_table.set_key_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
     		    l_table.set_equality_tester (create {AFX_EXPRESSION_VALUE_EQUALITY_TESTER})
@@ -230,7 +270,7 @@ feature -- Query state interpretation
     		    			a_table.force (an_equation.value, an_equation.expression)
     		    		end (?, l_table))
 
-    				-- interpretate object state according to each boolean outline predicate
+    				-- Interpretate object state according to each boolean outline predicate.
     		    l_outline := boolean_state_outline
     		    from
     		    	l_index := 0
@@ -242,11 +282,11 @@ feature -- Query state interpretation
     		        l_exp := l_predicate.expression
 
         		    if attached l_table.value (l_exp) as l_value then
-    		        		-- prepare for visiting
+    		        		-- Prepare the visitor.
         		        last_property := l_predicate
         		        last_property_index := l_index
 
-        		        	-- start visitor processing to evaluate the values of properties
+        		        	-- Evaluate the values of properties.
         		        l_value.process (Current)
 
         		        last_property := Void
