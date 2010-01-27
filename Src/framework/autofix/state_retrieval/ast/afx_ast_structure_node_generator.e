@@ -56,7 +56,7 @@ feature -- Basic operations
 						set_parent_node (structure)
 						structure.extend_trunk
 						safe_process (l_do.compound)
-						structure.set_last_breakpoint_slot_number (next_bpslot - 1)
+						structure.set_last_breakpoint_slot_number (next_bpslot)
 					end
 				end
 			end

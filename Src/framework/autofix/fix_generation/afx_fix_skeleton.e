@@ -212,10 +212,8 @@ feature{NONE} -- Implementation
 					l_delayed_post.set_invariants_in_passing_runs (passing_state (l_bpslots.passing_bpslot))
 					l_delayed_post.set_invariants_in_failing_runs (failing_state (l_bpslots.failing_bpslot))
 					l_postcondition := l_delayed_post.actual_state
-					io.put_string ("")
 				else
 					l_postcondition := l_post
-					io.put_string ("")
 				end
 			else
 				Result := Void
