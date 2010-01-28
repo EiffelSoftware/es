@@ -34,8 +34,6 @@ feature -- Constructor interface
 
 	construct_behavior (a_config: attached like config; a_criteria: detachable like criteria; a_is_forward: BOOLEAN)
 			-- Construct the state changing behavior.
-		require
-		    call_sequences_empty: call_sequences.is_empty
 		local
 			l_starting_state: AFX_BEHAVIOR_STATE
 		    l_empty_fix: DS_ARRAYED_LIST [STRING_8]
@@ -158,8 +156,10 @@ feature{NONE} -- Operation
 		    l_model: like state_transition_model
 		    l_tbl: DS_HASH_TABLE[AFX_STATE_TRANSITION_SUMMARY, INTEGER]
 		    l_transition: AFX_STATE_TRANSITION_SUMMARY
+		    l_mutator_table: DS_HASH_TABLE[AFX_STATE_TRANSITION_SUMMARY, INTEGER]
 		    l_options: DS_ARRAYED_LIST[AFX_STATE_TRANSITION_SUMMARY]
 		    l_destinations: DS_HASH_TABLE [AFX_BOOLEAN_STATE, STRING]
+		    l_num_of_property_change, l_num_of_mutator_repeatition, i: INTEGER
 		    l_boolean_state: AFX_BOOLEAN_STATE
 		    l_property_index, l_property_count: INTEGER
 		    l_is_interesting, l_value: BOOLEAN
@@ -182,11 +182,18 @@ feature{NONE} -- Operation
 				l_property_count := l_boolean_state.count
 				l_class_id := l_boolean_state.class_.class_id
 
-				if l_model.has (l_class_id) then
+				if not l_model.has (l_class_id) then
+					l_is_possible := False
+				else
 				    l_tbl := l_model.item (l_class_id)
+					create l_mutator_table.make (l_tbl.count)
 
-					from l_property_index := 0
-					until l_property_index = l_property_count or not l_is_possible
+						-- Collect the set of all mutators regarding the operand into a hash_table.
+					from
+						l_property_index := 0
+						l_num_of_property_change := 0
+					until
+						l_property_index = l_property_count or not l_is_possible
 					loop
 					    l_is_interesting := False
 					    if l_boolean_state.properties_true.is_bit_set (l_property_index) then
@@ -198,30 +205,39 @@ feature{NONE} -- Operation
 					    end
 
 					    if l_is_interesting then
-					        create l_options.make_default
-
+					        l_num_of_property_change := l_num_of_property_change + 1
         				    from l_tbl.start
         				    until l_tbl.after
         				    loop
         				        l_transition := l_tbl.item_for_iteration
 
 								if l_transition.count = 1 and then l_transition.is_mutator_to (l_property_index, l_value) then
-								    l_options.force_last (l_transition)
+								    l_mutator_table.force (l_transition, l_tbl.key_for_iteration)
 								end
 
         				        l_tbl.forth
-        				    end
-
-        				    if l_options.is_empty then
-        				        l_is_possible := False
-        				    else
-	        				    internal_list_of_feature_options.force_last (l_options)
         				    end
 					    end
 
 					    l_property_index := l_property_index + 1
 					end
 
+						-- Mutators from hash_table to arrayed_list.
+					if l_mutator_table.is_empty then
+					    l_is_possible := False
+					else
+    					create l_options.make (l_mutator_table.count)
+    					l_mutator_table.do_all (agent l_options.force_last)
+
+    						-- Repeat the mutators for a certain times, according to the config.
+    					l_num_of_mutator_repeatition := config.repeatition_per_class (l_num_of_property_change)
+    					from i := 1
+    					until i > l_num_of_mutator_repeatition
+    					loop
+        					internal_list_of_feature_options.force_last (l_options)
+        					i := i + 1
+    					end
+					end
 				end
 				l_destinations.forth
 			end
@@ -230,57 +246,6 @@ feature{NONE} -- Operation
 			    internal_list_of_feature_options.wipe_out
 			end
 		end
-
---				if attached l_backward_model.value (l_class_id) as lt_table_property then
---					from
---					    l_size := l_boolean_state.size
---					    l_property_index := 0
---					until
---					    l_property_index = l_size
---					loop
---						l_summary_manager := Void
---					    if l_boolean_state.properties_true.is_bit_set (l_property_index) then
---					        if attached lt_table_property.value (l_property_index) as lt_tuple_summary_t then
---					            l_summary_manager := lt_tuple_summary_t.true_summary
---					        else
---					        		-- No summarized feature set the property to true.
---					            l_is_possible := False
---					        end
---					    elseif l_boolean_state.properties_false.is_bit_set (l_property_index) then
---					        if attached lt_table_property.value (l_property_index) as lt_tuple_summary_f then
---					            l_summary_manager := lt_tuple_summary_f.false_summary
---					        else
---					        		-- No summarized feature set the property to false.
---					            l_is_possible := False
---					        end
---					    end
-
---							-- Filter out unsuitable mutators and queries.
---					    if l_summary_manager /= Void then
---				            l_summary_set := l_summary_manager.to_summary_set
---					        create l_summary_list.make (l_summary_set.count)
---				            from l_summary_set.start
---				            until l_summary_set.after
---				            loop
---				                l_summary := l_summary_set.item_for_iteration
-
---				                if attached l_forward_model.value (l_class_id) as lt_feature_table
---				                		and then attached lt_feature_table.value (l_summary.feature_.feature_id) as lt_summary
---				                		and then not lt_summary.is_property_preserving 	-- Not query.
---				                		and then criteria.is_suitable (l_summary.class_, l_summary.feature_, l_config.context_class) then
---				                    l_summary_list.force_last (l_summary)
---				                end
---				                l_summary_set.forth
---				            end
---				            internal_list_of_feature_options.force_last (l_summary_list)
---					    end
-
---					    l_property_index := l_property_index + 1
---					end
---				else
---						-- no summarized feature changes an object of this class
---				    l_is_possible := False
---				end
 
 	execute_feature_sequences
 			-- Execute all the possible feature call sequences from the starting state.

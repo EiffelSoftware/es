@@ -19,7 +19,6 @@ feature -- Initialization
 	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING];
 				a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING];
 				a_context_class: CLASS_C;
-				a_guidance_style: like model_guidance_style;
 				a_class_set: detachable like class_set)
 			-- Initialize.
 		require
@@ -133,9 +132,9 @@ feature -- Initialization
 		    end
 
 		    context_class := a_context_class
-		    model_guidance_style := a_guidance_style
 
 			set_maximum_length (default_maximum_length)
+
 		    is_good := True
 		end
 
@@ -164,22 +163,98 @@ feature -- Access
 			-- Style in which the model would be used to guide the fix generation.
 			-- It can only take one of the following three values.
 
+	post_state_guided_construction_style: INTEGER assign set_post_state_guided_construction_style
+			-- Style in which the behavior sequences are generated using post state guided construction.
+			-- It can only take one of the following three values.
+
+--	max_num_of_repeatition_per_class: INTEGER assign set_max_num_of_repeatition_per_class
+--			-- Max number of repeatitions for the mutators in a class.
+--			-- Only used when `post_state_guided_construction_style' is set to `Post_state_guided_construction_style_repeatition_maximum'.
+
+feature -- Configuration
+
+	repeatition_per_class (a_num_of_change: INTEGER): INTEGER
+			-- Num of repeatitions for a class, the object of which has `a_num_of_change' properties need to be changed.
+		do
+		    if post_state_guided_construction_style = Post_state_guided_construction_style_repeatition_maximum then
+		        if a_num_of_change > maximum_length then
+    		        Result := maximum_length
+		        else
+		            Result := a_num_of_change
+		        end
+		    elseif post_state_guided_construction_style = Post_state_guided_construction_style_repeatition_once then
+		        Result := 1
+		    elseif post_state_guided_construction_style = Post_state_guided_construction_style_repeatition_necessary then
+		        Result := a_num_of_change
+		    else
+		        check False end
+		    end
+		end
+
 feature -- Constants
+
+	Model_guidance_style_relaxed: INTEGER = 0
+			-- In relaxed style, infeasible feature calls are also possible to be generated,
+			--		where the operand objects cannot explictly violate the preconditions of the features;
 
 	Model_guidance_style_restriced: INTEGER = 1
 			-- In restrict style, only feasible feature calls would be generated,
 			-- 		where the operand objects have to satisfy the preconditions of the features;
 
-	Model_guidance_style_relaxed: INTEGER = 2
-			-- In relaxed style, infeasible feature calls are also possible to be generated,
-			--		where the operand objects cannot explictly violate the preconditions of the features;
-
-	Model_guidance_style_free: INTEGER = 3
+	Model_guidance_style_free: INTEGER = 2
 			-- In free style, all feature call sequences are possible,
 			--		since the preconditions of the features are simply ignored.
 
-	default_maximum_length: INTEGER = 3
+	Post_state_guided_construction_style_repeatition_maximum: INTEGER = 0
+			-- The mutators can be repeated at most for `max_num_of_repeatition_per_class' times.
+
+	Post_state_guided_construction_style_repeatition_once: INTEGER = 1
+			-- The mutators can only be used once for each class.
+
+	Post_state_guided_construction_style_repeatition_necessary: INTEGER = 2
+			-- The mutators can be repeated for as many times as necessary, i.e. at most
+			-- 		one time for each property difference.
+
+	default_maximum_length: INTEGER = 2
 			-- Default maximum length.
+
+feature -- Status set
+
+	set_maximum_length (a_maximum: INTEGER)
+			-- Set the `maximum_length' to be `a_maximum'.
+		require
+		    maximum_gt_0: a_maximum > 0
+		do
+		    maximum_length := a_maximum
+		end
+
+	set_model_guidance_style (a_guidance_style: INTEGER)
+			-- Set the model guidance style.
+		require
+		    valid_guidance_style: a_guidance_style = Model_guidance_style_restriced |
+		    					a_guidance_style = Model_guidance_style_relaxed |
+		    					a_guidance_style = Model_guidance_style_free
+		do
+		    model_guidance_style := a_guidance_style
+		end
+
+	set_post_state_guided_construction_style (a_style: INTEGER)
+			-- Set the post state guided construction style.
+		require
+		    style_valid: a_style = Post_state_guided_construction_style_repeatition_maximum or
+		    				a_style = Post_state_guided_construction_style_repeatition_once or
+		    				a_style = Post_state_guided_construction_style_repeatition_necessary
+		do
+		    post_state_guided_construction_style := a_style
+		end
+
+--	set_max_num_of_repeatition_per_class (a_num: INTEGER)
+--			-- Set the max num of repeatition for the mutators regarding each class object.
+--		require
+--		    positive_num: a_num > 0
+--		do
+--		    max_num_of_repeatition_per_class := a_num
+--		end
 
 feature{NONE} -- Implementation
 
@@ -201,24 +276,6 @@ feature{NONE} -- Implementation
 		        l_tbl.put (a_state, a_name)
 		        l_table.force (l_tbl, l_class.class_id)
 		    end
-		end
-
-	set_maximum_length (a_maximum: INTEGER)
-			-- Set the `maximum_length' to be `a_maximum'.
-		require
-		    maximum_gt_0: a_maximum > 0
-		do
-		    maximum_length := a_maximum
-		end
-
-	set_model_guidance_style (a_guidance_style: INTEGER)
-			-- Set the model guidance style.
-		require
-		    valid_guidance_style: a_guidance_style = Model_guidance_style_restriced |
-		    					a_guidance_style = Model_guidance_style_relaxed |
-		    					a_guidance_style = Model_guidance_style_free
-		do
-		    model_guidance_style := a_guidance_style
 		end
 
 end

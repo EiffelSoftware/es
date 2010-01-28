@@ -18,7 +18,6 @@ feature -- Query
 	state_transitions_from_model (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
 					a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
 					a_context_class: CLASS_C;
-					a_guidance_style: INTEGER;
 					a_class_set: detachable DS_HASH_SET [CLASS_C];
 					a_criteria: detachable AFX_BEHAVIOR_FEATURE_SELECTOR_I;
 					a_is_forward: BOOLEAN): DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
@@ -35,7 +34,7 @@ feature -- Query
    			end
 
 			l_constructor := constructor
-		    create l_config.make (a_objects, a_dest_objects, a_context_class, a_guidance_style, a_class_set)
+		    create l_config.make (a_objects, a_dest_objects, a_context_class, a_class_set)
    			l_constructor.construct_behavior (l_config, a_criteria, a_is_forward)
    			Result := l_constructor.call_sequences
 		end

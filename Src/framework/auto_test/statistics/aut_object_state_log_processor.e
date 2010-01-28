@@ -342,7 +342,7 @@ feature{NONE} -- Testing
 			set_autofix_config (l_config)
 
 		    l_fixes := state_transitions_from_model (l_before_objects, l_after_objects, l_class,
-		    		{AFX_BEHAVIOR_CONSTRUCTOR_CONFIG}.model_guidance_style_relaxed, Void, Void, True)
+		    		Void, Void, True)
 
 		    l_str := ""
 		    from l_fixes.start
