@@ -27,6 +27,7 @@ inherit
 	KL_SHARED_FILE_SYSTEM
 
 	AFX_SHARED_BEHAVIOR_CONSTRUCTOR
+		redefine load_model end
 
 	AFX_SHARED_SESSION
 
@@ -82,7 +83,7 @@ feature -- Process
 			l_model_file_name: FILE_NAME
 		do
 
-l_is_testing_behavior_construction := False
+l_is_testing_behavior_construction := True
 if not l_is_testing_behavior_construction then
 
 				-- Formal type manager.
@@ -156,6 +157,18 @@ end
 		end
 
 feature{NONE} -- Process
+
+	load_model (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8]; a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
+			-- <Precursor>
+		local
+			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
+		do
+   			create l_loader.make_with_directory ("E:\state_logs_merged\model")
+   			l_loader.load_state_transition_model (a_objects, a_dest_objects)
+   			if not l_loader.is_successful then
+   			    check error_in_model_loading: False end
+   			end
+   		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 			-- <Precursor>
@@ -342,7 +355,7 @@ feature{NONE} -- Testing
 			set_autofix_config (l_config)
 
 		    l_fixes := state_transitions_from_model (l_before_objects, l_after_objects, l_class,
-		    		Void, Void, True)
+		    		Void, Void, False)
 
 		    l_str := ""
 		    from l_fixes.start

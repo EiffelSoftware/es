@@ -28,11 +28,12 @@ feature -- Enumerate
 		    l_size, l_num, l_total_num: INTEGER
 		    l_set: DS_HASH_SET[G]
 		    l_list: DS_ARRAYED_LIST[G]
+		    l_found: BOOLEAN
 		    l_enumeration_list: like last_enumeration_list
 		    l_item: G
 		do
 		    	-- Reset the result buffer.
-		    	-- since the reference may be shared with other, we don't `wipe_out', we create a new one instead
+		    	-- Since the reference may be shared with other, we don't `wipe_out', we create a new one instead
 		    create last_enumeration_list.make_default
 			l_enumeration_list := last_enumeration_list
 
@@ -48,9 +49,9 @@ feature -- Enumerate
 		        a_possibilities.forth
 		    end
 
-				-- initialize the 2-D storage for all candidate configurations
+				-- Initialize the 2-D storage for all candidate configurations.
 		    l_enumeration_list.resize (l_total_num)
-		    	-- each enumeration contains one value for each position
+		    	-- Each enumeration contains one value for each position.
 		    l_size := a_possibilities.count
 		    from l_num := 1
 		    until l_num > l_total_num
@@ -60,8 +61,9 @@ feature -- Enumerate
 		        l_num := l_num + 1
 		    end
 
-		    -- generating all possible combinations
-		    	-- loop through each feature operand
+		    -- Generate all possible combinations.
+
+		    	-- Loop through all the positions.
 		    from
 		        a_possibilities.start
 		        l_repetition := 1
@@ -72,27 +74,28 @@ feature -- Enumerate
 		        l_opt_num := l_set.count
 		        l_loop := l_total_num // (l_opt_num * l_repetition)
 
-					-- starting from the first combination, we fill the corresponding position in all combinations.
-					-- each possible value appears consecutively in `l_repetition' combinations,
-					-- the whole set of possible values therefore need to be traversed from the beginning to the end for `l_loop' times.
+					-- Starting from the first combination, we fill the corresponding position in all combinations.
+					-- Each possible value appears consecutively in `l_repetition' combinations,
+					-- 		the whole set of possible values therefore need to be traversed from the beginning to the end for `l_loop' times.
 
 		        l_enumeration_list.start
-					-- the whole operand set need to be iterated for `l_loop' number of times
+					-- The whole operand set need to be iterated for `l_loop' number of times.
 		        from l_loop_index := 0
 		        until l_loop_index = l_loop
 		        loop
-		            	-- iterate through the possibilities for current position
+		            	-- Iterate through the possibilities for current position.
     		        from l_set.start
     		        until l_set.after
     		        loop
     		            l_item := l_set.item_for_iteration
 
-							-- consecutive appearance of each object in adjacent combinations
+							-- Consecutive appearance of each object in adjacent combinations.
     		        	from l_cur_rep := 0
     		        	until l_cur_rep = l_repetition
     		        	loop
         		            l_list := l_enumeration_list.item_for_iteration
-        		            l_list.force_last (l_item)
+
+           		            l_list.force_last (l_item)
 
         		            l_enumeration_list.forth
         		            l_cur_rep := l_cur_rep + 1
@@ -163,6 +166,128 @@ feature -- Enumerate
 		    end
 
 			last_enumeration_list := l_enumeration_list
+		end
+
+--	remove_combinations_with_duplicates
+--			-- Remove the combinations containing duplicate items (possibly at different positions)
+--		local
+--		    l_generations: like last_enumeration_list
+--		    l_index1, l_index2: INTEGER
+--		    l_gen: DS_ARRAYED_LIST [G]
+--		    l_val1, l_val2: G
+--		    l_found: BOOLEAN
+--		do
+--			l_generations := last_enumeration_list
+--			from l_generations.start
+--			until l_generations.after
+--			loop
+--			    l_gen := l_generations.item_for_iteration
+
+--			    from
+--			    	l_index1 := 1
+--			    	l_found := False
+--			    until l_index1 > l_gen.count
+--			    loop
+--			        from l_index2 := 1
+--			        until l_index2 > l_gen.count
+--			        loop
+--			            if l_gen.item(l_index1) ~ l_gen.item(l_index2) then
+--			                l_found := True
+--			            end
+--			            l_index2 := l_index2 + 1
+--			        end
+--			        l_index1 := l_index1 + 1
+--			    end
+
+--			    l_generations.forth
+--			end
+--		end
+
+	is_same_combination (a_com1, a_com2: DS_ARRAYED_LIST[G]): BOOLEAN
+			-- Is `a_com1' the same as `a_com2'?
+		local
+		do
+		    if a_com1.count /= a_com2.count then
+		        Result := False
+		    else
+		        Result := True
+		        from
+		            a_com1.start
+		            a_com2.start
+		        until
+		            a_com1.after or not Result
+		        loop
+		            if a_com1.item_for_iteration /~ a_com2.item_for_iteration then
+		                Result := False
+		            end
+		            a_com1.forth
+		            a_com2.forth
+		        end
+		    end
+		end
+
+	is_combination_with_duplication (a_combination: DS_ARRAYED_LIST[G]): BOOLEAN
+			-- Is `a_combination' containing duplication?
+		require
+		    combination_not_empty: not a_combination.is_empty
+		local
+		    l_index1, l_index2: INTEGER
+		    l_val1, l_val2: G
+		    l_found: BOOLEAN
+		    l_count: INTEGER
+		do
+		    from
+		    	l_index1 := 1
+		    	l_count := a_combination.count
+		    	l_found := False
+		    until l_index1 > l_count
+		    loop
+		        from l_index2 := l_index1 + 1
+		        until l_index2 > l_count
+		        loop
+		            if a_combination.item(l_index1) ~ a_combination.item(l_index2) then
+		                l_found := True
+		            end
+		            l_index2 := l_index2 + 1
+		        end
+		        l_index1 := l_index1 + 1
+		    end
+		    Result := l_found
+		end
+
+	remove_duplications
+			-- Remove duplications.
+		local
+		    l_com1, l_com2: DS_ARRAYED_LIST [G]
+		    l_found: BOOLEAN
+		    l_result, l_list: like last_enumeration_list
+		do
+			l_list := last_enumeration_list
+			create l_result.make (l_list.count)
+
+			from l_list.start
+			until l_list.after
+			loop
+			    l_com1 := l_list.item_for_iteration
+			    if not is_combination_with_duplication (l_com1) then
+			        l_found := False
+			        from l_result.start
+			        until l_result.after or l_found
+			        loop
+			            if is_same_combination (l_com1, l_result.item_for_iteration) then
+			                l_found := True
+			            end
+			            l_result.forth
+			        end
+
+			        if not l_found then
+			            l_result.force_last (l_com1)
+			        end
+			    end
+			    l_list.forth
+			end
+
+			last_enumeration_list := l_result
 		end
 
 feature{NONE} -- Implementation

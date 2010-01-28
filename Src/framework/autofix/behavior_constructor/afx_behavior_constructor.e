@@ -30,6 +30,12 @@ feature -- Access
 		    Result := internal_list_of_fixes
 		end
 
+	state_transition_summary_equality_tester: AFX_STATE_TRANSITION_SUMMARY_EQUALITY_TESTER
+			-- State transition summary equality tester.
+		once
+		    create Result
+		end
+
 feature -- Constructor interface
 
 	construct_behavior (a_config: attached like config; a_criteria: detachable like criteria; a_is_forward: BOOLEAN)
@@ -38,6 +44,7 @@ feature -- Constructor interface
 			l_starting_state: AFX_BEHAVIOR_STATE
 		    l_empty_fix: DS_ARRAYED_LIST [STRING_8]
 		    l_fix: AFX_STATE_TRANSITION_FIX
+		    l_feature_options: like internal_list_of_feature_options
 		do
 		    config := a_config
 
@@ -47,13 +54,20 @@ feature -- Constructor interface
 
 			reset_constructor
 		    collect_suitable_feature_options (a_is_forward)
-		    if not internal_list_of_feature_options.is_empty then
-		        create l_starting_state.make (Void, Void, Void, a_config.usable_objects, 0, 0)
-		        internal_stack_of_execution_env.put ([0, l_starting_state])
-    		    execute_feature_sequences
-    		    if not internal_satisfactory_behavior_states.is_empty then
-        		    interpretate_satisfactory_behavior_states
-    		    end
+
+	        l_feature_options := internal_list_of_feature_options
+		    if not l_feature_options.is_empty then
+		        if config.is_using_symbolic_execution then
+		            	-- Symbolically execute the features to construct the behavior sequences.
+    		        create l_starting_state.make (Void, Void, Void, a_config.usable_objects, 0, 0)
+    		        internal_stack_of_execution_env.put ([0, l_starting_state])
+        		    execute_feature_sequences
+        		    if not internal_satisfactory_behavior_states.is_empty then
+            		    interpretate_satisfactory_behavior_states
+        		    end
+		        else
+		            enumerate_feature_call_sequences
+		        end
 		    end
 
 				-- Always add the empty call sequence as a special fix candidate.
@@ -63,6 +77,109 @@ feature -- Constructor interface
 		end
 
 feature{NONE} -- Operation
+
+	enumerate_feature_call_sequences
+			-- Generate all possible feature call sequences by enumeration from the feature options.
+		require
+		    internal_list_of_feature_options_not_empty: not internal_list_of_feature_options.is_empty
+		local
+		    l_feature_options: like internal_list_of_feature_options
+		    l_generator: like Transition_enumeration_generator
+		    l_feature_options_in_set: DS_ARRAYED_LIST[DS_HASH_SET[AFX_STATE_TRANSITION_SUMMARY]]
+		    l_set_of_options: DS_HASH_SET[AFX_STATE_TRANSITION_SUMMARY]
+		    l_list_of_options: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_SUMMARY]
+   		    l_feature_call_sequences: DS_ARRAYED_LIST[DS_ARRAYED_LIST[AFX_STATE_TRANSITION_SUMMARY]]
+		    l_partial_call_sequences: DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
+		    l_starting_state: AFX_BEHAVIOR_STATE
+		    l_call_sequences: like call_sequences
+		    l_fix: AFX_STATE_TRANSITION_FIX
+		do
+	        l_feature_options := internal_list_of_feature_options
+
+				-- Convert `internal_list_of_feature_options' into the input format of the generator.
+			create l_feature_options_in_set.make (l_feature_options.count)
+			from l_feature_options.start
+			until l_feature_options.after
+			loop
+			    l_list_of_options := l_feature_options.item_for_iteration
+
+				create l_set_of_options.make (l_list_of_options.count)
+				l_set_of_options.set_equality_tester (state_transition_summary_equality_tester)
+				l_list_of_options.do_all (agent l_set_of_options.force)
+				l_feature_options_in_set.force_last (l_set_of_options)
+
+			    l_feature_options.forth
+			end
+
+            	-- Enumerate possible feature call sequences.
+			l_generator := Transition_enumeration_generator
+			l_generator.enumerate_all_partial (l_feature_options_in_set)
+			l_generator.remove_duplications
+			l_feature_call_sequences := l_generator.last_enumeration_list
+			check not l_feature_call_sequences.is_empty end
+
+				-- Feature call sequences to fix snippets.
+		    l_call_sequences := call_sequences
+		    create l_starting_state.make (Void, Void, Void, config.usable_objects, 0, 0)
+			from l_feature_call_sequences.start
+			until l_feature_call_sequences.after
+			loop
+			    l_partial_call_sequences := mutator_sequence_to_call_sequences (l_starting_state, l_feature_call_sequences.item_for_iteration)
+
+			    	-- construct a fix from each call sequence, and put the fix into `call_sequences'
+			    from l_partial_call_sequences.start
+			    until l_partial_call_sequences.after
+			    loop
+			        create l_fix.make (l_partial_call_sequences.item_for_iteration)
+			        l_call_sequences.force_last (l_fix)
+			        l_partial_call_sequences.forth
+			    end
+
+			    l_feature_call_sequences.forth
+			end
+		end
+
+	mutator_sequence_to_call_sequences (a_starting_state: AFX_BEHAVIOR_STATE; a_mutator_sequence: DS_ARRAYED_LIST[AFX_STATE_TRANSITION_SUMMARY])
+										: DS_ARRAYED_LIST[DS_ARRAYED_LIST[STRING]]
+			-- Construct a list of feature call sequences from a given mutator sequence.
+		local
+		    l_mutator: AFX_STATE_TRANSITION_SUMMARY
+		    l_feature_call_generator: like Feature_call_generator
+		    l_call_sequences: like call_sequences
+		    l_call: DS_ARRAYED_LIST [STRING]
+		    l_call_set: DS_HASH_SET [STRING]
+		    l_option_list: DS_ARRAYED_LIST[DS_HASH_SET[STRING]]
+		    l_generator: like Feature_call_enumeration_generator
+		do
+		    l_feature_call_generator := Feature_call_generator
+		    create l_option_list.make_default
+		    l_generator := Feature_call_enumeration_generator
+
+		    from a_mutator_sequence.start
+		    until a_mutator_sequence.after
+		    loop
+		        l_mutator := a_mutator_sequence.item_for_iteration
+
+		        	-- Each mutator can be executed using different operand-configurations, which constitutes a set.
+		        	-- We turn a mutator sequence into a list of set of concrete feature calls.
+		        l_feature_call_generator.generate_feasible_feature_call_configurations (a_starting_state, l_mutator)
+		        if attached l_feature_call_generator.last_behavior_operand_configurations as lt_configurations and then not lt_configurations.is_empty then
+		            l_call := l_feature_call_generator.configurations_to_feature_calls
+		            create l_call_set.make (l_call.count)
+		            l_call.do_all (agent l_call_set.put )
+		            l_option_list.force_last (l_call_set)
+		        else
+		            check False end
+		        end
+
+		        a_mutator_sequence.forth
+		    end
+
+			l_generator.enumerate_fully (l_option_list)
+			Result := l_generator.last_enumeration_list
+		end
+
+
 
 	reset_constructor
 			-- Reset the internal storage.
@@ -134,15 +251,15 @@ feature{NONE} -- Operation
 			end
 
 			if not l_transitions.is_empty then
-    				-- Repeatedly put the same feature options on each sequence position.
-    				-- Don't use internal cursor to iterate through the sub-list.
-    			internal_list_of_feature_options.resize (l_config.maximum_length)
-    			from l_index := 0
-    			until l_index = l_config.maximum_length
-    			loop
-    			    internal_list_of_feature_options.force_last (l_transitions)
-    			    l_index := l_index + 1
-    			end
+       				-- Repeatedly put the same feature options on each sequence position.
+       				-- Don't use internal cursor to iterate through the sub-list.
+       			internal_list_of_feature_options.resize (l_config.maximum_length)
+       			from l_index := 0
+       			until l_index = l_config.maximum_length
+       			loop
+       			    internal_list_of_feature_options.force_last (l_transitions)
+       			    l_index := l_index + 1
+       			end
 			end
 		end
 
@@ -226,17 +343,19 @@ feature{NONE} -- Operation
 					if l_mutator_table.is_empty then
 					    l_is_possible := False
 					else
+							-- Convert hash table into arrayed list.
     					create l_options.make (l_mutator_table.count)
     					l_mutator_table.do_all (agent l_options.force_last)
 
-    						-- Repeat the mutators for a certain times, according to the config.
-    					l_num_of_mutator_repeatition := config.repeatition_per_class (l_num_of_property_change)
-    					from i := 1
-    					until i > l_num_of_mutator_repeatition
-    					loop
-        					internal_list_of_feature_options.force_last (l_options)
-        					i := i + 1
-    					end
+       						-- Repeat the mutators for a certain times, according to the config.
+       					l_num_of_mutator_repeatition := config.repeatition_per_class (l_num_of_property_change)
+					    internal_list_of_feature_options.resize (l_num_of_mutator_repeatition)
+       					from i := 1
+       					until i > l_num_of_mutator_repeatition
+       					loop
+           					internal_list_of_feature_options.force_last (l_options)
+           					i := i + 1
+       					end
 					end
 				end
 				l_destinations.forth
@@ -341,6 +460,24 @@ feature{NONE} -- Operation
 		end
 
 feature{NONE} -- Implementation
+
+	Transition_enumeration_generator: AFX_ENUMERATION_GENERATOR [AFX_STATE_TRANSITION_SUMMARY]
+			-- Generator to generate all transition enumerations.
+		once
+		    create Result
+		end
+
+	Feature_call_enumeration_generator: AFX_ENUMERATION_GENERATOR [STRING]
+			-- Generator to generate all feature call (as STRING) enumerations.
+		once
+		    create Result
+		end
+
+	Feature_call_generator: AFX_FEATURE_CALL_GENERATOR
+			-- Feature call generator.
+		once
+		    create Result
+		end
 
 	internal_list_of_feature_options: DS_ARRAYED_LIST [DS_ARRAYED_LIST [AFX_STATE_TRANSITION_SUMMARY]]
 			-- List of suitable feature options.

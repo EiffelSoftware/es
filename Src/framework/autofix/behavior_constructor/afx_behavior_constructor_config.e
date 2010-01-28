@@ -135,6 +135,7 @@ feature -- Initialization
 
 			set_maximum_length (default_maximum_length)
 
+			is_using_symbolic_execution := False
 		    is_good := True
 		end
 
@@ -142,6 +143,10 @@ feature -- Access
 
 	is_good: BOOLEAN
 			-- Is configuration good?
+
+	is_using_symbolic_execution: BOOLEAN
+			-- Is the behavior constructor using the symbolic execution?
+			-- If False, we just enumerate all possible combinations of all the mutators.
 
 	usable_objects: DS_HASH_TABLE [DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING], INTEGER]
 			-- Objects can be used to accomplish the state transition.

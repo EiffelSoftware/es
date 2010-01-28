@@ -9,6 +9,7 @@ class
 
 inherit
     DS_ARRAYED_LIST[AFX_BOOLEAN_STATE_TRANSITION_SUMMARY]
+    	redefine is_equal end
 
     AFX_HASH_CALCULATOR
     	undefine is_equal, copy end
@@ -112,6 +113,12 @@ feature -- Status report
 		    end
 		end
 
+	is_equal (a_summary: like Current): BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_about_same_feature (a_summary)
+		end
+
 feature -- Update
 
 	update (a_summary: like Current)
@@ -134,6 +141,14 @@ feature -- Update
 
 		        l_index := l_index + 1
 		    end
+		end
+
+feature{NONE} -- Implementation
+
+	state_transition_summary_equality_tester: AFX_STATE_TRANSITION_SUMMARY_EQUALITY_TESTER
+			-- Equality tester.
+		once
+		    create Result
 		end
 
 feature{NONE} -- Hashable interface

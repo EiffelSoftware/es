@@ -8,6 +8,8 @@ class
 	AFX_STATE_TRANSITION_FIX
 
 inherit
+    DEBUG_OUTPUT
+    	undefine out end
 
     ANY
     	redefine
@@ -76,6 +78,12 @@ feature	-- Ranking
 			-- The impact of the fix on the object states, i.e. the differences between the states before and after the fix.
 
 feature -- Status report
+
+	debug_output: STRING
+			-- <Precursor>
+		do
+		    Result := out
+		end
 
 	out: STRING
 			-- <Precursor>
