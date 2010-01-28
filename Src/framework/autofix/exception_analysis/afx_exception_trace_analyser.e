@@ -174,7 +174,7 @@ feature{NONE} -- Implementation
 		        create {AFX_EXCEPTION_CALL_STACK_FRAME_RESCUE}l_frame
 		    else
 		        if is_valid_identifier (l_class_name) then
-    				if l_words.count > 6 then
+    				if l_words.count >= 3 then
             		    l_feature_name := l_words.at (2)
             		    if is_valid_identifier (l_feature_name) then
                 		    l_bkpt_string := l_words.at (3)
@@ -224,7 +224,9 @@ feature{NONE} -- Implementation
 				end
 		    end
 
-			internal_exception_frames.force_last (l_frame)
+			if l_frame /= Void then
+				internal_exception_frames.force_last (l_frame)
+			end
 		end
 
 	is_valid_identifier (a_name: STRING): BOOLEAN

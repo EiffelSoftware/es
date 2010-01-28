@@ -67,7 +67,7 @@ feature -- Status Report
 		    Result := (context_class_name /= Void and then not context_class_name.is_empty)
 		    		and then (origin_class_name /= Void and then not origin_class_name.is_empty)
 		    		and then (feature_name /= Void and then not feature_name.is_empty)
-		    		and then breakpoint_slot_index > 0
+		    		and then breakpoint_slot_index >= 0
 		end
 
 	is_resolved: BOOLEAN
@@ -106,12 +106,12 @@ feature{AFX_EXCEPTION_POSITION_RESOLVER_I} --Setting
 
 feature -- Operating
 
-	resolve_exception_position_info
-			-- resolve detailed exception position info
-		require
-		    is_information_complete: is_information_complete
-		deferred
-		end
+--	resolve_exception_position_info
+--			-- resolve detailed exception position info
+--		require
+--		    is_information_complete: is_information_complete
+--		deferred
+--		end
 
 
 note

@@ -39,7 +39,9 @@ feature{NONE} -- Implementation
 		    frame_information_complete: a_frame.is_information_complete
 		do
 		    resolve_context_feature (a_frame)
-		    resolve_breakpoint_info (a_frame)
+		    if a_frame.breakpoint_slot_index > 0 then
+    		    resolve_breakpoint_info (a_frame)
+		    end
 		end
 
 	resolve_context_feature (a_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I)
@@ -69,6 +71,7 @@ feature{NONE} -- Implementation
 			-- resolve the `breakpoint_info' of `a_frame'
 		require
 		    frame_information_complete: a_frame.is_information_complete
+		    breakpoint_slot_index_valid: a_frame.breakpoint_slot_index > 0
 		    origin_feature_resolved: a_frame.origin_feature /= Void
 		    breakpoint_info_unresolved: a_frame.breakpoint_info = Void
 		local

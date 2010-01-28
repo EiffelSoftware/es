@@ -86,11 +86,11 @@ feature{AFX_EXCEPTION_POSITION_RESOLVER_I} --Setting
 
 feature -- Operating
 
-	resolve_exception_position_info
-			-- <Precursor>
-		do
-		    check False end
-		end
+--	resolve_exception_position_info
+--			-- <Precursor>
+--		do
+--		    check False end
+--		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

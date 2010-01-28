@@ -44,16 +44,22 @@ feature -- Access
 		    create Result
 		end
 
+	model_loader: AFX_STATE_TRANSITION_MODEL_LOADER
+			-- Shared model loader.
+		once
+		    create Result.make
+		end
+
 feature{NONE} -- Operation
 
 	load_model (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8]; a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
 			-- Load the model necessary for the state transition.
 		local
-			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
+--			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
 		do
-   			create l_loader.make
-   			l_loader.load_state_transition_model (a_objects, a_dest_objects)
-   			if not l_loader.is_successful then
+--   		create l_loader.make
+   			model_loader.load_state_transition_model (a_objects, a_dest_objects)
+   			if not model_loader.is_successful then
    			    check error_in_model_loading: False end
    			end
    		end
