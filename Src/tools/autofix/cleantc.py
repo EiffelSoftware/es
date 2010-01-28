@@ -80,7 +80,7 @@ def create_folder (a_passing_tcs,  a_failing_tcs,  index):
             if index > 0:
                 folder_name = folder_name + "__" + str(index)
                 
-            print ("Process folder: " + folder_name)
+            print ("Created folder: " + folder_name)
                 
             # Create target folder and copy test cases into it.
             os.makedirs(folder_name)
@@ -103,6 +103,7 @@ def process_folder (a_folder):
     failed_test_cases = 0
     failing_tcs ={}
     passing_tcs=[]    
+    print ("Processing folder " + a_folder)
     for fn in os.listdir(a_folder):
         if not (fn=='.' or fn=='..'):
             l_path = os.path.join(a_folder,  fn)
@@ -163,9 +164,10 @@ options['input-folder'] = args[0]
 options['output-folder'] = args[1]
 
 # Get the list of test case containing folders, store result in `tc_folders'.
+print ("Searching for test case folders.")
 folders = recursive_folders (options['input-folder'])
 tc_folders = filter (is_folder_contain_test_cases,  folders)
-
+print ("Found " + str (len(tc_folders)) + " folders.")
 # Process all the folders containing test cases according to the given options
 map(process_folder, tc_folders)
 

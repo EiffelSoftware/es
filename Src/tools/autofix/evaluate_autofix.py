@@ -73,6 +73,8 @@ for option, value in opts:
 options['model-folder'] = args[0]
 options['project-folder'] = args[1]
 
+# Wait proc to execut for at most seconds. If proc exits before seconds, return True;
+# Ater those seconds, kill proc, and return False.
 def wait_timeout(proc, seconds):
     start = time.time()
     end = start + seconds
@@ -81,11 +83,11 @@ def wait_timeout(proc, seconds):
     while True:
         result = proc.poll()
         if result is not None:
-            return result
+            return True
         if time.time() >= end:
-            proc.kill()
+            proc.kill()            
         time.sleep(interval)
-
+    return False
 
 # Build project
 def compile_project(a_folder):
@@ -117,7 +119,7 @@ def autofix(a_folder):
 
     logfile = open(options['log-file'], 'w')
     p = Popen(ec_cmd,   shell=True,  stdout=logfile,  stderr=STDOUT)
-    wait_timeout(p, options['time-out'] * 60)    
+    l_timeout = wait_timeout(p, options['time-out'] * 60)    
     logfile.close()
     try:
         sts = os.waitpid(p.pid, 0)[1]
@@ -126,7 +128,9 @@ def autofix(a_folder):
     
     logfile = open(options['log-file'], 'r')
     content = logfile.read()
-    if content.find('Good fix No') > -1:
+    if l_timeout == True:
+        result = "Time out"
+    elif content.find('Good fix No') > -1:
         result = "Found valid fix."
     elif content.find('Class / Object') > -1:
         result = "Crashed."
@@ -138,6 +142,9 @@ def autofix(a_folder):
         result = "Not found valid fix."
     logfile.close()
     print(result)
+    os.system ('killall -9 mono')
+    os.system ('killall -9 Boogie.exe')
+    
     
     # Remove files to save space.
     shutil.rmtree(os.path.join(options['project-folder'],  'EIFGENs',  options['target'],  'W_code'),  ignore_errors=True)
