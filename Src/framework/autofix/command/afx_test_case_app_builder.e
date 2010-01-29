@@ -186,7 +186,6 @@ feature{NONE} -- Implementation
 					else
 						found_failing_test_case_count := found_failing_test_case_count + 1
 					end
-				else
 				end
 			else
 --				random.forth

@@ -510,6 +510,7 @@ feature{NONE} -- Implementation
 			l_data: TUPLE [seq: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]; premise: AFX_EXPRESSION]
 			l_premise: AFX_EXPRESSION
 			l_finished: BOOLEAN
+			l_premise_ranking: INTEGER
 		do
 			create Result.make
 			c := a_candidates.count
@@ -553,10 +554,19 @@ feature{NONE} -- Implementation
 						loop
 							l_data := l_array.item (j)
 							l_premise := l_data.premise
+
+								-- Call sequences generated to satisfy an implication are considered to be more complicated.
+							if l_premise.is_true_expression then
+									-- Simpler case.
+								l_premise_ranking := 1
+							else
+									-- Complicated case.
+								l_premise_ranking := 2
+							end
 							l_finished := l_data.seq.item_for_iteration.transitions.is_empty
 							if not l_finished then
 								l_fix.append (text_of_fix (l_premise, l_data.seq.item_for_iteration.transitions))
-								l_ranking := l_ranking + l_data.seq.item_for_iteration.ranking * (-1)
+								l_ranking := l_ranking + l_data.seq.item_for_iteration.ranking * (-1) * l_premise_ranking
 								j := j + 1
 							end
 						end
@@ -587,7 +597,7 @@ feature{NONE} -- Implementation
 
 			from
 				i := 1
-				k := 2
+				k := 1
 			until
 				i > k
 			loop

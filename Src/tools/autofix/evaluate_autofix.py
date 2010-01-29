@@ -142,7 +142,7 @@ def autofix(a_folder):
         result = "Not found valid fix."
     logfile.close()
     print(result)
-    os.system ('killall -9 mono')
+    os.system ('killall -9 mono.exe')
     os.system ('killall -9 Boogie.exe')
     
     
