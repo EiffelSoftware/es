@@ -379,6 +379,8 @@ feature -- Processing
 			feat_target: STRING
 			arguments: STRING
 			temporary: STRING
+			call_type: STRING
+			l_is_creation_routine: BOOLEAN
 		do
 			l_feature := system.class_of_id (a_node.written_in).feature_of_feature_id (a_node.feature_id)
 			check l_feature /= Void end
@@ -398,16 +400,26 @@ feature -- Processing
 				process_parameter_list (a_node.parameters)
 				arguments := expression
 
+				if a_node.precursor_type /= Void then
+					call_type := "specialinvoke"
+						-- This is a bit hacky.
+					if l_attached_feature.feature_name.is_equal("init") then
+						l_is_creation_routine := True
+					end
+				else
+					call_type := "virtualinvoke"
+				end
+
 				if l_attached_feature.has_return_value then
 					create_new_temporary
 					temporary := last_temporary
 					temporaries.extend ([temporary, type_string (l_attached_feature.type)])
 
-					side_effect.put_line (temporary + " = virtualinvoke " + feat_target + "." + name_for_routine_in_call (False, l_attached_feature) + arguments + ";")
+					side_effect.put_line (temporary + " = " + call_type + " " + feat_target + "." + name_for_routine_in_call (l_is_creation_routine, l_attached_feature) + arguments + ";")
 
 					expression := temporary
 				else
-					side_effect.put_line ("virtualinvoke " + feat_target + "." + name_for_routine_in_call (False, l_attached_feature) + arguments + ";")
+					side_effect.put_line (call_type + " " + feat_target + "." + name_for_routine_in_call (l_is_creation_routine, l_attached_feature) + arguments + ";")
 
 					expression := "Nothing!!!"
 				end

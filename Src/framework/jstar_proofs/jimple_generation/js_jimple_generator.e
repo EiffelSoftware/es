@@ -239,7 +239,7 @@ feature {NONE}
 			l_byte_code: BYTE_CODE
 		do
 			-- TODO: is this the correct way to see if a feature has (possibly inherited) preconditions?
-			if a_feature.has_precondition or a_feature.assert_id_set /= Void then
+			if has_requires_clause (a_feature) then
 				output.put_line ("requires {")
 				output.indent
 
@@ -269,7 +269,7 @@ feature {NONE}
 		local
 			l_byte_code: BYTE_CODE
 		do
-			if a_feature.has_postcondition or a_feature.assert_id_set /= Void then
+			if has_ensures_clause (a_feature) then
 				output.put_line ("ensures {")
 				output.indent
 
@@ -295,7 +295,7 @@ feature {NONE}
 			end
 		end
 
-		build_instructions_for_ensure_clauses (a_feature: !FEATURE_I; a_ensures_clause_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR)
+	build_instructions_for_ensure_clauses (a_feature: !FEATURE_I; a_ensures_clause_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR)
 		local
 			l_byte_code: BYTE_CODE
 			last_clause_set_result: STRING
@@ -715,6 +715,44 @@ feature {NONE}
 				Result := "UnknownValue!!!"
 			else
 				Result := "null"
+			end
+		end
+
+	has_requires_clause (a_feature: !FEATURE_I): BOOLEAN
+		local
+			l_counter: INTEGER
+			l_assert_info : INH_ASSERT_INFO
+		do
+			Result := a_feature.has_precondition
+			if a_feature.assert_id_set /= Void then
+				from
+					l_counter := 1
+				until
+					l_counter > a_feature.assert_id_set.count
+				loop
+					l_assert_info := a_feature.assert_id_set.at (l_counter)
+					Result := Result or l_assert_info.has_precondition
+					l_counter := l_counter + 1
+				end
+			end
+		end
+
+	has_ensures_clause (a_feature: !FEATURE_I): BOOLEAN
+		local
+			l_counter: INTEGER
+			l_assert_info : INH_ASSERT_INFO
+		do
+			Result := a_feature.has_postcondition
+			if a_feature.assert_id_set /= Void then
+				from
+					l_counter := 1
+				until
+					l_counter > a_feature.assert_id_set.count
+				loop
+					l_assert_info := a_feature.assert_id_set.at (l_counter)
+					Result := Result or l_assert_info.has_postcondition
+					l_counter := l_counter + 1
+				end
 			end
 		end
 

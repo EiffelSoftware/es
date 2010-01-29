@@ -1,0 +1,11 @@
+import "field_logic";
+
+rule equal_students1:
+ | S(?x,{age=?a1;exm=?e1}) |- S(?x,{age=?a2;exm=?e2})
+if
+ S(?x,{age=?a1;exm=?e1}) | |- ?a1=?a2 * ?e1=?e2
+
+rule equal_students2:
+ | S$STUDENT(?x,{age=?a1;exm=?e1}) |- S$STUDENT(?x,{age=?a2;exm=?e2})
+if
+ S$STUDENT(?x,{age=?a1;exm=?e1}) | |- ?a1=?a2 * ?e1=?e2
