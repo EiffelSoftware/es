@@ -73,16 +73,16 @@ feature -- Constants
 			-- Note: this is an empirical value which works in most of the cases.
 			-- The actual `snippet_complexity' can be larger than this.	
 
-	scope_levels_weight: DOUBLE = 0.15
+	scope_levels_weight: DOUBLE = 2.5
 			-- Weight of `scope_levels' in final syntax ranking calculation
 
-	relevant_instructions_weight: DOUBLE = 0.15
+	relevant_instructions_weight: DOUBLE = 1.0
 			-- Weight of `relevant_instructions' in final syntax ranking calculation
 
 	skeleton_complexity_weight: DOUBLE = 0.25
 			-- Weight of `skeleton_complexity' in final syntax ranking calculation
 
-	snippet_complexity_weight: DOUBLE = 0.25
+	snippet_complexity_weight: DOUBLE = 5.0
 			-- Weight of `snippet_complexity' in final syntax ranking calculation
 
 feature -- Setting

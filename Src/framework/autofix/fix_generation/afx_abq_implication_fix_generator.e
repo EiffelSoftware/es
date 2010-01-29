@@ -76,7 +76,7 @@ feature{NONE} -- Implementation
 					l_premise,
 					(not l_consequent).equation (l_value).to_state.union (l_premise.equation (l_value).to_state),
 					l_consequent.equation (l_value),
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, False))
 
 				-- Generate fix: (p -> q is the failing assertion)
 				-- if p then
@@ -91,7 +91,7 @@ feature{NONE} -- Implementation
 					l_premise,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 					create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, False))
 
 				-- Generate fix: (p -> q is the failing assertion)
 				-- if not (p -> q) then
@@ -107,7 +107,7 @@ feature{NONE} -- Implementation
 					l_negated_premise,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 					create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, True))
 		end
 
 	generate_wrapping_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
@@ -143,7 +143,7 @@ feature{NONE} -- Implementation
 						l_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-						a_fixing_location.scope_level))
+						a_fixing_location.scope_level, False))
 
 --					-- Generate fix: (p -> q is the failing assertion)
 --					-- if p -> q then

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_PROXY_LOGGER
+	AFX_CONSOLE_PRINTER
 
 inherit
 	AFX_TIME_UTILITY
@@ -21,8 +21,6 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			config := a_config
-			create log_file.make_create_read_write (config.proxy_log_path)
-			create break_point_hit_statistics.make (50)
 		ensure
 			config_set: config = a_config
 		end
@@ -32,46 +30,43 @@ feature -- Access
 	config: AFX_CONFIG
 			-- Configuration of current AutoFix session
 
-	log_file: PLAIN_TEXT_FILE
-			-- File to store logs
-
 feature -- Actions
 
 	on_sesson_starts
 			-- Action to be performed when the whole AutoFix session starts
 		do
 			start_time := time_now
-			log_time_stamp (session_start_message)
+			log_time_stamp_new_line (session_start_message)
 		end
 
 	on_session_ends
 			-- Action to be performed when the whole AutoFix session ends.
 		do
-			log_time_stamp (session_end_message)
+			log_time_stamp_new_line (session_end_message)
 		end
 
 	on_test_case_analyzing_starts
 			-- Action to be performed when test case analyzing starts
 		do
-			log_time_stamp (test_case_analyzing_start_message)
+			log_time_stamp_new_line (test_case_analyzing_start_message)
 		end
 
 	on_test_case_analyzing_ends
 			-- Action to be performed when test case analyzing ends
 		do
-			log_time_stamp (test_case_analyzing_end_message)
+			log_time_stamp_new_line (test_case_analyzing_end_message)
 		end
 
 	on_fix_generation_starts
 			-- Action to be performed when fix generation starts
 		do
-			log_time_stamp (fix_generation_start_message)
+			log_time_stamp_new_line (fix_generation_start_message)
 		end
 
 	on_fix_generation_ends (a_candidate_count: INTEGER)
 			-- Action to be performed when fix generation ends
 		do
-			log_time_stamp (fix_generation_end_message + a_candidate_count.out + " candidates generated.")
+			log_time_stamp_new_line (fix_generation_end_message + a_candidate_count.out + " candidates generated.")
 			fix_candidate_count := a_candidate_count
 			finish_validated_fix_candidate_count := 0
 		end
@@ -79,39 +74,23 @@ feature -- Actions
 	on_fix_validation_starts
 			-- Action to be performed when fix validation starts
 		do
-			log_time_stamp (fix_validation_start_message)
+			log_time_stamp_new_line (fix_validation_start_message)
 		end
 
 	on_fix_validation_ends
 			-- Action to be performed when fix validation ends
 		do
-			log_time_stamp (fix_validation_end_message)
+			log_time_stamp_new_line (fix_validation_end_message)
 		end
 
 	on_new_test_case_found (a_tc_info: AFX_TEST_CASE_INFO)
 			-- Action to be performed when a new test case indicated by `a_tc_info' is found in test case analysis phase.
 		do
-			if test_case_count > 0 then
-					-- There are some test cases before.				
-				log_break_point_hit_statistics
-			end
-
-			log_time_stamp (new_test_case_found_message + a_tc_info.id + ", " + a_tc_info.uuid + ", " + a_tc_info.is_passing.out)
-			test_case_count := test_case_count + 1
-			break_point_count := 0
-			break_point_hit_statistics.wipe_out
 		end
 
 	on_break_point_hits (a_tc_info: AFX_TEST_CASE_INFO; a_bpslot: INTEGER)
 			-- Action to be performed when break point `a_bpslot' in `a_tc_info' is hit
 		do
-			break_point_count := break_point_count + 1
-			break_point_hit_statistics.search (a_bpslot)
-			if break_point_hit_statistics.found then
-				break_point_hit_statistics.replace (break_point_hit_statistics.found_item + 1, a_bpslot)
-			else
-				break_point_hit_statistics.put (1, a_bpslot)
-			end
 		end
 
 	on_fix_candidate_validation_starts (a_candidate: AFX_FIX)
@@ -122,53 +101,49 @@ feature -- Actions
 			create l_message.make (128)
 			l_message.append (fix_candidate_validation_start_message)
 			l_message.append (fix_signature (a_candidate, False, True))
+			l_message.append ("; Progress: ")
 			if fix_candidate_count > 0 then
-				l_message.append ("; progression = ")
 				l_message.append (finish_validated_fix_candidate_count.out)
 				l_message.append (" / ")
 				l_message.append (fix_candidate_count.out)
 			end
+			l_message.append ("; ")
 			log_time_stamp (l_message)
 			finish_validated_fix_candidate_count := finish_validated_fix_candidate_count + 1
 		end
 
+	valid_fix_count: INTEGER
+			-- The number of valid fixes that have been found
+
 	on_fix_candidate_validation_ends (a_candidate: AFX_FIX; a_valid: BOOLEAN; a_passing_count: INTEGER; a_failing_count: INTEGER)
 			-- Action to be performed when `a_candidate' finishes to be validated.
 			-- `a_valid' indicates whether `a_candidate' is valid.
-		local
-			l_message: STRING
 		do
-			create l_message.make (128)
-			l_message.append (" Succeeded: " + a_passing_count.out + "; Failed: " + a_failing_count.out + "; ")
-			l_message.append ("   Validity: ")
-			l_message.append (a_valid.out)
 			if a_valid then
-				l_message.append ("; semantics ranking = " + a_candidate.ranking.semantics_score.out)
-				log_line (l_message)
-				log_line ({AUT_SHARED_CONSTANTS}.multi_line_value_start_tag)
+				valid_fix_count := valid_fix_count + 1
+				log_line ("Good fix No." + valid_fix_count.out + "; semantics ranking = " + a_candidate.ranking.semantics_score.out)
 				lines_with_prefixes (formated_fix (a_candidate), <<"   ">>).do_all (agent log_line)
-				log_line ({AUT_SHARED_CONSTANTS}.multi_line_value_end_tag)
 			else
-				log_line (l_message)
+				log_line (" Succeeded: " + a_passing_count.out + "; Failed: " + a_failing_count.out)
 			end
 		end
 
 	on_interpreter_starts (a_port: INTEGER)
 			-- Action to be performed when the interpreter starts with port number `a_port'.
 		do
-			log_time_stamp (interpreter_start_message + a_port.out)
+			log_time_stamp_new_line ("%N" + interpreter_start_message + a_port.out)
 		end
 
 	on_interpreter_start_failed (a_port: INTEGER)
 			-- Action to be performed when the interpreter start failed with port number `a_port'.
 		do
-			log_time_stamp (interpreter_start_failed_message + a_port.out)
+			log_time_stamp_new_line (interpreter_start_failed_message + a_port.out)
 		end
 
 	on_test_case_execution_time_out
 			-- Action to be performed when test case execution during validation times out.
 		do
-			log_time_stamp (test_case_execution_time_out_message)
+			log_time_stamp_new_line (test_case_execution_time_out_message)
 		end
 
 feature -- Constants
@@ -191,7 +166,7 @@ feature -- Constants
 
 	new_test_case_found_message: STRING = "test case found: "
 
-	fix_candidate_validation_start_message: STRING = "fix candidate validation starts; signature = "
+	fix_candidate_validation_start_message: STRING = "Validate "
 
 	interpreter_start_message: STRING = "Interpreter starts at port "
 
@@ -260,21 +235,28 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
+	log_time_stamp_new_line (a_tag: STRING)
+			-- Log tag `a_tag' with timing information.
+		do
+			log_time_stamp (a_tag)
+			log_line ("")
+		end
+
 	log_time_stamp (a_tag: STRING)
 			-- Log tag `a_tag' with timing information.
 		local
 			l_time_now: DT_DATE_TIME
 			duration: INTEGER
+			l_minute: INTEGER
+			l_second: INTEGER
 		do
-			check start_time /= Void end
 			duration := duration_from_time (start_time)
-			log ("-- time stamp: ")
+			l_second := duration // 1000
+			l_minute := l_second // 60
+			l_second := l_second \\ 60
+
+			log (l_minute.out + "m " + l_second.out + "s: ")
 			log (a_tag)
-			log ("; ")
-			log ((duration // 1000).out)
-			log ("; ")
-			log_line (duration.out)
-			log_file.flush
 		end
 
 	log_line (a_string: STRING)
@@ -291,24 +273,7 @@ feature{NONE} -- Implementation
 		require
 			a_string_not_void: a_string /= Void
 		do
-			log_file.put_string (a_string)
-		end
-
-	log_break_point_hit_statistics is
-			-- 	Log `break_point_hit_statistics'.
-		local
-			l_tbl: like break_point_hit_statistics
-		do
-			log_line ("    Number of break points: " + break_point_count.out)
-			l_tbl := break_point_hit_statistics
-			from
-				l_tbl.start
-			until
-				l_tbl.after
-			loop
-				log_line ("  bp@" + l_tbl.key_for_iteration.out + " : " + l_tbl.item_for_iteration.out)
-				l_tbl.forth
-			end
+			io.put_string (a_string)
 		end
 
 end

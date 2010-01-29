@@ -72,12 +72,13 @@ feature{NONE} -- Implementation
 			a_guard: detachable AFX_EXPRESSION;
 			a_precondition: detachable AFX_STATE;
 			a_postcondition: detachable AFX_STATE;
-			a_scope_level: INTEGER): AFX_AFORE_FIX_SKELETON
+			a_scope_level: INTEGER;
+			a_guard_in_negation: BOOLEAN): AFX_AFORE_FIX_SKELETON
 				-- New afore fix sekelton.
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
-			create Result.make (a_spot, config, test_case_execution_status)
+			create Result.make (a_spot, config, test_case_execution_status, a_guard_in_negation)
 			Result.set_guard_condition (a_guard)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
@@ -95,7 +96,8 @@ feature{NONE} -- Implementation
 			a_guard: detachable AFX_EXPRESSION;
 			a_precondition: detachable AFX_STATE;
 			a_postcondition: detachable AFX_STATE;
-			a_scope_level: INTEGER): AFX_WRAP_FIX_SKELETON
+			a_scope_level: INTEGER;
+			a_guard_in_negation: BOOLEAN): AFX_WRAP_FIX_SKELETON
 				-- New afore fix sekelton.
 		require
 			a_fixing_location_attached: a_fixing_location /= Void
@@ -103,7 +105,7 @@ feature{NONE} -- Implementation
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
-			create Result.make (a_spot, a_guard, config, test_case_execution_status)
+			create Result.make (a_spot, a_guard, config, test_case_execution_status, a_guard_in_negation)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_relevant_ast (a_fixing_location)

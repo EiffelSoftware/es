@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
+	make (a_spot: AFX_EXCEPTION_SPOT; a_config: like config; a_test_case_execution_status: like test_case_execution_status; a_guard_in_negation: BOOLEAN)
 			-- Initialize.
 		do
 			exception_spot := a_spot
@@ -26,6 +26,7 @@ feature{NONE} -- Initialization
 			create fixes.make
 			config := a_config
 			test_case_execution_status := a_test_case_execution_status
+			set_is_guard_condition_in_negation_form (a_guard_in_negation)
 		end
 
 feature -- Status report

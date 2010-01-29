@@ -60,7 +60,21 @@ feature{NONE} -- Implementation
 					Void,
 					l_negated_failing_assert.equation (l_value),
 					l_failing_assert.equation (l_value),
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, False))
+
+				-- Generate fix: (p is the failing assertion), simplified version.
+				-- snippet
+				--		require: not p
+				--		ensure: p
+			l_fix := new_afore_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						Void,
+						l_negated_failing_assert.equation (l_value),
+						l_failing_assert.equation (l_value),
+						a_fixing_location.scope_level, False)
+			l_fix.set_is_simplification_needed (True)
+			fixes.extend (l_fix)
 
 				-- Generate fix: (p is the failing assertion)
 				-- snippet
@@ -73,7 +87,7 @@ feature{NONE} -- Implementation
 					Void,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 					create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, False))
 
 			if not a_fixing_location.is_empty then
 					-- Generate fix: (p is the failing assertion)
@@ -89,7 +103,24 @@ feature{NONE} -- Implementation
 						l_negated_failing_assert,
 						l_negated_failing_assert.equation (l_value),
 						l_failing_assert.equation (l_value),
-						a_fixing_location.scope_level))
+						a_fixing_location.scope_level, True))
+
+					-- Generate fix: (p is the failing assertion), simplified version
+					-- if not p then
+					-- 		snippet
+					-- end
+					--		require: not p
+					--		ensure: p
+				l_fix :=
+					new_afore_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_negated_failing_assert,
+						l_negated_failing_assert.equation (l_value),
+						l_failing_assert.equation (l_value),
+						a_fixing_location.scope_level, True)
+				l_fix.set_is_simplification_needed (True)
+				fixes.extend (l_fix)
 
 					-- Generate fix: (p is the failing assertion)
 					-- if not p then
@@ -104,7 +135,7 @@ feature{NONE} -- Implementation
 						l_negated_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-						a_fixing_location.scope_level))
+						a_fixing_location.scope_level, True))
 			end
 		end
 
@@ -115,12 +146,49 @@ feature{NONE} -- Implementation
 			l_failing_assert: AFX_EXPRESSION
 			l_negated_failing_assert: AFX_EXPRESSION
 			l_value: AFX_BOOLEAN_VALUE
+			l_fix: AFX_WRAP_FIX_SKELETON
 		do
 			if not a_fixing_location.is_empty then
 					-- Initialize.
 				create l_value.make (True)
 				l_failing_assert := exception_spot.failing_assertion
 				l_negated_failing_assert := not l_failing_assert
+
+					-- Generate fix: (p is the failing assertion)
+					-- if p then
+					--		a_fixing_locaiton
+					-- else
+					--		snippet
+					--			require: not p
+					--			ensure: p
+					-- end
+				fixes.extend (
+					new_wrapping_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_failing_assert,
+						l_negated_failing_assert.equation (l_value),
+						l_failing_assert.equation (l_value),
+						a_fixing_location.scope_level, False))
+
+					-- Generate fix: (p is the failing assertion), simplified version
+					-- if p then
+					--		a_fixing_locaiton
+					-- else
+					--		snippet
+					--			require: not p
+					--			ensure: p
+					-- end
+				l_fix :=
+					new_wrapping_fix_skeleton (
+						exception_spot,
+						a_fixing_location.instructions,
+						l_failing_assert,
+						l_negated_failing_assert.equation (l_value),
+						l_failing_assert.equation (l_value),
+						a_fixing_location.scope_level, False)
+				l_fix.set_is_simplification_needed (True)
+				fixes.extend (l_fix)
 
 					-- Generate fix: (p is the failing assertion)
 					-- if p then
@@ -137,7 +205,7 @@ feature{NONE} -- Implementation
 						l_failing_assert,
 						l_negated_failing_assert.equation (l_value),
 						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-						a_fixing_location.scope_level))
+						a_fixing_location.scope_level, False))
 
 
 					-- Generate fix: (p is the failing assertion)
@@ -155,7 +223,7 @@ feature{NONE} -- Implementation
 						l_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-						a_fixing_location.scope_level))
+						a_fixing_location.scope_level, False))
 			end
 		end
 

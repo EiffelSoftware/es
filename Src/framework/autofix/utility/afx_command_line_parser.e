@@ -183,7 +183,7 @@ feature -- Basic operations
 			if l_max_fix_postcondition.was_found then
 				config.set_max_fix_postcondition_assertion (l_max_fix_postcondition.parameter)
 			else
-				config.set_max_fix_postcondition_assertion (6)
+				config.set_max_fix_postcondition_assertion (10)
 			end
 
 			if l_model_xml_option.was_found then

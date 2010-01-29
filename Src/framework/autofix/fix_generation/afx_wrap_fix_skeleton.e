@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: AFX_EXPRESSION; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
+	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: AFX_EXPRESSION; a_config: like config; a_test_case_execution_status: like test_case_execution_status; a_guard_in_negation: BOOLEAN)
 			-- Initialize.
 		require
 			a_guard_condition_attached: a_guard_condition /= Void
@@ -30,6 +30,7 @@ feature{NONE} -- Initialization
 			set_guard_condition (a_guard_condition)
 			config := a_config
 			test_case_execution_status := a_test_case_execution_status
+			set_is_guard_condition_in_negation_form (a_guard_in_negation)
 		end
 
 feature -- Access
@@ -74,7 +75,7 @@ feature{NONE} -- Implementation
 		local
 			l_fix_text: STRING
 		do
-				-- Insert a care where the else-branch is empty.
+				-- Insert a case where the else-branch is empty.
 			fixes.extend (fix_with_text (Void, 0, a_precondition, a_postcondition))
 
 				-- Insert fixes which tries to change state.

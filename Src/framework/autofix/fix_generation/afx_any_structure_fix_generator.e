@@ -60,7 +60,7 @@ feature{NONE} -- Implementation
 					Void,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 					create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, False))
 
 
 				-- Generate fix: (p is the failing assertion)
@@ -76,7 +76,7 @@ feature{NONE} -- Implementation
 					l_negated_failing_assert,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 					create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-					a_fixing_location.scope_level))
+					a_fixing_location.scope_level, True))
 		end
 
 	generate_wrapping_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
@@ -108,7 +108,7 @@ feature{NONE} -- Implementation
 						l_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
 						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
-						a_fixing_location.scope_level))
+						a_fixing_location.scope_level, False))
 			end
 		end
 

@@ -50,7 +50,7 @@ def is_failing_test_case_satisfied (a_tcinfo):
         keywords.append('-2147483648')
         
     if not options['keep-void-on-target']:
-        keywords.append('Void call target')
+        keywords.append('Feature call on void target')
         
     if not options['keep-seg-fault']:
         keywords.append('Segmentation fault')

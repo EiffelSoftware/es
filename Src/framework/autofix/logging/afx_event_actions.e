@@ -75,10 +75,11 @@ feature -- Access
 	fix_candidate_validation_start_actions: ACTION_SEQUENCE [TUPLE [a_candidate: AFX_FIX]]
 			-- Actions to be performed when a fix candidate `a_candidate' starts to be validated
 
-	fix_candidate_validation_end_actions: ACTION_SEQUENCE [TUPLE [a_candidate: AFX_FIX; a_valid: BOOLEAN]]
+	fix_candidate_validation_end_actions: ACTION_SEQUENCE [TUPLE [a_candidate: AFX_FIX; a_valid: BOOLEAN; a_passing_count: INTEGER; a_failing_count: INTEGER]]
 			-- Actions to be performed when a fix candidate `a_candidate' finishes to be validated.
 			-- `a_valid' indicates whether `a_candidate' is valid.
-
+			-- `a_passing_count' and `a_failing_count' indicate the number of the test cases that `a_candidate' passes and failes, respectively.
+			
 	interpreter_start_actions: ACTION_SEQUENCE [TUPLE [a_port: INTEGER]]
 			-- Actions to be performed when the interpreter starts
 			-- `a_port' is the port number used for inter-process communication.
@@ -159,10 +160,12 @@ feature -- actions
 			fix_candidate_validation_start_actions.call ([a_candidate])
 		end
 
-	notify_on_fix_candidate_validation_ends (a_candidate: AFX_FIX; a_valid: BOOLEAN)
+	notify_on_fix_candidate_validation_ends (a_candidate: AFX_FIX; a_valid: BOOLEAN; a_passing_count: INTEGER; a_failing_count: INTEGER)
 			-- Call actions in `fix_candidate_validation_end_actions'.
+			-- `a_valid' indicates whether `a_candidate' is Valid.
+			-- `a_passing_count' and `a_failing_count' indicate the number of the test cases that `a_candidate' passes and failes, respectively.
 		do
-			fix_candidate_validation_end_actions.call ([a_candidate, a_valid])
+			fix_candidate_validation_end_actions.call ([a_candidate, a_valid, a_passing_count, a_failing_count])
 		end
 
 	notify_on_interpreter_starts (a_port: INTEGER)

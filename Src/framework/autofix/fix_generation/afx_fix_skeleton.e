@@ -22,6 +22,8 @@ inherit
 
 	AFX_FIX_ID_SERVER
 
+	AFX_SOLVER_FACTORY
+
 feature -- Access
 
 	exception_spot: AFX_EXCEPTION_SPOT
@@ -90,6 +92,12 @@ feature -- Status report
 		do
 		end
 
+	is_simplification_needed: BOOLEAN
+			-- Should precondition and postcondition be simplified?
+
+	is_guard_condition_in_negation_form: BOOLEAN
+			-- Is `guard_condition' in negation form?
+
 feature -- Setting
 
 	set_guard_condition (a_condition: like guard_condition)
@@ -129,6 +137,22 @@ feature -- Setting
 			ranking := a_ranking
 		ensure
 			ranking_set: ranking = a_ranking
+		end
+
+	set_is_simplification_needed (b: BOOLEAN)
+			-- Set `is_simplification_needed' with `b'.
+		do
+			is_simplification_needed := b
+		ensure
+			is_simplification_needed_set: is_simplification_needed = b
+		end
+
+	set_is_guard_condition_in_negation_form (b: BOOLEAN)
+			-- Set `is_guard_condition_in_negation_form' with `b'.
+		do
+			is_guard_condition_in_negation_form := b
+		ensure
+			is_guard_condition_in_negation_form_set: is_guard_condition_in_negation_form = b
 		end
 
 feature -- Basic operations
@@ -186,6 +210,8 @@ feature{NONE} -- Implementation
 			l_precondition: detachable AFX_STATE
 			l_postcondition: detachable AFX_STATE
 			l_bpslots: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
+			l_failing_state: detachable AFX_STATE
+			l_necessary_conditions: AFX_STATE_SKELETON
 		do
 			l_bpslots := relevant_break_points
 
@@ -220,6 +246,16 @@ feature{NONE} -- Implementation
 			end
 
 			Result := [l_precondition, l_postcondition]
+				-- When simplification is enabled (It is only enabled if the failing assertion is a single ABQ.), try
+				-- to find out the necessary condition of the failing assertion.
+
+			if is_simplification_needed then
+				l_failing_state := failing_state (l_bpslots.failing_bpslot)
+				if l_failing_state /= Void then
+					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
+					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
+				end
+			end
 		end
 
 	feature_body_compound_ast: EIFFEL_LIST [INSTRUCTION_AS]
@@ -520,7 +556,7 @@ feature{NONE} -- Implementation
 							l_finished := l_data.seq.item_for_iteration.transitions.is_empty
 							if not l_finished then
 								l_fix.append (text_of_fix (l_premise, l_data.seq.item_for_iteration.transitions))
-								l_ranking := l_ranking + l_data.seq.item_for_iteration.ranking
+								l_ranking := l_ranking + l_data.seq.item_for_iteration.ranking * (-1)
 								j := j + 1
 							end
 						end

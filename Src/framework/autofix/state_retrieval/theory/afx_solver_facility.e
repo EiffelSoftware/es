@@ -46,6 +46,45 @@ feature -- Basic operations
 
 feature -- Access
 
+	valid_premises (a_premises: AFX_STATE_SKELETON; a_consequence: AFX_EXPRESSION; a_theory: AFX_THEORY): AFX_STATE_SKELETON
+			-- A state skeleton, in which all element e -> a_consequence
+		local
+			l_premise: AFX_EXPRESSION
+			l_implication: AFX_EXPRESSION
+			l_implication_skeleton: AFX_STATE_SKELETON
+			l_tbl: HASH_TABLE [AFX_EXPRESSION, AFX_EXPRESSION] -- Key is the implication, value is the premise.
+			l_valid_imps: DS_HASH_SET [AFX_EXPRESSION]
+		do
+			create l_implication_skeleton.make_basic (a_premises.class_, a_premises.feature_, a_premises.count)
+			create l_tbl.make (a_premises.count)
+			l_tbl.compare_objects
+
+			from
+				a_premises.start
+			until
+				a_premises.after
+			loop
+				l_premise := a_premises.item_for_iteration
+				if l_premise /~ a_consequence then
+					l_implication := l_premise implies a_consequence
+					l_implication_skeleton.force_last (l_implication)
+					l_tbl.put (l_premise, l_implication)
+				end
+				a_premises.forth
+			end
+			l_valid_imps := predicates_with_satisfiability (l_implication_skeleton, predicate_valid, l_implication_skeleton.theory)
+
+			create Result.make_basic (a_premises.class_, a_premises.feature_, l_valid_imps.count)
+			from
+				l_valid_imps.start
+			until
+				l_valid_imps.after
+			loop
+				Result.force_last (l_tbl.item (l_valid_imps.item_for_iteration))
+				l_valid_imps.forth
+			end
+		end
+
 	simplified_skeleton (a_skeleton: AFX_STATE_SKELETON): AFX_STATE_SKELETON
 			-- Simplified version of `a_skeleton'
 			-- Result is simplified from `a_skeleton' by doing the following:

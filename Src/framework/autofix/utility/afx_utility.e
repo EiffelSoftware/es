@@ -304,21 +304,30 @@ feature -- Fix
 
 feature -- Logging
 
-	store_fix_in_file (a_directory: STRING; a_fix: AFX_FIX; a_validated: BOOLEAN)
+	store_fix_in_file (a_directory: STRING; a_fix: AFX_FIX; a_validated: BOOLEAN; a_big_file: detachable PLAIN_TEXT_FILE)
 			-- Store `a_fix' as the `a_id'-th fix into a file in directory `a_directory'
 			-- `a_validated' indicates if `a_fix' has been validated.
+			-- Also append the fix in `a_big_file'.
 		local
 			l_file: PLAIN_TEXT_FILE
 			l_file_name: FILE_NAME
 			l_lines: LIST [STRING]
+			l_formated_fix: STRING
 		do
 			create l_file_name.make_from_string (a_directory)
 			l_file_name.set_file_name (fix_file_name (a_fix, a_validated))
 			create l_file.make_create_read_write (l_file_name)
 
 				-- Print patched feature text.
-			l_file.put_string (formated_fix (a_fix))
+			l_formated_fix := formated_fix (a_fix)
+			l_file.put_string (l_formated_fix)
 			l_file.put_string (once "%N%N")
+
+			if a_big_file /= Void then
+				a_big_file.put_string (fix_signature (a_fix, False, True) + "%N")
+				a_big_file.put_string (l_formated_fix)
+				a_big_file.put_string (once "%N%N")
+			end
 
 				-- Print information about current fix.
 			l_lines := a_fix.information.split ('%N')
@@ -335,9 +344,10 @@ feature -- Logging
 			l_file.close
 		end
 
-	fix_signature (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
+	fix_signature (a_fix: AFX_FIX; a_validated: BOOLEAN; a_id: BOOLEAN): STRING
 			-- Signature of `a_fix'
 			-- `a_validated' indicates if `a_fix' has been validated.
+			-- `a_id' indicates whether the fix ID is included.
 		local
 			l_fdouble: FORMAT_DOUBLE
 			l_rank: STRING
@@ -374,6 +384,10 @@ feature -- Logging
 			else
 				Result.append ("NONE")
 			end
+
+			if a_id then
+				Result.append ("__" + a_fix.id.out)
+			end
 		end
 
 	fix_file_name (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
@@ -384,9 +398,7 @@ feature -- Logging
 			l_rank: STRING
 		do
 			create Result.make (64)
-			Result.append (fix_signature (a_fix, a_validated))
-			Result.append (once "__")
-			Result.append (a_fix.id.out)
+			Result.append (fix_signature (a_fix, a_validated, True))
 			Result.append (".txt")
 		end
 

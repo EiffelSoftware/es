@@ -33,6 +33,8 @@ feature{NONE} -- Initialization
 			a_status_attached: a_status /= Void
 		local
 			l_fix: AFX_FIX
+			l_sorter: DS_QUICK_SORTER [AFX_FIX]
+			l_fixes: DS_ARRAYED_LIST [AFX_FIX]
 		do
 			config := a_config
 			exception_spot := a_spot
@@ -54,19 +56,29 @@ feature{NONE} -- Initialization
 			end
 
 				-- Setup `fixes' and `melted_fixes'.
+				-- Sort fixes according to their syntatic ranking, so syntatically simpler fixes are validated first.
+			create l_fixes.make (a_fixes.count)
 			create fixes.make (a_fixes.count)
+			a_fixes.do_all (agent l_fixes.force_last)
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AFX_FIX]}.make (
+				agent (af, bf: AFX_FIX): BOOLEAN
+					do
+						Result := af.ranking.syntax_score < bf.ranking.syntax_score
+					end))
+
+			l_sorter.sort (l_fixes)
 			create melted_fixes.make
 			from
-				a_fixes.start
+				l_fixes.start
 			until
-				a_fixes.after
+				l_fixes.after
 			loop
-				l_fix := a_fixes.item_for_iteration
+				l_fix := l_fixes.item_for_iteration
 				if attached {AFX_MELTED_FIX} melted_fix_from_fix (l_fix) as l_melted then
 					fixes.put (l_fix, l_fix.id)
 					melted_fixes.extend (l_melted)
 				end
-				a_fixes.forth
+				l_fixes.forth
 			end
 
 			create valid_fixes.make
@@ -114,7 +126,6 @@ feature{NONE} -- Actions
 	on_fix_validation_start (a_melted_fix: AFX_MELTED_FIX)
 			-- Action to be performed when `a_melted_fix' is about to be validated
 		do
-			io.put_string ("Strat validate fix No. " + a_melted_fix.id.out + ",  " + melted_fixes.count.out + " to go.  ")
 			event_actions.notify_on_fix_candidate_validation_starts (fixes.item (a_melted_fix.id))
 		end
 
@@ -124,8 +135,11 @@ feature{NONE} -- Actions
 			l_fix: AFX_FIX
 			l_valid: BOOLEAN
 			l_fix_text: STRING
+			l_passing_count: INTEGER
+			l_failing_count: INTEGER
 		do
-			io.put_string ("Failed: " + (a_exception_count.to_integer_32 - exception_count.to_integer_32).out + "  Succeeded: " + (test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)).out + "  " + a_exception_count.out + ", " + exception_count.out + "%N")
+			l_passing_count := test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)
+			l_failing_count := a_exception_count.to_integer_32 - exception_count.to_integer_32
 			l_valid := exception_count = a_exception_count
 			if l_valid then
 				l_fix := fixes.item (a_melted_fix.id)
@@ -133,15 +147,8 @@ feature{NONE} -- Actions
 				l_fix.set_is_valid (True)
 				l_fix_text := formated_fix (l_fix)
 				valid_fix_count := valid_fix_count + 1
-				store_fix_in_file (config.fix_directory, l_fix, True)
+				store_fix_in_file (config.fix_directory, l_fix, True, Void)
 				store_string_in_file (config.valid_fix_directory, "f" + valid_fix_count.out + ".e", l_fix_text)
-
-				io.put_string ("====================================================%N")
-				io.put_string ("Good fix No." + valid_fix_count.out + "%N")
-				io.put_string (l_fix_text)
-				io.put_string ("Ranking: " + l_fix.ranking.syntax_score.out + "%N")
-				io.put_string ("Semantics ranking: " + l_fix.ranking.semantics_score.out + "%N")
-				io.put_string ("%N")
 
 					-- Maximal number of valid fixes have already been found, terminate fix validation.
 				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number = valid_fix_count then
@@ -151,7 +158,7 @@ feature{NONE} -- Actions
 				end
 				valid_fixes.extend (fixes.item (a_melted_fix.id))
 			end
-			event_actions.notify_on_fix_candidate_validation_ends (fixes.item (a_melted_fix.id), l_valid)
+			event_actions.notify_on_fix_candidate_validation_ends (fixes.item (a_melted_fix.id), l_valid, l_passing_count, l_failing_count)
 			exception_count := a_exception_count
 		end
 
@@ -260,14 +267,6 @@ feature -- Basic operations
 			end
 		end
 
-	set_logger (a_logger: like logger)
-			-- Set `logger' with `a_logger'.
-		do
-			logger := a_logger
-		ensure
-			logger_set: logger = a_logger
-		end
-
 feature{NONE} -- Inter-process communication
 
 	socket: NETWORK_STREAM_SOCKET
@@ -323,11 +322,6 @@ feature{NONE} -- Inter-process communication
 				socket.close
 			end
 		end
-
-feature{NONE} -- Logging
-
-	logger: detachable AFX_PROXY_LOGGER
-			-- Logger for logging
 
 feature{NONE} -- Implementation
 

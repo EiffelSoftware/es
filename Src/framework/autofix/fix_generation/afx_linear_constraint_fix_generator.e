@@ -352,7 +352,7 @@ feature{NONE} -- Implementation
 			l_ranking.set_snippet_complexity (1)
 
 				-- Construct fix skeleton.
-			create l_fix_skeleton.make (exception_spot, config, test_case_execution_status)
+			create l_fix_skeleton.make (exception_spot, config, test_case_execution_status, False)
 			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion.negated)
 			l_fix_skeleton.set_original_ast (l_old_ast)
 			l_fix_skeleton.set_new_ast (l_new_ast)
@@ -399,7 +399,7 @@ feature{NONE} -- Implementation
 			l_ranking.set_snippet_complexity (1)
 
 				-- Construct fix skeleton.
-			create l_fix_skeleton.make (exception_spot, exception_spot.failing_assertion, config, test_case_execution_status)
+			create l_fix_skeleton.make (exception_spot, exception_spot.failing_assertion, config, test_case_execution_status, False)
 			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion)
 			l_fix_skeleton.set_original_ast (l_old_ast)
 			l_fix_skeleton.set_new_ast (l_new_ast)

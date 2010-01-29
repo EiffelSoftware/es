@@ -37,6 +37,12 @@ feature{NONE} -- Initialization
 			passing_test_cases.compare_objects
 
 			create temp_passing_test_cases.make (200)
+
+			create failing_states.make (50)
+			failing_states.compare_objects
+
+			create passing_states.make (50)
+			passing_states.compare_objects
 		ensure
 			config_set: config = a_config
 		end
@@ -62,6 +68,26 @@ feature -- Access
 		do
 			Result := config.max_test_case_number
 		end
+
+	passing_states: HASH_TABLE [NATURAL_8, STRING]
+			-- Object states stored in passing test cases
+			-- Key is predicate name,
+			-- Value is the value of that predicate.
+			-- The predicate name is prefixed with the object index. For example,
+			-- a predicate `is_empty' in the first object is renamed as "v1_is_empty".
+
+	failing_states: HASH_TABLE [NATURAL_8, STRING]
+			-- Object states stored in failing test cases
+			-- Key is predicate name,
+			-- Value is the value of that predicate.
+			-- The predicate name is prefixed with the object index. For example,
+			-- a predicate `is_empty' in the first object is renamed as "v1_is_empty".
+
+	found_passing_test_case_count: INTEGER
+			-- Number of passing test cases that are found so far
+
+	found_failing_test_case_count: INTEGER
+			-- Number of failing test cases that are found so far
 
 feature -- Basic operations
 
@@ -98,12 +124,15 @@ feature{NONE} -- Implementation
 		local
 			l_dir: DIRECTORY
 			l_tc_name: STRING
+			l_done: BOOLEAN
+			l_max_tc_number: INTEGER
 		do
+			l_max_tc_number := config.max_test_case_number
 			create l_dir.make_open_read (test_case_folder)
 			from
 				l_dir.readentry
 			until
-				l_dir.lastentry = Void
+				l_dir.lastentry = Void or l_done
 			loop
 				l_tc_name := l_dir.lastentry.twin
 				if
@@ -113,6 +142,9 @@ feature{NONE} -- Implementation
 				then
 					l_tc_name.remove_tail (2)
 					on_test_case_found (l_tc_name)
+					if l_max_tc_number > 0 then
+						l_done := found_passing_test_case_count = l_max_tc_number and then found_failing_test_case_count = l_max_tc_number
+					end
 				end
 				l_dir.readentry
 			end
@@ -147,10 +179,66 @@ feature{NONE} -- Implementation
 			end
 
 			if max_test_case_number = 0 or else l_list.count < max_test_case_number then
-				l_list.extend (a_test_case_name)
+				if is_test_case_contain_new_state (a_test_case_name, l_tc_info) then
+					l_list.extend (a_test_case_name)
+					if l_tc_info.is_passing then
+						found_passing_test_case_count := found_passing_test_case_count + 1
+					else
+						found_failing_test_case_count := found_failing_test_case_count + 1
+					end
+				else
+				end
 			else
-				random.forth
-				l_list.put_i_th (a_test_case_name, random.item \\ max_test_case_number + 1)
+--				random.forth
+--				l_list.put_i_th (a_test_case_name, random.item \\ max_test_case_number + 1)
+			end
+		end
+
+	is_test_case_contain_new_state (a_test_case_name: STRING; a_tc_info: AFX_TEST_CASE_INFO): BOOLEAN
+			-- Does test case in `a_test_case_name' contain new states?
+			-- Note: This routine will update `passing_states' and `failing_states' when needed.
+		local
+			l_state: like passing_states
+			l_state_extractor: AFX_TEST_CASE_STATE_EXTRACTOR
+			l_file_name: FILE_NAME
+			l_tc_states: like passing_states
+			l_expr: STRING
+			l_value: NATURAL_8
+			l_found_value: NATURAL_8
+		do
+			fixme ("Non-pure query. 29.1.2010 Jasonw")
+			if a_tc_info.is_passing then
+				l_state := passing_states
+			else
+				l_state := failing_states
+			end
+			create l_file_name.make_from_string (test_case_folder)
+			l_file_name.set_file_name (a_test_case_name)
+			create l_state_extractor.make (l_file_name + ".e")
+			l_tc_states := l_state_extractor.states
+			from
+				l_tc_states.start
+			until
+				l_tc_states.after
+			loop
+				l_expr := l_tc_states.key_for_iteration
+				l_value := l_tc_states.item_for_iteration
+				l_state.search (l_expr)
+				if l_state.found then
+					l_found_value := l_state.found_item
+					if l_found_value.bit_or (l_value) /= l_found_value then
+						l_state.force (l_found_value.bit_or (l_value), l_expr)
+						if not Result then
+							Result := True
+						end
+					end
+				else
+					if not Result then
+						Result := True
+					end
+					l_state.put (l_value, l_expr)
+				end
+				l_tc_states.forth
 			end
 		end
 

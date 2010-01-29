@@ -579,20 +579,29 @@ feature -- Fix generation
 			exception_spots.start
 			l_spot := exception_spots.item_for_iteration
 			create l_validator.make (config, l_spot, fixes, test_case_execution_status.status)
-			l_validator.set_logger (logger)
 			l_validator.validate
 		end
 
 	store_fixes (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Store fixes in to files.
+		local
+			l_big_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
 		do
-			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False))
+			create l_file_name.make_from_string (config.data_directory)
+			l_file_name.set_file_name ("fixes.txt")
+			create l_big_file.make_create_read_write (l_file_name)
+			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False, l_big_file))
+			l_big_file.close
 		end
 
 feature -- Logging
 
 	logger: AFX_PROXY_LOGGER;
 			-- Logger to log proxy messages
+
+	console_logger: AFX_CONSOLE_PRINTER
+			-- Logger to print messages to console
 
 	initialize_logging
 			-- Initialize logging.
@@ -613,6 +622,23 @@ feature -- Logging
 			event_actions.interpreter_start_actions.extend (agent logger.on_interpreter_starts)
 			event_actions.interpreter_start_failed_actions.extend (agent logger.on_interpreter_start_failed)
 			event_actions.test_case_execution_time_out_actions.extend (agent logger.on_test_case_execution_time_out)
+
+			create console_logger.make (config)
+			event_actions.session_start_actions.extend (agent console_logger.on_sesson_starts)
+			event_actions.session_end_actions.extend (agent console_logger.on_session_ends)
+			event_actions.test_case_analysis_start_actions.extend (agent console_logger.on_test_case_analyzing_starts)
+			event_actions.test_case_analysis_end_actions.extend (agent console_logger.on_test_case_analyzing_ends)
+			event_actions.fix_generation_start_actions.extend (agent console_logger.on_fix_generation_starts)
+			event_actions.fix_generation_end_actions.extend (agent console_logger.on_fix_generation_ends)
+			event_actions.fix_validation_start_actions.extend (agent console_logger.on_fix_validation_starts)
+			event_actions.fix_validation_end_actions.extend (agent console_logger.on_fix_validation_ends)
+			event_actions.new_test_case_found_actions.extend (agent console_logger.on_new_test_case_found)
+			event_actions.break_point_hit_actions.extend (agent console_logger.on_break_point_hits)
+			event_actions.fix_candidate_validation_start_actions.extend (agent console_logger.on_fix_candidate_validation_starts)
+			event_actions.fix_candidate_validation_end_actions.extend (agent console_logger.on_fix_candidate_validation_ends)
+			event_actions.interpreter_start_actions.extend (agent console_logger.on_interpreter_starts)
+			event_actions.interpreter_start_failed_actions.extend (agent console_logger.on_interpreter_start_failed)
+			event_actions.test_case_execution_time_out_actions.extend (agent console_logger.on_test_case_execution_time_out)
 		end
 
 note
