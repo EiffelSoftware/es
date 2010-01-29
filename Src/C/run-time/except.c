@@ -1106,7 +1106,7 @@ rt_public void eif_check_catcall_at_runtime (EIF_REFERENCE arg, EIF_TYPE_INDEX d
 		 * code could be share. The reason for it is to make it clearer on what is going on. Needless
 		 * to say that a change in one mode needs to be done in the other mode if applicable. */
 #ifdef WORKBENCH
-	if (catcall_detection_enabled) {
+	if (EIF_FALSE) {
 #endif
 		if (arg) {
 			dftype = Dftype(arg);
