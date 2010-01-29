@@ -41,8 +41,12 @@ feature -- Constants
 	value_unknown: NATURAL_8 = 128
 
 	integer_zero: NATURAL_8 = 1
-	integer_positive: NATURAL_8 = 2
-	integer_negative: NATURAL_8 = 4
+	integer_one: NATURAL_8 = 2
+	integer_two: NATURAL_8 = 4
+	integer_larger_than_two: NATURAL_8 = 8
+	integer_minus_one: NATURAL_8 = 16
+	integer_minus_two: NATURAL_8 = 32
+	integer_less_than_minus_two: NATURAL_8 = 64
 
 feature{NONE} -- Implementation
 
@@ -136,9 +140,22 @@ feature{NONE} -- Implementation
 			elseif a_value.is_integer then
 				l_int := a_value.to_integer
 				if l_int > 0 then
-					l_new_value := l_original_value.bit_or (integer_positive)
+					if l_int = 1 then
+						l_new_value := l_original_value.bit_or (integer_one)
+					elseif l_int = 2 then
+						l_new_value := l_original_value.bit_or (integer_two)
+					else
+						l_new_value := l_original_value.bit_or (integer_larger_than_two)
+					end
+
 				elseif l_int < 0 then
-					l_new_value := l_original_value.bit_or (integer_negative)
+					if l_int = -1 then
+						l_new_value := l_original_value.bit_or (integer_minus_one)
+					elseif l_int = -2 then
+						l_new_value := l_original_value.bit_or (integer_minus_two)
+					else
+						l_new_value := l_original_value.bit_or (integer_less_than_minus_two)
+					end
 				else
 					l_new_value := l_original_value.bit_or (integer_zero)
 				end
