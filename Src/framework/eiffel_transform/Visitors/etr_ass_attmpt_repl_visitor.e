@@ -61,7 +61,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			l_feat_context := class_context.written_in_features_by_name[current_feature]
 
-			if attached l_feat_context then
+			if l_feat_context /= Void then
 				type_checker.check_ast_type (l_as.target, l_feat_context)
 				l_target_type := type_checker.last_type
 				l_printed_type := type_checker.print_type(l_target_type,class_context.written_in_features_by_name[current_feature])

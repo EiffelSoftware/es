@@ -108,7 +108,7 @@ feature {NONE} -- Implementation (Extraction)
 					l_cur_pos := var_def[l_current_instr].item_for_iteration.first
 					if l_cur_pos>=block_start and l_cur_pos<=block_end then
 						l_cur_var := var_def[l_current_instr].key_for_iteration
-						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) and not l_cur_var.is_equal (ti_result) then
+						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) and not extracted_results.has (l_cur_var) and  not l_cur_var.is_equal (ti_result) then
 							changed_arguments.extend(var_def[l_current_instr].key_for_iteration)
 						end
 					end
@@ -310,7 +310,7 @@ feature {NONE} -- Implementation (Printing)
 			create l_feature_output_text.make_empty
 			l_feature_output_text.append (a_feature_name)
 
-			if is_result_possibly_undef then
+			if is_result_possibly_undef and not extracted_arguments.has (extracted_results.first) then
 				extracted_arguments.extend(extracted_results.first)
 			end
 
@@ -537,8 +537,8 @@ feature -- Operations
 					block_end := l_use_def_gen.block_end_position
 
 					extract_arguments
-					extract_changed_arguments
 					extract_results
+					extract_changed_arguments
 					extract_new_locals
 					extract_obsolete_locals
 
