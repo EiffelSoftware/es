@@ -19,12 +19,26 @@ feature {NONE} -- Implementation
 
 feature -- Operations
 
+	path_from_line(a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER): detachable AST_PATH
+			-- Gets a path from a line in a match list
+		require
+			non_void: a_match_list /= void and a_ast /= void
+		local
+			l_visitor: ETR_LINE_PATH_FINDER
+		do
+			create l_visitor.make_with_match_list (a_match_list)
+			l_visitor.find_path_from_line (a_ast, a_line)
+
+			if l_visitor.found then
+				Result := l_visitor.found_path
+			end
+		end
+
 	find_node(a_path: AST_PATH; a_root: AST_EIFFEL): detachable AST_EIFFEL
 			-- finds a node from `a_path' and root `a_root'
 		require
 			non_void: a_path /= void and a_root /= void
-			path_non_void: a_root.path /= void
-			path_valid: a_path.is_valid and a_root.path.is_valid
+			path_valid: a_path.is_valid
 		do
 			ast_locator.find_from_root (a_path, a_root)
 

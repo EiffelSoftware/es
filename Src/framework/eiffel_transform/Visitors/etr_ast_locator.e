@@ -23,8 +23,7 @@ feature -- Creation
 			-- starting from `a_root' find a node by following `a_path'
 		require
 			non_void: a_path /= void and a_root /= void
-			path_non_void: a_root.path /= void
-			path_valid: a_path.is_valid and a_root.path.is_valid
+			path_valid: a_path.is_valid
 		do
 			found := false
 			found_node := void
@@ -32,7 +31,7 @@ feature -- Creation
 			path := a_path
 			current_position := path.as_array.lower
 
-			if path.is_equal (a_root.path) then
+			if path.as_array.count = 1 then
 				found := true
 				found_node := a_root
 			else
@@ -53,7 +52,7 @@ feature -- Creation
 			path := a_path
 			current_position := path.as_array.lower
 
-			if path.is_equal (path.root.path) then
+			if path.as_array.count = 1 then
 				found := true
 				found_node := path.root
 			else
@@ -90,7 +89,7 @@ feature {NONE} -- Implementation
 		end
 
 	path: detachable AST_PATH
-		-- The location we're lookign for
+		-- The location we're looking for
 
 	current_position: INTEGER
 		-- current position in `path'

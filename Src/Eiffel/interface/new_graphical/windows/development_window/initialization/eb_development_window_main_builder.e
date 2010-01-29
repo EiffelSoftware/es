@@ -727,6 +727,7 @@ feature -- Command
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.rename_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.undo_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.redo_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.extract_method_command)
 
 				-- Force build
 				-- FIXME: We force the tools to be built completely here in order to perform
@@ -1175,7 +1176,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

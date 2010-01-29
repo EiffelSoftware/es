@@ -22,14 +22,25 @@ feature -- Constants
 
 	separator: CHARACTER is '.'
 
+feature -- Operations
+	set_root(a_root: like root)
+			-- sets `root' to `a_root'
+		require
+			non_void: a_root /= void
+		do
+			root := a_root
+		end
+
 feature -- Access
 
-	root: AST_EIFFEL
+	root: AST_EIFFEL assign set_root
+			-- root this path belongs to
 
 	branch_id: INTEGER
 			-- id of the branch
 
 	as_string: STRING
+			-- `Current' as string
 
 	as_array: ARRAY[INTEGER]
 			-- Current in array representation
@@ -45,6 +56,7 @@ feature -- Access
 		end
 
 	is_valid: BOOLEAN
+			-- is current a valid path?
 
 	has_prefix(a_prefix: like as_string):BOOLEAN
 			-- does current have a_prefix?
