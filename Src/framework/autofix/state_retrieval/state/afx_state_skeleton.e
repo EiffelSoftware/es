@@ -256,6 +256,34 @@ feature -- Access
 			good_result: Result /= Void implies Result.count <= count
 		end
 
+	anded: AFX_EXPRESSION
+			-- An expression representing the anded expression of all elements in current
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_text: STRING
+		do
+			create l_text.make (128)
+			if count = 1 then
+				l_text.append (first.text)
+			else
+				l_cursor := new_cursor
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_text.append_character ('(')
+					l_text.append (l_cursor.item.text)
+					l_text.append_character (')')
+					if not l_cursor.is_last then
+						l_text.append (once " and ")
+					end
+					l_cursor.forth
+				end
+			end
+			create {AFX_AST_EXPRESSION} Result.make_with_text (first.class_, first.feature_, l_text, first.written_class)
+		end
+
 feature -- Status report
 
 	implication alias "implies" (other: like Current): BOOLEAN

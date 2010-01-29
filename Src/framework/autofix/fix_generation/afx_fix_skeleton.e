@@ -212,6 +212,11 @@ feature{NONE} -- Implementation
 			l_bpslots: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
 			l_failing_state: detachable AFX_STATE
 			l_necessary_conditions: AFX_STATE_SKELETON
+			l_culprit_predicate: detachable AFX_EXPRESSION
+			l_abq_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+			l_value: BOOLEAN
+			l_pre_equation: AFX_EQUATION
+			l_post_equation: AFX_EQUATION
 		do
 			l_bpslots := relevant_break_points
 
@@ -245,17 +250,43 @@ feature{NONE} -- Implementation
 				Result := Void
 			end
 
-			Result := [l_precondition, l_postcondition]
 				-- When simplification is enabled (It is only enabled if the failing assertion is a single ABQ.), try
 				-- to find out the necessary condition of the failing assertion.
-
 			if is_simplification_needed then
-				l_failing_state := failing_state (l_bpslots.failing_bpslot)
-				if l_failing_state /= Void then
-					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
-					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
-				end
+				l_precondition := Void
+				l_postcondition := Void
+--				l_failing_state := failing_state (l_bpslots.failing_bpslot)
+--				if l_failing_state /= Void then
+--					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
+--						-- Find out the set of ABQS which implies the negation of the failing assertion.
+--					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
+--					if l_necessary_conditions.count > 1 then
+--						
+--					else
+--						l_culprit_predicate := l_necessary_conditions.first
+--					end
+
+--					if l_culprit_predicate /= Void then
+--						if attached guard_condition and then is_guard_condition_in_negation_form then
+--							set_guard_condition (l_culprit_predicate)
+--						else
+--							set_guard_condition (not l_culprit_predicate)
+--						end
+
+--						create l_abq_analyzer
+--						l_abq_analyzer.analyze (l_culprit_predicate)
+--						check l_abq_analyzer.is_matched end
+--						l_culprit_predicate := l_abq_analyzer.argumentless_boolean_query
+--						l_value := (l_abq_analyzer.negation_count \\ 0) = 0
+--						create l_pre_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (l_value))
+--						create l_post_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (not l_value))
+--						l_precondition := l_pre_equation
+--						l_postcondition := l_post_equation
+--					end
+--				end
 			end
+
+			Result := [l_precondition, l_postcondition]
 		end
 
 	feature_body_compound_ast: EIFFEL_LIST [INSTRUCTION_AS]
