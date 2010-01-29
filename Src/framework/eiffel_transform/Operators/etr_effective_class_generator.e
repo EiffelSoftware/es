@@ -16,10 +16,10 @@ inherit
 
 feature -- Operations
 	transformation_result: ETR_TRANSFORMABLE
-			-- result of last transformation
+			-- Result of last transformation
 
 	generate_effective_class(a_class: ETR_TRANSFORMABLE)
-			-- creates an effective class from `a_class'
+			-- Creates an effective class from `a_class'
 		local
 			l_ft: FEATURE_TABLE
 			l_cur_feat: FEATURE_I
@@ -59,8 +59,6 @@ feature -- Operations
 
 			create transformation_result.make_from_ast (parsing_helper.reparsed_root, a_class.context, false)
 		end
-
-
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

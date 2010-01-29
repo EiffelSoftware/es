@@ -23,15 +23,20 @@ create
 
 feature {NONE} -- Implementation
 
-	location: AST_PATH
-	replacement_text: STRING
 	replacement_disabled: BOOLEAN
+			-- Are replacements temporarly disabled?
 
 	app_prep_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
+			-- Appends/Prepends by parent-list
+
 	repl_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
+			-- Replacements by position
+
 	del_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
+			-- Deletions by position
 
 	ins_hash, app_hash, prep_hash: ETR_SORTED_MODIFICATION_SET
+			-- List-Operations grouped by parent-list and sorted by position in the list
 
 	processing_needed(an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
 			-- should `an_ast' be processed

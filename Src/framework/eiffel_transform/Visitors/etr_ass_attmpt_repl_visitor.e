@@ -26,12 +26,15 @@ create
 feature {NONE} -- Implementation
 
 	class_context: ETR_CLASS_CONTEXT
+			-- Class context we're working in
 
 	current_feature: STRING
+			-- Name of current feature
 
 feature {NONE} -- Creation
 
 	make(a_class_context: like class_context)
+			-- Make with `a_class_context'
 		do
 			class_context := a_class_context
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
@@ -40,6 +43,7 @@ feature {NONE} -- Creation
 feature -- Access
 
 	modifications: LIST[ETR_AST_MODIFICATION]
+			-- The modifications resulting from the replacements
 
 feature {AST_EIFFEL} -- Roundtrip
 

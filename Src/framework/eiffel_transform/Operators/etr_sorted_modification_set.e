@@ -18,6 +18,7 @@ feature {NONE} -- Creation
 
 feature {NONE} -- Implementation
 	par_groups: LINKED_LIST[TUPLE[AST_PATH,LINKED_LIST[ETR_AST_MODIFICATION]]]
+			-- Modifications grouped by their parent-list
 
 feature -- Operations
 

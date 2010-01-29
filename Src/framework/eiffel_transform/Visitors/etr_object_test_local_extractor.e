@@ -43,10 +43,13 @@ feature -- Operation
 feature {NONE} -- Implementation
 
 	context: ETR_FEATURE_CONTEXT
+			-- The feature context we're currently in
 
 	current_path: AST_PATH
+			-- The path we're currently at
 
 	current_branch_scope: like current_path
+			-- The local scope we're currently
 
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
 			-- process an n-way branch with parent `a_parent' and branches `br'
@@ -137,19 +140,21 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		local
-			l_type: TYPE_A
+			l_written_type: TYPE_A
 			l_type_checker: ETR_TYPE_CHECKER
+			l_explicit_type: TYPE_A
 		do
 			if attached l_as.name and attached current_branch_scope then
 				if attached l_as.type then
-					l_type := type_checker.explicit_type_from_type_as (l_as.type, context.class_context.written_class, context.written_feature)
+					l_written_type := type_checker.written_type_from_type_as (l_as.type, context.class_context.written_class, context.written_feature)
 				else
 					create l_type_checker
 					l_type_checker.check_ast_type_at (l_as.expression, context, current_path)
-					l_type := l_type_checker.last_type
+					l_written_type := l_type_checker.last_type
 				end
+				l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class)
 
-				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make (l_as.name.name, l_type, current_branch_scope))
+				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make_at (l_as.name.name, l_explicit_type, l_written_type, current_branch_scope))
 			end
 			process_n_way_branch(l_as,[void, l_as.expression, void])
 		end

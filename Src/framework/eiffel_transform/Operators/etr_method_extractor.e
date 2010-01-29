@@ -22,18 +22,53 @@ inherit
 
 feature {NONE} -- Implementation (Attributes)
 
-	extracted_arguments, extracted_results, used_locals, extracted_new_locals, obsolete_locals, changed_arguments: LINKED_LIST[STRING]
+	extracted_arguments: LINKED_LIST[STRING]
+			-- Arguments of the extracted method
+
+	extracted_results: LINKED_LIST[STRING]
+			-- Results of the extracted method
+
+	used_locals: LINKED_LIST[STRING]
+			-- Locals that are used in the range to extract
+
+	extracted_new_locals: LINKED_LIST[STRING]
+			-- Locals of the extracted method
+
+	obsolete_locals: LINKED_LIST[STRING]
+			-- Locals that are no longer used in the extracted method
+
+	changed_arguments: LINKED_LIST[STRING]
+			-- Arguments that have to be writable (i.e. duplicate as local)
 
 	vars_used: ARRAY[LIST[STRING]]
+			-- Variables used by position
+
 	var_def: ARRAY[HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]]
+			-- Variable definitions by position
 
 	context: ETR_FEATURE_CONTEXT
+			-- The context of the feature we're working in
 
-	block_start, block_end: INTEGER
+	block_start: INTEGER
+			-- Position where extraction starts
+
+	block_end: INTEGER
+			-- Position where extraction ends
 
 	is_result_possibly_undef: BOOLEAN
+			-- Does the result have to be pre-initialized?
 
 feature {NONE} -- Implementation (Extraction)	
+
+	print_indep_type(a_var: ETR_TYPED_VAR): STRING
+			-- Print `a_var' indepantly of feature
+		do
+			if a_var.original_type.is_like_argument then
+				Result := type_checker.print_type (a_var.resolved_type, context)
+			else
+				Result := type_checker.print_type (a_var.original_type, context)
+			end
+		end
 
 	extract_results
 			-- find locals that were used after the block and defined within
@@ -59,8 +94,8 @@ feature {NONE} -- Implementation (Extraction)
 						if l_pair.first >= block_start and l_pair.first <= block_end then
 							extracted_results.extend (l_cur_var_used.item)
 						elseif l_pair.second >= block_start and l_pair.second <= block_end then
-							-- the result has to be an argument too
-							-- not sure it's assigned to!
+							-- The result has to be an argument too
+							-- Not sure it's assigned to!
 							extracted_results.extend (l_cur_var_used.item)
 							is_result_possibly_undef := true
 						end
@@ -72,7 +107,7 @@ feature {NONE} -- Implementation (Extraction)
 				l_current_instr := l_current_instr + 1
 			end
 
-			-- check if result was defined within extracted block
+			-- Check if result was defined within extracted block
 			if context.has_return_value then
 				l_current_instr := vars_used.count
 				if attached (var_def[l_current_instr])[ti_result] as l_pair then
@@ -84,14 +119,14 @@ feature {NONE} -- Implementation (Extraction)
 		end
 
 	extract_changed_arguments
-			-- find arguments that have to be written to
-			-- have to copy them as locals!
+			-- Find arguments that have to be written to
+			-- Have to copy them as locals!
 		local
 			l_current_instr: INTEGER
 			l_cur_var: STRING
 			l_cur_pos: INTEGER
 		do
-			-- go over all variable definitions
+			-- Go over all variable definitions
 			-- and see if one inside the block is an argument
 			from
 				create changed_arguments.make
@@ -120,7 +155,7 @@ feature {NONE} -- Implementation (Extraction)
 		end
 
 	extract_arguments
-			-- find variables that were used in the block
+			-- Find variables that were used in the block
 			--   but their definitions MIGHT have been before
 			--   or they were arguments
 			-- -> arguments of the extracted method
@@ -145,7 +180,7 @@ feature {NONE} -- Implementation (Extraction)
 				until
 					l_cur_defs.after
 				loop
-					-- if the variable was defined here store it as "used"
+					-- If the variable was defined here store it as "used"
 					if l_cur_defs.item_for_iteration.first = l_current_instr and not used_locals.has (l_cur_defs.key_for_iteration) then
 						used_locals.extend (l_cur_defs.key_for_iteration)
 					end
@@ -160,7 +195,7 @@ feature {NONE} -- Implementation (Extraction)
 					l_cur_var_used.after
 				loop
 					if not extracted_arguments.has (l_cur_var_used.item) then
-						-- all used arguments will be arguments of the new method
+						-- All used arguments will be arguments of the new method
 						if attached context.arg_by_name[l_cur_var_used.item] then
 							extracted_arguments.extend (l_cur_var_used.item)
 						else
@@ -172,7 +207,7 @@ feature {NONE} -- Implementation (Extraction)
 								l_cur_var_def := l_pair.first
 
 								if l_cur_var_def < block_start  then
-								-- if the variable was defined before the block
+								-- If the variable was defined before the block
 								-- it's an argument of the extracted method
 								extracted_arguments.extend (l_cur_var_used.item)
 								end
@@ -188,7 +223,7 @@ feature {NONE} -- Implementation (Extraction)
 		end
 
 	extract_new_locals
-			-- find locals that were used in the block
+			-- Find locals that were used in the block
 			-- = used locals - extracted arguments - extracted results
 		do
 			from
@@ -198,7 +233,7 @@ feature {NONE} -- Implementation (Extraction)
 			until
 				used_locals.after
 			loop
-				-- if its not a result and not an argument
+				-- If its not a result and not an argument
 				-- we need it as local
 				if not extracted_arguments.has (used_locals.item) and not extracted_results.has (used_locals.item) then
 					extracted_new_locals.extend (used_locals.item)
@@ -209,7 +244,7 @@ feature {NONE} -- Implementation (Extraction)
 		end
 
 	extract_obsolete_locals
-			-- find obsolete locals
+			-- Find obsolete locals
 			-- only used in the extracted block
 		local
 			l_cur_var_used: LIST[STRING]
@@ -218,7 +253,7 @@ feature {NONE} -- Implementation (Extraction)
 			l_index: INTEGER
 			l_is_def: BOOLEAN
 		do
-			-- loop over part of feature that is not extracted
+			-- Loop over part of feature that is not extracted
 			-- and gather used locals
 
 			from
@@ -228,7 +263,7 @@ feature {NONE} -- Implementation (Extraction)
 			until
 				l_current_instr > vars_used.upper
 			loop
-				-- skip block
+				-- Skip block
 				if l_current_instr=block_start then
 					l_current_instr:=block_end
 				else
@@ -248,7 +283,7 @@ feature {NONE} -- Implementation (Extraction)
 				l_current_instr := l_current_instr + 1
 			end
 
-			-- the results will still be used!
+			-- The results will still be used!
 			from
 				extracted_results.start
 			until
@@ -261,7 +296,7 @@ feature {NONE} -- Implementation (Extraction)
 				extracted_results.forth
 			end
 
-			-- compute obsolete locals
+			-- Compute obsolete locals
 			-- basically: all locals - gathered locals
 			from
 				l_index := context.locals.lower
@@ -272,7 +307,7 @@ feature {NONE} -- Implementation (Extraction)
 			loop
 				if not l_rest_used_locals.has (context.locals[l_index].name) then
 					l_is_def := false
-					-- make sure the local was not defined either
+					-- Make sure the local was not defined either
 					if attached (var_def[var_def.upper])[context.locals[l_index].name] as l_def then
 						-- no definitions after the block
 						if l_def.first > block_end or l_def.second > block_end then
@@ -299,7 +334,7 @@ feature {NONE} -- Implementation (Extraction)
 feature {NONE} -- Implementation (Printing)
 
 	compute_extracted_method(a_start_path, a_end_path: AST_PATH; a_feature_name: STRING; a_feature_body: EIFFEL_LIST[INSTRUCTION_AS])
-			-- puts things together to create the extracted method
+			-- Puts things together to create the extracted method
 		local
 			l_feature_output_text: STRING
 			l_ex_printer: ETR_EXTRACTED_METHOD_PRINTER
@@ -317,29 +352,23 @@ feature {NONE} -- Implementation (Printing)
 			l_result_is_arg := extracted_arguments.has (ti_result)
 
 			if not extracted_arguments.is_empty then
-				-- print arguments
+				-- Print arguments
 				l_feature_output_text.append (ti_l_parenthesis)
 				from
 					extracted_arguments.start
 				until
 					extracted_arguments.after
 				loop
-					-- get type (local, argument or result)
+					-- Get type (local, argument or result)
 					-- and print the unresolved version
 					if attached {ETR_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context))
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg))
 					elseif attached {ETR_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
-						if l_arg.original_type.is_like_argument then
-							-- use resolved type if like argument (might not be valid)
-							l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.resolved_type, context))
-						else
-							l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context))
-						end
-
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg))
 					elseif extracted_arguments.item.is_equal (ti_result) then
 						l_feature_output_text.append ("a_"+ti_result + ti_colon + ti_space + type_checker.print_type (context.unresolved_type, context))
 					else
-						-- it might be an object-test local
+						-- It might be an object-test local
 						from
 							context.object_test_locals.start
 						until
@@ -347,7 +376,7 @@ feature {NONE} -- Implementation (Printing)
 						loop
 							if context.object_test_locals.item.name.is_equal (extracted_arguments.item) then
 								if a_start_path.is_child_of (context.object_test_locals.item.scope) then
-									l_feature_output_text.append (extracted_arguments.item + ti_colon + ti_space + type_checker.print_type (context.object_test_locals.item.type, context))
+									l_feature_output_text.append (extracted_arguments.item + ti_colon + ti_space + print_indep_type (context.object_test_locals.item))
 									l_type_found := true
 								end
 							end
@@ -358,7 +387,6 @@ feature {NONE} -- Implementation (Printing)
 						if not l_type_found then
 							error_handler.add_error("compute_extracted_method: Can't determine type of "+extracted_arguments.item)
 						end
-
 					end
 
 					extracted_arguments.forth
@@ -371,17 +399,17 @@ feature {NONE} -- Implementation (Printing)
 			end
 
 			if not extracted_results.is_empty then
-				-- add first result, ignore rest
+				-- Add first result, ignore rest
 				if extracted_results.count>1 then
 					check
 						not_supported: false
 					end
 				end
 
-				-- get type (local)
+				-- Get type (local)
 				-- and print the unresolved version
 				if attached {ETR_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
-					l_feature_output_text.append (ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context))
+					l_feature_output_text.append (ti_colon + ti_space + print_indep_type (l_arg))
 				elseif extracted_results.first.is_equal (ti_result) then
 					l_feature_output_text.append (ti_colon + ti_space + type_checker.print_type (context.unresolved_type, context))
 				end
@@ -397,7 +425,7 @@ feature {NONE} -- Implementation (Printing)
 					extracted_new_locals.after
 				loop
 					if attached {ETR_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
-						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context)+ti_new_line)
+						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg)+ti_new_line)
 					end
 
 					extracted_new_locals.forth
@@ -409,7 +437,7 @@ feature {NONE} -- Implementation (Printing)
 					changed_arguments.after
 				loop
 					if attached {ETR_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
-						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + type_checker.print_type (l_arg.original_type, context)+ti_new_line)
+						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + print_indep_type (l_arg)+ti_new_line)
 					end
 
 					changed_arguments.forth
@@ -441,7 +469,7 @@ feature {NONE} -- Implementation (Printing)
 				end
 			end
 
-			-- print only block range
+			-- Print only block range
 			-- replace result variable by "Result"
 			create l_body_output.make
 			create l_ex_printer.make (l_body_output, extracted_results, changed_arguments, a_start_path, a_end_path)
@@ -496,13 +524,13 @@ feature {NONE} -- Implementation (Printing)
 
 feature -- Operations
 	extracted_method: ETR_TRANSFORMABLE
-			-- extracted method
+			-- Extracted method
 
 	old_method: ETR_TRANSFORMABLE
-			-- original method with the extracted part replaced by a call to the extracted method
+			-- Original method with the extracted part replaced by a call to the extracted method
 
 	extract_method(a_feature: ETR_TRANSFORMABLE; a_start_path, a_end_path: AST_PATH; a_feature_name: STRING)
-			-- extracts a method with name `a_feature_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
+			-- Extracts a method with name `a_feature_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
 		local
 			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
@@ -512,7 +540,7 @@ feature -- Operations
 			is_result_possibly_undef := false
 			l_error_count := error_handler.error_count
 
-			-- check if valid context and valid ast!
+			-- Check if valid context and valid ast!
 			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
 				context := l_ft_ctxt
 				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.find_node (a_start_path.parent_path, a_start_path.root) as instrs then
@@ -526,7 +554,7 @@ feature -- Operations
 				end
 
 				if l_error_count = error_handler.error_count then
-					-- find out what locals are defined/used where
+					-- Find out what locals are defined/used where
 					create l_use_def_gen.make (context)
 
 					l_use_def_gen.generate_chain (a_feature.target_node, a_start_path, a_end_path)

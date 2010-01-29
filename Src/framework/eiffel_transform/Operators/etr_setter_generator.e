@@ -16,18 +16,18 @@ inherit
 
 feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
-			-- result of last transformation
+			-- Result of last transformation
 
-	generate_setter(an_attribute: ETR_TRANSFORMABLE)
-			-- generates a setter for `an_attribute'
+	generate_setter(a_attribute: ETR_TRANSFORMABLE)
+			-- Generates a setter for `an_attribute'
 		require
-			non_void: an_attribute /= void
-			valid_trans: an_attribute.is_valid
+			non_void: a_attribute /= void
+			valid_trans: a_attribute.is_valid
 		local
 			l_attr_name: STRING
 			l_setter_string: STRING
 		do
-			if attached {FEATURE_AS}an_attribute.target_node as l_attribute then
+			if attached {FEATURE_AS}a_attribute.target_node as l_attribute then
 				if l_attribute.is_attribute then
 					l_attr_name := l_attribute.feature_name.name
 
@@ -40,7 +40,7 @@ feature -- Operation
 					etr_feat_parser.parse_from_string (l_setter_string,void)
 
 					if etr_feat_parser.error_count=0 then
-						create transformation_result.make_from_ast (etr_feat_parser.feature_node, an_attribute.context.class_context, false)
+						create transformation_result.make_from_ast (etr_feat_parser.feature_node, a_attribute.context.class_context, false)
 					else
 						error_handler.add_error("generate_setter: Feature parsing failed")
 					end

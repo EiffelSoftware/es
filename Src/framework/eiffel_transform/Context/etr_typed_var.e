@@ -25,7 +25,14 @@ feature {NONE} -- Creation
 
 feature -- Access
 	name: STRING assign set_name
-	resolved_type, original_type: TYPE_A
+			-- Name of the variable
+
+	resolved_type: TYPE_A
+			-- Fully resolved type of `Current'
+
+	original_type: TYPE_A
+			-- Type of `Current' as it was written
+
 
 feature -- Modification
 

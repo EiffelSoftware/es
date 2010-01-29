@@ -12,6 +12,7 @@ create
 feature --Access
 
 	feature_context: detachable ETR_FEATURE_CONTEXT
+			-- `Current' as feature context	
 		do
 			if attached {ETR_FEATURE_CONTEXT}Current as l_res then
 				Result := l_res
@@ -19,6 +20,7 @@ feature --Access
 		end
 
 	class_context: detachable ETR_CLASS_CONTEXT
+			-- Class context belonging to this context
 
 	is_empty: BOOLEAN
 			-- is `Current' an empty context

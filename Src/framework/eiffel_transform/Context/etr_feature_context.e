@@ -20,25 +20,46 @@ create
 feature -- Access
 
 	is_modified: BOOLEAN
+			-- Has `Current' been modified since creation
 
 	written_feature: FEATURE_I
+			-- The coresponding compiled feature
 
 	has_return_value: BOOLEAN
+			-- Does this feature have a return value ?
+
 	has_arguments: BOOLEAN
+			-- Does this feature have arguments ?
+
 	has_locals: BOOLEAN
+			-- Does this feature have locals ?
 
 	unresolved_type: detachable TYPE_A
+			-- Type of the feature as it was written
+
 	type: detachable TYPE_A
+			-- Type of the feature, fully resolved
+
 	name: STRING
+			-- Name of the feature
 
 	feature_id: INTEGER
+			-- Feature_id of this feature
+
 	arguments: detachable ARRAY[ETR_TYPED_VAR]
+			-- Arguments of the feature
+
 	locals: detachable ARRAY[ETR_TYPED_VAR]
+			-- Locals of the feature
 
 	arg_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
+			-- Arguments of the feature by name
+
 	local_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
+			-- Locals of the feature by name
 
 	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
+			-- Object-test locals in the feature
 
 	has_feature_named(a_name: STRING): BOOLEAN
 			-- is there a feature with `a_name' in this context

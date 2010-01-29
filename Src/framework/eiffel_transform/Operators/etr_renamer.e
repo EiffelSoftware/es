@@ -16,10 +16,10 @@ inherit
 
 feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
-			-- result of last transformation
+			-- Result of last transformation
 
 	rename_local(a_function: ETR_TRANSFORMABLE; an_old_name, a_new_name: STRING)
-			-- rename the local `an_old_name' to `a_new_name' in `a_fuction'
+			-- Rename the local `an_old_name' to `a_new_name' in `a_fuction'
 		require
 			fun_set_and_valid: a_function /= void and then a_function.is_valid
 			name_set: a_new_name /= void and an_old_name /= void
@@ -50,7 +50,7 @@ feature -- Operation
 		end
 
 	rename_argument(a_function: ETR_TRANSFORMABLE; an_old_name, a_new_name: STRING)
-			-- rename the argument `an_old_name' to `a_new_name' in `a_fuction'
+			-- Rename the argument `an_old_name' to `a_new_name' in `a_fuction'
 		require
 			fun_set_and_valid: a_function /= void and then a_function.is_valid
 			name_set: a_new_name /= void and an_old_name /= void
@@ -81,7 +81,7 @@ feature -- Operation
 		end
 
 	rename_argument_at_position(a_function: ETR_TRANSFORMABLE; an_argument_position: INTEGER; a_new_name: STRING)
-			-- rename the argument at `an_arg_position' in `a_fuction'
+			-- Rename the argument at `an_arg_position' in `a_fuction'
 		require
 			fun_set_and_valid: a_function /= void and then a_function.is_valid
 			name_set: a_new_name /= void

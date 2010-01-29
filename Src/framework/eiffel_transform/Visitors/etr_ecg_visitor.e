@@ -22,9 +22,13 @@ create
 feature {NONE} -- Implementation
 
 	features_to_add: LIST[FEATURE_I]
+			-- Features that will be added from an ancestor
 
 	def_remover_output: ETR_AST_STRING_OUTPUT
+			-- Feature's with the deferred-keyword removed
+
 	def_remover: ETR_ECG_DEFERRED_REMOVER
+			-- Visitor that removes the deferred-keywords
 
 feature {NONE} -- Creation
 

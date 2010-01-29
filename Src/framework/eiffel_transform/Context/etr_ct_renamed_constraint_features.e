@@ -12,7 +12,10 @@ create {ETR_BASIC_OPS}
 feature  -- Access
 
 	feature_name: STRING
+			-- Name of the target feature
+
 	source_renaming, target_renaming: detachable RENAMING_A
+			-- Renamings in the source and target context
 
 feature {NONE} -- Creation
 
@@ -27,7 +30,7 @@ feature {NONE} -- Creation
 			target_renaming := a_target_renaming
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -12,7 +12,10 @@ create {ETR_BASIC_OPS}
 feature  -- Access
 
 	old_type,new_type:CLASS_C
+			-- Old and new associated class of the changed type
+
 	feature_name:STRING
+			-- Name of the target feature
 
 feature {NONE} -- Creation
 
@@ -26,7 +29,7 @@ feature {NONE} -- Creation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

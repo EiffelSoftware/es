@@ -25,9 +25,13 @@ feature -- Access
 		end
 
 	context: detachable ETR_CONTEXT
+			-- Context of the transformable
+
 	target_node: detachable AST_EIFFEL
+			-- AST belonging to the transformable
 
 	is_valid: BOOLEAN
+			-- Is `Current' valid?
 
 feature -- creation
 

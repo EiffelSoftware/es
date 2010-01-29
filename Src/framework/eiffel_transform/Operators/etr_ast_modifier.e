@@ -25,8 +25,10 @@ feature {NONE} -- Creation
 feature -- Access
 
 	modified_ast: detachable ETR_TRANSFORMABLE
+			-- Ast with modifications applied
 
 	modifications: LIST[ETR_AST_MODIFICATION]
+			-- The modifications stored
 
 	output: ETR_AST_STRING_OUTPUT
 			-- string output of printer

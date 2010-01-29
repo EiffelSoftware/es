@@ -14,10 +14,13 @@ create
 
 feature {NONE} -- Implementation
 	context: ROUNDTRIP_STRING_LIST_CONTEXT
+			-- String-context used to append strings
 
 	last_was_newline: BOOLEAN
+			-- Was the last symbol a newline?
 
 	current_indentation: STRING
+			-- Current level of indentation
 
 	make is
 			-- Create with `default_indentation_string'
@@ -38,6 +41,7 @@ feature {NONE} -- Implementation
 feature -- Constants
 
 	default_indentation_string: like indentation_string is "%T"
+			-- The default indentation string
 
 feature -- Attributes
 
@@ -112,7 +116,7 @@ feature -- Operations
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

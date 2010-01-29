@@ -14,12 +14,19 @@ create
 feature  -- Access
 
 	feature_name: STRING
+			-- Name of the target feature
 
 	old_type,new_type:detachable CLASS_C
+			-- Old and new associated class of the changed type
+
 	new_name:detachable STRING
+			-- New name of a feature
 
 	is_changed_type:BOOLEAN
+			-- Does `Current' represent a changed type
+
 	is_changed_name:BOOLEAN
+			-- Does `Current' represent a changed name
 
 feature {NONE} -- Creation
 

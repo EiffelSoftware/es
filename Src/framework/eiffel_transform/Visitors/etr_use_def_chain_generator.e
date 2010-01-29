@@ -64,6 +64,9 @@ feature {NONE} -- Implementation
 	next_local_name: STRING
 		-- name of next local
 
+	start_path, end_path: AST_PATH
+		-- start and and path that we're looking for
+
 	is_next_call_local(a_call: CALL_AS): BOOLEAN
 			-- is `a_call' a direct access to a local variable?
 		do
@@ -128,8 +131,6 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-
-	start_path, end_path: AST_PATH
 
 	check_ref_paths(l_as: AST_EIFFEL)
 		do

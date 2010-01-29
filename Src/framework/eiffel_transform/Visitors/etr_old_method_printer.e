@@ -48,8 +48,22 @@ feature {NONE} -- Creation
 feature {NONE} -- Implementation
 
 	replacement_text: STRING
+			-- The text the extracted part is to be replaced with (e.g. l_a := extracted(l_a, a_1))
 
 	is_locals_first_pass: BOOLEAN
+			-- First pass of processing locals. No Printing.
+
+	obsolete_locals: LIST[STRING]
+			-- locals that are no longer used
+
+	start_path, end_path, instr_list_parent: AST_PATH
+			-- range of methods to extract
+
+	is_id_list_non_empty: BOOLEAN
+			-- Is the processed id-list non-empty?
+
+	has_locals: BOOLEAN
+			-- Are there any locals left to print?
 
 	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and use `separator' for string output
@@ -95,15 +109,6 @@ feature {NONE} -- Implementation
 				Precursor(l_as, separator, a_parent, a_branch)
 			end
 		end
-
-	obsolete_locals: LIST[STRING]
-			-- locals that are no longer used
-
-	start_path, end_path, instr_list_parent: AST_PATH
-			-- range of methods to extract
-
-	is_id_list_non_empty: BOOLEAN
-	has_locals: BOOLEAN
 
 	process_identifier_list (l_as: IDENTIFIER_LIST)
 			-- process `l_as'

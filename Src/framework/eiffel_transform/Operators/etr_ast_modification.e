@@ -20,19 +20,37 @@ create {ETR_BASIC_OPS,ETR_MODIFYING_PRINTER}
 feature -- Access
 
 	is_replace: BOOLEAN
+			-- Is `Current' a replace-operation?
+
 	is_insert_before: BOOLEAN
+			-- Is `Current' an insert-before-operation?
+
 	is_insert_after: BOOLEAN
+			-- Is `Current' an insert-after-operation?
+
 	is_delete: BOOLEAN
+			-- Is `Current' a delete-operation?
+
 	is_list_prepend: BOOLEAN
+			-- Is `Current' a list-prepend-operation?
+
 	is_list_append: BOOLEAN
+			-- Is `Current' a list-append-operation?
+
 	is_list_put_ith: BOOLEAN
+			-- Is `Current' a list-put-ith-operation?
 
 	new_transformable: detachable ETR_TRANSFORMABLE
+			-- Transformable to insert
+
 	location: AST_PATH
+			-- Location this modification will take place
 
 	list_position: INTEGER
+			-- Position of insert/deletion if list-operation
 
 	replacement_text: detachable STRING
+			-- Replacement text in replacement-operations
 
 feature {COMPARABLE, ARRAY} -- Sorting
 
@@ -45,6 +63,7 @@ feature {COMPARABLE, ARRAY} -- Sorting
 feature {ETR_MODIFYING_PRINTER} -- Printing
 
 	branch_id: INTEGER
+			-- Branch id of the target position (i.e. last part of path)
 
 	set_branch_id(a_branch_id: like branch_id)
 			-- set `branch_id' to `a_branch_id'

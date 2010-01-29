@@ -20,6 +20,7 @@ create
 
 feature {NONE} -- Implementation
 	context: FEATURE_I
+			-- Context of the current feature
 
 feature -- Output
 	print_modified_feature(a_feature: FEATURE_I)

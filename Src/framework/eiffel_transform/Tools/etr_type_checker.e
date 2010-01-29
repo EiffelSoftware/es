@@ -276,7 +276,7 @@ feature {NONE} -- Implementation
 					l_cur_local := a_feature_context.object_test_locals.item
 					if a_path.is_child_of (l_cur_local.scope) then
 						create l_local_info
-						l_local_info.set_type (l_cur_local.type)
+						l_local_info.set_type (l_cur_local.resolved_type)
 						l_local_info.set_is_used (True)
 						create l_ot_id.initialize(l_cur_local.name)
 						context.add_object_test_local (l_local_info, l_ot_id)

@@ -6,14 +6,14 @@ note
 
 class
 	ETR_OBJECT_TEST_LOCAL
+inherit
+	ETR_TYPED_VAR
 create
-	make
+	make_at
 
 feature -- Access
-
-	name: STRING
-	type: detachable TYPE_A
 	scope: AST_PATH
+			-- Scope of this object-test-local
 
 	is_active_at(a_path: like scope): BOOLEAN
 			-- is `Current' active at `a_path'
@@ -23,13 +23,16 @@ feature -- Access
 
 feature {NONE} -- Creation
 
-	make(a_name: like name; a_type: like type; a_scope: like scope)
+	make_at(a_name: like name; a_res_type: like resolved_type; a_org_type: like original_type; a_scope: like scope)
 			-- create with `a_name', `a_type', `a_scope'
 		require
-			name_and_scope_set: a_name /= void and a_scope /= void
+			name_set: a_name /= void
+			type_set: a_res_type /= void and a_org_type  /= void
+			type_explicit: a_res_type.is_explicit
+			scope_set: a_scope /= void
 		do
-			name := a_name
-			type := a_type
+			make(a_name, a_res_type, a_org_type)
+
 			scope := a_scope
 		end
 

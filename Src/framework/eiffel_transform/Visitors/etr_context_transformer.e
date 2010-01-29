@@ -24,12 +24,22 @@ create
 feature {NONE} -- Implementation
 
 	changed_feature_hash: HASH_TABLE[ETR_CT_CHANGED_FEATURE,STRING]
+			-- Features that require transformation
+
 	changed_args_hash: HASH_TABLE[ETR_CT_CHANGED_ARG_LOCAL,STRING]
+			-- Arguments that require transformation
+
 	constraint_renaming_hash: HASH_TABLE[ETR_CT_RENAMED_CONSTRAINT_FEATURES,STRING]
+			-- Renamings in source & target context			
 
 	rename_next: BOOLEAN
+			-- Will be rename the next feature/local
+
 	last_was_unqualified_or_current: BOOLEAN
+			-- Are we in an "unqualified" call?
+
 	next_new_name: STRING
+			-- Name that will be use in the next renaming
 
 	next_access_name_id(a_message: CALL_AS): INTEGER
 			-- name id of next access as

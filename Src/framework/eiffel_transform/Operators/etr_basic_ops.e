@@ -23,7 +23,7 @@ inherit
 feature {NONE} -- Implementation
 
 	end_keyword: KEYWORD_AS
-			-- simple end keyword with no location or text information
+			-- Simple end keyword with no location or text information
 		once
 			create Result.make_null
 			Result.set_code ({EIFFEL_TOKENS}.te_end)
@@ -32,7 +32,7 @@ feature {NONE} -- Implementation
 		end
 
 	extract_renamings(a_feature_name: STRING; a_source_type, a_target_type: TYPE_A): detachable ETR_CT_RENAMED_CONSTRAINT_FEATURES
-			-- extracts renamings of `a_source_type' and `a_target_type'
+			-- Extracts renamings of `a_source_type' and `a_target_type'
 		require
 			non_void: a_feature_name /= void and a_source_type /= void and a_target_type /= void
 		local
@@ -51,16 +51,16 @@ feature {NONE} -- Implementation
 		end
 
 	check_renamed_name_or_type(an_old_var, a_new_var: ETR_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
-				-- checks for changed name or type of local/arg
+				-- Checks for changed name or type of local/arg
 		local
 			l_changed_type, l_changed_name: BOOLEAN
 		do
-			-- check for changed type
+			-- Check for changed type
 			if an_old_var.resolved_type.associated_class.class_id /= a_new_var.resolved_type.associated_class.class_id then
 				l_changed_type := true
 			end
 
-			-- check for changed name
+			-- Check for changed name
 			if not a_new_var.name.is_equal (an_old_var.name) then
 				l_changed_name := true
 			end
@@ -78,10 +78,10 @@ feature {NONE} -- Implementation
 feature -- Transformations
 
 	transformation_result: ETR_TRANSFORMABLE
-			-- result of last transformation
+			-- Result of last transformation
 
 	transform_to_context(a_transformable: ETR_TRANSFORMABLE; a_target_context: ETR_CONTEXT)
-			-- transform `a_transformable' into `a_target_context'
+			-- Transform `a_transformable' into `a_target_context'
 		require
 			non_void: a_transformable /= void and a_target_context /= void
 			valid_transformable: a_transformable.is_valid
@@ -193,13 +193,13 @@ feature -- Transformations
 				end
 			end
 
-			-- now visit the ETR_TRANSFORMABLE
+			-- Now visit the ETR_TRANSFORMABLE
 			-- and perform replacements
 			create l_output.make
 			create l_transformer.make(l_output, l_changed_feature_types, l_changed_args_locals, l_constraint_renaming_list)
-			-- print the ast to output
+			-- Print the ast to output
 			l_transformer.print_ast_to_output (a_transformable.target_node)
-			-- reparse it
+			-- Reparse it
 			parsing_helper.reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
 
 			if attached parsing_helper.reparsed_root then
@@ -211,7 +211,7 @@ feature -- Transformations
 		end
 
 	generate_conditional(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT)
-			-- create node corresponding to if `a_test' then `if_part' else `else_part' in a `a_context'
+			-- Create node corresponding to if `a_test' then `if_part' else `else_part' in a `a_context'
 		require
 			test_not_void: a_test /= void
 			context_not_void: a_context /= void
@@ -230,7 +230,7 @@ feature -- Transformations
 
 			if attached {EXPR_AS}a_test.target_node as condition then
 				if attached if_part then
-					-- check if its a single instruction or multiple
+					-- Check if its a single instruction or multiple
 					if attached {INSTRUCTION_AS}if_part.target_node as instr then
 						l_if_part_node := ast_tools.single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}if_part.target_node as instrs then
@@ -241,7 +241,7 @@ feature -- Transformations
 				end
 
 				if attached else_part then
-					-- check if its a single instruction or multiple
+					-- Check if its a single instruction or multiple
 					if attached {INSTRUCTION_AS}else_part.target_node as instr then
 						l_else_part_node := ast_tools.single_instr_list (instr)
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}else_part.target_node as instrs then
@@ -272,7 +272,7 @@ feature -- Transformations
 						l_test_node := l_test
 					end
 
-					-- assemble new IF_AS and transformable
+					-- Assemble new IF_AS and transformable
 					create l_result_node.initialize (l_test_node, l_if_part_node, void, l_else_part_node, end_keyword, void, void, void)
 					create transformation_result.make_from_ast (l_result_node, a_context, false)
 				end
