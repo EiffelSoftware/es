@@ -238,7 +238,6 @@ feature {NONE}
 		local
 			l_byte_code: BYTE_CODE
 		do
-			-- TODO: is this the correct way to see if a feature has (possibly inherited) preconditions?
 			if has_requires_clause (a_feature) then
 				output.put_line ("requires {")
 				output.indent
@@ -345,6 +344,7 @@ feature {NONE}
 				end
 			end
 
+			instruction_writer.temporaries.append (l_expression_writer.temporaries)
 			instruction_writer.temporaries.extend (["$res","int"])
 			instruction_writer.output.put_line ("$res = 1;")
 			instruction_writer.output.put_line ("goto " + l_end_label + ";")
@@ -493,6 +493,7 @@ feature {NONE}
 				end
 			end
 
+			instruction_writer.temporaries.append (l_expression_writer.temporaries)
 			instruction_writer.temporaries.extend (["$res","int"])
 			instruction_writer.output.put_line ("$res = 0;")
 			instruction_writer.output.put_line ("goto " + l_end_label + ";")
@@ -523,7 +524,6 @@ feature {NONE}
 				a_expression_writer.reset_expression_and_target_and_new_side_effect
 				l_assertion_clause.process (a_expression_writer)
 
-				instruction_writer.temporaries.append (a_expression_writer.temporaries)
 				instruction_writer.output.append_lines (a_expression_writer.side_effect_string)
 				instruction_writer.output.put_line ("if " + a_expression_writer.expression_string + " == 0 goto " + l_false_label + ";")
 
@@ -533,7 +533,7 @@ feature {NONE}
 			a_expression_writer.create_new_temporary
 			l_temp_result := a_expression_writer.last_temporary
 
-			instruction_writer.temporaries.extend ([l_temp_result,"int"])
+			a_expression_writer.temporaries.extend ([l_temp_result,"int"])
 			instruction_writer.output.put_line (l_temp_result.twin + " = 1;")
 			instruction_writer.output.put_line ("goto " + l_end_label + ";")
 			instruction_writer.output.put_line (l_false_label.twin + ":")
