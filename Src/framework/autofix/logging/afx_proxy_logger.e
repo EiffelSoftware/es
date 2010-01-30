@@ -139,8 +139,8 @@ feature -- Actions
 			l_message: STRING
 		do
 			create l_message.make (128)
-			l_message.append (" Succeeded: " + a_passing_count.out + "; Failed: " + a_failing_count.out + "; ")
-			l_message.append ("   Validity: ")
+			l_message.append ("-- Succeeded: " + a_passing_count.out + "; Failed: " + a_failing_count.out + "; ")
+			l_message.append ("Validity: ")
 			l_message.append (a_valid.out)
 			if a_valid then
 				l_message.append ("; semantics ranking = " + a_candidate.ranking.semantics_score.out)
