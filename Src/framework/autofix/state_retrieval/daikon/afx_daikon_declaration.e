@@ -7,26 +7,33 @@ note
 class
 	AFX_DAIKON_DECLARATION
 
-	inherit
-
+inherit
 	ANY
 	  redefine
 	 	out
 	  end
 
-	create
-	  make
+create
+	make,
+	make_with_expression
 
-feature -- Constructor
-	make (equation : AFX_EQUATION) is
+feature{NONE} -- Initialization
+
+	make (equation : AFX_EQUATION)
 			-- the variable name used for the declaration
 		do
+ 			make_with_expression (equation.expression)
+		end
+
+	make_with_expression (a_expression: AFX_EXPRESSION)
+			-- Initialize Current variable declaraction with `a_expression'.
+		do
 			var_kind := "variable"
- 			dec_type := equation.expression.text
- 			rep_type := get_rep_type (equation.type)
+ 			dec_type := a_expression.text
+ 			rep_type := get_rep_type (a_expression.type)
  			-- flags := "non_null"
 
- 			variable_name := equation.expression.text
+ 			variable_name := a_expression.text
  			remove_space(variable_name)
 		end
 
@@ -44,7 +51,6 @@ feature -- Set
 			result := result + "%T%T var-kind "+ var_kind + "%N"
 			result := result + "%T%T dec-type "+ dec_type + "%N"
 			result := result + "%T%T rep-type "+ rep_type + "%N"
-
 		end
 
 

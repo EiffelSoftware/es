@@ -23,6 +23,8 @@ feature{NONE} -- Initialization
 			create daikon_generator.make
 			create daikon_fail_states.make (100)
 			create daikon_pass_states.make (100)
+			create passing_declaractions.make (20)
+			create failing_declaractions.make (20)
 		end
 
 feature -- Access
@@ -32,6 +34,9 @@ feature -- Access
 
 	fail_result: AFX_DAIKON_RESULT
 			-- Result of all fail test cases
+
+	exception_spot: AFX_EXCEPTION_SPOT
+			-- Spot describing the current expressions
 
 feature -- Actions
 
@@ -53,7 +58,7 @@ feature -- Actions
 				end
 			end
 
-			daikon_generator.add_state (a_state, a_bpslot.out, a_tc.is_failing)
+			daikon_generator.add_state (exception_spot.skeleton, a_state, a_bpslot, a_tc.is_failing)
 		end
 
 	on_new_test_case_found (tc_info: AFX_TEST_CASE_INFO) is
@@ -109,6 +114,12 @@ feature -- Setting
 			fail_test_case_info_set: fail_test_case_info = a_tc
 		end
 
+	set_exception_spot (a_spot: like exception_spot)
+			-- Set `exception_spot' with `a_spot'.
+		do
+			exception_spot := a_spot
+		end
+
 feature{NONE} -- Implementation
 
 	daikon_result_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
@@ -139,6 +150,12 @@ feature{NONE} -- Implementation
 
 	daikon_fail_states:  DS_ARRAYED_LIST [STRING]
 			-- List of fail states
+
+	passing_declaractions: DS_ARRAYED_LIST [STRING]
+			-- Variable declaractions for passing test cases
+
+	failing_declaractions: DS_ARRAYED_LIST [STRING]
+			-- Variable declaractions for failing test cases
 
 	daikon_pass_result: STRING
 			-- Result from running Daikon
@@ -171,6 +188,7 @@ feature{NONE} -- Implementation
 			create pass_file.make_open_write (pass_file_name (pass_test_case_info))
 
 				--Save to file.
+			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_class_, exception_spot.recipient_, False))
 			from
 				daikon_pass_states.start
 			until
@@ -182,7 +200,7 @@ feature{NONE} -- Implementation
 			pass_file.close
 
 			create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
-
+			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_class_, exception_spot.recipient_, True))
 				--Save to file.
 			from
 				daikon_fail_states.start
@@ -225,7 +243,8 @@ feature{NONE} -- Implementation
 			daikon_state : STRING
 		do
 			if daikon_generator.number_states > 0 then
-				daikon_state := daikon_generator.declarations + daikon_generator.traces
+--				daikon_state := daikon_generator.declarations + daikon_generator.traces
+				daikon_state := daikon_generator.traces
 				if daikon_generator.is_failing_tc then
 					daikon_fail_states.put_right (daikon_state)
 				else

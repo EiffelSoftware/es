@@ -48,16 +48,16 @@ feature{NONE} -- Implementation
 		do
 			if (equation.value.out.is_boolean) then
 				if (equation.value.out.to_boolean) then
-					result:= "1"
+					Result := "1"
 				else
-					result:= "0"
+					Result := "0"
 				end
-			elseif(equation.value.out.is_integer or equation.value.out.is_natural
-			           or equation.value.out.is_real ) then
-
-				result := equation.value.out
+			elseif(equation.value.out.is_integer or equation.value.out.is_natural or equation.value.out.is_real) then
+				Result := equation.value.out
+			elseif equation.value.is_nonsensical then
+				Result := equation.value.out
 			else
-				result := equation.value.out.hash_code.out
+				Result := equation.value.out.hash_code.out
 			end
 		end
 

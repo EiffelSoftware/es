@@ -255,35 +255,35 @@ feature{NONE} -- Implementation
 			if is_simplification_needed then
 				l_precondition := Void
 				l_postcondition := Void
---				l_failing_state := failing_state (l_bpslots.failing_bpslot)
---				if l_failing_state /= Void then
---					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
---						-- Find out the set of ABQS which implies the negation of the failing assertion.
---					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
---					if l_necessary_conditions.count > 1 then
---						
---					else
---						l_culprit_predicate := l_necessary_conditions.first
---					end
+				l_failing_state := failing_state (l_bpslots.failing_bpslot)
+				if l_failing_state /= Void then
+					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
+						-- Find out the set of ABQS which implies the negation of the failing assertion.
+					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
+					if l_necessary_conditions.count > 1 then
 
---					if l_culprit_predicate /= Void then
---						if attached guard_condition and then is_guard_condition_in_negation_form then
---							set_guard_condition (l_culprit_predicate)
---						else
---							set_guard_condition (not l_culprit_predicate)
---						end
+					else
+						l_culprit_predicate := l_necessary_conditions.first
+					end
 
---						create l_abq_analyzer
---						l_abq_analyzer.analyze (l_culprit_predicate)
---						check l_abq_analyzer.is_matched end
---						l_culprit_predicate := l_abq_analyzer.argumentless_boolean_query
---						l_value := (l_abq_analyzer.negation_count \\ 0) = 0
---						create l_pre_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (l_value))
---						create l_post_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (not l_value))
---						l_precondition := l_pre_equation
---						l_postcondition := l_post_equation
---					end
---				end
+					if l_culprit_predicate /= Void then
+						if attached guard_condition and then is_guard_condition_in_negation_form then
+							set_guard_condition (l_culprit_predicate)
+						else
+							set_guard_condition (not l_culprit_predicate)
+						end
+
+						create l_abq_analyzer
+						l_abq_analyzer.analyze (l_culprit_predicate)
+						check l_abq_analyzer.is_matched end
+						l_culprit_predicate := l_abq_analyzer.argumentless_boolean_query
+						l_value := (l_abq_analyzer.negation_count \\ 0) = 0
+						create l_pre_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (l_value))
+						create l_post_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (not l_value))
+						l_precondition := l_pre_equation
+						l_postcondition := l_post_equation
+					end
+				end
 			end
 
 			Result := [l_precondition, l_postcondition]

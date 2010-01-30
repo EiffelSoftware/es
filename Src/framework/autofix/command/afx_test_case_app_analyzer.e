@@ -208,6 +208,7 @@ feature{NONE} -- Implementation
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
 			debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exited_agent)
 			remove_breakpoint (debugger_manager, root_class)
+			remove_debugger_session
 		end
 
 	analyze_test_cases
@@ -447,6 +448,9 @@ feature{NONE} -- Actions
 				create l_spot_analyzer.make (config)
 				l_spot_analyzer.analyze (current_test_case_info, debugger_manager)
 				exception_spots.put (l_spot_analyzer.last_spot, l_recipient_id)
+				if attached {AFX_DAIKON_FACILITY} daikon_facility as l_daikon then
+					l_daikon.set_exception_spot (l_spot_analyzer.last_spot)
+				end
 			end
 
 --			l_stack_level := call_stack_index (debugger_manager, test_case_routine_header)

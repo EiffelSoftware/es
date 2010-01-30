@@ -24,14 +24,13 @@ feature -- creation
 	add_ordered_declaration ( declaration : AFX_DAIKON_DECLARATION ) is
 			-- 	add one declaration to the list of declarations
 		do
-			declaration_list.put_right (declaration)
-
+			declaration_list.extend (declaration)
 		end
 
 	add_ordered_trace ( trace : AFX_DAIKON_TRACE ) is
 			-- 	add one declaration to the list of declarations
 		do
-			trace_list.put_right (trace)
+			trace_list.extend (trace)
 		end
 
 	print_declaration : STRING is

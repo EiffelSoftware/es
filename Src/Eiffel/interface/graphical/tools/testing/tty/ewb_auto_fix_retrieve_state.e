@@ -218,7 +218,7 @@ feature{NONE} -- Implementation
 
 		do
 
-			daikon_generator.add_state (a_state,a_breakpoint.breakable_line_number.out,false)
+--			daikon_generator.add_state (a_state,a_breakpoint.breakable_line_number, false)
 
 
 			if a_state.feature_ = void then

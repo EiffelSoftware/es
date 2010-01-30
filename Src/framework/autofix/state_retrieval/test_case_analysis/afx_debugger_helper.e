@@ -10,6 +10,10 @@ class
 inherit
 	SHARED_EIFFEL_PROJECT
 
+	SHARED_WORKBENCH
+
+	EIFFEL_LAYOUT
+
 feature -- Access
 
 	call_stack_index (a_dm: DEBUGGER_MANAGER; a_feature_name: STRING): INTEGER
@@ -51,6 +55,7 @@ feature -- Basic operations
 			wdir: STRING
 			param: DEBUGGER_EXECUTION_PARAMETERS
 		do
+			remove_debugger_session
 			if wdir = Void or else wdir.is_empty then
 				wdir := Eiffel_project.lace.directory_name
 						--Execution_environment.current_working_directory
@@ -63,6 +68,29 @@ feature -- Basic operations
 			a_dm.set_catcall_detection_in_console (False)
 			a_dm.set_catcall_detection_in_debugger (False)
 			ctlr.debug_application (param, {EXEC_MODES}.run)
+		end
+
+	remove_debugger_session
+			-- Remove the debugger serssion file for currently loaded projects.
+		local
+			l_ver: STRING
+			l_target_name: STRING
+			l_file_name: FILE_NAME
+			l_file: RAW_FILE
+		do
+			l_target_name := workbench.lace.target.name
+			if attached (create {USER_OPTIONS_FACTORY}).mapped_uuid (workbench.lace.file_name) as l_uuid then
+				l_ver := l_uuid.out
+			else
+				l_ver := workbench.lace.target.system.uuid.out
+			end
+			create l_file_name.make_from_string (eiffel_layout.session_data_path)
+			l_ver.replace_substring_all ("-", "")
+			l_file_name.set_file_name (l_ver + "." + l_target_name + ".dbg.ses")
+			create l_file.make (l_file_name)
+			if l_file.exists then
+				l_file.delete
+			end
 		end
 
 	remove_breakpoint (a_dm: DEBUGGER_MANAGER; a_class: CLASS_C)
