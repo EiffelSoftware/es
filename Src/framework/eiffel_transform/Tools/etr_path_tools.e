@@ -19,6 +19,21 @@ feature {NONE} -- Implementation
 
 feature -- Operations
 
+	feature_from_line (a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER): detachable STRING
+			-- The feature `a_path' is in
+		require
+			all_set: a_ast/=void and a_match_list /= void
+		local
+			l_finder: ETR_PATH_FEATURE_FINDER
+		do
+			create l_finder.make_with_match_list (a_match_list)
+			l_finder.find_path_from_line (a_ast, a_line )
+
+			if l_finder.found and l_finder.is_feature then
+				Result := l_finder.feature_name
+			end
+		end
+
 	path_from_line(a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER): detachable AST_PATH
 			-- Gets a path from a line in a match list
 		require

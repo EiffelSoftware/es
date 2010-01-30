@@ -14,6 +14,16 @@ create
 	make_invalid,
 	make_from_ast_list
 
+feature -- Operation
+
+	set_context (a_context: ETR_CONTEXT)
+			-- Sets context to `a_context'
+		require
+			valid_context: a_context /= void
+		do
+			context := a_context
+		end
+
 feature -- Access
 
 	path: detachable AST_PATH
@@ -24,7 +34,7 @@ feature -- Access
 			end
 		end
 
-	context: detachable ETR_CONTEXT
+	context: detachable ETR_CONTEXT assign set_context
 			-- Context of the transformable
 
 	target_node: detachable AST_EIFFEL
@@ -33,7 +43,7 @@ feature -- Access
 	is_valid: BOOLEAN
 			-- Is `Current' valid?
 
-feature -- creation
+feature {NONE} -- creation
 
 	make_from_ast(a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
 			-- make with `a_node' and `a_context'

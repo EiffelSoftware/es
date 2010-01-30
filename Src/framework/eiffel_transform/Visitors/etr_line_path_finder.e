@@ -52,20 +52,26 @@ feature {NONE} -- Implementation
 	current_path: AST_PATH
 			-- The path we're currently at
 
+	is_target(a_ast: AST_EIFFEL): BOOLEAN
+			-- is `a_ast' the target?
+		do
+			Result := not attached {DO_AS}a_ast and a_ast.is_text_available (match_list) and then (a_ast.first_token (match_list).line = target_line or a_ast.last_token (match_list).line = target_line)
+		end
+
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
 			-- process an n-way branch with parent `a_parent' and branches `br'
 		local
 			i: INTEGER
 			l_prev_path: AST_PATH
 		do
-			if a_parent.is_text_available (match_list) and then (a_parent.first_token (match_list).line = target_line or a_parent.last_token (match_list).line = target_line) then
+			if is_target(a_parent) then
 				found := true
 				found_path := current_path
 			else
 				from
 					i:=1
 				until
-					i>br.count
+					i>br.count or found
 				loop
 					if attached {AST_EIFFEL}br.item (i) as item then
 						l_prev_path := current_path.twin
@@ -87,26 +93,21 @@ feature {AST_EIFFEL} -- Roundtrip
 			i: INTEGER
 			l_prev_path: AST_PATH
 		do
-			if l_as.is_text_available (match_list) and then l_as.first_token (match_list).line = target_line then
-				found := true
-				found_path := current_path
-			else
-				from
-					l_cursor := l_as.index
-					i:=1
-					l_as.start
-				until
-					l_as.after
-				loop
-					l_prev_path := current_path.twin
-					create current_path.make_from_parent (current_path, i)
-					l_as.item.process (Current)
-					current_path := l_prev_path
-					l_as.forth
-					i:=i+1
-				end
-				l_as.go_i_th (l_cursor)
+			from
+				l_cursor := l_as.index
+				i:=1
+				l_as.start
+			until
+				l_as.after or found
+			loop
+				l_prev_path := current_path.twin
+				create current_path.make_from_parent (current_path, i)
+				l_as.item.process (Current)
+				current_path := l_prev_path
+				l_as.forth
+				i:=i+1
 			end
+			l_as.go_i_th (l_cursor)
 		end
 
 note

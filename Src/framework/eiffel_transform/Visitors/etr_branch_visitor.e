@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-feature -- Roundtrip
+feature {AST_EIFFEL} -- Roundtrip
 
 	process_like_id_as (l_as: LIKE_ID_AS)
 		do

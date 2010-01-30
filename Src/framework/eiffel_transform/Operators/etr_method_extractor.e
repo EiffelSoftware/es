@@ -196,7 +196,7 @@ feature {NONE} -- Implementation (Extraction)
 				loop
 					if not extracted_arguments.has (l_cur_var_used.item) then
 						-- All used arguments will be arguments of the new method
-						if attached context.arg_by_name[l_cur_var_used.item] then
+						if context.has_arguments and then attached context.arg_by_name[l_cur_var_used.item] then
 							extracted_arguments.extend (l_cur_var_used.item)
 						else
 							if not l_cur_var_used.item.is_equal (ti_result) and not used_locals.has (l_cur_var_used.item) then
@@ -207,10 +207,14 @@ feature {NONE} -- Implementation (Extraction)
 								l_cur_var_def := l_pair.first
 
 								if l_cur_var_def < block_start  then
-								-- If the variable was defined before the block
-								-- it's an argument of the extracted method
-								extracted_arguments.extend (l_cur_var_used.item)
+									-- If the variable was defined before the block
+									-- it's an argument of the extracted method
+									extracted_arguments.extend (l_cur_var_used.item)
 								end
+							else
+								-- variable not defined (yet)
+								-- maybe it has a default value
+								extracted_arguments.extend (l_cur_var_used.item)
 							end
 						end
 					end
@@ -361,9 +365,9 @@ feature {NONE} -- Implementation (Printing)
 				loop
 					-- Get type (local, argument or result)
 					-- and print the unresolved version
-					if attached {ETR_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
+					if context.has_arguments and then attached {ETR_TYPED_VAR}context.arg_by_name[extracted_arguments.item] as l_arg then
 						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg))
-					elseif attached {ETR_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
+					elseif context.has_locals and then attached {ETR_TYPED_VAR}context.local_by_name[extracted_arguments.item] as l_arg then
 						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg))
 					elseif extracted_arguments.item.is_equal (ti_result) then
 						l_feature_output_text.append ("a_"+ti_result + ti_colon + ti_space + type_checker.print_type (context.unresolved_type, context))
@@ -408,7 +412,7 @@ feature {NONE} -- Implementation (Printing)
 
 				-- Get type (local)
 				-- and print the unresolved version
-				if attached {ETR_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
+				if context.has_locals and then attached {ETR_TYPED_VAR}context.local_by_name[extracted_results.first] as l_arg then
 					l_feature_output_text.append (ti_colon + ti_space + print_indep_type (l_arg))
 				elseif extracted_results.first.is_equal (ti_result) then
 					l_feature_output_text.append (ti_colon + ti_space + type_checker.print_type (context.unresolved_type, context))
@@ -424,7 +428,7 @@ feature {NONE} -- Implementation (Printing)
 				until
 					extracted_new_locals.after
 				loop
-					if attached {ETR_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
+					if context.has_locals and then attached {ETR_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
 						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg)+ti_new_line)
 					end
 
@@ -436,7 +440,7 @@ feature {NONE} -- Implementation (Printing)
 				until
 					changed_arguments.after
 				loop
-					if attached {ETR_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
+					if context.has_locals and then attached {ETR_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
 						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + print_indep_type (l_arg)+ti_new_line)
 					end
 
@@ -488,7 +492,7 @@ feature {NONE} -- Implementation (Printing)
 			l_instr_text: STRING
 			l_call_text: STRING
 		do
-			l_call_text := a_extracted_feature_name
+			l_call_text := a_extracted_feature_name.twin
 			if not extracted_arguments.is_empty then
 				l_call_text.append (ti_l_parenthesis)
 				from

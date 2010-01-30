@@ -14,7 +14,9 @@ inherit
 			process_nested_as,
 			process_access_feat_as,
 			process_expr_call_as,
-			process_list_with_separator
+			process_list_with_separator,
+			process_assign_as,
+			process_reverse_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -107,23 +109,42 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Roundtrip
 
+	process_assign_as (l_as: ASSIGN_AS)
+		do
+			last_was_unqualified := true
+			process_child (l_as.target, l_as, 1)
+			output.append_string(ti_Space+ti_Assign+ti_Space)
+			last_was_unqualified := true
+			process_child (l_as.source, l_as, 2)
+			output.append_string(ti_New_line)
+		end
+
+	process_reverse_as (l_as: REVERSE_AS)
+		do
+			last_was_unqualified := true
+			process_child (l_as.target, l_as, 1)
+			output.append_string(ti_Space+ti_Reverse_assign+ti_Space)
+			last_was_unqualified := true
+			process_child (l_as.source, l_as, 2)
+			output.append_string(ti_New_line)
+		end
+
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
 			last_was_unqualified := true
-			process_child (l_as.call, l_as, 1)
-			output.append_string(ti_new_line)
+			Precursor(l_as)
 		end
 
 	process_expr_call_as (l_as: EXPR_CALL_AS)
 		do
 			last_was_unqualified := true
-			process_child(l_as.call, l_as, 1)
+			Precursor(l_as)
 		end
 
 	process_creation_as (l_as: CREATION_AS)
 		do
 			last_was_unqualified := true
-			Precursor {ETR_AST_STRUCTURE_PRINTER}(l_as)
+			Precursor(l_as)
 		end
 
 	process_nested_as (l_as: NESTED_AS)
