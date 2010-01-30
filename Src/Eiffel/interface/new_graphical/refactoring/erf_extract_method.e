@@ -168,6 +168,8 @@ feature {NONE} -- Implementation
 
 			l_replacement_text: STRING
 		do
+			success := true
+
 			error_handler.reset_errors
 
 			l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
@@ -199,10 +201,12 @@ feature {NONE} -- Implementation
 	        else
 	        	show_etr_error
 	        	rollback
+	        	success := false
 			end
 		rescue
 			show_etr_error
 			rollback
+			success := false
 		end
 
     ask_run_settings
