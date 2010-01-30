@@ -30,8 +30,8 @@ feature -- Query
    			load_model (a_objects, a_dest_objects)
 
 			l_constructor := constructor
-		    create l_config.make (a_objects, a_dest_objects, a_context_class, a_class_set)
-   			l_constructor.construct_behavior (l_config, a_criteria, a_is_forward)
+		    create l_config.make (a_objects, a_dest_objects, a_context_class, a_class_set, a_criteria, a_is_forward)
+   			l_constructor.construct_behavior (l_config)
    			Result := l_constructor.call_sequences
 		end
 

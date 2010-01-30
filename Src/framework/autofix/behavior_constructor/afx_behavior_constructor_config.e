@@ -8,8 +8,14 @@ class
 	AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
 
 inherit
+	AFX_HASH_CALCULATOR
+    	redefine is_equal end
+
+	AFX_SHARED_BEHAVIOR_FEATURE_SELECTOR_FACTORY
+    	redefine is_equal end
 
     AFX_SHARED_BOOLEAN_STATE_OUTLINE_MANAGER
+    	redefine is_equal end
 
 create
     make
@@ -19,7 +25,9 @@ feature -- Initialization
 	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING];
 				a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING];
 				a_context_class: CLASS_C;
-				a_class_set: detachable like class_set)
+				a_class_set: detachable like class_set;
+				a_criteria: detachable AFX_BEHAVIOR_FEATURE_SELECTOR_I;
+				a_is_forward: BOOLEAN)
 			-- Initialize.
 		require
 		    dest_subset_of_objects: -- all names in `a_dest_objects' should also be in `an_objects'
@@ -34,18 +42,6 @@ feature -- Initialization
 		    l_classes: DS_LINEAR[CLASS_C]
 		    l_found_conformance: BOOLEAN
 		do
-		    debug("auto-fix")
-		    		-- each dest object name should also appear in `an_objects'
-		    	from a_dest_objects.start
-		    	until a_dest_objects.after
-		    	loop
-		    	    if not an_objects.has ( a_dest_objects.key_for_iteration ) then
-		    	        check False end
-		    	    end
-		    	    a_dest_objects.forth
-		    	end
-		    end
-
 		    	-- interpretate usable objects into boolean states
 		    create usable_objects.make (an_objects.count)
 		    from an_objects.start
@@ -131,6 +127,12 @@ feature -- Initialization
 		        class_set := l_class_set
 		    end
 
+			if attached a_criteria as lt_criteria then
+				criteria := a_criteria
+			else
+			    criteria := behavior_feature_selector
+			end
+			is_forward := a_is_forward
 		    context_class := a_context_class
 
 			set_maximum_length (default_maximum_length)
@@ -161,6 +163,12 @@ feature -- Access
 	context_class: CLASS_C
 			-- Context class where the generated feature call sequence would be used.
 
+	criteria: AFX_BEHAVIOR_FEATURE_SELECTOR_I
+			-- Criteria used to select the features from the classes.
+
+	is_forward: BOOLEAN
+			-- Is the construction forward?
+
 	maximum_length: INTEGER assign set_maximum_length
 			-- Maximum number of feature calls in one fix.
 
@@ -172,9 +180,47 @@ feature -- Access
 			-- Style in which the behavior sequences are generated using post state guided construction.
 			-- It can only take one of the following three values.
 
---	max_num_of_repeatition_per_class: INTEGER assign set_max_num_of_repeatition_per_class
---			-- Max number of repeatitions for the mutators in a class.
---			-- Only used when `post_state_guided_construction_style' is set to `Post_state_guided_construction_style_repeatition_maximum'.
+feature -- Status report
+
+	is_equal (a_config: like Current): BOOLEAN
+			-- <Precursor>
+		local
+		    l_class_id: INTEGER
+		    l_tbl1, l_tbl2: DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING]
+		do
+		    Result := True
+		    if is_forward /= a_config.is_forward
+		    		or else is_good /= a_config.is_good
+		    		or else a_config.is_using_symbolic_execution /= is_using_symbolic_execution then
+		        Result := False
+		    elseif maximum_length /= a_config.maximum_length
+		    		or else model_guidance_style /= a_config.model_guidance_style
+		    		or else post_state_guided_construction_style /= a_config.post_state_guided_construction_style then
+		        Result := False
+		    elseif criteria /= a_config.criteria
+		    		or else context_class /= a_config.context_class then
+		        Result := False
+			elseif class_set /~ a_config.class_set then
+			    Result := False
+			elseif not is_same_object_table (a_config.destination, destination) then
+				Result := False
+			else
+			    from usable_objects.start
+			    until usable_objects.after or else not Result
+			    loop
+			        l_class_id := usable_objects.key_for_iteration
+			        l_tbl1 := usable_objects.item_for_iteration
+
+			        if not a_config.usable_objects.has (l_class_id) then
+			            Result := False
+			        else
+			            l_tbl2 := a_config.usable_objects.item (l_class_id)
+			            Result := is_same_object_table (l_tbl1, l_tbl2)
+			        end
+			        usable_objects.forth
+			    end
+		    end
+		end
 
 feature -- Configuration
 
@@ -253,15 +299,63 @@ feature -- Status set
 		    post_state_guided_construction_style := a_style
 		end
 
---	set_max_num_of_repeatition_per_class (a_num: INTEGER)
---			-- Set the max num of repeatition for the mutators regarding each class object.
---		require
---		    positive_num: a_num > 0
---		do
---		    max_num_of_repeatition_per_class := a_num
---		end
-
 feature{NONE} -- Implementation
+
+	is_same_object_table (a_table1, a_table2: DS_HASH_TABLE[AFX_BOOLEAN_STATE, STRING]): BOOLEAN
+			-- Is the first object table same as the second?
+		local
+		    l_obj_name1, l_obj_name2: STRING
+		    l_state1, l_state2: AFX_BOOLEAN_STATE
+		do
+		    if a_table1.count /= a_table2.count then
+		        Result := False
+		    else
+		        Result := True
+		        from a_table1.start
+		        until a_table1.after or not Result
+		        loop
+		            l_obj_name1 := a_table1.key_for_iteration
+		            l_state1 := a_table1.item_for_iteration
+
+		            if a_table2.has (l_obj_name1) then
+		                l_state2 := a_table2.item (l_obj_name1)
+
+		                		-- Note: We need real object comparison here
+		                if not boolean_state_equality_tester.test (l_state1, l_state2) then
+		                    Result := False
+		                end
+		            else
+		                Result := False
+		            end
+
+		            a_table1.forth
+		        end
+		    end
+		end
+
+	boolean_state_equality_tester: AFX_BOOLEAN_STATE_EQUALITY_TESTER
+			-- Shared boolean state equality tester.
+		once
+		    create Result
+		end
+
+	key_to_hash: DS_LINEAR[INTEGER]
+			-- <Precursor>
+		local
+		    l_list: DS_ARRAYED_LIST[INTEGER]
+		do
+		    create l_list.make (2 * destination.count)
+
+		    	-- Hash the configuration according only to the destination objects.
+		    from destination.start
+		    until destination.after
+		    loop
+		        l_list.force_last (destination.key_for_iteration.hash_code)
+		        l_list.force_last (destination.item_for_iteration.hash_code)
+		        destination.forth
+		    end
+		    Result := l_list
+		end
 
 	add_usable_object (a_state: AFX_BOOLEAN_STATE; a_name: STRING)
 			-- Add an object `a_name' with its state `a_state' to `usable_objects'.

@@ -18,15 +18,18 @@ feature -- Access
 	config: detachable AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
 			-- Configuration of the behavior construction.
 
-	criteria: AFX_BEHAVIOR_FEATURE_SELECTOR_I
-			-- Feature selection criteria.
-		do
-		    Result := internal_criteria.item
-		end
+--	criteria: AFX_BEHAVIOR_FEATURE_SELECTOR_I
+--			-- Feature selection criteria.
+--		do
+--		    Result := internal_criteria.item
+--		end
 
 	call_sequences: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
 			-- List of state transition fixes.
 		do
+		    if internal_list_of_fixes = Void then
+		        create internal_list_of_fixes.make_default
+		    end
 		    Result := internal_list_of_fixes
 		end
 
@@ -38,7 +41,7 @@ feature -- Access
 
 feature -- Constructor interface
 
-	construct_behavior (a_config: attached like config; a_criteria: detachable like criteria; a_is_forward: BOOLEAN)
+	construct_behavior (a_config: attached like config)
 			-- Construct the state changing behavior.
 		local
 			l_starting_state: AFX_BEHAVIOR_STATE
@@ -48,32 +51,35 @@ feature -- Constructor interface
 		do
 		    config := a_config
 
-		    if attached a_criteria as lt_criteria then
-		        internal_criteria.put (lt_criteria)
-		    end
+			if internal_call_sequence_cache.has (a_config) then
+			    internal_list_of_fixes := internal_call_sequence_cache.item (a_config)
+			else
+    			reset_constructor
+    		    collect_suitable_feature_options (a_config.is_forward)
 
-			reset_constructor
-		    collect_suitable_feature_options (a_is_forward)
+    	        l_feature_options := internal_list_of_feature_options
+    		    if not l_feature_options.is_empty then
+    		        if config.is_using_symbolic_execution then
+    		            	-- Symbolically execute the features to construct the behavior sequences.
+        		        create l_starting_state.make (Void, Void, Void, a_config.usable_objects, 0, 0)
+        		        internal_stack_of_execution_env.put ([0, l_starting_state])
+            		    execute_feature_sequences
+            		    if not internal_satisfactory_behavior_states.is_empty then
+                		    interpretate_satisfactory_behavior_states
+            		    end
+    		        else
+    		            enumerate_feature_call_sequences
+    		        end
+    		    end
 
-	        l_feature_options := internal_list_of_feature_options
-		    if not l_feature_options.is_empty then
-		        if config.is_using_symbolic_execution then
-		            	-- Symbolically execute the features to construct the behavior sequences.
-    		        create l_starting_state.make (Void, Void, Void, a_config.usable_objects, 0, 0)
-    		        internal_stack_of_execution_env.put ([0, l_starting_state])
-        		    execute_feature_sequences
-        		    if not internal_satisfactory_behavior_states.is_empty then
-            		    interpretate_satisfactory_behavior_states
-        		    end
-		        else
-		            enumerate_feature_call_sequences
-		        end
-		    end
+    				-- Always add the empty call sequence as a special fix candidate.
+    			create l_empty_fix.make (1)
+    			create l_fix.make (l_empty_fix)
+    			call_sequences.force_last (l_fix)
 
-				-- Always add the empty call sequence as a special fix candidate.
-			create l_empty_fix.make (1)
-			create l_fix.make (l_empty_fix)
-			internal_list_of_fixes.force_last (l_fix)
+					-- Cache the result.
+    			internal_call_sequence_cache.force (call_sequences, a_config)
+			end
 		end
 
 feature{NONE} -- Operation
@@ -187,7 +193,9 @@ feature{NONE} -- Operation
             internal_list_of_feature_options.wipe_out
             internal_stack_of_execution_env.wipe_out
             internal_satisfactory_behavior_states.wipe_out
-            internal_list_of_fixes.wipe_out
+
+            	-- Since we cache the result, the list of fixes should not be wiped out.
+            internal_list_of_fixes := Void
 		end
 
 	collect_suitable_feature_options (a_is_forward: BOOLEAN)
@@ -241,7 +249,7 @@ feature{NONE} -- Operation
     			        l_next_feature := l_feature_table.item_for_iteration
     			        if l_tbl.has (l_next_feature.feature_id) 	-- With summary information.
     			        		and then not l_tbl.item (l_next_feature.feature_id).is_property_preserving -- Not a query.
-    			        		and then criteria.is_suitable (l_class, l_next_feature, l_context_class) then
+    			        		and then config.criteria.is_suitable (l_class, l_next_feature, l_context_class) then
     			            l_transitions.force_last (l_tbl.item (l_next_feature.feature_id))
     			        end
     			        l_feature_table.forth
@@ -433,15 +441,15 @@ feature{NONE} -- Operation
 			-- Put the fixes into `internal_list_of_fixes'.
 		require
 		    internal_satisfactory_behaviors_states_not_empty: not internal_satisfactory_behavior_states.is_empty
-		    internal_list_of_fixes_empty: internal_list_of_fixes.is_empty
+		    call_sequences_empty: call_sequences.is_empty
 		local
-		    l_fixes: like internal_list_of_fixes
+		    l_fixes: like call_sequences
 		    l_satisfactory_states: like internal_satisfactory_behavior_states
 		    l_state: AFX_BEHAVIOR_STATE
 		    l_fix: AFX_STATE_TRANSITION_FIX
 		    l_empty_fix: DS_ARRAYED_LIST [STRING_8]
 		do
-		    l_fixes := internal_list_of_fixes
+		    l_fixes := call_sequences
 			l_fixes.resize (internal_satisfactory_behavior_states.count + 1)
 
 		    from
@@ -461,6 +469,12 @@ feature{NONE} -- Operation
 
 feature{NONE} -- Implementation
 
+	Configuration_equality_tester: AFX_BEHAVIOR_CONSTRUCTOR_CONFIG_EQUALITY_TESTER
+			-- Equality tester for configurations.
+		once
+		    create Result
+		end
+
 	Transition_enumeration_generator: AFX_ENUMERATION_GENERATOR [AFX_STATE_TRANSITION_SUMMARY]
 			-- Generator to generate all transition enumerations.
 		once
@@ -477,6 +491,13 @@ feature{NONE} -- Implementation
 			-- Feature call generator.
 		once
 		    create Result
+		end
+
+	internal_call_sequence_cache: DS_HASH_TABLE [DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX], AFX_BEHAVIOR_CONSTRUCTOR_CONFIG]
+			-- Internal cache for the generated call sequences.
+		once
+		    create Result.make_default
+		    Result.set_key_equality_tester (Configuration_equality_tester)
 		end
 
 	internal_list_of_feature_options: DS_ARRAYED_LIST [DS_ARRAYED_LIST [AFX_STATE_TRANSITION_SUMMARY]]
@@ -501,85 +522,13 @@ feature{NONE} -- Implementation
 		    create Result.make_default
 		end
 
-	internal_list_of_fixes: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
+	internal_list_of_fixes: detachable DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
 			-- Internal storage for the fixes generated.
-		once
-		    create Result.make_default
-		end
 
-	internal_criteria: CELL[AFX_BEHAVIOR_FEATURE_SELECTOR_I]
-			-- Internal storage for the criteria.
-		once
-		    create Result.put (create {AFX_BEHAVIOR_FEATURE_SELECTOR})
-		end
-
---	state_transition_model: AFX_STATE_TRANSITION_MODEL_I
---			-- The model to be used in construction.
---		deferred
---		end
---
---	internal_working_stack: DS_LINKED_STACK [AFX_BEHAVIOR_STATE]
---			-- Working stack for constructing the behavior sequences.
+--	internal_criteria: CELL[AFX_BEHAVIOR_FEATURE_SELECTOR_I]
+--			-- Internal storage for the criteria.
 --		once
---		    create Result.make_default
+--		    create Result.put (create {AFX_BEHAVIOR_FEATURE_SELECTOR})
 --		end
-
---	reset_constructor (an_objects: DS_HASH_TABLE[AFX_STATE, STRING];
---					a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING];
---					a_context_class: CLASS_C;
---					a_class_set: detachable DS_HASH_SET [CLASS_C];
---					a_criteria: detachable AFX_BEHAVIOR_FEATURE_SELECTOR_I)
---			-- Reset the constructor and get it ready for a new construction.
---			-- Note: `state_transition_model' is NOT reset.
---			-- 		Use `transition_summary_manager.clear_summary' to do that.
---		deferred
---		ensure
---		    config_set: config /= Void
---		    criteria_set: criteria /= Void
---		    call_sequences_empty: call_sequences.is_empty
---		end
-
---	construct_behavior
---			-- Construct behaviors to make the transition.
---			-- Constructed fixes are stored in `fix_sequences'.
---		require
---		    state_transition_model_good: state_transition_model.is_good
---		    config_good: config.is_good
---		    criteria_set: criteria /= Void
---		    call_sequences_empty: call_sequences.is_empty
---		deferred
---		end
-
---feature -- Output
-
---	call_sequences_as_string: STRING
---			-- Represent the whole call sequences using a single string.
---		require
---		    fix_candidates_not_empty: call_sequences /= Void and then not call_sequences.is_empty
---		local
---		    l_fixes: like call_sequences
---		    l_str: STRING
---		    l_index: INTEGER
---		do
---		    l_fixes := call_sequences
---		    create l_str.make (1024)
---		    from
---		    	l_index := 1
---		    	l_fixes.start
---		    until
---		        l_fixes.after
---		    loop
---		        l_str.append ("  --- Sequence #")
---		        l_str.append (l_index.out)
---		        l_str.append (" ---%N")
---		        l_str.append (l_fixes.item_for_iteration.out)
---				l_str.append_character ('%N')
-
---		        l_index := l_index + 1
---		        l_fixes.forth
---		    end
---		    Result := l_str
---		end
-
 
 end

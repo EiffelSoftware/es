@@ -30,7 +30,7 @@ feature -- Equality
     					and then l_u.boolean_state_outline = l_v.boolean_state_outline then
     						-- share the same boolean state outline (and therefore also the same boolean outline extractor)
     				Result := l_u.properties_false.is_equal (l_v.properties_false)
-    						and then l_u.properties_true.is_equal (l_v.properties_false)
+    						and then l_u.properties_true.is_equal (l_v.properties_true)
     			end
     		else
     		    check False end
