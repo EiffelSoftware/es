@@ -110,7 +110,8 @@ def compile_project(a_folder):
 # Launch AutoFix.
 def autofix(a_folder):    
     print("Start AutoFix.")
-    os.system ('rm ~/.es/64/session/*' + options['target'] + '.dbg.ses')
+    # os.system ('rm ~/.es/64/session/*' + options['target'] + '.dbg.ses')
+    os.system ("taskkill /F /IM " + options['target'] + ".exe")
     current_dir = os.getcwd()
     os.chdir(a_folder) 
     shutil.rmtree(os.path.join(options['project-folder'],  'EIFGENs',  options['target'],  'AutoFix',  'fix'),  ignore_errors=True)
@@ -142,8 +143,8 @@ def autofix(a_folder):
         result = "Not found valid fix."
     logfile.close()
     print(result)
-    os.system ('killall -9 mono.exe')
-    os.system ('killall -9 Boogie.exe')
+    # os.system ('killall -9 mono.exe')
+    # os.system ('killall -9 Boogie.exe')
     
     
     # Remove files to save space.
