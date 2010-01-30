@@ -11,7 +11,8 @@ inherit
 		redefine
 			preferences,
 			ask_run_settings,
-			refactor
+			refactor,
+			execute
 		end
 
 	REFACTORING_HELPER
@@ -47,6 +48,18 @@ feature -- Element change
 			class_i := a_class
 		end
 
+	set_start_line (a_line: INTEGER)
+			-- Set start line to `a_line'
+		do
+			preferences.set_start_line (a_line)
+		end
+
+	set_end_line (a_line: INTEGER)
+			-- Set end line to `a_line'
+		do
+			preferences.set_end_line (a_line)
+		end
+
 feature {ERF_EXTRACT_METHOD_CHECK} -- Element change
 
 	set_transformable(a_transformable: like transformable)
@@ -65,6 +78,67 @@ feature {ERF_EXTRACT_METHOD_CHECK} -- Element change
 			-- Set end path	
 		do
 			end_path := a_path
+		end
+
+feature -- Basic
+
+	execute
+			-- Execute the refactoring
+		local
+			all_checks_ok: BOOLEAN
+			compiler_check: ERF_COMPILATION_SUCCESSFUL
+		do
+			success := False
+			status_bar := window_manager.last_focused_development_window.status_bar
+			create compiler_check.make
+
+				-- check if compilation is ok
+			compiler_check.execute
+			if not compiler_check.success then
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (compiler_check.error_message, Void, Void)
+			else
+					-- Get open classes
+				window_manager.for_all_development_windows (agent add_window_to_open_classes)
+
+					-- Ask settings till the checks all complete successfully or if the user cancels
+				ask_run_settings
+				if retry_ask_run_settings then
+					from
+						all_checks_ok := checks.for_all (agent check_successful)
+					until
+						not retry_ask_run_settings or else all_checks_ok
+					loop
+						ask_run_settings
+						all_checks_ok := checks.for_all (agent check_successful)
+					end
+						-- Checks ok and user didn't cancel
+					if all_checks_ok and retry_ask_run_settings then
+							-- Handle undo
+						create current_actions.make (0)
+
+						refactor
+
+						if success then
+							-- Execute compilation
+							compiler_check.execute
+							success := compiler_check.success
+
+								-- on error ask if we should rollback
+							if not success then
+									-- success, because, now the user can choose to keep the changes or if he rollbacks, success will be set to False
+								success := True
+								(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_question_prompt (compiler_check.error_message.as_string_32+" " + interface_names.l_rollback_question, Void, agent rollback, agent commit)
+							else
+								commit
+							end
+						end
+					end
+					window_manager.for_all_development_windows (agent {EB_DEVELOPMENT_WINDOW}.synchronize)
+				end
+			end
+		rescue
+				-- on exception undo any changes
+			rollback
 		end
 
 feature {NONE} -- Implementation

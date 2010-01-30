@@ -86,7 +86,7 @@ feature -- Access
 	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
-			Result := pixmaps.icon_pixmaps.refactor_rename_icon_buffer
+			Result := pixmaps.icon_pixmaps.tool_config_icon_buffer
 		end
 
 	Name: STRING = "RF_extract_method"
@@ -99,12 +99,21 @@ feature -- Execution
 		local
 			window: EB_DEVELOPMENT_WINDOW
 			rf: ERF_EXTRACT_METHOD
+			displayed_text: CLICKABLE_TEXT
 		do
 			window := window_manager.last_focused_development_window
 
 			if attached {CLASSI_STONE}window.stone as cs and then attached {EIFFEL_CLASS_I}cs.class_i as eif_class_i then
 				rf := manager.extract_method_refactoring
 				rf.set_class (eif_class_i)
+
+				displayed_text := window.ui.current_editor.text_displayed
+
+				if not displayed_text.selection_is_empty then
+					rf.set_start_line(displayed_text.selection_start.y_in_lines)
+					rf.set_end_line(displayed_text.selection_end.y_in_lines)
+				end
+
 				manager.execute_refactoring (rf)
 			else
 				prompts.show_info_prompt (warning_messages.w_Select_class_feature_to_rename, window.window, Void)

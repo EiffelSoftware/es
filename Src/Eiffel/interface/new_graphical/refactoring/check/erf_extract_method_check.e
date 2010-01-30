@@ -68,10 +68,21 @@ feature -- Basic operation
 
 				-- Convert line numbers to paths
 				l_start_path := path_tools.path_from_line (l_orig_feat, l_matchlist, start_line)
-				l_start_path.set_root (l_feat_ast)
+				if l_start_path = void then
+					success := False
+					error_message := "Invalid start path"
+				else
+					l_start_path.set_root (l_feat_ast)
 
-				l_end_path := path_tools.path_from_line (l_orig_feat, l_matchlist, end_line)
-				l_end_path.set_root (l_feat_ast)
+					l_end_path := path_tools.path_from_line (l_orig_feat, l_matchlist, end_line)
+
+					if l_end_path = void then
+						success := False
+						error_message := "Invalid end path"
+					else
+						l_end_path.set_root (l_feat_ast)
+					end
+				end
 			end
 
 			if success then

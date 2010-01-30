@@ -404,11 +404,6 @@ feature {NONE} -- Implementation (Printing)
 
 			if not extracted_results.is_empty then
 				-- Add first result, ignore rest
-				if extracted_results.count>1 then
-					check
-						not_supported: false
-					end
-				end
 
 				-- Get type (local)
 				-- and print the unresolved version
@@ -574,8 +569,12 @@ feature -- Operations
 					extract_new_locals
 					extract_obsolete_locals
 
-					compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_instr_list)
-					compute_old_method (a_start_path, a_end_path, a_feature_name, l_feat_ast)
+					if extracted_results.count>1 then
+						error_handler.add_error ("extract_method: More than one result is not supported")
+					else
+						compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_instr_list)
+						compute_old_method (a_start_path, a_end_path, a_feature_name, l_feat_ast)
+					end
 				end
 			else
 				error_handler.add_error("extract_method: No feature context provided")
