@@ -217,6 +217,7 @@ feature{NONE} -- Implementation
 			l_value: BOOLEAN
 			l_pre_equation: AFX_EQUATION
 			l_post_equation: AFX_EQUATION
+			l_culprits: LINKED_LIST [AFX_EXPRESSION]
 		do
 			l_bpslots := relevant_break_points
 
@@ -261,12 +262,16 @@ feature{NONE} -- Implementation
 						-- Find out the set of ABQS which implies the negation of the failing assertion.
 					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
 					if l_necessary_conditions.count > 1 then
-
+						l_culprits := strongest_predicates (l_necessary_conditions, l_failing_state.skeleton.theory)
+						if l_culprits.count >= 1 then
+							l_culprit_predicate := l_culprits.first
+						end
 					else
 						l_culprit_predicate := l_necessary_conditions.first
 					end
 
 					if l_culprit_predicate /= Void then
+						l_culprit_predicate := abq_predicate_from_equation_expression (l_culprit_predicate.text, l_culprit_predicate.class_, l_culprit_predicate.feature_)
 						if attached guard_condition and then is_guard_condition_in_negation_form then
 							set_guard_condition (l_culprit_predicate)
 						else
@@ -277,7 +282,7 @@ feature{NONE} -- Implementation
 						l_abq_analyzer.analyze (l_culprit_predicate)
 						check l_abq_analyzer.is_matched end
 						l_culprit_predicate := l_abq_analyzer.argumentless_boolean_query
-						l_value := (l_abq_analyzer.negation_count \\ 0) = 0
+						l_value := (l_abq_analyzer.negation_count \\ 2) = 0
 						create l_pre_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (l_value))
 						create l_post_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (not l_value))
 						l_precondition := l_pre_equation
@@ -287,6 +292,76 @@ feature{NONE} -- Implementation
 			end
 
 			Result := [l_precondition, l_postcondition]
+		end
+
+	abq_predicate_from_equation_expression (a_text: STRING; a_class: CLASS_C; a_feature: FEATURE_I): AFX_AST_EXPRESSION
+			-- ABQ predicate from `a_text'
+		local
+			l_parts: LIST [STRING]
+			l_abq: STRING
+			l_value: STRING
+			l_text: STRING
+		do
+			l_parts := a_text.split ('=')
+			check l_parts.count = 2 end
+			l_abq := l_parts.first
+			l_value := l_parts.last
+			l_abq.left_adjust
+			l_abq.right_adjust
+			l_value.left_adjust
+			l_value.right_adjust
+			check l_value.is_boolean end
+			if l_value.to_boolean then
+				l_text := l_abq.twin
+			else
+				l_text := "not " + l_abq
+			end
+			create Result.make_with_text (a_class, a_feature, l_text, a_feature.written_class)
+		end
+
+	strongest_predicates (a_skeleton: AFX_STATE_SKELETON; a_theory: AFX_THEORY): LINKED_LIST [AFX_EXPRESSION]
+			-- Expressions in `a_skeleton' which implies all the rest expressions in `a_skeleton'.
+			-- `a_theory' is in which the reasoning is based.
+			-- For example, if `a_skeleton' contains 3 predicates a, b, and c.
+			-- If a->b and a->c, then a will be in the result.
+		local
+			l_tbl: HASH_TABLE [AFX_EXPRESSION, AFX_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_temp_skeleton: AFX_STATE_SKELETON
+			l_implication: AFX_EXPRESSION
+			l_implications: LINKED_LIST [AFX_EXPRESSION]
+			l_valid_imps: LINKED_LIST [AFX_EXPRESSION]
+		do
+			create Result.make
+			create l_implications.make
+			create l_tbl.make (a_skeleton.count)
+			l_tbl.compare_objects
+			from
+				l_cursor := a_skeleton.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_temp_skeleton := a_skeleton.cloned_object
+				l_temp_skeleton.remove (l_cursor.item)
+				l_implication := l_cursor.item implies l_temp_skeleton.anded
+				l_tbl.put (l_cursor.item, l_implication)
+				l_implications.extend (l_implication)
+				l_cursor.forth
+			end
+
+				-- Collect all valid implications.
+			l_valid_imps := solver_launcher.valid_expressions (l_implications, a_theory)
+			if not l_valid_imps.is_empty then
+				from
+					l_valid_imps.start
+				until
+					l_valid_imps.after
+				loop
+					Result.extend (l_tbl.item (l_valid_imps.item_for_iteration))
+					l_valid_imps.forth
+				end
+			end
 		end
 
 	feature_body_compound_ast: EIFFEL_LIST [INSTRUCTION_AS]
