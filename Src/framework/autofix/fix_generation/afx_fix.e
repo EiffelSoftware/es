@@ -197,6 +197,7 @@ feature -- Setting
 			-- Set `feature_text' with `a_text'.
 		do
 			feature_text := a_text.twin
+			feature_text.replace_substring_all ("%R", "")
 		end
 
 	set_exception_spot (a_spot: like exception_spot)

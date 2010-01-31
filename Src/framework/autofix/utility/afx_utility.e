@@ -290,14 +290,17 @@ feature -- Fix
 			l_printer: ETR_AST_STRUCTURE_PRINTER
 			l_output: ETR_AST_STRING_OUTPUT
 			l_feat_text: STRING
+			l_parser: like entity_feature_parser
 		do
 			if a_fix.feature_text.has_substring ("should not happen") then
 				Result := a_fix.feature_text.twin
 			else
-				entity_feature_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
+				l_parser := entity_feature_parser
+				l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+				l_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
 				create l_output.make_with_indentation_string ("%T")
 				create l_printer.make_with_output (l_output)
-				l_printer.print_ast_to_output (entity_feature_parser.feature_node)
+				l_printer.print_ast_to_output (l_parser.feature_node)
 				Result := l_output.string_representation
 			end
 		end

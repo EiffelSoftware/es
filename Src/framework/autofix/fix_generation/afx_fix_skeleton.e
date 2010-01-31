@@ -266,8 +266,10 @@ feature{NONE} -- Implementation
 						if l_culprits.count >= 1 then
 							l_culprit_predicate := l_culprits.first
 						end
-					else
+					elseif l_necessary_conditions.count = 1 then
 						l_culprit_predicate := l_necessary_conditions.first
+					else
+						l_culprit_predicate := Void
 					end
 
 					if l_culprit_predicate /= Void then

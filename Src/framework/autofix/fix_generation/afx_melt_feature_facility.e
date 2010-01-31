@@ -125,6 +125,7 @@ feature {NONE} -- Basic operations
 		do
 			fixme ("Coded copied from ETEST_EVALUATOR_BYTE_CODE_FACTORY, refactoring needed. 23.12.2009 Jasonw")
 			l_parser := entity_feature_parser
+			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
 			parse (l_parser, a_text, True, a_evaluator_class)
 
 			if not has_error and attached {FEATURE_AS} ast_node as l_feature then

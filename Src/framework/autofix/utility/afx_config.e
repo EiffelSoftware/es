@@ -250,6 +250,10 @@ feature -- Fix generation
 			-- the fix generation will be extremely time-consuming.
 			-- Default: 10
 
+	max_fixing_location_scope_level: INTEGER = 2
+			-- The control structure distance level away from the failing assertion.
+			-- Minimal is 1. Default: 2
+
 feature -- Status report
 
 	should_retrieve_state: BOOLEAN

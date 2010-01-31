@@ -119,7 +119,7 @@ feature{NONE} -- Implementation
 					l_scope_level := 1
 					l_node := l_spot.recipient_ast_structure.surrounding_instruction (l_spot.failing_assertion_break_point_slot)
 				until
-					l_node = Void or else l_node.is_feature_node
+					l_node = Void or else l_node.is_feature_node or l_scope_level > config.max_fixing_location_scope_level
 				loop
 						-- The fixing location which only contains the instruction in trouble.
 					create l_nlist.make

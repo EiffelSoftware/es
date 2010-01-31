@@ -48,7 +48,9 @@ feature{NONE} -- Implementation
 					is_validating_fixes := True
 					validate_fixes
 				elseif argument (1).is_case_insensitive_equal ("--check-fault") then
-
+					if attached {PROCEDURE [ANY, TUPLE]} test_cases.item (first_failing_test_case_uuid) as l_test_case_agent then
+						l_test_case_agent.call (Void)
+					end
 				end
 				close_log_file
 			end
