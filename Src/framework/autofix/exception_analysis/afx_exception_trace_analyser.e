@@ -22,44 +22,37 @@ feature -- Operation
 			l_frame_string: STRING
 		do
 		    is_successful := True
+		    last_relevant_exception_frames.wipe_out
 
-		    	-- prepare internal storage
-		    if internal_exception_frames = Void then
-		        create internal_exception_frames.make_default
-		    else
-		        internal_exception_frames.wipe_out
-		    end
-
-				-- get rid of the "%N" at the end of trace, so that no empty sub-string will be put at the end of the split-result list
+				-- Get rid of the "%N" at the end of trace to avoid the empty string at the end of the splitted list.
 			l_trace := a_trace.twin
 			l_trace.prune_all_trailing ('%N')
-
-				-- get list of trace lines
 			l_trace_lines := l_trace.as_string_8.split ('%N')
 
-				-- analyse each frame string
 			from
 				l_trace_lines.start
 				skip_trace_header (l_trace_lines)
-				create l_frame_string.make_empty
 			until
 			    l_trace_lines.after
 			loop
-				l_frame_string.wipe_out
-
-					-- construct a frame string
-				from l_line := l_trace_lines.item_for_iteration
-				until l_line.starts_with (dash_line)
+					-- Construct a frame string.
+				from
+				    l_frame_string := ""
+				until
+					l_trace_lines.after or else l_trace_lines.item_for_iteration.starts_with (dash_line)
 				loop
+					l_line := l_trace_lines.item_for_iteration
+
 				    l_frame_string := l_frame_string + l_line + " "
 				    l_trace_lines.forth
-				    l_line := l_trace_lines.item_for_iteration
 				end
 
 				analyse_frame_string (l_frame_string)
 
 					-- skip the delimiting dash line
-				l_trace_lines.forth
+				if not l_trace_lines.after then
+    				l_trace_lines.forth
+				end
 			end
 		ensure then
 		    internal_exception_frames_not_empty: internal_exception_frames /= Void and then not internal_exception_frames.is_empty
@@ -130,6 +123,9 @@ feature{NONE} -- Implementation
 		    l_origin_class_name: STRING
 		    l_feature_name: STRING
 		    l_bkpt_string: STRING
+		    l_next_string: STRING
+		    l_tag: STRING
+		    l_nature_of_exception: STRING
 		    l_bkpt_slot_index: INTEGER
 		    l_words: LIST[STRING]
 		    l_word: STRING
@@ -167,60 +163,29 @@ feature{NONE} -- Implementation
 		    l_words := l_string.split (' ')
 		    check l_words /= Void and not l_words.is_empty end
 
-		    l_class_name := l_words.at (1)
-
-		    if l_class_name.starts_with (rescue_line_prefix) then
+		    if l_words.at (1).starts_with (rescue_line_prefix) then
 		        	-- rescue frame
 		        create {AFX_EXCEPTION_CALL_STACK_FRAME_RESCUE}l_frame
 		    else
-		        if is_valid_identifier (l_class_name) then
-    				if l_words.count >= 3 then
-            		    l_feature_name := l_words.at (2)
-            		    if is_valid_identifier (l_feature_name) then
-                		    l_bkpt_string := l_words.at (3)
+		    	reset_last_parsing_temp
 
-                		    if l_bkpt_string.starts_with ("@") then
-                		        l_bkpt_string := l_bkpt_string.substring (2, l_bkpt_string.count)
-                		        if l_bkpt_string.is_integer then
-                		            l_bkpt_slot_index := l_bkpt_string.to_integer
-                		        else
-                		            l_bad_format := False
-                		        end
-                		    else
-                		        	-- external features do not have breakpoint slot info
-                		        l_bkpt_slot_index := 0
-                		    end
+    			last_word_list := l_words
+    			last_list_index := 1
 
-							create l_origin_class_name.make_empty
-                		    from i := 4
-                		    until l_bad_format or else not l_origin_class_name.is_empty or else i > l_words.count
-                		    loop
-                		        l_word := l_words.at (i)
-                		        if l_word ~ "(From" then
-                		            check l_words.count >= i + 1 end
-                		            l_word := l_words.at (i + 1)
-                		            l_origin_class_name := l_word.substring (1, l_word.count - 1)
-                		            if not is_valid_identifier (l_origin_class_name) then
-                		                l_bad_format := True
-                		                l_origin_class_name.wipe_out
-                		            end
-                		        end
-                		        i := i + 1
-                		    end
-            		    else
-            		        l_bad_format := True
-            		    end
-            		else
-            		    l_bad_format := True
-    				end
-		        else
-		            l_bad_format := True
-		        end
+    			parse_context_class_name
+                parse_feature_name
+                parse_breakpoint_index
+                parse_tag
+                parse_address
+                parse_original_class
+                parse_nature_of_exception
 
-				if l_bad_format then
-					is_successful := False
+				if is_last_parsing_successful then
+				    create {AFX_EXCEPTION_CALL_STACK_FRAME}l_frame.make (
+				    	last_context_class_name, last_origin_class_name, last_feature_name,
+				    	last_tag, last_nature_of_exception, last_breakpoint_slot_index)
 				else
-				    create {AFX_EXCEPTION_CALL_STACK_FRAME}l_frame.make (l_class_name, l_origin_class_name, l_feature_name, l_bkpt_slot_index, 0)
+					is_successful := False
 				end
 		    end
 
@@ -229,6 +194,8 @@ feature{NONE} -- Implementation
 			end
 		end
 
+feature{NONE} -- Implementation: parsing exception frame
+
 	is_valid_identifier (a_name: STRING): BOOLEAN
 			-- Is `a_name' a valid identifier in Eiffel?
 		do
@@ -236,6 +203,188 @@ feature{NONE} -- Implementation
 		        Result := True
 		    end
 		end
+
+	parse_context_class_name
+		local
+		    l_string: STRING
+		do
+		    if is_last_parsing_successful then
+		        if last_list_index < last_word_list.count then
+        		    l_string := last_word_list.at (last_list_index)
+
+        		    	-- Possible class name.
+        		    if is_valid_identifier (l_string) then
+        		        last_context_class_name := l_string.twin
+
+        		        last_list_index := last_list_index + 1
+        		    end
+        		else
+        		    is_last_parsing_successful := False
+		        end
+		    end
+		end
+
+	parse_feature_name
+		local
+		    l_string: STRING
+		do
+		    if is_last_parsing_successful then
+		        if last_list_index <= last_word_list.count then
+		            l_string := last_word_list.at (last_list_index)
+
+		            	-- Possible feature name.
+		            if l_string.starts_with ("@") or else l_string.starts_with ("<") then
+						last_feature_name := ""
+					else
+					    last_feature_name := l_string.twin
+
+					    last_list_index := last_list_index + 1
+		            end
+		        end
+		    end
+		end
+
+	parse_breakpoint_index
+		local
+		    l_string: STRING
+		do
+		    if is_last_parsing_successful then
+		        if last_list_index <= last_word_list.count then
+		            l_string := last_word_list.at (last_list_index)
+
+		            	-- Possible breakpoint index
+		            if l_string.starts_with ("@") then
+		                l_string := l_string.substring (2, l_string.count)
+		                if l_string.is_integer then
+		                    last_breakpoint_slot_index := l_string.to_integer
+		                else
+		                    is_last_parsing_successful := False
+		                end
+
+		                last_list_index := last_list_index + 1
+		            end
+		        end
+		    end
+		end
+
+	parse_tag
+		local
+		    l_string: STRING
+		do
+		    if is_last_parsing_successful then
+		        if last_list_index <= last_word_list.count then
+		            l_string := last_word_list.at (last_list_index)
+
+		            	-- Possible tag.
+		            if l_string.ends_with (":") then
+						last_tag := l_string.substring (1, l_string.index_of (':', 1) - 1)
+
+						last_list_index := last_list_index + 1
+		            end
+		        end
+		    end
+		end
+
+	parse_address
+		local
+		    l_string: STRING
+		do
+		    if is_last_parsing_successful then
+		        if last_list_index <= last_word_list.count then
+		            l_string := last_word_list.at (last_list_index)
+
+		            	-- Definite address.
+		            if l_string.starts_with ("<") then
+		                last_list_index := last_list_index + 1
+		            else
+		                is_last_parsing_successful := False
+		            end
+		        end
+		    end
+		end
+
+	parse_original_class
+		local
+		    l_string: STRING
+		do
+		    if is_last_parsing_successful then
+		        if last_list_index <= last_word_list.count then
+		        	l_string := last_word_list.at (last_list_index)
+
+		        		-- Possible original class
+		        	if l_string.starts_with ("(") then
+		        	    last_list_index := last_list_index + 1
+		        	    if last_list_index > last_word_list.count or else not last_word_list.at (last_list_index).ends_with (")") then
+		        	        is_last_parsing_successful := False
+		        	    else
+		        	        l_string := last_word_list.at (last_list_index)
+		        	        last_origin_class_name := l_string.substring (1, l_string.count - 1)
+
+		        	        last_list_index := last_list_index + 1
+		        	    end
+		        	end
+		        end
+		    end
+		end
+
+	parse_nature_of_exception
+		local
+		    l_string: STRING
+		    l_nature: STRING
+		    l_count: INTEGER
+		do
+		    if is_last_parsing_successful then
+		        l_nature := ""
+		        from l_count := last_word_list.count
+		        until last_list_index > l_count or else last_word_list.at (last_list_index).ends_with(".")
+		        loop
+		            l_nature.append (last_word_list.at (last_list_index))
+		            l_nature.append (" ")
+		            last_list_index := last_list_index + 1
+		        end
+
+		        if last_list_index <= last_word_list.count and then last_word_list.at (last_list_index).ends_with(".") then
+		            l_string := last_word_list.at (last_list_index)
+		        	l_nature.append (l_string.substring (1, l_string.count - 1))
+
+		        	last_nature_of_exception := l_nature
+		        end
+		    end
+		end
+
+	reset_last_parsing_temp
+			-- Reset the temp storage for parsing.
+		do
+		    is_last_parsing_successful := True
+		    last_word_list := Void
+		    last_list_index := 1
+		    last_context_class_name := ""
+		    last_origin_class_name := ""
+		    last_feature_name := ""
+		    last_breakpoint_slot_index := 0
+		    last_tag := ""
+		    last_nature_of_exception := ""
+		end
+
+	is_last_parsing_successful: BOOLEAN
+
+	last_word_list: detachable LIST[STRING]
+
+	last_list_index: INTEGER
+
+	last_context_class_name: detachable STRING_8
+
+	last_origin_class_name: detachable STRING_8
+
+	last_feature_name: detachable STRING_8
+
+	last_breakpoint_slot_index: INTEGER
+
+	last_tag: detachable STRING
+
+	last_nature_of_exception: detachable STRING
+
+feature{NONE} -- Implementation
 
 	dash_line: STRING = "-------------------------------------------------------------------------------"
 

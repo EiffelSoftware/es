@@ -24,13 +24,13 @@ create
 
 feature -- Creation
 
-	make (a_class_name, a_origin_class_name, a_routine_name: STRING_8; a_breakpoint_slot_index: INTEGER; a_nested_breakpoint_slot_index: INTEGER)
+	make (a_class_name, a_origin_class_name, a_routine_name, a_tag, a_nature: STRING_8;
+				a_breakpoint_slot_index: INTEGER)
 			-- initialize
 		require
 		    class_name_not_empty: not a_class_name.is_empty
 		    routine_name_not_empty: not a_routine_name.is_empty
 		    breakpoint_slot_index_valid_or_zero: a_breakpoint_slot_index >= 0
-		    nested_breakpoint_slot_index_valid_or_default: a_nested_breakpoint_slot_index >= 0
 		do
 			context_class_name := a_class_name
 			if not a_origin_class_name.is_empty then
@@ -39,8 +39,9 @@ feature -- Creation
 			    origin_class_name := context_class_name
 			end
 			feature_name := a_routine_name
+			tag := a_tag
+			nature_of_exception := a_nature
 			breakpoint_slot_index := a_breakpoint_slot_index
-			nested_breakpoint_slot_index := a_nested_breakpoint_slot_index
 
 			is_relevant := True
 		end
@@ -68,6 +69,12 @@ feature -- Access
 			-- <Precursor>
 
 	breakpoint_slot_index: INTEGER
+			-- <Precursor>
+
+	tag: STRING
+			-- <Precursor>
+
+	nature_of_exception: STRING
 			-- <Precursor>
 
 	nested_breakpoint_slot_index: INTEGER

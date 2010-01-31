@@ -526,7 +526,7 @@ feature{NONE} -- Implementation
 						end
 					end (?, ?, l_source_state))
 
-			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_spot.recipient_class_,
+			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_spot.recipient_written_class,
 					Void, Void, False)
 			create Result.make
 			l_fixes.do_all (

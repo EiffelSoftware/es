@@ -39,7 +39,7 @@ feature{NONE} -- Implementation
 		    frame_information_complete: a_frame.is_information_complete
 		do
 		    resolve_context_feature (a_frame)
-		    if a_frame.breakpoint_slot_index > 0 then
+		    if a_frame.origin_feature /= Void and then a_frame.breakpoint_slot_index > 0 then
     		    resolve_breakpoint_info (a_frame)
 		    end
 		end
@@ -51,6 +51,8 @@ feature{NONE} -- Implementation
 		local
 		    l_system: SYSTEM_I
 		    l_list_class_i: LIST [CLASS_I]
+		    l_feature_name: STRING
+		    l_name_validator: EIFFEL_SYNTAX_CHECKER
 		do
 		    l_system := Workbench.system
 
@@ -58,7 +60,17 @@ feature{NONE} -- Implementation
 		    l_list_class_i := l_system.system.universe.compiled_classes_with_name(a_frame.origin_class_name)
 		    if not l_list_class_i.is_empty and then attached {CLASS_C} l_list_class_i.first.actual_class.compiled_class as lt_class1 then
 		        a_frame.origin_class := lt_class1
-				a_frame.origin_feature := lt_class1.feature_named (a_frame.feature_name)
+
+		        	-- Resolve the feature only if we have a valid feature name.
+		        l_feature_name := a_frame.feature_name
+		        create l_name_validator
+			    if not l_feature_name.is_empty
+			    			and then l_name_validator.is_valid_identifier (l_feature_name)
+			    			and then not l_name_validator.keywords.has (l_feature_name.as_lower) then
+					a_frame.origin_feature := lt_class1.feature_named (a_frame.feature_name)
+				else
+					a_frame.origin_feature := Void
+				end
 		    end
 
 			l_list_class_i := l_system.system.universe.compiled_classes_with_name(a_frame.context_class_name)

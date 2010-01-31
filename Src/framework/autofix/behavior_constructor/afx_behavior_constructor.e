@@ -290,6 +290,7 @@ feature{NONE} -- Operation
 		    l_is_interesting, l_value: BOOLEAN
 		    l_name: STRING
 		    l_class_id: INTEGER
+		    l_class: CLASS_C
 		do
 		    l_config := config
 		    check l_config /= Void end
@@ -305,7 +306,8 @@ feature{NONE} -- Operation
 				l_name := l_destinations.key_for_iteration
 
 				l_property_count := l_boolean_state.count
-				l_class_id := l_boolean_state.class_.class_id
+				l_class := l_boolean_state.class_
+				l_class_id := l_class.class_id
 
 				if not l_model.has (l_class_id) then
 					l_is_possible := False
@@ -336,7 +338,8 @@ feature{NONE} -- Operation
         				    loop
         				        l_transition := l_tbl.item_for_iteration
 
-								if l_transition.count = 1 and then l_transition.is_mutator_to (l_property_index, l_value) then
+								if config.criteria.is_suitable (l_class, l_transition.feature_, config.context_class)
+										and then l_transition.is_mutator_to (l_property_index, l_value) then
 								    l_mutator_table.force (l_transition, l_tbl.key_for_iteration)
 								end
 

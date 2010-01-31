@@ -35,6 +35,12 @@ feature -- Access
 	breakpoint_slot_index: INTEGER
 			-- <Precursor>
 
+	tag: STRING
+			-- <Precursor>
+
+	nature_of_exception: STRING
+			-- <Precursor>
+
 	nested_breakpoint_slot_index: INTEGER
 			-- <Precursor>
 

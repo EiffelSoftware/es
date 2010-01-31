@@ -29,6 +29,16 @@ feature -- Access
 		deferred
 		end
 
+	tag: STRING
+			-- Tag of violated assertion.
+		deferred
+		end
+
+	nature_of_exception: STRING
+			-- Nature of exception.
+		deferred
+		end
+
 	nested_breakpoint_slot_index: INTEGER
 			-- Nested index of the breakpoint slot.
 		deferred
