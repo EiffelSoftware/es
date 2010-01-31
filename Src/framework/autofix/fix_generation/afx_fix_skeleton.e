@@ -180,7 +180,7 @@ feature -- Basic operations
 			l_contracts := actual_fix_contracts
 			l_precondition := l_contracts.precondition
 			l_postcondition := l_contracts.postcondition
-			if l_precondition /= Void and then l_postcondition /= Void and then not l_postcondition.is_empty then
+			if l_precondition /= Void and then l_postcondition /= Void then -- and then not l_postcondition.is_empty then
 
 					-- Postcondition are too large, we need to shrink it.
 				if l_postcondition.count > config.max_fix_postcondition_assertion then

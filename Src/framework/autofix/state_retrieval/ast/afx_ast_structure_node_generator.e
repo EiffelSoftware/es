@@ -27,6 +27,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	AUT_CONTRACT_EXTRACTOR
+
 feature -- Access
 
 	structure: detachable AFX_FEATURE_AST_STRUCTURE_NODE
@@ -52,7 +54,15 @@ feature -- Basic operations
 						next_bpslot := a_feature.first_breakpoint_slot_index - 1
 						create l_ast.make (l_do, a_class)
 						create {AFX_FEATURE_AST_STRUCTURE_NODE} structure.make (l_ast, a_class, a_feature, 0, Void)
-						structure.set_first_breakpoint_slot_number (next_bpslot + 1)
+						fixme ("The following lines related to setting next_bpslot for a feature which does not have preconditions is a hack. 31.1.2010 Jasonw")
+							-- When a feature does not have precondition, the FEATURE_I.first_breakpoint_slot_index still reports 2.
+							-- But in the actual trace, the break point number is 1.
+						if precondition_of_feature (current_feature, written_class).is_empty and then current_feature.first_breakpoint_slot_index > 1 then
+							structure.set_first_breakpoint_slot_number (1)
+							next_bpslot := 0
+						else
+							structure.set_first_breakpoint_slot_number (next_bpslot + 1)
+						end
 						set_parent_node (structure)
 						structure.extend_trunk
 						safe_process (l_do.compound)

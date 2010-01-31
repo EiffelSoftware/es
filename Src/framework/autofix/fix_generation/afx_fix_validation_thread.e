@@ -43,6 +43,8 @@ create
 
 feature{NONE} -- Initialization
 
+	a_bq: BOUNDED_QUEUE [INTEGER]
+
 	make (
 		a_config: like config
 		a_fixes: like fixes;
