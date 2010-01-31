@@ -188,7 +188,7 @@ feature{NONE} -- Implementation
 			create pass_file.make_open_write (pass_file_name (pass_test_case_info))
 
 				--Save to file.
-			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_class_, exception_spot.recipient_, False))
+			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, False))
 			from
 				daikon_pass_states.start
 			until
@@ -200,7 +200,7 @@ feature{NONE} -- Implementation
 			pass_file.close
 
 			create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
-			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_class_, exception_spot.recipient_, True))
+			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, True))
 				--Save to file.
 			from
 				daikon_fail_states.start

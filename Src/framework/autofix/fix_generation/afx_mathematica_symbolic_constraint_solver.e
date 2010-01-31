@@ -215,6 +215,9 @@ feature{NONE} -- Implementation
 			-- String representation of `a_expression' in Mathematica format
 		do
 			create Result.make_from_string (a_expression.text)
+			Result.replace_substring_all (" and ", " && ")
+			Result.replace_substring_all (" = ", " == ")
+
 			from
 				expressions.start
 			until
@@ -223,8 +226,6 @@ feature{NONE} -- Implementation
 				Result.replace_substring_all (expressions.item_for_iteration.text, name_expression_table.item (expressions.item_for_iteration))
 				expressions.forth
 			end
-			Result.replace_substring_all (" and ", " && ")
-			Result.replace_substring_all (" = ", " == ")
 		end
 
 	expression_in_eiffel (a_expression: STRING): STRING

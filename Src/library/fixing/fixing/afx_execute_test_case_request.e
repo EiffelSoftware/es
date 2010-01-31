@@ -28,7 +28,7 @@ feature{NONE} -- Initialization
 feature -- Access
 
 	test_case_uuid: STRING
-		-- Universal identifier of the test case to be executed
+			-- Universal identifier of the test case to be executed
 
 feature -- Status report
 

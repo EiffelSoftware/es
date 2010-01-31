@@ -182,7 +182,7 @@ feature -- Setting
 		require
 			type_attached: a_type /= Void
 		do
-			type := a_type
+			type := a_type.actual_type
 		ensure
 			type_set: type = a_type
 		end
@@ -203,7 +203,7 @@ feature{NONE} -- Implementation
 			syntax_correct: not has_syntax_error
 		do
 			expression_type_checker.check_expression (ast, class_, feature_, has_old_expression)
-			type := expression_type_checker.last_type
+			type := expression_type_checker.last_type.actual_type
 		ensure
 			type_attached: type /= Void
 		end

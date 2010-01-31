@@ -75,9 +75,14 @@ feature {NONE} -- Implementation
 			expression_integer_value : AFX_INTEGER_VALUE
 			tokens :LIST[STRING]
 			equation : AFX_EQUATION
+			l_expr: STRING
      	do
      		tokens := str.split ('=')
-     		create expression.make_with_text (test_case_info.recipient_class_, test_case_info.recipient_,tokens.i_th (1), test_case_info.recipient_class_)
+     		l_expr := tokens.i_th (1)
+     		if l_expr.has_substring ("orig(") then
+     			l_expr.replace_substring_all ("orig(", "old(")
+     		end
+     		create expression.make_with_text (test_case_info.recipient_class_, test_case_info.recipient_, l_expr, test_case_info.recipient_class_)
 
 			tokens.i_th (3).left_adjust
 			tokens.i_th (3).right_adjust

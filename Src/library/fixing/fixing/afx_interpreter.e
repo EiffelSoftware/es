@@ -198,6 +198,7 @@ feature{NONE} -- Implementation
 		local
 			l_agent: PROCEDURE [ANY, TUPLE]
 			l_except_count: NATURAL_32
+			l_passing: BOOLEAN
 		do
 			last_pre_state := Void
 			last_post_state := Void
@@ -214,17 +215,21 @@ feature{NONE} -- Implementation
 						l_except_count := exception_count
 						l_agent := test_cases.item (l_exec_request.test_case_uuid)
 						l_agent.call (Void)
-						if l_except_count /= exception_count and then attached {STRING} exception_trace as l_trace then
-							log_message (l_trace)
-						end
 						test_cases.forth
 					end
 				else
 						-- Execute a single test case.
 					if test_cases.has (l_exec_request.test_case_uuid) then
 						l_agent := test_cases.item (l_exec_request.test_case_uuid)
+						l_except_count := exception_count
 						l_agent.call (Void)
-						log_message ("-- Finished test case UUID: " + l_exec_request.test_case_uuid + "%N")
+						l_passing := (l_except_count = exception_count)
+						log_message ("-- Finished test case UUID: " + l_exec_request.test_case_uuid + ", status= " + l_passing.out + "%N")
+						if not l_passing and then attached {STRING} last_trace as l_trace then
+							log_message (l_trace)
+							log_message ("%N")
+							last_trace := Void
+						end
 					else
 						log_message ("-- Cannot find test case with UUID: " + l_exec_request.test_case_uuid + "%N")
 					end
@@ -242,11 +247,13 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	last_trace: STRING
+
 	execute_melting_request
 			-- Execute melting request.
 		do
 			if attached {AFX_MELT_FEATURE_REQUEST} last_request as l_request then
-				log_message ("-- Melt feature with body_id = " + l_request.body_id.out + ", pattern_id = " + l_request.pattern_id.out + ", byte_code length = " + l_request.byte_code.count.out + "%N")
+				log_message ("-- Melt feature with body_id = " + l_request.body_id.out + ", pattern_id = " + l_request.pattern_id.out + ", byte_code length = " + l_request.byte_code.count.out + " Fix: " + l_request.fix_signature  + "%N")
 				eif_override_byte_code_of_body (l_request.body_id, l_request.pattern_id, pointer_for_byte_code (l_request.byte_code), l_request.byte_code.count)
 			else
 				log_message ("-- Cannot interpreter melt feature request.%N")

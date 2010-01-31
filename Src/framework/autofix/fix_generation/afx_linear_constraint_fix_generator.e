@@ -280,10 +280,12 @@ feature{NONE} -- Implementation
 			l_constrained_expr := a_solution.constrained_expression
 			if exception_spot.is_precondition_violation then
 				if config.is_wrapping_fix_enabled then
+						-- Generate wrapping fixes according to solved numeric constraints.
 					fixing_locations.do_if (
 						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: AFX_EXPRESSION)
 							do
-								generate_wraping_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
+								generate_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
+--								generate_wraping_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
 							end (?, a_solution, l_solution_expr),
 
 						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
@@ -361,6 +363,52 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
+	generate_blind_wrapping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+			-- Generate blindly wrapping fixes for precondition violation for `a_fixing_location'.
+		require
+			scope_level_valid: a_fixing_location.scope_level = 1
+			instructions_valid: a_fixing_location.instructions.count = 1
+		local
+			l_arg_index: INTEGER
+			l_actual_argument: AFX_EXPRESSION
+			l_replacer: AFX_ACTUAL_PARAMETER_REPLACER
+			l_old_ast: AST_EIFFEL
+			l_new_ast: AST_EIFFEL
+			l_fix_skeleton: AFX_IMMEDIATE_WRAP_FIX_SKELETON
+			l_ranking: AFX_FIX_RANKING
+		do
+			fixme ("Code almost duplicated from generate_wraping_fixes_for_precondition_violation. 31.1.2010 Jasonw")
+				-- Generate fix: (p is the failing assertion)
+				-- if p then
+				-- 		original code
+				-- end
+
+				-- Get the new ast node with actual argument replaced with the linear constrained solution.
+			check a_solution.constrained_expression.is_argument end
+			l_arg_index := arguments_of_feature (exception_spot.feature_of_failing_assertion).item (a_solution.constrained_expression.text)
+			l_actual_argument := exception_spot.actual_arguments_in_failing_assertion.item (l_arg_index)
+			l_old_ast := a_fixing_location.instructions.first.ast.ast
+			create l_replacer
+			l_replacer.replace (l_old_ast, exception_spot.feature_of_failing_assertion, l_arg_index, a_solved_expression.ast, exception_spot.recipient_written_class)
+			l_new_ast := l_replacer.last_ast
+
+				-- Construct ranking for fix skeleton.
+			create l_ranking
+			l_ranking.set_fix_skeleton_complexity (wrapping_skeleton_complexity)
+			l_ranking.set_relevant_instructions (1)
+			l_ranking.set_scope_levels (1)
+			l_ranking.set_snippet_complexity (1)
+
+				-- Construct fix skeleton.
+			create l_fix_skeleton.make (exception_spot, exception_spot.failing_assertion, config, test_case_execution_status, False)
+			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion)
+			l_fix_skeleton.set_original_ast (l_old_ast)
+			l_fix_skeleton.set_new_ast (Void)
+			l_fix_skeleton.set_ranking (l_ranking)
+
+			fixes.extend (l_fix_skeleton)
+		end
+
 	generate_wraping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
 			-- Generate wrapping fixes for precondition violation for `a_fixing_location'.
 		require
@@ -406,6 +454,13 @@ feature{NONE} -- Implementation
 			l_fix_skeleton.set_ranking (l_ranking)
 
 			fixes.extend (l_fix_skeleton)
+		end
+
+	generate_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+			-- Generate fix candidates for precondition violation.
+		do
+			generate_wraping_fixes_for_precondition_violation (a_fixing_location, a_solution, a_solved_expression)
+			generate_blind_wrapping_fixes_for_precondition_violation (a_fixing_location, a_solution, a_solved_expression)
 		end
 
 	constrained_solutions (a_constrain_possibilities: like constrain_possibilities): LINKED_LIST [like type_anchor]

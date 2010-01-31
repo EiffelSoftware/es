@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_body_id: INTEGER; a_pattern_id: INTEGER; a_byte_code: STRING)
+	make (a_body_id: INTEGER; a_pattern_id: INTEGER; a_byte_code: STRING; a_fix_signature: STRING)
 			-- Initialize Current.
 		require
 			a_byte_code_attached: a_byte_code /= Void
@@ -23,6 +23,7 @@ feature{NONE} -- Initialization
 			body_id := a_body_id
 			pattern_id := a_pattern_id
 			byte_code := a_byte_code.twin
+			fix_signature := a_fix_signature.twin
 		end
 
 feature -- Access
@@ -35,5 +36,8 @@ feature -- Access
 
 	byte_code: STRING
 			-- String containing the byte code of the feature to be melted
+
+	fix_signature: STRING
+			-- Fix signature
 
 end

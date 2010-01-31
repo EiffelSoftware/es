@@ -33,6 +33,11 @@ inherit
 			{NONE} all
 		end
 
+	AFX_UTILITY
+		rename
+			system as eiffel_system
+		end
+
 create
 	make
 
@@ -122,7 +127,7 @@ feature{NONE} -- Impelmentation
 			l_request: AFX_MELT_FEATURE_REQUEST
 			l: NATURAL_32
 		do
-			create l_request.make (a_fix.feature_body_id, a_fix.feature_pattern_id, a_fix.feature_byte_code)
+			create l_request.make (a_fix.feature_body_id, a_fix.feature_pattern_id, a_fix.feature_byte_code, fix_signature (fixes.item (a_fix.id), False, True))
 			socket.put_natural_32 (request_melt_feature_type)
 			socket.independent_store (l_request)
 			socket.read_natural_32

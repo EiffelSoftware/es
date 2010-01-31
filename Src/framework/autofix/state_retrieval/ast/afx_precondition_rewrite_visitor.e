@@ -39,6 +39,7 @@ feature -- Basic operation
 			current_feature := a_feature
 			written_class := a_written_class
 			create mentioned_actual_args.make (2)
+			create nested_prefix.make (32)
 			create {ROUNDTRIP_STRING_LIST_CONTEXT} context.make
 			a_assertion.process (Current)
 			assertion := context.string_representation.twin
