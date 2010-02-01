@@ -260,7 +260,7 @@ feature -- Type checking
 
 feature {NONE} -- Implementation
 
-	init_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: AST_PATH)
+	init_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: detachable AST_PATH)
 			-- init with object test locals from `a_feature_context'
 		local
 			l_local_info: LOCAL_INFO

@@ -112,6 +112,9 @@ feature -- Execution
 				if not displayed_text.selection_is_empty then
 					rf.set_start_line(displayed_text.selection_start.y_in_lines)
 					rf.set_end_line(displayed_text.selection_end.y_in_lines)
+				else
+					rf.set_start_line (displayed_text.cursor.y_in_lines)
+					rf.set_end_line (displayed_text.cursor.y_in_lines)
 				end
 
 				manager.execute_refactoring (rf)

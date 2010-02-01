@@ -820,8 +820,10 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 					output.append_string (ti_r_curly)
 				end
 				process_child (l_as.expression, l_as, 2)
-				output.append_string (ti_Space+ti_as_keyword+ti_Space)
-				output.append_string (l_as.name.name)
+				if processing_needed (l_as.name, l_as, 3) then
+					output.append_string (ti_Space+ti_as_keyword+ti_Space)
+					output.append_string (l_as.name.name)
+				end
 			else
 				fixme("How does this look / is this possible ?")
 				process_child(l_as.type, l_as, 1)
@@ -959,10 +961,13 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 	process_creation_expr_as (l_as: CREATION_EXPR_AS)
 		do
-			output.append_string (ti_create_keyword+ti_Space+ti_l_curly)
-			process_child(l_as.type, l_as, 1)
-			output.append_string (ti_r_curly)
-			process_child(l_as.call, l_as, 2)
+			output.append_string (ti_create_keyword+ti_Space)
+			output.append_string(ti_l_curly)
+			process_child (l_as.type, l_as, 1)
+			output.append_string(ti_r_curly+ti_Space)
+			output.append_string (ti_dot)
+			process(l_as.call, l_as, 2)
+			output.append_string(ti_New_line)
 		end
 
 	process_routine_as (l_as: ROUTINE_AS)

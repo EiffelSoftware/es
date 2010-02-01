@@ -19,7 +19,9 @@ inherit
 			process_access_feat_as,
 			process_expr_call_as,
 			process_result_as,
-			process_object_test_as
+			process_object_test_as,
+			process_assigner_call_as,
+			process_tagged_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -71,7 +73,7 @@ feature {NONE} -- Implementation
 			-- is `a_call' a direct access to a local variable?
 		do
 			if attached {ACCESS_ID_AS}a_call as l_acc_id then
-				if attached context.local_by_name[l_acc_id.access_name] then
+				if context.has_locals and then attached context.local_by_name[l_acc_id.access_name] then
 					next_local_name := l_acc_id.access_name
 					Result := True
 				end
@@ -321,6 +323,47 @@ feature {AST_EIFFEL} -- Roundtrip
 			Precursor(l_as)
 		end
 
+	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+		local
+			l_target_is_local: BOOLEAN
+			l_is_array: BOOLEAN
+		do
+			current_instruction := current_instruction+1
+			check_ref_paths(l_as)
+
+			-- array
+			if attached {BRACKET_AS}l_as.target as l_br then
+				l_is_array := True
+
+				if attached {EXPR_CALL_AS}l_br.target as l_call and then is_next_call_local (l_call.call) then
+					-- in current_instruction next_local_name was defined
+					current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
+					l_target_is_local := true
+				end
+			end
+
+			-- store defined variables for this instruction
+			var_def_list.extend (current_var_defs.twin)
+
+			-- clear used variables
+			create {LINKED_LIST[STRING]}temp_vars_used.make
+			-- and gather new ones
+			if not l_is_array then
+				safe_process(l_as.target)
+			else
+				if attached {BRACKET_AS}l_as.target as l_br then
+					if not l_target_is_local then
+						safe_process(l_br.target)
+					end
+					safe_process(l_br.operands)
+				end
+			end
+
+			safe_process(l_as.source)
+			-- store them
+			var_used_list.extend (temp_vars_used)
+		end
+
 	process_assign_as (l_as: ASSIGN_AS)
 		local
 			l_target_is_local: BOOLEAN
@@ -407,6 +450,11 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 
 			safe_process(l_as.parameters)
+		end
+
+	process_tagged_as (l_as: TAGGED_AS)
+		do
+			-- don't process
 		end
 
 	process_if_as (l_as: IF_AS)

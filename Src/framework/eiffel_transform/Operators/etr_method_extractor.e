@@ -97,7 +97,6 @@ feature {NONE} -- Implementation (Extraction)
 							-- The result has to be an argument too
 							-- Not sure it's assigned to!
 							extracted_results.extend (l_cur_var_used.item)
-							is_result_possibly_undef := true
 						end
 					end
 
@@ -302,36 +301,39 @@ feature {NONE} -- Implementation (Extraction)
 
 			-- Compute obsolete locals
 			-- basically: all locals - gathered locals
-			from
+			create obsolete_locals.make
+			if context.has_locals then
+				from
 				l_index := context.locals.lower
-				create obsolete_locals.make
+
 				obsolete_locals.compare_objects
-			until
-				l_index > context.locals.upper
-			loop
-				if not l_rest_used_locals.has (context.locals[l_index].name) then
-					l_is_def := false
-					-- Make sure the local was not defined either
-					if attached (var_def[var_def.upper])[context.locals[l_index].name] as l_def then
-						-- no definitions after the block
-						if l_def.first > block_end or l_def.second > block_end then
-							l_is_def := true
+				until
+					l_index > context.locals.upper
+				loop
+					if not l_rest_used_locals.has (context.locals[l_index].name) then
+						l_is_def := false
+						-- Make sure the local was not defined either
+						if attached (var_def[var_def.upper])[context.locals[l_index].name] as l_def then
+							-- no definitions after the block
+							if l_def.first > block_end or l_def.second > block_end then
+								l_is_def := true
+							end
+						end
+
+						if block_start>1 and then attached (var_def[block_start-1])[context.locals[l_index].name] as l_def then
+							-- no definitions before the block
+							if l_def.first < block_start or l_def.second < block_start then
+								l_is_def := true
+							end
+						end
+
+						if not l_is_def then
+							obsolete_locals.extend (context.locals[l_index].name)
 						end
 					end
 
-					if block_start>1 and then attached (var_def[block_start-1])[context.locals[l_index].name] as l_def then
-						-- no definitions before the block
-						if l_def.first < block_start or l_def.second < block_start then
-							l_is_def := true
-						end
-					end
-
-					if not l_is_def then
-						obsolete_locals.extend (context.locals[l_index].name)
-					end
+					l_index := l_index + 1
 				end
-
-				l_index := l_index + 1
 			end
 		end
 
@@ -345,9 +347,23 @@ feature {NONE} -- Implementation (Printing)
 			l_body_output: ETR_AST_STRING_OUTPUT
 			l_result_is_arg: BOOLEAN
 			l_type_found: BOOLEAN
+
+			l_cur_ins: INTEGER
 		do
 			create l_feature_output_text.make_empty
 			l_feature_output_text.append (a_feature_name)
+
+			-- Decide if the result needs preinitialization!
+			-- This is not perfect but works most of the time
+			if not extracted_results.is_empty then
+				if attached (var_def[block_start])[extracted_results.first] as l_start and attached (var_def[block_end])[extracted_results.first] as l_end then
+					if attached (var_def[block_end+1])[extracted_results.first] as l_after then
+						if l_start.first /= l_end.first and l_after.first=l_start.first then
+							is_result_possibly_undef := true
+						end
+					end
+				end
+			end
 
 			if is_result_possibly_undef and not extracted_arguments.has (extracted_results.first) then
 				extracted_arguments.extend(extracted_results.first)
