@@ -356,7 +356,7 @@ feature {NONE} -- Implementation (Printing)
 			-- Decide if the result needs preinitialization!
 			-- This is not perfect but works most of the time
 			if not extracted_results.is_empty then
-				if attached (var_def[block_start])[extracted_results.first] as l_start and attached (var_def[block_end])[extracted_results.first] as l_end then
+				if attached (var_def[block_start])[extracted_results.first] as l_start and attached (var_def[block_end])[extracted_results.first] as l_end and var_def.valid_index (block_end+1) then
 					if attached (var_def[block_end+1])[extracted_results.first] as l_after then
 						if l_start.first /= l_end.first and l_after.first=l_start.first then
 							is_result_possibly_undef := true
