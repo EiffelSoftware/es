@@ -54,7 +54,7 @@ feature -- Basic operation
 
 			if l_target_feature_name = void then
 				success := False
-				error_message := "Start line is not in a feature"
+				error_message := interface_names.l_start_line_not_in_a_feature
 			end
 
 			if success then
@@ -70,7 +70,7 @@ feature -- Basic operation
 				l_start_path := path_tools.path_from_line (l_orig_feat, l_matchlist, start_line)
 				if l_start_path = void then
 					success := False
-					error_message := "Invalid start path"
+					error_message := interface_names.l_invalid_start_position
 				else
 					l_start_path.set_root (l_feat_ast)
 
@@ -78,7 +78,7 @@ feature -- Basic operation
 
 					if l_end_path = void then
 						success := False
-						error_message := "Invalid end path"
+						error_message := interface_names.l_invalid_end_position
 					else
 						l_end_path.set_root (l_feat_ast)
 					end
@@ -88,10 +88,10 @@ feature -- Basic operation
 			if success then
 				if not l_start_path.parent_path.is_equal (l_end_path.parent_path) then
 					success := False
-					error_message := "Line numbers are not in the same instruction-block"
+					error_message := interface_names.l_invalid_line_numbers
 				elseif start_line>end_line then
 					success := False
-					error_message := "End-line is before start-line"
+					error_message := interface_names.l_swapped_line_numbers
 				else
 					refactorer.set_end_path (l_end_path)
 					refactorer.set_start_path (l_start_path)

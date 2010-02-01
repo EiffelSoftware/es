@@ -31,13 +31,10 @@ feature {NONE} -- Initialization
 	initialize
 			-- Build interface.
 		local
-			fvb, vb_top, vb_label, vb_text_field: EV_VERTICAL_BOX
-			hb, hb_name, hb_old: EV_HORIZONTAL_BOX
-			f_top, f_bottom: EV_FRAME
-			l: EV_LABEL
-			sep: EV_HORIZONTAL_SEPARATOR
-
 			vb: EV_VERTICAL_BOX
+			l: EV_LABEL
+
+			hb_class, hb_start, hb_end, hb_name, hb_buttons: EV_HORIZONTAL_BOX
 		do
 			Precursor
 			set_title (interface_names.t_refactoring_extract_method)
@@ -47,89 +44,63 @@ feature {NONE} -- Initialization
 			vb.set_padding (Layout_constants.small_padding_size)
 			vb.set_border_width (Layout_constants.default_border_size)
 
+			create class_field
+			class_field.disable_edit
+			create l.make_with_text (interface_names.l_class_name_text)
+			create hb_class
+			hb_class.set_padding (Layout_constants.small_padding_size)
+			hb_class.extend (l)
+			l.set_minimum_width (150)
+			l.align_text_left
+			hb_class.disable_item_expand (l)
+			hb_class.extend (class_field)
+
 			create start_line_field
-			vb.extend (start_line_field)
-			vb.disable_item_expand (start_line_field)
+			create l.make_with_text (interface_names.l_start_line)
+			create hb_start
+			hb_start.set_padding (Layout_constants.small_padding_size)
+			hb_start.extend (l)
+			l.set_minimum_width (150)
+			l.align_text_left
+			hb_start.disable_item_expand (l)
+			hb_start.extend (start_line_field)
+
 			create end_line_field
-			vb.extend (end_line_field)
-			vb.disable_item_expand (end_line_field)
+			create l.make_with_text (interface_names.l_end_line)
+			create hb_end
+			hb_end.set_padding (Layout_constants.small_padding_size)
+			hb_end.extend (l)
+			l.set_minimum_width (150)
+			l.align_text_left
+			hb_end.disable_item_expand (l)
+			hb_end.extend (end_line_field)
+
 			create extracted_method_name_field
-			vb.extend (extracted_method_name_field)
-			vb.disable_item_expand (extracted_method_name_field)
+			create l.make_with_text (interface_names.l_extracted_method_name)
+			create hb_name
+			hb_name.set_padding (Layout_constants.small_padding_size)
+			hb_name.extend (l)
+			l.set_minimum_width (150)
+			l.align_text_left
+			hb_name.disable_item_expand (l)
+			hb_name.extend (extracted_method_name_field)
 
+			vb.extend (hb_class)
+			vb.extend (hb_start)
+			vb.extend (hb_end)
+			vb.extend (hb_name)
 
---			create f_top
---			create vb_top
-----			vb_top.set_padding (Layout_constants.small_padding_size)
---			create current_name
---			create hb_old
-----			hb_old.extend (current_name)
-----			hb_old.disable_item_expand (current_name)
-----			vb_top.extend (create {EV_CELL})
-----			vb_top.extend (hb_old)
---			create sep
-----			vb_top.extend (sep)
-----			vb_top.disable_item_expand (sep)
---			create vb_label
-----			vb_label.set_padding (Layout_constants.small_padding_size)
-----			vb_label.set_border_width (Layout_constants.default_border_size)
---			create hb_name
---			create l.make_with_text (interface_names.l_new_name)
-----			vb_label.extend (l)
-----			vb_label.disable_item_expand (l)
-----			vb_label.extend (create {EV_CELL})
-----			hb_name.extend (vb_label)
-----			hb_name.disable_item_expand (vb_label)
---			create vb_text_field
-----			vb_text_field.set_padding (Layout_constants.small_padding_size)
-----			vb_text_field.set_border_width (Layout_constants.default_border_size)
---			create name_field
-----			vb_text_field.extend (name_field)
-----			vb_text_field.disable_item_expand (name_field)
-----			hb_name.extend (vb_text_field)
-----			vb_top.extend (hb_name)
-----			vb_top.disable_item_expand (hb_name)
-----			f_top.extend (vb_top)
-----			vb.extend (f_top)
+			create hb_buttons
+			vb.extend (hb_buttons)
 
---			create f_middle
---			create fvb
-----			fvb.set_padding (Layout_constants.small_padding_size)
-----			fvb.set_border_width (Layout_constants.default_border_size)
-----			f_middle.extend (fvb)
---			create compiled_classes_button.make_with_text (interface_names.l_compiled_classes)
-----			compiled_classes_button.set_tooltip (interface_names.h_refactoring_compiled)
-----			compiled_classes_button.enable_select
-----			fvb.extend (compiled_classes_button)
---			create all_classes_button.make_with_text (interface_names.l_all_classes)
-----			all_classes_button.set_tooltip (interface_names.h_refactoring_all_classes)
-----			fvb.extend (all_classes_button)
-----			vb.extend (f_middle)
-
---			create f_bottom
---			create fvb
-----			fvb.set_padding (Layout_constants.small_padding_size)
-----			fvb.set_border_width (Layout_constants.default_border_size)
-----			f_bottom.extend (fvb)
---			create rename_file_button.make_with_text (interface_names.l_rename_file)
-----			fvb.extend (rename_file_button)
---			create comments_button.make_with_text (interface_names.l_replace_comments)
-----			fvb.extend (comments_button)
---			create strings_button.make_with_text (interface_names.l_replace_strings)
-----			fvb.extend (strings_button)
-----			vb.extend (f_bottom)
-
-			create hb
-			vb.extend (hb)
-			vb.disable_item_expand (hb)
 			extend (vb)
-			hb.set_padding (Layout_constants.small_padding_size)
-			hb.extend (create {EV_CELL})
+			hb_buttons.set_padding (Layout_constants.small_padding_size)
+			hb_buttons.extend (create {EV_CELL})
 
 			create ok_button.make_with_text_and_action (Interface_names.b_ok, agent on_ok_pressed)
 			create cancel_button.make_with_text_and_action (Interface_names.b_cancel, agent on_cancel_pressed)
-			extend_button (hb, ok_button)
-			extend_button (hb, cancel_button)
+			extend_button (hb_buttons, ok_button)
+			extend_button (hb_buttons, cancel_button)
 
 			set_default_push_button (ok_button)
 			set_default_cancel_button (cancel_button)
@@ -199,6 +170,14 @@ feature -- Element change
 			extracted_method_name_field.set_text (a_name)
 		end
 
+	set_class(a_name: STRING)
+			-- set name of class to `a_name'
+		require
+			not_void: a_name /= void
+		do
+			class_field.set_text (a_name)
+		end
+
 feature {NONE} -- Implementation
 
 	on_show
@@ -208,6 +187,7 @@ feature {NONE} -- Implementation
 		end
 
 	start_line_field: EV_TEXT_FIELD
+	class_field: EV_TEXT_FIELD
 	end_line_field: EV_TEXT_FIELD
 	extracted_method_name_field: EV_TEXT_FIELD
 

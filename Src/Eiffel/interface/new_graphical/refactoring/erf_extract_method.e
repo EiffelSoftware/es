@@ -223,6 +223,7 @@ feature {NONE} -- Implementation
 			dialog.set_extracted_method_name (preferences.extracted_method_name)
 			dialog.set_start_line (preferences.start_line)
 			dialog.set_end_line (preferences.end_line)
+			dialog.set_class (class_i.name)
 
 			dialog.show_modal_to_window (window_manager.last_focused_development_window.window)
 

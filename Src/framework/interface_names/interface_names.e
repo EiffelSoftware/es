@@ -1043,6 +1043,11 @@ feature -- Label texts
 	l_one_target_among: STRING_32			do Result := locale.translation("Choose one target among: ")	end
 	l_Only_available_for_stopped_application: STRING_32 do Result := locale.translation("This feature is only available when debugging, and when the execution is stopped.")	end
 
+	l_class_name_text: STRING_32		do Result := locale.translation ("Class name:") end
+	l_start_line: STRING_32				do Result := locale.translation ("Start line:") end
+	l_end_line: STRING_32				do Result := locale.translation ("End line:") end
+	l_extracted_method_name: STRING_32	do Result := locale.translation ("Name of extracted method:") end
+
 	l_class: STRING_32					do Result := locale.translation ("Class") end
 	l_class_address: STRING_32			do Result := locale.translation ("Class address") end
 	l_class_colon: STRING_32				do Result := locale.translation("Class:")	end
@@ -1154,6 +1159,12 @@ feature -- Label texts
 		do
 			Result := locale.formatted_string (locale.translation("The descending class $1 already has another feature with the new name."), [a_class])
 		end
+
+	l_start_line_not_in_a_feature: STRING_32 			do Result := locale.translation ("Start line is not in a feature") end
+	l_invalid_start_position: STRING_32 			do Result := locale.translation ("Invalid start position") end
+	l_invalid_end_position: STRING_32 			do Result := locale.translation ("Invalid end position") end
+	l_invalid_line_numbers: STRING_32 			do Result := locale.translation ("Line numbers are not in the same instruction-block") end
+	l_swapped_line_numbers: STRING_32 			do Result := locale.translation ("End-line is before start-line") end
 
 	l_description: STRING_32 			do Result := locale.translation ("Description") end
 	l_Diagram_delete_view_cmd: STRING_32	do Result := locale.translation("Do you really want to delete current view?")	end
