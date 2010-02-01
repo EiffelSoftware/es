@@ -493,7 +493,9 @@ feature {NONE} -- Implementation (Printing)
 			l_feature_output_text.append (ti_end_keyword)
 
 			parsing_helper.reparse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text)
-			create extracted_method.make_from_ast (parsing_helper.reparsed_root, context.class_context, false)
+			if parsing_helper.reparsed_root /= void then
+				create extracted_method.make_from_ast (parsing_helper.reparsed_root, context.class_context, false)
+			end
 		end
 
 	compute_old_method(a_start_path, a_end_path: AST_PATH; a_extracted_feature_name: STRING; a_feature_ast: FEATURE_AS)
@@ -534,7 +536,9 @@ feature {NONE} -- Implementation (Printing)
 			l_old_method_printer.print_feature (a_feature_ast)
 
 			parsing_helper.reparse_printed_ast (a_feature_ast, l_feat_output.string_representation)
-			create old_method.make_from_ast (parsing_helper.reparsed_root, context, false)
+			if parsing_helper.reparsed_root /= void then
+				create old_method.make_from_ast (parsing_helper.reparsed_root, context, false)
+			end
 		end
 
 feature -- Operations

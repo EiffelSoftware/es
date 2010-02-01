@@ -21,11 +21,15 @@ inherit
 		end
 
 	SHARED_SERVER
+	SHARED_ERROR_HANDLER
 
 	ETR_SHARED_AST_TOOLS
 	ETR_SHARED_PATH_TOOLS
 	ETR_SHARED_OPERATORS
 	ETR_SHARED_ERROR_HANDLER
+		rename
+			error_handler as etr_error_handler
+		end
 
 create
 	make
@@ -148,9 +152,23 @@ feature {NONE} -- Implementation
 
 	show_etr_error
 			-- Report etr error
+		local
+			l_error_msg: STRING
 		do
-			if error_handler.has_errors then
-				prompts.show_error_prompt (error_handler.last_error, Void, Void)
+			if etr_error_handler.has_errors then
+				from
+					create l_error_msg.make_empty
+					etr_error_handler.errors.start
+				until
+					etr_error_handler.errors.after
+				loop
+					l_error_msg.append (etr_error_handler.errors.item)
+					etr_error_handler.errors.forth
+					if not etr_error_handler.errors.after then
+						l_error_msg.append ("%N")
+					end
+				end
+				prompts.show_error_prompt (l_error_msg, Void, Void)
 			end
 		end
 
@@ -170,7 +188,7 @@ feature {NONE} -- Implementation
 		do
 			success := true
 
-			error_handler.reset_errors
+			etr_error_handler.reset_errors
 
 			l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
 			l_orig_feat := transformable.context.feature_context.written_feature.e_feature.ast
@@ -178,7 +196,7 @@ feature {NONE} -- Implementation
 			-- Perform method extraction
 			method_extractor.extract_method (transformable, start_path, end_path, preferences.extracted_method_name)
 
-			if not error_handler.has_errors then
+			if not etr_error_handler.has_errors then
 				-- Replace the old feature by the new one + extracted method
 				create l_output.make
 				create l_printer.make_with_output (l_output)
@@ -200,13 +218,13 @@ feature {NONE} -- Implementation
 	        	current_actions.extend (l_class_modifier)
 	        else
 	        	show_etr_error
-	        	rollback
 	        	success := false
+	        	error_handler.wipe_out
 			end
 		rescue
 			show_etr_error
-			rollback
 			success := false
+			error_handler.wipe_out
 		end
 
     ask_run_settings

@@ -157,6 +157,37 @@ feature
 		do
 
 		end
+		
+	rename_local(a_function: ETR_TRANSFORMABLE; an_old_name, a_new_name: STRING)
+			-- Rename the local `an_old_name' to `a_new_name' in `a_fuction'
+		require
+			fun_set_and_valid: a_function /= void and then a_function.is_valid
+			name_set: a_new_name /= void and an_old_name /= void
+		local
+			l_resulting_context: ETR_FEATURE_CONTEXT
+		do
+			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
+				if l_feat_context.has_arguments then
+					if attached l_feat_context.local_by_name[an_old_name] then
+						-- create new changed context
+						create l_resulting_context.make_from_other (l_feat_context)
+						l_resulting_context.local_by_name[an_old_name].set_name (a_new_name)
+						l_resulting_context.set_modified
+
+						-- transform to the new context
+						basic_operators.transform_to_context (a_function, l_resulting_context)
+
+						transformation_result := basic_operators.transformation_result
+					else
+						error_handler.add_error("rename_local: No local with name "+a_new_name)
+					end
+				else
+					error_handler.add_error("rename_local: Feature has no locals")
+				end
+			else
+				error_handler.add_error("rename_local: a_function does not have a feature-context")
+			end
+		end
 	
 invariant
 	yes: true

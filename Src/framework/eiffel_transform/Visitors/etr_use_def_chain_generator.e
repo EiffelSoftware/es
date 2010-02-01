@@ -21,7 +21,8 @@ inherit
 			process_result_as,
 			process_object_test_as,
 			process_assigner_call_as,
-			process_tagged_as
+			process_tagged_as,
+			process_nested_expr_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -415,12 +416,21 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- clear used variables
 			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones
-			if not l_target_is_local then
+--			if not l_target_is_local then
 				safe_process(l_as.call)
-			end
+--			end
 
 			-- store them
 			var_used_list.extend (temp_vars_used)
+		end
+
+	process_nested_expr_as (l_as: NESTED_EXPR_AS)
+		do
+			safe_process (l_as.target)
+
+			last_was_unqualified := false
+
+			safe_process (l_as.message)
 		end
 
 	process_nested_as (l_as: NESTED_AS)

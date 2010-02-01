@@ -16,7 +16,8 @@ inherit
 			process_expr_call_as,
 			process_list_with_separator,
 			process_assign_as,
-			process_reverse_as
+			process_reverse_as,
+			process_nested_expr_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -153,6 +154,21 @@ feature {AST_EIFFEL} -- Roundtrip
 			output.append_string (ti_dot)
 			last_was_unqualified := false
 			process_child (l_as.message, l_as, 2)
+		end
+
+	process_nested_expr_as (l_as: NESTED_EXPR_AS)
+		do
+			if attached {BINARY_AS}l_as.target or attached {UNARY_AS}l_as.target or attached {OBJECT_TEST_AS}l_as.target then
+				output.append_string (ti_l_parenthesis)
+				process_child(l_as.target, l_as, 1)
+				output.append_string (ti_r_parenthesis)
+			else
+				process_child(l_as.target, l_as, 1)
+			end
+
+			output.append_string (ti_dot)
+			last_was_unqualified := false
+			process_child(l_as.message, l_as, 2)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
