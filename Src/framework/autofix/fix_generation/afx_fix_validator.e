@@ -244,6 +244,8 @@ feature -- Basic operations
 					validate_left_fixes
 				end
 			end
+
+			store_valid_fixes
 		end
 
 	melted_fix_from_fix (a_fix: AFX_FIX): detachable AFX_MELTED_FIX
@@ -338,4 +340,50 @@ feature{NONE} -- Implementation
 			l_file.close
 		end
 
+	store_valid_fixes
+			-- Store `valid_fixes' into file.
+		local
+			l_file_name: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+			l_fixes: DS_ARRAYED_LIST [AFX_FIX]
+			l_sorter: DS_QUICK_SORTER [AFX_FIX]
+		do
+				-- Sort valid fixes first according to semantics score, and then
+				-- according to syntatic score.
+			create l_fixes.make (valid_fixes.count)
+			valid_fixes.do_all (agent l_fixes.force_last)
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AFX_FIX]}.make (
+				agent (af, bf: AFX_FIX): BOOLEAN
+					do
+						Result :=
+							af.ranking.semantics_score < bf.ranking.semantics_score or else
+							af.ranking.syntax_score < bf.ranking.syntax_score
+
+					end))
+			l_sorter.sort (l_fixes)
+
+				-- Store fixes in file			
+			create l_file_name.make_from_string (config.data_directory)
+			l_file_name.set_file_name ("valid_fixes.txt")
+			create l_file.make_create_read_write (l_file_name)
+			from
+				l_fixes.start
+			until
+				l_fixes.after
+			loop
+				l_file.put_string (content_of_fix (l_fixes.item_for_iteration))
+				l_fixes.forth
+			end
+			l_file.close
+		end
+
+	content_of_fix (a_fix: AFX_FIX): STRING
+			-- Content of `a_fix'
+		do
+			fixme ("Similar functionality with that in AFX_TEST_CASE_APP_ANALYZER. 1.2.2010 Jasonw")
+			create Result.make (1024)
+			Result.append (fix_signature (a_fix, True, True) + "%N")
+			Result.append (formated_fix (a_fix))
+			Result.append (once "%N%N")
+		end
 end
