@@ -259,39 +259,41 @@ feature{NONE} -- Implementation
 			l_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
 			l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
 		do
-			fixme ("This is a hack. Use relevant trace analysis classes instead. 12.12.2009 Jasonw")
---			create l_analyzer
---			l_analyzer.analyse (a_trace)
---			l_analyzer.last_relevant_exception_frames
---			from
---				l_frames.start
---			until
---				l_frames.after
---			loop
---				l_frame := l_frames.item_for_iteration
---				if l_frame /= Void and then l_frame.breakpoint_slot_index  then
-
---				end
---				l_frames.forth
---			end
-
-			l_lines := a_trace.split ('%N')
+--			fixme ("This is a hack. Use relevant trace analysis classes instead. 12.12.2009 Jasonw")
+			create l_analyzer
+			l_analyzer.analyse (a_trace)
 			from
-				l_lines.start
+				l_frames := l_analyzer.last_relevant_exception_frames
+				l_frames.start
 			until
-				l_lines.after or l_done
+				l_frames.after or else l_done
 			loop
-				create l_reg.make
-				l_reg.compile ("(([A-Z]|[a-z]|[0-9]|_)+)\s+(([A-Z]|[a-z]|[0-9]|_)+)\s@" + a_tc.breakpoint_slot.out + "\s+" + a_tc.tag)
-				check l_reg.is_compiled end
-				l_reg.match (l_lines.item_for_iteration)
-				if l_reg.has_matched then
+				l_frame := l_frames.item_for_iteration
+				if l_frame /= Void and then l_frame.breakpoint_slot_index = a_tc.breakpoint_slot and then attached {STRING} l_frame.tag as l_tag and then l_tag ~ a_tc.tag then
+					l_class_name := l_frame.context_class_name
+					l_feature_name := l_frame.feature_name
 					l_done := True
-					l_class_name := l_reg.captured_substring (1)
-					l_feature_name := l_reg.captured_substring (3)
 				end
-				l_lines.forth
+				l_frames.forth
 			end
+
+--			l_lines := a_trace.split ('%N')
+--			from
+--				l_lines.start
+--			until
+--				l_lines.after or l_done
+--			loop
+--				create l_reg.make
+--				l_reg.compile ("(([A-Z]|[a-z]|[0-9]|_)+)\s+(([A-Z]|[a-z]|[0-9]|_)+)\s@" + a_tc.breakpoint_slot.out + "\s+" + a_tc.tag)
+--				check l_reg.is_compiled end
+--				l_reg.match (l_lines.item_for_iteration)
+--				if l_reg.has_matched then
+--					l_done := True
+--					l_class_name := l_reg.captured_substring (1)
+--					l_feature_name := l_reg.captured_substring (3)
+--				end
+--				l_lines.forth
+--			end
 			check l_class_name /= Void end
 			check l_feature_name /= Void end
 			Result := [l_class_name, l_feature_name]
