@@ -964,7 +964,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			output.append_string (ti_create_keyword+ti_Space)
 			output.append_string(ti_l_curly)
 			process_child (l_as.type, l_as, 1)
-			output.append_string(ti_r_curly+ti_Space)
+			output.append_string(ti_r_curly)
 			output.append_string (ti_dot)
 			process(l_as.call, l_as, 2)
 			output.append_string(ti_New_line)

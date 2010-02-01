@@ -165,6 +165,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_creation_as (l_as: CREATION_AS)
 		do
+			fixme ("Add renaming handling here!")
 			last_was_unqualified_or_current := true
 
 			output.append_string ("create ")
@@ -179,6 +180,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			if processing_needed (l_as.call, l_as, 3) then
 				output.append_string (".")
 			end
+			last_was_unqualified_or_current := false
 			process_child (l_as.call, l_as, 3)
 			output.append_string("%N")
 		end
