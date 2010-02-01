@@ -382,7 +382,8 @@ feature -- Processing
 			call_type: STRING
 			l_is_creation_routine: BOOLEAN
 		do
-			l_feature := system.class_of_id (a_node.written_in).feature_of_feature_id (a_node.feature_id)
+			l_feature := system.class_of_id (a_node.written_in).feature_of_body_index(a_node.body_index)
+--			l_feature := system.class_of_id (a_node.written_in).feature_of_feature_id (a_node.feature_id)
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 

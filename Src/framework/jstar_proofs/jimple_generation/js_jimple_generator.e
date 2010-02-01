@@ -58,15 +58,25 @@ feature
 				abstract_clause := ""
 			end
 
-			parent_classes := c.conforming_parents_classes
+			-- TODO: Be explicit in error messages about which inheritance constructs are handled and which not.
+			-- At the moment, non-conforming inheritance, renaming and replication are not handled.
 			extends_clause := ""
-			if parent_classes.count > 1 then
-				-- TODO: Multiple inheritance
-				unsupported ("Multiple inheritance")
-			elseif parent_classes.count = 1 then
-				parent_class := parent_classes.at (1)
-				extends_clause := "extends " + parent_class.name_in_upper + " "
+			from
+				parent_classes := c.conforming_parents_classes
+				parent_classes.start
+			until
+				parent_classes.off
+			loop
+				if not extends_clause.is_empty then
+					extends_clause := extends_clause + ", "
+				end
+				extends_clause := extends_clause + parent_classes.item.name_in_upper
+				parent_classes.forth
 			end
+			if not extends_clause.is_empty then
+				extends_clause := "extends " + extends_clause + " "
+			end
+
 			output.put_line (abstract_clause + "class " + c.name_in_upper + " " + extends_clause + "{")
 			output.put_new_line
 

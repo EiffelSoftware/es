@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 	sl_predicate: "Cell(x,{val:v;cnt:c}) = Cc$CCELL(x,{val:v;cnt:c})"
 	sl_predicate: "Cn(x,{cnt:c}) = Cn$COUNTER(x,{cnt:c})"
-	sl_predicate: "Cc(x,{val:v;cnt:c}) = Cell$CELL(x,{val:v}) * Cn$COUNTER(x,{cnt:c})"
+	sl_predicate: "Cc(x,{val:v;cnt:c}) = Cell$CEL(x,{val:v}) * Cn$COUNTER(x,{cnt:c})"
 	js_logic: "ccell.logic"
 	js_abstraction: "ccell.abs"
 
@@ -82,5 +82,14 @@ feature
 			--SL1-- Cc$(Current,{val:_v;cnt:builtin_plus(_c,1)})
 			--SL2-- Cn$(Current,{cnt:builtin_plus(_c,1)})
 		end
+
+--	increment_helper
+--		require else
+--			--SLS-- Cn$COUNTER(Current,{cnt:_c})
+--		do
+--			Precursor {COUNTER}
+--		ensure then
+--			--SLS-- Cn$COUNTER(Current,{cnt:builtin_plus(_c,1)})
+--		end
 
 end
