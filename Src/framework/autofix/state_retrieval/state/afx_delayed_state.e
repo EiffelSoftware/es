@@ -87,8 +87,9 @@ feature{NONE} -- Implementation
 			-- Return `a_failing_inv'
 		do
 			Result := a_failing_inv
-		ensure
-			result_set: Result = a_failing_inv
+			if Result = Void and then a_passing_inv /= Void then
+				create Result.make (0, a_passing_inv.class_, a_passing_inv.feature_)
+			end
 		end
 
 	passing_invariants (a_passing_inv, a_failing_inv: detachable AFX_STATE): detachable AFX_STATE
