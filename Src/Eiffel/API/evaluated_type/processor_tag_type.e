@@ -94,6 +94,35 @@ feature --Compare
 		end
 
 feature --Access
+
+	parsed_processor_name:STRING
+		--returns the name of the processor
+
+		Require
+			has_empty: not tag_name.is_empty
+			not_void: tag_name /= Void
+		local
+			p_open, p_close, dot : INTEGER
+			p_name: STRING
+		do
+			p_name := tag_name
+
+			if p_name.has ('<') then
+				p_open := p_name.index_of ('<', 0)
+				p_close := p_name.index_of ('>', 0)
+
+				p_name := p_name.substring (p_open, p_close)
+			end
+			if p_name.has ('.') then
+				dot := p_name.index_of ('.', 0)
+				p_name := p_name.substring (0, dot)
+			end
+
+			Result := p_name
+
+		end
+
+
 	is_current : BOOLEAN
 			-- Determines whether this tag represents the same
 			-- processor where the type was declared.
@@ -113,10 +142,17 @@ feature --Access
 			controlled := contr
 		end
 
-  has_explicit_tag : BOOLEAN
-  	do
-  		Result := not tag_name.is_empty or is_handled
-  	end
+  	has_explicit_tag : BOOLEAN
+  		do
+  			Result := not tag_name.is_empty or is_handled
+  		end
+
+	has_handler: BOOLEAN
+			-- Returns if type has handler
+			-- Added by `damienm' 13.11.09
+		do
+			Result := is_handled
+		end
 
 	tag_name : ! STRING
 	bottom   : BOOLEAN
@@ -153,10 +189,41 @@ feature {NONE} -- Implementation
 	controlled   : BOOLEAN
 	current_proc : BOOLEAN
 	is_sep       : BOOLEAN
-	is_handled      : BOOLEAN
+	is_handled   : BOOLEAN
 
 invariant
 	top_bottom_exclusive: (bottom implies not top)
 	tag_exclusive:        not tag_name.is_empty implies (not top and not bottom)
 
+note
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

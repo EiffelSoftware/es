@@ -16,9 +16,11 @@ inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
 		redefine
 			process_feature_as,
-			process_keyword_as
+			process_keyword_as,
+			process_object_test_as,
+			process_reverse_as
 		end
-		
+
 	SCOOP_BASIC_TYPE
 
 create
@@ -321,36 +323,297 @@ feature {NONE} -- Implementation
 			end
 		end
 
-note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
-	copying: "[
-			This file is part of Eiffel Software's Eiffel Development Environment.
-			
-			Eiffel Software's Eiffel Development Environment is free
-			software; you can redistribute it and/or modify it under
-			the terms of the GNU General Public License as published
-			by the Free Software Foundation, version 2 of the License
-			(available at the URL listed under "license" above).
-			
-			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful, but
-			WITHOUT ANY WARRANTY; without even the implied warranty
-			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the GNU General Public License for more details.
-			
-			You should have received a copy of the GNU General Public
-			License along with Eiffel Software's Eiffel Development
-			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-		]"
-	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
-		]"
+feature -- object test / ass attempt
 
-end -- class SCOOP_CLIENT_FEATURE_VISITOR
+
+	process_object_test_as (l_as: OBJECT_TEST_AS) is
+			-- handles object tests {l: l_as.type} l_as.expression
+			-- Added by `damienm' 5.Nov 2009
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_is_expression_separate,l_is_type_separate: BOOLEAN
+			type_type: TYPE_A
+			feature_i: FEATURE_I
+		do
+			if not l_as.is_attached_keyword then
+
+				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+
+				if feature_as /= void then
+					feature_i := class_c.feature_named (feature_as.feature_name.name)
+
+					l_type_expression_visitor.evaluate_expression_type_in_class_and_feature(l_as.expression, class_c, feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
+					l_is_expression_separate := l_type_expression_visitor.is_expression_separate
+
+					l_type_expression_visitor.resolve_type_in_class_and_feature(l_as.type, class_c, feature_i)
+					type_type := l_type_expression_visitor.resolved_type
+					l_is_type_separate := type_type.is_separate
+
+				else
+					l_type_expression_visitor.evaluate_expression_type_in_class(l_as.expression, class_c, flattened_object_tests_layers, flattened_inline_agents_layers)
+					l_is_expression_separate := l_type_expression_visitor.is_expression_separate
+
+					l_type_expression_visitor.resolve_type_in_class(l_as.type, class_c)
+					type_type := l_type_expression_visitor.resolved_type
+					l_is_type_separate := type_type.is_separate
+
+				end
+
+					-- `l_is_type_separate' is non separate:
+					--      `l_is_expression_separate' is not separate:
+					--            {l: T} exp
+					--      `l_is_expression_separate' is separate:
+					--            exp /= Void and then exp.processor_ = processor_ and then attached {l: T} exp.implementation_
+
+				if not l_is_type_separate then
+					if not l_is_expression_separate then
+						-- {non sep} non sep
+						Precursor(l_as)
+					else
+						-- {non sep} sep
+						print_leading_separators (l_as.lcurly_symbol_index-1)
+						last_index := l_as.expression.first_token (match_list).index
+
+						safe_process (l_as.expression)
+						context.add_string (" /= Void and then ")
+						safe_process (l_as.expression)
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = "+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" and then ")
+						Precursor(l_as)
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					end
+						-- `l_is_type_separate' is separate with no specifications
+						--      `l_is_expression_separate' is not separate:
+						--            exp /= Void and then {l: T} exp.proxy_
+						--      `l_is_expression_separate' is not separate:
+						--             {l:T} exp
+
+				elseif type_type.processor_tag.top then
+
+					if not l_is_expression_separate then
+						-- {sep (T)} non sep
+						print_leading_separators (l_as.lcurly_symbol_index-1)
+						last_index := l_as.expression.first_token (match_list).index
+
+						safe_process (l_as.expression)
+						context.add_string (" /= Void and then ")
+						Precursor(l_as)
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+					else
+						-- {sep (T)} sep
+						Precursor(l_as)
+					end
+
+					--	`l_is_type_separate' is separate with a handler
+					--      `l_is_expression_separate' is not separate:
+					--            exp /= Void and then exp.processor_ = e.processor_ and then {l:T} exp.proxy_
+					--      `l_is_expression_separate' is separate:
+					--            exp /= Void and then exp.processor_ = e.processor_ and then {l:T} exp
+
+				elseif type_type.processor_tag.has_handler	then
+					print_leading_separators (l_as.lcurly_symbol_index-1)
+					last_index := l_as.expression.first_token (match_list).index
+
+					safe_process (l_as.expression)
+					context.add_string (" /= Void and then ")
+					safe_process (l_as.expression)
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+					context.add_string (type_type.processor_tag.parsed_processor_name)
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" and then ")
+					Precursor(l_as)
+
+					if not l_is_expression_separate then
+						-- {sep (<e.handler>)} non sep
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+					end
+
+					--	`l_is_type_separate' is separate with a processor tag
+					--      `l_is_expression_separate' is not separate:
+					--            exp /= Void and then exp.processor_ = p and then {l: T} exp.proxy_
+					--     `l_is_expression_separate' is separate:
+					--            exp /= Void and then exp.processor_ = p and then  {l: T} exp
+
+				elseif not type_type.processor_tag.has_handler and not type_type.processor_tag.tag_name.is_empty then
+
+					print_leading_separators (l_as.lcurly_symbol_index-1)
+					last_index := l_as.expression.first_token (match_list).index
+
+					safe_process (l_as.expression)
+					context.add_string (" /= Void and then ")
+					safe_process (l_as.expression)
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+					context.add_string (type_type.processor_tag.parsed_processor_name)
+					context.add_string (" and then ")
+					Precursor(l_as)
+
+					if not l_is_expression_separate then
+						-- {sep (<p>)} non sep
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+					end
+				end
+		 	else
+
+		 		Precursor (l_as)
+		 	end
+			last_index := l_as.last_token (match_list).index
+		end
+
+	process_reverse_as (l_as: REVERSE_AS) is
+				--process ass. attemps 'target' '?=' 'source'
+				-- Added by `damienm' 5.Nov 2009
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_is_source_separate,l_is_target_separate: BOOLEAN
+			target_type: TYPE_A
+			feature_i: FEATURE_I
+		do
+			feature_i := class_c.feature_named (feature_as.feature_name.name)
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+
+			l_type_expression_visitor.evaluate_expression_type_in_class_and_feature (l_as.source, class_c, feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
+			l_is_source_separate := l_type_expression_visitor.is_expression_separate
+
+			l_type_expression_visitor.evaluate_call_type_in_class_and_feature(l_as.target, class_c, feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
+			l_is_target_separate := l_type_expression_visitor.is_expression_separate
+			target_type := l_type_expression_visitor.expression_type
+
+
+			if not l_is_target_separate then
+				
+				--	`l_is_target_separate' is not separate:
+				--     `l_is_source_separate' is not separate:
+				--            l ?= exp
+				--     `l_is_source_separate' is separate:
+				--            if exp /= Void and then exp.processor_ = processor_ then
+				--                  l ?= exp.implementation_
+				--            else
+				--                  l := Void
+				--            end
+				if not l_is_source_separate then
+					-- non sep ?= non sep
+					Precursor(l_as)
+
+
+				else
+					-- non sep ?= sep
+					print_leading_separators (l_as.target.first_token (match_list).index-1)
+					last_index := l_as.source.first_token (match_list).index
+					context.add_string ("if ")
+					safe_process (l_as.source)
+					context.add_string (" /= Void and then ")
+					safe_process (l_as.source)
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = "+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" then ")
+					Precursor(l_as)
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation+" else ")
+					safe_process (l_as.target)
+					context.add_string (" := Void end")
+
+				end
+
+			elseif target_type.processor_tag.top then
+
+				--	`l_is_target_separate' is not separate with no specifications:
+				--      `l_is_source_separate' is not separate:
+				--            if exp /= Void then
+				--                  l ?= exp.proxy_
+				--            else
+				--                  l := Void
+				--            end
+				--      `l_is_source_separate' is separate:
+				--            l ?= exp
+
+				if not l_is_source_separate then
+					-- sep (T) ?= non sep
+					print_leading_separators (l_as.target.first_token (match_list).index-1)
+					last_index := l_as.source.first_token (match_list).index
+					context.add_string ("if ")
+					safe_process (l_as.source)
+					context.add_string (" /= Void then ")
+					Precursor(l_as)
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name+ " else ")
+					safe_process (l_as.target)
+					context.add_string (" := Void end")
+				else
+					-- sep (T) ?=  sep
+					Precursor(l_as)
+				end
+
+
+			elseif target_type.processor_tag.has_handler then
+				--				
+				--	`l_is_target_separate' is not separate with a handler:
+				--      `l_is_source_separate' is not separate:
+				--            if exp /= Void and then exp.processor_ = e.processor_ then
+				--                  l ?= exp.proxy_
+				--            else
+				--                  l := Void
+				--            end
+				--      `l_is_source_separate' is separate:
+				--            if exp /= Void and then exp.processor_ = e.processor_ then
+				--                  l ?= exp
+				--            else
+				--                  l := Void
+				--            end
+				print_leading_separators (l_as.target.first_token (match_list).index-1)
+				last_index := l_as.source.first_token (match_list).index
+				context.add_string ("if ")
+				safe_process (l_as.source)
+				context.add_string (" /= Void and then ")
+				safe_process (l_as.source)
+				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+				context.add_string (target_type.processor_tag.parsed_processor_name)
+				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name)
+				context.add_string (" then ")
+				Precursor(l_as)
+				if not l_is_source_separate then
+					-- sep (<e.handler>) ?= non sep
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name+ " else ")
+				else
+					-- sep (<e.handler>) ?= sep
+					context.add_string (" else ")
+				end
+
+				safe_process (l_as.target)
+				context.add_string (" := Void end")
+
+			elseif not target_type.processor_tag.has_handler and not target_type.processor_tag.tag_name.is_empty then
+
+				--	`l_is_target_separate' is not separate with a processor tag:
+				--      `l_is_source_separate' is not separate:
+				--            if exp /= Void and then exp.processor_ = p then
+				--                  l ?= exp.proxy_
+				--            else
+				--                  l := Void
+				--            end
+				--      `l_is_source_separate' is separate:
+				--            if exp /= Void and then exp.processor_ = p then
+				--                  l ?= exp
+				--            else
+				--                  l := Void
+				--            en
+				print_leading_separators (l_as.target.first_token (match_list).index-1)
+				last_index := l_as.source.first_token (match_list).index
+				context.add_string ("if ")
+				safe_process (l_as.source)
+				context.add_string (" /= Void and then ")
+				safe_process (l_as.source)
+				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+				context.add_string (target_type.processor_tag.parsed_processor_name)
+				context.add_string (" then ")
+				Precursor(l_as)
+
+				if not l_is_source_separate then
+					-- sep (<p>) ?= non sep
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name+ " else ")
+				else
+					-- sep (<p>) ?= sep
+					context.add_string (" else ")
+				end
+
+				safe_process (l_as.target)
+				context.add_string (" := Void end")
+
+			end
+	 		last_index := l_as.last_token (match_list).index
+		end
+end
+

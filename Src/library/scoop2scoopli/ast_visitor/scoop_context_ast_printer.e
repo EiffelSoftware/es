@@ -51,7 +51,7 @@ inherit
 			reset,
 			process_none_id_as
 		end
-		
+
 	SCOOP_WORKBENCH
 
 feature -- Basic SCOOP changes
@@ -244,6 +244,66 @@ feature{NONE} -- Context handling
 		do
 			context.add_string (l_as.text (match_list))
 		end
+
+	print_leading_separators(i: INTEGER)
+			-- prints leading separator from `match_list' infront and with position `i'
+		do
+			if match_list.i_th (i).is_separator then
+				print_leading_separators(i-1)
+				match_list.i_th (i).process (current)
+			end
+
+
+		end
+
+	compute_inlining(i: INTEGER):STRING
+			-- prints leading separator from `match_list' infront and with position `i'
+		local
+			str: STRING
+			j: INTEGER
+		do
+			create result.make_empty
+			if match_list.i_th (i).is_separator then
+				if {text: BREAK_AS} match_list.i_th (i) then
+					str := text.literal_text (match_list)
+					from
+						j := str.count
+					until
+						j <= 0
+					loop
+						if not str.item (j).is_equal ('%N') then
+							result.append_character (str.item (j))
+							j := j-1
+						else
+							j := 0
+						end
+					end
+				end
+				result.append (compute_inlining(i-1))
+			end
+
+
+		end
+--	last_new_line(str: STRING): INTEGER is
+--			-- returns the postion of the last `%N' in `str'
+--			local
+--				i,j : INTEGER
+--			do
+--				if str.has_substring ("%N") then
+--					i := str.substring_index ("%N", 1)
+--					j := last_new_line(str.substring (i+2, str.count))
+--					if j = 0 then
+--						-- no further `%N'
+--						result := i
+--					else
+--						-- further `%N'
+--						result := j
+--					end
+--				else
+--					result := 0
+--				end
+--			end
+
 
 feature -- Debug
 

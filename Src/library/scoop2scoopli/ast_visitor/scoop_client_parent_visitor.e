@@ -414,16 +414,11 @@ feature {NONE} -- Visitor implementation
 
 			if is_insert_with_rename_keyword then
 				context.add_string ("%N%T%Tredefine")
-				if not class_as.is_deferred then
-					-- No need to redefine proxy_ when class is deferred
-					context.add_string ("%N%T%T%T proxy_")
-				end
+				-- No need to redefine proxy_ when class is deferred
+				context.add_string ("%N%T%T%T proxy_")
 			else
-				if not class_as.is_deferred then
-					-- No need to redefine proxy_ when class is deferred
-					context.add_string (", proxy_")
-				end
-
+				-- No need to redefine proxy_ when class is deferred
+				context.add_string (", proxy_")
 			end
 
 

@@ -15,11 +15,11 @@ feature --scoop system constants
 
 	scoop_proxy_prefix: STRING is "scoop_separate__"
 
-	scoop_processor: STRING is "processor_"
+	scoop_processor_name: STRING is "processor_"
 
 	scoop_client_implementation: STRING is "implementation_"
 
-	scoop_proxy: STRING is "proxy_"
+	proxy_conversion_feature_name: STRING is "proxy_"
 
 	scoop_override_cluster_name: STRING is "scoop_override_cluster"
 

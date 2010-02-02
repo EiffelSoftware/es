@@ -277,8 +277,9 @@ feature {NONE} -- Content implementation
 
 					-- keyword is and local declaration
 					context.add_string (" is%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [ANY, TUPLE, ")
-				--	 l_type_signature.process_type (l_as.body.type)
+				--	l_type_signature.process_type (l_as.body.type)
 					l_type_locals.process_type (l_as.body.type)
+
 					context.add_string ("]")
 
 					-- body and agent declarateion
@@ -293,6 +294,8 @@ feature {NONE} -- Content implementation
 					context.add_string ("%N%T%T%TResult ")
 					create l_type_visitor
 					a_class_c := l_type_visitor.evaluate_class_from_type (l_as.body.type, class_c)
+
+
 --					if l_scoop_type_visitor.is_formal then
 --						context.add_string (":= ")
 --					elseif a_class_c /= Void then
@@ -302,9 +305,22 @@ feature {NONE} -- Content implementation
 --							context.add_string (":= ")
 --						end
 --					else
-						context.add_string ("?= ")
+						context.add_string (":=")
 --					end
+
 					context.add_string ("a_function_to_evaluate.last_result")
+
+					if {typ: CLASS_TYPE_AS} l_as.body.type then
+						if not typ.is_expanded then
+							-- first has prefix
+							if not typ.is_separate then
+								-- second doesnt have prefix
+								if scoop_classes.has (typ.class_name.name.as_upper) then
+									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+								end
+							end
+						end
+					end
 
 					-- TODO: Reevaluate this or remove it entirely.
 					-- create result conversion code
@@ -476,11 +492,25 @@ feature {NONE} -- Content implementation
 	--		if l_class_c /= Void and then
 	--			(l_class_c.name_in_upper.is_equal ("LINKABLE") or else l_class_c.is_deferred) then
 
-				context.add_string ("?= ")
+				context.add_string (":= ")
 	--		else
 	--			context.add_string (":= ")
 	--		end
+
 			context.add_string ("a_function_to_evaluate.last_result")
+
+			if {typ: CLASS_TYPE_AS} a_feature.body.type then
+				if not typ.is_expanded then
+					-- first has prefix
+					if not typ.is_separate then
+						-- second doesnt have prefix
+						if scoop_classes.has (typ.class_name.name.as_upper) then
+							context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+						end
+					end
+				end
+			end
+
 
 			-- TODO: Reevaluate this or remove it entirely.
 --			process_result_conversion_code (a_feature.body.type)
