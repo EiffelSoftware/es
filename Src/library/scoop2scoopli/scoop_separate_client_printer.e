@@ -10,7 +10,7 @@ class
 
 inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
-		-- to get common used visitor node processing functionality
+		-- Get common used visitor node processing functionality
 		export
 			{NONE} all
 			{SCOOP_VISITOR_FACTORY} setup
@@ -32,7 +32,7 @@ feature -- Access
 
 	process_class is
 			-- Process current `class_as'.
-			-- This is the entry point to start the client class creation.
+			-- Entry point to start client class creation.
 		do
 			process_class_as (class_as)
 		end
@@ -72,7 +72,7 @@ feature {NONE} -- Roundtrip: process nodes
 			if l_as.internal_generics /= Void then
 				process_leading_leaves (l_as.internal_generics.index)
 				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, true, false)
+				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, False)
 				last_index := l_generics_visitor.get_last_index
 			end
 
@@ -129,7 +129,7 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_create_as (l_as: CREATE_AS) is
-			-- Process `l_as', class creation feature list.
+			-- Process `l_as', the class creation feature list.
 		do
 			safe_process (l_as.create_creation_keyword (match_list))
 			-- process client list
@@ -138,7 +138,7 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
-			-- Process `l_as', AST feature clause list.
+			-- Process `l_as', the AST feature clause list.
 		do
 			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%N")
@@ -158,9 +158,9 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_client_list (l_as: EIFFEL_LIST [ID_AS]) is
-			-- Iterates a given client class list and makes some changes:
-			--   - it adds the proxy class of the current class to the list
-			--   - it filters class 'NONE' from the list because of the change before
+			-- Processes `l_as', the client class list:
+			--   - Add the proxy class of the current class
+			--   - Filter class 'NONE'
 		local
 			i, l_count: INTEGER
 			l_none_str: STRING
@@ -202,7 +202,7 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_feature_as (l_as: FEATURE_AS) is
-			-- Process `l_as', the AST feature node and invokes the `SCOOP_CLIENT_FEATURE_VISITOR'.
+			-- Process `l_as', the AST feature node, invoke the `SCOOP_CLIENT_FEATURE_VISITOR'.
 		local
 			l_feature_visitor: SCOOP_CLIENT_FEATURE_VISITOR
 		do
@@ -216,7 +216,7 @@ feature {NONE} -- Roundtrip: process nodes
 feature {NONE} -- Implementation
 
 	insert_infix_prefix_wrappers is
-			-- Inserts the wrapper feature of `scoop_workbench_objects.proxy_infix_prefix_wrappers'.
+			-- Insert the wrapper feature of `scoop_workbench_objects.proxy_infix_prefix_wrappers'.
 			-- Remove this item with EiffelStudio 6.4
 		local
 			i, nb: INTEGER
@@ -236,14 +236,13 @@ feature {NONE} -- Implementation
 					i > nb
 				loop
 					context.add_string (l_wrapper_list.i_th (i))
-
 					i := i + 1
 				end
 			end
 		end
 
 	insert_conversion(l_as: CLASS_AS) is
-			-- inserts conversion clause for `proxy_'
+			-- Insert conversion clause for `proxy_'
 			-- in order to allow up/down casts between separate and non separate entities
 			-- Added by `damienm' 4.Nov 2009	
 		local
@@ -263,7 +262,7 @@ feature {NONE} -- Implementation
 			if l_as.internal_generics /= Void then
 				process_leading_leaves (l_as.internal_generics.index)
 				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, true, true)
+				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
 				last_index := l_generics_visitor.get_last_index
 			end
 
@@ -288,7 +287,7 @@ feature {NONE} -- Implementation
 		end
 
 	add_proxy_feature(l_as: CLASS_AS) is
-				-- adds the feature `proxy_' to the class
+				-- Add feature `proxy_'
 				-- Added by `damienm' 3.Nov 2009
 			local
 				l_generics_visitor : SCOOP_GENERICS_VISITOR
@@ -300,13 +299,13 @@ feature {NONE} -- Implementation
 					if l_as.internal_generics /= Void then
 						process_leading_leaves (l_as.internal_generics.index)
 						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, true, true)
+						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
 						last_index := l_generics_visitor.get_last_index
 					end
 					context.add_string ("%N%T%Tdo%N")
 	          		context.add_string ("%T%T%TResult := create {"+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
 					if l_as.internal_generics /= Void then
-						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, true, true)
+						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
 						last_index := l_generics_visitor.get_last_index
 					end
 	--					context.add_string ("}%N%T%T%TResult.set_implementation_(Current)%N")
@@ -326,7 +325,7 @@ invariant
 	context_not_void: context /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -350,11 +349,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_SEPARATE_CLIENT_PRINTER

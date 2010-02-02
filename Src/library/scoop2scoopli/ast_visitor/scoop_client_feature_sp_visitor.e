@@ -17,7 +17,7 @@ inherit
 		redefine
 			process_body_as
 		end
-		
+
 	SCOOP_WORKBENCH
 
 create
@@ -80,10 +80,10 @@ feature {NONE} -- Node implementation
 
 				context.add_string ("%N%T%T%Tevaluated_as_separate_postcondition (")
 				-- first argument: list of separate arguments
-				context.add_string (an_assertion_object.get_separate_argument_list_as_string (false))
+				context.add_string (an_assertion_object.separate_argument_list_as_string (False))
 				-- second argument: agent
 				context.add_string (", agent " + fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
-				process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, an_assertion_object.get_i_th_separate_argument_tuple (1).argument_name)
+				process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, an_assertion_object.i_th_separate_argument_tuple (1).argument_name)
 				context.add_string (")")
 
 				-- postcondition added_to_unseparated_postconditions
@@ -140,10 +140,10 @@ feature {NONE} -- Node implementation
 
 feature {NONE} -- Implementation
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
-		-- feature object of current processed feature.
+			-- feature object of current processed feature.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -167,11 +167,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_FEATURE_SP_VISITOR

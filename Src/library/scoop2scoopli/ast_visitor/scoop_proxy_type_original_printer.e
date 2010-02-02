@@ -51,40 +51,40 @@ feature {NONE} -- Feature implementation
 	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
-			is_print_with_prefix := false
-			is_filter_detachable := true
+			is_print_with_prefix := False
+			is_filter_detachable := True
 		end
 
 	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
-			is_print_with_prefix := false
-			is_filter_detachable := true
+			is_print_with_prefix := False
+			is_filter_detachable := True
 		end
 
 	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
-			is_print_with_prefix := false
-			is_filter_detachable := true
+			is_print_with_prefix := False
+			is_filter_detachable := True
 		end
 
 	evaluate_like_current_type_flags is
 			-- the flags are set dependant on the situation
 		do
-			is_print_with_prefix := false
-			is_filter_detachable := true
+			is_print_with_prefix := False
+			is_filter_detachable := True
 		end
 
 	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
-			is_print_with_prefix := false
-			is_filter_detachable := true
+			is_print_with_prefix := False
+			is_filter_detachable := True
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -108,11 +108,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_TYPE_ORIGINAL_PRINTER

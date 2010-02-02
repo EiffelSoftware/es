@@ -17,7 +17,7 @@ inherit
 feature -- Access
 
 	has_parents_feature_with_assigner (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
-			-- Returns true if some ancestors have a feature with
+			-- Returns True if some ancestors have a feature with
 			-- name `an_original_feature_name' and an assigner.
 		local
 			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
@@ -27,17 +27,17 @@ feature -- Access
 		end
 
 	has_current_or_parents_feature_with_assigner (an_original_name, an_original_alias_name: STRING; a_parent_class: CLASS_C): BOOLEAN is
-			-- Returns true if some ancestors have a feature with
+			-- Returns True if some ancestors have a feature with
 			-- name `an_original_feature_name' and an assigner.
 		local
 			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
 		do
-			l_result := has_feature (an_original_name, an_original_alias_name, a_parent_class, true, false)
+			l_result := has_feature (an_original_name, an_original_alias_name, a_parent_class, True, false)
 			Result := l_result.found
 		end
 
 	is_first_parent_feature_deferred (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
-			-- Returns true if the first inherited parent feature of
+			-- Returns True if the first inherited parent feature of
 			-- `an_original_feature_name' is deferred
 		do
 			Result := is_first_feature_deferred (an_original_name, an_original_alias_name, a_base_class, false)
@@ -48,7 +48,7 @@ feature -- Access
 		local
 			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
 		do
-			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, false, true)
+			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, false, True)
 			Result := l_result.assigner
 		end
 
@@ -56,7 +56,7 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	has_feature (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_base_class, track_assigner: BOOLEAN): TUPLE [found: BOOLEAN; assigner: STRING] is
-			-- Returns true if (the current parent class or) some ancestors have
+			-- Returns True if (the current parent class or) some ancestors have
 			-- a feature with name `an_original_feature_name' and an assigner.
 			-- if `is_check_base_class' then check also the current class
 		local
@@ -85,7 +85,7 @@ feature {NONE} -- Implementation
 						-- otherwise we dont get the renaming					
 						and then l_feature_i.assigner_name /= Void then
 
-						l_result.found := true
+						l_result.found := True
 						l_result.assigner := l_feature_i.assigner_name
 					end
 				end
@@ -94,7 +94,7 @@ feature {NONE} -- Implementation
 			if not l_result.found then
 				-- get any renamings of `an_original_feature' of all parents
 				create l_assign_visitor
-				l_parent_renamings := l_assign_visitor.get_renamings (an_original_name, an_original_alias_name, a_class_c, true)
+				l_parent_renamings := l_assign_visitor.get_renamings (an_original_name, an_original_alias_name, a_class_c, True)
 			end
 
 			-- check parents of this parent class
@@ -148,7 +148,7 @@ feature {NONE} -- Implementation
 							or l_tuple.old_feature_name.is_equal (an_original_alias_name) then
 
 							-- there is a rename statement 'f as x'. therefore we skip the current parent.
-							l_skip_current_parent := true
+							l_skip_current_parent := True
 						end
 						j := j + 1
 					end
@@ -158,9 +158,9 @@ feature {NONE} -- Implementation
 
 					-- check parents (recursive call - therefore check also current class)
 					if l_rename_str.is_equal (an_original_alias_name) then
-						l_tmp_result := has_feature (an_original_name, an_original_alias_name, l_class_c, true, track_assigner)
+						l_tmp_result := has_feature (an_original_name, an_original_alias_name, l_class_c, True, track_assigner)
 					else
-						l_tmp_result := has_feature (l_rename_str, l_rename_str, l_class_c, true, track_assigner)
+						l_tmp_result := has_feature (l_rename_str, l_rename_str, l_class_c, True, track_assigner)
 					end
 					l_result.found :=  l_result.found or l_tmp_result.found
 
@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 		end
 
 --	has_parent_feature_with_assigner_p (an_original_feature_name: STRING; a_class_c: CLASS_C; is_check_base_class: BOOLEAN): BOOLEAN is
---			-- Returns true if (the current parent class or) some ancestors have
+--			-- Returns True if (the current parent class or) some ancestors have
 --			-- a feature with name `an_original_feature_name' as assigner.
 --			-- if `is_check_base_class' then check also the current class
 --		local
@@ -228,7 +228,7 @@ feature {NONE} -- Implementation
 --					if l_feature_i.assigner_name /= Void and then
 --						l_feature_i.assigner_name.is_equal (an_original_feature_name) then
 
---						Result := true
+--						Result := True
 --					end
 --				end
 --			end
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 --			if not Result then
 --				-- get any renamings of `an_original_feature' of all parents
 --				create l_assign_visitor
---				l_parent_renamings := l_assign_visitor.get_renamings (an_original_feature_name, a_class_c, true)
+--				l_parent_renamings := l_assign_visitor.get_renamings (an_original_feature_name, a_class_c, True)
 --			end
 
 --			-- check parents of this parent class
@@ -288,7 +288,7 @@ feature {NONE} -- Implementation
 --							and then l_tuple.old_feature_name.is_equal (an_original_feature_name) then
 
 --							-- there is a rename statement 'f as x'. therefore we skip the current parent.
---							l_skip_current_parent := true
+--							l_skip_current_parent := True
 --						end
 --						j := j + 1
 --					end
@@ -297,7 +297,7 @@ feature {NONE} -- Implementation
 
 --				if not l_skip_current_parent then
 --					-- check parents (recursive call - therefore check also current class)
---					l_tmp_result := has_feature (l_rename_str, l_class_c, true, track_assigner)
+--					l_tmp_result := has_feature (l_rename_str, l_class_c, True, track_assigner)
 --					l_result.found :=  l_result.found or l_tmp_result.found
 --				end
 --				i := i + 1
@@ -307,7 +307,7 @@ feature {NONE} -- Implementation
 --		end
 
 	is_first_feature_deferred (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_a_class_a: BOOLEAN): BOOLEAN is
-			-- Returns `true' if the first inherited parent feature of
+			-- Returns `True' if the first inherited parent feature of
 			-- `an_original_feature_name' is deferred
 		local
 			l_abort: BOOLEAN
@@ -330,10 +330,10 @@ feature {NONE} -- Implementation
 						l_feature_i := a_class_c.feature_table.item (an_original_alias_name)
 					end
 					if l_feature_i.is_deferred then
-						Result := true
+						Result := True
 					end
 				elseif not a_class_c.is_deferred then
-					l_abort := true
+					l_abort := True
 				end
 			end
 
@@ -341,7 +341,7 @@ feature {NONE} -- Implementation
 			if not l_abort then
 				-- get any renamings of `an_original_feature' of all parents
 				create l_assign_visitor
-				l_parent_renamings := l_assign_visitor.get_renamings (an_original_name, an_original_alias_name, a_class_c, true)
+				l_parent_renamings := l_assign_visitor.get_renamings (an_original_name, an_original_alias_name, a_class_c, True)
 
 				-- check parents of this parent class
 				from
@@ -370,10 +370,10 @@ feature {NONE} -- Implementation
 					-- check parents (recursive call - therefore check also current class)
 					if l_rename_str.is_equal (an_original_alias_name) then
 						-- no renamings -> check both names
-						Result := Result or is_first_feature_deferred (an_original_name, an_original_alias_name, l_class_c, true)
+						Result := Result or is_first_feature_deferred (an_original_name, an_original_alias_name, l_class_c, True)
 					else
 						-- feature name has been renamed -> check only renamed name
-						Result := Result or is_first_feature_deferred (l_rename_str, l_rename_str, l_class_c, true)
+						Result := Result or is_first_feature_deferred (l_rename_str, l_rename_str, l_class_c, True)
 					end
 
 					i := i + 1
@@ -382,7 +382,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -406,11 +406,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_ASSIGN_FINDER

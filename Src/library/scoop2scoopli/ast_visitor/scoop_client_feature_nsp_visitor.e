@@ -80,17 +80,17 @@ feature {NONE} -- Node implementation
 				an_assertion_object := fo.postconditions.non_separate_postconditions.i_th (i)
 
 				-- process postcondition
-				last_index := an_assertion_object.get_tagged_as.first_token (match_list).index - 1
-				safe_process (an_assertion_object.get_tagged_as)
+				last_index := an_assertion_object.tagged_as.first_token (match_list).index - 1
+				safe_process (an_assertion_object.tagged_as)
 
 				-- iterate all separate argumetns
 				from
 					j := 1
 				until
-					j > an_assertion_object.get_separate_argument_count
+					j > an_assertion_object.separate_argument_count
 				loop
 					-- get separate argument tuple
-					a_tuple := an_assertion_object.get_i_th_separate_argument_tuple (j)
+					a_tuple := an_assertion_object.i_th_separate_argument_tuple (j)
 
 					-- print decrease call
 					context.add_string ("%N%T%T%T" + a_tuple.argument_name + ".decreased_postcondition_counter (" + a_tuple.occurrence.out + ")")
@@ -108,10 +108,10 @@ feature {NONE} -- Node implementation
 feature {NONE} -- Implementation
 
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
-		-- feature object of current processed feature.
+			-- feature object of current processed feature.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -135,11 +135,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_FEATURE_NSP_VISITOR

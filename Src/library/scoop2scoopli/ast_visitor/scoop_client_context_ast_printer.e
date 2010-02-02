@@ -82,6 +82,7 @@ create
 	make_with_default_context
 
 feature {NONE} -- Initialization
+
 	make (a_ctxt: ROUNDTRIP_CONTEXT)
 			-- Initialize and set `context' with `a_ctxt'.
 		require
@@ -105,6 +106,7 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Type expression processing
+
 	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
@@ -149,7 +151,7 @@ feature {NONE} -- Type expression processing
 
 			-- process internal generics
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_internal_generics (l_as.internal_generics, true, false)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, True, False)
 			if l_as.internal_generics /= Void then
 				last_index := l_generics_visitor.get_last_index
 			end
@@ -179,6 +181,7 @@ feature {NONE} -- Type expression processing
 		end
 
 feature {NONE} -- Parameter list processing
+
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
 			-- Process `l_as'. Add 'Current' as first argument in paramenter list.
 		local
@@ -189,7 +192,7 @@ feature {NONE} -- Parameter list processing
 
 			-- add additional argument 'Current'
 			if (levels_layers.item.count > 1 and then is_previous_level_separate) or add_prefix_current_cc then
-				add_prefix_current_cc := false
+				add_prefix_current_cc := False
 				context.add_string ("Current, ")
 			end
 
@@ -234,6 +237,7 @@ feature {NONE} -- Parameter list processing
 		end
 
 feature {NONE} -- Calls processing
+
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		do
 			safe_process (l_as.feature_name)
@@ -323,6 +327,7 @@ feature {NONE} -- Calls processing
 		end
 
 feature {NONE} -- Expressions processing
+
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
 			-- Process `l_as'.
 		do
@@ -696,6 +701,7 @@ feature {NONE} -- Features processing
 		end
 
 feature {NONE} -- Instructions processing
+
 	process_assign_as (l_as: ASSIGN_AS)
 		local
 			l_expr_call_as: EXPR_CALL_AS
@@ -750,7 +756,7 @@ feature {NONE} -- Instructions processing
 			l_processor: like locals_processor
 		do
 			create l_type_visitor
-			l_type_visitor.setup (parsed_class, match_list, true, true)
+			l_type_visitor.setup (parsed_class, match_list, True, True)
 
 			-- get separate and the information of the explicit processor specification status of the current call
 			if l_as.type /= Void then
@@ -803,12 +809,12 @@ feature {NONE} -- Instructions processing
 					context.add_string ("." + l_as.call.feature_name.name)
 					context.add_string ("_scoop_separate_" + l_class_name)
 					-- process internal parameter: first: 'Current'
-					add_prefix_current_cc := true
+					add_prefix_current_cc := True
 					if l_as.call.internal_parameters /= Void then
 						last_index := l_as.call.internal_parameters.first_token (match_list).index
 					end
 					process_internal_parameters(l_as.call.internal_parameters)
-					add_prefix_current_cc := false
+					add_prefix_current_cc := False
 				else
 					context.add_string (".default_create_scoop_separate_" + l_class_name)
 					-- internal parameter: 'Current'
@@ -837,7 +843,7 @@ feature {NONE} -- Instructions processing
 			l_processor: like locals_processor
 		do
 			create l_type_visitor
-			l_type_visitor.setup (parsed_class, match_list, true, true)
+			l_type_visitor.setup (parsed_class, match_list, True, True)
 
 			if l_as.target /= Void then
 				l_target_name := l_as.target.access_name
@@ -963,12 +969,12 @@ feature {NONE} -- Instructions processing
 					context.add_string ("." + l_as.call.feature_name.name)
 					context.add_string ("_scoop_separate_" + l_class_name)
 					-- process internal parameter: first: 'Current'
-					add_prefix_current_cc := true
+					add_prefix_current_cc := True
 					if l_as.call.internal_parameters /= Void then
 						last_index := l_as.call.internal_parameters.first_token (match_list).index
 					end
 					process_internal_parameters(l_as.call.internal_parameters)
-					add_prefix_current_cc := false
+					add_prefix_current_cc := False
 				else
 					context.add_string (".default_create_scoop_separate_" + l_class_name)
 					-- internal parameter: 'Current'
@@ -982,6 +988,7 @@ feature {NONE} -- Instructions processing
 		end
 
 feature {NONE} -- Eiffel list processing
+
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
 		local
 			i, l_count: INTEGER
@@ -1029,7 +1036,9 @@ feature {NONE} -- Eiffel list processing
 		end
 
 feature {NONE} -- Level handling
+
 	levels_layers: STACK[LINKED_LIST[TUPLE [is_separate: BOOLEAN; type: TYPE_A]]]
+			-- ...
 
 	initialize_level_layers
 		do
@@ -1126,7 +1135,7 @@ feature {NONE} -- Level handling
 				if levels_layers.item.count > 1 and then is_previous_level_separate then
 					-- Propagation of 'is_separate' state
 					-- Creates for nested calls for every following call an argument 'Current'
-					set_current_level_is_separate(true)
+					set_current_level_is_separate(True)
 				else
 					set_current_level_is_separate(l_type_expr_visitor.is_expression_separate)
 				end
@@ -1168,7 +1177,9 @@ feature {NONE} -- Level handling
 		end
 
 feature {NONE} -- Object test handling
+
 	object_tests_layers: LINKED_STACK[HASH_TABLE[OBJECT_TEST_AS, STRING]]
+			-- ...
 
 	initialize_object_tests_layers
 		do
@@ -1277,7 +1288,9 @@ feature {NONE} -- Object test handling
 		end
 
 feature {NONE} -- Inline agent handling
+
 	inline_agents_layers: LINKED_STACK[SET[TYPE_DEC_AS]]
+			-- ...
 
 	initialize_inline_agents_layers
 		do
@@ -1377,25 +1390,26 @@ feature {NONE} -- Inline agent handling
 		end
 
 feature {NONE} -- Auxiliary Features
+
 	is_last_local_separate: BOOLEAN
-		-- returns true if current processed acccess_as node is
-		-- a local and separate
+			-- returns true if current processed acccess_as node is
+			-- a local and separate
 
 	is_last_internal_argument_separate: BOOLEAN
-		-- returns true if current processed access_as node is
-		-- an internal argument and of separate type
+			-- returns true if current processed access_as node is
+			-- an internal argument and of separate type
 
 	locals_processor: TUPLE [has_explicit_processor_specification: BOOLEAN; entity_name: STRING; has_handler: BOOLEAN]
-		-- remembers the explicit processor specification information when
-		-- processing `is_local'
+			-- remembers the explicit processor specification information when
+			-- processing `is_local'
 
 	locals_class_name: STRING
-		-- remembers the name of the class type
-		-- of a separate declared local
+			-- remembers the name of the class type
+			-- of a separate declared local
 
 	add_prefix_current_cc: BOOLEAN
-		-- adds a prefix 'Current' as first internal parameter
-		-- used for create creation process features.
+			-- adds a prefix 'Current' as first internal parameter
+			-- used for create creation process features.
 
 	is_local (an_access_name: STRING): BOOLEAN
 			-- Returns true if `an_access_name' is declared locally
@@ -1408,7 +1422,7 @@ feature {NONE} -- Auxiliary Features
 			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
 		do
 			-- reset some flags
-			is_last_local_separate := false
+			is_last_local_separate := False
 
 			if feature_as.body /= Void then
 				l_routine_as ?= feature_as.body.content
@@ -1427,10 +1441,10 @@ feature {NONE} -- Auxiliary Features
 							j > nbj
 						loop
 							if l_local.item_name (j).is_equal (an_access_name) then
-								Result := true
+								Result := True
 								-- get also separate status of current local
 								create l_type_visitor
-								l_type_visitor.setup (parsed_class, match_list, true, true)
+								l_type_visitor.setup (parsed_class, match_list, True, True)
 								l_class_c := l_type_visitor.evaluate_class_from_type (l_local.type, class_c)
 								is_last_local_separate := l_type_visitor.is_separate
 
@@ -1450,7 +1464,7 @@ feature {NONE} -- Auxiliary Features
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1474,11 +1488,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- SCOOP_CLIENT_CONTEXT_AST_PRINTER

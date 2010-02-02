@@ -17,7 +17,7 @@ inherit
 			process_body_as,
 			process_routine_as
 		end
-		
+
 	SHARED_ERROR_HANDLER
 		export
 			{NONE} all
@@ -82,7 +82,7 @@ feature {NONE} -- Node implementation
 		do
 				-- visit precondition
 			create l_precondition_visitor.make (fo.arguments)
-			l_precondition_visitor.setup (parsed_class, match_list, true, true)
+			l_precondition_visitor.setup (parsed_class, match_list, True, True)
 			l_precondition_visitor.process_precondition (l_as.precondition)
 			l_preconditions ?= l_precondition_visitor.get_assertion_object
 
@@ -94,7 +94,7 @@ feature {NONE} -- Node implementation
 
 				-- visit postcondition
 			create l_postcondition_visitor.make (fo.arguments)
-			l_postcondition_visitor.setup (parsed_class, match_list, true, true)
+			l_postcondition_visitor.setup (parsed_class, match_list, True, True)
 			l_postcondition_visitor.process_postcondition (l_as.postcondition)
 			l_postconditions ?= l_postcondition_visitor.get_assertion_object
 
@@ -127,11 +127,11 @@ feature -- Debug
 					until
 						i >  preconditions.wait_conditions.count
 					loop
-						test_context := safe_process_debug (preconditions.wait_conditions.i_th (i).get_tagged_as)
+						test_context := safe_process_debug (preconditions.wait_conditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (preconditions.wait_conditions.i_th (i), false)
+							print_detailed_assertion_object (preconditions.wait_conditions.i_th (i), False)
 						end
 
 						i := i + 1
@@ -146,11 +146,11 @@ feature -- Debug
 					until
 						i >  preconditions.non_separate_preconditions.count
 					loop
-						test_context := safe_process_debug (preconditions.non_separate_preconditions.i_th (i).get_tagged_as)
+						test_context := safe_process_debug (preconditions.non_separate_preconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (preconditions.non_separate_preconditions.i_th (i), false)
+							print_detailed_assertion_object (preconditions.non_separate_preconditions.i_th (i), False)
 						end
 
 						i := i + 1
@@ -170,11 +170,11 @@ feature -- Debug
 					until
 						i >  postconditions.immediate_postconditions.count
 					loop
-						test_context := safe_process_debug (postconditions.immediate_postconditions.i_th (i).get_tagged_as)
+						test_context := safe_process_debug (postconditions.immediate_postconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (postconditions.immediate_postconditions.i_th (i), true)
+							print_detailed_assertion_object (postconditions.immediate_postconditions.i_th (i), True)
 							print_separate_argument_list (postconditions.immediate_postconditions.i_th (i))
 						end
 
@@ -190,11 +190,11 @@ feature -- Debug
 					until
 						i >  postconditions.non_separate_postconditions.count
 					loop
-						test_context := safe_process_debug (postconditions.non_separate_postconditions.i_th (i).get_tagged_as)
+						test_context := safe_process_debug (postconditions.non_separate_postconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (postconditions.non_separate_postconditions.i_th (i), true)
+							print_detailed_assertion_object (postconditions.non_separate_postconditions.i_th (i), True)
 							print_separate_argument_list (postconditions.non_separate_postconditions.i_th (i))
 						end
 
@@ -210,11 +210,11 @@ feature -- Debug
 					until
 						i >  postconditions.separate_postconditions.count
 					loop
-						test_context := safe_process_debug (postconditions.separate_postconditions.i_th (i).get_tagged_as)
+						test_context := safe_process_debug (postconditions.separate_postconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (postconditions.separate_postconditions.i_th (i), true)
+							print_detailed_assertion_object (postconditions.separate_postconditions.i_th (i), True)
 							print_separate_argument_list (postconditions.separate_postconditions.i_th (i))
 						end
 
@@ -242,11 +242,11 @@ feature -- Debug
 
 				-- print list of separate calls
 			io.error.put_string ("separate: ")
-			io.error.put_string (assertion_object.get_separate_calls)
+			io.error.put_string (assertion_object.separate_calls)
 
 				-- print list of non separate calls
 			io.error.put_string (", non separate: ")
-			io.error.put_string (assertion_object.get_non_separate_calls)
+			io.error.put_string (assertion_object.non_separate_calls)
 
 			io.error.put_string ("]")
 		end
@@ -254,9 +254,9 @@ feature -- Debug
 	print_separate_argument_list (assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT) is
 			-- prints list to io.error
 		do
-			io.error.put_string ("%N%T%T - Sep. Arguments (" + assertion_object.get_separate_argument_count.out + "): ")
+			io.error.put_string ("%N%T%T - Sep. Arguments (" + assertion_object.separate_argument_count.out + "): ")
 			if assertion_object.has_separate_arguments then
-				io.error.put_string (assertion_object.get_separate_argument_list_as_string(true))
+				io.error.put_string (assertion_object.separate_argument_list_as_string(True))
 			else
 				io.error.put_string ("none.")
 			end
@@ -265,16 +265,16 @@ feature -- Debug
 feature {NONE} -- Implementation
 
 	l_preconditions: SCOOP_CLIENT_PRECONDITIONS
-		-- result object of preconditions visitor
+			-- result object of preconditions visitor
 
 	l_postconditions: SCOOP_CLIENT_POSTCONDITIONS
-		-- result object of postcondition visitor
+			-- result object of postcondition visitor
 
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
-		-- feature object of current processed feature.
+			-- feature object of current processed feature.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -298,11 +298,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_FEATURE_ASSERTION_VISITOR

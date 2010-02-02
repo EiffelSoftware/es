@@ -52,7 +52,7 @@ feature {NONE} -- Visitor implementation
 		do
 				-- test for immediate postcondition
 			if l_as.is_old_keyword or l_as.is_result_keyword then
-				current_assertion.set_is_containing_old_or_result (true)
+				current_assertion.set_is_containing_old_or_result (True)
 			end
 
 				-- process keyword
@@ -62,7 +62,7 @@ feature {NONE} -- Visitor implementation
 	process_un_old_as (l_as: UN_OLD_AS) is
 		do
 				-- immediate postcondition!
-			current_assertion.set_is_containing_old_or_result (true)
+			current_assertion.set_is_containing_old_or_result (True)
 
 				-- process un_old_as
 			Precursor(l_as)
@@ -71,7 +71,7 @@ feature {NONE} -- Visitor implementation
 	process_result_as (l_as: RESULT_AS) is
 		do
 				-- immediate postcondition!
-			current_assertion.set_is_containing_old_or_result (true)
+			current_assertion.set_is_containing_old_or_result (True)
 
 				-- process result_as
 			Precursor(l_as)
@@ -128,10 +128,10 @@ feature {NONE} -- Parent implementations
 
 				if l_postconditions.immediate_postconditions.count > 0 then
 						-- analysed calls contain old or Result keyword
-					current_assertion.set_is_containing_old_or_result (true)
+					current_assertion.set_is_containing_old_or_result (True)
 
 					if l_postconditions.immediate_postconditions.first.has_separate_arguments then
-						current_assertion.append_separate_argument_list (l_postconditions.immediate_postconditions.first.get_separate_argument_list)
+						current_assertion.append_separate_argument_list (l_postconditions.immediate_postconditions.first.separate_argument_list)
 					end
 
 				elseif l_postconditions.non_separate_postconditions.count > 0 then
@@ -139,23 +139,23 @@ feature {NONE} -- Parent implementations
 
 						-- just ignore void expressions
 					if not l_postconditions.non_separate_postconditions.first.is_containing_void then
-						current_assertion.set_is_containing_non_separate_calls (true)
+						current_assertion.set_is_containing_non_separate_calls (True)
 
 						if l_postconditions.non_separate_postconditions.first.has_separate_arguments then
-							current_assertion.append_separate_argument_list (l_postconditions.non_separate_postconditions.first.get_separate_argument_list)
+							current_assertion.append_separate_argument_list (l_postconditions.non_separate_postconditions.first.separate_argument_list)
 						end
 					end
 
 				elseif l_postconditions.separate_postconditions.count > 0 then
 						-- analysed calls contain separate calls (on some leve)
-					current_assertion.set_is_containing_separate_calls (true)
+					current_assertion.set_is_containing_separate_calls (True)
 
 					if l_postconditions.separate_postconditions.first.has_separate_arguments then
-						current_assertion.append_separate_argument_list (l_postconditions.separate_postconditions.first.get_separate_argument_list)
+						current_assertion.append_separate_argument_list (l_postconditions.separate_postconditions.first.separate_argument_list)
 					end
 				else
 					-- other expression like integers.
-					current_assertion.set_is_containing_non_separate_calls (true)
+					current_assertion.set_is_containing_non_separate_calls (True)
 				end
 
 				debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -256,11 +256,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_POSTCONDITION_VISITOR

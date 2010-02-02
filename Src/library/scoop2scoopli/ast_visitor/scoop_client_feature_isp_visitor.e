@@ -77,11 +77,11 @@ feature -- Access
 			context.add_string ("%N%T%T%Tif ")
 
 			-- process separate postcondition with prefix 'caller_'
-			is_print_assertion_as_expr := true
-			is_print_parameters_with_prefix := true
-			safe_process (assertion.get_tagged_as)
-			is_print_parameters_with_prefix := false
-			is_print_assertion_as_expr := false
+			is_print_assertion_as_expr := True
+			is_print_parameters_with_prefix := True
+			safe_process (assertion.tagged_as)
+			is_print_parameters_with_prefix := False
+			is_print_assertion_as_expr := False
 
 			-- then
 			context.add_string ("%N%T%T%Tthen -- Postcondition clause holds.")
@@ -90,10 +90,10 @@ feature -- Access
 			from
 				i := 1
 			until
-				i > assertion.get_separate_argument_count
+				i > assertion.separate_argument_count
 			loop
-				context.add_string ("%N%T%T%T%Taux := " + assertion.get_i_th_separate_argument_tuple (i).argument_name)
-				context.add_string (".decreased_postcondition_counter (" + assertion.get_i_th_separate_argument_tuple (i).occurrence.out + ")")
+				context.add_string ("%N%T%T%T%Taux := " + assertion.i_th_separate_argument_tuple (i).argument_name)
+				context.add_string (".decreased_postcondition_counter (" + assertion.i_th_separate_argument_tuple (i).occurrence.out + ")")
 
 				i := i + 1
 			end
@@ -104,7 +104,7 @@ feature -- Access
 			-- raise a postcondition exception
 			context.add_string ("%N%T%T%T%Tcreate l_exception")
 			context.add_string ("%N%T%T%T%Tl_exception.set_message (%"Postcondition violation: ")
-			safe_process (assertion.get_tagged_as)
+			safe_process (assertion.tagged_as)
 			context.add_string ("%")")
 			context.add_string ("%N%T%T%T%Tcreate l_exception_factory")
 			context.add_string ("%N%T%T%T%Tl_exception_factory.exception_manager.raise (l_exception)")
@@ -123,7 +123,7 @@ feature -- Access
 			context.add_string ("(")
 
 			-- set flags for processing internal arguments
-			is_print_with_prefix := true
+			is_print_with_prefix := True
 
 			-- set prefix
 			context.add_string (a_prefix)
@@ -136,7 +136,7 @@ feature -- Access
 			end
 
 			-- reset flags
-			is_print_with_prefix := false
+			is_print_with_prefix := False
 
 			context.add_string (")")
 		end
@@ -231,30 +231,30 @@ feature {NONE} -- Visitor implementation - parameter list prefix changes
 feature {NONE} -- Implementation
 
 	parameter_list_prefix: STRING
-		-- prefix is used when a parameter list is processed an 'is_print_parameters_with_prefix' is true.
-		-- it adds prefix as a first paramter in the list.
+			-- prefix is used when a parameter list is processed an 'is_print_parameters_with_prefix' is True.
+			-- it adds prefix as a first paramter in the list.
 
 	is_print_parameters_with_prefix: BOOLEAN
-		-- prints a parameter list with a given prefix as first parameter.
+			-- prints a parameter list with a given prefix as first parameter.
 
 	is_print_assertion_as_expr: BOOLEAN
-		-- prints the 'tagged_as' without tag and colon_symobol if is_print_assertion_as_expr is true.
+			-- prints the 'tagged_as' without tag and colon_symobol if is_print_assertion_as_expr is True.
 
 	is_print_with_prefix: BOOLEAN
-		-- prints the 'formal_argu_dec_list_as' with a prefix as first argument.
-		-- the argument list is processed without the l- and rparan_sympbol.
+			-- prints the 'formal_argu_dec_list_as' with a prefix as first argument.
+			-- the argument list is processed without the l- and rparan_sympbol.
 
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
-		-- feature object of current processed feature.
+			-- feature object of current processed feature.
 
 	assertion: SCOOP_CLIENT_ASSERTION_OBJECT
-		-- current processed assertion
+			-- current processed assertion
 
 	index: INTEGER
-		-- index of current separate postcondition
+			-- index of current separate postcondition
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -278,11 +278,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_CONTEXT_AST_PRINTER

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_CLIENT_POSTCONDITIONS}."
+	description: "Representation of postconditions of a client feature."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -27,15 +27,15 @@ feature {NONE} -- Initialization
 feature -- Access postcondition lists
 
 	immediate_postconditions: LINKED_LIST[SCOOP_CLIENT_ASSERTION_OBJECT]
-		-- postconditions contain reference to 'old' or 'Result'
+			-- Postconditions containing reference to 'old' or 'Result'.
 
 	non_separate_postconditions: LINKED_LIST[SCOOP_CLIENT_ASSERTION_OBJECT]
-		-- postcondition contains at least one non separate call
-		-- and no reference to 'old' or 'Result'
+			-- Postconditions containing at least one non separate call
+			-- and no reference to 'old' or 'Result'.
 
 	separate_postconditions: LINKED_LIST[SCOOP_CLIENT_ASSERTION_OBJECT]
-		-- postcondition contain no non-separate calls
-		-- and no reference to 'old' or 'Result'
+			-- Postconditions containing no non-separate calls
+			-- and no reference to 'old' or 'Result'.
 
 invariant
 	immediate_postconditions_not_void: immediate_postconditions /= Void
@@ -43,7 +43,7 @@ invariant
 	separate_postconditions_not_void: separate_postconditions /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -67,11 +67,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_POSTCONDITIONS

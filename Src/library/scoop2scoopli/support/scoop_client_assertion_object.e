@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_CLIENT_ASSERTION_OBJECT}."
+	description: "Representation of a client assertion object."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -27,66 +27,63 @@ feature -- Initialisation
 feature -- Access
 
 	reset is
-			-- resets some flags
+			-- Reset some flags
 		do
-			is_containing_separate_calls := false
-			is_containing_non_separate_calls := false
+			is_containing_separate_calls := False
+			is_containing_non_separate_calls := False
 		end
 
+	tagged_as: TAGGED_AS
+			-- Reference to original tagged_as node
+
 	set_tagged_as (a_tagged_as: TAGGED_AS) is
-			-- setter for 'tagged_as'
+			-- Set `a_tagged_as'.
 		require
 			a_tagged_as_not_void: a_tagged_as /= Void
 		do
 			tagged_as := a_tagged_as
 		end
 
-	get_tagged_as: TAGGED_AS is
-			-- getter for 'tagged_as'
-		do
-			Result := tagged_as
-		end
-
 	set_is_containing_separate_calls (a_value: BOOLEAN) is
-			-- setter for 'is_containing_separate_calls'
+			-- Set `is_containing_separate_calls'.
 		do
 			is_containing_separate_calls := a_value
 		end
 
 	set_is_containing_non_separate_calls (a_value: BOOLEAN) is
-			-- setter for 'is_containing_non_separate_calls'
+			-- Set `is_containing_non_separate_calls'.
 		do
 			is_containing_non_separate_calls := a_value
 		end
 
 	set_is_containing_old_or_result (a_value: BOOLEAN) is
-			-- setter for 'is_containing_old_or_result'
+			-- Set `is_containing_old_or_result'.
 		do
 			is_containing_old_or_result := a_value
 		end
 
 	set_is_containing_void (a_value: BOOLEAN) is
-			-- setter for 'is_containing_void'
+			-- Set `is_containing_void'.
 		do
 			is_containing_void := a_value
 		end
 
 feature -- Debugging access
 
-	get_non_separate_calls: STRING is
-			-- returns a string containing a list of all non separate calls
+	non_separate_calls: STRING is
+			-- List of all non separate calls.
 		do
-			Result := print_calls_selective (false)
+			Result := print_calls_selective (False)
 		end
 
-	get_separate_calls: STRING is
-			-- returns a string containing a list of all separate calls of the list
+	separate_calls: STRING is
+			-- List of all separate calls.
 		do
-			Result := print_calls_selective (true)
+			Result := print_calls_selective (True)
 		end
 
-	get_separate_argument_list_as_string (is_print_with_info: BOOLEAN): STRING is
-			-- returns a string containing a list of all separate arguments
+	separate_argument_list_as_string (is_print_with_info: BOOLEAN): STRING is
+			-- List of all separate arguments.
 		local
 			a_list: STRING
 			i: INTEGER
@@ -119,13 +116,13 @@ feature -- Debugging access
 feature {NONE} -- Debugging implementation
 
 	print_calls_selective (separate_state: BOOLEAN): STRING is
-			-- prints the call list with separate state
+			-- Print call list with separate state.
 		local
 			i: INTEGER
 			l_str: STRING
 			is_first: BOOLEAN
 		do
-			is_first := true
+			is_first := True
 			create l_str.make_from_string ("[")
 			from
 				i := 1
@@ -137,7 +134,7 @@ feature {NONE} -- Debugging implementation
 						l_str.append (",")
 					end
 					l_str.append (calls.i_th (i).call_name)
-					is_first := false
+					is_first := False
 				end
 				i := i + 1
 			end
@@ -153,20 +150,20 @@ feature {NONE} -- Debugging implementation
 feature -- Implementation counter access
 
 	count_separate_argument_occurrence(an_argument: STRING; a_value: INTEGER) is
-			-- increases the separate argument occurrence counter by one
+			-- Increase the separate argument occurrence counter by one.
 		local
 			i: INTEGER
 			found: BOOLEAN
 			a_tuple: TUPLE[argument_name: STRING; occurrence: INTEGER]
 		do
-			found := false
+			found := False
 			from
 				i := 1
 			until
 				i > separate_argument_counter.count
 			loop
 				if separate_argument_counter.i_th (i).argument_name.is_equal (an_argument) then
-					found := true
+					found := True
 					separate_argument_counter.i_th (i).occurrence := separate_argument_counter.i_th (i).occurrence + a_value
 				end
 				i := i + 1
@@ -178,20 +175,20 @@ feature -- Implementation counter access
 			end
 		end
 
-	get_separate_argument_occurrence (an_argument: STRING): INTEGER is
-			-- returns the separate argument occurrence counter
+	separate_argument_occurrence (an_argument: STRING): INTEGER is
+			-- Number of occurrence of separate argument `an_argument' in the list.
 		local
 			i: INTEGER
 			found: BOOLEAN
 		do
-			found := false
+			found := False
 			from
 				i := 1
 			until
 				i > separate_argument_counter.count
 			loop
 				if separate_argument_counter.i_th (i).argument_name.is_equal (an_argument) then
-					found := true
+					found := True
 					Result := separate_argument_counter.i_th (i).occurrence
 				end
 				i := i + 1
@@ -201,36 +198,36 @@ feature -- Implementation counter access
 			end
 		end
 
-	get_i_th_separate_argument_tuple (a_position: INTEGER): TUPLE[argument_name: STRING; occurrence: INTEGER] is
-			-- returns the separate argument occurrence counter
+	i_th_separate_argument_tuple (a_position: INTEGER): TUPLE[argument_name: STRING; occurrence: INTEGER] is
+			-- Separate argument on position `a_position'.
 		require
-			a_valid_position: a_position > 0 and a_position <= get_separate_argument_count
+			a_valid_position: a_position > 0 and a_position <= separate_argument_count
 		do
 			if a_position <= separate_argument_counter.count then
 				Result := separate_argument_counter.i_th (a_position)
 			end
 		end
 
-	get_separate_argument_count: INTEGER is
-			-- returns the number of arguments which occures in the assertion
+	separate_argument_count: INTEGER is
+			-- Number of arguments that occur in the assertion.
 		do
 			Result := separate_argument_counter.count
 		end
 
 	has_separate_arguments: BOOLEAN is
-			-- returns true if there are separate argument in the assertion
+			-- Does the assertion contains separate arguments?
 		do
 			Result := not separate_argument_counter.is_empty
 		end
 
-	get_separate_argument_list: LINKED_LIST[TUPLE[argument_name: STRING; occurrence: INTEGER]] is
-			-- returns the whole separate argument counter list
+	separate_argument_list: LINKED_LIST[TUPLE[argument_name: STRING; occurrence: INTEGER]] is
+			-- List of all separate arguments.
 		do
 			Result := separate_argument_counter
 		end
 
 	append_separate_argument_list (a_list: LINKED_LIST[TUPLE[argument_name: STRING; occurrence: INTEGER]]) is
-			-- appends the separate argument list with the list given in the argument
+			-- Append separate argument list with the list given in the argument.
 		require
 			a_list_not_void: a_list /= Void
 		local
@@ -249,31 +246,28 @@ feature -- Implementation counter access
 feature -- Implementation with access
 
 	calls: LINKED_LIST [TUPLE [call_name: STRING; is_separate: BOOLEAN]]
-		-- linked list of all calls within the assertion
-		-- list ist just for debugging reasons -> 'SCOOP_CLIENT_ASSERTIONS_EXT'
+			-- Linked list of all calls within the assertion
+			-- List ist just for debugging reasons -> 'SCOOP_CLIENT_ASSERTIONS_EXT'
 
 	is_containing_separate_calls: BOOLEAN
-		-- indicates separate calls within the assertion
+			-- Are there separate calls within the assertion?
 
 	is_containing_non_separate_calls: BOOLEAN
-		-- indicates the occurrence of non separate cals
+			-- Are there non separate calls within the assertions?
 
 	is_containing_old_or_result: BOOLEAN
-		-- indicates the occurrence of an old or result keyword
+			-- Are there any `Result' or `old' keywords?
 
 	is_containing_void: BOOLEAN
-		-- indicates that the last expression contains the keyword 'void'
+			-- Does the last expression contain the keyword `Void'?
 
 feature {NONE} -- Implementation
 
-	tagged_as: TAGGED_AS
-		-- reference to the original tagged_as node
-
 	separate_argument_counter: LINKED_LIST[TUPLE[argument_name: STRING; occurrence: INTEGER]]
-		-- saves for separate arguments an integer value.
+			-- Separate argument list with related occurence counter.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -297,11 +291,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_ASSERTION_OBJECT

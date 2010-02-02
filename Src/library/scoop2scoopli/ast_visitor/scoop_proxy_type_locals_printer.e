@@ -44,7 +44,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.like_keyword (match_list))
 			safe_process (l_as.anchor)
 --			create iterator
---			iterator.setup (class_as, match_list, true, true)
+--			iterator.setup (class_as, match_list, True, True)
 --			iterator.set_context (context)
 --			iterator.process_ast_node (l_as.anchor)
 
@@ -58,7 +58,7 @@ feature {NONE} -- Roundtrip: process nodes
 
 --				l_formal_a ?= l_type_a
 --				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
---				process_class_name_str (l_name, false, context, match_list)
+--				process_class_name_str (l_name, False, context, match_list)
 --			else
 --				-- get class name of actual type
 
@@ -129,7 +129,7 @@ feature {NONE} -- Roundtrip: process nodes
 			-- process internal generics			
 			-- no `SCOOP_SEPARATE__' prefix.
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_type_locals (l_as.internal_generics, false, not is_filter_detachable)
+			l_generics_visitor.process_type_locals (l_as.internal_generics, False, not is_filter_detachable)
 			if l_as.internal_generics /= Void then
 				last_index := l_as.internal_generics.last_token (match_list).index
 			end
@@ -154,7 +154,7 @@ feature {NONE} -- TYPE_A implementation
 				-- it is a formal generic parameter
 				l_formal_a ?= l_type_a
 				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
-				process_class_name_str (l_name, false, context, match_list)
+				process_class_name_str (l_name, False, context, match_list)
 			elseif l_type_a.has_generics then
 				-- formal generic or with explicit type
 				from
@@ -164,7 +164,7 @@ feature {NONE} -- TYPE_A implementation
 					i > nb
 				loop
 					if l_type_a.generics.item (i).is_formal then
-						is_formal_generic := true
+						is_formal_generic := True
 					end
 
 					i := i + 1
@@ -173,7 +173,7 @@ feature {NONE} -- TYPE_A implementation
 				if is_formal_generic then
 					-- print out current name
 					create l_name.make_from_string (l_type_a.associated_class.name_in_upper)
-					process_class_name_str (l_name, false, context, match_list)
+					process_class_name_str (l_name, False, context, match_list)
 
 					-- get current formal generic parameters
 				--	context.add_string ("[")
@@ -191,9 +191,9 @@ feature {NONE} -- TYPE_A implementation
 								context.add_string ("?")
 							end
 							create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
-							process_class_name_str (l_name, false, context, match_list)
+							process_class_name_str (l_name, False, context, match_list)
 						else
-							process_class_name_str (l_type_a.generics.item (i).name, false, context, match_list)
+							process_class_name_str (l_type_a.generics.item (i).name, False, context, match_list)
 						end
 
 						if i < nb then
@@ -208,16 +208,16 @@ feature {NONE} -- TYPE_A implementation
 					-- just print out the actual type
 
 					create ast_rdtrip
-					ast_rdtrip.setup (class_as, match_list, true, true)
+					ast_rdtrip.setup (class_as, match_list, True, True)
 					ast_rdtrip.set_context (context)
 					if feature_as.body.type /= void then
 						ast_rdtrip.process_ast_node (feature_as.body.type)
 					end
-				--	process_class_name_str (l_type_a.actual_type., false, context, match_list)
+				--	process_class_name_str (l_type_a.actual_type., False, context, match_list)
 				end
 			else
 				-- just print out the actual type
-				process_class_name_str (l_type_a.actual_type.name, false, context, match_list)
+				process_class_name_str (l_type_a.actual_type.name, False, context, match_list)
 			end
 		end
 
@@ -227,55 +227,55 @@ feature {NONE} -- Feature implementation
 			-- the flags are set dependant on the situation
 		do
 			if is_separate and not is_expanded then
-				is_print_with_prefix := true
+				is_print_with_prefix := True
 			else
-				is_print_with_prefix := false
+				is_print_with_prefix := False
 			end
-			is_filter_detachable := true
+			is_filter_detachable := True
 		end
 
 	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
 			if is_separate and not is_expanded then
-				is_print_with_prefix := true
+				is_print_with_prefix := True
 			else
-				is_print_with_prefix := false
+				is_print_with_prefix := False
 			end
-			is_filter_detachable := true
+			is_filter_detachable := True
 		end
 
 	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
 			if is_separate then
-				is_print_with_prefix := true
+				is_print_with_prefix := True
 			else
-				is_print_with_prefix := false
+				is_print_with_prefix := False
 			end
-			is_filter_detachable := true
+			is_filter_detachable := True
 		end
 
 	evaluate_like_current_type_flags is
 			-- the flags are set dependant on the situation
 		do
-			is_print_with_prefix := true
-			is_filter_detachable := true
+			is_print_with_prefix := True
+			is_filter_detachable := True
 		end
 
 	 evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
 			-- the flags are set dependant on the situation
 		do
 			if is_separate and not is_expanded then
-				is_print_with_prefix := true
+				is_print_with_prefix := True
 			else
-				is_print_with_prefix := false
+				is_print_with_prefix := False
 			end
-			is_filter_detachable := true
+			is_filter_detachable := True
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -299,11 +299,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_TYPE_LOCALS_PRINTER

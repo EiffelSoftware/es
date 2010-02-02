@@ -23,7 +23,7 @@ inherit
 			process_named_tuple_type_as,
 			process_like_cur_as
 		end
-		
+
 	SCOOP_CLASS_NAME
 
 feature -- Initialisation
@@ -36,8 +36,8 @@ feature -- Initialisation
 			context := a_context
 
 			-- Reset some values
-			is_print_with_prefix := false
-			is_filter_detachable := false
+			is_print_with_prefix := False
+			is_filter_detachable := False
 		end
 
 feature -- Access
@@ -117,7 +117,7 @@ feature {NONE} -- Roundtrip: process nodes
 			-- process internal generics			
 			-- no `SCOOP_SEPARATE__' prefix, not detachable.
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_type_internal_generics (l_as.internal_generics, false, false)
+			l_generics_visitor.process_type_internal_generics (l_as.internal_generics, False, False)
 			if l_as.internal_generics /= Void then
 				last_index := l_as.internal_generics.last_token (match_list).index
 			end
@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 			-- is set in the 'evaluate_flags' feature
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -256,11 +256,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_TYPE_VISITOR

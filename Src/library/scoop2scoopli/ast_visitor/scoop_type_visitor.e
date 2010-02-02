@@ -57,11 +57,11 @@ feature -- Access
 		do
 			last_class_name := Void
 			last_class_c := Void
-			is_formal := false
-			is_tuple_type := false
-			is_separate := false
-			is_a_like_type := false
-			is_class_type := false
+			is_formal := False
+			is_tuple_type := False
+			is_separate := False
+			is_a_like_type := False
+			is_class_type := False
 
 			base_class := a_base_class
 
@@ -77,7 +77,7 @@ feature -- Access
 					-- test if the current type is a formal generic parameter
 					from i := 1	until i > base_class.generics.count loop
 						if base_class.generics.i_th (i).name.name.as_upper.is_equal (last_class_name) then
-							is_formal := true
+							is_formal := True
 						end
 						i := i + 1
 					end
@@ -89,7 +89,7 @@ feature -- Access
 
 			-- check: it cannot be separate be if it is of basic type
 			if last_class_c /= Void and then is_special_class (last_class_c.name_in_upper) then
-				is_separate := false
+				is_separate := False
 			end
 
 			Result := last_class_c
@@ -124,7 +124,7 @@ feature {NONE} -- Visitor implementation
 			if base_class.feature_table.has (l_as.anchor.name.as_lower) then
 				l_type_a := base_class.feature_table.item (l_as.anchor.name.as_lower).type
 				if l_type_a.is_formal then
-					is_formal := true
+					is_formal := True
 				else
 					if l_type_a.associated_class /= Void then
 						create last_class_name.make_from_string (l_type_a.associated_class.name_in_upper)
@@ -142,23 +142,23 @@ feature {NONE} -- Visitor implementation
 				if feature_object.arguments.has (l_as.anchor.name) then
 					l_type_as := feature_object.arguments.get_type_by_name (l_as.anchor.name.as_lower)
 					create l_typ_visitor
-					l_typ_visitor.setup (class_as, match_list, true, true)
+					l_typ_visitor.setup (class_as, match_list, True, True)
 					l_class_c := l_typ_visitor.evaluate_class_from_type (l_type_as, class_c)
 					create last_class_name.make_from_string (l_class_c.name_in_upper)
 				end
 			end
-			is_a_like_type := true
+			is_a_like_type := True
 		end
 
 	process_like_cur_as (l_as: LIKE_CUR_AS) is
 		do
 			last_class_name := base_class.name_in_upper
-			is_a_like_type := true
+			is_a_like_type := True
 		end
 
 	process_formal_as (l_as: FORMAL_AS) is
 		do
-			is_formal := true
+			is_formal := True
 			last_class_name := l_as.name.name.as_upper
 		end
 
@@ -166,14 +166,14 @@ feature {NONE} -- Visitor implementation
 		do
 			last_class_name := l_as.class_name.name.as_upper
 			is_separate := l_as.is_separate
-			is_class_type := true
+			is_class_type := True
 		end
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
 		do
 			last_class_name := l_as.class_name.name
 			is_separate := l_as.is_separate
-			is_class_type := true
+			is_class_type := True
 		end
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS) is
@@ -253,7 +253,7 @@ feature {NONE} -- Implementation
 			-- Starting point for type analysis
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -277,11 +277,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_TYPE_VISITOR

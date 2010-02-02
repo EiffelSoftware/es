@@ -98,7 +98,7 @@ feature {NONE} -- Node implementation
 					i > fo.preconditions.wait_conditions.count
 				loop
 					context.add_string ("%N%T%T%T%Tand then (")
-					safe_process (fo.preconditions.wait_conditions.i_th (i).get_tagged_as)
+					safe_process (fo.preconditions.wait_conditions.i_th (i).tagged_as)
 					context.add_string (")")
 					i := i + 1
 				end
@@ -131,7 +131,7 @@ feature {NONE}
 
 			if current_level.type.is_separate then
 				context.add_string (".implementation_")
-				set_current_level_is_separate (false)
+				set_current_level_is_separate (False)
 			end
 
 			process_internal_parameters(l_as.internal_parameters)
@@ -145,7 +145,7 @@ feature {NONE}
 
 			if current_level.type.is_separate then
 				context.add_string (".implementation_")
-				set_current_level_is_separate (false)
+				set_current_level_is_separate (False)
 			end
 
 			process_internal_parameters(l_as.internal_parameters)
@@ -162,7 +162,7 @@ feature {NONE}
 
 			if current_level.type.is_separate then
 				context.add_string (".implementation_")
-				set_current_level_is_separate (false)
+				set_current_level_is_separate (False)
 			end
 
 			-- process internal parameters and add current if target is of separate type.
@@ -174,16 +174,16 @@ feature {NONE}
 			Precursor (l_as)
 			if current_level.type.is_separate then
 				context.add_string (".implementation_")
-				set_current_level_is_separate (false)
+				set_current_level_is_separate (False)
 			end
 		end
 
 feature {NONE} -- Implementation
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
-		-- feature object of current processed feature.
+			-- feature object of current processed feature.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -207,11 +207,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_FEATURE_WC_VISITOR

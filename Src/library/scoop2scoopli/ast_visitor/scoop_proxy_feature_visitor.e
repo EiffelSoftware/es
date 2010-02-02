@@ -80,22 +80,22 @@ feature {NONE} -- Visitor implementation
 					if not is_first_feature then
 						context.add_string ("%N%N%T")
 					else
-						set_is_first_feature (false)
+						set_is_first_feature (False)
 					end
 					-- process frozen key word
 					last_index := l_feature_name.first_token (match_list).index
 					safe_process (l_feature_name.frozen_keyword)
 
 					-- get feature name
-					l_feature_name_visitor.process_feature_name (l_feature_name, false)
+					l_feature_name_visitor.process_feature_name (l_feature_name, False)
 					l_feature_name_str := l_feature_name_visitor.get_feature_name
-					--l_feature_name_visitor.process_feature_name (l_feature_name, true)
+					--l_feature_name_visitor.process_feature_name (l_feature_name, True)
 					l_feature_declaration_name := l_feature_name_visitor.get_feature_name
 
 					-- get original feature name
-					--l_feature_name_visitor.process_original_feature_name (l_feature_name, true)
+					--l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
 					l_original_feature_alias_name := l_feature_name_visitor.get_feature_name
-					l_feature_name_visitor.process_original_feature_name (l_feature_name, false)
+					l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
 					l_original_feature_name := l_feature_name_visitor.get_feature_name
 
 					scoop_workbench_objects.set_current_proxy_feature_name (l_original_feature_name)
@@ -104,7 +104,7 @@ feature {NONE} -- Visitor implementation
 					context.add_string (l_feature_declaration_name + " ")
 
 					-- reset assign name flag
-					is_having_assign_id_name := false
+					is_having_assign_id_name := False
 
 					-- body (function and procedure)
 					process_body (l_as.body, l_as, l_feature_name_str, l_feature_declaration_name)
@@ -178,7 +178,7 @@ feature {NONE} -- Content implementation
 				process_leading_leaves (l_as.assigner.index)
 
 				-- remember processing assigner
-				is_having_assign_id_name := true
+				is_having_assign_id_name := True
 
 				-- create a call to a wrapper feature
 				context.add_string (a_feature_name)
@@ -254,7 +254,7 @@ feature {NONE} -- Content implementation
 
 					-- get feature name
 					l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-					l_feature_name_visitor.process_feature_name (l_feature_name, false)
+					l_feature_name_visitor.process_feature_name (l_feature_name, False)
 					l_feature_name_str := l_feature_name_visitor.get_feature_name
 					scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
@@ -263,7 +263,7 @@ feature {NONE} -- Content implementation
 					if not is_first_feature then
 						context.add_string ("%N%N%T")
 					else
-						set_is_first_feature (false)
+						set_is_first_feature (False)
 					end
 
 					-- set feature name
@@ -335,7 +335,7 @@ feature {NONE} -- Content implementation
 
 					-- result type (original / client type)
 					l_type_locals.process_type (l_as.body.type)
---					process_result_type (l_as.body.type, true, l_type_signature)
+--					process_result_type (l_as.body.type, True, l_type_signature)
 
 					-- body
 					context.add_string ("%N%T%T%T-- Wrapper for attribute `" + l_feature_name_str + "'.")
@@ -372,14 +372,14 @@ feature {NONE} -- Content implementation
 
 				-- get feature name
 				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-				l_feature_name_visitor.process_feature_name (l_feature_name, false)
+				l_feature_name_visitor.process_feature_name (l_feature_name, False)
 				l_feature_name_str := l_feature_name_visitor.get_feature_name
 				scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
 				if not is_first_feature then
 					context.add_string ("%N%N%T")
 				else
-					set_is_first_feature (false)
+					set_is_first_feature (False)
 				end
 
 				-- set feature name
@@ -438,7 +438,7 @@ feature {NONE} -- Content implementation
 				-- result type
 				l_type_locals.process_type (l_as.body.type)
 --				safe_process (l_as.body.type)
---				process_result_type (l_as.body.type, true, l_type_signature)
+--				process_result_type (l_as.body.type, True, l_type_signature)
 
 				-- body
 				context.add_string ("%N%T%T%T-- Wrapper for constant `")
@@ -473,7 +473,7 @@ feature {NONE} -- Content implementation
 
 			context.add_string (a_feature_name)
 			if a_feature.body.internal_arguments /= Void then
-				process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, false, true)
+				process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, False, True)
 			end
 			if lock_passing_possible then
 				process_lock_passing_before
@@ -528,19 +528,19 @@ feature {NONE} -- Content implementation
 				context.add_string ("%N%T%T%T%Tscoop_synchronous_execute (a_caller_, agent implementation_.")
 				context.add_string (a_feature_name)
 				if a_feature.body.internal_arguments /= void then
-					process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, false, true)
+					process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, False, True)
 				end
 				context.add_string (")")
 				process_lock_passing_after
 				context.add_string ("%N%T%T%T%Tscoop_asynchronous_execute (a_caller_, agent implementation_." + a_feature_name)
 				if a_feature.body.internal_arguments /= void then
-					process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, false, true)
+					process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, False, True)
 				end
 				context.add_string (")%N%T%T%Tend")
 			else
 				context.add_string ("%N%T%T%Tscoop_asynchronous_execute (a_caller_, agent implementation_." + a_feature_name)
 				if a_feature.body.internal_arguments /= void then
-					process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, false, true)
+					process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, False, True)
 				end
 				context.add_string (")")
 			end
@@ -564,7 +564,7 @@ feature {NONE} -- Content implementation
 
 			if a_feature.body.internal_arguments /= Void then
 				context.add_string (" ")
-				process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, false, true)
+				process_formal_argument_list_with_auxiliary_variables (a_feature.body.internal_arguments, False, True)
 			end
 			if lock_passing_possible then
 				process_lock_passing_before
@@ -597,11 +597,11 @@ feature {NONE} -- Content implementation
 			context.add_string (a_feature_name)
 			context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 			if a_feature.body.internal_arguments /= void then
-				process_flattened_formal_argument_list (a_feature.body.internal_arguments, false)
+				process_flattened_formal_argument_list (a_feature.body.internal_arguments, False)
 			end
 
 			-- process type
-			process_result_type (a_feature.body.type, true, l_type_signature)
+			process_result_type (a_feature.body.type, True, l_type_signature)
 
 			context.add_string (" is%N%T%T%T")
 			context.add_string ("-- Wrapper for external feature `" + a_feature_name + "'.")
@@ -609,7 +609,7 @@ feature {NONE} -- Content implementation
 			context.add_string (a_feature_name)
 			if a_feature.body.internal_arguments /= void then
 				context.add_string (" ")
-				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 			end
 			context.add_string ("%N%T%Tend")
 		end
@@ -626,7 +626,7 @@ feature {NONE} -- Content implementation
 				context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 				if a_feature.body.internal_arguments /= void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 				end
 				context.add_string (")")
 				process_lock_passing_after
@@ -634,7 +634,7 @@ feature {NONE} -- Content implementation
 				context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 				if a_feature.body.internal_arguments /= void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 				end
 				context.add_string (")%N%T%T%Tend")
 			else
@@ -642,7 +642,7 @@ feature {NONE} -- Content implementation
 				context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 				if a_feature.body.internal_arguments /= void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 				end
 				context.add_string (")")
 			end
@@ -653,14 +653,14 @@ feature {NONE} -- Content implementation
 			-- Create wrapper for external feature. Necessary for agent creation.
 			context.add_string (a_feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 			if a_feature.body.internal_arguments /= void then
-				process_flattened_formal_argument_list (a_feature.body.internal_arguments, false)
+				process_flattened_formal_argument_list (a_feature.body.internal_arguments, False)
 			end
 			context.add_string (" is%N%T%T%T")
 			context.add_string ("-- Wrapper for external feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%Timplementation_." + a_feature_name)
 			if a_feature.body.internal_arguments /= void then
 				context.add_string (" ")
-				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 			end
 			context.add_string ("%N%T%Tend")
 		end
@@ -677,7 +677,7 @@ feature {NONE} -- Content implementation
 				context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 				if a_feature.body.internal_arguments /= void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 				end
 				context.add_string (")")
 				process_lock_passing_after
@@ -685,7 +685,7 @@ feature {NONE} -- Content implementation
 				context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 				if a_feature.body.internal_arguments /= void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 				end
 				context.add_string (")%N%T%T%Tend")
 			else
@@ -693,7 +693,7 @@ feature {NONE} -- Content implementation
 				context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 				if a_feature.body.internal_arguments /= void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 				end
 				context.add_string (")")
 			end
@@ -702,14 +702,14 @@ feature {NONE} -- Content implementation
 			-- Create wrapper for external feature. Necessary for agent creation.
 			context.add_string (a_feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 			if a_feature.body.internal_arguments /= void then
-				process_flattened_formal_argument_list (a_feature.body.internal_arguments, false)
+				process_flattened_formal_argument_list (a_feature.body.internal_arguments, False)
 			end
 			context.add_string (" is%N%T%T%T")
 			context.add_string ("-- Wrapper for external feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%Timplementation_." + a_feature_name)
 			if a_feature.body.internal_arguments /= void then
 				context.add_string (" ")
-				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 			end
 			context.add_string ("%N%T%Tend")
 		end
@@ -730,7 +730,7 @@ feature {NONE} -- Content implementation
 
 			if a_feature.body.internal_arguments /= Void then
 				context.add_string (" ")
-				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 			end
 
 			if lock_passing_possible then
@@ -763,16 +763,16 @@ feature {NONE} -- Content implementation
 			context.add_string (a_feature_name)
 			context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 			if a_feature.body.internal_arguments /= void then
-				process_flattened_formal_argument_list (a_feature.body.internal_arguments, false)
+				process_flattened_formal_argument_list (a_feature.body.internal_arguments, False)
 			end
-			process_result_type (a_feature.body.type, true, l_type_signature)
+			process_result_type (a_feature.body.type, True, l_type_signature)
 			context.add_string (" is%N%T%T%T")
 			context.add_string ("-- Wrapper for once feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%TResult := implementation_.")
 			context.add_string (a_feature_name)
 			if a_feature.body.internal_arguments /= void then
 				context.add_string (" ")
-				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, false)
+				process_formal_argument_list_as_actual_argument_list (a_feature.body.internal_arguments, False)
 			end
 			context.add_string ("%N%T%Tend")
 		end
@@ -800,7 +800,7 @@ feature
 --		end
 
 	process_result_type (a_type: TYPE_AS; is_declared_type: BOOLEAN; l_proxy_type_visitor: SCOOP_PROXY_TYPE_VISITOR) is
-			-- Process `a_type'. Precede with `:' if `is_declared_type' is true.
+			-- Process `a_type'. Precede with `:' if `is_declared_type' is True.
 		local
 			a_class_c: CLASS_C
 			is_separate: BOOLEAN
@@ -838,7 +838,7 @@ feature
 					if l_type_a.is_formal then
 						l_formal_a ?= l_type_a
 						create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
-						process_class_name_str (l_name, false, context, match_list)
+						process_class_name_str (l_name, False, context, match_list)
 					else
 						is_separate := l_type_a.is_separate
 
@@ -918,7 +918,7 @@ feature
 				context.add_string (" (a_caller_, " + an_assigner_name + "_arg_1_")
 				if l_args /= Void then
 					context.add_string (", ")
-					process_formal_argument_list_with_auxiliary_variables (l_args, false, false)
+					process_formal_argument_list_with_auxiliary_variables (l_args, False, False)
 				end
 				context.add_string (")")
 			end
@@ -939,7 +939,7 @@ feature
 			end
 
 			-- set index back
-			set_is_first_feature (true)
+			set_is_first_feature (True)
 			last_index := l_last_index
 		end
 
@@ -952,7 +952,7 @@ feature{NONE} -- Implementation
 			-- prints 'TYPE_AS' to the context
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -976,11 +976,9 @@ feature{NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_FEATURE_VISITOR

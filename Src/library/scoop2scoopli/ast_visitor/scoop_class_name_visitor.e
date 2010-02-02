@@ -19,7 +19,7 @@ inherit
 		redefine
 			process_id_as
 		end
-		
+
 	SCOOP_WORKBENCH
 		export
 			{NONE} all
@@ -47,8 +47,8 @@ feature {SCOOP_CLASS_NAME} -- Access
 	process_class_list_with_prefix (l_as: CLASS_LIST_AS; print_both: BOOLEAN) is
 			-- Process `l_as'.
 		do
-			is_print_both := true
-			is_set_prefix := true
+			is_print_both := True
+			is_set_prefix := True
 			last_index := l_as.first_token (match_list).index
 			process_eiffel_list (l_as)
 			last_index := l_as.last_token (match_list).index - 1
@@ -57,7 +57,7 @@ feature {SCOOP_CLASS_NAME} -- Access
 	process_id (l_as: ID_AS; a_set_prefix: BOOLEAN) is
 			-- Process `l_as'.
 		do
-			is_print_both := false
+			is_print_both := False
 			is_set_prefix := a_set_prefix
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
@@ -72,18 +72,19 @@ feature {SCOOP_CLASS_NAME} -- Access
 			end
 			context.add_string (l_class_name)
 			if l_class_name.is_equal ("inherit") then
-				is_set_prefix := true
+				is_set_prefix := True
 			end
 		end
 
 feature {NONE} -- Roundtrip: process nodes
 
 	process_id_as (l_as: ID_AS) is
+			-- ..
 		local
 			is_scoop_string: BOOLEAN
 		do
 			if l_as.name.is_equal (scoop_string) then
-				is_scoop_string := false -- hack to see if this fixes STRING_8 always being processed despite SCOOP_BASIC_TYPE
+				is_scoop_string := False -- hack to see if this fixes STRING_8 always being processed despite SCOOP_BASIC_TYPE
 			end
 
 			process_leading_leaves (l_as.index)
@@ -111,7 +112,7 @@ feature {NONE} -- Roundtrip: process nodes
 				context.add_string ("_8")
 			end
 			if l_as.name.is_equal ("inherit") then
-				is_set_prefix := true
+				is_set_prefix := True
 			end
 		end
 
@@ -130,7 +131,7 @@ feature {NONE} -- Implementation
 			-- string that contains 'STRING'
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -154,11 +155,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- SCOOP_CLASS_NAME_VISITOR

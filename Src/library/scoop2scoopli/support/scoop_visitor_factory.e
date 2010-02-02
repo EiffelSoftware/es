@@ -29,7 +29,7 @@ feature -- Support visitors
 			l_visitor: SCOOP_FEATURE_NAME_VISITOR
 		do
 			create l_visitor.make
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -39,7 +39,7 @@ feature -- Support visitors
 			l_visitor: SCOOP_FEATURE_NAME_VISITOR
 		do
 			create l_visitor.make
-			l_visitor.setup (a_class, a_list, true, true)
+			l_visitor.setup (a_class, a_list, True, True)
 			Result := l_visitor
 		end
 
@@ -49,20 +49,20 @@ feature -- Support visitors
 			l_visitor: SCOOP_GENERICS_VISITOR
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
 	new_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
 			create Result
-			Result.setup (class_as, match_list, true, true)
+			Result.setup (class_as, match_list, True, True)
 		end
 
 	new_type_visitor: SCOOP_TYPE_VISITOR
 		do
 			create Result
-			Result.setup (class_as, match_list, true, true)
+			Result.setup (class_as, match_list, True, True)
 		end
 
 feature -- Client class generation
@@ -73,7 +73,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_SEPARATE_CLIENT_PRINTER
 		do
 			create l_visitor.make_with_default_context
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -83,7 +83,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_PARENT_VISITOR
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -93,7 +93,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -103,7 +103,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_ARGUMENT_VISITOR
 		do
 			create l_visitor
-			l_visitor.setup (a_class, a_list, true, true)
+			l_visitor.setup (a_class, a_list, True, True)
 			Result := l_visitor
 		end
 
@@ -113,7 +113,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_ASSERTION_VISITOR
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -123,7 +123,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_LR_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -133,7 +133,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_ER_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -143,7 +143,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_WC_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -153,7 +153,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_NSP_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -163,7 +163,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_SP_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -173,7 +173,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_CLIENT_FEATURE_ISP_VISITOR
 		do
 			create l_visitor.make (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -185,7 +185,7 @@ feature -- Client class generation
 			l_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
 		do
 			create l_visitor
-			l_visitor.setup (a_class.ast,  match_list_server.item (a_class.class_id), true, true)
+			l_visitor.setup (a_class.ast,  match_list_server.item (a_class.class_id), True, True)
 			Result := l_visitor
 		end
 
@@ -197,7 +197,7 @@ feature -- Proxy class generation
 			l_visitor: SCOOP_SEPARATE_PROXY_PRINTER
 		do
 			create l_visitor.make_with_default_context
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -207,7 +207,7 @@ feature -- Proxy class generation
 			l_visitor: SCOOP_PROXY_PARENT_VISITOR
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -217,7 +217,7 @@ feature -- Proxy class generation
 			l_visitor: SCOOP_PROXY_FEATURE_VISITOR
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -227,7 +227,7 @@ feature -- Proxy class generation
 			l_visitor: SCOOP_PROXY_TYPE_ATTRIBUTE_WRAPPER_PRINTER
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -237,7 +237,7 @@ feature -- Proxy class generation
 			l_visitor: SCOOP_PROXY_TYPE_LOCALS_PRINTER
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -247,7 +247,7 @@ feature -- Proxy class generation
 			l_visitor: SCOOP_PROXY_TYPE_SIGNATURE_PRINTER
 		do
 			create l_visitor.make_with_context (a_context)
-			l_visitor.setup (class_as, match_list, true, true)
+			l_visitor.setup (class_as, match_list, True, True)
 			Result := l_visitor
 		end
 
@@ -260,7 +260,7 @@ feature {NONE} -- Match list
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -284,11 +284,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_VISITOR_FACTORY

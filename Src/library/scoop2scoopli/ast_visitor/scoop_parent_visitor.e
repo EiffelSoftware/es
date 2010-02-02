@@ -115,7 +115,7 @@ feature {NONE} -- Visitor implementation
 
 	process_export_item_as (l_as: EXPORT_ITEM_AS) is
 		do
-			is_process_export_clause := true
+			is_process_export_clause := True
 			safe_process (l_as.clients)
 			is_process_export_clause := false
 			safe_process (l_as.features)
@@ -154,10 +154,10 @@ feature {NONE} -- Implementation
 		end
 
 	is_process_export_clause: BOOLEAN
-		-- indicates that the internal exports are processed.
+			-- indicates that the internal exports are processed.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -181,11 +181,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PARENT_VISITOR

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_CLIENT_ARGUMENT_OBJECT}."
+	description: "Representation of an argument list."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -14,36 +14,36 @@ create
 feature -- Initialisation
 
 	make
-			-- Initialisation of the argument object
+			-- Initialize argument object
 		do
 			create separate_arguments.make
 			create non_separate_argument_list.make
 			create separate_argument_counter.make
 
-			has_counted_separate_arguments := false
+			has_counted_separate_arguments := False
 		end
 
 feature -- Access
 
 	has_separate_arguments: BOOLEAN is
-			-- returns current state
+			-- Are there separate arguments?
 		do
 			if separate_arguments.count > 0 then
-				Result := true
+				Result := True
 			else
-				Result := false
+				Result := False
 			end
 		end
 
 	is_non_separate_argument (a_feature_name: STRING): BOOLEAN is
-			-- returns true if non separate argument list contains the feature name
+			-- Is `a_feature_name' a non separate argument?
 		require
 			a_feature_name_is_not_void: a_feature_name /= Void
 		local
 			i, j: INTEGER
 			found: BOOLEAN
 		do
-			found := false
+			found := False
 			from
 				i := 1
 			until
@@ -55,7 +55,7 @@ feature -- Access
 					j > non_separate_argument_list.i_th (i).id_list.count
 				loop
 					if non_separate_argument_list.i_th (i).item_name (j).is_equal (a_feature_name) then
-						found := true
+						found := True
 					end
 					j := j + 1
 				end
@@ -66,14 +66,14 @@ feature -- Access
 		end
 
 	is_separate_argument (a_name: STRING): BOOLEAN is
-			-- returns true if separate argument list contains the feature name
+			-- Is `a_feature_name' a separate argument?
 		require
 			a_name_is_not_void: a_name /= Void
 		local
 			i, j: INTEGER
 			found: BOOLEAN
 		do
-			found := false
+			found := False
 			from
 				i := 1
 			until
@@ -85,7 +85,7 @@ feature -- Access
 					j > separate_arguments.i_th (i).id_list.count
 				loop
 					if separate_arguments.i_th (i).item_name (j).is_equal (a_name) then
-						found := true
+						found := True
 					end
 					j := j + 1
 				end
@@ -96,7 +96,7 @@ feature -- Access
 		end
 
 	get_argument_by_name (a_name: STRING): TYPE_DEC_AS is
-			-- returns the type declaration of the argument
+			-- Type declaration of `a_name'.
 		require
 			a_name_not_void: a_name /= Void
 		local
@@ -152,14 +152,14 @@ feature -- Access
 		end
 
 	count_separate_argument (a_name: STRING) is
-			-- increases the counter of the separate argument by one.
+			-- Increase the counter of the separate argument by one.
 		local
 			i, a_value: INTEGER
 			found: BOOLEAN
 			a_tuple: TUPLE[STRING, INTEGER]
 		do
 			if is_separate_argument (a_name) then
-				found := false
+				found := False
 				from
 					i := 1
 				until
@@ -168,7 +168,7 @@ feature -- Access
 					if separate_argument_counter.i_th (i).item (1).is_equal (a_name) then
 						a_value := separate_argument_counter.i_th (i).integer_item (2) + 1
 						separate_argument_counter.i_th (i).item (2) := a_value
-						found := true
+						found := True
 					end
 					i := i + 1
 				end
@@ -178,12 +178,12 @@ feature -- Access
 					separate_argument_counter.extend (a_tuple)
 				end
 					-- flag to indicate the existance of separate arguments in a postcondition
-				has_counted_separate_arguments := true
+				has_counted_separate_arguments := True
 			end
 		end
 
 	get_i_th_postcondition_argument_name (i: INTEGER): STRING is
-			-- returns the name of the i_th counted postcondition argument
+			-- Name of the i_th counted postcondition argument.
 		local
 			a_tuple: TUPLE[a_name: STRING; a_count: INTEGER]
 		do
@@ -192,7 +192,7 @@ feature -- Access
 		end
 
 	get_i_th_postcondition_argument_count (i: INTEGER): INTEGER is
-			-- returns the count of the i_th coutned postcondition argument
+			-- Count of the i_th counted postcondition argument.
 		local
 			a_tuple: TUPLE[a_name: STRING; a_count: INTEGER]
 		do
@@ -201,12 +201,12 @@ feature -- Access
 		end
 
 	get_argument_count (an_argument_name: STRING_8): INTEGER is
-			-- returns the counter of the argument
+			-- Counter of `an_argument_name'.
 		local
 			i: INTEGER
 			found: BOOLEAN
 		do
-			found := false
+			found := False
 			from
 				i := 1
 			until
@@ -214,7 +214,7 @@ feature -- Access
 			loop
 				if separate_argument_counter.i_th (i).item (1).is_equal (an_argument_name) then
 					Result := separate_argument_counter.i_th (i).integer_item (2)
-					found := true
+					found := True
 				end
 				i := i + 1
 			end
@@ -224,13 +224,13 @@ feature -- Access
 		end
 
 	has_postcondition_occurrence: BOOLEAN is
-			-- returns 'has_counted_separate arguments
+			-- Does the argument list contain separate arguments?
 		do
 			Result := has_counted_separate_arguments
 		end
 
 	has (a_name: STRING): BOOLEAN is
-			-- returns true if an argument list contains `a_name'.
+			-- Does the argument list contain `a_name'?
 		require
 			a_name_is_not_void: a_name /= Void
 		do
@@ -238,7 +238,7 @@ feature -- Access
 		end
 
 	get_type_by_name (a_name: STRING): TYPE_AS is
-			-- returns the type of `a_name'.
+			-- Type of `a_name'.
 		require
 			a_name_not_void: a_name /= Void
 		local
@@ -253,21 +253,21 @@ feature -- Access
 feature -- Access to lists
 
 	separate_arguments: LINKED_LIST[TYPE_DEC_AS]
-		-- list of all separate arguments
+			-- List of all separate arguments.
 
 	non_separate_argument_list: LINKED_LIST[TYPE_DEC_AS]
-		-- list of all non separate arguments
+			-- List of all non separate arguments.
 
 feature {NONE} -- Implementation
 
 	separate_argument_counter: LINKED_LIST[TUPLE[STRING, INTEGER]]
-		-- saves for separate arguments an integer value.
+			-- Separate arguments with an integer which counts the occurence.
 
 	has_counted_separate_arguments: BOOLEAN
-		-- indicates the existance of counted postconditions.
+			-- Are there any counted postconditions?
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -291,12 +291,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
-
 
 end -- class SCOOP_CLIENT_ARGUMENT_OBJECT

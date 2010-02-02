@@ -32,7 +32,7 @@ feature -- Initialisation
 			Precursor (a_ctext)
 
 			-- Reset some values
-			is_print_with_processor_postfix := false
+			is_print_with_processor_postfix := False
 		end
 
 feature -- Access
@@ -136,7 +136,7 @@ feature {NONE} -- Node implementation
 					i > fo.preconditions.non_separate_preconditions.count
 				loop
 					context.add_string ("%N%T%T%T")
-					l_tagged_as := fo.preconditions.non_separate_preconditions.i_th (i).get_tagged_as
+					l_tagged_as := fo.preconditions.non_separate_preconditions.i_th (i).tagged_as
 					last_index := l_tagged_as.first_token (match_list).index - 1
 					safe_process (l_tagged_as)
 					i := i + 1
@@ -179,7 +179,7 @@ feature {NONE} -- Implementation
 
 			-- call function
 			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
-			process_separate_internal_arguments_as_actual_argument_list(true)
+			process_separate_internal_arguments_as_actual_argument_list(True)
 			context.add_string ("]")
 			context.add_string (", a_function_to_evaluate,%N%T%T%T%Tagent "+ fo.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition")
 			if feature_as.body.internal_arguments /= Void then
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 
 			context.add_string ("%N%T%T%Tinvariant_disabled := True")
 			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
-			process_separate_internal_arguments_as_actual_argument_list(true)
+			process_separate_internal_arguments_as_actual_argument_list(True)
 			context.add_string ("], agent " + fo.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_enclosing_routine ")
 			if feature_as.body.internal_arguments /= Void then
 				context.add_string ("(")
@@ -322,7 +322,7 @@ feature {NONE} -- Implementation
 				last_index := fo.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
 				is_print_with_processor_postfix := with_processor
 				process_identifier_list (fo.arguments.separate_arguments.i_th (i).id_list)
-				is_print_with_processor_postfix := false
+				is_print_with_processor_postfix := False
 				context.add_string (", ")
 				i := i + 1
 			end
@@ -331,20 +331,20 @@ feature {NONE} -- Implementation
 				last_index := fo.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
 				is_print_with_processor_postfix := with_processor
 				process_identifier_list (fo.arguments.separate_arguments.i_th (i).id_list)
-				is_print_with_processor_postfix := false
+				is_print_with_processor_postfix := False
 			end
 		end
 
 feature {NONE} -- Implementation
 
 	is_print_with_processor_postfix: BOOLEAN
-		-- indicates that a postfix '.processor' is added to an id_as element
+			-- indicates that a postfix '.processor' is added to an id_as element
 
 	fo: SCOOP_CLIENT_FEATURE_OBJECT
-		-- feature object of current processed feature.
+			-- feature object of current processed feature.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -368,11 +368,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_FEATURE_LR_VISITOR

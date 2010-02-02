@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_CLIENT_PRECONDITIONS}."
+	description: "Representation of precondition of a client feature."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -26,17 +26,17 @@ feature {NONE} -- Initialization
 feature -- Access postcondition lists
 
 	wait_conditions: LINKED_LIST[SCOOP_CLIENT_ASSERTION_OBJECT]
-		-- preconditions contain at least one separate call.
+			-- Preconditions containing at least one separate call.
 
 	non_separate_preconditions: LINKED_LIST[SCOOP_CLIENT_ASSERTION_OBJECT]
-		-- precondition contain no separate call.
+			-- Preconditions containing no separate call.
 
 invariant
 	wait_conditions_not_void: wait_conditions /= Void
 	non_separate_preconditions_not_void: non_separate_preconditions /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -60,11 +60,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_PRECONDITIONS

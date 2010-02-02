@@ -24,7 +24,7 @@ inherit
 		end
 
 	SCOOP_WORKBENCH
-	
+
 	SCOOP_CLASS_NAME
 
 create
@@ -81,12 +81,12 @@ feature -- Access
 		do
 			is_set_prefix := set_prefix
 			is_print_without_constraints := without_generics
-			is_print_proxy_locals := true
+			is_print_proxy_locals := True
 			if l_as /= Void then
 				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
-			is_print_proxy_locals := false
+			is_print_proxy_locals := False
 		end
 
 	get_last_index: INTEGER is
@@ -104,7 +104,7 @@ feature {NONE} -- Visitor implementation
 		do
 			process_leading_leaves (l_as.index)
 	--		process_class_name (l_as, is_set_prefix, context, match_list)
-			process_class_name (l_as, false, context, match_list)
+			process_class_name (l_as, False, context, match_list)
 			if l_as /= Void then
 				last_index := l_as.index
 			end
@@ -114,7 +114,7 @@ feature {NONE} -- Visitor implementation
 		do
 			process_leading_leaves (l_as.index)
 	--		process_class_name (l_as, is_set_prefix, context, match_list)
-			process_class_name (l_as, false, context, match_list)
+			process_class_name (l_as, False, context, match_list)
 			if l_as /= Void then
 				last_index := l_as.index
 			end
@@ -132,9 +132,9 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.expanded_keyword (match_list))
 
 		--	if l_as.is_separate then
-		--		l_process_id_as (l_as.class_name, true)
+		--		l_process_id_as (l_as.class_name, True)
 		--	else
-				l_process_id_as (l_as.class_name, false)
+				l_process_id_as (l_as.class_name, False)
 		--	end
 
 			safe_process (l_as.rcurly_symbol (match_list))
@@ -154,9 +154,9 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.expanded_keyword (match_list))
 
 	--		if l_as.is_separate then
-	--			l_process_id_as (l_as.class_name, true)
+	--			l_process_id_as (l_as.class_name, True)
 	--		else
-				l_process_id_as (l_as.class_name, false)
+				l_process_id_as (l_as.class_name, False)
 	--		end
 
 			if l_as.internal_generics /= Void then
@@ -179,9 +179,9 @@ feature {NONE} -- Visitor implementation
 			end
 
 		--	if l_as.is_separate then
-		--		l_process_id_as (l_as.class_name, true)
+		--		l_process_id_as (l_as.class_name, True)
 		--	else
-				l_process_id_as (l_as.class_name, false)
+				l_process_id_as (l_as.class_name, False)
 		--	end
 
 			safe_process (l_as.parameters)
@@ -256,11 +256,8 @@ feature {NONE} -- Implementation
 	is_print_proxy_locals: BOOLEAN
 			-- Print generics as locals of proxy printer.
 
-invariant
-	invariant_clause: True -- Your invariant here
-
-note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+;note
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -284,11 +281,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_GENERICS_VISITOR

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_CLIENT_FEATURE_OBJECT}."
+	description: "Representation of a client feature object."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -11,106 +11,106 @@ class
 feature -- Feature access
 
 	feature_name: STRING is
-			-- getter for 'feature_name_impl'
+			-- Feature name.
 		do
 			Result := feature_name_impl
 		end
 
 	set_feature_name (l_feature_name: STRING) is
-			-- setter for 'feature_name_impl'
+			-- Set `l_feature_name'.
 		do
 			feature_name_impl := l_feature_name
 		end
 
 	feature_alias_name: STRING is
-			-- getter for 'feature_alias_name_impl'
+			-- Feature alias name.
 		do
 			Result := feature_alias_name_impl
 		end
 
 	set_feature_alias_name (l_feature_alias_name: STRING) is
-			-- setter for 'feature_alias_name_impl'
+			-- Set `l_feature_alias_name'.
 		do
 			feature_alias_name_impl := l_feature_alias_name
 		end
 
 	feature_declaration_name: STRING is
-			-- getter for 'feature_declaration_name_impl'
+			-- Feature declaration name.
 		do
 			Result := feature_declaration_name_impl
 		end
 
 	set_feature_declaration_name (l_feature_declaration_name: STRING) is
-			-- setter for 'feature_declaration_name_impl'
+			-- Set `l_feature_declaration_name'.
 		do
 			feature_declaration_name_impl := l_feature_declaration_name
 		end
 
 	preconditions: SCOOP_CLIENT_PRECONDITIONS is
-			-- getter for 'preconditions_impl'
+			-- Client precondition object.
 		do
 			Result := preconditions_impl
 		end
 
 	set_preconditions (l_preconditions: SCOOP_CLIENT_PRECONDITIONS) is
-			-- setter for 'preconditions_impl'
+			-- Set `l_preconditions'.
 		do
 			preconditions_impl := l_preconditions
 		end
 
 	postconditions: SCOOP_CLIENT_POSTCONDITIONS is
-			-- getter for 'postconditions_impl'
+			-- Client postcondition object.
 		do
 			Result := postconditions_impl
 		end
 
 	set_postconditions (l_postconditions: SCOOP_CLIENT_POSTCONDITIONS) is
-			-- setter for 'postconditions_impl'
+			-- Set `l_postconditions'.
 		do
 			postconditions_impl := l_postconditions
 		end
 
 	arguments: SCOOP_CLIENT_ARGUMENT_OBJECT is
-			-- getter for 'arguments_impl'
+			-- Feature arguments.
 		do
 			Result := arguments_impl
 		end
 
 	set_arguments (l_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT) is
-			-- setter for 'arguments_impl'
+			-- Set `l_arguments'.
 		do
 			arguments_impl := l_arguments
 		end
 
 	is_feature_frozen: BOOLEAN
-		-- flag for frozen keyword
+			-- Is the feature frozen?
 
 feature {NONE} -- Implementation
 
 	feature_name_impl: STRING
-		-- name of current feature
+			-- Name of current feature.
 
 	feature_alias_name_impl: STRING
-		-- alias name of current feature
+			-- Alias name of current feature.
 
 	feature_declaration_name_impl: STRING
-		-- name of current feature with alias
-		-- or list of infix and noninfix name as string
+			-- Name of current feature with alias
+			-- or list of infix and noninfix name as string.
 
 	feature_as_impl: FEATURE_AS
-		-- reference to current feature_as
+			-- Reference to current feature_as.
 
 	preconditions_impl: SCOOP_CLIENT_PRECONDITIONS
-		-- actual container of precondition clauses, processed in 'process_routine_as'
+			-- Actual container of precondition clauses, processed in 'process_routine_as'.
 
 	postconditions_impl: SCOOP_CLIENT_POSTCONDITIONS
-		-- actual container of postcondition clauses, processed in 'process_routine_as'
+			-- Actual container of postcondition clauses, processed in 'process_routine_as'.
 
 	arguments_impl: SCOOP_CLIENT_ARGUMENT_OBJECT
-		-- object collects processed arguments of processed feature
+			-- Object collects processed arguments of processed feature.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -134,11 +134,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_FEATURE_OBJECT

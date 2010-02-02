@@ -39,7 +39,7 @@ feature -- Access
 			a_class_c_not_void: a_class_c /= Void
 		do
 			-- setup visitor
-			setup (a_class_c.ast, match_list_server.item (a_class_c.class_id), false, false)
+			setup (a_class_c.ast, match_list_server.item (a_class_c.class_id), False, False)
 
 			-- set flag
 			test_new_name := return_old_feature_names
@@ -88,15 +88,15 @@ feature {NONE} -- Visitor implementation
 
 			if test_new_name then
 				-- test on new name
-				l_feature_name_visitor.process_original_feature_name (l_as.new_name, false)
+				l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
 				l_name := l_feature_name_visitor.get_feature_name
-				l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
+				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
 				l_alias_name := l_feature_name_visitor.get_feature_name
 			else
 				-- test on old name
-				l_feature_name_visitor.process_original_feature_name (l_as.old_name, false)
+				l_feature_name_visitor.process_original_feature_name (l_as.old_name, False)
 				l_name := l_feature_name_visitor.get_feature_name
-				l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
+				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
 				l_alias_name := l_feature_name_visitor.get_feature_name
 			end
 
@@ -110,14 +110,14 @@ feature {NONE} -- Visitor implementation
 
 				if test_new_name then
 					-- test on new name - get old name
-					l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
+					l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
 					l_renamed_name := l_feature_name_visitor.get_feature_name
 					-- set names
 					l_tuple.old_assigner_name := l_renamed_name
 					l_tuple.new_assigner_name := l_name
 				else
 					-- test on old name - get new name
-					l_feature_name_visitor.process_original_feature_name (l_as.new_name, true)
+					l_feature_name_visitor.process_original_feature_name (l_as.new_name, True)
 					l_renamed_name := l_feature_name_visitor.get_feature_name
 					-- set names
 					l_tuple.old_assigner_name := l_name
@@ -143,7 +143,7 @@ feature {NONE} -- Implementation
 			-- with associated old assigner name
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -167,11 +167,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_ASSIGN_VISITOR

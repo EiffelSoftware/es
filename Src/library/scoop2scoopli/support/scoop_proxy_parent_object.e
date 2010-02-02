@@ -59,8 +59,8 @@ feature -- Access
 		require
 			a_cursor_not_void: a_cursor /= Void
 		do
-			has_changes := true
-			has_rename_clause := true
+			has_changes := True
+			has_rename_clause := True
 			rename_cursor := a_cursor
 		end
 
@@ -69,8 +69,8 @@ feature -- Access
 		require
 			a_cursor_not_void: a_cursor /= Void
 		do
-			has_changes := true
-			has_redefine_clause := true
+			has_changes := True
+			has_redefine_clause := True
 			redefine_cursor := a_cursor
 		end
 
@@ -87,10 +87,10 @@ feature -- Context change
 			if not has_rename_clause then
 				a_string_context.insert_after_cursor ("%N%T%Trename", parent_cursor)
 				set_rename_cursor (a_string_context.cursor_to_current_position)
-				has_rename_clause := true
+				has_rename_clause := True
 			else
 				l_string.append (",")
-				has_rename_clause := true
+				has_rename_clause := True
 			end
 
 			-- the rename statement
@@ -101,7 +101,7 @@ feature -- Context change
 			-- set the end keyword if needed
 			if not has_changes then
 					a_string_context.insert_after_cursor ("%N%T%Tend", rename_cursor)
-				has_changes := true
+				has_changes := True
 			end
 
 			-- move cursor to last position
@@ -119,10 +119,10 @@ feature -- Context change
 			if not has_redefine_clause then
 				a_string_context.insert_after_cursor ("%N%T%Tredefine", parent_cursor)
 				set_redefine_cursor (a_string_context.cursor_to_current_position)
-				has_redefine_clause := true
+				has_redefine_clause := True
 			else
 				l_string.append (",")
-				has_redefine_clause := true
+				has_redefine_clause := True
 			end
 
 			-- the redefine statement
@@ -133,7 +133,7 @@ feature -- Context change
 			-- set the end keyword if needed
 			if not has_changes then
 				a_string_context.insert_after_cursor ("%N%T%Tend", redefine_cursor)
-				has_changes := true
+				has_changes := True
 			end
 
 			-- move cursor to last position
@@ -161,7 +161,7 @@ feature {NONE} -- Implementation
 			-- Position to add additional redefinitions
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -185,11 +185,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_PARENT_OBJECT

@@ -39,7 +39,7 @@ feature -- Access
 feature -- Current CLASS_C access
 
 	current_class_c: CLASS_C
-		-- Current processed class_c - access from shared scoop workbench
+			-- Current processed class_c - access from shared scoop workbench
 
 	set_current_class_c (a_class: CLASS_C) is
 			-- Setter for 'current_class_c'
@@ -50,7 +50,7 @@ feature -- Current CLASS_C access
 feature -- Current CLASS_AS access
 
 	current_class_as: CLASS_AS
-		-- Current processed class_as - access from shared scoop workbench
+			-- Current processed class_as - access from shared scoop workbench
 
 	set_current_class_as (a_class: CLASS_AS) is
 			-- Setter for 'current_class_as'
@@ -61,7 +61,7 @@ feature -- Current CLASS_AS access
 feature -- Current FEATURE_AS access
 
 	current_feature_as: FEATURE_AS
-		-- Current processed feature_as
+			-- Current processed feature_as
 
 	set_current_feature_as (a_feature: FEATURE_AS) is
 			-- Setter for 'current_feature_as'
@@ -72,7 +72,7 @@ feature -- Current FEATURE_AS access
 feature -- Current FEATURE_CLAUSE_AS access
 
 	current_feature_clause_as: FEATURE_CLAUSE_AS
-		-- Current processed feature_clause_as
+			-- Current processed feature_clause_as
 
 	set_current_feature_clause_as (a_feature_clause: FEATURE_CLAUSE_AS) is
 			-- Setter for 'current_feature_clause_as'
@@ -83,7 +83,7 @@ feature -- Current FEATURE_CLAUSE_AS access
 feature -- Current FEATURE_CLAUSE_AS access
 
 	is_first_feature: BOOLEAN
-		-- Indicates the first occurence of a feature in a feature clause
+			-- Indicates the first occurence of a feature in a feature clause
 
 	set_is_first_feature (a_value: BOOLEAN) is
 			-- Setter for 'is_first_feature'
@@ -157,7 +157,7 @@ feature -- SCOOP_PROXY_PARENT_OBJECT access
 		end
 
 	has_proxy_parent_object (a_parent_name: STRING): BOOLEAN is
-			-- Returns true if there is already a parent object
+			-- Returns True if there is already a parent object
 			-- with name `a_parent_name' in the list
 		require
 			a_parent_name_not_void: a_parent_name /=  Void
@@ -247,7 +247,7 @@ invariant
 	proxy_parent_objects_not_void: proxy_parent_objects /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -271,11 +271,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_WORKBENCH_OBJECTS

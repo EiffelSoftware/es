@@ -46,7 +46,7 @@ feature -- Access
 	process_internal_conforming_parents(l_as: PARENT_LIST_AS) is
 			-- Process `l_as'.
 		do
-			is_process_first_select := true
+			is_process_first_select := True
 			if l_as /= Void then
 				create parent_redefine_list.make
 				Precursor (l_as)
@@ -66,7 +66,7 @@ feature -- Access
 	process_internal_non_conforming_parents(l_as: PARENT_LIST_AS) is
 			-- Process `l_as'
 		do
-			is_process_first_select := false
+			is_process_first_select := False
 			create parent_redefine_list.make
 			Precursor (l_as)
 			scoop_workbench_objects.append_parent_redefine_list (parent_redefine_list)
@@ -144,7 +144,7 @@ feature {NONE} -- Visitor implementation
 						context.add_string (", ")
 					end
 					context.add_string ("%N%T%T%Timplementation_" + l_as.type.class_name.name.as_lower + "_")
-					is_process_first_select := false
+					is_process_first_select := False
 				end
 
 					-- add in each case the end keyword
@@ -168,7 +168,7 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.class_name)
 
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_internal_generics (l_as.internal_generics, true, false)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, True, False)
 
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
@@ -225,15 +225,15 @@ feature {NONE} -- Visitor implementation
 			l_class_c := parent_object.parent_class_c
 
 			-- get original old name
-			l_feature_name_visitor.process_original_feature_name (l_as.old_name, false)
+			l_feature_name_visitor.process_original_feature_name (l_as.old_name, False)
 			l_original_old_name := l_feature_name_visitor.get_feature_name.twin
-			l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
+			l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
 			l_original_old_alias_name := l_feature_name_visitor.get_feature_name.twin
 
 			-- get old and new name (with infix replacement)
-			l_feature_name_visitor.process_feature_name (l_as.old_name, false)
+			l_feature_name_visitor.process_feature_name (l_as.old_name, False)
 			l_old_name := l_feature_name_visitor.get_feature_name
-			l_feature_name_visitor.process_feature_name (l_as.new_name, false)
+			l_feature_name_visitor.process_feature_name (l_as.new_name, False)
 			l_new_name := l_feature_name_visitor.get_feature_name
 
 			if not l_old_name.is_empty and not l_new_name.is_empty then
@@ -289,9 +289,9 @@ feature {NONE} -- Visitor implementation
 					i > nb
 				loop
 					-- get redefine statement / feature name
-					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), false)
+					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), False)
 					l_redefine_name := l_feature_name_visitor.get_feature_name
-					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), true)
+					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), True)
 					l_redefine_alias_name :=  l_feature_name_visitor.get_feature_name
 
 					-- check if current parent or an ancestor has the actual redefined feature
@@ -350,7 +350,7 @@ feature {NONE} -- Visitor implementation
 		do
 			-- get feature name without alias
 			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-			l_feature_name_visitor.process_feature_name (l_as, false)
+			l_feature_name_visitor.process_feature_name (l_as, False)
 			l_feature_name := l_feature_name_visitor.get_feature_name
 
 			-- process frozen keyowrd
@@ -370,7 +370,7 @@ feature {NONE} -- Visitor implementation
 		do
 			-- get feature name without alias
 			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-			l_feature_name_visitor.process_feature_name (l_as, false)
+			l_feature_name_visitor.process_feature_name (l_as, False)
 			l_feature_name := l_feature_name_visitor.get_feature_name
 
 			-- process frozen keyword
@@ -418,9 +418,9 @@ feature {NONE} -- Implementation
 				l_feature_name := a_list.i_th (i)
 
 				-- get original old name (without infix replacement)
-				l_feature_name_visitor.process_original_feature_name (l_feature_name, false)
+				l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
 				l_original_feature_name := l_feature_name_visitor.get_feature_name
-				l_feature_name_visitor.process_original_feature_name (l_feature_name, true)
+				l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
 				l_original_feature_alias_name := l_feature_name_visitor.get_feature_name
 
 				-- get current class
@@ -429,7 +429,7 @@ feature {NONE} -- Implementation
 				-- check if old name is a feature with assigner in current parent or an ancestor
 				if l_assign_finder.has_current_or_parents_feature_with_assigner (l_original_feature_name, l_original_feature_alias_name, l_class_c) then
 					-- get feature name (with infix replacement)
-					l_feature_name_visitor.process_feature_name (l_feature_name, false)
+					l_feature_name_visitor.process_feature_name (l_feature_name, False)
 					l_feature_name_str := l_feature_name_visitor.get_feature_name
 
 					-- create select / undefine clause
@@ -456,7 +456,7 @@ feature {NONE} -- Implementation
 			-- List of redefine features with corresponding parent object.
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -480,11 +480,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_PROXY_PARENT_VISITOR

@@ -177,12 +177,12 @@ feature {SYSTEM_I} -- Processing
 feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 
 	is_missing_class_ignored (a_class_name: STRING): BOOLEAN is
-			-- returns true if a missing class message should be ignored.
+			-- returns True if a missing class message should be ignored.
 		do
 			if a_class_name.is_equal ("PROCESSOR") then
-				Result := true
+				Result := True
 			else
-				Result := false
+				Result := False
 			end
 		end
 
@@ -420,7 +420,7 @@ feature {NONE} -- Implementation
 
 --						-- case 2)
 --					l_match_list := match_list_server.item (l_class.class_id)
---					l_separate_class_visitor.setup (l_class.ast, l_match_list, true, true)
+--					l_separate_class_visitor.setup (l_class.ast, l_match_list, True, True)
 --					l_separate_class_visitor.process_class_as (l_class.ast)
 --				end
 
@@ -497,7 +497,7 @@ feature {NONE} -- Implementation
 			root_class := root.class_type_name
 			starter.create_starter_class (root_class, "make")
 
-			print_to_file (starter.get_context , "SCOOP_STARTER" , true)
+			print_to_file (starter.get_context , "SCOOP_STARTER" , True)
 		end
 
 --	any_class_c : CLASS_C
@@ -531,13 +531,13 @@ feature {NONE} -- Implementation
 --			l_match_list := match_list_server.item (any_class_c.class_id)
 --			create l_printer.make_with_default_context
 
---			l_printer.setup (class_as , l_match_list, true, false)
+--			l_printer.setup (class_as , l_match_list, True, False)
 
 --			l_printer.process
 
 
 --				-- print_content to file.
---			print_to_file (l_printer.text, any_class_c, true)
+--			print_to_file (l_printer.text, any_class_c, True)
 
 --			workbench.add_class_to_recompile (any_class_c.original_class)
 --			any_class_c.set_changed (True)
@@ -573,13 +573,13 @@ feature {NONE} -- Implementation
 --			l_match_list := match_list_server.item (a_class_c.class_id)
 --			create l_printer.make_with_default_context
 
---			l_printer.setup (class_as , l_match_list, true, false)
+--			l_printer.setup (class_as , l_match_list, True, False)
 
 --			l_printer.process_ast_node (class_as)
 
 
 --				-- print_content to file.
---			print_to_file (l_printer.text, a_class_c, true)
+--			print_to_file (l_printer.text, a_class_c, True)
 
 --			workbench.add_class_to_recompile (a_class_c.original_class)
 --			a_class_c.set_changed (True)
@@ -607,7 +607,7 @@ feature {NONE} -- Implementation
 			end
 
 				-- print_content to file.
-			print_to_file (l_printer.get_context, a_class_c.name, true)
+			print_to_file (l_printer.get_context, a_class_c.name, True)
 		end
 
 	process_separate_proxy_creation (a_class_c: CLASS_C) is
@@ -632,7 +632,7 @@ feature {NONE} -- Implementation
 			end
 
 				-- print_content to file.
-			print_to_file (l_printer.get_context, a_class_c.name, false)
+			print_to_file (l_printer.get_context, a_class_c.name, False)
 		end
 
 

@@ -67,12 +67,12 @@ feature -- Access
 
 			-- set flag
 			is_with_alias := l_is_with_alias
-			is_without_infix_replacement := true
+			is_without_infix_replacement := True
 
 			-- process node
 			safe_process (a_feature_name)
 
-			is_without_infix_replacement := false
+			is_without_infix_replacement := False
 		end
 
 	process_feature_declaration_name (a_feature_name: FEATURE_NAME) is
@@ -85,12 +85,12 @@ feature -- Access
 			reset_visitor (a_feature_name.first_token (match_list).index)
 
 			-- set flag
-			is_with_alias := true
+			is_with_alias := True
 
 			-- process it as in the original code
-			is_processing_declaration := true
+			is_processing_declaration := True
 			safe_process (a_feature_name)
-			is_processing_declaration := false
+			is_processing_declaration := False
 
 			-- add now the non-infix notation
 			if has_processed_infix_prefix_node then
@@ -137,8 +137,8 @@ feature -- Access
 			reset_visitor (l_as.first_token (match_list).index)
 
 			-- set flag
-			is_with_alias := true
-			is_without_infix_replacement := true
+			is_with_alias := True
+			is_without_infix_replacement := True
 
 			-- process node
 			safe_process (l_as)
@@ -151,10 +151,10 @@ feature -- Access
 
 			-- set some flags
 			if a_prefix /= Void then
-				has_prefix := true
+				has_prefix := True
 				id_prefix := a_prefix
 			end
-			is_with_alias := true
+			is_with_alias := True
 
 			-- process id list
 			process_identifier_list (l_as)
@@ -188,17 +188,17 @@ feature {NONE} -- Visitor implementation
 				last_index := l_as.frozen_keyword.index+1
 				from
 					i := 1
-					is_sep := true
+					is_sep := True
 				until
-					is_sep = false
+					is_sep = False
 				loop
 					last_index := l_as.frozen_keyword.index+i
 					if match_list.i_th (last_index).is_separator then
 						i := i+1
-						is_sep := true
+						is_sep := True
 					else
 						last_index := last_index-1
-						is_sep := false
+						is_sep := False
 					end
 
 				end
@@ -218,7 +218,7 @@ feature {NONE} -- Visitor implementation
 			if is_processing_declaration or is_without_infix_replacement then
 				-- original version
 				safe_process (l_as.alias_name)
-				has_processed_infix_prefix_node := true
+				has_processed_infix_prefix_node := True
 			else
 				-- non-infix/prefix notation
 				context.add_string (non_infix_text (l_as.alias_name.value))
@@ -264,10 +264,10 @@ feature {NONE} -- Implementation
 			reset_context
 
 			-- reset some flags
-			is_with_alias := false
-			has_processed_infix_prefix_node := false
-			is_without_infix_replacement := false
-			has_prefix := false
+			is_with_alias := False
+			has_processed_infix_prefix_node := False
+			is_without_infix_replacement := False
+			has_prefix := False
 			id_prefix := Void
 
 			-- set start index
@@ -296,7 +296,7 @@ feature {NONE} -- Implementation
 			-- indicates that on processing declaration a infix or prefix node was processed
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -320,11 +320,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- SCOOP_FEATURE_NAME_VISITOR

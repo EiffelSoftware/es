@@ -36,7 +36,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	SCOOP_WORKBENCH
 
 feature -- Initialisation
@@ -59,7 +59,7 @@ feature -- Access
 				current_assertion := create {SCOOP_CLIENT_ASSERTION_OBJECT}.make
 
 					-- set current tagged_as
-				current_assertion.set_tagged_as (a_tagged_as)
+				current_assertion.set_tagged_as(a_tagged_as)
 
 					-- new expression, reset.
 				reset_assertion_evaluation
@@ -89,7 +89,7 @@ feature {NONE} -- Visitor implementation
 			current_assertion := create {SCOOP_CLIENT_ASSERTION_OBJECT}.make
 
 				-- set current tagged_as
-			current_assertion.set_tagged_as (l_as)
+			current_assertion.set_tagged_as(l_as)
 
 				-- new expression, reset.
 			reset_assertion_evaluation
@@ -135,21 +135,21 @@ feature {NONE} -- Visitor implementation
 				-- the id is an internal separate argument of the routine.
 
 					-- flag as separate.
-				current_assertion.set_is_containing_separate_calls (true)
+				current_assertion.set_is_containing_separate_calls (True)
 
 					-- count occurrence of separate argument
 				count_postcondition_arguments(l_as.name.as_lower)
 
 					-- debugging information
 				debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-					l_call_tuple := [l_as.name.as_lower, true]
+					l_call_tuple := [l_as.name.as_lower, True]
 					current_assertion.calls.extend (l_call_tuple)
 				end
 
 				a_type_dec := arguments.get_argument_by_name(l_as.name)
 
 				create l_type_visitor
-				l_type_visitor.setup (parsed_class, match_list, true, true)
+				l_type_visitor.setup (parsed_class, match_list, True, True)
 				last_level_class := l_type_visitor.evaluate_class_from_type (a_type_dec.type, last_level_class)
 
 			elseif arguments.is_non_separate_argument (l_as.name) then
@@ -157,11 +157,11 @@ feature {NONE} -- Visitor implementation
 
 					-- flag assertion as containing non separate calls.
 				if is_first_level then
-					current_assertion.set_is_containing_non_separate_calls (true)
+					current_assertion.set_is_containing_non_separate_calls (True)
 
 						-- debugging information
 					debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-						l_call_tuple := [l_as.name.as_lower, false]
+						l_call_tuple := [l_as.name.as_lower, False]
 						current_assertion.calls.extend (l_call_tuple)
 					end
 				end
@@ -169,7 +169,7 @@ feature {NONE} -- Visitor implementation
 				a_type_dec := arguments.get_argument_by_name(l_as.name)
 
 				create l_type_visitor
-				l_type_visitor.setup (parsed_class, match_list, true, true)
+				l_type_visitor.setup (parsed_class, match_list, True, True)
 				last_level_class := l_type_visitor.evaluate_class_from_type (a_type_dec.type, last_level_class)
 
 			elseif last_level_class.feature_table.has (l_as.name) then
@@ -177,21 +177,21 @@ feature {NONE} -- Visitor implementation
 
 					-- set separate state.
 				if last_level_class.feature_table.item (l_as.name).type.is_separate then
-					current_assertion.set_is_containing_separate_calls (true)
+					current_assertion.set_is_containing_separate_calls (True)
 
 						-- debugging information
 					debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-						l_call_tuple := [l_as.name.as_lower, true]
+						l_call_tuple := [l_as.name.as_lower, True]
 						current_assertion.calls.extend (l_call_tuple)
 					end
 				else
 					if is_first_level then
-						current_assertion.set_is_containing_non_separate_calls (true)
+						current_assertion.set_is_containing_non_separate_calls (True)
 					end
 
 						-- debugging information
 					debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-						l_call_tuple := [l_as.name.as_lower, false]
+						l_call_tuple := [l_as.name.as_lower, False]
 						current_assertion.calls.extend (l_call_tuple)
 					end
 				end
@@ -205,11 +205,11 @@ feature {NONE} -- Visitor implementation
 			end
 
 			if is_first_level then
-				is_first_level := false
+				is_first_level := False
 			end
 
 				-- reset is call flag
-			is_call_expression := false
+			is_call_expression := False
 		end
 
 	process_binary_as (l_as: BINARY_AS) is
@@ -218,7 +218,7 @@ feature {NONE} -- Visitor implementation
 			an_assertion_object: SCOOP_CLIENT_ASSERTIONS
 		do
 				-- process left side as call
-			is_call_expression := true
+			is_call_expression := True
 
 			safe_process (l_as.left)
 
@@ -230,9 +230,9 @@ feature {NONE} -- Visitor implementation
 
 			if l_as /= Void and then l_as.right /= Void then
 				l_expression_visitor := create_same_visitor
-				l_expression_visitor.setup (parsed_class, match_list, true, true)
+				l_expression_visitor.setup (parsed_class, match_list, True, True)
 					-- evaluate the expression
-				l_expression_visitor.safe_process_expr (l_as.right, current_assertion.get_tagged_as)
+				l_expression_visitor.safe_process_expr (l_as.right, current_assertion.tagged_as)
 					-- get the assertion object
 				an_assertion_object := l_expression_visitor.get_assertion_object
 					-- evaluate the expression
@@ -243,7 +243,7 @@ feature {NONE} -- Visitor implementation
 	process_expr_call_as (l_as: EXPR_CALL_AS) is
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			Precursor (l_as)
 		end
@@ -251,7 +251,7 @@ feature {NONE} -- Visitor implementation
 	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			safe_process (l_as.feature_name)
 
@@ -271,7 +271,7 @@ feature {NONE} -- Visitor implementation
 	process_access_id_as (l_as: ACCESS_ID_AS) is
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			safe_process (l_as.dot_symbol (match_list))
 			safe_process (l_as.feature_name)
@@ -283,7 +283,7 @@ feature {NONE} -- Visitor implementation
 	process_static_access_as (l_as: STATIC_ACCESS_AS) is
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			safe_process (l_as.feature_keyword (match_list))
 			safe_process (l_as.class_type)
@@ -327,7 +327,7 @@ feature {NONE} -- Visitor implementation
 			-- Process `l_as'.
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			Precursor (l_as)
 		end
@@ -336,7 +336,7 @@ feature {NONE} -- Visitor implementation
 			-- Process `l_as'.
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			Precursor (l_as)
 		end
@@ -344,7 +344,7 @@ feature {NONE} -- Visitor implementation
 	process_nested_expr_as (l_as: NESTED_EXPR_AS) is
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			Precursor (l_as)
 		end
@@ -352,14 +352,14 @@ feature {NONE} -- Visitor implementation
 	process_nested_as (l_as: NESTED_AS) is
 		do
 				-- current node is a call
-			is_call_expression := true
+			is_call_expression := True
 
 			Precursor (l_as)
 		end
 
 	process_void_as (l_as: VOID_AS) is
 		do
-			current_assertion.set_is_containing_void (true)
+			current_assertion.set_is_containing_void (True)
 
 				-- process void_as
 			Precursor(l_as)
@@ -370,11 +370,11 @@ feature {NONE} -- Implementation
 	reset_assertion_evaluation is
 			-- resets assertion attributes.
 		do
-			is_first_level := true
-			current_assertion.set_is_containing_void (false)
-			current_assertion.set_is_containing_non_separate_calls (false)
-			current_assertion.set_is_containing_separate_calls (false)
-			current_assertion.set_is_containing_old_or_result (false)
+			is_first_level := True
+			current_assertion.set_is_containing_void (False)
+			current_assertion.set_is_containing_non_separate_calls (False)
+			current_assertion.set_is_containing_separate_calls (False)
+			current_assertion.set_is_containing_old_or_result (False)
 
 				-- reset also expression evaluation flags
 			reset_expression_evaluation
@@ -383,9 +383,9 @@ feature {NONE} -- Implementation
 	reset_expression_evaluation is
 			-- resets the expression attributes.
 		do
-			is_expr_containing_non_separate_call := false
-			is_expr_separate_assertion := false
-			is_call_expression := false
+			is_expr_containing_non_separate_call := False
+			is_expr_separate_assertion := False
+			is_call_expression := False
 		end
 
 	save_expression_evaluation is
@@ -431,8 +431,8 @@ feature {NONE} -- Implementation
 		do
 			if l_as /= Void then
 				l_expression_visitor := create_same_visitor
-				l_expression_visitor.setup (parsed_class, match_list, true, true)
-				l_expression_visitor.safe_process_expr (l_as, current_assertion.get_tagged_as)
+				l_expression_visitor.setup (parsed_class, match_list, True, True)
+				l_expression_visitor.safe_process_expr (l_as, current_assertion.tagged_as)
 				an_assertion_object := l_expression_visitor.get_assertion_object
 				evaluate_external_assertion_object (an_assertion_object)
 			end
@@ -457,7 +457,7 @@ feature {NONE} -- Implementation
 		do
 			if l_as /= Void then
 				l_expression_visitor := create_same_visitor
-				l_expression_visitor.setup (parsed_class, match_list, true, true)
+				l_expression_visitor.setup (parsed_class, match_list, True, True)
 				process_eiffel_list_with_evaluation (l_as)
 				an_assertion_object := l_expression_visitor.get_assertion_object
 				evaluate_external_assertion_object (an_assertion_object)
@@ -515,37 +515,37 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	current_assertion: SCOOP_CLIENT_ASSERTION_OBJECT
-		-- current assertion object
+			-- current assertion object
 
 	last_id_name: STRING
-		-- current id name
+			-- current id name
 
 	last_level_class: CLASS_C
-		-- current base class of an evaluated call
+			-- current base class of an evaluated call
 
 	is_first_level: BOOLEAN
-		-- indicates that the first level of an expression is processed.
+			-- indicates that the first level of an expression is processed.
 
 	is_expr_separate_assertion: BOOLEAN
-		-- indicates the occurrence of a separate call of an already processed binary or list expression.
+			-- indicates the occurrence of a separate call of an already processed binary or list expression.
 
 	is_expr_containing_non_separate_call: BOOLEAN
-		-- indicates that the tagged as contains a non separate call of an already processed binary or list expression.
+			-- indicates that the tagged as contains a non separate call of an already processed binary or list expression.
 
 	is_call_expression: BOOLEAN
-		-- indicates that last expression was a call.
+			-- indicates that last expression was a call.
 
 	arguments: SCOOP_CLIENT_ARGUMENT_OBJECT
-		-- object collects processed arguments of processed feature
+			-- object collects processed arguments of processed feature
 
 	assertions: SCOOP_CLIENT_ASSERTIONS
-		-- Result object.
+			-- Result object.
 
 invariant
 	assertions_not_void: assertions /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -569,11 +569,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_ASSERTION_EXPR_VISITOR

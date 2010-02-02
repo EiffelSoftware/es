@@ -39,7 +39,7 @@ feature {NONE} -- Roundtrip/Token
 	process_type_dec_as (l_as: TYPE_DEC_AS) is
 		do
 				-- reset flag
-			is_current_type_separate := false
+			is_current_type_separate := False
 
 				-- evalualte separateness
 			safe_process (l_as.type)
@@ -56,7 +56,7 @@ feature {NONE} -- Roundtrip/Token
 	process_class_type_as (l_as: CLASS_TYPE_AS) is
 		do
 			if l_as.is_separate then
-				is_current_type_separate := true
+				is_current_type_separate := True
 			end
 		end
 
@@ -64,7 +64,7 @@ feature {NONE} -- Roundtrip/Token
 		do
 			safe_process (l_as.internal_generics)
 			if l_as.is_separate then
-				is_current_type_separate := true
+				is_current_type_separate := True
 			end
 		end
 
@@ -72,7 +72,7 @@ feature {NONE} -- Roundtrip/Token
 		do
 			safe_process (l_as.parameters)
 			if l_as.is_separate then
-				is_current_type_separate := true
+				is_current_type_separate := True
 			end
 		end
 
@@ -85,7 +85,7 @@ feature {NONE} -- Implementation
 		-- separate state of current type declaration
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -109,11 +109,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- SCOOP_CLIENT_ARGUMENT_VISITOR

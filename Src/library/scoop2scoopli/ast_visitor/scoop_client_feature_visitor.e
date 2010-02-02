@@ -89,13 +89,13 @@ feature {NONE} -- Visitor implementation
 				until
 					i > nb
 				loop
-					is_separate := false
+					is_separate := False
 					-- check if there are separate arguments
 					if l_as.body /= Void and then l_as.body.internal_arguments /= void then
 						l_feature_object.set_arguments (l_argument_visitor.process_arguments (l_as.body.internal_arguments))
 
 						if l_feature_object.arguments.has_separate_arguments then
-							is_separate := true
+							is_separate := True
 						end
 					end
 
@@ -103,13 +103,13 @@ feature {NONE} -- Visitor implementation
 					last_index := l_as.feature_names.i_th (i).first_token (match_list).index
 					if l_as.feature_names.i_th (i).is_frozen and then
 					   l_as.feature_names.i_th (i).frozen_keyword.index /= 0 then
-						l_feature_object.is_feature_frozen.set_item (true)
+						l_feature_object.is_feature_frozen.set_item (True)
 					end
 
 					-- process name
-					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), false)
+					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), False)
 					l_feature_object.set_feature_name (l_feature_name_visitor.get_feature_name)
-					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), true)
+					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), True)
 					l_feature_object.set_feature_alias_name (l_feature_name_visitor.get_feature_name)
 					-- declaration name writes the infix and non-infix notation if the feature name
 					-- contains an infix name. Change this to an alias notation in EiffelStudio 6.4
@@ -478,7 +478,7 @@ feature -- object test / ass attempt
 
 
 			if not l_is_target_separate then
-				
+
 				--	`l_is_target_separate' is not separate:
 				--     `l_is_source_separate' is not separate:
 				--            l ?= exp
@@ -615,5 +615,36 @@ feature -- object test / ass attempt
 			end
 	 		last_index := l_as.last_token (match_list).index
 		end
+
+note
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
+		]"
+
 end
 

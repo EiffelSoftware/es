@@ -10,7 +10,7 @@ class
 
 inherit
 	SCOOP_CONTEXT_AST_PRINTER
-		-- to get common used visitor node processing functionality
+		-- Get common used visitor node processing functionality
 		export
 			{NONE} all
 			{SCOOP_VISITOR_FACTORY} setup
@@ -53,7 +53,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_ctxt: ROUNDTRIP_CONTEXT)  is
-			-- Initialize and set `context' with `a_ctxt'.
+			-- Initialize, set `context' with `a_ctxt'.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
 		do
@@ -61,7 +61,7 @@ feature {NONE} -- Initialization
 		end
 
 	make_with_default_context is
-			-- Initialize and create context of type `ROUNDTRIP_STRING_LIST_CONTEXT'.
+			-- Initialize, create context of type `ROUNDTRIP_STRING_LIST_CONTEXT'.
 		do
 			make (create {ROUNDTRIP_STRING_LIST_CONTEXT}.make)
 		end
@@ -70,9 +70,9 @@ feature -- Access
 
 	process is
 			-- Process current `class_as'.
-			-- This is the entry point to start the client class creation.
+			-- Entry point to start client class creation.
 		do
-			-- initialize the type visitors for visiting signatures and locals
+			-- initialize type visitors for visiting signatures and locals
 			l_type_signature := scoop_visitor_factory.new_proxy_type_signature_printer (context)
 			l_type_locals := scoop_visitor_factory.new_proxy_type_local_printer (context)
 			-- start class processing
@@ -104,7 +104,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.frozen_keyword (match_list))
 			safe_process (l_as.deferred_keyword (match_list))
 
-			-- if class is expanded then set the proxy class deferred.
+			-- if class is expanded then set proxy class deferred
 			if l_as.is_expanded then
 				process_leading_leaves (l_as.expanded_keyword_index)
 				context.add_string ("deferred ")
@@ -113,7 +113,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.external_keyword (match_list))
 			safe_process (l_as.class_keyword (match_list))
 			process_leading_leaves (l_as.class_name.index)
-			process_class_name (l_as.class_name, true, context, match_list)
+			process_class_name (l_as.class_name, True, context, match_list)
 			if l_as.class_name /= Void then
 				last_index := l_as.class_name.last_token (match_list).index
 			end
@@ -122,7 +122,7 @@ feature {NONE} -- Roundtrip: process nodes
 			if l_as.internal_generics /= Void then
 				process_leading_leaves (l_as.internal_generics.index)
 				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, true, false)
+				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, False)
 				last_index := l_generics_visitor.get_last_index
 			end
 
@@ -140,7 +140,7 @@ feature {NONE} -- Roundtrip: process nodes
 				last_index := l_parent_visitor.get_last_index
 			end
 
-			-- process the creation and conversion clause
+			-- process creation and conversion clause
 			process_creators_and_conversions (l_as.creators)
 
 			-- process features
@@ -152,7 +152,7 @@ feature {NONE} -- Roundtrip: process nodes
 			context.add_string ("%N%N%Timplementation_: " + l_as.class_name.name.as_upper)
 			-- formal paramters
 			if l_as.internal_generics /= Void then
-				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, true, true)
+				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, True, True)
 			end
 			context.add_string ("%N%T%T-- reference to actual object")
 
@@ -189,7 +189,7 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
-			-- Process `l_as', AST feature clause list.
+			-- Process `l_as', the AST feature clause list.
 		do
 			-- remember the current feature clause
 			set_current_feature_clause_as (l_as)
@@ -205,7 +205,7 @@ feature {NONE} -- Roundtrip: process nodes
 				process_leading_leaves (l_as.last_token (match_list).index + 1)
 			end
 			-- set value for pretty printing
-			set_is_first_feature (true)
+			set_is_first_feature (True)
 			-- process features
 			safe_process (l_as.features)
 			-- reset the current feature clause
@@ -213,7 +213,7 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_feature_as (l_as: FEATURE_AS) is
-			-- Process `l_as', the AST feature node and invokes the `SCOOP_PROXY_FEATURE_VISITOR'.
+			-- Process `l_as', the AST feature node, invokes the `SCOOP_PROXY_FEATURE_VISITOR'.
 		local
 			l_feature_visitor: SCOOP_PROXY_FEATURE_VISITOR
 		do
@@ -263,7 +263,7 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_create_as (l_as: CREATE_AS) is
-			-- Process `l_as', class creation feature list.
+			-- Process `l_as', the class creation feature list.
 			-- Call `process_default_create_wrappers' when a `default_create' feature is listed.
 		local
 			i, nb: INTEGER
@@ -280,11 +280,11 @@ feature {NONE} -- Roundtrip: process nodes
 				until
 					i > nb
 				loop
-					l_feature_name_visitor.process_feature_name (l_as.feature_list.i_th (i), false)
+					l_feature_name_visitor.process_feature_name (l_as.feature_list.i_th (i), False)
 					l_feature_name := l_feature_name_visitor.get_feature_name
 
 					if l_feature_name.is_equal ("default_create") then
-						l_is_creator_default_create := true
+						l_is_creator_default_create := True
 					else
 						process_creation_procedure_wrappers (l_feature_name)
 					end
@@ -307,14 +307,14 @@ feature {NONE} -- Roundtrip: process nodes
 		end
 
 	process_class_list_as (l_as: CLASS_LIST_AS) is
-			-- Process `l_as', tha class list node.
+			-- Process `l_as', the class list node.
 			-- If a class name (other than ANY or NONE) appears in the list, add its separate proxy as well.
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 
 			-- add class names with prefix
 			if l_as /= Void then
-				process_class_name_list_with_prefix (l_as, true, context, match_list)
+				process_class_name_list_with_prefix (l_as, True, context, match_list)
 			end
 			last_index := l_as.rcurly_symbol_index - 1
 			safe_process (l_as.rcurly_symbol (match_list))
@@ -342,7 +342,7 @@ feature {NONE} -- Roundtrip: process nodes
 	process_invariant_as (l_as: INVARIANT_AS) is
 			-- Process `l_as', the AST invariant node.
 		do
-			-- skip it
+			-- skip node
 			if l_as.full_assertion_list /= Void then
 				last_index := l_as.last_token (match_list).index
 			end
@@ -367,7 +367,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 --				-- formal paramters
 --				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
---				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, true, true)
+--				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, True, True)
 
 --				-- convertor end
 --				context.add_string ("})")
@@ -398,7 +398,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 	process_default_create_wrappers is
 			-- Generate two additional procedures:
-			-- 'default_create_scoop_separate_class_name' and 'effective_default_create_scoop_separate_class_name'
+			-- `default_create_scoop_separate_class_name' and `effective_default_create_scoop_separate_class_name'
 			-- for wrapping creation instructions.
 		do
 			-- 'default_create_scoop_separate_class_name'
@@ -430,7 +430,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 	process_creation_procedure_wrappers (a_feature_name: STRING) is
 			-- Generate two additional procedures:
-			-- 'feature_name_scoop_separate_class_name' and 'effective_feature_name_scoop_separate_class_name'
+			-- `feature_name_scoop_separate_class_name' and `effective_feature_name_scoop_separate_class_name'
 			-- for wrapping creation instructions.
 		local
 			l_feature_i: FEATURE_I
@@ -475,7 +475,7 @@ feature {NONE} -- Roundtrip: Implementation
 						context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 						if l_feature_as.body.internal_arguments /= Void then
 							context.add_string (" ")
-							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, false, true)
+							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, False, True)
 						end
 						context.add_string (")")
 						process_lock_passing_after
@@ -483,7 +483,7 @@ feature {NONE} -- Roundtrip: Implementation
 						context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 						if l_feature_as.body.internal_arguments /= Void then
 							context.add_string (" ")
-							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, false, true)
+							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, False, True)
 						end
 						context.add_string (")")
 						context.add_string ("%N%T%T%Tend")
@@ -492,24 +492,24 @@ feature {NONE} -- Roundtrip: Implementation
 						context.add_string ("_scoop_separate_" + class_as.class_name.name.as_lower)
 						if l_feature_as.body.internal_arguments /= Void then
 							context.add_string (" ")
-							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, false, true)
+							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, False, True)
 						end
 						context.add_string (")")
 					end
 					context.add_string ("%N%T%Tend")
 				end
 
-					-- 'effective_feature_name_scoop_separate_class_name'
+				-- 'effective_feature_name_scoop_separate_class_name'
 				context.add_string ("%N%N%Teffective_" + a_feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 				if l_feature_as.body.internal_arguments /= Void then
-					process_flattened_formal_argument_list (l_feature_as.body.internal_arguments, false)
+					process_flattened_formal_argument_list (l_feature_as.body.internal_arguments, False)
 				end
 				context.add_string (" is")
 				context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + a_feature_name + "'.")
 				context.add_string ("%N%T%Tdo%N%T%T%Tcreate implementation_." + a_feature_name)
 				if l_feature_as.body.internal_arguments /= Void then
 					context.add_string (" ")
-					process_formal_argument_list_as_actual_argument_list (l_feature_as.body.internal_arguments, false)
+					process_formal_argument_list_as_actual_argument_list (l_feature_as.body.internal_arguments, False)
 				end
 				context.add_string ("%N%T%Tend")
 			else
@@ -518,6 +518,7 @@ feature {NONE} -- Roundtrip: Implementation
 		end
 
 	process_parent_creation_feature (featr : FEATURE_I)
+			-- Create parent creation wrapper feature
 		local
 			lock_passing_possible : BOOLEAN
 		do
@@ -531,21 +532,21 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string ("%N%T%T%Tscoop_asynchronous_execute (a_caller_, ")
 			context.add_string ("agent effective_" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 
-			process_formal_arguments_as_actual_arguments (featr.arguments, false)
+			process_formal_arguments_as_actual_arguments (featr.arguments, False)
 
 			context.add_string (")")
 			context.add_string ("%N%T%Tend")
 
-				-- 'effective_feature_name_scoop_separate_class_name'
+			-- 'effective_feature_name_scoop_separate_class_name'
 			context.add_string ("%N%N%Teffective_" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 
-			process_flattened_formal_arguments (featr.arguments, false)
+			process_flattened_formal_arguments (featr.arguments, False)
 
 			context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + featr.feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%Tcreate implementation_." + featr.feature_name)
 			context.add_string (" ")
 
-			process_formal_arguments_as_actual_arguments (featr.arguments, false)
+			process_formal_arguments_as_actual_arguments (featr.arguments, False)
 
 			context.add_string ("%N%T%Tend")
 		end
@@ -555,7 +556,7 @@ feature {NONE} -- Roundtrip: Implementation
 	process_auxiliary_local_variables (a_feature: FEATURE_AS; a_feature_name: STRING): BOOLEAN is
 		-- Generate auxiliary local variables for formal arguments.
 		-- Generate conversion code for auxiliary variables.
-		-- Return `true' if lock passing might occur (original feature takes separate formal arguments).
+		-- Return `True' if lock passing might occur (original feature takes separate formal arguments).
 		local
 			l_arguments: FORMAL_ARGU_DEC_LIST_AS
 			l_argument: TYPE_DEC_AS
@@ -632,10 +633,10 @@ feature {NONE} -- Roundtrip: Implementation
 					context.add_string ("%N%T%T%Tscoop_passing_locks: BOOLEAN%N%T%T%Tscoop_locked_processors_stack_size, scoop_synchronous_processors_stack_size: INTEGER_32")
 				end
 
-				-- do keyword
+				-- add do keyword
 				context.add_string ("%N%T%Tdo")
 
-				-- Conversion code
+				-- conversion code
 				from
 					i := 1
 					nb := l_arguments.arguments.count
@@ -666,7 +667,7 @@ feature {NONE} -- Roundtrip: Implementation
 									context.add_string ("%N%T%T%T%Tif aux_scoop_" + l_argument_name + ".processor_ = void then ")
 									context.add_string ("aux_scoop_" + l_argument_name + ".set_processor_ (a_caller_.processor_) end")
 									context.add_string ("%N%T%T%T%Tif a_caller_.processor_.locked_processors_has (aux_scoop_" + l_argument_name + ".processor_) then ")
-									context.add_string ("scoop_passing_locks := true end%N%T%T%Tend")
+									context.add_string ("scoop_passing_locks := True end%N%T%T%Tend")
 									j := j + 1
 								end
 							else
@@ -713,7 +714,7 @@ feature {NONE} -- Roundtrip: Implementation
 		end
 
 	process_formal_arguments_with_auxiliary_variables (a_args: FEAT_ARG; with_a_caller, with_brackets: BOOLEAN) is
-			-- Process `a_list' as if it is list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
+			-- Process `a_list' as list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
 			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
 			-- Addes brackets before and after the list if desired.
 		local
@@ -981,6 +982,7 @@ feature {NONE} -- Roundtrip: Implementation
 		end
 
 	separate_type_string (a : TYPE_A) : STRING
+			-- ...
 		do
 			Result := ""
 
@@ -994,6 +996,7 @@ feature {NONE} -- Roundtrip: Implementation
 		end
 
 	arg_number_name (i : INTEGER) : STRING
+			-- ...
 		do
 			Result := "arg___" + i.out
 		end
@@ -1072,7 +1075,7 @@ feature{NONE} -- Implementation
 			-- prints 'TYPE_AS' to the context
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1096,11 +1099,9 @@ feature{NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
  end -- class SCOOP_SEPARATE_PROXY_PRINTER

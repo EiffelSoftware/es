@@ -30,7 +30,7 @@ inherit
 			process_generic_class_type_as,
 			process_named_tuple_type_as
 		end
-		
+
 	SCOOP_WORKBENCH
 		export
 			{NONE} all
@@ -44,7 +44,7 @@ feature -- Access
 			l_last_index: INTEGER
 		do
 			-- init
-			is_separate := false
+			is_separate := False
 
 			-- save processed leaf list position
 			l_last_index := last_index
@@ -85,7 +85,7 @@ feature {NONE} -- Visitor implementation: access_as nodes
 		do
 			-- get base class of the static call
 			create l_type_visitor
-			l_type_visitor.setup (parsed_class, match_list, true, true)
+			l_type_visitor.setup (parsed_class, match_list, True, True)
 			last_base_class := l_type_visitor.evaluate_class_from_type (l_as.class_type, class_c)
 
 			-- process feature name
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 		do
 			-- get is_separate information of the current call
 			create l_type_expr_visitor
-			l_type_expr_visitor.setup (parsed_class, match_list, true, true)
+			l_type_expr_visitor.setup (parsed_class, match_list, True, True)
 			if last_base_class /= Void then
 				l_type_expr_visitor.evaluate_call_type_in_class (l_as, last_base_class)
 			else
@@ -148,16 +148,16 @@ feature {NONE} -- Implementation
 		end
 
 	is_separate: BOOLEAN
-		-- Result value of current query.
+			-- Result value of current query.
 
 	is_type_separate: BOOLEAN
-		-- Remembers the separate status of the current processed result type.
+			-- Remembers the separate status of the current processed result type.
 
 	last_base_class: CLASS_C
-		-- Reference to class on wich access call is called.
+			-- Reference to class on wich access call is called.
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -181,11 +181,9 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_TYPE_EXPR_VISITOR

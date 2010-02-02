@@ -33,10 +33,10 @@ feature -- List access
 			i: INTEGER
 			exist: BOOLEAN
 		do
-			exist := false
+			exist := False
 			from i := 1 until i > class_list.count loop
 				if class_list.i_th (i).name_in_upper.is_equal (a_class_name) then
-					exist := true
+					exist := True
 				end
 				i := i + 1
 			end
@@ -56,9 +56,9 @@ feature -- List access
 			-- returns the current state of the class lis.
 		do
 			if class_list.count > 0 then
-				Result := false
+				Result := False
 			else
-				Result := true
+				Result := True
 			end
 		end
 
@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 	class_list: LINKED_LIST [CLASS_C]
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -134,11 +134,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_SEPARATE_CLASS_LIST

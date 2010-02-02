@@ -198,9 +198,9 @@ feature {NONE} -- Visitor implementation
 				safe_process (l_as.internal_undefining)
 				if l_as.internal_redefining /= Void then
 					safe_process (l_as.internal_redefining)
-					insert_infix_prefix_redefine_list (false)
+					insert_infix_prefix_redefine_list (False)
 				else
-					insert_infix_prefix_redefine_list (true)
+					insert_infix_prefix_redefine_list (True)
 				end
 
 
@@ -288,7 +288,7 @@ feature {NONE} -- Visitor implementation
 			l_old_name ?= l_as.old_name
 
 			-- flag current processing
-			is_rename_clause := true
+			is_rename_clause := True
 
 			if l_old_name /= Void then
 				-- create first the undefine
@@ -301,7 +301,7 @@ feature {NONE} -- Visitor implementation
 
 				-- create first the infix / prefix version of the renaming
 				-- get old name without alias
-				l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
+				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
 				l_original_name := l_feature_name_visitor.get_feature_name
 				l_str.append (l_original_name)
 
@@ -312,7 +312,7 @@ feature {NONE} -- Visitor implementation
 					-- infix to infix -> create 2 rename statements
 
 					-- get new name without alias
-					l_feature_name_visitor.process_original_feature_name (l_as.new_name, false)
+					l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
 					l_str.append (l_feature_name_visitor.get_feature_name)
 
 				else
@@ -320,11 +320,11 @@ feature {NONE} -- Visitor implementation
 					-- a new wrapper feature which links to the renamed feature
 
 					-- get FEATURE_I node of current node
-					l_feature_name_visitor.process_original_feature_name (l_as.old_name, true)
+					l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
 					l_feature_i := current_parent_c.feature_table.item (l_feature_name_visitor.get_feature_name)
 
 					-- create a new feature name
-					l_feature_name_visitor.process_feature_name (l_as.old_name, false)
+					l_feature_name_visitor.process_feature_name (l_as.old_name, False)
 					create l_wrapper_name.make_from_string(l_feature_name_visitor.get_feature_name)
 					l_wrapper_name.append ("_" + class_c.name.as_lower)
 					l_wrapper_name.append ("_separate_scoop_wrapper_")
@@ -373,7 +373,7 @@ feature {NONE} -- Visitor implementation
 					-- add feature call:
 					l_wrapper_feature.append ("%N%T%T%TResult := ")
 					-- get new name without alias
-					l_feature_name_visitor.process_original_feature_name (l_as.new_name, false)
+					l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
 					l_wrapper_feature.append (l_feature_name_visitor.get_feature_name + " ")
 
 					-- add internal arguments as actual arguments
@@ -402,7 +402,7 @@ feature {NONE} -- Visitor implementation
 			Precursor (l_as)
 
 			-- unflag current processing
-			is_rename_clause := false
+			is_rename_clause := False
 		end
 
 	insert_infix_prefix_redefine_list (is_insert_with_rename_keyword: BOOLEAN) is
@@ -453,14 +453,14 @@ feature {NONE} -- Implementation
 	has_string(a_list: LINKED_LIST[STRING]; a_item: STRING): BOOLEAN is
 		 --`a_item' in `a_list' already?
 		do
-			result := false
+			result := False
 			from
 				a_list.start
 			until
 				a_list.after
 			loop
 				if a_list.item.is_equal (a_item) then
-					result := true
+					result := True
 				end
 				a_list.forth
 			end
@@ -487,7 +487,7 @@ feature {NONE} -- Implementation
 			-- Remove this list with EiffelStudio 6.4
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -511,11 +511,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_CLIENT_PARENT_VISITOR

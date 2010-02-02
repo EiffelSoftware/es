@@ -53,8 +53,8 @@ feature -- Access
 			l_last_index: INTEGER
 		do
 			-- reset
-			has_explicit_processor_specification := false
-			has_handler := false
+			has_explicit_processor_specification := False
+			has_handler := False
 			entity_name := Void
 
 			current_class_c := class_c
@@ -82,8 +82,8 @@ feature -- Access
 			l_last_index: INTEGER
 		do
 			-- reset
-			has_explicit_processor_specification := false
-			has_handler := false
+			has_explicit_processor_specification := False
+			has_handler := False
 			entity_name := Void
 			feature_name := a_feature_name
 			current_class_c := a_class_c
@@ -172,11 +172,11 @@ feature {NONE} -- Visitor implementation: Type nodes
 			-- Process `l_as'.
 			-- added for SCOOP by paedde
 		do
-			has_explicit_processor_specification := true
+			has_explicit_processor_specification := True
 			safe_process (l_as.entity)
 			entity_name := l_as.entity.name
 			if l_as.handler /= Void then
-				has_handler := true
+				has_handler := True
 			end
 		end
 
@@ -238,25 +238,25 @@ feature {NONE} -- Visitor implementation: Accessing a class
 feature {NONE} -- Implementation
 
 	current_class_c: CLASS_C
-		-- Reference to the 'CLASS_C' of the current processed class.
+			-- Reference to the 'CLASS_C' of the current processed class.
 
 	feature_name: STRING
-		-- Name of the feature we try to find
+			-- Name of the feature we try to find
 
 	visited_feature_name: STRING
-		-- Return value when processing the current feature name
+			-- Return value when processing the current feature name
 
 	entity_name: STRING
-		-- Return value of current query
+			-- Return value of current query
 
 	has_handler: BOOLEAN
-		-- Return value of current query
+			-- Return value of current query
 
 	has_explicit_processor_specification: BOOLEAN
-		-- Returns true if the explicit processor specification is not void
+			-- Returns True if the explicit processor specification is not void
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -280,11 +280,9 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
 		]"
 
 end -- class SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
