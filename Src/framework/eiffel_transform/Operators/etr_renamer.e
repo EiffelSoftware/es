@@ -18,15 +18,15 @@ feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
-	rename_local(a_function: ETR_TRANSFORMABLE; an_old_name, a_new_name: STRING)
-			-- Rename the local `an_old_name' to `a_new_name' in `a_fuction'
+	rename_local(a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
+			-- Rename the local `an_old_name' to `a_new_name' in `a_transformable' of feature `a_feature_name'
 		require
-			fun_set_and_valid: a_function /= void and then a_function.is_valid
+			fun_set_and_valid: a_transformable /= void and then a_transformable.is_valid
 			name_set: a_new_name /= void and an_old_name /= void
 		local
 			l_resulting_context: ETR_FEATURE_CONTEXT
 		do
-			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
+			if attached a_transformable.context.class_context.written_in_features_by_name[a_feature_name] as l_feat_context then
 				if l_feat_context.has_arguments then
 					if attached l_feat_context.local_by_name[an_old_name] then
 						-- create new changed context
@@ -35,29 +35,29 @@ feature -- Operation
 						l_resulting_context.set_modified
 
 						-- transform to the new context
-						basic_operators.transform_to_context (a_function, l_resulting_context)
+						basic_operators.transform_to_context (a_transformable, l_resulting_context)
 
 						transformation_result := basic_operators.transformation_result
 					else
-						error_handler.add_error("rename_local: No local with name "+a_new_name)
+						error_handler.add_error (Current, "rename_local", "No local with name "+a_new_name)
 					end
 				else
-					error_handler.add_error("rename_local: Feature has no locals")
+					error_handler.add_error (Current, "rename_local", "Feature has no locals")
 				end
 			else
-				error_handler.add_error("rename_local: a_function does not have a feature-context")
+				error_handler.add_error (Current, "rename_local", "a_function does not have a feature-context")
 			end
 		end
 
-	rename_argument(a_function: ETR_TRANSFORMABLE; an_old_name, a_new_name: STRING)
-			-- Rename the argument `an_old_name' to `a_new_name' in `a_fuction'
+	rename_argument(a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
+			-- Rename the argument `an_old_name' to `a_new_name' in `a_transformable' of feature `a_feature_name'
 		require
-			fun_set_and_valid: a_function /= void and then a_function.is_valid
+			fun_set_and_valid: a_transformable /= void and then a_transformable.is_valid
 			name_set: a_new_name /= void and an_old_name /= void
 		local
 			l_resulting_context: ETR_FEATURE_CONTEXT
 		do
-			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
+			if attached a_transformable.context.class_context.written_in_features_by_name[a_feature_name] as l_feat_context then
 				if l_feat_context.has_arguments then
 					if attached l_feat_context.arg_by_name[an_old_name] then
 						-- create new changed context
@@ -66,22 +66,22 @@ feature -- Operation
 						l_resulting_context.set_modified
 
 						-- transform to the new context
-						basic_operators.transform_to_context (a_function, l_resulting_context)
+						basic_operators.transform_to_context (a_transformable, l_resulting_context)
 
 						transformation_result := basic_operators.transformation_result
 					else
-						error_handler.add_error("rename_argument: No argument with name "+a_new_name)
+						error_handler.add_error (Current, "rename_argument", "No argument with name "+a_new_name)
 					end
 				else
-					error_handler.add_error("rename_argument: Feature has no argument")
+					error_handler.add_error (Current, "rename_argument", "Feature has no arguments")
 				end
 			else
-				error_handler.add_error("rename_argument: a_function does not have a feature-context")
+				error_handler.add_error (Current, "rename_argument", "a_function does not have a feature-context")
 			end
 		end
 
-	rename_argument_at_position(a_function: ETR_TRANSFORMABLE; an_argument_position: INTEGER; a_new_name: STRING)
-			-- Rename the argument at `an_arg_position' in `a_fuction'
+	rename_argument_at_position(a_function: ETR_TRANSFORMABLE; a_feature_name: STRING; an_argument_position: INTEGER; a_new_name: STRING)
+			-- Rename the argument at `an_arg_position' in `a_transformable' of feature `a_feature_name'
 		require
 			fun_set_and_valid: a_function /= void and then a_function.is_valid
 			name_set: a_new_name /= void
@@ -89,7 +89,7 @@ feature -- Operation
 		local
 			l_resulting_context: ETR_FEATURE_CONTEXT
 		do
-			if attached {ETR_FEATURE_CONTEXT}a_function.context as l_feat_context then
+			if attached a_function.context.class_context.written_in_features_by_name[a_feature_name] as l_feat_context then
 				if l_feat_context.has_arguments then
 					if l_feat_context.arguments.count >= an_argument_position then
 						-- valid case
@@ -104,13 +104,13 @@ feature -- Operation
 
 						transformation_result := basic_operators.transformation_result
 					else
-						error_handler.add_error("rename_argument_at_position: No argument at position "+an_argument_position.out)
+						error_handler.add_error (Current, "rename_argument_at_position", "No argument at position "+an_argument_position.out)
 					end
 				else
-					error_handler.add_error("rename_argument_at_position: Feature has no argument")
+					error_handler.add_error (Current, "rename_argument_at_position", "Feature has no argument")
 				end
 			else
-				error_handler.add_error("rename_argument_at_position: a_function does not have a feature-context")
+				error_handler.add_error (Current, "rename_argument_at_position", "a_function does not have a feature-context")
 			end
 		end
 

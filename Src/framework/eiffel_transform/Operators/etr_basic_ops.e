@@ -205,7 +205,7 @@ feature -- Transformations
 			if attached parsing_helper.reparsed_root then
 				create transformation_result.make_from_ast(parsing_helper.reparsed_root, a_target_context, false)
 			else
-				error_handler.add_error("transform_to_context: Failed to reparse result of transformation")
+				error_handler.add_error (Current, "transform_to_context", "Failed to reparse result of transformation")
 				create transformation_result.make_invalid
 			end
 		end
@@ -236,7 +236,7 @@ feature -- Transformations
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}if_part.target_node as instrs then
 						l_if_part_node := instrs
 					else
-						error_handler.add_error("generate_conditional: contained ast of if_part is of incompatible type ("+if_part.target_node.generating_type+")")
+						error_handler.add_error (Current, "generate_conditional", "Contained ast of if_part is of incompatible type ("+if_part.target_node.generating_type+")")
 					end
 				end
 
@@ -247,7 +247,7 @@ feature -- Transformations
 					elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}else_part.target_node as instrs then
 						l_else_part_node := instrs
 					else
-						error_handler.add_error("generate_conditional: contained ast of else_part is of incompatible type ("+else_part.target_node.generating_type+")")
+						error_handler.add_error (Current, "generate_conditional", "Contained ast of else_part is of incompatible type ("+else_part.target_node.generating_type+")")
 					end
 				end
 
@@ -277,7 +277,7 @@ feature -- Transformations
 					create transformation_result.make_from_ast (l_result_node, a_context, false)
 				end
 			else
-				error_handler.add_error("generate_conditional: contained ast of a_test is not of type EXPR_AS (but  "+a_test.target_node.generating_type+")")
+				error_handler.add_error (Current, "generate_conditional", "Contained ast of a_test is not of type EXPR_AS (but  "+a_test.target_node.generating_type+")")
 			end
 		end
 

@@ -18,16 +18,16 @@ feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
-	generate_setter(a_attribute: ETR_TRANSFORMABLE)
-			-- Generates a setter for `an_attribute'
+	generate_setter(a_transformable: ETR_TRANSFORMABLE)
+			-- Generates a setter for `a_transformable'
 		require
-			non_void: a_attribute /= void
-			valid_trans: a_attribute.is_valid
+			non_void: a_transformable /= void
+			valid_trans: a_transformable.is_valid
 		local
 			l_attr_name: STRING
 			l_setter_string: STRING
 		do
-			if attached {FEATURE_AS}a_attribute.target_node as l_attribute then
+			if attached {FEATURE_AS}a_transformable.target_node as l_attribute then
 				if l_attribute.is_attribute then
 					l_attr_name := l_attribute.feature_name.name
 
@@ -40,15 +40,15 @@ feature -- Operation
 					etr_feat_parser.parse_from_string (l_setter_string,void)
 
 					if etr_feat_parser.error_count=0 then
-						create transformation_result.make_from_ast (etr_feat_parser.feature_node, a_attribute.context.class_context, false)
+						create transformation_result.make_from_ast (etr_feat_parser.feature_node, a_transformable.context.class_context, false)
 					else
-						error_handler.add_error("generate_setter: Feature parsing failed")
+						error_handler.add_error (Current, "generate_setter", "Feature parsing failed")
 					end
 				else
-					error_handler.add_error("generate_setter: Feature is not an attribute")
+					error_handler.add_error (Current, "generate_setter", "Feature is not an attribute")
 				end
 			else
-				error_handler.add_error("generate_setter: Transformable does not contain a feature-node")
+				error_handler.add_error (Current, "generate_setter", "Transformable does not contain a feature-node")
 			end
 		end
 note

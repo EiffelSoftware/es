@@ -89,6 +89,14 @@ feature -- Access
 			Result := as_string.starts_with (a_other.as_string)
 		end
 
+	is_root: BOOLEAN
+			-- Is `Current' the path of a root?
+		require
+			valid: is_valid
+		do
+			Result := as_array.count = 1
+		end
+
 feature -- Hashing
 
 	hash_code: INTEGER

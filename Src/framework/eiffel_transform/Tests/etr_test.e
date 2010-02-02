@@ -72,6 +72,7 @@ feature -- Test routines
 		local
 			context: ETR_CONTEXT
 		do
+			parsing_helper.set_compiler_factory (false)
 			create context.make_empty
 
 			error_handler.reset_errors
@@ -97,6 +98,7 @@ feature -- Test routines
 			modifier: ETR_AST_MODIFIER
 			conditional: ETR_TRANSFORMABLE
 		do
+			parsing_helper.set_compiler_factory (false)
 			-- preparation
 			create context.make_empty
 			create modifier.make

@@ -27,6 +27,8 @@ inherit
 	ETR_SHARED_PARSERS
 		rename
 			error_handler as etr_error_handler
+		export
+			{ANY} parsing_helper
 		end
 
 feature -- Output
@@ -214,6 +216,7 @@ feature -- Type checking
 			non_void: a_transformable /= void
 			valid: a_transformable.is_valid
 			has_context: not a_transformable.context.is_empty
+			correct_factory: parsing_helper.is_using_compiler_factory
 		do
 			check_ast_type_at(a_transformable.target_node, a_transformable.context, a_transformable.path)
 		end
@@ -224,6 +227,7 @@ feature -- Type checking
 		require
 			non_void: an_ast /= void and a_context /= void
 			not_empty: not a_context.is_empty
+			correct_factory: parsing_helper.is_using_compiler_factory
 		do
 			check_ast_type_at (an_ast, a_context, void)
 		end
@@ -235,6 +239,7 @@ feature -- Type checking
 			non_void: an_ast /= void and a_context /= void
 			not_empty: not a_context.is_empty
 			valid: attached a_path implies a_path.is_valid
+			correct_factory: parsing_helper.is_using_compiler_factory
 		local
 			l_ast_string: STRING
 			l_feat: FEATURE_I
@@ -243,7 +248,7 @@ feature -- Type checking
 			l_ast_string := ast_tools.ast_to_string(an_ast)
 			etr_expr_parser.parse_from_string("check "+l_ast_string,void)
 			if etr_expr_parser.error_count > 0 then
-				etr_error_handler.add_error("check_ast_type: Cannot parse an_ast as EXPR_AS")
+				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
 			else
 				init (ast_context)
 				ast_context.set_is_ignoring_export (True)
@@ -336,6 +341,8 @@ feature {NONE} -- Implementation
 
 	check_expr_type (a_context: ETR_CONTEXT; an_expr: EXPR_AS)
 			-- typechecks `an_expr' in `a_context'
+		require
+			correct_factory: parsing_helper.is_using_compiler_factory
 		local
 			l_class: CLASS_C
 			l_feat: FEATURE_I
@@ -364,7 +371,7 @@ feature {NONE} -- Implementation
 				an_expr.process (Current)
 			end
 			if error_handler.error_list.count>0 then
-				etr_error_handler.add_error("expression_or_instruction_type_check_and_code: Type checker returned error "+error_handler.error_list.last.generating_type)
+				etr_error_handler.add_error (Current, "check_expr_type", "Type checker returned error "+error_handler.error_list.last.generating_type)
 			end
 			error_handler.wipe_out
 		end

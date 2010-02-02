@@ -65,6 +65,9 @@ feature -- Properties
 									"io.putstring(a_c.c1_a_renamed.out)%N"+ -- local type change
 									"io.putstring(other.arg_c1_a1.c1_b)%N"+ -- same name, no renaming
 									"io.putstring(a1.generating_type)%N"+ -- Current changed
+									"io.putstring((c+arg_c1_a1.c1_b).out)%N"+ -- Nested expr
+									"create str_a1.make_from_string(arg_c1_a1.c1_b)%N"+ -- creation
+									"io.putstring(create {STRING}.make_from_string(a_c.c1_a_renamed))%N"+ -- creation expr
 									"io.putstring(str_a1)%N"+ -- renamed local
 									"end", a1_context )
 
@@ -128,8 +131,8 @@ feature -- Properties
 			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
 
 
-			renamer.rename_argument_at_position (trans, 2, "new_arg_name")
-			renamer.rename_local (renamer.transformation_result, "a_c", "a_renamed_local_c")
+			renamer.rename_argument_at_position (trans, "test", 2, "new_arg_name")
+			renamer.rename_local (renamer.transformation_result, "test", "a_c", "a_renamed_local_c")
 
 			-- code snippet in `a1_context'
 			a1_instr := transformable_factory.new_instr(	"if true then%N"+
@@ -203,20 +206,25 @@ feature -- Properties
 		local
 			a1: CLASS_I
 			a1_ast: CLASS_AS
-			a1_context: ETR_FEATURE_CONTEXT
 			a1_feat: FEATURE_I
 			trans: ETR_TRANSFORMABLE
+			l_start, l_end: AST_PATH
 		do
 			a1 := universe.compiled_classes_with_name("M_EX").first
 			a1_ast := a1.compiled_class.ast
 			a1_feat := a1.compiled_class.feature_named (method_name)
 
-			create a1_context.make (a1_feat, void)
-			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
+			create trans.make_in_class (a1_feat.e_feature.ast, a1.compiled_class)
+
+			create l_start.make_from_string(a1_feat.e_feature.ast,a_start)
+			create l_end.make_from_string(a1_feat.e_feature.ast,a_end)
+			l_start.set_root (trans.target_node)
+			l_end.set_root (trans.target_node)
 
 			method_extractor.extract_method (trans,
-								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_start),
-								create {AST_PATH}.make_from_string(a1_feat.e_feature.ast,a_end),
+								method_name,
+								l_start,
+								l_end,
 								"extracted")
 			io.put_string ("=== "+method_name+" EXTRACTED ===%N")
 			io.put_string (ast_tools.ast_to_string(method_extractor.extracted_method.target_node))
@@ -240,7 +248,7 @@ feature -- Properties
 			create a1_context.make (a1_feat, void)
 			create trans.make_from_ast (a1_feat.e_feature.ast, a1_context, false)
 
-			renamer.rename_argument (trans, "arg1", "arg1_new")
+			renamer.rename_argument (trans, "test", "arg1", "arg1_new")
 
 			expr := transformable_factory.new_expr ("arg1_new", renamer.transformation_result.context)
 

@@ -75,7 +75,7 @@ feature -- Operations
 				create modified_ast.make_from_ast (parsing_helper.reparsed_root, a_transformable.context, false)
 			else
 				create modified_ast.make_invalid
-				error_handler.add_error("apply_to: Modification resulted in unparsable text")
+				error_handler.add_error (Current, "apply_to", "Modification resulted in unparsable text")
 			end
 
 			-- reset the modifications list and output

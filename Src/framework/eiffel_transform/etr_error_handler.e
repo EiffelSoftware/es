@@ -32,15 +32,22 @@ feature -- Operations
 			has_errors := false
 		end
 
-	add_error(an_error_message: attached like last_error)
+	add_error(a_class: detachable ANY; a_feature: detachable STRING; an_error_message: STRING)
 			-- set `last_error' to `an_error_message'
+		local
+			l_error_msg: STRING
 		do
 			if not attached errors then
 				create {LINKED_LIST[like last_error]}errors.make
 			end
 
 			has_errors := true
-			last_error := an_error_message
+			create l_error_msg.make_empty
+			if attached a_class and attached a_feature then
+				l_error_msg.append ("{"+a_class.generating_type+"}."+a_feature+": ")
+			end
+			l_error_msg.append (an_error_message)
+			last_error := l_error_msg
 			errors.extend (last_error)
 		end
 note

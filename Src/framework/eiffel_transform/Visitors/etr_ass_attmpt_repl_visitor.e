@@ -84,7 +84,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 				modifications.extend (basic_operators.replace_with_string (l_as.path, l_replacement))
 			else
-				error_handler.add_error ("process_reverse_as: Context of feature "+current_feature+" not found.")
+				error_handler.add_error (Current, "process_reverse_as", "Context of feature "+current_feature+" not found.")
 			end
 		end
 

@@ -36,7 +36,6 @@ feature -- Basic operation
 			l_matchlist: LEAF_AS_LIST
 			l_class_ast: CLASS_AS
 			l_start_path, l_end_path: AST_PATH
-			l_context: ETR_CONTEXT
 			l_feat_transformable: ETR_TRANSFORMABLE
 			l_feat_ast: AST_EIFFEL
 			l_orig_feat: AST_EIFFEL
@@ -62,13 +61,12 @@ feature -- Basic operation
 				l_orig_feat := l_written_feature.e_feature.ast
 
 				-- Create a transformable
-				create {ETR_FEATURE_CONTEXT}l_context.make (l_written_feature, void)
-				create l_feat_transformable.make_from_ast (l_orig_feat, l_context, true)
+				create l_feat_transformable.make_in_class (l_orig_feat, class_c)
 				l_feat_ast := l_feat_transformable.target_node
 
 				-- Convert line numbers to paths
 				l_start_path := path_tools.path_from_line (l_orig_feat, l_matchlist, start_line)
-				if l_start_path = void then
+				if l_start_path = void or else l_start_path.is_root then
 					success := False
 					error_message := interface_names.l_invalid_start_position
 				else
@@ -76,7 +74,7 @@ feature -- Basic operation
 
 					l_end_path := path_tools.path_from_line (l_orig_feat, l_matchlist, end_line)
 
-					if l_end_path = void then
+					if l_end_path = void or else l_end_path.is_root then
 						success := False
 						error_message := interface_names.l_invalid_end_position
 					else
@@ -96,6 +94,8 @@ feature -- Basic operation
 					refactorer.set_end_path (l_end_path)
 					refactorer.set_start_path (l_start_path)
 					refactorer.set_transformable (l_feat_transformable)
+					refactorer.set_feature_name (l_target_feature_name)
+					refactorer.set_original_feature_ast (l_orig_feat)
 				end
 			end
         end

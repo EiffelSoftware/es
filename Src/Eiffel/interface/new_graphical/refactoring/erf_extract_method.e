@@ -52,6 +52,12 @@ feature -- Element change
 			class_i := a_class
 		end
 
+	set_feature_name (a_name: like feature_name)
+			-- Set feature name to `a_name'
+		do
+			feature_name := a_name
+		end
+
 	set_start_line (a_line: INTEGER)
 			-- Set start line to `a_line'
 		do
@@ -62,6 +68,12 @@ feature -- Element change
 			-- Set end line to `a_line'
 		do
 			preferences.set_end_line (a_line)
+		end
+
+	set_original_feature_ast (a_ast: like original_feature_ast)
+			-- Set original feature ast to `a_ast'
+		do
+			original_feature_ast := a_ast
 		end
 
 feature {ERF_EXTRACT_METHOD_CHECK} -- Element change
@@ -178,12 +190,7 @@ feature {NONE} -- Implementation
 			class_set: class_set
 		local
 			l_matchlist: LEAF_AS_LIST
-			l_orig_feat: AST_EIFFEL
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
-
-			l_output: ETR_AST_STRING_OUTPUT
-			l_printer: ETR_AST_STRUCTURE_PRINTER
-
 			l_replacement_text: STRING
 		do
 			success := true
@@ -191,25 +198,17 @@ feature {NONE} -- Implementation
 			etr_error_handler.reset_errors
 
 			l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
-			l_orig_feat := transformable.context.feature_context.written_feature.e_feature.ast
 
 			-- Perform method extraction
-			method_extractor.extract_method (transformable, start_path, end_path, preferences.extracted_method_name)
+			method_extractor.extract_method (transformable, feature_name, start_path, end_path, preferences.extracted_method_name)
 
 			if not etr_error_handler.has_errors then
 				-- Replace the old feature by the new one + extracted method
-				create l_output.make
-				create l_printer.make_with_output (l_output)
-				l_output.enter_block
-				l_printer.print_ast_to_output (method_extractor.old_method.target_node)
-				l_replacement_text := l_output.string_representation
-				l_output.reset
-				l_output.enter_block
-				l_printer.print_ast_to_output (method_extractor.extracted_method.target_node)
-				l_replacement_text.append (l_output.string_representation)
+				l_replacement_text := ast_tools.ast_to_string_with_indentation(method_extractor.old_method.target_node, 1)
+				l_replacement_text.append (ast_tools.ast_to_string_with_indentation(method_extractor.extracted_method.target_node, 1))
 				l_replacement_text.remove_tail (3)
 
-				l_orig_feat.replace_text (l_replacement_text, l_matchlist)
+				original_feature_ast.replace_text (l_replacement_text, l_matchlist)
 
 				create l_class_modifier.make (class_i)
 				l_class_modifier.prepare
@@ -271,7 +270,13 @@ feature {NONE} -- Implementation
 			-- The start path
 
 	end_path: AST_PATH
-			-- The end path		
+			-- The end path
+
+	feature_name: STRING
+			-- Name of the feature the lines are in
+
+	original_feature_ast: AST_EIFFEL
+			-- AST node of the original feature
 ;
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

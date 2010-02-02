@@ -31,7 +31,7 @@ feature -- New
 			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
 
 			if etr_feat_parser.error_count>0 then
-				error_handler.add_error("new_instr: Parsing failed")
+				error_handler.add_error (Current, "new_instr", "Parsing failed")
 				create Result.make_invalid
 			else
 				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
@@ -49,7 +49,7 @@ feature -- New
 			etr_expr_parser.parse_from_string("check "+an_expr,void)
 
 			if etr_expr_parser.error_count>0 then
-				error_handler.add_error("new_expr: Parsing failed")
+				error_handler.add_error (Current, "new_expr", "Parsing failed")
 				create Result.make_invalid
 			else
 				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)

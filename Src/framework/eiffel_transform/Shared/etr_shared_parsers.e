@@ -10,38 +10,48 @@ inherit
 	ETR_SHARED_ERROR_HANDLER
 	ETR_SHARED_CONSTANTS
 
-feature {NONE} -- Parser
+feature {NONE} -- Constants
+
+	default_using_compiler_factory: BOOLEAN is true
+			-- Default factory is a compiler factory
+
+feature {NONE} -- Parser	
 
 	parsing_helper: ETR_PARSING_HELPER
 			-- shared instance of ETR_PARSING_HELPER
 		once
 			create Result
+			Result.set_compiler_factory (default_using_compiler_factory)
 		end
 
 	etr_class_parser: EIFFEL_PARSER
 			-- internal parser used to handle classes
-		once
-			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
---			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
-			Result.set_syntax_version (syntax_version)
+		do
+			if parsing_helper.is_using_compiler_factory then
+				Result := parsing_helper.etr_compiler_class_parser
+			else
+				Result := parsing_helper.etr_non_compiler_class_parser
+			end
 		end
 
 	etr_expr_parser: EIFFEL_PARSER
 			-- internal parser used to handle expressions
-		once
-			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
---			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
-			Result.set_expression_parser
-			Result.set_syntax_version(syntax_version)
+		do
+			if parsing_helper.is_using_compiler_factory then
+				Result := parsing_helper.etr_compiler_expr_parser
+			else
+				Result := parsing_helper.etr_non_compiler_expr_parser
+			end
 		end
 
 	etr_feat_parser: EIFFEL_PARSER
 			-- internal parser used to handle instructions
-		once
-			create Result.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
---			create Result.make_with_factory (create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY})
-			Result.set_feature_parser
-			Result.set_syntax_version(syntax_version)
+		do
+			if parsing_helper.is_using_compiler_factory then
+				Result := parsing_helper.etr_compiler_feat_parser
+			else
+				Result := parsing_helper.etr_non_compiler_feat_parser
+			end
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

@@ -12,7 +12,8 @@ inherit
 create
 	make_from_ast,
 	make_invalid,
-	make_from_ast_list
+	make_from_ast_list,
+	make_in_class
 
 feature -- Operation
 
@@ -45,8 +46,16 @@ feature -- Access
 
 feature {NONE} -- creation
 
+	make_in_class(a_node: like target_node; a_class: CLASS_C)
+			-- make with `a_node' and `a_class'. Duplicate AST.
+		require
+			non_void: a_node /= void and a_class /= void
+		do
+			make_from_ast (a_node, create {ETR_CLASS_CONTEXT}.make(a_class), true)
+		end
+
 	make_from_ast(a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
-			-- make with `a_node' and `a_context'
+			-- make with `a_node' and `a_context'. Duplicate AST if `duplicate' set
 		require
 			non_void: a_node /= void and a_context /= void
 		do
@@ -66,7 +75,7 @@ feature {NONE} -- creation
 		end
 
 	make_from_ast_list(a_list: LIST[like target_node]; a_context: like context; duplicate: BOOLEAN)
-			-- make with `a_list' and `a_context'
+			-- make with `a_list' and `a_context'. Duplicate AST if `duplicate' set
 		require
 			non_void: a_list /= void and a_context /= void
 		local

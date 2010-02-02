@@ -405,7 +405,7 @@ feature {NONE} -- Implementation (Printing)
 						end
 
 						if not l_type_found then
-							error_handler.add_error("compute_extracted_method: Can't determine type of "+extracted_arguments.item)
+							error_handler.add_error (Current, "compute_extracted_method", "Can't determine type of "+extracted_arguments.item)
 						end
 					end
 
@@ -548,8 +548,14 @@ feature -- Operations
 	old_method: ETR_TRANSFORMABLE
 			-- Original method with the extracted part replaced by a call to the extracted method
 
-	extract_method(a_feature: ETR_TRANSFORMABLE; a_start_path, a_end_path: AST_PATH; a_feature_name: STRING)
-			-- Extracts a method with name `a_feature_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
+	extract_method(a_feature: ETR_TRANSFORMABLE; a_context_feature: STRING; a_start_path, a_end_path: AST_PATH; a_extracted_method_name: STRING)
+			-- Extracts a method with name `a_extracted_method_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
+		require
+			non_void: a_feature /= void and a_context_feature /= void and a_start_path /= void and a_end_path /= void and a_extracted_method_name /= void
+			valid_transformable: a_feature.is_valid
+			valid_context: not a_feature.context.is_empty and a_feature.context.class_context /= void
+			valid_paths: a_start_path.is_valid and a_end_path.is_valid
+			root_has_paths: a_start_path.root.path /= void and a_end_path.root.path /= void
 		local
 			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
@@ -560,12 +566,12 @@ feature -- Operations
 			l_error_count := error_handler.error_count
 
 			-- Check if valid context and valid ast!
-			if attached {ETR_FEATURE_CONTEXT}a_feature.context as l_ft_ctxt then
+			if attached a_feature.context.class_context.written_in_features_by_name[a_context_feature] as l_ft_ctxt then
 				context := l_ft_ctxt
 				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.find_node (a_start_path.parent_path, a_start_path.root) as instrs then
 					l_instr_list := instrs
 				else
-					error_handler.add_error("extract_method: Start path is not an instruction")
+					error_handler.add_error (Current, "extract_method", "Start path is not an instruction")
 				end
 
 				if attached {FEATURE_AS}a_feature.target_node as l_ft then
@@ -590,14 +596,14 @@ feature -- Operations
 					extract_obsolete_locals
 
 					if extracted_results.count>1 then
-						error_handler.add_error ("extract_method: More than one result is not supported")
+						error_handler.add_error (Current, "extract_method", "More than one result is not supported")
 					else
-						compute_extracted_method (a_start_path, a_end_path, a_feature_name, l_instr_list)
-						compute_old_method (a_start_path, a_end_path, a_feature_name, l_feat_ast)
+						compute_extracted_method (a_start_path, a_end_path, a_extracted_method_name, l_instr_list)
+						compute_old_method (a_start_path, a_end_path, a_extracted_method_name, l_feat_ast)
 					end
 				end
 			else
-				error_handler.add_error("extract_method: No feature context provided")
+				error_handler.add_error (Current, "extract_method", "Feature "+a_context_feature+" not found")
 			end
 		end
 note

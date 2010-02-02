@@ -15,7 +15,16 @@ feature -- Access
 	reparsed_root: detachable AST_EIFFEL
 			-- Result of `reparse_printed_ast'
 
+	is_using_compiler_factory: BOOLEAN
+			-- Are we using a compiler factory to parse?
+
 feature -- Operations
+
+	set_compiler_factory(a_state: BOOLEAN)
+			-- Set parsers to use a compiler factory
+		do
+			is_using_compiler_factory := a_state
+		end
 
 	reparse_printed_ast(a_root_type: AST_EIFFEL; a_printed_ast: STRING)
 			-- parse an ast of type `a_root_type'
@@ -29,7 +38,7 @@ feature -- Operations
 				etr_class_parser.parse_from_string (a_printed_ast,void)
 
 				if etr_class_parser.error_count>0 then
-					error_handler.add_error("reparse_printed_ast: Class parsing failed")
+					error_handler.add_error (Current, "reparse_printed_ast", "Class parsing failed")
 				else
 					reparsed_root := etr_class_parser.root_node
 				end
@@ -38,7 +47,7 @@ feature -- Operations
 				etr_feat_parser.parse_from_string ("feature "+a_printed_ast,void)
 
 				if etr_feat_parser.error_count>0 then
-					error_handler.add_error("reparse_printed_ast: Feature parsing failed")
+					error_handler.add_error (Current, "reparse_printed_ast", "Feature parsing failed")
 				else
 					reparsed_root := etr_feat_parser.feature_node
 				end
@@ -46,7 +55,7 @@ feature -- Operations
 				etr_feat_parser.set_syntax_version(syntax_version)
 				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
 				if etr_feat_parser.error_count>0 then
-					error_handler.add_error("reparse_printed_ast: Instruction parsing failed")
+					error_handler.add_error (Current, "reparse_printed_ast", "Instruction parsing failed")
 				else
 					if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 						reparsed_root := body.compound.first
@@ -56,7 +65,7 @@ feature -- Operations
 				etr_feat_parser.set_syntax_version(syntax_version)
 				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
 				if etr_feat_parser.error_count>0 then
-					error_handler.add_error("reparse_printed_ast: Instruction-list parsing failed")
+					error_handler.add_error (Current, "reparse_printed_ast", "Instruction-list parsing failed")
 				else
 					if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 						reparsed_root := body.compound
@@ -66,14 +75,79 @@ feature -- Operations
 				etr_expr_parser.set_syntax_version(syntax_version)
 				etr_expr_parser.parse_from_string ("check "+a_printed_ast,void)
 				if etr_expr_parser.error_count>0 then
-					error_handler.add_error("reparse_printed_ast: Expression parsing failed")
+					error_handler.add_error (Current, "reparse_printed_ast", "Expression parsing failed")
 				else
 					reparsed_root := etr_expr_parser.expression_node
 				end
 			else
-				error_handler.add_error("reparse_printed_ast: Root of type "+a_root_type.generating_type+" is not supported")
+				error_handler.add_error (Current, "reparse_printed_ast", "Root of type "+a_root_type.generating_type+" is not supported")
 			end
 		end
+
+feature {ETR_SHARED_PARSERS} -- Compiler parsers
+
+	etr_compiler_class_parser: EIFFEL_PARSER
+			-- internal parser used to handle classes
+		once
+			create Result.make_with_factory (new_compiler_factory)
+			Result.set_syntax_version (syntax_version)
+		end
+
+	etr_compiler_expr_parser: EIFFEL_PARSER
+			-- internal parser used to handle expressions
+		once
+			create Result.make_with_factory (new_compiler_factory)
+			Result.set_expression_parser
+			Result.set_syntax_version(syntax_version)
+		end
+
+	etr_compiler_feat_parser: EIFFEL_PARSER
+			-- internal parser used to handle instructions
+		once
+			create Result.make_with_factory (new_compiler_factory)
+			Result.set_feature_parser
+			Result.set_syntax_version(syntax_version)
+		end
+
+feature {ETR_SHARED_PARSERS} -- Non compiler parsers
+
+	etr_non_compiler_class_parser: EIFFEL_PARSER
+			-- internal parser used to handle classes
+		once
+			create Result.make_with_factory (new_non_compiler_factory)
+			Result.set_syntax_version (syntax_version)
+		end
+
+	etr_non_compiler_expr_parser: EIFFEL_PARSER
+			-- internal parser used to handle expressions
+		once
+			create Result.make_with_factory (new_non_compiler_factory)
+			Result.set_expression_parser
+			Result.set_syntax_version(syntax_version)
+		end
+
+	etr_non_compiler_feat_parser: EIFFEL_PARSER
+			-- internal parser used to handle instructions
+		once
+			create Result.make_with_factory (new_non_compiler_factory)
+			Result.set_feature_parser
+			Result.set_syntax_version(syntax_version)
+		end
+
+feature {NONE} -- Factories
+
+	new_compiler_factory: AST_FACTORY
+			-- new ast factory
+		do
+			create {AST_ROUNDTRIP_COMPILER_LIGHT_FACTORY}Result
+		end
+
+	new_non_compiler_factory: AST_FACTORY
+			-- new ast factory
+		do
+			create {AST_ROUNDTRIP_LIGHT_FACTORY}Result
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

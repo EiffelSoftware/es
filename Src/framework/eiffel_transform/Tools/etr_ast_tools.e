@@ -28,11 +28,36 @@ feature -- Access
 
 feature -- Output
 
-	ast_to_string(an_ast: AST_EIFFEL): STRING
-			-- prints `an_ast' to text using `mini_printer'
+	ast_to_string(a_ast: AST_EIFFEL): STRING
+			-- prints `a_ast' to text using `mini_printer'
+		require
+			non_void: a_ast /= void
 		do
 			shared_printer_output.reset
-			shared_printer.print_ast_to_output(an_ast)
+			shared_printer.print_ast_to_output(a_ast)
+
+			Result := shared_printer_output.string_representation
+		end
+
+	ast_to_string_with_indentation(a_ast: AST_EIFFEL; an_indentation: INTEGER): STRING
+			-- prints `a_ast' starting at indentation level `an_indentation'
+		require
+			non_void: a_ast /= void
+			valid_indent: an_indentation>=0
+		local
+			l_index: INTEGER
+		do
+			from
+				l_index := 1
+				shared_printer_output.reset
+			until
+				l_index > an_indentation
+			loop
+				shared_printer_output.enter_block
+				l_index := l_index + 1
+			end
+			
+			shared_printer.print_ast_to_output(a_ast)
 
 			Result := shared_printer_output.string_representation
 		end
