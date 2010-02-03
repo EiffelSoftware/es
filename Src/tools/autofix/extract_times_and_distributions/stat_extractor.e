@@ -23,7 +23,7 @@ feature -- Operations
 			target_dir := a_target_dir
 
 			create output_file.make_open_write (target_dir+"\"+output_file_name)
-			output_file.put_string ("Testcase"+separator+"Valid fixes"+separator+"Total generated fixes"+separator+"Analysing-phase"+separator+"Generating-phase"+separator+"Validation-phase"+"%N")
+			output_file.put_string ("Testcase"+separator+"No. of passing testcases"+separator+"No. of failing testcases"+separator+"Analysing-phase"+separator+"Generating-phase"+separator+"Validation-phase"+"%N")
 
 			create l_dir.make_open_read(source_dir)
 			from
@@ -45,6 +45,37 @@ feature {NONE} -- Implementation
 	source_dir, target_dir: STRING
 
 	output_file: PLAIN_TEXT_FILE
+
+	cur_passing_test_cases: INTEGER
+	cur_failing_test_cases: INTEGER
+
+	compute_passing_testcases(a_name: STRING)
+			-- process a_name
+		local
+			a_dir: DIRECTORY
+		do
+			create a_dir.make_open_read (source_dir+"\"+a_name)
+
+			from
+				cur_passing_test_cases := 0
+				cur_failing_test_cases := 0
+
+				a_dir.start
+				a_dir.readentry
+			until
+				a_dir.lastentry = void
+			loop
+				if a_dir.lastentry.starts_with ("TC__") then
+					if a_dir.lastentry.has_substring ("__F__") then
+						cur_passing_test_cases := cur_passing_test_cases + 1
+					elseif a_dir.lastentry.has_substring ("__S__") then
+						cur_failing_test_cases := cur_failing_test_cases + 1
+					end
+				end
+				a_dir.readentry
+			end
+			a_dir.close
+		end
 
 	process_testcase(a_name: STRING)
 			-- process testcase in `a_dir'
@@ -165,7 +196,9 @@ feature {NONE} -- Implementation
 					l_validate_time := "X"
 				end
 
-				l_result := a_name + separator + l_num_valid_fixes.out + separator + l_total_fixes.out + separator + l_analyze_time + separator +  l_generate_time + separator + l_validate_time + "%N"
+				compute_passing_testcases(a_name)
+
+				l_result := a_name + separator + cur_passing_test_cases.out + separator + cur_failing_test_cases.out + separator + l_analyze_time + separator +  l_generate_time + separator + l_validate_time + "%N"
 				io.put_string (l_result)
 				output_file.put_string (l_result)
 
