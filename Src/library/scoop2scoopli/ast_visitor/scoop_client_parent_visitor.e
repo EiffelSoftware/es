@@ -77,7 +77,7 @@ feature -- Access
 					loop
 
 						-- current ancestor	
-						l_parent := get_class_as_by_name (l_as.internal_conforming_parents.item.type.class_name.name)
+						l_parent := class_as_by_name (l_as.internal_conforming_parents.item.type.class_name.name)
 
 						-- generate generics for ancestors from current class
 						l_string := ""
@@ -257,7 +257,7 @@ feature {NONE} -- Visitor implementation
 					process_leading_leaves (l_as.infix_prefix_keyword.index)
 				end
 				l_feature_name_visitor.process_declaration_infix_prefix (l_as)
-				context.add_string (" " + l_feature_name_visitor.get_feature_name + ", ")
+				context.add_string (" " + l_feature_name_visitor.feature_name + ", ")
 				last_index := l_as.alias_name.index
 			end
 
@@ -302,7 +302,7 @@ feature {NONE} -- Visitor implementation
 				-- create first the infix / prefix version of the renaming
 				-- get old name without alias
 				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
-				l_original_name := l_feature_name_visitor.get_feature_name
+				l_original_name := l_feature_name_visitor.feature_name
 				l_str.append (l_original_name)
 
 				l_str.append (" as ")
@@ -313,7 +313,7 @@ feature {NONE} -- Visitor implementation
 
 					-- get new name without alias
 					l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
-					l_str.append (l_feature_name_visitor.get_feature_name)
+					l_str.append (l_feature_name_visitor.feature_name)
 
 				else
 					-- infix to non-infix -> create for original rename statement
@@ -321,11 +321,11 @@ feature {NONE} -- Visitor implementation
 
 					-- get FEATURE_I node of current node
 					l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
-					l_feature_i := current_parent_c.feature_table.item (l_feature_name_visitor.get_feature_name)
+					l_feature_i := current_parent_c.feature_table.item (l_feature_name_visitor.feature_name)
 
 					-- create a new feature name
 					l_feature_name_visitor.process_feature_name (l_as.old_name, False)
-					create l_wrapper_name.make_from_string(l_feature_name_visitor.get_feature_name)
+					create l_wrapper_name.make_from_string(l_feature_name_visitor.feature_name)
 					l_wrapper_name.append ("_" + class_c.name.as_lower)
 					l_wrapper_name.append ("_separate_scoop_wrapper_")
 
@@ -374,7 +374,7 @@ feature {NONE} -- Visitor implementation
 					l_wrapper_feature.append ("%N%T%T%TResult := ")
 					-- get new name without alias
 					l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
-					l_wrapper_feature.append (l_feature_name_visitor.get_feature_name + " ")
+					l_wrapper_feature.append (l_feature_name_visitor.feature_name + " ")
 
 					-- add internal arguments as actual arguments
 					if l_old_name.is_infix then

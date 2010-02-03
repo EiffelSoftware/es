@@ -14,10 +14,10 @@ class
 inherit
 	SCOOP_CONTEXT_AST_PRINTER
 		rename
-			get_context as get_feature_name
+			get_context as feature_name
 		export
 			{NONE} all
-			{ANY} setup, get_feature_name
+			{ANY} setup, feature_name
 		redefine
 			process_infix_prefix_as,
 			process_keyword_as,

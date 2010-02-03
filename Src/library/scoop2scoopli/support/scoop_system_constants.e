@@ -11,7 +11,7 @@ class
 inherit
 	SYSTEM_CONSTANTS
 
-feature --scoop system constants
+feature -- Scoop system constants
 
 	scoop_proxy_prefix: STRING is "scoop_separate__"
 

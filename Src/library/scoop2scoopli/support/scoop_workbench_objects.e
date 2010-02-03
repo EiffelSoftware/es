@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_WORKBENCH_OBJECTS}."
+	description: "Shared objects needed during SCOOP compilation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -14,7 +14,7 @@ create
 feature -- Initialization
 
 	make
-			-- Initialize the SCOOP workbench objects
+			-- Initialize SCOOP workbench objects.
 		do
 			create proxy_parent_objects.make
 			create parent_redefine_list.make
@@ -23,7 +23,7 @@ feature -- Initialization
 feature -- Access
 
 	reset is
-			-- Resets classdependant values
+			-- Reset classdependant values.
 		do
 			current_class_as := Void
 			current_class_c := Void
@@ -39,10 +39,10 @@ feature -- Access
 feature -- Current CLASS_C access
 
 	current_class_c: CLASS_C
-			-- Current processed class_c - access from shared scoop workbench
+			-- Current processed class_c, access from scoop workbench.
 
 	set_current_class_c (a_class: CLASS_C) is
-			-- Setter for 'current_class_c'
+			-- Set `a_class' to current class_c.
 		do
 			current_class_c := a_class
 		end
@@ -50,10 +50,10 @@ feature -- Current CLASS_C access
 feature -- Current CLASS_AS access
 
 	current_class_as: CLASS_AS
-			-- Current processed class_as - access from shared scoop workbench
+			-- Current processed class_as, access from scoop workbench.
 
 	set_current_class_as (a_class: CLASS_AS) is
-			-- Setter for 'current_class_as'
+			-- Set `a_class' to current class_as.
 		do
 			current_class_as := a_class
 		end
@@ -61,10 +61,10 @@ feature -- Current CLASS_AS access
 feature -- Current FEATURE_AS access
 
 	current_feature_as: FEATURE_AS
-			-- Current processed feature_as
+			-- Current processed feature_as, access from scoop workbench.
 
 	set_current_feature_as (a_feature: FEATURE_AS) is
-			-- Setter for 'current_feature_as'
+			-- Set `a_feature' to current feature_as.
 		do
 			current_feature_as := a_feature
 		end
@@ -72,10 +72,10 @@ feature -- Current FEATURE_AS access
 feature -- Current FEATURE_CLAUSE_AS access
 
 	current_feature_clause_as: FEATURE_CLAUSE_AS
-			-- Current processed feature_clause_as
+			-- Current processed feature_clause_as, access from scoop workbench.
 
 	set_current_feature_clause_as (a_feature_clause: FEATURE_CLAUSE_AS) is
-			-- Setter for 'current_feature_clause_as'
+			-- Set `a_feature_clause' to current feature_clase_as.
 		do
 			current_feature_clause_as := a_feature_clause
 		end
@@ -83,10 +83,10 @@ feature -- Current FEATURE_CLAUSE_AS access
 feature -- Current FEATURE_CLAUSE_AS access
 
 	is_first_feature: BOOLEAN
-			-- Indicates the first occurence of a feature in a feature clause
+			-- Is current feature the first in feature clause?
 
 	set_is_first_feature (a_value: BOOLEAN) is
-			-- Setter for 'is_first_feature'
+			-- Set `a_value' for first feature occurrence.
 		do
 			is_first_feature := a_value
 		end
@@ -94,10 +94,10 @@ feature -- Current FEATURE_CLAUSE_AS access
 feature -- SCOOP_SEPARATE_CLASS_LIST access
 
 	scoop_classes: SCOOP_SEPARATE_CLASS_LIST
-			-- contains all classes which have to be processed.
+			-- The classes to be processed.
 
 	set_scoop_classes (a_list: SCOOP_SEPARATE_CLASS_LIST) is
-			-- Setter for 'scoop_class_list'
+			-- Set `a_list' containing classes to be processed.
 		do
 			scoop_classes := a_list
 		end
@@ -105,10 +105,10 @@ feature -- SCOOP_SEPARATE_CLASS_LIST access
 feature -- SCOOP_CLIENT_FEATURE_OBJECT access
 
 	current_feature_object: SCOOP_CLIENT_FEATURE_OBJECT
-			-- Reference to current feature object
+			-- Reference to current client feature object.
 
 	set_current_feature_object (a_feature_object: SCOOP_CLIENT_FEATURE_OBJECT) IS
-			-- Setter for `current_feature_object'.
+			-- Set `a_feature_object' to current client feature object.
 		do
 			current_feature_object := a_feature_object
 		end
@@ -116,10 +116,10 @@ feature -- SCOOP_CLIENT_FEATURE_OBJECT access
 feature -- SCOOP proxy feature name access
 
 	current_proxy_feature_name: STRING
-			-- Name of current processed feature
+			-- Name of current processed proxy feature.
 
 	set_current_proxy_feature_name (a_name: STRING)
-			-- Setter for `current_proxy_feature_name'
+			-- Set `a_name' to proxy feature name.
 		do
 			current_proxy_feature_name := a_name
 		end
@@ -127,7 +127,7 @@ feature -- SCOOP proxy feature name access
 feature -- SCOOP_PROXY_PARENT_OBJECT access
 
 	add_proxy_parent_object (a_proxy_parent_object: SCOOP_PROXY_PARENT_OBJECT) is
-			-- Adds `a_proxy_parent_object' to the `proxy_parent_objects'.
+			-- Adds `a_proxy_parent_object' to the proxy parent objects.
 		require
 			a_proxy_parent_object_not_void: a_proxy_parent_object /= Void
 		do
@@ -136,8 +136,8 @@ feature -- SCOOP_PROXY_PARENT_OBJECT access
 			end
 		end
 
-	get_proxy_parent_object (a_parent_name: STRING): SCOOP_PROXY_PARENT_OBJECT is
-			-- Get the proxy parent object with name `a_parent_name'.
+	proxy_parent_object (a_parent_name: STRING): SCOOP_PROXY_PARENT_OBJECT is
+			-- Proxy parent object with name `a_parent_name'.
 		require
 			a_parent_name_not_void: a_parent_name /= Void
 		local
@@ -157,8 +157,7 @@ feature -- SCOOP_PROXY_PARENT_OBJECT access
 		end
 
 	has_proxy_parent_object (a_parent_name: STRING): BOOLEAN is
-			-- Returns True if there is already a parent object
-			-- with name `a_parent_name' in the list
+			-- Is `a_parent_name' in the parent object list?
 		require
 			a_parent_name_not_void: a_parent_name /=  Void
 		local
@@ -178,7 +177,7 @@ feature -- SCOOP_PROXY_PARENT_OBJECT access
 		end
 
 	append_parent_redefine_list (a_list: like parent_redefine_list) is
-			-- Setter for `parent_redefine_list'.
+			-- Set `a_list' to the parent redefine list.
 		require
 			a_list_not_void: a_list /= Void
 		do
@@ -186,8 +185,9 @@ feature -- SCOOP_PROXY_PARENT_OBJECT access
 		end
 
 	insert_redefine_statement (an_original_feature_name, an_original_alias_name, a_feature_name: STRING; a_string_context: ROUNDTRIP_STRING_LIST_CONTEXT) is
-			-- Insert a redefine statement for the assigner wrapper feature
-			-- if `an_original_feature_name' is in the parent redefine list.
+			-- Insert `a_string_context' the redefine statement for the assigner
+			-- wrapper feature if `an_original_feature_name' or `an_original_alias_name'
+			-- is exists the parent redefine list.
 		require
 			an_original_feature_name_not_void: an_original_feature_name /= Void
 		local
@@ -222,11 +222,11 @@ feature -- SCOOP_PROXY_PARENT_OBJECT access
 feature -- SCOOP proxy infix prefix wrapper feature
 
 	proxy_infix_prefix_wrappers: LINKED_LIST [STRING]
-			-- List of new created wrapper features
+			-- List of new created wrapper features.
 			-- Remove this item with EiffelStudio 6.4
 
 	extend_proxy_infix_prefix_wrappers (a_wrapper: STRING) is
-			-- Adds the wrapper feature tot he wrapper list
+			-- Adds the wrapper feature tot he wrapper list.
 			-- Remove this item with EiffelStudio 6.4
 		do
 			if proxy_infix_prefix_wrappers = Void then
@@ -238,7 +238,7 @@ feature -- SCOOP proxy infix prefix wrapper feature
 feature {NONE} -- SCOOP_CLIENT_FEATURE_OBJECT implementation
 
 	proxy_parent_objects: LINKED_LIST[SCOOP_PROXY_PARENT_OBJECT]
-			-- List of proxy parent objects
+			-- List of proxy parent objects.
 
 	parent_redefine_list: LINKED_LIST [TUPLE [orignial_feature_name, original_feature_alias_name: STRING; parent_object: SCOOP_PROXY_PARENT_OBJECT ]]
 			-- List of redefine features with corresponding parent object.

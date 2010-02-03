@@ -108,13 +108,13 @@ feature {NONE} -- Visitor implementation
 
 					-- process name
 					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), False)
-					l_feature_object.set_feature_name (l_feature_name_visitor.get_feature_name)
+					l_feature_object.set_feature_name (l_feature_name_visitor.feature_name)
 					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), True)
-					l_feature_object.set_feature_alias_name (l_feature_name_visitor.get_feature_name)
+					l_feature_object.set_feature_alias_name (l_feature_name_visitor.feature_name)
 					-- declaration name writes the infix and non-infix notation if the feature name
 					-- contains an infix name. Change this to an alias notation in EiffelStudio 6.4
 					l_feature_name_visitor.process_feature_declaration_name (l_as.feature_names.i_th (i))
-					l_feature_object.set_feature_declaration_name (l_feature_name_visitor.get_feature_name)
+					l_feature_object.set_feature_declaration_name (l_feature_name_visitor.feature_name)
 
 					if is_separate then
 
@@ -176,7 +176,7 @@ feature {NONE} -- Visitor implementation
 						if l_infix_prefix /= Void then
 							l_feature_name_visitor.process_declaration_infix_prefix (l_infix_prefix)
 
-							create_infix_feature_wrapper(l_as, l_feature_name_visitor.get_feature_name, l_feature_object.feature_name)
+							create_infix_feature_wrapper(l_as, l_feature_name_visitor.feature_name, l_feature_object.feature_name)
 						end
 					end
 

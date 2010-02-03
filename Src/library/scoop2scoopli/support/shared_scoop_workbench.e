@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SHARED_SCOOP_WORKBENCH}."
+	description: "Shared access to SCOOP workbench objects."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -7,6 +7,8 @@ note
 
 class
 	SHARED_SCOOP_WORKBENCH
+
+obsolete "This class is obsolete. It is not used."
 
 feature -- Initialisation
 

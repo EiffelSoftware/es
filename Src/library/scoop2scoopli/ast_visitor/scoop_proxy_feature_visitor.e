@@ -88,15 +88,15 @@ feature {NONE} -- Visitor implementation
 
 					-- get feature name
 					l_feature_name_visitor.process_feature_name (l_feature_name, False)
-					l_feature_name_str := l_feature_name_visitor.get_feature_name
+					l_feature_name_str := l_feature_name_visitor.feature_name
 					--l_feature_name_visitor.process_feature_name (l_feature_name, True)
-					l_feature_declaration_name := l_feature_name_visitor.get_feature_name
+					l_feature_declaration_name := l_feature_name_visitor.feature_name
 
 					-- get original feature name
 					--l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
-					l_original_feature_alias_name := l_feature_name_visitor.get_feature_name
+					l_original_feature_alias_name := l_feature_name_visitor.feature_name
 					l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
-					l_original_feature_name := l_feature_name_visitor.get_feature_name
+					l_original_feature_name := l_feature_name_visitor.feature_name
 
 					scoop_workbench_objects.set_current_proxy_feature_name (l_original_feature_name)
 
@@ -134,7 +134,7 @@ feature {NONE} -- Visitor implementation
 						and then l_assign_finder.is_first_parent_feature_deferred (l_original_feature_name, l_original_feature_alias_name, class_c) then
 
 						-- get the assigner name of a parent feature version
-						l_assigner_name := l_assign_finder.get_inherited_assigner_name (l_original_feature_name, l_original_feature_alias_name, class_c)
+						l_assigner_name := l_assign_finder.inherited_assigner_name (l_original_feature_name, l_original_feature_alias_name, class_c)
 
 						-- create wrapper feature for assigner call
 						create_assign_wrapper_feature (l_feature_name_str, l_assigner_name, l_as)
@@ -255,7 +255,7 @@ feature {NONE} -- Content implementation
 					-- get feature name
 					l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
 					l_feature_name_visitor.process_feature_name (l_feature_name, False)
-					l_feature_name_str := l_feature_name_visitor.get_feature_name
+					l_feature_name_str := l_feature_name_visitor.feature_name
 					scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
 					-- create agent feature
@@ -373,7 +373,7 @@ feature {NONE} -- Content implementation
 				-- get feature name
 				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
 				l_feature_name_visitor.process_feature_name (l_feature_name, False)
-				l_feature_name_str := l_feature_name_visitor.get_feature_name
+				l_feature_name_str := l_feature_name_visitor.feature_name
 				scoop_workbench_objects.set_current_proxy_feature_name (l_feature_name_str)
 
 				if not is_first_feature then

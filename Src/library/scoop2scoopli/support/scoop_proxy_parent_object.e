@@ -17,7 +17,7 @@ create
 feature -- Initialization
 
 	make (a_parent_name: STRING)
-			-- Create a new proxy parent object
+			-- Create a new proxy parent object.
 		do
 			set_parent_name (a_parent_name)
 		end
@@ -25,10 +25,10 @@ feature -- Initialization
 feature -- Access
 
 	parent_name: STRING
-			-- Name of current parent object
+			-- Name of current parent object.
 
 	set_parent_name (a_parent_name: STRING) is
-			-- Setter for `parent_name'.
+			-- Set `parent_name'.
 		require
 			a_parent_name /= Void
 		do
@@ -39,7 +39,7 @@ feature -- Access
 			-- Reference to class C of current parent.
 
 	set_parent_class_c (a_class_c: CLASS_C) is
-			-- Setter for `parent_class_c'.
+			-- Set `parent_class_c'.
 		require
 			a_class_c_not_void: a_class_c /= Void
 		do
@@ -47,7 +47,7 @@ feature -- Access
 		end
 
 	set_parent_cursor (a_cursor: LINKED_LIST_CURSOR[STRING]) is
-			-- Setter for `parent_cursor'.
+			-- Set `parent_cursor'.
 		require
 			a_cursor_not_void: a_cursor /= Void
 		do
@@ -55,7 +55,7 @@ feature -- Access
 		end
 
 	set_rename_cursor (a_cursor: LINKED_LIST_CURSOR[STRING]) is
-			-- Setter for `rename_cursor'.
+			-- Set `rename_cursor'.
 		require
 			a_cursor_not_void: a_cursor /= Void
 		do
@@ -65,7 +65,7 @@ feature -- Access
 		end
 
 	set_redefine_cursor (a_cursor: LINKED_LIST_CURSOR[STRING]) is
-			-- Setter for `redefine_cursor'.
+			-- Set `redefine_cursor'.
 		require
 			a_cursor_not_void: a_cursor /= Void
 		do
@@ -77,7 +77,7 @@ feature -- Access
 feature -- Context change
 
 	add_rename_clause (an_old_name, a_new_name: STRING; a_string_context: ROUNDTRIP_STRING_LIST_CONTEXT) is
-			-- Inserts a new rename clause in the context
+			-- Insert a new rename clause in the context.
 		local
 			l_string: STRING
 		do
@@ -109,7 +109,7 @@ feature -- Context change
 		end
 
 	add_redefine_clause (a_feature_name: STRING; a_string_context: ROUNDTRIP_STRING_LIST_CONTEXT) is
-			-- Inserts a new redefine clause in the context
+			-- Insert a new redefine clause in the context.
 		local
 			l_string: STRING
 		do
@@ -143,22 +143,22 @@ feature -- Context change
 feature {NONE} -- Implementation
 
 	has_changes: BOOLEAN
-			-- Inherited features are changed in a way.
+			-- Are inherited features changed in a way?
 
 	parent_cursor: LINKED_LIST_CURSOR[STRING]
-			-- Position to add additional changes
+			-- Position to add additional changes.
 
 	has_rename_clause: BOOLEAN
-			-- Indicates the existance of a rename clause.
+			-- Does a rename clause exist?
 
 	rename_cursor: LINKED_LIST_CURSOR[STRING]
-			-- Position to add additional renamings
+			-- Position to add additional renamings.
 
 	has_redefine_clause: BOOLEAN
-			-- Indicates the existance of a redefine clause.
+			-- Does a redefine clause exist?
 
 	redefine_cursor: LINKED_LIST_CURSOR[STRING]
-			-- Position to add additional redefinitions
+			-- Position to add additional redefinitions.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

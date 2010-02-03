@@ -31,7 +31,7 @@ create
 feature {SCOOP_CLASS_NAME} -- Initialisation
 
 	make_with_context (a_context: ROUNDTRIP_CONTEXT)
-			-- Initialise and reset flags
+			-- Initialize and reset flags.
 		require
 			a_context_not_void: a_context /= Void
 		do
@@ -45,7 +45,7 @@ feature {SCOOP_CLASS_NAME} -- Initialisation
 feature {SCOOP_CLASS_NAME} -- Access
 
 	process_class_list_with_prefix (l_as: CLASS_LIST_AS; print_both: BOOLEAN) is
-			-- Process `l_as'.
+			-- Process `l_as', list containing class names.
 		do
 			is_print_both := True
 			is_set_prefix := True
@@ -55,7 +55,7 @@ feature {SCOOP_CLASS_NAME} -- Access
 		end
 
 	process_id (l_as: ID_AS; a_set_prefix: BOOLEAN) is
-			-- Process `l_as'.
+			-- Process `l_as', name as id element.
 		do
 			is_print_both := False
 			is_set_prefix := a_set_prefix
@@ -65,7 +65,7 @@ feature {SCOOP_CLASS_NAME} -- Access
 		end
 
 	process_id_str (l_class_name: STRING; a_set_prefix: BOOLEAN) is
-			-- Process `l_as'.
+			-- Process `l_as', name as string.
 		do
 			if a_set_prefix and then (scoop_classes.has (l_class_name.as_upper)) then
 				context.add_string (scoop_prefix)
@@ -79,7 +79,7 @@ feature {SCOOP_CLASS_NAME} -- Access
 feature {NONE} -- Roundtrip: process nodes
 
 	process_id_as (l_as: ID_AS) is
-			-- ..
+			-- Process `l_as', the class name id element.
 		local
 			is_scoop_string: BOOLEAN
 		do
@@ -119,16 +119,16 @@ feature {NONE} -- Roundtrip: process nodes
 feature {NONE} -- Implementation
 
 	is_print_both: BOOLEAN
-			-- indicates if original name and name with prefix should be printed.
+			-- Should the original and the name with prefix be printed?
 
 	is_set_prefix: BOOLEAN
-			-- indicates if prefix should be printed or not.
+			-- Should the prefix be printed?
 
 	scoop_prefix: STRING
-			-- string that contains 'SCOOP_SEPARATE__'
+			-- `SCOOP_SEPARATE__' prefix.
 
 	scoop_string: STRING
-			-- string that contains 'STRING'
+			-- `STRING' as local.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

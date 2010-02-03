@@ -89,15 +89,15 @@ feature {NONE} -- Visitor implementation
 			if test_new_name then
 				-- test on new name
 				l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
-				l_name := l_feature_name_visitor.get_feature_name
+				l_name := l_feature_name_visitor.feature_name
 				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
-				l_alias_name := l_feature_name_visitor.get_feature_name
+				l_alias_name := l_feature_name_visitor.feature_name
 			else
 				-- test on old name
 				l_feature_name_visitor.process_original_feature_name (l_as.old_name, False)
-				l_name := l_feature_name_visitor.get_feature_name
+				l_name := l_feature_name_visitor.feature_name
 				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
-				l_alias_name := l_feature_name_visitor.get_feature_name
+				l_alias_name := l_feature_name_visitor.feature_name
 			end
 
 
@@ -111,14 +111,14 @@ feature {NONE} -- Visitor implementation
 				if test_new_name then
 					-- test on new name - get old name
 					l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
-					l_renamed_name := l_feature_name_visitor.get_feature_name
+					l_renamed_name := l_feature_name_visitor.feature_name
 					-- set names
 					l_tuple.old_assigner_name := l_renamed_name
 					l_tuple.new_assigner_name := l_name
 				else
 					-- test on old name - get new name
 					l_feature_name_visitor.process_original_feature_name (l_as.new_name, True)
-					l_renamed_name := l_feature_name_visitor.get_feature_name
+					l_renamed_name := l_feature_name_visitor.feature_name
 					-- set names
 					l_tuple.old_assigner_name := l_name
 					l_tuple.new_assigner_name := l_renamed_name

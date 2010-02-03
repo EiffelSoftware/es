@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_VISITOR_FACTORY}."
+	description: "Factory class for visitors."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -13,13 +13,6 @@ inherit
 		export
 			{NONE} all
 		end
-
---create
---	make
-
-feature -- Initialisation
-
---	make
 
 feature -- Support visitors
 
@@ -54,12 +47,14 @@ feature -- Support visitors
 		end
 
 	new_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+			-- Create a `SCOOP_TYPE_EXPR_VISITOR' object.
 		do
 			create Result
 			Result.setup (class_as, match_list, True, True)
 		end
 
 	new_type_visitor: SCOOP_TYPE_VISITOR
+			-- Create a `SCOOP_TYPE_VISITOR' object.
 		do
 			create Result
 			Result.setup (class_as, match_list, True, True)
@@ -254,7 +249,7 @@ feature -- Proxy class generation
 feature {NONE} -- Match list
 
 	match_list: LEAF_AS_LIST is
-			-- Returns the current match list
+			-- Current match list.
 		do
 			Result := match_list_server.item (class_c.class_id)
 		end

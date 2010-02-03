@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCOOP_WORKBENCH}."
+	description: "Allows access to workbench objects and factory class."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -11,7 +11,7 @@ class
 feature -- Access
 
 	scoop_workbench_objects: SCOOP_WORKBENCH_OBJECTS is
-			-- Current scoop workbench
+			-- Current scoop workbench.
 		once
 			create Result.make
 		ensure
@@ -19,7 +19,7 @@ feature -- Access
 		end
 
 	scoop_visitor_factory: SCOOP_VISITOR_FACTORY is
-			-- A factory for visitors
+			-- Factory for visitors.
 		once
 			create Result
 		ensure

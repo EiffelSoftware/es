@@ -57,6 +57,7 @@ inherit
 feature -- Basic SCOOP changes
 
 	process_infix_prefix_as (l_as: INFIX_PREFIX_AS) is
+			-- Process `l_as', the infix prefix node.
 		local
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 		do
@@ -70,21 +71,21 @@ feature -- Basic SCOOP changes
 				process_leading_leaves (l_as.infix_prefix_keyword.index)
 			end
 			l_feature_name_visitor.process_infix_prefix (l_as)
-			context.add_string (" " + l_feature_name_visitor.get_feature_name)
+			context.add_string (" " + l_feature_name_visitor.feature_name)
 			last_index := l_as.alias_name.index
 		end
 
 feature -- Roundtrip: printing
 
 	process_break_as (l_as: BREAK_AS) is
-			-- Process `l_as'.
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_keyword_as (l_as: KEYWORD_AS) is
-			-- Process `l_as'.
+			-- Process `l_as', print it to context.
 		do
 			if l_as.is_separate_keyword then
 				-- skip
@@ -96,106 +97,119 @@ feature -- Roundtrip: printing
 		end
 
 	process_symbol_as (l_as: SYMBOL_AS) is
-			-- Process `l_as'.
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_symbol_stub_as (l_as: SYMBOL_STUB_AS) is
-			-- Process `l_as'.
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_bool_as (l_as: BOOL_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_char_as (l_as: CHAR_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_typed_char_as (l_as: TYPED_CHAR_AS) is
-			-- Process `l_as'.
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_result_as (l_as: RESULT_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_retry_as (l_as: RETRY_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_unique_as (l_as: UNIQUE_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_deferred_as (l_as: DEFERRED_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_void_as (l_as: VOID_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_string_as (l_as: STRING_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_current_as (l_as: CURRENT_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_integer_as (l_as: INTEGER_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			context.add_string (l_as.number_text (match_list))
 		end
 
 	process_real_as (l_as: REAL_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			context.add_string (l_as.number_text (match_list))
 		end
 
 	process_id_as (l_as: ID_AS) is
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			put_string (l_as)
 		end
 
 	process_none_id_as (l_as: NONE_ID_AS) is
-			-- Process `l_as'.
+			-- Process `l_as', print it to context.
 		do
 			Precursor (l_as)
 			context.add_string ("NONE")
@@ -211,7 +225,7 @@ feature -- Context setting and getting
 		end
 
 	reset_context is
-			-- Reset only context
+			-- Reset only context.
 		do
 			context.clear
 		end
@@ -235,7 +249,7 @@ feature -- Context setting and getting
 feature{NONE} -- Context handling
 
 	context: ROUNDTRIP_CONTEXT
-			-- Context used to store generated code
+			-- Context used to store generated code.
 
 	put_string (l_as: LEAF_AS) is
 			-- Print text contained in `l_as' into `context'.
@@ -246,7 +260,7 @@ feature{NONE} -- Context handling
 		end
 
 	print_leading_separators(i: INTEGER)
-			-- prints leading separator from `match_list' infront and with position `i'
+			-- Print leading separator from `match_list' infront and with position `i'.
 		do
 			if match_list.i_th (i).is_separator then
 				print_leading_separators(i-1)
@@ -257,7 +271,7 @@ feature{NONE} -- Context handling
 		end
 
 	compute_inlining(i: INTEGER):STRING
-			-- prints leading separator from `match_list' infront and with position `i'
+			-- Prints leading separator from `match_list' infront and with position `i'.
 		local
 			str: STRING
 			j: INTEGER
@@ -281,9 +295,8 @@ feature{NONE} -- Context handling
 				end
 				result.append (compute_inlining(i-1))
 			end
-
-
 		end
+
 --	last_new_line(str: STRING): INTEGER is
 --			-- returns the postion of the last `%N' in `str'
 --			local
@@ -304,11 +317,10 @@ feature{NONE} -- Context handling
 --				end
 --			end
 
-
 feature -- Debug
 
 	safe_process_debug (l_as: AST_EIFFEL): ROUNDTRIP_CONTEXT is
-			-- process the ast in a testing context
+			-- Process the ast in a testing context.
 		local
 			original_context: ROUNDTRIP_CONTEXT
 			l_last_index: INTEGER

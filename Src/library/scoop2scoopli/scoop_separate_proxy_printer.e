@@ -281,7 +281,7 @@ feature {NONE} -- Roundtrip: process nodes
 					i > nb
 				loop
 					l_feature_name_visitor.process_feature_name (l_as.feature_list.i_th (i), False)
-					l_feature_name := l_feature_name_visitor.get_feature_name
+					l_feature_name := l_feature_name_visitor.feature_name
 
 					if l_feature_name.is_equal ("default_create") then
 						l_is_creator_default_create := True
@@ -620,7 +620,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 						-- add feature names with prefix `aux_scoop_'
 						l_feature_name_visitor.process_id_list (l_argument.id_list, "aux_scoop_")
-						context.add_string (l_feature_name_visitor.get_feature_name)
+						context.add_string (l_feature_name_visitor.feature_name)
 
 						context.add_string (": ")
 						-- process normal type

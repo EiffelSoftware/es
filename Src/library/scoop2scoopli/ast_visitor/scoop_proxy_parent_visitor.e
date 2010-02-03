@@ -190,7 +190,7 @@ feature {NONE} -- Visitor implementation
 					context.add_string (", ")
 				else
 					-- add prefix if parent class is not expanded.
-					a_class := get_class_as_by_name (l_as.name)
+					a_class := class_as_by_name (l_as.name)
 					if (a_class /= Void and then not a_class.is_expanded) then
 						context.add_string (l_scoop_separate_str)
 					end
@@ -226,15 +226,15 @@ feature {NONE} -- Visitor implementation
 
 			-- get original old name
 			l_feature_name_visitor.process_original_feature_name (l_as.old_name, False)
-			l_original_old_name := l_feature_name_visitor.get_feature_name.twin
+			l_original_old_name := l_feature_name_visitor.feature_name.twin
 			l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
-			l_original_old_alias_name := l_feature_name_visitor.get_feature_name.twin
+			l_original_old_alias_name := l_feature_name_visitor.feature_name.twin
 
 			-- get old and new name (with infix replacement)
 			l_feature_name_visitor.process_feature_name (l_as.old_name, False)
-			l_old_name := l_feature_name_visitor.get_feature_name
+			l_old_name := l_feature_name_visitor.feature_name
 			l_feature_name_visitor.process_feature_name (l_as.new_name, False)
-			l_new_name := l_feature_name_visitor.get_feature_name
+			l_new_name := l_feature_name_visitor.feature_name
 
 			if not l_old_name.is_empty and not l_new_name.is_empty then
 				context.add_string ("%N%T%T%T")
@@ -290,9 +290,9 @@ feature {NONE} -- Visitor implementation
 				loop
 					-- get redefine statement / feature name
 					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), False)
-					l_redefine_name := l_feature_name_visitor.get_feature_name
+					l_redefine_name := l_feature_name_visitor.feature_name
 					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), True)
-					l_redefine_alias_name :=  l_feature_name_visitor.get_feature_name
+					l_redefine_alias_name :=  l_feature_name_visitor.feature_name
 
 					-- check if current parent or an ancestor has the actual redefined feature
 					-- defined together with an assigner
@@ -351,7 +351,7 @@ feature {NONE} -- Visitor implementation
 			-- get feature name without alias
 			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
 			l_feature_name_visitor.process_feature_name (l_as, False)
-			l_feature_name := l_feature_name_visitor.get_feature_name
+			l_feature_name := l_feature_name_visitor.feature_name
 
 			-- process frozen keyowrd
 			safe_process (l_as.frozen_keyword)
@@ -371,7 +371,7 @@ feature {NONE} -- Visitor implementation
 			-- get feature name without alias
 			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
 			l_feature_name_visitor.process_feature_name (l_as, False)
-			l_feature_name := l_feature_name_visitor.get_feature_name
+			l_feature_name := l_feature_name_visitor.feature_name
 
 			-- process frozen keyword
 			safe_process (l_as.frozen_keyword)
@@ -419,9 +419,9 @@ feature {NONE} -- Implementation
 
 				-- get original old name (without infix replacement)
 				l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
-				l_original_feature_name := l_feature_name_visitor.get_feature_name
+				l_original_feature_name := l_feature_name_visitor.feature_name
 				l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
-				l_original_feature_alias_name := l_feature_name_visitor.get_feature_name
+				l_original_feature_alias_name := l_feature_name_visitor.feature_name
 
 				-- get current class
 				l_class_c := parent_object.parent_class_c
@@ -430,7 +430,7 @@ feature {NONE} -- Implementation
 				if l_assign_finder.has_current_or_parents_feature_with_assigner (l_original_feature_name, l_original_feature_alias_name, l_class_c) then
 					-- get feature name (with infix replacement)
 					l_feature_name_visitor.process_feature_name (l_feature_name, False)
-					l_feature_name_str := l_feature_name_visitor.get_feature_name
+					l_feature_name_str := l_feature_name_visitor.feature_name
 
 					-- create select / undefine clause
 					create l_str.make_from_string (",%N%T%T%T" + l_feature_name_str + "_scoop_separate_assigner_")
