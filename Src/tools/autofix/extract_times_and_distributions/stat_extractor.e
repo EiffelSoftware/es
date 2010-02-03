@@ -66,9 +66,9 @@ feature {NONE} -- Implementation
 				a_dir.lastentry = void
 			loop
 				if a_dir.lastentry.starts_with ("TC__") then
-					if a_dir.lastentry.has_substring ("__F__") then
+					if a_dir.lastentry.has_substring ("__S__") then
 						cur_passing_test_cases := cur_passing_test_cases + 1
-					elseif a_dir.lastentry.has_substring ("__S__") then
+					elseif a_dir.lastentry.has_substring ("__F__") then
 						cur_failing_test_cases := cur_failing_test_cases + 1
 					end
 				end
