@@ -9,13 +9,19 @@ class
 
 feature {NONE} -- Implementation
 
-	shared_printer: ETR_AST_STRUCTURE_PRINTER
+	printer: ETR_AST_STRUCTURE_PRINTER
 			-- prints small ast fragments to text
 		once
-			create Result.make_with_output(shared_printer_output)
+			create Result.make_with_output(printer_output)
 		end
 
-	shared_printer_output: ETR_AST_STRING_OUTPUT
+	commenting_printer: ETR_COMMENTING_PRINTER
+			-- prints features with comment to text
+		once
+			create Result.make_with_output(printer_output)
+		end
+
+	printer_output: ETR_AST_STRING_OUTPUT
 			-- output used for `mini_printer'
 		once
 			create Result.make
@@ -28,15 +34,38 @@ feature -- Access
 
 feature -- Output
 
+	commented_feature_to_string(a_feature: AST_EIFFEL; a_comment: STRING; an_indentation: INTEGER): STRING
+			-- prints `a_ast' to text using `mini_printer'
+		require
+			non_void: a_feature /= void and a_comment /= void
+			valid_indent: an_indentation>=0
+		local
+			l_index: INTEGER
+		do
+			from
+				l_index := 1
+				printer_output.reset
+			until
+				l_index > an_indentation
+			loop
+				printer_output.enter_block
+				l_index := l_index + 1
+			end
+
+			commenting_printer.print_feature_with_comment(a_feature, a_comment)
+
+			Result := printer_output.string_representation
+		end
+
 	ast_to_string(a_ast: AST_EIFFEL): STRING
 			-- prints `a_ast' to text using `mini_printer'
 		require
 			non_void: a_ast /= void
 		do
-			shared_printer_output.reset
-			shared_printer.print_ast_to_output(a_ast)
+			printer_output.reset
+			printer.print_ast_to_output(a_ast)
 
-			Result := shared_printer_output.string_representation
+			Result := printer_output.string_representation
 		end
 
 	ast_to_string_with_indentation(a_ast: AST_EIFFEL; an_indentation: INTEGER): STRING
@@ -49,17 +78,17 @@ feature -- Output
 		do
 			from
 				l_index := 1
-				shared_printer_output.reset
+				printer_output.reset
 			until
 				l_index > an_indentation
 			loop
-				shared_printer_output.enter_block
+				printer_output.enter_block
 				l_index := l_index + 1
 			end
-			
-			shared_printer.print_ast_to_output(a_ast)
 
-			Result := shared_printer_output.string_representation
+			printer.print_ast_to_output(a_ast)
+
+			Result := printer_output.string_representation
 		end
 
 feature -- Operations

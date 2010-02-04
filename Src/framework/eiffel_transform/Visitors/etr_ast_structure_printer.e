@@ -111,7 +111,8 @@ inherit
 			process_un_strip_as,
 			process_converted_expr_as,
 			process_infix_prefix_as,
-			process_reverse_as
+			process_reverse_as,
+			process_formal_argu_dec_list_as
 		end
 	REFACTORING_HELPER
 		export
@@ -625,6 +626,11 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 			output.append_string (ti_R_bracket)
 		end
 
+	process_formal_argu_dec_list_as (l_as: FORMAL_ARGU_DEC_LIST_AS)
+		do
+			process_child_list (l_as.arguments, ti_semi_colon+ti_space, l_as, 1)
+		end
+
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
 		do
 			if l_as.is_separate then
@@ -638,7 +644,13 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 			end
 
 			process_child(l_as.class_name, l_as, 1)
-			process_child(l_as.parameters, l_as, 2)
+
+			if processing_needed (l_as.parameters, l_as, 2) then
+				output.append_string (ti_l_bracket)
+				process_child(l_as.parameters, l_as, 2)
+				output.append_string (ti_r_bracket)
+			end
+
 		end
 
 	process_constraining_type_as (l_as: CONSTRAINING_TYPE_AS)
@@ -752,12 +764,12 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
 		do
-			if attached {BINARY_AS}l_as.target or attached {UNARY_AS}l_as.target or attached {OBJECT_TEST_AS}l_as.target then
+			if attached {BRACKET_AS}l_as.target then
+				process_child(l_as.target, l_as, 1)
+			else
 				output.append_string (ti_l_parenthesis)
 				process_child(l_as.target, l_as, 1)
 				output.append_string (ti_r_parenthesis)
-			else
-				process_child(l_as.target, l_as, 1)
 			end
 
 			output.append_string (ti_dot)
@@ -965,9 +977,10 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			output.append_string(ti_l_curly)
 			process_child (l_as.type, l_as, 1)
 			output.append_string(ti_r_curly)
-			output.append_string (ti_dot)
-			process(l_as.call, l_as, 2)
-			output.append_string(ti_New_line)
+			if processing_needed (l_as.call, l_as, 1) then
+				output.append_string (ti_dot)
+				process(l_as.call, l_as, 2)
+			end
 		end
 
 	process_routine_as (l_as: ROUTINE_AS)
@@ -1100,6 +1113,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 	process_feature_as (l_as: FEATURE_AS)
 		do
 			process_child_list(l_as.feature_names, ti_comma+ti_Space, l_as, 1)
+			output.append_string (ti_space)
 			process_child(l_as.body, l_as, 2)
 		end
 

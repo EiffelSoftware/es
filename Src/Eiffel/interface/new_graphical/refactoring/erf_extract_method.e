@@ -184,6 +184,27 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	extract_feature_comments(a_feature: FEATURE_AS; a_matchlist: LEAF_AS_LIST): STRING
+			-- Extract comments from `a_feature' and return them as multiline-string
+		local
+			l_comments: EIFFEL_COMMENTS
+		do
+			l_comments := a_feature.comment (a_matchlist)
+
+			from
+				create Result.make_empty
+				l_comments.start
+			until
+				l_comments.after
+			loop
+				Result.append (l_comments.item.content)
+				l_comments.forth
+				if not l_comments.after then
+					Result.append("%N")
+				end
+			end
+		end
+
 	refactor
 			-- Do the refactoring changes.
 		require else
@@ -192,6 +213,7 @@ feature {NONE} -- Implementation
 			l_matchlist: LEAF_AS_LIST
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
 			l_replacement_text: STRING
+			l_feat_comment: STRING
 		do
 			success := true
 
@@ -199,13 +221,24 @@ feature {NONE} -- Implementation
 
 			l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
 
+			l_feat_comment := extract_feature_comments(original_feature_ast, l_matchlist)
+
 			-- Perform method extraction
 			method_extractor.extract_method (transformable, feature_name, start_path, end_path, preferences.extracted_method_name)
 
 			if not etr_error_handler.has_errors then
 				-- Replace the old feature by the new one + extracted method
-				l_replacement_text := ast_tools.ast_to_string_with_indentation(method_extractor.old_method.target_node, 1)
-				l_replacement_text.append (ast_tools.ast_to_string_with_indentation(method_extractor.extracted_method.target_node, 1))
+				l_replacement_text :=	ast_tools.commented_feature_to_string (
+											method_extractor.old_method.target_node,
+											l_feat_comment,
+											1)
+
+				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
+													method_extractor.extracted_method.target_node,
+													" Extracted from `"+feature_name+"'",
+													1)
+											)
+
 				l_replacement_text.remove_tail (3)
 
 				original_feature_ast.replace_text (l_replacement_text, l_matchlist)
@@ -275,7 +308,7 @@ feature {NONE} -- Implementation
 	feature_name: STRING
 			-- Name of the feature the lines are in
 
-	original_feature_ast: AST_EIFFEL
+	original_feature_ast: FEATURE_AS
 			-- AST node of the original feature
 ;
 note

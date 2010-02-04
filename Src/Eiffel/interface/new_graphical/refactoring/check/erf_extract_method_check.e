@@ -38,7 +38,7 @@ feature -- Basic operation
 			l_start_path, l_end_path: AST_PATH
 			l_feat_transformable: ETR_TRANSFORMABLE
 			l_feat_ast: AST_EIFFEL
-			l_orig_feat: AST_EIFFEL
+			l_orig_feat: FEATURE_AS
 			l_written_feature: FEATURE_I
 			l_target_feature_name: STRING
 		do
