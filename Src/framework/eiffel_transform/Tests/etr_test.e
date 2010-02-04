@@ -16,6 +16,10 @@ inherit
 	ETR_SHARED_AST_TOOLS
 	ETR_SHARED_PARSERS
 	ETR_SHARED_BASIC_OPERATORS
+	SHARED_ERROR_HANDLER
+		rename
+			error_handler as sys_error_handler
+		end
 
 feature -- Test routines
 
@@ -35,7 +39,7 @@ feature -- Test routines
 			create l_env
 			l_library_dir := l_env.get("EIFFEL_SRC")
 
-			if attached l_library_dir then
+			if l_library_dir /= void then
 				create l_parser.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
 
 				-- setup class to parse
@@ -130,7 +134,123 @@ feature -- Test routines
 			assert("Invalid result", are_asts_equal(parsing_helper.reparsed_root, modifier.modified_ast.target_node))
 		end
 
+	print_eiffel_files(a_directory: DIRECTORY)
+			-- Recursively parses and reprints all classes in `a_directory'
+		require
+			exists: a_directory.exists
+		local
+			l_cur_file: KL_BINARY_INPUT_FILE
+			l_subdir: DIRECTORY
+			l_index: INTEGER
+		do
+			a_directory.open_read
+
+			from
+				a_directory.start
+				a_directory.readentry
+			until
+				a_directory.lastentry = void
+			loop
+				if not a_directory.lastentry.is_equal (".") and not a_directory.lastentry.is_equal ("..") and not a_directory.lastentry.is_equal (".svn") then
+					create l_cur_file.make (a_directory.name+"\"+a_directory.lastentry)
+					if l_cur_file.exists then
+						-- it's a file
+						if a_directory.lastentry.ends_with (".e") then
+							-- it's eiffel code
+							test_print_file(l_cur_file)
+						end
+					else
+						-- it's a directory
+						create l_subdir.make (a_directory.name+"\"+a_directory.lastentry)
+						if l_subdir.exists then
+							-- recruse
+							print_eiffel_files(l_subdir)
+						else
+							-- oups ?
+							check
+								false
+							end
+						end
+					end
+				end
+
+				a_directory.readentry
+			end
+
+			a_directory.close
+		end
+
+	huge_printer_test
+			-- Parses and reprints all classes in EIFFEL_SRC
+		indexing
+			testing:  "EiffelTransform", "covers/{ETR_AST_STRUCTURE_PRINTER}"
+		local
+			l_root_dir: DIRECTORY
+			l_root_dir_name: STRING
+			l_env: EXECUTION_ENVIRONMENT
+		do
+			create l_env
+			l_root_dir_name := l_env.get("EIFFEL_SRC")
+
+			create shared_parser.make_with_factory (create {AST_ROUNDTRIP_LIGHT_FACTORY})
+			create shared_output.make
+			create shared_printer.make_with_output(shared_output)
+
+			if l_root_dir_name /= void then
+				create l_root_dir.make(l_root_dir_name+"\library\gobo\svn")
+--				create l_root_dir.make(l_root_dir_name+"\framework\eiffel_transform\test_dir")
+				if l_root_dir.exists then
+					print_eiffel_files(l_root_dir)
+				end
+			else
+				assert ("$EIFFEL_SRC not set", false)
+			end
+		end
+
 feature {NONE} -- Helpers
+
+	shared_parser: EIFFEL_PARSER
+	shared_output: ETR_AST_STRING_OUTPUT
+	shared_printer: ETR_AST_STRUCTURE_PRINTER
+
+	test_print_file(a_file: KL_BINARY_INPUT_FILE)
+			-- reads a complex syntax file, prints it out from structure and tries to reparse it
+		require
+			exists: a_file.exists
+		local
+			l_class_ast: CLASS_AS
+		do
+			-- Reset
+			error_handler.reset_errors
+			sys_error_handler.wipe_out
+			shared_parser.set_syntax_version (syntax_version)
+			shared_output.reset
+
+			a_file.open_read
+			-- parse the class (no matchlist is generated)
+			shared_parser.parse (a_file)
+			a_file.close
+
+			if shared_parser.error_count=0 then
+				l_class_ast := shared_parser.root_node
+
+				-- Print
+				shared_printer.print_ast_to_output (l_class_ast)
+
+				-- reparse the string representation
+				-- somehow the syntax version gets reset when parsing
+				shared_parser.set_syntax_version (syntax_version)
+				shared_parser.parse_from_string (shared_output.string_representation, void)
+
+				if shared_parser.error_count >0 then
+					io.put_string ("STOP")
+				end
+
+				assert("Parsing of "+a_file.name+" failed", shared_parser.error_count = 0)
+			else
+				-- initial parsing failed for some reason
+			end
+		end
 
 	are_asts_equal(an_ast, another_ast: AST_EIFFEL): BOOLEAN
 			-- compare asts by printing and comparing strings

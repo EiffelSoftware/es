@@ -92,7 +92,10 @@ inherit
 			process_external_as,
 			process_infix_prefix_as,
 			process_formal_as,
-			process_like_id_as
+			process_like_id_as,
+			process_integer_as,
+			process_real_as,
+			process_debug_as
 		end
 
 feature {NONE} -- Implementation
@@ -103,6 +106,21 @@ feature {NONE} -- Implementation
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_debug_as (l_as: DEBUG_AS)
+		do
+			process_n_way_branch(l_as, [l_as.internal_keys, l_as.compound])
+		end
+
+	process_real_as (l_as: REAL_AS)
+		do
+			process_n_way_branch(l_as, [l_as.constant_type])
+		end
+
+	process_integer_as (l_as: INTEGER_AS)
+		do
+			process_n_way_branch(l_as, [l_as.constant_type])
+		end
 
 	process_like_id_as (l_as: LIKE_ID_AS)
 		do

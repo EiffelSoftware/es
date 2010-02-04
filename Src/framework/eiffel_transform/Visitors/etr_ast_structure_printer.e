@@ -93,6 +93,7 @@ inherit
 			process_precursor_as,
 			process_bracket_as,
 			process_variant_as,
+			process_none_type_as,
 			process_export_clause_as,
 			process_undefine_clause_as,
 			process_redefine_clause_as,
@@ -126,6 +127,9 @@ create
 	make_with_output
 
 feature {NONE} -- Implementation
+
+	is_in_agent_target: BOOLEAN
+			-- Hack needed to process agent OPERANDS
 
 	processing_needed(an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
 			-- should `an_ast' be processed
@@ -294,11 +298,32 @@ feature {AST_EIFFEL} -- Roundtrip: Atomic
 
 	process_integer_as (l_as: INTEGER_AS)
 		do
-			output.append_string (l_as.string_value)
+			if processing_needed (l_as.constant_type, l_as, 1) then
+				output.append_string (ti_l_curly)
+				process_child (l_as.constant_type, l_as, 1)
+				output.append_string (ti_r_curly+ti_space)
+			end
+
+			if l_as.has_integer (32) then
+				output.append_string (l_as.string_value)
+			elseif l_as.has_integer (64) then
+				-- Can't be represented as 32bit INT
+				-- string_value will fail, use 64bit value
+				output.append_string (l_as.integer_64_value.out)
+			else
+				-- Use NATURAL_64 value
+				output.append_string (l_as.natural_64_value.out)
+			end
 		end
 
 	process_real_as (l_as: REAL_AS)
 		do
+			if processing_needed (l_as.constant_type, l_as, 1) then
+				output.append_string (ti_l_curly)
+				process_child (l_as.constant_type, l_as, 1)
+				output.append_string (ti_r_curly+ti_space)
+			end
+
 			output.append_string (l_as.value)
 		end
 
@@ -317,7 +342,7 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 	process_case_as (l_as: CASE_AS)
 		do
 			output.append_string (ti_When_keyword+ti_Space)
-			process_child(l_as.interval, l_as, 1)
+			process_child_list (l_as.interval, ti_comma+ti_space, l_as, 1)
 			output.append_string (ti_Space+ti_Then_keyword+ti_New_line)
 			process_child_block (l_as.compound, l_as, 2)
 		end
@@ -396,8 +421,12 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 
 	process_debug_as (l_as: DEBUG_AS)
 		do
+			if processing_needed (l_as.internal_keys, l_as, 1) then
+				process_child_list (l_as.internal_keys.keys, ", ", l_as, 1)
+			end
+
 			output.append_string(ti_debug_keyword+ti_New_line)
-			process_child_block(l_as.compound, l_as, 1)
+			process_child_block(l_as.compound, l_as, 2)
 			output.append_string(ti_End_keyword+ti_New_line)
 		end
 
@@ -534,7 +563,7 @@ feature {AST_EIFFEL} -- Roundtrip: Inheritance
 			if processing_needed (l_as.selecting, l_as, 6) then
 				output.append_string (ti_select_keyword+ti_New_line)
 				output.enter_block
-				process_child_list (l_as.selecting, ti_New_line, l_as, 6)
+				process_child_list (l_as.selecting, ti_comma+ti_New_line, l_as, 6)
 				output.append_string (ti_New_line)
 				output.exit_block
 				was_processed := true
@@ -591,6 +620,11 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 		do
 			output.append_string (ti_Bit_class+ti_Space)
 			process(l_as.bits_value, l_as, 1)
+		end
+
+	process_none_type_as (l_as: NONE_TYPE_AS)
+		do
+			output.append_string (ti_none_class)
 		end
 
 	process_class_type_as (l_as: CLASS_TYPE_AS)
@@ -683,12 +717,6 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 
 	process_formal_as (l_as: FORMAL_AS)
 		do
-			if l_as.is_expanded then
-				output.append_string (ti_expanded_keyword+ti_Space)
-			elseif l_as.is_reference then
-				output.append_string (ti_reference_keyword+ti_Space)
-			end
-
 			process (l_as.name, l_as, 1)
 		end
 
@@ -736,7 +764,9 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 
 	process_type_expr_as (l_as: TYPE_EXPR_AS)
 		do
+			output.append_string (ti_l_curly)
 			process_child (l_as.type, l_as, 1)
+			output.append_string (ti_r_curly)
 		end
 
 	process_custom_attribute_as (l_as: CUSTOM_ATTRIBUTE_AS)
@@ -837,9 +867,18 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 					output.append_string (l_as.name.name)
 				end
 			else
-				fixme("How does this look / is this possible ?")
-				process_child(l_as.type, l_as, 1)
-				process_child(l_as.expression, l_as, 2)
+				-- looks like this:
+				-- {name: TYPE} expr
+
+				output.append_string (ti_l_curly)
+
+				if processing_needed (l_as.name, l_as, 3) then
+					output.append_string (l_as.name.name+ti_colon+ti_space)
+				end
+
+				process_child (l_as.type, l_as, 1)
+				output.append_string (ti_r_curly+ti_space)
+				process_child (l_as.expression, l_as, 2)
 			end
 		end
 
@@ -866,7 +905,11 @@ feature {AST_EIFFEL} -- Roundtrip: Access
 				process_child(l_as.parent_base_class, l_as, 1)
 				output.append_string (ti_r_curly)
 			end
-			process_child(l_as.parameters, l_as, 2)
+			if processing_needed (l_as.parameters,l_as,2) then
+				output.append_string (ti_Space+ti_l_parenthesis)
+				process_child_list(l_as.parameters, ti_comma+ti_Space,l_as,2)
+				output.append_string (ti_r_parenthesis)
+			end
 		end
 
 	process_result_as (l_as: RESULT_AS)
@@ -952,6 +995,12 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 	process_formal_dec_as (l_as: FORMAL_DEC_AS)
 		do
+			if l_as.formal.is_expanded then
+				output.append_string (ti_expanded_keyword+ti_Space)
+			elseif l_as.formal.is_reference then
+				output.append_string (ti_reference_keyword+ti_Space)
+			end
+
 			process_child(l_as.formal, l_as, 1)
 
 			output.append_string (ti_Space+ti_Constraint+ti_Space)
@@ -1080,13 +1129,13 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 	process_body_as (l_as: BODY_AS)
 		do
 			if processing_needed (l_as.arguments, l_as, 1) then
-				output.append_string (ti_l_parenthesis)
+				output.append_string (ti_space+ti_l_parenthesis)
 				process_child_list(l_as.arguments, ti_semi_colon+ti_Space, l_as, 1)
 				output.append_string (ti_r_parenthesis)
 			end
 
 			if processing_needed (l_as.type, l_as, 2) then
-				output.append_string (ti_colon)
+				output.append_string (ti_colon+ti_space)
 				process_child (l_as.type, l_as, 2)
 			end
 
@@ -1095,6 +1144,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			elseif processing_needed (l_as.assigner, l_as, 3) then
 				output.append_string (ti_Space+ti_assign_keyword+ti_Space)
 				process_child (l_as.assigner, l_as, 3)
+				output.append_string(ti_New_line)
 			elseif l_as.is_unique then
 				output.append_string (ti_Space+ti_is_keyword+ti_Space+ti_unique_keyword)
 			else
@@ -1113,7 +1163,6 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 	process_feature_as (l_as: FEATURE_AS)
 		do
 			process_child_list(l_as.feature_names, ti_comma+ti_Space, l_as, 1)
-			output.append_string (ti_space)
 			process_child(l_as.body, l_as, 2)
 		end
 
@@ -1152,6 +1201,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			end
 
 			process_child(l_as.top_indexes, l_as, 1)
+
 			output.append_string (ti_class_keyword+ti_New_line)
 			output.enter_block
 			process_child(l_as.class_name, l_as, 2)
@@ -1194,7 +1244,8 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 	process_index_as (l_as: INDEX_AS)
 		do
-			process_child(l_as.index_list, l_as, 1)
+			-- don't print
+--			process_child(l_as.index_list, l_as, 1)
 		end
 
 	process_nested_as (l_as: NESTED_AS)
@@ -1289,7 +1340,13 @@ feature {AST_EIFFEL} -- Roundtrip: Agents
 		do
 			output.append_string (ti_agent_keyword+ti_Space)
 
-			process_child(l_as.target,l_as, 1)
+			if processing_needed (l_as.target,l_as,1) then
+				is_in_agent_target := true
+				process_child(l_as.target,l_as, 1)
+				is_in_agent_target := false
+				output.append_string (ti_dot)
+			end
+
 			process_child(l_as.feature_name,l_as, 2)
 			if processing_needed (l_as.operands,l_as,3) then
 				output.append_string (ti_l_parenthesis)
@@ -1306,10 +1363,16 @@ feature {AST_EIFFEL} -- Roundtrip: Agents
 					process_child (l_as.class_type, l_as, 1)
 					output.append_string (ti_r_curly)
 				end
-				output.append_string (ti_Question)
+				if not is_in_agent_target then
+					output.append_string (ti_Question)
+				end
 			else
 				process_child(l_as.target, l_as, 3)
-				process_child(l_as.expression, l_as, 2)
+				if processing_needed (l_as.expression, l_as, 2) then
+					output.append_string (ti_l_parenthesis)
+					process_child(l_as.expression, l_as, 2)
+					output.append_string (ti_r_parenthesis)
+				end
 			end
 		end
 note
