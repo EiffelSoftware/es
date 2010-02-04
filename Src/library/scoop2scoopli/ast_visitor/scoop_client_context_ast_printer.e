@@ -1132,7 +1132,9 @@ feature {NONE} -- Level handling
 
 			if l_type_expr_visitor.is_query then
 				set_current_level_type (l_type_expr_visitor.expression_type)
-				if levels_layers.item.count > 1 and then is_previous_level_separate then
+				if levels_layers.item.count > 1 and then
+					is_previous_level_separate and
+					not l_type_expr_visitor.expression_type.is_expanded then
 					-- Propagation of 'is_separate' state
 					-- Creates for nested calls for every following call an argument 'Current'
 					set_current_level_is_separate(True)
