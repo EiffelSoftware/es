@@ -497,7 +497,7 @@ feature {NONE} -- Implementation
 			root_class := root.class_type_name
 			starter.create_starter_class (root_class, "make")
 
-			print_to_file (starter.get_context , "SCOOP_STARTER" , True)
+			print_to_file (starter.context , "SCOOP_STARTER" , True)
 		end
 
 --	any_class_c : CLASS_C
