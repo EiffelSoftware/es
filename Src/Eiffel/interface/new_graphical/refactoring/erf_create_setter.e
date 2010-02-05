@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 			l_transformable: ETR_TRANSFORMABLE
 			l_append_text: STRING
 			l_brk_text: STRING
-			l_region_start_index, l_region_end_index: INTEGER
+			l_region_start_index: INTEGER
 			l_replacement_region: ERT_TOKEN_REGION
 		do
 			success := true

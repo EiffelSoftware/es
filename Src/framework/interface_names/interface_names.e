@@ -598,11 +598,17 @@ feature -- Accelerator, focus label and menu name
 	m_Refactoring_toolbar: STRING_32		do Result := locale.translation("Re&factoring Bar")	end
 	f_refactoring_pull: STRING_32		do Result := locale.translation("Pull up Feature")	end
 	f_refactoring_extract_method: STRING_32		do Result := locale.translation("Extract Method")	end
+	f_refactoring_pretty_print: STRING_32		do Result := locale.translation("Pretty print")	end
+	f_refactoring_make_effective: STRING_32		do Result := locale.translation("Make effective")	end
+	f_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
 	f_refactoring_rename: STRING_32		do Result := locale.translation("Rename Feature/Class")	end
 	f_refactoring_undo: STRING_32		do Result := locale.translation("Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)")	end
 	f_refactoring_redo: STRING_32		do Result := locale.translation("Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)")	end
 	b_refactoring_pull: STRING_32		do Result := locale.translation("Pull Up")	end
 	b_refactoring_extract_method: STRING_32		do Result := locale.translation("Extract Method")	end
+	b_refactoring_pretty_print: STRING_32		do Result := locale.translation("Pretty print")	end
+	b_refactoring_make_effective: STRING_32		do Result := locale.translation("Make effective")	end
+	b_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
 	b_refactoring_rename: STRING_32		do Result := locale.translation("Rename")	end
 	b_refactoring_undo: STRING_32		do Result := locale.translation("Undo Refactoring")	end
 	b_refactoring_redo: STRING_32		do Result := locale.translation("Redo Refactoring")	end

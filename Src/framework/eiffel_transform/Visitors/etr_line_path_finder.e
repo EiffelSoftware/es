@@ -59,8 +59,15 @@ feature {NONE} -- Implementation
 	is_target(a_ast: AST_EIFFEL): BOOLEAN
 			-- is `a_ast' the target?
 		do
-			fixme("Doesn't work with elsifs/ifs + probably others")
-			Result := not attached {DO_AS}a_ast and a_ast.is_text_available (match_list) and then (a_ast.first_token (match_list).line = target_line or a_ast.last_token (match_list).line = target_line)
+			if not attached {INSTRUCTION_AS}a_ast then
+				Result := False
+			elseif not a_ast.is_text_available (match_list) then
+				Result := False
+			elseif a_ast.first_token (match_list).line = target_line then
+				Result := True
+			elseif a_ast.last_token (match_list).line = target_line then
+				Result := True
+			end
 		end
 
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])

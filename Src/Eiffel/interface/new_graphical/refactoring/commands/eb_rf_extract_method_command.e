@@ -119,7 +119,7 @@ feature -- Execution
 
 				manager.execute_refactoring (rf)
 			else
-				prompts.show_info_prompt ("Current class is not compiled", window.window, Void)
+				prompts.show_info_prompt (warning_messages.w_Class_not_compiled, window.window, Void)
 			end
 		end
 

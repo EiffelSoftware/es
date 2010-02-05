@@ -70,8 +70,7 @@ feature -- Access
 	description: STRING_GENERAL
 			-- What is printed in the customize dialog.
 		do
---			Result := interface_names.f_refactoring_extract_method
-			Result := "Create setter"
+			Result := interface_names.f_refactoring_create_setter
 		end
 
 	tooltip: STRING_GENERAL
@@ -83,8 +82,7 @@ feature -- Access
 	tooltext: STRING_GENERAL
 			-- Text for toolbar button
 		do
-			Result := "Create setter"
---			Result := interface_names.b_refactoring_extract_method
+			Result := interface_names.b_refactoring_create_setter
 		end
 
 	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
@@ -128,7 +126,7 @@ feature -- Execution
 			if fs /= Void and then fs.e_feature.is_attribute then
 				drop_feature (fs)
 			else
-				prompts.show_info_prompt ("Drop an attribute to creata a setter for", window.window, Void)
+				prompts.show_info_prompt (warning_messages.w_Select_attribute_for_setter, window.window, Void)
 			end
 		end
 

@@ -49,8 +49,7 @@ feature -- Access
 	description: STRING_GENERAL
 			-- What is printed in the customize dialog.
 		do
-			Result := "Make effective"
---			Result := interface_names.f_refactoring_extract_method
+			Result := interface_names.f_refactoring_make_effective
 		end
 
 	tooltip: STRING_GENERAL
@@ -62,8 +61,7 @@ feature -- Access
 	tooltext: STRING_GENERAL
 			-- Text for toolbar button
 		do
---			Result := interface_names.b_refactoring_extract_method
-			Result := "Make effective"
+			Result := interface_names.b_refactoring_make_effective
 		end
 
 	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
@@ -109,7 +107,7 @@ feature -- Events
 				manager.execute_refactoring (rf)
 			else
 				window := window_manager.last_focused_development_window
-				prompts.show_info_prompt ("Drop a compiled, deferred class", window.window, Void)
+				prompts.show_info_prompt (warning_messages.w_Select_deferred_class, window.window, Void)
 			end
 		end
 
@@ -125,7 +123,7 @@ feature -- Execution
 			if attached {CLASSI_STONE}window.stone as cs then
 				drop_class (cs)
 			else
-				prompts.show_info_prompt ("Drop a compiled, deferred class", window.window, Void)
+				prompts.show_info_prompt (warning_messages.w_Select_deferred_class, window.window, Void)
 			end
 		end
 

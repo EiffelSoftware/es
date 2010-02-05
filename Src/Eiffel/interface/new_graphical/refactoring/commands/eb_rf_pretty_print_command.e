@@ -70,8 +70,7 @@ feature -- Access
 	description: STRING_GENERAL
 			-- What is printed in the customize dialog.
 		do
---			Result := interface_names.f_refactoring_extract_method
-			Result := "Pretty print"
+			Result := interface_names.f_refactoring_pretty_print
 		end
 
 	tooltip: STRING_GENERAL
@@ -83,8 +82,7 @@ feature -- Access
 	tooltext: STRING_GENERAL
 			-- Text for toolbar button
 		do
-			Result := "Pretty print"
---			Result := interface_names.b_refactoring_extract_method
+			Result := interface_names.b_refactoring_pretty_print
 		end
 
 	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
@@ -128,7 +126,7 @@ feature -- Execution
 			if fs /= Void then
 				drop_feature (fs)
 			else
-				prompts.show_info_prompt ("Select feature to pretty print", window.window, Void)
+				prompts.show_info_prompt (warning_messages.w_Select_feature_to_pretty_print, window.window, Void)
 			end
 		end
 

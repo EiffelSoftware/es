@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ERF_MAKE_EFFECTIVE}."
+	description: "Refactoring that makes a class effective by using empty implementations"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -52,8 +52,6 @@ feature {NONE} -- Implementation
 		local
 			l_matchlist: LEAF_AS_LIST
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
-			l_replacement_text: STRING
-
 			l_transformable: ETR_TRANSFORMABLE
 			l_compiled_class: CLASS_C
 		do
