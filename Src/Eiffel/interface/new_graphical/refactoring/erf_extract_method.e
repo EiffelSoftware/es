@@ -7,12 +7,11 @@ note
 class
 	ERF_EXTRACT_METHOD
 inherit
-	ERF_REFACTORING
+	ERF_ETR_REFACTORING
 		redefine
 			preferences,
 			ask_run_settings,
-			refactor,
-			execute
+			refactor
 		end
 
 	REFACTORING_HELPER
@@ -26,10 +25,6 @@ inherit
 	ETR_SHARED_AST_TOOLS
 	ETR_SHARED_PATH_TOOLS
 	ETR_SHARED_OPERATORS
-	ETR_SHARED_ERROR_HANDLER
-		rename
-			error_handler as etr_error_handler
-		end
 
 create
 	make
@@ -96,114 +91,10 @@ feature {ERF_EXTRACT_METHOD_CHECK} -- Element change
 			end_path := a_path
 		end
 
-feature -- Basic
-
-	execute
-			-- Execute the refactoring
-		local
-			all_checks_ok: BOOLEAN
-			compiler_check: ERF_COMPILATION_SUCCESSFUL
-		do
-			success := False
-			status_bar := window_manager.last_focused_development_window.status_bar
-			create compiler_check.make
-
-				-- check if compilation is ok
-			compiler_check.execute
-			if not compiler_check.success then
-				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (compiler_check.error_message, Void, Void)
-			else
-					-- Get open classes
-				window_manager.for_all_development_windows (agent add_window_to_open_classes)
-
-					-- Ask settings till the checks all complete successfully or if the user cancels
-				ask_run_settings
-				if retry_ask_run_settings then
-					from
-						all_checks_ok := checks.for_all (agent check_successful)
-					until
-						not retry_ask_run_settings or else all_checks_ok
-					loop
-						ask_run_settings
-						all_checks_ok := checks.for_all (agent check_successful)
-					end
-						-- Checks ok and user didn't cancel
-					if all_checks_ok and retry_ask_run_settings then
-							-- Handle undo
-						create current_actions.make (0)
-
-						refactor
-
-						if success then
-							-- Execute compilation
-							compiler_check.execute
-							success := compiler_check.success
-
-								-- on error ask if we should rollback
-							if not success then
-									-- success, because, now the user can choose to keep the changes or if he rollbacks, success will be set to False
-								success := True
-								(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_question_prompt (compiler_check.error_message.as_string_32+" " + interface_names.l_rollback_question, Void, agent rollback, agent commit)
-							else
-								commit
-							end
-						end
-					end
-					window_manager.for_all_development_windows (agent {EB_DEVELOPMENT_WINDOW}.synchronize)
-				end
-			end
-		rescue
-				-- on exception undo any changes
-			rollback
-		end
-
 feature {NONE} -- Implementation
 
 	preferences: ERF_EXTRACT_METHOD_PREFERENCES
 			-- Preferences for this refactoring.
-
-	show_etr_error
-			-- Report etr error
-		local
-			l_error_msg: STRING
-		do
-			if etr_error_handler.has_errors then
-				from
-					create l_error_msg.make_empty
-					etr_error_handler.errors.start
-				until
-					etr_error_handler.errors.after
-				loop
-					l_error_msg.append (etr_error_handler.errors.item)
-					etr_error_handler.errors.forth
-					if not etr_error_handler.errors.after then
-						l_error_msg.append ("%N")
-					end
-				end
-				prompts.show_error_prompt (l_error_msg, Void, Void)
-			end
-		end
-
-	extract_feature_comments(a_feature: FEATURE_AS; a_matchlist: LEAF_AS_LIST): STRING
-			-- Extract comments from `a_feature' and return them as multiline-string
-		local
-			l_comments: EIFFEL_COMMENTS
-		do
-			l_comments := a_feature.comment (a_matchlist)
-
-			from
-				create Result.make_empty
-				l_comments.start
-			until
-				l_comments.after
-			loop
-				Result.append (l_comments.item.content)
-				l_comments.forth
-				if not l_comments.after then
-					Result.append("%N")
-				end
-			end
-		end
 
 	refactor
 			-- Do the refactoring changes.
@@ -214,6 +105,9 @@ feature {NONE} -- Implementation
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
 			l_replacement_text: STRING
 			l_feat_comment: STRING
+			l_replacement_region: ERT_TOKEN_REGION
+			l_region_start_index, l_region_end_index: INTEGER
+			l_brk_text: STRING
 		do
 			success := true
 
@@ -221,17 +115,41 @@ feature {NONE} -- Implementation
 
 			l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
 
-			l_feat_comment := extract_feature_comments(original_feature_ast, l_matchlist)
+			l_feat_comment := ast_tools.extract_feature_comments(original_feature_ast, l_matchlist)
 
 			-- Perform method extraction
 			method_extractor.extract_method (transformable, feature_name, start_path, end_path, preferences.extracted_method_name)
 
 			if not etr_error_handler.has_errors then
 				-- Replace the old feature by the new one + extracted method
-				l_replacement_text :=	ast_tools.commented_feature_to_string (
-											method_extractor.old_method.target_node,
-											l_feat_comment,
-											1)
+
+				-- Get the leading break text
+				create l_brk_text.make_empty
+				if original_feature_ast.has_leading_separator (l_matchlist) then
+					l_region_start_index := original_feature_ast.first_token (l_matchlist).index-1
+					l_brk_text := l_matchlist.i_th (l_region_start_index).text (l_matchlist)
+					l_brk_text := ast_tools.remove_ending_indentation (l_brk_text, '%T')
+				else
+					l_region_start_index := original_feature_ast.first_token (l_matchlist).index
+				end
+
+				l_replacement_text := l_brk_text
+
+				if not l_replacement_text.ends_with ("%N%N") then
+					if l_replacement_text.ends_with ("%N") then
+						l_replacement_text.append ("%N")
+					else
+						l_replacement_text.append ("%N%N")
+					end
+				end
+
+				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
+													method_extractor.old_method.target_node,
+													l_feat_comment,
+													1)
+											)
+
+				l_replacement_text.append ("%N")
 
 				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
 													method_extractor.extracted_method.target_node,
@@ -239,9 +157,13 @@ feature {NONE} -- Implementation
 													1)
 											)
 
-				l_replacement_text.remove_tail (3)
+				-- Removing trailing newline, otherwise it's duplicate
+				l_replacement_text.remove_tail (1)
 
-				original_feature_ast.replace_text (l_replacement_text, l_matchlist)
+				l_region_end_index := original_feature_ast.last_token (l_matchlist).index
+
+				create l_replacement_region.make (l_region_start_index, l_region_end_index)
+				l_matchlist.replace_region (l_replacement_region, l_replacement_text)
 
 				create l_class_modifier.make (class_i)
 				l_class_modifier.prepare
@@ -287,8 +209,6 @@ feature {NONE} -- Implementation
 			checks.extend (create {ERF_VALID_FEATURE_NAME}.make (preferences.extracted_method_name))
 			checks.extend (create {ERF_FEATURE_NOT_IN_CLASS}.make (preferences.extracted_method_name, class_i.compiled_class, void, true, false))
 			checks.extend (create {ERF_EXTRACT_METHOD_CHECK}.make (Current, class_i.compiled_class, preferences.start_line, preferences.end_line))
-
-			-- todo: add check for line numbers
 
 			retry_ask_run_settings := dialog.ok_pressed
         end

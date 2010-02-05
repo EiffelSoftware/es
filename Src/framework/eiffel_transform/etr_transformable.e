@@ -8,7 +8,13 @@ class
 	ETR_TRANSFORMABLE
 inherit
 	ETR_SHARED_PATH_TOOLS
+		redefine
+			out
+		end
 	ETR_SHARED_AST_TOOLS
+		redefine
+			out
+		end
 create
 	make_from_ast,
 	make_invalid,
@@ -43,6 +49,18 @@ feature -- Access
 
 	is_valid: BOOLEAN
 			-- Is `Current' valid?
+
+feature -- Output
+
+	out: STRING
+			-- Print
+		do
+			if attached target_node then
+				Result := ast_tools.ast_to_string (target_node)
+			else
+				Result := "<INVALID>"
+			end
+		end
 
 feature {NONE} -- creation
 

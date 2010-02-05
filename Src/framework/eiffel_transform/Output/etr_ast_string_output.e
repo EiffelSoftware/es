@@ -36,6 +36,7 @@ feature {NONE} -- Implementation
 			create context.make
 			create current_indentation.make_empty
 			indentation_string := an_indentation_string
+			last_was_newline := true
 		end
 
 feature -- Constants
@@ -69,6 +70,7 @@ feature -- Operations
 		do
 			context.clear
 			current_indentation := ""
+			last_was_newline := true
 		end
 
 	enter_block

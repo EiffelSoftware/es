@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EB_RF_EXTRACT_METHOD_COMMAND
+	EB_RF_PRETTY_PRINT_COMMAND
 inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
@@ -37,6 +37,26 @@ feature {NONE} -- Initialization
 			manager := a_manager
 		end
 
+feature -- Events
+
+	drop_feature (fs: FEATURE_STONE)
+			-- Process feature stone.
+		local
+			feature_i: FEATURE_I
+			rf: ERF_FEATURE_PRETTY_PRINT
+		do
+			if fs.e_class /= Void then
+				feature_i := fs.e_class.feature_of_feature_id (fs.e_feature.feature_id)
+			end
+			if feature_i /= Void and then fs.e_feature.associated_class.class_id = feature_i.written_in then
+				rf := manager.pretty_print_refactoring
+				rf.set_feature (feature_i)
+				manager.execute_refactoring (rf)
+			else
+				prompts.show_error_prompt (warning_messages.w_feature_not_written_in_class, Void, Void)
+			end
+		end
+
 feature -- Status
 
 	is_tooltext_important: BOOLEAN
@@ -50,7 +70,8 @@ feature -- Access
 	description: STRING_GENERAL
 			-- What is printed in the customize dialog.
 		do
-			Result := interface_names.f_refactoring_extract_method
+--			Result := interface_names.f_refactoring_extract_method
+			Result := "Pretty print"
 		end
 
 	tooltip: STRING_GENERAL
@@ -62,13 +83,15 @@ feature -- Access
 	tooltext: STRING_GENERAL
 			-- Text for toolbar button
 		do
-			Result := interface_names.b_refactoring_extract_method
+			Result := "Pretty print"
+--			Result := interface_names.b_refactoring_extract_method
 		end
 
 	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Create a new toolbar button for `Current'.
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
+			Result.drop_actions.extend (agent drop_feature (?))
 		end
 
 	menu_name: STRING_GENERAL
@@ -89,7 +112,7 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.tool_config_icon_buffer
 		end
 
-	Name: STRING = "RF_extract_method"
+	Name: STRING = "RF_pretty_print"
 			-- Name of `Current' to identify it.
 
 feature -- Execution
@@ -97,29 +120,15 @@ feature -- Execution
 	execute
 			-- Execute.
 		local
+			fs: FEATURE_STONE
 			window: EB_DEVELOPMENT_WINDOW
-			rf: ERF_EXTRACT_METHOD
-			displayed_text: CLICKABLE_TEXT
 		do
 			window := window_manager.last_focused_development_window
-
-			if attached {CLASSI_STONE}window.stone as cs and then attached {EIFFEL_CLASS_I}cs.class_i as eif_class_i and then eif_class_i.is_compiled then
-				rf := manager.extract_method_refactoring
-				rf.set_class (eif_class_i)
-
-				displayed_text := window.ui.current_editor.text_displayed
-
-				if not displayed_text.selection_is_empty then
-					rf.set_start_line(displayed_text.selection_start.y_in_lines)
-					rf.set_end_line(displayed_text.selection_end.y_in_lines)
-				else
-					rf.set_start_line (displayed_text.cursor.y_in_lines)
-					rf.set_end_line (displayed_text.cursor.y_in_lines)
-				end
-
-				manager.execute_refactoring (rf)
+			fs ?= window.stone
+			if fs /= Void then
+				drop_feature (fs)
 			else
-				prompts.show_info_prompt ("Current class is not compiled", window.window, Void)
+				prompts.show_info_prompt ("Select feature to pretty print", window.window, Void)
 			end
 		end
 

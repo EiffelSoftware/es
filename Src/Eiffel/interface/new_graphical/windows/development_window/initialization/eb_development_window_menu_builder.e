@@ -90,6 +90,21 @@ feature -- Command
 			auto_recycle (l_command_menu_item)
 			l_refactoring_menu.extend (l_command_menu_item)
 
+				-- Pretty print
+			l_command_menu_item := develop_window.refactoring_manager.pretty_print_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Create setter
+			l_command_menu_item := develop_window.refactoring_manager.create_setter_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Make effective
+			l_command_menu_item := develop_window.refactoring_manager.make_effective_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
 				-- Separator -------------------------------------------------
 			l_refactoring_menu.extend (create {EV_MENU_SEPARATOR})
 

@@ -1155,8 +1155,6 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 				process_child_block(l_as.content, l_as, 4)
 			end
 
-			output.append_string(ti_New_line)
-
 			process_child(l_as.indexing_clause, l_as, 5)
 		end
 
@@ -1171,7 +1169,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			output.append_string(ti_feature_keyword+ti_Space)
 			process_child(l_as.clients, l_as, 1)
 			output.append_string(ti_New_line)
-			process_child_block (l_as.features, l_as, 2)
+			process_child_block_list (l_as.features, ti_new_line, l_as, 2)
 		end
 
 	process_class_list_as (l_as: CLASS_LIST_AS)
