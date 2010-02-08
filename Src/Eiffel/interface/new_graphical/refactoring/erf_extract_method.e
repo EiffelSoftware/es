@@ -135,12 +135,8 @@ feature {NONE} -- Implementation
 
 				l_replacement_text := l_brk_text
 
-				if not l_replacement_text.ends_with ("%N%N") then
-					if l_replacement_text.ends_with ("%N") then
-						l_replacement_text.append ("%N")
-					else
-						l_replacement_text.append ("%N%N")
-					end
+				if not l_replacement_text.ends_with ("%N") then
+					l_replacement_text.append ("%N")
 				end
 
 				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (

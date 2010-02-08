@@ -252,7 +252,7 @@ feature {NONE} -- Implementation
 
 feature -- Output
 
-	output: ETR_AST_STRUCTURE_OUTPUT
+	output: ETR_AST_STRUCTURE_OUTPUT_I
 
 	print_ast_to_output(an_ast: detachable AST_EIFFEL)
 			-- prints `an_ast' to `output'

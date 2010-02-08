@@ -7,7 +7,7 @@ note
 class
 	ETR_AST_STRING_OUTPUT
 inherit
-	ETR_AST_STRUCTURE_OUTPUT
+	ETR_AST_STRUCTURE_OUTPUT_I
 create
 	make,
 	make_with_indentation_string

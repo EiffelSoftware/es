@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	ETR_AST_STRUCTURE_OUTPUT
+	ETR_AST_STRUCTURE_OUTPUT_I
 
 feature
 

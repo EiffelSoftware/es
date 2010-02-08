@@ -124,14 +124,14 @@ feature -- Test routines
 			modifier.apply_to (modifier.modified_ast)
 
 			-- reference
-			parsing_helper.reparse_printed_ast (modifier.modified_ast.target_node,
+			parsing_helper.parse_printed_ast (modifier.modified_ast.target_node,
 			"if a >= b then %N"+
 				"a := a - b %N"+
 			"else %N"+
 				"b := b - a %N"+
 			"end")
 
-			assert("Invalid result", are_asts_equal(parsing_helper.reparsed_root, modifier.modified_ast.target_node))
+			assert("Invalid result", are_asts_equal(parsing_helper.parsed_ast, modifier.modified_ast.target_node))
 		end
 
 	print_eiffel_files(a_directory: DIRECTORY)

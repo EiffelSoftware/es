@@ -12,8 +12,25 @@ inherit
 
 feature -- Access
 
-	reparsed_root: detachable AST_EIFFEL
-			-- Result of `reparse_printed_ast'
+	parsed_ast: detachable AST_EIFFEL
+			-- Result of `parse_printed_ast'
+
+	parsed_expr: detachable EXPR_AS
+			-- Result of `parse_expr'
+
+	parsed_instruction: detachable INSTRUCTION_AS
+			-- Result of `parse_instruction'
+
+	parsed_class: detachable CLASS_AS
+			-- Result of `parse_class'
+
+	parsed_instruction_list: detachable EIFFEL_LIST[INSTRUCTION_AS]
+			-- Result of `parse_instruction_list'
+
+	parsed_feature: detachable FEATURE_AS
+			-- Result of `parse_feature'
+
+feature -- Status
 
 	is_using_compiler_factory: BOOLEAN
 			-- Are we using a compiler factory to parse?
@@ -26,61 +43,93 @@ feature -- Operations
 			is_using_compiler_factory := a_state
 		end
 
-	reparse_printed_ast(a_root_type: AST_EIFFEL; a_printed_ast: STRING)
+	parse_printed_ast (a_root_type: AST_EIFFEL; a_printed_ast: STRING)
 			-- parse an ast of type `a_root_type'
 		require
-			non_void: a_root_type /= void and a_printed_ast /= void
+			non_void: a_root_type /= Void and a_printed_ast /= Void
 		do
-			reparsed_root := void
-
+			parsed_ast := Void
 			if attached {CLASS_AS}a_root_type then
-				etr_class_parser.set_syntax_version(syntax_version)
-				etr_class_parser.parse_from_string (a_printed_ast,void)
-
-				if etr_class_parser.error_count>0 then
-					error_handler.add_error (Current, "reparse_printed_ast", "Class parsing failed")
-				else
-					reparsed_root := etr_class_parser.root_node
-				end
+				parse_class (a_printed_ast)
 			elseif attached {FEATURE_AS}a_root_type then
-				etr_feat_parser.set_syntax_version(syntax_version)
-				etr_feat_parser.parse_from_string ("feature "+a_printed_ast,void)
-
-				if etr_feat_parser.error_count>0 then
-					error_handler.add_error (Current, "reparse_printed_ast", "Feature parsing failed")
-				else
-					reparsed_root := etr_feat_parser.feature_node
-				end
+				parse_feature (a_printed_ast)
 			elseif attached {INSTRUCTION_AS}a_root_type then
-				etr_feat_parser.set_syntax_version(syntax_version)
-				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
-				if etr_feat_parser.error_count>0 then
-					error_handler.add_error (Current, "reparse_printed_ast", "Instruction parsing failed")
-				else
-					if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
-						reparsed_root := body.compound.first
-					end
-				end
+				parse_instruction (a_printed_ast)
 			elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}a_root_type then
-				etr_feat_parser.set_syntax_version(syntax_version)
-				etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+a_printed_ast+" end",void)
-				if etr_feat_parser.error_count>0 then
-					error_handler.add_error (Current, "reparse_printed_ast", "Instruction-list parsing failed")
-				else
-					if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
-						reparsed_root := body.compound
-					end
-				end
+				parse_instruction_list (a_printed_ast)
 			elseif attached {EXPR_AS}a_root_type then
-				etr_expr_parser.set_syntax_version(syntax_version)
-				etr_expr_parser.parse_from_string ("check "+a_printed_ast,void)
-				if etr_expr_parser.error_count>0 then
-					error_handler.add_error (Current, "reparse_printed_ast", "Expression parsing failed")
-				else
-					reparsed_root := etr_expr_parser.expression_node
-				end
+				parse_expr (a_printed_ast)
 			else
-				error_handler.add_error (Current, "reparse_printed_ast", "Root of type "+a_root_type.generating_type+" is not supported")
+				error_handler.add_error (Current, "reparse_printed_ast", "Root of type " + a_root_type.generating_type + " is not supported")
+			end
+		end
+
+	parse_expr (a_printed_ast: STRING_8)
+			-- Extracted from `parse_printed_ast'
+		do
+			etr_expr_parser.set_syntax_version (syntax_version)
+			etr_expr_parser.parse_from_string ("check " + a_printed_ast, Void)
+			if etr_expr_parser.error_count > 0 then
+				error_handler.add_error (Current, "reparse_printed_ast", "Expression parsing failed")
+			else
+				parsed_expr := etr_expr_parser.expression_node
+				parsed_ast := parsed_expr
+			end
+		end
+
+	parse_instruction_list (a_printed_ast: STRING_8)
+			-- Extracted from `parse_printed_ast'
+		do
+			etr_feat_parser.set_syntax_version (syntax_version)
+			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
+			if etr_feat_parser.error_count > 0 then
+				error_handler.add_error (Current, "reparse_printed_ast", "Instruction-list parsing failed")
+			else
+				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+					parsed_instruction_list := body.compound
+					parsed_ast := parsed_instruction_list
+				end
+			end
+		end
+
+	parse_instruction (a_printed_ast: STRING_8)
+			-- Extracted from `parse_printed_ast'
+		do
+			etr_feat_parser.set_syntax_version (syntax_version)
+			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
+			if etr_feat_parser.error_count > 0 then
+				error_handler.add_error (Current, "reparse_printed_ast", "Instruction parsing failed")
+			else
+				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+					parsed_instruction := body.compound.first
+					parsed_ast := parsed_instruction
+				end
+			end
+		end
+
+	parse_feature (a_printed_ast: STRING_8)
+			-- Extracted from `parse_printed_ast'
+		do
+			etr_feat_parser.set_syntax_version (syntax_version)
+			etr_feat_parser.parse_from_string ("feature " + a_printed_ast, Void)
+			if etr_feat_parser.error_count > 0 then
+				error_handler.add_error (Current, "reparse_printed_ast", "Feature parsing failed")
+			else
+				parsed_feature := etr_feat_parser.feature_node
+				parsed_ast := parsed_feature
+			end
+		end
+
+	parse_class (a_printed_ast: STRING_8)
+			-- Extracted from `parse_printed_ast'
+		do
+			etr_class_parser.set_syntax_version (syntax_version)
+			etr_class_parser.parse_from_string (a_printed_ast, Void)
+			if etr_class_parser.error_count > 0 then
+				error_handler.add_error (Current, "reparse_printed_ast", "Class parsing failed")
+			else
+				parsed_class := etr_class_parser.root_node
+				parsed_ast := parsed_class
 			end
 		end
 

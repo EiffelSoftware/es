@@ -6,6 +6,8 @@ note
 
 class
 	ETR_TYPED_VAR
+inherit
+	ETR_SHARED_TYPE_CHECKER
 create
 	make
 
@@ -32,8 +34,7 @@ feature -- Access
 
 	original_type: TYPE_A
 			-- Type of `Current' as it was written
-
-
+			
 feature -- Modification
 
 	set_name(a_new_name: like name)

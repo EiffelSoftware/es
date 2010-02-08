@@ -69,10 +69,10 @@ feature -- Operations
 			create l_printer.make (output, modifications)
 			l_printer.print_ast_to_output (a_transformable.target_node)
 
-			parsing_helper.reparse_printed_ast(a_transformable.target_node, output.string_representation)
+			parsing_helper.parse_printed_ast(a_transformable.target_node, output.string_representation)
 
-			if attached parsing_helper.reparsed_root then
-				create modified_ast.make_from_ast (parsing_helper.reparsed_root, a_transformable.context, false)
+			if attached parsing_helper.parsed_ast then
+				create modified_ast.make_from_ast (parsing_helper.parsed_ast, a_transformable.context, false)
 			else
 				create modified_ast.make_invalid
 				error_handler.add_error (Current, "apply_to", "Modification resulted in unparsable text")

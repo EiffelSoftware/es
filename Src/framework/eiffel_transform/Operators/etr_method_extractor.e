@@ -19,6 +19,7 @@ inherit
 	ETR_SHARED_TYPE_CHECKER
 	ETR_SHARED_PATH_TOOLS
 	ETR_SHARED_PARSERS
+	ETR_SHARED_LOGGER
 
 feature {NONE} -- Implementation (Attributes)
 
@@ -360,6 +361,9 @@ feature {NONE} -- Implementation (Printing)
 					if attached (var_def[block_end+1])[extracted_results.first] as l_after then
 						if l_start.first /= l_end.first and l_after.first=l_start.first then
 							is_result_possibly_undef := true
+							logger.log_info ("is_result_possibly_undef = true, l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
+						else
+							logger.log_info ("is_result_possibly_undef = false, l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
 						end
 					end
 				end
@@ -433,6 +437,7 @@ feature {NONE} -- Implementation (Printing)
 			l_feature_output_text.append (ti_new_line)
 
 			if not extracted_new_locals.is_empty or not changed_arguments.is_empty then
+				fixme("Sometimes local block gets printed with no locals !")
 				l_feature_output_text.append (ti_local_keyword+ti_new_line)
 				from
 					extracted_new_locals.start
@@ -441,6 +446,8 @@ feature {NONE} -- Implementation (Printing)
 				loop
 					if context.has_locals and then attached {ETR_TYPED_VAR}context.local_by_name[extracted_new_locals.item] as l_arg then
 						l_feature_output_text.append (l_arg.name + ti_colon + ti_space + print_indep_type (l_arg)+ti_new_line)
+					else
+						logger.log_warning ("Can't print extrated_new_local.item. Context has no local named "+extracted_new_locals.item)
 					end
 
 					extracted_new_locals.forth
@@ -453,6 +460,8 @@ feature {NONE} -- Implementation (Printing)
 				loop
 					if context.has_locals and then attached {ETR_TYPED_VAR}context.local_by_name[changed_arguments.item] as l_arg then
 						l_feature_output_text.append ("l_"+l_arg.name + ti_colon + ti_space + print_indep_type (l_arg)+ti_new_line)
+					else
+						logger.log_warning ("Can't print changed_arguments.item. Context has no local named "+changed_arguments.item)
 					end
 
 					changed_arguments.forth
@@ -492,9 +501,9 @@ feature {NONE} -- Implementation (Printing)
 			l_feature_output_text.append (l_body_output.string_representation)
 			l_feature_output_text.append (ti_end_keyword)
 
-			parsing_helper.reparse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text)
-			if parsing_helper.reparsed_root /= void then
-				create extracted_method.make_from_ast (parsing_helper.reparsed_root, context.class_context, false)
+			parsing_helper.parse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text)
+			if parsing_helper.parsed_ast /= void then
+				create extracted_method.make_from_ast (parsing_helper.parsed_ast, context.class_context, false)
 			end
 		end
 
@@ -535,10 +544,43 @@ feature {NONE} -- Implementation (Printing)
 			create l_old_method_printer.make (l_feat_output, obsolete_locals, a_start_path, a_end_path, l_instr_text)
 			l_old_method_printer.print_feature (a_feature_ast)
 
-			parsing_helper.reparse_printed_ast (a_feature_ast, l_feat_output.string_representation)
-			if parsing_helper.reparsed_root /= void then
-				create old_method.make_from_ast (parsing_helper.reparsed_root, context, false)
+			parsing_helper.parse_printed_ast (a_feature_ast, l_feat_output.string_representation)
+			if parsing_helper.parsed_ast /= void then
+				create old_method.make_from_ast (parsing_helper.parsed_ast, context, false)
 			end
+		end
+
+	log_named_list(a_name: STRING; a_list: LIST[STRING])
+			-- Log list
+		local
+			l_log_line: STRING
+		do
+			l_log_line := a_name + "(count="+a_list.count.out+")"
+			if not a_list.is_empty then
+				from
+					l_log_line.append (": ")
+					a_list.start
+				until
+					a_list.after
+				loop
+					l_log_line.append (a_list.item)
+					a_list.forth
+					if not a_list.after then
+						l_log_line.append (", ")
+					end
+				end
+			end
+			logger.log_info (l_log_line)
+		end
+
+	log_extracted
+			-- Log extrated variables
+		do
+			log_named_list("extracted_arguments", extracted_arguments)
+			log_named_list("extracted_results", extracted_results)
+			log_named_list("extracted_new_locals", extracted_new_locals)
+			log_named_list("extract_obsolete_locals", obsolete_locals)
+			log_named_list("changed_arguments", changed_arguments)
 		end
 
 feature -- Operations
@@ -579,6 +621,10 @@ feature -- Operations
 				end
 
 				if l_error_count = error_handler.error_count then
+					logger.log_info ("ETR_METHOD_EXTRACTOR: Starting. Old: "+a_context_feature+", New: "+a_extracted_method_name)
+					logger.log_info ("a_start_path: "+a_start_path.as_string)
+					logger.log_info ("a_end_path: "+a_end_path.as_string)
+
 					-- Find out what locals are defined/used where
 					create l_use_def_gen.make (context)
 
@@ -595,12 +641,15 @@ feature -- Operations
 					extract_new_locals
 					extract_obsolete_locals
 
+					log_extracted
+
 					if extracted_results.count>1 then
 						error_handler.add_error (Current, "extract_method", "More than one result is not supported")
 					else
 						compute_extracted_method (a_start_path, a_end_path, a_extracted_method_name, l_instr_list)
 						compute_old_method (a_start_path, a_end_path, a_extracted_method_name, l_feat_ast)
 					end
+					logger.log_info ("ETR_METHOD_EXTRACTOR: Complete")
 				end
 			else
 				error_handler.add_error (Current, "extract_method", "Feature "+a_context_feature+" not found")

@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Creation
 
-	make(an_output: ETR_AST_STRUCTURE_OUTPUT; modifications: LIST[ETR_AST_MODIFICATION])
+	make(an_output: ETR_AST_STRUCTURE_OUTPUT_I; modifications: LIST[ETR_AST_MODIFICATION])
 			-- make with `an_output' and `modifications'
 		local
 			ins,del,repl,app,prep: LINKED_LIST[ETR_AST_MODIFICATION]

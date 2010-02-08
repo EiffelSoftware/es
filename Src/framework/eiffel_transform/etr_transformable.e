@@ -15,20 +15,39 @@ inherit
 		redefine
 			out
 		end
+	ETR_SHARED_BASIC_OPERATORS
+		redefine
+			out
+		end
 create
 	make_from_ast,
 	make_invalid,
 	make_from_ast_list,
 	make_in_class
 
+convert
+	to_ast: {AST_EIFFEL}
+
+feature -- Conversion
+
+	to_ast: AST_EIFFEL
+			-- `Current' as AST-node
+		require
+			is_valid: is_valid
+		do
+			Result := target_node
+		end
+
 feature -- Operation
 
-	set_context (a_context: ETR_CONTEXT)
-			-- Sets context to `a_context'
+	transform_to_context (a_other_context: like context): like Current
+			-- Transform `Current' to `a_other_context'
 		require
-			valid_context: a_context /= void
+			is_valid: is_valid
+			valid_context: a_other_context /= void
 		do
-			context := a_context
+			basic_operators.transform_to_context (Current, a_other_context)
+			Result := basic_operators.transformation_result
 		end
 
 feature -- Access
@@ -41,7 +60,7 @@ feature -- Access
 			end
 		end
 
-	context: detachable ETR_CONTEXT assign set_context
+	context: detachable ETR_CONTEXT
 			-- Context of the transformable
 
 	target_node: detachable AST_EIFFEL
@@ -55,7 +74,7 @@ feature -- Output
 	out: STRING
 			-- Print
 		do
-			if attached target_node then
+			if is_valid then
 				Result := ast_tools.ast_to_string (target_node)
 			else
 				Result := "<INVALID>"

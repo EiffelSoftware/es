@@ -200,10 +200,10 @@ feature -- Transformations
 			-- Print the ast to output
 			l_transformer.print_ast_to_output (a_transformable.target_node)
 			-- Reparse it
-			parsing_helper.reparse_printed_ast (a_transformable.target_node, l_output.string_representation)
+			parsing_helper.parse_printed_ast (a_transformable.target_node, l_output.string_representation)
 
-			if attached parsing_helper.reparsed_root then
-				create transformation_result.make_from_ast(parsing_helper.reparsed_root, a_target_context, false)
+			if attached parsing_helper.parsed_ast then
+				create transformation_result.make_from_ast(parsing_helper.parsed_ast, a_target_context, false)
 			else
 				error_handler.add_error (Current, "transform_to_context", "Failed to reparse result of transformation")
 				create transformation_result.make_invalid

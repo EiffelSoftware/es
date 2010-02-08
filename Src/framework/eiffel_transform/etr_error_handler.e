@@ -6,6 +6,8 @@ note
 
 class
 	ETR_ERROR_HANDLER
+inherit
+	ETR_SHARED_LOGGER
 
 feature -- Access
 	has_errors: BOOLEAN
@@ -47,6 +49,7 @@ feature -- Operations
 				l_error_msg.append ("{"+a_class.generating_type+"}."+a_feature+": ")
 			end
 			l_error_msg.append (an_error_message)
+			logger.log_error(l_error_msg)
 			last_error := l_error_msg
 			errors.extend (last_error)
 		end

@@ -1,61 +1,21 @@
 note
-	description: "Prints an ast structure to a hierarchy tree"
+	description: "Shared logger"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_HIERARCHY_OUTPUT
-inherit
-	ETR_AST_STRUCTURE_OUTPUT_I
-		redefine
-			enter_block,
-			exit_block,
-			enter_child,
-			exit_child,
-			append_string
+	ETR_SHARED_LOGGER
+
+feature {NONE} -- Shared
+
+	logger: ETR_DEBUG_LOGGER
+			-- shared instance of ETR_DEBUG_LOGGER
+		once
+			create Result.make
 		end
-create
-	make,
-	make_with_indentation_string
-
-feature -- Operations
-
-	enter_block
-			-- Enters a new indentation-block
-		do
-			-- unused
-		end
-
-	exit_block
-			-- Exits an indentation-block
-		do
-			-- unused
-		end
-
-	enter_child(a_name: STRING)
-			-- Enters a new child with name `a_name'
-		do
-			context.add_string (current_indentation.twin+a_name+"%N")
-			current_indentation := current_indentation + indentation_string
-		end
-
-	exit_child
-			-- Exits a child
-		do
-			if current_indentation.count >= indentation_string.count then
-				current_indentation.remove_tail (indentation_string.count)
-			end
-		end
-
-	append_string(a_string: STRING)
-			-- Appends `a_string' to the output
-		do
-			-- unused
-		end
-
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
