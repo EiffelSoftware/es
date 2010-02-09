@@ -1,7 +1,6 @@
 note
 	description: "EiffelVision toggle button, Cocoa implementation."
-	legal: "See notice at end of class.";
-	status: "See notice at end of class.";
+	author: "Daniel Furrer"
 	id: "$Id$";
 	date: "$Date$";
 	revision: "$Revision$"
@@ -28,14 +27,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Create a Cocoa toggle button.
+	make
 		do
-			base_make (an_interface)
-			cocoa_make
-			cocoa_item := current
+			Precursor {EV_BUTTON_IMP}
 			set_bezel_style ({NS_BUTTON}.rounded_bezel_style)
 			set_button_type ({NS_BUTTON}.push_on_push_off_button)
+			align_text_left
+			set_is_initialized (True)
 		end
 
 feature -- Status setting
@@ -43,19 +41,21 @@ feature -- Status setting
 	enable_select
 			-- Set `is_selected' `True'.
 		do
+			set_state ({NS_CELL}.on_state)
+			is_selected := True
 		end
 
 	disable_select
 				-- Set `is_selected' `False'.
 		do
+			set_state ({NS_CELL}.off_state)
+			is_selected := False
 		end
 
 feature -- Status report
 
 	is_selected: BOOLEAN
 			-- Is toggle button pressed?
-		do
-		end
 
 feature -- Element change
 
@@ -66,17 +66,7 @@ feature -- Element change
 			-- Image may be scaled in some descendents, i.e EV_TREE_ITEM
 			-- See EV_TREE.set_pixmaps_size.
 
-		local
-			pixmap_imp: EV_PIXMAP_IMP
 		do
-			-- First load the pixmap into the button
-			pixmap_imp ?= a_pixmap.implementation
-
-			if
-				pixmap_imp /= Void
-			then
-			end
-
 			-- Then move the text to the right
 			align_text_right
 
@@ -90,11 +80,8 @@ feature -- Element change
 		end
 
 
-feature {EV_ANY_I}
+feature {EV_ANY, EV_ANY_I}
 
-	interface: EV_TOGGLE_BUTTON;
+	interface: detachable EV_TOGGLE_BUTTON note option: stable attribute end;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_TOGGLE_BUTTON_IMP
-

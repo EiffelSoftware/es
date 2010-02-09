@@ -11,9 +11,11 @@ inherit
 	NS_OBJECT
 
 create
-	main_screen
+	main_screen,
+	root_screen
 create {NS_OBJECT}
-	make_shared
+	make_from_pointer,
+	share_from_pointer
 
 feature {NONE} -- Getting NSScreen Objects
 
@@ -25,7 +27,20 @@ feature {NONE} -- Getting NSScreen Objects
 			-- The screen containing the menu bar is always the first object (index 0) in the array returned by the screens method.
 			-- FIXME: This should probably be a once method, maybe in an ...ENVIRONEMENT class
 		do
-			make_shared ({NS_SCREEN_API}.main_screen)
+			share_from_pointer ({NS_SCREEN_API}.main_screen)
+		end
+
+	root_screen
+			-- This screen contains the menu bar, has its origin at (0,0) and is always the first object (index 0) in the array returned by the screens method.
+			-- FIXME: This should probably be a once method, maybe in an ...ENVIRONEMENT class
+		local
+			l_screens: NS_ARRAY [NS_SCREEN]
+			l_root_screen: detachable NS_SCREEN
+		do
+			create l_screens.share_from_pointer ({NS_SCREEN_API}.screens)
+			l_root_screen := l_screens.item (0)
+			check l_root_screen /= void end
+			share_from_pointer (l_root_screen.item)
 		end
 
 feature -- Getting Screen Information
@@ -45,7 +60,7 @@ feature -- Getting Screen Information
 			-- when requesting the item from the dictionary. The value associated with this key is an NSNumber object containing the display ID value.
 			-- This string is only valid when used as a key for the dictionary returned by this method.
 		do
-			create Result.make_shared ({NS_SCREEN_API}.device_description (item))
+			create Result.make_from_pointer ({NS_SCREEN_API}.device_description (item))
 		end
 
 

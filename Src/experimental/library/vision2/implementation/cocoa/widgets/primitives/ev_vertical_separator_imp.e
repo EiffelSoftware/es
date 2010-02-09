@@ -1,8 +1,6 @@
 note
-	description:
-		"EiffelVision vertical separator, Cooca implementation"
-	legal: "See notice at end of class.";
-	status: "See notice at end of class."
+	description: "EiffelVision vertical separator, Cooca implementation"
+	author:	"Daniel Furrer"
 	date: "$Date$";
 	revision: "$Revision$"
 
@@ -23,12 +21,8 @@ inherit
 create
 	make
 
-feature {EV_ANY_I} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_VERTICAL_SEPARATOR;
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	interface: detachable EV_VERTICAL_SEPARATOR note option: stable attribute end;
 
 end -- class EV_VERTICAL_SEPARATOR_IMP
-

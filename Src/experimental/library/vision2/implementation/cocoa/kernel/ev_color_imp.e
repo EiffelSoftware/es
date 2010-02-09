@@ -15,7 +15,6 @@ class
 inherit
 	EV_COLOR_I
 		redefine
-			interface,
 			set_with_other
 		end
 
@@ -24,16 +23,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
+	old_make (an_interface: like interface)
 			-- Create zero intensity color.
 		do
-			base_make (an_interface)
-			name := Default_name.twin
+			assign_interface (an_interface)
 		end
 
-	initialize
+	make
 			-- Do nothing.
 		do
+			name := Default_name.twin
 			set_is_initialized (True)
 		end
 
@@ -181,19 +180,19 @@ feature -- Conversion
 
 	set_with_other (other: EV_COLOR)
 			-- Take on the appearance of `other'.
-		local
-			imp: EV_COLOR_IMP
 		do
-			imp ?= other.implementation
-			check
-				imp_not_void: imp /= Void
+			if attached {EV_COLOR_IMP} other.implementation as imp then
+				red_16_bit := imp.red_16_bit
+				green_16_bit := imp.green_16_bit
+				blue_16_bit := imp.blue_16_bit
+				red := imp.red
+				green := imp.green
+				blue := imp.blue
+			else
+				check
+					imp_void: False
+				end
 			end
-			red_16_bit := imp.red_16_bit
-			green_16_bit := imp.green_16_bit
-			blue_16_bit := imp.blue_16_bit
-			red := imp.red
-			green := imp.green
-			blue := imp.blue
 		end
 
 feature {EV_ANY_I} -- Command
@@ -217,8 +216,6 @@ feature {EV_ANY_I, ANY} -- Implementation
 		do
 			create Result.color_with_calibrated_red_green_blue_alpha (red, green, blue, 1.0)
 		end
-
-	interface: EV_COLOR;
 
 note
 	copyright:	"Copyright (c) 2009, Daniel Furrer"

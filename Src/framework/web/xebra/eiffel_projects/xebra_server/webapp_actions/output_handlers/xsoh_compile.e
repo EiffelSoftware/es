@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			Precursor
-			max_size := 200
+			max_size := 400
 		end
 
 feature -- Status setting
@@ -41,11 +41,10 @@ feature -- Status report
 	has_successfully_terminated: BOOLEAN
 			-- <Precursor>
 		do
-			Result := False
-			--print ("TESSSSSTING output!!! output is '" + output + "'")
-
-			if output.has_substring ("C compilation completed") or output.has_substring ("System Recompiled.") then
+			if output.has_substring ("completed") or output.has_substring ("Recompiled") then
 				Result := True
+			else
+				Result := False
 			end
 		end
 end

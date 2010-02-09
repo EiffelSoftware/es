@@ -1,8 +1,6 @@
 note
-	description: "Objects that ..."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	author: ""
+	description: "Cocoa Implementation for EV_HEADER_IMP."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,20 +16,20 @@ inherit
 	EV_ITEM_LIST_IMP [EV_HEADER_ITEM, EV_HEADER_ITEM_IMP]
 		redefine
 			interface,
-			initialize
+			make
 		end
 
 	EV_PRIMITIVE_IMP
 		redefine
 			interface,
-			initialize,
+			make,
 			set_default_minimum_size
 		end
 
 	EV_FONTABLE_IMP
 		redefine
 			interface,
-			initialize
+			make
 		end
 
 	EV_HEADER_ACTION_SEQUENCES_IMP
@@ -47,32 +45,28 @@ create
 
 feature -- Initialization
 
-	make (an_interface: like interface)
-			-- Create an empty Tree.
+	make
+			-- Initialize `Current'
 		do
-			base_make (an_interface)
 --			create w.new
 --			w.set_frame (create {NS_RECT}.make_rect (0, 0, 0, 18))
 --			create h.new
 --			w.set_cell (h)
 
 			create container.make
+			cocoa_view := container
 			container.set_frame (create {NS_RECT}.make_rect (0, 0, 0, 18))
 			container.set_has_horizontal_scroller (False)
 			container.set_has_vertical_scroller (False)
 
+			initialize_item_list
+
 			create outline_view.make
 			container.set_document_view (outline_view)
 			outline_view.set_data_source (current)
-			cocoa_item := container
 
 			initialize_pixmaps
-		end
 
-	initialize
-			-- Initialize `Current'
-		do
-			Precursor {EV_ITEM_LIST_IMP}
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
 			disable_tabable_to
@@ -107,6 +101,7 @@ feature {EV_HEADER_ITEM_IMP} -- Implemnentation
 
 	child_of_item (an_index: INTEGER; an_item: ANY): ANY
 		do
+			Result := 1
 		end
 
 	object_value_for_table_column_by_item (a_table_column: POINTER; an_item: ANY): POINTER
@@ -141,8 +136,8 @@ feature {NONE} -- Implementation
 
 	container: NS_SCROLL_VIEW
 
-	interface: EV_HEADER;
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	interface: detachable EV_HEADER note option: stable attribute end;
+
 end

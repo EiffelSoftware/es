@@ -1,8 +1,6 @@
 note
 	description: "Objects that ..."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	author: ""
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -42,18 +40,11 @@ create
 
 feature -- Initialization
 
-	make (an_interface: like interface)
-			-- Create the tree item.
-		do
-			base_make (an_interface)
-			create table_column.make
-			cocoa_item := table_column
-			align_text_left
-		end
-
-	initialize
+	make
 			-- Initialize the header item.
 		do
+			create table_column.make
+			align_text_left
 			set_width (80)
 			set_text ("")
 			set_is_initialized (True)
@@ -172,11 +163,9 @@ feature {EV_HEADER_IMP} -- Implementation
 
 	table_column: NS_TABLE_COLUMN
 
-feature {NONE} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_HEADER_ITEM;
+	interface: detachable EV_HEADER_ITEM note option: stable attribute end;
 		-- Interface object of `Current'.
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end

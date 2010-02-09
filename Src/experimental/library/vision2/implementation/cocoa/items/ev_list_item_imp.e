@@ -1,7 +1,6 @@
 note
 	description: "List Item Cocoa Implementation"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -37,13 +36,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Create a list item with an empty name.
-		do
-			base_make (an_interface)
-		end
-
-	initialize
+	make
 			-- Initialize `Current'
 		do
 			internal_text := once ""
@@ -54,15 +47,21 @@ feature -- Status report
 
 	is_selected: BOOLEAN
 			-- Is the item selected.
-		do
-			if parent_imp /= Void then
-			--	Result := parent_imp.selected_items.has (interface)
-			end
-		end
+--		do
+--			if parent_imp /= Void then
+--			--	Result := parent_imp.selected_items.has (interface)
+--			end
+--		end
 
 	minimum_width, minimum_height: INTEGER
 
 	is_dockable: BOOLEAN
+
+	text: STRING_32
+			-- <Precursor>
+		do
+			Result := internal_text.twin
+		end
 
 feature -- Status setting
 
@@ -70,18 +69,13 @@ feature -- Status setting
 			-- Select the item.
 		do
 			--parent_imp.select_item (parent_imp.index_of (interface, 1))
+			is_selected := True
 		end
 
 	disable_select
 			-- Deselect the item.
 		do
 			--parent_imp.deselect_item (parent_imp.index_of (interface, 1))
-		end
-
-	text: STRING_32
-			--
-		do
-			Result := internal_text.twin
 		end
 
 feature -- Element change
@@ -95,52 +89,49 @@ feature -- Element change
 	tooltip: STRING_32
 			-- Tooltip displayed on `Current'.
 		do
-			if internal_tooltip /= Void then
-				Result := internal_tooltip.twin
+			if attached internal_tooltip as l_tooltip then
+				Result := l_tooltip.twin
 			else
 				Result := ""
 			end
 		end
 
-	set_text (txt: STRING_GENERAL)
+	set_text (a_text: STRING_GENERAL)
 			-- Set current button text to `txt'.
 		do
-			internal_text := txt.twin
-			if parent_imp /= Void then
-			--	parent_imp.set_text_on_position (parent_imp.index_of (interface, 1) , txt)
-			end
+			internal_text := a_text.twin
 		end
 
 feature {NONE} -- Implementation
 
 	width: INTEGER
 		do
-			io.put_string ("EV_TREE_NODE_IMP.width: Not implemented%N")
+--			io.put_string ("EV_LIST_ITEM.width: Not implemented%N")
 		end
 
 	height: INTEGER
 		do
-			io.put_string ("EV_TREE_NODE_IMP.height: Not implemented%N")
+--			io.put_string ("EV_LIST_ITEM.height: Not implemented%N")
 		end
 
 	screen_x: INTEGER
 		do
-			io.put_string ("EV_TREE_NODE_IMP.screen_x: Not implemented%N")
+--			io.put_string ("EV_LIST_ITEM.screen_x: Not implemented%N")
 		end
 
 	screen_y: INTEGER
 		do
-			io.put_string ("EV_TREE_NODE_IMP.screen_y: Not implemented%N")
+--			io.put_string ("EV_LIST_ITEM.screen_y: Not implemented%N")
 		end
 
 	x_position: INTEGER
 		do
-			io.put_string ("EV_HEADER_ITEM_IMP.x_position: Not implemented%N")
+--			io.put_string ("EV_LIST_ITEM.x_position: Not implemented%N")
 		end
 
 	y_position: INTEGER
 		do
-			io.put_string ("EV_HEADER_ITEM_IMP.y_position: Not implemented%N")
+--			io.put_string ("EV_LIST_ITEM.y_position: Not implemented%N")
 		end
 
 	internal_text: STRING_32
@@ -148,14 +139,11 @@ feature {NONE} -- Implementation
 
 feature {EV_LIST_ITEM_LIST_IMP} -- Implementation
 
-	internal_tooltip: STRING_32
+	internal_tooltip: detachable STRING_32
 		-- Tooltip used for `Current'.
 
-feature {EV_LIST_ITEM_LIST_IMP, EV_LIST_ITEM_LIST_I} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_LIST_ITEM;
+	interface: detachable EV_LIST_ITEM note option: stable attribute end;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_LIST_ITEM_IMP
-

@@ -1,6 +1,6 @@
 note
 	description: "[
-		Provides logging features.
+		Provides logging features that gradually format the message.
 	]"
 	legal: "See notice at end of class."
 	status: "Prototyping phase"
@@ -10,8 +10,9 @@ note
 class
 	XU_OUTPUTTER
 
---inherit
---	ANY rename print as any_print end
+inherit
+	ANY
+
 
 create
 	make
@@ -29,6 +30,8 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+	add_input_line: BOOLEAN assign set_add_input_line
+
 	name: SETTABLE_STRING
 		-- The name of the application
 
@@ -40,7 +43,7 @@ feature -- Access
 feature -- Status Change
 
 	set_name (a_name: STRING)
-			-- Setts name.
+			-- Sets name.
 		require
 			a_name_attached: a_name /= Void
 		do
@@ -49,8 +52,16 @@ feature -- Status Change
 			name_set: equal (name.value, a_name)
 		end
 
+	set_add_input_line (a_add_input_line: BOOLEAN)
+			-- Sets add_input_line.
+		do
+			add_input_line := a_add_input_line
+		ensure
+			add_input_line_set: equal (add_input_line, a_add_input_line)
+		end
+
 	set_debug_level (a_debug_level: INTEGER)
-			-- Setts name.
+			-- Sets name.
 		do
 			debug_level := a_debug_level
 		ensure
@@ -59,17 +70,30 @@ feature -- Status Change
 
 feature -- Print
 
-	dprint (a_msg: STRING; a_debug_level: INTEGER)
-			-- Prints a debug message only if debug level is >= a_debug_level
+--	dprint (a_msg: STRING; a_debug_level: INTEGER)
+--			-- Prints a debug message only if debug level is >= a_debug_level
+--		require
+--			name_set: name.is_set
+--			debug_level_set: debug_level.is_set
+--			a_msg_attached: a_msg /= Void
+--		do
+--			dprintn (a_msg +  , a_debug_level)
+--		end
+
+	dprintn (a_msg: STRING; a_debug_level: INTEGER)
+			--Prints a debug message  only if debug level is >= a_debug_level without formatting
 		require
 			name_set: name.is_set
 			debug_level_set: debug_level.is_set
 			a_msg_attached: a_msg /= Void
 		do
-			dprintn (a_msg , a_debug_level)
+			if a_debug_level <= debug_level then
+				print_with_cmdnl (a_msg)
+			end
 		end
 
-	dprintn (a_msg: STRING; a_debug_level: INTEGER)
+
+	dprint (a_msg: STRING; a_debug_level: INTEGER)
 			-- Prints a debug message  only if debug level is >= a_debug_level
 		require
 			name_set: name.is_set
@@ -77,7 +101,7 @@ feature -- Print
 			a_msg_attached: a_msg /= Void
 		do
 			if a_debug_level <= debug_level then
-				print ("%N" + "[" + name.out + "][DEBUG] " + a_msg )
+				print_with_name ("[DEBUG] " + a_msg)
 			end
 		end
 
@@ -88,7 +112,7 @@ feature -- Print
 			a_msg_attached: a_msg /= Void
 			a_generating_type_attached: a_generating_type /= Void
 		do
-			print ("%N" + "[" + name.out + "][ERROR in " + a_generating_type.out + "] " + a_msg)
+			print_with_name ("[ERROR in " + a_generating_type.out + "] " + a_msg)
 		end
 
 	iprint (a_msg: STRING)
@@ -97,20 +121,32 @@ feature -- Print
 			name_set: name.is_set
 			a_msg_attached: a_msg /= Void
 		do
-			print ("%N" + "[" + name.out + "][INFO] " + a_msg )
+			print_with_name ("[INFO] " + a_msg )
 		end
 
 feature {NONE}  -- Impl
 
---	print (a_msg: STRING)
---			-- Engulfs print with mutex
---		require
---			a_msg_attached: a_msg /= Void
---		do
-----			print_mutex.lock
---			any_print (a_msg)
-----			print_mutex.unlock
---		end
+	print_with_name (a_msg: STRING)
+			-- Adds the name
+		require
+			a_msg_attached: a_msg /= Void
+		do
+			print_with_cmdnl ("[" + name.out + "]" + a_msg)
+		end
+
+	print_with_cmdnl (a_msg: STRING)
+			-- Adds a new line at the start and the end and the command symbol(s)
+		require
+			a_msg_attached: a_msg /= Void
+		do
+			if add_input_line then
+				print ("%N" + a_msg + "%N$> ")
+			else
+				print ("%N" + a_msg)
+			end
+		end
+
+
 
 invariant
 --	print_mutex_attached: print_mutex /= Void

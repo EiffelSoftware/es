@@ -1,7 +1,6 @@
 note
 	description: "EiffelVision pixmap, Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	keywords: "drawable, primitives, figures, buffer, bitmap, picture"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,25 +15,26 @@ inherit
 		end
 
 	EV_DRAWABLE_IMP
+		undefine
+			old_make
 		redefine
 			interface,
 			make,
 			width,
-			height,
-			initialize
+			height
 		end
 
 	EV_PRIMITIVE_IMP
 		undefine
-			foreground_color,
-			background_color,
+			foreground_color_internal,
+			background_color_internal,
 			set_foreground_color,
 			set_background_color
 		redefine
 			interface,
 			width,
 			height,
-			initialize,
+			make,
 			minimum_width,
 			minimum_height
 		end
@@ -49,21 +49,17 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Connect interface and initialize `c_object'.
-		do
-			base_make (an_interface)
-			internal_height := 10
-			internal_width := 10
-			create {NS_IMAGE_VIEW}cocoa_item.make
-			image_view.set_image_scaling ({NS_IMAGE_VIEW}.image_scaling_none)
-		end
-
-	initialize
+	make
 			-- Initialize `Current'
 		do
-			Precursor {EV_PRIMITIVE_IMP}
+			internal_height := 10
+			internal_width := 10
 			Precursor {EV_DRAWABLE_IMP}
+			create image_view.make
+			cocoa_view := image_view
+			image_view.set_image_scaling ({NS_IMAGE_VIEW}.image_scaling_none)
+
+			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
 			disable_tabable_to
 		end
@@ -119,25 +115,32 @@ feature -- Element change
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
 			l_image: NS_IMAGE
-			l_image_rep: NS_IMAGE_REP
+			l_image_rep: detachable NS_IMAGE_REP
 		do
 			create l_image.make_with_referencing_file (a_path)
 			image_view.set_image (l_image)
-			l_image_rep := l_image.representations.object_at_index (0)
-			internal_width := l_image_rep.pixels_wide
-			internal_height := l_image_rep.pixels_high
-			image := l_image
+			if l_image.representations.count > 0 then
+				-- File found, representation loaded
+				l_image_rep := l_image.representations.item (0)
+				check l_image_rep /= void end
+				internal_width := l_image_rep.pixels_wide
+				internal_height := l_image_rep.pixels_high
+				image := l_image
+			else
+				(create {EXCEPTIONS}).raise ("Could not load image file.")
+			end
 		end
 
 	load_system_image (a_name: STRING_GENERAL)
 			-- Load a OS X default system image
 		local
 			l_image: NS_IMAGE
-			l_image_rep: NS_IMAGE_REP
+			l_image_rep: detachable NS_IMAGE_REP
 		do
 			create l_image.make_named (a_name)
 			image_view.set_image (l_image)
-			l_image_rep := l_image.representations.object_at_index (0)
+			l_image_rep := l_image.representations.item (0)
+			check l_image_rep /= void end
 			internal_width := l_image_rep.pixels_wide
 			internal_height := l_image_rep.pixels_high
 			image := l_image
@@ -160,6 +163,7 @@ feature -- Element change
 		do
 			internal_width := a_width
 			internal_height := a_height
+			image.set_size (create {NS_SIZE}.make_size (a_width, a_height))
 		end
 
 	reset_for_buffering (a_width, a_height: INTEGER)
@@ -173,7 +177,7 @@ feature -- Element change
 	set_mask (a_mask: EV_BITMAP)
 			-- Set the Bitmap used for masking `Current'.
 		local
-			a_mask_imp: EV_BITMAP_IMP
+			a_mask_imp: detachable EV_BITMAP_IMP
 		do
 			a_mask_imp ?= a_mask.implementation
 		end
@@ -183,7 +187,7 @@ feature -- Access
 	raw_image_data: EV_RAW_IMAGE_DATA
 		do
 			create Result.make_with_alpha_zero (width, height)
-			Result.set_originating_pixmap (interface)
+			Result.set_originating_pixmap (attached_interface)
 			-- TODO: image -> bitmap, read bitmap values and write in Result
 		end
 
@@ -193,16 +197,18 @@ feature -- Duplication
 			-- Update `Current' to have same appearance as `other'.
 			-- (So as to satisfy `is_equal'.)
 		local
-			other_imp: EV_PIXMAP_IMP
+			other_imp: detachable EV_PIXMAP_IMP
 		do
 			other_imp ?= other.implementation
+			check other_imp /= void end
 
 --			if other_imp.pixmap_filename /= Void then
 --				pixmap_filename := other_imp.pixmap_filename.twin
 --			end
 			internal_width := other_imp.internal_width
 			internal_height := other_imp.internal_height
-			image := other_imp.image
+			image := other_imp.image.twin
+			image_view.set_image (image)
 
 --			private_mask_bitmap := other_simple_imp.private_mask_bitmap
 --			private_palette := other_simple_imp.private_palette
@@ -239,14 +245,10 @@ feature {NONE} -- Constants
 
 feature {EV_ANY_I} -- Implementation
 
-	interface: EV_PIXMAP;
-
 	image_view: NS_IMAGE_VIEW
-		do
-			Result ?= cocoa_item
-		end
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	interface: detachable EV_PIXMAP note option: stable attribute end;
+
 end -- EV_PIXMAP_IMP
-

@@ -1,7 +1,6 @@
 note
 	description: "Eiffel Vision radio button. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author:	"Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,20 +14,20 @@ inherit
 		end
 
 	EV_BUTTON_IMP
-		export
-			{NONE}
-				cocoa_item
 		undefine
 			default_alignment
 		redefine
 			interface,
 			make,
-			initialize
+			old_make
 		end
 
 	EV_RADIO_PEER_IMP
 		redefine
-			interface
+			interface,
+			make,
+			enable_select,
+			disable_select
 		end
 
 create
@@ -36,47 +35,51 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
+	old_make (an_interface: like interface)
 			-- Create radio button.
 		do
-			base_make (an_interface)
-			cocoa_make
-			cocoa_item := current
-			set_button_type ({NS_BUTTON}.radio_button)
+			assign_interface (an_interface)
 		end
 
-	initialize
+	make
 			-- Initialize `Current'
 		do
-		end
-
-feature -- Status report
-
-	is_selected: BOOLEAN
-			-- Is toggle button pressed?
-		do
+			cocoa_view := current
+			Precursor {EV_RADIO_PEER_IMP}
+			Precursor {EV_BUTTON_IMP}
+			cocoa_make
+			set_button_type ({NS_BUTTON}.radio_button)
+			align_text_left
+			set_state ({NS_CELL}.on_state)
+			select_actions.extend (agent enable_select)
 		end
 
 feature -- Status setting
 
 	enable_select
-			-- Set `is_selected' `True'.
+			-- Select `Current'.
 		do
+			Precursor
+			set_state ({NS_CELL}.on_state)
 		end
 
-feature {EV_ANY_I} -- Implementation
-
-	radio_group: LINKED_LIST [like current]
-			-- List of all radio item implementations
+	disable_select
+			-- Unselect 'Current'
 		do
+			Precursor
+			set_state ({NS_CELL}.off_state)
 		end
 
+feature -- Status report
 
-feature {EV_ANY_I} -- Implementation
+	is_selected: BOOLEAN
+			-- Is `Current' selected.
+		do
+			Result := state = {NS_CELL}.on_state
+		end
 
-	interface: EV_RADIO_BUTTON;
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	interface: detachable EV_RADIO_BUTTON note option: stable attribute end;
+
 end -- class EV_RADIO_BUTTON_IMP
-

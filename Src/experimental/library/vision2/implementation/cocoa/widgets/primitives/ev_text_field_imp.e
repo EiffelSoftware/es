@@ -1,7 +1,6 @@
 note
 	description: "EiffelVision text field. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +16,7 @@ inherit
 
 	EV_PRIMITIVE_IMP
 		undefine
-			initialize,
+			make,
 			default_key_processing_blocked,
 			set_default_minimum_size
 		redefine
@@ -31,7 +30,8 @@ inherit
 			create_change_actions,
 			on_key_event,
 			set_minimum_width_in_characters,
-			initialize
+			set_default_minimum_size,
+			make
 		end
 
 	EV_FONTABLE_IMP
@@ -52,33 +52,33 @@ create
 
 feature {NONE} -- Initialization
 
-		make (an_interface: like interface)
-			-- Create Cocoa textfield
-		do
-			base_make (an_interface)
-			create {NS_TEXT_FIELD}cocoa_item.make
-			text_field ?= cocoa_item
-		end
-
-	initialize
+	make
 			-- `Precursor' initialization,
 			-- create button box to hold label and pixmap.
 		local
 			a_font: EV_FONT
 		do
+			create text_field.make
+			cocoa_view := text_field
+			text_field.cell.set_wraps (False)
+
 			Precursor {EV_TEXT_COMPONENT_IMP}
 			Precursor {EV_PRIMITIVE_IMP}
 			align_text_left
 			create a_font.default_create
-			create text.make_empty
 			a_font.set_height (12)
 			set_font (a_font)
+
+			text_field.text_did_change_actions.extend (agent do change_actions.call ([]) end)
 		end
 
 feature -- Access
 
 	text: STRING_32
 			-- Text displayed in field.
+		do
+			Result := text_field.string_value.to_string.to_string_32
+		end
 
 feature -- Status setting
 
@@ -90,22 +90,19 @@ feature -- Status setting
 	set_text (a_text: STRING_GENERAL)
 			-- Assign `a_text' to `text'.
 		do
-			text := a_text.twin
 			text_field.set_string_value (a_text)
 		end
 
 	append_text (a_text: STRING_GENERAL)
 			-- Append `a_text' to the end of the text.
 		do
-			text := text + a_text
-			text_field.set_string_value (text)
+			text_field.set_string_value (text + a_text)
 		end
 
 	prepend_text (a_text: STRING_GENERAL)
 			-- Prepend `a_text' to the end of the text.
 		do
-			text := a_text + text
-			text_field.set_string_value (text)
+			text_field.set_string_value (a_text + text)
 		end
 
 	set_capacity (len: INTEGER)
@@ -158,6 +155,12 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			create Result
 		end
 
+	set_default_minimum_size
+			-- Called after creation. Set current size and notify parent.
+		do
+			internal_set_minimum_size (maximum_character_width * 4, 22)
+		end
+
 feature -- Status report
 
 	is_editable: BOOLEAN
@@ -178,11 +181,6 @@ feature -- Status report
 
 	selection_end: INTEGER
 			-- Index of the last character selected.
-		do
-		end
-
-	clipboard_content: STRING_32
-			-- `Result' is current clipboard content.
 		do
 		end
 
@@ -271,27 +269,22 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			create Result
 		end
 
-	stored_text: STRING_32
-			-- Value of 'text' prior to a change action, used to compare
-			-- between old and new text.
-
-
 	on_change_actions
 			-- A change action has occurred.
 		local
-			new_text: STRING_32
+--			new_text: STRING_32
 		do
-			new_text := text
-			if not in_change_action and then (stored_text /= Void and then not new_text.is_equal (stored_text)) or else stored_text = Void then
-					-- The text has actually changed
-				in_change_action := True
-				if change_actions_internal /= Void then
+--			new_text := text
+--			if not in_change_action and then (stored_text /= Void and then not new_text.is_equal (stored_text)) or else stored_text = Void then
+--					-- The text has actually changed
+--				in_change_action := True
+--				if change_actions_internal /= Void then
 
-					change_actions_internal.call (Void)
-				end
-				in_change_action := False
-				stored_text := text
-			end
+--					change_actions_internal.call (Void)
+--				end
+--				in_change_action := False
+--				stored_text := text
+--			end
 
 		end
 
@@ -314,16 +307,15 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 feature {EV_TEXT_FIELD_I} -- Implementation
 
-	interface: EV_TEXT_FIELD;
+	text_field: NS_TEXT_FIELD
+		attribute
+			create Result.make
+		end
+
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	interface: detachable EV_TEXT_FIELD note option: stable attribute end;
 			--Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
 
-	text_field: NS_TEXT_FIELD;
-
-invariant
-	text_field /= void
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_TEXT_FIELD_IMP
-

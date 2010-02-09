@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {XU_SERVER_OUTPUTTER}."
-	author: ""
+	description: "[
+			A version of XU_OUTPUTTER that sets all attributes already in the constructor.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,7 +13,9 @@ inherit
 		redefine
 			make
 		end
+
 	XS_SHARED_SERVER_CONFIG
+
 
 create
 	make
@@ -24,6 +27,7 @@ feature {NONE} -- Initialization
 		do
 			set_debug_level (config.args.debug_level)
 			set_name ({XS_MAIN_SERVER}.Name)
+			set_add_input_line (True)
 		end
 
 end

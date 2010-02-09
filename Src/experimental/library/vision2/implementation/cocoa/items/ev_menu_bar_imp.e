@@ -1,5 +1,6 @@
 note
 	description: "Eiffel Vision menu bar. Cocoa implementation."
+	author: "Daniel Furrer"
 
 class
 	EV_MENU_BAR_IMP
@@ -15,15 +16,21 @@ inherit
 			interface
 		end
 
+	EV_ANY_IMP
+		redefine
+			interface
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
+	make
+			-- Create and initialize `Current'.
 		do
-			base_make (an_interface)
-			create {NS_MENU}cocoa_item.make
+			create menu.make
+			initialize_item_list
 		end
 
 feature -- Measurement
@@ -68,6 +75,9 @@ feature -- Measurement
 		do
 		end
 
+	is_sensitive: BOOLEAN = True
+			-- `Current' is always sensitive as it cannot be disabled in the interface.
+
 feature {EV_WINDOW_IMP} -- Implementation
 
 	set_parent_window_imp (a_wind: EV_WINDOW_IMP)
@@ -78,11 +88,11 @@ feature {EV_WINDOW_IMP} -- Implementation
 			parent_imp := a_wind
 		end
 
-	parent: EV_WINDOW
+	parent: detachable EV_WINDOW
 			-- Parent window of Current.
 		do
-			if parent_imp /= Void then
-				Result := parent_imp.interface
+			if attached parent_imp as p_imp then
+				Result := p_imp.attached_interface
 			end
 		end
 
@@ -92,17 +102,14 @@ feature {EV_WINDOW_IMP} -- Implementation
 			parent_imp := Void
 		end
 
-	parent_imp: EV_WINDOW_IMP
+	parent_imp: detachable EV_WINDOW_IMP
 
 feature {EV_ANY_I} -- Implementation
 
-	interface: EV_MENU_BAR;
-
 	menu: NS_MENU
-		do
-			Result ?= cocoa_item
-		end
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	interface: detachable EV_MENU_BAR note option: stable attribute end;
+
 end -- class EV_MENU_BAR_IMP

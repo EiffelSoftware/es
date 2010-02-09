@@ -1,8 +1,6 @@
 note
-	description:
-		"Eiffel Vision tooltipable. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Eiffel Vision tooltipable. Cocoa implementation."
+	author: "Daniel Furrer"
 	keywords: "tooltip, popup"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,26 +10,16 @@ deferred class
 
 inherit
 	EV_TOOLTIPABLE_I
-		redefine
-			interface
-		end
-
-	EV_ANY_IMP
-		undefine
-			destroy
-		redefine
-			interface
-		end
 
 feature -- Initialization
 
 	tooltip: STRING_32
 			-- Tooltip that has been set.
 		do
-			if internal_tooltip_string = Void then
-				Result := ""
+			if attached internal_tooltip_string as l_tooltip then
+				Result := l_tooltip.twin
 			else
-				Result := internal_tooltip_string.twin
+				create Result.make_empty
 			end
 		end
 
@@ -45,13 +33,6 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	internal_tooltip_string: STRING_32
+	internal_tooltip_string: detachable STRING_32
 
-feature {EV_ANY_I} -- Implementation
-
-	interface: EV_TOOLTIPABLE;
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- EV_TOOLTIPABLE_IMP
-

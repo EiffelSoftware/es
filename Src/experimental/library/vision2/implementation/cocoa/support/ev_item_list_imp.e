@@ -1,11 +1,8 @@
 note
-	description:
-		"Eiffel Vision item list. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Eiffel Vision item list. Cocoa implementation."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
-
 
 deferred class
 	EV_ITEM_LIST_IMP [reference G -> EV_ITEM, reference G_IMP -> EV_ITEM_IMP]
@@ -17,18 +14,20 @@ inherit
 		end
 
 	EV_DYNAMIC_LIST_IMP [G, G_IMP]
+		rename
+			initialize as initialize_item_list
 		redefine
 			insert_i_th,
 			remove_i_th,
-			interface,
-			initialize
+			initialize_item_list,
+			interface
 		end
 
 	DISPOSABLE
 
 feature {NONE} -- Initialization
 
-	initialize
+	initialize_item_list
 			-- Initialize `Current'.
 		do
 			Precursor {EV_DYNAMIC_LIST_IMP}
@@ -39,33 +38,33 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	insert_i_th (v: like item; i: INTEGER)
+	insert_i_th (v: attached like item; i: INTEGER)
 			-- Insert `v' at position `i'.
 		local
-			v_imp: G_IMP
+			v_imp: detachable G_IMP
 		do
+			Precursor {EV_DYNAMIC_LIST_IMP} (v, i)
 			v_imp ?= v.implementation
 			check
-				v_imp_not_void: v /= Void
+				v_imp_not_void: v_imp /= Void
 			end
-			Precursor {EV_DYNAMIC_LIST_IMP} (v, i)
 			v_imp.set_parent_imp (Current)
 			insert_item (v_imp, i)
 			v_imp.on_parented
-			new_item_actions.call ([v_imp.interface])
+			new_item_actions.call ([v_imp.attached_interface])
 		end
 
 	remove_i_th (i: INTEGER)
 			-- Remove item at `i'-th position.
 		local
-			v_imp: G_IMP
+			v_imp: detachable G_IMP
 		do
-			v_imp ?= i_th (i).implementation
+			v_imp ?= interface_i_th (i).implementation
 			check
 				v_imp_not_void: v_imp /= Void
 			end
 			v_imp.on_orphaned
-			remove_item_actions.call ([v_imp.interface])
+			remove_item_actions.call ([v_imp.attached_interface])
 			remove_item (v_imp)
 			v_imp.set_parent_imp (Void)
 			Precursor {EV_DYNAMIC_LIST_IMP} (i)
@@ -96,13 +95,10 @@ feature -- Event handling
 	remove_item_actions: EV_LITE_ACTION_SEQUENCE [TUPLE [EV_ITEM]]
 			-- Actions to be performed before an item is removed.
 
-feature {EV_ANY_I} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_ITEM_LIST [G];
+	interface: detachable EV_ITEM_LIST [G] note option: stable attribute end;
 			-- Provides a common user interface to possibly dependent
 			-- functionality implemented by `Current'
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_ITEM_LIST_IMP
-

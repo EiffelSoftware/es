@@ -1,6 +1,6 @@
 note
-	description: "Objects that .... Cocoa implementation"
-	author: ""
+	description: "EiffelVision Bitmap. Cocoa implementation"
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +17,7 @@ inherit
 		redefine
 			interface,
 			clear_rectangle,
-			initialize
+			make
 		end
 
 create
@@ -25,13 +25,7 @@ create
 
 feature -- Initialization
 
-	make (an_interface: like interface)
-			-- Create an empty drawing area.
-		do
-			base_make (an_interface)
-		end
-
-	initialize
+	make
 			-- Set up action sequence connections and create graphics context.
 		do
 			set_default_colors
@@ -63,11 +57,6 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	app_implementation: EV_APPLICATION_IMP
-			-- Access to application object implementation.
-		once
-		end
-
 	redraw
 			-- Redraw the entire area.
 		do
@@ -98,8 +87,8 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	interface: EV_BITMAP;
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	interface: detachable EV_BITMAP note option: stable attribute end;
+
 end -- class EV_BITMAP_IMP

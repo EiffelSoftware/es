@@ -1,7 +1,6 @@
 note
 	description: "Eiffel Vision spin button. Cocoa Implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -24,7 +23,6 @@ inherit
 			set_range
 		redefine
 			interface,
-			initialize,
 			make,
 			dispose,
 			set_default_minimum_size,
@@ -39,8 +37,6 @@ inherit
 		redefine
 			make,
 			interface,
-			initialize,
-			set_text,
 			dispose,
 			on_change_actions,
 			set_default_minimum_size,
@@ -52,30 +48,27 @@ create
 
 feature {NONE} -- Implementation
 
-	make (an_interface: like interface)
-			-- Create the spin button.
+	make
 		do
-			base_make (an_interface)
-			create {NS_VIEW}cocoa_item.make
-			create text_field.make
+			create view.make
+			cocoa_view := view
 			create stepper.make
+
+			initialize_gauge_imp
+			Precursor {EV_TEXT_FIELD_IMP}
+
 			view.add_subview (text_field)
 			view.add_subview (stepper)
 			stepper.set_value_wraps (False)
-			change_actions_internal := create_change_actions
 			stepper.set_action (agent
 				do
 					set_value (stepper.double_value.floor)
-					change_actions_internal.call ([value])
+					change_actions.call ([value])
 				end)
-			create text.make_empty
-			align_text_left
-		end
 
-	initialize
-		do
-			Precursor {EV_TEXT_FIELD_IMP}
-			ev_gauge_imp_initialize --| {EV_GAUGE} Precursor
+			align_text_left
+			text_field.set_string_value (value.out)
+			cocoa_view := view
 		end
 
 feature -- Element change
@@ -105,10 +98,10 @@ feature -- Element change
 feature {NONE} -- Implementation
 
 	on_change_actions
-			do
-				gauge_change_actions
-			 	Precursor {EV_TEXT_FIELD_IMP}
-			end
+		do
+			gauge_change_actions
+		 	Precursor {EV_TEXT_FIELD_IMP}
+		end
 
 
 	gauge_change_actions
@@ -116,24 +109,17 @@ feature {NONE} -- Implementation
 		local
 			a_data: TUPLE [INTEGER_32]
 		do
-				if change_actions_internal /= Void then
-					create a_data.default_create
-					a_data.put (value, 1)
-					change_actions_internal.call (a_data)
-				end
+			if change_actions_internal /= Void then
+				create a_data.default_create
+				a_data.put (value, 1)
+				change_actions_internal.call (a_data)
+			end
 		end
 
 	dispose
 		do
 			Precursor {EV_TEXT_FIELD_IMP}
 			Precursor {EV_GAUGE_IMP}
-		end
-
-
-	set_text (a_text: STRING_GENERAL)
-			-- Assign `a_text' to `text'.
-		do
-			Precursor {EV_TEXT_FIELD_IMP} (a_text)
 		end
 
 	cocoa_set_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32)
@@ -160,16 +146,12 @@ feature {EV_ANY_I} -- Implementation
 
 	stepper_width: INTEGER = 15
 
-	interface: EV_SPIN_BUTTON;
-
 	stepper: NS_STEPPER;
 
-	view: NS_VIEW
-		do
-			Result ?= cocoa_item
-		end
+	view: NS_VIEW;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	interface: detachable EV_SPIN_BUTTON note option: stable attribute end;
+
 end -- class EV_SPIN_BUTTON_IMP
-

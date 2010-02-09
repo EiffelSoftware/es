@@ -1,5 +1,6 @@
 note
 	description: "Eiffel Vision menu separator. Cocoa implementation."
+	author:	"Daniel Furrer"
 
 class
 	EV_MENU_SEPARATOR_IMP
@@ -20,7 +21,6 @@ inherit
 			disable_sensitive,
 			is_sensitive,
 			interface,
-			initialize,
 			pointer_motion_actions_internal,
 			pointer_button_press_actions_internal,
 			pointer_double_press_actions_internal
@@ -31,26 +31,46 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Create a menu.
+	make
 		do
-			base_make (an_interface)
 			pixmapable_imp_initialize
-			create {NS_MENU_ITEM}cocoa_item.separator_item
-		end
-
-	initialize
-		do
+			create menu_item.separator_item
 			pixmapable_imp_initialize
 			is_sensitive := True
 			set_is_initialized (True)
 		end
 
-	initialize_menu_sep_box
-			-- Create and initialize menu item box.
-			--| This is just to satisfy pixmapable and textable contracts.
-		do
+feature {EV_MENU_ITEM_LIST_IMP} -- Access
 
+	radio_group: detachable LINKED_LIST [EV_RADIO_MENU_ITEM_IMP]
+			-- Radio items following this separator.
+
+	create_radio_group
+			-- Create `radio_group'.
+		require
+			radio_group_void: radio_group = Void
+		do
+			create radio_group.make
+		ensure
+			radio_group_not_void: radio_group /= Void
+		end
+
+	set_radio_group (a_list: like radio_group)
+			-- Assign `a_list' to `radio_group'.
+		require
+			a_list_not_void: a_list /= Void
+		do
+			radio_group := a_list
+		ensure
+			assigned: radio_group = a_list
+		end
+
+	remove_radio_group
+			-- Set `radio_group' to `Void'.
+		do
+			radio_group := Void
+		ensure
+			radio_group_void: radio_group = Void
 		end
 
 feature {NONE} -- Implementation
@@ -69,17 +89,26 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	pointer_motion_actions_internal: EV_POINTER_MOTION_ACTION_SEQUENCE
+	pointer_motion_actions_internal: detachable EV_POINTER_MOTION_ACTION_SEQUENCE
+		note
+			option: stable
+			attribute
+		end
 
-	pointer_button_press_actions_internal: EV_POINTER_BUTTON_ACTION_SEQUENCE
+	pointer_button_press_actions_internal: detachable EV_POINTER_BUTTON_ACTION_SEQUENCE
+		note
+			option: stable
+			attribute
+		end
 
-	pointer_double_press_actions_internal: EV_POINTER_BUTTON_ACTION_SEQUENCE
+	pointer_double_press_actions_internal: detachable EV_POINTER_BUTTON_ACTION_SEQUENCE
+		note
+			option: stable
+			attribute
+		end
 
-feature {NONE} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_MENU_SEPARATOR;
+	interface: detachable EV_MENU_SEPARATOR note option: stable attribute end;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_MENU_SEPARATOR_IMP
-

@@ -1,8 +1,6 @@
 note
-	description:
-		"Eiffel Vision Split Area, Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Eiffel Vision Split Area, Cocoa implementation."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,20 +20,21 @@ inherit
 		redefine
 			interface,
 			client_height,
-			client_width
+			client_width,
+			make
 		end
 
 create
 	make
 
-feature
+feature -- Creation
 
-	make (an_interface: like interface)
-			-- Connect interface and initialize `c_object'.
+	make
 		do
-			base_make( an_interface )
-			create {NS_SPLIT_VIEW}cocoa_item.make
+			create split_view.make
 			split_view.set_vertical (False)
+			cocoa_view := split_view
+			Precursor {EV_SPLIT_AREA_IMP}
 		end
 
 feature {NONE} -- Implementation
@@ -45,14 +44,14 @@ feature {NONE} -- Implementation
 		local
 			mh, mw, sep_wid: INTEGER
 		do
-			if first_visible then
-				mw := first.minimum_width
-				mh := first.minimum_height
+			if first_visible and then attached first as l_first then
+				mw := l_first.minimum_width
+				mh := l_first.minimum_height
 				sep_wid := splitter_width
 			end
-			if second_visible then
-				mw := mw.max (second.minimum_width)
-				mh := mh + second.minimum_height + sep_wid
+			if second_visible and then attached second as l_second then
+				mw := mw.max (l_second.minimum_width)
+				mh := mh + l_second.minimum_height + sep_wid
 			end
 			internal_set_minimum_size (mw, mh)
 		end
@@ -62,12 +61,12 @@ feature {NONE} -- Implementation
 		local
 			mh, sep_wid: INTEGER
 		do
-			if first_visible then
-				mh := first.minimum_height
+			if first_visible and then attached first as l_first then
+				mh := l_first.minimum_height
 				sep_wid := splitter_width
 			end
-			if second_visible then
-				mh := mh + second.minimum_height + sep_wid
+			if second_visible and then attached second as l_second then
+				mh := mh + l_second.minimum_height + sep_wid
 			end
 			internal_set_minimum_height (mh)
 		end
@@ -77,11 +76,11 @@ feature {NONE} -- Implementation
 		local
 			mw: INTEGER
 		do
-			if first_visible then
-				mw := first.minimum_width
+			if first_visible and then attached first as l_first then
+				mw := l_first.minimum_width
 			end
-			if second_visible then
-				mw := mw.max (second.minimum_width)
+			if second_visible and then attached second as l_second then
+				mw := mw.max (l_second.minimum_width)
 			end
 			internal_set_minimum_width (mw)
 		end
@@ -103,33 +102,43 @@ feature -- access
 		end
 
 	layout_widgets (originator: BOOLEAN)
+		local
+			l_first_imp: like first_imp
+			l_second_imp: like second_imp
 		do
 			if first_visible and not second_visible then
+				l_first_imp := first_imp
+				check l_first_imp /= Void end
 				if originator then
-					first_imp.set_move_and_size (0, 0, width, height)
+					l_first_imp.set_move_and_size (0, 0, width, height)
 				else
-					first_imp.ev_apply_new_size (0, 0, width, height, True)
+					l_first_imp.ev_apply_new_size (0, 0, width, height, True)
 				end
 			end
 
 			if second_visible and not first_visible then
+				l_second_imp := second_imp
+				check l_second_imp /= Void end
 				if originator then
-					second_imp.set_move_and_size (0, 0, width, height)
+					l_second_imp.set_move_and_size (0, 0, width, height)
 				else
-					second_imp.ev_apply_new_size (0, 0, width, height, True)
+					l_second_imp.ev_apply_new_size (0, 0, width, height, True)
 				end
 			end
 
 			if first_visible and second_visible then
+				l_first_imp := first_imp
+				l_second_imp := second_imp
+				check l_first_imp /= Void and l_second_imp /= Void end
 				if originator then
-					first_imp.set_move_and_size (0, 0, width, internal_split_position)
-					second_imp.set_move_and_size (0, internal_split_position +
+					l_first_imp.set_move_and_size (0, 0, width, internal_split_position)
+					l_second_imp.set_move_and_size (0, internal_split_position +
 						splitter_width, width, height - internal_split_position -
 						splitter_width)
 				else
-					first_imp.ev_apply_new_size (0, 0, width, internal_split_position,
+					l_first_imp.ev_apply_new_size (0, 0, width, internal_split_position,
 						True)
-					second_imp.ev_apply_new_size (0, internal_split_position +
+					l_second_imp.ev_apply_new_size (0, internal_split_position +
 						splitter_width, width, height - internal_split_position -
 						splitter_width, True)
 				end
@@ -138,13 +147,10 @@ feature -- access
 			split_view.adjust_subviews
 		end
 
-feature {EV_ANY_I} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_VERTICAL_SPLIT_AREA;
+	interface: detachable EV_VERTICAL_SPLIT_AREA note option: stable attribute end;
 			-- Provides a common user interface to possibly dependent
 			-- functionality implemented by `Current'.
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_VERTICAL_SPLIT_AREA_IMP
-

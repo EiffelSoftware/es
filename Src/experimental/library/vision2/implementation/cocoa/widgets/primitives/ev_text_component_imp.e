@@ -1,5 +1,6 @@
 note
 	description: "EiffelVision text component, Cocoa implementation."
+	author: "Daniel Furrer"
 	id: "$Id$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,7 +18,7 @@ inherit
 		redefine
 			interface,
 			default_key_processing_blocked,
-			initialize,
+			make,
 			set_default_minimum_size
 		end
 
@@ -28,7 +29,7 @@ inherit
 
 feature -- Initialization
 
-	initialize
+	make
 			-- Initialize `Current'.
 		do
 			set_minimum_width_in_characters (4)
@@ -82,18 +83,16 @@ feature {EV_WINDOW_IMP}
 			end
 		end
 
-feature {EV_ANY_I} -- Implementation		
+feature {NONE} -- Implementation
 
-	interface: EV_TEXT_COMPONENT;
+	clipboard_content: STRING_32
+			-- `Result' is current clipboard content.
+		do
+			create Result.make_empty
+		end
 
-note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
+feature {EV_ANY, EV_ANY_I} -- Implementation		
+
+	interface: detachable EV_TEXT_COMPONENT note option: stable attribute end;
+
 end -- class EV_TEXT_COMPONENT_IMP

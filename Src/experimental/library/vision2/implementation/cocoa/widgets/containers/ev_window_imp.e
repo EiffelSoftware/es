@@ -14,9 +14,11 @@ inherit
 			propagate_background_color
 		redefine
 			interface
+		select
+			copy
 		end
 
-	EV_CONTAINER_IMP
+	EV_SINGLE_CHILD_CONTAINER_IMP
 		undefine
 			x_position,
 			y_position,
@@ -25,16 +27,14 @@ inherit
 			width,
 			height,
 			on_key_event,
-			initialize,
 			destroy,
 			client_height,
 			client_width,
 			show
 		redefine
 			interface,
-			initialize,
-			is_sensitive,
 			make,
+			is_sensitive,
 			on_key_event,
 			hide,
 			destroy,
@@ -44,7 +44,9 @@ inherit
 			set_minimum_height,
 			set_top_level_window_imp,
 			ev_apply_new_size,
-			cocoa_set_size
+			cocoa_set_size,
+			dispose,
+			replace
 		end
 
 	EV_WINDOW_ACTION_SEQUENCES_IMP
@@ -58,7 +60,12 @@ inherit
 			background_color as cocoa_background_color,
 			make as cocoa_make,
 			screen as cocoa_screen,
-			item as window_item
+			item as window_item,
+			title as cocoa_title,
+			set_title as cocoa_set_title,
+			copy as cocoa_copy
+		redefine
+			dispose
 		end
 
 	NS_WINDOW_DELEGATE
@@ -68,40 +75,39 @@ inherit
 		redefine
 			window_did_resize
 		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Create the window.
-		do
-			base_make (an_interface)
-			cocoa_make (create {NS_RECT}.make_rect (100, 100, 100, 100),
-				{NS_WINDOW}.closable_window_mask | {NS_WINDOW}.miniaturizable_window_mask | {NS_WINDOW}.resizable_window_mask, True)
-			cocoa_item := current
-			make_key_and_order_front
-			order_out
-			allow_resize
-			create_delegate
-			set_delegate (current)
-		end
-
-	initialize
+	make
 			-- Create the vertical box `vbox' and horizontal box `hbox'
 			-- to put in the window.
 			-- The `vbox' will be able to contain the menu bar, the `hbox'
 			-- and the status bar.
 			-- The `hbox' will contain the child of the window.
 		do
+			cocoa_make (create {NS_RECT}.make_rect (100, 100, 100, 100),
+				{NS_WINDOW}.closable_window_mask | {NS_WINDOW}.miniaturizable_window_mask | {NS_WINDOW}.resizable_window_mask, True)
+			make_key_and_order_front
+			order_out
+			allow_resize
+			create_delegate
+
+			set_accepts_mouse_moved_events (True)
+
+			set_maximum_width (32000)
+			set_maximum_height (32000)
+			create accel_list.make (10)
+
+			initialize
+
+			cocoa_view := content_view
 			init_bars
-
-			maximum_width := interface.maximum_dimension
-			maximum_height := interface.maximum_dimension
-
-			app_implementation.windows.extend (interface)
-
-			Precursor {EV_CONTAINER_IMP}
+--			window := current
+			set_delegate (current)
+			app_implementation.windows_imp.extend (current)
 
 			internal_is_border_enabled := True
 			user_can_resize := True
@@ -111,7 +117,7 @@ feature {NONE} -- Initialization
  	init_bars
  			-- Initialize `lower_bar' and `upper_bar'.
  		local
- 			ub_imp, lb_imp: EV_VERTICAL_BOX_IMP
+ 			ub_imp, lb_imp: detachable EV_VERTICAL_BOX_IMP
  		do
  			create upper_bar
  			create lower_bar
@@ -124,7 +130,7 @@ feature {NONE} -- Initialization
   			ub_imp.on_parented
   			lb_imp.on_parented
   			ub_imp.set_parent_imp (Current)
-  			content_view.add_subview (ub_imp.cocoa_view)
+  			content_view.add_subview (ub_imp.attached_view)
   			lb_imp.set_parent_imp (Current)
   			ub_imp.set_top_level_window_imp (Current)
   			lb_imp.set_top_level_window_imp (Current)
@@ -134,24 +140,24 @@ feature -- Delegate
 
 	window_did_resize
 		local
-			bar_imp: EV_VERTICAL_BOX_IMP
+			bar_imp: detachable EV_VERTICAL_BOX_IMP
 		do
-			if not interface.upper_bar.is_empty then
-				bar_imp ?= interface.upper_bar.implementation
+			if not upper_bar.is_empty then
+				bar_imp ?= upper_bar.implementation
 				check
 					bar_imp_not_void: bar_imp /= Void
 				end
 				bar_imp.ev_apply_new_size (0, 0, client_width, client_y, True)
 			end
 
-			if item /= Void then
+			if attached item_imp as l_item_imp then
 --				item_imp.set_move_and_size (0, 0,
 --					client_width, client_height)
-				item_imp.ev_apply_new_size (0, client_y, client_width, client_height, True)
+				l_item_imp.ev_apply_new_size (0, client_y, client_width, client_height, True)
 			end
 
-			if not interface.lower_bar.is_empty then
-				bar_imp ?= interface.lower_bar.implementation
+			if not lower_bar.is_empty then
+				bar_imp ?= lower_bar.implementation
 				check
 					bar_imp_not_void: bar_imp /= Void
 				end
@@ -198,21 +204,21 @@ feature -- Measurement
 			-- This feature must be redefine by the containers to readjust its
 			-- children too.
 		local
-			bar_imp: EV_VERTICAL_BOX_IMP
+			bar_imp: detachable EV_VERTICAL_BOX_IMP
 		do
 			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
-			if item /= Void then
-				item_imp.ev_apply_new_size (0, client_y, client_width, client_height, True)
+			if attached item_imp as l_item_imp then
+				l_item_imp.ev_apply_new_size (0, client_y, client_width, client_height, True)
 			end
-			if not interface.upper_bar.is_empty then
-				bar_imp ?= interface.upper_bar.implementation
+			if not upper_bar.is_empty then
+				bar_imp ?= upper_bar.implementation
 				check
 					bar_imp_not_void: bar_imp /= Void
 				end
 				bar_imp.ev_move_and_resize (0, 0, client_width, client_y, True)
 			end
-			if not interface.lower_bar.is_empty then
-				bar_imp ?= interface.lower_bar.implementation
+			if not lower_bar.is_empty then
+				bar_imp ?= lower_bar.implementation
 				check
 					bar_imp_not_void: bar_imp /= Void
 				end
@@ -224,9 +230,9 @@ feature -- Measurement
 		do
 			Result := content_rect_for_frame_rect (frame).size.height - client_y
 --			Result := Precursor {EV_SINGLE_CHILD_CONTAINER_IMP} - client_y
-			if not interface.lower_bar.is_empty then
+			if not lower_bar.is_empty then
 				-- Add 1 pixel to separate client area and lower bar.
-				Result := Result - interface.lower_bar.minimum_height - 1
+				Result := Result - lower_bar.minimum_height - 1
 			end
 			Result := Result.max (0)
 		end
@@ -240,9 +246,9 @@ feature -- Measurement
  			-- Top of the client area of `Current'.
  		do
  			-- Result := Precursor {EV_SINGLE_CHILD_CONTAINER_IMP}
- 			if not interface.upper_bar.is_empty then
+ 			if not upper_bar.is_empty then
  				-- Add 1 pixel to separate client area and upper bar.
- 				Result := Result + interface.upper_bar.minimum_height + 1
+ 				Result := Result + upper_bar.minimum_height + 1
  			end
  	 		Result := Result.min (height)
  	 	end
@@ -308,13 +314,8 @@ feature -- Measurement
 	set_position (a_x, a_y: INTEGER)
 			-- Set horizontal offset to parent to `a_x'.
 			-- Set vertical offset to parent to `a_y'.
-		local
-			l_frame: NS_RECT
 		do
-			l_frame := frame
-			l_frame.origin.x := a_x
-			l_frame.origin.y := screen.frame.size.height - l_frame.size.height - a_y
-			set_frame (l_frame)
+			set_frame_top_left_point_flipped (create {NS_POINT}.make_point (a_x, a_y))
 		end
 
 	screen: NS_SCREEN
@@ -327,7 +328,7 @@ feature -- Measurement
 			-- Set the minimum horizontal size to `a_minimum_width'.
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
-			Precursor {EV_CONTAINER_IMP} (a_minimum_width, a_minimum_height)
+			Precursor {EV_SINGLE_CHILD_CONTAINER_IMP} (a_minimum_width, a_minimum_height)
 			if a_minimum_width > width then
 				set_width (a_minimum_width)
 			end
@@ -340,7 +341,7 @@ feature -- Measurement
 	set_minimum_height (a_minimum_height: INTEGER)
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
-			Precursor {EV_CONTAINER_IMP} (a_minimum_height)
+			Precursor {EV_SINGLE_CHILD_CONTAINER_IMP} (a_minimum_height)
 			if minimum_height > height then
 				set_height (minimum_height)
 			end
@@ -350,7 +351,7 @@ feature -- Measurement
 	set_minimum_width (a_minimum_width: INTEGER)
 			-- Set the minimum horizontal size to `a_minimum_width'.
 		do
-			Precursor {EV_CONTAINER_IMP} (a_minimum_width)
+			Precursor {EV_SINGLE_CHILD_CONTAINER_IMP} (a_minimum_width)
 			if minimum_width > width then
 				set_width (minimum_width)
 			end
@@ -380,7 +381,7 @@ feature -- Measurement
 	cocoa_set_size (a_x_position, a_y_position, a_width, a_height: INTEGER)
 		do
 
-			set_frame (create {NS_RECT}.make_rect(a_x_position, a_y_position, a_width, a_height))
+			set_frame (create {NS_RECT}.make_rect (a_x_position, a_y_position, a_width, a_height), True)
 		end
 
 feature -- Layout implementation
@@ -392,11 +393,11 @@ feature -- Layout implementation
 		do
 			mw := 0
 
-			if item_imp /= Void and item_imp.is_show_requested then
-				mw := mw + item_imp.minimum_width
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mw := mw + l_item_imp.minimum_width
 			end
-			mw := mw.max (interface.upper_bar.minimum_width).max
-				(interface.lower_bar.minimum_width)
+			mw := mw.max (attached_interface.upper_bar.minimum_width).max
+				(attached_interface.lower_bar.minimum_width)
 			internal_set_minimum_width (mw)
 			set_min_size (mw, minimum_height)
 		end
@@ -407,14 +408,14 @@ feature -- Layout implementation
 			mh: INTEGER
 		do
 			mh := 0
-			if not interface.upper_bar.is_empty then
-				mh := mh + interface.upper_bar.minimum_height + 1
+			if not attached_interface.upper_bar.is_empty then
+				mh := mh + attached_interface.upper_bar.minimum_height + 1
 			end
-			if item_imp /= Void and item_imp.is_show_requested then
-				mh := mh + item_imp.minimum_height
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mh := mh + l_item_imp.minimum_height
 			end
-			if not interface.lower_bar.is_empty then
-				mh := mh + interface.lower_bar.minimum_height + 1
+			if not attached_interface.lower_bar.is_empty then
+				mh := mh + attached_interface.lower_bar.minimum_height + 1
 			end
 			internal_set_minimum_height (mh)
 			set_min_size (minimum_width, mh)
@@ -427,21 +428,21 @@ feature -- Layout implementation
 			l_size: NS_SIZE
 		do
 			mw := 0
-			if item_imp /= Void and item_imp.is_show_requested then
-				mw := mw + item_imp.minimum_width
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mw := mw + l_item_imp.minimum_width
 			end
-			mw := mw.max (interface.upper_bar.minimum_width).max
-				(interface.lower_bar.minimum_width)
+			mw := mw.max (attached_interface.upper_bar.minimum_width).max
+				(attached_interface.lower_bar.minimum_width)
 
 			mh := 0
-			if not interface.upper_bar.is_empty then
-				mh := mh + interface.upper_bar.minimum_height + 1
+			if not attached_interface.upper_bar.is_empty then
+				mh := mh + attached_interface.upper_bar.minimum_height + 1
 			end
-			if item_imp /= Void then
-				mh := mh + item_imp.minimum_height
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mh := mh + l_item_imp.minimum_height
 			end
-			if not interface.lower_bar.is_empty then
-				mh := mh + interface.lower_bar.minimum_height + 1
+			if not attached_interface.lower_bar.is_empty then
+				mh := mh + attached_interface.lower_bar.minimum_height + 1
 			end
 			l_size := frame_rect_for_content_rect (create {NS_RECT}.make_rect (0, 0, mw, mh)).size
 			internal_set_minimum_size (l_size.width, l_size.height)
@@ -450,14 +451,14 @@ feature -- Layout implementation
 
 feature -- Widget relations
 
-	top_level_window_imp: EV_WINDOW_IMP
+	top_level_window_imp: detachable EV_WINDOW_IMP
 			-- Top level window that contains `Current'.
 			-- As `Current' is a window then we return `Current'
 		do
 			Result := Current
 		end
 
-	set_top_level_window_imp (a_window: EV_TITLED_WINDOW_IMP)
+	set_top_level_window_imp (a_window: detachable EV_WINDOW_IMP)
 			-- Make `a_window' the new `top_level_window_imp'
 			-- of `Current'.
 		do
@@ -480,10 +481,15 @@ feature  -- Access
 		do
 		end
 
-	item: EV_WIDGET
-			-- Current item.
+	count: INTEGER_32
+			-- Number of elements in `Current'.	
+		do
+			if item /= Void then
+				Result := 1
+			end
+		end
 
-	menu_bar: EV_MENU_BAR
+	menu_bar: detachable EV_MENU_BAR
 			-- FIXME Mac Issue: Menu-Bars are Application-wide
 			-- Horizontal bar at top of client area that contains menu's.
 
@@ -501,12 +507,26 @@ feature -- Status setting
 
 	internal_disable_border
 			-- Ensure no border is displayed around `Current'.
+		local
+			l_content_view: NS_VIEW
 		do
+			l_content_view := content_view
+			-- Recreate the Cocoa window, because changing the style mask is not supported
+			cocoa_make (frame,
+				{NS_WINDOW}.borderless_window_mask, True)
+			set_content_view (l_content_view)
 		end
 
 	internal_enable_border
 			-- Ensure a border is displayed around `Current'.
+		local
+			l_content_view: NS_VIEW
 		do
+			l_content_view := content_view
+			-- Recreate the Cocoa window, because changing the style mask is not supported
+			cocoa_make (frame,
+				{NS_WINDOW}.closable_window_mask | {NS_WINDOW}.miniaturizable_window_mask | {NS_WINDOW}.resizable_window_mask, True)
+			set_content_view (l_content_view)
 		end
 
 	block
@@ -541,12 +561,14 @@ feature -- Status setting
 			-- Forbid the resize of `Current'.
 		do
 			set_shows_resize_indicator (False)
+			standdard_window_button ({NS_WINDOW}.window_zoom_button).set_enabled (False)
 		end
 
 	allow_resize
 			-- Allow the resize of `Current'.
 		do
 			set_shows_resize_indicator (True)
+			standdard_window_button ({NS_WINDOW}.window_zoom_button).set_enabled (True)
 		end
 
 	show
@@ -567,32 +589,51 @@ feature -- Status setting
 			--is_show_requested := False
 		end
 
-feature -- Element change
+	set_title (a_title: STRING_GENERAL)
+			-- <Precursor>
+		do
+			cocoa_set_title (create {NS_STRING}.make_with_string (a_title))
+			internal_title := a_title.as_string_32
+		end
 
-	on_attach: ACTION_SEQUENCE [TUPLE]
+	title: STRING_32
+			-- <Precursor>-
+		do
+			if attached internal_title as l_title then
+				Result := l_title.twin
+			else
+				create Result.make_empty
+			end
+		end
+
+	internal_title: detachable STRING_32
+
+feature -- Element change
 
 	replace (v: like item)
 			-- Replace `item' with `v'.
 		local
-			w_imp: EV_WIDGET_IMP
+			v_imp: detachable EV_WIDGET_IMP
 		do
 			-- Remove current item, if any
-			if item /= Void then
-				w_imp ?= item.implementation
+			if attached item as l_item then
+				remove_item_actions.call ([l_item])
+				v_imp ?= l_item.implementation
 				check
-					item_has_implementation: w_imp /= Void
+					item_has_implementation: v_imp /= Void
 				end
-				on_removed_item ( w_imp )
+				v_imp.set_parent_imp (Void)
+				notify_change (Nc_minsize, Current)
 			end
 			-- Insert new item, if any
-			if v /= Void then
-				w_imp ?= v.implementation
+			if attached v as l_v then
+				v_imp ?= l_v.implementation
 				check
-					v_has_implementation: w_imp /= Void
+					v_has_implementation: v_imp /= Void
 				end
-				content_view.add_subview (w_imp.cocoa_view)
-				on_new_item ( w_imp )
-				notify_change (nc_minsize, Current)
+				content_view.add_subview (v_imp.attached_view)
+				v_imp.set_parent_imp (Current)
+				notify_change (Nc_minsize, Current)
 			end
 			item := v
 		end
@@ -600,24 +641,29 @@ feature -- Element change
 	set_menu_bar (a_menu_bar: EV_MENU_BAR)
 			-- Set `menu_bar' to `a_menu_bar'.
 		local
-			mb_imp: EV_MENU_BAR_IMP
+			mb_imp: detachable EV_MENU_BAR_IMP
+			menu: NS_MENU
 		do
 			menu_bar := a_menu_bar
-			mb_imp ?= menu_bar.implementation
+			mb_imp ?= a_menu_bar.implementation
+			check mb_imp /= Void end
 			mb_imp.set_parent_window_imp (Current)
 
 			-- TODO attach the menubar to the current window / application in cocoa and switch on window switch
-			app_implementation.application.set_main_menu (mb_imp.menu)
-			app_implementation.application.fix_apple_menu
+			menu := mb_imp.menu
+			menu.insert_item_at_index (app_implementation.default_application_menu, 0)
+
+			app_implementation.set_main_menu (menu)
 		end
 
 	remove_menu_bar
 			-- Set `menu_bar' to `Void'.
 		local
-			mb_imp: EV_MENU_BAR_IMP
+			mb_imp: detachable EV_MENU_BAR_IMP
 		do
-			if menu_bar /= Void then
-				mb_imp ?= menu_bar.implementation
+			if attached menu_bar as l_menu_bar then
+				mb_imp ?= l_menu_bar.implementation
+				check mb_imp /= Void end
 				mb_imp.remove_parent_window
 				-- TODO: remove the menubar in cocoa
 			end
@@ -631,7 +677,15 @@ feature {EV_ANY_IMP} -- Implementation
 		do
 			disable_capture
 			hide
-			Precursor {EV_CONTAINER_IMP}
+			app_implementation.windows_imp.start
+			app_implementation.windows_imp.prune (current)
+			Precursor {EV_SINGLE_CHILD_CONTAINER_IMP}
+		end
+
+	dispose
+		do
+			Precursor {EV_SINGLE_CHILD_CONTAINER_IMP}
+			Precursor {NS_WINDOW}
 		end
 
 feature {NONE} -- Implementation
@@ -656,13 +710,11 @@ feature {EV_INTERMEDIARY_ROUTINES}
 
 feature {EV_ANY_I, LAYOUT_INSPECTOR} -- Implementation
 
-	interface: EV_WINDOW;
-		-- Interface object of `Current'
+--	window: NS_WINDOW;
 
-	window: NS_WINDOW
-			--
-		do
-			Result ?= cocoa_item
-		end
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	interface: detachable EV_WINDOW note option: stable attribute end;
+		-- Interface object of `Current'
 
 end -- class EV_WINDOW_IMP

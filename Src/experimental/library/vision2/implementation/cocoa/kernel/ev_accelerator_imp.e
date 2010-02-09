@@ -1,32 +1,29 @@
 note
 	description: "EiffelVision accelerator. Cocoa implementation."
+	author:	"Daniel Furrer"
 
 class
 	EV_ACCELERATOR_IMP
 
 inherit
 	EV_ACCELERATOR_I
-		export
-			{EV_INTERMEDIARY_ROUTINES} actions_internal
-		redefine
-			interface
-		end
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Connect interface.
+	old_make (an_interface: like interface)
+			-- Create the window.
 		do
-			base_make (an_interface)
+			assign_interface (an_interface)
 		end
 
-	initialize
+	make
 			-- Setup `Current'
 		do
 			set_is_initialized (True)
+			create key
 		end
 
 feature {EV_TITLED_WINDOW_IMP} -- Implementation
@@ -113,17 +110,9 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	interface: EV_ACCELERATOR
-		-- Interface object of `Current'
-
-feature {NONE} -- Implementation
-
 	destroy
 			-- Free resources of `Current'
 		do
 		end
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_ACCELERATOR_IMP
-

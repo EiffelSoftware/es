@@ -1411,6 +1411,7 @@ test	profile-with-invariant				exec311 tcf fail execution profile
 test	small-eif-memory-scavenge		exec312	tcf pass execution
 test	static-access-on-like-current		exec313	tcf pass execution
 test	manifest-type-expr-generating-type	exec314	tcf pass execution
+test	manifest-type-singletons		exec315	tcf pass execution
 
 
 -- Compiler termination (exception trace, panic, etc.)
@@ -1734,6 +1735,7 @@ test	storable-with-attached-type-1	store019 tcf pass storable attached_types
 test	storable-with-attached-type-by-63	store020 tcf pass storable attached_types
 test	storable-removing-attachment-marks	store021 tcf pass storable attached_types
 test	store-expanded-class-type-2	store022 tcf pass storable expanded
+test	store-volatile-attributes	store023 tcf pass storable
 
 -- Flat, short, flatshort tests
 
@@ -1826,6 +1828,8 @@ test	validity-vsrp2-many-arguments	vsrp205	 tcf pass validity vsrp
 test	validity-vsrp2-bad-then-good	vsrp206	 tcf pass validity vsrp
 test	validity-vsrp2-two-procedures	vsrp207	 tcf pass validity vsrp
 test	validity-vsrp2-multi-procedures	vsrp208	 tcf pass validity vsrp
+
+test	validity-vsrp3-precondition	vsrp301 tcf pass validity vsrp
 
 
 test	validity-vscn-same-cluster	vscn001	 tcf pass validity vscn

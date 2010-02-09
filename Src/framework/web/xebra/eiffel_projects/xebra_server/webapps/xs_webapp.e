@@ -9,6 +9,10 @@ class
 	XS_WEBAPP
 
 inherit
+	XC_WEBAPP_BEAN
+		redefine
+			make
+		end
 	XS_SHARED_SERVER_OUTPUTTER
 	XS_SHARED_SERVER_CONFIG
 
@@ -17,38 +21,38 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_webapp_config: XS_WEBAPP_CONFIG)
+	make (a_webapp_config: XC_WEBAPP_CONFIG)
 			-- Initialization for `Current'.
-		require
-			a_webapp_config_attached: a_webapp_config /= Void
 		do
-			app_config := a_webapp_config
+			Precursor (a_webapp_config)
 
 			create translate_action.make (current)
 			create compile_action.make (current)
 			create run_action.make (current)
 			create send_action.make (current)
-			create shutdown_action.make (current)
+
 
 			translate_action.set_next_action (compile_action)
 			compile_action.set_next_action (run_action)
 			run_action.set_next_action (send_action)
 
-			cleaned := true
 
-		ensure
+			current_request := create {XCWC_EMPTY}.make
+			needs_cleaning := False
+
+			dev_mode := True
+
+		ensure then
 			config_attached: config /= Void
 			translate_action_attached: translate_action /= Void
 			compile_action_attached: compile_action /= Void
 			run_action_attached: run_action /= Void
 			send_action_attached: send_action /= Void
-			shutdown_action_attached: shutdown_action /= Void
+
 		end
 
 feature  -- Access
 
-	app_config: XS_WEBAPP_CONFIG
-		-- Contains info about the webapp
 
 	translate_action: XSWA_TRANSLATE
 		-- The action to translate the webapp
@@ -62,14 +66,14 @@ feature  -- Access
 	send_action: XSWA_SEND
 		-- The action to send the request to the webapp
 
-	shutdown_Action: XSWA_SHUTDOWN
-		-- The action to shut down a webapp	
 
-	request_message: detachable STRING
+--	request_message: detachable STRING assign set_request_message
 		-- The current request_message
 
-	cleaned: BOOLEAN assign set_cleaned
-		-- Can be used to force a clean on the first translation/compilation	
+	current_request: XC_WEBAPP_COMMAND --assign set_current_request
+
+	needs_cleaning: BOOLEAN assign set_needs_cleaning
+		-- Can be used to force a clean on the next translation/compilation	
 
 feature -- Constans
 
@@ -77,86 +81,101 @@ feature -- Constans
 	fourbillionnanoseconds: INTEGER_64 = 4000000000
 	sixbillionnanoseconds: INTEGER_64 = 6000000000
 
---feature {NONE} -- Access internal
-
---	server_config: XS_FILE_CONFIG
---			-- The attached server_config
---		require
---			internal_server_config_attached: internal_server_config /= Void
---		do
---			if attached  internal_server_config as c then
---				Result := c
---			else
---				Result := create {XS_FILE_CONFIG}.make_empty
---			end
---		ensure
---			Result_attached: Result /= Void
---		end
-
---	internal_server_config: detachable XS_FILE_CONFIG
---		-- Internal detachable server_config
-
 feature -- Actions
 
-	start_action_chain: XS_COMMANDS
-			-- Executes the first action in the chain		
+	send (a_request: XC_WEBAPP_COMMAND): XC_COMMAND_RESPONSE
+			-- Executes the the actions chain 		
+		require
+			a_request_attached: a_request /= Void
 		do
+			current_request := a_request
 			if config.args.assume_webapps_are_running.value then
 				Result := send_action.execute
 			else
-				Result := translate_action.execute
+				if is_disabled then
+					Result := (create {XER_DISABLED}.make(app_config.name)).render_to_command_response
+				else
+					if dev_mode then
+						Result := translate_action.execute
+					else
+						Result := run_action.execute
+					end
+
+				end
 			end
 		ensure
 			Result_attached: Result /= Void
 		end
 
-feature -- Status Setting
-
-	set_request_message (a_request_message: like request_message)
-			-- Sets a_request_message
+	get_sessions: BOOLEAN
+			-- Retrieves the count of sessions from the webapp
 		do
-			request_message := a_request_message
-		ensure
-			request_message_set: request_message = a_request_message
+			Result := True
+			if is_running then
+				current_request :=  create {XCWC_GET_SESSIONS}.make
+				if attached {XCCR_GET_SESSIONS} send_action.execute as l_response then
+					sessions := l_response.sessions
+				else
+					Result := False
+				end
+			end
 		end
 
-	set_cleaned (a_cleaned: like cleaned)
-			-- Sets
+feature  -- Status Setting
+
+--	set_current_request (a_current_request: like current_request)
+--			-- Sets current_request.
+--		require
+--			a_current_request_attached: a_current_request /= Void
+--		do
+--			current_request := a_current_request
+--		ensure
+--			current_request_set: equal( current_request, a_current_request)
+--		end
+
+--	set_request_message (a_request_message: like request_message)
+--			-- Sets a_request_message.
+--		do
+--			request_message := a_request_message
+--		ensure
+--			request_message_set: request_message = a_request_message
+--		end
+
+	set_needs_cleaning (a_cleaned: like needs_cleaning)
+			-- Sets needs_cleaning.
 		do
-			cleaned := a_cleaned
+			needs_cleaning := a_cleaned
 		ensure
-			cleaned_set: cleaned = a_cleaned
+			cleaned_set: needs_cleaning = a_cleaned
 		end
 
 	shutdown
-			-- Initiates shutdown and waits for termination
+			-- Initiates shutdown and waits for termination.
 		do
 			if run_action.is_running then
-				shutdown_action.execute.do_nothing;
+				o.dprint ("Sending shutdown command to '" + app_config.name.value + "'...", 4)
+				current_request := 	create {XCWC_SHUTDOWN}.make
+				send_action.execute.do_nothing
 				run_action.wait_for_exit
 			end
 		end
 
+	fire_off
+			-- Sends shutdown signal even if the webapp process is not owned by the server
+		do
+			o.dprint ("Sending shutdown command to '" + app_config.name.value + "'...", 4)
+			current_request := 	create {XCWC_SHUTDOWN}.make
+			send_action.execute.do_nothing
+		end
+
 
 	shutdown_all
-			-- Shuts the application down and all process (compile and translate)
+			-- Shuts the application down and all process (compile and translate).
 		do
 			shutdown
 			compile_action.stop
 			translate_action.stop
 		end
-
-
---	set_server_config (a_config: XS_FILE_CONFIG)
---			-- Setter
---		do
---			internal_server_config := a_config
---			translate_action.set_config (a_config)
---			compile_action.set_config (a_config)
---			run_action.set_config (a_config)
---			send_action.set_config (a_config)
---			shutdown_action.set_config (a_config)
---		end
 
 invariant
 	config_attached: config /= Void
@@ -164,6 +183,5 @@ invariant
 	compile_action_attached: compile_action /= Void
 	run_action_attached: run_action /= Void
 	send_action_attached: send_action /= Void
-	shutdown_action_attached: shutdown_action /= Void
-	request_message_not_empty_when_attached: request_message /= Void implies not request_message.is_empty
+
 end

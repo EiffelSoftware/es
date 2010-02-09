@@ -12,6 +12,7 @@ deferred class
 
 inherit
 	XU_SHARED_OUTPUTTER
+	XH_FORM_HANDLER
 
 feature {XWA_SERVLET} -- Initialization
 
@@ -69,13 +70,13 @@ feature -- Basic Operations
 			end
 		end
 
-	pre_handle_request (a_session_manager: XWA_SESSION_MANAGER; a_request: XH_REQUEST; a_response: XH_RESPONSE; a_commands: XS_COMMANDS)
+	pre_handle_request (a_session_manager: XWA_SESSION_MANAGER; a_request: XH_REQUEST; a_response: XH_RESPONSE)
 			-- Handles a request from a client an generates a response.
-			-- Assigns a_commands to the controllers.
+
 		require
 			a_session_manager_attached: attached a_session_manager
 			a_request_attached: attached a_request
-			a_commands_attached: attached a_commands
+
 		local
 			l_internal_controllers: LIST [XWA_CONTROLLER]
 		do
@@ -89,7 +90,7 @@ feature -- Basic Operations
 			loop
 				l_internal_controllers.item.set_current_request (a_request)
 				l_internal_controllers.item.set_current_session (current_session)
-				l_internal_controllers.item.server_control.set_commands(a_commands)
+
 				l_internal_controllers.forth
 			end
 			set_all_booleans (a_request, a_response)
@@ -106,10 +107,10 @@ feature -- Basic Operations
 		end
 
 	handle_form (a_request: XH_REQUEST; a_response: XH_RESPONSE)
-			-- Handles a form
+			-- <Precursor>
 		local
 			l_wrapped_form: XH_FORM
-			l_real_bean: ANY -- FIXME: Use correct type?
+			l_real_bean: ANY
 		do
 			handle_form_internal (a_request, a_response)
 		end

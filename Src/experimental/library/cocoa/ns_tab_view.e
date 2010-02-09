@@ -15,11 +15,14 @@ inherit
 create
 	make
 
+create {NS_OBJECT}
+	share_from_pointer
+
 feature {NONE} -- Creation
 
 	make
 		do
-			make_shared (tab_view_new)
+			make_from_pointer (tab_view_new)
 		end
 
 feature -- Access

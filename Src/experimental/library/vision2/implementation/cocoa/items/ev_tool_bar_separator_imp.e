@@ -1,8 +1,6 @@
 note
-	description:
-		"Eiffel Vision tool bar separator. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Eiffel Vision tool bar separator. Cocoa implementation."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +15,8 @@ inherit
 
 	EV_ITEM_IMP
 		redefine
-			interface
+			interface,
+			cocoa_view
 		end
 
 	EV_PND_DEFERRED_ITEM
@@ -29,7 +28,8 @@ inherit
 
 	EV_NS_VIEW
 		redefine
-			interface
+			interface,
+			cocoa_view
 		end
 
 create
@@ -39,19 +39,12 @@ feature {NONE} -- Initialization
 
 	is_dockable: BOOLEAN = False
 
-	make (an_interface: like interface)
-			-- Create a separator .
-		do
-			base_make (an_interface)
-			create box.make
-			box.set_box_type ({NS_BOX}.box_separator)
-			cocoa_item := box
-		end
-
-	initialize
+	make
 			--
 		do
-
+			create box.make
+			box.set_box_type ({NS_BOX}.box_separator)
+			cocoa_view := box
 		end
 
 
@@ -65,22 +58,20 @@ feature -- Statur Report
 
 	is_vertical: BOOLEAN
 			-- Are the buttons in parent toolbar arranged vertically?
-		local
-			tool_bar_imp: EV_TOOL_BAR_IMP
 		do
-			tool_bar_imp ?= parent
-			if tool_bar_imp /= Void then
+			if attached {EV_TOOL_BAR_IMP} parent as tool_bar_imp then
 				Result := tool_bar_imp.is_vertical
 			end
 		end
 
-feature {EV_ANY_I} -- Implementation
-
-	interface: EV_TOOL_BAR_SEPARATOR;
+feature {LAYOUT_INSPECTOR, EV_ANY_I} -- Implementation
 
 	box: NS_BOX;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
-end -- class EV_TOOL_BAR_SEPARATOR_I
+	cocoa_view: NS_VIEW;
 
+feature {EV_ANY, EV_ANY_I} -- Implementation
+
+	interface: detachable EV_TOOL_BAR_SEPARATOR note option: stable attribute end;
+
+end -- class EV_TOOL_BAR_SEPARATOR_I

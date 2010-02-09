@@ -32,6 +32,7 @@ feature -- Resizing
 	set_minimum_width (a_minimum_width: INTEGER)
 			-- Set the minimum horizontal size to `a_minimum_width'.
 		do
+			is_user_min_width_set := False
 			internal_set_minimum_width (a_minimum_width)
 			is_user_min_width_set := True
 		end
@@ -39,6 +40,7 @@ feature -- Resizing
 	set_minimum_height (a_minimum_height: INTEGER)
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
+			is_user_min_width_set := False
 			internal_set_minimum_height (a_minimum_height)
 			is_user_min_height_set := True
 		end
@@ -47,6 +49,8 @@ feature -- Resizing
 			-- Set the minimum horizontal size to `a_minimum_width'.
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
+			is_user_min_height_set := False
+			is_user_min_width_set := False
 			internal_set_minimum_size (a_minimum_width, a_minimum_height)
 			is_user_min_height_set := True
 			is_user_min_width_set := True
@@ -124,7 +128,7 @@ feature {EV_SIZEABLE_IMP} -- Implementation
 
 feature {EV_ANY_I} -- deferred feature
 
-	parent_imp: EV_SIZEABLE_CONTAINER_IMP
+	parent_imp: detachable EV_SIZEABLE_CONTAINER_IMP
 			-- Parent of `Current'.
 		deferred
 		end

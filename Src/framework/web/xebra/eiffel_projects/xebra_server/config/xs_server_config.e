@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {XS_SERVER_CONFIG}."
-	author: ""
+	description: "[
+			Contains configuration from the arguments and from the config file.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -25,10 +26,13 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	args: XS_ARG_CONFIG assign set_args
+			-- Contains info that is read from arguments
 
 	file: XS_FILE_CONFIG assign set_file
+			-- Contains info that is read from config file
 
-feature {XSC_LOAD_CONFIG} -- Status setting
+
+feature {XCC_LOAD_CONFIG} -- Status setting
 
 	set_args (a_args: like args)
 			-- Sets args.

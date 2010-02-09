@@ -1,7 +1,6 @@
 note
 	description: "Cocoa implementation of dockable source."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,16 +9,6 @@ deferred class
 
 inherit
 	EV_DOCKABLE_SOURCE_I
-		redefine
-			interface
-		end
-
-	EV_ANY_IMP
-		undefine
-			destroy
-		redefine
-			interface
-		end
 
 feature -- Status setting
 
@@ -72,6 +61,9 @@ feature {NONE} -- Implementation
 		end
 
 	orig_cursor: EV_POINTER_STYLE
+		do
+			create Result
+		end
 
 	end_dragable (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt,
 		a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
@@ -104,14 +96,10 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	pointer_style: EV_POINTER_STYLE
+	pointer_style: detachable EV_POINTER_STYLE
 			--
 		deferred
 		end
 
-	interface: EV_DOCKABLE_SOURCE;
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_DOCKABLE_IMP
 

@@ -1,7 +1,6 @@
 note
 	description: "Eiffel Vision gauge. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,24 +16,20 @@ inherit
 	EV_PRIMITIVE_IMP
 		redefine
 			interface,
-			initialize
+			make
 		end
 
 	EV_GAUGE_ACTION_SEQUENCES_IMP
 
 feature {NONE} -- Initialization
 
-	initialize
+	make
 		do
+			initialize_gauge_imp
 			Precursor {EV_PRIMITIVE_IMP}
-			ev_gauge_imp_initialize
 		end
 
-	ev_gauge_imp_initialize
-			-- Initialize without calling precursor.
-			--| Separate function so it can be called from
-			--| widgets that inherit twice from EV_WIDGET_IMP,
-			--| so initialize does not have to be called again.
+	initialize_gauge_imp
 		do
 			create value_range.make (0, 100)
 			set_leap (10)
@@ -42,7 +37,6 @@ feature {NONE} -- Initialization
 			value_range.change_actions.extend (agent set_range)
 			set_range
 		end
-
 
 feature -- Access
 
@@ -123,10 +117,6 @@ feature -- Element change
 			set_value ( temp_value )
 		end
 
-feature {NONE} -- Implementation
-
-	interface: EV_GAUGE
-
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	value_changed_handler
@@ -137,7 +127,8 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 			end
 		end
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
-end -- class EV_GAUGE_I
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
+	interface: detachable EV_GAUGE note option: stable attribute end
+
+end -- class EV_GAUGE_I

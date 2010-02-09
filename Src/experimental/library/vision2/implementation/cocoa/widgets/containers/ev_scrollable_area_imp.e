@@ -1,7 +1,6 @@
 note
 	description: "Eiffel Vision scrollable area. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author:	"Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,7 +21,9 @@ inherit
 	EV_VIEWPORT_IMP
 		redefine
 			interface,
-			make
+			make,
+			replace,
+			ev_apply_new_size
 		end
 
 create
@@ -30,20 +31,19 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Create scrollable area.
+	make
 		do
-			base_make (an_interface)
-
 			create scroll_view.make_with_flipped_content_view
 			scroll_view.set_has_horizontal_scroller (True)
 			scroll_view.set_has_vertical_scroller (True)
 --			scroll_view.set_autohides_scrollers (True)
 			scroll_view.set_draws_background (False)
-			cocoa_item := scroll_view
+			cocoa_view := scroll_view
 
-			set_horizontal_step (20)
-			set_vertical_step (20)
+			set_horizontal_step (10)
+			set_vertical_step (10)
+			initialize
+			set_is_initialized (True)
 		end
 
 feature -- Access
@@ -65,6 +65,24 @@ feature -- Access
 		end
 
 feature -- Element change
+
+	replace (v: like item)
+			-- Replace `item' with `v'.
+		do
+			if attached item_imp as l_item_imp then
+				l_item_imp.set_parent_imp (Void)
+				notify_change (Nc_minsize, Current)
+			end
+			if attached v and then attached {like item_imp} v.implementation as v_imp then
+				v_imp.set_parent_imp (current)
+				scroll_view.set_document_view (v_imp.attached_view)
+				v_imp.ev_apply_new_size (0, 0, v_imp.width, v_imp.height, True)
+				v_imp.set_parent_imp (Current)
+				notify_change (Nc_minsize, Current)
+			end
+			item := v
+			ev_apply_new_size (x_position, y_position, width, height, False)
+		end
 
 	set_horizontal_step (a_step: INTEGER)
 			-- Set `horizontal_step' to `a_step'.
@@ -102,13 +120,22 @@ feature -- Element change
 			scroll_view.set_has_vertical_scroller (False)
 		end
 
-feature {EV_ANY_I} -- Implementation		
+feature {NONE} -- Implementation
 
-	interface: EV_SCROLLABLE_AREA;
+	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
+		do
+			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
+			if attached item_imp as l_item_imp then
+				scroll_view.set_document_view (l_item_imp.attached_view)
+				l_item_imp.ev_apply_new_size (0, 0, l_item_imp.width, l_item_imp.height, True)
+			end
+		end
+
+
+feature {EV_ANY, EV_ANY_I} -- Implementation		
+
+	interface: detachable EV_SCROLLABLE_AREA note option: stable attribute end;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_SCROLLABLE_AREA_IMP
-

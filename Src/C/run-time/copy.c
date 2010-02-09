@@ -128,6 +128,11 @@ rt_public EIF_REFERENCE eif_twin (EIF_REFERENCE Current)
 
 	a = c_check_assert (EIF_FALSE);
 	Result = eclone (Current);
+	if (!egc_has_old_copy_semantic) {
+			/* When using the new semantic for `copy', we have to perform
+			 * a shallow copy of the object being twined before call `copy'. */
+		ecopy (Result, Current);
+	}
 #ifdef WORKBENCH
 	call_copy (Dtype (Result), Result, Current);
 #else
@@ -299,7 +304,7 @@ rt_public EIF_REFERENCE edclone(EIF_CONTEXT EIF_REFERENCE source)
 	 */
 
 	obj_nb = 0;						/* Mark objects */
-	traversal(source, TR_MAP);		/* Object traversal, mark with EO_STORE */
+	traversal(source, 0, TR_MAP);		/* Object traversal, mark with EO_STORE */
 	hash_malloc(&hclone, obj_nb);	/* Hash table allocation */
 	map_start();					/* Restart at bottom of FIFO stack */
 

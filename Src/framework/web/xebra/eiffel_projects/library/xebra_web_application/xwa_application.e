@@ -35,7 +35,7 @@ feature {NONE} -- Operations Internal
 		require
 			a_arg_parser_attached: a_arg_parser /= Void
 		local
-			l_config_reader: XWA_CONFIG_READER
+			l_config_reader: XC_WEBAPP_CONFIG_READER
 			l_printer: ERROR_CUI_PRINTER
 		do
 			create l_config_reader.make
@@ -89,17 +89,13 @@ feature {NONE} -- Operations Internal
 					if config.is_interactive.value then
 						o.iprint ("(enter 'x' to shut down)")
 						from
-							stop := False
 						until
-							stop
+							io.last_character.is_equal ('x')
 						loop
 							io.read_character
-							if io.last_character.is_equal ('x') then
-								stop := True
-							end
 						end
 						o.iprint ("Shutting down...")
-						server.shutdown
+						server.shutdown.do_nothing
 					end
 					server.join
 					o.iprint ("Bye!")
@@ -112,20 +108,54 @@ feature -- Access
 	server_connection_handler: detachable XWA_SERVER_CONN_HANDLER
 			-- Returns the applications server conn handler
 
-	stop: BOOLEAN
-			-- Is used to stop the application
-
-	config: XWA_CONFIG
+	config: XC_WEBAPP_CONFIG
 			-- Configuration for the webapp
 
-feature -- Setter
+feature -- Other
 
-	set_stop (a_stop: BOOLEAN)
-			-- Setter
+	compile_common_classes
+			-- Includes all classes in the system that are needed but not neccesarily included
+		local
+			l: ANY
 		do
-			stop := a_stop
-		ensure
-			stop_set: stop = a_stop
+				-- Responses
+			if attached {XCCR_CANNOT_SEND} l then end
+			if attached {XCCR_CONFIG_ERROR} l then end
+			if attached {XCCR_CONFIG_ERROR} l then end
+			if attached {XCCR_ERROR} l then end
+			if attached {XCCR_GET_MODULES} l then end
+			if attached {XCCR_GET_SESSIONS} l then end
+			if attached {XCCR_GET_WEBAPPS} l then end
+			if attached {XCCR_HTTP_REQUEST} l then end
+			if attached {XCCR_OK} l then end
+			if attached {XCCR_UNKNOWN_ERROR} l then end
+			if attached {XCCR_WEBAPP_NOT_FOUND} l then end
+
+				-- Server Commands
+			if attached {XCC_CLEAN_WEBAPP} l then end
+			if attached {XCC_DEV_OFF_GLOBAL} l then end
+			if attached {XCC_DEV_OFF_WEBAPP} l then end
+			if attached {XCC_DEV_ON_GLOBAL} l then end
+			if attached {XCC_DEV_ON_WEBAPP} l then end
+			if attached {XCC_DISABLE_WEBAPP} l then end
+			if attached {XCC_ENABLE_WEBAPP} l then end
+			if attached {XCC_FIREOFF_WEBAPP} l then end
+			if attached {XCC_GET_MODULES} l then end
+			if attached {XCC_GET_WEBAPPS} l then end
+			if attached {XCC_LAUNCH_WEBAPP} l then end
+			if attached {XCC_LOAD_CONFIG} l then end
+			if attached {XCC_RELAUNCH_MOD} l then end
+			if attached {XCC_SHUTDOWN_MOD} l then end
+			if attached {XCC_SHUTDOWN_SERVER} l then end
+			if attached {XCC_SHUTDOWN_WEBAPP} l then end
+			if attached {XCC_SHUTDOWN_WEBAPPS} l then end
+			if attached {XCC_GET_SESSIONS} l then end
+
+				-- Webapp Commands
+			if attached {XCWC_EMPTY} l then end
+			if attached {XCWC_GET_SESSIONS} l then end
+			if attached {XCWC_HTTP_REQUEST} l then end
+			if attached {XCWC_SHUTDOWN} l then end
 		end
 
 end

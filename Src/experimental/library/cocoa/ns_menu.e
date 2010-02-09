@@ -12,12 +12,14 @@ inherit
 
 create
 	make
+create {NS_OBJECT}
+	share_from_pointer
 
 feature {NONE} -- Creation
 
 	make
 		do
-			make_shared (menu_new)
+			make_from_pointer (menu_new)
 		end
 
 feature -- Access
@@ -32,9 +34,14 @@ feature -- Access
 			menu_remove_item_at_index (item, a_index)
 		end
 
-	set_title (a_title: STRING_GENERAL)
+	set_title (a_title: NS_STRING)
 		do
-			menu_set_title (item, (create {NS_STRING}.make_with_string (a_title)).item)
+			menu_set_title (item, a_title.item)
+		end
+
+	add_item (a_menu_item: NS_MENU_ITEM)
+		do
+			menu_add_item (item, a_menu_item.item)
 		end
 
 feature {NONE} -- Objective-C implementation
@@ -86,6 +93,7 @@ feature {NONE} -- Objective-C implementation
 		alias
 			"[(NSMenu*)$a_menu addItem: $a_menu_item];"
 		end
+
 --- (NSMenuItem *)insertItemWithTitle:(NSString *)aString action:(SEL)aSelector keyEquivalent:(NSString *)charCode atIndex:(NSInteger)index;
 --- (NSMenuItem *)addItemWithTitle:(NSString *)aString action:(SEL)aSelector keyEquivalent:(NSString *)charCode;
 	frozen menu_remove_item_at_index (a_menu: POINTER; a_index: INTEGER)

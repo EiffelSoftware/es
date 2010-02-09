@@ -1,8 +1,6 @@
 note
-	description:
-		"Eiffel Vision fixed. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Eiffel Vision fixed. Cocoa implementation."
+	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,13 +20,8 @@ inherit
 		redefine
 			interface,
 			insert_i_th,
-			initialize,
+			make,
 			notify_change
-		end
-
-	EV_NS_VIEW
-		redefine
-			interface
 		end
 
 create
@@ -36,17 +29,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Create the fixed container.
-		do
-			base_make (an_interface)
-			cocoa_item := create {NS_VIEW}.make_flipped
-		end
-
-	initialize
+	make
 			-- Initialize `Current'.
 		do
-			Precursor
+			cocoa_view := create {NS_VIEW}.make_flipped
+			Precursor {EV_WIDGET_LIST_IMP}
 		end
 
 feature -- Status setting
@@ -55,7 +42,7 @@ feature -- Status setting
 			-- Set `a_widget.x_position' to `a_x'.
 			-- Set `a_widget.y_position' to `a_y'.
 		local
-			w_imp : EV_WIDGET_IMP
+			w_imp: detachable EV_WIDGET_IMP
 		do
 			w_imp ?= a_widget.implementation
 			check
@@ -69,7 +56,7 @@ feature -- Status setting
 			-- Set `a_widget.width' to `a_width'.
 			-- Set `a_widget.height' to `a_height'.
 		local
-			w_imp : EV_WIDGET_IMP
+			w_imp: detachable EV_WIDGET_IMP
 		do
 			w_imp ?= a_widget.implementation
 			check
@@ -156,7 +143,7 @@ feature {EV_ANY_I} -- Implementation
 			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
 		end
 
-	insert_i_th (v: like item; i: INTEGER)
+	insert_i_th (v: attached like item; i: INTEGER)
 			-- Insert `v' at position `i'.
 		do
 			Precursor ( v, i )
@@ -187,11 +174,8 @@ feature {EV_ANY_I} -- Implementation
 
 feature -- Implementation
 
-	interface: EV_FIXED;
+	interface: detachable EV_FIXED note option: stable attribute end;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_FIXED
-

@@ -1,7 +1,6 @@
 note
 	description: "Eiffel Vision sensitive. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author: "Daniel Furrer"
 	keywords: "sensitive"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -11,16 +10,6 @@ deferred class
 
 inherit
 	EV_SENSITIVE_I
-		redefine
-			interface
-		end
-
-	EV_ANY_IMP
-		undefine
-			destroy
-		redefine
-			interface
-		end
 
 feature -- Status report
 
@@ -52,27 +41,18 @@ feature {EV_ANY_I} -- Implementation
 			Result := parent /= Void
 		end
 
-	parent: EV_ANY
+	parent: detachable EV_ANY
 		deferred
 		end
 
 	parent_is_sensitive: BOOLEAN
 			-- (export status {NONE})
-		local
-			sensitive_parent: EV_SENSITIVE
 		do
-			sensitive_parent ?= parent
-			if sensitive_parent /= Void then
+			if attached {EV_SENSITIVE} parent as sensitive_parent then
 				Result := sensitive_parent.is_sensitive
 			end
 		end
 
 	is_not_sensitive: BOOLEAN
 
-	interface: EV_SENSITIVE;
-			-- Interface object for implementation
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- EV_SENSITIVE_IMP
-

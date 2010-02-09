@@ -1,8 +1,6 @@
 note
-	description:
-		"EiffelVision horizontal separator, Cocoa implementation"
-	legal: "See notice at end of class.";
-	status: "See notice at end of class."
+	description: "EiffelVision horizontal separator, Cocoa implementation"
+	author:	"Daniel Furrer"
 	date: "$Date$";
 	revision: "$Revision$"
 
@@ -23,12 +21,8 @@ inherit
 create
 	make
 
-feature {EV_ANY_I} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_HORIZONTAL_SEPARATOR;
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	interface: detachable EV_HORIZONTAL_SEPARATOR note option: stable attribute end;
 
 end -- class EV_HORIZONTAL_SEPARATOR_IMP
-

@@ -1,7 +1,6 @@
 note
 	description: "Eiffel Vision font. Cocoa implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	author:	"Daniel Furrer"
 	keywords: "character, face, height, family, weight, shape, bold, italic"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,7 +12,6 @@ inherit
  	EV_FONT_I
 		redefine
 			interface,
-			set_values,
 			string_size
 		end
 
@@ -22,25 +20,20 @@ inherit
 			interface
 		end
 
+	NS_STRING_CONSTANTS
+
 create
 	make
 
 feature {NONE} -- Initialization
 
- 	make (an_interface: like interface)
- 			-- Create the default font.
-		do
-			base_make (an_interface)
-			create font.system_font_of_size (0)
-			cocoa_item := font
-		end
-
-
-	initialize
+	make
 			-- Set up `Current'
 		local
 			--l_app_imp: like app_implementation
 		do
+			create font.system_font_of_size (0)
+
 			--l_app_imp := app_implementation
 			create preferred_families
 			--set_height_in_points (l_app_imp.default_font_point_height_internal)
@@ -52,13 +45,6 @@ feature {NONE} -- Initialization
 			height := 10
 			height_in_points := 10
 			set_is_initialized (True)
-		end
-
-feature {EV_FONTABLE_IMP} -- Implementation
-
-	font_is_default: BOOLEAN
-			-- Does `Current' have the characteristics of the default application font?
-		do
 		end
 
 feature -- Access
@@ -87,6 +73,7 @@ feature -- Element change
 			-- Set `a_family' as preferred font category.
 		do
 			family := a_family
+			calculate_font_metrics
 		end
 
 	set_face_name (a_face: STRING_GENERAL)
@@ -114,20 +101,15 @@ feature -- Element change
 			-- Set `a_height' as preferred font size in screen pixels
 		do
 			height := a_height
+			height_in_points := a_height
 			calculate_font_metrics
 		end
 
 	set_height_in_points (a_height: INTEGER)
 			-- Set `a_height' as preferred font size in screen pixels
 		do
-			calculate_font_metrics
-		end
-
-	set_values (a_family, a_weight, a_shape, a_height: INTEGER;
-		a_preferred_families: like preferred_families)
-			-- Set `a_family', `a_weight', `a_shape' `a_height' and
-			-- `a_preferred_face' at the same time for speed.
-		do
+			height_in_points := a_height
+			height := a_height
 			calculate_font_metrics
 		end
 
@@ -147,6 +129,7 @@ feature -- Status report
 		do
 			ascent := 1
 			descent := 1
+			update_font_face
 		end
 
 	ascent: INTEGER
@@ -158,19 +141,19 @@ feature -- Status report
 	width: INTEGER
 			-- Character width of current fixed-width font.
 		do
-			Result := string_width("x")
+			Result := string_width ("x")
 		end
 
 	minimum_width: INTEGER
 			-- Width of the smallest character in the font.
 		do
-			Result := string_width("1")
+			Result := string_width ("1")
 		end
 
 	maximum_width: INTEGER
 			-- Width of the biggest character in the font.
 		do
-			Result := string_width("W")
+			Result := string_width ("W")
 		end
 
 	string_size (a_string: STRING_GENERAL): TUPLE [width: INTEGER; height: INTEGER; left_offset: INTEGER; right_offset: INTEGER]
@@ -182,7 +165,7 @@ feature -- Status report
 			l_size: NS_SIZE
 		do
 			create l_string.make_with_string (a_string)
-			create l_attributes.make_with_object_for_key (cocoa_item, cocoa_item.font_attribute_name)
+			create l_attributes.make_with_object_for_key (font, font_attribute_name)
 			l_size := l_string.size_with_attributes (l_attributes)
 
 			create Result.default_create
@@ -215,7 +198,15 @@ feature -- Status report
 feature {NONE} -- Implementation
 
 	update_font_face
+		local
+			font_descriptor: NS_FONT_DESCRIPTOR
 		do
+			create font_descriptor.make
+			font_descriptor.set_size (height)
+			if weight > weight_regular then
+				font_descriptor.set_trait ({NS_FONT_DESCRIPTOR}.bold_trait)
+			end
+			create font.font_with_descriptor (font_descriptor, height)
 		end
 
 	update_preferred_faces (a_face: STRING_32)
@@ -224,12 +215,10 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	interface: EV_FONT;
-		-- Interface coupling object for `Current'
-
 	font: NS_FONT;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
-end -- class EV_FONT_IMP
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
+	interface: detachable EV_FONT note option: stable attribute end
+
+end -- class EV_FONT_IMP

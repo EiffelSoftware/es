@@ -13,6 +13,8 @@ inherit
 			make
 		end
 
+	TARGET_ACTION_SUPPORT
+
 create
 	make
 
@@ -20,18 +22,10 @@ feature {NONE} -- Creation
 
 	make
 		do
-			make_shared ({NS_CONTROL_API}.new)
+			make_from_pointer ({NS_CONTROL_API}.new)
 		end
 
 feature -- Access
-
-	set_action (an_action: PROCEDURE [ANY, TUPLE])
-			-- Sets the receiver's action method to call the given eiffel agent.
-		do
-			action := an_action
-			{NS_CONTROL_API}.set_target (item, target_new ($current, $target))
-			{NS_CONTROL_API}.set_action (item)
-		end
 
 	set_double_value (a_double: DOUBLE)
 			-- Sets the value of the receiver's cell using a double-precision floating-point number.
@@ -80,22 +74,19 @@ feature -- Access
 			-- If the cell does not inherit from NSActionCell, the method marks the cell's interior as needing to be redisplayed; NSActionCell performs its own updating of cells.
 		do
 			{NS_CONTROL_API}.set_string_value (item, (create {NS_STRING}.make_with_string (a_string)).item)
+		ensure
+			string_value_set:
 		end
 
-	font: NS_FONT
-			-- Returns the font used to draw text in the receiver's cell.
+	string_value: NS_STRING -- assign set_string_value
 		do
-			create Result.make_shared ({NS_CONTROL_API}.font (item))
-		ensure
-			result_not_void: Result /= void
+			create Result.share_from_pointer ({NS_CONTROL_API}.string_value (item))
 		end
 
 	set_cell (a_cell: NS_CELL)
 			-- Sets the receiver's cell
 			-- Use this method with great care as it can irrevocably damage the affected control;
 			-- specifically, you should only use this method in initializers for subclasses of NS_CONTROL.
-		require
-			cell_not_void: a_cell /= void
 		do
 			{NS_CONTROL_API}.set_cell (item, a_cell.item)
 		ensure
@@ -105,17 +96,94 @@ feature -- Access
 	cell: NS_CELL
 			-- Returns the receiver's cell object.
 		do
-			create Result.make_shared ({NS_CONTROL_API}.cell (item))
+			create Result.make_from_pointer ({NS_CONTROL_API}.cell (item))
 		ensure
 			result_not_void: Result /= void
 		end
 
-feature {NONE} -- Callback Handling
+feature -- Formatting Text
 
-	target
+	alignment: INTEGER
+			-- Returns the alignment mode of the text in the receiver's cell.
+			-- The default value is NSNaturalTextAlignment
 		do
-			action.call([])
+			Result := {NS_CONTROL_API}.alignment (item)
+		ensure
+			valid_alignment: valid_alignment (Result)
 		end
 
-	action: PROCEDURE [ANY, TUPLE]
+	set_alignment (a_alignment: INTEGER)
+		require
+			valid_alignment: valid_alignment (a_alignment)
+		do
+			{NS_CONTROL_API}.set_alignment (item, a_alignment)
+		ensure
+			alignment_set: alignment = a_alignment
+		end
+
+	font: NS_FONT
+			-- Returns the font used to draw text in the receiver's cell.
+		do
+			create Result.make_from_pointer ({NS_CONTROL_API}.font (item))
+		end
+
+	set_font (a_font: NS_FONT)
+			-- Sets the font used to draw text in the receiver's cell.
+			-- If the cell is being edited, the text in the cell is redrawn in the new font, and the cell's editor
+			-- (the NSText object used globally for editing) is updated with the new font object.
+		do
+			{NS_CONTROL_API}.set_font (item, a_font.item)
+		ensure
+			font_set: a_font.is_equal (font)
+		end
+
+feature -- Contract support
+
+	valid_alignment (a_int: INTEGER): BOOLEAN
+		do
+			Result := (<<left_text_alignment, right_text_alignment, center_text_alignment, justified_text_alignment>>).has (a_int)
+		end
+
+feature -- NSTextAlignment Constants -- FIXME: move to NS_TEXT
+
+	frozen left_text_alignment: INTEGER
+			-- NSLeftTextAlignment
+		external
+			"C macro use <Cocoa/Cocoa.h>"
+		alias
+			"NSLeftTextAlignment"
+		end
+
+	frozen right_text_alignment: INTEGER
+			-- NSRightTextAlignment
+		external
+			"C macro use <Cocoa/Cocoa.h>"
+		alias
+			"NSRightTextAlignment"
+		end
+
+	frozen center_text_alignment: INTEGER
+			-- NSCenterTextAlignment
+		external
+			"C macro use <Cocoa/Cocoa.h>"
+		alias
+			"NSCenterTextAlignment"
+		end
+
+	frozen justified_text_alignment: INTEGER
+			-- NSJustifiedTextAlignment
+		external
+			"C macro use <Cocoa/Cocoa.h>"
+		alias
+			"NSJustifiedTextAlignment"
+		end
+
+	frozen natural_text_alignment: INTEGER
+			-- NSNaturalTextAlignment
+		external
+			"C macro use <Cocoa/Cocoa.h>"
+		alias
+			"NSNaturalTextAlignment"
+		end
+
 end

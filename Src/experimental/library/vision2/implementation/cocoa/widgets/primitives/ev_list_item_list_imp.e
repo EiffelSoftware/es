@@ -1,7 +1,6 @@
 note
 	description: "EiffelVision list item list, Cocoa implementation"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,14 +10,12 @@ deferred class
 inherit
 	EV_LIST_ITEM_LIST_I
 		redefine
-			call_pebble_function,
 			interface
 		end
 
 	EV_PRIMITIVE_IMP
 		redefine
-			call_pebble_function,
-			initialize,
+			make,
 			interface,
 			pre_pick_steps
 		end
@@ -26,7 +23,7 @@ inherit
 	EV_ITEM_LIST_IMP [EV_LIST_ITEM, EV_LIST_ITEM_IMP]
 		redefine
 			interface,
-			initialize
+			make
 		end
 
 	EV_LIST_ITEM_LIST_ACTION_SEQUENCES_IMP
@@ -37,10 +34,10 @@ inherit
 
 feature {NONE} -- Initialization
 
-	initialize
+	make
 			-- Set up `Current'
 		do
-			Precursor {EV_ITEM_LIST_IMP}
+			initialize_item_list
 			Precursor {EV_PRIMITIVE_IMP}
 			initialize_pixmaps
 		end
@@ -53,11 +50,6 @@ feature -- Access
 		end
 
 feature -- Status report
-
-	row_from_y_coord (a_y: INTEGER): EV_PND_DEFERRED_ITEM
-			-- Retrieve the Current row from `a_y' coordinate
-		do
-		end
 
 	update_pnd_status
 			-- Update PND status of list and its children.
@@ -83,21 +75,9 @@ feature -- Status report
 
 		end
 
-	pnd_row_imp: EV_LIST_ITEM_IMP
+	pnd_row_imp: detachable EV_LIST_ITEM_IMP
 			-- Implementation object of the current row if in PND transport.
 
-	temp_pebble: ANY
-
-	temp_pebble_function: FUNCTION [ANY, TUPLE [], ANY]
-			-- Returns data to be transported by PND mechanism.
-
-	temp_accept_cursor, temp_deny_cursor: EV_CURSOR
-
-	call_pebble_function (a_x, a_y, a_screen_x, a_screen_y: INTEGER)
-			-- Set `pebble' using `pebble_function' if present.
-		do
-
-		end
 
 feature -- Status setting
 
@@ -131,11 +111,8 @@ feature -- Insertion
 
 		end
 
-feature {EV_LIST_ITEM_LIST_IMP, EV_LIST_ITEM_IMP} -- Implementation
+feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: EV_LIST_ITEM_LIST;
+	interface: detachable EV_LIST_ITEM_LIST note option: stable attribute end;
 
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_LIST_ITEM_LIST_IMP
-

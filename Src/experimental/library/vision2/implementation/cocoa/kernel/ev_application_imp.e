@@ -1,7 +1,6 @@
 note
-	description:
-		"EiffelVision application, Cocoa implementation."
-	legal: "See notice at end of class."
+	description: "EiffelVision application, Cocoa implementation."
+	author: "Daniel Furrer"
 
 class
 	EV_APPLICATION_IMP
@@ -16,6 +15,11 @@ inherit
 				pointer_button_press_actions_internal,
 				pointer_double_press_actions_internal,
 				pointer_button_release_actions_internal
+		redefine
+			make,
+			dispose
+		select
+			copy
 		end
 
 	EV_APPLICATION_ACTION_SEQUENCES_IMP
@@ -30,17 +34,27 @@ inherit
 
 	EXCEPTIONS
 
+	NS_APPLICATION
+		rename
+			make as make_application_cocoa,
+			launch as launch_cocoa,
+			copy as copy_cocoa
+		redefine
+			dispose
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface)
-			-- Set up the callback marshalL
+	make
+			-- Set up the callback marshalL.... TODO
 		do
-			base_make (an_interface)
-			create windows.make
-			create application.make
+			Precursor
+			create windows_imp.make
+			make_application_cocoa
+			set_is_initialized (True)
 		end
 
 feature -- Access
@@ -48,61 +62,111 @@ feature -- Access
 	ctrl_pressed: BOOLEAN
 			-- Is ctrl key currently pressed?
 		do
+			-- This is low-level, not trivial in Cocoa (see HID manager)
 		end
 
 	alt_pressed: BOOLEAN
 			-- Is alt key currently pressed?
 		do
+			-- This is low-level, not trivial in Cocoa (see HID manager)
 		end
 
 	shift_pressed: BOOLEAN
 			-- Is shift key currently pressed?
 		do
+			-- This is low-level, not trivial in Cocoa (see HID manager)
 		end
 
 	caps_lock_on: BOOLEAN
 			-- Is the Caps or Shift Lock key currently on?
 		do
+			-- This is low-level, not trivial in Cocoa (see HID manager)
 		end
 
-	windows: LINKED_LIST [EV_WINDOW]
+	windows_imp: LINKED_LIST [EV_WINDOW_IMP]
 			-- Global list of windows.
+
+	windows: LINKED_LIST [EV_WINDOW]
+		do
+			create Result.make
+			from
+				windows_imp.start
+			until
+				windows_imp.after
+			loop
+				if attached windows_imp.item.interface as window then
+					Result.extend (window)
+				end
+				windows_imp.forth
+			end
+		end
 
 feature -- Basic operation
 
 	process_underlying_toolkit_event_queue
 			-- Process Cocoa events
 		local
-			event: POINTER
-			l_event: NS_EVENT
+			event: detachable NS_EVENT
+			view: detachable NS_VIEW
+			pointer_button_action: TUPLE [x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
+			pointer_motion_action: TUPLE [x: INTEGER; y: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
+			point: NS_POINT
 		do
+			-- Fix the menu because we are not loading from a nib
+			--main_menu.insert_item_at_index (default_application_menu, 0)
+
 			from
-				event := application.next_event(0, {NS_OBJECT}.nil, 0, true)
+				event := next_event (0, default_pointer, 0, true)
 			until
-				event = {EV_ANY_IMP}.NULL
+				event = void
 			loop
-				create l_event.make_shared (event)
-				if l_event.type = {NS_EVENT}.left_mouse_down then
-					io.output.put_string ("Event: " + l_event.location_in_window.out + "%N")
+				pool.release
+				create pool.make
+
+				if event.type = {NS_EVENT}.left_mouse_down or event.type = {NS_EVENT}.right_mouse_down or event.type = {NS_EVENT}.other_mouse_down
+					or event.type = {NS_EVENT}.left_mouse_up or event.type = {NS_EVENT}.right_mouse_up or event.type = {NS_EVENT}.other_mouse_up then
+					view := event.window.content_view.hit_test (event.location_in_window)
+					--io.output.put_string ("MouseDown event at " + event.location_in_window.out + " in object of type " + view.class_.name + "  " + view.generating_type + "%N")
+
+					if attached {EV_WIDGET_IMP} view as widget then
+						create pointer_button_action
+						point := event.window.content_view.convert_point_to_view (event.location_in_window, widget.cocoa_view)
+						pointer_button_action.x := point.x
+						pointer_button_action.y := point.y
+						point := event.window.convert_base_to_screen_top_left (event.location_in_window)
+						pointer_button_action.screen_x := point.x
+						pointer_button_action.screen_y := point.y
+						pointer_button_action.button :=	event.button_number + 1
+						if event.type = {NS_EVENT}.left_mouse_up or event.type = {NS_EVENT}.right_mouse_up or event.type = {NS_EVENT}.other_mouse_up then
+							widget.pointer_button_release_actions.call (pointer_button_action)
+						else
+							widget.pointer_button_press_actions.call (pointer_button_action)
+						end
+					end
+				elseif event.type = {NS_EVENT}.mouse_moved then
+					view := event.window.content_view.hit_test (event.location_in_window)
+					--io.output.put_string ("Move event at " + event.location_in_window.out + " in object of type " + view.class_.name + "  " + view.generating_type + "%N")
+
+					if attached {EV_WIDGET_IMP} view as widget then
+						create pointer_motion_action
+						point := event.window.content_view.convert_point_to_view (event.location_in_window, widget.cocoa_view)
+						pointer_motion_action.x := point.x
+						pointer_motion_action.y := point.y
+--						point := event.window.convert_base_to_screen_top_left (event.location_in_window)
+--						pointer_button_action.screen_x := point.x
+--						pointer_button_action.screen_y := point.y
+						widget.pointer_motion_actions.call (pointer_motion_action)
+					end
 				end
-				application.send_event (event)
-				application.update_windows
-				event := application.next_event(0, {NS_OBJECT}.nil, 0, true)
+				send_event (event)
+				update_windows
+				event := next_event (0, default_pointer, 0, true)
 			end
+			pool.release
 		end
 
 	process_graphical_events
 			-- Process all pending graphical events and redraws.
-		do
-		end
-
-	motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
-			-- Tuple optimizations
-		once
-		end
-
-	handle_dnd (a_event: POINTER)
-			-- Handle drag and drop event.
 		do
 		end
 
@@ -119,7 +183,7 @@ feature -- Basic operation
 				set_is_destroyed (True)
 				destroy_actions.call (Void)
 			end
-			application.terminate
+			stop
 		end
 
 feature -- Status report
@@ -134,7 +198,6 @@ feature -- Status setting
 		do
 			tooltip_delay := a_delay
 		end
-
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
 
@@ -164,10 +227,9 @@ feature -- Implementation
 	is_in_transport: BOOLEAN
 		-- Is application currently in transport (either PND or docking)?
 
-	pick_and_drop_source: EV_PICK_AND_DROPABLE_IMP
+	pick_and_drop_source: detachable EV_PICK_AND_DROPABLE_IMP
 			-- Source of pick and drop if any.
 		do
-			--Result := internal_pick_and_drop_source
 		end
 
 	enable_is_in_transport
@@ -184,27 +246,7 @@ feature -- Implementation
 		do
 		end
 
-	keyboard_modifier_mask: INTEGER
-			-- Mask representing current keyboard modifiers state.
-		do
-		end
-
-	enable_debugger
-			-- Enable the Eiffel debugger.
-		do
-		end
-
-	disable_debugger
-			-- Disable the Eiffel debugger.
-		do
-		end
-
 feature -- Thread Handling.
-
-	initialize_threading
-			-- Initialize thread support.
-		do
-		end
 
 	lock
 			-- Lock the Mutex.
@@ -223,19 +265,12 @@ feature -- Thread Handling.
 		do
 		end
 
-feature {NONE} -- Idle handling
+feature {NONE} -- Implementation
 
-	on_idle (a_intimer: POINTER; a_instate: INTEGER; a_inuserdata: POINTER)
-			-- Callback target. This feature gets called when the application idles
+	dispose
 		do
-				idle_actions_internal.call (Void)
+			Precursor {EV_APPLICATION_I}
+			Precursor {NS_APPLICATION}
 		end
 
-feature {EV_ANY_I}
-
-	application: NS_APPLICATION;
-
-note
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_APPLICATION_IMP
-

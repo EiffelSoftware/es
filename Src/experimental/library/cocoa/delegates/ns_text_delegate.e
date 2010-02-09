@@ -4,37 +4,78 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	NS_TEXT_DELEGATE
 
 inherit
-	NS_OBJECT
+	DELEGATE
+
+feature -- Class
+
+	delegate_class: OBJC_CLASS
+		once
+			create Result.make_with_name ("TextDelegate")
+			Result.set_superclass (create {OBJC_CLASS}.make_with_name("NSObject"))
+			Result.add_method ("textDidChange:", agent text_did_change_callback)
+			Result.register
+		end
+
+	text_did_change_callback (a_notification: POINTER)
+		do
+			if attached text_did_change_actions_internal as actions then
+				actions.call([])
+			end
+		end
+
+	init_delegate
+		local
+			delegate: NS_OBJECT
+		do
+			delegate := delegate_class.create_instance
+ 			{NS_VIEW_API}.init (delegate.item)
+
+			{NS_OUTLINE_VIEW_API}.set_delegate (item, delegate.item)
+		end
+
+	text_did_change_actions: ACTION_SEQUENCE [TUPLE[]]
+		do
+			if attached text_did_change_actions_internal as actions then
+				Result := actions
+			else
+				create Result
+				text_did_change_actions_internal := Result
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	text_did_change_actions_internal: detachable ACTION_SEQUENCE [TUPLE[]]
 
 feature -- Delegate Methods
 
 	text_should_begin_editing (a_text_object: NS_TEXT): BOOLEAN
 		do
-			Result := text_field_text_should_begin_editing (cocoa_object, a_text_object.cocoa_object)
+			Result := text_field_text_should_begin_editing (item, a_text_object.item)
 		end
 
 	text_should_end_editing (a_text_object: NS_TEXT): BOOLEAN
 		do
-			Result := text_field_text_should_end_editing (cocoa_object, a_text_object.cocoa_object)
+			Result := text_field_text_should_end_editing (item, a_text_object.item)
 		end
 
 	text_did_begin_editing (a_notification: NS_NOTIFICATION)
 		do
-			text_field_text_did_begin_editing (cocoa_object, a_notification.cocoa_object)
+			text_field_text_did_begin_editing (item, a_notification.item)
 		end
 
 	text_did_end_editing (a_notification: NS_NOTIFICATION)
 		do
-			text_field_text_did_end_editing (cocoa_object, a_notification.cocoa_object)
+			text_field_text_did_end_editing (item, a_notification.item)
 		end
 
 	text_did_change (a_notification: NS_NOTIFICATION)
 		do
-			text_field_text_did_change (cocoa_object, a_notification.cocoa_object)
+			text_field_text_did_change (item, a_notification.item)
 		end
 
 feature -- Objective-C implementation
