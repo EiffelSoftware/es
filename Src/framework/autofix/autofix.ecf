@@ -7,6 +7,7 @@
 		</option>
 		<setting name="multithreaded" value="true"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
+		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
@@ -98,6 +99,9 @@
 			</file_rule>
 			<file_rule>
 				<exclude>^/exception_analysis$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/graph/graph$</exclude>
 			</file_rule>
 			<cluster name="query_model" location="$EIFFEL_SRC\framework\autofix\query_model\"/>
 			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\autofix\boolean_model\"/>
