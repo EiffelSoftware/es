@@ -23,26 +23,29 @@ inherit
 			process_assigner_call_as,
 			process_tagged_as,
 			process_nested_expr_as,
-			process_creation_expr_as
+			process_creation_expr_as,
+			process_inline_agent_creation_as
 		end
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
 		end
-create
-	make
 
 feature -- Access
 
-	var_def: ARRAY[like current_var_defs]
-		-- var_def[i][var_name] = {j,k} -> in instruction i var_name was defined between instruction j and k
+	instructions: ARRAY[ETR_DF_INSTR]
+			-- Instructions
 
-	vars_used: ARRAY[like temp_vars_used]
-		-- vars_used[i] = {a,b} -> in instruction i vars a and b were used
+feature {NONE} -- Implementation (Attributes)
 
-	block_start_position, block_end_position: INTEGER
+	instr_list: LINKED_LIST[like cur_instr]
+			-- Internal structure to store instructions
 
-feature {NONE} -- Implementation
+	cur_instr: ETR_DF_INSTR
+			-- Current instruction
+
+	elseif_defs, caselist_defs: LINKED_LIST[like current_var_defs]
+			-- Variabels defined in variable-length-branches
 
 	context: ETR_FEATURE_CONTEXT
 		-- which feature are we in
@@ -51,15 +54,7 @@ feature {NONE} -- Implementation
 		-- number of instruction currently processed
 
 	current_var_defs: HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]
-
-	var_def_list: LINKED_LIST[like current_var_defs]
-		-- temporary list-form of var_def
-
-	var_used_list: LINKED_LIST[LIST[STRING]]
-		-- temporary list-form of var_used
-
-	temp_vars_used: LIST[STRING]
-		-- currently used variables
+		-- current variable definitions
 
 	last_was_unqualified: BOOLEAN
 		-- are we in an unqualified call
@@ -68,8 +63,7 @@ feature {NONE} -- Implementation
 	next_local_name: STRING
 		-- name of next local
 
-	start_path, end_path: AST_PATH
-		-- start and and path that we're looking for
+feature {NONE} -- Implementation (Features)
 
 	is_next_call_local(a_call: CALL_AS): BOOLEAN
 			-- is `a_call' a direct access to a local variable?
@@ -136,16 +130,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_ref_paths(l_as: AST_EIFFEL)
-		do
-			if start_path.is_equal (l_as.path) then
-				block_start_position := current_instruction
-			end
-			if end_path.is_equal (l_as.path) then
-				block_end_position := current_instruction
-			end
-		end
-
 	process_case_list(l_as: EIFFEL_LIST[CASE_AS])
 		local
 			l_prev_var_def: like current_var_defs
@@ -184,13 +168,12 @@ feature {NONE} -- Implementation
 				current_instruction := current_instruction+1
 				-- restore defined variables
 				current_var_defs := l_prev_var_def.twin
-				-- clear used variables
-				create {LINKED_LIST[STRING]}temp_vars_used.make
+				create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+
 				-- and gather new ones			
 				safe_process(l_as.item.expr)
 				-- store them
-				var_used_list.extend (temp_vars_used)
-				var_def_list.extend (current_var_defs)
+				instr_list.extend (cur_instr)
 
 				-- process the compound and store defs
 				safe_process(l_as.item.compound)
@@ -200,299 +183,53 @@ feature {NONE} -- Implementation
 			l_as.go_i_th(l_cursor)
 		end
 
-	elseif_defs, caselist_defs: LINKED_LIST[like current_var_defs]
-
-feature {NONE} -- creation
-
-	make(a_context: like context)
-			-- make with `a_output' and `a_context'
-		do
-			context := a_context
-		end
-
 feature -- Operation
 
-	generate_chain(a_ast: AST_EIFFEL; a_start_path: like start_path; a_end_path: like end_path)
-			-- generate a chain starting from `a_ast'
+	generate_chain(a_context: like context; a_ast: AST_EIFFEL)
+			-- generate a chain starting from `a_ast' in `a_context'
 		do
-			start_path := a_start_path
-			end_path := a_end_path
+			context := a_context
 
 			current_instruction := 0
 
 			-- create internal structures
-			create var_def_list.make
-			create var_used_list.make
 			create current_var_defs.make(20)
+			create instr_list.make
 
 			a_ast.process (Current)
 
-			-- convert for external access
 			from
-				create vars_used.make (1, var_used_list.count)
-				var_used_list.start
+				create instructions.make (1, instr_list.count)
+				instr_list.start
 			until
-				var_used_list.after
+				instr_list.after
 			loop
-				vars_used[var_used_list.index] := var_used_list.item
-				var_used_list.forth
+				instructions[instr_list.index] := instr_list.item
+				instr_list.forth
 			end
-
-			from
-				create var_def.make (1, var_def_list.count)
-				var_def_list.start
-			until
-				var_def_list.after
-			loop
-				var_def[var_def_list.index] := var_def_list.item
-				var_def_list.forth
-			end
+		ensure
+			counts_match: current_instruction = instructions.count
 		end
 
-feature {AST_EIFFEL} -- Roundtrip
-
-	process_inspect_as (l_as: INSPECT_AS)
-		local
-			l_merge_list: LINKED_LIST[like current_var_defs]
-			l_previous_defs: like current_var_defs
-		do
-			current_instruction := current_instruction+1
-			if start_path.is_equal (l_as.path) then
-				block_start_position := current_instruction
-			end
-			-- store defined variables for this instruction
-			l_previous_defs := current_var_defs
-			var_def_list.extend (current_var_defs)
-
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
-			-- and gather new ones			
-			safe_process(l_as.switch)
-			-- store them
-			var_used_list.extend (temp_vars_used)
-
-			create l_merge_list.make
-
-			-- process case list part
-			if attached l_as.case_list then
-				current_var_defs := l_previous_defs.twin
-				create caselist_defs.make
-				process_case_list(l_as.case_list)
-				l_merge_list.append (caselist_defs)
-			end
-
-			-- process else part
-			if attached l_as.else_part then
-				current_var_defs := l_previous_defs.twin
-				l_as.else_part.process (Current)
-				l_merge_list.extend (current_var_defs)
-			end
-
-			if end_path.is_equal (l_as.path) then
-				block_end_position := current_instruction
-			end
-
-			current_var_defs := union_merge_definitions (l_previous_defs, l_merge_list)
-		end
-
-	process_instr_call_as (l_as: INSTR_CALL_AS)
-		do
-			current_instruction := current_instruction+1
-			check_ref_paths(l_as)
-			last_was_unqualified := true
-			-- store defined variables for this instruction
-			var_def_list.extend (current_var_defs.twin)
-
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
-			-- and gather new ones			
-			safe_process(l_as.call)
-			-- store them
-			var_used_list.extend (temp_vars_used)
-		end
-
-	process_expr_call_as (l_as: EXPR_CALL_AS)
-		do
-			last_was_unqualified := true
-			safe_process (l_as.call)
-		end
-
-	process_object_test_as (l_as: OBJECT_TEST_AS)
-		do
-			if attached l_as.name then
-				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), l_as.name.name)
-			end
-			Precursor(l_as)
-		end
-
-	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
-		local
-			l_target_is_local: BOOLEAN
-			l_is_array: BOOLEAN
-		do
-			current_instruction := current_instruction+1
-			check_ref_paths(l_as)
-
-			-- array
-			if attached {BRACKET_AS}l_as.target as l_br then
-				l_is_array := True
-
-				if attached {EXPR_CALL_AS}l_br.target as l_call and then is_next_call_local (l_call.call) then
-					-- in current_instruction next_local_name was defined
-					current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
-					l_target_is_local := true
-				end
-			end
-
-			-- store defined variables for this instruction
-			var_def_list.extend (current_var_defs.twin)
-
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
-			-- and gather new ones
-			if not l_is_array then
-				safe_process(l_as.target)
-			else
-				if attached {BRACKET_AS}l_as.target as l_br then
-					if not l_target_is_local then
-						safe_process(l_br.target)
-					end
-					safe_process(l_br.operands)
-				end
-			end
-
-			safe_process(l_as.source)
-			-- store them
-			var_used_list.extend (temp_vars_used)
-		end
-
-	process_assign_as (l_as: ASSIGN_AS)
-		local
-			l_target_is_local: BOOLEAN
-		do
-			current_instruction := current_instruction+1
-			check_ref_paths(l_as)
-
-			-- if next is a local then add to variable definition
-			if is_next_call_local (l_as.target) then
-				-- in current_instruction next_local_name was defined
-				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
-				l_target_is_local := true
-			end
-
-			-- store defined variables for this instruction
-			var_def_list.extend (current_var_defs.twin)
-
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
-			-- and gather new ones
-			if not l_target_is_local then
-				safe_process(l_as.target)
-			end
-
-			safe_process(l_as.source)
-			-- store them
-			var_used_list.extend (temp_vars_used)
-		end
-
-	process_creation_expr_as (l_as: CREATION_EXPR_AS)
-		do
-			l_as.type.process (Current)
-			last_was_unqualified := false
-			safe_process (l_as.call)
-		end
-
-	process_creation_as (l_as: CREATION_AS)
-		local
-			l_target_is_local: BOOLEAN
-		do
-			current_instruction := current_instruction+1
-			check_ref_paths(l_as)
-
-			-- if next is a local then add to variable definition
-			if is_next_call_local (l_as.target) then
-				-- in current_instruction next_local_name was defined
-				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
-				l_target_is_local := true
-			end
-
-			safe_process(l_as.type)
-
-			-- store defined variables for this instruction
-			var_def_list.extend (current_var_defs.twin)
-
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
-			-- and gather new ones
-
-			last_was_unqualified := false
-			safe_process(l_as.call)
-
-			-- store them
-			var_used_list.extend (temp_vars_used)
-		end
-
-	process_nested_expr_as (l_as: NESTED_EXPR_AS)
-		do
-			safe_process (l_as.target)
-
-			last_was_unqualified := false
-
-			safe_process (l_as.message)
-		end
-
-	process_nested_as (l_as: NESTED_AS)
-		do
-			safe_process (l_as.target)
-
-			last_was_unqualified := false
-
-			safe_process (l_as.message)
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		do
-			-- result is being used
-			temp_vars_used.extend (ti_result)
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			-- if were in an unqualified call
-			-- the id might be a local/argument that is used
-			if last_was_unqualified then
-				if not context.has_feature_named(l_as.access_name) then
-					-- local or argument is being used!
-					temp_vars_used.extend (l_as.access_name)
-				end
-			end
-
-			safe_process(l_as.parameters)
-		end
-
-	process_tagged_as (l_as: TAGGED_AS)
-		do
-			-- don't process
-		end
+feature {AST_EIFFEL} -- Roundtrip (Branches)
 
 	process_if_as (l_as: IF_AS)
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
 			l_previous_defs: like current_var_defs
+			l_if_instr: ETR_DF_INSTR
 		do
 			current_instruction := current_instruction+1
-			if start_path.is_equal (l_as.path) then
-				block_start_position := current_instruction
-			end
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
+
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+			l_if_instr := cur_instr
+
 			-- and gather new ones			
 			safe_process(l_as.condition)
 			-- store them
-			var_used_list.extend (temp_vars_used)
+			instr_list.extend (cur_instr)
 			-- store defined variables for this instruction
 			l_previous_defs := current_var_defs
-			var_def_list.extend (current_var_defs)
 
 			create l_merge_list.make
 
@@ -518,9 +255,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_merge_list.extend (current_var_defs)
 			end
 
-			if end_path.is_equal (l_as.path) then
-				block_end_position := current_instruction
-			end
+			l_if_instr.set_last_contained_id (current_instruction)
 
 			current_var_defs := union_merge_definitions (l_previous_defs, l_merge_list)
 		end
@@ -529,37 +264,246 @@ feature {AST_EIFFEL} -- Roundtrip
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
 			l_prev_var_def: like current_var_defs
+			l_loop_instr: ETR_DF_INSTR
 		do
 			create l_merge_list.make
 			current_instruction := current_instruction+1
-			if start_path.is_equal (l_as.path) then
-				block_start_position := current_instruction
-			end
-			-- store defined variables for this instruction
-			l_prev_var_def := current_var_defs.twin
-			var_def_list.extend (l_prev_var_def)
+
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+			l_loop_instr := cur_instr
 
 			safe_process(l_as.from_part)
-			l_merge_list.extend (current_var_defs.twin)
+			-- store variables after from-part for merge
+			l_prev_var_def := current_var_defs.twin
+			l_merge_list.extend (l_prev_var_def)
 
-			-- invalidate for debugging
-			temp_vars_used := void
-
-			-- clear used variables
-			create {LINKED_LIST[STRING]}temp_vars_used.make
 			-- and gather new ones	
 			safe_process(l_as.stop)
 			-- store them
-			var_used_list.extend (temp_vars_used)
+			instr_list.extend (cur_instr)
 			safe_process(l_as.compound)
 
-			if end_path.is_equal (l_as.path) then
-				block_end_position := current_instruction
-			end
+			l_loop_instr.set_last_contained_id (current_instruction)
 
 			l_merge_list.extend (current_var_defs)
 
 			current_var_defs :=  union_merge_definitions (l_prev_var_def, l_merge_list)
+		end
+
+	process_inspect_as (l_as: INSPECT_AS)
+		local
+			l_merge_list: LINKED_LIST[like current_var_defs]
+			l_previous_defs: like current_var_defs
+			l_inspect_instr: ETR_DF_INSTR
+		do
+			current_instruction := current_instruction+1
+
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+			l_inspect_instr := cur_instr
+
+			-- store defined variables for this instruction
+			l_previous_defs := current_var_defs
+
+			-- and gather new ones			
+			safe_process(l_as.switch)
+			-- store them
+			instr_list.extend (cur_instr)
+
+			create l_merge_list.make
+
+			-- process case list part
+			if attached l_as.case_list then
+				current_var_defs := l_previous_defs.twin
+				create caselist_defs.make
+				process_case_list(l_as.case_list)
+				l_merge_list.append (caselist_defs)
+			end
+
+			-- process else part
+			if attached l_as.else_part then
+				current_var_defs := l_previous_defs.twin
+				l_as.else_part.process (Current)
+				l_merge_list.extend (current_var_defs)
+			end
+
+			l_inspect_instr.set_last_contained_id (current_instruction)
+
+			current_var_defs := union_merge_definitions (l_previous_defs, l_merge_list)
+		end
+
+feature {AST_EIFFEL} -- Roundtrip (Definitions)
+
+	process_object_test_as (l_as: OBJECT_TEST_AS)
+		do
+			if attached l_as.name then
+				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), l_as.name.name)
+				cur_instr.add_definition (l_as.name.name)
+			end
+			Precursor(l_as)
+		end
+
+	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+		local
+			l_target_is_local: BOOLEAN
+			l_is_array: BOOLEAN
+		do
+			current_instruction := current_instruction+1
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+
+			-- array
+			if attached {BRACKET_AS}l_as.target as l_br then
+				l_is_array := True
+
+				if attached {EXPR_CALL_AS}l_br.target as l_call and then is_next_call_local (l_call.call) then
+					-- in current_instruction next_local_name was defined
+					current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
+					cur_instr.add_definition (next_local_name)
+					l_target_is_local := true
+				end
+			end
+
+			-- and gather new ones
+			if not l_is_array then
+				safe_process(l_as.target)
+			else
+				if attached {BRACKET_AS}l_as.target as l_br then
+					if not l_target_is_local then
+						safe_process(l_br.target)
+					end
+					safe_process(l_br.operands)
+				end
+			end
+
+			safe_process(l_as.source)
+			-- store them
+			instr_list.extend (cur_instr)
+		end
+
+	process_assign_as (l_as: ASSIGN_AS)
+		local
+			l_target_is_local: BOOLEAN
+		do
+			current_instruction := current_instruction+1
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+
+			-- if next is a local then add to variable definition
+			if is_next_call_local (l_as.target) then
+				-- in current_instruction next_local_name was defined
+				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
+				cur_instr.add_definition (next_local_name)
+				l_target_is_local := true
+			end
+
+			-- and gather new ones
+			if not l_target_is_local then
+				safe_process(l_as.target)
+			end
+
+			safe_process(l_as.source)
+			-- store them
+			instr_list.extend (cur_instr)
+		end
+
+	process_creation_as (l_as: CREATION_AS)
+		local
+			l_target_is_local: BOOLEAN
+		do
+			current_instruction := current_instruction+1
+
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+
+			-- if next is a local then add to variable definition
+			if is_next_call_local (l_as.target) then
+				-- in current_instruction next_local_name was defined
+				current_var_defs.force (create {PAIR[INTEGER,INTEGER]}.make(current_instruction,current_instruction), next_local_name)
+				cur_instr.add_definition (next_local_name)
+				l_target_is_local := true
+			end
+
+			safe_process(l_as.type)
+
+			last_was_unqualified := false
+			safe_process(l_as.call)
+
+			-- store them
+			instr_list.extend (cur_instr)
+		end
+
+feature {AST_EIFFEL} -- Roundtrip (Usage)
+
+	process_instr_call_as (l_as: INSTR_CALL_AS)
+		do
+			current_instruction := current_instruction+1
+			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
+			last_was_unqualified := true
+
+			-- and gather new ones			
+			safe_process(l_as.call)
+			-- store them
+			instr_list.extend (cur_instr)
+		end
+
+	process_expr_call_as (l_as: EXPR_CALL_AS)
+		do
+			last_was_unqualified := true
+			safe_process (l_as.call)
+		end
+
+	process_creation_expr_as (l_as: CREATION_EXPR_AS)
+		do
+			l_as.type.process (Current)
+			last_was_unqualified := false
+			safe_process (l_as.call)
+		end
+
+	process_nested_expr_as (l_as: NESTED_EXPR_AS)
+		do
+			safe_process (l_as.target)
+
+			last_was_unqualified := false
+
+			safe_process (l_as.message)
+		end
+
+	process_nested_as (l_as: NESTED_AS)
+		do
+			safe_process (l_as.target)
+
+			last_was_unqualified := false
+
+			safe_process (l_as.message)
+		end
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			-- result is being used
+			cur_instr.add_use (ti_result)
+		end
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		do
+			-- if were in an unqualified call
+			-- the id might be a local/argument that is used
+			if last_was_unqualified then
+				if not context.has_feature_named(l_as.access_name) then
+					-- local or argument is being used!
+					cur_instr.add_use (l_as.access_name)
+				end
+			end
+
+			safe_process(l_as.parameters)
+		end
+
+feature {AST_EIFFEL} -- Roundtrip (Ignored)
+
+	process_tagged_as (l_as: TAGGED_AS)
+		do
+			-- don't process
+		end
+
+	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
+		do
+			-- don't process
 		end
 
 note

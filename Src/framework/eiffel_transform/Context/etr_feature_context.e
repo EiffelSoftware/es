@@ -62,7 +62,7 @@ feature -- Access
 			-- Object-test locals in the feature
 
 	has_feature_named(a_name: STRING): BOOLEAN
-			-- is there a feature with `a_name' in this context
+			-- Is there a feature with `a_name' in this context
 		require
 			name_attached: a_name /= void
 		do

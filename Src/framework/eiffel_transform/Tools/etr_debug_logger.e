@@ -60,7 +60,7 @@ feature -- Operation
 		require
 			string_set: a_string /= void
 		do
-			log_msg(0, a_string)
+			log_msg(0, "[ERR] "+a_string)
 		end
 
 	log_warning(a_string: STRING)
@@ -68,7 +68,7 @@ feature -- Operation
 		require
 			string_set: a_string /= void
 		do
-			log_msg(1, a_string)
+			log_msg(1, "[WARN] "+a_string)
 		end
 
 	log_info(a_string: STRING)
@@ -76,7 +76,7 @@ feature -- Operation
 		require
 			string_set: a_string /= void
 		do
-			log_msg(2, a_string)
+			log_msg(2, "[INFO] "+a_string)
 		end
 
 	log_msg(a_log_level: like log_level; a_string: STRING)

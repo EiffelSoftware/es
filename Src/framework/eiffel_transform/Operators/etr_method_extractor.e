@@ -26,6 +26,9 @@ feature {NONE} -- Implementation (Attributes)
 	extracted_arguments: LINKED_LIST[STRING]
 			-- Arguments of the extracted method
 
+	arg_uses: HASH_TABLE[AST_PATH, STRING]
+			-- Where were the arguments used. Needed to get correct object-local-types
+
 	extracted_results: LINKED_LIST[STRING]
 			-- Results of the extracted method
 
@@ -41,11 +44,11 @@ feature {NONE} -- Implementation (Attributes)
 	changed_arguments: LINKED_LIST[STRING]
 			-- Arguments that have to be writable (i.e. duplicate as local)
 
-	vars_used: ARRAY[LIST[STRING]]
-			-- Variables used by position
+	instrs: ARRAY[ETR_DF_INSTR]
+			-- Instructions
 
-	var_def: ARRAY[HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]]
-			-- Variable definitions by position
+	instr_count: INTEGER
+			-- number of instruction that were analyzed
 
 	context: ETR_FEATURE_CONTEXT
 			-- The context of the feature we're working in
@@ -83,15 +86,15 @@ feature {NONE} -- Implementation (Extraction)
 				extracted_results.compare_objects
 				l_current_instr := block_end+1
 			until
-				l_current_instr > vars_used.upper
+				l_current_instr > instr_count
 			loop
 				from
-					l_cur_var_used := vars_used[l_current_instr]
+					l_cur_var_used := instrs[l_current_instr].used_variables
 					l_cur_var_used.start
 				until
 					l_cur_var_used.after
 				loop
-					if not extracted_results.has (l_cur_var_used.item) and attached (var_def[l_current_instr])[l_cur_var_used.item] as l_pair then
+					if not extracted_results.has (l_cur_var_used.item) and attached instrs[l_current_instr].definitions[l_cur_var_used.item] as l_pair then
 						if l_pair.first >= block_start and l_pair.first <= block_end then
 							extracted_results.extend (l_cur_var_used.item)
 						elseif l_pair.second >= block_start and l_pair.second <= block_end then
@@ -109,8 +112,8 @@ feature {NONE} -- Implementation (Extraction)
 
 			-- Check if result was defined within extracted block
 			if context.has_return_value then
-				l_current_instr := vars_used.count
-				if attached (var_def[l_current_instr])[ti_result] as l_pair then
+				l_current_instr := instr_count
+				if attached instrs[l_current_instr].definitions[ti_result] as l_pair then
 					if l_pair.first >= block_start and l_pair.first <= block_end then
 						extracted_results.extend(ti_result)
 					end
@@ -136,18 +139,18 @@ feature {NONE} -- Implementation (Extraction)
 				l_current_instr > block_end
 			loop
 				from
-					var_def[l_current_instr].start
+					instrs[l_current_instr].definitions.start
 				until
-					var_def[l_current_instr].after
+					instrs[l_current_instr].definitions.after
 				loop
-					l_cur_pos := var_def[l_current_instr].item_for_iteration.first
+					l_cur_pos := instrs[l_current_instr].definitions.item_for_iteration.first
 					if l_cur_pos>=block_start and l_cur_pos<=block_end then
-						l_cur_var := var_def[l_current_instr].key_for_iteration
+						l_cur_var := instrs[l_current_instr].definitions.key_for_iteration
 						if not changed_arguments.has(l_cur_var) and extracted_arguments.has(l_cur_var) and not extracted_results.has (l_cur_var) and  not l_cur_var.is_equal (ti_result) then
-							changed_arguments.extend(var_def[l_current_instr].key_for_iteration)
+							changed_arguments.extend(instrs[l_current_instr].definitions.key_for_iteration)
 						end
 					end
-					var_def[l_current_instr].forth
+					instrs[l_current_instr].definitions.forth
 				end
 
 				l_current_instr := l_current_instr + 1
@@ -167,6 +170,7 @@ feature {NONE} -- Implementation (Extraction)
 		do
 			from
 				create extracted_arguments.make
+				create arg_uses.make (instr_count)
 				extracted_arguments.compare_objects
 				create used_locals.make
 				used_locals.compare_objects
@@ -175,7 +179,7 @@ feature {NONE} -- Implementation (Extraction)
 				l_current_instr > block_end
 			loop
 				from
-					l_cur_defs := var_def[l_current_instr]
+					l_cur_defs := instrs[l_current_instr].definitions
 					l_cur_defs.start
 				until
 					l_cur_defs.after
@@ -189,7 +193,7 @@ feature {NONE} -- Implementation (Extraction)
 				end
 
 				from
-					l_cur_var_used := vars_used[l_current_instr]
+					l_cur_var_used := instrs[l_current_instr].used_variables
 					l_cur_var_used.start
 				until
 					l_cur_var_used.after
@@ -198,23 +202,26 @@ feature {NONE} -- Implementation (Extraction)
 						-- All used arguments will be arguments of the new method
 						if context.has_arguments and then attached context.arg_by_name[l_cur_var_used.item] then
 							extracted_arguments.extend (l_cur_var_used.item)
+							arg_uses.extend (instrs[l_current_instr].path, l_cur_var_used.item)
 						else
 							if not l_cur_var_used.item.is_equal (ti_result) and not used_locals.has (l_cur_var_used.item) then
 								used_locals.extend (l_cur_var_used.item)
 							end
 
-							if attached (var_def[l_current_instr])[l_cur_var_used.item] as l_pair then
+							if attached instrs[l_current_instr].definitions[l_cur_var_used.item] as l_pair then
 								l_cur_var_def := l_pair.first
 
 								if l_cur_var_def < block_start  then
 									-- If the variable was defined before the block
 									-- it's an argument of the extracted method
 									extracted_arguments.extend (l_cur_var_used.item)
+									arg_uses.extend (instrs[l_current_instr].path, l_cur_var_used.item)
 								end
 							else
 								-- variable not defined (yet)
 								-- maybe it has a default value
 								extracted_arguments.extend (l_cur_var_used.item)
+								arg_uses.extend (instrs[l_current_instr].path, l_cur_var_used.item)
 							end
 						end
 					end
@@ -226,9 +233,11 @@ feature {NONE} -- Implementation (Extraction)
 			end
 		end
 
-	extract_new_locals
+	extract_new_locals(a_start_path: AST_PATH)
 			-- Find locals that were used in the block
 			-- = used locals - extracted arguments - extracted results
+		local
+			l_found: BOOLEAN
 		do
 			from
 				used_locals.start
@@ -237,9 +246,25 @@ feature {NONE} -- Implementation (Extraction)
 			until
 				used_locals.after
 			loop
+				-- It might be an object-test local
+				-- don't store
+				from
+					l_found := false
+					context.object_test_locals.start
+				until
+					context.object_test_locals.after or l_found
+				loop
+					if context.object_test_locals.item.name.is_equal (used_locals.item) then
+						l_found := true
+						-- we don't have to check if it's active because of name clashes
+					end
+
+					context.object_test_locals.forth
+				end
+
 				-- If its not a result and not an argument
 				-- we need it as local
-				if not extracted_arguments.has (used_locals.item) and not extracted_results.has (used_locals.item) then
+				if not l_found and not extracted_arguments.has (used_locals.item) and not extracted_results.has (used_locals.item) then
 					extracted_new_locals.extend (used_locals.item)
 				end
 
@@ -261,18 +286,18 @@ feature {NONE} -- Implementation (Extraction)
 			-- and gather used locals
 
 			from
-				l_current_instr := vars_used.lower
+				l_current_instr := 1
 				create l_rest_used_locals.make
 				l_rest_used_locals.compare_objects
 			until
-				l_current_instr > vars_used.upper
+				l_current_instr > instr_count
 			loop
 				-- Skip block
 				if l_current_instr=block_start then
 					l_current_instr:=block_end
 				else
 					from
-						l_cur_var_used := vars_used[l_current_instr]
+						l_cur_var_used := instrs[l_current_instr].used_variables
 						l_cur_var_used.start
 					until
 						l_cur_var_used.after
@@ -314,14 +339,13 @@ feature {NONE} -- Implementation (Extraction)
 					if not l_rest_used_locals.has (context.locals[l_index].name) then
 						l_is_def := false
 						-- Make sure the local was not defined either
-						if attached (var_def[var_def.upper])[context.locals[l_index].name] as l_def then
+						if attached instrs[instr_count].definitions[context.locals[l_index].name] as l_def then
 							-- no definitions after the block
 							if l_def.first > block_end or l_def.second > block_end then
 								l_is_def := true
 							end
 						end
-
-						if block_start>1 and then attached (var_def[block_start-1])[context.locals[l_index].name] as l_def then
+						if block_start>1 and then attached instrs[block_start-1].definitions[context.locals[l_index].name] as l_def then
 							-- no definitions before the block
 							if l_def.first < block_start or l_def.second < block_start then
 								l_is_def := true
@@ -357,8 +381,8 @@ feature {NONE} -- Implementation (Printing)
 			-- Decide if the result needs preinitialization!
 			-- This is not perfect but works most of the time
 			if not extracted_results.is_empty then
-				if attached (var_def[block_start])[extracted_results.first] as l_start and attached (var_def[block_end])[extracted_results.first] as l_end and var_def.valid_index (block_end+1) then
-					if attached (var_def[block_end+1])[extracted_results.first] as l_after then
+				if attached instrs[block_start].definitions[extracted_results.first] as l_start and attached instrs[block_end].definitions[extracted_results.first] as l_end and block_end+1<=instr_count then
+					if attached instrs[block_end+1].definitions[extracted_results.first] as l_after then
 						if l_start.first /= l_end.first and l_after.first=l_start.first then
 							is_result_possibly_undef := true
 							logger.log_info ("is_result_possibly_undef = true, l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
@@ -371,6 +395,7 @@ feature {NONE} -- Implementation (Printing)
 
 			if is_result_possibly_undef and not extracted_arguments.has (extracted_results.first) then
 				extracted_arguments.extend(extracted_results.first)
+				arg_uses.extend (instrs[1].path, extracted_results.first)
 			end
 
 			l_result_is_arg := extracted_arguments.has (ti_result)
@@ -396,10 +421,10 @@ feature {NONE} -- Implementation (Printing)
 						from
 							context.object_test_locals.start
 						until
-							context.object_test_locals.after or l_type_found
+							context.object_test_locals.after
 						loop
 							if context.object_test_locals.item.name.is_equal (extracted_arguments.item) then
-								if a_start_path.is_child_of (context.object_test_locals.item.scope) then
+								if context.object_test_locals.item.is_active_at (arg_uses[extracted_arguments.item]) then
 									l_feature_output_text.append (extracted_arguments.item + ti_colon + ti_space + print_indep_type (context.object_test_locals.item))
 									l_type_found := true
 								end
@@ -437,7 +462,6 @@ feature {NONE} -- Implementation (Printing)
 			l_feature_output_text.append (ti_new_line)
 
 			if not extracted_new_locals.is_empty or not changed_arguments.is_empty then
-				fixme("Sometimes local block gets printed with no locals !")
 				l_feature_output_text.append (ti_local_keyword+ti_new_line)
 				from
 					extracted_new_locals.start
@@ -583,6 +607,34 @@ feature {NONE} -- Implementation (Printing)
 			log_named_list("changed_arguments", changed_arguments)
 		end
 
+	compute_start_end_ids(a_start_path, a_end_path: AST_PATH)
+			-- Compute block_start and block_end
+		local
+			l_index: INTEGER
+		do
+			from
+				l_index := 1
+			until
+				l_index > instr_count
+			loop
+				if instrs[l_index].path.is_equal (a_start_path) then
+					block_start := l_index
+				end
+				if instrs[l_index].path.is_equal (a_end_path) then
+					block_end := instrs[l_index].last_contained_id
+				end
+				l_index := l_index+1
+			end
+
+			logger.log_info ("Translated start/end-instructions: "+block_start.out+"/"+block_end.out)
+		end
+
+	use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
+			-- Used to create a use-def-chain
+		once
+			create Result
+		end
+
 feature -- Operations
 	extracted_method: ETR_TRANSFORMABLE
 			-- Extracted method
@@ -599,7 +651,6 @@ feature -- Operations
 			valid_paths: a_start_path.is_valid and a_end_path.is_valid
 			root_has_paths: a_start_path.root.path /= void and a_end_path.root.path /= void
 		local
-			l_use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
 			l_feat_ast: FEATURE_AS
 			l_error_count: INTEGER
@@ -610,8 +661,8 @@ feature -- Operations
 			-- Check if valid context and valid ast!
 			if attached a_feature.context.class_context.written_in_features_by_name[a_context_feature] as l_ft_ctxt then
 				context := l_ft_ctxt
-				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.find_node (a_start_path.parent_path, a_start_path.root) as instrs then
-					l_instr_list := instrs
+				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.find_node (a_start_path.parent_path, a_start_path.root) as l_instrs then
+					l_instr_list := l_instrs
 				else
 					error_handler.add_error (Current, "extract_method", "Start path is not an instruction")
 				end
@@ -626,19 +677,18 @@ feature -- Operations
 					logger.log_info ("a_end_path: "+a_end_path.as_string)
 
 					-- Find out what locals are defined/used where
-					create l_use_def_gen.make (context)
+					use_def_gen.generate_chain (context, a_feature.target_node)
 
-					l_use_def_gen.generate_chain (a_feature.target_node, a_start_path, a_end_path)
+					instrs := use_def_gen.instructions
+					instr_count := instrs.count
 
-					vars_used := l_use_def_gen.vars_used
-					var_def := l_use_def_gen.var_def
-					block_start := l_use_def_gen.block_start_position
-					block_end := l_use_def_gen.block_end_position
+					-- Get start + end-position in terms of instruction-id's
+					compute_start_end_ids(a_start_path, a_end_path)
 
 					extract_arguments
 					extract_results
 					extract_changed_arguments
-					extract_new_locals
+					extract_new_locals(a_start_path)
 					extract_obsolete_locals
 
 					log_extracted
