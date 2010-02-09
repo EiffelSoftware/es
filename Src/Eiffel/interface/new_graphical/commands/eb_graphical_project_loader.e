@@ -72,11 +72,6 @@ inherit
 			{NONE} all
 		end
 
-	ES_SHARED_OUTPUTS
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -374,7 +369,6 @@ feature {NONE} -- Error reporting
 			-- Report that project was loaded successfully.
 		local
 			l_title: STRING_GENERAL
-			l_auto_scrolled: BOOLEAN
 		do
 			l_title := Interface_names.l_loaded_project.twin
 			l_title.append (target_name)
@@ -389,19 +383,7 @@ feature {NONE} -- Error reporting
 				-- We print text in the project_tool text concerning the system
 				-- because we were successful retrieving the project without
 				-- errors or conversion.
-			if attached {ES_OUTPUT_PANE_I} general_output as l_output then
-				l_auto_scrolled := l_output.is_auto_scrolled
-				l_output.is_auto_scrolled := False
-
-				l_output.lock
-				l_output.clear;
-				(create {ES_OUTPUT_ROUTINES}).append_system_info (general_formatter)
-				l_output.unlock
-
-				if l_auto_scrolled then
-					l_output.is_auto_scrolled := True
-				end
-			end
+			output_manager.display_system_info
 
 			if window_manager.development_windows_count = 1 then
 				-- We only do this for frist window (not `last_focused_development_window') since

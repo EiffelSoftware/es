@@ -1,6 +1,8 @@
 note
-	description: "Eiffel Vision password field. Cocoa implementation."
-	author: "Daniel Furrer"
+	description:
+		"Eiffel Vision password field. Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,8 +19,9 @@ inherit
 
 	EV_TEXT_FIELD_IMP
 		redefine
-			make,
-			interface
+			initialize,
+			interface,
+			make
 		end
 
 create
@@ -27,17 +30,28 @@ create
 feature {NONE} -- Initialization
 
 
-	make
+		make (an_interface: like interface)
 			-- Create Textfield on a user_pane
 		do
+			base_make (an_interface)
 			create {NS_SECURE_TEXT_FIELD}text_field.make
-			cocoa_view := text_field
-			Precursor {EV_TEXT_FIELD_IMP}
-			set_is_initialized (True)
+			cocoa_item := text_field
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: detachable EV_PASSWORD_FIELD note option: stable attribute end;
+feature -- Access
 
+	initialize
+			-- Create password field with `*'.
+		do
+		end
+
+
+feature {NONE} -- Implementation
+
+	interface: EV_PASSWORD_FIELD;
+
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_PASSWORD_FIELD_IMP
+

@@ -5,11 +5,14 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	XP_TAG_ARGUMENT
 
 inherit
 	XU_STRING_MANIPULATION
+
+create
+	make
 
 feature -- Initialization
 
@@ -25,24 +28,19 @@ feature -- Initialization
 
 feature {NONE} -- Access
 
+	is_dynamic: BOOLEAN
+			-- Is the argument dynamic?
+
 	internal_value: STRING
 			-- The actual value
 
+
 feature -- Access
 
-	value: STRING
+	value (a_controller_id: STRING): STRING
 			-- The value it represents
 		do
 			Result := internal_value
-		ensure
-			Result_attached: attached Result
-		end
-
-	put_attribute_type: STRING
-			-- Returns the type of attribute should be added via the appropriate feature name
-		deferred
-		ensure
-			Result_attached: attached Result
 		end
 
 invariant

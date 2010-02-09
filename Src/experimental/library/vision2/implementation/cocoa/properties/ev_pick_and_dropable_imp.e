@@ -1,6 +1,8 @@
 note
-	description: "Eiffel Vision pick and drop source, Cocoa implementation."
-	author: "Daniel Furrer"
+	description:
+		"Eiffel Vision pick and drop source, Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "pick and drop, drag and drop, source, PND, DND"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -18,10 +20,8 @@ inherit
 		end
 
 	EV_PICK_AND_DROPABLE_ACTION_SEQUENCES_IMP
-
-	EV_ANY_IMP
 		redefine
-			interface
+			create_drop_actions
 		end
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
@@ -50,7 +50,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES,  LAYOUT_INSPECTOR} -- Implementation
 
-	top_level_window_imp: detachable EV_WINDOW_IMP
+	top_level_window_imp: EV_WINDOW_IMP
 			-- Top level window that contains `Current'.
 		do
 			check
@@ -58,10 +58,9 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES,  LAYOUT_INSPECTOR} -- Implementatio
 			end
 		end
 
-	widget_imp_at_pointer_position: detachable EV_WIDGET_IMP
+	widget_imp_at_pointer_position: EV_WIDGET_IMP
 			-- Widget implementation at current mouse pointer position (if any)
 		do
-			--create Result
 		end
 
 	set_pointer_style (a_cursor: EV_POINTER_STYLE)
@@ -79,7 +78,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES,  LAYOUT_INSPECTOR} -- Implementatio
 		do
 		end
 
-	pointer_style: detachable EV_POINTER_STYLE
+	pointer_style: EV_POINTER_STYLE
 			-- Cursor displayed when the pointer is over this widget.
 			-- Position retrieval.
 
@@ -213,10 +212,9 @@ feature -- Implementation
 	pnd_screen: EV_SCREEN
 			-- Screen object used for drawing PND transport line
 		once
-			create Result
 		end
 
-	real_pointed_target: detachable EV_PICK_AND_DROPABLE
+	real_pointed_target: EV_PICK_AND_DROPABLE
 			-- Hole at mouse position
 		do
 		end
@@ -225,11 +223,17 @@ feature -- Implementation
 			-- Create and initialize `drop_actions' for `Current'
 		do
 			create Result
-			attached_interface.init_drop_actions (Result)
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_PICK_AND_DROPABLE note option: stable attribute end;
+	interface: EV_PICK_AND_DROPABLE;
 
+	cocoa_item: NS_OBJECT
+		deferred
+		end
+
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_PICK_AND_DROPABLE_IMP
+

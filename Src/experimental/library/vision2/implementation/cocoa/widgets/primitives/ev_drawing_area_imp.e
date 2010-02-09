@@ -1,6 +1,7 @@
 note
 	description: "EiffelVision drawing area. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,28 +12,26 @@ inherit
 	EV_DRAWING_AREA_I
 		redefine
 			interface
-		select
-			copy
 		end
 
 	EV_DRAWABLE_IMP
-		undefine
-			old_make
 		redefine
 			interface,
-			make
+			make,
+			initialize
 		end
 
 	EV_PRIMITIVE_IMP
 		undefine
-			foreground_color_internal,
-			background_color_internal,
+			foreground_color,
+			background_color,
 			set_foreground_color,
 			set_background_color
 		redefine
 			interface,
-			make,
-			dispose
+			default_key_processing_blocked,
+			initialize,
+			set_focus
 		end
 
 	EV_DRAWING_AREA_ACTION_SEQUENCES_IMP
@@ -40,28 +39,24 @@ inherit
 			interface
 		end
 
-	NS_VIEW
-		rename
-			make as make_cocoa,
-			make_custom as make_custom_cocoa,
-			initialize as initialize_cocoa,
-			copy as copy_cocoa
-		redefine
-			dispose
-		end
-
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Connect interface and initialize `c_object'.
+		do
+			base_make (an_interface)
+			create view.make_custom (agent cocoa_draw_rect)
+			cocoa_item := view
+		end
+
+	initialize
 			-- Initialize `Current'
 		do
-			Precursor {EV_DRAWABLE_IMP}
-			make_custom_cocoa (agent cocoa_draw_rect)
-			cocoa_view := current
 			Precursor {EV_PRIMITIVE_IMP}
+			Precursor {EV_DRAWABLE_IMP}
 			initialize_events
 			disable_tabable_from
 		end
@@ -69,16 +64,19 @@ feature {NONE} -- Initialization
 
 feature -- Status setting
 
+	default_key_processing_blocked (a_key: EV_KEY): BOOLEAN
+			-- Should default key processing be allowed for `a_key'.
+		do
+		end
+
 	redraw
 			-- Redraw the entire area.
 		do
-			set_needs_display (True)
 		end
 
 	redraw_rectangle (a_x, a_y, a_width, a_height: INTEGER)
 			-- Redraw the rectangle area defined by `a_x', `a_y', `a_width', a_height'.
 		do
---			set_needs_display_in_rect (create {NS_RECT}.make_rect (a_x, a_y, a_width, a_height))
 		end
 
 	clear_and_redraw
@@ -94,25 +92,34 @@ feature -- Status setting
 	flush
 			-- Redraw the screen immediately.
 		do
---			display
 		end
 
-feature {NONE} -- Implementation
-
 	update_if_needed
+			-- Update `Current' if needed.
 		do
-			set_needs_display (True)
+			view.set_needs_display (True)
+		end
+
+feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
+
+	lose_focus
+			-- Current has lost keyboard focus.
+		do
+		end
+
+	set_focus
+			-- Grab keyboard focus.
+		do
 		end
 
 	cocoa_draw_rect
-			-- Draw callback
 		local
 			invalid_rect: NS_RECT
 		do
 			create invalid_rect.make_rect (0, 0, width, height)
 
-			image.draw (create {NS_POINT}.make_point (0, 0), create {NS_RECT}.make_rect (0, 0, 1000, 1000), {NS_IMAGE}.composite_source_over, 1.0)
 
+			image.draw_at_point_from_rect_operation_fraction (create {NS_POINT}.make_point (0, 0), create {NS_RECT}.make_rect (0, 0, 1000, 1000), {NS_IMAGE}.composite_source_over, 1)
 			if expose_actions_internal /= Void then
 				expose_actions_internal.call ([
 					invalid_rect.origin.x,
@@ -125,14 +132,10 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	dispose
-		do
-			Precursor {NS_VIEW}
-			Precursor {EV_PRIMITIVE_IMP}
-		end
+	view: NS_VIEW
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+	interface: EV_DRAWING_AREA;
 
-	interface: detachable EV_DRAWING_AREA note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_DRAWING_AREA_IMP

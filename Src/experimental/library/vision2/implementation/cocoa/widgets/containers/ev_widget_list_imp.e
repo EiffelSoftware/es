@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision widget list. Cocoa implementation."
-	authors: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "widget list, container"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -20,11 +21,10 @@ inherit
 	EV_CONTAINER_IMP
 		redefine
 			interface,
-			initialize,
-			make
+			initialize
 		end
 
-	EV_DYNAMIC_LIST_IMP [detachable EV_WIDGET, EV_WIDGET_IMP]
+	EV_DYNAMIC_LIST_IMP [EV_WIDGET, EV_WIDGET_IMP]
 		redefine
 			interface,
 			initialize,
@@ -34,13 +34,8 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make
-			-- Initialize `Current'
-		do
-			initialize
-		end
-
 	initialize
+			-- Initialize `Current'
 		do
 			Precursor {EV_CONTAINER_IMP}
 			Precursor {EV_DYNAMIC_LIST_IMP}
@@ -48,10 +43,10 @@ feature {NONE} -- Initialization
 
 feature -- Widget relationships
 
-	top_level_window_imp: detachable EV_WINDOW_IMP
+	top_level_window_imp: EV_WINDOW_IMP
 			-- Top level window that contains `Current'.
 
-	set_top_level_window_imp (a_window: detachable EV_WINDOW_IMP)
+	set_top_level_window_imp (a_window: EV_WINDOW_IMP)
 			-- Make `a_window' the new `top_level_window_imp'
 			-- of `Current'.
 		local
@@ -73,50 +68,41 @@ feature -- Widget relationships
 
 feature {NONE} -- Implementation
 
-	insert_i_th (v: attached like item; i: INTEGER)
+	insert_i_th (v: like item; i: INTEGER)
 			-- Insert `v' at position `i'.
 		local
-			v_imp: detachable EV_WIDGET_IMP
+			v_imp: EV_WIDGET_IMP
 		do
 			v.implementation.on_parented
-			v_imp ?= v.implementation
-			check
-				v_imp_not_void: v_imp /= Void
-			end
-			ev_children.go_i_th (i)
-			ev_children.put_left (v_imp)
-			v_imp.set_parent_imp (Current)
+
+			Precursor {EV_DYNAMIC_LIST_IMP} (v, i)
 			new_item_actions.call ([v])
-			notify_change (Nc_minsize, Current)
-			attached_view.add_subview (v_imp.attached_view)
+			v_imp ?= v.implementation
+			cocoa_view.add_subview (v_imp.cocoa_view)
+			on_new_item (v_imp)
 		end
 
 	remove_i_th (i: INTEGER)
 			-- Remove item at `i'-th position.
 		local
-			v: detachable EV_WIDGET
-			v_imp: detachable EV_WIDGET_IMP
+			v_imp: EV_WIDGET_IMP
 		do
-			v := i_th (i)
-			check v /= Void end
-			v_imp ?= v.implementation
-			check v_imp_not_void: v_imp /= Void	end
-			remove_item_actions.call ([v_imp.attached_interface])
-			ev_children.go_i_th (i)
-			ev_children.remove
-			notify_change (Nc_minsize, Current)
-			-- Unlink the widget from its parent and
-			-- signal it.
-			v_imp.set_parent_imp (Void)
+			v_imp ?= i_th (i).implementation
 			v_imp.on_orphaned
+			on_removed_item (v_imp)
 
-			v_imp.attached_view.remove_from_superview
+			v_imp.cocoa_view.remove_from_superview
+
+			Precursor {EV_DYNAMIC_LIST_IMP} (i)
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {NONE} -- Implementation
 
-	interface: detachable EV_WIDGET_LIST note option: stable attribute end;
+	interface: EV_WIDGET_LIST;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_WIDGET_LIST_IMP
+

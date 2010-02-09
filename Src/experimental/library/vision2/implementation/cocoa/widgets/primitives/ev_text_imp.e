@@ -17,13 +17,16 @@ inherit
 		redefine
 			interface,
 			insert_text,
-			make,
+			initialize,
+			create_change_actions,
+			dispose,
 			default_key_processing_blocked
 		end
 
 	EV_FONTABLE_IMP
 		redefine
-			interface
+			interface,
+			dispose
 		end
 
 create
@@ -31,11 +34,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make
-			-- Initialize `Current'
+	make (an_interface: like interface)
+			-- Create a cocoa text view.
 		do
-			create scroll_view.make
-			cocoa_view := scroll_view
+			base_make (an_interface)
+			create {NS_SCROLL_VIEW}cocoa_item.make
 			create text_view.make
 			text_view.set_horizontally_resizable (True)
 			scroll_view.set_document_view (text_view)
@@ -43,7 +46,17 @@ feature {NONE} -- Initialization
 			scroll_view.set_has_vertical_scroller (True)
 			scroll_view.set_autohides_scrollers (True)
 			scroll_view.set_border_type ({NS_SCROLL_VIEW}.ns_line_border)
+		end
 
+	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE
+			-- Hook up the change actions for the text widget
+		do
+			create Result.default_create
+		end
+
+	initialize
+			-- Initialize `Current'
+		do
 			enable_word_wrapping
 			set_editable (True)
 			set_background_color ((create {EV_STOCK_COLORS}).white)
@@ -75,7 +88,6 @@ feature -- Access
 	line (a_line: INTEGER): STRING_32
 			-- Returns the content of line `a_line'.
 		do
-			create Result.make_empty
 		end
 
 	first_position_from_line_number (a_line: INTEGER): INTEGER
@@ -85,6 +97,11 @@ feature -- Access
 
 	last_position_from_line_number (a_line: INTEGER): INTEGER
 			-- Position of the last character on line `a_line'.
+		do
+		end
+
+	clipboard_content: STRING_32
+			-- `Result' is current clipboard content.
 		do
 		end
 
@@ -156,21 +173,11 @@ feature -- Status setting
 			-- Append `a_text' to `text'.	
 		local
 			l_text: STRING_32
-			range, l_range: NS_RANGE
 		do
 			l_text := text
 			l_text.append (a_text)
-
-			create l_range.make_range (a_text.count, text_view.string.to_string.count)
-
-			range := text_view.selected_range
---			text_view.replace_characters_in_range_with_string (l_range, create {NS_STRING}.make_with_string (a_text))
 			text_view.set_string (l_text)
 			text_view.size_to_fit
-
-			text_view.scroll_range_to_visible (l_range)
-
-			text_view.set_selected_range (range)
 		end
 
 	prepend_text (a_text: STRING_GENERAL)
@@ -273,6 +280,11 @@ feature {NONE} -- Implementation
 
 		end
 
+	dispose
+			-- Clean up `Current'
+		do
+		end
+
 	on_change_actions
 			-- The text within the widget has changed.
 		do
@@ -280,12 +292,13 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
+	interface: EV_TEXT;
+
 	scroll_view: NS_SCROLL_VIEW
+		do
+			Result ?= cocoa_item
+		end
 
 	text_view: NS_TEXT_VIEW;
-
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_TEXT note option: stable attribute end;
 
 end -- class EV_TEXT_IMP

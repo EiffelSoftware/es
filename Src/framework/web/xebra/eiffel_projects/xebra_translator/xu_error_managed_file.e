@@ -15,7 +15,7 @@ feature -- Initialization
 
 feature -- Access
 
-	process_file (a_file_name: STRING; a_action: PROCEDURE [ANY, TUPLE [source: STRING; file: PLAIN_TEXT_FILE]])
+	process_file (a_file_name: STRING; a_action: PROCEDURE [ANY, TUPLE [file: KI_CHARACTER_INPUT_STREAM]])
 			-- Manages error handling of a file and processes `a_action' with it
 			-- `a_file_name': The filename/path
 			-- `a_action': The action which should be executed with the file
@@ -24,12 +24,11 @@ feature -- Access
 			not_a_file_name_is_empty: not a_file_name.is_empty
 			a_action_attached: attached a_action
 		local
-			l_source: STRING
-			l_file: PLAIN_TEXT_FILE
+			l_file: KL_TEXT_INPUT_FILE
 			l_generic_file_name: XP_FILE_NAME
 		do
 			create l_generic_file_name.make_from_string (a_file_name)
-			create l_file.make (a_file_name)
+			create l_file.make (l_generic_file_name)
 			if (not l_file.exists) then
 				error_manager.add_error (create {XERROR_FILE_NOT_FOUND}.make (l_generic_file_name), false)
 			else
@@ -37,16 +36,7 @@ feature -- Access
 				if not l_file.is_open_read then
 					error_manager.add_error (create {XERROR_FILE_NOT_FOUND}.make (l_generic_file_name), false)
 				else
-					l_source := ""
-					from
-						l_file.read_line
-					until
-						l_file.end_of_file
-					loop
-						l_source := l_source + l_file.last_string + "%N"
-						l_file.read_line
-					end
-					a_action.call ([l_source, l_file])
+					a_action.call ([l_file])
 					l_file.close
 				end
 			end

@@ -14,19 +14,15 @@ inherit
 		redefine
 			interface,
 			print_context
-		select
-			copy
 		end
 
 	EV_STANDARD_DIALOG_IMP
 		undefine
-			internal_accept,
-			cocoa_copy
+			internal_accept
 		redefine
 			interface,
-			make,
-			show_modal_to_window,
-			dispose
+			initialize,
+			show_modal_to_window
 		end
 
 	NS_PRINT_PANEL
@@ -35,12 +31,7 @@ inherit
 			item as cocoa_panel,
 			screen as cocoa_screen,
 			set_background_color as cocoa_set_background_color,
-			background_color as cocoa_background_color,
-			title as cocoa_title,
-			set_title as cocoa_set_title,
-			copy as cocoa_copy
-		redefine
-			dispose
+			background_color as cocoa_background_color
 		select
 			make_window,
 			cocoa_panel
@@ -51,11 +42,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create a window with a parent.
+		do
+			base_make (an_interface)
+			create print_panel.make
+		end
+
+	initialize
 				-- Setup window and action sequences.
 		do
-			create print_panel.make
-			Precursor {EV_STANDARD_DIALOG_IMP}
 			enable_closeable
 			minimum_from_page := 1
 			maximum_to_page := 1
@@ -347,12 +343,6 @@ feature {NONE} -- Implementation
 	C5: STRING = "C5"
 
 	print_panel: NS_PRINT_PANEL
-
-	dispose
-		do
-			Precursor {NS_PRINT_PANEL}
-			Precursor {EV_STANDARD_DIALOG_IMP}
-		end
 
 	interface: EV_PRINT_DIALOG;
 

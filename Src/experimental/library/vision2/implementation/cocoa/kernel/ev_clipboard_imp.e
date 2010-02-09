@@ -1,6 +1,8 @@
 note
-	description: "Objects that allow access to the operating system clipboard. Cocoa implementation"
-	author: "Daniel Furrer."
+	description: "Objects that allow access to the operating %N%
+	%system clipboard. Cocoa implementation"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,22 +11,28 @@ class
 
 inherit
 	EV_CLIPBOARD_I
+		redefine
+			interface
+		end
+
+	EV_ANY_I
+		redefine
+			interface
+		end
 
 create
 	make
 
 feature {NONE}-- Initialization
 
-	old_make (an_interface: like interface)
+	make (an_interface: like interface)
 			-- Create `Current' with interface `an_interface'.
 		do
-			assign_interface (an_interface)
 		end
 
-	make
+	initialize
 			-- initialize `Current'.
 		do
-			set_is_initialized (True)
 		end
 
 feature -- Access
@@ -37,7 +45,6 @@ feature -- Access
 	text: STRING_32
 			-- `Result' is current clipboard content.
 		do
-			create Result.make_empty
 		end
 
 feature -- Status Setting
@@ -54,4 +61,19 @@ feature {EV_ANY_I}
 		do
 		end
 
+	interface: EV_CLIPBOARD;
+		-- Interface of `Current'
+
+note
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
 end -- class EV_CLIPBOARD_IMP
+

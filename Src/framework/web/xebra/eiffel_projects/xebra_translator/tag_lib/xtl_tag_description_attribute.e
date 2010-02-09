@@ -31,25 +31,15 @@ feature -- Access
 			-- Do nothing (XTL_TAG_DESCRIPTIONS don't have any children)
 		end
 
-	set_attribute (a_id: STRING; a_value: STRING)
+	set_attribute (a_id: STRING; value: STRING)
 			-- <Precursor>
 		require else
 			a_id_is_not_empty: not a_id.is_empty
-			value_is_not_empty: not a_value.is_empty
+			value_is_not_empty: not value.is_empty
 		do
 			if a_id.is_equal (id_id) then
-				id := a_value
+				id := value
 			end
-		end
-
-	set_value (a_value: STRING)
-			-- Sets the value.
-		require
-			a_value_valid: attached a_value and then not a_value.is_empty
-		do
-			id := a_value
-		ensure
-			id_set: id = a_value
 		end
 
 	description: STRING

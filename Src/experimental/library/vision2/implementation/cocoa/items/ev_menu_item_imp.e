@@ -1,6 +1,5 @@
 note
 	description: "Eiffel Vision menu item. Cocoa implementation."
-	author:	"Daniel Furrer"
 
 class
 	EV_MENU_ITEM_IMP
@@ -14,7 +13,7 @@ inherit
 	EV_ITEM_IMP
 		redefine
 			interface,
-			make,
+			initialize,
 			width,
 			height,
 			set_pixmap
@@ -43,11 +42,17 @@ feature {NONE} -- Initialization
 
 	is_dockable: BOOLEAN = False
 
-	make
+	make (an_interface: like interface)
+			-- Create a menu.
+		do
+			base_make (an_interface)
+			pixmapable_imp_initialize
+			create {NS_MENU_ITEM}cocoa_item.make
+		end
+
+	initialize
 			-- Initialize `Current'
 		do
-			pixmapable_imp_initialize
-			create menu_item.make
 			menu_item.set_action (agent
 				do
 					select_actions.call ([])
@@ -61,9 +66,11 @@ feature -- Status setting
 			-- Make the menu item avtive
 		local
 			pos: INTEGER
+			a_menu: EV_MENU_IMP
 		do
 			-- If this is a menu item we have to change the state through associated parent menu reference and this item's index
-			if attached {EV_MENU_IMP} parent_imp as a_menu then
+			a_menu ?= parent_imp
+			if a_menu /= Void then
 				pos := a_menu.index_of (interface, 1)
 			end
 			Precursor {EV_SENSITIVE_IMP}
@@ -73,9 +80,11 @@ feature -- Status setting
 			-- Make the menu item grayed out and ignore commands
 		local
 			pos: INTEGER
+			a_menu: EV_MENU_IMP
 		do
 			-- If this is a menu item we have to change the state through associated parent menu reference and this item's index
-			if attached {EV_MENU_IMP} parent_imp as a_menu then
+			a_menu ?= parent_imp
+			if a_menu /= Void then
 				pos := a_menu.index_of (interface, 1)
 			end
 			Precursor {EV_SENSITIVE_IMP}
@@ -87,9 +96,9 @@ feature -- Element change
 			-- Assign `a_text' to `text'.
 		local
 			l_text: STRING_32
-			ns_text: NS_STRING
 			l_split_list: LIST [STRING_32]
 			i: INTEGER
+			a_menu_imp: EV_MENU_ITEM_LIST_IMP
 		do
 			Precursor {EV_TEXTABLE_IMP} (a_text)
 
@@ -107,10 +116,10 @@ feature -- Element change
 				l_text := l_text.substring (1, i - 1) + l_text.substring (i + 1, l_text.count)
 			end
 
-			create ns_text.make_with_string (l_text)
-			menu_item.set_title (ns_text)
-			if attached {EV_MENU_ITEM_LIST_IMP} current as a_menu_imp then
-				a_menu_imp.menu.set_title (ns_text)
+			menu_item.set_title (l_text)
+			a_menu_imp ?= current
+			if a_menu_imp /= void then
+				a_menu_imp.menu.set_title (l_text)
 			end
 		end
 
@@ -137,34 +146,32 @@ feature -- Measurement
 
 	width: INTEGER
 		do
---			io.put_string ("EV_MENU_ITEM_IMP.width: Not implemented%N")
+			io.put_string ("EV_MENU_ITEM_IMP.width: Not implemented%N")
 		end
 
 	height: INTEGER
 		do
---			io.put_string ("EV_MENU_ITEM_IMP.height: Not implemented%N")
+			io.put_string ("EV_MENU_ITEM_IMP.height: Not implemented%N")
 		end
 
 	screen_x: INTEGER
 		do
---			io.put_string ("EV_MENU_ITEM_IMP.screen_x: Not implemented%N")
+			io.put_string ("EV_MENU_ITEM_IMP.screen_x: Not implemented%N")
 		end
 
 	screen_y: INTEGER
 		do
---			io.put_string ("EV_MENU_ITEM_IMP.screen_y: Not implemented%N")
+			io.put_string ("EV_MENU_ITEM_IMP.screen_y: Not implemented%N")
 		end
 
 	x_position: INTEGER
 		do
-			-- Functionality may not be fully available in OS X
-			-- see NSMenu locationForSubmenu, menuBarHeight
---			io.put_string ("EV_HEADER_ITEM_IMP.x_position: Not implemented%N")
+			io.put_string ("EV_HEADER_ITEM_IMP.x_position: Not implemented%N")
 		end
 
 	y_position: INTEGER
 		do
---			io.put_string ("EV_HEADER_ITEM_IMP.y_position: Not implemented%N")
+			io.put_string ("EV_HEADER_ITEM_IMP.y_position: Not implemented%N")
 		end
 
 	minimum_width: INTEGER = 10
@@ -175,10 +182,10 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	set_pixmap (a_pixmap: EV_PIXMAP)
 		local
---			l_pixmap_imp: EV_PIXMAP_IMP
+			l_pixmap_imp: EV_PIXMAP_IMP
 		do
---			l_pixmap_imp ?= a_pixmap.implementation
---			menu_item.set_image (l_pixmap_imp.image)
+		--	l_pixmap_imp ?= a_pixmap.implementation
+		--	menu_item.set_image (l_pixmap_imp.image)
 		end
 
 	internal_set_pixmap (a_pixmap_imp: EV_PIXMAP_IMP; a_width, a_height: INTEGER)
@@ -193,10 +200,14 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	accelerators_enabled: BOOLEAN = True
 
+	interface: EV_MENU_ITEM;
+
 	menu_item: NS_MENU_ITEM
+		do
+			Result ?= cocoa_item
+		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_MENU_ITEM note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_MENU_ITEM_IMP
+

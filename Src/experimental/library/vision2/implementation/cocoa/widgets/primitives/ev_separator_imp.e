@@ -1,6 +1,8 @@
 note
-	description: "Eiffel Vision separator. Cocoa implementation"
-	author:	"Daniel Furrer"
+	description:
+		"Eiffel Vision separator. Cocoa implementation"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,17 +24,15 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
 			-- Create the separator control.
 		local
 			box: NS_BOX
 		do
-			create box.make
-			cocoa_view := box
-			Precursor {EV_PRIMITIVE_IMP}
-			disable_tabable_from
+			base_make (an_interface)
+			create {NS_BOX}cocoa_item.make
+			box ?= cocoa_item
 			box.set_box_type ({NS_BOX}.box_separator)
-			set_is_initialized (True)
 		end
 
 feature -- Layout handling
@@ -43,8 +43,11 @@ feature -- Layout handling
 			internal_set_minimum_size (1, 1) -- Hardcoded value
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_SEPARATOR note option: stable attribute end;
+	interface: EV_SEPARATOR;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_SEPARATOR_IMP
+

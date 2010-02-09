@@ -1,6 +1,5 @@
 note
 	description: "Eiffel Vision dialog. Cocoa implementation."
-	author:	"Daniel Furrer"
 
 class
 	EV_DIALOG_IMP
@@ -21,7 +20,8 @@ inherit
 		redefine
 			make,
 			interface,
-			destroy
+			call_close_request_actions,
+			initialize
 		end
 
 create
@@ -29,10 +29,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create empty dialog box.
+		do
+			base_make (an_interface)
+			create {NS_WINDOW}cocoa_item.make (create {NS_RECT}.make_rect (100, 100, 100, 100),
+				{NS_WINDOW}.closable_window_mask, True)
+			window.make_key_and_order_front
+			allow_resize
+			create_delegate
+			window.set_delegate (current)
+--			Precursor {EV_TITLED_WINDOW_IMP} (an_interface)
+		end
+
+	initialize
 			-- Initialize 'Current'
 		do
-			allow_resize
 			Precursor {EV_TITLED_WINDOW_IMP}
 		end
 
@@ -55,14 +67,11 @@ feature -- Status Report
 		do
 		end
 
-	blocking_window: detachable EV_WINDOW
+	blocking_window: EV_WINDOW
 			-- `Result' is window `Current' is shown to if
 			-- `is_modal' or `is_relative'.
 
 		do
-			Result := Void
-			-- `Result' is Void as `Current' cannot be shown modally or
-			-- relative, otherwise its implementation would not be EV_DIALOG_IMP.
 		end
 
 	show_modal_to_window (a_window: EV_WINDOW)
@@ -72,7 +81,7 @@ feature -- Status Report
 			ret: INTEGER
 		do
 			show
-			ret := app_implementation.run_modal_for_window (current)
+			ret := app_implementation.application.run_modal_for_window (window)
 		end
 
 feature -- Status Setting
@@ -98,22 +107,23 @@ feature {NONE} -- Implementation
 		do
 		end
 
+	call_close_request_actions
+			-- Call the cancel actions if dialog is closeable.
+		do
+			Precursor
+		end
+
+	interface: EV_DIALOG
+			-- Provides a common user interface to platform dependent
+			-- functionality implemented by `Current'
+
 	is_dialog_closeable: BOOLEAN;
 			-- Temporary flag whose only use is to enable functions
 			-- `is_closeable', `enable_closeable' and `disable_closeable'
 			-- to be executed without raising zillions of assertion violations.
 			--| FIXME implement cited function, then remove me.
 
-	destroy
-		do
-			Precursor {EV_TITLED_WINDOW_IMP}
-			app_implementation.abort_modal
-		end
-
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_DIALOG note option: stable attribute end;
-			-- Provides a common user interface to platform dependent
-			-- functionality implemented by `Current'
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_DIALOG_IMP
+

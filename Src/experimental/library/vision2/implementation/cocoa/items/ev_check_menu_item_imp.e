@@ -1,6 +1,7 @@
 note
 	description: "EiffelVision check menu. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$";
 	revision: "$Revision$"
 
@@ -15,11 +16,21 @@ inherit
 
 	EV_MENU_ITEM_IMP
 		redefine
+			make,
 			interface
 		end
 
 create
 	make
+
+feature {NONE} -- Initialization
+
+	make (an_interface: like interface)
+			-- Create a menu.
+		do
+			base_make (an_interface)
+			create {NS_MENU_ITEM}cocoa_item.make
+		end
 
 feature -- Status report
 
@@ -42,8 +53,11 @@ feature -- Status setting
 			menu_item.set_state ({NS_CELL}.off_state)
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {NONE} -- Implementation
 
-	interface: detachable EV_CHECK_MENU_ITEM note option: stable attribute end
+	interface: EV_CHECK_MENU_ITEM;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_CHECK_MENU_ITEM_IMP
+

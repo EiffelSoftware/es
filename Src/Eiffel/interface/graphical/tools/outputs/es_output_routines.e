@@ -16,6 +16,11 @@ inherit
 			{NONE} all
 		end
 
+	ES_SHARED_OUTPUTS
+		export
+			{NONE} all
+		end
+
 	SHARED_EIFFEL_PROJECT
 		export
 			{NONE} all
@@ -29,9 +34,7 @@ inherit
 feature -- Output
 
 	append_system_info (a_formatter: TEXT_FORMATTER)
-			-- Appends the system information
-		require
-			a_formatter_attached: attached a_formatter
+			-- Append to `text' information about `e_system'.
 		local
 			creation_name: STRING
 			root_cluster: CONF_GROUP
@@ -44,9 +47,6 @@ feature -- Output
 			l_location: STRING_32
 			l_compilation: STRING_32
 			l_multithreaded: STRING_32
-			l_project_location: PROJECT_DIRECTORY
-			l_compiled: BOOLEAN
-			l_lace: LACE_I
 			l_count: INTEGER
 			l_max_len: INTEGER
 		do
@@ -59,8 +59,6 @@ feature -- Output
 			l_max_len := l_name.count.max (l_target.count).max (l_configuration.count).max (l_location.count).max (
 				l_compilation.count).max (l_multithreaded.count) + 1
 
-			l_compiled := workbench.system_defined and then workbench.is_already_compiled
-
 			a_formatter.process_keyword_text (locale_formatter.translation (lb_system), Void)
 			a_formatter.add_new_line
 			a_formatter.add_indent
@@ -70,8 +68,7 @@ feature -- Output
 			if l_count < l_max_len then
 				a_formatter.process_basic_text (create {STRING}.make_filled (' ', l_max_len - l_count))
 			end
-			l_lace := workbench.lace
-			a_formatter.process_basic_text (l_lace.conf_system.name)
+			a_formatter.process_basic_text (eiffel_system.name)
 			a_formatter.add_new_line
 
 			a_formatter.add_indent
@@ -81,7 +78,7 @@ feature -- Output
 			if l_count < l_max_len then
 				a_formatter.process_basic_text (create {STRING}.make_filled (' ', l_max_len - l_count))
 			end
-			a_formatter.process_basic_text (l_lace.target_name)
+			a_formatter.process_basic_text (eiffel_system.lace.target_name)
 			a_formatter.add_new_line
 
 			a_formatter.add_indent
@@ -91,7 +88,7 @@ feature -- Output
 			if l_count < l_max_len then
 				a_formatter.process_basic_text (create {STRING}.make_filled (' ', l_max_len - l_count))
 			end
-			a_formatter.process_basic_text (l_lace.file_name)
+			a_formatter.process_basic_text (eiffel_ace.file_name)
 			a_formatter.add_new_line
 
 			a_formatter.add_indent
@@ -101,8 +98,7 @@ feature -- Output
 			if l_count < l_max_len then
 				a_formatter.process_basic_text (create {STRING}.make_filled (' ', l_max_len - l_count))
 			end
-			l_project_location := eiffel_project.project_location
-			a_formatter.process_basic_text (l_project_location.location)
+			a_formatter.process_basic_text (eiffel_project.name)
 			a_formatter.add_new_line
 
 			a_formatter.add_indent
@@ -112,7 +108,7 @@ feature -- Output
 			if l_count < l_max_len then
 				a_formatter.process_basic_text (create {STRING}.make_filled (' ', l_max_len - l_count))
 			end
-			a_formatter.process_basic_text (l_project_location.target_path)
+			a_formatter.process_basic_text (eiffel_ace.system.project_location.target_path)
 			a_formatter.add_new_line
 
 			a_formatter.add_indent
@@ -122,19 +118,15 @@ feature -- Output
 			if l_count < l_max_len then
 				a_formatter.process_basic_text (create {STRING}.make_filled (' ', l_max_len - l_count))
 			end
-
-			if
-				(l_compiled and then eiffel_ace.system.has_multithreaded) or else
-				(not l_compiled and then l_lace.target.setting_multithreaded)
-			then
-				a_formatter.process_basic_text (locale_formatter.translation (lb_yes))
+			if eiffel_ace.system.has_multithreaded then
+				a_formatter.process_basic_text ("enabled")
 			else
-				a_formatter.process_basic_text (locale_formatter.translation (lb_no))
+				a_formatter.process_basic_text ("disabled")
 			end
 			a_formatter.add_new_line
 
 			a_formatter.add_new_line
-			if l_compiled then
+			if eiffel_system.workbench.is_already_compiled then
 				if not eiffel_system.system.root_creators.is_empty then
 					l_root := eiffel_system.system.root_creators.first
 
@@ -176,8 +168,7 @@ feature -- Output
 					a_formatter.add_new_line
 				end
 			else
-				a_formatter.add_indent
-				a_formatter.add (locale_formatter.translation (lb_more_info_on_compile))
+				a_formatter.add_comment ("System is not yet compiled.")
 				a_formatter.add_new_line
 			end
 		end
@@ -194,9 +185,7 @@ feature {NONE} -- Internationalization
 	lb_multithreaded: STRING = "multithreaded"
 	lb_enabled: STRING = "enabled"
 	lb_disabled: STRING = "disabled"
-	lb_yes: STRING = "yes"
-	lb_no: STRING = "no"
-	lb_more_info_on_compile: STRING = "More information available after a compilation!"
+	lb_system_not_compiled: STRING = "System has not yet compiled."
 
 ;note
 	copyright:	"Copyright (c) 1984-2009, Eiffel Software"

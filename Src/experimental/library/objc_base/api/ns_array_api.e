@@ -7,12 +7,9 @@ note
 class
 	NS_ARRAY_API
 
-inherit
-	NS_OBJECT_BASIC_TYPE
-
 feature -- Createing an Array & Initializing an Array
 
-	frozen array_with_objects_count (a_objects: POINTER; a_count: like ns_uinteger): POINTER
+	frozen array_with_objects_count (a_objects: POINTER; a_count: INTEGER): POINTER
 		external
 			"C inline use <Foundation/NSArray.h>"
 		alias
@@ -21,14 +18,14 @@ feature -- Createing an Array & Initializing an Array
 
 feature -- Querying an Array
 
-	frozen count (a_array: POINTER): like ns_uinteger
+	frozen count (a_array: POINTER): INTEGER
 		external
 			"C inline use <Foundation/NSArray.h>"
 		alias
 			"return [(NSArray*)$a_array count];"
 		end
 
-	frozen object_at_index (a_array: POINTER; a_index: like ns_uinteger): POINTER
+	frozen object_at_index (a_array: POINTER; a_index: INTEGER): POINTER
 		external
 			"C inline use <Foundation/NSArray.h>"
 		alias

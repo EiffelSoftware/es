@@ -21,7 +21,7 @@ feature {NONE} -- Creation
 	make
 			-- Create a new NSBox.
 		do
-			make_from_pointer ({NS_BOX_API}.new)
+			make_shared (box_new)
 		end
 
 feature -- Box
@@ -32,7 +32,7 @@ feature -- Box
 			-- (you should never send frame-altering messages directly to a box's content view). You can replace it
 			-- with an NSView of your own through the set_content_view method.
 		do
-			create Result.share_from_pointer ({NS_BOX_API}.content_view (item))
+			create Result.make_shared (box_content_view (item))
 		ensure
 			result_not_void: Result /= void
 		end
@@ -44,7 +44,7 @@ feature -- Box
 		require
 			valid_border_type: valid_border_type (a_border_type)
 		do
-			{NS_BOX_API}.set_border_type (item, a_border_type)
+			box_set_border_type (item, a_border_type)
 		ensure
 			border_type_set: a_border_type = border_type
 		end
@@ -53,7 +53,7 @@ feature -- Box
 			-- Returns the receiver's border type.
 			-- By default, the border type of an NSBox is NSGrooveBorder.
 		do
-			Result := {NS_BOX_API}.border_type (item)
+			Result := box_border_type (item)
 		ensure
 			valid_border_type: valid_border_type (Result)
 		end
@@ -62,7 +62,7 @@ feature -- Box
 			-- Specifies the receiver's border width.
 			-- Functional only when the receiver's box type (box_type) is NSBoxCustom and its border type (border_type) is NSLineBorder.
 		do
-			{NS_BOX_API}.set_border_width (item, a_border_width)
+			box_set_border_width (item, a_border_width)
 		ensure
 			border_width_set: -- TODO
 		end
@@ -72,7 +72,7 @@ feature -- Box
 		require
 			valid_box_type: valid_box_type (a_box_type)
 		do
-			{NS_BOX_API}.set_box_type (item, a_box_type)
+			box_set_box_type (item, a_box_type)
 		ensure
 			box_type_set: -- TODO
 		end
@@ -89,7 +89,7 @@ feature -- Box
 		require
 			-- Are negative values allowed? Probably not
 		do
-			{NS_BOX_API}.set_content_view_margins (item, a_width, a_height)
+			box_set_content_view_margins (item, a_width, a_height)
 		ensure
 			content_view_margins_set: -- TODO
 		end
@@ -99,7 +99,7 @@ feature -- Box
 			-- Functional only when the receiver's box type (boxType) is NSBoxCustom and its border type (borderType) is NSLineBorder.
 			-- TODO: should this be enforced by the contracts? Probably, but maybe it's okay to set the fill color first and then change those attributes
 		do
-			{NS_BOX_API}.set_fill_color (item, a_color.item)
+			box_set_fill_color (item, a_color.item)
 		ensure
 			fill_color_set: -- TODO
 		end
@@ -111,7 +111,7 @@ feature -- Box
 		require
 			-- can it be void/nil?
 		do
-			{NS_BOX_API}.set_title (item, (create {NS_STRING}.make_with_string (a_string)).item)
+			box_set_title (item, (create {NS_STRING}.make_with_string (a_string)).item)
 		ensure
 			title_set: -- TODO
 		end
@@ -122,7 +122,7 @@ feature -- Box
 		require
 			valid_position: valid_position (a_position)
 		do
-			{NS_BOX_API}.set_title_position (item, a_position)
+			box_set_title_position (item, a_position)
 		ensure
 			position_set: title_position = a_position
 		end
@@ -130,7 +130,7 @@ feature -- Box
 	title_position: INTEGER
 			-- Returns a constant representing the title position.
 		do
-			Result := {NS_BOX_API}.title_position (item)
+			Result := box_title_position (item)
 		ensure
 			valid_position: valid_position (Result)
 		end
@@ -155,97 +155,192 @@ feature -- Contract support
 			Result := (<<box_primary, box_secondary, box_separator, box_custom>>).has(a_integer)
 		end
 
+feature {NONE} -- Objective-C implementation
+
+	frozen box_new: POINTER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [NSBox new];"
+		end
+
+	frozen box_content_view (a_box: POINTER): POINTER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSBox*)$a_box contentView];"
+		ensure
+			Result /= nil
+		end
+
+	frozen box_set_border_type (a_box: POINTER; a_border_type: INTEGER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setBorderType: $a_border_type];"
+		end
+
+	frozen box_border_type (a_box: POINTER): INTEGER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSBox*)$a_box borderType];"
+		end
+
+	frozen box_set_border_width (a_box: POINTER; a_border_width: REAL)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setBorderWidth: $a_border_width];"
+		end
+
+	frozen box_set_content_view (a_box: POINTER; a_view: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setContentView: $a_view];"
+		end
+
+	frozen box_set_content_view_margins (a_box: POINTER; a_width, a_height: REAL)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setContentViewMargins: NSMakeSize($a_width, $a_height)];"
+		end
+
+	frozen box_set_corner_radius (a_box: POINTER; a_corner_radius: REAL)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setCornerRadius: $a_corner_radius];"
+		end
+
+	frozen box_set_fill_color (a_box: POINTER; a_fill_color: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setFillColor: $a_fill_color];"
+		end
+
+	frozen box_set_title (a_box: POINTER; a_nsstring: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setTitle: $a_nsstring];"
+		end
+
+	frozen box_set_title_position (a_box: POINTER; a_position: INTEGER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setTitlePosition: $a_position];"
+		end
+
+	frozen box_title_position (a_box: POINTER): INTEGER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSBox*)$a_box titlePosition];"
+		end
+
+	frozen box_set_box_type (a_box: POINTER; a_box_type: INTEGER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSBox*)$a_box setBoxType: $a_box_type];"
+		end
+
 feature -- NSTitlePosition constants
 
 	frozen no_title : INTEGER
 			-- The box has no title
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSNoTitle"
+			"return NSNoTitle;"
 		end
 
 	frozen above_top : INTEGER
 			-- Title positioned above the box's top border
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSAboveTop"
+			"return NSAboveTop;"
 		end
 
 	frozen at_top : INTEGER
 			-- Title positioned within the box's top border
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSAtTop"
+			"return NSAtTop;"
 		end
 
 	frozen below_top : INTEGER
 			-- Title positioned below the box's top border
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBelowTop"
+			"return NSBelowTop;"
 		end
 
 
 	frozen above_bottom : INTEGER
 			-- Title positioned above the box's bottom border
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSAboveTop"
+			"return NSAboveTop;"
 		end
 
 	frozen at_bottom : INTEGER
 			-- Title positioned within the box's bottom border
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSAtTop"
+			"return NSAtTop;"
 		end
 
 	frozen below_bottom : INTEGER
 			-- Title positioned below the box's bottom border
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBelowTop"
+			"return NSBelowTop;"
 		end
 
 feature -- NSBorderType constants
 
 	frozen no_border : INTEGER
-			-- No border.
+			-- Sets the position of the box's title
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSNoBorder"
+			"return NSNoBorder;"
 		end
 
 	frozen line_border : INTEGER
-			-- A black line border around the view.
+			-- Sets the position of the box's title
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSLineBorder"
+			"return NSLineBorder;"
 		end
 
 	frozen bezel_border : INTEGER
-			-- A concave border that makes the view look sunken.
+			-- Sets the position of the box's title
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBezelBorder"
+			"return NSBezelBorder;"
 		end
 
 	frozen groove_border : INTEGER
-			-- A thin border that looks etched around the image.
+			-- Sets the position of the box's title
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSGrooveBorder"
+			"return NSGrooveBorder;"
 		end
 
 feature -- NSBoxType constants
@@ -253,32 +348,32 @@ feature -- NSBoxType constants
 	frozen box_primary : INTEGER
 			-- Specifies the primary box apparance. This is the default box type.
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBoxPrimary"
+			"return NSBoxPrimary;"
 		end
 
 	frozen box_secondary : INTEGER
 			--
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBoxSecondary"
+			"return NSBoxSecondary;"
 		end
 
 	frozen box_separator : INTEGER
 			-- Specifies that the box is a spearator
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBoxSeparator"
+			"return NSBoxSeparator"
 		end
 
 	frozen box_custom : INTEGER
 			-- Specifies that the apparance of the box is determined entirely by the box-configuration methods, without automatically applying Apple human interface guidelines.
 		external
-			"C macro use <Cocoa/Cocoa.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"NSBoxCustom"
+			"return NSBoxCustom"
 		end
 end

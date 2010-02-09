@@ -1,6 +1,8 @@
 note
-	description: "EiffelVision Tree, Cocoa implementation"
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	description:
+		"EiffelVision Tree, Cocoa implementation"
+	legal: "See notice at end of class."
+	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
 
@@ -11,14 +13,14 @@ inherit
 	EV_TREE_I
 		redefine
 			interface,
-			make,
+			initialize,
 			call_pebble_function
 		end
 
 	EV_PRIMITIVE_IMP
 		redefine
 			interface,
-			make,
+			initialize,
 			set_to_drag_and_drop,
 			able_to_transport,
 			ready_for_pnd_menu,
@@ -31,7 +33,7 @@ inherit
 	EV_ITEM_LIST_IMP [EV_TREE_NODE, EV_TREE_NODE_IMP]
 		redefine
 			interface,
-			make
+			initialize
 		end
 
 	EV_TREE_ACTION_SEQUENCES_IMP
@@ -55,13 +57,14 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
 			-- Create an empty Tree.
 		local
 			table_column: NS_TABLE_COLUMN
 		do
+			base_make (an_interface)
 			create scroll_view.make
-			cocoa_view := scroll_view
+			cocoa_item := scroll_view
 			create outline_view.make
 			scroll_view.set_document_view (outline_view)
 			scroll_view.set_has_horizontal_scroller (True)
@@ -71,17 +74,20 @@ feature {NONE} -- Initialization
 			table_column.set_editable (False)
 			outline_view.add_table_column (table_column)
 			outline_view.set_outline_table_column (table_column)
-			outline_view.set_header_view (default_pointer)
+			outline_view.set_header_view (NULL)
 			table_column.set_width (1000.0)
-
-			initialize_item_list
 
 			create_data_source
 			outline_view.set_data_source (current)
 
 			create_delegate
 			outline_view.set_delegate (current)
+		end
 
+	initialize
+			-- Connect action sequences to signals.
+		do
+			Precursor {EV_ITEM_LIST_IMP}
 			Precursor {EV_PRIMITIVE_IMP}
 			Precursor {EV_TREE_I}
 			enable_tabable_from
@@ -103,14 +109,14 @@ feature -- Delegate
 			-- The selection of the NSOutlineView changed
 		do
 			select_actions.call ([])
-			if attached selected_item as l_item then
-				l_item.select_actions.call([])
+			if selected_item /= Void then
+				selected_item.select_actions.call([])
 			end
 		end
 
 feature -- DataSource
 
-	number_of_children_of_item (a_node: detachable EV_TREE_NODE): INTEGER
+	number_of_children_of_item (a_node: EV_TREE_NODE): INTEGER
 		do
 			if a_node = void then
 				Result := count
@@ -119,7 +125,7 @@ feature -- DataSource
 			end
 		end
 
-	is_item_expandable (a_node: detachable EV_TREE_NODE): BOOLEAN
+	is_item_expandable (a_node: EV_TREE_NODE): BOOLEAN
 		do
 			if a_node = void then
 				Result := count > 0
@@ -128,14 +134,10 @@ feature -- DataSource
 			end
 		end
 
-	child_of_item (an_index: INTEGER; a_node: detachable EV_TREE_NODE): EV_TREE_NODE
-		local
-			l_result: detachable EV_TREE_NODE
+	child_of_item (an_index: INTEGER; a_node: EV_TREE_NODE): EV_TREE_NODE
 		do
 			if a_node = void then
-				l_result := i_th (an_index + 1)
-				check l_result /= Void end
-				Result := l_result
+				Result := i_th (an_index + 1)
 			else
 				Result := a_node.i_th (an_index + 1)
 			end
@@ -148,15 +150,10 @@ feature -- DataSource
 
 feature -- Status report
 
-	selected_item: detachable EV_TREE_NODE
-			-- Item which is currently selected; Void if none
-		local
-			l_row: INTEGER
+	selected_item: EV_TREE_NODE
+			-- Item which is currently selected
 		do
-			l_row := outline_view.selected_row
-			if l_row /= -1 then
-				Result ?= outline_view.item_at_row (l_row)
-			end
+			Result ?= outline_view.item_at_row (outline_view.selected_row)
 		end
 
 	selected: BOOLEAN
@@ -201,6 +198,9 @@ feature -- Implementation
 		do
 		end
 
+	pnd_row_imp: EV_TREE_NODE_IMP
+			-- Implementation object of the current row if in PND transport.
+
 	call_pebble_function (a_x, a_y, a_screen_x, a_screen_y: INTEGER)
 			-- Set `pebble' using `pebble_function' if present.
 		do
@@ -216,27 +216,44 @@ feature -- Implementation
 		do
 		end
 
+feature {EV_TREE_NODE_IMP}
+
+	row_from_y_coord (a_y: INTEGER): EV_TREE_NODE_IMP
+			-- Returns the row index at relative coordinate `a_y'.
+		do
+		end
+
 feature {NONE} -- Implementation
 
-	previous_selected_item: detachable EV_TREE_NODE
+	previous_selected_item: EV_TREE_NODE
 			-- Item that was selected previously.
 
 	insert_item (item_imp: EV_TREE_NODE_IMP; an_index: INTEGER)
 			-- Insert `item_imp' at the `an_index' position.
 		do
 			-- TODO: optimization potential?
-			outline_view.reload_item_reload_children (default_pointer, True)
+			outline_view.reload_item_reload_children (NULL, True)
 		end
 
 	remove_item (item_imp: EV_TREE_NODE_IMP)
 			-- Remove `item_imp' from `Current'.
 		do
 			-- TODO: optimization potential?
-			outline_view.reload_item_reload_children (default_pointer, True)
+			outline_view.reload_item_reload_children (NULL, True)
 		end
 
 
 feature {EV_TREE_NODE_IMP} -- Implementation
+
+	get_text_from_position (a_tree_node_imp: EV_TREE_NODE_IMP): STRING_32
+			-- Retrieve cell text from `a_tree_node_imp`
+		do
+		end
+
+	set_text_on_position (a_tree_node_imp: EV_TREE_NODE_IMP; a_text: STRING_GENERAL)
+			-- Set cell text at to `a_text'.
+		do
+		end
 
 	update_row_pixmap (a_tree_node_imp: EV_TREE_NODE_IMP)
 			-- Set the pixmap for `a_tree_node_imp'.
@@ -260,14 +277,17 @@ feature {NONE} -- Implementation
 		do
 		end
 
+feature {EV_ANY_I} -- Implementation
+
+	interface: EV_TREE;
+
 feature {EV_ANY_I, EV_TREE_NODE_IMP} -- Implementation
 
 	scroll_view: NS_SCROLL_VIEW
 
 	outline_view: NS_OUTLINE_VIEW;
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_TREE note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_TREE_IMP
+

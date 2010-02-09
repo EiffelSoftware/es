@@ -23,7 +23,8 @@ class TRANSFER_MANAGER inherit
 			go_i_th as select_transaction
 		export
 			{ANY} valid_index, valid_cursor_index
-			{TRANSFER_MANAGER} area, i_th, cursor, go_to, valid_cursor, upper, lower
+			{TRANSFER_MANAGER} area, i_th, cursor, go_to, valid_cursor, upper,
+				subcopy, lower, subarray
 			{NONE} all
 		end
 

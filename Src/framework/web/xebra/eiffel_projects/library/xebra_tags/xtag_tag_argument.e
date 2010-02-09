@@ -9,12 +9,15 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	XTAG_TAG_ARGUMENT
 
 
 inherit
 	XU_STRING_MANIPULATION
+
+create
+	make
 
 feature -- Initialization
 
@@ -32,15 +35,6 @@ feature -- Initialization
 			else
 				internal_value := a_value
 			end
-		ensure
-			internal_value_attached: attached internal_value
-		end
-
-	make_default
-		do
-			internal_value := ""
-		ensure
-			internal_value_attached: attached internal_value
 		end
 
 feature {NONE} -- Access
@@ -84,37 +78,43 @@ feature -- Access
 
 	value (a_controller_id: STRING): STRING
 			-- The value it represents
-		require
-			a_controller_id_valid: attached a_controller_id
-		deferred
-		ensure
-			Result_attached: attached Result
+		do
+			if is_dynamic then
+				Result := "%"+" + a_controller_id + "." + internal_value + "+%""
+			elseif is_variable then
+				Result := "%"+" + internal_value + "+%""
+			else
+				Result := escape_string (internal_value)
+			end
 		end
 
 	plain_value (a_controller_id: STRING): STRING
-			-- Returns the plain_value without escaping and without quotes
-		require
-			a_controller_id_valid: attached a_controller_id
-		deferred
-		ensure
-			Result_attached: attached Result
+		do
+			if is_dynamic then
+				Result := a_controller_id + "." + internal_value
+			elseif is_variable then
+				Result := internal_value
+			else
+				Result := internal_value
+			end
 		end
 
 	value_without_escape (a_controller_id: STRING): STRING
 			-- Like #value but without escaping the value
-		require
-			a_controller_id_valid: attached a_controller_id
-		deferred
-		ensure
-			Result_attached: attached Result
+		do
+			if is_dynamic then
+				Result := "%"+" + a_controller_id + "." + internal_value + "+%""
+			elseif is_variable then
+				Result := "%"+" + internal_value + "+%""
+			else
+				Result := internal_value
+			end
 		end
 
 	is_plain_text: BOOLEAN
 			-- Is the argument plain (not dynamic)?
-		deferred
+		do
+			Result := not is_dynamic
 		end
-
-invariant
-	internal_value_attached: attached internal_value
 
 end

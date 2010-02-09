@@ -14,7 +14,7 @@ feature -- Getting NSScreen Objects
 		external
 			"C inline use <Cocoa/Cocoa.h>"
 		alias
-			"return [NSScreen screens]"
+			"return [NSScreen mainScreen];"
 		end
 
 	frozen main_screen: POINTER

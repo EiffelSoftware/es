@@ -14,9 +14,7 @@ class
 inherit
 	XTAG_TAG_SERIALIZER
 		redefine
-			generates_render,
-			generates_handle_form,
-			generates_clean_up
+			generates_render
 		end
 
 create
@@ -27,8 +25,8 @@ feature -- Initialization
 	make
 		do
 			make_base
-			create {XTAG_TAG_VALUE_ARGUMENT}data_class.make_default
-			create {XTAG_TAG_VALUE_ARGUMENT}variable.make_default
+			create data_class.make ("")
+			create variable.make ("")
 		ensure
 			data_class_attached: attached data_class
 			variable_attached: attached variable
@@ -65,17 +63,13 @@ feature -- Implementation
 			create {ARRAYED_LIST [STRING]} l_agent_expressions.make (2)
 			a_variable_table.put (l_id, Form_id)
 			a_variable_table.put (l_agent_expressions, Form_agent_var)
-			if l_variable_exists then
-				a_variable_table.put (variable.plain_value (current_controller_id), Form_var_key)
-			end
+			a_variable_table.put (variable.plain_value (current_controller_id), Form_var_key)
 
 			generate_children (a_servlet_class, a_variable_table)
 
 			a_variable_table.remove (Form_agent_var)
 			a_variable_table.remove (Form_id)
-			if l_variable_exists then
-				a_variable_table.remove (Form_var_key)
-			end
+			a_variable_table.remove (Form_var_key)
 
 			a_servlet_class.render_html_page.append_expression ("agent_table [" + l_id + "] := agent (a_request: XH_REQUEST) do -- FORM_TAG")
 
@@ -94,15 +88,15 @@ feature -- Implementation
 			write_string_to_result ("</form>", a_servlet_class.render_html_page)
 
 			a_servlet_class.handle_form_internal.append_expression ("if attached a_request.arguments [%"" + l_id + "%"] as form_argument then")
-			a_servlet_class.handle_form_internal.append_expression ("if attached agent_table [form_argument] then")
-			a_servlet_class.handle_form_internal.append_expression ("agent_table [form_argument].call ([a_request])")
+
+				a_servlet_class.handle_form_internal.append_expression ("agent_table [form_argument].call ([a_request])")
 
 			if l_variable_exists then
 				a_servlet_class.clean_up_after_render.append_expression_to_end ("if validation_errors.empty then")
 				a_servlet_class.clean_up_after_render.append_expression_to_end ("create " + variable.plain_value (current_controller_id) + ".make")
 				a_servlet_class.clean_up_after_render.append_expression_to_end ("end")
 			end
-			a_servlet_class.handle_form_internal.append_expression ("end")
+
 			a_servlet_class.handle_form_internal.append_expression ("end")
 		ensure then
 			a_variable_table_immuted: a_variable_table.count = old a_variable_table.count
@@ -120,8 +114,6 @@ feature -- Implementation
 		end
 
 	generates_render: BOOLEAN = True
-	generates_handle_form: BOOLEAN = True
-	generates_clean_up: BOOLEAN = True
 
 feature -- Constants
 
@@ -131,7 +123,6 @@ feature -- Constants
 	Form_validation_booleans: STRING = "Form_validation_booleans"
 	Form_agent_var: STRING = "Form_agent_var"
 	Form_lazy_validation_table: STRING = "Form_lazy_validation_table"
-
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

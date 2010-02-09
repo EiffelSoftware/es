@@ -21,45 +21,28 @@ inherit
 		end
 
 	EB_SHARED_WINDOW_MANAGER
-		export
-			{NONE} all
-		end
-		
-	EB_SHARED_MANAGERS
-		export
-			{NONE} all
-		end
 
-	ES_SHARED_DEBUGGER_OUTPUTS
-		export
-			{NONE} all
-		end
+	EB_SHARED_MANAGERS
 
 feature -- Aspects
 
 	before_starting (param: DEBUGGER_EXECUTION_PARAMETERS)
 		do
-			if attached debugger_output as l_output then
-				l_output.lock
-				Precursor (param)
-				if not manager.application_is_executing then
-					l_output.clear
-				end
-			else
-				Precursor (param)
+			Precursor (param)
+			if not manager.application_is_executing then
+				output_manager.clear_general
 			end
-
 				--| Display information
-			debugger_formatter.add_string ("Launching system :")
-			debugger_formatter.add_new_line
-			debugger_formatter.add_comment ("  - directory = ")
-			debugger_formatter.add_quoted_text (param.working_directory)
-			debugger_formatter.add_new_line
-			debugger_formatter.add_comment_text ("  - arguments = ")
+			output_manager.add_string ("Launching system :")
+			output_manager.add_new_line
+			output_manager.add_comment ("  - directory = ")
+			output_manager.add_quoted_text (param.working_directory)
+			output_manager.add_new_line
+			output_manager.add_comment_text ("  - arguments = ")
 			if param = Void or else param.arguments.is_empty then
-				debugger_formatter.add_string ("<Empty>")
+				output_manager.add_string ("<Empty>")
 			else
-				debugger_formatter.add_quoted_text (param.arguments)
+				output_manager.add_quoted_text (param.arguments)
 			end
 --| For now useless since the output panel display those info just a few nanoseconds ...
 --			if environment_vars /= Void and then not environment_vars.is_empty then
@@ -77,10 +60,7 @@ feature -- Aspects
 --					environment_vars.forth
 --				end
 --			end
-			debugger_formatter.add_new_line
-			if attached debugger_output as l_output then
-				l_output.unlock
-			end
+			output_manager.add_new_line
 		end
 
 	after_starting
@@ -131,7 +111,7 @@ feature -- {DEBUGGER_MANAGER, SHARED_DEBUGGER_MANAGER} -- Implementation
 	manager: EB_DEBUGGER_MANAGER;
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -144,22 +124,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful, but
+			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the GNU General Public License for more details.
+			See the	GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 
 end

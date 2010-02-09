@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 	make
 		do
 			make_base
-			create {XTAG_TAG_VALUE_ARGUMENT} feature_name.make ("####wrong_feature####")
+			create feature_name.make ("####wrong_feature####")
 		ensure
 			feature_name_attached: attached feature_name
 		end
@@ -38,7 +38,7 @@ feature -- Basic implementation
 	internal_generate (a_servlet_class: XEL_SERVLET_CLASS_ELEMENT; variable_table: HASH_TABLE [ANY, STRING])
 			-- <Precursor>
 		do
-			add_controller_call (feature_name.value (current_controller_id), a_servlet_class.render_html_page)
+			add_controller_call (feature_name.value (current_controller_id), a_servlet_class.render_feature)
 		end
 
 	internal_put_attribute (a_id: STRING; a_attribute: XTAG_TAG_ARGUMENT)

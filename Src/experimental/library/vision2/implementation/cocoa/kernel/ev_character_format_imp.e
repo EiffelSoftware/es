@@ -25,12 +25,12 @@ create
 
 feature {NONE} -- Initialization
 
-	old_make (an_interface: like interface)
+	make (an_interface: like interface)
 			-- Create character format
 		do
 		end
 
-	make
+	initialize
 			-- Do nothing
 		do
 		end

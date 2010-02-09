@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision vertical scroll bar. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,8 +17,7 @@ inherit
 	EV_SCROLL_BAR_IMP
 		redefine
 			interface,
-			cocoa_set_size,
-			make
+			cocoa_set_size
 		end
 
 create
@@ -25,23 +25,20 @@ create
 
 feature -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create the separator control.
 		do
+			base_make (an_interface)
 			create scroller.make_with_frame (0, 0, 5, 10)
-			Precursor {EV_SCROLL_BAR_IMP}
-			disable_tabable_from
-			disable_tabable_to
-			cocoa_view := scroller
+			cocoa_item := scroller
 			scroller.set_enabled (True)
 
 			change_actions_internal := create_change_actions
 			scroller.set_action (agent
 				do
 					set_proportion (scroller.double_value)
-					change_actions.call ([value])
+					change_actions_internal.call ([value])
 				end)
-
-			set_is_initialized (True)
 		end
 
 feature -- Minimum size
@@ -69,8 +66,11 @@ feature -- Minimum size
 			Precursor {EV_SCROLL_BAR_IMP} (l_x_position, a_y_position, l_width, a_height)
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_VERTICAL_SCROLL_BAR note option: stable attribute end;
+	interface: EV_VERTICAL_SCROLL_BAR;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_VERTICAL_SCROLL_BAR_IMP
+

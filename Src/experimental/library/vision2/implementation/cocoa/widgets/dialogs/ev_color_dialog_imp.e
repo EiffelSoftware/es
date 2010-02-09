@@ -1,6 +1,5 @@
 note
 	description: "EiffelVision color selection dialog. Cocoa implementation."
-	author: "Daniel Furrer"
 
 class
 	EV_COLOR_DIALOG_IMP
@@ -13,30 +12,9 @@ inherit
 
 	EV_STANDARD_DIALOG_IMP
 		redefine
-			make,
-			show,
 			interface,
-			dispose
-		end
-
-	NS_COLOR_PANEL
-		rename
-			make as make_cocoa,
-			item as color_panel,
-			title as cocoa_title,
-			set_title as cocoa_set_title,
-			set_background_color as set_background_color_cocoa,
-			background_color as background_color_cocoa,
-			screen as cocoa_screen
-		undefine
-			copy
-		redefine
-			dispose
-		select
-			color_panel,
-			make_cocoa,
-			set_background_color_cocoa,
-			background_color_cocoa
+			initialize,
+			show
 		end
 
 create
@@ -44,10 +22,17 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create a directory selection dialog with `par' as
+			-- parent.
+		do
+			base_make (an_interface)
+			create {NS_COLOR_PANEL}cocoa_item.shared_color_panel
+		end
+
+	initialize
 			-- Connect action sequences to button signals.
 		do
-			shared_color_panel
 			Precursor {EV_STANDARD_DIALOG_IMP}
 
 			enable_closeable
@@ -83,11 +68,9 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	dispose
-		do
-
-		end
-
 	interface: EV_COLOR_DIALOG;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_COLOR_DIALOG_IMP
+

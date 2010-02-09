@@ -1,6 +1,8 @@
 note
-	description: "EiffelVision screen. Cococa implementation."
-	author: "Daniel Furrer"
+	description:
+		"EiffelVision screen. Cococa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "screen, root, window, visual, top"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,20 +15,11 @@ inherit
 	EV_SCREEN_I
 		redefine
 			interface
-		select
-			copy
 		end
 
 	EV_DRAWABLE_IMP
 		redefine
-			interface,
-			make
-		end
-
-	NS_SCREEN
-		rename
-			main_screen as make_main_screen_cocoa,
-			copy as copy_cocoa
+			interface
 		end
 
 create
@@ -34,29 +27,26 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create an empty drawing area.
 		do
-			make_main_screen_cocoa
-			Precursor {EV_DRAWABLE_IMP}
+			base_make (an_interface)
+			create screen.main_screen
 		end
 
 feature -- Status report
 
 	pointer_position: EV_COORDINATE
 			-- Position of the screen pointer.
-		local
-			point: NS_POINT
 		do
-			create point.make_from_mouse_location
-			create Result.make (point.x, point.y)
 		end
 
-	widget_at_position (x, y: INTEGER): detachable EV_WIDGET
+	widget_at_position (x, y: INTEGER): EV_WIDGET
 			-- Widget at position ('x', 'y') if any.
 		do
 		end
 
-	widget_imp_at_pointer_position: detachable EV_WIDGET_IMP
+	widget_imp_at_pointer_position: EV_WIDGET_IMP
 			-- Widget implementation at current mouse pointer position (if any)
 		do
 		end
@@ -142,13 +132,13 @@ feature -- Measurement
 	height: INTEGER
 			-- Vertical size in pixels.
 		do
-			Result := frame.size.height
+			Result := screen.frame.size.height
 		end
 
 	width: INTEGER
 			-- Horizontal size in pixels.
 		do
-			Result := frame.size.width
+			Result := screen.frame.size.width
 		end
 
 feature {NONE} -- Implementation
@@ -169,8 +159,16 @@ feature {NONE} -- Implementation
 		do
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+	dispose
+			-- Cleanup
+		do
+		end
 
-	interface: detachable EV_SCREEN note option: stable attribute end;
+	screen: NS_SCREEN
 
+	interface: EV_SCREEN;
+
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_SCREEN_IMP
+

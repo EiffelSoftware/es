@@ -1,6 +1,8 @@
 note
-	description: "EiffelVision primitive, Cocoa implementation."
-	author:	"Daniel Furrer"
+	description:
+		"EiffelVision primitive, Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "primitive, base, widget"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,20 +19,25 @@ inherit
 	EV_WIDGET_IMP
 		redefine
 			interface,
-			make
+			initialize
+		end
+
+	EV_TOOLTIPABLE_IMP
+		redefine
+			interface
 		end
 
 feature {NONE} -- Initialization
 
-	make
+	initialize
 			-- Initialize `Current'.
 		do
-			initialize
+			Precursor {EV_WIDGET_IMP}
 			set_default_minimum_size
 			enable_tabable_from
 		end
 
-feature {EV_ANY_I} -- Implementation
+	interface: EV_PRIMITIVE;
 
 	update_for_pick_and_drop (starting: BOOLEAN)
 			-- Pick and drop status has changed so update appearance of
@@ -41,7 +48,7 @@ feature {EV_ANY_I} -- Implementation
 
 feature -- Element change
 
-	top_level_window_imp: detachable EV_WINDOW_IMP
+	top_level_window_imp: EV_WINDOW_IMP
 			-- Top level window that contains `Current'.
 
 	set_parent (par: EV_CONTAINER)
@@ -49,9 +56,9 @@ feature -- Element change
 			-- `par' can be Void then the parent is the
 			-- default_parent.
 		local
-			par_imp: detachable EV_CONTAINER_IMP
+			par_imp: EV_CONTAINER_IMP
 		do
-			if attached par then
+			if par /= Void then
 				par_imp ?= par.implementation
 				check
 					valid_cast: par_imp /= Void
@@ -60,7 +67,7 @@ feature -- Element change
 			end
 		end
 
-	set_top_level_window_imp (a_window: detachable EV_WINDOW_IMP)
+	set_top_level_window_imp (a_window: EV_WINDOW_IMP)
 			-- Make `a_window' the new `top_level_window_imp'
 			-- of `Current'.
 		do
@@ -109,26 +116,32 @@ feature -- Minimum size
 			-- Make `a_minimum_height' the new `minimum_height' of `Current'.
 			-- Should check if the user didn't set the minimum width
 			-- before setting a new value.
+		local
+			p_imp: like parent_imp
 		do
 			if minimum_height /= a_minimum_height then
 				if not is_user_min_height_set then
 					internal_minimum_height := a_minimum_height
 				end
-				if attached parent_imp as l_parent_imp then
-					l_parent_imp.notify_change (Nc_minheight, Current)
+				p_imp := parent_imp
+				if p_imp /= Void then
+					p_imp.notify_change (Nc_minheight, Current)
 				end
 			end
 		end
 
 	internal_set_minimum_width (a_minimum_width: INTEGER)
 			-- Abstracted implementation for minimum size setting.
+		local
+			p_imp: like parent_imp
 		do
 			if minimum_width /= a_minimum_width then
 				if not is_user_min_width_set then
 					internal_minimum_width := a_minimum_width
 				end
-				if attached parent_imp as l_parent_imp then
-					l_parent_imp.notify_change (Nc_minwidth, Current)
+				p_imp := parent_imp
+				if p_imp /= Void then
+					p_imp.notify_change (Nc_minwidth, Current)
 				end
 			end
 		end
@@ -165,8 +178,6 @@ feature -- Status report
 			is_tabable_from := False
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_PRIMITIVE note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_PRIMITIVE_IMP

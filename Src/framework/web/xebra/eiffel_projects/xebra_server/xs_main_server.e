@@ -1,6 +1,6 @@
 note
 	description: "[
-			The main component of the Server.
+			The main component of the Server. ...
 	]"
 	legal: "See notice at end of class."
 	status: "Prototyping phase"
@@ -11,7 +11,7 @@ class
     XS_MAIN_SERVER
 
 inherit
-	XC_SERVER_INTERFACE
+	XSC_SERVER_INTERFACE
 	XS_SHARED_SERVER_OUTPUTTER
 	ERROR_SHARED_MULTI_ERROR_MANAGER
 	XS_SHARED_SERVER_CONFIG
@@ -24,14 +24,19 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			create modules.make (1)
+			create commands.make
 		ensure
-			modules_attached: modules /= Void
+			commands_attached: commands /= Void
 		end
 
-feature {NONE} -- Access
+feature -- Access
 
-	modules: XS_SERVER_MODULES
+	http_connection_server: detachable XS_HTTP_CONN_SERVER
+			-- Handles connections to http server requests
+
+	input_server: detachable XS_INPUT_SERVER
+
+	commands: XS_COMMAND_MANAGER
 
 	stop: BOOLEAN
 		-- Stops the server
@@ -39,6 +44,7 @@ feature {NONE} -- Access
 feature -- Constants
 
 	Name: STRING = "XEBSRV"
+
 
 feature {XS_APPLICATION} -- Setup
 
@@ -55,274 +61,101 @@ feature {XS_APPLICATION} -- Setup
 			o.iprint ("Starting Xebra Web Application Server...")
 			o.dprint (config.args.print_configuration, 2)
 			stop := false
-			if attached {XCCR_OK} load_config then
-				modules.force (create {XS_CONSOLE_MODULE}.make (current, "mod_console"), "mod_console")
-				modules.force (create {XS_HTTP_CONN_MODULE}.make (current, "mod_http"), "mod_http")
-				modules.force (create {XS_WEBAPP_CMD_MODULE}.make (current, "mod_cmd"), "mod_cmd")
-				o.dprint("Launching modules...",2)
-				modules.run_all
-				run
-			end
+			commands.put (create {XSC_LOAD_CONFIG}.make)
+			commands.put (create {XSC_LAUNCH_HTTPS}.make)
+
+			launch_input_server
+			run
 		end
 
 feature {NONE} -- Operations
 
 	run
-			--  until stopped
+				-- Executes commands in the queue until stopped
 		local
 			l_webapp_handler: XS_WEBAPP_HANDLER
-			l_thread: EXECUTION_ENVIRONMENT
 		do
-			create l_thread
-			from until stop	loop
-				l_thread.sleep (1000000)
+			from
+
+			until
+				stop
+			loop
+				commands.execute_next (current)
 			end
 
 			o.iprint ("Shutting down...")
-			shutdown_webapps.do_nothing
-			shutdown_all_modules
-			if attached modules ["mod_input"] then
-				if modules ["mod_input"].running then
-					o.iprint ("Remote Shutdown. Bye!");
-					(create {EXCEPTIONS}).die (1)
-				end
-			end
-			o.iprint ("Shutdown complete. Bye!")
-		end
-
-
-	shutdown_all_modules
-			-- Shuts all modules down
-		do
-			from
-				modules.start
-			until
-				modules.after
-			loop
-				shutdown_module (modules.key_for_iteration).do_nothing
-				modules.forth
-			end
-		end
-
-
-feature {XS_SERVER_MODULE} -- Status setting
-
-	get_sessions: XC_COMMAND_RESPONSE
-			-- <Precursor>
-		local
-			l_webapp: XS_WEBAPP
-		do
-			from
-				config.file.webapps.start
-			until
-				config.file.webapps.after
-			loop
-				l_webapp := config.file.webapps.item_for_iteration
-
-					-- until multihreading is implemented in webapps this hack has to be here to prevent deadlock
-				if not l_webapp.app_config.name.value.is_equal ("servercontrol") then
-					--
-
-				if l_webapp.get_sessions then
-					create {XCCR_OK}Result.make
-				else
-					--todo: error
-					create {XCCR_OK}Result.make
-				end
-				end
-				config.file.webapps.forth
-			end
-
-		end
-
-	fire_off_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w then
-				o.iprint ("Fireing off webapp '" + a_name + "'")
-				l_w.fire_off
-				create {XCCR_OK}Result.make
+			shutdown_webapps
+			shutdown_http_server
+			if input_server.running then
+				o.iprint ("Remote Shutdown. Bye!")
+				(create {EXCEPTIONS}).die (1)
 			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
-			end
-		end
-
-	dev_mode_on_global: XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			o.iprint ("Setting dev_mode global on.")
-			from
-				config.file.webapps.start
-			until
-				config.file.webapps.after
-			loop
-				config.file.webapps.item_for_iteration.dev_mode := True
-				config.file.webapps.forth
-			end
-			create {XCCR_OK}Result.make
-		end
-
-	dev_mode_off_global: XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			o.iprint ("Setting dev_mode global off.")
-			from
-				config.file.webapps.start
-			until
-				config.file.webapps.after
-			loop
-				config.file.webapps.item_for_iteration.dev_mode := False
-				config.file.webapps.forth
-			end
-			create {XCCR_OK}Result.make
-		end
-
-	dev_mode_on_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w then
-				o.iprint ("Setting dev_mode of webapp '" + a_name + "' to on.")
-				l_w.dev_mode := True
-				create {XCCR_OK}Result.make
-			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
-			end
-		end
-
-	dev_mode_off_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-		if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w then
-				o.iprint ("Setting dev_mode of webapp '" + a_name + "' to off.")
-				l_w.dev_mode := False
-				create {XCCR_OK}Result.make
-			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
+				o.iprint ("Shutdown complete. Bye!")
 			end
 		end
 
 
-	launch_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w then
-				o.iprint ("Launching webapp '" + a_name + "'...")
-				l_w.send (create {XCWC_EMPTY}.make).do_nothing
-				create {XCCR_OK}Result.make
-			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
-			end
-		end
+feature {XS_COMMAND} -- Status setting
 
-	shutdown_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w then
-				o.iprint ("Shutting down webapp '" + a_name + "'...")
-				l_w.shutdown_all
-				create {XCCR_OK}Result.make
-			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
-			end
-		end
-
-	get_webapps: XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		local
-			l_response: XCCR_GET_WEBAPPS
-		do
-			if attached {XCCR_OK} get_sessions then
-			end
-
-			create l_response.make
-			if attached {HASH_TABLE [XS_WEBAPP, STRING]}config.file.webapps as l_webapps then
-				from
-					l_webapps.start
-				until
-					l_webapps.after
-				loop
-					l_response.webapps.force ( l_webapps.item_for_iteration.copy_from_bean)
-					l_webapps.forth
-				end
-			end
-			Result := l_response
-		end
-
-	enable_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w then
-				l_w.is_disabled := False
-				o.iprint ("Enabling webapp '" + a_name + "'...")
-				create {XCCR_OK}Result.make
-			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
-			end
-		end
-
-	disable_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps [a_name] as l_w  then
-				l_w.is_disabled := True
-				o.iprint ("Disabling webapp '" + a_name + "'...")
-				create {XCCR_OK}Result.make
-			else
-				create {XCCR_WEBAPP_NOT_FOUND}Result.make (a_name)
-			end
-		end
-
-	clean_webapp (a_name: STRING): XC_COMMAND_RESPONSE
-			-- <Precursor>.
-		do
-			if attached {XS_WEBAPP} config.file.webapps[a_name] as l_webapp then
-				l_webapp.needs_cleaning := True
-				o.iprint ("Cleaning webapp '" + a_name + "'...")
-				l_webapp.send (create {XCWC_EMPTY}.make).do_nothing
-				Result := create {XCCR_OK}.make
-			else
-				Result := create {XCCR_WEBAPP_NOT_FOUND}.make (a_name)
-			end
-		end
-
-	shutdown_webapps: XC_COMMAND_RESPONSE
+	shutdown_webapps
 			-- <Precursor>
 		local
 			l_webapp_handler: XS_WEBAPP_HANDLER
 		do
-			o.iprint ("Terminating Web Applications...")
+			o.dprint ("Terminating Web Applications...",3)
 			create l_webapp_handler.make
 			l_webapp_handler.stop_apps
-			Result := create {XCCR_OK}.make
 		end
 
-	shutdown_module (a_name: STRING): XC_COMMAND_RESPONSE
+	shutdown_http_server
 			-- <Precursor>
 		do
-			o.iprint ("Shutting down module '" + a_name + "'...")
-			if attached modules [a_name] as l_mod then
-				l_mod.shutdown
-				l_mod.join
-			else
-				o.iprint ("No module '" + a_name + "' found.")
+			if attached http_connection_server as https then
+				if https.launched then
+					o.dprint ("Waiting for http_connection_server to shutdown...", 3)
+					https.shutdown
+					https.join
+				end
 			end
-			Result := create {XCCR_OK}.make
 		end
 
-	relaunch_module (a_name: STRING): XC_COMMAND_RESPONSE
+
+
+	launch_http_server
+			-- <Precursor>
+		local
+			l_webapp_handler: XS_WEBAPP_HANDLER
+			l_webapp_finder: XS_WEBAPP_FINDER
+			l_config_reader: XS_CONFIG_READER
+		do
+			shutdown_http_server
+
+			o.iprint ("Launching http connection server...")
+			http_connection_server := create {XS_HTTP_CONN_SERVER}.make (commands)
+			if not http_connection_server.is_bound then
+					error_manager.add_error (create {XERROR_SOCKET_NOT_BOUND}.make, false)
+			else
+				http_connection_server.launch
+				print ("Done.")
+			end
+		end
+
+	launch_input_Server
+			-- <Precursor>	
+		do
+			o.iprint ("Launching input server...")
+			input_server := create {XS_INPUT_SERVER}.make (current)
+			input_server.launch
+			print ("Done.")
+		end
+
+
+	display_response
 			-- <Precursor>
 		do
-			o.iprint ("Launching module '" + a_name + "'...")
-			if attached modules [a_name] as l_mod then
-				shutdown_module (a_name).do_nothing
-				l_mod.launch
-			else
-				o.iprint ("No module '" + a_name + "' found.")
-			end
-			Result := create {XCCR_OK}.make
 		end
 
-	load_config: XC_COMMAND_RESPONSE
+	load_config
 			-- <Precursor>
 		local
 			l_webapp_handler: XS_WEBAPP_HANDLER
@@ -336,45 +169,21 @@ feature {XS_SERVER_MODULE} -- Status setting
 				create l_webapp_finder.make
 				config.file.set_webapps (l_webapp_finder.search_webapps (config.file.webapps_root))
 				o.dprint (config.file.print_configuration, 2)
-			end
-			if handle_errors then
-				Result := create {XCCR_OK}.make
-			else
-				Result := create {XCCR_CONFIG_ERROR}.make
+				o.iprint ("Done.")
 			end
 		end
 
-	shutdown_server: XC_COMMAND_RESPONSE
+	stop_server
 			-- <Precursor>
 		do
 			stop := True
-			Result := create {XCCR_OK}.make
 		end
 
-	get_modules: XC_COMMAND_RESPONSE
-			-- <Precursor>
-		local
-			l_response: XCCR_GET_MODULES
-		do
-			create l_response.make
-			from
-				modules.start
-			until
-				modules.after
-			loop
-				l_response.modules.force (create {XC_SERVER_MODULE_BEAN}.make_from_module(modules.item_for_iteration))
-				modules.forth
-			end
-			Result := l_response
-		end
-
-
-	handle_errors: BOOLEAN
+	handle_errors
 			-- <Precursor>
 		local
 			l_printer: XS_ERROR_PRINTER
 		do
-			Result := True
 			create l_printer.default_create
 			if error_manager.has_warnings then
 				error_manager.trace_warnings (l_printer)
@@ -382,10 +191,46 @@ feature {XS_SERVER_MODULE} -- Status setting
 
 			if not error_manager.is_successful then
 				error_manager.trace_errors (l_printer)
-				Result := False
+				stop := True
 			end
+
 		end
 
+--	set_http_connection_server (a_http_connection_server: like http_connection_server)
+--			-- Sets http_connection_server.
+--		require
+--			a_http_connection_server_attached: a_http_connection_server /= Void
+--		do
+--			http_connection_server  := a_http_connection_server
+--		ensure
+--			http_connection_server_set: http_connection_server  = a_http_connection_server
+--		end
+
+--	set_stop (a_stop: like stop)
+--			-- Sets stop.
+--		require
+--			a_stop_attached: a_stop /= Void
+--		do
+--			stop  := a_stop
+--		ensure
+--			stop_set: stop  = a_stop
+--		end
+
+
+--	set_input_server (a_input_server: like input_server)
+--			-- Sets input_server.
+--		require
+--			a_input_server_attached: a_input_server /= Void
+--		do
+--			input_server  := a_input_server
+--		ensure
+--			input_server_set: input_server  = a_input_server
+--		end
+
+
+
+
 invariant
-		modules_attached: modules /= Void
+		commands_attached: commands /= Void
+
 end

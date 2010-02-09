@@ -1,6 +1,9 @@
 note
-	description: "EiffelVision label, Cocoa implementation."
-	author:	"Daniel Furrer"
+
+	description:
+		"EiffelVision label, Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	id: "$Id$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,7 +20,7 @@ inherit
 	EV_PRIMITIVE_IMP
 		redefine
 			interface,
-			make,
+			initialize,
 			set_default_minimum_size,
 			set_background_color
 		end
@@ -30,8 +33,7 @@ inherit
 
 	EV_FONTABLE_IMP
 		redefine
-			interface,
-			set_font
+			interface
 		end
 
 	SINGLE_MATH
@@ -41,17 +43,21 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Connect interface and initialize `c_object'.
 		do
-			create text_field.make
+			base_make (an_interface)
+			create {NS_TEXT_FIELD}cocoa_item.make
 			text_field.set_editable (false)
 			--text_field.set_draws_background (false)
 			text_field.set_bordered (false)
 			text_field.set_background_color (create {NS_COLOR}.control_color)
-			cocoa_view := text_field
 
 			align_text_center
+		end
 
+	initialize
+		do
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
 			disable_tabable_to
@@ -86,7 +92,7 @@ feature -- Minimum size
 			a_width, a_height: INTEGER
 			l_angle: REAL
 		do
-			t := font.string_size (a_text)
+			t := internal_font.string_size (a_text)
 			a_width := t.width
 			a_height := t.height
 
@@ -97,8 +103,6 @@ feature -- Minimum size
 			end
 			internal_set_minimum_size (a_width.abs + 5, a_height.abs + 5)
 		end
-
-feature -- Status setting
 
 	set_text (a_text: STRING_GENERAL)
 			-- Assign `a_text' to `text'.
@@ -125,23 +129,17 @@ feature -- Status setting
 			text_field.set_background_color (color)
 		end
 
-	set_font (a_font: EV_FONT)
-			-- <Precursor>
-		do
-			Precursor {EV_FONTABLE_IMP} (a_font)
-			if attached {EV_FONT_IMP} a_font.implementation as font_imp then
-				text_field.set_font (font_imp.font)
-			else
-				check False end
-			end
-		end
-
 feature {EV_ANY_I} -- Implementation
 
+	interface: EV_LABEL;
+
 	text_field: NS_TEXT_FIELD
+			--
+		do
+			Result ?= cocoa_item
+		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_LABEL note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end --class LABEL_IMP
+

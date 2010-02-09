@@ -1,6 +1,7 @@
 note
 	description: "Cocoa implementation for EV_PIXEL_BUFFER_I."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "drawable, primitives, figures, buffer, bitmap, picture"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -23,26 +24,19 @@ feature {NONE} -- Initialization
 			height := a_height
 		end
 
-	old_make (an_interface: EV_PIXEL_BUFFER)
+	make (an_interface: EV_PIXEL_BUFFER)
 			-- Creation method.
 		do
-			assign_interface (an_interface)
+			base_make (an_interface)
 			make_with_size (1, 1)
 		end
 
 	make_with_pixmap (a_pixmap: EV_PIXMAP)
 			-- Create with `a_pixmap''s image data.
-		local
-			l_pixmap_imp: detachable EV_PIXMAP_IMP
 		do
-			width := a_pixmap.width
-			height := a_pixmap.height
-			l_pixmap_imp ?= a_pixmap.implementation
-			check l_pixmap_imp /= Void end
-			image := l_pixmap_imp.image.twin
 		end
 
-	make
+	initialize
 			-- Initialize `Current'.
 		do
 			set_is_initialized (True)
@@ -71,14 +65,12 @@ feature -- Command
 	sub_pixel_buffer (a_rect: EV_RECTANGLE): EV_PIXEL_BUFFER
 			-- Create a new sub pixel buffer object.
 		do
-			create Result.make_with_size (a_rect.width, a_rect.height)
+			create Result
 		end
 
 	get_pixel (a_x, a_y: NATURAL_32): NATURAL_32
 			-- Get RGBA value at `a_y', `a_y'.
 		do
-			-- See NSReadPixel on NSImage
-			-- http://lists.apple.com/archives/applescript-studio/2008/Mar/msg00035.html
 		end
 
 	set_pixel (a_x, a_y, rgba: NATURAL_32)
@@ -110,10 +102,8 @@ feature -- Query
 		do
 		end
 
-	image: NS_IMAGE
-
-	data_ptr: POINTER
-		-- A pointer to the byte-data. Accessed by classes in the Smart Docking library
+	data_ptr: POINTER;
+		-- Accessed by subclasses
 
 feature {EV_PIXEL_BUFFER_IMP, EV_POINTER_STYLE_IMP, EV_PIXMAP_IMP} -- Implementation
 
@@ -124,4 +114,6 @@ feature {EV_PIXEL_BUFFER_IMP, EV_POINTER_STYLE_IMP, EV_PIXMAP_IMP} -- Implementa
 			set_is_destroyed (True)
 		end
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end

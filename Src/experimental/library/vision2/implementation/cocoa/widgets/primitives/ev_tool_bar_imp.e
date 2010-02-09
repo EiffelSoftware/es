@@ -1,6 +1,7 @@
 note
 	description: "EiffelVision2 toolbar, Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,7 +20,7 @@ inherit
 			internal_set_minimum_height, internal_set_minimum_width, internal_set_minimum_size
 		redefine
 			interface,
-			make,
+			initialize,
 			set_parent_imp,
 			ev_apply_new_size
 		end
@@ -29,7 +30,7 @@ inherit
 			item_by_data
 		redefine
 			interface,
-			make
+			initialize
 		end
 
 	EV_SIZEABLE_CONTAINER_IMP
@@ -42,24 +43,20 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create the tool-bar.
+		do
+			base_make (an_interface)
+			create {NS_BOX}cocoa_item.make
+			box.set_title_position ({NS_BOX}.no_title)
+		end
+
+	initialize
 			-- Initialize `Current'.
 		do
-			initialize_item_list
-			create radio_group.make
-
-			create box.make
-			box.set_title_position ({NS_BOX}.no_title)
-			box.set_box_type ({NS_BOX}.box_custom)
-			box.set_content_view_margins (0, 0)
-			cocoa_view := box
-
+			Precursor {EV_ITEM_LIST_IMP}
 			Precursor {EV_PRIMITIVE_IMP}
-			disable_tabable_from
 			has_vertical_button_style := True
-
-			new_item_actions.extend (agent add_radio_button)
-			remove_item_actions.extend (agent remove_radio_button)
 		end
 
 	set_parent_imp (a_container_imp: EV_CONTAINER_IMP)
@@ -108,10 +105,9 @@ feature -- Access
 
 	insert_item (v: EV_ITEM_IMP; i: INTEGER_32)
 		local
-			l_view: detachable NS_VIEW
+			l_view: NS_VIEW
 		do
-			l_view ?= v.cocoa_view
-			check l_view /= void end
+			l_view ?= v.cocoa_item
 			box.add_subview (l_view)
 			notify_change (nc_minsize, Current)
 		end
@@ -133,18 +129,8 @@ feature -- Implementation
 
 	compute_minimum_height
 			-- Update the minimum-size of `Current'.
-		local
-			l_height: INTEGER
 		do
-			from
-				ev_children.start
-			until
-				ev_children.after
-			loop
-				l_height := l_height.max (ev_children.item.minimum_height)
-				ev_children.forth
-			end
-			internal_set_minimum_height (l_height)
+			internal_set_minimum_height (30)
 		end
 
 	compute_minimum_size
@@ -158,7 +144,7 @@ feature -- Implementation
 	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32; repaint: BOOLEAN)
 			-- Precursor		
 		local
-			litem: detachable EV_NS_VIEW
+			litem: EV_NS_VIEW
 			x: INTEGER
 			item_width, item_height: INTEGER
 		do
@@ -171,13 +157,23 @@ feature -- Implementation
 				ev_children.after
 			loop
 				litem ?= ev_children.item
-				check litem /= Void end
 				item_width := litem.minimum_width
 				litem.cocoa_set_size (x, 0, item_width, item_height)
 				x := x + item_width
 				ev_children.forth
 			end
 		end
+
+feature {EV_TOOL_BAR_RADIO_BUTTON_IMP} -- Radio button handling
+
+	add_radio_button (w: EV_RADIO_PEER_IMP)
+			-- Connect radio button to tool bar group.
+		require
+			w_not_void: w /= Void
+		do
+		end
+
+	radio_group: POINTER
 
 feature {EV_DOCKABLE_SOURCE_I} -- Implementation (obsolete?)
 
@@ -193,88 +189,16 @@ feature {EV_DOCKABLE_SOURCE_I} -- Implementation (obsolete?)
 		do
 		end
 
-
-feature {EV_TOOL_BAR_IMP} -- Implementation
-	-- TODO: is this the same for all radio-containers? (menu, toolbar, widget container)
-	-- if so, share the code.
-
-	radio_group: LINKED_LIST [EV_TOOL_BAR_RADIO_BUTTON_IMP]
-			-- Radio items in `Current'.
-			-- `Current' shares reference with merged containers.
-
-	is_merged (other: EV_TOOL_BAR): BOOLEAN
-			-- Is `Current' merged with `other'?
-		require
-			other_not_void: other /= Void
-		local
-			t_imp: detachable EV_TOOL_BAR_IMP
-		do
-			t_imp ?= other.implementation
-			check t_imp /= Void end
-			Result := t_imp.radio_group = radio_group
-		end
-
-	set_radio_group (rg: like radio_group)
-			-- Set `radio_group' by reference. (Merge)
-		do
-			radio_group := rg
-		end
-
-	add_radio_button (w: EV_ITEM)
-			-- Called when `w' has been added to `Current'.
-		require
-			w_not_void: w /= Void
-			w_correct_type: (({EV_TOOL_BAR_ITEM}) #? w) /= Void
-		local
-			r: detachable EV_TOOL_BAR_RADIO_BUTTON_IMP
-		do
-			r ?= w.implementation
-			if r /= Void then
-				if not radio_group.is_empty then
-					r.disable_select
-				end
-				r.set_radio_group (radio_group)
-			end
-		end
-
-	add_button (w: EV_ITEM)
-			-- Called when `w' has been added to `Current'.
-		require
-			w_not_void: w /= Void
-			w_correct_type: (({EV_TOOL_BAR_ITEM}) #? w) /= Void
-		local
-			button_imp: detachable EV_TOOL_BAR_BUTTON_IMP -- was: EV_TOOL_BAR_ITEM_IMP
-		do
-			button_imp ?= w.implementation
-			check
-				implementation_not_void: button_imp /= Void
-			end
-			if not button_imp.is_sensitive then
-				--disable_button (button_imp.id)
-			end
-		end
-
-	remove_radio_button (w: EV_ITEM)
-			-- Called when `w' has been removed from `Current'.
-		require
-			w_not_void: w /= Void
-			w_correct_type: (({EV_TOOL_BAR_ITEM}) #? w) /= Void
-		local
-			r: detachable EV_TOOL_BAR_RADIO_BUTTON_IMP
-		do
-			r ?= w.implementation
-			if r /= Void then
-				r.remove_from_radio_group
-				r.enable_select
-			end
-		end
-
 feature {EV_ANY_I} -- Interface
 
+	interface: EV_TOOL_BAR;
+
 	box: NS_BOX
+		do
+			Result ?= cocoa_item
+		end
 
-feature {EV_ANY, EV_ANY_I} -- Interface
-
-	interface: detachable EV_TOOL_BAR note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_TOOL_BAR_IMP
+

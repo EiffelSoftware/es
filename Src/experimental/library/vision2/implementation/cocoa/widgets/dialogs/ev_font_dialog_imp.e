@@ -1,6 +1,8 @@
 note
 	description: "EiffelVision font selection dialog, implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	description: "Objects that ..."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,8 +18,9 @@ inherit
 	EV_STANDARD_DIALOG_IMP
 		redefine
 			interface,
-			make,
-			show_modal_to_window
+			initialize,
+			show_modal_to_window,
+			window
 		end
 
 create
@@ -26,12 +29,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Connect `interface' and initialize `c_object'.
+		do
+			base_make (an_interface)
+			create font_panel.shared_font_panel
+		end
+
+	initialize
 			-- Initialize the dialog.
 		do
-			Precursor {EV_STANDARD_DIALOG_IMP}
-			create font_panel.shared_font_panel
---			window := font_panel
 		end
 
 feature -- Access
@@ -63,8 +70,16 @@ feature {NONE} -- Implementation
 
 	font_panel: NS_FONT_PANEL
 
+	window: NS_WINDOW
+		do
+			Result := font_panel
+		end
+
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_FONT_DIALOG;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_FONT_DIALOG_IMP
+

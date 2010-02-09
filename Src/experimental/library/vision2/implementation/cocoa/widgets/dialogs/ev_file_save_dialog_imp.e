@@ -1,6 +1,7 @@
 note
 	description: "EiffelVision file save dialog."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,7 +19,8 @@ inherit
 			internal_accept
 		redefine
 			interface,
-			make
+			initialize,
+			window
 		end
 
 create
@@ -26,15 +28,25 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create a window with a parent.
 		do
+			base_make (an_interface)
 			create save_panel.make
-			window_item := save_panel.item
+		end
+
+	initialize
+		do
 			Precursor {EV_FILE_DIALOG_IMP}
 			set_title ("Save As")
 		end
 
 feature {NONE} -- Implementation
+
+	window: NS_WINDOW
+		do
+			Result ?= save_panel
+		end
 
 	interface: EV_FILE_SAVE_DIALOG
 
@@ -43,4 +55,7 @@ feature {NONE} -- Implementation
 		do
 		end
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_FILE_SAVE_DIALOG_IMP
+

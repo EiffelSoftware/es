@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision tree item. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -21,8 +22,11 @@ inherit
 create
 	make
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_TREE_ITEM note option: stable attribute end;
+	interface: EV_TREE_ITEM;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_TREE_ITEM_IMP
+

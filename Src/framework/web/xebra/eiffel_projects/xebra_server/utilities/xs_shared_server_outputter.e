@@ -1,13 +1,11 @@
 note
-	description: "[
-			Provides shared access to a XS_SERVER_OUTPUTTER
-	]"
+	description: "Summary description for {XS_SHARED_SERVER_OUTPUTTER}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	XS_SHARED_SERVER_OUTPUTTER
-
 
 feature {NONE} -- Access
 

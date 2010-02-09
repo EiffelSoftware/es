@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision viewport. Cocoa implementation."
-	author:	"Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -32,15 +33,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Initialize.
 		do
+			base_make (an_interface)
 			create scroll_view.make
 			scroll_view.set_has_horizontal_scroller (False)
 			scroll_view.set_has_vertical_scroller (False)
 			scroll_view.set_draws_background (False)
-			cocoa_view := scroll_view
-			initialize
-			set_is_initialized (True)
+
+			cocoa_item := scroll_view
 		end
 
 feature -- Access
@@ -61,18 +63,18 @@ feature -- Element change
 
 	replace (v: like item)
 			-- Replace `item' with `v'.
+		local
+			v_imp: like item_imp
 		do
-			if attached item_imp as l_item_imp then
-				l_item_imp.set_parent_imp (Void)
-				notify_change (Nc_minsize, Current)
+			if item_imp /= void then
+				on_removed_item (item_imp)
 			end
-			if attached v and then attached {like item_imp} v.implementation as v_imp then
+			if v /= Void then
+				v_imp ?= v.implementation
 				v_imp.set_parent_imp (current)
-				item := v
-				scroll_view.set_document_view (v_imp.attached_view)
-				v_imp.ev_apply_new_size (0, 0, width, height, True)
-				v_imp.set_parent_imp (Current)
-				notify_change (Nc_minsize, Current)
+				scroll_view.set_document_view (v_imp.cocoa_view)
+				v_imp.ev_apply_new_size (0, 0, v_imp.width, v_imp.height, True)
+				on_new_item (v_imp)
 			end
 			item := v
 			ev_apply_new_size (x_position, y_position, width, height, False)
@@ -95,14 +97,8 @@ feature -- Element change
 	set_item_size (a_width, a_height: INTEGER)
 			-- Set `a_widget.width' to `a_width'.
 			-- Set `a_widget.height' to `a_height'.
-		local
-			l_item_imp: like item_imp
 		do
-			l_item_imp := item_imp
-			check
-				l_item_imp /= void
-			end
-			l_item_imp.parent_ask_resize (a_width, a_height)
+			item_imp.parent_ask_resize (a_width, a_height)
 		end
 
 feature -- Layout
@@ -118,29 +114,29 @@ feature -- Layout
 	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
 		do
 			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
-			if attached item_imp as l_item_imp then
-				scroll_view.set_document_view (l_item_imp.attached_view)
-
-				l_item_imp.ev_apply_new_size (0, 0, width, height, True)
+			if attached item_imp then
+				scroll_view.set_document_view (item_imp.cocoa_view)
+				item_imp.ev_apply_new_size (0, 0, item_imp.width, item_imp.height, True)
 			end
 --			if a_width > 0 then -- Hack because I want to get EV_GAUGE working. TODO How/where/when should the resize actions be called?
 --				on_size (a_width, a_height)
 --			end
 		end
 
---	on_size (a_width, a_height: INTEGER)
---		do
---			if resize_actions_internal /= Void then
---				resize_actions_internal.call ([screen_x, screen_y, a_width, a_height])
---			end
---		end
+	on_size (a_width, a_height: INTEGER)
+		do
+			if resize_actions_internal /= Void then
+				resize_actions_internal.call ([screen_x, screen_y, a_width, a_height])
+			end
+		end
 
 feature {EV_ANY_I} -- Implementation
 
+	interface: EV_VIEWPORT;
+
 	scroll_view: NS_SCROLL_VIEW;
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_VIEWPORT note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_VIEWPORT_IMP
+

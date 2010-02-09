@@ -286,13 +286,11 @@ feature -- Access
 			Result := type_number_int
 		end
 
+feature {NONE} -- Implementation: Access
+
 	basic_type: BASIC_A
 			-- If `type' is originally a basic type, we keep the BASIC_A instance
 			-- as it is used for certain queries (e.g. tuple_code).
-		attribute
-		ensure
-			is_basic_implies_attached: is_basic implies basic_type /= Void
-		end
 
 feature -- Status report
 
@@ -1324,12 +1322,6 @@ feature -- Skeleton generation
 				buffer.put_string (" [] =%N")
 				skeleton.generate_type_array
 
-					-- Generate attribute flags sequence
-				buffer.put_string ("uint16 attr_flags")
-				buffer.put_integer (type_id)
-				buffer.put_string (" [] =%N")
-				skeleton.generate_flags_array
-
 					-- Generate expanded generic type arrays
 				Byte_context.init (Current)
 				skeleton.generate_generic_type_arrays
@@ -1380,10 +1372,6 @@ feature -- Skeleton generation
 			buffer.put_integer (skeleton.count)
 			buffer.put_character (',')
 			buffer.put_new_line
-			buffer.put_string ("(long) ")
-			buffer.put_integer (skeleton.persistent_count)
-			buffer.put_character (',')
-			buffer.put_new_line
 			buffer.put_string_literal (a_class.name)
 			buffer.put_character (',')
 			buffer.put_new_line
@@ -1400,16 +1388,9 @@ feature -- Skeleton generation
 				buffer.put_integer (type_id)
 				buffer.put_character (',')
 				buffer.put_new_line
-				buffer.put_string ("attr_flags")
-				buffer.put_integer (type_id)
-				buffer.put_character (',')
-				buffer.put_new_line
 				buffer.put_string ("gtypes")
 				buffer.put_integer (type_id)
 			else
-				buffer.put_string ("NULL")
-				buffer.put_character (',')
-				buffer.put_new_line
 				buffer.put_string ("NULL")
 				buffer.put_character (',')
 				buffer.put_new_line
@@ -1767,12 +1748,10 @@ feature -- Byte code generation
 
 				-- 3. number of attributes
 			ba.append_integer (skeleton.count)
-			ba.append_integer (skeleton.persistent_count)
 
 				-- 4. attribute names, meta-types and full types
 			skeleton.make_names_byte_code (ba)
 			skeleton.make_type_byte_code (ba)
-			skeleton.make_flags_byte_code (ba)
 			skeleton.make_gen_type_byte_code (ba)
 
 				-- 5. Store skeleton flags
@@ -1987,7 +1966,7 @@ invariant
 	valid_implementation_id: System.il_generation implies implementation_id > 0
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -2000,22 +1979,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful, but
+			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the GNU General Public License for more details.
+			See the	GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
 
 end

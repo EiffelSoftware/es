@@ -13,18 +13,23 @@ inherit
 			make
 		end
 
+	OBJECTIVE_C
+
 create
 	make
-create {NS_OBJECT}
-	share_from_pointer
 
 feature {NONE} -- Creation
 
 	make
 			-- Create a new NSButton
 		do
-			make_from_pointer ({NS_BUTTON_API}.new)
-			insert_in_table
+			make_shared ({NS_BUTTON_API}.new ($Current, $mouse_down_y))
+		end
+
+	mouse_down_y (a_event: POINTER)
+		do
+			--io.put_string ("Mouse down on button " + title.to_string + "%N")
+			mouse_down (create {NS_EVENT}.make_shared (a_event))
 		end
 
 feature -- Access
@@ -67,7 +72,7 @@ feature -- Access
 			-- This title is always displayed if the button doesn't use its alternate contents for highlighting or displaying the alternate state.
 			-- By default, a button's title is "Button."
 		do
-			create Result.make_from_pointer ({NS_BUTTON_API}.title (item))
+			create Result.make_shared ({NS_BUTTON_API}.title (item))
 		ensure
 			result_not_void: Result /= void
 		end
@@ -81,8 +86,8 @@ feature -- Access
 			l_image: POINTER
 		do
 			l_image := {NS_BUTTON_API}.image (item)
-			if l_image /= default_pointer then
-				create Result.make_from_pointer (l_image)
+			if l_image /= nil then
+				create Result.make_shared (l_image)
 			end
 		end
 
@@ -93,7 +98,7 @@ feature -- Access
 		do
 			{NS_BUTTON_API}.set_image (item, a_image.item)
 		ensure
-			--image_set: a_image = image -- not true for every button type it seems
+			image_set: a_image = image
 		end
 
 	set_bezel_style (a_style: INTEGER)
@@ -109,33 +114,6 @@ feature -- Access
 			bezel_style_set: -- TODO
 		end
 
-feature -- Managing the button state
-
-	state: INTEGER
-			-- Returns the receiver's state.
-			-- The button's state. A button can have two or three states. If it has two, this value is either NSOffState (the normal or unpressed state) or NSOnState (the alternate or pressed state). If it has three, this value can be NSOnState (the feature is in effect everywhere), NSOffState (the feature is in effect nowhere), or NSMixedState (the feature is in effect somewhere).
-			-- To check whether the button uses the mixed state, use the method allowsMixedState.
-		do
-			Result := {NS_BUTTON_API}.state (item)
-		end
-
-	set_state (a_state: INTEGER)
-			-- Sets the cell's state to the specified value. This can be NSOnState, NSOffState,NSMixedState. See the discussion for a more detailed explanation.
-			-- If necessary, this method also redraws the receiver.
-			-- The cell can have two or three states. If it has two, value can be NSOffState (the normal or unpressed state) and NSOnState (the alternate or pressed state).
-			-- If it has three, value can be NSOnState (the feature is in effect everywhere), NSOffState (the feature is in effect nowhere), or NSMixedState (the feature is in effect somewhere).
-			-- Note that if the cell has only two states and value is NSMixedState, this method sets the cell's state to NSOnState.
-			-- Although using the enumerated constants is preferred, value can also be an integer. If the cell has two states, 0 is treated as NSOffState, and a nonzero value is treated as NSOnState.
-			-- If the cell has three states, 0 is treated as NSOffState; a negative value, as NSMixedState; and a positive value, as NSOnState.
-			-- To check whether the button uses the mixed state, use the method allowsMixedState.
-		require
-			valid_state:
-		do
-			{NS_BUTTON_API}.set_state (item, a_state)
-		ensure
-			state_set: state = a_state
-		end
-
 feature -- Contract support
 
 	valid_button_type (a_integer: INTEGER): BOOLEAN
@@ -145,10 +123,7 @@ feature -- Contract support
 
 	valid_bezel_style (a_integer: INTEGER): BOOLEAN
 		do
-			Result := (<<rounded_bezel_style, rectangular_square_bezel_style, thick_square_bezel_style, thicker_square_bezel_style,
-				disclosure_bezel_style, shadowless_square_bezel_style, circular_bezel_style, textured_square_bezel_style,
-				help_button_bezel_style, small_square_bezel_style, textured_rounded_bezel_style, rounded_rect_bezel_style,
-				recessed_bezel_style, rounded_disclosure_bezel_style>>).has (a_integer)
+			Result := (<<rounded_bezel_style>>).has (a_integer)
 		end
 
 feature -- NSButtonType Constants
@@ -156,35 +131,35 @@ feature -- NSButtonType Constants
 --    NSMomentaryLightButton		= 0,	// was NSMomentaryPushButton
 
 	frozen push_on_push_off_button: INTEGER
-			--    NSPushOnPushOffButton
+			--    NSPushOnPushOffButton		= 1,
 		external
 			"C macro use <Cocoa/Cocoa.h>"
 		alias
-			"NSPushOnPushOffButton"
+			"NSPushOnPushOffButton;"
 		end
 
 	frozen toggle_button: INTEGER
-    		-- NSToggleButton
+    		-- NSToggleButton			= 2
 		external
 			"C macro use <Cocoa/Cocoa.h>"
 		alias
-			"NSToggleButton"
+			"NSToggleButton;"
 		end
 
 	frozen switch_button: INTEGER
-			-- NSSwitchButton
+			-- NSSwitchButton			= 3
 		external
 			"C macro use <Cocoa/Cocoa.h>"
 		alias
-			"NSSwitchButton"
+			"NSSwitchButton;"
 		end
 
 	frozen radio_button: INTEGER
-			-- NSRadioButton
+			-- NSRadioButton			= 4,
 		external
 			"C macro use <Cocoa/Cocoa.h>"
 		alias
-			"NSRadioButton"
+			"NSRadioButton;"
 		end
 --    NSMomentaryChangeButton		= 5,
 --    NSOnOffButton			= 6,
@@ -200,133 +175,25 @@ feature -- NSButtonType Constants
 feature -- NSBezelStyle Constants
 
 	frozen rounded_bezel_style: INTEGER
-			-- NSRoundedBezelStyle
-			-- A rounded rectangle button, designed for text.
+			-- NSRoundedBezelStyle          = 1,
 		external
 			"C macro use <Cocoa/Cocoa.h>"
 		alias
-			"NSRoundedBezelStyle"
+			"NSRoundedBezelStyle;"
 		end
 
-	frozen rectangular_square_bezel_style: INTEGER
-			-- NSRegularSquareBezelStyle
-			-- A rectangular button with a 2 point border, designed for icons.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSRegularSquareBezelStyle"
-		end
-
-	frozen thick_square_bezel_style: INTEGER
-			-- NSThickSquareBezelStyle
-			-- A rectangular button with a 3 point border, designed for icons.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSThickSquareBezelStyle"
-		end
-
-	frozen thicker_square_bezel_style: INTEGER
-			-- NSThickerSquareBezelStyle
-			-- A rectangular button with a 4 point border, designed for icons.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSThickerSquareBezelStyle"
-		end
-
-	frozen disclosure_bezel_style: INTEGER
-			-- NSDisclosureBezelStyle
-			-- A bezel style for use with a disclosure triangle.
-			-- To create the disclosure triangle, set the button bezel style to NSDisclosureBezelStyle and the button type to NSOnOffButton.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSDisclosureBezelStyle"
-		end
-
-	frozen shadowless_square_bezel_style: INTEGER
-			-- NSShadowlessSquareBezelStyle
-			-- Similar to NSRegularSquareBezelStyle, but has no shadow so you can abut the cells without overlapping shadows.
-			-- This style would be used in a tool palette, for example.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSShadowlessSquareBezelStyle"
-		end
-
-	frozen circular_bezel_style: INTEGER
-			-- NSCircularBezelStyle
-			-- A round button with room for a small icon or a single character.
-			-- This style has both regular and small variants, but the large variant is available only in gray at this time.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSCircularBezelStyle"
-		end
-
-	frozen textured_square_bezel_style: INTEGER
-			-- NSTexturedSquareBezelStyle
-			-- A bezel style appropriate for use with textured (metal) windows.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSTexturedSquareBezelStyle"
-		end
-
-	frozen help_button_bezel_style: INTEGER
-			-- NSHelpButtonBezelStyle
-			-- A round button with a question mark providing the standard help button look.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSHelpButtonBezelStyle"
-		end
-
-	frozen small_square_bezel_style: INTEGER
-			-- NSSmallSquareBezelStyle
-			-- A simple square bezel style. Buttons using this style can be scaled to any size.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSSmallSquareBezelStyle"
-		end
-
-	frozen textured_rounded_bezel_style: INTEGER
-			-- NSTexturedRoundedBezelStyle
-			-- A textured (metal) bezel style similar in appearance to the Finder's action (gear) button.
-			-- The height of this button is fixed.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSTexturedRoundedBezelStyle"
-		end
-
-	frozen rounded_rect_bezel_style: INTEGER
-			-- NSRoundRectBezelStyle
-			-- A bezel style that matches the search buttons in Finder and Mail.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSRoundRectBezelStyle"
-		end
-
-	frozen recessed_bezel_style: INTEGER
-			-- NSRecessedBezelStyle
-			-- A bezel style that matches the recessed buttons in Mail, Finder and Safari.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSRecessedBezelStyle"
-		end
-
-	frozen rounded_disclosure_bezel_style: INTEGER
-			-- NSRoundedDisclosureBezelStyle
-			-- A bezel style that matches the disclosure style used in the standard Save panel.
-		external
-			"C macro use <Cocoa/Cocoa.h>"
-		alias
-			"NSRoundedDisclosureBezelStyle"
-		end
+--    NSRegularSquareBezelStyle    = 2,
+--    NSThickSquareBezelStyle      = 3,
+--    NSThickerSquareBezelStyle    = 4,
+--    NSDisclosureBezelStyle       = 5,
+--    NSShadowlessSquareBezelStyle = 6,
+--    NSCircularBezelStyle         = 7,
+--    NSTexturedSquareBezelStyle   = 8,
+--    NSHelpButtonBezelStyle       = 9,
+--    NSSmallSquareBezelStyle       = 10,
+--    NSTexturedRoundedBezelStyle   = 11,
+--    NSRoundRectBezelStyle         = 12,
+--    NSRecessedBezelStyle          = 13,
+--    NSRoundedDisclosureBezelStyle = 14,
 
 end

@@ -1,7 +1,6 @@
 note
-	description: "[
-			Implementation of ERROR_PRINTER that uses a XS_SHARED_SERVER_OUTPUTTER to print.
-	]"
+	description: "Summary description for {XS_ERROR_PRINTER}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 

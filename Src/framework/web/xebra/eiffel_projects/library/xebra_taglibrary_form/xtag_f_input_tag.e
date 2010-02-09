@@ -14,8 +14,7 @@ inherit
 	XTAG_TAG_SERIALIZER
 		redefine
 			make_base,
-			generates_render,
-			generates_wrap
+			generates_render
 		end
 
 feature -- Initialization
@@ -23,9 +22,9 @@ feature -- Initialization
 	make_base
 		do
 			Precursor
-			create {XTAG_TAG_VALUE_ARGUMENT}value.make_default
-			create {XTAG_TAG_VALUE_ARGUMENT}name.make_default
-			create {XTAG_TAG_VALUE_ARGUMENT}text.make_default
+			create value.make ("")
+			create name.make ("")
+			create text.make ("")
 		ensure then
 			value_attached: attached value
 			name_attached: attached name
@@ -119,6 +118,5 @@ feature -- Implementation
 		end
 
 	generates_render: BOOLEAN = True
-	generates_wrap: BOOLEAN = True
 
 end

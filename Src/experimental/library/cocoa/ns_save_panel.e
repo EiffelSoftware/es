@@ -20,29 +20,28 @@ feature {NONE} -- Creation
 
 	make
 		do
-			make_from_pointer (save_panel_save_panel)
+			make_shared (save_panel_save_panel)
 		end
 
 feature -- Access
-
 --	url : NS_URL
 --		do
 --			Result := save_panel_url(cocoa_object)
 --		end
 
-	filename: NS_STRING
+	filename : NS_STRING
 		do
-			create Result.share_from_pointer (save_panel_filename (item))
+			create Result.make_shared (save_panel_filename (item))
 		end
 
-	directory: NS_STRING
+	directory : NS_STRING
 		do
-			create Result.share_from_pointer (save_panel_directory (item))
+			create Result.make_shared (save_panel_directory (item))
 		end
 
 	set_directory (a_path: NS_STRING)
 		do
-			save_panel_set_directory (item, a_path.item)
+			save_panel_set_directory(item, a_path.item)
 		end
 
 	required_file_type : NS_STRING
@@ -62,7 +61,7 @@ feature -- Access
 
 	set_allowed_file_types (a_types: NS_ARRAY [NS_STRING])
 		do
-			save_panel_set_allowed_file_types (item, a_types.object_item)
+			save_panel_set_allowed_file_types (item, a_types.item)
 		end
 
 	allows_other_file_types : BOOLEAN

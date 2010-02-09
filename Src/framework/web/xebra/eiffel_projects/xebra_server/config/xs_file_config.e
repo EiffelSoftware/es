@@ -1,7 +1,6 @@
 note
 	description: "[
-		Contains all configuartion info for the xebra server including the list of webapps that 
-		are read from a config file.
+		Contains all configuartion info for the xebra server including the list of webapps
 	]"
 	legal: "See notice at end of class."
 	status: "Prototyping phase"

@@ -1,6 +1,8 @@
 note
-	description: "Eiffel Vision frame. Cocoa implementation"
-	author: "Daniel Furrer"
+	description:
+		"Eiffel Vision frame. Cocoa implementation"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,9 +19,11 @@ inherit
 		end
 
 	EV_CELL_IMP
+		undefine
+			make
 		redefine
 			interface,
-			make,
+			initialize,
 			compute_minimum_height,
 			compute_minimum_width,
 			compute_minimum_size
@@ -28,13 +32,13 @@ inherit
 	EV_FONTABLE_IMP
 		redefine
 			interface,
-			make
+			initialize
 		end
 
 	EV_TEXTABLE_IMP
 		redefine
 			interface,
-			make,
+			initialize,
 			set_text
 		end
 
@@ -43,41 +47,39 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create frame.
+		do
+			base_make (an_interface)
+			create {NS_BOX}cocoa_item.make
+			box.set_title_position ({NS_BOX}.no_title)
+		end
+
+	initialize
 			-- Initialize `Current'.
 		local
 			a_font: EV_FONT
-			l_box: NS_BOX
 		do
-			create l_box.make
-			l_box.set_title_position ({NS_BOX}.no_title)
-			cocoa_view := l_box
-
 			align_text_left
 			create a_font.default_create
 			a_font.set_height (10)
 			set_font (a_font)
-			set_is_initialized (True)
-			style := {EV_FRAME_CONSTANTS}.Ev_frame_etched_in
-			initialize
+			Precursor {EV_CELL_IMP}
 		end
 
 feature -- Access
 
 	style: INTEGER
 			-- Visual appearance. See: EV_FRAME_CONSTANTS.
+		do
+			Result := {EV_FRAME_CONSTANTS}.Ev_frame_etched_in
+		end
 
 feature -- Element change
 
 	set_style (a_style: INTEGER)
 			-- Assign `a_style' to `style'.
 		do
-			if a_style = {EV_FRAME_CONSTANTS}.Ev_frame_lowered or a_style = {EV_FRAME_CONSTANTS}.Ev_frame_etched_in then
-				box.set_border_type ({NS_BOX}.bezel_border)
-			else
-				box.set_border_type ({NS_BOX}.groove_border)
-			end
-			style := a_style
 		end
 
 	set_text (a_text: STRING_GENERAL)
@@ -99,8 +101,8 @@ feature -- Layout
 		local
 			mw: INTEGER
 		do
-			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
-				mw := l_item_imp.minimum_width
+			if item_imp /= Void and item_imp.is_show_requested then
+				mw := item_imp.minimum_width
 			end
 			mw := mw + client_x --+ border_width
 			--mw := mw.max (text_width + 2 * Text_padding)			
@@ -112,8 +114,8 @@ feature -- Layout
 		local
 			mh: INTEGER
 		do
-			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
-				mh := l_item_imp.minimum_height
+			if item_imp /= Void and item_imp.is_show_requested then
+				mh := item_imp.minimum_height
 			end
 			mh := mh + client_y
 			internal_set_minimum_height (mh)
@@ -125,9 +127,9 @@ feature -- Layout
 		local
 			mw, mh: INTEGER
 		do
-			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
-				mw := l_item_imp.minimum_width
-				mh := l_item_imp.minimum_height
+			if item_imp /= Void and item_imp.is_show_requested then
+				mw := item_imp.minimum_width
+				mh := item_imp.minimum_height
 			end
 			mh := mh + client_y
 			mw := mw + client_x --+ border_width
@@ -146,19 +148,13 @@ feature -- Layout
 			end
 		end
 
-	box: NS_BOX
-		local
-			l_result: detachable NS_BOX
-		do
-			l_result ?= cocoa_view
-			check l_result /= void end
-			Result := l_result
-		end
+feature {EV_ANY_I} -- Implementation
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_FRAME note option: stable attribute end;
+	interface: EV_FRAME;
 			-- Provides a common user interface to possibly platform
 			-- dependent functionality implemented by `Current'
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_FRAME_IMP
+

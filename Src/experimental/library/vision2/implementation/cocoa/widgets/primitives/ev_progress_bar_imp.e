@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision Progress bar. Cocoa implementation."
-	author:	"Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -23,15 +24,14 @@ inherit
 
 feature {NONE} -- Implementation
 
-	make
+	make (an_interface: like interface)
+			-- Create the progress bar.
 		do
+			base_make (an_interface)
 			create progress_indicator.make
-			Precursor {EV_GAUGE_IMP}
-			disable_tabable_from
-			enable_segmentation
+			--progress_indicator.start_animation
 			progress_indicator.set_indeterminate (False)
-			cocoa_view := progress_indicator
-			set_is_initialized (True)
+			cocoa_item := progress_indicator
 		end
 
 	set_value (a_value: INTEGER)
@@ -52,29 +52,28 @@ feature -- Status report
 
 	is_segmented: BOOLEAN
 			-- Is display animated ?
+		do
+		end
 
 feature -- Status setting
 
 	enable_segmentation
 			-- Display bar is animated
 		do
-			progress_indicator.start_animation
-			is_segmented := True
 		end
 
 	disable_segmentation
 			-- Display bar is not animated
 		do
-			progress_indicator.stop_animation
-			is_segmented := False
 		end
 
 feature {EV_ANY_I} -- Implementation
 
 	progress_indicator: NS_PROGRESS_INDICATOR
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+	interface: EV_PROGRESS_BAR;
 
-	interface: detachable EV_PROGRESS_BAR note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_PROGRESS_BAR_IMP
+

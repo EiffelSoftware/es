@@ -24,7 +24,7 @@ feature -- Initialization
 			-- Call this constructor, if you inherit
 		do
 			create {ARRAYED_LIST [XTAG_TAG_SERIALIZER]} children.make (3)
-			create {XTAG_TAG_VALUE_ARGUMENT}render.make ("")
+			create render.make ("")
 			current_controller_id := ""
 			tag_id := ""
 		ensure
@@ -93,53 +93,17 @@ feature -- Status setting
 
 feature -- Basic implementation
 
-	put_value_attribute (id: STRING; a_attribute: STRING)
-			-- Adds a value attribute to the tag
+	put_attribute (id: STRING; a_attribute: STRING)
+			-- Adds an attribute to the tag
 		require
 			id_attached: attached id
 			a_attribute_attached: attached a_attribute
 			id_is_not_empty: not id.is_empty
-		local
-			l_argument: XTAG_TAG_VALUE_ARGUMENT
 		do
-			create l_argument.make (a_attribute)
 			if id.is_equal (Render_attribute_name) then
-				render := l_argument
+				create render.make (a_attribute)
 			else
-				internal_put_attribute (id, l_argument)
-			end
-		end
-
-	put_dynamic_attribute (id: STRING; a_attribute: STRING)
-				-- Adds an attribute to the tag
-		require
-			id_attached: attached id
-			a_attribute_attached: attached a_attribute
-			id_is_not_empty: not id.is_empty
-		local
-			l_argument: XTAG_TAG_DYNAMIC_ARGUMENT
-		do
-			create l_argument.make (a_attribute)
-			if id.is_equal (Render_attribute_name) then
-				render := l_argument
-			else
-				internal_put_attribute (id, l_argument)
-			end
-		end
-
-	put_variable_attribute (id: STRING; a_attribute: STRING)
-		require
-			id_attached: attached id
-			a_attribute_attached: attached a_attribute
-			id_is_not_empty: not id.is_empty
-		local
-			l_argument: XTAG_TAG_VARIABLE_ARGUMENT
-		do
-			create l_argument.make (a_attribute)
-			if id.is_equal (Render_attribute_name) then
-				render := l_argument
-			else
-				internal_put_attribute (id, l_argument)
+				internal_put_attribute (id, create {XTAG_TAG_ARGUMENT}.make (a_attribute))
 			end
 		end
 
@@ -162,51 +126,37 @@ feature -- Basic implementation
 			if generates_make then
 				append_debug_info (a_servlet_class.make_feature)
 			end
+			if generates_booleans then
+				append_debug_info (a_servlet_class.set_all_booleans)
+			end
 			if generates_clean_up then
 				append_debug_info (a_servlet_class.clean_up_after_render)
 			end
 			if generates_render then
 				append_debug_info (a_servlet_class.render_html_page)
 			end
-			if generates_handle_form then
-				append_debug_info (a_servlet_class.handle_form_internal)
-			end
-			if generates_wrap then
-				append_debug_info (a_servlet_class.fill_bean)
-			end
 
 				-- If the render option is set, overwrite definition of tag
 			if not render.value (current_controller_id).is_empty then
+				append_debug_info (a_servlet_class.make_feature)
+				append_debug_info (a_servlet_class.set_all_booleans)
+				append_debug_info (a_servlet_class.clean_up_after_render)
+				append_debug_info (a_servlet_class.render_html_page)
+
 				l_render_condition_id := a_servlet_class.get_unique_identifier
 				a_servlet_class.set_all_booleans.append_expression ("render_conditions [%"" + l_render_condition_id + "%"] := " + current_controller_id + "." + render.plain_value (current_controller_id))
 
-				if generates_clean_up then
-					a_servlet_class.clean_up_after_render.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
-				end
-				if generates_render then
+				a_servlet_class.clean_up_after_render.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
 				a_servlet_class.render_html_page.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
-				end
-				if generates_handle_form then
-					a_servlet_class.handle_form_internal.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
-				end
-				if generates_wrap then
-					a_servlet_class.fill_bean.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
-				end
+				a_servlet_class.handle_form_internal.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
+				a_servlet_class.fill_bean.append_expression ("if attached render_conditions [%"" + l_render_condition_id + "%"] and then render_conditions [%"" + l_render_condition_id + "%"] then")
 
 				internal_generate (a_servlet_class, a_variable_table)
 
-				if generates_clean_up then
-					a_servlet_class.clean_up_after_render.append_expression ("end")
-				end
-				if generates_render then
-					a_servlet_class.render_html_page.append_expression ("end")
-				end
-				if generates_handle_form then
-					a_servlet_class.handle_form_internal.append_expression ("end")
-				end
-				if generates_wrap then
-					a_servlet_class.fill_bean.append_expression ("end")
-				end
+				a_servlet_class.clean_up_after_render.append_expression ("end")
+				a_servlet_class.render_html_page.append_expression ("end")
+				a_servlet_class.handle_form_internal.append_expression ("end")
+				a_servlet_class.fill_bean.append_expression ("end")
 			else
 				internal_generate (a_servlet_class, a_variable_table)
 			end
@@ -267,12 +217,6 @@ feature -- Debug configuration
 
 	generates_make: BOOLEAN
 			-- Does the tag write statements in the constructor feature?
-		do
-			Result := False
-		end
-
-	generates_handle_form: BOOLEAN
-				-- Does the tag write statements in the handle form feature?
 		do
 			Result := False
 		end

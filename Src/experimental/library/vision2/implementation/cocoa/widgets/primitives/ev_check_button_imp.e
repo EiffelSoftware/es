@@ -20,6 +20,7 @@ inherit
 		redefine
 			make,
 			interface,
+			initialize,
 			accomodate_text
 		end
 
@@ -28,14 +29,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make
-			-- Initialize 'Current'
+	make (an_interface: like interface)
+			-- Create a Cocoa check button.
 		do
-			Precursor {EV_TOGGLE_BUTTON_IMP}
+			base_make (an_interface)
+			cocoa_make
+			cocoa_item := current
 			set_bezel_style ({NS_BUTTON}.rounded_bezel_style)
 			set_button_type ({NS_BUTTON}.switch_button)
 
 			align_text_left
+		end
+
+	initialize
+			-- Initialize 'Current'
+		do
+			Precursor {EV_TOGGLE_BUTTON_IMP}
 		end
 
 	accomodate_text (a_text: STRING_GENERAL)
@@ -44,14 +53,14 @@ feature {NONE} -- Initialization
 			t: TUPLE [width: INTEGER; height: INTEGER]
 			a_width, a_height: INTEGER
 		do
-			t := font.string_size (a_text)
+			t := internal_font.string_size (a_text)
 			a_width := t.width
 			a_height := t.height
 			internal_set_minimum_size (a_width.abs + 25, a_height.abs + 5)
 		end
 
-feature {EV_ANY, EV_ANY_I}
+feature {EV_ANY_I}
 
-	interface: detachable EV_CHECK_BUTTON note option: stable attribute end;
+	interface: EV_CHECK_BUTTON;
 
 end -- class EV_CHECK_BUTTON_IMP

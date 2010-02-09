@@ -1,6 +1,7 @@
 note
 	description: "Objects that represent a tab associated with a notebook item."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -38,11 +39,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create `Current' with interface `an_interface'.
+		do
+			base_make (an_interface)
+			create {NS_TAB_VIEW_ITEM}cocoa_item.make
+		end
+
+	initialize
 			-- Initialize `Current'.
 		do
-			create tab_view_item.make
-			initialize_textable
 			set_is_initialized (True)
 		end
 
@@ -50,17 +56,17 @@ feature {NONE} -- Initialization
 			-- Image displayed on `Current' or Void if none.
 		do
 			-- FIXME Currently not implemented on Mac OS X
-			create Result
 		end
 
 feature -- Element change
 
 	set_widgets (a_notebook: EV_NOTEBOOK; a_widget: EV_WIDGET)
+		local
+			v_imp: EV_WIDGET_IMP
 		do
 			Precursor {EV_NOTEBOOK_TAB_I} (a_notebook, a_widget)
-			if attached {EV_WIDGET_IMP} a_widget.implementation as v_imp then
-				tab_view_item.set_view (v_imp.attached_view)
-			end
+			v_imp ?= a_widget.implementation
+			tab_view_item.set_view (v_imp.cocoa_view)
 		end
 
 	set_text (a_text: STRING_GENERAL)
@@ -84,23 +90,25 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	notebook_imp: detachable EV_NOTEBOOK_IMP
+	notebook_imp: EV_NOTEBOOK_IMP
 			-- Access to implementation of `notebook'.
 			-- Note that `Result' may be `Void' if `notebook' is.
 		do
-			if attached notebook as l_notebook then
-				Result ?= l_notebook.implementation
-			end
+			Result ?= notebook.implementation
 		ensure
 			not_void_if_notebook_not_void: notebook /= Void implies result /= Void
 		end
 
 feature {EV_ANY_I} -- Implementation
 
+	interface: EV_NOTEBOOK_TAB;
+
 	tab_view_item: NS_TAB_VIEW_ITEM
+		do
+			Result ?= cocoa_item
+		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_NOTEBOOK_TAB note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_NOTEBOOK_TAB_IMP
+

@@ -1,6 +1,8 @@
 note
-	description: "Action sequences for EV_WIDGET_IMP."
-	author: "Daniel Furrer"
+	description:
+		"Action sequences for EV_WIDGET_IMP."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "event, action, sequence"
 	date: "Generated!"
 	revision: "Generated!"
@@ -101,10 +103,12 @@ feature -- Event handling
 			create Result
 		end
 
-	create_file_drop_actions: attached like file_drop_actions_internal
+	create_file_drop_actions: like file_drop_actions_internal
 			-- Create a file_drop action sequence.
 		do
 			create Result
 		end
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end

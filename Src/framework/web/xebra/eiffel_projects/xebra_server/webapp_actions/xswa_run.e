@@ -21,8 +21,8 @@ feature -- Access
 	run_process: detachable PROCESS
 		-- Used to run the webapp
 
---	webapp_debug_level: INTEGER = 10
---			 Sets the debug level when launching the webapp
+	webapp_debug_level: INTEGER = 10
+			-- Sets the debug level when launching the webapp
 
 	run_args: STRING
 			-- The arguments for running the webapp
@@ -42,8 +42,6 @@ feature -- Status report
 
 	is_necessary: BOOLEAN
 			-- <Precursor>
-			-- Necessary if:
-			--	- The action is not running
 		do
 			Result := not is_running
 		end
@@ -67,13 +65,13 @@ feature -- Status setting
 				p.terminate
 				p.wait_for_exit
 			end
-			set_running (False)
+			is_running := False
 		end
 
 
 feature {NONE} -- Implementation
 
-	internal_execute: XC_COMMAND_RESPONSE
+	internal_execute: XS_COMMANDS
 			-- <Precursor>
 		do
 			if  not is_running then
@@ -85,22 +83,10 @@ feature {NONE} -- Implementation
 												agent run_process_exited,
 												agent run_output_handler,
 												agent run_output_handler)
-					set_running (True)
+					is_running := True
 				end
 			end
-			Result := (create {XER_APP_STARTING}.make (webapp.app_config.name.out)).render_to_command_response
-		end
-
-feature {NONE} -- Internal Status Setting
-
-	set_running (a_running: BOOLEAN)
-			-- Sets is_running
-		do
-			is_running := a_running
-			webapp.is_running := a_running
-		ensure
-			set: equal (is_running, a_running)
-			set: equal (is_running, webapp.is_running)
+			Result := create {XS_COMMANDS}.make_with_response((create {XER_APP_STARTING}.make (webapp.app_config.name.out)).render_to_response)
 		end
 
 feature -- Agents
@@ -110,7 +96,7 @@ feature -- Agents
 			-- Sets is_running := False
 		do
 --			config_outputter
-			set_running (False)
+			is_running := False
 			o.dprint ("Run process for " + webapp.app_config.name.out + " has exited.", 3)
 		end
 

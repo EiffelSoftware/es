@@ -85,7 +85,7 @@
 			</cluster>
 		</cluster>
 	</target>
-	<target name="i18n_dotnet" extends="i18n">
+	<target name="vision2_dotnet" extends="vision2">
 		<setting name="msil_generation" value="true"/>
 	</target>
 </system>

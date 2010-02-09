@@ -37,8 +37,6 @@ feature -- Initialization
 			-- Creates an empty template
 		do
 			controller_class := ""
-			create root_tag.make_empty
-			template_name := ""
 		end
 
 feature {XP_TEMPLATE} -- Access
@@ -48,39 +46,17 @@ feature {XP_TEMPLATE} -- Access
 
 feature -- Access
 
-	template_name: STRING assign set_name
+	template_name: STRING
 			-- The name of the servlet
 
-	controller_class: STRING assign set_controller_class
+	controller_class: STRING
 			-- The controller corresponding to this template
 
-	set_controller_class (a_class_name: STRING)
-			-- Sets the controller class name.
-		do
-			controller_class := a_class_name
-		end
-
-	is_template: BOOLEAN assign set_is_template
+	is_template: BOOLEAN
 			-- Can the XP_TEMPLATE NOT be renderered on its own?
-
-	set_is_template (a_is_template: BOOLEAN)
-			-- Sets the is_template variable
-		do
-			is_template := a_is_template
-		end
 
 	date: INTEGER assign set_date
 			-- The date of the corresponding .xeb-file
-
-	put_root_tag (a_root_tag: XP_TAG_ELEMENT)
-			-- Sets the root tag
-		require
-			a_root_tag_attached: attached a_root_tag
-		do
-			root_tag := a_root_tag
-		ensure
-			root_tag_set: root_tag = a_root_tag
-		end
 
 feature -- Status setting
 
@@ -92,16 +68,6 @@ feature -- Status setting
 			date := a_date
 		ensure
 			date_set: date = a_date
-		end
-
-	set_name (a_name: STRING)
-			-- Sets the name.
-		require
-			a_name_attached: attached a_name
-		do
-			template_name := a_name
-		ensure
-			name_set: template_name = a_name
 		end
 
 feature -- Basic functionality

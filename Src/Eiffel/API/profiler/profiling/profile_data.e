@@ -11,8 +11,10 @@ deferred class PROFILE_DATA
 
 inherit
 	ANY
+		undefine
+			copy
 		redefine
-			out, is_equal, copy
+			out, is_equal
 		end;
 
 feature -- Creation feature
@@ -60,12 +62,9 @@ feature -- Compare
 feature -- copy features
 
 	copy (other: like Current)
-			-- <Precursor>
-		do
-			if other /= Current then
-				standard_copy (other)
-				int_function := other.int_function.twin
-			end
+			-- Reinitialize by copying the attributes of `other'.
+			-- (This is also used by `clone'.)
+		deferred
 		end
 
 feature -- Status report

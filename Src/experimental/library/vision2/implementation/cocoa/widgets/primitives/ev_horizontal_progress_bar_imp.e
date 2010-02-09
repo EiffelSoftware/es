@@ -1,6 +1,7 @@
 note
 	description: "EiffelV ision horizontal progress bar. Cocoa implementation."
-	author:	"Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -54,8 +55,11 @@ feature {NONE} -- Implementation
 		end
 
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_HORIZONTAL_PROGRESS_BAR note option: stable attribute end;
+	interface: EV_HORIZONTAL_PROGRESS_BAR;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_HORIZONTAL_PROGRESS_BAR_IMP
+

@@ -20,7 +20,7 @@ feature {NONE} -- Creation
 
 	make
 		do
-			make_from_pointer (stepper_new)
+			make_shared (stepper_new)
 		end
 
 feature -- Access

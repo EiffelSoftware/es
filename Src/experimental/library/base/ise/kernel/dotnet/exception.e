@@ -14,8 +14,7 @@ class
 inherit
 	APPLICATION_EXCEPTION
 		rename
-			message as dotnet_message,
-			make as dotnet_make
+			message as dotnet_message
 		redefine
 			dotnet_message, out
 		end

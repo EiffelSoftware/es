@@ -11,9 +11,9 @@ class
 	XWA_SERVER_CONTROL
 
 inherit
-	XU_SHARED_OUTPUTTER
+	XSC_SERVER_INTERFACE
 
- create
+create
 	make
 
 feature {NONE} -- Initialization
@@ -21,54 +21,76 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
+			create commands.make
+		ensure
+			commands_attached: commands /= Void
 		end
 
-feature {NONE} -- Constants
-
-	default_cmd_server_port: INTEGER = 55001
-
-	default_cmd_server_host: STRING = "localhost" -- FIXME: read this from  config file
-
-
 feature -- Access
+
+	commands: XS_COMMANDS
 
 feature -- Status report
 
 feature -- Status setting
 
-feature -- Operations
-
-	send (a_command: XC_SERVER_COMMAND): XC_COMMAND_RESPONSE
-			-- Sends a command to the server and waits for the response
+	set_commands (a_commands: like commands)
+			-- Sets commands.
 		require
-			a_command_attached: a_command /= Void
-		local
-			l_socket: NETWORK_STREAM_SOCKET
+			a_commands_attached: a_commands /= Void
 		do
-			Result := create {XCCR_UNKNOWN_ERROR}.make
-
-			create l_socket.make_client_by_port (default_cmd_server_port, default_cmd_server_host)
-			o.dprint ("Connecting...", 3)
-			l_socket.connect
-            if  l_socket.is_connected then
-            	o.dprint("Sending command...", 3)
-            	l_socket.put_natural (0)
-		        l_socket.independent_store (a_command)
-	            o.dprint ("Waiting for response", 2)
-	            l_socket.read_natural
-				if attached {XC_COMMAND_RESPONSE} l_socket.retrieved as l_response then
-					o.dprint ("Response retrieved", 2)
-	            	Result := l_response
-	            else
-	            	Result := create {XCCR_CANNOT_SEND}.make
-	            end
-	        else
-	        	Result := create {XCCR_CANNOT_SEND}.make
-	        end
+			commands  := a_commands
 		ensure
-			result_attached: Result /= Void
+			commands_set: commands  = a_commands
+		end
+
+feature -- Inherited from XSC_SERVER_INTERFACE
+
+	shutdown_webapps
+			-- <Precursor>
+
+		do
+
+		end
+
+	shutdown_http_server
+			-- <Precursor>
+		do
+
 		end
 
 
+	launch_http_server
+			-- <Precursor>
+		do
+
+		end
+
+
+	display_response
+			-- <Precursor>
+		do
+		end
+
+	load_config
+			-- <Precursor>
+		do
+
+		end
+
+	stop_server
+			-- <Precursor>
+		do
+			commands.list.force (create {XSC_STOP_SERVER}.make)
+		end
+
+	handle_errors
+			-- <Precursor>
+		do
+		end
+
+
+invariant
+	commands_attached: commands /= Void
 end
 

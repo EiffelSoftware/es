@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision scrollbar. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,12 +20,12 @@ inherit
 			set_value
 		redefine
 			interface,
-			make
+			initialize
 		end
 
 feature {NONE} -- Implementation
 
-	make
+	initialize
 		do
 			Precursor {EV_GAUGE_IMP}
 			disable_tabable_from
@@ -44,8 +45,9 @@ feature {EV_ANY_I} -- Implementation
 
 	scroller: NS_SCROLLER
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+	interface: EV_SCROLL_BAR;
 
-	interface: detachable EV_SCROLL_BAR note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_SCROLL_BAR_IMP
+

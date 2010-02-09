@@ -16,13 +16,13 @@ create
 
 feature {NONE} -- Initialization
 
-	old_make (an_interface: like interface)
+	make (an_interface: like interface)
 			-- Create paragraph format
 		do
-			assign_interface (an_interface)
+			base_make (an_interface)
 		end
 
-	make
+	initialize
 			-- Do nothing
 		do
 			set_is_initialized (True)

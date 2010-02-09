@@ -11,169 +11,205 @@ inherit
 	NS_OBJECT
 
 create {NS_OBJECT}
-	make_from_pointer
+	make_shared
 
 feature -- Initialization
 
 	init_text_cell (a_string: NS_STRING)
 		do
-			{NS_CELL_API}.init_text_cell (item, a_string.item)
+			cell_init_text_cell (item, a_string.item)
 		end
 
 	init_image_cell (a_image: NS_IMAGE)
 		do
-			{NS_CELL_API}.init_image_cell (item, a_image.item)
+			cell_init_image_cell (item, a_image.item)
 		end
-
-feature -- Managing Cell Values
 
 --	object_value: NS_OBJECT
 --		do
---			Result := {NS_CELL_API}.object_value (cocoa_object)
+--			Result := cell_object_value (cocoa_object)
 --		end
 
 --	set_object_value (a_obj: NS_COPYING)
 --		do
---			{NS_CELL_API}.set_object_value (cocoa_object, a_obj)
+--			cell_set_object_value (cocoa_object, a_obj)
 --		end
 
 	has_valid_object_value: BOOLEAN
 		do
-			Result := {NS_CELL_API}.has_valid_object_value (item)
+			Result := cell_has_valid_object_value (item)
 		end
 
 	string_value: NS_STRING
 		do
-			create Result.make_from_pointer ({NS_CELL_API}.string_value (item))
+			create Result.make_shared (cell_string_value (item))
 		end
 
 	set_string_value (a_string: NS_STRING)
 		do
-			{NS_CELL_API}.set_string_value (item, a_string.item)
+			cell_set_string_value (item, a_string.item)
 		end
+
+--	compare (a_other_cell: NS_OBJECT): NS_COMPARISON_RESULT
+--		do
+--			Result := cell_compare (cocoa_object, a_other_cell)
+--		end
 
 	int_value: INTEGER
 		do
-			Result := {NS_CELL_API}.int_value (item)
+			Result := cell_int_value (item)
 		end
 
 	set_int_value (a_an_int: INTEGER)
 		do
-			{NS_CELL_API}.set_int_value (item, a_an_int)
+			cell_set_int_value (item, a_an_int)
 		end
 
 	float_value: REAL
 		do
-			Result := {NS_CELL_API}.float_value (item)
+			Result := cell_float_value (item)
 		end
 
 	set_float_value (a_float: REAL)
 		do
-			{NS_CELL_API}.set_float_value (item, a_float)
+			cell_set_float_value (item, a_float)
 		end
 
 	double_value: REAL_64
 		do
-			Result := {NS_CELL_API}.double_value (item)
+			Result := cell_double_value (item)
 		end
 
 	set_double_value (a_double: REAL_64)
 		do
-			{NS_CELL_API}.set_double_value (item, a_double)
+			cell_set_double_value (item, a_double)
 		end
-
-feature -- Managing Cell Attributes
-
-feature -- Managing Display Attributes
-
-feature -- Managing Cell State
-
-feature -- Modifying Textual Attributes
-
-	set_line_break_mode (a_mode: INTEGER)
-			-- Sets the line break mode to use when drawing text
-			-- The line break mode can also be modified by calling the setWraps: method.
-		require
-			valid_mode:
-		do
-			{NS_CELL_API}.set_line_break_mode (item, a_mode)
-		end
-
-	set_wraps (a_flag: BOOLEAN)
-			-- Sets whether text in the receiver wraps when its length exceeds the frame of the cell.
-			-- If the text of the receiver is an attributed string value you must explicitly set the paragraph style line break mode.
-			-- Calling this method with the value YES is equivalent to calling the setLineBreakMode: method with the value NSLineBreakByWordWrapping
-		do
-			{NS_CELL_API}.set_wraps (item, a_flag)
-		ensure
-			wraps_set: wraps = a_flag
-		end
-
-	wraps: BOOLEAN
-			-- Returns a Boolean value that indicates whether the receiver wraps its text when the text exceeds the borders of the cell.
-		do
-			Result := {NS_CELL_API}.wraps (item)
-		end
-
-feature -- Managing the Target and Action
-
-feature -- Managing the Image
-
-feature -- Managing the Tag
-
-feature -- Formatting and Validating Data
-
-feature -- Managing Menus
-
-feature -- Comparing Cells
-
-feature -- Respond to Keyboard Events
-
-feature -- Deriving Values
-
-feature -- Representing an Object
-
-feature -- Tracking the Mouse
-
-feature -- Hit Testing
-
-feature -- Managing the Cursor
-
-feature -- Handling Keyboard Alternatives
-
-feature -- Managing Focus Rings
-
-feature -- Determining Cell Size
-
-feature -- Drawing and Highlighting
-
-feature -- Editing and Selecting Text
-
-feature -- Managing Expansion Frames
-
-
---	compare (a_other_cell: NS_OBJECT): NS_COMPARISON_RESULT
---		do
---			Result := {NS_CELL_API}.compare (cocoa_object, a_other_cell)
---		end
-
-
 
 	title: NS_STRING
 		do
-			create Result.make_from_pointer ({NS_CELL_API}.title (item))
+			create Result.make_shared (cell_title (item))
 		end
 
 	set_title (a_string: NS_STRING)
 		do
-			{NS_CELL_API}.set_title (item, a_string.item)
+			cell_set_title (item, a_string.item)
 		end
 
-feature -- Contract Suppoer
+feature {NONE} -- Objective-C implementation
 
+	frozen cell_init_text_cell (a_cell: POINTER; a_string: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell initTextCell: $a_string];"
+		end
 
+	frozen cell_init_image_cell (a_cell: POINTER; a_image: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell initImageCell: $a_image];"
+		end
 
-feature -- Cell States (NSCellStateValue)
+--	frozen cell_object_value (a_cell: POINTER): POINTER
+--		external
+--			"C inline use <Cocoa/Cocoa.h>"
+--		alias
+--			"return [(NSCell*)$a_cell objectValue];"
+--		end
+
+--	frozen cell_set_object_value (a_cell: POINTER; a_obj: POINTER)
+--		external
+--			"C inline use <Cocoa/Cocoa.h>"
+--		alias
+--			"[(NSCell*)$a_cell setObjectValue: $a_obj];"
+--		end
+
+	frozen cell_has_valid_object_value (a_cell: POINTER): BOOLEAN
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSCell*)$a_cell hasValidObjectValue];"
+		end
+
+	frozen cell_string_value (a_cell: POINTER): POINTER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSCell*)$a_cell stringValue];"
+		end
+
+	frozen cell_set_string_value (a_cell: POINTER; a_string: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell setStringValue: $a_string];"
+		end
+
+--	frozen cell_compare (a_cell: POINTER; a_other_cell: POINTER): POINTER
+--		external
+--			"C inline use <Cocoa/Cocoa.h>"
+--		alias
+--			"return [(NSCell*)$a_cell compare: $a_other_cell];"
+--		end
+
+	frozen cell_int_value (a_cell: POINTER): INTEGER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSCell*)$a_cell intValue];"
+		end
+
+	frozen cell_set_int_value (a_cell: POINTER; a_an_int: INTEGER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell setIntValue: $a_an_int];"
+		end
+
+	frozen cell_float_value (a_cell: POINTER): REAL
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSCell*)$a_cell floatValue];"
+		end
+
+	frozen cell_set_float_value (a_cell: POINTER; a_float: REAL)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell setFloatValue: $a_float];"
+		end
+
+	frozen cell_double_value (a_cell: POINTER): REAL_64
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSCell*)$a_cell doubleValue];"
+		end
+
+	frozen cell_set_double_value (a_cell: POINTER; a_double: REAL_64)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell setDoubleValue: $a_double];"
+		end
+
+	frozen cell_title (a_cell: POINTER): POINTER
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"return [(NSCell*)$a_cell title];"
+		end
+
+	frozen cell_set_title (a_cell: POINTER; a_string: POINTER)
+		external
+			"C inline use <Cocoa/Cocoa.h>"
+		alias
+			"[(NSCell*)$a_cell setTitle: $a_string];"
+		end
+
+feature -- Cell States
 
 	frozen mixed_state: INTEGER
 		external

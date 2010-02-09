@@ -145,7 +145,7 @@
 							Description="EiffelStudio development environment" Show="normal"
 							Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
 							/>
-						<Shortcut Id="estudio.exe1" Directory="EiffelStudio" Name="$(var.Product) $(var.ProductVersion) (Experimental mode)"
+						<Shortcut Id="estudio.exe1" Directory="EiffelStudio" Name="$(var.Product) $(var.ProductVersion) (experimental mode)"
 							Description="EiffelStudio development environment using experimental facilities of EiffelStudio 6.4" Show="normal"
 							Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
 							Arguments="-experiment"
@@ -249,6 +249,7 @@
 
 			<?ifndef x64?>
 			<Feature Id="gcc_feature" Title="gcc" TypicalDefault="install" Display="hidden" Level="1" >
+				<Condition Level="0"><![CDATA[C_CONFIG_NAME <> "mingw"]]></Condition>
 				<ComponentGroupRef Id="gcc"/>
 			</Feature>
 			<?endif?>

@@ -11,11 +11,10 @@ deferred class
 inherit
 	THREAD
 	XU_SHARED_OUTPUTTER
-	XC_WEBAPP_INTERFACE
 
 feature {NONE} -- Initialization
 
-	make (a_config: XC_WEBAPP_CONFIG)
+	make (a_config: XWA_CONFIG)
 			-- Initialization of classes.
 		require
 			a_config_attached: a_config /= Void
@@ -54,7 +53,7 @@ feature -- Access
 	stop: BOOLEAN
 			-- Used to stop the thread
 
-	config: XC_WEBAPP_CONFIG
+	config: XWA_CONFIG
 			-- The configuration for the webapp
 
 	xserver_socket: NETWORK_STREAM_SOCKET
@@ -65,17 +64,12 @@ feature -- Implementation
 	execute
 			-- Waits for connections from the Xebra Server
 		local
-
-			l_response:  XC_COMMAND_RESPONSE
-			l_dummy: XCCR_HTTP_REQUEST
-			l_dummy1: XCCR_GET_SESSIONS
+			l_request_handler: XWA_REQUEST_HANDLER
+			l_commands:  detachable XS_COMMANDS
 		do
-			create l_dummy.make (create {XH_RESPONSE}.make_empty)
-			create l_dummy1.make (1)
-
 			o.set_name (config.name.out)
 			o.set_debug_level (config.arg_config.debug_level)
-
+			create l_request_handler.make
         	from
                 xserver_socket.listen (10)
             until
@@ -86,20 +80,22 @@ feature -- Implementation
                 if not stop then
 	                if attached {NETWORK_STREAM_SOCKET} xserver_socket.accepted as socket then
 		                o.dprint ("Connection to Xebra Server accepted",1)
-		                socket.read_natural
-
-			             if attached {XC_WEBAPP_COMMAND} socket.retrieved as l_command then
-			             	l_response := l_command.execute (current)
-
+			             if attached {STRING} socket.retrieved as l_request_message then
+			 	        	if not handle_shutdown_signal (l_request_message) then
+			 	        		l_commands := l_request_handler.process_servlet (session_manager, l_request_message, Current)
+			 	        	else
+			 	        		-- Don't send back a response on shutdownsignal
+			 	        	end
 			            else
-							l_response := (create {XER_GENERAL}.make("Xebra App could not retrieve valid STRING object from Xebra Server")).render_to_command_response
+							l_commands := create {XS_COMMANDS}.make_with_response((create {XER_GENERAL}.make("Xebra App could not retrieve valid STRING object from Xebra Server")).render_to_response)
 			            end
 
 
-					    o.dprint ("Sending back l_response...", 2)
-				        socket.put_natural (0)
-						socket.independent_store (l_response)
-
+						if attached l_commands then
+				            o.dprint ("Sending back commands...", 2)
+						   	socket.independent_store (l_commands)
+					   	end
+					   	l_commands := Void
 			            socket.cleanup
 			            check
 				        	socket.is_closed
@@ -112,7 +108,17 @@ feature -- Implementation
         	xserver_socket_closed: xserver_socket.is_closed
 		end
 
-
+	handle_shutdown_signal (a_request: STRING): BOOLEAN
+			-- If shutdown signal is detected initiate shutdown and return True
+		require
+			a_request_attached: a_request /= Void
+		do
+			Result := False
+			if a_request.starts_with ("#KAMIKAZE#") then
+				shutdown
+				Result := True
+			end
+		end
 
 --	servlet_handler_spawner: XWA_REQUEST_HANDLER
 --			-- Spawns {SERVLET_HANDLER}s for the `request_pool'.
@@ -135,36 +141,14 @@ feature -- Status setting
 		deferred
 		end
 
-
-feature {XC_COMMAND} -- Inherited from XC_WEBAPP_INTERFACE
-
-	handle_http_request (a_request: XH_REQUEST): XC_COMMAND_RESPONSE
-			-- <Precursor>
-		local
-			l_request_handler: XWA_REQUEST_HANDLER
-		do
-			o.dprint ("Handling http request...", 4)
-			create l_request_handler.make
-			create {XCCR_HTTP_REQUEST}Result.make (l_request_handler.process_servlet (session_manager, a_request, Current))
-		end
-
-	get_sessions: XC_COMMAND_RESPONSE
-			-- <Precursor>
-		do	o.dprint ("Counting sessions (=" + session_manager.sessions.count.as_natural_32.out + ")", 4)
-			Result := create {XCCR_GET_SESSIONS}.make (session_manager.sessions.count.as_natural_32)
-		end
-
-feature -- Basic Operations
-
-	shutdown: XC_COMMAND_RESPONSE
-			-- <Precursor>
+	shutdown
+			-- Stops the thread and closes connections
 		do
 			o.dprint ("Shutting down...", 1)
 			stop := True
-			Result := create {XCCR_OK}.make
+		ensure
+			stopping: stop = True
 		end
-
-
 
 invariant
 	config_attached: config /= Void

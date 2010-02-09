@@ -1,6 +1,8 @@
 note
-	description: "Eiffel Vision cell, Cocoa implementation."
-	author: "Daniel Furrer"
+	description:
+		"Eiffel Vision cell, Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,16 +18,14 @@ inherit
 			interface
 		end
 
-	EV_SINGLE_CHILD_CONTAINER_IMP
+	EV_CONTAINER_IMP
 		redefine
 			interface,
-			compute_minimum_width,
-			compute_minimum_height,
-			compute_minimum_size,
+			replace,
 			set_background_color,
 			client_height,
 			client_width,
-			make
+			ev_apply_new_size
 		end
 
 	EV_DOCKABLE_TARGET_IMP
@@ -38,71 +38,80 @@ create
 
 feature -- initialization
 
-	make
-		local
-			box: NS_BOX
+	make (an_interface: like interface)
+			-- Connect interface and initialize `c_object'.
 		do
-			create box.make
+			base_make (an_interface)
+			create {NS_BOX}cocoa_item.make
 			box.set_box_type ({NS_BOX}.box_custom)
 			box.set_border_type ({NS_BOX}.no_border)
-			cocoa_view := box
-			set_expandable (True) -- Check: is this correct??
-			is_show_requested := True
-			initialize -- Precursor {EV_CONTAINER_IMP}
-			set_is_initialized (True)
 		end
 
 feature -- Access
 
-	has (v: like item): BOOLEAN
-			-- Does `Current' include `v'?	
-		do
-			Result := not is_destroyed and (v /= Void and then item = v)
-		end
-
-	count: INTEGER_32
-			-- Number of elements in `Current'.	
-		do
-			if item /= Void then
-				Result := 1
-			end
-		end
+	item: EV_WIDGET
+			-- Current item.
 
 feature -- Element change
+
+	replace (v: like item)
+			-- Replace `item' with `v'.
+		local
+			v_imp: like item_imp
+		do
+			if item_imp /= void then
+				item_imp.cocoa_view.remove_from_superview
+				on_removed_item (item_imp)
+			end
+			if v /= Void then
+				v_imp ?= v.implementation
+				cocoa_view.add_subview (v_imp.cocoa_view)
+				on_new_item (v_imp)
+			end
+			item := v
+		end
 
 	set_background_color (a_color: EV_COLOR)
 			-- Assign `a_color' to `background_color'
 		local
 			color: NS_COLOR
 		do
-			Precursor {EV_SINGLE_CHILD_CONTAINER_IMP} (a_color)
-			if attached {NS_BOX} cocoa_view as l_box then -- TODO: get rid of this when redefining in children
+			Precursor {EV_CONTAINER_IMP} (a_color)
+			if box /= void then -- TODO: get rid of this when redefining in children
 				create color.color_with_calibrated_red_green_blue_alpha (a_color.red, a_color.green, a_color.blue, 1.0)
 				--create color.white_color
-				l_box.set_fill_color (color);
+				box.set_fill_color (color);
 			end
 		end
 
-	top_level_window_imp: detachable EV_WINDOW_IMP
+	top_level_window_imp: EV_WINDOW_IMP
 			-- Top level window that contains `Current'.
 
-	set_top_level_window_imp (a_window: detachable EV_WINDOW_IMP)
+	set_top_level_window_imp (a_window: EV_WINDOW_IMP)
 			-- Make `a_window' the new `top_level_window_imp'
 			-- of `Current'.
 		do
 			top_level_window_imp := a_window
-			if attached item_imp as l_item_imp then
-				l_item_imp.set_top_level_window_imp (a_window)
+			if item_imp /= Void then
+				item_imp.set_top_level_window_imp (a_window)
 			end
 		end
 
 feature -- Layout
 
+	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
+		do
+			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
+			if item /= Void then
+				item_imp.ev_apply_new_size (0, 0, client_width, client_height, True)
+			end
+		end
+
 	client_height: INTEGER
 			-- Height of the client area of `Current'
 		do
-			if attached {NS_BOX} cocoa_view as l_box then
-				Result := l_box.content_view.frame.size.height.max (0)
+			if box /= void then
+				Result := box.content_view.frame.size.height.max (0)
 			else
 				Result := height
 			end
@@ -111,8 +120,8 @@ feature -- Layout
 	client_width: INTEGER
 			-- Height of the client area of `Current'.
 		do
-			if attached {NS_BOX} cocoa_view as l_box then
-				Result := l_box.content_view.frame.size.width.max (0)
+			if box /= void then
+				Result := box.content_view.frame.size.width.max (0)
 			else
 				Result := width
 			end
@@ -123,8 +132,8 @@ feature -- Layout
 		local
 			mw: INTEGER
 		do
-			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
-				mw := l_item_imp.minimum_width
+			if item_imp /= Void and item_imp.is_show_requested then
+				mw := item_imp.minimum_width
 			end
 			internal_set_minimum_width (mw)
 		end
@@ -134,8 +143,8 @@ feature -- Layout
 		local
 			mh: INTEGER
 		do
-			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
-				mh := l_item_imp.minimum_height
+			if item_imp /= Void and item_imp.is_show_requested then
+				mh := item_imp.minimum_height
 			end
 			internal_set_minimum_height (mh)
 		end
@@ -146,17 +155,27 @@ feature -- Layout
 		local
 			mw, mh: INTEGER
 		do
-			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
-				mw := l_item_imp.minimum_width
-				mh := l_item_imp.minimum_height
+			if item_imp /= Void and item_imp.is_show_requested then
+				mw := item_imp.minimum_width
+				mh := item_imp.minimum_height
 			end
 			internal_set_minimum_size (mw, mh)
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {NONE}
 
-	interface: detachable EV_CELL note option: stable attribute end;
+	box: NS_BOX
+		do
+			Result ?= cocoa_item
+		end
+
+feature {EV_ANY_I} -- Implementation
+
+	interface: EV_CELL;
 			-- Provides a common user interface to possibly dependent
 			-- functionality implemented by `Current'.
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_CELL_IMP
+

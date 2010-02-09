@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision range. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -23,12 +24,11 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create the range control.
 		do
-			create slider.make
-			cocoa_view := slider
-			Precursor {EV_GAUGE_IMP}
-			enable_tabable_to
+			base_make (an_interface)
+			create {NS_SLIDER}cocoa_item.make
 			change_actions_internal := create_change_actions
 			slider.set_action (agent
 				local
@@ -36,9 +36,8 @@ feature {NONE} -- Initialization
 				do
 					l_value := slider.double_value.floor
 					value := l_value
-					change_actions.call ([l_value])
+					change_actions_internal.call ([l_value])
 				end)
-			set_is_initialized (True)
 		end
 
 	set_value (a_value: INTEGER)
@@ -57,10 +56,14 @@ feature {NONE} -- Initialization
 
 feature {EV_ANY_I} -- Implementation
 
+	interface: EV_RANGE;
+
 	slider: NS_SLIDER
+		do
+			Result ?= cocoa_view
+		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_RANGE note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_RANGE_IMP
+

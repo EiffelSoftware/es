@@ -1,6 +1,7 @@
 note
 	description: "EiffelVision popup window, Cocoa implementation"
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -20,27 +21,37 @@ inherit
 
 	EV_WINDOW_IMP
 		redefine
-			interface,
-			make
+			interface
 		end
 
 create
-	make,
-	initialize_with_shadow
-
-feature -- Implementation
-
 	make
+
+feature {NONE} -- Initialization
+
+
+feature {NONE} -- Implementation
+
+	default_wm_decorations: INTEGER
+			-- Default Window Manager decorations of `Current'.
 		do
-			Precursor
-			disable_border
-			disable_user_resize
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_POPUP_WINDOW note option: stable attribute end;
+	interface: EV_POPUP_WINDOW;
 			-- Provides a common user interface to possibly dependent
 			-- functionality implemented by `Current'.
 
+note
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 end -- class EV_POPUP_WINDOW_IMP
+

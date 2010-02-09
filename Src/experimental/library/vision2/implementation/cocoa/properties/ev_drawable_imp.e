@@ -1,6 +1,7 @@
 note
 	description: "EiffelVision drawable. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords: "figures, primitives, drawing, line, point, ellipse"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -30,31 +31,15 @@ inherit
 
 	MATH_CONST
 
-	NS_STRING_CONSTANTS
 
 feature {NONE} -- Initialization
 
-	old_make (an_interface: like interface)
-			-- Create an empty drawing area.
-		do
-			assign_interface (an_interface)
-		end
-
-	make
+	initialize
 			-- Set default values. Call during initialization.
 		do
 			create image.make_with_size (create {NS_SIZE}.make_size (1000, 1000))
-
-			if internal_background_color = void then
-				create internal_background_color.make_with_rgb (1, 1, 1)
-			end
-			if internal_foreground_color = void then
-	        	create internal_foreground_color.make_with_rgb (0, 0, 0)
-			end
-
-			set_line_width (1)
-
-			set_is_initialized (True)
+        	create internal_background_color.make_with_rgb (1, 1, 1)
+        	create internal_foreground_color.make_with_rgb (0, 0, 0)
 		end
 
 feature {EV_DRAWABLE_IMP, EV_APPLICATION_IMP} -- Implementation
@@ -74,32 +59,24 @@ feature -- Access
 	font: EV_FONT
 			-- Font used for drawing text.
 		do
-			if attached internal_font_imp as l_font then
-				Result := l_font.attached_interface.twin
+			if internal_font_imp /= Void then
+				Result := internal_font_imp.interface.twin
 			else
 				create Result
 			end
 		end
 
-	foreground_color_internal: EV_COLOR
+	foreground_color: EV_COLOR
 			-- Color used to draw primitives.
 		do
-			if attached internal_foreground_color as l_color then
-				Result := l_color.twin
-			else
-				create Result
-			end
+			Result := internal_foreground_color
 		end
 
-	background_color_internal: EV_COLOR
+	background_color: EV_COLOR
 			-- Color used for erasing of canvas.
 			-- Default: white.
 		do
-			if attached internal_background_color as l_color then
-				Result := l_color.twin
-			else
-				create Result
-			end
+			Result := internal_background_color
 		end
 
 	line_width: INTEGER
@@ -111,11 +88,11 @@ feature -- Access
 	drawing_mode: INTEGER
 			-- Logical operation on pixels when drawing.
 
-	clip_area: detachable EV_RECTANGLE
+	clip_area: EV_RECTANGLE
 			-- Clip area used to clip drawing.
 			-- If set to Void, no clipping is applied.
 
-	tile: detachable EV_PIXMAP
+	tile: EV_PIXMAP
 			-- Pixmap that is used to fill instead of background_color.
 			-- If set to Void, `background_color' is used to fill.
 
@@ -220,15 +197,15 @@ feature -- Clearing operations
 			-- Erase rectangle specified with `background_color'.
 		local
 			path: NS_BEZIER_PATH
-			color: detachable EV_COLOR_IMP
+			color: EV_COLOR_IMP
 		do
 			image.lock_focus
 			color ?= background_color.implementation
-			check color /= void end
 			color.color.set
 			create path.make_with_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
 			path.fill
 			image.unlock_focus
+			update_if_needed
 		end
 
 feature -- Drawing operations
@@ -277,15 +254,15 @@ feature -- Drawing operations
 		local
 			l_string: NS_STRING
 			l_attributes: NS_DICTIONARY
-			l_font: detachable EV_FONT_IMP
+			l_font: EV_FONT_IMP
 		do
 			create l_string.make_with_string (a_text)
 			l_font ?= font.implementation
-			check l_font /= void end
-			create l_attributes.make_with_object_for_key (l_font.font, font_attribute_name)
+			create l_attributes.make_with_object_for_key (l_font.font, l_font.font.font_attribute_name)
 			image.lock_focus
 			l_string.draw_at_point_with_attributes (create {NS_POINT}.make_point (x, y), l_attributes)
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	draw_segment (x1, y1, x2, y2: INTEGER)
@@ -302,7 +279,8 @@ feature -- Drawing operations
 			path.move_to_point (create {NS_POINT}.make_point (x1, y1))
 			path.line_to_point (create {NS_POINT}.make_point (x2, y2))
 			path.stroke
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	draw_arc (x, y, a_width, a_height: INTEGER; a_start_angle, an_aperture: REAL)
@@ -321,17 +299,16 @@ feature -- Drawing operations
 	draw_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP)
 			-- Draw `a_pixmap' with upper-left corner on (`x', `y').
 		local
-			pixmap_imp: detachable EV_PIXMAP_IMP
+			pixmap_imp: EV_PIXMAP_IMP
 		do
 			prepare_drawing
 			pixmap_imp ?= a_pixmap.implementation
-			check pixmap_imp /= Void end
-			pixmap_imp.image.set_flipped (True)
-			pixmap_imp.image.draw (
+			pixmap_imp.image.draw_at_point_from_rect_operation_fraction (
 				create {NS_POINT}.make_point (x, y),
 				create {NS_RECT}.make_rect (0, 0, a_pixmap.width, a_pixmap.height),
 				{NS_IMAGE}.composite_source_over, 1)
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	sub_pixmap (area: EV_RECTANGLE): EV_PIXMAP
@@ -344,16 +321,16 @@ feature -- Drawing operations
 	draw_sub_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP; area: EV_RECTANGLE)
 			-- Draw `area' of `a_pixmap' with upper-left corner on (`x', `y').
 		local
-			pixmap_imp: detachable EV_PIXMAP_IMP
+			pixmap_imp: EV_PIXMAP_IMP
 		do
 			prepare_drawing
 			pixmap_imp ?= a_pixmap.implementation
-			check pixmap_imp /= void end
-			pixmap_imp.image.draw (
+			pixmap_imp.image.draw_at_point_from_rect_operation_fraction (
 				create {NS_POINT}.make_point (x, y),
 				create {NS_RECT}.make_rect (0, 0, area.width, area.height),
 				{NS_IMAGE}.composite_source_over, 1)
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	draw_rectangle (x, y, a_width, a_height: INTEGER)
@@ -369,7 +346,8 @@ feature -- Drawing operations
 				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<1.0, 1.0>>), 0.0)
 			end
 			path.stroke
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	draw_ellipse (x, y, a_width, a_height: INTEGER)
@@ -385,7 +363,8 @@ feature -- Drawing operations
 				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<1.0, 1.0>>), 0.0)
 			end
 			path.stroke
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	draw_polyline (points: ARRAY [EV_COORDINATE]; is_closed: BOOLEAN)
@@ -421,7 +400,8 @@ feature -- Drawing operations
 				end
 			end
 			path.stroke
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	draw_pie_slice (x, y, a_width, a_height: INTEGER; a_start_angle, an_aperture: REAL)
@@ -445,7 +425,8 @@ feature -- filling operations
 			prepare_drawing
 			create path.make_with_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
 			path.fill
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	fill_ellipse (x, y, a_width, a_height: INTEGER)
@@ -458,7 +439,8 @@ feature -- filling operations
 			prepare_drawing
 			create path.make_with_oval_in_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
 			path.fill
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	fill_polygon (points: ARRAY [EV_COORDINATE])
@@ -487,7 +469,8 @@ feature -- filling operations
 				path.line_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
 			end
 			path.fill
-			finish_drawing
+			image.unlock_focus
+			update_if_needed
 		end
 
 	fill_pie_slice (x, y, a_width, a_height: INTEGER; a_start_angle, an_aperture: REAL)
@@ -507,34 +490,21 @@ feature {NONE} -- Implementation
 
 	prepare_drawing
 		local
-			l_color: detachable EV_COLOR_IMP
---			trans: NS_AFFINE_TRANSFORM
+			l_color: EV_COLOR_IMP
 		do
 			image.lock_focus
---			create trans.make
---			trans.translate_by_xy (0.0, image.size.height)
---			trans.scale_by_xy (1.0, -1.0)
---			trans.concat
 			l_color ?= foreground_color.implementation
-			check l_color /= void end
 			l_color.color.set
-		end
-
-	finish_drawing
-		do
-			image.unlock_focus
-			-- update the view
-			update_if_needed
 		end
 
 	internal_line_width: INTEGER
 
 	internal_dashed_line_style: BOOLEAN
 
-	internal_foreground_color: detachable EV_COLOR
+	internal_foreground_color: EV_COLOR
 			-- Color used to draw primitives.
 
-	internal_background_color: detachable EV_COLOR
+	internal_background_color: EV_COLOR
 			-- Color used for erasing of canvas.
 			-- Default: white.
 
@@ -544,14 +514,15 @@ feature {NONE} -- Implementation
 		end
 
 	update_if_needed
-			--
+			-- Force update of `Current' if needed
 		deferred
 		end
 
-	internal_font_imp: detachable EV_FONT_IMP
+	internal_font_imp: EV_FONT_IMP
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+	interface: EV_DRAWABLE;
 
-	interface: detachable EV_DRAWABLE note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_DRAWABLE_IMP
+

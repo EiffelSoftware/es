@@ -1,6 +1,9 @@
 note
-	description: "EiffelVision multi-column list row, Cocoa implementation."
-	author: "Daniel Furrer."
+
+	description:
+		"EiffelVision multi-column list row, Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
 
@@ -27,6 +30,7 @@ inherit
 	EV_ITEM_IMP
 		undefine
 			pixmap_equal_to,
+			pixmap,
 			create_drop_actions
 		redefine
 			interface,
@@ -38,7 +42,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
+			-- Create a row with one empty column.
+		do
+			base_make (an_interface)
+		end
+
+	initialize
 			-- Create the linked lists.
 		do
 			tooltip := ""
@@ -52,10 +62,8 @@ feature -- Status report
 	is_selected: BOOLEAN
 			-- Is the item selected.
 		do
-			if attached parent_imp as l_parent_imp then
-				Result := (l_parent_imp.selected_item = interface)
-					or else (l_parent_imp.selected_items.has (attached_interface))
-			end
+			Result := (parent_imp.selected_item = interface)
+			 or else (parent_imp.selected_items.has (interface))
 		end
 
 feature -- Status setting
@@ -63,16 +71,16 @@ feature -- Status setting
 	enable_select
 			-- Select the row in the list.
 		do
-			if not is_selected and attached parent_imp as l_parent_imp then
-				l_parent_imp.select_item (index)
+			if not is_selected then
+				parent_imp.select_item (index)
 			end
 		end
 
 	disable_select
 			-- Deselect the row from the list.
 		do
-			if is_selected and attached parent_imp as l_parent_imp then
-				l_parent_imp.deselect_item (index)
+			if is_selected then
+				parent_imp.deselect_item (index)
 			end
 		end
 
@@ -91,51 +99,58 @@ feature -- Measurement
 
 	width: INTEGER
 		do
---			io.put_string ("EV_MULTI_COLUMN_LIST_ROW_IMP.width: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.width: Not implemented%N")
 		end
 
 	height: INTEGER
 		do
---			io.put_string ("EV_MULTI_COLUMN_LIST_ROW_IMP.height: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.height: Not implemented%N")
 		end
 
 	screen_x: INTEGER
 		do
---			io.put_string ("EV_MULTI_COLUMN_LIST_ROW_IMP.screen_x: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.screen_x: Not implemented%N")
 		end
 
 	screen_y: INTEGER
 		do
---			io.put_string ("EV_MULTI_COLUMN_LIST_ROW_IMP.screen_y: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.screen_y: Not implemented%N")
 		end
 
 	x_position: INTEGER
 		do
---			io.put_string ("EV_MULTI_COLUMN_LIST_ROW_IMP.x_position: Not implemented%N")
+			io.put_string ("EV_HEADER_ITEM_IMP.x_position: Not implemented%N")
 		end
 
 	y_position: INTEGER
 		do
---			io.put_string ("EV_MULTI_COLUMN_LIST_ROW_IMP.y_position: Not implemented%N")
+			io.put_string ("EV_HEADER_ITEM_IMP.y_position: Not implemented%N")
 		end
 
 	minimum_width: INTEGER
 			-- Minimum horizontal size in pixels.
 		do
-			if attached parent_imp as l_parent_imp then
-				Result := l_parent_imp.minimum_width
+			if parent_imp /= Void then
+				Result := parent_imp.minimum_width
 			end
 		end
 
 	minimum_height: INTEGER
 			-- Minimum vertical size in pixels.
 		do
-			if attached parent_imp as l_parent_imp then
-				Result := l_parent_imp.attached_interface.row_height
+			if parent_imp /= Void then
+				Result := parent_imp.interface.row_height
 			end
 		end
 
 feature {ANY} -- Implementation
+
+	text: STRING_32
+			--
+		do
+			Result := interface.i_th (1)
+		end
+
 
 	on_item_added_at (an_item: STRING_GENERAL; item_index: INTEGER)
 			-- `an_item' has been added to index `item_index'.
@@ -158,15 +173,17 @@ feature {EV_ANY_I} -- Implementation
 			-- Index of the row in the list
 			-- (starting from 1).
 		do
-			if attached parent_imp as l_parent_imp then
-				Result := l_parent_imp.ev_children.index_of (Current, 1)
-			end
+			-- The `ev_children' array has to contain
+			-- the same rows in the same order than in the g.t.k.
+			-- part.
+			Result := parent_imp.ev_children.index_of (Current, 1)
 		end
 
-	parent_imp: detachable EV_MULTI_COLUMN_LIST_IMP
+	parent_imp: EV_MULTI_COLUMN_LIST_IMP
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+	interface: EV_MULTI_COLUMN_LIST_ROW;
 
-	interface: detachable EV_MULTI_COLUMN_LIST_ROW note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_MULTI_COLUMN_LIST_ROW_IMP
+

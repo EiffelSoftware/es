@@ -63,12 +63,8 @@ feature -- Factory
 					else
 						fixme ("support process-relative constants (e.g., string constants)")
 					end
-				elseif Result.is_attribute then
-					if a_node.indexes.is_stable and then attached {ATTRIBUTE_I} Result as a then
-						a.set_is_stable (True)
-					elseif a_node.indexes.is_volatile and then attached {ATTRIBUTE_I} Result as a then
-						a.set_is_volatile (True)
-					end
+				elseif Result.is_attribute and then a_node.indexes.is_stable and then attached {ATTRIBUTE_I} Result as a then
+					a.set_is_stable
 				end
 				if a_node.property_name /= Void then
 					Result.set_has_property (True)

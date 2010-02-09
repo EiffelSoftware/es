@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision vertical range. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -36,8 +37,11 @@ feature {NONE} -- Layout
 		do
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_VERTICAL_RANGE note option: stable attribute end;
+	interface: EV_VERTICAL_RANGE;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_VERTICAL_RANGE_IMP
+

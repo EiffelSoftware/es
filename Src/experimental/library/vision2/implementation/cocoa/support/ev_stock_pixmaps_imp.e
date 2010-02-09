@@ -1,12 +1,10 @@
 note
 	description	: "Facilities for accessing default pixmaps."
-	author		: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	keywords	: "pixmap, default"
 	date		: "$Date$"
 	revision	: "$Revision$"
-
--- TODO find the icons by tag instead of using fixed icon paths (probably by using NS_WORKSPACE and constants from IconsCore)
--- TODO Load cursors
 
 class
 	EV_STOCK_PIXMAPS_IMP
@@ -21,57 +19,49 @@ feature -- Access
 	Information_pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer symbolizing a piece of information.
 		do
-			create Result.make_with_pixmap (Information_pixmap)
+			create Result
 		end
 
 	Error_pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer symbolizing an error.
 		do
-			create Result.make_with_pixmap (Error_pixmap)
+			create Result
 		end
 
 	Warning_pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer symbolizing a warning.
 		do
-			create Result.make_with_pixmap (Warning_pixmap)
+			create Result
 		end
 
 	Question_pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer symbolizing a question.
 		do
-			create Result.make_with_pixmap (Question_pixmap)
+			create Result
 		end
 
 	Information_pixmap: EV_PIXMAP
 			-- Pixmap symbolizing a piece of information.
 		do
-			create Result
-			Result.set_with_named_file ("/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarInfoIcon.icns")
-			Result.stretch (32, 32)
+			Result := load_named (image_name_info)
 		end
 
 	Error_pixmap: EV_PIXMAP
 			-- Pixmap symbolizing an error.
 		do
 			create Result
-			Result.set_with_named_file ("/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns")
-			--Result.stretch (32, 32)
 		end
 
 	Warning_pixmap: EV_PIXMAP
 			-- Pixmap symbolizing a warning.
 		do
 			create Result
-			Result.set_with_named_file ("/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertCautionIcon.icns")
-			Result.stretch (32, 32)
 		end
 
 	Question_pixmap: EV_PIXMAP
 			-- Pixmap symbolizing a question.
 		do
 			create Result
-			Result.set_with_named_file ("/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertNoteIcon.icns")
-			Result.stretch (32, 32)
 		end
 
 	Collate_pixmap: EV_PIXMAP
@@ -102,7 +92,16 @@ feature -- Access
 			-- Pixmap used as default icon for new windows.
 		do
 			create Result
-			Result.set_with_named_file ("/System/Library/Frameworks/AppKit.framework/Resources/NSDefaultApplicationIcon.tiff")
+			Result.set_with_named_file ("/System/Library/Frameworks/AppKit.framework/Versions/C/Resources/NSDefaultApplicationIcon.tiff")
+		end
+
+	load_named (a_name: NS_STRING): EV_PIXMAP
+		local
+			l_imp: EV_PIXMAP_IMP
+		do
+			create Result
+			l_imp ?= Result.implementation
+			l_imp.load_system_image (a_name.to_string)
 		end
 
 feature -- Default cursors
@@ -185,4 +184,7 @@ feature -- Default cursors
 			create Result
 		end
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_STOCK_PIXMAPS_IMP
+

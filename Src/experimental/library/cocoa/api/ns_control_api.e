@@ -62,14 +62,6 @@ feature -- Setting the Control's Value
 			"[(NSControl*)$a_control setStringValue: $a_string];"
 		end
 
-	frozen string_value (a_control: POINTER): POINTER
-			-- - (NSString *)stringValue
-		external
-			"C inline use <Cocoa/Cocoa.h>"
-		alias
-			"return [(NSControl*)$a_control stringValue];"
-		end
-
 	frozen set_double_value (a_control: POINTER; a_double: DOUBLE)
 			--- (void)setDoubleValue:(double)aDouble;
 		external
@@ -90,38 +82,14 @@ feature -- Interacting with Other Controls
 
 feature -- Formatting Text
 
-	frozen alignment (a_control: POINTER): INTEGER
-			-- - (NSTextAlignment)alignment
-		external
-			"C inline use <Cocoa/Cocoa.h>"
-		alias
-			"return [(NSControl*)$a_control alignment];"
-		end
-
-	frozen set_alignment (a_control: POINTER; a_alignment: INTEGER)
-			-- - (void)setAlignment:(NSTextAlignment)
-		external
-			"C inline use <Cocoa/Cocoa.h>"
-		alias
-			"return [(NSControl*)$a_control setAlignment: $a_alignment];"
-		end
-
-	frozen font (a_control: POINTER): POINTER
-			-- - (NSFont *)font
+	frozen font (a_control: POINTER) : POINTER
+			--- (void)setStringValue:(NSString *)aString;
 		external
 			"C inline use <Cocoa/Cocoa.h>"
 		alias
 			"return [(NSControl*)$a_control font];"
 		end
-
-	frozen set_font (a_control: POINTER; a_font: POINTER)
-			-- - (void)setFont:(NSFont *)fontObject
-		external
-			"C inline use <Cocoa/Cocoa.h>"
-		alias
-			"return [(NSControl*)$a_control setFont: $a_font];"
-		end
-
+		
 feature -- Managing the Field Editor
 
 feature -- Editing Text in a Control

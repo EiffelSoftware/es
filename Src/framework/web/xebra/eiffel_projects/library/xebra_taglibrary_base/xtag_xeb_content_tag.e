@@ -10,9 +10,9 @@ class
 
 inherit
 	XTAG_PLAINTEXT_TAG
-		redefine
-			generates_render
-		end
+--		redefine
+--			generates_render
+--		end
 
 create
 	make
@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 	make
 		do
 			make_base
-			create {XTAG_TAG_VALUE_ARGUMENT} text.make ("no content")
+			create text.make ("no content")
 		end
 
 feature -- Access
@@ -54,6 +54,6 @@ feature -- Implementation
 
 feature -- Debug Configuration
 
-	generates_render: BOOLEAN = True
+	--generates_render: BOOLEAN = True
 
 end

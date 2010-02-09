@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision tree node. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -43,12 +44,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
 			-- Create the tree item.
 		do
+			base_make (an_interface)
 			internal_text := ""
-			initialize_item_list
-			set_is_initialized (True)
 		end
 
 feature -- Status report
@@ -115,9 +115,9 @@ feature {EV_ANY_I} -- Status setting
 				until
 					i >= count
 				loop
---					if i_th (i).is_expanded then
+					if i_th (i).is_expanded then
 --TODO						i_th (i).implementation.set_expand (true)
---					end
+					end
 					i := i + 1
 				end
 			else
@@ -134,10 +134,10 @@ feature {EV_ANY_I} -- Status setting
 
 feature {EV_ANY_I} -- Implementation
 
-	parent_tree_imp: detachable EV_TREE_IMP
+	parent_tree_imp: EV_TREE_IMP
 		do
-			if attached parent_tree as p then
-				Result ?= p.implementation
+			if parent_tree /= Void then
+				Result ?= parent_tree.implementation
 			end
 		end
 
@@ -160,10 +160,10 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 	text: STRING_32
 			-- Text displayed.
 		do
-			if attached internal_text as l_text then
-				Result := l_text.twin
-			else
+			if internal_text = Void then
 				create Result.make_empty
+			else
+				Result := internal_text.twin
 			end
 		ensure then
 			text_not_void: Result /= Void
@@ -172,10 +172,10 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 	tooltip: STRING_32
 			-- Tooltip if any.
 		do
-			if attached internal_tooltip as l_tooltip then
-				Result := l_tooltip.twin
-			else
+			if internal_tooltip = Void then
 				Result := ""
+			else
+				Result := internal_tooltip.twin
 			end
 		ensure then
 			tooltip_not_void: Result /= Void
@@ -193,10 +193,10 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			internal_text := a_text
 		end
 
-	internal_text: detachable STRING_32
+	internal_text: STRING_32
 		-- Internal representation of `text'.
 
-	internal_tooltip: detachable STRING_32
+	internal_tooltip: STRING_32
 		-- Internal representation of `tooltip'.
 
 	set_tooltip (a_text: STRING_GENERAL)
@@ -208,7 +208,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 	remove_tooltip
 			-- Remove text of `tooltip'.
 		do
-			internal_tooltip := void
+			internal_tooltip := ""
 		end
 
 	pix_width, pix_height: INTEGER
@@ -218,8 +218,8 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			-- Insert `item_imp' at the `index' position.
 		do
 			-- TODO: optimization potential, only reload under the current item
-			if attached parent_tree_imp as l_tree then
-				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
+			if parent_tree_imp /= void then
+				parent_tree_imp.outline_view.reload_item_reload_children ({EV_ANY_IMP}.NULL, True)
 			end
 		end
 
@@ -227,8 +227,8 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			-- Remove `item_imp' from `Current'.
 		do
 			-- TODO: optimization potential, only reload under the current item
-			if attached parent_tree_imp as l_tree then
-				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
+			if parent_tree_imp /= void then
+				parent_tree_imp.outline_view.reload_item_reload_children ({EV_ANY_IMP}.NULL, True)
 			end
 		end
 
@@ -238,38 +238,39 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 
 	width: INTEGER
 		do
-			-- rect_of_column.size.width
---			io.put_string ("EV_TREE_NODE_IMP.width: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.width: Not implemented%N")
 		end
 
 	height: INTEGER
 		do
-			-- rect_of_row.size.height
---			io.put_string ("EV_TREE_NODE_IMP.height: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.height: Not implemented%N")
 		end
 
 	screen_x: INTEGER
 		do
---			io.put_string ("EV_TREE_NODE_IMP.screen_x: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.screen_x: Not implemented%N")
 		end
 
 	screen_y: INTEGER
 		do
---			io.put_string ("EV_TREE_NODE_IMP.screen_y: Not implemented%N")
+			io.put_string ("EV_TREE_NODE_IMP.screen_y: Not implemented%N")
 		end
 
 	x_position: INTEGER
 		do
---			io.put_string ("EV_TREE_NODE_IMP.x_position: Not implemented%N")
+			io.put_string ("EV_HEADER_ITEM_IMP.x_position: Not implemented%N")
 		end
 
 	y_position: INTEGER
 		do
---			io.put_string ("EV_HEADER_ITEM_IMP.y_position: Not implemented%N")
+			io.put_string ("EV_HEADER_ITEM_IMP.y_position: Not implemented%N")
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_TREE_NODE note option: stable attribute end;
+	interface: EV_TREE_NODE;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_TREE_NODE_IMP
+

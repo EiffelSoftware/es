@@ -1,6 +1,9 @@
 note
-	description: "EiffelVision combo box, Cocoa implementation."
-	author: "Daniel Furrer"
+
+	description:
+		"EiffelVision combo box, Cocoa implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -25,6 +28,7 @@ inherit
 			enable_transport,
 			hide_border
 		redefine
+			initialize,
 			make,
 			interface,
 			has_focus,
@@ -43,6 +47,7 @@ inherit
 			dispose,
 			set_default_minimum_size
 		redefine
+			initialize,
 			make,
 			interface,
 			cocoa_set_size
@@ -57,14 +62,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (an_interface: like interface)
 			-- Create a Cocoa combo-box.
 		do
+			base_make (an_interface)
 			create combo_box.make
-			Precursor {EV_LIST_ITEM_LIST_IMP}
-			Precursor {EV_TEXT_FIELD_IMP}
 			text_field := combo_box
-			cocoa_view := combo_box
+			cocoa_item := combo_box
 		end
 
 feature {NONE} -- Initialization
@@ -73,6 +77,13 @@ feature {NONE} -- Initialization
 			-- Call the appropriate selection action sequences
 		do
 			select_actions.call ([])
+		end
+
+	initialize
+			-- Connect action sequences to signals.
+		do
+			Precursor {EV_LIST_ITEM_LIST_IMP}
+			Precursor {EV_TEXT_FIELD_IMP}
 		end
 
 	insert_item (item_imp: EV_LIST_ITEM_IMP; pos: INTEGER)
@@ -98,8 +109,9 @@ feature -- Status report
 
 		end
 
-	selected_item: detachable EV_LIST_ITEM
-			-- Item which is currently selected
+	selected_item: EV_LIST_ITEM
+			-- Item which is currently selected, for a multiple
+			-- selection.
 		local
 			l_index: INTEGER
 		do
@@ -111,13 +123,9 @@ feature -- Status report
 
 	selected_items: ARRAYED_LIST [EV_LIST_ITEM]
 			-- List of all the selected items. Used for list_item.is_selected implementation.
-		local
-			l_item: detachable EV_LIST_ITEM
 		do
 			create Result.make (1)
-			l_item := i_th (combo_box.index_of_selected_item + 1)
-			check l_item /= Void end
-			Result.put (l_item)
+			Result.put (i_th (combo_box.index_of_selected_item + 1))
 		end
 
 	select_item (a_index: INTEGER)
@@ -183,10 +191,11 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
+	interface: EV_COMBO_BOX;
+
 	combo_box: NS_COMBO_BOX;
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
-
-	interface: detachable EV_COMBO_BOX note option: stable attribute end;
-
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_COMBO_BOX_IMP
+

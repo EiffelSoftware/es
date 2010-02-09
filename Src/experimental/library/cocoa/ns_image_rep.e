@@ -11,7 +11,7 @@ inherit
 	NS_OBJECT
 
 create {NS_OBJECT} -- Creation
-	share_from_pointer
+	make_shared
 
 feature -- Access
 

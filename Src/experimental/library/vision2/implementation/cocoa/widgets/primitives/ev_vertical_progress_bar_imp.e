@@ -1,6 +1,7 @@
 note
 	description: "Eiffel Vision vertical progress bar. Cocoa implementation."
-	author: "Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -37,8 +38,11 @@ feature {NONE} -- Implementation
 			Result := 22 -- Hardcode, same value as in GTK+
 		end
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_VERTICAL_PROGRESS_BAR note option: stable attribute end;
+	interface: EV_VERTICAL_PROGRESS_BAR;
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end -- class EV_VERTICAL_PROGRESS_BAR_IMP
+

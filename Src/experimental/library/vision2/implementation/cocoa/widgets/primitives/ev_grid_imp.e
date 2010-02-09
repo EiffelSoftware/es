@@ -3,7 +3,8 @@ note
 		Widget which is a combination of an EV_TREE and an EV_MULTI_COLUMN_LIST.
 		Cocoa implementation.
 			]"
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +18,7 @@ inherit
 			propagate_foreground_color
 		redefine
 			interface,
-			make
+			initialize
 		end
 
 	EV_CELL_IMP
@@ -43,44 +44,40 @@ inherit
 			set_drag_and_drop_mode,
 			set_target_menu_mode,
 			set_configurable_target_menu_mode,
-			set_configurable_target_menu_handler,
-			tooltip,
-			set_tooltip
+			set_configurable_target_menu_handler
 		redefine
 			interface,
+			initialize,
 			make,
-			old_make,
 			set_background_color,
 			set_foreground_color
 		end
-
-	NS_STRING_CONSTANTS
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	old_make (an_interface: like interface)
+	make (an_interface: like interface)
 			-- Create grid
 		do
-			assign_interface (an_interface)
+			base_make (an_interface)
+			create {NS_VIEW}cocoa_item.make
 		end
 
-	make
+	initialize
 			-- Initialize `Current'
 --		local
 --			color_imp: EV_COLOR_IMP
 		do
+			Precursor {EV_CELL_IMP}
+			initialize_grid
+
 			create focused_selection_color.make_with_rgb (1, 0, 0)
 			create non_focused_selection_color.make_with_rgb (1, 1, 0)
 			create focused_selection_text_color.make_with_rgb (0, 1, 0)
 			create non_focused_selection_text_color.make_with_rgb (0, 0, 1)
-
-			create cocoa_view.make
-			Precursor {EV_CELL_IMP}
-			initialize_grid
-
+--			color_imp ?= non_focused_selection_text_color.implementation
 
 			set_is_initialized (True)
 		end
@@ -117,7 +114,7 @@ feature {EV_GRID_ITEM_I} -- Implementation
 			-- not include the horizontal overhang or underhang. This can
 			-- make quite a difference on certain platforms.
 		local
-			l_font_imp: detachable EV_FONT_IMP
+			l_font_imp: EV_FONT_IMP
 			l_string: NS_STRING
 			l_attributes: NS_DICTIONARY
 			l_size: NS_SIZE
@@ -127,9 +124,8 @@ feature {EV_GRID_ITEM_I} -- Implementation
 				tuple.put_integer (0, 2)
 			else
 				l_font_imp ?= a_font.implementation
-				check l_font_imp /= void end
 				create l_string.make_with_string (a_string)
-				create l_attributes.make_with_object_for_key (l_font_imp.font, font_attribute_name)
+				create l_attributes.make_with_object_for_key (l_font_imp.cocoa_item, l_font_imp.cocoa_item.font_attribute_name)
 				l_size := l_string.size_with_attributes (l_attributes)
 
 				tuple.put_integer (l_size.width, 1)
@@ -149,10 +145,13 @@ feature {EV_GRID_ITEM_I} -- Implementation
 
 	text_style, base_style, fg_style, bg_style: INTEGER = unique
 
-feature {EV_ANY, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	interface: detachable EV_GRID note option: stable attribute end;
+	interface: EV_GRID;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'.
 
+note
+	copyright:	"Copyright (c) 2009, Daniel Furrer"
 end
+
