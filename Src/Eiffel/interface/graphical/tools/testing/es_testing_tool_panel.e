@@ -42,8 +42,6 @@ inherit
 	ES_HELP_CONTEXT
 		export
 			{NONE} all
-		redefine
-			help_provider
 		end
 
 	TAG_UTILITIES
@@ -211,16 +209,10 @@ feature {NONE} -- Initialization: widget status
 
 feature -- Access: help
 
-	help_provider: attached UUID
-			-- <Precursor>
-		once
-			Result := (create {HELP_PROVIDER_KINDS}).wiki
-		end
-
 	help_context_id: STRING
 			-- <Precursor>
 		once
-			Result := "Testing Tool (Specification)"
+			Result := "1d8cc843-238e-feaa-cfa6-629f080ffba7"
 		end
 
 feature {NONE} -- Access
@@ -290,9 +282,6 @@ feature {NONE} -- Access: buttons
 
 	stop_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for stopping any current test execution
-
-	autofix_button: attached SD_TOOL_BAR_BUTTON
-			-- Button for launching autoFix
 
 	clear_filter_button: attached SD_TOOL_BAR_BUTTON
 			-- Button for clearing any filter
@@ -632,17 +621,6 @@ feature {NONE} -- Events: test execution
 			launch_processor (a_type, l_conf)
 		end
 
-	on_fix (a_type: attached TYPE [AFX_FIX_PROPOSER_I])
-			-- Try to fix the program
-		local
-		    l_conf: AFX_FIX_PROPOSER_CONF
-		do
-			if test_suite.is_service_available then
-				create l_conf.make (tree_view.selected_items, test_suite.service.tests)
-				launch_processor(a_type, l_conf)
-			end
-		end
-
 	on_stop
 			-- Stop any running test processor
 		local
@@ -909,17 +887,6 @@ feature {NONE} -- Factory
 			stop_button.set_pixmap (stock_pixmaps.debug_stop_icon)
 			register_action (stop_button.select_actions, agent on_stop)
 			Result.force_last (stop_button)
-
-			Result.force_last (create {SD_TOOL_BAR_SEPARATOR}.make)
-
-				-- Create fix button
-			create autofix_button.make
-			autofix_button.set_tooltip(locale_formatter.translation (f_fix_button))
-			autofix_button.set_pixel_buffer(stock_pixmaps.debug_stop_icon_buffer)
-			autofix_button.set_pixmap(stock_pixmaps.debug_stop_icon)
-			register_action (autofix_button.select_actions, agent on_fix(fix_proposer_type))
-			Result.force_last(autofix_button)
-
 		end
 
 	create_right_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
@@ -987,7 +954,6 @@ feature {NONE} -- Internationalization
 	f_run_button: STRING = "Run all tests in background"
 	f_debug_button: STRING = "Debug all tests in EiffelStudio"
 	f_stop_button: STRING = "Stop all execution"
-	f_fix_button: STRING = "Autofix a failure"
 	tt_clear_filter: STRING = "Clear filter"
 
 	m_run_all: STRING = "Run all"

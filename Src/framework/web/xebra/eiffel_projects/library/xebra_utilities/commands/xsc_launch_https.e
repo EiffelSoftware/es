@@ -21,6 +21,6 @@ feature -- Basic operations
 	execute (a_server: XSC_SERVER_INTERFACE)
 			-- <Precursor>	
 		do
-			a_server.launch_http_server
+			a_server.launch_https
 		end
 end

@@ -8,14 +8,17 @@ class
 	NS_OBJECT
 
 inherit
+	NS_OBJECT_BASIC_TYPE
+
 	DISPOSABLE
 
-create {NS_OBJECT, OBJC_CALLBACK_MARSHAL}
+create
 	share_from_pointer
-create {OBJC_CLASS, OBJC_CALLBACK_MARSHAL}
+
+create {NS_OBJECT, OBJC_CLASS, OBJC_CALLBACK_MARSHAL}
 	make_from_pointer
 
-feature {NS_OBJECT} -- Creation
+feature {NONE} -- Initialization
 
 	make_from_pointer (a_ptr: POINTER)
 			-- Initialize Current assuming the Eiffel code initialized `a_ptr' via an external call.
@@ -29,10 +32,8 @@ feature {NS_OBJECT} -- Creation
 			item := a_ptr
 		ensure
 			item_set: item = a_ptr
-			--proper_reference_counting: {NS_OBJECT_API}.retain_count (a_ptr) = 1
+			proper_reference_counting: {NS_OBJECT_API}.retain_count (a_ptr) = 1
 		end
-
-feature {NONE} -- Creation
 
 	share_from_pointer (a_ptr: POINTER)
 			-- Initialize Current using `a_ptr' assuming `a_ptr' was not created by the Eiffel code.
@@ -40,44 +41,50 @@ feature {NONE} -- Creation
 			a_ptr_not_null: a_ptr /= default_pointer
 		do
 			item := a_ptr
-			--{NS_OBJECT_API}.retain (a_ptr)
+			{NS_OBJECT_API}.retain (a_ptr)
 		ensure
 			item_set: item = a_ptr
-			--proper_reference_counting: {NS_OBJECT_API}.retain_count (a_ptr) = old {NS_OBJECT_API}.retain_count (a_ptr) + 1
+			proper_reference_counting: {NS_OBJECT_API}.retain_count (a_ptr) = old {NS_OBJECT_API}.retain_count (a_ptr) + 1
 		end
 
-feature -- Identifying Classes
+feature -- Access
 
 	class_: OBJC_CLASS
+			-- Identifying class
 		do
 			create Result.make_from_pointer ({NS_OBJECT_API}.class_ (item))
 		end
 
-feature -- Constants
+	item: POINTER
+			-- Underlying objective-C object
 
-	frozen nil: POINTER
+	null: POINTER
+			-- Default NULL pointer to be used in assertions in place of `default_pointer'
 		external
-			"C inline use <Cocoa/Cocoa.h>"
+			"C inline"
 		alias
-			"return nil;"
+			"return NULL;"
+		end
+
+feature -- Status report
+
+	exists: BOOLEAN
+			-- Does current still have its underlying object and thus is usable?
+		do
+			Result := item /= default_pointer
 		end
 
 feature -- Removal
 
 	dispose
 			-- <Precursor>
+		local
+			l_null: POINTER
 		do
-			if item /= default_pointer then
+			if item /= l_null then
 				{NS_OBJECT_API}.release (item)
-				item := default_pointer
+				item := l_null
 			end
 		end
 
-feature {NS_OBJECT} -- Should be used by classes in native only
-
-	item: POINTER
-	 	-- The C-pointer to the Cocoa object
-
-invariant
---	cocoa_object_allocated: item /= nil
 end
