@@ -405,7 +405,7 @@ feature -- Command
 				-- AutoTet command
 			create l_test_command.make
 			develop_window.commands.set_test_command (l_test_command)
-
+			
 				-- Add history commands to toolbarable_commands.
 				-- Setup its accelerators.
 			l_toolbarable_commands.extend (develop_window.history_manager.back_command)
@@ -740,6 +740,10 @@ feature -- Command
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.rename_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.undo_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.redo_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.extract_method_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.pretty_print_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.create_setter_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.make_effective_command)
 
 				-- Force build
 				-- FIXME: We force the tools to be built completely here in order to perform
@@ -1188,8 +1192,8 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -1218,4 +1222,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

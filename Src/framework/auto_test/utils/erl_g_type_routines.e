@@ -122,6 +122,36 @@ feature -- Access
 				(a_type.has_associated_class implies Result = exported_creators (a_type.associated_class, a_system).count)
 		end
 
+	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN is
+			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
+		require
+			a_feature_attached: a_feature /= Void
+			a_type_attached: a_type /= Void
+		local
+			l_class: CLASS_C
+		do
+			if
+				a_type.has_associated_class and then
+				a_type.associated_class.creators /= Void and then
+				a_type.associated_class.creators.has (a_feature.feature_name)
+			then
+				Result := a_type.associated_class.creators.item (a_feature.feature_name).is_all
+			end
+
+			if a_type.has_associated_class then
+				l_class := a_type.associated_class
+
+				if l_class.creators /= Void and then l_class.creators.has (a_feature.feature_name) then
+						-- For normal creators.
+					Result := l_class.creators.item (a_feature.feature_name).is_all
+
+				elseif l_class.allows_default_creation and then l_class.default_create_feature.feature_name.is_equal (a_feature.feature_name) then
+						-- For default creators.
+					Result := True
+				end
+			end
+		end
+
 feature {NONE} -- Parsing class types
 
 	type_a_generator: AST_TYPE_A_GENERATOR
@@ -140,20 +170,11 @@ feature {NONE} -- Parsing class types
 		require
 			a_name_not_void: a_name /= Void
 		local
-			l_type_as: TYPE_AS
+			l_name: STRING
 		do
-			if a_name.is_case_insensitive_equal ("NONE") then
-				Result := none_type
-			else
-					-- Parse `a_name' into a type AST node.
-				type_parser.parse_from_string ("type " + a_name, interpreter_root_class)
-				l_type_as := type_parser.type_node
-
-					-- Generate TYPE_A object from type AST node.
-				if l_type_as /= Void and then attached {CLASS_C} interpreter_root_class as l_context_class then
-					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
-				end
-			end
+			l_name := a_name.twin
+			l_name.replace_substring_all ("%N", "")
+			Result := base_type_with_context (l_name, interpreter_root_class)
 		end
 
 feature{NONE} -- Implementation
@@ -190,13 +211,165 @@ feature{NONE} -- Implementation
 				until
 					i > count
 				loop
-					Result.extend (a_feature.arguments.i_th (i).actual_type.instantiation_in (a_context, a_feature.written_in).deep_actual_type)
+					Result.extend (a_feature.arguments.i_th (i).actual_type.instantiation_in (a_context, a_context.associated_class.class_id).deep_actual_type)
 					i := i + 1
 				end
 			end
 		ensure
 			result_attached: Result /= Void
 			good_result: not Result.has (Void)
+		end
+
+feature -- Types
+
+	resolved_type_from_name (a_type_name: STRING; a_context: CLASS_C): detachable TYPE_A is
+			-- Note: Code taken from `build_types_and_classes_under_test'
+		local
+			l_type: TYPE_A
+			l_name: STRING
+		do
+			fixme ("Note: Code taken from `build_types_and_classes_under_test'. Refactoring is needed.")
+			l_type := base_type_with_context (a_type_name, a_context) --system.root_type.associated_class)
+			if l_type /= Void then
+				if l_type.associated_class.is_generic then
+					if not attached {GEN_TYPE_A} l_type as l_gen_type then
+						if attached {GEN_TYPE_A} l_type.associated_class.actual_type as l_gen_type2 then
+							l_type := generic_derivation_of_type (l_gen_type2, l_gen_type2.associated_class)
+						else
+							check
+								dead_end: False
+							end
+						end
+					end
+				end
+				if attached {CL_TYPE_A} l_type as l_class_type then
+						-- Only compiled classes are taken into consideration.
+					if l_class_type.associated_class /= Void then
+						if not interpreter_related_classes.has (l_class_type.name) then
+							Result := l_class_type
+						end
+					end
+				else
+					check
+						dead_end: False
+					end
+				end
+			end
+		end
+
+	base_type_with_context (a_name: STRING; a_context_class: CLASS_C): TYPE_A
+			-- Type parsed from `a_name'
+			-- If `a_name' is "NONE", return {NONE_A}.
+			-- If `a_name' is an unknown type, return Void.
+			-- The result is resolved in `a_context_class'.
+		require
+			a_name_not_void: a_name /= Void
+		local
+			l_type_as: TYPE_AS
+			l_options: CONF_OPTION
+		do
+			fixme ("Code is similar to ERL_G_TYPE_ROUTINES.base_type. Refactoring is needed.")
+			if a_name.is_case_insensitive_equal ("NONE") then
+				Result := none_type
+			else
+					-- Setup syntax level according to `a_context_class'.
+				l_options := a_context_class.lace_class.options
+				inspect l_options.syntax.index
+				when {CONF_OPTION}.syntax_index_obsolete then
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.obsolete_64_syntax)
+				when {CONF_OPTION}.syntax_index_transitional then
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.transitional_64_syntax)
+				else
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.ecma_syntax)
+				end
+
+					-- Parse `a_name' into a type AST node.
+				type_parser.parse_from_string ("type " + a_name, a_context_class)
+				l_type_as := type_parser.type_node
+
+					-- Generate TYPE_A object from type AST node.
+				if l_type_as /= Void and then attached {CLASS_C} a_context_class as l_context_class then
+					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
+				end
+			end
+		end
+
+	full_type_name (a_type: STRING; a_context_class: CLASS_C): STRING
+			-- Full type name of `a_type'
+			-- Note: Code copied from TEST_INTERPRETER_SOURCE_WRITER.`put_type_assignment'. `put_type_assignment'
+			-- can be simplified using current feature. 05.06.2009 Jasonw
+		require
+			a_type_not_void: a_type /= Void
+			a_context_class_class_attached: a_context_class /= Void
+		local
+			l_type_a, l_gtype: TYPE_A
+			l_class: CLASS_C
+			l_type: detachable STRING
+			i: INTEGER
+		do
+			fixme ("Refactoring, see header comment.")
+			type_parser.parse_from_string ("type " + a_type, a_context_class)
+			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
+				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, a_context_class)
+				if l_type_a /= Void then
+					create l_type.make (20)
+					l_type.append (l_type_a.name)
+					if l_type_a.generics = Void then
+						l_class := l_type_a.associated_class
+						check l_class /= Void end
+						if l_class.is_generic then
+								-- In this case we try to insert constrains to receive a valid type
+							l_type.append (" [")
+							from
+								i := 1
+							until
+								not l_class.is_valid_formal_position (i)
+							loop
+								if i > 1 then
+									l_type.append (", ")
+								end
+								if l_class.generics [i].is_multi_constrained (l_class.generics) then
+									l_type.append ("NONE")
+								else
+									l_gtype := l_class.constrained_type (i)
+									append_type_in_string (l_type, l_gtype)
+								end
+								i := i + 1
+							end
+							l_type.append ("]")
+						end
+					end
+					Result := l_type
+				end
+			end
+		end
+
+	append_type_in_string (a_string: attached STRING; a_type: TYPE_A)
+			-- Append type name for `a_type' to `a_string' without formal parameters.
+		local
+			i: INTEGER
+		do
+			fixme ("Refactoring this and {TEST_INTERPRETER_SOURCE_WRITER}.append_type")
+			if not a_type.is_formal and attached {CL_TYPE_A} a_type as l_class_type then
+				a_string.append (l_class_type.associated_class.name)
+				if l_class_type.has_generics then
+					a_string.append (" [")
+					from
+						i := l_class_type.generics.lower
+					until
+						i > l_class_type.generics.upper
+					loop
+						if i > l_class_type.generics.lower then
+							a_string.append (", ")
+						end
+						append_type_in_string (a_string, l_class_type.generics.item (i))
+						i := i + 1
+					end
+					a_string.append ("]")
+				end
+			else
+				a_string.append ("NONE")
+			end
 		end
 
 note

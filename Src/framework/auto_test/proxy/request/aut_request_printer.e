@@ -24,9 +24,8 @@ inherit
 	ERL_G_TYPE_ROUTINES
 
 	SHARED_SERVER
-		rename
-			universe as system_universe,
-			system as system_system
+		undefine
+			universe, system
 		end
 
 	AUT_BYTE_NODE_FACTORY
@@ -38,16 +37,22 @@ inherit
 
 	ITP_SHARED_CONSTANTS
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; a_variable_table: like variable_table)
+	make (a_system: like system; a_variable_table: like variable_table; a_interpreter: like interpreter)
 			-- Create new request.
 		require
 			a_system_not_void: a_system /= Void
 			a_variable_table_attached: a_variable_table /= Void
+			a_interpreter_attached: a_interpreter /= Void
 		do
 			system := a_system
 			variable_table := a_variable_table
@@ -55,9 +60,12 @@ feature {NONE} -- Initialization
 			load_object_feature := interpreter_root_class.feature_named (load_object_feature_name)
 			store_object_feature := interpreter_root_class.feature_named (store_object_feature_name)
 			check_object_invariant_feature := interpreter_root_class.feature_named (check_object_invariant_feature_name)
+			record_query_feature := interpreter_class.feature_named (record_query_feature_name)
 
 			create expression_type_visitor.make (system, variable_table)
 			create expression_b_visitor.make (system, load_object_feature)
+
+			interpreter := a_interpreter
 		ensure
 			system_set: system = a_system
 		end
@@ -74,6 +82,9 @@ feature -- Access
 			-- Last request
 			-- `flag' indicates the type of current request, possible
 			-- values are defined in `ITP_SHARED_CONSTANTS'.			
+
+	interpreter: AUT_INTERPRETER_PROXY
+			-- Proxy
 
 feature {AUT_REQUEST} -- Processing
 
@@ -114,7 +125,7 @@ feature {AUT_REQUEST} -- Processing
 				-- 1: target which willl be created.
 				-- 2~`l_argument_count'+1: arguments
 
-			l_locals.extend (a_request.target_type)
+			l_locals.extend (a_request.target_type.deep_actual_type)
 			if a_request.has_argument then
 				l_arguments := feature_argument_types (l_feature, a_request.target_type)
 				l_locals.append (l_arguments)
@@ -135,8 +146,8 @@ feature {AUT_REQUEST} -- Processing
 				-- Create nodes to store created object into object pool.
 			l_compound.extend (new_store_variable_byte_code (1, a_request.target.index))
 
-				-- Print request into `output_stream'.
-			print_execute_request (l_compound)
+				-- Print request into `output_stream'.			
+			print_execute_request (l_compound, execute_request_flag, extra_data_for_execute_request (a_request))
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
@@ -155,11 +166,13 @@ feature {AUT_REQUEST} -- Processing
 			l_local_count: INTEGER
 			l_receiver_index: INTEGER
 			l_extra_local_count: INTEGER
+			l_receiver_var: detachable ITP_VARIABLE
 		do
 				-- If the to be called feature is a query, we need one more instruction
 				-- at the end to store the result in object pool
 			if a_request.is_feature_query then
 				l_extra_local_count := 1
+				l_receiver_var := a_request.receiver
 			else
 				l_local_count := l_argument_count + 1
 			end
@@ -179,6 +192,7 @@ feature {AUT_REQUEST} -- Processing
 				-- 2~`l_argument_count'+1: arguments
 				-- `l_argument_count' + 2: receiver (if `l_feature' is a query)
 			l_target_type ?= expression_type_visitor.type (a_request.target)
+			l_target_type := l_target_type.deep_actual_type
 			l_locals.extend (l_target_type)
 
 			if a_request.has_argument then
@@ -186,7 +200,8 @@ feature {AUT_REQUEST} -- Processing
 				l_locals.append (l_arguments)
 			end
 
-			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_feature.written_in)
+			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).deep_actual_type
+--			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_feature.written_in)
 			if a_request.is_feature_query then
 				l_locals.extend (l_receiver_type)
 			end
@@ -222,7 +237,7 @@ feature {AUT_REQUEST} -- Processing
 			end
 
 				-- Dump request into `output_stream'.
-			print_execute_request (l_compound)
+			print_execute_request (l_compound, execute_request_flag, extra_data_for_execute_request (a_request))
 		end
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
@@ -241,7 +256,7 @@ feature {AUT_REQUEST} -- Processing
 			l_compound.extend (new_store_variable_byte_code (1, a_request.receiver.index))
 
 				-- Print request into `output_stream'.
-			print_execute_request (l_compound)
+			print_execute_request (l_compound, execute_request_flag, Void)
 		end
 
 	process_type_request (a_request: AUT_TYPE_REQUEST)
@@ -252,11 +267,100 @@ feature {AUT_REQUEST} -- Processing
 			last_request := [type_request_flag, a_request.variable.index.out]
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+			l_locals: ARRAYED_LIST [TYPE_A]
+			l_feature: FEATURE_I
+			l_compound: BYTE_LIST [BYTE_NODE]
+			l_target: DS_LINKED_LIST [ITP_EXPRESSION]
+			l_compound_count: INTEGER
+			l_target_index: INTEGER
+			l_local_count: INTEGER
+			l_record_feature: FEATURE_I
+			l_query_names: LIST [STRING]
+			l_target_type: CL_TYPE_A
+		do
+			if attached {CL_TYPE_A} expression_type_visitor.type (a_request.variable) as l_type then
+				l_target_type := l_type
+			else
+				l_target_type := system.any_type
+			end
+
+			l_query_names := a_request.query_names
+			l_compound_count := 2 + l_query_names.count
+			l_local_count := 1
+
+			create l_compound.make (l_compound_count)
+			create l_locals.make (l_local_count)
+
+				-- Setup locals: The only local we need is the the target object
+				-- whose state is to be recorded.
+			l_locals.extend (l_target_type)
+
+				-- Setup context for byte-node generation.
+			setup_byte_code_in_context (l_locals)
+
+				-- Create nodes to load target into local.
+			create l_target.make
+			l_target.force_last (a_request.variable)
+			l_compound.append (new_load_local_nodes (l_target, 1))
+
+				-- Create a node for "record_query" for each query that we are interested in.
+--				from
+--					l_query_names.start
+--				until
+--					l_query_names.after
+--				loop
+--					l_feature := l_target_type.associated_class.feature_named (l_query_names.item)
+--					l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
+--					l_query_names.forth
+--				end
+
+				-- Dump request into `output_stream'.
+			print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		local
+			l_feature_identifier: STRING
+			l_object_ids: ARRAY [INTEGER]
+			l_variables: DS_LIST [ITP_VARIABLE]
+			i: INTEGER
+		do
+			create l_feature_identifier.make (48)
+			l_feature_identifier.append (a_request.feature_.associated_class.name_in_upper)
+			l_feature_identifier.append ("__")
+			l_feature_identifier.append (a_request.feature_.feature_.feature_name.as_lower)
+
+			l_variables := a_request.variables
+			create l_object_ids.make (1, l_variables.count)
+			from
+				i := 1
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				l_object_ids.put (l_variables.item_for_iteration.index, i)
+				i := i + 1
+				l_variables.forth
+			end
+			last_request := [precondition_evaluation_request_flag, [l_feature_identifier, l_object_ids]]
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			last_request := [predicate_evaluation_request_flag, a_request.predicates]
+		end
+
+
 feature {NONE} -- Byte code generation
 
-	new_check_invariant_feature_call (a_local_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is
+	new_check_invariant_feature_call (a_local_index: INTEGER; a_object_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is
 			-- New FEATURE_B instance to check class invariant of the `a_local_index'-th local variable.
-			-- `a_local_type' is the type of that local variable.
+			-- `a_local_type' is the type of that local variable, whose index in the object pool is `a_object_index'.
 		require
 			a_local_index_positive: a_local_index > 0
 			a_local_type_attached: a_local_type /= Void
@@ -265,9 +369,18 @@ feature {NONE} -- Byte code generation
 			l_object_pool_index_param: PARAMETER_B
 			l_parameters: BYTE_LIST [PARAMETER_B]
 			l_local: LOCAL_B
+			l_integer_expr: INTEGER_CONSTANT
 		do
-			create l_parameters.make (1)
+			create l_parameters.make (2)
 
+				-- Setup argument for object index.
+			create l_object_pool_index_param
+			create l_integer_expr.make_with_value (a_object_index)
+			l_object_pool_index_param.set_expression (l_integer_expr)
+			l_object_pool_index_param.set_attachment_type (l_integer_expr.type)
+			l_parameters.extend (l_object_pool_index_param)
+
+				-- Setup argument for local variable index.
 			create l_local_index_param
 			create l_local
 			l_local.set_position (a_local_index)
@@ -276,6 +389,35 @@ feature {NONE} -- Byte code generation
 
 			l_parameters.extend (l_local_index_param)
 			Result := new_feature_b (check_object_invariant_feature, void_type, l_parameters)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	record_query_feature: FEATURE_I
+			-- Feature to record query value
+
+	record_query_feature_name: STRING = "record_query"
+			-- Name of the feature used to record value of a query
+
+	new_record_query_feature_call (a_agent_argument: ROUTINE_CREATION_B): BYTE_NODE is
+			-- New FEATURE_B instance to record a feature's value. That feature is wrapped
+			-- in `a_agent_argument'.
+		require
+			a_agent_argument_attached: a_agent_argument /= Void
+		local
+			l_param: PARAMETER_B
+			l_object_pool_index_param: PARAMETER_B
+			l_parameters: BYTE_LIST [PARAMETER_B]
+			l_local: LOCAL_B
+		do
+			create l_parameters.make (1)
+
+			create l_param
+			l_param.set_expression (a_agent_argument)
+			l_param.set_attachment_type (record_query_feature.arguments.i_th (1).actual_type)
+
+			l_parameters.extend (l_param)
+			Result := new_instr_call_b (new_feature_b (record_query_feature, void_type, l_parameters))
 		ensure
 			result_attached: Result /= Void
 		end
@@ -333,7 +475,12 @@ feature {NONE} -- Byte code generation
 				l_cursor.after
 			loop
 				Result.extend (new_reverse_b (new_local_b (i), l_expr_visitor.expression (l_cursor.item)))
-				Result.extend (new_check_invariant_byte_code (i))
+				if attached {ITP_VARIABLE} l_cursor.item as l_variable then
+					fixme ("It will cause a segmentation violation if expanded types are included here. Jasonw 22.05.2009")
+					if not variable_table.variable_type (l_variable).is_expanded then
+						Result.extend (new_check_invariant_byte_code (i, l_variable.index))
+					end
+				end
 				l_cursor.forth
 				i := i + 1
 			end
@@ -357,7 +504,7 @@ feature {NONE} -- Byte code generation
 			result_attached: Result /= Void
 		end
 
-	new_check_invariant_byte_code (a_local_index: INTEGER): BYTE_NODE
+	new_check_invariant_byte_code (a_local_index: INTEGER; a_object_index: INTEGER): BYTE_NODE
 			-- New byte-node to store local at `a_local_index' in object pool at index `a_index'.
 		require
 			a_local_index_positive: a_local_index > 0
@@ -366,6 +513,7 @@ feature {NONE} -- Byte code generation
 				new_instr_call_b (
 					new_check_invariant_feature_call (
 						a_local_index,
+						a_object_index,
 						check_object_invariant_feature.arguments.i_th (1).actual_type))
 		ensure
 			result_attached: Result /= Void
@@ -411,8 +559,8 @@ feature {NONE} -- Byte code generation
 	last_byte_code: STD_BYTE_CODE
 			-- Last generated byte-code
 
-	print_execute_request (a_compound: BYTE_LIST [BYTE_NODE])
-			-- Print execute request to `output_stream'.
+	print_execute_request (a_compound: BYTE_LIST [BYTE_NODE]; a_request_flag: NATURAL_8; a_extra_data: detachable ANY)
+			-- Print request indicated by `a_request_flag' to `output_stream'.
 			-- The execute request contains the byte code defined by `a_locals' and `a_compound'.
 		require
 			a_compound_attached: a_compound /= Void
@@ -421,6 +569,7 @@ feature {NONE} -- Byte code generation
 			l_feature: like feature_for_byte_code_injection
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
+			l_extra: detachable ANY
 		do
 			l_feature := feature_for_byte_code_injection
 
@@ -439,7 +588,12 @@ feature {NONE} -- Byte code generation
 				-- [execute_request_flag: NATURAL_8, [byte_code: ?STRING, extra_data: ?ANY]]
 				-- `byte_code' is the byte code to execute, `extra_data' stores some
 				-- additional data, which may be used in the future.
-			last_request := [execute_request_flag, [l_byte_code_data, ""]]
+			if a_extra_data = Void then
+				l_extra := ""
+			else
+				l_extra := a_extra_data
+			end
+			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
 		end
 
 feature{NONE} -- Implementation
@@ -467,6 +621,116 @@ feature{NONE} -- Implementation
 
 	check_object_invariant_feature_name: STRING = "check_invariant"
 			-- Name of feature to check invariant of an object in interpreter.
+
+feature{NONE} -- Precondition satisfaction
+
+	extra_data_for_execute_request (a_request: AUT_CALL_BASED_REQUEST): detachable ANY is
+			-- Extract data for `a_request'
+		require
+			a_request_attached: a_request /= Void
+		local
+			l_config: TEST_GENERATOR_CONF_I
+			l_array: ARRAY [detachable ANY]
+			l_is_extra_data_needed: BOOLEAN
+		do
+			l_config := interpreter.configuration
+			l_is_extra_data_needed :=
+				l_config.is_precondition_checking_enabled or
+				l_config.is_test_case_serialization_enabled
+
+			if l_is_extra_data_needed then
+				create l_array.make (1, 2)
+					-- Setup data for precondition satisfaction.
+				if l_config.is_precondition_checking_enabled then
+					setup_extra_data_for_precondition_satisfaction (a_request, l_array)
+				end
+
+				if l_config.is_test_case_serialization_enabled then
+					setup_extra_data_for_test_case_serialization (a_request, l_array)
+				end
+			end
+			Result := l_array
+		end
+
+	setup_extra_data_for_test_case_serialization (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY]) is
+			-- Set up extra data for test case serialization for `a_request' in `a_data'.
+		require
+			a_request_attached: a_request /= Void
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			l_operands: SPECIAL [INTEGER]
+			l_is_creation: BOOLEAN
+			l_is_query: BOOLEAN
+		do
+			if
+				a_data /= Void and then
+				interpreter.configuration.is_test_case_serialization_enabled
+			then
+				if attached {AUT_CREATE_OBJECT_REQUEST} a_request as l_request then
+					l_is_creation := True
+				end
+
+				if attached {AUT_INVOKE_FEATURE_REQUEST} a_request as q_request then
+					l_is_query := q_request.receiver /= Void
+				end
+
+				a_data.put (
+					[a_request.target_type.associated_class.name,
+					a_request.feature_to_call.feature_name,
+					a_request.test_case_index,
+					a_request.start_time,
+					a_request.operand_indexes,
+					a_request.operand_types,
+					a_request.argument_count,
+					l_is_creation,
+					l_is_query],
+					extra_data_index_test_case_serialization)
+			end
+		end
+
+	setup_extra_data_for_precondition_satisfaction (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY]) is
+			-- Set up extra data for precondition satisfaction for `a_request' in `a_data'.
+		require
+			a_request_attached: a_request /= Void
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			l_operands: SPECIAL [INTEGER]
+		do
+			if
+				a_data /= Void and then
+				interpreter.configuration.is_precondition_checking_enabled and then
+				a_request.feature_id > 0 and then
+				relevant_predicate_with_operand_table.has (a_request.feature_id)
+			then
+				a_data.put ([a_request.feature_id, a_request.operand_indexes], extra_data_index_precondition_satisfaction)
+			end
+		end
+
+	extra_data_for_predicate_evaluation (a_request: AUT_CALL_BASED_REQUEST): TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]] is
+			-- Extra data used for predicate evaluation.
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			l_operands: SPECIAL [INTEGER]
+		do
+			if
+				interpreter.configuration.is_precondition_checking_enabled and then
+				a_request.feature_id > 0 and then
+				relevant_predicate_with_operand_table.has (a_request.feature_id)
+			then
+				Result := [a_request.feature_id, a_request.operand_indexes]
+			else
+				Result := Void
+			end
+		end
 
 invariant
 	system_not_void: system /= Void

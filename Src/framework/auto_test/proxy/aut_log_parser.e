@@ -88,9 +88,12 @@ feature -- Parsing
 					if line.count >= 2 and then line.substring (1, 2).same_string ("--") then
 							-- We are in the comment line. If this line matches the start request,
 							-- the start request will be handled, otherwise, the line is ignored.
+
 						if line.same_string (proxy_has_started_and_connected_message) then
 							-- We are in the "start" request.
 							report_request_line (line)
+						else
+							report_comment_line (line)
 						end
 					else
 						if line.count >= interpreter_log_prefix.count and then line.substring (1, interpreter_log_prefix.count).same_string (interpreter_log_prefix) then
@@ -142,6 +145,9 @@ feature {NONE} -- Reporting
 				report_event (l_last_response)
 
 				last_response_text.wipe_out
+			else
+				create {AUT_BAD_RESPONSE} l_last_response.make ("")
+				report_event (l_last_response)
 			end
 
 				-- Now we parse the newly found request line.
@@ -154,6 +160,158 @@ feature {NONE} -- Reporting
 				report_event (l_last_request)
 			end
 		end
+
+--	report_last_request
+--			-- Report `last_request' in `request_parser'.
+--		require
+--			last_request_exists: request_parser.last_request /= Void
+--		do
+--			request_history.force_last (request_parser.last_request)
+--			request_parser.last_request.process (Current)
+--			reported_request_count := reported_request_count + 1
+--		end
+
+	report_comment_line (a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			report_event (create {AUT_COMMENT_EVENT}.make (a_line))
+		end
+
+--feature {NONE} -- Processsing
+
+--	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
+--		local
+--			l_last_response: AUT_RESPONSE
+--			l_response_stream: KL_STRING_INPUT_STREAM
+--		do
+--			if last_response_text.is_empty then
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+--			else
+--				create l_response_stream.make (last_response_text)
+--				response_parser.set_input_stream (l_response_stream)
+--				response_parser.parse_invoke_response
+--				l_last_response := response_parser.last_response
+--				if l_last_response.is_normal then
+--					if not l_last_response.is_exception then
+--						variable_table.define_variable (a_request.target, a_request.target_type)
+--					end
+--				end
+--			end
+--			a_request.set_response (l_last_response)
+--		end
+
+--	process_start_request (a_request: AUT_START_REQUEST)
+--		do
+--			check last_response_text.is_empty end
+--			a_request.set_response (create {AUT_NORMAL_RESPONSE}.make (""))
+--			variable_table.wipe_out
+--		end
+
+--	process_stop_request (a_request: AUT_STOP_REQUEST)
+--		local
+--			l_last_response: AUT_RESPONSE
+--		do
+--			if last_response_text.is_empty then
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+--			else
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make (last_response_text)
+--			end
+--			a_request.set_response (l_last_response)
+--		end
+
+--	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
+--		local
+--			l_last_response: AUT_RESPONSE
+--			l_response_stream: KL_STRING_INPUT_STREAM
+--		do
+--			if variable_table.is_variable_defined (a_request.target) then
+--				a_request.set_target_type (variable_table.variable_type (a_request.target))
+--			end
+--			if last_response_text.is_empty then
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+--			else
+--				create l_response_stream.make (last_response_text)
+--				response_parser.set_input_stream (l_response_stream)
+--				response_parser.parse_invoke_response
+--				l_last_response := response_parser.last_response
+--			end
+--			a_request.set_response (l_last_response)
+--		end
+
+--	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
+--		local
+--			l_last_response: AUT_RESPONSE
+--			l_response_stream: KL_STRING_INPUT_STREAM
+--		do
+--			if last_response_text.is_empty then
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+--			else
+--				create l_response_stream.make (last_response_text)
+--				response_parser.set_input_stream (l_response_stream)
+--				response_parser.parse_assign_expression_response
+--				l_last_response := response_parser.last_response
+--			end
+--			a_request.set_response (l_last_response)
+--		end
+
+--	process_type_request (a_request: AUT_TYPE_REQUEST)
+--		local
+--			l_last_response: AUT_RESPONSE
+--			l_response_stream: KL_STRING_INPUT_STREAM
+--		do
+--			if last_response_text.is_empty then
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+--			else
+--				create l_response_stream.make (last_response_text)
+--				response_parser.set_input_stream (l_response_stream)
+--				response_parser.parse_type_of_variable_response
+--				l_last_response := response_parser.last_response
+--				if l_last_response.is_normal then
+--					if not l_last_response.is_exception then
+--						variable_table.define_variable (
+--							a_request.variable,
+--							base_type (l_last_response.text))
+--					end
+--				end
+--				l_last_response := response_parser.last_response
+--			end
+--			a_request.set_response (l_last_response)
+--		end
+
+--	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+--			-- Process `a_request'.
+--		local
+--			l_last_response: AUT_RESPONSE
+--			l_response_stream: KL_STRING_INPUT_STREAM
+--		do
+--			if last_response_text.is_empty then
+--				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+--			else
+--				create l_response_stream.make (last_response_text)
+--				response_parser.set_input_stream (l_response_stream)
+--				response_parser.parse_object_state_response
+--				l_last_response := response_parser.last_response
+--				if
+--					attached {AUT_NORMAL_RESPONSE} l_last_response as l_normal_response and then
+--					l_normal_response.is_normal
+--				then
+--					create {AUT_OBJECT_STATE_RESPONSE} l_last_response.make_from_normal_response (l_normal_response)
+--				end
+--			end
+--			a_request.set_response (l_last_response)
+--		end
+
+--	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+--			-- Process `a_request'.
+--		do
+--			-- Do nothing.
+--		end
+
+--	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+--			-- Process `a_request'.
+--		do
+--			-- Do nothing.
+--		end
 
 feature{NONE} -- Implementation
 

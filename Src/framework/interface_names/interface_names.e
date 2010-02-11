@@ -597,10 +597,18 @@ feature -- Accelerator, focus label and menu name
 	m_Project_toolbar: STRING_32			do Result := locale.translation("&Project Bar")	end
 	m_Refactoring_toolbar: STRING_32		do Result := locale.translation("Re&factoring Bar")	end
 	f_refactoring_pull: STRING_32		do Result := locale.translation("Pull up Feature")	end
+	f_refactoring_extract_method: STRING_32		do Result := locale.translation("Extract Method")	end
+	f_refactoring_pretty_print: STRING_32		do Result := locale.translation("Pretty print")	end
+	f_refactoring_make_effective: STRING_32		do Result := locale.translation("Make effective")	end
+	f_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
 	f_refactoring_rename: STRING_32		do Result := locale.translation("Rename Feature/Class")	end
 	f_refactoring_undo: STRING_32		do Result := locale.translation("Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)")	end
 	f_refactoring_redo: STRING_32		do Result := locale.translation("Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)")	end
 	b_refactoring_pull: STRING_32		do Result := locale.translation("Pull Up")	end
+	b_refactoring_extract_method: STRING_32		do Result := locale.translation("Extract Method")	end
+	b_refactoring_pretty_print: STRING_32		do Result := locale.translation("Pretty print")	end
+	b_refactoring_make_effective: STRING_32		do Result := locale.translation("Make effective")	end
+	b_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
 	b_refactoring_rename: STRING_32		do Result := locale.translation("Rename")	end
 	b_refactoring_undo: STRING_32		do Result := locale.translation("Undo Refactoring")	end
 	b_refactoring_redo: STRING_32		do Result := locale.translation("Redo Refactoring")	end
@@ -1041,6 +1049,11 @@ feature -- Label texts
 	l_one_target_among: STRING_32			do Result := locale.translation("Choose one target among: ")	end
 	l_Only_available_for_stopped_application: STRING_32 do Result := locale.translation("This feature is only available when debugging, and when the execution is stopped.")	end
 
+	l_class_name_text: STRING_32		do Result := locale.translation ("Class name:") end
+	l_start_line: STRING_32				do Result := locale.translation ("Start line:") end
+	l_end_line: STRING_32				do Result := locale.translation ("End line:") end
+	l_extracted_method_name: STRING_32	do Result := locale.translation ("Name of extracted method:") end
+
 	l_class: STRING_32					do Result := locale.translation ("Class") end
 	l_class_address: STRING_32			do Result := locale.translation ("Class address") end
 	l_class_colon: STRING_32				do Result := locale.translation("Class:")	end
@@ -1152,6 +1165,12 @@ feature -- Label texts
 		do
 			Result := locale.formatted_string (locale.translation("The descending class $1 already has another feature with the new name."), [a_class])
 		end
+
+	l_start_line_not_in_a_feature: STRING_32 			do Result := locale.translation ("Start line is not in a feature") end
+	l_invalid_start_position: STRING_32 			do Result := locale.translation ("Invalid start position") end
+	l_invalid_end_position: STRING_32 			do Result := locale.translation ("Invalid end position") end
+	l_invalid_line_numbers: STRING_32 			do Result := locale.translation ("Line numbers are not in the same instruction-block") end
+	l_swapped_line_numbers: STRING_32 			do Result := locale.translation ("End-line is before start-line") end
 
 	l_description: STRING_32 			do Result := locale.translation ("Description") end
 	l_Diagram_delete_view_cmd: STRING_32	do Result := locale.translation("Do you really want to delete current view?")	end
@@ -2302,6 +2321,8 @@ feature -- Title part
 	t_refactoring_class_rename: STRING_32 do Result := locale.translation("Refactoring: Class Rename")	end
 	t_select_working_directory: STRING_32 do Result := locale.translation("Select working directory")	end
 
+	t_refactoring_extract_method: STRING_32	do Result := locale.translation("Refactoring: Extract Method")	end
+
 	t_Breakpoints_tool: STRING_32				do Result := locale.translation ("Breakpoints")	end
 	t_Call_stack_tool: STRING_32					do Result := locale.translation ("Call Stack")	end
 	t_Cluster_tool: STRING_32					do Result := locale.translation ("Clusters")	end
@@ -2719,7 +2740,7 @@ feature -- String escape
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

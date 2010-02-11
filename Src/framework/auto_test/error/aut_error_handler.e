@@ -316,6 +316,12 @@ feature -- Report events
 			last_testing_request := Void
 		end
 
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			-- Do nothing.		
+		end
+
 feature -- Reporting messages
 
 	report_version_message
@@ -614,6 +620,14 @@ feature -- Reporting errors
 			a_filename_attached: a_filename /= Void
 		do
 			report_error_message ("Could not create file '" + a_filename + "' for writing.")
+		end
+
+	report_linear_constraint_solver_name_error (a_name: STRING)
+			-- Report invalid `a_name' for linear constraint solver.
+		require
+			a_name_attached: a_name /= Void
+		do
+			report_error_message ("Linear constraint solver name %"" + a_name + "%" is not supported.")
 		end
 
 invariant

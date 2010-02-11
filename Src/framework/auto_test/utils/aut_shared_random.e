@@ -20,6 +20,18 @@ feature -- Access
 			random_not_void: Result /= Void
 		end
 
+feature -- Status report
+
+	is_within_probability (a_probability: DOUBLE): BOOLEAN is
+			-- Is the next random fall into the probality of [0, a_probality]?
+		require
+			a_probability_in_range: a_probability >= 0.0 and a_probability <= 1.0
+		do
+			random.forth
+			Result := ((random.item_for_iteration \\ 100).to_double / 100.0) <= a_probability
+		end
+
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -78,7 +78,10 @@ feature -- Execution
 			l_type: STRING
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
+--			l_profiler: PROFILING_SETTING
 		do
+--			create l_profiler.make
+--			l_profiler.start_profiling
 			l_args := auto_test_arguments
 			if l_args /= Void then
 				l_project := a_test_suite.eiffel_project
@@ -120,6 +123,82 @@ feature -- Execution
 				l_conf.set_html_output (l_ap.is_html_statistics_format_enabled)
 				l_root_group := l_project.system.system.root_creators.first.cluster
 
+					-- Log file loading
+				l_conf.set_load_file_path (l_ap.log_file_path)
+
+					-- Object state retrieval config
+				l_conf.set_object_state_config (l_ap.object_state_config)
+
+					-- Should automatic testing be enabled?
+				l_conf.set_is_random_testing_enabled (l_ap.is_automatic_testing_enabled)
+
+					-- Should precondition checking be enabled?
+				l_conf.set_is_precondition_evaluation_enabled (l_ap.is_precondition_checking_enabled)
+
+					-- Should linear constraint solving be enabled?
+				l_conf.set_is_linear_solving_enabled (l_ap.is_linear_constraint_solving_enabled)
+
+					-- Should object state exploration be enabled?
+				l_conf.set_is_object_state_exploration_enabled (l_ap.is_object_state_exploration_enabled)
+
+					-- Set log processor.
+				l_conf.set_log_processor (l_ap.log_processor)
+				l_conf.set_log_processor_output (l_ap.log_processor_output)
+
+					-- Set max tries for precondition search.
+				l_conf.set_max_precondition_search_tries (l_ap.max_precondition_search_tries)
+
+					-- Set max time for precondition search.
+				l_conf.set_max_precondition_search_time (l_ap.max_precondition_search_time)
+
+					-- Set seed.
+				if l_ap.is_seed_provided then
+					l_conf.set_seed (l_ap.seed.as_natural_32)
+				end
+
+					-- Should AutoTest generate tests for CITADEL from the given proxy log?
+				l_conf.set_is_citadel_test_generation_enabled (l_ap.prepare_citadel_tests)
+
+					-- Ilinca, "number of faults law" experiment
+				if l_ap.random.seed >= 0 then
+					l_conf.set_seed (l_ap.random.seed.to_natural_32)
+				else
+					l_conf.set_seed ((-l_ap.random.seed).to_natural_32)
+				end
+
+					-- Set max candidates count for precondition evaluation
+				l_conf.set_max_candidate_count (l_ap.max_candidate_count)
+
+					-- Should statistics of object pool and predicate pool be logged?
+				l_conf.set_is_pool_statistics_logged (l_ap.is_pool_statistics_logged)
+
+					-- Set linear constraint solver to be used.
+				l_conf.set_is_smt_linear_constraint_solver_enabled (l_ap.is_smt_linear_constraint_solver_enabled)
+				l_conf.set_is_lpsolve_linear_constraint_solver_enabled (l_ap.is_lpsolve_contraint_linear_solver_enabled)
+
+					-- Set smart object selection rate
+				l_conf.set_object_selection_for_precondition_satisfaction_rate (l_ap.object_selection_for_precondition_satisfaction_rate)
+
+				l_conf.set_smt_enforce_old_value_rate (l_ap.smt_enforce_old_value_rate)
+				l_conf.set_smt_use_predefined_value_rate (l_ap.smt_use_predefined_value_rate)
+
+					-- Set lower/upper bound for linearly solvable arguments.
+				l_conf.set_integer_lower_bound (l_ap.integer_lower_bound)
+				l_conf.set_integer_upper_bound (l_ap.integer_upper_bound)
+
+				l_conf.set_is_random_cursor_used (l_ap.is_random_cursor_used)
+
+					-- Set test case serialization arguments.
+				l_conf.set_is_passing_test_case_serialization_enabled (l_ap.is_passing_test_cases_serialization_enabled)
+				l_conf.set_is_failing_test_case_serialization_enabled (l_ap.is_failing_test_cases_serialization_enabled)
+
+				l_conf.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
+				l_conf.set_is_console_output_enabled (l_ap.is_console_log_enabled)
+
+				l_conf.set_is_on_the_fly_test_case_generation_enabled (l_ap.is_on_the_fly_test_case_generation_enabled)
+
+				l_conf.set_proxy_log_options (l_ap.proxy_log_options)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)
@@ -132,6 +211,7 @@ feature -- Execution
 			else
 
 			end
+--			l_profiler.stop_profiling
 		end
 
 	auto_test_arguments: detachable DS_LIST [STRING]

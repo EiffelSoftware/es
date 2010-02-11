@@ -53,6 +53,13 @@ feature -- Status report
 		deferred
 		end
 
+	is_loading_log: BOOLEAN
+			-- Is `Current' loading a log?
+		require
+			running: is_running
+		deferred
+		end
+
 feature -- Access
 
 	conf_type: attached TEST_GENERATOR_CONF_I

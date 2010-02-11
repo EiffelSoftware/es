@@ -50,6 +50,7 @@
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
 		<library name="xml" location="$EIFFEL_SRC\framework\xml\xml.ecf" readonly="false"/>
+		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>		
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>
@@ -167,6 +168,7 @@
 		</external_object>
 		<variable name="batch_framework" value="false"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
+		<library name="auto_fix" location="$EIFFEL_SRC\framework\autofix\autofix.ecf" readonly="false"/>		
 		<library name="command_tunnel" location="$EIFFEL_SRC\framework\command_tunnel\command_tunnel.ecf" readonly="false"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true">
 			<option debug="true">
@@ -222,10 +224,13 @@
 		<library name="uri_launcher" location="$EIFFEL_SRC\framework\uri_launcher\uri_launcher.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
+		<library name="fixing" location="$EIFFEL_SRC\library\fixing\fixing.ecf" readonly="false"/>
+		<library name="eiffel_transform" location="$EIFFEL_SRC\framework\eiffel_transform\eiffel_transform.ecf" readonly="false"/>		
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
 		<cluster name="compiler_framework" location="$EIFFEL_SRC\Eiffel\API\framework\" recursive="true"/>
+		<cluster name="auto_fix_py" location="$EIFFEL_SRC\framework\auto_fix_py\" recursive="true"/>
 		<cluster name="debugger_interface" location="$EIFFEL_SRC\Eiffel\debugger_interface\" recursive="true">
 			<file_rule>
 				<exclude>/none$</exclude>

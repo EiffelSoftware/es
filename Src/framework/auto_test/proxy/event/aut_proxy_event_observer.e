@@ -27,6 +27,11 @@ feature -- Basic operations
 		deferred
 		end
 
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+			-- Report comment line `a_line'.
+		deferred
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

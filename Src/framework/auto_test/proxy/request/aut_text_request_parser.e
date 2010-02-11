@@ -111,6 +111,9 @@ feature -- Parsing
 			quit_keyword_count: INTEGER
 			type_keyword_count: INTEGER
 			execute_keyword_count: INTEGER
+			state_keyword_count: INTEGER
+			l_var_name: STRING
+			l_var_type: TYPE_A
 		do
 			if end_of_input then
 				report_and_set_error_at_position ("Expected something, not end of input. Don't be so stingy!", position)
@@ -122,6 +125,7 @@ feature -- Parsing
 					quit_keyword_count := quit_keyword.count
 					type_keyword_count := type_keyword.count
 					execute_keyword_count := execute_keyword.count
+					state_keyword_count := state_keyword.count
 					if
 							-- Process ":quit" request.
 						input.count - 1 = quit_keyword_count and then
@@ -150,6 +154,30 @@ feature -- Parsing
 							parse_identifier
 							if not has_error then
 								report_type_request (last_string.twin)
+							end
+						end
+					elseif
+							-- Process ":state" request.
+						input.count > state_keyword_count and then
+						substring (2, 1 + state_keyword_count).is_case_insensitive_equal (state_keyword)
+					then
+						position := position + state_keyword_count
+						skip_whitespace
+						if end_of_input then
+							report_and_set_error_at_position ("Expected variable name, not end of input.", position)
+						else
+							parse_identifier
+							if not has_error then
+								l_var_name := last_string.twin
+								skip_whitespace
+								if not has_error then
+									parse_type_name_in_braces
+									l_var_type := base_type (last_string.twin)
+									if not has_error then
+										report_object_state_request (l_var_name, l_var_type)
+									end
+								end
+
 							end
 						end
 					else
@@ -236,6 +264,15 @@ feature {NONE} -- Handlers
 
 	report_start_request
 			-- Report a "start" request.
+		deferred
+		end
+
+	report_object_state_request (a_variable_name: STRING; a_type: TYPE_A)
+			-- Report state request for variable named `a_variable_name' of `a_type'.
+		require
+			a_variable_name_not_void: a_variable_name /= Void
+			a_variable_name_valid: is_valid_entity_name (a_variable_name)
+			a_type_attached: a_type /= Void
 		deferred
 		end
 
@@ -1225,6 +1262,9 @@ feature {NONE} -- Implementation
 
 	comment_prefix: STRING = "--"
 			-- Line comment prefix
+
+	state_keyword: STRING = "state"
+			-- 'state' keyword
 
 invariant
 

@@ -85,6 +85,29 @@ feature -- Command
 				-- Separator -------------------------------------------------
 			l_refactoring_menu.extend (create {EV_MENU_SEPARATOR})
 
+				-- Extract method
+			l_command_menu_item := develop_window.refactoring_manager.extract_method_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Pretty print
+			l_command_menu_item := develop_window.refactoring_manager.pretty_print_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Create setter
+			l_command_menu_item := develop_window.refactoring_manager.create_setter_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Make effective
+			l_command_menu_item := develop_window.refactoring_manager.make_effective_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Separator -------------------------------------------------
+			l_refactoring_menu.extend (create {EV_MENU_SEPARATOR})
+
 				-- Undo command.
 			l_command_menu_item := develop_window.refactoring_manager.undo_command.new_menu_item
 			auto_recycle (l_command_menu_item)
@@ -1181,10 +1204,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_SEARCH_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SEARCH_REPORT_TOOL})
 			Result.extend (create {EV_MENU_SEPARATOR})
-
-			insert_show_tool_menu_item(Result, {ES_EBBRO_TOOL})
-
-			Result.extend (create {EV_MENU_SEPARATOR})
 			insert_show_tool_menu_item (Result, {ES_PROPERTIES_TOOL})
 			insert_show_tool_menu_item (Result, {ES_DIAGRAM_TOOL})
 			insert_show_tool_menu_item (Result, {ES_METRICS_TOOL})
@@ -1198,18 +1217,12 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			Result.extend (create {EV_MENU_SEPARATOR})
 			insert_show_tool_menu_item (Result, {ES_TESTING_TOOL})
 			insert_show_tool_menu_item (Result, {ES_OUTPUTS_TOOL})
-			insert_show_tool_menu_item (Result, {ES_PROOF_TOOL})
-			insert_show_tool_menu_item (Result, {ES_PROOF_ASSISTANT_TOOL})
-
 
 --			l_customized_tools := develop_window.tools.customized_tools
 --			if not l_customized_tools.is_empty then
 --				Result.extend (create {EV_MENU_SEPARATOR})
 --				l_customized_tools.do_all (agent fill_show_menu_for_tool (Result, ?))
 --			end
-
-			Result.extend (create {EV_MENU_SEPARATOR})
-			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
 		end
 
 	build_window_menu
@@ -1607,8 +1620,8 @@ feature -- Docking library menu items
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -1637,4 +1650,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

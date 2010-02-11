@@ -98,6 +98,24 @@ feature {AUT_REQUEST} -- Visitors
 			a_request.variable.process (expression_printer)
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature {NONE} -- Implementation
 
 	wipe_out_string

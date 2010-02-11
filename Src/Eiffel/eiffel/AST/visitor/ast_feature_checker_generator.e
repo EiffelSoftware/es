@@ -8856,7 +8856,7 @@ feature {NONE} -- Agents
 			l_cur_class.insert_changed_assertion (a_feat)
 		end
 
-feature {AST_FEATURE_CHECKER_GENERATOR}
+feature -- {AST_FEATURE_CHECKER_GENERATOR}
 
 	break_point_slot_count: INTEGER
 			-- Counts the breakpoint slots that occured during processing the feature.

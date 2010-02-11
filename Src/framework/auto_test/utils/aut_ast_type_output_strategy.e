@@ -1,8 +1,5 @@
 note
-	description: "[
-		AutoTest specific type output strategy which does not print formal types, only their
-		corresponding actual type.	
-	]"
+	description: "Summary description for {AUT_AST_TYPE_OUTPUT_STRATEGY}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

@@ -1056,6 +1056,11 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu.extend (dev_window.refactoring_manager.rename_command.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
 			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.rename_command).drop_class (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.make_effective_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.make_effective_command).drop_class (a_stone))
+
 --			l_menu.extend (new_menu_item ("Move"))
 			--| FIXME IEK There is no dialog for moving a class?
 		end
@@ -1077,6 +1082,14 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu.extend (dev_window.refactoring_manager.pull_command.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
 			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.pull_command).drop_feature (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.pretty_print_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.pretty_print_command).drop_feature (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.create_setter_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.create_setter_command).drop_feature (a_stone))
 		end
 
 	extend_debug_class_menus (a_menu: EV_MENU; a_class_c: CLASS_C)
@@ -1995,5 +2008,37 @@ feature {NONE} -- Implementation
 
 invariant
 	dev_window_not_void: dev_window /= Void
+
+note
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

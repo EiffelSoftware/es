@@ -23,6 +23,15 @@ feature -- AutoTest socket request flags
 	type_request_flag: NATURAL_8 = 4
 			-- Flag for "type" request
 
+	object_state_request_flag: NATURAL_8 = 5
+			-- Flag for "state" request
+
+	precondition_evaluation_request_flag: NATURAL_8 = 6
+			-- Flag for "precondition" request
+
+	predicate_evaluation_request_flag: NATURAL_8 = 7
+			-- Flag for "predicate" request			
+
 feature -- AutoTest socket reponse flags
 
 	normal_response_flag: NATURAL_8 = 1
@@ -35,6 +44,22 @@ feature -- AutoTest socket reponse flags
 	internal_error_respones_flag: NATURAL_8 = 3
 			-- Flag to indicate that there is an internal error
 			-- in the interpreter.
+
+	object_is_void_flag: NATURAL_8 = 4
+			-- Flag to indicate that the object involed in state query is void
+
+feature -- Index for extra data
+
+	extra_data_index_precondition_satisfaction: INTEGER is 1
+			-- Index for precondition satisfaction
+
+	extra_data_index_test_case_serialization: INTEGER is 2
+			-- Index for test case serialization on the fly
+
+feature -- Strings
+
+	nonsensical: STRING is "nonsensical"
+			-- Nonsensical value
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"

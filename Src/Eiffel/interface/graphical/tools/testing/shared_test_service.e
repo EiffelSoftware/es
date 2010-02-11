@@ -64,6 +64,12 @@ feature {NONE} -- Access
 			Result := {TEST_GENERATOR_I}
 		end
 
+	fix_proposer_type: attached TYPE [AFX_FIX_PROPOSER_I]
+			-- Factory type for fix generator
+		do
+		    Result := {AFX_FIX_PROPOSER_I}
+		end
+
 feature {NONE} -- Query
 
 	error_message (a_type: attached TYPE [TEST_PROCESSOR_I]; a_code: NATURAL): attached STRING_32
@@ -88,7 +94,11 @@ feature {NONE} -- Query
 				elseif attached {TYPE [TEST_EXTRACTOR_I]} a_type as l_extractor_type then
 					l_message := e_extraction_unavailable
 				elseif attached {TYPE [TEST_GENERATOR_I]} a_type as l_generator_type then
-					l_message := e_unkonwn_error
+					l_message := e_generation_unavailable
+				elseif attached {TYPE [AFX_FIX_PROPOSER_I]} a_type as l_fix_proposer_type then
+				    l_message := e_fix_proposer_unavailable
+				else
+				    l_message := e_unkonwn_error
 				end
 			when processor_not_ready_code then
 				if attached {TYPE [TEST_EXECUTOR_I]} a_type as l_exec_type2 then
@@ -100,6 +110,10 @@ feature {NONE} -- Query
 				elseif attached {TYPE [TEST_EXTRACTOR_I]} a_type as l_extractor_type2 then
 					l_message := e_extraction_not_ready
 				elseif attached {TYPE [TEST_GENERATOR_I]} a_type as l_generator_type2 then
+				    l_message := e_generation_not_ready
+				elseif attached {TYPE [AFX_FIX_PROPOSER_I]} a_type as l_fix_proposer_type2 then
+				    l_message := e_fix_proposer_not_ready
+				else
 					l_message := e_unkonwn_error
 				end
 			when configuration_not_valid_code then
@@ -111,6 +125,8 @@ feature {NONE} -- Query
 					l_message := e_extraction_conf_invalid
 				elseif attached {TYPE [TEST_GENERATOR_I]} a_type as l_generator_type3 then
 					l_message := e_generation_conf_invalid
+				elseif attached {TYPE [AFX_FIX_PROPOSER_I]} a_type as l_fix_proposer_type3 then
+				    l_message := e_fix_proposer_conf_invalid
 				else
 					l_message := e_unkonwn_error
 				end
@@ -192,17 +208,20 @@ feature {NONE} -- Internationalization
 	e_creation_unavailable: STRING = "Test creation is currently unavailable"
 	e_extraction_unavailable: STRING = "Test extraction is currently unavailable"
 	e_generation_unavailable: STRING = "AutoTest is currently unavailable"
+	e_fix_proposer_unavailable: STRING = "AutoFix is currently unavailable"
 
 	e_execution_not_ready: STRING = "Can not launch test execution because it is currently executing tests."
 	e_debugging_not_ready: STRING = "Can not debug test because debugger is currently running."
 	e_creation_not_ready: STRING = "Currently unable to create new tests."
 	e_extraction_not_ready: STRING = "Can not extract any tests, please check debugger state."
 	e_generation_not_ready: STRING = "Can not launch AutoTest because it is already running."
+	e_fix_proposer_not_ready: STRING = "AutoFix is not ready."
 
 	e_execution_conf_invalid: STRING = "Can not execute selected tests. Make sure none of the tests are already queued or running by a differend executor."
 	e_creation_conf_invalid: STRING = "Unable to create new tests."
 	e_extraction_conf_invalid: STRING = "Unable to extract tests for selected call stack frames."
 	e_generation_conf_invalid: STRING = "Unable to launch AutoTest with provided options."
+	e_fix_proposer_conf_invalid: STRING = "Unable to perform AutoFix with provided options."
 
 	e_unkonwn_error: STRING = "Unable to launch processor"
 

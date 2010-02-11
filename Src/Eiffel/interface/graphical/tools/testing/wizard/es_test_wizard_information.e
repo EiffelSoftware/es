@@ -71,6 +71,7 @@ feature -- Access
 			if l_cache = Void then
 				create l_cache.make (preferences)
 				generator_conf_cache := l_cache
+				l_cache.set_is_random_testing_enabled (True)
 			end
 			Result := l_cache
 		ensure

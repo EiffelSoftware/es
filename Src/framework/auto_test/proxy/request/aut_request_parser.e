@@ -215,6 +215,15 @@ feature {NONE} -- Handlers
 			end
 		end
 
+	report_object_state_request (a_variable_name: STRING; a_type: TYPE_A)
+			-- Report state request for variable named `a_variable_name'.
+		local
+			variable: ITP_VARIABLE
+		do
+			create variable.make (variable_index (a_variable_name, variable_name_prefix))
+			create {AUT_OBJECT_STATE_REQUEST} last_request.make (system, variable, a_type)
+		end
+
 feature {NONE} -- Error Reporting
 
 	report_error (a_reason: STRING)

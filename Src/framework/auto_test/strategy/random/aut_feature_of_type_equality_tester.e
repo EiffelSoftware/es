@@ -21,7 +21,8 @@ inherit
 
 create
 
-	make
+	make,
+	make_with_creator_flag
 
 feature {NONE} -- Initialization
 
@@ -29,7 +30,17 @@ feature {NONE} -- Initialization
 			-- Create new tester.
 			-- `a_feature' of type `a_type'.
 		do
+			is_creator_checked := True
 		end
+
+	make_with_creator_flag (b: BOOLEAN) is
+			-- Initialize `is_creator_checked' with `b'.
+		do
+			is_creator_checked := b
+		ensure
+			is_creator_checked_set: is_creator_checked = b
+		end
+
 
 feature -- Status report
 
@@ -42,13 +53,17 @@ feature -- Status report
 			elseif u = Void then
 				Result := False
 			else
-				Result := v.feature_ = u.feature_ and then
+				Result := v.feature_.equiv (u.feature_) and then
 							v.type.same_type (u.type) and then
 							v.type.is_equivalent (u.type) and then
-							v.is_creator = u.is_creator
+							(is_creator_checked implies v.is_creator = u.is_creator)
 
 			end
 		end
+
+	is_creator_checked: BOOLEAN;
+			-- Is `{AUT_FEATURE_OF_TYPE}.is_creator' checked during equality comparison?
+			-- Default: True
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

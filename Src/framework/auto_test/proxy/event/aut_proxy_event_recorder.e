@@ -77,6 +77,12 @@ feature -- Basic operations
 			last_response := Void
 		end
 
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			-- Do nothing.
+		end
+
 	cleanup
 			-- Process last request still waiting for response if any.
 		do
@@ -180,15 +186,17 @@ feature {NONE} -- Implementation
 		local
 			l_last_response: AUT_RESPONSE
 			l_response_stream: KL_STRING_INPUT_STREAM
+			l_text: STRING
 		do
 			if a_request.response = Void then
 				if attached last_response as l_response then
 					l_last_response := l_response
 					if l_last_response.is_normal then
 						if not l_last_response.is_exception then
+							l_text := l_last_response.text.split ('%N').first
 							variable_table.define_variable (
 								a_request.variable,
-								base_type (l_last_response.text))
+								base_type (l_text))
 						end
 					end
 				else
@@ -197,6 +205,36 @@ feature {NONE} -- Implementation
 				a_request.set_response (l_last_response)
 			end
 		end
+
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+			l_state_response: AUT_OBJECT_STATE_RESPONSE
+		do
+			if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
+				if attached {AUT_OBJECT_STATE_RESPONSE} l_normal_response as l_sresponse then
+					l_state_response := l_sresponse
+				else
+					create l_state_response.make_from_normal_response (l_normal_response)
+				end
+			else
+				create l_state_response.make_with_bad
+			end
+			a_request.set_response (l_state_response)
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 
 invariant
 	variable_table_not_void: variable_table /= Void

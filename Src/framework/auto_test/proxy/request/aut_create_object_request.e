@@ -79,6 +79,52 @@ feature -- Access
 			-- If the default creation procedure should be used to create the object
 			-- `creation_procecure' will be Void.
 
+	operand_indexes: SPECIAL [INTEGER] is
+			-- Indexes of operands for the feature call
+			-- in current
+		do
+			if argument_list /= Void then
+				create Result.make (argument_list.count + 1)
+				Result.put (target.index, 0)
+				argument_list.do_all_with_index (agent (a_var: ITP_VARIABLE; a_index: INTEGER; a_result: SPECIAL [INTEGER]) do a_result.put (a_var.index, a_index) end (?, ?, Result))
+			else
+				create Result.make (1)
+				Result.put (target.index, 0)
+			end
+		end
+
+	operand_types: SPECIAL [STRING] is
+			-- Typss of operands
+		local
+			l_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			l_target_type: TYPE_A
+			i: INTEGER
+		do
+			l_target_type := target_type
+			l_count := argument_list.count + 1
+
+			create Result.make (l_count)
+			Result.put (l_target_type.name, 0)
+
+			if argument_count > 0 then
+				l_args := creation_procedure.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					Result.put (l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).name, i)
+					l_args.forth
+					i := i + 1
+				end
+				l_args.go_to (l_cursor)
+			end
+		end
+
 feature -- Processing
 
 	process (a_processor: AUT_REQUEST_PROCESSOR)
@@ -97,4 +143,35 @@ invariant
 	no_argument_void: argument_list /= Void implies  not argument_list.has (Void)
 --	is_default_creatable: default_creation implies is_default_creatable (type.base_class, system)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -1,6 +1,6 @@
 note
 	description: "[
-		Simple response printer creating textual representation of a response.	
+		Simple response printer creating textual representation of a response.
 	]"
 	author: ""
 	date: "$Date$"
@@ -65,6 +65,24 @@ feature {AUT_RESPONSE} -- Visitors
 		do
 			string.wipe_out
 			string.append ("(invalid response)")
+		end
+
+	process_object_state_response (a_response: AUT_OBJECT_STATE_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- Do nothing.
+		end
+
+	process_precondition_evaluation_response (a_response: AUT_PRECONDITION_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_response (a_response: AUT_PREDICATE_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- Do nothing.
 		end
 
 note

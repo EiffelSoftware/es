@@ -75,7 +75,7 @@ feature -- Generation
 			file_system_routines.copy_recursive (pathnames.runtime_dirname, file_system.pathname (a_pathname, "runtime"))
 		end
 
-	create_interpreter (a_log_dirname: STRING)
+	create_interpreter (a_log_dirname: STRING; a_config: TEST_GENERATOR_CONF_I)
 			-- Create interpreter proxy based on executable found in `a_pathname'
 			-- and make it available via `last_interpreter'.
 			--
@@ -98,8 +98,11 @@ feature -- Generation
 					system,
 					file_system.pathname (a_log_dirname, "interpreter_log.txt"),
 					file_system.pathname (a_log_dirname, "proxy_log.txt"),
-					session.error_handler)
+					file_system.pathname (a_log_dirname, "serialization.txt"),
+					session.error_handler,
+					a_config)
 				l_new.add_observer (session.error_handler)
+				l_new.set_timeout (session.options.proxy_time_out)
 			end
 			last_interpreter := l_new
 		end

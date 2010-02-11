@@ -1252,15 +1252,16 @@ feature -- Update
 				end
 			elseif option.is_equal ("-auto_test") then
 				create l_at_args.make
-				from
-					current_option := current_option + 1
-				until
-					current_option > argument_count
-				loop
-					l_at_args.force (argument (current_option))
-					current_option := current_option + 1
-				end
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
 				create {EWB_AUTO_TEST} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-auto_fix") then
+				create l_at_args.make
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_AUTO_FIX} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-eiffel_transform") then
+				create {EWB_EIFFEL_TRANSFORM} command
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
@@ -1383,6 +1384,25 @@ feature {NONE} -- Implementation
 			create l_formatter.make (6, 2)
 			io.put_string (l_formatter.formatted (l_real_64))
 			io.put_string (l_unit)
+		end
+
+	arguments_in_range (a_lower, a_upper: INTEGER): LINKED_LIST [STRING]
+			-- Arguments from position `a_lower' to `a_upper'
+		require
+			a_lower_valid: a_lower > 0 and a_lower <= argument_count
+			a_upper_valid: a_upper > 0 and a_upper <= argument_count and a_lower <= a_upper
+		local
+			i: INTEGER
+		do
+			create Result.make
+			from
+				i := a_lower
+			until
+				i > a_upper
+			loop
+				Result.force (argument (i))
+				i := i + 1
+			end
 		end
 
 note

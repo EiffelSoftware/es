@@ -19,6 +19,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	ERL_G_TYPE_ROUTINES
+
 create
 
 	make
@@ -78,6 +80,20 @@ feature -- Access
 
 	highest_dynamic_priority: INTEGER
 			-- Highest dynamic priority
+
+	features_under_test: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+			-- List of features under test
+		do
+			create Result.make
+			from
+				feature_list_table.start
+			until
+				feature_list_table.after
+			loop
+				feature_list_table.item_for_iteration.do_all (agent Result.force_last)
+				feature_list_table.forth
+			end
+		end
 
 feature -- Changing Priority
 
@@ -316,9 +332,7 @@ feature {NONE} -- Implementation
 			feature_i: FEATURE_I
 		do
 			create feature_.make (a_feature, a_type)
-			if a_creator then
-				feature_.set_is_creator (True)
-			end
+			feature_.set_is_creator (a_creator)
 
 			if a_feature.written_class.name.is_case_insensitive_equal ("ANY") then
 				if a_creator then
@@ -330,36 +344,6 @@ feature {NONE} -- Implementation
 				end
 			else
 				set_static_priority_of_feature (feature_, a_priority)
-			end
-		end
-
-	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN is
-			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
-		require
-			a_feature_attached: a_feature /= Void
-			a_type_attached: a_type /= Void
-		local
-			l_class: CLASS_C
-		do
-			if
-				a_type.has_associated_class and then
-				a_type.associated_class.creators /= Void and then
-				a_type.associated_class.creators.has (a_feature.feature_name)
-			then
-				Result := a_type.associated_class.creators.item (a_feature.feature_name).is_all
-			end
-
-			if a_type.has_associated_class then
-				l_class := a_type.associated_class
-
-				if l_class.creators /= Void and then l_class.creators.has (a_feature.feature_name) then
-						-- For normal creators.
-					Result := l_class.creators.item (a_feature.feature_name).is_all
-
-				elseif l_class.allows_default_creation and then l_class.default_create_feature.feature_name.is_equal (a_feature.feature_name) then
-						-- For default creators.
-					Result := True
-				end
 			end
 		end
 

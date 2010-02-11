@@ -61,6 +61,21 @@ feature -- Access
 				(feature_to_call = Void implies Result = 0)
 		end
 
+	feature_id: INTEGER
+			-- Id of the feature to call
+			-- This is an ID used for predicate evaluation
+
+	operand_indexes: SPECIAL [INTEGER] is
+			-- Indexes of operands for the feature call
+			-- in current
+		deferred
+		end
+
+	operand_types: SPECIAL [STRING] is
+			-- Typss of operands
+		deferred
+		end
+
 feature -- Status report
 
 	is_setup_ready: BOOLEAN
@@ -86,6 +101,18 @@ feature -- Status report
 			Result := argument_count > 0
 		ensure
 			good_result: Result = (argument_count > 0)
+		end
+
+feature -- Setting
+
+	set_feature_id (a_id: INTEGER) is
+			-- Set `feature_id' with `a_id'.
+		require
+			a_id_valid: a_id >= 0
+		do
+			feature_id := a_id
+		ensure
+			feature_id_set: feature_id = a_id
 		end
 
 note

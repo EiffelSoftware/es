@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="graphx" uuid="197D2624-6547-4BAB-904B-131ABFA4EA73" library_target="graphx">
+	<target name="graphx">
+		<root all_classes="true"/>
+		<option warning="false" is_attached_by_default="false" void_safety="none">
+			<assertions/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
+		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="gobo_time" location="$ISE_LIBRARY\library\gobo\gobo_time.ecf"/>
+		<library name="gobo_tools" location="$ISE_LIBRARY\library\gobo\gobo_tools.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<cluster name="graphx" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/unix$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/Clib$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

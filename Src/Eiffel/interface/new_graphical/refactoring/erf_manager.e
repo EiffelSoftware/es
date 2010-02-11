@@ -42,12 +42,20 @@ feature {NONE} -- Initialization
 			create class_rename_refactoring.make (undo_stack, preferences)
 			create feature_rename_refactoring.make (undo_stack, preferences)
 			create feature_pull_refactoring.make (undo_stack, preferences)
+			create extract_method_refactoring.make (undo_stack, preferences)
+			create pretty_print_refactoring.make (undo_stack, preferences)
+			create create_setter_refactoring.make (undo_stack, preferences)
+			create make_effective_refactoring.make (undo_stack, preferences)
 
 				-- create the commands
 			create pull_command.make (Current)
 			create rename_command.make (Current)
 			create undo_command.make (Current)
 			create redo_command.make (Current)
+			create extract_method_command.make (Current)
+			create pretty_print_command.make (Current)
+			create create_setter_command.make (Current)
+			create make_effective_command.make (Current)
 		end
 
 feature -- Commands
@@ -57,11 +65,21 @@ feature -- Commands
 	undo_command: EB_RF_UNDO_COMMAND
 	redo_command: EB_RF_REDO_COMMAND
 
+	extract_method_command: EB_RF_EXTRACT_METHOD_COMMAND
+	pretty_print_command: EB_RF_PRETTY_PRINT_COMMAND
+	create_setter_command: EB_RF_CREATE_SETTER_COMMAND
+	make_effective_command: EB_RF_MAKE_EFFECTIVE_COMMAND
+
 feature -- Access
 
 	class_rename_refactoring: ERF_CLASS_RENAME
 	feature_rename_refactoring: ERF_FEATURE_RENAME
 	feature_pull_refactoring: ERF_FEATURE_PULL
+
+	extract_method_refactoring: ERF_EXTRACT_METHOD
+	pretty_print_refactoring: ERF_FEATURE_PRETTY_PRINT
+	create_setter_refactoring: ERF_CREATE_SETTER
+	make_effective_refactoring: ERF_MAKE_EFFECTIVE
 
 feature -- Status
 
@@ -168,6 +186,11 @@ feature -- Element change
 			else
 				redo_command.disable_sensitive
 			end
+
+			extract_method_command.enable_sensitive
+			pretty_print_command.enable_sensitive
+			create_setter_command.enable_sensitive
+			make_effective_command.enable_sensitive
 		end
 
 	disable_sensitive
@@ -177,6 +200,11 @@ feature -- Element change
 			rename_command.disable_sensitive
 			undo_command.disable_sensitive
 			redo_command.disable_sensitive
+
+			extract_method_command.disable_sensitive
+			pretty_print_command.disable_sensitive
+			create_setter_command.disable_sensitive
+			make_effective_command.disable_sensitive
 		end
 
 	destroy
@@ -284,7 +312,7 @@ invariant
 	redo_command_not_void: redo_command /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -297,22 +325,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

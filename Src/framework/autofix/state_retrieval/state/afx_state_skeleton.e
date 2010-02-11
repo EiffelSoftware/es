@@ -1,0 +1,505 @@
+note
+	description: "State of a class"
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	AFX_STATE_SKELETON
+
+inherit
+	AFX_HASH_SET [AFX_EXPRESSION]
+		redefine
+			force_new,
+			append,
+			put,
+			put_new,
+			put_last,
+			force,
+			force_last,
+			extend,
+			extend_last,
+			append_last,
+			merge,
+			intersect,
+			subtract,
+			symdif
+		end
+
+	AUT_OBJECT_STATE_REQUEST_UTILITY
+		undefine
+			is_equal,
+			copy
+		end
+
+	SHARED_WORKBENCH
+		undefine
+			is_equal,
+			copy
+		end
+
+	AFX_SOLVER_FACTORY
+		undefine
+			is_equal,
+			copy
+		end
+
+	DEBUG_OUTPUT
+		undefine
+			is_equal,
+			copy
+		end
+
+create
+	make_with_basic_argumentless_query,
+	make_with_accesses,
+	make_with_expressions,
+	make_basic,
+	make_with_text
+
+convert
+	linear_representation: {LINEAR [AFX_EXPRESSION]}
+
+feature{NONE} -- Initialization
+
+	make_with_basic_argumentless_query (a_class: CLASS_C)
+			-- Initialize Current with argumentless
+			-- qureies of basic types in `a_class'.
+		local
+			l_queries: LIST [FEATURE_I]
+			l_item: AFX_AST_EXPRESSION
+		do
+			l_queries := supported_queries_of_type (a_class.actual_type)
+			make_basic (class_, Void, l_queries.count)
+			from
+				l_queries.start
+			until
+				l_queries.after
+			loop
+				create l_item.make_with_text (a_class, l_queries.item_for_iteration, l_queries.item_for_iteration.feature_name, a_class)
+				force_last (l_item)
+				l_queries.forth
+			end
+		end
+
+	make_with_accesses (a_class: like class_; a_feature: like feature_; a_accesses: LIST [AFX_ACCESS])
+			-- Initialize Current with `a_accesses'.
+		local
+			l_cursor: CURSOR
+			l_expr: AFX_EXPRESSION
+		do
+			make_basic (a_class, a_feature, a_accesses.count)
+
+			l_cursor := a_accesses.cursor
+			from
+				a_accesses.start
+			until
+				a_accesses.after
+			loop
+				l_expr := a_accesses.item_for_iteration.expression
+				force_last (l_expr)
+				a_accesses.forth
+			end
+			a_accesses.go_to (l_cursor)
+		end
+
+	make_with_expressions (a_class: like class_; a_feature: like feature_; a_expressions: LINEAR [AFX_EXPRESSION])
+			-- Initialize current with `a_expressions'.
+		do
+			make_basic (a_class, a_feature, 20)
+			a_expressions.do_all (agent force_last)
+		end
+
+	make_with_text (a_class: like class_; a_feature: like feature_; a_expressions: LIST [STRING])
+			-- Initialize current with a list of literal expressions in `a_expressions'.
+		do
+			make_basic (a_class, a_feature, a_expressions.count)
+			from
+				a_expressions.start
+			until
+				a_expressions.after
+			loop
+				force_last (create {AFX_AST_EXPRESSION}.make_with_text (class_, feature_, a_expressions.item_for_iteration, class_))
+				a_expressions.forth
+			end
+		end
+
+	make_basic (a_class: like class_; a_feature: like feature_; a_count: INTEGER)
+			-- Initialize Current.
+		do
+			set_class (a_class)
+			set_feature (a_feature)
+			set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			make (a_count)
+		end
+
+feature -- Access
+
+	class_: CLASS_C
+			-- Class whose state Current presents
+
+	feature_: detachable FEATURE_I
+			-- Feature whose state Curernt presents
+			-- If Void, it means that Current presents the state
+			-- for `class_', not for a particular feature.
+
+feature -- Status report
+
+	is_for_class: BOOLEAN
+			-- Does current represent state of a class?
+		do
+			Result := feature_ = Void
+		ensure
+			good_result: Result = feature_ = Void
+		end
+
+	is_for_feature: BOOLEAN
+			-- Does current represent state of a feature?
+		do
+			Result := feature_ /= Void
+		ensure
+			good_result: Result = (feature_ /= Void)
+		end
+
+feature -- Access
+
+	smtlib_expressions: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
+			-- Table of SMTLIB representation for items in Current skeleton
+			-- Key is items in Current, value is its SMTLIB representation.
+		do
+			if smtlib_expressions_cache = Void then
+				calculate_smtlib_expressions
+			end
+			Result := smtlib_expressions_cache
+		end
+
+	theory: AFX_THEORY
+			-- SMTLIB theory for current skeleton needed for reasoning about `smtlib_expressions'
+		do
+			if theory_cache = Void then
+				calculate_smtlib_expressions
+			end
+			Result := theory_cache
+		end
+
+	simplified: like Current
+			-- Simplified version of Current
+		do
+			Result := solver_launcher.simplified_skeleton (Current)
+		end
+
+	linear_representation: LINEAR [AFX_EXPRESSION]
+			-- List representation of Current
+		local
+			l_list: LINKED_LIST [AFX_EXPRESSION]
+		do
+			create l_list.make
+			do_all (agent l_list.extend)
+			Result := l_list
+		end
+
+	slices (n: INTEGER): LINKED_LIST [AFX_STATE_SKELETON]
+			-- Split current skeleton into `n' approximately equally large slices
+			-- and return those slices.
+		require
+			n_positive: n > 0
+		local
+			l_slice_size: INTEGER
+			i, j: INTEGER
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_cur_slice: LINKED_LIST [AFX_EXPRESSION]
+		do
+			l_slice_size := count // n
+			from
+				create l_cur_slice.make
+				l_cursor := new_cursor
+				l_cursor.start
+				i := 0
+				j := 1
+			until
+				l_cursor.after
+			loop
+				l_cur_slice.extend (l_cursor.item)
+				i := i + 1
+				if i = l_slice_size and then j < n then
+					Result.extend (create{like Current}.make_with_expressions (class_, feature_, l_cur_slice))
+					create l_cur_slice.make
+					i := 0
+					j := j + 1
+				end
+				l_cursor.forth
+			end
+		ensure
+			good_result: Result.count = n
+		end
+
+	minimal_premises (a_predicate: AFX_EXPRESSION): detachable like Current
+			-- The minimal subset of Current which implies `a_predicate'
+			-- If no such subset is found, return Void.
+		require
+			a_predicate_valid: a_predicate.is_predicate
+		do
+			Result := minimal_premises_with_context (a_predicate, Void)
+		ensure
+			good_result: Result /= Void implies Result.count <= count
+		end
+
+	minimal_premises_with_context (a_predicate: AFX_EXPRESSION; a_context: detachable like Current): detachable like Current
+			-- The minimal subset of Current which, when accompanied with `a_context,
+			-- implies `a_predicate': Result ^ a_context -> a_predicate
+			-- If no such subset is found, return Void.
+		require
+			a_predicate_valid: a_predicate.is_predicate
+		do
+			Result := solver_launcher.minimized_premises (Current, a_predicate, a_context)
+		ensure
+			good_result: Result /= Void implies Result.count <= count
+		end
+
+	anded: AFX_EXPRESSION
+			-- An expression representing the anded expression of all elements in current
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_text: STRING
+		do
+			create l_text.make (128)
+			if count = 1 then
+				l_text.append (first.text)
+			else
+				l_cursor := new_cursor
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_text.append_character ('(')
+					l_text.append (l_cursor.item.text)
+					l_text.append_character (')')
+					if not l_cursor.is_last then
+						l_text.append (once " and ")
+					end
+					l_cursor.forth
+				end
+			end
+			create {AFX_AST_EXPRESSION} Result.make_with_text (first.class_, first.feature_, l_text, first.written_class)
+		end
+
+feature -- Status report
+
+	implication alias "implies" (other: like Current): BOOLEAN
+			-- Does Current implies `other'?
+			-- `theory' in Current and `other' will be used to support the reasoning.
+		do
+			Result := solver_launcher.has_implication (linear_representation, other.linear_representation, theory + other.theory)
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (1024)
+			do_all (
+				agent (a_item: like item; a_str: STRING)
+					do
+						a_str.append (a_item.text)
+						a_str.append_character ('%N')
+					end (?, Result))
+		end
+
+feature -- Element change
+
+	put (v: like item) is
+			-- Add `v' to set, replacing any existing item.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (v)
+		end
+
+	put_new (v: like item) is
+			-- Add `v' to set.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (v)
+		end
+
+	put_last (v: like item) is
+			-- Add `v' at the end of set if not already included,
+			-- or replace it otherwise.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (v)
+		end
+
+	force (v: like item) is
+			-- Add `v' to set, replacing any existing item.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (v)
+		end
+
+	force_new (v: like item) is
+			-- Add `v' to set.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (v)
+		end
+
+	force_last (v: like item) is
+			-- Add `v' at the end of set if not already included,
+			-- or replace it otherwise.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (v)
+		end
+
+	extend (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	extend_last (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- If items of `other' were not included yet, insert
+			-- them at last position if implementation permits.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	append (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	append_last (other: DS_LINEAR [like item]) is
+			-- Add items of `other' to set, replacing any existing item.
+			-- Add `other.first' first, etc.
+			-- If items of `other' were not included yet, insert
+			-- them at last position if implementation permits.
+			-- Resize set if necessary.
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+feature -- Basic operations
+
+	merge (other: DS_SET [like item]) is
+			-- Add all items of `other' to current set.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Do not move cursors.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	intersect (other: DS_SET [like item]) is
+			-- Remove all items not included in `other'.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Move all cursors `off'.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	subtract (other: DS_SET [like item]) is
+			-- Remove all items also included in `other'.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Move all cursors `off'.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+	symdif (other: DS_SET [like item]) is
+			-- Add items of `other' which are not included
+			-- in current set and remove those which are.
+			-- (Use `equality_tester''s comparison criterion
+			-- if not void, use `=' criterion otherwise.)
+			-- Move all cursors `off'.
+		do
+			clear_cache
+			Precursor (other)
+		end
+
+feature -- Setting
+
+	set_class (a_class: like class_)
+			-- Set `class_' with `a_class'.
+		do
+			class_ := a_class
+		ensure
+			class_set: class_ = a_class
+		end
+
+	set_feature (a_feature: like feature_)
+			-- Set `feature_' with `a_feature'.
+		do
+			feature_ := a_feature
+		ensure
+			feature_set: feature_ = a_feature
+		end
+
+feature{NONE} -- Implementation
+
+	smtlib_expressions_cache: detachable like smtlib_expressions
+			-- Cache for `smtlib_expressions'
+
+	theory_cache: detachable like theory
+			-- Cache for `theory'
+
+	calculate_smtlib_expressions
+			-- Calculate `smtlib_expressions'.
+		local
+			l_data: TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
+		do
+			l_data := (create {AFX_SHARED_CLASS_THEORY}).expressions_with_theory (linear_representation, class_, feature_)
+			smtlib_expressions_cache := l_data.exprs
+			theory_cache := l_data.theory
+		end
+
+	clear_cache
+			-- Clear cached data, for example, calculated theory
+			-- becuase of element change.
+		do
+			theory_cache := Void
+		end
+
+end

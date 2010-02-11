@@ -65,6 +65,11 @@ inherit
 			{NONE} all
 		end
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -157,6 +162,16 @@ feature -- Status report
 		do
 			Result := status = statistic_status_code
 		end
+
+	is_loading_log: BOOLEAN
+			-- Is `Current' loading a log?
+		do
+		end
+
+--	is_generating_citadel_tests: BOOLEAN
+--		do
+--			Result := status = citadel_status_code
+--		end
 
 feature {TEST_PROCESSOR_SCHEDULER_I} -- Status report
 
@@ -302,40 +317,48 @@ feature {NONE} -- Basic operations
 									l_task.cancel
 								else
 									l_task.step
-									l_repo := session.result_repository_builder.result_repository
-									l_witnesses := l_repo.witnesses
-										-- TODO: it is possible that more than one witness is added per `step', so we need to
-										--       check for the last `k' witnesses added (Arno: 05/03/2009)
-									if not l_witnesses.is_empty and then l_witnesses.last /= last_witness then
-										l_witness := l_witnesses.last
-										if l_witness.is_fail then
-												-- If no minimization algorithm is provided, we disable test creation.
-											if
-												session.options.is_minimization_enabled and then
-												not session.used_witnesses.there_exists (agent {AUT_WITNESS}.is_same_bug (l_witness))
-											then
-												l_minimize_task := minimize_task
-												if l_minimize_task = Void then
-													l_itp := new_interpreter
-													if l_itp /= Void then
-														create l_minimize_task.make (l_itp, system, l_error_handler)
-														minimize_task := l_minimize_task
+									if configuration.is_on_the_fly_test_case_generation_enabled then
+										l_repo := session.result_repository_builder.result_repository
+										l_witnesses := l_repo.witnesses
+											-- TODO: it is possible that more than one witness is added per `step', so we need to
+											--       check for the last `k' witnesses added (Arno: 05/03/2009)
+										if not l_witnesses.is_empty and then l_witnesses.last /= last_witness then
+											l_witness := l_witnesses.last
+											if l_witness.is_fail then
+													-- If no minimization algorithm is provided, we disable test creation.
+												if
+													session.options.is_minimization_enabled and then
+													not session.used_witnesses.there_exists (agent {AUT_WITNESS}.is_same_bug (l_witness))
+												then
+													l_minimize_task := minimize_task
+													if l_minimize_task = Void then
+														l_itp := new_interpreter
+														if l_itp /= Void then
+															create l_minimize_task.make (l_itp, system, l_error_handler)
+															minimize_task := l_minimize_task
+														end
+													end
+													if l_minimize_task /= Void then
+														l_minimize_task.set_witness (l_witness)
+														l_minimize_task.start
 													end
 												end
-												if l_minimize_task /= Void then
-													l_minimize_task.set_witness (l_witness)
-													l_minimize_task.start
-												end
 											end
+											last_witness := l_witness
 										end
-										last_witness := l_witness
 									end
 								end
 							else
 								status := statistic_status_code
 							end
 						else
-							execute_random_tests
+							if configuration.is_random_testing_enabled then
+								execute_random_tests
+							else
+								if configuration.is_load_log_enabled then
+									load_log (configuration.log_file_path)
+								end
+							end
 							is_finished := test_task = Void
 						end
 					elseif is_generating_statistics then
@@ -347,14 +370,18 @@ feature {NONE} -- Basic operations
 							end
 						else
 							if attached {AUT_RANDOM_STRATEGY} test_task as l_task then
-								if session.options.is_text_statistics_format_enabled then
-									generate_text_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
-								end
-								if session.options.is_html_statistics_format_enabled then
-									generate_html_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
-								else
-									is_finished := True
-								end
+								request_stop
+								fixme ("Uncomment the following lines to enable statistics generation. I commented out because there is no way to avoid this and it takes a lot of time. Jasonw 2009.7.23")
+--								generate_failure_statistics -- Ilinca, "number of faults law" experiment
+
+--								if session.options.is_text_statistics_format_enabled then
+--									generate_text_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
+--								end
+--								if session.options.is_html_statistics_format_enabled then
+--									generate_html_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
+--								else
+--									is_finished := True
+--								end
 							end
 						end
 					else
@@ -447,7 +474,8 @@ feature {NONE} -- Implementation
 				l_error_handler.report_info_message (session.options.help_message)
 				is_finished := True
 			else
-
+				find_types_under_test
+				setup_for_precondition_evaluation
 				generate_interpreter
 
 				if is_finished then
@@ -513,7 +541,7 @@ feature {NONE} -- Interpreter generation
 				l_system.force_rebuild
 			end
 			l_file.recursive_open_write
-			create l_source_writer
+			create l_source_writer.make (configuration)
 			if l_file.is_open_write then
 				l_source_writer.write_class (l_file, a_class_name_list, l_system)
 				l_file.flush
@@ -556,7 +584,9 @@ feature{NONE} -- Test case generation and execution
 
 				l_session := session
 				l_error_handler := l_session.error_handler
-				l_itp.add_observer (l_session.result_repository_builder)
+				if configuration.is_on_the_fly_test_case_generation_enabled then
+					l_itp.add_observer (l_session.result_repository_builder)
+				end
 				l_itp.set_is_logging_enabled (True)
 
 				create l_strategy.make (l_itp, system, l_session.error_handler)
@@ -793,8 +823,15 @@ feature {NONE} -- Factory
 		do
 			l_session := session
 			l_itp_gen := l_session.interpreter_generator
-			l_itp_gen.create_interpreter (file_system.pathname (session.output_dirname, "log"))
+
+			l_itp_gen.create_interpreter (file_system.pathname (session.output_dirname, "log"), configuration)
 			Result := l_itp_gen.last_interpreter
+			if Result /= Void then
+					-- Generate typed object pool for precondition evaluation.
+--				if configuration.is_precondition_checking_enabled then
+					Result.generate_typed_object_pool
+--				end
+			end
 		end
 
 feature {NONE} -- Constants
@@ -812,6 +849,355 @@ feature {NONE} -- Constants
 
 	max_tests_per_class: NATURAL = 9
 			-- Maximal number of test routines in a single class
+
+feature -- Precondition satisfaction
+
+	find_types_under_test is
+			-- Find types under test and add them into `configuration'.`types_under_test'.
+		do
+			configuration.set_types_under_test (types_under_test (session.options.class_names, system.root_type.associated_class))
+		end
+
+	setup_for_precondition_evaluation is
+			-- Setup for precondition evaluation.
+		do
+			if configuration.is_precondition_checking_enabled then
+					-- Get the list of all features under test.
+				class_types_under_test.append_last (configuration.types_under_test)
+				features_under_test.append_last (testable_features_from_types (class_types_under_test, system))
+				setup_feature_id_table
+
+					-- Find out all preconditions.
+				find_precondition_predicates
+
+					-- Find out relevant predicates for every feature in `features_under_test'.
+				find_relevant_predicates
+				build_relevant_predicate_with_operand_table
+
+					-- Setup predicate pool.	
+				predicate_pool.setup_predicates (predicates)
+			end
+		end
+
+	setup_feature_id_table is
+			-- Setup `feature_id_table'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_FEATURE_OF_TYPE]
+			l_id: INTEGER
+		do
+			from
+				l_cursor := features_under_test.new_cursor
+				l_id := 1
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				feature_id_table.force_last (l_id, l_cursor.item.full_name)
+				l_id := l_id + 1
+				l_cursor.forth
+			end
+		end
+
+	build_relevant_predicate_with_operand_table is
+			-- Build `relevant_predicate_with_operand_table'.
+		local
+			l_feat_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE], AUT_FEATURE_OF_TYPE]
+			l_pred_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_predicates: DS_LINKED_LIST [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]
+			l_index_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_indexes: SPECIAL [INTEGER]
+		do
+			from
+				l_feat_cursor := relevant_predicates_of_feature.new_cursor
+				l_feat_cursor.start
+			until
+				l_feat_cursor.after
+			loop
+				create l_predicates.make
+				from
+					l_pred_cursor := l_feat_cursor.item.new_cursor
+					l_pred_cursor.start
+				until
+					l_pred_cursor.after
+				loop
+					from
+						l_index_cursor := l_pred_cursor.item.new_cursor
+						l_index_cursor.start
+					until
+						l_index_cursor.after
+					loop
+						create l_indexes.make (l_index_cursor.item.count)
+						l_index_cursor.item.do_all_with_index (
+							agent (a_pos: AUT_FEATURE_SIGNATURE_TYPE; a_index: INTEGER; a_ops: SPECIAL [INTEGER])
+								do
+									a_ops.put (a_pos.position, a_index - 1)
+								end (?, ?, l_indexes))
+
+						l_index_cursor.forth
+					end
+					l_predicates.force_last ([l_pred_cursor.key.id, l_indexes])
+					l_pred_cursor.forth
+				end
+				if not l_predicates.is_empty then
+					relevant_predicate_with_operand_table.force_last (l_predicates.to_array, l_feat_cursor.key.id)
+				end
+				l_feat_cursor.forth
+			end
+		end
+
+	find_precondition_predicates is
+			-- Find precondition predicates from `features_under_test',
+			-- store those predicates into `predicates', and store
+			-- the access patterns of those predicates into
+			-- `precondition_access_pattern'.
+		local
+			l_visitor: AUT_PRECONDITION_ANALYZER
+			l_features: like features_under_test
+			l_feature: AUT_FEATURE_OF_TYPE
+		do
+			l_features := features_under_test
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+					-- Get preconditions from `l_feature'.
+				l_feature := l_features.item_for_iteration
+				create l_visitor.make
+				l_visitor.generate_precondition_predicates (l_feature)
+
+					-- Store predicates and their access patterns.
+				if not l_visitor.last_predicates.is_empty then
+					l_visitor.last_predicates.do_if (agent put_predicate, agent (a_pred: AUT_PREDICATE): BOOLEAN do Result := not predicates.has (a_pred) end (?))
+					put_precondition_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
+					put_precondition_of_feature (l_feature, l_visitor.last_predicates)
+					l_visitor.last_predicates.do_all (agent put_predicate_in_feature_table (?, l_feature))
+				end
+				l_features.forth
+			end
+		end
+
+	find_relevant_predicates is
+			-- For each feature in `features_under_test',
+			-- find relevant predicates that needs to be reevalated
+			-- every time when that feature is executed.
+		local
+			l_features: like features_under_test
+			l_feature: AUT_FEATURE_OF_TYPE
+			l_arranger: AUT_PREDICATE_ARGUMENT_ARRANGER
+			l_predicates: like predicates
+			l_relevant: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_arrangements: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_predicate_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
+		do
+			l_features := features_under_test
+			l_predicates := predicates
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+				l_feature := l_features.item_for_iteration
+				create l_relevant.make (10)
+				l_relevant.set_key_equality_tester (predicate_equality_tester)
+				relevant_predicates_of_feature.force_last (l_relevant, l_feature)
+				from
+					l_predicate_cursor := l_predicates.new_cursor
+					l_predicate_cursor.start
+				until
+					l_predicate_cursor.after
+				loop
+					create l_arranger.make (l_predicate_cursor.item, system)
+					l_arrangements := l_arranger.arrangements_for_feature (l_feature)
+					if not l_arrangements.is_empty then
+						l_relevant.force_last (l_arrangements, l_predicate_cursor.item)
+					end
+					l_predicate_cursor.forth
+				end
+				l_features.forth
+			end
+		end
+
+	types_under_test (a_list: detachable DS_LIST [STRING_8]; a_context: CLASS_C): DS_LINKED_LIST [CL_TYPE_A]
+			-- Types under test from class names in `a_list'.
+			-- classes_under_test with list of class names.
+			--
+			-- `a_list': List of class/type names, can be void or empty to indicate that all classes in the
+			--           system should be tested.
+		local
+			l_tester: KL_STRING_EQUALITY_TESTER_A [STRING_8]
+			l_class_set: DS_HASH_SET [CLASS_I]
+			l_class_cur: DS_HASH_SET_CURSOR [CLASS_I]
+			l_type: TYPE_A
+			l_class_name_set: DS_HASH_SET [STRING_8]
+			l_name_cur: DS_HASH_SET_CURSOR [STRING_8]
+			l_name: STRING_8
+		do
+			fixme ("Duplicated code with {AUT_RANDOM_STRATEGY}.`add_class_names'. 17.06.2009 Jasonw")
+			create Result.make
+			create l_tester
+			if a_list /= Void and then not a_list.is_empty then
+				create l_class_name_set.make (a_list.count)
+				l_class_name_set.set_equality_tester (l_tester)
+				l_class_name_set.append (a_list)
+			else
+				l_class_set := system.universe.all_classes
+				create l_class_name_set.make (l_class_set.count)
+				l_class_name_set.set_equality_tester (l_tester)
+				from
+					l_class_cur := l_class_set.new_cursor
+					l_class_cur.start
+				until
+					l_class_cur.after
+				loop
+					l_name := l_class_cur.item.name
+					check
+						l_name /= Void
+					end
+					l_class_name_set.force_last (l_name)
+					l_class_cur.forth
+				end
+			end
+			from
+				l_name_cur := l_class_name_set.new_cursor
+				l_name_cur.start
+			until
+				l_name_cur.after
+			loop
+				l_type := base_type_with_context (l_name_cur.item, a_context)
+				if l_type /= Void then
+					if l_type.associated_class.is_generic then
+						if not attached {GEN_TYPE_A} l_type as l_gen_type then
+							if attached {GEN_TYPE_A} l_type.associated_class.actual_type as l_gen_type2 then
+								l_type := generic_derivation_of_type (l_gen_type2, l_gen_type2.associated_class)
+							else
+								check
+									dead_end: False
+								end
+							end
+						end
+					end
+					if attached {CL_TYPE_A} l_type as l_class_type then
+						if l_class_type.associated_class /= Void then
+							if not interpreter_related_classes.has (l_class_type.name) then
+								Result.force_last (l_class_type)
+							end
+						end
+					else
+						check
+							dead_end: False
+						end
+					end
+				end
+				l_name_cur.forth
+			end
+		end
+
+feature -- Log processor
+
+	load_log (a_log_file: STRING)
+			-- Load log in `a_log_file'.
+		local
+			l_processor_name: detachable STRING
+			l_processor: AUT_LOG_PROCESSOR
+		do
+			l_processor_name := configuration.log_processor
+			if l_processor_name /= Void then
+				 l_processor_name.to_lower
+				 if log_processors.has (l_processor_name) then
+					l_processor := log_processors.item (l_processor_name)
+					l_processor.set_configuration (configuration)
+					l_processor.process
+				 end
+			end
+		end
+
+	log_processors: HASH_TABLE [AUT_LOG_PROCESSOR, STRING]
+			-- Table of registered log processors
+			-- [Log processor, name of the processor]
+		do
+			if log_processors_internal = Void then
+				create log_processors_internal.make (5)
+				log_processors_internal.compare_objects
+				log_processors_internal.extend (create{AUT_RESULT_ANALYZER}.make (system, configuration, session), "ps")
+				log_processors_internal.extend (create{AUT_OBJECT_STATE_LOG_PROCESSOR}.make (system, configuration, session), "state")
+			end
+			Result := log_processors_internal
+		end
+
+	log_processors_internal: like log_processors
+			-- Implementation of `log_processors'
+
+feature -- CITADEL related
+
+	generate_citadel_tests
+			-- Generate tests for CITADEL from an existing proxy log file.
+		local
+--			l_gen: AUT_CITADEL_TEST_GENERATOR
+		do
+--			create l_gen.make (result_repository, interpreter, error_handler, system, output_dirname)
+--			l_gen.generate_tests (class_names)
+		end
+
+feature -- Repository generation
+
+	build_failure_only_result_repository
+			-- Build result repository from failure log file.
+			-- Ilinca, "number of faults law" experiment
+--		local
+--			log_stream: KL_TEXT_INPUT_FILE
+--			builder: AUT_RESULT_REPOSITORY_BUILDER
+		do
+--			create result_repository.make
+--			create log_stream.make (log_file_path)
+--			log_stream.open_read
+--			if not log_stream.is_open_read then
+--				error_handler.report_cannot_read_error (log_file_path)
+--			else
+--				create builder.make  (system, error_handler)
+--				builder.build (log_stream)
+--				result_repository := builder.last_result_repository
+--				log_stream.close
+--			end
+--		ensure
+--			result_repository_not_void: result_repository /= Void
+		end
+
+	build_citadel_result_repository
+			-- Build result repository from log file.
+--		local
+--			log_stream: KL_TEXT_INPUT_FILE
+--			builder: AUT_CITADEL_RESULT_REPOSITORY_BUILDER
+		do
+--			create result_repository.make
+--			create log_stream.make (log_file_path)
+--			log_stream.open_read
+--			if not log_stream.is_open_read then
+--				error_handler.report_cannot_read_error (log_file_path)
+--			else
+--				create builder.make  (system, error_handler)
+--				builder.build (log_stream)
+--				result_repository := builder.last_result_repository
+--				log_stream.close
+--			end
+--		ensure
+--			result_repository_not_void: result_repository /= Void
+		end
+
+	generate_failure_statistics
+--		require
+--			result_repository_not_void: result_repository /= Void
+--		local
+--			l_generator: AUT_FAILURE_STATISTICS_GENERATOR
+		do
+--			create l_generator.make ("", file_system.pathname (output_dirname, "result"), system, classes_under_test)
+--			l_generator.generate (result_repository)
+--			if l_generator.has_fatal_error then
+--				error_handler.report_text_generation_error
+--			else
+--				error_handler.report_text_generation_finished (l_generator.absolute_index_filename)
+--			end
+		end
 
 invariant
 	not_running_implies_status_compiling: not is_running implies (status = compile_status_code)

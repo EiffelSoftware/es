@@ -155,27 +155,29 @@ feature -- Element change
 			object_test_locals_resolved := a_object_test_locals_resolved
 		end
 
-	add_point (a_class: CLASS_C; a_line: INTEGER; a_text: STRING)
+	add_point (an_ast: AST_EIFFEL; a_class: CLASS_C; a_line: INTEGER; a_text: STRING)
 			-- Add breakable point info
 		require
+		    an_ast_not_void: an_ast /= Void
 			a_class_attached: a_class /= Void
 			a_line_valid: a_line > 0
 			a_text_valid: a_text /= Void
 		do
 			breakable_count := breakable_count + 1
 			breakable_nested_count := 0
-			internal_add_point_info (a_class, a_line, a_text)
+			internal_add_point_info (an_ast, a_class, a_line, a_text)
 		end
 
-	add_nested_point (a_class: CLASS_C; a_line: INTEGER; a_text: STRING)
+	add_nested_point (an_ast: AST_EIFFEL; a_class: CLASS_C; a_line: INTEGER; a_text: STRING)
 			-- Add nested breakable point info
 		require
+		    an_ast_not_void: an_ast /= Void
 			a_class_attached: a_class /= Void
 			a_line_valid: a_line > 0
 			a_text_valid: a_text /= Void
 		do
 			breakable_nested_count := breakable_nested_count + 1
-			internal_add_point_info (a_class, a_line, a_text)
+			internal_add_point_info (an_ast, a_class, a_line, a_text)
 		end
 
 	add_object_test_local (a_name: ID_AS; a_type: detachable TYPE_AS; a_exp: detachable EXPR_AS)
@@ -192,7 +194,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	internal_add_point_info (a_class: CLASS_C; a_line: INTEGER; a_text: STRING)
+	internal_add_point_info (an_ast: attached AST_EIFFEL; a_class: CLASS_C; a_line: INTEGER; a_text: STRING)
 			-- Implementation for `add(_*)_point_info'
 		require
 			a_class_attached: a_class /= Void
@@ -205,6 +207,7 @@ feature {NONE} -- Implementation
 			l_info.class_c := a_class
 			l_info.line := a_line
 			l_info.text := a_text
+			l_info.ast := an_ast
 			points.force (l_info)
 		end
 

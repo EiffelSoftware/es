@@ -73,6 +73,30 @@ feature{AUT_REQUEST} -- Processing
 		deferred
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		require
+			a_request_not_void: a_request /= Void
+			a_request_is_valid: is_request_valid (a_request)
+		deferred
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		require
+			a_request_not_void: a_request /= Void
+			a_request_is_valid: is_request_valid (a_request)
+		deferred
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		require
+			a_request_not_void: a_request /= Void
+			a_request_is_valid: is_request_valid (a_request)
+		deferred
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

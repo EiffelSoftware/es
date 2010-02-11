@@ -1,5 +1,4 @@
 note
-
 	description:
 
 		"AutoTest command line parser"
@@ -20,10 +19,10 @@ create
 	make_with_arguments,
 	make_with_configuration
 
-feature {NONE} -- Initialization
+feature{NONE} -- Initialization
 
 	make_with_arguments (a_arguments: DS_LIST [STRING]; error_handler: AUT_ERROR_HANDLER)
-			-- Process `a_arguments'.
+			-- Process `a_arguments'.		
 		require
 			a_arguments_attached: a_arguments /= Void
 			error_hadler_not_void: error_handler /= Void
@@ -51,6 +50,30 @@ feature {NONE} -- Initialization
 			l_log_to_replay: AP_STRING_OPTION
 			l_help_option: AP_FLAG
 			l_help_flag: AP_DISPLAY_HELP_FLAG
+			l_load_log_option: AP_STRING_OPTION
+			l_state_option: AP_STRING_OPTION
+			l_precondition_option: AP_FLAG
+			l_constraint_solving_option: AP_FLAG
+			l_object_state_exploration: AP_FLAG
+			l_log_processor_op: AP_STRING_OPTION
+			l_log_processor_output_op: AP_STRING_OPTION
+			l_max_precondition_tries_op: AP_INTEGER_OPTION
+			l_max_precondition_time_op: AP_INTEGER_OPTION
+			l_prepare_citadel_tests_option: AP_STRING_OPTION
+			l_candidate_count_option: AP_INTEGER_OPTION
+			l_pool_statistics_logged_option: AP_FLAG
+			l_linear_constraint_solver_option: AP_STRING_OPTION
+			l_smart_selection_rate_option: AP_INTEGER_OPTION
+			l_smt_old_value_rate_option: AP_INTEGER_OPTION
+			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
+			l_integer_bound_option: AP_STRING_OPTION
+			l_use_random_cursor_option: AP_FLAG
+			l_test_case_serialization_option: AP_STRING_OPTION
+			l_interpreter_log_enabled: AP_STRING_OPTION
+			l_on_the_fly_tc_flag: AP_FLAG
+			l_proxy_log_option: AP_STRING_OPTION
+			l_console_log_option: AP_STRING_OPTION
+			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -135,6 +158,98 @@ feature {NONE} -- Initialization
 			create l_help_option.make ('h', "help")
 			l_help_option.set_description ("Display this help message.")
 			parser.options.force_last (l_help_option)
+
+			create l_load_log_option.make_with_long_form ("log-file")
+			l_load_log_option.set_description ("Process the log file specified as the following parameter.")
+			parser.options.force_last (l_load_log_option)
+
+			create l_state_option.make_with_long_form ("state")
+			l_state_option.set_description ("Parameters to enable object state monitoring. The format is comma separated names. The supported parameters are target, argument and result. For example: %"target,argument%" means only retrieve state for target and argument objects.")
+			parser.options.force_last (l_state_option)
+
+			create l_precondition_option.make ('p', "precondition")
+			l_precondition_option.set_description ("Enable precondition evaluation before feature call.")
+			parser.options.force_last (l_precondition_option)
+
+			create l_constraint_solving_option.make_with_long_form ("cs")
+			l_constraint_solving_option.set_description ("Enable linear constraint solving for integers.")
+			parser.options.force_last (l_constraint_solving_option)
+
+			create l_object_state_exploration.make_with_long_form ("state-explore")
+			l_object_state_exploration.set_description ("Enable object state exploration.")
+			parser.options.force_last (l_object_state_exploration)
+
+			create l_log_processor_op.make_with_long_form ("log-processor")
+			l_log_processor_op.set_description ("Processor for the log file specified with the " + l_load_log_option.name + " option. Supported processors are: 1) ps: precondition satisfaction processor 2) state: object state processor.")
+			parser.options.force_last (l_log_processor_op)
+
+			create l_log_processor_output_op.make_with_long_form ("log-processor-output")
+			l_log_processor_output_op.set_description ("Name of the output file from the log processor specified with the " + l_log_processor_op.name + " option.")
+			parser.options.force_last (l_log_processor_output_op)
+
+			create l_max_precondition_tries_op.make_with_long_form ("max-precondition-tries")
+			l_max_precondition_tries_op.set_description ("Maximal tries to search for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
+			parser.options.force_last (l_max_precondition_tries_op)
+
+			create l_max_precondition_time_op.make_with_long_form ("max-precondition-time")
+			l_max_precondition_time_op.set_description ("Maximal time that can be spent in searching for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
+			parser.options.force_last (l_max_precondition_time_op)
+
+			create l_prepare_citadel_tests_option.make_with_long_form ("citadel")
+			l_prepare_citadel_tests_option.set_description ("Generate, from an existing proxy log given as next parameter, tests which CITADEL can use.")
+			parser.options.force_last (l_prepare_citadel_tests_option)
+
+			create l_candidate_count_option.make_with_long_form ("max-candidates")
+			l_candidate_count_option.set_description ("Max number of candidates that satisfy the precondition of the feature to call. 0 means no limit, default is 100.")
+			parser.options.force_last (l_candidate_count_option)
+
+			create l_pool_statistics_logged_option.make_with_long_form ("pool-statistics-logged")
+			l_pool_statistics_logged_option.set_description ("Should statistics of object pool and predicate pool be logged? Default: False")
+			parser.options.force_last (l_pool_statistics_logged_option)
+
+			create l_linear_constraint_solver_option.make_with_long_form ("linear-constraint-solver")
+			l_linear_constraint_solver_option.set_description ("Linear constraint solver to be used, can be either %"smt%" or %"lpsolve%". Default is %"smt%".")
+			parser.options.force_last (l_linear_constraint_solver_option)
+
+			create l_smart_selection_rate_option.make_with_long_form ("ps-selection-rate")
+			l_smart_selection_rate_option.set_description ("Rate under which smart selection of object to satisfy preconditions are used.")
+			parser.options.force_last (l_smart_selection_rate_option)
+
+			create l_smt_old_value_rate_option.make_with_long_form ("smt-enforce-old-value-rate")
+			l_smt_old_value_rate_option.set_description ("Possibility [0-100] to enforce SMT solver to choose an already used value. Default is 25")
+			parser.options.force_last (l_smt_old_value_rate_option)
+
+			create l_smt_use_predefined_value_rate_option.make_with_long_form ("smt-use-predefined-value-rate")
+			l_smt_use_predefined_value_rate_option.set_description ("Possibility [0-100] to for the SMT solver to choose a predefined value for integers. Default is 25")
+			parser.options.force_last (l_smt_use_predefined_value_rate_option)
+
+			create l_integer_bound_option.make_with_long_form ("integer-bounds")
+			l_integer_bound_option.set_description ("Lower and upper bounds for integer arguments that are to be solved by a linear constraint solver. In form of %"lower,upper%"")
+			parser.options.force_last (l_integer_bound_option)
+
+			create l_use_random_cursor_option.make_with_long_form ("use-random-cursor")
+			l_use_random_cursor_option.set_description ("When searching in predicate pool, should random cursor be used? Default is False.")
+			parser.options.force_last (l_use_random_cursor_option)
+
+			create l_test_case_serialization_option.make_with_long_form ("serialization")
+			l_test_case_serialization_option.set_description ("Enable test case serialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
+			parser.options.force_last (l_test_case_serialization_option)
+
+			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
+			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Valid options are: on, off. Default: off.")
+			parser.options.force_last (l_interpreter_log_enabled)
+
+			create l_on_the_fly_tc_flag.make_with_long_form ("on-the-fly-tc")
+			l_on_the_fly_tc_flag.set_description ("Is on-the-fly test case generation enabled? Default: False")
+			parser.options.force_last (l_on_the_fly_tc_flag)
+
+			create l_proxy_log_option.make_with_long_form ("proxy-log")
+			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state.")
+			parser.options.force_last (l_proxy_log_option)
+
+			create l_console_log_option.make_with_long_form ("console-log")
+			l_console_log_option.set_description ("Enable or disable console output. Valid options are: on, off. Default: on")
+			parser.options.force_last (l_console_log_option)
 
 			parser.parse_list (a_arguments)
 
@@ -247,8 +362,188 @@ feature {NONE} -- Initialization
 					create l_help_flag.make_with_short_form ('h')
 					help_message := l_help_flag.full_help_text (parser)
 				end
-
 			end
+
+			if not error_handler.has_error then
+				if l_load_log_option.was_found then
+					is_load_log_enabled := True
+					log_file_path := l_load_log_option.parameter
+
+						-- When we are in load log mode, we disable
+						-- automatic testing.
+					is_automatic_testing_enabled := False
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_state_option.was_found then
+					create object_state_config.make_with_string (l_state_option.parameter)
+				end
+			end
+
+			if not error_handler.has_error then
+				is_precondition_checking_enabled := l_precondition_option.was_found
+			end
+
+			if not error_handler.has_error then
+				is_linear_constraint_solving_enabled := l_constraint_solving_option.was_found
+			end
+
+			if not error_handler.has_error then
+				is_object_state_exploration_enabled := l_object_state_exploration.was_found
+			end
+
+			if not error_handler.has_error then
+				if l_log_processor_op.was_found then
+					log_processor := l_log_processor_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_log_processor_output_op.was_found then
+					log_processor_output := l_log_processor_output_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_max_precondition_tries_op.was_found then
+					max_precondition_search_tries := l_max_precondition_tries_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				is_seed_provided := seed_option.was_found
+				if is_seed_provided then
+					seed := seed_option.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_max_precondition_time_op.was_found then
+					max_precondition_search_time := l_max_precondition_time_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_prepare_citadel_tests_option.was_found then
+					prepare_citadel_tests := True
+					is_automatic_testing_enabled := False
+					log_file_path := l_prepare_citadel_tests_option.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_candidate_count_option.was_found then
+					max_candidate_count := l_candidate_count_option.parameter
+				else
+					max_candidate_count := 100
+				end
+			end
+
+			if not error_handler.has_error then
+				is_pool_statistics_logged := l_pool_statistics_logged_option.was_found
+			end
+
+			if not error_handler.has_error then
+				if l_linear_constraint_solver_option.was_found then
+					l_strs := l_linear_constraint_solver_option.parameter.as_lower.split (',')
+					l_strs.compare_objects
+					if l_strs.has ("smt") then
+						is_smt_linear_constraint_solver_enabled := True
+					end
+					if l_strs.has ("lpsolve") then
+						is_lpsolve_contraint_linear_solver_enabled := True
+					end
+				else
+					is_smt_linear_constraint_solver_enabled := True
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_smart_selection_rate_option.was_found then
+					object_selection_for_precondition_satisfaction_rate := l_smart_selection_rate_option.parameter
+				else
+					object_selection_for_precondition_satisfaction_rate := 100
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_smt_old_value_rate_option.was_found then
+					smt_enforce_old_value_rate := l_smt_old_value_rate_option.parameter
+				else
+					smt_enforce_old_value_rate := 25
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_smt_use_predefined_value_rate_option.was_found then
+					smt_use_predefined_value_rate := l_smt_use_predefined_value_rate_option.parameter
+				else
+					smt_use_predefined_value_rate := 25
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_integer_bound_option.was_found then
+					l_strs := l_integer_bound_option.parameter.split (',')
+					integer_lower_bound := l_strs.first.to_integer
+					integer_upper_bound := l_strs.last.to_integer
+				else
+					integer_lower_bound := -512
+					integer_upper_bound := 512
+				end
+			end
+
+			if not error_handler.has_error then
+				is_random_cursor_used := l_use_random_cursor_option.was_found
+			end
+
+			if not error_handler.has_error then
+				is_passing_test_cases_serialization_enabled := False
+				is_failing_test_cases_serialization_enabled := False
+				if l_test_case_serialization_option.was_found then
+					l_strs := l_test_case_serialization_option.parameter.as_lower.split (',')
+					from
+						l_strs.start
+					until
+						l_strs.after
+					loop
+						if l_strs.item_for_iteration.is_equal ("passing") then
+							is_passing_test_cases_serialization_enabled := True
+						elseif l_strs.item_for_iteration.is_equal ("failing") then
+							is_failing_test_cases_serialization_enabled := True
+						end
+						l_strs.forth
+					end
+				end
+			end
+
+			if not error_handler.has_error then
+				is_interpreter_log_enabled := False
+				if l_interpreter_log_enabled.was_found then
+					is_interpreter_log_enabled := l_interpreter_log_enabled.parameter.is_case_insensitive_equal ("on")
+				end
+			end
+
+			if not error_handler.has_error then
+				is_console_log_enabled := True
+				if l_console_log_option.was_found then
+					is_console_log_enabled := l_console_log_option.parameter.is_case_insensitive_equal ("on")
+				end
+			end
+
+			if not error_handler.has_error then
+				is_on_the_fly_test_case_generation_enabled := l_on_the_fly_tc_flag.was_found
+			end
+
+			if not error_handler.has_error then
+				if l_proxy_log_option.was_found then
+					proxy_log_options := l_proxy_log_option.parameter
+				else
+					proxy_log_options := ""
+				end
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -371,6 +666,120 @@ feature -- Status report
 
 	is_debugging: BOOLEAN
 			-- True if debugging output should be written to log.
+
+	is_debug_mode_enabled: BOOLEAN
+			-- Should the interpreter runtime be compiled with
+			-- assertion checking on?
+
+	log_file_path: detachable STRING
+			-- Full path of the log file to be loaded.
+
+	is_load_log_enabled: BOOLEAN
+			-- Is log load enabled?
+
+	object_state_config: AUT_OBJECT_STATE_CONFIG
+			-- Configuration related object state retrieval
+
+	is_precondition_checking_enabled: BOOLEAN
+			-- Should precondition evaluation be enabled?
+
+	is_linear_constraint_solving_enabled: BOOLEAN
+			-- Is linare constraint solving for integers enabled?
+
+	is_object_state_exploration_enabled: BOOLEAN
+			-- Is object state exploration enabled?
+
+	log_processor: detachable STRING
+			-- Name of the log processor
+
+	log_processor_output: detachable STRING
+			-- Name of the output file from log processor
+
+	max_precondition_search_tries: INTEGER
+			-- Max tries in the search to satisfy precondition of a feature
+			-- 0 means that search until a satisfying object comibination is found.
+
+	max_precondition_search_time: INTEGER
+			-- Maximal time (in second) that can be spent in searching for
+			-- objects satisfying precondition of a feature
+
+	is_seed_provided: BOOLEAN
+			-- Is seed to the random number generator provided?
+
+	seed: INTEGER
+			-- Provided seed
+			-- Only have effect if `is_seed_provided' is True.
+
+	prepare_citadel_tests: BOOLEAN
+			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
+
+	max_candidate_count: INTEGER
+			-- Max number of candidates that satisfy the precondition of
+			-- the feature to call.
+			-- 0 means no limit. Default is 100.
+
+	is_pool_statistics_logged: BOOLEAN
+			-- Should statistics of object pool and predicate pool be logged?
+			-- Default: False
+
+	is_smt_linear_constraint_solver_enabled: BOOLEAN
+			-- Is SMT based linear constraint solver enabled?
+			-- Default: True
+
+	is_lpsolve_contraint_linear_solver_enabled: BOOLEAN
+			-- Is lp_solve based linear constraint solver enabled?
+			-- Default: False
+
+	object_selection_for_precondition_satisfaction_rate: INTEGER
+			-- Possibility [0-100] under which smart object selection for precondition satisfaction
+			-- is used.
+			-- Only have effect when precondition evaluation is enabled.
+
+	smt_enforce_old_value_rate: INTEGER
+			-- Possibility [0-100] to enforce SMT solver to choose an already used value
+			-- Default is 25
+
+	smt_use_predefined_value_rate: INTEGER
+			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers
+			-- Default is 25
+
+	integer_lower_bound: INTEGER
+			-- Lower bound (min value) for integer arguments that are to be solved by a linear constraint solver
+			-- Default is -512.
+
+	integer_upper_bound: INTEGER
+			-- Upper bound (max value) for integer arguments that are to be solved by a linear constraint solver
+			-- Default is 512.
+
+	is_random_cursor_used: BOOLEAN
+			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+
+	is_passing_test_cases_serialization_enabled: BOOLEAN
+			-- Is test case serialization for passing test cases enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+			-- Default: False
+
+	is_failing_test_cases_serialization_enabled: BOOLEAN
+			-- Is test case serialization for failing test cases enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+			-- Default: False
+
+	is_interpreter_log_enabled: BOOLEAN
+			-- Is the messages from the interpreter logged?
+			-- Default: False
+
+	is_on_the_fly_test_case_generation_enabled: BOOLEAN
+			-- Is on-the-fly test case generation enabled?
+			-- Default: False
+
+	proxy_log_options: STRING
+			-- Proxy log options:
+			-- Default: passing,failing,invalid,bad,error,type,expr-assign
+
+	is_console_log_enabled: BOOLEAN
+			-- Should console output be enabled?
+			-- Default: True
 
 feature {NONE} -- Constants
 

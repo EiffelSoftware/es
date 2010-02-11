@@ -1721,6 +1721,25 @@ feature {APPLICATION_EXECUTION} -- specific implementation
 
 	implementation: DEBUGGER_MANAGER_IMP;
 
+feature -- Status report
+
+	should_menu_be_raised_when_application_stopped: BOOLEAN
+			-- Should a debug menu be raised when application is stopped?
+		do
+			Result := should_menu_be_raised_when_application_stopped_cache
+		end
+
+	should_menu_be_raised_when_application_stopped_cache: BOOLEAN
+			-- Cache for `should_menu_be_raised_when_application_stopped'
+
+	set_should_menu_be_raised_when_application_stopped (b: BOOLEAN)
+			-- Set `should_menu_be_raised_when_application_stopped' with `b'.
+		do
+			should_menu_be_raised_when_application_stopped_cache := b
+		ensure
+			should_menu_be_raised_when_application_stopped_set: should_menu_be_raised_when_application_stopped = b
+		end
+
 invariant
 
 	dbg_storage_attached: dbg_storage /= Void
