@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="rollercoaster_test" uuid="E4F23FD5-F1B7-4ABE-95C8-4D551B4246F9">
+	<target name="rollercoaster">
+		<root class="SCOOP_STARTER" feature="make"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf"/>
+		<cluster name="rollercoaster" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+		</cluster>
+		<override name="scoop_override" location=".\EIFGENs\rollercoaster\scoop_override_cluster" recursive="true"/>
+	</target>
+</system>

@@ -2126,7 +2126,9 @@ Src/examples/preferences/graphics.png -text
 Src/examples/proofs/formatter/formatter.aps -text
 Src/examples/scoop/baboon_crossing/Readme.txt -text
 Src/examples/scoop/barbershop/Readme.txt -text
+Src/examples/scoop/dining_savages/Readme.txt -text
 Src/examples/scoop/faneuil_hall/Readme.txt -text
+Src/examples/scoop/rollercoaster/Readme.txt -text
 Src/examples/scoop/senate_bus/Readme.txt -text
 Src/examples/thread/fancy/fancy.ico svneol=native#unset
 Src/examples/vision2/edraw/nocolor.png -text

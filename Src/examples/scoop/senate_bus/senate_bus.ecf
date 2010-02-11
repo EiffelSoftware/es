@@ -2,7 +2,6 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="scoop_test" uuid="339E6D6C-3F60-4CAE-9EFF-161187269EF7">
 	<target name="senate_bus">
 		<root class="SENATE_BUS" feature="make"/>
-		<setting name="multithreaded" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<cluster name="senate_bus" location=".\" recursive="true">
 			<file_rule>
@@ -11,5 +10,6 @@
 				<exclude>/CVS$</exclude>
 			</file_rule>
 		</cluster>
+		<override name="some" location="\home\scott\local\src\eve\Src\examples\scoop\rollercoaster\" recursive="true"/>
 	</target>
 </system>

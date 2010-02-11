@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="dining_savages" uuid="339E6D6C-3F60-4CAE-9EFF-161187269EF7">
+	<target name="dining_savages">
+		<root class="SCOOP_STARTER" feature="make"/>
+		<option  warning="true" syntax="transitional">
+			<assertions  precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true" />
+		</option>
+		<setting name="multithreaded" value="True"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf"/>
+<!--		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/> -->
+		<cluster name="dining_savages" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+		</cluster>
+		<override name="scoop_override_cluster" location="\home\scott\local\src\eve\Src\examples\scoop\dining_savages\EIFGENs\dining_savages\scoop_override_cluster\" recursive="true"/>
+	</target>
+</system>
