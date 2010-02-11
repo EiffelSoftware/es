@@ -420,11 +420,12 @@ feature {NONE} -- Type Resolution Implementation
 			a_type /= Void
 			expression_type /= Void
 		do
-			Result :=
-				type_a_generator.evaluate_type (
-					a_type,
-					expression_type.associated_class
-				).instantiated_in(expression_type).deep_actual_type
+			-- As a context feature we use the default create feauture from 'ANY' because it is empty.
+			type_a_checker.init_for_checking (system.any_class.compiled_class.default_create_feature, expression_type.associated_class, Void, Void)
+			Result := type_a_checker.solved (
+				type_a_generator.evaluate_type (a_type, expression_type.associated_class),
+				a_type
+			).instantiated_in(expression_type).deep_actual_type
 		end
 
 feature {NONE} -- Expression evaluation visits

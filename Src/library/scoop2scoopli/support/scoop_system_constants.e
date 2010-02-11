@@ -13,6 +13,8 @@ inherit
 
 feature -- Scoop system constants
 
+	scoop_proxy_class_prefix: STRING is "SCOOP_SEPARATE__"
+
 	scoop_proxy_prefix: STRING is "scoop_separate__"
 
 	scoop_processor_name: STRING is "processor_"

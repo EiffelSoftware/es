@@ -47,7 +47,7 @@ feature -- Access
 	Degree_number: INTEGER is 7
 			-- Degree number
 
-	is_degree_scoop_needed: BOOLEAN is
+	is_degree_scoop_needed: BOOLEAN
 			-- checks project if there is a separate keyword
 		local
 			i: INTEGER
@@ -93,13 +93,13 @@ feature -- Access
 			degree_5 := a_degree_5
 		end
 
-feature {SYSTEM_I} -- Processing
+feature {SYSTEM_I, WORKBENCH_I} -- Processing
 
-	execute is
+	execute
 			-- Process all classes.
 		local
 			i: INTEGER
-			a_class: CLASS_C
+			l_class: CLASS_C
 			l_degree_output: like degree_output
 		do
 			-- set degree values.
@@ -128,45 +128,12 @@ feature {SYSTEM_I} -- Processing
 
 			-- iterate over all classes and create the new proxy- and client classes.
 			from i := 1 until i > scoop_classes.count loop
-				a_class := scoop_classes.item (i)
+				l_class := scoop_classes.item (i)
+				if l_class.degree_scoop_needed then
+					l_degree_output.put_degree_scoop (l_class, count - i + 1)
 
-
-				l_degree_output.put_degree_scoop (a_class, count - i + 1)
-
-				debug ("SCOOP")
-					io.error.put_string ("SCOOP: Processing class '" + a_class.name + "'.")
-					io.error.put_new_line
+					execute_on_class (l_class)
 				end
-
-					-- set feature table in workbench
-					-- was computed in degree 4.
-
-
-					-- reset workbench
-				scoop_workbench_objects.reset
-
-					-- set current processed class in workbench
-				set_current_class_c (a_class)
-				set_current_class_as (a_class.ast)
-
-
-				if a_class.feature_table /= Void then
-					a_class.ast.set_feature_table (a_class.feature_table)
-				end
-
-
-				if not is_special_class (a_class.name_in_upper) and not a_class.is_basic then
-					-- create original classes
-					process_separate_client_creation (a_class)
-
-					-- creation of proxy classes
-					process_separate_proxy_creation (a_class)
-				end
-
-				-- force system to check class again
-				workbench.add_class_to_recompile (a_class.original_class)
-				a_class.set_changed (True)
-
 				i := i + 1
 			end
 
@@ -174,9 +141,43 @@ feature {SYSTEM_I} -- Processing
 			l_degree_output.put_end_degree
 		end
 
+	execute_on_class (a_class: CLASS_C)
+			-- Process 'a_class'.
+		do
+			debug ("SCOOP")
+				io.error.put_string ("SCOOP: Processing class '" + a_class.name + "'.")
+				io.error.put_new_line
+			end
+
+			-- set feature table in workbench
+			-- was computed in degree 4.
+
+				-- reset workbench
+			scoop_workbench_objects.reset
+
+				-- set current processed class in workbench
+			set_current_class_c (a_class)
+			set_current_class_as (a_class.ast)
+
+
+			if a_class.feature_table /= Void then
+				a_class.ast.set_feature_table (a_class.feature_table)
+			end
+
+			-- create original classes
+			process_separate_client_creation (a_class)
+
+			-- creation of proxy classes
+			process_separate_proxy_creation (a_class)
+
+			-- force system to check class again
+			workbench.add_class_to_recompile (a_class.original_class)
+			a_class.set_changed (True)
+		end
+
 feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 
-	is_missing_class_ignored (a_class_name: STRING): BOOLEAN is
+	is_missing_class_ignored (a_class_name: STRING): BOOLEAN
 			-- returns True if a missing class message should be ignored.
 		do
 			if a_class_name.is_equal ("PROCESSOR") then
@@ -186,14 +187,7 @@ feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 			end
 		end
 
-	reset_scoop_processing is
-			-- reset SCOOP processing environment
-		do
-			-- delete old generated classes
-			delete_scoop_cluster_content
-		end
-
-	remove_scoop_classes (a_class_name: STRING) is
+	remove_scoop_classes (a_class_name: STRING)
 			-- removes scoop client and proxy class from cluster if there are any
 		local
 			l_file_name: FILE_NAME
@@ -219,7 +213,7 @@ feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 			end
 		end
 
-	scoop_override_cluster_path: STRING is
+	scoop_override_cluster_path: STRING
 			-- returns the path of the scoop cluster
 		local
 			l_scoop_path: DIRECTORY_NAME
@@ -234,15 +228,15 @@ feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 			Result := l_scoop_path.string
 		end
 
-feature {NONE} -- Cluster handling implementation
+feature {WORKBENCH_I, SYSTEM_I} -- Cluster handling implementation
 
-	create_directory_name is
+	create_directory_name
 			-- creates the scoop directory cluster name
 		do
 			create scoop_directory.make (scoop_override_cluster_path)
 		end
 
-	create_directory is
+	create_directory
 			-- creates the scoop directory reference
 		require
 			scoop_directory_name_not_void: scoop_directory /= Void
@@ -256,7 +250,7 @@ feature {NONE} -- Cluster handling implementation
 		end
 
 
-	delete_scoop_cluster_content is
+	delete_scoop_cluster_content
 			-- delete the content of the project cluster
 		require
 			scoop_directory_name_not_void: scoop_directory /= Void
@@ -268,21 +262,21 @@ feature {NONE} -- Cluster handling implementation
 
 feature -- Element Change and Removal
 
-	insert_class (a_class: CLASS_C) is
+	insert_class (a_class: CLASS_C)
 			-- Add `a_class' to be processed.
 		do
 			a_class.add_to_degree_scoop
 			count := count + 1
 		end
 
-	remove_class (a_class: CLASS_C) is
+	remove_class (a_class: CLASS_C)
 			-- Remove `a_class'.
 		do
 			a_class.remove_from_degree_scoop
 			count := count - 1
 		end
 
-	wipe_out is
+	wipe_out
 			-- Remove all classes.
 		local
 			i, nb: INTEGER
@@ -306,7 +300,7 @@ feature -- Element Change and Removal
 			count := 0
 		end
 
-	print_to_file (a_context, a_class_name: STRING; is_client_and_not_proxy: BOOLEAN) is
+	print_to_file (a_context, a_class_name: STRING; is_client_and_not_proxy: BOOLEAN)
 			-- Print text of a_class_node.
 		local
 			file: PLAIN_TEXT_FILE
@@ -344,7 +338,7 @@ feature -- Element Change and Removal
 
 feature {NONE} -- Implementation
 
-	collect_needed_classes is
+	collect_needed_classes
 			-- takes currently all classes from 'system.classes'
 			-- which are not basic classes
 		local
@@ -585,7 +579,7 @@ feature {NONE} -- Implementation
 --			a_class_c.set_changed (True)
 --		end
 
-	process_separate_client_creation (a_class_c: CLASS_C) is
+	process_separate_client_creation (a_class_c: CLASS_C)
 			-- Process client class of input class.
 		local
 			l_match_list: LEAF_AS_LIST
@@ -610,7 +604,7 @@ feature {NONE} -- Implementation
 			print_to_file (l_printer.get_context, a_class_c.name, True)
 		end
 
-	process_separate_proxy_creation (a_class_c: CLASS_C) is
+	process_separate_proxy_creation (a_class_c: CLASS_C)
 			-- Create proxy class of input class.
 		local
 			l_match_list: LEAF_AS_LIST
@@ -636,7 +630,7 @@ feature {NONE} -- Implementation
 		end
 
 
-feature {NONE} -- Implementation
+feature {WORKBENCH_I, SYSTEM_I} -- Implementation
 
 	scoop_directory: DIRECTORY
 			-- SCOOP directory in EIFGENs folder

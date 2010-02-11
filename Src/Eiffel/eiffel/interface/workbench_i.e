@@ -189,8 +189,7 @@ feature -- Additional properties
 			end
 		end
 
-feature -- Additional properties for SCOOP
-
+feature -- Added for SCOOP
 	is_degree_scoop_processing: BOOLEAN
 			-- remebers SCOOP processing for compilation steps.
 			-- added for SCOOP by paedde
@@ -199,13 +198,13 @@ feature -- Additional properties for SCOOP
 			-- indicates that scoop classes are already generated
 			-- added for SCOOP by paedde
 
-	set_is_degree_scoop_processing (a_value: BOOLEAN) is
+	set_is_degree_scoop_processing (a_value: BOOLEAN)
 			-- setter for 'is_degree_scoop_processing'
 		do
 			is_degree_scoop_processing := a_value
 		end
 
-	set_is_degree_scoop_processed (a_value: BOOLEAN) is
+	set_is_degree_scoop_processed (a_value: BOOLEAN)
 			-- setter for 'is_degree_scoop_processed'
 		do
 			is_degree_scoop_processed := a_value
@@ -410,39 +409,6 @@ feature {NONE} -- Added for SCOOP
 			-- Save the updated current target configuration.
 			universe.target.system.store
 		end
-
---	replace_base_precompile
---		local
---			l_factory: CONF_PARSE_FACTORY
---			l_original_base_precompile: CONF_PRECOMPILE
---			l_new_base_precompile: CONF_PRECOMPILE
---			l_precomp_r: PRECOMP_R
---			l_project_location: PROJECT_DIRECTORY
---		do
---			if universe.target.precompile /= Void and then universe.target.precompile.location.original_file.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_precompile_filename) then
---				l_original_base_precompile := universe.target.precompile
-
---				create l_factory
---				l_new_base_precompile :=
---					l_factory.new_precompile (
---						"base_pre",
---						l_original_base_precompile.location.original_directory + l_original_base_precompile.location.directory_separator.out + {SCOOP_SYSTEM_CONSTANTS}.base_mt_precompile_filename,
---						universe.target
---					)
---				l_new_base_precompile.set_library_target (l_original_base_precompile.library_target)
-
---				universe.target.set_precompile (l_new_base_precompile)
---				universe.target.system.store
-
---				if universe.target.precompile.eifgens_location /= Void then
---					create l_project_location.make (universe.target.precompile.eifgens_location.evaluated_path, universe.target.precompile.library_target.name)
---				else
---					create l_project_location.make (universe.target.precompile.location.build_path ("", ""), universe.target.precompile.library_target.name)
---				end
---				create l_precomp_r
---				l_precomp_r.retrieve_precompiled (l_project_location)
---			end
---		end
 
 feature -- Conveniences
 
@@ -737,7 +703,7 @@ feature -- Commands
 						missing_class_error := True
 						lace.reset_date_stamp
 						Error_handler.wipe_out
-					elseif is_degree_scoop_processing and error_handler.error_list.item.code.is_equal ("INTERNAL_ERROR") then
+					elseif is_degree_scoop_processed and error_handler.error_list.item.code.is_equal ("INTERNAL_ERROR") then
 						missing_class_error := True
 						lace.reset_date_stamp
 						Error_handler.wipe_out
@@ -845,6 +811,10 @@ feature -- Commands
 
 				-- Insertion in the pass controlers
 			Degree_5.insert_changed_class (class_to_recompile)
+
+			-- Added for SCOOP: For a SCOOP project, classes must be processed in the SCOOP degree. For non-SCOOP projects the SCOOP degree will not be executed.
+			Degree_SCOOP.insert_new_class (class_to_recompile)
+
 			Degree_4.insert_new_class (class_to_recompile)
 			Degree_3.insert_new_class (class_to_recompile)
 			Degree_2.insert_new_class (class_to_recompile)

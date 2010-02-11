@@ -170,7 +170,7 @@ feature {NONE} -- Roundtrip: process nodes
 			if l_as.count > 0 then
 				-- set first client a reference to the proxy class.
 				process_leading_leaves (l_as.first.index)
-				context.add_string ("SCOOP_SEPARATE__" + class_c.name_in_upper)
+				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix + class_c.name_in_upper)
 				if not l_as.first.name.is_equal (l_none_str) then
 					context.add_string (", ")
 				end
@@ -186,6 +186,8 @@ feature {NONE} -- Roundtrip: process nodes
 				loop
 					if not l_as.item.name.is_equal (l_none_str) then
 						safe_process (l_as.item)
+						context.add_string (", ")
+						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix + l_as.item.name)
 						if i <= l_count then
 							safe_process (l_as.separator_list_i_th (i, match_list))
 							i := i + 1

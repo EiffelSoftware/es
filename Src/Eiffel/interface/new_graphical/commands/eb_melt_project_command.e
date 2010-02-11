@@ -70,6 +70,10 @@ inherit
 			{NONE} all
 		end
 
+	EB_CLUSTER_MANAGER_OBSERVER -- Added for SCOOP
+
+	COMPILER_EXPORTER -- Added for SCOOP
+
 create
 	make
 
@@ -123,6 +127,10 @@ feature {NONE} -- Compilation implementation
 			if not Eiffel_project.is_compiling then
 				reset_debugger
 				Window_manager.on_compile
+
+				-- Added for SCOOP
+				remove_scoop_compilation_artifacts
+
 				perform_compilation
 				display_eiffel_compilation_status
 				if Eiffel_project.successful then
@@ -208,6 +216,119 @@ feature {NONE} -- Compilation implementation
 			end
 		end
 
+feature -- Added for SCOOP
+	remove_scoop_compilation_artifacts
+			-- Removes SCOOP compilation artifacts from the system, if necessary.
+			-- SCOOP compilation artifacts include:
+			--	- Compiled classes based on classes generated in the SCOOP degree.
+			--	- Compiled classes based on classes from the SCOOP library.
+			--	- Class types based on classes generated in the SCOOP degree.
+			--	- Class types based on classes from the SCOOP library.
+		do
+			if
+				workbench.system_defined and then
+				system.classes.there_exists (
+					agent (a_class_c: CLASS_C): BOOLEAN
+						do
+							Result :=
+								a_class_c /= Void and then
+								a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+						end
+				)
+			then
+				-- There are artifacts to be removed.
+
+				-- Remove artifacts based on class types.
+				system.class_types.twin.do_all (
+					agent (a_class_type: CLASS_TYPE)
+						do
+							if
+								a_class_type /= Void and then a_class_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+							then
+								system.remove_class_type (a_class_type)
+							end
+						end
+				)
+
+				-- Remove artifacts based on compiled classes.
+				system.classes.twin.do_all (
+					agent (a_class_c: CLASS_C)
+						local
+							l_file: PLAIN_TEXT_FILE
+						do
+							-- Remove artifacts from system.
+							if
+								a_class_c /= Void and then a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+							then
+								-- We have an artifact to remove.
+								create l_file.make (a_class_c.lace_class.file_name)
+								if
+									l_file.exists and then
+									l_file.is_writable and then
+									a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+								then
+									l_file.delete
+								end
+								manager.remove_class (a_class_c.lace_class)
+								a_class_c.original_class.reset_compiled_class
+								system.classes.remove (a_class_c.class_id)
+								system.remove_class (a_class_c)
+							end
+
+							-- Remove artifacts from compiled classes in the system.
+							if
+								a_class_c /= Void
+							then
+								-- We have a class from which we want to remove an artifacts.
+
+								-- Remove artifacts from the clients list.
+								a_class_c.clients.twin.do_all (
+									agent (a_supplier_class_c: CLASS_C; a_client_class_c: CLASS_C)
+										do
+											if
+												a_client_class_c /= Void and then a_client_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+											then
+												a_supplier_class_c.clients.start
+												a_supplier_class_c.clients.search (a_client_class_c)
+												a_supplier_class_c.clients.remove
+											end
+										end (a_class_c, ?)
+								)
+
+								-- Remove artifacts from the syntactical clients list.
+								a_class_c.syntactical_clients.twin.do_all (
+									agent (a_supplier_class_c: CLASS_C; a_client_class_c: CLASS_C)
+										do
+											if
+												a_client_class_c /= Void and then a_client_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+											then
+												a_supplier_class_c.syntactical_clients.start
+												a_supplier_class_c.syntactical_clients.search (a_client_class_c)
+												a_supplier_class_c.syntactical_clients.remove
+											end
+										end (a_class_c, ?)
+								)
+
+								-- Remove artifacts from the direct descendants list.
+								a_class_c.direct_descendants.twin.do_all (
+									agent (a_parent_class_c: CLASS_C; a_descendant_class_c: CLASS_C)
+										do
+											if
+												a_descendant_class_c /= Void and then a_descendant_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+											then
+												a_parent_class_c.direct_descendants.start
+												a_parent_class_c.direct_descendants.search (a_descendant_class_c)
+												a_parent_class_c.direct_descendants.remove
+											end
+										end (a_class_c, ?)
+								)
+							end
+						end
+				)
+			end
+		end
+
+feature
 	perform_compilation
 			-- The real compilation. (This is melting.)
 		do
@@ -508,7 +629,7 @@ feature {NONE} -- Implementation
 			-- Number of compilations done in a certain mode so far.
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
