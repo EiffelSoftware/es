@@ -1769,9 +1769,8 @@ feature -- Recompilation
 					io.error.put_new_line
 				end
 
-				-- Class ast has been generated. Now traverse it and find SCOOP funcionality.
+				-- Added for SCOOP: Class ast has been generated. Now traverse it and find SCOOP funcionality.
 				-- Class generation is done after degree 3 - after type checking.
-				-- Added for SCOOP by paedde.
 				if degree_scoop.is_degree_scoop_needed and not workbench.is_degree_scoop_processed then
 					workbench.set_is_degree_scoop_processing (True)
 				elseif workbench.is_degree_scoop_processed then
@@ -1897,8 +1896,7 @@ feature -- Recompilation
 					-- Byte code production and type checking
 				process_degree_3
 
-					-- Start SCOOP class creation if needed
-					-- Added for SCOOP by paedde.
+				-- Added for SCOOP: Start SCOOP class creation if needed.
 				if workbench.is_degree_scoop_processing and not workbench.is_degree_scoop_processed then
 					-- create new client and proxy classes.
 					-- generate an internal error to restart compilation.

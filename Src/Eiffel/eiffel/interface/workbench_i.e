@@ -191,33 +191,41 @@ feature -- Additional properties
 
 feature -- Added for SCOOP
 	is_degree_scoop_processing: BOOLEAN
-			-- remebers SCOOP processing for compilation steps.
-			-- added for SCOOP by paedde
+		-- Is the degree SCOOP processing?
 
 	is_degree_scoop_processed: BOOLEAN
-			-- indicates that scoop classes are already generated
-			-- added for SCOOP by paedde
+		-- Did the degree SCOOP finish?
+
+	is_degree_scoop_result_compilation_failed: BOOLEAN
+		-- Did the compilation of the result of the degree SCOOPfail?
 
 	set_is_degree_scoop_processing (a_value: BOOLEAN)
-			-- setter for 'is_degree_scoop_processing'
+			-- Set the degree SCOOP processing flag.
 		do
 			is_degree_scoop_processing := a_value
 		end
 
 	set_is_degree_scoop_processed (a_value: BOOLEAN)
-			-- setter for 'is_degree_scoop_processed'
+			-- Set the degree SCOOP processed flag.
 		do
 			is_degree_scoop_processed := a_value
 		end
 
-feature {NONE} -- Added for SCOOP
-	reset_scoop_processing is
+	set_is_degree_scoop_result_compilation_failed (a_value: BOOLEAN)
+			-- Set the degree SCOOP result compilation failed flag.
+		do
+			is_degree_scoop_result_compilation_failed := a_value
+		end
+
+	reset_scoop_compilation_status_flags is
 			-- Reset SCOOP flags.
 		do
 			is_degree_scoop_processing := false
 			is_degree_scoop_processed := false
+			is_degree_scoop_result_compilation_failed := false
 		end
 
+feature {NONE} -- Added for SCOOP
 	add_scoop_override_cluster
 			-- Add SCOOP override cluster to the universe target, if necessary.
 		local
@@ -569,13 +577,12 @@ feature -- Commands
 			if retried = 0 then
 				error_handler.clear_display
 
-					-- reset scoop processing
-					-- added for SCOOP by paedde
-				reset_scoop_processing
+				-- Added for SCOOP: Reset SCOOP compilation status flags.
+				reset_scoop_compilation_status_flags
 			end
 
 			-- Added for SCOOP: Change the configuration for the newly generated code.
-			if is_degree_scoop_processed then
+			if is_degree_scoop_processed and not is_degree_scoop_result_compilation_failed then
 				add_scoop_override_cluster
 				add_scoop_library
 				force_scoop_root
@@ -703,15 +710,32 @@ feature -- Commands
 						missing_class_error := True
 						lace.reset_date_stamp
 						Error_handler.wipe_out
+
+						-- Added for SCOOP: Take a note of a failure during the compilation of the result of the degree SCOOP.
+						if is_degree_scoop_processed then
+							set_is_degree_scoop_result_compilation_failed (True)
+						end
+
+					-- Added for SCOOP: After the execution of the degree SCOOP, start the compilation all over using the generated classes instead of the original classes.
 					elseif is_degree_scoop_processed and error_handler.error_list.item.code.is_equal ("INTERNAL_ERROR") then
 						missing_class_error := True
 						lace.reset_date_stamp
 						Error_handler.wipe_out
 						degree_6_done := false
 					else
+						-- Added for SCOOP: Take a note of a failure during the compilation of the result of the degree SCOOP.
+						if is_degree_scoop_processed then
+							set_is_degree_scoop_result_compilation_failed (True)
+						end
+
 						Error_handler.trace
 					end
 				else
+					-- Added for SCOOP: Take a note of a failure during the compilation of the result of the degree SCOOP.
+					if is_degree_scoop_processed then
+						set_is_degree_scoop_result_compilation_failed (True)
+					end
+
 					missing_class_error := False
 					Error_handler.trace
 				end
@@ -812,7 +836,7 @@ feature -- Commands
 				-- Insertion in the pass controlers
 			Degree_5.insert_changed_class (class_to_recompile)
 
-			-- Added for SCOOP: For a SCOOP project, classes must be processed in the SCOOP degree. For non-SCOOP projects the SCOOP degree will not be executed.
+			-- Added for SCOOP: For a SCOOP project, classes must be processed in the degree SCOOP. For non-SCOOP projects the degree SCOOP will not be executed.
 			Degree_SCOOP.insert_new_class (class_to_recompile)
 
 			Degree_4.insert_new_class (class_to_recompile)
