@@ -17,7 +17,12 @@ inherit
 			process_body_as,
 			process_precursor_as,
 			process_ensure_as,
-			process_routine_as
+			process_routine_as,
+			process_access_feat_as,
+			process_access_assert_as,
+			process_static_access_as,
+			process_result_as,
+			process_binary_as
 		end
 
 	SHARED_ERROR_HANDLER
@@ -76,16 +81,18 @@ feature {NONE} -- Node implementation
 			end
 		end
 
-	process_routine_as (l_as: ROUTINE_AS) is
+	process_routine_as (l_as: ROUTINE_AS)
+		local
+			r_as: ROUTINE_AS
 		do
 				-- process 'l_as'
 			safe_process (l_as.obsolete_keyword (match_list))
 			safe_process (l_as.obsolete_message)
-			-- TODO: remove comment: we do not need to process the precondition as it is already checked by means of the locking requestor and the wait condition wrapper.
-			-- safe_process (l_as.precondition)
-			if l_as.precondition /= Void then
-				last_index := l_as.precondition.last_token (match_list).index
-			end
+
+			processing_preconditions := True
+			safe_process (l_as.precondition)
+
+			processing_preconditions := False
 
 			safe_process (l_as.internal_locals)
 			safe_process (l_as.routine_body)
@@ -169,6 +176,87 @@ feature {NONE} -- Node implementation
 
 			if l_as /= Void then
 				last_index := l_as.last_token (match_list).index
+			end
+		end
+
+feature {NONE} -- Adding .implementation_ for precondition processing.
+	processing_preconditions : BOOLEAN
+
+	process_binary_as (l_as: BINARY_AS)
+		do
+			if processing_preconditions then
+				safe_process (l_as.left)
+				safe_process (l_as.operator (match_list))
+				safe_process (l_as.right)
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		do
+			if processing_preconditions then
+				safe_process (l_as.feature_name)
+
+				update_current_level_with_call (l_as)
+
+				if current_level.type.is_separate then
+					context.add_string (".implementation_")
+					set_current_level_is_separate (False)
+				end
+
+				process_internal_parameters(l_as.internal_parameters)
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
+		do
+			if processing_preconditions then
+				safe_process (l_as.feature_name)
+
+				update_current_level_with_call (l_as)
+
+				if current_level.type.is_separate then
+					context.add_string (".implementation_")
+					set_current_level_is_separate (False)
+				end
+
+				process_internal_parameters(l_as.internal_parameters)
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_static_access_as (l_as: STATIC_ACCESS_AS)
+		do
+			if processing_preconditions then
+				safe_process (l_as.feature_keyword (match_list))
+				safe_process (l_as.class_type)
+				safe_process (l_as.dot_symbol (match_list))
+				safe_process (l_as.feature_name)
+
+				update_current_level_with_call (l_as)
+
+				if current_level.type.is_separate then
+					context.add_string (".implementation_")
+					set_current_level_is_separate (False)
+				end
+
+				-- process internal parameters and add current if target is of separate type.
+				process_internal_parameters(l_as.internal_parameters)
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			Precursor (l_as)
+			if processing_preconditions and current_level.type.is_separate then
+				context.add_string (".implementation_")
+				set_current_level_is_separate (False)
 			end
 		end
 
