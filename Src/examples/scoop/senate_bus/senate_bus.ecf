@@ -10,6 +10,5 @@
 				<exclude>/CVS$</exclude>
 			</file_rule>
 		</cluster>
-		<override name="some" location="\home\scott\local\src\eve\Src\examples\scoop\rollercoaster\" recursive="true"/>
 	</target>
 </system>
