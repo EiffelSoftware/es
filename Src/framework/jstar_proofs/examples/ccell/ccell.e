@@ -6,6 +6,13 @@ note
 	sl_predicate: "Cell(x,{val:v;cnt:c}) = Cc$CCELL(x,{val:v;cnt:c})"
 	sl_predicate: "Cn(x,{cnt:c}) = Cn$COUNTER(x,{cnt:c})"
 	sl_predicate: "Cc(x,{val:v;cnt:c}) = Cell$CEL(x,{val:v}) * Cn$COUNTER(x,{cnt:c})"
+	sl_exports: "[
+		cc_cn: x : CCELL * Cc(x,{val:v;cnt:c}) <==> x : CCELL * Cn(x,{cnt:c}) * Rest(x,v)
+		cc_cell: x : CCELL * Cc(x,{val:v;cnt:c}) <==> x : CCELL * Cell(x,{val:v;cnt:c})
+		cell_cn: x : CCELL * Cell(x,{val:v;cnt:c}) <==> x : CCELL * Cn(x,{cnt:c}) * Rest(x,v)
+	where	
+		Rest(x,v) = Cell$CEL(x,{val:v})
+	]"
 	js_logic: "ccell.logic"
 	js_abstraction: "ccell.abs"
 

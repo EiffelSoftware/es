@@ -51,8 +51,9 @@ feature
 			-- Set up the variable_substitution
 			variable_substitution.wipe_out
 			variable_substitution.force ("nil()", "Void")
+				-- Although axioms have class scope, they still use Current as a free variable.
+			variable_substitution.force ("@this:", "Current")
 			if f /= Void then
-				variable_substitution.force ("@this:", "Current")
 				variable_substitution.force ("$ret_var", "Result")
 				from
 					i := 1
@@ -77,6 +78,12 @@ feature -- Node processing
 		do
 			binop.left_argument.accept (Current)
 			binop.right_argument.accept (Current)
+		end
+
+	process_exports (exports: JS_EXPORTS_NODE)
+		do
+			process_list (exports.named_formulas)
+			process_list (exports.where_pred_defs)
 		end
 
 	process_false (false_node: JS_FALSE_NODE)
@@ -134,6 +141,18 @@ feature -- Node processing
 			mapsto.object.accept (Current)
 			mapsto.field_signature.accept (Current)
 			mapsto.value.accept (Current)
+		end
+
+	process_named_iff (named_iff: JS_NAMED_IFF_NODE)
+		do
+			named_iff.left_assertion.accept (Current)
+			named_iff.right_assertion.accept (Current)
+		end
+
+	process_named_implication (named_implication: JS_NAMED_IMPLICATION_NODE)
+		do
+			named_implication.antecedent.accept (Current)
+			named_implication.consequent.accept (Current)
 		end
 
 	process_or (or_node: JS_OR_NODE)
@@ -200,6 +219,11 @@ feature -- Node processing
 	process_variable_as_arg (variable_as_arg: JS_VARIABLE_AS_ARG_NODE)
 		do
 			variable_as_arg.variable.accept (Current)
+		end
+
+	process_where_pred_def (where_pred_def: JS_WHERE_PRED_DEF_NODE)
+		do
+			where_pred_def.body.accept (Current)
 		end
 
 feature {NONE} -- Helpers

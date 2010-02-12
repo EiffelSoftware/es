@@ -171,7 +171,7 @@ feature {NONE}
 					-- Check if creation routine is not yet generated. This can happen if a subclass
 					-- uses the same feature as a creation routine as the parent.
 				--if not feature_list.is_creation_routine_already_generated (l_attached_feature) then
-					process_routine (True, l_attached_feature)
+					process_routine (True, l_attached_feature, a_class)
 				--end
 
 				a_class.creators.forth
@@ -198,7 +198,7 @@ feature {NONE}
 					-- Only write routines which are written in that class, and that are not creation routines
 				if l_feature.is_routine and then l_feature.written_in = a_class.class_id then
 					if (a_class.creators = Void) or else (not a_class.creators.has_key (l_feature.feature_name)) then
-						process_routine (False, l_attached_feature)
+						process_routine (False, l_attached_feature, a_class)
 					end
 				end
 
@@ -206,7 +206,7 @@ feature {NONE}
 			end
 		end
 
-	process_routine (as_creation_routine: BOOLEAN; a_feature: !FEATURE_I)
+	process_routine (as_creation_routine: BOOLEAN; a_feature: !FEATURE_I; a_class: !CLASS_C)
 			-- Generate code for creation routine `a_feature'.
 		local
 			l_argument_name, l_argument_type: STRING
@@ -231,7 +231,7 @@ feature {NONE}
 				output.put_line ("{")
 				output.indent
 
-				process_routine_body (a_feature)
+				process_routine_body (as_creation_routine, a_feature, a_class)
 
 				output.unindent
 				-- Finally print the closing brace
@@ -554,7 +554,7 @@ feature {NONE}
 		end
 
 
-	process_routine_body (a_feature: !FEATURE_I)
+	process_routine_body (as_creation_routine: BOOLEAN; a_feature: !FEATURE_I; a_class: !CLASS_C)
 		local
 			l_byte_code: BYTE_CODE
 			l_has_locals: BOOLEAN
@@ -615,6 +615,10 @@ feature {NONE}
 			output.put_new_line
 
 			output.put_comment_line ("The routine body")
+				-- Inject all ancestor attributes
+			if as_creation_routine then
+				inject_ancestor_attributes (a_class)
+			end
 				-- Feature body
 			output.append_lines (instruction_writer.output_instructions)
 
@@ -623,6 +627,35 @@ feature {NONE}
 			else
 				output.put_line ("return;")
 			end
+		end
+
+	inject_ancestor_attributes (a_class: !CLASS_C)
+		local
+			l_feature: FEATURE_I
+			l_attached_feature: !FEATURE_I
+			pointstos: STRING
+		do
+			pointstos := ""
+			from
+				a_class.feature_table.start
+			until
+				a_class.feature_table.after
+			loop
+				l_feature := a_class.feature_table.item_for_iteration
+				check l_feature /= Void end
+				l_attached_feature := l_feature
+
+					-- Only write attributes which are written in other classes
+				if l_attached_feature.is_attribute and then l_attached_feature.written_in /= a_class.class_id then
+					if not equal ("", pointstos) then
+						pointstos := pointstos + " * "
+					end
+					pointstos := pointstos + "Current." + attr_designator (l_attached_feature) + " |-> _"
+				end
+
+				a_class.feature_table.forth
+			end
+			output.put_line ("{} : {} {" + pointstos + "};")
 		end
 
 	declare_registers (a_byte_code: BYTE_CODE; a_feature: !FEATURE_I)

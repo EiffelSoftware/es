@@ -19,7 +19,7 @@ INT     "-"?{DIGIT}+
 
 %%
 
-[ \t]+      -- Whitespace. Do nothing.
+([ \t\n]|"%T"|"%N")+        -- Whitespace. Do nothing.
 
 "!"         { last_token := BANG }
 "<="        { last_token := CMPLE; last_string_value := text }
@@ -33,7 +33,10 @@ INT     "-"?{DIGIT}+
 "="         { last_token := EQUALS; last_string_value := text }
 "False"     { last_token := FALSE_TOK }
 "True"      { last_token := TRUE_TOK }
+"where"     { last_token := WHERE }
 {ID}        { last_token := IDENTIFIER; last_string_value := text }
+"<==>"      { last_token := IFF }
+"==>"       { last_token := IMP }
 {INT}       { last_token := INTEGER_CONSTANT; last_string_value := text }
 "{"         { last_token := L_BRACE }
 "["         { last_token := L_BRACKET }

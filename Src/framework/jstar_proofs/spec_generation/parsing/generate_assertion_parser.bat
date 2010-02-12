@@ -1,1 +1,0 @@
-geyacc -t JS_SPEC_TOKENS parser.y > js_assertion_parser.e

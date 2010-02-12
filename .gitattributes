@@ -2632,7 +2632,10 @@ Src/framework/jstar_proofs/examples/sum_visitor/client.logic -text
 Src/framework/jstar_proofs/examples/sum_visitor/sum_visitor.abs -text
 Src/framework/jstar_proofs/examples/sum_visitor/sum_visitor.logic -text
 Src/framework/jstar_proofs/spec_generation/jstar_grammar.txt -text
+Src/framework/jstar_proofs/spec_generation/parsing/generate_lexer_and_parsers.rb -text
 Src/framework/jstar_proofs/spec_generation/parsing/lexer.l -text
+Src/framework/jstar_proofs/spec_generation/parsing/parser_part1 -text
+Src/framework/jstar_proofs/spec_generation/parsing/parser_part2 -text
 Src/framework/parser_extension/parser_extension.lic -text
 Src/framework/sqlite3/sqlite-safe.lic -text
 Src/framework/sqlite3/sqlite.lic -text

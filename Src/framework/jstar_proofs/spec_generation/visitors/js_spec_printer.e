@@ -42,6 +42,11 @@ feature -- Spec node processing
 			binop.right_argument.accept (Current)
 		end
 
+	process_exports (exports: JS_EXPORTS_NODE)
+		do
+			check false end -- The exports is never printed as a whole. Print its individual components from the outside.
+		end
+
 	process_false (false_node: JS_FALSE_NODE)
 		do
 			append ("False")
@@ -86,6 +91,26 @@ feature -- Spec node processing
 			mapsto.field_signature.accept (Current)
 			append (" |-> ")
 			mapsto.value.accept (Current)
+		end
+
+	process_named_iff (named_iff: JS_NAMED_IFF_NODE)
+		do
+			append (named_iff.name)
+			append (": ")
+			named_iff.left_assertion.accept (Current)
+			append (" <=> ")
+			named_iff.right_assertion.accept (Current)
+			append (";")
+		end
+
+	process_named_implication (named_implication: JS_NAMED_IMPLICATION_NODE)
+		do
+			append (named_implication.name)
+			append (": ")
+			named_implication.antecedent.accept (Current)
+			append (" => ")
+			named_implication.consequent.accept (Current)
+			append (";")
 		end
 
 	process_or (or_node: JS_OR_NODE)
@@ -167,6 +192,16 @@ feature -- Spec node processing
 	process_variable_as_arg (variable_as_arg: JS_VARIABLE_AS_ARG_NODE)
 		do
 			variable_as_arg.variable.accept (Current)
+		end
+
+	process_where_pred_def (where_pred_def: JS_WHERE_PRED_DEF_NODE)
+		do
+			append (where_pred_def.pred_name)
+			append ("(")
+			process_list (where_pred_def.arguments, ",")
+			append (") = ")
+			where_pred_def.body.accept (Current)
+			append (";")
 		end
 
 feature {NONE}

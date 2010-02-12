@@ -406,6 +406,8 @@ feature -- Processing
 						-- This is a bit hacky.
 					if l_attached_feature.feature_name.is_equal("init") then
 						l_is_creation_routine := True
+							-- Swallow the right attributes
+						swallow_ancestor_attributes (a_node.precursor_type.associated_class)
 					end
 				else
 					call_type := "virtualinvoke"
@@ -436,6 +438,35 @@ feature -- Processing
 			end
 
 			target := expression
+		end
+
+	swallow_ancestor_attributes (a_class: CLASS_C)
+		local
+			l_feature: FEATURE_I
+			l_attached_feature: !FEATURE_I
+			pointstos: STRING
+		do
+			pointstos := ""
+			from
+				a_class.feature_table.start
+			until
+				a_class.feature_table.after
+			loop
+				l_feature := a_class.feature_table.item_for_iteration
+				check l_feature /= Void end
+				l_attached_feature := l_feature
+
+					-- Only write attributes
+				if l_attached_feature.is_attribute then
+					if not equal ("", pointstos) then
+						pointstos := pointstos + " * "
+					end
+					pointstos := pointstos + "Current." + attr_designator (l_attached_feature) + " |-> _"
+				end
+
+				a_class.feature_table.forth
+			end
+			side_effect.put_line ("{} : {" + pointstos + "} {};")
 		end
 
 	process_int_val_b (a_node: INT_VAL_B)

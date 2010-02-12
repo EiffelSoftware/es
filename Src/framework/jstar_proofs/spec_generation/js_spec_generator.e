@@ -23,6 +23,8 @@ feature
 		do
 			create output.make
 			create predicate_definition_parser.make
+			create exports_clause_parser.make
+			create axioms_clause_parser.make
 			create assertion_parser.make
 			create spec_adapter.make
 			create spec_printer.make
@@ -67,6 +69,10 @@ feature {NONE}
 
 	predicate_definition_parser: JS_PREDICATE_DEFINITION_PARSER
 
+	exports_clause_parser: JS_EXPORTS_CLAUSE_PARSER
+
+	axioms_clause_parser: JS_AXIOMS_CLAUSE_PARSER
+
 	assertion_parser: JS_ASSERTION_PARSER
 
 	spec_adapter: JS_SPEC_ADAPTER
@@ -107,18 +113,53 @@ feature {NONE}
 
 	collect_spec_of_class (a_class: !CLASS_C)
 			-- Collects the shallow spec of a class, i.e. the suppliers of `a_class' are not considered.
+		local
+			parent: CLASS_C
+			parents: STRING
 		do
-			-- TODO: issue a warning if a_class uses inheritance
+			-- TODO: issue a warning if a_class uses weird inheritance
+
+			parents := ""
+			from
+				a_class.conforming_parents.start
+			until
+				a_class.conforming_parents.off
+			loop
+				parent := a_class.conforming_parents.item.associated_class
+				if
+					parent /= Void and then
+					not parent.is_expanded and then
+					not parent.is_external and then
+					not parent.is_class_any and then
+					not parent.is_class_none
+				then
+					if not equal ("", parents) then
+						parents := parents + ", "
+					end
+					parents := parents + parent.name_in_upper
+				end
+				a_class.conforming_parents.forth
+			end
 
 			match_list := match_list_server.item (a_class.class_id)
 
-			output.put_line ("class " + a_class.name_in_upper)
+			if equal ("", parents) then
+				output.put_line ("class " + a_class.name_in_upper)
+			else
+				output.put_line ("class " + a_class.name_in_upper + " extends " + parents)
+			end
 			output.put_line ("{")
 
 			output.indent
 
 			collect_predicates (a_class.ast.top_indexes)
 			collect_predicates (a_class.ast.bottom_indexes)
+
+			collect_exports (a_class.ast.top_indexes)
+			collect_exports (a_class.ast.bottom_indexes)
+
+			collect_axioms (a_class.ast.top_indexes)
+			collect_axioms (a_class.ast.bottom_indexes)
 
 			collect_specs_of_creation_routines (a_class)
 
@@ -172,6 +213,136 @@ feature {NONE}
 							output.put_line (qualifier + " " + spec_printer.output + ";%N")
 						else
 							error ("Error parsing predicate definition: " + l_content)
+						end
+					end
+					a_indexing_clause.forth
+				end
+			end
+		end
+
+	collect_exports (a_indexing_clause: INDEXING_CLAUSE_AS)
+		local
+			l_content: STRING
+			l_exports: JS_EXPORTS_NODE
+			exports_tags: ARRAY [STRING]
+		do
+			exports_tags := <<"SL_EXPORTS">>
+			exports_tags.compare_objects
+
+			if a_indexing_clause /= Void then
+				from
+					a_indexing_clause.start
+				until
+					a_indexing_clause.off
+				loop
+					if
+						{l_index_as: !INDEX_AS} a_indexing_clause.item and then
+						exports_tags.has (l_index_as.tag.name.as_upper)
+					then
+						l_content := l_index_as.content_as_string
+						l_content := l_content.substring (2, l_content.count - 1)
+						exports_clause_parser.reset
+						exports_clause_parser.set_input_buffer (create {YY_BUFFER}.make (l_content))
+						exports_clause_parser.parse
+						if exports_clause_parser.error_count = 0 then
+							l_exports := exports_clause_parser.exports_clause
+
+							-- Substitute types and Void.
+							spec_adapter.with_class_context
+							l_exports.accept (spec_adapter)
+
+							-- Now output the pretty printed definition
+							output.put_line ("exports {")
+							output.indent
+							from
+								l_exports.named_formulas.start
+							until
+								l_exports.named_formulas.off
+							loop
+								spec_printer.reset
+								l_exports.named_formulas.item.accept (spec_printer)
+								output.put_line (spec_printer.output)
+								l_exports.named_formulas.forth
+							end
+							output.unindent
+							output.put_line ("} where {")
+							output.indent
+							from
+								l_exports.where_pred_defs.start
+							until
+								l_exports.where_pred_defs.off
+							loop
+								spec_printer.reset
+								l_exports.where_pred_defs.item.accept (spec_printer)
+								output.put_line (spec_printer.output)
+								l_exports.where_pred_defs.forth
+							end
+							output.unindent
+							output.put_line ("}%N")
+						else
+							error ("Error parsing exports clause: " + l_content)
+						end
+					end
+					a_indexing_clause.forth
+				end
+			end
+		end
+
+	collect_axioms (a_indexing_clause: INDEXING_CLAUSE_AS)
+		local
+			l_content: STRING
+			l_axioms: LINKED_LIST [JS_NAMED_FORMULA_NODE]
+			axioms_tags: ARRAY [STRING]
+		do
+			axioms_tags := <<"SL_AXIOMS">>
+			axioms_tags.compare_objects
+
+			if a_indexing_clause /= Void then
+				from
+					a_indexing_clause.start
+				until
+					a_indexing_clause.off
+				loop
+					if
+						{l_index_as: !INDEX_AS} a_indexing_clause.item and then
+						axioms_tags.has (l_index_as.tag.name.as_upper)
+					then
+						l_content := l_index_as.content_as_string
+						l_content := l_content.substring (2, l_content.count - 1)
+						axioms_clause_parser.reset
+						axioms_clause_parser.set_input_buffer (create {YY_BUFFER}.make (l_content))
+						axioms_clause_parser.parse
+						if axioms_clause_parser.error_count = 0 then
+							l_axioms := axioms_clause_parser.axioms_clause
+
+							-- Substitute types and Void.
+							spec_adapter.with_class_context
+							from
+								l_axioms.start
+							until
+								l_axioms.off
+							loop
+								l_axioms.item.accept (spec_adapter)
+								l_axioms.forth
+							end
+
+							-- Now output the pretty printed definition
+							output.put_line ("axioms {")
+							output.indent
+							from
+								l_axioms.start
+							until
+								l_axioms.off
+							loop
+								spec_printer.reset
+								l_axioms.item.accept (spec_printer)
+								output.put_line (spec_printer.output)
+								l_axioms.forth
+							end
+							output.unindent
+							output.put_line ("}%N")
+						else
+							error ("Error parsing axioms clause: " + l_content)
 						end
 					end
 					a_indexing_clause.forth

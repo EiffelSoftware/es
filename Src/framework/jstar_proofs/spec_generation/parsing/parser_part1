@@ -1,0 +1,46 @@
+
+inherit
+    YY_PARSER_SKELETON
+        rename make as make_parser_skeleton end
+    
+    JS_SPEC_LEXER
+    rename make as make_scanner end
+    
+create
+    make
+%}
+
+%token BANG
+%token <STRING> CMPLE
+%token <STRING> CMPLT
+%token <STRING> CMPGE
+%token <STRING> CMPGT
+%token <STRING> CMPNE
+%token COLON
+%token COMMA
+%token DOT
+%token <STRING> EQUALS
+%token ERROR_TOK
+%token FALSE_TOK
+%token <STRING> IDENTIFIER
+%token <STRING> INTEGER_CONSTANT
+%token L_BRACE
+%token L_BRACKET
+%token L_PAREN
+%token MAPSTO
+%token MULT
+%token OROR
+%token QUESTIONMARK
+%token R_BRACE
+%token R_BRACKET
+%token R_PAREN
+%token SEMICOLON
+-- TODO: %token <STRING> STRING_CONSTANT
+%token TRUE_TOK
+%token WHERE
+%token IMP
+%token IFF
+
+%left OROR
+%left MULT
+

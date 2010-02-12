@@ -13,6 +13,10 @@ feature
 		deferred
 		end
 
+	process_exports (exports: JS_EXPORTS_NODE)
+		deferred
+		end
+
 	process_false (false_node: JS_FALSE_NODE)
 		deferred
 		end
@@ -38,6 +42,14 @@ feature
 		end
 
 	process_mapsto (mapsto: JS_MAPSTO_NODE)
+		deferred
+		end
+
+	process_named_iff (named_iff: JS_NAMED_IFF_NODE)
+		deferred
+		end
+
+	process_named_implication (named_implication: JS_NAMED_IMPLICATION_NODE)
 		deferred
 		end
 
@@ -82,6 +94,10 @@ feature
 		end
 
 	process_variable_as_arg (variable_as_arg: JS_VARIABLE_AS_ARG_NODE)
+		deferred
+		end
+
+	process_where_pred_def (where_pred_def: JS_WHERE_PRED_DEF_NODE)
 		deferred
 		end
 

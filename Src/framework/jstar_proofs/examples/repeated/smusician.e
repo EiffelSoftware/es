@@ -11,6 +11,12 @@ note
 	sl_predicate: "RestMtoP(x, {pfm:p}) = RestMtoP$MUSICIAN(x,{pfm:p})"
 	sl_predicate: "RestSMtoS(x, {pfm:p}) = RestMtoP$MUSICIAN(x,{pfm:p})"
 	sl_predicate: "RestSMtoM(x, {exm:e}) = RestStoP$STUDENT(x,{exm:e})"
+	sl_axioms: "[
+		SM_S: SM(Current,{age:a;exm:e;pfm:p}) <==> S(Current,{age:a;exm:e}) * RestSMtoS(Current,{pfm:p})
+		SM_M: SM(Current,{age:a;exm:e;pfm:p}) <==> M(Current,{age:a;pfm:p}) * RestSMtoM(Current,{exm:e})
+		S_M: S(Current,{age:a;exm:e}) * RestSMtoS(Current,{pfm:p}) <==> M(Current,{age:a;pfm:p}) * RestSMtoM(Current,{exm:e})
+		s_student_to_person_field: S$STUDENT(x,{age:a;exm:e}) ==> x.<PERSON.my_age> |-> a * RestStoP$STUDENT(x,{exm:e})
+	]"
 	js_logic: "smusician.logic"
 	js_abstraction: "smusician.abs"
 
@@ -23,6 +29,9 @@ inherit
 
 	MUSICIAN
 		redefine init end
+
+create
+	init
 
 feature
 

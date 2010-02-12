@@ -76,6 +76,12 @@ feature -- Access
 				Result := "SEMICOLON"
 			when TRUE_TOK then
 				Result := "TRUE_TOK"
+			when WHERE then
+				Result := "WHERE"
+			when IMP then
+				Result := "IMP"
+			when IFF then
+				Result := "IFF"
 			else
 				Result := yy_character_token_name (a_token)
 			end
@@ -109,5 +115,8 @@ feature -- Token codes
 	R_PAREN: INTEGER is 281
 	SEMICOLON: INTEGER is 282
 	TRUE_TOK: INTEGER is 283
+	WHERE: INTEGER is 284
+	IMP: INTEGER is 285
+	IFF: INTEGER is 286
 
 end
