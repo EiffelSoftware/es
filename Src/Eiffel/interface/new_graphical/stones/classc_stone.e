@@ -119,7 +119,13 @@ feature -- Synchronization
 		do
 			if e_class /= Void then
 				if e_class.is_valid then
-					if is_valid then
+					-- Changed for SCOOP: Make sure the synchronized stone of the compiled class points to the original class.
+					if
+						e_class.original_class.config_class.is_overriden and then
+						e_class.original_class.config_class.overriden_by.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+					then
+						Result := create {CLASSI_STONE}.make (e_class.original_class)
+					elseif is_valid then
 						Result := Current
 					else
 						Result := create {CLASSC_STONE}.make (e_class)
@@ -131,7 +137,7 @@ feature -- Synchronization
 		end
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -155,11 +161,11 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CLASSC_STONE

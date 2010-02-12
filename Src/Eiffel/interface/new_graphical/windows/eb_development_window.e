@@ -570,7 +570,7 @@ feature -- Update
 				if workbench.is_degree_scoop_processed then
 					create l_conf_load.make (create {CONF_PARSE_FACTORY})
 					l_conf_load.retrieve_configuration (workbench.lace.file_name)
-					l_original_conf_root := l_conf_load.last_system.targets.at(workbench.universe.target.name).root
+					l_original_conf_root := l_conf_load.last_system.targets.at (workbench.universe.target.name).root
 
 					if l_original_conf_root.cluster_name /= Void then
 						stone := create {CLASSI_STONE}.make (
