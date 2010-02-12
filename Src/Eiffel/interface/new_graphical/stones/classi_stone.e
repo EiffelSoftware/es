@@ -103,7 +103,7 @@ feature -- Properties
 			-- be a classc_stone if the class is compiled now)
 		do
 			if class_i /= Void and then class_i.is_valid then
-				-- Changed for SCOOP: Make sure the synchronized stone of an original class is the original class itself.
+				-- Changed for SCOOP: Make sure the synchronized stone of an original class points to the original class itself.
 				if
 					class_i.config_class.is_overriden and then
 					class_i.config_class.overriden_by.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
