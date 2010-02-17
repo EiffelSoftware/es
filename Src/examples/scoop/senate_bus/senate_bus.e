@@ -9,11 +9,6 @@ class
 inherit
 	SHARED_RANDOM
 
---	SCOOP_UTILITY
---		export
---			{NONE} all
---		end
-
 create
 	make
 
@@ -36,7 +31,7 @@ feature -- Initialization
 			create t_passenger.make_with_station(i, station)
 			launch_actor (t_passenger)
 			i := i + 1
---			sleep (500)
+			(create {EXECUTION_ENVIRONMENT}).sleep (500 * 1000000)
 		end
 	end
 

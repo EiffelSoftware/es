@@ -9,11 +9,6 @@ class
 inherit
 	ACTOR
 
---	SCOOP_UTILITY
---		undefine
---			out
---		end
-
 create {SENATE_BUS}
 	make_with_station
 
@@ -28,7 +23,7 @@ feature {NONE} -- Implementation
 			pick_up (station)
 			leave (station)
 			io.put_string (out + " left the station%N")
---			sleep (2000)
+			(create {EXECUTION_ENVIRONMENT}).sleep (2000 * 1000000)
 		end
 
 	enter (a_station: separate STATION)
