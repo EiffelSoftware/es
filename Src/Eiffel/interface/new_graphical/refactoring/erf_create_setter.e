@@ -101,6 +101,7 @@ feature {NONE} -- Implementation
 				dialog.disable_user_resize
 
         		dialog.set_feature_name (l_feat_name)
+        		dialog.set_use_as_assigner (preferences.use_as_assigner)
 
 				dialog.show_modal_to_window (window_manager.last_focused_development_window.window)
 
@@ -108,6 +109,7 @@ feature {NONE} -- Implementation
         		preferences.set_assignment (dialog.assignment)
         		preferences.set_setter_name (dialog.setter_name)
         		preferences.set_postcondition (dialog.postcondition)
+        		preferences.set_use_as_assigner (dialog.use_as_assigner)
 
 	        	checks.wipe_out
 				checks.extend (create {ERF_VALID_FEATURE_NAME}.make (preferences.argument_name))
@@ -134,6 +136,9 @@ feature {NONE} -- Implementation
 			l_append_text: STRING
 			l_feat_name: STRING
 			l_retry: BOOLEAN
+			l_modifier: ETR_AST_MODIFIER
+			l_comment: STRING
+			l_old_feat_text: STRING
 		do
 			if not l_retry then
 				success := true
@@ -146,10 +151,26 @@ feature {NONE} -- Implementation
 				create l_transformable.make_in_class (l_feat_ast, l_written_class)
 
 				l_feat_name := l_feat_ast.feature_name.name
-				if is_custom then
-					setter_generator.generate_setter (l_transformable, preferences.setter_name, preferences.argument_name, preferences.assignment, preferences.postcondition)
-				else
-					setter_generator.generate_setter (l_transformable, "set_"+l_feat_name, "a_"+l_feat_name, l_feat_name+" := a_"+l_feat_name, l_feat_name+" = a_"+l_feat_name)
+
+				if not is_custom then
+					-- set default preferences
+					preferences.set_argument_name ("a_"+l_feat_name)
+					preferences.set_setter_name ("set_"+l_feat_name)
+					preferences.set_assignment (l_feat_name+" := a_"+l_feat_name)
+					preferences.set_postcondition (l_feat_name+" = a_"+l_feat_name)
+					preferences.set_use_as_assigner (true)
+				end
+
+				setter_generator.generate_setter (l_transformable, preferences.setter_name, preferences.argument_name, preferences.assignment, preferences.postcondition)
+
+				if preferences.use_as_assigner then
+					create l_modifier.make
+					-- relative to a feature "1.2.3" is always the assigner
+					l_modifier.add (basic_operators.replace_with_string (create {AST_PATH}.make_from_string(l_transformable.target_node,"1.2.3"), preferences.setter_name))
+					l_modifier.apply_to (l_transformable)
+
+					-- extract original comment
+					l_comment := ast_tools.extract_feature_comments (l_feat_ast, l_matchlist)
 				end
 
 				if not etr_error_handler.has_errors then
@@ -160,9 +181,18 @@ feature {NONE} -- Implementation
 													" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'.",
 													1)
 											)
-					l_append_text.append("%N")
+					l_append_text.append("%N%T")
 
-					l_feat_ast.append_text (l_append_text, l_matchlist)
+					if preferences.use_as_assigner then
+						l_old_feat_text := ast_tools.commented_feature_to_string (
+													l_modifier.modified_ast.target_node,
+													l_comment,
+													1)
+
+						l_feat_ast.replace_text ("%N"+l_old_feat_text+l_append_text, l_matchlist)
+					else
+						l_feat_ast.append_text (l_append_text, l_matchlist)
+					end
 
 					create l_class_modifier.make (l_written_class.original_class)
 					l_class_modifier.prepare

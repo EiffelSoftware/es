@@ -39,6 +39,12 @@ feature -- Value
 			Result := argument_name_preference.value
 		end
 
+	use_as_assigner: BOOLEAN
+			-- will setter be used as assigner
+		do
+			Result := use_as_assigner_preference.value
+		end
+
 feature -- Change value
 
 	set_assignment (a_text: STRING)
@@ -73,12 +79,19 @@ feature -- Change value
 			argument_name_preference.set_value (a_text)
 		end
 
+	set_use_as_assigner (a_state :BOOLEAN)
+			-- Set if setter will be used as assigner
+		do
+			use_as_assigner_preference.set_value (a_state)
+		end
+
 feature {NONE} -- Preference
 
 	assignment_preference: STRING_PREFERENCE
 	postcondition_preference: STRING_PREFERENCE
 	setter_name_preference: STRING_PREFERENCE
 	argument_name_preference: STRING_PREFERENCE
+	use_as_assigner_preference: BOOLEAN_PREFERENCE
 
 feature {NONE} -- Preference Strings
 
@@ -86,6 +99,7 @@ feature {NONE} -- Preference Strings
 	postcondition_string: STRING = "tools.refactoring.create_setter.postcondition"
 	setter_name_string: STRING = "tools.refactoring.create_setter.setter_name"
 	argument_name_string: STRING = "tools.refactoring.create_setter.argument_name"
+	use_as_assigner_string: STRING = "tools.refactoring.create_setter.use_as_assigner"
 
 feature {NONE} -- Implementation
 
@@ -109,6 +123,9 @@ feature {NONE} -- Implementation
 
 			argument_name_preference := l_manager.new_string_preference_value (l_manager, argument_name_string, "<uninit>")
 			argument_name_preference.change_actions.extend (l_update_agent)
+
+			use_as_assigner_preference := l_manager.new_boolean_preference_value (l_manager, use_as_assigner_string, true)
+			use_as_assigner_preference.change_actions.extend (l_update_agent)
 		end
 
 invariant
@@ -116,6 +133,7 @@ invariant
 	postcondition_preference_not_void: postcondition_preference /= Void
 	setter_name_preference_not_void: setter_name_preference /= Void
 	argument_name_preference_not_void: argument_name_preference /= Void
+	use_as_assigner_preference_not_void: use_as_assigner_preference /= Void
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

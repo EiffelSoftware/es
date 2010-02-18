@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 
 					l_replacement_text.remove_tail (1)
 
-					original_feature_ast.replace_text (l_replacement_text, l_matchlist)
+					original_feature_ast.replace_text (l_replacement_text+"%T", l_matchlist)
 
 					create l_class_modifier.make (class_i)
 					l_class_modifier.prepare

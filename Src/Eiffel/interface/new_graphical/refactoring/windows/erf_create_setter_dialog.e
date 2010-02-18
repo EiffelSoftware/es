@@ -25,6 +25,16 @@ inherit
 		undefine
 			default_create, copy
 		end
+	EB_SHARED_PREFERENCES
+		rename
+			preferences as es_preferences
+		undefine
+			copy, default_create
+		end
+	SHARED_EDITOR_FONT
+		undefine
+			copy, default_create
+		end
 
 feature {NONE} -- Initialization
 
@@ -34,6 +44,7 @@ feature {NONE} -- Initialization
 			l: EV_LABEL
 			hb_setter_name, hb_arg_name, hb_buttons, hb_middle: EV_HORIZONTAL_BOX
 			vb, vb_radio, vb_predef: EV_VERTICAL_BOX
+			space: EV_CELL
 		do
 			Precursor
 			set_title ("Create custom setter")
@@ -45,10 +56,8 @@ feature {NONE} -- Initialization
 			vb.set_border_width (Layout_constants.default_border_size)
 			create vb_radio
 			vb_radio.set_padding (Layout_constants.small_padding_size)
-			vb_radio.set_border_width (Layout_constants.default_border_size)
 			create vb_predef
 			vb_predef.set_padding (Layout_constants.small_padding_size)
-			vb_predef.set_border_width (Layout_constants.default_border_size)
 
 			-- HB's
 			create hb_setter_name
@@ -60,7 +69,9 @@ feature {NONE} -- Initialization
 
 			-- Controls
 			create assignment_field
+			assignment_field.set_minimum_width (200)
 			create postcondition_field
+			postcondition_field.set_minimum_width (200)
 			create setter_name_field
 			create argument_name_field
 			create direct_assignment_radio
@@ -73,7 +84,11 @@ feature {NONE} -- Initialization
 			custom_assignment_radio.set_text ("Custom assignment")
 			create preview_text
 			preview_text.disable_edit
-			preview_text.set_minimum_height (120)
+			preview_text.set_current_format (text_format_normal)
+			preview_text.set_tab_width (es_preferences.editor_data.tabulation_spaces*preview_text.font.width)
+			preview_text.set_minimum_height (150)
+			create use_as_assigner_checkbox
+			use_as_assigner_checkbox.set_text ("Use as assigner")
 
 			-- Layout
 			create l.make_with_text ("Setter name:")
@@ -92,10 +107,15 @@ feature {NONE} -- Initialization
 			hb_arg_name.extend (argument_name_field)
 			vb.extend (hb_arg_name)
 
+			create space
+			space.set_minimum_height (10)
+			vb.extend (space)
+
 			vb_radio.extend (direct_assignment_radio)
 			vb_radio.extend (twin_assignment_radio)
 			vb_radio.extend (deep_twin_assignment_radio)
 			vb_radio.extend (custom_assignment_radio)
+			vb_radio.set_minimum_width (150)
 
 			create l.make_with_text ("Assignment:")
 			vb_predef.extend (l)
@@ -105,6 +125,7 @@ feature {NONE} -- Initialization
 			vb_predef.extend (postcondition_field)
 
 			hb_middle.extend (vb_radio)
+			hb_middle.disable_item_expand (vb_radio)
 			hb_middle.extend (vb_predef)
 			vb.extend (hb_middle)
 
@@ -112,6 +133,11 @@ feature {NONE} -- Initialization
 			l.align_text_left
 			vb.extend (l)
 			vb.extend (preview_text)
+
+			create space
+			space.set_minimum_height (10)
+			vb.extend (space)
+			vb.extend (use_as_assigner_checkbox)
 
 			create hb_buttons
 			vb.extend (hb_buttons)
@@ -159,7 +185,19 @@ feature -- Access
 			Result := assignment_field.text
 		end
 
+	use_as_assigner: BOOLEAN
+		do
+			Result := use_as_assigner_checkbox.is_selected
+		end
+
 feature -- Element change
+
+	set_use_as_assigner(a_val: BOOLEAN)
+		do
+			if use_as_assigner_checkbox.is_selected /= a_val then
+				use_as_assigner_checkbox.toggle
+			end
+		end
 
 	set_setter_name(a_str: STRING)
 		do
@@ -222,15 +260,76 @@ feature {NONE} -- Event handling
 			-- updates the preview-window
 		do
 			if not update_disabled then
-				preview_text.set_text (
-					setter_name + " (" + argument_name + ": like " + feature_name + ")%N"+
-					"%T%TSet `"+feature_name+"' to `"+argument_name+"'.%N"+
-					"%Tdo%N"+
-					"%T%T"+assignment+"%N"+
-					"%Tensure%N"+
-					"%T%T"+feature_name+"_set: "+postcondition+"%N"+
-					"%Tend%N" )
+				preview_text.remove_text
+
+				add_preview_normal (setter_name + " (" + argument_name + ": ")
+				add_preview_keyword ("like")
+				add_preview_normal (" "+feature_name+")%N%T%T")
+				add_preview_comment ("-- Set ")
+				add_preview_normal ("`"+feature_name+"'")
+				add_preview_comment (" to ")
+				add_preview_normal ("`"+argument_name+"'")
+				add_preview_comment (".")
+				add_preview_normal ("%N%T")
+				add_preview_keyword ("do")
+				add_preview_normal ("%N%T%T"+assignment+"%N%T")
+				add_preview_keyword ("ensure")
+				add_preview_normal ("%N%T%T"+feature_name+"_set: "+postcondition+"%N%T")
+				add_preview_keyword ("end")
 			end
+		end
+
+feature {NONE} -- Formats
+
+	add_with_format(a_text: STRING; a_format: EV_CHARACTER_FORMAT)
+		local
+			l_start: INTEGER
+		do
+			l_start := preview_text.caret_position
+			preview_text.append_text (a_text)
+			preview_text.set_caret_position (preview_text.text_length)
+			preview_text.select_region (l_start, preview_text.caret_position)
+			preview_text.set_current_format (a_format)
+		end
+
+	add_preview_keyword(a_text: STRING)
+		do
+			add_with_format(a_text, text_format_keyword)
+		end
+
+	add_preview_comment(a_text: STRING)
+		do
+			add_with_format(a_text, text_format_comment)
+		end
+
+	add_preview_normal(a_text: STRING)
+		do
+			add_with_format(a_text, text_format_normal)
+		end
+
+	text_format_normal: EV_CHARACTER_FORMAT
+		once
+			create Result
+
+			Result.set_color (es_preferences.editor_data.normal_text_color)
+			Result.set_background_color (es_preferences.editor_data.normal_background_color)
+			Result.set_font (calculate_font_with_zoom_factor)
+		end
+
+	text_format_comment: EV_CHARACTER_FORMAT
+		once
+			create Result
+			Result.set_color (es_preferences.editor_data.comments_text_color)
+			Result.set_background_color (es_preferences.editor_data.comments_background_color)
+			Result.set_font (calculate_font_with_zoom_factor)
+		end
+
+	text_format_keyword: EV_CHARACTER_FORMAT
+		once
+			create Result
+			Result.set_color (es_preferences.editor_data.keyword_text_color)
+			Result.set_background_color (es_preferences.editor_data.keyword_background_color)
+			Result.set_font (calculate_keyword_font_with_zoom_factor)
 		end
 
 feature {NONE} -- Implementation
@@ -254,7 +353,9 @@ feature {NONE} -- Implementation
 	assignment_field: EV_TEXT_FIELD
 	postcondition_field: EV_TEXT_FIELD
 
-	preview_text: EV_TEXT
+	use_as_assigner_checkbox: EV_CHECK_BUTTON
+
+	preview_text: EV_RICH_TEXT
 
 	on_show
 			-- Triggered when the dialog is shown.

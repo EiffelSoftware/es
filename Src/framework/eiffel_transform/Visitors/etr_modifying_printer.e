@@ -42,6 +42,7 @@ feature {NONE} -- Implementation
 			-- should `an_ast' be processed
 		local
 			l_cursor: INTEGER
+			l_path: AST_PATH
 		do
 			if attached {EIFFEL_LIST[AST_EIFFEL]}an_ast as l_list then
 				-- don't process if all items in the list are to be removed
@@ -58,8 +59,7 @@ feature {NONE} -- Implementation
 					l_list.forth
 				end
 				l_list.go_i_th (l_cursor)
-
-			elseif attached an_ast or else app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch)) then
+			elseif attached an_ast or else (app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch)) or repl_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch))) then
 				Result := True
 			end
 		end
@@ -77,9 +77,7 @@ feature {NONE} -- Implementation
 			end
 
 			if attached l_path then
-				if attached l_as then
-					l_mod := repl_hash.item (l_path)
-				end
+				l_mod := repl_hash.item (l_path)
 
 				if attached l_mod and not replacement_disabled then
 					output.append_string (l_mod.replacement_text)

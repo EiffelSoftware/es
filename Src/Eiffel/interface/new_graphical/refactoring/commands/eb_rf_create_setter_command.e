@@ -51,6 +51,7 @@ feature -- Events
 			if feature_i /= Void and then fs.e_feature.associated_class.class_id = feature_i.written_in then
 				rf := manager.create_setter_refactoring
 				rf.set_feature (feature_i)
+				rf.set_custom (false)
 				manager.execute_refactoring (rf)
 			else
 				prompts.show_error_prompt (warning_messages.w_feature_not_written_in_class, Void, Void)
