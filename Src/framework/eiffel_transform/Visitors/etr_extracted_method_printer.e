@@ -158,12 +158,12 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
 		do
-			if attached {BINARY_AS}l_as.target or attached {UNARY_AS}l_as.target or attached {OBJECT_TEST_AS}l_as.target then
+			if attached {BRACKET_AS}l_as.target then
+				process_child(l_as.target, l_as, 1)
+			else
 				output.append_string (ti_l_parenthesis)
 				process_child(l_as.target, l_as, 1)
 				output.append_string (ti_r_parenthesis)
-			else
-				process_child(l_as.target, l_as, 1)
 			end
 
 			output.append_string (ti_dot)

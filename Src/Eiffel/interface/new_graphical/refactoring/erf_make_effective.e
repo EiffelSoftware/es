@@ -54,35 +54,61 @@ feature {NONE} -- Implementation
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
 			l_transformable: ETR_TRANSFORMABLE
 			l_compiled_class: CLASS_C
+			l_retry: BOOLEAN
+			l_comments: HASH_TABLE[STRING,STRING]
+			l_class_string: STRING
 		do
-			success := true
+			if not l_retry then
+				success := true
 
-			etr_error_handler.reset_errors
+				etr_error_handler.reset_errors
 
-			l_compiled_class := class_i.compiled_class
-			l_matchlist := match_list_server.item (l_compiled_class.class_id)
+				l_compiled_class := class_i.compiled_class
+				l_matchlist := match_list_server.item (l_compiled_class.class_id)
 
-			create l_transformable.make_in_class (l_compiled_class.ast, l_compiled_class)
+				create l_transformable.make_in_class (l_compiled_class.ast, l_compiled_class)
 
-			effective_class_generator.generate_effective_class (l_transformable)
+				effective_class_generator.generate_effective_class (l_transformable)
 
-			if not etr_error_handler.has_errors then
-				l_compiled_class.ast.replace_text (effective_class_generator.transformation_result.out, l_matchlist)
+				if not etr_error_handler.has_errors then
+					l_comments := ast_tools.extract_class_comments (l_compiled_class.ast, l_matchlist)
 
-				create l_class_modifier.make (class_i)
-				l_class_modifier.prepare
-				l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
-				l_class_modifier.commit
-	        	current_actions.extend (l_class_modifier)
-	        else
-	        	show_etr_error
-	        	success := false
-	        	error_handler.wipe_out
+					-- set comments for pulled down features to `<precursor>'
+
+					from
+						effective_class_generator.pulled_down_features.start
+					until
+						effective_class_generator.pulled_down_features.after
+					loop
+						l_comments.force (" <precursor>", effective_class_generator.pulled_down_features.item)
+						effective_class_generator.pulled_down_features.forth
+					end
+
+					l_class_string := ast_tools.commented_class_to_string (effective_class_generator.transformation_result.target_node, l_comments)
+
+					l_compiled_class.ast.replace_text (l_class_string, l_matchlist)
+
+					create l_class_modifier.make (class_i)
+					l_class_modifier.prepare
+					l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
+					l_class_modifier.commit
+		        	current_actions.extend (l_class_modifier)
+		        else
+		        	show_etr_error
+		        	success := false
+		        	error_handler.wipe_out
+				end
 			end
 		rescue
+			if not etr_error_handler.has_errors then
+				etr_error_handler.add_error (Current, "refactor", "Unhandled exception from EiffelTransform")
+			end
+
 			show_etr_error
 			success := false
 			error_handler.wipe_out
+			l_retry := true
+			retry
 		end
 
     ask_run_settings

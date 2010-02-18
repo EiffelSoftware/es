@@ -93,7 +93,7 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA,
 	refactoring_toolbar_layout: ARRAY [STRING]
 			-- Toolbar organization
 		do
-			Result := <<"RF_pull__visible", "RF_rename__visible", "Separator", "RF_extract_method__visible", "RF_pretty_print__visible", "RF_create_setter__visible", "RF_make_effective__visible", "Separator", "RF_undo__visible", "RF_redo__visible">>
+			Result := <<"RF_pull__visible", "RF_rename__visible", "Separator", "RF_extract_method__visible", "RF_extract_constant__visible", "RF_pretty_print__visible", "RF_create_setter__visible", "RF_create_custom_setter__visible", "RF_make_effective__visible", "Separator", "RF_undo__visible", "RF_redo__visible">>
 		end
 
 	max_history_size: INTEGER

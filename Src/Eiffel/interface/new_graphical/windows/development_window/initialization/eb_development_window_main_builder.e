@@ -741,9 +741,11 @@ feature -- Command
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.undo_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.redo_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.extract_method_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.create_custom_setter_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.pretty_print_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.create_setter_command)
 			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.make_effective_command)
+			l_dev_commands.toolbarable_commands.extend (develop_window.refactoring_manager.extract_constant_command)
 
 				-- Force build
 				-- FIXME: We force the tools to be built completely here in order to perform

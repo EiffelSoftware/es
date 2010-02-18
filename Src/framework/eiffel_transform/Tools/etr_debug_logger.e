@@ -9,6 +9,14 @@ class
 create
 	make
 
+feature -- Constants
+
+	logfile_name: STRING = "eiffel_transform.log"
+			-- Name of logfile
+
+	default_log_level: like log_level = 5
+			-- Default loglevel
+
 feature {NONE}-- Creation
 
 	make
@@ -16,34 +24,33 @@ feature {NONE}-- Creation
 		local
 			l_env: EXECUTION_ENVIRONMENT
 			l_src_dir: STRING
+			l_retry: BOOLEAN
 		do
-			create l_env
-			l_src_dir := l_env.get("EIFFEL_SRC")
+--			l_retry := true
+			if not l_retry then
+				create l_env
+				l_src_dir := l_env.get("EIFFEL_SRC")
 
-			is_enabled := false
-			if l_src_dir /= void then
-				create log_file.make_open_read_append (l_src_dir+"\framework\eiffel_transform\"+logfile_name)
-				if log_file /= void then
-					is_enabled := true
+				is_enabled := false
+				if l_src_dir /= void then
+					create log_file.make_open_read_append (l_src_dir+"\framework\eiffel_transform\"+logfile_name)
+					if log_file /= void then
+						is_enabled := true
+					end
+					log_file.close
 				end
-				log_file.close
-			end
 
-			log_level := default_log_level
+				log_level := default_log_level
+			end
 		rescue
 			is_enabled := false
+			l_retry := true
+			retry
 		end
 
 feature {NONE} -- Implementation
 
 	log_file: PLAIN_TEXT_FILE
-
-feature -- Constants
-
-	logfile_name: STRING = "eiffel_transform.log"
-
-	default_log_level: like log_level = 5
-			-- Default loglevel
 
 feature -- Access
 

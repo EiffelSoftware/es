@@ -7,21 +7,43 @@ note
 deferred class
 	ETR_AST_STRUCTURE_OUTPUT_I
 
-feature
+feature -- Access
+
+	block_depth: INTEGER
+
+feature -- Operations
+
+	set_block_depth (a_block_depth: like block_depth)
+			-- Set `block_depth' to `a_block_depth'.
+		require
+			is_positivie: a_block_depth >= 0
+		do
+			block_depth := a_block_depth
+		ensure
+			block_depth_set: block_depth = a_block_depth
+		end
 
 	reset
 			-- Resets the internals state
 		deferred
+		ensure
+			no_depth: block_depth = 0
 		end
 
 	enter_block
 			-- Enters a new indentation-block
 		deferred
+		ensure
+			depth_increased: block_depth = old block_depth + 1
 		end
 
 	exit_block
 			-- Exits an indentation-block
+		require
+			has_depth: block_depth > 0
 		deferred
+		ensure
+			depth_decreased: block_depth = old block_depth - 1
 		end
 
 	enter_child(a_name: STRING)
@@ -43,7 +65,7 @@ feature
 		deferred
 		end
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

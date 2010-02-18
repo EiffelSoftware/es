@@ -37,30 +37,35 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- don't print locals or contracts
 
 			if processing_needed (l_as.obsolete_message, l_as, 1) then
-				output.append_string ("obsolete%N")
+				output.append_string (ti_obsolete_keyword+ti_New_line)
 				process_block (l_as.obsolete_message, l_as, 1)
-				output.append_string ("%N")
+				output.append_string (ti_New_line)
 			end
 
 			process_child(l_as.routine_body, l_as, 4)
 
-			output.append_string("end%N")
+			output.append_string(ti_End_keyword+ti_New_line)
 		end
 
 	process_body_as (l_as: BODY_AS)
 		local
 			l_resolved_type: TYPE_A
 		do
-			-- copied from precursor but fully resolve the type		
+			-- copied from precursor but fully resolve the type
 
 			if processing_needed (l_as.arguments, l_as, 1) then
-				output.append_string ("(")
-				process_child_list(l_as.arguments, "; ", l_as, 1)
-				output.append_string (")")
+				output.append_string (ti_space+ti_l_parenthesis)
+				process_child_list(l_as.arguments, ti_semi_colon+ti_Space, l_as, 1)
+				output.append_string (ti_r_parenthesis)
 			end
 
 			if processing_needed (l_as.type, l_as, 2) then
-				output.append_string (":")
+				output.append_string (ti_colon+ti_space)
+				process_child (l_as.type, l_as, 2)
+			end
+
+			if processing_needed (l_as.type, l_as, 2) then
+				output.append_string (ti_colon+ti_space)
 				-- always print the fully explicit type to be sure it's valid in the new context
 				l_resolved_type := type_checker.explicit_type_from_type_as (l_as.type, context.written_class, context.written_class.feature_of_feature_id (context.feature_id))
 
@@ -76,21 +81,20 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 
 			if l_as.is_constant then
-				output.append_string(" is ")
+				output.append_string(ti_Space+ti_is_keyword+ti_Space)
 			elseif processing_needed (l_as.assigner, l_as, 3) then
-				output.append_string (" assign ")
+				output.append_string (ti_Space+ti_assign_keyword+ti_Space)
 				process_child (l_as.assigner, l_as, 3)
+				output.append_string(ti_New_line)
 			elseif l_as.is_unique then
-				output.append_string (" is unique")
+				output.append_string (ti_Space+ti_is_keyword+ti_Space+ti_unique_keyword)
 			else
-				output.append_string("%N")
+				output.append_string(ti_New_line)
 			end
 
 			if processing_needed (l_as.content, l_as, 4) then
 				process_child_block(l_as.content, l_as, 4)
 			end
-
-			output.append_string("%N")
 
 			process_child(l_as.indexing_clause, l_as, 5)
 		end
@@ -105,7 +109,7 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_deferred_as (l_as: DEFERRED_AS)
 		do
 			-- print do instead of deferred
-			output.append_string ("do%N")
+			output.append_string (ti_do_keyword+ti_new_line)
 		end
 
 note

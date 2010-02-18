@@ -1,11 +1,11 @@
 note
-	description: "Refactoring that pretty prints a feature"
+	description: "Refactoring that pretty prints a class"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ERF_FEATURE_PRETTY_PRINT
+	ERF_CLASS_PRETTY_PRINT
 
 inherit
 	ERF_ETR_REFACTORING
@@ -26,39 +26,40 @@ inherit
 
 	ETR_SHARED_AST_TOOLS
 	SHARED_ERROR_HANDLER
+	SHARED_SERVER
 
 create
 	make
 
 feature -- Status
 
-	feature_set: BOOLEAN
-			-- Has the the feature been set?
+	class_set: BOOLEAN
+			-- Has the the class been set?
 		do
-			Result := feature_i /= Void
+			Result := class_i /= Void
 		end
 
 feature -- Element change
 
-	set_feature (a_feature: FEATURE_I)
-			-- The feature to print.
+	set_class (a_class: CLASS_I)
+			-- The class to pretty-print.
 		require
-			a_feature_not_void: a_feature /= Void
+			a_class_not_void: a_class /= Void
 		do
-			feature_i := a_feature
+			class_i := a_class
 		ensure
-			feature_set_correct: feature_set and feature_i = a_feature
+			class_set_correct: class_set and class_i = a_class
 		end
 
 feature {NONE} -- Implementation
 
-	feature_i: FEATURE_I
-			-- The feature to print.
+	class_i: CLASS_I
+			-- The class to print.
 
 	ask_run_settings
             -- Ask for the settings, that are run specific.
 		require else
-			feature_set: feature_set
+			class_set: class_set
         do
 			retry_ask_run_settings := true
         end
@@ -66,39 +67,26 @@ feature {NONE} -- Implementation
 	refactor
 			-- Do the refactoring changes.
 		require else
-			feature_set: feature_set
+			class_set: class_set
 		local
-			l_feat_ast: FEATURE_AS
-			l_matchlist: LEAF_AS_LIST
 			l_written_class: CLASS_C
-			l_comments: STRING
-			l_replacement_text: STRING
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
 			l_retry: BOOLEAN
+			l_comments: HASH_TABLE[STRING,STRING]
+			l_class_string: STRING
+			l_matchlist: LEAF_AS_LIST
 		do
 			if not l_retry then
 				success := true
-				l_feat_ast := feature_i.e_feature.ast
-				l_written_class := feature_i.written_class
-				l_matchlist := system.match_list_server.item (l_written_class.class_id)
+				l_written_class := class_i.compiled_class
+				l_matchlist := match_list_server.item (l_written_class.class_id)
 
-				l_comments := ast_tools.extract_feature_comments (l_feat_ast, l_matchlist)
+				l_comments := ast_tools.extract_class_comments (l_written_class.ast, l_matchlist)
+				l_class_string := ast_tools.commented_class_to_string (l_written_class.ast, l_comments)
 
-				l_replacement_text := "%N"
-
-				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
-													l_feat_ast,
-													l_comments,
-													1)
-											)
-
-				l_replacement_text.remove_tail (1)
-
-				l_feat_ast.replace_text (l_replacement_text, l_matchlist)
-
-				create l_class_modifier.make (l_written_class.original_class)
+				create l_class_modifier.make (class_i)
 				l_class_modifier.prepare
-				l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
+				l_class_modifier.set_changed_text (l_class_string)
 				l_class_modifier.commit
 	        	current_actions.extend (l_class_modifier)
 	        end

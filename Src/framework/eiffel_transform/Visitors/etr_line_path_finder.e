@@ -7,7 +7,7 @@ note
 class
 	ETR_LINE_PATH_FINDER
 inherit
-	ETR_BRANCH_VISITOR
+	ETR_PATH_FINDER
 	REFACTORING_HELPER
 		export
 			{NONE} all
@@ -15,46 +15,18 @@ inherit
 create
 	make_with_match_list
 
-feature -- Access
-
-	found: BOOLEAN
-			-- Did we find what we we're looking for?
-
-	found_path: AST_PATH
-			-- The path we've found
-
 feature -- Operation
 
-	find_path_from_line(an_ast: AST_EIFFEL; a_line: like target_line)
-			-- Process `an_ast' and determine the path of `a_line'
+	init(a_line: like target_line)
+			-- Set with `a_line'
 		do
-			found := false
-			found_path := void
-
 			target_line := a_line
-
-			create current_path.make_as_root (an_ast)
-			an_ast.process(Current)
-		end
-
-feature {NONE} -- Creation
-
-	make_with_match_list(a_match_list: like match_list)
-			-- Make with `a_match_list'
-		do
-			match_list := a_match_list
 		end
 
 feature {NONE} -- Implementation
 
 	target_line: INTEGER
 			-- The line we're looking for
-
-	match_list: LEAF_AS_LIST
-			-- The match-list we're working with
-
-	current_path: AST_PATH
-			-- The path we're currently at
 
 	is_target(a_ast: AST_EIFFEL): BOOLEAN
 			-- is `a_ast' the target?
@@ -69,59 +41,6 @@ feature {NONE} -- Implementation
 				Result := True
 			end
 		end
-
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
-		local
-			i: INTEGER
-			l_prev_path: AST_PATH
-		do
-			if is_target(a_parent) then
-				found := true
-				found_path := current_path
-			else
-				from
-					i:=1
-				until
-					i>br.count or found
-				loop
-					if attached {AST_EIFFEL}br.item (i) as item then
-						l_prev_path := current_path.twin
-						create current_path.make_from_parent (current_path, i)
-						item.process (Current)
-						current_path := l_prev_path
-					end
-					i:=i+1
-				end
-			end
-		end
-
-feature {AST_EIFFEL} -- Roundtrip
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
-			l_prev_path: AST_PATH
-		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after or found
-			loop
-				l_prev_path := current_path.twin
-				create current_path.make_from_parent (current_path, i)
-				l_as.item.process (Current)
-				current_path := l_prev_path
-				l_as.forth
-				i:=i+1
-			end
-			l_as.go_i_th (l_cursor)
-		end
-
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

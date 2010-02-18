@@ -20,19 +20,14 @@ feature -- Access
 	last_contained_id: INTEGER
 			-- Id of the last subinstruction (e.g. in if-body)
 
+	first_contained_id: INTEGER
+			-- Id of the first subinstruction (e.g. in from-part of a loop)
+
 	used_variables: LIST[STRING]
 			-- Variables that we're used in this instruction
 
 	definitions: HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]
 			-- Variable-definitions from the POV of this instruction
-
-feature -- Operation
-
-	set_last_contained_id (a_last_contained_id: like last_contained_id)
-			-- Set `last_contained_id' to `a_last_contained_id'
-		do
-			last_contained_id := a_last_contained_id
-		end
 
 feature {NONE} -- Creation
 
@@ -41,6 +36,7 @@ feature {NONE} -- Creation
 		do
 			id := a_id
 			last_contained_id := id
+			first_contained_id := id
 			path := a_path
 
 			create {LINKED_LIST[STRING]}used_variables.make
@@ -48,6 +44,18 @@ feature {NONE} -- Creation
 		end
 
 feature -- Operations
+
+	set_last_contained_id (a_last_contained_id: like last_contained_id)
+			-- Set `last_contained_id' to `a_last_contained_id'
+		do
+			last_contained_id := a_last_contained_id
+		end
+
+	set_first_contained_id (a_first_contained_id: like first_contained_id)
+			-- Set `first_contained_id' to `a_first_contained_id'.
+		do
+			first_contained_id := a_first_contained_id
+		end
 
 	add_use(a_name: STRING)
 			-- add variable with `a_name' as used

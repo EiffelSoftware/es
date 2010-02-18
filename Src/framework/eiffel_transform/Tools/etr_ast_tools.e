@@ -83,6 +83,8 @@ feature -- Output
 
 	extract_feature_comments(a_feature: FEATURE_AS; a_matchlist: LEAF_AS_LIST): STRING
 			-- Extract comments from `a_feature' and return them as multiline-string
+		require
+			non_void: a_feature /= void and a_matchlist /= void
 		local
 			l_comments: EIFFEL_COMMENTS
 		do
@@ -100,6 +102,46 @@ feature -- Output
 					Result.append("%N")
 				end
 			end
+		end
+
+	extract_class_comments(a_class: CLASS_AS; a_matchlist: LEAF_AS_LIST): HASH_TABLE[STRING,STRING]
+			-- Extract comments from `a_class' and return them in a hash table
+		require
+			non_void: a_class /= void and a_matchlist /= void
+		local
+			l_cur_comment: STRING
+		do
+			create Result.make (20)
+
+			from
+				a_class.features.start
+			until
+				a_class.features.after
+			loop
+				from
+					a_class.features.item.features.start
+				until
+					a_class.features.item.features.after
+				loop
+					l_cur_comment := extract_feature_comments(a_class.features.item.features.item, a_matchlist)
+					Result.put (l_cur_comment, a_class.features.item.features.item.feature_name.name)
+
+					a_class.features.item.features.forth
+				end
+
+				a_class.features.forth
+			end
+		end
+
+	commented_class_to_string(a_class: AST_EIFFEL; a_comments: HASH_TABLE[STRING,STRING]): STRING
+			-- prints `a_ast' to text using `mini_printer'
+		require
+			non_void: a_class /= void and a_comments /= void
+		do
+			printer_output.reset
+			commenting_printer.print_class_with_comment (a_class, a_comments)
+
+			Result := printer_output.string_representation
 		end
 
 	commented_feature_to_string(a_feature: AST_EIFFEL; a_comment: STRING; an_indentation: INTEGER): STRING

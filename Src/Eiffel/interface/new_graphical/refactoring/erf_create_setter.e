@@ -11,7 +11,8 @@ inherit
 	ERF_ETR_REFACTORING
 		redefine
 			refactor,
-			ask_run_settings
+			ask_run_settings,
+			preferences
 		end
 
 	SHARED_WORKBENCH
@@ -40,7 +41,29 @@ feature -- Status
 			Result := feature_i /= Void
 		end
 
+	is_custom: BOOLEAN
+			-- Is a custom setter created
+
+	use_custom_defaults: BOOLEAN
+			-- Are preferences used even when default setter is created?
+
 feature -- Element change
+
+	set_use_custom_defaults (a_use_custom_defaults: like use_custom_defaults)
+			-- Set `use_custom_defaults' to `a_use_custom_defaults'.
+		do
+			use_custom_defaults := a_use_custom_defaults
+		ensure
+			use_custom_defaults_set: use_custom_defaults = a_use_custom_defaults
+		end
+
+	set_custom (a_is_custom: like is_custom)
+			-- Set `is_custom' to `a_is_custom'.
+		do
+			is_custom := a_is_custom
+		ensure
+			is_custom_set: is_custom = a_is_custom
+		end
 
 	set_feature (a_feature: FEATURE_I)
 			-- The feature that get's pulled.
@@ -54,6 +77,9 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
+	preferences: ERF_CREATE_SETTER_PREFERENCES
+			-- Preferences for this refactoring.
+
 	feature_i: FEATURE_I
 			-- The feature to pull.
 
@@ -61,8 +87,38 @@ feature {NONE} -- Implementation
             -- Ask for the settings, that are run specific.
 		require else
 			feature_set: feature_set
+		local
+			dialog: ERF_CREATE_SETTER_DIALOG
+			l_feat_name: STRING
         do
-			retry_ask_run_settings := true
+        	retry_ask_run_settings := false
+        	if not is_custom then
+        		retry_ask_run_settings := true
+        	else
+        		l_feat_name := feature_i.feature_name
+
+				create dialog
+				dialog.disable_user_resize
+
+        		dialog.set_feature_name (l_feat_name)
+
+				dialog.show_modal_to_window (window_manager.last_focused_development_window.window)
+
+				preferences.set_argument_name (dialog.argument_name)
+        		preferences.set_assignment (dialog.assignment)
+        		preferences.set_setter_name (dialog.setter_name)
+        		preferences.set_postcondition (dialog.postcondition)
+
+	        	checks.wipe_out
+				checks.extend (create {ERF_VALID_FEATURE_NAME}.make (preferences.argument_name))
+				checks.extend (create {ERF_VALID_FEATURE_NAME}.make (preferences.setter_name))
+				checks.extend (create {ERF_VALID_EXPR}.make (preferences.postcondition))
+				checks.extend (create {ERF_VALID_INSTR}.make (preferences.assignment))
+
+        		if dialog.ok_pressed then
+        			retry_ask_run_settings := dialog.ok_pressed
+        		end
+        	end
         end
 
 	refactor
@@ -76,71 +132,55 @@ feature {NONE} -- Implementation
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
 			l_transformable: ETR_TRANSFORMABLE
 			l_append_text: STRING
-			l_brk_text: STRING
-			l_region_start_index: INTEGER
-			l_replacement_region: ERT_TOKEN_REGION
+			l_feat_name: STRING
+			l_retry: BOOLEAN
 		do
-			success := true
-			etr_error_handler.reset_errors
+			if not l_retry then
+				success := true
+				etr_error_handler.reset_errors
 
-			l_feat_ast := feature_i.e_feature.ast
-			l_written_class := feature_i.written_class
-			l_matchlist := system.match_list_server.item (l_written_class.class_id)
+				l_feat_ast := feature_i.e_feature.ast
+				l_written_class := feature_i.written_class
+				l_matchlist := system.match_list_server.item (l_written_class.class_id)
 
-			create l_transformable.make_in_class (l_feat_ast, l_written_class)
+				create l_transformable.make_in_class (l_feat_ast, l_written_class)
 
-			setter_generator.generate_setter (l_transformable)
-
-			if not etr_error_handler.has_errors then
-				-- Get the trailing break text
-				create l_brk_text.make_empty
-				if l_feat_ast.break_included then
-					l_region_start_index := l_feat_ast.last_token (l_matchlist).index
-					l_brk_text := l_matchlist.i_th (l_region_start_index).text (l_matchlist)
-					l_brk_text := ast_tools.remove_ending_indentation (l_brk_text, '%T')
-				elseif l_feat_ast.has_trailing_separator (l_matchlist) then
-					l_region_start_index := l_feat_ast.last_token (l_matchlist).index+1
-					l_brk_text := l_matchlist.i_th (l_region_start_index).text (l_matchlist)
-					l_brk_text := ast_tools.remove_ending_indentation (l_brk_text, '%T')
+				l_feat_name := l_feat_ast.feature_name.name
+				if is_custom then
+					setter_generator.generate_setter (l_transformable, preferences.setter_name, preferences.argument_name, preferences.assignment, preferences.postcondition)
 				else
-					l_brk_text := "%N"
+					setter_generator.generate_setter (l_transformable, "set_"+l_feat_name, "a_"+l_feat_name, l_feat_name+" := a_"+l_feat_name, l_feat_name+" = a_"+l_feat_name)
 				end
 
-				l_append_text := l_brk_text
+				if not etr_error_handler.has_errors then
+					l_append_text := "%N"
 
-				if not l_append_text.ends_with ("%N%N") then
-					if l_append_text.ends_with ("%N") then
-						l_append_text.append ("%N")
-					else
-						l_append_text.append ("%N%N")
-					end
+					l_append_text.append	(	ast_tools.commented_feature_to_string (
+													setter_generator.transformation_result.target_node,
+													" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'.",
+													1)
+											)
+					l_append_text.append("%N")
+
+					l_feat_ast.append_text (l_append_text, l_matchlist)
+
+					create l_class_modifier.make (l_written_class.original_class)
+					l_class_modifier.prepare
+					l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
+					l_class_modifier.commit
+		        	current_actions.extend (l_class_modifier)
+				else
+		        	show_etr_error
+		        	success := false
+		        	error_handler.wipe_out
 				end
-
-				l_append_text.append	(	ast_tools.commented_feature_to_string (
-												setter_generator.transformation_result.target_node,
-												" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'",
-												1)
-										)
-				l_append_text.append("%N")
-
-				create l_replacement_region.make (l_region_start_index, l_region_start_index)
-				l_matchlist.replace_region (l_replacement_region, l_append_text)
-
-
-				create l_class_modifier.make (l_written_class.original_class)
-				l_class_modifier.prepare
-				l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
-				l_class_modifier.commit
-	        	current_actions.extend (l_class_modifier)
-			else
-	        	show_etr_error
-	        	success := false
-	        	error_handler.wipe_out
 			end
 		rescue
 			show_etr_error
 			success := false
 			error_handler.wipe_out
+			l_retry := true
+			retry
 		end
 
 note

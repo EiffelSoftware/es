@@ -15,6 +15,24 @@ inherit
 		rename
 			error_handler as etr_error_handler
 		end
+	ETR_SHARED_LOGGER
+
+feature {NONE} -- Implementation
+
+	log_exception(a_class: ANY; a_feat: STRING)
+			-- Log exception that caused the failure of EiffelTransform
+		local
+			l_exception: EXCEPTION
+		do
+			l_exception := (create {EXCEPTION_MANAGER}).last_exception
+			if l_exception /= void then
+				if not etr_error_handler.has_errors then
+					etr_error_handler.add_error (a_class, a_feat, l_exception.meaning)
+				end
+
+				logger.log_error ("Unhandled exception:%N"+l_exception.out)
+			end
+		end
 
 feature -- Error handling
 

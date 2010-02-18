@@ -165,24 +165,21 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_creation_as (l_as: CREATION_AS)
 		do
-			fixme ("Add renaming handling here!")
 			last_was_unqualified_or_current := true
-
-			output.append_string ("create ")
+			output.append_string (ti_create_keyword+ti_Space)
 
 			if processing_needed (l_as.type, l_as, 2) then
-				output.append_string("{")
+				output.append_string(ti_l_curly)
 				process_child (l_as.type, l_as, 2)
-				output.append_string("} ")
+				output.append_string(ti_r_curly+ti_Space)
 			end
-
 			process(l_as.target, l_as, 1)
 			if processing_needed (l_as.call, l_as, 3) then
-				output.append_string (".")
+				output.append_string (ti_dot)
 			end
 			last_was_unqualified_or_current := false
 			process_child (l_as.call, l_as, 3)
-			output.append_string("%N")
+			output.append_string(ti_New_line)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -206,9 +203,9 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 
 			if processing_needed (l_as.parameters,l_as,1) then
-				output.append_string (" (")
-				process_child_list(l_as.parameters, ", ", l_as, 1)
-				output.append_string (")")
+				output.append_string (ti_Space+ti_l_parenthesis)
+				process_child_list(l_as.parameters, ti_comma+ti_Space, l_as, 1)
+				output.append_string (ti_r_parenthesis)
 			end
 		end
 
@@ -226,12 +223,12 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
 		do
-			if attached {BINARY_AS}l_as.target or attached {UNARY_AS}l_as.target or attached {OBJECT_TEST_AS}l_as.target then
+			if attached {BRACKET_AS}l_as.target then
+				process_child(l_as.target, l_as, 1)
+			else
 				output.append_string (ti_l_parenthesis)
 				process_child(l_as.target, l_as, 1)
 				output.append_string (ti_r_parenthesis)
-			else
-				process_child(l_as.target, l_as, 1)
 			end
 
 			output.append_string (ti_dot)
@@ -249,7 +246,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_old_msg_name_id, l_new_msg_name_id, l_next_access_name_id: INTEGER
 		do
 			process_child (l_as.target, l_as, 1)
-			output.append_string (".")
+			output.append_string (ti_dot)
 
 			if not last_was_unqualified_or_current then
 				process_child (l_as.message, l_as, 2)

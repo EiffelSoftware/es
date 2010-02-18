@@ -25,6 +25,8 @@ inherit
 	ETR_SHARED_AST_TOOLS
 	ETR_SHARED_PATH_TOOLS
 	ETR_SHARED_OPERATORS
+	EXCEPTION_MANAGER
+	ETR_SHARED_LOGGER
 
 create
 	make
@@ -40,7 +42,7 @@ feature -- Status
 feature -- Element change
 
 	set_class (a_class: like class_i)
-			-- That class that get's renamed
+			-- The class that get's renamed
 		require
 			a_class_not_void: a_class /= void
 		do
@@ -105,76 +107,62 @@ feature {NONE} -- Implementation
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
 			l_replacement_text: STRING
 			l_feat_comment: STRING
-			l_replacement_region: ERT_TOKEN_REGION
-			l_region_start_index, l_region_end_index: INTEGER
-			l_brk_text: STRING
+			l_retry: BOOLEAN
 		do
-			success := true
+			if not l_retry then
+				success := true
 
-			etr_error_handler.reset_errors
+				etr_error_handler.reset_errors
 
-			l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
+				l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
 
-			l_feat_comment := ast_tools.extract_feature_comments(original_feature_ast, l_matchlist)
+				l_feat_comment := ast_tools.extract_feature_comments(original_feature_ast, l_matchlist)
 
-			-- Perform method extraction
-			method_extractor.extract_method (transformable, feature_name, start_path, end_path, preferences.extracted_method_name)
+				-- Perform method extraction
+				method_extractor.extract_method (transformable, feature_name, start_path, end_path, preferences.extracted_method_name)
 
-			if not etr_error_handler.has_errors then
-				-- Replace the old feature by the new one + extracted method
+				if not etr_error_handler.has_errors then
+					-- Replace the old feature by the new one + extracted method
 
-				-- Get the leading break text
-				create l_brk_text.make_empty
-				if original_feature_ast.has_leading_separator (l_matchlist) then
-					l_region_start_index := original_feature_ast.first_token (l_matchlist).index-1
-					l_brk_text := l_matchlist.i_th (l_region_start_index).text (l_matchlist)
-					l_brk_text := ast_tools.remove_ending_indentation (l_brk_text, '%T')
-				else
-					l_region_start_index := original_feature_ast.first_token (l_matchlist).index
-				end
+					l_replacement_text := "%N"
 
-				l_replacement_text := l_brk_text
+					l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
+														method_extractor.old_method.target_node,
+														l_feat_comment,
+														1)
+												)
 
-				if not l_replacement_text.ends_with ("%N") then
 					l_replacement_text.append ("%N")
+
+					l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
+														method_extractor.extracted_method.target_node,
+														" Extracted from `"+feature_name+"'",
+														1)
+												)
+
+					l_replacement_text.remove_tail (1)
+
+					original_feature_ast.replace_text (l_replacement_text, l_matchlist)
+
+					create l_class_modifier.make (class_i)
+					l_class_modifier.prepare
+					l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
+					l_class_modifier.commit
+		        	current_actions.extend (l_class_modifier)
+		        else
+		        	show_etr_error
+		        	success := false
+		        	error_handler.wipe_out
 				end
-
-				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
-													method_extractor.old_method.target_node,
-													l_feat_comment,
-													1)
-											)
-
-				l_replacement_text.append ("%N")
-
-				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
-													method_extractor.extracted_method.target_node,
-													" Extracted from `"+feature_name+"'",
-													1)
-											)
-
-				-- Removing trailing newline, otherwise it's duplicate
-				l_replacement_text.remove_tail (1)
-
-				l_region_end_index := original_feature_ast.last_token (l_matchlist).index
-
-				create l_replacement_region.make (l_region_start_index, l_region_end_index)
-				l_matchlist.replace_region (l_replacement_region, l_replacement_text)
-
-				create l_class_modifier.make (class_i)
-				l_class_modifier.prepare
-				l_class_modifier.set_changed_text (l_matchlist.all_modified_text)
-				l_class_modifier.commit
-	        	current_actions.extend (l_class_modifier)
-	        else
-	        	show_etr_error
-	        	success := false
-	        	error_handler.wipe_out
 			end
 		rescue
+			log_exception(Current, "refactor")
+
 			show_etr_error
 			success := false
 			error_handler.wipe_out
+			l_retry := true
+			retry
 		end
 
     ask_run_settings

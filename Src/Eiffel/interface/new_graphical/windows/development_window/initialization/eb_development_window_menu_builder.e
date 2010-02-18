@@ -100,8 +100,18 @@ feature -- Command
 			auto_recycle (l_command_menu_item)
 			l_refactoring_menu.extend (l_command_menu_item)
 
+				-- Create custom setter
+			l_command_menu_item := develop_window.refactoring_manager.create_custom_setter_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
 				-- Make effective
 			l_command_menu_item := develop_window.refactoring_manager.make_effective_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_refactoring_menu.extend (l_command_menu_item)
+
+				-- Extract constant
+			l_command_menu_item := develop_window.refactoring_manager.extract_constant_command.new_menu_item
 			auto_recycle (l_command_menu_item)
 			l_refactoring_menu.extend (l_command_menu_item)
 

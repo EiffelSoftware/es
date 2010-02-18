@@ -19,6 +19,17 @@ feature {NONE} -- Implementation
 
 feature -- Operations
 
+	constant_node_from_x_y (a_ast: AST_EIFFEL; a_matchlist: LEAF_AS_LIST; a_x, a_y: INTEGER): detachable AST_EIFFEL
+		local
+			l_pos_finder: ETR_CONSTANT_CURSOR_POS_FINDER
+		do
+			create l_pos_finder.make_with_match_list (a_matchlist)
+			l_pos_finder.init (a_x, a_y)
+			l_pos_finder.find_from (a_ast)
+
+			Result := l_pos_finder.found_node
+		end
+
 	feature_from_line (a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER): detachable STRING
 			-- The feature `a_path' is in
 		require
@@ -27,7 +38,8 @@ feature -- Operations
 			l_finder: ETR_PATH_FEATURE_FINDER
 		do
 			create l_finder.make_with_match_list (a_match_list)
-			l_finder.find_path_from_line (a_ast, a_line )
+			l_finder.init (a_line)
+			l_finder.find_from (a_ast)
 
 			if l_finder.found and l_finder.is_feature then
 				Result := l_finder.feature_name
@@ -42,7 +54,8 @@ feature -- Operations
 			l_visitor: ETR_LINE_PATH_FINDER
 		do
 			create l_visitor.make_with_match_list (a_match_list)
-			l_visitor.find_path_from_line (a_ast, a_line)
+			l_visitor.init (a_line)
+			l_visitor.find_from (a_ast)
 
 			if l_visitor.found then
 				Result := l_visitor.found_path

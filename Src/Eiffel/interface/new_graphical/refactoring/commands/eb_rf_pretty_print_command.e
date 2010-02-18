@@ -49,11 +49,28 @@ feature -- Events
 				feature_i := fs.e_class.feature_of_feature_id (fs.e_feature.feature_id)
 			end
 			if feature_i /= Void and then fs.e_feature.associated_class.class_id = feature_i.written_in then
-				rf := manager.pretty_print_refactoring
+				rf := manager.feature_pretty_print_refactoring
 				rf.set_feature (feature_i)
 				manager.execute_refactoring (rf)
 			else
 				prompts.show_error_prompt (warning_messages.w_feature_not_written_in_class, Void, Void)
+			end
+		end
+
+	drop_class (cs: CLASSI_STONE)
+			-- Process class stone.
+		local
+			window: EB_DEVELOPMENT_WINDOW
+			rf: ERF_CLASS_PRETTY_PRINT
+		do
+			if attached {EIFFEL_CLASS_I} cs.class_i as eif_class_i and then eif_class_i.is_compiled then
+				rf := manager.class_pretty_print_refactoring
+				rf.set_class (eif_class_i)
+
+				manager.execute_refactoring (rf)
+			else
+				window := window_manager.last_focused_development_window
+				prompts.show_info_prompt ("Select a compiled Eiffel-class", window.window, Void)
 			end
 		end
 
@@ -90,6 +107,7 @@ feature -- Access
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
 			Result.drop_actions.extend (agent drop_feature (?))
+			Result.drop_actions.extend (agent drop_class (?))
 		end
 
 	menu_name: STRING_GENERAL
@@ -118,15 +136,16 @@ feature -- Execution
 	execute
 			-- Execute.
 		local
-			fs: FEATURE_STONE
 			window: EB_DEVELOPMENT_WINDOW
 		do
 			window := window_manager.last_focused_development_window
-			fs ?= window.stone
-			if fs /= Void then
+
+			if attached {CLASSI_STONE}window.stone as cs then
+				drop_class (cs)
+			elseif attached {FEATURE_STONE}window.stone as fs then
 				drop_feature (fs)
 			else
-				prompts.show_info_prompt (warning_messages.w_Select_feature_to_pretty_print, window.window, Void)
+				prompts.show_info_prompt ("Select a feature or class to pretty print", window.window, Void)
 			end
 		end
 

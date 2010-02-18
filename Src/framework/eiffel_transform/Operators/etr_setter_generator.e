@@ -18,23 +18,49 @@ feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
-	generate_setter(a_transformable: ETR_TRANSFORMABLE)
+	generate_setter(a_transformable: ETR_TRANSFORMABLE; a_feature_name, a_arg_name, a_assignment, a_postcond: STRING)
 			-- Generates a setter for `a_transformable'
 		require
-			non_void: a_transformable /= void
+			non_void: a_transformable /= void and a_feature_name /= void and a_arg_name /= void and a_assignment /= void and a_postcond /= void
 			valid_trans: a_transformable.is_valid
 		local
 			l_attr_name: STRING
 			l_setter_string: STRING
 		do
+			error_handler.reset_errors
 			if attached {FEATURE_AS}a_transformable.target_node as l_attribute then
-				if l_attribute.is_attribute then
+				-- check strings
+				if not (create {EIFFEL_SYNTAX_CHECKER}).is_valid_feature_name (a_feature_name) then
+					error_handler.add_error(Current, "generate_setter", "%""+a_feature_name+"%" is not a valid name.")
+				end
+
+				if not (create {EIFFEL_SYNTAX_CHECKER}).is_valid_feature_name (a_arg_name) then
+					error_handler.add_error(Current, "generate_setter", "%""+a_arg_name+"%" is not a valid name.")
+				end
+
+				parsing_helper.parse_instruction (a_assignment)
+				if parsing_helper.parsed_instruction = void then
+					error_handler.add_error(Current, "generate_setter", "%""+a_assignment+"%" is not a valid instruction.")
+				end
+
+				parsing_helper.parse_expr (a_postcond)
+				if parsing_helper.parsed_expr = void then
+					error_handler.add_error(Current, "generate_setter", "%""+a_postcond+"%" is not a valid expression.")
+				end
+
+				if not l_attribute.is_attribute then
+					error_handler.add_error (Current, "generate_setter", "Feature is not an attribute")
+				end
+
+				if not error_handler.has_errors then
 					l_attr_name := l_attribute.feature_name.name
 
 					-- as easy as possible:
-					l_setter_string := 	"feature set_"+l_attr_name+"(a_"+l_attr_name+": like "+l_attr_name+")%N"+
+					l_setter_string := 	"feature "+a_feature_name+" ("+a_arg_name+": like "+l_attr_name+")%N"+
 										"%Tdo%N"+
-										"%T%T"+l_attr_name+" := a_"+l_attr_name+"%N"+
+										"%T%T"+a_assignment+"%N"+
+										"%Tensure%N"+
+										"%T%T"+l_attr_name+"_set: "+a_postcond+"%N"+
 										"%Tend%N"
 
 					etr_feat_parser.parse_from_string (l_setter_string,void)
@@ -44,8 +70,6 @@ feature -- Operation
 					else
 						error_handler.add_error (Current, "generate_setter", "Feature parsing failed")
 					end
-				else
-					error_handler.add_error (Current, "generate_setter", "Feature is not an attribute")
 				end
 			else
 				error_handler.add_error (Current, "generate_setter", "Transformable does not contain a feature-node")

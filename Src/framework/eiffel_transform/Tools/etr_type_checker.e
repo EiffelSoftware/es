@@ -30,6 +30,7 @@ inherit
 		export
 			{ANY} parsing_helper
 		end
+	ETR_SHARED_LOGGER
 
 feature -- Output
 
@@ -82,6 +83,34 @@ feature -- Output
 				if attached {LIKE_FEATURE}a_type as l_like_feat then
 					Result.append("like "+l_like_feat.feature_name)
 				end
+			elseif a_type.is_named_tuple then
+				if attached {NAMED_TUPLE_TYPE_A}a_type as l_named_tt then
+					Result.append (l_named_tt.associated_class.name_in_upper)
+
+					l_gen_count := l_named_tt.generics.count
+
+					if l_gen_count>0 then
+						Result.append("[")
+					end
+
+					from
+						l_index := l_named_tt.generics.lower
+					until
+						l_index > l_named_tt.generics.upper
+					loop
+						Result.append (l_named_tt.label_name (l_index)+": ")
+						Result.append (print_type(l_named_tt.generics[l_index],a_context))
+						if l_index /= l_gen_count then
+							Result.append("; ")
+						end
+
+						l_index := l_index + 1
+					end
+
+					if l_gen_count>0 then
+						Result.append("]")
+					end
+				end
 			elseif a_type.has_generics then
 				if attached {GEN_TYPE_A}a_type as l_gen then
 					Result.append (l_gen.associated_class.name_in_upper)
@@ -121,6 +150,7 @@ feature -- Output
 				end
 			else
 				Result := a_type.dump -- can't handle, just use debug-dump
+				logger.log_warning("{ETR_TYPE_CHCKER}.print_type: Using default dump ("+Result+")")
 			end
 		end
 
@@ -171,6 +201,8 @@ feature -- Type evaluation
 		require
 			type_non_void: a_type /= void
 			written_class_non_void: a_written_class /= void
+		local
+			l_index: INTEGER
 		do
 			if a_type.is_formal then
 				if attached {FORMAL_A} a_type as l_formal then
@@ -195,7 +227,19 @@ feature -- Type evaluation
 			end
 
 			if Result.has_generics then
-				Result := Result.associated_class.constraint_actual_type
+				-- check if all generics are explicit
+				if attached {GEN_TYPE_A}Result as gen then
+					from
+						l_index := gen.generics.lower
+					until
+						l_index > gen.generics.upper
+					loop
+						if not gen.generics[l_index].is_explicit then
+							gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class)
+						end
+						l_index := l_index + 1
+					end
+				end
 			end
 
 			if not Result.is_explicit then
@@ -279,7 +323,7 @@ feature {NONE} -- Implementation
 					a_feature_context.object_test_locals.after
 				loop
 					l_cur_local := a_feature_context.object_test_locals.item
-					if a_path.is_child_of (l_cur_local.scope) then
+					if l_cur_local.is_active_at (a_path) then
 						create l_local_info
 						l_local_info.set_type (l_cur_local.resolved_type)
 						l_local_info.set_is_used (True)

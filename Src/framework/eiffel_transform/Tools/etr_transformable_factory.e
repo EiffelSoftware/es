@@ -22,37 +22,35 @@ feature -- New
 			create Result.make_invalid
 		end
 
-	new_instr(an_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
-			-- create a new instruction from `an_instr' with context `a_context'
+	new_instr(a_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
+			-- create a new instruction from `a_instr' with context `a_context'
 		require
-			instr_attached: an_instr /= void
+			instr_attached: a_instr /= void
 			context_attached: a_context /= void
 		do
-			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do "+an_instr+" end",void)
+			parsing_helper.parse_instruction (a_instr)
 
-			if etr_feat_parser.error_count>0 then
+			if parsing_helper.parsed_instruction /= void then
+				create Result.make_from_ast (parsing_helper.parsed_instruction, a_context, false)
+			else
 				error_handler.add_error (Current, "new_instr", "Parsing failed")
 				create Result.make_invalid
-			else
-				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
-					create Result.make_from_ast (body.compound.first, a_context, false)
-				end
 			end
 		end
 
-	new_expr(an_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
-			-- create a new exression from `an_expr' with context `a_context'
+	new_expr(a_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
+			-- create a new exression from `a_expr' with context `a_context'
 		require
-			expr_attached: an_expr /= void
+			expr_attached: a_expr /= void
 			context_attached: a_context /= void
 		do
-			etr_expr_parser.parse_from_string("check "+an_expr,void)
+			parsing_helper.parse_expr (a_expr)
 
-			if etr_expr_parser.error_count>0 then
+			if parsing_helper.parsed_expr /= void then
+				create Result.make_from_ast (parsing_helper.parsed_expr, a_context, false)
+			else
 				error_handler.add_error (Current, "new_expr", "Parsing failed")
 				create Result.make_invalid
-			else
-				create Result.make_from_ast (etr_expr_parser.expression_node, a_context, false)
 			end
 		end
 

@@ -1,60 +1,54 @@
 note
-	description: "EiffelTransform Operators"
-	author: "$Author$"
+	description: "Check if a a string is a valid instruction."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_SHARED_OPERATORS
+	ERF_VALID_INSTR
 
-feature {NONE} -- Operators
+inherit
+	ERF_CHECK
 
-	inspect_replacer: ETR_INSPECT_REPLACER
-			-- Shared instance of ETR_INSPECT_REPLACER
-		once
-			create Result
+	SHARED_WORKBENCH
+		export
+			{NONE} all
+		end
+	ETR_SHARED_PARSERS
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_instr: STRING)
+			-- Create check for `a_instr'.
+		require
+			a_instr_not_void: a_instr /= void
+		do
+			instr := a_instr
+			error_message := "%"" + a_instr + "%" is not a valid instruction."
 		end
 
-	assignment_attempt_reaplacer: ETR_ASSIGNMENT_ATTEMPT_REPLACER
-			-- Shared instance of ETR_ASSIGNMENT_ATTEMPT_REPLACER
-		once
-			create Result
-		end
+feature -- Basic operation
 
-	effective_class_generator: ETR_EFFECTIVE_CLASS_GENERATOR
-			-- Shared instance of ETR_EFFECTIVE_CLASS_GENERATOR
-		once
-			create Result
-		end
+	execute
+            -- Execute a check.
+        do
+        	parsing_helper.parse_instruction(instr)
 
-	renamer: ETR_RENAMER
-			-- Shared instance of ETR_RENAMER
-		once
-			create Result
-		end
+        	success := parsing_helper.parsed_instruction /= void
+        end
 
-	setter_generator: ETR_SETTER_GENERATOR
-			-- Shared instance of ETR_SETTER_GENERATOR
-		once
-			create Result
-		end
+feature {NONE} -- Implementation
 
-	method_extractor: ETR_METHOD_EXTRACTOR
-			-- Shared instance of ETR_METHOD_EXTRACTOR
-		once
-			create Result
-		end
-
-	constant_extractor: ETR_CONSTANT_EXTRACTOR
-			-- Shared instance of ETR_CONSTANT_EXTRACTOR
-		once
-			create Result
-		end
+	instr: STRING;
+			-- The expr to check.
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
-	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options: "http://www.eiffel.com/licensing"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -82,4 +76,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

@@ -36,6 +36,7 @@ feature -- Operation
 		require
 			root_set: a_root /= void
 		do
+			create current_scope.make
 			create current_path.make_as_root (a_root)
 			a_root.process (Current)
 		end
@@ -48,8 +49,8 @@ feature {NONE} -- Implementation
 	current_path: AST_PATH
 			-- The path we're currently at
 
-	current_branch_scope: like current_path
-			-- The local scope we're currently
+	current_scope: LINKED_LIST[AST_PATH]
+			-- The current scope
 
 	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
 			-- process an n-way branch with parent `a_parent' and branches `br'
@@ -76,10 +77,9 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_bin_and_then_as (l_as: BIN_AND_THEN_AS)
 		do
-			-- scope: l_as.right
-			current_branch_scope := create {AST_PATH}.make_from_parent(current_path,2)
+			-- scope: l_as.right (+branch body)
+			current_scope.extend (create {AST_PATH}.make_from_parent(current_path,2))
 			Precursor(l_as)
-			current_branch_scope := void
 		end
 
 	process_feature_as (l_as: FEATURE_AS)
@@ -117,9 +117,10 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_elseif_as (l_as: ELSIF_AS)
 		do
 			-- scope: l_as.expr
-			current_branch_scope := create {AST_PATH}.make_from_parent(current_path,2)
+			current_scope.wipe_out
+			current_scope.extend(create {AST_PATH}.make_from_parent(current_path,2))
 			Precursor(l_as)
-			current_branch_scope := void
+			current_scope.wipe_out
 		end
 
 	process_if_as (l_as: IF_AS)
@@ -129,11 +130,12 @@ feature {AST_EIFFEL} -- Roundtrip
 			old_path := current_path.twin
 
 			-- scope: l_as.compound
-			current_branch_scope := create {AST_PATH}.make_from_parent(current_path,2)
+			current_scope.wipe_out
+			current_scope.extend ( create {AST_PATH}.make_from_parent(current_path,2) )
 			create current_path.make_from_parent (current_path, 1)
 			l_as.condition.process (Current)
 			current_path := old_path
-			current_branch_scope := void
+			current_scope.wipe_out
 
 			process_n_way_branch(l_as,[void, l_as.compound, l_as.elsif_list, l_as.else_part])
 		end
@@ -144,7 +146,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_type_checker: ETR_TYPE_CHECKER
 			l_explicit_type: TYPE_A
 		do
-			if attached l_as.name and attached current_branch_scope then
+			if attached l_as.name and attached not current_scope.is_empty then
 				if attached l_as.type then
 					l_written_type := type_checker.written_type_from_type_as (l_as.type, context.class_context.written_class, context.written_feature)
 				else
@@ -154,7 +156,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				end
 				l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class)
 
-				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make_at (l_as.name.name, l_explicit_type, l_written_type, current_branch_scope))
+				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make_at (l_as.name.name, l_explicit_type, l_written_type, current_scope))
 			end
 			process_n_way_branch(l_as,[void, l_as.expression, void])
 		end

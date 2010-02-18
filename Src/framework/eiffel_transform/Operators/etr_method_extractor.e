@@ -233,7 +233,7 @@ feature {NONE} -- Implementation (Extraction)
 			end
 		end
 
-	extract_new_locals(a_start_path: AST_PATH)
+	extract_new_locals
 			-- Find locals that were used in the block
 			-- = used locals - extracted arguments - extracted results
 		local
@@ -379,15 +379,15 @@ feature {NONE} -- Implementation (Printing)
 			l_feature_output_text.append (a_feature_name)
 
 			-- Decide if the result needs preinitialization!
-			-- This is not perfect but works most of the time
+			-- Not perfect but seems to work most of the time
 			if not extracted_results.is_empty then
 				if attached instrs[block_start].definitions[extracted_results.first] as l_start and attached instrs[block_end].definitions[extracted_results.first] as l_end and block_end+1<=instr_count then
 					if attached instrs[block_end+1].definitions[extracted_results.first] as l_after then
-						if l_start.first /= l_end.first and l_after.first=l_start.first then
+						logger.log_info (" l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
+
+						if l_start.first < block_start and l_after.first < block_start and l_after.second >= block_start and l_end.second >= block_start then
+							logger.log_info ("is_result_possibly_undef = true")
 							is_result_possibly_undef := true
-							logger.log_info ("is_result_possibly_undef = true, l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
-						else
-							logger.log_info ("is_result_possibly_undef = false, l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
 						end
 					end
 				end
@@ -618,7 +618,7 @@ feature {NONE} -- Implementation (Printing)
 				l_index > instr_count
 			loop
 				if instrs[l_index].path.is_equal (a_start_path) then
-					block_start := l_index
+					block_start := instrs[l_index].first_contained_id
 				end
 				if instrs[l_index].path.is_equal (a_end_path) then
 					block_end := instrs[l_index].last_contained_id
@@ -680,26 +680,34 @@ feature -- Operations
 					use_def_gen.generate_chain (context, a_feature.target_node)
 
 					instrs := use_def_gen.instructions
+
 					instr_count := instrs.count
+					logger.log_info ("Use-def chain for "+instr_count.out+" instructions created")
 
 					-- Get start + end-position in terms of instruction-id's
+					block_start := 0
+					block_end := 0
 					compute_start_end_ids(a_start_path, a_end_path)
 
-					extract_arguments
-					extract_results
-					extract_changed_arguments
-					extract_new_locals(a_start_path)
-					extract_obsolete_locals
-
-					log_extracted
-
-					if extracted_results.count>1 then
-						error_handler.add_error (Current, "extract_method", "More than one result is not supported")
+					if block_start=0 or block_end=0 or block_start>block_end then
+						error_handler.add_error (Current, "extract_method", "Failed to convert path->block id")
 					else
-						compute_extracted_method (a_start_path, a_end_path, a_extracted_method_name, l_instr_list)
-						compute_old_method (a_start_path, a_end_path, a_extracted_method_name, l_feat_ast)
+						extract_arguments
+						extract_results
+						extract_changed_arguments
+						extract_new_locals
+						extract_obsolete_locals
+
+						log_extracted
+
+						if extracted_results.count>1 then
+							error_handler.add_error (Current, "extract_method", "More than one result is not supported")
+						else
+							compute_extracted_method (a_start_path, a_end_path, a_extracted_method_name, l_instr_list)
+							compute_old_method (a_start_path, a_end_path, a_extracted_method_name, l_feat_ast)
+						end
+						logger.log_info ("ETR_METHOD_EXTRACTOR: Complete")
 					end
-					logger.log_info ("ETR_METHOD_EXTRACTOR: Complete")
 				end
 			else
 				error_handler.add_error (Current, "extract_method", "Feature "+a_context_feature+" not found")

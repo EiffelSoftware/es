@@ -24,13 +24,13 @@ feature -- Operations
 	enter_block
 			-- Enters a new indentation-block
 		do
-			-- unused
+			block_depth := block_depth + 1
 		end
 
 	exit_block
 			-- Exits an indentation-block
 		do
-			-- unused
+			block_depth := block_depth - 1
 		end
 
 	enter_child(a_name: STRING)
@@ -55,7 +55,7 @@ feature -- Operations
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

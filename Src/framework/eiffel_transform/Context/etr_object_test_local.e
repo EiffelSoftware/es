@@ -12,13 +12,22 @@ create
 	make_at
 
 feature -- Access
-	scope: AST_PATH
+	scope: LIST[AST_PATH]
 			-- Scope of this object-test-local
 
-	is_active_at(a_path: like scope): BOOLEAN
+	is_active_at(a_path: AST_PATH): BOOLEAN
 			-- is `Current' active at `a_path'
 		do
-			Result := a_path.is_child_of(scope)
+			from
+				scope.start
+			until
+				scope.after or Result
+			loop
+				if a_path.is_child_of (scope.item) then
+					Result := true
+				end
+				scope.forth
+			end
 		end
 
 feature {NONE} -- Creation
@@ -33,7 +42,7 @@ feature {NONE} -- Creation
 		do
 			make(a_name, a_res_type, a_org_type)
 
-			scope := a_scope
+			scope := a_scope.twin
 		end
 
 note

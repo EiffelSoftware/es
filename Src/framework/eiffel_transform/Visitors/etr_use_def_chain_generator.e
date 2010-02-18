@@ -24,7 +24,8 @@ inherit
 			process_tagged_as,
 			process_nested_expr_as,
 			process_creation_expr_as,
-			process_inline_agent_creation_as
+			process_inline_agent_creation_as,
+			process_bracket_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -190,7 +191,13 @@ feature -- Operation
 		do
 			context := a_context
 
+			-- reset internal state
 			current_instruction := 0
+			cur_instr := void
+			elseif_defs := void
+			caselist_defs := void
+			last_was_unqualified := false
+			next_local_name := void
 
 			-- create internal structures
 			create current_var_defs.make(20)
@@ -265,22 +272,27 @@ feature {AST_EIFFEL} -- Roundtrip (Branches)
 			l_merge_list: LINKED_LIST[like current_var_defs]
 			l_prev_var_def: like current_var_defs
 			l_loop_instr: ETR_DF_INSTR
+			l_first_instr: like current_instruction
 		do
-			create l_merge_list.make
-			current_instruction := current_instruction+1
+			l_first_instr := current_instruction+1
 
+			-- first process the from part
+			safe_process(l_as.from_part)
+
+			-- now process the loop instruction
+			current_instruction := current_instruction+1
 			create cur_instr.make (current_instruction, l_as.path, current_var_defs)
 			l_loop_instr := cur_instr
+			l_loop_instr.set_first_contained_id (l_first_instr)
 
-			safe_process(l_as.from_part)
-			-- store variables after from-part for merge
-			l_prev_var_def := current_var_defs.twin
-			l_merge_list.extend (l_prev_var_def)
-
-			-- and gather new ones	
 			safe_process(l_as.stop)
-			-- store them
 			instr_list.extend (cur_instr)
+
+			-- store for merge
+			create l_merge_list.make
+			l_prev_var_def := current_var_defs.twin
+			l_merge_list.extend (l_prev_var_def.twin)
+
 			safe_process(l_as.compound)
 
 			l_loop_instr.set_last_contained_id (current_instruction)
@@ -463,6 +475,17 @@ feature {AST_EIFFEL} -- Roundtrip (Usage)
 			last_was_unqualified := false
 
 			safe_process (l_as.message)
+		end
+
+	process_bracket_as (l_as: BRACKET_AS)
+		do
+			l_as.target.process (Current)
+
+			last_was_unqualified := true
+
+			l_as.operands.process (Current)
+
+			last_was_unqualified := false
 		end
 
 	process_nested_as (l_as: NESTED_AS)

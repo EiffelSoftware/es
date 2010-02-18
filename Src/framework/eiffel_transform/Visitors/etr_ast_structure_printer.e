@@ -292,8 +292,64 @@ feature {AST_EIFFEL} -- Roundtrip: Atomic
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
+		local
+			l_lines: LIST[STRING]
+			l_depth: INTEGER
 		do
-			output.append_string (l_as.string_value)
+			if l_as.is_once_string then
+				output.append_string (ti_once_keyword+ti_space)
+			end
+
+			output.append_string (ti_Double_quote+l_as.verbatim_marker)
+
+			if l_as.is_indentable then
+				output.append_string (ti_l_bracket)
+			else
+				output.append_string (ti_l_curly)
+			end
+
+			output.append_string (ti_new_line)
+
+			output.enter_block
+			output.enter_block
+
+			if not l_as.is_indentable then
+				l_depth := output.block_depth
+				output.set_block_depth (0)
+			end
+
+			if not l_as.value.is_empty then
+				from
+					l_lines := l_as.value.split ('%N')
+					l_lines.start
+				until
+					l_lines.after
+				loop
+					output.append_string (l_lines.item)
+					l_lines.forth
+					if not l_lines.after then
+						output.append_string (ti_new_line)
+					end
+				end
+			end
+
+			if not l_as.is_indentable then
+				output.set_block_depth (l_depth)
+			end
+
+			output.exit_block
+
+			output.append_string (ti_new_line)
+
+			if l_as.is_indentable then
+				output.append_string (ti_r_bracket)
+			else
+				output.append_string (ti_r_curly)
+			end
+
+			output.append_string (l_as.verbatim_marker + ti_double_quote)
+
+			output.exit_block
 		end
 
 	process_integer_as (l_as: INTEGER_AS)
@@ -1065,6 +1121,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 	process_constant_as (l_as: CONSTANT_AS)
 		do
 			process  (l_as.value, l_as, 1)
+			output.append_string (ti_new_line)
 		end
 
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
@@ -1140,7 +1197,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			end
 
 			if l_as.is_constant then
-				output.append_string(ti_Space+ti_is_keyword+ti_Space)
+				output.append_string(ti_Space+ti_equal+ti_space)
 			elseif processing_needed (l_as.assigner, l_as, 3) then
 				output.append_string (ti_Space+ti_assign_keyword+ti_Space)
 				process_child (l_as.assigner, l_as, 3)
@@ -1151,11 +1208,19 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 				output.append_string(ti_New_line)
 			end
 
-			if processing_needed (l_as.content, l_as, 4) then
-				process_child_block(l_as.content, l_as, 4)
+			output.enter_block
+
+			if processing_needed (l_as.indexing_clause, l_as, 5) then
+				output.append_string (ti_indexing_keyword+ti_new_line)
+				process_child_block_list (l_as.indexing_clause, ti_new_line, l_as, 5)
+				output.append_string (ti_new_line)
 			end
 
-			process_child(l_as.indexing_clause, l_as, 5)
+			if processing_needed (l_as.content, l_as, 4) then
+				process_child(l_as.content, l_as, 4)
+			end
+
+			output.exit_block
 		end
 
 	process_feature_as (l_as: FEATURE_AS)
@@ -1168,7 +1233,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 		do
 			output.append_string(ti_feature_keyword+ti_Space)
 			process_child(l_as.clients, l_as, 1)
-			output.append_string(ti_New_line)
+			output.append_string(ti_New_line+ti_new_line)
 			process_child_block_list (l_as.features, ti_new_line, l_as, 2)
 		end
 
@@ -1198,11 +1263,16 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 				output.append_string("partial"+ti_Space)
 			end
 
-			process_child(l_as.top_indexes, l_as, 1)
+			if processing_needed (l_as.top_indexes, l_as, 1) then
+				output.append_string (ti_note_keyword+ti_new_line)
+				process_child_block_list (l_as.top_indexes, ti_new_line, l_as, 1)
+				output.append_string (ti_new_line+ti_new_line)
+			end
 
 			output.append_string (ti_class_keyword+ti_New_line)
 			output.enter_block
 			process_child(l_as.class_name, l_as, 2)
+			output.append_string (ti_new_line)
 
 			if processing_needed (l_as.generics, l_as, 3) then
 				output.append_string (ti_l_bracket)
@@ -1219,7 +1289,7 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 			if processing_needed (l_as.parents, l_as, 5)  then
 				output.append_string (ti_inherit_keyword+ti_new_line)
-				process_child_block (l_as.parents, l_as, 5)
+				process_child_block_list (l_as.parents, ti_new_line, l_as, 5)
 			end
 
 			process_child (l_as.creators, l_as, 6)
@@ -1234,16 +1304,31 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 			output.append_string(ti_New_line)
 
-			process_child(l_as.features, l_as, 8)
+			if processing_needed (l_as.features, l_as, 8) then
+				process_child_list (l_as.features, ti_new_line, l_as, 8)
+				output.append_string (ti_new_line)
+			end
 			process_child(l_as.invariant_part, l_as, 9)
-			process_child(l_as.bottom_indexes, l_as, 10)
+
+			if processing_needed (l_as.bottom_indexes, l_as, 10) then
+				-- Make sure parsing successful
+				-- Semicolon or end needed before 'note'
+				if l_as.features.is_empty or else l_as.features.last.features.is_empty or else (l_as.features.last.features.last.is_attribute or l_as.features.last.features.last.is_constant) then
+					output.append_string (ti_semi_colon)
+				end
+				output.append_string (ti_note_keyword+ti_new_line)
+				process_child_block_list (l_as.bottom_indexes, ti_new_line, l_as, 10)
+				output.append_string (ti_new_line)
+			end
+
 			output.append_string (ti_End_keyword+ti_New_line)
 		end
 
 	process_index_as (l_as: INDEX_AS)
 		do
-			-- don't print
---			process_child(l_as.index_list, l_as, 1)
+			process_child (l_as.tag, l_as, 1)
+			output.append_string (": ")
+			process_child_list (l_as.index_list, ti_comma+ti_space, l_as, 2)
 		end
 
 	process_nested_as (l_as: NESTED_AS)

@@ -8,6 +8,8 @@ deferred class
 	ETR_BRANCH_VISITOR
 inherit
 	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		undefine
 			-- this needs custom processing!
 			process_eiffel_list
@@ -408,7 +410,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_index_as (l_as: INDEX_AS)
 		do
-			process_n_way_branch(l_as,[l_as.index_list])
+			process_n_way_branch(l_as,[l_as.tag, l_as.index_list])
 		end
 
 	process_export_item_as (l_as: EXPORT_ITEM_AS)

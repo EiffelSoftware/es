@@ -43,9 +43,11 @@ feature {NONE} -- Initialization
 			create feature_rename_refactoring.make (undo_stack, preferences)
 			create feature_pull_refactoring.make (undo_stack, preferences)
 			create extract_method_refactoring.make (undo_stack, preferences)
-			create pretty_print_refactoring.make (undo_stack, preferences)
+			create feature_pretty_print_refactoring.make (undo_stack, preferences)
+			create class_pretty_print_refactoring.make (undo_stack, preferences)
 			create create_setter_refactoring.make (undo_stack, preferences)
 			create make_effective_refactoring.make (undo_stack, preferences)
+			create extract_constant_refactoring.make (undo_stack, preferences)
 
 				-- create the commands
 			create pull_command.make (Current)
@@ -55,7 +57,9 @@ feature {NONE} -- Initialization
 			create extract_method_command.make (Current)
 			create pretty_print_command.make (Current)
 			create create_setter_command.make (Current)
+			create create_custom_setter_command.make (Current)
 			create make_effective_command.make (Current)
+			create extract_constant_command.make (Current)
 		end
 
 feature -- Commands
@@ -68,7 +72,9 @@ feature -- Commands
 	extract_method_command: EB_RF_EXTRACT_METHOD_COMMAND
 	pretty_print_command: EB_RF_PRETTY_PRINT_COMMAND
 	create_setter_command: EB_RF_CREATE_SETTER_COMMAND
+	create_custom_setter_command: EB_RF_CREATE_CUSTOM_SETTER_COMMAND
 	make_effective_command: EB_RF_MAKE_EFFECTIVE_COMMAND
+	extract_constant_command: EB_RF_EXTRACT_CONSTANT_COMMAND
 
 feature -- Access
 
@@ -77,9 +83,11 @@ feature -- Access
 	feature_pull_refactoring: ERF_FEATURE_PULL
 
 	extract_method_refactoring: ERF_EXTRACT_METHOD
-	pretty_print_refactoring: ERF_FEATURE_PRETTY_PRINT
+	feature_pretty_print_refactoring: ERF_FEATURE_PRETTY_PRINT
+	class_pretty_print_refactoring: ERF_CLASS_PRETTY_PRINT
 	create_setter_refactoring: ERF_CREATE_SETTER
 	make_effective_refactoring: ERF_MAKE_EFFECTIVE
+	extract_constant_refactoring: ERF_EXTRACT_CONSTANT
 
 feature -- Status
 
@@ -191,6 +199,8 @@ feature -- Element change
 			pretty_print_command.enable_sensitive
 			create_setter_command.enable_sensitive
 			make_effective_command.enable_sensitive
+			create_custom_setter_command.enable_sensitive
+			extract_constant_command.enable_sensitive
 		end
 
 	disable_sensitive
@@ -205,6 +215,8 @@ feature -- Element change
 			pretty_print_command.disable_sensitive
 			create_setter_command.disable_sensitive
 			make_effective_command.disable_sensitive
+			create_custom_setter_command.disable_sensitive
+			extract_constant_command.disable_sensitive
 		end
 
 	destroy

@@ -8,6 +8,9 @@ class
 	ETR_AST_STRING_OUTPUT
 inherit
 	ETR_AST_STRUCTURE_OUTPUT_I
+		redefine
+			set_block_depth
+		end
 create
 	make,
 	make_with_indentation_string
@@ -57,6 +60,24 @@ feature -- Output
 
 feature -- Operations
 
+	set_block_depth (a_block_depth: like block_depth)
+			-- Set `block_depth' to `a_block_depth'.
+		local
+			l_index: INTEGER
+		do
+			from
+				l_index := 1
+				create current_indentation.make_empty
+			until
+				l_index > a_block_depth
+			loop
+				current_indentation.append (indentation_string)
+				l_index := l_index + 1
+			end
+
+			block_depth := a_block_depth
+		end
+
 	set_indentation_string(an_indentation_string: like indentation_string)
 			-- Set `indentation_string'
 		require
@@ -71,12 +92,14 @@ feature -- Operations
 			context.clear
 			current_indentation := ""
 			last_was_newline := true
+			block_depth := 0
 		end
 
 	enter_block
 			-- Enters a new indentation-block
 		do
 			current_indentation := current_indentation + indentation_string
+			block_depth := block_depth + 1
 		end
 
 	exit_block
@@ -85,6 +108,7 @@ feature -- Operations
 			if current_indentation.count >= indentation_string.count then
 				current_indentation.remove_tail (indentation_string.count)
 			end
+			block_depth := block_depth - 1
 		end
 
 	enter_child(a_name: STRING)

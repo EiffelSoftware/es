@@ -18,6 +18,9 @@ feature -- Operations
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
+	pulled_down_features: LIST[STRING]
+			-- Features that were pulled down from an ancestor and made effective
+
 	generate_effective_class(a_class: ETR_TRANSFORMABLE)
 			-- Creates an effective class from `a_class'
 		local
@@ -28,11 +31,11 @@ feature -- Operations
 			l_visitor: ETR_ECG_VISITOR
 			l_output: ETR_AST_STRING_OUTPUT
 		do
-			fixme("Use interface of class context! (add)")
 			l_written_class := a_class.context.class_context.written_class
 			l_ft := l_written_class.feature_table
 
 			create l_new_features.make
+			create {LINKED_LIST[STRING]}pulled_down_features.make
 
 			from
 				l_ft.start
@@ -46,6 +49,7 @@ feature -- Operations
 						l_new_features.extend (l_cur_feat)
 						-- feature is written in an ancestor
 						--  -> add feature when printing
+						pulled_down_features.extend (l_cur_feat.feature_name)
 					end
 				end
 
