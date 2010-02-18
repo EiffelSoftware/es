@@ -291,6 +291,8 @@
 				<exclude>/dbg_preferences\.e$</exclude>
 				<exclude>/ewb_testing\.e$</exclude>
 				<exclude>/ewb_auto_test\.e$</exclude>
+				<exclude>/ewb_eiffel_transform\.e$</exclude>
+				<exclude>/ewb_auto_fix\.e$</exclude>
 			</file_rule>
 		</cluster>
 		<override name="eiffel_override" location="$EIFFEL_SRC\Eiffel\override\" recursive="true"/>
