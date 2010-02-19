@@ -57,6 +57,14 @@ feature -- Element change
 			original_constant := a_constant
 		end
 
+	set_containing_feature (a_name: STRING)
+			-- Set containing feature
+		require
+			a_name_set: a_name /= void
+		do
+			containing_feature := a_name
+		end
+
 feature {NONE} -- Implementation
 
 	preferences: ERF_EXTRACT_CONSTANT_PREFERENCES
@@ -66,6 +74,9 @@ feature {NONE} -- Implementation
 
 	class_i: EIFFEL_CLASS_I;
 			-- The class we're operating in
+
+	containing_feature: STRING
+			-- The feature the constant occurs in
 
 	class_modifiers: LINKED_LIST[ERF_CLASS_TEXT_MODIFICATION]
 
@@ -128,7 +139,7 @@ feature {NONE} -- Implementation
 
 				create l_cons_trans.make_in_class (original_constant, class_i.compiled_class)
 
-				constant_extractor.extract_constant (l_cons_trans, preferences.constant_name, preferences.ancestors_flag, preferences.descendants_flag)
+				constant_extractor.extract_constant (l_cons_trans, containing_feature, preferences.constant_name, preferences.whole_class_flag, preferences.ancestors_flag, preferences.descendants_flag)
 
 				if etr_error_handler.has_errors then
 					show_etr_error
@@ -234,6 +245,7 @@ feature {NONE} -- Implementation
 			dialog.set_descendants_flag (preferences.descendants_flag)
 			dialog.set_constant_name (preferences.constant_name)
 			dialog.set_constant_value (original_constant.text (l_matchlist))
+			dialog.set_class_flag (preferences.whole_class_flag)
 
 			dialog.show_modal_to_window (window_manager.last_focused_development_window.window)
 
@@ -241,6 +253,7 @@ feature {NONE} -- Implementation
 			preferences.set_ancestors (dialog.ancestors_flag)
 			preferences.set_descendants (dialog.descendants_flag)
 			preferences.set_constant_name (dialog.constant_name)
+			preferences.set_whole_class (dialog.class_flag)
 
 				-- add basic checks
         	checks.wipe_out

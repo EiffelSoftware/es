@@ -105,7 +105,6 @@ feature -- Execution
 			rf: ERF_EXTRACT_CONSTANT
 			displayed_text: CLICKABLE_TEXT
 			l_matchlist: LEAF_AS_LIST
-			l_constant_node: AST_EIFFEL
 		do
 			window := window_manager.last_focused_development_window
 
@@ -113,14 +112,15 @@ feature -- Execution
 				l_matchlist := match_list_server.item (eif_class_i.compiled_class.class_id)
 				displayed_text := window.ui.current_editor.text_displayed
 
-				l_constant_node := path_tools.constant_node_from_x_y (eif_class_i.compiled_class.ast, l_matchlist, displayed_text.cursor.x_in_characters, displayed_text.cursor.y_in_lines)
+				path_tools.constant_node_from_x_y (eif_class_i.compiled_class.ast, l_matchlist, displayed_text.cursor.x_in_characters, displayed_text.cursor.y_in_lines)
 
-				if l_constant_node = void then
+				if not path_tools.found then
 					prompts.show_info_prompt ("Move the cursor to a constant to extract.", window.window, Void)
 				else
 					rf := manager.extract_constant_refactoring
 					rf.set_class (eif_class_i)
-					rf.set_constant (l_constant_node)
+					rf.set_constant (path_tools.last_ast)
+					rf.set_containing_feature (path_tools.last_feature_name)
 
 					manager.execute_refactoring (rf)
 				end

@@ -15,16 +15,20 @@ inherit
 			process_real_as,
 			process_char_as,
 			process_bit_const_as,
-			process_bool_as
+			process_bool_as,
+			process_feature_as
 		end
 
 feature -- Operation
 
-	find_constants(a_constant: like constant; a_root: AST_EIFFEL)
+	find_constants(a_constant: like constant; a_root: CLASS_AS; a_feature_name: like feature_name)
 			-- find all constants that match `a_constant'
 		require
 			non_void: a_constant /= void and a_root /= void
 		do
+			is_processing_single_feature := a_feature_name /= void
+			feature_name := a_feature_name
+
 			constant := a_constant
 			create {LINKED_LIST[AST_PATH]}found_constants.make
 			create current_path.make_as_root (a_root)
@@ -38,6 +42,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
+	feature_name: detachable STRING
+
+	is_processing_single_feature: BOOLEAN
+
 	constant: AST_EIFFEL
 			-- The constant we're looking for
 
@@ -50,6 +58,17 @@ feature {NONE} -- Implementation
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_feature_as (l_as: FEATURE_AS)
+		do
+			if is_processing_single_feature then
+				if l_as.feature_name.name.is_equal (feature_name) then
+					Precursor(l_as)
+				end
+			else
+				Precursor(l_as)
+			end
+		end
 
 	process_bool_as (l_as: BOOL_AS)
 		do

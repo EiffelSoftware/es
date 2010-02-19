@@ -6,14 +6,10 @@ note
 
 class
 	ETR_SHARED_OPERATORS
+inherit
+	ETR_SHARED_BASIC_OPERATORS
 
 feature {NONE} -- Operators
-
-	basic_operators: ETR_BASIC_OPS
-			-- Shared instance of ETR_BASIC_OPS
-		once
-			create Result
-		end
 
 	inspect_replacer: ETR_INSPECT_REPLACER
 			-- Shared instance of ETR_INSPECT_REPLACER

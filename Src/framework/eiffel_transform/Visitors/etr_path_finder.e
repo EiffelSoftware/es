@@ -27,7 +27,7 @@ feature -- Access
 feature -- Operation
 
 	find_from(a_ast: AST_EIFFEL)
-			-- Reset internal state
+			-- Find from `a_ast'
 		do
 			found := false
 			found_path := void

@@ -9,7 +9,9 @@ class
 inherit
 	ETR_PATH_FINDER
 		redefine
-			process_routine_as
+			process_routine_as,
+			process_feature_as,
+			find_from
 		end
 	REFACTORING_HELPER
 		export
@@ -18,6 +20,9 @@ inherit
 create
 	make_with_match_list
 
+feature -- Access
+
+	contained_feature_name: STRING
 
 feature -- Operation
 
@@ -27,6 +32,13 @@ feature -- Operation
 			target_x := a_x
 			target_y := a_y
 			is_in_routine := false
+		end
+
+	find_from(a_ast: AST_EIFFEL)
+			-- <precursor>
+		do
+			contained_feature_name := void
+			Precursor(a_ast)
 		end
 
 feature {NONE} -- Implementation
@@ -64,6 +76,12 @@ feature {NONE} -- Implementation
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_feature_as (l_as: FEATURE_AS)
+		do
+			contained_feature_name := l_as.feature_name.name
+			Precursor(l_as)
+		end
 
 	process_routine_as (l_as: ROUTINE_AS)
 		do

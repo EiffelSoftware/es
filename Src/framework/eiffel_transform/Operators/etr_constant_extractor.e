@@ -72,22 +72,45 @@ feature {NONE} -- Implementation
 		local
 			l_found: TUPLE[occ_class: CLASS_C; locs: LIST[AST_PATH]]
 		do
-			constant_finder.find_constants (constant, a_class.ast)
+			constant_finder.find_constants (constant, a_class.ast, void)
 
 			if level=0 and constant_finder.found_constants.is_empty then
 				error_handler.add_error (Current, "process_class", "Constant not found in specified class.")
 			elseif not constant_finder.found_constants.is_empty then
-				l_found := [a_class, constant_finder.found_constants]
-				found_constants.extend (l_found)
+				-- check if already processed
+				if not found_classes.has (a_class.name) then
+					l_found := [a_class, constant_finder.found_constants]
+					found_constants.extend (l_found)
+					found_classes.extend (a_class.name)
+				end
 
 				if level>highest_level then
 					highest_level := level
 					declaring_class := a_class
-				elseif level=highest_level then
-					error_handler.add_error (Current, "process_class", "Can't decide in which ancestor to declare the constant.")
+				elseif level=highest_level and declaring_class.class_id /= a_class.class_id then
+					error_handler.add_error (Current, "process_class", "Can't decide in which ancestor to declare the constant%NUse the constant extraction in the desired ancestor.")
 				end
 			end
 		end
+
+	process_feature(a_written_class: CLASS_C; a_feature_name: STRING)
+			-- process `a_feature_name' in `a_written_class'
+		local
+			l_found: TUPLE[occ_class: CLASS_C; locs: LIST[AST_PATH]]
+		do
+			constant_finder.find_constants (constant, a_written_class.ast, a_feature_name)
+
+			if constant_finder.found_constants.is_empty then
+				error_handler.add_error (Current, "process_feature", "Constant not found in specified feature or feature not found in class.")
+			else
+				l_found := [a_written_class, constant_finder.found_constants]
+				found_constants.extend (l_found)
+
+				declaring_class := a_written_class
+			end
+		end
+
+	found_classes: LINKED_LIST[STRING]
 
 	highest_level: INTEGER
 			-- Level in inheritance hierarchy
@@ -127,13 +150,13 @@ feature -- Access
 
 feature -- Operations
 
-	extract_constant(a_constant: ETR_TRANSFORMABLE; a_name: STRING; a_process_ancestors, a_process_descendants: BOOLEAN)
+	extract_constant(a_constant: ETR_TRANSFORMABLE; a_contained_feature_name, a_constant_name: STRING; a_process_whole_cass, a_process_ancestors, a_process_descendants: BOOLEAN)
 			-- Extracts `a_constant' while also processing ancestors/descendants
 		require
 			cons_non_void: a_constant /= void
 			cons_valid: a_constant.is_valid
 			context_valid: not a_constant.context.is_empty
-			name_non_void: a_name /= void
+			name_non_void: a_constant_name /= void and a_contained_feature_name /= void
 		local
 			l_earliest_occurence: CLASS_C
 			l_source_class: CLASS_C
@@ -151,20 +174,28 @@ feature -- Operations
 		do
 			create {LINKED_LIST[TUPLE[occ_class: CLASS_C; locs: LIST[AST_PATH]]]}found_constants.make
 			create {LINKED_LIST[TUPLE[occ_class: CLASS_C; mods: LIST[ETR_AST_MODIFICATION]]]}modifiers.make
+			create found_classes.make
+			found_classes.compare_objects
 			constant := a_constant.target_node
 			l_source_class := a_constant.context.class_context.written_class
 
-			logger.log_info ("extract_constant starting. Name: "+a_name+"; Ancestors: "+a_process_ancestors.out+"; Descendants: "+a_process_descendants.out)
+			logger.log_info ("extract_constant starting. Name: "+a_constant_name+"; Ancestors: "+a_process_ancestors.out+"; Descendants: "+a_process_descendants.out)
 
 			highest_level := -1
 
-			if a_process_ancestors then
-				process_ancestors (l_source_class, 1)
+			if not a_process_whole_cass then
+				process_feature (l_source_class, a_contained_feature_name)
+			else
+				if a_process_ancestors then
+					process_ancestors (l_source_class, 1)
+				end
+				process_class (l_source_class, 0)
+				if a_process_descendants then
+					process_descendants (l_source_class)
+				end
 			end
-			process_class (l_source_class, 0)
-			if a_process_descendants then
-				process_descendants (l_source_class)
-			end
+
+
 
 			-- Make sure all class inherit in some way from the class we declare in
 			from
@@ -189,12 +220,12 @@ feature -- Operations
 				l_class_list.extend (create {NONE_ID_AS}.make)
 
 				create l_clients.initialize (l_class_list)
-				parsing_helper.parse_feature (a_name+":"+const_ast_to_type (a_constant.target_node)+" = "+a_constant.out)
+				parsing_helper.parse_feature (a_constant_name+":"+const_ast_to_type (a_constant.target_node)+" = "+a_constant.out)
 				create l_feat_list.make (1)
 				l_feat_list.extend (parsing_helper.parsed_feature)
 				create l_feat_clause.initialize (l_clients, l_feat_list, create {KEYWORD_AS}.make_null, 0)
 
-				l_const_var := transformable_factory.new_expr (a_name, create {ETR_CONTEXT}.make_empty)
+				l_const_var := transformable_factory.new_expr (a_constant_name, create {ETR_CONTEXT}.make_empty)
 
 				logger.log_info ("Declaring class: "+declaring_class.name_in_upper)
 				logger.log_info ("Occurrences:")

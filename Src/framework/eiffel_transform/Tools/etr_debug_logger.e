@@ -26,21 +26,23 @@ feature {NONE}-- Creation
 			l_src_dir: STRING
 			l_retry: BOOLEAN
 		do
---			l_retry := true
-			if not l_retry then
-				create l_env
-				l_src_dir := l_env.get("EIFFEL_SRC")
+			is_enabled := false
 
-				is_enabled := false
-				if l_src_dir /= void then
-					create log_file.make_open_read_append (l_src_dir+"\framework\eiffel_transform\"+logfile_name)
-					if log_file /= void then
-						is_enabled := true
+			debug("eiffel_transform")
+				if not l_retry then
+					create l_env
+					l_src_dir := l_env.get("EIFFEL_SRC")
+
+					if l_src_dir /= void then
+						create log_file.make_open_read_append (l_src_dir+"\framework\eiffel_transform\"+logfile_name)
+						if log_file /= void then
+							is_enabled := true
+						end
+						log_file.close
 					end
-					log_file.close
-				end
 
-				log_level := default_log_level
+					log_level := default_log_level
+				end
 			end
 		rescue
 			is_enabled := false

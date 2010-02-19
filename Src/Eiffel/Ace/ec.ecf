@@ -225,7 +225,11 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
 		<library name="fixing" location="$EIFFEL_SRC\library\fixing\fixing.ecf" readonly="false"/>
-		<library name="eiffel_transform" location="$EIFFEL_SRC\framework\eiffel_transform\eiffel_transform.ecf" readonly="false"/>		
+		<library name="eiffel_transform" location="$EIFFEL_SRC\framework\eiffel_transform\eiffel_transform.ecf" readonly="false">		
+			<option debug="true">
+				<debug name="eiffel_transform" enabled="true"/>
+			</option>
+		</library>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>

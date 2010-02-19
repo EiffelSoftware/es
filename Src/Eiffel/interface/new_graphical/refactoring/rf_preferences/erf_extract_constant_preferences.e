@@ -27,6 +27,12 @@ feature -- Value
 			Result := ancestors_preference.value
 		end
 
+	whole_class_flag: BOOLEAN
+			-- whole_class flag
+		do
+			Result := whole_class_preference.value
+		end
+
 	constant_name: STRING
 			-- Name of constant
 		do
@@ -47,6 +53,12 @@ feature -- Change value
 			ancestors_preference.set_value (a_state)
 		end
 
+	set_whole_class (a_state: BOOLEAN)
+			-- Set whole_class flag
+		do
+			whole_class_preference.set_value (a_state)
+		end
+
 	set_constant_name (a_name: STRING)
 			-- Set constant name to `a_name'
 		require
@@ -59,6 +71,7 @@ feature {NONE} -- Preference
 
 	ancestors_preference: BOOLEAN_PREFERENCE
 	descendants_preference: BOOLEAN_PREFERENCE
+	whole_class_preference: BOOLEAN_PREFERENCE
 	constant_name_preference: STRING_PREFERENCE
 
 feature {NONE} -- Preference Strings
@@ -66,6 +79,7 @@ feature {NONE} -- Preference Strings
 	ancestors_string: STRING = "tools.refactoring.extract_constant.ancestors"
 	descendants_string: STRING = "tools.refactoring.extract_constant.descendants"
 	constant_name_string: STRING = "tools.refactoring.extract_constant.constant_name"
+	whole_class_string: STRING = "tools.refactoring.extract_constant.whole_class"
 
 feature {NONE} -- Implementation
 
@@ -86,6 +100,9 @@ feature {NONE} -- Implementation
 
 			constant_name_preference := l_manager.new_string_preference_value (l_manager, constant_name_string, "constant")
 			constant_name_preference.change_actions.extend (l_update_agent)
+
+			whole_class_preference := l_manager.new_boolean_preference_value (l_manager, whole_class_string, true)
+			whole_class_preference.change_actions.extend (l_update_agent)
 		end
 
 invariant

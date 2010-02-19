@@ -87,6 +87,7 @@ feature {NONE} -- Initialization
 			preview_text.set_current_format (text_format_normal)
 			preview_text.set_tab_width (es_preferences.editor_data.tabulation_spaces*preview_text.font.width)
 			preview_text.set_minimum_height (150)
+			preview_text.disable_word_wrapping
 			create use_as_assigner_checkbox
 			use_as_assigner_checkbox.set_text ("Use as assigner")
 

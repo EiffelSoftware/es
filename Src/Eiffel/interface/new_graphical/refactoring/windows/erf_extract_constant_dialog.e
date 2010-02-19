@@ -67,6 +67,10 @@ feature {NONE} -- Initialization
 			hb_temp.extend (constant_name_field)
 			vb.extend (hb_temp)
 
+			create class_flag_checkbox
+			class_flag_checkbox.set_text ("Process whole class")
+			class_flag_checkbox.select_actions.extend (agent on_class_flag_changed)
+			vb.extend (class_flag_checkbox)
 			create ancestors_flag_checkbox
 			ancestors_flag_checkbox.set_text ("Process ancestors")
 			vb.extend (ancestors_flag_checkbox)
@@ -124,6 +128,12 @@ feature -- Access
 			Result := descendants_flag_checkbox.is_selected
 		end
 
+	class_flag: BOOLEAN
+			-- Descendants flag
+		do
+			Result := class_flag_checkbox.is_selected
+		end
+
 feature -- Element change
 
 	set_constant_value(a_value: STRING)
@@ -158,7 +168,29 @@ feature -- Element change
 			end
 		end
 
+	set_class_flag(a_state: BOOLEAN)
+			-- set class flag
+		do
+			if class_flag_checkbox.is_selected /= a_state then
+				class_flag_checkbox.toggle
+			end
+		end
+
 feature {NONE} -- Implementation
+
+	on_class_flag_changed
+			-- "Process class" checkbox changed
+		do
+			if class_flag_checkbox.is_selected then
+				ancestors_flag_checkbox.enable_sensitive
+				descendants_flag_checkbox.enable_sensitive
+			else
+				ancestors_flag_checkbox.disable_select
+				descendants_flag_checkbox.disable_select
+				ancestors_flag_checkbox.disable_sensitive
+				descendants_flag_checkbox.disable_sensitive
+			end
+		end
 
 	on_show
 			-- Triggered when the dialog is shown.
@@ -170,6 +202,7 @@ feature {NONE} -- Implementation
 	constant_value_field: EV_TEXT_FIELD
 	ancestors_flag_checkbox: EV_CHECK_BUTTON
 	descendants_flag_checkbox: EV_CHECK_BUTTON
+	class_flag_checkbox: EV_CHECK_BUTTON
 
 	on_ok_pressed
 			-- The user pressed OK.

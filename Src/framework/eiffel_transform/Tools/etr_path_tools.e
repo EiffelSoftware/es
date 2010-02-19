@@ -17,9 +17,19 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
+feature -- Access
+
+	-- fixme! Make all results available here
+
+	found: BOOLEAN
+
+	last_ast: AST_EIFFEL
+
+	last_feature_name: STRING
+
 feature -- Operations
 
-	constant_node_from_x_y (a_ast: AST_EIFFEL; a_matchlist: LEAF_AS_LIST; a_x, a_y: INTEGER): detachable AST_EIFFEL
+	constant_node_from_x_y (a_ast: AST_EIFFEL; a_matchlist: LEAF_AS_LIST; a_x, a_y: INTEGER)
 		local
 			l_pos_finder: ETR_CONSTANT_CURSOR_POS_FINDER
 		do
@@ -27,7 +37,9 @@ feature -- Operations
 			l_pos_finder.init (a_x, a_y)
 			l_pos_finder.find_from (a_ast)
 
-			Result := l_pos_finder.found_node
+			found := l_pos_finder.found
+			last_ast := l_pos_finder.found_node
+			last_feature_name := l_pos_finder.contained_feature_name
 		end
 
 	feature_from_line (a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER): detachable STRING
