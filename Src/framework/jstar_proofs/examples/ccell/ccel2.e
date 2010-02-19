@@ -3,8 +3,13 @@ note
 	author: "Stephan van Staden"
 	date: "$Date$"
 	revision: "$Revision$"
-	sl_predicate: "Cell(x,{val:v;cnt:c}) = Cell$CELL(x,{val:v}) * Cn$COUNTER(x,{cnt:c})"
+	sl_predicate: "Cell(x,{val:v;cnt:c}) = Cell$CEL(x,{val:v}) * Cn$COUNTER(x,{cnt:c})"
 	sl_predicate: "Cn(x,{cnt:c}) = Cn$COUNTER(x,{cnt:c})"
+	sl_exports: "[
+		cell2cn: x : CCEL2 * Cell(x,{val:v;cnt:c}) ==> x : CCEL2 * Dummy(x,v) * Cn(x,{cnt:c})
+	where
+		Dummy(x,v) = Cell$CEL(x,{val:v})
+	]"
 	js_logic: "ccel2.logic"
 	js_abstraction: "ccel2.abs"
 

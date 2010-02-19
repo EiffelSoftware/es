@@ -1,6 +1,2 @@
 import "field_logic";
 
-rule same_person:
- | P(?x,{age=?a}) |- P(?x,{age=?b})
-if
- P(?x,{age=?a}) | |- ?a=?b

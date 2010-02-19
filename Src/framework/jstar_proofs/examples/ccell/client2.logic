@@ -1,0 +1,3 @@
+
+rewrite a_simple_sum:
+	builtin_plus(numeric_const(0),numeric_const(10)) = numeric_const(10)

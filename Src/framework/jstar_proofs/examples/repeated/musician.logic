@@ -1,11 +1,2 @@
 import "field_logic";
 
-rule equal_musicians1:
- | M(?x,{age=?a1;pfm=?p1}) |- M(?x,{age=?a2;pfm=?p2})
-if
- M(?x,{age=?a1;pfm=?p1}) | |- ?a1=?a2 * ?p1=?p2
-
-rule equal_musicians2:
- | M$MUSICIAN(?x,{age=?a1;pfm=?p1}) |- M$MUSICIAN(?x,{age=?a2;pfm=?p2})
-if
- M$MUSICIAN(?x,{age=?a1;pfm=?p1}) | |- ?a1=?a2 * ?p1=?p2

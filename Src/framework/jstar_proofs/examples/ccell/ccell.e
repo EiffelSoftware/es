@@ -90,13 +90,4 @@ feature
 			--SL2-- Cn$(Current,{cnt:builtin_plus(_c,1)})
 		end
 
---	increment_helper
---		require else
---			--SLS-- Cn$COUNTER(Current,{cnt:_c})
---		do
---			Precursor {COUNTER}
---		ensure then
---			--SLS-- Cn$COUNTER(Current,{cnt:builtin_plus(_c,1)})
---		end
-
 end

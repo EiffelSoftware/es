@@ -2604,6 +2604,10 @@ Src/framework/jstar_proofs/examples/ccell/ccell.abs -text
 Src/framework/jstar_proofs/examples/ccell/ccell.logic -text
 Src/framework/jstar_proofs/examples/ccell/cel.abs -text
 Src/framework/jstar_proofs/examples/ccell/cel.logic -text
+Src/framework/jstar_proofs/examples/ccell/client.abs -text
+Src/framework/jstar_proofs/examples/ccell/client.logic -text
+Src/framework/jstar_proofs/examples/ccell/client2.abs -text
+Src/framework/jstar_proofs/examples/ccell/client2.logic -text
 Src/framework/jstar_proofs/examples/ccell/counter.abs -text
 Src/framework/jstar_proofs/examples/ccell/counter.logic -text
 Src/framework/jstar_proofs/examples/connection_pool/connection_pool.abs -text

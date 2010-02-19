@@ -4,6 +4,10 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 	sl_predicate: "P(x, {age:a}) = x.<PERSON.my_age> |-> a"
+	sl_exports: "[
+		P_PERSON_def: P$PERSON(x, {age:a}) <==> x.<PERSON.my_age> |-> a
+	where
+	]"
 	js_logic: "person.logic"
 	js_abstraction: "person.abs"
 

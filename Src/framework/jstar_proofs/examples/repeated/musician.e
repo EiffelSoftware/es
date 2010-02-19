@@ -6,6 +6,13 @@ note
 	sl_predicate: "P(x, {age:a}) = P$PERSON(x,{age:a})"
 	sl_predicate: "M(x, {age:a;pfm:p}) = P$MUSICIAN(x,{age:a}) * x.<MUSICIAN.my_performances> |-> p"
 	sl_predicate: "RestMtoP(x, {pfm:p}) = x.<MUSICIAN.my_performances> |-> p"
+	sl_exports: "[
+		m_musician: M$MUSICIAN(x,{age:a;pfm:p}) <==> P$PERSON(x,{age:a}) * RestMtoP$MUSICIAN(x,{pfm:p})
+	where
+	]"
+	sl_axioms: "[
+		M_P: M(Current,{age:a;pfm:p}) <==> P(Current,{age:a}) * RestMtoP(Current,{pfm:p})
+	]"
 	js_logic: "musician.logic"
 	js_abstraction: "musician.abs"
 

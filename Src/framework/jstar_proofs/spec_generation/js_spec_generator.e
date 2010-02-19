@@ -47,7 +47,7 @@ feature
 				a_class.suppliers.off
 			loop
 				l_supplier := a_class.suppliers.item.supplier
-				process_class_if_needed (l_supplier, considered)
+				process_class_and_parents_if_needed (l_supplier, considered, create {HASH_TABLE [BOOLEAN, INTEGER]}.make (10))
 				a_class.suppliers.forth
 			end
 				-- Next: collect specs from ancestor classes that are not expanded or external.
@@ -81,7 +81,13 @@ feature {NONE}
 
 	process_class_and_parents_if_needed (a_class: CLASS_C; emitted: HASH_TABLE [BOOLEAN, INTEGER]; visited: HASH_TABLE [BOOLEAN, INTEGER])
 		do
-			if not visited.has_key (a_class.class_id) then
+			if
+				a_class /= Void and then
+				not a_class.is_expanded and then
+				not a_class.is_external and then
+				not a_class.is_class_any and then
+				not a_class.is_class_none and then
+				not visited.has_key (a_class.class_id) then
 				visited.put (True, a_class.class_id)
 				from
 					a_class.conforming_parents.start
@@ -358,6 +364,7 @@ feature {NONE}
 			region: ERT_TOKEN_REGION
 			static_spec: STRING
 			dynamic_spec: STRING
+			l_qualifier: STRING
 		do
 			where := a_feature_i.written_class.name_in_upper + "." + a_feature_i.feature_name
 
@@ -388,14 +395,19 @@ feature {NONE}
 			if equal (static_spec, "") and then equal (dynamic_spec, "") then
 				error (where + ": spec missing")
 			else
+				if a_feature_i.is_deferred then
+					l_qualifier := "abstract "
+				else
+					l_qualifier := ""
+				end
 				if not equal (static_spec, "") then
-					output.put_line ("static " + routine_signature (as_creation_procedure, a_feature_i) + " :")
+					output.put_line (l_qualifier.twin + routine_signature (as_creation_procedure, a_feature_i) + " static:")
 					output.indent
 					output.append_lines (static_spec + ";")
 					output.unindent
 				end
 				if not equal (dynamic_spec, "") then
-					output.put_line (routine_signature (as_creation_procedure, a_feature_i) + " :")
+					output.put_line (l_qualifier.twin + routine_signature (as_creation_procedure, a_feature_i) + " :")
 					output.indent
 					output.append_lines (dynamic_spec + ";")
 					output.unindent

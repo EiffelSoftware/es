@@ -6,6 +6,13 @@ note
 	sl_predicate: "P(x, {age:a}) = P$PERSON(x,{age:a})"
 	sl_predicate: "S(x, {age:a;exm:e}) = P$STUDENT(x,{age:a}) * x.<STUDENT.my_exams> |-> e"
 	sl_predicate: "RestStoP(x, {exm:e}) = x.<STUDENT.my_exams> |-> e"
+	sl_exports: "[
+		s_student: S$STUDENT(x,{age:a;exm:e}) <==> P$PERSON(x,{age:a}) * RestStoP$STUDENT(x,{exm:e})
+	where
+	]"
+	sl_axioms: "[
+		S_P: S(Current,{age:a;exm:e}) <==> P(Current,{age:a}) * RestStoP(Current,{exm:e})
+	]"
 	js_logic: "student.logic"
 	js_abstraction: "student.abs"
 
