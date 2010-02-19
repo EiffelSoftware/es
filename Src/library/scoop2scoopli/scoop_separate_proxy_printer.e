@@ -570,7 +570,7 @@ feature {NONE} -- Roundtrip: Implementation
 			create l_type_visitor
 
 			-- Does original feature take any separate arguments?
-			if l_arguments /= Void then
+			if l_arguments /= Void and then l_arguments.arguments /= Void then
 				from
 					i := 1
 					nb := l_arguments.arguments.count
@@ -599,7 +599,7 @@ feature {NONE} -- Roundtrip: Implementation
 				context.add_string ("]")
 			end
 
-			if l_arguments /= Void then
+			if l_arguments /= Void and then l_arguments.arguments /= Void then
 				-- create feature name visitor
 				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
 
@@ -777,39 +777,41 @@ feature {NONE} -- Roundtrip: Implementation
 				context.add_string ("a_caller_, ")
 			end
 
-			from
-				i := 1
-				nbi := a_list.arguments.count
-			until
-				i > nbi
-			loop
-				l_type_dec_as := a_list.arguments.i_th (i)
-				a_class_c := l_type_visitor.evaluate_class_from_type (l_type_dec_as.type, class_c)
-
-				if not l_type_visitor.is_formal and then not a_class_c.is_expanded
-					and then not l_type_visitor.is_tuple_type then
-
-					create a_prefix.make_from_string ("aux_scoop_")
-				else
-					create a_prefix.make_empty
-				end
-
+			if a_list.arguments /= Void then
 				from
-					j := 1
-					nbj := l_type_dec_as.id_list.count
+					i := 1
+					nbi := a_list.arguments.count
 				until
-					j > nbj
+					i > nbi
 				loop
-					context.add_string (a_prefix + l_type_dec_as.item_name (j))
+					l_type_dec_as := a_list.arguments.i_th (i)
+					a_class_c := l_type_visitor.evaluate_class_from_type (l_type_dec_as.type, class_c)
 
-					if i < nbi or (i = nbi and j < nbj) then
-						context.add_string (", ")
+					if not l_type_visitor.is_formal and then not a_class_c.is_expanded
+						and then not l_type_visitor.is_tuple_type then
+
+						create a_prefix.make_from_string ("aux_scoop_")
+					else
+						create a_prefix.make_empty
 					end
 
-					j := j + 1
-				end
+					from
+						j := 1
+						nbj := l_type_dec_as.id_list.count
+					until
+						j > nbj
+					loop
+						context.add_string (a_prefix + l_type_dec_as.item_name (j))
 
-				i := i + 1
+						if i < nbi or (i = nbi and j < nbj) then
+							context.add_string (", ")
+						end
+
+						j := j + 1
+					end
+
+					i := i + 1
+				end
 			end
 			if with_brackets then
 				context.add_string (")")
@@ -1015,30 +1017,32 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string ("(")
 			context.add_string ("a_caller_: SCOOP_SEPARATE_TYPE; ")
 
-			from
-				i := 1
-				nb := a_list.arguments.count
-			until
-				i > nb
-			loop
-				l_argument := a_list.arguments.i_th (i)
-				a_class_c := l_scoop_type_visitor.evaluate_class_from_type (l_argument.type, class_c)
-
+			if a_list.arguments /= Void then
 				from
-					j := 1
-					nbj := l_argument.id_list.count
+					i := 1
+					nb := a_list.arguments.count
 				until
-					j > nbj
+					i > nb
 				loop
-					context.add_string (l_argument.item_name (j) + ": ")
-					l_type_signature.process_type (l_argument.type)
+					l_argument := a_list.arguments.i_th (i)
+					a_class_c := l_scoop_type_visitor.evaluate_class_from_type (l_argument.type, class_c)
 
-					if i < nb or (i = nb and j < l_argument.id_list.count) then
-						context.add_string ("; ")
+					from
+						j := 1
+						nbj := l_argument.id_list.count
+					until
+						j > nbj
+					loop
+						context.add_string (l_argument.item_name (j) + ": ")
+						l_type_signature.process_type (l_argument.type)
+
+						if i < nb or (i = nb and j < l_argument.id_list.count) then
+							context.add_string ("; ")
+						end
+						j := j + 1
 					end
-					j := j + 1
+					i := i + 1
 				end
-				i := i + 1
 			end
 			context.add_string (")")
 			last_index := a_list.last_token (match_list).index

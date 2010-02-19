@@ -1,7 +1,10 @@
 note
 	description: "[
-					Roundtrip visitor to evaluate type expressions, determine types.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to evaluate the type of expressions and to resolve types.
+					
+					Terminology:
+					- The object test context maps names of object test locals to object tests.
+					- The inline agent context maps inline agent entity names to their types.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -55,8 +58,19 @@ inherit
 
 	SHARED_STATELESS_VISITOR
 
-feature -- Expression and Call Evaluation Access
-	evaluate_expression_type_in_workbench (a_expression: EXPR_AS; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
+feature -- Expression and call evaluation access
+	evaluate_expression_type_in_workbench (
+		a_expression: EXPR_AS;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_expression' in the context given by the class and the feature indicated in the workbench, 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
+		require
+			a_expression_is_valid: a_expression /= Void
+			workbench_is_valid: class_c /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		do
 			object_test_context := a_object_test_context
 			inline_agent_context := a_inline_agent_context
@@ -67,98 +81,188 @@ feature -- Expression and Call Evaluation Access
 			end
 			expression_type := implicit_generic_derivation(class_c)
 			evaluate_expression_type(a_expression)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
-	evaluate_expression_type_in_class_and_feature (a_expression: EXPR_AS; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
+	evaluate_expression_type_in_class_and_feature (
+		a_expression: EXPR_AS;
+		a_context_class: CLASS_C;
+		a_context_feature: FEATURE_I;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_expression' in the context 'a_context_class', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
-			a_expression_not_void: a_expression /= Void
-			a_context_class_not_void: a_context_class /= Void
-			a_context_feature_not_void: a_context_feature /= Void
-			a_object_test_context /= Void
+			a_expression_is_valid: a_expression /= Void
+			a_context_class_is_valid: a_context_class /= Void
+			a_context_feature_is_valid: a_context_feature /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		do
 			object_test_context := a_object_test_context
 			inline_agent_context := a_inline_agent_context
 			context_feature := a_context_feature
 			expression_type := implicit_generic_derivation(a_context_class)
 			evaluate_expression_type (a_expression)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
-	evaluate_expression_type_in_class (a_expression: EXPR_AS; a_context_class: CLASS_C; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
+	evaluate_expression_type_in_class (
+		a_expression: EXPR_AS;
+		a_context_class: CLASS_C;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_expression' in the context 'a_context_class', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
-			a_expression /= Void
-			a_context_class /= Void
+			a_expression_is_valid: a_expression /= Void
+			a_context_class_is_valid: a_context_class /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		do
 			object_test_context := a_object_test_context
 			inline_agent_context := a_inline_agent_context
 			context_feature := Void
 			expression_type := implicit_generic_derivation(a_context_class)
 			evaluate_expression_type (a_expression)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
-	evaluate_expression_type_in_type (a_expression: EXPR_AS; a_context_type: TYPE_A; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
+	evaluate_expression_type_in_type (
+		a_expression: EXPR_AS;
+		a_context_type: TYPE_A;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_expression' in the context 'a_context_type', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
-			a_expression /= Void
-			a_context_type /= Void
-			a_object_test_context /= Void
+			a_expression_is_valid: a_expression /= Void
+			a_context_type_is_valud: a_context_type /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		do
 			object_test_context := a_object_test_context
 			inline_agent_context := a_inline_agent_context
 			context_feature := Void
 			expression_type := a_context_type
 			evaluate_expression_type (a_expression)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
-	evaluate_call_type_in_workbench (a_call: CALL_AS; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
+	evaluate_call_type_in_workbench (
+		a_call: CALL_AS;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_call' in the context given by the class and the feature indicated in the workbench, 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
-			-- a_call is a query
+			a_call_is_valid: a_call /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		local
 			l_call_expression: EXPR_CALL_AS
 		do
 			create l_call_expression.initialize (a_call)
-			evaluate_expression_type_in_workbench(l_call_expression, a_object_test_context, a_inline_agent_context)
+			evaluate_expression_type_in_workbench (l_call_expression, a_object_test_context, a_inline_agent_context)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
-	evaluate_call_type_in_class_and_feature (a_call: CALL_AS; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
-		local
-			l_call_expression: EXPR_CALL_AS
-		do
-			create l_call_expression.initialize (a_call)
-			evaluate_expression_type_in_class_and_feature(l_call_expression, a_context_class, a_context_feature, a_object_test_context, a_inline_agent_context)
-		end
-
-	evaluate_call_type_in_class (a_call: CALL_AS; a_context_class: CLASS_C; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
-		local
-			l_call_expression: EXPR_CALL_AS
-		do
-			create l_call_expression.initialize (a_call)
-			evaluate_expression_type_in_class(l_call_expression, a_context_class, a_object_test_context, a_inline_agent_context)
-		end
-
-	evaluate_call_type_in_type (a_call: CALL_AS; a_context_type: TYPE_A; a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]; a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING])
+	evaluate_call_type_in_class_and_feature (
+		a_call: CALL_AS;
+		a_context_class: CLASS_C;
+		a_context_feature: FEATURE_I;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_call' in the context 'a_context_class', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
-			a_call /= Void
-			a_context_type /= Void
+			a_call_is_valid: a_call /= Void
+			a_context_class_is_valid: a_context_class /= Void
+			a_context_feature_is_valid: a_context_feature /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		local
 			l_call_expression: EXPR_CALL_AS
 		do
 			create l_call_expression.initialize (a_call)
-			evaluate_expression_type_in_type(l_call_expression, a_context_type, a_object_test_context, a_inline_agent_context)
+			evaluate_expression_type_in_class_and_feature (l_call_expression, a_context_class, a_context_feature, a_object_test_context, a_inline_agent_context)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
+		end
+
+	evaluate_call_type_in_class (
+		a_call: CALL_AS;
+		a_context_class: CLASS_C;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_call' in the context 'a_context_class', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
+		require
+			a_call_is_valid: a_call /= Void
+			a_context_class_is_valid: a_context_class /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
+		local
+			l_call_expression: EXPR_CALL_AS
+		do
+			create l_call_expression.initialize (a_call)
+			evaluate_expression_type_in_class (l_call_expression, a_context_class, a_object_test_context, a_inline_agent_context)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
+		end
+
+	evaluate_call_type_in_type (
+		a_call: CALL_AS;
+		a_context_type: TYPE_A;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_call' in the context 'a_context_type', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
+		require
+			a_call_is_valid: a_call /= Void
+			a_context_type_is_valid: a_context_type /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
+		local
+			l_call_expression: EXPR_CALL_AS
+		do
+			create l_call_expression.initialize (a_call)
+			evaluate_expression_type_in_type (l_call_expression, a_context_type, a_object_test_context, a_inline_agent_context)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
 	is_query: BOOLEAN
+		-- Is the evaluated expression a query?
 
 	is_expression_separate: BOOLEAN
-		-- separate state of last evaluated type
+		-- Is the evaluated expression separate?
 
 	expression_type: TYPE_A
+		-- The type of the evaluated expression.
 
 	object_test_context_update: HASH_TABLE[OBJECT_TEST_AS, STRING]
+		-- The object test locals encoutered during the evaluation of the expression.
 
-feature -- Type Resolution Access
+feature -- Type resolution access
 	resolve_type_in_workbench (a_type: TYPE_AS)
+			-- Resolve 'a_type' in the context given by the class and the feature from the workbench.
+			-- Indicate the result in 'resolved_type'.
 		require
-			a_type /= Void
-			class_c /= Void
+			a_type_is_valid: a_type /= Void
+			workbench_is_valid: class_c /= Void
 		do
 			if feature_as /= Void then
 				context_feature := class_c.feature_table.item (feature_as.feature_name.name)
@@ -169,54 +273,78 @@ feature -- Type Resolution Access
 				expression_type := implicit_generic_derivation(class_c)
 				resolved_type := resolved_type_in_expression_type (a_type)
 			end
+		ensure
+			result_is_valid: resolved_type /= Void
 		end
 
 	resolve_type_in_class_and_feature (a_type: TYPE_AS; a_context_class: CLASS_C; a_context_feature: FEATURE_I)
+			-- Resolve 'a_type' in the context given by 'a_context_class' and 'a_context_feature'.
+			-- Indicate the result in 'resolved_type'.
 		require
-			a_type /= Void
-			a_context_class /= Void
-			a_context_feature /= Void
+			a_type_is_valid: a_type /= Void
+			a_context_class_is_valid: a_context_class /= Void
+			a_context_feature_is_valid: a_context_feature /= Void
 		do
 			context_feature := a_context_feature
 			expression_type := implicit_generic_derivation(a_context_class)
 			resolved_type := resolved_type_in_context_feature_and_expression_type (a_type)
+		ensure
+			result_is_valid: resolved_type /= Void
 		end
 
 	resolve_type_in_class (a_type: TYPE_AS; a_context_class: CLASS_C)
+			-- Resolve 'a_type' in the context given by 'a_context_class'.
+			-- Indicate the result in 'resolved_type'.
 		require
-			a_type /= Void
-			a_context_class /= Void
+			a_type_is_valid: a_type /= Void
+			a_context_class_is_valid: a_context_class /= Void
 		do
 			context_feature := Void
 			expression_type := implicit_generic_derivation(a_context_class)
 			resolved_type := resolved_type_in_expression_type (a_type)
+		ensure
+			result_is_valid: resolved_type /= Void
 		end
 
 	resolve_type_in_type (a_type: TYPE_AS; a_context_type: TYPE_A)
+			-- Resolve 'a_type' in the context given by 'a_context_type'.
+			-- Indicate the result in 'resolved_type'.
+		require
+			a_type_is_valid: a_type /= Void
+			a_context_type_is_valid: a_context_type /= Void
 		do
 			context_feature := Void
 			expression_type := a_context_type
 			resolved_type := resolved_type_in_expression_type (a_type)
+		ensure
+			result_is_valid: resolved_type /= Void
 		end
 
 	resolved_type: TYPE_A
+		-- The resolved type.
 
-feature {NONE} -- Expression and Call Evaluation Implementation
+feature {NONE} -- Expression and call evaluation implementation
 	evaluate_expression_type (a_expression: EXPR_AS)
-			-- Given a EXPR_AS node, get the is_separate information of the evaluated expression
+			-- Evaluate the type of 'a_expression' in the context given by 'expression_type'.
+			-- Indicate the result in 'expression_type'.
 		require
-			a_expression_not_void: a_expression /= Void
-			expression_type /= Void
+			a_expression_is_valid: a_expression /= Void
+			expression_type_is_valid: expression_type /= Void
 		do
 			is_query := False
 			is_expression_separate := False
 			create object_test_context_update.make (10)
 			safe_process (a_expression)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
 	implicit_generic_derivation (a_class: CLASS_C): TYPE_A
+			-- The implicit generation derivation of 'a_class'.
+			-- If 'a_class' is not generic then the implicit generic derivation is the class type.
+			-- If 'a_class' is generic then the implicit generic derivation is the generic derivation of 'a_class' where each formal generic parameter is replaced with either the constraint if available or the supertype of the type system.
 		require
-			a_class /= Void
+			a_class_is_valid: a_class /= Void
 		local
 			i: INTEGER
 			l_generated_actual_generics: ARRAY [TYPE_A]
@@ -246,13 +374,25 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 			else
 				create {CL_TYPE_A} Result.make (a_class.class_id)
 			end
+		ensure
+			result_is_valid: Result /= Void
 		end
 
 	context_feature: FEATURE_I
+		--	The feature context.
+
 	object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING]
+		-- The object test context.
+
 	inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+		-- The inline agent context.
 
 	update_interface (a_found_type: TYPE_A)
+			-- Update 'is_query', 'is_expression_separate', and 'expression_type' with 'a_found_type' based on 'expression_type'.
+			-- The object test context update remains unchanged.
+			-- The result type combiner is used to determine the separateness of the expression up until 'a_found_type'.
+		require
+			expression_type_is_valid: expression_type /= Void
 		do
 			if a_found_type /= Void then
 				is_query := True
@@ -270,34 +410,54 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 				expression_type := Void
 				is_expression_separate := False
 			end
+		ensure
+			interface_is_updated:
+				(a_found_type = Void implies not is_query) and
+				(a_found_type /= Void implies is_query) and
+				(is_query implies expression_type /= Void) and
+				(not is_query implies expression_type = Void) and
+				(object_test_context_update.count = old object_test_context_update.count)
 		end
 
 	update_interface_with_object_test_context_update (a_found_type: TYPE_A; a_object_test_context_update: OBJECT_TEST_AS)
+			-- Update 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update' with 'a_found_type' based on 'expression_type'.
+			-- The result type combiner is used to determine the separateness of the expression up until 'a_found_type'.
 		require
-			a_object_test_context_update /= Void
+			expression_type_is_valid: expression_type /= Void
+			a_object_test_context_update_is_valid: a_object_test_context_update /= Void
 		do
 			update_interface (a_found_type)
 			if a_object_test_context_update.name /= Void then
 				object_test_context_update.put (a_object_test_context_update, a_object_test_context_update.name.name)
 			end
+		ensure
+			interface_is_updated:
+				(a_found_type = Void implies not is_query) and
+				(a_found_type /= Void implies is_query) and
+				(is_query implies expression_type /= Void) and
+				(not is_query implies expression_type = Void) and
+				(object_test_context_update.count /= old object_test_context_update.count)
 		end
 
 	type_of_qualified_query (a_name: STRING): TYPE_A
+			-- The type of a qualified call with name 'a_name' on a target of type 'expression_type', if it can be found. The void reference otherwise.
 		require
-			a_name /= Void
-			expression_type /= Void
+			a_name_is_valid: a_name /= Void
+			expression_type_is_valid: expression_type /= Void
 		local
 			i: INTEGER
 			l_found_type: TYPE_A
 		do
 			l_found_type := Void
 
+			-- Try to resolve the call using the feature table.
 			if expression_type.associated_class.feature_table.has (a_name) then
 				l_found_type := expression_type.associated_class.feature_table.item (a_name).type
 			elseif expression_type.associated_class.feature_table.is_mangled_alias_name (a_name) then
 				l_found_type := expression_type.associated_class.feature_table.alias_item (a_name).type
 			end
 
+			-- Try to resolve the call as a tuple field.
 			if l_found_type = Void and {l_expression_type_as_named_tuple: NAMED_TUPLE_TYPE_A} expression_type then
 				from
 					i := 1
@@ -311,6 +471,7 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 				end
 			end
 
+			-- Evaluate the result.
 			if l_found_type /= Void then
 				Result := l_found_type.instantiated_in (expression_type).deep_actual_type
 			else
@@ -319,11 +480,10 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 		end
 
 	type_of_unqualified_query (a_name: STRING): TYPE_A
-			-- the local type can not be anchored on another local type
-			-- the formal argument type can not be anchored on a local
+			-- The type of an unqualified call with name 'a_name' in the context of 'expression_type' and 'context_feature' if it can be found. The void reference otherwise.
 		require
-			a_name /= Void
-			expression_type /= Void
+			a_name_is_valid: a_name /= Void
+			expression_type_is_valid: expression_type /= Void
 		local
 			i, j: INTEGER
 			l_locals: EIFFEL_LIST [TYPE_DEC_AS]
@@ -333,7 +493,10 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 			l_type_expr_visitor: like Current
 		do
 			Result := Void
+
+			-- Try to resolve the call on an entity of the context feature, if available.
 			if context_feature /= Void then
+				-- Note: The local type can not be anchored on another local type and the formal argument type can not be anchored on a local type.
 				if context_feature.body.body.arguments /= Void then
 					from
 						l_formal_arguments := context_feature.body.body.arguments
@@ -379,6 +542,7 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 				end
 			end
 
+			-- Try to resolve the call on a target in the object test context. Note that the object test context update does not matter for unqualified calls. The object test context update only matters for qualified calls.
 			if Result = Void and object_test_context.has (a_name) then
 				if object_test_context.item (a_name).type /= Void then
 					Result := resolved_type_in_context_feature_and_expression_type (object_test_context.item (a_name).type)
@@ -389,10 +553,12 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 				end
 			end
 
+			-- Try to resolve the call on a target in the inline agent context.
 			if Result = Void and inline_agent_context.has (a_name) then
 				Result := resolved_type_in_context_feature_and_expression_type (inline_agent_context.item (a_name))
 			end
 
+			-- Try to resolve the call on a target of type 'expression_type'.
 			if Result = Void then
 				if expression_type.associated_class.feature_table.has (a_name) then
 					Result := expression_type.associated_class.feature_table.item (a_name).type.instantiated_in (expression_type).deep_actual_type
@@ -402,23 +568,28 @@ feature {NONE} -- Expression and Call Evaluation Implementation
 			end
 		end
 
-feature {NONE} -- Type Resolution Implementation
+feature {NONE} -- Type resolution implementation
 	resolved_type_in_context_feature_and_expression_type (a_type: TYPE_AS): TYPE_A
+			-- The resolved version of 'a_type' in the context given by 'expression_type' and 'context_feature'.
 		require
-			a_type /= Void
-			expression_type /= Void
+			a_type_is_valid: a_type /= Void
+			expression_type_is_valid: expression_type /= Void
+			context_feature_is_valid: context_feature /= Void
 		do
 			type_a_checker.init_for_checking (context_feature, expression_type.associated_class, Void, Void)
 			Result := type_a_checker.solved (
 				type_a_generator.evaluate_type (a_type, expression_type.associated_class),
 				a_type
 			).instantiated_in(expression_type).deep_actual_type
+		ensure
+			result_is_valid: Result /= Void
 		end
 
 	resolved_type_in_expression_type (a_type: TYPE_AS): TYPE_A
+			-- The resolved version of 'a_type' in the context given by 'expression_type'.
 		require
-			a_type /= Void
-			expression_type /= Void
+			a_type_is_valid: a_type /= Void
+			expression_type_is_valid: expression_type /= Void
 		do
 			-- As a context feature we use the default create feauture from 'ANY' because it is empty.
 			type_a_checker.init_for_checking (system.any_class.compiled_class.default_create_feature, expression_type.associated_class, Void, Void)
@@ -426,15 +597,19 @@ feature {NONE} -- Type Resolution Implementation
 				type_a_generator.evaluate_type (a_type, expression_type.associated_class),
 				a_type
 			).instantiated_in(expression_type).deep_actual_type
+		ensure
+			result_is_valid: Result /= Void
 		end
 
 feature {NONE} -- Expression evaluation visits
 	process_address_as (l_as: ADDRESS_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.pointer_class.compiled_representation.class_id))
 		end
 
 	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_found_type: TYPE_A
 		do
@@ -447,6 +622,7 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	process_bang_creation_expr_as (l_as: BANG_CREATION_EXPR_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_found_type: TYPE_A
 		do
@@ -459,71 +635,85 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	process_bin_lt_as (l_as: BIN_LT_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_le_as (l_as: BIN_LE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_gt_as (l_as: BIN_GT_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_ge_as (l_as: BIN_GE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_xor_as (l_as: BIN_XOR_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_or_else_as (l_as: BIN_OR_ELSE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_or_as (l_as: BIN_OR_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_implies_as (l_as: BIN_IMPLIES_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_free_as (l_as: BIN_FREE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_eq_as (l_as: BIN_EQ_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_bin_tilde_as (l_as: BIN_TILDE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_bin_not_tilde_as (l_as: BIN_NOT_TILDE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_bin_ne_as (l_as: BIN_NE_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_binary_as (l_as: BINARY_AS)
+			-- Update the interface with 'l_as'.
 		do
 			safe_process(l_as.left)
 
@@ -531,26 +721,31 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	process_bin_and_then_as (l_as: BIN_AND_THEN_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_bin_and_as (l_as: BIN_AND_AS)
+			-- Update the interface with 'l_as'.
 		do
 			process_binary_as (l_as)
 		end
 
 	process_string_as (l_as: STRING_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.string_32_class.compiled_representation.class_id))
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.string_32_class.compiled_representation.class_id))
 		end
 
 	process_real_as (l_as: REAL_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_found_type: TYPE_A
 		do
@@ -567,6 +762,7 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	process_integer_as (l_as: INTEGER_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_found_type: TYPE_A
 		do
@@ -583,11 +779,13 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	process_char_as (l_as: CHAR_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.character_32_class.compiled_representation.class_id))
 		end
 
 	process_typed_char_as (l_as: TYPED_CHAR_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_found_type: TYPE_A
 		do
@@ -604,28 +802,33 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	process_bool_as (l_as: BOOL_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 feature {NONE} -- Call evaluation visits
 	process_result_as (l_as: RESULT_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(context_feature.type.instantiated_in (expression_type).deep_actual_type)
 		end
 
 	process_current_as (l_as: CURRENT_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(expression_type)
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_parents_classes: FIXED_LIST[CLASS_C]
 			l_precursor_feature: FEATURE_I
 			l_precursor_class: CLASS_C
 			i: INTEGER
 		do
+			-- Find the precursor feature and take its result type.
 			l_parents_classes := expression_type.associated_class.parents_classes
 			if l_as.parent_base_class /= Void then
 				from
@@ -655,20 +858,24 @@ feature {NONE} -- Call evaluation visits
 			check l_precursor_class /= Void end
 			check l_precursor_feature /= Void end
 
+			-- Update the interface with the result type.
 			update_interface(l_precursor_feature.type.instantiation_in (expression_type, l_precursor_class.class_id))
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(type_of_qualified_query(l_as.feature_name.name))
 		end
 
 	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
+			-- Update the interface with 'l_as'.
 		do
 			update_interface(type_of_unqualified_query(l_as.feature_name.name))
 		end
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
+			-- Update the interface with 'l_as'.
 		local
 			l_found_type: TYPE_A
 		do
@@ -687,14 +894,15 @@ feature {NONE} -- Call evaluation visits
 		end
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
+			-- Update the interface with 'l_as'.
 		do
-			-- in Eiffel feature names, locals and object test locals must be distinct
 			update_interface(type_of_unqualified_query(l_as.feature_name.name))
 		end
 
 feature {NONE} -- Object test context update handling visits
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
+			-- Update the interface with 'l_as'. This includes the object test context update.
 		do
 			update_interface_with_object_test_context_update (create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id), l_as)
 		end
