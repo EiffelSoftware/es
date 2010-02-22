@@ -28,6 +28,8 @@ create
 
 feature{NONE} -- Initialization
 
+	xx: LINKED_CURSOR_TREE [STRING]
+
 	make (a_spot: like exception_spot; a_id: INTEGER)
 			-- Initialize.
 		require

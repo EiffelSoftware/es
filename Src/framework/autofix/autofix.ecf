@@ -42,6 +42,7 @@
 				<platform value="windows"/>
 			</condition>
 		</library>
+		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
 		<cluster name="autofix" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/.svn$</exclude>

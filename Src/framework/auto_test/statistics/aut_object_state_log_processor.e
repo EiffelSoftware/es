@@ -56,6 +56,8 @@ feature{NONE} -- Initialization
 			create mock_heap.make_default
 			create expected_object_states.make_default
 			create last_model.make_default
+
+			create transition_summary.make
 		end
 
 feature -- Process
@@ -83,77 +85,77 @@ feature -- Process
 			l_model_file_name: FILE_NAME
 		do
 
-l_is_testing_behavior_construction := True
-if not l_is_testing_behavior_construction then
+			l_is_testing_behavior_construction := False
+			if not l_is_testing_behavior_construction then
+					-- Formal type manager.
+				create l_formal_type_manager.make_default
+				set_formal_type_manager (l_formal_type_manager)
 
-				-- Formal type manager.
-			create l_formal_type_manager.make_default
-			set_formal_type_manager (l_formal_type_manager)
+					-- Load log file.
+				create l_log_stream.make (configuration.log_file_path)
+				l_log_stream.open_read
+				create l_log_parser.make (system, session.error_handler)
+				l_log_parser.add_observer (Current)
+				l_log_parser.parse_stream (l_log_stream)
+				l_log_stream.close
+				transition_summary.store_transitions (configuration.log_file_path)
 
-				-- Load log file.
-			create l_log_stream.make (configuration.log_file_path)
-			l_log_stream.open_read
-			create l_log_parser.make (system, session.error_handler)
-			l_log_parser.add_observer (Current)
-			l_log_parser.parse_stream (l_log_stream)
-			l_log_stream.close
+					-- Construct state transition model.
+	   			create l_state_transition_model.make (100)
+				create l_boolean_model.make_from_query_model (last_model)
+				l_transition_list := l_boolean_model.to_transition_list
+				l_transition_list.do_all (agent l_state_transition_model.summarize_transition)
 
-				-- Construct state transition model.
-   			create l_state_transition_model.make (100)
-			create l_boolean_model.make_from_query_model (last_model)
-			l_transition_list := l_boolean_model.to_transition_list
-			l_transition_list.do_all (agent l_state_transition_model.summarize_transition)
+					-- Create model directory.
+					-- We don't save the model into the project directory to avoid the risk of being cleared.
+	--			create l_repository_dir_name.make_from_string (system.eiffel_project.project_directory.fixing_results_path)
+				create l_repository_dir_name.make_from_string (directory_name_from_file_name (configuration.log_file_path))
+				l_repository_dir_name.extend ("model")
+				create l_repository_dir.make (l_repository_dir_name)
+				if not l_repository_dir.exists then
+				    l_repository_dir.recursive_create_directory
+				end
 
-				-- Create model directory.
-				-- We don't same the model into the project directory to avoid the risk of being cleared.
---			create l_repository_dir_name.make_from_string (system.eiffel_project.project_directory.fixing_results_path)
-			create l_repository_dir_name.make_from_string (directory_name_from_file_name (configuration.log_file_path))
-			l_repository_dir_name.extend ("model")
-			create l_repository_dir.make (l_repository_dir_name)
-			if not l_repository_dir.exists then
-			    l_repository_dir.recursive_create_directory
+					-- Save state transition model into file.
+				l_class_name := class_name_from_file_name (configuration.log_file_path)
+				create l_file_name.make_from_string (l_repository_dir_name)
+				l_file_name.set_file_name (l_class_name)
+				l_file_name.add_extension ("xml")
+
+				io.putstring ("Saving model to: ")
+				io.putstring (l_file_name)
+				l_state_transition_model.save_to_file (l_file_name)
+				io.putstring (" ...... Done!%N")
+			else
+					-- Local testing.
+				l_class_name := class_name_from_file_name (configuration.log_file_path)
+
+					-- From file name...
+				create l_repository_dir_name.make_from_string (directory_name_from_file_name (configuration.log_file_path))
+				l_repository_dir_name.extend ("model")
+				create l_file_name.make_from_string (l_repository_dir_name)
+				l_file_name.set_file_name (l_class_name)
+				l_file_name.add_extension ("xml")
+
+					-- Make sure the model directory exists.
+				create l_model_dir_name.make_from_string (system.eiffel_project.project_directory.fixing_results_path)
+				l_model_dir_name.extend ("model")
+				create l_model_dir.make (l_model_dir_name)
+				if not l_model_dir.exists then
+				    l_model_dir.recursive_create_directory
+				end
+
+					-- To file name...
+				create l_model_file_name.make_from_string (l_model_dir_name)
+				l_model_file_name.set_file_name (l_class_name)
+				l_model_file_name.add_extension ("xml")
+
+					-- Copy the model to project directory.
+				file_system.copy_file (l_file_name, l_model_file_name)
+
+					-- Test behavior construction.
+				test_behavior_construction
 			end
-
-				-- Save state transition model into file.
-			l_class_name := class_name_from_file_name (configuration.log_file_path)
-			create l_file_name.make_from_string (l_repository_dir_name)
-			l_file_name.set_file_name (l_class_name)
-			l_file_name.add_extension ("xml")
-
-			io.putstring ("Saving model to: ")
-			io.putstring (l_file_name)
-			l_state_transition_model.save_to_file (l_file_name)
-			io.putstring (" ...... Done!%N")
-else
-				-- Local testing.
-			l_class_name := class_name_from_file_name (configuration.log_file_path)
-
-				-- From file name...
-			create l_repository_dir_name.make_from_string (directory_name_from_file_name (configuration.log_file_path))
-			l_repository_dir_name.extend ("model")
-			create l_file_name.make_from_string (l_repository_dir_name)
-			l_file_name.set_file_name (l_class_name)
-			l_file_name.add_extension ("xml")
-
-				-- Make sure the model directory exists.
-			create l_model_dir_name.make_from_string (system.eiffel_project.project_directory.fixing_results_path)
-			l_model_dir_name.extend ("model")
-			create l_model_dir.make (l_model_dir_name)
-			if not l_model_dir.exists then
-			    l_model_dir.recursive_create_directory
-			end
-
-				-- To file name...
-			create l_model_file_name.make_from_string (l_model_dir_name)
-			l_model_file_name.set_file_name (l_class_name)
-			l_model_file_name.add_extension ("xml")
-
-				-- Copy the model to project directory.
-			file_system.copy_file (l_file_name, l_model_file_name)
-
-				-- Test behavior construction.
-			test_behavior_construction
-end
 		end
 
 feature{NONE} -- Process
@@ -191,10 +193,9 @@ feature{NONE} -- Process
 			process_call_based_request (a_request)
 		end
 
-	state_from_query_result (a_state: HASH_TABLE [STRING_8, STRING_8]; a_class: CLASS_C; a_feature: detachable FEATURE_I)
-				: detachable AFX_STATE
+	state_from_query_result (a_state: HASH_TABLE [STRING_8, STRING_8]; a_class: CLASS_C; a_feature: detachable FEATURE_I): detachable AFX_STATE
 			-- Construct a afx_state object from the query result.
-			-- Workaround: the state report may be meshy, this makes it possible to ignore the bad-formed states.
+			-- Workaround: the state report may be messy, this makes it possible to ignore the bad-formed states.
 			-- 			Maybe this is overkilling, but since the expressions may contain also implications,
 			--			there seems to be no easy way to check the validity without using exception handling.
 		local
@@ -224,7 +225,7 @@ feature{NONE} -- Process
 		do
 			Precursor (a_request)
 
-				-- variable information
+				-- Variable information
 			l_type := a_request.type
 			check l_type /= Void end
 			l_class := a_request.type.associated_class
@@ -237,18 +238,18 @@ feature{NONE} -- Process
 			    if not (l_response.is_bad or l_response.is_error)  then
 			        fixme ("check for the conditions where the response may be useless")
 
-						-- create state
+						-- Create state
 					l_results := l_response.query_results
 					l_state := state_from_query_result (l_results, l_type.associated_class, Void)
 					if l_state /= Void then
-    				    	-- source state of feature call, just put the state into `mock_heap'
+    				    	-- Source state of feature call, just put the state into `mock_heap'
     					mock_heap.force (l_state, l_var_index)
 
     					if attached last_call_based_request as l_call_request then
     						if expected_object_states.first.ob_id = l_var_index then
     							l_is_good := True
 
-    								-- one more relevant state available, remove it from expecting list
+    								-- One more relevant state available, remove it from expecting list
     							expected_object_states.remove_first
 
     							if expected_object_states.is_empty then
@@ -259,23 +260,24 @@ feature{NONE} -- Process
     							    l_model_state.extract_state (mock_heap, last_call_based_request, False)
     								last_transition.set_destination (l_model_state)
     								last_model.add_transition (last_transition)
+    								transition_summary.add_transition (last_call_based_request.class_of_target_type, last_call_based_request.feature_to_call, last_transition.source, last_transition.destination)
 
-    									-- prepare for next transition
+    									-- Prepare for next transition
     								last_call_based_request := Void
     								last_transition := Void
     							end
     						else
-    								-- unexpected object state, error
+    								-- Unexpected object state, error
     							l_is_good := False
     						end
-    					else		-- not (attached last_call_based_request as l_call_request)
+    					else		-- Not (attached last_call_based_request as l_call_request)
     					    l_is_good := True
     					end
 					end
-				else 		-- not not (l_response.is_bad or l_response.is_error)
+				else 		-- Not not (l_response.is_bad or l_response.is_error)
 				    l_is_good := False
 			    end
-			else		-- not attached {AUT_OBJECT_STATE_RESPONSE} a_request.response as l_response
+			else		-- Not attached {AUT_OBJECT_STATE_RESPONSE} a_request.response as l_response
 				l_is_good := False
 			end
 
@@ -435,6 +437,9 @@ feature{NONE} -- implementation
 
 	expected_object_states: DS_ARRAYED_LIST [TUPLE[ob_type: TYPE_A; ob_id: INTEGER] ]
 			-- List of expected object states to finish the last call transition.
+
+	transition_summary: AFX_TRANSITION_SUMMARY
+			-- Transition summary
 
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
