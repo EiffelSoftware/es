@@ -178,16 +178,14 @@ feature {NONE} -- Implementation
 
 					l_append_text.append	(	ast_tools.commented_feature_to_string (
 													setter_generator.transformation_result.target_node,
-													" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'.",
-													1)
+													" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'.")
 											)
 					l_append_text.append("%N%T")
 
 					if preferences.use_as_assigner then
 						l_old_feat_text := ast_tools.commented_feature_to_string (
 													l_modifier.modified_ast.target_node,
-													l_comment,
-													1)
+													l_comment)
 
 						l_feat_ast.replace_text ("%N"+l_old_feat_text+l_append_text, l_matchlist)
 					else

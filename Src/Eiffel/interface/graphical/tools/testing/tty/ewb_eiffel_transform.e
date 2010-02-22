@@ -86,7 +86,6 @@ feature -- Properties
 			a2_ast: CLASS_AS
 			a2_context: ETR_FEATURE_CONTEXT
 			a2_feat: FEATURE_I
-			repl: ETR_ASSIGNMENT_ATTEMPT_REPLACER
 			a2_trans: ETR_TRANSFORMABLE
 			mod: ETR_AST_MODIFIER
 		do
@@ -98,13 +97,12 @@ feature -- Properties
 			-- create contexts
 			create a2_context.make (a2_feat, void)
 
-			create repl
 			a2_trans := create {ETR_TRANSFORMABLE}.make_from_ast(a2_ast, create {ETR_CLASS_CONTEXT}.make(a2.compiled_class),true)
-			repl.replace_assignment_attempts (a2_trans)
+			rewrite.replace_assignment_attempts (a2_trans)
 
 			-- apply the modifications
 			create mod.make
-			mod.add_list(repl.replacements)
+			mod.add_list(rewrite.modifications)
 			mod.apply_to (a2_trans)
 
 			-- print transformed instruction
@@ -256,47 +254,88 @@ feature -- Properties
 			tc.check_transformable (expr)
 		end
 
---	test_constant_finder
---		local
---			l_trans: ETR_TRANSFORMABLE
---			c1: CLASS_I
---			c1_ast: CLASS_AS
---			str_as: STRING_AS
---			l_ex: ETR_CONSTANT_EXTRACTOR
---		do
---			c1 := universe.compiled_classes_with_name("C2").first
---			c1_ast := c1.compiled_class.ast
-
---			create str_as.initialize ("This is a shared string", 0, 0, 0, 0)
---			create l_trans.make_in_class (str_as, c1.compiled_class)
-
---			create l_ex
---			l_ex.extract_constant (l_trans, "cons", true, true)
-
-----			create l_finder
-----			l_finder.find_constants (l_trans.target_node, c1_ast)
---		end
-
-	test_inspect_replace
-			-- test inspect replacement
+	test_branch_removal
 		local
-			a1: CLASS_I
-			a1_ast: CLASS_AS
-			a1_feat: FEATURE_I
+			cls: CLASS_I
+			cls_ast: CLASS_AS
+			l_rng: RANGED_RANDOM
 			trans: ETR_TRANSFORMABLE
-			l_modifier: ETR_AST_MODIFIER
 		do
-			a1 := universe.compiled_classes_with_name("M_EX").first
-			a1_ast := a1.compiled_class.ast
-			a1_feat := a1.compiled_class.feature_named ("test_inspect")
+			-- prepare transformable
+			cls := universe.compiled_classes_with_name("M_EX").first
+			cls_ast := cls.compiled_class.ast
 
-			create trans.make_in_class (a1_ast, a1.compiled_class)
+			create trans.make_in_class (cls_ast, cls.compiled_class)
 
-			inspect_replacer.replace_inspects (trans)
+			-- prepare rng
+			create l_rng.make
+			l_rng.set_seed ((create {TIME}.make_now).compact_time)
 
-			create l_modifier.make
-			l_modifier.add_list (inspect_replacer.replacements)
-			l_modifier.apply_to (trans)
+			-- step 1: remove inspects
+			from
+				ast_stats.process_transformable (trans)
+			until
+				not ast_stats.has_inspects
+			loop
+				rewrite.replace_inspects (trans)
+				trans.apply_modifications (rewrite.modifications)
+
+				ast_stats.process_transformable (trans)
+			end
+
+			-- step 2: remove loops, random number of rewrites, one at a time
+			from
+				ast_stats.process_transformable (trans)
+			until
+				not ast_stats.has_loops
+			loop
+				rewrite.unroll_loop (trans, l_rng.next_item_in_range (1, 5), true)
+				trans.apply_modifications (rewrite.modifications)
+
+				ast_stats.process_transformable (trans)
+			end
+
+			-- step 3: remove elseifs
+			from
+				ast_stats.process_transformable (trans)
+			until
+				not ast_stats.has_elseifs
+			loop
+				rewrite.replace_elseifs (trans)
+				trans.apply_modifications (rewrite.modifications)
+
+				ast_stats.process_transformable (trans)
+			end
+
+			-- step 4: remove ifs, take random branch, one at a time
+			from
+				ast_stats.process_transformable (trans)
+			until
+				not ast_stats.has_conditional_branches
+			loop
+				if l_rng.next_item_in_range (0, 1) = 0 then
+					rewrite.remove_ifs (trans, true, true)
+				else
+					rewrite.remove_ifs (trans, false, true)
+				end
+
+				trans.apply_modifications (rewrite.modifications)
+
+				ast_stats.process_transformable (trans)
+			end
+
+			io.put_string (trans.out)
+		end
+
+	test_me_all
+		do
+			test_me("test", "1.2.4.4.1.2", "1.2.4.4.1.2")
+			test_me("test2", "1.2.4.4.1.3", "1.2.4.4.1.3")
+			test_me("test3", "1.2.4.4.1.3", "1.2.4.4.1.4")
+			test_me("test4", "1.2.4.4.1.1.4.1", "1.2.4.4.1.1.4.4")
+			test_me("test5", "1.2.4.4.1.2", "1.2.4.4.1.4")
+			test_me("test6", "1.2.4.4.1.2", "1.2.4.4.1.2")
+			test_me("test7", "1.2.4.4.1.1.2.2", "1.2.4.4.1.1.2.2")
 		end
 
 	execute
@@ -304,21 +343,14 @@ feature -- Properties
 			-- command line.
 		do
 			-- reparse to have the original ast and don't use a modified one from storage
---			test_ren
---			test_setter_gen
---			test_context_transformation
---			test_ass_attempt_replacing
---			test_ec_gen
---			test_typechecker
---			test_me("test", "1.2.4.4.1.2", "1.2.4.4.1.2")
---			test_me("test2", "1.2.4.4.1.3", "1.2.4.4.1.3")
---			test_me("test3", "1.2.4.4.1.3", "1.2.4.4.1.4")
---			test_me("test4", "1.2.4.4.1.1.4.1", "1.2.4.4.1.1.4.4")
---			test_me("test5", "1.2.4.4.1.2", "1.2.4.4.1.4")
---			test_me("test6", "1.2.4.4.1.2", "1.2.4.4.1.2")
---			test_me("test7", "1.2.4.4.1.1.2.2", "1.2.4.4.1.1.2.2")
---			test_constant_finder
---			test_inspect_replace
+			test_ren
+			test_setter_gen
+			test_context_transformation
+			test_ass_attempt_replacing
+			test_ec_gen
+			test_typechecker
+			test_me_all
+			test_branch_removal
 		end
 
 note

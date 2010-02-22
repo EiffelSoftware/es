@@ -34,53 +34,6 @@ feature -- Access
 
 feature -- Output
 
-	remove_ending_indentation(a_string: STRING; a_indentation_char: CHARACTER): STRING
-    		-- Make sure `a_string' ends at indentation level `a_level'
-    	require
-    		non_void: a_string /= void
-    	do
-    		Result := ending_indentation(a_string, 0, a_indentation_char)
-    	end
-
-	ending_indentation(a_string: STRING; a_level: INTEGER; a_indentation_char: CHARACTER): STRING
-    		-- Make sure `a_string' ends at indentation level `a_level'
-    	require
-    		non_void: a_string /= void
-    		valid_level: a_level>=0
-    	local
-    		l_pos: INTEGER
-    		l_num_indent: INTEGER
-    		l_last_was_indent: BOOLEAN
-    	do
-			from
-				l_pos := a_string.count
-				l_last_was_indent := true
-			until
-				l_pos<1 or not l_last_was_indent
-			loop
-				if a_string.item (l_pos) = a_indentation_char and l_last_was_indent then
-					l_num_indent := l_num_indent + 1
-					l_pos := l_pos - 1
-				else
-					l_last_was_indent := false
-				end
-			end
-
-			Result := a_string.twin
-			if l_num_indent>a_level then
-				Result.remove_tail(l_num_indent-a_level)
-			elseif a_level>l_num_indent then
-				from
-
-				until
-					l_num_indent>a_level
-				loop
-					Result.append_character(a_indentation_char)
-					l_num_indent := l_num_indent+1
-				end
-			end
-    	end
-
 	extract_feature_comments(a_feature: FEATURE_AS; a_matchlist: LEAF_AS_LIST): STRING
 			-- Extract comments from `a_feature' and return them as multiline-string
 		require
@@ -144,77 +97,66 @@ feature -- Output
 			Result := printer_output.string_representation
 		end
 
-	commented_feature_to_string(a_feature: AST_EIFFEL; a_comment: STRING; an_indentation: INTEGER): STRING
+	commented_feature_to_string(a_feature: AST_EIFFEL; a_comment: STRING): STRING
 			-- prints `a_ast' to text using `mini_printer'
 		require
 			non_void: a_feature /= void and a_comment /= void
-			valid_indent: an_indentation>=0
-		local
-			l_index: INTEGER
 		do
-			from
-				l_index := 1
-				printer_output.reset
-			until
-				l_index > an_indentation
-			loop
-				printer_output.enter_block
-				l_index := l_index + 1
-			end
+			printer_output.reset
+			printer_output.enter_block
 
 			commenting_printer.print_feature_with_comment(a_feature, a_comment)
 
 			Result := printer_output.string_representation
 		end
 
-	ast_to_string(a_ast: AST_EIFFEL): STRING
-			-- prints `a_ast' to text using `mini_printer'
-		require
-			non_void: a_ast /= void
+	ast_to_string(a_ast: detachable AST_EIFFEL): STRING
+			-- Prints `a_ast' to text
 		do
-			printer_output.reset
-			printer.print_ast_to_output(a_ast)
+			if attached a_ast then
+				printer_output.reset
+				printer.print_ast_to_output(a_ast)
 
-			Result := printer_output.string_representation
+				Result := printer_output.string_representation
+			else
+				create Result.make_empty
+			end
 		end
 
-	ast_to_string_with_indentation(a_ast: AST_EIFFEL; an_indentation: INTEGER): STRING
-			-- prints `a_ast' starting at indentation level `an_indentation'
+	ast_to_string_with_indentation(a_ast: detachable AST_EIFFEL; an_indentation: INTEGER): STRING
+			-- Prints `a_ast' starting at indentation level `an_indentation'
 		require
 			non_void: a_ast /= void
 			valid_indent: an_indentation>=0
 		local
 			l_index: INTEGER
 		do
-			from
-				l_index := 1
-				printer_output.reset
-			until
-				l_index > an_indentation
-			loop
-				printer_output.enter_block
-				l_index := l_index + 1
+			if attached a_ast then
+				from
+					l_index := 1
+					printer_output.reset
+				until
+					l_index > an_indentation
+				loop
+					printer_output.enter_block
+					l_index := l_index + 1
+				end
+
+				printer.print_ast_to_output(a_ast)
+
+				Result := printer_output.string_representation
+			else
+				create Result.make_empty
 			end
-
-			printer.print_ast_to_output(a_ast)
-
-			Result := printer_output.string_representation
 		end
 
 feature -- Operations
 
 	duplicate_ast(an_ast: AST_EIFFEL)
-			-- duplicates `an_ast' and stores the result in `duplicated_ast'
+			-- Duplicates `an_ast' and stores the result in `duplicated_ast'
 		require
 			non_void: an_ast /= void
 		do
-			-- is cloning the way to go?
-			-- alternative would be:
-			-- print + reparse (are some ids lost? adjust for context again?)
-			-- 		needs facility to print ast without matchlist
-			-- recreating from scratch
-			--		very dependant on ast structure
-
 			duplicated_ast := an_ast.deep_twin
 		end
 

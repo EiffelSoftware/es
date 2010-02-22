@@ -50,6 +50,20 @@ feature -- Operation
 			Result := basic_operators.transformation_result
 		end
 
+	apply_modifications (a_modification_list: LIST[ETR_AST_MODIFICATION])
+			-- Apply `a_modification_list' to `Current'
+		require
+			non_void: a_modification_list /= void
+			valid: is_valid
+		local
+			l_modifier: ETR_AST_MODIFIER
+		do
+			create l_modifier.make
+			l_modifier.add_list (a_modification_list)
+			l_modifier.apply_to (Current)
+			target_node := l_modifier.modified_ast.target_node
+		end
+
 feature -- Access
 
 	path: detachable AST_PATH

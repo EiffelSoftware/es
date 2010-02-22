@@ -14,6 +14,12 @@ feature {NONE} -- Shared
 		once
 			create Result
 		end
+
+	ast_stats: ETR_AST_STATS
+			-- shared instance of ETR_AST_STATS
+		once
+			create Result
+		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

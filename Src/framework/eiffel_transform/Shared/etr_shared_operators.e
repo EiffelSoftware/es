@@ -11,14 +11,8 @@ inherit
 
 feature {NONE} -- Operators
 
-	inspect_replacer: ETR_INSPECT_REPLACER
-			-- Shared instance of ETR_INSPECT_REPLACER
-		once
-			create Result
-		end
-
-	assignment_attempt_reaplacer: ETR_ASSIGNMENT_ATTEMPT_REPLACER
-			-- Shared instance of ETR_ASSIGNMENT_ATTEMPT_REPLACER
+	rewrite: ETR_REWRITING_OPS
+			-- Shared instance of ETR_REWRITING_OPS
 		once
 			create Result
 		end

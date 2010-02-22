@@ -21,16 +21,15 @@ inherit
 		end
 	ETR_SHARED_ERROR_HANDLER
 	SHARED_TEXT_ITEMS
-create
-	make
 
-feature {NONE} -- Creation
+feature -- Operations
 
-	make(a_class_context: like class_context)
-			-- Make with `a_class_context'
+	replace_inspects_in(a_ast: AST_EIFFEL)
+		require
+			non_void: a_ast /= void
 		do
-			class_context := a_class_context
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			a_ast.process (Current)
 		end
 
 feature -- Access
@@ -46,9 +45,6 @@ feature {NONE} -- Implementation
 
 	switch_expr: STRING
 			-- Text of current switch expression
-
-	class_context: ETR_CLASS_CONTEXT
-			-- Class context we're working in
 
 	is_first_case: BOOLEAN
 			-- Are we in the first case of the switch statement (use if instead of elseif)

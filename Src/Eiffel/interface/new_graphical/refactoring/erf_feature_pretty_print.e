@@ -88,8 +88,7 @@ feature {NONE} -- Implementation
 
 				l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
 													l_feat_ast,
-													l_comments,
-													1)
+													l_comments)
 											)
 
 				l_replacement_text.remove_tail (1)

@@ -1,31 +1,85 @@
 note
-	description: "Replaces all assignment attempts by object tests"
-	author: "$Author$"
+	description: "Summary description for {ETR_AST_STATS}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_ASSIGNMENT_ATTEMPT_REPLACER
+	ETR_AST_STATS
 inherit
-	REFACTORING_HELPER
+	AST_ITERATOR
 		export
-			{NONE} all
+			{AST_EIFFEL} all
+		redefine
+			process_loop_as,
+			process_if_as,
+			process_elseif_as,
+			process_inspect_as
 		end
-	ETR_SHARED_ERROR_HANDLER
 
-feature -- Operations
-	replacements: LIST[ETR_AST_MODIFICATION]
-			-- modifications resulting from this operator
+feature -- Access
 
-	replace_assignment_attempts(a_transformable: ETR_TRANSFORMABLE)
-			-- replaces assignment attempts in `a_transformable'
-		local
-			l_visitor: ETR_ASS_ATTMPT_REPL_VISITOR
+	has_loops: BOOLEAN
+
+	has_inspects: BOOLEAN
+
+	has_elseifs: BOOLEAN
+
+	has_conditional_branches: BOOLEAN
+
+feature -- Operation
+
+	process_transformable(a_transformable: ETR_TRANSFORMABLE)
+			-- Process `a_transformable'
+		require
+			non_void: a_transformable /= void
+			valid: a_transformable.is_valid
 		do
-			create l_visitor.make (a_transformable.context.class_context)
-			a_transformable.target_node.process (l_visitor)
-			replacements := l_visitor.modifications
+			process_ast(a_transformable.target_node)
 		end
+
+	process_ast(a_ast: AST_EIFFEL)
+			-- Process `a_ast'
+		require
+			non_void: a_ast /= void
+		do
+			has_loops := false
+			has_inspects := false
+			has_elseifs := false
+			has_conditional_branches := false
+
+			a_ast.process (Current)
+		end
+
+feature {AST_EIFFEL} -- Roundtrip
+
+	process_loop_as (l_as: LOOP_AS)
+		do
+			has_conditional_branches := true
+			has_loops := true
+			Precursor(l_as)
+		end
+
+	process_if_as (l_as: IF_AS)
+		do
+			has_conditional_branches := true
+			Precursor(l_as)
+		end
+
+	process_elseif_as (l_as: ELSIF_AS)
+		do
+			has_conditional_branches := true
+			has_elseifs := true
+			Precursor(l_as)
+		end
+
+	process_inspect_as (l_as: INSPECT_AS)
+		do
+			has_inspects := true
+			has_conditional_branches := true
+			Precursor(l_as)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

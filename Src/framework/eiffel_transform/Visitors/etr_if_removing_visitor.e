@@ -1,31 +1,67 @@
 note
-	description: "Replaces all assignment attempts by object tests"
-	author: "$Author$"
+	description: "Summary description for {ETR_LOOP_REWRITING_VISITOR}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_INSPECT_REPLACER
+	ETR_IF_REMOVING_VISITOR
 inherit
-	REFACTORING_HELPER
+	AST_ITERATOR
 		export
-			{NONE} all
+			{AST_EIFFEL} all
+		redefine
+			process_if_as
 		end
-	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
 
-feature -- Operations
-	replacements: LIST[ETR_AST_MODIFICATION]
-			-- modifications resulting from this operator
+feature -- Access
 
-	replace_inspects(a_transformable: ETR_TRANSFORMABLE)
-			-- replaces inspects attempts in `a_transformable' by normal conditionals
-		local
-			l_visitor: ETR_INSPECT_REPL_VISITOR
+	modifications: LIST[ETR_AST_MODIFICATION]
+
+feature -- Operation
+
+	remove_ifs_in(a_ast: AST_EIFFEL; a_take_branches: BOOLEAN; a_first_only: BOOLEAN)
+		require
+			non_void: a_ast /= void
 		do
-			create l_visitor.make (a_transformable.context.class_context)
-			a_transformable.target_node.process (l_visitor)
-			replacements := l_visitor.modifications
+			first_only := a_first_only
+			was_processed := false
+
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			take_branches := a_take_branches
+			a_ast.process (Current)
 		end
+
+feature {NONE} -- Implementation
+
+	take_branches: BOOLEAN
+	first_only: BOOLEAN
+	was_processed: BOOLEAN
+
+feature {AST_EIFFEL} -- Roundtrip
+
+	process_if_as (l_as: IF_AS)
+		do
+			if not (first_only and was_processed) then
+				if take_branches then
+					if l_as.compound /= void then
+						modifications.extend (basic_operators.replace_with_string (l_as.path, ast_tools.ast_to_string (l_as.compound)))
+					else
+						modifications.extend (basic_operators.delete (l_as.path))
+					end
+				else
+					if l_as.else_part /= void then
+						modifications.extend (basic_operators.replace_with_string (l_as.path, ast_tools.ast_to_string (l_as.else_part)))
+					else
+						modifications.extend (basic_operators.delete (l_as.path))
+					end
+				end
+				was_processed := true
+			end
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
