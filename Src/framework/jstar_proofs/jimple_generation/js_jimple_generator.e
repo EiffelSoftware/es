@@ -213,34 +213,36 @@ feature {NONE}
 			at_least_one_arg: BOOLEAN
 			l_ensures_clause_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
 		do
-			-- First do the signature
-			output.put_indentation
-			if a_feature.is_deferred then
-				output.put ("abstract ")
+			if should_consider_routine (a_class, a_feature) then
+				-- First do the signature
+				output.put_indentation
+				if a_feature.is_deferred then
+					output.put ("abstract ")
+				end
+				output.put (routine_signature (as_creation_routine, a_feature))
+				output.put_new_line
+
+				process_require_clauses (a_feature)
+
+				l_ensures_clause_expression_writer := process_old_expressions (a_feature)
+				process_ensure_clauses (a_feature, l_ensures_clause_expression_writer)
+
+				if not a_feature.is_deferred then
+					-- Print the opening brace
+					output.put_line ("{")
+					output.indent
+
+					process_routine_body (as_creation_routine, a_feature, a_class)
+
+					output.unindent
+					-- Finally print the closing brace
+					output.put_line ("}")
+				else
+					output.put_line (";")
+				end
+
+				output.put_new_line
 			end
-			output.put (routine_signature (as_creation_routine, a_feature))
-			output.put_new_line
-
-			process_require_clauses (a_feature)
-
-			l_ensures_clause_expression_writer := process_old_expressions (a_feature)
-			process_ensure_clauses (a_feature, l_ensures_clause_expression_writer)
-
-			if not a_feature.is_deferred then
-				-- Print the opening brace
-				output.put_line ("{")
-				output.indent
-
-				process_routine_body (as_creation_routine, a_feature, a_class)
-
-				output.unindent
-				-- Finally print the closing brace
-				output.put_line ("}")
-			else
-				output.put_line (";")
-			end
-
-			output.put_new_line
 		end
 
 

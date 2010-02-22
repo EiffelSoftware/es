@@ -47,13 +47,13 @@ feature
 				a_class.suppliers.off
 			loop
 				l_supplier := a_class.suppliers.item.supplier
-				process_class_and_parents_if_needed (l_supplier, considered, create {HASH_TABLE [BOOLEAN, INTEGER]}.make (10))
+				process_class_and_parents_if_needed (l_supplier, considered)
 				a_class.suppliers.forth
 			end
 				-- Next: collect specs from ancestor classes that are not expanded or external.
 				-- TODO: non-conforming ancestors.
 			considered.remove (a_class.class_id)
-			process_class_and_parents_if_needed (a_class, considered, create {HASH_TABLE [BOOLEAN, INTEGER]}.make (10))
+			process_class_and_parents_if_needed (a_class, considered)
 		end
 
 	generated_specs: !STRING
@@ -79,42 +79,20 @@ feature {NONE}
 
 	spec_printer: JS_SPEC_PRINTER
 
-	process_class_and_parents_if_needed (a_class: CLASS_C; emitted: HASH_TABLE [BOOLEAN, INTEGER]; visited: HASH_TABLE [BOOLEAN, INTEGER])
+	process_class_and_parents_if_needed (a_class: CLASS_C; visited: HASH_TABLE [BOOLEAN, INTEGER])
 		do
-			if
-				a_class /= Void and then
-				not a_class.is_expanded and then
-				not a_class.is_external and then
-				not a_class.is_class_any and then
-				not a_class.is_class_none and then
-				not visited.has_key (a_class.class_id) then
+			if should_consider_class (a_class) and then not visited.has_key (a_class.class_id) then
 				visited.put (True, a_class.class_id)
 				from
 					a_class.conforming_parents.start
 				until
 					a_class.conforming_parents.off
 				loop
-					process_class_and_parents_if_needed (a_class.conforming_parents.item.associated_class, emitted, visited)
+					process_class_and_parents_if_needed (a_class.conforming_parents.item.associated_class, visited)
 					a_class.conforming_parents.forth
 				end
-				process_class_if_needed (a_class, emitted)
-			end
-		end
-
-	process_class_if_needed (a_class: CLASS_C; considered: HASH_TABLE [BOOLEAN, INTEGER])
-		do
-			if
-				a_class /= Void and then
-				not a_class.is_expanded and then
-				not a_class.is_external and then
-				not a_class.is_class_any and then
-				not a_class.is_class_none and then
-				not considered.has_key (a_class.class_id)
-			then
-				considered.put (True, a_class.class_id)
 				collect_spec_of_class (a_class)
 			end
-			-- TODO: Specs of ANY
 		end
 
 	collect_spec_of_class (a_class: !CLASS_C)
@@ -132,13 +110,7 @@ feature {NONE}
 				a_class.conforming_parents.off
 			loop
 				parent := a_class.conforming_parents.item.associated_class
-				if
-					parent /= Void and then
-					not parent.is_expanded and then
-					not parent.is_external and then
-					not parent.is_class_any and then
-					not parent.is_class_none
-				then
+				if should_consider_class (parent) then
 					if not equal ("", parents) then
 						parents := parents + ", "
 					end
@@ -366,52 +338,56 @@ feature {NONE}
 			dynamic_spec: STRING
 			l_qualifier: STRING
 		do
-			where := a_feature_i.written_class.name_in_upper + "." + a_feature_i.feature_name
+			if should_consider_method (match_list, a_feature_as) then
 
-			if {b: !BODY_AS} a_feature_as.body and then {r: !ROUTINE_AS} b.content then
+				where := a_feature_i.written_class.name_in_upper + "." + a_feature_i.feature_name
 
-					-- Get the precondition comments
-				if {pre: !REQUIRE_AS} r.precondition then
-					create region.make (pre.first_token (match_list).index, r.routine_body.first_token (match_list).index)
-					precond_comments := match_list.extract_comment (region)
+				if {b: !BODY_AS} a_feature_as.body and then {r: !ROUTINE_AS} b.content then
+
+						-- Get the precondition comments
+					if {pre: !REQUIRE_AS} r.precondition then
+						create region.make (pre.first_token (match_list).index, r.routine_body.first_token (match_list).index)
+						precond_comments := match_list.extract_comment (region)
+					else
+						error (where + ": precondition missing")
+					end
+
+						-- Get the postcondition comments
+					if {post: !ENSURE_AS} r.postcondition then
+						create region.make (post.first_token (match_list).index, r.end_keyword.first_token (match_list).index)
+						postcond_comments := match_list.extract_comment (region)
+					else
+						error (where + ": postcondition missing")
+					end
 				else
-					error (where + ": precondition missing")
+					error (where + ": spec missing")
 				end
 
-					-- Get the postcondition comments
-				if {post: !ENSURE_AS} r.postcondition then
-					create region.make (post.first_token (match_list).index, r.end_keyword.first_token (match_list).index)
-					postcond_comments := match_list.extract_comment (region)
+				static_spec := static_spec_of_routine (precond_comments, postcond_comments, where, a_feature_i).string
+				dynamic_spec := dynamic_spec_of_routine (precond_comments, postcond_comments, where, a_feature_i).string
+
+				if equal (static_spec, "") and then equal (dynamic_spec, "") then
+					error (where + ": spec missing")
 				else
-					error (where + ": postcondition missing")
+					if a_feature_i.is_deferred then
+						l_qualifier := "abstract "
+					else
+						l_qualifier := ""
+					end
+					if not equal (static_spec, "") then
+						output.put_line (l_qualifier.twin + routine_signature (as_creation_procedure, a_feature_i) + " static:")
+						output.indent
+						output.append_lines (static_spec + ";")
+						output.unindent
+					end
+					if not equal (dynamic_spec, "") then
+						output.put_line (l_qualifier.twin + routine_signature (as_creation_procedure, a_feature_i) + " :")
+						output.indent
+						output.append_lines (dynamic_spec + ";")
+						output.unindent
+					end
 				end
-			else
-				error (where + ": spec missing")
-			end
 
-			static_spec := static_spec_of_routine (precond_comments, postcond_comments, where, a_feature_i).string
-			dynamic_spec := dynamic_spec_of_routine (precond_comments, postcond_comments, where, a_feature_i).string
-
-			if equal (static_spec, "") and then equal (dynamic_spec, "") then
-				error (where + ": spec missing")
-			else
-				if a_feature_i.is_deferred then
-					l_qualifier := "abstract "
-				else
-					l_qualifier := ""
-				end
-				if not equal (static_spec, "") then
-					output.put_line (l_qualifier.twin + routine_signature (as_creation_procedure, a_feature_i) + " static:")
-					output.indent
-					output.append_lines (static_spec + ";")
-					output.unindent
-				end
-				if not equal (dynamic_spec, "") then
-					output.put_line (l_qualifier.twin + routine_signature (as_creation_procedure, a_feature_i) + " :")
-					output.indent
-					output.append_lines (dynamic_spec + ";")
-					output.unindent
-				end
 			end
 
 		end

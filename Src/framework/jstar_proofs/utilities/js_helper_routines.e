@@ -11,6 +11,9 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
+	DOCUMENTATION_EXPORT
+		export {NONE} all end
+
 feature {NONE}
 
 	name_for_argument (a_argument: !ARGUMENT_B): STRING
@@ -145,6 +148,72 @@ feature {NONE}
            end
        end
 
+
+	should_consider_class (a_class: CLASS_C): BOOLEAN
+		do
+			Result := a_class /= Void and then
+				not a_class.is_expanded and then
+				not a_class.is_external and then
+				not a_class.is_class_any and then
+				not a_class.is_class_none and then
+				not has_ignores_info (a_class, a_class.ast.top_indexes) and then
+				not has_ignores_info (a_class, a_class.ast.bottom_indexes)
+		end
+
+	should_consider_method (a_match_list: LEAF_AS_LIST; a_feature_as: !FEATURE_AS): BOOLEAN
+		local
+			comments: EIFFEL_COMMENTS
+		do
+			Result := True
+			comments := a_feature_as.comment (a_match_list)
+			if comments /= Void then
+				from
+					comments.start
+				until
+					comments.off or not Result
+				loop
+					if comments.item.content.has_substring ("sl_ignore") then
+						Result := False
+					end
+					comments.forth
+				end
+			end
+		end
+
+	should_consider_routine (a_class: !CLASS_C; a_feature: !FEATURE_I): BOOLEAN
+		local
+			match_list: LEAF_AS_LIST
+		do
+			match_list := match_list_server.item (a_class.class_id)
+			if {body: !FEATURE_AS} a_feature.body then
+				Result := should_consider_method (match_list, body)
+			end
+		end
+
+	has_ignores_info (a_class: CLASS_C; a_indexing_clause: INDEXING_CLAUSE_AS): BOOLEAN
+		local
+			l_content: STRING
+		do
+			if a_indexing_clause /= Void then
+				from
+					a_indexing_clause.start
+				until
+					a_indexing_clause.off
+				loop
+					if
+						{l_index_as: !INDEX_AS} a_indexing_clause.item and then
+						equal ("SL_INFO", l_index_as.tag.name.as_upper)
+					then
+						l_content := l_index_as.content_as_string
+						l_content := l_content.substring (2, l_content.count - 1)
+						if l_content.has_substring ("ignore") then
+							Result := True
+						end
+					end
+					a_indexing_clause.forth
+				end
+			end
+		end
 
    output_from_program (a_command: STRING; a_working_directory: STRING): STRING
            -- Output from the execution of `a_command' in (possibly) `a_working_directory'.
