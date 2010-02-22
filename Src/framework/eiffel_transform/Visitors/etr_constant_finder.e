@@ -16,7 +16,8 @@ inherit
 			process_char_as,
 			process_bit_const_as,
 			process_bool_as,
-			process_feature_as
+			process_feature_as,
+			process_routine_as
 		end
 
 feature -- Operation
@@ -49,15 +50,24 @@ feature {NONE} -- Implementation
 	constant: AST_EIFFEL
 			-- The constant we're looking for
 
+	is_in_routine: BOOLEAN
+
 	process_constant(l_as: AST_EIFFEL)
 			-- Check l_as
 		do
-			if constant.same_type(l_as) and then constant.is_equivalent(l_as) then
+			if is_in_routine and constant.same_type(l_as) and then constant.is_equivalent(l_as) then
 				found_constants.extend (current_path)
 			end
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_routine_as (l_as: ROUTINE_AS)
+		do
+			is_in_routine := true
+			Precursor(l_as)
+			is_in_routine := false
+		end
 
 	process_feature_as (l_as: FEATURE_AS)
 		do

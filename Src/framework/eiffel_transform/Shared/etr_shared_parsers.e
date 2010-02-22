@@ -34,6 +34,16 @@ feature {NONE} -- Parser
 			end
 		end
 
+	etr_type_parser: EIFFEL_PARSER
+			-- internal parser used to handle classes
+		do
+			if parsing_helper.is_using_compiler_factory then
+				Result := parsing_helper.etr_compiler_type_parser
+			else
+				Result := parsing_helper.etr_non_compiler_type_parser
+			end
+		end
+
 	etr_expr_parser: EIFFEL_PARSER
 			-- internal parser used to handle expressions
 		do

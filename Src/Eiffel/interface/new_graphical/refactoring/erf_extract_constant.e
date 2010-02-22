@@ -25,7 +25,6 @@ inherit
 	ETR_SHARED_AST_TOOLS
 	ETR_SHARED_PATH_TOOLS
 	ETR_SHARED_OPERATORS
-	EXCEPTION_MANAGER
 	ETR_SHARED_LOGGER
 
 create
@@ -78,6 +77,10 @@ feature {NONE} -- Implementation
 	containing_feature: STRING
 			-- The feature the constant occurs in
 
+	declaring_class: CLASS_C
+
+	is_already_declared: BOOLEAN
+
 	class_modifiers: LINKED_LIST[ERF_CLASS_TEXT_MODIFICATION]
 
 	apply_class_modifications(a_mods: TUPLE[occ_class: CLASS_C; mods: LIST[ETR_AST_MODIFICATION]])
@@ -90,9 +93,7 @@ feature {NONE} -- Implementation
 			l_matchlist: LEAF_AS_LIST
 			l_class_string: STRING
 		do
-			if a_mods.occ_class.feature_named (preferences.constant_name) /= void then
-				etr_error_handler.add_error (Current, "apply_class_modifications", a_mods.occ_class.name_in_upper + " already has a feature with name " + preferences.constant_name + ".")
-			else
+			if a_mods.occ_class.feature_named (preferences.constant_name) = void or else (a_mods.occ_class.class_id = declaring_class.class_id and is_already_declared) then
 				l_matchlist := match_list_server.item (a_mods.occ_class.class_id)
 
 				l_comments := ast_tools.extract_class_comments (a_mods.occ_class.ast, l_matchlist)
@@ -115,6 +116,8 @@ feature {NONE} -- Implementation
 				else
 					etr_error_handler.add_error (Current, "apply_class_modifications", "Failed to apply modifications to "+a_mods.occ_class.name_in_upper + ".")
 				end
+			else
+				etr_error_handler.add_error (Current, "apply_class_modifications", a_mods.occ_class.name_in_upper + " already has a feature with name " + preferences.constant_name + " and it's not the declaring class.")
 			end
 		end
 
@@ -146,6 +149,9 @@ feature {NONE} -- Implementation
 		        	success := false
 		        	error_handler.wipe_out
 		        else
+		        	is_already_declared := constant_extractor.is_already_declared
+		        	declaring_class := constant_extractor.declaring_class
+
 		        	from
 		        		create class_modifiers.make
 						constant_extractor.modifiers.start
@@ -156,46 +162,51 @@ feature {NONE} -- Implementation
 
 						constant_extractor.modifiers.forth
 					end
+
+					if etr_error_handler.has_errors then
+						show_etr_error
+			        	success := false
+			        	error_handler.wipe_out
+			        else
+			        	-- ask for confirmation
+
+			        	if is_already_declared then
+			        		l_confirmation_string := preferences.constant_name + " is already declared in " + declaring_class.name_in_upper + ".%N%N"
+			        	else
+			        		l_confirmation_string := preferences.constant_name + " will be declared in " + declaring_class.name_in_upper + ".%N%N"
+			        	end
+
+			        	l_confirmation_string.append ("The following classes will be modified:%N")
+
+			        	from
+			        		constant_extractor.modifiers.start
+			        	until
+			        		constant_extractor.modifiers.after
+			        	loop
+							l_cur_occs := constant_extractor.modifiers.item.mods.count
+
+							if constant_extractor.declaring_class.class_id = constant_extractor.modifiers.item.occ_class.class_id and not is_already_declared then
+								l_cur_occs := l_cur_occs - 1
+							end
+
+			        		l_confirmation_string.append (constant_extractor.modifiers.item.occ_class.name_in_upper + " (" + l_cur_occs.out + " occurrence")
+
+			        		if l_cur_occs>1 then
+			        			l_confirmation_string.append ("s")
+			        		end
+
+			        		l_confirmation_string.append (")%N")
+
+			        		constant_extractor.modifiers.forth
+			        	end
+
+			        	l_confirmation_string.append ("%NContinue?")
+
+			        	window := window_manager.last_focused_development_window
+
+			        	prompts.show_question_prompt (l_confirmation_string, window.window, agent continue_yes, agent continue_no)
+			        end
 				end
-
-				if etr_error_handler.has_errors then
-					show_etr_error
-		        	success := false
-		        	error_handler.wipe_out
-		        else
-		        	-- ask for confirmation
-		        	l_confirmation_string :=
-		        		preferences.constant_name + " will be declared in " + constant_extractor.declaring_class.name_in_upper + ".%N%N" +
-		        		"The following classes will be modified:%N"
-
-		        	from
-		        		constant_extractor.modifiers.start
-		        	until
-		        		constant_extractor.modifiers.after
-		        	loop
-						l_cur_occs := constant_extractor.modifiers.item.mods.count
-
-						if constant_extractor.declaring_class.class_id = constant_extractor.modifiers.item.occ_class.class_id then
-							l_cur_occs := l_cur_occs -1
-						end
-
-		        		l_confirmation_string.append (constant_extractor.modifiers.item.occ_class.name_in_upper + " (" + l_cur_occs.out + " occurrence")
-
-		        		if l_cur_occs>1 then
-		        			l_confirmation_string.append ("s")
-		        		end
-
-		        		l_confirmation_string.append (")%N")
-
-		        		constant_extractor.modifiers.forth
-		        	end
-
-		        	l_confirmation_string.append ("%NContinue?")
-
-		        	window := window_manager.last_focused_development_window
-
-		        	prompts.show_question_prompt (l_confirmation_string, window.window, agent continue_yes, agent continue_no)
-		        end
 			end
 		rescue
 			log_exception(Current, "refactor")
@@ -258,7 +269,6 @@ feature {NONE} -- Implementation
 				-- add basic checks
         	checks.wipe_out
 			checks.extend (create {ERF_VALID_FEATURE_NAME}.make (preferences.constant_name))
-			checks.extend (create {ERF_FEATURE_NOT_IN_CLASS}.make (preferences.constant_name, class_i.compiled_class, void, true, false))
 
 			retry_ask_run_settings := dialog.ok_pressed
         end

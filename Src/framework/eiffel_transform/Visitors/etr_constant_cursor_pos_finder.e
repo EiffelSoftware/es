@@ -86,7 +86,7 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_routine_as (l_as: ROUTINE_AS)
 		do
 			is_in_routine := true
-			process_n_way_branch(l_as,[l_as.obsolete_message, l_as.precondition, l_as.locals, l_as.routine_body, l_as.postcondition, l_as.rescue_clause])
+			Precursor(l_as)
 			is_in_routine := false
 		end
 

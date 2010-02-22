@@ -11,11 +11,13 @@ inherit
 		export
 			{NONE} all
 		end
+	SHARED_SERVER
 	ETR_SHARED_ERROR_HANDLER
 	ETR_SHARED_LOGGER
 	ETR_SHARED_BASIC_OPERATORS
 	ETR_SHARED_TRANSFORMABLE_FACTORY
 	ETR_SHARED_PARSERS
+	ETR_SHARED_TYPE_CHECKER
 
 feature {NONE} -- Implementation
 
@@ -146,6 +148,8 @@ feature -- Access
 	declaring_class: CLASS_C
 			-- Class where the constant will be declared
 
+	is_already_declared: BOOLEAN
+
 	modifiers: LIST[TUPLE[occ_class: CLASS_C; mods: LIST[ETR_AST_MODIFICATION]]]
 
 feature -- Operations
@@ -160,6 +164,7 @@ feature -- Operations
 		local
 			l_earliest_occurence: CLASS_C
 			l_source_class: CLASS_C
+			l_source_feature: FEATURE_I
 			l_parents: LIST[CLASS_C]
 			l_class_mods: TUPLE[occ_class: CLASS_C; mods: LIST[ETR_AST_MODIFICATION]]
 			l_mods: LINKED_LIST[ETR_AST_MODIFICATION]
@@ -171,6 +176,10 @@ feature -- Operations
 
 			l_modifier: ETR_AST_MODIFIER
 			l_log_str: STRING
+			l_existing_feat: FEATURE_I
+			l_constant_kind: STRING
+			l_constant_type_as: TYPE_AS
+			l_constant_type: TYPE_A
 		do
 			create {LINKED_LIST[TUPLE[occ_class: CLASS_C; locs: LIST[AST_PATH]]]}found_constants.make
 			create {LINKED_LIST[TUPLE[occ_class: CLASS_C; mods: LIST[ETR_AST_MODIFICATION]]]}modifiers.make
@@ -178,39 +187,46 @@ feature -- Operations
 			found_classes.compare_objects
 			constant := a_constant.target_node
 			l_source_class := a_constant.context.class_context.written_class
+			l_source_feature := l_source_class.feature_named (a_contained_feature_name)
+			is_already_declared := false
+
+			if l_source_feature = void then
+				error_handler.add_error (Current, "extract_constant", "There is not feature named "+a_contained_feature_name+" in "+l_source_class.name_in_upper+".")
+			end
 
 			logger.log_info ("extract_constant starting. Name: "+a_constant_name+"; Ancestors: "+a_process_ancestors.out+"; Descendants: "+a_process_descendants.out)
 
 			highest_level := -1
 
-			if not a_process_whole_cass then
-				process_feature (l_source_class, a_contained_feature_name)
-			else
-				if a_process_ancestors then
-					process_ancestors (l_source_class, 1)
-				end
-				process_class (l_source_class, 0)
-				if a_process_descendants then
-					process_descendants (l_source_class)
+			if not error_handler.has_errors then
+				if not a_process_whole_cass then
+					process_feature (l_source_class, a_contained_feature_name)
+				else
+					if a_process_ancestors then
+						process_ancestors (l_source_class, 1)
+					end
+					process_class (l_source_class, 0)
+					if a_process_descendants then
+						process_descendants (l_source_class)
+					end
 				end
 			end
 
+			if not error_handler.has_errors then
+				-- Make sure all class inherit in some way from the class we declare in
+				from
+					found_constants.start
+				until
+					found_constants.after or error_handler.has_errors
+				loop
+					if not found_constants.item.occ_class.conform_to (declaring_class) then
+						error_handler.add_error (Current, "extract_constant",
+							"Constant will be declared in " + declaring_class.name_in_upper + " but " + found_constants.item.occ_class.name_in_upper +
+							"does not inherit from it")
+					end
 
-
-			-- Make sure all class inherit in some way from the class we declare in
-			from
-				found_constants.start
-			until
-				found_constants.after or error_handler.has_errors
-			loop
-				fixme("Is the correct way to check this?")
-				if not found_constants.item.occ_class.conform_to (declaring_class) then
-					error_handler.add_error (Current, "extract_constant",
-						"Constant will be declared in " + declaring_class.name_in_upper + " but " + found_constants.item.occ_class.name_in_upper +
-						"does not inherit from it")
+					found_constants.forth
 				end
-
-				found_constants.forth
 			end
 
 			if not error_handler.has_errors then
@@ -220,7 +236,12 @@ feature -- Operations
 				l_class_list.extend (create {NONE_ID_AS}.make)
 
 				create l_clients.initialize (l_class_list)
-				parsing_helper.parse_feature (a_constant_name+":"+const_ast_to_type (a_constant.target_node)+" = "+a_constant.out)
+				l_constant_kind := const_ast_to_type (a_constant.target_node)
+				parsing_helper.parse_type (l_constant_kind)
+				l_constant_type_as := parsing_helper.parsed_type
+				l_constant_type := type_checker.written_type_from_type_as (l_constant_type_as, l_source_class, l_source_feature)
+
+				parsing_helper.parse_feature (a_constant_name+":"+l_constant_kind+" = "+a_constant.out)
 				create l_feat_list.make (1)
 				l_feat_list.extend (parsing_helper.parsed_feature)
 				create l_feat_clause.initialize (l_clients, l_feat_list, create {KEYWORD_AS}.make_null, 0)
@@ -253,8 +274,29 @@ feature -- Operations
 					end
 					if found_constants.item.occ_class.class_id = declaring_class.class_id then
 						-- add modifier for declaration
-						-- insert new feature clause to feature-clause list (1.8)
-						l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string(found_constants.item.occ_class.ast, "1.8"), create {ETR_TRANSFORMABLE}.make_from_ast(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
+						l_existing_feat := declaring_class.feature_named (a_constant_name)
+
+						if l_existing_feat /= void then
+							-- check if there already is a constant with the same name
+							if attached {CONSTANT_I}l_existing_feat as c then
+								-- check if type matches
+								if c.type.same_type(l_constant_type) and then c.type.is_equivalent (l_constant_type) then
+									-- check if value matches (string comparison)
+									if c.value.string_value.is_equal (a_constant.out) then
+										is_already_declared := true
+									else
+										error_handler.add_error (Current, "extract_constant", "There already is a feature named "+a_constant_name+" in "+declaring_class.name_in_upper+ " but it has a different value (string comparison).")
+									end
+								else
+									error_handler.add_error (Current, "extract_constant", "There already is a feature named "+a_constant_name+" in "+declaring_class.name_in_upper+ " but it's of a different type.")
+								end
+							else
+								error_handler.add_error (Current, "extract_constant", "There already is a feature named "+a_constant_name+" in "+declaring_class.name_in_upper+ " but it's not a constant.")
+							end
+						else
+							-- insert new feature clause to feature-clause list (1.8)
+							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string(declaring_class.ast, "1.8"), create {ETR_TRANSFORMABLE}.make_from_ast(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
+						end
 					end
 
 					modifiers.extend ([found_constants.item.occ_class,l_mods])
