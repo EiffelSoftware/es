@@ -16,7 +16,7 @@ inherit
 			system
 		end
 
-	AUT_AGENT_UTILITY [FEATURE_I]
+	EPA_AGENT_UTILITY [FEATURE_I]
 
 feature -- Access
 

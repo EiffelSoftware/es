@@ -19,6 +19,8 @@ feature{NONE} -- Initialization
 
 	make (a_node_text_agent: like node_text_action; a_edge_text_agent: like edge_text_action) is
 			-- Initialize Current.
+			-- `a_node_text_agent' and `a_edge_text_agent are used to decide the text
+			-- for displaying notes and edges, respectively.
 		do
 			set_node_text_action (a_node_text_agent)
 			set_edge_text_action (a_edge_text_agent)

@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AUT_AGENT_UTILITY}."
+	description: "Utility to connect agents together with OR or AND operator"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_AGENT_UTILITY [G]
+	EPA_AGENT_UTILITY [G]
 
 feature -- Access
 
