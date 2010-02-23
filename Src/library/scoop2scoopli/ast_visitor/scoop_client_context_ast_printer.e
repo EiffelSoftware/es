@@ -1,6 +1,6 @@
 note
 	description: "[
-					A roundtrip visitor for the generation fo client class elements. It keeps track of the types encountered during the traversal and translates comparison operators.
+					A roundtrip visitor for the generation of client class elements. It keeps track of the types encountered during the traversal and translates comparison operators.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
