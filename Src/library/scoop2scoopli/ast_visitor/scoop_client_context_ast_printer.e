@@ -919,11 +919,20 @@ feature {NONE} -- Instructions processing
 				safe_process (l_as.target)
 				safe_process (l_as.assignment_symbol (match_list))
 
+				-- Prepare the levels layer for the assignment source
+				reset_current_levels_layer
+
 				-- process the create creation expression
 				process_create_creation_expr (l_create_creation_expr_as, l_as.target.access_name)
 			else
 				-- process now the assigner call node
-				Precursor (l_as)
+				safe_process (l_as.target)
+				safe_process (l_as.assignment_symbol (match_list))
+
+				-- Prepare the levels layer for the assignment source
+				reset_current_levels_layer
+
+				safe_process (l_as.source)
 			end
 		end
 
