@@ -1,5 +1,8 @@
 indexing
-	description: "Objects that ..."
+	description: "[
+			Graph printer in GDL format
+			See http://www.aisee.com/gdl/ for details of how to display the graph.				
+			]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision: 5 $"

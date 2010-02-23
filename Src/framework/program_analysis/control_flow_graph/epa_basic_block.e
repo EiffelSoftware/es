@@ -89,6 +89,7 @@ feature -- Setting
 			if attached {STRING} hash_code_string_internal as l_cache then
 				Result := l_cache
 			else
+				hash_code_string_internal := id.out
 			end
 		ensure
 			result_attached: Result /= Void
