@@ -1,6 +1,5 @@
 note
 	description: "Represents a path in an ast node"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

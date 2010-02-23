@@ -63,6 +63,20 @@ feature -- Operation
 			target_node := l_modifier.modified_ast.target_node
 		end
 
+	apply_modification (a_modification: ETR_AST_MODIFICATION)
+			-- Apply `a_modification' to `Current'
+		require
+			non_void: a_modification /= void
+			valid: is_valid
+		local
+			l_modifier: ETR_AST_MODIFIER
+		do
+			create l_modifier.make
+			l_modifier.add (a_modification)
+			l_modifier.apply_to (Current)
+			target_node := l_modifier.modified_ast.target_node
+		end
+
 feature -- Access
 
 	path: detachable AST_PATH

@@ -193,7 +193,7 @@ feature -- Operations
 				error_handler.add_error (Current, "extract_constant", "There is not feature named "+a_contained_feature_name+" in "+l_source_class.name_in_upper+".")
 			end
 
-			logger.log_info ("extract_constant starting. Name: "+a_constant_name+"; Ancestors: "+a_process_ancestors.out+"; Descendants: "+a_process_descendants.out)
+			logger.log_info ("extract_constant starting. Name: "+a_constant_name+";Whole class: "+a_process_whole_cass.out+"; Ancestors: "+a_process_ancestors.out+"; Descendants: "+a_process_descendants.out)
 
 			highest_level := -1
 

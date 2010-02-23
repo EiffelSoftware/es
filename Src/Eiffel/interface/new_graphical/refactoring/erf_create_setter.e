@@ -135,7 +135,6 @@ feature {NONE} -- Implementation
 			l_append_text: STRING
 			l_feat_name: STRING
 			l_retry: BOOLEAN
-			l_modifier: ETR_AST_MODIFIER
 			l_comment: STRING
 			l_old_feat_text: STRING
 		do
@@ -163,10 +162,8 @@ feature {NONE} -- Implementation
 				setter_generator.generate_setter (l_transformable, preferences.setter_name, preferences.argument_name, preferences.assignment, preferences.postcondition)
 
 				if preferences.use_as_assigner then
-					create l_modifier.make
 					-- relative to a feature "1.2.3" is always the assigner
-					l_modifier.add (basic_operators.replace_with_string (create {AST_PATH}.make_from_string(l_transformable.target_node,"1.2.3"), preferences.setter_name))
-					l_modifier.apply_to (l_transformable)
+					l_transformable.apply_modification (basic_operators.replace_with_string (create {AST_PATH}.make_from_string(l_transformable,"1.2.3"), preferences.setter_name))
 
 					-- extract original comment
 					l_comment := ast_tools.extract_feature_comments (l_feat_ast, l_matchlist)
@@ -176,14 +173,14 @@ feature {NONE} -- Implementation
 					l_append_text := "%N"
 
 					l_append_text.append	(	ast_tools.commented_feature_to_string (
-													setter_generator.transformation_result.target_node,
+													setter_generator.transformation_result,
 													" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'.")
 											)
 					l_append_text.append("%N%T")
 
 					if preferences.use_as_assigner then
 						l_old_feat_text := ast_tools.commented_feature_to_string (
-													l_modifier.modified_ast.target_node,
+													l_transformable,
 													l_comment)
 
 						l_feat_ast.replace_text ("%N"+l_old_feat_text+l_append_text, l_matchlist)
