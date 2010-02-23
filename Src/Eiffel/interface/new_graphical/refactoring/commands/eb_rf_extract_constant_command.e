@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {EB_RF_EXTRACT_CONSTANT_COMMAND}."
-	author: ""
+	description: "Command for the extract constant refactoring."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -26,7 +25,7 @@ inherit
 
 	SHARED_SERVER
 
-	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_TOOLS
 
 create
 	make
@@ -112,7 +111,7 @@ feature -- Execution
 				l_matchlist := match_list_server.item (eif_class_i.compiled_class.class_id)
 				displayed_text := window.ui.current_editor.text_displayed
 
-				path_tools.constant_node_from_x_y (eif_class_i.compiled_class.ast, l_matchlist, displayed_text.cursor.x_in_characters, displayed_text.cursor.y_in_lines)
+				path_tools.find_constant_node_from_x_y (eif_class_i.compiled_class.ast, l_matchlist, displayed_text.cursor.x_in_characters, displayed_text.cursor.y_in_lines)
 
 				if not path_tools.found then
 					prompts.show_info_prompt ("Move the cursor to a constant to extract.", window.window, Void)

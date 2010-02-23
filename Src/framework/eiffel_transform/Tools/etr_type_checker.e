@@ -1,6 +1,5 @@
 note
-	description: "Computes the type of expressions. Based on AFX_EXPRESSION_TYPE_CHECKER"
-	author: ""
+	description: "Type operations."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -23,7 +22,7 @@ inherit
 		export
 			{NONE} all
 		end
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
 		rename
 			error_handler as etr_error_handler

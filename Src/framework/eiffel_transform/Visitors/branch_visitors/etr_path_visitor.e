@@ -1,25 +1,65 @@
 note
-	description: "Shared ast tools."
-	author: "$Author$"
+	description: "Processes an ast while keeping track of path information."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_SHARED_AST_TOOLS
+	ETR_PATH_VISITOR
+inherit
+	ETR_BRANCH_VISITOR
 
-feature {NONE} -- Shared
+feature {NONE} -- Implementation
 
-	ast_tools: ETR_AST_TOOLS
-			-- shared instance of ETR_AST_TOOLS
-		once
-			create Result
+	current_path: AST_PATH
+			-- The path we're currently at
+
+	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
+			-- process an n-way branch with parent `a_parent' and branches `br'
+		local
+			i: INTEGER
+			l_prev_path: AST_PATH
+		do
+			from
+				i:=1
+			until
+				i>br.count
+			loop
+				if attached {AST_EIFFEL}br.item (i) as item then
+					l_prev_path := current_path.twin
+					create current_path.make_from_parent (current_path, i)
+					item.process (Current)
+					current_path := l_prev_path
+				end
+				i:=i+1
+			end
 		end
 
-	ast_stats: ETR_AST_STATS
-			-- shared instance of ETR_AST_STATS
-		once
-			create Result
+feature {AST_EIFFEL} -- Roundtrip
+
+	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
+			-- process an EIFFEL_LIST
+		local
+			l_cursor: INTEGER
+			i: INTEGER
+			l_prev_path: AST_PATH
+		do
+			from
+				l_cursor := l_as.index
+				i:=1
+				l_as.start
+			until
+				l_as.after
+			loop
+				l_prev_path := current_path.twin
+				create current_path.make_from_parent (current_path, i)
+				l_as.item.process (Current)
+				current_path := l_prev_path
+				l_as.forth
+				i:=i+1
+			end
+			l_as.go_i_th (l_cursor)
 		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

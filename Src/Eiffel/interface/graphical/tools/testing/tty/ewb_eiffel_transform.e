@@ -17,7 +17,7 @@ inherit
 	REFACTORING_HELPER
 	ETR_COMPILATION_HELPER
 	ETR_SHARED_TRANSFORMABLE_FACTORY
-	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_TOOLS
 
 feature -- Properties
 
@@ -35,6 +35,9 @@ feature -- Properties
 		do
 			Result := 'e'
 		end
+
+	hier_out: ETR_AST_HIERARCHY_OUTPUT
+			-- Used to force the class to compile
 
 	test_context_transformation
 			-- test context transformations
@@ -72,8 +75,7 @@ feature -- Properties
 									"end", a1_context )
 
 			-- transform to `a2_context'
-			basic_operators.transform_to_context (a1_instr, a2_context)
-			a2_instr := basic_operators.transformation_result
+			a2_instr := a1_instr.transform_to_context (a2_context)
 
 			-- print transformed instruction
 			io.put_string (ast_tools.ast_to_string(a2_instr.target_node))
@@ -144,9 +146,9 @@ feature -- Properties
 									"end", a1_context )
 
 			-- transform to new context with renaming
-			basic_operators.transform_to_context (trans, renamer.transformation_result.context)
+			trans := trans.transform_to_context (renamer.transformation_result.context)
 
-			io.put_string (ast_tools.ast_to_string(basic_operators.transformation_result.target_node))
+			io.put_string (trans.out)
 		end
 
 	test_setter_gen

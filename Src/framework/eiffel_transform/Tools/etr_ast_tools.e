@@ -1,6 +1,5 @@
 note
 	description: "Some tools to use with AST's"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ERF_EXTRACT_METHOD_PREFERENCES}."
-	author: ""
+	description: "Preferences for the extract method refactoring."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Processes a deferred class and makes all features effective"
-	author: "$Author$"
+	description: "Effective class generator: Processes a deferred class and makes all features effective."
 	date: "$Date$"
 	revision: "$Revision$"
 

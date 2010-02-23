@@ -1,6 +1,5 @@
 note
-	description: "Error handling for EiffelTransform classes"
-	author: "$Author$"
+	description: "Error handling for EiffelTransform classes."
 	date: "$Date$"
 	revision: "$Revision$"
 

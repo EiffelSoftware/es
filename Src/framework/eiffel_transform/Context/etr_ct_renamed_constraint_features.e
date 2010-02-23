@@ -1,12 +1,11 @@
 note
 	description: "Respresents renamings in constraints to be used by ETR_CONTEXT_TRANSFORMER"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_CT_RENAMED_CONSTRAINT_FEATURES
-create {ETR_BASIC_OPS}
+create {ETR_TRANSFORM_CONTEXT}
 	make
 
 feature  -- Access

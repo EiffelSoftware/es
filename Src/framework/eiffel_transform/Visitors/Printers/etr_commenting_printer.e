@@ -1,6 +1,5 @@
 note
-	description: "Prints a feature with comment"
-	author: "$Author$"
+	description: "Prints a feature with comment."
 	date: "$Date$"
 	revision: "$Revision$"
 

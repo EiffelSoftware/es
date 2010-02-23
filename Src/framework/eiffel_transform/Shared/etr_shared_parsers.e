@@ -1,6 +1,5 @@
 note
-	description: "EiffelTransform shared parsers"
-	author: "$Author$"
+	description: "EiffelTransform shared parsers."
 	date: "$Date$"
 	revision: "$Revision$"
 

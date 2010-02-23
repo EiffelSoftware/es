@@ -1,6 +1,5 @@
 note
-	description: "Prints an ast while replacing assigment attempts with object tests"
-	author: "$Author$"
+	description: "Rewriting: Replaces assigment attempts with object tests."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,8 +11,7 @@ inherit
 			process_reverse_as,
 			process_feature_as
 		end
-	ETR_SHARED_TYPE_CHECKER
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_BASIC_OPERATORS
 	REFACTORING_HELPER
 		export

@@ -1,6 +1,5 @@
 note
-	description: "Replaces ast nodes"
-	author: "$Author$"
+	description: "Modifies ast nodes"
 	date: "$Date$"
 	revision: "$Revision$"
 

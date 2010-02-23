@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_ELSEIF_REMOVING_VISITOR}."
-	author: ""
+	description: "Rewriting: Replaces elseifs by if/else."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +16,7 @@ inherit
 		export
 			{NONE} all
 		end
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_BASIC_OPERATORS
 
 feature -- Access

@@ -1,6 +1,5 @@
 note
-	description: "Replaces deferred by do in features it prints and uses fully resolved return types"
-	author: "$Author$"
+	description: "Effective class generator: Replaces deferred by do in features it prints and uses fully resolved return types."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -14,7 +13,7 @@ inherit
 			process_body_as,
 			process_routine_as
 		end
-	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_TOOLS
 create
 	make_with_output
 

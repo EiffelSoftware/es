@@ -1,16 +1,10 @@
 note
 	description: "Shared transformable factory."
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_SHARED_TRANSFORMABLE_FACTORY
-inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 
 feature {NONE} -- Shared
 

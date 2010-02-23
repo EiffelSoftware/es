@@ -1,11 +1,10 @@
 note
-	description: "Performs renamings as transformations between contexts"
-	author: "$Author$"
+	description: "Context transformation: Performs renamings and prints the result."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_CONTEXT_TRANSFORMER
+	ETR_CONTEXT_TRANSFORMING_VISITOR
 inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine

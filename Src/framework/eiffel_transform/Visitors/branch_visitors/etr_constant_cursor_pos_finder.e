@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_CONSTANT_CURSOR_POS_FINDER}."
-	author: "$Author$"
+	description: "Constant extraction: Finds a constant by x/y positions in the matchlist."
 	date: "$Date$"
 	revision: "$Revision$"
 

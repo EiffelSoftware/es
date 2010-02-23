@@ -1,6 +1,5 @@
 note
-	description: "Represents the context of a feature"
-	author: "$Author$"
+	description: "Feature-context of a transformable."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,7 +11,7 @@ inherit
 		export
 			{NONE} all
 		end
-	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_TOOLS
 create
 	make,
 	make_from_other
@@ -247,6 +246,7 @@ invariant
 	locals_valid: has_locals implies attached locals
 	arguments_valid: has_arguments implies attached arguments
 	type_valid: has_return_value implies attached type
+	has_class_context: class_context /= void
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

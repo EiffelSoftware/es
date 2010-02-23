@@ -1,7 +1,5 @@
 note
-	description: "Check if a a string is a valid instruction."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Checks if an instruction is valid."
 	date: "$Date$"
 	revision: "$Revision$"
 

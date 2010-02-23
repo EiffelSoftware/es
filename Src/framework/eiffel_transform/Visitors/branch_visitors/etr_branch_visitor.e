@@ -1,6 +1,5 @@
 note
-	description: "Visits all nodes with branches and runs process_n_way_branch"
-	author: "$Author$"
+	description: "Visits all nodes with branches."
 	date: "$Date$"
 	revision: "$Revision$"
 

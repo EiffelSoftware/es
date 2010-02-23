@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ERF_EXTRACT_METHOD_DIALOG}."
-	author: ""
+	description: "Dialog for the extract constant refactoring."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_PATH_FINDER}."
-	author: "$Author$"
+	description: "Finds stuff in an ast with no path information."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,10 +7,6 @@ deferred class
 	ETR_PATH_FINDER
 inherit
 	ETR_BRANCH_VISITOR
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 
 feature -- Access
 
@@ -32,7 +27,6 @@ feature -- Operation
 			found := false
 			found_path := void
 			found_node := void
-
 
 			create current_path.make_as_root (a_ast)
 

@@ -1,12 +1,11 @@
 note
 	description: "Represents a changed feature to be processed by ETR_CONTEXT_TRANSFORMER"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_CT_CHANGED_FEATURE
-create {ETR_BASIC_OPS}
+create {ETR_TRANSFORM_CONTEXT}
 	make
 
 feature  -- Access

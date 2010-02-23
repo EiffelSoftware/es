@@ -1,6 +1,5 @@
 note
-	description: "Refactoring that pretty prints a feature"
-	author: ""
+	description: "Refactoring that pretty prints a feature."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -24,7 +23,7 @@ inherit
 			{NONE} all
 		end
 
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	SHARED_ERROR_HANDLER
 
 create

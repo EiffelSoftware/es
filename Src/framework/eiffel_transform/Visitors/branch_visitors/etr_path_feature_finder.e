@@ -1,66 +1,37 @@
 note
-	description: "Summary description for {ETR_PATH_VISITOR}."
-	author: ""
+	description: "Returns the feature-name a path is in."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_PATH_VISITOR
+	ETR_PATH_FEATURE_FINDER
 inherit
-	ETR_BRANCH_VISITOR
-
-feature {NONE} -- Implementation
-
-	current_path: AST_PATH
-			-- The path we're currently at
-
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
-		local
-			i: INTEGER
-			l_prev_path: AST_PATH
-		do
-			from
-				i:=1
-			until
-				i>br.count
-			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
-					l_prev_path := current_path.twin
-					create current_path.make_from_parent (current_path, i)
-					item.process (Current)
-					current_path := l_prev_path
-				end
-				i:=i+1
-			end
+	ETR_LINE_PATH_FINDER
+		redefine
+			process_feature_as
 		end
+create
+	make_with_match_list
+
+feature -- Access
+
+	is_feature: BOOLEAN
+			-- Did the search end in a feature?
+
+	feature_name: STRING
+			-- Name of the feature
 
 feature {AST_EIFFEL} -- Roundtrip
 
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
-			l_prev_path: AST_PATH
+	process_feature_as (l_as: FEATURE_AS)
 		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_prev_path := current_path.twin
-				create current_path.make_from_parent (current_path, i)
-				l_as.item.process (Current)
-				current_path := l_prev_path
-				l_as.forth
-				i:=i+1
+			is_feature := true
+			feature_name := l_as.feature_name.name
+			Precursor(l_as)
+			if not found then
+				is_feature := false
 			end
-			l_as.go_i_th (l_cursor)
 		end
-
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

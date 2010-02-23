@@ -1,6 +1,5 @@
 note
 	description: "Represents an object local for easy access by EiffelTransform"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Refactoring that extracts a method"
-	author: ""
+	description: "Refactoring that extracts a constant."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,8 +21,7 @@ inherit
 	SHARED_SERVER
 	SHARED_ERROR_HANDLER
 
-	ETR_SHARED_AST_TOOLS
-	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_OPERATORS
 	ETR_SHARED_LOGGER
 

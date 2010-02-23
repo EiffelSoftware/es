@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_AST_STATS}."
-	author: ""
+	description: "Computes some stats of asts."
 	date: "$Date$"
 	revision: "$Revision$"
 

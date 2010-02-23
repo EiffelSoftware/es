@@ -1,6 +1,5 @@
 note
 	description: "Replaces all deferred features by empty implementations"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

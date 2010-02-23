@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_CONSTANT_FINDER}."
-	author: ""
+	description: "Constant extraction: Extracts all matching constants from an ast."
 	date: "$Date$"
 	revision: "$Revision$"
 

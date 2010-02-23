@@ -1,13 +1,12 @@
 note
 	description: "Represents an argument or local with a name and a type"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_TYPED_VAR
 inherit
-	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_TOOLS
 create
 	make
 
@@ -34,7 +33,7 @@ feature -- Access
 
 	original_type: TYPE_A
 			-- Type of `Current' as it was written
-			
+
 feature -- Modification
 
 	set_name(a_new_name: like name)

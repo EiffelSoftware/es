@@ -1,6 +1,5 @@
 note
-	description: "Prints an ast while replacing assigment attempts with object tests"
-	author: "$Author$"
+	description: "Extracts object test-locals from an ast."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,7 +14,7 @@ inherit
 			process_feature_as,
 			process_bin_and_then_as
 		end
-	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_TOOLS
 create
 	make
 

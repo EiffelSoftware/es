@@ -1,6 +1,5 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform."
-	author: "$Author$"
+	description: "Context of a transformable."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -32,6 +31,9 @@ feature {NONE} -- Creation
 		do
 			is_empty := true
 		end
+
+invariant
+	valid: not is_empty implies class_context /= void
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -1,6 +1,5 @@
 note
-	description: "Locates a node based on a root and a path expression"
-	author: "$Author$"
+	description: "Locates a node based on a root and a path expression."
 	date: "$Date$"
 	revision: "$Revision$"
 

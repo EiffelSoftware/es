@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {EB_RF_MAKE_EFFECTIVE_COMMAND}."
-	author: ""
+	description: "Command for the make effective refactoring."
 	date: "$Date$"
 	revision: "$Revision$"
 class

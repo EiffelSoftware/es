@@ -1,6 +1,5 @@
 note
 	description: "Set of modifications, grouped by parent and insertions sorted by branch id."
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 class

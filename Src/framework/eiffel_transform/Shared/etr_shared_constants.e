@@ -1,6 +1,5 @@
 note
-	description: "Shared constants"
-	author: "$Author$"
+	description: "Shared constants."
 	date: "$Date$"
 	revision: "$Revision$"
 

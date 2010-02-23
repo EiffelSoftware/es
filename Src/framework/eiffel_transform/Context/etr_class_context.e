@@ -1,6 +1,5 @@
 note
-	description: "Context of an AST that is to be modified by EiffelTransform."
-	author: "$Author$"
+	description: "Class-context of a transformable."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Iterates over all nodes and creates path-indexes"
-	author: "$Author$"
+	description: "Iterates over all nodes and creates path-indexes."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
 	description: "Represents a modification in an ast"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_REWRITING_OPS}."
-	author: ""
+	description: "Operators that rewrite code using different constructs."
 	date: "$Date$"
 	revision: "$Revision$"
 

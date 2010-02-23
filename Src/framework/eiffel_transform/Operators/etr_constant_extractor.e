@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_CONSTANT_EXTRACTOR}."
-	author: ""
+	description: "Operator for the extract constant-refactoring"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +16,7 @@ inherit
 	ETR_SHARED_BASIC_OPERATORS
 	ETR_SHARED_TRANSFORMABLE_FACTORY
 	ETR_SHARED_PARSERS
-	ETR_SHARED_TYPE_CHECKER
+	ETR_SHARED_TOOLS
 
 feature {NONE} -- Implementation
 

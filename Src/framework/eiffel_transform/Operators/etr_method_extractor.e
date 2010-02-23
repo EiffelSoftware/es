@@ -1,6 +1,5 @@
 note
-	description: "Extracts a method"
-	author: "$Author$"
+	description: "Extracts a method."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,8 +15,7 @@ inherit
 		export
 			{NONE} all
 		end
-	ETR_SHARED_TYPE_CHECKER
-	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
 	ETR_SHARED_LOGGER
 
@@ -661,7 +659,8 @@ feature -- Operations
 			-- Check if valid context and valid ast!
 			if attached a_feature.context.class_context.written_in_features_by_name[a_context_feature] as l_ft_ctxt then
 				context := l_ft_ctxt
-				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.find_node (a_start_path.parent_path, a_start_path.root) as l_instrs then
+				path_tools.find_node (a_start_path.parent_path, a_start_path.root)
+				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.last_ast as l_instrs then
 					l_instr_list := l_instrs
 				else
 					error_handler.add_error (Current, "extract_method", "Start path is not an instruction")

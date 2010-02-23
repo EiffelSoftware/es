@@ -1,6 +1,5 @@
 note
-	description: "Prints an ast while depending purely on structure information (no matchlist needed)"
-	author: "$Author$"
+	description: "Prints an ast while depending purely on structure information (no matchlist needed)."
 	date: "$Date$"
 	revision: "$Revision$"
 

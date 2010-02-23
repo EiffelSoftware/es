@@ -1,6 +1,5 @@
 note
-	description: "Refactoring that makes a class effective by using empty implementations"
-	author: ""
+	description: "Refactoring that makes a class effective by using empty implementations."
 	date: "$Date$"
 	revision: "$Revision$"
 class
@@ -20,7 +19,7 @@ inherit
 	SHARED_SERVER
 	SHARED_ERROR_HANDLER
 	ETR_SHARED_OPERATORS
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 
 create
 	make

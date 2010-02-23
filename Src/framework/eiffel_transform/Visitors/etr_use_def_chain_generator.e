@@ -1,6 +1,5 @@
 note
-	description: "Generates a use-define chain of an instruction-list in a feature-context"
-	author: "$Author$"
+	description: "Method extraction: Generates a use-define chain of an instruction-list in a feature-context."
 	date: "$Date$"
 	revision: "$Revision$"
 

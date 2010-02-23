@@ -1,21 +1,12 @@
 note
-	description: "Transformable AST and context"
-	author: "$Author$"
+	description: "Transformable AST and context."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_TRANSFORMABLE
 inherit
-	ETR_SHARED_PATH_TOOLS
-		redefine
-			out
-		end
-	ETR_SHARED_AST_TOOLS
-		redefine
-			out
-		end
-	ETR_SHARED_BASIC_OPERATORS
+	ETR_SHARED_TOOLS
 		redefine
 			out
 		end
@@ -38,6 +29,14 @@ feature -- Conversion
 			Result := target_node
 		end
 
+feature {NONE} -- Implementation
+
+	context_transformer: ETR_TRANSFORM_CONTEXT
+			-- shared instance of ETR_TRANSFORM_CONTEXT
+		once
+			create Result
+		end
+
 feature -- Operation
 
 	transform_to_context (a_other_context: like context): like Current
@@ -46,8 +45,8 @@ feature -- Operation
 			is_valid: is_valid
 			valid_context: a_other_context /= void
 		do
-			basic_operators.transform_to_context (Current, a_other_context)
-			Result := basic_operators.transformation_result
+			context_transformer.transform_to_context (Current, a_other_context)
+			Result := context_transformer.transformation_result
 		end
 
 	apply_modifications (a_modification_list: LIST[ETR_AST_MODIFICATION])

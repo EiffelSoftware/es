@@ -1,7 +1,5 @@
 note
-	description: "Check if a a string is a valid expression."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Checks if an expression is valid."
 	date: "$Date$"
 	revision: "$Revision$"
 

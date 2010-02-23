@@ -1,6 +1,5 @@
 note
-	description: "Prints an ast structure to a normal text representation"
-	author: "$Author$"
+	description: "Prints an ast structure to a normal text representation."
 	date: "$Date$"
 	revision: "$Revision$"
 

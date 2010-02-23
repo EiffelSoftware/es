@@ -1,12 +1,11 @@
 note
 	description: "Represents a changed argument or local variable to be processed by ETR_CONTEXT_TRANSFORMER"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_CT_CHANGED_ARG_LOCAL
-create
+create {ETR_TRANSFORM_CONTEXT}
 	make_changed_type,
 	make_changed_name,
 	make_changed_name_type

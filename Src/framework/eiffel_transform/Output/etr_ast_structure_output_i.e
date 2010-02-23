@@ -1,6 +1,5 @@
 note
-	description: "Interface used by ETR_AST_STRUCTURE_PRINTER to print an ast structure"
-	author: "$Author$"
+	description: "Interface used by ETR_AST_STRUCTURE_PRINTER to print an ast structure."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
 	description: "Method extraction: Prints the old method minus the extracted part."
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

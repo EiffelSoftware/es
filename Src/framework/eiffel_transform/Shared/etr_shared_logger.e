@@ -1,6 +1,5 @@
 note
 	description: "Shared logger"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

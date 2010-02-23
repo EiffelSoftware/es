@@ -1,36 +1,43 @@
 note
-	description: "Summary description for {ETR_PATH_FEATURE_FINDER}."
-	author: ""
+	description: "Method extraction: Returns the path that belongs to a line."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_PATH_FEATURE_FINDER
-inherit
 	ETR_LINE_PATH_FINDER
-		redefine
-			process_feature_as
+inherit
+	ETR_PATH_FINDER
+	REFACTORING_HELPER
+		export
+			{NONE} all
 		end
 create
 	make_with_match_list
 
-feature -- Access
+feature -- Operation
 
-	is_feature: BOOLEAN
-			-- Did the search end in a feature?
-
-	feature_name: STRING
-			-- Name of the feature
-
-feature {AST_EIFFEL} -- Roundtrip
-
-	process_feature_as (l_as: FEATURE_AS)
+	init(a_line: like target_line)
+			-- Set with `a_line'
 		do
-			is_feature := true
-			feature_name := l_as.feature_name.name
-			Precursor(l_as)
-			if not found then
-				is_feature := false
+			target_line := a_line
+		end
+
+feature {NONE} -- Implementation
+
+	target_line: INTEGER
+			-- The line we're looking for
+
+	is_target(a_ast: AST_EIFFEL): BOOLEAN
+			-- is `a_ast' the target?
+		do
+			if not attached {INSTRUCTION_AS}a_ast then
+				Result := False
+			elseif not a_ast.is_text_available (match_list) then
+				Result := False
+			elseif a_ast.first_token (match_list).line = target_line then
+				Result := True
+			elseif a_ast.last_token (match_list).line = target_line then
+				Result := True
 			end
 		end
 note

@@ -1,6 +1,5 @@
 note
-	description: "EiffelTransform Operators"
-	author: "$Author$"
+	description: "Shared EiffelTransform operators"
 	date: "$Date$"
 	revision: "$Revision$"
 

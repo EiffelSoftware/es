@@ -1,6 +1,5 @@
 note
 	description: "Renames feature arguments and locals"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,7 +11,6 @@ inherit
 			{NONE} all
 		end
 	ETR_SHARED_ERROR_HANDLER
-	ETR_SHARED_BASIC_OPERATORS
 
 feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
@@ -35,9 +33,7 @@ feature -- Operation
 						l_resulting_context.set_modified
 
 						-- transform to the new context
-						basic_operators.transform_to_context (a_transformable, l_resulting_context)
-
-						transformation_result := basic_operators.transformation_result
+						transformation_result := a_transformable.transform_to_context (l_resulting_context)
 					else
 						error_handler.add_error (Current, "rename_local", "No local with name "+a_new_name)
 					end
@@ -66,9 +62,7 @@ feature -- Operation
 						l_resulting_context.set_modified
 
 						-- transform to the new context
-						basic_operators.transform_to_context (a_transformable, l_resulting_context)
-
-						transformation_result := basic_operators.transformation_result
+						transformation_result := a_transformable.transform_to_context (l_resulting_context)
 					else
 						error_handler.add_error (Current, "rename_argument", "No argument with name "+a_new_name)
 					end
@@ -100,9 +94,7 @@ feature -- Operation
 						l_resulting_context.set_modified
 
 						-- transform to the new context
-						basic_operators.transform_to_context (a_function, l_resulting_context)
-
-						transformation_result := basic_operators.transformation_result
+						transformation_result := a_function.transform_to_context (l_resulting_context)
 					else
 						error_handler.add_error (Current, "rename_argument_at_position", "No argument at position "+an_argument_position.out)
 					end

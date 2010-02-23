@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {EB_RF_EXTRACT_METHOD_COMMAND}."
-	author: ""
+	description: "Command for the create setter refactoring."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_LOGGER}."
-	author: ""
+	description: "Simple debug logger."
 	date: "$Date$"
 	revision: "$Revision$"
 

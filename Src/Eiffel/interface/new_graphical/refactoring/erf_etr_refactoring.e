@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ERF_ETR_REFACTORING}."
-	author: ""
+	description: "Refactoring that used EiffelTransform."
 	date: "$Date$"
 	revision: "$Revision$"
 

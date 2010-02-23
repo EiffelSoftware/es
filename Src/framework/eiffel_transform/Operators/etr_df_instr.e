@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_DF_INSTR}."
-	author: ""
+	description: "An instruction in dataflow-analysis used by method extraction."
 	date: "$Date$"
 	revision: "$Revision$"
 

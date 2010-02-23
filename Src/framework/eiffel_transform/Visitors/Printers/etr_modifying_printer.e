@@ -1,6 +1,5 @@
 note
-	description: "Prints an ast an incorporates modifications"
-	author: "$Author$"
+	description: "Prints an ast an incorporates modifications."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,8 +15,7 @@ inherit
 			process_list_with_separator,
 			processing_needed
 		end
-	ETR_SHARED_AST_TOOLS
-	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_TOOLS
 create
 	make
 
@@ -146,7 +144,8 @@ feature {NONE} -- Creation
 					repl.extend (modifications.item)
 				elseif modifications.item.is_list_put_ith then
 					-- convert to replace!
-					if attached {EIFFEL_LIST[AST_EIFFEL]}path_tools.find_node (modifications.item.location, modifications.item.location.root) as list and then list.count>=modifications.item.list_position then
+					path_tools.find_node (modifications.item.location, modifications.item.location.root)
+					if attached {EIFFEL_LIST[AST_EIFFEL]}path_tools.last_ast as list and then list.count>=modifications.item.list_position then
 						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, ast_tools.ast_to_string(modifications.item.new_transformable.target_node)))
 					else
 						check false end

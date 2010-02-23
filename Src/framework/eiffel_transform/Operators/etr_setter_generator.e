@@ -1,6 +1,5 @@
 note
-	description: "Creates a setter for an attribute"
-	author: "$Author$"
+	description: "Creates a setter for an attribute."
 	date: "$Date$"
 	revision: "$Revision$"
 

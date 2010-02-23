@@ -1,6 +1,5 @@
 note
 	description: "DEBUG. Some features to help use custom asts in compilation"
-	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,7 +8,7 @@ class
 inherit
 	SHARED_SERVER
 	SHARED_DEGREES
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 
 feature -- Operations
 	reparse_class_by_name(a_class: STRING)

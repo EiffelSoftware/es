@@ -1,6 +1,5 @@
 note
-	description: "Helper functions for parsing"
-	author: "$Author$"
+	description: "Helper functions for parsing."
 	date: "$Date$"
 	revision: "$Revision$"
 

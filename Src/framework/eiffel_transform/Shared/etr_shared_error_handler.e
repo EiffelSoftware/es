@@ -1,6 +1,5 @@
 note
-	description: "Shared error handler"
-	author: "$Author$"
+	description: "Shared error handler."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ETR_LOOP_REWRITING_VISITOR}."
-	author: ""
+	description: "Rewriting: Removes if-branches."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,7 +12,7 @@ inherit
 		redefine
 			process_if_as
 		end
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_BASIC_OPERATORS
 
 feature -- Access

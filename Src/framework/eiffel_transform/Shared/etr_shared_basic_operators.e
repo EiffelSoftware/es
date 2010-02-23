@@ -1,6 +1,5 @@
 note
-	description: "Shared basic operators"
-	author: "$Author$"
+	description: "Shared basic operators."
 	date: "$Date$"
 	revision: "$Revision$"
 

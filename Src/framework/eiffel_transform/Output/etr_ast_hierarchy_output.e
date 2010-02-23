@@ -1,13 +1,12 @@
 note
-	description: "Prints an ast structure to a hierarchy tree"
-	author: "$Author$"
+	description: "Prints an ast structure to a tree."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETR_AST_HIERARCHY_OUTPUT
 inherit
-	ETR_AST_STRUCTURE_OUTPUT_I
+	ETR_AST_STRING_OUTPUT
 		redefine
 			enter_block,
 			exit_block,

@@ -1,6 +1,5 @@
 note
-	description: "Refactoring that creates a setter for an attribute"
-	author: ""
+	description: "Refactoring that creates a setter for an attribute."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -27,7 +26,7 @@ inherit
 
 	SHARED_ERROR_HANDLER
 
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_OPERATORS
 
 create

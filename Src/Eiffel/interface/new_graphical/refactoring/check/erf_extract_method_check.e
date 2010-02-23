@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {ERF_EXTRACT_METHOD_CHECK}."
-	author: ""
+	description: "Checks for the extract method refactoring."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,7 +9,7 @@ class
 inherit
 	ERF_CHECK
 	SHARED_SERVER
-	ETR_SHARED_PATH_TOOLS
+	ETR_SHARED_TOOLS
 
 create
 	make
@@ -49,7 +48,8 @@ feature -- Basic operation
 			l_class_ast := class_c.ast
 
 			-- Get current feature from line number
-			l_target_feature_name := path_tools.feature_from_line (l_class_ast, l_matchlist, start_line)
+			path_tools.find_feature_from_line (l_class_ast, l_matchlist, start_line)
+			l_target_feature_name := path_tools.last_feature_name
 
 			if l_target_feature_name = void then
 				success := False
@@ -65,14 +65,16 @@ feature -- Basic operation
 				l_feat_ast := l_feat_transformable.target_node
 
 				-- Convert line numbers to paths
-				l_start_path := path_tools.path_from_line (l_orig_feat, l_matchlist, start_line)
+				path_tools.find_path_from_line (l_orig_feat, l_matchlist, start_line)
+				l_start_path := path_tools.last_path
 				if l_start_path = void or else l_start_path.is_root then
 					success := False
 					error_message := interface_names.l_invalid_start_position
 				else
 					l_start_path.set_root (l_feat_ast)
 
-					l_end_path := path_tools.path_from_line (l_orig_feat, l_matchlist, end_line)
+					path_tools.find_path_from_line (l_orig_feat, l_matchlist, end_line)
+					l_end_path := path_tools.last_path
 
 					if l_end_path = void or else l_end_path.is_root then
 						success := False
