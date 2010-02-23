@@ -49,7 +49,7 @@ feature {NONE} -- Process
 				else
 					io.put_string ("Customer-"+id.out+" will come back later.%N")
 					-- no chair is free, come back later
---					scoop_sleep(10000)
+					(create {EXECUTION_ENVIRONMENT}).sleep(10000*1000000)
 				end
 			end
 

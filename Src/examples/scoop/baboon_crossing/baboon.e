@@ -97,8 +97,8 @@ feature {NONE} -- Implementation
 		do
 			io.put_string (out + " traversing%N")
 			-- wait randomly sometime for your traverse
-			random.forth
-			-- scoop_sleep (random_integer (500, 1500))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (random_integer (500, 1500) * 1000000)
 		end
 
 	unmount (a_rope: separate ROPE) is

@@ -35,8 +35,8 @@ feature -- Initialization
 			create t_baboon.make_with_rope (i, rope)
 			launch_baboon (t_baboon)
 			-- put some delay between baboons generation
-			random.forth
-			-- scoop_sleep (random_integer (100, 300))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (random_integer (100, 300) * 1000000)
 			i := i + 1
 		end
 	end

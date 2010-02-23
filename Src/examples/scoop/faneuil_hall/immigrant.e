@@ -23,8 +23,8 @@ feature {NONE} -- Implementation
 			-- Do a process step.
 		do
 			enter (hall)
-			random.forth
---			scoop_sleep (random_integer (250, 500))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (1000000 * random_integer (250, 500))
 			check_in (hall)
 			sit_down (hall)
 			swear(hall)

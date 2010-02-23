@@ -30,13 +30,13 @@ feature {NONE} -- Implementation
 	step is
 			-- Do a process step.
 		do
-			random.forth
---			scoop_sleep (random_integer (1000, 2000))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (1000000 * random_integer (1000, 2000))
 			enter (hall)
 			take_place(hall)
 			confirm (hall)
-			random.forth
---			scoop_sleep (random_integer (250, 500))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (1000000 * random_integer (250, 500))
 			leave (hall)
 		end
 

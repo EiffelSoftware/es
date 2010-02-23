@@ -29,7 +29,7 @@ feature {CUSTOMER} -- Basic access
 			require
 				an_id >= 0
 			do
---				scoop_sleep (hair_cut_time)
+				(create {EXECUTION_ENVIRONMENT}).sleep (hair_cut_time * 1000000)
 				result := true
 			end
 

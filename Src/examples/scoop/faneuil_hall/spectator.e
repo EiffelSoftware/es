@@ -39,11 +39,11 @@ feature {NONE} -- Implementation
 	spectate is
 			-- Spectate.
 		do
-			random.forth
---			scoop_sleep (random_integer (500, 1000))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (1000000 * random_integer (500, 1000))
 			io.put_string (out + " spectating%N")
-			random.forth
---			scoop_sleep (random_integer (500, 1000))
+			random.forth;
+			(create {EXECUTION_ENVIRONMENT}).sleep (1000000 * random_integer (500, 1000))
 		end
 
 	leave (a_hall: separate HALL) is
