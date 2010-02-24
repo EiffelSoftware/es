@@ -1180,12 +1180,31 @@ feature {NONE} -- Instructions processing
 
 feature {NONE} -- Eiffel list processing
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- Reset the current levels_layer after each instruction, assertion or formal argument type declaration. Processing a type declaration can involve processing calls in anchor types.
-			-- Reset the object tests layer after each instruction or assertion.
+			-- Reset the current levels layer before each non-empty list of instructions, type declarations, or assertion clauses and after each instruction, assertion, or type declaration.
+			-- Levels layers are relevant in type declarations because processing a type declaration can involve processing calls in anchor types.
+			-- Reset the current object tests layer before each non-empty list of instructions or assertion clauses and after each instruction or assertion clause.
 		local
 			i, l_count: INTEGER
 		do
 			if l_as.count > 0 then
+				-- Reset the current levels layer before every list of instructions, type declarations, or assertion clauses.
+				if
+					{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
+					{l_type_declaration_list: EIFFEL_LIST [TYPE_DEC_AS]} l_as or
+					{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+				then
+					reset_current_levels_layer
+				end
+
+				-- Reset the current object tests layer before every list of instruction or assertion clauses.
+				if
+					{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
+					{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+				then
+					reset_current_object_tests_layer
+				end
+
+				-- Process each list element.
 				from
 					l_as.start
 					i := 1
@@ -1200,6 +1219,8 @@ feature {NONE} -- Eiffel list processing
 						safe_process (l_as.separator_list_i_th (i, match_list))
 						i := i + 1
 					end
+
+					-- Reset the current levels layer after each instruction, type declaration, or assertion clause.
 					if
 						{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
 						{l_type_declaration_list: EIFFEL_LIST [TYPE_DEC_AS]} l_as or
@@ -1207,12 +1228,15 @@ feature {NONE} -- Eiffel list processing
 					then
 						reset_current_levels_layer
 					end
+
+					-- Reset the current object tests layer after each instruction or assertion clause.
 					if
 						{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
 						{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
 					then
 						reset_current_object_tests_layer
 					end
+
 					l_as.forth
 				end
 			end
