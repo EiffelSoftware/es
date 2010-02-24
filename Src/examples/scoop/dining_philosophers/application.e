@@ -45,7 +45,7 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-	number_of_philosophers: INTEGER is 1
+	number_of_philosophers: INTEGER is 5
 
 	number_of_rounds: INTEGER is 30
 
