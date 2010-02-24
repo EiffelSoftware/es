@@ -174,10 +174,10 @@
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true">
 			<option debug="true">
 				<debug name="activity" enabled="false"/>
-				<debug name="scoop" enabled="true"/>
-				<debug name="scoop_client" enabled="true"/>
-				<debug name="scoop_client_assertions" enabled="true"/>
-				<debug name="scoop_client_assertions_ext" enabled="true"/>
+				<debug name="scoop" enabled="false"/>
+				<debug name="scoop_client" enabled="false"/>
+				<debug name="scoop_client_assertions" enabled="false"/>
+				<debug name="scoop_client_assertions_ext" enabled="false"/>
 			</option>
 		</library>
 		<library name="configuration_gui" location="$EIFFEL_SRC\framework\configuration\configuration_gui.ecf" readonly="false"/>
@@ -215,14 +215,7 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
-		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false" use_application_options="true">
-			<option debug="true">
-				<debug name="scoop" enabled="true"/>
-				<debug name="scoop_client" enabled="true"/>
-				<debug name="scoop_client_assertions" enabled="true"/>
-				<debug name="scoop_client_assertions_ext" enabled="true"/>
-			</option>
-		</library>
+		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false" use_application_options="true"/>
 		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf" readonly="false"/>
