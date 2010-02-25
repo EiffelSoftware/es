@@ -152,7 +152,9 @@ feature {NONE} -- Implementation
 				output.append_string (ti_New_line)
 			end
 
-			process_child (l_as.precondition, l_as, 2)
+			if processing_needed (l_as.precondition, l_as, 2) then
+				process_child (l_as.precondition, l_as, 2)
+			end
 
 			if processing_needed (l_as.locals, l_as, 3) then
 				is_locals_first_pass := true
@@ -171,7 +173,9 @@ feature {NONE} -- Implementation
 
 			process_child(l_as.routine_body, l_as, 4)
 
-			process_child (l_as.postcondition, l_as, 5)
+			if processing_needed (l_as.postcondition, l_as, 5) then
+				process_child (l_as.postcondition, l_as, 5)
+			end
 
 			if processing_needed (l_as.rescue_clause, l_as, 6) then
 				output.append_string(ti_rescue_keyword+ti_New_line)

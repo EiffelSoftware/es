@@ -1,10 +1,10 @@
 note
-	description: "Prints an ast structure to a tree."
+	description: "Prints an AST as xml."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_HIERARCHY_OUTPUT
+	ETR_AST_XML_OUTPUT
 inherit
 	ETR_AST_STRING_OUTPUT
 		redefine
@@ -12,13 +12,39 @@ inherit
 			exit_block,
 			enter_child,
 			exit_child,
+			make_with_indentation_string,
 			append_string
 		end
 create
 	make,
 	make_with_indentation_string
 
-feature -- Operations
+feature {NONE} -- Creation
+
+	make_with_indentation_string(an_indentation_string: like indentation_string)
+			-- Create with `an_indentation_string'
+		do
+			create node_stack.make
+			Precursor(an_indentation_string)
+		end
+
+feature -- Output
+
+	node_stack: LINKED_STACK[STRING]
+
+	append_string(a_string: STRING)
+			-- <precursor>
+		do
+			context.add_string (current_indentation.twin + "<text>%N")
+			current_indentation := current_indentation + indentation_string
+			context.add_string (current_indentation.twin + "<![CDATA[%N")
+			current_indentation := current_indentation + indentation_string
+			context.add_string (current_indentation.twin + a_string)
+			current_indentation.remove_tail (indentation_string.count)
+			context.add_string ("%N" + current_indentation.twin + "]]>%N")
+			current_indentation.remove_tail (indentation_string.count)
+			context.add_string (current_indentation.twin + "</text>%N")
+		end
 
 	enter_block
 			-- <precursor>
@@ -32,39 +58,39 @@ feature -- Operations
 			block_depth := block_depth - 1
 		end
 
-	enter_child(a_child: ANY)
+	exit_child
 			-- <precursor>
 		do
+			current_indentation.remove_tail (indentation_string.count)
+			context.add_string (current_indentation.twin+"</"+node_stack.item+">%N")
+			node_stack.remove
+		end
+
+	enter_child(a_child: ANY)
+			-- <precursor>
+		local
+			l_formatted_name: STRING
+		do
+			l_formatted_name := a_child.generating_type
+			-- remove any spaces
+			l_formatted_name.replace_substring_all (" ", "")
+
+			node_stack.put (l_formatted_name)
+
+			context.add_string (current_indentation.twin+"<"+l_formatted_name)
+
 			if attached {AST_EIFFEL}a_child as ast_child then
 				if attached ast_child.path then
-					context.add_string (
-						current_indentation.twin+a_child.generating_type+" (br:"+
-						ast_child.path.branch_id.out+";bp:"+ast_child.breakpoint_slot.out+")%N"
-					)
+					context.add_string (" branch_id=%""+ast_child.path.branch_id.out+"%" breakpoint_slot=%""+ast_child.breakpoint_slot.out+"%"")
 				else
-					context.add_string (
-						current_indentation.twin+a_child.generating_type+" (br:0;bp:"+ast_child.breakpoint_slot.out+")%N"
-					)
+					context.add_string (" breakpoint_slot=%""+ast_child.breakpoint_slot.out+"%"")
 				end
 			else
 				context.add_string (current_indentation.twin+a_child.generating_type+"%N")
 			end
+			context.add_string (">%N")
 
 			current_indentation := current_indentation + indentation_string
-		end
-
-	exit_child
-			-- <precursor>
-		do
-			if current_indentation.count >= indentation_string.count then
-				current_indentation.remove_tail (indentation_string.count)
-			end
-		end
-
-	append_string(a_string: STRING)
-			-- <precursor>
-		do
-			-- unused
 		end
 
 note

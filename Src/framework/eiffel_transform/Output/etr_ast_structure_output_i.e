@@ -47,6 +47,8 @@ feature -- Operations
 
 	enter_child(a_child: ANY)
 			-- Enters a new child
+		require
+			non_void: a_child /= void
 		deferred
 		end
 

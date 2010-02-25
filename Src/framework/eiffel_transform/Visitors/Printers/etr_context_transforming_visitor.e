@@ -152,14 +152,13 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
 			last_was_unqualified_or_current := true
-			process_child (l_as.call, l_as, 1)
-			output.append_string("%N")
+			Precursor(l_as)
 		end
 
 	process_expr_call_as (l_as: EXPR_CALL_AS)
 		do
 			last_was_unqualified_or_current := true
-			process_child (l_as.call, l_as, 1)
+			Precursor(l_as)
 		end
 
 	process_creation_as (l_as: CREATION_AS)
@@ -177,7 +176,10 @@ feature {AST_EIFFEL} -- Roundtrip
 				output.append_string (ti_dot)
 			end
 			last_was_unqualified_or_current := false
-			process_child (l_as.call, l_as, 3)
+			if processing_needed (l_as.call, l_as, 3) then
+				output.append_string (ti_dot)
+				process_child (l_as.call, l_as, 3)
+			end
 			output.append_string(ti_New_line)
 		end
 

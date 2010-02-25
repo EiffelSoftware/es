@@ -159,10 +159,6 @@ feature {NONE} -- Implementation
 			-- <precursor>
 		do
 			if is_in_breakpoint_slot then
-				if a_node.breakpoint_slot /= 0 then
-					io.put_integer (0)
-				end
-
 				a_node.set_breakpoint_slot (current_breakpoint_slot)
 			end
 		end

@@ -43,8 +43,11 @@ feature {NONE} -- Implementation
 
 feature -- Constants
 
-	default_indentation_string: like indentation_string is "%T"
+	default_indentation_string: STRING
 			-- The default indentation string
+		once
+			Result := "%T"
+		end
 
 feature -- Attributes
 

@@ -343,28 +343,26 @@ feature -- Properties
 			test_me("test7", "1.2.4.4.1.1.2.2", "1.2.4.4.1.1.2.2")
 		end
 
-	test_slot_init
+	test_xml_print
 		local
 			bp_vis: ETR_BP_SLOT_INITIALIZER
-			path_vis: ETR_AST_PATH_INITIALIZER
 			a1: CLASS_I
 			a1_ast: CLASS_AS
-			l_out: ETR_AST_HIERARCHY_OUTPUT
+			l_out: ETR_AST_XML_OUTPUT
 			l_printer: ETR_AST_STRUCTURE_PRINTER
 			l_textout: PLAIN_TEXT_FILE
+			l_trans: ETR_TRANSFORMABLE
 		do
 			a1 := universe.compiled_classes_with_name("M_EX").first
 			a1_ast := a1.compiled_class.ast
 			create bp_vis
-			create path_vis
-			bp_vis.init_from (a1_ast)
-			path_vis.process_from_root (a1_ast)
-
+			create l_trans.make_from_ast (a1_ast, create {ETR_CONTEXT}.make_empty, true)
+			bp_vis.init_from (l_trans)
 			create l_out.make
 			create l_printer.make_with_output (l_out)
-			l_printer.print_ast_to_output (a1_ast)
+			l_printer.print_ast_to_output (l_trans)
 
-			create l_textout.make_open_write ("E:\ETH\MasterThesis\evedev\Src\framework\eiffel_transform\hierout.txt")
+			create l_textout.make_open_write ((create {EXECUTION_ENVIRONMENT}).get("EIFFEL_SRC")+"\framework\eiffel_transform\testout.xml")
 			l_textout.put_string (l_out.string_representation)
 			l_textout.close
 		end
@@ -381,7 +379,7 @@ feature -- Properties
 			test_typechecker
 			test_me_all
 			test_branch_removal
-			test_slot_init
+			test_xml_print
 		end
 
 note

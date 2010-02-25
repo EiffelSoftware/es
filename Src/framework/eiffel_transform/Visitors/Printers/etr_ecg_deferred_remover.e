@@ -60,11 +60,6 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			if processing_needed (l_as.type, l_as, 2) then
 				output.append_string (ti_colon+ti_space)
-				process_child (l_as.type, l_as, 2)
-			end
-
-			if processing_needed (l_as.type, l_as, 2) then
-				output.append_string (ti_colon+ti_space)
 				-- always print the fully explicit type to be sure it's valid in the new context
 				l_resolved_type := type_checker.explicit_type_from_type_as (l_as.type, context.written_class, context.written_class.feature_of_feature_id (context.feature_id))
 
@@ -80,7 +75,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 
 			if l_as.is_constant then
-				output.append_string(ti_Space+ti_is_keyword+ti_Space)
+				output.append_string(ti_Space+ti_equal+ti_space)
 			elseif processing_needed (l_as.assigner, l_as, 3) then
 				output.append_string (ti_Space+ti_assign_keyword+ti_Space)
 				process_child (l_as.assigner, l_as, 3)
@@ -91,11 +86,19 @@ feature {AST_EIFFEL} -- Roundtrip
 				output.append_string(ti_New_line)
 			end
 
-			if processing_needed (l_as.content, l_as, 4) then
-				process_child_block(l_as.content, l_as, 4)
+			output.enter_block
+
+			if processing_needed (l_as.indexing_clause, l_as, 5) then
+				output.append_string (ti_indexing_keyword+ti_new_line)
+				process_child_block_list (l_as.indexing_clause, ti_new_line, l_as, 5)
+				output.append_string (ti_new_line)
 			end
 
-			process_child(l_as.indexing_clause, l_as, 5)
+			if processing_needed (l_as.content, l_as, 4) then
+				process_child(l_as.content, l_as, 4)
+			end
+
+			output.exit_block
 		end
 
 	process_feature_as (l_as: FEATURE_AS)

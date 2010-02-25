@@ -70,6 +70,8 @@ feature {NONE} -- Implementation
 		do
 			if attached a_parent and then attached a_parent.path then
 				create l_path.make_from_parent (a_parent.path, a_branch)
+			elseif attached l_as and then attached l_as.path then
+				l_path := l_as.path
 			end
 
 			if l_path /= void then
