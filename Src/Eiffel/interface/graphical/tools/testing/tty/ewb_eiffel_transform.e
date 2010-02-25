@@ -367,6 +367,34 @@ feature -- Properties
 			l_textout.close
 		end
 
+	test_dot_print
+		local
+			bp_vis: ETR_BP_SLOT_INITIALIZER
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			l_out: ETR_AST_DOT_OUTPUT
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_textout: PLAIN_TEXT_FILE
+			l_trans: ETR_TRANSFORMABLE
+			a1_feat: FEATURE_I
+		do
+			a1 := universe.compiled_classes_with_name("M_EX").first
+			a1_ast := a1.compiled_class.ast
+			a1_feat := a1.compiled_class.feature_named ("test")
+			create bp_vis
+			create l_trans.make_from_ast (a1_feat.e_feature.ast, create {ETR_CONTEXT}.make_empty, true)
+			bp_vis.init_from (l_trans)
+			create l_out.make
+			l_out.start
+			create l_printer.make_with_output (l_out)
+			l_printer.print_ast_to_output (l_trans)
+			l_out.finish
+
+			create l_textout.make_open_write ((create {EXECUTION_ENVIRONMENT}).get("EIFFEL_SRC")+"\framework\eiffel_transform\testout.dot")
+			l_textout.put_string (l_out.string_representation)
+			l_textout.close
+		end
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
@@ -380,6 +408,7 @@ feature -- Properties
 			test_me_all
 			test_branch_removal
 			test_xml_print
+			test_dot_print
 		end
 
 note
