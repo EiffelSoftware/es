@@ -172,16 +172,21 @@ feature {NONE} -- Implementation
 				if not etr_error_handler.has_errors then
 					l_append_text := "%N"
 
-					l_append_text.append	(	ast_tools.commented_feature_to_string (
-													setter_generator.transformation_result,
-													" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'.")
-											)
+					l_append_text.append (
+						ast_tools.commented_feature_to_string (
+							setter_generator.transformation_result,
+							" Set `"+feature_i.feature_name+"' to `a_"+feature_i.feature_name+"'."
+						)
+					)
+					
 					l_append_text.append("%N%T")
 
 					if preferences.use_as_assigner then
-						l_old_feat_text := ast_tools.commented_feature_to_string (
-													l_transformable,
-													l_comment)
+						l_old_feat_text :=
+							ast_tools.commented_feature_to_string (
+								l_transformable,
+								l_comment
+							)
 
 						l_feat_ast.replace_text ("%N"+l_old_feat_text+l_append_text, l_matchlist)
 					else

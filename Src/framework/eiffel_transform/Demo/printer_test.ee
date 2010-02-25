@@ -36,7 +36,7 @@ convert
 feature
 	uniq_str: STRING is unique
 	
-	some_str: separate detachable STRING
+	some_str: separate STRING
 
 	test, altname(a_var,a_var2: INTEGER; a_var3:STRING) is
 			-- test
@@ -141,7 +141,7 @@ feature
 		
 	ext2: STRING
 		external
-			"builtin"
+			"built_in"
 		ensure
 			a>b
 		end

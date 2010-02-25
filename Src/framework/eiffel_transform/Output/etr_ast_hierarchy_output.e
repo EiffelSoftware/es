@@ -21,26 +21,40 @@ create
 feature -- Operations
 
 	enter_block
-			-- Enters a new indentation-block
+			-- <precursor>
 		do
 			block_depth := block_depth + 1
 		end
 
 	exit_block
-			-- Exits an indentation-block
+			-- <precursor>
 		do
 			block_depth := block_depth - 1
 		end
 
-	enter_child(a_name: STRING)
-			-- Enters a new child with name `a_name'
+	enter_child(a_child: ANY)
+			-- <precursor>
 		do
-			context.add_string (current_indentation.twin+a_name+"%N")
+			if attached {AST_EIFFEL}a_child as ast_child then
+				if attached ast_child.path then
+					context.add_string (
+						current_indentation.twin+a_child.generating_type+" (br:"+
+						ast_child.path.branch_id.out+";bp:"+ast_child.breakpoint_slot.out+")%N"
+					)
+				else
+					context.add_string (
+						current_indentation.twin+a_child.generating_type+" (br:0;bp:"+ast_child.breakpoint_slot.out+")%N"
+					)
+				end
+			else
+				context.add_string (current_indentation.twin+"<VOID>%N")
+			end
+
 			current_indentation := current_indentation + indentation_string
 		end
 
 	exit_child
-			-- Exits a child
+			-- <precursor>
 		do
 			if current_indentation.count >= indentation_string.count then
 				current_indentation.remove_tail (indentation_string.count)
@@ -48,7 +62,7 @@ feature -- Operations
 		end
 
 	append_string(a_string: STRING)
-			-- Appends `a_string' to the output
+			-- <precursor>
 		do
 			-- unused
 		end

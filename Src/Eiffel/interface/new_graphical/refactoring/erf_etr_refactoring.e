@@ -23,13 +23,17 @@ feature {NONE} -- Implementation
 		local
 			l_exception: EXCEPTION
 		do
+			if not etr_error_handler.has_errors then
+				etr_error_handler.add_error (Current, a_feat, "Unhandled exception from EiffelTransform")
+			end
+
 			l_exception := (create {EXCEPTION_MANAGER}).last_exception
 			if l_exception /= void then
 				if not etr_error_handler.has_errors then
 					etr_error_handler.add_error (a_class, a_feat, l_exception.meaning)
 				end
 
-				logger.log_error ("Unhandled exception:%N"+l_exception.out)
+				logger.log_error ("Exception:%N"+l_exception.out)
 			end
 		end
 

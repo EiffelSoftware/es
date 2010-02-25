@@ -124,17 +124,21 @@ feature {NONE} -- Implementation
 
 					l_replacement_text := "%N"
 
-					l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
-														method_extractor.old_method.target_node,
-														l_feat_comment)
-												)
+					l_replacement_text.append (
+						ast_tools.commented_feature_to_string (
+							method_extractor.old_method.target_node,
+							l_feat_comment
+						)
+					)
 
 					l_replacement_text.append ("%N")
 
-					l_replacement_text.append 	(	ast_tools.commented_feature_to_string (
-														method_extractor.extracted_method.target_node,
-														" Extracted from `"+feature_name+"'")
-												)
+					l_replacement_text.append (
+						ast_tools.commented_feature_to_string (
+							method_extractor.extracted_method.target_node,
+							" Extracted from `"+feature_name+"'"
+						)
+					)
 
 					l_replacement_text.remove_tail (1)
 

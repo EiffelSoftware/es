@@ -62,19 +62,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_or_replace (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
+	process_or_replace (l_as: detachable AST_EIFFEL; a_parent: detachable AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and check for replacement
 		local
 			l_mod: ETR_AST_MODIFICATION
 			l_path: AST_PATH
 		do
-			if attached l_as then
-				l_path := l_as.path
-			elseif attached a_parent then
+			if attached a_parent and then attached a_parent.path then
 				create l_path.make_from_parent (a_parent.path, a_branch)
 			end
 
-			if attached l_path then
+			if l_path /= void then
 				l_mod := repl_hash.item (l_path)
 
 				if attached l_mod and not replacement_disabled then

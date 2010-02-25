@@ -51,8 +51,8 @@ feature {NONE} -- Implementation
 	current_scope: LINKED_LIST[AST_PATH]
 			-- The current scope
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
+	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+			-- process an n-way branch with parent `a_parent' and `a_branches'
 		local
 			i: INTEGER
 			old_path: like current_path
@@ -61,9 +61,9 @@ feature {NONE} -- Implementation
 				i:=1
 				old_path := current_path.twin
 			until
-				i>br.count
+				i>a_branches.count
 			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
+				if attached a_branches[i] as item then
 					create current_path.make_from_parent (current_path, i)
 					item.process (Current)
 					current_path := old_path
@@ -85,32 +85,8 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			-- only process the feature we're interested in
 			if l_as.feature_name.name.is_equal (context.name) then
-				process_n_way_branch(l_as,[l_as.feature_names, l_as.body, l_as.indexes])
+				Precursor(l_as)
 			end
-		end
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
-			old_path: like current_path
-		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-				old_path := current_path.twin
-			until
-				l_as.after
-			loop
-				create current_path.make_from_parent (current_path, i)
-				l_as.item.process (Current)
-				current_path := old_path
-				l_as.forth
-				i:=i+1
-			end
-			l_as.go_i_th (l_cursor)
 		end
 
 	process_elseif_as (l_as: ELSIF_AS)
@@ -136,7 +112,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			current_path := old_path
 			current_scope.wipe_out
 
-			process_n_way_branch(l_as,[void, l_as.compound, l_as.elsif_list, l_as.else_part])
+			process_branch(l_as, << void, l_as.compound, l_as.elsif_list, l_as.else_part >>)
 		end
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
@@ -157,7 +133,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make_at (l_as.name.name, l_explicit_type, l_written_type, current_scope))
 			end
-			process_n_way_branch(l_as,[void, l_as.expression, void])
+			process_branch(l_as, << void, l_as.expression, void >>)
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

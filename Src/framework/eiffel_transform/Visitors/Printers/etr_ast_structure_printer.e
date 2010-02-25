@@ -114,10 +114,6 @@ inherit
 			process_reverse_as,
 			process_formal_argu_dec_list_as
 		end
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
@@ -130,34 +126,24 @@ feature {NONE} -- Implementation
 	is_in_agent_target: BOOLEAN
 			-- Hack needed to process agent OPERANDS
 
-	processing_needed(an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
+	processing_needed(an_ast: detachable AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
 			-- should `an_ast' be processed
 		do
 			Result := attached an_ast
 		end
 
-	process(l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
+	process(l_as: detachable AST_EIFFEL; a_parent: detachable AST_EIFFEL; a_branch: INTEGER)
 			-- Process `l_as'
 		do
-			if attached l_as then
+--			if attached l_as then
 				l_as.process (Current)
-			end
-		end
-
-	internal_enter_child_ast(an_ast: AST_EIFFEL) is
-			-- enter `an_ast'
-		do
-			if attached an_ast then
-				output.enter_child (an_ast.generating_type)
-			else
-				output.enter_child (ti_void)
-			end
+--			end
 		end
 
 	process_child_list (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and use `separator' for string output
 		do
-			internal_enter_child_ast (l_as)
+			output.enter_child (l_as)
 			process_list_with_separator (l_as, separator, a_parent, a_branch)
 			output.exit_child
 		end
@@ -165,7 +151,7 @@ feature {NONE} -- Implementation
 	process_child_block_list (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process `l_as' and use `separator' for string output
 		do
-			internal_enter_child_ast (l_as)
+			output.enter_child (l_as)
 			output.enter_block
 			process_list_with_separator (l_as, separator, a_parent, a_branch)
 			output.exit_block
@@ -177,21 +163,19 @@ feature {NONE} -- Implementation
 		local
 			l_cursor: INTEGER
 		do
-			if attached l_as then
-				from
-					l_cursor := l_as.index
-					l_as.start
-				until
-					l_as.after
-				loop
-					process_child (l_as.item, l_as, l_as.index)
-					if attached separator and l_as.index /= l_as.count then
-						output.append_string(separator)
-					end
-					l_as.forth
+			from
+				l_cursor := l_as.index
+				l_as.start
+			until
+				l_as.after
+			loop
+				process_child (l_as.item, l_as, l_as.index)
+				if attached separator and l_as.index /= l_as.count then
+					output.append_string(separator)
 				end
-				l_as.go_i_th (l_cursor)
+				l_as.forth
 			end
+			l_as.go_i_th (l_cursor)
 		end
 
 	process_identifier_list (l_as: IDENTIFIER_LIST)
@@ -234,16 +218,24 @@ feature {NONE} -- Implementation
 	process_child (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process as child
 		do
-			internal_enter_child_ast(l_as)
+			output.enter_child (l_as)
 			process(l_as, a_parent, a_branch)
 			output.exit_child
+		end
+
+	process_child_if_needed (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
+			-- process if needed
+		do
+			if processing_needed (l_as, a_parent, a_branch) then
+				process_child (l_as, a_parent, a_branch)
+			end
 		end
 
 	process_child_block (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
 			-- process as child and block
 		do
 			output.enter_block
-			internal_enter_child_ast (l_as)
+			output.enter_child (l_as)
 			process(l_as, a_parent, a_branch)
 			output.exit_child
 			output.exit_block
@@ -280,7 +272,7 @@ feature {AST_EIFFEL} -- Roundtrip: Atomic
 	process_typed_char_as (l_as: TYPED_CHAR_AS)
 		do
 			output.append_string (ti_L_curly)
-			process_child(l_as.type, l_as, 1)
+			process_child_if_needed(l_as.type, l_as, 1)
 			output.append_string (ti_R_curly)
 			output.append_string (l_as.string_value)
 		end
@@ -399,7 +391,9 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			output.append_string (ti_When_keyword+ti_Space)
 			process_child_list (l_as.interval, ti_comma+ti_space, l_as, 1)
 			output.append_string (ti_Space+ti_Then_keyword+ti_New_line)
-			process_child_block (l_as.compound, l_as, 2)
+			if processing_needed (l_as.compound, l_as, 2) then
+				process_child_block (l_as.compound, l_as, 2)
+			end
 		end
 
 	process_interval_as (l_as: INTERVAL_AS)
@@ -417,7 +411,9 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			process_child_block (l_as.switch, l_as, 1)
 			output.append_string (ti_New_line)
 
-			process_child (l_as.case_list, l_as, 2)
+			if processing_needed (l_as.case_list, l_as, 2) then
+				process_child (l_as.case_list, l_as, 2)
+			end
 
 			if processing_needed (l_as.else_part, l_as, 3) then
 				output.append_string (ti_else_keyword+ti_New_line)
@@ -469,8 +465,9 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			process(l_as.target, l_as, 1)
 			if processing_needed (l_as.call, l_as, 3) then
 				output.append_string (ti_dot)
+				process_child (l_as.call, l_as, 3)
 			end
-			process_child (l_as.call, l_as, 3)
+
 			output.append_string(ti_New_line)
 		end
 
@@ -481,14 +478,19 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			end
 
 			output.append_string(ti_debug_keyword+ti_New_line)
-			process_child_block(l_as.compound, l_as, 2)
+			if processing_needed (l_as.compound, l_as, 2) then
+				process_child_block(l_as.compound, l_as, 2)
+			end
+
 			output.append_string(ti_End_keyword+ti_New_line)
 		end
 
 	process_check_as (l_as: CHECK_AS)
 		do
 			output.append_string (ti_check_keyword+ti_New_line)
-			process_child_block (l_as.check_list, l_as, 1)
+			if processing_needed (l_as.check_list, l_as, 1) then
+				process_child_block (l_as.check_list, l_as, 1)
+			end
 			output.append_string (ti_End_keyword+ti_New_line)
 		end
 
@@ -502,8 +504,14 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			output.append_string (ti_if_keyword+ti_Space)
 			process_child (l_as.condition, l_as, 1)
 			output.append_string (ti_Space+ti_then_keyword+ti_New_line)
-			process_child_block_list (l_as.compound, void, l_as, 2)
-			process_child (l_as.elsif_list, l_as, 3)
+
+			if processing_needed (l_as.compound, l_as, 2) then
+				process_child_block_list (l_as.compound, void, l_as, 2)
+			end
+
+			if processing_needed (l_as.elsif_list, l_as, 3) then
+				process_child (l_as.elsif_list, l_as, 3)
+			end
 
 			if processing_needed (l_as.else_part, l_as, 4) then
 				output.append_string(ti_else_keyword+ti_New_line)
@@ -517,13 +525,17 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			output.append_string (ti_elseif_keyword+ti_Space)
 			process_child(l_as.expr, l_as, 1)
 			output.append_string (ti_Space+ti_then_keyword+ti_New_line)
-			process_child_block_list(l_as.compound, void, l_as, 2)
+			if processing_needed (l_as.compound, l_as, 2) then
+				process_child_block_list(l_as.compound, void, l_as, 2)
+			end
 		end
 
 	process_loop_as (l_as: LOOP_AS)
 		do
 			output.append_string(ti_from_keyword+ti_New_line)
-			process_child_block(l_as.from_part, l_as, 1)
+			if processing_needed (l_as.from_part, l_as, 1) then
+				process_child_block(l_as.from_part, l_as, 1)
+			end
 
 			if processing_needed (l_as.full_invariant_list, l_as, 2) then
 				output.append_string (ti_invariant_keyword+ti_New_line)
@@ -641,32 +653,42 @@ feature {AST_EIFFEL} -- Roundtrip: Contracts
 	process_invariant_as (l_as: INVARIANT_AS)
 		do
 			output.append_string (ti_invariant_keyword+ti_New_line)
-			process_child_block_list(l_as.full_assertion_list, void, l_as, 1)
+			if processing_needed(l_as.full_assertion_list, l_as, 1) then
+				process_child_block_list(l_as.full_assertion_list, void, l_as, 1)
+			end
 		end
 
 	process_require_as (l_as: REQUIRE_AS)
 		do
 			output.append_string (ti_require_keyword+ti_New_line)
-			process_child_block (l_as.full_assertion_list, l_as, 1)
+			if processing_needed(l_as.full_assertion_list, l_as, 1) then
+				process_child_block (l_as.full_assertion_list, l_as, 1)
+			end
 		end
 
 	process_require_else_as (l_as: REQUIRE_ELSE_AS)
 		do
 
 			output.append_string (ti_require_else_keyword+ti_New_line)
-			process_child_block (l_as.full_assertion_list, l_as, 1)
+			if processing_needed(l_as.full_assertion_list, l_as, 1) then
+				process_child_block (l_as.full_assertion_list, l_as, 1)
+			end
 		end
 
 	process_ensure_as (l_as: ENSURE_AS)
 		do
 			output.append_string (ti_ensure_keyword+ti_New_line)
-			process_child_block (l_as.full_assertion_list, l_as, 1)
+			if processing_needed(l_as.full_assertion_list, l_as, 1) then
+				process_child_block (l_as.full_assertion_list, l_as, 1)
+			end
 		end
 
 	process_ensure_then_as (l_as: ENSURE_THEN_AS)
 		do
 			output.append_string (ti_ensure_then_keyword+ti_New_line)
-			process_child_block (l_as.full_assertion_list, l_as, 1)
+			if processing_needed(l_as.full_assertion_list, l_as, 1) then
+				process_child_block (l_as.full_assertion_list, l_as, 1)
+			end
 		end
 
 feature {AST_EIFFEL} -- Roundtrip: Types
@@ -710,9 +732,11 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 			end
 
 			process_child(l_as.class_name, l_as, 1)
-			output.append_string (ti_L_bracket)
-			process_child_list (l_as.generics, ti_comma+ti_Space, l_as, 2)
-			output.append_string (ti_R_bracket)
+			if processing_needed (l_as.generics, l_as, 2) then
+				output.append_string (ti_L_bracket)
+				process_child_list (l_as.generics, ti_comma+ti_Space, l_as, 2)
+				output.append_string (ti_R_bracket)
+			end
 		end
 
 	process_formal_argu_dec_list_as (l_as: FORMAL_ARGU_DEC_LIST_AS)
@@ -745,7 +769,9 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 	process_constraining_type_as (l_as: CONSTRAINING_TYPE_AS)
 		do
 			process_child(l_as.type, l_as, 1)
-			process_child(l_as.renaming, l_as, 2)
+			if processing_needed(l_as.renaming, l_as, 2) then
+				process_child(l_as.renaming, l_as, 2)
+			end
 		end
 
 	process_like_id_as (l_as: LIKE_ID_AS)
@@ -874,8 +900,7 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 				process(l_as.tag, l_as, 1)
 				output.append_string(ti_colon+ti_Space)
 			end
-
-			process_child(l_as.expr, l_as, 2)
+			process_child_if_needed (l_as.expr, l_as, 2)
 			output.append_string (ti_New_line)
 		end
 
@@ -902,9 +927,9 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 
 	process_unary_as (l_as: UNARY_AS)
 		do
-			output.append_string (l_as.operator_name)
+			process_child (l_as.operator_ast, l_as, 1)
 			output.append_string (ti_Space)
-			process_child (l_as.expr, l_as, 1)
+			process_child (l_as.expr, l_as, 2)
 		end
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
@@ -931,9 +956,9 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 					output.append_string (l_as.name.name+ti_colon+ti_space)
 				end
 
-				process_child (l_as.type, l_as, 1)
+				process_child_if_needed (l_as.type, l_as, 1)
 				output.append_string (ti_r_curly+ti_space)
-				process_child (l_as.expression, l_as, 2)
+				process_child_if_needed (l_as.expression, l_as, 2)
 			end
 		end
 
@@ -942,7 +967,7 @@ feature {AST_EIFFEL} -- Roundtrip: Access
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
 		do
 			output.append_string (ti_feature_keyword+ti_Space+ti_l_curly)
-			process_child(l_as.class_type, l_as, 1)
+			process_child_if_needed(l_as.class_type, l_as, 1)
 			output.append_string (ti_r_curly+ti_dot)
 			output.append_string (l_as.feature_name.name)
 			if processing_needed (l_as.parameters, l_as, 2) then
@@ -1009,25 +1034,21 @@ feature {AST_EIFFEL} -- Roundtrip: Inheritance clauses
 
 	process_export_clause_as (l_as: EXPORT_CLAUSE_AS)
 		do
-			fixme("When/How is this used?")
 			process_child(l_as.content, l_as, 1)
 		end
 
 	process_undefine_clause_as (l_as: UNDEFINE_CLAUSE_AS)
 		do
-			fixme("When/How is this used?")
 			process_child(l_as.content, l_as, 1)
 		end
 
 	process_redefine_clause_as (l_as: REDEFINE_CLAUSE_AS)
 		do
-			fixme("When/How is this used?")
 			process_child(l_as.content, l_as, 1)
 		end
 
 	process_select_clause_as (l_as: SELECT_CLAUSE_AS)
 		do
-			fixme("When/How is this used?")
 			process_child(l_as.content, l_as, 1)
 		end
 
@@ -1095,7 +1116,9 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 				output.append_string (ti_New_line)
 			end
 
-			process_child (l_as.precondition, l_as, 2)
+			if processing_needed (l_as.precondition, l_as, 2) then
+				process_child (l_as.precondition, l_as, 2)
+			end
 
 			if processing_needed (l_as.locals, l_as, 3) then
 				output.append_string (ti_local_keyword+ti_New_line)
@@ -1107,7 +1130,9 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 			process_child(l_as.routine_body, l_as, 4)
 
-			process_child (l_as.postcondition, l_as, 5)
+			if processing_needed (l_as.postcondition, l_as, 5) then
+				process_child (l_as.postcondition, l_as, 5)
+			end
 
 			if processing_needed (l_as.rescue_clause, l_as, 6) then
 				output.append_string(ti_rescue_keyword+ti_New_line)
@@ -1231,7 +1256,9 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS)
 		do
 			output.append_string(ti_feature_keyword+ti_Space)
-			process_child(l_as.clients, l_as, 1)
+			if processing_needed (l_as.clients, l_as, 1) then
+				process_child(l_as.clients, l_as, 1)
+			end
 			output.append_string(ti_New_line+ti_new_line)
 			process_child_block_list (l_as.features, ti_new_line, l_as, 2)
 		end
@@ -1246,6 +1273,12 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 	process_class_as (l_as: CLASS_AS)
 		do
+			if processing_needed (l_as.top_indexes, l_as, 1) then
+				output.append_string (ti_note_keyword+ti_new_line)
+				process_child_block_list (l_as.top_indexes, ti_new_line, l_as, 1)
+				output.append_string (ti_new_line+ti_new_line)
+			end
+
 			if l_as.is_deferred then
 				output.append_string(ti_deferred_keyword+ti_Space)
 			end
@@ -1260,12 +1293,6 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 
 			if l_as.is_partial then
 				output.append_string("partial"+ti_Space)
-			end
-
-			if processing_needed (l_as.top_indexes, l_as, 1) then
-				output.append_string (ti_note_keyword+ti_new_line)
-				process_child_block_list (l_as.top_indexes, ti_new_line, l_as, 1)
-				output.append_string (ti_new_line+ti_new_line)
 			end
 
 			output.append_string (ti_class_keyword+ti_New_line)
@@ -1286,37 +1313,47 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 				process_child_block(l_as.obsolete_message, l_as, 4)
 			end
 
-			if processing_needed (l_as.parents, l_as, 5)  then
+			if processing_needed (l_as.conforming_parents, l_as, 5)  then
 				output.append_string (ti_inherit_keyword+ti_new_line)
-				process_child_block_list (l_as.parents, ti_new_line, l_as, 5)
+				process_child_block_list (l_as.conforming_parents, ti_new_line, l_as, 5)
 			end
 
-			process_child (l_as.creators, l_as, 6)
+			if processing_needed (l_as.non_conforming_parents, l_as, 6)  then
+				output.append_string (ti_inherit_keyword+ti_space+ti_l_curly+ti_none_class+ti_r_curly+ti_new_line)
+				process_child_block_list (l_as.non_conforming_parents, ti_new_line, l_as, 6)
+			end
 
-			if processing_needed (l_as.convertors, l_as, 7)  then
+			if processing_needed (l_as.creators, l_as, 7) then
+				process_child (l_as.creators, l_as, 7)
+			end
+
+			if processing_needed (l_as.convertors, l_as, 8)  then
 				output.append_string (ti_convert_keyword+ti_New_line)
 				output.enter_block
-				process_child_list(l_as.convertors, ti_comma+ti_New_line, l_as, 7)
+				process_child_list(l_as.convertors, ti_comma+ti_New_line, l_as, 8)
 				output.append_string (ti_New_line)
 				output.exit_block
 			end
 
 			output.append_string(ti_New_line)
 
-			if processing_needed (l_as.features, l_as, 8) then
-				process_child_list (l_as.features, ti_new_line, l_as, 8)
+			if processing_needed (l_as.features, l_as, 9) then
+				process_child_list (l_as.features, ti_new_line, l_as, 9)
 				output.append_string (ti_new_line)
 			end
-			process_child(l_as.invariant_part, l_as, 9)
 
-			if processing_needed (l_as.bottom_indexes, l_as, 10) then
-				-- Make sure parsing successful
-				-- Semicolon or end needed before 'note'
-				if l_as.features.is_empty or else l_as.features.last.features.is_empty or else (l_as.features.last.features.last.is_attribute or l_as.features.last.features.last.is_constant) then
+			if processing_needed (l_as.invariant_part, l_as, 10) then
+				process_child(l_as.invariant_part, l_as, 10)
+			end
+
+			if processing_needed (l_as.bottom_indexes, l_as, 11) then
+				-- Semicolon is necessary if there was an attribute or constant before
+				if l_as.features /= void and then not l_as.features.is_empty and then not l_as.features.last.features.is_empty and then (l_as.features.last.features.last.is_attribute or l_as.features.last.features.last.is_constant) then
 					output.append_string (ti_semi_colon)
 				end
+
 				output.append_string (ti_note_keyword+ti_new_line)
-				process_child_block_list (l_as.bottom_indexes, ti_new_line, l_as, 10)
+				process_child_block_list (l_as.bottom_indexes, ti_new_line, l_as, 11)
 				output.append_string (ti_new_line)
 			end
 
@@ -1340,7 +1377,9 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 	process_create_as (l_as: CREATE_AS)
 		do
 			output.append_string (ti_create_keyword+ti_Space)
-			process_child(l_as.clients, l_as, 1)
+			if processing_needed (l_as.clients, l_as, 1) then
+				process_child(l_as.clients, l_as, 1)
+			end
 			output.append_string (ti_New_line)
 
 			output.enter_block
@@ -1361,7 +1400,9 @@ feature {AST_EIFFEL} -- Roundtrip: Routine body
 	process_attribute_as (l_as: ATTRIBUTE_AS)
 		do
 			output.append_string (ti_attribute_keyword+ti_New_line)
-			process_child_block (l_as.compound, l_as, 1)
+			if processing_needed (l_as.compound, l_as, 1) then
+				process_child_block (l_as.compound, l_as, 1)
+			end
 			output.append_string (ti_New_line)
 		end
 
@@ -1373,13 +1414,17 @@ feature {AST_EIFFEL} -- Roundtrip: Routine body
 	process_do_as (l_as: DO_AS)
 		do
 			output.append_string (ti_do_keyword+ti_New_line)
-			process_child_block_list (l_as.compound, void, l_as, 1)
+			if processing_needed (l_as.compound, l_as, 1) then
+				process_child_block_list (l_as.compound, void, l_as, 1)
+			end
 		end
 
 	process_once_as (l_as: ONCE_AS)
 		do
 			output.append_string (ti_once_keyword+ti_New_line)
-			process_child_block (l_as.compound, l_as, 1)
+			if processing_needed (l_as.compound, l_as, 1) then
+				process_child_block (l_as.compound, l_as, 1)
+			end
 		end
 
 	process_external_as (l_as: EXTERNAL_AS)
@@ -1449,7 +1494,10 @@ feature {AST_EIFFEL} -- Roundtrip: Agents
 					output.append_string (ti_Question)
 				end
 			else
-				process_child(l_as.target, l_as, 3)
+				if processing_needed(l_as.target, l_as, 3) then
+					process_child(l_as.target, l_as, 3)
+				end
+
 				if processing_needed (l_as.expression, l_as, 2) then
 					output.append_string (ti_l_parenthesis)
 					process_child(l_as.expression, l_as, 2)

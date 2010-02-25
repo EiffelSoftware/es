@@ -211,9 +211,7 @@ feature -- Type evaluation
 						Result := typeset.first
 
 						if typeset.count>1 then
-							check
-								not_supported: false
-							end
+							etr_error_handler.add_error (Current, "explicit_type", "Multiple constraints are not supported.")
 						end
 					end
 				end

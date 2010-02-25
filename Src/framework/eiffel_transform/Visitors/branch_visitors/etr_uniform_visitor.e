@@ -1,59 +1,49 @@
 note
-	description: "Error handling for EiffelTransform classes."
+	description: "Calls a single feature for every ast-node."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	ETR_ERROR_HANDLER
+deferred class
+	ETR_UNIFORM_VISITOR
 inherit
-	ETR_SHARED_LOGGER
+	ETR_BRANCH_VISITOR
 
-feature -- Access
-	has_errors: BOOLEAN
-	last_error: detachable STRING
-	errors: detachable LIST[attached like last_error]
+feature -- Operation
 
-	error_count: INTEGER
-			-- Number of errors
+	process (a_node: AST_EIFFEL)
+			-- Process `a_node' and any children
+		require
+			non_void: a_node /= void
 		do
-			if attached errors then
-				Result := errors.count
-			end
+			process_node (a_node)
+			a_node.process (Current)
 		end
 
-feature -- Operations
+feature {NONE} -- Implementation
 
-	reset_errors
-			-- set `has_errors' to false
-		do
-			if attached errors then
-				errors.wipe_out
-			end
-
-			has_errors := false
+	process_node (a_node: AST_EIFFEL)
+			-- Process `a_node' only
+		deferred
 		end
 
-	add_error(a_class: detachable ANY; a_feature: detachable STRING; an_error_message: STRING)
-			-- set `last_error' to `an_error_message'
+	process_branch (a_parent: AST_EIFFEL; a_branches: ARRAY[detachable AST_EIFFEL])
+			-- <precursor>
 		local
-			l_error_msg: STRING
+			i: INTEGER
 		do
-			if not attached errors then
-				create {LINKED_LIST[like last_error]}errors.make
-			end
-
-			has_errors := true
-			create l_error_msg.make_empty
-			debug("eiffel_transform")
-				if attached a_class and attached a_feature then
-					l_error_msg.append ("{"+a_class.generating_type+"}."+a_feature+": ")
+			from
+				i := a_branches.lower
+			until
+				i > a_branches.upper
+			loop
+				if attached a_branches[i] as item then
+					process_node(item)
+					item.process (Current)
 				end
+				i := i+1
 			end
-			l_error_msg.append (an_error_message)
-			logger.log_error(l_error_msg)
-			last_error := l_error_msg
-			errors.extend (last_error)
 		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

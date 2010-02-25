@@ -195,6 +195,7 @@ feature {NONE} -- Implementation
 			-- Triggered when the dialog is shown.
 		do
 			constant_value_field.set_focus
+			on_class_flag_changed
 		end
 
 	constant_name_field: EV_TEXT_FIELD

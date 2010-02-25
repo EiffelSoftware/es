@@ -13,8 +13,8 @@ feature {NONE} -- Implementation
 	current_path: AST_PATH
 			-- The path we're currently at
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
+	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+			-- process an n-way branch with parent `a_parent' and `a_branches'
 		local
 			i: INTEGER
 			l_prev_path: AST_PATH
@@ -22,9 +22,9 @@ feature {NONE} -- Implementation
 			from
 				i:=1
 			until
-				i>br.count
+				i>a_branches.count
 			loop
-				if attached {AST_EIFFEL}br.item (i) as item then
+				if attached a_branches[i] as item then
 					l_prev_path := current_path.twin
 					create current_path.make_from_parent (current_path, i)
 					item.process (Current)
@@ -32,32 +32,6 @@ feature {NONE} -- Implementation
 				end
 				i:=i+1
 			end
-		end
-
-feature {AST_EIFFEL} -- Roundtrip
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			l_cursor: INTEGER
-			i: INTEGER
-			l_prev_path: AST_PATH
-		do
-			from
-				l_cursor := l_as.index
-				i:=1
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_prev_path := current_path.twin
-				create current_path.make_from_parent (current_path, i)
-				l_as.item.process (Current)
-				current_path := l_prev_path
-				l_as.forth
-				i:=i+1
-			end
-			l_as.go_i_th (l_cursor)
 		end
 
 note

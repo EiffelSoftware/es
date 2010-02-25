@@ -65,23 +65,25 @@ feature -- Output
 		do
 			create Result.make (20)
 
-			from
-				a_class.features.start
-			until
-				a_class.features.after
-			loop
+			if a_class.features /= void then
 				from
-					a_class.features.item.features.start
+					a_class.features.start
 				until
-					a_class.features.item.features.after
+					a_class.features.after
 				loop
-					l_cur_comment := extract_feature_comments(a_class.features.item.features.item, a_matchlist)
-					Result.put (l_cur_comment, a_class.features.item.features.item.feature_name.name)
+					from
+						a_class.features.item.features.start
+					until
+						a_class.features.item.features.after
+					loop
+						l_cur_comment := extract_feature_comments(a_class.features.item.features.item, a_matchlist)
+						Result.put (l_cur_comment, a_class.features.item.features.item.feature_name.name)
 
-					a_class.features.item.features.forth
+						a_class.features.item.features.forth
+					end
+
+					a_class.features.forth
 				end
-
-				a_class.features.forth
 			end
 		end
 

@@ -39,6 +39,9 @@ feature -- Properties
 	hier_out: ETR_AST_HIERARCHY_OUTPUT
 			-- Used to force the class to compile
 
+	dbg: ETR_BP_SLOT_INITIALIZER
+			-- Used to force the class to compile
+
 	test_context_transformation
 			-- test context transformations
 		local
@@ -340,11 +343,36 @@ feature -- Properties
 			test_me("test7", "1.2.4.4.1.1.2.2", "1.2.4.4.1.1.2.2")
 		end
 
+	test_slot_init
+		local
+			bp_vis: ETR_BP_SLOT_INITIALIZER
+			path_vis: ETR_AST_PATH_INITIALIZER
+			a1: CLASS_I
+			a1_ast: CLASS_AS
+			l_out: ETR_AST_HIERARCHY_OUTPUT
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+			l_textout: PLAIN_TEXT_FILE
+		do
+			a1 := universe.compiled_classes_with_name("M_EX").first
+			a1_ast := a1.compiled_class.ast
+			create bp_vis
+			create path_vis
+			bp_vis.init_from (a1_ast)
+			path_vis.process_from_root (a1_ast)
+
+			create l_out.make
+			create l_printer.make_with_output (l_out)
+			l_printer.print_ast_to_output (a1_ast)
+
+			create l_textout.make_open_write ("E:\ETH\MasterThesis\evedev\Src\framework\eiffel_transform\hierout.txt")
+			l_textout.put_string (l_out.string_representation)
+			l_textout.close
+		end
+
 	execute
 			-- Action performed when invoked from the
 			-- command line.
 		do
-			-- reparse to have the original ast and don't use a modified one from storage
 			test_ren
 			test_setter_gen
 			test_context_transformation
@@ -353,6 +381,7 @@ feature -- Properties
 			test_typechecker
 			test_me_all
 			test_branch_removal
+			test_slot_init
 		end
 
 note

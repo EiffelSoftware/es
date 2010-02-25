@@ -13,7 +13,7 @@ class
 inherit
 	EQA_TEST_SET
 	ETR_SHARED_TRANSFORMABLE_FACTORY
-	ETR_SHARED_AST_TOOLS
+	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
 	ETR_SHARED_BASIC_OPERATORS
 	SHARED_ERROR_HANDLER
@@ -75,20 +75,21 @@ feature -- Test routines
 			testing:  "EiffelTransform", "covers/{ETR_BASIC_OPS}"
 		local
 			context: ETR_CONTEXT
+			l_trans: ETR_TRANSFORMABLE
 		do
 			parsing_helper.set_compiler_factory (false)
 			create context.make_empty
 
 			error_handler.reset_errors
-			basic_operators.generate_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_expr ("b>a",context), context)
+			l_trans := transformable_factory.new_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_expr ("b>a",context), context)
 			assert("Error 1 not caught", error_handler.has_errors)
 
 			error_handler.reset_errors
-			basic_operators.generate_conditional (transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_instr ("a:=a-b",context), context)
+			l_trans := transformable_factory.new_conditional (transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_instr ("a:=a-b",context), transformable_factory.new_instr ("a:=a-b",context), context)
 			assert("Error 2 not caught", error_handler.has_errors)
 
 			error_handler.reset_errors
-			basic_operators.generate_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context),transformable_factory. new_instr ("a:=a-b",context), context)
+			l_trans := transformable_factory.new_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context),transformable_factory. new_instr ("a:=a-b",context), context)
 			assert("Invalid error or error not reset", not error_handler.has_errors)
 		end
 
@@ -108,8 +109,7 @@ feature -- Test routines
 			create modifier.make
 
 			-- create conditional
-			basic_operators.generate_conditional (transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context), void, context)
-			conditional := basic_operators.transformation_result
+			conditional :=  transformable_factory.new_conditional(transformable_factory.new_expr ("b>a",context), transformable_factory.new_instr ("a:=a-b",context), void, context)
 
 			-- the else-part
 			mod1 := basic_operators.list_append(create {AST_PATH}.make_from_parent(conditional.target_node.path, 4), transformable_factory.new_instr ("b:=b-a",context))
@@ -197,8 +197,7 @@ feature -- Test routines
 			create shared_printer.make_with_output(shared_output)
 
 			if l_root_dir_name /= void then
-				create l_root_dir.make(l_root_dir_name+"\library\gobo\svn")
---				create l_root_dir.make(l_root_dir_name+"\framework\eiffel_transform\test_dir")
+				create l_root_dir.make(l_root_dir_name+"\framework\eiffel_transform")
 				if l_root_dir.exists then
 					print_eiffel_files(l_root_dir)
 				end
@@ -212,6 +211,11 @@ feature {NONE} -- Helpers
 	shared_parser: EIFFEL_PARSER
 	shared_output: ETR_AST_STRING_OUTPUT
 	shared_printer: ETR_AST_STRUCTURE_PRINTER
+
+	bp_vis: ETR_BP_SLOT_INITIALIZER
+		once
+			create Result
+		end
 
 	test_print_file(a_file: KL_BINARY_INPUT_FILE)
 			-- reads a complex syntax file, prints it out from structure and tries to reparse it
@@ -236,6 +240,9 @@ feature {NONE} -- Helpers
 
 				-- Print
 				shared_printer.print_ast_to_output (l_class_ast)
+
+				-- Test bp slot assignment
+				bp_vis.init_from (l_class_ast)
 
 				-- reparse the string representation
 				-- somehow the syntax version gets reset when parsing

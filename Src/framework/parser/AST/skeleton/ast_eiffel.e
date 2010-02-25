@@ -17,13 +17,26 @@ inherit
 
 feature -- Identification
 
-	path: detachable AST_PATH
-			-- path to this ast node from the root
+	path: detachable AST_PATH assign set_path
+			-- Path to this ast node
+
+	breakpoint_slot: INTEGER assign set_breakpoint_slot
+			-- Breakpoint slot this node belongs to
+
+	set_breakpoint_slot (a_breakpoint_slot: like breakpoint_slot)
+			-- Set `breakpoint_slot' to `a_breakpoint_slot'.
+		do
+			breakpoint_slot := a_breakpoint_slot
+		ensure
+			breakpoint_slot_set: breakpoint_slot = a_breakpoint_slot
+		end
 
 	set_path(a_path: like path)
-			-- set path
+			-- Set `path' to `a_path'
 		do
 			path := a_path
+		ensure
+			path_set: path = a_path
 		end
 
 feature -- Visitor

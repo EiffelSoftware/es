@@ -50,6 +50,12 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_class_as (l_as: CLASS_AS)
 		do
+			if processing_needed (l_as.top_indexes, l_as, 1) then
+				output.append_string (ti_note_keyword+ti_new_line)
+				process_child_block_list (l_as.top_indexes, ti_new_line, l_as, 1)
+				output.append_string (ti_new_line+ti_new_line)
+			end
+
 			-- the start is copied from Precursor
 			-- just deferred-part is left out
 			-- and the effective features added
@@ -64,12 +70,6 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			if l_as.is_partial then
 				output.append_string("partial"+ti_Space)
-			end
-
-			if processing_needed (l_as.top_indexes, l_as, 1) then
-				output.append_string (ti_note_keyword+ti_new_line)
-				process_child_block_list (l_as.top_indexes, ti_new_line, l_as, 1)
-				output.append_string (ti_new_line+ti_new_line)
 			end
 
 			output.append_string (ti_class_keyword+ti_New_line)
@@ -89,24 +89,34 @@ feature {AST_EIFFEL} -- Roundtrip
 				process_child_block(l_as.obsolete_message, l_as, 4)
 			end
 
-			if processing_needed (l_as.parents, l_as, 5)  then
+			if processing_needed (l_as.conforming_parents, l_as, 5)  then
 				output.append_string (ti_inherit_keyword+ti_new_line)
-				process_child_block (l_as.parents, l_as, 5)
+				process_child_block_list (l_as.conforming_parents, ti_new_line, l_as, 5)
 			end
 
-			process_child (l_as.creators, l_as, 6)
+			if processing_needed (l_as.non_conforming_parents, l_as, 6)  then
+				output.append_string (ti_inherit_keyword+ti_space+ti_l_curly+ti_none_class+ti_r_curly+ti_new_line)
+				process_child_block_list (l_as.non_conforming_parents, ti_new_line, l_as, 6)
+			end
 
-			if processing_needed (l_as.convertors, l_as, 7)  then
+			if processing_needed (l_as.creators, l_as, 7) then
+				process_child (l_as.creators, l_as, 7)
+			end
+
+			if processing_needed (l_as.convertors, l_as, 8)  then
 				output.append_string (ti_convert_keyword+ti_New_line)
 				output.enter_block
-				process_child_list(l_as.convertors, ti_comma+ti_New_line, l_as, 7)
+				process_child_list(l_as.convertors, ti_comma+ti_New_line, l_as, 8)
 				output.append_string (ti_New_line)
 				output.exit_block
 			end
 
 			output.append_string(ti_New_line)
 
-			process_child(l_as.features, l_as, 8)
+			if processing_needed (l_as.features, l_as, 9) then
+				process_child_list (l_as.features, ti_new_line, l_as, 9)
+				output.append_string (ti_new_line)
+			end
 
 			-- print the effective features
 			if features_to_add.count > 0 then
@@ -125,16 +135,18 @@ feature {AST_EIFFEL} -- Roundtrip
 				end
 			end
 
-			process_child(l_as.invariant_part, l_as, 9)
+			if processing_needed (l_as.invariant_part, l_as, 10) then
+				process_child(l_as.invariant_part, l_as, 10)
+			end
 
-			if processing_needed (l_as.bottom_indexes, l_as, 10) then
-				-- Make sure parsing successful
-				-- Semicolon or end needed before 'note'
-				if l_as.features.is_empty or else l_as.features.last.features.is_empty or else (l_as.features.last.features.last.is_attribute or l_as.features.last.features.last.is_constant) then
+			if processing_needed (l_as.bottom_indexes, l_as, 11) then
+				-- Semicolon is necessary if there was an attribute or constant before
+				if l_as.features /= void and then not l_as.features.is_empty and then not l_as.features.last.features.is_empty and then (l_as.features.last.features.last.is_attribute or l_as.features.last.features.last.is_constant) then
 					output.append_string (ti_semi_colon)
 				end
+
 				output.append_string (ti_note_keyword+ti_new_line)
-				process_child_block_list (l_as.bottom_indexes, ti_new_line, l_as, 10)
+				process_child_block_list (l_as.bottom_indexes, ti_new_line, l_as, 11)
 				output.append_string (ti_new_line)
 			end
 

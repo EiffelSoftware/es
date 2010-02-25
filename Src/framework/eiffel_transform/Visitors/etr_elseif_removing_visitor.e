@@ -96,6 +96,8 @@ feature {AST_EIFFEL} -- Roundtrip
 				replacement_string.append (ti_end_keyword+ti_new_line)
 
 				modifications.extend (basic_operators.replace_with_string (l_as.path, replacement_string))
+			else
+				Precursor(l_as)
 			end
 		end
 

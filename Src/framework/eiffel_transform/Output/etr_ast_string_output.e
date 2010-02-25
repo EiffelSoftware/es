@@ -86,7 +86,7 @@ feature -- Operations
 		end
 
 	reset
-			-- Resets the internals state
+			-- <precursor>
 		do
 			context.clear
 			current_indentation := ""
@@ -95,14 +95,14 @@ feature -- Operations
 		end
 
 	enter_block
-			-- Enters a new indentation-block
+			-- <precursor>
 		do
 			current_indentation := current_indentation + indentation_string
 			block_depth := block_depth + 1
 		end
 
 	exit_block
-			-- Exits an indentation-block
+			-- <precursor>
 		do
 			if current_indentation.count >= indentation_string.count then
 				current_indentation.remove_tail (indentation_string.count)
@@ -110,14 +110,14 @@ feature -- Operations
 			block_depth := block_depth - 1
 		end
 
-	enter_child(a_name: STRING)
-			-- Enters a new child with name `a_name'
+	enter_child(a_child: ANY)
+			-- <precursor>
 		do
 			-- unused
 		end
 
 	exit_child
-			-- Exits a child
+			-- <precursor>
 		do
 			-- unused
 		end
@@ -125,8 +125,6 @@ feature -- Operations
 	append_string(a_string: STRING)
 			-- Appends `a_string' to the output
 		do
-			-- fixme("Eventually add support for adding multiple lines at once, it's however only needed for the modifying printer")
-
 			if last_was_newline then
 				context.add_string (current_indentation.twin)
 			end

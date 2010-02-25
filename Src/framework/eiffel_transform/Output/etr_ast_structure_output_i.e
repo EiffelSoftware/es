@@ -45,10 +45,8 @@ feature -- Operations
 			depth_decreased: block_depth = old block_depth - 1
 		end
 
-	enter_child(a_name: STRING)
-			-- Enters a new child with name `a_name'
-		require
-			not_void: a_name /= void
+	enter_child(a_child: ANY)
+			-- Enters a new child
 		deferred
 		end
 

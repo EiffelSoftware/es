@@ -99,9 +99,7 @@ feature {NONE} -- Implementation
 				end
 			end
 		rescue
-			if not etr_error_handler.has_errors then
-				etr_error_handler.add_error (Current, "refactor", "Unhandled exception from EiffelTransform")
-			end
+			log_exception(Current, "refactor")
 
 			show_etr_error
 			success := false

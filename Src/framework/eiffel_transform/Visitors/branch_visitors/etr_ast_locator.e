@@ -61,28 +61,26 @@ feature -- Creation
 
 feature {NONE} -- Implementation
 
-	process_n_way_branch(a_parent: AST_EIFFEL; br:TUPLE[AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and branches `br'
+	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+			-- <precursor>
 		local
 			l_next_br_number: INTEGER
 		do
-			if attached path as p then
-				l_next_br_number := next_branch
+			l_next_br_number := next_branch
 
-				if current_position = p.as_array.upper-1 then
-					if l_next_br_number <= br.count then
-						if attached {AST_EIFFEL}br.item (l_next_br_number) as item then
-							found_node := item
-						else
-							found_node := void
-						end
-						found := true
+			if current_position = path.as_array.upper-1 then
+				if l_next_br_number <= a_branches.count then
+					if attached a_branches[l_next_br_number] as item then
+						found_node := item
+					else
+						found_node := void
 					end
-				elseif current_position < p.as_array.upper then
-					current_position := current_position+1
-					if attached {AST_EIFFEL}br.item (l_next_br_number) as next then
-						safe_process (next)
-					end
+					found := true
+				end
+			elseif current_position < path.as_array.upper then
+				current_position := current_position+1
+				if attached a_branches[l_next_br_number] as next then
+					next.process(Current)
 				end
 			end
 		end
@@ -101,27 +99,6 @@ feature {NONE} -- Implementation
 			Result := path.as_array.item (current_position+1)
 		end
 
-feature -- Roundtrip
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- process an EIFFEL_LIST
-		local
-			next_br_number: INTEGER
-		do
-			if attached path as p then
-				next_br_number := next_branch
-
-				if current_position = p.as_array.upper-1 then
-					if next_br_number <= l_as.count then
-						found_node := l_as.i_th (next_br_number)
-						found := true
-					end
-				elseif current_position < p.as_array.upper then
-					current_position := current_position+1
-					safe_process(l_as.i_th (next_br_number))
-				end
-			end
-		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
