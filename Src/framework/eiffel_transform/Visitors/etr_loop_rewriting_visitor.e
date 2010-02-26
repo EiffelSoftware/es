@@ -6,22 +6,10 @@ note
 class
 	ETR_LOOP_REWRITING_VISITOR
 inherit
-	AST_ITERATOR
-		export
-			{AST_EIFFEL} all
+	ETR_REWRITING_VISITOR
 		redefine
 			process_loop_as
 		end
-	SHARED_TEXT_ITEMS
-		export
-			{NONE} all
-		end
-	ETR_SHARED_TOOLS
-	ETR_SHARED_BASIC_OPERATORS
-
-feature -- Access
-
-	modifications: LIST[ETR_AST_MODIFICATION]
 
 feature -- Operation
 
@@ -32,10 +20,11 @@ feature -- Operation
 		do
 			first_only := a_first_only
 			was_processed := false
-
-			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
 			unroll_count := a_unroll_count
-			a_ast.process (Current)
+
+			create remapped_regions.make
+
+			init_and_process (a_ast)
 		end
 
 feature {NONE} -- Implementation
@@ -53,26 +42,61 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_compound_string: STRING
 			l_single_iteration: STRING
 			l_index: like unroll_count
+			l_current_slot: INTEGER
+			l_stop_slot, l_body_first_slot: INTEGER
+			l_from_bp_count, l_body_bp_count: INTEGER
+			l_first_new_slot: INTEGER
+			l_old_total_bp_count, l_new_total_bp_count: INTEGER
 		do
 			if not (first_only and was_processed) then
 				create l_replacement_string.make_empty
+				l_old_total_bp_count := break_point_slots_of (l_as)
+				create breakpoint_mappings.make (l_old_total_bp_count*unroll_count*2)
+				l_stop_slot := l_as.stop.breakpoint_slot
 				if l_as.from_part /= void then
+					-- mappings of from-part are 1:1
+					l_current_slot := l_as.from_part.first.breakpoint_slot
+					l_first_new_slot := l_current_slot
 					l_replacement_string.append (ast_tools.ast_to_string (l_as.from_part))
+					l_from_bp_count := break_point_slots_of (l_as.from_part)
+					map_region_one_to_one(l_current_slot, l_current_slot+l_from_bp_count)
+				else
+					l_first_new_slot := l_stop_slot
 				end
 
 				l_if_line := ti_if_keyword+ti_space+ti_not_keyword+ti_space+ti_l_parenthesis+ast_tools.ast_to_string (l_as.stop)+ti_r_parenthesis+ti_space+ti_then_keyword+ti_new_line
 				l_compound_string := ast_tools.ast_to_string (l_as.compound)+ti_end_keyword+ti_new_line
 				l_single_iteration := l_if_line+l_compound_string
 
+				l_body_bp_count := break_point_slots_of(l_as.compound)
+
+				if l_as.compound /= void then
+					l_body_first_slot := l_as.compound.first.breakpoint_slot
+				end
+
 				from
+					l_current_slot := l_stop_slot
 					l_index := 1
 				until
 					l_index > unroll_count
 				loop
+					-- map current slot to stop slot
+					breakpoint_mappings.extend (l_stop_slot,l_current_slot)
+					l_current_slot := l_current_slot+1
+					-- map if-body to original loop body
+					if l_as.compound/=void then
+						map_region_shifted(l_current_slot, l_body_bp_count, l_body_first_slot)
+						l_current_slot := l_current_slot+l_body_bp_count
+					end
+
 					l_replacement_string.append (l_single_iteration)
 
 					l_index := l_index + 1
 				end
+
+				l_new_total_bp_count := l_current_slot - l_first_new_slot
+				remapped_regions.extend ([l_first_new_slot, l_first_new_slot, l_old_total_bp_count, l_new_total_bp_count])
+				breakpoint_mappings_internal.extend (breakpoint_mappings)
 
 				modifications.extend (basic_operators.replace_with_string (l_as.path, l_replacement_string))
 				was_processed := true

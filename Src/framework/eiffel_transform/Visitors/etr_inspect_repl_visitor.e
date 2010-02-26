@@ -6,19 +6,11 @@ note
 class
 	ETR_INSPECT_REPL_VISITOR
 inherit
-	AST_ITERATOR
+	ETR_REWRITING_VISITOR
 		redefine
 			process_inspect_as,
 			process_case_as
 		end
-	ETR_SHARED_TOOLS
-	ETR_SHARED_BASIC_OPERATORS
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
-	ETR_SHARED_ERROR_HANDLER
-	SHARED_TEXT_ITEMS
 
 feature -- Operations
 
@@ -26,15 +18,8 @@ feature -- Operations
 		require
 			non_void: a_ast /= void
 		do
-			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
-			a_ast.process (Current)
+			init_and_process (a_ast)
 		end
-
-feature -- Access
-
-	modifications: LIST[ETR_AST_MODIFICATION]
-			-- The modifications resulting from the replacements
-
 
 feature {NONE} -- Implementation
 

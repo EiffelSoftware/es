@@ -6,22 +6,10 @@ note
 class
 	ETR_ELSEIF_REMOVING_VISITOR
 inherit
-	AST_ITERATOR
-		export
-			{AST_EIFFEL} all
+	ETR_REWRITING_VISITOR
 		redefine
 			process_if_as
 		end
-	SHARED_TEXT_ITEMS
-		export
-			{NONE} all
-		end
-	ETR_SHARED_TOOLS
-	ETR_SHARED_BASIC_OPERATORS
-
-feature -- Access
-
-	modifications: LIST[ETR_AST_MODIFICATION]
 
 feature -- Operation
 
@@ -29,8 +17,7 @@ feature -- Operation
 		require
 			non_void: a_ast /= void
 		do
-			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
-			a_ast.process (Current)
+			init_and_process(a_ast)
 		end
 
 feature {NONE} -- Implementation

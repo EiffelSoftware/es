@@ -81,7 +81,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_tagged_as (l_as: TAGGED_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
 			Precursor(l_as)
 			is_in_breakpoint_slot := false
@@ -101,13 +101,13 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_retry_as (l_as: RETRY_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			current_breakpoint_slot := current_breakpoint_slot + 1
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
 			Precursor(l_as)
 			is_in_breakpoint_slot := false
@@ -116,7 +116,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
 			Precursor(l_as)
 			is_in_breakpoint_slot := false
@@ -125,7 +125,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_if_as (l_as: IF_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			process_in_slot (l_as.condition)
 			current_breakpoint_slot := current_breakpoint_slot + 1
 			safe_process_and_check (l_as.compound)
@@ -135,7 +135,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_assign_as (l_as: ASSIGN_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
 			Precursor(l_as)
 			is_in_breakpoint_slot := false
@@ -144,7 +144,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_reverse_as (l_as: REVERSE_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
 			Precursor(l_as)
 			is_in_breakpoint_slot := false
@@ -153,7 +153,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_elseif_as (l_as: ELSIF_AS)
 		do
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
 			Precursor(l_as)
 			is_in_breakpoint_slot := false
@@ -197,11 +197,17 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process_and_check (l_as.rescue_clause)
 
 			-- Breakpoint slot at the end of a routine
-			l_as.set_breakpoint_slot (current_breakpoint_slot)
+			assign_current_slot (l_as)
 			current_breakpoint_slot := current_breakpoint_slot + 1
 		end
 
 feature {NONE} -- Implementation
+
+	assign_current_slot (l_as: AST_EIFFEL)
+			-- Assign current slot to `l_as'
+		do
+			l_as.set_breakpoint_slot (current_breakpoint_slot)
+		end
 
 	context: detachable CLASS_C
 			-- The class the ast belongs to
@@ -322,7 +328,7 @@ feature {NONE} -- Implementation
 			-- <precursor>
 		do
 			if is_in_breakpoint_slot then
-				a_node.set_breakpoint_slot (current_breakpoint_slot)
+				assign_current_slot (a_node)
 			end
 		end
 

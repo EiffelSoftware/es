@@ -11,6 +11,9 @@ feature -- Results
 	modifications: LIST[ETR_AST_MODIFICATION]
 			-- Modifications resulting from the last operator
 
+	breakpoint_mappings: HASH_TABLE[INTEGER,INTEGER]
+			-- Mappings between old and new breakpoints
+
 feature -- Operations
 
 	replace_assignment_attempts(a_transformable: ETR_TRANSFORMABLE)
@@ -21,6 +24,7 @@ feature -- Operations
 			create l_visitor.make (a_transformable.context.class_context)
 			a_transformable.target_node.process (l_visitor)
 			modifications := l_visitor.modifications
+			breakpoint_mappings := l_visitor.breakpoint_mappings
 		end
 
 	replace_elseifs(a_transformable: ETR_TRANSFORMABLE)
@@ -31,6 +35,7 @@ feature -- Operations
 		do
 			elseif_remover.remove_elseifs_in (a_transformable)
 			modifications := elseif_remover.modifications
+			breakpoint_mappings := elseif_remover.breakpoint_mappings
 		end
 
 	remove_ifs(a_transformable: ETR_TRANSFORMABLE; a_always_branch: BOOLEAN; a_process_first_only: BOOLEAN)
@@ -41,6 +46,7 @@ feature -- Operations
 		do
 			if_remover.remove_ifs_in (a_transformable.target_node, a_always_branch, a_process_first_only)
 			modifications := if_remover.modifications
+			breakpoint_mappings := if_remover.breakpoint_mappings
 		end
 
 	replace_inspects(a_transformable: ETR_TRANSFORMABLE)
@@ -51,6 +57,7 @@ feature -- Operations
 		do
 			inspect_replacer.replace_inspects_in(a_transformable.target_node)
 			modifications := inspect_replacer.modifications
+			breakpoint_mappings := inspect_replacer.breakpoint_mappings
 		end
 
 	unroll_loop(a_transformable: ETR_TRANSFORMABLE; a_unroll_count: INTEGER; a_process_first_only: BOOLEAN)
@@ -62,6 +69,7 @@ feature -- Operations
 		do
 			loop_rewriter.rewrite_loops_in (a_transformable.target_node, a_unroll_count, a_process_first_only)
 			modifications := loop_rewriter.modifications
+			breakpoint_mappings := loop_rewriter.breakpoint_mappings
 		end
 
 feature {NONE} -- Implementation

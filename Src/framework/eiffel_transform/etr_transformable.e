@@ -94,6 +94,11 @@ feature -- Operation
 			l_modifier.add_list (a_modification_list)
 			l_modifier.apply_to (Current)
 			target_node := l_modifier.modified_transformable.target_node
+
+			-- update breakpoint-slots
+			if are_breakpoints_calculated then
+				calculate_breakpoint_slots
+			end
 		end
 
 	apply_modification (a_modification: ETR_AST_MODIFICATION)
@@ -108,6 +113,11 @@ feature -- Operation
 			l_modifier.add (a_modification)
 			l_modifier.apply_to (Current)
 			target_node := l_modifier.modified_transformable.target_node
+
+			-- update breakpoint-slots
+			if are_breakpoints_calculated then
+				calculate_breakpoint_slots
+			end
 		end
 
 feature -- Access
@@ -198,7 +208,7 @@ feature {NONE} -- creation
 
 				a_list.forth
 			end
-			
+
 			target_node := l_eiffel_list
 			context := a_context
 			is_valid := true

@@ -6,18 +6,10 @@ note
 class
 	ETR_IF_REMOVING_VISITOR
 inherit
-	AST_ITERATOR
-		export
-			{AST_EIFFEL} all
+	ETR_REWRITING_VISITOR
 		redefine
 			process_if_as
 		end
-	ETR_SHARED_TOOLS
-	ETR_SHARED_BASIC_OPERATORS
-
-feature -- Access
-
-	modifications: LIST[ETR_AST_MODIFICATION]
 
 feature -- Operation
 
@@ -27,10 +19,9 @@ feature -- Operation
 		do
 			first_only := a_first_only
 			was_processed := false
-
-			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
 			take_branches := a_take_branches
-			a_ast.process (Current)
+
+			init_and_process (a_ast)
 		end
 
 feature {NONE} -- Implementation

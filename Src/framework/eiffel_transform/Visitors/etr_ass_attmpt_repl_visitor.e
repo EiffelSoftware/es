@@ -6,16 +6,10 @@ note
 class
 	ETR_ASS_ATTMPT_REPL_VISITOR
 inherit
-	AST_ITERATOR
+	ETR_REWRITING_VISITOR
 		redefine
 			process_reverse_as,
 			process_feature_as
-		end
-	ETR_SHARED_TOOLS
-	ETR_SHARED_BASIC_OPERATORS
-	REFACTORING_HELPER
-		export
-			{NONE} all
 		end
 	ETR_SHARED_ERROR_HANDLER
 create
@@ -36,12 +30,8 @@ feature {NONE} -- Creation
 		do
 			class_context := a_class_context
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			create breakpoint_mappings.make(20)
 		end
-
-feature -- Access
-
-	modifications: LIST[ETR_AST_MODIFICATION]
-			-- The modifications resulting from the replacements
 
 feature {AST_EIFFEL} -- Roundtrip
 
