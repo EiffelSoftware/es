@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 					-- add comment for new constant
 					l_comments.force (" Extracted from "+class_i.name+".", preferences.constant_name)
 
-					l_class_string := ast_tools.commented_class_to_string (l_modifier.modified_ast.target_node, l_comments)
+					l_class_string := ast_tools.commented_class_to_string (l_modifier.modified_transformable.target_node, l_comments)
 
 					create l_class_modifier.make (a_mods.occ_class.original_class)
 					l_class_modifier.prepare

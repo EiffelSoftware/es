@@ -16,15 +16,7 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	path_initializer: ETR_AST_PATH_INITIALIZER
-			-- shared instance of ETR_AST_PATH_INITIALIZER
-		once
-			create Result
-		end
-
 feature -- Access
-
-	-- fixme! Make all results available here
 
 	found: BOOLEAN
 
@@ -108,22 +100,6 @@ feature -- Operations
 				found := true
 				last_ast := ast_locator.found_node
 			end
-		end
-
-	index_ast_from_root(an_ast: AST_EIFFEL)
-			-- indexes and ast with root `an_ast'
-		require
-			non_void: an_ast /= void
-		do
-			path_initializer.process_from_root(an_ast)
-		end
-
-	reindex_ast(an_ast: AST_EIFFEL) is
-			-- reindexes `an_ast'
-		require
-			non_void: an_ast /= void
-		do
-			path_initializer.process_from(an_ast)
 		end
 
 note

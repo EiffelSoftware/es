@@ -37,7 +37,40 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
+	path_initializer: ETR_AST_PATH_INITIALIZER
+			-- shared instance of ETR_AST_PATH_INITIALIZER
+		once
+			create Result
+		end
+
+	bp_initializer: ETR_BP_SLOT_INITIALIZER
+			-- shared instance of ETR_BP_SLOT_INITIALIZER
+		once
+			create Result
+		end
+
+	calculate_paths
+			-- Calculate all the paths in `target_node'
+		do
+			if is_valid then
+				path_initializer.process_from_root(target_node)
+			end
+		end
+
 feature -- Operation
+
+	calculate_breakpoint_slots
+			-- Calculate the breakpoint slots in `target_node'
+		do
+			if is_valid then
+				if not context.is_empty then
+					bp_initializer.init_with_context (target_node, context.class_context.written_class)
+				else
+					bp_initializer.init_from (target_node)
+				end
+				are_breakpoints_calculated := true
+			end
+		end
 
 	transform_to_context (a_other_context: like context): like Current
 			-- Transform `Current' to `a_other_context'
@@ -60,7 +93,7 @@ feature -- Operation
 			create l_modifier.make
 			l_modifier.add_list (a_modification_list)
 			l_modifier.apply_to (Current)
-			target_node := l_modifier.modified_ast.target_node
+			target_node := l_modifier.modified_transformable.target_node
 		end
 
 	apply_modification (a_modification: ETR_AST_MODIFICATION)
@@ -74,10 +107,13 @@ feature -- Operation
 			create l_modifier.make
 			l_modifier.add (a_modification)
 			l_modifier.apply_to (Current)
-			target_node := l_modifier.modified_ast.target_node
+			target_node := l_modifier.modified_transformable.target_node
 		end
 
 feature -- Access
+
+	are_breakpoints_calculated: BOOLEAN
+			-- Have breakpoint slots been calculated in `target_node'
 
 	path: detachable AST_PATH
 			-- path of `Current'
@@ -132,10 +168,10 @@ feature {NONE} -- creation
 
 			context := a_context
 
-			-- index it
-			path_tools.index_ast_from_root (target_node)
-
 			is_valid := true
+
+			-- index it
+			calculate_paths
 		end
 
 	make_from_ast_list(a_list: LIST[like target_node]; a_context: like context; duplicate: BOOLEAN)
@@ -162,13 +198,13 @@ feature {NONE} -- creation
 
 				a_list.forth
 			end
-
-			-- reindex it
-			path_tools.index_ast_from_root(l_eiffel_list)
-
+			
 			target_node := l_eiffel_list
 			context := a_context
 			is_valid := true
+
+			-- reindex it
+			calculate_paths
 		end
 
 	make_invalid

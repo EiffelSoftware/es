@@ -153,12 +153,12 @@ feature -- Output
 
 feature -- Operations
 
-	duplicate_ast(an_ast: AST_EIFFEL)
-			-- Duplicates `an_ast' and stores the result in `duplicated_ast'
+	duplicate_ast(a_ast: AST_EIFFEL)
+			-- Duplicates `a_ast' and stores the result in `duplicated_ast'
 		require
-			non_void: an_ast /= void
+			non_void: a_ast /= void
 		do
-			duplicated_ast := an_ast.deep_twin
+			duplicated_ast := a_ast.deep_twin
 		end
 
 	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [like instr]

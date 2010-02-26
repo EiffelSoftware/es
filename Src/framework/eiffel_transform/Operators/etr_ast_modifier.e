@@ -17,14 +17,14 @@ feature {NONE} -- Creation
 			-- create a new instance
 		do
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
-			create modified_ast.make_invalid
+			create modified_transformable.make_invalid
 			create output.make
 		end
 
 feature -- Access
 
-	modified_ast: detachable ETR_TRANSFORMABLE
-			-- Ast with modifications applied
+	modified_transformable: detachable ETR_TRANSFORMABLE
+			-- Transformable with modifications applied
 
 	modifications: LIST[ETR_AST_MODIFICATION]
 			-- The modifications stored
@@ -71,10 +71,10 @@ feature -- Operations
 			parsing_helper.parse_printed_ast(a_transformable.target_node, output.string_representation)
 
 			if attached parsing_helper.parsed_ast then
-				create modified_ast.make_from_ast (parsing_helper.parsed_ast, a_transformable.context, false)
+				create modified_transformable.make_from_ast (parsing_helper.parsed_ast, a_transformable.context, false)
 			else
-				create modified_ast.make_invalid
-				error_handler.add_error (Current, "apply_to", "Modification resulted in unparsable text")
+				create modified_transformable.make_invalid
+				error_handler.add_error (Current, "apply_to", "Modification resulted in unparsable text.")
 			end
 
 			-- reset the modifications list and output

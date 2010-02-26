@@ -3,6 +3,10 @@ deferred class
 
 feature
 	test
+		require
+			in_def_a: true
 		deferred
+		ensure
+			in_def_a: true
 		end
 end

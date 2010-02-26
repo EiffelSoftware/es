@@ -119,19 +119,19 @@ feature -- Test routines
 			modifier.apply_to (conditional)
 
 			-- change operator to >=
-			mod1 := basic_operators.replace_with_string (create {AST_PATH}.make_from_string(modifier.modified_ast.target_node, "1.1.2"), ">=")
+			mod1 := basic_operators.replace_with_string (create {AST_PATH}.make_from_string(modifier.modified_transformable.target_node, "1.1.2"), ">=")
 			modifier.add (mod1)
-			modifier.apply_to (modifier.modified_ast)
+			modifier.apply_to (modifier.modified_transformable)
 
 			-- reference
-			parsing_helper.parse_printed_ast (modifier.modified_ast.target_node,
+			parsing_helper.parse_printed_ast (modifier.modified_transformable.target_node,
 			"if a >= b then %N"+
 				"a := a - b %N"+
 			"else %N"+
 				"b := b - a %N"+
 			"end")
 
-			assert("Invalid result", are_asts_equal(parsing_helper.parsed_ast, modifier.modified_ast.target_node))
+			assert("Invalid result", are_asts_equal(parsing_helper.parsed_ast, modifier.modified_transformable.target_node))
 		end
 
 	print_eiffel_files(a_directory: DIRECTORY)

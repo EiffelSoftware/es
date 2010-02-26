@@ -8,7 +8,13 @@ feature
 			-- 2 arguments, 1 result
 		local
 			l1,l2,l3: INTEGER
+			l: LIST [STRING_8]
 		do
+			if l.for_all (agent (x: STRING_8): BOOLEAN
+				do
+					Result := x /= Void
+				end) then
+			end
 			l1 := 1
 			-- ex start
 			if l1>arg1 then

@@ -1,104 +1,87 @@
 note
-	description: "Prints an ast in dot-format."
+	description: "Print's an ast with breakpoint-slots"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_AST_DOT_OUTPUT
+	ETR_AST_BP_OUTPUT
 inherit
-	ETR_AST_STRUCTURE_OUTPUT_I
+	ETR_AST_STRING_OUTPUT
+		redefine
+			append_string,
+			enter_child,
+			exit_child,
+			make,
+			reset
+		end
 create
-	make
-
-feature -- Operation
-
-	start
-			-- Start processing
-		do
-			context.add_string ("digraph {%N%Tnode [margin=0.2,0.1]%N%Tedge [fontsize=20.0]%N")
-		end
-
-	finish
-			-- Stop processing
-		do
-			context.add_string("}")
-		end
+	make,
+	make_with_indentation_string
 
 feature {NONE} -- Creation
 
-	make
-			-- Create with `an_indentation_string'
+	make is
+			-- <precursor>
 		do
-			create context.make
-			create node_stack.make
+			create child_stack.make
+			is_new_child := true
+			Precursor
 		end
 
 feature {NONE} -- Implementation
 
-	context: ROUNDTRIP_STRING_LIST_CONTEXT
-			-- String-context used to append strings
+	child_stack: LINKED_STACK[ANY]
 
-	node_stack: LINKED_STACK[INTEGER]
+	is_new_child: BOOLEAN
 
-	node_counter: INTEGER
-
-feature -- Output
-
-	string_representation:STRING
-			-- string representation of `Current'
-		do
-			Result := context.string_representation
-		end
+feature -- Operations
 
 	reset
 			-- <precursor>
 		do
-			context.clear
-			node_counter := 0
+			child_stack.wipe_out
+			is_new_child := true
+			Precursor
 		end
 
 	append_string(a_string: STRING)
 			-- <precursor>
 		do
-			-- unused
-		end
+			if last_was_newline then
+				-- Hack to print the breakpoint-slot at the end of a routine
+				if attached {ROUTINE_AS}child_stack.item as ast then
+					if not is_new_child and ast.breakpoint_slot/=0 then
+						context.add_string (ast.breakpoint_slot.out)
+					end
+				elseif is_new_child and attached {AST_EIFFEL}child_stack.item as ast and then ast.breakpoint_slot/=0 then
+					context.add_string (ast.breakpoint_slot.out)
+				end
+				context.add_string (current_indentation.twin)
+			end
 
-	enter_block
-			-- <precursor>
-		do
-			block_depth := block_depth + 1
-		end
+			context.add_string (a_string)
 
-	exit_block
-			-- <precursor>
-		do
-			block_depth := block_depth - 1
-		end
-
-	exit_child
-			-- <precursor>
-		do
-			node_stack.remove
+			if a_string.ends_with ("%N") then
+				last_was_newline := true
+			else
+				last_was_newline := false
+			end
 		end
 
 	enter_child(a_child: ANY)
 			-- <precursor>
 		do
-			-- Create label for the new node
-			context.add_string ("%T{node [label=%""+a_child.generating_type+"%"] "+node_counter.out+"}%N")
-			-- Create edge from the current node
-			if not node_stack.is_empty then
-				if attached {AST_EIFFEL}a_child as ast_child and then attached ast_child.path then
-					context.add_string ("%T"+node_stack.item.out+"->"+node_counter.out+" [label="+ast_child.path.branch_id.out+"]%N")
-				else
-					context.add_string ("%T"+node_stack.item.out+"->"+node_counter.out+"%N")
-				end
-			end
-
-			-- Add to stack and increment counter
-			node_stack.put (node_counter)
-			node_counter := node_counter+1
+			child_stack.put (a_child)
+			is_new_child := true
 		end
+
+	exit_child
+			-- <precursor>
+		do
+			child_stack.remove
+			is_new_child := false
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

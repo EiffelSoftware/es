@@ -126,6 +126,8 @@ feature {NONE} -- Implementation
 	is_in_agent_target: BOOLEAN
 			-- Hack needed to process agent OPERANDS
 
+	is_in_inline_agent: BOOLEAN
+
 	processing_needed(an_ast: detachable AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
 			-- should `an_ast' be processed
 		do
@@ -1139,7 +1141,11 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 				process_child_block (l_as.rescue_clause, l_as, 6)
 			end
 
-			output.append_string(ti_End_keyword+ti_New_line)
+			output.append_string(ti_End_keyword)
+
+			if not is_in_inline_agent then
+				output.append_string (ti_new_line)
+			end
 		end
 
 	process_constant_as (l_as: CONSTANT_AS)
@@ -1451,9 +1457,11 @@ feature {AST_EIFFEL} -- Roundtrip: Agents
 	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
 		do
 			output.enter_block
-			output.append_string (ti_New_line+ti_agent_keyword+ti_Space)
+			output.append_string (ti_agent_keyword+ti_Space)
 
+			is_in_inline_agent := true
 			process_child(l_as.body, l_as, 1)
+			is_in_inline_agent := false
 
 			if processing_needed(l_as.operands, l_as, 2) then
 				output.append_string (ti_l_parenthesis)

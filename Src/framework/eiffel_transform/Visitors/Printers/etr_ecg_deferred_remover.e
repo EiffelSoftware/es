@@ -43,7 +43,11 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			process_child(l_as.routine_body, l_as, 4)
 
-			output.append_string(ti_End_keyword+ti_New_line)
+			output.append_string(ti_End_keyword)
+
+			if not is_in_inline_agent then
+				output.append_string (ti_new_line)
+			end
 		end
 
 	process_body_as (l_as: BODY_AS)
