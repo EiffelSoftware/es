@@ -269,7 +269,7 @@ feature{NONE} -- Implementation
 		do
 				-- Rewrite the solution in the context of the recipient.
 			create l_solution_text.make (64)
-			if attached {AFX_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not l_target_expr.is_for_boogie then
+			if attached {AFX_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not is_for_boogie then
 				l_solution_text.append (l_target_expr.text)
 				l_solution_text.append (".")
 			end

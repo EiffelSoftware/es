@@ -74,8 +74,8 @@ feature{NONE} -- Implementation
 					exception_spot,
 					a_fixing_location.instructions,
 					l_premise,
-					equation_as_state ((not l_consequent).equation (l_value)).union (equation_as_state (l_premise.equation (l_value))),
-					equation_as_state (l_consequent.equation (l_value)),
+					equation_as_state (equation_with_value ((not l_consequent), l_value)).union (equation_as_state (equation_with_value (l_premise, l_value))),
+					equation_as_state (equation_with_value (l_consequent, l_value)),
 					a_fixing_location.scope_level, False))
 
 				-- Generate fix: (p -> q is the failing assertion)

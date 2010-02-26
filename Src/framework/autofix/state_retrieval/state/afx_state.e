@@ -221,9 +221,9 @@ feature -- Access
 		do
 			create Result.make_basic (class_, feature_, count)
 			do_all (
-				agent (equation: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+				agent (a_equation: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
 					do
-						a_skeleton.force_last (equation.expression)
+						a_skeleton.force_last (a_equation.expression)
 					end (?, Result))
 		ensure
 			good_result: Result.count = count
@@ -290,7 +290,7 @@ feature -- Access
 				l_diff.do_all (
 					agent (a_expr: AFX_EXPRESSION; a_state: like Current)
 						do
-							a_state.force_last (a_expr.equation_with_random_value)
+							a_state.force_last (equation_with_random_value (a_expr))
 						end (?, Result))
 			end
 		ensure

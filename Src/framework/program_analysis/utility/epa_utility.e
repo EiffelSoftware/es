@@ -10,6 +10,57 @@ class
 inherit
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	SHARED_WORKBENCH
+
+	SHARED_EIFFEL_PARSER
+
+	SHARED_SERVER
+
+feature -- AST
+
+	text_from_ast (a_ast: AST_EIFFEL): STRING
+			-- Text from `a_ast'
+		require
+			a_ast_attached: a_ast /= Void
+		do
+			ast_printer_output.reset
+			ast_printer.print_ast_to_output (a_ast)
+			Result := ast_printer_output.string_representation
+		end
+
+	ast_printer: ETR_AST_STRUCTURE_PRINTER
+			-- AST printer
+		local
+			l_output: ETR_AST_STRING_OUTPUT
+		once
+			create Result.make_with_output (ast_printer_output)
+		end
+
+	ast_printer_output: ETR_AST_STRING_OUTPUT
+			-- Output for `ast_printer'
+		once
+			create Result.make_with_indentation_string ("%T")
+		end
+
+	ast_from_text (a_text: STRING): AST_EIFFEL
+			-- AST node from `a_text'
+			-- `a_text' must be able to be parsed in to a single AST node.
+		local
+			l_text: STRING
+		do
+			l_text := "feature foo do " + a_text + "%Nend"
+			entity_feature_parser.parse_from_string (l_text, Void)
+
+			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
+				if attached {DO_AS} l_routine.routine_body as l_do then
+					if l_do.compound.count = 1 then
+						Result := l_do.compound.first
+					end
+				end
+			end
+			check Result /= Void end
+		end
+
 feature -- Feature related
 
 	arguments_of_feature (a_feature: FEATURE_I): DS_HASH_TABLE [INTEGER, STRING]

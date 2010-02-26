@@ -58,8 +58,8 @@ feature{NONE} -- Implementation
 					exception_spot,
 					a_fixing_location.instructions,
 					Void,
-					equation_as_state (l_negated_failing_assert.equation (l_value)),
-					equation_as_state (l_failing_assert.equation (l_value)),
+					equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
+					equation_as_state (equation_with_value (l_failing_assert, l_value)),
 					a_fixing_location.scope_level, False))
 
 				-- Generate fix: (p is the failing assertion), simplified version.
@@ -70,8 +70,8 @@ feature{NONE} -- Implementation
 						exception_spot,
 						a_fixing_location.instructions,
 						Void,
-						equation_as_state (l_negated_failing_assert.equation (l_value)),
-						equation_as_state (l_failing_assert.equation (l_value)),
+						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
+						equation_as_state (equation_with_value (l_failing_assert, l_value)),
 						a_fixing_location.scope_level, False)
 			l_fix.set_is_simplification_needed (True)
 			fixes.extend (l_fix)
@@ -101,8 +101,8 @@ feature{NONE} -- Implementation
 						exception_spot,
 						a_fixing_location.instructions,
 						l_negated_failing_assert,
-						equation_as_state (l_negated_failing_assert.equation (l_value)),
-						equation_as_state (l_failing_assert.equation (l_value)),
+						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
+						equation_as_state (equation_with_value (l_failing_assert, l_value)),
 						a_fixing_location.scope_level, True))
 
 					-- Generate fix: (p is the failing assertion), simplified version
@@ -116,8 +116,8 @@ feature{NONE} -- Implementation
 						exception_spot,
 						a_fixing_location.instructions,
 						l_negated_failing_assert,
-						equation_as_state (l_negated_failing_assert.equation (l_value)),
-						equation_as_state (l_failing_assert.equation (l_value)),
+						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
+						equation_as_state (equation_with_value (l_failing_assert, l_value)),
 						a_fixing_location.scope_level, True)
 				l_fix.set_is_simplification_needed (True)
 				fixes.extend (l_fix)
@@ -167,8 +167,8 @@ feature{NONE} -- Implementation
 						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
-						equation_as_state (l_negated_failing_assert.equation (l_value)),
-						equation_as_state (l_failing_assert.equation (l_value)),
+						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
+						equation_as_state (equation_with_value (l_failing_assert, l_value)),
 						a_fixing_location.scope_level, False))
 
 					-- Generate fix: (p is the failing assertion), simplified version
@@ -184,8 +184,8 @@ feature{NONE} -- Implementation
 						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
-						equation_as_state (l_negated_failing_assert.equation (l_value)),
-						equation_as_state (l_failing_assert.equation (l_value)),
+						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
+						equation_as_state (equation_with_value (l_failing_assert, l_value)),
 						a_fixing_location.scope_level, False)
 				l_fix.set_is_simplification_needed (True)
 				fixes.extend (l_fix)
@@ -203,7 +203,7 @@ feature{NONE} -- Implementation
 						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
-						equation_as_state (l_negated_failing_assert.equation (l_value)),
+						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
 						create {AFX_DELAYED_STATE}.make_as_passing_substracted_from_failing_invariants,
 						a_fixing_location.scope_level, False))
 

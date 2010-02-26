@@ -31,10 +31,10 @@ inherit
 			is_equal
 		end
 
-	AFX_UTILITY
-		undefine
-			is_equal
-		end
+--	AFX_UTILITY
+--		undefine
+--			is_equal
+--		end
 
 create
 	make,

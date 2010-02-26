@@ -16,7 +16,7 @@ inherit
 
 	REFACTORING_HELPER
 
-	AFX_SOLVER_FACTORY
+--	AFX_SOLVER_FACTORY
 
 	EPA_UTILITY
 
@@ -46,32 +46,6 @@ feature -- Access
 
 	written_class: CLASS_C
 			-- Class where `ast' is written
-
-	equation (a_value: AFX_EXPRESSION_VALUE): AFX_EQUATION
-			-- Equation with current as expression and `a_value' as value.
-		do
-			create Result.make (Current, a_value)
-		end
-
-	equation_with_random_value: AFX_EQUATION
-			-- Equation with current as expression, with a randomly
-			-- assigned value.
-		local
-			l_value: AFX_EXPRESSION_VALUE
-		do
-			if type.is_boolean then
-				create {AFX_RANDOM_BOOLEAN_VALUE} l_value.make
-			elseif type.is_integer then
-				create {AFX_RANDOM_INTEGER_VALUE} l_value.make
-			else
-				check not_supported_yet: False end
-				to_implement ("Implement random value for other types.")
-			end
-
-			Result := equation (l_value)
-		ensure
-			value_is_random: Result.value.is_random
-		end
 
 feature --Logic operations
 
