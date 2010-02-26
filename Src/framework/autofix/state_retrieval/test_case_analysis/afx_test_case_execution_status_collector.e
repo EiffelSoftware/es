@@ -8,7 +8,7 @@ class
 	AFX_TEST_CASE_EXECUTION_STATUS_COLLECTOR
 
 inherit
-	AFX_CONSTANTS
+	EPA_CONSTANTS
 
 	REFACTORING_HELPER
 
@@ -79,7 +79,7 @@ feature -- Actions
 			end
 		end
 
-	on_break_point_hit (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
+	on_break_point_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to be performed when `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the retrieved system state at `a_bpslot'.
 		require
@@ -113,7 +113,7 @@ feature -- Actions
 			until
 				status.after
 			loop
-				if attached {AFX_STATE} status.item_for_iteration.pre_state as l_pre_state then
+				if attached {EPA_STATE} status.item_for_iteration.pre_state as l_pre_state then
 				else
 					l_keys.extend (status.key_for_iteration)
 				end
@@ -162,8 +162,8 @@ feature{NONE} -- Impelemntation
 			l_file: RAW_FILE
 			l_tcstatus: AFX_TEST_CASE_INFO
 			l_data: TUPLE [tc_info: AFX_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING]
-			l_pre_state: detachable AFX_STATE
-			l_post_state: detachable AFX_STATE
+			l_pre_state: detachable EPA_STATE
+			l_post_state: detachable EPA_STATE
 			l_single_status: AFX_TEST_CASE_EXECUTION_STATUS
 		do
 			if attached {AFX_TEST_CASE_INFO} test_case_info as l_tc then

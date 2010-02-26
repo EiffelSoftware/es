@@ -70,8 +70,8 @@ feature -- Setting
 feature -- Operation
 
 	load_state_transition_model (
-				a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
-				a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
+				a_objects: DS_HASH_TABLE [EPA_STATE, STRING_8];
+				a_dest_objects: DS_HASH_TABLE [EPA_STATE, STRING_8])
 			-- Load the state transition model.
 			-- Fixme: find all relevant models from the repository and merge them
 		local
@@ -103,7 +103,7 @@ feature -- Operation
 
 feature{NONE} -- Implementation
 
-	class_name_from_objects (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8]; a_name_set: DS_HASH_SET[STRING])
+	class_name_from_objects (a_objects: DS_HASH_TABLE [EPA_STATE, STRING_8]; a_name_set: DS_HASH_SET[STRING])
 		local
 		do
 		    from a_objects.start

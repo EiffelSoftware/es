@@ -8,7 +8,7 @@ class
 	AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
 
 inherit
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
     	redefine is_equal end
 
 	AFX_SHARED_BEHAVIOR_FEATURE_SELECTOR_FACTORY
@@ -22,8 +22,8 @@ create
 
 feature -- Initialization
 
-	make (an_objects: DS_HASH_TABLE[AFX_STATE, STRING];
-				a_dest_objects: DS_HASH_TABLE[AFX_STATE, STRING];
+	make (an_objects: DS_HASH_TABLE[EPA_STATE, STRING];
+				a_dest_objects: DS_HASH_TABLE[EPA_STATE, STRING];
 				a_context_class: CLASS_C;
 				a_class_set: detachable like class_set;
 				a_criteria: detachable AFX_BEHAVIOR_FEATURE_SELECTOR_I;
@@ -36,8 +36,8 @@ feature -- Initialization
 			l_type, l_outlined_type: TYPE_A
 		    l_name: STRING
 		    l_obj_boolean, l_dest_boolean: AFX_BOOLEAN_STATE
-		    l_obj_state, l_dest_state: AFX_STATE
-		    l_new_state: AFX_STATE
+		    l_obj_state, l_dest_state: EPA_STATE
+		    l_new_state: EPA_STATE
 		    l_class_set: like class_set
 		    l_classes: DS_LINEAR[CLASS_C]
 		    l_found_conformance: BOOLEAN

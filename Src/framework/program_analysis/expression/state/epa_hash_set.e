@@ -5,17 +5,23 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_HASH_SET [G -> HASHABLE]
+	EPA_HASH_SET [G -> HASHABLE]
 
 inherit
 	DS_HASH_SET [G]
 
-	AFX_UTILITY
+	EPA_UTILITY
 		undefine
 			is_equal,
 			copy
 		end
 
+	EPA_SHARED_MATH
+		undefine
+			is_equal,
+			copy
+		end
+		
 create
 	make,
 	make_equal,

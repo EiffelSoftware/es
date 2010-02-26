@@ -12,7 +12,7 @@ inherit
 
 feature -- Access
 
-	shrinked_state (a_state: AFX_STATE; a_assertion_number: INTEGER; a_spot: AFX_EXCEPTION_SPOT): AFX_STATE
+	shrinked_state (a_state: EPA_STATE; a_assertion_number: INTEGER; a_spot: AFX_EXCEPTION_SPOT): EPA_STATE
 			-- A possibly shrinked state from `a_state'.
 			-- When possible, the number of the expressions in the returned state should not
 			-- be larger than `a_assertion_number', but this is not guaranteed.
@@ -34,7 +34,7 @@ feature{NONE} -- Implementation
 			create Result
 		end
 
-	not_is_abq (a_equation: AFX_EQUATION): BOOLEAN
+	not_is_abq (a_equation: EPA_EQUATION): BOOLEAN
 			-- Is the expression of `a_equation' NOT an argumentless boolean query?
 		do
 			abq_expression_analyzer.analyze (a_equation.expression)

@@ -32,7 +32,7 @@ feature -- Generation
 --			l_implications := possible_implications (a_spot.recipient_class_, atomic_predicates (a_spot.recipient_class_, a_spot.recipient_))
 			implications := l_implications
 			create l_exprs.make (l_implications.count)
-			l_exprs.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			l_exprs.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 
 			l_implications.do_all (
 				agent (a_imp: AFX_IMPLICATION_EXPR; a_store: DS_HASH_SET [EPA_EXPRESSION])
@@ -190,7 +190,7 @@ feature{NONE} -- Implementation
 		do
 				-- Transform predicates into {AFX_EXPRESSION}.
 			create l_exprs.make (a_predicates.count)
-			l_exprs.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			l_exprs.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 			from
 				a_predicates.start
 			until

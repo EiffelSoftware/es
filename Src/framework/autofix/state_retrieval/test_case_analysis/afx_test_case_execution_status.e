@@ -44,10 +44,10 @@ feature -- Access
 	info: AFX_TEST_CASE_INFO
 			-- Information of current test case
 
-	pre_state: AFX_STATE
+	pre_state: EPA_STATE
 			-- State before current test case is executed
 
-	post_state: detachable AFX_STATE
+	post_state: detachable EPA_STATE
 			-- State after current test case is executed
 			-- Void if current is a failing test case.
 
@@ -74,10 +74,10 @@ feature -- Access
 			l_pre_str: detachable STRING
 			l_post_str: detachable STRING
 		do
-			if attached {AFX_STATE} pre_state as l_pre then
+			if attached {EPA_STATE} pre_state as l_pre then
 				l_pre_str := l_pre.debug_output
 			end
-			if attached {AFX_STATE} post_state as l_post then
+			if attached {EPA_STATE} post_state as l_post then
 				l_post_str := l_post.debug_output
 			end
 			check l_pre_str /= Void end

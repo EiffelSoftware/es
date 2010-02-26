@@ -16,6 +16,8 @@ inherit
 
 	SHARED_SERVER
 
+	REFACTORING_HELPER
+
 feature -- AST
 
 	text_from_ast (a_ast: AST_EIFFEL): STRING
@@ -116,5 +118,59 @@ feature -- Feature related
 			end
 		end
 
+feature -- String manipulation
+
+	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
+			-- Split `a_string' on `a_separater', return slices.
+		local
+			l_index1, l_index2: INTEGER
+			l_part: STRING
+			l_done: BOOLEAN
+			l_spe_count: INTEGER
+		do
+			create {LINKED_LIST [STRING]} Result.make
+			from
+				l_spe_count := a_separater.count
+			until
+				l_done
+			loop
+				l_index2 := a_string.substring_index (a_separater, l_index1 + 1)
+				if l_index2 = 0 then
+					l_index2 := a_string.count + 1
+					l_done := True
+				end
+				l_part := a_string.substring (l_index1 + 1, l_index2 - 1)
+				Result.extend (l_part)
+				l_index1 := l_index2 + l_spe_count - 1
+			end
+		end
+
+feature -- Equation
+
+	equation_with_value (a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE): EPA_EQUATION
+			-- Equation with current as expression and `a_value' as value.
+		do
+			create Result.make (a_expr, a_value)
+		end
+
+	equation_with_random_value (a_expr: EPA_EXPRESSION): EPA_EQUATION
+			-- Equation with current as expression, with a randomly
+			-- assigned value.
+		local
+			l_value: EPA_EXPRESSION_VALUE
+		do
+			if a_expr.type.is_boolean then
+				create {EPA_RANDOM_BOOLEAN_VALUE} l_value.make
+			elseif a_expr.type.is_integer then
+				create {EPA_RANDOM_INTEGER_VALUE} l_value.make
+			else
+				check not_supported_yet: False end
+				to_implement ("Implement random value for other types.")
+			end
+
+			Result := equation_with_value (a_expr, l_value)
+		ensure
+			value_is_random: Result.value.is_random
+		end
 
 end

@@ -19,7 +19,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (equation : AFX_EQUATION)
+	make (equation : EPA_EQUATION)
 			-- the variable name used for the declaration
 		do
  			make_with_expression (equation.expression)

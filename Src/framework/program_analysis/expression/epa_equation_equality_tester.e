@@ -5,17 +5,17 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EQUATION_EQUALITY_TESTER
+	EPA_EQUATION_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [AFX_EQUATION]
+	KL_EQUALITY_TESTER [EPA_EQUATION]
 		redefine
 			test
 		end
 
 feature -- Status report
 
-	test (v, u: AFX_EQUATION): BOOLEAN
+	test (v, u: EPA_EQUATION): BOOLEAN
 		do
 			if v = u then
 				Result := True
@@ -32,13 +32,13 @@ feature -- Status report
 
 feature{NONE} -- Implementation
 
-	expression_equality_tester: AFX_EXPRESSION_EQUALITY_TESTER
+	expression_equality_tester: EPA_EXPRESSION_EQUALITY_TESTER
 			-- Equality tester for expressions
 		once
 			create Result
 		end
 
-	value_equality_tester: AFX_EXPRESSION_VALUE_EQUALITY_TESTER
+	value_equality_tester: EPA_EXPRESSION_VALUE_EQUALITY_TESTER
 			-- Equality tester for expression values
 		once
 			create Result

@@ -22,7 +22,7 @@ feature
 feature -- Access
 test_case_info: AFX_TEST_CASE_INFO
 
-daikon_table: HASH_TABLE[AFX_STATE , INTEGER]
+daikon_table: HASH_TABLE[EPA_STATE , INTEGER]
 
 feature {NONE} -- Implementation
 
@@ -30,8 +30,8 @@ feature {NONE} -- Implementation
 			--Parses the result of a Daikon File.
 		local
 			list_tokens :LIST[STRING]
-			states : AFX_STATE
-			equation : AFX_EQUATION
+			states : EPA_STATE
+			equation : EPA_EQUATION
 			current_key : INTEGER
 		do
 			list_tokens := daikon_output.split ('%N')
@@ -67,14 +67,14 @@ feature {NONE} -- Implementation
 		end
 
 
-     build_equation ( str :STRING ) :AFX_EQUATION is
+     build_equation ( str :STRING ) :EPA_EQUATION is
      		--Takes a line output from Daikon and builds an AFX_Equation
 		local
 			expression : EPA_AST_EXPRESSION
 			expression_boolean_value : EPA_BOOLEAN_VALUE
 			expression_integer_value : EPA_INTEGER_VALUE
 			tokens :LIST[STRING]
-			equation : AFX_EQUATION
+			equation : EPA_EQUATION
 			l_expr: STRING
      	do
      		tokens := str.split ('=')

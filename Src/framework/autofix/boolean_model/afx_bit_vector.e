@@ -8,7 +8,7 @@ class
 	AFX_BIT_VECTOR
 
 inherit
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
 		redefine
 			is_equal
 		end

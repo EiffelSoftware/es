@@ -55,7 +55,7 @@ feature -- Access
 			-- Actions to be performed when a test case is to be analyzed.
 			-- The information about the test case is passed as the argument to the agent.
 
-	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER]]
+	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER]]
 			-- Actions to be performed when a breakpoint is hit in a test case.
 			-- `a_tc' is the test case currently analyzed.
 			-- `a_state' is the state evaluated at the breakpoint.
@@ -319,7 +319,7 @@ feature{NONE} -- Actions
 			result_attached: Result /= Void
 		end
 
-	on_new_test_case_found (a_breakpoint: BREAKPOINT; a_test_case_info: AFX_STATE)
+	on_new_test_case_found (a_breakpoint: BREAKPOINT; a_test_case_info: EPA_STATE)
 			-- Action to be performed when `a_breakpoint' is hit
 		local
 			l_recipient_class: CLASS_C
@@ -381,13 +381,13 @@ feature{NONE} -- Actions
 			end
 		end
 
-	on_breakpoint_hit_in_test_case (a_breakpoint: BREAKPOINT; a_state: AFX_STATE)
+	on_breakpoint_hit_in_test_case (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
 			-- Action to be performed when `a_breakpoint' is hit.
 			-- `a_breakpoint' is a break point in a test case.
 			-- `a_state' stores the values of all evaluated expressions'.
 		do
 			a_state.keep_if (
-				agent (a_equation: AFX_EQUATION): BOOLEAN
+				agent (a_equation: EPA_EQUATION): BOOLEAN
 					do
 						Result :=
 							a_equation.value.is_integer or
@@ -496,12 +496,12 @@ feature{NONE} -- Implication
 			-- Keys are test case info id, check {AFX_TEST_CASE_INFO}.`id' for details.
 			-- Values are the associated exception spots.
 
-	on_test_case_breakpoint_hit_print_state (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit_print_state (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		local
-			l_sorter: DS_QUICK_SORTER [AFX_EQUATION]
-			l_equations: DS_ARRAYED_LIST [AFX_EQUATION]
+			l_sorter: DS_QUICK_SORTER [EPA_EQUATION]
+			l_equations: DS_ARRAYED_LIST [EPA_EQUATION]
 		do
 			create l_equations.make (a_state.count)
 			a_state.do_all (agent l_equations.force_last)
@@ -513,7 +513,7 @@ feature{NONE} -- Implication
 
 			io.put_string (a_tc.recipient_class + "." + a_tc.recipient + "@" + a_bpslot.out + "%N")
 			l_equations.do_all (
-				agent (a_equation: AFX_EQUATION)
+				agent (a_equation: EPA_EQUATION)
 					do
 						io.put_string (a_equation.debug_output + "%N")
 					end)
@@ -521,10 +521,10 @@ feature{NONE} -- Implication
 			io.put_string ("%N")
 		end
 
-	equation_tester: AGENT_BASED_EQUALITY_TESTER [AFX_EQUATION] is
+	equation_tester: AGENT_BASED_EQUALITY_TESTER [EPA_EQUATION] is
 			-- Tester to decide the order of two equations.
 		do
-			create Result.make (agent (a, b: AFX_EQUATION): BOOLEAN
+			create Result.make (agent (a, b: EPA_EQUATION): BOOLEAN
 				do
 					Result := a.expression.text < b.expression.text
 				end)

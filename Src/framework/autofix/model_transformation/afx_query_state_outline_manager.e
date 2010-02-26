@@ -34,7 +34,7 @@ feature -- Register
 			-- Register the query model state of `a_state'.
 			-- Either a new outline would be created for its class, or existing outline would be updated.
 		local
-		    l_state: AFX_STATE
+		    l_state: EPA_STATE
 		    l_class: CLASS_C
 		    l_id: INTEGER
 		do
@@ -59,7 +59,7 @@ feature -- Register
 
 feature{NONE} --Implementation
 
-	register_new (a_state: AFX_STATE)
+	register_new (a_state: EPA_STATE)
 			-- Register `a_state' as from an unregistered class.
 		require
 		    not_registered: not is_registered (a_state.class_.class_id)

@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_STATE
+	EPA_STATE
 
 inherit
-	AFX_HASH_SET [AFX_EQUATION]
+	EPA_HASH_SET [EPA_EQUATION]
 		rename
 			make as make_set
 		end
@@ -19,13 +19,7 @@ inherit
 		    is_equal
 		end
 
-	AFX_SOLVER_FACTORY
-		undefine
-		    is_equal,
-		    copy
-		end
-
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
 		undefine
 		    is_equal,
 		    copy
@@ -49,7 +43,13 @@ inherit
 			is_equal
 		end
 
-	AFX_CONSTANTS
+	EPA_CONSTANTS
+		undefine
+			copy,
+			is_equal
+		end
+
+	EPA_SHARED_EQUALITY_TESTERS
 		undefine
 			copy,
 			is_equal
@@ -63,9 +63,6 @@ create
 	make_from_state,
 	make_from_string
 
-convert
-	predicate_skeleton: {AFX_STATE_SKELETON}
-
 feature{NONE} -- Initialization
 
 	make (n: INTEGER; a_class: like class_; a_feature: like feature_) is
@@ -78,7 +75,7 @@ feature{NONE} -- Initialization
 			class_ := a_class
 			feature_ := a_feature
 			make_set (n)
-			set_equality_tester (create {AFX_EQUATION_EQUALITY_TESTER})
+			set_equality_tester (create {EPA_EQUATION_EQUALITY_TESTER})
 		end
 
 	make_from_object_state (a_state: HASH_TABLE [STRING, STRING]; a_class: like class_; a_feature: like feature_)
@@ -103,7 +100,7 @@ feature{NONE} -- Initialization
 		require
 			a_class_attached: a_class /= Void
 		local
-		    l_equation: AFX_EQUATION
+		    l_equation: EPA_EQUATION
 		do
 		    make (a_exp_val.count, a_class, a_feature)
 		    from a_exp_val.start
@@ -121,7 +118,7 @@ feature{NONE} -- Initialization
 			class_exists: a_state.class_ /= Void
 		local
 		    l_type: TYPE_A
-		    l_equation: AFX_EQUATION
+		    l_equation: EPA_EQUATION
 		    l_feature_table: FEATURE_TABLE
 		    l_feature_name_set: DS_HASH_SET[STRING]
 		    l_feature: FEATURE_I
@@ -200,7 +197,7 @@ feature{NONE} -- Initialization
 					else
 						check not_supported: False end
 					end
-					force_last (create {AFX_EQUATION}.make (l_expr, l_value))
+					force_last (create {EPA_EQUATION}.make (l_expr, l_value))
 				end
 				l_lines.forth
 			end
@@ -216,92 +213,11 @@ feature -- Access
 			-- If Void, it means that Current state is derived for the whole class,
 			-- instead of particular feature.
 
-	skeleton: AFX_STATE_SKELETON
-			-- Expression skeleton of Current
-		do
-			create Result.make_basic (class_, feature_, count)
-			do_all (
-				agent (a_equation: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
-					do
-						a_skeleton.force_last (a_equation.expression)
-					end (?, Result))
-		ensure
-			good_result: Result.count = count
-		end
-
-	predicate_skeleton: AFX_STATE_SKELETON
-			-- Skeleton of current state
-		require
-			all_expressions_boolean: for_all (agent (a_equation: AFX_EQUATION): BOOLEAN do Result := a_equation.expression.is_predicate end)
-		do
-			create Result.make_basic (class_, feature_, count)
-			do_all (
-				agent (a_pred: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
-					do
-						a_skeleton.force_last (a_pred.expression)
-					end (?, Result))
-		ensure
-			good_result: Result.count = count
-		end
-
-	skeleton_with_value: AFX_STATE_SKELETON
-			-- Skeleton consisting of predicate rewritten as predicates
-			-- in Current.
-		do
-			create Result.make_basic (class_, feature_, count)
-			do_all (
-				agent (a_pred: AFX_EQUATION; a_skeleton: AFX_STATE_SKELETON)
-					do
-						a_skeleton.force_last (a_pred.as_predicate)
-					end (?, Result))
-		end
-
-	projection_by_skeleton (a_skeleton: AFX_STATE_SKELETON): like Current
-			-- Projection of Current only containing expressions in `a_skeleton'
-		local
-			l_removed: LINKED_LIST [AFX_EQUATION]
-			l_equation: AFX_EQUATION
-		do
-			Result := cloned_object
-			Result.do_if (
-				agent Result.remove,
-				agent (a_equation: AFX_EQUATION; a_ske: AFX_STATE_SKELETON): BOOLEAN
-					do
-						Result := not a_ske.has (a_equation.expression)
-					end (?, a_skeleton))
-		end
-
-	padded (a_skeleton: AFX_STATE_SKELETON): like Current
-			-- State containing all predicates in `a_skeleton'.
-			-- Predicates in `a_skeleton' but not presented in Current
-			-- will be assigned to a random value in the returned state.
-		require
-			current_is_subset: predicate_skeleton.is_subset (a_skeleton)
-		local
-			l_diff: like a_skeleton
-		do
-				-- Copy existing equations into Result.
-			create Result.make (a_skeleton.count, class_, feature_)
-			do_all (agent Result.force_last)
-
-				-- Generate random values for expression not appearing in Current.
-			l_diff := a_skeleton.subtraction (Result.predicate_skeleton)
-			if not l_diff.is_empty then
-				l_diff.do_all (
-					agent (a_expr: EPA_EXPRESSION; a_state: like Current)
-						do
-							a_state.force_last (equation_with_random_value (a_expr))
-						end (?, Result))
-			end
-		ensure
-			result_is_padded: Result.predicate_skeleton.is_subset (a_skeleton) and a_skeleton.is_subset (Result.predicate_skeleton)
-		end
-
-	item_with_expression_text (a_expr: STRING): detachable AFX_EQUATION
+	item_with_expression_text (a_expr: STRING): detachable EPA_EQUATION
 			-- Equation whose expression has text `a_expr'
 			-- Void if no such equation is found.
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 		do
 			l_cursor := new_cursor
 			from
@@ -316,11 +232,11 @@ feature -- Access
 			end
 		end
 
-	item_with_expression (a_expr: EPA_EXPRESSION): detachable AFX_EQUATION
+	item_with_expression (a_expr: EPA_EXPRESSION): detachable EPA_EQUATION
 			-- Equation whose expression is `a_expr'
 			-- Void if no such equation is found.
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_equality_tester: FUNCTION [ANY, TUPLE [EPA_EXPRESSION, EPA_EXPRESSION], BOOLEAN]
 		do
 			l_equality_tester := agent expression_equality_tester.test
@@ -345,7 +261,7 @@ feature -- Access
 			create Result.make (count)
 			Result.compare_objects
 			do_all (
-				agent (a_equation: AFX_EQUATION; a_table: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING])
+				agent (a_equation: EPA_EQUATION; a_table: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING])
 					do
 						a_table.force (a_equation.value, a_equation.expression.text)
 					end (?, Result))
@@ -357,7 +273,7 @@ feature -- Access
 			Result := cloned_object
 			Result.do_if (
 				agent Result.remove,
-				agent (a_equation: AFX_EQUATION): BOOLEAN
+				agent (a_equation: EPA_EQUATION): BOOLEAN
 					do
 						Result := not a_equation.expression.is_predicate
 					end)
@@ -374,13 +290,6 @@ feature -- Status report
 		do
 		end
 
-	implication alias "implies" (other: AFX_STATE): BOOLEAN
-			-- Does Current implies `other'?
-			-- The theory of `Current' will be used to support the reasoning.
-		do
-			Result := skeleton_with_value implies other.skeleton_with_value
-		end
-
 feature -- Setting
 
     set_class (a_class: like class_)
@@ -391,16 +300,16 @@ feature -- Setting
     		class_set: class_ = a_class
     	end
 
-    keep_if (a_test: PREDICATE [ANY, TUPLE [equation: AFX_EQUATION]])
+    keep_if (a_test: PREDICATE [ANY, TUPLE [equation: EPA_EQUATION]])
     		-- Keep equations only if they satisfy `a_test'.
     		-- Remove those equations which does not satisfy `a_test'.
     	local
-    		l_list: LINKED_LIST [AFX_EQUATION]
+    		l_list: LINKED_LIST [EPA_EQUATION]
     	do
 			create l_list.make
 			do_if (
 				agent l_list.extend,
-				agent (a_equ: AFX_EQUATION; t: PREDICATE [ANY, TUPLE [equation: AFX_EQUATION]]): BOOLEAN
+				agent (a_equ: EPA_EQUATION; t: PREDICATE [ANY, TUPLE [equation: EPA_EQUATION]]): BOOLEAN
 					do
 						Result := not t.item ([a_equ])
 					end (?, a_test))
@@ -415,7 +324,7 @@ feature -- Status report
 		do
 			create Result.make (512)
 			do_all (
-				agent (a_equation: AFX_EQUATION; a_string: STRING)
+				agent (a_equation: EPA_EQUATION; a_string: STRING)
 					do
 						a_string.append (a_equation.debug_output)
 						a_string.append_character ('%N')
@@ -440,7 +349,7 @@ feature{NONE} -- Implementation
 			Result := l_list
 		end
 
-	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_EQUATION
+	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): EPA_EQUATION
 			-- Predicate from `a_expression' and its `a_value'
 		local
 			l_expr: EPA_AST_EXPRESSION
@@ -463,7 +372,7 @@ feature{NONE} -- Implementation
 					create {EPA_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
 				elseif a_value.is_integer then
 					create {EPA_INTEGER_VALUE} l_value.make (a_value.to_integer)
-				elseif a_value.is_equal ({AUT_SHARED_CONSTANTS}.nonsensical) then
+				elseif a_value.is_equal ({EPA_CONSTANTS}.nonsensical) then
 					create {EPA_NONSENSICAL_VALUE} l_value
 				end
 			end

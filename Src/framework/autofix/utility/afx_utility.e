@@ -14,6 +14,10 @@ inherit
 
 	EPA_UTILITY
 
+	EPA_SHARED_EQUALITY_TESTERS
+
+	EPA_SHARED_EQUALITY_TESTERS
+
 feature -- Access
 
 	first_class_starts_with_name (a_class_name: STRING): detachable CLASS_C
@@ -75,21 +79,9 @@ feature -- Equality tester
 			create Result.make (agent (a, b: AFX_CLASS_WITH_PREFIX): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
-	equation_equality_tester: AFX_EQUATION_EQUALITY_TESTER
-			-- Equality tester for equations
-		once
-			create Result
-		end
-
-	expression_equality_tester: AFX_EXPRESSION_EQUALITY_TESTER
-			-- Equality tester for expressions
-		once
-			create Result
-		end
-
 feature -- Equation transformation
 
-	equation_in_normal_form (a_equation: AFX_EQUATION): AFX_EQUATION
+	equation_in_normal_form (a_equation: EPA_EQUATION): EPA_EQUATION
 			-- Equation in normal form of `a_equation'.
 			-- Transformation only happens if `a_equation'.`expression' is in form of "prefix.ABQ",
 			-- otherwise, return `a_equation' itself.
@@ -189,77 +181,6 @@ feature -- AST node
 			-- String for `a_level' tabs
 		do
 			create Result.make_filled (' ', a_level * 2)
-		end
-
-feature -- Math operations
-
-	factorial (k: INTEGER): INTEGER
-			-- Factorial of `k'
-		local
-			i: INTEGER
-		do
-			from
-				Result := 1
-				i := 1
-			until
-				i > k
-			loop
-				Result := Result * i
-				i := i + 1
-			end
-		end
-
-	permute (a_sequence: ARRAY [detachable ANY]; k: INTEGER)
-			-- Permute `a_sequence' according to k'.
-		require
-			k_valid: k >= 0 and k <= factorial (a_sequence.count)
-		local
-			i, j, t: INTEGER
-			l_count: INTEGER
-			l_lower: INTEGER
-			l_item: detachable ANY
-		do
-			from
-				l_count := a_sequence.count
-				l_lower := a_sequence.lower
-				j := 2
-			until
-				j > l_count
-			loop
-				i := k \\ j + l_lower
-				t := j - 1 + l_lower
-				l_item := a_sequence.item (i)
-				a_sequence.put (a_sequence.item (t), i)
-				a_sequence.put (l_item, t)
-				j := j + 1
-			end
-		end
-
-feature -- String manipulation
-
-	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
-			-- Split `a_string' on `a_separater', return slices.
-		local
-			l_index1, l_index2: INTEGER
-			l_part: STRING
-			l_done: BOOLEAN
-			l_spe_count: INTEGER
-		do
-			create {LINKED_LIST [STRING]} Result.make
-			from
-				l_spe_count := a_separater.count
-			until
-				l_done
-			loop
-				l_index2 := a_string.substring_index (a_separater, l_index1 + 1)
-				if l_index2 = 0 then
-					l_index2 := a_string.count + 1
-					l_done := True
-				end
-				l_part := a_string.substring (l_index1 + 1, l_index2 - 1)
-				Result.extend (l_part)
-				l_index1 := l_index2 + l_spe_count - 1
-			end
 		end
 
 feature -- Fix
@@ -561,7 +482,7 @@ feature -- Access
 			create Result.make_with_expressions (a_expr.class_, a_expr.feature_, l_exprs)
 		end
 
-	equation_as_state (a_equation: AFX_EQUATION): AFX_STATE
+	equation_as_state (a_equation: EPA_EQUATION): EPA_STATE
 			-- State representing `a_equation'.
 			-- The returned state only contains Current as the only predicate.
 		do
@@ -569,30 +490,86 @@ feature -- Access
 			Result.force_last (a_equation)
 		end
 
-	equation_with_value (a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE): AFX_EQUATION
-			-- Equation with current as expression and `a_value' as value.
+feature -- State related
+
+	state_projected_by_skeleton (a_state: EPA_STATE; a_skeleton: AFX_STATE_SKELETON): EPA_STATE
+			-- Projection of `a_state' only containing expressions in `a_skeleton'
+		local
+			l_removed: LINKED_LIST [EPA_EQUATION]
+			l_equation: EPA_EQUATION
 		do
-			create Result.make (a_expr, a_value)
+			Result := a_state.cloned_object
+			Result.do_if (
+				agent Result.remove,
+				agent (a_equation: EPA_EQUATION; a_ske: AFX_STATE_SKELETON): BOOLEAN
+					do
+						Result := not a_ske.has (a_equation.expression)
+					end (?, a_skeleton))
 		end
 
-	equation_with_random_value (a_expr: EPA_EXPRESSION): AFX_EQUATION
-			-- Equation with current as expression, with a randomly
-			-- assigned value.
+	padded_state (a_state: EPA_STATE; a_skeleton: AFX_STATE_SKELETON): EPA_STATE
+			-- State from `a_state' containing all predicates in `a_skeleton'.
+			-- Predicates in `a_skeleton' but not presented in Current
+			-- will be assigned to a random value in the returned state.
+		require
+			current_is_subset: predicate_skeleton (a_state).is_subset (a_skeleton)
 		local
-			l_value: EPA_EXPRESSION_VALUE
+			l_diff: like a_skeleton
 		do
-			if a_expr.type.is_boolean then
-				create {EPA_RANDOM_BOOLEAN_VALUE} l_value.make
-			elseif a_expr.type.is_integer then
-				create {EPA_RANDOM_INTEGER_VALUE} l_value.make
-			else
-				check not_supported_yet: False end
-				to_implement ("Implement random value for other types.")
-			end
+				-- Copy existing equations into Result.
+			create Result.make (a_skeleton.count, a_state.class_, a_state.feature_)
+			a_state.do_all (agent Result.force_last)
 
-			Result := equation_with_value (a_expr, l_value)
+				-- Generate random values for expression not appearing in Current.
+			l_diff := a_skeleton.subtraction (predicate_skeleton (Result))
+			if not l_diff.is_empty then
+				l_diff.do_all (
+					agent (a_expr: EPA_EXPRESSION; a_st: EPA_STATE)
+						do
+							a_st.force_last (equation_with_random_value (a_expr))
+						end (?, Result))
+			end
 		ensure
-			value_is_random: Result.value.is_random
+			result_is_padded: predicate_skeleton (Result).is_subset (a_skeleton) and a_skeleton.is_subset (predicate_skeleton (Result))
+		end
+
+	predicate_skeleton (a_state: EPA_STATE): AFX_STATE_SKELETON
+			-- Predicate skeleton of `a_state'
+		require
+			all_expressions_boolean: a_state.for_all (agent (a_equation: EPA_EQUATION): BOOLEAN do Result := a_equation.expression.is_predicate end)
+		do
+			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
+			a_state.do_all (
+				agent (a_pred: EPA_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+					do
+						a_skeleton.force_last (a_pred.expression)
+					end (?, Result))
+		ensure
+			good_result: Result.count = a_state.count
+		end
+
+	skeleton_with_value (a_state: EPA_STATE): AFX_STATE_SKELETON
+			-- Skeleton from consisting of predicate rewritten as predicates in `a_state'.
+		do
+			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
+			a_state.do_all (
+				agent (a_pred: EPA_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+					do
+						a_skeleton.force_last (a_pred.as_predicate)
+					end (?, Result))
+		end
+		
+	skeleton_from_state (a_state: EPA_STATE): AFX_STATE_SKELETON
+			-- Expression skeleton from `a_state'
+		do
+			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
+			a_state.do_all (
+				agent (a_equation: EPA_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+					do
+						a_skeleton.force_last (a_equation.expression)
+					end (?, Result))
+		ensure
+			good_result: Result.count = a_state.count
 		end
 
 end

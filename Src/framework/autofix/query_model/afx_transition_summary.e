@@ -45,7 +45,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	add_transition (a_class: CLASS_C; a_feature: FEATURE_I; a_source: DS_ARRAYED_LIST [AFX_STATE]; a_target: DS_ARRAYED_LIST [AFX_STATE])
+	add_transition (a_class: CLASS_C; a_feature: FEATURE_I; a_source: DS_ARRAYED_LIST [EPA_STATE]; a_target: DS_ARRAYED_LIST [EPA_STATE])
 			-- Add state transition for `a_feature' in `a_class' into `transitions', and update `expression_table' when needed.
 			-- `a_source' is the starting state, `a_target' is the ending state.
 			-- The elements in `a_source' or `a_target' are states for a particular operand, or result object.
@@ -57,8 +57,8 @@ feature -- Basic operations
 			i: INTEGER
 			c: INTEGER
 			l_expr_tbl: like expression_table
-			l_state: AFX_STATE
-			l_states: DS_ARRAYED_LIST [AFX_STATE]
+			l_state: EPA_STATE
+			l_states: DS_ARRAYED_LIST [EPA_STATE]
 			l_feature: AUT_FEATURE_OF_TYPE
 			l_expr: STRING
 			l_value: STRING

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EQUATION_TO_EXPRESSION_GENERATOR
+	EPA_EQUATION_TO_EXPRESSION_GENERATOR
 
 inherit
 	EPA_EXPRESSION_VALUE_VISITOR
@@ -17,7 +17,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	generate (a_equation: AFX_EQUATION)
+	generate (a_equation: EPA_EQUATION)
 			-- Generator expression from `a_equation'
 		do
 			expression_text := a_equation.expression.text

@@ -43,7 +43,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	set_hit_action_with_agent (a_skeleton: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: AFX_STATE]])
+	set_hit_action_with_agent (a_skeleton: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
 			-- Set `a_action' to all break points to `a_feature'.
 			-- Every time when the breakpoint is hit, all expressions in `a_skeleton' are evaluated and
 			-- their values are passed to `a_action' through the argument `a_state'.

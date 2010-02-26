@@ -28,7 +28,7 @@ feature -- Access
 
 feature -- Actions
 
-	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: AFX_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		local
@@ -64,7 +64,7 @@ feature -- Actions
 
 feature{NONE} -- Implementation
 
-	put_data (a_file: PLAIN_TEXT_FILE; a_bpslot: INTEGER; a_state: AFX_STATE)
+	put_data (a_file: PLAIN_TEXT_FILE; a_bpslot: INTEGER; a_state: EPA_STATE)
 			-- Store `a_state' which is retrieved at breakpoint `a_bpslot' in `a_file'.
 		local
 			l_value: EPA_EXPRESSION_VALUE
@@ -106,7 +106,7 @@ feature{NONE} -- Implementation
 			a_file.flush
 		end
 
-	put_header (a_file: PLAIN_TEXT_FILE; a_relation_name: STRING; a_state: AFX_STATE)
+	put_header (a_file: PLAIN_TEXT_FILE; a_relation_name: STRING; a_state: EPA_STATE)
 			-- Put header containing relation name `a_relation_name' and data declarations from `a_state'
 			-- into `a_file'.
 		local

@@ -14,15 +14,15 @@ inherit
 
 feature -- Access
 
-	partitions_by_expression_prefix (a_state: AFX_STATE): HASH_TABLE [AFX_STATE, STRING]
+	partitions_by_expression_prefix (a_state: EPA_STATE): HASH_TABLE [EPA_STATE, STRING]
 			-- A table of subsets from `a_state', partitioned by path prefix of expressions in `a_state'
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
-			l_state: AFX_STATE
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_state: EPA_STATE
 			l_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
 			l_prefix: STRING
 			l_expression: EPA_EXPRESSION
-			l_equation: AFX_EQUATION
+			l_equation: EPA_EQUATION
 		do
 			create Result.make (10)
 			Result.compare_objects
@@ -56,19 +56,19 @@ feature -- Access
 			end
 		end
 
-	partitions_by_premise (a_state: AFX_STATE): HASH_TABLE [AFX_STATE, EPA_EXPRESSION]
+	partitions_by_premise (a_state: EPA_STATE): HASH_TABLE [EPA_STATE, EPA_EXPRESSION]
 			-- A table of subsets from `a_state', partitioned by premises in `a_state'.
 			-- Predicates without premises are treated with premise "True".
 		local
 			l_imp_analyzer: AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_true_expr: EPA_AST_EXPRESSION
 			l_consequent: EPA_EXPRESSION
 			l_premise: EPA_EXPRESSION
 			l_found: BOOLEAN
 			l_value: EPA_EXPRESSION_VALUE
-			l_equation: AFX_EQUATION
-			l_state: AFX_STATE
+			l_equation: EPA_EQUATION
+			l_state: EPA_STATE
 		do
 			create Result.make (5)
 			Result.compare_objects

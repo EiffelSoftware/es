@@ -21,7 +21,7 @@ class
 	   make
 feature --Constructor
 
-	make (equation : AFX_EQUATION) is
+	make (equation : EPA_EQUATION) is
 			-- create the trace with the current variable
 		local
 			expression_str:STRING
@@ -42,7 +42,7 @@ feature --Constructor
 
 feature{NONE} -- Implementation
 
-	get_value (equation : AFX_EQUATION):STRING is
+	get_value (equation : EPA_EQUATION):STRING is
 			-- Return the right representation for each type
 			-- Use visitor
 		do

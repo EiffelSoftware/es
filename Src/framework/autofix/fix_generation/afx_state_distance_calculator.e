@@ -7,9 +7,12 @@ note
 class
 	AFX_STATE_DISTANCE_CALCULATOR
 
+inherit
+	AFX_UTILITY
+
 feature -- Access
 
-	distance (a_state1: AFX_STATE; a_state2: AFX_STATE): INTEGER
+	distance (a_state1: EPA_STATE; a_state2: EPA_STATE): INTEGER
 			-- Distance between `a_state1' and `a_state2'
 			-- Algorithm:
 			-- 1. Only consider the common predicate intersection between `a_state1' and `a_state2'.
@@ -20,13 +23,13 @@ feature -- Access
 --			same_class_context: a_state1.class_ ~ a_state2.class_
 --			same_feature_context: a_state1.feature_ ~ a_state2.feature_
 		local
-			s1, s2: AFX_STATE
+			s1, s2: EPA_STATE
 			l_common_skeleton: AFX_STATE_SKELETON
-			l_equation1, l_equation2: AFX_EQUATION
+			l_equation1, l_equation2: EPA_EQUATION
 		do
-			l_common_skeleton := a_state1.skeleton.intersection (a_state2.skeleton)
-			s1 := a_state1.projection_by_skeleton (l_common_skeleton)
-			s2 := a_state2.projection_by_skeleton (l_common_skeleton)
+			l_common_skeleton := skeleton_from_state (a_state1).intersection (skeleton_from_state (a_state2))
+			s1 := state_projected_by_skeleton (a_state1, l_common_skeleton)
+			s2 := state_projected_by_skeleton (a_state2, l_common_skeleton)
 			Result := s1.count - s1.intersection (s2).count
 		end
 

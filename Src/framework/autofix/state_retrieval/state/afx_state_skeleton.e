@@ -8,7 +8,7 @@ class
 	AFX_STATE_SKELETON
 
 inherit
-	AFX_HASH_SET [EPA_EXPRESSION]
+	EPA_HASH_SET [EPA_EXPRESSION]
 		redefine
 			force_new,
 			append,
@@ -129,7 +129,7 @@ feature{NONE} -- Initialization
 		do
 			set_class (a_class)
 			set_feature (a_feature)
-			set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 			make (a_count)
 		end
 

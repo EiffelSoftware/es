@@ -8,7 +8,7 @@ class
 	AFX_DELAYED_STATE
 
 inherit
-	AFX_STATE
+	EPA_STATE
 		redefine
 			is_delayed
 		end
@@ -40,22 +40,22 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	invariants_in_passing_runs: detachable AFX_STATE
+	invariants_in_passing_runs: detachable EPA_STATE
 			-- State invariants in passing runs
 			-- The break point slot from which this state is retrieved is not specified.
 
-	invariants_in_failing_runs: detachable AFX_STATE
+	invariants_in_failing_runs: detachable EPA_STATE
 			-- State invariants in failing runs
 			-- The break point slot from which this state is retrieved is not specified.
 
-	actual_state: detachable AFX_STATE
+	actual_state: detachable EPA_STATE
 			-- Actual state calculated by `actual_state_function' based on `invariants_in_passing_runs' and
 			-- `invariants_in_failing_runs'
 		do
 			Result := actual_state_function.item ([invariants_in_passing_runs, invariants_in_failing_runs])
 		end
 
-	actual_state_function: FUNCTION [ANY, TUPLE [a_passing_inv, a_failing_inv: detachable AFX_STATE], detachable AFX_STATE]
+	actual_state_function: FUNCTION [ANY, TUPLE [a_passing_inv, a_failing_inv: detachable EPA_STATE], detachable EPA_STATE]
 			-- Action to return the `actual_state' based on `a_passing_inv' and `a_failing_inv'
 
 feature -- Status report
@@ -83,7 +83,7 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	failing_invariants (a_passing_inv, a_failing_inv: detachable AFX_STATE): detachable AFX_STATE
+	failing_invariants (a_passing_inv, a_failing_inv: detachable EPA_STATE): detachable EPA_STATE
 			-- Return `a_failing_inv'
 		do
 			Result := a_failing_inv
@@ -92,7 +92,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	passing_invariants (a_passing_inv, a_failing_inv: detachable AFX_STATE): detachable AFX_STATE
+	passing_invariants (a_passing_inv, a_failing_inv: detachable EPA_STATE): detachable EPA_STATE
 			-- Return `a_passing_inv'
 		do
 			Result := a_passing_inv
@@ -100,7 +100,7 @@ feature{NONE} -- Implementation
 			result_set: Result = a_passing_inv
 		end
 
-	passing_substracted_from_failing_invariants (a_passing_inv, a_failing_inv: detachable AFX_STATE): detachable AFX_STATE
+	passing_substracted_from_failing_invariants (a_passing_inv, a_failing_inv: detachable EPA_STATE): detachable EPA_STATE
 			-- Return the substraction: `a_passing_inv' - `a_failing_inv'.
 		do
 			if a_passing_inv = Void then

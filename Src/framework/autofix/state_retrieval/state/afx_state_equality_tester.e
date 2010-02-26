@@ -8,7 +8,7 @@ class
 	AFX_STATE_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [AFX_STATE]
+	KL_EQUALITY_TESTER [EPA_STATE]
 		redefine
 			test
 		end
@@ -18,7 +18,7 @@ create
 
 feature -- status report
 
-	test (u, v: AFX_STATE): BOOLEAN
+	test (u, v: EPA_STATE): BOOLEAN
 			-- test if `u' and `v' are considered to be equal
 		do
 		    if u = v then
@@ -48,7 +48,7 @@ feature -- status report
 
 feature{NONE} -- implementation
 
-	equation_equality_tester: AFX_EQUATION_EQUALITY_TESTER
+	equation_equality_tester: EPA_EQUATION_EQUALITY_TESTER
 			-- equality tester for predicates
 		once
 		    create Result

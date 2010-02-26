@@ -70,8 +70,8 @@ feature{NONE} -- Implementation
 			a_spot: AFX_EXCEPTION_SPOT;
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
 			a_guard: detachable EPA_EXPRESSION;
-			a_precondition: detachable AFX_STATE;
-			a_postcondition: detachable AFX_STATE;
+			a_precondition: detachable EPA_STATE;
+			a_postcondition: detachable EPA_STATE;
 			a_scope_level: INTEGER;
 			a_guard_in_negation: BOOLEAN): AFX_AFORE_FIX_SKELETON
 				-- New afore fix sekelton.
@@ -94,8 +94,8 @@ feature{NONE} -- Implementation
 			a_spot: AFX_EXCEPTION_SPOT;
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
 			a_guard: detachable EPA_EXPRESSION;
-			a_precondition: detachable AFX_STATE;
-			a_postcondition: detachable AFX_STATE;
+			a_precondition: detachable EPA_STATE;
+			a_postcondition: detachable EPA_STATE;
 			a_scope_level: INTEGER;
 			a_guard_in_negation: BOOLEAN): AFX_WRAP_FIX_SKELETON
 				-- New afore fix sekelton.

@@ -11,7 +11,7 @@ inherit
     DS_ARRAYED_LIST[AFX_BOOLEAN_STATE_TRANSITION_SUMMARY]
     	redefine is_equal end
 
-    AFX_HASH_CALCULATOR
+    EPA_HASH_CALCULATOR
     	undefine is_equal, copy end
 
 create

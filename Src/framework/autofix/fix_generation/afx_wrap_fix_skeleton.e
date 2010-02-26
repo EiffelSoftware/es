@@ -70,7 +70,7 @@ feature -- Status report
 
 feature{NONE} -- Implementation
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE; a_ignore_state_change: BOOLEAN)
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: EPA_STATE; a_postcondition: EPA_STATE; a_ignore_state_change: BOOLEAN)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
@@ -94,7 +94,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	fix_with_text (a_else_part: detachable STRING; a_snippet_ranking: INTEGER; a_precondition: AFX_STATE; a_postcondition: AFX_STATE): AFX_FIX
+	fix_with_text (a_else_part: detachable STRING; a_snippet_ranking: INTEGER; a_precondition: EPA_STATE; a_postcondition: EPA_STATE): AFX_FIX
 			-- New text of `exception_spot'.`recipient_' with fix `a_fix' applied.
 			-- `a_precondition' and `a_postcondition' are used to provide better logging information.
 		local

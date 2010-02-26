@@ -8,7 +8,7 @@ class
 	AFX_BOOLEAN_MODEL_TRANSITION
 
 inherit
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
 
 create
     make

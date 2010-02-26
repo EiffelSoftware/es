@@ -160,7 +160,7 @@ feature -- Process
 
 feature{NONE} -- Process
 
-	load_model (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8]; a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
+	load_model (a_objects: DS_HASH_TABLE [EPA_STATE, STRING_8]; a_dest_objects: DS_HASH_TABLE [EPA_STATE, STRING_8])
 			-- <Precursor>
 		local
 			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER
@@ -193,7 +193,7 @@ feature{NONE} -- Process
 			process_call_based_request (a_request)
 		end
 
-	state_from_query_result (a_state: HASH_TABLE [STRING_8, STRING_8]; a_class: CLASS_C; a_feature: detachable FEATURE_I): detachable AFX_STATE
+	state_from_query_result (a_state: HASH_TABLE [STRING_8, STRING_8]; a_class: CLASS_C; a_feature: detachable FEATURE_I): detachable EPA_STATE
 			-- Construct a afx_state object from the query result.
 			-- Workaround: the state report may be messy, this makes it possible to ignore the bad-formed states.
 			-- 			Maybe this is overkilling, but since the expressions may contain also implications,
@@ -218,7 +218,7 @@ feature{NONE} -- Process
 		    l_class: CLASS_C
 		    l_var_index: INTEGER
 		    l_results: HASH_TABLE [detachable STRING, STRING]
-		    l_state: AFX_STATE
+		    l_state: EPA_STATE
 		    l_model_state: AFX_QUERY_MODEL_STATE
 		    l_is_good: BOOLEAN
 		    l_context_class: CLASS_C
@@ -326,8 +326,8 @@ feature{NONE} -- Testing
 		    l_class_name: STRING
 		    l_class: CLASS_C
 		    l_before_property, l_after_property: HASH_TABLE [STRING, STRING]
-		    l_before_state, l_after_state: AFX_STATE
-		    l_before_objects, l_after_objects: DS_HASH_TABLE [AFX_STATE, STRING]
+		    l_before_state, l_after_state: EPA_STATE
+		    l_before_objects, l_after_objects: DS_HASH_TABLE [EPA_STATE, STRING]
 		    l_fixes: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
 		    l_config: AFX_CONFIG
 		    l_str: STRING
@@ -431,7 +431,7 @@ feature{NONE} -- implementation
 	last_model: AFX_QUERY_MODEL
 			-- Constructed query model.
 
-	mock_heap: DS_HASH_TABLE [AFX_STATE, INTEGER]
+	mock_heap: DS_HASH_TABLE [EPA_STATE, INTEGER]
 			-- Mock heap to cache responses to object state requests.
 			-- The key of the hash table is the index of variable.
 

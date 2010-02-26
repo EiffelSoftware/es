@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EQUATION
+	EPA_EQUATION
 
 inherit
 	HASHABLE
@@ -18,12 +18,7 @@ inherit
 			out
 		end
 
-	AFX_UTILITY
-		undefine
-			out
-		end
-
-	AFX_CONSTANTS
+	EPA_CONSTANTS
 		undefine
 			out
 		end
@@ -64,7 +59,7 @@ feature -- Access
 			-- Current as an expression in the form of
 			-- "expression = value"
 		local
-			l_gen: AFX_EQUATION_TO_EXPRESSION_GENERATOR
+			l_gen: EPA_EQUATION_TO_EXPRESSION_GENERATOR
 		do
 			create l_gen
 			l_gen.generate (Current)
@@ -127,13 +122,13 @@ feature -- Status report
 
 feature -- Conversion
 
-	to_normal_form: like Current
-			-- Turn current into normal form
-		require
-			expression_is_predicate: expression.is_predicate
-		do
-			Result := equation_in_normal_form (Current)
-		end
+--	to_normal_form: like Current
+--			-- Turn current into normal form
+--		require
+--			expression_is_predicate: expression.is_predicate
+--		do
+--			Result := equation_in_normal_form (Current)
+--		end
 
 feature -- Status report
 

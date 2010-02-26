@@ -147,8 +147,8 @@ feature -- Execute
 	test_state_implication
 			-- Test state implication
 		local
-			l_s1, l_s2: AFX_STATE
-			l_pred1, l_pred2: AFX_EQUATION
+			l_s1, l_s2: EPA_STATE
+			l_pred1, l_pred2: EPA_EQUATION
 			l_expr1, l_expr2: EPA_AST_EXPRESSION
 			l_value1: EPA_INTEGER_VALUE
 			l_value2: EPA_BOOLEAN_VALUE
@@ -208,7 +208,7 @@ feature{NONE} -- Implementation
 			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
 
-	on_hit (a_breakpoint: BREAKPOINT; a_state: AFX_STATE) is
+	on_hit (a_breakpoint: BREAKPOINT; a_state: EPA_STATE) is
 			-- Action to be performed when `a_breakpoint' is hit and `a_state' is retrieved
 			-- Due to the naming convention the class and the feature_name cannot be void
 		require

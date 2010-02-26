@@ -59,7 +59,7 @@ feature -- Basic operations
 			l_processed := class_with_prefix_set
 			create l_base_prefix.make (a_class, "")
 			create l_generated_exprs.make (20)
-			l_generated_exprs.set_key_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			l_generated_exprs.set_key_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 
 			create l_theory.make_with_feature (a_class, a_feature)
 			l_theory.append (resolved_class_theory (a_class))

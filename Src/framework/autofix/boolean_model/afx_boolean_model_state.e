@@ -13,7 +13,7 @@ inherit
     		make as make_list
     	end
 
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
     	undefine
     		is_equal,
     		copy
@@ -27,7 +27,7 @@ feature -- Initialization
 	make (a_query_model_state: like query_model_state)
 			-- Initialize
 		local
-		    l_query_state: AFX_STATE
+		    l_query_state: EPA_STATE
 		    l_boolean_state: AFX_BOOLEAN_STATE
 		do
 		    query_model_state := a_query_model_state

@@ -236,7 +236,7 @@ feature -- Access
 		do
 			l_pred_status := predicate_satisfiability (a_predicates, a_theory)
 			create Result.make (a_predicates.count)
-			Result.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			Result.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 
 			from
 				l_pred_status.start

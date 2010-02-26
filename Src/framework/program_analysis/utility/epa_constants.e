@@ -5,11 +5,14 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_CONSTANTS
+	EPA_CONSTANTS
 
 feature -- Access
 
 	equation_separator: STRING = " == "
 			-- Separator between the expression and the value in an equation
+
+	nonsensical: STRING is "nonsensical"
+			-- Nonsensical value
 
 end

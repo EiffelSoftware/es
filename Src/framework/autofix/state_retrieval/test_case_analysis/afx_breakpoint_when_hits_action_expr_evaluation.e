@@ -33,7 +33,7 @@ feature -- Access
 	expressions: AFX_STATE_SKELETON
 			-- Expressions to be evaluate
 
-	on_hit_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [a_breakpoint: BREAKPOINT; a_state: AFX_STATE]]]
+	on_hit_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [a_breakpoint: BREAKPOINT; a_state: EPA_STATE]]]
 			-- List of actions to be performed when current is hit
 
 	class_: CLASS_C
@@ -50,8 +50,8 @@ feature -- Basic operations
 		local
 			l_exprs: like expressions
 			l_value: DUMP_VALUE
-			l_concrete_state: AFX_STATE
-			l_state_value: AFX_EQUATION
+			l_concrete_state: EPA_STATE
+			l_state_value: EPA_EQUATION
 			l_actions: like on_hit_actions
 			l_cursor: CURSOR
 		do

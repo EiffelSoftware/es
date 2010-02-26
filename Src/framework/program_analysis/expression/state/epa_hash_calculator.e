@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
 
 inherit
     HASHABLE

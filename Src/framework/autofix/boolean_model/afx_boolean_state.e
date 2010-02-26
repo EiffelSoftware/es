@@ -9,7 +9,7 @@ class
 
 inherit
 
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
     	undefine is_equal, copy	end
 
     EPA_EXPRESSION_VALUE_VISITOR
@@ -42,7 +42,7 @@ feature -- Initializer
 
 feature -- Access
 
-	query_state: detachable AFX_STATE
+	query_state: detachable EPA_STATE
 			-- Original query-based state.
 
 	boolean_state_outline: detachable AFX_BOOLEAN_STATE_OUTLINE
@@ -247,7 +247,7 @@ feature -- State comparison
 
 feature -- Query state interpretation
 
-	interpretate (a_state: AFX_STATE)
+	interpretate (a_state: EPA_STATE)
 			-- Interpretate `a_state' into boolean state.
 		require
 		    same_class: class_.class_id = a_state.class_.class_id
@@ -263,9 +263,9 @@ feature -- Query state interpretation
 		    if not is_chaos then
     		    	-- Put each pair of (value, expression) from `a_state' into hashtable.
     		    create l_table.make (a_state.count)
-    		    l_table.set_key_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
-    		    l_table.set_equality_tester (create {AFX_EXPRESSION_VALUE_EQUALITY_TESTER})
-    		    a_state.do_all (agent (an_equation: AFX_EQUATION; a_table: DS_HASH_TABLE[EPA_EXPRESSION_VALUE, EPA_EXPRESSION])
+    		    l_table.set_key_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
+    		    l_table.set_equality_tester (create {EPA_EXPRESSION_VALUE_EQUALITY_TESTER})
+    		    a_state.do_all (agent (an_equation: EPA_EQUATION; a_table: DS_HASH_TABLE[EPA_EXPRESSION_VALUE, EPA_EXPRESSION])
     		    		do
     		    			a_table.force (an_equation.value, an_equation.expression)
     		    		end (?, l_table))

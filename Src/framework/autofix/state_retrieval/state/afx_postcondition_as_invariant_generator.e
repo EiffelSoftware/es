@@ -62,7 +62,7 @@ feature -- Generate
 			l_suitable_features: LINKED_LIST [FEATURE_I]
 		do
 			create last_invariants.make (10)
-			last_invariants.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+			last_invariants.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 			context_class := a_class
 
 			l_any_class_id := system.any_class.compiled_representation.class_id

@@ -15,8 +15,8 @@ create
 
 feature -- Query
 
-	state_transitions_from_model (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
-					a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8];
+	state_transitions_from_model (a_objects: DS_HASH_TABLE [EPA_STATE, STRING_8];
+					a_dest_objects: DS_HASH_TABLE [EPA_STATE, STRING_8];
 					a_context_class: CLASS_C;
 					a_class_set: detachable DS_HASH_SET [CLASS_C];
 					a_criteria: detachable AFX_BEHAVIOR_FEATURE_SELECTOR_I;
@@ -52,7 +52,7 @@ feature -- Access
 
 feature{NONE} -- Operation
 
-	load_model (a_objects: DS_HASH_TABLE [AFX_STATE, STRING_8]; a_dest_objects: DS_HASH_TABLE [AFX_STATE, STRING_8])
+	load_model (a_objects: DS_HASH_TABLE [EPA_STATE, STRING_8]; a_dest_objects: DS_HASH_TABLE [EPA_STATE, STRING_8])
 			-- Load the model necessary for the state transition.
 		local
 --			l_loader: AFX_STATE_TRANSITION_MODEL_LOADER

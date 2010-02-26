@@ -29,10 +29,10 @@ feature -- Access
 	exception_spot: AFX_EXCEPTION_SPOT
 			-- Exception related information
 
-	precondition: AFX_STATE
+	precondition: EPA_STATE
 			-- Fix precondition
 
-	postcondition: AFX_STATE
+	postcondition: EPA_STATE
 			-- Fix postcondition
 
 	guard_condition: detachable EPA_EXPRESSION
@@ -163,8 +163,8 @@ feature -- Basic operations
 			l_passing_bpslot: INTEGER
 			l_failing_bpslot: INTEGER
 			l_contracts: like actual_fix_contracts
-			l_precondition: detachable AFX_STATE
-			l_postcondition: detachable AFX_STATE
+			l_precondition: detachable EPA_STATE
+			l_postcondition: detachable EPA_STATE
 			l_pre_hie: like state_hierarchy
 			l_post_hie: like state_hierarchy
 			l_premises: ARRAY [EPA_EXPRESSION]
@@ -203,20 +203,20 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	actual_fix_contracts: TUPLE [precondition: detachable AFX_STATE; postcondition: detachable AFX_STATE]
+	actual_fix_contracts: TUPLE [precondition: detachable EPA_STATE; postcondition: detachable EPA_STATE]
 			-- Actual pre-/postconditions for current fix
 			-- `precondition' or `postcondition' may be empty.
 		local
-			l_precondition: detachable AFX_STATE
-			l_postcondition: detachable AFX_STATE
+			l_precondition: detachable EPA_STATE
+			l_postcondition: detachable EPA_STATE
 			l_bpslots: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
-			l_failing_state: detachable AFX_STATE
+			l_failing_state: detachable EPA_STATE
 			l_necessary_conditions: AFX_STATE_SKELETON
 			l_culprit_predicate: detachable EPA_EXPRESSION
 			l_abq_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
 			l_value: BOOLEAN
-			l_pre_equation: AFX_EQUATION
-			l_post_equation: AFX_EQUATION
+			l_pre_equation: EPA_EQUATION
+			l_post_equation: EPA_EQUATION
 			l_culprits: LINKED_LIST [EPA_EXPRESSION]
 		do
 			l_bpslots := relevant_break_points
@@ -224,7 +224,7 @@ feature{NONE} -- Implementation
 				-- Calculate actual precondition for current fix:
 				-- 1. If the precondition is given, use the given one;
 				-- 2. otherwise, use an empty precondition				
-			if attached {AFX_STATE} precondition as l_pre then
+			if attached {EPA_STATE} precondition as l_pre then
 				if attached {AFX_DELAYED_STATE} l_pre as l_delayed_pre then
 					l_delayed_pre.set_invariants_in_passing_runs (passing_state (l_bpslots.passing_bpslot))
 					l_delayed_pre.set_invariants_in_failing_runs (failing_state (l_bpslots.failing_bpslot))
@@ -239,7 +239,7 @@ feature{NONE} -- Implementation
 				-- Calculate actual postcondition for current fix:
 				-- 1. If the postcondition is given, use the given one;
 				-- 2. otherwise, calculate the postcodition from two break points.
-			if attached {AFX_STATE} postcondition as l_post then
+			if attached {EPA_STATE} postcondition as l_post then
 				if attached {AFX_DELAYED_STATE} l_post as l_delayed_post then
 					l_delayed_post.set_invariants_in_passing_runs (passing_state (l_bpslots.passing_bpslot))
 					l_delayed_post.set_invariants_in_failing_runs (failing_state (l_bpslots.failing_bpslot))
@@ -260,9 +260,9 @@ feature{NONE} -- Implementation
 				if l_failing_state /= Void then
 					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
 						-- Find out the set of ABQS which implies the negation of the failing assertion.
-					l_necessary_conditions := solver_launcher.valid_premises (l_failing_state.skeleton_with_value, not exception_spot.failing_assertion, l_failing_state.skeleton.theory)
+					l_necessary_conditions := solver_launcher.valid_premises (skeleton_with_value (l_failing_state), not exception_spot.failing_assertion, skeleton_from_state (l_failing_state).theory)
 					if l_necessary_conditions.count > 1 then
-						l_culprits := strongest_predicates (l_necessary_conditions, l_failing_state.skeleton.theory)
+						l_culprits := strongest_predicates (l_necessary_conditions, skeleton_from_state (l_failing_state).theory)
 						if l_culprits.count >= 1 then
 							l_culprit_predicate := l_culprits.first
 						end
@@ -385,7 +385,7 @@ feature{NONE} -- Implementation
 			Result := exception_spot.recipient_.e_feature.ast
 		end
 
-	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: AFX_STATE; a_postcondition: AFX_STATE; a_ignore_state_change: BOOLEAN)
+	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: EPA_STATE; a_postcondition: EPA_STATE; a_ignore_state_change: BOOLEAN)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 			-- `a_precondition' and `a_postcondition' are not directly used for fix generation,
 			-- they are passed to the actually generated fixes to provide better logging information.
@@ -393,11 +393,11 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
-	state_hierarchy (a_state: AFX_STATE): HASH_TABLE [HASH_TABLE [AFX_STATE, STRING], EPA_EXPRESSION]
+	state_hierarchy (a_state: EPA_STATE): HASH_TABLE [HASH_TABLE [EPA_STATE, STRING], EPA_EXPRESSION]
 			-- hierarchically partitioned states from `a_state'
 		local
-			l_imp_parts: HASH_TABLE [AFX_STATE, EPA_EXPRESSION]
-			l_prefix_parts: HASH_TABLE [AFX_STATE, STRING]
+			l_imp_parts: HASH_TABLE [EPA_STATE, EPA_EXPRESSION]
+			l_prefix_parts: HASH_TABLE [EPA_STATE, STRING]
 		do
 			create Result.make (20)
 			Result.compare_objects
@@ -437,11 +437,11 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	passing_state (a_passing_bpslot: INTEGER): detachable AFX_STATE
+	passing_state (a_passing_bpslot: INTEGER): detachable EPA_STATE
 			-- State invariant (containg only predicates) from passing test cases at break point `a_passing_bpslot'.
 			-- If no data is associated with the break point, return Void.
 		local
-			l_passing_state: AFX_STATE
+			l_passing_state: EPA_STATE
 			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
 		do
 			l_state := state_server.state_for_fault (exception_spot.test_case_info)
@@ -454,11 +454,11 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	failing_state (a_failing_bpslot: INTEGER): detachable AFX_STATE
+	failing_state (a_failing_bpslot: INTEGER): detachable EPA_STATE
 			-- State invariant (containg only predicates) from failing test cases at break point `a_failing_bpslot'.
 			-- If no data is associated with the break point, return Void.
 		local
-			l_failing_state: AFX_STATE
+			l_failing_state: EPA_STATE
 			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
 		do
 			l_state := state_server.state_for_fault (exception_spot.test_case_info)
@@ -468,17 +468,17 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	state_invariant_difference (a_passing_bpslot: INTEGER; a_failing_bpslot: INTEGER): detachable AFX_STATE
+	state_invariant_difference (a_passing_bpslot: INTEGER; a_failing_bpslot: INTEGER): detachable EPA_STATE
 			-- State invariant difference between break point `a_passing_bpslot' in passing runs and
 			-- break point `a_failing_bpslot' in failing runs.
 			-- If no data is associated with either break point, return Void.
 		local
 			l_snippets: LINKED_LIST [ETR_TRANSFORMABLE]
 			l_tran: ETR_TRANSFORMABLE
-			l_passing_state: AFX_STATE
-			l_failing_state: AFX_STATE
+			l_passing_state: EPA_STATE
+			l_failing_state: EPA_STATE
 			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
-			l_state_diff: AFX_STATE
+			l_state_diff: EPA_STATE
 		do
 			l_state := state_server.state_for_fault (exception_spot.test_case_info)
 			l_passing_state := l_state.passing.daikon_table.item (a_passing_bpslot)
@@ -490,11 +490,11 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	state_transitions (a_source_state: HASH_TABLE [AFX_STATE, STRING]; a_target_state: HASH_TABLE [AFX_STATE, STRING]): LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]
+	state_transitions (a_source_state: HASH_TABLE [EPA_STATE, STRING]; a_target_state: HASH_TABLE [EPA_STATE, STRING]): LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]
 			-- List of transitions to direct state from `a_source_state' to `a_target_state'
 		local
-			l_source_state: DS_HASH_TABLE [AFX_STATE, STRING]
-			l_target_state: DS_HASH_TABLE [AFX_STATE, STRING]
+			l_source_state: DS_HASH_TABLE [EPA_STATE, STRING]
+			l_target_state: DS_HASH_TABLE [EPA_STATE, STRING]
 			l_class: CLASS_C
 			l_feature: detachable FEATURE_I
 			l_empty: LINKED_LIST [STRING]
@@ -505,7 +505,7 @@ feature{NONE} -- Implementation
 
 			create l_empty.make
 			l_target_state.do_all_with_key (agent (
-				item: AFX_STATE; key: STRING; a_list: LINKED_LIST [STRING])
+				item: EPA_STATE; key: STRING; a_list: LINKED_LIST [STRING])
 					do
 						if item.is_empty then
 							a_list.extend (key)
@@ -516,9 +516,9 @@ feature{NONE} -- Implementation
 				-- Duplicate object path expression prefixes from target state to source state.
 			fixme ("This may not be necessary in the future. 18.12.2009 Jasonw")
 			l_target_state.do_all_with_key (
-				agent (item: AFX_STATE; key: STRING; data: DS_HASH_TABLE [AFX_STATE, STRING])
+				agent (item: EPA_STATE; key: STRING; data: DS_HASH_TABLE [EPA_STATE, STRING])
 					local
-						l_dummy_state: AFX_STATE
+						l_dummy_state: EPA_STATE
 					do
 						if not data.has (key) then
 							create l_dummy_state.make (0, item.class_, item.feature_)
@@ -536,7 +536,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	hash_table_to_ds_hash_table (a_hash_table: HASH_TABLE [AFX_STATE, STRING]): DS_HASH_TABLE [AFX_STATE, STRING]
+	hash_table_to_ds_hash_table (a_hash_table: HASH_TABLE [EPA_STATE, STRING]): DS_HASH_TABLE [EPA_STATE, STRING]
 			-- DS_HASH_TABLE from HASH_TABLE
 		local
 			l_cursor: CURSOR
@@ -560,7 +560,7 @@ feature{NONE} -- Implementation
 	call_sequences (a_source_state: like state_hierarchy; a_target_state: like state_hierarchy): HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], EPA_EXPRESSION]
 			-- Possible call sequences to change the system from `a_source_state' to `a_target_state'.
 		local
-			l_source: detachable HASH_TABLE [AFX_STATE, STRING]
+			l_source: detachable HASH_TABLE [EPA_STATE, STRING]
 		do
 			create Result.make (10)
 			from

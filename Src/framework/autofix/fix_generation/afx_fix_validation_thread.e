@@ -288,7 +288,7 @@ feature{NONE} -- Implementation
 			l_status: AFX_TEST_CASE_EXECUTION_STATUS
 			l_class: CLASS_C
 			l_feature: FEATURE_I
-			l_state: detachable AFX_STATE
+			l_state: detachable EPA_STATE
 			l_operand_names: HASH_TABLE [STRING, INTEGER]
 			i: INTEGER
 			l_args: FEAT_ARG
@@ -345,7 +345,7 @@ feature{NONE} -- Implementation
 						if l_value.is_boolean or else l_value.is_integer then
 							fixme ("Only support integer and boolean for the moment. 25.12.2009 Jasonw")
 							l_state_string.append (l_expression)
-							l_state_string.append ({AFX_CONSTANTS}.equation_separator)
+							l_state_string.append ({EPA_CONSTANTS}.equation_separator)
 							l_state_string.append (l_value)
 							l_state_string.append_character ('%N')
 						end

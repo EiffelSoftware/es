@@ -12,12 +12,12 @@ class
 	AFX_QUERY_MODEL_STATE
 
 inherit
-	DS_ARRAYED_LIST [AFX_STATE]
+	DS_ARRAYED_LIST [EPA_STATE]
 		redefine
 			make
 		end
 
-	AFX_HASH_CALCULATOR
+	EPA_HASH_CALCULATOR
     	undefine
     		is_equal,
     		copy
@@ -50,7 +50,7 @@ feature -- Initialization
 
 feature -- State extraction
 
-	extract_state (a_heap: DS_HASH_TABLE [AFX_STATE, INTEGER]; a_request: AUT_CALL_BASED_REQUEST; is_before_request: BOOLEAN)
+	extract_state (a_heap: DS_HASH_TABLE [EPA_STATE, INTEGER]; a_request: AUT_CALL_BASED_REQUEST; is_before_request: BOOLEAN)
 			-- Extract the model state for `a_request' from `a_heap'.
 			-- If `is_before_request', create chaos states for creation object and query result.
 		require
@@ -62,7 +62,7 @@ feature -- State extraction
 		    l_index: INTEGER
 		    l_class: CLASS_C
 		    l_type: TYPE_A
-		    l_state: AFX_STATE
+		    l_state: EPA_STATE
 		    i: INTEGER
 		    l_skip_creation_target, l_skip_query_result: BOOLEAN
 		do
@@ -116,7 +116,7 @@ feature -- State extraction
 
             debug("autofix_state_extraction")
             	if l_skip_creation_target then print ("skip creation target.%N") end
-            	do_all (agent (a_state: AFX_STATE) do print (a_state.debug_output) end)
+            	do_all (agent (a_state: EPA_STATE) do print (a_state.debug_output) end)
             	if l_skip_query_result then print ("skip query result.%N") end
             end
 
@@ -131,7 +131,7 @@ feature -- Status report
 		do
 		    create Result.make (512)
 		    do_all (
-		    	agent (a_state: AFX_STATE; a_string: STRING)
+		    	agent (a_state: EPA_STATE; a_string: STRING)
 		    		do
 		    		    a_string.append ("++")
 		    		    a_string.append (a_state.class_.name)

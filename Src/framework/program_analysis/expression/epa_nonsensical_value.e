@@ -30,7 +30,7 @@ feature -- Access
 	nonsensical: STRING
 			-- Nonsensical value
 		do
-			Result := once "nonsensical"
+			Result := {EPA_CONSTANTS}.nonsensical
 		end
 
 feature -- Status report

@@ -55,10 +55,10 @@ feature -- Access
 	ranking: AFX_FIX_RANKING
 			-- Ranking for current fix
 
-	precondition: detachable AFX_STATE
+	precondition: detachable EPA_STATE
 			-- Precondition of the snippet part of current fix
 
-	postcondition: detachable AFX_STATE
+	postcondition: detachable EPA_STATE
 			-- Postcondition of the snippet part of current fix
 
 	recipient_: FEATURE_I
@@ -133,9 +133,9 @@ feature -- Access
 					l_post_status := l_post.item (l_pre.key_for_iteration)
 					fixme ("l_pre_status and l_post_status should always be attached. 26.1.2010 Jasonw")
 					if l_pre_status /= Void and then l_post_status /= Void then
-						if  attached {AFX_STATE} l_pre_status.post_state as l_pre_post then
+						if  attached {EPA_STATE} l_pre_status.post_state as l_pre_post then
 							l_passing_tc := l_passing_tc + 1
-							if attached {AFX_STATE} l_post_status.post_state as l_post_post then
+							if attached {EPA_STATE} l_post_status.post_state as l_post_post then
 									-- Current test case is passing before and after current fix.
 								l_distance_sum := l_distance_sum + l_pre_status.post_state_distance (l_post_status).to_double
 							else
@@ -283,14 +283,14 @@ feature -- Status report
 			Result.append_character ('%N')
 
 			Result.append ("Precondition:%N")
-			if attached {AFX_STATE} precondition as l_pre then
+			if attached {EPA_STATE} precondition as l_pre then
 				Result.append (l_pre.debug_output)
 			else
 				Result.append ("Void%N")
 			end
 
 			Result.append ("Postcondition:%N")
-			if attached {AFX_STATE} postcondition as l_post then
+			if attached {EPA_STATE} postcondition as l_post then
 				Result.append (l_post.debug_output)
 			else
 				Result.append ("Void%N")

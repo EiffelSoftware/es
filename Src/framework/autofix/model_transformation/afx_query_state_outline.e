@@ -21,14 +21,14 @@ create
 
 feature{NONE} -- Initialization
 
-	make_for_state (a_state: AFX_STATE)
+	make_for_state (a_state: EPA_STATE)
 			-- Initialize.
 		require
 		    not_chaos: not a_state.is_chaos
 		do
 		    class_ := a_state.class_
 		    make (a_state.count)
-		    set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
+		    set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 
 		    from a_state.start
 		    until a_state.after
@@ -62,7 +62,7 @@ feature -- Status report
 
 feature -- Operation
 
-	accommodate (a_state: AFX_STATE)
+	accommodate (a_state: EPA_STATE)
 			-- Accommodate `a_state' into outline.
 		require
 		    is_for_same_class: is_for_class (a_state.class_)

@@ -8,7 +8,7 @@ class
 	AFX_BOOLEAN_STATE_TRANSITION_SUMMARY
 
 inherit
-    AFX_HASH_CALCULATOR
+    EPA_HASH_CALCULATOR
 
 create
 	make_for_transition_operand, make_for_two_states, make_with_outline

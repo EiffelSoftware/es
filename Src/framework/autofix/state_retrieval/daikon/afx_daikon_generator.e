@@ -33,7 +33,7 @@ feature -- Declaration
 			create daikon_state_list.make
 		end
 
-   	add_state (a_skeleton: AFX_STATE_SKELETON; a_state: AFX_STATE; break_point: INTEGER; is_failing: BOOLEAN)
+   	add_state (a_skeleton: AFX_STATE_SKELETON; a_state: EPA_STATE; break_point: INTEGER; is_failing: BOOLEAN)
    			-- Add traces for a breakpoint
    			-- `a_skeleton' is the template for all possible variables/expressions.
    		local
@@ -42,7 +42,7 @@ feature -- Declaration
    			a_daikon_declaration : AFX_DAIKON_DECLARATION
    			a_daikon_trace : AFX_DAIKON_TRACE
    			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
-   			l_equation: detachable AFX_EQUATION
+   			l_equation: detachable EPA_EQUATION
    			l_nonsensical_value: EPA_NONSENSICAL_VALUE
    		do
    			--CLASS_NAME.feature_name.bpslot:::POINT
