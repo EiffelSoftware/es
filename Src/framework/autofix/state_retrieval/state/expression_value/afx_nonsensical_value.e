@@ -24,7 +24,13 @@ feature -- Access
 	item: STRING
 			-- Value item in current
 		do
-			Result := {AUT_SHARED_CONSTANTS}.nonsensical
+			Result := nonsensical
+		end
+
+	nonsensical: STRING
+			-- Nonsensical value
+		do
+			Result := once "nonsensical"
 		end
 
 feature -- Status report

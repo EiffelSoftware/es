@@ -287,8 +287,8 @@ feature{NONE} -- Implementation
 						l_value := (l_abq_analyzer.negation_count \\ 2) = 0
 						create l_pre_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (l_value))
 						create l_post_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (not l_value))
-						l_precondition := l_pre_equation
-						l_postcondition := l_post_equation
+						l_precondition := equation_as_state (l_pre_equation)
+						l_postcondition := equation_as_state (l_post_equation)
 					end
 				end
 			end

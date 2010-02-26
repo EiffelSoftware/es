@@ -34,6 +34,7 @@ feature -- Access
 
 	asts: ARRAYED_LIST [AST_EIFFEL]
 			-- List of ASTs inside current block
+			-- Note: Can be empty, for example, for a fake node added for ease of analysis.
 		deferred
 		end
 

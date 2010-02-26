@@ -178,7 +178,7 @@ feature -- Access
 		require
 			a_predicate_valid: a_predicate.type.is_boolean
 		do
-			if a_skeleton implies a_predicate.as_skeleton then
+			if a_skeleton implies expression_as_state_skeleton (a_predicate) then
 				Result := minimal_premises_ddmin (a_skeleton, 2, a_predicate, a_context)
 			end
 		ensure
@@ -211,7 +211,7 @@ feature -- Access
 					else
 						l_premises := l_subset
 					end
-					if l_premises implies a_predicate.as_skeleton then
+					if l_premises implies expression_as_state_skeleton (a_predicate) then
 						l_done := True
 						Result := minimal_premises_ddmin (l_subset, (2).max (a_granularity - 1), a_predicate, a_context)
 					end
@@ -403,7 +403,7 @@ feature{NONE} -- Implementation
 				l_expr := a_expressions.item_for_iteration
 				if l_expr.is_predicate then
 					l_expr_list.extend (l_expr)
-					l_list.extend (l_expr.as_solver_expression)
+					l_list.extend (solver_expression (l_expr))
 				end
 				a_expressions.forth
 			end

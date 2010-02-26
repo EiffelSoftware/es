@@ -31,9 +31,6 @@ inherit
 create
 	make
 
-convert
-	to_state: {AFX_STATE}
-
 feature{NONE} -- Initialization
 
 	make (a_expr: like expression; a_value: like value)
@@ -129,14 +126,6 @@ feature -- Status report
 		end
 
 feature -- Conversion
-
-	to_state: AFX_STATE
-			-- State representation for Current.
-			-- The returned state only contains Current as the only predicate.
-		do
-			create Result.make (1, class_, feature_)
-			Result.force_last (Current)
-		end
 
 	to_normal_form: like Current
 			-- Turn current into normal form

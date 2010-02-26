@@ -18,7 +18,7 @@ inherit
 
 	AFX_SOLVER_FACTORY
 
-	AFX_UTILITY
+	EPA_UTILITY
 
 feature -- Access
 
@@ -46,34 +46,6 @@ feature -- Access
 
 	written_class: CLASS_C
 			-- Class where `ast' is written
-
-	as_solver_expression: AFX_SOLVER_EXPR
-			-- SMTLIB expression for Current.
-		local
-			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]]
-			l_shared_theory: AFX_SHARED_CLASS_THEORY
-			l_raw_text: STRING
-		do
-			create l_shared_theory
-			l_shared_theory.solver_expression_generator.initialize_for_generation
-			l_shared_theory.solver_expression_generator.generate_expression (ast, class_, written_class, feature_)
-			l_raw_text := l_shared_theory.solver_expression_generator.last_statements.first
-			l_resolved := l_shared_theory.resolved_smt_statement (l_raw_text, create {AFX_CLASS_WITH_PREFIX}.make (class_, ""))
-			Result := new_solver_expression_from_string (l_resolved.resolved_str)
-		end
-
-	as_skeleton: AFX_STATE_SKELETON
-			-- Skeleton representation for Current
-		require
-			is_predicate: is_predicate
-		local
-			l_exprs: LINKED_LIST [AFX_EXPRESSION]
-		do
-			create l_exprs.make
-			l_exprs.extend (Current)
-
-			create Result.make_with_expressions (class_, feature_, l_exprs)
-		end
 
 	equation (a_value: AFX_EXPRESSION_VALUE): AFX_EQUATION
 			-- Equation with current as expression and `a_value' as value.

@@ -18,6 +18,10 @@ inherit
 
 	SHARED_SERVER
 
+	AFX_SOLVER_FACTORY
+
+	EPA_UTILITY
+
 feature -- Access
 
 	first_class_starts_with_name (a_class_name: STRING): detachable CLASS_C
@@ -580,61 +584,42 @@ feature -- Process
 			end
 		end
 
-feature -- Feature related
+feature -- Access
 
-	local_names_of_feature (a_feature: FEATURE_I): DS_HASH_SET [STRING]
-			-- Set of local variable names in `a_feature'
-			-- The equality tester of the result is case insensitive equality tester.
-		do
-			create Result.make (10)
-			Result.set_equality_tester (case_insensitive_string_equality_tester)
-
-			if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
-				if l_routine.locals /= Void then
-					l_routine.locals.do_all (
-						agent (a_type_dec: TYPE_DEC_AS; a_result: DS_HASH_SET [STRING])
-							local
-								i: INTEGER
-								c: INTEGER
-							do
-								from
-									c := a_type_dec.id_list.count
-									i := 1
-								until
-									i > c
-								loop
-									a_result.force_last (a_type_dec.item_name (i))
-									i := i + 1
-								end
-							end (?, Result))
-				end
-			end
-		end
-
-	arguments_of_feature (a_feature: FEATURE_I): DS_HASH_TABLE [INTEGER, STRING]
-			-- Table of formal argument names in `a_feature'
-			-- Key is the argument name, value is its index in the feature signature.
-			-- The equality tester of the result is case insensitive equality tester.
+	solver_expression (a_expr: AFX_EXPRESSION): AFX_SOLVER_EXPR
+			-- Solver expression from `a_expr'
 		local
-			i: INTEGER
-			l_count: INTEGER
+			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]]
+			l_shared_theory: AFX_SHARED_CLASS_THEORY
+			l_raw_text: STRING
 		do
-			l_count := a_feature.argument_count
-			create Result.make (l_count)
-			Result.set_key_equality_tester (case_insensitive_string_equality_tester)
-
-			if l_count > 0 then
-				from
-					i := 1
-				until
-					i > l_count
-				loop
-					Result.put (i, a_feature.arguments.item_name (i))
-					i := i + 1
-				end
-			end
+			create l_shared_theory
+			l_shared_theory.solver_expression_generator.initialize_for_generation
+			l_shared_theory.solver_expression_generator.generate_expression (a_expr.ast, a_expr.class_, a_expr.written_class, a_expr.feature_)
+			l_raw_text := l_shared_theory.solver_expression_generator.last_statements.first
+			l_resolved := l_shared_theory.resolved_smt_statement (l_raw_text, create {AFX_CLASS_WITH_PREFIX}.make (a_expr.class_, ""))
+			Result := new_solver_expression_from_string (l_resolved.resolved_str)
 		end
 
+	expression_as_state_skeleton (a_expr: AFX_EXPRESSION): AFX_STATE_SKELETON
+			-- State skeleton including `a_expr'
+		require
+			a_expr_is_predicate: a_expr.is_predicate
+		local
+			l_exprs: LINKED_LIST [AFX_EXPRESSION]
+		do
+			create l_exprs.make
+			l_exprs.extend (a_expr)
 
+			create Result.make_with_expressions (a_expr.class_, a_expr.feature_, l_exprs)
+		end
+
+	equation_as_state (a_equation: AFX_EQUATION): AFX_STATE
+			-- State representing `a_equation'.
+			-- The returned state only contains Current as the only predicate.
+		do
+			create Result.make (1, a_equation.class_, a_equation.feature_)
+			Result.force_last (a_equation)
+		end
 
 end

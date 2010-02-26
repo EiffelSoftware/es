@@ -12,6 +12,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	AFX_UTILITY
+
 feature -- Access
 
 	last_content: detachable STRING
@@ -43,7 +45,8 @@ feature -- Basic operations
 			-- Generate file to check if `a_expr' is a tautology in the context of `a_state'.
 			-- Store result in `last_content'.
 		do
-			generate (a_expr.as_solver_expression, a_state.theory)
+			generate (solver_expression (a_expr), a_state.theory)
+
 		end
 
 	generate_for_implied_checking (a_exprs1: LINEAR [AFX_EXPRESSION]; a_exprs2: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY)
@@ -80,7 +83,7 @@ feature{NONE} -- Implementation
 			a_exprs.do_all (
 				agent (a_exp: AFX_EXPRESSION; a_list: LINKED_LIST [AFX_SOLVER_EXPR])
 					do
-						a_list.extend (a_exp.as_solver_expression)
+						a_list.extend (solver_expression (a_exp))
 					end (?, Result))
 		end
 
