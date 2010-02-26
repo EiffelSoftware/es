@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	TEST_GENERATOR_ROUTINES
+	EPA_GENERATOR_ROUTINES
 
 feature -- Access
 

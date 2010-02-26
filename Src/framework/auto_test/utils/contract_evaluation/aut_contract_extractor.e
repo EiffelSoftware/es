@@ -10,7 +10,7 @@ class
 inherit
 	REFACTORING_HELPER
 
-	TEST_GENERATOR_ROUTINES
+	EPA_GENERATOR_ROUTINES
 
 feature -- Access
 

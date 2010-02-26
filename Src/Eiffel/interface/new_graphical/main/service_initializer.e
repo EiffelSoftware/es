@@ -137,7 +137,7 @@ feature {NONE} -- Registrations: Testing
 			a_service_usable: a_service.is_interface_usable
 		local
 			a_registrar: TEST_PROCESSOR_REGISTRAR_I
-			l_test_generator_routines: TEST_GENERATOR_ROUTINES
+			l_test_generator_routines: EPA_GENERATOR_ROUTINES
 			l_routines: TEST_SERVICE_ROUTINES
 		do
 			a_registrar := a_service.processor_registrar
