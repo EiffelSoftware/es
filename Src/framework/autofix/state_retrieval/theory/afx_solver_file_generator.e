@@ -41,7 +41,7 @@ feature -- Basic operations
 			generate_formulae_internal (a_formulae)
 		end
 
-	generate_for_tautology_checking (a_expr: AFX_EXPRESSION; a_state: AFX_STATE_SKELETON)
+	generate_for_tautology_checking (a_expr: EPA_EXPRESSION; a_state: AFX_STATE_SKELETON)
 			-- Generate file to check if `a_expr' is a tautology in the context of `a_state'.
 			-- Store result in `last_content'.
 		do
@@ -49,7 +49,7 @@ feature -- Basic operations
 
 		end
 
-	generate_for_implied_checking (a_exprs1: LINEAR [AFX_EXPRESSION]; a_exprs2: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY)
+	generate_for_implied_checking (a_exprs1: LINEAR [EPA_EXPRESSION]; a_exprs2: LINEAR [EPA_EXPRESSION]; a_theory: AFX_THEORY)
 			-- Generate file to check if `a_expr2' can be implied from `a_exprs1' in the context of `a_theory'.
 			-- Store result in `last_content'.
 		local
@@ -76,12 +76,12 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	expressions_to_solver_expressions (a_exprs: LINEAR [AFX_EXPRESSION]): LINKED_LIST [AFX_SOLVER_EXPR]
+	expressions_to_solver_expressions (a_exprs: LINEAR [EPA_EXPRESSION]): LINKED_LIST [AFX_SOLVER_EXPR]
 			-- Expressions to solver expressions.
 		do
 			create {LINKED_LIST [AFX_SOLVER_EXPR]} Result.make
 			a_exprs.do_all (
-				agent (a_exp: AFX_EXPRESSION; a_list: LINKED_LIST [AFX_SOLVER_EXPR])
+				agent (a_exp: EPA_EXPRESSION; a_list: LINKED_LIST [AFX_SOLVER_EXPR])
 					do
 						a_list.extend (solver_expression (a_exp))
 					end (?, Result))

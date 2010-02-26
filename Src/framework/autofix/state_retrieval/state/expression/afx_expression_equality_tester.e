@@ -8,14 +8,14 @@ class
 	AFX_EXPRESSION_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [AFX_EXPRESSION]
+	KL_EQUALITY_TESTER [EPA_EXPRESSION]
 		redefine
 			test
 		end
 
 feature -- Status report
 
-	test (v, u: AFX_EXPRESSION): BOOLEAN
+	test (v, u: EPA_EXPRESSION): BOOLEAN
 		do
 			if v = u then
 				Result := True

@@ -12,7 +12,7 @@ inherit
 
 feature -- Basic operations
 
-	analyze (a_expression: AFX_EXPRESSION)
+	analyze (a_expression: EPA_EXPRESSION)
 			-- Analyze the structure of `a_expression', set `is_matched' to True if
 			-- the structure of `a_expression' matches current analyzer.
 			-- This analyzer will match any expression.

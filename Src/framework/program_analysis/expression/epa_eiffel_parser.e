@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EIFFEL_PARSER
+	EPA_EIFFEL_PARSER
 
 inherit
 	EIFFEL_PARSER
@@ -18,7 +18,7 @@ create
 
 feature -- Factory
 
-	ast_factory: AFX_EXPRESSION_AST_FACTORY
+	ast_factory: EPA_EXPRESSION_AST_FACTORY
 			-- Abstract Syntax Tree factory
 
 feature -- Status report

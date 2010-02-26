@@ -12,7 +12,7 @@ inherit
 	AFX_HASH_CALCULATOR
     	undefine is_equal, copy	end
 
-    AFX_EXPRESSION_VALUE_VISITOR
+    EPA_EXPRESSION_VALUE_VISITOR
     	undefine is_equal, copy end
 
 	AFX_SHARED_BOOLEAN_STATE_OUTLINE_MANAGER
@@ -254,8 +254,8 @@ feature -- Query state interpretation
 		local
 		    l_outline: like boolean_state_outline
 		    l_predicate: AFX_PREDICATE_EXPRESSION
-		    l_exp: AFX_EXPRESSION
-		    l_table: DS_HASH_TABLE[AFX_EXPRESSION_VALUE, AFX_EXPRESSION]
+		    l_exp: EPA_EXPRESSION
+		    l_table: DS_HASH_TABLE[EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
 		    l_index: INTEGER
 		do
 		    query_state := a_state
@@ -265,7 +265,7 @@ feature -- Query state interpretation
     		    create l_table.make (a_state.count)
     		    l_table.set_key_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
     		    l_table.set_equality_tester (create {AFX_EXPRESSION_VALUE_EQUALITY_TESTER})
-    		    a_state.do_all (agent (an_equation: AFX_EQUATION; a_table: DS_HASH_TABLE[AFX_EXPRESSION_VALUE, AFX_EXPRESSION])
+    		    a_state.do_all (agent (an_equation: AFX_EQUATION; a_table: DS_HASH_TABLE[EPA_EXPRESSION_VALUE, EPA_EXPRESSION])
     		    		do
     		    			a_table.force (an_equation.value, an_equation.expression)
     		    		end (?, l_table))
@@ -309,7 +309,7 @@ feature{NONE} -- Visitor
 	last_property_index: INTEGER
 			-- Index of last unprocessed predicate in the boolean outline.
 
-	process_boolean_value (a_value: AFX_BOOLEAN_VALUE)
+	process_boolean_value (a_value: EPA_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		local
 			l_property: like last_property
@@ -326,13 +326,13 @@ feature{NONE} -- Visitor
 			end
 		end
 
-	process_random_boolean_value (a_value: AFX_RANDOM_BOOLEAN_VALUE)
+	process_random_boolean_value (a_value: EPA_RANDOM_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		do
 		    check last_property /= Void and then last_property.is_predicate end
 		end
 
-	process_integer_value (a_value: AFX_INTEGER_VALUE)
+	process_integer_value (a_value: EPA_INTEGER_VALUE)
 			-- Process `a_value'.
 		local
 			l_property: like last_property
@@ -349,25 +349,25 @@ feature{NONE} -- Visitor
 			end
 		end
 
-	process_random_integer_value (a_value: AFX_RANDOM_INTEGER_VALUE)
+	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)
 			-- Process `a_value'.
 		do
 		    check last_property /= Void and then last_property.is_predicate end
 		end
 
-	process_nonsensical_value (a_value: AFX_NONSENSICAL_VALUE)
+	process_nonsensical_value (a_value: EPA_NONSENSICAL_VALUE)
 			-- Process `a_value'.
 		do
 		    check last_property /= Void and then last_property.is_predicate end
 		end
 
-	process_void_value (a_value: AFX_VOID_VALUE)
+	process_void_value (a_value: EPA_VOID_VALUE)
 			-- Process `a_value'.
 		do
 			-- should not happen, we have filtered out the queries returning reference values.
 		end
 
-	process_any_value (a_value: AFX_ANY_VALUE)
+	process_any_value (a_value: EPA_ANY_VALUE)
 			-- <Precursor>
 		do
 		end

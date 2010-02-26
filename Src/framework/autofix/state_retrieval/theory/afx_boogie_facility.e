@@ -64,7 +64,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	solver_output_for_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, AFX_EXPRESSION]
+	solver_output_for_expressions (a_expressions: LINEAR [EPA_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, EPA_EXPRESSION]
 			-- Output from the solver for checking `a_expressions' in the context of `a_solver_input'.
 			-- `a_solver_input' is the input fed to the underlying theorem prover.
 			-- Result is a table, key is the expression, value is the solver output for that expression':
@@ -104,7 +104,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	bpl_procedure_to_expression_table (a_expressions: LINEAR [AFX_EXPRESSION]): HASH_TABLE [AFX_EXPRESSION, STRING]
+	bpl_procedure_to_expression_table (a_expressions: LINEAR [EPA_EXPRESSION]): HASH_TABLE [EPA_EXPRESSION, STRING]
 			-- Table from bpl procedure name to expressions in `a_expressions'.
 			-- The order in `a_expressions' is important, and reflected in the procedure name associated with it.
 			-- Key is the bpl procedure name, value is its associated expression.

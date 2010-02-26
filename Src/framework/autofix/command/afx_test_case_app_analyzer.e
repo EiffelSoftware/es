@@ -328,7 +328,7 @@ feature{NONE} -- Actions
 			l_bpslot: INTEGER
 			l_tag: STRING
 			l_passing: BOOLEAN
-			l_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
+			l_table: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			l_spot: AFX_EXCEPTION_SPOT
 			l_uuid: STRING
 			l_trace: STRING

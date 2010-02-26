@@ -5,11 +5,11 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SHARED_EXPR_TYPE_CHECKER
+	EPA_SHARED_EXPR_TYPE_CHECKER
 
 feature -- Access
 
-	expression_type_checker: AFX_EXPRESSION_TYPE_CHECKER
+	expression_type_checker: EPA_EXPRESSION_TYPE_CHECKER
 			-- Type checker for expressions
 		once
 			create Result

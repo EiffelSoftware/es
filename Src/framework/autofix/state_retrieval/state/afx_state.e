@@ -98,7 +98,7 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	make_from_expression_value (a_exp_val: HASH_TABLE [AFX_EXPRESSION_VALUE, AFX_AST_EXPRESSION]; a_class: like class_; a_feature: like feature_)
+	make_from_expression_value (a_exp_val: HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_AST_EXPRESSION]; a_class: like class_; a_feature: like feature_)
 			-- Initialize a new state from a list of expression-value pairs
 		require
 			a_class_attached: a_class /= Void
@@ -167,8 +167,8 @@ feature{NONE} -- Initialization
 			l_lines: LIST [STRING]
 			l_text: STRING
 			l_parts: LIST [STRING]
-			l_expr: AFX_AST_EXPRESSION
-			l_value: AFX_EXPRESSION_VALUE
+			l_expr: EPA_AST_EXPRESSION
+			l_value: EPA_EXPRESSION_VALUE
 			l_expr_str: STRING
 			l_value_str: STRING
 		do
@@ -194,9 +194,9 @@ feature{NONE} -- Initialization
 
 					create l_expr.make_with_text (a_class, a_feature, l_parts.first, a_class)
 					if l_value_str.is_integer then
-						create {AFX_INTEGER_VALUE} l_value.make (l_value_str.to_integer)
+						create {EPA_INTEGER_VALUE} l_value.make (l_value_str.to_integer)
 					elseif l_value_str.is_boolean then
-						create {AFX_BOOLEAN_VALUE} l_value.make (l_value_str.to_boolean)
+						create {EPA_BOOLEAN_VALUE} l_value.make (l_value_str.to_boolean)
 					else
 						check not_supported: False end
 					end
@@ -288,7 +288,7 @@ feature -- Access
 			l_diff := a_skeleton.subtraction (Result.predicate_skeleton)
 			if not l_diff.is_empty then
 				l_diff.do_all (
-					agent (a_expr: AFX_EXPRESSION; a_state: like Current)
+					agent (a_expr: EPA_EXPRESSION; a_state: like Current)
 						do
 							a_state.force_last (equation_with_random_value (a_expr))
 						end (?, Result))
@@ -316,12 +316,12 @@ feature -- Access
 			end
 		end
 
-	item_with_expression (a_expr: AFX_EXPRESSION): detachable AFX_EQUATION
+	item_with_expression (a_expr: EPA_EXPRESSION): detachable AFX_EQUATION
 			-- Equation whose expression is `a_expr'
 			-- Void if no such equation is found.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
-			l_equality_tester: FUNCTION [ANY, TUPLE [AFX_EXPRESSION, AFX_EXPRESSION], BOOLEAN]
+			l_equality_tester: FUNCTION [ANY, TUPLE [EPA_EXPRESSION, EPA_EXPRESSION], BOOLEAN]
 		do
 			l_equality_tester := agent expression_equality_tester.test
 			l_cursor := new_cursor
@@ -337,7 +337,7 @@ feature -- Access
 			end
 		end
 
-	to_hash_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING]
+	to_hash_table: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			-- Hash table representation of Current
 			-- Key is the text of the equations,
 			-- value is the value associated in those equations.
@@ -345,7 +345,7 @@ feature -- Access
 			create Result.make (count)
 			Result.compare_objects
 			do_all (
-				agent (a_equation: AFX_EQUATION; a_table: HASH_TABLE [AFX_EXPRESSION_VALUE, STRING])
+				agent (a_equation: AFX_EQUATION; a_table: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING])
 					do
 						a_table.force (a_equation.value, a_equation.expression.text)
 					end (?, Result))
@@ -443,8 +443,8 @@ feature{NONE} -- Implementation
 	predicate_from_expression_and_value (a_expression: STRING; a_value: STRING; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_EQUATION
 			-- Predicate from `a_expression' and its `a_value'
 		local
-			l_expr: AFX_AST_EXPRESSION
-			l_value: AFX_EXPRESSION_VALUE
+			l_expr: EPA_AST_EXPRESSION
+			l_value: EPA_EXPRESSION_VALUE
 			l_written_class: CLASS_C
 		do
 			if a_feature /= Void then
@@ -457,14 +457,14 @@ feature{NONE} -- Implementation
 
 			fixme ("Refactoring the following ugly if statement.")
 			if a_value = Void then
-				create {AFX_VOID_VALUE} l_value.make
+				create {EPA_VOID_VALUE} l_value.make
 			else
 				if a_value.is_boolean then
-					create {AFX_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
+					create {EPA_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
 				elseif a_value.is_integer then
-					create {AFX_INTEGER_VALUE} l_value.make (a_value.to_integer)
+					create {EPA_INTEGER_VALUE} l_value.make (a_value.to_integer)
 				elseif a_value.is_equal ({AUT_SHARED_CONSTANTS}.nonsensical) then
-					create {AFX_NONSENSICAL_VALUE} l_value
+					create {EPA_NONSENSICAL_VALUE} l_value
 				end
 			end
 			create Result.make (l_expr, l_value)

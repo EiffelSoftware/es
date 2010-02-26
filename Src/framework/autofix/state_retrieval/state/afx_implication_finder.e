@@ -38,7 +38,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	last_implications: LINKED_LIST [TUPLE [premise:AFX_EXPRESSION; consequent: AFX_EXPRESSION]]
+	last_implications: LINKED_LIST [TUPLE [premise:EPA_EXPRESSION; consequent: EPA_EXPRESSION]]
 			-- Implications that are found by the last `generate'.
 			-- Every tuple represents an implication: `premise' -> `consequent'.
 			-- The exact text `premise' -> `consequent' may not appear in code,
@@ -107,16 +107,16 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	premise_stack: ARRAYED_STACK [LINKED_LIST [AFX_EXPRESSION]]
+	premise_stack: ARRAYED_STACK [LINKED_LIST [EPA_EXPRESSION]]
 			-- Stack for premises
 
-	consequent_stack: ARRAYED_STACK [LINKED_LIST [AFX_EXPRESSION]]
+	consequent_stack: ARRAYED_STACK [LINKED_LIST [EPA_EXPRESSION]]
 			-- Stack for consequents
 
-	term_writer: detachable PROCEDURE [ANY, TUPLE [a_expr: AFX_EXPRESSION]]
+	term_writer: detachable PROCEDURE [ANY, TUPLE [a_expr: EPA_EXPRESSION]]
 			-- Agent to call when a term is found
 
-	final_expression: detachable AFX_AST_EXPRESSION
+	final_expression: detachable EPA_AST_EXPRESSION
 			-- Final name of the last found identifier
 
 feature{NONE} -- Implementation
@@ -186,7 +186,7 @@ feature{NONE} -- Implementation
 		local
 			l_feat: detachable FEATURE_I
 			l_done: BOOLEAN
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 				-- Check if `a_name' is a feature name.
 			check written_class /= Void end
@@ -206,7 +206,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	implications_from_components (a_premises: LINKED_LIST [AFX_EXPRESSION]; a_consequents: LINKED_LIST [AFX_EXPRESSION]): like last_implications
+	implications_from_components (a_premises: LINKED_LIST [EPA_EXPRESSION]; a_consequents: LINKED_LIST [EPA_EXPRESSION]): like last_implications
 			-- List of implications that are constructed from `a_premises' and `a_consequents'.
 			-- The result is an acoss product between `a_premises' and `a_consequents'.
 			-- This means that some returned implications may not really appear in the source code, they are just guesses.
@@ -233,8 +233,8 @@ feature{NONE} -- Process
 
 	process_bin_implies_as (l_as: BIN_IMPLIES_AS)
 		local
-			l_premises: LINKED_LIST [AFX_EXPRESSION]
-			l_consequents: LINKED_LIST [AFX_EXPRESSION]
+			l_premises: LINKED_LIST [EPA_EXPRESSION]
+			l_consequents: LINKED_LIST [EPA_EXPRESSION]
 			l_implication: AFX_IMPLICATION_EXPR
 		do
 			fixme ("No support for nested implications in source code for the moment. 27.11.2009 Jasonw")
@@ -278,7 +278,7 @@ feature{NONE} -- Process
 			fixme ("Does not support nested expressions for the moment. 26.11.2009 Jasonw")
 		end
 
-	extend_expression (a_expr: AFX_EXPRESSION; store: LINKED_LIST [AFX_EXPRESSION])
+	extend_expression (a_expr: EPA_EXPRESSION; store: LINKED_LIST [EPA_EXPRESSION])
 			-- Extend `a_expr' into `store'.
 		do
 			store.extend (a_expr)

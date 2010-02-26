@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_VOID_VALUE
+	EPA_VOID_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 		redefine
 			type,
 			item
@@ -36,7 +36,7 @@ feature -- Access
 
 feature -- Process
 
-	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
 			a_visitor.process_void_value (Current)

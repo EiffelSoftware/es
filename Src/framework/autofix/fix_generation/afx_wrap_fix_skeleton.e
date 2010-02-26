@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: AFX_EXPRESSION; a_config: like config; a_test_case_execution_status: like test_case_execution_status; a_guard_in_negation: BOOLEAN)
+	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: EPA_EXPRESSION; a_config: like config; a_test_case_execution_status: like test_case_execution_status; a_guard_in_negation: BOOLEAN)
 			-- Initialize.
 		require
 			a_guard_condition_attached: a_guard_condition /= Void

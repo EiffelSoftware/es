@@ -36,7 +36,7 @@ feature -- Operation
 			l_outline: AFX_QUERY_STATE_OUTLINE
 			l_manager: like State_outline_manager
 			l_class_id: INTEGER
-			l_exp: AFX_EXPRESSION
+			l_exp: EPA_EXPRESSION
 			l_pre_exp: DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
 		do
 		    l_manager := State_outline_manager
@@ -51,7 +51,7 @@ feature -- Operation
         		        l_exp := l_outline.item_for_iteration
 
         		        	-- construct predicates for expressions
-        		        if attached {AFX_AST_EXPRESSION} l_exp as ll_exp then
+        		        if attached {EPA_AST_EXPRESSION} l_exp as ll_exp then
             		        if ll_exp.is_predicate then
             		            l_pre_exp := extract_boolean_outline (ll_exp)
             		        elseif ll_exp.type /= Void and then ll_exp.type.is_integer then
@@ -81,14 +81,14 @@ feature -- Operation
 
 feature{NONE} -- Implementation
 
-	extract_integer_outline (a_integer_expression: AFX_AST_EXPRESSION): DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
+	extract_integer_outline (a_integer_expression: EPA_AST_EXPRESSION): DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
 			-- Extract outline from `a_integer_expression'.
 		require
 		    integer_expression: a_integer_expression.type.is_integer
 		deferred
 		end
 
-	extract_boolean_outline (a_boolean_expression: AFX_AST_EXPRESSION): DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
+	extract_boolean_outline (a_boolean_expression: EPA_AST_EXPRESSION): DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
 			-- Extract outline from `a_boolean_expression'.
 		local
 		    l_agents: DS_ARRAYED_LIST [PREDICATE[AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I, TUPLE[INTEGER]]]

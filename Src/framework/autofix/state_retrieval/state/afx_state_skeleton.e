@@ -8,7 +8,7 @@ class
 	AFX_STATE_SKELETON
 
 inherit
-	AFX_HASH_SET [AFX_EXPRESSION]
+	AFX_HASH_SET [EPA_EXPRESSION]
 		redefine
 			force_new,
 			append,
@@ -58,7 +58,7 @@ create
 	make_with_text
 
 convert
-	linear_representation: {LINEAR [AFX_EXPRESSION]}
+	linear_representation: {LINEAR [EPA_EXPRESSION]}
 
 feature{NONE} -- Initialization
 
@@ -67,7 +67,7 @@ feature{NONE} -- Initialization
 			-- qureies of basic types in `a_class'.
 		local
 			l_queries: LIST [FEATURE_I]
-			l_item: AFX_AST_EXPRESSION
+			l_item: EPA_AST_EXPRESSION
 		do
 			l_queries := supported_queries_of_type (a_class.actual_type)
 			make_basic (class_, Void, l_queries.count)
@@ -86,7 +86,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current with `a_accesses'.
 		local
 			l_cursor: CURSOR
-			l_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
 		do
 			make_basic (a_class, a_feature, a_accesses.count)
 
@@ -103,7 +103,7 @@ feature{NONE} -- Initialization
 			a_accesses.go_to (l_cursor)
 		end
 
-	make_with_expressions (a_class: like class_; a_feature: like feature_; a_expressions: LINEAR [AFX_EXPRESSION])
+	make_with_expressions (a_class: like class_; a_feature: like feature_; a_expressions: LINEAR [EPA_EXPRESSION])
 			-- Initialize current with `a_expressions'.
 		do
 			make_basic (a_class, a_feature, 20)
@@ -119,7 +119,7 @@ feature{NONE} -- Initialization
 			until
 				a_expressions.after
 			loop
-				force_last (create {AFX_AST_EXPRESSION}.make_with_text (class_, feature_, a_expressions.item_for_iteration, class_))
+				force_last (create {EPA_AST_EXPRESSION}.make_with_text (class_, feature_, a_expressions.item_for_iteration, class_))
 				a_expressions.forth
 			end
 		end
@@ -163,7 +163,7 @@ feature -- Status report
 
 feature -- Access
 
-	smtlib_expressions: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
+	smtlib_expressions: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
 			-- Table of SMTLIB representation for items in Current skeleton
 			-- Key is items in Current, value is its SMTLIB representation.
 		do
@@ -188,10 +188,10 @@ feature -- Access
 			Result := solver_launcher.simplified_skeleton (Current)
 		end
 
-	linear_representation: LINEAR [AFX_EXPRESSION]
+	linear_representation: LINEAR [EPA_EXPRESSION]
 			-- List representation of Current
 		local
-			l_list: LINKED_LIST [AFX_EXPRESSION]
+			l_list: LINKED_LIST [EPA_EXPRESSION]
 		do
 			create l_list.make
 			do_all (agent l_list.extend)
@@ -206,8 +206,8 @@ feature -- Access
 		local
 			l_slice_size: INTEGER
 			i, j: INTEGER
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
-			l_cur_slice: LINKED_LIST [AFX_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_cur_slice: LINKED_LIST [EPA_EXPRESSION]
 		do
 			l_slice_size := count // n
 			from
@@ -233,7 +233,7 @@ feature -- Access
 			good_result: Result.count = n
 		end
 
-	minimal_premises (a_predicate: AFX_EXPRESSION): detachable like Current
+	minimal_premises (a_predicate: EPA_EXPRESSION): detachable like Current
 			-- The minimal subset of Current which implies `a_predicate'
 			-- If no such subset is found, return Void.
 		require
@@ -244,7 +244,7 @@ feature -- Access
 			good_result: Result /= Void implies Result.count <= count
 		end
 
-	minimal_premises_with_context (a_predicate: AFX_EXPRESSION; a_context: detachable like Current): detachable like Current
+	minimal_premises_with_context (a_predicate: EPA_EXPRESSION; a_context: detachable like Current): detachable like Current
 			-- The minimal subset of Current which, when accompanied with `a_context,
 			-- implies `a_predicate': Result ^ a_context -> a_predicate
 			-- If no such subset is found, return Void.
@@ -256,10 +256,10 @@ feature -- Access
 			good_result: Result /= Void implies Result.count <= count
 		end
 
-	anded: AFX_EXPRESSION
+	anded: EPA_EXPRESSION
 			-- An expression representing the anded expression of all elements in current
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_text: STRING
 		do
 			create l_text.make (128)
@@ -281,7 +281,7 @@ feature -- Access
 					l_cursor.forth
 				end
 			end
-			create {AFX_AST_EXPRESSION} Result.make_with_text (first.class_, first.feature_, l_text, first.written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (first.class_, first.feature_, l_text, first.written_class)
 		end
 
 feature -- Status report
@@ -488,7 +488,7 @@ feature{NONE} -- Implementation
 	calculate_smtlib_expressions
 			-- Calculate `smtlib_expressions'.
 		local
-			l_data: TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
+			l_data: TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]; theory: AFX_THEORY]
 		do
 			l_data := (create {AFX_SHARED_CLASS_THEORY}).expressions_with_theory (linear_representation, class_, feature_)
 			smtlib_expressions_cache := l_data.exprs

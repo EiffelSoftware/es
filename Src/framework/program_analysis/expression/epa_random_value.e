@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_RANDOM_VALUE
+	EPA_RANDOM_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 		redefine
 			is_random
 		end

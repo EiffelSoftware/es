@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_BOOLEAN_VALUE
+	EPA_BOOLEAN_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 		redefine
 			is_boolean
 		end
@@ -52,7 +52,7 @@ feature{NONE} -- Implementation
 
 feature -- Process
 
-	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
 			a_visitor.process_boolean_value (Current)

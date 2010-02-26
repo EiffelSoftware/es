@@ -42,7 +42,7 @@ feature -- Basic operations
 			solver_expression_generator.last_statements.do_all (agent Result.extend_function_with_string)
 		end
 
-	expressions_with_theory (a_exprs: LINEAR [AFX_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]; theory: AFX_THEORY]
+	expressions_with_theory (a_exprs: LINEAR [EPA_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]; theory: AFX_THEORY]
 			-- Expressions and their supporting theories for `a_exprs' in the context of `a_class' and `a_feature'.
 			-- If `a_feature' is Void, it means that `a_exprs' are for `a_class', not for a particular feature.
 			-- `exprs' are the SMTLIB expressions for `a_exprs', `theory' are the support theories.
@@ -52,7 +52,7 @@ feature -- Basic operations
 			l_theory: AFX_THEORY
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: like class_with_prefix_set]
 			l_base_prefix: AFX_CLASS_WITH_PREFIX
-			l_generated_exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
+			l_generated_exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
 			l_raw_text: STRING
 		do
 			l_smt_gen := solver_expression_generator

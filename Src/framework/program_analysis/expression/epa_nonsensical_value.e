@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_NONSENSICAL_VALUE
+	EPA_NONSENSICAL_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 		redefine
 			is_nonsensical
 		end
@@ -40,7 +40,7 @@ feature -- Status report
 
 feature -- Process
 
-	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
 			a_visitor.process_nonsensical_value (Current)

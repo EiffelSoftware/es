@@ -21,7 +21,7 @@ feature -- Access
 			l_state: AFX_STATE
 			l_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
 			l_prefix: STRING
-			l_expression: AFX_EXPRESSION
+			l_expression: EPA_EXPRESSION
 			l_equation: AFX_EQUATION
 		do
 			create Result.make (10)
@@ -36,7 +36,7 @@ feature -- Access
 				l_analyzer.analyze (l_cursor.item.expression)
 --				check l_analyzer.is_matched end
 				if l_analyzer.is_matched then
-					if attached {AFX_EXPRESSION} l_analyzer.prefix_expression as l_pre then
+					if attached {EPA_EXPRESSION} l_analyzer.prefix_expression as l_pre then
 						l_prefix := l_pre.text.twin
 						l_expression := l_analyzer.argumentless_boolean_query
 					else
@@ -56,17 +56,17 @@ feature -- Access
 			end
 		end
 
-	partitions_by_premise (a_state: AFX_STATE): HASH_TABLE [AFX_STATE, AFX_EXPRESSION]
+	partitions_by_premise (a_state: AFX_STATE): HASH_TABLE [AFX_STATE, EPA_EXPRESSION]
 			-- A table of subsets from `a_state', partitioned by premises in `a_state'.
 			-- Predicates without premises are treated with premise "True".
 		local
 			l_imp_analyzer: AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER
 			l_cursor: DS_HASH_SET_CURSOR [AFX_EQUATION]
-			l_true_expr: AFX_AST_EXPRESSION
-			l_consequent: AFX_EXPRESSION
-			l_premise: AFX_EXPRESSION
+			l_true_expr: EPA_AST_EXPRESSION
+			l_consequent: EPA_EXPRESSION
+			l_premise: EPA_EXPRESSION
 			l_found: BOOLEAN
-			l_value: AFX_EXPRESSION_VALUE
+			l_value: EPA_EXPRESSION_VALUE
 			l_equation: AFX_EQUATION
 			l_state: AFX_STATE
 		do
@@ -83,7 +83,7 @@ feature -- Access
 				l_found := False
 				l_imp_analyzer.analyze (l_cursor.item.expression)
 				if l_imp_analyzer.is_matched then
-					if attached {AFX_BOOLEAN_VALUE} l_cursor.item.value as l_bool then
+					if attached {EPA_BOOLEAN_VALUE} l_cursor.item.value as l_bool then
 						if l_bool.item then
 							l_premise := l_imp_analyzer.premise
 							l_consequent := l_imp_analyzer.consequent

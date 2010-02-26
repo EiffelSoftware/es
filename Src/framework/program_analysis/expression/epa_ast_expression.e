@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_AST_EXPRESSION
+	EPA_AST_EXPRESSION
 
 inherit
-	AFX_EXPRESSION
+	EPA_EXPRESSION
 		redefine
 			type,
 			is_equal,
@@ -21,7 +21,7 @@ inherit
 			is_equal
 		end
 
-	AFX_SHARED_EXPR_TYPE_CHECKER
+	EPA_SHARED_EXPR_TYPE_CHECKER
 		undefine
 			is_equal
 		end
@@ -239,10 +239,10 @@ feature{NONE} -- Implementation
 	has_old_expression: BOOLEAN
 			-- Does `text' contain old expression?
 
-	parser: AFX_EIFFEL_PARSER
+	parser: EPA_EIFFEL_PARSER
 			-- Parser used for parsing expressions
 		once
-			create Result.make_with_factory (create {AFX_EXPRESSION_AST_FACTORY})
+			create Result.make_with_factory (create {EPA_EXPRESSION_AST_FACTORY})
 			Result.set_expression_parser
 		end
 

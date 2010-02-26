@@ -59,10 +59,10 @@ feature -- Access
 			good_result: Result >= 1
 		end
 
-	expression: AFX_EXPRESSION
+	expression: EPA_EXPRESSION
 			-- Expression representation
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (context_class, context_feature, text, written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (context_class, context_feature, text, written_class)
 		ensure
 			good_result: Result.type.same_as (type)
 		end

@@ -8,7 +8,7 @@ class
 	AFX_QUERY_STATE_OUTLINE
 
 inherit
-    DS_HASH_SET [AFX_EXPRESSION]
+    DS_HASH_SET [EPA_EXPRESSION]
 
     HASHABLE
     	undefine
@@ -68,7 +68,7 @@ feature -- Operation
 		    is_for_same_class: is_for_class (a_state.class_)
 		    not_chaos: not a_state.is_chaos
 		local
-		    l_exp: AFX_EXPRESSION
+		    l_exp: EPA_EXPRESSION
 		do
 		    from a_state.start
 		    until a_state.after

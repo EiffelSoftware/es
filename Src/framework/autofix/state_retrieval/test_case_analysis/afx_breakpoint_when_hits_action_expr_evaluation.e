@@ -84,23 +84,23 @@ feature -- Basic operations
 			l_actions.go_to (l_cursor)
 		end
 
-	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE): AFX_EXPRESSION_VALUE
+	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE): EPA_EXPRESSION_VALUE
 			-- Expression value from `a_dump_value'
 		do
 			if a_dump_value = Void or else a_dump_value.is_invalid_value then
-				create {AFX_NONSENSICAL_VALUE} Result
+				create {EPA_NONSENSICAL_VALUE} Result
 
 			elseif a_dump_value.is_type_boolean then
-				create {AFX_BOOLEAN_VALUE} Result.make (a_dump_value.output_for_debugger.to_boolean)
+				create {EPA_BOOLEAN_VALUE} Result.make (a_dump_value.output_for_debugger.to_boolean)
 
 			elseif a_dump_value.is_type_integer_32 then
-				create {AFX_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
+				create {EPA_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
 
 			elseif a_dump_value.is_void then
-				create {AFX_VOID_VALUE} Result.make
+				create {EPA_VOID_VALUE} Result.make
 
 			elseif a_dump_value.is_type_object then
-				create {AFX_ANY_VALUE} Result.make (a_dump_value.string_representation)
+				create {EPA_ANY_VALUE} Result.make (a_dump_value.string_representation)
 			else
 				check False end
 			end

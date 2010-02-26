@@ -19,7 +19,7 @@ create
 
 feature -- Initialize
 
-	make_with_ast_expression (an_exp: AFX_AST_EXPRESSION; a_predicator: like predicator; a_predicator_string: like predicator_string)
+	make_with_ast_expression (an_exp: EPA_AST_EXPRESSION; a_predicator: like predicator; a_predicator_string: like predicator_string)
 			-- Initialize.
 		do
 			expression := an_exp
@@ -58,7 +58,7 @@ feature -- Initialize
 
 feature -- Access
 
-	expression: AFX_AST_EXPRESSION
+	expression: EPA_AST_EXPRESSION
 			-- Original expression.
 
 	predicator: PREDICATE [ANY, TUPLE[ANY]]

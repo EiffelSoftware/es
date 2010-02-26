@@ -50,7 +50,7 @@ feature{NONE} -- Implementation
 			-- Implications and their rankings for `a_class'
 		local
 			i: INTEGER
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 			create Result.make_basic (a_class, a_feature, a_implications.count)
 			from
@@ -83,7 +83,7 @@ feature{NONE} -- Implementation
 			-- `a_tc' includes basic information of the current exception.
 			-- `a_dm' is a debugger manager.
 		local
-			l_ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
+			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
 			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
 			l_implication_gen: AFX_IMPLICATION_GENERATOR
 			l_imp_file: PLAIN_TEXT_FILE
@@ -203,12 +203,12 @@ feature{NONE} -- Implementation
 			a_spot.set_target_expression_of_failing_feature (l_rewriter.target_expression)
 		end
 
-	update_expressions_with_ranking (a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]; a_new_exprs: DS_HASH_SET [AFX_EXPRESSION]; a_ranking: INTEGER)
+	update_expressions_with_ranking (a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]; a_new_exprs: DS_HASH_SET [EPA_EXPRESSION]; a_ranking: INTEGER)
 			-- Add `a_new_exprs' into `a_expressions' with `a_ranking' into `a_expression'.
 			-- If some expression already in `a_expressions' but `a_ranking' is higher than the original ranking,
 			-- update it with `a_ranking'.
 		local
-			l_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
 			l_rank: AFX_EXPR_RANK
 		do
 			fixme ("Copied from AFX_RELEVANT_STATE_EXPRESSION_GENERATOR. 28.11.2009 Jasonw")

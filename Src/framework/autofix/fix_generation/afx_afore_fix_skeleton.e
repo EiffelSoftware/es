@@ -71,7 +71,7 @@ feature{NONE} -- Implementation
 					a_snippets.after
 				loop
 					l_fix_text := a_snippets.item_for_iteration.snippet.twin
-					if attached {AFX_EXPRESSION} guard_condition as l_guard then
+					if attached {EPA_EXPRESSION} guard_condition as l_guard then
 						l_fix_text.prepend ("if " + l_guard.text + " then%N%T%T")
 						l_fix_text.append ("%Nend%N")
 					end

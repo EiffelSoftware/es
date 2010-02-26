@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXPRESSION
+	EPA_EXPRESSION
 
 inherit
 	SHARED_TYPES
@@ -56,7 +56,7 @@ feature --Logic operations
 			other_is_predicate: other.is_predicate
 			same_context: has_same_context (other)
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") and (" + other.text + ")", written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") and (" + other.text + ")", written_class)
 		ensure
 			same_context: has_same_context (Result)
 			text_correct: Result.text ~ "(" + text + ") and (" + other.text + ")"
@@ -70,7 +70,7 @@ feature --Logic operations
 			other_is_predicate: other.is_predicate
 			same_context: has_same_context (other)
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") or (" + other.text + ")", written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") or (" + other.text + ")", written_class)
 		ensure
 			same_context: has_same_context (Result)
 			text_correct: Result.text ~ "(" + text + ") or (" + other.text + ")"
@@ -82,7 +82,7 @@ feature --Logic operations
 		require
 			current_is_predicate: is_predicate
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "not (" + text + ")", written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, "not (" + text + ")", written_class)
 		ensure
 			same_context: has_same_context (Result)
 			text_correct: Result.text ~ "not (" + text + ")"
@@ -96,7 +96,7 @@ feature --Logic operations
 			other_is_predicate: other.is_predicate
 			same_context: has_same_context (other)
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") implies (" + other.text + ")", written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + text + ") implies (" + other.text + ")", written_class)
 		ensure
 			same_context: has_same_context (Result)
 			text_correct: Result.text ~ "(" + text + ") implies (" + other.text + ")"

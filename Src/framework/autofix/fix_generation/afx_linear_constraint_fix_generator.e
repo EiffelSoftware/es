@@ -60,16 +60,16 @@ feature{NONE} -- Implementation
 			-- Contraints relevant to `constraints'
 			-- `relevant_constriants' is a super set of `constraints'.
 
-	constraint_table: HASH_TABLE [AFX_NUMERIC_CONSTRAINTS, AFX_EXPRESSION]
+	constraint_table: HASH_TABLE [AFX_NUMERIC_CONSTRAINTS, EPA_EXPRESSION]
 			-- Table of contraints.
 			-- Key is the assertion from which the contraint comes,
 			-- value is that constraint.
 
-	constrained_expressions: LINKED_LIST [AFX_EXPRESSION]
+	constrained_expressions: LINKED_LIST [EPA_EXPRESSION]
 			-- Constrained expressions
 			-- This list contains the keys of `constraint_table'
 
-	constrain_possibilities: LINKED_LIST [TUPLE [constrained_expressions: DS_HASH_SET [AFX_EXPRESSION]; constraining_expressions: DS_HASH_SET [AFX_EXPRESSION]]]
+	constrain_possibilities: LINKED_LIST [TUPLE [constrained_expressions: DS_HASH_SET [EPA_EXPRESSION]; constraining_expressions: DS_HASH_SET [EPA_EXPRESSION]]]
 			-- Different possibilities to treat components in `constraints' as constrained or constraining.
 			-- Returned value is a list of these possibilities.
 			-- `constrained_expressions' are the set of expressions in `constraints' which are considered to be constrained.
@@ -77,9 +77,9 @@ feature{NONE} -- Implementation
 			-- The order of the elements in the result has no meaning.
 		local
 			l_max_occur: INTEGER
-			l_constrained_expr: AFX_EXPRESSION
-			l_constrained: DS_HASH_SET [AFX_EXPRESSION]
-			l_constraining: DS_HASH_SET [AFX_EXPRESSION]
+			l_constrained_expr: EPA_EXPRESSION
+			l_constrained: DS_HASH_SET [EPA_EXPRESSION]
+			l_constraining: DS_HASH_SET [EPA_EXPRESSION]
 		do
 				-- Heuristics to decide which expressions are constrained:
 				-- 1. If an expression appears the most, it is likely to be the constrained part, `i' in the above example.
@@ -120,17 +120,17 @@ feature{NONE} -- Implementation
 			-- Coleect numeric constrained assertions which are relevant to the failing assertion,
 			-- store result in `constraints'.
 		local
-			l_asserts: DS_HASH_SET [AFX_EXPRESSION]
+			l_asserts: DS_HASH_SET [EPA_EXPRESSION]
 			l_constraint_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			l_feat: FEATURE_I
 			l_class: CLASS_C
 			l_constraints, l_temp: like constraint_table
-			l_rev_components: DS_HASH_SET [AFX_EXPRESSION]
+			l_rev_components: DS_HASH_SET [EPA_EXPRESSION]
 			l_done: BOOLEAN
-			l_kept: DS_HASH_SET [AFX_EXPRESSION]
+			l_kept: DS_HASH_SET [EPA_EXPRESSION]
 			l_cir: ARRAYED_CIRCULAR [ANY]
 			l_cursor: CURSOR
-			l_removed: LINKED_LIST [AFX_EXPRESSION]
+			l_removed: LINKED_LIST [EPA_EXPRESSION]
 		do
 			create l_asserts.make (20)
 			l_asserts.set_equality_tester (expression_equality_tester)
@@ -180,7 +180,7 @@ feature{NONE} -- Implementation
 			l_temp := l_constraints.twin
 			create l_kept.make (5)
 			l_kept.set_equality_tester (expression_equality_tester)
-			if attached {AFX_EXPRESSION} constraints.expression as l_expr then
+			if attached {EPA_EXPRESSION} constraints.expression as l_expr then
 				l_kept.force_last (l_expr)
 			else
 				check False end
@@ -232,7 +232,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	solve_and_append_solution (a_maximize: BOOLEAN; a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION]; a_solutions: DS_HASH_SET [AFX_EXPRESSION])
+	solve_and_append_solution (a_maximize: BOOLEAN; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION]; a_solutions: DS_HASH_SET [EPA_EXPRESSION])
 			-- Append solutions to the linear constraint problem into `a_solutions'.
 			-- If `a_maximize' is True, maximize the solution, otherwise, minimize it.
 			-- The linear constrianed problem is defined by `a_function', `a_constriants' and `a_arguments'.
@@ -254,7 +254,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	type_anchor: TUPLE [constrained_expression: AFX_EXPRESSION; solution: AFX_EXPRESSION; constrained_expressions: DS_HASH_SET [AFX_EXPRESSION]; constraining_expressions: DS_HASH_SET [AFX_EXPRESSION]]
+	type_anchor: TUPLE [constrained_expression: EPA_EXPRESSION; solution: EPA_EXPRESSION; constrained_expressions: DS_HASH_SET [EPA_EXPRESSION]; constraining_expressions: DS_HASH_SET [EPA_EXPRESSION]]
 			-- Anchor type
 			-- `constrained_expression' is the expression considered as the solving target, `constrained_expression' must be one of `constrained_expressions'.
 			-- `solution' is the solution for `constrained_expression' under the constraints.
@@ -264,12 +264,12 @@ feature{NONE} -- Implementation
 			-- Generate fixes for `a_solution'.
 		local
 			l_solution_text: STRING
-			l_solution_expr: AFX_AST_EXPRESSION
-			l_constrained_expr: AFX_EXPRESSION
+			l_solution_expr: EPA_AST_EXPRESSION
+			l_constrained_expr: EPA_EXPRESSION
 		do
 				-- Rewrite the solution in the context of the recipient.
 			create l_solution_text.make (64)
-			if attached {AFX_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not is_for_boogie then
+			if attached {EPA_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not is_for_boogie then
 				l_solution_text.append (l_target_expr.text)
 				l_solution_text.append (".")
 			end
@@ -282,7 +282,7 @@ feature{NONE} -- Implementation
 				if config.is_wrapping_fix_enabled then
 						-- Generate wrapping fixes according to solved numeric constraints.
 					fixing_locations.do_if (
-						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: AFX_EXPRESSION)
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: EPA_EXPRESSION)
 							do
 								generate_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
 --								generate_wraping_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
@@ -300,7 +300,7 @@ feature{NONE} -- Implementation
 			then
 				if config.is_afore_fix_enabled then
 					fixing_locations.do_if (
-						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: AFX_EXPRESSION)
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: EPA_EXPRESSION)
 							do
 								generate_afore_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
 							end (?, a_solution, l_solution_expr),
@@ -315,13 +315,13 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	generate_afore_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+	generate_afore_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate afore fixes for precondition violation for `a_fixing_location'.
 		require
 			scope_level_valid: a_fixing_location.scope_level = 1
 			instructions_valid: a_fixing_location.instructions.count <= 1
 		local
-			l_new_exp: AFX_AST_EXPRESSION
+			l_new_exp: EPA_AST_EXPRESSION
 			l_old_ast: detachable AST_EIFFEL
 			l_new_ast: AST_EIFFEL
 			l_fix_skeleton: AFX_IMMEDIATE_AFORE_FIX_SKELETON
@@ -363,14 +363,14 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
-	generate_blind_wrapping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+	generate_blind_wrapping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate blindly wrapping fixes for precondition violation for `a_fixing_location'.
 		require
 			scope_level_valid: a_fixing_location.scope_level = 1
 			instructions_valid: a_fixing_location.instructions.count = 1
 		local
 			l_arg_index: INTEGER
-			l_actual_argument: AFX_EXPRESSION
+			l_actual_argument: EPA_EXPRESSION
 			l_replacer: AFX_ACTUAL_PARAMETER_REPLACER
 			l_old_ast: AST_EIFFEL
 			l_new_ast: AST_EIFFEL
@@ -409,14 +409,14 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
-	generate_wraping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+	generate_wraping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate wrapping fixes for precondition violation for `a_fixing_location'.
 		require
 			scope_level_valid: a_fixing_location.scope_level = 1
 			instructions_valid: a_fixing_location.instructions.count = 1
 		local
 			l_arg_index: INTEGER
-			l_actual_argument: AFX_EXPRESSION
+			l_actual_argument: EPA_EXPRESSION
 			l_replacer: AFX_ACTUAL_PARAMETER_REPLACER
 			l_old_ast: AST_EIFFEL
 			l_new_ast: AST_EIFFEL
@@ -456,7 +456,7 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
-	generate_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: AFX_EXPRESSION)
+	generate_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate fix candidates for precondition violation.
 		do
 			generate_wraping_fixes_for_precondition_violation (a_fixing_location, a_solution, a_solved_expression)
@@ -468,11 +468,11 @@ feature{NONE} -- Implementation
 		local
 			l_maximizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
 			l_minimizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
-			l_constrained_exprs: DS_HASH_SET [AFX_EXPRESSION]
-			l_arguments: LINKED_LIST [AFX_EXPRESSION]
-			l_solutions: DS_HASH_SET [AFX_EXPRESSION]
-			l_constrained_expr: AFX_EXPRESSION
-			l_sol: AFX_AST_EXPRESSION
+			l_constrained_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_arguments: LINKED_LIST [EPA_EXPRESSION]
+			l_solutions: DS_HASH_SET [EPA_EXPRESSION]
+			l_constrained_expr: EPA_EXPRESSION
+			l_sol: EPA_AST_EXPRESSION
 		do
 			create Result.make
 

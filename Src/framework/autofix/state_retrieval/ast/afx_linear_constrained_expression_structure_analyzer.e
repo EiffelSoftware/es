@@ -31,7 +31,7 @@ inherit
 
 feature -- Basic operations
 
-	analyze (a_expression: AFX_EXPRESSION)
+	analyze (a_expression: EPA_EXPRESSION)
 			-- Analyze the structure of `a_expression', set `is_matched' to True if
 			-- the structure of `a_expression' matches current analyzer.
 			-- Only matched a linearly constrained expression
@@ -138,13 +138,13 @@ feature -- Visitor
 
 feature{NONE} -- Implementation
 
-	new_expression (a_ast: AST_EIFFEL): AFX_EXPRESSION
+	new_expression (a_ast: AST_EIFFEL): EPA_EXPRESSION
 			-- Expression from `a_ast'
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, text_from_ast (a_ast), written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, text_from_ast (a_ast), written_class)
 		end
 
-	check_expression (a_expr: AFX_EXPRESSION)
+	check_expression (a_expr: EPA_EXPRESSION)
 			-- Check if `a_expr' is of type integer, if so, added into `components' and `occurrence_frequency'.
 			-- Otherwise, set `is_matched' to False.
 		do

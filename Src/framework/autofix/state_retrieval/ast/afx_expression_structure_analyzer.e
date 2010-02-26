@@ -17,7 +17,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	analyze (a_expression: AFX_EXPRESSION)
+	analyze (a_expression: EPA_EXPRESSION)
 			-- Analyze the structure of `a_expression', set `is_matched' to True if
 			-- the structure of `a_expression' matches current analyzer.
 			-- Here is a list of possible structure of `a_expression':

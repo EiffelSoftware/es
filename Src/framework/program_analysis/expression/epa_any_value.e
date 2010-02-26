@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ANY_VALUE
+	EPA_ANY_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 
 	SHARED_TYPES
 		undefine
@@ -46,7 +46,7 @@ feature -- Access
 
 feature -- Process
 
-	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
 		end

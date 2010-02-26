@@ -20,11 +20,11 @@ inherit
 
 	SHARED_SERVER
 
-	AFX_SHARED_EXPR_TYPE_CHECKER
+	EPA_SHARED_EXPR_TYPE_CHECKER
 
 	SHARED_NAMES_HEAP
 
-	AFX_SHARED_EXPR_TYPE_CHECKER
+	EPA_SHARED_EXPR_TYPE_CHECKER
 
 	AST_ITERATOR
 		redefine
@@ -68,7 +68,7 @@ feature -- Basic operations
 			-- as if they are class invariants and store results in `last_statements'.
 		local
 			l_inv_gen: AFX_POSTCONDITION_AS_INVARIANT_GENERATOR
-			l_inv: DS_HASH_SET [AFX_EXPRESSION]
+			l_inv: DS_HASH_SET [EPA_EXPRESSION]
 			l_stmt: STRING
 			l_paran_needed: BOOLEAN
 			l_axiom: STRING

@@ -5,41 +5,41 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXPRESSION_VALUE_VISITOR
+	EPA_EXPRESSION_VALUE_VISITOR
 
 feature -- Process
 
-	process_boolean_value (a_value: AFX_BOOLEAN_VALUE)
+	process_boolean_value (a_value: EPA_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		deferred
 		end
 
-	process_random_boolean_value (a_value: AFX_RANDOM_BOOLEAN_VALUE)
+	process_random_boolean_value (a_value: EPA_RANDOM_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		deferred
 		end
 
-	process_integer_value (a_value: AFX_INTEGER_VALUE)
+	process_integer_value (a_value: EPA_INTEGER_VALUE)
 			-- Process `a_value'.
 		deferred
 		end
 
-	process_random_integer_value (a_value: AFX_RANDOM_INTEGER_VALUE)
+	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)
 			-- Process `a_value'.
 		deferred
 		end
 
-	process_nonsensical_value (a_value: AFX_NONSENSICAL_VALUE)
+	process_nonsensical_value (a_value: EPA_NONSENSICAL_VALUE)
 			-- Process `a_value'.
 		deferred
 		end
 
-	process_void_value (a_value: AFX_VOID_VALUE)
+	process_void_value (a_value: EPA_VOID_VALUE)
 			-- Process `a_value'.
 		deferred
 		end
 
-	process_any_value (a_value: AFX_ANY_VALUE)
+	process_any_value (a_value: EPA_ANY_VALUE)
 			-- Process `a_value'.
 		deferred
 		end

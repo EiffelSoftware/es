@@ -39,7 +39,7 @@ inherit
 
 feature -- Access
 
-	last_invariants: DS_HASH_SET [AFX_EXPRESSION]
+	last_invariants: DS_HASH_SET [EPA_EXPRESSION]
 			-- Invariant clauses generate by the last `generate'.
 
 feature -- Generate
@@ -174,7 +174,7 @@ feature{NONE} -- Implementation
 	generate_invariant_from_string (a_text: STRING)
 			-- Generate class invariant clause from `a_text'.
 		local
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 			is_suitable_as_invariant := True
 			is_result_mentioned := False

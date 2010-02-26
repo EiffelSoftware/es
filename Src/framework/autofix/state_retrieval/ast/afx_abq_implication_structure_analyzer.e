@@ -12,15 +12,15 @@ inherit
 
 feature -- Basic operations
 
-	analyze (a_expression: AFX_EXPRESSION)
+	analyze (a_expression: EPA_EXPRESSION)
 			-- Analyze the structure of `a_expression', set `is_matched' to True if
 			-- the structure of `a_expression' matches current analyzer.
 			-- Here is a list of possible structure of `a_expression':
 			-- ABQ -> ABQ (ABQ is the set of argumentless boolean queries, possibly with negations)
 		local
 			l_abq_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
-			l_left: AFX_AST_EXPRESSION
-			l_right: AFX_AST_EXPRESSION
+			l_left: EPA_AST_EXPRESSION
+			l_right: EPA_AST_EXPRESSION
 			l_class: CLASS_C
 			l_written_class: CLASS_C
 			l_feature: FEATURE_I
@@ -68,16 +68,16 @@ feature -- Access
 			-- Number of outer negations of the premise part of the analyzed expression
 			-- Only has effect if `is_matched' is True.
 
-	premise_prefix_expression: detachable AFX_EXPRESSION
+	premise_prefix_expression: detachable EPA_EXPRESSION
 			-- The prefix part of the premise part of the analyzed expression if in the form "prefix.ABQ"
 			-- Void if there is not prefix.
 			-- Only has effect if `is_matched' is True.
 
-	premise_argumentless_boolean_query: detachable AFX_EXPRESSION
+	premise_argumentless_boolean_query: detachable EPA_EXPRESSION
 			-- The final argumentless boolean query in the premise part of the analyzed expression			
 			-- Only has effect if `is_matched' is True.
 
-	premise: detachable AFX_EXPRESSION
+	premise: detachable EPA_EXPRESSION
 			-- Premise expression
 			-- Only has effect if `is_matched' is True.
 
@@ -85,16 +85,16 @@ feature -- Access
 			-- Number of outer negations of the consequent part of the analyzed expression
 			-- Only has effect if `is_matched' is True.
 
-	consequent_prefix_expression: detachable AFX_EXPRESSION
+	consequent_prefix_expression: detachable EPA_EXPRESSION
 			-- The prefix part of the consequent part of the analyzed expression if in the form "prefix.ABQ"
 			-- Void if there is not prefix.
 			-- Only has effect if `is_matched' is True.
 
-	consequent_argumentless_boolean_query: detachable AFX_EXPRESSION
+	consequent_argumentless_boolean_query: detachable EPA_EXPRESSION
 			-- The final argumentless boolean query in the consequent part of the analyzed expression			
 			-- Only has effect if `is_matched' is True.
 
-	consequent: detachable AFX_EXPRESSION
+	consequent: detachable EPA_EXPRESSION
 			-- Consequent
 			-- Only has effect if `is_matched' is True.
 

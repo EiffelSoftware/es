@@ -29,17 +29,17 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	expression: detachable AFX_EXPRESSION
+	expression: detachable EPA_EXPRESSION
 			-- Expression from which `components' come
 			-- If Void, items in `components' may come from multiple assertions.
 
-	components: DS_HASH_SET [AFX_EXPRESSION]
+	components: DS_HASH_SET [EPA_EXPRESSION]
 			-- Distinct components in the last analyzed expression.
 			-- For example, in an assertion "i > 0 and i <= count",
 			-- `i', `count' are components.
 			-- Only have effect if `is_matched' is True.
 
-	occurrence_frequency: HASH_TABLE [INTEGER, AFX_EXPRESSION]
+	occurrence_frequency: HASH_TABLE [INTEGER, EPA_EXPRESSION]
 			-- Occurrence frequency of the components in the last analyzed expression
 			-- Key is a component, value is the number of times it appears in the expression.
 			-- Occurrence frequency is used as one of the heuristics to decide which compoents in
@@ -73,7 +73,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	increase_occurrence_frequency (a_expr: AFX_EXPRESSION; a_increase: INTEGER)
+	increase_occurrence_frequency (a_expr: EPA_EXPRESSION; a_increase: INTEGER)
 			-- Increase the occurrence frequency of `a_expr' by `a_increas'.
 		require
 			a_increase_positive: a_increase > 0

@@ -18,21 +18,21 @@ inherit
 
 feature -- Basic operations
 
-	has_implication (a_list1: LINEAR [AFX_EXPRESSION]; a_list2: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): BOOLEAN
+	has_implication (a_list1: LINEAR [EPA_EXPRESSION]; a_list2: LINEAR [EPA_EXPRESSION]; a_theory: AFX_THEORY): BOOLEAN
 			-- Does the conjunction of `a_list1' imply the conjunction of `a_list2'
 			-- in the context of `a_theory'?
 		require
 			a_list1_not_empty: not a_list1.is_empty
 			a_list2_not_empty: not a_list2.is_empty
 		local
-			l_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
 			l_result: like solver_output_for_expressions
-			l_list: LINKED_LIST [AFX_EXPRESSION]
+			l_list: LINKED_LIST [EPA_EXPRESSION]
 		do
 				-- Create a dummy expression.
 			a_list1.start
 			l_expr := a_list1.item_for_iteration
-			create {AFX_AST_EXPRESSION} l_expr.make_with_text (l_expr.class_, l_expr.feature_, "Current", l_expr.written_class)
+			create {EPA_AST_EXPRESSION} l_expr.make_with_text (l_expr.class_, l_expr.feature_, "Current", l_expr.written_class)
 			create l_list.make
 			l_list.extend (l_expr)
 			solver_file_generator.generate_for_implied_checking (a_list1, a_list2, a_theory)
@@ -46,14 +46,14 @@ feature -- Basic operations
 
 feature -- Access
 
-	valid_premises (a_premises: AFX_STATE_SKELETON; a_consequence: AFX_EXPRESSION; a_theory: AFX_THEORY): AFX_STATE_SKELETON
+	valid_premises (a_premises: AFX_STATE_SKELETON; a_consequence: EPA_EXPRESSION; a_theory: AFX_THEORY): AFX_STATE_SKELETON
 			-- A state skeleton, in which all element e -> a_consequence
 		local
-			l_premise: AFX_EXPRESSION
-			l_implication: AFX_EXPRESSION
+			l_premise: EPA_EXPRESSION
+			l_implication: EPA_EXPRESSION
 			l_implication_skeleton: AFX_STATE_SKELETON
-			l_tbl: HASH_TABLE [AFX_EXPRESSION, AFX_EXPRESSION] -- Key is the implication, value is the premise.
-			l_valid_imps: DS_HASH_SET [AFX_EXPRESSION]
+			l_tbl: HASH_TABLE [EPA_EXPRESSION, EPA_EXPRESSION] -- Key is the implication, value is the premise.
+			l_valid_imps: DS_HASH_SET [EPA_EXPRESSION]
 		do
 			create l_implication_skeleton.make_basic (a_premises.class_, a_premises.feature_, a_premises.count)
 			create l_tbl.make (a_premises.count)
@@ -90,7 +90,7 @@ feature -- Access
 			-- Result is simplified from `a_skeleton' by doing the following:
 			-- Remove all tautologies from `a_skeleton'.
 		local
-			l_expr_list: LINKED_LIST [AFX_EXPRESSION]
+			l_expr_list: LINKED_LIST [EPA_EXPRESSION]
 			l_tautologies: AFX_STATE_SKELETON
 		do
 			l_tautologies := tautologies (a_skeleton)
@@ -98,7 +98,7 @@ feature -- Access
 
 			a_skeleton.do_if (
 				agent l_expr_list.extend,
-				agent (a_expr: AFX_EXPRESSION; a_tau: AFX_STATE_SKELETON): BOOLEAN
+				agent (a_expr: EPA_EXPRESSION; a_tau: AFX_STATE_SKELETON): BOOLEAN
 						do
 							Result := not a_tau.has (a_expr)
 						end (?, l_tautologies))
@@ -115,13 +115,13 @@ feature -- Access
 				valid_expressions (a_skeleton.linear_representation, a_skeleton.theory))
 		end
 
-	expression_validity (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [BOOLEAN]
+	expression_validity (a_expressions: LINEAR [EPA_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [BOOLEAN]
 			-- Validity status of `a_expressions' in the context of `a_theory'.
 			-- Result is a list of status, True means the corresponding expression in `a_expressions'
 			-- is valid, otherwise, is not valid.
 		local
 			i: INTEGER
-			l_temp_exprs: LINKED_LIST [AFX_EXPRESSION]
+			l_temp_exprs: LINKED_LIST [EPA_EXPRESSION]
 		do
 			create l_temp_exprs.make
 			create Result.make
@@ -145,14 +145,14 @@ feature -- Access
 			end
 		end
 
-	valid_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [AFX_EXPRESSION]
+	valid_expressions (a_expressions: LINEAR [EPA_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [EPA_EXPRESSION]
 			-- List of valid formulae from `a_expressions' in the context of `a_theory'
 		local
 			l_generator: like solver_file_generator
 			l_list: LINKED_LIST [AFX_SOLVER_EXPR]
-			l_expr_list: LINKED_LIST [AFX_EXPRESSION]
-			l_expr: AFX_EXPRESSION
-			l_output: HASH_TABLE [STRING, AFX_EXPRESSION]
+			l_expr_list: LINKED_LIST [EPA_EXPRESSION]
+			l_expr: EPA_EXPRESSION
+			l_output: HASH_TABLE [STRING, EPA_EXPRESSION]
 			l_validity: like expression_validity
 		do
 			create Result.make
@@ -171,7 +171,7 @@ feature -- Access
 			end
 		end
 
-	minimized_premises (a_skeleton: AFX_STATE_SKELETON; a_predicate: AFX_EXPRESSION; a_context: AFX_STATE_SKELETON): detachable AFX_STATE_SKELETON
+	minimized_premises (a_skeleton: AFX_STATE_SKELETON; a_predicate: EPA_EXPRESSION; a_context: AFX_STATE_SKELETON): detachable AFX_STATE_SKELETON
 			-- Smallest state S (containing possibly fewer predicates than `a_skeleton') that, when accompanied
 			-- with `a_context', implies `a_predicate': a_context ^ S -> a_predicate
 			-- in `last_skeleton'. If no such state is found, set `last_skeleton' to Void.
@@ -185,7 +185,7 @@ feature -- Access
 			result_correct: Result /= Void implies Result.count <= a_skeleton.count
 		end
 
-	minimal_premises_ddmin (a_skeleton: AFX_STATE_SKELETON; a_granularity: INTEGER; a_predicate: AFX_EXPRESSION; a_context: detachable AFX_STATE_SKELETON): detachable AFX_STATE_SKELETON
+	minimal_premises_ddmin (a_skeleton: AFX_STATE_SKELETON; a_granularity: INTEGER; a_predicate: EPA_EXPRESSION; a_context: detachable AFX_STATE_SKELETON): detachable AFX_STATE_SKELETON
 			-- Minimal subset of `a_skeleton' which, when accompanied with `a_context', implies `a_predicate', generated by delta deubbing.
 			-- `a_granularity' is the granularity for delta debugging.
 			-- Return Void if no such subset is found.
@@ -227,7 +227,7 @@ feature -- Access
 			end
 		end
 
-	predicates_with_satisfiability (a_predicates: DS_HASH_SET [AFX_EXPRESSION]; a_satisfiability: NATURAL_8; a_theory: AFX_THEORY): DS_HASH_SET [AFX_EXPRESSION]
+	predicates_with_satisfiability (a_predicates: DS_HASH_SET [EPA_EXPRESSION]; a_satisfiability: NATURAL_8; a_theory: AFX_THEORY): DS_HASH_SET [EPA_EXPRESSION]
 			-- Predicates in `a_predicates' of `a_satisfiability' in the context of `a_theory'
 		require
 			a_satisfiability_valid: is_satisfiability_valid (a_satisfiability)
@@ -250,21 +250,21 @@ feature -- Access
 			end
 		end
 
-	predicate_satisfiability (a_predicates: DS_HASH_SET [AFX_EXPRESSION]; a_theory: AFX_THEORY): HASH_TABLE [NATURAL_8, AFX_EXPRESSION]
+	predicate_satisfiability (a_predicates: DS_HASH_SET [EPA_EXPRESSION]; a_theory: AFX_THEORY): HASH_TABLE [NATURAL_8, EPA_EXPRESSION]
 			-- Predicate satisfiability table for predicates in `a_predicates'
 			-- Key is the predicate, value is the satisfiacbility of that predicate:
 			-- 0: Satisfiable
 			-- 1: Valid
 			-- 2: Contradictary			
 		local
-			l_normal_preds: LINKED_LIST [AFX_EXPRESSION]
-			l_exprs: LINKED_LIST [AFX_EXPRESSION]
+			l_normal_preds: LINKED_LIST [EPA_EXPRESSION]
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
 			l_validity: LINKED_LIST [BOOLEAN]
 			l_valid: BOOLEAN
 			l_negation_valid: BOOLEAN
 			l_satis: NATURAL_8
-			l_expr: AFX_EXPRESSION
-			l_negated_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
+			l_negated_expr: EPA_EXPRESSION
 			l_skeleton: AFX_STATE_SKELETON
 			l_count: INTEGER
 		do
@@ -366,7 +366,7 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
-	solver_output_for_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, AFX_EXPRESSION]
+	solver_output_for_expressions (a_expressions: LINEAR [EPA_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, EPA_EXPRESSION]
 			-- Output from the solver for checking `a_expressions' in the context of `a_solver_input'.
 			-- `a_solver_input' is the input fed to the underlying theorem prover.
 			-- Result is a table, key is the expression, value is the solver output for that expression':
@@ -380,16 +380,16 @@ feature{NONE} -- Implementation
 			-- This is introduced because if there are too many obligations
 			-- in one file, Boogie will easily crash.
 
-	expression_validity_internal (a_expressions: LINEAR [AFX_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [BOOLEAN]
+	expression_validity_internal (a_expressions: LINEAR [EPA_EXPRESSION]; a_theory: AFX_THEORY): LINKED_LIST [BOOLEAN]
 			-- Validity status of `a_expressions' in the context of `a_theory'.
 			-- Result is a list of status, True means the corresponding expression in `a_expressions'
 			-- is valid, otherwise, is not valid.
 		local
 			l_generator: like solver_file_generator
 			l_list: LINKED_LIST [AFX_SOLVER_EXPR]
-			l_expr_list: LINKED_LIST [AFX_EXPRESSION]
-			l_expr: AFX_EXPRESSION
-			l_output: HASH_TABLE [STRING, AFX_EXPRESSION]
+			l_expr_list: LINKED_LIST [EPA_EXPRESSION]
+			l_expr: EPA_EXPRESSION
+			l_output: HASH_TABLE [STRING, EPA_EXPRESSION]
 			i: INTEGER
 		do
 				-- Build solver input.

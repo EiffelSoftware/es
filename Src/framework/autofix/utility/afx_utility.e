@@ -95,10 +95,10 @@ feature -- Equation transformation
 			-- otherwise, return `a_equation' itself.
 		local
 			l_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 			l_text: STRING
-			l_ori_expr: AFX_EXPRESSION
-			l_value: AFX_BOOLEAN_VALUE
+			l_ori_expr: EPA_EXPRESSION
+			l_value: EPA_BOOLEAN_VALUE
 		do
 			l_ori_expr := a_equation.expression
 			if l_ori_expr.is_predicate then
@@ -112,7 +112,7 @@ feature -- Equation transformation
 					end
 					l_text.append (l_analyzer.argumentless_boolean_query.text)
 					create l_expr.make_with_text (l_ori_expr.class_, l_ori_expr.feature_, l_text, l_ori_expr.written_class)
-					if attached {AFX_BOOLEAN_VALUE} a_equation.value as l_temp_value then
+					if attached {EPA_BOOLEAN_VALUE} a_equation.value as l_temp_value then
 						if l_temp_value.is_deterministic and then l_analyzer.negation_count \\ 2 = 1 then
 							create l_value.make (not l_temp_value.item)
 						else
@@ -411,11 +411,11 @@ feature -- State
 
 feature -- Contract extraction
 
-	precondition_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+	precondition_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of precondition assertions of `a_feature' in `a_context_class'
 		local
 			l_exprs: LINKED_LIST [AUT_EXPRESSION]
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 			l_exprs := precondition_of_feature (a_feature, a_context_class)
 
@@ -431,7 +431,7 @@ feature -- Contract extraction
 				a_feature)
 		end
 
-	postconditions_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+	postconditions_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of postcondition assertions of `a_feature' in `a_context_class'
 		local
 			l_exprs: LINKED_LIST [AUT_EXPRESSION]
@@ -449,7 +449,7 @@ feature -- Contract extraction
 				a_feature)
 		end
 
-	invariant_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [AFX_EXPRESSION]
+	invariant_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of class invariant assertions in `a_context_class'
 		local
 			l_exprs: LINKED_LIST [AUT_EXPRESSION]
@@ -473,17 +473,17 @@ feature -- Contract extraction
 				-- Include some postconditions as class invariants.
 			l_gen.last_invariants.do_if (
 				agent Result.force_last,
-				agent (a_item: AFX_EXPRESSION; a_set: DS_HASH_SET [AFX_EXPRESSION]): BOOLEAN
+				agent (a_item: EPA_EXPRESSION; a_set: DS_HASH_SET [EPA_EXPRESSION]): BOOLEAN
 					do
 						Result := not a_set.has (a_item)
 					end (?, Result))
 		end
 
-	extend_expression_in_set (a_exprs: LINKED_LIST [AUT_EXPRESSION]; a_test: PREDICATE [ANY, TUPLE [AUT_EXPRESSION]]; a_set: DS_HASH_SET [AFX_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
+	extend_expression_in_set (a_exprs: LINKED_LIST [AUT_EXPRESSION]; a_test: PREDICATE [ANY, TUPLE [AUT_EXPRESSION]]; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
 			-- Append items from `a_exprs' into `a_set' if those items satisfy `a_test'.
 			-- `a_context_class' and `a_feature' are used to construct AFX_EXPRESSION.
 		local
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 			from
 				a_exprs.start
@@ -533,7 +533,7 @@ feature -- Process
 
 feature -- Access
 
-	solver_expression (a_expr: AFX_EXPRESSION): AFX_SOLVER_EXPR
+	solver_expression (a_expr: EPA_EXPRESSION): AFX_SOLVER_EXPR
 			-- Solver expression from `a_expr'
 		local
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]]
@@ -548,12 +548,12 @@ feature -- Access
 			Result := new_solver_expression_from_string (l_resolved.resolved_str)
 		end
 
-	expression_as_state_skeleton (a_expr: AFX_EXPRESSION): AFX_STATE_SKELETON
+	expression_as_state_skeleton (a_expr: EPA_EXPRESSION): AFX_STATE_SKELETON
 			-- State skeleton including `a_expr'
 		require
 			a_expr_is_predicate: a_expr.is_predicate
 		local
-			l_exprs: LINKED_LIST [AFX_EXPRESSION]
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
 		do
 			create l_exprs.make
 			l_exprs.extend (a_expr)
@@ -569,22 +569,22 @@ feature -- Access
 			Result.force_last (a_equation)
 		end
 
-	equation_with_value (a_expr: AFX_EXPRESSION; a_value: AFX_EXPRESSION_VALUE): AFX_EQUATION
+	equation_with_value (a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE): AFX_EQUATION
 			-- Equation with current as expression and `a_value' as value.
 		do
 			create Result.make (a_expr, a_value)
 		end
 
-	equation_with_random_value (a_expr: AFX_EXPRESSION): AFX_EQUATION
+	equation_with_random_value (a_expr: EPA_EXPRESSION): AFX_EQUATION
 			-- Equation with current as expression, with a randomly
 			-- assigned value.
 		local
-			l_value: AFX_EXPRESSION_VALUE
+			l_value: EPA_EXPRESSION_VALUE
 		do
 			if a_expr.type.is_boolean then
-				create {AFX_RANDOM_BOOLEAN_VALUE} l_value.make
+				create {EPA_RANDOM_BOOLEAN_VALUE} l_value.make
 			elseif a_expr.type.is_integer then
-				create {AFX_RANDOM_INTEGER_VALUE} l_value.make
+				create {EPA_RANDOM_INTEGER_VALUE} l_value.make
 			else
 				check not_supported_yet: False end
 				to_implement ("Implement random value for other types.")

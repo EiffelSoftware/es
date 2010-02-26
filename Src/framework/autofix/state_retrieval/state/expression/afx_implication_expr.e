@@ -59,16 +59,16 @@ feature -- Access
 	text: STRING
 			-- Text of current implication
 
-	as_expression: AFX_EXPRESSION
+	as_expression: EPA_EXPRESSION
 			-- Expression representation
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, text, written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, text, written_class)
 		end
 
-	as_conjuction: AFX_EXPRESSION
+	as_conjuction: EPA_EXPRESSION
 			-- Expression representing `premise' and `conseuent'
 		do
-			create {AFX_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + premise.text + ") and (" + consequent.text + ")", written_class)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (class_, feature_, "(" + premise.text + ") and (" + consequent.text + ")", written_class)
 		end
 
 feature -- Access

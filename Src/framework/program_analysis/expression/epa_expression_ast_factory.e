@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EXPRESSION_AST_FACTORY
+	EPA_EXPRESSION_AST_FACTORY
 
 inherit
 	AST_COMPILER_FACTORY

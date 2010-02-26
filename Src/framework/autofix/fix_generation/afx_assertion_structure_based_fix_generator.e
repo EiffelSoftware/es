@@ -69,7 +69,7 @@ feature{NONE} -- Implementation
 	new_afore_fix_skeleton (
 			a_spot: AFX_EXCEPTION_SPOT;
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
-			a_guard: detachable AFX_EXPRESSION;
+			a_guard: detachable EPA_EXPRESSION;
 			a_precondition: detachable AFX_STATE;
 			a_postcondition: detachable AFX_STATE;
 			a_scope_level: INTEGER;
@@ -93,7 +93,7 @@ feature{NONE} -- Implementation
 	new_wrapping_fix_skeleton (
 			a_spot: AFX_EXCEPTION_SPOT;
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
-			a_guard: detachable AFX_EXPRESSION;
+			a_guard: detachable EPA_EXPRESSION;
 			a_precondition: detachable AFX_STATE;
 			a_postcondition: detachable AFX_STATE;
 			a_scope_level: INTEGER;

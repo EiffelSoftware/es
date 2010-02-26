@@ -77,7 +77,7 @@ feature{NONE} -- Implementation
 		do
 		end
 
-	solver_output_for_expressions (a_expressions: LINEAR [AFX_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, AFX_EXPRESSION]
+	solver_output_for_expressions (a_expressions: LINEAR [EPA_EXPRESSION]; a_solver_input: STRING): HASH_TABLE [STRING, EPA_EXPRESSION]
 			-- Output from the solver for checking `a_expressions' in the context of `a_solver_input'.
 			-- `a_solver_input' is the input fed to the underlying theorem prover.
 			-- Result is a table, key is the expression, value is the solver output for that expression':

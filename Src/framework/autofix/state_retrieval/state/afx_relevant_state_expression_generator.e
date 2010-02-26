@@ -9,7 +9,7 @@ deferred class
 
 feature -- Generation
 
-	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION])
+	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- Generate expressions that are relevant to `a_spot' and
 			-- store result in `a_expressions'.
 			-- Ranking of expressions alreadys in `a_expressions' before `generate' may also get updated
@@ -24,12 +24,12 @@ feature -- Generation
 
 feature{NONE} -- Implementation
 
-	update_expressions_with_ranking (a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]; a_new_exprs: DS_HASH_SET [AFX_EXPRESSION]; a_ranking: INTEGER)
+	update_expressions_with_ranking (a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]; a_new_exprs: DS_HASH_SET [EPA_EXPRESSION]; a_ranking: INTEGER)
 			-- Add `a_new_exprs' into `a_expressions' with `a_ranking' into `a_expression'.
 			-- If some expression already in `a_expressions' but `a_ranking' is higher than the original ranking,
 			-- update it with `a_ranking'.
 		local
-			l_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
 			l_rank: AFX_EXPR_RANK
 		do
 			from

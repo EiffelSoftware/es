@@ -21,11 +21,11 @@ feature -- Access
 
 feature -- Generation
 
-	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION])
+	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- <Precursor>
 		local
 			l_implications: DS_HASH_SET [AFX_IMPLICATION_EXPR]
-			l_exprs: DS_HASH_SET [AFX_EXPRESSION]
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
 		do
 				-- Find implications from source code.
 			l_implications := possible_implications (a_spot.recipient_written_class, atomic_predicates (a_spot.recipient_written_class, a_spot.recipient_))
@@ -35,7 +35,7 @@ feature -- Generation
 			l_exprs.set_equality_tester (create {AFX_EXPRESSION_EQUALITY_TESTER})
 
 			l_implications.do_all (
-				agent (a_imp: AFX_IMPLICATION_EXPR; a_store: DS_HASH_SET [AFX_EXPRESSION])
+				agent (a_imp: AFX_IMPLICATION_EXPR; a_store: DS_HASH_SET [EPA_EXPRESSION])
 					do
 						a_store.force_last (a_imp.as_expression)
 					end (?, l_exprs))
@@ -45,11 +45,11 @@ feature -- Generation
 
 feature{NONE} -- Implementation
 
-	non_reflective_combinations (a_class: CLASS_C): LINKED_LIST [TUPLE [premise: AFX_EXPRESSION; consequent: AFX_EXPRESSION]]
+	non_reflective_combinations (a_class: CLASS_C): LINKED_LIST [TUPLE [premise: EPA_EXPRESSION; consequent: EPA_EXPRESSION]]
 			-- Non-reflective relation from `a_atomic_preds'
 		local
-			l_premise: AFX_EXPRESSION
-			l_conse: AFX_EXPRESSION
+			l_premise: EPA_EXPRESSION
+			l_conse: EPA_EXPRESSION
 			l_finder: AFX_IMPLICATION_FINDER
 		do
 			create l_finder.make
@@ -94,10 +94,10 @@ feature{NONE} -- Implementation
 			-- Implications from `a_implications' with are not equavilant with any of the predicates in `a_predicates'
 			-- in the context of `a_atomic_predicates'.`a_theory'
 		local
-			l_temp_exprs: LINKED_LIST [AFX_EXPRESSION]
+			l_temp_exprs: LINKED_LIST [EPA_EXPRESSION]
 			l_valid: BOOLEAN
 			l_impl: AFX_IMPLICATION_EXPR
-			l_expr: AFX_AST_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 			l_status: LINKED_LIST [BOOLEAN]
 		do
 			create l_temp_exprs.make
@@ -179,13 +179,13 @@ feature{NONE} -- Implementation
 			-- 2: Contradictary			
 		local
 			l_normal_preds: LINKED_LIST [AFX_IMPLICATION_EXPR]
-			l_exprs: DS_HASH_SET [AFX_EXPRESSION]
-			l_validity: HASH_TABLE [NATURAL_8, AFX_EXPRESSION]
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_validity: HASH_TABLE [NATURAL_8, EPA_EXPRESSION]
 			l_valid: BOOLEAN
 			l_negation_valid: BOOLEAN
 			l_satis: NATURAL_8
-			l_expr: AFX_EXPRESSION
-			l_negated_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
+			l_negated_expr: EPA_EXPRESSION
 			l_skeleton: AFX_STATE_SKELETON
 		do
 				-- Transform predicates into {AFX_EXPRESSION}.
@@ -228,7 +228,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	implications_from_term (a_premise: AFX_EXPRESSION; a_consequent: AFX_EXPRESSION; a_written_class: CLASS_C): LINKED_LIST [AFX_IMPLICATION_EXPR]
+	implications_from_term (a_premise: EPA_EXPRESSION; a_consequent: EPA_EXPRESSION; a_written_class: CLASS_C): LINKED_LIST [AFX_IMPLICATION_EXPR]
 			-- All four possible ways to connect `a_premise' and `consequent' into an implication:
 			-- 1. `a_premise' -> `a_consequent'.
 			-- 2. `a_premise' -> not `a_consequent'.

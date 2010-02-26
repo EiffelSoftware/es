@@ -36,7 +36,7 @@ feature -- Operation
 
 feature{NONE} -- Implementation
 
-	extract_integer_outline (a_integer_expression: AFX_AST_EXPRESSION): DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
+	extract_integer_outline (a_integer_expression: EPA_AST_EXPRESSION): DS_HASH_SET [AFX_PREDICATE_EXPRESSION]
 			-- <Precursor>
 		local
 		    l_agents: DS_ARRAYED_LIST [PREDICATE[AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I, TUPLE[INTEGER]]]

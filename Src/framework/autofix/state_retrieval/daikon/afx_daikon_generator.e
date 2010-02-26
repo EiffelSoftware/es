@@ -41,9 +41,9 @@ feature -- Declaration
    			name : STRING
    			a_daikon_declaration : AFX_DAIKON_DECLARATION
    			a_daikon_trace : AFX_DAIKON_TRACE
-   			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+   			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
    			l_equation: detachable AFX_EQUATION
-   			l_nonsensical_value: AFX_NONSENSICAL_VALUE
+   			l_nonsensical_value: EPA_NONSENSICAL_VALUE
    		do
    			--CLASS_NAME.feature_name.bpslot:::POINT
    			is_failing_tc := is_failing
@@ -235,7 +235,7 @@ feature -- Access
 			i: INTEGER
 			l_last_bpslot: INTEGER
 			l_var_decs: LINKED_LIST [AFX_DAIKON_DECLARATION]
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_ppt_dec: STRING
 			l_var_declaraction: STRING
 			l_dec: AFX_DAIKON_DECLARATION

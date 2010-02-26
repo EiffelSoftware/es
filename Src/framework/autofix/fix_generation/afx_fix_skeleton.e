@@ -35,7 +35,7 @@ feature -- Access
 	postcondition: AFX_STATE
 			-- Fix postcondition
 
-	guard_condition: detachable AFX_EXPRESSION
+	guard_condition: detachable EPA_EXPRESSION
 			-- Expression used as guard in the generated fix.
 			-- If attached, generate fix like: (p is this guard):
 			--	 if p then
@@ -167,7 +167,7 @@ feature -- Basic operations
 			l_postcondition: detachable AFX_STATE
 			l_pre_hie: like state_hierarchy
 			l_post_hie: like state_hierarchy
-			l_premises: ARRAY [AFX_EXPRESSION]
+			l_premises: ARRAY [EPA_EXPRESSION]
 			l_premise_skeleton: AFX_STATE_SKELETON
 			l_premise_combi: LINKED_LIST [AFX_STATE_SKELETON]
 			i, k: INTEGER
@@ -212,12 +212,12 @@ feature{NONE} -- Implementation
 			l_bpslots: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
 			l_failing_state: detachable AFX_STATE
 			l_necessary_conditions: AFX_STATE_SKELETON
-			l_culprit_predicate: detachable AFX_EXPRESSION
+			l_culprit_predicate: detachable EPA_EXPRESSION
 			l_abq_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
 			l_value: BOOLEAN
 			l_pre_equation: AFX_EQUATION
 			l_post_equation: AFX_EQUATION
-			l_culprits: LINKED_LIST [AFX_EXPRESSION]
+			l_culprits: LINKED_LIST [EPA_EXPRESSION]
 		do
 			l_bpslots := relevant_break_points
 
@@ -285,8 +285,8 @@ feature{NONE} -- Implementation
 						check l_abq_analyzer.is_matched end
 						l_culprit_predicate := l_abq_analyzer.argumentless_boolean_query
 						l_value := (l_abq_analyzer.negation_count \\ 2) = 0
-						create l_pre_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (l_value))
-						create l_post_equation.make (l_culprit_predicate, create {AFX_BOOLEAN_VALUE}.make (not l_value))
+						create l_pre_equation.make (l_culprit_predicate, create {EPA_BOOLEAN_VALUE}.make (l_value))
+						create l_post_equation.make (l_culprit_predicate, create {EPA_BOOLEAN_VALUE}.make (not l_value))
 						l_precondition := equation_as_state (l_pre_equation)
 						l_postcondition := equation_as_state (l_post_equation)
 					end
@@ -296,7 +296,7 @@ feature{NONE} -- Implementation
 			Result := [l_precondition, l_postcondition]
 		end
 
-	abq_predicate_from_equation_expression (a_text: STRING; a_class: CLASS_C; a_feature: FEATURE_I): AFX_AST_EXPRESSION
+	abq_predicate_from_equation_expression (a_text: STRING; a_class: CLASS_C; a_feature: FEATURE_I): EPA_AST_EXPRESSION
 			-- ABQ predicate from `a_text'
 		local
 			l_parts: LIST [STRING]
@@ -321,18 +321,18 @@ feature{NONE} -- Implementation
 			create Result.make_with_text (a_class, a_feature, l_text, a_feature.written_class)
 		end
 
-	strongest_predicates (a_skeleton: AFX_STATE_SKELETON; a_theory: AFX_THEORY): LINKED_LIST [AFX_EXPRESSION]
+	strongest_predicates (a_skeleton: AFX_STATE_SKELETON; a_theory: AFX_THEORY): LINKED_LIST [EPA_EXPRESSION]
 			-- Expressions in `a_skeleton' which implies all the rest expressions in `a_skeleton'.
 			-- `a_theory' is in which the reasoning is based.
 			-- For example, if `a_skeleton' contains 3 predicates a, b, and c.
 			-- If a->b and a->c, then a will be in the result.
 		local
-			l_tbl: HASH_TABLE [AFX_EXPRESSION, AFX_EXPRESSION]
-			l_cursor: DS_HASH_SET_CURSOR [AFX_EXPRESSION]
+			l_tbl: HASH_TABLE [EPA_EXPRESSION, EPA_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_temp_skeleton: AFX_STATE_SKELETON
-			l_implication: AFX_EXPRESSION
-			l_implications: LINKED_LIST [AFX_EXPRESSION]
-			l_valid_imps: LINKED_LIST [AFX_EXPRESSION]
+			l_implication: EPA_EXPRESSION
+			l_implications: LINKED_LIST [EPA_EXPRESSION]
+			l_valid_imps: LINKED_LIST [EPA_EXPRESSION]
 		do
 			create Result.make
 			create l_implications.make
@@ -393,10 +393,10 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
-	state_hierarchy (a_state: AFX_STATE): HASH_TABLE [HASH_TABLE [AFX_STATE, STRING], AFX_EXPRESSION]
+	state_hierarchy (a_state: AFX_STATE): HASH_TABLE [HASH_TABLE [AFX_STATE, STRING], EPA_EXPRESSION]
 			-- hierarchically partitioned states from `a_state'
 		local
-			l_imp_parts: HASH_TABLE [AFX_STATE, AFX_EXPRESSION]
+			l_imp_parts: HASH_TABLE [AFX_STATE, EPA_EXPRESSION]
 			l_prefix_parts: HASH_TABLE [AFX_STATE, STRING]
 		do
 			create Result.make (20)
@@ -557,7 +557,7 @@ feature{NONE} -- Implementation
 		end
 
 
-	call_sequences (a_source_state: like state_hierarchy; a_target_state: like state_hierarchy): HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], AFX_EXPRESSION]
+	call_sequences (a_source_state: like state_hierarchy; a_target_state: like state_hierarchy): HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], EPA_EXPRESSION]
 			-- Possible call sequences to change the system from `a_source_state' to `a_target_state'.
 		local
 			l_source: detachable HASH_TABLE [AFX_STATE, STRING]
@@ -579,7 +579,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	text_of_fix (a_premise: AFX_EXPRESSION; a_sequences: DS_LIST [STRING]): STRING
+	text_of_fix (a_premise: EPA_EXPRESSION; a_sequences: DS_LIST [STRING]): STRING
 			--
 		local
 			l_tab: STRING
@@ -608,15 +608,15 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	text_of_fixes (a_candidates: HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], AFX_EXPRESSION]): LINKED_LIST [TUPLE [snippet: STRING; ranking: INTEGER]]
+	text_of_fixes (a_candidates: HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], EPA_EXPRESSION]): LINKED_LIST [TUPLE [snippet: STRING; ranking: INTEGER]]
 		local
-			l_array: ARRAY [TUPLE [seq: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]; premise: AFX_EXPRESSION]]
+			l_array: ARRAY [TUPLE [seq: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]; premise: EPA_EXPRESSION]]
 			i, j, c: INTEGER
 			l_done: BOOLEAN
 			l_ranking: INTEGER
 			l_fix: STRING
-			l_data: TUPLE [seq: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]; premise: AFX_EXPRESSION]
-			l_premise: AFX_EXPRESSION
+			l_data: TUPLE [seq: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]]; premise: EPA_EXPRESSION]
+			l_premise: EPA_EXPRESSION
 			l_finished: BOOLEAN
 			l_premise_ranking: INTEGER
 		do
@@ -695,7 +695,7 @@ feature{NONE} -- Implementation
 			l_premise_skeleton: AFX_STATE_SKELETON
 			i, k: INTEGER
 			l_combinations: LINKED_LIST [AFX_STATE_SKELETON]
-			l_temp: HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], AFX_EXPRESSION]
+			l_temp: HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], EPA_EXPRESSION]
 			l_comb: AFX_STATE_SKELETON
 		do
 			create Result.make

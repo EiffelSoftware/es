@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_INTEGER_VALUE
+	EPA_INTEGER_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 		redefine
 			is_integer
 		end
@@ -47,7 +47,7 @@ feature -- Status report
 
 feature -- Process
 
-	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
 			a_visitor.process_integer_value (Current)

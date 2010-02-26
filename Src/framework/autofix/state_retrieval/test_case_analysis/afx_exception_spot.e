@@ -105,7 +105,7 @@ feature -- Access
 			-- Expressions that should be included in the
 			-- state model for current exception spot
 
-	ranking: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
+	ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
 			-- Expressions in `skeleton' with rankings
 
 	id: STRING
@@ -128,10 +128,10 @@ feature -- Access
 	recipient_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE
 			-- AST structure of `recipient_'
 
-	failing_assertion: AFX_EXPRESSION
+	failing_assertion: EPA_EXPRESSION
 			-- Failing assertion, rewritten in the context of the recipient.
 
-	original_failing_assertion: AFX_EXPRESSION
+	original_failing_assertion: EPA_EXPRESSION
 			-- Original assertion for `failing_assertion'.
 			-- Different from `failing_assertion' in precondition violations,
 			-- same as `failing_assertion' in other types of assertion violations.
@@ -151,13 +151,13 @@ feature -- Access
 			-- Class of `feature_of_failing_assertion'.
 			-- Not necessarily the written class of `feature_of_failing_assertion'
 
-	actual_arguments_in_failing_assertion: HASH_TABLE [AFX_EXPRESSION, INTEGER]
+	actual_arguments_in_failing_assertion: HASH_TABLE [EPA_EXPRESSION, INTEGER]
 			-- Expressions used as routine arguments and mentioned in `failing_assertion'.
 			-- This is only used in case of precondition violation, for other types of exceptions
 			-- this table is empty.
 			-- Key is the argument index, value is the mentioned expression used as actual argument.
 
-	target_expression_of_failing_feature: detachable AFX_EXPRESSION
+	target_expression_of_failing_feature: detachable EPA_EXPRESSION
 			-- Target expression of `feature_of_failing_assertion'
 			-- Void means that `feature_of_failing_assertion' is a unqualified call.
 
@@ -270,7 +270,7 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	keys_from_hash_table (a_table: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]): LINKED_LIST [AFX_EXPRESSION]
+	keys_from_hash_table (a_table: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]): LINKED_LIST [EPA_EXPRESSION]
 			-- Keys from `a_table' as a list
 		do
 			create Result.make

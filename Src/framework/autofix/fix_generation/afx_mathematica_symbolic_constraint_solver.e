@@ -32,7 +32,7 @@ feature -- Access
 
 feature -- Solve
 
-	maximize (a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION])
+	maximize (a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Maximize the value of `a_function' under constraints `a_constraints', with respect to `a_arguments'.
 			-- Store results in `last_solutions'.
 			-- If there is no solution, make `lasT_solutions' empty.
@@ -40,7 +40,7 @@ feature -- Solve
 			solve_internal ("Maximize", a_function, a_constraints, a_arguments)
 		end
 
-	minimize (a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION])
+	minimize (a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Minimize the value of `a_function' under constraints `a_constraints', with respect to `a_arguments'.
 			-- Store results in `last_solutions'.
 			-- If there is no solution, make `lasT_solutions' empty.
@@ -48,7 +48,7 @@ feature -- Solve
 			solve_internal ("Minimize", a_function, a_constraints, a_arguments)
 		end
 
-	solve (a_maximize: BOOLEAN; a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION])
+	solve (a_maximize: BOOLEAN; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Maximize or Minimize (depending on `a_maximize') the value of `a_function' under constraints `a_constraints', with respect to `a_arguments'.
 			-- Store results in `last_solutions'.
 			-- If there is no solution, make `lasT_solutions' empty.
@@ -62,23 +62,23 @@ feature -- Solve
 
 feature{NONE} -- Implementation
 
-	expression_name_table: HASH_TABLE [AFX_EXPRESSION, STRING]
+	expression_name_table: HASH_TABLE [EPA_EXPRESSION, STRING]
 			-- Table for expression and their short names
 			-- Key is a short name, value is the expression associated with that short name.
 			-- short names are used in Mathematica.
 
-	name_expression_table: HASH_TABLE [STRING, AFX_EXPRESSION]
+	name_expression_table: HASH_TABLE [STRING, EPA_EXPRESSION]
 			-- Table for expression and their short names
 			-- Key is an expression, value is the short name associated with that expression.
 			-- short names are used in Mathematica.
 
-	expressions: DS_ARRAYED_LIST [AFX_EXPRESSION]
+	expressions: DS_ARRAYED_LIST [EPA_EXPRESSION]
 			-- Expressions that appear in the constraints and arguments of the last solving request.
 			-- Sorted by the length of the expressions, from the longest to the shortest
 
 feature{NONE} -- Implementation
 
-	mathematica_program (a_method: STRING; a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION]): STRING
+	mathematica_program (a_method: STRING; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION]): STRING
 			-- Mathamatica program to solve `a_function' under constraints `a_constraints', with respect to `a_arguments' using `a_method'.
 			-- `a_method' can be "Maximize" or "Minimize".
 		local
@@ -127,15 +127,15 @@ feature{NONE} -- Implementation
 			Result := l_output
 		end
 
-	parse_result (a_output: STRING; a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION])
+	parse_result (a_output: STRING; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Parse Mathematica result in `a_output' and setup `last_solutions'.
 		local
 			l_output_parser: AFX_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
 			l_solution: HASH_TABLE [TUPLE [argument_valuations: HASH_TABLE [STRING, STRING]; condition: STRING], STRING]
 			l_value: STRING
-			l_expr: AFX_AST_EXPRESSION
-			l_conditions: LINKED_LIST [AFX_EXPRESSION]
-			l_valuations: HASH_TABLE [AFX_EXPRESSION, AFX_EXPRESSION]
+			l_expr: EPA_AST_EXPRESSION
+			l_conditions: LINKED_LIST [EPA_EXPRESSION]
+			l_valuations: HASH_TABLE [EPA_EXPRESSION, EPA_EXPRESSION]
 		do
 			create last_solutions.make (2)
 			if a_output.item (1) = '{' then
@@ -161,7 +161,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	solve_internal (a_method: STRING; a_function: AFX_EXPRESSION; a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION])
+	solve_internal (a_method: STRING; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Solve `a_function' under constraints `a_constraints', with respect to `a_arguments' using `a_method'.
 			-- `a_method' can be "Maximize" or "Minimize".
 			-- Store results in `last_solutions'.
@@ -171,9 +171,9 @@ feature{NONE} -- Implementation
 			l_output_parser: AFX_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
 			l_solution: HASH_TABLE [TUPLE [argument_valuations: HASH_TABLE [STRING, STRING]; condition: STRING], STRING]
 			l_value: STRING
-			l_expr: AFX_AST_EXPRESSION
-			l_conditions: LINKED_LIST [AFX_EXPRESSION]
-			l_valuations: HASH_TABLE [AFX_EXPRESSION, AFX_EXPRESSION]
+			l_expr: EPA_AST_EXPRESSION
+			l_conditions: LINKED_LIST [EPA_EXPRESSION]
+			l_valuations: HASH_TABLE [EPA_EXPRESSION, EPA_EXPRESSION]
 		do
 			ananlyze_constraints_and_arguments (a_constraints, a_arguments)
 
@@ -211,7 +211,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	expression_in_mathematica (a_expression: AFX_EXPRESSION): STRING
+	expression_in_mathematica (a_expression: EPA_EXPRESSION): STRING
 			-- String representation of `a_expression' in Mathematica format
 		do
 			create Result.make_from_string (a_expression.text)
@@ -245,17 +245,17 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	ananlyze_constraints_and_arguments (a_constraints: LINKED_LIST [AFX_EXPRESSION]; a_arguments: LINKED_LIST [AFX_EXPRESSION])
+	ananlyze_constraints_and_arguments (a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Ananlyze `a_constraints' and `a_arguments', and populate `expression_name_table', `name_expression_table' and
 			-- `expressions'.
 		local
 			l_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			l_cursor: CURSOR
 			l_merged_constraints: AFX_NUMERIC_CONSTRAINTS
-			l_names: DS_HASH_SET [AFX_EXPRESSION]
+			l_names: DS_HASH_SET [EPA_EXPRESSION]
 			i: INTEGER
 			l_expr_name: STRING
-			l_sorter: DS_QUICK_SORTER [AFX_EXPRESSION]
+			l_sorter: DS_QUICK_SORTER [EPA_EXPRESSION]
 		do
 			create l_merged_constraints.make (Void)
 
@@ -304,8 +304,8 @@ feature{NONE} -- Implementation
 
 				-- Sort `expressions' by the length of expressions, from longest to shortest.
 			create l_sorter.make (
-				create {AGENT_BASED_EQUALITY_TESTER [AFX_EXPRESSION]}.make (
-					agent (a, b: AFX_EXPRESSION): BOOLEAN
+				create {AGENT_BASED_EQUALITY_TESTER [EPA_EXPRESSION]}.make (
+					agent (a, b: EPA_EXPRESSION): BOOLEAN
 						do
 							Result := a.text.count > b.text.count
 						end))

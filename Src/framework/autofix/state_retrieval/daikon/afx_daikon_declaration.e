@@ -25,7 +25,7 @@ feature{NONE} -- Initialization
  			make_with_expression (equation.expression)
 		end
 
-	make_with_expression (a_expression: AFX_EXPRESSION)
+	make_with_expression (a_expression: EPA_EXPRESSION)
 			-- Initialize Current variable declaraction with `a_expression'.
 		do
 			var_kind := "variable"

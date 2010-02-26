@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EXPRESSION_TYPE_CHECKER
+	EPA_EXPRESSION_TYPE_CHECKER
 
 inherit
 	REFACTORING_HELPER

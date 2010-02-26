@@ -45,10 +45,10 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	expression: AFX_EXPRESSION
+	expression: EPA_EXPRESSION
 			-- State item whose value is stored in Current
 
-	value: AFX_EXPRESSION_VALUE
+	value: EPA_EXPRESSION_VALUE
 			-- Value
 
 	type: detachable TYPE_A
@@ -60,7 +60,7 @@ feature -- Access
 			end
 		end
 
-	as_predicate: AFX_EXPRESSION
+	as_predicate: EPA_EXPRESSION
 			-- Current as an expression in the form of
 			-- "expression = value"
 		local
@@ -95,9 +95,9 @@ feature -- Access
 		require
 			expression_is_predicate: expression.is_predicate
 		local
-			l_new_value: AFX_BOOLEAN_VALUE
+			l_new_value: EPA_BOOLEAN_VALUE
 		do
-			if attached {AFX_BOOLEAN_VALUE} value as l_bool then
+			if attached {EPA_BOOLEAN_VALUE} value as l_bool then
 				create l_new_value.make (not l_bool.item)
 				create Result.make (expression, l_new_value)
 			end
@@ -109,7 +109,7 @@ feature -- Access
 		require
 			expression_is_predicate: expression.is_predicate
 		do
-			if attached {AFX_BOOLEAN_VALUE} value as l_bool then
+			if attached {EPA_BOOLEAN_VALUE} value as l_bool then
 				create Result.make (not expression, l_bool)
 			end
 		end

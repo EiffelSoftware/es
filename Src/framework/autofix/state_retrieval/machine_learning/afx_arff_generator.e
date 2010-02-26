@@ -34,7 +34,7 @@ feature -- Actions
 		local
 			l_file_name: STRING
 			l_file_path: FILE_NAME
-			l_tbl: HASH_TABLE [AFX_EXPR_RANK, AFX_EXPRESSION]
+			l_tbl: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
 		do
 			create l_tbl.make (1000)
 			l_tbl.compare_objects
@@ -67,7 +67,7 @@ feature{NONE} -- Implementation
 	put_data (a_file: PLAIN_TEXT_FILE; a_bpslot: INTEGER; a_state: AFX_STATE)
 			-- Store `a_state' which is retrieved at breakpoint `a_bpslot' in `a_file'.
 		local
-			l_value: AFX_EXPRESSION_VALUE
+			l_value: EPA_EXPRESSION_VALUE
 			i: INTEGER
 			l_count: INTEGER
 			l_value_ignored: BOOLEAN
@@ -110,7 +110,7 @@ feature{NONE} -- Implementation
 			-- Put header containing relation name `a_relation_name' and data declarations from `a_state'
 			-- into `a_file'.
 		local
-			l_expr: AFX_EXPRESSION
+			l_expr: EPA_EXPRESSION
 		do
 			a_file.put_string ("@RELATION " + a_relation_name + "%N")
 			a_file.put_string ("@ATTRIBUTE%Tbpslot%TNUMERIC%N")

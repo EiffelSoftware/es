@@ -39,7 +39,7 @@ feature -- Basic operations
 				analyze_paranthesis_and_negation
 				if attached {NESTED_AS} ast as l_nested then
 						-- `expression' is in the form of "prefix.ABQ".						
-					create {AFX_AST_EXPRESSION} prefix_expression.make_with_text (
+					create {EPA_AST_EXPRESSION} prefix_expression.make_with_text (
 						expression.class_,
 						expression.feature_,
 						text_from_ast (l_nested.target),
@@ -74,7 +74,7 @@ feature -- Basic operations
 							l_written_class := expression.written_class
 						end
 						fixme ("The following line, when used make instead of make_with_type, will crash on ARRAYED_CIRCULAR.merge_left. 8.12.2009 Jasonw.")
-						create {AFX_AST_EXPRESSION} argumentless_boolean_query.make_with_type (l_class, l_feature, create {EXPR_CALL_AS}.initialize (l_final_query), l_written_class, expression.type)
+						create {EPA_AST_EXPRESSION} argumentless_boolean_query.make_with_type (l_class, l_feature, create {EXPR_CALL_AS}.initialize (l_final_query), l_written_class, expression.type)
 					end
 				end
 			end
@@ -86,18 +86,18 @@ feature -- Access
 			-- Number of outer negations of `expression'
 			-- Only has effect if `is_matched' is True.
 
-	prefix_expression: detachable AFX_EXPRESSION
+	prefix_expression: detachable EPA_EXPRESSION
 			-- The prefix part of `expression' if in the form "prefix.ABQ"
 			-- Void if there is not prefix.
 			-- Only has effect if `is_matched' is True.
 
-	argumentless_boolean_query: detachable AFX_EXPRESSION
+	argumentless_boolean_query: detachable EPA_EXPRESSION
 			-- The final argumentless boolean query in `expression'			
 			-- Only has effect if `is_matched' is True.
 
 feature{NONE} -- Implementation
 
-	expression: AFX_EXPRESSION
+	expression: EPA_EXPRESSION
 			-- Expression that is being analyzed
 
 	ast: AST_EIFFEL

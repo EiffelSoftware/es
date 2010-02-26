@@ -70,9 +70,9 @@ feature {NONE} -- Implementation
      build_equation ( str :STRING ) :AFX_EQUATION is
      		--Takes a line output from Daikon and builds an AFX_Equation
 		local
-			expression : AFX_AST_EXPRESSION
-			expression_boolean_value : AFX_BOOLEAN_VALUE
-			expression_integer_value : AFX_INTEGER_VALUE
+			expression : EPA_AST_EXPRESSION
+			expression_boolean_value : EPA_BOOLEAN_VALUE
+			expression_integer_value : EPA_INTEGER_VALUE
 			tokens :LIST[STRING]
 			equation : AFX_EQUATION
 			l_expr: STRING

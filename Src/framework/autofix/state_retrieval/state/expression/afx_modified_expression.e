@@ -36,7 +36,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	expression: AFX_EXPRESSION
+	expression: EPA_EXPRESSION
 			-- Expression representing current.
 		do
 			if is_negated then
@@ -46,7 +46,7 @@ feature -- Access
 			end
 		end
 
-	original_expression: AFX_EXPRESSION
+	original_expression: EPA_EXPRESSION
 			-- The original expression
 
 	negated alias "not": like Current

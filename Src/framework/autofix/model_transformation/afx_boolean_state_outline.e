@@ -104,14 +104,14 @@ feature -- Query
 		    end
 		end
 
-	query_predicate_indexes (a_exp_set: DS_HASH_SET[AFX_AST_EXPRESSION]): DS_HASH_SET[INTEGER]
+	query_predicate_indexes (a_exp_set: DS_HASH_SET[EPA_AST_EXPRESSION]): DS_HASH_SET[INTEGER]
 			-- Query the indexes of expressions in the boolean representation.
 			-- NOTE: only boolean queries supported now.
 		require
-		    all_expression_predicates: a_exp_set.for_all (agent {AFX_AST_EXPRESSION}.is_predicate)
+		    all_expression_predicates: a_exp_set.for_all (agent {EPA_AST_EXPRESSION}.is_predicate)
 		local
 		    l_ok: BOOLEAN
-		    l_exp: AFX_AST_EXPRESSION
+		    l_exp: EPA_AST_EXPRESSION
 		    l_index, l_count: INTEGER
 		    l_set: DS_HASH_SET[INTEGER]
 		do

@@ -58,7 +58,7 @@ feature -- Execute
 			l_smt_generator:AFX_SMTLIB_GENERATOR
 			l_inv: LINKED_LIST [AUT_EXPRESSION]
 			l_theory: AFX_THEORY
-			l_smt_expr: DS_HASH_TABLE [AFX_SOLVER_EXPR, AFX_EXPRESSION]
+			l_smt_expr: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
 
 			l_test_state_implication: BOOLEAN
 			l_build_theory: BOOLEAN
@@ -149,10 +149,10 @@ feature -- Execute
 		local
 			l_s1, l_s2: AFX_STATE
 			l_pred1, l_pred2: AFX_EQUATION
-			l_expr1, l_expr2: AFX_AST_EXPRESSION
-			l_value1: AFX_INTEGER_VALUE
-			l_value2: AFX_BOOLEAN_VALUE
-			l_value3: AFX_RANDOM_BOOLEAN_VALUE
+			l_expr1, l_expr2: EPA_AST_EXPRESSION
+			l_value1: EPA_INTEGER_VALUE
+			l_value2: EPA_BOOLEAN_VALUE
+			l_value3: EPA_RANDOM_BOOLEAN_VALUE
 		do
 			create l_s1.make (1, config.state_recipient_class, config.state_recipient)
 			create l_s2.make (1, config.state_recipient_class, config.state_recipient)

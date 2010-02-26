@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 
 inherit
 	SHARED_TYPES
@@ -79,7 +79,7 @@ feature -- Status report
 
 feature -- Process
 
-	process (a_visitor: AFX_EXPRESSION_VALUE_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		deferred
 		end

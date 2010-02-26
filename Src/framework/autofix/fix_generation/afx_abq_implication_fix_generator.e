@@ -48,12 +48,12 @@ feature{NONE} -- Implementation
 			-- store results in fixes'.
 		local
 			l_fix: AFX_AFORE_FIX_SKELETON
-			l_failing_assert: AFX_EXPRESSION
-			l_negated_failing_assert: AFX_EXPRESSION
-			l_value: AFX_BOOLEAN_VALUE
-			l_premise: AFX_EXPRESSION
-			l_consequent: AFX_EXPRESSION
-			l_negated_premise: AFX_EXPRESSION
+			l_failing_assert: EPA_EXPRESSION
+			l_negated_failing_assert: EPA_EXPRESSION
+			l_value: EPA_BOOLEAN_VALUE
+			l_premise: EPA_EXPRESSION
+			l_consequent: EPA_EXPRESSION
+			l_negated_premise: EPA_EXPRESSION
 		do
 				-- Initialize.
 			create l_value.make (True)
@@ -114,11 +114,11 @@ feature{NONE} -- Implementation
 			-- Generate wrapping fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local
-			l_failing_assert: AFX_EXPRESSION
-			l_negated_failing_assert: AFX_EXPRESSION
-			l_value: AFX_BOOLEAN_VALUE
-			l_premise: AFX_EXPRESSION
-			l_consequent: AFX_EXPRESSION
+			l_failing_assert: EPA_EXPRESSION
+			l_negated_failing_assert: EPA_EXPRESSION
+			l_value: EPA_BOOLEAN_VALUE
+			l_premise: EPA_EXPRESSION
+			l_consequent: EPA_EXPRESSION
 		do
 			if not a_fixing_location.is_empty then
 					-- Initialize.
