@@ -5,14 +5,20 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_REFERENCE_VALUE
+	EPA_REFERENCE_VALUE
 
 inherit
-	AFX_EXPRESSION_VALUE
+	EPA_EXPRESSION_VALUE
 		redefine
 			type,
 			item,
 			is_reference
+		end
+
+	REFACTORING_HELPER
+		undefine
+			is_equal,
+			out
 		end
 
 create
@@ -39,5 +45,13 @@ feature -- Status report
 
 	is_reference: BOOLEAN is True
 			-- Is current a reference value?
+
+feature -- Process
+
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			fixme ("To implement. 27.2.2010 Jasonw")
+		end
 
 end

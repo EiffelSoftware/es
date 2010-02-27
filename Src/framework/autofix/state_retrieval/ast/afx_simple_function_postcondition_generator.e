@@ -32,7 +32,7 @@ feature -- Generation
 			-- Generate postcondition for `a_feature'.
 			-- Store result in `last_postcondition'.
 		local
-			l_contract_extractor: AUT_CONTRACT_EXTRACTOR
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
 			l_done: BOOLEAN
 			l_text: STRING
 		do

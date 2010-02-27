@@ -89,7 +89,7 @@ feature -- Basic operation
 			-- Store result in `last_predicates' and
 			-- `last_predicate_access_patterns'.
 		local
-			l_precondition_extractor: AUT_CONTRACT_EXTRACTOR
+			l_precondition_extractor: EPA_CONTRACT_EXTRACTOR
 			l_asserts: LINKED_LIST [EPA_EXPRESSION]
 			l_assertion: EPA_EXPRESSION
 			l_solvables: DS_LINKED_LIST [AUT_PREDICATE]

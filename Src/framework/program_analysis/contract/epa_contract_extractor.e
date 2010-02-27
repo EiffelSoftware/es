@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AUT_CONTRACT_EXTRACTOR
+	EPA_CONTRACT_EXTRACTOR
 
 inherit
 	REFACTORING_HELPER

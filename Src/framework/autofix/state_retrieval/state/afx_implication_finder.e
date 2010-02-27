@@ -50,7 +50,7 @@ feature -- Basic operations
 			-- Generate implications that are mentioned in the code of `a_class' and
 			-- store result in `last_implications'.
 		local
-			l_contract_extractor: AUT_CONTRACT_EXTRACTOR
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
 			l_inv: LIST [EPA_EXPRESSION]
 			l_features: like features
 			l_feat: FEATURE_I

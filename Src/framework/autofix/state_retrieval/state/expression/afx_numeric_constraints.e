@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AFXP_CONSTRAINTS}."
+	description: "Objects describing numeric constraints over an expression"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

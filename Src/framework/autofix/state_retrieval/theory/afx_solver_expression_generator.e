@@ -101,7 +101,7 @@ feature -- Basic operations
 	generate_invariant_axioms (a_class: CLASS_C)
 			-- Generate SMTLIB axioms for invariants in `a_class' and store results in `last_statements'.
 		local
-			l_contract_extractor: AUT_CONTRACT_EXTRACTOR
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
 			l_inv: LIST [EPA_EXPRESSION]
 			l_axiom: STRING
 			l_stmt: STRING

@@ -13,7 +13,7 @@ inherit
 			structure_analyzer
 		end
 
-	AUT_CONTRACT_EXTRACTOR
+	EPA_CONTRACT_EXTRACTOR
 
 	REFACTORING_HELPER
 

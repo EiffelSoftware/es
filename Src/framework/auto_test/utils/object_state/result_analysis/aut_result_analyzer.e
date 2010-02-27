@@ -20,7 +20,7 @@ inherit
 			system
 		end
 
-	AUT_CONTRACT_EXTRACTOR
+	EPA_CONTRACT_EXTRACTOR
 
 create
 	make
