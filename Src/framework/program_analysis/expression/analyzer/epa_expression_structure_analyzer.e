@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXPRESSION_STRUCTURE_ANALYZER
+	EPA_EXPRESSION_STRUCTURE_ANALYZER
 
 inherit
 	EPA_UTILITY
@@ -29,7 +29,7 @@ feature -- Basic operations
 
 feature -- Visitor
 
-	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
 			-- Process Current with `a_visitor'.
 		deferred
 		end

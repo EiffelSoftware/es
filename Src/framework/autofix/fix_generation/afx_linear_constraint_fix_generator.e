@@ -24,7 +24,7 @@ create
 
 feature -- Access
 
-	structure_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
+	structure_analyzer: EPA_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			-- Failing assertion structure analyzer
 
 feature -- Basic operations
@@ -121,7 +121,7 @@ feature{NONE} -- Implementation
 			-- store result in `constraints'.
 		local
 			l_asserts: DS_HASH_SET [EPA_EXPRESSION]
-			l_constraint_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
+			l_constraint_analyzer: EPA_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			l_feat: FEATURE_I
 			l_class: CLASS_C
 			l_constraints, l_temp: like constraint_table

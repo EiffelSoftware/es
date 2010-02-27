@@ -19,7 +19,7 @@ feature -- Access
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_state: EPA_STATE
-			l_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+			l_analyzer: EPA_ABQ_STRUCTURE_ANALYZER
 			l_prefix: STRING
 			l_expression: EPA_EXPRESSION
 			l_equation: EPA_EQUATION
@@ -60,7 +60,7 @@ feature -- Access
 			-- A table of subsets from `a_state', partitioned by premises in `a_state'.
 			-- Predicates without premises are treated with premise "True".
 		local
-			l_imp_analyzer: AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER
+			l_imp_analyzer: EPA_ABQ_IMPLICATION_STRUCTURE_ANALYZER
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_true_expr: EPA_AST_EXPRESSION
 			l_consequent: EPA_EXPRESSION

@@ -35,7 +35,7 @@ feature -- Equation transformation
 			-- Transformation only happens if `a_equation'.`expression' is in form of "prefix.ABQ",
 			-- otherwise, return `a_equation' itself.
 		local
-			l_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+			l_analyzer: EPA_ABQ_STRUCTURE_ANALYZER
 			l_expr: EPA_AST_EXPRESSION
 			l_text: STRING
 			l_ori_expr: EPA_EXPRESSION

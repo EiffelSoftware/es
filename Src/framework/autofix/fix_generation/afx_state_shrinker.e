@@ -28,7 +28,7 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	abq_expression_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+	abq_expression_analyzer: EPA_ABQ_STRUCTURE_ANALYZER
 			-- ABQ expression analyzer
 		once
 			create Result

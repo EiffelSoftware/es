@@ -213,7 +213,7 @@ feature{NONE} -- Implementation
 			l_failing_state: detachable EPA_STATE
 			l_necessary_conditions: AFX_STATE_SKELETON
 			l_culprit_predicate: detachable EPA_EXPRESSION
-			l_abq_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+			l_abq_analyzer: EPA_ABQ_STRUCTURE_ANALYZER
 			l_value: BOOLEAN
 			l_pre_equation: EPA_EQUATION
 			l_post_equation: EPA_EQUATION

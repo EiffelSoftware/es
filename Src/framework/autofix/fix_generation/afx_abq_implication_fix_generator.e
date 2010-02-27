@@ -18,7 +18,7 @@ create
 
 feature -- Access
 
-	structure_analyzer: AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER
+	structure_analyzer: EPA_ABQ_IMPLICATION_STRUCTURE_ANALYZER
 			-- Failing assertion structure analyzer
 
 feature -- Basic operations

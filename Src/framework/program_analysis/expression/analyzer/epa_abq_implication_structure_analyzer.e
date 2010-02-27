@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER
+	EPA_ABQ_IMPLICATION_STRUCTURE_ANALYZER
 
 inherit
-	AFX_EXPRESSION_STRUCTURE_ANALYZER
+	EPA_EXPRESSION_STRUCTURE_ANALYZER
 
 feature -- Basic operations
 
@@ -18,7 +18,7 @@ feature -- Basic operations
 			-- Here is a list of possible structure of `a_expression':
 			-- ABQ -> ABQ (ABQ is the set of argumentless boolean queries, possibly with negations)
 		local
-			l_abq_analyzer: AFX_ABQ_STRUCTURE_ANALYZER
+			l_abq_analyzer: EPA_ABQ_STRUCTURE_ANALYZER
 			l_left: EPA_AST_EXPRESSION
 			l_right: EPA_AST_EXPRESSION
 			l_class: CLASS_C
@@ -100,7 +100,7 @@ feature -- Access
 
 feature -- Visitor
 
-	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
 			-- Process Current with `a_visitor'.
 		do
 			a_visitor.process_abq_implication_structure_analyzer (Current)

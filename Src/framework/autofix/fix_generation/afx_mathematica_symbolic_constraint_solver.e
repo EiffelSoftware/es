@@ -249,7 +249,7 @@ feature{NONE} -- Implementation
 			-- Ananlyze `a_constraints' and `a_arguments', and populate `expression_name_table', `name_expression_table' and
 			-- `expressions'.
 		local
-			l_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
+			l_analyzer: EPA_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			l_cursor: CURSOR
 			l_merged_constraints: EPA_NUMERIC_CONSTRAINTS
 			l_names: DS_HASH_SET [EPA_EXPRESSION]

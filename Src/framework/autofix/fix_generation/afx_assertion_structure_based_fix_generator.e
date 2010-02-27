@@ -32,7 +32,7 @@ feature -- Access
 	fixes: LINKED_LIST [AFX_FIX_SKELETON]
 			-- Fixes generated
 
-	structure_analyzer: AFX_EXPRESSION_STRUCTURE_ANALYZER
+	structure_analyzer: EPA_EXPRESSION_STRUCTURE_ANALYZER
 			-- Failing assertion structure analyzer
 
 	exception_spot: AFX_EXCEPTION_SPOT

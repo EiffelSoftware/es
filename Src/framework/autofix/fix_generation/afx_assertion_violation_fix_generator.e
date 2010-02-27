@@ -10,7 +10,7 @@ class
 inherit
 	AFX_FIX_GENERATOR
 
-	AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR
+	EPA_EXPRESSION_STRUCTURE_ANALYZER_VISITOR
 
 create
 	make
@@ -41,7 +41,7 @@ feature -- Basic operations
 			generate_relevant_asts
 
 				-- Analyze structure type of the failing assertion.			
-			assertion_structure_analyzers.do_all (agent {AFX_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_spot.failing_assertion))
+			assertion_structure_analyzers.do_all (agent {EPA_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_spot.failing_assertion))
 
 				-- Generate fixes according to structure type of the failing assertion.
 			from
@@ -79,7 +79,7 @@ feature{NONE} -- Implementation
 			-- `instructions' goes away for the failing point. `scope_leve' is used for fix ranking.
 			-- The outer list is needed because there may be more than one fixing locations.
 
-	assertion_structure_analyzers: LINKED_LIST [AFX_EXPRESSION_STRUCTURE_ANALYZER]
+	assertion_structure_analyzers: LINKED_LIST [EPA_EXPRESSION_STRUCTURE_ANALYZER]
 			-- List of assertion structure analyzers
 			-- The fix syntax for assertions with different structures are different.
 
@@ -87,10 +87,10 @@ feature{NONE} -- Implementation
 			-- Analyze `assertion_structure_analyzers'.
 		do
 			create assertion_structure_analyzers.make
-			assertion_structure_analyzers.extend (create {AFX_ABQ_STRUCTURE_ANALYZER})
-			assertion_structure_analyzers.extend (create {AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER})
-			assertion_structure_analyzers.extend (create {AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER})
-			assertion_structure_analyzers.extend (create {AFX_ANY_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {EPA_ABQ_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {EPA_ABQ_IMPLICATION_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {EPA_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER})
+			assertion_structure_analyzers.extend (create {EPA_ANY_STRUCTURE_ANALYZER})
 		end
 
 	config: AFX_CONFIG
@@ -146,7 +146,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	process_abq_structure_analyzer (a_analyzer: AFX_ABQ_STRUCTURE_ANALYZER)
+	process_abq_structure_analyzer (a_analyzer: EPA_ABQ_STRUCTURE_ANALYZER)
 			-- Process `a_analyzer'.
 		local
 			l_generator: AFX_ABQ_FIX_GENERATOR
@@ -156,7 +156,7 @@ feature{NONE} -- Implementation
 			fix_skeletons.append (l_generator.fixes)
 		end
 
-	process_abq_implication_structure_analyzer (a_analyzer: AFX_ABQ_IMPLICATION_STRUCTURE_ANALYZER)
+	process_abq_implication_structure_analyzer (a_analyzer: EPA_ABQ_IMPLICATION_STRUCTURE_ANALYZER)
 			-- Process `a_analyzer'.
 		local
 			l_generator: AFX_ABQ_IMPLICATION_FIX_GENERATOR
@@ -166,7 +166,7 @@ feature{NONE} -- Implementation
 			fix_skeletons.append (l_generator.fixes)
 		end
 
-	process_linear_constrained_structure_analyzer (a_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER)
+	process_linear_constrained_structure_analyzer (a_analyzer: EPA_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER)
 			-- Process `a_analyzer'.
 		local
 			l_generator: AFX_LINEAR_CONSTRAINT_FIX_GENERATOR
@@ -176,7 +176,7 @@ feature{NONE} -- Implementation
 			fix_skeletons.append (l_generator.fixes)
 		end
 
-	process_any_structure_analyzer (a_analyzer: AFX_ANY_STRUCTURE_ANALYZER)
+	process_any_structure_analyzer (a_analyzer: EPA_ANY_STRUCTURE_ANALYZER)
 			-- Process `a_analyzer'.
 		local
 			l_generator: AFX_ANY_STRUCTURE_FIX_GENERATOR

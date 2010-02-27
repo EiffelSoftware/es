@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ANY_STRUCTURE_ANALYZER
+	EPA_ANY_STRUCTURE_ANALYZER
 
 inherit
-	AFX_EXPRESSION_STRUCTURE_ANALYZER
+	EPA_EXPRESSION_STRUCTURE_ANALYZER
 
 feature -- Basic operations
 
@@ -22,7 +22,7 @@ feature -- Basic operations
 
 feature -- Visitor
 
-	process (a_visitor: AFX_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
+	process (a_visitor: EPA_EXPRESSION_STRUCTURE_ANALYZER_VISITOR)
 			-- Process Current with `a_visitor'.
 		do
 			a_visitor.process_any_structure_analyzer (Current)
