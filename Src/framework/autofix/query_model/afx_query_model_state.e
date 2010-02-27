@@ -44,7 +44,7 @@ feature -- Initialization
 			-- <Precursor>
 		do
 		    Precursor (a_size)
-		    set_equality_tester (create {AFX_STATE_EQUALITY_TESTER})
+		    set_equality_tester (create {EPA_STATE_EQUALITY_TESTER})
 		    is_good := True
 		end
 

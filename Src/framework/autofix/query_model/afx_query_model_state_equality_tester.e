@@ -42,7 +42,7 @@ feature -- Equality
 
 feature{NONE} --Implementation
 
-	state_equality_tester: AFX_STATE_EQUALITY_TESTER
+	state_equality_tester: EPA_STATE_EQUALITY_TESTER
 			-- State equality tester.
 		once
 		    create Result

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_STATE_EQUALITY_TESTER
+	EPA_STATE_EQUALITY_TESTER
 
 inherit
 	KL_EQUALITY_TESTER [EPA_STATE]
