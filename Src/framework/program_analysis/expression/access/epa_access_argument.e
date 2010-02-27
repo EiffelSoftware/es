@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ACCESS_ARGUMENT
+	EPA_ACCESS_ARGUMENT
 
 inherit
-	AFX_ACCESS
+	EPA_ACCESS
 		redefine
 			is_argument,
 			length,

@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ACCESS_NESTED
+	EPA_ACCESS_NESTED
 
 inherit
-	AFX_ACCESS_FEATURE
+	EPA_ACCESS_FEATURE
 		rename
 			make as make_feature
 		undefine
@@ -46,10 +46,10 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	left: AFX_ACCESS
+	left: EPA_ACCESS
 			-- Left part of the access
 
-	right: AFX_ACCESS_FEATURE
+	right: EPA_ACCESS_FEATURE
 			-- Right part of the access
 
 	type: TYPE_A

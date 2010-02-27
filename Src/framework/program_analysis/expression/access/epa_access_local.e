@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ACCESS_LOCAL
+	EPA_ACCESS_LOCAL
 
 inherit
-	AFX_ACCESS
+	EPA_ACCESS
 		redefine
 			is_local,
 			length,

@@ -82,7 +82,7 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	make_with_accesses (a_class: like class_; a_feature: like feature_; a_accesses: LIST [AFX_ACCESS])
+	make_with_accesses (a_class: like class_; a_feature: like feature_; a_accesses: LIST [EPA_ACCESS])
 			-- Initialize Current with `a_accesses'.
 		local
 			l_cursor: CURSOR

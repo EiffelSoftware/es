@@ -47,7 +47,7 @@ feature -- Basic operations
 
 feature -- Access
 
-	constraints: AFX_NUMERIC_CONSTRAINTS
+	constraints: EPA_NUMERIC_CONSTRAINTS
 			-- Numeric constraints found in the last `analyze'
 
 feature{NONE} -- Implementation

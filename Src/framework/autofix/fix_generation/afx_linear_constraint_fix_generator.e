@@ -53,14 +53,14 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	constraints: AFX_NUMERIC_CONSTRAINTS
+	constraints: EPA_NUMERIC_CONSTRAINTS
 			-- Constraints relevant to the assertion failure
 
-	relevant_constraints: AFX_NUMERIC_CONSTRAINTS
+	relevant_constraints: EPA_NUMERIC_CONSTRAINTS
 			-- Contraints relevant to `constraints'
 			-- `relevant_constriants' is a super set of `constraints'.
 
-	constraint_table: HASH_TABLE [AFX_NUMERIC_CONSTRAINTS, EPA_EXPRESSION]
+	constraint_table: HASH_TABLE [EPA_NUMERIC_CONSTRAINTS, EPA_EXPRESSION]
 			-- Table of contraints.
 			-- Key is the assertion from which the contraint comes,
 			-- value is that constraint.

@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ACCESS_CURRENT
+	EPA_ACCESS_CURRENT
 
 inherit
-	AFX_ACCESS
+	EPA_ACCESS
 		rename
 			make_with_class_feature as make
 		redefine

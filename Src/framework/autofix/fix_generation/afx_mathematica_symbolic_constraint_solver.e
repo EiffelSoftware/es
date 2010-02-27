@@ -251,7 +251,7 @@ feature{NONE} -- Implementation
 		local
 			l_analyzer: AFX_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			l_cursor: CURSOR
-			l_merged_constraints: AFX_NUMERIC_CONSTRAINTS
+			l_merged_constraints: EPA_NUMERIC_CONSTRAINTS
 			l_names: DS_HASH_SET [EPA_EXPRESSION]
 			i: INTEGER
 			l_expr_name: STRING

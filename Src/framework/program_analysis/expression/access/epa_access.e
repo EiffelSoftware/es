@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_ACCESS_ID}."
+	description: "Objects that representing path expressions"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AFX_ACCESS
+	EPA_ACCESS
 
 inherit
 	DEBUG_OUTPUT

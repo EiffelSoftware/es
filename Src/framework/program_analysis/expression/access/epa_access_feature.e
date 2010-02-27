@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ACCESS_FEATURE
+	EPA_ACCESS_FEATURE
 
 inherit
-	AFX_ACCESS
+	EPA_ACCESS
 		redefine
 			length,
 			is_feature
@@ -37,7 +37,7 @@ feature -- Access
 	feature_: FEATURE_I
 			-- Feature of current access
 
-	arguments: LIST [AFX_ACCESS]
+	arguments: LIST [EPA_ACCESS]
 			-- List of arguments
 
 	type: TYPE_A
