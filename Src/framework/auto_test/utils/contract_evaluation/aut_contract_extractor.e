@@ -14,7 +14,7 @@ inherit
 
 feature -- Access
 
-	invariant_of_class (a_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
+	invariant_of_class (a_class: CLASS_C): LINKED_LIST [EPA_EXPRESSION] is
 			-- List of invariant clauses of `a_class'.
 			-- `ast' is the TAGGED_AS for an invariant clause, and `written_class' is the class
 			-- where that invariant clause is written.
@@ -25,7 +25,7 @@ feature -- Access
 			l_ancestors: LINKED_LIST [CLASS_C]
 			l_current_class: CLASS_C
 			l_index: INTEGER
-			l_list: LINKED_LIST [AUT_EXPRESSION]
+			l_list: LINKED_LIST [EPA_EXPRESSION]
 		do
 			create Result.make
 
@@ -49,7 +49,6 @@ feature -- Access
 					until
 						l_list.after
 					loop
-						l_list.item.set_index (l_index)
 						l_list.forth
 						l_index := l_index + 1
 					end
@@ -61,12 +60,12 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable AUT_EXPRESSION] is
+	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable EPA_EXPRESSION] is
 			-- List of preconditions of `a_feature' in `a_context_class'
 		local
 			l_asserts: LINKED_LIST [TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]]
 			l_data: TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]
-			l_assert: AUT_EXPRESSION
+--			l_assert: EPA_AST_EXPRESSION
 			l_expressions: like predicate_assertions
 		do
 			create Result.make
@@ -80,7 +79,7 @@ feature -- Access
 				if l_data.precondition /= Void and then l_data.precondition.assertions /= Void then
 					l_expressions := predicate_assertions (l_data.precondition, l_data.written_in_feature.written_class, a_context_class)
 					if l_data.precondition.is_else then
-						l_expressions.do_all (agent (a_expr: AUT_EXPRESSION) do a_expr.set_is_require_else (True) end)
+						l_expressions.do_all (agent (a_expr: EPA_EXPRESSION) do a_expr.set_is_require_else (True) end)
 					end
 					Result.append (l_expressions)
 				end
@@ -88,12 +87,12 @@ feature -- Access
 			end
 		end
 
-	postcondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable AUT_EXPRESSION] is
+	postcondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable EPA_EXPRESSION] is
 			-- List of postcondition of `a_feature' in `a_context_class'
 		local
 			l_asserts: LINKED_LIST [TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]]
 			l_data: TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]
-			l_assert: AUT_EXPRESSION
+			l_assert: EPA_EXPRESSION
 			l_expressions: like predicate_assertions
 		do
 			create Result.make
@@ -149,14 +148,14 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	tags (a_written_class: CLASS_C; a_context_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [AUT_EXPRESSION] is
+	tags (a_written_class: CLASS_C; a_context_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [EPA_EXPRESSION] is
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void
 			a_asserts_attached: a_asserts /= Void
 		local
 			l_cursor: CURSOR
-			l_expr: AUT_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 			create Result.make
 			l_cursor := a_asserts.cursor
@@ -181,14 +180,14 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	predicate_assertions (a_assert_list: ASSERT_LIST_AS; a_written_class: CLASS_C; a_context_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
+	predicate_assertions (a_assert_list: ASSERT_LIST_AS; a_written_class: CLASS_C; a_context_class: CLASS_C): LINKED_LIST [EPA_EXPRESSION] is
 			-- List of predicate assertions from `a_assert_list'.
 			-- `a_written_class' is where `a_assert_list' is written.
 			-- `a_context_class' is where `a_assert_list' is viewed.
 		local
 			l_tags: EIFFEL_LIST [TAGGED_AS]
 			l_tag: TAGGED_AS
-			l_expr: AUT_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
 		do
 			create Result.make
 			l_tags := a_assert_list.assertions
@@ -213,7 +212,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

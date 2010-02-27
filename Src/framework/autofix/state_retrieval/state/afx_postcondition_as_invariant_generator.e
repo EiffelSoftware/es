@@ -119,10 +119,10 @@ feature{NONE} -- Implementation
 			-- Generate invariant clauses from postconditions
 			-- of `a_feature', store result in `last_invariants'.
 		local
-			l_posts: LINKED_LIST [detachable AUT_EXPRESSION]
+			l_posts: LINKED_LIST [detachable EPA_EXPRESSION]
 			l_post_gen: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_post_str: detachable STRING
-			l_post_expr: AUT_EXPRESSION
+			l_post_expr: EPA_EXPRESSION
 		do
 			l_posts := postcondition_of_feature (a_feature, context_class)
 

@@ -31,15 +31,11 @@ inherit
 			is_equal
 		end
 
---	AFX_UTILITY
---		undefine
---			is_equal
---		end
-
 create
 	make,
 	make_with_text,
-	make_with_type
+	make_with_type,
+	make_with_feature
 
 feature{NONE} -- Initialization
 
@@ -58,7 +54,7 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	make (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
+	make_with_feature (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
 			-- Initialize Current.
 		do
 			set_class (a_class)
@@ -72,6 +68,12 @@ feature{NONE} -- Initialization
 			else
 				check should_not_happen: False end
 			end
+		end
+
+	make (a_expr: like ast; a_written_class: like written_class; a_context_class: like class_)
+			-- Initialize Current.
+		do
+			make_with_feature (a_context_class, Void, a_expr, a_written_class)
 		end
 
 	make_with_type (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class; a_type: like type)

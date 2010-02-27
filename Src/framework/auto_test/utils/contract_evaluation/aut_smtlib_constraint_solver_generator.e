@@ -35,7 +35,7 @@ feature -- Access
 			-- Set of name of constrained operands
 			-- The names are arguments of the feature (not predicate argument names).
 
-	assertions: DS_LINKED_LIST [TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]]
+	assertions: DS_LINKED_LIST [TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]]
 			-- Assertions of all the linearly solvable preconditions
 
 	last_smtlib: STRING
@@ -204,7 +204,7 @@ feature{NONE} -- Generation
 	generate_formula is
 			-- Generate the formula part of the SMT-LIB.
 		local
-			l_data: TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
+			l_data: TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
 		do
 			last_smtlib.append (":formula (%N")
 			last_smtlib.append ("and%N")
@@ -456,7 +456,7 @@ feature{NONE} -- Generation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -90,8 +90,8 @@ feature -- Basic operation
 			-- `last_predicate_access_patterns'.
 		local
 			l_precondition_extractor: AUT_CONTRACT_EXTRACTOR
-			l_asserts: LINKED_LIST [AUT_EXPRESSION]
-			l_assertion: AUT_EXPRESSION
+			l_asserts: LINKED_LIST [EPA_EXPRESSION]
+			l_assertion: EPA_EXPRESSION
 			l_solvables: DS_LINKED_LIST [AUT_PREDICATE]
 			l_unsolvables: DS_LINKED_LIST [AUT_PREDICATE]
 			l_not_void_pred: like target_not_void_predicate_and_access_pattern
@@ -430,7 +430,7 @@ feature{NONE} -- Process
 			end
 		end
 
-	operand_index (a_name: STRING; a_assertion: AUT_EXPRESSION; a_feature: FEATURE_I): INTEGER is
+	operand_index (a_name: STRING; a_assertion: EPA_EXPRESSION; a_feature: FEATURE_I): INTEGER is
 			-- 0-based operand index of an operand with `a_name' in `a_assertion' of `a_feature'.
 			-- Operand index here can only be larger than 0 because target is not included, so
 			-- if current feature returns 0, it means that `a_name' is not an argument name.
@@ -462,7 +462,7 @@ feature{NONE} -- Process
 
 feature{NONE} -- Implementation
 
-	current_assertion: detachable AUT_EXPRESSION
+	current_assertion: detachable EPA_EXPRESSION
 			-- Assertion that is currently processed
 
 	current_feature: detachable AUT_FEATURE_OF_TYPE
@@ -695,7 +695,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	check_assertion (a_assertion: AUT_EXPRESSION; a_context_feature: AUT_FEATURE_OF_TYPE) is
+	check_assertion (a_assertion: EPA_EXPRESSION; a_context_feature: AUT_FEATURE_OF_TYPE) is
 			-- Analyze `a_assertion' from `a_context_feature'.
 			-- If the constaints in `a_assertion' which is written in `a_context_feature'
 			-- is linear solvable, set `is_linear_solvable' to True and put integer arguments
@@ -796,7 +796,7 @@ feature{NONE} -- Implmentation
 			l_predicate: AUT_PREDICATE
 			l_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
 			l_pattern_table: DS_HASH_TABLE [INTEGER, INTEGER]
-			l_assertion: AUT_EXPRESSION
+			l_assertion: EPA_AST_EXPRESSION
 			l_target: ID_AS
 			l_void: VOID_AS
 			l_ne_binary: BIN_NE_AS
@@ -855,7 +855,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

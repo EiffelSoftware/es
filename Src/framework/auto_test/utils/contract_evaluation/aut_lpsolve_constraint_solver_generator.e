@@ -35,7 +35,7 @@ feature -- Access
 			-- Set of name of constrained operands
 			-- The names are arguments of the feature (not predicate argument names).
 
-	assertions: DS_LINKED_LIST [TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]]
+	assertions: DS_LINKED_LIST [TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]]
 			-- Assertions of all the linearly solvable preconditions
 
 	last_lpsolve: STRING
@@ -188,7 +188,7 @@ feature{NONE} -- Generation
 	generate_constraints is
 			-- Generate the constraints part of the lpsolve format.
 		local
-			l_data: TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
+			l_data: TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
 			l_integer_lower_bound: INTEGER_32
 			l_integer_upper_bound: INTEGER_32
 		do
@@ -275,7 +275,7 @@ feature{NONE} -- Generation
 				Result := a_feature.arguments.item_name (i)
 			end
 		end
-		
+
 	normalized_string (a_string: STRING): STRING is
 			-- Normalized version of `a_string'.
 			-- Normalization means remoing all leading and trailing
@@ -291,7 +291,7 @@ feature{NONE} -- Generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

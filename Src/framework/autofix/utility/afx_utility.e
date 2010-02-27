@@ -256,7 +256,7 @@ feature -- Contract extraction
 	precondition_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of precondition assertions of `a_feature' in `a_context_class'
 		local
-			l_exprs: LINKED_LIST [AUT_EXPRESSION]
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
 			l_expr: EPA_AST_EXPRESSION
 		do
 			l_exprs := precondition_of_feature (a_feature, a_context_class)
@@ -267,7 +267,7 @@ feature -- Contract extraction
 			fixme ("Require else assertions are ignored. 30.12.2009 Jasonw")
 			extend_expression_in_set (
 				l_exprs,
-				agent (a_expr: AUT_EXPRESSION): BOOLEAN do Result := not a_expr.is_require_else end,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_require_else end,
 				Result,
 				a_context_class,
 				a_feature)
@@ -276,7 +276,7 @@ feature -- Contract extraction
 	postconditions_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of postcondition assertions of `a_feature' in `a_context_class'
 		local
-			l_exprs: LINKED_LIST [AUT_EXPRESSION]
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
 		do
 			l_exprs := postcondition_of_feature (a_feature, a_context_class)
 
@@ -285,7 +285,7 @@ feature -- Contract extraction
 
 			extend_expression_in_set (
 				l_exprs,
-				agent (a_expr: AUT_EXPRESSION): BOOLEAN do Result := True end,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := True end,
 				Result,
 				a_context_class,
 				a_feature)
@@ -294,7 +294,7 @@ feature -- Contract extraction
 	invariant_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of class invariant assertions in `a_context_class'
 		local
-			l_exprs: LINKED_LIST [AUT_EXPRESSION]
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
 			l_gen: AFX_POSTCONDITION_AS_INVARIANT_GENERATOR
 		do
 			l_exprs := invariant_of_class (a_context_class)
@@ -307,7 +307,7 @@ feature -- Contract extraction
 				-- Include normal class invariants.
 			extend_expression_in_set (
 				l_exprs,
-				agent (a_expr: AUT_EXPRESSION): BOOLEAN do Result := True end,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := True end,
 				Result,
 				a_context_class,
 				a_feature)
@@ -321,7 +321,7 @@ feature -- Contract extraction
 					end (?, Result))
 		end
 
-	extend_expression_in_set (a_exprs: LINKED_LIST [AUT_EXPRESSION]; a_test: PREDICATE [ANY, TUPLE [AUT_EXPRESSION]]; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
+	extend_expression_in_set (a_exprs: LINKED_LIST [EPA_EXPRESSION]; a_test: PREDICATE [ANY, TUPLE [EPA_EXPRESSION]]; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
 			-- Append items from `a_exprs' into `a_set' if those items satisfy `a_test'.
 			-- `a_context_class' and `a_feature' are used to construct AFX_EXPRESSION.
 		local

@@ -56,7 +56,7 @@ feature -- Execute
 			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
 
 			l_smt_generator:AFX_SMTLIB_GENERATOR
-			l_inv: LINKED_LIST [AUT_EXPRESSION]
+			l_inv: LINKED_LIST [EPA_EXPRESSION]
 			l_theory: AFX_THEORY
 			l_smt_expr: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
 

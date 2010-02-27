@@ -56,7 +56,7 @@ feature -- Basic operations
 			-- The generated assertion should appear in the context of `a_tc'.recipient_'.
 			-- `a_structure' stores the AST sturcture of `a_tc'.recipient_'.
 		local
-			l_failing_expr: detachable AUT_EXPRESSION
+			l_failing_expr: detachable EPA_EXPRESSION
 		do
 			create actual_argument_expressions.make (2)
 			if a_tc.exception_code = {EXCEP_CONST}.precondition then
@@ -67,7 +67,7 @@ feature -- Basic operations
 				assertion_break_point_slot := a_tc.breakpoint_slot
 				if a_tc.exception_code = {EXCEP_CONST}.check_instruction then
 					if attached {TAGGED_AS} a_structure.relevant_ast (a_tc.breakpoint_slot) as l_check_ast then
-						create l_failing_expr.make (l_check_ast.expr, a_tc.recipient_class_, a_tc.recipient_class_)
+						create {EPA_AST_EXPRESSION}l_failing_expr.make (l_check_ast.expr, a_tc.recipient_class_, a_tc.recipient_class_)
 					else
 						check should_not_happen: False end
 					end
@@ -110,7 +110,7 @@ feature{NONE} -- Implementation
 			l_paran_level: INTEGER
 			c: CHARACTER
 			l_cur_arg: STRING
-			l_failing_precondition: AUT_EXPRESSION
+			l_failing_precondition: EPA_EXPRESSION
 			l_rewriter: AFX_PRECONDITION_REWRITE_VISITOR
 			l_arg_expr: EPA_AST_EXPRESSION
 			l_square_level: INTEGER
@@ -299,11 +299,11 @@ feature{NONE} -- Implementation
 			Result := [l_class_name, l_feature_name]
 		end
 
-	assertion_with_tag (a_assertions: LIST [AUT_EXPRESSION]; a_tag: STRING): AUT_EXPRESSION
+	assertion_with_tag (a_assertions: LIST [EPA_EXPRESSION]; a_tag: STRING): EPA_EXPRESSION
 			-- Assertion from `a_assertions' with tag `a_tag'
 		local
 			l_cursor: CURSOR
-			l_expression: AUT_EXPRESSION
+			l_expression: EPA_EXPRESSION
 			l_done: BOOLEAN
 		do
 			l_cursor := a_assertions.cursor

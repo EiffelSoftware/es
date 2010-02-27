@@ -16,8 +16,6 @@ inherit
 
 	REFACTORING_HELPER
 
---	AFX_SOLVER_FACTORY
-
 	EPA_UTILITY
 
 feature -- Access
@@ -26,7 +24,13 @@ feature -- Access
 			-- Feature returning to which current expression belongs
 
 	class_: CLASS_C
-			-- Context lass of `feature_'
+			-- Context class of `feature_'
+
+	context_class: like class_
+			-- Context class
+		do
+			Result := class_
+		end
 
 	text: STRING
 			-- Expression text of current item
@@ -46,6 +50,10 @@ feature -- Access
 
 	written_class: CLASS_C
 			-- Class where `ast' is written
+
+	tag: detachable STRING
+			-- Tag for current expression
+			-- For example, an assertion can be associated with a tag
 
 feature --Logic operations
 
@@ -174,6 +182,16 @@ feature -- Status report
 			end
 		end
 
+	is_require_else: BOOLEAN
+			-- Is current expression from a require else clause?
+			-- Default: False
+
+	is_feature_set: BOOLEAN
+			-- Is `feature_' set?
+		do
+			Result := attached {FEATURE_I} feature_
+		end
+
 feature -- Setting
 
 	set_feature (a_feature: like feature_)
@@ -198,6 +216,25 @@ feature -- Setting
 			written_class := a_written_class
 		ensure
 			written_class_set: written_class = a_written_class
+		end
+
+	set_is_require_else (b: BOOLEAN) is
+			-- Set `is_require_else' with `b'.
+		do
+			is_require_else := b
+		ensure
+			is_require_else_set: is_require_else = b
+		end
+
+	set_tag (a_tag: like tag)
+			-- Set `tag' with `a_tag'.
+			-- Make a new copy from `a_tag'.
+		do
+			if a_tag = Void then
+				tag := "noname"
+			else
+				tag := a_tag.twin
+			end
 		end
 
 end

@@ -51,10 +51,10 @@ feature -- Basic operations
 			-- store result in `last_implications'.
 		local
 			l_contract_extractor: AUT_CONTRACT_EXTRACTOR
-			l_inv: LIST [AUT_EXPRESSION]
+			l_inv: LIST [EPA_EXPRESSION]
 			l_features: like features
 			l_feat: FEATURE_I
-			l_exprs: LINKED_LIST [TUPLE [expr: AUT_EXPRESSION; feat: detachable FEATURE_I]]
+			l_exprs: LINKED_LIST [TUPLE [expr: EPA_EXPRESSION; feat: detachable FEATURE_I]]
 		do
 			create l_exprs.make
 
@@ -129,7 +129,7 @@ feature{NONE} -- Implementation
 			create consequent_stack.make (3)
 		end
 
-	generate_implications (a_expr: AUT_EXPRESSION; a_feature: detachable FEATURE_I)
+	generate_implications (a_expr: EPA_EXPRESSION; a_feature: detachable FEATURE_I)
 			-- Generate implications from `a_expr'
 		do
 			premise_stack.wipe_out
@@ -165,7 +165,7 @@ feature{NONE} -- Implementation
 			Result := a_feature.written_class.class_id = system.any_class.compiled_representation.class_id
 		end
 
-	append_expressions (a_assertions: LIST [AUT_EXPRESSION]; a_context_feature: detachable FEATURE_I; a_list: LINKED_LIST [TUPLE [expr: AUT_EXPRESSION; feat: detachable FEATURE_I]])
+	append_expressions (a_assertions: LIST [EPA_EXPRESSION]; a_context_feature: detachable FEATURE_I; a_list: LINKED_LIST [TUPLE [expr: EPA_EXPRESSION; feat: detachable FEATURE_I]])
 			-- Append `a_assertions' in `a_context_feature' into `a_list'.
 		do
 			from

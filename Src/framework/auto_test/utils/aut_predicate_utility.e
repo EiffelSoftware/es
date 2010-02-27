@@ -205,7 +205,7 @@ feature -- Constraint solving related
 			result_attached: Result /= Void
 		end
 
-	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]] is
+	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]] is
 			-- Predicate assertions in `a_patterns'
 		require
 			a_patterns_attached: a_patterns /= Void
@@ -230,7 +230,7 @@ feature -- Constraint solving related
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

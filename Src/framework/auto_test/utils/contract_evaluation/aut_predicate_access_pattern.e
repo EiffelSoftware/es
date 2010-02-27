@@ -42,7 +42,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern; a_assertion: AUT_EXPRESSION) is
+	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern; a_assertion: EPA_EXPRESSION) is
 			-- Initialize current.
 		require
 			a_feature_attached: a_feature /= Void
@@ -107,7 +107,7 @@ feature -- Access
 			end
 		end
 
-	assertion: AUT_EXPRESSION
+	assertion: EPA_EXPRESSION
 			-- Associated assertion expression
 
 feature -- Status report
@@ -186,7 +186,7 @@ invariant
 	access_pattern_valid: is_argument_operand_mapping_valid (access_pattern, predicate, feature_)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
