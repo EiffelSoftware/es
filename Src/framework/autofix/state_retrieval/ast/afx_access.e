@@ -10,7 +10,7 @@ deferred class
 inherit
 	DEBUG_OUTPUT
 
-	AFX_UTILITY
+	EPA_TYPE_UTILITY
 
 feature{NONE} -- Initialization
 

@@ -64,7 +64,10 @@ inherit
 
 	AUT_SHARED_CONSTANTS
 
-	AUT_OBJECT_STATE_REQUEST_UTILITY
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
+		undefine
+			system
+		end
 
 	AUT_SHARED_PREDICATE_CONTEXT
 		undefine
@@ -771,7 +774,7 @@ feature -- Execution
 			l_type := variable_table.variable_type (a_variable)
 			create l_request.make (system, a_variable, variable_table.variable_type (a_variable))
 			if l_type /= none_type then
-				l_request.set_queries (supported_queries_of_type (l_type))
+				l_request.set_queries (argumentless_primitive_queries (l_type))
 			else
 				l_request.set_queries (create {LINKED_LIST [FEATURE_I]}.make)
 			end
@@ -2310,7 +2313,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

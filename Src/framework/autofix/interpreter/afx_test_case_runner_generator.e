@@ -13,7 +13,10 @@ inherit
 			system
 		end
 
-	AUT_OBJECT_STATE_REQUEST_UTILITY
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
+		undefine
+			system
+		end
 
 create
 	make
@@ -330,7 +333,7 @@ feature{NONE} -- Stats retrieval
 		require
 			a_type_has_class: a_type.has_associated_class
 		do
-			Result := supported_queries_of_type (a_type)
+			Result := argumentless_primitive_queries (a_type)
 		end
 
 feature{NONE} -- Implementation

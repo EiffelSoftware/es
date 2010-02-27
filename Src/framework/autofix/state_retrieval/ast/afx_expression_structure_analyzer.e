@@ -8,7 +8,7 @@ deferred class
 	AFX_EXPRESSION_STRUCTURE_ANALYZER
 
 inherit
-	AFX_UTILITY
+	EPA_UTILITY
 
 feature -- Status report
 

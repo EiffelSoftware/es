@@ -10,8 +10,6 @@ class
 inherit
 	DEBUG_OUTPUT
 
-	AFX_UTILITY
-
 create
 	make
 
@@ -181,6 +179,69 @@ feature -- Setting
 			sibling := a_sibling
 		ensure
 			sibling_set: sibling = a_sibling
+		end
+
+feature{NONE} -- Implementation
+
+feature -- AST node
+
+	ast_node_string_representation (a_node: AFX_AST_STRUCTURE_NODE; a_level: INTEGER): STRING
+			-- String representation for `a_node' at indentation level `a_level'
+		local
+			l_cursor: CURSOR
+			l_cursor2: CURSOR
+			l_nodes: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+		do
+			create Result.make (1024)
+			Result.append (tab_string (a_level))
+
+				-- Generate break point.
+			if a_node.breakpoint_slot = 0 then
+				Result.append ("  ")
+			else
+				if a_node.breakpoint_slot > 10 then
+					Result.append (a_node.breakpoint_slot.out)
+				else
+					Result.append_character (' ')
+					Result.append (a_node.breakpoint_slot.out)
+				end
+			end
+			Result.append_character (' ')
+
+				-- Generate node type.
+			Result.append (a_node.ast.ast.generating_type)
+			Result.append_character ('%N')
+
+				-- Generate children nodes.
+			l_cursor := a_node.children.cursor
+			from
+				a_node.children.start
+			until
+				a_node.children.after
+			loop
+				l_nodes := a_node.children.item_for_iteration
+				if not l_nodes.is_empty then
+					l_cursor2 := l_nodes.cursor
+					from
+						l_nodes.start
+					until
+						l_nodes.after
+					loop
+						Result.append (ast_node_string_representation (l_nodes.item_for_iteration, a_level + 2))
+						l_nodes.forth
+					end
+					Result.append ("------------------------------%N")
+					l_nodes.go_to (l_cursor2)
+				end
+				a_node.children.forth
+			end
+			a_node.children.go_to (l_cursor)
+		end
+
+	tab_string (a_level: INTEGER): STRING
+			-- String for `a_level' tabs
+		do
+			create Result.make_filled (' ', a_level * 2)
 		end
 
 end

@@ -12,7 +12,7 @@ inherit
 
 	AUT_SHARED_TYPE_FORMATTER
 
-	AUT_OBJECT_STATE_REQUEST_UTILITY
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 
 create
 	make
@@ -93,7 +93,7 @@ feature -- Generation
 					stream.put_string ("%T-- For class ")
 					stream.put_line (class_info.item_for_iteration.class_name)
 					stream.put_line ("create l.make")
-					l_queries := supported_queries_of_type (class_info.item.type)
+					l_queries := argumentless_primitive_queries (class_info.item.type)
 					create l_signature.make (64)
 					from
 						l_queries.start

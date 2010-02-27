@@ -18,6 +18,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	EPA_TYPE_UTILITY
+
 feature -- Access
 
 	first_class_starts_with_name (a_class_name: STRING): detachable CLASS_C
@@ -49,26 +51,6 @@ feature -- Access
 			-- Test case information analyzed from `a_string'
 		do
 			create Result.make_with_string (a_string)
-		end
-
-feature -- Type related
-
-	actual_type_from_formal_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A
-			-- If `a_type' is formal, return its actual type in context of `a_context'
-			-- otherwise return `a_type' itself.
-		do
-			if a_type.is_formal then
-				if attached {FORMAL_A} a_type as l_formal then
-					Result := l_formal.constrained_type (a_context)
-				end
-			else
-				Result := a_type
-			end
-			if Result.has_generics then
-				Result := Result.associated_class.constraint_actual_type
-			end
-		ensure
-			result_attached: Result /= Void
 		end
 
 feature -- Equality tester
@@ -120,67 +102,6 @@ feature -- Equation transformation
 			else
 				Result := a_equation
 			end
-		end
-
-feature -- AST node
-
-	ast_node_string_representation (a_node: AFX_AST_STRUCTURE_NODE; a_level: INTEGER): STRING
-			-- String representation for `a_node' at indentation level `a_level'
-		local
-			l_cursor: CURSOR
-			l_cursor2: CURSOR
-			l_nodes: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
-		do
-			create Result.make (1024)
-			Result.append (tab_string (a_level))
-
-				-- Generate break point.
-			if a_node.breakpoint_slot = 0 then
-				Result.append ("  ")
-			else
-				if a_node.breakpoint_slot > 10 then
-					Result.append (a_node.breakpoint_slot.out)
-				else
-					Result.append_character (' ')
-					Result.append (a_node.breakpoint_slot.out)
-				end
-			end
-			Result.append_character (' ')
-
-				-- Generate node type.
-			Result.append (a_node.ast.ast.generating_type)
-			Result.append_character ('%N')
-
-				-- Generate children nodes.
-			l_cursor := a_node.children.cursor
-			from
-				a_node.children.start
-			until
-				a_node.children.after
-			loop
-				l_nodes := a_node.children.item_for_iteration
-				if not l_nodes.is_empty then
-					l_cursor2 := l_nodes.cursor
-					from
-						l_nodes.start
-					until
-						l_nodes.after
-					loop
-						Result.append (ast_node_string_representation (l_nodes.item_for_iteration, a_level + 2))
-						l_nodes.forth
-					end
-					Result.append ("------------------------------%N")
-					l_nodes.go_to (l_cursor2)
-				end
-				a_node.children.forth
-			end
-			a_node.children.go_to (l_cursor)
-		end
-
-	tab_string (a_level: INTEGER): STRING
-			-- String for `a_level' tabs
-		do
-			create Result.make_filled (' ', a_level * 2)
 		end
 
 feature -- Fix
@@ -558,7 +479,7 @@ feature -- State related
 						a_skeleton.force_last (a_pred.as_predicate)
 					end (?, Result))
 		end
-		
+
 	skeleton_from_state (a_state: EPA_STATE): AFX_STATE_SKELETON
 			-- Expression skeleton from `a_state'
 		do

@@ -26,7 +26,7 @@ inherit
 			symdif
 		end
 
-	AUT_OBJECT_STATE_REQUEST_UTILITY
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 		undefine
 			is_equal,
 			copy
@@ -69,7 +69,7 @@ feature{NONE} -- Initialization
 			l_queries: LIST [FEATURE_I]
 			l_item: EPA_AST_EXPRESSION
 		do
-			l_queries := supported_queries_of_type (a_class.actual_type)
+			l_queries := argumentless_primitive_queries (a_class.actual_type)
 			make_basic (class_, Void, l_queries.count)
 			from
 				l_queries.start

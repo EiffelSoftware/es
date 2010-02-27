@@ -22,7 +22,7 @@ inherit
 
 feature -- Access
 
-	feature_: FEATURE_I
+	feature_: detachable FEATURE_I
 			-- Feature returning to which current expression belongs
 
 	class_: CLASS_C

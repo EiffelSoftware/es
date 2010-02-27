@@ -8,6 +8,8 @@ class
 	EPA_TYPE_A_WITH_CONTEXT
 
 inherit
+	EPA_TYPE_UTILITY
+
 	REFACTORING_HELPER
 
 create
@@ -52,8 +54,8 @@ feature -- Access
 			-- Resolved type of `type' in `context_class' and `context_feature'
 			-- Things that are resolved: anchored, formal generic parameter are replaced with the constrained type.
 		do
-			fixme ("To implement. 23.2.2010 Jasonw")
-			Result := type
+			Result := type.actual_type.instantiation_in (context_class.actual_type, context_class.class_id)
+			Result := actual_type_from_formal_type (Result, context_class)
 		end
 
 	is_instantiated_equivalent (other: like Current): BOOLEAN

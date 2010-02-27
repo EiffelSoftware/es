@@ -32,7 +32,7 @@ inherit
 
 	SHARED_WORKBENCH
 
-	AUT_OBJECT_STATE_REQUEST_UTILITY
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 		export
 			{NONE} all
 		end
@@ -528,7 +528,7 @@ feature -- Object state retrieval
 			then
 				stream.put_line ("record_object_state_basic (o)")
 			else
-				l_features := supported_queries_of_type (a_type)
+				l_features := argumentless_primitive_queries (a_type)
 				from
 					l_features.start
 				until

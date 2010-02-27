@@ -4,24 +4,21 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_OBJECT_STATE_REQUEST_UTILITY
+class
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 
 inherit
 	SHARED_TYPES
 		export {ANY} all end
 
 	SHARED_WORKBENCH
-		undefine
-			system
-		end
 
 	EPA_AGENT_UTILITY [FEATURE_I]
 
 feature -- Access
 
-	supported_queries_of_type (a_type: TYPE_A): LIST [FEATURE_I] is
-			-- Support queries to define an object state from `a_type'
+	argumentless_primitive_queries (a_type: TYPE_A): LIST [FEATURE_I] is
+			-- List of argumentless queries with primitive return types such as INTEGER, BOOLEAN in `a_type'
 		do
 			create {LINKED_LIST [FEATURE_I]} Result.make
 			if
@@ -193,7 +190,7 @@ feature -- Feature criteria
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
