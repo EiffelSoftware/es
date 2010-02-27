@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_ACCESS_AGENT_UTILITY
+	EPA_ACCESS_AGENT_UTILITY
 
 inherit
 	EPA_AGENT_UTILITY [EPA_ACCESS]

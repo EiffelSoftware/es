@@ -5,6 +5,6 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXPRESSION_GENERATOR
+	EPA_EXPRESSION_GENERATOR
 
 end

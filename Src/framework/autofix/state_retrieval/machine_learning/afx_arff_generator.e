@@ -24,8 +24,6 @@ feature -- Access
 	config: AFX_CONFIG
 			-- AutoFix configuration
 
-	k: WEKA_ARFF_RELATION
-
 feature -- Actions
 
 	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)

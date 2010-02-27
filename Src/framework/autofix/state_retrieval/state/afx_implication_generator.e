@@ -10,7 +10,7 @@ class
 inherit
 	AFX_RELEVANT_STATE_EXPRESSION_GENERATOR
 
-	AFX_ACCESS_AGENT_UTILITY
+	EPA_ACCESS_AGENT_UTILITY
 
 	AFX_SOLVER_FACTORY
 
@@ -269,7 +269,7 @@ feature{NONE} -- Implementation
 			-- List of predicates that are used as atomic terms
 			-- in implication generation
 		local
-			l_gen: AFX_NESTED_EXPRESSION_GENERATOR
+			l_gen: EPA_NESTED_EXPRESSION_GENERATOR
 		do
 			create l_gen.make
 			l_gen.set_level (2)

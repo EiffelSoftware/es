@@ -7,7 +7,6 @@
 		</option>
 		<setting name="multithreaded" value="true"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
-		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
@@ -28,22 +27,23 @@
 		<library name="gobo_tools" location="$ISE_LIBRARY\library\gobo\gobo_tools.ecf"/>
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
+		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="parser_extension" location="$EIFFEL_SRC\framework\parser_extension\parser_extension.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
-		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
+		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
 			<condition>
 				<platform value="windows"/>
 			</condition>
 		</library>
-		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
 		<cluster name="autofix" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/.svn$</exclude>
@@ -104,6 +104,9 @@
 			</file_rule>
 			<file_rule>
 				<exclude>^/graph/graph$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/state/expression_value$</exclude>
 			</file_rule>
 			<cluster name="query_model" location="$EIFFEL_SRC\framework\autofix\query_model\"/>
 			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\autofix\boolean_model\"/>
