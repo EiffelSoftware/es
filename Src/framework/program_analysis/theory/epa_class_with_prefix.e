@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_CLASS_WITH_PREFIX
+	EPA_CLASS_WITH_PREFIX
 
 inherit
 	HASHABLE
@@ -14,11 +14,16 @@ inherit
 			hash_code
 		end
 
-	AFX_UTILITY
+	EPA_THEORY_UTILITY
 		undefine
 			is_equal
 		end
 
+	EPA_UTILITY
+		undefine
+			is_equal
+		end
+		
 create
 	make,
 	make_with_class_name

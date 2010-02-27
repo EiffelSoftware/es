@@ -63,7 +63,7 @@ feature -- AST
 			check Result /= Void end
 		end
 
-feature -- Feature related
+feature -- Class/feature related
 
 	arguments_of_feature (a_feature: FEATURE_I): DS_HASH_TABLE [INTEGER, STRING]
 			-- Table of formal argument names in `a_feature'
@@ -115,6 +115,31 @@ feature -- Feature related
 								end
 							end (?, Result))
 				end
+			end
+		end
+
+	first_class_starts_with_name (a_class_name: STRING): detachable CLASS_C
+			-- First class found in current system with name `a_class_name'
+			-- Void if no such class was found.
+		local
+			l_classes: LIST [CLASS_I]
+			l_class_c: CLASS_C
+		do
+			l_classes := universe.classes_with_name (a_class_name)
+			if not l_classes.is_empty then
+				Result := l_classes.first.compiled_representation
+			end
+		end
+
+	feature_from_class (a_class_name: STRING; a_feature_name: STRING): detachable FEATURE_I
+			-- Feature named `a_feature_name' from class named `a_class_name'
+			-- Void if no such feature exists.
+		local
+			l_class: detachable CLASS_C
+		do
+			l_class := first_class_starts_with_name (a_class_name)
+			if l_class /= Void then
+				Result := l_class.feature_named (a_feature_name)
 			end
 		end
 

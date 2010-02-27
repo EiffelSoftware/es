@@ -14,6 +14,8 @@ inherit
 
 	AFX_SOLVER_FACTORY
 
+	EPA_THEORY_UTILITY
+
 feature -- Access
 
 	class_theories: HASH_TABLE [AFX_THEORY, CLASS_C]
@@ -34,7 +36,7 @@ feature -- Basic operations
 			l_processed := class_with_prefix_set
 
 			create Result.make (a_class)
-			resolved_class_theory_internal (create {AFX_CLASS_WITH_PREFIX}.make (a_class, ""), Result, l_processed)
+			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, ""), Result, l_processed)
 
 				-- Generate dummy function for expression "Void"
 			solver_expression_generator.initialize_for_generation
@@ -51,7 +53,7 @@ feature -- Basic operations
 			l_processed: like class_with_prefix_set
 			l_theory: AFX_THEORY
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: like class_with_prefix_set]
-			l_base_prefix: AFX_CLASS_WITH_PREFIX
+			l_base_prefix: EPA_CLASS_WITH_PREFIX
 			l_generated_exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
 			l_raw_text: STRING
 		do
@@ -92,7 +94,7 @@ feature -- Basic operations
 
 feature -- Access
 
-	class_with_prefix_set: DS_HASH_SET [AFX_CLASS_WITH_PREFIX]
+	class_with_prefix_set: DS_HASH_SET [EPA_CLASS_WITH_PREFIX]
 			-- New set for class with prefix
 		do
 			create Result.make (5)
@@ -133,7 +135,7 @@ feature -- Access
 			a_class_generated: class_theories.has (a_class)
 		end
 
-	resolved_smt_statement (a_stmt: STRING; a_class_with_prefix: AFX_CLASS_WITH_PREFIX): TUPLE [resolved: STRING; mentioned_prefixes: like class_with_prefix_set]
+	resolved_smt_statement (a_stmt: STRING; a_class_with_prefix: EPA_CLASS_WITH_PREFIX): TUPLE [resolved: STRING; mentioned_prefixes: like class_with_prefix_set]
 			-- Resolve SMTLIB statement `a_stmt' by solving all qualified calls in the context
 			-- of `a_class_with_prefix'. This means that all functions and axioms in the resolved
 			-- statement will be prefixed with `a_class_with_prefix'.
@@ -174,7 +176,7 @@ feature -- Access
 					if l_class.is_empty  then
 						l_class := a_class_with_prefix.class_.name
 					end
-					l_mentioned_prefixes.force_last (create {AFX_CLASS_WITH_PREFIX}.make_with_class_name (l_class, a_class_with_prefix.prefix_ + l_prefix))
+					l_mentioned_prefixes.force_last (create {EPA_CLASS_WITH_PREFIX}.make_with_class_name (l_class, a_class_with_prefix.prefix_ + l_prefix))
 				else
 					l_done := True
 				end
@@ -183,7 +185,7 @@ feature -- Access
 			Result := [l_resolved, l_mentioned_prefixes]
 		end
 
-	resolved_class_theory_internal (a_class_with_prefix: AFX_CLASS_WITH_PREFIX; a_theory: AFX_THEORY; a_processed: like class_with_prefix_set)
+	resolved_class_theory_internal (a_class_with_prefix: EPA_CLASS_WITH_PREFIX; a_theory: AFX_THEORY; a_processed: like class_with_prefix_set)
 			-- SMT theory for `a_class' with prefix `a_prefix'
 		local
 			l_theory: AFX_THEORY
