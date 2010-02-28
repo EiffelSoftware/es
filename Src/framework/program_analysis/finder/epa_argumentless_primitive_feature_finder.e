@@ -51,15 +51,12 @@ feature -- Access
 			end
 		end
 
-	features_of_type (a_type: TYPE_A; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LIST [FEATURE_I] is
-			-- List of features satisfying `a_criterion' from `a_type'.
+	features_in_class (a_context_class: CLASS_C; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LINKED_LIST [FEATURE_I]
+			-- List of features satisfying `a_criterion' from `a_context_class'.
 			-- `a_criterion' is a filter function used to selected wanted features: all the features causing
 			-- `a_criterion' to return true are kept in the result.
 			-- If `a_criterion' is Void, all features are returned.
 			-- If there is no satisfying feature, an empty list will be returned.
-		require
-			a_type_attached: a_type /= Void
-			a_type_valid: a_type /= none_type and then a_type.has_associated_class
 		local
 			l_class: CLASS_C
 			l_feat_table: FEATURE_TABLE
@@ -68,8 +65,8 @@ feature -- Access
 			l_tester: AGENT_BASED_EQUALITY_TESTER [FEATURE_I]
 			l_sorter: DS_QUICK_SORTER [FEATURE_I]
 		do
-			l_feat_table := a_type.associated_class.feature_table
-			create {LINKED_LIST [FEATURE_I]} Result.make
+			l_feat_table := a_context_class.feature_table
+			create Result.make
 			create l_list.make (10)
 			from
 				l_feat_table.start
@@ -86,6 +83,21 @@ feature -- Access
 			create l_sorter.make (l_tester)
 			l_sorter.sort (l_list)
 			l_list.do_all (agent Result.extend)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	features_of_type (a_type: TYPE_A; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LINKED_LIST [FEATURE_I] is
+			-- List of features satisfying `a_criterion' from `a_type'.
+			-- `a_criterion' is a filter function used to selected wanted features: all the features causing
+			-- `a_criterion' to return true are kept in the result.
+			-- If `a_criterion' is Void, all features are returned.
+			-- If there is no satisfying feature, an empty list will be returned.
+		require
+			a_type_attached: a_type /= Void
+			a_type_valid: a_type /= none_type and then a_type.has_associated_class
+		do
+			Result := features_in_class (a_type.associated_class, a_criterion)
 		ensure
 			result_attached: Result /= Void
 		end
@@ -187,6 +199,22 @@ feature -- Feature criteria
 			a_feature_attached: a_feature /= Void
 		do
 			Result := a_feature.e_feature.written_class.class_id /= system.any_class.compiled_class.class_id
+		end
+
+	is_primitive_query (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' with primitive return type?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.type.is_basic
+		end
+
+	is_reference_query (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' with reference return type?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.type.is_reference
 		end
 
 note

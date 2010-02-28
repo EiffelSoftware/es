@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AFX_HASH_SET}."
+	description: "Hash-based set which supports permutation and combinations of its elements"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,7 +21,7 @@ inherit
 			is_equal,
 			copy
 		end
-		
+
 create
 	make,
 	make_equal,
