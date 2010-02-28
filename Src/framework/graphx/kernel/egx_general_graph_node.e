@@ -182,6 +182,7 @@ feature{NONE} -- Implementation
 		local
 			l_cursor: CURSOR
 		do
+			create {ARRAYED_LIST [like Current]} Result.make (a_edge_source.count)
 			l_cursor := a_edge_source.cursor
 			from
 				a_edge_source.start

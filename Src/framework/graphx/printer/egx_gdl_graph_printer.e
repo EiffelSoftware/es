@@ -1,7 +1,7 @@
 indexing
 	description: "[
 			Graph printer in GDL format
-			See http://www.aisee.com/gdl/ for details of how to display the graph.				
+			See http://www.aisee.com/gdl/ for details of how to display the graph.
 			]"
 	author: ""
 	date: "$Date$"
@@ -197,7 +197,7 @@ feature{NONE} -- Implemenation/Drawing
 			a_buffer.append (a_target_title)
 			a_buffer.append ("%" ")
 
-			if a_label /= Void then
+			if a_label /= Void and then not a_label.is_empty then
 				a_buffer.append ("label: %"")
 				a_buffer.append (a_label)
 				a_buffer.append ("%" ")

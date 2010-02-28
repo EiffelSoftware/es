@@ -230,9 +230,9 @@ feature -- Access
 			l_nodes: HASH_TABLE [like node_type, INTEGER]
 			l_cursor: CURSOR
 		do
-				-- Merge feature calls.
 			l_nodes := nodes
 			create Result.make (l_nodes.count)
+			Result.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [N]}.make(actual_node_equality_tester))
 			l_cursor := l_nodes.cursor
 			from
 				l_nodes.start

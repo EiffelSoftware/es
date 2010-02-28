@@ -4,11 +4,20 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	EPA_CFG_EDGE
 
 inherit
 	HASHABLE
+
+feature{NONE} -- Initialization
+
+	make (a_start_node: like start_node; a_end_node: like end_node)
+			-- Initialize Current.
+		do
+			start_node := a_start_node
+			end_node := a_end_node
+		end
 
 feature -- Access
 
@@ -25,6 +34,23 @@ feature -- Access
 				hash_code_internal := (start_node.hash_code.out + "," + end_node.hash_code.out).hash_code
 			end
 			Result := hash_code_internal
+		end
+
+feature -- Status report
+
+	is_true_branch: BOOLEAN
+			-- Is Current an true-branch edge?
+		do
+		end
+
+	is_false_branch: BOOLEAN
+			-- Is Current an false-branch edge?
+		do
+		end
+
+	is_seqential_branch: BOOLEAN
+			-- Is Current a sequential edge?
+		do
 		end
 
 feature -- Setting

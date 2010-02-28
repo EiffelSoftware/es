@@ -9,6 +9,9 @@ deferred class
 
 inherit
 	HASHABLE
+		redefine
+			is_equal
+		end
 
 feature -- Access
 
@@ -27,9 +30,7 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code value
 		do
-			Result := hash_code_string.hash_code
-		ensure then
-			good_result: Result = hash_code_string.hash_code
+			Result := id
 		end
 
 	asts: ARRAYED_LIST [AST_EIFFEL]
@@ -38,14 +39,20 @@ feature -- Access
 		deferred
 		end
 
-	predecessors: ARRAYED_LIST [EPA_BASIC_BLOCK]
-			-- Predecessor blocks
-		deferred
+feature -- Status report
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := id = other.id
 		end
 
-	successors: ARRAYED_LIST [EPA_BASIC_BLOCK]
-			-- Successor blocks
-		deferred
+feature -- Status report
+
+	is_auxilary: BOOLEAN
+			-- Is current block auxilary?
+		do
 		end
 
 feature -- Setting
@@ -82,23 +89,10 @@ feature -- Setting
 			feature_set: feature_ = a_feature
 		end
 
-feature -- Setting
-
-	hash_code_string: STRING
-			-- String representing the ID of current block
-		do
-			if attached {STRING} hash_code_string_internal as l_cache then
-				Result := l_cache
-			else
-				hash_code_string_internal := id.out
-			end
-		ensure
-			result_attached: Result /= Void
-		end
-
 feature{NONE} -- Implementation
 
-	hash_code_string_internal: detachable STRING
-			-- Cache for `hash_code_string'
+	initial_capacity: INTEGER = 2
+			-- Initial capacity for `asts', `predecessors' and `successors'
+
 
 end

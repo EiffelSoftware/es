@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	EPA_SPLITTING_BLOCK
+	EPA_BRANCHING_BLOCK
 
 inherit
 	EPA_BASIC_BLOCK
@@ -25,16 +25,6 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	predecessors: ARRAYED_LIST [EPA_BASIC_BLOCK]
-			-- Predecessor blocks
-		do
-		end
-
-	successors: ARRAYED_LIST [EPA_BASIC_BLOCK]
-			-- Successor blocks
-		do
-		end
-
 	true_successor: EPA_BASIC_BLOCK
 			-- Successor which goes through if `condition' evaluates to True
 
@@ -43,6 +33,5 @@ feature -- Access
 
 invariant
 	asts_valid: asts.count = 1 and then asts.first = condition
-	successors_valid: successors.count = 0 and then successors.has (true_successor) and then successors.has (false_successor)
 
 end
