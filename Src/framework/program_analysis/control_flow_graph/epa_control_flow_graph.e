@@ -44,6 +44,7 @@ feature -- Access
 			l_asts: LIST [AST_EIFFEL]
 			l_str: STRING
 		do
+			fixme ("This is a simple solution for the GDL format. It should be moved out of current class. 28.2.2010 Jasonw")
 			l_asts := a_node.asts
 			l_cursor := l_asts.cursor
 			create l_label.make (128)
@@ -68,6 +69,7 @@ feature -- Access
 	edge_text (a_edge: EPA_CFG_EDGE): STRING
 			-- Text information for `a_edge'.
 		do
+			fixme ("This is a simple solution for the GDL format. It should be moved out of current class. 28.2.2010 Jasonw")
 			if a_edge.is_true_branch then
 				Result := "True"
 			elseif a_edge.is_false_branch then

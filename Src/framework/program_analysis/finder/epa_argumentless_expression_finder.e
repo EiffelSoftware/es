@@ -12,9 +12,11 @@ inherit
 
 	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 		export{NONE} all end
+
 create
 	make,
-	make_with_boolean_queries
+	make_with_boolean_queries,
+	make_with_queries
 
 feature{NONE} -- Initialization
 
