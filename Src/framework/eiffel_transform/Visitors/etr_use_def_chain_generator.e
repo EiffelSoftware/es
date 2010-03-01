@@ -507,7 +507,7 @@ feature {AST_EIFFEL} -- Roundtrip (Usage)
 			-- if were in an unqualified call
 			-- the id might be a local/argument that is used
 			if last_was_unqualified then
-				if not context.has_feature_named(l_as.access_name) then
+				if not context.class_context.has_feature_named(l_as.access_name) then
 					-- local or argument is being used!
 					cur_instr.add_use (l_as.access_name)
 				end

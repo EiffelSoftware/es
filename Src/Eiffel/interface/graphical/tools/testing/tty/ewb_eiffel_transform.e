@@ -259,22 +259,63 @@ feature -- Properties
 			tc.check_transformable (expr)
 		end
 
+	ast_to_bp_string(a_ast: AST_EIFFEL): STRING
+		local
+			l_out: ETR_AST_BP_OUTPUT
+			l_printer: ETR_AST_STRUCTURE_PRINTER
+		do
+			create l_out.make
+			create l_printer.make_with_output (l_out)
+			l_printer.print_ast_to_output (a_ast)
+			Result := l_out.string_representation
+		end
+
+	print_map (a_map: HASH_TABLE[INTEGER,INTEGER])
+		local
+			l_textout: PLAIN_TEXT_FILE
+		do
+			create l_textout.make_open_write ((create {EXECUTION_ENVIRONMENT}).get("EIFFEL_SRC")+"\framework\eiffel_transform\map.txt")
+			from
+				a_map.start
+			until
+				a_map.after
+			loop
+				l_textout.put_string (a_map.key_for_iteration.out+" -> "+a_map.item_for_iteration.out+"%N")
+				a_map.forth
+			end
+			l_textout.close
+		end
+
 	test_branch_removal
 		local
 			cls: CLASS_I
 			cls_ast: CLASS_AS
+			feat: FEATURE_I
 			l_rng: RANGED_RANDOM
 			trans: ETR_TRANSFORMABLE
+			l_textout: PLAIN_TEXT_FILE
+			l_map_chain: LINKED_LIST[HASH_TABLE[INTEGER,INTEGER]]
+			l_final_map: HASH_TABLE[INTEGER,INTEGER]
+			l_bp_count: INTEGER
 		do
 			-- prepare transformable
 			cls := universe.compiled_classes_with_name("M_EX").first
 			cls_ast := cls.compiled_class.ast
+			feat := cls.compiled_class.feature_named ("big")
 
-			create trans.make_in_class (cls_ast, cls.compiled_class)
+			create trans.make_in_class (feat.e_feature.ast, cls.compiled_class)
+			trans.calculate_breakpoint_slots
+
+			create l_textout.make_open_write ((create {EXECUTION_ENVIRONMENT}).get("EIFFEL_SRC")+"\framework\eiffel_transform\big.before.ee")
+			l_textout.put_string (ast_to_bp_string(trans))
+			l_textout.close
 
 			-- prepare rng
 			create l_rng.make
-			l_rng.set_seed ((create {TIME}.make_now).compact_time)
+--			l_rng.set_seed ((create {TIME}.make_now).compact_time)
+			l_rng.set_seed (42)
+
+			create l_map_chain.make
 
 			-- step 1: remove inspects
 			from
@@ -284,6 +325,7 @@ feature -- Properties
 			loop
 				rewrite.replace_inspects (trans)
 				trans.apply_modifications (rewrite.modifications)
+				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (trans)
 			end
@@ -294,8 +336,9 @@ feature -- Properties
 			until
 				not ast_stats.has_loops
 			loop
-				rewrite.unroll_loop (trans, l_rng.next_item_in_range (1, 5), true)
+				rewrite.unroll_loop (trans, 3, false)
 				trans.apply_modifications (rewrite.modifications)
+				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (trans)
 			end
@@ -308,6 +351,7 @@ feature -- Properties
 			loop
 				rewrite.replace_elseifs (trans)
 				trans.apply_modifications (rewrite.modifications)
+				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (trans)
 			end
@@ -325,11 +369,18 @@ feature -- Properties
 				end
 
 				trans.apply_modifications (rewrite.modifications)
+				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (trans)
 			end
 
-			io.put_string (trans.out)
+			create l_textout.make_open_write ((create {EXECUTION_ENVIRONMENT}).get("EIFFEL_SRC")+"\framework\eiffel_transform\big.after.ee")
+			l_textout.put_string (ast_to_bp_string(trans))
+			l_textout.close
+
+			l_bp_count := ast_tools.num_breakpoint_slots_in (trans)
+			l_final_map :=  ast_tools.combined_breakpoint_mapping (l_map_chain, l_bp_count)
+			print_map(l_final_map)
 		end
 
 	test_me_all
@@ -419,17 +470,17 @@ feature -- Properties
 			-- Action performed when invoked from the
 			-- command line.
 		do
-			test_ren
-			test_setter_gen
-			test_context_transformation
+--			test_ren
+--			test_setter_gen
+--			test_context_transformation
 			test_ass_attempt_replacing
-			test_ec_gen
-			test_typechecker
-			test_me_all
+--			test_ec_gen
+--			test_typechecker
+--			test_me_all
 			test_branch_removal
-			test_xml_print
-			test_dot_print
-			test_bp_print
+--			test_xml_print
+--			test_dot_print
+--			test_bp_print
 		end
 
 note

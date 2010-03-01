@@ -11,7 +11,7 @@ create
 	make
 
 feature --Access
-	written_class: detachable CLASS_C
+	written_class: CLASS_C
 	written_in_features: LIST[ETR_FEATURE_CONTEXT]
 		do
 			if not attached internal_written_in_features then
@@ -38,6 +38,14 @@ feature --Access
 			if attached l_feat_i then
 				create Result.make(l_feat_i, Current)
 			end
+		end
+
+	has_feature_named (a_name: STRING): BOOLEAN
+			-- Is there a feature with `a_name' in this context
+		require
+			name_attached: a_name /= void
+		do
+			Result := written_class.feature_named (a_name) /= void
 		end
 
 feature {NONE} -- Implementation

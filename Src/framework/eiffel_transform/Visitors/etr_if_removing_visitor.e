@@ -33,22 +33,42 @@ feature {NONE} -- Implementation
 feature {AST_EIFFEL} -- Roundtrip
 
 	process_if_as (l_as: IF_AS)
+		local
+			l_old_bp_count, l_new_bp_count: INTEGER
+			l_else_part_count, l_if_part_count: INTEGER
+			l_new_first, l_old_first: INTEGER
+			i: INTEGER
 		do
 			if not (first_only and was_processed) then
+				l_old_bp_count := ast_tools.num_breakpoint_slots_in (l_as)
+				l_old_first := l_as.breakpoint_slot
+				l_new_first := l_as.breakpoint_slot
+				create breakpoint_mappings.make (l_old_bp_count)
+
 				if take_branches then
-					if l_as.compound /= void then
+					if l_as.compound /= void and then not l_as.compound.is_empty then
 						modifications.extend (basic_operators.replace_with_string (l_as.path, ast_tools.ast_to_string (l_as.compound)))
+
+						l_new_bp_count := ast_tools.num_breakpoint_slots_in (l_as.compound)
+						map_region_shifted (l_old_first, l_new_bp_count, l_as.compound.first.breakpoint_slot)
 					else
 						modifications.extend (basic_operators.delete (l_as.path))
 					end
 				else
-					if l_as.else_part /= void then
+					if l_as.else_part /= void and then not l_as.else_part.is_empty then
 						modifications.extend (basic_operators.replace_with_string (l_as.path, ast_tools.ast_to_string (l_as.else_part)))
+
+						-- Map else-part
+						l_new_bp_count := ast_tools.num_breakpoint_slots_in (l_as.else_part)
+						map_region_shifted (l_old_first, l_new_bp_count, l_as.else_part.first.breakpoint_slot)
 					else
 						modifications.extend (basic_operators.delete (l_as.path))
 					end
 				end
 				was_processed := true
+
+				remapped_regions.extend ([l_new_first, l_new_first, l_old_bp_count, l_new_bp_count])
+				breakpoint_mappings_internal.extend (breakpoint_mappings)
 			end
 		end
 

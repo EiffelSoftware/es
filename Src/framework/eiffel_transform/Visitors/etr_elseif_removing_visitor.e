@@ -31,6 +31,8 @@ feature {NONE} -- Implementation
 			l_index: INTEGER
 			l_cur: ELSIF_AS
 		do
+			-- Note: This Rewriting doesn't change any breakpoint slots.
+
 			from
 				l_index := a_elseif_list.index
 				a_elseif_list.start

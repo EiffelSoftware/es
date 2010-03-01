@@ -16,69 +16,9 @@ create
 	make,
 	make_from_other
 
-feature -- Access
-
-	is_modified: BOOLEAN
-			-- Has `Current' been modified since creation
-
-	written_feature: FEATURE_I
-			-- The coresponding compiled feature
-
-	has_return_value: BOOLEAN
-			-- Does this feature have a return value ?
-
-	has_arguments: BOOLEAN
-			-- Does this feature have arguments ?
-
-	has_locals: BOOLEAN
-			-- Does this feature have locals ?
-
-	unresolved_type: detachable TYPE_A
-			-- Type of the feature as it was written
-
-	type: detachable TYPE_A
-			-- Type of the feature, fully resolved
-
-	name: STRING
-			-- Name of the feature
-
-	feature_id: INTEGER
-			-- Feature_id of this feature
-
-	arguments: detachable ARRAY[ETR_TYPED_VAR]
-			-- Arguments of the feature
-
-	locals: detachable ARRAY[ETR_TYPED_VAR]
-			-- Locals of the feature
-
-	arg_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
-			-- Arguments of the feature by name
-
-	local_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
-			-- Locals of the feature by name
-
-	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
-			-- Object-test locals in the feature
-
-	has_feature_named(a_name: STRING): BOOLEAN
-			-- Is there a feature with `a_name' in this context
-		require
-			name_attached: a_name /= void
-		do
-			Result := attached class_context.written_class.feature_named (a_name)
-		end
-
-feature -- Operation
-
-	set_modified
-			-- set `is_modified' to `true'
-		do
-			is_modified := true
-		end
-
 feature {NONE} -- Creation
 	make_from_other(a_other: like Current)
-			-- make from `a_other'
+			-- Make from `a_other'
 		local
 			l_index: INTEGER
 		do
@@ -128,7 +68,8 @@ feature {NONE} -- Creation
 		end
 
 	make(a_written_feature: like written_feature; a_class_context: detachable like class_context)
-			-- make with `a_written_feature' and `a_class_context'
+			-- Make with `a_written_feature' and use the existing `a_class_context'.
+			-- If void, create it.
 		local
 			l_arg_list,l_local_list: LINKED_LIST[ETR_TYPED_VAR]
 			l_expl_type: TYPE_A
@@ -242,6 +183,59 @@ feature {NONE} -- Creation
 			-- root = FEATURE_AS
 			l_ot_extractor.process_from_root (a_written_feature.e_feature.ast)
 		end
+
+feature -- Access
+
+	is_modified: BOOLEAN
+			-- Has `Current' been modified since creation
+
+	written_feature: FEATURE_I
+			-- The coresponding compiled feature
+
+	has_return_value: BOOLEAN
+			-- Does this feature have a return value ?
+
+	has_arguments: BOOLEAN
+			-- Does this feature have arguments ?
+
+	has_locals: BOOLEAN
+			-- Does this feature have locals ?
+
+	unresolved_type: detachable TYPE_A
+			-- Type of the feature as it was written
+
+	type: detachable TYPE_A
+			-- Type of the feature, fully resolved
+
+	name: STRING
+			-- Name of the feature
+
+	feature_id: INTEGER
+			-- Feature_id of this feature
+
+	arguments: detachable ARRAY[ETR_TYPED_VAR]
+			-- Arguments of the feature
+
+	locals: detachable ARRAY[ETR_TYPED_VAR]
+			-- Locals of the feature
+
+	arg_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
+			-- Arguments of the feature by name
+
+	local_by_name: detachable HASH_TABLE[ETR_TYPED_VAR, STRING]
+			-- Locals of the feature by name
+
+	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
+			-- Object-test locals in the feature
+
+feature -- Operation
+
+	set_modified
+			-- set `is_modified' to `true'
+		do
+			is_modified := true
+		end
+
 invariant
 	locals_valid: has_locals implies attached locals
 	arguments_valid: has_arguments implies attached arguments

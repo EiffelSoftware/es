@@ -26,6 +26,12 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
+	slot_counter: ETR_BP_SLOT_COUNTER
+			-- Shared instance of ETR_BP_SLOT_COUNTER
+		once
+			create Result
+		end
+
 feature -- Access
 
 	duplicated_ast: detachable AST_EIFFEL
@@ -33,7 +39,83 @@ feature -- Access
 
 feature -- Output
 
-	extract_feature_comments(a_feature: FEATURE_AS; a_matchlist: LEAF_AS_LIST): STRING
+	commented_class_to_string (a_class: AST_EIFFEL; a_comments: HASH_TABLE[STRING,STRING]): STRING
+			-- prints `a_ast' to text using `mini_printer'
+		require
+			non_void: a_class /= void and a_comments /= void
+		do
+			printer_output.reset
+			commenting_printer.print_class_with_comment (a_class, a_comments)
+
+			Result := printer_output.string_representation
+		end
+
+	commented_feature_to_string (a_feature: AST_EIFFEL; a_comment: STRING): STRING
+			-- prints `a_ast' to text using `mini_printer'
+		require
+			non_void: a_feature /= void and a_comment /= void
+		do
+			printer_output.reset
+			printer_output.enter_block
+
+			commenting_printer.print_feature_with_comment(a_feature, a_comment)
+
+			Result := printer_output.string_representation
+		end
+
+	ast_to_string (a_ast: detachable AST_EIFFEL): STRING
+			-- Prints `a_ast' to text
+		do
+			if attached a_ast then
+				printer_output.reset
+				printer.print_ast_to_output(a_ast)
+
+				Result := printer_output.string_representation
+			else
+				create Result.make_empty
+			end
+		end
+
+	ast_to_string_with_indentation (a_ast: detachable AST_EIFFEL; an_indentation: INTEGER): STRING
+			-- Prints `a_ast' starting at indentation level `an_indentation'
+		require
+			non_void: a_ast /= void
+			valid_indent: an_indentation>=0
+		local
+			l_index: INTEGER
+		do
+			if attached a_ast then
+				from
+					l_index := 1
+					printer_output.reset
+				until
+					l_index > an_indentation
+				loop
+					printer_output.enter_block
+					l_index := l_index + 1
+				end
+
+				printer.print_ast_to_output(a_ast)
+
+				Result := printer_output.string_representation
+			else
+				create Result.make_empty
+			end
+		end
+
+feature -- Operations
+
+	num_breakpoint_slots_in (a_ast: detachable AST_EIFFEL): INTEGER
+			-- Return the number of breakpoint slots in `a_ast'
+			-- Correct only if fragment is in a single feature
+		do
+			if attached a_ast then
+				slot_counter.init_from (a_ast)
+				Result := slot_counter.break_point_count
+			end
+		end
+
+	extract_feature_comments (a_feature: FEATURE_AS; a_matchlist: LEAF_AS_LIST): STRING
 			-- Extract comments from `a_feature' and return them as multiline-string
 		require
 			non_void: a_feature /= void and a_matchlist /= void
@@ -56,7 +138,7 @@ feature -- Output
 			end
 		end
 
-	extract_class_comments(a_class: CLASS_AS; a_matchlist: LEAF_AS_LIST): HASH_TABLE[STRING,STRING]
+	extract_class_comments (a_class: CLASS_AS; a_matchlist: LEAF_AS_LIST): HASH_TABLE[STRING,STRING]
 			-- Extract comments from `a_class' and return them in a hash table
 		require
 			non_void: a_class /= void and a_matchlist /= void
@@ -87,73 +169,33 @@ feature -- Output
 			end
 		end
 
-	commented_class_to_string(a_class: AST_EIFFEL; a_comments: HASH_TABLE[STRING,STRING]): STRING
-			-- prints `a_ast' to text using `mini_printer'
-		require
-			non_void: a_class /= void and a_comments /= void
-		do
-			printer_output.reset
-			commenting_printer.print_class_with_comment (a_class, a_comments)
-
-			Result := printer_output.string_representation
-		end
-
-	commented_feature_to_string(a_feature: AST_EIFFEL; a_comment: STRING): STRING
-			-- prints `a_ast' to text using `mini_printer'
-		require
-			non_void: a_feature /= void and a_comment /= void
-		do
-			printer_output.reset
-			printer_output.enter_block
-
-			commenting_printer.print_feature_with_comment(a_feature, a_comment)
-
-			Result := printer_output.string_representation
-		end
-
-	ast_to_string(a_ast: detachable AST_EIFFEL): STRING
-			-- Prints `a_ast' to text
-		do
-			if attached a_ast then
-				printer_output.reset
-				printer.print_ast_to_output(a_ast)
-
-				Result := printer_output.string_representation
-			else
-				create Result.make_empty
-			end
-		end
-
-	ast_to_string_with_indentation(a_ast: detachable AST_EIFFEL; an_indentation: INTEGER): STRING
-			-- Prints `a_ast' starting at indentation level `an_indentation'
-		require
-			non_void: a_ast /= void
-			valid_indent: an_indentation>=0
+	combined_breakpoint_mapping (a_mappings: LIST[HASH_TABLE[INTEGER,INTEGER]]; a_count: INTEGER): HASH_TABLE[INTEGER,INTEGER]
+			-- Combine `a_mappings' to a single one. Range from 1 to `a_count'.
 		local
-			l_index: INTEGER
+			i:INTEGER
+			l_cur_item: INTEGER
 		do
-			if attached a_ast then
+			from
+				create Result.make (a_count*2)
+				i:=1
+			until
+				i>a_count
+			loop
 				from
-					l_index := 1
-					printer_output.reset
+					l_cur_item := i
+					a_mappings.finish
 				until
-					l_index > an_indentation
+					a_mappings.before
 				loop
-					printer_output.enter_block
-					l_index := l_index + 1
+					l_cur_item := a_mappings.item[l_cur_item]
+					a_mappings.back
 				end
-
-				printer.print_ast_to_output(a_ast)
-
-				Result := printer_output.string_representation
-			else
-				create Result.make_empty
+				Result.extend (l_cur_item, i)
+				i:=i+1
 			end
 		end
 
-feature -- Operations
-
-	duplicate_ast(a_ast: AST_EIFFEL)
+	duplicate_ast (a_ast: AST_EIFFEL)
 			-- Duplicates `a_ast' and stores the result in `duplicated_ast'
 		require
 			non_void: a_ast /= void
@@ -161,7 +203,7 @@ feature -- Operations
 			duplicated_ast := a_ast.deep_twin
 		end
 
-	single_instr_list(instr: INSTRUCTION_AS): EIFFEL_LIST [like instr]
+	single_instr_list (instr: INSTRUCTION_AS): EIFFEL_LIST [like instr]
 			-- creates list with a single instruction `instr'
 		require
 			instr_not_void: instr/=void

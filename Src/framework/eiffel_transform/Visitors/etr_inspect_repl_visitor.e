@@ -14,7 +14,7 @@ inherit
 
 feature -- Operations
 
-	replace_inspects_in(a_ast: AST_EIFFEL)
+	replace_inspects_in (a_ast: AST_EIFFEL)
 		require
 			non_void: a_ast /= void
 		do
@@ -32,9 +32,18 @@ feature {NONE} -- Implementation
 	is_first_case: BOOLEAN
 			-- Are we in the first case of the switch statement (use if instead of elseif)
 
+	inspect_bp_slot: INTEGER
+			-- Breakpoint slot of the current inspect statement
+
+	current_old_bp_slot: INTEGER
+			-- Current old breakpoint slot
+
+	current_new_bp_slot: INTEGER
+			-- Current new breakpoint slot
+
 feature {AST_EIFFEL} -- Roundtrip
 
-	process_case_list(a_case_list: EIFFEL_LIST[CASE_AS])
+	process_case_list (a_case_list: EIFFEL_LIST[CASE_AS])
 		local
 			l_cursor: INTEGER
 		do
@@ -52,7 +61,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			a_case_list.go_i_th (l_cursor)
 		end
 
-	process_interval_list(a_interval_list: EIFFEL_LIST[INTERVAL_AS])
+	process_interval_list (a_interval_list: EIFFEL_LIST[INTERVAL_AS])
 		local
 			l_cursor: INTEGER
 		do
@@ -81,27 +90,47 @@ feature {AST_EIFFEL} -- Roundtrip
 		end
 
 	process_inspect_as (l_as: INSPECT_AS)
+		local
+			l_old_bp_count: INTEGER
+			l_else_bp_count: INTEGER
 		do
+			l_old_bp_count := ast_tools.num_breakpoint_slots_in (l_as)
+			create breakpoint_mappings.make (l_old_bp_count*2)
+			current_old_bp_slot := l_as.breakpoint_slot
+			current_new_bp_slot := current_old_bp_slot
+			inspect_bp_slot := current_old_bp_slot
+
 			create replacement_text.make_empty
 			switch_expr := ast_tools.ast_to_string (l_as.switch)
 			process_case_list (l_as.case_list)
 
-			if l_as.else_part /= void then
+			if l_as.else_part /= void and then not l_as.else_part.is_empty then
+				l_else_bp_count := ast_tools.num_breakpoint_slots_in (l_as.else_part)
+				map_region_shifted (current_new_bp_slot, l_else_bp_count, current_old_bp_slot)
 				replacement_text.append (ti_else_keyword+ti_new_line+ast_tools.ast_to_string (l_as.else_part))
+				current_new_bp_slot:=current_new_bp_slot+l_else_bp_count
+				current_old_bp_slot:=current_old_bp_slot+l_else_bp_count
 			end
 
 			replacement_text.append (ti_end_keyword+ti_new_line)
 
 			modifications.extend (basic_operators.replace_with_string (l_as.path, replacement_text))
+			remapped_regions.extend ([l_as.breakpoint_slot, l_as.breakpoint_slot, l_old_bp_count, current_new_bp_slot-l_as.breakpoint_slot])
+			breakpoint_mappings_internal.extend (breakpoint_mappings)
 		end
 
 	process_case_as (l_as: CASE_AS)
+		local
+			l_case_bp_count: INTEGER
 		do
 			if is_first_case then
 				replacement_text.append (ti_if_keyword)
+				current_old_bp_slot := current_old_bp_slot+1
 			else
 				replacement_text.append (ti_elseif_keyword)
 			end
+			breakpoint_mappings.extend (inspect_bp_slot, current_new_bp_slot)
+			current_new_bp_slot := current_new_bp_slot+1
 
 			replacement_text.append (ti_space)
 
@@ -109,7 +138,11 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			replacement_text.append (ti_space + ti_then_keyword + ti_new_line)
 
-			if l_as.compound /= void then
+			if l_as.compound /= void and then not l_as.compound.is_empty then
+				l_case_bp_count := ast_tools.num_breakpoint_slots_in (l_as.compound)
+				map_region_shifted (current_new_bp_slot, l_case_bp_count, l_as.compound.first.breakpoint_slot)
+				current_new_bp_slot := current_new_bp_slot+l_case_bp_count
+				current_old_bp_slot := current_old_bp_slot+l_case_bp_count
 				replacement_text.append (ast_tools.ast_to_string (l_as.compound))
 			end
 		end

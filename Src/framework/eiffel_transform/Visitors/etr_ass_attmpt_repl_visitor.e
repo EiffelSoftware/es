@@ -7,6 +7,10 @@ class
 	ETR_ASS_ATTMPT_REPL_VISITOR
 inherit
 	ETR_REWRITING_VISITOR
+		rename
+			init_and_process as replace_assignment_attempts_in
+		export
+			{ANY} replace_assignment_attempts_in
 		redefine
 			process_reverse_as,
 			process_feature_as
@@ -50,6 +54,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_source_string: STRING
 			l_replacement: STRING
 			l_mod: ETR_AST_MODIFICATION
+			l_cur_slot: INTEGER
 		do
 			l_feat_context := class_context.written_in_features_by_name[current_feature]
 
@@ -63,6 +68,13 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_source_string := ast_tools.ast_to_string (l_as.source)
 
 				create l_replacement.make_empty
+				create breakpoint_mappings.make (5)
+				l_cur_slot := l_as.breakpoint_slot
+				breakpoint_mappings.extend (l_cur_slot, l_cur_slot)
+				breakpoint_mappings.extend (l_cur_slot, l_cur_slot+1)
+				breakpoint_mappings.extend (l_cur_slot, l_cur_slot+2)
+				remapped_regions.extend ([l_cur_slot, l_cur_slot, 1, 3])
+				breakpoint_mappings_internal.extend (breakpoint_mappings)
 
 				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_source_string+" as "+"l_etr_ot_local then%N")
 				l_replacement.append_string (l_target_string+" := l_etr_ot_local%N")

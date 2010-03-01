@@ -50,7 +50,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			if not (first_only and was_processed) then
 				create l_replacement_string.make_empty
-				l_old_total_bp_count := break_point_slots_of (l_as)
+				l_old_total_bp_count := ast_tools.num_breakpoint_slots_in (l_as)
 				create breakpoint_mappings.make (l_old_total_bp_count*unroll_count*2)
 				l_stop_slot := l_as.stop.breakpoint_slot
 				if l_as.from_part /= void then
@@ -58,7 +58,7 @@ feature {AST_EIFFEL} -- Roundtrip
 					l_current_slot := l_as.from_part.first.breakpoint_slot
 					l_first_new_slot := l_current_slot
 					l_replacement_string.append (ast_tools.ast_to_string (l_as.from_part))
-					l_from_bp_count := break_point_slots_of (l_as.from_part)
+					l_from_bp_count := ast_tools.num_breakpoint_slots_in (l_as.from_part)
 					map_region_one_to_one(l_current_slot, l_current_slot+l_from_bp_count)
 				else
 					l_first_new_slot := l_stop_slot
@@ -68,7 +68,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_compound_string := ast_tools.ast_to_string (l_as.compound)+ti_end_keyword+ti_new_line
 				l_single_iteration := l_if_line+l_compound_string
 
-				l_body_bp_count := break_point_slots_of(l_as.compound)
+				l_body_bp_count := ast_tools.num_breakpoint_slots_in(l_as.compound)
 
 				if l_as.compound /= void then
 					l_body_first_slot := l_as.compound.first.breakpoint_slot

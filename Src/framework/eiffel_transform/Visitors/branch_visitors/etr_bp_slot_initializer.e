@@ -92,6 +92,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		local
 			i: INTEGER
 		do
+			assign_current_slot (l_as)
 			process_in_slot (l_as.switch)
 			current_breakpoint_slot := current_breakpoint_slot + 1
 
@@ -155,9 +156,10 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			assign_current_slot (l_as)
 			is_in_breakpoint_slot := true
-			Precursor(l_as)
+			safe_process_and_check (l_as.expr)
 			is_in_breakpoint_slot := false
 			current_breakpoint_slot := current_breakpoint_slot + 1
+			safe_process_and_check (l_as.compound)
 		end
 
 	process_loop_as (l_as: LOOP_AS)

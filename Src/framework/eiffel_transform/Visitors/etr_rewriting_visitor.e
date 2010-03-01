@@ -58,20 +58,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	break_point_slots_of (a_ast: detachable AST_EIFFEL): INTEGER
-		do
-			if attached a_ast then
-				slot_counter.init_from (a_ast)
-				Result := slot_counter.break_point_count
-			end
-		end
-
-	slot_counter: ETR_BP_SLOT_COUNTER
-			-- Shared instance of ETR_BP_SLOT_COUNTER
-		once
-			create Result
-		end
-
 	init_and_process (a_ast: AST_EIFFEL)
 			-- Init fields and process `a_ast'
 		require
@@ -89,7 +75,7 @@ feature {NONE} -- Implementation
 			create remapped_regions.make
 			create breakpoint_mappings_internal.make
 
-			l_old_total_bp_count := break_point_slots_of (a_ast)
+			l_old_total_bp_count := ast_tools.num_breakpoint_slots_in (a_ast)+1
 
 			a_ast.process (Current)
 

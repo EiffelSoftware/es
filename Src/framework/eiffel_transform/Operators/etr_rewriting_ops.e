@@ -16,18 +16,18 @@ feature -- Results
 
 feature -- Operations
 
-	replace_assignment_attempts(a_transformable: ETR_TRANSFORMABLE)
+	replace_assignment_attempts (a_transformable: ETR_TRANSFORMABLE)
 			-- Replaces assignment attempts in `a_transformable'
 		local
 			l_visitor: ETR_ASS_ATTMPT_REPL_VISITOR
 		do
 			create l_visitor.make (a_transformable.context.class_context)
-			a_transformable.target_node.process (l_visitor)
+			l_visitor.replace_assignment_attempts_in (a_transformable.target_node)
 			modifications := l_visitor.modifications
 			breakpoint_mappings := l_visitor.breakpoint_mappings
 		end
 
-	replace_elseifs(a_transformable: ETR_TRANSFORMABLE)
+	replace_elseifs (a_transformable: ETR_TRANSFORMABLE)
 			-- Removes one layer of elseifs from `a_transformable'
 		require
 			non_void: a_transformable /= void
@@ -38,7 +38,7 @@ feature -- Operations
 			breakpoint_mappings := elseif_remover.breakpoint_mappings
 		end
 
-	remove_ifs(a_transformable: ETR_TRANSFORMABLE; a_always_branch: BOOLEAN; a_process_first_only: BOOLEAN)
+	remove_ifs (a_transformable: ETR_TRANSFORMABLE; a_always_branch: BOOLEAN; a_process_first_only: BOOLEAN)
 			-- Rewrites if's of `a_transformable' to always or never take the branch
 		require
 			non_void: a_transformable /= void
@@ -49,7 +49,7 @@ feature -- Operations
 			breakpoint_mappings := if_remover.breakpoint_mappings
 		end
 
-	replace_inspects(a_transformable: ETR_TRANSFORMABLE)
+	replace_inspects (a_transformable: ETR_TRANSFORMABLE)
 			-- Replaces inspects in `a_transformable' by normal conditionals
 		require
 			non_void: a_transformable /= void
@@ -60,7 +60,7 @@ feature -- Operations
 			breakpoint_mappings := inspect_replacer.breakpoint_mappings
 		end
 
-	unroll_loop(a_transformable: ETR_TRANSFORMABLE; a_unroll_count: INTEGER; a_process_first_only: BOOLEAN)
+	unroll_loop (a_transformable: ETR_TRANSFORMABLE; a_unroll_count: INTEGER; a_process_first_only: BOOLEAN)
 			-- Unrolls loops in `a_transformable' `a_unroll_count' times
 		require
 			non_void: a_transformable /= void
