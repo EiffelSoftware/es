@@ -16,7 +16,7 @@ feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
-	rename_local(a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
+	rename_local (a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
 			-- Rename the local `an_old_name' to `a_new_name' in `a_transformable' of feature `a_feature_name'
 		require
 			fun_set_and_valid: a_transformable /= void and then a_transformable.is_valid
@@ -30,10 +30,9 @@ feature -- Operation
 						-- create new changed context
 						create l_resulting_context.make_from_other (l_feat_context)
 						l_resulting_context.local_by_name[an_old_name].set_name (a_new_name)
-						l_resulting_context.set_modified
 
 						-- transform to the new context
-						transformation_result := a_transformable.transform_to_context (l_resulting_context)
+						transformation_result := a_transformable.as_in_other_context (l_resulting_context)
 					else
 						error_handler.add_error (Current, "rename_local", "No local with name "+a_new_name)
 					end
@@ -45,7 +44,7 @@ feature -- Operation
 			end
 		end
 
-	rename_argument(a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
+	rename_argument (a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
 			-- Rename the argument `an_old_name' to `a_new_name' in `a_transformable' of feature `a_feature_name'
 		require
 			fun_set_and_valid: a_transformable /= void and then a_transformable.is_valid
@@ -59,10 +58,9 @@ feature -- Operation
 						-- create new changed context
 						create l_resulting_context.make_from_other (l_feat_context)
 						l_resulting_context.arg_by_name[an_old_name].set_name (a_new_name)
-						l_resulting_context.set_modified
 
 						-- transform to the new context
-						transformation_result := a_transformable.transform_to_context (l_resulting_context)
+						transformation_result := a_transformable.as_in_other_context (l_resulting_context)
 					else
 						error_handler.add_error (Current, "rename_argument", "No argument with name "+a_new_name)
 					end
@@ -74,7 +72,7 @@ feature -- Operation
 			end
 		end
 
-	rename_argument_at_position(a_function: ETR_TRANSFORMABLE; a_feature_name: STRING; an_argument_position: INTEGER; a_new_name: STRING)
+	rename_argument_at_position (a_function: ETR_TRANSFORMABLE; a_feature_name: STRING; an_argument_position: INTEGER; a_new_name: STRING)
 			-- Rename the argument at `an_arg_position' in `a_transformable' of feature `a_feature_name'
 		require
 			fun_set_and_valid: a_function /= void and then a_function.is_valid
@@ -91,10 +89,9 @@ feature -- Operation
 						-- create new changed context
 						create l_resulting_context.make_from_other (l_feat_context)
 						l_resulting_context.arguments[an_argument_position].set_name (a_new_name)
-						l_resulting_context.set_modified
 
 						-- transform to the new context
-						transformation_result := a_function.transform_to_context (l_resulting_context)
+						transformation_result := a_function.as_in_other_context (l_resulting_context)
 					else
 						error_handler.add_error (Current, "rename_argument_at_position", "No argument at position "+an_argument_position.out)
 					end

@@ -17,14 +17,14 @@ feature {NONE} -- Constants
 feature {NONE} -- Parser	
 
 	parsing_helper: ETR_PARSING_HELPER
-			-- shared instance of ETR_PARSING_HELPER
+			-- Shared instance of ETR_PARSING_HELPER
 		once
 			create Result
 			Result.set_compiler_factory (default_using_compiler_factory)
 		end
 
 	etr_class_parser: EIFFEL_PARSER
-			-- internal parser used to handle classes
+			-- Internal parser used to handle classes
 		do
 			if parsing_helper.is_using_compiler_factory then
 				Result := parsing_helper.etr_compiler_class_parser
@@ -34,7 +34,7 @@ feature {NONE} -- Parser
 		end
 
 	etr_type_parser: EIFFEL_PARSER
-			-- internal parser used to handle classes
+			-- Internal parser used to handle classes
 		do
 			if parsing_helper.is_using_compiler_factory then
 				Result := parsing_helper.etr_compiler_type_parser
@@ -44,7 +44,7 @@ feature {NONE} -- Parser
 		end
 
 	etr_expr_parser: EIFFEL_PARSER
-			-- internal parser used to handle expressions
+			-- Internal parser used to handle expressions
 		do
 			if parsing_helper.is_using_compiler_factory then
 				Result := parsing_helper.etr_compiler_expr_parser
@@ -54,7 +54,7 @@ feature {NONE} -- Parser
 		end
 
 	etr_feat_parser: EIFFEL_PARSER
-			-- internal parser used to handle instructions
+			-- Internal parser used to handle instructions
 		do
 			if parsing_helper.is_using_compiler_factory then
 				Result := parsing_helper.etr_compiler_feat_parser

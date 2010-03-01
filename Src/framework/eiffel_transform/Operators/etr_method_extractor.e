@@ -62,7 +62,7 @@ feature {NONE} -- Implementation (Attributes)
 
 feature {NONE} -- Implementation (Extraction)	
 
-	print_indep_type(a_var: ETR_TYPED_VAR): STRING
+	print_indep_type (a_var: ETR_TYPED_VAR): STRING
 			-- Print `a_var' indepantly of feature
 		do
 			if a_var.original_type.is_like_argument then
@@ -362,7 +362,7 @@ feature {NONE} -- Implementation (Extraction)
 
 feature {NONE} -- Implementation (Printing)
 
-	compute_extracted_method(a_start_path, a_end_path: AST_PATH; a_feature_name: STRING; a_feature_body: EIFFEL_LIST[INSTRUCTION_AS])
+	compute_extracted_method (a_start_path, a_end_path: AST_PATH; a_feature_name: STRING; a_feature_body: EIFFEL_LIST[INSTRUCTION_AS])
 			-- Puts things together to create the extracted method
 		local
 			l_feature_output_text: STRING
@@ -529,7 +529,7 @@ feature {NONE} -- Implementation (Printing)
 			end
 		end
 
-	compute_old_method(a_start_path, a_end_path: AST_PATH; a_extracted_feature_name: STRING; a_feature_ast: FEATURE_AS)
+	compute_old_method (a_start_path, a_end_path: AST_PATH; a_extracted_feature_name: STRING; a_feature_ast: FEATURE_AS)
 		local
 			l_old_method_printer: ETR_OLD_METHOD_PRINTER
 			l_feat_output: ETR_AST_STRING_OUTPUT
@@ -572,7 +572,7 @@ feature {NONE} -- Implementation (Printing)
 			end
 		end
 
-	log_named_list(a_name: STRING; a_list: LIST[STRING])
+	log_named_list (a_name: STRING; a_list: LIST[STRING])
 			-- Log list
 		local
 			l_log_line: STRING
@@ -605,7 +605,7 @@ feature {NONE} -- Implementation (Printing)
 			log_named_list("changed_arguments", changed_arguments)
 		end
 
-	compute_start_end_ids(a_start_path, a_end_path: AST_PATH)
+	compute_start_end_ids (a_start_path, a_end_path: AST_PATH)
 			-- Compute block_start and block_end
 		local
 			l_index: INTEGER
@@ -640,7 +640,7 @@ feature -- Operations
 	old_method: ETR_TRANSFORMABLE
 			-- Original method with the extracted part replaced by a call to the extracted method
 
-	extract_method(a_feature: ETR_TRANSFORMABLE; a_context_feature: STRING; a_start_path, a_end_path: AST_PATH; a_extracted_method_name: STRING)
+	extract_method (a_feature: ETR_TRANSFORMABLE; a_context_feature: STRING; a_start_path, a_end_path: AST_PATH; a_extracted_method_name: STRING)
 			-- Extracts a method with name `a_extracted_method_name' of `a_feature' starting at `a_start_path' and ending at `a_end_path'
 		require
 			non_void: a_feature /= void and a_context_feature /= void and a_start_path /= void and a_end_path /= void and a_extracted_method_name /= void

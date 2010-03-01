@@ -33,8 +33,8 @@ feature -- Operations
 			has_errors := false
 		end
 
-	add_error(a_class: detachable ANY; a_feature: detachable STRING; an_error_message: STRING)
-			-- set `last_error' to `an_error_message'
+	add_error (a_class: detachable ANY; a_feature: detachable STRING; an_error_message: STRING)
+			-- Set `last_error' to `an_error_message'
 		local
 			l_error_msg: STRING
 		do

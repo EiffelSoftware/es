@@ -121,29 +121,38 @@ inherit
 create
 	make_with_output
 
-feature {NONE} -- Implementation
+feature {NONE} -- Creation
+
+	make_with_output (an_output: like output)
+			-- Make with `an_output'
+		do
+			output := an_output
+		end
+
+feature {NONE} -- Implementation (Attributes)
 
 	is_in_agent_target: BOOLEAN
 			-- Hack needed to process agent OPERANDS
 
 	is_in_inline_agent: BOOLEAN
+			-- Currently processing an inline agent?
 
-	processing_needed(an_ast: detachable AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
+feature {NONE} -- Implementation (Processing)
+
+	processing_needed (an_ast: detachable AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
 			-- should `an_ast' be processed
 		do
 			Result := attached an_ast
 		end
 
-	process(l_as: detachable AST_EIFFEL; a_parent: detachable AST_EIFFEL; a_branch: INTEGER)
+	process (l_as: detachable AST_EIFFEL; a_parent: detachable AST_EIFFEL; a_branch: INTEGER)
 			-- Process `l_as'
 		do
---			if attached l_as then
-				l_as.process (Current)
---			end
+			l_as.process (Current)
 		end
 
 	process_child_list (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process `l_as' and use `separator' for string output
+			-- Process `l_as' and use `separator' for string output
 		do
 			output.enter_child (l_as)
 			process_list_with_separator (l_as, separator, a_parent, a_branch)
@@ -151,7 +160,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_child_block_list (l_as: EIFFEL_LIST[AST_EIFFEL]; separator: STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process `l_as' and use `separator' for string output
+			-- Process `l_as' and use `separator' for string output
 		do
 			output.enter_child (l_as)
 			output.enter_block
@@ -161,7 +170,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process `l_as' and use `separator' for string output
+			-- Process `l_as' and use `separator' for string output
 		local
 			l_cursor: INTEGER
 		do
@@ -181,7 +190,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_identifier_list (l_as: IDENTIFIER_LIST)
-			-- process `l_as'
+			-- Process `l_as'
 		local
 			l_cursor: INTEGER
 		do
@@ -203,14 +212,8 @@ feature {NONE} -- Implementation
 			l_as.go_i_th (l_cursor)
 		end
 
-	make_with_output,set_output(an_output: like output)
-			-- make with `an_output'
-		do
-			output := an_output
-		end
-
 	process_block (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process as block
+			-- Process as block
 		do
 			output.enter_block
 			process(l_as, a_parent, a_branch)
@@ -218,7 +221,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_child (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process as child
+			-- Process as child
 		do
 			output.enter_child (l_as)
 			process(l_as, a_parent, a_branch)
@@ -226,7 +229,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_child_if_needed (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process if needed
+			-- Process if needed
 		do
 			if processing_needed (l_as, a_parent, a_branch) then
 				process_child (l_as, a_parent, a_branch)
@@ -234,7 +237,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_child_block (l_as: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process as child and block
+			-- Process as child and block
 		do
 			output.enter_block
 			output.enter_child (l_as)
@@ -247,8 +250,8 @@ feature -- Output
 
 	output: ETR_AST_STRUCTURE_OUTPUT_I
 
-	print_ast_to_output(an_ast: detachable AST_EIFFEL)
-			-- prints `an_ast' to `output'
+	print_ast_to_output (an_ast: detachable AST_EIFFEL)
+			-- Prints `an_ast' to `output'
 		do
 			process_child (an_ast, void, 0)
 		end

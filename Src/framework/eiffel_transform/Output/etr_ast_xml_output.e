@@ -32,6 +32,7 @@ feature {NONE} -- Creation
 feature {NONE} -- Implementation
 
 	node_stack: LINKED_STACK[STRING]
+			-- Children that have been entered
 
 feature -- Output
 
@@ -76,7 +77,7 @@ feature -- Output
 			node_stack.remove
 		end
 
-	enter_child(a_child: ANY)
+	enter_child (a_child: ANY)
 			-- <precursor>
 		local
 			l_formatted_name: STRING

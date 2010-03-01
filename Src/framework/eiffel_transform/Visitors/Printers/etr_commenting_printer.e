@@ -16,7 +16,7 @@ create
 
 feature -- Operations
 
-	print_feature_with_comment(a_feature: AST_EIFFEL; a_comment: attached like comment)
+	print_feature_with_comment (a_feature: AST_EIFFEL; a_comment: attached like comment)
 			-- Print `a_feature' with `a_comment'
 		require
 			non_void: a_feature /= void and a_comment /= void
@@ -26,7 +26,7 @@ feature -- Operations
 			print_ast_to_output(a_feature)
 		end
 
-	print_class_with_comment(a_class: AST_EIFFEL; a_comments: attached like comments)
+	print_class_with_comment (a_class: AST_EIFFEL; a_comments: attached like comments)
 			-- Print `a_class' with `a_comments'
 		require
 			non_void: a_class /= void and a_comments /= void

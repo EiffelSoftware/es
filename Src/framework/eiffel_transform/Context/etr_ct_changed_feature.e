@@ -8,6 +8,17 @@ class
 create {ETR_TRANSFORM_CONTEXT}
 	make
 
+feature {NONE} -- Creation
+
+	make (a_name: like feature_name; an_old_type: like old_type; a_new_type: like new_type)
+			-- Make with `a_name', `an_old_type' and `a_new_type'
+		do
+			feature_name := a_name
+
+			old_type := an_old_type
+			new_type := a_new_type
+		end
+
 feature  -- Access
 
 	old_type,new_type:CLASS_C
@@ -16,18 +27,7 @@ feature  -- Access
 	feature_name:STRING
 			-- Name of the target feature
 
-feature {NONE} -- Creation
-
-	make(a_name: like feature_name; an_old_type: like old_type; a_new_type: like new_type)
-			-- make with `a_name', `an_old_type' and `a_new_type'
-		do
-			feature_name := a_name
-
-			old_type := an_old_type
-			new_type := a_new_type
-		end
-
-note
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	extract_renamings(a_feature_name: STRING; a_source_type, a_target_type: TYPE_A): detachable ETR_CT_RENAMED_CONSTRAINT_FEATURES
+	extract_renamings (a_feature_name: STRING; a_source_type, a_target_type: TYPE_A): detachable ETR_CT_RENAMED_CONSTRAINT_FEATURES
 			-- Extracts renamings of `a_source_type' and `a_target_type'
 		require
 			non_void: a_feature_name /= void and a_source_type /= void and a_target_type /= void
@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_renamed_name_or_type(an_old_var, a_new_var: ETR_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
+	check_renamed_name_or_type (an_old_var, a_new_var: ETR_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
 				-- Checks for changed name or type of local/arg
 		local
 			l_changed_type, l_changed_name: BOOLEAN
@@ -69,7 +69,7 @@ feature -- Transformations
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
-	transform_to_context(a_transformable: ETR_TRANSFORMABLE; a_target_context: ETR_CONTEXT)
+	transform_to_context (a_transformable: ETR_TRANSFORMABLE; a_target_context: ETR_CONTEXT)
 			-- Transform `a_transformable' into `a_target_context'
 		require
 			non_void: a_transformable /= void and a_target_context /= void

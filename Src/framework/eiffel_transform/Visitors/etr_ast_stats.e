@@ -28,7 +28,7 @@ feature -- Access
 
 feature -- Operation
 
-	process_transformable(a_transformable: ETR_TRANSFORMABLE)
+	process_transformable (a_transformable: ETR_TRANSFORMABLE)
 			-- Process `a_transformable'
 		require
 			non_void: a_transformable /= void
@@ -37,7 +37,7 @@ feature -- Operation
 			process_ast(a_transformable.target_node)
 		end
 
-	process_ast(a_ast: AST_EIFFEL)
+	process_ast (a_ast: AST_EIFFEL)
 			-- Process `a_ast'
 		require
 			non_void: a_ast /= void

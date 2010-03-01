@@ -8,18 +8,10 @@ class
 create {ETR_TRANSFORM_CONTEXT}
 	make
 
-feature  -- Access
-
-	feature_name: STRING
-			-- Name of the target feature
-
-	source_renaming, target_renaming: detachable RENAMING_A
-			-- Renamings in the source and target context
-
 feature {NONE} -- Creation
 
-	make(a_feature_name: like feature_name; a_source_renaming: like source_renaming; a_target_renaming: like target_renaming)
-			-- make with `feature_name', `a_source_renaming' and `a_target_renaming'
+	make (a_feature_name: like feature_name; a_source_renaming: like source_renaming; a_target_renaming: like target_renaming)
+			-- Make with `feature_name', `a_source_renaming' and `a_target_renaming'
 		require
 			name_non_void: a_feature_name /= void
 			one_set: a_source_renaming /= void or a_target_renaming /= void
@@ -28,7 +20,16 @@ feature {NONE} -- Creation
 			source_renaming := a_source_renaming
 			target_renaming := a_target_renaming
 		end
-note
+
+feature  -- Access
+
+	feature_name: STRING
+			-- Name of the target feature
+
+	source_renaming, target_renaming: detachable RENAMING_A
+			-- Renamings in the source and target context
+
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

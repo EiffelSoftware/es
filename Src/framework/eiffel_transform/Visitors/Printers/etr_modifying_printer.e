@@ -19,97 +19,6 @@ inherit
 create
 	make
 
-feature {NONE} -- Implementation
-
-	replacement_disabled: BOOLEAN
-			-- Are replacements temporarly disabled?
-
-	app_prep_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
-			-- Appends/Prepends by parent-list
-
-	repl_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
-			-- Replacements by position
-
-	del_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
-			-- Deletions by position
-
-	ins_hash, app_hash, prep_hash: ETR_SORTED_MODIFICATION_SET
-			-- List-Operations grouped by parent-list and sorted by position in the list
-
-	processing_needed(an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
-			-- should `an_ast' be processed
-		local
-			l_cursor: INTEGER
-			l_path: AST_PATH
-		do
-			if attached {EIFFEL_LIST[AST_EIFFEL]}an_ast as l_list then
-				-- don't process if all items in the list are to be removed
-				from
-					l_cursor := l_list.index
-					l_list.start
-				until
-					Result or l_list.after
-				loop
-					if not del_hash.has (l_list.item.path) then
-						Result := true
-					end
-
-					l_list.forth
-				end
-				l_list.go_i_th (l_cursor)
-			elseif attached an_ast or else (app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch)) or repl_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch))) then
-				Result := True
-			end
-		end
-
-	process_or_replace (l_as: detachable AST_EIFFEL; a_parent: detachable AST_EIFFEL; a_branch: INTEGER)
-			-- process `l_as' and check for replacement
-		local
-			l_mod: ETR_AST_MODIFICATION
-			l_path: AST_PATH
-		do
-			if attached a_parent and then attached a_parent.path then
-				create l_path.make_from_parent (a_parent.path, a_branch)
-			elseif attached l_as and then attached l_as.path then
-				l_path := l_as.path
-			end
-
-			if l_path /= void then
-				l_mod := repl_hash.item (l_path)
-
-				if attached l_mod and not replacement_disabled then
-					output.append_string (l_mod.replacement_text)
-				else
-					Precursor(l_as, a_parent, a_branch)
-				end
-			else
-				Precursor(l_as, a_parent, a_branch)
-			end
-		end
-
-	shift_after_insert(mods_arr: ARRAY[ETR_AST_MODIFICATION]; pos: INTEGER)
-			-- shifts locations after an insertion at `pos'
-		local
-			i: INTEGER
-			l_mod: ETR_AST_MODIFICATION
-			l_brid: INTEGER
-		do
-			-- all operations after pos have to be incremented
-			from
-				i:=mods_arr.lower
-			until
-				i>mods_arr.upper
-			loop
-				l_mod := mods_arr[i]
-				l_brid := l_mod.branch_id
-
-				if l_brid >= pos then
-					l_mod.set_branch_id (l_brid+1)
-				end
-				i:=i+1
-			end
-		end
-
 feature {NONE} -- Creation
 
 	make(an_output: ETR_AST_STRUCTURE_OUTPUT_I; modifications: LIST[ETR_AST_MODIFICATION])
@@ -218,6 +127,97 @@ feature {NONE} -- Creation
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	replacement_disabled: BOOLEAN
+			-- Are replacements temporarly disabled?
+
+	app_prep_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
+			-- Appends/Prepends by parent-list
+
+	repl_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
+			-- Replacements by position
+
+	del_hash: HASH_TABLE[ETR_AST_MODIFICATION,AST_PATH]
+			-- Deletions by position
+
+	ins_hash, app_hash, prep_hash: ETR_SORTED_MODIFICATION_SET
+			-- List-Operations grouped by parent-list and sorted by position in the list
+
+	processing_needed (an_ast: AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
+			-- Should `an_ast' be processed
+		local
+			l_cursor: INTEGER
+			l_path: AST_PATH
+		do
+			if attached {EIFFEL_LIST[AST_EIFFEL]}an_ast as l_list then
+				-- don't process if all items in the list are to be removed
+				from
+					l_cursor := l_list.index
+					l_list.start
+				until
+					Result or l_list.after
+				loop
+					if not del_hash.has (l_list.item.path) then
+						Result := true
+					end
+
+					l_list.forth
+				end
+				l_list.go_i_th (l_cursor)
+			elseif attached an_ast or else (app_prep_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch)) or repl_hash.has (create {AST_PATH}.make_from_parent(a_parent.path, a_branch))) then
+				Result := True
+			end
+		end
+
+	process_or_replace (l_as: detachable AST_EIFFEL; a_parent: detachable AST_EIFFEL; a_branch: INTEGER)
+			-- Process `l_as' and check for replacement
+		local
+			l_mod: ETR_AST_MODIFICATION
+			l_path: AST_PATH
+		do
+			if attached a_parent and then attached a_parent.path then
+				create l_path.make_from_parent (a_parent.path, a_branch)
+			elseif attached l_as and then attached l_as.path then
+				l_path := l_as.path
+			end
+
+			if l_path /= void then
+				l_mod := repl_hash.item (l_path)
+
+				if attached l_mod and not replacement_disabled then
+					output.append_string (l_mod.replacement_text)
+				else
+					Precursor(l_as, a_parent, a_branch)
+				end
+			else
+				Precursor(l_as, a_parent, a_branch)
+			end
+		end
+
+	shift_after_insert (mods_arr: ARRAY[ETR_AST_MODIFICATION]; pos: INTEGER)
+			-- Shifts locations after an insertion at `pos'
+		local
+			i: INTEGER
+			l_mod: ETR_AST_MODIFICATION
+			l_brid: INTEGER
+		do
+			-- all operations after pos have to be incremented
+			from
+				i:=mods_arr.lower
+			until
+				i>mods_arr.upper
+			loop
+				l_mod := mods_arr[i]
+				l_brid := l_mod.branch_id
+
+				if l_brid >= pos then
+					l_mod.set_branch_id (l_brid+1)
+				end
+				i:=i+1
+			end
+		end
+
 feature -- Roundtrip
 
 	process_eiffel_list (l_as: EIFFEL_LIST[AST_EIFFEL])
@@ -226,7 +226,7 @@ feature -- Roundtrip
 		end
 
 	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process `l_as' and use `separator' for string output
+			-- Process `l_as' and use `separator' for string output
 		local
 			l_mods_arr: ARRAY[ETR_AST_MODIFICATION]
 			i, num_printed: INTEGER

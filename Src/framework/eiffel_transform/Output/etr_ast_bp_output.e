@@ -31,8 +31,10 @@ feature {NONE} -- Creation
 feature {NONE} -- Implementation
 
 	child_stack: LINKED_STACK[ANY]
+			-- Children we're in at the moment
 
 	is_new_child: BOOLEAN
+			-- Is the child at the top of a stack a newly added one
 
 feature -- Operations
 
@@ -44,7 +46,7 @@ feature -- Operations
 			Precursor
 		end
 
-	append_string(a_string: STRING)
+	append_string (a_string: STRING)
 			-- <precursor>
 		do
 			if last_was_newline then
@@ -68,7 +70,7 @@ feature -- Operations
 			end
 		end
 
-	enter_child(a_child: ANY)
+	enter_child (a_child: ANY)
 			-- <precursor>
 		do
 			child_stack.put (a_child)

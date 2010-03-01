@@ -16,19 +16,10 @@ inherit
 create
 	make
 
-feature -- Operation
-
-	print_feature(a_feature: FEATURE_AS)
-			-- print `a_body' to output
-		do
-			is_locals_first_pass := false
-			a_feature.process(Current)
-		end
-
 feature {NONE} -- Creation
 
-	make(a_output: like output; a_obsolete_list: like obsolete_locals; a_start_path: like start_path; a_end_path: like end_path; a_repl_text: like replacement_text)
-			-- make with `a_output', `a_obsolete_list', `a_start_path' and `a_end_path'
+	make (a_output: like output; a_obsolete_list: like obsolete_locals; a_start_path: like start_path; a_end_path: like end_path; a_repl_text: like replacement_text)
+			-- Make with `a_output', `a_obsolete_list', `a_start_path' and `a_end_path'
 		require
 			none_void: a_output /= void and a_obsolete_list /= void and a_start_path /= void and a_end_path /= void and a_repl_text /= void
 			same_parent: a_start_path.parent_path.is_equal (a_end_path.parent_path)
@@ -42,6 +33,15 @@ feature {NONE} -- Creation
 			replacement_text := a_repl_text
 
 			instr_list_parent := start_path.parent_path
+		end
+
+feature -- Operation
+
+	print_feature (a_feature: FEATURE_AS)
+			-- Print `a_body' to output
+		do
+			is_locals_first_pass := false
+			a_feature.process(Current)
 		end
 
 feature {NONE} -- Implementation

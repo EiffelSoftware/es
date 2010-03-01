@@ -10,9 +10,23 @@ inherit
 create
 	make
 
+feature {NONE} -- Creation
+
+	make (a_written_class: like written_class)
+			-- make with `a_written_class'
+		require
+			non_void: a_written_class /= void
+		do
+			written_class := a_written_class
+			class_context := Current
+		end
+
 feature --Access
 	written_class: CLASS_C
+			-- Compiled class that belongs to this context
+
 	written_in_features: LIST[ETR_FEATURE_CONTEXT]
+			-- Features in this context
 		do
 			if not attached internal_written_in_features then
 				init_features
@@ -21,6 +35,7 @@ feature --Access
 		end
 
 	written_in_features_by_name: HASH_TABLE[ETR_FEATURE_CONTEXT, STRING]
+			-- Features in this context
 		do
 			if not attached internal_written_in_features_by_name then
 				init_features
@@ -28,7 +43,7 @@ feature --Access
 			Result := internal_written_in_features_by_name
 		end
 
-	feature_of_id(an_id: INTEGER): ETR_FEATURE_CONTEXT
+	feature_of_id (an_id: INTEGER): ETR_FEATURE_CONTEXT
 			-- gets feature with the id `an_id' in the current context
 		local
 			l_feat_i: FEATURE_I
@@ -55,7 +70,7 @@ feature {NONE} -- Implementation
 	internal_written_in_features_by_name: like written_in_features_by_name
 
 	init_features
-			-- init internal feature tables
+			-- Init internal feature table
 		local
 			l_written_in: LIST [E_FEATURE]
 			l_feat_context: ETR_FEATURE_CONTEXT
@@ -73,17 +88,6 @@ feature {NONE} -- Implementation
 				internal_written_in_features_by_name.extend(l_feat_context, l_feat_context.name)
 				l_written_in.forth
 			end
-		end
-
-feature {NONE} -- Creation
-
-	make(a_written_class: like written_class)
-			-- make with `a_written_class'
-		require
-			non_void: a_written_class /= void
-		do
-			written_class := a_written_class
-			class_context := Current
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

@@ -14,15 +14,7 @@ create
 	make,
 	make_with_indentation_string
 
-feature {NONE} -- Implementation
-	context: ROUNDTRIP_STRING_LIST_CONTEXT
-			-- String-context used to append strings
-
-	last_was_newline: BOOLEAN
-			-- Was the last symbol a newline?
-
-	current_indentation: STRING
-			-- Current level of indentation
+feature {NONE} -- Creation
 
 	make is
 			-- Create with `default_indentation_string'
@@ -30,7 +22,7 @@ feature {NONE} -- Implementation
 			make_with_indentation_string(default_indentation_string)
 		end
 
-	make_with_indentation_string(an_indentation_string: like indentation_string)
+	make_with_indentation_string (an_indentation_string: like indentation_string)
 			-- Create with `an_indentation_string'
 		require
 			string_attached: an_indentation_string /= void
@@ -40,6 +32,16 @@ feature {NONE} -- Implementation
 			indentation_string := an_indentation_string
 			last_was_newline := true
 		end
+
+feature {NONE} -- Implementation
+	context: ROUNDTRIP_STRING_LIST_CONTEXT
+			-- String-context used to append strings
+
+	last_was_newline: BOOLEAN
+			-- Was the last symbol a newline?
+
+	current_indentation: STRING
+			-- Current level of indentation
 
 feature -- Constants
 
@@ -80,7 +82,7 @@ feature -- Operations
 			block_depth := a_block_depth
 		end
 
-	set_indentation_string(an_indentation_string: like indentation_string)
+	set_indentation_string (an_indentation_string: like indentation_string)
 			-- Set `indentation_string'
 		require
 			not_void: an_indentation_string /= void
@@ -125,7 +127,7 @@ feature -- Operations
 			-- unused
 		end
 
-	append_string(a_string: STRING)
+	append_string (a_string: STRING)
 			-- Appends `a_string' to the output
 		do
 			if last_was_newline then

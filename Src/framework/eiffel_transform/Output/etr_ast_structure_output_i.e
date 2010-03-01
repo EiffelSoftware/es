@@ -45,7 +45,7 @@ feature -- Operations
 			depth_decreased: block_depth = old block_depth - 1
 		end
 
-	enter_child(a_child: ANY)
+	enter_child (a_child: ANY)
 			-- Enters a new child
 		require
 			non_void: a_child /= void
@@ -57,7 +57,7 @@ feature -- Operations
 		deferred
 		end
 
-	append_string(a_string: STRING)
+	append_string (a_string: STRING)
 			-- Appends `a_string' to the output
 		require
 			not_void: a_string /= void

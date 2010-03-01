@@ -21,7 +21,7 @@ create
 feature {NONE} -- Creation
 
 	make(a_context: like context)
-			-- make with `a_feature_context'
+			-- Make with `a_feature_context'
 		require
 			set: a_context /= void
 		do
@@ -30,8 +30,8 @@ feature {NONE} -- Creation
 
 feature -- Operation
 
-	process_from_root(a_root: AST_EIFFEL)
-			-- process from `a_root'
+	process_from_root (a_root: AST_EIFFEL)
+			-- Process from `a_root'
 		require
 			root_set: a_root /= void
 		do
@@ -51,8 +51,8 @@ feature {NONE} -- Implementation
 	current_scope: LINKED_LIST[AST_PATH]
 			-- The current scope
 
-	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and `a_branches'
+	process_branch (a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+			-- <precursor>
 		local
 			i: INTEGER
 			old_path: like current_path

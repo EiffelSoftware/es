@@ -13,7 +13,7 @@ inherit
 
 feature -- Operation
 
-	remove_ifs_in(a_ast: AST_EIFFEL; a_take_branches: BOOLEAN; a_first_only: BOOLEAN)
+	remove_ifs_in (a_ast: AST_EIFFEL; a_take_branches: BOOLEAN; a_first_only: BOOLEAN)
 		require
 			non_void: a_ast /= void
 		do

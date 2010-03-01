@@ -134,7 +134,7 @@ feature -- Test routines
 			assert("Invalid result", are_asts_equal(parsing_helper.parsed_ast, modifier.modified_transformable.target_node))
 		end
 
-	print_eiffel_files(a_directory: DIRECTORY)
+	print_eiffel_files (a_directory: DIRECTORY)
 			-- Recursively parses and reprints all classes in `a_directory'
 		require
 			exists: a_directory.exists
@@ -217,7 +217,7 @@ feature {NONE} -- Helpers
 			create Result
 		end
 
-	test_print_file(a_file: KL_BINARY_INPUT_FILE)
+	test_print_file (a_file: KL_BINARY_INPUT_FILE)
 			-- reads a complex syntax file, prints it out from structure and tries to reparse it
 		require
 			exists: a_file.exists
@@ -259,7 +259,7 @@ feature {NONE} -- Helpers
 			end
 		end
 
-	are_asts_equal(an_ast, another_ast: AST_EIFFEL): BOOLEAN
+	are_asts_equal (an_ast, another_ast: AST_EIFFEL): BOOLEAN
 			-- compare asts by printing and comparing strings
 		local
 			l_ast1_str, l_ast2_str: STRING

@@ -18,17 +18,6 @@ inherit
 create
 	make
 
-feature {NONE} -- Implementation
-
-	features_to_add: LIST[FEATURE_I]
-			-- Features that will be added from an ancestor
-
-	def_remover_output: ETR_AST_STRING_OUTPUT
-			-- Feature's with the deferred-keyword removed
-
-	def_remover: ETR_ECG_DEFERRED_REMOVER
-			-- Visitor that removes the deferred-keywords
-
 feature {NONE} -- Creation
 
 	make(a_output: like output; a_features_to_add: like features_to_add)
@@ -39,6 +28,17 @@ feature {NONE} -- Creation
 			create def_remover_output.make
 			create def_remover.make_with_output(def_remover_output)
 		end
+
+feature {NONE} -- Implementation
+
+	features_to_add: LIST[FEATURE_I]
+			-- Features that will be added from an ancestor
+
+	def_remover_output: ETR_AST_STRING_OUTPUT
+			-- Feature's with the deferred-keyword removed
+
+	def_remover: ETR_ECG_DEFERRED_REMOVER
+			-- Visitor that removes the deferred-keywords
 
 feature {AST_EIFFEL} -- Roundtrip
 

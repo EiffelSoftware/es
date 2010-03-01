@@ -13,7 +13,7 @@ inherit
 
 feature -- Operation
 
-	rewrite_loops_in(a_ast: AST_EIFFEL; a_unroll_count: like unroll_count; a_first_only: BOOLEAN)
+	rewrite_loops_in (a_ast: AST_EIFFEL; a_unroll_count: like unroll_count; a_first_only: BOOLEAN)
 		require
 			non_void: a_ast /= void
 			count_pos: a_unroll_count>=0

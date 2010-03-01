@@ -34,16 +34,16 @@ feature -- Access
 
 feature -- Operations
 
-	add_list(a_list: like modifications)
-			-- add `a_list' to `modifications'
+	add_list (a_list: like modifications)
+			-- Add `a_list' to `modifications'
 		require
 			list_attached: a_list /= void
 		do
 			modifications.append (a_list)
 		end
 
-	add(a_modification: ETR_AST_MODIFICATION)
-			-- add `a_modification' to `modifications'
+	add (a_modification: ETR_AST_MODIFICATION)
+			-- Add `a_modification' to `modifications'
 		require
 			non_void: a_modification /= void
 		do
@@ -51,14 +51,14 @@ feature -- Operations
 		end
 
 	reset
-			-- empty `modifications' and reset `output'
+			-- Empty `modifications' and reset `output'
 		do
 			modifications.wipe_out
 			output.reset
 		end
 
-	apply_to(a_transformable: ETR_TRANSFORMABLE)
-			-- apply to `a_transformable'
+	apply_to (a_transformable: ETR_TRANSFORMABLE)
+			-- Apply to `a_transformable'
 		require
 			non_void: a_transformable /= void and a_transformable.is_valid /= void
 		local
@@ -77,7 +77,7 @@ feature -- Operations
 				error_handler.add_error (Current, "apply_to", "Modification resulted in unparsable text.")
 			end
 
-			-- reset the modifications list and output
+			-- Reset the modifications list and output
 			reset
 		end
 note

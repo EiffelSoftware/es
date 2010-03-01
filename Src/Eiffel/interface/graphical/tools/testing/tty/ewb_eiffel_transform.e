@@ -78,7 +78,7 @@ feature -- Properties
 									"end", a1_context )
 
 			-- transform to `a2_context'
-			a2_instr := a1_instr.transform_to_context (a2_context)
+			a2_instr := a1_instr.as_in_other_context (a2_context)
 
 			-- print transformed instruction
 			io.put_string (ast_tools.ast_to_string(a2_instr.target_node))
@@ -149,7 +149,7 @@ feature -- Properties
 									"end", a1_context )
 
 			-- transform to new context with renaming
-			trans := trans.transform_to_context (renamer.transformation_result.context)
+			trans := trans.as_in_other_context (renamer.transformation_result.context)
 
 			io.put_string (trans.out)
 		end
@@ -470,17 +470,17 @@ feature -- Properties
 			-- Action performed when invoked from the
 			-- command line.
 		do
---			test_ren
---			test_setter_gen
---			test_context_transformation
+			test_ren
+			test_setter_gen
+			test_context_transformation
 			test_ass_attempt_replacing
---			test_ec_gen
---			test_typechecker
---			test_me_all
+			test_ec_gen
+			test_typechecker
+			test_me_all
 			test_branch_removal
---			test_xml_print
---			test_dot_print
---			test_bp_print
+			test_xml_print
+			test_dot_print
+			test_bp_print
 		end
 
 note

@@ -32,7 +32,7 @@ feature -- Operations
 			block_depth := block_depth - 1
 		end
 
-	enter_child(a_child: ANY)
+	enter_child (a_child: ANY)
 			-- <precursor>
 		do
 			if attached {AST_EIFFEL}a_child as ast_child then
@@ -61,7 +61,7 @@ feature -- Operations
 			end
 		end
 
-	append_string(a_string: STRING)
+	append_string (a_string: STRING)
 			-- <precursor>
 		do
 			-- unused

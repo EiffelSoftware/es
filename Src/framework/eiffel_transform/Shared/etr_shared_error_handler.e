@@ -9,7 +9,7 @@ class
 feature {NONE} -- Shared
 
 	error_handler: ETR_ERROR_HANDLER
-			-- shared instance of ETR_ERROR_HANDLER
+			-- Shared instance of ETR_ERROR_HANDLER
 		once
 			create Result
 		end

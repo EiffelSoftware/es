@@ -27,7 +27,8 @@ feature {NONE} -- Implementation
 	remapped_regions: LINKED_LIST[TUPLE[old_start: INTEGER; new_start: INTEGER; old_count: INTEGER; new_count: INTEGER]]
 	breakpoint_mappings_internal: LINKED_LIST[like breakpoint_mappings]
 
-	map_region_one_to_one(a_start, a_end: INTEGER)
+	map_region_one_to_one (a_start, a_end: INTEGER)
+			-- Map region from `a_start' to `a_end' 1:1
 		local
 			i: INTEGER
 		do
@@ -41,7 +42,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	map_region_shifted(a_start, a_count, a_reference: INTEGER)
+	map_region_shifted (a_start, a_count, a_reference: INTEGER)
+			-- Map new region at `a_start' to `a_reference'
 		require
 			count_pos: a_count>0
 		local

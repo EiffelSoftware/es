@@ -39,8 +39,10 @@ feature {NONE} -- Implementation
 			-- String-context used to append strings
 
 	node_stack: LINKED_STACK[INTEGER]
+			-- Children that have been entered
 
 	node_counter: INTEGER
+			-- Counter for node id's
 
 feature -- Output
 
@@ -57,7 +59,7 @@ feature -- Output
 			node_counter := 0
 		end
 
-	append_string(a_string: STRING)
+	append_string (a_string: STRING)
 			-- <precursor>
 		do
 			-- unused
@@ -81,7 +83,7 @@ feature -- Output
 			node_stack.remove
 		end
 
-	enter_child(a_child: ANY)
+	enter_child (a_child: ANY)
 			-- <precursor>
 		do
 			-- Create label for the new node

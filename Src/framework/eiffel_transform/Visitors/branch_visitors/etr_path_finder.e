@@ -8,6 +8,14 @@ deferred class
 inherit
 	ETR_BRANCH_VISITOR
 
+feature {NONE} -- Creation
+
+	make_with_match_list (a_match_list: like match_list)
+			-- Make with `a_match_list'
+		do
+			match_list := a_match_list
+		end
+
 feature -- Access
 
 	found: BOOLEAN
@@ -21,7 +29,7 @@ feature -- Access
 
 feature -- Operation
 
-	find_from(a_ast: AST_EIFFEL)
+	find_from (a_ast: AST_EIFFEL)
 			-- Find from `a_ast'
 		do
 			found := false
@@ -39,14 +47,6 @@ feature -- Operation
 			end
 		end
 
-feature {NONE} -- Creation
-
-	make_with_match_list(a_match_list: like match_list)
-			-- Make with `a_match_list'
-		do
-			match_list := a_match_list
-		end
-
 feature {NONE} -- Implementation
 
 	match_list: LEAF_AS_LIST
@@ -55,13 +55,13 @@ feature {NONE} -- Implementation
 	current_path: AST_PATH
 			-- The path we're currently at
 
-	is_target(a_ast: AST_EIFFEL): BOOLEAN
-			-- is `a_ast' the target?
+	is_target (a_ast: AST_EIFFEL): BOOLEAN
+			-- <precursor>
 		deferred
 		end
 
-	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and `a_branches'
+	process_branch (a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+			-- <precursor>
 		local
 			i: INTEGER
 			l_prev_path: AST_PATH

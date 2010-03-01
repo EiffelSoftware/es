@@ -156,7 +156,7 @@ feature -- Output
 feature -- Type evaluation
 
 	written_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
-			-- returns the type of `a_type' as it was written
+			-- Returns the type of `a_type' as it was written
 		require
 			type_non_void: a_type /= void
 			context_set: a_written_class /= void and a_feature /= void
@@ -176,7 +176,7 @@ feature -- Type evaluation
 		end
 
 	explicit_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
-			-- returns the explicit type of `a_type' in `a_context'
+			-- Returns the explicit type of `a_type' in `a_context'
 		require
 			type_non_void: a_type /= void
 			context_set: a_written_class /= void and a_feature /= void
@@ -196,7 +196,7 @@ feature -- Type evaluation
 		end
 
 	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C): TYPE_A
-			-- returns the explicit type of `a_type' in `a_context'
+			-- Returns the explicit type of `a_type' in `a_context'
 		require
 			type_non_void: a_type /= void
 			written_class_non_void: a_written_class /= void
@@ -307,7 +307,7 @@ feature -- Type checking
 feature {NONE} -- Implementation
 
 	init_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: detachable AST_PATH)
-			-- init with object test locals from `a_feature_context'
+			-- Init with object test locals from `a_feature_context'
 		local
 			l_local_info: LOCAL_INFO
 			l_cur_local: ETR_OBJECT_TEST_LOCAL
@@ -335,7 +335,7 @@ feature {NONE} -- Implementation
 		end
 
 	init_locals (a_feature_context: ETR_FEATURE_CONTEXT)
-			-- adds the locals from `a_feature_context'
+			-- Adds the locals from `a_feature_context'
 		local
 			l_index: INTEGER
 			l_local_info: LOCAL_INFO
@@ -358,7 +358,7 @@ feature {NONE} -- Implementation
 		end
 
 	init_arguments (a_feature_context: ETR_FEATURE_CONTEXT)
-			-- adds the arguments from `a_feature_context'
+			-- Adds the arguments from `a_feature_context'
 		local
 			l_index: INTEGER
 			l_local_info: LOCAL_INFO
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 		end
 
 	check_expr_type (a_context: ETR_CONTEXT; an_expr: EXPR_AS)
-			-- typechecks `an_expr' in `a_context'
+			-- Typechecks `an_expr' in `a_context'
 		require
 			correct_factory: parsing_helper.is_using_compiler_factory
 		local

@@ -19,6 +19,77 @@ create
 convert
 	to_ast: {AST_EIFFEL}
 
+feature {NONE} -- creation
+
+	make_in_class (a_node: like target_node; a_class: CLASS_C)
+			-- Make with `a_node' and `a_class'. Duplicate AST.
+		require
+			non_void: a_node /= void and a_class /= void
+		do
+			make_from_ast (a_node, create {ETR_CLASS_CONTEXT}.make(a_class), true)
+		end
+
+	make_from_ast (a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
+			-- Make with `a_node' and `a_context'. Duplicate AST if `duplicate' set
+		require
+			non_void: a_node /= void and a_context /= void
+		do
+			if duplicate then
+				ast_tools.duplicate_ast (a_node)
+				target_node := ast_tools.duplicated_ast
+			else
+				target_node := a_node
+			end
+
+			context := a_context
+
+			is_valid := true
+
+			-- index it
+			calculate_paths
+		end
+
+	make_from_ast_list (a_list: LIST[like target_node]; a_context: like context; duplicate: BOOLEAN)
+			-- Make with `a_list' and `a_context'. Duplicate AST if `duplicate' set
+		require
+			non_void: a_list /= void and a_context /= void
+		local
+			l_eiffel_list: EIFFEL_LIST[AST_EIFFEL]
+		do
+			-- duplicate all items
+			-- since we're gonna change their paths!
+			from
+				a_list.start
+				create l_eiffel_list.make (a_list.count)
+			until
+				a_list.after
+			loop
+				if duplicate then
+					ast_tools.duplicate_ast (a_list.item)
+					l_eiffel_list.extend (ast_tools.duplicated_ast)
+				else
+					l_eiffel_list.extend (a_list.item)
+				end
+
+				a_list.forth
+			end
+
+			target_node := l_eiffel_list
+			context := a_context
+			is_valid := true
+
+			-- reindex it
+			calculate_paths
+		end
+
+	make_invalid
+			-- make and mark as invalid
+		do
+			context := void
+			target_node := void
+			is_valid := false
+		end
+
 feature -- Conversion
 
 	to_ast: AST_EIFFEL
@@ -32,19 +103,19 @@ feature -- Conversion
 feature {NONE} -- Implementation
 
 	context_transformer: ETR_TRANSFORM_CONTEXT
-			-- shared instance of ETR_TRANSFORM_CONTEXT
+			-- Shared instance of ETR_TRANSFORM_CONTEXT
 		once
 			create Result
 		end
 
 	path_initializer: ETR_AST_PATH_INITIALIZER
-			-- shared instance of ETR_AST_PATH_INITIALIZER
+			-- Shared instance of ETR_AST_PATH_INITIALIZER
 		once
 			create Result
 		end
 
 	bp_initializer: ETR_BP_SLOT_INITIALIZER
-			-- shared instance of ETR_BP_SLOT_INITIALIZER
+			-- Shared instance of ETR_BP_SLOT_INITIALIZER
 		once
 			create Result
 		end
@@ -72,7 +143,7 @@ feature -- Operation
 			end
 		end
 
-	transform_to_context (a_other_context: like context): like Current
+	as_in_other_context (a_other_context: like context): like Current
 			-- Transform `Current' to `a_other_context'
 		require
 			is_valid: is_valid
@@ -126,7 +197,7 @@ feature -- Access
 			-- Have breakpoint slots been calculated in `target_node'
 
 	path: detachable AST_PATH
-			-- path of `Current'
+			-- Path of `Current'
 		do
 			if attached target_node then
 				Result := target_node.path
@@ -154,76 +225,6 @@ feature -- Output
 			end
 		end
 
-feature {NONE} -- creation
-
-	make_in_class(a_node: like target_node; a_class: CLASS_C)
-			-- make with `a_node' and `a_class'. Duplicate AST.
-		require
-			non_void: a_node /= void and a_class /= void
-		do
-			make_from_ast (a_node, create {ETR_CLASS_CONTEXT}.make(a_class), true)
-		end
-
-	make_from_ast(a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
-			-- make with `a_node' and `a_context'. Duplicate AST if `duplicate' set
-		require
-			non_void: a_node /= void and a_context /= void
-		do
-			if duplicate then
-				ast_tools.duplicate_ast (a_node)
-				target_node := ast_tools.duplicated_ast
-			else
-				target_node := a_node
-			end
-
-			context := a_context
-
-			is_valid := true
-
-			-- index it
-			calculate_paths
-		end
-
-	make_from_ast_list(a_list: LIST[like target_node]; a_context: like context; duplicate: BOOLEAN)
-			-- make with `a_list' and `a_context'. Duplicate AST if `duplicate' set
-		require
-			non_void: a_list /= void and a_context /= void
-		local
-			l_eiffel_list: EIFFEL_LIST[AST_EIFFEL]
-		do
-			-- duplicate all items
-			-- since we're gonna change their paths!
-			from
-				a_list.start
-				create l_eiffel_list.make (a_list.count)
-			until
-				a_list.after
-			loop
-				if duplicate then
-					ast_tools.duplicate_ast (a_list.item)
-					l_eiffel_list.extend (ast_tools.duplicated_ast)
-				else
-					l_eiffel_list.extend (a_list.item)
-				end
-
-				a_list.forth
-			end
-
-			target_node := l_eiffel_list
-			context := a_context
-			is_valid := true
-
-			-- reindex it
-			calculate_paths
-		end
-
-	make_invalid
-			-- make and mark as invalid
-		do
-			context := void
-			target_node := void
-			is_valid := false
-		end
 invariant
 	valid_target: is_valid implies (attached target_node and attached context)
 note

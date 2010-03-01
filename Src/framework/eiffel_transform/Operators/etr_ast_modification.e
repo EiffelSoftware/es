@@ -16,6 +16,73 @@ create {ETR_BASIC_OPS,ETR_MODIFYING_PRINTER}
 	make_list_append,
 	make_list_put_ith
 
+feature {NONE} -- Creation
+
+	make_list_put_ith (a_list: like location; a_position: like list_position; a_replacement: like new_transformable)
+			-- Replace item at position `a_position' in `a_list' by `a_replacement'
+		do
+			is_list_put_ith := true
+			list_position := a_position
+
+			location := a_list
+			new_transformable := a_replacement
+		end
+
+	make_list_append (a_list: like location; a_replacement: like new_transformable)
+			-- Append `a_replacement' to `a_list'
+		do
+			is_list_append := true
+
+			location := a_list
+			new_transformable := a_replacement
+		end
+
+	make_list_prepend (a_list: like location; a_replacement: like new_transformable)
+			-- Prepend `a_replacement' to `a_list'
+		do
+			is_list_prepend := true
+
+			location := a_list
+			new_transformable := a_replacement
+		end
+
+	make_replace (a_reference: like location; a_replacement: like replacement_text)
+			-- Replace `a_reference' by `a_replacement'
+		do
+			is_replace := true
+
+			location := a_reference
+			replacement_text := a_replacement
+		end
+
+	make_insert_before (a_reference: like location; a_new_trans: like new_transformable)
+			-- Insert `a_new_trans' before `a_reference'
+		do
+			is_insert_before := true
+			branch_id := a_reference.branch_id
+
+			location := a_reference
+			new_transformable := a_new_trans
+		end
+
+	make_insert_after (a_reference: like location; a_new_trans: like new_transformable)
+			-- Insert `a_new_trans' after `a_reference'
+		do
+			is_insert_after := true
+			branch_id := a_reference.branch_id
+
+			location := a_reference
+			new_transformable := a_new_trans
+		end
+
+	make_delete (a_reference: like location;)
+			-- Delete `a_transformable'
+		do
+			is_delete := true
+
+			location := a_reference
+		end
+
 feature -- Access
 
 	is_replace: BOOLEAN
@@ -68,73 +135,6 @@ feature {ETR_MODIFYING_PRINTER} -- Printing
 			-- set `branch_id' to `a_branch_id'
 		do
 			branch_id := a_branch_id
-		end
-
-feature {NONE} -- Creation
-
-	make_list_put_ith(a_list: like location; a_position: like list_position; a_replacement: like new_transformable)
-			-- Replace item at position `a_position' in `a_list' by `a_replacement'
-		do
-			is_list_put_ith := true
-			list_position := a_position
-
-			location := a_list
-			new_transformable := a_replacement
-		end
-
-	make_list_append(a_list: like location; a_replacement: like new_transformable)
-			-- Append `a_replacement' to `a_list'
-		do
-			is_list_append := true
-
-			location := a_list
-			new_transformable := a_replacement
-		end
-
-	make_list_prepend(a_list: like location; a_replacement: like new_transformable)
-			-- Prepend `a_replacement' to `a_list'
-		do
-			is_list_prepend := true
-
-			location := a_list
-			new_transformable := a_replacement
-		end
-
-	make_replace(a_reference: like location; a_replacement: like replacement_text)
-			-- Replace `a_reference' by `a_replacement'
-		do
-			is_replace := true
-
-			location := a_reference
-			replacement_text := a_replacement
-		end
-
-	make_insert_before(a_reference: like location; a_new_trans: like new_transformable)
-			-- Insert `a_new_trans' before `a_reference'
-		do
-			is_insert_before := true
-			branch_id := a_reference.branch_id
-
-			location := a_reference
-			new_transformable := a_new_trans
-		end
-
-	make_insert_after(a_reference: like location; a_new_trans: like new_transformable)
-			-- Insert `a_new_trans' after `a_reference'
-		do
-			is_insert_after := true
-			branch_id := a_reference.branch_id
-
-			location := a_reference
-			new_transformable := a_new_trans
-		end
-
-	make_delete(a_reference: like location;)
-			-- Delete `a_transformable'
-		do
-			is_delete := true
-
-			location := a_reference
 		end
 
 note

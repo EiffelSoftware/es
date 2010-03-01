@@ -9,19 +9,19 @@ class
 feature {NONE} -- Implementation
 
 	printer: ETR_AST_STRUCTURE_PRINTER
-			-- prints small ast fragments to text
+			-- Prints small ast fragments to text
 		once
 			create Result.make_with_output(printer_output)
 		end
 
 	commenting_printer: ETR_COMMENTING_PRINTER
-			-- prints features with comment to text
+			-- Prints features with comment to text
 		once
 			create Result.make_with_output(printer_output)
 		end
 
 	printer_output: ETR_AST_STRING_OUTPUT
-			-- output used for `mini_printer'
+			-- Output used for printing
 		once
 			create Result.make
 		end
@@ -204,7 +204,7 @@ feature -- Operations
 		end
 
 	single_instr_list (instr: INSTRUCTION_AS): EIFFEL_LIST [like instr]
-			-- creates list with a single instruction `instr'
+			-- Creates list with a single instruction `instr'
 		require
 			instr_not_void: instr/=void
 		do

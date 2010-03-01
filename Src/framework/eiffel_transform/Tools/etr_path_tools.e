@@ -19,12 +19,16 @@ feature {NONE} -- Implementation
 feature -- Access
 
 	found: BOOLEAN
+			-- Did the last search find something?
 
 	last_ast: AST_EIFFEL
+			-- Ast found by last search
 
 	last_feature_name: STRING
+			-- Feature name found by last search
 
 	last_path: AST_PATH
+			-- Path found by last search
 
 feature -- Operations
 
@@ -64,7 +68,7 @@ feature -- Operations
 			end
 		end
 
-	find_path_from_line(a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER)
+	find_path_from_line (a_ast: AST_EIFFEL; a_match_list: LEAF_AS_LIST; a_line: INTEGER)
 			-- Gets a path from `a_line' in `a_match_list'
 			-- Result will be available in `last_path'
 		require
@@ -85,7 +89,7 @@ feature -- Operations
 			end
 		end
 
-	find_node(a_path: AST_PATH; a_root: AST_EIFFEL)
+	find_node (a_path: AST_PATH; a_root: AST_EIFFEL)
 			-- Finds a node from `a_path' and root `a_root'
 			-- Result will be available in `last_ast'
 		require

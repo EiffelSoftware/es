@@ -26,7 +26,7 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	process_descendants(a_class: CLASS_C)
+	process_descendants (a_class: CLASS_C)
 			-- Process descendants of `a_class'
 		local
 			l_descendants: LIST[CLASS_C]
@@ -47,7 +47,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_ancestors(a_class: CLASS_C; level: INTEGER)
+	process_ancestors (a_class: CLASS_C; level: INTEGER)
 			-- Process ancestors of `a_class'
 		local
 			l_ancestors: LIST[CLASS_C]
@@ -68,7 +68,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_class(a_class: CLASS_C; level: INTEGER)
+	process_class (a_class: CLASS_C; level: INTEGER)
 			-- Process a_class
 		local
 			l_found: TUPLE[occ_class: CLASS_C; locs: LIST[AST_PATH]]
@@ -94,8 +94,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_feature(a_written_class: CLASS_C; a_feature_name: STRING)
-			-- process `a_feature_name' in `a_written_class'
+	process_feature (a_written_class: CLASS_C; a_feature_name: STRING)
+			-- Process `a_feature_name' in `a_written_class'
 		local
 			l_found: TUPLE[occ_class: CLASS_C; locs: LIST[AST_PATH]]
 		do
@@ -153,7 +153,7 @@ feature -- Access
 
 feature -- Operations
 
-	extract_constant(a_constant: ETR_TRANSFORMABLE; a_contained_feature_name, a_constant_name: STRING; a_process_whole_cass, a_process_ancestors, a_process_descendants: BOOLEAN)
+	extract_constant (a_constant: ETR_TRANSFORMABLE; a_contained_feature_name, a_constant_name: STRING; a_process_whole_cass, a_process_ancestors, a_process_descendants: BOOLEAN)
 			-- Extracts `a_constant' while also processing ancestors/descendants
 		require
 			cons_non_void: a_constant /= void

@@ -21,8 +21,8 @@ inherit
 
 feature -- Operation
 
-	find_constants(a_constant: like constant; a_root: CLASS_AS; a_feature_name: like feature_name)
-			-- find all constants that match `a_constant'
+	find_constants (a_constant: like constant; a_root: CLASS_AS; a_feature_name: like feature_name)
+			-- Find all constants that match `a_constant'
 		require
 			non_void: a_constant /= void and a_root /= void
 		do
@@ -51,7 +51,7 @@ feature {NONE} -- Implementation
 
 	is_in_routine: BOOLEAN
 
-	process_constant(l_as: AST_EIFFEL)
+	process_constant (l_as: AST_EIFFEL)
 			-- Check l_as
 		do
 			if is_in_routine and constant.same_type(l_as) and then constant.is_equivalent(l_as) then

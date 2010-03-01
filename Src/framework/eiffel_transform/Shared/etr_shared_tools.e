@@ -9,25 +9,25 @@ class
 feature {NONE} -- Shared
 
 	path_tools: ETR_PATH_TOOLS
-			-- shared instance of ETR_PATH_TOOLS
+			-- Shared instance of ETR_PATH_TOOLS
 		once
 			create Result
 		end
 
 	ast_tools: ETR_AST_TOOLS
-			-- shared instance of ETR_AST_TOOLS
+			-- Shared instance of ETR_AST_TOOLS
 		once
 			create Result
 		end
 
 	ast_stats: ETR_AST_STATS
-			-- shared instance of ETR_AST_STATS
+			-- Shared instance of ETR_AST_STATS
 		once
 			create Result
 		end
 
 	type_checker: ETR_TYPE_CHECKER
-			-- shared instance of ETR_TYPE_CHECKER
+			-- Shared instance of ETR_TYPE_CHECKER
 		once
 			create Result
 		end

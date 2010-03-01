@@ -9,7 +9,7 @@ class
 feature {NONE} -- Shared
 
 	transformable_factory: ETR_TRANSFORMABLE_FACTORY
-			-- shared instance of ETR_TRANSFORMABLE_FACTORY
+			-- Shared instance of ETR_TRANSFORMABLE_FACTORY
 		once
 			create Result
 		end

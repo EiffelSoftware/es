@@ -20,7 +20,7 @@ feature -- Operations
 	pulled_down_features: LIST[STRING]
 			-- Features that were pulled down from an ancestor and made effective
 
-	generate_effective_class(a_class: ETR_TRANSFORMABLE)
+	generate_effective_class (a_class: ETR_TRANSFORMABLE)
 			-- Creates an effective class from `a_class'
 		local
 			l_ft: FEATURE_TABLE

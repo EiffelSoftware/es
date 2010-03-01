@@ -10,6 +10,39 @@ create {ETR_TRANSFORM_CONTEXT}
 	make_changed_name,
 	make_changed_name_type
 
+feature {NONE} -- Creation
+
+	make_changed_type (a_feature_name: like feature_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
+			-- Make with `an_old_type' and `a_new_type'
+		do
+			feature_name := a_feature_name
+			old_type := an_old_type
+			new_type := a_new_type
+
+			is_changed_type := true
+		end
+
+	make_changed_name (a_feature_name: like feature_name; a_new_name: attached like new_name)
+			-- Make with `an_old_name' and `a_new_name'
+		do
+			feature_name := a_feature_name
+			new_name := a_new_name
+
+			is_changed_name := true
+		end
+
+	make_changed_name_type (a_feature_name: like feature_name; a_new_name: attached like new_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
+			-- Make with `an_old_type', `a_new_type', `an_old_name' and `a_new_name'
+		do
+			feature_name := a_feature_name
+			old_type := an_old_type
+			new_type := a_new_type
+			new_name := a_new_name
+
+			is_changed_type := true
+			is_changed_name := true
+		end
+
 feature  -- Access
 
 	feature_name: STRING
@@ -27,40 +60,7 @@ feature  -- Access
 	is_changed_name:BOOLEAN
 			-- Does `Current' represent a changed name
 
-feature {NONE} -- Creation
-
-	make_changed_type(a_feature_name: like feature_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
-			-- make with `an_old_type' and `a_new_type'
-		do
-			feature_name := a_feature_name
-			old_type := an_old_type
-			new_type := a_new_type
-
-			is_changed_type := true
-		end
-
-	make_changed_name(a_feature_name: like feature_name; a_new_name: attached like new_name)
-			-- make with `an_old_name' and `a_new_name'
-		do
-			feature_name := a_feature_name
-			new_name := a_new_name
-
-			is_changed_name := true
-		end
-
-	make_changed_name_type(a_feature_name: like feature_name; a_new_name: attached like new_name; an_old_type: attached like old_type; a_new_type: attached like new_type)
-			-- make with `an_old_type', `a_new_type', `an_old_name' and `a_new_name'
-		do
-			feature_name := a_feature_name
-			old_type := an_old_type
-			new_type := a_new_type
-			new_name := a_new_name
-
-			is_changed_type := true
-			is_changed_name := true
-		end
-
-note
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

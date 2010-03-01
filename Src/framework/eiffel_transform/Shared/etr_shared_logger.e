@@ -9,7 +9,7 @@ class
 feature {NONE} -- Shared
 
 	logger: ETR_DEBUG_LOGGER
-			-- shared instance of ETR_DEBUG_LOGGER
+			-- Shared instance of ETR_DEBUG_LOGGER
 		once
 			create Result.make
 		end

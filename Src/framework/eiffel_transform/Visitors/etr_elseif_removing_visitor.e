@@ -13,7 +13,7 @@ inherit
 
 feature -- Operation
 
-	remove_elseifs_in(a_ast: AST_EIFFEL)
+	remove_elseifs_in (a_ast: AST_EIFFEL)
 		require
 			non_void: a_ast /= void
 		do
@@ -26,7 +26,7 @@ feature {NONE} -- Implementation
 	has_else: BOOLEAN
 	else_string: STRING
 
-	process_elseif_list(a_elseif_list: EIFFEL_LIST[ELSIF_AS])
+	process_elseif_list (a_elseif_list: EIFFEL_LIST[ELSIF_AS])
 		local
 			l_index: INTEGER
 			l_cur: ELSIF_AS

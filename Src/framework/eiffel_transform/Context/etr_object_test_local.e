@@ -10,12 +10,27 @@ inherit
 create
 	make_at
 
+feature {NONE} -- Creation
+
+	make_at(a_name: like name; a_res_type: like resolved_type; a_org_type: like original_type; a_scope: like scope)
+			-- Create with `a_name', `a_type', `a_scope'
+		require
+			name_set: a_name /= void
+			type_set: a_res_type /= void and a_org_type  /= void
+			type_explicit: a_res_type.is_explicit
+			scope_set: a_scope /= void
+		do
+			make(a_name, a_res_type, a_org_type)
+
+			scope := a_scope.twin
+		end
+
 feature -- Access
 	scope: LIST[AST_PATH]
 			-- Scope of this object-test-local
 
 	is_active_at(a_path: AST_PATH): BOOLEAN
-			-- is `Current' active at `a_path'
+			-- Is `Current' active at `a_path'
 		do
 			from
 				scope.start
@@ -28,22 +43,6 @@ feature -- Access
 				scope.forth
 			end
 		end
-
-feature {NONE} -- Creation
-
-	make_at(a_name: like name; a_res_type: like resolved_type; a_org_type: like original_type; a_scope: like scope)
-			-- create with `a_name', `a_type', `a_scope'
-		require
-			name_set: a_name /= void
-			type_set: a_res_type /= void and a_org_type  /= void
-			type_explicit: a_res_type.is_explicit
-			scope_set: a_scope /= void
-		do
-			make(a_name, a_res_type, a_org_type)
-
-			scope := a_scope.twin
-		end
-
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

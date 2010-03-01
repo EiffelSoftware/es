@@ -17,7 +17,7 @@ feature -- Operation
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
 
-	generate_setter(a_transformable: ETR_TRANSFORMABLE; a_feature_name, a_arg_name, a_assignment, a_postcond: STRING)
+	generate_setter (a_transformable: ETR_TRANSFORMABLE; a_feature_name, a_arg_name, a_assignment, a_postcond: STRING)
 			-- Generates a setter for `a_transformable'
 		require
 			non_void: a_transformable /= void and a_feature_name /= void and a_arg_name /= void and a_assignment /= void and a_postcond /= void

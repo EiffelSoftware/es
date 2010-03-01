@@ -19,6 +19,16 @@ inherit
 create
 	make
 
+feature {NONE} -- Creation
+
+	make (a_class_context: like class_context)
+			-- Make with `a_class_context'
+		do
+			class_context := a_class_context
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			create breakpoint_mappings.make(20)
+		end
+
 feature {NONE} -- Implementation
 
 	class_context: ETR_CLASS_CONTEXT
@@ -26,16 +36,6 @@ feature {NONE} -- Implementation
 
 	current_feature: STRING
 			-- Name of current feature
-
-feature {NONE} -- Creation
-
-	make(a_class_context: like class_context)
-			-- Make with `a_class_context'
-		do
-			class_context := a_class_context
-			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
-			create breakpoint_mappings.make(20)
-		end
 
 feature {AST_EIFFEL} -- Roundtrip
 

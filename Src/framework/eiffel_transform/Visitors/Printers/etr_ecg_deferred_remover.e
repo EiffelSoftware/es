@@ -22,8 +22,8 @@ feature {NONE} -- Implementation
 			-- Context of the current feature
 
 feature -- Output
-	print_modified_feature(a_feature: FEATURE_I)
-			-- prints `an_ast' to `output'
+	print_modified_feature (a_feature: FEATURE_I)
+			-- Prints `an_ast' to `output'
 		do
 			context := a_feature
 			process_child (a_feature.e_feature.ast, void, 0)
@@ -33,7 +33,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_routine_as (l_as: ROUTINE_AS)
 		do
-			-- don't print locals or contracts
+			-- Don't print locals or contracts
 
 			if processing_needed (l_as.obsolete_message, l_as, 1) then
 				output.append_string (ti_obsolete_keyword+ti_New_line)

@@ -18,8 +18,8 @@ feature -- Access
 
 feature -- Creation
 
-	find_from_root(a_path: AST_PATH; a_root: AST_EIFFEL)
-			-- starting from `a_root' find a node by following `a_path'
+	find_from_root (a_path: AST_PATH; a_root: AST_EIFFEL)
+			-- Starting from `a_root' find a node by following `a_path'
 		require
 			non_void: a_path /= void and a_root /= void
 			path_valid: a_path.is_valid
@@ -38,8 +38,8 @@ feature -- Creation
 			end
 		end
 
-	find(a_path: AST_PATH)
-			-- starting from `a_path's root find a node by following `a_path'
+	find (a_path: AST_PATH)
+			-- Starting from `a_path's root find a node by following `a_path'
 		require
 			non_void: a_path /= void
 			path_valid: a_path.is_valid
@@ -61,7 +61,7 @@ feature -- Creation
 
 feature {NONE} -- Implementation
 
-	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+	process_branch (a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
 			-- <precursor>
 		local
 			l_next_br_number: INTEGER

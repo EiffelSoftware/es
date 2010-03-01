@@ -25,18 +25,10 @@ inherit
 create
 	make
 
-feature -- Operation
-
-	print_feature_body(a_body: EIFFEL_LIST[INSTRUCTION_AS])
-			-- print `a_body' to output
-		do
-			process_child_list (a_body, void, void, 0)
-		end
-
 feature {NONE} -- Creation
 
-	make(a_output: like output; a_result_list: like results; a_changed_args_list: like changed_arguments; a_start_path: like start_path; a_end_path: like end_path)
-			-- make with `a_output', `a_result_list', `a_start_path' and `a_end_path'
+	make (a_output: like output; a_result_list: like results; a_changed_args_list: like changed_arguments; a_start_path: like start_path; a_end_path: like end_path)
+			-- Make with `a_output', `a_result_list', `a_start_path' and `a_end_path'
 		require
 			none_void: a_output /= void and a_result_list /= void and a_start_path /= void and a_end_path /= void and a_changed_args_list /= void
 			single_result: a_result_list.count<=1
@@ -54,10 +46,19 @@ feature {NONE} -- Creation
 			instr_list_parent := start_path.parent_path
 		end
 
+
+feature -- Operation
+
+	print_feature_body (a_body: EIFFEL_LIST[INSTRUCTION_AS])
+			-- Print `a_body' to output
+		do
+			process_child_list (a_body, void, void, 0)
+		end
+
 feature {NONE} -- Implementation
 
 	process_list_with_separator (l_as: detachable EIFFEL_LIST[AST_EIFFEL]; separator: detachable STRING; a_parent: AST_EIFFEL; a_branch: INTEGER)
-			-- process `l_as' and use `separator' for string output
+			-- Process `l_as' and use `separator' for string output
 		local
 			l_cursor: INTEGER
 			l_first_instr: INTEGER
@@ -96,16 +97,16 @@ feature {NONE} -- Implementation
 		end
 
 	last_was_unqualified: BOOLEAN
-			-- presently in an unqualified call
+			-- Presently in an unqualified call
 
 	changed_arguments: LIST[STRING]
-			-- arguments that have been "converted" to locals
+			-- Arguments that have been "converted" to locals
 
 	results: LIST[STRING]
-			-- which variables are a result
+			-- Which variables are a result
 
 	start_path, end_path, instr_list_parent: AST_PATH
-			-- range of methods to extract
+			-- Range of methods to extract
 
 feature {AST_EIFFEL} -- Roundtrip
 

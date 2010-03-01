@@ -13,13 +13,13 @@ inherit
 feature -- New
 
 	new_invalid: ETR_TRANSFORMABLE
-			-- create a new invalid transformable
+			-- Create a new invalid transformable
 		do
 			create Result.make_invalid
 		end
 
-	new_instr(a_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
-			-- create a new instruction from `a_instr' with context `a_context'
+	new_instr (a_instr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
+			-- Create a new instruction from `a_instr' with context `a_context'
 		require
 			instr_attached: a_instr /= void
 			context_attached: a_context /= void
@@ -34,8 +34,8 @@ feature -- New
 			end
 		end
 
-	new_expr(a_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
-			-- create a new exression from `a_expr' with context `a_context'
+	new_expr (a_expr: STRING; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
+			-- Create a new exression from `a_expr' with context `a_context'
 		require
 			expr_attached: a_expr /= void
 			context_attached: a_context /= void
@@ -94,20 +94,20 @@ feature -- New
 				if l_error_count = error_handler.error_count then
 					-- Transform all parts to a_context
 					if attached if_part then
-						l_if_part_trans := if_part.transform_to_context (a_context)
+						l_if_part_trans := if_part.as_in_other_context (a_context)
 						if attached {EIFFEL_LIST[INSTRUCTION_AS]}l_if_part_trans.target_node as l_if_part then
 							l_if_part_node := l_if_part
 						end
 					end
 
 					if attached else_part then
-						l_else_part_trans := else_part.transform_to_context (a_context)
+						l_else_part_trans := else_part.as_in_other_context (a_context)
 						if attached {EIFFEL_LIST[INSTRUCTION_AS]}l_else_part_trans.target_node as l_else_part then
 							l_else_part_node := l_else_part
 						end
 					end
 
-					l_test_trans := a_test.transform_to_context (a_context)
+					l_test_trans := a_test.as_in_other_context (a_context)
 					if attached {EXPR_AS}l_test_trans.target_node as l_test then
 						l_test_node := l_test
 					end

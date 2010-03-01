@@ -25,7 +25,7 @@ feature -- Access
 
 feature -- Operation
 
-	init(a_x, a_y: INTEGER)
+	init (a_x, a_y: INTEGER)
 			-- Init with (`a_x'/`a_y')
 		do
 			target_x := a_x
@@ -33,7 +33,7 @@ feature -- Operation
 			is_in_routine := false
 		end
 
-	find_from(a_ast: AST_EIFFEL)
+	find_from (a_ast: AST_EIFFEL)
 			-- <precursor>
 		do
 			contained_feature_name := void
@@ -45,6 +45,7 @@ feature {NONE} -- Implementation
 	is_in_routine: BOOLEAN
 
 	is_constant (a_ast: AST_EIFFEL): BOOLEAN
+			-- Is `a_ast' a constant?
 		do
 			if attached {INTEGER_AS}a_ast then
 				Result := True
@@ -64,7 +65,7 @@ feature {NONE} -- Implementation
 	target_x, target_y: INTEGER
 			-- The position we're looking for
 
-	is_target(a_ast: AST_EIFFEL): BOOLEAN
+	is_target (a_ast: AST_EIFFEL): BOOLEAN
 			-- is `a_ast' the target?
 		do
 			if is_in_routine and is_constant(a_ast) and attached {LOCATION_AS}a_ast as loc then

@@ -228,14 +228,6 @@ feature -- Access
 	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
 			-- Object-test locals in the feature
 
-feature -- Operation
-
-	set_modified
-			-- set `is_modified' to `true'
-		do
-			is_modified := true
-		end
-
 invariant
 	locals_valid: has_locals implies attached locals
 	arguments_valid: has_arguments implies attached arguments

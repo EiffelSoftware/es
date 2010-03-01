@@ -40,7 +40,7 @@ feature -- Status
 
 feature -- Operations
 
-	set_compiler_factory(a_state: BOOLEAN)
+	set_compiler_factory (a_state: BOOLEAN)
 			-- Set parsers to use a compiler factory
 		do
 			is_using_compiler_factory := a_state

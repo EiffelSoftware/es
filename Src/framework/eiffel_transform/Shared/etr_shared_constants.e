@@ -9,7 +9,7 @@ class
 feature {NONE} -- Constants
 
 	syntax_version: NATURAL_8
-			-- syntax version used
+			-- Syntax version used
 		once
 			Result := {CONF_OPTION}.syntax_index_transitional
 		end

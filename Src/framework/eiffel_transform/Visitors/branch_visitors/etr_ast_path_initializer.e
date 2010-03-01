@@ -13,8 +13,8 @@ inherit
 
 feature -- Operation
 
-	process_from_root(a_root: AST_EIFFEL)
-			-- process from `a_root'
+	process_from_root (a_root: AST_EIFFEL)
+			-- Process from `a_root'
 		require
 			root_set: a_root /= void
 		do
@@ -22,8 +22,8 @@ feature -- Operation
 			a_root.process (Current)
 		end
 
-	process_from(a_node: AST_EIFFEL)
-			-- process starting at `a_node'
+	process_from (a_node: AST_EIFFEL)
+			-- Process starting at `a_node'
 		require
 			node_set: a_node /= void
 		do
@@ -40,7 +40,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 feature {NONE} -- Implementation
 
-	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+	process_branch (a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
 			-- <precursor>
 		local
 			i: INTEGER

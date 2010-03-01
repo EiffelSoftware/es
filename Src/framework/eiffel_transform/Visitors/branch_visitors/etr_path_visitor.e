@@ -13,8 +13,8 @@ feature {NONE} -- Implementation
 	current_path: AST_PATH
 			-- The path we're currently at
 
-	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
-			-- process an n-way branch with parent `a_parent' and `a_branches'
+	process_branch (a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+			-- <precursor>
 		local
 			i: INTEGER
 			l_prev_path: AST_PATH

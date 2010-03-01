@@ -12,8 +12,8 @@ create
 
 feature {NONE} -- Creation
 
-	make(a_name: like name; a_res_type: like resolved_type; a_org_type: like original_type)
-			-- make with `a_name' and `a_type'
+	make (a_name: like name; a_res_type: like resolved_type; a_org_type: like original_type)
+			-- Make with `a_name', `a_res_type' and `a_org_type'
 		require
 			name_set: a_name /= void
 			type_set: a_res_type /= void and a_org_type  /= void
@@ -37,7 +37,7 @@ feature -- Access
 feature -- Modification
 
 	set_name(a_new_name: like name)
-			-- set `name' to `a_new_name'
+			-- Set `name' to `a_new_name'
 		require
 			non_void: a_new_name /= void
 		do

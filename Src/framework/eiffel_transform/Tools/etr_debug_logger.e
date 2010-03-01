@@ -63,7 +63,7 @@ feature -- Access
 
 feature -- Operation
 
-	log_error(a_string: STRING)
+	log_error (a_string: STRING)
 			-- Add `a_string' as error
 		require
 			string_set: a_string /= void
@@ -71,7 +71,7 @@ feature -- Operation
 			log_msg(0, "[ERR] "+a_string)
 		end
 
-	log_warning(a_string: STRING)
+	log_warning (a_string: STRING)
 			-- Add `a_string' as warning
 		require
 			string_set: a_string /= void
@@ -79,7 +79,7 @@ feature -- Operation
 			log_msg(1, "[WARN] "+a_string)
 		end
 
-	log_info(a_string: STRING)
+	log_info (a_string: STRING)
 			-- Add `a_string' as info
 		require
 			string_set: a_string /= void
@@ -87,7 +87,7 @@ feature -- Operation
 			log_msg(2, "[INFO] "+a_string)
 		end
 
-	log_msg(a_log_level: like log_level; a_string: STRING)
+	log_msg (a_log_level: like log_level; a_string: STRING)
 			-- Add `a_string' with `a_log_level' to the output
 		require
 			string_set: a_string /= void
@@ -105,7 +105,7 @@ feature -- Operation
 
 feature {NONE} -- Implementation
 
-	formatted_time(a_time: TIME): STRING
+	formatted_time (a_time: TIME): STRING
 			-- Formatted `a_time'
 		do
 			Result := a_time.hour.out + ":"+ a_time.minute.out + ":" + a_time.second.out + "." + a_time.milli_second.out

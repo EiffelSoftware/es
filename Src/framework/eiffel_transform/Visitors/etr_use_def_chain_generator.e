@@ -65,7 +65,7 @@ feature {NONE} -- Implementation (Attributes)
 
 feature {NONE} -- Implementation (Features)
 
-	is_next_call_local(a_call: CALL_AS): BOOLEAN
+	is_next_call_local (a_call: CALL_AS): BOOLEAN
 			-- is `a_call' a direct access to a local variable?
 		do
 			if attached {ACCESS_ID_AS}a_call as l_acc_id then
@@ -130,7 +130,7 @@ feature {NONE} -- Implementation (Features)
 			end
 		end
 
-	process_case_list(l_as: EIFFEL_LIST[CASE_AS])
+	process_case_list (l_as: EIFFEL_LIST[CASE_AS])
 		local
 			l_prev_var_def: like current_var_defs
 			l_cursor: INTEGER
@@ -153,7 +153,7 @@ feature {NONE} -- Implementation (Features)
 			l_as.go_i_th(l_cursor)
 		end
 
-	process_elseif_list(l_as: EIFFEL_LIST[ELSIF_AS])
+	process_elseif_list (l_as: EIFFEL_LIST[ELSIF_AS])
 		local
 			l_prev_var_def: like current_var_defs
 			l_cursor: INTEGER
@@ -185,7 +185,7 @@ feature {NONE} -- Implementation (Features)
 
 feature -- Operation
 
-	generate_chain(a_context: like context; a_ast: AST_EIFFEL)
+	generate_chain (a_context: like context; a_ast: AST_EIFFEL)
 			-- generate a chain starting from `a_ast' in `a_context'
 		do
 			context := a_context

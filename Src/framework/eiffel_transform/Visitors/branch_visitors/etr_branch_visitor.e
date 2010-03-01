@@ -98,7 +98,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	process_branch(a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])
+	process_branch (a_parent: AST_EIFFEL; a_branches: ARRAY[detachable AST_EIFFEL])
 			-- Process an n-way branch with parent `a_parent' and `a_branches'
 		deferred
 		end

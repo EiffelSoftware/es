@@ -234,7 +234,7 @@ feature {NONE} -- Implementation
 	current_breakpoint_slot: INTEGER
 			-- The current breakpoint slot
 
-	feature_postcondition_count(a_feature: E_FEATURE): INTEGER
+	feature_postcondition_count (a_feature: E_FEATURE): INTEGER
 			-- Number of full postcondition in `a_feature'
 		local
 			l_current_feature: like a_feature
@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	inherited_postcondition_count(a_feature: E_FEATURE): INTEGER
+	inherited_postcondition_count (a_feature: E_FEATURE): INTEGER
 			-- Number of inherited full postconditions in `a_feature'
 		local
 			l_feat_id: INTEGER
@@ -273,7 +273,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	feature_precondition_count(a_feature: E_FEATURE): INTEGER
+	feature_precondition_count (a_feature: E_FEATURE): INTEGER
 			-- Number of full preconditions in `a_feature'
 		local
 			l_current_feature: like a_feature
@@ -288,7 +288,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	inherited_precondition_count(a_feature: E_FEATURE): INTEGER
+	inherited_precondition_count (a_feature: E_FEATURE): INTEGER
 			-- Number of inherited full preconditions in `a_feature'
 		local
 			l_feat_id: INTEGER

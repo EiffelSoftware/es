@@ -16,8 +16,8 @@ create
 
 feature -- Operation
 
-	init(a_line: like target_line)
-			-- Set with `a_line'
+	init (a_line: like target_line)
+			-- Init with `a_line'
 		do
 			target_line := a_line
 		end
@@ -27,8 +27,8 @@ feature {NONE} -- Implementation
 	target_line: INTEGER
 			-- The line we're looking for
 
-	is_target(a_ast: AST_EIFFEL): BOOLEAN
-			-- is `a_ast' the target?
+	is_target (a_ast: AST_EIFFEL): BOOLEAN
+			-- <precursor>
 		do
 			if not attached {INSTRUCTION_AS}a_ast then
 				Result := False

@@ -21,75 +21,9 @@ inherit
 create
 	make
 
-feature {NONE} -- Implementation
-
-	changed_feature_hash: HASH_TABLE[ETR_CT_CHANGED_FEATURE,STRING]
-			-- Features that require transformation
-
-	changed_args_hash: HASH_TABLE[ETR_CT_CHANGED_ARG_LOCAL,STRING]
-			-- Arguments that require transformation
-
-	constraint_renaming_hash: HASH_TABLE[ETR_CT_RENAMED_CONSTRAINT_FEATURES,STRING]
-			-- Renamings in source & target context			
-
-	rename_next: BOOLEAN
-			-- Will be rename the next feature/local
-
-	last_was_unqualified_or_current: BOOLEAN
-			-- Are we in an "unqualified" call?
-
-	next_new_name: STRING
-			-- Name that will be use in the next renaming
-
-	next_access_name_id(a_message: CALL_AS): INTEGER
-			-- name id of next access as
-		do
-			if attached {ACCESS_AS}a_message as l_msg_access_as then
-				Result := names_heap.id_of (l_msg_access_as.access_name)
-			elseif attached {NESTED_AS}a_message as l_msg_nested_as then
-				Result := names_heap.id_of (l_msg_nested_as.target.access_name)
-			else
-				-- nothing which can be renamed
-				-- i.e. NESTED_EXPR_AS
-				Result :=-1
-			end
-		end
-
-	process_identifier_list_with_renaming (l_as: IDENTIFIER_LIST)
-			-- process `l_as'
-		local
-			l_cursor: INTEGER
-			l_name: STRING
-			l_changed: ETR_CT_CHANGED_ARG_LOCAL
-		do
-			-- process the id's list
-			-- which is not an ast but an array of indexes into the names heap
-			from
-				l_cursor := l_as.index
-				l_as.start
-			until
-				l_as.after
-			loop
-				l_name := names_heap.item (l_as.item)
-				l_changed := changed_args_hash[l_name]
-				if attached l_changed and then l_changed.is_changed_name then
-					output.append_string(l_changed.new_name)
-				else
-					output.append_string(l_name)
-				end
-
-				if l_as.index /= l_as.count then
-					output.append_string(", ")
-				end
-
-				l_as.forth
-			end
-			l_as.go_i_th (l_cursor)
-		end
-
 feature {NONE} -- Creation
 
-	make(an_output: like output; a_changed_feature_list: LIST[ETR_CT_CHANGED_FEATURE]; a_changed_argument_list: LIST[ETR_CT_CHANGED_ARG_LOCAL]; a_constraint_renaming_list: LIST[ETR_CT_RENAMED_CONSTRAINT_FEATURES])
+	make (an_output: like output; a_changed_feature_list: LIST[ETR_CT_CHANGED_FEATURE]; a_changed_argument_list: LIST[ETR_CT_CHANGED_ARG_LOCAL]; a_constraint_renaming_list: LIST[ETR_CT_RENAMED_CONSTRAINT_FEATURES])
 			-- make with `an_output', `a_changed_feature_list', `a_source' and `a_target'
 		do
 			make_with_output(an_output)
@@ -138,6 +72,72 @@ feature {NONE} -- Creation
 			else
 				create changed_args_hash.make (1)
 			end
+		end
+
+feature {NONE} -- Implementation
+
+	changed_feature_hash: HASH_TABLE[ETR_CT_CHANGED_FEATURE,STRING]
+			-- Features that require transformation
+
+	changed_args_hash: HASH_TABLE[ETR_CT_CHANGED_ARG_LOCAL,STRING]
+			-- Arguments that require transformation
+
+	constraint_renaming_hash: HASH_TABLE[ETR_CT_RENAMED_CONSTRAINT_FEATURES,STRING]
+			-- Renamings in source & target context			
+
+	rename_next: BOOLEAN
+			-- Will be rename the next feature/local
+
+	last_was_unqualified_or_current: BOOLEAN
+			-- Are we in an "unqualified" call?
+
+	next_new_name: STRING
+			-- Name that will be use in the next renaming
+
+	next_access_name_id (a_message: CALL_AS): INTEGER
+			-- name id of next access as
+		do
+			if attached {ACCESS_AS}a_message as l_msg_access_as then
+				Result := names_heap.id_of (l_msg_access_as.access_name)
+			elseif attached {NESTED_AS}a_message as l_msg_nested_as then
+				Result := names_heap.id_of (l_msg_nested_as.target.access_name)
+			else
+				-- nothing which can be renamed
+				-- i.e. NESTED_EXPR_AS
+				Result :=-1
+			end
+		end
+
+	process_identifier_list_with_renaming (l_as: IDENTIFIER_LIST)
+			-- process `l_as'
+		local
+			l_cursor: INTEGER
+			l_name: STRING
+			l_changed: ETR_CT_CHANGED_ARG_LOCAL
+		do
+			-- process the id's list
+			-- which is not an ast but an array of indexes into the names heap
+			from
+				l_cursor := l_as.index
+				l_as.start
+			until
+				l_as.after
+			loop
+				l_name := names_heap.item (l_as.item)
+				l_changed := changed_args_hash[l_name]
+				if attached l_changed and then l_changed.is_changed_name then
+					output.append_string(l_changed.new_name)
+				else
+					output.append_string(l_name)
+				end
+
+				if l_as.index /= l_as.count then
+					output.append_string(", ")
+				end
+
+				l_as.forth
+			end
+			l_as.go_i_th (l_cursor)
 		end
 
 feature {AST_EIFFEL} -- Roundtrip

@@ -30,8 +30,8 @@ feature -- Access
 
 feature {NONE} -- Creation
 
-	make(a_id: like id; a_path: like path; a_previous_definitions: like definitions)
-			-- make with `a_id' and `a_path'
+	make (a_id: like id; a_path: like path; a_previous_definitions: like definitions)
+			-- Make with `a_id' and `a_path'
 		do
 			id := a_id
 			last_contained_id := id
@@ -56,14 +56,14 @@ feature -- Operations
 			first_contained_id := a_first_contained_id
 		end
 
-	add_use(a_name: STRING)
-			-- add variable with `a_name' as used
+	add_use (a_name: STRING)
+			-- Add variable with `a_name' as used
 		do
 			used_variables.extend(a_name)
 		end
 
-	add_definition(a_var: STRING)
-			-- set `a_var' as defined in this instruction
+	add_definition (a_var: STRING)
+			-- Set `a_var' as defined in this instruction
 		do
 			definitions.force(create {PAIR[INTEGER,INTEGER]}.make(id,id), a_var)
 		end

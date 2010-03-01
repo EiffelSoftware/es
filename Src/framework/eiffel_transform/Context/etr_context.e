@@ -8,7 +8,15 @@ class
 create
 	make_empty
 
-feature --Access
+feature {NONE} -- Creation
+
+	make_empty
+			-- make with `is_empty' set to true
+		do
+			is_empty := true
+		end
+
+feature -- Access
 
 	feature_context: detachable ETR_FEATURE_CONTEXT
 			-- `Current' as feature context	
@@ -22,18 +30,10 @@ feature --Access
 			-- Class context belonging to this context
 
 	is_empty: BOOLEAN
-			-- is `Current' an empty context
-
-feature {NONE} -- Creation
-
-	make_empty
-			-- make with `is_empty' set to true
-		do
-			is_empty := true
-		end
+			-- Is `Current' an empty context
 
 invariant
-	valid: not is_empty implies class_context /= void
+	valid: not is_empty implies attached class_context
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
