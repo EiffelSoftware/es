@@ -13,6 +13,19 @@ feature {NONE} -- Constants
 		once
 			Result := {CONF_OPTION}.syntax_index_transitional
 		end
+
+feature {NONE} -- Class-relative paths
+
+	c_first_feature: STRING = "1.9.1.2.1"
+			-- First feature of a class
+
+feature {NONE} -- Feature-relative paths
+
+	f_assigner: STRING = "1.2.3"
+			-- Assigner
+
+	f_first_instruction: STRING = "1.2.4.4.1.1"
+			-- First instruction of a feature
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -43,6 +43,7 @@ feature {NONE} -- Initialization
 			l: EV_LABEL
 			hb_setter_name, hb_arg_name, hb_buttons, hb_middle: EV_HORIZONTAL_BOX
 			vb, vb_radio, vb_predef: EV_VERTICAL_BOX
+			f_left, f_right: EV_FRAME
 			space: EV_CELL
 		do
 			Precursor
@@ -55,8 +56,14 @@ feature {NONE} -- Initialization
 			vb.set_border_width (Layout_constants.default_border_size)
 			create vb_radio
 			vb_radio.set_padding (Layout_constants.small_padding_size)
+			vb_radio.set_border_width (Layout_constants.default_border_size)
 			create vb_predef
 			vb_predef.set_padding (Layout_constants.small_padding_size)
+			vb_predef.set_border_width (Layout_constants.default_border_size)
+
+			-- Frames
+			create f_left.make_with_text ("Assignment type")
+			create f_right.make_with_text ("Custom texts")
 
 			-- HB's
 			create hb_setter_name
@@ -116,6 +123,7 @@ feature {NONE} -- Initialization
 			vb_radio.extend (deep_twin_assignment_radio)
 			vb_radio.extend (custom_assignment_radio)
 			vb_radio.set_minimum_width (150)
+			f_left.extend (vb_radio)
 
 			create l.make_with_text ("Assignment:")
 			vb_predef.extend (l)
@@ -123,10 +131,10 @@ feature {NONE} -- Initialization
 			create l.make_with_text ("Postcondition:")
 			vb_predef.extend (l)
 			vb_predef.extend (postcondition_field)
+			f_right.extend (vb_predef)
 
-			hb_middle.extend (vb_radio)
-			hb_middle.disable_item_expand (vb_radio)
-			hb_middle.extend (vb_predef)
+			hb_middle.extend (f_left)
+			hb_middle.extend (f_right)
 			vb.extend (hb_middle)
 
 			create l.make_with_text ("Preview")
@@ -235,21 +243,12 @@ feature {NONE} -- Event handling
 			if direct_assignment_radio.is_selected then
 				set_assignment (feature_name + " := " + argument_name)
 				set_postcondition (feature_name + " = " + argument_name)
-				assignment_field.disable_edit
-				postcondition_field.disable_edit
 			elseif twin_assignment_radio.is_selected then
 				set_assignment (feature_name + " := " + argument_name + ".twin")
 				set_postcondition (feature_name + " ~ " + argument_name)
-				assignment_field.disable_edit
-				postcondition_field.disable_edit
 			elseif deep_twin_assignment_radio.is_selected then
 				set_assignment (feature_name + " := " + argument_name + ".deep_twin")
 				set_postcondition (feature_name + ".is_deep_equal(" + argument_name + ")")
-				assignment_field.disable_edit
-				postcondition_field.disable_edit
-			else -- custom
-				assignment_field.enable_edit
-				postcondition_field.enable_edit
 			end
 
 			update_disabled := false
@@ -343,6 +342,8 @@ feature {NONE} -- Implementation
 	feature_name: STRING
 			-- name of the attribute
 
+
+
 	direct_assignment_radio: EV_RADIO_BUTTON
 	twin_assignment_radio: EV_RADIO_BUTTON
 	deep_twin_assignment_radio: EV_RADIO_BUTTON
@@ -376,6 +377,17 @@ feature {NONE} -- Implementation
 
 			setter_name_field.set_focus
 			direct_assignment_radio.enable_select
+
+			assignment_field.change_actions.extend (agent on_text_changed)
+			postcondition_field.change_actions.extend (agent on_text_changed)
+		end
+
+	on_text_changed
+			-- Changed some text
+		do
+			if not update_disabled then
+				custom_assignment_radio.enable_select
+			end
 		end
 
 	on_ok_pressed
