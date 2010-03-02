@@ -14,7 +14,6 @@ inherit
 	ETR_SHARED_ERROR_HANDLER
 	ETR_SHARED_LOGGER
 	ETR_SHARED_BASIC_OPERATORS
-	ETR_SHARED_TRANSFORMABLE_FACTORY
 	ETR_SHARED_PARSERS
 	ETR_SHARED_TOOLS
 
@@ -244,8 +243,8 @@ feature -- Operations
 				create l_feat_list.make (1)
 				l_feat_list.extend (parsing_helper.parsed_feature)
 				create l_feat_clause.initialize (l_clients, l_feat_list, create {KEYWORD_AS}.make_null, 0)
-
-				l_const_var := transformable_factory.new_expr (a_constant_name, create {ETR_CONTEXT}.make_empty)
+				
+				l_const_var := (create {ETR_TRANSFORMABLE_FACTORY}).new_expr (a_constant_name, create {ETR_CONTEXT}.make_empty)
 
 				logger.log_info ("Declaring class: "+declaring_class.name_in_upper)
 				logger.log_info ("Occurrences:")
@@ -294,7 +293,7 @@ feature -- Operations
 							end
 						else
 							-- insert new feature clause to feature-clause list (1.8)
-							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string(declaring_class.ast, "1.8"), create {ETR_TRANSFORMABLE}.make_from_ast(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
+							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string(declaring_class.ast, "1.8"), create {ETR_TRANSFORMABLE}.make(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
 						end
 					end
 

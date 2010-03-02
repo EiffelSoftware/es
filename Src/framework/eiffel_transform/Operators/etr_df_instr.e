@@ -8,6 +8,20 @@ class
 create
 	make
 
+feature {NONE} -- Creation
+
+	make (a_id: like id; a_path: like path; a_previous_definitions: like definitions)
+			-- Make with `a_id' and `a_path'
+		do
+			id := a_id
+			last_contained_id := id
+			first_contained_id := id
+			path := a_path
+
+			create {LINKED_LIST[STRING]}used_variables.make
+			definitions := a_previous_definitions.twin
+		end
+
 feature -- Access
 
 	path: AST_PATH
@@ -27,20 +41,6 @@ feature -- Access
 
 	definitions: HASH_TABLE[PAIR[INTEGER,INTEGER],STRING]
 			-- Variable-definitions from the POV of this instruction
-
-feature {NONE} -- Creation
-
-	make (a_id: like id; a_path: like path; a_previous_definitions: like definitions)
-			-- Make with `a_id' and `a_path'
-		do
-			id := a_id
-			last_contained_id := id
-			first_contained_id := id
-			path := a_path
-
-			create {LINKED_LIST[STRING]}used_variables.make
-			definitions := a_previous_definitions.twin
-		end
 
 feature -- Operations
 

@@ -10,6 +10,7 @@ inherit
 	ERF_CHECK
 	SHARED_SERVER
 	ETR_SHARED_TOOLS
+	ETR_SHARED_FACTORIES
 
 create
 	make
@@ -61,7 +62,7 @@ feature -- Basic operation
 				l_orig_feat := l_written_feature.e_feature.ast
 
 				-- Create a transformable
-				create l_feat_transformable.make_in_class (l_orig_feat, class_c)
+				l_feat_transformable := transformable_factory.new_transformable_in_class (l_orig_feat, class_c)
 				l_feat_ast := l_feat_transformable.target_node
 
 				-- Convert line numbers to paths

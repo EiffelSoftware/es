@@ -11,25 +11,15 @@ inherit
 			out
 		end
 create
-	make_from_ast,
-	make_invalid,
-	make_from_ast_list,
-	make_in_class
+	make,
+	make_invalid
 
 convert
 	to_ast: {AST_EIFFEL}
 
 feature {NONE} -- creation
 
-	make_in_class (a_node: like target_node; a_class: CLASS_C)
-			-- Make with `a_node' and `a_class'. Duplicate AST.
-		require
-			non_void: a_node /= void and a_class /= void
-		do
-			make_from_ast (a_node, create {ETR_CLASS_CONTEXT}.make(a_class), true)
-		end
-
-	make_from_ast (a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
+	make (a_node: like target_node; a_context: like context; duplicate: BOOLEAN)
 			-- Make with `a_node' and `a_context'. Duplicate AST if `duplicate' set
 		require
 			non_void: a_node /= void and a_context /= void
@@ -46,39 +36,6 @@ feature {NONE} -- creation
 			is_valid := true
 
 			-- index it
-			calculate_paths
-		end
-
-	make_from_ast_list (a_list: LIST[like target_node]; a_context: like context; duplicate: BOOLEAN)
-			-- Make with `a_list' and `a_context'. Duplicate AST if `duplicate' set
-		require
-			non_void: a_list /= void and a_context /= void
-		local
-			l_eiffel_list: EIFFEL_LIST[AST_EIFFEL]
-		do
-			-- duplicate all items
-			-- since we're gonna change their paths!
-			from
-				a_list.start
-				create l_eiffel_list.make (a_list.count)
-			until
-				a_list.after
-			loop
-				if duplicate then
-					ast_tools.duplicate_ast (a_list.item)
-					l_eiffel_list.extend (ast_tools.duplicated_ast)
-				else
-					l_eiffel_list.extend (a_list.item)
-				end
-
-				a_list.forth
-			end
-
-			target_node := l_eiffel_list
-			context := a_context
-			is_valid := true
-
-			-- reindex it
 			calculate_paths
 		end
 

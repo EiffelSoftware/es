@@ -1,18 +1,51 @@
 note
-	description: "Shared transformable factory."
+	description: "Context factory."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_SHARED_TRANSFORMABLE_FACTORY
+	ETR_CONTEXT_FACTORY
+inherit
+	ETR_WORKBENCH_OPERATIONS
 
-feature {NONE} -- Shared
+feature -- New
 
-	transformable_factory: ETR_TRANSFORMABLE_FACTORY
-			-- Shared instance of ETR_TRANSFORMABLE_FACTORY
-		once
-			create Result
+	new_class_context (a_name: STRING): ETR_CLASS_CONTEXT
+			-- Returns the context in the class with `a_name'
+		require
+			system_defined: system_defined
+			non_void: a_name /= void
+		local
+			l_cls: CLASS_C
+		do
+			l_cls := compiled_class_with_name (a_name)
+
+			if l_cls /= void then
+				create Result.make(l_cls)
+			end
 		end
+
+	new_feature_context (a_classname, a_featurename: STRING): ETR_FEATURE_CONTEXT
+				-- Returns the context in the feature `a_featurename' in the class with `a_classname'
+		require
+			system_defined: system_defined
+			non_void: a_classname /= void and a_featurename /= void
+		local
+			l_feat: FEATURE_I
+		do
+			l_feat := feature_of_compiled_class(a_classname, a_featurename)
+
+			if l_feat /= void then
+				create Result.make(l_feat,void)
+			end
+		end
+
+	new_empty_context: ETR_CONTEXT
+			-- Returns a new empty context
+		do
+			create Result.make_empty
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

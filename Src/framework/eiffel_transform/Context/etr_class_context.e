@@ -21,7 +21,7 @@ feature {NONE} -- Creation
 			class_context := Current
 		end
 
-feature --Access
+feature -- Access
 	written_class: CLASS_C
 			-- Compiled class that belongs to this context
 

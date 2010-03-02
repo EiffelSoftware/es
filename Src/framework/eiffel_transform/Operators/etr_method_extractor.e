@@ -525,7 +525,7 @@ feature {NONE} -- Implementation (Printing)
 
 			parsing_helper.parse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text)
 			if parsing_helper.parsed_ast /= void then
-				create extracted_method.make_from_ast (parsing_helper.parsed_ast, context.class_context, false)
+				create extracted_method.make (parsing_helper.parsed_ast, context.class_context, false)
 			end
 		end
 
@@ -568,7 +568,7 @@ feature {NONE} -- Implementation (Printing)
 
 			parsing_helper.parse_printed_ast (a_feature_ast, l_feat_output.string_representation)
 			if parsing_helper.parsed_ast /= void then
-				create old_method.make_from_ast (parsing_helper.parsed_ast, context, false)
+				create old_method.make (parsing_helper.parsed_ast, context, false)
 			end
 		end
 

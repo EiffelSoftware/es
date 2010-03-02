@@ -60,7 +60,7 @@ feature -- Operations
 			l_visitor.print_ast_to_output(a_class.target_node)
 			parsing_helper.parse_printed_ast (a_class.target_node, l_output.string_representation)
 
-			create transformation_result.make_from_ast (parsing_helper.parsed_ast, a_class.context, false)
+			create transformation_result.make (parsing_helper.parsed_ast, a_class.context, false)
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

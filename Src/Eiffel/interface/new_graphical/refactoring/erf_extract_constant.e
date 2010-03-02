@@ -24,6 +24,7 @@ inherit
 	ETR_SHARED_TOOLS
 	ETR_SHARED_OPERATORS
 	ETR_SHARED_LOGGER
+	ETR_SHARED_FACTORIES
 
 create
 	make
@@ -97,9 +98,8 @@ feature {NONE} -- Implementation
 				l_comments := ast_tools.extract_class_comments (a_mods.occ_class.ast, l_matchlist)
 
 				create l_modifier.make
-				create l_trans.make_in_class (a_mods.occ_class.ast, a_mods.occ_class)
-				l_modifier.add_list (a_mods.mods)
-				l_modifier.apply_to (l_trans)
+				l_trans := transformable_factory.new_transformable_in_class (a_mods.occ_class.ast, a_mods.occ_class)
+				l_trans.apply_modifications (a_mods.mods)
 
 				if not etr_error_handler.has_errors then
 					-- add comment for new constant
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 
 				l_matchlist := match_list_server.item (class_i.compiled_class.class_id)
 
-				create l_cons_trans.make_in_class (original_constant, class_i.compiled_class)
+				l_cons_trans := transformable_factory.new_transformable_in_class (original_constant, class_i.compiled_class)
 
 				constant_extractor.extract_constant (l_cons_trans, containing_feature, preferences.constant_name, preferences.whole_class_flag, preferences.ancestors_flag, preferences.descendants_flag)
 

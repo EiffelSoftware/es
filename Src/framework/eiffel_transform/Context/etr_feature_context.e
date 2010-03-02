@@ -62,7 +62,6 @@ feature {NONE} -- Creation
 			written_feature := a_other.written_feature
 			create class_context.make(written_feature.written_class)
 			feature_id := a_other.feature_id
-			is_modified := a_other.is_modified
 
 			object_test_locals := a_other.object_test_locals.deep_twin
 		end
@@ -142,7 +141,7 @@ feature {NONE} -- Creation
 						l_e_feat.locals.item.id_list.after
 					loop
 						l_name := names_heap.item (l_e_feat.locals.item.id_list.item)
-						l_local_list.extend (create {ETR_TYPED_VAR}.make(l_name, l_expl_type,l_written_type))
+						l_local_list.extend (create {ETR_TYPED_VAR}.make(l_name, l_expl_type, l_written_type))
 						l_e_feat.locals.item.id_list.forth
 					end
 
@@ -168,7 +167,7 @@ feature {NONE} -- Creation
 
 			feature_id := a_written_feature.feature_id
 
-			-- store original written feature
+			-- Store original written feature
 			written_feature := a_written_feature
 
 			if attached a_class_context then
@@ -177,7 +176,7 @@ feature {NONE} -- Creation
 				create class_context.make(a_written_feature.written_class)
 			end
 
-			-- init object test locals
+			-- Init object test locals
 			create {LINKED_LIST[ETR_OBJECT_TEST_LOCAL]}object_test_locals.make
 			create l_ot_extractor.make (Current)
 			-- root = FEATURE_AS
@@ -185,12 +184,6 @@ feature {NONE} -- Creation
 		end
 
 feature -- Access
-
-	is_modified: BOOLEAN
-			-- Has `Current' been modified since creation
-
-	written_feature: FEATURE_I
-			-- The coresponding compiled feature
 
 	has_return_value: BOOLEAN
 			-- Does this feature have a return value ?
@@ -201,6 +194,14 @@ feature -- Access
 	has_locals: BOOLEAN
 			-- Does this feature have locals ?
 
+
+	written_feature: FEATURE_I
+			-- The coresponding compiled feature
+
+	feature_id: INTEGER
+			-- Feature_id of this feature
+
+
 	unresolved_type: detachable TYPE_A
 			-- Type of the feature as it was written
 
@@ -209,9 +210,6 @@ feature -- Access
 
 	name: STRING
 			-- Name of the feature
-
-	feature_id: INTEGER
-			-- Feature_id of this feature
 
 	arguments: detachable ARRAY[ETR_TYPED_VAR]
 			-- Arguments of the feature

@@ -20,6 +20,7 @@ inherit
 	SHARED_ERROR_HANDLER
 	ETR_SHARED_OPERATORS
 	ETR_SHARED_TOOLS
+	ETR_SHARED_FACTORIES
 
 create
 	make
@@ -65,7 +66,7 @@ feature {NONE} -- Implementation
 				l_compiled_class := class_i.compiled_class
 				l_matchlist := match_list_server.item (l_compiled_class.class_id)
 
-				create l_transformable.make_in_class (l_compiled_class.ast, l_compiled_class)
+				l_transformable := transformable_factory.new_transformable_in_class (l_compiled_class.ast, l_compiled_class)
 
 				effective_class_generator.generate_effective_class (l_transformable)
 

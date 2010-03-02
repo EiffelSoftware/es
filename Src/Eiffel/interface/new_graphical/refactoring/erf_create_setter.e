@@ -29,6 +29,7 @@ inherit
 	ETR_SHARED_TOOLS
 	ETR_SHARED_OPERATORS
 	ETR_SHARED_CONSTANTS
+	ETR_SHARED_FACTORIES
 
 create
 	make
@@ -147,7 +148,7 @@ feature {NONE} -- Implementation
 				l_written_class := feature_i.written_class
 				l_matchlist := system.match_list_server.item (l_written_class.class_id)
 
-				create l_transformable.make_in_class (l_feat_ast, l_written_class)
+				l_transformable	:= transformable_factory.new_transformable_in_class (l_feat_ast, l_written_class)
 
 				l_feat_name := l_feat_ast.feature_name.name
 

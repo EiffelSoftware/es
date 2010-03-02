@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_renamed_name_or_type (an_old_var, a_new_var: ETR_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
+	check_changed_name_or_type (an_old_var, a_new_var: ETR_TYPED_VAR): ETR_CT_CHANGED_ARG_LOCAL
 				-- Checks for changed name or type of local/arg
 		local
 			l_changed_type, l_changed_name: BOOLEAN
@@ -142,7 +142,7 @@ feature -- Transformations
 							l_cur_old_arg := l_source_feat_context.arguments[l_index]
 							l_cur_new_arg := l_target_feat_context.arguments[l_index]
 
-							l_changed_var := check_renamed_name_or_type(l_cur_old_arg, l_cur_new_arg)
+							l_changed_var := check_changed_name_or_type(l_cur_old_arg, l_cur_new_arg)
 							if attached l_changed_var then
 								l_changed_args_locals.extend (l_changed_var)
 							end
@@ -166,7 +166,7 @@ feature -- Transformations
 							l_cur_old_local := l_source_feat_context.locals[l_index]
 							l_cur_new_local := l_target_feat_context.locals[l_index]
 
-							l_changed_var := check_renamed_name_or_type(l_cur_old_local, l_cur_new_local)
+							l_changed_var := check_changed_name_or_type(l_cur_old_local, l_cur_new_local)
 							if attached l_changed_var then
 								l_changed_args_locals.extend (l_changed_var)
 							end
@@ -192,7 +192,7 @@ feature -- Transformations
 			parsing_helper.parse_printed_ast (a_transformable.target_node, l_output.string_representation)
 
 			if attached parsing_helper.parsed_ast then
-				create transformation_result.make_from_ast(parsing_helper.parsed_ast, a_target_context, false)
+				create transformation_result.make(parsing_helper.parsed_ast, a_target_context, false)
 			else
 				error_handler.add_error (Current, "transform_to_context", "Failed to reparse result of transformation")
 				create transformation_result.make_invalid

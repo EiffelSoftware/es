@@ -71,7 +71,7 @@ feature -- Operations
 			parsing_helper.parse_printed_ast(a_transformable.target_node, output.string_representation)
 
 			if attached parsing_helper.parsed_ast then
-				create modified_transformable.make_from_ast (parsing_helper.parsed_ast, a_transformable.context, false)
+				create modified_transformable.make (parsing_helper.parsed_ast, a_transformable.context, false)
 			else
 				create modified_transformable.make_invalid
 				error_handler.add_error (Current, "apply_to", "Modification resulted in unparsable text.")
