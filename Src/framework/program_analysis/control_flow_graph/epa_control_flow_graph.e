@@ -83,6 +83,8 @@ feature -- Setting
 
 	set_start_node (a_node: like start_node)
 			-- Set `start_node' with `a_node'.
+		require
+			a_node_in_graph: has_node (a_node)
 		do
 			start_node := a_node
 		ensure
@@ -91,10 +93,12 @@ feature -- Setting
 
 	set_end_node (a_node: like end_node)
 			-- Set `end_node' with `a_node'.
+		require
+			a_node_in_graph: has_node (a_node)
 		do
 			end_node := a_node
 		ensure
 			end_node_set: end_node = a_node
 		end
-
+		
 end
