@@ -45,6 +45,8 @@ feature -- Access
 
 	ast: EXPR_AS
 			-- AST node for `text'
+		require
+			is_ast_available: is_ast_available
 		deferred
 		end
 
@@ -190,6 +192,40 @@ feature -- Status report
 			-- Is `feature_' set?
 		do
 			Result := attached {FEATURE_I} feature_
+		end
+
+	is_quantified: BOOLEAN
+			-- Is Current expression quantified, either universal or existential?
+		do
+		end
+
+	is_universal_quantified: BOOLEAN
+			-- Is Current expression universally quantified?
+		do
+		end
+
+	is_existential_quantified: BOOLEAN
+			-- Is Current expression existentially quantified?
+		do
+		end
+
+	has_old_inside_access: BOOLEAN
+			-- Does any feature access subexpression contain an old expression?
+			-- For example, this query returns True for expression "has (old item)",
+			-- and returns False for expression "occurrences(v) = (old occurrences(v)) + 1".
+			-- Becaues the first expression has a subexpression, "old item", which is an
+			-- old expression and a subexpression inside a feature access expression "has".
+			-- For the second expression, "old occurrences(v)" is an old expression,
+			-- but it is not an subexpression inside a feature access expression.
+		do
+			check False end
+			fixme ("Implement. 2.3.2010 Jasonw")
+		end
+
+	is_ast_available: BOOLEAN
+			-- Is `ast' available?
+		do
+			Result := True
 		end
 
 feature -- Setting
