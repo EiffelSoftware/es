@@ -9,6 +9,8 @@ inherit
 	ETR_CONTEXT
 create
 	make
+convert
+	to_class_c: {CLASS_C}
 
 feature {NONE} -- Creation
 
@@ -19,6 +21,14 @@ feature {NONE} -- Creation
 		do
 			written_class := a_written_class
 			class_context := Current
+		end
+
+feature -- Conversion
+
+	to_class_c: CLASS_C
+			-- `Current' as CLASS_C
+		do
+			Result := written_class
 		end
 
 feature -- Access
@@ -43,24 +53,35 @@ feature -- Access
 			Result := internal_written_in_features_by_name
 		end
 
-	feature_of_id (an_id: INTEGER): ETR_FEATURE_CONTEXT
-			-- gets feature with the id `an_id' in the current context
-		local
-			l_feat_i: FEATURE_I
-		do
-			l_feat_i := written_class.feature_of_feature_id (an_id)
-
-			if attached l_feat_i then
-				create Result.make(l_feat_i, Current)
-			end
-		end
-
 	has_feature_named (a_name: STRING): BOOLEAN
 			-- Is there a feature with `a_name' in this context
 		require
 			name_attached: a_name /= void
 		do
 			Result := written_class.feature_named (a_name) /= void
+		end
+
+	feature_of_rout_id (a_id: INTEGER): detachable ETR_FEATURE_CONTEXT
+			-- Feature with the id `a_id' in the current context
+		local
+			l_feat: FEATURE_I
+		do
+			l_feat := written_class.feature_of_rout_id (a_id)
+
+			if attached l_feat then
+				create Result.make(l_feat, Current)
+			end
+		end
+
+	corresponding_feature(a_feature: FEATURE_I): detachable ETR_FEATURE_CONTEXT
+			-- Return the corresponding feature in `a_class_context'
+		require
+			non_void: a_feature /= void
+		local
+			l_rout_id: INTEGER
+			l_feat: FEATURE_I
+		do
+			Result := feature_of_rout_id(a_feature.rout_id_set.first)
 		end
 
 feature {NONE} -- Implementation

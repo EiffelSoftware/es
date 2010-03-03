@@ -13,6 +13,7 @@ inherit
 	ETR_SHARED_TOOLS
 	ETR_WORKBENCH_OPERATIONS
 	ETR_SHARED_FACTORIES
+	ETR_SHARED_ERROR_HANDLER
 
 feature -- Properties
 
@@ -206,6 +207,7 @@ feature -- Test features
 			l_bp_count: INTEGER
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", "big")
+--			l_trans.calculate_breakpoint_slots
 
 			create l_textout.make_open_write (eiffel_transform_directory+"big.before.ee")
 			l_textout.put_string (ast_to_bp_string(l_trans))

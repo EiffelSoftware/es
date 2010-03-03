@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	ETR_CT_RENAMED_CONSTRAINT_FEATURES
+	ETR_CT_CONSTRAINT_RENAMING
 create {ETR_TRANSFORM_CONTEXT}
 	make
 

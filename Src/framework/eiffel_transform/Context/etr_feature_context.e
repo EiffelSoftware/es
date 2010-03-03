@@ -12,9 +12,13 @@ inherit
 			{NONE} all
 		end
 	ETR_SHARED_TOOLS
+
 create
 	make,
 	make_from_other
+
+convert
+	to_feature_i: {FEATURE_I}
 
 feature {NONE} -- Creation
 	make_from_other(a_other: like Current)
@@ -60,8 +64,7 @@ feature {NONE} -- Creation
 			end
 
 			written_feature := a_other.written_feature
-			create class_context.make(written_feature.written_class)
-			feature_id := a_other.feature_id
+			create class_context.make(a_other.class_context.written_class)
 
 			object_test_locals := a_other.object_test_locals.deep_twin
 		end
@@ -77,10 +80,16 @@ feature {NONE} -- Creation
 			l_written_type: TYPE_A
 			l_ot_extractor: ETR_OBJECT_TEST_LOCAL_EXTRACTOR
 		do
+			if attached a_class_context then
+				class_context := a_class_context
+			else
+				create class_context.make(a_written_feature.written_class)
+			end
+
 			-- compute explicit type
 			if a_written_feature.has_return_value then
 				unresolved_type := a_written_feature.type
-				type := type_checker.explicit_type (a_written_feature.type, a_written_feature.written_class)
+				type := type_checker.explicit_type (a_written_feature.type, class_context.written_class)
 				has_return_value := true
 			end
 
@@ -98,7 +107,7 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.arguments.after or l_e_feat.argument_names.after
 				loop
-					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, l_e_feat.written_class)
+					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, class_context.written_class)
 					l_name := l_e_feat.argument_names.item
 					l_arg_list.extend (create {ETR_TYPED_VAR}.make(l_name, l_expl_type,l_e_feat.arguments.item))
 
@@ -165,22 +174,22 @@ feature {NONE} -- Creation
 				end
 			end
 
-			feature_id := a_written_feature.feature_id
-
 			-- Store original written feature
 			written_feature := a_written_feature
-
-			if attached a_class_context then
-				class_context := a_class_context
-			else
-				create class_context.make(a_written_feature.written_class)
-			end
 
 			-- Init object test locals
 			create {LINKED_LIST[ETR_OBJECT_TEST_LOCAL]}object_test_locals.make
 			create l_ot_extractor.make (Current)
 			-- root = FEATURE_AS
 			l_ot_extractor.process_from_root (a_written_feature.e_feature.ast)
+		end
+
+feature -- Conversion
+
+	to_feature_i: FEATURE_I
+			-- `Current' as FEATURE_I
+		do
+			Result := written_feature
 		end
 
 feature -- Access
@@ -197,10 +206,6 @@ feature -- Access
 
 	written_feature: FEATURE_I
 			-- The coresponding compiled feature
-
-	feature_id: INTEGER
-			-- Feature_id of this feature
-
 
 	unresolved_type: detachable TYPE_A
 			-- Type of the feature as it was written

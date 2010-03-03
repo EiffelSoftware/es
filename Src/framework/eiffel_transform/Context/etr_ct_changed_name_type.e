@@ -4,11 +4,12 @@ note
 	revision: "$Revision$"
 
 class
-	ETR_CT_CHANGED_ARG_LOCAL
+	ETR_CT_CHANGED_NAME_TYPE
 create {ETR_TRANSFORM_CONTEXT}
 	make_changed_type,
 	make_changed_name,
-	make_changed_name_type
+	make_changed_name_type,
+	make_changed_feat_type
 
 feature {NONE} -- Creation
 
@@ -18,6 +19,17 @@ feature {NONE} -- Creation
 			feature_name := a_feature_name
 			old_type := an_old_type
 			new_type := a_new_type
+
+			is_changed_type := true
+		end
+
+	make_changed_feat_type (a_feature_name: like feature_name; a_written_type: attached like old_type; an_old_type: attached like old_type; a_new_type: attached like new_type)
+			-- Make with `an_old_type' and `a_new_type'
+		do
+			feature_name := a_feature_name
+			old_type := an_old_type
+			new_type := a_new_type
+			written_type := a_written_type
 
 			is_changed_type := true
 		end
@@ -48,7 +60,7 @@ feature  -- Access
 	feature_name: STRING
 			-- Name of the target feature
 
-	old_type,new_type:detachable CLASS_C
+	old_type,new_type,written_type:detachable CLASS_C
 			-- Old and new associated class of the changed type
 
 	new_name:detachable STRING

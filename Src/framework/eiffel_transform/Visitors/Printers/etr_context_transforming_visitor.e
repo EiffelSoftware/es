@@ -23,10 +23,10 @@ create
 
 feature {NONE} -- Creation
 
-	make (an_output: like output; a_changed_feature_list: LIST[ETR_CT_CHANGED_FEATURE]; a_changed_argument_list: LIST[ETR_CT_CHANGED_ARG_LOCAL]; a_constraint_renaming_list: LIST[ETR_CT_RENAMED_CONSTRAINT_FEATURES])
-			-- make with `an_output', `a_changed_feature_list', `a_source' and `a_target'
+	make (a_output: like output; a_changed_local_list: LIST[ETR_CT_CHANGED_NAME_TYPE]; a_constraint_renaming_list: LIST[ETR_CT_CONSTRAINT_RENAMING])
+			-- Make with `a_output', `a_changed_local_list' and `a_constraint_renaming_list'
 		do
-			make_with_output(an_output)
+			make_with_output(a_output)
 
 			if attached a_constraint_renaming_list then
 				from
@@ -43,46 +43,28 @@ feature {NONE} -- Creation
 				create constraint_renaming_hash.make(0)
 			end
 
-			if attached a_changed_feature_list then
+			if attached a_changed_local_list then
 				from
-					create changed_feature_hash.make(a_changed_feature_list.count)
-					a_changed_feature_list.start
+					create changed_locals_hash.make(a_changed_local_list.count)
+					a_changed_local_list.start
 				until
-					a_changed_feature_list.after
+					a_changed_local_list.after
 				loop
-					changed_feature_hash.extend(a_changed_feature_list.item,a_changed_feature_list.item.feature_name)
+					changed_locals_hash.extend(a_changed_local_list.item, a_changed_local_list.item.feature_name)
 
-					a_changed_feature_list.forth
+					a_changed_local_list.forth
 				end
 			else
-				create changed_feature_hash.make (0)
-			end
-
-			if attached a_changed_argument_list then
-				from
-					create changed_args_hash.make(a_changed_argument_list.count)
-					a_changed_argument_list.start
-				until
-					a_changed_argument_list.after
-				loop
-					changed_args_hash.extend(a_changed_argument_list.item, a_changed_argument_list.item.feature_name)
-
-					a_changed_argument_list.forth
-				end
-			else
-				create changed_args_hash.make (1)
+				create changed_locals_hash.make (1)
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	changed_feature_hash: HASH_TABLE[ETR_CT_CHANGED_FEATURE,STRING]
-			-- Features that require transformation
+	changed_locals_hash: HASH_TABLE[ETR_CT_CHANGED_NAME_TYPE,STRING]
+			-- Locals that need renaming
 
-	changed_args_hash: HASH_TABLE[ETR_CT_CHANGED_ARG_LOCAL,STRING]
-			-- Arguments that require transformation
-
-	constraint_renaming_hash: HASH_TABLE[ETR_CT_RENAMED_CONSTRAINT_FEATURES,STRING]
+	constraint_renaming_hash: HASH_TABLE[ETR_CT_CONSTRAINT_RENAMING,STRING]
 			-- Renamings in source & target context			
 
 	rename_next: BOOLEAN
@@ -113,7 +95,7 @@ feature {NONE} -- Implementation
 		local
 			l_cursor: INTEGER
 			l_name: STRING
-			l_changed: ETR_CT_CHANGED_ARG_LOCAL
+			l_changed: ETR_CT_CHANGED_NAME_TYPE
 		do
 			-- process the id's list
 			-- which is not an ast but an array of indexes into the names heap
@@ -124,7 +106,7 @@ feature {NONE} -- Implementation
 				l_as.after
 			loop
 				l_name := names_heap.item (l_as.item)
-				l_changed := changed_args_hash[l_name]
+				l_changed := changed_locals_hash[l_name]
 				if attached l_changed and then l_changed.is_changed_name then
 					output.append_string(l_changed.new_name)
 				else
@@ -172,9 +154,6 @@ feature {AST_EIFFEL} -- Roundtrip
 				output.append_string(ti_r_curly+ti_Space)
 			end
 			process(l_as.target, l_as, 1)
-			if processing_needed (l_as.call, l_as, 3) then
-				output.append_string (ti_dot)
-			end
 			last_was_unqualified_or_current := false
 			if processing_needed (l_as.call, l_as, 3) then
 				output.append_string (ti_dot)
@@ -185,7 +164,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
-			l_changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
+			l_changed_arguments: ETR_CT_CHANGED_NAME_TYPE
 		do
 			if rename_next then
 				output.append_string (next_new_name)
@@ -193,7 +172,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			elseif not last_was_unqualified_or_current then
 				output.append_string (l_as.access_name)
 			else
-				l_changed_arguments := changed_args_hash[l_as.access_name]
+				l_changed_arguments := changed_locals_hash[l_as.access_name]
 
 				-- check for changed argument name
 				if attached l_changed_arguments and then l_changed_arguments.is_changed_name then
@@ -211,8 +190,6 @@ feature {AST_EIFFEL} -- Roundtrip
 		end
 
 	process_id_as (l_as: ID_AS)
-		local
-			l_changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
 		do
 			if rename_next then
 				output.append_string (next_new_name)
@@ -240,11 +217,12 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_nested_as (l_as: NESTED_AS)
 		local
 			l_old_feature,l_new_feature: FEATURE_I
-			l_changed_features: ETR_CT_CHANGED_FEATURE
-			l_changed_arguments: ETR_CT_CHANGED_ARG_LOCAL
-			l_renamings: ETR_CT_RENAMED_CONSTRAINT_FEATURES
+			l_changed_local: ETR_CT_CHANGED_NAME_TYPE
+			l_renamings: ETR_CT_CONSTRAINT_RENAMING
 			l_old_msg_name, l_new_msg_name: STRING
 			l_old_msg_name_id, l_new_msg_name_id, l_next_access_name_id: INTEGER
+
+			l_msg_name: STRING
 		do
 			process_child (l_as.target, l_as, 1)
 			output.append_string (ti_dot)
@@ -256,8 +234,7 @@ feature {AST_EIFFEL} -- Roundtrip
 					last_was_unqualified_or_current := false
 				end
 
-				l_changed_features := changed_feature_hash[l_as.target.access_name]
-				l_changed_arguments := changed_args_hash[l_as.target.access_name]
+				l_changed_local := changed_locals_hash[l_as.target.access_name]
 				l_renamings := constraint_renaming_hash[l_as.target.access_name]
 
 				-- we have to get the old message name before the renamings!
@@ -266,21 +243,19 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_next_access_name_id := next_access_name_id(l_as.message)
 
 				if l_next_access_name_id>0 then
-					if attached l_renamings and then attached l_renamings.source_renaming then
+					if l_renamings /= void and then attached l_renamings.source_renaming then
 						l_old_msg_name_id := l_renamings.source_renaming.renamed (l_next_access_name_id)
 						l_old_msg_name := names_heap.item (l_old_msg_name_id)
 					else
 						l_old_msg_name := names_heap.item (l_next_access_name_id)
 					end
 
-					if attached l_changed_features then
-						-- now look up feature id's of the message and print the new name
-						-- consider possible renamings
-						l_old_feature := l_changed_features.old_type.feature_named (l_old_msg_name)
-						l_new_feature := l_changed_features.new_type.feature_of_feature_id (l_old_feature.feature_id)
+					if l_changed_local /= void and then l_changed_local.is_changed_type then
+						l_old_feature := l_changed_local.old_type.feature_named (l_old_msg_name)
+						l_new_feature := l_changed_local.new_type.feature_of_rout_id (l_old_feature.rout_id_set.first)
 
 						-- we have to get the new name of the feature
-						if attached l_renamings and then attached l_renamings.target_renaming then
+						if l_renamings /= void and then attached l_renamings.target_renaming then
 							l_new_msg_name_id := l_renamings.target_renaming.new_name (l_new_feature.feature_name_id)
 							l_new_msg_name := names_heap.item (l_new_msg_name_id)
 						else
@@ -290,25 +265,6 @@ feature {AST_EIFFEL} -- Roundtrip
 						rename_next := true
 						next_new_name := l_new_msg_name
 						process_child (l_as.message, l_as, 2)
-					elseif attached l_changed_arguments then
-						if l_changed_arguments.is_changed_type then
-							l_old_feature := l_changed_arguments.old_type.feature_named (l_old_msg_name)
-							l_new_feature := l_changed_arguments.new_type.feature_of_feature_id (l_old_feature.feature_id)
-
-							-- we have to get the new name of the feature
-							if attached l_renamings and then attached l_renamings.target_renaming then
-								l_new_msg_name_id := l_renamings.target_renaming.new_name (l_new_feature.feature_name_id)
-								l_new_msg_name := names_heap.item (l_new_msg_name_id)
-							else
-								l_new_msg_name := l_new_feature.feature_name
-							end
-
-							rename_next := true
-							next_new_name := l_new_msg_name
-							process_child (l_as.message, l_as, 2)
-						else
-							process_child (l_as.message, l_as, 2)
-						end
 					else
 						process_child (l_as.message, l_as, 2)
 					end
