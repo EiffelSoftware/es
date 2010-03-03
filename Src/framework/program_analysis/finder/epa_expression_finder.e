@@ -33,4 +33,10 @@ feature{NONE} -- Implementation
 			Result.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
 		end
 
+	expression_equality_tester: EPA_EXPRESSION_EQUALITY_TESTER
+			-- Equality tester for expressions
+		once
+			create Result
+		end
+
 end

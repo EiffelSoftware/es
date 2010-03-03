@@ -74,7 +74,11 @@ feature -- Access
 				l_feat_table.after
 			loop
 				l_feature := l_feat_table.item_for_iteration
-				if a_criterion.item ([l_feature]) then
+				if a_criterion /= Void then
+					if a_criterion.item ([l_feature]) then
+						l_list.force_last (l_feature)
+					end
+				else
 					l_list.force_last (l_feature)
 				end
 				l_feat_table.forth

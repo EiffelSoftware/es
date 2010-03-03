@@ -43,6 +43,15 @@ feature -- Access
 		deferred
 		end
 
+	resolved_type: like type
+			-- Resolved type for `type'.
+			-- Should be the same as type if `type' is also resolved.
+		do
+			to_implement ("To implement, for the moment, we use the following. 3.3.2010 Jasonw")
+			Result := type
+
+		end
+
 	ast: EXPR_AS
 			-- AST node for `text'
 		require
