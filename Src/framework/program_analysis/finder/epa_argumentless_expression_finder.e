@@ -83,6 +83,8 @@ feature{NONE} -- Initialization
 				l_agents.grow (1)
 				l_agents.put (ored_agents (l_ored_agents), l_agents.count)
 			end
+			criterion := anded_agents (l_agents)
+			context_class := a_context_class
 		end
 
 
