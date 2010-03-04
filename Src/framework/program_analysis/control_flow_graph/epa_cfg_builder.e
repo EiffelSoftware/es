@@ -19,7 +19,7 @@ inherit
 
 	ETR_SHARED_TOOLS
 
-	ETR_SHARED_TRANSFORMABLE_FACTORY
+	ETR_SHARED_FACTORIES
 
 	ETR_SHARED_OPERATORS
 
@@ -63,7 +63,7 @@ feature -- Basic operations
 				-- Duplicate ASTs.
 			create l_class_context.make (a_context_class)
 			create l_context.make (a_feature, l_class_context)
-			create l_transformable.make_from_ast (l_compound, l_context, True)
+			create l_transformable.make (l_compound, l_context, True)
 
 				-- Visit duplicated AST to build up CFG.
 			process_feature_body (l_transformable.to_ast)

@@ -201,19 +201,6 @@ feature -- Type evaluation
 			has_associated_class: Result.associated_class /= void
 		end
 
-	explicit_type_in_context (a_type: TYPE_A; a_context: ETR_CONTEXT): TYPE_A
-			-- Returns the explicit type of `a_type' in `a_context'
-		require
-			non_void: a_type /= void and a_context /= void
-			context_non_empty: not a_context.is_empty
-		do
-			if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
-				Result := explicit_type (a_type, l_feat_context.class_context.written_class, l_feat_context.written_feature)
-			elseif attached {ETR_CLASS_CONTEXT}a_context as l_class_context then
-				Result := explicit_type (a_type, l_class_context.written_class, void)
-			end
-		end
-
 	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I): TYPE_A
 			-- Returns the explicit type of `a_type' in `a_written_class' and `a_written_feature'
 		require
@@ -255,9 +242,9 @@ feature -- Type evaluation
 					until
 						l_index > gen.generics.upper
 					loop
-						if not gen.generics[l_index].is_explicit then
+--						if not gen.generics[l_index].is_explicit then
 							gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class, a_written_feature)
-						end
+--						end
 						l_index := l_index + 1
 					end
 				end
