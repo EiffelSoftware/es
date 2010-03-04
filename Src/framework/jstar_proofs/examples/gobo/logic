@@ -45,7 +45,8 @@ if
 // At least two solutions:
 //  1) Make jStar maching less eager by using backtracking if multiple matchings are possible
 //  2) Introduce a specification mechanism to state that certain variables on the left- and right-hand sides of the conclusion sequent's turnstile are the same. This will restrict matching.
-//     For example: ItemAt(?current,{res=?result;ref=?iter;iters=?i;content=?c}) => IsOff(?current,{res=false();ref=?iter;iters=?i;content=?c})
+//     For example, the following axiom will generate two rules, one which is listed below:
+//       ItemAt(@this:,{res=!result;ref=!iter;iters=!i;content=!c}) => IsOff(@this:,{res=false();ref=!iter;iters=!i;content=!c}) * ItemAt(@this:,{res=!result;ref=!iter;iters=!i;content=!c})
 rule someaxiom:
  | ItemAt(?current,{res=?result;ref=?iter;iters=?i;content=?c}) |- IsOff(?current,{res=false();ref=?iter;iters=?i;content=?c})
 if
