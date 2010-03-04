@@ -215,6 +215,7 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
+		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>
 		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false" use_application_options="true"/>
 		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
@@ -225,7 +226,6 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
-		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>		
 		<cluster name="auto_fix_py" location="$EIFFEL_SRC\framework\auto_fix_py\" recursive="true"/>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
@@ -301,6 +301,7 @@
 	<target name="bench_unix" extends="bench">
 		<description>Compiling UNIX bench compiler on other platforms than Windows</description>
 		<setting name="platform" value="unix"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
 	</target>
 	<target name="bench_cocoa" extends="bench">
 		<description>Compile on Mac OS X using the Cocoa framework instead of GTK+</description>
