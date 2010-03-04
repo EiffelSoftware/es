@@ -123,7 +123,7 @@ feature {DS_BILINEAR_CURSOR} -- Cursor implementation
 			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
 		ensure
-			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsLast(Current,{res:Result;ref:a_cursor;iters:_i;content:_c)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsLast(Current,{res:Result;ref:a_cursor;iters:_i;content:_c})
 			--not_empty: Result implies not is_empty
 			--a_cursor_not_off: Result implies not cursor_off (a_cursor)
 			--definition: Result implies (cursor_item (a_cursor) = last)
@@ -137,7 +137,7 @@ feature {DS_BILINEAR_CURSOR} -- Cursor implementation
 			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
 		ensure
-			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsBefore(Current,{res:Result;ref:a_cursor;iters:_i;content:_c)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsBefore(Current,{res:Result;ref:a_cursor;iters:_i;content:_c})
 		end
 
 	cursor_finish (a_cursor: like new_cursor) is

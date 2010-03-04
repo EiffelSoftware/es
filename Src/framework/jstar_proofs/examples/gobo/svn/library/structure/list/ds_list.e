@@ -9,6 +9,9 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	sl_axioms: "[
+		valid_index_constraint: IsCount(Current,{res:count;content:c}) * r = builtin_and(builtin_le(0,i),builtin_le(i,builtin_plus(count,1))) ==> IsValidIndex(Current,{res:r;index:i;content:c})
+	]"
 
 deferred class DS_LIST [G]
 
@@ -16,10 +19,14 @@ inherit
 
 	DS_BILINEAR [G]
 		redefine
-			new_cursor
+			new_cursor,
+			count			-- For respecification
 		end
 
 	DS_INDEXABLE [G]
+		redefine
+			count			-- For respecification
+		end
 
 feature -- Access
 
@@ -36,6 +43,18 @@ feature -- Access
 			-- New external cursor for traversal
 			-- sl_ignore
 		deferred
+		end
+
+feature -- Measurement
+
+	count: INTEGER is
+			-- Number of items in container
+		require else
+			-- Listed here for respecification purposes.
+			--SL-- DS(Current,{content:_c;pos:_p;iters:_i})
+		deferred
+		ensure then
+			--SL-- DS(Current,{content:_c;pos:_p;iters:_i}) * IsCount(Current,{res:Result;content:_c})
 		end
 
 feature -- Status report
@@ -82,14 +101,14 @@ feature -- Element change
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.put_left (v)'.)
 		require
-			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c1;pos:_p1;iters:_i1}) * IsBefore(Current,{res:false();ref:a_cursor;iters:_i1;content:_c1) * IsExtendible(Current,{res:true();elems:1})
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c1;pos:_p1;iters:_i1}) * IsBefore(Current,{res:false();ref:a_cursor;iters:_i1;content:_c1}) * IsExtendible(Current,{res:true();elems:1})
 			--extendible: extendible (1)
 			--cursor_not_void: a_cursor /= Void
 			--valid_cursor: valid_cursor (a_cursor)
 			--not_before: not a_cursor.before
 		deferred
 		ensure
-			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutLeft(Current,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:a_cursor;with:v})
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutLeft(Current,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:a_cursor;value:v})
 			--one_more: count = old count + 1
 		end
 
@@ -111,14 +130,14 @@ feature -- Element change
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.put_right (v)'.)
 		require
-			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c1;pos:_p1;iters:_i1}) * IsAfter(Current,{res:false();ref:a_cursor;iters:_i1;content:_c1) * IsExtendible(Current,{res:true();elems:1})
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c1;pos:_p1;iters:_i1}) * IsAfter(Current,{res:false();ref:a_cursor;iters:_i1;content:_c1}) * IsExtendible(Current,{res:true();elems:1})
 			--extendible: extendible (1)
 			--cursor_not_void: a_cursor /= Void
 			--valid_cursor: valid_cursor (a_cursor)
 			--not_after: not a_cursor.after
 		deferred
 		ensure
-			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutRight(Current,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:a_cursor;with:v})
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutRight(Current,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:a_cursor;value:v})
 			--one_more: count = old count + 1
 		end
 

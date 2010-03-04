@@ -143,12 +143,12 @@ feature -- Processing
 
 	process_bin_and_b (a_node: BIN_AND_B)
 		do
-			process_built_in_binary_b (a_node, "&&")
+			process_built_in_binary_b (a_node, "&")
 		end
 
 	process_bin_and_then_b (a_node: B_AND_THEN_B)
 		do
-			process_built_in_binary_b (a_node, "&&")
+			process_built_in_binary_b (a_node, "&")
 		end
 
 	process_bin_div_b (a_node: BIN_DIV_B)
@@ -243,13 +243,13 @@ feature -- Processing
 	process_bin_or_b (a_node: BIN_OR_B)
 			-- Process `a_node'.
 		do
-			process_built_in_binary_b (a_node, "||")
+			process_built_in_binary_b (a_node, "|")
 		end
 
 	process_bin_or_else_b (a_node: B_OR_ELSE_B)
 			-- Process `a_node'.
 		do
-			process_built_in_binary_b (a_node, "||")
+			process_built_in_binary_b (a_node, "|")
 		end
 
 	process_bin_plus_b (a_node: BIN_PLUS_B)

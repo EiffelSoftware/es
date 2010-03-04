@@ -10,6 +10,7 @@ note
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
+	sl_info: "ignore"
 
 class ARRAY [G] inherit
 

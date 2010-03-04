@@ -9,6 +9,8 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	js_logic: "logic"
+	js_abstraction: "abs"
 
 deferred class DS_INDEXED_CURSOR [G]
 

@@ -18,7 +18,7 @@
 		<option namespace="Gobo.Library">
 		</option>
 		<setting name="dotnet_naming_convention" value="true"/>
-		<library name="eiffelbase" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="eiffelbase" location="base\base.ecf" readonly="false"/>
 		<library name="eiffeltime" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<assembly name="eiffelsoftware.runtime" location="$ISE_EIFFEL\studio\spec\$ISE_PLATFORM\lib\EiffelSoftware.Runtime.dll"/>
 		<cluster name="kernel" location="svn\library\kernel\" recursive="true">

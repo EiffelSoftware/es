@@ -9,6 +9,8 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	js_logic: "logic"
+	js_abstraction: "abs"
 
 deferred class DS_BILINEAR_CURSOR [G]
 
@@ -40,7 +42,7 @@ feature -- Status report
 		do
 			Result := container.cursor_is_last (Current)
 		ensure
-			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsLast(_ds,{res:Result;ref:Current;iters:_i;content:_c)
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsLast(_ds,{res:Result;ref:Current;iters:_i;content:_c})
 			--not_empty: Result implies not container.is_empty
 			--not_off: Result implies not off
 		end
@@ -52,7 +54,7 @@ feature -- Status report
 		do
 			Result := container.cursor_before (Current)
 		ensure
-			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsBefore(_ds,{res:Result;ref:Current;iters:_i;content:_c)
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsBefore(_ds,{res:Result;ref:Current;iters:_i;content:_c})
 		end
 
 feature -- Cursor movement

@@ -32,28 +32,14 @@ feature
 
 	process_class (a_class: !CLASS_C)
 		local
-			l_supplier: CLASS_C
 			considered: HASH_TABLE [BOOLEAN, INTEGER]
 				-- The keys are class ids. This makes sure that no class is emitted twice.
 		do
 			output.reset
 
 			create considered.make (10)
-			considered.put (True, a_class.class_id)
-				-- First collect specs from supplier classes of `a_class' (excluding `a_class' itself) that are not expanded or external (e.g. INTEGER_32).
-			from
-				a_class.suppliers.start
-			until
-				a_class.suppliers.off
-			loop
-				l_supplier := a_class.suppliers.item.supplier
-				process_class_and_parents_if_needed (l_supplier, considered)
-				a_class.suppliers.forth
-			end
-				-- Next: collect specs from ancestor classes that are not expanded or external.
-				-- TODO: non-conforming ancestors.
-			considered.remove (a_class.class_id)
-			process_class_and_parents_if_needed (a_class, considered)
+
+			process_class_with_parents_and_suppliers_if_needed (a_class, considered)
 		end
 
 	generated_specs: !STRING
@@ -79,24 +65,38 @@ feature {NONE}
 
 	spec_printer: JS_SPEC_PRINTER
 
-	process_class_and_parents_if_needed (a_class: CLASS_C; visited: HASH_TABLE [BOOLEAN, INTEGER])
+	process_class_with_parents_and_suppliers_if_needed (a_class: CLASS_C; visited: HASH_TABLE [BOOLEAN, INTEGER])
+		local
+			l_supplier: CLASS_C
 		do
 			if should_consider_class (a_class) and then not visited.has_key (a_class.class_id) then
 				visited.put (True, a_class.class_id)
+
+				from
+					a_class.suppliers.start
+				until
+					a_class.suppliers.off
+				loop
+					l_supplier := a_class.suppliers.item.supplier
+					process_class_with_parents_and_suppliers_if_needed (l_supplier, visited)
+					a_class.suppliers.forth
+				end
+
 				from
 					a_class.conforming_parents.start
 				until
 					a_class.conforming_parents.off
 				loop
-					process_class_and_parents_if_needed (a_class.conforming_parents.item.associated_class, visited)
+					process_class_with_parents_and_suppliers_if_needed (a_class.conforming_parents.item.associated_class, visited)
 					a_class.conforming_parents.forth
 				end
+				-- TODO: non-conforming parents
 				collect_spec_of_class (a_class)
 			end
 		end
 
 	collect_spec_of_class (a_class: !CLASS_C)
-			-- Collects the shallow spec of a class, i.e. the suppliers of `a_class' are not considered.
+			-- Collects the shallow spec of a class, i.e. the suppliers and parents of `a_class' are not considered.
 		local
 			parent: CLASS_C
 			parents: STRING

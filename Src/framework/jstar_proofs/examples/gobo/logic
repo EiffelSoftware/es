@@ -1,5 +1,7 @@
 import "field_logic";
 
+//////////////////////////////// Rules for Boolean logic //////////////////////////////////////////////
+
 rewrite simple1:
  builtin_ne(?x,?x) = false()
 
@@ -31,19 +33,31 @@ without
 if 
  | |- ?y!=?z
 
+
+///////////////////////////////// Axioms that we cannot encode yet ////////////////////////////////////
+
 // We cannot encode this rule as an axiom yet. It would be Cursor * Cursor ==> False in class DS_CURSOR
-rule check:
+rule checksanity:
  | Cursor(?x,{ds=?y}) * Cursor(?x,{ds=?z}) |- False
 if
 
 // This is another axiom. Since there are many ItemAt's on the left and many IsOff's on the right, jStar picks the wrong ones if the general axiom format is used.
+// At least two solutions:
+//  1) Make jStar maching less eager by using backtracking if multiple matchings are possible
+//  2) Introduce a specification mechanism to state that certain variables on the left- and right-hand sides of the conclusion sequent's turnstile are the same. This will restrict matching.
+//     For example: ItemAt(?current,{res=?result;ref=?iter;iters=?i;content=?c}) => IsOff(?current,{res=false();ref=?iter;iters=?i;content=?c})
 rule someaxiom:
  | ItemAt(?current,{res=?result;ref=?iter;iters=?i;content=?c}) |- IsOff(?current,{res=false();ref=?iter;iters=?i;content=?c})
 if
 IsOff(?current,{res=false();ref=?iter;iters=?i;content=?c}) | ItemAt(?current,{res=?result;ref=?iter;iters=?i;content=?c}) |- !objsubtype(?current,"DS_TRAVERSABLE")
 
-// Another axiom, but we cannot reason like this about types at the moment.
-rule static_types:
+
+///////////////////////////////// Rules related to types /////////////////////////////////////////////
+
+// Maybe these can be specified as axioms too. It will all depend on how type info is going to be integrated in jStar.
+// For example, we can put the following axiom in DS_CURSOR: Cursor(Current,{ds:_ds}) ==> !statictype_upperbound(_ds,"DS_TRAVERSABLE")
+
+rule static_types1:
  | Cursor(?x,{ds=?d}) |- !statictype(?d,"DS_TRAVERSABLE")
 if
  | Cursor(?x,{ds=?d}) |- !statictype(?x,"DS_CURSOR")
