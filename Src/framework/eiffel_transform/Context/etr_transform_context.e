@@ -124,8 +124,8 @@ feature -- Transformations
 
 						if l_old_feat.has_return_value and l_new_feat.has_return_value then
 							-- check if the type changed
-							l_old_expl_type := type_checker.explicit_type (l_old_feat.type, l_source_class_context.written_class)
-							l_new_expl_type := type_checker.explicit_type (l_new_feat.type, l_target_class_context.written_class)
+							l_old_expl_type := type_checker.explicit_type (l_old_feat.type, l_source_class_context.written_class, l_old_feat)
+							l_new_expl_type := type_checker.explicit_type (l_new_feat.type, l_target_class_context.written_class, l_new_feat)
 
 							if l_old_expl_type.associated_class.class_id /= l_new_expl_type.associated_class.class_id then
 								l_changed_type := true

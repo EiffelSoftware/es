@@ -118,18 +118,16 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		local
 			l_written_type: TYPE_A
-			l_type_checker: ETR_TYPE_CHECKER
 			l_explicit_type: TYPE_A
 		do
 			if attached l_as.name and attached not current_scope.is_empty then
 				if attached l_as.type then
 					l_written_type := type_checker.written_type_from_type_as (l_as.type, context.class_context.written_class, context.written_feature)
 				else
-					create l_type_checker
-					l_type_checker.check_ast_type_at (l_as.expression, context, current_path)
-					l_written_type := l_type_checker.last_type
+					type_checker.check_ast_type_at (l_as.expression, context, current_path)
+					l_written_type := type_checker.last_type
 				end
-				l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class)
+				l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class, context.written_feature)
 
 				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make_at (l_as.name.name, l_explicit_type, l_written_type, current_scope))
 			end

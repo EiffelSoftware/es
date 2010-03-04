@@ -29,7 +29,7 @@ feature {NONE} -- Shared
 	type_checker: ETR_TYPE_CHECKER
 			-- Shared instance of ETR_TYPE_CHECKER
 		once
-			create Result
+			create Result.make
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

@@ -30,6 +30,17 @@ inherit
 			{ANY} parsing_helper
 		end
 	ETR_SHARED_LOGGER
+create
+	make
+
+feature {NONE} -- Creation
+
+	make
+			-- Initialize type checker
+		do
+			-- Make sure interal type checkers are initialized
+			init (void)
+		end
 
 feature -- Output
 
@@ -161,16 +172,11 @@ feature -- Type evaluation
 			type_non_void: a_type /= void
 			context_set: a_written_class /= void and a_feature /= void
 		local
-			l_type_gen: AST_TYPE_A_GENERATOR
 			l_generated_type, l_resolved_type: TYPE_A
-			l_type_a_checker: TYPE_A_CHECKER
 		do
-			create l_type_gen
-			create l_type_a_checker
-
-			l_generated_type := l_type_gen.evaluate_type (a_type, a_written_class)
-			l_type_a_checker.init_for_checking (a_feature, a_written_class, void, void)
-			l_resolved_type := l_type_a_checker.solved(l_generated_type, void)
+			l_generated_type := type_a_generator.evaluate_type (a_type, a_written_class)
+			type_a_checker.init_for_checking (a_feature, a_written_class, void, void)
+			l_resolved_type := type_a_checker.solved(l_generated_type, void)
 
 			Result := l_resolved_type
 		end
@@ -188,22 +194,40 @@ feature -- Type evaluation
 
 			if not Result.is_explicit then
 				-- recurse
-				Result := explicit_type (Result, a_written_class)
+				Result := explicit_type (Result, a_written_class, a_feature)
 			end
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void
 		end
 
-	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C): TYPE_A
+	explicit_type_in_context (a_type: TYPE_A; a_context: ETR_CONTEXT): TYPE_A
 			-- Returns the explicit type of `a_type' in `a_context'
 		require
+			non_void: a_type /= void and a_context /= void
+			context_non_empty: not a_context.is_empty
+		do
+			if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
+				Result := explicit_type (a_type, l_feat_context.class_context.written_class, l_feat_context.written_feature)
+			elseif attached {ETR_CLASS_CONTEXT}a_context as l_class_context then
+				Result := explicit_type (a_type, l_class_context.written_class, void)
+			end
+		end
+
+	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I): TYPE_A
+			-- Returns the explicit type of `a_type' in `a_written_class' and `a_written_feature'
+		require
 			type_non_void: a_type /= void
-			written_class_non_void: a_written_class /= void
+			non_void: a_written_class /= void
 		local
 			l_index: INTEGER
 		do
-			if a_type.is_formal then
+			if not a_type.is_valid then
+				-- It probably hasn't been solved yet
+				type_a_checker.init_for_checking (a_written_feature, a_written_class, void, void)
+				Result := type_a_checker.solved(a_type, void)
+				Result := Result.actual_type
+			elseif a_type.is_formal then
 				if attached {FORMAL_A} a_type as l_formal then
 					Result :=  l_formal.constraints (a_written_class)
 
@@ -232,16 +256,21 @@ feature -- Type evaluation
 						l_index > gen.generics.upper
 					loop
 						if not gen.generics[l_index].is_explicit then
-							gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class)
+							gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class, a_written_feature)
 						end
 						l_index := l_index + 1
 					end
 				end
 			end
 
-			if not Result.is_explicit then
-				-- recurse
-				Result := explicit_type (Result, a_written_class)
+			if not Result.is_valid then
+				etr_error_handler.add_error (Current, "explicit type", "Type is invalid and unable to be resolved.")
+			elseif not Result.is_explicit then
+				if a_type.same_type (Result) and then a_type.is_equivalent (Result) then
+					etr_error_handler.add_error (Current, "explicit type", "Unable to resolve explicit type.")
+				else
+					Result := explicit_type (Result, a_written_class, a_written_feature)
+				end
 			end
 		ensure
 			is_explicit: Result.is_explicit
