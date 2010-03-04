@@ -9,6 +9,8 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	js_logic: "logic"
+	js_abstraction: "abs"
 
 deferred class DS_SET_CURSOR [G]
 
@@ -24,7 +26,11 @@ feature -- Access
 
 	container: DS_SET [G] is
 			-- Set traversed
+		require else
+			--SL-- Cursor(Current,{ds:_ds})
 		deferred
+		ensure then
+			--SL-- Cursor(Current,{ds:_ds}) * Result = _ds
 		end
 
 feature {DS_SET} -- Implementation

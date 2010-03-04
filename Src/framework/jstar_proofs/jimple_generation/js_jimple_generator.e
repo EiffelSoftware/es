@@ -319,7 +319,9 @@ feature {NONE}
 				-- Set up byte context
 			Context.clear_feature_data
 			Context.clear_class_type_data
-			Context.init (a_feature.written_class.types.first)
+			if not a_feature.written_class.is_generic then
+				Context.init (a_feature.written_class.types.first)
+			end
 			Context.set_current_feature (a_feature)
 			Context.set_byte_code (l_byte_code)
 			l_byte_code.setup_local_variables (False)
@@ -378,7 +380,9 @@ feature {NONE}
 				-- Set up byte context
 			Context.clear_feature_data
 			Context.clear_class_type_data
-			Context.init (a_feature.written_class.types.first)
+			if not a_feature.written_class.is_generic then
+				Context.init (a_feature.written_class.types.first)
+			end
 			Context.set_current_feature (a_feature)
 			Context.set_byte_code (l_byte_code)
 			l_byte_code.setup_local_variables (False)
@@ -468,7 +472,9 @@ feature {NONE}
 				-- Set up byte context
 			Context.clear_feature_data
 			Context.clear_class_type_data
-			Context.init (a_feature.written_class.types.first)
+			if not a_feature.written_class.is_generic then
+				Context.init (a_feature.written_class.types.first)
+			end
 			Context.set_current_feature (a_feature)
 			Context.set_byte_code (l_byte_code)
 			l_byte_code.setup_local_variables (False)
@@ -572,7 +578,9 @@ feature {NONE}
 					-- Set up byte context
 				Context.clear_feature_data
 				Context.clear_class_type_data
-				Context.init (a_feature.written_class.types.first)
+				if not a_feature.written_class.is_generic then
+					Context.init (a_feature.written_class.types.first)
+				end
 				Context.set_current_feature (a_feature)
 				Context.set_byte_code (l_byte_code)
 				l_byte_code.setup_local_variables (False)
