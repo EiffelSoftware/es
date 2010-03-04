@@ -6,18 +6,14 @@ note
 class
 	ETR_METHOD_EXTRACTOR
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_LOGGER
+	ETR_SHARED_TOOLS
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
 		end
-	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
-	ETR_SHARED_LOGGER
 
 feature {NONE} -- Implementation (Attributes)
 
@@ -42,7 +38,7 @@ feature {NONE} -- Implementation (Attributes)
 	changed_arguments: LINKED_LIST[STRING]
 			-- Arguments that have to be writable (i.e. duplicate as local)
 
-	instrs: ARRAY[ETR_DF_INSTR]
+	instrs: ARRAY[ETR_DATAFLOW_INSTRUCTION]
 			-- Instructions
 
 	instr_count: INTEGER
@@ -572,6 +568,36 @@ feature {NONE} -- Implementation (Printing)
 			end
 		end
 
+	compute_start_end_ids (a_start_path, a_end_path: AST_PATH)
+			-- Compute block_start and block_end
+		local
+			l_index: INTEGER
+		do
+			from
+				l_index := 1
+			until
+				l_index > instr_count
+			loop
+				if instrs[l_index].path.is_equal (a_start_path) then
+					block_start := instrs[l_index].first_contained_id
+				end
+				if instrs[l_index].path.is_equal (a_end_path) then
+					block_end := instrs[l_index].last_contained_id
+				end
+				l_index := l_index+1
+			end
+
+			logger.log_info ("Translated start/end-instructions: "+block_start.out+"/"+block_end.out)
+		end
+
+	use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
+			-- Used to create a use-def-chain
+		once
+			create Result
+		end
+
+feature {NONE} -- Logging
+
 	log_named_list (a_name: STRING; a_list: LIST[STRING])
 			-- Log list
 		local
@@ -603,34 +629,6 @@ feature {NONE} -- Implementation (Printing)
 			log_named_list("extracted_new_locals", extracted_new_locals)
 			log_named_list("extract_obsolete_locals", obsolete_locals)
 			log_named_list("changed_arguments", changed_arguments)
-		end
-
-	compute_start_end_ids (a_start_path, a_end_path: AST_PATH)
-			-- Compute block_start and block_end
-		local
-			l_index: INTEGER
-		do
-			from
-				l_index := 1
-			until
-				l_index > instr_count
-			loop
-				if instrs[l_index].path.is_equal (a_start_path) then
-					block_start := instrs[l_index].first_contained_id
-				end
-				if instrs[l_index].path.is_equal (a_end_path) then
-					block_end := instrs[l_index].last_contained_id
-				end
-				l_index := l_index+1
-			end
-
-			logger.log_info ("Translated start/end-instructions: "+block_start.out+"/"+block_end.out)
-		end
-
-	use_def_gen: ETR_USE_DEF_CHAIN_GENERATOR
-			-- Used to create a use-def-chain
-		once
-			create Result
 		end
 
 feature -- Operations

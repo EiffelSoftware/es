@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	ETR_BASIC_OPS
+	ETR_BASIC_OPERATORS
 
 feature -- Modifications
 

@@ -6,16 +6,12 @@ note
 class
 	ETR_CONSTANT_EXTRACTOR
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	SHARED_SERVER
 	ETR_SHARED_ERROR_HANDLER
 	ETR_SHARED_LOGGER
+	ETR_SHARED_TOOLS
 	ETR_SHARED_BASIC_OPERATORS
 	ETR_SHARED_PARSERS
-	ETR_SHARED_TOOLS
 
 feature {NONE} -- Implementation
 
@@ -243,7 +239,7 @@ feature -- Operations
 				create l_feat_list.make (1)
 				l_feat_list.extend (parsing_helper.parsed_feature)
 				create l_feat_clause.initialize (l_clients, l_feat_list, create {KEYWORD_AS}.make_null, 0)
-				
+
 				l_const_var := (create {ETR_TRANSFORMABLE_FACTORY}).new_expr (a_constant_name, create {ETR_CONTEXT}.make_empty)
 
 				logger.log_info ("Declaring class: "+declaring_class.name_in_upper)

@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	ETR_DF_INSTR
+	ETR_DATAFLOW_INSTRUCTION
 create
 	make
 

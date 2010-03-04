@@ -6,16 +6,8 @@ note
 class
 	ETR_TRANSFORM_CONTEXT
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
-	COMPILER_EXPORTER
-	SHARED_NAMES_HEAP
-		export
-			{NONE} all
-		end
 	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_LOGGER
 	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
 
@@ -66,10 +58,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature -- Transformations
+feature -- Access
 
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
+
+feature -- Transformations
 
 	transform_to_context (a_transformable: ETR_TRANSFORMABLE; a_target_context: ETR_CONTEXT)
 			-- Transform `a_transformable' into `a_target_context'

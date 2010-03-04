@@ -8,6 +8,12 @@ class
 
 feature {NONE} -- Shared
 
+	tracking_tools: ETR_TRACKING_TOOLS
+			-- Shared instance of ETR_TRACKING_TOOLS
+		once
+			create Result
+		end
+
 	path_tools: ETR_PATH_TOOLS
 			-- Shared instance of ETR_PATH_TOOLS
 		once

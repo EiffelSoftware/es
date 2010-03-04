@@ -202,12 +202,9 @@ feature -- Test features
 			l_rng: RANGED_RANDOM
 			l_trans: ETR_TRANSFORMABLE
 			l_textout: PLAIN_TEXT_FILE
-			l_map_chain: LINKED_LIST[HASH_TABLE[INTEGER,INTEGER]]
-			l_final_map: HASH_TABLE[INTEGER,INTEGER]
-			l_bp_count: INTEGER
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", "big")
---			l_trans.calculate_breakpoint_slots
+			l_trans.enable_code_tracking
 
 			create l_textout.make_open_write (eiffel_transform_directory+"big.before.ee")
 			l_textout.put_string (ast_to_bp_string(l_trans))
@@ -218,8 +215,6 @@ feature -- Test features
 --			l_rng.set_seed ((create {TIME}.make_now).compact_time)
 			l_rng.set_seed (42)
 
-			create l_map_chain.make
-
 			-- step 1: remove inspects
 			from
 				ast_stats.process_transformable (l_trans)
@@ -228,7 +223,6 @@ feature -- Test features
 			loop
 				rewrite.replace_inspects (l_trans)
 				l_trans.apply_modifications (rewrite.modifications)
-				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (l_trans)
 			end
@@ -241,7 +235,6 @@ feature -- Test features
 			loop
 				rewrite.unroll_loop (l_trans, 3, false)
 				l_trans.apply_modifications (rewrite.modifications)
-				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (l_trans)
 			end
@@ -254,7 +247,6 @@ feature -- Test features
 			loop
 				rewrite.replace_elseifs (l_trans)
 				l_trans.apply_modifications (rewrite.modifications)
-				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (l_trans)
 			end
@@ -272,7 +264,6 @@ feature -- Test features
 				end
 
 				l_trans.apply_modifications (rewrite.modifications)
-				l_map_chain.extend (rewrite.breakpoint_mappings)
 
 				ast_stats.process_transformable (l_trans)
 			end
@@ -281,9 +272,9 @@ feature -- Test features
 			l_textout.put_string (ast_to_bp_string(l_trans))
 			l_textout.close
 
-			l_bp_count := ast_tools.num_breakpoint_slots_in (l_trans)
-			l_final_map :=  ast_tools.combined_breakpoint_mapping (l_map_chain, l_bp_count)
-			print_map(l_final_map)
+--			l_bp_count := ast_tools.num_breakpoint_slots_in (l_trans)
+--			l_final_map :=  ast_tools.combined_breakpoint_mapping (l_map_chain, l_bp_count)
+			print_map(l_trans.breakpoint_map)
 		end
 
 	test_me_all

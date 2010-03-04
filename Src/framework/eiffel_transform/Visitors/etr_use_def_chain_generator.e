@@ -33,7 +33,7 @@ inherit
 
 feature -- Access
 
-	instructions: ARRAY[ETR_DF_INSTR]
+	instructions: ARRAY[ETR_DATAFLOW_INSTRUCTION]
 			-- Instructions
 
 feature {NONE} -- Implementation (Attributes)
@@ -41,7 +41,7 @@ feature {NONE} -- Implementation (Attributes)
 	instr_list: LINKED_LIST[like cur_instr]
 			-- Internal structure to store instructions
 
-	cur_instr: ETR_DF_INSTR
+	cur_instr: ETR_DATAFLOW_INSTRUCTION
 			-- Current instruction
 
 	elseif_defs, caselist_defs: LINKED_LIST[like current_var_defs]
@@ -223,7 +223,7 @@ feature {AST_EIFFEL} -- Roundtrip (Branches)
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
 			l_previous_defs: like current_var_defs
-			l_if_instr: ETR_DF_INSTR
+			l_if_instr: ETR_DATAFLOW_INSTRUCTION
 		do
 			current_instruction := current_instruction+1
 
@@ -270,7 +270,7 @@ feature {AST_EIFFEL} -- Roundtrip (Branches)
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
 			l_prev_var_def: like current_var_defs
-			l_loop_instr: ETR_DF_INSTR
+			l_loop_instr: ETR_DATAFLOW_INSTRUCTION
 			l_first_instr: like current_instruction
 		do
 			l_first_instr := current_instruction+1
@@ -305,7 +305,7 @@ feature {AST_EIFFEL} -- Roundtrip (Branches)
 		local
 			l_merge_list: LINKED_LIST[like current_var_defs]
 			l_previous_defs: like current_var_defs
-			l_inspect_instr: ETR_DF_INSTR
+			l_inspect_instr: ETR_DATAFLOW_INSTRUCTION
 		do
 			current_instruction := current_instruction+1
 

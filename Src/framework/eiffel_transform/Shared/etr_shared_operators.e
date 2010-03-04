@@ -10,7 +10,7 @@ inherit
 
 feature {NONE} -- Operators
 
-	rewrite: ETR_REWRITING_OPS
+	rewrite: ETR_REWRITING_OPERATORS
 			-- Shared instance of ETR_REWRITING_OPS
 		once
 			create Result

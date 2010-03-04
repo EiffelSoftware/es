@@ -6,10 +6,23 @@ note
 class
 	ETR_LOOP_REWRITING_VISITOR
 inherit
-	ETR_REWRITING_VISITOR
+	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		redefine
 			process_loop_as
 		end
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
+	ETR_SHARED_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
+
+feature -- Access
+
+	modifications: LIST[ETR_AST_MODIFICATION]
+			-- Modifications computed
 
 feature -- Operation
 
@@ -22,9 +35,8 @@ feature -- Operation
 			was_processed := false
 			unroll_count := a_unroll_count
 
-			create remapped_regions.make
-
-			init_and_process (a_ast)
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			a_ast.process (Current)
 		end
 
 feature {NONE} -- Implementation
@@ -47,11 +59,13 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_from_bp_count, l_body_bp_count: INTEGER
 			l_first_new_slot: INTEGER
 			l_old_total_bp_count, l_new_total_bp_count: INTEGER
+			l_current_mapping: HASH_TABLE[INTEGER,INTEGER]
+			l_mod: ETR_TRACKABLE_MODIFICATION
 		do
 			if not (first_only and was_processed) then
 				create l_replacement_string.make_empty
 				l_old_total_bp_count := ast_tools.num_breakpoint_slots_in (l_as)
-				create breakpoint_mappings.make (l_old_total_bp_count*unroll_count*2)
+				create l_current_mapping.make (l_old_total_bp_count*unroll_count*2)
 				l_stop_slot := l_as.stop.breakpoint_slot
 				if l_as.from_part /= void then
 					-- mappings of from-part are 1:1
@@ -59,7 +73,7 @@ feature {AST_EIFFEL} -- Roundtrip
 					l_first_new_slot := l_current_slot
 					l_replacement_string.append (ast_tools.ast_to_string (l_as.from_part))
 					l_from_bp_count := ast_tools.num_breakpoint_slots_in (l_as.from_part)
-					map_region_one_to_one(l_current_slot, l_current_slot+l_from_bp_count)
+					tracking_tools.map_region_one_to_one(l_current_mapping, l_current_slot, l_current_slot+l_from_bp_count-1)
 				else
 					l_first_new_slot := l_stop_slot
 				end
@@ -81,11 +95,11 @@ feature {AST_EIFFEL} -- Roundtrip
 					l_index > unroll_count
 				loop
 					-- map current slot to stop slot
-					breakpoint_mappings.extend (l_stop_slot,l_current_slot)
+					l_current_mapping.extend (l_stop_slot,l_current_slot)
 					l_current_slot := l_current_slot+1
 					-- map if-body to original loop body
 					if l_as.compound/=void then
-						map_region_shifted(l_current_slot, l_body_bp_count, l_body_first_slot)
+						tracking_tools.map_region_shifted(l_current_mapping, l_current_slot, l_body_first_slot, l_body_bp_count)
 						l_current_slot := l_current_slot+l_body_bp_count
 					end
 
@@ -95,11 +109,9 @@ feature {AST_EIFFEL} -- Roundtrip
 				end
 
 				l_new_total_bp_count := l_current_slot - l_first_new_slot
-				remapped_regions.extend ([l_first_new_slot, l_first_new_slot, l_old_total_bp_count, l_new_total_bp_count])
-				breakpoint_mappings_internal.extend (breakpoint_mappings)
-
-				modifications.extend (basic_operators.replace_with_string (l_as.path, l_replacement_string))
-				was_processed := true
+				create l_mod.make_replace (l_as.path, l_replacement_string)
+				l_mod.initialize_tracking_info (l_current_mapping, l_first_new_slot, l_old_total_bp_count, l_new_total_bp_count)
+				modifications.extend (l_mod)
 			end
 		end
 

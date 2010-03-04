@@ -7,7 +7,7 @@ class
 	ETR_AST_MODIFICATION
 inherit
 	COMPARABLE
-create {ETR_BASIC_OPS,ETR_MODIFYING_PRINTER}
+create
 	make_replace,
 	make_insert_after,
 	make_insert_before,
@@ -84,6 +84,22 @@ feature {NONE} -- Creation
 		end
 
 feature -- Access
+
+	tracked_modification: detachable ETR_TRACKABLE_MODIFICATION
+			-- Trackable version of `Current'
+		do
+			if attached {ETR_TRACKABLE_MODIFICATION}Current as l_tracked then
+				Result := l_tracked
+			end
+		ensure
+			is_trackable implies Result /= void
+		end
+
+	is_trackable: BOOLEAN
+			-- Can this modification be tracked?
+		do
+			Result := false
+		end
 
 	is_replace: BOOLEAN
 			-- Is `Current' a replace-operation?

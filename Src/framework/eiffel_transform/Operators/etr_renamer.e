@@ -6,15 +6,16 @@ note
 class
 	ETR_RENAMER
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_LOGGER
+	ETR_SHARED_TOOLS
 
-feature -- Operation
+feature -- Access
+
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
+
+feature -- Operation
 
 	rename_local (a_transformable: ETR_TRANSFORMABLE; a_feature_name: STRING; an_old_name, a_new_name: STRING)
 			-- Rename the local `an_old_name' to `a_new_name' in `a_transformable' of feature `a_feature_name'

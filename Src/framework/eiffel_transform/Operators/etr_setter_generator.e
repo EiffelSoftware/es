@@ -6,16 +6,17 @@ note
 class
 	ETR_SETTER_GENERATOR
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_LOGGER
+	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
 
-feature -- Operation
+feature -- Access
+
 	transformation_result: ETR_TRANSFORMABLE
 			-- Result of last transformation
+
+feature -- Operation
 
 	generate_setter (a_transformable: ETR_TRANSFORMABLE; a_feature_name, a_arg_name, a_assignment, a_postcond: STRING)
 			-- Generates a setter for `a_transformable'

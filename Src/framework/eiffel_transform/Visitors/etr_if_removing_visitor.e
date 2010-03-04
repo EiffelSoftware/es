@@ -6,10 +6,24 @@ note
 class
 	ETR_IF_REMOVING_VISITOR
 inherit
-	ETR_REWRITING_VISITOR
+	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		redefine
 			process_if_as
 		end
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
+	ETR_SHARED_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
+	ETR_SHARED_ERROR_HANDLER
+
+feature -- Access
+
+	modifications: LIST[ETR_AST_MODIFICATION]
+			-- Modifications computed	
 
 feature -- Operation
 
@@ -21,7 +35,8 @@ feature -- Operation
 			was_processed := false
 			take_branches := a_take_branches
 
-			init_and_process (a_ast)
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			a_ast.process (Current)
 		end
 
 feature {NONE} -- Implementation
@@ -38,37 +53,39 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_else_part_count, l_if_part_count: INTEGER
 			l_new_first, l_old_first: INTEGER
 			i: INTEGER
+			l_current_mapping: HASH_TABLE[INTEGER,INTEGER]
+			l_mod: ETR_TRACKABLE_MODIFICATION
 		do
 			if not (first_only and was_processed) then
 				l_old_bp_count := ast_tools.num_breakpoint_slots_in (l_as)
 				l_old_first := l_as.breakpoint_slot
 				l_new_first := l_as.breakpoint_slot
-				create breakpoint_mappings.make (l_old_bp_count)
+				create l_current_mapping.make (l_old_bp_count)
 
 				if take_branches then
 					if l_as.compound /= void and then not l_as.compound.is_empty then
-						modifications.extend (basic_operators.replace_with_string (l_as.path, ast_tools.ast_to_string (l_as.compound)))
+						create l_mod.make_replace (l_as.path, ast_tools.ast_to_string (l_as.compound))
 
 						l_new_bp_count := ast_tools.num_breakpoint_slots_in (l_as.compound)
-						map_region_shifted (l_old_first, l_new_bp_count, l_as.compound.first.breakpoint_slot)
+						tracking_tools.map_region_shifted (l_current_mapping, l_old_first, l_as.compound.first.breakpoint_slot, l_new_bp_count)
 					else
-						modifications.extend (basic_operators.delete (l_as.path))
+						create l_mod.make_delete (l_as.path)
 					end
 				else
 					if l_as.else_part /= void and then not l_as.else_part.is_empty then
-						modifications.extend (basic_operators.replace_with_string (l_as.path, ast_tools.ast_to_string (l_as.else_part)))
+						create l_mod.make_replace (l_as.path, ast_tools.ast_to_string (l_as.else_part))
 
 						-- Map else-part
 						l_new_bp_count := ast_tools.num_breakpoint_slots_in (l_as.else_part)
-						map_region_shifted (l_old_first, l_new_bp_count, l_as.else_part.first.breakpoint_slot)
+						tracking_tools.map_region_shifted (l_current_mapping, l_old_first, l_as.else_part.first.breakpoint_slot, l_new_bp_count)
 					else
-						modifications.extend (basic_operators.delete (l_as.path))
+						create l_mod.make_delete (l_as.path)
 					end
 				end
 				was_processed := true
 
-				remapped_regions.extend ([l_new_first, l_new_first, l_old_bp_count, l_new_bp_count])
-				breakpoint_mappings_internal.extend (breakpoint_mappings)
+				l_mod.initialize_tracking_info (l_current_mapping, l_old_first, l_old_bp_count, l_new_bp_count)
+				modifications.extend (l_mod)
 			end
 		end
 

@@ -44,15 +44,25 @@ feature {NONE} -- Creation
 
 feature -- Output
 
-	print_type (a_type: TYPE_A; a_context: ETR_FEATURE_CONTEXT): STRING
+	print_type (a_type: TYPE_A; a_context: ETR_CONTEXT): STRING
 			-- Prints `a_type' so it's parsable
 		require
 			type_non_void: a_type /= void
+			valid_type: a_type.is_valid
 			context_set: a_context /= void
 		local
 			l_gen_count: INTEGER
 			l_index: INTEGER
+			l_class_context: ETR_CLASS_CONTEXT
+			l_feat_context: ETR_FEATURE_CONTEXT
 		do
+			if attached {ETR_FEATURE_CONTEXT}a_context as l_ft then
+				l_feat_context := l_ft
+				l_class_context := l_ft.class_context
+			elseif attached {ETR_CLASS_CONTEXT}a_context as l_cls then
+				l_class_context := l_cls
+			end
+
 			create Result.make_empty
 
 			-- print attachment marks etc
@@ -81,13 +91,21 @@ feature -- Output
 
 			if a_type.is_formal then
 				if attached {FORMAL_A}a_type as l_formal then
-					Result.append(a_context.class_context.written_class.generics[l_formal.position].formal.name.name)
+					if l_class_context /= void then
+						Result.append(l_class_context.written_class.generics[l_formal.position].formal.name.name)
+					else
+						etr_error_handler.add_error (Current, "print_type", "Cannot print FORMAL_A without a class context.")
+					end
 				end
 			elseif a_type.is_like_current then
 				Result.append("like Current")
 			elseif a_type.is_like_argument then
 				if attached {LIKE_ARGUMENT}a_type as l_like_arg then
-					Result.append("like "+a_context.arguments[l_like_arg.position].name)
+					if l_feat_context /= void then
+						Result.append("like "+l_feat_context.arguments[l_like_arg.position].name)
+					else
+						etr_error_handler.add_error (Current, "print_type", "Cannot print LIKE_ARGUMENT without a feature context.")
+					end
 				end
 			elseif a_type.is_like then
 				if attached {LIKE_FEATURE}a_type as l_like_feat then
@@ -313,7 +331,7 @@ feature -- Type checking
 
 				if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
 					l_feat := l_feat_context.written_feature
-					init_object_test_locals (l_feat_context, a_path)
+					initialize_object_test_locals (l_feat_context, a_path)
 				end
 
 				check_expr_type (a_context, etr_expr_parser.expression_node)
@@ -322,7 +340,7 @@ feature -- Type checking
 
 feature {NONE} -- Implementation
 
-	init_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: detachable AST_PATH)
+	initialize_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: detachable AST_PATH)
 			-- Init with object test locals from `a_feature_context'
 		local
 			l_local_info: LOCAL_INFO
@@ -350,7 +368,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	init_locals (a_feature_context: ETR_FEATURE_CONTEXT)
+	initialize_locals (a_feature_context: ETR_FEATURE_CONTEXT)
 			-- Adds the locals from `a_feature_context'
 		local
 			l_index: INTEGER
@@ -373,7 +391,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	init_arguments (a_feature_context: ETR_FEATURE_CONTEXT)
+	initialize_arguments (a_feature_context: ETR_FEATURE_CONTEXT)
 			-- Adds the arguments from `a_feature_context'
 		local
 			l_index: INTEGER
@@ -415,8 +433,8 @@ feature {NONE} -- Implementation
 				l_feat := l_feat_context.written_feature
 				current_feature := l_feat
 
-				init_locals(l_feat_context)
-				init_arguments(l_feat_context)
+				initialize_locals(l_feat_context)
+				initialize_arguments(l_feat_context)
 			end
 
 			context.init_attribute_scopes

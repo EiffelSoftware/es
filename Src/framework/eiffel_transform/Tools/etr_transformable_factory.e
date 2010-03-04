@@ -105,6 +105,7 @@ feature -- New (Universe-Independant)
 
 	new_conditional(a_test: ETR_TRANSFORMABLE; if_part, else_part: detachable ETR_TRANSFORMABLE; a_context: ETR_CONTEXT): ETR_TRANSFORMABLE
 			-- Create node corresponding to if `a_test' then `if_part' else `else_part' in a `a_context'
+			-- Inherits breakpoint slots.
 		require
 			test_not_void: a_test /= void
 			context_not_void: a_context /= void
@@ -171,6 +172,8 @@ feature -- New (Universe-Independant)
 						create l_result_node.initialize (l_test_node, l_if_part_node, void, l_else_part_node, create {KEYWORD_AS}.make_null, void, void, void)
 						create Result.make (l_result_node, a_context, false)
 					end
+
+					-- fixme: assign breakpoint slots!
 				end
 			else
 				error_handler.add_error (Current, "generate_conditional", "Contained ast of a_test is not of type EXPR_AS (but  "+a_test.target_node.generating_type+")")

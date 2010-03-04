@@ -6,10 +6,24 @@ note
 class
 	ETR_ELSEIF_REMOVING_VISITOR
 inherit
-	ETR_REWRITING_VISITOR
+	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		redefine
 			process_if_as
 		end
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
+	ETR_SHARED_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
+	ETR_SHARED_ERROR_HANDLER
+
+feature -- Access
+
+	modifications: LIST[ETR_AST_MODIFICATION]
+			-- Modifications computed	
 
 feature -- Operation
 
@@ -17,7 +31,8 @@ feature -- Operation
 		require
 			non_void: a_ast /= void
 		do
-			init_and_process(a_ast)
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			a_ast.process (Current)
 		end
 
 feature {NONE} -- Implementation
@@ -69,6 +84,8 @@ feature {NONE} -- Implementation
 feature {AST_EIFFEL} -- Roundtrip
 
 	process_if_as (l_as: IF_AS)
+		local
+			l_mod: ETR_TRACKABLE_MODIFICATION
 		do
 			if l_as.elsif_list /= void then
 				replacement_string := 	ti_if_keyword + ti_space + ast_tools.ast_to_string (l_as.condition) + ti_space + ti_then_keyword + ti_new_line+
@@ -84,7 +101,9 @@ feature {AST_EIFFEL} -- Roundtrip
 
 				replacement_string.append (ti_end_keyword+ti_new_line)
 
-				modifications.extend (basic_operators.replace_with_string (l_as.path, replacement_string))
+				create l_mod.make_replace (l_as.path, replacement_string)
+				l_mod.initialize_unchanged_tracking
+				modifications.extend (l_mod)
 			else
 				Precursor(l_as)
 			end

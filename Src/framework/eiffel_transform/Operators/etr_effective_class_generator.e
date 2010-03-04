@@ -6,19 +6,20 @@ note
 class
 	ETR_EFFECTIVE_CLASS_GENERATOR
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_LOGGER
+	ETR_SHARED_TOOLS
 	ETR_SHARED_PARSERS
 
-feature -- Operations
+feature -- Access
+
 	transformation_result: ETR_TRANSFORMABLE
-			-- Result of last transformation
+			-- Result of transformation
 
 	pulled_down_features: LIST[STRING]
 			-- Features that were pulled down from an ancestor and made effective
+
+feature -- Operations
 
 	generate_effective_class (a_class: ETR_TRANSFORMABLE)
 			-- Creates an effective class from `a_class'

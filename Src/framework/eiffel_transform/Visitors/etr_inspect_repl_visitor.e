@@ -6,11 +6,24 @@ note
 class
 	ETR_INSPECT_REPL_VISITOR
 inherit
-	ETR_REWRITING_VISITOR
+	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		redefine
 			process_inspect_as,
 			process_case_as
 		end
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
+	ETR_SHARED_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
+
+feature -- Access
+
+	modifications: LIST[ETR_AST_MODIFICATION]
+			-- Modifications computed	
 
 feature -- Operations
 
@@ -18,7 +31,8 @@ feature -- Operations
 		require
 			non_void: a_ast /= void
 		do
-			init_and_process (a_ast)
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			a_ast.process (Current)
 		end
 
 feature {NONE} -- Implementation
@@ -40,6 +54,9 @@ feature {NONE} -- Implementation
 
 	current_new_bp_slot: INTEGER
 			-- Current new breakpoint slot
+
+	current_mapping: HASH_TABLE[INTEGER,INTEGER]
+			-- Current breakpoint mapping
 
 feature {AST_EIFFEL} -- Roundtrip
 
@@ -93,9 +110,10 @@ feature {AST_EIFFEL} -- Roundtrip
 		local
 			l_old_bp_count: INTEGER
 			l_else_bp_count: INTEGER
+			l_mod: ETR_TRACKABLE_MODIFICATION
 		do
 			l_old_bp_count := ast_tools.num_breakpoint_slots_in (l_as)
-			create breakpoint_mappings.make (l_old_bp_count*2)
+			create current_mapping.make (l_old_bp_count*2)
 			current_old_bp_slot := l_as.breakpoint_slot
 			current_new_bp_slot := current_old_bp_slot
 			inspect_bp_slot := current_old_bp_slot
@@ -106,7 +124,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			if l_as.else_part /= void and then not l_as.else_part.is_empty then
 				l_else_bp_count := ast_tools.num_breakpoint_slots_in (l_as.else_part)
-				map_region_shifted (current_new_bp_slot, l_else_bp_count, current_old_bp_slot)
+				tracking_tools.map_region_shifted (current_mapping, current_new_bp_slot, current_old_bp_slot, l_else_bp_count)
 				replacement_text.append (ti_else_keyword+ti_new_line+ast_tools.ast_to_string (l_as.else_part))
 				current_new_bp_slot:=current_new_bp_slot+l_else_bp_count
 				current_old_bp_slot:=current_old_bp_slot+l_else_bp_count
@@ -114,9 +132,9 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			replacement_text.append (ti_end_keyword+ti_new_line)
 
-			modifications.extend (basic_operators.replace_with_string (l_as.path, replacement_text))
-			remapped_regions.extend ([l_as.breakpoint_slot, l_as.breakpoint_slot, l_old_bp_count, current_new_bp_slot-l_as.breakpoint_slot])
-			breakpoint_mappings_internal.extend (breakpoint_mappings)
+			create l_mod.make_replace (l_as.path, replacement_text)
+			l_mod.initialize_tracking_info (current_mapping, l_as.breakpoint_slot, l_old_bp_count, current_new_bp_slot-l_as.breakpoint_slot)
+			modifications.extend (l_mod)
 		end
 
 	process_case_as (l_as: CASE_AS)
@@ -129,7 +147,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			else
 				replacement_text.append (ti_elseif_keyword)
 			end
-			breakpoint_mappings.extend (inspect_bp_slot, current_new_bp_slot)
+			current_mapping.extend (inspect_bp_slot, current_new_bp_slot)
 			current_new_bp_slot := current_new_bp_slot+1
 
 			replacement_text.append (ti_space)
@@ -140,7 +158,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			if l_as.compound /= void and then not l_as.compound.is_empty then
 				l_case_bp_count := ast_tools.num_breakpoint_slots_in (l_as.compound)
-				map_region_shifted (current_new_bp_slot, l_case_bp_count, l_as.compound.first.breakpoint_slot)
+				tracking_tools.map_region_shifted (current_mapping, current_new_bp_slot, l_as.compound.first.breakpoint_slot, l_case_bp_count)
 				current_new_bp_slot := current_new_bp_slot+l_case_bp_count
 				current_old_bp_slot := current_old_bp_slot+l_case_bp_count
 				replacement_text.append (ast_tools.ast_to_string (l_as.compound))

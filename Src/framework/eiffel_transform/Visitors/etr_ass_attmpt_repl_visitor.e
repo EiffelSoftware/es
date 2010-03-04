@@ -6,18 +6,38 @@ note
 class
 	ETR_ASS_ATTMPT_REPL_VISITOR
 inherit
-	ETR_REWRITING_VISITOR
-		rename
-			init_and_process as replace_assignment_attempts_in
+	AST_ITERATOR
 		export
-			{ANY} replace_assignment_attempts_in
+			{AST_EIFFEL} all
 		redefine
 			process_reverse_as,
 			process_feature_as
 		end
+	SHARED_TEXT_ITEMS
+		export
+			{NONE} all
+		end
+	ETR_SHARED_TOOLS
+	ETR_SHARED_BASIC_OPERATORS
 	ETR_SHARED_ERROR_HANDLER
 create
 	make
+
+feature -- Access
+
+	modifications: LIST[ETR_AST_MODIFICATION]
+			-- Modifications computed	
+
+feature -- Operation
+
+	replace_assignment_attempts_in (a_ast: AST_EIFFEL)
+			-- Init fields and process `a_ast'
+		require
+			non_void: a_ast /= void
+		do
+			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			a_ast.process (Current)
+		end
 
 feature {NONE} -- Creation
 
@@ -26,7 +46,6 @@ feature {NONE} -- Creation
 		do
 			class_context := a_class_context
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
-			create breakpoint_mappings.make(20)
 		end
 
 feature {NONE} -- Implementation
@@ -53,8 +72,9 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_target_string: STRING
 			l_source_string: STRING
 			l_replacement: STRING
-			l_mod: ETR_AST_MODIFICATION
 			l_cur_slot: INTEGER
+			l_current_mapping: HASH_TABLE[INTEGER,INTEGER]
+			l_mod: ETR_TRACKABLE_MODIFICATION
 		do
 			l_feat_context := class_context.written_in_features_by_name[current_feature]
 
@@ -68,13 +88,11 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_source_string := ast_tools.ast_to_string (l_as.source)
 
 				create l_replacement.make_empty
-				create breakpoint_mappings.make (5)
+				create l_current_mapping.make (5)
 				l_cur_slot := l_as.breakpoint_slot
-				breakpoint_mappings.extend (l_cur_slot, l_cur_slot)
-				breakpoint_mappings.extend (l_cur_slot, l_cur_slot+1)
-				breakpoint_mappings.extend (l_cur_slot, l_cur_slot+2)
-				remapped_regions.extend ([l_cur_slot, l_cur_slot, 1, 3])
-				breakpoint_mappings_internal.extend (breakpoint_mappings)
+				l_current_mapping.extend (l_cur_slot, l_cur_slot)
+				l_current_mapping.extend (l_cur_slot, l_cur_slot+1)
+				l_current_mapping.extend (l_cur_slot, l_cur_slot+2)
 
 				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_source_string+" as "+"l_etr_ot_local then%N")
 				l_replacement.append_string (l_target_string+" := l_etr_ot_local%N")
@@ -82,7 +100,9 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_replacement.append_string (l_target_string+" := void%N")
 				l_replacement.append_string ("end%N")
 
-				modifications.extend (basic_operators.replace_with_string (l_as.path, l_replacement))
+				create l_mod.make_replace (l_as.path, l_replacement)
+				l_mod.initialize_tracking_info (l_current_mapping, l_cur_slot, 1, 3)
+				modifications.extend (l_mod)
 			else
 				error_handler.add_error (Current, "process_reverse_as", "Context of feature "+current_feature+" not found.")
 			end

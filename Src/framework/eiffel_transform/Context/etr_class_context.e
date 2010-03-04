@@ -77,9 +77,6 @@ feature -- Access
 			-- Return the corresponding feature in `a_class_context'
 		require
 			non_void: a_feature /= void
-		local
-			l_rout_id: INTEGER
-			l_feat: FEATURE_I
 		do
 			Result := feature_of_rout_id(a_feature.rout_id_set.first)
 		end
