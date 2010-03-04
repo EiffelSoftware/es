@@ -2619,6 +2619,8 @@ Src/framework/jstar_proofs/examples/connection_pool2/l_list.abs -text
 Src/framework/jstar_proofs/examples/connection_pool2/l_list.logic -text
 Src/framework/jstar_proofs/examples/connection_pool2/list_node.abs -text
 Src/framework/jstar_proofs/examples/connection_pool2/list_node.logic -text
+Src/framework/jstar_proofs/examples/gobo/abs -text
+Src/framework/jstar_proofs/examples/gobo/logic -text
 Src/framework/jstar_proofs/examples/gobo/svn/library/kernel/Readme.txt -text
 Src/framework/jstar_proofs/examples/gobo/svn/library/structure/Readme.txt -text
 Src/framework/jstar_proofs/examples/modelbased/olist.abs -text

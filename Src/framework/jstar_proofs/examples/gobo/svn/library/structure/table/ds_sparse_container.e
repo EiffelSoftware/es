@@ -905,9 +905,6 @@ feature {NONE} -- Cursor movements
 			internal_cursor := c
 		end
 
-	internal_cursor: like new_cursor
-			-- Internal cursor
-
 	move_all_cursors_after is
 			-- Move `after' all cursors.
 		local

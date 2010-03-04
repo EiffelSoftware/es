@@ -27,6 +27,7 @@ feature -- Access
 
 	first: G is
 			-- First item in container
+			-- sl_ignore
 		require
 			not_empty: not is_empty
 		deferred
@@ -36,6 +37,7 @@ feature -- Access
 
 	new_cursor: DS_LINEAR_CURSOR [G] is
 			-- New external cursor for traversal
+			-- sl_ignore
 		deferred
 		end
 
@@ -43,6 +45,7 @@ feature -- Status report
 
 	is_first: BOOLEAN is
 			-- Is internal cursor on first item?
+			-- sl_ignore
 		do
 			Result := cursor_is_first (internal_cursor)
 		ensure
@@ -53,6 +56,7 @@ feature -- Status report
 
 	after: BOOLEAN is
 			-- Is there no valid position to right of internal cursor?
+			-- sl_ignore
 		do
 			Result := cursor_after (internal_cursor)
 		end
@@ -61,6 +65,7 @@ feature -- Status report
 			-- Does container include `v'?
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
+			-- sl_ignore
 		local
 			a_cursor: like new_cursor
 		do
@@ -79,6 +84,7 @@ feature -- Measurement
 			-- Number of times `v' appears in container
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
+			-- sl_ignore
 		local
 			a_cursor: like new_cursor
 		do
@@ -100,6 +106,7 @@ feature -- Cursor movement
 
 	start is
 			-- Move internal cursor to first position.
+			-- sl_ignore
 		do
 			cursor_start (internal_cursor)
 		ensure
@@ -109,6 +116,7 @@ feature -- Cursor movement
 
 	forth is
 			-- Move internal cursor to next position.
+			-- sl_ignore
 		require
 			not_after: not after
 		do
@@ -121,6 +129,7 @@ feature -- Cursor movement
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
 			-- Move `after' if not found.
+			-- sl_ignore
 		require
 			not_off: not off or after
 		do
@@ -129,6 +138,7 @@ feature -- Cursor movement
 
 	go_after is
 			-- Move internal cursor to `after' position.
+			-- sl_ignore
 		do
 			cursor_go_after (internal_cursor)
 		ensure
@@ -140,6 +150,7 @@ feature -- Iteration
 	do_all (an_action: PROCEDURE [ANY, TUPLE [G]]) is
 			-- Apply `an_action' to every item, from first to last.
 			-- (Semantics not guaranteed if `an_action' changes the structure.)
+			-- sl_ignore
 		deferred
 		end
 
@@ -147,6 +158,7 @@ feature -- Iteration
 			-- Apply `an_action' to every item, from first to last.
 			-- `an_action' receives the item and its index.
 			-- (Semantics not guaranteed if `an_action' changes the structure.)
+			-- sl_ignore
 		require
 			an_action_not_void: an_action /= Void
 		deferred
@@ -155,6 +167,7 @@ feature -- Iteration
 	do_if (an_action: PROCEDURE [ANY, TUPLE [G]]; a_test: FUNCTION [ANY, TUPLE [G], BOOLEAN]) is
 			-- Apply `an_action' to every item that satisfies `a_test', from first to last.
 			-- (Semantics not guaranteed if `an_action' or `a_test' change the structure.)
+			-- sl_ignore
 		deferred
 		end
 
@@ -162,6 +175,7 @@ feature -- Iteration
 			-- Apply `an_action' to every item that satisfies `a_test', from first to last.
 			-- `an_action' and `a_test' receive the item and its index.
 			-- (Semantics not guaranteed if `an_action' or `a_test' change the structure.)
+			-- sl_ignore
 		require
 			an_action_not_void: an_action /= Void
 			a_test_not_void: a_test /= Void
@@ -173,6 +187,7 @@ feature -- Duplication
 	to_array: ARRAY [G] is
 			-- Array containing the same items as current
 			-- container in the same order
+			-- sl_ignore
 		local
 			a_cursor: like new_cursor
 			i: INTEGER
@@ -197,8 +212,12 @@ feature {DS_CURSOR} -- Cursor implementation
 
 	cursor_off (a_cursor: like new_cursor): BOOLEAN is
 			-- Is there no item at `a_cursor' position?
+		require else
+			--SLS1-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i})
 		do
 			Result := cursor_after (a_cursor)
+		ensure then
+			--SLS1-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsOff(Current,{res:Result;ref:a_cursor;iters:_i;content:_c})
 		end
 
 feature {DS_LINEAR_CURSOR} -- Cursor implementation
@@ -206,41 +225,51 @@ feature {DS_LINEAR_CURSOR} -- Cursor implementation
 	cursor_is_first (a_cursor: like new_cursor): BOOLEAN is
 			-- Is `a_cursor' on first item?
 		require
-			a_cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i})
+			--a_cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
 		ensure
-			not_empty: Result implies not is_empty
-			a_cursor_not_off: Result implies not cursor_off (a_cursor)
-			definition: Result implies (cursor_item (a_cursor) = first)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsFirst(Current,{res:Result;ref:a_cursor;iters:_i;content:_c})
+			--not_empty: Result implies not is_empty
+			--a_cursor_not_off: Result implies not cursor_off (a_cursor)
+			--definition: Result implies (cursor_item (a_cursor) = first)
 		end
 
 	cursor_after (a_cursor: like new_cursor): BOOLEAN is
 			-- Is there no valid position to right of `a_cursor'?
 		require
-			a_cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i})
+			--a_cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
+		ensure
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * IsAfter(Current,{res:Result;ref:a_cursor;iters:_i;content:_c})
 		end
 
 	cursor_start (a_cursor: like new_cursor) is
 			-- Move `a_cursor' to first position.
 		require
-			a_cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i1})
+			--a_cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
 		ensure
-			empty_behavior: is_empty implies cursor_after (a_cursor)
-			not_empty_behavior: not is_empty implies cursor_is_first (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i2}) * MovedToStart(Current,{ref:a_cursor;newiters:_i2;olditers:_i1;content:_c})
+			--empty_behavior: is_empty implies cursor_after (a_cursor)
+			--not_empty_behavior: not is_empty implies cursor_is_first (a_cursor)
 		end
 
 	cursor_forth (a_cursor: like new_cursor) is
 			-- Move `a_cursor' to next position.
 		require
-			a_cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
-			a_cursor_not_after: not cursor_after (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i1}) * IsAfter(Current,{res:false();ref:a_cursor;iters:_i1;content:_c})
+			--a_cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
+			--a_cursor_not_after: not cursor_after (a_cursor)
 		deferred
+		ensure
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i2}) * MovedForth(Current,{ref:a_cursor;newiters:_i2;olditers:_i1;content:_c})
 		end
 
 	cursor_search_forth (a_cursor: like new_cursor; v: G) is
@@ -250,20 +279,25 @@ feature {DS_LINEAR_CURSOR} -- Cursor implementation
 			-- if not void, use `=' criterion otherwise.)
 			-- Move `after' if not found.
 		require
-			a_cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
-			a_cursor_not_off: not cursor_off (a_cursor) or cursor_after (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i1})
+			--a_cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
+			--a_cursor_not_off: not cursor_off (a_cursor) or cursor_after (a_cursor)
 		deferred
+		ensure
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i2}) * SearchedForth(Current,{ref:a_cursor;newiters:_i2;olditers:_i1;content:_c;val:v})
 		end
 
 	cursor_go_after (a_cursor: like new_cursor) is
 			-- Move `a_cursor' to `after' position.
 		require
-			a_cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i1})
+			--a_cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
 		ensure
-			a_cursor_after: cursor_after (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i2}) * MovedToAfter(Current,{ref:a_cursor;newiters:_i2;olditers:_i1;content:_c})
+			--a_cursor_after: cursor_after (a_cursor)
 		end
 
 invariant

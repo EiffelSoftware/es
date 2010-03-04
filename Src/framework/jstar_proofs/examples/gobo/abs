@@ -1,0 +1,23 @@
+/*
+
+Predicate Meanings:
+IsIn(boolvar,ref,pos,iters): boolvar <=> iter_pos(ref,pos) is an element of iters.
+IsOff(boolvar,pos,structure): boolvar <=> NotOff(pos,structure)
+ItemAt(structure,pos,value): the element of structure at position pos is value
+EqualSets1(setA,ref,pos,setB): setA = [{(ref,pos)} union setB]
+EqualSets2(setA,ref1,pos1,ref2,pos2,setB): setA = [{(ref1,pos1),(ref2,pos2)} union setB]
+IsEmpty(boolvar,structure): boolvar <=> structure is empty.
+IsFirstPos(boolvar,pos,structure): boolvar <=> pos is the first position of structure.
+IsLastPos(boolvar,pos,structure): boolvar <=> pos is the last position of structure.
+IsBeforePos(boolvar,pos,structure): obvious
+IsAfterPos(boolvar,pos,structure): boolvar <=> pos is the after position of structure.
+StartPos(pos,structure): pos is the starting position of structure.
+NextPos(pos1,pos2,structure): pos1 is the next position w.r.t. pos2 in structure.
+PreviousPos(pos1,pos2,structure): pos1 is the previous position w.r.t. pos2 in structure.
+IsValidPos(boolvar,pos,structure): boolvar <=> pos is a valid position for structure.
+EqualAfterUpdate1(structure1,structure2,pos,val): structure1 = [structure2 updated such that val is at pos]
+EqualAfterSwap1(structure1,structure2,pos1,pos2): structure1 = [structure2 updated such that the values at pos1 and pos2 have been swapped]
+InItersAndOn(ref,pos,iters,structure): same as IsIn(true(),ref,pos,iters) * IsOff(false(),pos,structure)
+EqualAfterSwap2(structureA1,structureB1,structureA2,structureB2,posA,posB): structureA1 = [structureA2 with the value at posA updated to the value at posB in structureB2], and similarly for structureB1.
+
+*/

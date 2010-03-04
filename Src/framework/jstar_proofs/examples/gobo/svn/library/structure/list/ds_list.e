@@ -25,6 +25,7 @@ feature -- Access
 
 	index: INTEGER is
 			-- Index of current internal cursor position
+			-- sl_ignore
 		do
 			Result := cursor_index (internal_cursor)
 		ensure
@@ -33,6 +34,7 @@ feature -- Access
 
 	new_cursor: DS_LIST_CURSOR [G] is
 			-- New external cursor for traversal
+			-- sl_ignore
 		deferred
 		end
 
@@ -40,6 +42,7 @@ feature -- Status report
 
 	valid_index (i: INTEGER): BOOLEAN is
 			-- Is `i' a valid index value?
+			-- sl_ignore
 		do
 			Result := 0 <= i and i <= (count + 1)
 		ensure
@@ -50,6 +53,7 @@ feature -- Cursor movement
 
 	go_i_th (i: INTEGER) is
 			-- Move internal cursor to `i'-th position.
+			-- sl_ignore
 		require
 			valid_index: valid_index (i)
 		do
@@ -63,6 +67,7 @@ feature -- Element change
 	put_left (v: G) is
 			-- Add `v' to left of internal cursor position.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			extendible: extendible (1)
 			not_before: not before
@@ -77,18 +82,21 @@ feature -- Element change
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.put_left (v)'.)
 		require
-			extendible: extendible (1)
-			cursor_not_void: a_cursor /= Void
-			valid_cursor: valid_cursor (a_cursor)
-			not_before: not a_cursor.before
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c1;pos:_p1;iters:_i1}) * IsBefore(Current,{res:false();ref:a_cursor;iters:_i1;content:_c1) * IsExtendible(Current,{res:true();elems:1})
+			--extendible: extendible (1)
+			--cursor_not_void: a_cursor /= Void
+			--valid_cursor: valid_cursor (a_cursor)
+			--not_before: not a_cursor.before
 		deferred
 		ensure
-			one_more: count = old count + 1
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutLeft(Current,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:a_cursor;with:v})
+			--one_more: count = old count + 1
 		end
 
 	put_right (v: G) is
 			-- Add `v' to right of internal cursor position.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			extendible: extendible (1)
 			not_after: not after
@@ -103,18 +111,21 @@ feature -- Element change
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.put_right (v)'.)
 		require
-			extendible: extendible (1)
-			cursor_not_void: a_cursor /= Void
-			valid_cursor: valid_cursor (a_cursor)
-			not_after: not a_cursor.after
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c1;pos:_p1;iters:_i1}) * IsAfter(Current,{res:false();ref:a_cursor;iters:_i1;content:_c1) * IsExtendible(Current,{res:true();elems:1})
+			--extendible: extendible (1)
+			--cursor_not_void: a_cursor /= Void
+			--valid_cursor: valid_cursor (a_cursor)
+			--not_after: not a_cursor.after
 		deferred
 		ensure
-			one_more: count = old count + 1
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutRight(Current,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:a_cursor;with:v})
+			--one_more: count = old count + 1
 		end
 
 	force_left (v: G) is
 			-- Add `v' to left of internal cursor position.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			not_before: not before
 		do
@@ -127,6 +138,7 @@ feature -- Element change
 			-- Add `v' to left of `a_cursor' position.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.force_left (v)'.)
+			-- sl_ignore
 		require
 			cursor_not_void: a_cursor /= Void
 			valid_cursor: valid_cursor (a_cursor)
@@ -139,6 +151,7 @@ feature -- Element change
 	force_right (v: G) is
 			-- Add `v' to right of internal cursor position.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			not_after: not after
 		do
@@ -151,6 +164,7 @@ feature -- Element change
 			-- Add `v' to right of `a_cursor' position.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.force_right (v)'.)
+			-- sl_ignore
 		require
 			cursor_not_void: a_cursor /= Void
 			valid_cursor: valid_cursor (a_cursor)
@@ -163,6 +177,7 @@ feature -- Element change
 	replace_at (v: G) is
 			-- Replace item at internal cursor position by `v'.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			not_off: not off
 		do
@@ -176,6 +191,7 @@ feature -- Element change
 			-- Replace item at `a_cursor' position by `v'.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.replace (v)'.)
+			-- sl_ignore
 		require
 			cursor_not_void: a_cursor /= Void
 			valid_cursor: valid_cursor (a_cursor)
@@ -191,6 +207,7 @@ feature -- Element change
 			-- Add items of `other' to left of internal cursor position.
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			extendible: extendible (other.count)
@@ -207,6 +224,7 @@ feature -- Element change
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.extend_left (other)'.)
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			extendible: extendible (other.count)
@@ -223,6 +241,7 @@ feature -- Element change
 			-- Add items of `other' to right of internal cursor position.
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			extendible: extendible (other.count)
@@ -239,6 +258,7 @@ feature -- Element change
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.extend_right (other)'.)
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			extendible: extendible (other.count)
@@ -255,6 +275,7 @@ feature -- Element change
 			-- Add items of `other' to left of internal cursor position.
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			not_before: not before
@@ -270,6 +291,7 @@ feature -- Element change
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.append_left (other)'.)
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			cursor_not_void: a_cursor /= Void
@@ -285,6 +307,7 @@ feature -- Element change
 			-- Add items of `other' to right of internal cursor position.
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			not_after: not after
@@ -300,6 +323,7 @@ feature -- Element change
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
 			-- (Synonym of `a_cursor.append_right (other)'.)
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			cursor_not_void: a_cursor /= Void
@@ -316,6 +340,7 @@ feature -- Removal
 	remove_at is
 			-- Remove item at internal cursor position.
 			-- Move any cursors at this position `forth'.
+			-- sl_ignore
 		require
 			not_off: not off
 		do
@@ -328,6 +353,7 @@ feature -- Removal
 			-- Remove item at `a_cursor' position.
 			-- Move any cursors at this position `forth'.
 			-- (Synonym of `a_cursor.remove'.)
+			-- sl_ignore
 		require
 			cursor_not_void: a_cursor /= Void
 			valid_cursor: valid_cursor (a_cursor)
@@ -340,6 +366,7 @@ feature -- Removal
 	remove_left is
 			-- Remove item to left of internal cursor position.
 			-- Move any cursors at this position `forth'.
+			-- sl_ignore
 		require
 			not_empty: not is_empty
 			not_before: not before
@@ -354,6 +381,7 @@ feature -- Removal
 			-- Remove item to left of `a_cursor' position.
 			-- Move any cursors at this position `forth'.
 			-- (Synonym of `a_cursor.remove_left'.)
+			-- sl_ignore
 		require
 			not_empty: not is_empty
 			cursor_not_void: a_cursor /= Void
@@ -368,6 +396,7 @@ feature -- Removal
 	remove_right is
 			-- Remove item to right of internal cursor position.
 			-- Move any cursors at this position `forth'.
+			-- sl_ignore
 		require
 			not_empty: not is_empty
 			not_after: not after
@@ -382,6 +411,7 @@ feature -- Removal
 			-- Remove item to right of `a_cursor' position.
 			-- Move any cursors at this position `forth'.
 			-- (Synonym of `a_cursor.remove_right'.)
+			-- sl_ignore
 		require
 			not_empty: not is_empty
 			cursor_not_void: a_cursor /= Void
@@ -396,6 +426,7 @@ feature -- Removal
 	prune_left (n: INTEGER) is
 			-- Remove `n' items to left of internal cursor position.
 			-- Move all cursors `off'.
+			-- sl_ignore
 		require
 			valid_n: 0 <= n and n < index
 		do
@@ -408,6 +439,7 @@ feature -- Removal
 			-- Remove `n' items to left of `a_cursor' position.
 			-- Move all cursors `off'.
 			-- (Synonym of `a_cursor.prune_left (n)'.)
+			-- sl_ignore
 		require
 			cursor_not_void: a_cursor /= Void
 			valid_cursor: valid_cursor (a_cursor)
@@ -420,6 +452,7 @@ feature -- Removal
 	prune_right (n: INTEGER) is
 			-- Remove `n' items to right of internal cursor position.
 			-- Move all cursors `off'.
+			-- sl_ignore
 		require
 			valid_n: 0 <= n and n <= (count - index)
 		do
@@ -432,6 +465,7 @@ feature -- Removal
 			-- Remove `n' items to right of `a_cursor' position.
 			-- Move all cursors `off'.
 			-- (Synonym of `a_cursor.prune_right (n)'.)
+			-- sl_ignore
 		require
 			cursor_not_void: a_cursor /= Void
 			valid_cursor: valid_cursor (a_cursor)
@@ -446,6 +480,7 @@ feature -- Removal
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
 			-- Move all cursors `off'.
+			-- sl_ignore
 		deferred
 		ensure
 			deleted: not has (v)
@@ -457,22 +492,26 @@ feature {DS_LIST_CURSOR} -- Cursor implementation
 	cursor_index (a_cursor: like new_cursor): INTEGER is
 			-- Index of `a_cursor''s current position
 		require
-			cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i})
+			--cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
 		deferred
 		ensure
-			valid_index: valid_index (Result)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i}) * Index(Current,{index:Result;ref:a_cursor;iters:_i;content:_c})
+			--valid_index: valid_index (Result)
 		end
 
 	cursor_go_i_th (a_cursor: like new_cursor; i: INTEGER) is
 			-- Move `a_cursor' to `i'-th position.
 		require
-			cursor_not_void: a_cursor /= Void
-			a_cursor_valid: valid_cursor (a_cursor)
-			valid_index: valid_index (i)
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i1}) * IsValidIndex(Current,{res:true();index:i;content:_c})
+			--cursor_not_void: a_cursor /= Void
+			--a_cursor_valid: valid_cursor (a_cursor)
+			--valid_index: valid_index (i)
 		deferred
 		ensure
-			moved: cursor_index (a_cursor) = i
+			--SL-- Cursor(a_cursor,{ds:Current}) * DS(Current,{content:_c;pos:_p;iters:_i2}) * WentToIndex(Current,{ref:a_cursor;index:i;newiters:_i2;olditers:_i1;content:_c})
+			--moved: cursor_index (a_cursor) = i
 		end
 
 end

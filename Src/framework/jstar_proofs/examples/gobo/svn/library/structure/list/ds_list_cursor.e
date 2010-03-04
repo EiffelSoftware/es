@@ -36,32 +36,47 @@ feature -- Access
 
 	index: INTEGER is
 			-- Index of current position
+		require else
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i})
 		do
 			Result := container.cursor_index (Current)
+		ensure then
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * Index(_ds,{index:Result;ref:Current;iters:_i;content:_c})
 		end
 
 	container: DS_LIST [G] is
 			-- List traversed
+		require else
+			--SL-- Cursor(Current,{ds:_ds})
 		deferred
+		ensure then
+			--SL-- Cursor(Current,{ds:_ds}) * Result = _ds
 		end
 
 feature -- Status report
 
 	valid_index (i: INTEGER): BOOLEAN is
 			-- Is `i' a valid index value?
+		require else
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i})
 		do
 			Result := (0 <= i and i <= (container.count + 1))
 		ensure then
-			i_large_enough: Result implies (i >= 0)
-			i_small_enough: Result implies (i <= (container.count + 1))
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsValidIndex(_ds,{res:Result;index:i;content:_c})
+			--i_large_enough: Result implies (i >= 0)
+			--i_small_enough: Result implies (i <= (container.count + 1))
 		end
 
 feature -- Cursor movement
 
 	go_i_th (i: INTEGER) is
 			-- Move cursor to `i'-th position.
+		require else
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i1}) * IsValidIndex(_ds,{res:true();index:i;content:_c})
 		do
 			container.cursor_go_i_th (Current, i)
+		ensure then
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i2}) * WentToIndex(_ds,{ref:Current;index:i;newiters:_i2;olditers:_i1;content:_c})
 		end
 
 feature -- Element change
@@ -70,29 +85,34 @@ feature -- Element change
 			-- Add `v' to left of cursor position.
 			-- Do not move cursors.
 		require
-			extendible: container.extendible (1)
-			not_before: not before
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c1;pos:_p1;iters:_i1}) * IsBefore(_ds,{res:false();ref:Current;iters:_i1;content:_c1) * IsExtendible(_ds,{res:true();elems:1})
+			--extendible: container.extendible (1)
+			--not_before: not before
 		do
 			container.put_left_cursor (v, Current)
 		ensure
-			one_more: container.count = old container.count + 1
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutLeft(_ds,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:Current;with:v})
+			--one_more: container.count = old container.count + 1
 		end
 
 	put_right (v: G) is
 			-- Add `v' to right of cursor position.
 			-- Do not move cursors.
 		require
-			extendible: container.extendible (1)
-			not_after: not after
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c1;pos:_p1;iters:_i1}) * IsAfter(_ds,{res:false();ref:Current;iters:_i1;content:_c1) * IsExtendible(_ds,{res:true();elems:1})
+			--extendible: container.extendible (1)
+			--not_after: not after
 		do
 			container.put_right_cursor (v, Current)
 		ensure
-			one_more: container.count = old container.count + 1
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c2;pos:_p2;iters:_i2}) * EqualAfterPutRight(_ds,{newcontent:_c2;newpos:_p2;newiters:_i2;oldcontent:_c1;oldpos:_p1;olditers:_i1;ref:Current;with:v})
+			--one_more: container.count = old container.count + 1
 		end
 
 	force_left (v: G) is
 			-- Add `v' to left of cursor position.
 			-- Do not move cursors.
+			-- sl_ignore - For the moment, this seems to be equivalent to put_left
 		require
 			not_before: not before
 		do
@@ -104,6 +124,7 @@ feature -- Element change
 	force_right (v: G) is
 			-- Add `v' to right of cursor position.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			not_after: not after
 		do
@@ -117,9 +138,10 @@ feature -- Element change
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
 		require
-			other_not_void: other /= Void
-			extendible: container.extendible (other.count)
-			not_before: not before
+			-- sl_ignore - for the moment
+			--other_not_void: other /= Void
+			--extendible: container.extendible (other.count)
+			--not_before: not before
 		do
 			container.extend_left_cursor (other, Current)
 		ensure
@@ -131,6 +153,7 @@ feature -- Element change
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
 		require
+			-- sl_ignore - for the moment
 			other_not_void: other /= Void
 			extendible: container.extendible (other.count)
 			not_after: not after
@@ -144,6 +167,7 @@ feature -- Element change
 			-- Add items of `other' to left of cursor position.
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			not_before: not before
@@ -157,6 +181,7 @@ feature -- Element change
 			-- Add items of `other' to right of cursor position.
 			-- Keep items of `other' in the same order.
 			-- Do not move cursors.
+			-- sl_ignore
 		require
 			other_not_void: other /= Void
 			not_after: not after
@@ -172,6 +197,7 @@ feature -- Removal
 			-- Remove item at cursor position.
 			-- Move any cursors at this position `forth'.
 		require
+			-- sl_ignore
 			not_off: not off
 		do
 			container.remove_at_cursor (Current)
@@ -183,6 +209,7 @@ feature -- Removal
 			-- Remove item to left of cursor position.
 			-- Move any cursors at this position `forth'.
 		require
+			-- sl_ignore
 			not_empty: not container.is_empty
 			not_before: not before
 			not_first: not is_first
@@ -195,6 +222,7 @@ feature -- Removal
 	remove_right is
 			-- Remove item to right of cursor position.
 			-- Move any cursors at this position `forth'.
+			-- sl_ignore
 		require
 			not_empty: not container.is_empty
 			not_after: not after
@@ -209,6 +237,7 @@ feature -- Removal
 			-- Remove `n' items to left of cursor position.
 			-- Move all cursors `off'.
 		require
+			-- sl_ignore
 			valid_n: 0 <= n and n < index
 		do
 			container.prune_left_cursor (n, Current)
@@ -220,6 +249,7 @@ feature -- Removal
 			-- Remove `n' items to right of cursor position.
 			-- Move all cursors `off'.
 		require
+			-- sl_ignore
 			valid_n: 0 <= n and n <= (container.count - index)
 		do
 			container.prune_right_cursor (n, Current)

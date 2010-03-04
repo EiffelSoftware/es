@@ -9,6 +9,12 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+--	sl_axioms: "[
+--		type_stuff: Cursor(Current,{ds:d}) ==> !statictype(d,"DS_TRAVERSABLE") * Cursor(Current,{ds:d})
+--	]"
+	sl_predicate: "Cursor(x,{ds:d}) = undefined()" -- Here such that the prover generates default rules.
+	js_logic: "logic"
+	js_abstraction: "abs"
 
 deferred class DS_CURSOR [G]
 
@@ -31,26 +37,38 @@ feature -- Access
 	item: G is
 			-- Item at cursor position
 		require
-			not_off: not off
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsOff(_ds,{res:false();ref:Current;iters:_i;content:_c})
+			--not_off: not off
 		do
 			Result := container.cursor_item (Current)
+		ensure
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * ItemAt(_ds,{res:Result;ref:Current;iters:_i;content:_c})
 		end
 
 	container: DS_TRAVERSABLE [G] is
 			-- Data structure traversed
+		require
+			--SL-- Cursor(Current,{ds:_ds})
 		deferred
+		ensure
+			--SL-- Cursor(Current,{ds:_ds}) * Result = _ds
 		end
 
 feature -- Status report
 
 	off: BOOLEAN is
 			-- Is there no item at cursor position?
+		require
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i})
 		do
 			Result := container.cursor_off (Current)
+		ensure
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsOff(_ds,{res:Result;ref:Current;iters:_i;content:_c})
 		end
 
 	same_position (other: like Current): BOOLEAN is
 			-- Is current cursor at same position as `other'?
+			-- sl_ignore - Fill in semantics later
 		require
 			other_not_void: other /= Void
 		do
@@ -61,30 +79,36 @@ feature -- Status report
 			-- Is `other' a valid cursor according
 			-- to current traversal strategy?
 		require
-			other_not_void: other /= Void
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * Cursor(other,{ds:_ds2})
+			--other_not_void: other /= Void
 		do
 			Result := container.valid_cursor (other)
 		ensure
-			Result implies container.valid_cursor (other)
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * Cursor(other,{ds:_ds2}) * Result = builtin_eq(_ds2,_ds)
+			--Result implies container.valid_cursor (other)
 		end
 
 feature -- Cursor movement
 
 	go_to (other: like Current) is
 			-- Move cursor to `other''s position.
+			-- sl_ignore
 		require
-			other_not_void: other /= Void
-			other_valid: valid_cursor (other)
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i1}) * Cursor(other,{ds:_ds})
+			--other_not_void: other /= Void
+			--other_valid: valid_cursor (other)
 		do
 			container.cursor_go_to (Current, other)
 		ensure
-			same_position: same_position (other)
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i2}) * Cursor(other,{ds:_ds}) * Moved(_ds,{ref:Current;destref:other;newiters:_i2;olditers:_i1})
+			--same_position: same_position (other)
 		end
 
 feature -- Duplication
 
 	copy (other: like Current) is
 			-- Copy `other' to current cursor.
+			-- sl_ignore
 		do
 			if container /= Void and then not off then
 				container.remove_traversing_cursor (Current)
@@ -100,6 +124,7 @@ feature -- Comparison
 
 	is_equal (other: like Current): BOOLEAN is
 			-- Are `other' and current cursor at the same position?
+			-- sl_ignore
 		do
 			if ANY_.same_types (Current, other) then
 				Result := same_position (other)
@@ -116,10 +141,13 @@ feature {DS_TRAVERSABLE} -- Implementation
 
 	set_next_cursor (a_cursor: like next_cursor) is
 			-- Set `next_cursor' to `a_cursor'.
+		require
+			--SLS-- Current.<DS_CURSOR.next_cursor> |-> _
 		do
 			next_cursor := a_cursor
 		ensure
-			next_cursor_set: next_cursor = a_cursor
+			--SLS-- Current.<DS_CURSOR.next_cursor> |-> a_cursor
+			--next_cursor_set: next_cursor = a_cursor
 		end
 
 invariant

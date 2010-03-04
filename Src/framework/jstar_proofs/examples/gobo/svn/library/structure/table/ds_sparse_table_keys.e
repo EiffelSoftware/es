@@ -257,9 +257,6 @@ feature {NONE} -- Cursor implementation
 			internal_cursor := c
 		end
 
-	internal_cursor: like new_cursor
-			-- Internal cursor
-
 feature {DS_SPARSE_TABLE_KEYS_CURSOR} -- Cursor implementation
 
 	cursor_item (a_cursor: like new_cursor): K is

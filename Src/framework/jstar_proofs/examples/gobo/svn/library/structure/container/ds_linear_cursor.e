@@ -9,6 +9,8 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	js_logic: "logic"
+	js_abstraction: "abs"
 
 deferred class DS_LINEAR_CURSOR [G]
 
@@ -24,43 +26,60 @@ feature -- Access
 
 	container: DS_LINEAR [G] is
 			-- Data structure traversed
+		require else
+			--SL-- Cursor(Current,{ds:_ds})
 		deferred
+		ensure then
+			--SL-- Cursor(Current,{ds:_ds}) * Result = _ds
 		end
 
 feature -- Status report
 
 	is_first: BOOLEAN is
 			-- Is cursor on first item?
+		require
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i})
 		do
 			Result := container.cursor_is_first (Current)
 		ensure
-			not_empty: Result implies not container.is_empty
-			not_off: Result implies not off
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsFirst(_ds,{res:Result;ref:Current;iters:_i;content:_c})
+			--not_empty: Result implies not container.is_empty
+			--not_off: Result implies not off
 		end
 
 	after: BOOLEAN is
 			-- Is there no valid position to right of cursor?
+		require
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i})
 		do
 			Result := container.cursor_after (Current)
+		ensure
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i}) * IsAfter(_ds,{res:Result;ref:Current;iters:_i;content:_c})
 		end
 
 feature -- Cursor movement
 
 	start is
 			-- Move cursor to first position.
+		require
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i1})
 		do
 			container.cursor_start (Current)
 		ensure
-			empty_behavior: container.is_empty implies after
-			first_or_after: is_first xor after
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i2}) * MovedToStart(_ds,{ref:Current;newiters:_i2;olditers:_i1;content:_c})
+			--empty_behavior: container.is_empty implies after
+			--first_or_after: is_first xor after
 		end
 
 	forth is
 			-- Move cursor to next position.
 		require
-			not_after: not after
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i1}) * IsAfter(_ds,{res:false();ref:Current;iters:_i1;content:_c})
+			--not_after: not after
 		do
 			container.cursor_forth (Current)
+		ensure
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i2}) * MovedForth(_ds,{ref:Current;newiters:_i2;olditers:_i1;content:_c})
 		end
 
 	search_forth (v: G) is
@@ -70,17 +89,23 @@ feature -- Cursor movement
 			-- if not void, use `=' criterion otherwise.)
 			-- Move `after' if not found.
 		require
-			not_off: not off or after
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i1})
+			--not_off: not off or after
 		do
 			container.cursor_search_forth (Current, v)
+		ensure
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i2}) * SearchedForth(_ds,{ref:Current;newiters:_i2;olditers:_i1;content:_c;val:v})
 		end
 
 	go_after is
 			-- Move cursor to `after' position.
+		require
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i1})
 		do
 			container.cursor_go_after (Current)
 		ensure
-			after: after
+			--SLS-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c;pos:_p;iters:_i2}) * MovedToAfter(_ds,{ref:Current;newiters:_i2;olditers:_i1;content:_c})
+			--after: after
 		end
 
 feature {DS_LINEAR} -- Implementation

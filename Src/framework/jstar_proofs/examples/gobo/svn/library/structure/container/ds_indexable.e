@@ -10,6 +10,7 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	sl_info: "ignore"
 
 deferred class DS_INDEXABLE [G]
 

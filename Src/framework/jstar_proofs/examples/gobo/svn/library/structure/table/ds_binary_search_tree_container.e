@@ -846,8 +846,6 @@ feature {DS_BINARY_SEARCH_TREE_CONTAINER} -- Cursor implementation
 			internal_cursor := c
 		end
 
-	internal_cursor: like new_cursor
-			-- Internal cursor
 
 feature {NONE} -- Cursor movement
 

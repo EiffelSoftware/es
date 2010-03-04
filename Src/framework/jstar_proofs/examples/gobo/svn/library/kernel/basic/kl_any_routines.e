@@ -9,6 +9,7 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	sl_info: "ignore"
 
 class KL_ANY_ROUTINES
 
