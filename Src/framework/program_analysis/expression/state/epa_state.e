@@ -279,6 +279,24 @@ feature -- Access
 					end)
 		end
 
+	as_table: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
+			-- Current as a table
+			-- Keys are the expessions in all the equations inside Current,
+			-- values are the corresponding values of those equations.
+		local
+			l_cursor: DS_HASH_TABLE_CURSOR [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
+		do
+			create Result.make (count)
+			Result.set_key_equality_tester (expression_equality_tester)
+			do_all (
+				agent (a_tbl: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]; a_equation: EPA_EQUATION)
+					do
+						a_tbl.force_last (a_equation.value, a_equation.expression)
+					end (Result, ?))
+		ensure
+			good_result: Result.count = count
+		end
+
 feature -- Status report
 
 	is_chaos: BOOLEAN

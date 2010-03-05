@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="program_analysis" uuid="197D2624-6547-4BAB-904B-131ABFA4EABB" library_target="program_analysis">
-	<target name="program_analysis">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="semantic_search" uuid="197D2624-6547-4BAB-90AB-131ABFA4EABB" library_target="semantic_search">
+	<target name="semantic_search">
 		<root all_classes="true"/>
 		<option warning="false" is_attached_by_default="false" void_safety="none">
 			<assertions/>
@@ -23,7 +23,8 @@
 		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
-		<cluster name="program_analysis" location=".\" recursive="true">
+		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
+		<cluster name="semantic_search" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/.svn$</exclude>
 			</file_rule>

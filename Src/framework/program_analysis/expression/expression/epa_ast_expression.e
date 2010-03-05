@@ -124,18 +124,6 @@ feature -- Status report
 	has_syntax_error: BOOLEAN
 			-- Does `text' contain syntex error?
 
-	is_boolean_type: BOOLEAN is
-			-- Is `ast' of boolean type?
-		do
-			Result := is_valid and then type /= Void and then type.is_boolean
-		end
-
-	is_integer_type: BOOLEAN is
-			-- Is `ast' of integer type?
-		do
-			Result := is_valid and then type /= Void and then type.is_integer
-		end
-
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?

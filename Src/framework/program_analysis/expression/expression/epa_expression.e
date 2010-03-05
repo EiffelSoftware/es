@@ -163,6 +163,24 @@ feature -- Status report
 		do
 		end
 
+	is_boolean: BOOLEAN
+			-- Is Current expression of boolean type?
+		do
+			Result := type.is_boolean
+		end
+
+	is_integer: BOOLEAN
+			-- Is Current expression of integer type?
+		do
+			Result := type.is_integer
+		end
+
+	is_reference: BOOLEAN
+			-- Is Current expression of reference type?
+		do
+			Result := type.is_reference
+		end
+
 	is_result: BOOLEAN
 			-- Does current expression "Result"?
 		do
@@ -235,6 +253,18 @@ feature -- Status report
 			-- Is `ast' available?
 		do
 			Result := True
+		end
+
+	is_integer_constant: BOOLEAN
+			-- Is Current an integer constant?
+		do
+			Result := text.is_integer
+		end
+
+	is_boolean_constant: BOOLEAN
+			-- Is Current a boolean constant?
+		do
+			Result := text.is_boolean
 		end
 
 feature -- Setting
