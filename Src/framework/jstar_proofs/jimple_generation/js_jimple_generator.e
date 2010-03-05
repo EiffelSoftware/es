@@ -315,16 +315,7 @@ feature {NONE}
 			l_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
 			l_false_label, l_end_label: STRING
 		do
-			l_byte_code := byte_server.item (a_feature.body_index)
-				-- Set up byte context
-			Context.clear_feature_data
-			Context.clear_class_type_data
-			if not a_feature.written_class.is_generic then
-				Context.init (a_feature.written_class.types.first)
-			end
-			Context.set_current_feature (a_feature)
-			Context.set_byte_code (l_byte_code)
-			l_byte_code.setup_local_variables (False)
+			l_byte_code := setup_byte_context (a_feature)
 
 			instruction_writer.reset
 			instruction_writer.set_feature (a_feature)
@@ -376,16 +367,7 @@ feature {NONE}
 			l_old_clause_generator: JS_JIMPLE_OLD_CLAUSE_GENERATOR
 			l_old_expression_side_effects: LINKED_LIST [!JS_OUTPUT_BUFFER]
 		do
-			l_byte_code := byte_server.item (a_feature.body_index)
-				-- Set up byte context
-			Context.clear_feature_data
-			Context.clear_class_type_data
-			if not a_feature.written_class.is_generic then
-				Context.init (a_feature.written_class.types.first)
-			end
-			Context.set_current_feature (a_feature)
-			Context.set_byte_code (l_byte_code)
-			l_byte_code.setup_local_variables (False)
+			l_byte_code := setup_byte_context (a_feature)
 
 			-- It's extremely important that we do the instatiate l_expression_writer to a JS_JIMPLE_ENSURE_CLAUSE_GENERATOR
 			create {JS_JIMPLE_ENSURE_CLAUSE_GENERATOR} l_expression_writer.make (instruction_writer)
@@ -468,16 +450,7 @@ feature {NONE}
 			l_expression_writer: JS_JIMPLE_EXPRESSION_GENERATOR
 			l_true_label, l_end_label: STRING
 		do
-			l_byte_code := byte_server.item (a_feature.body_index)
-				-- Set up byte context
-			Context.clear_feature_data
-			Context.clear_class_type_data
-			if not a_feature.written_class.is_generic then
-				Context.init (a_feature.written_class.types.first)
-			end
-			Context.set_current_feature (a_feature)
-			Context.set_byte_code (l_byte_code)
-			l_byte_code.setup_local_variables (False)
+			l_byte_code := setup_byte_context (a_feature)
 
 			instruction_writer.reset
 			instruction_writer.set_feature (a_feature)
@@ -573,17 +546,7 @@ feature {NONE}
 			instruction_writer.set_feature (a_feature)
 
 			if byte_server.has (a_feature.body_index) then
-				l_byte_code := byte_server.item (a_feature.body_index)
-
-					-- Set up byte context
-				Context.clear_feature_data
-				Context.clear_class_type_data
-				if not a_feature.written_class.is_generic then
-					Context.init (a_feature.written_class.types.first)
-				end
-				Context.set_current_feature (a_feature)
-				Context.set_byte_code (l_byte_code)
-				l_byte_code.setup_local_variables (False)
+				l_byte_code := setup_byte_context (a_feature)
 
 					-- Features with rescue clauses are skipped
 					-- TODO: implement rescue clauses
@@ -807,6 +770,24 @@ feature {NONE}
 					l_counter := l_counter + 1
 				end
 			end
+		end
+
+	setup_byte_context (a_feature: !FEATURE_I): BYTE_CODE
+		do
+			Result := byte_server.item (a_feature.body_index)
+				-- Set up byte context
+			Context.clear_feature_data
+			Context.clear_class_type_data
+			if not a_feature.written_class.is_generic then
+				Context.init (a_feature.written_class.types.first)
+			elseif a_feature.written_class.types /= Void and then not a_feature.written_class.types.is_empty then
+				Context.init (a_feature.written_class.types.first)
+			else
+				error ("Please put some generic derivation of class " + a_feature.written_class.name_in_upper + " in the project.")
+			end
+			Context.set_current_feature (a_feature)
+			Context.set_byte_code (Result)
+			Result.setup_local_variables (False)
 		end
 
 end

@@ -9,6 +9,8 @@ indexing
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
+	js_logic: "logic"
+	js_abstraction: "abs"
 
 deferred class DS_BILINEAR_SET_CURSOR [G]
 
@@ -30,7 +32,11 @@ feature -- Access
 
 	container: DS_BILINEAR_SET [G] is
 			-- Bilinear set traversed
+		require else
+			--SL-- Cursor(Current,{ds:_ds})
 		deferred
+		ensure then
+			--SL-- Cursor(Current,{ds:_ds}) * Result = _ds
 		end
 
 feature {DS_BILINEAR_SET} -- Implementation
