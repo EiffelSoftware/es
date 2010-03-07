@@ -2654,6 +2654,7 @@ Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticDocument.
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticDocumentField.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticDocumentLoader.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticIndexWriter.java -text
+Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticQueryTranslator.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticToLuceneDocumentTranslator.java -text
 Src/framework/sqlite3/sqlite-safe.lic -text
 Src/framework/sqlite3/sqlite.lic -text
