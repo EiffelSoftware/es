@@ -32,7 +32,7 @@ feature{NONE} -- Initialization
 			set_feature (a_feature)
 			set_written_class (a_written_class)
 			predicate := a_predicate
-			text := text_internal
+			text := text_with_predicate (predicate.text)
 			create {BOOLEAN_A} type
 		end
 
@@ -59,6 +59,13 @@ feature -- Access
 			-- Type of current state
 			-- Should be a deanchered and resolved generic type.
 
+	text_in_context (a_context_class: CLASS_C): STRING
+			-- Text viewed from `a_context_class',
+			-- with all kinds of renaming resolved
+		do
+			Result := text_with_predicate (predicate.text_in_context (a_context_class))
+		end
+
 feature -- Status report
 
 	is_universal_quantified: BOOLEAN = True
@@ -72,6 +79,14 @@ feature -- Status report
 			-- Is current item valid?
 			-- Note: If at some point, current state item is not evaluable,
 			-- then it is_valid is False.
+
+feature -- Visitor/Process
+
+	process (a_visitor: EPA_EXPRESSION_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_universal_quantified_expression (Current)
+		end
 
 feature{NONE} -- Implementation
 

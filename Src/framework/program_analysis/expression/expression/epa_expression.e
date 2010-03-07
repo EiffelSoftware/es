@@ -18,6 +18,10 @@ inherit
 
 	EPA_UTILITY
 
+	EPA_TYPE_UTILITY
+
+	SHARED_TEXT_ITEMS
+
 feature -- Access
 
 	feature_: detachable FEATURE_I
@@ -37,6 +41,32 @@ feature -- Access
 		deferred
 		end
 
+	text_in_context (a_context_class: CLASS_C): STRING
+			-- Text viewed from `a_context_class',
+			-- with all kinds of renaming resolved
+		local
+			l_class_ctxt: ETR_CLASS_CONTEXT
+			l_src_ctxt: ETR_CONTEXT
+			l_dest_ctxt: ETR_CONTEXT
+			l_trans: ETR_TRANSFORMABLE
+		do
+			if attached{FEATURE_I} feature_ as l_feature then
+				create l_class_ctxt.make (written_class)
+				create {ETR_FEATURE_CONTEXT} l_src_ctxt.make (l_feature, l_class_ctxt)
+
+				create l_class_ctxt.make (a_context_class)
+				create {ETR_FEATURE_CONTEXT} l_dest_ctxt.make (a_context_class.feature_of_rout_id_set (l_feature.rout_id_set), l_class_ctxt)
+			else
+				create {ETR_CLASS_CONTEXT} l_src_ctxt.make (written_class)
+				create {ETR_CLASS_CONTEXT} l_dest_ctxt.make (a_context_class)
+			end
+
+			create l_trans.make (ast, l_src_ctxt, True)
+			Result := text_from_ast (l_trans.as_in_other_context (l_dest_ctxt).to_ast)
+		ensure
+			result_attached: Result /= Void
+		end
+
 	type: detachable TYPE_A
 			-- Type of current state
 			-- Should be a deanchered and resolved generic type.
@@ -47,9 +77,8 @@ feature -- Access
 			-- Resolved type for `type'.
 			-- Should be the same as type if `type' is also resolved.
 		do
-			to_implement ("To implement, for the moment, we use the following. 3.3.2010 Jasonw")
-			Result := type
-
+			Result := type.actual_type.instantiation_in (context_class.actual_type, context_class.class_id)
+			Result := actual_type_from_formal_type (Result, context_class)
 		end
 
 	ast: EXPR_AS
@@ -184,7 +213,7 @@ feature -- Status report
 	is_result: BOOLEAN
 			-- Does current expression "Result"?
 		do
-			Result := text.is_case_insensitive_equal ("Result")
+			Result := text.is_case_insensitive_equal (ti_result)
 		end
 
 	is_attribute: BOOLEAN
@@ -209,6 +238,12 @@ feature -- Status report
 			if attached {FEATURE_I} feature_ as l_feat then
 				Result := local_names_of_feature (l_feat).has (text)
 			end
+		end
+
+	is_current: BOOLEAN
+			-- Does current expressoin represent "Current"?
+		do
+			Result := text.is_case_insensitive_equal (ti_current)
 		end
 
 	is_require_else: BOOLEAN
@@ -310,6 +345,13 @@ feature -- Setting
 			else
 				tag := a_tag.twin
 			end
+		end
+
+feature -- Visitor/Process
+
+	process (a_visitor: EPA_EXPRESSION_VISITOR)
+			-- Process Current using `a_visitor'.
+		deferred
 		end
 
 end

@@ -9,6 +9,8 @@ deferred class
 
 inherit
 	EPA_EXPRESSION
+		undefine
+			text_in_context
 		redefine
 			is_quantified,
 			text
@@ -30,6 +32,40 @@ feature -- Access
 			-- as an expression to evaluate (for example, in debugger).
 			-- Current Eiffel syntax does not support some of the well-formed quantified expressions,
 			-- for example, forall x. old has(x) implies has (x). 2.3.2010 Jasonw.
+
+	text_with_predicate (a_predicate: STRING): STRING
+			-- Text of current expression
+		local
+			l_cursor: CURSOR
+			l_variables: like variables
+			i, c: INTEGER
+		do
+			create Result.make (64)
+			Result.append (quantifier_name)
+			Result.append_character (' ')
+
+			l_variables := variables
+			l_cursor := l_variables.cursor
+			from
+				i := 1
+				c := l_variables.count
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				Result.append (l_variables.key_for_iteration)
+				Result.append (once ": ")
+				Result.append (l_variables.item_for_iteration.name)
+				if i < c then
+					Result.append (once ", ")
+				end
+				i := i + 1
+				l_variables.forth
+			end
+			l_variables.go_to (l_cursor)
+			Result.append (once " :: ")
+			Result.append (a_predicate)
+		end
 
 feature -- Status report
 
@@ -66,40 +102,6 @@ feature{NONE} -- Implementation
 	quantifier_name: STRING
 			-- Name of the quantifier
 		deferred
-		end
-
-	text_internal: STRING
-			-- Text of current expression
-		local
-			l_cursor: CURSOR
-			l_variables: like variables
-			i, c: INTEGER
-		do
-			create Result.make (64)
-			Result.append (quantifier_name)
-			Result.append_character (' ')
-
-			l_variables := variables
-			l_cursor := l_variables.cursor
-			from
-				i := 1
-				c := l_variables.count
-				l_variables.start
-			until
-				l_variables.after
-			loop
-				Result.append (l_variables.key_for_iteration)
-				Result.append (once ": ")
-				Result.append (l_variables.item_for_iteration.name)
-				if i < c then
-					Result.append (once ", ")
-				end
-				i := i + 1
-				l_variables.forth
-			end
-			l_variables.go_to (l_cursor)
-			Result.append (once " :: ")
-			Result.append (predicate.text)
 		end
 
 invariant

@@ -55,6 +55,79 @@ feature{NONE} -- Implementation
 				a_position >= 0
 		end
 
+	anonymous_operand_name (a_position: INTEGER): STRING
+			-- Anonymous name for `a_position'-th operand
+			-- Format: {`a_position'}, for example "{0}".
+		do
+			create Result.make (4)
+			Result.append_character ('{')
+			Result.append (a_position.out)
+			Result.append_character ('}')
+		end
+
+	put_operand (a_operand: EPA_EXPRESSION; a_position: INTEGER; a_input: BOOLEAN; a_output: BOOLEAN)
+			-- Add `a_operand' as the `a_position'-th position in Current transition.
+			-- `a_input' indicates whether `a_operand' is an input.
+			-- `a_output' indicates whether `a_operand' is an output.
+		require
+			a_operand_not_exist: not operands.has (a_operand)
+		do
+			operands.force_last (a_operand)
+			operand_positions.force_last (a_position, a_operand)
+			inputs.force_last (a_operand)
+			outputs.force_last (a_operand)
+		end
+
+	anonymous_expressoin_text (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
+			-- For example, "has (v)" will be: "{0}.has ({1})".
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+		do
+			create l_replacements.make (operands.count)
+			l_replacements.compare_objects
+			operand_positions.do_all_with_key (
+				agent (a_position: INTEGER; a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
+					do
+						a_tbl.put (anonymous_operand_name (a_position), a_expr.text.as_lower)
+					end (?, ?, l_replacements))
+
+			Result := expression_rewriter.expression_text (a_expression, l_replacements)
+		end
+
+	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
+			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+		do
+			create l_replacements.make (operands.count)
+			l_replacements.compare_objects
+			operands.do_all (
+				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
+					do
+						a_tbl.put (a_expr.resolved_type.name, a_expr.text.as_lower)
+					end (?, l_replacements))
+
+			Result := expression_rewriter.expression_text (a_expression, l_replacements)
+		end
+
+feature{NONE} -- Implementation
+
+	expression_rewriter: SEM_TRANSITION_EXPRESSION_REWRITER
+			-- Expression rewriter to rewrite `operands' in anonymous format.
+		do
+			if attached {SEM_TRANSITION_EXPRESSION_REWRITER} expression_rewriter_internal as l_rewriter then
+				Result := l_rewriter
+			else
+				create expression_rewriter_internal.make
+				Result := expression_rewriter_internal
+			end
+		end
+
+	expression_rewriter_internal: detachable like expression_rewriter
+			-- Cache of `expression_rewriter'
+
 invariant
 	operand_positions_valid: operand_positions.for_all_with_key (agent is_operand_position_valid)
 	inputs_valid: inputs.for_all (agent operands.has)

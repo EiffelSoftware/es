@@ -177,6 +177,14 @@ feature -- Setting
 			type_set: type = a_type
 		end
 
+feature -- Visitor/Process
+
+	process (a_visitor: EPA_EXPRESSION_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_ast_expression (Current)
+		end
+
 feature{NONE} -- Implementation
 
 	set_has_syntax_error (b: BOOLEAN)
