@@ -26,6 +26,7 @@ feature{NONE} -- Initialization
 			a_capacity_positive: a_capacity > 0
 		do
 			create nodes.make (a_capacity)
+			nodes.compare_objects
 		end
 
 feature -- Access
