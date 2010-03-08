@@ -119,6 +119,12 @@ feature -- Process
 			process_deterministic_value (a_value)
 		end
 
+	process_reference_value (a_value: EPA_REFERENCE_VALUE)
+			-- Process `a_value'.
+		do
+			process_deterministic_value (a_value)
+		end
+
 feature{NONE} -- Implementation
 
 	max_integer_value: INTEGER

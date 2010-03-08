@@ -372,6 +372,11 @@ feature{NONE} -- Visitor
 		do
 		end
 
+	process_reference_value (a_value: EPA_REFERENCE_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
 feature{NONE} -- Implementation
 
 	get_effective_boolean_outline (a_class: like class_): AFX_BOOLEAN_STATE_OUTLINE

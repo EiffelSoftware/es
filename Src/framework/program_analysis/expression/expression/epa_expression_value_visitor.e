@@ -44,4 +44,9 @@ feature -- Process
 		deferred
 		end
 
+	process_reference_value (a_value: EPA_REFERENCE_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
 end

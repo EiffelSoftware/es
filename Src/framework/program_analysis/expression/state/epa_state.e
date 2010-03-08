@@ -297,6 +297,18 @@ feature -- Access
 			good_result: Result.count = count
 		end
 
+	expressions: EPA_HASH_SET [EPA_EXPRESSION]
+			-- Expressions of equations in Current
+		do
+			create Result.make (count)
+			Result.set_equality_tester (expression_equality_tester)
+			do_all (
+				agent (a_equation: EPA_EQUATION; a_set: EPA_HASH_SET [EPA_EXPRESSION])
+					do
+						a_set.force_last (a_equation.expression)
+					end (?, Result))
+		end
+
 feature -- Status report
 
 	is_chaos: BOOLEAN
@@ -306,6 +318,12 @@ feature -- Status report
 			-- Is Current state delayed?
 			-- Delayed state means that its actual values are to be instantiated
 		do
+		end
+
+	has_expression (a_expression: EPA_EXPRESSION): BOOLEAN
+			-- Is there an equation in Current with `a_expression' as its expression?
+		do
+			Result := attached item_with_expression (a_expression)
 		end
 
 feature -- Setting

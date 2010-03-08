@@ -27,6 +27,7 @@ feature{NONE} -- Initialization
 			values.append_last (a_values)
 
 			set_is_relative (a_relative)
+			set_relevance (1.0)
 		end
 
 feature -- Access
@@ -36,6 +37,11 @@ feature -- Access
 
 	values: EPA_EXPRESSION_CHANGE_VALUE_SET
 			-- Values by which or to which `expression' changes
+
+	relevance: DOUBLE
+			-- Relevance of Current change
+			-- Maybe used as a boost value in search engine
+			-- Default: 1.0
 
 feature -- Status report	
 
@@ -66,6 +72,14 @@ feature -- Setting
 			is_relative := not b
 		ensure
 			is_absolute_set: is_absolute = b
+		end
+
+	set_relevance (v: DOUBLE)
+			-- Set `relevance' with `v'.
+		do
+			relevance := v
+		ensure
+			relevance_set: relevance = v
 		end
 
 end
