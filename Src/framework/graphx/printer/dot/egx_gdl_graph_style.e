@@ -2,7 +2,7 @@ indexing
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision: 4 $"
+	revision: "$Revision$"
 
 class
 	EGX_GDL_GRAPH_STYLE

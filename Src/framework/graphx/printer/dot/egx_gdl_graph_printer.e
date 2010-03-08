@@ -5,7 +5,7 @@ indexing
 			]"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision: 5 $"
+	revision: "$Revision$"
 
 deferred class
 	EGX_GDL_GRAPH_PRINTER [N -> HASHABLE, L]

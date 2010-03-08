@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EGX_GENERAL_GRAPH_PRINTER [N -> HASHABLE, L]
+	EGX_SIMPLE_GDL_GRAPH_PRINTER [N -> HASHABLE, L]
 
 inherit
 	EGX_GDL_GRAPH_PRINTER [N, L]
