@@ -55,24 +55,26 @@ feature -- Setting
 			-- Prepare for a new navigation by `visitor'.
 		local
 			l_sorted_nodes: ARRAY [N]
-			l_nodes: HASH_TABLE [like node_type, INTEGER]
+			l_nodes: DS_HASH_TABLE [like node_type, N]
 			l_sorter: DS_ARRAY_QUICK_SORTER [N]
 			l_index: INTEGER
 			l_node_count: INTEGER
 			l_unvisited_nodes: like unvisited_nodes
+			l_cursor: DS_HASH_TABLE_CURSOR [like node_type, N]
 		do
 				-- Copy nodes from `graph' for later sorting.
 			l_nodes := graph.nodes
+			l_cursor := l_nodes.new_cursor
 			l_node_count := l_nodes.count
 			create l_sorted_nodes.make (1, l_nodes.count)
 			from
-				l_nodes.start
+				l_cursor.start
 				l_index := 1
 			until
-				l_nodes.after
+				l_cursor.after
 			loop
-				l_sorted_nodes.put (l_nodes.item_for_iteration.data, l_index)
-				l_nodes.forth
+				l_sorted_nodes.put (l_cursor.item.data, l_index)
+				l_cursor.forth
 				l_index := l_index + 1
 			end
 

@@ -77,7 +77,7 @@ feature -- Setting
 			-- Reset Current, make sure all nodes in `graph' are marked as unvisited.
 			-- Prepare for a new navigation by `visitor'.
 		local
-			l_nodes: HASH_TABLE [like node_type, INTEGER]
+			l_nodes: DS_HASH_TABLE [like node_type, N]
 			l_unvisited_nodes: like unvisited_nodes
 		do
 			l_nodes := graph.nodes

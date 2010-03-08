@@ -113,18 +113,16 @@ feature -- Status report
 			a_start_node_attached: a_start_node /= Void
 			a_start_node_in_graph: graph.has_node (a_start_node)
 		local
-			l_end_nodes: LIST [like node_type]
+			l_end_nodes: LIST [N]
 		do
 			l_end_nodes := graph.end_nodes (a_start_node, a_label)
---			Result := l_edges.
---			Result := is_node_in_same_scc (a_start_node, graph.end_node (a_start_node, a_label).data)
 			from
 				Result := True
 				l_end_nodes.start
 			until
 				l_end_nodes.after or not Result
 			loop
-				Result := is_node_in_same_scc (a_start_node, l_end_nodes.item.data)
+				Result := is_node_in_same_scc (a_start_node, l_end_nodes.item)
 				l_end_nodes.forth
 			end
 		ensure

@@ -1,5 +1,5 @@
 indexing
-	description: "Objects that ..."
+	description: "General directed graph"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision: 8 $"
@@ -12,7 +12,9 @@ inherit
 		redefine
 			node_type,
 			edge_type,
-			nodes
+			nodes,
+			set_node_equality_tester,
+			is_node_equality_tester_settable
 		end
 
 create
@@ -26,7 +28,6 @@ feature{NONE} -- Initialization
 			a_capacity_positive: a_capacity > 0
 		do
 			create nodes.make (a_capacity)
-			nodes.compare_objects
 		end
 
 feature -- Access
@@ -34,9 +35,9 @@ feature -- Access
 	node (a_node: N): like node_type is
 			-- Graph node representation of `a_node'
 		do
-			Result := nodes.item (a_node.hash_code)
+			Result := nodes.item (a_node)
 		ensure then
-			good_result: Result = nodes.item (a_node.hash_code)
+			good_result: Result = nodes.item (a_node)
 		end
 
 	end_nodes (a_start_node: N; a_label: L): LIST [N] is
@@ -45,7 +46,7 @@ feature -- Access
 		local
 			l_edges: LIST [like edge_type]
 		do
-			l_edges := nodes.item (a_start_node.hash_code).out_edges_with_label (a_label)
+			l_edges := nodes.item (a_start_node).out_edges_with_label (a_label)
 			create {ARRAYED_LIST [N]}Result.make (l_edges.count)
 			from
 				l_edges.start
@@ -159,7 +160,7 @@ feature -- Access
 			-- Copy of Current into a new graph
 		local
 			l_nodes: like nodes
-			l_cursor: CURSOR
+			l_cursor: DS_HASH_TABLE_CURSOR [like node_type, N]
 			l_node: like node_type
 			l_out_edges: LIST [like edge_type]
 			l_edge_cursor: CURSOR
@@ -172,7 +173,7 @@ feature -- Access
 			Result.set_edge_equality_tester (edge_equality_tester)
 
 			l_nodes := nodes
-			l_cursor := l_nodes.cursor
+			l_cursor := l_nodes.new_cursor
 			from
 				l_nodes.start
 			until
@@ -228,13 +229,13 @@ feature -- Access
 	node_set: DS_HASH_SET [N] is
 			-- Set of `nodes'
 		local
-			l_nodes: HASH_TABLE [like node_type, INTEGER]
-			l_cursor: CURSOR
+			l_nodes: DS_HASH_TABLE [like node_type, N]
+			l_cursor: DS_HASH_TABLE_CURSOR [like node_type, N]
 		do
 			l_nodes := nodes
 			create Result.make (l_nodes.count)
 			Result.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [N]}.make(actual_node_equality_tester))
-			l_cursor := l_nodes.cursor
+			l_cursor := l_nodes.new_cursor
 			from
 				l_nodes.start
 			until
@@ -254,7 +255,7 @@ feature -- Status report
 		local
 			l_node: like node_type
 		do
-			l_node := nodes.item (a_node.hash_code)
+			l_node := nodes.item (a_node)
 			Result := l_node /= Void and then actual_node_equality_tester.item ([l_node.data, a_node])
 		end
 
@@ -302,6 +303,12 @@ feature -- Status report
 			Result := True
 		end
 
+	is_node_equality_tester_settable: BOOLEAN
+			-- Is `node_equality_tester' settable?
+		do
+			Result := node_count = 0
+		end
+
 feature -- Setting
 
 	extend_node (a_node: N) is
@@ -312,7 +319,7 @@ feature -- Setting
 		do
 			create l_node.make (a_node)
 			l_node.set_graph (Current)
-			nodes.force (l_node, l_node.hash_code)
+			nodes.force (l_node, a_node)
 		end
 
 	extend_out_edge (a_node, b_node: N; a_label: L) is
@@ -325,8 +332,8 @@ feature -- Setting
 		do
 			create l_edge.make (a_label)
 			l_nodes := nodes
-			l_a_node := l_nodes.item (a_node.hash_code)
-			l_b_node := l_nodes.item (b_node.hash_code)
+			l_a_node := l_nodes.item (a_node)
+			l_b_node := l_nodes.item (b_node)
 			l_edge.set_nodes (l_a_node, l_b_node)
 			l_a_node.extend_out_edge (l_edge)
 			l_b_node.extend_in_edge (l_edge)
@@ -375,7 +382,7 @@ feature -- Setting
 			l_node.in_edges.wipe_out
 			l_node.out_edges.wipe_out
 			l_node.set_graph (Void)
-			nodes.remove (a_node.hash_code)
+			nodes.remove (a_node)
 		end
 
 	remove_out_edges (a_start_node: N; a_label: L) is
@@ -387,7 +394,7 @@ feature -- Setting
 			l_edges: LIST [like edge_type]
 		do
 			from
-				l_node := nodes.item (a_start_node.hash_code)
+				l_node := nodes.item (a_start_node)
 				l_edges := l_node.out_edges_with_label (a_label)
 				l_edges.start
 			until
@@ -408,7 +415,7 @@ feature -- Setting
 			l_edge: like edge_type
 			l_edges: LIST [like edge_type]
 		do
-			l_edges := nodes.item (a_end_node.hash_code).in_edges_with_label (a_label)
+			l_edges := nodes.item (a_end_node).in_edges_with_label (a_label)
 			from
 				l_edges.start
 			until
@@ -420,11 +427,20 @@ feature -- Setting
 			end
 		end
 
+feature -- Setting
+
+	set_node_equality_tester (a_tester: like node_equality_tester) is
+			-- Set `node_equality_tester' with `a_tester'.
+		do
+			node_equality_tester := a_tester
+			nodes.set_key_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [N]}.make (actual_node_equality_tester))
+		end
+
 feature{EGX_GRAPH_VISITOR} -- Implementation
 
-	nodes: HASH_TABLE [like node_type, INTEGER]
+	nodes: DS_HASH_TABLE [like node_type, N]
 			-- Table of nodes in Current graph
-			-- [node, node hash code]
+			-- [node_type, node]			
 
 feature{NONE} -- Implementation
 

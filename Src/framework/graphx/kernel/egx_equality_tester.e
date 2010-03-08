@@ -27,10 +27,19 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+feature -- Status report
+
+	is_equality_tester_settable: BOOLEAN
+			-- Is `equality_tester' settable?
+		do
+		end
+
 feature -- Setting
 
 	set_equality_tester (a_tester: like equality_tester) is
 			-- Set `equality_tester' with `a_tester'.
+		require
+			is_settable: is_equality_tester_settable
 		do
 			equality_tester := a_tester
 		ensure

@@ -17,7 +17,8 @@ inherit
 			equality_tester as node_equality_tester,
 			actual_equality_tester as actual_node_equality_tester,
 			reference_equality_tester as node_reference_equality_tester,
-			set_equality_tester as set_node_equality_tester
+			set_equality_tester as set_node_equality_tester,
+			is_equality_tester_settable as is_node_equality_tester_settable
 		end
 
 feature -- Access
@@ -60,9 +61,8 @@ feature -- Access
 			good_result: Result >= 0
 		end
 
-	nodes: HASH_TABLE [like node_type, INTEGER] is
-			-- Table of nodes in Current graph
-			-- [node, node hash code]
+	nodes: DS_HASH_TABLE [like node_type, N] is
+			-- Set of nodes in Current graph
 		deferred
 		ensure
 			result_attached: Result /= Void
