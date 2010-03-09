@@ -13,7 +13,9 @@ inherit
 			make as make_set
 		redefine
 			is_integer_range,
-			is_valid
+			is_valid,
+			debug_output,
+			process
 		end
 
 create
@@ -100,5 +102,43 @@ feature -- Status report
 				first.is_integer_constant and then
 				last.is_integer_constant
 		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (32)
+			if is_lower_included then
+				Result.append_character ('[')
+			else
+				Result.append_character ('(')
+			end
+			if lower = negative_infinity then
+				Result.append (once "-Infinity")
+			else
+				Result.append (lower.out)
+			end
+			Result.append (", ")
+			if upper = positive_infinity then
+				Result.append (once "+Infinity")
+			else
+				Result.append (upper.out)
+			end
+			if is_upper_included then
+				Result.append_character (']')
+			else
+				Result.append_character (')')
+			end
+		end
+
+feature -- Visit
+
+	process (a_visitor: EPA_EXPRESSION_CHANGE_VALUE_SET_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_integer_range (Current)
+		end
+
 
 end

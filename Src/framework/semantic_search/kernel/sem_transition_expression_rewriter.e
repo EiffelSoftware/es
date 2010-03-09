@@ -31,6 +31,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			create output.make
+			create nested_level.make
 		end
 
 feature -- Basic operations
@@ -40,6 +41,8 @@ feature -- Basic operations
 		do
 			output.reset
 			replacements := a_replacements
+			nested_level.wipe_out
+			nested_level.extend (0)
 			a_ast.process (Current)
 			Result := output.string_representation.twin
 		end
@@ -48,6 +51,8 @@ feature -- Basic operations
 			-- Text of `a_expr' with `a_replacements'
 		do
 			output.reset
+			nested_level.wipe_out
+			nested_level.extend (0)
 			replacements := a_replacements
 			a_expr.process (Current)
 			Result := output.string_representation.twin

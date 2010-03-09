@@ -45,6 +45,49 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	anonymous_expressoin_text (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
+			-- For example, "has (v)" will be: "{0}.has ({1})".
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+		do
+			create l_replacements.make (operands.count)
+			l_replacements.compare_objects
+			operand_positions.do_all_with_key (
+				agent (a_position: INTEGER; a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
+					do
+						a_tbl.put (anonymous_operand_name (a_position), a_expr.text.as_lower)
+					end (?, ?, l_replacements))
+
+			Result := expression_rewriter.expression_text (a_expression, l_replacements)
+		end
+
+	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
+			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+		do
+			create l_replacements.make (operands.count)
+			l_replacements.compare_objects
+			operands.do_all (
+				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
+					local
+						l_type: STRING
+					do
+						l_type := a_expr.resolved_type.name
+						l_type.replace_substring_all (once "?", once "")
+						a_tbl.put (l_type, a_expr.text.as_lower)
+					end (?, l_replacements))
+
+			Result := expression_rewriter.expression_text (a_expression, l_replacements)
+		end
+
+	context: STRING
+			-- Context of current transition
+		deferred
+		end
+
 feature{NONE} -- Implementation
 
 	is_operand_position_valid (a_position: INTEGER; a_operand: EPA_EXPRESSION): BOOLEAN
@@ -76,40 +119,6 @@ feature{NONE} -- Implementation
 			operand_positions.force_last (a_position, a_operand)
 			inputs.force_last (a_operand)
 			outputs.force_last (a_operand)
-		end
-
-	anonymous_expressoin_text (a_expression: EPA_EXPRESSION): STRING
-			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
-			-- For example, "has (v)" will be: "{0}.has ({1})".
-		local
-			l_replacements: HASH_TABLE [STRING, STRING]
-		do
-			create l_replacements.make (operands.count)
-			l_replacements.compare_objects
-			operand_positions.do_all_with_key (
-				agent (a_position: INTEGER; a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
-					do
-						a_tbl.put (anonymous_operand_name (a_position), a_expr.text.as_lower)
-					end (?, ?, l_replacements))
-
-			Result := expression_rewriter.expression_text (a_expression, l_replacements)
-		end
-
-	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
-			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
-			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
-		local
-			l_replacements: HASH_TABLE [STRING, STRING]
-		do
-			create l_replacements.make (operands.count)
-			l_replacements.compare_objects
-			operands.do_all (
-				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
-					do
-						a_tbl.put (a_expr.resolved_type.name, a_expr.text.as_lower)
-					end (?, l_replacements))
-
-			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
 feature{NONE} -- Implementation

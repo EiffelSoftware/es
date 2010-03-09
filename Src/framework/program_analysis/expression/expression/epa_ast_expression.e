@@ -201,9 +201,15 @@ feature{NONE} -- Implementation
 			syntax_correct: not has_syntax_error
 		do
 			expression_type_checker.check_expression (ast, class_, feature_, has_old_expression)
-			type := expression_type_checker.last_type.actual_type
-		ensure
-			type_attached: type /= Void
+--			type := expression_type_checker.last_type.actual_type
+			fixme ("This is a walkaround. Fix me later. 9.3.2010 Jasonw")
+			if attached {TYPE_A} expression_type_checker.last_type as l_type then
+				type := l_type.actual_type
+			else
+				type := Void
+			end
+--		ensure
+--			type_attached: type /= Void
 		end
 
 	parse_text (a_text: STRING) is

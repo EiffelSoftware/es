@@ -113,9 +113,6 @@ feature{NONE} -- Implementation
 
 					an_ast.process (Current)
 					reset
-					if a_in_postcondition then
-						set_is_checking_postcondition (True)
-					end
 					set_is_inherited (True)
 					context.restore (l_ctx)
 				end
@@ -125,6 +122,9 @@ feature{NONE} -- Implementation
 				inherited_type_a_checker.init_for_checking (a_feature, l_wc, Void, Void)
 			end
 			if l_error_level = error_level then
+				if a_in_postcondition then
+					set_is_checking_postcondition (True)
+				end
 				an_ast.process (Current)
 			end
 			check error_handler.error_list.count = 0 end

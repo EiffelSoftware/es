@@ -18,6 +18,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	SHARED_TEXT_ITEMS
+
 feature -- AST
 
 	text_from_ast (a_ast: AST_EIFFEL): STRING
@@ -87,6 +89,46 @@ feature -- Class/feature related
 					i := i + 1
 				end
 			end
+		end
+
+	operands_of_feature (a_feature: FEATURE_I): DS_HASH_TABLE [INTEGER, STRING]
+			-- Operands and their positions of `a_feature', including target and possible
+			-- returned Result. Operand positions are 0-based, with 0 indicates the target.
+			-- Key is an operand name, value is the position of that operand.
+			-- The result is inversed `operands_with_feature'.
+		local
+			l_operand_count: INTEGER
+		do
+			l_operand_count := 1 + a_feature.argument_count
+			if not a_feature.type.is_void then
+				l_operand_count := l_operand_count + 1
+			end
+			create Result.make (l_operand_count)
+			Result.set_key_equality_tester (string_equality_tester)
+
+			Result.force_last (0, ti_current)
+			arguments_of_feature (a_feature).do_all_with_key (agent Result.force_last)
+
+			if not a_feature.type.is_void then
+				Result.force_last (l_operand_count - 1, ti_result)
+			end
+		end
+
+	operands_with_feature (a_feature: FEATURE_I): DS_HASH_TABLE [STRING, INTEGER]
+			-- Operands and their positions of `a_feature', including target and possible
+			-- returned Result. Operand positions are 0-based, with 0 indicates the target.
+			-- Key is an operand position, value is the operand name.
+			-- The result is inversed `operands_of_feature'.
+		local
+			l_operands: like operands_of_feature
+		do
+			l_operands := operands_of_feature (a_feature)
+			create Result.make (l_operands.count)
+			l_operands.do_all_with_key (
+				agent (a_pos: INTEGER; a_name: STRING; a_tbl: DS_HASH_TABLE [STRING, INTEGER])
+					do
+						a_tbl.force_last (a_name, a_pos)
+					end (?, ?, Result))
 		end
 
 	local_names_of_feature (a_feature: FEATURE_I): DS_HASH_SET [STRING]

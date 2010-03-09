@@ -16,6 +16,12 @@ inherit
 			copy
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			is_equal,
+			copy
+		end
+
 create
 	make
 
@@ -36,6 +42,30 @@ feature -- Status report
 			-- Does Current represent the notion of a "unknown" change?
 		do
 			Result := is_empty
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (128)
+			do_all_with_index (
+				agent (a_expr: EPA_EXPRESSION; a_index: INTEGER; a_count: INTEGER; a_str: STRING)
+					do
+						a_str.append (a_expr.text)
+						if a_index < a_count then
+							a_str.append (once ", ")
+						end
+					end (?, ?, count, Result))
+		end
+
+feature -- Visit
+
+	process (a_visitor: EPA_EXPRESSION_CHANGE_VALUE_SET_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_expression_change_value_set (Current)
 		end
 
 end

@@ -10,6 +10,8 @@ class
 inherit
 	AUT_PREDICATE_UTILITY
 
+	EPA_UTILITY
+
 
 create
 	make
@@ -26,6 +28,9 @@ feature{NONE} -- Initialization
 
 			create transitions.make (100)
 			transitions.set_key_equality_tester (feature_of_type_equality_tester)
+
+			create transitions_cache.make (10000)
+			transitions_cache.set_equality_tester (string_equality_tester)
 		end
 
 feature -- Access
@@ -44,6 +49,126 @@ feature -- Access
 			-- For both `source' and `target', key is expression name, value is the evaluation value of that expression.
 
 feature -- Basic operations
+
+	transitions_cache: DS_HASH_SET [STRING]
+			-- Cache for transitions seen so far
+
+	transition_signature (a_type: TYPE_A; a_class: CLASS_C; a_feature: FEATURE_I; a_source: DS_ARRAYED_LIST [EPA_STATE]; a_target: DS_ARRAYED_LIST [EPA_STATE]): STRING
+			-- Signature of the transition defined by `a_class', `a_feature', `a_source' and `a_target'.
+			-- See `add_transition' for meanings of these arguments.
+			-- The signature is used to check if a transition has been seen before.
+			-- `a_type' is the dynamic type of the target of the feature call.
+		do
+			create Result.make (2048)
+			Result.append_character ('{')
+			Result.append (a_type.name)
+			Result.append_character ('}')
+			Result.append_character ('.')
+			Result.append (a_feature.feature_name.as_lower)
+			a_source.do_all (agent (a_str: STRING; a_state: EPA_STATE) do a_str.append (a_state.debug_output) end (Result, ?))
+			Result.append_character ('%N')
+			a_target.do_all (agent (a_str: STRING; a_state: EPA_STATE) do a_str.append (a_state.debug_output) end (Result, ?))
+		end
+
+	add_semantic_document (a_type: TYPE_A; a_class: CLASS_C; a_feature: FEATURE_I; a_source: DS_ARRAYED_LIST [EPA_STATE]; a_target: DS_ARRAYED_LIST [EPA_STATE])
+			-- Add state transition as a semantic document for `a_feature' in `a_class' into `transitions', and update `expression_table' when needed.
+			-- `a_source' is the starting state, `a_target' is the ending state.
+			-- The elements in `a_source' or `a_target' are states for a particular operand, or result object.
+			-- The first element is target, followed by optional arguments, and then the result object.
+		local
+			l_signature: STRING
+			l_precondition: EPA_STATE
+			l_postcondition: EPA_STATE
+			l_change_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
+			l_changes: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
+			l_document_writer: SEM_DOCUMENT_WRITER
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+		do
+			if not a_feature.is_function and not a_feature.is_attribute and not a_feature.is_constant then
+				l_signature := transition_signature (a_type, a_class, a_feature, a_source, a_target)
+
+					-- Only continure to process if current transision is not seen so far.
+				if not transitions_cache.has (l_signature) then
+					transitions_cache.force_last (l_signature)
+					l_precondition := state_with_operands (a_class, a_feature, a_source)
+					l_postcondition := state_with_operands (a_class, a_feature, a_target)
+					create l_transition.make_with_operands (a_class, a_feature, l_precondition, l_postcondition)
+					create l_change_calculator
+					l_changes := l_change_calculator.change_set (l_transition.precondition, l_transition.postcondition)
+					if not l_changes.is_empty then
+						create l_transition.make_with_operands (a_class, a_feature, l_precondition, l_postcondition)
+						create l_document_writer
+						l_document_writer.write (l_transition, "d:\temp\transitions")
+					end
+				end
+			end
+		end
+
+	string_representation_of_changes (a_changes: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]): STRING
+			-- String representation for `a_changes'
+		do
+			create Result.make (2048)
+			a_changes.do_all_with_key (
+				agent (a_change: LIST [EPA_EXPRESSION_CHANGE]; a_expr: EPA_EXPRESSION; a_str: STRING)
+					local
+						l_cursor: CURSOR
+					do
+						l_cursor := a_change.cursor
+						from
+							a_change.start
+						until
+							a_change.after
+						loop
+							a_str.append (a_change.item_for_iteration.debug_output)
+							a_str.append_character ('%N')
+							a_change.forth
+						end
+						a_change.go_to (l_cursor)
+					end (?, ?, Result))
+		end
+
+	state_with_operands (a_class: CLASS_C; a_feature: FEATURE_I; a_states: DS_ARRAYED_LIST [EPA_STATE]): EPA_STATE
+			-- State containing equations in all states in `a_states' in `a_class', `a_feature'.
+			-- every expression is prepended with its operand name.
+			-- For example, an expression "is_empty" for target object in `a_states'
+			-- will be "Current.is_empty" in the resulting state.
+		local
+			l_operands: like operands_with_feature
+			l_cursor: DS_ARRAYED_LIST_CURSOR [EPA_STATE]
+			l_state_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_old_equation: EPA_EQUATION
+			l_new_equation: EPA_EQUATION
+			l_operand_pos: INTEGER
+			l_new_expr: EPA_AST_EXPRESSION
+		do
+			create Result.make (50, a_class, a_feature)
+			l_operands := operands_with_feature (a_feature)
+
+			from
+				l_operand_pos := 0
+				l_cursor := a_states.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				from
+					l_state_cursor := l_cursor.item.new_cursor
+					l_state_cursor.start
+				until
+					l_state_cursor.after
+				loop
+					l_old_equation := l_state_cursor.item
+					create l_new_expr.make_with_text (a_class, a_feature, l_operands.item (l_operand_pos) + once "." + l_old_equation.expression.text, a_class)
+					if l_new_expr.type /= Void then
+						create l_new_equation.make (l_new_expr, l_old_equation.value)
+						Result.force_last (l_new_equation)
+					end
+					l_state_cursor.forth
+				end
+				l_operand_pos := l_operand_pos + 1
+				l_cursor.forth
+			end
+		end
 
 	add_transition (a_class: CLASS_C; a_feature: FEATURE_I; a_source: DS_ARRAYED_LIST [EPA_STATE]; a_target: DS_ARRAYED_LIST [EPA_STATE])
 			-- Add state transition for `a_feature' in `a_class' into `transitions', and update `expression_table' when needed.

@@ -130,7 +130,7 @@ feature{NONE} -- Process/Data
 		do
 			l_equation := source_state.item_with_expression (expression)
 
-			if l_equation /= Void and then attached {EPA_INTEGER_VALUE} l_equation.value.is_integer as l_source_value then
+			if l_equation /= Void and then attached {EPA_INTEGER_VALUE} l_equation.value as l_source_value then
 				l_delta := a_value.item - l_source_value.item
 				if l_delta /= 0 then
 					create l_change_list.make
@@ -140,9 +140,9 @@ feature{NONE} -- Process/Data
 
 						-- Integer delta relaxation
 					if l_delta > 0 then
-						l_changes := create {EPA_INTEGER_RANGE}.make_with_lower_bound (expression.class_, l_delta, True)
+						l_changes := create {EPA_INTEGER_RANGE}.make_with_lower_bound (expression.class_, 1, True)
 					else
-						l_changes := create {EPA_INTEGER_RANGE}.make_with_upper_bound (expression.class_, l_delta, True)
+						l_changes := create {EPA_INTEGER_RANGE}.make_with_upper_bound (expression.class_, -1, True)
 					end
 					l_change_list.extend (new_expression_change (expression, l_changes, True, 0.1))
 

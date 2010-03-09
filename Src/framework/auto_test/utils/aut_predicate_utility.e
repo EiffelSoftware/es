@@ -12,6 +12,8 @@ inherit
 
 	SHARED_WORKBENCH
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 feature -- Access
 
 	feature_signature_type_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_FEATURE_SIGNATURE_TYPE] is
@@ -48,12 +50,6 @@ feature -- Access
 			-- Equality tester for feature of type based on feature names
 		do
 			create Result.make (a_system)
-		end
-
-	string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
-			-- Equality tester for string
-		do
-			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
 	hashable_variable_array_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_HASHABLE_ITP_VARIABLE_ARRAY] is

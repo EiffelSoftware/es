@@ -194,7 +194,7 @@ feature{NONE} -- Implementation
 		do
 			l_context_queries := constraining_queries_from_access_patterns (linear_solvable_preconditions)
 			create l_queries.make_from_linear (l_context_queries)
-			create l_sorter.make (string_equality_tester)
+			create l_sorter.make (agent_based_string_equality_tester)
 			l_sorter.sort (l_queries)
 			create Result.make (64)
 			from
@@ -217,8 +217,14 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
+	agent_based_string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
+			-- Equality tester for string
+		do
+			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a ~ b end)
+		end
+
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

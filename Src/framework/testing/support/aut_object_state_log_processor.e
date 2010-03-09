@@ -260,7 +260,8 @@ feature{NONE} -- Process
     							    l_model_state.extract_state (mock_heap, last_call_based_request, False)
     								last_transition.set_destination (l_model_state)
     								last_model.add_transition (last_transition)
-    								transition_summary.add_transition (last_call_based_request.class_of_target_type, last_call_based_request.feature_to_call, last_transition.source, last_transition.destination)
+    								transition_summary.add_semantic_document (last_call_based_request.target_type, last_call_based_request.class_of_target_type, last_call_based_request.feature_to_call, last_transition.source, last_transition.destination)
+--    								transition_summary.add_transition (last_call_based_request.class_of_target_type, last_call_based_request.feature_to_call, last_transition.source, last_transition.destination)
 
     									-- Prepare for next transition
     								last_call_based_request := Void

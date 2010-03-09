@@ -12,6 +12,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -23,9 +25,7 @@ feature{NONE} -- Initialization
 			expression := a_expression
 
 			create values.make (a_values.count)
-			values.set_equality_tester (expression_equality_tester)
-			values.append_last (a_values)
-
+			values := a_values
 			set_is_relative (a_relative)
 			set_relevance (1.0)
 		end
@@ -80,6 +80,24 @@ feature -- Setting
 			relevance := v
 		ensure
 			relevance_set: relevance = v
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (128)
+			if is_relative then
+				Result.append (once "by::")
+			else
+				Result.append (once "to::")
+			end
+			Result.append (expression.text)
+			Result.append (once " == ")
+			Result.append (values.debug_output)
+			Result.append (once ", ")
+			Result.append (relevance.out)
 		end
 
 end

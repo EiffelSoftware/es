@@ -9,9 +9,15 @@ class
 
 inherit
 	SEM_TRANSITION
+		redefine
+			context
+		end
+
+	EPA_UTILITY
 
 create
-	make
+	make,
+	make_with_operands
 
 feature{NONE} -- Initialization
 
@@ -23,6 +29,27 @@ feature{NONE} -- Initialization
 			precondition := a_precondition
 			postcondition := a_postcondition
 			initialize_internal
+			context :=  context_class.name_in_upper + once "__" + a_feature.feature_name.as_lower
+		end
+
+	make_with_operands (a_context_class: like context_class; a_feature: like feature_; a_precondition: like precondition; a_postcondition: like postcondition)
+			-- Initialize Current, with operands set to the operands involved in `a_feature'.
+		local
+			l_feat: like final_feature
+		do
+			make (a_context_class, a_feature, a_precondition, a_postcondition)
+
+				-- Initialize `operands' and `operand_positions'.
+			l_feat := final_feature
+			operands_of_feature (l_feat).do_all_with_key (
+				agent (a_pos: INTEGER; a_name: STRING)
+					local
+						l_expr: EPA_AST_EXPRESSION
+					do
+						create l_expr.make_with_text (context_class, feature_, a_name, context_class)
+						operands.force_last (l_expr)
+						operand_positions.force_last (a_pos, l_expr)
+					end)
 		end
 
 feature -- Access
@@ -47,6 +74,9 @@ feature -- Access
 		do
 			Result := internal_content
 		end
+
+	context: STRING
+			-- Context of current transition
 
 feature{NONE} -- Implementation
 
@@ -114,7 +144,7 @@ feature{NONE} -- Implementation
 
 
 				-- Setup `content'.
-
+			internal_content := final_feature.feature_name.twin
 		end
 
 	internal_content: STRING
