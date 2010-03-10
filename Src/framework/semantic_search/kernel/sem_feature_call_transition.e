@@ -104,9 +104,13 @@ feature{NONE} -- Implementation
 			end
 
 			create operands.make (l_operand_count)
+			operands.set_equality_tester (expression_equality_tester)
 			create operand_positions.make (l_operand_count)
+			operand_positions.set_key_equality_tester (expression_equality_tester)
 			create inputs.make (l_operand_count)
+			inputs.set_equality_tester (expression_equality_tester)
 			create outputs.make (l_operand_count)
+			outputs.set_equality_tester (expression_equality_tester)
 
 				-- Handle result operand.
 			if not l_feat.type.is_void then

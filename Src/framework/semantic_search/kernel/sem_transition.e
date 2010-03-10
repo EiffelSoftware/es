@@ -22,6 +22,39 @@ feature -- Access
 			-- Key is a operand, value is the 0-based appearing index of that
 			-- operand in Current transition.
 
+	operand_type_table: DS_HASH_TABLE [INTEGER, TYPE_A]
+			-- Table of types of `operands'
+			-- Key is the type, value is the number of times that a certain
+			-- type appears in `operands.
+			-- Create a new table each time.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_type: TYPE_A
+		do
+			create Result.make (operands.count)
+			Result.set_key_equality_tester (
+				create {AGENT_BASED_EQUALITY_TESTER [TYPE_A]}.make (
+					agent (a, b: TYPE_A): BOOLEAN
+						do
+							Result := a.name ~ b.name
+						end))
+
+			from
+				l_cursor := operands.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_type := l_cursor.item.resolved_type
+				if Result.has (l_type) then
+					Result.replace (Result.item (l_type) + 1, l_type)
+				else
+					Result.put (1, l_type)
+				end
+				l_cursor.forth
+			end
+		end
+
 	inputs: EPA_HASH_SET [EPA_EXPRESSION]
 			-- List of variables used as inputs to Current transition
 

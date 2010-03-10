@@ -10,6 +10,8 @@ class
 inherit
 	EPA_EXPRESSION_CHANGE_VALUE_SET_VISITOR
 
+	EPA_SHARED_EQUALITY_TESTERS
+
 feature -- Basic operation
 
 	write (a_transition: SEM_TRANSITION; a_folder: STRING)
@@ -23,6 +25,7 @@ feature -- Basic operation
 			create buffer.make (4096)
 			append_content
 			append_operands
+			append_operand_types
 			append_inputs
 			append_outputs
 			append_precondition
@@ -69,6 +72,7 @@ feature{NONE} -- Impelementation
 	field_by: STRING = "by::"
 	field_changed: STRING = "changed::"
 	field_operands: STRING = "operands"
+	field_type: STRING = "type"
 
 	default_boost: DOUBLE = 1.0
 			-- Default boost value for a field
@@ -228,6 +232,9 @@ feature{NONE} -- Implementation
 			l_transition: like transition
 			l_expr: EPA_EXPRESSION
 			l_change_list: LIST [EPA_EXPRESSION_CHANGE]
+			l_all_exprs: EPA_HASH_SET [EPA_EXPRESSION]
+			l_not_changed_exprs: EPA_HASH_SET [EPA_EXPRESSION]
+			l_changed_exprs: EPA_HASH_SET [EPA_EXPRESSION]
 		do
 			l_transition := transition
 			create l_calculator
@@ -250,6 +257,39 @@ feature{NONE} -- Implementation
 				end
 				l_changes.forth
 			end
+
+				-- Calculate expressions that are not changed in current transition, and
+				-- add corresponding information into the semantic document.
+			l_all_exprs := l_transition.precondition.expressions.union (l_transition.postcondition.expressions)
+			create l_changed_exprs.make (l_all_exprs.count)
+			l_changed_exprs.set_equality_tester (expression_equality_tester)
+			l_changes.keys.do_all (agent l_changed_exprs.force_last)
+
+				-- Only consider an expression to be unchanged if it appears both in pre- and postconditions of
+				-- the transition, and its value is the same in pre- and postconditions.
+			l_all_exprs.subtraction (l_changed_exprs).do_if (
+				agent append_unchanged_expression,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN
+					do
+						Result :=
+							transition.precondition.has_expression (a_expr) and
+							transition.postcondition.has_expression (a_expr)
+					end
+				)
+		end
+
+	append_unchanged_expression (a_expression: EPA_EXPRESSION)
+			-- Append unchanged `a_expression' in `buffer'.
+		local
+			l_typed_expr: STRING
+			l_anony_expr: STRING
+			l_transition: like transition
+		do
+			l_transition := transition
+			l_typed_expr := l_transition.typed_expression_text (a_expression)
+			l_anony_expr := l_transition.anonymous_expressoin_text (a_expression)
+			append_field (field_changed + l_typed_expr, default_boost, type_boolean, once "False")
+			append_field (field_changed + l_anony_expr, default_boost, type_boolean, once "False")
 		end
 
 	append_expression_change (a_expression: EPA_EXPRESSION; a_change: EPA_EXPRESSION_CHANGE; a_append_changed: BOOLEAN)
@@ -288,6 +328,24 @@ feature{NONE} -- Implementation
 					append_field (field_changed + l_typed_expr, a_change.relevance, type_boolean, once "True")
 					append_field (field_changed + l_anony_expr, a_change.relevance, type_boolean, once "True")
 				end
+			end
+		end
+
+	append_operand_types
+			-- Append type information (operand type and their number of occurrences) of `transition into `buffer'.
+		local
+			l_types: DS_HASH_TABLE [INTEGER, TYPE_A]
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, TYPE_A]
+		do
+			l_types := transition.operand_type_table
+			from
+				l_cursor := l_types.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				append_field (field_type, default_boost, type_string, once "{" + normalized_type_name (l_cursor.key.name) + "}#" + l_cursor.item.out)
+				l_cursor.forth
 			end
 		end
 
