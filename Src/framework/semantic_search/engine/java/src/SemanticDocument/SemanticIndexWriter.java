@@ -56,7 +56,7 @@ public class SemanticIndexWriter {
         } else {
             // Only process semantic document ended with ".tran" extension.
             if(aPath.getName().endsWith(".tran")) {
-                indexSemanticDocument(aPath.getName(), aIndexWriter);
+                indexSemanticDocument(aPath.getAbsolutePath(), aIndexWriter);
             }
         }
     }

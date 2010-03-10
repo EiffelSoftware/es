@@ -81,9 +81,9 @@ public class SemanticDocumentLoader {
 
         // Decide the type of this field.
         FieldType type = FieldType.STRING;
-        if(aType.equals("Boolean")) {
+        if(aType.equals("BOOLEAN")) {
             type = FieldType.BOOLEAN;
-        } else if (aType.equals("Integer")) {
+        } else if (aType.equals("INTEGER")) {
             type = FieldType.INTEGER;
         } else if (aType.equals("STRING")) {
             type = FieldType.STRING;

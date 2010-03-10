@@ -51,7 +51,7 @@ public class SemanticToLuceneDocumentTranslator {
                 nf.setIntValue(new Integer (value));
                 field = nf;
             } else {
-                Field nf = new Field(aField.name, value, Field.Store.NO, Field.Index.NOT_ANALYZED, Field.TermVector.NO);
+                Field nf = new Field(aField.name, value, Field.Store.YES, Field.Index.NOT_ANALYZED, Field.TermVector.NO);
                 field = nf;
             }
             field.setBoost(aField.boost);
