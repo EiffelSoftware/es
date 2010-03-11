@@ -777,7 +777,6 @@ feature{NONE} -- Implmentation
 			-- ascendingly sorted list of keys in `a_table'
 		local
 			l_sorter: DS_QUICK_SORTER [INTEGER]
-			l_tester: AGENT_BASED_EQUALITY_TESTER [INTEGER]
 			l_keys: DS_ARRAYED_LIST [INTEGER]
 		do
 			create l_keys.make (a_table.keys.count)
