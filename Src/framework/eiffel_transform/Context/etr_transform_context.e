@@ -85,6 +85,8 @@ feature -- Transformations
 			l_old_expl_type, l_new_expl_type: TYPE_A
 			l_changed_type, l_changed_name: BOOLEAN
 			l_source_class_context, l_target_class_context: ETR_CLASS_CONTEXT
+			l_ot_local_finder: ETR_OBJECT_TEST_LOCAL_FINDER
+			l_ot_local_list: LINKED_LIST[ETR_OBJECT_TEST_LOCAL]
 		do
 			transformation_result := void
 
@@ -144,7 +146,70 @@ feature -- Transformations
 					l_source_feat_table.forth
 				end
 
+				-- Find object-test locals in the snippet
+				create l_ot_local_list.make
+				create l_ot_local_finder.make (l_source_context, l_ot_local_list)
+				l_ot_local_finder.process_from_root (a_transformable.target_node)
+
+				from
+					l_ot_local_list.start
+				until
+					l_ot_local_list.after
+				loop
+					l_changed_var := void
+
+					if attached {LIKE_FEATURE}l_ot_local_list.item.original_type as l_like_feat then
+						-- Get matching features
+						l_old_feat := l_source_class_context.written_class.feature_of_name_id (l_like_feat.feature_name_id)
+						l_new_feat := l_target_class_context.written_class.feature_of_rout_id_set (l_old_feat.rout_id_set)
+
+						if l_new_feat /= void then
+							l_old_expl_type := type_checker.explicit_type (l_old_feat.type, l_source_class_context.written_class, l_old_feat)
+							l_new_expl_type := type_checker.explicit_type (l_new_feat.type, l_target_class_context.written_class, l_new_feat)
+
+							if l_old_expl_type.associated_class.class_id /= l_new_expl_type.associated_class.class_id then
+								create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
+							end
+
+							add_constraint_renamings (l_ot_local_list.item.name, l_old_expl_type, l_new_expl_type, l_constraint_renaming_list)
+						end
+					elseif attached {LIKE_CURRENT}l_ot_local_list.item.original_type as l_like_cur then
+						create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_source_class_context.written_class, l_target_class_context.written_class)
+					end
+
+					if l_changed_var /= void then
+						l_changed_args_locals.extend (l_changed_var)
+					end
+
+					l_ot_local_list.forth
+				end
+
 				if attached {ETR_FEATURE_CONTEXT}l_source_context as l_source_feat_context and attached {ETR_FEATURE_CONTEXT}a_target_context as l_target_feat_context then
+					-- Object-test with LIKE_ARGUMENT type
+					from
+						l_ot_local_list.start
+					until
+						l_ot_local_list.after
+					loop
+						l_changed_var := void
+
+						if attached {LIKE_ARGUMENT}l_ot_local_list.item.original_type as l_like_arg then
+							if l_source_feat_context.has_arguments and then l_source_feat_context.arguments.count>=l_like_arg.position and l_target_feat_context.has_arguments and then l_target_feat_context.arguments.count>=l_like_arg.position then
+								l_old_expl_type := l_source_feat_context.arguments[l_like_arg.position].resolved_type
+								l_new_expl_type := l_target_feat_context.arguments[l_like_arg.position].resolved_type
+
+								if l_old_expl_type.associated_class.class_id /= l_new_expl_type.associated_class.class_id then
+									create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
+									l_changed_args_locals.extend(l_changed_var)
+								end
+
+								add_constraint_renamings (l_ot_local_list.item.name, l_old_expl_type, l_new_expl_type, l_constraint_renaming_list)
+							end
+						end
+
+						l_ot_local_list.forth
+					end
+
 					-- check for renamed arguments and changed types
 					-- they are matched strictly by position!
 					-- which may give completely wrong results

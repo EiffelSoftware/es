@@ -54,7 +54,7 @@ feature  -- Operation
 			-- Create a new modification
 		require
 			non_void: a_breakpoint_mapping /= void
-			pos_numbers: a_region_start>0 and a_old_count>=0 and a_new_count>=0
+			pos_numbers: a_region_start>=0 and a_old_count>=0 and a_new_count>=0
 		do
 			has_tracking_data := true
 			are_breakpoints_changed := true

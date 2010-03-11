@@ -15,7 +15,8 @@ inherit
 			process_expr_call_as,
 			process_type_dec_as,
 			process_creation_as,
-			process_nested_expr_as
+			process_nested_expr_as,
+			process_like_id_as
 		end
 	SHARED_NAMES_HEAP
 create
@@ -124,6 +125,12 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Roundtrip
 
+	process_like_id_as (l_as: LIKE_ID_AS)
+		do
+			last_was_unqualified_or_current := true
+			Precursor (l_as)
+		end
+
 	process_type_dec_as (l_as: TYPE_DEC_AS)
 		do
 			process_identifier_list_with_renaming (l_as.id_list)
@@ -190,10 +197,20 @@ feature {AST_EIFFEL} -- Roundtrip
 		end
 
 	process_id_as (l_as: ID_AS)
+		local
+			l_changed: ETR_CT_CHANGED_NAME_TYPE
 		do
 			if rename_next then
 				output.append_string (next_new_name)
 				rename_next := false
+			elseif last_was_unqualified_or_current then
+				l_changed := changed_locals_hash[l_as.name]
+
+				if l_changed /= void then
+					output.append_string (l_changed.new_name)
+				else
+					output.append_string (l_as.name)
+				end
 			else
 				output.append_string (l_as.name)
 			end

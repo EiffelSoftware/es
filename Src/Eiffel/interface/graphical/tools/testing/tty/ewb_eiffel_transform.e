@@ -85,6 +85,12 @@ feature -- Test features
 									"io.putstring((c+arg_c1_a1.c1_b).out)%N"+ -- Nested expr
 									"create str_a1.make_from_string(arg_c1_a1.c1_b)%N"+ -- creation
 									"io.putstring(create {STRING}.make_from_string(a_c.c1_a_renamed))%N"+ -- creation expr
+									"if attached {like c}other.arg_c1_a1 as l_c then%N"+ -- Object test local with feature anchor
+									"io.putstring(l_c.c1_a_renamed)%Nend%N"+
+									"if attached {like arg_c1_a1}a_c as l_c2 then%N"+ -- Object test local with argument anchor
+									"io.putstring(l_c2.c1_b)%Nend%N"+
+									"if attached {like Current}c as l_a then%N"+ -- Object test local with current anchor
+									"io.putstring(l_a.c.generating_type)%Nend%N"+
 									"io.putstring(str_a1)%N"+ -- renamed local
 									"end", a1_context )
 
@@ -367,10 +373,7 @@ feature -- Helper features
 				l_ref_file.open_read
 				l_ref_file.read_stream (l_ref_file.count)
 				if not is_trans_equal_to (a_transformable, l_ref_file.last_string) then
-					logger.log_error ("Non-matching transformable. Expected:")
-					logger.log_error (l_ref_file.last_string)
-					logger.log_error ("but got:")
-					logger.log_error (a_transformable.out)
+					logger.log_error ("Non-matching transformable. Expected:%N----%N"+l_ref_file.last_string+"%N----%Nbut got:%N----%N"+a_transformable.out+"-----")
 					has_failed_assertion := true
 				end
 				l_ref_file.close
