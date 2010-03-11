@@ -7,6 +7,9 @@ inherit
 		end
 
 feature
+
+	index: INTEGER
+
 	test(a_var_a2: INTEGER; arg_c2_a2: like c_ren)
 		local
 			a_c: like c_ren

@@ -260,9 +260,7 @@ feature -- Type evaluation
 					until
 						l_index > gen.generics.upper
 					loop
---						if not gen.generics[l_index].is_explicit then
-							gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class, a_written_feature)
---						end
+						gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class, a_written_feature)
 						l_index := l_index + 1
 					end
 				end

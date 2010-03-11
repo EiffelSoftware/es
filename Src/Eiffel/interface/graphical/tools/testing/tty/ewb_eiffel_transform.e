@@ -14,6 +14,10 @@ inherit
 	ETR_WORKBENCH_OPERATIONS
 	ETR_SHARED_FACTORIES
 	ETR_SHARED_ERROR_HANDLER
+	ETR_SHARED_LOGGER
+	ETR_SHARED_PARSERS
+
+	REFACTORING_HELPER
 
 feature -- Properties
 
@@ -43,17 +47,19 @@ feature -- Entry point
 			-- Action performed when invoked from the
 			-- command line.
 		do
-			test_ren
-			test_setter_gen
-			test_context_transformation
-			test_ass_attempt_replacing
-			test_ec_gen
-			test_typechecker
-			test_me_all
-			test_branch_removal
-			test_xml_print
-			test_dot_print
-			test_bp_print
+			logger.set_log_level (0) -- errors only
+
+			run_test ("test_ren", agent test_ren)
+			run_test ("test_setter_gen", agent test_setter_gen)
+			run_test ("test_context_transformation", agent test_context_transformation)
+			run_test ("test_ass_attempt_replacing", agent test_ass_attempt_replacing)
+			run_test ("test_ec_gen", agent test_ec_gen)
+			run_test ("test_typechecker", agent test_typechecker)
+			run_test ("test_me_all", agent test_me_all)
+			run_test ("test_branch_removal", agent test_branch_removal)
+			run_test ("test_xml_print", agent test_xml_print)
+			run_test ("test_dot_print", agent test_dot_print)
+			run_test ("test_bp_print", agent test_bp_print)
 		end
 
 feature -- Test features
@@ -86,7 +92,7 @@ feature -- Test features
 			a2_instr := a1_instr.as_in_other_context (a2_context)
 
 			-- print transformed instruction
-			io.put_string (a2_instr.out)
+			dbg_check_trans (a2_instr)
 		end
 
 	test_ass_attempt_replacing
@@ -94,13 +100,13 @@ feature -- Test features
 		local
 			l_trans: ETR_TRANSFORMABLE
 		do
-			l_trans := transformable_factory.new_class_transformable("A2")
+			l_trans := transformable_factory.new_feature_transformable ("A2", "test2")
 
 			rewrite.replace_assignment_attempts (l_trans)
 			l_trans.apply_modifications (rewrite.modifications)
 
 			-- print transformed instruction
-			io.put_string (l_trans.out)
+			dbg_check_trans (l_trans)
 		end
 
 	test_ren
@@ -108,10 +114,8 @@ feature -- Test features
 		local
 			a1_context: ETR_FEATURE_CONTEXT
 			a1_feat: FEATURE_I
-			a1_instr: ETR_TRANSFORMABLE
 			trans: ETR_TRANSFORMABLE
 		do
-
 			a1_feat := feature_of_compiled_class ("A1", "test")
 
 			-- create contexts
@@ -121,21 +125,10 @@ feature -- Test features
 			renamer.rename_argument_at_position (trans, "test", 2, "new_arg_name")
 			renamer.rename_local (renamer.transformation_result, "test", "a_c", "a_renamed_local_c")
 
-			-- code snippet in `a1_context'
-			a1_instr := transformable_factory.new_instr(	"if true then%N"+
-									"io.putstring(c.c1_a_renamed)%N"+ -- feature type change
-									"io.putstring(Current.c.c1_b)%N"+ -- fake qualified call
-									"io.putstring(io.putstring(arg_c1_a1.c1_b))%N"+ -- argument type and name change
-									"io.putstring(a_c.c1_a_renamed.out)%N"+ -- local type change
-									"io.putstring(other.arg_c1_a1.c1_b)%N"+ -- same name, no renaming
-									"io.putstring(a1.generating_type)%N"+ -- Current changed
-									"io.putstring(str_a1)%N"+ -- renamed local
-									"end", a1_context )
-
 			-- transform to new context with renaming
 			trans := trans.as_in_other_context (renamer.transformation_result.context)
 
-			io.put_string (trans.out)
+			dbg_check_trans (trans)
 		end
 
 	test_setter_gen
@@ -147,7 +140,7 @@ feature -- Test features
 
 			setter_generator.generate_setter (l_trans, "set_c", "a_c", "c := a_c", "c = a_c")
 
-			io.put_string (setter_generator.transformation_result.out)
+			dbg_check_trans (setter_generator.transformation_result)
 		end
 
 	test_ec_gen
@@ -158,8 +151,7 @@ feature -- Test features
 			l_trans := transformable_factory.new_class_transformable ("DEF_B")
 
 			effective_class_generator.generate_effective_class (l_trans)
-
-			io.put_string (effective_class_generator.transformation_result.out)
+			dbg_check_trans (effective_class_generator.transformation_result)
 		end
 
 	test_me(method_name: STRING; a_start, a_end: STRING)
@@ -178,15 +170,16 @@ feature -- Test features
 								l_start,
 								l_end,
 								"extracted")
-			io.put_string ("=== "+method_name+" EXTRACTED ===%N")
-			io.put_string (method_extractor.extracted_method.out)
-			io.put_string ("=== "+method_name+" OLD ===%N")
-			io.put_string (method_extractor.old_method.out)
+			dbg_check_trans (method_extractor.extracted_method)
+			dbg_check_trans (method_extractor.old_method)
 		end
 
 	test_typechecker
 		local
 			l_trans, l_expr: ETR_TRANSFORMABLE
+			l_class_context: ETR_CLASS_CONTEXT
+			l_feat_context: ETR_FEATURE_CONTEXT
+			l_feat: FEATURE_I
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", "test")
 
@@ -195,20 +188,25 @@ feature -- Test features
 			l_expr := transformable_factory.new_expr ("arg1_new", renamer.transformation_result.context)
 
 			type_checker.check_transformable (l_expr)
+			dbg_assert ("correct_type_1", type_checker.last_type.dump.starts_with ("INTEGER_32"))
+
+			-- Typecheck in a mixed context
+			l_class_context := context_factory.new_class_context ("A2")
+			l_feat := feature_of_compiled_class ("A", "a_feature")
+			l_feat_context := l_class_context.corresponding_feature (l_feat)
+
+			l_expr := transformable_factory.new_expr ("Result.item(index)", l_feat_context)
+			type_checker.check_transformable (l_expr)
+			dbg_assert ("correct_type_2", type_checker.last_type.dump.starts_with ("CHARACTER_8"))
 		end
 
 	test_branch_removal
 		local
 			l_rng: RANGED_RANDOM
 			l_trans: ETR_TRANSFORMABLE
-			l_textout: PLAIN_TEXT_FILE
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", "big")
 			l_trans.enable_code_tracking
-
-			create l_textout.make_open_write (eiffel_transform_directory+"big.before.ee")
-			l_textout.put_string (ast_to_bp_string(l_trans))
-			l_textout.close
 
 			-- prepare rng
 			create l_rng.make
@@ -268,13 +266,11 @@ feature -- Test features
 				ast_stats.process_transformable (l_trans)
 			end
 
-			create l_textout.make_open_write (eiffel_transform_directory+"big.after.ee")
-			l_textout.put_string (ast_to_bp_string(l_trans))
-			l_textout.close
+			dbg_check_trans (l_trans)
 
---			l_bp_count := ast_tools.num_breakpoint_slots_in (l_trans)
---			l_final_map :=  ast_tools.combined_breakpoint_mapping (l_map_chain, l_bp_count)
-			print_map(l_trans.breakpoint_map)
+			if l_trans.has_code_tracking then
+				print_map(l_trans.breakpoint_map)
+			end
 		end
 
 	test_me_all
@@ -347,6 +343,86 @@ feature -- Test features
 		end
 
 feature -- Helper features
+
+	is_trans_equal_to (a_trans: ETR_TRANSFORMABLE; a_text: STRING): BOOLEAN
+			-- Compare `a_trans' with `a_text'. Ignore formatting.
+		do
+			parsing_helper.parse_printed_ast (a_trans.target_node, a_text)
+
+			if parsing_helper.parsed_ast /= void then
+				Result := a_trans.out.is_equal (ast_tools.ast_to_string (parsing_helper.parsed_ast))
+			end
+		end
+
+	dbg_check_trans (a_transformable: ETR_TRANSFORMABLE)
+		local
+			l_ref_file: PLAIN_TEXT_FILE
+		do
+			create l_ref_file.make ((create {EXECUTION_ENVIRONMENT}).get("EIFFEL_SRC")+"\framework\eiffel_transform\Tests\"+current_test+"."+trans_number.out+".ref")
+
+			if not l_ref_file.exists then
+				logger.log_error ("Couldn't open reference text.")
+				has_failed_assertion := true
+			else
+				l_ref_file.open_read
+				l_ref_file.read_stream (l_ref_file.count)
+				if not is_trans_equal_to (a_transformable, l_ref_file.last_string) then
+					logger.log_error ("Non-matching transformable. Expected:")
+					logger.log_error (l_ref_file.last_string)
+					logger.log_error ("but got:")
+					logger.log_error (a_transformable.out)
+					has_failed_assertion := true
+				end
+				l_ref_file.close
+			end
+
+			trans_number := trans_number+1
+		end
+
+	current_test: STRING
+	trans_number: INTEGER
+
+	dbg_assert(a_tag: STRING; a_cond: BOOLEAN)
+		do
+			if not a_cond then
+				logger.log_error ("Assertion "+a_tag+" failed.")
+				has_failed_assertion := true
+			end
+		end
+
+	has_failed_assertion: BOOLEAN
+
+	run_test(a_name: STRING; a_fun: PROCEDURE[ANY,TUPLE])
+		local
+			retrying: BOOLEAN
+			l_exception: EXCEPTION
+			l_success: BOOLEAN
+		do
+			if retrying then
+				l_exception := (create {EXCEPTION_MANAGER}).last_exception
+				if l_exception /= void then
+					logger.log_error ("Exception:%N"+l_exception.out)
+				end
+			else
+				error_handler.reset_errors
+				has_failed_assertion := false
+				trans_number := 1
+				current_test := a_name
+				a_fun.call (void)
+				if not error_handler.has_errors and not has_failed_assertion then
+					l_success := true
+				end
+			end
+
+			if l_success  then
+				io.put_string ("======== "+a_name.as_upper+": OK%N")
+			else
+				io.put_string ("======== "+a_name.as_upper+": FAIL%N")
+			end
+		rescue
+			retrying := true
+			retry
+		end
 
 	eiffel_transform_directory: STRING
 		once

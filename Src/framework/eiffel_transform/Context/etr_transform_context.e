@@ -106,7 +106,7 @@ feature -- Transformations
 					l_source_feat_table.after
 				loop
 					l_old_feat := l_source_feat_table.item_for_iteration
-					l_new_feat := l_target_class_context.class_context.written_class.feature_of_rout_id (l_old_feat.rout_id_set.first)
+					l_new_feat := l_target_class_context.class_context.written_class.feature_of_rout_id_set (l_old_feat.rout_id_set)
 
 					if l_new_feat /= void then
 						l_changed_var := void

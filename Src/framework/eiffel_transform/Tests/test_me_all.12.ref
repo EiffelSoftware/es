@@ -1,0 +1,8 @@
+test6 (arg1: INTEGER): INTEGER
+	local
+		l1: like arg1
+	do
+		l1 := 5
+		l1 := extracted (arg1, l1)
+		f2 := l1
+	end

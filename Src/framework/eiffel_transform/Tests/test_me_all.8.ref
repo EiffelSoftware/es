@@ -1,0 +1,15 @@
+test4 (arg1: INTEGER): INTEGER
+	local
+		l1, l3, l4: INTEGER
+	do
+		from
+			l1 := 5
+		until
+			l1 > arg1
+		loop
+			l4 := extracted (l1, arg1)
+			l1 := l1 + 1
+		end
+		f2 := l4
+		l3 := l1
+	end

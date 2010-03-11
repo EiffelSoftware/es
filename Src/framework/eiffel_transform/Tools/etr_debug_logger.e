@@ -57,11 +57,18 @@ feature -- Access
 
 	is_enabled: BOOLEAN
 
-	log_level: INTEGER
+	log_level: INTEGER assign set_log_level
 
 	output_file: STRING
 
 feature -- Operation
+
+	set_log_level (a_log_level: like log_level)
+		do
+			log_level := a_log_level
+		ensure
+			log_level_set: log_level = a_log_level
+		end
 
 	log_error (a_string: STRING)
 			-- Add `a_string' as error

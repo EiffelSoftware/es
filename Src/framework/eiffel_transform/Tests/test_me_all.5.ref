@@ -1,0 +1,7 @@
+extracted (l1: INTEGER_32; l2: INTEGER_32)
+	local
+		l3: INTEGER_32
+	do
+		l3 := l1 + l2
+		f2 := 3 * l3
+	end

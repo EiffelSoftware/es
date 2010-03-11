@@ -4,6 +4,7 @@ inherit
 	A[G]
 
 feature
+	
 	test(a_var_a1: INTEGER; arg_c1_a1: C1)
 		local
 			a_c: like c

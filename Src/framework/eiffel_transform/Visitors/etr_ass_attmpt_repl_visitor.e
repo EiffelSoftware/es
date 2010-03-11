@@ -6,6 +6,10 @@ note
 class
 	ETR_ASS_ATTMPT_REPL_VISITOR
 inherit
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		end
 	AST_ITERATOR
 		export
 			{AST_EIFFEL} all
@@ -81,7 +85,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			if l_feat_context /= Void then
 				type_checker.check_ast_type (l_as.target, l_feat_context)
 				l_target_type := type_checker.last_type
-				l_printed_type := type_checker.print_type(l_target_type,class_context.written_in_features_by_name[current_feature])
+				l_printed_type := type_checker.print_type(l_target_type, l_feat_context)
 
 				-- print object-test version
 				l_target_string := ast_tools.ast_to_string (l_as.target)
@@ -94,6 +98,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_current_mapping.extend (l_cur_slot, l_cur_slot+1)
 				l_current_mapping.extend (l_cur_slot, l_cur_slot+2)
 
+				fixme("Use unique string for object-test local")
 				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_source_string+" as "+"l_etr_ot_local then%N")
 				l_replacement.append_string (l_target_string+" := l_etr_ot_local%N")
 				l_replacement.append_string ("else%N")

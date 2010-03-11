@@ -61,12 +61,12 @@ feature -- Access
 			Result := written_class.feature_named (a_name) /= void
 		end
 
-	feature_of_rout_id (a_id: INTEGER): detachable ETR_FEATURE_CONTEXT
-			-- Feature with the id `a_id' in the current context
+	feature_of_rout_id_set (a_set: ROUT_ID_SET): detachable ETR_FEATURE_CONTEXT
+			-- Feature with the id `a_set' in the current context
 		local
 			l_feat: FEATURE_I
 		do
-			l_feat := written_class.feature_of_rout_id (a_id)
+			l_feat := written_class.feature_of_rout_id_set (a_set)
 
 			if attached l_feat then
 				create Result.make(l_feat, Current)
@@ -78,7 +78,7 @@ feature -- Access
 		require
 			non_void: a_feature /= void
 		do
-			Result := feature_of_rout_id(a_feature.rout_id_set.first)
+			Result := feature_of_rout_id_set(a_feature.rout_id_set)
 		end
 
 feature {NONE} -- Implementation
