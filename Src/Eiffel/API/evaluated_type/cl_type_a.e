@@ -129,7 +129,8 @@ feature -- Properties
 	is_reference: BOOLEAN
 			-- Is the type a reference type?
 		do
-			Result := has_reference_mark or else (has_no_mark and then not associated_class.is_expanded)
+			-- Changed for SCOOP:
+			Result := has_reference_mark or else (has_separate_mark or (has_no_mark and then not associated_class.is_expanded))
 		end
 
 	is_separate: BOOLEAN
@@ -731,6 +732,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 --			io.new_line
 
 			Result := lte_proc_tag and lte_attach
+			Result := lte_attach
 		end
 
 	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
@@ -1020,7 +1022,7 @@ invariant
 		class_declaration_mark = no_mark or class_declaration_mark = expanded_mark
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

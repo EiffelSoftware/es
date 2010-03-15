@@ -22,7 +22,7 @@ feature -- Access
 		local
 			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
 		do
-			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, false, false)
+			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, false, false, false)
 			Result := l_result.found
 		end
 
@@ -32,7 +32,7 @@ feature -- Access
 		local
 			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
 		do
-			l_result := has_feature (an_original_name, an_original_alias_name, a_parent_class, True, false)
+			l_result := has_feature (an_original_name, an_original_alias_name, a_parent_class, True, false, false)
 			Result := l_result.found
 		end
 
@@ -49,17 +49,176 @@ feature -- Access
 		local
 			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
 		do
-			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, false, True)
+			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, false, True,false)
 			Result := l_result.assigner
 		end
 
+feature -- Access Redeclaration substituion
+
+	have_to_replace_internal_arguments(a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; argument_position: INTEGER;  is_processed_class: BOOLEAN): BOOLEAN is
+			-- Do we need to replace the return type?
+			-- Is the case when we have a redeclaration with a separate return type
+			local
+				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+				parent_class_c: CLASS_C
+				l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+				l_original_feature_alias_name,l_original_feature_name: STRING
+				l_class_as: CLASS_AS
+
+			do
+				-- Setup:
+				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
+
+				l_class_as := class_as_by_name (a_class_c.name)
+
+				-- Check if class has a redefine clause for this feature
+				if l_class_as.parents /= void then
+					-- get original feature name
+					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, True, is_processed_class)
+					l_original_feature_alias_name := l_feature_name_visitor.feature_name
+					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, False, is_processed_class)
+					l_original_feature_name := l_feature_name_visitor.feature_name
+
+					from
+						l_class_as.parents.start
+					until
+						l_class_as.parents.after
+					loop
+						if l_class_as.parents.item.redefining /= void and then l_class_as.parents.item.redefining.has (a_feature_name) then
+							-- Has a redefine clause for this feature:
+							-- Check if the internal argument from parent classes is separate.
+
+							parent_class_c := system.class_of_id (class_as_by_name (l_class_as.parents.item.type.class_name.name).class_id)
+							internal_argument_to_check := argument_position
+							if has_parent_feature_nseparate_argument (l_original_feature_name, l_original_feature_alias_name, parent_class_c) then
+								-- Return type was separate in previus version of feature:
+								Result := True
+							end
+							internal_argument_to_check := 0
+						end
+						l_class_as.parents.forth
+					end
+				end
+
+			end
+
+
+	have_to_replace_return_type(a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; is_processed_class: BOOLEAN): BOOLEAN is
+			-- Do we need to replace the return type?
+			-- Is the case when we have a redeclaration with a separate return type
+			require
+				has_name: a_feature_name /= void
+				has_class: a_class_c /= void
+			local
+				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+				parent_class_c: CLASS_C
+				l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+				l_original_feature_alias_name,l_original_feature_name: STRING
+				l_class_as: CLASS_AS
+
+			do
+				-- Setup:
+				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
+
+				l_class_as := class_as_by_name (a_class_c.name)
+
+				-- Check if class has a redefine clause for this feature
+				if l_class_as.parents /= void then
+
+					-- get original feature name
+
+					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, True, False)
+					l_original_feature_alias_name := l_feature_name_visitor.feature_name
+					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, False, False)
+					l_original_feature_name := l_feature_name_visitor.feature_name
+
+					from
+						l_class_as.parents.start
+					until
+						l_class_as.parents.after
+					loop
+						if l_class_as.parents.item.redefining /= void and then l_class_as.parents.item.redefining.has (a_feature_name) then
+							-- Has a redefine clause for this feature:
+							-- Check if the return type from parent classes is separate.
+							parent_class_c := system.class_of_id (class_as_by_name (l_class_as.parents.item.type.class_name.name).class_id)
+
+							if has_parent_feature_separate_return_type (l_original_feature_name, l_original_feature_alias_name, parent_class_c) then
+								-- Return type was separate in previus version of feature:
+								Result := True
+							end
+						end
+						l_class_as.parents.forth
+					end
+				end
+
+			end
+
+	generic_parameters_to_replace(a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; is_processed_class: BOOLEAN;  internal_argument: TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN): LINKED_LIST[TUPLE[INTEGER,INTEGER]] is
+			-- Do we need to substitute generics? Is the case when we have a redeclaration with separate generics
+			-- `is_processed_class' : Is the class we are checking the current processed class?
+			-- `is_return_type' : Are we checking the generics of a return type? If this is `False' we are cheking the generics of a internal argument
+			-- `internal_argument': Is void when `is_return_type' is true. Else it denotes the position of the internal argument we are currently checking
+			-- Returns the list of the generics we need to adapt
+			require
+				has_name: a_feature_name /= void
+				has_class: a_class_c /= void
+				makes_sense: internal_argument = void implies is_return_type
+			local
+				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+				parent_class_c: CLASS_C
+				l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+				l_original_feature_alias_name,l_original_feature_name: STRING
+				l_class_as: CLASS_AS
+				l_feature_i: FEATURE_I
+				pos: INTEGER
+
+			do
+				-- Setup:
+				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
+
+				l_class_as := class_as_by_name (a_class_c.name)
+
+				-- Check if class has a redefine clause for this feature
+				create generic_parameters_to_substitute.make
+				if l_class_as.parents /= void then
+
+					-- get original feature name
+					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, True, is_processed_class)
+					l_original_feature_alias_name := l_feature_name_visitor.feature_name
+					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, False, is_processed_class)
+					l_original_feature_name := l_feature_name_visitor.feature_name
+
+					from
+						l_class_as.parents.start
+					until
+						l_class_as.parents.after
+					loop
+						if l_class_as.parents.item.redefining /= void and then l_class_as.parents.item.redefining.has (a_feature_name) then
+							-- Has a redefine clause for this feature:
+							parent_class_c := system.class_of_id (class_as_by_name (l_class_as.parents.item.type.class_name.name).class_id)
+							if is_return_type then
+								original_class_type := a_class_c.feature_named (a_feature_name.visual_name).body.body.type
+							else
+								original_class_type := internal_argument.type
+							end
+							has_parent_feature_different_generics (l_original_feature_name, l_original_feature_alias_name, parent_class_c,internal_argument, is_return_type)
+						end
+						l_class_as.parents.forth
+					end
+				end
+				Result := generic_parameters_to_substitute
+			end
 
 feature {NONE} -- Implementation
 
-	has_feature (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_base_class, track_assigner: BOOLEAN): TUPLE [found: BOOLEAN; assigner: STRING] is
+	has_feature (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_base_class, track_assigner, ignore_found: BOOLEAN): TUPLE [found: BOOLEAN; assigner: STRING] is
 			-- Does some ancestors of `a_class_c' have a feature with name `an_original_name'
 			-- or `an_original_alias_name' and an assigner?
 			-- Check also `a_class_c' if `is_check_base_class' has value `True'.
+			-- If `ignore_found' is `true' we ignore findings and keep searching until we get `return_type_separate'
 		local
 			l_skip_current_parent: BOOLEAN
 			i, j, nb, nbj: INTEGER
@@ -70,6 +229,7 @@ feature {NONE} -- Implementation
 			l_result, l_tmp_result: TUPLE [found: BOOLEAN; assigner: STRING]
 			l_tuple: TUPLE [parent_name: STRING; old_feature_name, new_feature_name: STRING]
 			l_parent_renamings, l_old_parent_renamings: LINKED_LIST [TUPLE [parent_name: STRING; old_feature_name, new_feature_name: STRING]]
+			start_position: TUPLE[stage,pos:INTEGER]
 		do
 			create l_result
 
@@ -81,18 +241,43 @@ feature {NONE} -- Implementation
 					else
 						l_feature_i := a_class_c.feature_table.item (an_original_alias_name)
 					end
-					if l_feature_i.written_in = a_class_c.class_id
+
+					if ignore_found then
+						-- Used to find redeclarated features
+						-- `check_return_type' : Check if return type was redeclared from separate to non separate
+						-- `internal_argument_to_check' /= void : Check if if internal arguments was redeclared from non separate to separate
+						-- `check_generics' : Check if generics from a class type was redeclared
+								-- from separate to non separate from a return type
+								-- from non separate to separate from an internal argument
+						if compare_return_type and then l_feature_i.type /= void then
+							if compare_generics then
+								create start_position.default_create
+								start_position.stage := 0
+								start_position.pos := 1
+								compare_generic_parameters(l_feature_i.body.body.type, original_class_type, start_position)
+							elseif l_feature_i.type.is_separate then
+								return_type_separate := True
+								l_result.found := True
+								-- Result found: Stop Searching
+							end
+						end
+						if compare_internal_argument and then l_feature_i.body.body.internal_arguments /= void then
+							if has_nseparate_internal_argument(l_feature_i) then
+								internal_argument_nseparate := True
+								l_result.found := True
+							end
+						end
+					elseif l_feature_i.written_in = a_class_c.class_id
 						-- test only features in current processed class,
 						-- otherwise we dont get the renaming					
-						and then l_feature_i.assigner_name /= Void then
-
+					and then l_feature_i.assigner_name /= Void then
 						l_result.found := True
 						l_result.assigner := l_feature_i.assigner_name
 					end
 				end
 			end
 
-			if not l_result.found then
+			if (not l_result.found) then
 				-- get any renamings of `an_original_feature' of all parents
 				create l_assign_visitor
 				l_parent_renamings := l_assign_visitor.get_renamings (an_original_name, an_original_alias_name, a_class_c, True)
@@ -159,9 +344,9 @@ feature {NONE} -- Implementation
 
 					-- check parents (recursive call - therefore check also current class)
 					if l_rename_str.is_equal (an_original_alias_name) then
-						l_tmp_result := has_feature (an_original_name, an_original_alias_name, l_class_c, True, track_assigner)
+						l_tmp_result := has_feature (an_original_name, an_original_alias_name, l_class_c, True, track_assigner, ignore_found)
 					else
-						l_tmp_result := has_feature (l_rename_str, l_rename_str, l_class_c, True, track_assigner)
+						l_tmp_result := has_feature (l_rename_str, l_rename_str, l_class_c, True, track_assigner, ignore_found)
 					end
 					l_result.found :=  l_result.found or l_tmp_result.found
 
@@ -273,7 +458,179 @@ feature {NONE} -- Implementation
 			end
 		end
 
-note
+feature {NONE} -- Implementation Redeclaration substitution
+
+
+	has_parent_feature_separate_return_type (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
+			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
+			-- and does it have a separate return type?
+		local
+			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
+		do
+			compare_return_type := True
+			return_type_separate := false
+			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
+			Result := return_type_separate
+			compare_return_type := False
+		end
+
+	has_parent_feature_nseparate_argument (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
+			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
+			-- and does it have a non separate argument at the position of `check_internal_arguments'
+		local
+			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
+		do
+			compare_internal_argument := True
+			internal_argument_nseparate := false
+			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
+			Result := internal_argument_nseparate
+			compare_internal_argument := False
+		end
+	has_parent_feature_different_generics (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C; internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN) is
+			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
+			-- and does it have different generic parameter (separateness wise)
+			-- `is_return_type' : Are we checking the generics of a return type? If this is `False' we are cheking the generics of a internal argument
+			-- `internal_argument': Is void when `is_return_type' is true. Else it denotes the position of the internal argument we are currently checking
+		require
+			makes_sense: internal_argument = void implies is_return_type
+		local
+			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
+		do
+			if is_return_type then
+				-- Check generics from a return type
+				compare_return_type := True
+			else
+				-- Check generics from a internal argument
+				compare_internal_argument := True
+				internal_argument_to_check := internal_argument.pos
+			end
+			compare_generics := True
+			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
+			compare_generics := False
+			compare_internal_argument := False
+			compare_return_type := False
+			internal_argument_to_check := 0
+		end
+
+
+	compare_generic_parameters(curr_type: TYPE_AS; org_type: TYPE_AS; position: TUPLE[stage:INTEGER;pos: INTEGER]) is
+			--
+		local
+			i: INTEGER
+			l_position: TUPLE[stage:INTEGER;pos: INTEGER]
+		do
+			position.stage := position.stage +1
+			if attached {CLASS_TYPE_AS} org_type as o_typ and attached {CLASS_TYPE_AS} curr_type as c_typ then
+				-- Check if generics are different (separate wise)
+				if not c_typ.is_separate.is_equal(o_typ.is_separate) then
+					if not generic_parameters_to_substitute.has (position) then
+						create l_position.default_create
+						l_position.pos := position.pos
+						l_position.stage := position.stage
+						generic_parameters_to_substitute.put_front (l_position)
+					end
+				end
+			end
+			if attached {GENERIC_CLASS_TYPE_AS} org_type as o_typ and attached {GENERIC_CLASS_TYPE_AS} curr_type as c_typ then
+				-- Nested generic type call recursively
+				from
+					i := 1
+				until
+					i > o_typ.generics.count
+				loop
+					position.pos := i
+					compare_generic_parameters (c_typ.generics.i_th(i), o_typ.generics.i_th (i), position)
+					position.stage := position.stage -1
+					i := i+1
+				end
+
+			else
+
+			end
+
+		end
+
+
+	has_nseparate_internal_argument(l_feature_i: FEATURE_I): BOOLEAN is
+			-- Used for internal_arguments return type fix
+			-- Compare internal argument from original feature and feature from parent class
+
+		local
+			pos: INTEGER
+			start_position: TUPLE[stage,pos:INTEGER]
+		do
+			pos := 1 -- # of argument
+			from
+				l_feature_i.body.body.internal_arguments.arguments.start
+			until
+				l_feature_i.body.body.internal_arguments.arguments.after
+			loop
+				-- Get each id from the id_list
+				from
+					l_feature_i.body.body.internal_arguments.arguments.item.id_list.start
+				until
+					l_feature_i.body.body.internal_arguments.arguments.item.id_list.after
+				loop
+					if pos = internal_argument_to_check then
+						-- Found the argument we want to check!
+						if attached {CLASS_TYPE_AS} l_feature_i.body.body.internal_arguments.arguments.item.type as type then
+							-- Check it's type!
+							if compare_generics then
+								create start_position.default_create
+								start_position.stage := 0
+								start_position.pos := 1
+								compare_generic_parameters(type, original_class_type, start_position)
+								-- Keep searching in further ancestors to build the complete list of generics to substitute in the current internal argument.
+								Result := false
+							elseif not type.is_separate then
+								-- Found it!
+								Result := true
+							end
+						end
+					end
+					pos := pos +1
+					l_feature_i.body.body.internal_arguments.arguments.item.id_list.forth
+				end
+				l_feature_i.body.body.internal_arguments.arguments.forth
+			end
+		end
+
+feature {NONE} -- implementation for redeclaration
+
+
+	compare_return_type: BOOLEAN
+		-- Compare return types of the ancestor's version.
+	return_type_separate: BOOLEAN
+		-- Is the return type of the found feature separate?
+		-- Used for redeclaration fix
+
+
+	compare_internal_argument: BOOLEAN
+		-- Compare internal arguments of the ancestor's version.
+	internal_argument_to_check : INTEGER
+		-- Separate argument to check in the parents
+	internal_argument_nseparate: BOOLEAN
+		-- Is the internal argument of the found feature non separate?
+		-- Used for redeclaration fix
+
+	compare_generics: BOOLEAN
+		-- Ccmpare generics of the ancestor's version.
+--	conformance_up_to_down: BOOLEAN
+--		-- Do we need to check conformance for return types or internal arguments?
+--		-- True: Return Type -> separate redeclared to non separate
+--		-- False: Internal Argument -> non separate redeclared to separate
+	generic_parameters_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+		-- The generic parameters to substitute
+	original_class_type: TYPE_AS
+		-- Class type to check redeclared features with.
+--	current_generic_position: TUPLE[stage: INTEGER; pos: INTEGER]
+--		-- Current position of processed generic parameter.
+--		-- Stage: Nested level of the generics
+--		-- Pos: position on the current level
+--		-- i.e TUPLE[CLASS[B,C]] => position(C) = 2,2
+
+
+;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

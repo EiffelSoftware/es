@@ -72,7 +72,7 @@ feature {NONE} -- Roundtrip: process nodes
 			if l_as.internal_generics /= Void then
 				process_leading_leaves (l_as.internal_generics.index)
 				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, False)
+				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, False, False)
 				last_index := l_generics_visitor.get_last_index
 			end
 
@@ -264,7 +264,7 @@ feature {NONE} -- Implementation
 			if l_as.internal_generics /= Void then
 				process_leading_leaves (l_as.internal_generics.index)
 				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
+				l_generics_visitor.process_class_internal_generics (l_as.internal_generics, False, True)
 				last_index := l_generics_visitor.get_last_index
 			end
 
@@ -293,34 +293,41 @@ feature {NONE} -- Implementation
 				-- Added by `damienm' 3.Nov 2009
 			local
 				l_generics_visitor : SCOOP_GENERICS_VISITOR
+				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+				l_type_a : TYPE_A
 
 			do
-				if not l_as.is_deferred then
-					context.add_string("%N%Nfeature%N%N")
-					context.add_string ("%Tproxy_: "+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
-					if l_as.internal_generics /= Void then
-						process_leading_leaves (l_as.internal_generics.index)
-						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
-						last_index := l_generics_visitor.get_last_index
-					end
-					context.add_string ("%N%T%Tdo%N")
-	          		context.add_string ("%T%T%TResult := create {"+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
-					if l_as.internal_generics /= Void then
-						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
-						last_index := l_generics_visitor.get_last_index
-					end
-	--					context.add_string ("}%N%T%T%TResult.set_implementation_(Current)%N")
-	--           		context.add_string ("%T%T%TResult.set_processor_ (Current.processor_)%N")
-	           			context.add_string ("}.set_processor_ (Current.processor_)%N%T%T%TResult.set_implementation_(Current)%N")
-	           			context.add_string ("%N%N%T%Tend")
-				else
-					context.add_string("%N%Nfeature%N%N")
-					context.add_string ("%Tproxy_: SCOOP_SEPARATE__ANY")
-					context.add_string ("%N%T%Tdo")
-					context.add_string ("%N%T%T%Tresult := void")
-					context.add_string ("%N%T%Tend")
+
+
+				context.add_string("%N%Nfeature%N%N")
+				context.add_string ("%Tproxy_: "+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
+				if l_as.internal_generics /= Void then
+
+					process_leading_leaves (l_as.internal_generics.index)
+					l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+					l_generics_visitor.process_class_internal_generics (l_as.internal_generics, False, True)
+					last_index := l_generics_visitor.get_last_index
+
 				end
+				context.add_string ("%N%T%Tdo")
+
+				if not l_as.is_deferred then
+
+	          		context.add_string ("%T%T%TResult := create {"+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
+
+					if l_as.internal_generics /= Void then
+						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
+						last_index := l_generics_visitor.get_last_index
+					end
+--					context.add_string ("}%N%T%T%TResult.set_implementation_(Current)%N")
+--           		context.add_string ("%T%T%TResult.set_processor_ (Current.processor_)%N")
+           			context.add_string ("}.set_processor_ (Current.processor_)%N%T%T%TResult.set_implementation_(Current)%N")
+
+				else
+					context.add_string ("%N%T%T%Tresult := void")
+				end
+
+				context.add_string ("%N%N%T%Tend")
 			end
 
 invariant

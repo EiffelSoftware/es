@@ -129,6 +129,9 @@ feature {NONE} -- Roundtrip: process nodes
 			-- process internal generics			
 			-- no `SCOOP_SEPARATE__' prefix.
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+			if generics_to_substitute /= void and not generics_to_substitute.is_empty then
+				l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
+			end
 			l_generics_visitor.process_type_locals (l_as.internal_generics, False, not is_filter_detachable)
 			if l_as.internal_generics /= Void then
 				last_index := l_as.internal_generics.last_token (match_list).index

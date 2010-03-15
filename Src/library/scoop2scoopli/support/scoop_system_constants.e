@@ -45,7 +45,101 @@ feature -- Scoop system constants
 
 	base_library_name: STRING is "base"
 
+	classes_to_be_compiled: LINKED_LIST[STRING] is
+			-- returns classes to be compiled
+			do
+				create_classes_to_be_compiled_list
+				result := classes_to_be_compiled_list
+			ensure
+				not_void: classes_to_be_compiled_list /= void
+			end
+	nonseparate_result: STRING is "nonseparate_result"
+
 feature {NONE}
+
+	classes_to_be_compiled_list: LINKED_LIST[STRING]
+
+	create_classes_to_be_compiled_list is
+			-- creates classes to be compiled list
+			do
+				create classes_to_be_compiled_list.make
+--				classes_to_be_compiled_list.extend ("ROUTINE")
+--				classes_to_be_compiled_list.extend ("PROCEDURE")
+--				classes_to_be_compiled_list.extend ("PREDICATE")
+--				classes_to_be_compiled_list.extend ("FUNCTION")
+--				classes_to_be_compiled_list.extend ("HASHABLE")
+--				classes_to_be_compiled_list.extend ("TUPLE")
+--				classes_to_be_compiled_list.extend ("MISMATCH_CORRECTOR")
+--				classes_to_be_compiled_list.extend ("STRING_8")
+--			    classes_to_be_compiled_list.extend ("STRING_32")
+--			    classes_to_be_compiled_list.extend ("TO_SPECIAL")
+--			    classes_to_be_compiled_list.extend ("RESIZABLE")
+--			    classes_to_be_compiled_list.extend ("INDEXABLE")
+--			    classes_to_be_compiled_list.extend ("READABLE_STRING_32")
+--			    classes_to_be_compiled_list.extend ("STRING_GENERAL")
+--			    classes_to_be_compiled_list.extend ("READABLE_STRING_8")
+--			    classes_to_be_compiled_list.extend ("READABLE_STRING_GENERAL")
+--			    classes_to_be_compiled_list.extend ("PART_COMPARABLE")
+--			    classes_to_be_compiled_list.extend ("TABLE")
+--			    classes_to_be_compiled_list.extend ("COLLECTION")
+--			    classes_to_be_compiled_list.extend ("BOX")
+--			    classes_to_be_compiled_list.extend ("BOUNDED")
+--			    classes_to_be_compiled_list.extend ("BAG")
+--			    classes_to_be_compiled_list.extend ("CONTAINER")
+--			    classes_to_be_compiled_list.extend ("COMPARABLE")
+--			    classes_to_be_compiled_list.extend ("FINITE")
+--			    classes_to_be_compiled_list.extend ("PART_COMPARABLE")
+--			    classes_to_be_compiled_list.extend ("STRING_HANDLER")
+--			    classes_to_be_compiled_list.extend ("INTEGER_INTERVAL")
+--			    classes_to_be_compiled_list.extend ("DISPENSER")
+--			    classes_to_be_compiled_list.extend ("COUNTABLE_SEQUENCE")
+--			    classes_to_be_compiled_list.extend ("SEQUENCE")
+--			    classes_to_be_compiled_list.extend ("ARRAY")
+--			    classes_to_be_compiled_list.extend ("HASH_TABLE")
+--			    classes_to_be_compiled_list.extend ("CHARACTER_32_REF")
+--			    classes_to_be_compiled_list.extend ("CHARACTER_8_REF")
+--			    classes_to_be_compiled_list.extend ("READABLE_STRING_GENERAL")
+--			    classes_to_be_compiled_list.extend ("INTEGER_64_REF")
+--			    classes_to_be_compiled_list.extend ("INTEGER_16_REF")
+--			    classes_to_be_compiled_list.extend ("INTEGER_8_REF")
+--				classes_to_be_compiled_list.extend ("INTEGER_32_REF")
+--			    classes_to_be_compiled_list.extend ("NATURAL_64_REF")
+--			    classes_to_be_compiled_list.extend ("NATURAL_16_REF")
+--			    classes_to_be_compiled_list.extend ("NATURAL_8_REF")
+--				classes_to_be_compiled_list.extend ("NATURAL_32_REF")
+--			    classes_to_be_compiled_list.extend ("REAL_32_REF")
+--			    classes_to_be_compiled_list.extend ("REAL_64_REF")
+--			    classes_to_be_compiled_list.extend ("NUMERIC")
+--			    classes_to_be_compiled_list.extend ("DEBUG_OUTPUT")
+--			    classes_to_be_compiled_list.extend ("UNBOUNDED")
+--			    classes_to_be_compiled_list.extend ("SET")
+--			    classes_to_be_compiled_list.extend ("CHAIN")
+--			    classes_to_be_compiled_list.extend ("ARRAYED_QUEUE")
+--			    classes_to_be_compiled_list.extend ("FILE")
+--			    classes_to_be_compiled_list.extend ("ACTIVE")
+--			    classes_to_be_compiled_list.extend ("QUEUE")
+--			    classes_to_be_compiled_list.extend ("BILINEAR")
+--			    classes_to_be_compiled_list.extend ("LINEAR")
+--			    classes_to_be_compiled_list.extend ("TRAVERSABLE")
+--			    classes_to_be_compiled_list.extend ("DYNAMIC_CHAIN")
+--			    classes_to_be_compiled_list.extend ("DYNAMIC_LIST")
+--			    classes_to_be_compiled_list.extend ("ARRAYED_LIST")
+--			    classes_to_be_compiled_list.extend ("LIST")
+--			    classes_to_be_compiled_list.extend ("CURSOR_STRUCTURE")
+--			    classes_to_be_compiled_list.extend ("COUNTABLE")
+--			    classes_to_be_compiled_list.extend ("IO_MEDIUM")
+--			    classes_to_be_compiled_list.extend ("INFINITE")
+--			    classes_to_be_compiled_list.extend ("DISPOSABLE")
+--			    classes_to_be_compiled_list.extend ("STRING")
+--			    classes_to_be_compiled_list.extend ("NATIVE_ARRAY")
+--			    classes_to_be_compiled_list.extend ("SPECIAL")
+--			    classes_to_be_compiled_list.extend ("ABSTRACT_SPECIAL")
+			  --  l_list.extend ("MANAGED_POINTER")
+			   -- l_list.extend ("CURSOR")
+			   -- l_list.extend ("SYSTEM_STRING")
+			    --l_list.extend ("PLATFORM")
+			end
+
 
 note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

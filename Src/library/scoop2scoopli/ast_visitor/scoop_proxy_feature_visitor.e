@@ -33,6 +33,7 @@ feature {NONE} -- Initialisation
 			context := a_context
 		end
 
+
 feature -- Access
 
 	process_feature(l_as: FEATURE_AS) is
@@ -89,14 +90,15 @@ feature {NONE} -- Visitor implementation
 					-- get feature name
 					l_feature_name_visitor.process_feature_name (l_feature_name, False)
 					l_feature_name_str := l_feature_name_visitor.feature_name
-					--l_feature_name_visitor.process_feature_name (l_feature_name, True)
+					l_feature_name_visitor.process_feature_name (l_feature_name, True)
 					l_feature_declaration_name := l_feature_name_visitor.feature_name
 
 					-- get original feature name
-					--l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
+					l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
 					l_original_feature_alias_name := l_feature_name_visitor.feature_name
 					l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
 					l_original_feature_name := l_feature_name_visitor.feature_name
+
 
 					scoop_workbench_objects.set_current_proxy_feature_name (l_original_feature_name)
 
@@ -154,7 +156,12 @@ feature {NONE} -- Content implementation
 			r_as: ROUTINE_AS
 			ex_as: EXTERNAL_AS
 			once_as: ONCE_AS
+			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			feature_name: FEATURE_NAME
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]
 		do
+
 			last_index := l_as.first_token (match_list).index - 1
 
 			-- create internal arguments
@@ -163,10 +170,33 @@ feature {NONE} -- Content implementation
 			else
 				context.add_string ("(a_caller_: SCOOP_SEPARATE_TYPE)")
 			end
+
 			safe_process (l_as.colon_symbol (match_list))
 
+			-- Do we need to substitute some generics
+			from
+				feature_as.feature_names.start
+			until
+				feature_as.feature_names.after
+			loop
+				if feature_as.feature_names.item.visual_name.is_equal (feature_as.feature_name.name) then
+					feature_name := feature_as.feature_names.item
+				end
+				feature_as.feature_names.forth
+			end
+			if attached {GENERIC_CLASS_TYPE_AS}  l_as.type as gen_typ then
+				create l_assign_finder
+				generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, Void, True)
+				if not generics_to_substitute.is_empty then
+					l_type_signature.set_generics_to_substitute (generics_to_substitute)
+				end
+			end
+
 			-- process type of feature
-			l_type_signature.process_type (l_as.type)
+			l_type_signature.process_type_replace_current (l_as.type)
+
+
+
 			if l_as.type /= Void then
 				last_index := l_as.type.last_token (match_list).index
 				context.add_string (" ")
@@ -225,6 +255,8 @@ feature {NONE} -- Content implementation
 					process_once_procedure_content(once_as, a_feature, a_feature_name)
 				end
 			end
+			-- Wipe out `feature_object.internal_arguments_to_substitute'
+			feature_object.internal_arguments_to_substitute.wipe_out
 		end
 
 	process_attribute (l_as: FEATURE_AS) is
@@ -237,6 +269,9 @@ feature {NONE} -- Content implementation
 			l_feature_name_str: STRING
 			l_type_visitor: SCOOP_TYPE_VISITOR
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
 			a_class_type ?= l_as.body.type
 			if not (a_class_type /= Void and then a_class_type.class_name.name.as_upper.is_equal ("PROCESSOR")) then
@@ -278,7 +313,51 @@ feature {NONE} -- Content implementation
 					-- keyword is and local declaration
 					context.add_string (" is%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [ANY, TUPLE, ")
 				--	l_type_signature.process_type (l_as.body.type)
-					l_type_locals.process_type (l_as.body.type)
+				--	l_type_locals.process_type (l_as.body.type)
+
+					if l_as.body.type /= void then
+
+						-- Fix for redeclarations if feature is query type:
+						-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+						-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+
+						if attached {CLASS_TYPE_AS} l_as.body.type as typ then
+							create l_assign_finder
+							if not typ.is_separate then
+								if l_assign_finder.have_to_replace_return_type(l_feature_name, class_c, true) then
+									context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+									add_result_substitution := true
+								else
+									-- No substitution needed, print normaly
+									context.add_string (typ.class_name.name)
+								end
+							else
+								-- Separate: No substitution needed, print normaly
+								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+							end
+						else
+							-- Nothing was done, no generics -> process normally
+							l_type_locals.process_type (l_as.body.type)
+						end
+						-- Print generics and check if they need a substitution
+						if attached {GENERIC_CLASS_TYPE_AS}  l_as.body.type as gen_typ then
+								l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+								generics_to_substitute := l_assign_finder.generic_parameters_to_replace (l_feature_name, class_c, False, Void, True)
+								if not generics_to_substitute.is_empty then
+									l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
+								end
+								l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
+
+
+							--	last_index := l_generics_visitor.get_last_index
+						end
+						last_index := l_as.body.type.last_token (match_list).index
+					end
+--					if not add_result_substitution then
+--						-- Nothing was done -> process normally
+--						l_type_locals.process_type (l_as.body.type)
+--					end
+
 
 					context.add_string ("]")
 
@@ -310,13 +389,16 @@ feature {NONE} -- Content implementation
 
 					context.add_string ("a_function_to_evaluate.last_result")
 
-					if {typ: CLASS_TYPE_AS} l_as.body.type then
+					if attached {CLASS_TYPE_AS} l_as.body.type as typ then
 						if not typ.is_expanded then
 							-- first has prefix
 							if not typ.is_separate then
 								-- second doesnt have prefix
 								if scoop_classes.has (typ.class_name.name.as_upper) then
-									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+									if not add_result_substitution then
+										-- If `add_result_substitution' was converted -> dont reconvert
+										context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+									end
 								end
 							end
 						end
@@ -334,7 +416,15 @@ feature {NONE} -- Content implementation
 					context.add_string  ("_scoop_separate_" + class_as.class_name.name.as_lower + ": ")
 
 					-- result type (original / client type)
-					l_type_locals.process_type (l_as.body.type)
+					if add_result_substitution then
+						if attached {CLASS_TYPE_AS} l_as.body.type as type then
+							-- Fix was added before: need to convert to separate return type
+							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+type.class_name.name)
+						end
+					else
+						l_type_locals.process_type (l_as.body.type)
+					end
+
 --					process_result_type (l_as.body.type, True, l_type_signature)
 
 					-- body
@@ -358,6 +448,7 @@ feature {NONE} -- Content implementation
 			l_feature_name_str: STRING
 			l_scoop_type_visitor: SCOOP_TYPE_VISITOR
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
 		do
 			--context.add_string ("%N%Nfeature -- constant attribute wrapper")
 
@@ -395,6 +486,26 @@ feature {NONE} -- Content implementation
 				context.add_string (" is%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [ANY, TUPLE, ")
 				l_type_locals.process_type (l_as.body.type)
 			--	l_type_signature.process_type (l_as.body.type)
+
+
+--				if l_as.body.type /= void then
+--					-- Fix for redeclarations if feature is query type:
+--					-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+--					-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+
+--					if attached {CLASS_TYPE_AS} l_as.body.type as typ and then not typ.is_separate then
+--						create l_assign_finder
+--						if l_assign_finder.have_to_replace_return_type(l_feature_name, class_c) then
+--							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+--							apply_redeclaration_fix := true
+--						end
+--					end
+--				end
+--				if not apply_redeclaration_fix then
+--					-- Nothing was done -> process normally
+--					l_type_locals.process_type (l_as.body.type)
+--				end
+
 				context.add_string ("]")
 
 				-- body and agent declarateion
@@ -505,7 +616,10 @@ feature {NONE} -- Content implementation
 					if not typ.is_separate then
 						-- second doesnt have prefix
 						if scoop_classes.has (typ.class_name.name.as_upper) then
-							context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+							if not add_result_substitution then
+								-- If `add_result_substitution' means the result type was converted -> dont reconvert
+								context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+							end
 						end
 					end
 				end

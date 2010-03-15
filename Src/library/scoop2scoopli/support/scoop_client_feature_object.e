@@ -7,14 +7,29 @@ note
 
 class
 	SCOOP_CLIENT_FEATURE_OBJECT
+create
+	make
 
 feature -- Feature access
+
+	make is
+			-- Create Feature Object
+		do
+			create internal_arguments_to_substitute.make (0)
+		ensure
+			not_void: internal_arguments_to_substitute /= void
+		end
+
 
 	feature_name: STRING is
 			-- Feature name.
 		do
 			Result := feature_name_impl
 		end
+--	feature_name_object: FEATURE_NAME
+--		do
+--			Result := feature_name_object_impl
+--		end
 
 	set_feature_name (l_feature_name: STRING) is
 			-- Set `l_feature_name'.
@@ -85,7 +100,21 @@ feature -- Feature access
 	is_feature_frozen: BOOLEAN
 			-- Is the feature frozen?
 
+
+	is_internal_arguments_to_substitute_defined: BOOLEAN is
+			-- Is `internal_arguments_to_substitute' not empty?
+			do
+				Result := not internal_arguments_to_substitute.is_empty
+			end
+
+	internal_arguments_to_substitute: IDENTIFIER_LIST
+			-- List of arguments to substitute:
+			-- Separate Arguments, which feature has a parent redeclaration with non separate argument.
+
 feature {NONE} -- Implementation
+
+	feature_name_object_impl: FEATURE_NAME
+			-- Feature name object
 
 	feature_name_impl: STRING
 			-- Name of current feature.

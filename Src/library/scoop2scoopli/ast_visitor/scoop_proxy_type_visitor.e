@@ -46,6 +46,18 @@ feature -- Access
 			-- process 'l_as'
 			-- print out the TYPE_AS as defined below
 		do
+			is_replace_current := False
+			if l_as /= Void then
+				last_index := l_as.first_token (match_list).index - 1
+				safe_process (l_as)
+			end
+		end
+
+	process_type_replace_current (l_as: TYPE_AS) is
+			-- process 'l_as'
+			-- print out the TYPE_AS as defined below
+		do
+			is_replace_current := True
 			if l_as /= Void then
 				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
@@ -60,6 +72,14 @@ feature -- Access
 				last_index := l_as.first_token (match_list).index - 1
 				safe_process (l_as)
 			end
+		end
+
+	set_generics_to_substitute(gen: LINKED_LIST[TUPLE[INTEGER,INTEGER]]) is
+			-- Set the generic's which need to be substituted
+		do
+			generics_to_substitute := gen
+		ensure
+			is_set: generics_to_substitute = gen
 		end
 
 feature {NONE} -- Roundtrip: process nodes
@@ -117,7 +137,19 @@ feature {NONE} -- Roundtrip: process nodes
 			-- process internal generics			
 			-- no `SCOOP_SEPARATE__' prefix, not detachable.
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_type_internal_generics (l_as.internal_generics, False, False)
+
+			-- Do we need to substitute generics?
+			if generics_to_substitute /= void and then (not generics_to_substitute.is_empty) then
+				l_generics_visitor.set_generics_to_substitute(generics_to_substitute)
+			end
+
+			-- Do we need to replace `like current'
+			if is_replace_current then
+				l_generics_visitor.process_type_locals(l_as.internal_generics, False, False)
+			else
+				l_generics_visitor.process_type_internal_generics (l_as.internal_generics, False, False)
+			end
+
 			if l_as.internal_generics /= Void then
 				last_index := l_as.internal_generics.last_token (match_list).index
 			end
@@ -222,6 +254,13 @@ feature {NONE} -- Feature implementation
 		end
 
 feature {NONE} -- Implementation
+
+	generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			-- List of generics which need to be substituted.
+
+	is_replace_current: BOOLEAN
+			-- Do we want to replace `like current' with `like implementation'
+			-- in the internal generics?
 
 	is_print_with_prefix: BOOLEAN
 			-- indicates that a class name is printed with prefix 'SCOOP_SEPARATE__'

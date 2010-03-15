@@ -90,7 +90,7 @@ feature {NONE} -- Visitor implementation
 				-- test on new name
 				l_feature_name_visitor.process_original_feature_name (l_as.new_name, False)
 				l_name := l_feature_name_visitor.feature_name
-				l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
+				l_feature_name_visitor.process_original_feature_name (l_as.new_name, True)
 				l_alias_name := l_feature_name_visitor.feature_name
 			else
 				-- test on old name

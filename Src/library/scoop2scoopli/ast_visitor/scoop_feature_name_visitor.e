@@ -75,6 +75,23 @@ feature -- Access
 			is_without_infix_replacement := False
 		end
 
+	process_original_feature_name_no_matchlist (a_feature_name: FEATURE_NAME; l_is_with_alias: BOOLEAN; is_processed_class: BOOLEAN) is
+			-- Given a FEATURE_NAME node, try to evaluate the feature name.
+		require
+			a_feature_name_not_void: a_feature_name /= Void
+		do
+
+			if not is_processed_class then
+				has_no_matchlist := true
+				process_original_feature_name(a_feature_name,l_is_with_alias)
+				has_no_matchlist := false
+			else
+				process_original_feature_name(a_feature_name,l_is_with_alias)
+			end
+
+
+		end
+
 	process_feature_declaration_name (a_feature_name: FEATURE_NAME) is
 			-- If `a_feature_name' is containing a INFIX_PREFIX_AS node,
 			-- return a list consisting of the non-infix and the infix version of the name.
@@ -185,22 +202,24 @@ feature {NONE} -- Visitor implementation
 		do
 			-- skip frozen keyword + whitespace after it.
 			if l_as.is_frozen then
-				last_index := l_as.frozen_keyword.index+1
-				from
-					i := 1
-					is_sep := True
-				until
-					is_sep = False
-				loop
-					last_index := l_as.frozen_keyword.index+i
-					if match_list.i_th (last_index).is_separator then
-						i := i+1
+				if not has_no_matchlist then
+					last_index := l_as.frozen_keyword.index+1
+					from
+						i := 1
 						is_sep := True
-					else
-						last_index := last_index-1
-						is_sep := False
-					end
+					until
+						is_sep = False
+					loop
+						last_index := l_as.frozen_keyword.index+i
+						if match_list.i_th (last_index).is_separator then
+							i := i+1
+							is_sep := True
+						else
+							last_index := last_index-1
+							is_sep := False
+						end
 
+					end
 				end
 			end
 			safe_process (l_as.feature_name)
@@ -244,7 +263,9 @@ feature {NONE} -- Visitor implementation
 
 	process_id_as (l_as: ID_AS) is
 		do
-			process_leading_leaves (l_as.index)
+			if not has_no_matchlist then
+				process_leading_leaves (l_as.index)
+			end
 
 			-- add a prefix
 			if has_prefix then
@@ -252,7 +273,12 @@ feature {NONE} -- Visitor implementation
 			end
 
 			-- process the id
-			Precursor (l_as)
+			if has_no_matchlist then
+				last_index := l_as.index
+				context.add_string (l_as.name)
+			else
+				Precursor (l_as)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -275,6 +301,9 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	has_no_matchlist: BOOLEAN
+			-- Used when match_list does not match the context it is called in
 
 	is_with_alias: BOOLEAN
 			-- process the actual node with or without alias name

@@ -12,14 +12,19 @@ class
 	SCOOP_CLIENT_FEATURE_LR_VISITOR
 
 inherit
-	SCOOP_CLIENT_CONTEXT_AST_PRINTER
+	SCOOP_CLIENT_FEATURE_VISITOR
 		redefine
 			make,
 			process_body_as,
 			process_routine_as,
 			process_id_as,
-			process_require_as
+			process_require_as,
+			process_require_else_as,
+			process_type_dec_as,
+			process_class_type_as,
+			process_generic_class_type_as
 		end
+
 
 create
 	make
@@ -65,10 +70,68 @@ feature {NONE} -- Node implementation
 	process_body_as (l_as: BODY_AS) is
 		local
 			c_as: CONSTANT_AS
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			feature_name: FEATURE_NAME
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 		do
+
+			is_internal_arguments := True
 			safe_process (l_as.internal_arguments)
+			is_internal_arguments := False
+
 			safe_process (l_as.colon_symbol (match_list))
-			safe_process (l_as.type)
+
+			if l_as.type /= void then
+
+				-- Fix for redeclarations if feature is query type:
+				-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+				-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+				-- If `feature_name' is void we are in an attribute or constant
+
+				if attached {CLASS_TYPE_AS} l_as.type as typ then
+					create l_assign_finder
+					from
+						feature_as.feature_names.start
+					until
+						feature_as.feature_names.after
+					loop
+						if feature_as.feature_names.item.visual_name.is_equal (feature_as.feature_name.name) then
+							feature_name := feature_as.feature_names.item
+						end
+						feature_as.feature_names.forth
+					end
+					if not typ.is_separate then
+						-- non Separate: Check if substitution is needed.
+						if l_assign_finder.have_to_replace_return_type(feature_name, class_c, false) then
+							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+							result_substitution := true
+	--						seperate_result_signature := typ
+						else
+							-- No substitution needed, print normaly
+							context.add_string (typ.class_name.name)
+						end
+					else
+						-- Separate: No substitution needed, print normaly
+						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+					end
+				else
+					safe_process (l_as.type)
+				end
+				-- Print generics and check if they need a substitution
+				if attached {GENERIC_CLASS_TYPE_AS} l_as.type as gen_typ then
+					l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+					generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, Void, True)
+					if not generics_to_substitute.is_empty then
+						l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
+					end
+					l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
+
+				end
+				last_index := l_as.type.last_token (match_list).index
+			end
+
+			--safe_process (l_as.type)
 			safe_process (l_as.assign_keyword (match_list))
 			safe_process (l_as.assigner)
 			safe_process (l_as.is_keyword (match_list))
@@ -85,6 +148,11 @@ feature {NONE} -- Node implementation
 
 				safe_process (l_as.content)
 			end
+
+			-- Wipe out `internal_arguments_to_substitute'
+			feature_object.internal_arguments_to_substitute.wipe_out
+
+
 		end
 
 	process_routine_as (l_as: ROUTINE_AS) is
@@ -115,6 +183,18 @@ feature {NONE} -- Node implementation
 	process_id_as (l_as: ID_AS) is
 		do
 			Precursor (l_as)
+			if feature_object /= void and then feature_object.is_internal_arguments_to_substitute_defined then
+				from
+					feature_object.internal_arguments_to_substitute.start
+				until
+					feature_object.internal_arguments_to_substitute.after
+				loop
+					if feature_object.internal_arguments_to_substitute.item.is_equal (l_as.index) then
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+					end
+					feature_object.internal_arguments_to_substitute.forth
+				end
+			end
 			if is_print_with_processor_postfix then
 				context.add_string (".processor_")
 			end
@@ -128,8 +208,12 @@ feature {NONE} -- Node implementation
 				-- print only non-separate preconditions
 			if fo.preconditions.non_separate_preconditions.count > 0 then
 					-- print out require keyword
-				safe_process (l_as.require_keyword (match_list))
 
+				safe_process (l_as.require_keyword (match_list))
+				if attached {REQUIRE_ELSE_AS} l_as as rea then
+					-- Require Else call, process esle keyword
+					safe_process (rea.else_keyword (match_list))
+				end
 				from
 					i := 1
 				until
@@ -148,6 +232,257 @@ feature {NONE} -- Node implementation
 			end
 		end
 
+	process_require_else_as (l_as: REQUIRE_ELSE_AS) is
+		do
+			process_require_as(l_as)
+		end
+
+feature{NONE} -- Internal Argument Substitution
+
+
+	process_type_dec_as (l_as: TYPE_DEC_AS)
+
+		do
+			if is_internal_arguments and then attached {CLASS_TYPE_AS} l_as.type as typ then
+				-- We are in Internal Arguments (not random type dec)
+
+				single_process_identifier_list (l_as.id_list,typ)
+				last_index := l_as.last_token (match_list).index
+			else
+				-- Not internal arguments: skip substitution
+				Precursor (l_as)
+			end
+
+		end
+
+	process_class_type_as (l_as: CLASS_TYPE_AS)
+		local
+			add_scoop_separate__: BOOLEAN
+		do
+			safe_process (l_as.lcurly_symbol (match_list))
+			safe_process (l_as.attachment_mark (match_list))
+			safe_process (l_as.expanded_keyword (match_list))
+
+			-- skip separate keyword and processor tag
+			if l_as.is_separate then
+				process_leading_leaves (l_as.separate_keyword_index)
+				last_index := l_as.class_name.index - 1
+				context.add_string (" ")
+			end
+
+			if substitute_internal_argument then
+				add_scoop_separate__ := False
+				substitute_internal_argument := False
+			else
+				add_scoop_separate__ := l_as.is_separate
+			end
+
+			-- process class name
+			process_leading_leaves (l_as.class_name.index)
+			process_class_name (l_as.class_name, add_scoop_separate__, context, match_list)
+			last_index := l_as.class_name.index
+
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
+		local
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+			add_scoop_separate__: BOOLEAN
+		do
+			safe_process (l_as.lcurly_symbol (match_list))
+			safe_process (l_as.attachment_mark (match_list))
+			safe_process (l_as.expanded_keyword (match_list))
+
+			-- skip separate keyword and processor tag
+			if l_as.is_separate then
+				process_leading_leaves (l_as.separate_keyword_index)
+				last_index := l_as.class_name.index - 1
+				context.add_string (" ")
+			end
+
+			if substitute_internal_argument then
+				add_scoop_separate__ := False
+				substitute_internal_argument := False
+			else
+				add_scoop_separate__ := l_as.is_separate
+			end
+			-- process class name
+			process_leading_leaves (l_as.class_name.index)
+			process_class_name (l_as.class_name, add_scoop_separate__, context, match_list)
+			context.add_string (" ")
+			last_index := l_as.class_name.index
+
+			-- process internal generics
+			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, True, False)
+			if l_as.internal_generics /= Void then
+				last_index := l_generics_visitor.get_last_index
+			end
+
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+--	process_identifier_list (l_as: IDENTIFIER_LIST)
+--			-- Process `l_as'
+--		local
+--			i, l_count: INTEGER
+--			l_index: INTEGER
+--			l_ids: CONSTRUCT_LIST [INTEGER]
+--			l_id_as: ID_AS
+--			l_leaf: LEAF_AS
+--		do
+--			if l_as /= Void then
+--				l_ids := l_as.id_list
+--				if l_ids /= Void and l_ids.count > 0 then
+--					from
+--						l_ids.start
+--						i := 1
+--							-- Temporary/reused objects to print identifiers.
+--						create l_id_as.initialize_from_id (1)
+--						if l_as.separator_list /= Void then
+--							l_count := l_as.separator_list.count
+--						end
+--					until
+--						l_ids.after
+--					loop
+--						l_index := l_ids.item
+--						if match_list.valid_index (l_index) then
+--							l_leaf := match_list.i_th (l_index)
+--								-- Note that we do not set the `name_id' for `l_id_as' since it will require
+--								-- updating the NAMES_HEAP and we do not want to do that. It is assumed in roundtrip
+--								-- mode that the text is never obtained from the node itself but from the `text' queries.
+--							l_id_as.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
+--							l_id_as.set_index (l_index)
+--							safe_process (l_id_as)
+
+--						end
+--						if i <= l_count then
+--							safe_process (l_as.separator_list_i_th (i, match_list))
+--							i := i + 1
+--						end
+--						l_ids.forth
+--						precursor(l_as)
+--					end
+--				end
+--			end
+--		end
+
+	single_process_identifier_list (l_as: IDENTIFIER_LIST; l_as_type: CLASS_TYPE_AS)
+			-- Process `l_as'
+		local
+			pos,x,j,i, l_count: INTEGER
+			l_index: INTEGER
+			l_ids: CONSTRUCT_LIST [INTEGER]
+			l_id_as: ID_AS
+			l_leaf: LEAF_AS
+			type_dec: TYPE_DEC_AS
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			add_scoop_separate__: BOOLEAN
+			interal_argument_to_substitute: TUPLE[pos:INTEGER;type:TYPE_AS]
+			feature_name: FEATURE_NAME
+		do
+			if l_as /= Void then
+				l_ids := l_as.id_list
+				if l_ids /= Void and l_ids.count > 0 then
+
+					-- Get the position of the first argument of the list in the feature
+					x := 1
+					from
+						j := 1
+					until
+						j > feature_as.body.internal_arguments.arguments.count
+					loop
+						type_dec:= feature_as.body.internal_arguments.arguments.i_th (j)
+						from
+							type_dec.id_list.id_list.start
+						until
+							type_dec.id_list.id_list.after
+						loop
+							if type_dec.id_list.id_list.item.is_equal (l_ids.i_th (1)) then
+								pos := x
+							end
+							x := x +1
+							type_dec.id_list.id_list.forth
+						end
+						j := j +1
+					end
+
+					from
+						l_ids.start
+						i := 1
+							-- Temporary/reused objects to print identifiers.
+						create l_id_as.initialize_from_id (1)
+						if l_as.separator_list /= Void then
+							l_count := l_as.separator_list.count
+						end
+					until
+						l_ids.after
+					loop
+						l_index := l_ids.item
+						if match_list.valid_index (l_index) then
+							l_leaf := match_list.i_th (l_index)
+								-- Note that we do not set the `name_id' for `l_id_as' since it will require
+								-- updating the NAMES_HEAP and we do not want to do that. It is assumed in roundtrip
+								-- mode that the text is never obtained from the node itself but from the `text' queries.
+							l_id_as.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
+							l_id_as.set_index (l_index)
+							safe_process (l_id_as)
+
+							context.add_string (":")
+							last_index := l_as_type.first_token (match_list).index
+							-- Check if we need to substitute the internal argument
+							add_scoop_separate__ := False
+							if l_as_type.is_separate then
+								add_scoop_separate__ := True
+								if need_internal_argument_substitution(feature_as.feature_name, class_c, pos) then
+									feature_object.internal_arguments_to_substitute.put_front (l_ids.item)
+									substitute_internal_argument := True
+									add_scoop_separate__ := False
+
+								end
+							end
+							if add_scoop_separate__ then
+								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix)
+							end
+							context.add_string (l_as_type.class_name.name)
+							if attached {GENERIC_CLASS_TYPE_AS} l_as_type as gen_typ then
+								create l_assign_finder
+								l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+								create interal_argument_to_substitute.default_create
+								interal_argument_to_substitute.pos := pos
+								interal_argument_to_substitute.type := gen_typ
+								from
+									feature_as.feature_names.start
+								until
+									feature_as.feature_names.after
+								loop
+									if feature_as.feature_names.item.visual_name.is_equal (feature_as.feature_name.name) then
+										feature_name := feature_as.feature_names.item
+									end
+									feature_as.feature_names.forth
+								end
+								generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, interal_argument_to_substitute, False)
+								if not generics_to_substitute.is_empty then
+									l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
+								end
+								l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
+							end
+						end
+						if i <= l_count then
+							context.add_string ("; ")
+							i := i + 1
+						end
+						pos := pos +1
+						l_ids.forth
+					end
+				end
+			end
+		end
+
+
 feature {NONE} -- Implementation
 
 	process_routine_as_function is
@@ -156,14 +491,58 @@ feature {NONE} -- Implementation
 			is_set_prefix: BOOLEAN
 			l_class_c: CLASS_C
 			l_type_visitor: SCOOP_TYPE_VISITOR
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			i,nb: INTEGER
+			l_feature_name: FEATURE_NAME
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
 			-- add locals
 			context.add_string ("%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, ")
 			create l_type_visitor
 			l_class_c := l_type_visitor.evaluate_class_from_type (feature_as.body.type, class_c)
 			context.add_string (" ")
+
+
+			-- Fix for redeclarations if feature is query type:
+			-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+			-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+
+--			if attached {CLASS_TYPE_AS} feature_as.body.type as typ and then not typ.is_separate then
+--				create l_assign_finder
+--				from
+--					i := 1
+--					nb := feature_as.feature_names.count
+--				until
+--					i > nb
+--				loop
+--					l_feature_name := feature_as.feature_names.i_th (i)
+--					if l_feature_name.visual_name.is_equal (feature_as.feature_name.name) then
+--						if l_assign_finder.have_to_replace_return_type(l_feature_name, class_c, true) then
+--							is_set_prefix := True
+--							result_substitution := true  -- Remember we added the fix so we dont add `proxy_' later
+--						end
+--					end
+--					i := i+1
+--				end
+--			end
+
+--			if not result_substitution then
+--				-- Nothing was done -> process normally
+--				is_set_prefix := l_type_visitor.is_separate and then not l_type_visitor.is_tuple_type or l_type_visitor.is_formal
+--			end
 			is_set_prefix := l_type_visitor.is_separate and then not l_type_visitor.is_tuple_type or l_type_visitor.is_formal
 			process_class_name_str (l_class_c.name_in_upper, is_set_prefix, context, match_list)
+
+			-- process internal generics
+			if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type as typ then
+				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+				l_generics_visitor.process_internal_generics (typ.internal_generics, True, False)
+				if typ.internal_generics /= Void then
+					last_index := l_generics_visitor.get_last_index
+				end
+			end
+
+
 			context.add_string ("]")
 
 			-- add do keyword

@@ -174,15 +174,22 @@ feature {NONE} -- Roundtrip: process nodes
 --				safe_process (l_as.internal_invariant)
 --			end
 
+
+			context.add_string ("%N%N")
+
+			context.add_string (";") -- fix for notes at the end of the class  ::remove when activating invariants!::
+
 			-- process indexes
 			if l_as.internal_bottom_indexes /= Void then
-				context.add_string ("%N%N")
 				last_index := l_as.internal_bottom_indexes.first_token (match_list).index - 1
 				safe_process (l_as.internal_bottom_indexes)
 			else
 				last_index := l_as.end_keyword.index - 1
-				context.add_string ("%N%N")
 			end
+
+
+
+
 
 			-- process end keyword
 			safe_process (l_as.end_keyword)
@@ -216,7 +223,10 @@ feature {NONE} -- Roundtrip: process nodes
 			-- Process `l_as', the AST feature node, invokes the `SCOOP_PROXY_FEATURE_VISITOR'.
 		local
 			l_feature_visitor: SCOOP_PROXY_FEATURE_VISITOR
+			l_feature_object: SCOOP_CLIENT_FEATURE_OBJECT
 		do
+			create l_feature_object.make
+			set_feature_object (l_feature_object)
 			l_feature_visitor := scoop_visitor_factory.new_proxy_feature_visitor (context)
 			l_feature_visitor.process_feature(l_as)
 			last_index := l_as.last_token (match_list).index
@@ -468,7 +478,7 @@ feature {NONE} -- Roundtrip: Implementation
 					else
 						context.add_string ("%N%T%Tdo")
 					end
-
+					is_like_item_proxy := true
 					if lock_passing_possible then
 						process_lock_passing_before
 						context.add_string ("%N%T%T%T%Tscoop_synchronous_execute (a_caller_, agent effective_" + a_feature_name)
@@ -493,9 +503,11 @@ feature {NONE} -- Roundtrip: Implementation
 						if l_feature_as.body.internal_arguments /= Void then
 							context.add_string (" ")
 							process_formal_argument_list_with_auxiliary_variables (l_feature_as.body.internal_arguments, False, True)
+
 						end
 						context.add_string (")")
 					end
+					is_like_item_proxy := false
 					context.add_string ("%N%T%Tend")
 				end
 
@@ -525,29 +537,33 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string ("%N%Nfeature -- creation instruction wrapper")
 			context.add_string ("%N%N%T" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
 
-			process_formal_arguments_with_caller (featr.arguments)
+			if featr.arguments /= void then
+				process_formal_arguments_with_caller (featr.arguments)
+			else
+				context.add_string ("(a_caller_: SCOOP_SEPARATE_TYPE)")
+			end
 
 			context.add_string ("%N%T%T%T-- Wrapper for parent creation procedure `" + featr.feature_name + "'.%N%T%T")
 			context.add_string ("%N%T%Tdo")
 			context.add_string ("%N%T%T%Tscoop_asynchronous_execute (a_caller_, ")
 			context.add_string ("agent effective_" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
-
-			process_formal_arguments_as_actual_arguments (featr.arguments, False)
-
+			if featr.arguments /= void then
+				process_formal_arguments_as_actual_arguments (featr.arguments, False)
+			end
 			context.add_string (")")
 			context.add_string ("%N%T%Tend")
 
 			-- 'effective_feature_name_scoop_separate_class_name'
 			context.add_string ("%N%N%Teffective_" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
-
-			process_flattened_formal_arguments (featr.arguments, False)
-
+			if featr.arguments /= void then
+				process_flattened_formal_arguments (featr.arguments, False)
+			end
 			context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + featr.feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%Tcreate implementation_." + featr.feature_name)
 			context.add_string (" ")
-
-			process_formal_arguments_as_actual_arguments (featr.arguments, False)
-
+			if featr.arguments /= void then
+				process_formal_arguments_as_actual_arguments (featr.arguments, False)
+			end
 			context.add_string ("%N%T%Tend")
 		end
 
@@ -565,6 +581,18 @@ feature {NONE} -- Roundtrip: Implementation
 			a_class_c: CLASS_C
 			i, j, nb, nbj: INTEGER
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_type_a: TYPE_A
+			l_class_as: CLASS_AS
+			generic_position, x: INTEGER
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			l_feature_name,feature_name: FEATURE_NAME
+			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]
+			l_index,pos: INTEGER
+			l_id_as:ID_AS
+			l_leaf: LEAF_AS
 		do
 			l_arguments := a_feature.body.internal_arguments
 			create l_type_visitor
@@ -593,9 +621,65 @@ feature {NONE} -- Roundtrip: Implementation
 
 			-- add local variables
 			context.add_string ("%N%T%Tlocal")
+			-- Get Feature name object
+			from
+				i := 1
+				nb := a_feature.feature_names.count
+			until
+				i > nb
+			loop
+				l_feature_name := a_feature.feature_names.i_th (i)
+				if l_feature_name.visual_name.is_equal (a_feature.feature_name.name) then
+					feature_name := l_feature_name
+				end
+				i := i+1
+			end
 			if a_feature.is_function then
 				context.add_string ("%N%T%T%Ta_function_to_evaluate: FUNCTION [ANY, TUPLE, ")
-				l_type_locals.process_type (a_feature.body.type)
+				if a_feature.body.type /= void then
+					-- Fix for redeclarations if feature is query type:
+					-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+					-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+
+					if attached {CLASS_TYPE_AS} a_feature.body.type as typ then
+						create l_assign_finder
+						if not typ.is_separate then
+							if l_assign_finder.have_to_replace_return_type(feature_name, class_c, true) then
+								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+								add_result_substitution := true -- Remember we added the substitution so we dont add `proxy_' later					
+							else
+								-- No substitution needed, print normaly
+								context.add_string (typ.class_name.name)
+							end
+						else
+							-- Separate: No substitution needed, print normaly
+							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+						end
+					else
+						-- Nothing was done, no generics -> process normally
+						l_type_locals.process_type (a_feature.body.type)
+					end
+
+					-- Print generics and check if they need a substitution
+					if attached {GENERIC_CLASS_TYPE_AS}  a_feature.body.type as gen_typ then
+							create l_assign_finder
+							l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+							generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, Void, True)
+							if not generics_to_substitute.is_empty then
+								l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
+							end
+							l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
+
+
+						--	last_index := l_generics_visitor.get_last_index
+					end
+					last_index := a_feature.body.type.last_token (match_list).index
+				end
+--				if not add_result_substitution then
+--					-- Nothing was done -> process normally
+--					l_type_locals.process_type (a_feature.body.type)
+--				end
+			--	l_type_locals.process_type (a_feature.body.type)
 				context.add_string ("]")
 			end
 
@@ -605,6 +689,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 				-- iterate over internal arguments to add for each a new local variable
 				from
+					pos :=1
 					i := 1
 					nb := l_arguments.arguments.count
 				until
@@ -619,12 +704,100 @@ feature {NONE} -- Roundtrip: Implementation
 						context.add_string ("%N%T%T%T")
 
 						-- add feature names with prefix `aux_scoop_'
-						l_feature_name_visitor.process_id_list (l_argument.id_list, "aux_scoop_")
-						context.add_string (l_feature_name_visitor.feature_name)
+						from
 
-						context.add_string (": ")
-						-- process normal type
-						l_type_locals.process_type (l_argument.type)
+							l_argument.id_list.id_list.start
+							create l_id_as.initialize_from_id (1)
+						until
+							l_argument.id_list.id_list.after
+						loop
+							context.add_string ("aux_scoop_")
+							l_index := l_argument.id_list.id_list.item
+							if match_list.valid_index (l_index) then
+								l_leaf := match_list.i_th (l_index)
+									-- Note that we do not set the `name_id' for `l_id_as' since it will require
+									-- updating the NAMES_HEAP and we do not want to do that. It is assumed in roundtrip
+									-- mode that the text is never obtained from the node itself but from the `text' queries.
+								l_id_as.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
+								l_id_as.set_index (l_index)
+								last_index := l_id_as.first_token (match_list).index
+								safe_process (l_id_as)
+							end
+
+							--l_feature_name_visitor.process_id_list (l_list, "aux_scoop_")
+							context.add_string (l_feature_name_visitor.feature_name)
+
+							context.add_string (": ")
+							-- process normal type
+
+							if l_type_visitor.is_a_like_type then
+								if attached {LIKE_ID_AS} l_argument.type as typ then
+									-- like something -> evaluate something
+									l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
+									l_type_expr_visitor.resolve_type_in_class (l_argument.type, class_c)
+									l_type_a := l_type_expr_visitor.resolved_type
+
+									if l_type_a.has_generics then
+										-- get class_as from the evaluated class_a name (needs parsing because name comes with generics)
+										context.add_string (l_type_a.name.substring (1, l_type_a.name.index_of ('[', 1)-2))
+										l_class_as := class_as_by_name (l_type_a.name.substring (1, l_type_a.name.index_of ('[', 1)-2))
+	--									l_class_as := class_as
+										context.add_string ("[")
+										from
+											x := 1
+										until
+											x > l_type_a.generic_derivation.generics.count
+										loop
+											if x /= 1 then
+												context.add_string (", ")
+											end
+											if l_type_a.generic_derivation.generics.item (x).is_formal then
+												-- generic is formal, get the formal genetics from the actual class
+												generic_position := l_type_a.generic_derivation.generics.item (x).name.substring (l_type_a.generic_derivation.generics.item (x).name.index_of ('#', 1)+1, l_type_a.generic_derivation.generics.item (x).name.count).to_integer
+												context.add_string (l_class_as.generics.i_th (generic_position).name.name)
+											else
+												-- non formal free to print
+												context.add_string (l_type_a.generic_derivation.generics.item (x).name)
+											end
+											x := x+1
+										end
+										context.add_string ("]")
+									else
+										-- no generics in the evaluated type
+										context.add_string (l_type_a.name)
+									end
+								elseif attached {LIKE_CUR_AS} l_argument.type as typ then
+									-- like current -> print currenr class signature
+									context.add_string (class_as.class_name.name)
+									if class_as.generics /= void then
+										l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+										l_generics_visitor.process_class_internal_generics (class_as.generics, True, True)
+										last_index := l_generics_visitor.get_last_index
+									end
+								end
+
+							else
+								if attached {GENERIC_CLASS_TYPE_AS} l_argument.type as gen_typ then
+									create l_assign_finder
+									create internal_argument.default_create
+									internal_argument.pos := pos
+									internal_argument.type := gen_typ
+									generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, internal_argument, False)
+									if not generics_to_substitute.is_empty then
+										l_type_locals.set_generics_to_substitute (generics_to_substitute)
+									end
+								end
+								l_type_locals.process_type (l_argument.type)
+							end
+							l_argument.id_list.id_list.forth
+							pos := pos +1;
+							if not l_argument.id_list.id_list.after then
+							context.add_string ("%N%T%T%T")
+						end
+					end
+					last_index := l_argument.last_token (match_list).index
+---------------------------------------
+
 					end
 					i := i + 1
 				end
@@ -713,48 +886,48 @@ feature {NONE} -- Roundtrip: Implementation
 			Result := Result -- and not is_lock_passing_ignored
 		end
 
-	process_formal_arguments_with_auxiliary_variables (a_args: FEAT_ARG; with_a_caller, with_brackets: BOOLEAN) is
-			-- Process `a_list' as list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
-			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
-			-- Addes brackets before and after the list if desired.
-		local
-			i : INTEGER
-			t : TYPE_A
-			a_prefix: STRING
-		do
-			if with_brackets then
-				context.add_string ("(")
-			end
+--	process_formal_arguments_with_auxiliary_variables (a_args: FEAT_ARG; with_a_caller, with_brackets: BOOLEAN) is
+--			-- Process `a_list' as list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
+--			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument if `with_a_caller' is true.
+--			-- Addes brackets before and after the list if desired.
+--		local
+--			i : INTEGER
+--			t : TYPE_A
+--			a_prefix: STRING
+--		do
+--			if with_brackets then
+--				context.add_string ("(")
+--			end
 
-			if with_a_caller then
-				context.add_string ("a_caller_, ")
-			end
+--			if with_a_caller then
+--				context.add_string ("a_caller_, ")
+--			end
 
-			from
-				i := 1
+--			from
+--				i := 1
 
-			until
-				i > a_args.count
-			loop
-				t := a_args [i]
+--			until
+--				i > a_args.count
+--			loop
+--				t := a_args [i]
 
-				if not t.is_formal and then not t.is_expanded and then
-				   not t.is_tuple then
-					a_prefix := "aux_scoop_"
-				else
-					a_prefix := ""
-				end
+--				if not t.is_formal and then not t.is_expanded and then
+--				   not t.is_tuple then
+--					a_prefix := "aux_scoop_"
+--				else
+--					a_prefix := ""
+--				end
 
-				context.add_string (", ")
-				context.add_string (a_prefix + arg_number_name (i))
+--				context.add_string (", ")
+--				context.add_string (a_prefix + arg_number_name (i))
 
-				i := i + 1
-			end
+--				i := i + 1
+--			end
 
-			if with_brackets then
-				context.add_string (")")
-			end
-		end
+--			if with_brackets then
+--				context.add_string (")")
+--			end
+--		end
 
 	process_formal_argument_list_with_auxiliary_variables (a_list: FORMAL_ARGU_DEC_LIST_AS; with_a_caller, with_brackets: BOOLEAN) is
 			-- Process `a_list' as if it is list of actual arguments. Substitute original arguments with auxiliary variables where necessary.
@@ -766,6 +939,7 @@ feature {NONE} -- Roundtrip: Implementation
 			a_class_c: CLASS_C
 			a_prefix: STRING
 			l_type_dec_as: TYPE_DEC_AS
+			add_proxy_,add_implementation_: BOOLEAN
 		do
 			if with_brackets then
 				context.add_string ("(")
@@ -791,6 +965,16 @@ feature {NONE} -- Roundtrip: Implementation
 						and then not l_type_visitor.is_tuple_type then
 
 						create a_prefix.make_from_string ("aux_scoop_")
+						if attached {LIKE_ID_AS} l_type_dec_as.type  then
+							-- `like item' was evaluated and converted to non separate, need to reconvert -> add `proxy_'
+							add_proxy_ := true
+						end
+						if attached {CLASS_TYPE_AS} l_type_dec_as.type then
+							if feature_object /= void and then feature_object.is_internal_arguments_to_substitute_defined then
+								-- Check if we need to substitute internal arguments
+								add_implementation_ := true
+							end
+						end
 					else
 						create a_prefix.make_empty
 					end
@@ -802,7 +986,24 @@ feature {NONE} -- Roundtrip: Implementation
 						j > nbj
 					loop
 						context.add_string (a_prefix + l_type_dec_as.item_name (j))
+						if add_proxy_ and is_like_item_proxy then
+							-- `like item' was created and converted to non separate, need to reconvert -> add `proxy_'
+							context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+							add_proxy_ := false
+						end
+						if add_implementation_ then
+							from
+								feature_object.internal_arguments_to_substitute.start
+							until
+								feature_object.internal_arguments_to_substitute.after
+							loop
+								if feature_object.internal_arguments_to_substitute.item.is_equal (l_type_dec_as.id_list.i_th (j)) then
+									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+								end
+								feature_object.internal_arguments_to_substitute.forth
 
+							end
+						end
 						if i < nbi or (i = nbi and j < nbj) then
 							context.add_string (", ")
 						end
@@ -1007,10 +1208,14 @@ feature {NONE} -- Roundtrip: Implementation
 			-- Process `a_list'.
 			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument.
 		local
-			i, j, nb, nbj: INTEGER
+			pos,i, j, nb, nbj: INTEGER
 			l_scoop_type_visitor: SCOOP_TYPE_VISITOR
 			a_class_c: CLASS_C
 			l_argument: TYPE_DEC_AS
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			interal_argument_to_substitute: TUPLE[pos:INTEGER;type:TYPE_AS]
+			feature_name: FEATURE_NAME
 		do
 			create l_scoop_type_visitor
 
@@ -1018,6 +1223,7 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string ("a_caller_: SCOOP_SEPARATE_TYPE; ")
 
 			if a_list.arguments /= Void then
+				pos := 1 -- # of argument
 				from
 					i := 1
 					nb := a_list.arguments.count
@@ -1034,8 +1240,41 @@ feature {NONE} -- Roundtrip: Implementation
 						j > nbj
 					loop
 						context.add_string (l_argument.item_name (j) + ": ")
+						if attached {GENERIC_CLASS_TYPE_AS}  l_argument.type as gen_typ then
+							create l_assign_finder
+							create interal_argument_to_substitute.default_create
+							interal_argument_to_substitute.pos := pos
+							interal_argument_to_substitute.type := gen_typ
+							if feature_as /= void then
+								from
+									feature_as.feature_names.start
+								until
+									feature_as.feature_names.after
+								loop
+									if feature_as.feature_names.item.visual_name.is_equal (feature_as.feature_name.name) then
+										feature_name := feature_as.feature_names.item
+									end
+									feature_as.feature_names.forth
+								end
+								generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, interal_argument_to_substitute, False)
+								if not generics_to_substitute.is_empty then
+									l_type_signature.set_generics_to_substitute (generics_to_substitute)
+								end
+							end
+						end
 						l_type_signature.process_type (l_argument.type)
-
+						if attached {CLASS_TYPE_AS} l_argument.type as typ then
+							if typ.is_separate then
+								if feature_as /= void then
+									if need_internal_argument_substitution(feature_as.feature_name, class_c, pos) then
+										feature_object.internal_arguments_to_substitute.append (l_argument.id_list)
+									end
+								end
+							debug
+								end
+							end
+						end
+						pos := pos +1
 						if i < nb or (i = nb and j < l_argument.id_list.count) then
 							context.add_string ("; ")
 						end
@@ -1047,6 +1286,39 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string (")")
 			last_index := a_list.last_token (match_list).index
 		end
+
+feature {NONE} -- Redeclaration Implementation
+
+need_internal_argument_substitution(a_feature_name: ID_AS; a_class_c: CLASS_C; arg_pos: INTEGER):BOOLEAN is
+			-- Do we need a redeclaration substitution for internal arguments?
+			-- Needed when current argument is separate and parent version was non separate
+			local
+				l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+				feature_i: FEATURE_I
+				l_feature_name: FEATURE_NAME
+				has_context: BOOLEAN
+			do
+				create l_assign_finder
+				feature_i := a_class_c.feature_named (a_feature_name.name)
+				if feature_i /= Void then
+					from
+						feature_i.body.feature_names.start
+					until
+						feature_i.body.feature_names.after
+					loop
+						if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
+							l_feature_name := feature_i.body.feature_names.item
+						end
+						feature_i.body.feature_names.forth
+					end
+					if a_class_c = class_c then
+						has_context := true
+					end
+					if a_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, arg_pos, has_context) then
+						Result := True
+					end
+				end
+			end
 
 feature {NONE} -- SCOOP Implementation
 
@@ -1071,6 +1343,16 @@ feature {NONE} -- SCOOP Implementation
 		end
 
 feature{NONE} -- Implementation
+
+
+
+	add_result_substitution: BOOLEAN
+			-- Is the result type of the feature beeing changed from non separate to separate?
+			-- Is the case when a feature with non separate return type has a parent feature redeclaration with separate return type.
+
+	is_like_item_proxy : BOOLEAN
+			-- Is `like item' a reference to a `proxy_' object?
+			-- Used to determine if we have to add `proxy_' to the feature call
 
 	l_type_signature: SCOOP_PROXY_TYPE_SIGNATURE_PRINTER
 			-- prints 'TYPE_AS' to the context
