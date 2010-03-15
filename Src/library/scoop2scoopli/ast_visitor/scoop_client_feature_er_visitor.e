@@ -62,49 +62,12 @@ feature {NONE} -- Node implementation
 			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
 			feature_name: FEATURE_NAME
 		do
---			-- Initialise `internal_arguments_to_substitute'
---			create internal_arguments_to_substitute.make (0)
-
 			is_internal_arguments := True
 			safe_process (l_as.internal_arguments)
 			is_internal_arguments := False
 
 
 			safe_process (l_as.colon_symbol (match_list))
-
---			if l_as.type /= void then
-
---			-- Fix for redeclarations if feature is query type:
---			-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
---			-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
---			-- If `feature_name' is void we are in an attribute or constant
-
---				if attached {CLASS_TYPE_AS} l_as.type as typ and then not typ.is_separate then
---					create l_assign_finder
-
---					from
---						feature_as.feature_names.start
---					until
---						feature_as.feature_names.after
---					loop
---						feature_name := feature_as.feature_names.item
---						feature_as.feature_names.forth
---					end
-
---					if l_assign_finder.have_to_replace_return_type(feature_name, class_c, false) then
---						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
---						result_substitution := true
---						seperate_result_signature := typ.class_name.name
---					end
---				end
---			end
---			if not result_substitution then
---				-- Nothing was done -> process normally
---				safe_process (l_as.type)
---			else
---				last_index := l_as.type.last_token (match_list).index
---			end
-
 			safe_process (l_as.type)
 			safe_process (l_as.assign_keyword (match_list))
 			safe_process (l_as.assigner)
@@ -125,8 +88,6 @@ feature {NONE} -- Node implementation
 
 			end
 
---			-- Wipe out `internal_arguments_to_substitute'
---			internal_arguments_to_substitute.wipe_out
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS) is
@@ -258,21 +219,6 @@ feature {NONE} -- Adding .implementation_ for precondition processing.
 
 				update_current_level_with_call (l_as)
 
---				if internal_arguments_to_substitute /= void then
---					from
---						internal_arguments_to_substitute.start
---					until
---						internal_arguments_to_substitute.after
---					loop
---						if internal_arguments_to_substitute.item.is_equal (l_as.feature_name.name_id) then
---							-- Is an internal argument we changed the type from:
---							-- No need to add `.implementation_'
---							add_implementation_ := False
---						end
---						internal_arguments_to_substitute.forth
---					end
---				end
-
 				if current_level.type.is_separate then
 					if add_implementation_ then
 						context.add_string (".implementation_")
@@ -346,122 +292,6 @@ feature {NONE} -- Node implementation
 				i := i + 1
 			end
 		end
---feature -- Internal Argument Generic Substitution
-
---	process_type_dec_as (l_as: TYPE_DEC_AS)
-
---		do
---			if is_internal_arguments and then attached {CLASS_TYPE_AS} l_as.type as typ then
---				-- We are in Internal Arguments (not random type dec)
---					single_process_identifier_list (l_as.id_list,typ)
---					last_index := l_as.last_token (match_list).index
---			else
---				Precursor (l_as)
---			end
---		end
---	single_process_identifier_list (l_as: IDENTIFIER_LIST; l_as_type: CLASS_TYPE_AS)
---			-- Process `l_as'
---		local
---			pos,x,j,i, l_count: INTEGER
---			l_index: INTEGER
---			l_ids: CONSTRUCT_LIST [INTEGER]
---			l_id_as: ID_AS
---			l_leaf: LEAF_AS
---			type_dec: TYPE_DEC_AS
---			l_generics_visitor: SCOOP_GENERICS_VISITOR
---			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
---			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
---			add_scoop_separate__: BOOLEAN
---			interal_argument_to_substitute: TUPLE[pos:INTEGER;type:TYPE_AS]
---		do
---			if l_as /= Void then
---				l_ids := l_as.id_list
---				if l_ids /= Void and l_ids.count > 0 then
-
---					-- Get the position of the first argument of the list in the feature
---					x := 1
---					from
---						j := 1
---					until
---						j > feature_as.body.internal_arguments.arguments.count
---					loop
---						type_dec:= feature_as.body.internal_arguments.arguments.i_th (j)
---						from
---							type_dec.id_list.id_list.start
---						until
---							type_dec.id_list.id_list.after
---						loop
---							if type_dec.id_list.id_list.item.is_equal (l_ids.i_th (1)) then
---								pos := x
---							end
---							x := x +1
---							type_dec.id_list.id_list.forth
---						end
---						j := j +1
---					end
-
---					from
---						l_ids.start
---						i := 1
---							-- Temporary/reused objects to print identifiers.
---						create l_id_as.initialize_from_id (1)
---						if l_as.separator_list /= Void then
---							l_count := l_as.separator_list.count
---						end
---					until
---						l_ids.after
---					loop
---						l_index := l_ids.item
---						if match_list.valid_index (l_index) then
---							l_leaf := match_list.i_th (l_index)
---								-- Note that we do not set the `name_id' for `l_id_as' since it will require
---								-- updating the NAMES_HEAP and we do not want to do that. It is assumed in roundtrip
---								-- mode that the text is never obtained from the node itself but from the `text' queries.
---							l_id_as.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
---							l_id_as.set_index (l_index)
---							safe_process (l_id_as)
-
---							context.add_string (":")
---							last_index := l_as_type.first_token (match_list).index
---							-- Check if we need to substitute the internal argument
---							add_scoop_separate__ := False
---							if l_as_type.is_separate then
---								add_scoop_separate__ := True
-----								if need_internal_argument_substitution(feature_as.feature_name, class_c, pos) then
-----									feature_object.internal_arguments_to_substitute.put_front (l_ids.item)
-----									substitute_internal_argument := True
-----									add_scoop_separate__ := False
-
-----								end
---							end
---							if add_scoop_separate__ then
---								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix)
---							end
---							context.add_string (l_as_type.class_name.name)
---							if attached {GENERIC_CLASS_TYPE_AS} l_as_type as gen_typ then
---								create l_assign_finder
---								l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
---								create interal_argument_to_substitute.default_create
---								interal_argument_to_substitute.pos := pos
---								interal_argument_to_substitute.type := gen_typ
---								generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_object.feature_name_object, class_c, False, interal_argument_to_substitute, False)
---								if not generics_to_substitute.is_empty then
---									l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
---								end
---								l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
---							end
---						end
---						if i <= l_count then
---							context.add_string ("; ")
---							i := i + 1
---						end
---						pos := pos +1
---						l_ids.forth
---					end
---				end
---			end
---		end
-
 
 feature {NONE} -- Implementation
 

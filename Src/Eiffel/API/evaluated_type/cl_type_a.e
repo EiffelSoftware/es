@@ -732,7 +732,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 --			io.new_line
 
 			Result := lte_proc_tag and lte_attach
-			Result := lte_attach
+	--		Result := lte_attach
 		end
 
 	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
