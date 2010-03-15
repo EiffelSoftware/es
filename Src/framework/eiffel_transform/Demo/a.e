@@ -3,6 +3,8 @@ deferred class
 
 feature
 
+	next: like Current
+
 	a_feature(a_arg: INTEGER): STRING
 		local
 			a_local: like a_arg

@@ -2609,6 +2609,7 @@ Src/framework/eiffel_transform/Tests/test_me_all.8.ref -text
 Src/framework/eiffel_transform/Tests/test_me_all.9.ref -text
 Src/framework/eiffel_transform/Tests/test_ren.1.ref -text
 Src/framework/eiffel_transform/Tests/test_setter_gen.1.ref -text
+Src/framework/eiffel_transform/Tests/test_wrap.1.ref -text
 Src/framework/eiffel_transform/eiffel_transform.lic -text
 Src/framework/jstar_proofs/examples/bank_account/bank_account.abs -text
 Src/framework/jstar_proofs/examples/bank_account/bank_account.logic -text

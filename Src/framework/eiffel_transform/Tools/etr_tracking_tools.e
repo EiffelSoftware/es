@@ -167,20 +167,6 @@ feature -- Combine mappings
 				-- Map all 1:1
 				Result := new_directly_mapped_region (a_count)
 			end
-
-			debug ("eiffel_transform")
-				-- Make sure everything in the range is mapped
-				from
-					i:=1
-				until
-					i>=a_count
-				loop
-					check
-						non_zero: Result[i] /= 0
-					end
-					i:=i+1
-				end
-			end
 		end
 
 	chained_breakpoint_mapping (a_original_mapping, a_new_mapping: HASH_TABLE[INTEGER,INTEGER]; a_count: INTEGER): HASH_TABLE[INTEGER,INTEGER]

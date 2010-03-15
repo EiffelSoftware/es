@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 			l_changed_type, l_changed_name: BOOLEAN
 		do
 			-- Check for changed type
-			if a_old_type.associated_class.class_id /= a_new_type.associated_class.class_id then
+			if not a_old_type.same_as (a_new_type) then
 				l_changed_type := true
 			end
 
@@ -112,6 +112,8 @@ feature -- Transformations
 
 					if l_new_feat /= void then
 						l_changed_var := void
+						l_changed_name := false
+						l_changed_type := false
 
 						-- check if theres renamings
 						if l_old_feat.feature_name_id /= l_new_feat.feature_name_id then
@@ -122,8 +124,8 @@ feature -- Transformations
 							-- check if the type changed
 							l_old_expl_type := type_checker.explicit_type (l_old_feat.type, l_source_class_context.written_class, l_old_feat)
 							l_new_expl_type := type_checker.explicit_type (l_new_feat.type, l_target_class_context.written_class, l_new_feat)
-
-							if l_old_expl_type.associated_class.class_id /= l_new_expl_type.associated_class.class_id then
+							
+							if not l_old_expl_type.same_as (l_new_expl_type) then
 								l_changed_type := true
 							end
 
@@ -167,7 +169,7 @@ feature -- Transformations
 							l_old_expl_type := type_checker.explicit_type (l_old_feat.type, l_source_class_context.written_class, l_old_feat)
 							l_new_expl_type := type_checker.explicit_type (l_new_feat.type, l_target_class_context.written_class, l_new_feat)
 
-							if l_old_expl_type.associated_class.class_id /= l_new_expl_type.associated_class.class_id then
+							if not l_old_expl_type.same_as (l_new_expl_type) then
 								create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
 							end
 
@@ -198,7 +200,7 @@ feature -- Transformations
 								l_old_expl_type := l_source_feat_context.arguments[l_like_arg.position].resolved_type
 								l_new_expl_type := l_target_feat_context.arguments[l_like_arg.position].resolved_type
 
-								if l_old_expl_type.associated_class.class_id /= l_new_expl_type.associated_class.class_id then
+								if not l_old_expl_type.same_as (l_new_expl_type) then
 									create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
 									l_changed_args_locals.extend(l_changed_var)
 								end
@@ -259,7 +261,7 @@ feature -- Transformations
 			-- Now visit the ETR_TRANSFORMABLE
 			-- and perform replacements
 			create l_output.make
-			create l_transformer.make(l_output, l_changed_args_locals, l_constraint_renaming_list)
+			create l_transformer.make(l_output, l_changed_args_locals, l_constraint_renaming_list, l_source_context, a_target_context)
 			-- Print the ast to output
 			l_transformer.print_ast_to_output (a_transformable.target_node)
 			-- Reparse it

@@ -18,13 +18,14 @@ inherit
 			process_nested_expr_as,
 			process_like_id_as
 		end
+	ETR_SHARED_TOOLS
 	SHARED_NAMES_HEAP
 create
 	make
 
 feature {NONE} -- Creation
 
-	make (a_output: like output; a_changed_local_list: LIST[ETR_CT_CHANGED_NAME_TYPE]; a_constraint_renaming_list: LIST[ETR_CT_CONSTRAINT_RENAMING])
+	make (a_output: like output; a_changed_local_list: LIST[ETR_CT_CHANGED_NAME_TYPE]; a_constraint_renaming_list: LIST[ETR_CT_CONSTRAINT_RENAMING]; a_source_context, a_target_context: ETR_CONTEXT)
 			-- Make with `a_output', `a_changed_local_list' and `a_constraint_renaming_list'
 		do
 			make_with_output(a_output)
@@ -74,6 +75,15 @@ feature {NONE} -- Implementation
 	last_was_unqualified_or_current: BOOLEAN
 			-- Are we in an "unqualified" call?
 
+	last_was_changed: BOOLEAN
+			-- Did we change the type of the last access
+
+	changed_old_type, changed_new_type: CLASS_C
+			-- Changed types of a nested expression
+
+	changed_old_renamings, changed_new_renamings: RENAMING_A
+			-- Renamings in the current nested expression
+
 	next_new_name: STRING
 			-- Name that will be use in the next renaming
 
@@ -121,6 +131,57 @@ feature {NONE} -- Implementation
 				l_as.forth
 			end
 			l_as.go_i_th (l_cursor)
+		end
+
+	old_message_name (a_name_id: INTEGER; a_renaming: detachable RENAMING_A): STRING
+			-- Name of `a_name_id' before `a_renaming'
+		local
+			l_old_msg_name_id: INTEGER
+		do
+			if a_renaming /= void then
+				l_old_msg_name_id := a_renaming.renamed (a_name_id)
+				Result := names_heap.item (l_old_msg_name_id)
+			else
+				Result := names_heap.item (a_name_id)
+			end
+		end
+
+	new_message_name (a_name_id: INTEGER; a_renaming: detachable RENAMING_A): STRING
+			-- Name of `a_name_id' after `a_renaming'
+		local
+			l_new_msg_name_id: INTEGER
+		do
+			if a_renaming /= void then
+				l_new_msg_name_id := a_renaming.new_name (a_name_id)
+				Result := names_heap.item (l_new_msg_name_id)
+			else
+				Result := names_heap.item (a_name_id)
+			end
+		end
+
+	set_additional_renaming(a_old_type, a_new_type: TYPE_A)
+			-- Set additional renaming resulting from changed types
+		do
+			if not a_old_type.same_as (a_new_type) then
+				changed_old_type := a_old_type.associated_class
+				changed_new_type := a_new_type.associated_class
+
+				if attached {RENAMED_TYPE_A[TYPE_A]}a_old_type as l_ren_old then
+					changed_old_renamings := l_ren_old.renaming
+				else
+					changed_old_renamings := void
+				end
+
+				if attached {RENAMED_TYPE_A[TYPE_A]}a_new_type as l_ren_new then
+					changed_new_renamings := l_ren_new.renaming
+				else
+					changed_new_renamings := void
+				end
+
+				last_was_changed := true
+			else
+				last_was_changed := false
+			end
 		end
 
 feature {AST_EIFFEL} -- Roundtrip
@@ -206,7 +267,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			elseif last_was_unqualified_or_current then
 				l_changed := changed_locals_hash[l_as.name]
 
-				if l_changed /= void then
+				if l_changed /= void and then l_changed.is_changed_name then
 					output.append_string (l_changed.new_name)
 				else
 					output.append_string (l_as.name)
@@ -238,6 +299,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_renamings: ETR_CT_CONSTRAINT_RENAMING
 			l_old_msg_name, l_new_msg_name: STRING
 			l_old_msg_name_id, l_new_msg_name_id, l_next_access_name_id: INTEGER
+			l_old_expl_type, l_new_expl_type: TYPE_A
 
 			l_msg_name: STRING
 		do
@@ -245,7 +307,29 @@ feature {AST_EIFFEL} -- Roundtrip
 			output.append_string (ti_dot)
 
 			if not last_was_unqualified_or_current then
-				process_child (l_as.message, l_as, 2)
+				l_next_access_name_id := next_access_name_id(l_as.message)
+				if last_was_changed and l_next_access_name_id>0 then
+					-- Further renaming!
+					l_old_msg_name := old_message_name (l_next_access_name_id, changed_old_renamings)
+
+					l_old_feature := changed_old_type.feature_named (l_old_msg_name)
+					l_new_feature := changed_new_type.feature_of_rout_id_set (l_old_feature.rout_id_set)
+
+					l_new_msg_name := new_message_name (l_new_feature.feature_name_id, changed_new_renamings)
+
+					-- Check if type of expression changed
+					l_old_expl_type := type_checker.explicit_type (l_old_feature.type, changed_old_type, void)
+					l_new_expl_type := type_checker.explicit_type (l_new_feature.type, changed_new_type, void)
+
+					set_additional_renaming(l_old_expl_type, l_new_expl_type)
+
+					rename_next := true
+					next_new_name := l_new_msg_name
+					process_child (l_as.message, l_as, 2)
+				else
+					last_was_changed := false
+					process_child (l_as.message, l_as, 2)
+				end
 			else
 				if not attached {CURRENT_AS}l_as.target then
 					last_was_unqualified_or_current := false
@@ -260,32 +344,38 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_next_access_name_id := next_access_name_id(l_as.message)
 
 				if l_next_access_name_id>0 then
-					if l_renamings /= void and then attached l_renamings.source_renaming then
-						l_old_msg_name_id := l_renamings.source_renaming.renamed (l_next_access_name_id)
-						l_old_msg_name := names_heap.item (l_old_msg_name_id)
+					if l_renamings /= void then
+						l_old_msg_name := old_message_name (l_next_access_name_id, l_renamings.source_renaming)
 					else
-						l_old_msg_name := names_heap.item (l_next_access_name_id)
+						l_old_msg_name := old_message_name (l_next_access_name_id, void)
 					end
 
 					if l_changed_local /= void and then l_changed_local.is_changed_type then
 						l_old_feature := l_changed_local.old_type.feature_named (l_old_msg_name)
-						l_new_feature := l_changed_local.new_type.feature_of_rout_id (l_old_feature.rout_id_set.first)
+						l_new_feature := l_changed_local.new_type.feature_of_rout_id_set (l_old_feature.rout_id_set)
 
 						-- we have to get the new name of the feature
-						if l_renamings /= void and then attached l_renamings.target_renaming then
-							l_new_msg_name_id := l_renamings.target_renaming.new_name (l_new_feature.feature_name_id)
-							l_new_msg_name := names_heap.item (l_new_msg_name_id)
+						if l_renamings /= void then
+							l_new_msg_name := new_message_name (l_new_feature.feature_name_id, l_renamings.target_renaming)
 						else
-							l_new_msg_name := l_new_feature.feature_name
+							l_new_msg_name := new_message_name (l_new_feature.feature_name_id, void)
 						end
+
+						-- Check if type of expression changed
+						l_old_expl_type := type_checker.explicit_type (l_old_feature.type, l_changed_local.old_type, void)
+						l_new_expl_type := type_checker.explicit_type (l_new_feature.type, l_changed_local.new_type, void)
+
+						set_additional_renaming (l_old_expl_type, l_new_expl_type)
 
 						rename_next := true
 						next_new_name := l_new_msg_name
 						process_child (l_as.message, l_as, 2)
 					else
+						last_was_changed := false
 						process_child (l_as.message, l_as, 2)
 					end
 				else
+					last_was_changed := false
 					process_child (l_as.message, l_as, 2)
 				end
 			end

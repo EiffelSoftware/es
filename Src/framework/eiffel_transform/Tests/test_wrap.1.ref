@@ -1,0 +1,12 @@
+test_wrap
+	local
+		l1, l2: INTEGER
+	do
+		if l1 /= l2 then
+			if l1 > l2 then
+				l1 := l2
+			else
+				l2 := l1
+			end
+		end
+	end

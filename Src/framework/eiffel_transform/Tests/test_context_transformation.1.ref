@@ -15,7 +15,8 @@ if True then
 		io.putstring (l_c2.c2_b)
 	end
 	if attached {like Current}c_ren as l_a then
-		io.putstring (l_a.c_ren.generating_type)
+		io.putstring (l_a.next.next.next.next.c_ren.c2_a_ren)
+		io.putstring (l_a.c_ren.c2_b)
 	end
 	io.putstring (str_a2)
 end

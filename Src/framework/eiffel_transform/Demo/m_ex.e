@@ -93,7 +93,7 @@ feature
 			l2 := l2*l2
 			-- ex end
 		end
-	
+		
 	test(arg1,arg2:INTEGER)
 			-- 2 arguments, 1 result
 		local
@@ -223,5 +223,15 @@ feature
 		end
 		
 	f2: INTEGER
-
+	
+	test_wrap
+		local
+			l1,l2: INTEGER
+		do
+			if l1>l2 then
+				l1 := l2
+			else
+				l2 := l1
+			end
+		end
 end

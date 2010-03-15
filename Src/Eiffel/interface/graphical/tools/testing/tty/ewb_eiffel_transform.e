@@ -60,9 +60,25 @@ feature -- Entry point
 			run_test ("test_xml_print", agent test_xml_print)
 			run_test ("test_dot_print", agent test_dot_print)
 			run_test ("test_bp_print", agent test_bp_print)
+			run_test ("test_wrap", agent test_wrap)
+
+			io.put_string ("%N" + num_passed.out + "/" + (num_failed+num_passed).out + " tests passed.%N")
 		end
 
 feature -- Test features
+
+	test_wrap
+			-- test setter creation
+		local
+			l_trans: ETR_TRANSFORMABLE
+		do
+			l_trans := transformable_factory.new_feature_transformable ("M_EX", "test_wrap")
+			l_trans.enable_code_tracking
+			wrap.wrap_statement (l_trans, create {AST_PATH}.make_from_string(l_trans.target_node, f_first_instruction), transformable_factory.new_expr ("l1 /= l2", context_factory.new_empty_context))
+			l_trans.apply_modifications (wrap.modifications)
+
+			dbg_check_trans (l_trans)
+		end
 
 	test_context_transformation
 			-- test context transformations
@@ -90,7 +106,8 @@ feature -- Test features
 									"if attached {like arg_c1_a1}a_c as l_c2 then%N"+ -- Object test local with argument anchor
 									"io.putstring(l_c2.c1_b)%Nend%N"+
 									"if attached {like Current}c as l_a then%N"+ -- Object test local with current anchor
-									"io.putstring(l_a.c.generating_type)%Nend%N"+
+									"io.putstring(l_a.next.next.next.next.c.c1_a_renamed)%N"+ -- Deep nesting
+									"io.putstring(l_a.c.c1_b)%Nend%N"+
 									"io.putstring(str_a1)%N"+ -- renamed local
 									"end", a1_context )
 
@@ -385,6 +402,8 @@ feature -- Helper features
 	current_test: STRING
 	trans_number: INTEGER
 
+	num_failed, num_passed: INTEGER
+
 	dbg_assert(a_tag: STRING; a_cond: BOOLEAN)
 		do
 			if not a_cond then
@@ -418,9 +437,11 @@ feature -- Helper features
 			end
 
 			if l_success  then
-				io.put_string ("======== "+a_name.as_upper+": OK%N")
+				io.put_string ("======== "+a_name.as_upper+": PASS%N")
+				num_passed := num_passed + 1
 			else
 				io.put_string ("======== "+a_name.as_upper+": FAIL%N")
+				num_failed := num_failed + 1
 			end
 		rescue
 			retrying := true

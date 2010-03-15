@@ -10,6 +10,12 @@ inherit
 
 feature {NONE} -- Operators
 
+	wrap: ETR_WRAP_GENERATOR
+			-- Shared instance of ETR_WRAP_GENERATOR
+		once
+			create Result
+		end
+
 	rewrite: ETR_REWRITING_OPERATORS
 			-- Shared instance of ETR_REWRITING_OPS
 		once
