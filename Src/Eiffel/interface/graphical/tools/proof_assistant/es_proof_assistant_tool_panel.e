@@ -30,6 +30,7 @@ feature
 	build_tool_interface (root_widget: EV_TEXT)
 		do
 			create jstar_proofs.make
+			create stop_watch
 			propagate_drop_actions (Void)
 		end
 
@@ -66,6 +67,8 @@ feature
 
 feature {NONE}
 
+	stop_watch: JS_STOP_WATCH
+
 	on_stone_changed (a_old_stone: ?like stone)
 		local
 			l_retry: BOOLEAN
@@ -75,11 +78,13 @@ feature {NONE}
 				user_widget.set_text ("")
 				ev_application.process_events
 				if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
+					stop_watch.start
 					jstar_proofs.prove (c)
+					stop_watch.stop
 					if jstar_proofs.timed_out then
 						user_widget.set_text ("Timed out! Your logic and abstraction rules possibly cause looping.")
 					else
-						user_widget.set_text ("Done!")
+						user_widget.set_text ("Done with " + c.name_in_upper + "!%NTime taken: " + stop_watch.total_time_in_seconds + " s")
 					end
 				end
 			end
@@ -288,7 +293,7 @@ feature {NONE} -- Unused, but possibly handy
        end
 
 ;indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
