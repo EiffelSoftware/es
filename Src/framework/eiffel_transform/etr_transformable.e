@@ -125,8 +125,13 @@ feature -- Operation
 	enable_code_tracking
 			-- Enable this transformable to track modifications
 		do
-			calculate_breakpoint_slots
-			is_code_tracking_enabled := true
+			-- Don't allow for nodes containing multiple features
+			if attached {EIFFEL_LIST[FEATURE_AS]}target_node or attached {FEATURE_CLAUSE_AS}target_node or attached {CLASS_AS}target_node or attached {EIFFEL_LIST[FEATURE_CLAUSE_AS]}target_node then
+				logger.log_warning ("Couldn't enable code tracking because multiple contained ast contains multiple features.")
+			else
+				calculate_breakpoint_slots
+				is_code_tracking_enabled := true
+			end
 		end
 
 	calculate_breakpoint_slots

@@ -6,10 +6,6 @@ note
 class
 	ETR_ASS_ATTMPT_REPL_VISITOR
 inherit
-	REFACTORING_HELPER
-		export
-			{NONE} all
-		end
 	AST_ITERATOR
 		export
 			{AST_EIFFEL} all
@@ -40,6 +36,7 @@ feature -- Operation
 			non_void: a_ast /= void
 		do
 			create {LINKED_LIST[ETR_AST_MODIFICATION]}modifications.make
+			id_counter := 1
 			a_ast.process (Current)
 		end
 
@@ -60,6 +57,9 @@ feature {NONE} -- Implementation
 	current_feature: STRING
 			-- Name of current feature
 
+	id_counter: INTEGER
+			-- Unique id of last object-test local
+
 feature {AST_EIFFEL} -- Roundtrip
 
 	process_feature_as (l_as: FEATURE_AS)
@@ -79,6 +79,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_cur_slot: INTEGER
 			l_current_mapping: HASH_TABLE[INTEGER,INTEGER]
 			l_mod: ETR_TRACKABLE_MODIFICATION
+			l_ot_local_name: STRING
 		do
 			l_feat_context := class_context.written_in_features_by_name[current_feature]
 
@@ -98,11 +99,18 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_current_mapping.extend (l_cur_slot, l_cur_slot+1)
 				l_current_mapping.extend (l_cur_slot, l_cur_slot+2)
 
-				fixme("Use unique string for object-test local")
-				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_source_string+" as "+"l_etr_ot_local then%N")
-				l_replacement.append_string (l_target_string+" := l_etr_ot_local%N")
-				l_replacement.append_string ("else%N")
-				l_replacement.append_string (l_target_string+" := void%N")
+				l_ot_local_name := "lot_" + id_counter.out
+				id_counter := id_counter + 1
+
+				l_replacement.append_string("if attached {"+l_printed_type+"}"+l_source_string+" as "+l_ot_local_name+" then%N")
+				l_replacement.append_string (l_target_string+" := "+l_ot_local_name+"%N")
+
+				-- This is to be inline with the semantics of assignment attempts
+				if not l_target_type.is_expanded then
+					l_replacement.append_string ("else%N")
+					l_replacement.append_string (l_target_string+" := void%N")
+				end
+
 				l_replacement.append_string ("end%N")
 
 				create l_mod.make_replace (l_as.path, l_replacement)

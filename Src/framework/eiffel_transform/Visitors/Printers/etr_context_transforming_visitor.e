@@ -19,6 +19,7 @@ inherit
 			process_like_id_as
 		end
 	ETR_SHARED_TOOLS
+	ETR_SHARED_ERROR_HANDLER
 	SHARED_NAMES_HEAP
 create
 	make
@@ -315,17 +316,23 @@ feature {AST_EIFFEL} -- Roundtrip
 					l_old_feature := changed_old_type.feature_named (l_old_msg_name)
 					l_new_feature := changed_new_type.feature_of_rout_id_set (l_old_feature.rout_id_set)
 
-					l_new_msg_name := new_message_name (l_new_feature.feature_name_id, changed_new_renamings)
+					if l_new_feature /= void then
+						l_new_msg_name := new_message_name (l_new_feature.feature_name_id, changed_new_renamings)
 
-					-- Check if type of expression changed
-					l_old_expl_type := type_checker.explicit_type (l_old_feature.type, changed_old_type, void)
-					l_new_expl_type := type_checker.explicit_type (l_new_feature.type, changed_new_type, void)
+						-- Check if type of expression changed
+						l_old_expl_type := type_checker.explicit_type (l_old_feature.type, changed_old_type, void)
+						l_new_expl_type := type_checker.explicit_type (l_new_feature.type, changed_new_type, void)
 
-					set_additional_renaming(l_old_expl_type, l_new_expl_type)
+						set_additional_renaming(l_old_expl_type, l_new_expl_type)
 
-					rename_next := true
-					next_new_name := l_new_msg_name
-					process_child (l_as.message, l_as, 2)
+						rename_next := true
+						next_new_name := l_new_msg_name
+						process_child (l_as.message, l_as, 2)
+					else
+						error_handler.add_error (Current, "process_nested_as", "Cannot transform "+l_as.target.access_name+"."+names_heap.item (l_next_access_name_id)+" to target context.")
+						last_was_changed := false
+						process_child (l_as.message, l_as, 2)
+					end
 				else
 					last_was_changed := false
 					process_child (l_as.message, l_as, 2)
@@ -354,22 +361,28 @@ feature {AST_EIFFEL} -- Roundtrip
 						l_old_feature := l_changed_local.old_type.feature_named (l_old_msg_name)
 						l_new_feature := l_changed_local.new_type.feature_of_rout_id_set (l_old_feature.rout_id_set)
 
-						-- we have to get the new name of the feature
-						if l_renamings /= void then
-							l_new_msg_name := new_message_name (l_new_feature.feature_name_id, l_renamings.target_renaming)
+						if l_new_feature /= void then
+							-- we have to get the new name of the feature
+							if l_renamings /= void then
+								l_new_msg_name := new_message_name (l_new_feature.feature_name_id, l_renamings.target_renaming)
+							else
+								l_new_msg_name := new_message_name (l_new_feature.feature_name_id, void)
+							end
+
+							-- Check if type of expression changed
+							l_old_expl_type := type_checker.explicit_type (l_old_feature.type, l_changed_local.old_type, void)
+							l_new_expl_type := type_checker.explicit_type (l_new_feature.type, l_changed_local.new_type, void)
+
+							set_additional_renaming (l_old_expl_type, l_new_expl_type)
+
+							rename_next := true
+							next_new_name := l_new_msg_name
+							process_child (l_as.message, l_as, 2)
 						else
-							l_new_msg_name := new_message_name (l_new_feature.feature_name_id, void)
+							error_handler.add_error (Current, "process_nested_as", "Cannot transform "+l_as.target.access_name+"."+names_heap.item (l_next_access_name_id)+" to target context.")
+							last_was_changed := false
+							process_child (l_as.message, l_as, 2)
 						end
-
-						-- Check if type of expression changed
-						l_old_expl_type := type_checker.explicit_type (l_old_feature.type, l_changed_local.old_type, void)
-						l_new_expl_type := type_checker.explicit_type (l_new_feature.type, l_changed_local.new_type, void)
-
-						set_additional_renaming (l_old_expl_type, l_new_expl_type)
-
-						rename_next := true
-						next_new_name := l_new_msg_name
-						process_child (l_as.message, l_as, 2)
 					else
 						last_was_changed := false
 						process_child (l_as.message, l_as, 2)

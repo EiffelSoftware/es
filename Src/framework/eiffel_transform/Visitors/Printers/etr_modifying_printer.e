@@ -29,7 +29,6 @@ feature {NONE} -- Creation
 			l_parent_node: EIFFEL_LIST[AST_EIFFEL]
 			l_parent_set: ARRAYED_SET[AST_PATH]
 			l_par_groups: LINKED_LIST[TUPLE[AST_PATH,LINKED_LIST[ETR_AST_MODIFICATION]]]
-			l_temp_mod_arr: SORTABLE_ARRAY[ETR_AST_MODIFICATION]
 			i: INTEGER
 		do
 			-- set output
@@ -327,10 +326,10 @@ feature -- Roundtrip
 						end
 
 						if l_changed_items.has (l_list_copy.item) then
-						-- don't do operations on new nodes
-						replacement_disabled := true
-						process_child(l_list_copy.item, void, 0)
-						replacement_disabled := false
+							-- don't do operations on new nodes
+							replacement_disabled := true
+							process_child(l_list_copy.item, void, 0)
+							replacement_disabled := false
 						else
 							-- don't delete, replace eventually
 							process_child (l_list_copy.item, void, 0)
