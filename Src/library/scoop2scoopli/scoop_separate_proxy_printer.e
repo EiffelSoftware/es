@@ -855,7 +855,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 									context.add_string ("%N%T%T%Tif " + l_argument_name + " /= void then ")
 									context.add_string ("%N%T%T%T%Taux_scoop_" + l_argument_name + " := ")
-									context.add_string (l_argument_name + ".implementation_%N%T%T%Tend")
+									context.add_string (l_argument_name + "%N%T%T%Tend")
 									j := j + 1
 								end
 							end
@@ -870,7 +870,7 @@ feature {NONE} -- Roundtrip: Implementation
 								l_argument_name := l_argument.item_name (j)
 
 								context.add_string ("%N%T%T%Taux_scoop_" + l_argument_name + " := ")
-								context.add_string (l_argument_name + ".implementation_")
+								context.add_string (l_argument_name)
 								j := j + 1
 							end
 						end
