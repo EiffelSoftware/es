@@ -606,7 +606,7 @@ feature -- Commands
 				-- To avoid a recursion, we do it at most twice.
 			if
 				not degree_6_done and then
-				(retried = 0 or else retried = 1 and then (missing_class_error))
+				(retried = 0 or else ((retried = 1 or (retried = 2 and is_degree_scoop_processed)) and then (missing_class_error)))
 			then
 
 				if not forbid_degree_6 then
