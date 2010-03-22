@@ -566,6 +566,36 @@ feature -- Commands
 			end
 		end
 
+	scoop_config_added : BOOLEAN
+
+	add_scoop_config
+		do
+			add_scoop_override_cluster
+			add_scoop_library
+			force_scoop_root
+			add_thread_library
+			enable_multithreading
+
+			scoop_config_added := True
+		ensure
+			scoop_added: scoop_config_added
+		end
+
+	remove_scoop_config
+		require
+			scoop_added: scoop_config_added
+		do
+			remove_scoop_override_cluster
+			remove_scoop_library
+			revert_scoop_root
+			remove_thread_library
+			remove_multithreading_setting
+
+			scoop_config_added := False
+		ensure
+			scoop_removed: not scoop_config_added
+		end
+
 	recompile
 			-- Incremental recompilation
 		local
@@ -583,11 +613,7 @@ feature -- Commands
 
 			-- Added for SCOOP: Change the configuration for the newly generated code.
 			if is_degree_scoop_processed and not is_degree_scoop_result_compilation_failed then
-				add_scoop_override_cluster
-				add_scoop_library
-				force_scoop_root
-				add_thread_library
-				enable_multithreading
+				add_scoop_config
 			end
 
 			not_actions_successful := False
@@ -668,12 +694,8 @@ feature -- Commands
 			end
 
 			 -- Added for SCOOP: Revert the changes to the configuration.
-			if is_degree_scoop_processed then
-				remove_scoop_override_cluster
-				remove_scoop_library
-				revert_scoop_root
-				remove_thread_library
-				remove_multithreading_setting
+			if scoop_config_added then
+				remove_scoop_config
 			end
 		ensure
 			increment_compilation_counter:
@@ -746,12 +768,8 @@ feature -- Commands
 				retry
 			else
 				-- Added for SCOOP: Revert the changes to the configuration.
-				if is_degree_scoop_processed then
-					remove_scoop_override_cluster
-					remove_scoop_library
-					revert_scoop_root
-					remove_thread_library
-					remove_multithreading_setting
+				if scoop_config_added then
+					remove_scoop_config
 				end
 				stop_compilation
 			end
