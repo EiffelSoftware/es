@@ -719,6 +719,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 			lte_proc_tag : BOOLEAN
 			lte_attach   : BOOLEAN
 		do
+			-- TODO: This rule prevents legal SCOOP feature redeclarations, because it is both applied to result types AND arguments. This needs to be reworked. In the meantime, the check for lte_proc_tag got removed temporarily.
 			lte_proc_tag := processor_tag < other.processor_tag or else processor_tag.is_equal (other.processor_tag)
 			lte_attach   := other.is_implicitly_attached implies
 			                is_implicitly_attached
@@ -731,8 +732,8 @@ feature {COMPILER_EXPORTER} -- Conformance
 --			io.put_boolean (lte_attach)
 --			io.new_line
 
-			Result := lte_proc_tag and lte_attach
-	--		Result := lte_attach
+--			Result := lte_proc_tag and lte_attach
+			Result := lte_attach
 		end
 
 	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
