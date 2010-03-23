@@ -127,7 +127,7 @@ feature -- Operation
 		do
 			-- Don't allow for nodes containing multiple features
 			if attached {EIFFEL_LIST[FEATURE_AS]}target_node or attached {FEATURE_CLAUSE_AS}target_node or attached {CLASS_AS}target_node or attached {EIFFEL_LIST[FEATURE_CLAUSE_AS]}target_node then
-				logger.log_warning ("Couldn't enable code tracking because multiple contained ast contains multiple features.")
+				logger.log_warning ("Couldn't enable code tracking because contained ast contains multiple features.")
 			else
 				calculate_breakpoint_slots
 				is_code_tracking_enabled := true

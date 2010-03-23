@@ -38,27 +38,6 @@ feature -- Creation
 			end
 		end
 
-	find (a_path: AST_PATH)
-			-- Starting from `a_path's root find a node by following `a_path'
-		require
-			non_void: a_path /= void
-			path_valid: a_path.is_valid
-			has_root: a_path.root /= void
-		do
-			found := false
-			found_node := void
-
-			path := a_path
-			current_position := path.as_array.lower
-
-			if path.as_array.count = 1 then
-				found := true
-				found_node := path.root
-			else
-				path.root.process (Current)
-			end
-		end
-
 feature {NONE} -- Implementation
 
 	process_branch (a_parent: AST_EIFFEL; a_branches:ARRAY[detachable AST_EIFFEL])

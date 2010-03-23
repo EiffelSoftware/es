@@ -20,30 +20,18 @@ create
 feature -- Constants
 
 	separator: CHARACTER is '.'
-
-feature -- Operations
-	set_root(a_root: like root)
-			-- sets `root' to `a_root'
-		require
-			non_void: a_root /= void
-		do
-			root := a_root
-		end
+			-- Separator used in the string representation
 
 feature -- Access
 
-	root: AST_EIFFEL assign set_root
-			-- root this path belongs to
-
 	branch_id: INTEGER
-			-- id of the branch
+			-- Id of the branch
 
 	as_string: STRING
 			-- `Current' as string
 
 	as_array: ARRAY[INTEGER]
 			-- Current in array representation
-			-- lazy initialization
 		require
 			valid: is_valid
 		do
@@ -55,16 +43,16 @@ feature -- Access
 		end
 
 	is_valid: BOOLEAN
-			-- is current a valid path?
+			-- Is current a valid path?
 
-	has_prefix(a_prefix: like as_string):BOOLEAN
-			-- does current have a_prefix?
+	has_prefix (a_prefix: like as_string):BOOLEAN
+			-- Does current have a_prefix?
 		do
 			Result := as_string.starts_with (a_prefix)
 		end
 
 	parent_path: like Current
-			-- the path of `Current's parent
+			-- The path of `Current's parent
 		require
 			valid: is_valid
 			not_root: as_array.count>1
@@ -78,14 +66,14 @@ feature -- Access
 			Result.is_valid
 		end
 
-	is_child_of(a_other: like Current): BOOLEAN
-			-- is `Current' a child of `a_other'
+	is_child_of (a_other: like Current): BOOLEAN
+			-- Is `Current' a child of `a_other'
 		require
 			valid: is_valid
 			other_set: a_other /= void
 			other_valid: a_other.is_valid
 		do
-			Result := as_string.starts_with (a_other.as_string)
+			Result := has_prefix (a_other.as_string)
 		end
 
 	is_root: BOOLEAN
@@ -109,12 +97,12 @@ feature {NONE}-- Internal
 	internal_parent_path: like Current
 
 	init_parent_path
-			-- init `parent_path'
+			-- Init `parent_path'
 		local
 			l_parent_string: STRING
 			i: INTEGER
 		do
-			-- construct path of parent
+			-- Construct path of parent
 			from
 				i := Current.as_array.lower
 				create l_parent_string.make_empty
@@ -129,13 +117,13 @@ feature {NONE}-- Internal
 				i := i+1
 			end
 
-			create internal_parent_path.make_from_string (Current.root, l_parent_string)
+			create internal_parent_path.make_from_string (l_parent_string)
 		end
 
 	internal_as_array: like as_array
 
 	init_array_representation
-			-- init as_array
+			-- Initialize as_array
 		require
 			valid: is_valid
 		local
@@ -159,8 +147,8 @@ feature {NONE}-- Internal
 
 feature -- Validation
 
-	is_valid_path_expr(a_string_rep: like as_string):BOOLEAN
-			-- check if a_string_rep is a valid path expression
+	is_valid_path_expr (a_string_rep: like as_string):BOOLEAN
+			-- Check if a_string_rep is a valid path expression
 		local
 			split_list: LIST[STRING]
 		do
@@ -196,19 +184,17 @@ feature {NONE} -- Creation
 		require
 			non_void: an_other /= void
 		do
-			root := an_other.root
 			as_string := an_other.as_string
 			is_valid := an_other.is_valid
 
 			branch_id := an_other.branch_id
 		end
 
-	make_from_string(a_root: like root; a_string_rep: like as_string)
+	make_from_string(a_string_rep: like as_string)
 			-- make from a string
 		require
-			non_void: a_root /= void and a_string_rep /= void
+			non_void: a_string_rep /= void
 		do
-			root := a_root
 			as_string := a_string_rep
 			is_valid := is_valid_path_expr(as_string)
 
@@ -217,8 +203,8 @@ feature {NONE} -- Creation
 			end
 		end
 
-	make_from_child(a_child: like root; level: INTEGER)
-			-- make current as parent of child, n levels down
+	make_from_child(a_child: AST_EIFFEL; level: INTEGER)
+			-- Make current as parent of child, n levels down
 		require
 			non_void: a_child /= void
 			has_path: a_child.path /= void
@@ -228,8 +214,6 @@ feature {NONE} -- Creation
 			i: INTEGER
 			l_target_level: INTEGER
 		do
-			root := a_child.path.root
-
 			l_levels := a_child.path.as_array.count
 
 			if l_levels>level then
@@ -252,13 +236,11 @@ feature {NONE} -- Creation
 		end
 
 	make_from_parent(a_parent_path: like Current; a_branch_number: INTEGER)
-			-- make from parent
+			-- Make from parent
 		require
 			non_void: a_parent_path /= void
 			valid: a_parent_path.is_valid
 		do
-			root := a_parent_path.root
-
 			branch_id := a_branch_number
 
 			as_string := a_parent_path.as_string + separator.out + branch_id.out
@@ -266,10 +248,9 @@ feature {NONE} -- Creation
 			is_valid := true
 		end
 
-	make_as_root(a_root: like root)
+	make_as_root
 			-- make as root
 		do
-			root := a_root
 			as_string := "1"
 
 			is_valid := true

@@ -77,12 +77,16 @@ feature -- Output
 			node_stack.remove
 		end
 
-	enter_child (a_child: ANY)
+	enter_child (a_child: detachable ANY)
 			-- <precursor>
 		local
 			l_formatted_name: STRING
 		do
-			l_formatted_name := a_child.generating_type
+			if attached a_child then
+				l_formatted_name := a_child.generating_type
+			else
+				l_formatted_name := "VOID"
+			end
 			-- remove any spaces
 			l_formatted_name.replace_substring_all (" ", "")
 

@@ -53,9 +53,6 @@ feature {NONE} -- Implementation (Attributes)
 	block_end: INTEGER
 			-- Position where extraction ends
 
-	is_result_possibly_undef: BOOLEAN
-			-- Does the result have to be pre-initialized?
-
 feature {NONE} -- Implementation (Extraction)	
 
 	print_indep_type (a_var: ETR_TYPED_VAR): STRING
@@ -366,8 +363,8 @@ feature {NONE} -- Implementation (Printing)
 			l_body_output: ETR_AST_STRING_OUTPUT
 			l_result_is_arg: BOOLEAN
 			l_type_found: BOOLEAN
-
 			l_cur_ins: INTEGER
+			l_is_result_possibly_undef: BOOLEAN
 		do
 			create l_feature_output_text.make_empty
 			l_feature_output_text.append (a_feature_name)
@@ -380,14 +377,14 @@ feature {NONE} -- Implementation (Printing)
 						logger.log_info (" l_start = {"+l_start.first.out+","+l_start.second.out+"}, l_end =  {"+l_end.first.out+","+l_end.second.out+"}, l_after =  {"+l_after.first.out+","+l_after.second.out+"}")
 
 						if l_start.first < block_start and l_after.first < block_start and l_after.second >= block_start and l_end.second >= block_start then
-							logger.log_info ("is_result_possibly_undef = true")
-							is_result_possibly_undef := true
+							logger.log_info ("l_is_result_possibly_undef = true")
+							l_is_result_possibly_undef := true
 						end
 					end
 				end
 			end
 
-			if is_result_possibly_undef and not extracted_arguments.has (extracted_results.first) then
+			if l_is_result_possibly_undef and not extracted_arguments.has (extracted_results.first) then
 				extracted_arguments.extend(extracted_results.first)
 				arg_uses.extend (instrs[1].path, extracted_results.first)
 			end
@@ -503,12 +500,10 @@ feature {NONE} -- Implementation (Printing)
 			end
 
 			-- pre-initialized result
-			if is_result_possibly_undef or l_result_is_arg then
-				if extracted_results.first.is_equal (ti_result) then
-					l_feature_output_text.append (ti_result+ti_assign+"a_"+extracted_results.first+ti_new_line)
-				else
-					l_feature_output_text.append (ti_result+ti_assign+extracted_results.first+ti_new_line)
-				end
+			if l_is_result_possibly_undef then
+				l_feature_output_text.append (ti_result+ti_assign+extracted_results.first+ti_new_line)
+			elseif l_result_is_arg and not extracted_results.is_empty then
+				l_feature_output_text.append (ti_result+ti_assign+"a_"+ti_result+ti_new_line)
 			end
 
 			-- Print only block range
@@ -645,19 +640,17 @@ feature -- Operations
 			valid_transformable: a_feature.is_valid
 			valid_context: not a_feature.context.is_empty and a_feature.context.class_context /= void
 			valid_paths: a_start_path.is_valid and a_end_path.is_valid
-			root_has_paths: a_start_path.root.path /= void and a_end_path.root.path /= void
 		local
 			l_instr_list: EIFFEL_LIST[INSTRUCTION_AS]
 			l_feat_ast: FEATURE_AS
 			l_error_count: INTEGER
 		do
-			is_result_possibly_undef := false
 			l_error_count := error_handler.error_count
 
 			-- Check if valid context and valid ast!
 			if attached a_feature.context.class_context.written_in_features_by_name[a_context_feature] as l_ft_ctxt then
 				context := l_ft_ctxt
-				path_tools.find_node (a_start_path.parent_path, a_start_path.root)
+				path_tools.find_node (a_start_path.parent_path, a_feature.target_node)
 				if attached {EIFFEL_LIST[INSTRUCTION_AS]}path_tools.last_ast as l_instrs then
 					l_instr_list := l_instrs
 				else

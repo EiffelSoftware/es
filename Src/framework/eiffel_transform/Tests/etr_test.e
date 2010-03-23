@@ -119,7 +119,7 @@ feature -- Test routines
 			modifier.apply_to (conditional)
 
 			-- change operator to >=
-			mod1 := basic_operators.replace_with_string (create {AST_PATH}.make_from_string(modifier.modified_transformable.target_node, "1.1.2"), ">=")
+			mod1 := basic_operators.replace_with_string (create {AST_PATH}.make_from_string("1.1.2"), ">=")
 			modifier.add (mod1)
 			modifier.apply_to (modifier.modified_transformable)
 

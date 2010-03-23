@@ -23,21 +23,21 @@ feature -- Operations
 		end
 
 	reset
-			-- Resets the internals state
+			-- Resets the internals state.
 		deferred
 		ensure
 			no_depth: block_depth = 0
 		end
 
 	enter_block
-			-- Enters a new indentation-block
+			-- Enters a new indentation-block.
 		deferred
 		ensure
 			depth_increased: block_depth = old block_depth + 1
 		end
 
 	exit_block
-			-- Exits an indentation-block
+			-- Exits an indentation-block.
 		require
 			has_depth: block_depth > 0
 		deferred
@@ -45,20 +45,18 @@ feature -- Operations
 			depth_decreased: block_depth = old block_depth - 1
 		end
 
-	enter_child (a_child: ANY)
-			-- Enters a new child
-		require
-			non_void: a_child /= void
+	enter_child (a_child: detachable ANY)
+			-- Enters a new child.
 		deferred
 		end
 
 	exit_child
-			-- Exits a child
+			-- Exits a child.
 		deferred
 		end
 
 	append_string (a_string: STRING)
-			-- Appends `a_string' to the output
+			-- Appends `a_string' to the output.
 		require
 			not_void: a_string /= void
 		deferred

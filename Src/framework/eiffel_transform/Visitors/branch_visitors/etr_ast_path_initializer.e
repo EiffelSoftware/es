@@ -18,7 +18,7 @@ feature -- Operation
 		require
 			root_set: a_root /= void
 		do
-			a_root.set_path (create {AST_PATH}.make_as_root(a_root))
+			a_root.set_path (create {AST_PATH}.make_as_root)
 			a_root.process (Current)
 		end
 

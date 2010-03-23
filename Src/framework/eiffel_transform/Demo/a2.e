@@ -13,7 +13,7 @@ feature
 	test(a_var_a2: INTEGER; arg_c2_a2: like c_ren)
 		local
 			a_c: like c_ren
-			a2: like Current
+			a: like Current
 			str_a2: STRING
 		do
 			create c_ren
@@ -27,7 +27,7 @@ feature
 
 			c_ren ?= str_a2
 			a_c ?= c_ren
-			a2 ?= Current
+			a ?= Current
 		end
 
 	test2

@@ -16,7 +16,8 @@ inherit
 			process_list_with_separator,
 			process_assign_as,
 			process_reverse_as,
-			process_nested_expr_as
+			process_nested_expr_as,
+			process_result_as
 		end
 	SHARED_TEXT_ITEMS
 		export
@@ -109,6 +110,14 @@ feature {NONE} -- Implementation
 			-- Range of methods to extract
 
 feature {AST_EIFFEL} -- Roundtrip
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			if results.is_empty then
+				output.append_string ("a_")
+			end
+			output.append_string (ti_result)
+		end
 
 	process_assign_as (l_as: ASSIGN_AS)
 		do

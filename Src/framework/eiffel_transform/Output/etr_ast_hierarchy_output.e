@@ -32,7 +32,7 @@ feature -- Operations
 			block_depth := block_depth - 1
 		end
 
-	enter_child (a_child: ANY)
+	enter_child (a_child: detachable ANY)
 			-- <precursor>
 		do
 			if attached {AST_EIFFEL}a_child as ast_child then
@@ -46,8 +46,10 @@ feature -- Operations
 						current_indentation.twin+a_child.generating_type+" (br:0;bp:"+ast_child.breakpoint_slot.out+")%N"
 					)
 				end
-			else
+			elseif attached a_child then
 				context.add_string (current_indentation.twin+a_child.generating_type+"%N")
+			else
+				context.add_string (current_indentation.twin+"VOID%N")
 			end
 
 			current_indentation := current_indentation + indentation_string

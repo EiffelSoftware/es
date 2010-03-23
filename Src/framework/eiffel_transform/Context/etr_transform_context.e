@@ -124,7 +124,7 @@ feature -- Transformations
 							-- check if the type changed
 							l_old_expl_type := type_checker.explicit_type (l_old_feat.type, l_source_class_context.written_class, l_old_feat)
 							l_new_expl_type := type_checker.explicit_type (l_new_feat.type, l_target_class_context.written_class, l_new_feat)
-							
+
 							if not l_old_expl_type.same_as (l_new_expl_type) then
 								l_changed_type := true
 							end
@@ -240,18 +240,20 @@ feature -- Transformations
 						from
 							l_index := 1
 						until
-							l_index > l_source_feat_context.locals.count or l_index > l_target_feat_context.locals.count
+							l_index > l_source_feat_context.locals.count
 						loop
 							l_cur_old_local := l_source_feat_context.locals[l_index]
-							l_cur_new_local := l_target_feat_context.locals[l_index]
+							l_cur_new_local := l_target_feat_context.local_by_name[l_cur_old_local.name]
 
-							l_changed_var := changed_name_or_type(l_cur_old_local.name, l_cur_new_local.name, l_cur_old_local.resolved_type, l_cur_new_local.resolved_type)
-							if attached l_changed_var then
-								l_changed_args_locals.extend (l_changed_var)
+							if l_cur_new_local /= void then
+								l_changed_var := changed_name_or_type(l_cur_old_local.name, l_cur_new_local.name, l_cur_old_local.resolved_type, l_cur_new_local.resolved_type)
+								if attached l_changed_var then
+									l_changed_args_locals.extend (l_changed_var)
+								end
+
+								add_constraint_renamings (l_cur_old_local.name, l_cur_old_local.resolved_type, l_cur_new_local.resolved_type, l_constraint_renaming_list)
 							end
-
-							add_constraint_renamings (l_cur_old_local.name, l_cur_old_local.resolved_type, l_cur_new_local.resolved_type, l_constraint_renaming_list)
-
+							
 							l_index := l_index + 1
 						end
 					end

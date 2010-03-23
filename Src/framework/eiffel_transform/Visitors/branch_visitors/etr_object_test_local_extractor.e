@@ -36,7 +36,7 @@ feature -- Operation
 			root_set: a_root /= void
 		do
 			create current_scope.make
-			create current_path.make_as_root (a_root)
+			create current_path.make_as_root
 			a_root.process (Current)
 		end
 
@@ -128,6 +128,10 @@ feature {AST_EIFFEL} -- Roundtrip
 					l_written_type := type_checker.last_type
 				end
 				l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class, context.written_feature)
+
+				if not l_explicit_type.is_attached then
+					l_explicit_type := l_explicit_type.as_attached_type
+				end
 
 				context.object_test_locals.extend (create {ETR_OBJECT_TEST_LOCAL}.make_at (l_as.name.name, l_explicit_type, l_written_type, current_scope))
 			end

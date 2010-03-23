@@ -8,7 +8,7 @@ feature
 	test(a_var_a1: INTEGER; arg_c1_a1: C1)
 		local
 			a_c: like c
-			a1: like Current
+			a: like Current
 			str_a1: STRING
 		do
 			create c

@@ -11,6 +11,8 @@ inherit
 			{NONE} all
 		end
 	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		redefine
 			process_bool_as,
 			process_char_as,
@@ -123,10 +125,10 @@ create
 
 feature {NONE} -- Creation
 
-	make_with_output (an_output: like output)
-			-- Make with `an_output'
+	make_with_output (a_output: like output)
+			-- Make with `a_output'
 		do
-			output := an_output
+			output := a_output
 		end
 
 feature {NONE} -- Implementation (Attributes)
@@ -250,10 +252,10 @@ feature -- Output
 
 	output: ETR_AST_STRUCTURE_OUTPUT_I
 
-	print_ast_to_output (an_ast: detachable AST_EIFFEL)
-			-- Prints `an_ast' to `output'
+	print_ast_to_output (a_ast: detachable AST_EIFFEL)
+			-- Prints `a_ast' to `output'.
 		do
-			process_child (an_ast, void, 0)
+			process_child (a_ast, void, 0)
 		end
 
 feature {AST_EIFFEL} -- Roundtrip: Atomic

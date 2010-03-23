@@ -72,16 +72,12 @@ feature -- Basic operation
 					success := False
 					error_message := interface_names.l_invalid_start_position
 				else
-					l_start_path.set_root (l_feat_ast)
-
 					path_tools.find_path_from_line (l_orig_feat, l_matchlist, end_line)
 					l_end_path := path_tools.last_path
 
 					if l_end_path = void or else l_end_path.is_root then
 						success := False
 						error_message := interface_names.l_invalid_end_position
-					else
-						l_end_path.set_root (l_feat_ast)
 					end
 				end
 			end

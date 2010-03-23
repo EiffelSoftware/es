@@ -36,7 +36,7 @@ feature -- Operation
 			found_path := void
 			found_node := void
 
-			create current_path.make_as_root (a_ast)
+			create current_path.make_as_root
 
 			if is_target(a_ast) then
 				found := true

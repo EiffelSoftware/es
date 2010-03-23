@@ -31,7 +31,7 @@ feature -- Operation
 
 			constant := a_constant
 			create {LINKED_LIST[AST_PATH]}found_constants.make
-			create current_path.make_as_root (a_root)
+			create current_path.make_as_root
 			a_root.process (Current)
 		end
 

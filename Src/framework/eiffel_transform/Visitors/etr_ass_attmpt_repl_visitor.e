@@ -80,6 +80,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			l_current_mapping: HASH_TABLE[INTEGER,INTEGER]
 			l_mod: ETR_TRACKABLE_MODIFICATION
 			l_ot_local_name: STRING
+			l_new_count: INTEGER
 		do
 			l_feat_context := class_context.written_in_features_by_name[current_feature]
 
@@ -97,7 +98,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_cur_slot := l_as.breakpoint_slot
 				l_current_mapping.extend (l_cur_slot, l_cur_slot)
 				l_current_mapping.extend (l_cur_slot, l_cur_slot+1)
-				l_current_mapping.extend (l_cur_slot, l_cur_slot+2)
+				l_new_count := 2
 
 				l_ot_local_name := "lot_" + id_counter.out
 				id_counter := id_counter + 1
@@ -107,6 +108,8 @@ feature {AST_EIFFEL} -- Roundtrip
 
 				-- This is to be inline with the semantics of assignment attempts
 				if not l_target_type.is_expanded then
+					l_current_mapping.extend (l_cur_slot, l_cur_slot+2)
+					l_new_count := l_new_count + 1
 					l_replacement.append_string ("else%N")
 					l_replacement.append_string (l_target_string+" := void%N")
 				end
@@ -114,7 +117,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				l_replacement.append_string ("end%N")
 
 				create l_mod.make_replace (l_as.path, l_replacement)
-				l_mod.initialize_tracking_info (l_current_mapping, l_cur_slot, 1, 3)
+				l_mod.initialize_tracking_info (l_current_mapping, l_cur_slot, 1, l_new_count)
 				modifications.extend (l_mod)
 			else
 				error_handler.add_error (Current, "process_reverse_as", "Context of feature "+current_feature+" not found.")

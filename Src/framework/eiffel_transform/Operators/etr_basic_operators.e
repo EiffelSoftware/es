@@ -82,7 +82,7 @@ feature -- Modifications
 			a_replacement_valid: a_replacement.is_valid
 			a_list_valid: a_list.is_valid
 		do
-			create Result.make_list_put_ith (a_list, a_position, a_replacement)
+			create Result.make_replace (create {AST_PATH}.make_from_parent(a_list, a_position), a_replacement.out)
 		end
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

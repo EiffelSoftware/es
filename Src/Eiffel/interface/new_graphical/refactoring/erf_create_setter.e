@@ -165,7 +165,7 @@ feature {NONE} -- Implementation
 
 				if preferences.use_as_assigner then
 					-- relative to a feature "1.2.3" is always the assigner
-					l_transformable.apply_modification (basic_operators.replace_with_string (create {AST_PATH}.make_from_string(l_transformable, f_assigner), preferences.setter_name))
+					l_transformable.apply_modification (basic_operators.replace_with_string (create {AST_PATH}.make_from_string(f_assigner), preferences.setter_name))
 
 					-- extract original comment
 					l_comment := ast_tools.extract_feature_comments (l_feat_ast, l_matchlist)

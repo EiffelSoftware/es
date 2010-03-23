@@ -40,6 +40,7 @@ feature -- Force compilation
 
 	hier_out: ETR_AST_HIERARCHY_OUTPUT
 	comp_helper: ETR_COMPILATION_HELPER
+	test: ETR_TEST
 
 feature -- Entry point
 
@@ -74,7 +75,7 @@ feature -- Test features
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", "test_wrap")
 			l_trans.enable_code_tracking
-			wrap.wrap_statement (l_trans, create {AST_PATH}.make_from_string(l_trans.target_node, f_first_instruction), transformable_factory.new_expr ("l1 /= l2", context_factory.new_empty_context))
+			wrap.wrap_statement (l_trans, create {AST_PATH}.make_from_string(f_first_instruction), transformable_factory.new_expr ("l1 /= l2", context_factory.new_empty_context))
 			l_trans.apply_modifications (wrap.modifications)
 
 			dbg_check_trans (l_trans)
@@ -97,7 +98,7 @@ feature -- Test features
 									"io.putstring(io.putstring(arg_c1_a1.c1_b))%N"+ -- argument type and name change
 									"io.putstring(a_c.c1_a_renamed.out)%N"+ -- local type change
 									"io.putstring(other.arg_c1_a1.c1_b)%N"+ -- same name, no renaming
-									"io.putstring(a1.generating_type)%N"+ -- Current changed
+									"io.putstring(a.generating_type)%N"+ -- Current changed
 									"io.putstring((c+arg_c1_a1.c1_b).out)%N"+ -- Nested expr
 									"create str_a1.make_from_string(arg_c1_a1.c1_b)%N"+ -- creation
 									"io.putstring(create {STRING}.make_from_string(a_c.c1_a_renamed))%N"+ -- creation expr
@@ -108,7 +109,6 @@ feature -- Test features
 									"if attached {like Current}c as l_a then%N"+ -- Object test local with current anchor
 									"io.putstring(l_a.next.next.next.next.c.c1_a_renamed)%N"+ -- Deep nesting
 									"io.putstring(l_a.c.c1_b)%Nend%N"+
-									"io.putstring(str_a1)%N"+ -- renamed local
 									"end", a1_context )
 
 			-- transform to `a2_context'
@@ -185,8 +185,8 @@ feature -- Test features
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", method_name)
 
-			create l_start.make_from_string(l_trans.target_node,a_start)
-			create l_end.make_from_string(l_trans.target_node,a_end)
+			create l_start.make_from_string(a_start)
+			create l_end.make_from_string(a_end)
 
 			method_extractor.extract_method (l_trans,
 								method_name,
@@ -377,6 +377,11 @@ feature -- Helper features
 			end
 		end
 
+	diff: DIFF_TEXT
+		once
+			create Result
+		end
+
 	dbg_check_trans (a_transformable: ETR_TRANSFORMABLE)
 		local
 			l_ref_file: PLAIN_TEXT_FILE
@@ -390,7 +395,9 @@ feature -- Helper features
 				l_ref_file.open_read
 				l_ref_file.read_stream (l_ref_file.count)
 				if not is_trans_equal_to (a_transformable, l_ref_file.last_string) then
-					logger.log_error ("Non-matching transformable. Expected:%N----%N"+l_ref_file.last_string+"%N----%Nbut got:%N----%N"+a_transformable.out+"-----")
+					diff.set_text (l_ref_file.last_string, a_transformable.out)
+					diff.compute_diff
+					logger.log_error ("Non-matching transformable. Expected:%N----%N"+l_ref_file.last_string+"%N----%Nbut got:%N----%N"+a_transformable.out+"-----%NDiff:%N-----%N"+diff.unified)
 					has_failed_assertion := true
 				end
 				l_ref_file.close

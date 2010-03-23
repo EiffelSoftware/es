@@ -50,14 +50,13 @@ feature {NONE} -- Creation
 					del.extend (modifications.item)
 				elseif modifications.item.is_replace then
 					repl.extend (modifications.item)
-				elseif modifications.item.is_list_put_ith then
-					-- convert to replace!
-					path_tools.find_node (modifications.item.location, modifications.item.location.root)
-					if attached {EIFFEL_LIST[AST_EIFFEL]}path_tools.last_ast as list and then list.count>=modifications.item.list_position then
-						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, ast_tools.ast_to_string(modifications.item.new_transformable.target_node)))
-					else
-						check false end
-					end
+--				elseif modifications.item.is_list_put_ith then
+--					-- convert to replace!
+--					path_tools.find_node (modifications.item.location, modifications.item.location.root)
+--					repl.extend (create {AST_PATH}.make_from_parent(modifications.item.location, modifications.item.list_position)
+--					if attached {EIFFEL_LIST[AST_EIFFEL]}path_tools.last_ast as list and then list.count>=modifications.item.list_position then
+--						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, ast_tools.ast_to_string(modifications.item.new_transformable.target_node)))
+--					end
 				elseif modifications.item.is_list_append then
 					app.extend(modifications.item)
 				elseif modifications.item.is_list_prepend then
@@ -78,7 +77,9 @@ feature {NONE} -- Creation
 				app.after
 			loop
 				app_hash.extend(app.item)
-				app_prep_hash.extend (app.item, app.item.location)
+				if not app_prep_hash.has (app.item.location) then
+					app_prep_hash.extend (app.item, app.item.location)
+				end
 				app.forth
 			end
 			from
@@ -88,7 +89,9 @@ feature {NONE} -- Creation
 				prep.after
 			loop
 				prep_hash.extend(prep.item)
-				app_prep_hash.extend (prep.item, prep.item.location)
+				if not app_prep_hash.has (prep.item.location) then
+					app_prep_hash.extend (prep.item, prep.item.location)
+				end
 				prep.forth
 			end
 
@@ -99,7 +102,7 @@ feature {NONE} -- Creation
 			until
 				repl.after
 			loop
-				repl_hash.extend (repl.item, repl.item.location)
+				repl_hash.force (repl.item, repl.item.location)
 				repl.forth
 			end
 
@@ -110,7 +113,7 @@ feature {NONE} -- Creation
 			until
 				del.after
 			loop
-				del_hash.extend (del.item, del.item.location)
+				del_hash.force (del.item, del.item.location)
 				del.forth
 			end
 

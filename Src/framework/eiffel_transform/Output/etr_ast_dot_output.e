@@ -83,11 +83,18 @@ feature -- Output
 			node_stack.remove
 		end
 
-	enter_child (a_child: ANY)
+	enter_child (a_child: detachable ANY)
 			-- <precursor>
+		local
+			l_name: STRING
 		do
 			-- Create label for the new node
-			context.add_string ("%T{node [label=%""+a_child.generating_type+"%"] "+node_counter.out+"}%N")
+			if attached a_child then
+				l_name := a_child.generating_type
+			else
+				l_name := "VOID"
+			end
+			context.add_string ("%T{node [label=%""+l_name+"%"] "+node_counter.out+"}%N")
 			-- Create edge from the current node
 			if not node_stack.is_empty then
 				if attached {AST_EIFFEL}a_child as ast_child and then attached ast_child.path then

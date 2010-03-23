@@ -289,7 +289,7 @@ feature -- Operations
 							end
 						else
 							-- insert new feature clause to feature-clause list (1.8)
-							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string(declaring_class.ast, "1.8"), create {ETR_TRANSFORMABLE}.make(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
+							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string("1.8"), create {ETR_TRANSFORMABLE}.make(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
 						end
 					end
 
