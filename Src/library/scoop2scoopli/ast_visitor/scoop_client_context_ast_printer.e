@@ -1,6 +1,11 @@
 note
 	description: "[
-					A roundtrip visitor for the generation of client class elements. It keeps track of the types encountered during the traversal and translates comparison operators.
+					A roundtrip visitor for the generation of common client class elements. In particular:
+					
+					- It analyses call chains in terms of types. It also writes call chains that involve SCOOP processing using the generated SCOOP classes. These generated call chains either involve both proxies and clients or just clients. This is controlled with the avoid proxy calls in call chains flag.
+					- It translates comparison operators.
+					- It replaces separate types with proxy class types.
+					- It transformed creation instructions and creation expressions.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -48,7 +53,8 @@ inherit
 			process_if_as,
 			process_elseif_as,
 			process_object_test_as,
-			process_inline_agent_creation_as
+			process_inline_agent_creation_as,
+			process_agent_routine_creation_as
 		end
 
 	SCOOP_CLASS_NAME
@@ -70,6 +76,7 @@ feature {NONE} -- Initialization
 	make (a_ctxt: ROUNDTRIP_CONTEXT)
 			-- Initialize and set `context' with `a_ctxt'.
 			-- Initialize the level layers, the object tests layers and the inline agents layers.
+			-- Initialize the visitor to use proxy calls in generated call chains.
 		require
 			a_ctxt_not_void: a_ctxt /= Void
 		do
@@ -78,22 +85,28 @@ feature {NONE} -- Initialization
 			initialize_level_layers
 			initialize_object_tests_layers
 			initialize_inline_agents_layers
+
+			avoid_proxy_calls_in_call_chains := false
 		end
 
 	make_with_default_context
 			-- Initialize and create context of type `ROUNDTRIP_STRING_LIST_CONTEXT'.
 			-- Initialize the level layers, the object tests layers and the inline agents layers.
+			-- Initialize the visitor to use proxy calls in generated call chains.
 		do
 			make (create {ROUNDTRIP_STRING_LIST_CONTEXT}.make)
 
 			initialize_level_layers
 			initialize_object_tests_layers
 			initialize_inline_agents_layers
+
+			avoid_proxy_calls_in_call_chains := false
 		end
 
 feature {NONE} -- Type expression processing
 
 	process_class_type_as (l_as: CLASS_TYPE_AS)
+			-- Adapt the type 'l_as' for generated SCOOP classes.
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			safe_process (l_as.attachment_mark (match_list))
@@ -115,6 +128,7 @@ feature {NONE} -- Type expression processing
 		end
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
+			-- Adapt the type 'l_as' for generated SCOOP classes.
 		local
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
@@ -146,6 +160,7 @@ feature {NONE} -- Type expression processing
 		end
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
+			-- Adapt the type 'l_as' for generated SCOOP classes.
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			safe_process (l_as.attachment_mark (match_list))
@@ -234,6 +249,13 @@ feature {NONE} -- Calls processing
 
 			-- process internal parameters and add current if target is of separate type.
 			process_internal_parameters(l_as.internal_parameters)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
@@ -245,6 +267,13 @@ feature {NONE} -- Calls processing
 
 			-- process internal parameters and add current if target is of separate type.
 			process_internal_parameters(l_as.internal_parameters)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_access_inv_as (l_as: ACCESS_INV_AS)
@@ -257,6 +286,13 @@ feature {NONE} -- Calls processing
 
 			-- process internal parameters and add current if target is of separate type.
 			process_internal_parameters(l_as.internal_parameters)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
@@ -267,6 +303,13 @@ feature {NONE} -- Calls processing
 
 			-- process internal parameters and add current if target is of separate type.
 			process_internal_parameters(l_as.internal_parameters)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
@@ -281,6 +324,13 @@ feature {NONE} -- Calls processing
 
 			-- process internal parameters and add current if target is of separate type.
 			process_internal_parameters(l_as.internal_parameters)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS)
@@ -290,6 +340,13 @@ feature {NONE} -- Calls processing
 			safe_process (l_as.parent_base_class)
 			update_current_level_with_call (l_as)
 			process_internal_parameters(l_as.internal_parameters)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_result_as (l_as: RESULT_AS)
@@ -297,6 +354,13 @@ feature {NONE} -- Calls processing
 		do
 			Precursor (l_as)
 			update_current_level_with_call (l_as)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_current_as (l_as: CURRENT_AS)
@@ -304,6 +368,13 @@ feature {NONE} -- Calls processing
 		do
 			Precursor (l_as)
 			update_current_level_with_call (l_as)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_nested_as (l_as: NESTED_AS)
@@ -349,421 +420,454 @@ feature {NONE} -- Expressions processing
 			l_is_left_expression_separate, l_is_right_expression_separate: BOOLEAN
 			l_left_type : TYPE_A
 		do
-			-- Most operations of a binary expression are features declared in classes.
-			-- There are only few exceptions from this rule. The boolean comparison operators '=', '/=', '~', and '/~' are not represented as features of a class. The compiler knows these symbols and matches them to features initially declared in 'ANY'. Therefore these operators need special treatment.
-			-- For the handling of a binary operation it is important to know the separateness and the type of the left and right expression.
-			-- Note: A binary operator can be nested within another binary or unary operator. But it is always at the beginning of a call chain.
+			-- Check whether we are generating proxy calls in the call chains. The processing of binary nodes differs significantly, depending on this option.
+			if not avoid_proxy_calls_in_call_chains then
+				-- Most operations of a binary expression are features declared in classes.
+				-- There are only few exceptions from this rule. The boolean comparison operators '=', '/=', '~', and '/~' are not represented as features of a class. The compiler knows these symbols and matches them to features initially declared in 'ANY'. Therefore these operators need special treatment.
+				-- For the handling of a binary operation it is important to know the separateness and the type of the left and right expression.
+				-- Note: A binary operator can be nested within another binary or unary operator. But it is always at the beginning of a call chain.
 
-			-- Determine the separateness and the type of the left expression.
-			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
-			-- TODO: This doesn't handle the convert clauses where the types may be `converted'
-			l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.left, flattened_object_tests_layers, flattened_inline_agents_layers)
-			l_is_left_expression_separate := l_type_expression_visitor.is_expression_separate
-			l_left_type := l_type_expression_visitor.expression_type
+				-- Determine the separateness and the type of the left expression.
+				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+				-- TODO: This doesn't handle the convert clauses where the types may be `converted'
+				l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.left, flattened_object_tests_layers, flattened_inline_agents_layers)
+				l_is_left_expression_separate := l_type_expression_visitor.is_expression_separate
+				l_left_type := l_type_expression_visitor.expression_type
 
-			-- Determine the separateness and the type of the left expression.
-			-- The left expression could introduce object test locals that need to be available in the evaluation of the right expression.
-			-- For this we add an object tests layer to accomodate all these object test locals.
-			-- Once the right expression has been evaluated the new object tests layer can be removed once again.
-			add_object_tests_layer
-			add_multiple_to_current_object_tests_layer (l_type_expression_visitor.object_test_context_update)
-			l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.right, flattened_object_tests_layers, flattened_inline_agents_layers)
-			l_is_right_expression_separate := l_type_expression_visitor.is_expression_separate
-			remove_current_object_tests_layer
+				-- Determine the separateness and the type of the left expression.
+				-- The left expression could introduce object test locals that need to be available in the evaluation of the right expression.
+				-- For this we add an object tests layer to accomodate all these object test locals.
+				-- Once the right expression has been evaluated the new object tests layer can be removed once again.
+				add_object_tests_layer
+				add_multiple_to_current_object_tests_layer (l_type_expression_visitor.object_test_context_update)
+				l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.right, flattened_object_tests_layers, flattened_inline_agents_layers)
+				l_is_right_expression_separate := l_type_expression_visitor.is_expression_separate
+				remove_current_object_tests_layer
 
-			-- Process the binary operator.
-			-- What kind of operator do we have?
-			if {l_bin_not_tilde_as: BIN_NOT_TILDE_AS} l_as then
-				-- We have a '/~' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
-				-- An expression 'left_separate /~ right_separate' gets translated to:
-				-- 	(left_separate = Void or else right_separate = Void) or else
-				--	(
-				--		left_separate /= Void and then right_separate /= Void and then
-				--		left_separate.implementation_ /~ right_separate.implementation_
-				--	)
-				-- An expression 'left_separate /~ right_non_separate' gets translated to:
-				--	(left_separate = Void or else right_non_separate = Void) or else
-				--	(
-				--		left_separate /= Void and then right_non_separate /= Void and then
-				--		left_separate.implementation_ /~ right_non_separate
-				--	)
-				-- An expression 'left_non_separate /~ right_separate' gets translated to:
-				--	(left_non_separate = Void or else right_separate = Void) or else
-				--	(
-				--		left_non_separate /= Void and then right_separate /= Void and then
-				--		left_non_separate /~ right_separate.implementation_
-				--	)
-				-- An expression 'left_non_separate /~ right_non_separate' gets translated to:
-				--	left_non_separate /~ right_non_separate
+				-- Process the binary operator.
+				-- What kind of operator do we have?
+				if {l_bin_not_tilde_as: BIN_NOT_TILDE_AS} l_as then
+					-- We have a '/~' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
+					-- An expression 'left_separate /~ right_separate' gets translated to:
+					-- 	(left_separate = Void or else right_separate = Void) or else
+					--	(
+					--		left_separate /= Void and then right_separate /= Void and then
+					--		left_separate.implementation_ /~ right_separate.implementation_
+					--	)
+					-- An expression 'left_separate /~ right_non_separate' gets translated to:
+					--	(left_separate = Void or else right_non_separate = Void) or else
+					--	(
+					--		left_separate /= Void and then right_non_separate /= Void and then
+					--		left_separate.implementation_ /~ right_non_separate
+					--	)
+					-- An expression 'left_non_separate /~ right_separate' gets translated to:
+					--	(left_non_separate = Void or else right_separate = Void) or else
+					--	(
+					--		left_non_separate /= Void and then right_separate /= Void and then
+					--		left_non_separate /~ right_separate.implementation_
+					--	)
+					-- An expression 'left_non_separate /~ right_non_separate' gets translated to:
+					--	left_non_separate /~ right_non_separate
 
-				-- What is the separateness of the left and the right expression?
-				if not l_is_left_expression_separate and not l_is_right_expression_separate then
-					-- Both expressions are non separate.
-					safe_process (l_as.left)
-					safe_process (l_as.operator (match_list))
-					add_levels_layer
-					safe_process (l_as.right)
-					remove_current_levels_layer
-				else
-					-- At least one of the expression is separate.
-
-					-- Create the beginning of the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" = Void")
-					context.add_string (" or else ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" = Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (")")
-					context.add_string (" or else ")
-					reset_current_levels_layer
-
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" /= Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (" and then ")
-					reset_current_levels_layer
-
-					-- Create the operation invocation part on the client objects.
-					if not l_is_left_expression_separate and l_is_right_expression_separate then
+					-- What is the separateness of the left and the right expression?
+					if not l_is_left_expression_separate and not l_is_right_expression_separate then
+						-- Both expressions are non separate.
 						safe_process (l_as.left)
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
 						safe_process (l_as.operator (match_list))
 						add_levels_layer
 						safe_process (l_as.right)
 						remove_current_levels_layer
-					elseif l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					end
-
-					-- Create the end of the common void check part.
-					context.add_string (")")
-				end
-
-				-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
-				reset_current_levels_layer
-				update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-			elseif {l_bin_ne_as: BIN_NE_AS} l_as then
-				-- We have a '/=' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
-				-- An expression 'left_separate /= right_separate' gets translated to:
-				-- 	(left_separate = Void and then right_separate /= Void) or else
-				--	(left_separate /= Void and then right_separate = Void) or else
-				--	(
-				--		left_separate /= Void and then right_separate /= Void and then
-				--		left_separate.implementation_ /= right_separate.implementation_
-				--	)
-				-- An expression 'left_separate /= right_non_separate' gets translated to:
-				--	(left_separate = Void and then right_non_separate /= Void) or else
-				--	(left_separate /= Void and then right_non_separate = Void) or else
-				--	(
-				--		left_separate /= Void and then right_non_separate /= Void and then
-				--		left_separate.implementation_ /= right_non_separate
-				--	)
-				-- An expression 'left_non_separate /= right_separate' gets translated to:
-				--	(left_non_separate = Void and then right_separate /= Void) or else
-				--	(left_non_separate /= Void and then right_separate = Void) or else
-				--	(
-				--		left_non_separate /= Void and then right_separate /= Void and then
-				--		left_non_separate /= right_separate.implementation_
-				--	)
-				-- An expression 'left_non_separate /= right_non_separate' gets translated to:
-				--	left_non_separate /= right_non_separate
-
-				-- What is the separateness of the left and the right expression?
-				if not l_is_left_expression_separate and not l_is_right_expression_separate then
-					-- Both expressions are non-separate.
-					safe_process (l_as.left)
-					safe_process (l_as.operator (match_list))
-					add_levels_layer
-					safe_process (l_as.right)
-					remove_current_levels_layer
-				else
-					-- At least one of the expression is separate.
-
-					-- Create the beginning of the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" = Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (")")
-					context.add_string (" or else ")
-					reset_current_levels_layer
-
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" /= Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" = Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (")")
-					context.add_string (" or else ")
-					reset_current_levels_layer
-
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" /= Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (" and then ")
-					reset_current_levels_layer
-
-					-- Create the operation invocation part on the client objects.
-					if not l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left)
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right)
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					end
-
-					-- Create the end of the common void check part.
-					context.add_string (")")
-				end
-
-				-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
-				reset_current_levels_layer
-				update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-			elseif {l_bin_tilde_as: BIN_TILDE_AS} l_as then
-				-- We have a '~' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
-				-- An expression 'left_separate ~ right_separate' gets translated to:
-				-- 	left_separate /= Void and then
-				--	right_separate /= Void and then
-				--	left_separate.implementation_ ~ right_separate.implementation_
-				-- An expression 'left_separate ~ right_non_separate' gets translated to:
-				--	left_separate /= Void and then
-				--	right_non_separate /= Void and then
-				--	left_separate.implementation_ ~ right_non_separate
-				-- An expression 'left_non_separate ~ right_separate' gets translated to:
-				--	left_non_separate /= Void and then
-				--	right_separate /= Void and then
-				--	left_non_separate ~ right_separate.implementation_
-				-- An expression 'left_non_separate ~ right_non_separate' gets translated to:
-				--	left_non_separate ~ right_non_separate
-
-				-- What is the separateness of the left and the right expression?
-				if not l_is_left_expression_separate and not l_is_right_expression_separate then
-					-- Both expressions are non-separate.
-					safe_process (l_as.left)
-					safe_process (l_as.operator (match_list))
-					add_levels_layer
-					safe_process (l_as.right)
-					remove_current_levels_layer
-				else
-					-- At least one of the expression is separate.
-
-					-- Create the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" /= Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (" and then ")
-					reset_current_levels_layer
-
-					-- Create the operation invocation part on the client objects.
-					if not l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left)
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right)
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					end
-				end
-
-				-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
-				reset_current_levels_layer
-				update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-			elseif {l_bin_eq_as: BIN_EQ_AS} l_as then
-				-- We have a '=' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
-				-- An expression 'left_separate = right_separate' gets translated to:
-				-- 	(left_separate = Void and then right_separate = Void) or else
-				-- 	(
-				--		left_separate /= Void and then right_separate /= Void and then
-				--		left_separate.implementation_ = right_separate.implementation_
-				--	)
-				-- An expression 'left_separate = right_non_separate' gets translated to:
-				--	(left_separate = Void and then right_non_separate = Void) or else
-				--	(
-				--		left_separate /= Void and then right_non_separate /= Void and then
-				--		left_separate.implementation_ = right_non_separate
-				--	)
-				-- An expression 'left_non_separate = right_separate' gets translated to:
-				--	(left_non_separate = Void and then right_separate = Void) or else
-				--	(
-				--		left_non_separate /= Void and then right_separate /= Void and then
-				--		left_non_separate = right_separate.implementation_
-				--	)
-				-- An expression 'left_non_separate = right_non_separate' gets translated to:
-				--	left_non_separate = right_non_separate
-
-				-- What is the separateness of the left and the right expression?
-				if not l_is_left_expression_separate and not l_is_right_expression_separate then
-					-- Both expressions are non-separate.
-					safe_process (l_as.left)
-					safe_process (l_as.operator (match_list))
-					add_levels_layer
-					safe_process (l_as.right)
-					remove_current_levels_layer
-				else
-					-- At least one of the expression is separate.
-
-					-- Create the beginning of the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" = Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" = Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (")")
-					context.add_string (" or else ")
-					reset_current_levels_layer
-
-					context.add_string ("(")
-					add_object_tests_layer
-					safe_process (l_as.left); context.add_string (" /= Void")
-					context.add_string (" and then ")
-					add_levels_layer
-					last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
-					remove_current_levels_layer
-					remove_current_object_tests_layer
-					context.add_string (" and then ")
-					reset_current_levels_layer
-
-					-- Create the operation invocation part on the client objects.
-					if not l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left)
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right)
-						remove_current_levels_layer
-					elseif l_is_left_expression_separate and l_is_right_expression_separate then
-						safe_process (l_as.left); context.add_string (".implementation_")
-						safe_process (l_as.operator (match_list))
-						add_levels_layer
-						safe_process (l_as.right); context.add_string (".implementation_")
-						remove_current_levels_layer
-					end
-
-					-- Create the end of the common void check part.
-					context.add_string (")")
-				end
-
-				-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
-				reset_current_levels_layer
-				update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-			else
-				-- We have an operator different than '=', '/=', '~', or '/~'. It is a feature of the left expression and the right expression is the argument.
-
-				-- Is the left expression separate?
-				if l_is_left_expression_separate then
-					-- Yes, the left expression is separate: Replace the infix call with a non-infix call, because the proxy doesn't have aliases anymore.
-
-					-- Process the left expression and update the current level with its type to resolve the operator in this type. Processing the left expression only maintains this type while the expression is processed. We use the type expression visitor to update the current level.
-					safe_process (l_as.left)
-					reset_current_levels_layer
-					update_current_level_with_type (l_is_left_expression_separate, l_left_type)
-
-					-- Add a level, process the operator as a non-infix, non-alias feature and update the new level.
-					add_level
-					l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-					-- l_feature_name_visitor.process_infix_str (l_as.operator_ast.name)
-					-- context.add_string ("." + l_feature_name_visitor.get_feature_name)
-					convert_infix (l_left_type, l_as.operator_ast.name)
-					last_index := l_as.operator_index
-					update_current_level_with_name (l_as.infix_function_name)
-					-- Note: This class could inherit from PREFIX_INFIX_NAMES.. then it can be used to resolve symbols to prefix or infix names
-
-					-- Process the right expression as an argument. The target is a separate and therefore it is a proxy object. Thus we need to add the caller as a first actual argument.
-					context.add_string ("(Current,")
-					add_levels_layer
-					safe_process (l_as.right)
-					remove_current_levels_layer
-					context.add_string (")")
-				else
-					-- No, the left expression is not separate: Process it is as usual.
-
-					-- Process the left expression and update the current level with its type to resolve the operator in this type. Processing the left expression only maintains this type while the expression is processed. We use the type expression visitor to update the current level.
-					safe_process (l_as.left)
-					reset_current_levels_layer
-					update_current_level_with_type (l_is_left_expression_separate, l_left_type)
-
-					-- Add a level, process the operator and update the new level.
-					add_level
-					if {l_bin_and_then_as: BIN_AND_THEN_AS} l_as then
-						safe_process (l_bin_and_then_as.and_keyword (match_list))
-						safe_process (l_bin_and_then_as.then_keyword (match_list))
-					elseif {l_or_else_as: BIN_OR_ELSE_AS} l_as then
-						safe_process (l_or_else_as.or_keyword (match_list))
-						safe_process (l_or_else_as.else_keyword (match_list))
 					else
-						safe_process (l_as.operator (match_list))
-					end
-					update_current_level_with_name (l_as.infix_function_name)
+						-- At least one of the expression is separate.
 
-					-- Process the right expression as an argument.
-					add_levels_layer
-					safe_process (l_as.right)
-					remove_current_levels_layer
+						-- Create the beginning of the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" = Void")
+						context.add_string (" or else ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" = Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (")")
+						context.add_string (" or else ")
+						reset_current_levels_layer
+
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" /= Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (" and then ")
+						reset_current_levels_layer
+
+						-- Create the operation invocation part on the client objects.
+						if not l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						end
+
+						-- Create the end of the common void check part.
+						context.add_string (")")
+					end
+
+					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
+					reset_current_levels_layer
+					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+				elseif {l_bin_ne_as: BIN_NE_AS} l_as then
+					-- We have a '/=' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
+					-- An expression 'left_separate /= right_separate' gets translated to:
+					-- 	(left_separate = Void and then right_separate /= Void) or else
+					--	(left_separate /= Void and then right_separate = Void) or else
+					--	(
+					--		left_separate /= Void and then right_separate /= Void and then
+					--		left_separate.implementation_ /= right_separate.implementation_
+					--	)
+					-- An expression 'left_separate /= right_non_separate' gets translated to:
+					--	(left_separate = Void and then right_non_separate /= Void) or else
+					--	(left_separate /= Void and then right_non_separate = Void) or else
+					--	(
+					--		left_separate /= Void and then right_non_separate /= Void and then
+					--		left_separate.implementation_ /= right_non_separate
+					--	)
+					-- An expression 'left_non_separate /= right_separate' gets translated to:
+					--	(left_non_separate = Void and then right_separate /= Void) or else
+					--	(left_non_separate /= Void and then right_separate = Void) or else
+					--	(
+					--		left_non_separate /= Void and then right_separate /= Void and then
+					--		left_non_separate /= right_separate.implementation_
+					--	)
+					-- An expression 'left_non_separate /= right_non_separate' gets translated to:
+					--	left_non_separate /= right_non_separate
+
+					-- What is the separateness of the left and the right expression?
+					if not l_is_left_expression_separate and not l_is_right_expression_separate then
+						-- Both expressions are non-separate.
+						safe_process (l_as.left)
+						safe_process (l_as.operator (match_list))
+						add_levels_layer
+						safe_process (l_as.right)
+						remove_current_levels_layer
+					else
+						-- At least one of the expression is separate.
+
+						-- Create the beginning of the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" = Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (")")
+						context.add_string (" or else ")
+						reset_current_levels_layer
+
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" /= Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" = Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (")")
+						context.add_string (" or else ")
+						reset_current_levels_layer
+
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" /= Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (" and then ")
+						reset_current_levels_layer
+
+						-- Create the operation invocation part on the client objects.
+						if not l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						end
+
+						-- Create the end of the common void check part.
+						context.add_string (")")
+					end
+
+					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
+					reset_current_levels_layer
+					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+				elseif {l_bin_tilde_as: BIN_TILDE_AS} l_as then
+					-- We have a '~' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
+					-- An expression 'left_separate ~ right_separate' gets translated to:
+					-- 	left_separate /= Void and then
+					--	right_separate /= Void and then
+					--	left_separate.implementation_ ~ right_separate.implementation_
+					-- An expression 'left_separate ~ right_non_separate' gets translated to:
+					--	left_separate /= Void and then
+					--	right_non_separate /= Void and then
+					--	left_separate.implementation_ ~ right_non_separate
+					-- An expression 'left_non_separate ~ right_separate' gets translated to:
+					--	left_non_separate /= Void and then
+					--	right_separate /= Void and then
+					--	left_non_separate ~ right_separate.implementation_
+					-- An expression 'left_non_separate ~ right_non_separate' gets translated to:
+					--	left_non_separate ~ right_non_separate
+
+					-- What is the separateness of the left and the right expression?
+					if not l_is_left_expression_separate and not l_is_right_expression_separate then
+						-- Both expressions are non-separate.
+						safe_process (l_as.left)
+						safe_process (l_as.operator (match_list))
+						add_levels_layer
+						safe_process (l_as.right)
+						remove_current_levels_layer
+					else
+						-- At least one of the expression is separate.
+
+						-- Create the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" /= Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (" and then ")
+						reset_current_levels_layer
+
+						-- Create the operation invocation part on the client objects.
+						if not l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						end
+					end
+
+					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
+					reset_current_levels_layer
+					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+				elseif {l_bin_eq_as: BIN_EQ_AS} l_as then
+					-- We have a '=' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
+					-- An expression 'left_separate = right_separate' gets translated to:
+					-- 	(left_separate = Void and then right_separate = Void) or else
+					-- 	(
+					--		left_separate /= Void and then right_separate /= Void and then
+					--		left_separate.implementation_ = right_separate.implementation_
+					--	)
+					-- An expression 'left_separate = right_non_separate' gets translated to:
+					--	(left_separate = Void and then right_non_separate = Void) or else
+					--	(
+					--		left_separate /= Void and then right_non_separate /= Void and then
+					--		left_separate.implementation_ = right_non_separate
+					--	)
+					-- An expression 'left_non_separate = right_separate' gets translated to:
+					--	(left_non_separate = Void and then right_separate = Void) or else
+					--	(
+					--		left_non_separate /= Void and then right_separate /= Void and then
+					--		left_non_separate = right_separate.implementation_
+					--	)
+					-- An expression 'left_non_separate = right_non_separate' gets translated to:
+					--	left_non_separate = right_non_separate
+
+					-- What is the separateness of the left and the right expression?
+					if not l_is_left_expression_separate and not l_is_right_expression_separate then
+						-- Both expressions are non-separate.
+						safe_process (l_as.left)
+						safe_process (l_as.operator (match_list))
+						add_levels_layer
+						safe_process (l_as.right)
+						remove_current_levels_layer
+					else
+						-- At least one of the expression is separate.
+
+						-- Create the beginning of the common void check part. Levels layers and object tests layers temporarily get added for the processing of the left and the right expression during the generation of the void checks.
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" = Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" = Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (")")
+						context.add_string (" or else ")
+						reset_current_levels_layer
+
+						context.add_string ("(")
+						add_object_tests_layer
+						safe_process (l_as.left); context.add_string (" /= Void")
+						context.add_string (" and then ")
+						add_levels_layer
+						last_index := l_as.operator_index; safe_process (l_as.right); context.add_string (" /= Void")
+						remove_current_levels_layer
+						remove_current_object_tests_layer
+						context.add_string (" and then ")
+						reset_current_levels_layer
+
+						-- Create the operation invocation part on the client objects.
+						if not l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right)
+							remove_current_levels_layer
+						elseif l_is_left_expression_separate and l_is_right_expression_separate then
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.operator (match_list))
+							add_levels_layer
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							remove_current_levels_layer
+						end
+
+						-- Create the end of the common void check part.
+						context.add_string (")")
+					end
+
+					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
+					reset_current_levels_layer
+					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+				else
+					-- We have an operator different than '=', '/=', '~', or '/~'. It is a feature of the left expression and the right expression is the argument.
+
+					-- Is the left expression separate?
+					if l_is_left_expression_separate then
+						-- Yes, the left expression is separate: Replace the infix call with a non-infix call, because the proxy doesn't have aliases anymore.
+
+						-- Process the left expression and update the current level with its type to resolve the operator in this type. Processing the left expression only maintains this type while the expression is processed. We use the type expression visitor to update the current level.
+						safe_process (l_as.left)
+						reset_current_levels_layer
+						update_current_level_with_type (l_is_left_expression_separate, l_left_type)
+
+						-- Add a level, process the operator as a non-infix, non-alias feature and update the new level.
+						add_level
+						l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+						-- l_feature_name_visitor.process_infix_str (l_as.operator_ast.name)
+						-- context.add_string ("." + l_feature_name_visitor.get_feature_name)
+						convert_infix (l_left_type, l_as.operator_ast.name)
+						last_index := l_as.operator_index
+						update_current_level_with_name (l_as.infix_function_name)
+						-- Note: This class could inherit from PREFIX_INFIX_NAMES.. then it can be used to resolve symbols to prefix or infix names
+
+						-- Process the right expression as an argument. The target is a separate and therefore it is a proxy object. Thus we need to add the caller as a first actual argument.
+						context.add_string ("(Current,")
+						add_levels_layer
+						safe_process (l_as.right)
+						remove_current_levels_layer
+						context.add_string (")")
+					else
+						-- No, the left expression is not separate: Process it as usual.
+
+						-- Process the left expression and update the current level with its type to resolve the operator in this type. Processing the left expression only maintains this type while the expression is processed. We use the type expression visitor to update the current level.
+						safe_process (l_as.left)
+						reset_current_levels_layer
+						update_current_level_with_type (l_is_left_expression_separate, l_left_type)
+
+						-- Add a level, process the operator and update the new level.
+						add_level
+						if {l_bin_and_then_as: BIN_AND_THEN_AS} l_as then
+							safe_process (l_bin_and_then_as.and_keyword (match_list))
+							safe_process (l_bin_and_then_as.then_keyword (match_list))
+						elseif {l_or_else_as: BIN_OR_ELSE_AS} l_as then
+							safe_process (l_or_else_as.or_keyword (match_list))
+							safe_process (l_or_else_as.else_keyword (match_list))
+						else
+							safe_process (l_as.operator (match_list))
+						end
+						update_current_level_with_name (l_as.infix_function_name)
+
+						-- Process the right expression as an argument.
+						add_levels_layer
+						safe_process (l_as.right)
+						remove_current_levels_layer
+					end
 				end
+			else
+				-- Note: The transformation of the operators '=', '/=', '~', and '/~' is not necessary if we do not generated proxy calls in the call chains.
+
+				-- Determine the type of the left expression.
+				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+				l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.left, flattened_object_tests_layers, flattened_inline_agents_layers)
+				l_left_type := l_type_expression_visitor.expression_type
+
+				-- Process the left expression and update the current level with its type to resolve the operator in this type. Processing the left expression only maintains this type while the expression is processed. We use the type expression visitor to update the current level. The current level is not separate, because we do not generate proxy calls.
+				safe_process (l_as.left)
+				reset_current_levels_layer
+				update_current_level_with_type (false, l_left_type)
+
+				-- Add a level, process the operator and update the new level.
+				add_level
+				if {l_bin_and_then_as: BIN_AND_THEN_AS} l_as then
+					safe_process (l_bin_and_then_as.and_keyword (match_list))
+					safe_process (l_bin_and_then_as.then_keyword (match_list))
+				elseif {l_or_else_as: BIN_OR_ELSE_AS} l_as then
+					safe_process (l_or_else_as.or_keyword (match_list))
+					safe_process (l_or_else_as.else_keyword (match_list))
+				else
+					safe_process (l_as.operator (match_list))
+				end
+				update_current_level_with_name (l_as.infix_function_name)
+
+				-- Process the right expression as an argument.
+				add_levels_layer
+				safe_process (l_as.right)
+				remove_current_levels_layer
 			end
 		end
 
@@ -780,8 +884,8 @@ feature {NONE} -- Expressions processing
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
 			-- Note: A unary operator can be nested within another binary or unary operator. But it is always at the beginning of a call chain.
-			if {l_unary_as: UNARY_AS} l_as then
-				safe_process (l_as.expr)
+			if {l_un_old_as: UN_OLD_AS} l_as then
+				safe_process (l_un_old_as.expr)
 			else
 				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 				l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.expr, flattened_object_tests_layers, flattened_inline_agents_layers)
@@ -867,6 +971,13 @@ feature {NONE} -- Expressions processing
 		do
 			Precursor(l_as)
 			update_current_level_with_call (l_as)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 	process_bang_creation_expr_as (l_as: BANG_CREATION_EXPR_AS)
@@ -874,9 +985,17 @@ feature {NONE} -- Expressions processing
 		do
 			Precursor(l_as)
 			update_current_level_with_call (l_as)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
 		end
 
 feature {NONE} -- Features processing
+
 	process_feature_as (l_as: FEATURE_AS)
 		do
 			set_current_feature_as (l_as)
@@ -884,6 +1003,7 @@ feature {NONE} -- Features processing
 		end
 
 feature {NONE} -- Instructions processing
+
 	process_assign_as (l_as: ASSIGN_AS)
 		local
 			l_expr_call_as: EXPR_CALL_AS
@@ -1179,6 +1299,7 @@ feature {NONE} -- Instructions processing
 		end
 
 feature {NONE} -- Eiffel list processing
+
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
 			-- Reset the current levels layer before each non-empty list of instructions, type declarations, or assertion clauses and after each instruction, assertion, or type declaration.
 			-- Levels layers are relevant in type declarations because processing a type declaration can involve processing calls in anchor types.
@@ -1243,6 +1364,10 @@ feature {NONE} -- Eiffel list processing
 		end
 
 feature {NONE} -- Level handling
+
+	avoid_proxy_calls_in_call_chains: BOOLEAN
+		-- Should proxy calls be avoided in the generated call chains?
+
 	levels_layers: STACK[LINKED_LIST[TUPLE [is_separate: BOOLEAN; type: TYPE_A]]]
 		-- The levels layers. It is used to keep track of the type and the separateness of a call chain.
 		-- The structure consists of a stack of layers where each layer is a list of levels. Each layer corresponds to a call chain. Every call corresponds to a level.
@@ -1308,6 +1433,7 @@ feature {NONE} -- Level handling
 	update_current_level_with_name (l_as: STRING)
 			-- Update the current level with the result type of a call with name 'l_as'.
 			-- If there is a previous level then the previous level is used for the resolution. The result type combiner is used to determine the separateness of the chain up until the call with name 'l_as' based on the type of the call with name 'l_as' and the separateness of the chain up until the previous level.
+			-- Works on top of 'update_current_level_with_call'.
 		do
 			update_current_level_with_call (
 				create {ACCESS_FEAT_AS}.initialize (
@@ -1320,6 +1446,7 @@ feature {NONE} -- Level handling
 	update_current_level_with_call (l_as: CALL_AS)
 			-- Update the current level with the result type of the call 'l_as'.
 			-- If there is a previous level then the previous level is used for the resolution. The result type combiner is used to determine the separateness of the chain up until 'l_as' based on the type of 'l_as' and the separateness of the chain up until the previous level.
+			-- Works on top of 'update_current_level_with_expression'.
 		do
 			update_current_level_with_expression (create {EXPR_CALL_AS}.initialize (l_as))
 		end
@@ -1327,6 +1454,7 @@ feature {NONE} -- Level handling
 	update_current_level_with_expression (l_as: EXPR_AS)
 			-- Update the current level with the result type of the call 'l_as'.
 			-- If there is a previous level then the previous level is used for the resolution. The result type combiner is used to determine the separateness of the chain up until 'l_as' based on the type of 'l_as' and the separateness of the chain up until the previous level.
+			-- Works on top of 'update_current_level_with_type'.
 		local
 			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
@@ -1375,7 +1503,6 @@ feature {NONE} -- Level handling
 	update_current_level_with_type (a_is_call_chain_separate: BOOLEAN; a_type: TYPE_A)
 			-- Update the current level with 'a_is_call_chain_separate' and 'a_type'.
 		require
-			a_is_call_chain_separate /= Void
 			a_type /= Void
 		do
 			set_current_level_type (a_type)
@@ -1425,6 +1552,7 @@ feature {NONE} -- Level handling
 		end
 
 feature {NONE} -- Object test handling
+
 	object_tests_layers: LINKED_STACK[HASH_TABLE[OBJECT_TEST_AS, STRING]]
 		-- The object tests layers. It is used to keep track of the object tests locals of a call chain.
 		-- The structure consists of a stack of layers where each layer maps names of object test locals to their types. Each layer corresponds to a set of non-nested object tests.
@@ -1552,7 +1680,8 @@ feature {NONE} -- Object test handling
 			add_to_current_object_tests_layer (l_as)
 		end
 
-feature {NONE} -- Inline agent handling
+feature {NONE} -- Agent handling
+
 	inline_agents_layers: LINKED_STACK[SET[TYPE_DEC_AS]]
 		-- The inline agents layers. It is used to keep track of the entities declared in inline agents of a call chain.
 		-- The structure consists of a stack of layers where each layer is a set with the entities declared in an inline agent. Each layer related to one inline agent.
@@ -1656,10 +1785,19 @@ feature {NONE} -- Inline agent handling
 					i := i + 1
 				end
 			end
+
+			update_current_level_with_expression (l_as)
+
 			add_inline_agents_layer
 			Precursor (l_as)
 			remove_current_inline_agents_layer
 			reset_current_inline_agents_layer
+		end
+
+	process_agent_routine_creation_as (l_as: AGENT_ROUTINE_CREATION_AS)
+		do
+			Precursor (l_as)
+			update_current_level_with_expression (l_as)
 		end
 
 feature {NONE} -- Auxiliary Features

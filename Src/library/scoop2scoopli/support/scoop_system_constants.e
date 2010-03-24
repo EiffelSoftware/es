@@ -53,7 +53,24 @@ feature -- Scoop system constants
 			ensure
 				not_void: classes_to_be_compiled_list /= void
 			end
+
 	nonseparate_result: STRING is "nonseparate_result"
+
+	general_wrapper_name_additive: STRING is "_scoop_separate_"
+
+	individual_separate_postcondition_wrapper_name_additive: STRING is "_spc_"
+
+	unseparated_postcondition_attribute_name_additive: STRING is "_unseparated_postconditions"
+
+	unseparated_postcondition_attribute_type: STRING is "LINKED_LIST [ROUTINE [ANY, TUPLE]]"
+
+	enclosing_routine_name_additive: STRING is "_enclosing_routine"
+
+	wait_condition_wrapper_name_additive: STRING is "_wait_condition"
+	
+	separate_postcondition_wrapper_name_additive: STRING is "_separate_postcondition"
+	
+	non_separate_postcondition_wrapper_name_additive: STRING is "_non_separate_postcondition"
 
 feature {NONE}
 

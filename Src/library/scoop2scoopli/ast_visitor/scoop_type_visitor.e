@@ -11,6 +11,9 @@ note
 class
 	SCOOP_TYPE_VISITOR
 
+obsolete
+	"Use SCOOP_TYPE_EXPR_VISITOR"
+
 inherit
 	AST_ROUNDTRIP_ITERATOR
 		export
@@ -139,8 +142,8 @@ feature {NONE} -- Visitor implementation
 				is_separate := l_type_a.is_separate
 			elseif feature_as.body.internal_arguments /= Void then
 				-- check internal arguments
-				if feature_object.arguments.has (l_as.anchor.name) then
-					l_type_as := feature_object.arguments.get_type_by_name (l_as.anchor.name.as_lower)
+				if feature_object.arguments.is_argument (l_as.anchor.name) then
+					l_type_as := feature_object.arguments.type_by_name (l_as.anchor.name.as_lower)
 					create l_typ_visitor
 					l_typ_visitor.setup (class_as, match_list, True, True)
 					l_class_c := l_typ_visitor.evaluate_class_from_type (l_type_as, class_c)

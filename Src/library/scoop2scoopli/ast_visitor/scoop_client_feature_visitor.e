@@ -1,8 +1,12 @@
 note
 	description: "[
-					Roundtrip visitor to process feature node (`FEATURE_AS' node) in
-					SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to generate client features out of original features. It uses specific visitors to handle the creation of locking requestors, enclosing routines, wait condition wrappers, and postcondition wrappers for features with separate arguments.
+					
+					Additionally the visitor handles the following aspects:
+					
+					- It handles the modification of call chains that involve calls to redeclared features.
+					- It handles object tests and assignment attempts.
+					- It handles agents.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -19,66 +23,63 @@ inherit
 			process_keyword_as,
 			process_object_test_as,
 			process_reverse_as,
-		--	process_inline_agent_creation_as,
-		--	process_agent_routine_creation_as,
-		--	process_instr_call_as,
-		--	process_assign_as,
 			process_routine_as,
 			process_body_as,
-			process_access_id_as,
 			process_access_feat_as,
+			process_access_assert_as,
+			process_access_inv_as,
+			process_access_id_as,
+			process_static_access_as,
+			process_precursor_as,
 			process_result_as,
+			process_current_as,
 			process_parameter_list_as
-
 		end
-
-	SCOOP_BASIC_TYPE
 
 create
 	make
 
 feature -- Access
 
-	process_feature(l_as: FEATURE_AS) is
-			-- Process `l_as'.
+	add_client_features (l_as: FEATURE_AS)
+			-- Add the client features for the original feature 'l_as'.
 		do
 			safe_process (l_as)
 		end
 
-feature {NONE} -- Visitor implementation
+feature {NONE} -- General implementation
 
-	process_feature_as (l_as: FEATURE_AS) is
+	process_feature_as (l_as: FEATURE_AS)
 		local
 			i, nb: INTEGER
 			l_infix_prefix: INFIX_PREFIX_AS
 			is_separate: BOOLEAN
-			l_feature_object: SCOOP_CLIENT_FEATURE_OBJECT
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
-			l_argument_visitor: SCOOP_CLIENT_ARGUMENT_VISITOR
 			l_feature_assertion_visitor: SCOOP_CLIENT_FEATURE_ASSERTION_VISITOR
 			l_feature_lr_visitor: SCOOP_CLIENT_FEATURE_LR_VISITOR
 			l_feature_er_visitor: SCOOP_CLIENT_FEATURE_ER_VISITOR
 			l_feature_wc_visitor: SCOOP_CLIENT_FEATURE_WC_VISITOR
 			l_feature_nsp_visitor: SCOOP_CLIENT_FEATURE_NSP_VISITOR
 			l_feature_sp_visitor: SCOOP_CLIENT_FEATURE_SP_VISITOR
+			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT
 		do
+			-- Update the workbench with the feature and a fresh feature object.
 			set_current_feature_as (l_as)
-			-- create feature object
-			create l_feature_object.make
-			set_feature_object (l_feature_object)
+			set_feature_object (create {SCOOP_CLIENT_FEATURE_OBJECT}.make)
 
+			-- Check whether the feature is an attribute or a constant.
 			if l_as.is_attribute or l_as.is_constant then
+				-- The feature is an attribute or a constant.
 				last_index := l_as.first_token (match_list).index - 1
 				context.add_string ("%N%N%T")
 				safe_process (l_as.feature_names)
 				safe_process (l_as.body)
-			else -- routine
+			else
+				-- The feature is a routine.
 
 				-- get feature name visitor
 				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-
-				-- create an argument visitor
-				l_argument_visitor := scoop_visitor_factory.new_client_argument_visitor_for_class (parsed_class, match_list)
 				-- create assertion visitor
 				l_feature_assertion_visitor := scoop_visitor_factory.new_client_feature_assertion_visitor (context)
 				-- create locking request body (feature, procedure, deferred routines)
@@ -97,86 +98,95 @@ feature {NONE} -- Visitor implementation
 				from
 					i := 1
 					nb := l_as.feature_names.count
+					l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 				until
 					i > nb
 				loop
 					is_separate := False
 					-- check if there are separate arguments
-					if l_as.body /= Void and then l_as.body.internal_arguments /= void then
-						l_feature_object.set_arguments (l_argument_visitor.process_arguments (l_as.body.internal_arguments))
-
-						if l_feature_object.arguments.has_separate_arguments then
-							is_separate := True
+					if l_as.body /= Void and then l_as.body.arguments /= void then
+						from
+							l_as.body.arguments.start
+							create l_arguments.make
+						until
+							l_as.body.arguments.after
+						loop
+							l_type_expr_visitor.resolve_type_in_workbench (l_as.body.arguments.item.type)
+							if l_type_expr_visitor.resolved_type.is_separate then
+								is_separate := True
+								l_arguments.separate_arguments.extend (l_as.body.arguments.item)
+							else
+								l_arguments.non_separate_arguments.extend (l_as.body.arguments.item)
+							end
+							l_as.body.arguments.forth
 						end
+						feature_object.set_arguments (l_arguments)
 					end
 
 					-- identify frozen key word
 					last_index := l_as.feature_names.i_th (i).first_token (match_list).index
 					if l_as.feature_names.i_th (i).is_frozen and then
 					   l_as.feature_names.i_th (i).frozen_keyword.index /= 0 then
-						l_feature_object.is_feature_frozen.set_item (True)
+						feature_object.is_feature_frozen.set_item (True)
 					end
 
 					-- process name
 					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), False)
-					l_feature_object.set_feature_name (l_feature_name_visitor.feature_name)
+					feature_object.set_feature_name (l_feature_name_visitor.feature_name)
 					l_feature_name_visitor.process_feature_name (l_as.feature_names.i_th (i), True)
-					l_feature_object.set_feature_alias_name (l_feature_name_visitor.feature_name)
+					feature_object.set_feature_alias_name (l_feature_name_visitor.feature_name)
 					-- declaration name writes the infix and non-infix notation if the feature name
 					-- contains an infix name. Change this to an alias notation in EiffelStudio 6.4
 					l_feature_name_visitor.process_feature_declaration_name (l_as.feature_names.i_th (i))
-					l_feature_object.set_feature_declaration_name (l_feature_name_visitor.feature_name)
+					feature_object.set_feature_declaration_name (l_feature_name_visitor.feature_name)
 
 
 					if is_separate then
 
 						-- assertion visitor
-						l_feature_assertion_visitor.process_feature_body (l_as.body, l_feature_object)
+						l_feature_assertion_visitor.process_feature_body (l_as.body)
 
 						-- get result objects
-						l_feature_object.set_preconditions (l_feature_assertion_visitor.get_preconditions)
-						l_feature_object.set_postconditions (l_feature_assertion_visitor.get_postconditions)
+						feature_object.set_preconditions (l_feature_assertion_visitor.preconditions)
+						feature_object.set_postconditions (l_feature_assertion_visitor.postconditions)
 
 						-- locking request body (feature, procedure, deferred routines)
-						l_feature_lr_visitor.process_feature_body (l_as.body, l_feature_object)
+						l_feature_lr_visitor.add_locking_requestor (l_as.body)
 
 						-- enclosing routine body (feature, procedure, deferred routines)
-						l_feature_er_visitor.process_feature_body (l_as.body, l_feature_object)
+						l_feature_er_visitor.add_enclosing_routine (l_as.body)
 
 						-- wait condition wrapper (feature, procedure, deferred routines)
-						l_feature_wc_visitor.process_feature_body (l_as.body, l_feature_object)
+						l_feature_wc_visitor.add_wait_condition_wrapper (l_as.body)
 
 						-- postcondition processing
-						if not l_feature_object.postconditions.separate_postconditions.is_empty then
-
+						if
+							not feature_object.postconditions.separate_postconditions.is_empty or
+							not feature_object.postconditions.non_separate_postconditions.is_empty
+						then
 							-- unseparated postcondition attribute
-							create_unseparated_postcondition_attribute (l_feature_object)
+							add_unseparated_postcondition_attribute
 						end
 
-						if not l_feature_object.postconditions.non_separate_postconditions.is_empty then
+						if not feature_object.postconditions.non_separate_postconditions.is_empty then
 							-- non separate postcondition clauses wrapper
-							l_feature_nsp_visitor.process_feature_body (l_as.body, l_feature_object)
+							l_feature_nsp_visitor.add_non_separate_postcondition_wrapper (l_as.body)
 						end
 
-						if not l_feature_object.postconditions.separate_postconditions.is_empty then
+						if not feature_object.postconditions.separate_postconditions.is_empty then
 							-- separate postcondition clauses wrapper
-							l_feature_sp_visitor.process_feature_body (l_as.body, l_feature_object)
+							l_feature_sp_visitor.add_separate_postcondition_wrapper (l_as.body)
 						end
 
 						-- postcondition processing
-						if not l_feature_object.postconditions.separate_postconditions.is_empty then
-
-							-- wrappers for individual separate postcondition clauses
-							create_separate_postcondition_wrapper (l_feature_object)
-						end
-
+						add_individual_separate_postcondition_wrappers
 					else
 							-- print original feature
 						context.add_string ("%N%N%T")
-						if l_feature_object.is_feature_frozen then
+						if feature_object.is_feature_frozen then
 							context.add_string ("frozen ")
 						end
-						context.add_string (l_feature_object.feature_alias_name + " ")
+						context.add_string (feature_object.feature_alias_name + " ")
 						last_index := l_as.body.first_token (match_list).index - 1
 
 						safe_process (l_as.body)
@@ -188,7 +198,7 @@ feature {NONE} -- Visitor implementation
 						if l_infix_prefix /= Void then
 							l_feature_name_visitor.process_declaration_infix_prefix (l_infix_prefix)
 
-							create_infix_feature_wrapper(l_as, l_feature_name_visitor.feature_name, l_feature_object.feature_name)
+							create_infix_feature_wrapper(l_as, l_feature_name_visitor.feature_name, feature_object.feature_name)
 						end
 					end
 
@@ -199,9 +209,10 @@ feature {NONE} -- Visitor implementation
 
 			-- invalidate workbench access
 			set_current_feature_as_void
+			set_feature_object (Void)
 		end
 
-	process_keyword_as (l_as: KEYWORD_AS) is
+	process_keyword_as (l_as: KEYWORD_AS)
 			-- Process `l_as'.
 		do
 			if l_as.is_frozen_keyword then
@@ -213,9 +224,7 @@ feature {NONE} -- Visitor implementation
 			end
 		end
 
-feature {NONE} -- Implementation
-
-	create_infix_feature_wrapper (l_as: FEATURE_AS; an_original_feature_name, a_feature_name: STRING) is
+	create_infix_feature_wrapper (l_as: FEATURE_AS; an_original_feature_name, a_feature_name: STRING)
 			-- Remove this feature with EiffelStudio 6.4
 			-- It creates a wrapper feature so that a call on a infix feature
 			-- is wrapped to the non-infix version
@@ -293,27 +302,30 @@ feature {NONE} -- Implementation
 			last_index := l_last_index
 		end
 
-	create_unseparated_postcondition_attribute (a_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
+	add_unseparated_postcondition_attribute
 			-- Generate list of unseparated postconditions.
-			-- Unseparated postconditions are separate postcondition that
-			-- involve a non-separate object at run time. They are treated as
-			-- non-separate postconditions.
+			-- Unseparated postconditions are separate postcondition that involve a non-separate object at run time. They are treated as non-separate postconditions.
 		require
-			a_fo_not_void: a_fo /= Void
+			feature_object_is_valid: feature_object /= Void
 		do
-			context.add_string ("%N%N%T" + a_fo.feature_name + "_scoop_separate_" + class_c.name.as_lower +
-								"_unseparated_postconditions: LINKED_LIST [ROUTINE [ANY, TUPLE]]")
-			context.add_string ("%N%T%T-- Precondition clauses of `" + a_fo.feature_name + "' that seem to be separate but are not.")
+			context.add_string (
+				"%N%N%T" +
+				feature_object.feature_name +
+				{SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive +
+				class_c.name.as_lower +
+				{SCOOP_SYSTEM_CONSTANTS}.unseparated_postcondition_attribute_name_additive +
+				": " +
+				{SCOOP_SYSTEM_CONSTANTS}.unseparated_postcondition_attribute_type
+			)
+			context.add_string ("%N%T%T-- Precondition clauses of `" + feature_object.feature_name + "' that seem to be separate but are not.")
 			context.add_string ("%N%T%T-- They have to be processed as correctness conditions.")
 		end
 
-	create_separate_postcondition_wrapper  (a_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
+	add_individual_separate_postcondition_wrappers
 			-- Generate wrappers for individual separate postcondition clauses.
-		require
-			a_fo_not_void: a_fo /= Void
 		local
 			i: INTEGER
-			an_assertion: SCOOP_CLIENT_ASSERTION_OBJECT
+			current_separate_postcondition: SCOOP_CLIENT_ASSERTION_OBJECT
 			l_feature_isp_visitor: SCOOP_CLIENT_FEATURE_ISP_VISITOR
 		do
 			-- create visitor for individual separate postcondition clauses.
@@ -323,19 +335,83 @@ feature {NONE} -- Implementation
 			from
 				i := 1
 			until
-				i > a_fo.postconditions.separate_postconditions.count
+				i > feature_object.postconditions.separate_postconditions.count
 			loop
 				-- get assertion
-				an_assertion := a_fo.postconditions.separate_postconditions.i_th (i)
+				current_separate_postcondition := feature_object.postconditions.separate_postconditions.i_th (i)
 
 				-- process feature
-				l_feature_isp_visitor.process_individual_separate_postcondition (i, an_assertion, a_fo)
+				l_feature_isp_visitor.add_individual_separate_postcondition_wrapper (i, current_separate_postcondition)
 
 				i := i + 1
 			end
 		end
 
-feature -- feature body
+feature {NONE} -- Feature redeclaration handling
+	process_routine_as(l_as: ROUTINE_AS)
+		local
+			l_generics_visitor : SCOOP_GENERICS_VISITOR
+		do
+			safe_process (l_as.obsolete_keyword (match_list))
+			safe_process (l_as.obsolete_message)
+			safe_process (l_as.precondition)
+
+			-- local keyword needs to be added?
+
+			if l_as.internal_locals = void or l_as.internal_locals.local_keyword (match_list) = void then
+				if result_substitution then
+					context.add_string ("%N%T%Tlocal%N")
+				end
+			end
+
+			safe_process (l_as.internal_locals)
+			if result_substitution then
+				if attached {CLASS_TYPE_AS} feature_as.body.type as typ then
+					context.add_string ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+": "+typ.class_name.name)
+					if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type then
+						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+						l_generics_visitor.process_internal_generics (typ.generics, True, True)
+					end
+				end
+			end
+
+		--	if not is_in_agent then
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				if not is_in_agent then
+					feature_locals_agent_counter :=0
+				end
+				feature_locals_index := ctxt.cursor_to_current_position
+			end
+		--	end
+
+			safe_process (l_as.routine_body)
+
+			if result_substitution then
+				if attached {CLASS_TYPE_AS} feature_as.body.type as typ then
+					context.add_string ("%N%T%T%Tif "+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+" /= Void then")
+					context.add_string ("%N%T%T%T%TResult := "+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+"."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
+					context.add_string ("%N%T%T%Telse")
+					context.add_string ("%N%T%T%T%TResult := create {"+{SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_prefix.as_upper+typ.class_name.name.as_upper)
+					if typ.generics /= Void then
+						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+						l_generics_visitor.process_internal_generics (typ.generics, True, True)
+					--	last_index := l_generics_visitor.get_last_index
+					end
+	           		context.add_string ("}.set_processor_ (Current.processor_)%N%T%T%T%TResult.set_implementation_(Void)%N")
+	           		context.add_string ("%N%T%T%Tend")
+	           	end
+			end
+
+			safe_process (l_as.postcondition)
+			safe_process (l_as.rescue_keyword (match_list))
+			safe_process (l_as.rescue_clause)
+			safe_process (l_as.end_keyword)
+
+			-- Disable `Result' replacement, unless we are in an agent
+			if (not is_in_agent) and (not is_in_inline_agent) then
+				result_substitution := false
+			end
+		end
 
 	process_body_as (l_as: BODY_AS)
 		local
@@ -345,11 +421,12 @@ feature -- feature body
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 		do
-
 			-- Reset
 			result_substitution := False
 
+			is_internal_arguments := True
 			safe_process (l_as.internal_arguments)
+			is_internal_arguments := False
 
 			safe_process (l_as.colon_symbol (match_list))
 
@@ -425,110 +502,158 @@ feature -- feature body
 
 		end
 
-
-feature {NONE} -- Adding .implementation_ for precondition processing.
-	processing_assertions : BOOLEAN
-
-
-
-feature -- Result Substitution
-
-
-	process_result_as (l_as: RESULT_AS) is
-			-- Process `l_as', print it to context.
-		do
-			process_leading_leaves (l_as.index)
-			last_index := l_as.index
-			if result_substitution then
-				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.nonseparate_result)
-			else
-				put_string (l_as)
-			end
-			update_current_level_with_call (l_as)
-		end
-
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		local
-
-			l_is_in_nested: BOOLEAN
-			a_type_a: TYPE_A
-			current_levels: LINKED_LIST[TUPLE [is_separate: BOOLEAN; type: TYPE_A]]
-			index_current_level: INTEGER
-			l_class_c: CLASS_C
 		do
-			safe_process (l_as.feature_name)
-
-			update_current_level_with_call (l_as)
-
-			-- Process actual arguments and add current if target is of separate type.
 			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
 				accessed_feature := l_as.feature_name
 			end
-			process_internal_parameters(l_as.internal_parameters)
 
-			current_levels := levels_layers.item
-			index_current_level := levels_layers.item.index_of(current_level ,1)
+			Precursor (l_as)
 
-			a_type_a := current_level.type
-
-
-			if not attached {VOID_A} a_type_a and a_type_a /= void then
-				-- If `a_type_a' is `VOID_A' then its a command -> ignore
+			if current_level.type /= void and then not attached {VOID_A} current_level.type then
+				-- If the current level type is `VOID_A' then its a command -> ignore
 				if not current_level.type.is_separate then
 					-- If this is separate, no fix needed anyway.
 					--l_class_c := system.class_of_id (class_as_by_name(a_type_a.name).class_id)
 					if not previous_level_exists then
 						-- No call chain, get class of current item
-						add_result_type_substitution(l_as.feature_name, a_type_a.associated_class)
+						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
 					else
-						a_type_a := previous_level.type
-						add_result_type_substitution(l_as.feature_name, a_type_a.associated_class)
+						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
 					end
 				end
 			end
+		end
 
+	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
+		do
+			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
+				accessed_feature := l_as.feature_name
+			end
+
+			Precursor (l_as)
+
+			if current_level.type /= void and then not attached {VOID_A} current_level.type then
+				-- If the current level type is `VOID_A' then its a command -> ignore
+				if not current_level.type.is_separate then
+					-- If this is separate, no fix needed anyway.
+					--l_class_c := system.class_of_id (class_as_by_name(a_type_a.name).class_id)
+					if not previous_level_exists then
+						-- No call chain, get class of current item
+						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
+					else
+						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
+					end
+				end
+			end
+		end
+
+	process_access_inv_as (l_as: ACCESS_INV_AS)
+		do
+			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
+				accessed_feature := l_as.feature_name
+			end
+
+			Precursor (l_as)
+
+			if current_level.type /= void and then not attached {VOID_A} current_level.type then
+				-- If the current level type is `VOID_A' then its a command -> ignore
+				if not current_level.type.is_separate then
+					-- If this is separate, no fix needed anyway.
+					--l_class_c := system.class_of_id (class_as_by_name(a_type_a.name).class_id)
+					if not previous_level_exists then
+						-- No call chain, get class of current item
+						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
+					else
+						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
+					end
+				end
+			end
 		end
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
-
-		local
-			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-			feature_i: FEATURE_I
-			l_is_in_nested: BOOLEAN
-			a_type_a: TYPE_A
-			current_levels: LINKED_LIST[TUPLE [is_separate: BOOLEAN; type: TYPE_A]]
-			index_current_level: INTEGER
 		do
-			safe_process (l_as.feature_name)
-			update_current_level_with_call (l_as)
-
 			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
 				-- Save accessed feature
 				accessed_feature := l_as.feature_name
 			end
-			-- process internal parameters and add current if target is of separate type.
-			process_internal_parameters(l_as.internal_parameters)
 
-			current_levels := levels_layers.item
-			index_current_level := levels_layers.item.index_of(current_level ,1)
+			Precursor (l_as)
 
-			a_type_a := current_level.type
-			if not attached {VOID_A} a_type_a and a_type_a /= void then
+			if current_level.type /= void and then not attached {VOID_A} current_level.type then
 				-- If `a_type_a' is `VOID_A' then its a command -> ignore
 				if not current_level.type.is_separate then
 					if not previous_level_exists then
 						-- No call chain, get class of current item
-						add_result_type_substitution(l_as.feature_name, a_type_a.associated_class)
+						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
 					else
-						a_type_a := previous_level.type
-						add_result_type_substitution(l_as.feature_name, a_type_a.associated_class)
+						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
 					end
 				end
 			end
-
 		end
 
-feature {NONE} -- Internal Arguments Substitution
+	process_static_access_as (l_as: STATIC_ACCESS_AS)
+		do
+			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
+				-- Save accessed feature
+				accessed_feature := l_as.feature_name
+			end
+
+			Precursor (l_as)
+
+			if current_level.type /= void and then not attached {VOID_A} current_level.type then
+				-- If `a_type_a' is `VOID_A' then its a command -> ignore
+				if not current_level.type.is_separate then
+					if not previous_level_exists then
+						-- No call chain, get class of current item
+						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
+					else
+						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
+					end
+				end
+			end
+		end
+
+	process_precursor_as (l_as: PRECURSOR_AS)
+		do
+			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
+				-- Save accessed feature
+				accessed_feature := l_as.feature_name
+			end
+
+			Precursor (l_as)
+
+			if current_level.type /= void and then not attached {VOID_A} current_level.type then
+				-- If `a_type_a' is `VOID_A' then its a command -> ignore
+				if not current_level.type.is_separate then
+					if not previous_level_exists then
+						-- No call chain, get class of current item
+						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
+					else
+						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
+					end
+				end
+			end
+		end
+
+	process_result_as (l_as: RESULT_AS)
+			-- Process `l_as', print it to context.
+		do
+			if result_substitution then
+				process_leading_leaves (l_as.index)
+				last_index := l_as.index
+				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.nonseparate_result)
+				update_current_level_with_call (l_as)
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_current_as (l_as: CURRENT_AS)
+		do
+			Precursor (l_as)
+		end
 
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
 			-- Process `l_as'. Add 'Current' as first argument in paramenter list.
@@ -575,7 +700,7 @@ feature {NONE} -- Internal Arguments Substitution
 					if current_level.type.is_separate then
 						if accessed_feature /= void then
 							if need_internal_argument_substitution (accessed_feature, a_class_c, pos) then
-								context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+								context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
 							end
 						end
 					end
@@ -594,14 +719,13 @@ feature {NONE} -- Internal Arguments Substitution
 			safe_process (l_as.rparan_symbol (match_list))
 		end
 
-	need_internal_argument_substitution(a_feature_name: ID_AS; a_class_c: CLASS_C; argument_position: INTEGER): BOOLEAN is
+	need_internal_argument_substitution (a_feature_name: ID_AS; a_class_c: CLASS_C; argument_position: INTEGER): BOOLEAN
 			-- Do we need to substitute the internal argument?
 			-- Needed when current argument is separate and a parent version of the feature has a non separate argument.
 
 			require
 				has_name: a_feature_name /= void
 				has_class: a_class_c /= void
-				has_argu: argument_position /= void
 				valid: not argument_position.is_equal (0)
 			local
 				l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
@@ -629,26 +753,16 @@ feature {NONE} -- Internal Arguments Substitution
 						end
 						feature_i.body.feature_names.forth
 					end
-
-
 				end
 			end
-
 
 	is_internal_arguments: BOOLEAN
 			-- Are we currently processing internal arguments?
 			-- If so we have to check if there is no parent redeclaration of the feature with different argument types (separate / non separate).
 
-feature {NONE} -- Redeclaration Substitution Impl
-
-
 	accessed_feature: ID_AS
 			-- Accessed feature of the actual arguments we are processing.
 			-- i.e a.b.f(c,d) -> f
-
---	seperate_result_signature: CLASS_TYPE_AS
---			-- Signature substituted of the return type.
---			-- Return type of the feature is substituted when it is non separate and there exists a parent redeclaration with separate return type.
 
 	result_substitution: BOOLEAN
 			-- Is the result type of the feature beeing changed from non separate to separate?
@@ -664,7 +778,7 @@ feature {NONE} -- Redeclaration Substitution Impl
 			-- Skip result type substition?
 			-- Used for preformance improvement like when the right hand side of an assignment is separate we skip the substitution
 
-	add_result_type_substitution(a_feature_name: ID_AS; a_class_c: CLASS_C) is
+	add_result_type_substitution (a_feature_name: ID_AS; a_class_c: CLASS_C) is
 			-- Check if the result type was substituted in the case where the current result type is non separate and was non separate in a parent redeclaration.
 			-- If so add `implementation_' to reconvert.
 
@@ -697,7 +811,7 @@ feature {NONE} -- Redeclaration Substitution Impl
 							if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
 								l_feature_name := feature_i.body.feature_names.item
 								if l_feature_name /= void and then l_assign_finder.have_to_replace_return_type (l_feature_name, a_class_c, has_context) then
-									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+									context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
 								end
 							end
 							feature_i.body.feature_names.forth
@@ -706,95 +820,23 @@ feature {NONE} -- Redeclaration Substitution Impl
 				end
 			end
 
-feature {NONE} -- index handling
-
-
-	process_routine_as(l_as: ROUTINE_AS)
-		local
-			l_generics_visitor : SCOOP_GENERICS_VISITOR
-		do
-			safe_process (l_as.obsolete_keyword (match_list))
-			safe_process (l_as.obsolete_message)
-
-			processing_assertions := True
-			safe_process (l_as.precondition)
-			processing_assertions := False
-
-			-- local keyword needs to be added?
-
-			if l_as.internal_locals = void or l_as.internal_locals.local_keyword (match_list) = void then
-				if result_substitution then
-					context.add_string ("%N%T%Tlocal%N")
-				end
-			end
-
-			safe_process (l_as.internal_locals)
-			if result_substitution then
-				if attached {CLASS_TYPE_AS} feature_as.body.type as typ then
-					context.add_string ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+": "+typ.class_name.name)
-					if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type then
-						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-						l_generics_visitor.process_internal_generics (typ.generics, True, True)
-					end
-				end
-			end
-
-		--	if not is_in_agent then
-			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
-				if not is_in_agent then
-					feature_locals_agent_counter :=0
-				end
-				feature_locals_index := ctxt.cursor_to_current_position
-			end
-		--	end
-
-			safe_process (l_as.routine_body)
-
-			if result_substitution then
-				if attached {CLASS_TYPE_AS} feature_as.body.type as typ then
-					context.add_string ("%N%T%T%Tif "+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+" /= Void then")
-					context.add_string ("%N%T%T%T%TResult := "+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+"."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
-					context.add_string ("%N%T%T%Telse")
-					context.add_string ("%N%T%T%T%TResult := create {"+{SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_prefix.as_upper+typ.class_name.name.as_upper)
-					if typ.generics /= Void then
-						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-						l_generics_visitor.process_internal_generics (typ.generics, True, True)
-					--	last_index := l_generics_visitor.get_last_index
-					end
-	           		context.add_string ("}.set_processor_ (Current.processor_)%N%T%T%T%TResult.set_implementation_(Void)%N")
-	           		context.add_string ("%N%T%T%Tend")
-	           	end
-			end
-
-			safe_process (l_as.postcondition)
-			safe_process (l_as.rescue_keyword (match_list))
-			safe_process (l_as.rescue_clause)
-			safe_process (l_as.end_keyword)
-
-			-- Disable `Result' replacement, unless we are in an agent
-			if (not is_in_agent) and (not is_in_inline_agent) then
-				result_substitution := false
-			end
-		end
-
-
-	inlining: STRING
-		-- Inlining used to print code for agent object creation
---	feature_last_instr_call_index: LINKED_LIST_CURSOR[STRING]
---		-- Position of the last instruction call of the current feature
 	feature_locals_index: LINKED_LIST_CURSOR[STRING]
 		-- Position of the `local' declaration of the current feature
+
+feature {NONE} -- Agent handling
+	inlining: STRING
+		-- Inlining used to print code for agent object creation
+
+
 	feature_locals_agent_counter:INTEGER
 		-- Counter to create local agent objects
+
 	is_in_agent, is_in_inline_agent: BOOLEAN
 		-- Keeps track if we are currently 'inside' of an inline agent / normal agent
---	agent_sig_to_update, agent_ass_to_update: STRING
---		-- If there is the need to propagate stuff to the upper agent level
 
-feature -- object test / ass attempt
+feature -- Object test and assignment attempt handling
 
-
-	process_object_test_as (l_as: OBJECT_TEST_AS) is
+	process_object_test_as (l_as: OBJECT_TEST_AS)
 			-- handles object tests {l: l_as.type} l_as.expression
 			-- Added by `damienm' 5.Nov 2009
 		local
@@ -925,7 +967,7 @@ feature -- object test / ass attempt
 			last_index := l_as.last_token (match_list).index
 		end
 
-	process_reverse_as (l_as: REVERSE_AS) is
+	process_reverse_as (l_as: REVERSE_AS)
 				--process ass. attemps 'target' '?=' 'source'
 				-- Added by `damienm' 5.Nov 2009
 		local

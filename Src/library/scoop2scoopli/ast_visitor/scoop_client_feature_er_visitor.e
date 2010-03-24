@@ -1,7 +1,10 @@
 note
 	description: "[
-					Roundtrip visitor to create enclosing routine in SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to create an enclosing routine in a client class, based on an original feature.
+					An enclosing routine exists for an original feature with separate arguments. It contains the code of the original feature and it checks the separate precondition and the immediate postcondition. It also increments a postcondition counter for each separate argument. This counter is used to keep track of when all postcondition clauses that involve the particular argument have been evaluated. Each time a postcondition clause gets evaluated that involves the argument, the postcondition counter of the argument gets decreased by the number of times the argument appears in the postcondition clause. When the postcondition counter reaches 0, it means that the lock on the corresponding processor can be released. After increasing the postcondition counter, the enclosing routine decreases the postcondition counter for the number of times the argument appears in the immediate postcondition.
+					A separate precondition contains calls on separate targets. It can either be controlled or uncontrolled. An uncontrolled separate precondition has a wait semantics. A uncontrolled separate precondition has a correctness semantics. Whether a separate precondition is uncontrolled or controlled depends on the context in which the feature was called. To make sure that a separate precondition can be used as wait condition and as a correctness condition, the separate precondition must be replicated in two places of the client class. The separate precondition must appear in the body of the wait condition wrapper and as a precondition of the enclosing routine. If the separate precondition is controlled then it must be treated as a correctness condition. This happens when the precondition of the enclosing routine gets checked. If the separate precondition is uncontrolled then it must be treated as a wait condition. This happens when the scheduler periodically checks the wait condition wrapper. After the wait condition wrapper returns true, the enclosing routine wrapper gets executed. As part of this execution the separate precondition gets checked one more time, because it appears as a precondition in the enclosing routine wrapper. This is unnecessary, but not harmful, because the locking semantics guarantees that the separate precondition must still hold at this point. 
+					The immediate postcondition contains old and result keywords. It must be checked right after the execution of the body, because this is when the old values and the result are still available.
+					Generated call chains in the contracts operate on client objects. Call chains in the body operate both on client- and proxy objects.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -16,19 +19,9 @@ inherit
 		redefine
 			process_body_as,
 			process_precursor_as,
-			process_ensure_as,
 			process_ensure_then_as,
-			process_access_feat_as,
-			process_access_assert_as,
-			process_static_access_as,
-			process_result_as,
-			process_binary_as
-		--	process_type_dec_as
-		end
-
-	SHARED_ERROR_HANDLER
-		export
-			{NONE} all
+			process_ensure_as,
+			process_routine_as
 		end
 
 create
@@ -36,31 +29,24 @@ create
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
-			-- Process `l_as': the locking requester to the original feature.
-		require
-			l_fo_not_void: l_fo /= Void
-			l_fo_preconditions_not_void: l_fo.preconditions /= Void
-			l_fo_postconditions_not_void: l_fo.postconditions /= Void
+	add_enclosing_routine (l_as: BODY_AS)
+			-- Add an enclosing routine for 'l_as'.
 		do
-			fo := l_fo
-
 			-- print feature name
-			context.add_string ("%N%N%T" + fo.feature_name + "_scoop_separate_")
-			context.add_string (class_c.name.as_lower + "_enclosing_routine ")
+			context.add_string ("%N%N%T" + feature_object.feature_name + {SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive)
+			context.add_string (class_c.name.as_lower + {SCOOP_SYSTEM_CONSTANTS}.enclosing_routine_name_additive)
+			context.add_string ("")
 
 			-- process body
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
-feature {NONE} -- Node implementation
+feature {NONE} -- Implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_body_as (l_as: BODY_AS)
 		local
 			c_as: CONSTANT_AS
-			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-			feature_name: FEATURE_NAME
 		do
 			is_internal_arguments := True
 			safe_process (l_as.internal_arguments)
@@ -81,30 +67,52 @@ feature {NONE} -- Node implementation
 				safe_process (l_as.indexing_clause)
 
 					-- add comment
-				context.add_string ("%N%T%T%T-- Wrapper for enclosing routine `" + fo.feature_name.as_lower + "'.")
+				context.add_string ("%N%T%T%T-- Wrapper for enclosing routine `" + feature_object.feature_name.as_lower + "'.")
 
 					-- process body (routine_as)
 				safe_process (l_as.content)
-
 			end
-
 		end
 
-	process_precursor_as (l_as: PRECURSOR_AS) is
+	process_routine_as (l_as: ROUTINE_AS)
+		do
+				-- process 'l_as'
+			safe_process (l_as.obsolete_keyword (match_list))
+			safe_process (l_as.obsolete_message)
+
+			avoid_proxy_calls_in_call_chains := true
+			safe_process (l_as.precondition)
+			avoid_proxy_calls_in_call_chains := false
+
+			safe_process (l_as.internal_locals)
+			safe_process (l_as.routine_body)
+
+			safe_process (l_as.postcondition)
+
+			safe_process (l_as.rescue_keyword (match_list))
+			safe_process (l_as.rescue_clause)
+
+				-- process end keyword
+			context.add_string ("%N%T%T")
+			last_index := l_as.end_keyword.first_token (match_list).index - 1
+			safe_process (l_as.end_keyword)
+		end
+
+	process_precursor_as (l_as: PRECURSOR_AS)
 		local
 			l_parent: STRING
 		do
 			last_index := l_as.first_token (match_list).index - 1
 
 				-- print normal call to inherited feature
-			context.add_string ("%N%T%T%T" + fo.feature_name + "_scoop_separate_")
+			context.add_string ("%N%T%T%T" + feature_object.feature_name + "_scoop_separate_")
 
 			if l_as.parent_base_class /= Void then
 				create l_parent.make_from_string (l_as.parent_base_class.class_name.name.as_lower)
 				context.add_string (l_parent + "_enclosing_routine ")
 			else
 					-- get name of parent base class		
-				l_parent := precursor_parent (fo.feature_name)
+				l_parent := precursor_parent (feature_object.feature_name)
 				if l_parent /= Void then
 					context.add_string (l_parent.as_lower + "_enclosing_routine ")
 				else
@@ -122,37 +130,46 @@ feature {NONE} -- Node implementation
 			last_index := l_as.last_token (match_list).index
 		end
 
-	process_ensure_then_as (l_as: ENSURE_THEN_AS) is
-		local
-			i: INTEGER
-			a_post_condition: TAGGED_AS
+	process_ensure_then_as (l_as: ENSURE_THEN_AS)
 		do
 			process_ensure_as(l_as)
 		end
 
-	process_ensure_as (l_as: ENSURE_AS) is
+	process_ensure_as (l_as: ENSURE_AS)
 		local
-			i: INTEGER
-			a_post_condition: TAGGED_AS
+			i, j: INTEGER
+			current_immediate_post_condition: SCOOP_CLIENT_ASSERTION_OBJECT
+			separate_argument_occurrences_count: TUPLE[name: STRING; occurrences_count: INTEGER]
+			l_argument_name: STRING
 		do
 			if attached {ENSURE_THEN_AS} l_as then
 				context.add_string ("%N%T%Tensure then")
 			else
 				context.add_string ("%N%T%Tensure")
 			end
-			processing_assertions := True
 				-- separate argument increased postcondition counter call
-			if fo.arguments.has_separate_arguments and then fo.arguments.has_postcondition_occurrence then
+			if not feature_object.arguments.separate_arguments.is_empty then
 				from
 					i := 1
 				until
-					i > fo.arguments.separate_arguments.count
+					i > feature_object.arguments.separate_arguments.count
 				loop
-					context.add_string ("%N%T%T%T")
-					context.add_string (fo.arguments.get_i_th_postcondition_argument_name (i))
-					context.add_string (".increased_postcondition_counter (")
-					context.add_string (fo.arguments.get_i_th_postcondition_argument_count (i).out)
-					context.add_string (")")
+					from
+						j := 1
+					until
+						j > feature_object.arguments.separate_arguments.i_th (i).id_list.count
+					loop
+						l_argument_name := feature_object.arguments.separate_arguments.i_th (i).item_name (j)
+						if feature_object.arguments.argument_count (l_argument_name) > 0 then
+							context.add_string ("%N%T%T%T")
+							context.add_string (l_argument_name)
+							context.add_string (".increased_postcondition_counter (")
+							context.add_string (feature_object.arguments.argument_count (l_argument_name).out)
+							context.add_string (")")
+						end
+						j := j + 1
+					end
+
 					i := i + 1
 				end
 			end
@@ -161,111 +178,40 @@ feature {NONE} -- Node implementation
 			from
 				i := 1
 			until
-				i > fo.postconditions.immediate_postconditions.count
+				i > feature_object.postconditions.immediate_postconditions.count
 			loop
-				a_post_condition := fo.postconditions.immediate_postconditions.i_th (i).tagged_as
-				last_index := a_post_condition.first_token (match_list).index - 1
+				current_immediate_post_condition := feature_object.postconditions.immediate_postconditions.i_th (i)
+				last_index := current_immediate_post_condition.tagged_as.first_token (match_list).index - 1
 				context.add_string ("%N%T%T%T")
-				safe_process (a_post_condition)
+				avoid_proxy_calls_in_call_chains := true
+				safe_process (current_immediate_post_condition.tagged_as)
+				avoid_proxy_calls_in_call_chains := false
+				reset_current_levels_layer
+				reset_current_object_tests_layer
+
+				from
+					j := 1
+				until
+					j > current_immediate_post_condition.separate_arguments_count
+				loop
+					-- get separate argument tuple
+					separate_argument_occurrences_count := current_immediate_post_condition.i_th_separate_argument_occurrences_count (j)
+
+					-- print decrease call
+					context.add_string ("%N%T%T%T" + separate_argument_occurrences_count.name + ".decreased_postcondition_counter (" + separate_argument_occurrences_count.occurrences_count.out + ")")
+
+					j := j + 1
+				end
+
 				i := i + 1
 			end
 
 			if l_as /= Void then
 				last_index := l_as.last_token (match_list).index
 			end
-			processing_assertions := False
 		end
 
-feature {NONE} -- Adding .implementation_ for precondition processing.
-
-	process_binary_as (l_as: BINARY_AS)
-		do
-			if processing_assertions then
-				safe_process (l_as.left)
-				safe_process (l_as.operator (match_list))
-				safe_process (l_as.right)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			if processing_assertions then
-				safe_process (l_as.feature_name)
-
-				update_current_level_with_call (l_as)
-
-				if current_level.type.is_separate then
-					context.add_string (".implementation_")
-					set_current_level_is_separate (False)
-				end
-
-				process_internal_parameters(l_as.internal_parameters)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
-		local
-			add_implementation_: BOOLEAN
-		do
-
-			if processing_assertions then
-				add_implementation_ := True
-
-				safe_process (l_as.feature_name)
-
-				update_current_level_with_call (l_as)
-
-				if current_level.type.is_separate then
-					if add_implementation_ then
-						context.add_string (".implementation_")
-					end
-					set_current_level_is_separate (False)
-				end
-
-				process_internal_parameters(l_as.internal_parameters)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_static_access_as (l_as: STATIC_ACCESS_AS)
-		do
-			if processing_assertions then
-				safe_process (l_as.feature_keyword (match_list))
-				safe_process (l_as.class_type)
-				safe_process (l_as.dot_symbol (match_list))
-				safe_process (l_as.feature_name)
-
-				update_current_level_with_call (l_as)
-
-				if current_level.type.is_separate then
-					context.add_string (".implementation_")
-					set_current_level_is_separate (False)
-				end
-
-				-- process internal parameters and add current if target is of separate type.
-				process_internal_parameters(l_as.internal_parameters)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		do
-			Precursor (l_as)
-			if processing_assertions and current_level.type.is_separate then
-				context.add_string (".implementation_")
-				set_current_level_is_separate (False)
-			end
-		end
-
-feature {NONE} -- Node implementation
-
-	precursor_parent (a_feature_name: STRING): STRING is
+	precursor_parent (a_feature_name: STRING): STRING
 			-- returns the parent of a precursor feature.
 			-- traverses the redefining list of the parents.
 		local
@@ -292,11 +238,6 @@ feature {NONE} -- Node implementation
 				i := i + 1
 			end
 		end
-
-feature {NONE} -- Implementation
-
-	fo: SCOOP_CLIENT_FEATURE_OBJECT
-			-- feature object of current processed feature.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

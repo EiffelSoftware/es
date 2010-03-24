@@ -1,7 +1,9 @@
 note
 	description: "[
-					Roundtrip visitor to create locking request feature in SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to create a locking request feature in a client class, based on an original feature.
+					A locking request feature exists for an original feature with separate arguments. It checks the non-separate precondition of the original feature. If the check is successful, it blocks until the scheduler signals that all all requested locks are granted and the wait condition is satisfied. Then it executes the enclosing routine.
+					The non-separate precondition contains only calls on non-separate targets. The non-separate precondition is always controlled. Therefore it can be checked before the locking requestor gets executed. 
+					The formal argument list of the locking requestor is changed in case the original feature redeclares its internal arguments from non-separate to separate.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -15,7 +17,6 @@ inherit
 	SCOOP_CLIENT_FEATURE_VISITOR
 		redefine
 			make,
-			process_body_as,
 			process_routine_as,
 			process_id_as,
 			process_require_as,
@@ -24,7 +25,6 @@ inherit
 			process_class_type_as,
 			process_generic_class_type_as
 		end
-
 
 create
 	make
@@ -42,120 +42,229 @@ feature -- Initialisation
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
-			-- Process `l_as': the locking requester to the original feature.
-		require
-			l_fo_not_void: l_fo /= Void
-			l_fo_preconditions_not_void: l_fo.preconditions /= Void
-			l_fo_postconditions_not_void: l_fo.postconditions /= Void
+	add_locking_requestor (l_as: BODY_AS)
+			-- Add a locking requestor for 'l_as'.
 		do
-			fo := l_fo
-
 			-- frozen keyword
 			context.add_string ("%N%N%T")
-			if fo.is_feature_frozen then
+			if feature_object.is_feature_frozen then
 				context.add_string ("frozen ")
 			end
 
 			-- print feature name
-			context.add_string (fo.feature_name + " ")
+			context.add_string (feature_object.feature_name + " ")
 
 			-- process body
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
-feature {NONE} -- Node implementation
+feature {NONE} -- General implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_routine_as_function
+			-- Adds body for routine body: function
 		local
-			c_as: CONSTANT_AS
-			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-			feature_name: FEATURE_NAME
+			is_set_prefix: BOOLEAN
+			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_routine_type: TYPE_A
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
-			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 		do
+			-- add locals
+			context.add_string ("%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, ")
+			l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expr_visitor.resolve_type_in_class (feature_as.body.type, class_c)
+			l_routine_type := l_type_expr_visitor.resolved_type
+			context.add_string (" ")
 
-			is_internal_arguments := True
-			safe_process (l_as.internal_arguments)
-			is_internal_arguments := False
 
-			safe_process (l_as.colon_symbol (match_list))
+			-- Fix for redeclarations if feature is query type:
+			-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+			-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+			is_set_prefix := l_routine_type.is_separate and then not l_routine_type.is_tuple or l_routine_type.is_formal
+			process_class_name_str (l_routine_type.associated_class.name_in_upper, is_set_prefix, context, match_list)
 
-			if l_as.type /= void then
-
-				-- Fix for redeclarations if feature is query type:
-				-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
-				-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
-				-- If `feature_name' is void we are in an attribute or constant
-
-				if attached {CLASS_TYPE_AS} l_as.type as typ then
-					create l_assign_finder
-					from
-						feature_as.feature_names.start
-					until
-						feature_as.feature_names.after
-					loop
-						if feature_as.feature_names.item.visual_name.is_equal (feature_as.feature_name.name) then
-							feature_name := feature_as.feature_names.item
-						end
-						feature_as.feature_names.forth
-					end
-					if not typ.is_separate then
-						-- non Separate: Check if substitution is needed.
-						if l_assign_finder.have_to_replace_return_type(feature_name, class_c, false) then
-							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
-							result_substitution := true
-	--						seperate_result_signature := typ
-						else
-							-- No substitution needed, print normaly
-							context.add_string (typ.class_name.name)
-						end
-					else
-						-- Separate: No substitution needed, print normaly
-						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
-					end
-				else
-					safe_process (l_as.type)
+			-- process internal generics
+			if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type as typ then
+				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+				l_generics_visitor.process_internal_generics (typ.internal_generics, True, False)
+				if typ.internal_generics /= Void then
+					last_index := l_generics_visitor.get_last_index
 				end
-				-- Print generics and check if they need a substitution
-				if attached {GENERIC_CLASS_TYPE_AS} l_as.type as gen_typ then
-					l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-					generics_to_substitute := l_assign_finder.generic_parameters_to_replace (feature_name, class_c, False, Void, True)
-					if not generics_to_substitute.is_empty then
-						l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
-					end
-					l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
-
-				end
-				last_index := l_as.type.last_token (match_list).index
 			end
 
-			--safe_process (l_as.type)
-			safe_process (l_as.assign_keyword (match_list))
-			safe_process (l_as.assigner)
-			safe_process (l_as.is_keyword (match_list))
 
-			c_as ?= l_as.content
-			if c_as /= Void then
-				l_as.content.process (Current)
-				safe_process (l_as.indexing_clause)
+			context.add_string ("]")
+
+			-- add do keyword
+			context.add_string ("%N%T%Tdo")
+
+			-- create function
+			context.add_string ("%N%T%T%Ta_function_to_evaluate := agent " + feature_object.feature_name + "_scoop_separate_" + parsed_class.class_name.name.as_lower + "_enclosing_routine ")
+			if feature_as.body.internal_arguments /= Void then
+				context.add_string ("(")
+				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+				context.add_string (")")
+			end
+
+			-- call function
+			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
+			process_separate_internal_arguments_as_actual_argument_list(True)
+			context.add_string ("]")
+			context.add_string (", a_function_to_evaluate,%N%T%T%T%Tagent "+ feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition")
+			if feature_as.body.internal_arguments /= Void then
+				context.add_string (" (")
+				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+				context.add_string (")")
+			end
+
+			-- 5th argument, postcondition processing: separate postconditions
+			if feature_object.postconditions.separate_postconditions.count > 0 then
+				-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
+				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+				context.add_string (class_c.name.as_lower + "_separate_postcondition")
+				if feature_as.body.internal_arguments /= Void then
+					context.add_string (" (")
+					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+					context.add_string (")")
+				end
 			else
-				safe_process (l_as.indexing_clause)
-
-				-- add comment
-				context.add_string ("%N%T%T%T-- Locking request of feature `" + fo.feature_name.as_lower + "'.")
-
-				safe_process (l_as.content)
+				-- just pass 'void' as fifth argument
+				context.add_string (", Void")
 			end
 
-			-- Wipe out `internal_arguments_to_substitute'
-			feature_object.internal_arguments_to_substitute.wipe_out
+			-- 6th argument, postcondition processing: non separate postconditions
+			if feature_object.postconditions.non_separate_postconditions.count > 0 then
+				-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
+				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+				context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
+				if feature_as.body.internal_arguments /= Void then
+					context.add_string (" (")
+					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+					context.add_string (")")
+				end
+			else
+				-- just pass 'void' as fifth argument
+				context.add_string (", Void")
+			end
+			context.add_string (")")
 
-
+			-- Result
+			context.add_string ("%N%T%T%TResult ")
+			if not l_routine_type.associated_class.is_expanded and then not l_routine_type.is_formal then
+				context.add_string ("?= ")
+			else
+				context.add_string (":= ")
+			end
+			context.add_string ("a_function_to_evaluate.last_result")
 		end
 
-	process_routine_as (l_as: ROUTINE_AS) is
+	process_routine_as_procedure
+			-- Adds body for routine body: procedure
+		do
+			context.add_string ("%N%T%Tdo")
+
+			context.add_string ("%N%T%T%Tinvariant_disabled := True")
+			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
+			process_separate_internal_arguments_as_actual_argument_list(True)
+			context.add_string ("], agent " + feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_enclosing_routine ")
+			if feature_as.body.internal_arguments /= Void then
+				context.add_string ("(")
+				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+				context.add_string (")")
+			end
+			context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition ")
+						if feature_as.body.internal_arguments /= Void then
+				context.add_string ("(")
+				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+				context.add_string (")")
+			end
+
+			-- 5th argument, postcondition processing: separate postconditions
+			if feature_object.postconditions.separate_postconditions.count > 0 then
+				-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
+				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+				context.add_string (class_c.name.as_lower + "_separate_postcondition")
+				if feature_as.body.internal_arguments /= Void then
+					context.add_string (" (")
+					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+					context.add_string (")")
+				end
+			else
+				-- just pass 'void' as fifth argument
+				context.add_string (", Void")
+			end
+
+			-- 6th argument, postcondition processing: non separate postconditions
+			if feature_object.postconditions.non_separate_postconditions.count > 0 then
+				-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
+				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+				context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
+				if feature_as.body.internal_arguments /= Void then
+					context.add_string (" (")
+					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+					context.add_string (")")
+				end
+			else
+				-- just pass 'void' as fifth argument
+				context.add_string (", Void")
+			end
+			context.add_string (")")
+
+			-- End keyword.
+			context.add_string ("%N%T%T%Tinvariant_disabled := False")
+		end
+
+	process_internal_arguments_as_actual_argument_list(l_as: FORMAL_ARGU_DEC_LIST_AS)
+			-- prints argument names as actual argument list to context.
+		local
+			i: INTEGER
+		do
+			if l_as /= Void then
+				from
+					i := 1
+				until
+					i >= l_as.arguments.count
+				loop
+					last_index := l_as.arguments.i_th (i).first_token (match_list).index - 1
+					process_identifier_list (l_as.arguments.i_th (i).id_list)
+					context.add_string (", ")
+					i := i + 1
+				end
+
+				if i = l_as.arguments.count then
+					last_index := l_as.arguments.i_th (i).first_token (match_list).index - 1
+					process_identifier_list (l_as.arguments.i_th (i).id_list)
+				end
+			end
+		end
+
+	process_separate_internal_arguments_as_actual_argument_list(with_processor: BOOLEAN)
+			-- prints argument names as actual argument list to context.
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i >= feature_object.arguments.separate_arguments.count
+			loop
+				last_index := feature_object.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
+				is_print_with_processor_postfix := with_processor
+				process_identifier_list (feature_object.arguments.separate_arguments.i_th (i).id_list)
+				is_print_with_processor_postfix := False
+				context.add_string (", ")
+				i := i + 1
+			end
+
+			if i = feature_object.arguments.separate_arguments.count then
+				last_index := feature_object.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
+				is_print_with_processor_postfix := with_processor
+				process_identifier_list (feature_object.arguments.separate_arguments.i_th (i).id_list)
+				is_print_with_processor_postfix := False
+			end
+		end
+
+	process_routine_as (l_as: ROUTINE_AS)
 		do
 			safe_process (l_as.obsolete_keyword (match_list))
 			safe_process (l_as.obsolete_message)
@@ -180,7 +289,50 @@ feature {NONE} -- Node implementation
 			safe_process (l_as.end_keyword)
 		end
 
-	process_id_as (l_as: ID_AS) is
+	process_require_else_as (l_as: REQUIRE_ELSE_AS)
+		do
+			process_require_as(l_as)
+		end
+
+	process_require_as (l_as: REQUIRE_AS)
+		local
+			i: INTEGER
+			l_tagged_as: TAGGED_AS
+		do
+				-- print only non-separate preconditions
+			if feature_object.preconditions.non_separate_preconditions.count > 0 then
+					-- print out require keyword
+				avoid_proxy_calls_in_call_chains := true
+				safe_process (l_as.require_keyword (match_list))
+				if attached {REQUIRE_ELSE_AS} l_as as rea then
+					-- Require Else call, process esle keyword
+					safe_process (rea.else_keyword (match_list))
+				end
+				avoid_proxy_calls_in_call_chains := false
+
+				from
+					i := 1
+				until
+					i > feature_object.preconditions.non_separate_preconditions.count
+				loop
+					context.add_string ("%N%T%T%T")
+					l_tagged_as := feature_object.preconditions.non_separate_preconditions.i_th (i).tagged_as
+					last_index := l_tagged_as.first_token (match_list).index - 1
+					safe_process (l_tagged_as)
+					i := i + 1
+				end
+			end
+
+			if l_as /= Void then
+				last_index := l_as.last_token (match_list).index
+			end
+		end
+
+	is_print_with_processor_postfix: BOOLEAN
+			-- indicates that a postfix '.processor' is added to an id_as element
+
+feature {NONE} -- Feature redeclaration handling
+	process_id_as (l_as: ID_AS)
 		do
 			Precursor (l_as)
 			if feature_object /= void and then feature_object.is_internal_arguments_to_substitute_defined then
@@ -200,48 +352,7 @@ feature {NONE} -- Node implementation
 			end
 		end
 
-	process_require_as (l_as: REQUIRE_AS) is
-		local
-			i: INTEGER
-			l_tagged_as: TAGGED_AS
-		do
-				-- print only non-separate preconditions
-			if fo.preconditions.non_separate_preconditions.count > 0 then
-					-- print out require keyword
-
-				safe_process (l_as.require_keyword (match_list))
-				if attached {REQUIRE_ELSE_AS} l_as as rea then
-					-- Require Else call, process esle keyword
-					safe_process (rea.else_keyword (match_list))
-				end
-				from
-					i := 1
-				until
-					i > fo.preconditions.non_separate_preconditions.count
-				loop
-					context.add_string ("%N%T%T%T")
-					l_tagged_as := fo.preconditions.non_separate_preconditions.i_th (i).tagged_as
-					last_index := l_tagged_as.first_token (match_list).index - 1
-					safe_process (l_tagged_as)
-					i := i + 1
-				end
-			end
-
-			if l_as /= Void then
-				last_index := l_as.last_token (match_list).index
-			end
-		end
-
-	process_require_else_as (l_as: REQUIRE_ELSE_AS) is
-		do
-			process_require_as(l_as)
-		end
-
-feature{NONE} -- Internal Argument Substitution
-
-
 	process_type_dec_as (l_as: TYPE_DEC_AS)
-
 		do
 			if is_internal_arguments and then attached {CLASS_TYPE_AS} l_as.type as typ then
 				-- We are in Internal Arguments (not random type dec)
@@ -322,51 +433,6 @@ feature{NONE} -- Internal Argument Substitution
 
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
-
---	process_identifier_list (l_as: IDENTIFIER_LIST)
---			-- Process `l_as'
---		local
---			i, l_count: INTEGER
---			l_index: INTEGER
---			l_ids: CONSTRUCT_LIST [INTEGER]
---			l_id_as: ID_AS
---			l_leaf: LEAF_AS
---		do
---			if l_as /= Void then
---				l_ids := l_as.id_list
---				if l_ids /= Void and l_ids.count > 0 then
---					from
---						l_ids.start
---						i := 1
---							-- Temporary/reused objects to print identifiers.
---						create l_id_as.initialize_from_id (1)
---						if l_as.separator_list /= Void then
---							l_count := l_as.separator_list.count
---						end
---					until
---						l_ids.after
---					loop
---						l_index := l_ids.item
---						if match_list.valid_index (l_index) then
---							l_leaf := match_list.i_th (l_index)
---								-- Note that we do not set the `name_id' for `l_id_as' since it will require
---								-- updating the NAMES_HEAP and we do not want to do that. It is assumed in roundtrip
---								-- mode that the text is never obtained from the node itself but from the `text' queries.
---							l_id_as.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
---							l_id_as.set_index (l_index)
---							safe_process (l_id_as)
-
---						end
---						if i <= l_count then
---							safe_process (l_as.separator_list_i_th (i, match_list))
---							i := i + 1
---						end
---						l_ids.forth
---						precursor(l_as)
---					end
---				end
---			end
---		end
 
 	single_process_identifier_list (l_as: IDENTIFIER_LIST; l_as_type: CLASS_TYPE_AS)
 			-- Process `l_as'
@@ -481,246 +547,6 @@ feature{NONE} -- Internal Argument Substitution
 				end
 			end
 		end
-
-
-feature {NONE} -- Implementation
-
-	process_routine_as_function is
-			-- Adds body for routine body: function
-		local
-			is_set_prefix: BOOLEAN
-			l_class_c: CLASS_C
-			l_type_visitor: SCOOP_TYPE_VISITOR
-			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-			i,nb: INTEGER
-			l_feature_name: FEATURE_NAME
-			l_generics_visitor: SCOOP_GENERICS_VISITOR
-		do
-			-- add locals
-			context.add_string ("%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, ")
-			create l_type_visitor
-			l_class_c := l_type_visitor.evaluate_class_from_type (feature_as.body.type, class_c)
-			context.add_string (" ")
-
-
-			-- Fix for redeclarations if feature is query type:
-			-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
-			-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
-
---			if attached {CLASS_TYPE_AS} feature_as.body.type as typ and then not typ.is_separate then
---				create l_assign_finder
---				from
---					i := 1
---					nb := feature_as.feature_names.count
---				until
---					i > nb
---				loop
---					l_feature_name := feature_as.feature_names.i_th (i)
---					if l_feature_name.visual_name.is_equal (feature_as.feature_name.name) then
---						if l_assign_finder.have_to_replace_return_type(l_feature_name, class_c, true) then
---							is_set_prefix := True
---							result_substitution := true  -- Remember we added the fix so we dont add `proxy_' later
---						end
---					end
---					i := i+1
---				end
---			end
-
---			if not result_substitution then
---				-- Nothing was done -> process normally
---				is_set_prefix := l_type_visitor.is_separate and then not l_type_visitor.is_tuple_type or l_type_visitor.is_formal
---			end
-			is_set_prefix := l_type_visitor.is_separate and then not l_type_visitor.is_tuple_type or l_type_visitor.is_formal
-			process_class_name_str (l_class_c.name_in_upper, is_set_prefix, context, match_list)
-
-			-- process internal generics
-			if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type as typ then
-				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_internal_generics (typ.internal_generics, True, False)
-				if typ.internal_generics /= Void then
-					last_index := l_generics_visitor.get_last_index
-				end
-			end
-
-
-			context.add_string ("]")
-
-			-- add do keyword
-			context.add_string ("%N%T%Tdo")
-
-			-- create function
-			context.add_string ("%N%T%T%Ta_function_to_evaluate := agent " + fo.feature_name + "_scoop_separate_" + parsed_class.class_name.name.as_lower + "_enclosing_routine ")
-			if feature_as.body.internal_arguments /= Void then
-				context.add_string ("(")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-
-			-- call function
-			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
-			process_separate_internal_arguments_as_actual_argument_list(True)
-			context.add_string ("]")
-			context.add_string (", a_function_to_evaluate,%N%T%T%T%Tagent "+ fo.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition")
-			if feature_as.body.internal_arguments /= Void then
-				context.add_string (" (")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-
-			-- 5th argument, postcondition processing: separate postconditions
-			if fo.postconditions.separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + fo.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_separate_postcondition")
-				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
-					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-					context.add_string (")")
-				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-
-			-- 6th argument, postcondition processing: non separate postconditions
-			if fo.postconditions.non_separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + fo.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
-				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
-					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-					context.add_string (")")
-				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-			context.add_string (")")
-
-			-- Result
-			context.add_string ("%N%T%T%TResult ")
-			if not l_class_c.is_expanded and then not l_type_visitor.is_formal then
-				context.add_string ("?= ")
-			else
-				context.add_string (":= ")
-			end
-			context.add_string ("a_function_to_evaluate.last_result")
-		end
-
-	process_routine_as_procedure is
-			-- Adds body for routine body: procedure
-		do
-			context.add_string ("%N%T%Tdo")
-
-			context.add_string ("%N%T%T%Tinvariant_disabled := True")
-			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
-			process_separate_internal_arguments_as_actual_argument_list(True)
-			context.add_string ("], agent " + fo.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_enclosing_routine ")
-			if feature_as.body.internal_arguments /= Void then
-				context.add_string ("(")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-			context.add_string (",%N%T%T%T%Tagent " + fo.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition ")
-						if feature_as.body.internal_arguments /= Void then
-				context.add_string ("(")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-
-			-- 5th argument, postcondition processing: separate postconditions
-			if fo.postconditions.separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + fo.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_separate_postcondition")
-				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
-					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-					context.add_string (")")
-				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-
-			-- 6th argument, postcondition processing: non separate postconditions
-			if fo.postconditions.non_separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + fo.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
-				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
-					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-					context.add_string (")")
-				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-			context.add_string (")")
-
-			-- End keyword.
-			context.add_string ("%N%T%T%Tinvariant_disabled := False")
-		end
-
-	process_internal_arguments_as_actual_argument_list(l_as: FORMAL_ARGU_DEC_LIST_AS) is
-			-- prints argument names as actual argument list to context.
-		local
-			i: INTEGER
-		do
-			if l_as /= Void then
-				from
-					i := 1
-				until
-					i >= l_as.arguments.count
-				loop
-					last_index := l_as.arguments.i_th (i).first_token (match_list).index - 1
-					process_identifier_list (l_as.arguments.i_th (i).id_list)
-					context.add_string (", ")
-					i := i + 1
-				end
-
-				if i = l_as.arguments.count then
-					last_index := l_as.arguments.i_th (i).first_token (match_list).index - 1
-					process_identifier_list (l_as.arguments.i_th (i).id_list)
-				end
-			end
-		end
-
-	process_separate_internal_arguments_as_actual_argument_list(with_processor: BOOLEAN) is
-			-- prints argument names as actual argument list to context.
-		local
-			i: INTEGER
-		do
-			from
-				i := 1
-			until
-				i >= fo.arguments.separate_arguments.count
-			loop
-				last_index := fo.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
-				is_print_with_processor_postfix := with_processor
-				process_identifier_list (fo.arguments.separate_arguments.i_th (i).id_list)
-				is_print_with_processor_postfix := False
-				context.add_string (", ")
-				i := i + 1
-			end
-
-			if i = fo.arguments.separate_arguments.count then
-				last_index := fo.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
-				is_print_with_processor_postfix := with_processor
-				process_identifier_list (fo.arguments.separate_arguments.i_th (i).id_list)
-				is_print_with_processor_postfix := False
-			end
-		end
-
-feature {NONE} -- Implementation
-
-	is_print_with_processor_postfix: BOOLEAN
-			-- indicates that a postfix '.processor' is added to an id_as element
-
-	fo: SCOOP_CLIENT_FEATURE_OBJECT
-			-- feature object of current processed feature.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

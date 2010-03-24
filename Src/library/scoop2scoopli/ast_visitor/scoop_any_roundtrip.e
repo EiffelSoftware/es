@@ -8,6 +8,9 @@ note
 class
 	SCOOP_ANY_ROUNDTRIP
 
+obsolete
+	"This class is not used anymore"
+
 inherit
 	COMPILER_EXPORTER
 

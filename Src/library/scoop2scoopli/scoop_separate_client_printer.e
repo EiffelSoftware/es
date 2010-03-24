@@ -211,7 +211,7 @@ feature {NONE} -- Roundtrip: process nodes
 			process_leading_leaves (l_as.feature_names.index)
 			-- Process the feature node with the feature visitor
 			l_feature_visitor := scoop_visitor_factory.new_client_feature_visitor (context)
-			l_feature_visitor.process_feature(l_as)
+			l_feature_visitor.add_client_features(l_as)
 			last_index := l_as.last_token (match_list).index
 		end
 
@@ -293,12 +293,7 @@ feature {NONE} -- Implementation
 				-- Added by `damienm' 3.Nov 2009
 			local
 				l_generics_visitor : SCOOP_GENERICS_VISITOR
-				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
-				l_type_a : TYPE_A
-
 			do
-
-
 				context.add_string("%N%Nfeature%N%N")
 				context.add_string ("%Tproxy_: "+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
 				if l_as.internal_generics /= Void then

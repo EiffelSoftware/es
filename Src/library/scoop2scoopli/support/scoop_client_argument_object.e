@@ -12,68 +12,70 @@ create
 	make
 
 feature -- Initialisation
-
 	make
 			-- Initialize argument object
 		do
 			create separate_arguments.make
-			create non_separate_argument_list.make
+			create non_separate_arguments.make
 			create separate_argument_counter.make
 
-			has_counted_separate_arguments := False
+--			has_counted_separate_arguments := False
 		end
 
 feature -- Access
+--	has_separate_arguments: BOOLEAN
+--			-- Are there separate arguments?
+--		do
+--			Result := separate_arguments.count > 0
+--		end
 
-	has_separate_arguments: BOOLEAN is
-			-- Are there separate arguments?
-		do
-			if separate_arguments.count > 0 then
-				Result := True
-			else
-				Result := False
-			end
-		end
-
-	is_non_separate_argument (a_feature_name: STRING): BOOLEAN is
-			-- Is `a_feature_name' a non separate argument?
+	is_argument (a_feature_name: STRING): BOOLEAN
+			-- Is `a_feature_name' an argument?
 		require
 			a_feature_name_is_not_void: a_feature_name /= Void
+		do
+			Result := is_non_separate_argument (a_feature_name) or is_separate_argument (a_feature_name)
+		end
+
+	is_non_separate_argument (a_name: STRING): BOOLEAN
+			-- Is `a_name' a non separate argument?
+		require
+			a_name_is_valid: a_name /= Void
 		local
 			i, j: INTEGER
-			found: BOOLEAN
+			l_found: BOOLEAN
 		do
-			found := False
+			l_found := False
 			from
 				i := 1
 			until
-				i > non_separate_argument_list.count
+				i > non_separate_arguments.count
 			loop
 				from
 					j := 1
 				until
-					j > non_separate_argument_list.i_th (i).id_list.count
+					j > non_separate_arguments.i_th (i).id_list.count
 				loop
-					if non_separate_argument_list.i_th (i).item_name (j).is_equal (a_feature_name) then
-						found := True
+					if non_separate_arguments.i_th (i).item_name (j).is_equal (a_name) then
+						l_found := True
 					end
 					j := j + 1
 				end
 				i := i + 1
 			end
 
-			Result := found
+			Result := l_found
 		end
 
-	is_separate_argument (a_name: STRING): BOOLEAN is
-			-- Is `a_feature_name' a separate argument?
+	is_separate_argument (a_name: STRING): BOOLEAN
+			-- Is `a_name' a separate argument?
 		require
-			a_name_is_not_void: a_name /= Void
+			a_name_is_valid: a_name /= Void
 		local
 			i, j: INTEGER
-			found: BOOLEAN
+			l_found: BOOLEAN
 		do
-			found := False
+			l_found := False
 			from
 				i := 1
 			until
@@ -85,25 +87,24 @@ feature -- Access
 					j > separate_arguments.i_th (i).id_list.count
 				loop
 					if separate_arguments.i_th (i).item_name (j).is_equal (a_name) then
-						found := True
+						l_found := True
 					end
 					j := j + 1
 				end
 				i := i + 1
 			end
 
-			Result := found
+			Result := l_found
 		end
 
-	get_argument_by_name (a_name: STRING): TYPE_DEC_AS is
+	argument_by_name (a_name: STRING): TYPE_DEC_AS
 			-- Type declaration of `a_name'.
 		require
-			a_name_not_void: a_name /= Void
+			a_name_is_valid: a_name /= Void
 		local
-			i,j: 	INTEGER
+			i, j: INTEGER
 		do
 			if is_separate_argument (a_name) then
-				-- return separate argument declaration
 				from
 					i := 1
 				until
@@ -120,38 +121,47 @@ feature -- Access
 
 						j := j + 1
 					end
-
 					i := i + 1
 				end
-
 			elseif is_non_separate_argument (a_name) then
-				-- return non separate argument declaration
 				from
 					i := 1
 				until
-					i > non_separate_argument_list.count
+					i > non_separate_arguments.count
 				loop
 					from
 						j := 1
 					until
-						j > non_separate_argument_list.i_th (i).id_list.count
+						j > non_separate_arguments.i_th (i).id_list.count
 					loop
-						if non_separate_argument_list.i_th (i).item_name (j).is_equal (a_name) then
-							Result := non_separate_argument_list.i_th (i)
+						if non_separate_arguments.i_th (i).item_name (j).is_equal (a_name) then
+							Result := non_separate_arguments.i_th (i)
 						end
 
 						j := j + 1
 					end
-
 					i := i + 1
 				end
 			else
-				-- argument is not in the list!
+				-- The argument is not in the list.
 				Result := Void
 			end
 		end
 
-	count_separate_argument (a_name: STRING) is
+	type_by_name (a_name: STRING): TYPE_AS
+			-- Type of `a_name'.
+		require
+			a_name_not_void: a_name /= Void
+		local
+			l_type_dec_as: TYPE_DEC_AS
+		do
+			l_type_dec_as := argument_by_name (a_name)
+			if l_type_dec_as /= Void then
+				Result := l_type_dec_as.type
+			end
+		end
+
+	count_separate_argument (a_name: STRING)
 			-- Increase the counter of the separate argument by one.
 		local
 			i, a_value: INTEGER
@@ -178,93 +188,77 @@ feature -- Access
 					separate_argument_counter.extend (a_tuple)
 				end
 					-- flag to indicate the existance of separate arguments in a postcondition
-				has_counted_separate_arguments := True
+--				has_counted_separate_arguments := True
 			end
 		end
 
-	get_i_th_postcondition_argument_name (i: INTEGER): STRING is
-			-- Name of the i_th counted postcondition argument.
-		local
-			a_tuple: TUPLE[a_name: STRING; a_count: INTEGER]
-		do
-			a_tuple := separate_argument_counter.i_th (i)
-			Result := a_tuple.a_name
-		end
+--	get_i_th_postcondition_argument_name (i: INTEGER): STRING
+--			-- Name of the i_th counted postcondition argument.
+--		local
+--			a_tuple: TUPLE[a_name: STRING; a_count: INTEGER]
+--		do
+--			a_tuple := separate_argument_counter.i_th (i)
+--			Result := a_tuple.a_name
+--		end
 
-	get_i_th_postcondition_argument_count (i: INTEGER): INTEGER is
-			-- Count of the i_th counted postcondition argument.
-		local
-			a_tuple: TUPLE[a_name: STRING; a_count: INTEGER]
-		do
-			a_tuple := separate_argument_counter.i_th (i)
-			Result := a_tuple.a_count
-		end
+--	get_i_th_postcondition_argument_count (i: INTEGER): INTEGER
+--			-- Count of the i_th counted postcondition argument.
+--		local
+--			a_tuple: TUPLE[a_name: STRING; a_count: INTEGER]
+--		do
+--			a_tuple := separate_argument_counter.i_th (i)
+--			Result := a_tuple.a_count
+--		end
 
-	get_argument_count (an_argument_name: STRING_8): INTEGER is
-			-- Counter of `an_argument_name'.
+	argument_count (a_argument_name: STRING_8): INTEGER
+			-- Counter of `a_argument_name'.
 		local
 			i: INTEGER
-			found: BOOLEAN
+			l_found: BOOLEAN
 		do
-			found := False
+			l_found := False
 			from
 				i := 1
 			until
 				i > separate_argument_counter.count
 			loop
-				if separate_argument_counter.i_th (i).item (1).is_equal (an_argument_name) then
-					Result := separate_argument_counter.i_th (i).integer_item (2)
-					found := True
+				if separate_argument_counter.i_th (i).name.is_equal (a_argument_name) then
+					Result := separate_argument_counter.i_th (i).number_of_occurences
+					l_found := True
 				end
 				i := i + 1
 			end
-			if not found then
+			if not l_found then
 				Result := 0
 			end
 		end
 
-	has_postcondition_occurrence: BOOLEAN is
+	does_any_separate_argument_appear_in_postcondition: BOOLEAN
 			-- Does the argument list contain separate arguments?
 		do
-			Result := has_counted_separate_arguments
+			Result := not separate_argument_counter.is_empty
 		end
 
-	has (a_name: STRING): BOOLEAN is
-			-- Does the argument list contain `a_name'?
-		require
-			a_name_is_not_void: a_name /= Void
-		do
-			Result := is_non_separate_argument (a_name) or is_separate_argument (a_name)
-		end
-
-	get_type_by_name (a_name: STRING): TYPE_AS is
-			-- Type of `a_name'.
-		require
-			a_name_not_void: a_name /= Void
-		local
-			l_type_dec_as: TYPE_DEC_AS
-		do
-			l_type_dec_as := get_argument_by_name (a_name)
-			if l_type_dec_as /= Void then
-				Result := l_type_dec_as.type
-			end
-		end
-
-feature -- Access to lists
+--	has (a_name: STRING): BOOLEAN
+--			-- Does the argument list contain `a_name'?
+--		require
+--			a_name_is_not_void: a_name /= Void
+--		do
+--			Result := is_non_separate_argument (a_name) or is_separate_argument (a_name)
+--		end
 
 	separate_arguments: LINKED_LIST[TYPE_DEC_AS]
 			-- List of all separate arguments.
 
-	non_separate_argument_list: LINKED_LIST[TYPE_DEC_AS]
+	non_separate_arguments: LINKED_LIST[TYPE_DEC_AS]
 			-- List of all non separate arguments.
 
 feature {NONE} -- Implementation
+	separate_argument_counter: LINKED_LIST[TUPLE[name: STRING; number_of_occurences: INTEGER]]
+			-- The number of times a formal argument occurs in the postcondition.
 
-	separate_argument_counter: LINKED_LIST[TUPLE[STRING, INTEGER]]
-			-- Separate arguments with an integer which counts the occurence.
-
-	has_counted_separate_arguments: BOOLEAN
-			-- Are there any counted postconditions?
+--	has_counted_separate_arguments: BOOLEAN
+--			-- Are there any counted postconditions?
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

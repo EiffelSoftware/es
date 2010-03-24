@@ -51,7 +51,9 @@ inherit
 			process_char_as,
 			process_typed_char_as,
 			process_bool_as,
-			process_object_test_as
+			process_object_test_as,
+			process_inline_agent_creation_as,
+			process_agent_routine_creation_as
 		end
 
 	SCOOP_WORKBENCH
@@ -602,10 +604,157 @@ feature {NONE} -- Type resolution implementation
 		end
 
 feature {NONE} -- Expression evaluation visits
+	process_inline_agent_creation_as  (l_as: INLINE_AGENT_CREATION_AS)
+			-- Update the interface with 'l_as'.
+		do
+			update_interface (
+				derived_agent_type (l_as.target, l_as.body, l_as.operands)
+			)
+		end
+
+
+	process_agent_routine_creation_as (l_as: AGENT_ROUTINE_CREATION_AS)
+			-- Update the interface with 'l_as'.
+		do
+			update_interface (
+				derived_agent_type (
+					l_as.target,
+					system.classes.at (l_as.class_id).feature_table.item (l_as.feature_name.name).body.body,
+					l_as.operands
+				)
+			)
+		end
+
+	derived_agent_type (a_target: OPERAND_AS; a_body: BODY_AS; a_operands: EIFFEL_LIST[OPERAND_AS]): TYPE_A
+			-- The type of an agent with 'a_target', 'a_body', and 'a_operands'.
+		local
+			i, j, k: INTEGER
+			l_base_type: TYPE_AS
+			l_open_types: NAMED_TUPLE_TYPE_AS
+			l_open_types_tuple_parameters: EIFFEL_LIST [TYPE_DEC_AS]
+			l_is_agent_a_query: BOOLEAN
+			l_is_agent_a_function: BOOLEAN
+			l_result_type: TYPE_AS
+			l_agent_type_actual_generics: TYPE_LIST_AS
+			l_agent_type: GENERIC_CLASS_TYPE_AS
+		do
+			-- Evaluate the base type of the routine.
+			l_base_type := create {CLASS_TYPE_AS}.initialize (create {ID_AS}.initialize (system.any_class.name))
+
+			-- Evaluate the open types of the routine.
+			create l_open_types_tuple_parameters.make (0)
+			-- Add the target type to the open types tuple parameters, if the target is open.
+			if a_target.is_open then
+				l_open_types_tuple_parameters.put_right (
+					create {TYPE_DEC_AS}.initialize (
+						create {IDENTIFIER_LIST}.make (0),
+						a_target.class_type,
+						void
+					)
+				)
+			end
+			-- Add the open argument types to the open types tuple parameters.
+			from
+				i := 1
+				k := 1
+			until
+				i > a_body.arguments.count
+			loop
+				from
+					j := 1
+				until
+					j > a_body.arguments.i_th (i).id_list.count
+				loop
+					if a_operands.i_th (k).is_open then
+						l_open_types_tuple_parameters.put_right (
+							create {TYPE_DEC_AS}.initialize (
+								create {IDENTIFIER_LIST}.make (0),
+								a_body.arguments.i_th (i).type,
+								void
+							)
+						)
+					end
+					k := k + 1
+					j := j + 1
+				end
+				i := i + 1
+			end
+			create l_open_types.initialize (
+				create {ID_AS}.initialize (system.tuple_class.name),
+				create {FORMAL_ARGU_DEC_LIST_AS}.make (l_open_types_tuple_parameters, void, void)
+			)
+
+			-- Evaluate the result type of the routine, if it is a function.
+			if
+				a_body.type /= Void
+			then
+				l_is_agent_a_query := true
+
+				if not type_a_generator.evaluate_type (a_body.type, expression_type.associated_class)
+					.same_as (system.boolean_class.compiled_class.actual_type)
+				then
+					l_is_agent_a_function := true
+					l_result_type := a_body.type
+				else
+					l_is_agent_a_function := false
+					l_result_type := void
+				end
+			else
+				l_is_agent_a_query := false
+				l_is_agent_a_function := false
+				l_result_type := void
+			end
+
+			-- Create the inline agent type actual generics.
+			if l_is_agent_a_query then
+				if l_is_agent_a_function then
+					create l_agent_type_actual_generics.make (3)
+					l_agent_type_actual_generics.put (l_base_type)
+					l_agent_type_actual_generics.put_right (l_open_types)
+					l_agent_type_actual_generics.put_right (l_result_type)
+				else
+					create l_agent_type_actual_generics.make (2)
+					l_agent_type_actual_generics.put (l_base_type)
+					l_agent_type_actual_generics.put_right (l_open_types)
+				end
+			else
+				create l_agent_type_actual_generics.make (2)
+				l_agent_type_actual_generics.put (l_base_type)
+				l_agent_type_actual_generics.put_right (l_open_types)
+			end
+
+			-- Create the inline agent type.
+			if l_is_agent_a_query then
+				if l_is_agent_a_function then
+					 create l_agent_type.initialize (
+					 	create {ID_AS}.initialize (system.function_class.name),
+					 	l_agent_type_actual_generics
+					 )
+				else
+					 create l_agent_type.initialize (
+					 	create {ID_AS}.initialize (system.predicate_class.name),
+					 	l_agent_type_actual_generics
+					 )
+				end
+			else
+				 create l_agent_type.initialize (
+				 	create {ID_AS}.initialize (system.procedure_class.name),
+				 	l_agent_type_actual_generics
+				 )
+			end
+
+			-- Resolve the type.
+			if context_feature /= Void then
+				Result := resolved_type_in_context_feature_and_expression_type (l_agent_type)
+			else
+				Result := resolved_type_in_expression_type (l_agent_type)
+			end
+		end
+
 	process_address_as (l_as: ADDRESS_AS)
 			-- Update the interface with 'l_as'.
 		do
-			update_interface(create {CL_TYPE_A}.make (system.pointer_class.compiled_representation.class_id))
+			update_interface (create {CL_TYPE_A}.make (system.pointer_class.compiled_representation.class_id))
 		end
 
 	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)

@@ -1,8 +1,9 @@
 note
 	description: "[
-					Roundtrip visitor to process non-separate postconditions of 
-					enclosing routines in SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to create a non-separate postcondition wrapper in a client class, based on an original feature.
+					A non-separate postcondition wrapper exists for an original feature with separate arguments. It checks the non-separate postcondition and the unseparated postcondition of the original feature. It also decreases the postcondition counters for the involved separate arguments.
+					Each clause of the non-separate postcondition contains at least one call on a non-separate target and does not contain the old or the result keyword. The non-separate postcondition must be checked by the current processor, but it does not have to be checked right after the execution of the enclosing routine.
+					Generated call chains operate on client objects.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -23,31 +24,31 @@ create
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
-			-- Process `l_as': the locking requester to the original feature.
-		require
-			l_fo_not_void: l_fo /= Void
-			l_fo_preconditions_not_void: l_fo.preconditions /= Void
-			l_fo_postconditions_not_void: l_fo.postconditions /= Void
+	add_non_separate_postcondition_wrapper (l_as: BODY_AS)
+			-- Add a non-separate postcondition wrapper for 'l_as'.
 		do
-			fo := l_fo
-
 			-- print feature name
-			context.add_string ("%N%N%T" + fo.feature_name + "_scoop_separate_" +
-								class_c.name.as_lower + "_non_separate_postcondition ")
+			context.add_string (
+				"%N%N%T" +
+				feature_object.feature_name +
+				{SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive +
+				class_c.name.as_lower +
+				{SCOOP_SYSTEM_CONSTANTS}.non_separate_postcondition_wrapper_name_additive
+			)
+			context.add_string (" ")
 
 			-- process body
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
-feature {NONE} -- Node implementation
+feature {NONE} -- Implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_body_as (l_as: BODY_AS)
 		local
 			i,j: INTEGER
-			an_assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT
-			a_tuple: TUPLE[argument_name: STRING; occurrence: INTEGER]
+			current_non_separate_postcondition_clause: SCOOP_CLIENT_ASSERTION_OBJECT
+			separate_argument_occurrences_count: TUPLE[name: STRING; occurrences_count: INTEGER]
 		do
 			safe_process (l_as.internal_arguments)
 
@@ -55,7 +56,7 @@ feature {NONE} -- Node implementation
 			context.add_string (" is")
 
 			-- add comment
-			context.add_string ("%N%T%T%T-- Wrapper for non-separate postconditions of enclosing routine `" + fo.feature_name  + "'.")
+			context.add_string ("%N%T%T%T-- Wrapper for non-separate postconditions of enclosing routine `" + feature_object.feature_name  + "'.")
 
 			-- add 'do' and 'ensure' keyword
 			context.add_string ("%N%T%Tdo%N%T%Tensure")
@@ -64,36 +65,38 @@ feature {NONE} -- Node implementation
 			context.add_string (" -- Operations are expressed as postconditions to allow for switching them on and off.)")
 
 			-- postcondition clause 'not unseparated_postconditions_left'
-			if not fo.postconditions.separate_postconditions.is_empty then
-				context.add_string ("%N%T%T%Tnot unseparated_postconditions_left (" + fo.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_unseparated_postconditions)")
-			end
+			context.add_string ("%N%T%T%Tnot unseparated_postconditions_left (" + feature_object.feature_name + "_scoop_separate_")
+			context.add_string (class_c.name.as_lower + "_unseparated_postconditions)")
 
 			from
 				i := 1
 			until
-				i > fo.postconditions.non_separate_postconditions.count
+				i > feature_object.postconditions.non_separate_postconditions.count
 			loop
 				context.add_string ("%N%T%T%T")
 
 				-- get assertion object
-				an_assertion_object := fo.postconditions.non_separate_postconditions.i_th (i)
+				current_non_separate_postcondition_clause := feature_object.postconditions.non_separate_postconditions.i_th (i)
 
 				-- process postcondition
-				last_index := an_assertion_object.tagged_as.first_token (match_list).index - 1
-				safe_process (an_assertion_object.tagged_as)
+				last_index := current_non_separate_postcondition_clause.tagged_as.first_token (match_list).index - 1
+				avoid_proxy_calls_in_call_chains := true
+				safe_process (current_non_separate_postcondition_clause.tagged_as)
+				avoid_proxy_calls_in_call_chains := false
+				reset_current_levels_layer
+				reset_current_object_tests_layer
 
-				-- iterate all separate argumetns
+				-- iterate over all separate arguments
 				from
 					j := 1
 				until
-					j > an_assertion_object.separate_argument_count
+					j > current_non_separate_postcondition_clause.separate_arguments_count
 				loop
 					-- get separate argument tuple
-					a_tuple := an_assertion_object.i_th_separate_argument_tuple (j)
+					separate_argument_occurrences_count := current_non_separate_postcondition_clause.i_th_separate_argument_occurrences_count (j)
 
 					-- print decrease call
-					context.add_string ("%N%T%T%T" + a_tuple.argument_name + ".decreased_postcondition_counter (" + a_tuple.occurrence.out + ")")
+					context.add_string ("%N%T%T%T" + separate_argument_occurrences_count.name + ".decreased_postcondition_counter (" + separate_argument_occurrences_count.occurrences_count.out + ")")
 
 					j := j + 1
 				end
@@ -104,11 +107,6 @@ feature {NONE} -- Node implementation
 			-- add 'end' keyword'
 			context.add_string ("%N%T%Tend")
 		end
-
-feature {NONE} -- Implementation
-
-	fo: SCOOP_CLIENT_FEATURE_OBJECT
-			-- feature object of current processed feature.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

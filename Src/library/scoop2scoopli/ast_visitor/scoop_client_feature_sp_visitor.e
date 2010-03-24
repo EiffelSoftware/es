@@ -1,8 +1,7 @@
 note
 	description: "[
-					Roundtrip visitor to process separate postconditions of enclosing routine
-					in SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to create a separate postcondition wrapper in a client class, based on an original feature.
+					A separate postcondition wrapper exists for an original feature with separate arguments. It asynchronously checks the individual separate postconditions that do not involve the current processor. The remaining individual separate postconditions are added to the unseparated postcondition.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,37 +17,35 @@ inherit
 			process_body_as
 		end
 
-	SCOOP_WORKBENCH
-
 create
 	make
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
-			-- Process `l_as': the locking requester to the original feature.
-		require
-			l_fo_not_void: l_fo /= Void
-			l_fo_preconditions_not_void: l_fo.preconditions /= Void
-			l_fo_postconditions_not_void: l_fo.postconditions /= Void
+	add_separate_postcondition_wrapper (l_as: BODY_AS)
+			-- Add a separate postcondition wrapper for 'l_as'.
 		do
-			fo := l_fo
-
 			-- print feature name
-			context.add_string ("%N%N%T" + fo.feature_name + "_scoop_separate_" +
-								class_c.name.as_lower + "_separate_postcondition ")
+			context.add_string (
+				"%N%N%T" +
+				feature_object.feature_name +
+				{SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive +
+				class_c.name.as_lower +
+				{SCOOP_SYSTEM_CONSTANTS}.separate_postcondition_wrapper_name_additive
+			)
+			context.add_string (" ")
 
 			-- process body
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
-feature {NONE} -- Node implementation
+feature {NONE} -- Implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_body_as (l_as: BODY_AS)
 		local
 			i: INTEGER
-			an_assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT
+			current_separate_postcondition_clause: SCOOP_CLIENT_ASSERTION_OBJECT
 		do
 			safe_process (l_as.internal_arguments)
 
@@ -56,13 +53,13 @@ feature {NONE} -- Node implementation
 			context.add_string (" is")
 
 			-- add comment
-			context.add_string ("%N%T%T%T-- Wrapper for separate postconditions of enclosing routine `" + fo.feature_name + "'.")
+			context.add_string ("%N%T%T%T-- Wrapper for separate postconditions of enclosing routine `" + feature_object.feature_name + "'.")
 
 			-- add 'do' keyword
 			context.add_string ("%N%T%Tdo")
 
 			-- add call
-			context.add_string ("%N%T%T%Tcreate " + fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions.make")
+			context.add_string ("%N%T%T%Tcreate " + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions.make")
 
 			-- add 'ensure' keyword
 			context.add_string ("%N%T%Tensure")
@@ -73,22 +70,22 @@ feature {NONE} -- Node implementation
 			from
 				i := 1
 			until
-				i > fo.postconditions.separate_postconditions.count
+				i > feature_object.postconditions.separate_postconditions.count
 			loop
 				-- get assertion object
-				an_assertion_object := fo.postconditions.separate_postconditions.i_th (i)
+				current_separate_postcondition_clause := feature_object.postconditions.separate_postconditions.i_th (i)
 
 				context.add_string ("%N%T%T%Tevaluated_as_separate_postcondition (")
 				-- first argument: list of separate arguments
-				context.add_string (an_assertion_object.separate_argument_list_as_string (False))
+				context.add_string (current_separate_postcondition_clause.separate_argument_list_as_string (False))
 				-- second argument: agent
-				context.add_string (", agent " + fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
-				process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, an_assertion_object.i_th_separate_argument_tuple (1).argument_name)
+				context.add_string (", agent " + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
+				process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, current_separate_postcondition_clause.i_th_separate_argument_occurrences_count (1).name)
 				context.add_string (")")
 
 				-- postcondition added_to_unseparated_postconditions
-				context.add_string ("%N%T%T%T%Tor else added_to_unseparated_postconditions (" + fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions,")
-				context.add_string ("%N%T%T%T%Tagent " + fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
+				context.add_string ("%N%T%T%T%Tor else added_to_unseparated_postconditions (" + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions,")
+				context.add_string ("%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
 				process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, "Current")
 
 				context.add_string (")")
@@ -99,7 +96,7 @@ feature {NONE} -- Node implementation
 			context.add_string ("%N%T%Tend")
 		end
 
-	process_formal_argument_list_as_actual_argument_list_with_prefix (l_as: BODY_AS; a_prefix: STRING) is
+	process_formal_argument_list_as_actual_argument_list_with_prefix (l_as: BODY_AS; a_prefix: STRING)
 			-- prints internal arguments as an actual argument list,
 			-- sets 'a_prefix' as a first argument.
 		local
@@ -137,10 +134,6 @@ feature {NONE} -- Node implementation
 
 			context.add_string (")")
 		end
-
-feature {NONE} -- Implementation
-	fo: SCOOP_CLIENT_FEATURE_OBJECT
-			-- feature object of current processed feature.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

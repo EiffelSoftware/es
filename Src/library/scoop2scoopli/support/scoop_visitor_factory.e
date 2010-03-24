@@ -92,15 +92,15 @@ feature -- Client class generation
 			Result := l_visitor
 		end
 
-	new_client_argument_visitor_for_class (a_class: CLASS_AS; a_list: LEAF_AS_LIST): SCOOP_CLIENT_ARGUMENT_VISITOR is
-			-- Create a `SCOOP_CLIENT_ARGUMENT_VISITOR' object.
-		local
-			l_visitor: SCOOP_CLIENT_ARGUMENT_VISITOR
-		do
-			create l_visitor
-			l_visitor.setup (a_class, a_list, True, True)
-			Result := l_visitor
-		end
+--	new_client_argument_visitor_for_class (a_class: CLASS_AS; a_list: LEAF_AS_LIST): SCOOP_CLIENT_ARGUMENT_VISITOR is
+--			-- Create a `SCOOP_CLIENT_ARGUMENT_VISITOR' object.
+--		local
+--			l_visitor: SCOOP_CLIENT_ARGUMENT_VISITOR
+--		do
+--			create l_visitor
+--			l_visitor.setup (a_class, a_list, True, True)
+--			Result := l_visitor
+--		end
 
 	new_client_feature_assertion_visitor (a_context: ROUNDTRIP_CONTEXT): SCOOP_CLIENT_FEATURE_ASSERTION_VISITOR is
 			-- Create a `SCOOP_CLIENT_FEATURE_ASSERTION_VISITOR' object.

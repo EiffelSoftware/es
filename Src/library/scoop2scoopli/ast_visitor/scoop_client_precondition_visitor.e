@@ -1,7 +1,6 @@
 note
 	description: "[
-					Roundtrip visitor to process precondition clause
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to analyze preconditions. Differentiate between separate and non-separate precondition.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -13,124 +12,47 @@ class
 
 inherit
 	SCOOP_CLIENT_ASSERTION_EXPR_VISITOR
+		rename
+			analyze_assertion_list as analyze_precondition
 		redefine
-			make
+			analyze_precondition,
+			evaluate_current_assertion
 		end
 
 create
-	make
-
-feature -- Initialisation
-
-	make (an_argument_object: SCOOP_CLIENT_ARGUMENT_OBJECT)
-			-- Initialisation with list of the separate internal argument.
-		do
-			Precursor (an_argument_object)
-
-			assertions := create {SCOOP_CLIENT_PRECONDITIONS}.make
-		end
+	make,
+	make_with_default_context
 
 feature -- Access
 
-	process_precondition (l_as: REQUIRE_AS) is
+	analyze_precondition (a_precondition: ASSERT_LIST_AS; a_formal_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT)
+			-- Analyze each assertion in 'a_precondition' one by one using 'a_formal_arguments' and store the result in 'preconditions'.
 		do
-			if l_as /= Void then
-				last_index := l_as.require_keyword_index
+			Precursor (a_precondition, a_formal_arguments)
+			create preconditions.make
+			if {l_require_as: REQUIRE_AS} a_precondition then
+				last_index := l_require_as.require_keyword_index
 			end
-			safe_process (l_as)
+			safe_process (a_precondition)
+		ensure then
+			a_precondition_is_analyzed: preconditions /= void
 		end
 
-feature {NONE} -- Parent implementation
-
-	evaluate_assertion  is
-			-- evaluates the processed tagged_as flags
-		do
-			if current_assertion.is_containing_separate_calls then
-				-- assertion contains separate calls.
-				current_preconditions.wait_conditions.extend (current_assertion)
-			else
-				-- assertion contains no separate call
-				current_preconditions.non_separate_preconditions.extend (current_assertion)
-			end
-		end
-
-	evaluate_expression is
-			-- evaluates the processed expr flags
-			-- needed when processing binary expression evaluation and lists.
-		do
-			-- evaluate is_separate_assertion flag
-			if is_expr_separate_assertion then
-				current_assertion.set_is_containing_separate_calls (is_expr_separate_assertion)
-			end
-		end
-
-	evaluate_external_assertion_object (an_assertion_object: SCOOP_CLIENT_ASSERTIONS) is
-			-- Evaluates the created assertion object after running through the internal parameters.
-		local
-			i: INTEGER
-			l_precondition_object: SCOOP_CLIENT_PRECONDITIONS
-			l_assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT
-		do
-			l_precondition_object ?= an_assertion_object
-			if l_precondition_object /= Void then
-				-- evaluate the result object of the visited calls of tuples, binary expressions
-				-- and internal parameters
-
-				if l_precondition_object.wait_conditions.count > 0 then
-					-- analysed expression contains separate arguments
-					current_assertion.set_is_containing_separate_calls (True)
-
-				elseif l_precondition_object.non_separate_preconditions.count > 0 then
-					-- analysed expression contains no separate arguments
-					-- do nothing
-				end
-
-				debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-
-					if l_precondition_object.wait_conditions.count > 0 then
-
-						from
-							i := 1
-						until
-							i > l_precondition_object.wait_conditions.count
-						loop
-								-- copy all calls
-							l_assertion_object := l_precondition_object.wait_conditions.i_th (i)
-							current_assertion.calls.append (l_assertion_object.calls)
-							i := i + 1
-						end
-					end
-
-					if l_precondition_object.non_separate_preconditions.count > 0 then
-
-						from
-							i := 1
-						until
-							i > l_precondition_object.non_separate_preconditions.count
-						loop
-								-- copy all calls
-							l_assertion_object := l_precondition_object.non_separate_preconditions.i_th (i)
-							current_assertion.calls.append (l_assertion_object.calls)
-							i := i + 1
-						end
-					end
-
-				end
-			end
-		end
-
-	create_same_visitor: SCOOP_CLIENT_ASSERTION_EXPR_VISITOR is
-			-- returns a new created visitor of the same type
-		do
-			Result := create {SCOOP_CLIENT_PRECONDITION_VISITOR}.make (arguments)
-		end
+	preconditions: SCOOP_CLIENT_PRECONDITIONS
+		-- The analyzed precondition.
 
 feature {NONE} -- Implementation
 
-	current_preconditions: SCOOP_CLIENT_PRECONDITIONS is
-			-- container for new generated precondition lists.
+	evaluate_current_assertion
+			-- Do the differentiation.
 		do
-			Result ?= assertions
+			if current_assertion.is_containing_separate_calls then
+				-- assertion contains separate calls.
+				preconditions.wait_conditions.extend (current_assertion)
+			else
+				-- assertion contains no separate call
+				preconditions.non_separate_preconditions.extend (current_assertion)
+			end
 		end
 
 note

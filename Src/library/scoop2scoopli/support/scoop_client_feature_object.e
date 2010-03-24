@@ -11,7 +11,6 @@ create
 	make
 
 feature -- Feature access
-
 	make is
 			-- Create Feature Object
 		do
@@ -21,80 +20,58 @@ feature -- Feature access
 		end
 
 
-	feature_name: STRING is
+	feature_name: STRING
 			-- Feature name.
+
+	set_feature_name (a_feature_name: STRING)
+			-- Set the feature name.
 		do
-			Result := feature_name_impl
+			feature_name := a_feature_name
 		end
+
 --	feature_name_object: FEATURE_NAME
 --		do
 --			Result := feature_name_object_impl
 --		end
 
-	set_feature_name (l_feature_name: STRING) is
-			-- Set `l_feature_name'.
+	feature_alias_name: STRING
+
+	set_feature_alias_name (a_feature_alias_name: STRING)
+			-- Set the feature alias name.
 		do
-			feature_name_impl := l_feature_name
+			feature_alias_name := a_feature_alias_name
 		end
 
-	feature_alias_name: STRING is
-			-- Feature alias name.
+	feature_declaration_name: STRING
+
+	set_feature_declaration_name (a_feature_declaration_name: STRING)
+			-- Set the feature declaration name.
 		do
-			Result := feature_alias_name_impl
+			feature_declaration_name := a_feature_declaration_name
 		end
 
-	set_feature_alias_name (l_feature_alias_name: STRING) is
-			-- Set `l_feature_alias_name'.
+	preconditions: SCOOP_CLIENT_PRECONDITIONS
+
+	set_preconditions (a_preconditions: SCOOP_CLIENT_PRECONDITIONS)
+			-- Set the preconditions.
 		do
-			feature_alias_name_impl := l_feature_alias_name
+			preconditions := a_preconditions
 		end
 
-	feature_declaration_name: STRING is
-			-- Feature declaration name.
+	postconditions: SCOOP_CLIENT_POSTCONDITIONS
+
+	set_postconditions (a_postconditions: SCOOP_CLIENT_POSTCONDITIONS)
+			-- Set the postconditions.
 		do
-			Result := feature_declaration_name_impl
+			postconditions := a_postconditions
 		end
 
-	set_feature_declaration_name (l_feature_declaration_name: STRING) is
-			-- Set `l_feature_declaration_name'.
-		do
-			feature_declaration_name_impl := l_feature_declaration_name
-		end
+	arguments: SCOOP_CLIENT_ARGUMENT_OBJECT
 
-	preconditions: SCOOP_CLIENT_PRECONDITIONS is
-			-- Client precondition object.
+	set_arguments (a_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT)
+			-- Set the arguments.
 		do
-			Result := preconditions_impl
-		end
-
-	set_preconditions (l_preconditions: SCOOP_CLIENT_PRECONDITIONS) is
-			-- Set `l_preconditions'.
-		do
-			preconditions_impl := l_preconditions
-		end
-
-	postconditions: SCOOP_CLIENT_POSTCONDITIONS is
-			-- Client postcondition object.
-		do
-			Result := postconditions_impl
-		end
-
-	set_postconditions (l_postconditions: SCOOP_CLIENT_POSTCONDITIONS) is
-			-- Set `l_postconditions'.
-		do
-			postconditions_impl := l_postconditions
-		end
-
-	arguments: SCOOP_CLIENT_ARGUMENT_OBJECT is
-			-- Feature arguments.
-		do
-			Result := arguments_impl
-		end
-
-	set_arguments (l_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT) is
-			-- Set `l_arguments'.
-		do
-			arguments_impl := l_arguments
+			arguments := a_arguments
 		end
 
 	is_feature_frozen: BOOLEAN
@@ -116,27 +93,24 @@ feature {NONE} -- Implementation
 	feature_name_object_impl: FEATURE_NAME
 			-- Feature name object
 
-	feature_name_impl: STRING
-			-- Name of current feature.
+--	feature_alias_name_impl: STRING
+--			-- Alias name of current feature.
 
-	feature_alias_name_impl: STRING
-			-- Alias name of current feature.
+--	feature_declaration_name_impl: STRING
+--			-- Name of current feature with alias
+--			-- or list of infix and noninfix name as string.
 
-	feature_declaration_name_impl: STRING
-			-- Name of current feature with alias
-			-- or list of infix and noninfix name as string.
+--	feature_as_impl: FEATURE_AS
+--			-- Reference to current feature_as.
 
-	feature_as_impl: FEATURE_AS
-			-- Reference to current feature_as.
+--	preconditions_impl: SCOOP_CLIENT_PRECONDITIONS
+--			-- Actual container of precondition clauses, processed in 'process_routine_as'.
 
-	preconditions_impl: SCOOP_CLIENT_PRECONDITIONS
-			-- Actual container of precondition clauses, processed in 'process_routine_as'.
+--	postconditions_impl: SCOOP_CLIENT_POSTCONDITIONS
+--			-- Actual container of postcondition clauses, processed in 'process_routine_as'.
 
-	postconditions_impl: SCOOP_CLIENT_POSTCONDITIONS
-			-- Actual container of postcondition clauses, processed in 'process_routine_as'.
-
-	arguments_impl: SCOOP_CLIENT_ARGUMENT_OBJECT
-			-- Object collects processed arguments of processed feature.
+--	arguments_impl: SCOOP_CLIENT_ARGUMENT_OBJECT
+--			-- Object collects processed arguments of processed feature.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

@@ -11,6 +11,9 @@ note
 class
 	SCOOP_CLIENT_ARGUMENT_VISITOR
 
+obsolete
+	"Use SCOOP_TYPE_EXPR_VISITOR"
+
 inherit
 	AST_ROUNDTRIP_ITERATOR
 		export
@@ -49,7 +52,7 @@ feature {NONE} -- Roundtrip/Token
 				-- extend the list
 				arguments.separate_arguments.extend (l_as)
 			else
-				arguments.non_separate_argument_list.extend (l_as)
+				arguments.non_separate_arguments.extend (l_as)
 			end
 		end
 

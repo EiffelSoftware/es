@@ -18,17 +18,17 @@ inherit
 			process_routine_as
 		end
 
-	SHARED_ERROR_HANDLER
-		export
-			{NONE} all
-		end
+--	SHARED_ERROR_HANDLER
+--		export
+--			{NONE} all
+--		end
 
 create
 	make_with_context
 
 feature -- Initialisation
 
-	make_with_context(a_context: ROUNDTRIP_CONTEXT)
+	make_with_context (a_context: ROUNDTRIP_CONTEXT)
 			-- Initialise and reset flags
 		require
 			a_context_not_void: a_context /= Void
@@ -38,34 +38,31 @@ feature -- Initialisation
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
-			-- Process `l_as': the locking requester to the original feature.
+	process_feature_body (l_as: BODY_AS)
+			-- Process `l_as'
 		require
 			feature_as_not_void: feature_as /= Void
-			l_fo_arguments_not_void: l_fo.arguments /= Void
-			l_fo_feature_name_not_void: l_fo.feature_name /= Void
+			feature_object /= Void and then (feature_object.feature_name /= Void and feature_object.arguments /= Void)
 		do
-			fo := l_fo
-
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
 		end
 
-	get_preconditions: SCOOP_CLIENT_PRECONDITIONS is
-			-- returns the preconditions object
-		do
-			Result := l_preconditions
-		end
+--	get_preconditions: SCOOP_CLIENT_PRECONDITIONS is
+--			-- returns the preconditions object
+--		do
+--			Result := l_preconditions
+--		end
 
-	get_postconditions: SCOOP_CLIENT_POSTCONDITIONS is
-			-- retunrs the postconditions object
-		do
-			Result := l_postconditions
-		end
+--	get_postconditions: SCOOP_CLIENT_POSTCONDITIONS is
+--			-- retunrs the postconditions object
+--		do
+--			Result := l_postconditions
+--		end
 
 feature {NONE} -- Node implementation
 
-	process_body_as (l_as: BODY_AS) is
+	process_body_as (l_as: BODY_AS)
 		local
 			r_as: ROUTINE_AS
 		do
@@ -75,68 +72,68 @@ feature {NONE} -- Node implementation
 			end
 		end
 
-	process_routine_as (l_as: ROUTINE_AS) is
+	process_routine_as (l_as: ROUTINE_AS)
 		local
 			l_precondition_visitor: SCOOP_CLIENT_PRECONDITION_VISITOR
 			l_postcondition_visitor: SCOOP_CLIENT_POSTCONDITION_VISITOR
 		do
 				-- visit precondition
-			create l_precondition_visitor.make (fo.arguments)
+			create l_precondition_visitor.make_with_default_context
 			l_precondition_visitor.setup (parsed_class, match_list, True, True)
-			l_precondition_visitor.process_precondition (l_as.precondition)
-			l_preconditions ?= l_precondition_visitor.get_assertion_object
+			l_precondition_visitor.analyze_precondition (l_as.precondition, feature_object.arguments)
+			preconditions := l_precondition_visitor.preconditions
 
 			debug ("SCOOP_CLIENT_ASSERTIONS")
-				if l_preconditions /= Void then
-					print_assertions_for_debugging (l_preconditions)
+				if preconditions /= Void then
+					print_assertions_for_debugging (preconditions)
 				end
 			end
 
 				-- visit postcondition
-			create l_postcondition_visitor.make (fo.arguments)
+			create l_postcondition_visitor.make_with_default_context
 			l_postcondition_visitor.setup (parsed_class, match_list, True, True)
-			l_postcondition_visitor.process_postcondition (l_as.postcondition)
-			l_postconditions ?= l_postcondition_visitor.get_assertion_object
+			l_postcondition_visitor.analyze_postcondition (l_as.postcondition, feature_object.arguments)
+			postconditions := l_postcondition_visitor.postconditions
 
 			debug ("SCOOP_CLIENT_ASSERTIONS")
-				if l_postconditions /= Void then
-					print_assertions_for_debugging (l_postconditions)
+				if postconditions /= Void then
+					print_assertions_for_debugging (postconditions)
 				end
 			end
 		end
 
 feature -- Debug
 
-	print_assertions_for_debugging (assertions: SCOOP_CLIENT_ASSERTIONS) is
+	print_assertions_for_debugging (a_assertions: SCOOP_CLIENT_ASSERTIONS)
 			-- prints content for debugging
 		local
 			i: INTEGER
 			test_context: ROUNDTRIP_CONTEXT
-			preconditions: SCOOP_CLIENT_PRECONDITIONS
-			postconditions: SCOOP_CLIENT_POSTCONDITIONS
+			l_preconditions: SCOOP_CLIENT_PRECONDITIONS
+			l_postconditions: SCOOP_CLIENT_POSTCONDITIONS
 		do
 			debug ("SCOOP_CLIENT_ASSERTIONS")
 
-				preconditions ?= assertions
-				if preconditions /= Void then
-					io.error.put_string ("%NSCOOP: SCOOP SEPARATE CLIENT, FEATURE [" + fo.feature_name + "] - ASSERTIONS: PRECONDITIONS")
+				l_preconditions ?= a_assertions
+				if l_preconditions /= Void then
+					io.error.put_string ("%NSCOOP: SCOOP SEPARATE CLIENT, FEATURE [" + feature_object.feature_name + "] - ASSERTIONS: PRECONDITIONS")
 
 					io.error.put_string ("%N%TWAIT_CONDITIONS:")
 					from
 						i := 1
 					until
-						i >  preconditions.wait_conditions.count
+						i >  l_preconditions.wait_conditions.count
 					loop
-						test_context := safe_process_debug (preconditions.wait_conditions.i_th (i).tagged_as)
+						test_context := safe_process_debug (l_preconditions.wait_conditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (preconditions.wait_conditions.i_th (i), False)
+							print_detailed_assertion_object (l_preconditions.wait_conditions.i_th (i), False)
 						end
 
 						i := i + 1
 					end
-					if preconditions.wait_conditions.count = 0 then
+					if l_preconditions.wait_conditions.count = 0 then
 						io.error.put_string ("%N%T%Tnone")
 					end
 
@@ -144,43 +141,43 @@ feature -- Debug
 					from
 						i := 1
 					until
-						i >  preconditions.non_separate_preconditions.count
+						i >  l_preconditions.non_separate_preconditions.count
 					loop
-						test_context := safe_process_debug (preconditions.non_separate_preconditions.i_th (i).tagged_as)
+						test_context := safe_process_debug (l_preconditions.non_separate_preconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (preconditions.non_separate_preconditions.i_th (i), False)
+							print_detailed_assertion_object (l_preconditions.non_separate_preconditions.i_th (i), False)
 						end
 
 						i := i + 1
 					end
-					if preconditions.non_separate_preconditions.count = 0 then
+					if l_preconditions.non_separate_preconditions.count = 0 then
 						io.error.put_string ("%N%T%Tnone")
 					end
 				end
 
-				postconditions ?= assertions
-				if postconditions /= Void then
-					io.error.put_string ("%NSCOOP: SCOOP SEPARATE CLIENT, FEATURE [" + fo.feature_name + "] - ASSERTIONS: POSTCONDITIONS")
+				l_postconditions ?= a_assertions
+				if l_postconditions /= Void then
+					io.error.put_string ("%NSCOOP: SCOOP SEPARATE CLIENT, FEATURE [" + feature_object.feature_name + "] - ASSERTIONS: POSTCONDITIONS")
 
 					io.error.put_string ("%N%TIMMEDIATE_POSTCONDITIONS:")
 					from
 						i := 1
 					until
-						i >  postconditions.immediate_postconditions.count
+						i >  l_postconditions.immediate_postconditions.count
 					loop
-						test_context := safe_process_debug (postconditions.immediate_postconditions.i_th (i).tagged_as)
+						test_context := safe_process_debug (l_postconditions.immediate_postconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (postconditions.immediate_postconditions.i_th (i), True)
-							print_separate_argument_list (postconditions.immediate_postconditions.i_th (i))
+							print_detailed_assertion_object (l_postconditions.immediate_postconditions.i_th (i), True)
+							print_separate_argument_list (l_postconditions.immediate_postconditions.i_th (i))
 						end
 
 						i := i + 1
 					end
-					if postconditions.immediate_postconditions.count = 0 then
+					if l_postconditions.immediate_postconditions.count = 0 then
 						io.error.put_string ("%N%T%Tnone")
 					end
 
@@ -188,19 +185,19 @@ feature -- Debug
 					from
 						i := 1
 					until
-						i >  postconditions.non_separate_postconditions.count
+						i >  l_postconditions.non_separate_postconditions.count
 					loop
-						test_context := safe_process_debug (postconditions.non_separate_postconditions.i_th (i).tagged_as)
+						test_context := safe_process_debug (l_postconditions.non_separate_postconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (postconditions.non_separate_postconditions.i_th (i), True)
-							print_separate_argument_list (postconditions.non_separate_postconditions.i_th (i))
+							print_detailed_assertion_object (l_postconditions.non_separate_postconditions.i_th (i), True)
+							print_separate_argument_list (l_postconditions.non_separate_postconditions.i_th (i))
 						end
 
 						i := i + 1
 					end
-					if postconditions.non_separate_postconditions.count = 0 then
+					if l_postconditions.non_separate_postconditions.count = 0 then
 						io.error.put_string ("%N%T%Tnone")
 					end
 
@@ -208,26 +205,26 @@ feature -- Debug
 					from
 						i := 1
 					until
-						i >  postconditions.separate_postconditions.count
+						i >  l_postconditions.separate_postconditions.count
 					loop
-						test_context := safe_process_debug (postconditions.separate_postconditions.i_th (i).tagged_as)
+						test_context := safe_process_debug (l_postconditions.separate_postconditions.i_th (i).tagged_as)
 						io.error.put_string ("%N%T%T" + i.out + ": " + test_context.string_representation)
 
 						debug ("SCOOP_CLIENT_ASSERTIONS_EXT")
-							print_detailed_assertion_object (postconditions.separate_postconditions.i_th (i), True)
-							print_separate_argument_list (postconditions.separate_postconditions.i_th (i))
+							print_detailed_assertion_object (l_postconditions.separate_postconditions.i_th (i), True)
+							print_separate_argument_list (l_postconditions.separate_postconditions.i_th (i))
 						end
 
 						i := i + 1
 					end
-					if postconditions.separate_postconditions.count = 0 then
+					if l_postconditions.separate_postconditions.count = 0 then
 						io.error.put_string ("%N%T%Tnone")
 					end
 				end
 			end
 		end
 
-	print_detailed_assertion_object (assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT; is_postcondition: BOOLEAN) is
+	print_detailed_assertion_object (assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT; is_postcondition: BOOLEAN)
 			-- prints list to io.error
 		do
 
@@ -251,10 +248,10 @@ feature -- Debug
 			io.error.put_string ("]")
 		end
 
-	print_separate_argument_list (assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT) is
+	print_separate_argument_list (assertion_object: SCOOP_CLIENT_ASSERTION_OBJECT)
 			-- prints list to io.error
 		do
-			io.error.put_string ("%N%T%T - Sep. Arguments (" + assertion_object.separate_argument_count.out + "): ")
+			io.error.put_string ("%N%T%T - Sep. Arguments (" + assertion_object.separate_arguments_count.out + "): ")
 			if assertion_object.has_separate_arguments then
 				io.error.put_string (assertion_object.separate_argument_list_as_string(True))
 			else
@@ -262,16 +259,13 @@ feature -- Debug
 			end
 		end
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
-	l_preconditions: SCOOP_CLIENT_PRECONDITIONS
+	preconditions: SCOOP_CLIENT_PRECONDITIONS
 			-- result object of preconditions visitor
 
-	l_postconditions: SCOOP_CLIENT_POSTCONDITIONS
+	postconditions: SCOOP_CLIENT_POSTCONDITIONS
 			-- result object of postcondition visitor
-
-	fo: SCOOP_CLIENT_FEATURE_OBJECT
-			-- feature object of current processed feature.
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

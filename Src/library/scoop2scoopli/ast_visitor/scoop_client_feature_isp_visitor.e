@@ -1,7 +1,9 @@
 note
 	description: "[
-					Roundtrip visitor to create separate postcondition clause in SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to create an individual separate postcondition wrapper in a client class, based on an original feature.
+					An individual separate postcondition wrapper exists for an original feature with separate arguments. It checks the individual separate postcondition. It also decreases the postcondition counters for the involved separate arguments.
+					An individual separate postcondition is a single clause that contains only calls on separate targets.
+					Generated call chains operate on client objects.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -15,58 +17,46 @@ inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
 		redefine
 			process_formal_argu_dec_list_as,
-			process_tagged_as,
-			process_binary_as,
-			process_access_feat_as,
-			process_access_assert_as,
-			process_static_access_as,
-			process_result_as
---			process_static_access_as,
---			process_access_feat_as,
---			process_access_inv_as,
---			process_access_id_as,
---			process_parameter_list_as
+			process_tagged_as
 		end
 
 create
 	make
 
 feature -- Access
-
-	process_individual_separate_postcondition (l_number: INTEGER; l_assertion: SCOOP_CLIENT_ASSERTION_OBJECT; l_fo: SCOOP_CLIENT_FEATURE_OBJECT) is
-			-- Process `l_as': the locking requester to the original feature.
-		require
-			l_assertion_not_void: l_assertion /= Void
-			l_fo_not_void: l_fo /= Void
+	add_individual_separate_postcondition_wrapper (a_number: INTEGER; a_assertion: SCOOP_CLIENT_ASSERTION_OBJECT)
+			-- Add an invididual separate postcondition wrapper with number 'a_number' and the assertion 'a_assertion'.
 		do
-			fo := l_fo
-			index := l_number
-			assertion := l_assertion
-
-			-- create prefix
-			create parameter_list_prefix.make_from_string ("caller_")
+			index := a_number
+			assertion := a_assertion
 
 			-- print feature name
 			context.add_string ("%N%N%T")
-			context.add_string (fo.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + index.out + " ")
+			context.add_string (
+				feature_object.feature_name +
+				{SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive +
+				class_c.name.as_lower +
+				{SCOOP_SYSTEM_CONSTANTS}.individual_separate_postcondition_wrapper_name_additive +
+				index.out + " "
+			)
 
 			-- process body
 			process_body
 		end
 
-	process_body is
-			-- processes the body of the feature
+feature {NONE} -- Implementation
+	process_body
 		local
 			i: INTEGER
 		do
 			-- process internal arguments
-			process_formal_argument_list_with_prefix (feature_as.body, "caller_: SCOOP_SEPARATE_TYPE")
+			add_formal_argument_list_as_actual_argument_list_with_prefix (feature_as.body, "caller_: SCOOP_SEPARATE_TYPE")
 
 			-- add 'is' keyword
 			context.add_string (" is")
 
 			-- add comment
-			context.add_string ("%N%T%T%T-- Wrapper for separate postcondition clause " + index.out + " of routine `" + fo.feature_name + "'.")
+			context.add_string ("%N%T%T%T-- Wrapper for separate postcondition clause " + index.out + " of routine `" + feature_object.feature_name + "'.")
 
 			-- add locals
 			context.add_string ("%N%T%Tlocal%N%T%T%Taux: BOOLEAN")
@@ -82,11 +72,11 @@ feature -- Access
 			context.add_string ("%N%T%T%Tif ")
 
 			-- process separate postcondition with prefix 'caller_'
-			is_print_assertion_as_expr := True
-			is_print_parameters_with_prefix := True
+			avoid_proxy_calls_in_call_chains := true
 			safe_process (assertion.tagged_as)
-			is_print_parameters_with_prefix := False
-			is_print_assertion_as_expr := False
+			avoid_proxy_calls_in_call_chains := false
+			reset_current_levels_layer
+			reset_current_object_tests_layer
 
 			-- then
 			context.add_string ("%N%T%T%Tthen -- Postcondition clause holds.")
@@ -95,10 +85,10 @@ feature -- Access
 			from
 				i := 1
 			until
-				i > assertion.separate_argument_count
+				i > assertion.separate_arguments_count
 			loop
-				context.add_string ("%N%T%T%T%Taux := " + assertion.i_th_separate_argument_tuple (i).argument_name)
-				context.add_string (".decreased_postcondition_counter (" + assertion.i_th_separate_argument_tuple (i).occurrence.out + ")")
+				context.add_string ("%N%T%T%T%Taux := " + assertion.i_th_separate_argument_occurrences_count (i).name)
+				context.add_string (".decreased_postcondition_counter (" + assertion.i_th_separate_argument_occurrences_count (i).occurrences_count.out + ")")
 
 				i := i + 1
 			end
@@ -109,7 +99,7 @@ feature -- Access
 			-- raise a postcondition exception
 			context.add_string ("%N%T%T%T%Tcreate l_exception")
 			context.add_string ("%N%T%T%T%Tl_exception.set_message (%"Postcondition violation: ")
-			safe_process (assertion.tagged_as)
+			safe_process (assertion.tagged_as.tag)
 			context.add_string ("%")")
 			context.add_string ("%N%T%T%T%Tcreate l_exception_factory")
 			context.add_string ("%N%T%T%T%Tl_exception_factory.exception_manager.raise (l_exception)")
@@ -121,7 +111,7 @@ feature -- Access
 			context.add_string ("%N%T%Tend")
 		end
 
-	process_formal_argument_list_with_prefix (l_as: BODY_AS; a_prefix: STRING) is
+	add_formal_argument_list_as_actual_argument_list_with_prefix (l_as: BODY_AS; a_prefix: STRING)
 			-- prints internal arguments as an actual argument list,
 			-- sets 'a_prefix' as a fist as a first argument.
 		do
@@ -146,21 +136,13 @@ feature -- Access
 			context.add_string (")")
 		end
 
-feature {NONE} -- Visitor implementation
-
-	process_tagged_as (l_as: TAGGED_AS) is
+	process_tagged_as (l_as: TAGGED_AS)
 		do
-			if not is_print_assertion_as_expr then
-				safe_process (l_as.tag)
-				safe_process (l_as.colon_symbol (match_list))
-			else
-				last_index := l_as.expr.first_token (match_list).index - 1
-			end
+			last_index := l_as.expr.first_token (match_list).index - 1
 			safe_process (l_as.expr)
 		end
 
-	process_formal_argu_dec_list_as (l_as: FORMAL_ARGU_DEC_LIST_AS) is
-			-- Process `l_as'.
+	process_formal_argu_dec_list_as (l_as: FORMAL_ARGU_DEC_LIST_AS)
 		do
 			if not is_print_with_prefix then
 				safe_process (l_as.lparan_symbol (match_list))
@@ -173,162 +155,9 @@ feature {NONE} -- Visitor implementation
 			end
 		end
 
-feature {NONE} -- Visitor implementation - parameter list prefix changes
-
-	process_binary_as (l_as: BINARY_AS)
-		do
-			if is_print_assertion_as_expr then
-				safe_process (l_as.left)
-				safe_process (l_as.operator (match_list))
-				safe_process (l_as.right)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			if is_print_assertion_as_expr then
-				safe_process (l_as.feature_name)
-
-				update_current_level_with_call (l_as)
-
-				if current_level.type.is_separate then
-					context.add_string (".implementation_")
-					set_current_level_is_separate (False)
-				end
-
-				process_internal_parameters(l_as.internal_parameters)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
-		do
-			if is_print_assertion_as_expr then
-				safe_process (l_as.feature_name)
-
-				update_current_level_with_call (l_as)
-
-				if current_level.type.is_separate then
-					context.add_string (".implementation_")
-					set_current_level_is_separate (False)
-				end
-
-				process_internal_parameters(l_as.internal_parameters)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_static_access_as (l_as: STATIC_ACCESS_AS)
-		do
-			if is_print_assertion_as_expr then
-				safe_process (l_as.feature_keyword (match_list))
-				safe_process (l_as.class_type)
-				safe_process (l_as.dot_symbol (match_list))
-				safe_process (l_as.feature_name)
-
-				update_current_level_with_call (l_as)
-
-				if current_level.type.is_separate then
-					context.add_string (".implementation_")
-					set_current_level_is_separate (False)
-				end
-
-				-- process internal parameters and add current if target is of separate type.
-				process_internal_parameters(l_as.internal_parameters)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		do
-			Precursor (l_as)
-			if is_print_assertion_as_expr and current_level.type.is_separate then
-				context.add_string (".implementation_")
-				set_current_level_is_separate (False)
-			end
-		end
-
---	process_parameter_list_as (l_as: PARAMETER_LIST_AS) is
---			-- Process `l_as'.
---		do
---			safe_process (l_as.lparan_symbol (match_list))
---			if not is_print_parameters_with_prefix then
---				safe_process (l_as.parameters)
---			else
---				context.add_string (parameter_list_prefix + ", ")
---				safe_process (l_as.parameters)
---			end
---			safe_process (l_as.rparan_symbol (match_list))
---		end
-
---	process_static_access_as (l_as: STATIC_ACCESS_AS) is
---		do
---			safe_process (l_as.feature_keyword (match_list))
---			safe_process (l_as.class_type)
---			safe_process (l_as.dot_symbol (match_list))
---			safe_process (l_as.feature_name)
---			if l_as.internal_parameters /= Void then
---				safe_process (l_as.internal_parameters)
---			elseif is_print_parameters_with_prefix then
---				context.add_string (" (" + parameter_list_prefix + ")")
---			end
---		end
-
---	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
---		do
---			safe_process (l_as.feature_name)
---			if l_as.internal_parameters /= Void then
---				safe_process (l_as.internal_parameters)
---			elseif is_print_parameters_with_prefix then
---				context.add_string ("(" + parameter_list_prefix + ")")
---			end
---		end
-
---	process_access_inv_as (l_as: ACCESS_INV_AS) is
---		do
---			safe_process (l_as.dot_symbol (match_list))
---			safe_process (l_as.feature_name)
---			if l_as.internal_parameters /= Void then
---				safe_process (l_as.internal_parameters)
---			elseif is_print_parameters_with_prefix then
---				context.add_string ("(" + parameter_list_prefix + ")")
---			end
---		end
-
---	process_access_id_as (l_as: ACCESS_ID_AS) is
---		do
---			safe_process (l_as.feature_name)
---			if l_as.internal_parameters /= Void then
---				safe_process (l_as.internal_parameters)
---			elseif is_print_parameters_with_prefix then
-
---				context.add_string ("(" + parameter_list_prefix + ")")
---			end
---		end
-
-feature {NONE} -- Implementation
-
-	parameter_list_prefix: STRING
-			-- prefix is used when a parameter list is processed an 'is_print_parameters_with_prefix' is True.
-			-- it adds prefix as a first paramter in the list.
-
-	is_print_parameters_with_prefix: BOOLEAN
-			-- prints a parameter list with a given prefix as first parameter.
-
-	is_print_assertion_as_expr: BOOLEAN
-			-- prints the 'tagged_as' without tag and colon_symobol if is_print_assertion_as_expr is True.
-
 	is_print_with_prefix: BOOLEAN
 			-- prints the 'formal_argu_dec_list_as' with a prefix as first argument.
 			-- the argument list is processed without the l- and rparan_sympbol.
-
-	fo: SCOOP_CLIENT_FEATURE_OBJECT
-			-- feature object of current processed feature.
 
 	assertion: SCOOP_CLIENT_ASSERTION_OBJECT
 			-- current processed assertion
