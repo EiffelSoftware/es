@@ -42,6 +42,11 @@ rule checksanity:
 if
 
 // This is another axiom. Since there are many ItemAt's on the left and many IsOff's on the right, jStar picks the wrong ones if the general axiom format is used.
+// rule uselessaxiom:
+//  | ItemAt(?current,{res=?result;ref=?iter1;iters=?i1;content=?c1}) |- IsOff(?current,{res=false();ref=?iter2;iters=?i2;content=?c2})
+// if
+// IsOff(?current,{res=false();ref=?iter1;iters=?i1;content=?c1}) | ItemAt(?current,{res=?result;ref=?iter1;iters=?i1;content=?c1}) |- ?iter1=?iter2 * ?iters1=?iters2 * ?c1=?c2 * !objsubtype(?current,"DS_TRAVERSABLE")
+// 
 // At least two solutions:
 //  1) Make jStar maching less eager by using backtracking if multiple matchings are possible
 //  2) Introduce a specification mechanism to state that certain variables on the left- and right-hand sides of the conclusion sequent's turnstile are the same. This will restrict matching.

@@ -52,7 +52,7 @@ feature -- Element change
 				w := other.item
 				-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c1;pos:_p;iters:_i}) * ItemAt(_ds,{res:v;ref:Current;iters:_i;content:_c1}) * Cursor(other,{ds:_ds}) * ItemAt(_ds,{res:w;ref:other;iters:_i;content:_c1})
 				replace (w)
-				-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c2;pos:_p;iters:_i}) * Replaced(_ds,{ref:Current;value:w;newcontent:_c2;oldcontent:_c1;iters:_i}) * ItemAt(_ds,{res:v;ref:Current;iters:_i;content:_c1}) * Cursor(other,{ds:_ds}) * ItemAt(_ds,{res:w;ref:other;iters:_i;content:_c1})
+				-- Cursor(Current,{ds:_ds}) * DS(_ds,{content:_c1p;pos:_p;iters:_i}) * Replaced(_ds,{ref:Current;value:w;newcontent:_c1p;oldcontent:_c1;iters:_i}) * ItemAt(_ds,{res:v;ref:Current;iters:_i;content:_c1}) * Cursor(other,{ds:_ds}) * ItemAt(_ds,{res:w;ref:other;iters:_i;content:_c1})
 				other.replace (v)
 			end
 		ensure
