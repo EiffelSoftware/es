@@ -9,10 +9,10 @@ class
 
 feature -- Access
 
-	expression_type_checker: EPA_EXPRESSION_TYPE_CHECKER
+	expression_type_checker: ETR_TYPE_CHECKER
 			-- Type checker for expressions
 		once
-			create Result
+			create Result.make
 		end
 
 end

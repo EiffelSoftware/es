@@ -14,7 +14,7 @@ inherit
 	AST_FEATURE_CHECKER_GENERATOR
 		export
 			{NONE} all
-			{ANY} last_type
+			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition
 		end
 	SHARED_AST_CONTEXT
 		rename
@@ -278,6 +278,31 @@ feature -- Type evaluation
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void
+		end
+
+	local_info (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [LOCAL_INFO, INTEGER]
+			-- Local information for `a_feature' in `a_class'.
+		do
+			init (ast_context)
+			ast_context.set_is_ignoring_export (True)
+			ast_context.initialize (a_class, a_class.actual_type, a_class.feature_table)
+			ast_context.set_current_feature (a_feature)
+			ast_context.set_written_class (a_feature.written_class)
+			current_feature := a_feature
+			if a_feature.is_routine then
+				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
+					if l_routine.locals /= Void then
+						type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
+						inherited_type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
+						context.locals.wipe_out
+						check_locals (l_routine)
+						Result := context.locals
+					end
+				end
+			end
+			if Result = Void then
+				create Result.make (0)
+			end
 		end
 
 feature -- Type checking

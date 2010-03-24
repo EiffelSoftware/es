@@ -199,17 +199,18 @@ feature{NONE} -- Implementation
 			-- Check type of `ast', store type in `type'.
 		require
 			syntax_correct: not has_syntax_error
+		local
+			l_check_post: BOOLEAN
+			l_checker: like expression_type_checker
 		do
-			expression_type_checker.check_expression (ast, class_, feature_, has_old_expression)
---			type := expression_type_checker.last_type.actual_type
-			fixme ("This is a walkaround. Fix me later. 9.3.2010 Jasonw")
-			if attached {TYPE_A} expression_type_checker.last_type as l_type then
-				type := l_type.actual_type
-			else
-				type := Void
-			end
---		ensure
---			type_attached: type /= Void
+			l_checker := expression_type_checker
+			l_check_post := l_checker.is_checking_postcondition
+			l_checker.set_is_checking_postcondition (has_old_expression)
+			l_checker.check_ast_type (ast, context)
+			l_checker.set_is_checking_postcondition (l_check_post)
+			type := l_checker.last_type.actual_type
+		ensure
+			type_attached: type /= Void
 		end
 
 	parse_text (a_text: STRING) is
@@ -248,6 +249,21 @@ feature{NONE} -- Implementation
 		once
 			create Result.make_with_factory (create {EPA_EXPRESSION_AST_FACTORY})
 			Result.set_expression_parser
+		end
+
+	context: ETR_CONTEXT
+			-- Context for Current expression
+		local
+			l_class_ctxt: ETR_CLASS_CONTEXT
+			l_feature_ctxt: ETR_FEATURE_CONTEXT
+		do
+			if attached {FEATURE_I} feature_ as l_feat then
+				create l_feature_ctxt.make (feature_, Void)
+				Result := l_feature_ctxt
+			else
+				create l_class_ctxt.make (class_)
+				Result := l_class_ctxt
+			end
 		end
 
 end
