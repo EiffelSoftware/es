@@ -110,6 +110,8 @@ feature -- Access
 					do
 						l_type := a_expr.resolved_type.name
 						l_type.replace_substring_all (once "?", once "")
+						l_type.prepend_character ('{')
+						l_type.append_character ('}')
 						a_tbl.put (l_type, a_expr.text.as_lower)
 					end (?, l_replacements))
 

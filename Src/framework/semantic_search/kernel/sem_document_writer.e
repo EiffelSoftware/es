@@ -72,7 +72,7 @@ feature{NONE} -- Impelementation
 	field_by: STRING = "by::"
 	field_changed: STRING = "changed::"
 	field_operands: STRING = "operands"
-	field_type: STRING = "type"
+	field_type: STRING = "type::"
 
 	default_boost: DOUBLE = 1.0
 			-- Default boost value for a field
@@ -336,6 +336,9 @@ feature{NONE} -- Implementation
 		local
 			l_types: DS_HASH_TABLE [INTEGER, TYPE_A]
 			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, TYPE_A]
+			l_count: INTEGER
+			i: INTEGER
+			l_values: STRING
 		do
 			l_types := transition.operand_type_table
 			from
@@ -344,7 +347,20 @@ feature{NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				append_field (field_type, default_boost, type_string, once "{" + normalized_type_name (l_cursor.key.name) + "}#" + l_cursor.item.out)
+				create l_values.make (32)
+				l_count := l_cursor.item
+				from
+					i := 1
+				until
+					i > l_count
+				loop
+					l_values.append (i.out)
+					if i < l_count then
+						l_values.append (field_value_separator)
+					end
+					i := i + 1
+				end
+				append_field (field_type + once "{" + normalized_type_name (l_cursor.key.name) + "}", default_boost, type_integer, l_values)
 				l_cursor.forth
 			end
 		end
