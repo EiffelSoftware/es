@@ -31,6 +31,13 @@ inherit
 			is_equal
 		end
 
+	ETR_SHARED_ERROR_HANDLER
+		export
+			{NONE}all
+		undefine
+			is_equal
+		end
+
 create
 	make,
 	make_with_text,
@@ -124,6 +131,9 @@ feature -- Status report
 	has_syntax_error: BOOLEAN
 			-- Does `text' contain syntex error?
 
+	has_type_error: BOOLEAN
+			-- Does Current have type error?
+
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
@@ -195,6 +205,14 @@ feature{NONE} -- Implementation
 			has_syntax_error_set: has_syntax_error = b
 		end
 
+	set_has_type_error (b: BOOLEAN)
+			-- Set `has_type_error' with `b'.
+		do
+			has_type_error := b
+		ensure
+			has_type_error_set: has_type_error = b
+		end
+
 	check_type is
 			-- Check type of `ast', store type in `type'.
 		require
@@ -202,15 +220,19 @@ feature{NONE} -- Implementation
 		local
 			l_check_post: BOOLEAN
 			l_checker: like expression_type_checker
+			l_error_handler: like error_handler
 		do
+			l_error_handler := error_handler
+			l_error_handler.reset_errors
 			l_checker := expression_type_checker
 			l_check_post := l_checker.is_checking_postcondition
 			l_checker.set_is_checking_postcondition (has_old_expression)
 			l_checker.check_ast_type (ast, context)
 			l_checker.set_is_checking_postcondition (l_check_post)
+			set_has_type_error (l_error_handler.has_errors)
 			type := l_checker.last_type.actual_type
 		ensure
-			type_attached: type /= Void
+			type_attached: not has_type_error implies type /= Void
 		end
 
 	parse_text (a_text: STRING) is
