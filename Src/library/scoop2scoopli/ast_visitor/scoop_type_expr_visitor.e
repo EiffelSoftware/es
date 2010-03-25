@@ -626,12 +626,12 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	derived_agent_type (a_target: OPERAND_AS; a_body: BODY_AS; a_operands: EIFFEL_LIST[OPERAND_AS]): TYPE_A
-			-- The type of an agent with 'a_target', 'a_body', and 'a_operands'.
+			-- The type of an agent with 'a_target', 'a_body', and 'a_operands'. For inline agents, 'a_target' can be void. For inline agents, the target is always the current object.
 		local
 			i, j, k: INTEGER
 			l_base_type: TYPE_AS
-			l_open_types: NAMED_TUPLE_TYPE_AS
-			l_open_types_tuple_parameters: EIFFEL_LIST [TYPE_DEC_AS]
+			l_open_types: GENERIC_CLASS_TYPE_AS
+			l_open_types_tuple_parameters: TYPE_LIST_AS
 			l_is_agent_a_query: BOOLEAN
 			l_is_agent_a_function: BOOLEAN
 			l_result_type: TYPE_AS
@@ -644,14 +644,8 @@ feature {NONE} -- Expression evaluation visits
 			-- Evaluate the open types of the routine.
 			create l_open_types_tuple_parameters.make (0)
 			-- Add the target type to the open types tuple parameters, if the target is open.
-			if a_target.is_open then
-				l_open_types_tuple_parameters.put_right (
-					create {TYPE_DEC_AS}.initialize (
-						create {IDENTIFIER_LIST}.make (0),
-						a_target.class_type,
-						void
-					)
-				)
+			if a_target /= void and then a_target.is_open then
+				l_open_types_tuple_parameters.extend (a_target.class_type)
 			end
 			-- Add the open argument types to the open types tuple parameters.
 			from
@@ -666,13 +660,7 @@ feature {NONE} -- Expression evaluation visits
 					j > a_body.arguments.i_th (i).id_list.count
 				loop
 					if a_operands.i_th (k).is_open then
-						l_open_types_tuple_parameters.put_right (
-							create {TYPE_DEC_AS}.initialize (
-								create {IDENTIFIER_LIST}.make (0),
-								a_body.arguments.i_th (i).type,
-								void
-							)
-						)
+						l_open_types_tuple_parameters.extend (a_body.arguments.i_th (i).type)
 					end
 					k := k + 1
 					j := j + 1
@@ -681,7 +669,7 @@ feature {NONE} -- Expression evaluation visits
 			end
 			create l_open_types.initialize (
 				create {ID_AS}.initialize (system.tuple_class.name),
-				create {FORMAL_ARGU_DEC_LIST_AS}.make (l_open_types_tuple_parameters, void, void)
+				l_open_types_tuple_parameters
 			)
 
 			-- Evaluate the result type of the routine, if it is a function.
@@ -708,19 +696,19 @@ feature {NONE} -- Expression evaluation visits
 			-- Create the inline agent type actual generics.
 			if l_is_agent_a_query then
 				if l_is_agent_a_function then
-					create l_agent_type_actual_generics.make (3)
-					l_agent_type_actual_generics.put (l_base_type)
-					l_agent_type_actual_generics.put_right (l_open_types)
-					l_agent_type_actual_generics.put_right (l_result_type)
+					create l_agent_type_actual_generics.make (0)
+					l_agent_type_actual_generics.extend (l_base_type)
+					l_agent_type_actual_generics.extend (l_open_types)
+					l_agent_type_actual_generics.extend (l_result_type)
 				else
-					create l_agent_type_actual_generics.make (2)
-					l_agent_type_actual_generics.put (l_base_type)
-					l_agent_type_actual_generics.put_right (l_open_types)
+					create l_agent_type_actual_generics.make (0)
+					l_agent_type_actual_generics.extend (l_base_type)
+					l_agent_type_actual_generics.extend (l_open_types)
 				end
 			else
-				create l_agent_type_actual_generics.make (2)
-				l_agent_type_actual_generics.put (l_base_type)
-				l_agent_type_actual_generics.put_right (l_open_types)
+				create l_agent_type_actual_generics.make (0)
+				l_agent_type_actual_generics.extend (l_base_type)
+				l_agent_type_actual_generics.extend (l_open_types)
 			end
 
 			-- Create the inline agent type.
