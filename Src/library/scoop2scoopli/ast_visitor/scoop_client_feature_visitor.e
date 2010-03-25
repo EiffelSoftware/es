@@ -144,7 +144,7 @@ feature {NONE} -- General implementation
 					if is_separate then
 
 						-- assertion visitor
-						l_feature_assertion_visitor.process_feature_body (l_as.body)
+						l_feature_assertion_visitor.analyze_precondition_and_postcondition (l_as.body)
 
 						-- get result objects
 						feature_object.set_preconditions (l_feature_assertion_visitor.preconditions)

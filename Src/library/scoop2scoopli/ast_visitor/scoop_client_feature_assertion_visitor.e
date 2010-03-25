@@ -1,7 +1,6 @@
 note
 	description: "[
-					Roundtrip visitor to process feature assertions in SCOOP client class.
-					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+					Roundtrip visitor to analyze preconditions and postconditions. For preconditions, differentiate between separate and non-separate precondition. For postconditions, differentiate between immediate postcondition, non-separate postcondition, and separate postcondition.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,11 +17,6 @@ inherit
 			process_routine_as
 		end
 
---	SHARED_ERROR_HANDLER
---		export
---			{NONE} all
---		end
-
 create
 	make_with_context
 
@@ -38,29 +32,23 @@ feature -- Initialisation
 
 feature -- Access
 
-	process_feature_body (l_as: BODY_AS)
-			-- Process `l_as'
-		require
-			feature_as_not_void: feature_as /= Void
-			feature_object /= Void and then (feature_object.feature_name /= Void and feature_object.arguments /= Void)
+	analyze_precondition_and_postcondition (l_as: BODY_AS)
+			-- Analyze the precondition and the postcondition of 'l_as' and store the result in 'preconditions' and 'postconditions'.
 		do
 			last_index := l_as.first_token (match_list).index
 			safe_process (l_as)
+		ensure
+			precondition_is_analyzed: preconditions /= void
+			postcondition_is_analyzed: postconditions /= void
 		end
 
---	get_preconditions: SCOOP_CLIENT_PRECONDITIONS is
---			-- returns the preconditions object
---		do
---			Result := l_preconditions
---		end
+	preconditions: SCOOP_CLIENT_PRECONDITIONS
+			-- The analyzed precondition.
 
---	get_postconditions: SCOOP_CLIENT_POSTCONDITIONS is
---			-- retunrs the postconditions object
---		do
---			Result := l_postconditions
---		end
+	postconditions: SCOOP_CLIENT_POSTCONDITIONS
+			-- The analyzed postcondition.
 
-feature {NONE} -- Node implementation
+feature {NONE} -- Implementation
 
 	process_body_as (l_as: BODY_AS)
 		local
@@ -258,14 +246,6 @@ feature -- Debug
 				io.error.put_string ("none.")
 			end
 		end
-
-feature -- Implementation
-
-	preconditions: SCOOP_CLIENT_PRECONDITIONS
-			-- result object of preconditions visitor
-
-	postconditions: SCOOP_CLIENT_POSTCONDITIONS
-			-- result object of postcondition visitor
 
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
