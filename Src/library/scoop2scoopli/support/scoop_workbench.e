@@ -140,7 +140,7 @@ feature -- SCOOP_SEPARATE_CLASS_LIST access
 			scoop_workbench_objects.set_scoop_classes (a_list)
 		end
 
-feature -- Current SCOOP_CLIENT_FEATURE_OBJECT access
+feature -- Current derived information access
 
 	feature_object: SCOOP_CLIENT_FEATURE_OBJECT is
 			-- The current feature object.
@@ -148,11 +148,24 @@ feature -- Current SCOOP_CLIENT_FEATURE_OBJECT access
 			Result := scoop_workbench_objects.current_feature_object
 		end
 
+	derived_class_information: SCOOP_DERIVED_CLASS_INFORMATION is
+			-- The current class object.
+		do
+			Result := scoop_workbench_objects.current_derived_class_information
+		end
+
 	set_feature_object (a_feature_object: SCOOP_CLIENT_FEATURE_OBJECT) is
 			-- Set `a_feature_object' as current feature object.
 		do
 			scoop_workbench_objects.set_current_feature_object (a_feature_object)
 		end
+
+	set_derived_class_information  (a_derived_class_information: SCOOP_DERIVED_CLASS_INFORMATION) is
+			-- Set `a_feature_object' as current feature object.
+		do
+			scoop_workbench_objects.set_current_derived_class_information (a_derived_class_information)
+		end
+
 
 feature -- Current proxy feature name
 
@@ -185,6 +198,21 @@ feature -- System support
 				end
 				i := i + 1
 			end
+--			if result = void then
+--				from
+--					i := 1
+--				until
+--					i > system.classes.count
+--				loop
+--					a_class := system.classes.item (i)
+--					if a_class /= Void then
+--						if a_class.name_in_upper.is_equal (a_class_name.as_upper) then
+--							Result := a_class.ast
+--						end
+--					end
+--					i := i + 1
+--				end
+--			end
 		end
 
 invariant

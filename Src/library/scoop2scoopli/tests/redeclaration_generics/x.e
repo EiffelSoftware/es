@@ -10,7 +10,7 @@ class
 feature -- Access
 
 
-do_some(k: X): TUPLE[TUPLE[INTEGER, BOOLEAN, TUPLE[separate X]]] is
+test(k: X): TUPLE[TUPLE[INTEGER, BOOLEAN, TUPLE[separate X]]] is
 	do
 	end
 

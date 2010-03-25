@@ -7,6 +7,12 @@ note
 
 class
 	SCOOP_CLIENT_FEATURE_OBJECT
+inherit
+	SCOOP_DERIVED_CLASS_INFORMATION
+	redefine
+		make
+	end
+
 create
 	make
 
@@ -15,7 +21,7 @@ feature -- Feature access
 			-- Create Feature Object
 		do
 			create internal_arguments_to_substitute.make (0)
-		ensure
+		ensure then
 			not_void: internal_arguments_to_substitute /= void
 		end
 
@@ -28,11 +34,6 @@ feature -- Feature access
 		do
 			feature_name := a_feature_name
 		end
-
---	feature_name_object: FEATURE_NAME
---		do
---			Result := feature_name_object_impl
---		end
 
 	feature_alias_name: STRING
 
@@ -88,10 +89,61 @@ feature -- Feature access
 			-- List of arguments to substitute:
 			-- Separate Arguments, which feature has a parent redeclaration with non separate argument.
 
-feature {NONE} -- Implementation
+	is_create_creation_wrappers_defined: BOOLEAN is
+			-- Is `internal_arguments_to_substitute' not empty?
+			do
+				Result := not internal_arguments_to_substitute.is_empty
+			end
 
-	feature_name_object_impl: FEATURE_NAME
-			-- Feature name object
+	locals_index: LINKED_LIST_CURSOR[STRING]
+		-- Position of the `local' declaration of the current feature
+		-- Used to inser local declerations
+
+	last_instr_call_index: LINKED_LIST_CURSOR[STRING]
+		-- Position of the last instruction call of the current feature
+
+	set_locals_index(crs:LINKED_LIST_CURSOR[STRING]) is
+			-- set locals position
+			do
+				locals_index := crs
+			end
+
+	set_last_instr_call_index(crs:LINKED_LIST_CURSOR[STRING]) is
+			-- set start position
+			do
+				last_instr_call_index := crs
+			end
+
+--	has_local_section: BOOLEAN
+--		-- Does the feature contain a local section
+
+--	set_has_local_section (has: BOOLEAN) is
+--		-- Feature `has' a local keyword
+--		do
+--			has_local_section := has
+--		end
+
+	need_local_section: BOOLEAN
+		-- Do we need to add a local section at the end
+		-- Is needed when we insert local decleration while processing the feature
+
+	set_need_local_section (need: BOOLEAN) is
+		-- Feature `need's a local keyword
+		do
+			need_local_section := need
+		end
+
+	local_keyword_index: LINKED_LIST_CURSOR[STRING]
+		-- Position of where the `local' keyword is to be inserted if it has to be added
+
+	set_local_keyword_index(crs:LINKED_LIST_CURSOR[STRING]) is
+			-- set locals position
+			do
+				local_keyword_index := crs
+			end
+
+
+feature {NONE} -- Implementation
 
 --	feature_alias_name_impl: STRING
 --			-- Alias name of current feature.
@@ -112,7 +164,7 @@ feature {NONE} -- Implementation
 --	arguments_impl: SCOOP_CLIENT_ARGUMENT_OBJECT
 --			-- Object collects processed arguments of processed feature.
 
-;note
+note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -80,14 +80,22 @@ feature {NONE} -- Implementation
 			safe_process (l_as.obsolete_keyword (match_list))
 			safe_process (l_as.obsolete_message)
 
-			avoid_proxy_calls_in_call_chains := true
+			avoid_proxy_calls_in_call_chains := True
+			is_processing_assertions := True
 			safe_process (l_as.precondition)
-			avoid_proxy_calls_in_call_chains := false
+			is_processing_assertions := False
+			avoid_proxy_calls_in_call_chains := False
 
 			safe_process (l_as.internal_locals)
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				feature_object.set_locals_index (ctxt.cursor_to_current_position)
+			end
+
 			safe_process (l_as.routine_body)
 
+			is_processing_assertions := True
 			safe_process (l_as.postcondition)
+			is_processing_assertions := False
 
 			safe_process (l_as.rescue_keyword (match_list))
 			safe_process (l_as.rescue_clause)
@@ -96,6 +104,14 @@ feature {NONE} -- Implementation
 			context.add_string ("%N%T%T")
 			last_index := l_as.end_keyword.first_token (match_list).index - 1
 			safe_process (l_as.end_keyword)
+
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				if feature_object.need_local_section then
+					ctxt.insert_after_cursor ("%N%T%Tlocal", feature_object.locals_index)
+					feature_object.set_need_local_section ( False )
+				end
+			end
+
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS)

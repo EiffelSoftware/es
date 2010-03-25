@@ -8,7 +8,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Run application.
+			--Used to test conversion and object tests
 		local
 			c: C[STRING]
 			sp_a: separate A[INTEGER]

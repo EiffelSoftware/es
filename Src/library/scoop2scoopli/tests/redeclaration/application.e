@@ -12,7 +12,8 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Run application.
+			-- Used to test redeclaration in various situations.
+			-- Redeclared features and attributes from class A in classes B and D
 
 		local
 			d_sep_class: separate D
@@ -27,6 +28,7 @@ feature {NONE} -- Initialization
 			create d.make
 			create d_sep_class.make
 			create y_sep_class
+			create y_class
 
 			d := b.d_object.f(d)
 			d := b.f(d)

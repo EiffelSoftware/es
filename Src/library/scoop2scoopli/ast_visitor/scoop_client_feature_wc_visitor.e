@@ -14,7 +14,7 @@ class
 	SCOOP_CLIENT_FEATURE_WC_VISITOR
 
 inherit
-	SCOOP_CLIENT_CONTEXT_AST_PRINTER
+	SCOOP_CLIENT_FEATURE_VISITOR
 		redefine
 			make,
 			process_body_as,
@@ -88,6 +88,7 @@ feature {NONE} -- Implementation
 				context.add_string ("%N%T%T%TResult := True")
 
 				-- add precondition expressions with 'and then'
+				is_processing_assertions := True
 				from
 					i := 1
 				until
@@ -102,7 +103,7 @@ feature {NONE} -- Implementation
 					context.add_string (")")
 					i := i + 1
 				end
-
+				is_processing_assertions := False
 				-- add end keyword
 				context.add_string ("%N%T%Tend")
 			end

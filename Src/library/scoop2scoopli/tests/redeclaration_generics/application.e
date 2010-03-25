@@ -12,7 +12,8 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Run application.
+			-- Used to test redeclaration in an generic environment
+			-- Does not compile like it should since the type checker is prohibiting correct scoop code when including generics.
 
 		local
 			d_sep_class: separate D[X]
@@ -24,15 +25,8 @@ feature {NONE} -- Initialization
 		do
 			create d.make
 			create d_sep_class.make
-			try(a)
 
 		end
-
-	try(test:D[separate X])is
-			-- testin...
-			do
-
-			end
 
 
 end

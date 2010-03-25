@@ -54,7 +54,12 @@ feature -- Scoop system constants
 				not_void: classes_to_be_compiled_list /= void
 			end
 
+
 	nonseparate_result: STRING is "nonseparate_result"
+
+	creation_object: STRING is "creation_object"
+
+	create_creation_wrapper: STRING is "create_creation_wrapper"
 
 	general_wrapper_name_additive: STRING is "_scoop_separate_"
 

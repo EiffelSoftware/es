@@ -9,11 +9,11 @@ class
 
 inherit X
 	redefine
-		do_some
+		test
 	end
-	
+
 feature
-	do_some(k: X): TUPLE[TUPLE[INTEGER, BOOLEAN, TUPLE[X]]] is
+	test(k: X): TUPLE[TUPLE[INTEGER, BOOLEAN, TUPLE[X]]] is
 	do
 	end
 

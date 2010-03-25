@@ -12,7 +12,7 @@ class
 	SCOOP_CLIENT_FEATURE_SP_VISITOR
 
 inherit
-	SCOOP_CLIENT_CONTEXT_AST_PRINTER
+	SCOOP_CLIENT_FEATURE_VISITOR
 		redefine
 			process_body_as
 		end
@@ -63,7 +63,7 @@ feature {NONE} -- Implementation
 
 			-- add 'ensure' keyword
 			context.add_string ("%N%T%Tensure")
-
+			is_processing_assertions := True
 			-- add comment
 			context.add_string (" -- Operations are expressed as postconditions to allow for switching them on and off.")
 
@@ -91,7 +91,7 @@ feature {NONE} -- Implementation
 				context.add_string (")")
 				i := i + 1
 			end
-
+			is_processing_assertions := False
 			-- add 'end' keyword'
 			context.add_string ("%N%T%Tend")
 		end

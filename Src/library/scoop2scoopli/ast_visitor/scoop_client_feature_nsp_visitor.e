@@ -14,7 +14,7 @@ class
 	SCOOP_CLIENT_FEATURE_NSP_VISITOR
 
 inherit
-	SCOOP_CLIENT_CONTEXT_AST_PRINTER
+	SCOOP_CLIENT_FEATURE_VISITOR
 		redefine
 			process_body_as
 		end
@@ -60,6 +60,7 @@ feature {NONE} -- Implementation
 
 			-- add 'do' and 'ensure' keyword
 			context.add_string ("%N%T%Tdo%N%T%Tensure")
+			is_processing_assertions := True
 
 			-- add comment
 			context.add_string (" -- Operations are expressed as postconditions to allow for switching them on and off.)")
@@ -77,7 +78,6 @@ feature {NONE} -- Implementation
 
 				-- get assertion object
 				current_non_separate_postcondition_clause := feature_object.postconditions.non_separate_postconditions.i_th (i)
-
 				-- process postcondition
 				last_index := current_non_separate_postcondition_clause.tagged_as.first_token (match_list).index - 1
 				avoid_proxy_calls_in_call_chains := true
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 
 				i :=  i + 1
 			end
-
+			is_processing_assertions := False
 			-- add 'end' keyword'
 			context.add_string ("%N%T%Tend")
 		end

@@ -107,10 +107,19 @@ feature -- SCOOP_CLIENT_FEATURE_OBJECT access
 	current_feature_object: SCOOP_CLIENT_FEATURE_OBJECT
 			-- Reference to current client feature object.
 
+	current_derived_class_information: SCOOP_DERIVED_CLASS_INFORMATION
+			-- Reference to current derived class information.
+
 	set_current_feature_object (a_feature_object: SCOOP_CLIENT_FEATURE_OBJECT) IS
 			-- Set `a_feature_object' to current client feature object.
 		do
 			current_feature_object := a_feature_object
+		end
+
+	set_current_derived_class_information (a_derived_class_information: SCOOP_DERIVED_CLASS_INFORMATION) IS
+			-- Set `a_derived_class_information' to current derived class information.
+		do
+			current_derived_class_information := a_derived_class_information
 		end
 
 feature -- SCOOP proxy feature name access

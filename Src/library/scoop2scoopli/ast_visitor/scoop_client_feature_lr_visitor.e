@@ -270,10 +270,16 @@ feature {NONE} -- General implementation
 			safe_process (l_as.obsolete_message)
 
 			-- preconditions: only non separate required
+			is_processing_assertions := True
 			safe_process (l_as.precondition)
+			is_processing_assertions := False
 
 			if l_as.internal_locals /= Void then
 				last_index := l_as.internal_locals.last_token (match_list).index
+			end
+
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				feature_object.set_locals_index (ctxt.cursor_to_current_position)
 			end
 
 			if feature_as.body.type /= Void then
@@ -287,6 +293,16 @@ feature {NONE} -- General implementation
 			last_index := l_as.last_token (match_list).index - 1
 			context.add_string ("%N%T%T")
 			safe_process (l_as.end_keyword)
+
+
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				if feature_object.need_local_section then
+					ctxt.insert_after_cursor ("%N%T%Tlocal", feature_object.locals_index)
+					feature_object.set_need_local_section ( False )
+				end
+			end
+
+
 		end
 
 	process_require_else_as (l_as: REQUIRE_ELSE_AS)

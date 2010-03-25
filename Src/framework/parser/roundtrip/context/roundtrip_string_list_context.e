@@ -67,6 +67,7 @@ feature -- Operation
 			Result := ctxt.cursor
 		end
 
+
 	insert_after_cursor (s: STRING; c: LINKED_LIST_CURSOR[STRING]) is
 			-- Insert `s' after `c'.
 		do
@@ -75,11 +76,19 @@ feature -- Operation
 			byte_count := byte_count + s.count
 		end
 
+
 	finish is
 			-- Move cursor to last position.
 		do
 			ctxt.finish
 		end
+
+
+	valid_cursor(c: LINKED_LIST_CURSOR[STRING]): BOOLEAN is
+			-- returns if cursor is valid
+			do
+				result := ctxt.valid_cursor (c)
+			end
 
 
 feature{NONE} -- Implementation

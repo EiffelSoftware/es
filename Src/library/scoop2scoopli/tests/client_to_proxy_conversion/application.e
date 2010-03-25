@@ -8,7 +8,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Run application.
+			-- Used to test client to proxy conversion in a non trivial setup
 		local
 			a: separate A[INTEGER,INTEGER]
 			b: separate B[STRING]

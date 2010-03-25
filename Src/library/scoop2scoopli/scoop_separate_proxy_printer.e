@@ -794,7 +794,6 @@ feature {NONE} -- Roundtrip: Implementation
 						end
 					end
 					last_index := l_argument.last_token (match_list).index
----------------------------------------
 
 					end
 					i := i + 1
@@ -853,7 +852,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 									context.add_string ("%N%T%T%Tif " + l_argument_name + " /= void then ")
 									context.add_string ("%N%T%T%T%Taux_scoop_" + l_argument_name + " := ")
-									context.add_string (l_argument_name + ".implementation_%N%T%T%Tend")
+									context.add_string (l_argument_name +"."+ {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation +"%N%T%T%Tend")
 									j := j + 1
 								end
 							end
@@ -868,7 +867,7 @@ feature {NONE} -- Roundtrip: Implementation
 								l_argument_name := l_argument.item_name (j)
 
 								context.add_string ("%N%T%T%Taux_scoop_" + l_argument_name + " := ")
-								context.add_string (l_argument_name + ".implementation_")
+								context.add_string (l_argument_name+"."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
 								j := j + 1
 							end
 						end
@@ -965,12 +964,12 @@ feature {NONE} -- Roundtrip: Implementation
 						create a_prefix.make_from_string ("aux_scoop_")
 						if attached {LIKE_ID_AS} l_type_dec_as.type  then
 							-- `like item' was evaluated and converted to non separate, need to reconvert -> add `proxy_'
-							add_proxy_ := true
+							add_proxy_ := True
 						end
 						if attached {CLASS_TYPE_AS} l_type_dec_as.type then
 							if feature_object /= void and then feature_object.is_internal_arguments_to_substitute_defined then
 								-- Check if we need to substitute internal arguments
-								add_implementation_ := true
+								add_implementation_ := True
 							end
 						end
 					else
@@ -1267,8 +1266,6 @@ feature {NONE} -- Roundtrip: Implementation
 									if need_internal_argument_substitution(feature_as.feature_name, class_c, pos) then
 										feature_object.internal_arguments_to_substitute.append (l_argument.id_list)
 									end
-								end
-							debug
 								end
 							end
 						end

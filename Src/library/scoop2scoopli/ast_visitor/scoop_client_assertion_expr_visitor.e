@@ -18,7 +18,8 @@ inherit
 			process_un_old_as,
 			process_result_as,
 			process_tagged_as,
-			process_binary_as
+			process_binary_as,
+			process_create_creation_expr_as
 		end
 
 feature -- Access
@@ -137,6 +138,22 @@ feature {NONE} -- Implementation
 
 				-- evaluate the processed expression
 			evaluate_current_assertion
+		end
+
+	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
+			-- Process `l_as'.
+		do
+			safe_process (l_as.create_keyword (match_list))
+			safe_process (l_as.type)
+			safe_process (l_as.call)
+			update_current_level_with_call (l_as)
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
+
 		end
 
 	formal_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT

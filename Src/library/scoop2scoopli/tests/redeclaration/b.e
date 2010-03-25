@@ -14,6 +14,7 @@ create
 	make
 
 feature -- Access
+
 	make is
 			-- bla
 		do
@@ -35,7 +36,7 @@ feature -- Access
 	g(a,b: separate D;c: separate D): D is
 
 	     do
-		result.do_it
+			result.do_it
 
 	     end
 

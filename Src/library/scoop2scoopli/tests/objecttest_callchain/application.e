@@ -5,7 +5,7 @@ create
 feature
 
 	make is
-			-- Run application.
+			-- Used to test call chain in object tests
 		local
 			a : separate A
 

@@ -33,7 +33,11 @@ inherit
 			process_precursor_as,
 			process_result_as,
 			process_current_as,
-			process_parameter_list_as
+			process_parameter_list_as,
+			process_inline_agent_creation_as,
+			process_agent_routine_creation_as,
+			process_assign_as,
+			process_instr_call_as
 		end
 
 create
@@ -67,6 +71,9 @@ feature {NONE} -- General implementation
 			-- Update the workbench with the feature and a fresh feature object.
 			set_current_feature_as (l_as)
 			set_feature_object (create {SCOOP_CLIENT_FEATURE_OBJECT}.make)
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				derived_class_information.set_wrapper_insertion_index (ctxt.cursor_to_current_position)
+			end
 
 			-- Check whether the feature is an attribute or a constant.
 			if l_as.is_attribute or l_as.is_constant then
@@ -144,7 +151,9 @@ feature {NONE} -- General implementation
 					if is_separate then
 
 						-- assertion visitor
+						is_processing_assertions := True
 						l_feature_assertion_visitor.analyze_precondition_and_postcondition (l_as.body)
+						is_processing_assertions := False
 
 						-- get result objects
 						feature_object.set_preconditions (l_feature_assertion_visitor.preconditions)
@@ -348,25 +357,34 @@ feature {NONE} -- General implementation
 		end
 
 feature {NONE} -- Feature redeclaration handling
+
 	process_routine_as(l_as: ROUTINE_AS)
 		local
 			l_generics_visitor : SCOOP_GENERICS_VISITOR
 		do
 			safe_process (l_as.obsolete_keyword (match_list))
 			safe_process (l_as.obsolete_message)
+
+			is_processing_assertions := True
 			safe_process (l_as.precondition)
-
-			-- local keyword needs to be added?
-
-			if l_as.internal_locals = void or l_as.internal_locals.local_keyword (match_list) = void then
-				if result_substitution then
-					context.add_string ("%N%T%Tlocal%N")
-				end
-			end
+			is_processing_assertions := False
 
 			safe_process (l_as.internal_locals)
+
+			--	if not is_in_agent then
+			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+				if not is_in_agent then
+					feature_locals_agent_counter :=0
+				end
+				feature_object.set_locals_index(ctxt.cursor_to_current_position)
+			end
+		--	end
+
 			if result_substitution then
 				if attached {CLASS_TYPE_AS} feature_as.body.type as typ then
+					if l_as.internal_locals = void then
+						feature_object.set_need_local_section ( True )
+					end
 					context.add_string ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+": "+typ.class_name.name)
 					if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type then
 						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
@@ -374,15 +392,6 @@ feature {NONE} -- Feature redeclaration handling
 					end
 				end
 			end
-
-		--	if not is_in_agent then
-			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
-				if not is_in_agent then
-					feature_locals_agent_counter :=0
-				end
-				feature_locals_index := ctxt.cursor_to_current_position
-			end
-		--	end
 
 			safe_process (l_as.routine_body)
 
@@ -401,16 +410,26 @@ feature {NONE} -- Feature redeclaration handling
 	           		context.add_string ("%N%T%T%Tend")
 	           	end
 			end
-
+			is_processing_assertions := True
 			safe_process (l_as.postcondition)
+			is_processing_assertions := True
+
 			safe_process (l_as.rescue_keyword (match_list))
 			safe_process (l_as.rescue_clause)
 			safe_process (l_as.end_keyword)
+
+			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+				if feature_object.need_local_section then
+					ctxt.insert_after_cursor ("%N%T%Tlocal", feature_object.locals_index)
+					feature_object.set_need_local_section( False )
+				end
+			end
 
 			-- Disable `Result' replacement, unless we are in an agent
 			if (not is_in_agent) and (not is_in_inline_agent) then
 				result_substitution := false
 			end
+
 		end
 
 	process_body_as (l_as: BODY_AS)
@@ -421,7 +440,7 @@ feature {NONE} -- Feature redeclaration handling
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 		do
-			-- Reset
+			-- Reset result substitution
 			result_substitution := False
 
 			is_internal_arguments := True
@@ -451,7 +470,7 @@ feature {NONE} -- Feature redeclaration handling
 						-- non Separate: Check if substitution is needed.
 						if l_assign_finder.have_to_replace_return_type(feature_name, class_c, false) then
 							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
-							result_substitution := true
+							result_substitution := True
 	--						seperate_result_signature := typ
 						else
 							-- No substitution needed, print normaly
@@ -719,6 +738,46 @@ feature {NONE} -- Feature redeclaration handling
 			safe_process (l_as.rparan_symbol (match_list))
 		end
 
+	process_instr_call_as (l_as: INSTR_CALL_AS)
+		do
+			process_leading_leaves (l_as.call.first_token (match_list).index)
+			if not is_in_agent then
+				inlining := compute_inlining(l_as.call.first_token (match_list).index-1)
+			end
+			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+				feature_object.set_last_instr_call_index(ctxt.cursor_to_current_position)
+			end
+			precursor(l_as)
+		end
+
+	process_assign_as (l_as: ASSIGN_AS)
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			feature_i: FEATURE_I
+		do
+
+			process_leading_leaves (l_as.target.first_token (match_list).index)
+			if not is_in_agent then
+				inlining := compute_inlining(l_as.target.first_token (match_list).index-1)
+			end
+			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+				-- needed to insert agent objects
+				feature_object.set_last_instr_call_index(ctxt.cursor_to_current_position)
+			end
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			feature_i := class_c.feature_named (feature_as.feature_name.name)
+			l_type_expression_visitor.evaluate_call_type_in_class_and_feature (l_as.target, class_c, feature_i,flattened_object_tests_layers,flattened_inline_agents_layers )
+			if l_type_expression_visitor.is_expression_separate	then
+				-- Right side of assign is separate -> Skip result type substitution
+				skip_result_type_substitution := True
+			end
+
+			Precursor(l_as)
+
+			-- Reset Variable
+			skip_result_type_substitution := False
+		end
+
 	need_internal_argument_substitution (a_feature_name: ID_AS; a_class_c: CLASS_C; argument_position: INTEGER): BOOLEAN
 			-- Do we need to substitute the internal argument?
 			-- Needed when current argument is separate and a parent version of the feature has a non separate argument.
@@ -773,7 +832,6 @@ feature {NONE} -- Feature redeclaration handling
 			-- Does the current type of the internal argument have to be substituted?
 			-- Is the case if the it is separate and the current feature has a parent redeclaration with non separate argument.
 
-
 	skip_result_type_substitution: BOOLEAN
 			-- Skip result type substition?
 			-- Used for preformance improvement like when the right hand side of an assignment is separate we skip the substitution
@@ -820,19 +878,390 @@ feature {NONE} -- Feature redeclaration handling
 				end
 			end
 
-	feature_locals_index: LINKED_LIST_CURSOR[STRING]
-		-- Position of the `local' declaration of the current feature
+feature -- Agent handling
+
+	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
+		local
+			i: INTEGER
+			l_agent: STRING
+			l_agent_sig, l_agent_ass: STRING
+			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
+			l_feature_last_instr_call_index,l_feature_locals_index: LINKED_LIST_CURSOR[STRING]
+			top_level: BOOLEAN
+		do
+
+			create l_context.make
+			create l_agent_sig.make_empty
+			create l_agent_ass.make_empty
+			l_agent := "l_agent"+feature_locals_agent_counter.out
+			feature_locals_agent_counter := feature_locals_agent_counter+1
+
+
+			if not is_in_agent then
+				top_level := TRUE
+				is_in_agent := TRUE
+				create agent_ass_to_update.make_empty
+				create agent_sig_to_update.make_empty
+			else
+				top_level := FALSE
+			end
+			is_in_inline_agent := TRUE
+
+			-- Do we need to add a local section at the end?
+			if attached {ROUTINE_AS} feature_as.body.content as rout then
+				if rout.internal_locals = void then
+					feature_object.set_need_local_section(True)
+				end
+			end
+
+
+
+			if l_as.body.type /= void then
+				-- has return type
+				l_agent_sig.append ("%N"+inlining+l_agent+": attached FUNCTION[ANY")
+--					ctxt.insert_after_cursor ("%N%T%T%T"+l_agent+": FUNCTION[ANY", feature_locals_index)
+			else
+				l_agent_sig.append ("%N"+inlining+l_agent+": attached PROCEDURE[ANY")
+--					ctxt.insert_after_cursor ("%N%T%T%T"+l_agent+": PROCEDURE[ANY", feature_locals_index)
+			end
+
+
+			if l_as.body.arguments /= Void then
+				-- has arguments
+				l_agent_sig.append (", TUPLE[")
+
+				from
+					l_as.body.arguments.start
+				until
+					l_as.body.arguments.after
+				loop
+					l_agent_sig.append(l_as.body.arguments.item.type.text (match_list))
+					add_to_current_inline_agents_layer (l_as.body.arguments.item)
+					l_as.body.arguments.forth
+					if not l_as.body.arguments.after then
+						l_agent_sig.append(", ")
+					end
+
+				end
+				l_agent_sig.append("]")
+			else
+				-- no arguments, signatur -> FUNCTION[BASE_TYPE, TUPLE, RESULT_TYPE]
+				l_agent_sig.append (", TUPLE")
+			end
+
+			if l_as.body.type /= void then
+				-- has return type
+				 l_agent_sig.append(", "+l_as.body.type.text (match_list))
+			end
+
+
+			if {l_routine: ROUTINE_AS} l_as.body.content and then l_routine.locals /= Void then
+				-- has locals
+				from
+					i := 1
+				until
+					i > l_routine.locals.count
+				loop
+					add_to_current_inline_agents_layer (l_routine.locals.i_th (i))
+					i := i + 1
+				end
+			end
+
+			add_inline_agents_layer
+
+			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+
+				l_agent_sig.append ("]")
+
+				-- assign agent object to agent
+				l_agent_ass.append("%N"+inlining+l_agent+" := ")
+
+				-- adjust inlining
+				inlining.prepend ("%T")
+
+				-- store indexes
+				l_feature_last_instr_call_index := feature_object.last_instr_call_index
+				l_feature_locals_index := feature_object.locals_index
+
+				-- call processing of the inline agent in another context
+				l_context ?= safe_process_debug (l_as.agent_keyword (match_list))
+				l_agent_ass.append(l_context.string_representation)
+			--	l_agent_ass.append (" ")
+
+				l_context ?= safe_process_debug (l_as.body)
+				l_agent_ass.append(l_context.string_representation)
+				if l_as.internal_operands /= void then
+					l_context ?= safe_process_debug (l_as.internal_operands)
+					l_agent_ass.append(l_context.string_representation)
+				end
+
+				-- restore indexes
+				feature_object.set_last_instr_call_index(l_feature_last_instr_call_index)
+				feature_object.set_locals_index(l_feature_locals_index)
+
+				--adjust inlining
+				inlining := inlining.substring (2,inlining.count)
+
+				-- assign correct processor to agent object
+				l_agent_ass.append("%N"+inlining+l_agent+".set_processor_ (Current.processor_)%N"+inlining)
+
+				-- prepend the output from possible nested agents
+
+				if ctxt.valid_cursor(feature_object.last_instr_call_index) and ctxt.valid_cursor(feature_object.locals_index) then
+					l_agent_ass.prepend (agent_ass_to_update)
+					l_agent_sig.prepend (agent_sig_to_update)
+					ctxt.insert_after_cursor (l_agent_ass, feature_object.last_instr_call_index)
+					ctxt.insert_after_cursor (l_agent_sig, feature_object.locals_index)
+					agent_ass_to_update.make_empty
+					agent_sig_to_update.make_empty
+				else
+					agent_ass_to_update.prepend (l_agent_ass)
+					agent_sig_to_update.prepend (l_agent_sig)
+				end
+
+
+				context.add_string (l_agent)
+			else
+				-- should not happen
+				Precursor(l_as)
+			end
+
+
+			if l_as.internal_operands /= void then
+				last_index := l_as.internal_operands.last_token (match_list).index
+			else
+				last_index := l_as.body.last_token (match_list).index
+			end
+
+			if top_level then
+				is_in_agent := FALSE
+			end
+			is_in_inline_agent := FALSE
+			remove_current_inline_agents_layer
+			reset_current_inline_agents_layer
+
+
+		end
+
+	process_agent_routine_creation_as (l_as: AGENT_ROUTINE_CREATION_AS)
+			-- Process `l_as'.
+		local
+			feature_i: FEATURE_I
+			l_agent: STRING
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
+			l_target_type: TYPE_A
+			is_target_separate: BOOLEAN
+			l_agent_sig, l_agent_ass: STRING
+			agent_feature: FEATURE_AS
+			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
+			l_feature_last_instr_call_index,l_feature_locals_index: LINKED_LIST_CURSOR[STRING]
+			top_level: BOOLEAN
+		do
+			create l_agent_sig.make_empty
+			create l_agent_ass.make_empty
+			l_agent := "l_agent"+feature_locals_agent_counter.out
+			feature_locals_agent_counter := feature_locals_agent_counter+1
+
+			-- get feature which is passed
+			agent_feature := class_as.feature_of_name (l_as.feature_name.name, false)
+
+			l_agent_ass.append ("%N"+inlining+l_agent+" := ")
+
+			if not is_in_agent then
+				top_level := TRUE
+				is_in_agent := TRUE
+				create agent_ass_to_update.make_empty
+				create agent_sig_to_update.make_empty
+			else
+				top_level := FALSE
+			end
+
+			-- Store indexes
+			l_feature_last_instr_call_index := feature_object.last_instr_call_index
+			l_feature_locals_index := feature_object.locals_index
+
+			-- call process of the inline agent in another context
+			l_context ?= safe_process_debug (l_as.agent_keyword (match_list))
+			l_agent_ass.append(l_context.string_representation)
+			l_agent_ass.append (" ")
+			if l_as.target /= Void then
+				l_context ?= safe_process_debug (l_as.lparan_symbol (match_list))
+				l_agent_ass.append(l_context.string_representation)
+				l_context ?= safe_process_debug (l_as.target)
+				l_agent_ass.append(l_context.string_representation)
+				l_context ?= safe_process_debug (l_as.rparan_symbol (match_list))
+				l_agent_ass.append(l_context.string_representation)
+				l_context ?= safe_process_debug (l_as.dot_symbol (match_list))
+				l_agent_ass.append(l_context.string_representation)
+			end
+			l_context ?= safe_process_debug (l_as.feature_name)
+			l_agent_ass.append(l_context.string_representation)
+			if l_as.internal_operands /= void then
+				l_context ?= safe_process_debug (l_as.internal_operands)
+				l_agent_ass.append(l_context.string_representation)
+			end
+
+			-- reStore indexes
+			feature_object.set_last_instr_call_index(l_feature_last_instr_call_index)
+			feature_object.set_locals_index(l_feature_locals_index)
+
+			if l_as.target /= void then
+				feature_i := class_c.feature_named (feature_as.feature_name.name)
+				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+				l_type_expression_visitor.evaluate_expression_type_in_class_and_feature(l_as.target, class_c, feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
+				l_target_type := l_type_expression_visitor.expression_type
+				is_target_separate := l_type_expression_visitor.is_expression_separate
+
+				if is_target_separate then
+					l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
+
+					-- has target and it is separate	
+					l_agent_ass.append ("%N"+inlining+"if {tar: SCOOP_SEPARATE_PROXY} "+l_agent+"."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation+".target then ")
+					l_agent_ass.append (l_agent+".set_processor_ (tar."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+") end %N"+inlining)
+
+
+					-- Do we need to add a local section at the end?
+					if attached {ROUTINE_AS} feature_as.body.content as rout then
+						if rout.internal_locals = void then
+							feature_object.set_need_local_section(True)
+						end
+					end
+
+					if is_in_inline_agent then
+						l_agent_sig.append ("%N"+inlining)
+					else
+						l_agent_sig.append ("%N%T%T%T")
+					end
+
+					if agent_feature.body.type /= void then
+						l_agent_sig.append (l_agent+": attached SCOOP_SEPARATE__FUNCTION[ANY")
+					else
+						l_agent_sig.append (l_agent+": attached SCOOP_SEPARATE__PROCEDURE[ANY")
+					end
+
+				else
+					-- has target but is non separate.
+					l_agent_ass.append ("%N"+inlining+l_agent+".set_processor_ (Current."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name + ")%N"+inlining)
+
+					-- Do we need to add a local section at the end?
+					if attached {ROUTINE_AS} feature_as.body.content as rout then
+						if rout.internal_locals = void then
+							feature_object.set_need_local_section(True)
+						end
+					end
+
+					if is_in_inline_agent then
+						l_agent_sig.append ("%N"+inlining)
+					else
+						l_agent_sig.append ("%N%T%T%T")
+					end
+					if agent_feature.body.type /= void then
+						l_agent_sig.append (l_agent+": attached FUNCTION[ANY")
+					else
+						l_agent_sig.append (l_agent+": attached PROCEDURE[ANY")
+					end
+				end
+
+			else
+				-- target void, agent is attached and non separate
+				l_agent_ass.append ("%N"+inlining+l_agent+".set_processor_ (Current."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name + ")%N"+inlining)
+
+
+				-- Do we need to add a local section at the end?
+				if attached {ROUTINE_AS} feature_as.body.content as rout then
+					if rout.internal_locals = void then
+						feature_object.set_need_local_section(True)
+					end
+				end
+
+
+				if is_in_inline_agent then
+					l_agent_sig.append ("%N"+inlining)
+				else
+					l_agent_sig.append ("%N%T%T%T")
+				end
+				if agent_feature.body.type /= void then
+					l_agent_sig.append (l_agent+": attached FUNCTION[ANY")
+				else
+
+					l_agent_sig.append (l_agent+": attached PROCEDURE[ANY")
+				end
+
+			end
+			if agent_feature.body.arguments /= Void then
+				-- has arguments
+				l_agent_sig.append (", TUPLE[")
+				from
+					agent_feature.body.arguments.start
+				until
+					agent_feature.body.arguments.after
+				loop
+					l_agent_sig.append(agent_feature.body.arguments.item.type.text (match_list))
+					agent_feature.body.arguments.forth
+					if not agent_feature.body.arguments.after then
+						l_agent_sig.append(", ")
+					end
+				end
+				l_agent_sig.append("]")
+			else
+				-- no arguments, signatur -> FUNCTION[BASE_TYPE, TUPLE, RESULT_TYPE]
+				l_agent_sig.append (", TUPLE")
+			end
+
+			if agent_feature.body.type /= void then
+				-- has return type
+				 l_agent_sig.append(", "+agent_feature.body.type.text (match_list))
+			end
+
+			if l_as.internal_operands /= void then
+				last_index := l_as.internal_operands.last_token (match_list).index
+			else
+				last_index := l_as.feature_name.last_token (match_list).index
+			end
+
+
+			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+
+				l_agent_sig.append ("]")
+
+				-- prepend output from possible nested agents
+				if top_level or is_in_inline_agent then
+					l_agent_ass.prepend (agent_ass_to_update)
+					l_agent_sig.prepend (agent_sig_to_update)
+					ctxt.insert_after_cursor (l_agent_sig, feature_object.locals_index)
+					ctxt.insert_after_cursor (l_agent_ass, feature_object.last_instr_call_index)
+				else
+					agent_ass_to_update.prepend (l_agent_ass)
+					agent_sig_to_update.prepend (l_agent_sig)
+				end
+
+				context.add_string (l_agent)
+
+
+			else
+				-- should not happen
+				precursor(l_as)
+			end
+
+			if top_level then
+				is_in_agent := FALSE
+			end
+		end
 
 feature {NONE} -- Agent handling
+
 	inlining: STRING
 		-- Inlining used to print code for agent object creation
-
 
 	feature_locals_agent_counter:INTEGER
 		-- Counter to create local agent objects
 
 	is_in_agent, is_in_inline_agent: BOOLEAN
-		-- Keeps track if we are currently 'inside' of an inline agent / normal agent
+		-- Keeps track if we are currently 'inside' of an inline agent / normal agent	
+
+	agent_sig_to_update, agent_ass_to_update: STRING
+		-- if there is the need to propagate stuff to the upper agent level
 
 feature -- Object test and assignment attempt handling
 
