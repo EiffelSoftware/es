@@ -11,6 +11,9 @@ note
 class
 	SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
 
+obsolete
+	"Use SCOOP_TYPE_EXPR_VISITOR"
+
 inherit
 	AST_ROUNDTRIP_ITERATOR
 		export
@@ -32,7 +35,8 @@ inherit
 			process_feature_as,
 			process_feat_name_id_as,
 			process_feature_name_alias_as,
-			process_infix_prefix_as
+			process_infix_prefix_as,
+			process_eiffel_list
 		end
 
 	SCOOP_WORKBENCH
@@ -177,6 +181,31 @@ feature {NONE} -- Visitor implementation: Type nodes
 			entity_name := l_as.entity.name
 			if l_as.handler /= Void then
 				has_handler := True
+			end
+		end
+
+	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
+		local
+			j,i, l_count: INTEGER
+		do
+			if l_as.count > 0 then
+				from
+					j := 1
+					l_as.start
+					i := 1
+					if l_as.separator_list /= Void then
+						l_count := l_as.separator_list.count
+					end
+				until
+					j > l_as.count
+				loop
+					safe_process (l_as.i_th (j))
+					if i <= l_count then
+						safe_process (l_as.separator_list_i_th (i, match_list))
+						i := i + 1
+					end
+					j := j+1
+				end
 			end
 		end
 

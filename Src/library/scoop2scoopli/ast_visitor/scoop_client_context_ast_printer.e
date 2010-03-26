@@ -394,6 +394,18 @@ feature {NONE} -- Calls processing
 
 feature {NONE} -- Expressions processing
 
+	process_assign_as (l_as: ASSIGN_AS)
+		do
+			-- process now the assigner call node
+			safe_process (l_as.target)
+			safe_process (l_as.assignment_symbol (match_list))
+
+			-- Prepare the levels layer for the assignment source
+			reset_current_levels_layer
+
+			safe_process (l_as.source)
+		end
+
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
 			-- Populate the current level with the type of the target and temporarily add a new level to the current levels layer for the message. The current level does not get reset to be in line with the behavior of non-nested calls.
 		do
@@ -988,109 +1000,42 @@ feature {NONE} -- Features processing
 			Precursor (l_as)
 		end
 
-feature {NONE} -- Instructions processing
-
-
-	process_assign_as (l_as: ASSIGN_AS)
-		do
-			-- process now the assigner call node
-			safe_process (l_as.target)
-			safe_process (l_as.assignment_symbol (match_list))
-
-			-- Prepare the levels layer for the assignment source
-			reset_current_levels_layer
-
-			safe_process (l_as.source)
-		end
+feature {NONE} -- Creation handling
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
 			-- Process `l_as'.
 		local
 			is_separate: BOOLEAN
-			l_target_name, l_class_name: STRING
-			l_class_c: CLASS_C
-			l_result_as: RESULT_AS
+			l_class_name: STRING
 			l_feature_i: FEATURE_I
-			l_type_visitor: SCOOP_TYPE_VISITOR
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
-			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
-			l_processor: like locals_processor
+			l_processor_tag: PROCESSOR_TAG_TYPE
 		do
-			create l_type_visitor
-			l_type_visitor.setup (parsed_class, match_list, True, True)
 
-			if l_as.target /= Void then
-				l_target_name := l_as.target.access_name
-			end
+			l_feature_i := class_c.feature_named (feature_as.feature_name.name)
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 
-			-- get separate and the information of the explicit processor specification status of the current call
-			l_result_as ?= l_as.target
-			if l_result_as /= Void then
-				l_class_c := l_type_visitor.evaluate_class_from_type (feature_as.body.type, class_c)
-				-- get separate status
-				is_separate := l_type_visitor.is_separate
+			if l_as.type /= Void then
+				-- Get type by the explicit type
+				l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
+				is_separate := l_type_expression_visitor.is_expression_separate
+				l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
+				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
 
-				if is_separate then
-					-- get class name for separate call
-					create l_class_name.make_from_string (l_class_c.name.as_lower)
-					-- get processor specification
-					l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
-					l_processor := l_processor_visitor.get_explicit_processor_specification (feature_as.body.type)
-				end
-			elseif l_as.type /= Void then
-				-- get type by the explicit type
-				l_class_c := l_type_visitor.evaluate_class_from_type (l_as.type, class_c)
-				-- get separate status
-				is_separate := l_type_visitor.is_separate
-
-				if is_separate then
-					-- get class name for separate call
-					create l_class_name.make_from_string (l_class_c.name.as_lower)
-					-- get processor specification
-					l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
-					l_processor := l_processor_visitor.get_explicit_processor_specification (l_as.type)
-				end
 			elseif l_as.target /= Void then
-				if class_c.feature_table.has (l_target_name) then
-					-- get type by evaluating l_as.target which is an ACCESS_AS node
-					l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
-					-- get separate status
-					l_type_expression_visitor.evaluate_call_type_in_workbench (l_as.target, flattened_object_tests_layers, flattened_inline_agents_layers)
-					is_separate := l_type_expression_visitor.is_expression_separate
-					l_feature_i := class_c.feature_table.item (l_target_name)
-					if l_feature_i.type /= Void then
-						l_class_c := class_c.feature_table.item (l_target_name).type.associated_class
-					end
+				l_type_expression_visitor.evaluate_call_type_in_class_and_feature (l_as.target, class_c, l_feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
+				is_separate := l_type_expression_visitor.is_expression_separate
+				l_processor_tag := l_type_expression_visitor.expression_type.processor_tag
+				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
 
-					if is_separate then
-						-- get class name for separate call
-						create l_class_name.make_from_string (l_class_c.name.as_lower)
-						-- get processor specification
-						l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(l_class_c)
-						l_processor := l_processor_visitor.get_explicit_processor_specification_by_class (l_target_name, l_class_c)
-					end
-				elseif is_local (l_target_name) then
-					is_separate := is_last_local_separate
-
-					if is_separate and then locals_processor /= Void then
-						l_class_name := locals_class_name
-						l_processor := locals_processor
-					end
-				else
-					-- should not be the case
-					error_handler.insert_error (create {INTERNAL_ERROR}.make("SCOOP Unexpected error: {SCOOP_CLIENT_CONTEXT_AST_PRINTER}.process_create_creation_as."))
-				end
-			else
-				-- should not be the case
-				error_handler.insert_error (create {INTERNAL_ERROR}.make("SCOOP Unexpected error: {SCOOP_CLIENT_CONTEXT_AST_PRINTER}.process_create_creation_as."))
 			end
 
-			if not is_separate then
-				-- process it as normal
-				Precursor (l_as)
-			else
-				l_target_name := l_as.target.access_name
-				if not l_processor.has_explicit_processor_specification then
+			if is_separate then
+
+				------------------------------------------------------------------------------------------
+				-- Separate create creation.															--
+				------------------------------------------------------------------------------------------
+				if not l_processor_tag.has_explicit_tag then
 					-- current object is separate, but has no explicit processor specification
 
 					-- create SCOOP object with new processor
@@ -1099,21 +1044,21 @@ feature {NONE} -- Instructions processing
 					safe_process (l_as.target)
 					context.add_string (".set_processor_ (scoop_scheduler.new_processor_); ")
 
-				elseif not l_processor.has_handler then
+				elseif not l_processor_tag.has_handler then
 					-- current entity is separate and has an explicit processor specification
 					-- but is not defined by a handler.
 
 					process_leading_leaves (l_as.create_keyword_index)
 
 					-- add processor void test
-					context.add_string ("if " + l_processor.entity_name + " = Void then ")
-					context.add_string (l_processor.entity_name + ".set_processor_(scoop_scheduler.new_processor_) end; ")
+					context.add_string ("if " + l_processor_tag.tag_name + " = Void then ")
+					context.add_string ( l_processor_tag.tag_name + ":= scoop_scheduler.new_processor_ end; ")
 
 					-- create SCOOP object with new processor
 					safe_process (l_as.create_keyword (match_list))
 					safe_process (l_as.type)
 					safe_process (l_as.target)
-					context.add_string (".set_processor_ (" + l_processor.entity_name + "); ")
+					context.add_string (".set_processor_ (" + l_processor_tag.parsed_processor_name + "); ")
 				else
 					-- current entity is separate and has an explicit processor specification.
 					-- it is defined also by a handler.
@@ -1121,13 +1066,13 @@ feature {NONE} -- Instructions processing
 					process_leading_leaves (l_as.create_keyword_index)
 
 					-- add processor void test
-					context.add_string ("check " + l_processor.entity_name + " /= Void and then " + l_processor.entity_name + ".processor_ /= Void end ")
+					context.add_string ("check " + l_processor_tag.tag_name + " /= Void and then " + l_processor_tag.tag_name + ".processor_ /= Void end ")
 
 					-- create SCOOP object with new processor
 					safe_process (l_as.create_keyword (match_list))
 					safe_process (l_as.type)
 					safe_process (l_as.target)
-					context.add_string (".set_processor_ (" + l_processor.entity_name + ".processor_); ")
+					context.add_string (".set_processor_ (" + l_processor_tag.tag_name + ".processor_); ")
 				end
 
 				-- process current creation call
@@ -1158,8 +1103,326 @@ feature {NONE} -- Instructions processing
 				if l_as.call /= Void then
 					last_index := l_as.call.last_token (match_list).index
 				end
+			else
+				------------------------------------------------------------------------------------------
+				-- Non separate create creation.														--
+				------------------------------------------------------------------------------------------
+
+				safe_process (l_as.create_keyword (match_list))
+				safe_process (l_as.type)
+				safe_process (l_as.target)
+				safe_process (l_as.call)
+				-- Only SCOOP compiled classes can be cast to SCOOP_SEAPARATE_CLIENT and can have a processor assigned to them.
+				context.add_string (";  if attached {SCOOP_SEPARATE_CLIENT} ")
+				safe_process (l_as.target)
+				context.add_string (" as target then target.set_processor_ (Current.processor_) end;")
+				if l_as.call /= void then
+					last_index := l_as.call.last_token (match_list).index
+				end
+
 			end
 		end
+
+	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
+			-- Update the current level with 'l_as'.
+		local
+			wrapper: STRING
+			original_context: ROUNDTRIP_CONTEXT
+			l_last_index: INTEGER
+			l_class_name: STRING
+			wrapper_name,feat_name: STRING
+			already_inserted: BOOLEAN
+			local_wrapper_object: STRING
+			arg_postfix,creation_object_name: STRING
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_processor_tag: PROCESSOR_TAG_TYPE
+		do
+
+			if derived_class_information.create_creations /= void then
+				if not derived_class_information.create_creations.has (l_as) then
+					derived_class_information.create_creations.go_i_th (derived_class_information.create_creations.count)
+					derived_class_information.create_creations.put_right (l_as)
+					current_create_creation_position := derived_class_information.create_creations.count
+				else
+					current_create_creation_position := derived_class_information.create_creations.index_of (l_as, 1)
+				end
+			end
+
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
+			l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
+			l_class_name := l_type_expression_visitor.resolved_type.associated_class.name.as_lower
+
+			if l_type_expression_visitor.resolved_type.is_separate then
+				------------------------------------------------------------------------------------------
+				-- Separate create creation expression: Create a wrapper to generate the correct separate object
+				------------------------------------------------------------------------------------------
+
+				create wrapper.make_empty
+				if feature_as /= void then
+					feat_name := feature_as.feature_name.name+"_"
+				else
+					-- Invariant
+					feat_name := ""
+				end
+
+				wrapper_name := feat_name+class_as.class_name.name.as_lower+"_sp_"+{SCOOP_SYSTEM_CONSTANTS}.create_creation_wrapper+"_nr"+current_create_creation_position.out
+
+				if is_processing_assertions then
+					context.add_string (wrapper_name)
+				else
+					context.add_string ("creation_object"+current_create_creation_position.out)
+				end
+
+
+--				l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
+--				l_processor := l_processor_visitor.get_explicit_processor_specification (l_as.type)
+
+				if is_processing_assertions then
+					if l_processor_tag.has_handler then
+						-- If processor has handler , pass it on to the wrapper
+						context.add_string("("+l_processor_tag.tag_name+")")
+					end
+				end
+
+				-- Create a new context to process creation
+				original_context := context
+				l_last_index := last_index
+				context := create {ROUNDTRIP_STRING_LIST_CONTEXT}.make
+
+				if is_processing_assertions then
+
+					-- Build wrapper feature and insert it before the current feature
+					wrapper.append ("%N%N%T")
+					wrapper.append (wrapper_name)
+
+					if l_processor_tag.has_explicit_tag and then l_processor_tag.has_handler then
+						-- Pass on the handler:
+						wrapper.append ("("+l_processor_tag.tag_name+"_arg: SCOOP_SEPARATE_TYPE)")
+					end
+				end
+
+				last_index := l_as.type.first_token (match_list).index
+				safe_process (l_as.type)
+				last_index := l_as.type.last_token (match_list).index
+
+				if is_processing_assertions then
+					-- Print processed items
+					wrapper.append (": "+context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
+					wrapper.append (" is")
+					wrapper.append ("%N%T%T")
+					wrapper.append ("-- Wrapper for separate create creation expression")
+					wrapper.append ("%N%T%Tlocal")
+					wrapper.append ("%N%T%T%Tcreation_object: ")
+					-- Print processed items
+					wrapper.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
+					wrapper.append ("%N%T%Tdo%N%T%T%T")
+
+				else
+					create local_wrapper_object.make_empty
+					if attached {ROUTINE_AS} feature_as.body.content as rout then
+						if rout.internal_locals = void then
+							feature_object.set_need_local_section(True)
+						end
+					end
+
+					local_wrapper_object.append ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out+": ")
+					local_wrapper_object.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1)+"%N")
+				end
+				context.clear
+				if is_processing_assertions then
+					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object
+					if l_processor_tag.has_explicit_tag and then l_processor_tag.has_handler then
+						-- Entity is passed as an argument
+						arg_postfix := "_arg"
+					else
+						arg_postfix := ""
+					end
+				else
+					arg_postfix := ""
+					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out
+				end
+
+				if not l_processor_tag.has_explicit_tag then
+					wrapper.append ("create "+creation_object_name+"")
+					wrapper.append (".set_processor_ (scoop_scheduler.new_processor_); ")
+				elseif not l_processor_tag.has_handler then
+					process_leading_leaves (l_as.create_keyword_index)
+					wrapper.append ("if " + l_processor_tag.tag_name + arg_postfix + " = Void then ")
+					wrapper.append (l_processor_tag.tag_name + arg_postfix + ":= scoop_scheduler.new_processor_ end; ")
+					wrapper.append ("create "+creation_object_name+".set_processor_ (" + l_processor_tag.tag_name + arg_postfix + "); ")
+				else
+					process_leading_leaves (l_as.create_keyword_index)
+					wrapper.append ("check " + l_processor_tag.tag_name + arg_postfix + " /= Void and then " + l_processor_tag.tag_name + arg_postfix + ".processor_ /= Void end; ")
+					wrapper.append ("create "+creation_object_name+".set_processor_ (" + l_processor_tag.tag_name + arg_postfix + ".processor_); ")
+				end
+				wrapper.append ("separate_execute_routine (["+creation_object_name+".processor_], agent "+creation_object_name+"")
+				if l_as.call /= Void then
+					wrapper.append ("." + l_as.call.feature_name.name)
+					wrapper.append ("_scoop_separate_" + l_class_name)
+					add_prefix_current_cc := True
+					if l_as.call.internal_parameters /= Void then
+						last_index := l_as.call.internal_parameters.first_token (match_list).index
+					end
+					context.clear
+					process_internal_parameters (l_as.call.internal_parameters)
+					wrapper.append (context.string_representation)
+					add_prefix_current_cc := False
+				else
+					wrapper.append (".default_create_scoop_separate_" + l_class_name)
+					wrapper.append (" (Current)")
+				end
+				wrapper.append(", Void, Void, Void)")
+				if is_processing_assertions then
+					wrapper.append ("%N%T%T%TResult := "+{SCOOP_SYSTEM_CONSTANTS}.creation_object)
+					wrapper.append ("%N%T%Tend%N")
+				end
+				context.clear
+				-- Restore original Context
+				last_index := l_last_index
+				context := original_context
+				last_index := l_as.last_token (match_list).index
+			else
+				------------------------------------------------------------------------------------------
+				-- Non separate create creation.
+				------------------------------------------------------------------------------------------
+
+				create wrapper.make_empty
+				if feature_as /= void then
+					feat_name := feature_as.feature_name.name+"_"
+				else
+					-- Invariant
+					feat_name := ""
+				end
+
+				wrapper_name := feat_name+class_as.class_name.name.as_lower+"_nsp_"+{SCOOP_SYSTEM_CONSTANTS}.create_creation_wrapper+"_nr"+current_create_creation_position.out
+
+				if is_processing_assertions then
+					context.add_string (wrapper_name)
+				else
+					context.add_string ("creation_object"+current_create_creation_position.out)
+				end
+				-- Create a new context to process creation
+				original_context := context
+				l_last_index := last_index
+				context := create {ROUNDTRIP_STRING_LIST_CONTEXT}.make
+
+				if is_processing_assertions then
+					-- Build wrapper feature and insert it before the current feature
+					wrapper.append ("%N%N%T")
+					wrapper.append (wrapper_name)
+				end
+
+				last_index := l_as.type.first_token (match_list).index
+				safe_process (l_as.type)
+				last_index := l_as.type.last_token (match_list).index
+
+				if is_processing_assertions then
+					-- Print processed items
+					wrapper.append (": "+context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
+					wrapper.append (" is")
+					wrapper.append ("%N%T%T")
+					wrapper.append ("-- Wrapper for create creation expression")
+					wrapper.append ("%N%T%Tlocal")
+					wrapper.append ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.creation_object+": ")
+					-- Print processed items
+					wrapper.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
+					wrapper.append ("%N%T%Tdo%N%T%T%T")
+
+				else
+					create local_wrapper_object.make_empty
+					-- Do we need to add a local section at the end?
+					if attached {ROUTINE_AS} feature_as.body.content as rout then
+						if rout.internal_locals = void then
+							feature_object.set_need_local_section(True)
+						end
+					end
+
+					local_wrapper_object.append ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out+": ")
+					local_wrapper_object.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1)+"%N")
+				end
+				context.clear
+				if is_processing_assertions then
+					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object
+				else
+					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out
+				end
+
+
+				wrapper.append ("create "+creation_object_name)
+				if l_as.call /= Void then
+					wrapper.append ("." + l_as.call.feature_name.name)
+--						wrapper.append ("_scoop_separate_" + l_class_name)
+					if l_as.call.internal_parameters /= Void then
+						last_index := l_as.call.internal_parameters.first_token (match_list).index
+					end
+					context.clear
+					process_internal_parameters (l_as.call.internal_parameters)
+					wrapper.append (context.string_representation)
+				end
+				-- Only SCOOP compiled classes can be cast to SCOOP_SEAPARATE_CLIENT and can have a processor assigned to them.
+				wrapper.append (";  if attached {SCOOP_SEPARATE_CLIENT} "+creation_object_name+" as co then co.set_processor_ (Current.processor_) end; ")
+				if is_processing_assertions then
+					wrapper.append ("%N%T%T%TResult := "+creation_object_name)
+					wrapper.append ("%N%T%Tend%N")
+				end
+				context.clear
+				-- Restore original Context
+				last_index := l_last_index
+				context := original_context
+				last_index := l_as.last_token (match_list).index
+			end
+	--	end
+
+			-- Output generated obejcts
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
+				if not is_processing_assertions then
+					ctxt.insert_after_cursor (local_wrapper_object, feature_object.locals_index)
+					ctxt.insert_after_cursor (wrapper+"%N%T%T%T", feature_object.last_instr_call_index)
+				else
+					-- Check if the assertion was already processed.
+
+					from
+						already_inserted := False
+						derived_class_information.create_creation_wrappers.start
+					until
+						derived_class_information.create_creation_wrappers.after
+					loop
+						if derived_class_information.create_creation_wrappers.item.is_equal (wrapper_name) then
+							already_inserted := True
+						end
+						derived_class_information.create_creation_wrappers.forth
+					end
+
+					if not already_inserted then
+						ctxt.insert_after_cursor (wrapper, derived_class_information.wrapper_insertion_index)
+						derived_class_information.create_creation_wrappers.put_front (wrapper_name)
+					end
+
+				end
+			end
+
+			update_current_level_with_call (l_as)
+
+			if avoid_proxy_calls_in_call_chains then
+				if current_level.type.is_separate then
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					set_current_level_is_separate (false)
+				end
+			end
+
+		end
+
+	current_create_creation_position: INTEGER
+		-- Position of the create creation which is currently beeing processed relative to all create creations in a class.
+		-- Used to create uniquely identifiable wrappers
+
+	is_processing_assertions: BOOLEAN
+		-- Is the currently processed item part of an assertion?
+
+	add_prefix_current_cc: BOOLEAN
+		-- adds a prefix 'Current' as first internal parameter
+		-- used for create creation process features.
 
 feature {NONE} -- Eiffel list processing
 
@@ -1668,384 +1931,6 @@ feature {NONE} -- Agent handling
 		do
 			Precursor (l_as)
 			update_current_level_with_expression (l_as)
-		end
-feature -- Create creation expression handling
-
-	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
-			-- Update the current level with 'l_as'.
-		local
-			wrapper: STRING
-			original_context: ROUNDTRIP_CONTEXT
-			l_last_index: INTEGER
-			l_class_name: STRING
-			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
-			l_processor : TUPLE [has_explicit_processor_specification: BOOLEAN; entity_name: STRING; has_handler: BOOLEAN]
-			wrapper_name,feat_name: STRING
-			already_inserted: BOOLEAN
-			local_wrapper_object: STRING
-			entity_name,creation_object_name: STRING
-			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
-		do
-
-			if derived_class_information.create_creations /= void then
-				if not derived_class_information.create_creations.has (l_as) then
-					derived_class_information.create_creations.go_i_th (derived_class_information.create_creations.count)
-					derived_class_information.create_creations.put_right (l_as)
-					current_create_creation_position := derived_class_information.create_creations.count
-				else
-					current_create_creation_position := derived_class_information.create_creations.index_of (l_as, 1)
-				end
-			end
-
-			l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
-			l_type_expr_visitor.resolve_type_in_workbench (l_as.type)
-
-			if l_type_expr_visitor.resolved_type.is_separate then
-				------------------------------------------------------------------------------------------
-				-- Separate create creation expression: Create a wrapper to generate the correct separate object
-				------------------------------------------------------------------------------------------
-
-				create wrapper.make_empty
-				if feature_as /= void then
-					feat_name := feature_as.feature_name.name+"_"
-				else
-					-- Invariant
-					feat_name := ""
-				end
-				l_class_name := l_type_expr_visitor.resolved_type.associated_class.name.as_lower
-				wrapper_name := feat_name+class_as.class_name.name.as_lower+"_sp_"+{SCOOP_SYSTEM_CONSTANTS}.create_creation_wrapper+"_nr"+current_create_creation_position.out
-
-				if is_processing_assertions then
-					context.add_string (wrapper_name)
-				else
-					context.add_string ("creation_object"+current_create_creation_position.out)
-				end
-				l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
-				l_processor := l_processor_visitor.get_explicit_processor_specification (l_as.type)
-
-				if is_processing_assertions then
-					if l_processor.has_explicit_processor_specification then
-						-- If processor has handler or processor tag, pass it on to the wrapper
-						context.add_string("("+l_processor.entity_name+")")
-					end
-				end
-
-				-- Create a new context to process creation
-				original_context := context
-				l_last_index := last_index
-				context := create {ROUNDTRIP_STRING_LIST_CONTEXT}.make
-
-				if is_processing_assertions then
-
-					-- Build wrapper feature and insert it before the current feature
-					wrapper.append ("%N%N%T")
-					wrapper.append (wrapper_name)
-
-					if l_processor.has_explicit_processor_specification and then l_processor.has_handler then
-						-- Pass on the handler:
-						wrapper.append ("("+l_processor.entity_name+"_arg: SCOOP_SEPARATE_TYPE)")
-					end
-				end
-
-				last_index := l_as.type.first_token (match_list).index
-				safe_process (l_as.type)
-				last_index := l_as.type.last_token (match_list).index
-
-				if is_processing_assertions then
-					-- Print processed items
-					wrapper.append (": "+context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-					wrapper.append (" is")
-					wrapper.append ("%N%T%T")
-					wrapper.append ("-- Wrapper for separate create creation expression")
-					wrapper.append ("%N%T%Tlocal")
-					wrapper.append ("%N%T%T%Tcreation_object: ")
-					-- Print processed items
-					wrapper.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-					wrapper.append ("%N%T%Tdo%N%T%T%T")
-
-				else
-					create local_wrapper_object.make_empty
-					if attached {ROUTINE_AS} feature_as.body.content as rout then
-						if rout.internal_locals = void then
-							feature_object.set_need_local_section(True)
-						end
-					end
-
-					local_wrapper_object.append ("%N%T%T%Tcreation_object"+current_create_creation_position.out+": ")
-					local_wrapper_object.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-				end
-				context.clear
-				if is_processing_assertions then
-					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object
-					if l_processor.has_explicit_processor_specification and then l_processor.has_handler then
-						-- Entity is passed as an argument
-						entity_name := l_processor.entity_name+"_arg"
-					else
-						-- Entity is called globally
-						entity_name := l_processor.entity_name
-					end
-				else
-					if l_processor.has_explicit_processor_specification then
-						entity_name := l_processor.entity_name
-					end
-					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out
-				end
-
-				if not l_processor.has_explicit_processor_specification then
-					wrapper.append ("create "+creation_object_name+"")
-					wrapper.append (".set_processor_ (scoop_scheduler.new_processor_); ")
-				elseif not l_processor.has_handler then
-					process_leading_leaves (l_as.create_keyword_index)
-					wrapper.append ("if " + entity_name + " = Void then ")
-					wrapper.append (entity_name + ":= scoop_scheduler.new_processor_ end; ")
-					wrapper.append ("create "+creation_object_name+".set_processor_ (" + entity_name + "); ")
-				else
-					process_leading_leaves (l_as.create_keyword_index)
-					wrapper.append ("check " + entity_name + " /= Void and then " + entity_name + ".processor_ /= Void end; ")
-					wrapper.append ("create "+creation_object_name+".set_processor_ (" + entity_name + ".processor_); ")
-				end
-				wrapper.append ("separate_execute_routine (["+creation_object_name+".processor_], agent "+creation_object_name+"")
-				if l_as.call /= Void then
-					wrapper.append ("." + l_as.call.feature_name.name)
-					wrapper.append ("_scoop_separate_" + l_class_name)
-					add_prefix_current_cc := True
-					if l_as.call.internal_parameters /= Void then
-						last_index := l_as.call.internal_parameters.first_token (match_list).index
-					end
-					context.clear
-					process_internal_parameters (l_as.call.internal_parameters)
-					wrapper.append (context.string_representation)
-					add_prefix_current_cc := False
-				else
-					wrapper.append (".default_create_scoop_separate_" + l_class_name)
-					wrapper.append (" (Current)")
-				end
-				wrapper.append(", Void, Void, Void)")
-				if is_processing_assertions then
-					wrapper.append ("%N%T%T%TResult := "+{SCOOP_SYSTEM_CONSTANTS}.creation_object)
-					wrapper.append ("%N%T%Tend%N")
-				end
-				context.clear
-				-- Restore original Context
-				last_index := l_last_index
-				context := original_context
-				last_index := l_as.last_token (match_list).index
-			else
-				------------------------------------------------------------------------------------------
-				-- Non separate create creation.
-				------------------------------------------------------------------------------------------
-
-				create wrapper.make_empty
-				if feature_as /= void then
-					feat_name := feature_as.feature_name.name+"_"
-				else
-					-- Invariant
-					feat_name := ""
-				end
-
-				wrapper_name := feat_name+class_as.class_name.name.as_lower+"_nsp_"+{SCOOP_SYSTEM_CONSTANTS}.create_creation_wrapper+"_nr"+current_create_creation_position.out
-
-				if is_processing_assertions then
-					context.add_string (wrapper_name)
-				else
-					context.add_string ("creation_object"+current_create_creation_position.out)
-				end
-				-- Create a new context to process creation
-				original_context := context
-				l_last_index := last_index
-				context := create {ROUNDTRIP_STRING_LIST_CONTEXT}.make
-
-				if is_processing_assertions then
-					-- Build wrapper feature and insert it before the current feature
-					wrapper.append ("%N%N%T")
-					wrapper.append (wrapper_name)
-				end
-
-				last_index := l_as.type.first_token (match_list).index
-				safe_process (l_as.type)
-				last_index := l_as.type.last_token (match_list).index
-
-				if is_processing_assertions then
-					-- Print processed items
-					wrapper.append (": "+context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-					wrapper.append (" is")
-					wrapper.append ("%N%T%T")
-					wrapper.append ("-- Wrapper for create creation expression")
-					wrapper.append ("%N%T%Tlocal")
-					wrapper.append ("%N%T%T%Tcreation_object: ")
-					-- Print processed items
-					wrapper.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-					wrapper.append ("%N%T%Tdo%N%T%T%T")
-
-				else
-					create local_wrapper_object.make_empty
-					-- Do we need to add a local section at the end?
-					if attached {ROUTINE_AS} feature_as.body.content as rout then
-						if rout.internal_locals = void then
-							feature_object.set_need_local_section(True)
-						end
-					end
-
-					local_wrapper_object.append ("%N%T%T%Tcreation_object"+current_create_creation_position.out+": ")
-					local_wrapper_object.append (context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-				end
-				context.clear
-				if is_processing_assertions then
-					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object
-				else
-					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out
-				end
-
-
-				wrapper.append ("create "+creation_object_name)
-				if l_as.call /= Void then
-					wrapper.append ("." + l_as.call.feature_name.name)
---						wrapper.append ("_scoop_separate_" + l_class_name)
-					if l_as.call.internal_parameters /= Void then
-						last_index := l_as.call.internal_parameters.first_token (match_list).index
-					end
-					context.clear
-					process_internal_parameters (l_as.call.internal_parameters)
-					wrapper.append (context.string_representation)
-				end
-				wrapper.append (";  if attached {SCOOP_SEPARATE_CLIENT} "+creation_object_name+" as co then co.set_processor_ (Current.processor_) end; ")
-				if is_processing_assertions then
-					wrapper.append ("%N%T%T%TResult := "+creation_object_name)
-					wrapper.append ("%N%T%Tend%N")
-				end
-				context.clear
-				-- Restore original Context
-				last_index := l_last_index
-				context := original_context
-				last_index := l_as.last_token (match_list).index
-			end
-	--	end
-
-			-- Output generated obejcts
-			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
-				if not is_processing_assertions then
-					ctxt.insert_after_cursor (local_wrapper_object, feature_object.locals_index)
-					ctxt.insert_after_cursor (wrapper+"%N%T%T%T", feature_object.last_instr_call_index)
-				else
-					-- Check if the assertion was already processed.
-
-					from
-						already_inserted := False
-						derived_class_information.create_creation_wrappers.start
-					until
-						derived_class_information.create_creation_wrappers.after
-					loop
-						if derived_class_information.create_creation_wrappers.item.is_equal (wrapper_name) then
-							already_inserted := True
-						end
-						derived_class_information.create_creation_wrappers.forth
-					end
-
-					if not already_inserted then
-						ctxt.insert_after_cursor (wrapper, derived_class_information.wrapper_insertion_index)
-						derived_class_information.create_creation_wrappers.put_front (wrapper_name)
-					end
-
-				end
-			end
-
-			update_current_level_with_call (l_as)
-
-			if avoid_proxy_calls_in_call_chains then
-				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
-					set_current_level_is_separate (false)
-				end
-			end
-
-		end
-
---	create_creation_object_counter: INTEGER
-		-- Counter who counts the create creation obkject to identify them correctly
---	added_create_creation_wrappers: LINKED_LIST[STRING]
-		-- List of wrappers which was added so we dont add a wrapper twice.
-	is_processing_assertions: BOOLEAN
-		-- Is the currently processed item part of an assertion?
-
-
-feature {NONE} -- Creation Handling
-
-	current_create_creation_position: INTEGER
-		-- Position of the create creation which is currently beeing processed relative to all create creations in a class.
-		-- Used to create uniquely identifiable wrappers
-
-feature {NONE} -- Auxiliary Features
-
-	is_last_local_separate: BOOLEAN
-			-- returns true if current processed acccess_as node is
-			-- a local and separate
-
-	is_last_internal_argument_separate: BOOLEAN
-			-- returns true if current processed access_as node is
-			-- an internal argument and of separate type
-
-	locals_processor: TUPLE [has_explicit_processor_specification: BOOLEAN; entity_name: STRING; has_handler: BOOLEAN]
-			-- remembers the explicit processor specification information when
-			-- processing `is_local'
-
-	locals_class_name: STRING
-			-- remembers the name of the class type
-			-- of a separate declared local
-
-	add_prefix_current_cc: BOOLEAN
-			-- adds a prefix 'Current' as first internal parameter
-			-- used for create creation process features.
-
-	is_local (an_access_name: STRING): BOOLEAN
-			-- Returns true if `an_access_name' is declared locally
-		local
-			i, j, nb, nbj: INTEGER
-			l_routine_as: ROUTINE_AS
-			l_local: TYPE_DEC_AS
-			l_class_c: CLASS_C
-			l_type_visitor: SCOOP_TYPE_VISITOR
-			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
-		do
-			-- reset some flags
-			is_last_local_separate := False
-
-			if feature_as.body /= Void then
-				l_routine_as ?= feature_as.body.content
-				if l_routine_as /= Void and then l_routine_as.internal_locals /= Void then
-					from
-						i := 1
-						nb := l_routine_as.internal_locals.locals.count
-					until
-						i > nb
-					loop
-						l_local := l_routine_as.internal_locals.locals.i_th (i)
-						from
-							j :=1
-							nbj := l_local.id_list.count
-						until
-							j > nbj
-						loop
-							if l_local.item_name (j).is_equal (an_access_name) then
-								Result := True
-								-- get also separate status of current local
-								create l_type_visitor
-								l_type_visitor.setup (parsed_class, match_list, True, True)
-								l_class_c := l_type_visitor.evaluate_class_from_type (l_local.type, class_c)
-								is_last_local_separate := l_type_visitor.is_separate
-
-								-- get processor specification
-								if is_last_local_separate then
-									l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
-									locals_processor := l_processor_visitor.get_explicit_processor_specification (l_local.type)
-									create locals_class_name.make_from_string (l_class_c.name.as_lower)
-								end
-							end
-							j := j + 1
-						end
-						i := i + 1
-					end
-				end
-			end
 		end
 
 note

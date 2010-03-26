@@ -19,12 +19,18 @@ feature {NONE} -- Initialization
 		local
 
 			xh: separate <x.handler> X
-     	--	xp: separate <p> X
-     		y: Y
-        	inv: INV
+     	--xp: separate <p> X
+     	y: Y
+     	xn: X
+      inv: INV
 		do
+			create {INV} y
+			create y
 			create x.make(False)
-      	--	create xp.make(True)
+			create xn.make (True)
+     	--	create xpg.make(True)
+     	create xhg.make(True)
+     	--	create xp.make(True)
 			create xh.make(True)
 
 
@@ -73,9 +79,11 @@ feature {NONE} -- Initialization
 		do
 
 		end
-
+feature -- test
 	x :separate X
---	p: PROCESSOR
+	--xpg :separate <p> X
+	xhg: separate <x.handler> X
+	--p: PROCESSOR
 
 
 end
