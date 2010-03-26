@@ -364,7 +364,7 @@ feature -- Type checking
 				init (ast_context)
 				ast_context.set_is_ignoring_export (True)
 				ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type, a_context.class_context.written_class.feature_table)
-
+				ast_context.set_written_class (a_context.class_context.written_class)
 				if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
 					l_feat := l_feat_context.written_feature
 					initialize_object_test_locals (l_feat_context, a_path)

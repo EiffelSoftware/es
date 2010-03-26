@@ -230,7 +230,9 @@ feature{NONE} -- Implementation
 			l_checker.check_ast_type (ast, context)
 			l_checker.set_is_checking_postcondition (l_check_post)
 			set_has_type_error (l_error_handler.has_errors)
-			type := l_checker.last_type.actual_type
+			if not has_type_error then
+				type := l_checker.last_type.actual_type
+			end
 		ensure
 			type_attached: not has_type_error implies type /= Void
 		end
