@@ -626,7 +626,7 @@ feature {NONE} -- Expression evaluation visits
 		end
 
 	derived_agent_type (a_target: OPERAND_AS; a_body: BODY_AS; a_operands: EIFFEL_LIST[OPERAND_AS]): TYPE_A
-			-- The type of an agent with 'a_target', 'a_body', and 'a_operands'. For inline agents, 'a_target' can be void. For inline agents, the target is always the current object.
+			-- The type of an agent with 'a_target', 'a_body', and 'a_operands'. For inline agents, 'a_target' can be void. For inline agents, the target is always the current object. `a_operands' can be void, all arguments are open.
 		local
 			i, j, k: INTEGER
 			l_base_type: TYPE_AS
@@ -659,7 +659,7 @@ feature {NONE} -- Expression evaluation visits
 				until
 					j > a_body.arguments.i_th (i).id_list.count
 				loop
-					if a_operands.i_th (k).is_open then
+					if a_operands = void or else a_operands.i_th (k).is_open then
 						l_open_types_tuple_parameters.extend (a_body.arguments.i_th (i).type)
 					end
 					k := k + 1
