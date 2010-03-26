@@ -1032,6 +1032,8 @@ feature -- Agent handling
 			else
 				last_index := l_as.body.last_token (match_list).index
 			end
+			
+			update_current_level_with_expression (l_as)
 
 			if top_level then
 				is_in_agent := FALSE
