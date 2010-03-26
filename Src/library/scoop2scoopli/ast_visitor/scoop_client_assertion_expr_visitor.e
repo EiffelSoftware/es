@@ -27,7 +27,6 @@ feature -- Access
 	analyze_assertion_list (a_assertion_list: ASSERT_LIST_AS; a_formal_arguments: SCOOP_CLIENT_ARGUMENT_OBJECT)
 			-- Analyze each assertion in 'a_assertion_list' one by one using 'a_formal_arguments'. Store the result of each assertion in 'current_assertion', and then call 'evaluate_current_assertion' before the next assertion gets analyzed.
 		require
-			a_assertion_list_is_valid: a_assertion_list /= Void
 			a_formal_arguments_is_valid: a_formal_arguments /= Void
 		do
 			formal_arguments := a_formal_arguments
