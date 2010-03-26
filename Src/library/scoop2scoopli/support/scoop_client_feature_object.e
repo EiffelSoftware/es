@@ -20,6 +20,7 @@ feature -- Feature access
 	make is
 			-- Create Feature Object
 		do
+			Precursor
 			create internal_arguments_to_substitute.make (0)
 		ensure then
 			not_void: internal_arguments_to_substitute /= void
