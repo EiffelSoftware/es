@@ -261,7 +261,7 @@ feature -- Access
 feature -- Output
 
 	out: STRING
-			-- Print
+			-- String-representation of `Current'
 		do
 			if is_valid then
 				Result := ast_tools.ast_to_string (target_node)

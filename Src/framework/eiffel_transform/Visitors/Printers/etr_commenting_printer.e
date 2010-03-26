@@ -101,43 +101,6 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 
 			if l_as.is_constant then
-				output.append_string(ti_Space+ti_equal+ti_space)
-			elseif processing_needed (l_as.assigner, l_as, 3) then
-				output.append_string (ti_Space+ti_assign_keyword+ti_Space)
-				process_child (l_as.assigner, l_as, 3)
-				output.append_string(ti_New_line)
-			elseif l_as.is_unique then
-				output.append_string (ti_Space+ti_is_keyword+ti_Space+ti_unique_keyword)
-			else
-				output.append_string(ti_New_line)
-			end
-
-			output.enter_block
-
-			if processing_needed (l_as.indexing_clause, l_as, 5) then
-				output.append_string (ti_indexing_keyword+ti_new_line)
-				process_child_block_list (l_as.indexing_clause, ti_new_line, l_as, 5)
-				output.append_string (ti_new_line)
-			end
-
-			if processing_needed (l_as.content, l_as, 4) then
-				process_child(l_as.content, l_as, 4)
-			end
-
-			output.exit_block
-
-			if processing_needed (l_as.arguments, l_as, 1) then
-				output.append_string (ti_space+ti_l_parenthesis)
-				process_child_list(l_as.arguments, ti_semi_colon+ti_Space, l_as, 1)
-				output.append_string (ti_r_parenthesis)
-			end
-
-			if processing_needed (l_as.type, l_as, 2) then
-				output.append_string (ti_colon+ti_space)
-				process_child (l_as.type, l_as, 2)
-			end
-
-			if l_as.is_constant then
 				output.append_string(ti_Space+ti_equal+ti_Space)
 			elseif processing_needed (l_as.assigner, l_as, 3) then
 				output.append_string (ti_Space+ti_assign_keyword+ti_Space)

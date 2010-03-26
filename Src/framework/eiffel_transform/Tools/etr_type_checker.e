@@ -319,6 +319,19 @@ feature -- Type checking
 			check_ast_type_at(a_transformable.target_node, a_transformable.context, a_transformable.path)
 		end
 
+	check_transformable_at (a_transformable: ETR_TRANSFORMABLE; a_path: AST_PATH)
+			-- Type check `a_transformable' in its context at location `a_path'
+			-- Store type in `last_type'.
+		require
+			non_void: a_transformable /= void
+			valid: a_transformable.is_valid
+			has_context: not a_transformable.context.is_empty
+			correct_factory: parsing_helper.is_using_compiler_factory
+			path_set_and_valid: a_path /= void and then a_path.is_valid
+		do
+			check_ast_type_at(a_transformable.target_node, a_transformable.context, a_path)
+		end
+
 	check_ast_type (an_ast: AST_EIFFEL; a_context: ETR_CONTEXT)
 			-- Type check `an_ast' in `a_context'.
 			-- Store type in `last_type'.
