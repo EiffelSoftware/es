@@ -5,7 +5,7 @@ note
 					- It analyses call chains in terms of types. It also writes call chains that involve SCOOP processing using the generated SCOOP classes. These generated call chains either involve both proxies and clients or just clients. This is controlled with the avoid proxy calls in call chains flag.
 					- It translates comparison operators.
 					- It replaces separate types with proxy class types.
-					- It transformed creation instructions and creation expressions.
+					- It transformes creation instructions and creation expressions.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
