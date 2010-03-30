@@ -35,6 +35,38 @@ feature -- Access
 	end_node: detachable EPA_BASIC_BLOCK
 			-- End node of Current CFG
 
+	text_of_node (a_node: EPA_BASIC_BLOCK): STRING
+			-- Text of `a_node'
+		local
+			l_cursor: CURSOR
+			l_asts: LIST [AST_EIFFEL]
+		do
+			l_asts := a_node.asts
+			l_cursor := l_asts.cursor
+			create Result.make (128)
+			from
+				l_asts.start
+			until
+				l_asts.after
+			loop
+				Result.append (text_from_ast (l_asts.item_for_iteration))
+				l_asts.forth
+			end
+			l_asts.go_to (l_cursor)
+		end
+
+	text_of_edge (a_edge: EPA_CFG_EDGE): STRING
+			-- Text information for `a_edge'.
+		do
+			if a_edge.is_true_branch then
+				Result := "True"
+			elseif a_edge.is_false_branch then
+				Result := "False"
+			else
+				Result := ""
+			end
+		end
+
 	node_text (a_node: EPA_BASIC_BLOCK): TUPLE [title: STRING; label: STRING]
 			-- Text information for `a_node'
 		local
@@ -59,6 +91,7 @@ feature -- Access
 				l_label.append (l_str)
 				l_asts.forth
 			end
+			l_asts.go_to (l_cursor)
 			if not l_label.is_empty and then l_label.item (l_label.count) = '%N' then
 				l_label.remove_tail (1)
 			end
@@ -100,5 +133,5 @@ feature -- Setting
 		ensure
 			end_node_set: end_node = a_node
 		end
-		
+
 end
