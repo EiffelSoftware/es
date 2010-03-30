@@ -1,4 +1,4 @@
-EC=${EIFFEL_SRC}/Eiffel/Ace/EIFGENs/batch/W_code/ecb
+EC=${EIFFEL_SRC}/Eiffel/Ace/EIFGENs/batch/F_code/ecb
 
 EC_STABLE=ec
 

@@ -38,9 +38,18 @@ feature {NONE} -- Initialization
 			tre.compute (0)
 			print (tre.comp_result)
 
-                        tre.compute_agents (0, agent (x : INTEGER) : INTEGER do Result := x + 1 end, agent (x,y : INTEGER) : INTEGER do Result := x + y end)
-                        print (tre.comp_result)
+			tre.compute_agents (0, agent addf,
+				agent (x,y : INTEGER) : INTEGER 
+					do Result := x + y end)
+			print (tre.comp_result)
 		end
+	
+	addf (x : INTEGER) : INTEGER
+		do
+			(create {EXECUTION_ENVIRONMENT}).sleep (1000000000)
+			Result := x + 1
+		end
+
 
 	make_c (a_x, a_y : separate S) : separate CONC
 		do
