@@ -852,7 +852,7 @@ feature {NONE} -- Roundtrip: Implementation
 
 									context.add_string ("%N%T%T%Tif " + l_argument_name + " /= void then ")
 									context.add_string ("%N%T%T%T%Taux_scoop_" + l_argument_name + " := ")
-									context.add_string (l_argument_name +"."+ {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation +"%N%T%T%Tend")
+									context.add_string (l_argument_name +"%N%T%T%Tend") -- +"."+ {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation +"%N%T%T%Tend")
 									j := j + 1
 								end
 							end
