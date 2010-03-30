@@ -808,20 +808,20 @@ feature {NONE} -- Roundtrip: Implementation
 
 				-- conversion code
 				from
+					l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 					i := 1
 					nb := l_arguments.arguments.count
 				until
 					i > nb
 				loop
 					l_argument := l_arguments.arguments.i_th (i)
+					l_type_expr_visitor.resolve_type_in_workbench (l_argument.type)
+					l_type_a := l_type_expr_visitor.resolved_type
 					a_class_c := l_type_visitor.evaluate_class_from_type (l_argument.type, class_c)
 
-					if not l_type_visitor.is_formal and then not a_class_c.is_expanded
-						and then not l_type_visitor.is_tuple_type then
-
-						if l_type_visitor.is_class_type then
-							if l_type_visitor.is_separate then
-
+					if not l_type_visitor.is_formal and then not l_type_a.is_expanded and then not l_type_a.is_tuple then
+--						if l_type_visitor.is_class_type then
+							if l_type_a.is_separate then
 								from
 									j := 1
 									nbj := l_argument.id_list.count
@@ -849,28 +849,31 @@ feature {NONE} -- Roundtrip: Implementation
 									j > nbj
 								loop
 									l_argument_name := l_argument.item_name (j)
-
 									context.add_string ("%N%T%T%Tif " + l_argument_name + " /= void then ")
 									context.add_string ("%N%T%T%T%Taux_scoop_" + l_argument_name + " := ")
-									context.add_string (l_argument_name +"%N%T%T%Tend") -- +"."+ {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation +"%N%T%T%Tend")
+									if not l_type_a.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+										context.add_string (l_argument_name + "." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation +"%N%T%T%Tend")
+									else
+										context.add_string (l_argument_name +"%N%T%T%Tend")
+									end
 									j := j + 1
 								end
 							end
-						elseif l_type_visitor.is_a_like_type or l_type_visitor.is_tuple_type then
-								-- Tuple type or a like type.
-							from
-								j := 1
-								nbj := l_argument.id_list.count
-							until
-								j > nbj
-							loop
-								l_argument_name := l_argument.item_name (j)
+--						elseif l_type_visitor.is_a_like_type or l_type_visitor.is_tuple_type then
+--								-- Tuple type or a like type.
+--							from
+--								j := 1
+--								nbj := l_argument.id_list.count
+--							until
+--								j > nbj
+--							loop
+--								l_argument_name := l_argument.item_name (j)
 
-								context.add_string ("%N%T%T%Taux_scoop_" + l_argument_name + " := ")
-								context.add_string (l_argument_name+"."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
-								j := j + 1
-							end
-						end
+--								context.add_string ("%N%T%T%Taux_scoop_" + l_argument_name + " := ")
+--								context.add_string (l_argument_name+"."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+--								j := j + 1
+--							end
+--						end
 					end
 
 					i := i + 1
