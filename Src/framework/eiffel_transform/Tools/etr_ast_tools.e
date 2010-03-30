@@ -138,6 +138,39 @@ feature -- Operations
 			end
 		end
 
+	feature_list (a_ast: AST_EIFFEL): LIST[FEATURE_AS]
+			-- Features contained in `a_ast'
+		do
+			create {LINKED_LIST[FEATURE_AS]}Result.make
+			if attached {CLASS_AS}a_ast as l_cls then
+				from
+					l_cls.features.start
+				until
+					l_cls.features.after
+				loop
+					from
+						l_cls.features.item.features.start
+					until
+						l_cls.features.item.features.after
+					loop
+						Result.extend (l_cls.features.item.features.item)
+						l_cls.features.item.features.forth
+					end
+
+					l_cls.features.forth
+				end
+			elseif attached {FEATURE_CLAUSE_AS}a_ast as l_ft_clause then
+				from
+					l_ft_clause.features.start
+				until
+					l_ft_clause.features.after
+				loop
+					Result.extend (l_ft_clause.features.item)
+					l_ft_clause.features.forth
+				end
+			end
+		end
+
 	extract_class_comments (a_class: CLASS_AS; a_matchlist: LEAF_AS_LIST): HASH_TABLE[STRING,STRING]
 			-- Extract comments from `a_class' and return them in a hash table
 		require
@@ -169,31 +202,38 @@ feature -- Operations
 			end
 		end
 
-	combined_breakpoint_mapping (a_mappings: LIST[HASH_TABLE[INTEGER,INTEGER]]; a_count: INTEGER): HASH_TABLE[INTEGER,INTEGER]
+	
+	combined_breakpoint_mapping (a_mappings: LIST[HASH_TABLE[INTEGER, INTEGER]]; a_count: INTEGER): HASH_TABLE[INTEGER, INTEGER]
 			-- Combine `a_mappings' to a single one. Range from 1 to `a_count'.
 		local
-			i:INTEGER
+			i: INTEGER
 			l_cur_item: INTEGER
 		do
 			from
-				create Result.make (a_count*2)
-				i:=1
+				create Result.make (a_count * 2)
+				i := 1
 			until
-				i>a_count
+				i > a_count
 			loop
-				from
-					l_cur_item := i
-					a_mappings.finish
-				until
-					a_mappings.before
-				loop
-					l_cur_item := a_mappings.item[l_cur_item]
-					a_mappings.back
-				end
+				l_cur_item := process_mapping (i, a_mappings)
 				Result.extend (l_cur_item, i)
-				i:=i+1
+				i := i + 1
 			end
 		end
+
+	process_mapping (i: INTEGER_32; a_mappings: LIST[HASH_TABLE[INTEGER_32, INTEGER_32]]): INTEGER_32
+			-- Extracted from `combined_breakpoint_mapping'
+		do
+			from
+				Result := i
+				a_mappings.finish
+			until
+				a_mappings.before
+			loop
+				Result := a_mappings.item[Result]
+				a_mappings.back
+			end
+		end	
 
 	duplicate_ast (a_ast: AST_EIFFEL)
 			-- Duplicates `a_ast' and stores the result in `duplicated_ast'

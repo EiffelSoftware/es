@@ -96,7 +96,7 @@ feature -- Test routines
 	test_ast_modification_valid
 			-- does some valid ast modifications
 		indexing
-			testing:  "EiffelTransform", "covers/{ETR_AST_MODIFIER}", "covers/{ETR_AST_STRUCTURE_PRINTER}", "covers/{ETR_BASIC_OPS}"
+			testing:  "EiffelTransform", "covers/{ETR_AST_STRUCTURE_PRINTER}", "covers/{ETR_BASIC_OPS}"
 		local
 			context: ETR_CONTEXT
 			mod1,mod2: ETR_AST_MODIFICATION

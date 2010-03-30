@@ -12,6 +12,7 @@ inherit
 	ETR_SHARED_TOOLS
 	ETR_SHARED_BASIC_OPERATORS
 	ETR_SHARED_PARSERS
+	ETR_SHARED_CONSTANTS
 
 feature {NONE} -- Implementation
 
@@ -288,8 +289,8 @@ feature -- Operations
 								error_handler.add_error (Current, "extract_constant", "There already is a feature named "+a_constant_name+" in "+declaring_class.name_in_upper+ " but it's not a constant.")
 							end
 						else
-							-- insert new feature clause to feature-clause list (1.8)
-							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string("1.8"), create {ETR_TRANSFORMABLE}.make(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
+							-- insert new feature clause to feature-clause list (1.5)
+							l_mods.extend (basic_operators.list_append (create {AST_PATH}.make_from_string(c_feature_clauses), create {ETR_TRANSFORMABLE}.make(l_feat_clause, create {ETR_CONTEXT}.make_empty, false)))
 						end
 					end
 

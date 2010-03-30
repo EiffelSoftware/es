@@ -8,7 +8,7 @@ class
 
 feature -- Modifications
 
-	insert_after(a_reference: AST_PATH; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	insert_after (a_reference: AST_PATH; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 			-- Insert `a_new_trans' after `a_reference'
 		require
 			non_void: a_reference /= void and a_new_trans /= void
@@ -17,7 +17,7 @@ feature -- Modifications
 			create Result.make_insert_after (a_reference, a_new_trans)
 		end
 
-	insert_before(a_reference: AST_PATH; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	insert_before (a_reference: AST_PATH; a_new_trans: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 			-- Insert `a_new_trans' before `a_reference'
 		require
 			non_void: a_reference /= void and a_new_trans /= void
@@ -27,7 +27,7 @@ feature -- Modifications
 			create Result.make_insert_before (a_reference, a_new_trans)
 		end
 
-	delete(a_reference: AST_PATH): ETR_AST_MODIFICATION
+	delete (a_reference: AST_PATH): ETR_AST_MODIFICATION
 			-- Delete `a_reference'
 		require
 			non_void: a_reference /= void
@@ -36,7 +36,7 @@ feature -- Modifications
 			create Result.make_delete (a_reference)
 		end
 
-	replace(a_reference: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	replace (a_reference: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 				-- Replace `a_reference' by `a_replacement'
 		require
 			non_void: a_reference /= void and a_replacement /= void
@@ -46,7 +46,7 @@ feature -- Modifications
 			create Result.make_replace (a_reference, a_replacement.out)
 		end
 
-	replace_with_string(a_reference: AST_PATH; a_replacement: STRING): ETR_AST_MODIFICATION
+	replace_with_string (a_reference: AST_PATH; a_replacement: STRING): ETR_AST_MODIFICATION
 				-- Replace `a_reference' by `a_replacement'
 		require
 			non_void: a_reference /= void and a_replacement /= void
@@ -55,27 +55,45 @@ feature -- Modifications
 			create Result.make_replace (a_reference, a_replacement)
 		end
 
-	list_prepend(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	list_prepend_text (a_list: AST_PATH; a_replacement_text: STRING): ETR_AST_MODIFICATION
+				-- Prepend `a_replacement' to `a_list'
+		require
+			non_void: a_list /= void and a_replacement_text /= void
+			a_list_valid: a_list.is_valid
+		do
+			create Result.make_list_prepend (a_list, a_replacement_text)
+		end
+
+	list_append_text (a_list: AST_PATH; a_replacement_text: STRING): ETR_AST_MODIFICATION
 				-- Append `a_replacement' to `a_list'
+		require
+			non_void: a_list /= void and a_replacement_text /= void
+			a_list_valid: a_list.is_valid
+		do
+			create Result.make_list_append (a_list, a_replacement_text)
+		end
+
+	list_prepend (a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+				-- Prepend `a_replacement' to `a_list'
 		require
 			non_void: a_list /= void and a_replacement /= void
 			a_list_valid: a_list.is_valid
 			a_replacement_valid: a_replacement.is_valid
 		do
-			create Result.make_list_prepend (a_list, a_replacement)
+			create Result.make_list_prepend (a_list, a_replacement.out)
 		end
 
-	list_append(a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	list_append (a_list: AST_PATH; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 				-- Prepend `a_replacement' to `a_list'
 		require
 			non_void: a_list /= void and a_replacement /= void
 			a_replacement_valid: a_replacement.is_valid
 			a_list_valid: a_list.is_valid
 		do
-			create Result.make_list_append (a_list, a_replacement)
+			create Result.make_list_append (a_list, a_replacement.out)
 		end
 
-	list_put_ith(a_list: AST_PATH; a_position: INTEGER; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
+	list_put_ith (a_list: AST_PATH; a_position: INTEGER; a_replacement: ETR_TRANSFORMABLE): ETR_AST_MODIFICATION
 				-- Replace item at position `a_position' in `a_list' by `a_replacement'
 		require
 			non_void: a_list /= void and a_replacement /= void

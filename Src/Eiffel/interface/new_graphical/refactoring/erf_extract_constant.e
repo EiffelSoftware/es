@@ -86,7 +86,6 @@ feature {NONE} -- Implementation
 			-- apply `a_mods'
 		local
 			l_class_modifier: ERF_CLASS_TEXT_MODIFICATION
-			l_modifier: ETR_AST_MODIFIER
 			l_trans: ETR_TRANSFORMABLE
 			l_comments: HASH_TABLE[STRING,STRING]
 			l_matchlist: LEAF_AS_LIST
@@ -97,7 +96,6 @@ feature {NONE} -- Implementation
 
 				l_comments := ast_tools.extract_class_comments (a_mods.occ_class.ast, l_matchlist)
 
-				create l_modifier.make
 				l_trans := transformable_factory.new_transformable_in_class (a_mods.occ_class.ast, a_mods.occ_class)
 				l_trans.apply_modifications (a_mods.mods)
 
@@ -105,7 +103,7 @@ feature {NONE} -- Implementation
 					-- add comment for new constant
 					l_comments.force (" Extracted from "+class_i.name+".", preferences.constant_name)
 
-					l_class_string := ast_tools.commented_class_to_string (l_modifier.modified_transformable.target_node, l_comments)
+					l_class_string := ast_tools.commented_class_to_string (l_trans.target_node, l_comments)
 
 					create l_class_modifier.make (a_mods.occ_class.original_class)
 					l_class_modifier.prepare

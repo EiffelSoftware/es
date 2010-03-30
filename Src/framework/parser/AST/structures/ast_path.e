@@ -15,7 +15,8 @@ create
 	make_as_root,
 	make_from_string,
 	make_from_child,
-	make_from_other
+	make_from_other,
+	make_subpath
 
 feature -- Constants
 
@@ -179,15 +180,34 @@ feature -- Comparison
 
 feature {NONE} -- Creation
 
-	make_from_other(an_other: like current)
-			-- make from `an_other'
+	make_subpath (a_other: like current; a_subpath: like as_string)
+			-- Make as subpath of `a_other'
 		require
-			non_void: an_other /= void
+			non_void: a_other /= void and a_subpath /= void
+			valid: a_other.is_valid
+			subpath_valid: is_valid_path_expr (a_subpath)
+		local
+			l_first_sep: INTEGER
+			l_tail: STRING
 		do
-			as_string := an_other.as_string
-			is_valid := an_other.is_valid
+			l_first_sep := a_subpath.index_of (separator, 1)
+			if l_first_sep>0 then
+				l_tail := a_subpath.substring (l_first_sep+1, a_subpath.count)
+				make_from_string (a_other.as_string+separator.out+l_tail)
+			else
+				is_valid := false
+			end
+		end
 
-			branch_id := an_other.branch_id
+	make_from_other(a_other: like current)
+			-- Make from `a_other'
+		require
+			non_void: a_other /= void
+		do
+			as_string := a_other.as_string
+			is_valid := a_other.is_valid
+
+			branch_id := a_other.branch_id
 		end
 
 	make_from_string(a_string_rep: like as_string)

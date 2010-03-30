@@ -23,7 +23,7 @@ feature {NONE} -- Implementation
 
 feature -- Output
 	print_modified_feature (a_feature: FEATURE_I)
-			-- Prints `an_ast' to `output'
+			-- Prints `a_feature' to `output'
 		do
 			context := a_feature
 			process_child (a_feature.e_feature.ast, void, 0)

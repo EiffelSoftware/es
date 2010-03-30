@@ -39,7 +39,6 @@ feature -- Properties
 feature -- Force compilation
 
 	hier_out: ETR_AST_HIERARCHY_OUTPUT
-	comp_helper: ETR_COMPILATION_HELPER
 	test: ETR_TEST
 
 feature -- Entry point

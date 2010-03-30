@@ -194,6 +194,12 @@ feature -- Conversion
 
 feature -- Access
 
+	ast: FEATURE_AS
+			-- AST associated with this feature-context
+		do
+			Result := written_feature.e_feature.ast
+		end
+
 	has_return_value: BOOLEAN
 			-- Does this feature have a return value ?
 

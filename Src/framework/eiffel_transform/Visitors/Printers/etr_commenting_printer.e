@@ -114,7 +114,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			output.enter_block
 
-			if not attached {CONSTANT_AS}l_as.content then
+			if not attached {CONSTANT_AS}l_as.content and not is_in_inline_agent then
 				print_current_comments
 			end
 
@@ -128,7 +128,7 @@ feature {AST_EIFFEL} -- Roundtrip
 				process_child(l_as.content, l_as, 4)
 			end
 
-			if attached {CONSTANT_AS}l_as.content then
+			if attached {CONSTANT_AS}l_as.content and not is_in_inline_agent then
 				print_current_comments
 			end
 

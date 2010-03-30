@@ -19,10 +19,19 @@ feature {NONE} -- Class-relative paths
 	c_first_feature: STRING = "1.9.1.2.1"
 			-- First feature of a class
 
+	c_conforming_parent_list: STRING = "1.5"
+			-- Conforming parents of a feature
+
+	c_feature_clauses: STRING = "1.9"
+			-- Feature clauses of a class
+
 feature {NONE} -- Feature-relative paths
 
 	f_assigner: STRING = "1.2.3"
 			-- Assigner
+
+	f_instruction_list: STRING = "1.2.4.4.1"
+			-- Instruction list of the feature body
 
 	f_first_instruction: STRING = "1.2.4.4.1.1"
 			-- First instruction of a feature

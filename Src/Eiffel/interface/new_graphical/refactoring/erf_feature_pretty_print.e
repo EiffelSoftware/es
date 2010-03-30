@@ -90,8 +90,6 @@ feature {NONE} -- Implementation
 													l_comments)
 											)
 
-				l_replacement_text.remove_tail (1)
-
 				l_feat_ast.replace_text (l_replacement_text, l_matchlist)
 
 				create l_class_modifier.make (l_written_class.original_class)

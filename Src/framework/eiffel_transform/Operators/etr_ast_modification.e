@@ -28,22 +28,22 @@ feature {NONE} -- Creation
 			new_transformable := a_replacement
 		end
 
-	make_list_append (a_list: like location; a_replacement: like new_transformable)
+	make_list_append (a_list: like location; a_replacement: like replacement_text)
 			-- Append `a_replacement' to `a_list'
 		do
 			is_list_append := true
 
 			location := a_list
-			new_transformable := a_replacement
+			replacement_text := a_replacement
 		end
 
-	make_list_prepend (a_list: like location; a_replacement: like new_transformable)
+	make_list_prepend (a_list: like location; a_replacement: like replacement_text)
 			-- Prepend `a_replacement' to `a_list'
 		do
 			is_list_prepend := true
 
 			location := a_list
-			new_transformable := a_replacement
+			replacement_text := a_replacement
 		end
 
 	make_replace (a_reference: like location; a_replacement: like replacement_text)

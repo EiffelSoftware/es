@@ -50,13 +50,6 @@ feature {NONE} -- Creation
 					del.extend (modifications.item)
 				elseif modifications.item.is_replace then
 					repl.extend (modifications.item)
---				elseif modifications.item.is_list_put_ith then
---					-- convert to replace!
---					path_tools.find_node (modifications.item.location, modifications.item.location.root)
---					repl.extend (create {AST_PATH}.make_from_parent(modifications.item.location, modifications.item.list_position)
---					if attached {EIFFEL_LIST[AST_EIFFEL]}path_tools.last_ast as list and then list.count>=modifications.item.list_position then
---						repl.extend (create {ETR_AST_MODIFICATION}.make_replace(list.i_th (modifications.item.list_position).path, ast_tools.ast_to_string(modifications.item.new_transformable.target_node)))
---					end
 				elseif modifications.item.is_list_append then
 					app.extend(modifications.item)
 				elseif modifications.item.is_list_prepend then
@@ -293,7 +286,6 @@ feature -- Roundtrip
 
 				-- print prepends
 				-- don't replace in new items
-				replacement_disabled := true
 				l_mods_arr := prep_hash[l_path]
 				if attached l_mods_arr then
 					-- print prepends
@@ -308,13 +300,12 @@ feature -- Roundtrip
 							output.append_string(separator)
 						end
 
-						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
+						output.append_string (l_mods_arr[i].replacement_text)
 
 						num_printed:=num_printed+1
 						i := i-1
 					end
 				end
-				replacement_disabled := false
 
 				-- second pass, process and check for deletion/replacement
 				from
@@ -347,7 +338,6 @@ feature -- Roundtrip
 
 				-- print appends
 				-- don't replace in new items
-				replacement_disabled := true
 				l_mods_arr := app_hash[l_path]
 				if attached l_mods_arr then
 					-- print appends
@@ -360,13 +350,12 @@ feature -- Roundtrip
 							output.append_string(separator)
 						end
 
-						process_child (l_mods_arr[i].new_transformable.target_node, void, 0)
+						output.append_string (l_mods_arr[i].replacement_text)
 
 						num_printed:=num_printed+1
 						i := i+1
 					end
 				end
-				replacement_disabled := false
 			end
 		end
 
