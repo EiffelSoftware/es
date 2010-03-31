@@ -683,6 +683,13 @@ feature -- Access queries for settings
 			Result_not_void: Result /= Void
 		end
 
+	setting_scoop_profile: BOOLEAN
+			-- Value for the scoop_profile setting.
+			-- Added for SCOOP, by trosim on 2010-03-31
+		do
+			Result := setting_boolean (s_scoop_profile)
+		end
+
 	setting_shared_library_definition: STRING
 			-- Value for the shared_library_definition setting.
 		do

@@ -92,6 +92,8 @@ feature -- Settings
 	s_old_feature_replication: STRING = "old_feature_replication"
 	s_platform: STRING = "platform"
 	s_external_runtime: STRING = "external_runtime"
+	-- Added for SCOOP, by trosim on 2010-03-31
+	s_scoop_profile: STRING = "scoop_profile"
 	s_shared_library_definition: STRING = "shared_library_definition"
 	s_use_cluster_name_as_namespace: STRING = "use_cluster_name_as_namespace"
 	s_use_all_cluster_name_as_namespace: STRING = "use_all_cluster_name_as_namespace"
