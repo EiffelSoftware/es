@@ -7,6 +7,12 @@ note
 deferred class
 	SCOOP_PROFILER_ACTION_PROFILE
 
+inherit
+	SCOOP_PROFILER_HELPER
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	processor: SCOOP_PROFILER_PROCESSOR_PROFILE
@@ -17,13 +23,14 @@ feature -- Access
 
 feature -- Timing
 
-	duration: TIME_DURATION
+	duration: DATE_TIME_DURATION
 			-- What's the duration of the action?
 		require
 			start_time /= Void
 			stop_time /= Void
 		do
-			Result := stop_time.duration.minus (start_time.duration).time
+			Result := stop_time.duration.minus (start_time.duration)
+			Result.set_origin_date_time (epoch)
 		ensure
 			result_not_void: Result /= Void
 		end

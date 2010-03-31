@@ -7,6 +7,12 @@ note
 class
 	SCOOP_PROFILER_APPLICATION_PROFILE
 
+inherit
+	SCOOP_PROFILER_HELPER
+		export
+			{NONE} all
+		end
+
 create
 	make
 

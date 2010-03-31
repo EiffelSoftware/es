@@ -8,6 +8,15 @@ class
 	SCOOP_PROFILER_PROCESSOR_PROFILE
 
 inherit
+	SCOOP_PROFILER_HELPER
+		export
+			{NONE} all
+		undefine
+			default_create,
+			copy,
+			is_equal
+		end
+
 	COMPARABLE
 
 create {SCOOP_PROFILER_APPLICATION_PROFILE}
@@ -42,22 +51,23 @@ feature -- Timing
 	profile_time: INTEGER
 			-- How much time has been spent on profiling?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
-			create d.make_by_seconds (0)
+			create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+			d.set_origin_date_time (epoch)
 			from
 				calls.start
-			variant
-				calls.count - calls.index + 1
 			until
 				calls.after
 			loop
 				if not attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} calls.item then
-					d := d.plus (calls.item.stop_time.duration.minus (calls.item.start_time.duration).time)
+					d := d.plus (calls.item.stop_time.duration.minus (calls.item.start_time.duration))
 				end
 				calls.forth
+			variant
+				calls.count - calls.index + 1
 			end
-			Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+			Result := duration_to_milliseconds (d)
 		ensure
 			result_non_negative: Result >= 0
 		end
@@ -65,22 +75,23 @@ feature -- Timing
 	wait_time: INTEGER
 			-- How much time has been spent waiting?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
-			create d.make_by_seconds (0)
+			create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+			d.set_origin_date_time (epoch)
 			from
 				calls.start
-			variant
-				calls.count - calls.index + 1
 			until
 				calls.after
 			loop
 				if attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} calls.item as item then
-					d := d.plus (item.application_time.duration.minus (item.sync_time.duration).time)
+					d := d.plus (item.application_time.duration.minus (item.sync_time.duration))
 				end
 				calls.forth
+			variant
+				calls.count - calls.index + 1
 			end
-			Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+			Result := duration_to_milliseconds (d)
 		ensure
 			result_non_negative: Result >= 0
 		end
@@ -88,22 +99,23 @@ feature -- Timing
 	execution_time: INTEGER
 			-- How much time has been spent executing?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
-			create d.make_by_seconds (0)
+			create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+			d.set_origin_date_time (epoch)
 			from
 				calls.start
-			variant
-				calls.count - calls.index + 1
 			until
 				calls.after
 			loop
 				if attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} calls.item as item then
-					d := d.plus (item.return_time.duration.minus (item.application_time.duration).time)
+					d := d.plus (item.return_time.duration.minus (item.application_time.duration))
 				end
 				calls.forth
+			variant
+				calls.count - calls.index + 1
 			end
-			Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+			Result := duration_to_milliseconds (d)
 		ensure
 			result_non_negative: Result >= 0
 		end

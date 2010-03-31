@@ -85,48 +85,51 @@ feature -- Status report
 
 feature -- Timing
 
-	total_duration: TIME_DURATION
+	total_duration: DATE_TIME_DURATION
 			-- How long is the total duration?
 		do
-			Result := return_time.duration.minus (call_time.duration).time
+			Result := return_time.duration.minus (call_time.duration)
+			Result.set_origin_date_time (epoch)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	queue_duration: TIME_DURATION
+	queue_duration: DATE_TIME_DURATION
 			-- How long did this feature queue?
 		do
-			Result := sync_time.duration.minus (call_time.duration).time
+			Result := sync_time.duration.minus (call_time.duration)
+			Result.set_origin_date_time (epoch)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	sync_duration: TIME_DURATION
+	sync_duration: DATE_TIME_DURATION
 			-- How long did it take to synchronize?
 			-- Aquire locks and test wait conditions.
 		do
-			Result := application_time.duration.minus (sync_time.duration).time
+			Result := application_time.duration.minus (sync_time.duration)
+			Result.set_origin_date_time (epoch)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	execution_duration: TIME_DURATION
+	execution_duration: DATE_TIME_DURATION
 			-- How long was the execution?
 		do
-			Result := return_time.duration.minus (application_time.duration).time
+			Result := return_time.duration.minus (application_time.duration)
+			Result.set_origin_date_time (epoch)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	wait_duration: TIME_DURATION
+	wait_duration: DATE_TIME_DURATION
 			-- How long did this feature wait?
 			-- Wait for internal feature calls and profiling times.
 		do
-			create Result.make_by_seconds (0)
+			create Result.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+			Result.set_origin_date_time (epoch)
 			from
 				call_tree.start
-			variant
-				call_tree.count - call_tree.index + 1
 			until
 				call_tree.after
 			loop
@@ -144,6 +147,8 @@ feature -- Timing
 					end
 				end
 				call_tree.forth
+			variant
+				call_tree.count - call_tree.index + 1
 			end
 		ensure
 			result_not_void: Result /= Void

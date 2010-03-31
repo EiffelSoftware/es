@@ -7,6 +7,12 @@ note
 class
 	SCOOP_PROFILER_FEATURE_PROFILE
 
+inherit
+	SCOOP_PROFILER_HELPER
+		export
+			{NONE} all
+		end
+
 create {SCOOP_PROFILER_APPLICATION_PROFILE}
 	make
 
@@ -75,6 +81,8 @@ feature -- Counting
 			loop
 				Result := Result + calls.item.wait_conditions.count
 				calls.forth
+			variant
+				calls.count - calls.index + 1
 			end
 		ensure
 			result_non_negative: Result >= 0
@@ -92,13 +100,13 @@ feature -- Timing
 				l_average := average_execution_time
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
-					l_sum := l_sum + ((calls.item.execution_duration.fine_seconds_count * 1_000) - l_average).power (2)
+					l_sum := l_sum + (duration_to_milliseconds (calls.item.execution_duration) - l_average).power (2)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
 				Result := (l_sum / calls.count).power (1/2).truncated_to_integer
 			end
@@ -119,21 +127,22 @@ feature -- Timing
 	total_execution_time: INTEGER
 			-- What's the total execution time?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
 			if not calls.is_empty then
-				create d.make_by_seconds (0)
+				create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+				d.set_origin_date_time (epoch)
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
 					d := d.plus (calls.item.execution_duration)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
-				Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+				Result := duration_to_milliseconds (d)
 			end
 		ensure
 			result_non_negative: Result >= 0
@@ -149,13 +158,13 @@ feature -- Timing
 				l_average := average_sync_time
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
-					l_sum := l_sum + ((calls.item.sync_duration.fine_seconds_count * 1_000) - l_average).power (2)
+					l_sum := l_sum + (duration_to_milliseconds (calls.item.sync_duration) - l_average).power (2)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
 				Result := (l_sum / calls.count).power (1/2).truncated_to_integer
 			end
@@ -176,21 +185,22 @@ feature -- Timing
 	total_sync_time: INTEGER
 			-- What's the total synchronization time?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
 			if not calls.is_empty then
-				create d.make_by_seconds (0)
+				create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+				d.set_origin_date_time (epoch)
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
 					d := d.plus (calls.item.sync_duration)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
-				Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+				Result := duration_to_milliseconds (d)
 			end
 		ensure
 			result_non_negative: Result >= 0
@@ -206,13 +216,13 @@ feature -- Timing
 				l_average := average_queue_time
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
-					l_sum := l_sum + ((calls.item.queue_duration.fine_seconds_count * 1_000) - l_average).power (2)
+					l_sum := l_sum + (duration_to_milliseconds (calls.item.queue_duration) - l_average).power (2)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
 				Result := (l_sum / calls.count).power (1/2).truncated_to_integer
 			end
@@ -233,21 +243,22 @@ feature -- Timing
 	total_queue_time: INTEGER
 			-- What's the total queue time?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
 			if not calls.is_empty then
-				create d.make_by_seconds (0)
+				create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+				d.set_origin_date_time (epoch)
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
 					d := d.plus (calls.item.queue_duration)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
-				Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+				Result := duration_to_milliseconds (d)
 			end
 		ensure
 			result_non_negative: Result >= 0
@@ -266,21 +277,22 @@ feature -- Timing
 	total_wait_time: INTEGER
 			-- What's the total wait time?
 		local
-			d: TIME_DURATION
+			d: DATE_TIME_DURATION
 		do
 			if not calls.is_empty then
-				create d.make_by_seconds (0)
+				create d.make_by_date_time (create {DATE_DURATION}.make_by_days (0), create {TIME_DURATION}.make_by_seconds (0))
+				d.set_origin_date_time (epoch)
 				from
 					calls.start
-				variant
-					calls.count - calls.index + 1
 				until
 					calls.after
 				loop
 					d := d.plus (calls.item.wait_duration)
 					calls.forth
+				variant
+					calls.count - calls.index + 1
 				end
-				Result := (d.fine_seconds_count * 1_000).truncated_to_integer
+				Result := duration_to_milliseconds (d)
 			end
 		ensure
 			result_non_negative: Result >= 0
