@@ -41,6 +41,7 @@ feature {SCOOP_PROFILER_LOADER} -- Basic operation
 
 	cleanup
 			-- Cleanup.
+			-- Terminate features that are still on stack.
 		local
 			l_item: SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE
 			s: LINKED_STACK [SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE]

@@ -59,6 +59,7 @@ feature -- Visitor
 			-- Set information
 			find_processor (a_event.processor_id).set_start_time (a_event.time)
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 
@@ -68,6 +69,7 @@ feature -- Visitor
 			-- Set information
 			find_processor (a_event.processor_id).set_stop_time (a_event.time)
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 
@@ -92,6 +94,7 @@ feature -- Visitor
 			end
 			profiling.extend (a, p.id)
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 
@@ -135,6 +138,7 @@ feature -- Visitor
 				end
 			end
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 
@@ -197,6 +201,7 @@ feature -- Visitor
 			-- Add to calls
 			calls.item (a_event.processor_id).extend (fc)
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 
@@ -270,6 +275,7 @@ feature -- Visitor
 					resume (fc.caller_processor.id)
 				end
 
+				-- Continue with events for this processor
 				continue (p.id)
 			end
 		end
@@ -294,6 +300,7 @@ feature -- Visitor
 			-- Set information
 			fc.set_application_time (a_event.time)
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 
@@ -356,6 +363,7 @@ feature -- Visitor
 					resume (fc.caller_processor.id)
 				end
 
+				-- Continue with events for this processor
 				continue (p.id)
 			end
 		end
@@ -380,6 +388,7 @@ feature -- Visitor
 			-- Add wait condition try
 			fc.wait_conditions.extend (a_event.time)
 
+			-- Continue with events for this processor
 			continue (a_event.processor_id)
 		end
 

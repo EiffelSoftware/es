@@ -21,12 +21,15 @@ feature {NONE} -- Creation
 			l_parts: LIST [STRING]
 		do
 			create l_name.make_from_string (a_name.out)
+
+			-- Prepare information from file name
 			if not {SCOOP_LIBRARY_CONSTANTS}.Profile_file_extension.is_empty then
 				l_name.remove_tail (1 + {SCOOP_LIBRARY_CONSTANTS}.Profile_file_extension.count)
 			end
 			l_name := l_name.split (Operating_environment.directory_separator).last
 			l_parts := l_name.split ('_')
 			if l_parts.count = 4 then
+				-- Set information
 				create start.make_from_epoch (l_parts.at (1).to_integer)
 				create stop.make_from_epoch (l_parts.at (2).to_integer)
 				stop.fine_second_add (1)

@@ -34,11 +34,14 @@ feature {NONE} -- Creation
 			until
 				directory.lastentry = Void
 			loop
+				-- This is a profile file
 				if {SCOOP_LIBRARY_CONSTANTS}.Profile_file_extension.is_empty or else directory.lastentry.ends_with ("." + {SCOOP_LIBRARY_CONSTANTS}.Profile_file_extension) then
+					-- Create file name
 					create l_file_name.make
 					l_file_name.set_directory (directory.name)
 					l_file_name.set_file_name (directory.lastentry)
 
+					-- Create file abstraction
 					create l_file.make_with_name (l_file_name)
 
 					if l_file.is_valid then
@@ -59,6 +62,8 @@ feature {NONE} -- Creation
 				directory.readentry
 			end
 			directory.close
+
+			-- Set min/max to default
 			create min.make_by_date_time (start.date, start.time)
 			create max.make_by_date_time (stop.date, stop.time)
 		ensure
@@ -120,29 +125,38 @@ feature -- Basic Operations
 				l_loader := hpq.item
 				hpq.remove
 
-				-- Visit item
+				-- Get next event
 				l_item := l_loader.item
 				if l_item.time < min then
+					-- Go to next event
 					l_loader.forth
+
+					-- If there are other events, add to the queue
 					if not l_loader.after then
 						hpq.extend (l_loader)
 					end
 				elseif l_item.time > max then
-					l_loader.forth
+					-- Don't do anything, don't add to the queue
 				else
+					-- Call progress action
 					if l_current = Void or else l_current < l_item.time then
 						l_current := l_item.time
 						if progress_action /= Void then
 							progress_action.call ([l_current])
 						end
 					end
+
+					-- Visit item
 					l_item.visit (a_visitor)
 				end
 			end
-			a_visitor.cleanup
+			-- Call progress action
 			if progress_action /= Void then
 				progress_action.call ([max])
 			end
+			
+			-- Cleanup
+			a_visitor.cleanup
 		end
 
 feature {NONE} -- Implementation

@@ -57,11 +57,13 @@ feature {NONE} -- Events
 			l_serializer: SED_MEDIUM_READER_WRITER
 			e: SCOOP_PROFILER_EVENT
 		do
+			-- Prepare serializer
 			l_file := files.item.file
 			create l_serializer.make (l_file)
 			l_serializer.set_for_reading
 
 			if l_file.exists and then l_file.is_readable then
+				-- Open file and retrieve events
 				from
 					l_file.open_read
 					e ?= store_handler.retrieved (l_serializer, True)
@@ -83,6 +85,7 @@ feature -- Cursor movement
 	start
 			-- Start.
 		do
+			-- Go to first file inside the min-max range
 			from
 				files.start
 			variant
@@ -92,6 +95,8 @@ feature -- Cursor movement
 			loop
 				files.forth
 			end
+
+			-- Read events
 			read_events
 			files.forth
 		end
