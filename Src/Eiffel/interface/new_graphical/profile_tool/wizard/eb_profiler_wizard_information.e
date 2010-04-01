@@ -75,7 +75,7 @@ feature -- Access
 				Result := wkb_generate_execution_profile
 			else
 				Result := flz_generate_execution_profile
-			end	
+			end 
 		end
 
 	use_existing_execution_profile: BOOLEAN
@@ -160,7 +160,27 @@ feature -- Access
 			else
 				Result := project_location.final_path
 			end
-		end	
+		end 
+
+feature -- Access (SCOOP)
+
+	scoop_hotspots: BOOLEAN
+			--
+
+	scoop_type: BOOLEAN
+			--
+
+	directory: DIRECTORY
+			--
+
+	loader: SCOOP_PROFILER_LOADER
+			--
+
+	scoop_profile_path: DIRECTORY_NAME
+			--
+		once
+			create Result.make_from_string (project_location.target_path + Operating_environment.directory_separator.out + {SCOOP_LIBRARY_CONSTANTS}.Profile_directory)
+		end
 
 feature -- Element change
 
@@ -278,6 +298,56 @@ feature -- Element change
 			query_not_void: query /= Void
 		end
 		
+feature -- Element change (SCOOP)
+
+	set_normal_type
+			--
+		do
+			scoop_type := False
+		ensure
+			type_set: not scoop_type
+		end
+
+	set_scoop_type
+			--
+		do
+			scoop_type := True
+		ensure
+			type_set: scoop_type
+		end
+
+	set_directory (a_directory: like directory)
+			--
+		require
+			a_directory.exists and then a_directory.is_readable
+		do
+			directory := a_directory
+		end
+
+	set_loader (a_loader: like loader)
+			--
+		require
+			loader /= Void and then loader.min /= Void
+		do
+			loader := a_loader
+		end
+
+	enable_hotspots
+			--
+		do
+			scoop_hotspots := True
+		ensure
+			scoop_hotspots
+		end
+
+	disable_hotspots
+			--
+		do
+			scoop_hotspots := False
+		ensure
+			not scoop_hotspots
+		end
+
 feature {NONE} -- Implementation
 
 	wkb_generate_execution_profile: BOOLEAN
@@ -347,7 +417,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -360,22 +430,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_PROFILER_WIZARD_INFORMATION

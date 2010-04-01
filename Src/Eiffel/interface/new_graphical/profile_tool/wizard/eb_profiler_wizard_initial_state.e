@@ -14,7 +14,7 @@ inherit
 		redefine
 			proceed_with_current_info
 		end
-		
+
 	EB_CONSTANTS
 		export
 			{NONE} all
@@ -25,9 +25,12 @@ create
 
 feature -- basic Operations
 
-	proceed_with_current_info 
+	proceed_with_current_info
 		do
-			proceed_with_new_state(create {EB_PROFILER_WIZARD_FIRST_STATE}.make (wizard_information))
+			-- Changed for SCOOP profiler wizard
+			-- Added by trosim, on 2010-03-30
+--			proceed_with_new_state(create {EB_PROFILER_WIZARD_FIRST_STATE}.make (wizard_information))
+			proceed_with_new_state (create {EB_PROFILER_WIZARD_DATA_TYPE_STATE}.make (wizard_information))
 		end
 
 	display_state_text
@@ -38,7 +41,7 @@ feature -- basic Operations
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -51,22 +54,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_PROFILER_WIZARD_INITIAL_STATE
