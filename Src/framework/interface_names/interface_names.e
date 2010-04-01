@@ -791,6 +791,59 @@ feature -- Tool tips
 	f_result: STRING_32 				do Result := locale.translation ("`Result' value associated to selected call stack element") end
 	f_dropped_references: STRING_32 	do Result := locale.translation ("Debugged object dropped onto Objects tool") end
 
+		-- SCOOP Profile
+		-- Added by trosim on 2010-03-31
+	f_scoop_incomplete: STRING_32 do Result := locale.translation ("! INCOMPLETE DATA !") end
+	f_scoop_processor (a_processor, a_exec, a_wait, a_time: STRING_GENERAL): STRING_32
+		require
+			processor_not_void: a_processor /= Void
+			exec_not_void: a_exec /= Void
+			wait_not_void: a_wait /= Void
+			time_not_void: a_time /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Processor: $1%NExecution time: $2%NWait time: $3%NProfile time: $4"), [a_processor, a_exec, a_wait, a_time])
+		end
+	f_scoop_profiling (a_duration, a_start, a_stop: STRING_GENERAL): STRING_32
+		require
+			duration_not_void: a_duration /= Void
+			start_not_void: a_start /= Void
+			stop_not_void: a_stop /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Profiling action%NDuration: $1%NStart: $2%NEnd: $3"), [a_duration, a_start, a_stop])
+		end
+	f_scoop_feature_call_application (a_class, a_feature, a_duration, a_queue, a_sync, a_exec, a_call, a_start, a_stop: STRING_GENERAL): STRING_32
+		require
+			class_not_void: a_class /= Void
+			feature_not_void: a_feature /= Void
+			duration_not_void: a_duration /= Void
+			queue_not_void: a_queue /= Void
+			sync_not_void: a_sync /= Void
+			exec_not_void: a_exec /= Void
+			call_not_void: a_call /= Void
+			start_not_void: a_start /= Void
+			stop_not_void: a_stop /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("$1 $2%NDuration: $3%NQueue duration: $4%NSync duration: $5%NExec duration: $6%NCall time: $7%NStart: $8%NStop: $9"), [a_class, a_feature, a_duration, a_queue, a_sync, a_exec, a_call, a_start, a_stop])
+		end
+	f_scoop_called_processor (a_processor: STRING_GENERAL): STRING_32
+		require
+			processor_not_void: a_processor /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Called processor: $1"), [a_processor])
+		end
+	f_scoop_wait_conditions (a_conditions: STRING_GENERAL): STRING_32
+		require
+			conditions_not_void: a_conditions /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Wait condition tries: $1"), [a_conditions])
+		end
+	f_scoop_requested_processors (a_processors: STRING_GENERAL): STRING_32
+		require
+			processors_not_void: a_processors /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Requested processors: $1"), [a_processors])
+		end
+
 feature -- Formatter displayer names
 
 	l_class_tree_displayer_help: STRING_32 do Result := locale.translation ("This view is suitable for displaying class hierarchy%Nsuch as class ancestors/descendants") end
@@ -2018,6 +2071,17 @@ feature -- Label texts
 			Result := locale.formatted_string ("(must conform to $1)", [a_type])
 		end
 
+		-- SCOOP Profile
+		-- Added by trosim on 2010-03-31
+	l_loading: STRING_32 do Result := locale.translation ("Loading...") end
+	l_scoop_start_time: STRING_32 do Result := locale.translation ("Start time: ") end
+	l_scoop_stop_time: STRING_32 do Result := locale.translation ("Stop time: ") end
+	l_scoop_enable_hotspots: STRING_32 do Result := locale.translation ("Enable hotspots") end
+	l_profile_data_traditional: STRING_32 do Result := locale.translation ("Traditional profile data") end
+	l_profile_data_scoop: STRING_32 do Result := locale.translation ("SCOOP profile data") end
+	l_scoop_profiling_element: STRING_32 do Result := locale.translation ("prof") end
+	l_scoop_processor_element: STRING_32 do Result := locale.translation ("Processor ") end
+
 feature -- Label text, no translation (for the editor)
 
 	le_version_from_message: STRING = " (version from)"
@@ -2404,6 +2468,12 @@ feature -- Title part
 	t_contract_no_postcondtions: STRING_32 			do Result := locale.translation ("No postconditions added yet") end
 	t_contract_no_invariants: STRING_32 			do Result := locale.translation ("No invariants added yet") end
 
+		-- SCOOP Profiler
+		-- Added by trosim on 2010-03-31
+	t_Scoop_profile_window: STRING_32 do Result := locale.translation ("SCOOP Profile") end
+	t_Scoop_time_span: STRING_32 do Result := locale.translation ("Time span") end
+	t_Scoop_hotspots: STRING_32 do Result := locale.translation ("Hotspots") end
+
 feature -- Sub titles
 
 		-- Debugger
@@ -2710,7 +2780,19 @@ feature -- Wizard texts
 				do Result := locale.translation("The file you have supplied as existring Execution Provide does%N%
 				%not exist or is not valid. Please provide a valid file or generate%N%
 				%a new one.%N%
-				%Click Back and select a valid file or choose the generate option.")	end;
+				%Click Back and select a valid file or choose the generate option.")	end
+
+	-- Added for SCOOP, by trosim on 2010-03-31
+	wt_Profile_directory: STRING_32 do Result := locale.translation ("Profile Directory") end
+	ws_Profile_directory: STRING_32 do Result := locale.translation ("Find the scoop profile directory.") end
+	wb_Profile_directory: STRING_32 do Result := locale.translation ("Browse to the directory containing SCOOP profile data.") end
+	wt_Profile_directory_error: STRING_32 do Result := locale.translation ("Directory Error") end
+	wb_Profile_directory_error: STRING_32 do Result := locale.translation ("The directory you chose doesn't exist anymore, or it contains no profile files.") end
+	wt_Data_type: STRING_32 do Result := locale.translation ("Profile data") end
+	ws_Data_type: STRING_32 do Result := locale.translation ("Choose the profile data type.") end
+	wb_Data_type: STRING_32 do Result := locale.translation ("Choose the type of data you are about to use as profile.") end
+	wt_Profile_options: STRING_32 do Result := locale.translation ("Choose Options") end
+	ws_Profile_options: STRING_32 do Result := locale.translation ("Choose options for the visualization.") end
 
 feature -- Translation (unrecommended to use)
 
@@ -2772,6 +2854,3 @@ note
 		]"
 
 end -- class INTERFACE_NAMES
-
-
-
