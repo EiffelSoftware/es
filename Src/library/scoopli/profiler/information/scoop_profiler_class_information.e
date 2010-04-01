@@ -15,9 +15,9 @@ feature {NONE} -- Creation
 	make
 			-- Creation procedure.
 		do
-			create feature_names.make (0)
+			create features.make (0)
 		ensure
-			feature_names_not_void: feature_names /= Void
+			features_not_void: features /= Void
 		end
 
 feature -- Access
@@ -25,9 +25,9 @@ feature -- Access
 	name: STRING
 			-- Class name
 
-	feature_names: HASH_TABLE [STRING, INTEGER]
+	features: HASH_TABLE [SCOOP_PROFILER_FEATURE_INFORMATION, INTEGER]
 			-- Feature information
-			-- key: feature id, value: feature name
+			-- key: feature id, value: feature
 
 feature -- Basic Operations
 
@@ -42,6 +42,6 @@ feature -- Basic Operations
 		end
 
 invariant
-	feature_names_not_void: feature_names /= Void
+	features_not_void: features /= Void
 
 end

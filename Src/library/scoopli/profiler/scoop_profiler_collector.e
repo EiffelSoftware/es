@@ -339,7 +339,7 @@ feature {NONE} -- Conversion
 		require
 			feature_not_void: a_feature /= Void
 		do
-			Result := information.classes.item (class_id_of (a_feature.target)).feature_names.item (feature_id_of (a_feature))
+			Result := information.classes.item (class_id_of (a_feature.target)).features.item (feature_id_of (a_feature)).name
 		ensure
 			result_valid: Result /= Void and then not Result.is_empty
 		end
