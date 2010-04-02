@@ -1957,6 +1957,12 @@ feature -- Recompilation
 					create d1.make_now
 				end
 
+				-- SCOOP: get information about compiled classes and features.
+				-- Added by trosim on 2010-02-27
+				if not workbench.is_degree_scoop_processing and workbench.is_degree_scoop_processed then
+					process_degree_scoop_profile_information
+				end
+
 					-- Finalize a successful compilation
 				finish_compilation
 				debug ("timing")
@@ -2117,6 +2123,14 @@ end
 			-- restart compilation
 			error_handler.raise_error
 		end
+
+	process_degree_scoop_profile_information
+			-- Process information for SCOOP profile.
+			-- Added by trosim on 2010-02-26
+		do
+			degree_scoop.build_profile_information
+		end
+
 
 	process_degree_4
 			-- Process Degree 4.

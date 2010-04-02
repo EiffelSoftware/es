@@ -93,6 +93,140 @@ feature -- Access
 			degree_5 := a_degree_5
 		end
 
+feature {SYSTEM_I} -- Profiling
+
+	build_profile_information
+			-- Build the profile information.
+			-- Added by trosim on 2010-02-26
+		local
+			information: SCOOP_PROFILER_INFORMATION
+			l_class_info: SCOOP_PROFILER_CLASS_INFORMATION
+			l_feature_info: SCOOP_PROFILER_FEATURE_INFORMATION
+			i, l_index: INTEGER
+			l_feature: FEATURE_I
+			l_class: CLASS_C
+			l_name: STRING
+
+			l_serializer: SED_MEDIUM_READER_WRITER
+			l_store: SED_STORABLE_FACILITIES
+			l_file_name: FILE_NAME
+			l_file: RAW_FILE
+			l_directory: DIRECTORY
+		do
+			-- Create profile directory
+			create l_directory.make (system.project_location.location + Operating_environment.directory_separator.out + {SCOOP_LIBRARY_CONSTANTS}.Eifgens_directory)
+
+			-- Create profile information file name
+			create l_file_name.make
+			l_file_name.set_directory (l_directory.name)
+			l_file_name.set_file_name ({SCOOP_LIBRARY_CONSTANTS}.Information_file_name)
+			if not {SCOOP_LIBRARY_CONSTANTS}.Information_file_extension.is_empty then
+				l_file_name.add_extension ({SCOOP_LIBRARY_CONSTANTS}.Information_file_extension)
+			end
+
+			if universe.target.setting_scoop_profile then
+				--| Profiling is enabled |--
+
+				-- Create information object
+				create information.make
+				information.enable_profiling
+
+				-- Produce profiling information for the classes
+				from
+					i := 1
+				invariant
+					i >= 1
+					i <= system.class_types.count + 1
+				until
+					i > system.class_types.count
+				loop
+					-- Is this a class related to SCOOP?
+					if attached {CLASS_TYPE} system.class_types.item (i) as l_type and then l_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_override_cluster_name) then
+						create l_name.make_from_string (l_type.associated_class.name_in_upper)
+
+						-- Remove scoop prefix
+						if l_type.associated_class.name_in_upper.starts_with ({SCOOP_SYSTEM_CONSTANTS}.Scoop_proxy_class_prefix) then
+							l_name.remove_head ({SCOOP_SYSTEM_CONSTANTS}.Scoop_proxy_class_prefix.count)
+						end
+
+						-- Do not profile scoop starter class
+						if not l_name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_starter_class_name) then
+							create l_class_info.make
+							l_class_info.set_name (l_name)
+							information.classes.extend (l_class_info, l_type.type_id)
+
+							-- Produce profile information for features
+							from
+								l_type.associated_class.feature_table.start
+							until
+								l_type.associated_class.feature_table.after
+							loop
+								l_feature := l_type.associated_class.feature_table.item_for_iteration
+
+								-- Process feature only if it is written in SCOOP classes (override cluster)
+								if l_feature.written_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_override_cluster_name) then
+									-- Create feature information
+									create l_feature_info.make
+
+									-- Get feature name
+									create l_name.make_from_string (l_feature.e_feature.name)
+									if l_name.has_substring ({SCOOP_LIBRARY_CONSTANTS}.Separate_features_infix) then
+										l_index := l_name.substring_index ({SCOOP_LIBRARY_CONSTANTS}.Separate_features_infix, 1)
+										l_name.keep_head (l_index - 1)
+									end
+									if l_name.starts_with ({SCOOP_LIBRARY_CONSTANTS}.Effective_features_prefix) then
+										l_name.keep_tail (l_name.count - {SCOOP_LIBRARY_CONSTANTS}.Effective_features_prefix.count)
+									end
+									l_feature_info.set_name (l_name)
+
+									-- Check whether the feature has separate arguments
+									if l_feature.arguments /= Void then
+										from
+											l_feature.arguments.start
+										until
+											l_feature.arguments.after
+										loop
+											if l_feature.arguments.item.actual_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_override_cluster_name) then
+												l_feature_info.set_has_separate_arguments
+											end
+											l_feature.arguments.forth
+										variant
+											l_feature.arguments.count - l_feature.arguments.index + 1
+										end
+									end
+
+									-- Extend class info
+									l_class_info.features.extend (l_feature_info, l_feature.e_feature.feature_id)
+								end
+								l_type.associated_class.feature_table.forth
+							end
+						end
+					end
+					i := i + 1
+				variant
+					system.class_types.count - i + 1
+				end
+
+				-- Set directory where to put profile data
+				information.set_directory (create {DIRECTORY}.make (system.project_location.target_path + Operating_environment.directory_separator.out + {SCOOP_LIBRARY_CONSTANTS}.Profile_directory))
+
+				-- Write profile information to disk
+				-- this will be read by the to-be-profiled program
+				create l_store
+				create l_file.make_open_write (l_file_name.out)
+				create l_serializer.make (l_file)
+				l_serializer.set_for_writing
+				l_store.independent_store (information, l_serializer, True)
+				l_file.close
+			else
+				-- Remove the file if we are not profiling
+				create l_file.make (l_file_name.out)
+				if l_file.exists then
+					l_file.delete
+				end
+			end
+		end
+
 feature {SYSTEM_I, WORKBENCH_I} -- Processing
 
 	execute
