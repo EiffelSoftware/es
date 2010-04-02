@@ -49,8 +49,6 @@ feature {NONE} -- Initialization
 			button_box: EV_HORIZONTAL_BOX		-- Box for the buttons
 			close_button: EV_BUTTON				-- Button to close Current
 		do
-			profile.set_zoom (0.05)
-
 			-- Display processor rows information
 			create scrollable
 			scrollable.extend (profile.widget)
