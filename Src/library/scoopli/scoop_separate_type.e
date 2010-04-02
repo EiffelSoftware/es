@@ -11,15 +11,15 @@ indexing
 deferred class
 	SCOOP_SEPARATE_TYPE
 
--- inherit 
+-- inherit
 --	SCOOP_CONCURRENCY
 	
 --		rename
 --			default_create as concurrency_default_create
 --		end
 
-		
-feature {SCOOP_SEPARATE_TYPE, SCOOP_PROCESSOR, SCOOP_SCHEDULER} -- Access
+
+feature {SCOOP_SEPARATE_TYPE, SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_ROUTINE_REQUEST} -- Access
 
 	processor_: SCOOP_PROCESSOR
 			-- Processor handling this object.

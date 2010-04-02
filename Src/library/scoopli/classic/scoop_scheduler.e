@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		do
 			create routine_requests.make
@@ -34,22 +34,29 @@ feature {NONE} -- Initialization
 
 feature {SCOOP_SEPARATE_TYPE} -- Registration
 
-	new_processor_: SCOOP_PROCESSOR is
+	new_processor_: SCOOP_PROCESSOR
 			-- Create new processor and return reference to it.
 		do
+				-- SCOOP PROFILER
+				if profile_information = Void then
+					read_profile_information
+				end
 				create Result.make (Current)
 				processors_mutex.lock
 				processors.extend (Result)
+				-- SCOOP PROFILER
+				if profile_information.is_profiling_enabled then
+					Result.profile_collector.collect_processor_add
+				end
 				processors_mutex.unlock
 		end
 
 feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 
-
 	execute_routine (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]; a_routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE];
 						a_wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN]
 						a_separate_postcondition: ROUTINE [SCOOP_SEPARATE_CLIENT, TUPLE];
-						a_non_separate_postcondition: ROUTINE [SCOOP_SEPARATE_CLIENT, TUPLE]) is
+						a_non_separate_postcondition: ROUTINE [SCOOP_SEPARATE_CLIENT, TUPLE])
 			-- Create routine request for `a_routine' and add it to list of routine requests.
 			-- When request is ready for execution, i.e. all requested processors are locked and `a_wait_condition' holds, execute `a_routine'.
 			-- Check `a_separate_postcondition' and `a_non_separate_postcondition'.
@@ -65,12 +72,17 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 			effectively_requested_processors: LINKED_LIST [SCOOP_PROCESSOR] -- Processors effectively requested.
 			are_requested_processors_locked: BOOLEAN
 			a_requested_processor: SCOOP_PROCESSOR
+			scoop_profiler_target: SCOOP_SEPARATE_CLIENT
 		do
 			create effectively_requested_processors.make
 			requested_processors := a_requested_processors.twin
 			-- Check whether `a_caller_' knows its processor.
 			if a_caller_.processor_ = void then
 				find_and_set_processor_ (a_caller_)
+			end
+			-- SCOOP PROFILE
+			if profile_information.is_profiling_enabled then
+				scoop_profiler_target ?= a_routine.target
 			end
 			-- Eliminate repeated requests for the same processor.
 			-- Eliminate requests for processors that a_caller has already locked.
@@ -92,8 +104,19 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 				end
 				i := i + 1
 			end
+			-- SCOOP PROFILE
+			if scoop_profiler_target /= Void then
+				scoop_profiler_target.processor_.profile_collector.collect_feature_wait (a_routine, effectively_requested_processors)
+			end
 			if are_requested_processors_locked then
-				a_routine.call([])
+				-- SCOOP PROFILE
+				if scoop_profiler_target /= Void then
+					scoop_profiler_target.processor_.profile_collector.collect_feature_application (a_routine)
+					a_routine.call([])
+					scoop_profiler_target.processor_.profile_collector.collect_feature_return (a_routine)
+				else
+					a_routine.call([])
+				end
 				if a_separate_postcondition /= void then
 					a_separate_postcondition.call ([])
 				end
@@ -111,7 +134,14 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 			    routine_requests_mutex.unlock
 				request.ready_for_execution.wait_one -- wait until routine request is ready for execution (locks acquired and wait condition holds)
 				a_caller_.processor_.locked_processors_push (requested_processors)
-				a_routine.call([])
+				-- SCOOP PROFILE
+				if scoop_profiler_target /= Void then
+					scoop_profiler_target.processor_.profile_collector.collect_feature_application (a_routine)
+					a_routine.call([])
+					scoop_profiler_target.processor_.profile_collector.collect_feature_return (a_routine)
+				else
+					a_routine.call([])
+				end
 				if a_separate_postcondition /= void then
 					a_separate_postcondition.call ([])
 				end
@@ -123,7 +153,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 			end
 		end
 
-	execute_routine_without_postconditions (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]; a_routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE]; a_wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN]) is
+	execute_routine_without_postconditions (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]; a_routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE]; a_wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN])
 			-- Create routine request for `a_routine' and add it to list of routine requests.
 			-- When request is ready for execution, i.e. all requested processors are locked and `a_wait_condition' holds, execute `a_routine'.
 			-- Obsolete; use `execute_routine' instead.
@@ -187,11 +217,9 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 			end
 		end
 
-
-
 feature {NONE} -- Synchronization
 
-	execute_thread is
+	execute_thread
 			-- Main loop. Schedule routine requests for execution.
 			-- Scheduling and locking policy are implemented here.
 		local
@@ -276,9 +304,7 @@ feature {NONE} -- Synchronization
 			processors_mutex.unlock
 		end
 
-
-
-	locks_acquired (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]): BOOLEAN is
+	locks_acquired (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]): BOOLEAN
 			-- Check if locks on `a_requested_processors' can be acquired, if yes acquire them.
 		require
 			a_caller_non_void: a_caller_ /= void
@@ -326,8 +352,7 @@ feature {NONE} -- Synchronization
 			end
 		end
 
-
-	single_lock_acquired (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processor: SCOOP_PROCESSOR): BOOLEAN is
+	single_lock_acquired (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processor: SCOOP_PROCESSOR): BOOLEAN
 			-- Check if lock on `a_requested_processor' can be acquired, if yes acquire it.
 		require
 			a_caller_non_void: a_caller_ /= void
@@ -344,8 +369,7 @@ feature {NONE} -- Synchronization
 			a_processor.mutex.unlock
 		end
 
-
-	release_locks (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]) is
+	release_locks (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR])
 			-- Release locks on `a_requested_processors'.
 			-- Release is synchronous, i.e. routine terminates when all locks have been released.
 		require
@@ -368,8 +392,7 @@ feature {NONE} -- Synchronization
 			end
 		end
 
-
-	release_locks_asynchronously (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR]) is
+	release_locks_asynchronously (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processors: TUPLE [SCOOP_PROCESSOR])
 			-- Release locks on `a_requested_processors'.
 			-- Release is asynchronous, i.e. routine terminates after scheduling release of locks but without waiting for them to be released.
 		require
@@ -392,8 +415,7 @@ feature {NONE} -- Synchronization
 			end
 		end
 
-
-	release_single_lock (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processor: SCOOP_PROCESSOR) is
+	release_single_lock (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processor: SCOOP_PROCESSOR)
 			-- Release lock on `a_requested_processor'.
 			-- Release is synchronous, i.e. routine terminates when lock has been released.
 		require
@@ -404,8 +426,7 @@ feature {NONE} -- Synchronization
 			a_requested_processor.release_lock
 		end
 
-
-	release_single_lock_asynchronously (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processor: SCOOP_PROCESSOR) is
+	release_single_lock_asynchronously (a_caller_: SCOOP_SEPARATE_CLIENT; a_requested_processor: SCOOP_PROCESSOR)
 			-- Release lock on `a_requested_processor'.
 			-- Release is asynchronous, i.e. routine terminates after scheduling release of lock but without waiting for it to be released.
 		require
@@ -415,7 +436,6 @@ feature {NONE} -- Synchronization
 		do
 			a_requested_processor.asynchronous_execute (a_caller_, agent a_requested_processor.release_lock_and_signal_change)
 		end
-
 
 feature {NONE} -- Implementation
 
@@ -440,7 +460,7 @@ feature {NONE} -- Implementation
 	scoop_starter: SCOOP_STARTER_IMP
 		-- Object that initializes SCOOP application.
 
-	find_and_set_processor_ (a_caller_: SCOOP_SEPARATE_CLIENT) is
+	find_and_set_processor_ (a_caller_: SCOOP_SEPARATE_CLIENT)
 			-- Find processor that handles `a_caller_' and set `a_caller.processor_'.
 		require
 			a_caller_processor_void: a_caller_.processor_ = void
@@ -462,27 +482,65 @@ feature {NONE} -- Implementation
 			processors_mutex.unlock
 		end
 
-
 feature {SCOOP_PROCESSOR} -- Update
+
+	read_profile_information
+			--
+		local
+			l_serializer: SED_MEDIUM_READER_WRITER
+			l_store: SED_STORABLE_FACILITIES
+
+			l_file: RAW_FILE
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make
+			l_file_name.set_directory ({SCOOP_LIBRARY_CONSTANTS}.Eifgens_directory)
+			l_file_name.set_file_name ({SCOOP_LIBRARY_CONSTANTS}.Information_file_name)
+			if not {SCOOP_LIBRARY_CONSTANTS}.Information_file_extension.is_empty then
+				l_file_name.add_extension ({SCOOP_LIBRARY_CONSTANTS}.Information_file_extension)
+			end
+			create l_file.make (l_file_name.out)
+			if l_file.exists and then l_file.is_readable then
+				l_file.open_read
+				create l_serializer.make (l_file)
+				l_serializer.set_for_reading
+				create l_store
+				profile_information ?= l_store.retrieved (l_serializer, True)
+				l_file.close
+			end
+			if profile_information = Void then
+				create profile_information.make
+				profile_information.disable_profiling
+			elseif not profile_information.directory.exists then
+				profile_information.directory.create_dir
+			end
+		ensure
+			profile_information /= Void
+		end
+
+	profile_information: SCOOP_PROFILER_INFORMATION
 
 	routine_request_update: SCOOP_AUTO_RESET_EVENT_HANDLE
 		-- Indication that `routine_requests' list has been updated.
 		-- If set, wake up thread servicing `routine_requests'.
 
-	remove_processor (a_processor: SCOOP_PROCESSOR) is
+	remove_processor (a_processor: SCOOP_PROCESSOR)
 		-- Remove `a_processor' from list of processors.
 		require
 			a_processor_not_void: a_processor /= void
 		do
 			processors_mutex.lock
 			processors.start
+			-- SCOOP PROFILER
+			if profile_information.is_profiling_enabled then
+				a_processor.profile_collector.collect_processor_end
+			end
 			processors.prune (a_processor)
 			if processors.is_empty then
 				all_processors_finished.set
 			end
 			processors_mutex.unlock
 		end
-
 
 feature {SCOOP_STARTER_IMP} -- Termination
 
@@ -491,7 +549,7 @@ feature {SCOOP_STARTER_IMP} -- Termination
 
 feature {SCOOP_SEPARATE_CLIENT} -- Termination
 
-	stop_execution is	--Highly unelegant. Obsolete.
+	stop_execution	--Highly unelegant. Obsolete.
 			-- Signal it is time to stop the application.
 		do
 			execution_stopped := True

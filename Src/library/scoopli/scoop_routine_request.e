@@ -48,14 +48,18 @@ feature -- Access
 	ready_for_execution: SCOOP_AUTO_RESET_EVENT_HANDLE
 			-- Signal routine request is ready for execution.
 
-	wait_condition_satisfied: BOOLEAN is
+	wait_condition_satisfied: BOOLEAN
 			-- Is wait condition satisfied?
 		do
 			if wait_condition /= void then
+				-- SCOOP PROFILE
+				if attached {SCOOP_SEPARATE_TYPE} routine.target as scoop_profile_target and then scoop_profile_target.processor_.profile_collector /= Void then
+					scoop_profile_target.processor_.profile_collector.collect_wait_condition (routine)
+				end
 				wait_condition.call ([])
 				Result := wait_condition.last_result
 			else
-				Result := True		
+				Result := True
 			end
 		end
 		
@@ -64,7 +68,7 @@ feature -- Element change
 	signal_ready_for_execution is
 			-- Signal that request is ready for execution.
 		do
-			ready_for_execution.set			
+			ready_for_execution.set
 		end
 
 feature {NONE} -- Implementation

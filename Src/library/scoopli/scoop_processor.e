@@ -19,7 +19,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_scheduler: SCOOP_SCHEDULER) is
+	make (a_scheduler: SCOOP_SCHEDULER)
 			-- Creation procedure.
 		do
 			create locked_processors.make
@@ -36,12 +36,20 @@ feature {NONE} -- Initialization
 			create postcondition_counter_mutex
 			scheduler := a_scheduler
 			default_create
+			-- SCOOP PROFILE
+			if scheduler.profile_information.is_profiling_enabled then
+				create profile_collector.make_with_processor (Current)
+				profile_collector.set_information (scheduler.profile_information)
+			end
 		end
 
+feature {SCOOP_SCHEDULER, SCOOP_SEPARATE_PROXY, SCOOP_PROFILER_COLLECTOR, SCOOP_ROUTINE_REQUEST} -- Profile collection
+
+	profile_collector: SCOOP_PROFILER_COLLECTOR
 
 feature -- Access
 
-	signal_finished is
+	signal_finished
 			-- Signal that processor has finished.
 		do
 			finished := true
@@ -65,7 +73,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 	actions_not_empty: SCOOP_AUTO_RESET_EVENT_HANDLE
 		-- There are actions to execute.
 
-	signal_actions_not_empty is
+	signal_actions_not_empty
 		-- Signal that there are actions to execute.
 		do
 			actions_not_empty.set
@@ -74,7 +82,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 	actions_empty: SCOOP_AUTO_RESET_EVENT_HANDLE
 		-- There are no actions to execute.
 
-	signal_actions_empty is
+	signal_actions_empty
 		-- Signal that there are no actions to execute.
 		do
 			actions_empty.set
@@ -83,13 +91,13 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 	locked_by: SCOOP_PROCESSOR
 		-- Processor that holds lock on current processor.
 
-	locked: BOOLEAN is
+	locked: BOOLEAN
 			-- Is processor locked?
 		do
 			Result := locked_by /= void
 		end
 
-	lock (a_lock_holder: SCOOP_SEPARATE_CLIENT) is
+	lock (a_lock_holder: SCOOP_SEPARATE_CLIENT)
 			-- Lock processor.
 		require
 			not_locked: not locked
@@ -100,7 +108,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			lock_holder_set: locked_by = a_lock_holder.processor_
 		end
 
-	release_lock is
+	release_lock
 			-- Unlock processor.
 		require
 			locked: locked
@@ -112,7 +120,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			not_locked: not locked
 		end
 
-	release_lock_and_signal_change is
+	release_lock_and_signal_change
 			-- Unlock processor and signal it.
 		require
 			locked: locked
@@ -142,7 +150,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 
 	finished: BOOLEAN
 
-	auto_finished: BOOLEAN is
+	auto_finished: BOOLEAN
 		-- Should processor be destroyed?
 		local
 			references: SPECIAL [ANY]
@@ -172,7 +180,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 	locked_processors_mutex: MUTEX
 		-- Provides mutually exclusive access to stack of locked processors.
 
-	locked_processors_has (a_processor: SCOOP_PROCESSOR): BOOLEAN is
+	locked_processors_has (a_processor: SCOOP_PROCESSOR): BOOLEAN
 			-- Does `a_processor' appear in `locked_processors'?
 		require
 			a_processor_not_void: a_processor /= void
@@ -182,7 +190,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			locked_processors_mutex.unlock
 		end
 
-	locked_processors_push (a_processors: TUPLE [SCOOP_PROCESSOR]) is
+	locked_processors_push (a_processors: TUPLE [SCOOP_PROCESSOR])
 			-- Push `a_processors' on top of `locked_processors' stack.
 		require
 			a_processors_not_void: a_processors /= void
@@ -192,7 +200,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			locked_processors_mutex.unlock
 		end
 
-	locked_processors_pop is
+	locked_processors_pop
 			-- Pop the top of `locked_processors' stack.
 		require
 --			at_least_two_elements: locked_processors_count > 1
@@ -204,7 +212,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 --			not locked_processors.is_empty
 		end
 
-	locked_processors_push_whole_stack (a_stack: SCOOP_TUPLE_PROCESSOR_STACK) is
+	locked_processors_push_whole_stack (a_stack: SCOOP_TUPLE_PROCESSOR_STACK)
 			-- Push `a_stack' on top of `locked_processors'.
 		do
 			locked_processors_mutex.lock
@@ -213,7 +221,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 		end
 
 
-	locked_processors_trim (n: INTEGER_32) is
+	locked_processors_trim (n: INTEGER_32)
 			-- Trim `locked_processors' to size `n'. At least one element should be left.
 		require
 --			n_small_enough: n < locked_processors_count
@@ -224,7 +232,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			locked_processors_mutex.unlock
 		end
 
-	locked_processors_count: INTEGER_32 is
+	locked_processors_count: INTEGER_32
 			-- Size of `locked_processors' stack.
 		do
 			locked_processors_mutex.lock
@@ -241,7 +249,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 	synchronous_processors_mutex: MUTEX
 		-- Provides mutually exclusive access to stack of synchronous processors.
 
-	synchronous_processors_has (a_processor: SCOOP_PROCESSOR): BOOLEAN is
+	synchronous_processors_has (a_processor: SCOOP_PROCESSOR): BOOLEAN
 			-- Does `a_processor' appear in `synchronous_processors'?
 		require
 			a_processor_not_void: a_processor /= void
@@ -251,7 +259,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			synchronous_processors_mutex.unlock
 		end
 
-	synchronous_processors_push (a_processor: SCOOP_PROCESSOR) is
+	synchronous_processors_push (a_processor: SCOOP_PROCESSOR)
 			-- Push `a_processor' on top of `synchronous_processors' stack.
 		require
 			a_processor_not_void: a_processor /= void
@@ -261,7 +269,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			synchronous_processors_mutex.unlock
 		end
 
-	synchronous_processors_pop is
+	synchronous_processors_pop
 			-- Pop the top of `synchronous_processors' stack.
 		require
 --			at_least_two_elements: synchronous_processors_count > 1
@@ -273,7 +281,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 --			not synchronous_processors.is_empty
 		end
 
-	synchronous_processors_push_whole_stack (a_stack: SCOOP_PROCESSOR_STACK) is
+	synchronous_processors_push_whole_stack (a_stack: SCOOP_PROCESSOR_STACK)
 			-- Push `a_stack' on top of `synchronous_processors'.
 		do
 			synchronous_processors_mutex.lock
@@ -281,7 +289,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			synchronous_processors_mutex.unlock
 		end
 
-	synchronous_processors_trim (n: INTEGER_32) is
+	synchronous_processors_trim (n: INTEGER_32)
 			-- Trim `synchronous_processors' to size `n'. At least one element should be left.
 		require
 --			n_small_enough: n < synchronous_processors_count
@@ -292,7 +300,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			synchronous_processors_mutex.unlock
 		end
 
-	synchronous_processors_count: INTEGER_32 is
+	synchronous_processors_count: INTEGER_32
 			-- Size of `synchronous_processors' stack.
 		do
 			synchronous_processors_mutex.lock
@@ -313,7 +321,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Postcondition
 	all_postconditions_evaluated: SCOOP_AUTO_RESET_EVENT_HANDLE
 		-- There are no more pending postconditions.
 
-	increase_postcondition_counter (i: INTEGER_32) is
+	increase_postcondition_counter (i: INTEGER_32)
 			-- Increase postcondition counter by i.
 		require
 			i > 0
@@ -324,7 +332,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Postcondition
 			postcondition_counter_mutex.unlock
 		end
 
-	decrease_postcondition_counter (i: INTEGER_32) is
+	decrease_postcondition_counter (i: INTEGER_32)
 			-- Decrease postcondition counter by i.
 		require
 			i > 0
@@ -339,20 +347,20 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Postcondition
 
 feature {SCOOP_SCHEDULER, SCOOP_SEPARATE_PROXY} -- Basic operations
 
-	asynchronous_execute (a_requesting_object: SCOOP_SEPARATE_TYPE; a_routine: ROUTINE [ANY, TUPLE]) is
+	asynchronous_execute (a_requesting_object: SCOOP_SEPARATE_TYPE; a_routine: ROUTINE [ANY, TUPLE])
 			-- Add `a_routine' to list of actions.
 		do
 			add_action (a_requesting_object, a_routine)
 		end
 
-	synchronous_execute (a_requesting_object: SCOOP_SEPARATE_TYPE; a_routine: ROUTINE [ANY, TUPLE]) is
+	synchronous_execute (a_requesting_object: SCOOP_SEPARATE_TYPE; a_routine: ROUTINE [ANY, TUPLE])
 			-- Add `a_routine' to list of actions and wait until it is executed.
 		do
 			add_action (a_requesting_object, a_routine)
 			actions_empty.wait_one
 		end
 
-	add_action (a_requesting_object: SCOOP_SEPARATE_TYPE; an_action: ROUTINE [ANY, TUPLE]) is
+	add_action (a_requesting_object: SCOOP_SEPARATE_TYPE; an_action: ROUTINE [ANY, TUPLE])
 			-- Add `an_action' to list of actions.
 		require
 --			requesting_processor_has_lock: a_requesting_object.processor_.locked_processors_has (Current)
@@ -376,13 +384,13 @@ feature -- Lock passing
 	lock_passing_counter: INTEGER_32
 		-- Number of lock passing operations current processor is involved in.
 
-	increment_lock_passing_counter is
+	increment_lock_passing_counter
 			-- Increment `lock_passing_counter'.
 		do
 			lock_passing_counter := lock_passing_counter + 1
 		end
 
-	decrement_lock_passing_counter is
+	decrement_lock_passing_counter
 			-- Decrement `lock_passing_counter'.
 		require
 			lock_passing_counter >= 0
@@ -394,7 +402,7 @@ feature {NONE} -- Implementation
 
 	scheduler: SCOOP_SCHEDULER
 
-	execute_thread is
+	execute_thread
 			-- Main execution loop.
 			-- Execute actions (if any) from action list.
 		local
@@ -415,7 +423,17 @@ feature {NONE} -- Implementation
 					check current_action /= void end
 					actions.remove -- remove `current_action' from list of actions
 					actions_mutex.unlock -- allow clients to add actions in the meantime
-					current_action.action.apply -- execute action
+
+					-- SCOOP PROFILE
+					if (profile_collector /= Void and attached {SCOOP_SEPARATE_TYPE} current_action.target) and then not profile_collector.has_separate_arguments (current_action.action) then
+						profile_collector.collect_feature_wait (current_action.action, create {LINKED_LIST [SCOOP_PROCESSOR]}.make)
+						profile_collector.collect_feature_application (current_action.action)
+						current_action.action.apply -- execute action
+						profile_collector.collect_feature_return (current_action.action)
+					else
+						current_action.action.apply -- execute action
+					end
+
 					actions_mutex.lock
 				end
 				signal_actions_empty
@@ -424,7 +442,6 @@ feature {NONE} -- Implementation
 			end
 			scheduler.remove_processor (Current)
 		end
-
 
 invariant
 	mutex_not_void: mutex /= void
