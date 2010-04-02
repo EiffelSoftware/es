@@ -9,7 +9,7 @@ class
 
 feature -- Access
 
-	Profile_collector_buffer: INTEGER = 25
+	Profile_collector_buffer: INTEGER = 0
 			-- Number of events to buffer before writing to disk
 			-- (per processor)
 

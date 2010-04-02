@@ -44,6 +44,20 @@ feature {SCOOP_PROCESSOR} -- Basic Operations
 			information_set: information = a_info
 		end
 
+feature -- Status report
+
+	has_separate_arguments (a_routine: ROUTINE [ANY, TUPLE]): BOOLEAN
+			-- Does `a_routine` have separate arguments?
+		local
+			l_class, l_feature: INTEGER
+		do
+			l_class := class_id_of (a_routine)
+			l_feature := feature_id_of (a_routine)
+			if information.classes.has (l_class) and then information.classes.item (l_class).features.has (l_feature) then
+				Result := information.classes.item (l_class).features.item (l_feature).has_separate_arguments
+			end
+		end
+
 feature {SCOOP_PROFILER_COLLECTOR} -- Measurement
 
 	collect_feature_external_call (a_routine: ROUTINE [ANY, TUPLE]; a_called: SCOOP_PROCESSOR; a_sync: BOOLEAN)
@@ -57,7 +71,7 @@ feature {SCOOP_PROFILER_COLLECTOR} -- Measurement
 			create e.make_now
 			e.set_processor (processor_id_of (processor))
 			e.set_called_id (processor_id_of (a_called))
-			e.set_class_name (class_name_of (a_routine.target))
+			e.set_class_name (class_name_of (a_routine))
 			e.set_feature_name (feature_name_of (a_routine))
 			e.set_synchronous (a_sync)
 			events.extend (e)
@@ -75,11 +89,11 @@ feature -- Measurement
 		local
 			e: SCOOP_PROFILER_FEATURE_CALL_EVENT
 		do
-			if information.classes.has (class_id_of (a_routine.target)) then
+			if information.classes.has (class_id_of (a_routine)) then
 				create e.make_now
 				e.set_processor (processor_id_of (processor))
 				e.set_caller_id (processor_id_of (a_caller))
-				e.set_class_name (class_name_of (a_routine.target))
+				e.set_class_name (class_name_of (a_routine))
 				e.set_feature_name (feature_name_of (a_routine))
 				e.set_synchronous (a_sync)
 				events.extend (e)
@@ -99,11 +113,11 @@ feature -- Measurement
 		local
 			e: SCOOP_PROFILER_FEATURE_WAIT_EVENT
 		do
-			if information.classes.has (class_id_of (a_routine.target)) then
+			if information.classes.has (class_id_of (a_routine)) then
 				-- Collect wait
 				create e.make_now
 				e.set_processor (processor_id_of (processor))
-				e.set_class_name (class_name_of (a_routine.target))
+				e.set_class_name (class_name_of (a_routine))
 				e.set_feature_name (feature_name_of (a_routine))
 				from
 					a_requested_processors.start
@@ -128,10 +142,10 @@ feature -- Measurement
 		local
 			e: SCOOP_PROFILER_FEATURE_APPLICATION_EVENT
 		do
-			if information.classes.has (class_id_of (a_routine.target)) then
+			if information.classes.has (class_id_of (a_routine)) then
 				create e.make_now
 				e.set_processor (processor_id_of (processor))
-				e.set_class_name (class_name_of (a_routine.target))
+				e.set_class_name (class_name_of (a_routine))
 				e.set_feature_name (feature_name_of (a_routine))
 				events.extend (e)
 			end
@@ -146,10 +160,10 @@ feature -- Measurement
 		local
 			e: SCOOP_PROFILER_FEATURE_RETURN_EVENT
 		do
-			if information.classes.has (class_id_of (a_routine.target)) then
+			if information.classes.has (class_id_of (a_routine)) then
 				create e.make_now
 				e.set_processor (processor_id_of (processor))
-				e.set_class_name (class_name_of (a_routine.target))
+				e.set_class_name (class_name_of (a_routine))
 				e.set_feature_name (feature_name_of (a_routine))
 				events.extend (e)
 			end
@@ -167,7 +181,7 @@ feature -- Measurement
 		do
 			create e.make_now
 			e.set_processor (processor_id_of (processor))
-			e.set_class_name (class_name_of (a_routine.target))
+			e.set_class_name (class_name_of (a_routine))
 			e.set_feature_name (feature_name_of (a_routine))
 			events.extend (e)
 		ensure
@@ -300,7 +314,7 @@ feature {NONE} -- Serialization
 --			io.put_string (a_event.out + " " + a_event.code + "%N")
 		end
 
-	file_name: STRING is
+	file_name: STRING
 			-- What's the file name where to put profile data?
 		local
 			l_duration: DATE_TIME_DURATION
@@ -334,17 +348,17 @@ feature {NONE} -- Conversion
 			result_positive: Result > 0
 		end
 
-	feature_name_of (a_feature: ROUTINE [ANY, TUPLE]): STRING is
+	feature_name_of (a_feature: ROUTINE [ANY, TUPLE]): STRING
 			-- What's the name of `a_feature`?
 		require
 			feature_not_void: a_feature /= Void
 		do
-			Result := information.classes.item (class_id_of (a_feature.target)).features.item (feature_id_of (a_feature)).name
+			Result := information.classes.item (class_id_of (a_feature)).features.item (feature_id_of (a_feature)).name
 		ensure
 			result_valid: Result /= Void and then not Result.is_empty
 		end
 
-	feature_id_of (a_feature: ROUTINE [ANY, TUPLE]): INTEGER is
+	feature_id_of (a_feature: ROUTINE [ANY, TUPLE]): INTEGER
 			-- What's the id of `a_feature`?
 		require
 			a_feature /= Void
@@ -354,22 +368,32 @@ feature {NONE} -- Conversion
 			result_positive: Result > 0
 		end
 
-	class_name_of (a_object: ANY): STRING is
+	class_name_of (a_feature: ROUTINE [ANY, TUPLE]): STRING
 			-- What's the class name of `a_object`?
 		require
-			object_not_void: a_object /= Void
+			feature_not_void: a_feature /= Void
 		do
-			Result := information.classes.item (class_id_of (a_object)).name
+			Result := information.classes.item (dynamic_class_id_of (a_feature)).name
 		ensure
 			result_valid: Result /= Void and then not Result.is_empty
 		end
 
-	class_id_of (a_object: ANY): INTEGER is
+	dynamic_class_id_of (a_feature: ROUTINE [ANY, TUPLE]): INTEGER
+			-- What's the dynamic class id of `a_feature`?
+		require
+			feature_not_void: a_feature /= Void
+		do
+			Result := dynamic_type (a_feature.target) + 1
+		ensure
+			result_positive: Result > 0
+		end
+
+	class_id_of (a_feature: ROUTINE [ANY, TUPLE]): INTEGER
 			-- What's the class id of `a_object`?
 		require
-			object_not_void: a_object /= Void
+			feature_not_void: a_feature /= Void
 		do
-			Result := dynamic_type (a_object) + 1
+			Result := a_feature.class_id + 1
 		ensure
 			result_positive: Result > 0
 		end

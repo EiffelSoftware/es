@@ -7,6 +7,9 @@ note
 class
 	SCOOP_PROFILER_FILE
 
+inherit
+	COMPARABLE
+
 create {SCOOP_PROFILER_LOADER}
 	make_with_name
 
@@ -62,6 +65,15 @@ feature -- Access
 		ensure
 			result_not_void: Result /= Void
 			result_not_open: Result.is_closed
+		end
+
+feature -- Comparison
+
+	is_less alias "<" (a_other: like Current): BOOLEAN
+			-- Is current less than `a_other`?
+			-- Less means that number is greater, for use with HEAP_PRIORITY_QUEUE.
+		do
+			Result := number > a_other.number
 		end
 
 feature {NONE} -- Implementation

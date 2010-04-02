@@ -58,7 +58,7 @@ feature {NONE} -- Events
 			e: SCOOP_PROFILER_EVENT
 		do
 			-- Prepare serializer
-			l_file := files.item.file
+			l_file := queue.item.file
 			create l_serializer.make (l_file)
 			l_serializer.set_for_reading
 
@@ -74,8 +74,8 @@ feature {NONE} -- Events
 					e ?= store_handler.retrieved (l_serializer, True)
 				end
 				l_file.close
-			elseif not files.after then
-				files.forth
+			elseif not queue.is_empty then
+				queue.remove
 				read_events
 			end
 		end
@@ -85,28 +85,29 @@ feature -- Cursor movement
 	start
 			-- Start.
 		do
+			-- Create queue
+			create queue.make (files.count)
+			queue.append (files)
+
 			-- Go to first file inside the min-max range
 			from
-				files.start
-			variant
-				files.count - files.index + 1
 			until
-				files.item.stop >= loader.min
+				queue.item.stop >= loader.min
 			loop
-				files.forth
+				queue.remove
 			end
 
 			-- Read events
 			read_events
-			files.forth
+			queue.remove
 		end
 
 	after: BOOLEAN
 			-- Is after?
 		do
-			Result := files.after and events.is_empty
+			Result := queue.is_empty and events.is_empty
 		ensure
-			definition: Result = (files.after and events.is_empty)
+			definition: Result = (queue.is_empty and events.is_empty)
 		end
 
 	forth
@@ -115,9 +116,9 @@ feature -- Cursor movement
 			not_after: not after
 		do
 			events.remove
-			if events.is_empty and not files.after then
+			if events.is_empty and not queue.is_empty then
 				read_events
-				files.forth
+				queue.remove
 			end
 		end
 
@@ -148,6 +149,9 @@ feature {NONE} -- Implementation
 
 	files: LINKED_LIST [SCOOP_PROFILER_FILE]
 			-- List of files
+
+	queue: HEAP_PRIORITY_QUEUE [SCOOP_PROFILER_FILE]
+			-- Queue (ordered by file number)
 
 	store_handler: SED_STORABLE_FACILITIES
 			-- Store handler
