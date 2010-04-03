@@ -131,10 +131,22 @@ feature -- Visitor
 			-- Add profiling to the caller
 			s := stack.item (p.id)
 			if p.stop_time = Void then
-				if s.count = 0 then
-					p.calls.extend (a)
+				if s.is_empty then
+					if not p.calls.is_empty and then (attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} p.calls.last as t_call and a.start_time < p.calls.last.stop_time) then
+						t_call.call_tree.extend (a)
+					else
+						p.calls.extend (a)
+					end
 				else
-					s.item.call_tree.extend (a)
+					if attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} s.item as t_call and then not t_call.call_tree.is_empty and then a.start_time < t_call.call_tree.last.stop_time then
+						if attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} t_call.call_tree.last as t_internal then
+							t_internal.call_tree.extend (a)
+						else
+							s.item.call_tree.extend (a)
+						end
+					else
+						s.item.call_tree.extend (a)
+					end
 				end
 			end
 
