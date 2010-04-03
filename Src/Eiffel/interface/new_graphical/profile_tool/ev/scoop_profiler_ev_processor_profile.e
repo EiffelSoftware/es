@@ -114,7 +114,11 @@ feature -- Display
 				Result.disable_item_expand (Result.last)
 
 				-- Add calls
-				Result.extend (calls.item.widget)
+				if attached {SCOOP_PROFILER_EV_FEATURE_CALL_APPLICATION_PROFILE} calls.item as t_call and then t_call.processor /= Current then
+					Result.extend (t_call.widget_external)
+				else
+					Result.extend (calls.item.widget)
+				end
 				Result.disable_item_expand (Result.last)
 
 				l_time := calls.item.stop_time
