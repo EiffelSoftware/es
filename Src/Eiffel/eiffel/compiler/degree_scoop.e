@@ -104,7 +104,6 @@ feature {SYSTEM_I} -- Profiling
 			l_feature_info: SCOOP_PROFILER_FEATURE_INFORMATION
 			i, l_index: INTEGER
 			l_feature: FEATURE_I
-			l_class: CLASS_C
 			l_name: STRING
 
 			l_serializer: SED_MEDIUM_READER_WRITER

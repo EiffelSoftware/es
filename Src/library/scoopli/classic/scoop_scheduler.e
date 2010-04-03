@@ -490,8 +490,11 @@ feature {SCOOP_PROCESSOR} -- Update
 			l_serializer: SED_MEDIUM_READER_WRITER
 			l_store: SED_STORABLE_FACILITIES
 
+			l_duration: DATE_TIME_DURATION
+
 			l_file: RAW_FILE
 			l_file_name: FILE_NAME
+			l_directory_name: DIRECTORY_NAME
 		do
 			create l_file_name.make
 			l_file_name.set_directory ({SCOOP_LIBRARY_CONSTANTS}.Eifgens_directory)
@@ -511,8 +514,23 @@ feature {SCOOP_PROCESSOR} -- Update
 			if profile_information = Void then
 				create profile_information.make
 				profile_information.disable_profiling
-			elseif not profile_information.directory.exists then
-				profile_information.directory.create_dir
+			else
+				-- Create scoop_profile directory
+				if not profile_information.directory.exists then
+					profile_information.directory.create_dir
+				end
+
+				-- Prepare duration for current run
+				l_duration := (create {DATE_TIME}.make_now).duration.minus ((create {DATE_TIME}.make_from_epoch (0)).duration)
+				l_duration.set_origin_date_time (create {DATE_TIME}.make_from_epoch (0))
+
+				-- Create directory for current run
+				create l_directory_name.make_from_string (profile_information.directory.name)
+				l_directory_name.set_subdirectory (l_duration.fine_seconds_count.truncated_to_integer.out)
+				profile_information.set_directory (create {DIRECTORY}.make (l_directory_name.out))
+				if not profile_information.directory.exists then
+					profile_information.directory.create_dir
+				end
 			end
 		ensure
 			profile_information /= Void

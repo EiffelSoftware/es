@@ -2793,6 +2793,9 @@ feature -- Wizard texts
 	wb_Data_type: STRING_32 do Result := locale.translation ("Choose the type of data you are about to use as profile.") end
 	wt_Profile_options: STRING_32 do Result := locale.translation ("Choose Options") end
 	ws_Profile_options: STRING_32 do Result := locale.translation ("Choose options for the visualization.") end
+	wt_Profile_runs: STRING_32 do Result := locale.translation ("Profiler Runs") end
+	ws_Profile_runs: STRING_32 do Result := locale.translation ("Choose the right profiler run.") end
+	wb_Profile_runs: STRING_32 do Result := locale.translation ("Please choose the right profiler run, indicated by the starting time.") end
 
 feature -- Translation (unrecommended to use)
 

@@ -1,17 +1,17 @@
 note
-	description: "State to select profile data type."
+	description: "State to select between different profiler runs."
 	author: "Martino Trosi, ETH Zürich"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EB_PROFILER_WIZARD_DATA_TYPE_STATE
+	EB_PROFILER_WIZARD_RUNS_STATE
 
 inherit
 	EB_WIZARD_INTERMEDIARY_STATE_WINDOW
 		redefine
-			proceed_with_current_info,
 			update_state_information,
+			proceed_with_current_info,
 			build
 		end
 
@@ -33,27 +33,31 @@ feature -- Basic Operation
 	build
 			-- Build entries.
 		local
-			program_type_radio_box: EV_VERTICAL_BOX
+			l_item: EV_LIST_ITEM
+			l_directory: DIRECTORY
 		do
-				-- Radio buttons
-			create type_normal.make_with_text (interface_names.l_profile_data_traditional)
-			create type_scoop.make_with_text (interface_names.l_profile_data_scoop)
-			create program_type_radio_box
-			program_type_radio_box.set_border_width (Default_border_size)
-			program_type_radio_box.extend (type_normal)
-			program_type_radio_box.extend (type_scoop)
+			create runs_field
+			runs_field.disable_edit
+			from
+				create l_directory.make_open_read (information.directory_name.out)
+				l_directory.start
+				l_directory.readentry
+			until
+				l_directory.lastentry = Void
+			loop
+				if l_directory.lastentry.is_integer then
+					create l_item.make_with_text ((create {DATE_TIME}.make_from_epoch (l_directory.lastentry.to_integer)).out)
+					l_item.set_data (create {DIRECTORY_NAME}.make_from_string (information.directory_name.out + operating_environment.directory_separator.out + l_directory.lastentry))
+					runs_field.extend (l_item)
+				end
+				l_directory.readentry
+			end
+			l_directory.close
 
 				-- Link
-			choice_box.extend (program_type_radio_box)
-			choice_box.disable_item_expand (program_type_radio_box)
+			choice_box.extend (runs_field)
+			choice_box.disable_item_expand (choice_box.last)
 			choice_box.extend (create {EV_CELL})
-
-				-- Update info
-			if information.scoop_type then
-				type_scoop.enable_select
-			else
-				type_normal.enable_select
-			end
 		end
 
 	proceed_with_current_info
@@ -61,22 +65,21 @@ feature -- Basic Operation
 		local
 			next_state: EB_WIZARD_STATE_WINDOW
 		do
-			if type_normal.is_selected then
-				next_state := create {EB_PROFILER_WIZARD_FIRST_STATE}.make (wizard_information)
+			if information.loader /= Void then
+				next_state := create {EB_PROFILER_WIZARD_OPTIONS_STATE}.make (wizard_information)
 			else
-				next_state := create {EB_PROFILER_WIZARD_DIRECTORY_STATE}.make (wizard_information)
+				next_state := create {EB_PROFILER_WIZARD_DIRECTORY_ERROR_STATE}.make (wizard_information)
 			end
 
 			proceed_with_new_state (next_state)
 		end
 
 	update_state_information
-			-- Update state information.
+			-- Check User Entries.
 		do
-			if type_normal.is_selected then
-				information.set_normal_type
-			else
-				information.set_scoop_type
+			Precursor
+			if is_supplied_directory_valid then
+				information.set_loader (loader)
 			end
 		end
 
@@ -85,13 +88,37 @@ feature {NONE} -- Implementation
 	display_state_text
 			-- Display state text.
 		do
-			title.set_text (interface_names.wt_Data_type)
-			subtitle.set_text (interface_names.ws_Data_type)
-			message.set_text (interface_names.wb_Data_type)
+			title.set_text (interface_names.wt_Profile_runs)
+			subtitle.set_text (interface_names.ws_Profile_runs)
+			message.set_text (interface_names.wb_Profile_runs)
 		end
 
-	type_normal, type_scoop: EV_RADIO_BUTTON
-			-- Normal and scoop data radio button
+	is_supplied_directory_valid: BOOLEAN
+			-- Does supplied directory contain scoop profile data?
+		local
+			l_name: DIRECTORY_NAME
+			l_directory: DIRECTORY
+		do
+			if attached {DIRECTORY_NAME} runs_field.selected_item.data as t_name then
+				l_name := t_name
+				if l_name.is_empty then
+					Result := False
+				else
+					create l_directory.make (l_name.out)
+					if l_directory.exists and then l_directory.is_readable then
+						-- Check for profile files
+						create loader.make_with_directory (l_directory)
+						Result := loader.min /= Void
+					end
+				end
+			end
+		end
+
+	runs_field: EV_COMBO_BOX
+			-- Runs select field
+
+	loader: SCOOP_PROFILER_DEFAULT_LOADER
+			-- Reference to the loader
 
 invariant
 	True

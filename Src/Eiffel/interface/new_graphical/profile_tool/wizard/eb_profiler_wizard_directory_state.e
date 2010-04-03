@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {EB_PROFILER_WIZARD_DIRECTORY_STATE}."
-	author: ""
+	description: "State to select directory for scoop profile."
+	author: "Martino Trosi, ETH Zürich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -50,8 +50,8 @@ feature -- Basic Operation
 		local
 			next_state: EB_WIZARD_STATE_WINDOW
 		do
-			if information.loader /= Void then
-				next_state := create {EB_PROFILER_WIZARD_OPTIONS_STATE}.make (wizard_information)
+			if information.directory_name /= Void then
+				next_state := create {EB_PROFILER_WIZARD_RUNS_STATE}.make (wizard_information)
 			else
 				next_state := create {EB_PROFILER_WIZARD_DIRECTORY_ERROR_STATE}.make (wizard_information)
 			end
@@ -64,8 +64,7 @@ feature -- Basic Operation
 		do
 			Precursor
 			if is_supplied_directory_valid then
-				information.set_directory (create {DIRECTORY}.make (directory_field.text))
-				information.set_loader (loader)
+				information.set_directory_name (create {DIRECTORY_NAME}.make_from_string (directory_field.text))
 			end
 		end
 
@@ -90,19 +89,12 @@ feature {NONE} -- Implementation
 				Result := False
 			else
 				create l_directory.make (l_name)
-				if l_directory.exists and then l_directory.is_readable then
-					-- Check for profile files
-					create loader.make_with_directory (l_directory)
-					Result := loader.min /= Void
-				end
+				Result := l_directory.exists and then l_directory.is_readable
 			end
 		end
 
 	directory_field: EB_WIZARD_SMART_TEXT_FIELD
 			-- Directory browse field
-
-	loader: SCOOP_PROFILER_DEFAULT_LOADER
-			-- Reference to the loader
 
 invariant
 	True

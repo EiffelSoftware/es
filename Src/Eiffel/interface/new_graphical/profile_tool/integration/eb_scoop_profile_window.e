@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {EB_SCOOP_PROFILE_WINDOW}."
-	author: ""
+	description: "Scoop profile window."
+	author: "Martino Trosi, ETH Zürich"
 	date: "$Date$"
 	revision: "$Revision$"
 

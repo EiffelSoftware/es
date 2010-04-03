@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {EB_PROFILER_WIZARD_OPTIONS_STATE}."
-	author: ""
+	description: "State to select profile options."
+	author: "Martino Trosi, ETH Zürich"
 	date: "$Date$"
 	revision: "$Revision$"
 

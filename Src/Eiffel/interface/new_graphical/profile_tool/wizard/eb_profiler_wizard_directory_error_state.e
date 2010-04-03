@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {EB_PROFILER_WIZARD_DIRECTORY_ERROR_STATE}."
-	author: ""
+	description: "Error state if directory error."
+	author: "Martino Trosi, ETH Zürich"
 	date: "$Date$"
 	revision: "$Revision$"
 

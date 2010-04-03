@@ -11,17 +11,17 @@ class
 
 inherit
 	EB_WIZARD_INFORMATION
-	
+
 	PROJECT_CONTEXT
 		export
 			{NONE} all
 		end
-		
+
 	SYSTEM_CONSTANTS
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -33,20 +33,20 @@ feature  {NONE} -- Initialization
 			filename: FILE_NAME
 		do
 			set_workbench_mode
-			
+
 			wkb_existing_profile := find_execution_profile (True)
 			flz_existing_profile := find_execution_profile (False)
-			
+
 			wkb_generate_execution_profile := (wkb_existing_profile = Void)
 			flz_generate_execution_profile := (flz_existing_profile = Void)
-			
+
 			create filename.make_from_string (project_location.workbench_path)
 			filename.set_file_name ("profinfo")
 			wkb_runtime_information_record := filename
 			create filename.make_from_string (project_location.final_path)
 			filename.set_file_name ("profinfo")
 			flz_runtime_information_record := filename
-			
+
 			wkb_runtime_information_type := "eiffel"
 			flz_runtime_information_type := "eiffel"
 
@@ -61,7 +61,7 @@ feature -- Access
 
 	workbench_mode: BOOLEAN
 			-- Analyse a system compiled in workbench mode?
-			
+
 	finalized_mode: BOOLEAN
 			-- Analyse a system compiled in finalized mode?
 		do
@@ -75,7 +75,7 @@ feature -- Access
 				Result := wkb_generate_execution_profile
 			else
 				Result := flz_generate_execution_profile
-			end 
+			end
 		end
 
 	use_existing_execution_profile: BOOLEAN
@@ -83,7 +83,7 @@ feature -- Access
 		do
 			Result := not generate_execution_profile
 		end
-		
+
 	existing_profile: FILE_NAME
 			-- Existing profile to use, Void if none
 		do
@@ -93,7 +93,7 @@ feature -- Access
 				Result := flz_existing_profile
 			end
 		end
-			
+
 	runtime_information_record: FILE_NAME
 			-- Runtime information record to use when generating the execution profile
 		do
@@ -103,7 +103,7 @@ feature -- Access
 				Result := flz_runtime_information_record
 			end
 		end
-			
+
 	runtime_information_type: STRING
 			-- Type of profiler used to produce `runtime_information_record'
 			-- (gcc profiler, eiffel profiler, ...)
@@ -114,7 +114,7 @@ feature -- Access
 				Result := flz_runtime_information_type
 			end
 		end
-		
+
 	name_switch: BOOLEAN
 			-- Switch for the feature names
 
@@ -136,7 +136,7 @@ feature -- Access
 			-- Switch for the amount of time
 			-- spent in both the function itself
 			-- and the called ones.
-			
+
 	eiffel_switch: BOOLEAN
 			-- Switch for output of eiffel features
 
@@ -160,7 +160,7 @@ feature -- Access
 			else
 				Result := project_location.final_path
 			end
-		end 
+		end
 
 feature -- Access (SCOOP)
 
@@ -170,7 +170,7 @@ feature -- Access (SCOOP)
 	scoop_type: BOOLEAN
 			--
 
-	directory: DIRECTORY
+	directory_name: DIRECTORY_NAME
 			--
 
 	loader: SCOOP_PROFILER_LOADER
@@ -191,7 +191,7 @@ feature -- Element change
 		ensure
 			Result_set: workbench_mode
 		end
-		
+
 	set_finalized_mode
 			-- Analyse a system compiled in finalized mode.
 		do
@@ -199,7 +199,7 @@ feature -- Element change
 		ensure
 			Result_set: finalized_mode
 		end
-		
+
 	set_generate_execution_profile
 			-- Generate the execution profile from a Run-time information record.
 		do
@@ -229,9 +229,9 @@ feature -- Element change
 			profile_not_void: existing_profile /=  Void
 			profile_set: existing_profile.is_equal (an_existing_profile)
 		end
-		
+
 	set_runtime_information_record (a_record: FILE_NAME)
-			-- Set the Runtime information record to use when generating 
+			-- Set the Runtime information record to use when generating
 			-- the execution profile to `a_record'.
 		require
 			valid_record: a_record /= Void
@@ -297,7 +297,7 @@ feature -- Element change
 		ensure
 			query_not_void: query /= Void
 		end
-		
+
 feature -- Element change (SCOOP)
 
 	set_normal_type
@@ -316,20 +316,24 @@ feature -- Element change (SCOOP)
 			type_set: scoop_type
 		end
 
-	set_directory (a_directory: like directory)
+	set_directory_name (a_directory: like directory_name)
 			--
 		require
-			a_directory.exists and then a_directory.is_readable
+			directory_not_void: a_directory /= Void
 		do
-			directory := a_directory
+			directory_name := a_directory
+		ensure
+			directory_name_set: directory_name = a_directory
 		end
 
 	set_loader (a_loader: like loader)
 			--
 		require
-			loader /= Void and then loader.min /= Void
+			loader_valid: loader /= Void and then loader.min /= Void
 		do
 			loader := a_loader
+		ensure
+			loader_set: loader = a_loader
 		end
 
 	enable_hotspots
@@ -337,7 +341,7 @@ feature -- Element change (SCOOP)
 		do
 			scoop_hotspots := True
 		ensure
-			scoop_hotspots
+			enabled: scoop_hotspots
 		end
 
 	disable_hotspots
@@ -345,7 +349,7 @@ feature -- Element change (SCOOP)
 		do
 			scoop_hotspots := False
 		ensure
-			not scoop_hotspots
+			disabled: not scoop_hotspots
 		end
 
 feature {NONE} -- Implementation
@@ -355,34 +359,34 @@ feature {NONE} -- Implementation
 
 	flz_generate_execution_profile: BOOLEAN
 			-- Generate the execution profile from a Run-time information record?
-			
+
 	wkb_existing_profile: FILE_NAME
 			-- Existing profile to use (Workbench mode)
-	
+
 	flz_existing_profile: FILE_NAME
 			-- Existing profile to use (Finalized mode)
 
 	wkb_runtime_information_record: FILE_NAME
 			-- Runtime information record to use when generating the
 			-- execution profile (Workbench mode)
-			
+
 	flz_runtime_information_record: FILE_NAME
-			-- Runtime information record to use when generating the 
+			-- Runtime information record to use when generating the
 			-- execution profile (Finalized mode)
-			
+
 	wkb_runtime_information_type: STRING
 			-- Type of profiler used to produce `runtime_information_record'
 			-- (gcc profiler, eiffel profiler, ...)
-			
+
 	flz_runtime_information_type: STRING
 			-- Type of profiler used to produce `runtime_information_record'
 			-- (gcc profiler, eiffel profiler, ...)
-			
+
 	find_execution_profile (is_workbench_mode: BOOLEAN) : FILE_NAME
 			-- Find an existing execution profile for the workbench
 			-- compilation mode if `workbench_mode' is set, for the
 			-- finalized mode otherwise.
-			-- 
+			--
 			-- Return Void if not found.
 		local
 			dir: DIRECTORY
@@ -398,7 +402,7 @@ feature {NONE} -- Implementation
 			end
 			create dir.make (path)
 			files := dir.linear_representation
-			
+
 			from
 				files.start
 			until
