@@ -4241,6 +4241,7 @@ eweasel/tests/term137/notes -text
 eweasel/tests/term163/Ace -text
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
+eweasel/tests/thread015/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text
