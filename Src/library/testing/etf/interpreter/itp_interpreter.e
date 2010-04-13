@@ -59,9 +59,11 @@ feature {NONE} -- Initialization
 			if argument_count = 8 then
 				only_serialize_failed_test_case := argument (7).to_boolean
 				l_tc_serialization_file_name := argument (8)
+				is_test_case_serialization_enabled := True
 			else
 				only_serialize_failed_test_case := True
 				l_tc_serialization_file_name := ""
+				is_test_case_serialization_enabled := False
 			end
 
 				-- Redirect standard output to `output_buffer'.
@@ -70,6 +72,7 @@ feature {NONE} -- Initialization
 
 				-- Create object pool
 			create store.make
+			store.set_is_typed_search_enabled (is_test_case_serialization_enabled)
 
 				-- Create storage for object state retrieval.
 			create query_values.make
@@ -595,7 +598,7 @@ feature {NONE} -- Parsing
 			end
 		end
 
-feature {NONE} -- Object pool
+feature {ITP_TEST_CASE_SERIALIZER} -- Object pool
 
 	store: ITP_STORE
 			-- Object store
@@ -1469,6 +1472,9 @@ feature -- Test case serialization
 			end
 		end
 
+	is_test_case_serialization_enabled: BOOLEAN
+			-- Is test case serialization enabled?
+
 invariant
 	log_file_open_write: log_file.is_open_write
 	store_not_void: store /= Void
@@ -1477,7 +1483,7 @@ invariant
 	socket_attached: socket /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
