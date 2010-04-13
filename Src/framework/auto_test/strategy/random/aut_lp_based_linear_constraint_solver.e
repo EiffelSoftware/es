@@ -169,36 +169,33 @@ feature{NONE} -- Implementation
 			--  -1 if there is something wrong with the format of the input file or something wrong when reading the input file.
 			--  0  if there is a solved solution.
 			--  1  if there is no solution.
-		do
+		external
+			"C inline use %"lp_lib.h%""
+		alias
+			"[
+			  {
+				lprec *lp;
+				
+				/* read LP model */
+				lp = read_LP ((char *)$a_filename, NEUTRAL, NULL);
+				if (lp == NULL) {
+					return (-1);
+				}
+
+				/* solve the model */
+				if (solve(lp) != OPTIMAL) {
+					delete_lp (lp);
+					return (1);
+				}
+
+				/* write result in `a_out_solution' */
+				*((REAL *)$a_out_solution) = get_objective (lp);
+
+				delete_lp (lp);
+				return (0);
+			  }
+			]"
 		end
--- FIXME: Use the following feature body for get_lpsolve_solution when upgraded to 6.5 11.2.2009 Jasonw
---		external
---			"C inline use %"lp_lib.h%""
---		alias
---			"[
---			  {
---				lprec *lp;
---				
---				/* read LP model */
---				lp = read_LP ((char *)$a_filename, NEUTRAL, NULL);
---				if (lp == NULL) {
---					return (-1);
---				}
---
---				/* solve the model */
---				if (solve(lp) != OPTIMAL) {
---					delete_lp (lp);
---					return (1);
---				}
---				
---				/* write result in `a_out_solution' */
---				*((REAL *)$a_out_solution) = get_objective (lp);
---
---				delete_lp (lp);
---				return (0);
---			  }
---			]"
---		end
 
 	last_solver_solution: REAL_64
 			-- Solution from last launched solver
@@ -213,7 +210,7 @@ invariant
 	constraining_queries_attached: context_queries /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
