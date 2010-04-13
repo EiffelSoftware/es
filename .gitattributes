@@ -2581,6 +2581,11 @@ Src/framework/auto_test/Clib/lp_solve/lpsolve55/lib.vcproj -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/lpsolve.rc -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/readme.txt -text
 Src/framework/auto_test/auto_test.lic -text
+Src/framework/auto_test/spec/msc/win64/lib/liblpsolve55.lib -text
+Src/framework/auto_test/spec/msc/win64/lib/liblpsolve55d.lib -text
+Src/framework/auto_test/spec/msc/win64/lib/lpsolve55.dll -text
+Src/framework/auto_test/spec/msc/win64/lib/lpsolve55.exp -text
+Src/framework/auto_test/spec/msc/win64/lib/lpsolve55.lib -text
 Src/framework/configuration/parser/implementation/lace/lace_compile/classname_finder.l -text
 Src/framework/configuration/parser/implementation/lace/lace_compile/lace.l -text
 Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
