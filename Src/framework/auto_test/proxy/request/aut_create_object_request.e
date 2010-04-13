@@ -101,6 +101,7 @@ feature -- Access
 			l_cursor: CURSOR
 			l_target_type: TYPE_A
 			i: INTEGER
+			l_type: TYPE_A
 		do
 			l_target_type := target_type
 			l_count := argument_list.count + 1
@@ -117,7 +118,9 @@ feature -- Access
 				until
 					l_args.after
 				loop
-					Result.put (l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).name, i)
+					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
+					Result.put (l_type.name, i)
 					l_args.forth
 					i := i + 1
 				end
@@ -144,7 +147,7 @@ invariant
 --	is_default_creatable: default_creation implies is_default_creatable (type.base_class, system)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
