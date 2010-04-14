@@ -2698,6 +2698,7 @@ Src/framework/web/xebra/www/xebrahome/images/li.gif -text
 Src/framework/web/xebra/www/xebrahome/translation_conf.xml -text
 Src/framework/web/xebra/www/xmlrpc_demo/config-DISABLED-wapp -text
 Src/framework/xml/xml.lic -text
+Src/framework/xml_utility/xml_utility.lic -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
 Src/help/wizards/estore1/bmp/essai2.bmp -text
 Src/help/wizards/estore2/bmp/Eiffel_wizard_new.bmp svneol=native#unset
