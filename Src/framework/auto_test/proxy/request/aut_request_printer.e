@@ -681,7 +681,7 @@ feature{NONE} -- Precondition satisfaction
 					[a_request.target_type.associated_class.name,
 					a_request.feature_to_call.feature_name,
 					a_request.test_case_index,
-					a_request.start_time,
+					interpreter.duration_until_now.millisecond_count,
 					a_request.operand_indexes,
 					a_request.operand_types,
 					a_request.argument_count,
@@ -740,7 +740,7 @@ invariant
 	expression_b_visitor_attached: expression_b_visitor /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

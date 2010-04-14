@@ -56,10 +56,11 @@ feature {NONE} -- Initialization
 			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
-			if argument_count = 8 then
+			if argument_count = 9 then
 				only_serialize_failed_test_case := argument (7).to_boolean
 				l_tc_serialization_file_name := argument (8)
 				is_test_case_serialization_enabled := True
+				is_duplicated_test_case_serialized := argument (9).to_boolean
 			else
 				only_serialize_failed_test_case := True
 				l_tc_serialization_file_name := ""
@@ -788,8 +789,10 @@ feature -- Object state checking
 			execute_protected_for_query_recording (a_object)
 		end
 
-	object_summary (a_object_index: INTEGER): STRING is
+	object_summary (a_object_index: INTEGER): TUPLE [obj_summary: STRING; hash: INTEGER] is
 			-- Summary of `a_object_index'
+			-- `obj_summary' is the summary of the variable given by index `a_object_index'.
+			-- `hash' is the hash code of the summary, with object index ignored.
 		require
 			a_object_index_valid: a_object_index > 0
 		local
@@ -799,19 +802,24 @@ feature -- Object state checking
 			l_status: like query_status
 			l_queries: LINKED_LIST [STRING]
 			l_value: detachable STRING
+			l_var_name: STRING
+			l_hash: INTEGER
+			l_data: STRING
 		do
 			if not l_retried then
-				create Result.make (256)
+				create l_data.make (256)
 				initialize_query_value_holders
 				o := variable_at_index (a_object_index)
-				Result.append (" v_" + a_object_index.out)
+				create l_var_name.make (6)
+				l_var_name.append (once " v_")
+				l_var_name.append (a_object_index.out)
 				if o = Void then
-					Result.append (": [[Void]], [[]]%N")
+					l_data.append (once ": [[Void]], [[]]%N")
 				else
 					check_invariant (a_object_index, o)
-					Result.append (": [[" + o.generating_type + "]], [[")
-					Result.append (supported_query_types (o))
-					Result.append ("]]%N")
+					l_data.append (once ": [[" + o.generating_type + "]], [[")
+					l_data.append (supported_query_types (o))
+					l_data.append (once "]]%N")
 					record_object_queries (a_object_index, o)
 
 					l_values := query_values
@@ -825,18 +833,18 @@ feature -- Object state checking
 						until
 							l_values.after
 						loop
-							Result.append ("|")
-							Result.append (l_queries.item_for_iteration)
-							Result.append (" = ")
+							l_data.append_character ('|')
+							l_data.append (l_queries.item_for_iteration)
+							l_data.append (once " = ")
 							if l_status.item_for_iteration then
 								l_value := l_values.item_for_iteration
 								if l_value = Void then
-									l_value := "[[Void]]"
+									l_value := once "[[Void]]"
 								end
-								Result.append (l_value)
-								Result.append ("%N")
+								l_data.append (l_value)
+								l_data.append_character ('%N')
 							else
-								Result.append ("[[Error]]%N")
+								l_data.append (once "[[Error]]%N")
 							end
 							l_values.forth
 							l_status.forth
@@ -844,11 +852,15 @@ feature -- Object state checking
 						end
 					end
 				end
+				l_hash := l_data.hash_code
+				l_data.prepend (l_var_name)
 			else
-				create Result.make (64)
-				Result.append (" v_" + a_object_index.out)
-				Result.append (": [[Invariant_violation]], [[]]%N")
+				create l_data.make (64)
+				l_data.append (once ": [[Invariant_violation]], [[]]%N")
+				l_hash := Result.hash_code
+				l_data.prepend (" v_" + a_object_index.out)
 			end
+			Result := [l_data, l_hash]
 		ensure
 			result_attached: Result /= Void
 		rescue
@@ -1466,14 +1478,22 @@ feature -- Test case serialization
 
 	log_test_case_serialization is
 			-- Log serialization of the last test case into log file.
+		local
+			l_serialization: STRING
 		do
 			if test_case_serializer.is_test_case_valid and then (only_serialize_failed_test_case implies is_failing_test_case) then
-				test_case_serialization_file.put_string (test_case_serializer.string_representation)
+				l_serialization := test_case_serializer.string_representation
+				if not l_serialization.is_empty then
+					test_case_serialization_file.put_string (l_serialization)
+				end
 			end
 		end
 
 	is_test_case_serialization_enabled: BOOLEAN
 			-- Is test case serialization enabled?
+
+	is_duplicated_test_case_serialized: BOOLEAN
+			-- Should duplicated test case be serialized?
 
 invariant
 	log_file_open_write: log_file.is_open_write

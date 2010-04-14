@@ -30,6 +30,8 @@ feature{NONE} -- Initialization
 		do
 			interpreter := a_interpreter
 			create object_graph_traversor
+			create test_case_hashs.make (2048)
+			test_case_hashs.compare_objects
 		ensure
 			interpreter_set: interpreter = a_interpreter
 		end
@@ -38,6 +40,10 @@ feature -- Access
 
 	interpreter: ITP_INTERPRETER
 			-- AutoTest interpreter attached to current serializer
+
+	test_case_hashs: HASH_TABLE [STRING, INTEGER]
+			-- Table of hash codes for test cases seen so far.
+			-- Key is hash code, value is the string representation of that hash code
 
 	string_representation: STRING is
 			-- String representation of the test case
@@ -50,127 +56,148 @@ feature -- Access
 			l_description: like object_description
 			l_index: INTEGER
 			l_object: detachable ANY
+			l_should_serialize: BOOLEAN
+			l_hash: INTEGER
 		do
 			if is_test_case_valid then
-				l_last := operands.count - 1
-				create Result.make (1024)
-				Result.append ("<serialization>%N")
+				l_hash := test_case_hash_code.hash_code
+				l_should_serialize :=
+					interpreter.is_duplicated_test_case_serialized or else
+					not test_case_hashs.has (l_hash)
 
-					-- Synthesize class.
-				Result.append ("<class>%N")
-				Result.append (class_name)
-				Result.append ("%N</class>%N")
+				if not l_should_serialize then
+					Result := ""
+				else
+					if not interpreter.is_duplicated_test_case_serialized then
+						test_case_hashs.put (test_case_hash_code, l_hash)
+					end
 
-					-- Synthesize time.
-				Result.append ("<time>")
-				Result.append (time.out)
-				Result.append ("</time>%N")
+					l_last := operands.count - 1
+					create Result.make (1024)
+					Result.append (once "<serialization>%N")
 
-					-- Synthesize test case body.
-				Result.append ("<test_case>%N")
+						-- Synthesize class.
+					Result.append (once "<class>%N")
+					Result.append (class_name)
+					Result.append (once "%N</class>%N")
 
-					-- Synthesize return value.
-				if is_query then
-					Result.append ("v_")
-					Result.append (operands.item (l_last).out)
-					Result.append (" := ")
-				end
+						-- Synthesize time.
+					Result.append (once "<time>")
+					Result.append (time.out)
+					Result.append (once "</time>%N")
 
-				if is_creation then
-					Result.append ("create {")
-					Result.append (types.item (0))
-					Result.append ("}")
-				end
+						-- Synthesize test case body.
+					Result.append (once "<test_case>%N")
 
-				Result.append ("v_" + operands.item (0).out)
-				Result.append (".")
-				Result.append (feature_name)
+						-- Synthesize return value.
+					if is_query then
+						Result.append (once "v_")
+						Result.append (operands.item (l_last).out)
+						Result.append (once " := ")
+					end
 
-					-- Synthesize arguments.
-				if argument_count > 0 then
-					Result.append (" (")
+					if is_creation then
+						Result.append (once "create {")
+						Result.append (types.item (0))
+						Result.append (once "}")
+					end
+
+					Result.append (once "v_")
+					Result.append (operands.item (0).out)
+					Result.append_character ('.')
+					Result.append (feature_name)
+
+						-- Synthesize arguments.
+					if argument_count > 0 then
+						Result.append (once " (")
+						from
+							i := 1
+						until
+							i > argument_count
+						loop
+							Result.append (once "v_")
+							Result.append (operands.item (i).out)
+							if i < argument_count then
+								Result.append (once ", ")
+							end
+							i := i + 1
+						end
+						Result.append (once ")")
+					end
+					Result.append (once "%N</test_case>%N")
+
+						-- Synthesize type information.
+					Result.append (once "<types>%N")
 					from
-						i := 1
+						i := 0
+						create l_var_tbl.make (5)
 					until
-						i > argument_count
+						i > l_last
 					loop
-						Result.append ("v_")
-						Result.append (operands.item (i).out)
-						if i < argument_count then
-							Result.append (", ")
+						l_var_id := operands.item (i)
+						if not l_var_tbl.has (l_var_id) then
+							l_var_tbl.put (l_var_id, l_var_id)
+							append_variable_with_type (l_var_id, types.item (i), Result)
 						end
 						i := i + 1
 					end
-					Result.append (")")
-				end
-				Result.append ("%N</test_case>%N")
+					Result.append (once "</types>%N")
 
-					-- Synthesize type information.
-				Result.append ("<types>%N")
-				from
-					i := 0
-					create l_var_tbl.make (5)
-				until
-					i > l_last
-				loop
-					l_var_id := operands.item (i)
-					if not l_var_tbl.has (l_var_id) then
-						l_var_tbl.put (l_var_id, l_var_id)
-						append_variable_with_type (l_var_id, types.item (i), Result)
+						-- Synthesize all AutoTest created variables in current test case.
+					l_description := object_description
+					Result.append (once "<all_variables>%N")
+					from
+						l_description.start
+					until
+						l_description.after
+					loop
+						l_index := l_description.key_for_iteration
+						l_object := l_description.item_for_iteration
+						if l_object = Void then
+							append_variable_with_type (l_index, once "NONE", Result)
+						else
+							append_variable_with_type (l_index, l_object.generating_type, Result)
+						end
+						l_description.forth
 					end
-					i := i + 1
-				end
-				Result.append ("</types>%N")
+					Result.append (once "</all_variables>%N")
 
-					-- Synthesize all AutoTest created variables in current test case.
-				l_description := object_description
-				Result.append ("<all_variables>%N")
-				from
-					l_description.start
-				until
-					l_description.after
-				loop
-					l_index := l_description.key_for_iteration
-					l_object := l_description.item_for_iteration
-					if l_object = Void then
-						append_variable_with_type (l_index, once "NONE", Result)
-					else
-						append_variable_with_type (l_index, l_object.generating_type, Result)
+						-- Synthesize trace.
+					Result.append (once "<trace>%N<![CDATA[%N")
+					if exception /= Void then
+						Result.append (exception)
 					end
-					l_description.forth
-				end
-				Result.append ("<all_variables/>%N")
+					Result.append (once "%N]]>%N</trace>%N")
 
-					-- Synthesize trace.
-				Result.append ("<trace>%N<![CDATA[%N")
-				if exception /= Void then
-					Result.append (exception)
-				end
-				Result.append ("%N]]>%N</trace>%N")
+						-- Synthesize hash.
+					Result.append (once "<hash_code>")
+					Result.append (test_case_hash_code)
+					Result.append (once "</hash_code>%N")
 
-					-- Synthesize object summary.
-				Result.append ("<object_state>%N")
-				from
-					object_summary.start
-				until
-					object_summary.after
-				loop
-					Result.append (object_summary.item_for_iteration)
-					Result.append ("%N")
-					object_summary.forth
-				end
-				Result.append ("</object_state>%N")
+						-- Synthesize object summary.
+					Result.append (once "<object_state>%N")
+					from
+						object_summary.start
+					until
+						object_summary.after
+					loop
+						Result.append (object_summary.item_for_iteration)
+						Result.append_character ('%N')
+						object_summary.forth
+					end
+					Result.append (once "</object_state>%N")
 
-					-- Synthesize serialization
-				Result.append ("<data_length>")
-				Result.append (object_serialization.count.out)
-				Result.append ("</data_length>%N")
-				Result.append ("<data><![CDATA[")
-				if object_serialization /= Void then
-					Result.append (object_serialization)
+						-- Synthesize serialization
+					Result.append (once "<data_length>")
+					Result.append (object_serialization.count.out)
+					Result.append (once "</data_length>%N")
+					Result.append (once "<data><![CDATA[")
+					if object_serialization /= Void then
+						Result.append (object_serialization)
+					end
+					Result.append (once "]]></data>%N")
+					Result.append (once "%N</serialization>%N")
 				end
-				Result.append ("]]></data>%N")
-				Result.append ("%N</serialization>%N")
 			else
 				create Result.make_empty
 			end
@@ -268,8 +295,18 @@ feature -- Basic operations
 			l_summary: like object_summary
 			l_operands: like operands
 			l_interpreter: like interpreter
+			l_sum_data: TUPLE [summary: STRING; hash: INTEGER]
+			l_hash_code: STRING
 		do
 			if is_test_case_valid then
+					-- Setup test case hash code, which consists the hash of the states of all operands.
+				create test_case_hash_code.make (64)
+				l_hash_code := test_case_hash_code
+				l_hash_code.append (class_name)
+				l_hash_code.append_character ('.')
+				l_hash_code.append (feature_name)
+				l_hash_code.append_character ('.')
+
 				l_operands := operands
 				l_interpreter := interpreter
 				from
@@ -284,7 +321,12 @@ feature -- Basic operations
 				until
 					i > l_upper
 				loop
-					l_summary.put (commented_string (l_interpreter.object_summary (l_operands.item (i))) , i)
+					l_sum_data := l_interpreter.object_summary (l_operands.item (i))
+					l_hash_code.append_integer (l_sum_data.hash)
+					if i < l_upper then
+						l_hash_code.append_character ('.')
+					end
+					l_summary.put (commented_string (l_sum_data.summary), i)
 					i := i + 1
 				end
 				object_summary := l_summary
@@ -392,6 +434,9 @@ feature{NONE} -- Implementation
 			-- Table of object state summary
 			-- Key is the object index,
 			-- value is a string containing state summary for that object
+
+	test_case_hash_code: STRING
+			-- Hash code for current test case
 
 	object_serialization: detachable STRING
 			-- String representing the serialized data for objects specified by
