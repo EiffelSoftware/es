@@ -133,7 +133,7 @@ feature -- Access
 					l_index := l_description.key_for_iteration
 					l_object := l_description.item_for_iteration
 					if l_object = Void then
-						append_variable_with_type (0, once "NONE", Result)
+						append_variable_with_type (l_index, once "NONE", Result)
 					else
 						append_variable_with_type (l_index, l_object.generating_type, Result)
 					end
@@ -413,7 +413,6 @@ feature{NONE} -- Implementation
 			i: INTEGER
 			l_obj_list: like recursively_referenced_objects
 			l_objects: SPECIAL [TUPLE [index: INTEGER; object: detachable ANY]]
-			f: PLAIN_TEXT_FILE
 			l_index: INTEGER
 			l_object: detachable ANY
 			l_data: TUPLE [index: INTEGER; object: detachable ANY]
@@ -450,10 +449,6 @@ feature{NONE} -- Implementation
 				create l_objects.make (0)
 			end
 			Result := [serialized_object (l_objects), l_obj_list]
-		rescue
-			create f.make_create_read_write ("c:\temp\error.txt")
-			f.put_string (exception_trace)
-			f.close
 		end
 
 	recursively_referenced_objects (a_roots: SPECIAL [INTEGER]): HASH_TABLE [detachable ANY, INTEGER]
@@ -461,7 +456,7 @@ feature{NONE} -- Implementation
 			-- specified by `a_roots'. Result is a list of such referenced object pairs. In each pair, `index' is the
 			-- variable index in the object pool, `object' is the variable itself.
 			-- Objects specified in `a_roots' are also included in Result.
-			-- A pair [0, Void] is always included in Result.
+			-- A pair [Void, 1] is always included in Result.
 		require
 			a_roots_not_empty: a_roots.count > 0
 		local
@@ -474,7 +469,9 @@ feature{NONE} -- Implementation
 			l_index: INTEGER
 		do
 			create l_tbl.make (20)
-			l_tbl.put (Void, 0)
+				-- Insert [Void, v_1], becuase AutoTest will always set v_1 to Void.
+			l_tbl.put (Void, 1)
+
 			l_store := interpreter.store
 			l_traversor := object_graph_traversor
 
