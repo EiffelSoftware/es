@@ -2701,6 +2701,7 @@ Src/framework/xml/dom/README.TXT -text
 Src/framework/xml/dom/license.lic -text
 Src/framework/xml/parser/callbacks/README.TXT -text
 Src/framework/xml/parser/license.lic -text
+Src/framework/xml/tests/license.lic -text
 Src/framework/xml_utility/xml_utility.lic -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
 Src/help/wizards/estore1/bmp/essai2.bmp -text
