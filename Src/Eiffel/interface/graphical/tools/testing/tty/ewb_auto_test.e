@@ -199,6 +199,8 @@ feature -- Execution
 
 				l_conf.set_proxy_log_options (l_ap.proxy_log_options)
 
+				l_conf.set_is_duplicated_test_case_serialized (l_ap.is_duplicated_test_case_serialized)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)
@@ -296,7 +298,7 @@ feature {NONE} -- Events
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

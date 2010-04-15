@@ -56,13 +56,14 @@ feature {NONE} -- Initialization
 			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
-			if argument_count = 9 then
-				only_serialize_failed_test_case := argument (7).to_boolean
-				l_tc_serialization_file_name := argument (8)
+			if argument_count = 10 then
+				is_passing_test_case_serialized := argument (7).to_boolean
+				is_failing_test_case_serialized := argument (8).to_boolean
+				l_tc_serialization_file_name := argument (9)
 				is_test_case_serialization_enabled := True
-				is_duplicated_test_case_serialized := argument (9).to_boolean
+				is_duplicated_test_case_serialized := argument (10).to_boolean
 			else
-				only_serialize_failed_test_case := True
+				is_failing_test_case_serialized := True
 				l_tc_serialization_file_name := ""
 				is_test_case_serialization_enabled := False
 			end
@@ -158,8 +159,8 @@ feature -- Status report
 	has_error: BOOLEAN
 			-- Has an error occured while parsing?
 
-	is_last_protected_execution_successfull: BOOLEAN
-			-- Was the last protected execution successfull?
+	is_last_protected_execution_successful: BOOLEAN
+			-- Was the last protected execution successful?
 			-- (i.e. did it not trigger an exception)
 
 	should_quit: BOOLEAN
@@ -181,8 +182,12 @@ feature -- Status report
 	should_generate_log: BOOLEAN
 			-- Should interpreter log be generated?
 
-	only_serialize_failed_test_case: BOOLEAN
+	is_failing_test_case_serialized: BOOLEAN
 			-- Should only failed test cases be serialized?
+			-- Only has effect when serialization is enabled.
+
+	is_passing_test_case_serialized: BOOLEAN
+			-- Should passing test case be serialized?			
 			-- Only has effect when serialization is enabled.
 
 feature -- Access
@@ -208,7 +213,7 @@ feature {NONE} -- Handlers
 			l_generating_type: STRING
 		do
 			if attached {STRING} last_request as l_obj_index then
-				log_message ("report_type_request start%N")
+				log_message (once "report_type_request start%N")
 				l_index := l_obj_index.to_integer
 				l_store := store
 				if l_store.is_variable_defined (l_index) then
@@ -234,9 +239,9 @@ feature {NONE} -- Handlers
 					l_type.append (value_of_object (l_value, l_generating_type))
 					print_line_and_flush (l_type)
 				else
-					report_error ("Variable `v_" + l_index.out + "' not defined.")
+					report_error (once "Variable `v_" + l_index.out + "' not defined.")
 				end
-				log_message ("report_type_request end%N")
+				log_message (once "report_type_request end%N")
 			else
 				report_error (invalid_request_format_error)
 			end
@@ -277,7 +282,7 @@ feature {NONE} -- Handlers
 				if l_bcode.count = 0 then
 					report_error (byte_code_length_error)
 				else
-					log_message ("report_execute_request start%N")
+					log_message (once "report_execute_request start%N")
 						-- Inject received byte-code into byte-code array of Current process.
 					eif_override_byte_code_of_body (
 						byte_code_feature_body_id,
@@ -290,10 +295,10 @@ feature {NONE} -- Handlers
 
 						-- Run the feature with newly injected byte-code.
 					execute_protected
-					log_message ("report_execute_request end%N")
+					log_message (once "report_execute_request end%N")
 
 						-- Evaluate relevant predicates.
-					if is_last_protected_execution_successfull and then is_predicate_evaluation_enabled then
+					if is_last_protected_execution_successful and then is_predicate_evaluation_enabled then
 						if attached {detachable ARRAY [detachable ANY]} l_last_request.l_data as l_extra_data then
 							if attached {TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]} l_extra_data.item (extra_data_index_precondition_satisfaction) as l_feature_data then
 								l_predicate_results :=  [l_feature_data.feature_id, evaluated_predicate_results (l_feature_data.feature_id, l_feature_data.operands)]
@@ -336,7 +341,7 @@ feature {NONE} -- Error Reporting
 			a_reason_not_void: a_reason /= Void
 			a_reason_not_empty: not a_reason.is_empty
 		do
-			error_buffer.append ("error: " + a_reason + "%N")
+			error_buffer.append (once "error: " + a_reason + once "%N")
 			last_response_flag := internal_error_respones_flag
 			has_error := True
 			log_message (error_buffer)
@@ -351,11 +356,11 @@ feature {NONE} -- Error Reporting
 			not_a_reason_is_empty: not a_reason.is_empty
 		do
 			if should_generate_log then
-				log_file.put_string ("<error type='internal'>%N")
-				log_file.put_string ("%T<reason>%N<![CDATA[%N")
+				log_file.put_string (once "<error type='internal'>%N")
+				log_file.put_string (once "%T<reason>%N<![CDATA[%N")
 				log_file.put_string (a_reason)
-				log_file.put_string ("]]>%N</reason>%N")
-				log_file.put_string ("</error>%N")
+				log_file.put_string (once "]]>%N</reason>%N")
+				log_file.put_string (once "</error>%N")
 			end
 		end
 
@@ -367,13 +372,13 @@ feature {NONE} -- Logging
 	log_instance (an_object: detachable ANY)
 			-- Log an XML representation of `an_object' to `log_file'.
 		do
-			log_message ("<instance<![CDATA[%N")
+			log_message (once "<instance<![CDATA[%N")
 			if an_object = Void then
-				log_message ("Void%N")
+				log_message (once "Void%N")
 			else
 				log_message (an_object.tagged_out)
 			end
-			log_message ("]]>%N</instance>%N")
+			log_message (once "]]>%N</instance>%N")
 		end
 
 	log_message (a_message: STRING)
@@ -434,16 +439,16 @@ feature {NONE} -- Logging
 			l_buffer.append (l_trace)
 
 				-- Store exception into log file.
-			log_message ("<call_result type='exception'>%N")
-			log_message ("%T<meaning value='" + l_meaning + "'/>%N")
-			log_message ("%T<tag value='" + l_tag + "'/>%N")
-			log_message ("%T<recipient value='" + l_recipient + "'/>%N")
-			log_message ("%T<class value='" + l_recipient_class_name + "'>%N")
-			log_message ("%T<invariant violation on entry='" + is_last_invariant_violated.out + "'>%N")
-			log_message ("%T<exception_trace>%N<![CDATA[%N")
+			log_message (once "<call_result type='exception'>%N")
+			log_message (once "%T<meaning value='" + l_meaning + once "'/>%N")
+			log_message (once "%T<tag value='" + l_tag + once "'/>%N")
+			log_message (once "%T<recipient value='" + l_recipient + once "'/>%N")
+			log_message (once "%T<class value='" + l_recipient_class_name + once "'>%N")
+			log_message (once "%T<invariant violation on entry='" + is_last_invariant_violated.out + once "'>%N")
+			log_message (once "%T<exception_trace>%N<![CDATA[%N")
 			log_message (l_trace)
-			log_message ("]]>%N</exception_trace>%N")
-			log_message ("</call_result>%N")
+			log_message (once "]]>%N</exception_trace>%N")
+			log_message (once "</call_result>%N")
 		end
 
 feature -- IO Buffer
@@ -569,7 +574,7 @@ feature {NONE} -- Parsing
 		do
 			if is_request_type_valid (last_request_type) then
 				if last_request = Void then
-					report_error ("Received data is not recognized as a request.")
+					report_error (once "Received data is not recognized as a request.")
 				else
 					inspect
 						last_request_type
@@ -595,7 +600,7 @@ feature {NONE} -- Parsing
 					end
 				end
 			else
-				report_error (invalid_request_type_error +" Type code: " + last_request_type.out)
+				report_error (invalid_request_type_error + once " Type code: " + last_request_type.out)
 			end
 		end
 
@@ -618,10 +623,12 @@ feature {NONE} -- Byte code
 			failed: BOOLEAN
 			fault_id: STRING
 		do
-			is_last_protected_execution_successfull := False
+			is_last_protected_execution_successful := False
 			if not failed then
+				is_failing_test_case := False
+				is_invalid_test_case := False
 				execute_byte_code
-				is_last_protected_execution_successfull := True
+				is_last_protected_execution_successful := True
 			end
 		rescue
 			failed := True
@@ -629,7 +636,16 @@ feature {NONE} -- Byte code
 
 				-- Book keeps found faults.
 			if not is_last_invariant_violated then
-				is_failing_test_case := not (recipient_name.is_equal (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition)
+				if (recipient_name.is_equal (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition) then
+					is_invalid_test_case := True
+					is_failing_test_case := False
+				else
+					is_invalid_test_case := False
+					is_failing_test_case := True
+				end
+			else
+				is_invalid_test_case := True
+				is_failing_test_case := False
 			end
 --			if exception = Class_invariant then
 --					-- A class invariant cannot be recovered from since we
@@ -728,6 +744,9 @@ feature{ITP_TEST_CASE_SERIALIZER} -- Invariant checking
 
 	is_failing_test_case: BOOLEAN
 			-- Is current test case failing, meaning that it reveals a fault?
+
+	is_invalid_test_case: BOOLEAN
+			-- Is current test case invalid, meaning that it violates the feature's precondition?
 
 feature{NONE} -- Invariant checking
 
@@ -919,7 +938,7 @@ feature -- Object state checking
 							check_invariant (l_index, o)
 
 								-- If `o' is OK, we start checking the states of it.
-							log_message ("report_object_state_request start%N")
+							log_message (once "report_object_state_request start%N")
 								-- Inject received byte-code into byte-code array of Current process.
 							eif_override_byte_code_of_body (
 								byte_code_feature_body_id,
@@ -942,7 +961,7 @@ feature -- Object state checking
 								-- Run the feature with newly injected byte-code.
 --							execute_protected
 							execute_protected_for_query_recording (o)
-							log_message ("report_object_state_request end%N")
+							log_message (once "report_object_state_request end%N")
 							last_response := [query_values, query_status, output_buffer, error_buffer]
 							refresh_last_response_flag
 							send_response_to_socket
@@ -1048,10 +1067,10 @@ feature -- Object state checking
 		local
 			failed: BOOLEAN
 		do
-			is_last_protected_execution_successfull := False
+			is_last_protected_execution_successful := False
 			if not failed then
 				record_queries (o)
-				is_last_protected_execution_successfull := True
+				is_last_protected_execution_successful := True
 			end
 		rescue
 			failed := True
@@ -1462,7 +1481,7 @@ feature -- Test case serialization
 			if attached {detachable ARRAY [detachable ANY]} a_data as l_extra_data then
 				l_serializer.setup_test_case (l_extra_data.item (extra_data_index_test_case_serialization))
 
-				if l_serializer.is_test_case_valid then
+				if l_serializer.is_test_case_setup then
 					l_serializer.retrieve_pre_state
 				end
 			end
@@ -1471,7 +1490,7 @@ feature -- Test case serialization
 	retrieve_post_test_case_state is
 			-- Retrieve post test case state.		
 		do
-			if test_case_serializer.is_test_case_valid then
+			if test_case_serializer.is_test_case_setup then
 				test_case_serializer.retrieve_post_state
 			end
 		end
@@ -1481,10 +1500,15 @@ feature -- Test case serialization
 		local
 			l_serialization: STRING
 		do
-			if test_case_serializer.is_test_case_valid and then (only_serialize_failed_test_case implies is_failing_test_case) then
-				l_serialization := test_case_serializer.string_representation
-				if not l_serialization.is_empty then
-					test_case_serialization_file.put_string (l_serialization)
+			if test_case_serializer.is_test_case_setup and then not is_invalid_test_case and then not is_last_invariant_violated then
+				if
+					(is_passing_test_case_serialized and (not is_failing_test_case)) or
+					(is_failing_test_case_serialized and is_failing_test_case)
+				then
+					l_serialization := test_case_serializer.string_representation
+					if not l_serialization.is_empty then
+						test_case_serialization_file.put_string (l_serialization)
+					end
 				end
 			end
 		end

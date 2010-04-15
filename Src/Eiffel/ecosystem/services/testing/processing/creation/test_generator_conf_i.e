@@ -327,6 +327,12 @@ feature -- Test case serialization
 			Result := is_passing_test_case_serialization_enabled or is_failing_test_case_serialization_enabled
 		end
 
+	is_duplicated_test_case_serialized: BOOLEAN
+			-- Is duplicated test case serialized?
+			-- Two test cases are duplicated if their operands have the same abstract states.
+		deferred
+		end
+
 feature -- Types under test
 
 	types_under_test: DS_LIST [CL_TYPE_A]
@@ -349,7 +355,7 @@ feature -- CITADEL
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

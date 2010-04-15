@@ -1045,9 +1045,27 @@ feature{NONE} -- Process scheduling
 				-- We need `injected_feature_body_id'-1 because the underlying C array is 0-based.
 			l_body_id := injected_feature_body_id - 1
 			if configuration.is_test_case_serialization_enabled then
-				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, configuration.is_interpreter_log_enabled.out , (not configuration.is_passing_test_case_serialization_enabled).out, test_case_serialization_filename,  "False", "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+				create arguments.make_from_array (
+					<<"localhost",
+					  port.out,
+					  l_body_id.out,
+					  injected_feature_pattern_id.out,
+					  interpreter_log_filename,
+					  configuration.is_interpreter_log_enabled.out ,
+					  configuration.is_passing_test_case_serialization_enabled.out,
+					  configuration.is_failing_test_case_serialization_enabled.out,
+					  test_case_serialization_filename,
+					  configuration.is_duplicated_test_case_serialized.out,
+					  "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 			else
-				create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, configuration.is_interpreter_log_enabled.out, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+				create arguments.make_from_array (
+					<<"localhost",
+					  port.out,
+					  l_body_id.out,
+					  injected_feature_pattern_id.out,
+					  interpreter_log_filename,
+					  configuration.is_interpreter_log_enabled.out,
+					  "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 			end
 
 			l_workdir := system.lace.directory_name

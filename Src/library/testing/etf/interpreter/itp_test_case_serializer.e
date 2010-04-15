@@ -59,7 +59,7 @@ feature -- Access
 			l_should_serialize: BOOLEAN
 			l_hash: INTEGER
 		do
-			if is_test_case_valid then
+			if is_test_case_setup then
 				l_hash := test_case_hash_code.hash_code
 				l_should_serialize :=
 					interpreter.is_duplicated_test_case_serialized or else
@@ -221,15 +221,15 @@ feature -- Access
 
 feature -- Status report
 
-	is_test_case_valid: BOOLEAN
+	is_test_case_setup: BOOLEAN
 			-- Is the last test case set by `setup_test_case' valid?
 
 feature -- Basic operations
 
 	setup_test_case (a_test_case: detachable ANY) is
 			-- Setup information about the current test case.
-			-- Set `is_test_case_valid' to True if `a_test_case' contain valid information of a test case,
-			-- otherwise, set `is_test_case_valid' to False'.
+			-- Set `is_test_case_setup' to True if `a_test_case' contain valid information of a test case,
+			-- otherwise, set `is_test_case_setup' to False'.
 		do
 				-- Check if `a_test_case' contains correct information.
 			if attached{detachable TUPLE [class_name: STRING; feature_name: STRING; test_case_index: INTEGER; time: INTEGER; operands: SPECIAL [INTEGER]; types: SPECIAL [STRING]; argument_count: INTEGER; is_creation: BOOLEAN; is_query: BOOLEAN]} a_test_case as l_tc then
@@ -261,11 +261,11 @@ feature -- Basic operations
 		end
 
 	set_is_test_case_valid (b: BOOLEAN) is
-			-- Set `is_test_case_valid' with `b'.
+			-- Set `is_test_case_setup' with `b'.
 		do
-			is_test_case_valid := b
+			is_test_case_setup := b
 		ensure
-			is_test_case_valid_set: is_test_case_valid
+			is_test_case_valid_set: is_test_case_setup
 		end
 
 	retrieve_pre_state is
@@ -279,7 +279,7 @@ feature -- Basic operations
 	retrieve_post_state is
 			-- Retrieve post state of the test case.
 		do
-			if is_test_case_valid then
+			if is_test_case_setup then
 				exception := interpreter.error_buffer
 			else
 				exception := Void
@@ -298,7 +298,7 @@ feature -- Basic operations
 			l_sum_data: TUPLE [summary: STRING; hash: INTEGER]
 			l_hash_code: STRING
 		do
-			if is_test_case_valid then
+			if is_test_case_setup then
 					-- Setup test case hash code, which consists the hash of the states of all operands.
 				create test_case_hash_code.make (64)
 				l_hash_code := test_case_hash_code
@@ -373,7 +373,7 @@ feature -- Basic operations
 			l_stream: STRING
 			l_data: TUPLE [serialization: STRING; description: HASH_TABLE [detachable ANY, INTEGER]]
 		do
-			if is_test_case_valid then
+			if is_test_case_setup then
 
 				if is_creation then
 					l_lower := 1

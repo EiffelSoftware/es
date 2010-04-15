@@ -73,6 +73,7 @@ feature{NONE} -- Initialization
 			l_on_the_fly_tc_flag: AP_FLAG
 			l_proxy_log_option: AP_STRING_OPTION
 			l_console_log_option: AP_STRING_OPTION
+			l_duplicated_test_case_serialization_option: AP_FLAG
 			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
@@ -250,6 +251,10 @@ feature{NONE} -- Initialization
 			create l_console_log_option.make_with_long_form ("console-log")
 			l_console_log_option.set_description ("Enable or disable console output. Valid options are: on, off. Default: on")
 			parser.options.force_last (l_console_log_option)
+
+			create l_duplicated_test_case_serialization_option.make_with_long_form ("serialize-duplicated-tc")
+			l_duplicated_test_case_serialization_option.set_description ("Should duplicated test cases be serialized? Two test cases are duplicated if their operands have the same abstract states. Default: False")
+			parser.options.force_last (l_duplicated_test_case_serialization_option)
 
 			parser.parse_list (a_arguments)
 
@@ -544,6 +549,10 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if not error_handler.has_error then
+				is_duplicated_test_case_serialized := l_duplicated_test_case_serialization_option.was_found
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -781,6 +790,11 @@ feature -- Status report
 			-- Should console output be enabled?
 			-- Default: True
 
+	is_duplicated_test_case_serialized: BOOLEAN
+			-- Should duplicated test cases be serialized?
+			-- Two test cases are duplicated if their operands have the same abstract states.
+			-- Default: False
+
 feature {NONE} -- Constants
 
 	default_time_out: NATURAL = 5
@@ -790,7 +804,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -339,6 +339,9 @@ feature -- Access: cache
 	is_console_output_enabled_cache: BOOLEAN
 			-- Cache for `is_console_output_enabled'		
 
+	is_duplicated_test_case_serialized_cache: BOOLEAN
+			-- Cache for `is_duplicated_test_case_serialized_cache'
+
 feature -- Status report
 
 	is_new_class: BOOLEAN = True
@@ -489,6 +492,14 @@ feature -- Test case serialization
 			-- Only has effect if `is_test_case_serialization_enabled' is True.
 		do
 			Result := is_failing_test_case_serialization_enabled_cache
+		end
+
+	is_duplicated_test_case_serialized: BOOLEAN
+			-- Should duplicated test case be serialized?
+			-- Two test cases are considered duplicated if their operands have
+			-- the same abstract states.
+		do
+			Result := is_duplicated_test_case_serialized_cache
 		end
 
 feature -- Status setting
@@ -762,6 +773,14 @@ feature -- Status setting
 			on_the_fly_test_case_generation_enabled_set: is_on_the_fly_test_case_generation_enabled = b
 		end
 
+	set_is_duplicated_test_case_serialized (b: BOOLEAN)
+			-- Set `is_duplicated_test_case_serialized' with `b'.
+		do
+			is_duplicated_test_case_serialized_cache := b
+		ensure
+			is_duplicated_test_case_serialized_set: is_duplicated_test_case_serialized = b
+		end
+
 	set_proxy_log_options (b: like proxy_log_options)
 			-- Set `proxy_log_options' with `b'.
 		do
@@ -779,7 +798,7 @@ feature -- Status setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
