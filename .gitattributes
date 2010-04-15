@@ -4042,7 +4042,6 @@ eweasel/tests/once002/Ace -text
 eweasel/tests/once003/Ace -text
 eweasel/tests/once003/output_2 -text
 eweasel/tests/once004/Ace -text
-eweasel/tests/queue002/output -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
