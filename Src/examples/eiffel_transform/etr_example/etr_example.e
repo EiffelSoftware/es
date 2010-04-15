@@ -105,7 +105,7 @@ feature -- Example operators
 			create mods.make
 			create list_path.make_from_string (c_conforming_parent_list)
 			mods.extend (basic_operators.list_append_text (list_path, "LOGGER"))
-			feature_list := ast_tools.feature_list(a_class)
+			feature_list := ast_tools.feature_list (a_class)
 			from
 				feature_list.start
 			until

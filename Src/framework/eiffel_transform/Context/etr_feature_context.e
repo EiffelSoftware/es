@@ -140,8 +140,8 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.locals.after
 				loop
-					l_written_type := type_checker.written_type_from_type_as (l_e_feat.locals.item.type, a_written_feature.written_class, a_written_feature)
-					l_expl_type := type_checker.explicit_type (l_written_type, a_written_feature.written_class, a_written_feature)
+					l_written_type := type_checker.written_type_from_type_as (l_e_feat.locals.item.type, class_context.written_class, a_written_feature)
+					l_expl_type := type_checker.explicit_type (l_written_type, class_context.written_class, a_written_feature)
 
 					-- add a local for each name
 					from

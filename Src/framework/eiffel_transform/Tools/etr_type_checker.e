@@ -226,14 +226,17 @@ feature -- Type evaluation
 			non_void: a_written_class /= void
 		local
 			l_index: INTEGER
+			l_type: like a_type
 		do
-			if not a_type.is_valid then
+			l_type := a_type.deep_twin
+
+			if not l_type.is_valid then
 				-- It probably hasn't been solved yet
 				type_a_checker.init_for_checking (a_written_feature, a_written_class, void, void)
-				Result := type_a_checker.solved(a_type, void)
+				Result := type_a_checker.solved(l_type, void)
 				Result := Result.actual_type
-			elseif a_type.is_formal then
-				if attached {FORMAL_A} a_type as l_formal then
+			elseif l_type.is_formal then
+				if attached {FORMAL_A} l_type as l_formal then
 					Result :=  l_formal.constraints (a_written_class)
 
 					if attached {TYPE_SET_A}Result as typeset then
@@ -244,12 +247,12 @@ feature -- Type evaluation
 						end
 					end
 				end
-			elseif a_type.has_like_current then
+			elseif l_type.has_like_current then
 				Result := a_written_class.actual_type
-			elseif a_type.has_like then
-				Result := a_type.actual_type
+			elseif l_type.has_like then
+				Result := l_type.actual_type
 			else
-				Result := a_type
+				Result := l_type
 			end
 
 			if Result.has_generics then
@@ -269,7 +272,7 @@ feature -- Type evaluation
 			if not Result.is_valid then
 				etr_error_handler.add_error (Current, "explicit type", "Type is invalid and unable to be resolved.")
 			elseif not Result.is_explicit then
-				if a_type.same_type (Result) and then a_type.is_equivalent (Result) then
+				if l_type.same_type (Result) and then l_type.is_equivalent (Result) then
 					etr_error_handler.add_error (Current, "explicit type", "Unable to resolve explicit type.")
 				else
 					Result := explicit_type (Result, a_written_class, a_written_feature)
@@ -362,6 +365,7 @@ feature -- Type checking
 				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
 			else
 				init (ast_context)
+				context.clear_all
 				ast_context.set_is_ignoring_export (True)
 				ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type, a_context.class_context.written_class.feature_table)
 				ast_context.set_written_class (a_context.class_context.written_class)
@@ -392,7 +396,7 @@ feature {NONE} -- Implementation
 					l_cur_local := a_feature_context.object_test_locals.item
 					if l_cur_local.is_active_at (a_path) then
 						create l_local_info
-						l_local_info.set_type (l_cur_local.resolved_type)
+						l_local_info.set_type (l_cur_local.original_type)
 						l_local_info.set_is_used (True)
 						create l_ot_id.initialize(l_cur_local.name)
 						context.add_object_test_local (l_local_info, l_ot_id)
@@ -410,6 +414,7 @@ feature {NONE} -- Implementation
 			l_index: INTEGER
 			l_local_info: LOCAL_INFO
 			l_cur_local: ETR_TYPED_VAR
+			l_name_id: INTEGER
 		do
 			if a_feature_context.has_locals then
 				from
@@ -419,9 +424,10 @@ feature {NONE} -- Implementation
 				loop
 					l_cur_local := a_feature_context.locals[l_index]
 					create l_local_info
-					l_local_info.set_type(l_cur_local.resolved_type)
+					l_local_info.set_type(l_cur_local.original_type)
 					l_local_info.set_position (l_index)
-					context.locals.put (l_local_info, names_heap.id_of (l_cur_local.name))
+					l_name_id := names_heap.id_of (l_cur_local.name)
+					context.locals.put (l_local_info, l_name_id)
 					l_index := l_index + 1
 				end
 			end
@@ -442,7 +448,7 @@ feature {NONE} -- Implementation
 				loop
 					l_cur_arg := a_feature_context.arguments[l_index]
 					create l_local_info
-					l_local_info.set_type(l_cur_arg.resolved_type)
+					l_local_info.set_type(l_cur_arg.original_type)
 					l_local_info.set_position (l_index)
 					context.locals.put (l_local_info, names_heap.id_of (l_cur_arg.name))
 					l_index := l_index + 1
@@ -462,21 +468,22 @@ feature {NONE} -- Implementation
 			l_class := a_context.class_context.written_class
 			error_handler.wipe_out
 			reset
+			is_byte_node_enabled := False
 			l_error_level := error_level
-			ast_context.locals.wipe_out
 
 			if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
 				l_feat := l_feat_context.written_feature
 				current_feature := l_feat
+				context.set_current_feature (l_feat)
 
 				initialize_locals(l_feat_context)
 				initialize_arguments(l_feat_context)
-			end
 
-			context.init_attribute_scopes
-			context.init_local_scopes
-			type_a_checker.init_for_checking (l_feat, l_class, Void, error_handler)
-			inherited_type_a_checker.init_for_checking (l_feat, l_class, Void, Void)
+				context.init_attribute_scopes
+				context.init_local_scopes
+				type_a_checker.init_for_checking (l_feat, l_class, Void, error_handler)
+				inherited_type_a_checker.init_for_checking (l_feat, l_class, Void, Void)
+			end
 
 			if l_error_level = error_level then
 				an_expr.process (Current)

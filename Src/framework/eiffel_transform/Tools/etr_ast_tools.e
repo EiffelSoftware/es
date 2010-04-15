@@ -202,38 +202,31 @@ feature -- Operations
 			end
 		end
 
-	
-	combined_breakpoint_mapping (a_mappings: LIST[HASH_TABLE[INTEGER, INTEGER]]; a_count: INTEGER): HASH_TABLE[INTEGER, INTEGER]
+	combined_breakpoint_mapping (a_mappings: LIST[HASH_TABLE[INTEGER,INTEGER]]; a_count: INTEGER): HASH_TABLE[INTEGER,INTEGER]
 			-- Combine `a_mappings' to a single one. Range from 1 to `a_count'.
 		local
-			i: INTEGER
+			i:INTEGER
 			l_cur_item: INTEGER
 		do
 			from
-				create Result.make (a_count * 2)
-				i := 1
+				create Result.make (a_count*2)
+				i:=1
 			until
-				i > a_count
+				i>a_count
 			loop
-				l_cur_item := process_mapping (i, a_mappings)
+				from
+					l_cur_item := i
+					a_mappings.finish
+				until
+					a_mappings.before
+				loop
+					l_cur_item := a_mappings.item[l_cur_item]
+					a_mappings.back
+				end
 				Result.extend (l_cur_item, i)
-				i := i + 1
+				i:=i+1
 			end
 		end
-
-	process_mapping (i: INTEGER_32; a_mappings: LIST[HASH_TABLE[INTEGER_32, INTEGER_32]]): INTEGER_32
-			-- Extracted from `combined_breakpoint_mapping'
-		do
-			from
-				Result := i
-				a_mappings.finish
-			until
-				a_mappings.before
-			loop
-				Result := a_mappings.item[Result]
-				a_mappings.back
-			end
-		end	
 
 	duplicate_ast (a_ast: AST_EIFFEL)
 			-- Duplicates `a_ast' and stores the result in `duplicated_ast'

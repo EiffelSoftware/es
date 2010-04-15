@@ -210,7 +210,7 @@ feature -- Test features
 			l_expr := transformable_factory.new_expr ("arg1_new", renamer.transformation_result.context)
 
 			type_checker.check_transformable (l_expr)
-			dbg_assert ("correct_type_1", type_checker.last_type.dump.starts_with ("INTEGER_32"))
+			dbg_assert ("correct_type_1", type_checker.last_type.dump.is_equal ("INTEGER_32"))
 
 			-- Typecheck in a mixed context
 			l_class_context := context_factory.new_class_context ("A2")
@@ -219,7 +219,16 @@ feature -- Test features
 
 			l_expr := transformable_factory.new_expr ("Result.item(index)", l_feat_context)
 			type_checker.check_transformable (l_expr)
-			dbg_assert ("correct_type_2", type_checker.last_type.dump.starts_with ("CHARACTER_8"))
+			dbg_assert ("correct_type_2", type_checker.last_type.dump.is_equal ("CHARACTER_8"))
+
+			-- Typecheck with a class context only
+			l_trans := transformable_factory.new_expr ("count", context_factory.new_class_context ("LINKED_LIST"))
+			type_checker.check_transformable (l_trans)
+			dbg_assert ("correct_type_3", type_checker.last_type.dump.is_equal ("INTEGER_32"))
+
+			l_trans := transformable_factory.new_expr ("new_cell (a.item)", context_factory.new_feature_context ("LINKED_LIST", "put_left"))
+			type_checker.check_transformable (l_trans)
+			dbg_assert ("correct_type_4", type_checker.last_type.dump.is_equal ("LINKABLE [[like item] G#1]"))
 		end
 
 	test_branch_removal
