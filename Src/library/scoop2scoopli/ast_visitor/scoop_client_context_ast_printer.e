@@ -252,7 +252,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -270,7 +270,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -289,7 +289,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -306,7 +306,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -327,7 +327,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -343,7 +343,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -357,7 +357,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -371,7 +371,7 @@ feature {NONE} -- Calls processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -521,19 +521,19 @@ feature {NONE} -- Expressions processing
 							safe_process (l_as.left)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
 							safe_process (l_as.right)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						end
 
@@ -622,19 +622,19 @@ feature {NONE} -- Expressions processing
 							safe_process (l_as.left)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
 							safe_process (l_as.right)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						end
 
@@ -689,19 +689,19 @@ feature {NONE} -- Expressions processing
 							safe_process (l_as.left)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
 							safe_process (l_as.right)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						end
 					end
@@ -772,19 +772,19 @@ feature {NONE} -- Expressions processing
 							safe_process (l_as.left)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and not l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
 							safe_process (l_as.right)
 							remove_current_levels_layer
 						elseif l_is_left_expression_separate and l_is_right_expression_separate then
-							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.left); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							safe_process (l_as.operator (match_list))
 							add_levels_layer
-							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+							safe_process (l_as.right); context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							remove_current_levels_layer
 						end
 
@@ -986,7 +986,7 @@ feature {NONE} -- Expressions processing
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end
@@ -1009,6 +1009,7 @@ feature {NONE} -- Creation handling
 			l_class_name: STRING
 			l_feature_i: FEATURE_I
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_target_type: TYPE_A
 			l_processor_tag: PROCESSOR_TAG_TYPE
 		do
 
@@ -1019,15 +1020,15 @@ feature {NONE} -- Creation handling
 				-- Get type by the explicit type
 				l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
 				is_separate := l_type_expression_visitor.is_expression_separate
+				l_target_type := l_type_expression_visitor.resolved_type
 				l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
 				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
-
 			elseif l_as.target /= Void then
 				l_type_expression_visitor.evaluate_call_type_in_class_and_feature (l_as.target, class_c, l_feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
 				is_separate := l_type_expression_visitor.is_expression_separate
+				l_target_type := l_type_expression_visitor.expression_type
 				l_processor_tag := l_type_expression_visitor.expression_type.processor_tag
 				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
-
 			end
 
 			if is_separate then
@@ -1108,18 +1109,56 @@ feature {NONE} -- Creation handling
 				-- Non separate create creation.														--
 				------------------------------------------------------------------------------------------
 
-				safe_process (l_as.create_keyword (match_list))
-				safe_process (l_as.type)
-				safe_process (l_as.target)
-				safe_process (l_as.call)
-				-- Only SCOOP compiled classes can be cast to SCOOP_SEAPARATE_CLIENT and can have a processor assigned to them.
-				context.add_string (";  if attached {SCOOP_SEPARATE_CLIENT} ")
-				safe_process (l_as.target)
-				context.add_string (" as target then target.set_processor_ (Current.processor_) end;")
-				if l_as.call /= void then
-					last_index := l_as.call.last_token (match_list).index
-				end
+				-- Does the type of the target has a class type that comes from the base library?
+				if l_target_type.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+					-- Yes, it does.
+					-- Base classes do not get processed. Therefore we cannot set the processor of the target.
+					safe_process (l_as.create_keyword (match_list))
+					safe_process (l_as.type)
+					safe_process (l_as.target)
+					safe_process (l_as.call)
+				else
+					-- No, it doesn't.
+					-- The class got processed and we have to set the processor of the target to the current processor.
 
+					-- Create code that calls the processor setter feature as a creation routine. Note that every client class has the processor setter feature as the only constructor.
+					safe_process (l_as.create_keyword (match_list))
+					safe_process (l_as.type)
+					add_levels_layer
+					safe_process (l_as.target)
+					remove_current_levels_layer
+					context.add_string (".")
+					context.add_string (
+						{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name +
+						"(Current." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name + ")"
+					)
+					context.add_string ("; ")
+
+					-- Create code that calls the creation routine as a normal feature, if an explicit call exists. Note that client classes have no export status anymore.
+					if l_as.call /= void then
+						-- Does the creation instruction denote a type?
+						if l_as.type /= void then
+							-- Yes, it does.
+							-- Create code that casts the target to the denotes type to call the creation routine as a normal feature.
+							last_index := l_as.type.last_token (match_list).index - 1
+							context.add_string ("if attached {")
+							safe_process (l_as.type)
+							context.add_string ("} ")
+							safe_process (l_as.target)
+							context.add_string (" as target then")
+							context.add_string ("target")
+							safe_process (l_as.call)
+							context.add_string ("end; ")
+						else
+							-- No, it doesn't.
+							-- Create code that calls the creation routine as a normal feature without a cast.
+							last_index := l_as.target.last_token (match_list).index - 1
+							safe_process (l_as.target)
+							safe_process (l_as.call)
+						end
+					end
+				end
+				last_index := l_as.last_token (match_list).index
 			end
 		end
 
@@ -1135,6 +1174,7 @@ feature {NONE} -- Creation handling
 			local_wrapper_object: STRING
 			arg_postfix,creation_object_name: STRING
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+			l_target_type: TYPE_A
 			l_processor_tag: PROCESSOR_TAG_TYPE
 		do
 
@@ -1150,6 +1190,7 @@ feature {NONE} -- Creation handling
 
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 			l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
+			l_target_type := l_type_expression_visitor.resolved_type
 			l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
 			l_class_name := l_type_expression_visitor.resolved_type.associated_class.name.as_lower
 
@@ -1173,10 +1214,6 @@ feature {NONE} -- Creation handling
 				else
 					context.add_string ("creation_object"+current_create_creation_position.out)
 				end
-
-
---				l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor(class_c)
---				l_processor := l_processor_visitor.get_explicit_processor_specification (l_as.type)
 
 				if is_processing_assertions then
 					if l_processor_tag.has_handler then
@@ -1348,22 +1385,50 @@ feature {NONE} -- Creation handling
 					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out
 				end
 
+				-- Does the type of the target has a class type that comes from the base library?
+				if l_target_type.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+					-- Yes, it does.
+					-- Base classes do not get processed. Therefore we cannot set the processor of the target.
 
-				wrapper.append ("create "+creation_object_name)
-				if l_as.call /= Void then
-					wrapper.append ("." + l_as.call.feature_name.name)
---						wrapper.append ("_scoop_separate_" + l_class_name)
-					if l_as.call.internal_parameters /= Void then
-						last_index := l_as.call.internal_parameters.first_token (match_list).index
+					wrapper.append ("create " + creation_object_name)
+					if l_as.call /= Void then
+						wrapper.append ("." + l_as.call.feature_name.name)
+						if l_as.call.internal_parameters /= Void then
+							last_index := l_as.call.internal_parameters.first_token (match_list).index
+						end
+						context.clear
+						process_internal_parameters (l_as.call.internal_parameters)
+						wrapper.append (context.string_representation)
 					end
-					context.clear
-					process_internal_parameters (l_as.call.internal_parameters)
-					wrapper.append (context.string_representation)
+				else
+					-- No, it doesn't.
+					-- The class got processed and we have to set the processor of the target to the current processor.
+
+					-- Create code that calls the processor setter feature as a creation routine. Note that every client class has the processor setter feature as the only constructor.
+					wrapper.append ("create " + creation_object_name)
+					wrapper.append (".")
+					wrapper.append (
+						{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name +
+						"(Current." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name + ")"
+					)
+					wrapper.append ("; ")
+
+					-- Create code that calls the creation routine as a normal feature, if necessary. Note that client classes have no export status anymore.
+					if l_as.call /= Void then
+						wrapper.append (creation_object_name)
+						wrapper.append (".")
+						wrapper.append (l_as.call.feature_name.name)
+						if l_as.call.internal_parameters /= Void then
+							last_index := l_as.call.internal_parameters.first_token (match_list).index
+						end
+						context.clear
+						process_internal_parameters (l_as.call.internal_parameters)
+						wrapper.append (context.string_representation)
+					end
 				end
-				-- Only SCOOP compiled classes can be cast to SCOOP_SEAPARATE_CLIENT and can have a processor assigned to them.
-				wrapper.append (";  if attached {SCOOP_SEPARATE_CLIENT} "+creation_object_name+" as co then co.set_processor_ (Current.processor_) end; ")
+
 				if is_processing_assertions then
-					wrapper.append ("%N%T%T%TResult := "+creation_object_name)
+					wrapper.append ("%N%T%T%TResult := " + creation_object_name)
 					wrapper.append ("%N%T%Tend%N")
 				end
 				context.clear
@@ -1372,9 +1437,8 @@ feature {NONE} -- Creation handling
 				context := original_context
 				last_index := l_as.last_token (match_list).index
 			end
-	--	end
 
-			-- Output generated obejcts
+			-- Output generated objects
 			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				if not is_processing_assertions then
 					ctxt.insert_after_cursor (local_wrapper_object, feature_object.locals_index)
@@ -1406,7 +1470,7 @@ feature {NONE} -- Creation handling
 
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end

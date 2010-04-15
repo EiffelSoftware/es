@@ -10,19 +10,11 @@ class
 
 inherit
 	SCOOP_CLIENT_CONTEXT_AST_PRINTER
-		-- Get common used visitor node processing functionality
-		export
-			{NONE} all
-			{SCOOP_VISITOR_FACTORY} setup
-			{DEGREE_SCOOP} get_context
 		redefine
 			process_class_as,
-			process_create_as,
 			process_feature_clause_as,
 			process_feature_as
 		end
-
-	SCOOP_SYSTEM_CONSTANTS
 
 create
 	make,
@@ -96,7 +88,16 @@ feature {NONE} -- Roundtrip: process nodes
 			end
 
 			context.add_string ("%N%N")
-			safe_process (l_as.creators)
+
+			--- Change the creation clause to only include the processor setter.
+			if not l_as.is_deferred then
+				context.add_string ("%N%Ncreate%N%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name)
+			end
+			if l_as.creators /= void then
+				last_index := l_as.creators.last_token (match_list).index
+			end
+
+			-- Process the convertors.
 			safe_process (l_as.convertors)
 
 			-- process feature clauses
@@ -138,79 +139,19 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.end_keyword)
 		end
 
-	process_create_as (l_as: CREATE_AS) is
-			-- Process `l_as', the class creation feature list.
-		do
-			safe_process (l_as.create_creation_keyword (match_list))
-			-- process client list
-			process_clients (l_as.clients)
-			safe_process (l_as.feature_list)
-		end
-
 	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
 			-- Process `l_as', the AST feature clause list.
 		do
 			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%N")
 			safe_process (l_as.feature_keyword)
-			process_clients (l_as.clients)
+
+			-- Remove all clients.
+			if l_as.clients /= void then
+				last_index := l_as.clients.last_token (match_list).index
+			end
+
 			safe_process (l_as.features)
-		end
-
-	process_clients (l_as: CLIENT_AS) is
-			-- Processes `l_as', the export list by iterating it in the `process_client_list' feature.
-		do
-			if l_as /= Void and then l_as.clients /= Void then
-				safe_process (l_as.clients.lcurly_symbol (match_list))
-				process_client_list (l_as.clients)
-				safe_process (l_as.clients.rcurly_symbol (match_list))
-			end
-		end
-
-	process_client_list (l_as: EIFFEL_LIST [ID_AS]) is
-			-- Processes `l_as', the client class list:
-			--   - Add the proxy class of the current class
-			--   - Filter class 'NONE'
-		local
-			i, l_count: INTEGER
-			l_none_str: STRING
-		do
-			create l_none_str.make_from_string ("NONE")
-
-			if l_as.count > 0 then
-				-- set first client a reference to the proxy class.
-				process_leading_leaves (l_as.first.index)
-				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix + class_c.name_in_upper)
-				if not l_as.first.name.is_equal (l_none_str) then
-					context.add_string (", ")
-				end
-				-- iterate over list and filter class "NONE"
-				from
-					l_as.start
-					i := 1
-					if l_as.separator_list /= Void then
-						l_count := l_as.separator_list.count
-					end
-				until
-					l_as.after
-				loop
-					if not l_as.item.name.is_equal (l_none_str) then
-						safe_process (l_as.item)
-						context.add_string (", ")
-						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix + l_as.item.name)
-						if i <= l_count then
-							safe_process (l_as.separator_list_i_th (i, match_list))
-							i := i + 1
-						end
-					else
-						last_index := l_as.item.index
-						if i <= l_count then
-							i := i + 1
-						end
-					end
-					l_as.forth
-				end
-			end
 		end
 
 	process_feature_as (l_as: FEATURE_AS) is

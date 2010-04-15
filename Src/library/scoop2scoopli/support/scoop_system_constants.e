@@ -17,10 +17,6 @@ feature -- Scoop system constants
 
 	scoop_proxy_prefix: STRING is "scoop_separate__"
 
-	scoop_processor_name: STRING is "processor_"
-
-	scoop_client_implementation: STRING is "implementation_"
-
 	proxy_conversion_feature_name: STRING is "proxy_"
 
 	scoop_override_cluster_name: STRING is "scoop_override_cluster"
@@ -28,6 +24,12 @@ feature -- Scoop system constants
 	scoop_library_name: STRING is "scoopli"
 
 	scoop_library_path: STRING is "$ISE_LIBRARY\library\scoopli\scoopli.ecf"
+
+	scoop_library_processor_setter_name: STRING is "set_processor_"
+
+	scoop_library_processor_getter_name: STRING is "processor_"
+
+	scoop_library_implementation_getter_name: STRING is "implementation_"
 
 	scoop_starter_class_name: STRING is "SCOOP_STARTER"
 
@@ -72,9 +74,9 @@ feature -- Scoop system constants
 	enclosing_routine_name_additive: STRING is "_enclosing_routine"
 
 	wait_condition_wrapper_name_additive: STRING is "_wait_condition"
-	
+
 	separate_postcondition_wrapper_name_additive: STRING is "_separate_postcondition"
-	
+
 	non_separate_postcondition_wrapper_name_additive: STRING is "_non_separate_postcondition"
 
 feature {NONE}

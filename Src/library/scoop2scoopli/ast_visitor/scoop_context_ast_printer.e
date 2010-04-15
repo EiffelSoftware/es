@@ -54,6 +54,8 @@ inherit
 
 	SCOOP_WORKBENCH
 
+	SCOOP_SYSTEM_CONSTANTS
+
 feature -- Basic SCOOP changes
 
 	process_infix_prefix_as (l_as: INFIX_PREFIX_AS) is

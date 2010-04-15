@@ -159,7 +159,6 @@ feature {NONE} -- Content implementation
 			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 			feature_name: FEATURE_NAME
 			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-			internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]
 		do
 
 			last_index := l_as.first_token (match_list).index - 1
@@ -264,10 +263,8 @@ feature {NONE} -- Content implementation
 		local
 			i, nb: INTEGER
 			a_class_type: CLASS_TYPE_AS
-			a_class_c: CLASS_C
 			l_feature_name: FEATURE_NAME
 			l_feature_name_str: STRING
-			l_type_visitor: SCOOP_TYPE_VISITOR
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
 			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
@@ -371,22 +368,7 @@ feature {NONE} -- Content implementation
 
 					-- feature result
 					context.add_string ("%N%T%T%TResult ")
-					create l_type_visitor
-					a_class_c := l_type_visitor.evaluate_class_from_type (l_as.body.type, class_c)
-
-
---					if l_scoop_type_visitor.is_formal then
---						context.add_string (":= ")
---					elseif a_class_c /= Void then
---						if a_class_c.is_deferred and then not l_scoop_type_visitor.is_formal  then
---							context.add_string ("?= ")
---						else
---							context.add_string (":= ")
---						end
---					else
-						context.add_string (":=")
---					end
-
+					context.add_string (":=")
 					context.add_string ("a_function_to_evaluate.last_result")
 
 					if attached {CLASS_TYPE_AS} l_as.body.type as typ then
@@ -443,12 +425,9 @@ feature {NONE} -- Content implementation
 	process_constant (l_as: FEATURE_AS) is
 		local
 			i, nb: INTEGER
-			a_class_c: CLASS_C
 			l_feature_name: FEATURE_NAME
 			l_feature_name_str: STRING
-			l_scoop_type_visitor: SCOOP_TYPE_VISITOR
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
-			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
 		do
 			--context.add_string ("%N%Nfeature -- constant attribute wrapper")
 
@@ -517,21 +496,7 @@ feature {NONE} -- Content implementation
 
 				-- feature result
 				context.add_string ("%N%T%T%TResult ")
-				create l_scoop_type_visitor
-				a_class_c := l_scoop_type_visitor.evaluate_class_from_type (l_as.body.type, class_c)
---				if l_scoop_type_visitor.is_formal then
---					context.add_string (":= ")
---				elseif a_class_c /= Void then
---					if a_class_c.name_in_upper.is_equal ("LINKABLE")
---						or a_class_c.is_deferred and then not l_scoop_type_visitor.is_formal  then
---						context.add_string ("?= ")
---					else
---						context.add_string (":= ")
---					end
---				else
-					context.add_string ("?= ")
---				end
-
+				context.add_string ("?= ")
 				context.add_string ("a_function_to_evaluate.last_result")
 
 				-- TODO: Reevaluate this or remove it entirely.
@@ -573,11 +538,7 @@ feature {NONE} -- Content implementation
 	process_function_content (l_as: ROUTINE_AS; a_feature: FEATURE_AS; a_feature_name, a_feature_declaration_name: STRING) is
 		local
 			lock_passing_possible: BOOLEAN
-			l_type_visitor: SCOOP_TYPE_VISITOR
-			l_class_c: CLASS_C
 		do
-			create l_type_visitor
-
 			lock_passing_possible := process_auxiliary_local_variables (a_feature, a_feature_name)
 
 			context.add_string ("%N%T%T%Ta_function_to_evaluate := agent implementation_.")
@@ -597,17 +558,7 @@ feature {NONE} -- Content implementation
 			end
 
 			context.add_string ("%N%T%T%TResult ")
-
-			l_class_c := l_type_visitor.evaluate_class_from_type (a_feature.body.type, class_c)
-
-	--		if l_class_c /= Void and then
-	--			(l_class_c.name_in_upper.is_equal ("LINKABLE") or else l_class_c.is_deferred) then
-
-				context.add_string (":= ")
-	--		else
-	--			context.add_string (":= ")
-	--		end
-
+			context.add_string (":= ")
 			context.add_string ("a_function_to_evaluate.last_result")
 
 			if {typ: CLASS_TYPE_AS} a_feature.body.type then
@@ -664,11 +615,7 @@ feature {NONE} -- Content implementation
 	process_external_function_content (l_as: EXTERNAL_AS; a_feature: FEATURE_AS; a_feature_name: STRING) is
 		local
 			lock_passing_possible: BOOLEAN
-			l_type_visitor: SCOOP_TYPE_VISITOR
-			l_class_c: CLASS_C
 		do
-			create l_type_visitor
-
 			lock_passing_possible := process_auxiliary_local_variables (a_feature, a_feature_name)
 
 			context.add_string ("%N%T%T%Ta_function_to_evaluate := agent ")
@@ -691,16 +638,7 @@ feature {NONE} -- Content implementation
 			end
 
 			context.add_string ("%N%T%T%TResult ")
-
-			l_class_c := l_type_visitor.evaluate_class_from_type (a_feature.body.type, class_c)
-
---			if l_class_c.name_in_upper.is_equal ("LINKABLE")
---				or else (l_class_c.is_deferred and then not l_scoop_type_visitor.is_formal) then
-
-				context.add_string ("?= ")
---			else
---				context.add_string (":= ")
---			end
+			context.add_string ("?= ")
 			context.add_string ("a_function_to_evaluate.last_result")
 
 			-- TODO: Reevaluate this or remove it entirely.
@@ -831,11 +769,7 @@ feature {NONE} -- Content implementation
 	process_once_function_content (l_as: ONCE_AS; a_feature: FEATURE_AS; a_feature_name: STRING) is
 		local
 			lock_passing_possible: BOOLEAN
-			l_type_visitor: SCOOP_TYPE_VISITOR
-			l_class_c: CLASS_C
 		do
-			create l_type_visitor
-
 			lock_passing_possible := process_auxiliary_local_variables (a_feature, a_feature_name)
 
 			context.add_string ("%N%T%T%Ta_function_to_evaluate := agent ")
@@ -858,15 +792,7 @@ feature {NONE} -- Content implementation
 			end
 
 			context.add_string ("%N%T%T%TResult ")
-
-			l_class_c := l_type_visitor.evaluate_class_from_type (a_feature.body.type, class_c)
-
---			if (l_class_c.is_deferred and then not l_scoop_type_visitor.is_formal) then
-
-				context.add_string ("?= ")
---			else
---				context.add_string (":= ")
---			end
+			context.add_string ("?= ")
 			context.add_string ("a_function_to_evaluate.last_result")
 
 			-- TODO: Reevaluate this or remove it entirely.
@@ -916,9 +842,7 @@ feature
 	process_result_type (a_type: TYPE_AS; is_declared_type: BOOLEAN; l_proxy_type_visitor: SCOOP_PROXY_TYPE_VISITOR) is
 			-- Process `a_type'. Precede with `:' if `is_declared_type' is True.
 		local
-			a_class_c: CLASS_C
 			is_separate: BOOLEAN
-			l_type_visitor: SCOOP_TYPE_VISITOR
 			a_like_type: LIKE_ID_AS
 			l_type_a: TYPE_A
 			l_formal_a: FORMAL_A
@@ -930,9 +854,6 @@ feature
 				context.add_string (": ")
 			end
 
-			-- get TYPE_C of given TYPE_AS
-			create l_type_visitor
-			a_class_c := l_type_visitor.evaluate_class_from_type (a_type, class_c)
 
 			-- check if type is like type
 			a_like_type ?= a_type

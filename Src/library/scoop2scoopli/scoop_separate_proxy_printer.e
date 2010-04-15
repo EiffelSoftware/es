@@ -204,7 +204,12 @@ feature {NONE} -- Roundtrip: process nodes
 			last_index := l_as.first_token (match_list).index
 			context.add_string ("%N%N")
 			safe_process (l_as.feature_keyword)
-			safe_process (l_as.clients)
+
+			-- Remove the clients.
+			if l_as.clients /= void then
+				last_index := l_as.clients.last_token (match_list).index
+			end
+
 			-- process feature clause comment
 			if not l_as.features.is_empty then
 				process_leading_leaves (l_as.features.first_token (match_list).index)
@@ -367,18 +372,7 @@ feature {NONE} -- Roundtrip: Implementation
 			if not class_as.is_deferred then
 				-- creator
 				-- context.add_string ("%N%Ncreate%N%Tmake_from_local, set_processor_")
-				context.add_string ("%N%Ncreate%N%Tset_processor_")
-
---				-- convertor Removed by `damienm', conversion is done on client side
-
---				context.add_string ("%N%Nconvert%N%Tmake_from_local ({" + class_as.class_name.name.as_upper)
-
---				-- formal paramters
---				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
---				l_generics_visitor.process_class_internal_generics (class_as.internal_generics, True, True)
-
---				-- convertor end
---				context.add_string ("})")
+				context.add_string ("%N%Ncreate%N%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name)
 			end
 
 			-- skip original creators and convertors
@@ -425,14 +419,12 @@ feature {NONE} -- Roundtrip: Implementation
 			context.add_string ("%N%N%Teffective_default_create_scoop_separate_" + class_as.class_name.name.as_lower + " is")
 			context.add_string ("%N%T%T%T-- Wrapper for creation procedure `default_create'.")
 			context.add_string ("%N%T%Tdo")
-			if not class_as.class_name.name.as_upper.is_equal ("METHOD_BAS") or else
-				class_as.class_name.name.as_upper.is_equal ("SYSTEM_STRING") or else
-				class_as.class_name.name.as_upper.is_equal ("STRING_BUILDER") or else
-				class_as.class_name.name.as_upper.is_equal ("SYSTEM_ARRAY") or else
-				class_as.class_name.name.as_upper.is_equal ("SYSTEM_OBJECT")
-			then
-				context.add_string ("%N%T%T%Tcreate implementation_")
-			end
+			context.add_string ("%N%T%T%Tcreate " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
+			context.add_string (".")
+			context.add_string (
+				{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name +
+				"(Current." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name + ")"
+			)
 			context.add_string ("%N%T%Tend%N")
 		end
 
@@ -516,11 +508,20 @@ feature {NONE} -- Roundtrip: Implementation
 				end
 				context.add_string (" is")
 				context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + a_feature_name + "'.")
-				context.add_string ("%N%T%Tdo%N%T%T%Tcreate implementation_." + a_feature_name)
+
+				context.add_string ("%N%T%Tdo")
+				context.add_string ("%N%T%T%Tcreate " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
+				context.add_string (".")
+				context.add_string (
+					{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name +
+					"(Current." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name + ")"
+				)
+				context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + a_feature_name)
 				if l_feature_as.body.internal_arguments /= Void then
 					context.add_string (" ")
 					process_formal_argument_list_as_actual_argument_list (l_feature_as.body.internal_arguments, False)
 				end
+
 				context.add_string ("%N%T%Tend")
 			else
 				process_parent_creation_feature (l_feature_i)
@@ -529,8 +530,6 @@ feature {NONE} -- Roundtrip: Implementation
 
 	process_parent_creation_feature (featr : FEATURE_I)
 			-- Create parent creation wrapper feature
-		local
-			lock_passing_possible : BOOLEAN
 		do
 			context.add_string ("%N%Nfeature -- creation instruction wrapper")
 			context.add_string ("%N%N%T" + featr.feature_name + "_scoop_separate_" + class_as.class_name.name.as_lower + " ")
@@ -557,7 +556,15 @@ feature {NONE} -- Roundtrip: Implementation
 				process_flattened_formal_arguments (featr.arguments, False)
 			end
 			context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + featr.feature_name + "'.")
-			context.add_string ("%N%T%Tdo%N%T%T%Tcreate implementation_." + featr.feature_name)
+
+			context.add_string ("%N%T%Tdo")
+			context.add_string ("%N%T%T%Tcreate " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
+			context.add_string (".")
+			context.add_string (
+				{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name +
+				"(Current." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name + ")"
+			)
+			context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + featr.feature_name)
 			context.add_string (" ")
 			if featr.arguments /= void then
 				process_formal_arguments_as_actual_arguments (featr.arguments, False)
@@ -852,7 +859,7 @@ feature {NONE} -- Roundtrip: Implementation
 									context.add_string ("%N%T%T%Tif " + l_argument_name + " /= void then ")
 									context.add_string ("%N%T%T%T%Taux_scoop_" + l_argument_name + " := ")
 									if not l_type_a.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
-										context.add_string (l_argument_name + "." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation +"%N%T%T%Tend")
+										context.add_string (l_argument_name + "." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name +"%N%T%T%Tend")
 									else
 										context.add_string (l_argument_name +"%N%T%T%Tend")
 									end
@@ -998,7 +1005,7 @@ feature {NONE} -- Roundtrip: Implementation
 								feature_object.internal_arguments_to_substitute.after
 							loop
 								if feature_object.internal_arguments_to_substitute.item.is_equal (l_type_dec_as.id_list.i_th (j)) then
-									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 								end
 								feature_object.internal_arguments_to_substitute.forth
 
@@ -1054,7 +1061,6 @@ feature {NONE} -- Roundtrip: Implementation
 			i, nb, j, nbj: INTEGER
 			l_scoop_type_visitor: SCOOP_TYPE_VISITOR
 			l_argument: TYPE_DEC_AS
-			a_class_c: CLASS_C
 			l_proxy_type_visitor: SCOOP_PROXY_TYPE_VISITOR
 		do
 			create l_scoop_type_visitor
@@ -1074,7 +1080,6 @@ feature {NONE} -- Roundtrip: Implementation
 				i > nb
 			loop
 				l_argument := a_list.arguments.i_th (i)
-				a_class_c := l_scoop_type_visitor.evaluate_class_from_type (l_argument.type, class_c)
 
 				from
 					j := 1
@@ -1209,16 +1214,12 @@ feature {NONE} -- Roundtrip: Implementation
 			-- Insert `a_caller_: SCOOP_SEPARATE_TYPE' as first argument.
 		local
 			pos,i, j, nb, nbj: INTEGER
-			l_scoop_type_visitor: SCOOP_TYPE_VISITOR
-			a_class_c: CLASS_C
 			l_argument: TYPE_DEC_AS
 			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
 			generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 			interal_argument_to_substitute: TUPLE[pos:INTEGER;type:TYPE_AS]
 			feature_name: FEATURE_NAME
 		do
-			create l_scoop_type_visitor
-
 			context.add_string ("(")
 			context.add_string ("a_caller_: SCOOP_SEPARATE_TYPE; ")
 
@@ -1231,7 +1232,6 @@ feature {NONE} -- Roundtrip: Implementation
 					i > nb
 				loop
 					l_argument := a_list.arguments.i_th (i)
-					a_class_c := l_scoop_type_visitor.evaluate_class_from_type (l_argument.type, class_c)
 
 					from
 						j := 1

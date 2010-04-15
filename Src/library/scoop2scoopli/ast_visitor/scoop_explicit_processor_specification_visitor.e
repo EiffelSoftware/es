@@ -158,7 +158,8 @@ feature {NONE} -- Visitor implementation: Type nodes
 				-- get class in which the feature is written
 				l_class_c := system.class_of_id (l_feature_i.written_in)
 				-- get the explicit processor specification by parsing the new class
-				l_processor_visitor := scoop_visitor_factory.new_explicit_processor_specification_visitor (l_class_c)
+				l_processor_visitor := create {SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR}
+				-- TODO: fix this l_processor_visitor.setup (l_class_c.ast, match_list_server.item (l_class_c.class_id), True, True)
 				l_processor := l_processor_visitor.get_explicit_processor_specification_by_class (l_anchor_name, l_class_c)
 				has_explicit_processor_specification := l_processor.has_explicit_processor_specification
 				has_handler := l_processor.has_handler

@@ -148,7 +148,7 @@ feature {NONE} -- Implementation
 			update_current_level_with_call (l_as)
 			if avoid_proxy_calls_in_call_chains then
 				if current_level.type.is_separate then
-					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+					context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					set_current_level_is_separate (false)
 				end
 			end

@@ -719,7 +719,7 @@ feature {NONE} -- Feature redeclaration handling
 					if current_level.type.is_separate then
 						if accessed_feature /= void then
 							if need_internal_argument_substitution (accessed_feature, a_class_c, pos) then
-								context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+								context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							end
 						end
 					end
@@ -869,7 +869,7 @@ feature {NONE} -- Feature redeclaration handling
 							if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
 								l_feature_name := feature_i.body.feature_names.item
 								if l_feature_name /= void and then l_assign_finder.have_to_replace_return_type (l_feature_name, a_class_c, has_context) then
-									context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+									context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 								end
 							end
 							feature_i.body.feature_names.forth
@@ -1327,9 +1327,9 @@ feature -- Object test and assignment attempt handling
 						safe_process (l_as.expression)
 						context.add_string (" /= Void and then ")
 						safe_process (l_as.expression)
-						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = "+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" and then ")
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" = "+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" and then ")
 						Precursor(l_as)
-						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation)
+						context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 					end
 						-- `l_is_type_separate' is separate with no specifications
 						--      `l_is_expression_separate' is not separate:
@@ -1366,9 +1366,9 @@ feature -- Object test and assignment attempt handling
 					safe_process (l_as.expression)
 					context.add_string (" /= Void and then ")
 					safe_process (l_as.expression)
-					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" = ")
 					context.add_string (type_type.processor_tag.parsed_processor_name)
-					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" and then ")
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" and then ")
 					Precursor(l_as)
 
 					if not l_is_expression_separate then
@@ -1390,7 +1390,7 @@ feature -- Object test and assignment attempt handling
 					safe_process (l_as.expression)
 					context.add_string (" /= Void and then ")
 					safe_process (l_as.expression)
-					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" = ")
 					context.add_string (type_type.processor_tag.parsed_processor_name)
 					context.add_string (" and then ")
 					Precursor(l_as)
@@ -1451,9 +1451,9 @@ feature -- Object test and assignment attempt handling
 					safe_process (l_as.source)
 					context.add_string (" /= Void and then ")
 					safe_process (l_as.source)
-					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = "+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" then ")
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" = "+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" then ")
 					Precursor(l_as)
-					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_client_implementation+" else ")
+					context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name+" else ")
 					safe_process (l_as.target)
 					context.add_string (" := Void end")
 
@@ -1509,9 +1509,9 @@ feature -- Object test and assignment attempt handling
 				safe_process (l_as.source)
 				context.add_string (" /= Void and then ")
 				safe_process (l_as.source)
-				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" = ")
 				context.add_string (target_type.processor_tag.parsed_processor_name)
-				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name)
+				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name)
 				context.add_string (" then ")
 				Precursor(l_as)
 				if not l_is_source_separate then
@@ -1546,7 +1546,7 @@ feature -- Object test and assignment attempt handling
 				safe_process (l_as.source)
 				context.add_string (" /= Void and then ")
 				safe_process (l_as.source)
-				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_processor_name+" = ")
+				context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_getter_name+" = ")
 				context.add_string (target_type.processor_tag.parsed_processor_name)
 				context.add_string (" then ")
 				Precursor(l_as)
