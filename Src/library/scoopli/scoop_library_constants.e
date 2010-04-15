@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {SCOOP_LIBRARY_CONSTANTS}."
-	author: ""
+	description: "Library constants."
+	author: "Martino Trosi, ETH Zürich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,7 +9,13 @@ class
 
 feature -- Access
 
-	Profile_collector_buffer: INTEGER = 0
+	Enable_profiler: BOOLEAN = True
+			-- Whether to enable the profiler
+
+	Enable_log: BOOLEAN = False
+			-- Whether to enable log files
+
+	Profile_collector_buffer: INTEGER = 25
 			-- Number of events to buffer before writing to disk
 			-- (per processor)
 

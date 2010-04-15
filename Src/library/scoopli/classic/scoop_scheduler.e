@@ -45,7 +45,7 @@ feature {SCOOP_SEPARATE_TYPE} -- Registration
 				processors_mutex.lock
 				processors.extend (Result)
 				-- SCOOP PROFILER
-				if profile_information.is_profiling_enabled then
+				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_information.is_profiling_enabled then
 					Result.profile_collector.collect_processor_add
 				end
 				processors_mutex.unlock
@@ -81,7 +81,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 				find_and_set_processor_ (a_caller_)
 			end
 			-- SCOOP PROFILE
-			if profile_information.is_profiling_enabled then
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_information.is_profiling_enabled then
 				scoop_profiler_target ?= a_routine.target
 			end
 			-- Eliminate repeated requests for the same processor.
@@ -105,12 +105,12 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 				i := i + 1
 			end
 			-- SCOOP PROFILE
-			if scoop_profiler_target /= Void then
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and scoop_profiler_target /= Void then
 				scoop_profiler_target.processor_.profile_collector.collect_feature_wait (a_routine, effectively_requested_processors)
 			end
 			if are_requested_processors_locked then
 				-- SCOOP PROFILE
-				if scoop_profiler_target /= Void then
+				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and scoop_profiler_target /= Void then
 					scoop_profiler_target.processor_.profile_collector.collect_feature_application (a_routine)
 					a_routine.call([])
 					scoop_profiler_target.processor_.profile_collector.collect_feature_return (a_routine)
@@ -135,7 +135,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
 				request.ready_for_execution.wait_one -- wait until routine request is ready for execution (locks acquired and wait condition holds)
 				a_caller_.processor_.locked_processors_push (requested_processors)
 				-- SCOOP PROFILE
-				if scoop_profiler_target /= Void then
+				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and scoop_profiler_target /= Void then
 					scoop_profiler_target.processor_.profile_collector.collect_feature_application (a_routine)
 					a_routine.call([])
 					scoop_profiler_target.processor_.profile_collector.collect_feature_return (a_routine)
@@ -496,20 +496,22 @@ feature {SCOOP_PROCESSOR} -- Update
 			l_file_name: FILE_NAME
 			l_directory_name: DIRECTORY_NAME
 		do
-			create l_file_name.make
-			l_file_name.set_directory ({SCOOP_LIBRARY_CONSTANTS}.Eifgens_directory)
-			l_file_name.set_file_name ({SCOOP_LIBRARY_CONSTANTS}.Information_file_name)
-			if not {SCOOP_LIBRARY_CONSTANTS}.Information_file_extension.is_empty then
-				l_file_name.add_extension ({SCOOP_LIBRARY_CONSTANTS}.Information_file_extension)
-			end
-			create l_file.make (l_file_name.out)
-			if l_file.exists and then l_file.is_readable then
-				l_file.open_read
-				create l_serializer.make (l_file)
-				l_serializer.set_for_reading
-				create l_store
-				profile_information ?= l_store.retrieved (l_serializer, True)
-				l_file.close
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler then
+				create l_file_name.make
+				l_file_name.set_directory ({SCOOP_LIBRARY_CONSTANTS}.Eifgens_directory)
+				l_file_name.set_file_name ({SCOOP_LIBRARY_CONSTANTS}.Information_file_name)
+				if not {SCOOP_LIBRARY_CONSTANTS}.Information_file_extension.is_empty then
+					l_file_name.add_extension ({SCOOP_LIBRARY_CONSTANTS}.Information_file_extension)
+				end
+				create l_file.make (l_file_name.out)
+				if l_file.exists and then l_file.is_readable then
+					l_file.open_read
+					create l_serializer.make (l_file)
+					l_serializer.set_for_reading
+					create l_store
+					profile_information ?= l_store.retrieved (l_serializer, True)
+					l_file.close
+				end
 			end
 			if profile_information = Void then
 				create profile_information.make
@@ -550,7 +552,7 @@ feature {SCOOP_PROCESSOR} -- Update
 			processors_mutex.lock
 			processors.start
 			-- SCOOP PROFILER
-			if profile_information.is_profiling_enabled then
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_information.is_profiling_enabled then
 				a_processor.profile_collector.collect_processor_end
 			end
 			processors.prune (a_processor)

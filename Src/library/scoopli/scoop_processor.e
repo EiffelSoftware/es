@@ -425,7 +425,7 @@ feature {NONE} -- Implementation
 					actions_mutex.unlock -- allow clients to add actions in the meantime
 
 					-- SCOOP PROFILE
-					if (profile_collector /= Void and attached {SCOOP_SEPARATE_TYPE} current_action.target) and then not profile_collector.has_separate_arguments (current_action.action) then
+					if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and (profile_collector /= Void and attached {SCOOP_SEPARATE_TYPE} current_action.target) and then not profile_collector.has_separate_arguments (current_action.action) then
 						profile_collector.collect_feature_wait (current_action.action, create {LINKED_LIST [SCOOP_PROCESSOR]}.make)
 						profile_collector.collect_feature_application (current_action.action)
 						current_action.action.apply -- execute action

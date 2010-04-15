@@ -73,7 +73,7 @@ feature -- Basic Operation
 			extend_no_expand (l_box, stop_slider)
 			extend_no_expand (l_box, l_label)
 
-			create l_frame.make_with_text (interface_names.t_Scoop_hotspots)
+			create l_frame.make_with_text (interface_names.t_Scoop_time_span)
 			l_frame.align_text_left
 			l_frame.extend (l_box)
 
@@ -87,7 +87,7 @@ feature -- Basic Operation
 			create hotspot_check.make_with_text (interface_names.l_scoop_enable_hotspots)
 			extend_no_expand (l_box, hotspot_check)
 
-			create l_frame.make_with_text (interface_names.t_Scoop_time_span)
+			create l_frame.make_with_text (interface_names.t_Scoop_hotspots)
 			l_frame.align_text_left
 			l_frame.extend (l_box)
 

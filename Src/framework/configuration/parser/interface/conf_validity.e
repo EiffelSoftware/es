@@ -213,7 +213,7 @@ feature {NONE} -- Implementation
 	valid_settings: SEARCH_TABLE [STRING]
 			-- The codes of valid settings.
 		once
-			create Result.make (40)
+			create Result.make (41)
 			Result.force (s_address_expression)
 			Result.force (s_array_optimization)
 			Result.force (s_automatic_backup)
@@ -251,6 +251,7 @@ feature {NONE} -- Implementation
 			Result.force (s_external_runtime)
 			-- Added for SCOOP, by trosim on 2010-03-13
 			Result.force (s_scoop_profile)
+			Result.force (s_scoop_profile_buffer)
 			Result.force (s_shared_library_definition)
 			Result.force (s_use_cluster_name_as_namespace)
 			Result.force (s_use_all_cluster_name_as_namespace)

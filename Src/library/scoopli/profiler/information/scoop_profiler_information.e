@@ -29,6 +29,9 @@ feature -- Access
 	is_profiling_enabled: BOOLEAN
 			-- Is profiling enabled?
 
+	buffer_size: INTEGER
+			-- What's the buffer size?
+
 	directory: DIRECTORY
 			-- Directory where to put profile data
 
@@ -58,6 +61,16 @@ feature -- Basic Operations
 			directory := a_dir
 		ensure
 			directory_set: directory = a_dir
+		end
+
+	set_buffer_size (a_size: like buffer_size)
+			-- Set `buffer_size` to `a_size`.
+		require
+			size_non_negative: a_size >= 0
+		do
+			buffer_size := a_size
+		ensure
+			buffer_size_set: buffer_size = a_size
 		end
 
 invariant

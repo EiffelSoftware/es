@@ -690,6 +690,31 @@ feature -- Access queries for settings
 			Result := setting_boolean (s_scoop_profile)
 		end
 
+	setting_scoop_profile_buffer_enabled: BOOLEAN
+			-- Is scoop_profile_buffer enabled?
+			-- Added for SCOOP, by trosim on 2010-04-15
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (s_scoop_profile_buffer)
+			Result := l_settings.found and then l_settings.found_item.is_integer and then l_settings.found_item.to_integer >= 0
+		end
+
+	setting_scoop_profile_buffer: INTEGER
+			-- Value for the scoop profile buffer.
+			-- Added for SCOOP, by trosim on 2010-04-15
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (s_scoop_profile_buffer)
+			if l_settings.found then
+				check l_settings.found_item.is_integer and then l_settings.found_item.to_integer >= 0 end
+				Result := l_settings.found_item.to_integer
+			end
+		end
+
 	setting_shared_library_definition: STRING
 			-- Value for the shared_library_definition setting.
 		do

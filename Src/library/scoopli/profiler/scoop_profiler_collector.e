@@ -273,10 +273,12 @@ feature {NONE} -- Serialization
 			create profile_file.make_create_read_write (l_file_name.out)
 			create serializer.make (profile_file)
 			serializer.set_for_writing
-			log_file.open_append
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_log then
+				log_file.open_append
+			end
 		ensure
 			serializer_for_writing: not serializer.is_for_reading
-			log_file_open: log_file.is_open_append
+			log_file_open: {SCOOP_LIBRARY_CONSTANTS}.Enable_log = log_file.is_open_append
 			profile_file_open: profile_file.is_open_write
 		end
 
@@ -293,7 +295,9 @@ feature {NONE} -- Serialization
 
 			-- Close files
 			profile_file.close
-			log_file.close
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_log then
+				log_file.close
+			end
 
 			-- Rename file
 			profile_file.change_name (directory.name + Operating_environment.directory_separator.out + file_name)
@@ -310,7 +314,9 @@ feature {NONE} -- Serialization
 			a_event /= Void
 		do
 			store_handler.independent_store (a_event, serializer, True)
-			log_file.put_string (a_event.out + " " + a_event.code + "%R%N")
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_log then
+				log_file.put_string (a_event.out + " " + a_event.code + "%R%N")
+			end
 --			io.put_string (a_event.out + " " + a_event.code + "%N")
 		end
 
@@ -406,11 +412,11 @@ feature {NONE} -- Implementation
 	flush_events
 			-- Flush the events.
 		do
-			if events.count > {SCOOP_LIBRARY_CONSTANTS}.Profile_collector_buffer then
+			if events.count > information.buffer_size then
 				flush_all_events
 			end
 		ensure
-			events_flushed: old events.count > {SCOOP_LIBRARY_CONSTANTS}.Profile_collector_buffer implies events.is_empty
+			events_flushed: old events.count > information.buffer_size implies events.is_empty
 		end
 
 	flush_all_events

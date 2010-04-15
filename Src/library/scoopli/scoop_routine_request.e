@@ -30,12 +30,12 @@ feature {NONE} -- Initialization
 			requested_processors_set: requested_processors = a_requested_processors
 			routine_set: routine = a_routine
 		end
-		
+
 feature -- Access
 
 	requested_processors: TUPLE [SCOOP_PROCESSOR]
 			-- Processors to be locked by routine.
-	
+
 	requested_by: SCOOP_SEPARATE_CLIENT
 			-- Separate client requesting the execution of routine.
 
@@ -44,7 +44,7 @@ feature -- Access
 
 	active: BOOLEAN
 			-- Is routine being currently executed?
-	
+
 	ready_for_execution: SCOOP_AUTO_RESET_EVENT_HANDLE
 			-- Signal routine request is ready for execution.
 
@@ -53,7 +53,7 @@ feature -- Access
 		do
 			if wait_condition /= void then
 				-- SCOOP PROFILE
-				if attached {SCOOP_SEPARATE_TYPE} routine.target as scoop_profile_target and then scoop_profile_target.processor_.profile_collector /= Void then
+				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and attached {SCOOP_SEPARATE_TYPE} routine.target as scoop_profile_target and then scoop_profile_target.processor_.profile_collector /= Void then
 					scoop_profile_target.processor_.profile_collector.collect_wait_condition (routine)
 				end
 				wait_condition.call ([])
@@ -62,7 +62,7 @@ feature -- Access
 				Result := True
 			end
 		end
-		
+
 feature -- Element change
 
 	signal_ready_for_execution is
@@ -75,13 +75,13 @@ feature {NONE} -- Implementation
 
 	wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN]
 			-- Wait condition to be satisfied before calling routine.
-	
+
 	routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE]
 			-- Routine to be executed (enclosing routine).
 
-			
+
 invariant
-	
+
 	requested_by_not_void: requested_by /= void
 	requested_processors_not_void: requested_processors /= void
 	routine_not_void: routine /= void

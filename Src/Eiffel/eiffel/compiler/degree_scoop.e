@@ -123,12 +123,17 @@ feature {SYSTEM_I} -- Profiling
 				l_file_name.add_extension ({SCOOP_LIBRARY_CONSTANTS}.Information_file_extension)
 			end
 
-			if universe.target.setting_scoop_profile then
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and universe.target.setting_scoop_profile then
 				--| Profiling is enabled |--
 
 				-- Create information object
 				create information.make
 				information.enable_profiling
+				if universe.target.setting_scoop_profile_buffer_enabled then
+					information.set_buffer_size (universe.target.setting_scoop_profile_buffer)
+				else
+					information.set_buffer_size ({SCOOP_LIBRARY_CONSTANTS}.Profile_collector_buffer)
+				end
 
 				-- Produce profiling information for the classes
 				from

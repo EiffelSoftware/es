@@ -26,7 +26,7 @@ feature {NONE} -- Basic operations
 
 			-- SCOOP PROFILE
 			-- Added by trosim
-			if processor_.profile_collector /= Void then
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and processor_.profile_collector /= Void then
 				scoop_collector := processor_.profile_collector
 				-- Collect call (always)
 				scoop_collector.collect_feature_call (a_routine, a_caller_.processor_, a_caller_.processor_.synchronous_processors_has (processor_))
@@ -35,7 +35,7 @@ feature {NONE} -- Basic operations
 			if a_caller_.processor_.synchronous_processors_has (processor_) then
 				-- SCOOP PROFILE
 				-- Added by trosim
-				if scoop_collector /= Void and then not scoop_collector.has_separate_arguments (a_routine) then
+				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and scoop_collector /= Void and then not scoop_collector.has_separate_arguments (a_routine) then
 					-- This doesn't go through the scheduler, collect wait/application/return here
 					scoop_collector.collect_feature_wait (a_routine, create {LINKED_LIST [SCOOP_PROCESSOR]}.make)
 					scoop_collector.collect_feature_application (a_routine)
@@ -62,7 +62,7 @@ feature {NONE} -- Basic operations
 
 			-- SCOOP PROFILE
 			-- Added by trosim
-			if processor_.profile_collector /= Void then
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and processor_.profile_collector /= Void then
 				scoop_collector := processor_.profile_collector
 				-- Collect call (always)
 				scoop_collector.collect_feature_call (a_routine, a_caller_.processor_, True)
@@ -71,7 +71,7 @@ feature {NONE} -- Basic operations
 			if a_caller_.processor_.synchronous_processors_has (processor_) then
 				-- SCOOP PROFILE
 				-- Added by trosim
-				if scoop_collector /= Void and then not scoop_collector.has_separate_arguments (a_routine) then
+				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and scoop_collector /= Void and then not scoop_collector.has_separate_arguments (a_routine) then
 					-- This doesn't go through the scheduler, collect wait/application/return here
 					scoop_collector.collect_feature_wait (a_routine, create {LINKED_LIST [SCOOP_PROCESSOR]}.make)
 					scoop_collector.collect_feature_application (a_routine)
