@@ -52,6 +52,7 @@ feature -- Generation
 			-- Generate routines needed by test case serialization.
 		do
 			generate_supported_query_names_routine
+			generate_supported_query_names_with_static_type_routine
 			generate_supported_query_type_routine
 			generate_initialize_supported_query_name_table_routine
 		end
@@ -196,6 +197,55 @@ feature -- Generation
 			stream.put_line ("")
 		end
 
+	generate_supported_query_names_with_static_type_routine is
+			-- Generate the routine `supported_query_names_with_static_type'.
+		local
+			l_cursor: CURSOR
+		do
+			stream.indent
+			stream.put_line ("supported_query_names_with_static_type (o: ANY; a_static_type: STRING): LINKED_LIST [STRING] is")
+			stream.indent
+			stream.put_line ("do")
+			if configuration.is_test_case_serialization_enabled then
+				stream.indent
+				if not class_info.is_empty then
+					l_cursor := class_info.cursor
+					from
+						class_info.start
+					until
+						class_info.after
+					loop
+						if class_info.index = 1 then
+							stream.put_string ("if ")
+						else
+							stream.put_string ("elseif ")
+						end
+						stream.put_string ("a_static_type.is_equal (%"" + class_info.item.type_name + "%")")
+						stream.put_line (" then")
+						stream.indent
+						stream.put_string ("Result := supported_query_name_table.item (")
+						stream.put_string (class_info.index.out)
+						stream.put_line (")")
+						stream.dedent
+						class_info.forth
+					end
+					stream.put_line ("else")
+					stream.indent
+					stream.put_line ("Result := supported_query_name_table.item (0)")
+					stream.dedent
+					stream.put_line ("end")
+					class_info.go_to (l_cursor)
+				else
+					stream.put_line ("Result := supported_query_name_table.item (0)")
+				end
+				stream.dedent
+			end
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
 	generate_supported_query_type_routine is
 			-- Generate the routine `supported_query_names'.
 		local
@@ -249,7 +299,7 @@ feature -- Generation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -808,7 +808,7 @@ feature -- Object state checking
 			execute_protected_for_query_recording (a_object)
 		end
 
-	object_summary (a_object_index: INTEGER): TUPLE [obj_summary: STRING; hash: INTEGER] is
+	object_summary (a_object_index: INTEGER; a_static_type: STRING): TUPLE [obj_summary: STRING; hash: INTEGER] is
 			-- Summary of `a_object_index'
 			-- `obj_summary' is the summary of the variable given by index `a_object_index'.
 			-- `hash' is the hash code of the summary, with object index ignored.
@@ -836,14 +836,15 @@ feature -- Object state checking
 					l_data.append (once ": [[Void]], [[]]%N")
 				else
 					check_invariant (a_object_index, o)
-					l_data.append (once ": [[" + o.generating_type + "]], [[")
+					l_data.append (once ": [[" + a_static_type + "]], [[")
 					l_data.append (supported_query_types (o))
 					l_data.append (once "]]%N")
-					record_object_queries (a_object_index, o)
+--					record_object_queries (a_object_index, o)
+					record_queries_with_static_type (o, a_static_type)
 
 					l_values := query_values
 					l_status := query_status
-					l_queries := supported_query_names (o)
+					l_queries := supported_query_names_with_static_type (o, a_static_type)
 					if l_values.count = l_status.count and then l_values.count = l_queries.count then
 						from
 							l_values.start
@@ -1056,6 +1057,12 @@ feature -- Object state checking
 			-- Flag to indicate that the string repsrsentation of the query value is its memory address.
 
 	record_queries (o: ANY) is
+			-- Record queries for `o'.
+		deferred
+		end
+
+	record_queries_with_static_type (o: ANY; a_static_type: STRING)
+			-- Record quereis for `o' whose static type name is `a_static_type'
 		deferred
 		end
 
@@ -1434,6 +1441,16 @@ feature -- Test case serialization
 			-- Suported query names for `o' for state retrieval
 		require
 			o_attached: o /= Void
+		deferred
+		ensure
+			result_attached: Result /= Void
+		end
+
+
+	supported_query_names_with_static_type (o: ANY; a_static_type: STRING): LINKED_LIST [STRING]
+		require
+			o_attached: o /= Void
+			a_static_type_attached: a_static_type /= Void
 		deferred
 		ensure
 			result_attached: Result /= Void

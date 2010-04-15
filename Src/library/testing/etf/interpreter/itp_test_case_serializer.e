@@ -184,7 +184,7 @@ feature -- Access
 						until
 							l_state_summary.after
 						loop
-							Result.append (l_state_summary.item_for_iteration)
+							Result.append (l_state_summary.item_for_iteration.summary)
 							Result.append_character ('%N')
 							l_state_summary.forth
 						end
@@ -200,7 +200,7 @@ feature -- Access
 						until
 							l_state_summary.after
 						loop
-							Result.append (l_state_summary.item_for_iteration)
+							Result.append (l_state_summary.item_for_iteration.summary)
 							Result.append_character ('%N')
 							l_state_summary.forth
 						end
@@ -292,7 +292,7 @@ feature -- Basic operations
 			-- Retrieve state of objects before test case
 			-- execution.
 		local
-			l_data: TUPLE [summary: HASH_TABLE [STRING_8, INTEGER_32]; hash: STRING]
+			l_data: TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING]
 		do
 			pre_state_object_summary := Void
 			l_data := abstract_object_state (True)
@@ -305,7 +305,7 @@ feature -- Basic operations
 			-- Retrieve post state of the test case.
 			-- `a_is_failing_test_case' indicates if the last test case is failing.
 		local
-			l_data: TUPLE [summary: HASH_TABLE [STRING_8, INTEGER_32]; hash: STRING]
+			l_data: TUPLE [summary: ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]; hash: STRING]
 		do
 			post_state_object_summary := Void
 			if is_test_case_setup then
@@ -319,7 +319,7 @@ feature -- Basic operations
 			end
 		end
 
-	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: HASH_TABLE [STRING_8, INTEGER_32]; hash: STRING] is
+	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING] is
 			-- Retrieve object state summary from objects specified by `operands'
 			-- `a_is_pre_state' indicates if this state extraction are before or after test case execution.
 			-- `summary' is the state summary for `operands'.
@@ -332,6 +332,7 @@ feature -- Basic operations
 			l_interpreter: like interpreter
 			l_sum_data: TUPLE [summary: STRING; hash: INTEGER]
 			l_hash_code: STRING
+			l_types: like types
 		do
 			if is_test_case_setup then
 					-- Setup test case hash code, which consists the hash of the states of all operands.
@@ -342,6 +343,7 @@ feature -- Basic operations
 				l_hash_code.append_character ('.')
 
 				l_operands := operands
+				l_types := types
 				l_interpreter := interpreter
 				from
 						-- FIXME: We don't record state of creation target and query result,
@@ -357,12 +359,12 @@ feature -- Basic operations
 				until
 					i > l_upper
 				loop
-					l_sum_data := l_interpreter.object_summary (l_operands.item (i))
+					l_sum_data := l_interpreter.object_summary (l_operands.item (i), l_types.item (i))
 					l_hash_code.append_integer (l_sum_data.hash)
 					if i < l_upper then
 						l_hash_code.append_character ('.')
 					end
-					l_summary.put (commented_string (l_sum_data.summary), i)
+					l_summary.extend ([commented_string (l_sum_data.summary), i])
 					i := i + 1
 				end
 				Result := [l_summary, l_hash_code]
@@ -466,12 +468,12 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	pre_state_object_summary: detachable HASH_TABLE [STRING, INTEGER]
+	pre_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
 			-- Table of object state summary in pre-state.
 			-- Key is the object index,
 			-- value is a string containing state summary for that object
 
-	post_state_object_summary: detachable HASH_TABLE [STRING, INTEGER]
+	post_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
 			-- Table of object state summary in post-state
 			-- Key is the object index,
 			-- value is a string containing state summary for that object

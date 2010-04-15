@@ -107,7 +107,7 @@ feature -- Access
 			l_count := argument_list.count + 1
 
 			create Result.make (l_count)
-			Result.put (l_target_type.name, 0)
+			Result.put (cleaned_type_name (l_target_type.name), 0)
 
 			if argument_count > 0 then
 				l_args := creation_procedure.arguments
@@ -120,7 +120,7 @@ feature -- Access
 				loop
 					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
-					Result.put (l_type.name, i)
+					Result.put (cleaned_type_name (l_type.name), i)
 					l_args.forth
 					i := i + 1
 				end

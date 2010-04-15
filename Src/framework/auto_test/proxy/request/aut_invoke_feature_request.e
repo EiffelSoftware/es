@@ -138,7 +138,7 @@ feature -- Access
 			end
 
 			create Result.make (l_count)
-			Result.put (l_target_type.name, 0)
+			Result.put (cleaned_type_name (l_target_type.name), 0)
 
 			if argument_count > 0 then
 				l_args := feature_to_call.arguments
@@ -151,7 +151,7 @@ feature -- Access
 				loop
 					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
-					Result.put (l_type.name, i)
+					Result.put (cleaned_type_name (l_type.name), i)
 					l_args.forth
 					i := i + 1
 				end
@@ -159,7 +159,9 @@ feature -- Access
 			end
 
 			if is_feature_query then
-				Result.put (feature_to_call.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).name, l_count - 1)
+				l_type := feature_to_call.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+				l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
+				Result.put (cleaned_type_name (l_type.name), l_count - 1)
 			end
 		end
 

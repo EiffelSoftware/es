@@ -350,6 +350,7 @@ feature -- Object state retrieval
 
 					-- Generate routines to record states.
 				put_record_queries_routine (l_class_info)
+				put_record_queries_with_static_type_routine (l_class_info)
 
 				from
 					l_class_info.start
@@ -363,6 +364,7 @@ feature -- Object state retrieval
 				put_record_query_for_void
 			else
 				put_empty_record_queries_routine
+				put_empty_record_queries_with_static_type_routine
 			end
 		end
 
@@ -482,6 +484,79 @@ feature -- Object state retrieval
 			stream.put_line ("")
 		end
 
+	put_record_queries_with_static_type_routine (a_classes: LIST [TUPLE [a_class_name: STRING; a_type: TYPE_A; a_type_name: STRING]]) is
+			-- Generate `record_queries_with_static_type' routine for record argumentless queries
+			-- of type BOOLEAN and INTEGER.
+			-- Note: If the recording from byte-code works, this feature should be removed.
+			-- This is a walkaround for the moment. 4.10.2009 Jasonw
+		local
+			l_class: CLASS_C
+			l_classi: LIST [CLASS_I]
+			l_class_name: STRING
+			l_local_name: STRING
+			i: INTEGER
+		do
+			stream.indent
+			stream.put_line ("record_queries_with_static_type (o: detachable ANY; a_static_type: STRING)")
+			stream.indent
+			stream.put_line ("do")
+			stream.indent
+			from
+				type_a_checker.init_for_checking (root_feature, root_class, Void, Void)
+				a_classes.start
+				i := 1
+			until
+				a_classes.after
+			loop
+				l_class_name := a_classes.item.a_class_name
+				l_local_name := "l_" + l_class_name.as_lower
+				if i = 1 then
+					stream.put_string ("if a_static_type.is_equal (%"" + a_classes.item.a_type_name + "%") and then ")
+				else
+					stream.put_string ("elseif a_static_type.is_equal (%"" + a_classes.item.a_type_name + "%") and then ")
+				end
+				stream.put_string ("attached {")
+				stream.put_string (a_classes.item.a_type_name)
+				stream.put_string ("} o as ")
+				stream.put_string (l_local_name)
+				stream.put_line (" then")
+
+				stream.indent
+				stream.put_string ("record_query_")
+				stream.put_string (l_class_name)
+				stream.put_string (" (")
+				stream.put_string (l_local_name)
+				stream.put_line (")")
+				stream.dedent
+				i := i + 1
+				a_classes.forth
+			end
+
+			if a_classes.is_empty then
+				stream.put_string ("if ")
+			else
+				stream.put_string ("elseif ")
+			end
+			stream.put_line ("attached {ANY} o as l_obj_of_any then")
+			stream.indent
+			stream.put_line ("record_query_default_for_any (l_obj_of_any)")
+			stream.dedent
+
+			stream.put_line ("else")
+			stream.indent
+			stream.put_line ("record_query_for_void")
+
+			stream.dedent
+			stream.put_line ("end")
+
+			stream.dedent
+			stream.put_line ("end")
+
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
 	put_empty_record_queries_routine is
 			-- Generate an empty `record_queires' feature.
 			-- Note: If the recording from byte-code works, this feature should be removed.
@@ -497,6 +572,19 @@ feature -- Object state retrieval
 			stream.put_line ("")
 		end
 
+	put_empty_record_queries_with_static_type_routine
+			-- Generate an empty `record_queires_with_static_type' feature.
+			-- Note: If the recording from byte-code works, this feature should be removed.
+		do
+			stream.indent
+			stream.put_line ("record_queries_with_static_type (o: ANY; a_static_type: STRING)")
+			stream.indent
+			stream.put_line ("do")
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
 	put_record_query_routine (a_class_name: STRING; a_type: TYPE_A; a_full_type_name: STRING) is
 			-- Put routine to record queries for `a_type'.
 		require
@@ -864,7 +952,7 @@ feature -- Test case serialization
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
