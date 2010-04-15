@@ -56,8 +56,8 @@ feature {NONE} -- Implementation
 	once
 		create Result
 	end
-	
-	max_actors: INTEGER is 10
+
+	max_actors: INTEGER is 3
 			-- Maximum number of actors
 
 	launch_actor (a_actor: separate ACTOR) is

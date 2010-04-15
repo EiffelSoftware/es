@@ -38,6 +38,7 @@ feature {NONE} -- Implementation
 			random.forth;
 			(create {EXECUTION_ENVIRONMENT}).sleep (1000000 * random_integer (250, 500))
 			leave (hall)
+			over := true
 		end
 
 	enter (a_hall: separate HALL) is
