@@ -58,6 +58,7 @@ feature -- Access
 			l_object: detachable ANY
 			l_should_serialize: BOOLEAN
 			l_hash: INTEGER
+			l_state_summary: like pre_state_object_summary
 		do
 			if is_test_case_setup then
 				l_hash := test_case_hash_code.hash_code
@@ -175,17 +176,36 @@ feature -- Access
 					Result.append (once "</hash_code>%N")
 
 						-- Synthesize object summary.
-					Result.append (once "<object_state>%N")
-					from
-						object_summary.start
-					until
-						object_summary.after
-					loop
-						Result.append (object_summary.item_for_iteration)
-						Result.append_character ('%N')
-						object_summary.forth
+					Result.append (once "<pre_state>%N")
+					l_state_summary := pre_state_object_summary
+					if l_state_summary /= Void then
+						from
+							l_state_summary.start
+						until
+							l_state_summary.after
+						loop
+							Result.append (l_state_summary.item_for_iteration)
+							Result.append_character ('%N')
+							l_state_summary.forth
+						end
 					end
-					Result.append (once "</object_state>%N")
+					Result.append (once "</pre_state>%N")
+
+						-- Synthesize object summary.
+					Result.append (once "<post_state>%N")
+					l_state_summary := post_state_object_summary
+					if l_state_summary /= Void then
+						from
+							l_state_summary.start
+						until
+							l_state_summary.after
+						loop
+							Result.append (l_state_summary.item_for_iteration)
+							Result.append_character ('%N')
+							l_state_summary.forth
+						end
+					end
+					Result.append (once "</post_state>%N")
 
 						-- Synthesize serialization
 					Result.append (once "<data_length>")
@@ -271,28 +291,43 @@ feature -- Basic operations
 	retrieve_pre_state is
 			-- Retrieve state of objects before test case
 			-- execution.
+		local
+			l_data: TUPLE [summary: HASH_TABLE [STRING_8, INTEGER_32]; hash: STRING]
 		do
-			retrieve_object_state_summary
+			pre_state_object_summary := Void
+			l_data := abstract_object_state (True)
+			pre_state_object_summary := l_data.summary
+			test_case_hash_code := l_data.hash
 			retrieve_object_serialization
 		end
 
-	retrieve_post_state is
+	retrieve_post_state (a_is_failing_test_case: BOOLEAN) is
 			-- Retrieve post state of the test case.
+			-- `a_is_failing_test_case' indicates if the last test case is failing.
+		local
+			l_data: TUPLE [summary: HASH_TABLE [STRING_8, INTEGER_32]; hash: STRING]
 		do
+			post_state_object_summary := Void
 			if is_test_case_setup then
 				exception := interpreter.error_buffer
+				if not a_is_failing_test_case then
+					l_data := abstract_object_state (False)
+					post_state_object_summary := l_data.summary
+				end
 			else
 				exception := Void
 			end
 		end
 
-	retrieve_object_state_summary is
+	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: HASH_TABLE [STRING_8, INTEGER_32]; hash: STRING] is
 			-- Retrieve object state summary from objects specified by `operands'
-			-- and store summaries in `object_summary'.
+			-- `a_is_pre_state' indicates if this state extraction are before or after test case execution.
+			-- `summary' is the state summary for `operands'.
+			-- `hash' is the hash code of `summary'.
 		local
 			i: INTEGER
 			l_upper: INTEGER
-			l_summary: like object_summary
+			l_summary: like pre_state_object_summary
 			l_operands: like operands
 			l_interpreter: like interpreter
 			l_sum_data: TUPLE [summary: STRING; hash: INTEGER]
@@ -300,8 +335,7 @@ feature -- Basic operations
 		do
 			if is_test_case_setup then
 					-- Setup test case hash code, which consists the hash of the states of all operands.
-				create test_case_hash_code.make (64)
-				l_hash_code := test_case_hash_code
+				create l_hash_code.make (64)
 				l_hash_code.append (class_name)
 				l_hash_code.append_character ('.')
 				l_hash_code.append (feature_name)
@@ -310,14 +344,16 @@ feature -- Basic operations
 				l_operands := operands
 				l_interpreter := interpreter
 				from
+						-- FIXME: We don't record state of creation target and query result,
+						-- because when I tried to record state for them, I got wield crashes.
+						-- 15.4.2010 Jason
 					if is_creation then
 						i := 1
-						l_upper := argument_count
 					else
 						i := 0
-						l_upper := argument_count
 					end
-					create l_summary .make (l_upper - i + 1)
+					l_upper := argument_count
+					create l_summary.make (l_upper - i + 1)
 				until
 					i > l_upper
 				loop
@@ -329,9 +365,9 @@ feature -- Basic operations
 					l_summary.put (commented_string (l_sum_data.summary), i)
 					i := i + 1
 				end
-				object_summary := l_summary
+				Result := [l_summary, l_hash_code]
 			else
-				object_summary := Void
+				Result := Void
 			end
 		end
 
@@ -426,14 +462,20 @@ feature{NONE} -- Implementation
 	exception: detachable STRING
 			-- Exception trace of the last test case
 			-- Can be empty if there was no exception
-			-- or Void if the test case is not properly setup.
+			-- or Void if the test case is not properly setup.		
 
 feature{NONE} -- Implementation
 
-	object_summary: detachable HASH_TABLE [STRING, INTEGER]
-			-- Table of object state summary
+	pre_state_object_summary: detachable HASH_TABLE [STRING, INTEGER]
+			-- Table of object state summary in pre-state.
 			-- Key is the object index,
 			-- value is a string containing state summary for that object
+
+	post_state_object_summary: detachable HASH_TABLE [STRING, INTEGER]
+			-- Table of object state summary in post-state
+			-- Key is the object index,
+			-- value is a string containing state summary for that object
+
 
 	test_case_hash_code: STRING
 			-- Hash code for current test case

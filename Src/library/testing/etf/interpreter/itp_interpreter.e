@@ -1491,7 +1491,7 @@ feature -- Test case serialization
 			-- Retrieve post test case state.		
 		do
 			if test_case_serializer.is_test_case_setup then
-				test_case_serializer.retrieve_post_state
+				test_case_serializer.retrieve_post_state (is_failing_test_case)
 			end
 		end
 
