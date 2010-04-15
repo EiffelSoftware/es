@@ -30,6 +30,7 @@ inherit
 		export
 			{NONE} all
 		end
+	ETR_SHARED_TOOLS
 
 feature -- Operation
 
@@ -72,7 +73,7 @@ feature {AST_EIFFEL} -- Roundtrip
 	process_feature_as (l_as: FEATURE_AS)
 		do
 			if attached context and then attached context.feature_named (l_as.feature_name.name) as l_feat then
-				current_feature := l_feat.e_feature
+				current_feature := l_feat
 			end
 
 			Precursor(l_as)
@@ -182,7 +183,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process_and_check (l_as.obsolete_message)
 
 			if not is_in_inline_agent and current_feature /= void then
-				current_breakpoint_slot := inherited_precondition_count(current_feature)+1
+				current_breakpoint_slot := contract_tools.inherited_precondition_count (current_feature)+1
 			else
 				current_breakpoint_slot := 1
 			end
@@ -192,7 +193,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process_and_check (l_as.routine_body)
 
 			if not is_in_inline_agent and current_feature /= void then
-				current_breakpoint_slot := current_breakpoint_slot+inherited_postcondition_count (current_feature)
+				current_breakpoint_slot := contract_tools.inherited_postcondition_count (current_feature)
 			end
 
 			safe_process_and_check (l_as.postcondition)
@@ -214,7 +215,7 @@ feature {NONE} -- Implementation
 	context: detachable CLASS_C
 			-- The class the ast belongs to
 
-	current_feature: detachable E_FEATURE
+	current_feature: detachable FEATURE_I
 			-- The feature we're currently in
 
 	is_in_inline_agent: BOOLEAN
@@ -233,84 +234,6 @@ feature {NONE} -- Implementation
 
 	current_breakpoint_slot: INTEGER
 			-- The current breakpoint slot
-
-	feature_postcondition_count (a_feature: E_FEATURE): INTEGER
-			-- Number of full postcondition in `a_feature'
-		local
-			l_current_feature: like a_feature
-			l_rout: ROUTINE_AS
-		do
-			if a_feature.ast.body.is_routine then
-				l_rout := a_feature.ast.body.as_routine
-
-				if l_rout.postcondition /= void and then l_rout.postcondition.assertions /= void then
-					Result := l_rout.postcondition.assertions.count
-				end
-			end
-		end
-
-	inherited_postcondition_count (a_feature: E_FEATURE): INTEGER
-			-- Number of inherited full postconditions in `a_feature'
-		local
-			l_feat_id: INTEGER
-			l_precursors: LIST[CLASS_C]
-		do
-			l_precursors := a_feature.precursors
-
-			if l_precursors /= void then
-				from
-					l_feat_id := a_feature.feature_id
-					l_precursors.start
-				until
-					l_precursors.after
-				loop
-					if attached l_precursors.item.feature_of_feature_id (l_feat_id) as l_feat then
-						Result := Result + feature_postcondition_count(l_feat.e_feature)
-					end
-
-					l_precursors.forth
-				end
-			end
-		end
-
-	feature_precondition_count (a_feature: E_FEATURE): INTEGER
-			-- Number of full preconditions in `a_feature'
-		local
-			l_current_feature: like a_feature
-			l_rout: ROUTINE_AS
-		do
-			if a_feature.ast.body.is_routine then
-				l_rout := a_feature.ast.body.as_routine
-
-				if l_rout.precondition /= void and then l_rout.precondition.assertions /= void then
-					Result := l_rout.precondition.assertions.count
-				end
-			end
-		end
-
-	inherited_precondition_count (a_feature: E_FEATURE): INTEGER
-			-- Number of inherited full preconditions in `a_feature'
-		local
-			l_feat_id: INTEGER
-			l_precursors: LIST[CLASS_C]
-		do
-			l_precursors := a_feature.precursors
-
-			if l_precursors /= void then
-				from
-					l_feat_id := a_feature.feature_id
-					l_precursors.start
-				until
-					l_precursors.after
-				loop
-					if attached l_precursors.item.feature_of_feature_id (l_feat_id) as l_feat then
-						Result := Result + feature_precondition_count(l_feat.e_feature)
-					end
-
-					l_precursors.forth
-				end
-			end
-		end
 
 	safe_process_and_check (a_node: AST_EIFFEL)
 		do

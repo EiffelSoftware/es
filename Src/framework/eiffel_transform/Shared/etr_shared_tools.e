@@ -8,6 +8,12 @@ class
 
 feature {NONE} -- Shared
 
+	contract_tools: ETR_CONTRACT_TOOLS
+			-- Shared instance of ETR_CONTRACT_TOOLS
+		once
+			create Result
+		end
+
 	tracking_tools: ETR_TRACKING_TOOLS
 			-- Shared instance of ETR_TRACKING_TOOLS
 		once
