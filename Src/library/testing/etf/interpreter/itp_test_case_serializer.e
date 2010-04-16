@@ -73,149 +73,32 @@ feature -- Access
 						test_case_hashs.put (test_case_hash_code, l_hash)
 					end
 
-					l_last := operands.count - 1
+						-- Synthesize serialization part for a test case.
 					create Result.make (1024)
 					Result.append (once "<serialization>%N")
 
-						-- Synthesize class.
-					Result.append (once "<class>%N")
-					Result.append (class_name)
-					Result.append (once "%N</class>%N")
-
 						-- Synthesize time.
-					Result.append (once "<time>")
-					Result.append (time.out)
-					Result.append (once "</time>%N")
+					append_time (time, Result)
 
-						-- Synthesize test case body.
-					Result.append (once "<test_case>%N")
-
-						-- Synthesize return value.
-					if is_query then
-						Result.append (once "v_")
-						Result.append (operands.item (l_last).out)
-						Result.append (once " := ")
-					end
-
-					if is_creation then
-						Result.append (once "create {")
-						Result.append (types.item (0))
-						Result.append (once "}")
-					end
-
-					Result.append (once "v_")
-					Result.append (operands.item (0).out)
-					Result.append_character ('.')
-					Result.append (feature_name)
-
-						-- Synthesize arguments.
-					if argument_count > 0 then
-						Result.append (once " (")
-						from
-							i := 1
-						until
-							i > argument_count
-						loop
-							Result.append (once "v_")
-							Result.append (operands.item (i).out)
-							if i < argument_count then
-								Result.append (once ", ")
-							end
-							i := i + 1
-						end
-						Result.append (once ")")
-					end
-					Result.append (once "%N</test_case>%N")
-
-						-- Synthesize type information.
-					Result.append (once "<types>%N")
-					from
-						i := 0
-						create l_var_tbl.make (5)
-					until
-						i > l_last
-					loop
-						l_var_id := operands.item (i)
-						if not l_var_tbl.has (l_var_id) then
-							l_var_tbl.put (l_var_id, l_var_id)
-							append_variable_with_type (l_var_id, types.item (i), Result)
-						end
-						i := i + 1
-					end
-					Result.append (once "</types>%N")
+						-- Synthesize test case.
+					append_test_case (class_name, feature_name, argument_count, is_creation, is_query, operands, types, Result)
 
 						-- Synthesize all AutoTest created variables in current test case.
-					l_description := object_description
-					Result.append (once "<all_variables>%N")
-					from
-						l_description.start
-					until
-						l_description.after
-					loop
-						l_index := l_description.key_for_iteration
-						l_object := l_description.item_for_iteration
-						if l_object = Void then
-							append_variable_with_type (l_index, once "NONE", Result)
-						else
-							append_variable_with_type (l_index, l_object.generating_type, Result)
-						end
-						l_description.forth
-					end
-					Result.append (once "</all_variables>%N")
+					append_all_variables (object_description, Result)
 
 						-- Synthesize trace.
-					Result.append (once "<trace>%N<![CDATA[%N")
-					if exception /= Void then
-						Result.append (exception)
-					end
-					Result.append (once "%N]]>%N</trace>%N")
+					append_exception_trace (exception, Result)
 
 						-- Synthesize hash.
-					Result.append (once "<hash_code>")
-					Result.append (test_case_hash_code)
-					Result.append (once "</hash_code>%N")
+					append_test_case_hash_code (test_case_hash_code, Result)
 
-						-- Synthesize object summary.
-					Result.append (once "<pre_state>%N")
-					l_state_summary := pre_state_object_summary
-					if l_state_summary /= Void then
-						from
-							l_state_summary.start
-						until
-							l_state_summary.after
-						loop
-							Result.append (l_state_summary.item_for_iteration.summary)
-							Result.append_character ('%N')
-							l_state_summary.forth
-						end
-					end
-					Result.append (once "</pre_state>%N")
-
-						-- Synthesize object summary.
-					Result.append (once "<post_state>%N")
-					l_state_summary := post_state_object_summary
-					if l_state_summary /= Void then
-						from
-							l_state_summary.start
-						until
-							l_state_summary.after
-						loop
-							Result.append (l_state_summary.item_for_iteration.summary)
-							Result.append_character ('%N')
-							l_state_summary.forth
-						end
-					end
-					Result.append (once "</post_state>%N")
+						-- Synthesize pre-/post-state object summary.
+					append_object_state (pre_state_object_summary, True, Result)
+					append_object_state (post_state_object_summary, False, Result)
 
 						-- Synthesize serialization
-					Result.append (once "<data_length>")
-					Result.append (object_serialization.count.out)
-					Result.append (once "</data_length>%N")
-					Result.append (once "<data><![CDATA[")
-					if object_serialization /= Void then
-						Result.append (object_serialization)
-					end
-					Result.append (once "]]></data>%N")
+					append_object_serialization (object_serialization, Result)
+
 					Result.append (once "%N</serialization>%N")
 				end
 			else
@@ -225,24 +108,46 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	append_variable_with_type (a_index: INTEGER; a_type: STRING; a_buffer: STRING)
-			-- Append variable with `a_index' and `a_type' into `a_buffer'.
-		do
-			a_buffer.append (once "%Tv_")
-			a_buffer.append_integer (a_index)
-			a_buffer.append (once ": ")
-			if a_index = 0 then
-				a_buffer.append (once "NONE")
-			else
-				a_buffer.append (a_type)
-			end
-			a_buffer.append_character ('%N')
-		end
+	class_name: detachable STRING
+			-- Class name of the test case
+
+	feature_name: detachable STRING
+			-- Feature name of the test case
+
+	test_case_index: INTEGER
+			-- Test case index
+
+	time: INTEGER
+			-- Time in millisecond relative to the starting of current test session
+
+	operands: detachable SPECIAL [INTEGER]
+			-- Object index of operands for the test case
+			-- Target object is in the 0-th position,
+			-- followed by arguments, if any, and then by result object, if any.
+			-- Note: Strictly speaking, the result object is not an operand for the feature call.
+
+	types: detachable SPECIAL [STRING]
+			-- Type names of the `operands'.
+			-- Type names appear in the same order as their corresponding objects in `operands'.
+
+	argument_count: INTEGER
+			-- Number of arguments in the feature with name `feature_name'
+
+	exception: detachable STRING
+			-- Exception trace of the last test case
+			-- Can be empty if there was no exception
+			-- or Void if the test case is not properly setup.		
 
 feature -- Status report
 
 	is_test_case_setup: BOOLEAN
 			-- Is the last test case set by `setup_test_case' valid?
+
+	is_creation: BOOLEAN
+			-- Is feature with `feature_name' a creator?
+
+	is_query: BOOLEAN
+			-- Is feature with `feature_name' a query?
 
 feature -- Basic operations
 
@@ -319,6 +224,56 @@ feature -- Basic operations
 			end
 		end
 
+	retrieve_object_serialization is
+			-- Retrieve serialized data for objects specified by `operands'
+			-- and store the data in `object_serialization'.
+		local
+			l_lower: INTEGER
+			l_upper: INTEGER
+			l_stream: STRING
+			l_data: TUPLE [serialization: STRING; description: HASH_TABLE [detachable ANY, INTEGER]]
+		do
+			if is_test_case_setup then
+
+				if is_creation then
+					l_lower := 1
+					l_upper := argument_count
+				else
+					l_lower := 0
+					l_upper := l_lower + argument_count
+				end
+				l_data := objects_as_string (operands, l_lower, l_upper)
+				object_serialization := l_data.serialization
+				object_description := l_data.description
+			else
+				object_serialization := Void
+			end
+		end
+
+feature{NONE} -- Implementation
+
+	pre_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
+			-- Table of object state summary in pre-state.
+			-- Key is the object index,
+			-- value is a string containing state summary for that object
+
+	post_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
+			-- Table of object state summary in post-state
+			-- Key is the object index,
+			-- value is a string containing state summary for that object
+
+
+	test_case_hash_code: STRING
+			-- Hash code for current test case
+
+	object_serialization: detachable STRING
+			-- String representing the serialized data for objects specified by
+			-- `operands'
+
+	object_description: HASH_TABLE [detachable ANY, INTEGER]
+			-- List of variables in `object_serialization' along with their object index.
+			-- Key is variable index, value is the variable object itself.
+
 	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING] is
 			-- Retrieve object state summary from objects specified by `operands'
 			-- `a_is_pre_state' indicates if this state extraction are before or after test case execution.
@@ -346,15 +301,15 @@ feature -- Basic operations
 				l_types := types
 				l_interpreter := interpreter
 				from
-						-- FIXME: We don't record state of creation target and query result,
-						-- because when I tried to record state for them, I got wield crashes.
-						-- 15.4.2010 Jason
-					if is_creation then
+					if is_creation and a_is_pre_state then
 						i := 1
 					else
 						i := 0
 					end
 					l_upper := argument_count
+					if is_query and then not a_is_pre_state then
+						l_upper := l_upper + 1
+					end
 					create l_summary.make (l_upper - i + 1)
 				until
 					i > l_upper
@@ -401,94 +356,6 @@ feature -- Basic operations
 		ensure
 			result_attached: Result /= Void
 		end
-
-	retrieve_object_serialization is
-			-- Retrieve serialized data for objects specified by `operands'
-			-- and store the data in `object_serialization'.
-		local
-			l_lower: INTEGER
-			l_upper: INTEGER
-			l_stream: STRING
-			l_data: TUPLE [serialization: STRING; description: HASH_TABLE [detachable ANY, INTEGER]]
-		do
-			if is_test_case_setup then
-
-				if is_creation then
-					l_lower := 1
-					l_upper := argument_count
-				else
-					l_lower := 0
-					l_upper := l_lower + argument_count
-				end
-				l_data := objects_as_string (operands, l_lower, l_upper)
-				object_serialization := l_data.serialization
-				object_description := l_data.description
-			else
-				object_serialization := Void
-			end
-		end
-
-feature{NONE} -- Implementation
-
-	class_name: detachable STRING
-			-- Class name of the test case
-
-	feature_name: detachable STRING
-			-- Feature name of the test case
-
-	test_case_index: INTEGER
-			-- Test case index
-
-	time: INTEGER
-			-- Time in millisecond relative to the starting of current test session
-
-	operands: detachable SPECIAL [INTEGER]
-			-- Object index of operands for the test case
-			-- Target object is in the 0-th position,
-			-- followed by arguments, if any, and then by result object, if any.
-			-- Note: Strictly speaking, the result object is not an operand for the feature call.
-
-	types: detachable SPECIAL [STRING]
-			-- Type names of the `operands'.
-			-- Type names appear in the same order as their corresponding objects in `operands'.
-
-	argument_count: INTEGER
-			-- Number of arguments in the feature with name `feature_name'
-
-	is_creation: BOOLEAN
-			-- Is feature with `feature_name' a creator?
-
-	is_query: BOOLEAN
-			-- Is feature with `feature_name' a query?
-
-	exception: detachable STRING
-			-- Exception trace of the last test case
-			-- Can be empty if there was no exception
-			-- or Void if the test case is not properly setup.		
-
-feature{NONE} -- Implementation
-
-	pre_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
-			-- Table of object state summary in pre-state.
-			-- Key is the object index,
-			-- value is a string containing state summary for that object
-
-	post_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
-			-- Table of object state summary in post-state
-			-- Key is the object index,
-			-- value is a string containing state summary for that object
-
-
-	test_case_hash_code: STRING
-			-- Hash code for current test case
-
-	object_serialization: detachable STRING
-			-- String representing the serialized data for objects specified by
-			-- `operands'
-
-	object_description: HASH_TABLE [detachable ANY, INTEGER]
-			-- List of variables in `object_serialization' along with their object index.
-			-- Key is variable index, value is the variable object itself.
 
 feature{NONE} -- Implementation
 
@@ -604,6 +471,189 @@ feature{NONE} -- Implementation
 	object_graph_traversor: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE
 			-- Object graph traversor, used to find objects in the object pool
 			-- that are also (recursively) referenced by a given object.
+
+feature{NONE} -- Implementation/Test case synthesis
+
+	append_time (a_time: INTEGER; a_buffer: STRING)
+			-- Append `a_time' into `a_buffer'.
+		do
+			a_buffer.append (once "<time>")
+			a_buffer.append (a_time.out)
+			a_buffer.append (once "</time>%N")
+		end
+
+	append_test_case (a_class_name: STRING; a_feature_name: STRING; a_argument_count: INTEGER; a_is_creation: BOOLEAN; a_is_query: BOOLEAN; a_operands: like operands; a_types: like types; a_buffer: STRING)
+			-- Append test case defined by `a_class_name', `a_feature_name', `a_is_creation', `a_is_query', `a_operands' and `a_types' into `a_buffer'.
+		local
+			l_last: INTEGER
+			i: INTEGER
+			l_var_tbl: HASH_TABLE [INTEGER, INTEGER]
+			l_var_id: INTEGER
+		do
+			l_last := a_operands.count - 1
+
+				-- Synthesize class.
+			a_buffer.append (once "<class>")
+			a_buffer.append (a_class_name)
+			a_buffer.append (once "</class>%N")
+
+				-- Synthesize test case body.
+			a_buffer.append (once "<test_case>%N")
+
+				-- Synthesize return value.
+			if a_is_query then
+				a_buffer.append (once "v_")
+				a_buffer.append (a_operands.item (l_last).out)
+				a_buffer.append (once " := ")
+			end
+
+			if a_is_creation then
+				a_buffer.append (once "create {")
+				a_buffer.append (a_types.item (0))
+				a_buffer.append (once "}")
+			end
+
+			a_buffer.append (once "v_")
+			a_buffer.append (a_operands.item (0).out)
+			a_buffer.append_character ('.')
+			a_buffer.append (a_feature_name)
+
+				-- Synthesize arguments.
+			if a_argument_count > 0 then
+				a_buffer.append (once " (")
+				from
+					i := 1
+				until
+					i > a_argument_count
+				loop
+					a_buffer.append (once "v_")
+					a_buffer.append (a_operands.item (i).out)
+					if i < a_argument_count then
+						a_buffer.append (once ", ")
+					end
+					i := i + 1
+				end
+				a_buffer.append (once ")")
+			end
+			a_buffer.append (once "%N</test_case>%N")
+
+				-- Synthesize type information.
+			a_buffer.append (once "<operands>%N")
+			from
+				i := 0
+				create l_var_tbl.make (5)
+			until
+				i > l_last
+			loop
+				l_var_id := a_operands.item (i)
+				if not l_var_tbl.has (l_var_id) then
+					l_var_tbl.put (l_var_id, l_var_id)
+					append_variable_with_type (l_var_id, types.item (i), a_buffer)
+				end
+				i := i + 1
+			end
+			a_buffer.append (once "</operands>%N")
+		end
+
+	append_all_variables (a_objects: HASH_TABLE [detachable ANY, INTEGER_32]; a_buffer: STRING)
+			-- Append variable descriptions in `a_objects' into `a_buffer'.
+			-- `a_objects' is a hash table, key is variable index in object pool, value is the object itself.
+		local
+			l_index: INTEGER
+			l_object: detachable ANY
+		do
+			a_buffer.append (once "<all_variables>%N")
+			from
+				a_objects.start
+			until
+				a_objects.after
+			loop
+				l_index := a_objects.key_for_iteration
+				l_object := a_objects.item_for_iteration
+				if l_object = Void then
+					append_variable_with_type (l_index, once "NONE", a_buffer)
+				else
+					append_variable_with_type (l_index, l_object.generating_type, a_buffer)
+				end
+				a_objects.forth
+			end
+			a_buffer.append (once "</all_variables>%N")
+		end
+
+	append_exception_trace (a_trace: detachable STRING; a_buffer: STRING)
+			-- Append `a_trace' into `a_buffer'.
+		do
+			a_buffer.append (once "<trace>%N<![CDATA[%N")
+			if exception /= Void then
+				a_buffer.append (exception)
+			end
+			a_buffer.append (once "%N]]>%N</trace>%N")
+		end
+
+	append_test_case_hash_code (a_hash_code: STRING; a_buffer: STRING)
+			-- Append test case hash code `a_hash_code' in `a_buffer'.
+		do
+			a_buffer.append (once "<hash_code>")
+			a_buffer.append (a_hash_code)
+			a_buffer.append (once "</hash_code>%N")
+		end
+
+	append_object_serialization (a_serialization: STRING; a_buffer: STRING)
+			-- Append object serialization data `a_serialization' into `a_buffer'.
+		do
+			a_buffer.append (once "<data_length>")
+			a_buffer.append (a_serialization.count.out)
+			a_buffer.append (once "</data_length>%N")
+			a_buffer.append (once "<data><![CDATA[")
+			if object_serialization /= Void then
+				a_buffer.append (a_serialization)
+			end
+			a_buffer.append (once "]]></data>%N")
+		end
+
+	append_object_state (a_state: detachable ARRAYED_LIST [TUPLE [summary: STRING_8; index: INTEGER_32]]; a_is_pre_state: BOOLEAN; a_buffer: STRING)
+			-- Append `a_stat' into `a_buffer'. `a_is_pre_state' indicates whether `a_state' is retrieved before or after test case execution.
+		do
+			if a_is_pre_state then
+				a_buffer.append (once "<pre_state>%N")
+			else
+				a_buffer.append (once "<post_state>%N")
+			end
+
+			if a_state /= Void then
+				from
+					a_state.start
+				until
+					a_state.after
+				loop
+					a_buffer.append (a_state.item_for_iteration.summary)
+					a_buffer.append_character ('%N')
+					a_state.forth
+				end
+			end
+
+			if a_is_pre_state then
+				a_buffer.append (once "</pre_state>%N")
+			else
+				a_buffer.append (once "</post_state>%N")
+			end
+		end
+
+	append_variable_with_type (a_index: INTEGER; a_type: STRING; a_buffer: STRING)
+			-- Append variable with `a_index' and `a_type' into `a_buffer'.
+		do
+			a_buffer.append (once "%Tv_")
+			a_buffer.append_integer (a_index)
+			a_buffer.append (once ": ")
+			if a_index = 0 then
+				a_buffer.append (once "NONE")
+			else
+				a_buffer.append (a_type)
+			end
+			a_buffer.append_character ('%N')
+		end
+
+
 
 invariant
 	interpreter_attached: interpreter /= Void

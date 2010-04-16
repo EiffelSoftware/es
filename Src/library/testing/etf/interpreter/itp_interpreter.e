@@ -821,27 +821,28 @@ feature -- Object state checking
 			l_status: like query_status
 			l_queries: LINKED_LIST [STRING]
 			l_value: detachable STRING
-			l_var_name: STRING
 			l_hash: INTEGER
 			l_data: STRING
+			l_var_def: STRING
 		do
+			create l_var_def.make (32)
+			l_var_def.append (once "v_")
+			l_var_def.append (a_object_index.out)
+			l_var_def.append (once ": ")
+			l_var_def.append (a_static_type)
+			l_var_def.append_character ('%N')
+
 			if not l_retried then
-				create l_data.make (256)
+				create l_data.make (512)
 				initialize_query_value_holders
 				o := variable_at_index (a_object_index)
-				create l_var_name.make (6)
-				l_var_name.append (once " v_")
-				l_var_name.append (a_object_index.out)
+
 				if o = Void then
-					l_data.append (once ": [[Void]], [[]]%N")
+					l_data.append_character ('|')
+					l_data.append (once "[[Void]]%N")
 				else
 					check_invariant (a_object_index, o)
-					l_data.append (once ": [[" + a_static_type + "]], [[")
-					l_data.append (supported_query_types (o))
-					l_data.append (once "]]%N")
---					record_object_queries (a_object_index, o)
 					record_queries_with_static_type (o, a_static_type)
-
 					l_values := query_values
 					l_status := query_status
 					l_queries := supported_query_names_with_static_type (o, a_static_type)
@@ -873,12 +874,13 @@ feature -- Object state checking
 					end
 				end
 				l_hash := l_data.hash_code
-				l_data.prepend (l_var_name)
+				l_data.prepend (l_var_def)
 			else
 				create l_data.make (64)
-				l_data.append (once ": [[Invariant_violation]], [[]]%N")
-				l_hash := Result.hash_code
-				l_data.prepend (" v_" + a_object_index.out)
+				l_data.append (l_var_def)
+				l_data.append (once "|[[Invariant_violation]]%N")
+				l_hash := l_data.hash_code
+				l_data.prepend (l_var_def)
 			end
 			Result := [l_data, l_hash]
 		ensure
