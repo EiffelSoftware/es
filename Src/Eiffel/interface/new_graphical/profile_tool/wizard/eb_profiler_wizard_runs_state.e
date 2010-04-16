@@ -49,6 +49,10 @@ feature -- Basic Operation
 					create l_item.make_with_text ((create {DATE_TIME}.make_from_epoch (l_directory.lastentry.to_integer)).out)
 					l_item.set_data (create {DIRECTORY_NAME}.make_from_string (information.directory_name.out + operating_environment.directory_separator.out + l_directory.lastentry))
 					runs_field.extend (l_item)
+				elseif not l_directory.lastentry.starts_with (".") then
+					create l_item.make_with_text (l_directory.lastentry)
+					l_item.set_data (create {DIRECTORY_NAME}.make_from_string (information.directory_name.out + operating_environment.directory_separator.out + l_directory.lastentry))
+					runs_field.extend (l_item)
 				end
 				l_directory.readentry
 			end
