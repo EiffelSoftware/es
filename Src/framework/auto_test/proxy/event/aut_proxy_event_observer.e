@@ -32,8 +32,13 @@ feature -- Basic operations
 		deferred
 		end
 
+	report_message (a_producer: AUT_PROXY_EVENT_PRODUCER; a_message: STRING; a_type: STRING)
+			-- Report `a_message' from `a_producer'. The message is of `a_type'.
+		do
+		end
+
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

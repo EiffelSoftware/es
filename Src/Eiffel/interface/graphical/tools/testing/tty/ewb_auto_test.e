@@ -169,9 +169,6 @@ feature -- Execution
 					-- Set max candidates count for precondition evaluation
 				l_conf.set_max_candidate_count (l_ap.max_candidate_count)
 
-					-- Should statistics of object pool and predicate pool be logged?
-				l_conf.set_is_pool_statistics_logged (l_ap.is_pool_statistics_logged)
-
 					-- Set linear constraint solver to be used.
 				l_conf.set_is_smt_linear_constraint_solver_enabled (l_ap.is_smt_linear_constraint_solver_enabled)
 				l_conf.set_is_lpsolve_linear_constraint_solver_enabled (l_ap.is_lpsolve_contraint_linear_solver_enabled)
@@ -197,7 +194,7 @@ feature -- Execution
 
 				l_conf.set_is_on_the_fly_test_case_generation_enabled (l_ap.is_on_the_fly_test_case_generation_enabled)
 
-				l_conf.set_proxy_log_options (l_ap.proxy_log_options)
+				l_conf.set_proxy_log_options (l_ap.log_types)
 
 				l_conf.set_is_duplicated_test_case_serialized (l_ap.is_duplicated_test_case_serialized)
 

@@ -215,12 +215,14 @@ feature -- Access
 			good_result: Result = is_on_the_fly_test_case_generation_enabled_cache
 		end
 
-	proxy_log_options: STRING
+	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
 			-- Proxy log options.
+			-- Key is the type name, value indicates if messages of that type is logged.
+			-- Missing types are treated as not to be logged.
 		do
-			Result := is_proxy_log_options_cache
+			Result := proxy_log_options_cache
 		ensure then
-			good_result: Result = is_proxy_log_options_cache
+			good_result: Result = proxy_log_options_cache
 		end
 
 	is_console_output_enabled: BOOLEAN
@@ -294,9 +296,6 @@ feature -- Access: cache
 	max_candidate_count_cache: like max_candidate_count
 			-- Cache for `max_candidate_count'
 
-	is_pool_statistics_logged_cache: like is_pool_statistics_logged
-			-- Cache for `is_pool_statistics_logged'
-
 	is_lpsolve_linear_constraint_solver_enabled_cache: like is_lpsolve_linear_constraint_solver_enabled
 			-- Cache for `is_lpsolve_linear_constraint_solver_enabled'
 
@@ -333,7 +332,7 @@ feature -- Access: cache
 	is_on_the_fly_test_case_generation_enabled_cache: BOOLEAN
 			-- Cache for `on_the_fly_test_case_generation_enabled_cache'	
 
-	is_proxy_log_options_cache: STRING
+	proxy_log_options_cache: like proxy_log_options
 			-- Cache for `is_proxy_log_options'	
 
 	is_console_output_enabled_cache: BOOLEAN
@@ -437,9 +436,14 @@ feature -- Precondition satisfaction
 			-- Should statistics of object pool and predicate be logged?
 			-- Default: False
 		do
-			Result := is_pool_statistics_logged_cache
-		ensure then
-			good_result: Result = is_pool_statistics_logged_cache
+			Result := proxy_log_options.has ("statistics")
+		end
+
+	is_precondition_satisfaction_logged: BOOLEAN
+			-- Should messaged related to precondition satisfaction be logged?
+			-- Default: False
+		do
+			Result := proxy_log_options_cache.has ("precondition")
 		end
 
 	is_smt_linear_constraint_solver_enabled: BOOLEAN is
@@ -669,14 +673,6 @@ feature -- Status setting
 			max_candidate_count_cache_set: max_candidate_count_cache = a_count
 		end
 
-	set_is_pool_statistics_logged (b: like is_pool_statistics_logged) is
-			-- Set `is_pool_statistics_logged' with `b'.
-		do
-			is_pool_statistics_logged_cache := b
-		ensure
-			is_pool_statistics_logged_set: is_pool_statistics_logged_cache = b
-		end
-
 	set_is_smt_linear_constraint_solver_enabled (b: BOOLEAN) is
 			-- Set `is_smt_linear_constraint_solver_enabled' with `b'.
 		do
@@ -784,7 +780,7 @@ feature -- Status setting
 	set_proxy_log_options (b: like proxy_log_options)
 			-- Set `proxy_log_options' with `b'.
 		do
-			is_proxy_log_options_cache := b.twin
+			proxy_log_options_cache := b.twin
 		ensure
 			proxy_log_options_set: proxy_log_options ~ b
 		end

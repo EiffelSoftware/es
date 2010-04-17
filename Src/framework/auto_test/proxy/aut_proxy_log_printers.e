@@ -12,6 +12,8 @@ inherit
 		undefine
 			is_equal,
 			copy
+		redefine
+			report_message
 		end
 
 	LINKED_LIST [AUT_PROXY_EVENT_OBSERVER]
@@ -59,8 +61,14 @@ feature -- Basic operations
 			do_all (agent {AUT_PROXY_EVENT_OBSERVER}.report_comment_line (a_producer, a_line))
 		end
 
+	report_message (a_producer: AUT_PROXY_EVENT_PRODUCER; a_message: STRING; a_type: STRING)
+			-- Report `a_message' of type `a_type' from `a_producer'.
+		do
+			do_all (agent {AUT_PROXY_EVENT_OBSERVER}.report_message (a_producer, a_message, a_type))
+		end
+
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

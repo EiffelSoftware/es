@@ -9,6 +9,9 @@ class
 
 inherit
 	AUT_PROXY_LOG_PRINTER
+		redefine
+			report_message
+		end
 
 	AUT_SHARED_CONSTANTS
 
@@ -106,6 +109,14 @@ feature -- Status report
 			-- Should type request be logged?
 			-- Default: True
 
+	is_precondition_satisfaction_logged: BOOLEAN
+			-- Should precondition satisfaction related message be logged?
+			-- Default: False
+
+	is_pool_satistics_logged: BOOLEAN
+			-- Should statistics of object pool and predicate evaluation pool be logged?
+			-- Default: False
+
 feature -- Setting
 
 	set_is_passing_test_case_logged (b: BOOLEAN)
@@ -180,6 +191,22 @@ feature -- Setting
 			is_type_request_logged_set: is_type_request_logged = b
 		end
 
+	set_is_precondition_satisfaction_logged (b: BOOLEAN)
+			-- Set `is_precondition_satisfication_logged' with `b'.
+		do
+			is_precondition_satisfaction_logged := b
+		ensure
+			is_precondition_satisfaction_logged_set: is_precondition_satisfaction_logged = b
+		end
+
+	set_is_pool_satistics_logged (b: BOOLEAN)
+			-- Set `is_pool_satistics_logged' with `b'.
+		do
+			is_pool_satistics_logged := b
+		ensure
+			is_pool_satistics_logged_set: is_pool_satistics_logged = b
+		end
+
 	set_start_time (a_time: INTEGER)
 			-- Set `start_time' with `a_time'.
 		do
@@ -196,7 +223,7 @@ feature -- Setting
 			end_time_set: end_time = a_time
 		end
 
-	set_with_config_string (a_string: STRING)
+	set_with_config_string (a_config: HASH_TABLE [BOOLEAN, STRING])
 			-- Set log options using `a_string'.
 			-- `a_string' consists of comma separated keywords.
 			-- Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state
@@ -205,48 +232,17 @@ feature -- Setting
 			l_keywords: LIST [STRING]
 			l_word: STRING
 		do
-			set_is_passing_test_case_logged (False)
-			set_is_failing_test_case_logged (False)
-			set_is_invalid_test_case_logged (False)
-			set_is_bad_test_case_logged (False)
-			set_is_error_test_case_logged (False)
-			set_is_object_state_logged (False)
-			set_is_operand_type_logged (False)
-			set_is_bad_test_case_logged (False)
-			set_is_error_test_case_logged (False)
-			set_is_assign_expression_logged (False)
-			set_is_type_request_logged (False)
-
-			l_keywords := a_string.as_lower.split (',')
-			from
-				l_keywords.start
-			until
-				l_keywords.after
-			loop
-				l_word := l_keywords.item_for_iteration
-				if l_word.is_equal ("off") then
-					-- Do nothing.
-				elseif l_word.is_equal ("passing") then
-					set_is_passing_test_case_logged (True)
-				elseif l_word.is_equal ("failing") then
-					set_is_failing_test_case_logged (True)
-				elseif l_word.is_equal ("invalid") then
-					set_is_invalid_test_case_logged (True)
-				elseif l_word.is_equal ("bad") then
-					set_is_bad_test_case_logged (True)
-				elseif l_word.is_equal ("error") then
-					set_is_error_test_case_logged (True)
-				elseif l_word.is_equal ("state") then
-					set_is_object_state_logged (True)
-				elseif l_word.is_equal ("operand-type") then
-					set_is_operand_type_logged (True)
-				elseif l_word.is_equal ("expr-assign") then
-					set_is_assign_expression_logged (True)
-				elseif l_word.is_equal ("type") then
-					set_is_type_request_logged (True)
-				end
-				l_keywords.forth
-			end
+			set_is_passing_test_case_logged (a_config.has ("passing"))
+			set_is_failing_test_case_logged (a_config.has ("failing"))
+			set_is_invalid_test_case_logged (a_config.has ("invalid"))
+			set_is_bad_test_case_logged (a_config.has ("bad"))
+			set_is_error_test_case_logged (a_config.has ("error"))
+			set_is_object_state_logged (a_config.has ("state"))
+			set_is_operand_type_logged (a_config.has ("operand-type"))
+			set_is_assign_expression_logged (a_config.has ("expr-assign"))
+			set_is_type_request_logged (a_config.has ("type"))
+			set_is_precondition_satisfaction_logged (a_config.has ("precondition"))
+			set_is_pool_satistics_logged (a_config.has ("statistics"))
 		end
 
 feature -- Basic operations
@@ -274,6 +270,23 @@ feature -- Basic operations
 		do
 			output_stream.put_string (a_line)
 			output_stream.flush
+		end
+
+	report_message (a_producer: AUT_PROXY_EVENT_PRODUCER; a_message: STRING; a_type: STRING)
+			-- Report `a_message' from `a_producer'. The message is of `a_type'.
+		local
+			l_should_report: BOOLEAN
+		do
+			if a_type ~ once "precondition_satisfaction" then
+				l_should_report := is_precondition_satisfaction_logged
+			elseif a_type ~ once "pool_statistics" then
+				l_should_report := is_pool_satistics_logged
+			end
+
+			if l_should_report then
+				output_stream.put_string (a_message)
+				output_stream.flush
+			end
 		end
 
 feature{AUT_REQUEST} -- Processing requests
@@ -445,7 +458,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

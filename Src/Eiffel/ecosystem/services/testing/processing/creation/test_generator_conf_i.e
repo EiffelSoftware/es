@@ -137,7 +137,7 @@ feature -- Status report
 		deferred
 		end
 
-	proxy_log_options: STRING
+	proxy_log_options: HASH_TABLE [BOOLEAN, STRING]
 			-- Proxy_log_options
 		require
 			usable: is_interface_usable
@@ -294,6 +294,14 @@ feature -- Precondition satisfaction
 
 	is_random_cursor_used: BOOLEAN is
 			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_precondition_satisfaction_logged: BOOLEAN
+			-- Should messaged related to precondition satisfaction be logged?
 			-- Default: False
 		require
 			usable: is_interface_usable

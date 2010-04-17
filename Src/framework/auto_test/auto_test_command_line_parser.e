@@ -61,7 +61,6 @@ feature{NONE} -- Initialization
 			l_max_precondition_time_op: AP_INTEGER_OPTION
 			l_prepare_citadel_tests_option: AP_STRING_OPTION
 			l_candidate_count_option: AP_INTEGER_OPTION
-			l_pool_statistics_logged_option: AP_FLAG
 			l_linear_constraint_solver_option: AP_STRING_OPTION
 			l_smart_selection_rate_option: AP_INTEGER_OPTION
 			l_smt_old_value_rate_option: AP_INTEGER_OPTION
@@ -75,6 +74,7 @@ feature{NONE} -- Initialization
 			l_console_log_option: AP_STRING_OPTION
 			l_duplicated_test_case_serialization_option: AP_FLAG
 			l_strs: LIST [STRING]
+			l_word: STRING
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -204,10 +204,6 @@ feature{NONE} -- Initialization
 			l_candidate_count_option.set_description ("Max number of candidates that satisfy the precondition of the feature to call. 0 means no limit, default is 100.")
 			parser.options.force_last (l_candidate_count_option)
 
-			create l_pool_statistics_logged_option.make_with_long_form ("pool-statistics-logged")
-			l_pool_statistics_logged_option.set_description ("Should statistics of object pool and predicate pool be logged? Default: False")
-			parser.options.force_last (l_pool_statistics_logged_option)
-
 			create l_linear_constraint_solver_option.make_with_long_form ("linear-constraint-solver")
 			l_linear_constraint_solver_option.set_description ("Linear constraint solver to be used, can be either %"smt%" or %"lpsolve%". Default is %"smt%".")
 			parser.options.force_last (l_linear_constraint_solver_option)
@@ -245,7 +241,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_on_the_fly_tc_flag)
 
 			create l_proxy_log_option.make_with_long_form ("proxy-log")
-			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state.")
+			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state, precondition, pool-statistics.")
 			parser.options.force_last (l_proxy_log_option)
 
 			create l_console_log_option.make_with_long_form ("console-log")
@@ -446,10 +442,6 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				is_pool_statistics_logged := l_pool_statistics_logged_option.was_found
-			end
-
-			if not error_handler.has_error then
 				if l_linear_constraint_solver_option.was_found then
 					l_strs := l_linear_constraint_solver_option.parameter.as_lower.split (',')
 					l_strs.compare_objects
@@ -543,9 +535,48 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if l_proxy_log_option.was_found then
-					proxy_log_options := l_proxy_log_option.parameter
+					l_strs := l_proxy_log_option.parameter.as_lower.split (',')
+					from
+						l_strs.start
+					until
+						l_strs.after
+					loop
+						l_word := l_strs.item_for_iteration
+						if l_word.is_equal ("off") then
+							-- Do nothing.
+						elseif l_word.is_case_insensitive_equal ("passing") then
+							log_types.put (True, "passing")
+						elseif l_word.is_case_insensitive_equal ("failing") then
+							log_types.put (True, "failing")
+						elseif l_word.is_case_insensitive_equal ("invalid") then
+							log_types.put (True, "invalid")
+						elseif l_word.is_case_insensitive_equal ("bad") then
+							log_types.put (True, "bad")
+						elseif l_word.is_case_insensitive_equal ("error") then
+							log_types.put (True, "error")
+						elseif l_word.is_case_insensitive_equal ("state") then
+							log_types.put (True, "state")
+						elseif l_word.is_case_insensitive_equal ("operand-type") then
+							log_types.put (True, "operand-type")
+						elseif l_word.is_case_insensitive_equal ("expr-assign") then
+							log_types.put (True, "expr-assign")
+						elseif l_word.is_case_insensitive_equal ("type") then
+							log_types.put (True, "type")
+						elseif l_word.is_case_insensitive_equal ("precondition") then
+							log_types.put (True, "precondition")
+						elseif l_word.is_case_insensitive_equal ("statistics") then
+							log_types.put (True, "statistics")
+						end
+						l_strs.forth
+					end
 				else
-					proxy_log_options := ""
+					log_types.put (True, "passing")
+					log_types.put (True, "failing")
+					log_types.put (True, "invalid")
+					log_types.put (True, "bad")
+					log_types.put (True, "error")
+					log_types.put (True, "expr-assign")
+					log_types.put (True, "type")
 				end
 			end
 
@@ -727,10 +758,6 @@ feature -- Status report
 			-- the feature to call.
 			-- 0 means no limit. Default is 100.
 
-	is_pool_statistics_logged: BOOLEAN
-			-- Should statistics of object pool and predicate pool be logged?
-			-- Default: False
-
 	is_smt_linear_constraint_solver_enabled: BOOLEAN
 			-- Is SMT based linear constraint solver enabled?
 			-- Default: True
@@ -782,10 +809,6 @@ feature -- Status report
 			-- Is on-the-fly test case generation enabled?
 			-- Default: False
 
-	proxy_log_options: STRING
-			-- Proxy log options:
-			-- Default: passing,failing,invalid,bad,error,type,expr-assign
-
 	is_console_log_enabled: BOOLEAN
 			-- Should console output be enabled?
 			-- Default: True
@@ -794,6 +817,20 @@ feature -- Status report
 			-- Should duplicated test cases be serialized?
 			-- Two test cases are duplicated if their operands have the same abstract states.
 			-- Default: False
+
+	log_types: HASH_TABLE [BOOLEAN, STRING]
+			-- Types of messages that are to be logged
+			-- Key is the type name, value indicates if messages of that type should be logged.
+		do
+			if log_types_internal = Void then
+				create log_types_internal.make (10)
+				log_types_internal.compare_objects
+			end
+			Result := log_types_internal
+		end
+
+	log_types_internal: like log_types
+			-- Cache for `log_types'
 
 feature {NONE} -- Constants
 

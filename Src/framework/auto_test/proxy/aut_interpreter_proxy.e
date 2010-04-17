@@ -130,7 +130,7 @@ feature {NONE} -- Initialization
 			create proxy_log_file.make (a_proxy_log_filename)
 			proxy_log_file.open_write
 
-			if not configuration.proxy_log_options.is_equal ("off") then
+			if not configuration.proxy_log_options.is_empty then
 				create l_file_printer.make (system, configuration, proxy_log_file)
 				if not configuration.proxy_log_options.is_empty then
 					l_file_printer.set_with_config_string (configuration.proxy_log_options)
@@ -1267,6 +1267,13 @@ feature -- Logging
 			log ("%N")
 		end
 
+	log_message_line (a_message: STRING; a_type: STRING)
+			-- Log `a_message' of `a_type' with a new line character.
+		do
+			log_message (a_message, a_type)
+			log_message (once "%N", a_type)
+		end
+
 feature {NONE} -- Logging
 
 	log (a_string: STRING)
@@ -1276,6 +1283,14 @@ feature {NONE} -- Logging
 		do
 			if is_logging_enabled and then proxy_log_file.is_open_write then
 				proxy_log_printers.report_comment_line (Current, a_string)
+			end
+		end
+
+	log_message (a_message: STRING; a_type: STRING)
+			-- Log `a_message' of `a_type'.
+		do
+			if is_logging_enabled and then proxy_log_file.is_open_write then
+				proxy_log_printers.report_message (Current, a_message, a_type)
 			end
 		end
 
@@ -1608,34 +1623,36 @@ feature -- Precondition satisfaction
 		local
 			l_text: STRING
 		do
-			create l_text.make (128)
-			l_text.append ("-- Precondition_evaluation: ")
+			if configuration.is_precondition_satisfaction_logged then
+				create l_text.make (128)
+				l_text.append ("-- Precondition_evaluation: ")
 
-			l_text.append ("tried_times: ")
-			l_text.append (a_tried_count.out)
-			l_text.append ("; ")
+				l_text.append ("tried_times: ")
+				l_text.append (a_tried_count.out)
+				l_text.append ("; ")
 
-			l_text.append ("max_times: ")
-			l_text.append (a_worst_case_count.out)
-			l_text.append ("; ")
+				l_text.append ("max_times: ")
+				l_text.append (a_worst_case_count.out)
+				l_text.append ("; ")
 
-			l_text.append ("start time: ")
-			l_text.append (a_start_time.out)
-			l_text.append ("; ")
+				l_text.append ("start time: ")
+				l_text.append (a_start_time.out)
+				l_text.append ("; ")
 
-			l_text.append ("end time: ")
-			l_text.append (a_end_time.out)
-			l_text.append ("; ")
+				l_text.append ("end time: ")
+				l_text.append (a_end_time.out)
+				l_text.append ("; ")
 
-			l_text.append ("Succeeded: ")
-			l_text.append (a_succeed_level.out)
-			l_text.append ("; ")
+				l_text.append ("Succeeded: ")
+				l_text.append (a_succeed_level.out)
+				l_text.append ("; ")
 
-			l_text.append (a_type.associated_class.name_in_upper)
-			l_text.append (".")
-			l_text.append (a_feature.feature_name.as_lower)
+				l_text.append (a_type.associated_class.name_in_upper)
+				l_text.append (".")
+				l_text.append (a_feature.feature_name.as_lower)
 
-			log_line (l_text)
+				log_message_line (l_text, precondition_satisfaction_message_type)
+			end
 		end
 
 feature -- Predicate evaluation
@@ -1767,6 +1784,7 @@ feature -- Predicate evaluation
 			l_message: STRING
 		do
 			if
+				configuration.is_precondition_satisfaction_logged and then
 				attached {AUT_PRECONDITION_SATISFACTION_TASK} precondition_evaluator as l_evaluator and then
 				l_evaluator.is_precondition_satisfaction_performed and then
 				l_evaluator.last_precondition_satisfaction_level /= {AUT_PRECONDITION_SATISFACTION_TASK}.precondition_satisfaction_not_satisfied
@@ -1780,7 +1798,7 @@ feature -- Predicate evaluation
 				l_message.append (a_failed_predicate.text)
 				l_message.append ("; time(ms): ")
 				l_message.append (duration_until_now.millisecond_count.out)
-				log_line (l_message)
+				log_message_line (l_message, precondition_satisfaction_message_type)
 			end
 		end
 
@@ -2107,14 +2125,14 @@ feature -- Predicate evaluation
 		require
 			a_duration_attached: a_duration /= Void
 		do
-			if configuration.is_precondition_checking_enabled then
-				log_line (
+			if configuration.is_precondition_checking_enabled and then configuration.is_precondition_satisfaction_logged then
+				log_message_line (
 					precondition_satisfaction_failure_rate_header +
 					" second: " + a_duration.second_count.out +
 					"; full_suggested: " + suggested_precondition_count.out +
 					"; full_failed: " + failed_precondition_count.out +
 					"; partial_suggested: " + suggested_precondition_count_partial.out +
-					"; partial_failed: " + failed_precondition_count_partial.out)
+					"; partial_failed: " + failed_precondition_count_partial.out, precondition_satisfaction_message_type)
 			end
 		end
 
@@ -2128,7 +2146,8 @@ feature -- Predicate evaluation
 			if
 				configuration.is_precondition_checking_enabled and then
 				a_precondition_evaluatior.has_precondition and then
-				a_precondition_evaluatior.is_precondition_satisfaction_performed
+				a_precondition_evaluatior.is_precondition_satisfaction_performed and then
+				configuration.is_precondition_satisfaction_logged
 			then
 				log_precondition_evaluation (
 					a_type,
@@ -2163,7 +2182,7 @@ feature -- Predicate evaluation
 			l_message.append (a_feature.feature_name)
 			l_message.append ("; time: ")
 			l_message.append (duration_until_now.millisecond_count.out)
-			log_line (l_message)
+			log_message_line (l_message, precondition_satisfaction_message_type)
 		end
 
 	log_pool_statistics (a_duration: DT_DATE_TIME_DURATION) is
@@ -2181,7 +2200,7 @@ feature -- Predicate evaluation
 				check l_context_class /= Void end
 
 					-- Log statistics of object pool: which is the number of objects of each type.
-				log_line ("-- Pool statistics: " + a_duration.millisecond_count.out)
+				log_message_line ("-- Pool statistics: " + a_duration.millisecond_count.out, pool_statistics_message_type)
 				if typed_object_pool /= Void then
 					l_stat_object_pool := "-- object_pool: "
 					from
@@ -2190,7 +2209,7 @@ feature -- Predicate evaluation
 					until
 						l_var_table_cursor.after
 					loop
-						log_line (l_stat_object_pool + type_name_with_context (l_var_table_cursor.key, l_context_class, Void) + ": " + l_var_table_cursor.item.count.out)
+						log_message_line (l_stat_object_pool + type_name_with_context (l_var_table_cursor.key, l_context_class, Void) + ": " + l_var_table_cursor.item.count.out, pool_statistics_message_type)
 						l_var_table_cursor.forth
 					end
 				end
@@ -2203,7 +2222,7 @@ feature -- Predicate evaluation
 				until
 					l_pred_table_cursor.after
 				loop
-					log_line (l_stat_predicate_pool + l_pred_table_cursor.key.text_with_type_name + ": " + l_pred_table_cursor.item.count.out)
+					log_message_line (l_stat_predicate_pool + l_pred_table_cursor.key.text_with_type_name + ": " + l_pred_table_cursor.item.count.out, pool_statistics_message_type)
 					l_pred_table_cursor.forth
 				end
 			end
@@ -2315,6 +2334,14 @@ feature -- Object State Exploration
 
 	object_state_table: AUT_OBJECT_STATE_TABLE
 			-- Table with information about encountered object states
+
+feature{NONE} -- Logging
+
+	pool_statistics_message_type: STRING = "pool_statistics"
+			-- Message type for pool statistics logging
+
+	precondition_satisfaction_message_type: STRING = "precondition_satisfaction"
+			-- Message type for precondition satisfaction
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)
