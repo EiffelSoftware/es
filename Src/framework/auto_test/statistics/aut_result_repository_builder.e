@@ -45,6 +45,7 @@ feature -- Access
 				create comment_processors_internal.make
 				comment_processors_internal.extend (agent test_case_time_comment_processor)
 				comment_processors_internal.extend (agent test_case_index_comment_processor)
+				comment_processors_internal.extend (agent test_case_operand_type_comment_processor)
 			end
 			Result := comment_processors_internal
 		end
@@ -188,6 +189,58 @@ feature -- Time measurement
 			end
 		end
 
+	test_case_operand_type_comment_processor (a_line: STRING)
+			-- Process `a_line' as specification for test case operands with types.
+		local
+			l_line: STRING
+			l_header_count: INTEGER
+			l_vars: LIST [STRING]
+			l_variable: ITP_VARIABLE
+			l_index: INTEGER
+			l_var_def: STRING
+			l_var_name: STRING
+			l_type_name: STRING
+			l_existing_var_type: TYPE_A
+			l_type: TYPE_A
+		do
+			l_header_count := test_case_operand_type_header.count
+			if a_line.substring (1, l_header_count) ~ test_case_operand_type_header then
+				l_index := a_line.index_of (':', 1)
+				l_vars := a_line.substring (l_index + 2, a_line.count).split (';')
+				from
+					l_vars.start
+				until
+					l_vars.after
+				loop
+					l_var_def := l_vars.item_for_iteration
+					l_var_def.left_adjust
+					l_var_def.right_adjust
+					l_index := l_var_def.index_of (':', 1)
+					l_var_name := l_var_def.substring (3, l_index - 1)
+					l_type_name := l_var_def.substring (l_index + 1, l_var_def.count)
+					l_var_name.left_adjust
+					l_var_name.right_adjust
+					l_type_name.left_adjust
+					l_type_name.right_adjust
+					create l_variable.make (l_var_name.to_integer)
+					l_type := base_type (l_type_name)
+					if variable_table.is_variable_defined (l_variable) then
+						l_existing_var_type := variable_table.variable_type (l_variable)
+						if (not l_existing_var_type.is_none) and then l_existing_var_type.associated_class.is_deferred and then not l_type.associated_class.is_deferred then
+							variable_table.define_variable (l_variable, l_type)
+						end
+					else
+						variable_table.define_variable (l_variable, l_type)
+					end
+
+					l_vars.forth
+				end
+			end
+		end
+
+	test_case_operand_type_header: STRING = "-- Types for TC No."
+			-- Header for comment line for test case operand specification
+
 	exception_thrown_comment_processor (a_line: STRING) is
 			-- Process `a_line' if it is an exception thrown line.
 		do
@@ -207,7 +260,7 @@ feature -- Time measurement
 			-- Implementation of `comment_processors'
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

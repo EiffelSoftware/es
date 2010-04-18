@@ -43,7 +43,7 @@ feature -- Access
 			Result := witness_observers_internal
 		end
 
-	witness_veto_function: detachable FUNCTION [ANY, TUPLE [AUT_WITNESS], BOOLEAN]
+	witness_veto_function: detachable FUNCTION [ANY, TUPLE [AUT_ABS_WITNESS], BOOLEAN]
 			-- Function to veto dispatch of a witness
 			-- If this function returns true, the witness will be dispatched
 			-- to all registered observers
@@ -76,6 +76,7 @@ feature -- Basic operation
 		do
 			create l_log_parser.make (system, session.error_handler)
 			l_log_parser.add_observer (Current)
+			l_log_parser.set_variable_table (variable_table)
 			l_log_parser.parse_stream (a_input_stream)
 			notify_observers
 		end
@@ -85,7 +86,7 @@ feature{NONE} -- Implementation
 	witness_observers_internal: detachable like witness_observers
 			-- Implementation of `witness_observers'
 
-	unprocessed_witnesses: DS_LINKED_QUEUE [AUT_WITNESS] is
+	unprocessed_witnesses: DS_LINKED_QUEUE [AUT_ABS_WITNESS] is
 			-- Queu of unprocessed witness
 		do
 			if unprocessed_witnesses_internal = Void then
@@ -100,12 +101,12 @@ feature{NONE} -- Implementation
 	update_result_repository
 			-- Update result repository based on last request in result-history.			
 		local
-			witness: AUT_WITNESS
+			witness: AUT_ABS_WITNESS
 		do
 			notify_observers
 
-			fixme ("The following 4 lines are copied from the Precursor version, should be refactored.")
-			create witness.make (request_history, last_start_index, request_history.count)
+--			create witness.make (request_history, last_start_index, request_history.count)
+			create witness.make_with_request (request_history.last)
 			result_repository.add_witness (witness)
 --			last_test_case_request := witness.item (witness.count)
 --			last_test_case_request.set_test_case_index (last_test_case_index)
@@ -120,7 +121,7 @@ feature{NONE} -- Implementation
 			-- Notify all witnessed in `unprocessed_witnesses' to `witness_observers',
 			-- and wipe out `unprocessed_witnesses'.
 		local
-			l_witness: AUT_WITNESS
+			l_witness: AUT_ABS_WITNESS
 			l_observers: like witness_observers
 			l_unprocessed: like unprocessed_witnesses
 		do
@@ -146,7 +147,7 @@ feature{NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

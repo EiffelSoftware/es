@@ -124,9 +124,9 @@ feature {NONE} -- Implementation
 	process_start_request (a_request: AUT_START_REQUEST)
 			-- <Precursor>
 		do
-			check last_response = Void end
+--			check last_response = Void end
 			a_request.set_response (create {AUT_NORMAL_RESPONSE}.make (""))
-			variable_table.wipe_out
+--			variable_table.wipe_out
 		end
 
 	process_stop_request (a_request: AUT_STOP_REQUEST)
@@ -242,7 +242,7 @@ invariant
 	no_void_request_in_history: not request_history.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

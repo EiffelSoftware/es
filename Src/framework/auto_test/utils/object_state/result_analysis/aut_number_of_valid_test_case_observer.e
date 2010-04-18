@@ -57,14 +57,14 @@ feature -- Access
 
 feature -- Process
 
-	process_witness (a_witness: AUT_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS) is
 			-- Handle `a_witness'.
 		local
 			l_new_time: INTEGER
 			i: INTEGER
 		do
 			if a_witness.is_pass or a_witness.is_fail or a_witness.is_bad_response then
-				l_new_time := a_witness.item (a_witness.count).start_time // time_unit + 1
+				l_new_time := a_witness.request.start_time // time_unit + 1
 				test_case_count.grow (l_new_time * 2)
 
 				if current_time < l_new_time then
@@ -100,7 +100,7 @@ feature{NONE} -- Implementation
 			-- Index of this list is the time interval.
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

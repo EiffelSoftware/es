@@ -33,7 +33,7 @@ feature -- Access
 
 feature -- handler
 
-	process_witness (a_witness: AUT_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS) is
 			-- Handle `a_witness'.
 		local
 			l_data: like type_anchor
@@ -46,7 +46,7 @@ feature -- handler
 			else
 				l_data := [0, 0, 0, 0, 0, 0, 0, 0, -1]
 			end
-			l_request := a_witness.item (a_witness.count)
+			l_request := a_witness.request
 			if a_witness.is_pass then
 				l_data.put_integer (l_data.pass + 1, 1)
 				l_data.put_integer (l_data.pass_time + l_request.duration, 5)
@@ -78,7 +78,7 @@ feature{NONE} -- Implementation
 			-- System under which the tests are performed
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

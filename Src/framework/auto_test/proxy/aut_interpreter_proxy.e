@@ -1352,7 +1352,7 @@ feature {NONE} -- Logging
 			test_case_index_set:
 				is_test_case_index_logging_enabled implies (
 					test_case_count = old test_case_count + 1 and
-					last_request.test_case_index = test_case_count)
+					a_request.test_case_index = test_case_count)
 		end
 
 	proxy_log_printers: AUT_PROXY_LOG_PRINTERS

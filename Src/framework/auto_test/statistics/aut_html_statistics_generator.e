@@ -665,7 +665,7 @@ feature {NONE} -- HTML Generation
 			a_stream.put_line ("Result:<br/>")
 			a_stream.put_line ("<pre class='witness'>")
 			create response_printer.make (a_stream)
-			a_result.witness.item (a_result.witness.count).response.process (response_printer)
+			a_result.witness.request.response.process (response_printer)
 			a_stream.put_line ("</pre>")
 			a_stream.put_line ("<br/>")
 		end
@@ -941,7 +941,7 @@ invariant
 	test_case_printer_not_void: test_case_printer /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

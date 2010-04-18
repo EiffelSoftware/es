@@ -61,6 +61,16 @@ feature -- Status report
 	is_replaying: BOOLEAN do end
 			-- <Precursor>
 
+feature -- Setting
+
+	set_variable_table (a_table: like variable_table)
+			-- Set `variable_table' with `a_table'.
+		do
+			variable_table := a_table
+		ensure
+			variable_table_set: variable_table = a_table
+		end
+
 feature -- Parsing
 
 	parse_stream (an_input_stream: KI_TEXT_INPUT_STREAM)
@@ -136,18 +146,23 @@ feature {NONE} -- Reporting
 			l_last_response: detachable AUT_RESPONSE
 		do
 				-- Report previously received response if any
-			if attached last_response_text as l_response_text and then not l_response_text.is_empty then
-				create l_response_stream.make (l_response_text)
-				response_parser.set_input_stream (l_response_stream)
-				response_parser.parse_invoke_response
-				l_last_response := response_parser.last_response
-				check l_last_response /= Void end
-				report_event (l_last_response)
-
-				last_response_text.wipe_out
+			if a_line.has_substring (proxy_has_started_and_connected_message) then
+					variable_table.wipe_out
 			else
-				create {AUT_BAD_RESPONSE} l_last_response.make ("")
-				report_event (l_last_response)
+				if (attached last_response_text as l_response_text and then not l_response_text.is_empty) then
+					create l_response_stream.make (l_response_text)
+					response_parser.set_input_stream (l_response_stream)
+					response_parser.parse_invoke_response
+					l_last_response := response_parser.last_response
+					check l_last_response /= Void end
+					report_event (l_last_response)
+
+					last_response_text.wipe_out
+				else
+					create {AUT_BAD_RESPONSE} l_last_response.make ("")
+					report_event (l_last_response)
+				end
+
 			end
 
 				-- Now we parse the newly found request line.
@@ -336,6 +351,9 @@ feature{NONE} -- Implementation
 	last_response_text: STRING
 			-- Last found response from interpreter
 
+	variable_table: AUT_VARIABLE_TABLE
+			-- Variable table for AutoTest created objects
+
 invariant
 	system_attached: system /= Void
 	error_handler_attached: error_handler /= Void
@@ -345,7 +363,7 @@ invariant
 --	last_start_index_small_enough: last_start_index <= request_history.count -- TODO: reenable and fix bug! (inv does not hold before processing and after start request)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

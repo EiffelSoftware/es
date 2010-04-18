@@ -123,7 +123,7 @@ feature {NONE} -- Access: tasks
 	test_task: detachable AUT_STRATEGY
 			-- Task running tests through an interpreter
 
-	last_witness: detachable AUT_WITNESS
+	last_witness: detachable AUT_ABS_WITNESS
 			-- Last witness derived from `test_task'
 
 	minimize_task: detachable AUT_WITNESS_MINIMIZER
@@ -240,8 +240,8 @@ feature {NONE} -- Basic operations
 			l_totalc, l_remainingc: NATURAL
 			l_progress: REAL
 			l_cancel: BOOLEAN
-			l_witnesses: DS_LIST [AUT_WITNESS]
-			l_witness: detachable AUT_WITNESS
+			l_witnesses: DS_LIST [AUT_ABS_WITNESS]
+			l_witness: detachable AUT_ABS_WITNESS
 			l_minimize_task: like minimize_task
 			l_error_handler: AUT_ERROR_HANDLER
 			l_itp: AUT_INTERPRETER_PROXY
@@ -328,7 +328,7 @@ feature {NONE} -- Basic operations
 													-- If no minimization algorithm is provided, we disable test creation.
 												if
 													session.options.is_minimization_enabled and then
-													not session.used_witnesses.there_exists (agent {AUT_WITNESS}.is_same_bug (l_witness))
+													not session.used_witnesses.there_exists (agent {AUT_ABS_WITNESS}.is_same_bug (l_witness))
 												then
 													l_minimize_task := minimize_task
 													if l_minimize_task = Void then
@@ -339,8 +339,10 @@ feature {NONE} -- Basic operations
 														end
 													end
 													if l_minimize_task /= Void then
-														l_minimize_task.set_witness (l_witness)
-														l_minimize_task.start
+														if attached {AUT_WITNESS} l_witness as l_wit then
+															l_minimize_task.set_witness (l_wit)
+															l_minimize_task.start
+														end
 													end
 												end
 											end

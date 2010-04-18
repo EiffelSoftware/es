@@ -105,6 +105,7 @@ feature{NONE} -- Implementation
 				l_storage.put (l_var, l_index)
 				unvisited_item_count := unvisited_item_count - 1
 				item_cache := l_item
+				before := False
 			end
 		end
 
@@ -117,7 +118,7 @@ invariant
 	random_attached: random /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

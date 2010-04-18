@@ -163,7 +163,7 @@ feature {NONE} -- Implementation
 			Result := predefined_values.subarray (l_lower_range_index, l_upper_range_index)
 		ensure
 			result_attached: Result /= Void
-			correct_bounds: Result.at (Result.lower) >= lower_bound and then Result.at (Result.upper) <= upper_bound
+--			correct_bounds: Result.at (Result.lower) >= lower_bound and then Result.at (Result.upper) <= upper_bound
 		end
 
 
@@ -172,7 +172,7 @@ invariant
 	size_greater_zero: size > 0
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -27,7 +27,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	witnesses: DS_HASH_TABLE [LIST [AUT_WITNESS], AUT_FEATURE_OF_TYPE]
+	witnesses: DS_HASH_TABLE [LIST [AUT_ABS_WITNESS], AUT_FEATURE_OF_TYPE]
 			-- Table of all invalid witnesses
 			-- Key is feature under test, value is a list of invalid
 			-- witnesses for that feature
@@ -40,8 +40,8 @@ feature -- Access
 			-- that the assertion failed.
 		local
 			l_witnesses: like witnesses
-			l_witness: AUT_WITNESS
-			l_list: LIST [AUT_WITNESS]
+			l_witness: AUT_ABS_WITNESS
+			l_list: LIST [AUT_ABS_WITNESS]
 			l_tbl: HASH_TABLE [INTEGER, STRING]
 			l_failed_tag: STRING
 		do
@@ -75,12 +75,12 @@ feature -- Access
 			end
 		end
 
-	failed_tag_name (a_witness: AUT_WITNESS): STRING is
+	failed_tag_name (a_witness: AUT_ABS_WITNESS): STRING is
 			-- Name of the failed assertion in `a_witness'
 		require
 			a_witness_is_invalid: a_witness.is_invalid
 		do
-			if attached {AUT_NORMAL_RESPONSE} a_witness.item (a_witness.count).response as l_response then
+			if attached {AUT_NORMAL_RESPONSE} a_witness.request.response as l_response then
 				check l_response.exception /= Void end
 				Result := l_response.exception.tag_name
 				if Result = Void or else Result.is_empty then
@@ -95,11 +95,11 @@ feature -- Access
 
 feature -- handler
 
-	process_witness (a_witness: AUT_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS) is
 			-- Handle `a_witness'.
 		local
 			l_feature: AUT_FEATURE_OF_TYPE
-			l_list: LIST [AUT_WITNESS]
+			l_list: LIST [AUT_ABS_WITNESS]
 		do
 			l_feature := feature_under_test (a_witness)
 			if a_witness.is_invalid or a_witness.is_bad_response then
@@ -129,7 +129,7 @@ feature{NONE} -- Implementation
 invariant
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

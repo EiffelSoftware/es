@@ -80,7 +80,7 @@ feature -- Access: testing
 			--
 			-- Note: currently there is only one repository per session
 
-	used_witnesses: DS_ARRAYED_LIST [AUT_WITNESS]
+	used_witnesses: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
 			-- Witness which have been minimized and for which a test was created
 
 feature {NONE} -- Access: cache
@@ -95,7 +95,7 @@ invariant
 	error_handler_uses_eiffel_system: error_handler.system = eiffel_system
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

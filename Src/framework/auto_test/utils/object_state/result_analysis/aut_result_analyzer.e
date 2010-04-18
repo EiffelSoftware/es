@@ -158,7 +158,7 @@ feature -- Result printing
 	print_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM) is
 			-- Print simplified information about found faults to `a_output_file'.
 		local
-			l_faults: DS_ARRAYED_LIST [AUT_WITNESS]
+			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
 			i: INTEGER
 		do
 			l_faults := faulty_witness_observer.witnesses
@@ -191,13 +191,13 @@ feature -- Result printing
 	print_sorted_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM) is
 			-- Print sorted simplified information about found faults to `a_output_file'.
 		local
-			l_faults: DS_ARRAYED_LIST [AUT_WITNESS]
+			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
 			i: INTEGER
-			l_faults_with_name: DS_ARRAYED_LIST [TUPLE [name: STRING; witness: AUT_WITNESS]]
+			l_faults_with_name: DS_ARRAYED_LIST [TUPLE [name: STRING; witness: AUT_ABS_WITNESS]]
 			l_name: STRING
 			l_request: AUT_REQUEST
 			l_response: AUT_NORMAL_RESPONSE
-			l_sorter: DS_QUICK_SORTER [TUPLE [name: STRING; witness: AUT_WITNESS]]
+			l_sorter: DS_QUICK_SORTER [TUPLE [name: STRING; witness: AUT_ABS_WITNESS]]
 		do
 			l_faults := faulty_witness_observer.witnesses
 			a_output_file.put_string ("--[Sorted faults] " + l_faults.count.out + " %N")
@@ -217,7 +217,7 @@ feature -- Result printing
 			until
 				l_faults.after
 			loop
-				l_request := l_faults.item_for_iteration.item (l_faults.item_for_iteration.count)
+				l_request := l_faults.item_for_iteration.request
 				l_response ?= l_request.response
 				l_name := l_response.exception.class_name.to_string_8.as_upper + "." + l_response.exception.recipient_name.to_string_8.as_lower
 
@@ -503,7 +503,7 @@ feature -- Result printing
 	print_fault_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
 			-- Print found faults in detail into `a_output_stream'.
 		local
-			l_faults: DS_ARRAYED_LIST [AUT_WITNESS]
+			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
 			i: INTEGER
 			l_response: AUT_NORMAL_RESPONSE
 		do
@@ -519,7 +519,7 @@ feature -- Result printing
 				a_output_stream.put_character ('%T')
 				a_output_stream.put_string (fault_signature (l_faults.item_for_iteration))
 				a_output_stream.put_character ('%N')
-				l_response ?= l_faults.item_for_iteration.item (l_faults.item_for_iteration.count).response
+				l_response ?= l_faults.item_for_iteration.request.response
 				a_output_stream.put_line (l_response.exception.trace)
 				a_output_stream.put_character ('%N')
 				i := i + 1
@@ -775,7 +775,7 @@ feature -- Process
 			end
 		end
 
-	process_witness (a_witness: AUT_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS) is
 			-- Handle `a_witness'.
 		do
 		end
@@ -828,7 +828,7 @@ feature -- Process
 			a_output_stream.put_character ('%N')
 		end
 
-	fault_signature (a_witness: AUT_WITNESS): STRING is
+	fault_signature (a_witness: AUT_ABS_WITNESS): STRING is
 			-- Signature of the fault revealed by `a_witness'
 		require
 			a_witness_is_failing: a_witness.is_fail
@@ -836,7 +836,7 @@ feature -- Process
 			l_request: AUT_REQUEST
 			l_response: AUT_NORMAL_RESPONSE
 		do
-			l_request := a_witness.item (a_witness.count)
+			l_request := a_witness.request
 			l_response ?= l_request.response
 
 			create Result.make (128)
@@ -862,7 +862,7 @@ feature -- Process
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
