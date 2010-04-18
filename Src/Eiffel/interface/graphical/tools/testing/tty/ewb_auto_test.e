@@ -136,7 +136,7 @@ feature -- Execution
 				l_conf.set_is_precondition_evaluation_enabled (l_ap.is_precondition_checking_enabled)
 
 					-- Should linear constraint solving be enabled?
-				l_conf.set_is_linear_solving_enabled (l_ap.is_linear_constraint_solving_enabled)
+				l_conf.set_is_linear_solving_enabled (l_ap.is_smt_linear_constraint_solver_enabled or l_ap.is_lpsolve_contraint_linear_solver_enabled)
 
 					-- Should object state exploration be enabled?
 				l_conf.set_is_object_state_exploration_enabled (l_ap.is_object_state_exploration_enabled)

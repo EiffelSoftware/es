@@ -53,7 +53,6 @@ feature{NONE} -- Initialization
 			l_load_log_option: AP_STRING_OPTION
 			l_state_option: AP_STRING_OPTION
 			l_precondition_option: AP_FLAG
-			l_constraint_solving_option: AP_FLAG
 			l_object_state_exploration: AP_FLAG
 			l_log_processor_op: AP_STRING_OPTION
 			l_log_processor_output_op: AP_STRING_OPTION
@@ -66,7 +65,7 @@ feature{NONE} -- Initialization
 			l_smt_old_value_rate_option: AP_INTEGER_OPTION
 			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
 			l_integer_bound_option: AP_STRING_OPTION
-			l_use_random_cursor_option: AP_FLAG
+			l_use_random_cursor_option: AP_STRING_OPTION
 			l_test_case_serialization_option: AP_STRING_OPTION
 			l_interpreter_log_enabled: AP_STRING_OPTION
 			l_on_the_fly_tc_flag: AP_FLAG
@@ -172,10 +171,6 @@ feature{NONE} -- Initialization
 			l_precondition_option.set_description ("Enable precondition evaluation before feature call.")
 			parser.options.force_last (l_precondition_option)
 
-			create l_constraint_solving_option.make_with_long_form ("cs")
-			l_constraint_solving_option.set_description ("Enable linear constraint solving for integers.")
-			parser.options.force_last (l_constraint_solving_option)
-
 			create l_object_state_exploration.make_with_long_form ("state-explore")
 			l_object_state_exploration.set_description ("Enable object state exploration.")
 			parser.options.force_last (l_object_state_exploration)
@@ -201,15 +196,15 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_prepare_citadel_tests_option)
 
 			create l_candidate_count_option.make_with_long_form ("max-candidates")
-			l_candidate_count_option.set_description ("Max number of candidates that satisfy the precondition of the feature to call. 0 means no limit, default is 100.")
+			l_candidate_count_option.set_description ("Max number of candidates to search for which satisfy the precondition of the feature to call. 0 means no limit. Only have effect when precondition satisfaction is enabled through %"-p%" option. Default is 1.")
 			parser.options.force_last (l_candidate_count_option)
 
 			create l_linear_constraint_solver_option.make_with_long_form ("linear-constraint-solver")
-			l_linear_constraint_solver_option.set_description ("Linear constraint solver to be used, can be either %"smt%" or %"lpsolve%". Default is %"smt%".")
+			l_linear_constraint_solver_option.set_description ("Linear constraint solver to be used, can be either %"smt%", %"lpsolve%" or %"off%". Only have effect when precondition satisfaction is enabled through %"-p%" option. Default is %"lpsolve%".")
 			parser.options.force_last (l_linear_constraint_solver_option)
 
 			create l_smart_selection_rate_option.make_with_long_form ("ps-selection-rate")
-			l_smart_selection_rate_option.set_description ("Rate under which smart selection of object to satisfy preconditions are used.")
+			l_smart_selection_rate_option.set_description ("Rate under which smart selection of object to satisfy preconditions are used. Value is a number in range [0, 100]. Only have effect when precondition satisfaction is enabled through %"-p%" option. Default: 100.")
 			parser.options.force_last (l_smart_selection_rate_option)
 
 			create l_smt_old_value_rate_option.make_with_long_form ("smt-enforce-old-value-rate")
@@ -225,7 +220,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_integer_bound_option)
 
 			create l_use_random_cursor_option.make_with_long_form ("use-random-cursor")
-			l_use_random_cursor_option.set_description ("When searching in predicate pool, should random cursor be used? Default is False.")
+			l_use_random_cursor_option.set_description ("When searching in predicate pool, should random cursor be used? Value can be %"True%" or %"False%". Default is True.")
 			parser.options.force_last (l_use_random_cursor_option)
 
 			create l_test_case_serialization_option.make_with_long_form ("serialization")
@@ -387,10 +382,6 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				is_linear_constraint_solving_enabled := l_constraint_solving_option.was_found
-			end
-
-			if not error_handler.has_error then
 				is_object_state_exploration_enabled := l_object_state_exploration.was_found
 			end
 
@@ -437,22 +428,28 @@ feature{NONE} -- Initialization
 				if l_candidate_count_option.was_found then
 					max_candidate_count := l_candidate_count_option.parameter
 				else
-					max_candidate_count := 100
+					max_candidate_count := 1
 				end
 			end
 
 			if not error_handler.has_error then
+				is_smt_linear_constraint_solver_enabled := False
+				is_lpsolve_contraint_linear_solver_enabled := False
 				if l_linear_constraint_solver_option.was_found then
-					l_strs := l_linear_constraint_solver_option.parameter.as_lower.split (',')
-					l_strs.compare_objects
-					if l_strs.has ("smt") then
-						is_smt_linear_constraint_solver_enabled := True
-					end
-					if l_strs.has ("lpsolve") then
-						is_lpsolve_contraint_linear_solver_enabled := True
+					if l_precondition_option.was_found then
+						l_strs := l_linear_constraint_solver_option.parameter.as_lower.split (',')
+						l_strs.compare_objects
+						if l_strs.has ("smt") then
+							is_smt_linear_constraint_solver_enabled := True
+						end
+						if l_strs.has ("lpsolve") then
+							is_lpsolve_contraint_linear_solver_enabled := True
+						end
 					end
 				else
-					is_smt_linear_constraint_solver_enabled := True
+					if l_precondition_option.was_found then
+						is_lpsolve_contraint_linear_solver_enabled := True
+					end
 				end
 			end
 
@@ -492,7 +489,11 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				is_random_cursor_used := l_use_random_cursor_option.was_found
+				if l_use_random_cursor_option.was_found then
+					is_random_cursor_used := l_use_random_cursor_option.parameter.to_boolean
+				else
+					is_random_cursor_used := True
+				end
 			end
 
 			if not error_handler.has_error then
@@ -723,9 +724,6 @@ feature -- Status report
 	is_precondition_checking_enabled: BOOLEAN
 			-- Should precondition evaluation be enabled?
 
-	is_linear_constraint_solving_enabled: BOOLEAN
-			-- Is linare constraint solving for integers enabled?
-
 	is_object_state_exploration_enabled: BOOLEAN
 			-- Is object state exploration enabled?
 
@@ -760,16 +758,17 @@ feature -- Status report
 
 	is_smt_linear_constraint_solver_enabled: BOOLEAN
 			-- Is SMT based linear constraint solver enabled?
-			-- Default: True
+			-- Default: False
 
 	is_lpsolve_contraint_linear_solver_enabled: BOOLEAN
 			-- Is lp_solve based linear constraint solver enabled?
-			-- Default: False
+			-- Default: True
 
 	object_selection_for_precondition_satisfaction_rate: INTEGER
 			-- Possibility [0-100] under which smart object selection for precondition satisfaction
 			-- is used.
 			-- Only have effect when precondition evaluation is enabled.
+			-- Default: 100.
 
 	smt_enforce_old_value_rate: INTEGER
 			-- Possibility [0-100] to enforce SMT solver to choose an already used value

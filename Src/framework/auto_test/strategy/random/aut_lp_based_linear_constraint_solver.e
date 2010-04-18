@@ -105,7 +105,7 @@ feature -- Basic operations
 									"/*placeholder_" + l_iter_operand + "*/",
 									l_iter_operand + "=" + l_concrete_integer.out + ";")
 
-							fixme ("remove this output?")
+--							fixme ("remove this output?")
 --							io.put_string ("lpsolve: " + l_iter_operand + "=[" + l_abstract_integer.lower_bound.out + "," + l_abstract_integer.upper_bound.out + "]:" + l_concrete_integer.out + "%N")
 						end
 
