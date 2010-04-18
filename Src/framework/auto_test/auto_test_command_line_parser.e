@@ -74,6 +74,7 @@ feature{NONE} -- Initialization
 			l_duplicated_test_case_serialization_option: AP_FLAG
 			l_strs: LIST [STRING]
 			l_word: STRING
+			l_log_has_basic: BOOLEAN
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -236,7 +237,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_on_the_fly_tc_flag)
 
 			create l_proxy_log_option.make_with_long_form ("proxy-log")
-			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state, precondition, pool-statistics.")
+			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state, precondition, pool-statistics, basic. Basic is equal to passing, failing, invalid, bad, error, type, expr-assign. Default: normal")
 			parser.options.force_last (l_proxy_log_option)
 
 			create l_console_log_option.make_with_long_form ("console-log")
@@ -535,6 +536,7 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
+				l_log_has_basic := False
 				if l_proxy_log_option.was_found then
 					l_strs := l_proxy_log_option.parameter.as_lower.split (',')
 					from
@@ -567,10 +569,13 @@ feature{NONE} -- Initialization
 							log_types.put (True, "precondition")
 						elseif l_word.is_case_insensitive_equal ("statistics") then
 							log_types.put (True, "statistics")
+						elseif l_word.is_case_insensitive_equal ("basic") then
+							l_log_has_basic := True
 						end
 						l_strs.forth
 					end
-				else
+				end
+				if not l_proxy_log_option.was_found or l_log_has_basic then
 					log_types.put (True, "passing")
 					log_types.put (True, "failing")
 					log_types.put (True, "invalid")
