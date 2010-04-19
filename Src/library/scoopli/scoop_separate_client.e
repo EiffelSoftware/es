@@ -11,15 +11,6 @@ deferred class
 inherit
 	SCOOP_SEPARATE_TYPE
 
---	THREAD_CONTROL
---		rename
---			join as scoop_join, join_all as scoop_join_all, yield as scoop_yield
---		end
-
---	EXCEPTIONS
---		rename
---			class_name as exceptions_class_name
---		end
 feature {SCOOP_SEPARATE_CLIENT} -- Implementation
 
 	separate_execute_routine (a_requested_processors: TUPLE [SCOOP_PROCESSOR]; a_routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE];
@@ -36,7 +27,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Implementation
 			scoop_scheduler.execute_routine (Current, a_requested_processors, a_routine, a_wait_condition, a_separate_postcondition, a_non_separate_postcondition)
 		end
 
-	separate_execute_routine_without_postconditions (a_requested_processors: TUPLE [SCOOP_PROCESSOR]; a_routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE]; a_wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN]) is
+	separate_execute_routine_without_postconditions (a_requested_processors: TUPLE [SCOOP_PROCESSOR]; a_routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE]; a_wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN])
 			-- Wait until exclusive locks on `a_requested_processors' are acquired and `a_wait_condition' holds, then execute `a_routine'.
 		obsolete
 			"Use `separate_execute_routine' instead."
@@ -48,7 +39,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Implementation
 			scoop_scheduler.execute_routine_without_postconditions (Current, a_requested_processors, a_routine, a_wait_condition)
 		end
 
-	unseparated_postconditions_left (an_unseparated_postconditions: LIST [ROUTINE [ANY, TUPLE]]): BOOLEAN is
+	unseparated_postconditions_left (an_unseparated_postconditions: LIST [ROUTINE [ANY, TUPLE]]): BOOLEAN
 			-- Evaluate unseparated postconditions.
 		require
 			an_unseparated_postconditions /= Void
@@ -63,7 +54,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Implementation
 			end
 		end
 
-	evaluated_as_separate_postcondition (an_involved_suppliers: TUPLE []; a_routine: ROUTINE [ANY, TUPLE]): BOOLEAN is
+	evaluated_as_separate_postcondition (an_involved_suppliers: TUPLE []; a_routine: ROUTINE [ANY, TUPLE]): BOOLEAN
 			-- Evaluate separate postcondition asynchronously.
 		require
 			an_involved_supplierrs_not_empty: an_involved_suppliers /= void --and then an_involved_suppliers.count > 0
@@ -95,7 +86,7 @@ feature {SCOOP_SEPARATE_CLIENT} -- Implementation
 			end
 		end
 
-	added_to_unseparated_postconditions (a_list: LIST [ROUTINE [ANY, TUPLE]]; a_routine: ROUTINE [ANY, TUPLE]): BOOLEAN is
+	added_to_unseparated_postconditions (a_list: LIST [ROUTINE [ANY, TUPLE]]; a_routine: ROUTINE [ANY, TUPLE]): BOOLEAN
 			-- Extend `a_list' with `a_routine'.
 		require
 			a_list /= void
@@ -113,13 +104,15 @@ feature {SCOOP_SEPARATE_CLIENT} -- Implementation
 
 feature {NONE} -- Termination
 
-	stop_execution_ is
-			-- Stop execution of SCOOP system. Obsolete.
+	stop_execution_
+			-- Stop execution of SCOOP system.
+		obsolete
+			"Use `scoop_scheduler.stop_execution' instead."
 		do
 			scoop_scheduler.stop_execution
 		end
 
-feature 	-- Type conversion proxy
+feature {SCOOP_SEPARATE_TYPE} -- Proxy conversion
 
 	proxy_: SCOOP_SEPARATE__ANY
 			-- Added by `damienm' 5.Nov 2009

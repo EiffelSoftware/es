@@ -11,20 +11,12 @@ indexing
 deferred class
 	SCOOP_SEPARATE_TYPE
 
--- inherit
---	SCOOP_CONCURRENCY
-	
---		rename
---			default_create as concurrency_default_create
---		end
-
-
 feature {SCOOP_SEPARATE_TYPE, SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_ROUTINE_REQUEST} -- Access
 
 	processor_: SCOOP_PROCESSOR
 			-- Processor handling this object.
-			
-	set_processor_ (a_processor_: SCOOP_PROCESSOR) is
+
+	set_processor_ (a_processor_: SCOOP_PROCESSOR)
 			-- Set `processor_' to `a_processor_'.
 		require
 			a_processor_exists: a_processor_ /= void
@@ -36,13 +28,13 @@ feature {SCOOP_SEPARATE_TYPE, SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_ROUTINE_RE
 
 feature {SCOOP_SEPARATE_TYPE, SCOOP_PROCESSOR, SCOOP_SCHEDULER} -- Comparison
 
-	scoop_is_local (other: SCOOP_PROCESSOR): BOOLEAN is
+	scoop_is_local (other: SCOOP_PROCESSOR): BOOLEAN
 		do
 			Result := other /= void and then processor_.synchronous_processors_has (other)
 		end
 
 	scoop_local_to_each_other (one_separate_object, other_separate_object: SCOOP_SEPARATE_TYPE): BOOLEAN is
-			-- 
+			--
 		do
 			if one_separate_object /= void and then other_separate_object /= void then
 				if one_separate_object.processor_ = void then
@@ -55,14 +47,14 @@ feature {SCOOP_SEPARATE_TYPE, SCOOP_PROCESSOR, SCOOP_SCHEDULER} -- Comparison
 			end
 		end
 
-feature {NONE} -- Implementation
-	
-	scoop_scheduler: SCOOP_SCHEDULER is
+feature {NONE} -- Scheduler
+
+	scoop_scheduler: SCOOP_SCHEDULER
 			-- Scheduler of separate calls.
 		indexing
 			once_status: global
 		once
 			create Result.make
 		end
-			
+
 end -- class SCOOP_SEPARATE_TYPE

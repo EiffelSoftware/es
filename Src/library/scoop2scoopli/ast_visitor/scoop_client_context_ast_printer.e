@@ -1027,7 +1027,7 @@ feature {NONE} -- Creation handling
 			if l_as.type /= Void then
 				-- Get type by the explicit type
 				l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
-				is_separate := l_type_expression_visitor.is_expression_separate
+				is_separate := l_type_expression_visitor.resolved_type.is_separate
 				l_target_type := l_type_expression_visitor.resolved_type
 				l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
 				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
@@ -1051,8 +1051,8 @@ feature {NONE} -- Creation handling
 					safe_process (l_as.create_keyword (match_list))
 					safe_process (l_as.type)
 					safe_process (l_as.target)
-					context.add_string (".set_processor_ (scoop_scheduler.new_processor_); ")
-
+					context.add_string (".")
+					context.add_string("set_processor_ (scoop_scheduler.new_processor_); ")
 				elseif not l_processor_tag.has_handler then
 					-- current entity is separate and has an explicit processor specification
 					-- but is not defined by a handler.

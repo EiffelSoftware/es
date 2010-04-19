@@ -35,7 +35,7 @@ convert
 
 feature -- Status report
 
-	conforms_to (a_caller_: SCOOP_SEPARATE_TYPE; other: SCOOP_SEPARATE__ANY): BOOLEAN is
+	conforms_to (a_caller_: SCOOP_SEPARATE_TYPE; other: SCOOP_SEPARATE__ANY): BOOLEAN
 		local
 			a_function_to_evaluate: FUNCTION [ANY, TUPLE, BOOLEAN]
 		do
@@ -47,7 +47,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal (a_caller_: SCOOP_SEPARATE_TYPE; other: like Current): BOOLEAN is
+	is_equal (a_caller_: SCOOP_SEPARATE_TYPE; other: like Current): BOOLEAN
 		local
 			a_function_to_evaluate: FUNCTION [ANY, TUPLE, BOOLEAN]
  		do
@@ -59,7 +59,7 @@ feature -- Comparison
 
 feature -- Output
 
-	io (a_caller_: SCOOP_SEPARATE_TYPE): STD_FILES is
+	io (a_caller_: SCOOP_SEPARATE_TYPE): STD_FILES
 			-- Handle to standard file setup
 		once
 			create Result
@@ -79,7 +79,7 @@ feature -- Output
 
 feature -- Initialization
 
-	default_create (a_caller_: SCOOP_SEPARATE_TYPE) is
+	default_create (a_caller_: SCOOP_SEPARATE_TYPE)
 		do
 			scoop_asynchronous_execute (a_caller_, agent implementation_.default_create)
 		end
@@ -115,20 +115,9 @@ feature -- Basic operations
 			scoop_asynchronous_execute (a_caller_, agent implementation_.copy (aux_other))
 		end
 
-
-feature -- Separateness
-
-	implementation_: ANY
-
-	set_implementation_ (an_implementation_: like implementation_) is
-			-- Set `implementation_' to `an_implementation_'.
-		do
-			implementation_ := an_implementation_
-		end
-
 feature -- Conversion
 
-	make_from_local (l: like implementation_) is
+	make_from_local (l: like implementation_)
 			-- Convert from non-separate object.
 			-- Note that `processor_' will be void unless `l' is a separate client and its processor is set.
 		local
@@ -148,7 +137,7 @@ feature -- Conversion
 			implementation_ = l
 		end
 
-	import (a_caller_: SCOOP_SEPARATE_TYPE): like implementation_ is
+	import (a_caller_: SCOOP_SEPARATE_TYPE): like implementation_
 			-- Return a local (deep) copy of `implementation_'
 		local
 			a_function_to_evaluate: FUNCTION [ANY, TUPLE, ANY]

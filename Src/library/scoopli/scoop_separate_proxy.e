@@ -10,6 +10,9 @@ deferred class
 
 inherit
 	SCOOP_SEPARATE_TYPE
+		redefine
+			set_processor_
+		end
 
 feature {NONE} -- Basic operations
 
@@ -85,7 +88,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-feature -- Postcondition handling
+feature {SCOOP_SEPARATE_TYPE} -- Postcondition handling
 
 	evaluate_separate_postcondition (a_caller_: SCOOP_SEPARATE_TYPE; a_routine: ROUTINE [ANY, TUPLE])
 			-- Evaluate separate postcondition asynchronously.
@@ -118,6 +121,30 @@ feature -- Postcondition handling
 		do
 			processor_.decrease_postcondition_counter (i)
 			Result := True
+		end
+
+feature {SCOOP_SEPARATE_TYPE} -- Implementation association
+
+	implementation_: ANY
+
+	set_implementation_ (an_implementation_: like implementation_)
+			-- Set `implementation_' to `an_implementation_'.
+		do
+			implementation_ := an_implementation_
+		end
+
+feature {SCOOP_SEPARATE_TYPE} -- Processor association
+
+	set_processor_ (a_processor_: SCOOP_PROCESSOR)
+			-- Set `processor_' to `a_processor_' and create 'implementation_'.
+		do
+			processor_ := a_processor_
+			create implementation_
+			if attached {SCOOP_SEPARATE_CLIENT} implementation_ as client then
+				client.set_processor_ (a_processor_)
+			end
+		ensure then
+			implementation_set: attached {SCOOP_SEPARATE_CLIENT} implementation_ as client and then client.processor_ = a_processor_
 		end
 
 end -- class SCOOP_SEPARATE_PROXY

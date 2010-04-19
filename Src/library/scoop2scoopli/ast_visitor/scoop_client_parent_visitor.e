@@ -63,15 +63,12 @@ feature -- Access
 				i: INTEGER
 				formal_type: STRING
 				n_overwrites: HASH_TABLE[STRING,STRING]
-				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
-				l_type : TYPE_A
 			do
 				if result = void then
 				  create result.make
 				end
 
 				create	n_overwrites.make (0)
-				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 
 				if l_as.internal_conforming_parents /= Void and not l_as.internal_conforming_parents.is_empty then
 					from
@@ -94,16 +91,12 @@ feature -- Access
 							until
 								l_as.internal_conforming_parents.item.type.generics.after
 							loop
-
-								l_type_expr_visitor.resolve_type_in_workbench (l_as.internal_conforming_parents.item.type.generics.item)
-								l_type := l_type_expr_visitor.resolved_type
-								
 								-- get formal generic type from the ancestor, only interesting if it is of type `FORMAL_AS'
 								formal_type  := l_parent.generics.i_th (i).name.name
 
 								-- print generics and store them for potention overwrites
 								if {type: CLASS_TYPE_AS} l_as.internal_conforming_parents.item.type.generics.item then
-									l_string.append_string (l_type.name)
+									l_string.append_string (type.class_name.name)
 --									n_overwrites.force (formal_type, type.class_name.name)
 									n_overwrites.force (type.class_name.name,formal_type)
 								elseif {type: FORMAL_AS} l_as.internal_conforming_parents.item.type.generics.item then
