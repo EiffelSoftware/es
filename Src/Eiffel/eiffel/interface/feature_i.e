@@ -739,7 +739,11 @@ feature -- Setting
 				end
 			end
 		ensure
-			normal_export_status_set: (written_in /= system.any_id or else feature_name_id /= {PREDEFINED_NAMES}.default_create_name_id) implies export_status.same_as (e)
+			normal_export_status_set:
+				not ((written_in = system.any_id and then feature_name_id = {PREDEFINED_NAMES}.default_create_name_id)
+				or (written_in = system.routine_class_id and then feature_name_id = {PREDEFINED_NAMES}.feature_id_name_id)
+				or (written_in = system.routine_class_id and then feature_name_id = {PREDEFINED_NAMES}.class_id_name_id))
+					implies export_status.same_as (e)
 			any_default_create_export_status_set: (written_in = system.any_id and then feature_name_id = {PREDEFINED_NAMES}.default_create_name_id) implies export_status.is_all
 		end
 
