@@ -47,6 +47,8 @@ feature -- Scoop system constants
 
 	base_library_name: STRING is "base"
 
+	net_library_name: STRING = "net"
+
 	classes_to_be_compiled: LINKED_LIST[STRING] is
 			-- returns classes to be compiled
 			do
