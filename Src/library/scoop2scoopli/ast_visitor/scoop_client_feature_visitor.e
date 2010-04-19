@@ -638,8 +638,9 @@ feature {NONE} -- Feature redeclaration handling
 		do
 			if l_as.internal_parameters /= void and then l_as.internal_parameters.parameters /= void then
 				-- Save accessed feature
-				accessed_feature := l_as.feature_name
+				accessed_feature := feature_as.feature_name
 			end
+
 
 			Precursor (l_as)
 
@@ -648,9 +649,9 @@ feature {NONE} -- Feature redeclaration handling
 				if not current_level.type.is_separate then
 					if not previous_level_exists then
 						-- No call chain, get class of current item
-						add_result_type_substitution(l_as.feature_name, current_level.type.associated_class)
+						add_result_type_substitution(feature_as.feature_name, current_level.type.associated_class)
 					else
-						add_result_type_substitution(l_as.feature_name, previous_level.type.associated_class)
+						add_result_type_substitution(feature_as.feature_name, previous_level.type.associated_class)
 					end
 				end
 			end
