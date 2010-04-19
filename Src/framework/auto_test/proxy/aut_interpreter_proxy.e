@@ -131,7 +131,7 @@ feature {NONE} -- Initialization
 			proxy_log_file.open_write
 
 			if not configuration.proxy_log_options.is_empty then
-				create l_file_printer.make (system, configuration, proxy_log_file)
+				create l_file_printer.make (system, configuration, variable_table, proxy_log_file)
 				if not configuration.proxy_log_options.is_empty then
 					l_file_printer.set_with_config_string (configuration.proxy_log_options)
 				end

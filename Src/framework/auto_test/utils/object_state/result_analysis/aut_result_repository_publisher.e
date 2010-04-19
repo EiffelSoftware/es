@@ -76,7 +76,6 @@ feature -- Basic operation
 		do
 			create l_log_parser.make (system, session.error_handler)
 			l_log_parser.add_observer (Current)
-			l_log_parser.set_variable_table (variable_table)
 			l_log_parser.parse_stream (a_input_stream)
 			notify_observers
 		end

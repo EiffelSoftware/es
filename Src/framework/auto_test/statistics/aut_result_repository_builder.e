@@ -21,6 +21,8 @@ inherit
 			report_request
 		end
 
+	AUT_SHARED_CONSTANTS
+
 create
 	make
 
@@ -138,18 +140,6 @@ feature -- Time measurement
 	last_test_case_end_time: INTEGER
 			-- Time in millisecond when the last test case ended
 
-	time_stamp_header: STRING is "-- time stamp: "
-			-- Header for time stamp
-
-	test_case_index_header: STRING is "-- test case No."
-			-- Header for test case index comment
-
-	test_case_start_time_header: STRING is "TC start"
-			-- Test case start time tag
-
-	test_case_end_time_header: STRING is "TC end"
-			-- Test case end time tag	
-
 	test_case_time_comment_processor (a_line: STRING) is
 			-- Process `a_line' if it is a time stamp for test cases start/end.
 		local
@@ -171,9 +161,9 @@ feature -- Time measurement
 			check l_parts.count = 3 end
 			l_time := l_parts.last.to_integer
 
-			if l_parts.first.is_equal (test_case_start_time_header) then
+			if l_parts.first.is_equal (test_case_start_tag) then
 				last_test_case_start_time := l_time
-			elseif l_parts.first.is_equal (test_case_end_time_header) then
+			elseif l_parts.first.is_equal (test_case_end_tag) then
 				last_test_case_end_time := l_time
 			end
 		end
@@ -203,8 +193,9 @@ feature -- Time measurement
 			l_existing_var_type: TYPE_A
 			l_type: TYPE_A
 		do
-			l_header_count := test_case_operand_type_header.count
-			if a_line.substring (1, l_header_count) ~ test_case_operand_type_header then
+			l_header_count := interpreter_type_message_prefix.count
+			if a_line.substring (1, l_header_count) ~ interpreter_type_message_prefix then
+				variable_table.wipe_out
 				l_index := a_line.index_of (':', 1)
 				l_vars := a_line.substring (l_index + 2, a_line.count).split (';')
 				from
@@ -215,21 +206,18 @@ feature -- Time measurement
 					l_var_def := l_vars.item_for_iteration
 					l_var_def.left_adjust
 					l_var_def.right_adjust
-					l_index := l_var_def.index_of (':', 1)
-					l_var_name := l_var_def.substring (3, l_index - 1)
-					l_type_name := l_var_def.substring (l_index + 1, l_var_def.count)
-					l_var_name.left_adjust
-					l_var_name.right_adjust
-					l_type_name.left_adjust
-					l_type_name.right_adjust
-					create l_variable.make (l_var_name.to_integer)
-					l_type := base_type (l_type_name)
-					if variable_table.is_variable_defined (l_variable) then
-						l_existing_var_type := variable_table.variable_type (l_variable)
-						if (not l_existing_var_type.is_none) and then l_existing_var_type.associated_class.is_deferred and then not l_type.associated_class.is_deferred then
-							variable_table.define_variable (l_variable, l_type)
-						end
-					else
+					if not l_var_def.is_empty then
+						l_var_def.left_adjust
+						l_var_def.right_adjust
+						l_index := l_var_def.index_of (':', 1)
+						l_var_name := l_var_def.substring (3, l_index - 1)
+						l_type_name := l_var_def.substring (l_index + 1, l_var_def.count)
+						l_var_name.left_adjust
+						l_var_name.right_adjust
+						l_type_name.left_adjust
+						l_type_name.right_adjust
+						create l_variable.make (l_var_name.to_integer)
+						l_type := base_type (l_type_name)
 						variable_table.define_variable (l_variable, l_type)
 					end
 
@@ -237,9 +225,6 @@ feature -- Time measurement
 				end
 			end
 		end
-
-	test_case_operand_type_header: STRING = "-- Types for TC No."
-			-- Header for comment line for test case operand specification
 
 	exception_thrown_comment_processor (a_line: STRING) is
 			-- Process `a_line' if it is an exception thrown line.

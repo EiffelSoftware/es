@@ -117,15 +117,6 @@ feature -- Setting
 			feature_id_set: feature_id = a_id
 		end
 
-feature{NONE} -- Implementation
-
-	cleaned_type_name (a_type_name: STRING): STRING
-			-- A copy from `a_type_name', with all "?" removed.
-		do
-			create Result.make_from_string (a_type_name)
-			Result.replace_substring_all (once "?", once "")
-		end
-
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

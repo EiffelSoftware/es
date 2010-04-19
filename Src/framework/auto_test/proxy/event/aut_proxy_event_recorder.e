@@ -72,7 +72,7 @@ feature -- Basic operations
 				process_request (l_request)
 				last_request := Void
 			else
-				check response_without_request: False end
+--				check response_without_request: False end
 			end
 			last_response := Void
 		end
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 		do
 --			check last_response = Void end
 			a_request.set_response (create {AUT_NORMAL_RESPONSE}.make (""))
---			variable_table.wipe_out
+			variable_table.wipe_out
 		end
 
 	process_stop_request (a_request: AUT_STOP_REQUEST)

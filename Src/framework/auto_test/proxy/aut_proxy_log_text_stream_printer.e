@@ -17,17 +17,22 @@ inherit
 
 	AUT_REQUEST_PROCESSOR
 
+	EPA_TYPE_UTILITY
+
+	AUT_SHARED_INTERPRETER_INFO
+
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_config: like configuration; a_output_stream: like output_stream)
+	make (a_system: like system; a_config: like configuration; a_variable_table: like variable_table; a_output_stream: like output_stream)
 			-- Initialize Current.
 		do
 			system := a_system
 			configuration := a_config
 			output_stream := a_output_stream
+			variable_table := a_variable_table
 
 			create request_printer.make (system, output_stream, configuration)
 			create response_printer.make_with_prefix (output_stream, interpreter_log_prefix)
@@ -60,6 +65,9 @@ feature -- Access
 
 	configuration: TEST_GENERATOR_CONF_I
 			-- Configuration			
+
+	variable_table: AUT_VARIABLE_TABLE
+			-- Table for objects created by AutoTest
 
 feature -- Access
 
@@ -289,12 +297,77 @@ feature -- Basic operations
 			end
 		end
 
+	report_test_case_operands (a_request: AUT_CALL_BASED_REQUEST)
+			-- Log operand information in `a_request'.
+		require
+			operands_should_be_logged: is_operand_type_logged
+		local
+			l_should_log: BOOLEAN
+			l_operand_type: SPECIAL [STRING]
+			l_operand_index: SPECIAL [INTEGER]
+			i: INTEGER
+			c: INTEGER
+			l_type_str: STRING
+			l_variable_table: like variable_table
+			l_processed_vars: DS_HASH_SET [INTEGER]
+			l_var_index: INTEGER
+			l_variable: ITP_VARIABLE
+			l_type_name: STRING
+			l_type: TYPE_A
+		do
+			l_operand_index := a_request.operand_indexes
+			l_operand_type := a_request.operand_types
+			check l_operand_index.count = l_operand_type.count end
+			l_variable_table := variable_table
+			create l_processed_vars.make (a_request.argument_count + 2)
+			from
+				i := 0
+				c := l_operand_index.count
+				create l_type_str.make (64)
+				l_type_str.append (interpreter_type_message_prefix)
+				l_type_str.append (a_request.test_case_index.out)
+				l_type_str.append (once ": ")
+			until
+				i = c
+			loop
+				l_var_index := l_operand_index.item (i)
+				if not l_processed_vars.has (l_var_index) then
+					create l_variable.make (l_var_index)
+					l_processed_vars.force_last (l_var_index)
+					l_type_str.append (once "v_")
+					l_type_str.append (l_var_index.out)
+					l_type_str.append (once ": ")
+
+					if l_variable_table.is_variable_defined (l_variable) then
+						l_type := l_variable_table.variable_type (l_variable)
+						if l_type.is_none then
+							l_type_name := l_operand_type.item (i)
+						else
+							l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
+							l_type_name := cleaned_type_name (l_type.name)
+						end
+					else
+						l_type_name := l_operand_type.item (i)
+					end
+
+					l_type_str.append (l_type_name)
+					l_type_str.append (once "; ")
+
+				end
+				i := i + 1
+			end
+			log_line (l_type_str)
+		end
+
 feature{AUT_REQUEST} -- Processing requests
 
 	safe_process_request (a_request: AUT_REQUEST)
 			-- Process `a_request'.
 		do
 			a_request.process (request_printer)
+			if is_operand_type_logged and then attached {AUT_CALL_BASED_REQUEST} a_request as l_call_request then
+				report_test_case_operands (l_call_request)
+			end
 			if a_request.response /= Void then
 				a_request.response.process (response_printer)
 			end
@@ -331,33 +404,6 @@ feature{AUT_REQUEST} -- Processing requests
 			end
 
 			if l_should_log then
-					-- Output operand indexes and types as comments.
-					-- Useful as context information when only part of the test cases are logged.
-				if is_operand_type_logged then
-					l_operand_index := a_request.operand_indexes
-					l_operand_type := a_request.operand_types
-					check l_operand_index.count = l_operand_type.count end
-					from
-						i := 0
-						c := l_operand_index.count
-						create l_type_str.make (64)
-						l_type_str.append (interpreter_type_message_prefix)
-						l_type_str.append (a_request.test_case_index.out)
-						l_type_str.append (once ": ")
-					until
-						i = c
-					loop
-						l_type_str.append (once "v_")
-						l_type_str.append (l_operand_index.item (i).out)
-						l_type_str.append (once ": ")
-						l_type_str.append (l_operand_type.item (i))
-						if i < c - 1 then
-							l_type_str.append (once "; ")
-						end
-						i := i + 1
-					end
-					log_line (l_type_str)
-				end
 				log_time_stamp (test_case_start_tag, start_time)
 				log_line (test_case_index_header + a_request.test_case_index.out)
 				safe_process_request (a_request)

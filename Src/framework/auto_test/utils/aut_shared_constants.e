@@ -30,7 +30,7 @@ feature -- Access
 
 	interpreter_exception_message: STRING = "status: exception"
 
-	interpreter_type_message_prefix: STRING = "-- Types for TC No."
+	interpreter_type_message_prefix: STRING = "%T-- > Types for TC No."
 
 	proxy_has_started_and_connected_message: STRING = "-- Proxy has started and connected to interpreter."
 			-- Message printed to the log when a new interpreter is started
@@ -67,7 +67,7 @@ feature -- Access
 	test_case_index_header: STRING is "-- test case No."
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

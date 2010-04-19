@@ -148,7 +148,7 @@ feature{NONE} -- Implementation
 
 
 				-- Setup `content'.
-			internal_content := final_feature.feature_name.twin
+			internal_content := l_content
 		end
 
 	internal_content: STRING

@@ -61,16 +61,6 @@ feature -- Status report
 	is_replaying: BOOLEAN do end
 			-- <Precursor>
 
-feature -- Setting
-
-	set_variable_table (a_table: like variable_table)
-			-- Set `variable_table' with `a_table'.
-		do
-			variable_table := a_table
-		ensure
-			variable_table_set: variable_table = a_table
-		end
-
 feature -- Parsing
 
 	parse_stream (an_input_stream: KI_TEXT_INPUT_STREAM)
@@ -107,8 +97,13 @@ feature -- Parsing
 						end
 					else
 						if line.count >= interpreter_log_prefix.count and then line.substring (1, interpreter_log_prefix.count).same_string (interpreter_log_prefix) then
-								-- We are inside a response comment-block
-							report_response_line (line)
+								-- This is a line to report test case operand types.
+							if line.substring (1, interpreter_type_message_prefix.count).same_string (interpreter_type_message_prefix) then
+								report_comment_line (line)
+							else
+									-- We are inside a response comment-block
+								report_response_line (line)
+							end
 						else
 								-- Report that some request other than "start" request is found in current line.
 							report_request_line (line)
@@ -146,23 +141,18 @@ feature {NONE} -- Reporting
 			l_last_response: detachable AUT_RESPONSE
 		do
 				-- Report previously received response if any
-			if a_line.has_substring (proxy_has_started_and_connected_message) then
-					variable_table.wipe_out
+			if (attached last_response_text as l_response_text and then not l_response_text.is_empty) then
+				create l_response_stream.make (l_response_text)
+				response_parser.set_input_stream (l_response_stream)
+				response_parser.parse_invoke_response
+				l_last_response := response_parser.last_response
+				check l_last_response /= Void end
+				report_event (l_last_response)
+
+				last_response_text.wipe_out
 			else
-				if (attached last_response_text as l_response_text and then not l_response_text.is_empty) then
-					create l_response_stream.make (l_response_text)
-					response_parser.set_input_stream (l_response_stream)
-					response_parser.parse_invoke_response
-					l_last_response := response_parser.last_response
-					check l_last_response /= Void end
-					report_event (l_last_response)
-
-					last_response_text.wipe_out
-				else
-					create {AUT_BAD_RESPONSE} l_last_response.make ("")
-					report_event (l_last_response)
-				end
-
+				create {AUT_BAD_RESPONSE} l_last_response.make ("")
+				report_event (l_last_response)
 			end
 
 				-- Now we parse the newly found request line.
@@ -350,9 +340,6 @@ feature{NONE} -- Implementation
 
 	last_response_text: STRING
 			-- Last found response from interpreter
-
-	variable_table: AUT_VARIABLE_TABLE
-			-- Variable table for AutoTest created objects
 
 invariant
 	system_attached: system /= Void

@@ -27,5 +27,13 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+feature{NONE} -- Implementation
+
+	cleaned_type_name (a_type_name: STRING): STRING
+			-- A copy from `a_type_name', with all "?" removed.
+		do
+			create Result.make_from_string (a_type_name)
+			Result.replace_substring_all (once "?", once "")
+		end
 
 end
