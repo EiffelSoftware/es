@@ -62,14 +62,18 @@ feature -- Events
 			window: EB_DEVELOPMENT_WINDOW
 			rf: ERF_CLASS_PRETTY_PRINT
 		do
-			if attached {EIFFEL_CLASS_I} cs.class_i as eif_class_i and then eif_class_i.is_compiled then
-				rf := manager.class_pretty_print_refactoring
-				rf.set_class (eif_class_i)
+			if not attached {FEATURE_STONE}cs then
+				if attached {EIFFEL_CLASS_I} cs.class_i as eif_class_i and then eif_class_i.is_compiled then
+					rf := manager.class_pretty_print_refactoring
+					rf.set_class (eif_class_i)
 
-				manager.execute_refactoring (rf)
+					manager.execute_refactoring (rf)
+				else
+					window := window_manager.last_focused_development_window
+					prompts.show_info_prompt ("Select a compiled Eiffel-class", window.window, Void)
+				end
 			else
-				window := window_manager.last_focused_development_window
-				prompts.show_info_prompt ("Select a compiled Eiffel-class", window.window, Void)
+				-- Ignore this drop action
 			end
 		end
 
