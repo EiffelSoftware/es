@@ -102,9 +102,9 @@ feature {NONE} -- Roundtrip: process nodes
 
 			-- process feature clauses
 			l_last_index := last_index
-			if not l_as.is_deferred then
-				insert_conversion(l_as) 		-- Added by `damienm' 4.Nov 2009
-			end
+
+			insert_conversion(l_as) 		-- Added by `damienm' 4.Nov 2009
+			
 			add_proxy_feature(l_as) 		-- Added by `damienm' 3.Nov 2009
 			last_index := l_last_index
 
