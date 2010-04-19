@@ -47,6 +47,7 @@ inherit
 			process_char_as,
 			process_typed_char_as,
 			process_bool_as,
+			process_void_as,
 			process_eiffel_list,
 			process_address_as,
 			process_assign_as,
@@ -978,6 +979,13 @@ feature {NONE} -- Expressions processing
 			update_current_level_with_expression (l_as)
 		end
 
+	process_void_as (l_as: VOID_AS)
+			-- Update the current level with 'l_as'.
+		do
+			Precursor (l_as)
+			update_current_level_with_expression (l_as)
+		end
+
 	process_bang_creation_expr_as (l_as: BANG_CREATION_EXPR_AS)
 			-- Update the current level with 'l_as'.
 		do
@@ -1109,8 +1117,8 @@ feature {NONE} -- Creation handling
 				-- Non separate create creation.														--
 				------------------------------------------------------------------------------------------
 
-				-- Does the type of the target has a class type that comes from the base library?
-				if l_target_type.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+				-- Does the type of the target has a class type that comes from an excluded library?
+				if is_in_ignored_group (l_target_type.associated_class) then
 					-- Yes, it does.
 					-- Base classes do not get processed. Therefore we cannot set the processor of the target.
 					safe_process (l_as.create_keyword (match_list))
@@ -1385,8 +1393,8 @@ feature {NONE} -- Creation handling
 					creation_object_name := {SCOOP_SYSTEM_CONSTANTS}.creation_object+current_create_creation_position.out
 				end
 
-				-- Does the type of the target has a class type that comes from the base library?
-				if l_target_type.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+				-- Does the type of the target has a class type that comes from an excluded library?
+				if is_in_ignored_group (l_target_type.associated_class) then
 					-- Yes, it does.
 					-- Base classes do not get processed. Therefore we cannot set the processor of the target.
 

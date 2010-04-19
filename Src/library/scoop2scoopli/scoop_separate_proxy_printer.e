@@ -858,7 +858,7 @@ feature {NONE} -- Roundtrip: Implementation
 									l_argument_name := l_argument.item_name (j)
 									context.add_string ("%N%T%T%Tif " + l_argument_name + " /= void then ")
 									context.add_string ("%N%T%T%T%Taux_scoop_" + l_argument_name + " := ")
-									if not l_type_a.associated_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+									if not is_in_ignored_group (l_type_a.associated_class) then
 										context.add_string (l_argument_name + "." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name +"%N%T%T%Tend")
 									else
 										context.add_string (l_argument_name +"%N%T%T%Tend")

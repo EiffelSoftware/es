@@ -496,7 +496,7 @@ feature {NONE} -- Implementation
 			from i := 1 until i > l_classes.count loop
 				l_class ?= l_classes.item (i)
 
-				if l_class /= Void and then not l_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) then
+				if l_class /= Void and then not is_in_ignored_group(l_class) then
 					l_scoop_classes.extend (l_class)
 				end
 				i := i + 1
