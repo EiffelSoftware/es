@@ -51,6 +51,7 @@ inherit
 			process_char_as,
 			process_typed_char_as,
 			process_bool_as,
+			process_void_as,
 			process_object_test_as,
 			process_inline_agent_creation_as,
 			process_agent_routine_creation_as
@@ -59,6 +60,8 @@ inherit
 	SCOOP_WORKBENCH
 
 	SHARED_STATELESS_VISITOR
+
+	SHARED_TYPES
 
 feature -- Expression and call evaluation access
 	evaluate_expression_type_in_workbench (
@@ -942,6 +945,12 @@ feature {NONE} -- Expression evaluation visits
 			-- Update the interface with 'l_as'.
 		do
 			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+		end
+
+	process_void_as (l_as: VOID_AS)
+			-- Update the interface with 'l_as'.
+		do
+			update_interface(none_type)
 		end
 
 feature {NONE} -- Call evaluation visits
