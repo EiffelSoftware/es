@@ -169,24 +169,11 @@ feature {NONE} -- Roundtrip: process nodes
 --				safe_process (l_as.internal_invariant)
 --			end
 
-
-			context.add_string ("%N%N")
-
-			context.add_string (";") -- fix for notes at the end of the class  ::remove when activating invariants!::
-
-			-- process indexes
-			if l_as.internal_bottom_indexes /= Void then
-				last_index := l_as.internal_bottom_indexes.first_token (match_list).index - 1
-				safe_process (l_as.internal_bottom_indexes)
-			else
-				last_index := l_as.end_keyword.index - 1
-			end
-
-
-
-
+			-- Skip indexes.
+			last_index := l_as.end_keyword.index - 1
 
 			-- process end keyword
+			context.add_string ("%N%N")
 			safe_process (l_as.end_keyword)
 		end
 

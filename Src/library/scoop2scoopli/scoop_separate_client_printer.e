@@ -104,7 +104,7 @@ feature {NONE} -- Roundtrip: process nodes
 			l_last_index := last_index
 
 			insert_conversion(l_as) 		-- Added by `damienm' 4.Nov 2009
-			
+
 			add_proxy_feature(l_as) 		-- Added by `damienm' 3.Nov 2009
 			last_index := l_last_index
 
@@ -125,17 +125,11 @@ feature {NONE} -- Roundtrip: process nodes
 				is_processing_assertions := False
 			end
 
-			-- process indexes
-			if l_as.internal_bottom_indexes /= Void then
-				context.add_string ("%N%N")
-				last_index := l_as.internal_bottom_indexes.first_token (match_list).index - 1
-				safe_process (l_as.internal_bottom_indexes)
-			else
-				last_index := l_as.end_keyword.index - 1
-				context.add_string ("%N%N")
-			end
+			-- Skip indexes.
+			last_index := l_as.end_keyword.index - 1
 
 			-- process end keyword
+			context.add_string ("%N%N")
 			safe_process (l_as.end_keyword)
 		end
 
