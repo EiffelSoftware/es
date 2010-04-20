@@ -514,58 +514,30 @@ feature{NONE} -- Actions
 			develop_window.commands.edit_external_commands_cmd.update_menus_from_outside
 		end
 
-	demo
-		local
-			l_feat: D_DYN_FUNC_I
-		do
-			create l_feat
-		end
-
 	on_run_process
 			-- Agent called when launching a process
 		local
 			str ,wd: STRING
 			e_cmd: EB_EXTERNAL_COMMAND
 			temp_cmd: EB_EXTERNAL_COMMAND
-			l_feat: STRING
-			l_feat_as: FEATURE_AS
-			l_generator: AST_FEATURE_I_GENERATOR
-			l_feature_i: FEATURE_I
-			l_expr: EPA_AST_EXPRESSION
-			l_class: CLASS_C
-			l_name_id: INTEGER
 		do
-			names_heap.put ("new__feature")
-			l_name_id := names_heap.id_of ("new__feature")
-			l_feat := "feature new__feature (a: STRING; b: INTEGER) do end"
-			entity_feature_parser.parse_from_string (l_feat, Void)
-			l_feat_as := entity_feature_parser.feature_node
-
-			create l_generator
-			l_class := workbench.system.root_type.associated_class
-			l_feature_i := l_generator.new_feature (l_feat_as, 0, l_class)
-			l_feature_i.set_written_in (l_class.class_id)
-			l_feature_i.set_feature_name_id (l_name_id, l_name_id)
-
-			create l_expr.make_with_text (l_class, l_feature_i, "a.count", l_class)
-
---			create str.make_from_string (cmd_lst.text)
---			str.left_adjust
---			str.right_adjust
---			if not str.is_empty then
---				e_cmd := corresponding_external_command
---				if e_cmd /= Void then
---					wd := e_cmd.working_directory
---					if wd = Void then
---						wd := ""
---					end
---					create temp_cmd.make_and_run_only (e_cmd.external_command, wd)
---					print_command_name (e_cmd.external_command)
---				else
---					create temp_cmd.make_and_run_only (str, "")
---					print_command_name (str)
---				end
---			end
+			create str.make_from_string (cmd_lst.text)
+			str.left_adjust
+			str.right_adjust
+			if not str.is_empty then
+				e_cmd := corresponding_external_command
+				if e_cmd /= Void then
+					wd := e_cmd.working_directory
+					if wd = Void then
+						wd := ""
+					end
+					create temp_cmd.make_and_run_only (e_cmd.external_command, wd)
+					print_command_name (e_cmd.external_command)
+				else
+					create temp_cmd.make_and_run_only (str, "")
+					print_command_name (str)
+				end
+			end
 		end
 
 	on_input_to_process (str: STRING)
