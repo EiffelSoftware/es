@@ -41,6 +41,7 @@ inherit
 create
 	make,
 	make_with_text,
+	make_with_text_and_type,
 	make_with_type,
 	make_with_feature
 
@@ -59,6 +60,16 @@ feature{NONE} -- Initialization
 			else
 				check should_not_happen: False end
 			end
+		end
+
+	make_with_text_and_type (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_type: like type)
+			-- Initialize Current.
+		do
+			set_class (a_class)
+			set_feature (a_feature)
+			set_written_class (a_written_class)
+			parse_text (a_text)
+			set_type (a_type)
 		end
 
 	make_with_feature (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)

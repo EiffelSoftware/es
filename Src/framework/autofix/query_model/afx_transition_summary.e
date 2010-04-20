@@ -92,11 +92,11 @@ feature -- Basic operations
 					transitions_cache.force_last (l_signature)
 					l_precondition := state_with_operands (a_class, a_feature, a_source)
 					l_postcondition := state_with_operands (a_class, a_feature, a_target)
-					create l_transition.make_with_operands (a_class, a_feature, l_precondition, l_postcondition)
+--					create l_transition.make_with_operands (a_class, a_feature, l_precondition, l_postcondition)
 					create l_change_calculator
 					l_changes := l_change_calculator.change_set (l_transition.precondition, l_transition.postcondition)
 					if not l_changes.is_empty then
-						create l_transition.make_with_operands (a_class, a_feature, l_precondition, l_postcondition)
+--						create l_transition.make_with_operands (a_class, a_feature, l_precondition, l_postcondition)
 						create l_document_writer
 						l_document_writer.write (l_transition, "d:\temp\t2")
 					end

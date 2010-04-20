@@ -113,8 +113,8 @@ feature{NONE} -- Implementation
 			create l_values.make (128)
 			from
 				i := 1
-				c := transition.operand_positions.count
-				l_cursor := transition.operand_positions.new_cursor
+				c := transition.variable_positions.count
+				l_cursor := transition.variable_positions.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
@@ -155,7 +155,7 @@ feature{NONE} -- Implementation
 			i, c: INTEGER
 		do
 			create l_values.make (64)
-			l_operands := transition.operand_positions
+			l_operands := transition.variable_positions
 			from
 				i := 1
 				c := a_operands.count
@@ -340,7 +340,7 @@ feature{NONE} -- Implementation
 			i: INTEGER
 			l_values: STRING
 		do
-			l_types := transition.operand_type_table
+			l_types := transition.variable_type_table
 			from
 				l_cursor := l_types.new_cursor
 				l_cursor.start

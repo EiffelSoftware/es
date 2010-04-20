@@ -20,6 +20,8 @@ inherit
 
 	SHARED_TEXT_ITEMS
 
+	EPA_TYPE_UTILITY
+
 feature -- AST
 
 	text_from_ast (a_ast: AST_EIFFEL): STRING
@@ -91,6 +93,15 @@ feature -- Class/feature related
 			end
 		end
 
+	operand_count_of_feature (a_feature: FEATURE_I): INTEGER
+			-- Number of operands (target, argument, result) of `a_feature'
+		do
+			Result := a_feature.argument_count + 1
+			if not a_feature.type.is_void then
+				Result := Result + 1
+			end
+		end
+
 	operands_of_feature (a_feature: FEATURE_I): DS_HASH_TABLE [INTEGER, STRING]
 			-- Operands and their positions of `a_feature', including target and possible
 			-- returned Result. Operand positions are 0-based, with 0 indicates the target.
@@ -129,6 +140,40 @@ feature -- Class/feature related
 					do
 						a_tbl.force_last (a_name, a_pos)
 					end (?, ?, Result))
+		end
+
+	operand_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, INTEGER]
+			-- Types of operands of `a_feature' in the context of `a_context_class'.
+			-- Result is a table, key is the 0-based operand index, 0 indicates the target,
+			-- followed by arguments and result, if any. Value is the type of that operand.
+			-- Note: Types in the result is not resolved.
+		local
+			l_operand_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			i: INTEGER
+		do
+			l_operand_count := 1 + a_feature.argument_count
+			if not a_feature.type.is_void then
+				l_operand_count := l_operand_count + 1
+			end
+			create Result.make (l_operand_count)
+			Result.force_last (a_context_class.actual_type, 0)
+			Result.force_last (a_feature.type, l_operand_count)
+
+			l_args := a_feature.arguments
+			l_cursor := l_args.cursor
+			from
+				i := 1
+				l_args.start
+			until
+				l_args.after
+			loop
+				Result.force_last (l_args.item_for_iteration, i)
+				i := i + 1
+				l_args.forth
+			end
+			l_args.go_to (l_cursor)
 		end
 
 	local_names_of_feature (a_feature: FEATURE_I): DS_HASH_SET [STRING]
