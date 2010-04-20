@@ -341,6 +341,13 @@ feature -- Test case serialization
 		deferred
 		end
 
+	is_post_state_serialized: BOOLEAN
+			-- Should post-state information be serialized as well?
+			-- Normally, only pre-state information is necessary, because
+			-- we can re-execute the test case to observe the post-state.
+		deferred
+		end
+
 feature -- Types under test
 
 	types_under_test: DS_LIST [CL_TYPE_A]

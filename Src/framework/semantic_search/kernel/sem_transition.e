@@ -69,7 +69,7 @@ feature -- Access
 
 	content: STRING
 			-- String representing the content of Current transition
-			-- Can be a piece of code, should be in a form where all variables are
+			-- Can be a piece of code, should be in a form where all variable names are
 			-- normalized, for example:
 			-- {1}.extend ({2})
 			-- {1} and {2} represent the first and second operand, respectively.
@@ -118,8 +118,8 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
-	context: STRING
-			-- Context of current transition
+	description: STRING
+			-- Description of current transition
 		deferred
 		end
 

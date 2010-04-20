@@ -1056,6 +1056,7 @@ feature{NONE} -- Process scheduling
 					  configuration.is_failing_test_case_serialization_enabled.out,
 					  test_case_serialization_filename,
 					  configuration.is_duplicated_test_case_serialized.out,
+					  configuration.is_post_state_serialized.out,
 					  "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 			else
 				create arguments.make_from_array (

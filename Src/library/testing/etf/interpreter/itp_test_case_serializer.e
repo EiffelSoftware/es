@@ -23,8 +23,10 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_interpreter: like interpreter) is
+	make (a_interpreter: like interpreter; a_post_state_serialized: BOOLEAN) is
 			-- Initialization `interpreter' with `a_interpreter'.
+			-- `a_post_state_serialized' indicates if post-state information should
+			-- be serialized as well.
 		require
 			a_interpreter_attached: a_interpreter /= Void
 		do
@@ -32,6 +34,7 @@ feature{NONE} -- Initialization
 			create object_graph_traversor
 			create test_case_hashs.make (2048)
 			test_case_hashs.compare_objects
+			is_post_state_serialized := a_post_state_serialized
 		ensure
 			interpreter_set: interpreter = a_interpreter
 		end
@@ -53,7 +56,7 @@ feature -- Access
 			l_lower, l_upper: INTEGER
 			l_var_tbl: HASH_TABLE [INTEGER, INTEGER]
 			l_var_id: INTEGER
-			l_description: like object_description
+			l_description: like pre_state_objects
 			l_index: INTEGER
 			l_object: detachable ANY
 			l_should_serialize: BOOLEAN
@@ -75,7 +78,7 @@ feature -- Access
 
 						-- Synthesize serialization part for a test case.
 					create Result.make (1024)
-					Result.append (once "<serialization>%N")
+					Result.append (once "<test_case>%N")
 
 						-- Synthesize time.
 					append_time (time, Result)
@@ -84,7 +87,7 @@ feature -- Access
 					append_test_case (class_name, feature_name, argument_count, is_creation, is_query, operands, types, Result)
 
 						-- Synthesize all AutoTest created variables in current test case.
-					append_all_variables (object_description, Result)
+					append_all_variables (pre_state_objects, Result)
 
 						-- Synthesize trace.
 					append_exception_trace (exception, Result)
@@ -97,9 +100,10 @@ feature -- Access
 					append_object_state (post_state_object_summary, False, Result)
 
 						-- Synthesize serialization
-					append_object_serialization (object_serialization, Result)
+					append_object_serialization (True, pre_state_serialization, Result)
+					append_object_serialization (False, post_state_serialization, Result)
 
-					Result.append (once "%N</serialization>%N")
+					Result.append (once "</test_case>%N")
 				end
 			else
 				create Result.make_empty
@@ -148,6 +152,13 @@ feature -- Status report
 
 	is_query: BOOLEAN
 			-- Is feature with `feature_name' a query?
+
+	is_post_state_serialized: BOOLEAN
+			-- Should post-state information be serialized as well?
+			-- Strictly speaking, post-state information is not necessary because
+			-- when pre-state information is available, we can reexecute the test case
+			-- to observe the post-state. But if post-state information is available, we
+			-- don't need to re-execute the test case.
 
 feature -- Basic operations
 
@@ -198,12 +209,15 @@ feature -- Basic operations
 			-- execution.
 		local
 			l_data: TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING]
+			l_serialization: like object_serialization
 		do
 			pre_state_object_summary := Void
 			l_data := abstract_object_state (True)
 			pre_state_object_summary := l_data.summary
 			test_case_hash_code := l_data.hash
-			retrieve_object_serialization
+			l_serialization := object_serialization (True)
+			pre_state_serialization := l_serialization.serialization
+			pre_state_objects := l_serialization.description
 		end
 
 	retrieve_post_state (a_is_failing_test_case: BOOLEAN) is
@@ -211,6 +225,7 @@ feature -- Basic operations
 			-- `a_is_failing_test_case' indicates if the last test case is failing.
 		local
 			l_data: TUPLE [summary: ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]; hash: STRING]
+			l_serialization: like object_serialization
 		do
 			post_state_object_summary := Void
 			if is_test_case_setup then
@@ -218,38 +233,41 @@ feature -- Basic operations
 				if not a_is_failing_test_case then
 					l_data := abstract_object_state (False)
 					post_state_object_summary := l_data.summary
+					if is_post_state_serialized then
+						l_serialization := object_serialization (False)
+						post_state_serialization := l_serialization.serialization
+						post_state_objects := l_serialization.description
+					else
+						post_state_serialization := Void
+						post_state_objects := Void
+					end
 				end
 			else
 				exception := Void
 			end
 		end
 
-	retrieve_object_serialization is
-			-- Retrieve serialized data for objects specified by `operands'
-			-- and store the data in `object_serialization'.
+	object_serialization (a_pre_state: BOOLEAN): TUPLE [serialization: detachable STRING; description: detachable HASH_TABLE [detachable ANY, INTEGER]]
+			-- Object serialization for `operands'. `a_pre_state' indicates if the objects are in pre-execution or post-execution state.
 		local
 			l_lower: INTEGER
 			l_upper: INTEGER
-			l_stream: STRING
-			l_data: TUPLE [serialization: STRING; description: HASH_TABLE [detachable ANY, INTEGER]]
 		do
 			if is_test_case_setup then
-
-				if is_creation then
+				if is_creation and then a_pre_state then
 					l_lower := 1
-					l_upper := argument_count
 				else
 					l_lower := 0
-					l_upper := l_lower + argument_count
 				end
-				l_data := objects_as_string (operands, l_lower, l_upper)
-				object_serialization := l_data.serialization
-				object_description := l_data.description
+				l_upper := argument_count
+				if is_query and then not a_pre_state then
+					l_upper := l_upper + 1
+				end
+				Result := objects_as_string (operands, l_lower, l_upper)
 			else
-				object_serialization := Void
+				Result := Void
 			end
 		end
-
 feature{NONE} -- Implementation
 
 	pre_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
@@ -262,17 +280,24 @@ feature{NONE} -- Implementation
 			-- Key is the object index,
 			-- value is a string containing state summary for that object
 
-
 	test_case_hash_code: STRING
 			-- Hash code for current test case
 
-	object_serialization: detachable STRING
+	pre_state_serialization: detachable STRING
 			-- String representing the serialized data for objects specified by
-			-- `operands'
+			-- `operands' in pre-execution state.
 
-	object_description: HASH_TABLE [detachable ANY, INTEGER]
-			-- List of variables in `object_serialization' along with their object index.
-			-- Key is variable index, value is the variable object itself.
+	pre_state_objects: detachable HASH_TABLE [detachable ANY, INTEGER]
+			-- List of variables in `pre_state_serialization' along with their object index.
+			-- Key is variable index, value is the variable object itself in pre-execution state.
+
+	post_state_serialization: detachable STRING
+			-- String representing the serialized data for objects specified by
+			-- `operands' in pre-execution state.
+
+	post_state_objects: detachable HASH_TABLE [detachable ANY, INTEGER]
+			-- List of variables in `pre_state_serialization' along with their object index.
+			-- Key is variable index, value is the variable object itself in pre-execution state.
 
 	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING] is
 			-- Retrieve object state summary from objects specified by `operands'
@@ -498,7 +523,7 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append (once "</class>%N")
 
 				-- Synthesize test case body.
-			a_buffer.append (once "<test_case>%N")
+			a_buffer.append (once "<code>%N")
 
 				-- Synthesize return value.
 			if a_is_query then
@@ -535,7 +560,7 @@ feature{NONE} -- Implementation/Test case synthesis
 				end
 				a_buffer.append (once ")")
 			end
-			a_buffer.append (once "%N</test_case>%N")
+			a_buffer.append (once "%N</code>%N")
 
 				-- Synthesize type information.
 			a_buffer.append (once "<operands>%N")
@@ -598,17 +623,41 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append (once "</hash_code>%N")
 		end
 
-	append_object_serialization (a_serialization: STRING; a_buffer: STRING)
+	append_object_serialization (a_pre_state: BOOLEAN; a_serialization: detachable STRING; a_buffer: STRING)
 			-- Append object serialization data `a_serialization' into `a_buffer'.
+			-- `a_pre_state' indicates if `a_serialization' is retrieved in pre-execution state or
+			-- in post-execution state.		
 		do
-			a_buffer.append (once "<data_length>")
-			a_buffer.append (a_serialization.count.out)
-			a_buffer.append (once "</data_length>%N")
-			a_buffer.append (once "<data><![CDATA[")
-			if object_serialization /= Void then
+			if a_pre_state then
+				a_buffer.append (once "<pre_serialization_length>")
+			else
+				a_buffer.append (once "<post_serialization_length>")
+			end
+
+			if a_serialization = Void then
+				a_buffer.append_character ('0')
+			else
+				a_buffer.append (a_serialization.count.out)
+			end
+
+			if a_pre_state then
+				a_buffer.append (once "</pre_serialization_length>%N")
+				a_buffer.append (once "<pre_serialization><![CDATA[")
+			else
+				a_buffer.append (once "</post_serialization_length>%N")
+				a_buffer.append (once "<post_serialization><![CDATA[")
+			end
+
+			if a_serialization /= Void then
 				a_buffer.append (a_serialization)
 			end
-			a_buffer.append (once "]]></data>%N")
+
+			if a_pre_state then
+				a_buffer.append (once "]]></pre_serialization>%N")
+			else
+				a_buffer.append (once "]]></post_serialization>%N")
+			end
+
 		end
 
 	append_object_state (a_state: detachable ARRAYED_LIST [TUPLE [summary: STRING_8; index: INTEGER_32]]; a_is_pre_state: BOOLEAN; a_buffer: STRING)

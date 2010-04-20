@@ -10,7 +10,7 @@ class
 inherit
 	SEM_TRANSITION
 		redefine
-			context
+			description
 		end
 
 	EPA_UTILITY
@@ -29,7 +29,7 @@ feature{NONE} -- Initialization
 			precondition := a_precondition
 			postcondition := a_postcondition
 			initialize_internal
-			context :=  context_class.name_in_upper + once "__" + a_feature.feature_name.as_lower
+			description :=  context_class.name_in_upper + once "__" + a_feature.feature_name.as_lower
 		end
 
 	make_with_operands (a_context_class: like context_class; a_feature: like feature_; a_precondition: like precondition; a_postcondition: like postcondition)
@@ -75,7 +75,7 @@ feature -- Access
 			Result := internal_content
 		end
 
-	context: STRING
+	description: STRING
 			-- Context of current transition
 
 feature{NONE} -- Implementation

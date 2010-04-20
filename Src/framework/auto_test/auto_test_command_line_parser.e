@@ -75,6 +75,7 @@ feature{NONE} -- Initialization
 			l_strs: LIST [STRING]
 			l_word: STRING
 			l_log_has_basic: BOOLEAN
+			l_post_state_serialization_option: AP_FLAG
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -247,6 +248,10 @@ feature{NONE} -- Initialization
 			create l_duplicated_test_case_serialization_option.make_with_long_form ("serialize-duplicated-tc")
 			l_duplicated_test_case_serialization_option.set_description ("Should duplicated test cases be serialized? Two test cases are duplicated if their operands have the same abstract states. Default: False")
 			parser.options.force_last (l_duplicated_test_case_serialization_option)
+
+			create l_post_state_serialization_option.make_with_long_form ("serialize-post-state")
+			l_post_state_serialization_option.set_description ("Enable post-state information serialization? Normally only pre-state information is necessary because the test case can be re-executed to observe the post-state. But when post-state information is available, you don't need to re-execute the test case. Default: not enabled")
+			parser.options.force_last (l_post_state_serialization_option)
 
 			parser.parse_list (a_arguments)
 
@@ -590,6 +595,10 @@ feature{NONE} -- Initialization
 				is_duplicated_test_case_serialized := l_duplicated_test_case_serialization_option.was_found
 			end
 
+			if not error_handler.has_error then
+				is_post_state_serialized := l_post_state_serialization_option.was_found
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -835,6 +844,10 @@ feature -- Status report
 
 	log_types_internal: like log_types
 			-- Cache for `log_types'
+
+	is_post_state_serialized: BOOLEAN
+			-- Should post-state information be serialized?
+			-- Default: False
 
 feature {NONE} -- Constants
 

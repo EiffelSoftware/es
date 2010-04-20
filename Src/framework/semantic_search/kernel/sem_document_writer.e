@@ -33,7 +33,7 @@ feature -- Basic operation
 			append_changes
 
 			create l_id.make (64)
-			l_id.append (transition.context)
+			l_id.append (transition.description)
 			l_id.append_character ('.')
 			l_id.append (buffer.hash_code.out)
 			append_field (field_id, default_boost, type_string, l_id)

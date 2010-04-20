@@ -234,6 +234,15 @@ feature -- Access
 			good_result: Result = is_console_output_enabled_cache
 		end
 
+	is_post_state_serialized: BOOLEAN
+			-- Should post-state information be serialized as well?
+			-- Normally, only pre-state information is necessary, because
+			-- we can re-execute the test case to observe the post-state.
+		do
+			Result := is_post_state_serialized_cache
+		ensure then
+			good_result: Result = is_post_state_serialized_cache
+		end
 
 feature -- Access: cache
 
@@ -340,6 +349,9 @@ feature -- Access: cache
 
 	is_duplicated_test_case_serialized_cache: BOOLEAN
 			-- Cache for `is_duplicated_test_case_serialized_cache'
+
+	is_post_state_serialized_cache: BOOLEAN
+			-- Cache for `is_post_state_serialized_cache'
 
 feature -- Status report
 
@@ -791,6 +803,14 @@ feature -- Status setting
 			is_console_output_enabled_cache := b
 		ensure
 			is_console_output_enabled_set: is_console_output_enabled = b
+		end
+
+	set_is_post_state_serialized (b: BOOLEAN)
+			-- Set `is_post_state_serialized' with `b'.
+		do
+			is_post_state_serialized_cache := b
+		ensure
+			is_post_state_serialized_set: is_post_state_serialized = b
 		end
 
 note

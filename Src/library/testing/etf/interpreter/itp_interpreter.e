@@ -56,12 +56,13 @@ feature {NONE} -- Initialization
 			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
-			if argument_count = 10 then
+			if argument_count = 11 then
 				is_passing_test_case_serialized := argument (7).to_boolean
 				is_failing_test_case_serialized := argument (8).to_boolean
 				l_tc_serialization_file_name := argument (9)
 				is_test_case_serialization_enabled := True
 				is_duplicated_test_case_serialized := argument (10).to_boolean
+				is_post_state_serialized := argument (11).to_boolean
 			else
 				is_failing_test_case_serialized := True
 				l_tc_serialization_file_name := ""
@@ -110,7 +111,7 @@ feature {NONE} -- Initialization
 			initialize_supported_query_name_table
 
 				-- Create test case serializer.
-			create test_case_serializer.make (Current)
+			create test_case_serializer.make (Current, is_post_state_serialized)
 
 			start (l_port, (create {INET_ADDRESS_FACTORY}).create_loopback)
 
@@ -189,6 +190,9 @@ feature -- Status report
 	is_passing_test_case_serialized: BOOLEAN
 			-- Should passing test case be serialized?			
 			-- Only has effect when serialization is enabled.
+
+	is_post_state_serialized: BOOLEAN
+			-- Should post-state information be serialized?
 
 feature -- Access
 

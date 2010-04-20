@@ -78,20 +78,22 @@ feature -- Access
 	failed_tag_name (a_witness: AUT_ABS_WITNESS): STRING is
 			-- Name of the failed assertion in `a_witness'
 		require
-			a_witness_is_invalid: a_witness.is_invalid
+			a_witness_is_invalid: a_witness.is_invalid or a_witness.is_bad_response
 		do
 			if attached {AUT_NORMAL_RESPONSE} a_witness.request.response as l_response then
 				check l_response.exception /= Void end
 				Result := l_response.exception.tag_name
 				if Result = Void or else Result.is_empty then
-					Result := "no_name"
+					Result := unnamed_tag
 				end
 			else
-				check False end
+				Result := unnamed_tag
 			end
 		ensure
 			result_not_is_empty: not Result.is_empty
 		end
+
+	unnamed_tag: STRING = "no_name"
 
 feature -- handler
 
