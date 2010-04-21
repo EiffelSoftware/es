@@ -73,6 +73,7 @@ feature -- Process
 			create failed_predicate_proposal_observer.make (system)
 			create incorrect_lpsolve_file_observer.make (system)
 			create pool_statistics_observer.make (system)
+			create precondition_failure_observer.make (system)
 
 			l_log_publisher.register_witness_observer (basic_witness_observer)
 			l_log_publisher.register_witness_observer (faulty_witness_observer)
@@ -83,6 +84,7 @@ feature -- Process
 			l_log_publisher.register_witness_observer (failed_predicate_proposal_observer)
 			l_log_publisher.register_witness_observer (incorrect_lpsolve_file_observer)
 			l_log_publisher.register_witness_observer (pool_statistics_observer)
+			l_log_publisher.register_witness_observer (precondition_failure_observer)
 			l_log_publisher.register_witness_observer (Current)
 
 				-- Load log file.
@@ -107,12 +109,15 @@ feature -- Process
 			print_incorrect_lpsolve_file (l_output_file)
 			print_pool_statistics (l_output_file)
 			print_fault_detail (l_output_file)
+			print_evolutionary_detail (l_output_file)
 			l_output_file.close
 		end
 
 feature{NONE} -- Implementation
 
 	basic_witness_observer: AUT_BASIC_WITNESS_OBSERVER
+
+	precondition_failure_observer: AUT_PRECONDITION_FAILURE_OBESERVER
 
 	faulty_witness_observer: AUT_FAULT_WITNESS_OBSERVER
 
@@ -527,6 +532,83 @@ feature -- Result printing
 			end
 			a_output_stream.put_string ("%N")
 		end
+
+
+	print_evolutionary_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print detail used by the evolutionary algorithm
+		local
+			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
+			i: INTEGER
+			n_faults : STRING
+			l_untested_features: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, STRING_8], AUT_FEATURE_OF_TYPE]
+			n_precondition_passed : REAL
+			n_unique_state :STRING
+			n_untested_features :STRING
+			n_pass_test_cases :INTEGER
+			n_fail_test_cases:INTEGER
+			n_bad_test_cases:INTEGER
+			n_invalid_test_cases :INTEGER
+			l_response: AUT_NORMAL_RESPONSE
+			l_stat, l_statistics: DS_HASH_TABLE [like statistics_anchored_type, AUT_FEATURE_OF_TYPE]
+			l_data: like statistics_anchored_type
+		do
+
+			l_faults := faulty_witness_observer.witnesses
+
+			a_output_stream.put_string ("--[Evolutionary Score] %N")
+			a_output_stream.put_string ("Number of faults = "+ l_faults.count.out + "%N")
+
+			create l_statistics.make (100)
+			l_statistics.set_key_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
+
+			l_stat := basic_witness_observer.witnesses
+			from
+				l_stat.start
+			until
+				l_stat.after
+			loop
+				l_statistics.force_last (l_stat.item_for_iteration, l_stat.key_for_iteration)
+				l_stat.forth
+			end
+
+			from
+				l_statistics.start
+				n_invalid_test_cases := 0
+				n_pass_test_cases := 0
+			until
+				l_statistics.after
+			loop
+				l_data := l_statistics.item_for_iteration
+				n_pass_test_cases := n_pass_test_cases + l_data.pass
+				n_fail_test_cases := n_fail_test_cases + l_data.fail
+				n_bad_test_cases := n_bad_test_cases + l_data.bad
+				n_invalid_test_cases := n_invalid_test_cases + l_data.invalid
+				l_statistics.forth
+			end
+
+			--Precondition Score
+			l_untested_features := invalid_witness_observer.failed_assertions
+
+			from
+				l_untested_features.start
+			until
+				l_untested_features.after
+			loop
+				if  precondition_failure_observer.precondition_table.has (l_untested_features.key_for_iteration.feature_name) then
+					n_precondition_passed := n_precondition_passed + precondition_failure_observer.precondition_table.item (l_untested_features.key_for_iteration.feature_name)
+				end
+				l_untested_features.forth
+			end
+
+			a_output_stream.put_string ("Number of pass test cases = "+ n_pass_test_cases.out + "%N")
+			a_output_stream.put_string ("Number of fail test cases = "+ n_fail_test_cases.out + "%N")
+			a_output_stream.put_string ("Number of bad test cases = "+ n_bad_test_cases.out + "%N")
+			a_output_stream.put_string ("Number of invalid test cases = "+ n_invalid_test_cases.out + "%N")
+			a_output_stream.put_string ("Number of untested features = "+ l_untested_features.count.out + "%N")
+			a_output_stream.put_string ("Precondition score = "+ n_precondition_passed.out + "%N")
+			a_output_stream.put_string ("%N")
+
+	end
 
 	print_precondition_satisfaction_failure_rate (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
 			-- Print precondition satisfaction failure rate statistics into `a_output_stream'.

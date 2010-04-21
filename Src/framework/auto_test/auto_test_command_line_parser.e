@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 --			deep_manual_option: AP_FLAG
 			disable_manual_option: AP_FLAG
 			disable_auto_option: AP_FLAG
+			evolutionary_option: AP_FLAG
 			benchmark_option: AP_FLAG
 			disable_minimize_option: AP_FLAG
 			minimize_option: AP_STRING_OPTION
@@ -104,6 +105,10 @@ feature{NONE} -- Initialization
 --			create deep_manual_option.make ('d', "deep-manual")
 --			deep_manual_option.set_description ("Enable deep relevancy check for manual strategy.")
 --			parser.options.force_last (deep_manual_option)
+
+			create evolutionary_option.make ('E', "evolve")
+			evolutionary_option.set_description ("Evolve test cases")
+			parser.options.force_last (evolutionary_option)
 
 			create disable_manual_option.make ('m', "disable-manual")
 			disable_manual_option.set_description ("Disable manual testing strategy.")
@@ -348,6 +353,14 @@ feature{NONE} -- Initialization
 					is_text_statistics_format_enabled := True
 				end
 			end
+
+			 --Must be after output_dirname is set	
+			if evolutionary_option.was_found then
+				is_evolutionary_enabled := true
+			else
+				is_evolutionary_enabled := false
+			end
+
 
 			if not error_handler.has_error then
 				if proxy_time_out_option.was_found then
@@ -687,6 +700,9 @@ feature -- Status report
 
 	is_automatic_testing_enabled: BOOLEAN
 			-- Should the automatic testing strategy be used?
+
+	is_evolutionary_enabled: BOOLEAN
+			-- Should use evolutionary algorithm	
 
 	is_minimization_enabled: BOOLEAN
 			-- Should bug reproducing examples be minimized?

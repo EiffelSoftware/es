@@ -193,6 +193,20 @@ feature{NONE} -- Implementation
 			l_arg_types.do_all (agent a_input_creator.add_type)
 		end
 
+	add_feature_argument_type_in_deterministic_input_creator (a_feature: FEATURE_I; a_context: TYPE_A; a_input_creator: AUT_DETERMINISTIC_INPUT_CREATOR)
+			-- Add types of arguments in `a_feature' if any into `a_input_creator'.
+			-- Types are evaluated in context `a_context'.
+		require
+			a_feature_attached: a_feature /= Void
+			a_context_attached: a_context /= Void
+			a_input_creator_attached: a_input_creator /= Void
+		local
+			l_arg_types: LIST [TYPE_A]
+		do
+			l_arg_types := feature_argument_types (a_feature, a_context)
+			l_arg_types.do_all (agent a_input_creator.add_type)
+		end
+
 	feature_argument_types (a_feature: FEATURE_I; a_context: TYPE_A): LIST [TYPE_A]
 			-- List of types for arguments in `a_feature'. Types are evaluated in context `a_context'.
 			-- If `a_feature' doesn't have any argument, return an empty list.
@@ -373,7 +387,7 @@ feature -- Types
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

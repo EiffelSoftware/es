@@ -10,6 +10,8 @@ class
 inherit
 	TEST_GENERATOR_I
 
+	AUT_SHARED_PARAMETER_LOADER
+
 	TEST_CREATOR
 		redefine
 			make,
@@ -606,6 +608,42 @@ feature{NONE} -- Test case generation and execution
 				test_task := l_strategy
 			end
 		end
+
+
+	 execute_evolved_tests
+			-- Execute evolutionary tests.
+		require
+			system_not_empty: system /= Void
+		local
+			l_cursor: DS_LINEAR_CURSOR [CL_TYPE_A]
+			l_strategy: AUT_EVOLVE_STRATEGY
+			l_itp: like new_interpreter
+			l_session: like session
+			l_error_handler: AUT_ERROR_HANDLER
+		do
+			test_task := Void
+			l_itp := new_interpreter
+			if l_itp /= Void then
+				l_session := session
+				l_error_handler := l_session.error_handler
+				l_itp.add_observer (l_session.result_repository_builder)
+				l_itp.set_is_logging_enabled (True)
+
+				create l_strategy.make (l_itp, system, l_session.error_handler)
+				l_strategy.add_class_names (session.options.class_names)
+
+				l_error_handler.report_random_testing
+
+				l_error_handler.set_start_time (system_clock.date_time_now)
+				l_error_handler.reset_counters (session.options.test_count)
+				if l_session.options.time_out.second_count > 0 then
+					update_remaining_time
+				end
+
+				l_strategy.start
+				test_task := l_strategy
+			end
+	end
 
 	update_remaining_time
 			-- Update `error_handler.remaining_time' and mark in the proxy log every elapsed minute.

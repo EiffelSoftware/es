@@ -272,8 +272,12 @@ feature -- Access: cache
 
 	is_debugging_cache: like is_debugging assign set_debugging
 			-- Cache for `is_debugging'
+
 	is_random_testing_enabled_cache: like is_random_testing_enabled assign set_is_random_testing_enabled
 			-- Cache for `is_random_testing_enabled'
+
+	is_evolutionary_testing_enabled_cache: like is_evolutionary_testing_enabled assign set_is_evolutionary_testing_enabled
+			-- Cache for `is_evolutionary_testing_enabled'
 
 	log_file_path_cache: like log_file_path assign set_load_file_path
 			-- Cache for `log_file_path'
@@ -404,6 +408,14 @@ feature -- Status report
 			Result := is_random_testing_enabled_cache
 		ensure then
 			result_set: Result = is_random_testing_enabled_cache
+		end
+
+	is_evolutionary_testing_enabled: BOOLEAN
+			-- Is evolutionary testing enabled?
+		do
+			Result := is_evolutionary_testing_enabled_cache
+		ensure then
+			result_set: Result = is_evolutionary_testing_enabled_cache
 		end
 
 feature -- Object state retrieval
@@ -598,6 +610,14 @@ feature -- Status setting
 			is_random_testing_enabled_cache := b
 		ensure
 			is_random_testing_enabled_set: is_random_testing_enabled = b
+		end
+
+	set_is_evolutionary_testing_enabled (b: BOOLEAN) is
+			-- Set `is_evolutionary_testing_enabled' with `b'.
+		do
+			is_evolutionary_testing_enabled_cache := b
+		ensure
+			is_evolutionary_testing_enabled_set: is_evolutionary_testing_enabled = b
 		end
 
 	set_object_state_config (a_config: like object_state_config) is
