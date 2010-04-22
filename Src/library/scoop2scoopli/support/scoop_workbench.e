@@ -178,14 +178,6 @@ feature -- Current proxy feature name
 		end
 
 feature -- System support
-	is_in_ignored_group (a_class : CLASS_C) : BOOLEAN
-		require
-			non_void_class: a_class /= Void
-		do
-			Result := a_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) or
-			          a_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.net_library_name)
-		end
-
 	class_as_by_name (a_class_name: STRING): CLASS_AS is
 			-- Get the class_as by the given name `a_class_name'.
 		local

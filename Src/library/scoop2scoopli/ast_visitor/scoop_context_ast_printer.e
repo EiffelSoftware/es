@@ -52,6 +52,8 @@ inherit
 			process_none_id_as
 		end
 
+	SCOOP_BASIC_TYPE
+
 	SCOOP_WORKBENCH
 
 	SCOOP_SYSTEM_CONSTANTS

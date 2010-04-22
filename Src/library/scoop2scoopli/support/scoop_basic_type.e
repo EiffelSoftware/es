@@ -12,6 +12,14 @@ class
 	SCOOP_BASIC_TYPE
 
 feature -- Basic type declaration
+	is_in_ignored_group (a_class : CLASS_C) : BOOLEAN
+		require
+			non_void_class: a_class /= Void
+		do
+			Result := a_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.base_library_name) or
+			          a_class.group.target.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.net_library_name)
+		end
+
 
 	is_special_class (a_name: STRING): BOOLEAN is
 			-- Is `a_class_type' a special type (such as ARRAY, STRING, HASHABLE, that are treated as special by EiffelStudio)?
