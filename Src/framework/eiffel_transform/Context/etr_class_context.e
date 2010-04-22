@@ -73,7 +73,7 @@ feature -- Access
 			end
 		end
 
-	corresponding_feature(a_feature: FEATURE_I): detachable ETR_FEATURE_CONTEXT
+	corresponding_feature (a_feature: FEATURE_I): detachable ETR_FEATURE_CONTEXT
 			-- Return the corresponding feature in `a_class_context'
 		require
 			non_void: a_feature /= void

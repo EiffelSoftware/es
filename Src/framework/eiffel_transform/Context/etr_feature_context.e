@@ -21,11 +21,15 @@ convert
 	to_feature_i: {FEATURE_I}
 
 feature {NONE} -- Creation
-	make_from_other(a_other: like Current)
+	make_from_other (a_other: like Current)
 			-- Make from `a_other'
+		require
+			non_void: a_other /= void
 		local
 			l_index: INTEGER
 		do
+			make (a_other.written_feature, a_other.class_context)
+
 			has_arguments := a_other.has_arguments
 			has_locals := a_other.has_locals
 			has_return_value := a_other.has_return_value
@@ -66,10 +70,18 @@ feature {NONE} -- Creation
 			written_feature := a_other.written_feature
 			create class_context.make(a_other.class_context.written_class)
 
-			object_test_locals := a_other.object_test_locals.deep_twin
+			from
+				a_other.object_test_locals.start
+				create {LINKED_LIST[ETR_OBJECT_TEST_LOCAL]}object_test_locals.make
+			until
+				a_other.object_test_locals.after
+			loop
+				object_test_locals.extend (a_other.object_test_locals.item.duplicate)
+				a_other.object_test_locals.forth
+			end
 		end
 
-	make(a_written_feature: like written_feature; a_class_context: detachable like class_context)
+	make (a_written_feature: like written_feature; a_class_context: detachable like class_context)
 			-- Make with `a_written_feature' and use the existing `a_class_context'.
 			-- If void, create it.
 		local

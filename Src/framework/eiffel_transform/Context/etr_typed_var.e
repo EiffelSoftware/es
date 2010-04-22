@@ -24,7 +24,16 @@ feature {NONE} -- Creation
 			original_type := a_org_type
 		end
 
+feature -- Operatoin
+
+	duplicate: like Current
+			-- Duplicate of `current'
+		do
+			create Result.make (name.twin, resolved_type.duplicate, original_type.duplicate)
+		end
+
 feature -- Access
+
 	name: STRING assign set_name
 			-- Name of the variable
 

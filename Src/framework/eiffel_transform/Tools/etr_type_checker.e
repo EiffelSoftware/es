@@ -226,17 +226,14 @@ feature -- Type evaluation
 			non_void: a_written_class /= void
 		local
 			l_index: INTEGER
-			l_type: like a_type
 		do
-			l_type := a_type.deep_twin
-
-			if not l_type.is_valid then
+			if not a_type.is_valid then
 				-- It probably hasn't been solved yet
 				type_a_checker.init_for_checking (a_written_feature, a_written_class, void, void)
-				Result := type_a_checker.solved(l_type, void)
+				Result := type_a_checker.solved(a_type, void)
 				Result := Result.actual_type
-			elseif l_type.is_formal then
-				if attached {FORMAL_A} l_type as l_formal then
+			elseif a_type.is_formal then
+				if attached {FORMAL_A} a_type as l_formal then
 					Result :=  l_formal.constraints (a_written_class)
 
 					if attached {TYPE_SET_A}Result as typeset then
@@ -247,16 +244,18 @@ feature -- Type evaluation
 						end
 					end
 				end
-			elseif l_type.has_like_current then
+			elseif a_type.has_like_current then
 				Result := a_written_class.actual_type
-			elseif l_type.has_like then
-				Result := l_type.actual_type
+			elseif a_type.has_like then
+				Result := a_type.actual_type
 			else
-				Result := l_type
+				Result := a_type
 			end
 
 			if Result.has_generics then
 				-- check if all generics are explicit
+				-- duplicate so the original type is not changed
+				Result := Result.duplicate
 				if attached {GEN_TYPE_A}Result as gen then
 					from
 						l_index := gen.generics.lower
@@ -272,7 +271,7 @@ feature -- Type evaluation
 			if not Result.is_valid then
 				etr_error_handler.add_error (Current, "explicit type", "Type is invalid and unable to be resolved.")
 			elseif not Result.is_explicit then
-				if l_type.same_type (Result) and then l_type.is_equivalent (Result) then
+				if a_type.same_type (Result) and then a_type.is_equivalent (Result) then
 					etr_error_handler.add_error (Current, "explicit type", "Unable to resolve explicit type.")
 				else
 					Result := explicit_type (Result, a_written_class, a_written_feature)

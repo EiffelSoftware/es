@@ -7,6 +7,9 @@ class
 	ETR_OBJECT_TEST_LOCAL
 inherit
 	ETR_TYPED_VAR
+		redefine
+			duplicate
+		end
 create
 	make_at
 
@@ -25,7 +28,16 @@ feature {NONE} -- Creation
 			scope := a_scope.twin
 		end
 
+feature -- Operatoin
+
+	duplicate: like Current
+			-- Duplicate of `current'
+		do
+			create Result.make_at (name.twin, resolved_type.duplicate, original_type.duplicate, scope.deep_twin)
+		end
+
 feature -- Access
+
 	scope: LIST[AST_PATH]
 			-- Scope of this object-test-local
 

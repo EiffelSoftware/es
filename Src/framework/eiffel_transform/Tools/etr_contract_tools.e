@@ -51,14 +51,7 @@ feature -- Extract contract expressions
 		do
 			create {LINKED_LIST[ETR_CONTRACT_EXPRESSION]}Result.make
 			if a_class.has_invariant then
-				from
-					a_class.invariant_ast.assertion_list.start
-				until
-					a_class.invariant_ast.assertion_list.after
-				loop
-					Result.extend (create {ETR_CONTRACT_EXPRESSION}.make_invariant (a_class.invariant_ast.assertion_list.item, a_class))
-					a_class.invariant_ast.assertion_list.forth
-				end
+				Result.extend (create {ETR_CONTRACT_EXPRESSION}.make_invariant (a_class.invariant_ast, a_class))
 			end
 		ensure
 			all_invariants: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_invariant end)
@@ -74,14 +67,7 @@ feature -- Extract contract expressions
 
 			if attached a_feature.e_feature.ast.body.as_routine as l_rout then
 				if l_rout.precondition /= void and then l_rout.precondition.assertions /= void then
-					from
-						l_rout.precondition.assertions.start
-					until
-						l_rout.precondition.assertions.after
-					loop
-						Result.extend (create {ETR_CONTRACT_EXPRESSION}.make_precondition (l_rout.precondition.assertions.item, a_feature))
-						l_rout.precondition.assertions.forth
-					end
+					Result.extend (create {ETR_CONTRACT_EXPRESSION}.make_pre_post (l_rout.precondition, a_feature))
 				end
 			end
 		ensure
@@ -98,14 +84,7 @@ feature -- Extract contract expressions
 
 			if attached a_feature.e_feature.ast.body.as_routine as l_rout then
 				if l_rout.postcondition /= void and then l_rout.postcondition.assertions /= void then
-					from
-						l_rout.postcondition.assertions.start
-					until
-						l_rout.postcondition.assertions.after
-					loop
-						Result.extend (create {ETR_CONTRACT_EXPRESSION}.make_postcondition (l_rout.postcondition.assertions.item, a_feature))
-						l_rout.postcondition.assertions.forth
-					end
+					Result.extend (create {ETR_CONTRACT_EXPRESSION}.make_pre_post (l_rout.postcondition, a_feature))
 				end
 			end
 		ensure
@@ -114,7 +93,7 @@ feature -- Extract contract expressions
 		end
 
 	inherited_invariants (a_class: CLASS_C): LIST[ETR_CONTRACT_EXPRESSION]
-			-- Complete inherited full postconditions of `a_feature'
+			-- Complete inherited postconditions of `a_feature'
 		require
 			non_void: a_class /= void
 		local
@@ -242,7 +221,7 @@ feature -- Count
 		end
 
 	inherited_invariant_count (a_class: CLASS_C): INTEGER
-			-- Number of inherited full invariants of `a_feature'
+			-- Number of inherited complete invariants of `a_feature'
 		require
 			non_void: a_class /= void
 		local

@@ -6,45 +6,43 @@ note
 class
 	ETR_CONTRACT_EXPRESSION
 create
-	make_postcondition,
-	make_precondition,
+	make_pre_post,
 	make_invariant
 
 feature {NONE} -- Creation
 
-	make_postcondition (a_expression: like expression; a_source_feature: attached like source_feature)
-			-- Make with `a_expression' and `a_source_feature'
+	make_pre_post (a_assertion_list: ASSERT_LIST_AS; a_source_feature: attached like source_feature)
+			-- Make with `a_assertion_list' and `a_source_feature'
 		require
-			non_void: a_expression /= void and a_source_feature /= void
-			is_complete: a_expression.is_complete
+			non_void: a_assertion_list /= void and a_source_feature /= void
 		do
-			expression := a_expression
+			assertions := a_assertion_list.assertions
+
+			if attached {REQUIRE_ELSE_AS} a_assertion_list then
+				is_require_else := true
+			elseif attached {ENSURE_THEN_AS} a_assertion_list then
+				is_ensure_then := true
+			elseif attached {REQUIRE_AS} a_assertion_list then
+				is_require := true
+			elseif attached {ENSURE_AS} a_assertion_list then
+				is_ensure := true
+			else
+				-- Should never happen
+				check
+					false
+				end
+			end
+
 			source_feature := a_source_feature
 			source_class := a_source_feature.written_class
-
-			is_postcondition := true
 		end
 
-	make_precondition (a_expression: like expression; a_source_feature: attached like source_feature)
-			-- Make with `a_expression' and `a_source_feature'
+	make_invariant (a_invariant: INVARIANT_AS; a_source_class: like source_class)
+			-- Make with `a_invariant' and `a_source_class'
 		require
-			non_void: a_expression /= void and a_source_feature /= void
-			is_complete: a_expression.is_complete
+			non_void: a_invariant /= void and a_source_class /= void
 		do
-			expression := a_expression
-			source_feature := a_source_feature
-			source_class := a_source_feature.written_class
-
-			is_precondition := true
-		end
-
-	make_invariant (a_expression: like expression; a_source_class: like source_class)
-			-- Make with `a_expression' and `a_source_class'
-		require
-			non_void: a_expression /= void and a_source_class /= void
-			is_complete: a_expression.is_complete
-		do
-			expression := a_expression
+			assertions := a_invariant.assertion_list
 			source_class := a_source_class
 
 			is_invariant := true
@@ -52,14 +50,32 @@ feature {NONE} -- Creation
 
 feature -- Access
 
-	expression: TAGGED_AS
-			-- AST node containing the expression
+	assertions: EIFFEL_LIST [TAGGED_AS]
+			-- AST node containing the expressions
+
+	is_require: BOOLEAN
+			-- Is `Current' a require-precondition?
+
+	is_ensure: BOOLEAN
+			-- Is `Current' an ensure-postcondition?
+
+	is_ensure_then: BOOLEAN
+			-- Is `Current' an ensure-then-postcondition?
+
+	is_require_else: BOOLEAN
+			-- Is `Current' a require-else-precondition?
 
 	is_precondition: BOOLEAN
 			-- Is `Current' a precondition?
+		do
+			Result := is_require or is_require_else
+		end
 
 	is_postcondition: BOOLEAN
 			-- Is `Current' a postcondition?
+		do
+			Result := is_ensure or is_ensure_then
+		end
 
 	is_invariant: BOOLEAN
 			-- Is `Current' an invariant?
@@ -71,10 +87,9 @@ feature -- Access
 			-- Source feature of the expression
 
 invariant
-	has_expression: expression /= void
+	has_assertions: assertions /= void
 	has_source_class: source_class /= void
 	has_source_feature: (is_precondition or is_postcondition) implies source_feature /= void
-	expr_is_complete: expression.is_complete
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
