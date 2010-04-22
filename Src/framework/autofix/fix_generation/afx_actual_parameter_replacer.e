@@ -99,7 +99,7 @@ feature -- Basic operation
 				l_arguments.forth
 			end
 			l_ast_text.replace_substring (l_str, l_start_index, l_end_index)
-			last_ast := ast_from_text (l_ast_text)
+			last_ast := ast_from_statement_text (l_ast_text)
 		end
 
 end

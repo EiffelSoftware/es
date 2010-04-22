@@ -54,13 +54,13 @@ feature -- AST
 			create Result.make_with_indentation_string ("%T")
 		end
 
-	ast_from_text (a_text: STRING): AST_EIFFEL
+	ast_from_statement_text (a_text: STRING): AST_EIFFEL
 			-- AST node from `a_text'
-			-- `a_text' must be able to be parsed in to a single AST node.
+			-- `a_text' must a statement AST and must be able to be parsed in to a single AST node.
 		local
 			l_text: STRING
 		do
-			l_text := "feature foo do " + a_text + "%Nend"
+			l_text := "feature dummy__feature do " + a_text + "%Nend"
 			entity_feature_parser.parse_from_string (l_text, Void)
 
 			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
@@ -73,13 +73,21 @@ feature -- AST
 			check Result /= Void end
 		end
 
-	ast_without_old_expression (a_ast: AST_EIFFEL): AST_EIFFEL
+	ast_from_expression_text (a_text: STRING): EXPR_AS
+			-- AST node from expression `a_text'
+			-- `a_text' must be as an expression.
+		do
+			expression_parser.parse_from_string (once "check " + a_text, Void)
+			Result := expression_parser.expression_node
+		end
+
+	ast_without_old_expression (a_ast: EXPR_AS): EXPR_AS
 			-- An AST node the same as `a_ast' expect that all "old"
 			-- keywords are removed
 		do
 			old_remover.output.reset
 			old_remover.print_ast_to_output (a_ast)
-			Result := ast_from_text (old_remover_output.string_representation)
+			Result := ast_from_expression_text (old_remover_output.string_representation)
 		end
 
 	old_remover: EPA_AST_OLD_EXPRESSION_REMOVER

@@ -16,6 +16,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	SHARED_WORKBENCH
+
 feature -- Access
 
 	actual_type_from_formal_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A
@@ -74,6 +76,13 @@ feature -- Access
 			end
 		end
 
+	type_a_from_string_in_application_context (a_name: STRING): TYPE_A
+			-- Type parsed rom `a_name' in the context of current application root class
+		require
+			root_class_exists: workbench.system.root_type.associated_class /= Void
+		do
+			Result := type_a_from_string (a_name, workbench.system.root_type.associated_class)
+		end
 
 feature{NONE} -- Implementation
 

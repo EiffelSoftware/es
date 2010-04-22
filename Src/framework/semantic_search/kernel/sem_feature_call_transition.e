@@ -152,7 +152,7 @@ feature{NONE} -- Implementation
 			until
 				a_operands.after
 			loop
-				l_expr_as ?= ast_from_text (a_operands.item_for_iteration)
+				l_expr_as := ast_from_expression_text (a_operands.item_for_iteration)
 				l_type := l_context.expression_type (l_expr_as)
 				create l_expr.make_with_type (l_env_class, l_env_feat, l_expr_as, l_env_class, l_type)
 

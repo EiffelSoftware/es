@@ -18,6 +18,9 @@ inherit
 	AUT_REQUEST_PROCESSOR
 
 	EPA_TYPE_UTILITY
+		undefine
+			system
+		end
 
 	AUT_SHARED_INTERPRETER_INFO
 

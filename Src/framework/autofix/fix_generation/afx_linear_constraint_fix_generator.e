@@ -343,7 +343,7 @@ feature{NONE} -- Implementation
 			fixme ("The above method of removing old expression is not should. Refactoring is needed. 7.1.2009 Jasonw")
 			l_old_free_text := a_solved_expression.text.twin
 			l_old_free_text.replace_substring_all ("old ", "")
-			l_new_ast := ast_from_text (a_solution.constrained_expression.text + " := " + l_old_free_text)
+			l_new_ast := ast_from_statement_text (a_solution.constrained_expression.text + " := " + l_old_free_text)
 			check l_new_ast /= Void end
 
 				-- Construct ranking for fix skeleton.

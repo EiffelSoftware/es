@@ -14,6 +14,9 @@ inherit
 		export {NONE} all end
 
 	EPA_TYPE_UTILITY
+		undefine
+			system
+		end
 
 feature -- Access
 

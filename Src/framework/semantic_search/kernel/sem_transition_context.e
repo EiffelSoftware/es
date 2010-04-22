@@ -16,6 +16,11 @@ inherit
 
 	EPA_UTILITY
 
+	ETR_SHARED_TOOLS
+		rename
+			type_checker as expr_type_checker
+		end
+
 create
 	make,
 	make_with_variable_names,
@@ -50,7 +55,7 @@ feature{NONE} -- Initialization
 			create variables.make (a_variables.count)
 			variables := a_variables
 			feature_ := environment_feature (variables)
-			create feature_context.make (feature_, Void)
+			create feature_context.make_with_locals (feature_, a_variables)
 		end
 
 	make_with_class_and_variable_names (a_class: CLASS_C; a_variables: HASH_TABLE [STRING, STRING])
@@ -121,7 +126,7 @@ feature -- Type checking
 			-- return the type if checked correctly, return Void,
 			-- if `a_expression' is type-invalid.
 		do
-			if attached {EXPR_AS} ast_without_old_expression (ast_from_text (a_expression)) as l_expr then
+			if attached {EXPR_AS} ast_without_old_expression (ast_from_expression_text (a_expression)) as l_expr then
 				Result := expression_type (l_expr)
 			end
 		end
@@ -142,23 +147,7 @@ feature{NONE} -- Implementation
 		do
 				-- Synthesize the fake feature body for type checking purpose.
 			create l_body.make (256)
-			l_body.append (once "feature ")
-			l_body.append (transition_feature_name)
-			l_body.append (once " local %N")
-			l_cursor := a_variable.cursor
-			from
-				a_variable.start
-			until
-				a_variable.after
-			loop
-				l_body.append (a_variable.key_for_iteration)
-				l_body.append (once ": ")
-				l_body.append (a_variable.item_for_iteration.name)
-				l_body.append_character ('%N')
-				a_variable.forth
-			end
-			a_variable.go_to (l_cursor)
-			l_body.append (once "do end%N")
+			l_body.append (once "feature transition__feature do end")
 
 				-- Parse this fake feature.
 			entity_feature_parser.parse_from_string (l_body, Void)
@@ -174,13 +163,7 @@ feature{NONE} -- Implementation
 			Result.set_feature_name_id (l_name_id, l_name_id)
 		end
 
-	transition_feature_name: STRING = "feature__transition"
+	transition_feature_name: STRING = ""
 			-- Name of the fake feature used to type check feature transitions
-
-	expr_type_checker: ETR_TYPE_CHECKER
-			-- Type checker
-		once
-			create Result.make
-		end
 
 end
