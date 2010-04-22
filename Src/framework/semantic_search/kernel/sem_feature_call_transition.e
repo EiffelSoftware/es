@@ -10,7 +10,7 @@ class
 inherit
 	SEM_TRANSITION
 		redefine
-			description
+			name
 		end
 
 	EPA_UTILITY
@@ -20,22 +20,22 @@ create
 
 feature{SEM_TRANSITION_FACTORY} -- Initialization
 
-	make (a_context_class: like context_class; a_feature: like feature_; a_env_class: like environment_class; a_env_feature: like environment_feature; a_variables: HASH_TABLE [TYPE_A, STRING]; a_operands: HASH_TABLE [INTEGER, STRING]; a_creation: BOOLEAN)
-			-- Initialize Curren
-			-- `a_variables' are the set of variables in the transition, key is variable name,
-			-- value is type of that variable.
-			-- `a_operands' is a table for operands of `a_feature', including possible result, if any.
-			-- Key is 0-based operand index (0 means target, 1 means the first argument, and so on),
-			-- value is the operand name at that index.
-			-- `a_creation' indicates if `a_feature' is used as a creation procedure.
+	make (a_class: like class_; a_feature: like feature_;  a_operands: HASH_TABLE [STRING, INTEGER]; a_context: like context)
+			-- Initialize Current as the transition of `a_feature' in `a_class'.
+			-- `a_operands' is a table indicating the operands for current transition.
+			-- Key of `a_operands' are 0-based operand (including result, if any) indexes,
+			-- 0 means target, 1 means the first argument, and so on,
+			-- value of `a_operands' is the name of that operands.
+			-- All the variables in `a_operands' should also be defined in `a_context'.
+		require
+			operand_count_valid: operand_count_of_feature (a_feature) = a_operands.count
 		do
-			context_class := a_context_class
+			class_ := a_class
 			feature_ := a_feature
-			environment_class := a_env_class
-			environment_feature := a_env_feature
-			create precondition.make (20, environment_class, environment_feature)
-			create postcondition.make (20, environment_class, environment_feature)
-			initialize (a_variables, a_operands)
+			context := a_context
+			create precondition.make (20, context.class_, context.feature_)
+			create postcondition.make (20, context.class_, context.feature_)
+			initialize (a_operands)
 		end
 
 feature -- Access
@@ -43,20 +43,17 @@ feature -- Access
 	feature_: FEATURE_I
 			-- Feature which is modeled by current transition.
 
-	context_class: CLASS_C
+	class_: CLASS_C
 			-- Class from which `feature_' is viewed.
-
-	environment_feature: FEATURE_I
-			-- Feature associated with current transition
-
-	environment_class: CLASS_C
-			-- Context class from which `environment_feature' is viewed
 
 	content: STRING
 			-- <Precursor>
 
+	name: STRING
+			-- Name of current transition
+
 	description: STRING
-			-- Context of current transition
+			-- Description of current transition
 
 feature -- Status report
 
@@ -118,30 +115,35 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	initialize (a_variables: HASH_TABLE [TYPE_A, STRING]; a_operands: HASH_TABLE [INTEGER, STRING])
+	initialize (a_operands: HASH_TABLE [STRING, INTEGER])
 			-- Initialize Current with `a_variables' and `a_operands'.
-			-- `a_variables' are the set of variables in the transition, key is variable name,
-			-- value is type of that variable.
 			-- `a_operands' is a table for operands of `a_feature', including possible result, if any.
 			-- Key is 0-based operand index (0 means target, 1 means the first argument, and so on),
 			-- value is the operand name at that index.
+			-- All operand names should be in `context'.`variables'.			
 		local
 			l_cursor: CURSOR
 			l_index: INTEGER
 			l_expr: EPA_AST_EXPRESSION
 			l_operand_count: INTEGER
 			l_is_query: BOOLEAN
+			l_env_feat: FEATURE_I
+			l_env_class: CLASS_C
+			l_context: like context
+			l_type: TYPE_A
+			l_expr_as: EXPR_AS
 		do
-			l_operand_count := feature_.argument_count + 1
-			if not feature_.type.is_void then
-				l_operand_count := l_operand_count + 1
-				l_is_query := True
-			end
-			create variables.make (a_variables.count)
-			create variable_positions.make (a_variables.count)
-			create reversed_variable_position.make (a_variables.count)
-			create inputs.make (a_operands.count)
-			create outputs.make (a_operands.count)
+			l_context := context
+			l_env_feat := l_context.feature_
+			l_env_class := l_context.class_
+			l_operand_count := operand_count_of_feature (feature_)
+			l_is_query := feature_.has_return_value
+
+			create variables.make (l_operand_count)
+			create variable_positions.make (l_operand_count)
+			create reversed_variable_position.make (l_operand_count)
+			create inputs.make (l_operand_count)
+			create outputs.make (l_operand_count)
 
 				-- Put operands into `variables', `inputs' and `outputs'.
 			l_cursor := a_operands.cursor
@@ -150,8 +152,11 @@ feature{NONE} -- Implementation
 			until
 				a_operands.after
 			loop
-				create l_expr.make_with_text (environment_class, environment_feature, a_operands.key_for_iteration, environment_class)
-				extend_variable (l_expr, a_operands.item_for_iteration)
+				l_expr_as ?= ast_from_text (a_operands.item_for_iteration)
+				l_type := l_context.expression_type (l_expr_as)
+				create l_expr.make_with_type (l_env_class, l_env_feat, l_expr_as, l_env_class, l_type)
+
+				extend_variable (l_expr, a_operands.key_for_iteration)
 				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count and then l_is_query) then
 					inputs.force_last (l_expr)
 				end
@@ -161,27 +166,12 @@ feature{NONE} -- Implementation
 			end
 			a_operands.go_to (l_cursor)
 
-				-- Put `a_variables' in `variables'.
-			l_cursor := a_variables.cursor
-			from
-				a_variables.start
-			until
-				a_variables.after
-			loop
-				create l_expr.make_with_text (environment_class, environment_feature, a_variables.key_for_iteration, environment_class)
-				if not variables.has (l_expr) then
-					extend_variable (l_expr, l_index)
-					l_index := l_index + 1
-				end
-				a_variables.forth
-			end
-			a_variables.go_to (l_cursor)
-
 				-- Initialize `content'.
 			content := content_of_transition
 
-				-- Initialize `description'.
-			description :=  context_class.name_in_upper + once "__" + feature_.feature_name.as_lower
+				-- Initialize `name' and `description'.
+			name :=  class_.name_in_upper + once "." + feature_.feature_name.as_lower
+			description := feature_header_comment (feature_)
 		end
 
 end

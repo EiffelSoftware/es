@@ -14,6 +14,12 @@ inherit
 
 feature -- Access
 
+	context: SEM_TRANSITION_CONTEXT
+			-- Context in which current transition is type checked
+			-- Because transitions may contain code that does not appear
+			-- in current project, so we need a special context in order to
+			-- make the type checker work.
+
 	variables: EPA_HASH_SET [EPA_EXPRESSION]
 			-- Variables mentioned in Current transition
 			-- Variables can be input, output or intermediate locals.
@@ -133,71 +139,14 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
+	name: STRING
+			-- Name of current transition
+		deferred
+		end
+
 	description: STRING
 			-- Description of current transition
 		deferred
-		end
-
-	environment_class: CLASS_C
-			-- Environment class in which Current transition should be type checked
-		deferred
-		end
-
-	environment_feature: FEATURE_I
-			-- Enviroment feature in which Current transition should be type checked
-		deferred
-		end
-
-	pre_state_serialization: detachable STRING
-			-- Serialization data for pre-state objects
-
-	post_state_serialization: detachable STRING
-			-- Serialization data for post-state objects
-
-	exception_trace: detachable STRING
-			-- Exception trace of current transition, if any.
-			-- For example, if current transition is from a failing test case,
-			-- we would like to store the exception trace.
-
-feature -- Setting
-
-	set_pre_state_serialization (a_serialization: like pre_state_serialization)
-			-- Set `pre_state_serialization' with `a_serialization'.
-			-- Make a copy of `a_serialization'.
-		do
-			if a_serialization = Void then
-				pre_state_serialization := Void
-			else
-				pre_state_serialization := a_serialization.twin
-			end
-		ensure
-			pre_state_serialization_set: pre_state_serialization ~ a_serialization
-		end
-
-	set_post_state_serialization (a_serialization: like post_state_serialization)
-			-- Set `post_state_serialization' with `a_serialization'.
-			-- Make a copy of `a_serialization'.
-		do
-			if a_serialization = Void then
-				post_state_serialization := Void
-			else
-				post_state_serialization := a_serialization.twin
-			end
-		ensure
-			post_state_serialization_set: post_state_serialization ~ a_serialization
-		end
-
-	set_exception_trace (a_trace: like exception_trace)
-			-- Set `exception_trace' with `a_trace'.
-			-- Make a copy of `a_trace'.
-		do
-			if a_trace = Void then
-				exception_trace := Void
-			else
-				exception_trace := a_trace.twin
-			end
-		ensure
-			exception_trace_set: exception_trace ~ a_trace
 		end
 
 feature{NONE} -- Implementation

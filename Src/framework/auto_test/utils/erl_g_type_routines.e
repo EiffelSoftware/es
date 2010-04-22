@@ -19,6 +19,8 @@ inherit
 
 	SHARED_TYPES
 
+	SHARED_STATELESS_VISITOR
+
 	AUT_SHARED_INTERPRETER_INFO
 		export
 			{NONE} all
@@ -153,14 +155,6 @@ feature -- Access
 		end
 
 feature {NONE} -- Parsing class types
-
-	type_a_generator: AST_TYPE_A_GENERATOR
-			-- TYPE_A generator
-		once
-			create Result
-		ensure
-			result_attached: Result /= Void
-		end
 
 	base_type (a_name: STRING): TYPE_A
 			-- Type parsed from `a_name'
@@ -385,7 +379,7 @@ feature -- Types
 				a_string.append ("NONE")
 			end
 		end
-
+		
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

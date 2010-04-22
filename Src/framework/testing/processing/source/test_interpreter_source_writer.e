@@ -39,23 +39,14 @@ inherit
 
 	AUT_SHARED_TYPE_FORMATTER
 		rename
-			type_output_strategy as old_type_output_strategy
+			type_printer as old_type_output_strategy
 		end
 
 	ERL_G_TYPE_ROUTINES
-		undefine
-			type_a_generator
-		end
 
 	AUT_PREDICATE_UTILITY
-		undefine
-			type_a_generator
-		end
 
 	AUT_SHARED_PREDICATE_CONTEXT
-		undefine
-			type_a_generator
-		end
 
 create
 	make

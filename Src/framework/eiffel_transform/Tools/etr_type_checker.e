@@ -11,25 +11,31 @@ inherit
 		export
 			{NONE} all
 		end
+
 	AST_FEATURE_CHECKER_GENERATOR
 		export
 			{NONE} all
 			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition
 		end
+
 	SHARED_AST_CONTEXT
 		rename
 			context as ast_context
 		export
 			{NONE} all
 		end
+
 	ETR_SHARED_TOOLS
+
 	ETR_SHARED_PARSERS
 		rename
 			error_handler as etr_error_handler
 		export
 			{ANY} parsing_helper
 		end
+
 	ETR_SHARED_LOGGER
+
 create
 	make
 

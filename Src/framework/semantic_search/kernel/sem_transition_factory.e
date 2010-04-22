@@ -18,44 +18,44 @@ inherit
 
 feature -- Access
 
-	new_feature_call_transition (a_context_class: CLASS_C; a_feature: FEATURE_I; a_variables: HASH_TABLE [TYPE_A, STRING]; a_operands: HASH_TABLE [INTEGER, STRING]; a_creation: BOOLEAN): SEM_FEATURE_CALL_TRANSITION
-			-- New feature call transition for `a_feature' viewed from `a_context_class'
-			-- `a_variables' are the set of variables in the transition, key is variable name,
-			-- value is type name of that variable.
-			-- `a_operands' is a table for operands of `a_feature', including possible result, if any.
-			-- Key is 0-based operand index (0 means target, 1 means the first argument, and so on),
-			-- value is the operand name at that index.
-			-- `a_creation' indicates if `a_feature' is used as a creation procedure.
-		require
-			has_root_class: has_root_class
-		do
-			create Result.make (a_context_class, a_feature, environment_class, environment_feature (a_variables), a_variables, a_operands, a_creation)
-		end
+--	new_feature_call_transition (a_context_class: CLASS_C; a_feature: FEATURE_I; a_variables: HASH_TABLE [TYPE_A, STRING]; a_operands: HASH_TABLE [INTEGER, STRING]; a_creation: BOOLEAN): SEM_FEATURE_CALL_TRANSITION
+--			-- New feature call transition for `a_feature' viewed from `a_context_class'
+--			-- `a_variables' are the set of variables in the transition, key is variable name,
+--			-- value is type name of that variable.
+--			-- `a_operands' is a table for operands of `a_feature', including possible result, if any.
+--			-- Key is 0-based operand index (0 means target, 1 means the first argument, and so on),
+--			-- value is the operand name at that index.
+--			-- `a_creation' indicates if `a_feature' is used as a creation procedure.
+--		require
+--			has_root_class: has_root_class
+--		do
+--			create Result.make (a_context_class, a_feature, environment_class, environment_feature (a_variables), a_variables, a_operands, a_creation)
+--		end
 
-	new_simple_feature_call_transition (a_context_class: CLASS_C; a_feature: FEATURE_I; a_creation: BOOLEAN): SEM_FEATURE_CALL_TRANSITION
-			-- New feature call transition for `a_feature' viewed from `a_context_class'
-			-- Use "v_0" for target variable, "v_1" for the first argument, and so on.			
-		local
-			l_variables: HASH_TABLE [TYPE_A, STRING]
-			l_operands: HASH_TABLE [INTEGER, STRING]
-			l_operand_count: INTEGER
-			i: INTEGER
-		do
-			l_operand_count := operand_count_of_feature (a_feature)
-			create l_operands.make (l_operand_count)
-			l_operands.compare_objects
-			create l_variables.make (0)
+--	new_simple_feature_call_transition (a_context_class: CLASS_C; a_feature: FEATURE_I; a_creation: BOOLEAN): SEM_FEATURE_CALL_TRANSITION
+--			-- New feature call transition for `a_feature' viewed from `a_context_class'
+--			-- Use "v_0" for target variable, "v_1" for the first argument, and so on.			
+--		local
+--			l_variables: HASH_TABLE [TYPE_A, STRING]
+--			l_operands: HASH_TABLE [INTEGER, STRING]
+--			l_operand_count: INTEGER
+--			i: INTEGER
+--		do
+--			l_operand_count := operand_count_of_feature (a_feature)
+--			create l_operands.make (l_operand_count)
+--			l_operands.compare_objects
+--			create l_variables.make (0)
 
-			from
-				i := 0
-			until
-				i < l_operand_count
-			loop
-				l_operands.put (i, once "v_" + i.out)
-				i := i + 1
-			end
-			Result := new_feature_call_transition (a_context_class, a_feature, l_variables, l_operands, a_creation)
-		end
+--			from
+--				i := 0
+--			until
+--				i < l_operand_count
+--			loop
+--				l_operands.put (i, once "v_" + i.out)
+--				i := i + 1
+--			end
+--			Result := new_feature_call_transition (a_context_class, a_feature, l_variables, l_operands, a_creation)
+--		end
 
 feature -- Status report
 
@@ -117,15 +117,6 @@ feature{NONE} -- Implementation
 			Result := feature_i_generator.new_feature (l_feat_as, 0, l_class)
 			Result.set_written_in (l_class.class_id)
 			Result.set_feature_name_id (l_name_id, l_name_id)
-		end
-
-	feature_i_generator: AST_FEATURE_I_GENERATOR
-			-- FEATURE_I genreator
-		do
-			if feature_i_generator_internal = Void then
-				create feature_i_generator_internal
-			end
-			Result := feature_i_generator_internal
 		end
 
 	feature_i_generator_internal: like feature_i_generator

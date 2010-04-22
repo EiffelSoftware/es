@@ -48,6 +48,12 @@ feature -- AST
 			create Result.make_with_indentation_string ("%T")
 		end
 
+	old_remover_output: ETR_AST_STRING_OUTPUT
+			-- Output for `old_remover'
+		once
+			create Result.make_with_indentation_string ("%T")
+		end
+
 	ast_from_text (a_text: STRING): AST_EIFFEL
 			-- AST node from `a_text'
 			-- `a_text' must be able to be parsed in to a single AST node.
@@ -65,6 +71,21 @@ feature -- AST
 				end
 			end
 			check Result /= Void end
+		end
+
+	ast_without_old_expression (a_ast: AST_EIFFEL): AST_EIFFEL
+			-- An AST node the same as `a_ast' expect that all "old"
+			-- keywords are removed
+		do
+			old_remover.output.reset
+			old_remover.print_ast_to_output (a_ast)
+			Result := ast_from_text (old_remover_output.string_representation)
+		end
+
+	old_remover: EPA_AST_OLD_EXPRESSION_REMOVER
+			-- Old expression remover
+		once
+			create Result.make_with_output (old_remover_output)
 		end
 
 feature -- Class/feature related
@@ -228,6 +249,45 @@ feature -- Class/feature related
 			if l_class /= Void then
 				Result := l_class.feature_named (a_feature_name)
 			end
+		end
+
+	feature_header_comment (a_feature: FEATURE_I): STRING
+			-- Header comment of `a_feature'
+		local
+			l_comments: EIFFEL_COMMENTS
+			l_text: STRING_32
+			l_nls: INTEGER
+		do
+			fixme ("Code copied from EB_FEATURE_FOR_COMPLETION.tooltip_text")
+			create Result.make_empty
+			l_comments := comment_extractor.feature_comments (a_feature.e_feature)
+			if attached l_comments then
+				from l_comments.start until l_comments.after loop
+					if attached l_comments.item as l_comment_line then
+						l_text := l_comment_line.content
+						l_text.left_adjust
+						l_text.right_adjust
+
+						if not l_text.is_empty then
+							Result.append_string_general (l_text)
+							Result.append_character (' ')
+							l_nls := 0
+						else
+							if l_nls >= 2 and then not l_comments.islast then
+								Result.append ("%N%N")
+							end
+						end
+						l_nls := l_nls + 1
+					end
+					l_comments.forth
+				end
+			end
+		end
+
+	comment_extractor: EPA_COMMENT_EXTRACTOR
+			-- Comment extractor
+		once
+			create Result
 		end
 
 feature -- String manipulation

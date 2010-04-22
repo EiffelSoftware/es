@@ -19,7 +19,7 @@ feature -- Access
 		do
 			l_type_formatter := type_formatter
 			l_type_formatter.wipe_type_name
-			type_output_strategy.process (a_type, l_type_formatter, a_type.associated_class, a_feature)
+			type_printer.process (a_type, l_type_formatter, a_type.associated_class, a_feature)
 			Result := l_type_formatter.type_name.twin
 		ensure
 			result_attached: Result /= Void
@@ -35,7 +35,7 @@ feature -- Access
 		do
 			l_type_formatter := type_formatter
 			l_type_formatter.wipe_type_name
-			type_output_strategy.process (a_type, l_type_formatter, a_context_class, a_context_feature)
+			type_printer.process (a_type, l_type_formatter, a_context_class, a_context_feature)
 			Result := l_type_formatter.type_name.twin
 		ensure
 			result_attached: Result /= Void
@@ -43,7 +43,7 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	type_output_strategy: AUT_AST_TYPE_OUTPUT_STRATEGY
+	type_printer: AUT_AST_TYPE_OUTPUT_STRATEGY
 			-- Output strategy for type
 		once
 			create Result

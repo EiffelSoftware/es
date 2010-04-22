@@ -15,7 +15,8 @@ inherit
 
 create
 	make,
-	make_from_other
+	make_from_other,
+	make_with_locals
 
 convert
 	to_feature_i: {FEATURE_I}
@@ -194,6 +195,58 @@ feature {NONE} -- Creation
 			create l_ot_extractor.make (Current)
 			-- root = FEATURE_AS
 			l_ot_extractor.process_from_root (a_written_feature.e_feature.ast)
+		end
+
+	make_with_locals (a_written_feature: like written_feature; a_locals: HASH_TABLE [TYPE_A, STRING])
+			-- Initialize Current with `a_written_feature' and `a_locals'.
+			-- `a_written_feature' is treated as an argument-less procedure with locals `a_locals'.
+			-- Key in `a_locals' are local names, value is the written type of that variable.
+		local
+			l_local_list: LINKED_LIST[ETR_TYPED_VAR]
+			l_expl_type: TYPE_A
+			l_written_type: TYPE_A
+			l_cursor: CURSOR
+		do
+			create class_context.make(a_written_feature.written_class)
+			name := a_written_feature.feature_name
+			create l_local_list.make
+
+			l_cursor := a_locals.cursor
+			from
+				a_locals.start
+			until
+				a_locals.after
+			loop
+				l_written_type := a_locals.item_for_iteration
+				l_expl_type := type_checker.explicit_type (a_locals.item_for_iteration, class_context.written_class, a_written_feature)
+				names_heap.put (a_locals.key_for_iteration)
+				l_local_list.extend (create {ETR_TYPED_VAR}.make(a_locals.key_for_iteration, l_expl_type, l_written_type))
+				a_locals.forth
+			end
+			a_locals.go_to (l_cursor)
+
+			if not l_local_list.is_empty then
+				has_locals := true
+
+				from
+					create locals.make (1, l_local_list.count)
+					create local_by_name.make (l_local_list.count)
+					l_local_list.start
+				until
+					l_local_list.after
+				loop
+					local_by_name.extend (l_local_list.item, l_local_list.item.name)
+					locals[l_local_list.index] := l_local_list.item
+					l_local_list.forth
+				end
+				has_locals := True
+			end
+
+				-- Store original written feature
+			written_feature := a_written_feature
+
+				-- Init object test locals
+			create {LINKED_LIST[ETR_OBJECT_TEST_LOCAL]}object_test_locals.make
 		end
 
 feature -- Conversion
