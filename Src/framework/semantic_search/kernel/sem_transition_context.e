@@ -146,8 +146,10 @@ feature{NONE} -- Implementation
 			l_cursor: CURSOR
 		do
 				-- Synthesize the fake feature body for type checking purpose.
-			create l_body.make (256)
-			l_body.append (once "feature transition__feature do end")
+			create l_body.make (64)
+			l_body.append (once "feature ")
+			l_body.append (transition_feature_name)
+			l_body.append (once " do end")
 
 				-- Parse this fake feature.
 			entity_feature_parser.parse_from_string (l_body, Void)
@@ -163,7 +165,7 @@ feature{NONE} -- Implementation
 			Result.set_feature_name_id (l_name_id, l_name_id)
 		end
 
-	transition_feature_name: STRING = ""
+	transition_feature_name: STRING = "transition__feature"
 			-- Name of the fake feature used to type check feature transitions
 
 end
