@@ -215,6 +215,9 @@ feature -- Visitor
 
 			-- Continue with events for this processor
 			continue (a_event.processor_id)
+			if fc.caller_processor /= fc.processor then
+				resume (a_event.caller_id)
+			end
 		end
 
 	visit_feature_wait (a_event: SCOOP_PROFILER_FEATURE_WAIT_EVENT)
@@ -232,7 +235,10 @@ feature -- Visitor
 			-- Find call, but do not remove from the queue
 			fc := find_call (a_event, False)
 
-			if fc /= Void and then (p.id /= fc.caller_processor.id and not external_call.has (fc.caller_processor.id)) then
+			if fc /= Void and then (p.id /= fc.caller_processor.id and not (external_call.has (fc.caller_processor.id)
+				and (external_call.item (fc.caller_processor.id).feature_name.is_equal (a_event.feature_name)
+				and external_call.item (fc.caller_processor.id).class_name.is_equal (a_event.class_name))
+			)) then
 				--| This is an external call         |--
 				--| but the caller is not ready      |--
 				delay (p.id)
@@ -487,7 +493,7 @@ feature {NONE} -- Element search
 			until
 				q.after or Result /= Void
 			loop
-				if q.item.feature_definition.name.is_equal (a_event.feature_name) then
+				if q.item.feature_definition.name.is_equal (a_event.feature_name) and q.item.feature_definition.class_definition.name.is_equal (a_event.class_name) then
 					Result := q.item
 					if a_remove then
 						q.prune (Result)
