@@ -4044,8 +4044,6 @@ eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
 eweasel/tests/once001/Ace -text
 eweasel/tests/once002/Ace -text
-eweasel/tests/once003/Ace -text
-eweasel/tests/once003/output_2 -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
