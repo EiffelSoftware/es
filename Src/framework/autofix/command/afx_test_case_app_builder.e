@@ -99,11 +99,11 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], AFX_TEST_CASE_INFO]
+	failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_INFO]
 			-- Table of failing test cases in `test_case_folder'
 			-- Key is the test case id, value is the list of test cases revealing the same fault.
 
-	passing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], AFX_TEST_CASE_INFO]
+	passing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_INFO]
 			-- Table of passing test cases in `test_case_folder'
 			-- for each failing test cases.
 			-- Key is the failing test cases, Value is the list of passing test cases for the same feature.
@@ -162,7 +162,7 @@ feature{NONE} -- Implementation
 	on_test_case_found (a_test_case_name: STRING)
 			-- Action to be performed when a test case named `a_test_case_name' is found
 		local
-			l_tc_info: AFX_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_INFO
 			l_list: ARRAYED_LIST [STRING]
 		do
 			create l_tc_info.make_with_string (a_test_case_name)
@@ -193,7 +193,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	is_test_case_contain_new_state (a_test_case_name: STRING; a_tc_info: AFX_TEST_CASE_INFO): BOOLEAN
+	is_test_case_contain_new_state (a_test_case_name: STRING; a_tc_info: EPA_TEST_CASE_INFO): BOOLEAN
 			-- Does test case in `a_test_case_name' contain new states?
 			-- Note: This routine will update `passing_states' and `failing_states' when needed.
 		local
@@ -315,7 +315,7 @@ feature{NONE} -- Implementation
 			-- Compile project after adding types that are mentioned in failing test cases.
 		local
 			l_type_feat: E_FEATURE
-			l_tc_info: AFX_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_INFO
 			l_list: LEAF_AS_LIST
 			l_feat_text: STRING
 			l_tc_file: PLAIN_TEXT_FILE

@@ -465,7 +465,7 @@ feature{NONE} -- Implementation
 			-- Analyze `state_test_case_class_name' to find out
 			-- tested feature, and (in case of a failed test case, recipient of the exception'.
 		local
-			l_tc_info: AFX_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_INFO
 		do
 			if state_test_case_class_name /= Void then
 				create l_tc_info.make_with_string (state_test_case_class_name)

@@ -51,11 +51,11 @@ feature -- Access
 	config: AFX_CONFIG
 			-- Config for AutoFix ocmmand line	
 
-	test_case_start_actions: ACTION_SEQUENCE[TUPLE [AFX_TEST_CASE_INFO]]
+	test_case_start_actions: ACTION_SEQUENCE[TUPLE [EPA_TEST_CASE_INFO]]
 			-- Actions to be performed when a test case is to be analyzed.
 			-- The information about the test case is passed as the argument to the agent.
 
-	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER]]
+	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER]]
 			-- Actions to be performed when a breakpoint is hit in a test case.
 			-- `a_tc' is the test case currently analyzed.
 			-- `a_state' is the state evaluated at the breakpoint.
@@ -170,7 +170,7 @@ feature{NONE} -- Access
 			create Result.make_with_text (a_class, a_feature, l_exprs)
 		end
 
-	current_test_case_info: detachable AFX_TEST_CASE_INFO
+	current_test_case_info: detachable EPA_TEST_CASE_INFO
 			-- Information about currently analyzed test case
 
 feature{NONE} -- Implementation
@@ -496,7 +496,7 @@ feature{NONE} -- Implication
 			-- Keys are test case info id, check {AFX_TEST_CASE_INFO}.`id' for details.
 			-- Values are the associated exception spots.
 
-	on_test_case_breakpoint_hit_print_state (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit_print_state (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		local

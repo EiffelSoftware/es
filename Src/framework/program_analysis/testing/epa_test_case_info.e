@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_TEST_CASE_INFO}."
+	description: "Information of a test case"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_TEST_CASE_INFO
+	EPA_TEST_CASE_INFO
 
 inherit
 	HASHABLE
@@ -14,7 +14,7 @@ inherit
 			out
 		end
 
-	AFX_UTILITY
+	EPA_UTILITY
 		undefine
 			is_equal,
 			out

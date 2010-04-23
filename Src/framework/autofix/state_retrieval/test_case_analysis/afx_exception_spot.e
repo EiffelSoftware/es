@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_info: AFX_TEST_CASE_INFO)
+	make (a_info: EPA_TEST_CASE_INFO)
 			-- Initialize Current with `a_info.
 		do
 			test_case_info := a_info
@@ -27,7 +27,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	test_case_info: AFX_TEST_CASE_INFO
+	test_case_info: EPA_TEST_CASE_INFO
 			-- Test case information
 
 	class_under_test: STRING

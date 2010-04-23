@@ -88,7 +88,7 @@ feature -- Actions
 			log_time_stamp (fix_validation_end_message)
 		end
 
-	on_new_test_case_found (a_tc_info: AFX_TEST_CASE_INFO)
+	on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
 			-- Action to be performed when a new test case indicated by `a_tc_info' is found in test case analysis phase.
 		do
 			if test_case_count > 0 then
@@ -102,7 +102,7 @@ feature -- Actions
 			break_point_hit_statistics.wipe_out
 		end
 
-	on_break_point_hits (a_tc_info: AFX_TEST_CASE_INFO; a_bpslot: INTEGER)
+	on_break_point_hits (a_tc_info: EPA_TEST_CASE_INFO; a_bpslot: INTEGER)
 			-- Action to be performed when break point `a_bpslot' in `a_tc_info' is hit
 		do
 			break_point_count := break_point_count + 1

@@ -66,10 +66,10 @@ feature -- Access
 	fix_validation_end_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when fix validation ends
 
-	new_test_case_found_actions: ACTION_SEQUENCE [TUPLE [tc_info: AFX_TEST_CASE_INFO]]
+	new_test_case_found_actions: ACTION_SEQUENCE [TUPLE [tc_info: EPA_TEST_CASE_INFO]]
 			-- Actions to be performed when test case indicated by `tc_info' is found during test case analysis phase
 
-	break_point_hit_actions: ACTION_SEQUENCE [TUPLE [tc_info: AFX_TEST_CASE_INFO; break_point_slot: INTEGER]]
+	break_point_hit_actions: ACTION_SEQUENCE [TUPLE [tc_info: EPA_TEST_CASE_INFO; break_point_slot: INTEGER]]
 			-- Actions to be performed when break point `break_point_slot' in `tc_info' is hit
 
 	fix_candidate_validation_start_actions: ACTION_SEQUENCE [TUPLE [a_candidate: AFX_FIX]]
@@ -142,13 +142,13 @@ feature -- actions
 			fix_validation_end_actions.call (Void)
 		end
 
-	notify_on_new_test_case_found (a_tc_info: AFX_TEST_CASE_INFO)
+	notify_on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
 			-- Call actions in `new_test_case_found_actions'.
 		do
 			new_test_case_found_actions.call ([a_tc_info])
 		end
 
-	notify_on_break_point_hit (a_tc_info: AFX_TEST_CASE_INFO; a_bpslot: INTEGER)
+	notify_on_break_point_hit (a_tc_info: EPA_TEST_CASE_INFO; a_bpslot: INTEGER)
 			-- Call actions in `break_point_hit_actions'.
 		do
 			break_point_hit_actions.call ([a_tc_info, a_bpslot])

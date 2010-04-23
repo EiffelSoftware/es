@@ -21,7 +21,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	state_for_fault (a_tc: AFX_TEST_CASE_INFO): detachable like state_type
+	state_for_fault (a_tc: EPA_TEST_CASE_INFO): detachable like state_type
 			-- State invariants from passing an failing test cases for the fault indicated in `a_tc'
 		do
 			Result := state.item (a_tc)
@@ -29,7 +29,7 @@ feature -- Access
 
 feature -- Status report
 
-	hast_state_for_fault (a_tc: AFX_TEST_CASE_INFO): BOOLEAN
+	hast_state_for_fault (a_tc: EPA_TEST_CASE_INFO): BOOLEAN
 			 -- Does state information for the fault indicated in `a_tc'
 			 -- exist?
 		do
@@ -38,13 +38,13 @@ feature -- Status report
 
 feature -- Setting
 
-	put_state_for_fault (a_tc: AFX_TEST_CASE_INFO; a_state: like state_type)
+	put_state_for_fault (a_tc: EPA_TEST_CASE_INFO; a_state: like state_type)
 			-- Associate fault indicated in `a_tc' with state `a_state'.
 		do
 			state.force (a_state, a_tc)
 		end
 
-	state: HASH_TABLE [like state_type, AFX_TEST_CASE_INFO]
+	state: HASH_TABLE [like state_type, EPA_TEST_CASE_INFO]
 			-- State information for each fault identified by the key of the table.
 			-- The key is a fault identifier, see {AFX_TEST_CASE_INFO} for details.
 			-- Value is a pair of states, one for passing test cases, and one for failing test cases.

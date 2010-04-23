@@ -31,7 +31,7 @@ feature -- Access
 			-- Table of test case status (including both passing and failing test cases)
 			-- Key is test case uuid, value is the execution status of that test case.
 
-	test_case_info: AFX_TEST_CASE_INFO
+	test_case_info: EPA_TEST_CASE_INFO
 			-- Information of the fault
 
 	config: AFX_CONFIG
@@ -57,7 +57,7 @@ feature -- Setting
 
 feature -- Actions
 
-	on_test_case_start (a_tc: AFX_TEST_CASE_INFO; a_mocking_mode: BOOLEAN)
+	on_test_case_start (a_tc: EPA_TEST_CASE_INFO; a_mocking_mode: BOOLEAN)
 			-- Action to ber performed when `a_tc' starts
 			-- If `a_mocking_mode' is True, load file directly from disk.
 		require
@@ -79,7 +79,7 @@ feature -- Actions
 			end
 		end
 
-	on_break_point_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_break_point_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to be performed when `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the retrieved system state at `a_bpslot'.
 		require
@@ -131,10 +131,10 @@ feature{NONE} -- Impelemntation
 		local
 			l_file_name: FILE_NAME
 			l_file: RAW_FILE
-			l_data: HASH_TABLE [TUPLE [tc_info: AFX_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING], STRING]
+			l_data: HASH_TABLE [TUPLE [tc_info: EPA_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING], STRING]
 			l_status: AFX_TEST_CASE_EXECUTION_STATUS
 		do
-			if attached {AFX_TEST_CASE_INFO} test_case_info as l_tc then
+			if attached {EPA_TEST_CASE_INFO} test_case_info as l_tc then
 				create l_data.make (status.count)
 				l_data.compare_objects
 				from
@@ -160,17 +160,17 @@ feature{NONE} -- Impelemntation
 		local
 			l_file_name: FILE_NAME
 			l_file: RAW_FILE
-			l_tcstatus: AFX_TEST_CASE_INFO
-			l_data: TUPLE [tc_info: AFX_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING]
+			l_tcstatus: EPA_TEST_CASE_INFO
+			l_data: TUPLE [tc_info: EPA_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING]
 			l_pre_state: detachable EPA_STATE
 			l_post_state: detachable EPA_STATE
 			l_single_status: AFX_TEST_CASE_EXECUTION_STATUS
 		do
-			if attached {AFX_TEST_CASE_INFO} test_case_info as l_tc then
+			if attached {EPA_TEST_CASE_INFO} test_case_info as l_tc then
 				create l_file_name.make_from_string (config.data_directory)
 				l_file_name.set_file_name (l_tc.id + ".execution_status")
 				create l_file.make_open_read (l_file_name)
-				if attached {HASH_TABLE [TUPLE [tc_info: AFX_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING], STRING]} l_file.retrieved as l_status then
+				if attached {HASH_TABLE [TUPLE [tc_info: EPA_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING], STRING]} l_file.retrieved as l_status then
 					create status.make (l_status.count)
 					from
 						l_status.start

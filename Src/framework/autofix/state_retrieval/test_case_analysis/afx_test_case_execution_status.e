@@ -41,7 +41,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	info: AFX_TEST_CASE_INFO
+	info: EPA_TEST_CASE_INFO
 			-- Information of current test case
 
 	pre_state: EPA_STATE
@@ -68,7 +68,7 @@ feature -- Access
 			Result := info.last_break_point_slot
 		end
 
-	data_as_string: TUPLE [tc_info: AFX_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING]
+	data_as_string: TUPLE [tc_info: EPA_TEST_CASE_INFO; pre_state: detachable STRING; post_state: detachable STRING]
 			-- Strings representing Current
 		local
 			l_pre_str: detachable STRING

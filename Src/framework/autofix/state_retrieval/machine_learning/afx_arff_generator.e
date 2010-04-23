@@ -26,7 +26,7 @@ feature -- Access
 
 feature -- Actions
 
-	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		local
@@ -156,7 +156,7 @@ feature{NONE} -- Implementation
 			Result := config.data_directory
 		end
 
-	output_file_name (a_tc: AFX_TEST_CASE_INFO; a_bpslot: INTEGER): STRING
+	output_file_name (a_tc: EPA_TEST_CASE_INFO; a_bpslot: INTEGER): STRING
 			-- Name of the file used to store data retrieved breakpoint `a_bpslot'
 			-- in test case `a_tc'
 		do

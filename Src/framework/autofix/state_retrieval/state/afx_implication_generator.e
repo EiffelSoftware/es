@@ -21,7 +21,7 @@ feature -- Access
 
 feature -- Generation
 
-	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
+	generate (a_spot: EPA_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- <Precursor>
 		local
 			l_implications: DS_HASH_SET [AFX_IMPLICATION_EXPR]

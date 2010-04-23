@@ -20,17 +20,17 @@ create
 
 feature -- Actions
 
-	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		do
 			-- Do nothing
 		end
 
-	on_new_test_case_found (tc_info: AFX_TEST_CASE_INFO) is
+	on_new_test_case_found (tc_info: EPA_TEST_CASE_INFO) is
 			-- Store the current
 		local
-			l_tc_info: AFX_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_INFO
 		do
 			if pass_test_case_info = Void or fail_test_case_info = Void then
 				if tc_info.is_passing then

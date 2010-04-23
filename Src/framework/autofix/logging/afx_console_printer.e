@@ -83,12 +83,12 @@ feature -- Actions
 			log_time_stamp_new_line (fix_validation_end_message)
 		end
 
-	on_new_test_case_found (a_tc_info: AFX_TEST_CASE_INFO)
+	on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
 			-- Action to be performed when a new test case indicated by `a_tc_info' is found in test case analysis phase.
 		do
 		end
 
-	on_break_point_hits (a_tc_info: AFX_TEST_CASE_INFO; a_bpslot: INTEGER)
+	on_break_point_hits (a_tc_info: EPA_TEST_CASE_INFO; a_bpslot: INTEGER)
 			-- Action to be performed when break point `a_bpslot' in `a_tc_info' is hit
 		do
 		end

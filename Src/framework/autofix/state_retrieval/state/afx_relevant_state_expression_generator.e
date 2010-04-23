@@ -9,7 +9,7 @@ deferred class
 
 feature -- Generation
 
-	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
+	generate (a_spot: EPA_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- Generate expressions that are relevant to `a_spot' and
 			-- store result in `a_expressions'.
 			-- Ranking of expressions alreadys in `a_expressions' before `generate' may also get updated

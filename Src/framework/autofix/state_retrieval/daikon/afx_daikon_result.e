@@ -11,7 +11,7 @@ class
 		make_from_string
 
 feature
-	make_from_string (daikon_output :STRING; a_tc_info : AFX_TEST_CASE_INFO) is
+	make_from_string (daikon_output :STRING; a_tc_info : EPA_TEST_CASE_INFO) is
 			--Create a Daikon result from a Daikon output and a test case information
 		do
 			create daikon_table.make (1000)
@@ -20,7 +20,7 @@ feature
 		end
 
 feature -- Access
-test_case_info: AFX_TEST_CASE_INFO
+test_case_info: EPA_TEST_CASE_INFO
 
 daikon_table: HASH_TABLE[EPA_STATE , INTEGER]
 

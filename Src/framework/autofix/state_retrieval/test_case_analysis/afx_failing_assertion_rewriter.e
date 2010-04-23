@@ -51,7 +51,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	rewrite (a_tc: AFX_TEST_CASE_INFO; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
+	rewrite (a_tc: EPA_TEST_CASE_INFO; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
 			-- Generate the rewritten failing assertion.
 			-- The generated assertion should appear in the context of `a_tc'.recipient_'.
 			-- `a_structure' stores the AST sturcture of `a_tc'.recipient_'.
@@ -92,7 +92,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	analyze_precondtion_violation (a_tc: AFX_TEST_CASE_INFO; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
+	analyze_precondtion_violation (a_tc: EPA_TEST_CASE_INFO; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
 			-- Analyze precondition violation in `a_tc'.
 		local
 			l_culprit_ast: AFX_AST_STRUCTURE_NODE
@@ -219,7 +219,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	exception_break_point_in_recipient (a_tc: AFX_TEST_CASE_INFO; a_trace: STRING): INTEGER
+	exception_break_point_in_recipient (a_tc: EPA_TEST_CASE_INFO; a_trace: STRING): INTEGER
 			-- Break point at the exception line in `a_tc'
 		local
 			l_lines: LIST [STRING]
@@ -247,7 +247,7 @@ feature{NONE} -- Implementation
 			result_positive: Result > 0
 		end
 
-	failing_feature_name (a_tc: AFX_TEST_CASE_INFO; a_trace: STRING): TUPLE [a_class_name: STRING; a_feature_name: STRING]
+	failing_feature_name (a_tc: EPA_TEST_CASE_INFO; a_trace: STRING): TUPLE [a_class_name: STRING; a_feature_name: STRING]
 			-- Name of the failing feature from `a_tc'
 		local
 			l_lines: LIST [STRING]

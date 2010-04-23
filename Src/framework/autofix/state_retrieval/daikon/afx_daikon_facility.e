@@ -40,7 +40,7 @@ feature -- Access
 
 feature -- Actions
 
-	on_test_case_breakpoint_hit (a_tc: AFX_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		require
@@ -61,7 +61,7 @@ feature -- Actions
 			daikon_generator.add_state (exception_spot.skeleton, a_state, a_bpslot, a_tc.is_failing)
 		end
 
-	on_new_test_case_found (tc_info: AFX_TEST_CASE_INFO) is
+	on_new_test_case_found (tc_info: EPA_TEST_CASE_INFO) is
 			-- Store the current
 		require
 			tc_info_attached: tc_info /= Void
@@ -122,7 +122,7 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	daikon_result_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
+	daikon_result_file_name (a_tc: EPA_TEST_CASE_INFO): STRING
 			-- Full file path for the file to store Daikon output
 		local
 			l_path: FILE_NAME
@@ -163,20 +163,20 @@ feature{NONE} -- Implementation
 	daikon_fail_result: STRING
 			-- Result from running Daikon
 
-	pass_test_case_info: detachable AFX_TEST_CASE_INFO
+	pass_test_case_info: detachable EPA_TEST_CASE_INFO
 			-- Information about a pass test case
 		do
-			if attached {AFX_TEST_CASE_INFO} pass_test_case_info_internal as l_pass_info then
+			if attached {EPA_TEST_CASE_INFO} pass_test_case_info_internal as l_pass_info then
 				Result := l_pass_info
 			else
-				if attached {AFX_TEST_CASE_INFO} fail_test_case_info as l_fail_info then
+				if attached {EPA_TEST_CASE_INFO} fail_test_case_info as l_fail_info then
 					Result := l_fail_info.deep_twin
 					Result.set_is_passing (True)
 				end
 			end
 		end
 
-	fail_test_case_info: detachable AFX_TEST_CASE_INFO
+	fail_test_case_info: detachable EPA_TEST_CASE_INFO
 			-- Information about a fail test case
 
 	write_daikon_to_file is
@@ -264,7 +264,7 @@ feature{NONE} -- Implementation
 			l_file.close
 		end
 
-	pass_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
+	pass_file_name (a_tc: EPA_TEST_CASE_INFO): STRING
 			-- Faull path for the file to store passing test case states
 			-- for fault indicated in `a_Tc'
 		require
@@ -277,7 +277,7 @@ feature{NONE} -- Implementation
 			Result := l_path
 		end
 
-	fail_file_name (a_tc: AFX_TEST_CASE_INFO): STRING
+	fail_file_name (a_tc: EPA_TEST_CASE_INFO): STRING
 			-- Faull path for the file to store failing test case states
 			-- for fault indicated in `a_Tc'
 		local

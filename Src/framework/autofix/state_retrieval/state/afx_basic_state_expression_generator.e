@@ -12,7 +12,7 @@ inherit
 
 feature -- Generation
 
-	generate (a_spot: AFX_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
+	generate (a_spot: EPA_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- <Precursor>
 		local
 			l_gen: EPA_NESTED_EXPRESSION_GENERATOR

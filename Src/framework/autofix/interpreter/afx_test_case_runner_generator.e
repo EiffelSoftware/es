@@ -40,11 +40,11 @@ feature -- Access
 	config: AFX_CONFIG
 			-- Config for AutoFix
 
-	failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], AFX_TEST_CASE_INFO]
+	failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_INFO]
 			-- Table of failing test cases in `test_case_folder'
 			-- Key is the test case id, value is the list of test cases revealing the same fault.
 
-	passing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], AFX_TEST_CASE_INFO]
+	passing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_INFO]
 			-- Table of passing test cases in `test_case_folder'
 			-- for each failing test cases.
 			-- Key is the failing test cases, Value is the list of passing test cases for the same feature.
@@ -67,7 +67,7 @@ feature -- Generation
 			i: INTEGER
 			l_test_case: STRING
 			l_test_executors: STRING
-			l_tc_info: AFX_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_INFO
 		do
 			test_case_number := 1
 			l_root_class_name := system.root_type.associated_class.name.twin
@@ -101,7 +101,7 @@ feature -- Generation
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_test_executors)
 		end
 
-	append_test_case_executor (a_string: STRING; a_test_case_name: STRING; a_test_info: AFX_TEST_CASE_INFO; a_passing: BOOLEAN; a_dry_run: BOOLEAN)
+	append_test_case_executor (a_string: STRING; a_test_case_name: STRING; a_test_info: EPA_TEST_CASE_INFO; a_passing: BOOLEAN; a_dry_run: BOOLEAN)
 			-- Append test case named `a_test_case_name' as the `test_case_number'-th test case
 			-- into `a_string'.
 			-- `a_dry_run' indicates whether the states of the system should be retrieved when the test case is executed:
