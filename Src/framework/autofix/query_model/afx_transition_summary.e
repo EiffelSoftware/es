@@ -416,7 +416,7 @@ feature -- Basic operations
 			end
 			if not l_attrs.is_empty then
 				create l_file.make_create_read_write (a_file_name)
-				l_relation.to_file (l_file)
+				l_relation.to_medium (l_file)
 				l_file.close
 			end
 		end

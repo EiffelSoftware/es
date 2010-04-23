@@ -32,7 +32,7 @@ feature -- Access
 	value (a_value: STRING): STRING
 			-- Value from `a_value', possibly processed to fit the type of current attribute
 		do
-			if a_value.is_integer or a_value.is_real then
+			if a_value /= Void and then (a_value.is_integer or a_value.is_real) then
 				Result := a_value.twin
 			else
 				Result := missing_value

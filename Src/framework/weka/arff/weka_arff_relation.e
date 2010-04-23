@@ -112,7 +112,7 @@ feature -- Basic operations
 			good_result: name ~ a_name
 		end
 
-	to_file (a_media: IO_MEDIUM)
+	to_medium (a_media: IO_MEDIUM)
 			-- Store current relation in `a_media'.
 		require
 			a_media_is_ready: a_media.is_open_write
@@ -155,6 +155,14 @@ feature -- Basic operations
 			end
 			go_to (l_cursor)
 			a_media.put_character ('%N')
+		end
+
+	extend_instance (a_instance: like item)
+			-- Extend `a_intance' into Current relation.
+		require
+			a_instance_valid: is_instance_valid (a_instance)
+		do
+			extend (a_instance)
 		end
 
 feature -- Constants

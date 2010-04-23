@@ -36,7 +36,13 @@ feature -- Access
 			create Result.make (128)
 			Result.append (attribute_header)
 			Result.append_character (' ')
+			if name.has (' ') then
+				Result.append_character ('%"')
+			end
 			Result.append (name)
+			if name.has (' ') then
+				Result.append_character ('%"')
+			end
 			Result.append_character ('%T')
 			Result.append (type_string)
 		end

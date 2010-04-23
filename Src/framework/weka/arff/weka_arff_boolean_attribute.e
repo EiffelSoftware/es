@@ -23,7 +23,7 @@ feature{NONE} -- Initialization
 		do
 			name := a_name.twin
 		end
-		
+
 feature -- Access
 
 	type_string: STRING = "{True, False}"
@@ -32,7 +32,7 @@ feature -- Access
 	value (a_value: STRING): STRING
 			-- Value from `a_value', possibly processed to fit the type of current attribute
 		do
-			if a_value.is_boolean then
+			if a_value /= Void and then a_value.is_boolean then
 				Result := a_value.twin
 			else
 				Result := missing_value
