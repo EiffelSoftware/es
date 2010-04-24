@@ -70,6 +70,14 @@ feature -- Access
 			end
 		end
 
+	variable_position (a_variable: EPA_EXPRESSION): INTEGER
+			-- Position of `a_variable'
+		require
+			has_a_variable: has_variable (a_variable)
+		do
+			Result := variable_positions.item (a_variable)
+		end
+
 	inputs: EPA_HASH_SET [EPA_EXPRESSION]
 			-- List of variables used as inputs to Current transition			
 
@@ -139,6 +147,47 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
+	precondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
+			-- Precondition equation from `precondition' by anonymouse `a_expr_text' in
+			-- the form of "{0}.has ({1})".
+			-- Void if no such equation is found.
+		do
+			Result := equation_by_anonymous_expression_text (a_expr_text, precondition)
+		end
+
+	postcondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
+			-- Precondition equation from `postcondition' by anonymouse `a_expr_text' in
+			-- the form of "{0}.has ({1})".
+			-- Void if no such equation is found.
+		do
+			Result := equation_by_anonymous_expression_text (a_expr_text, postcondition)
+		end
+
+	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: like precondition): detachable EPA_EQUATION
+			-- Assertion equation from `a_state' by anonymouse `a_expr_text' in
+			-- the form of "{0}.has ({1})".
+			-- Void if no such equation is found.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_equation: EPA_EQUATION
+			l_done: BOOLEAN
+		do
+			from
+				l_cursor := a_state.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or else l_done
+			loop
+				l_equation := l_cursor.item
+				if a_expr_text ~ anonymous_expressoin_text (l_equation.expression) then
+					Result := l_equation
+					l_done := True
+				else
+					l_cursor.forth
+				end
+			end
+		end
+
 	name: STRING
 			-- Name of current transition
 		deferred
@@ -147,6 +196,34 @@ feature -- Access
 	description: STRING
 			-- Description of current transition
 		deferred
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- Status report
+
+	has_variable (a_variable: EPA_EXPRESSION): BOOLEAN
+			-- Does `a_variable' exist in `variables'?
+		do
+			Result := variables.has (a_variable)
+		end
+
+	is_input_variable (a_variable: EPA_EXPRESSION): BOOLEAN
+			-- Is `a_variable' an input variable?
+		do
+			Result := inputs.has (a_variable)
+		end
+
+	is_output_variable (a_variable: EPA_EXPRESSION): BOOLEAN
+			-- Is `a_variable' an output variable?
+		do
+			Result := outputs.has (a_variable)
+		end
+
+	is_operand_variable (a_variable: EPA_EXPRESSION): BOOLEAN
+			-- Is `a_variable' an operand variable (either input or output)?
+		do
+			Result := is_input_variable (a_variable) or else is_output_variable (a_variable)
 		end
 
 feature{NONE} -- Implementation
@@ -209,6 +286,44 @@ feature{NONE} -- Implementation
 			variable_positions.force_last (a_index, a_variable)
 			reversed_variable_position.force_last (a_variable, a_index)
 		end
+
+feature -- Variable name
+
+	variable_name (a_variable: EPA_EXPRESSION; a_display_type: INTEGER): STRING
+			-- Name for `a_variable'
+			-- `a_display_type' decides the final output of the name.
+			-- See `variable_position_name', `variable_normalized_position_name' and `variable_type_name' for details.
+		require
+			a_vairable_exists: has_variable (a_variable)
+			a_display_type_valid: is_valid_variable_display_type (a_display_type)
+		do
+			create Result.make (32)
+			if a_display_type = variable_position_name then
+				Result := anonymous_variable_name (variable_positions.item (a_variable))
+			elseif a_display_type = variable_type_name then
+				Result := typed_expression_text (a_variable)
+			elseif a_display_type = variable_normalized_position_name then
+				Result.append (once "v_")
+				Result.append_integer (variable_position (a_variable))
+			elseif a_display_type = variable_original_name then
+				Result.append (a_variable.text)
+			end
+		end
+
+	is_valid_variable_display_type (a_type: INTEGER): BOOLEAN
+			-- Is `a_type' a valid variable display type?
+		do
+			Result :=
+				a_type = variable_position_name or
+				a_type = variable_normalized_position_name or
+				a_type = variable_type_name or
+				a_type = variable_original_name
+		end
+
+	variable_position_name: INTEGER = 1               -- {0}, {1}
+	variable_normalized_position_name: INTEGER = 2    -- v_0, v_1
+	variable_type_name: INTEGER = 3					  -- {LINKED_LIST [ANY]}, {ANY}
+	variable_original_name: INTEGER = 4				  -- Original variable name
 
 invariant
 	variable_positions_valid: variable_positions.for_all_with_key (agent is_variable_position_valid)

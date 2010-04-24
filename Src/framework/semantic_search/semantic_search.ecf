@@ -23,11 +23,12 @@
 		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
+		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>	
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
 		<cluster name="semantic_search" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/java$</exclude>
-			</file_rule>	  
+			</file_rule>
 			<file_rule>
 				<exclude>/.svn$</exclude>
 			</file_rule>

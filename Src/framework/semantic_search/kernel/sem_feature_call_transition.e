@@ -20,7 +20,7 @@ create
 
 feature{SEM_TRANSITION_FACTORY} -- Initialization
 
-	make (a_class: like class_; a_feature: like feature_;  a_operands: HASH_TABLE [STRING, INTEGER]; a_context: like context)
+	make (a_class: like class_; a_feature: like feature_;  a_operands: HASH_TABLE [STRING, INTEGER]; a_context: like context; a_is_creation: BOOLEAN)
 			-- Initialize Current as the transition of `a_feature' in `a_class'.
 			-- `a_operands' is a table indicating the operands for current transition.
 			-- Key of `a_operands' are 0-based operand (including result, if any) indexes,
@@ -33,6 +33,7 @@ feature{SEM_TRANSITION_FACTORY} -- Initialization
 			class_ := a_class
 			feature_ := a_feature
 			context := a_context
+			is_creation := a_is_creation
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)
 			initialize (a_operands)
@@ -62,8 +63,11 @@ feature -- Status report
 
 feature{NONE} -- Implementation
 
-	content_of_transition: STRING
+	content_of_transition_internal (a_variable_display_type: INTEGER): STRING
 			-- Content of current transition
+			-- `a_variable_display_type' indicates how variables are outputed.
+		require
+			a_variable_display_type_valid: is_valid_variable_display_type (a_variable_display_type)
 		local
 			l_target_index: INTEGER
 			l_result_index: INTEGER
@@ -76,10 +80,10 @@ feature{NONE} -- Implementation
 			if is_creation then
 				Result.append (once "create ")
 			elseif not feature_.type.is_void then
-				Result.append (result_variable.text)
+				Result.append (variable_name (result_variable, a_variable_display_type))
 				Result.append (once " := ")
 			end
-			Result.append (target_variable.text)
+			Result.append (variable_name (target_variable, a_variable_display_type))
 			Result.append_character ('.')
 			Result.append (feature_.feature_name.as_lower)
 			if l_arg_count > 0 then
@@ -89,7 +93,7 @@ feature{NONE} -- Implementation
 				until
 					i <= l_arg_count
 				loop
-					Result.append (reversed_variable_position.item (i).text)
+					Result.append (variable_name (reversed_variable_position.item (i), a_variable_display_type))
 					if i < l_arg_count then
 						Result.append (once ", ")
 					end
@@ -97,6 +101,12 @@ feature{NONE} -- Implementation
 				end
 				Result.append_character (')')
 			end
+		end
+
+	content_of_transition: STRING
+			-- Content of current transition
+		do
+			Result := content_of_transition_internal (variable_original_name)
 		end
 
 	target_variable: EPA_EXPRESSION

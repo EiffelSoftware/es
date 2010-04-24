@@ -32,6 +32,7 @@ feature{NONE} -- Initialization
 			attributes.append (a_attributes)
 
 			name := "noname"
+			comment := ""
 
 			old_make (initiail_data_capacity)
 		end
@@ -46,7 +47,10 @@ feature -- Access
 			-- The order of attributes in this list determines the order of values.			
 			-- Each element in current list represent an instance,
 			-- and the inner list stores the values of all attributes in that instance,
-			-- with the same order as `attributes'.		
+			-- with the same order as `attributes'.	
+
+	comment: STRING
+			-- Comments to be located after the relation name, before attribute declaration	
 
 feature -- Status report
 
@@ -112,12 +116,24 @@ feature -- Basic operations
 			good_result: name ~ a_name
 		end
 
+	set_comment (a_comment: STRING)
+			-- Set `comment' with `a_comment'.
+			-- Make a copy from `a_comment'.
+		do
+			if a_comment = Void then
+				comment := ""
+			else
+				comment := a_comment.twin
+			end
+		end
+
 	to_medium (a_media: IO_MEDIUM)
 			-- Store current relation in `a_media'.
 		require
 			a_media_is_ready: a_media.is_open_write
 		local
 			l_cursor: CURSOR
+			l_lines: LIST [STRING]
 		do
 				-- Output the relation name part.
 			a_media.put_string (relation_header)
@@ -125,6 +141,19 @@ feature -- Basic operations
 			a_media.put_string (name)
 			a_media.put_character ('%N')
 			a_media.put_character ('%N')
+
+				-- Output comment.
+			l_lines := comment.split ('%N')
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				a_media.put_character ('%%')
+				a_media.put_string (l_lines.item_for_iteration)
+				a_media.put_character ('%N')
+				l_lines.forth
+			end
 
 				-- Output attributes.
 			l_cursor := attributes.cursor
