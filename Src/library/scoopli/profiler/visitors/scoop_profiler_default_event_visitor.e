@@ -236,9 +236,7 @@ feature -- Visitor
 			fc := find_call (a_event, False)
 
 			if fc /= Void and then (p.id /= fc.caller_processor.id and not (external_call.has (fc.caller_processor.id)
-				and (external_call.item (fc.caller_processor.id).feature_name.is_equal (a_event.feature_name)
-				and external_call.item (fc.caller_processor.id).class_name.is_equal (a_event.class_name))
-			)) then
+				and is_same_feature_event (external_call.item (fc.caller_processor.id), a_event))) then
 				--| This is an external call         |--
 				--| but the caller is not ready      |--
 				delay (p.id)
@@ -310,7 +308,7 @@ feature -- Visitor
 				if fc = Void then
 					io.put_string ("ERROR: application of inexistent feature.%N")
 				end
-				if not (fc.feature_definition.name.is_equal (a_event.feature_name) and fc.feature_definition.class_definition.name.is_equal (a_event.class_name)) then
+				if not is_same_feature (fc, a_event) then
 					io.put_string ("ERROR: application of wrong feature.%N")
 				end
 			end
@@ -328,7 +326,7 @@ feature -- Visitor
 			p: SCOOP_PROFILER_PROCESSOR_PROFILE
 			f: SCOOP_PROFILER_FEATURE_PROFILE
 			fc, fce: SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE
-			s: LINKED_STACK [SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE]
+			s, se: LINKED_STACK [SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE]
 		do
 			-- Find elements
 			p := find_processor (a_event.processor_id)
@@ -336,7 +334,7 @@ feature -- Visitor
 			f := find_feature (a_event)
 			fc := s.item
 
-			if not (fc.feature_definition.name.is_equal (a_event.feature_name) and fc.feature_definition.class_definition.name.is_equal (a_event.class_name)) then
+			if not is_same_feature (fc, a_event) then
 				--| We should wait for an internal feature |--
 
 				delay (p.id)
@@ -361,21 +359,21 @@ feature -- Visitor
 
 				-- Add to caller processor
 				if p.id /= fc.caller_processor.id and fc.synchronous then
-					s := stack.item (fc.caller_processor.id)
-					fce := s.item
+					se := stack.item (fc.caller_processor.id)
+					fce := se.item
 
 					-- Remove from stack
-					s.remove
+					se.remove
 
 					-- Add to caller
-					if s.is_empty then
+					if se.is_empty then
 						debug ("SCOOP")
 							io.put_string ("WARN: adding to external processor%N")
 						end
 						fc.caller_processor.calls.extend (fce)
-					elseif s.item.caller_processor.id /= p.id then
+					elseif se.item.caller_processor.id /= p.id then
 						-- Only if this is not a callback
-						s.item.call_tree.extend (fce)
+						se.item.call_tree.extend (fce)
 					end
 
 					resume (fc.caller_processor.id)
@@ -398,7 +396,7 @@ feature -- Visitor
 				if fc = Void then
 					io.put_string ("ERROR: wait condition try of inexistent feature.%N")
 				end
-				if not (fc.feature_definition.name.is_equal (a_event.feature_name) and fc.feature_definition.class_definition.name.is_equal (a_event.class_name)) then
+				if not is_same_feature (fc, a_event) then
 					io.put_string ("ERROR: wait condition try of wrong feature.%N")
 				end
 			end
@@ -408,6 +406,26 @@ feature -- Visitor
 
 			-- Continue with events for this processor
 			continue (a_event.processor_id)
+		end
+
+feature {NONE} -- Status report
+
+	is_same_feature (a_feature: SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE; a_event: SCOOP_PROFILER_FEATURE_EVENT): BOOLEAN
+			-- Do `a_feature` and `a_event` represent the same feature?
+		require
+			feature_not_void: a_feature /= Void
+			event_not_void: a_event /= Void
+		do
+			Result := a_feature.feature_definition.name.is_equal (a_event.feature_name) and a_feature.feature_definition.class_definition.name.is_equal (a_event.class_name)
+		end
+
+	is_same_feature_event (a_event, a_other: SCOOP_PROFILER_FEATURE_EVENT): BOOLEAN
+			-- Do `a_event` and `a_other` represent the same feature?
+		require
+			event_not_void: a_event /= Void
+			other_not_void: a_other /= Void
+		do
+			Result := a_other.feature_name.is_equal (a_event.feature_name) and a_other.class_name.is_equal (a_event.class_name)
 		end
 
 feature {NONE} -- Element search

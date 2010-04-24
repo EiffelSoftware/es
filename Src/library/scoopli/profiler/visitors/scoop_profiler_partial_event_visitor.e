@@ -53,9 +53,12 @@ feature {SCOOP_PROFILER_LOADER} -- Basic operation
 			loop
 				if not stack.item_for_iteration.is_empty then
 					l_item := stack.item_for_iteration.item
-					l_item.set_incomplete
+					s := stack.item_for_iteration
 					if l_item.processor.id = stack.key_for_iteration then
-						s := stack.item_for_iteration
+						-- Is a local call
+						l_item.set_incomplete
+
+						-- Remove from call stack
 						s.remove
 
 						-- Set information
@@ -100,6 +103,7 @@ feature {SCOOP_PROFILER_LOADER} -- Basic operation
 
 						stack.start
 					else
+						-- It is an external call
 						stack.forth
 						if stack.after then
 							stack.start
@@ -168,7 +172,11 @@ feature {SCOOP_PROFILER_EVENT} -- Visiting
 				continue (a_event.processor_id)
 			elseif not on_stack (a_event) then
 				--| FIXME Throw away the rest?
-				continue (a_event.processor_id)
+				if stack.item (a_event.processor_id).is_empty then
+					continue (a_event.processor_id)
+				else
+					delay (a_event.processor_id)
+				end
 			else
 				Precursor (a_event)
 			end
