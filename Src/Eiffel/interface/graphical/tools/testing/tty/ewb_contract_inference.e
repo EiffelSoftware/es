@@ -12,7 +12,7 @@ inherit
 
 	EPA_GENERATOR_ROUTINES
 
-	AFX_SHARED_SESSION
+	CI_SHARED_SESSION
 
 create
 	make_with_arguments
@@ -62,6 +62,7 @@ feature -- Properties
 			create l_parser.make_with_arguments (contract_inference_arguments, system)
 			l_parser.parse
 			l_config := l_parser.config
+			set_contract_inference_config (l_config)
 		end
 
 note
