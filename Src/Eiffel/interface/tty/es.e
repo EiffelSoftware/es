@@ -1260,6 +1260,11 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_AUTO_FIX} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-contract_inference") then
+				create l_at_args.make
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_CONTRACT_INFERENCE} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-eiffel_transform") then
 				create {EWB_EIFFEL_TRANSFORM} command
 			elseif is_eiffel_class_file_name (option) then
@@ -1406,7 +1411,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
