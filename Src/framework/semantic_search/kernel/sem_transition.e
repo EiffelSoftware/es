@@ -101,7 +101,7 @@ feature -- Access
 
 	anonymous_expressoin_text (a_expression: EPA_EXPRESSION): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
-			-- For example, "has (v)" will be: "{0}.has ({1})".
+			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.
 		local
 			l_replacements: HASH_TABLE [STRING, STRING]
 		do
