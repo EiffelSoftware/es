@@ -14,9 +14,6 @@ deferred class
 
 inherit
 	SCOOP_CONTEXT_AST_PRINTER
-		export
-			{NONE} all
-			{SCOOP_VISITOR_FACTORY} setup
 		redefine
 			process_class_type_as,
 			process_generic_class_type_as,
@@ -42,7 +39,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	process_type (l_as: TYPE_AS) is
+	process_type (l_as: TYPE_AS)
 			-- process 'l_as'
 			-- print out the TYPE_AS as defined below
 		do
@@ -53,7 +50,7 @@ feature -- Access
 			end
 		end
 
-	process_type_replace_current (l_as: TYPE_AS) is
+	process_type_replace_current (l_as: TYPE_AS)
 			-- process 'l_as'
 			-- print out the TYPE_AS as defined below
 		do
@@ -64,7 +61,7 @@ feature -- Access
 			end
 		end
 
-	process_type_ast (l_as: AST_EIFFEL) is
+	process_type_ast (l_as: AST_EIFFEL)
 			-- process 'l_as'
 			-- used to print out internal generics and other types nodes
 		do
@@ -74,7 +71,7 @@ feature -- Access
 			end
 		end
 
-	set_generics_to_substitute(gen: LINKED_LIST[TUPLE[INTEGER,INTEGER]]) is
+	set_generics_to_substitute(gen: LINKED_LIST[TUPLE[INTEGER,INTEGER]])
 			-- Set the generic's which need to be substituted
 		do
 			generics_to_substitute := gen
@@ -84,7 +81,7 @@ feature -- Access
 
 feature {NONE} -- Roundtrip: process nodes
 
-	process_class_type_as (l_as: CLASS_TYPE_AS) is
+	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
 			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
 			evaluate_class_type_flags (l_as.is_expanded, l_as.is_separate)
@@ -110,7 +107,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
-	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
+	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
 		local
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
@@ -158,7 +155,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
-	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS) is
+	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
 		do
 			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
 			evaluate_named_tuple_type_flags (l_as.is_separate)
@@ -182,7 +179,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
-	process_like_cur_as (l_as: LIKE_CUR_AS) is
+	process_like_cur_as (l_as: LIKE_CUR_AS)
 			-- process 'l_as'
 			-- this feature is redefined in the locals printer
 		do
@@ -209,34 +206,34 @@ feature {NONE} -- Roundtrip: process nodes
 
 feature {NONE} -- Deferred feature implementation
 
-	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
-	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
-	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
+	evaluate_named_tuple_type_flags (is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
-	evaluate_like_current_type_flags is
+	evaluate_like_current_type_flags
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
-	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
 feature {NONE} -- Feature implementation
 
-	process_attachment_mark (has_detachable_mark: BOOLEAN; attachment_mark_index: INTEGER;  attachment_mark_symbol: SYMBOL_AS) is
+	process_attachment_mark (has_detachable_mark: BOOLEAN; attachment_mark_index: INTEGER;  attachment_mark_symbol: SYMBOL_AS)
 			-- process the attachment mark
 		do
 			if is_filter_detachable then

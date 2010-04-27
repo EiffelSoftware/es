@@ -79,7 +79,7 @@ feature {NONE} -- Implementation
 				-- The call is the first element of a call chain.
 				-- Check whether the call is a call on the current object, or an access to a separate formal argument.
 				if
-					{l_access_as: ACCESS_AS} l_as and then
+					attached {ACCESS_AS} l_as as l_access_as and then
 					(
 						class_c.feature_table.has (l_access_as.access_name) or
 						class_c.feature_table.is_mangled_alias_name (l_access_as.access_name)
@@ -88,7 +88,7 @@ feature {NONE} -- Implementation
 					-- The call is a call on the current object and thus it is a non-separate call.
 					current_assertion.set_is_containing_non_separate_calls (True)
 				elseif
-					{l_access_as: ACCESS_AS} l_as and then
+					attached {ACCESS_AS} l_as as l_access_as and then
 					formal_arguments.is_separate_argument (l_access_as.access_name)
 				then
 					-- The call is an access to a separate formal argument.

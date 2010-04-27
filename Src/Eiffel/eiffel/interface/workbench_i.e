@@ -234,7 +234,7 @@ feature {NONE} -- Added for SCOOP
 			l_factory: CONF_PARSE_FACTORY
 		do
 			-- Test whether the SCOOP override cluster has already been added.
-			if not universe.target.overrides.has ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name) then
+			if not universe.target.overrides.has ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name) then
 				-- The SCOOP override cluster has not been added yet. Add the SCOOP override cluster.
 
 				-- Create a factory for configurations.
@@ -242,7 +242,7 @@ feature {NONE} -- Added for SCOOP
 
 				-- Create a new override for the SCOOP override cluster.
 				l_loc := l_factory.new_location_from_path (degree_scoop.scoop_override_cluster_path, universe.target)
-				l_override := l_factory.new_override ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name, l_loc, universe.target)
+				l_override := l_factory.new_override ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name, l_loc, universe.target)
 				l_override.set_recursive (true)
 				l_override.set_internal (true)
 
@@ -258,7 +258,7 @@ feature {NONE} -- Added for SCOOP
 			-- Remove the SCOOP override cluster from the universe target.
 		do
 			-- Remove the override for the SCOOP override cluster.
-			universe.target.remove_override ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+			universe.target.remove_override ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 
 			-- Save the updated universe target configuration.
 			universe.target.system.store
@@ -326,7 +326,7 @@ feature {NONE} -- Added for SCOOP
 			create l_factory
 
 			-- Set the root.
-			universe.target.set_root (l_factory.new_root (Void, {SCOOP_SYSTEM_CONSTANTS}.scoop_starter_class_name, {SCOOP_SYSTEM_CONSTANTS}.scoop_starter_feature_name, false))
+			universe.target.set_root (l_factory.new_root (Void, {SCOOP_SYSTEM_CONSTANTS}.scoop_library_starter_class_name, {SCOOP_SYSTEM_CONSTANTS}.scoop_library_starter_feature_name, false))
 
 			-- Save the updated universe target configuration.
 			universe.target.system.store

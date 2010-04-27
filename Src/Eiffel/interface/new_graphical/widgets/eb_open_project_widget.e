@@ -748,7 +748,7 @@ feature {NONE} -- Implementation
 		do
 			l_scoop_override_cluster_directory_path := a_project_location.eifgens_path.twin
 			l_scoop_override_cluster_directory_path.set_subdirectory (a_project_location.target)
-			l_scoop_override_cluster_directory_path.set_subdirectory ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+			l_scoop_override_cluster_directory_path.set_subdirectory ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 			create l_scoop_override_cluster_directory.make (l_scoop_override_cluster_directory_path)
 			Result := l_scoop_override_cluster_directory.exists
 		end

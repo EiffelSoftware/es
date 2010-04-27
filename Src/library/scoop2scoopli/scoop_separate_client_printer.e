@@ -1,5 +1,9 @@
 note
-	description: "SCOOP_SEPARATE_CLIENT_PRINTER implements the starting point of the client class creation step."
+	description: "[
+			A class visitor to create a client class.
+
+			- Each client has only the processor setter as its creation routine.
+			]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -22,16 +26,15 @@ create
 
 feature -- Access
 
-	process_class is
-			-- Process current `class_as'.
-			-- Entry point to start client class creation.
+	add_client_class
+			-- Add a client class for the original class indicated in the workbench.
 		do
 			process_class_as (class_as)
 		end
 
-feature {NONE} -- Roundtrip: process nodes
+feature {NONE} -- Implementation
 
-	process_class_as (l_as: CLASS_AS) is
+	process_class_as (l_as: CLASS_AS)
 			-- Process `l_as', the AST class node.
 		require else
 			class_as_not_void: class_as /= Void
@@ -125,6 +128,11 @@ feature {NONE} -- Roundtrip: process nodes
 				is_processing_assertions := False
 			end
 
+			-- Skip invariant.
+			if l_as.internal_invariant /= Void then
+				last_index := l_as.internal_invariant.last_token (match_list).index
+			end
+
 			-- Skip indexes.
 			last_index := l_as.end_keyword.index - 1
 
@@ -133,7 +141,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.end_keyword)
 		end
 
-	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS) is
+	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS)
 			-- Process `l_as', the AST feature clause list.
 		do
 			last_index := l_as.first_token (match_list).index
@@ -148,7 +156,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.features)
 		end
 
-	process_feature_as (l_as: FEATURE_AS) is
+	process_feature_as (l_as: FEATURE_AS)
 			-- Process `l_as', the AST feature node, invoke the `SCOOP_CLIENT_FEATURE_VISITOR'.
 		local
 			l_feature_visitor: SCOOP_CLIENT_FEATURE_VISITOR
@@ -160,9 +168,7 @@ feature {NONE} -- Roundtrip: process nodes
 			last_index := l_as.last_token (match_list).index
 		end
 
-feature {NONE} -- Implementation
-
-	insert_infix_prefix_wrappers is
+	insert_infix_prefix_wrappers
 			-- Insert the wrapper feature of `scoop_workbench_objects.proxy_infix_prefix_wrappers'.
 			-- Remove this item with EiffelStudio 6.4
 		local
@@ -188,7 +194,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	insert_conversion(l_as: CLASS_AS) is
+	insert_conversion(l_as: CLASS_AS)
 			-- Insert conversion clause for `proxy_'
 			-- in order to allow up/down casts between separate and non separate entities
 			-- Added by `damienm' 4.Nov 2009	
@@ -204,7 +210,7 @@ feature {NONE} -- Implementation
 				context.add_string (",")
 			end
 			l_parent_visitor := scoop_visitor_factory.new_client_parent_visitor (context)
-			context.add_string ("%N%Tproxy_: {"+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
+			context.add_string ("%N%Tproxy_: {"+proxy_class_prefix+l_as.class_name.name.as_upper)
 --			safe_process (l_as.generics)
 			if l_as.internal_generics /= Void then
 				process_leading_leaves (l_as.internal_generics.index)
@@ -222,7 +228,7 @@ feature {NONE} -- Implementation
 				until
 					l_ancestors.after
 				loop
-					context.add_string (", "+scoop_proxy_prefix.as_upper)
+					context.add_string (", "+proxy_class_prefix)
 					context.add_string (l_ancestors.item)
 --					l_parent_visitor.process_parent_names(l_ancestors.item)
 				--	context.add_string (l_ancestors.item.type.class_name.name)
@@ -233,14 +239,14 @@ feature {NONE} -- Implementation
 			context.add_string (", SCOOP_SEPARATE__ANY, SCOOP_SEPARATE_PROXY}%N%N")
 		end
 
-	add_proxy_feature(l_as: CLASS_AS) is
+	add_proxy_feature(l_as: CLASS_AS)
 				-- Add feature `proxy_'
 				-- Added by `damienm' 3.Nov 2009
 			local
 				l_generics_visitor : SCOOP_GENERICS_VISITOR
 			do
 				context.add_string("%N%Nfeature%N%N")
-				context.add_string ("%Tproxy_: "+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
+				context.add_string ("%Tproxy_: "+proxy_class_prefix+l_as.class_name.name.as_upper)
 				if l_as.internal_generics /= Void then
 
 					process_leading_leaves (l_as.internal_generics.index)
@@ -253,7 +259,7 @@ feature {NONE} -- Implementation
 
 				if not l_as.is_deferred then
 
-	          		context.add_string ("%T%T%TResult := create {"+scoop_proxy_prefix.as_upper+l_as.class_name.name.as_upper)
+	          		context.add_string ("%T%T%TResult := create {"+proxy_class_prefix+l_as.class_name.name.as_upper)
 
 					if l_as.internal_generics /= Void then
 						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)

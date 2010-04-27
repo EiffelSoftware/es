@@ -10,7 +10,7 @@ class
 
 feature -- Access
 
-	scoop_workbench_objects: SCOOP_WORKBENCH_OBJECTS is
+	scoop_workbench_objects: SCOOP_WORKBENCH_OBJECTS
 			-- Current scoop workbench.
 		once
 			create Result.make
@@ -18,7 +18,7 @@ feature -- Access
 			scoop_workbench_objects_not_void: Result /= Void
 		end
 
-	scoop_visitor_factory: SCOOP_VISITOR_FACTORY is
+	scoop_visitor_factory: SCOOP_VISITOR_FACTORY
 			-- Factory for visitors.
 		once
 			create Result

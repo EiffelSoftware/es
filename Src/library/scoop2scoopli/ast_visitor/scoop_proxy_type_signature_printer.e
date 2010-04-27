@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Feature implementation
 
-	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		do
 			if is_expanded then
@@ -35,7 +35,7 @@ feature {NONE} -- Feature implementation
 			end
 		end
 
-	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		do
 			if is_expanded then
@@ -47,7 +47,7 @@ feature {NONE} -- Feature implementation
 			end
 		end
 
-	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
+	evaluate_named_tuple_type_flags (is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		do
 			--if is_separate then
@@ -66,7 +66,7 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := False
 		end
 
-	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN)
 			-- the flags are set dependant on the situation
 		do
 			if is_expanded then
@@ -80,7 +80,7 @@ feature {NONE} -- Feature implementation
 
 feature {NONE} -- class name implementation
 
-	process_class_name (l_as: ID_AS; is_set_prefix: BOOLEAN; l_context: ROUNDTRIP_CONTEXT; l_match_list: LEAF_AS_LIST) is
+	process_class_name (l_as: ID_AS; is_set_prefix: BOOLEAN; l_context: ROUNDTRIP_CONTEXT; l_match_list: LEAF_AS_LIST)
 			-- adds 'SCOOP_SEPARATE__'  as prefix to class name `ANY'
 		do
 			if l_as.name.as_upper.is_equal ("ANY") then

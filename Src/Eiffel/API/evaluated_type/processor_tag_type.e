@@ -15,7 +15,7 @@ inherit
 			default_create
 		redefine
 			is_equal,
-			infix "<"
+			is_less
 		end
 
 create
@@ -31,7 +31,7 @@ feature --Creation
 			make_current
 		end
 
-	make (is_separate : BOOLEAN; proc_name : ! STRING ; a_handled : BOOLEAN)
+	make (is_separate : BOOLEAN; proc_name : attached STRING ; a_handled : BOOLEAN)
 		require
 			handled_has_name: a_handled implies not proc_name.is_empty
 		do
@@ -70,7 +70,7 @@ feature --Creation
 		end
 
 feature --Copy
-	duplicate : ! PROCESSOR_TAG_TYPE
+	duplicate : attached PROCESSOR_TAG_TYPE
 			-- Duplicate the current processor tag.
 		do
 			create Result.make (is_sep, tag_name, is_handled)
@@ -78,7 +78,7 @@ feature --Copy
 		end
 
 feature --Compare
-	infix "<" (other : like Current) : BOOLEAN
+	is_less alias "<" (other : like Current) : BOOLEAN
 		do
 			Result := (other.top and not top) or else
 			          (bottom and not other.bottom)
@@ -154,7 +154,7 @@ feature --Access
 			Result := is_handled
 		end
 
-	tag_name : ! STRING
+	tag_name : attached STRING
 	bottom   : BOOLEAN
 	top      : BOOLEAN
 
@@ -169,7 +169,7 @@ feature --Debug
 		end
 
 feature {NONE} -- Implementation
-	set_tag_name (name :!STRING)
+	set_tag_name (name : attached STRING)
 			-- Sets the name of the tag to `name'
 		do
 			tag_name := name.twin

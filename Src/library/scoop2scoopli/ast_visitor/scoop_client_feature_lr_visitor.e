@@ -86,7 +86,7 @@ feature {NONE} -- General implementation
 			-- process internal generics
 			if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type as typ then
 				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_internal_generics (typ.internal_generics, True, False)
+				l_generics_visitor.process_internal_generics (typ.internal_generics, false, False)
 				if typ.internal_generics /= Void then
 					last_index := l_generics_visitor.get_last_index
 				end
@@ -238,29 +238,32 @@ feature {NONE} -- General implementation
 			end
 		end
 
-	process_separate_internal_arguments_as_actual_argument_list(with_processor: BOOLEAN)
+	process_separate_internal_arguments_as_actual_argument_list (with_processor: BOOLEAN)
 			-- prints argument names as actual argument list to context.
 		local
 			i: INTEGER
+			l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
+			l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 			from
 				i := 1
 			until
-				i >= feature_object.arguments.separate_arguments.count
+				i > feature_object.arguments.separate_arguments.count
 			loop
 				last_index := feature_object.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
-				is_print_with_processor_postfix := with_processor
-				process_identifier_list (feature_object.arguments.separate_arguments.i_th (i).id_list)
-				is_print_with_processor_postfix := False
-				context.add_string (", ")
+				l_type_expr_visitor.resolve_type_in_workbench (feature_object.arguments.separate_arguments.i_th (i).type)
+				if
+					attached {ATTACHABLE_TYPE_A} l_type_expr_visitor.resolved_type as attachable_resolved_type and then
+					(attachable_resolved_type.has_attached_mark or not attachable_resolved_type.has_detachable_mark)
+				then
+					if i /= 1 then
+						context.add_string (", ")
+					end
+					is_print_with_processor_postfix := with_processor
+					process_identifier_list (feature_object.arguments.separate_arguments.i_th (i).id_list)
+					is_print_with_processor_postfix := False
+				end
 				i := i + 1
-			end
-
-			if i = feature_object.arguments.separate_arguments.count then
-				last_index := feature_object.arguments.separate_arguments.i_th (i).first_token (match_list).index - 1
-				is_print_with_processor_postfix := with_processor
-				process_identifier_list (feature_object.arguments.separate_arguments.i_th (i).id_list)
-				is_print_with_processor_postfix := False
 			end
 		end
 
@@ -442,7 +445,7 @@ feature {NONE} -- Feature redeclaration handling
 
 			-- process internal generics
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_internal_generics (l_as.internal_generics, True, False)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, false, False)
 			if l_as.internal_generics /= Void then
 				last_index := l_generics_visitor.get_last_index
 			end
@@ -527,7 +530,7 @@ feature {NONE} -- Feature redeclaration handling
 								end
 							end
 							if add_scoop_separate__ then
-								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix)
+								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix)
 							end
 							context.add_string (l_as_type.class_name.name)
 							if attached {GENERIC_CLASS_TYPE_AS} l_as_type as gen_typ then
@@ -550,7 +553,7 @@ feature {NONE} -- Feature redeclaration handling
 								if not generics_to_substitute.is_empty then
 									l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
 								end
-								l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
+								l_generics_visitor.process_internal_generics (gen_typ.generics, false, True)
 							end
 						end
 						if i <= l_count then

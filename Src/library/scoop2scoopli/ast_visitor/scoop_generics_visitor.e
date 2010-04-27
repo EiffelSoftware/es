@@ -5,7 +5,7 @@ note
 					One can call the visitor by passing it a context and process the generics on the created visitor
 					After creating the visitor before calling it one can set `set_generics_to_substitute' with a list of generic parameters to replace.
 					The list contains the indexes of the parameter one wants to substitute.
-					`set_prefix' can be set to print generic parameter as well as the 'SCOOP_SEPARATE__' prefix in front of it. (only used in process_id_as probably obsolete)
+					`set_prefix' can be set to print generic parameter as well as the 'SCOOP_SEPARATE__' prefix in front of it.
 					`without_constraints' can be set to ignore generic constraints. (i.e D[X -> INTEGER])
 					The `generic_index' in this visitor defines the index of the current generic parameter beeing processed and is used to match the items in the `generics_to_substitute' list.
 					Generic indexes contain a stage which defines the depth of the parameter and a position which defines the position of the current stage.(i.e TUPLE[INTEGER, D[X]] -> index(X) = [2,2])
@@ -26,7 +26,6 @@ inherit
 			process_generic_class_type_as,
 			process_named_tuple_type_as,
 			process_formal_dec_as,
-			process_id_as,
 			process_like_cur_as,
 			process_like_id_as,
 			process_eiffel_list
@@ -131,18 +130,6 @@ feature -- Access
 
 
 feature {NONE} -- Visitor implementation
-
-	process_id_as (l_as: ID_AS) is
-		do
-
-			process_leading_leaves (l_as.index)
-			process_class_name (l_as, is_set_prefix, context, match_list)
-	--		process_class_name (l_as, False, context, match_list)
-			if l_as /= Void then
-				last_index := l_as.index
-			end
-		end
-
 	l_process_id_as (l_as: ID_AS; is_separate: BOOLEAN) is
 		local
 			l_is_separate: BOOLEAN
@@ -162,7 +149,7 @@ feature {NONE} -- Visitor implementation
 					generics_to_substitute.forth
 				end
 			end
-			process_class_name (l_as, l_is_separate, context, match_list)
+			process_class_name (l_as, l_is_separate or is_set_prefix, context, match_list)
 	--		process_class_name (l_as, is_set_prefix, context, match_list)
 	--		process_class_name (l_as, False, context, match_list)
 			if l_as /= Void then

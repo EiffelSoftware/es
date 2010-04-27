@@ -30,7 +30,7 @@ feature -- Access
 		do
 			Precursor (a_precondition, a_formal_arguments)
 			create preconditions.make
-			if {l_require_as: REQUIRE_AS} a_precondition then
+			if attached {REQUIRE_AS} a_precondition as l_require_as then
 				last_index := l_require_as.require_keyword_index
 			end
 			safe_process (a_precondition)

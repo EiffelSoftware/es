@@ -11,6 +11,8 @@ note
 class
 	SCOOP_SEPARATE_CLASS_VISITOR
 
+	obsolete "This class should not be in use."
+
 inherit
 	AST_ROUNDTRIP_ITERATOR
 		redefine

@@ -152,7 +152,7 @@ feature {NONE} -- Type expression processing
 
 			-- process internal generics
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_internal_generics (l_as.internal_generics, True, False)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, false, False)
 			if l_as.internal_generics /= Void then
 				last_index := l_generics_visitor.get_last_index
 			end
@@ -459,7 +459,7 @@ feature {NONE} -- Expressions processing
 
 				-- Process the binary operator.
 				-- What kind of operator do we have?
-				if {l_bin_not_tilde_as: BIN_NOT_TILDE_AS} l_as then
+				if attached {BIN_NOT_TILDE_AS} l_as as l_bin_not_tilde_as then
 					-- We have a '/~' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
 					-- An expression 'left_separate /~ right_separate' gets translated to:
 					-- 	(left_separate = Void or else right_separate = Void) or else
@@ -545,7 +545,7 @@ feature {NONE} -- Expressions processing
 					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
 					reset_current_levels_layer
 					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-				elseif {l_bin_ne_as: BIN_NE_AS} l_as then
+				elseif attached {BIN_NE_AS} l_as as l_bin_ne_as then
 					-- We have a '/=' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
 					-- An expression 'left_separate /= right_separate' gets translated to:
 					-- 	(left_separate = Void and then right_separate /= Void) or else
@@ -646,7 +646,7 @@ feature {NONE} -- Expressions processing
 					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
 					reset_current_levels_layer
 					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-				elseif {l_bin_tilde_as: BIN_TILDE_AS} l_as then
+				elseif attached {BIN_TILDE_AS} l_as as l_bin_tilde_as then
 					-- We have a '~' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
 					-- An expression 'left_separate ~ right_separate' gets translated to:
 					-- 	left_separate /= Void and then
@@ -710,7 +710,7 @@ feature {NONE} -- Expressions processing
 					-- We want to remember the type of the binary expression. It is not determine by the left or the right expression. Instead it is just a boolean.
 					reset_current_levels_layer
 					update_current_level_with_type (False, create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
-				elseif {l_bin_eq_as: BIN_EQ_AS} l_as then
+				elseif attached {BIN_EQ_AS} l_as as l_bin_eq_as then
 					-- We have a '=' operator. It is not a feature. We must make sure that the comparison is based on the client objects and not on the proxy objects.
 					-- An expression 'left_separate = right_separate' gets translated to:
 					-- 	(left_separate = Void and then right_separate = Void) or else
@@ -834,10 +834,10 @@ feature {NONE} -- Expressions processing
 
 						-- Add a level, process the operator and update the new level.
 						add_level
-						if {l_bin_and_then_as: BIN_AND_THEN_AS} l_as then
+						if attached {BIN_AND_THEN_AS} l_as as l_bin_and_then_as then
 							safe_process (l_bin_and_then_as.and_keyword (match_list))
 							safe_process (l_bin_and_then_as.then_keyword (match_list))
-						elseif {l_or_else_as: BIN_OR_ELSE_AS} l_as then
+						elseif attached {BIN_OR_ELSE_AS} l_as as l_or_else_as then
 							safe_process (l_or_else_as.or_keyword (match_list))
 							safe_process (l_or_else_as.else_keyword (match_list))
 						else
@@ -866,10 +866,10 @@ feature {NONE} -- Expressions processing
 
 				-- Add a level, process the operator and update the new level.
 				add_level
-				if {l_bin_and_then_as: BIN_AND_THEN_AS} l_as then
+				if attached {BIN_AND_THEN_AS} l_as as l_bin_and_then_as then
 					safe_process (l_bin_and_then_as.and_keyword (match_list))
 					safe_process (l_bin_and_then_as.then_keyword (match_list))
-				elseif {l_or_else_as: BIN_OR_ELSE_AS} l_as then
+				elseif attached {BIN_OR_ELSE_AS} l_as as l_or_else_as then
 					safe_process (l_or_else_as.or_keyword (match_list))
 					safe_process (l_or_else_as.else_keyword (match_list))
 				else
@@ -897,7 +897,7 @@ feature {NONE} -- Expressions processing
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
 			-- Note: A unary operator can be nested within another binary or unary operator. But it is always at the beginning of a call chain.
-			if {l_un_old_as: UN_OLD_AS} l_as then
+			if attached {UN_OLD_AS} l_as as l_un_old_as then
 				safe_process (l_un_old_as.expr)
 			else
 				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
@@ -1508,17 +1508,17 @@ feature {NONE} -- Eiffel list processing
 			if l_as.count > 0 then
 				-- Reset the current levels layer before every list of instructions, type declarations, or assertion clauses.
 				if
-					{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
-					{l_type_declaration_list: EIFFEL_LIST [TYPE_DEC_AS]} l_as or
-					{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+					attached {EIFFEL_LIST [INSTRUCTION_AS]} l_as as l_instruction_list or
+					attached {EIFFEL_LIST [TYPE_DEC_AS]} l_as as l_type_declaration_list or
+					attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list
 				then
 					reset_current_levels_layer
 				end
 
 				-- Reset the current object tests layer before every list of instruction or assertion clauses.
 				if
-					{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
-					{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+					attached {EIFFEL_LIST [INSTRUCTION_AS]} l_as as l_instruction_list or
+					attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list
 				then
 					reset_current_object_tests_layer
 				end
@@ -1541,17 +1541,17 @@ feature {NONE} -- Eiffel list processing
 
 					-- Reset the current levels layer after each instruction, type declaration, or assertion clause.
 					if
-						{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
-						{l_type_declaration_list: EIFFEL_LIST [TYPE_DEC_AS]} l_as or
-						{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+						attached {EIFFEL_LIST [INSTRUCTION_AS]} l_as as l_instruction_list or
+						attached {EIFFEL_LIST [TYPE_DEC_AS]} l_as as l_type_declaration_list or
+						attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list
 					then
 						reset_current_levels_layer
 					end
 
 					-- Reset the current object tests layer after each instruction or assertion clause.
 					if
-						{l_instruction_list: EIFFEL_LIST [INSTRUCTION_AS]} l_as or
-						{l_assertion_clause_list: EIFFEL_LIST [TAGGED_AS]} l_as
+						attached {EIFFEL_LIST [INSTRUCTION_AS]} l_as as l_instruction_list or
+						attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list
 					then
 						reset_current_object_tests_layer
 					end
@@ -1842,7 +1842,7 @@ feature {NONE} -- Object test handling
 
 			-- Update last_instr_call_index
 			process_leading_leaves (l_as.if_keyword (match_list).first_token (match_list).index)
-			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				feature_object.set_last_instr_call_index(ctxt.cursor_to_current_position)
 			end
 
@@ -1980,7 +1980,7 @@ feature {NONE} -- Agent handling
 					i := i + 1
 				end
 			end
-			if {l_routine: ROUTINE_AS} l_as.body.content and then l_routine.locals /= Void then
+			if attached {ROUTINE_AS} l_as.body.content as l_routine and then l_routine.locals /= Void then
 				from
 					i := 1
 				until

@@ -282,7 +282,7 @@ feature{NONE} -- Context handling
 		do
 			create result.make_empty
 			if match_list.i_th (i).is_separator then
-				if {text: BREAK_AS} match_list.i_th (i) then
+				if attached {BREAK_AS} match_list.i_th (i) as text then
 					str := text.literal_text (match_list)
 					from
 						j := str.count

@@ -57,7 +57,7 @@ feature {NONE} -- General implementation
 		local
 			i, nb: INTEGER
 			l_infix_prefix: INFIX_PREFIX_AS
-			is_separate: BOOLEAN
+			l_does_feature_lock_arguments: BOOLEAN
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 			l_feature_assertion_visitor: SCOOP_CLIENT_FEATURE_ASSERTION_VISITOR
 			l_feature_lr_visitor: SCOOP_CLIENT_FEATURE_LR_VISITOR
@@ -109,7 +109,7 @@ feature {NONE} -- General implementation
 				until
 					i > nb
 				loop
-					is_separate := False
+					l_does_feature_lock_arguments := False
 					-- check if there are separate arguments
 					if l_as.body /= Void and then l_as.body.arguments /= void then
 						from
@@ -119,8 +119,12 @@ feature {NONE} -- General implementation
 							l_as.body.arguments.after
 						loop
 							l_type_expr_visitor.resolve_type_in_workbench (l_as.body.arguments.item.type)
-							if l_type_expr_visitor.resolved_type.is_separate then
-								is_separate := True
+							if
+								l_type_expr_visitor.resolved_type.is_separate and
+								attached {ATTACHABLE_TYPE_A} l_type_expr_visitor.resolved_type as attachable_resolved_type and then
+								(attachable_resolved_type.has_attached_mark or not attachable_resolved_type.has_detachable_mark)
+							then
+								l_does_feature_lock_arguments := True
 								l_arguments.separate_arguments.extend (l_as.body.arguments.item)
 							else
 								l_arguments.non_separate_arguments.extend (l_as.body.arguments.item)
@@ -148,7 +152,7 @@ feature {NONE} -- General implementation
 					feature_object.set_feature_declaration_name (l_feature_name_visitor.feature_name)
 
 
-					if is_separate then
+					if l_does_feature_lock_arguments then
 
 						-- assertion visitor
 						is_processing_assertions := True
@@ -372,7 +376,7 @@ feature {NONE} -- Feature redeclaration handling
 			safe_process (l_as.internal_locals)
 
 			--	if not is_in_agent then
-			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				if not is_in_agent then
 					feature_locals_agent_counter :=0
 				end
@@ -388,7 +392,7 @@ feature {NONE} -- Feature redeclaration handling
 					context.add_string ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+": "+typ.class_name.name)
 					if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type then
 						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-						l_generics_visitor.process_internal_generics (typ.generics, True, True)
+						l_generics_visitor.process_internal_generics (typ.generics, false, True)
 					end
 				end
 			end
@@ -400,10 +404,10 @@ feature {NONE} -- Feature redeclaration handling
 					context.add_string ("%N%T%T%Tif "+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+" /= Void then")
 					context.add_string ("%N%T%T%T%TResult := "+{SCOOP_SYSTEM_CONSTANTS}.nonseparate_result+"."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
 					context.add_string ("%N%T%T%Telse")
-					context.add_string ("%N%T%T%T%TResult := create {"+{SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_prefix.as_upper+typ.class_name.name.as_upper)
+					context.add_string ("%N%T%T%T%TResult := create {"+{SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name.as_upper)
 					if typ.generics /= Void then
 						l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-						l_generics_visitor.process_internal_generics (typ.generics, True, True)
+						l_generics_visitor.process_internal_generics (typ.generics, false, True)
 					--	last_index := l_generics_visitor.get_last_index
 					end
 	           		context.add_string ("}.set_processor_ (Current.processor_)%N%T%T%T%TResult.set_implementation_(Void)%N")
@@ -418,7 +422,7 @@ feature {NONE} -- Feature redeclaration handling
 			safe_process (l_as.rescue_clause)
 			safe_process (l_as.end_keyword)
 
-			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				if feature_object.need_local_section then
 					ctxt.insert_after_cursor ("%N%T%Tlocal", feature_object.locals_index)
 					feature_object.set_need_local_section( False )
@@ -469,7 +473,7 @@ feature {NONE} -- Feature redeclaration handling
 					if not typ.is_separate then
 						-- non Separate: Check if substitution is needed.
 						if l_assign_finder.have_to_replace_return_type(feature_name, class_c, false) then
-							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name)
 							result_substitution := True
 	--						seperate_result_signature := typ
 						else
@@ -478,7 +482,7 @@ feature {NONE} -- Feature redeclaration handling
 						end
 					else
 						-- Separate: No substitution needed, print normaly
-						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_proxy_class_prefix+typ.class_name.name)
+						context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name)
 					end
 				else
 					safe_process (l_as.type)
@@ -490,7 +494,7 @@ feature {NONE} -- Feature redeclaration handling
 						if not generics_to_substitute.is_empty then
 							l_generics_visitor.set_generics_to_substitute (generics_to_substitute)
 						end
-						l_generics_visitor.process_internal_generics (gen_typ.generics, True, True)
+						l_generics_visitor.process_internal_generics (gen_typ.generics, false, True)
 
 
 					--	last_index := l_generics_visitor.get_last_index
@@ -689,7 +693,10 @@ feature {NONE} -- Feature redeclaration handling
 			-- add additional argument 'Current'
 			if (previous_level_exists and then previous_level.is_separate) or add_prefix_current_cc then
 				add_prefix_current_cc := False
-				context.add_string ("Current, ")
+				context.add_string ("Current")
+				if l_as.parameters /= void and then not l_as.parameters.is_empty then
+					context.add_string (", ")
+				end
 			end
 
 			-- Get the class where the called feature is in
@@ -745,7 +752,7 @@ feature {NONE} -- Feature redeclaration handling
 			if not is_in_agent then
 				inlining := compute_inlining(l_as.call.first_token (match_list).index-1)
 			end
-			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				feature_object.set_last_instr_call_index(ctxt.cursor_to_current_position)
 			end
 			precursor(l_as)
@@ -761,7 +768,7 @@ feature {NONE} -- Feature redeclaration handling
 			if not is_in_agent then
 				inlining := compute_inlining(l_as.target.first_token (match_list).index-1)
 			end
-			if {ctxt: ROUNDTRIP_STRING_LIST_CONTEXT} context then
+			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				-- needed to insert agent objects
 				feature_object.set_last_instr_call_index(ctxt.cursor_to_current_position)
 			end
@@ -884,11 +891,11 @@ feature -- Agent handling
 	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
 		local
 			i: INTEGER
-			l_agent: STRING
-			l_agent_sig, l_agent_ass: STRING
-			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
-			l_feature_last_instr_call_index,l_feature_locals_index: LINKED_LIST_CURSOR[STRING]
-			top_level: BOOLEAN
+--			l_agent: STRING
+--			l_agent_sig, l_agent_ass: STRING
+--			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
+--			l_feature_last_instr_call_index,l_feature_locals_index: LINKED_LIST_CURSOR[STRING]
+--			top_level: BOOLEAN
 		do
 			Precursor (l_as)
 			-- The following to be re-enabled after agents within the context of
@@ -959,7 +966,7 @@ feature -- Agent handling
 --			end
 
 
-			if {l_routine: ROUTINE_AS} l_as.body.content and then l_routine.locals /= Void then
+			if attached {ROUTINE_AS} l_as.body.content as l_routine and then l_routine.locals /= Void then
 				-- has locals
 				from
 					i := 1
@@ -1052,17 +1059,17 @@ feature -- Agent handling
 	process_agent_routine_creation_as (l_as: AGENT_ROUTINE_CREATION_AS)
 			-- Process `l_as'.
 		local
-			feature_i: FEATURE_I
-			l_agent: STRING
-			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
-			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
-			l_target_type: TYPE_A
-			is_target_separate: BOOLEAN
-			l_agent_sig, l_agent_ass: STRING
-			agent_feature: FEATURE_AS
-			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
-			l_feature_last_instr_call_index,l_feature_locals_index: LINKED_LIST_CURSOR[STRING]
-			top_level: BOOLEAN
+--			feature_i: FEATURE_I
+--			l_agent: STRING
+--			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+--			l_processor_visitor: SCOOP_EXPLICIT_PROCESSOR_SPECIFICATION_VISITOR
+--			l_target_type: TYPE_A
+--			is_target_separate: BOOLEAN
+--			l_agent_sig, l_agent_ass: STRING
+--			agent_feature: FEATURE_AS
+--			l_context: ROUNDTRIP_STRING_LIST_CONTEXT
+--			l_feature_last_instr_call_index,l_feature_locals_index: LINKED_LIST_CURSOR[STRING]
+--			top_level: BOOLEAN
 		do
 			Precursor (l_as)
 

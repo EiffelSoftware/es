@@ -53,13 +53,6 @@ feature -- Support visitors
 			Result.setup (class_as, match_list, True, True)
 		end
 
-	new_type_visitor: SCOOP_TYPE_VISITOR
-			-- Create a `SCOOP_TYPE_VISITOR' object.
-		do
-			create Result
-			Result.setup (class_as, match_list, True, True)
-		end
-
 feature -- Client class generation
 
 	new_client_printer: SCOOP_SEPARATE_CLIENT_PRINTER is

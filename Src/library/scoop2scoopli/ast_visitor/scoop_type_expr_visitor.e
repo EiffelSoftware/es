@@ -264,69 +264,90 @@ feature -- Expression and call evaluation access
 feature -- Type resolution access
 	resolve_type_in_workbench (a_type: TYPE_AS)
 			-- Resolve 'a_type' in the context given by the class and the feature from the workbench.
-			-- Indicate the result in 'resolved_type'.
+			-- Indicate the result in 'resolved_type' and 'is_resolved_type_based_on_formal'.
 		require
 			a_type_is_valid: a_type /= Void
 			workbench_is_valid: class_c /= Void
+		local
+			l_resolved_type: like resolved_type_in_context_feature_and_expression_type
 		do
 			if feature_as /= Void then
 				context_feature := class_c.feature_table.item (feature_as.feature_name.name)
 				expression_type := implicit_generic_derivation(class_c)
-				resolved_type := resolved_type_in_context_feature_and_expression_type (a_type)
+				l_resolved_type := resolved_type_in_context_feature_and_expression_type (a_type)
+				resolved_type := l_resolved_type.resolved_type
+				is_resolved_type_based_on_formal_generic_parameter := l_resolved_type.is_resolved_type_based_on_formal_generic_parameter
 			else
 				context_feature := Void
 				expression_type := implicit_generic_derivation(class_c)
-				resolved_type := resolved_type_in_expression_type (a_type)
+				l_resolved_type := resolved_type_in_expression_type (a_type)
+				resolved_type := l_resolved_type.resolved_type
+				is_resolved_type_based_on_formal_generic_parameter := l_resolved_type.is_resolved_type_based_on_formal_generic_parameter
 			end
 		ensure
-			result_is_valid: resolved_type /= Void
+			result_is_valid: resolved_type /= Void and (is_resolved_type_based_on_formal_generic_parameter or not is_resolved_type_based_on_formal_generic_parameter)
 		end
 
 	resolve_type_in_class_and_feature (a_type: TYPE_AS; a_context_class: CLASS_C; a_context_feature: FEATURE_I)
 			-- Resolve 'a_type' in the context given by 'a_context_class' and 'a_context_feature'.
-			-- Indicate the result in 'resolved_type'.
+			-- Indicate the result in 'resolved_type' and 'is_resolved_type_based_on_formal'.
 		require
 			a_type_is_valid: a_type /= Void
 			a_context_class_is_valid: a_context_class /= Void
 			a_context_feature_is_valid: a_context_feature /= Void
+		local
+			l_resolved_type: like resolved_type_in_context_feature_and_expression_type
 		do
 			context_feature := a_context_feature
 			expression_type := implicit_generic_derivation(a_context_class)
-			resolved_type := resolved_type_in_context_feature_and_expression_type (a_type)
+			l_resolved_type := resolved_type_in_context_feature_and_expression_type (a_type)
+			resolved_type := l_resolved_type.resolved_type
+			is_resolved_type_based_on_formal_generic_parameter := l_resolved_type.is_resolved_type_based_on_formal_generic_parameter
 		ensure
-			result_is_valid: resolved_type /= Void
+			result_is_valid: resolved_type /= Void and (is_resolved_type_based_on_formal_generic_parameter or not is_resolved_type_based_on_formal_generic_parameter)
 		end
 
 	resolve_type_in_class (a_type: TYPE_AS; a_context_class: CLASS_C)
 			-- Resolve 'a_type' in the context given by 'a_context_class'.
-			-- Indicate the result in 'resolved_type'.
+			-- Indicate the result in 'resolved_type' and 'is_resolved_type_based_on_formal'.
 		require
 			a_type_is_valid: a_type /= Void
 			a_context_class_is_valid: a_context_class /= Void
+		local
+			l_resolved_type: like resolved_type_in_context_feature_and_expression_type
 		do
 			context_feature := Void
 			expression_type := implicit_generic_derivation(a_context_class)
-			resolved_type := resolved_type_in_expression_type (a_type)
+			l_resolved_type := resolved_type_in_expression_type (a_type)
+			resolved_type := l_resolved_type.resolved_type
+			is_resolved_type_based_on_formal_generic_parameter := l_resolved_type.is_resolved_type_based_on_formal_generic_parameter
 		ensure
-			result_is_valid: resolved_type /= Void
+			result_is_valid: resolved_type /= Void and (is_resolved_type_based_on_formal_generic_parameter or not is_resolved_type_based_on_formal_generic_parameter)
 		end
 
 	resolve_type_in_type (a_type: TYPE_AS; a_context_type: TYPE_A)
 			-- Resolve 'a_type' in the context given by 'a_context_type'.
-			-- Indicate the result in 'resolved_type'.
+			-- Indicate the result in 'resolved_type' and 'is_resolved_type_based_on_formal'.
 		require
 			a_type_is_valid: a_type /= Void
 			a_context_type_is_valid: a_context_type /= Void
+		local
+			l_resolved_type: like resolved_type_in_context_feature_and_expression_type
 		do
 			context_feature := Void
 			expression_type := a_context_type
-			resolved_type := resolved_type_in_expression_type (a_type)
+			l_resolved_type := resolved_type_in_expression_type (a_type)
+			resolved_type := l_resolved_type.resolved_type
+			is_resolved_type_based_on_formal_generic_parameter := l_resolved_type.is_resolved_type_based_on_formal_generic_parameter
 		ensure
-			result_is_valid: resolved_type /= Void
+			result_is_valid: resolved_type /= Void and (is_resolved_type_based_on_formal_generic_parameter or not is_resolved_type_based_on_formal_generic_parameter)
 		end
 
 	resolved_type: TYPE_A
 		-- The resolved type.
+
+	is_resolved_type_based_on_formal_generic_parameter: BOOLEAN
+		-- Is the resolved type based on a formal generic parameter?
 
 feature {NONE} -- Expression and call evaluation implementation
 	evaluate_expression_type (a_expression: EXPR_AS)
@@ -463,7 +484,7 @@ feature {NONE} -- Expression and call evaluation implementation
 			end
 
 			-- Try to resolve the call as a tuple field.
-			if l_found_type = Void and {l_expression_type_as_named_tuple: NAMED_TUPLE_TYPE_A} expression_type then
+			if l_found_type = Void and attached {NAMED_TUPLE_TYPE_A} expression_type as l_expression_type_as_named_tuple then
 				from
 					i := 1
 				until
@@ -516,7 +537,7 @@ feature {NONE} -- Expression and call evaluation implementation
 							j > l_formal_arguments_group.id_list.count or Result /= Void
 						loop
 							if l_formal_arguments_group.item_name (j).is_equal (a_name) then
-								Result := resolved_type_in_context_feature_and_expression_type (l_formal_arguments_group.type)
+								Result := resolved_type_in_context_feature_and_expression_type (l_formal_arguments_group.type).resolved_type
 							end
 							j := j + 1
 						end
@@ -524,7 +545,7 @@ feature {NONE} -- Expression and call evaluation implementation
 					end
 				end
 
-				if Result = Void and {l_routine: ROUTINE_AS} context_feature.body.body.content and then l_routine.locals /= Void then
+				if Result = Void and attached {ROUTINE_AS} context_feature.body.body.content as l_routine and then l_routine.locals /= Void then
 					from
 						l_locals := l_routine.locals;
 						i := 1
@@ -538,7 +559,7 @@ feature {NONE} -- Expression and call evaluation implementation
 							j > l_locals_group.id_list.count or Result /= Void
 						loop
 							if l_locals_group.item_name (j).is_equal (a_name) then
-								Result := resolved_type_in_context_feature_and_expression_type (l_locals_group.type)
+								Result := resolved_type_in_context_feature_and_expression_type (l_locals_group.type).resolved_type
 							end
 							j := j + 1
 						end
@@ -550,7 +571,7 @@ feature {NONE} -- Expression and call evaluation implementation
 			-- Try to resolve the call on a target in the object test context. Note that the object test context update does not matter for unqualified calls. The object test context update only matters for qualified calls.
 			if Result = Void and object_test_context.has (a_name) then
 				if object_test_context.item (a_name).type /= Void then
-					Result := resolved_type_in_context_feature_and_expression_type (object_test_context.item (a_name).type)
+					Result := resolved_type_in_context_feature_and_expression_type (object_test_context.item (a_name).type).resolved_type
 				else
 					l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 					l_type_expr_visitor.evaluate_expression_type_in_workbench (object_test_context.item (a_name).expression, object_test_context, inline_agent_context)
@@ -560,7 +581,7 @@ feature {NONE} -- Expression and call evaluation implementation
 
 			-- Try to resolve the call on a target in the inline agent context.
 			if Result = Void and inline_agent_context.has (a_name) then
-				Result := resolved_type_in_context_feature_and_expression_type (inline_agent_context.item (a_name))
+				Result := resolved_type_in_context_feature_and_expression_type (inline_agent_context.item (a_name)).resolved_type
 			end
 
 			-- Try to resolve the call on a target of type 'expression_type'.
@@ -574,36 +595,130 @@ feature {NONE} -- Expression and call evaluation implementation
 		end
 
 feature {NONE} -- Type resolution implementation
-	resolved_type_in_context_feature_and_expression_type (a_type: TYPE_AS): TYPE_A
+	resolved_type_in_context_feature_and_expression_type (a_type: TYPE_AS): TUPLE[resolved_type: TYPE_A; is_resolved_type_based_on_formal_generic_parameter: BOOLEAN]
 			-- The resolved version of 'a_type' in the context given by 'expression_type' and 'context_feature'.
 		require
 			a_type_is_valid: a_type /= Void
 			expression_type_is_valid: expression_type /= Void
 			context_feature_is_valid: context_feature /= Void
+		local
+			l_resolved_type: TYPE_A
 		do
 			type_a_checker.init_for_checking (context_feature, expression_type.associated_class, Void, Void)
-			Result := type_a_checker.solved (
+			l_resolved_type := type_a_checker.solved (
 				type_a_generator.evaluate_type (a_type, expression_type.associated_class),
 				a_type
-			).instantiated_in(expression_type).deep_actual_type
+			).deep_actual_type.instantiated_in (expression_type).deep_actual_type
+
+			Result := [
+				l_resolved_type,
+				is_type_based_on_formal_generic_parameter (a_type)
+			]
 		ensure
 			result_is_valid: Result /= Void
 		end
 
-	resolved_type_in_expression_type (a_type: TYPE_AS): TYPE_A
+	resolved_type_in_expression_type (a_type: TYPE_AS): like resolved_type_in_context_feature_and_expression_type
 			-- The resolved version of 'a_type' in the context given by 'expression_type'.
 		require
 			a_type_is_valid: a_type /= Void
 			expression_type_is_valid: expression_type /= Void
+		local
+			l_resolved_type: TYPE_A
 		do
 			-- As a context feature we use the default create feauture from 'ANY' because it is empty.
 			type_a_checker.init_for_checking (system.any_class.compiled_class.default_create_feature, expression_type.associated_class, Void, Void)
-			Result := type_a_checker.solved (
+			l_resolved_type := type_a_checker.solved (
 				type_a_generator.evaluate_type (a_type, expression_type.associated_class),
 				a_type
-			).instantiated_in(expression_type).deep_actual_type
+			).deep_actual_type.instantiated_in(expression_type).deep_actual_type
+
+			Result := [
+				l_resolved_type,
+				is_type_based_on_formal_generic_parameter (a_type)
+			]
 		ensure
 			result_is_valid: Result /= Void
+		end
+
+	is_type_based_on_formal_generic_parameter (a_type: TYPE_AS): BOOLEAN
+			-- Is 'a_type' based on a formal generic parameter?
+		local
+			l_current_type: TYPE_AS
+			l_current_class: CLASS_C
+			l_current_feature: FEATURE_I
+			l_result_found: BOOLEAN
+			l_formal_arguments_group: TYPE_DEC_AS
+			l_formal_arguments: EIFFEL_LIST [TYPE_DEC_AS]
+			i, j: INTEGER
+		do
+			-- If 'a_type' is anchored then find the deanchored type and check whether it is a formal generic parameter.
+			-- If 'a_type' is not anchored then check whether it is a formal generic parameter.
+			from
+				-- Start with 'a_type' as a current type and the context given by 'expression_type' and 'context_feature'.
+				l_current_type := a_type
+				l_current_class := expression_type.associated_class
+				l_current_feature := context_feature
+				l_result_found := false
+			until
+				l_result_found
+			loop
+				-- Check the nature of the current type.
+				if attached {FORMAL_AS} l_current_type then
+					-- The current type is a formal generic parameter.
+					Result := true
+					l_result_found := true
+				elseif attached {LIKE_ID_AS} l_current_type as l_anchored_type then
+					-- The current type is a anchored type.
+					-- Find the deanchored form of the type. It could be an anchored type again.
+
+					-- Check the feature table of the current class to find the anchor.
+					if l_current_class.feature_table.has (l_anchored_type.anchor.name) then
+						l_current_type := l_current_class.feature_table.item (l_anchored_type.anchor.name).body.body.type
+						l_current_class := l_current_class.feature_table.item (l_anchored_type.anchor.name).written_class
+						l_current_feature := void
+					elseif l_current_class.feature_table.is_mangled_alias_name (l_anchored_type.anchor.name) then
+						l_current_type := l_current_class.feature_table.alias_item (l_anchored_type.anchor.name).body.body.type
+						l_current_class := l_current_class.feature_table.alias_item (l_anchored_type.anchor.name).written_class
+						l_current_feature := void
+					-- Check the current feature, if it exists, to find the anchor.
+					elseif l_current_feature /= void then
+						-- Note: The local type can not be anchored on another local type and the formal argument type can not be anchored on a local type.
+						from
+							l_formal_arguments := l_current_feature.body.body.arguments
+							i := 1
+						until
+							i > l_formal_arguments.count
+						loop
+							l_formal_arguments_group := l_formal_arguments.i_th (i)
+							from
+								j := 1
+							until
+								j > l_formal_arguments_group.id_list.count
+							loop
+								if l_formal_arguments_group.item_name (j).is_equal (l_anchored_type.anchor.name) then
+									l_current_type := l_formal_arguments_group.type
+									l_current_class := l_current_class
+									l_current_feature := l_current_feature
+								end
+								j := j + 1
+							end
+							i := i + 1
+						end
+					else
+						-- This case shouldn't occur.
+						check false end
+					end
+				elseif attached {LIKE_CUR_AS} l_current_type then
+					-- The current type is anchored to the current object.
+					Result := false
+					l_result_found := true
+				else
+					-- The current type is not anchored and not a formal generic parameter.
+					Result := false
+					l_result_found := true
+				end
+			end
 		end
 
 feature {NONE} -- Expression evaluation visits
@@ -736,9 +851,9 @@ feature {NONE} -- Expression evaluation visits
 
 			-- Resolve the type.
 			if context_feature /= Void then
-				Result := resolved_type_in_context_feature_and_expression_type (l_agent_type)
+				Result := resolved_type_in_context_feature_and_expression_type (l_agent_type).resolved_type
 			else
-				Result := resolved_type_in_expression_type (l_agent_type)
+				Result := resolved_type_in_expression_type (l_agent_type).resolved_type
 			end
 		end
 
@@ -754,9 +869,9 @@ feature {NONE} -- Expression evaluation visits
 			l_found_type: TYPE_A
 		do
 			if context_feature /= Void then
-				l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.type)
+				l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.type).resolved_type
 			else
-				l_found_type := resolved_type_in_expression_type (l_as.type)
+				l_found_type := resolved_type_in_expression_type (l_as.type).resolved_type
 			end
 			update_interface (l_found_type)
 		end
@@ -767,9 +882,9 @@ feature {NONE} -- Expression evaluation visits
 			l_found_type: TYPE_A
 		do
 			if context_feature /= Void then
-				l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.type)
+				l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.type).resolved_type
 			else
-				l_found_type := resolved_type_in_expression_type (l_as.type)
+				l_found_type := resolved_type_in_expression_type (l_as.type).resolved_type
 			end
 			update_interface (l_found_type)
 		end
@@ -891,9 +1006,9 @@ feature {NONE} -- Expression evaluation visits
 		do
 			if l_as.constant_type /= Void then
 				if context_feature /= Void then
-					l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.constant_type)
+					l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.constant_type).resolved_type
 				else
-					l_found_type := resolved_type_in_expression_type (l_as.constant_type)
+					l_found_type := resolved_type_in_expression_type (l_as.constant_type).resolved_type
 				end
 			else
 				l_found_type := create {CL_TYPE_A}.make (system.real_64_class.compiled_representation.class_id)
@@ -908,9 +1023,9 @@ feature {NONE} -- Expression evaluation visits
 		do
 			if l_as.has_constant_type then
 				if context_feature /= Void then
-					l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.constant_type)
+					l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.constant_type).resolved_type
 				else
-					l_found_type := resolved_type_in_expression_type (l_as.constant_type)
+					l_found_type := resolved_type_in_expression_type (l_as.constant_type).resolved_type
 				end
 			else
 				l_found_type := create {CL_TYPE_A}.make (system.integer_64_class.compiled_representation.class_id)
@@ -931,9 +1046,9 @@ feature {NONE} -- Expression evaluation visits
 		do
 			if l_as.type /= Void then
 				if context_feature /= Void then
-					l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.type)
+					l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.type).resolved_type
 				else
-					l_found_type := resolved_type_in_expression_type (l_as.type)
+					l_found_type := resolved_type_in_expression_type (l_as.type).resolved_type
 				end
 			else
 				l_found_type := create {CL_TYPE_A}.make (system.character_32_class.compiled_representation.class_id)
@@ -1026,9 +1141,9 @@ feature {NONE} -- Call evaluation visits
 			l_found_type: TYPE_A
 		do
 			if context_feature /= Void then
-				l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.class_type)
+				l_found_type := resolved_type_in_context_feature_and_expression_type (l_as.class_type).resolved_type
 			else
-				l_found_type := resolved_type_in_expression_type (l_as.class_type)
+				l_found_type := resolved_type_in_expression_type (l_as.class_type).resolved_type
 			end
 			update_interface (l_found_type)
 			safe_process(create {ACCESS_FEAT_AS}.initialize (l_as.feature_name, l_as.internal_parameters))

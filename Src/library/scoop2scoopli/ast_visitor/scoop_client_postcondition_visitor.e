@@ -31,7 +31,7 @@ feature -- Access
 		do
 			Precursor (a_postcondition, a_formal_arguments)
 			create postconditions.make
-			if {l_ensure_as: ENSURE_AS} a_postcondition then
+			if attached {ENSURE_AS} a_postcondition as l_ensure_as then
 				last_index := l_ensure_as.ensure_keyword_index
 			end
 			safe_process (a_postcondition)
@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 			-- Check whether the call is an access to a separate formal argument.
 			if
 				not previous_level_exists and then
-				{l_access_as: ACCESS_AS} l_as and then
+				attached {ACCESS_AS} l_as as l_access_as and then
 				formal_arguments.is_separate_argument (l_access_as.access_name)
 			then
 				-- The call is an access to a separate formal argument.

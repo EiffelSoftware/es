@@ -171,9 +171,6 @@ feature -- Access Redeclaration substituion
 				l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 				l_original_feature_alias_name,l_original_feature_name: STRING
 				l_class_as: CLASS_AS
-				l_feature_i: FEATURE_I
-				pos: INTEGER
-
 			do
 				-- Setup:
 				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor

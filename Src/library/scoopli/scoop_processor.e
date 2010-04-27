@@ -379,25 +379,6 @@ feature {SCOOP_SCHEDULER, SCOOP_SEPARATE_PROXY} -- Basic operations
 			-- this postcondition may not hold due to multithreading
 		end
 
-feature -- Lock passing
-
-	lock_passing_counter: INTEGER_32
-		-- Number of lock passing operations current processor is involved in.
-
-	increment_lock_passing_counter
-			-- Increment `lock_passing_counter'.
-		do
-			lock_passing_counter := lock_passing_counter + 1
-		end
-
-	decrement_lock_passing_counter
-			-- Decrement `lock_passing_counter'.
-		require
-			lock_passing_counter >= 0
-		do
-			lock_passing_counter := lock_passing_counter - 1
-		end
-
 feature {NONE} -- Implementation
 
 	scheduler: SCOOP_SCHEDULER

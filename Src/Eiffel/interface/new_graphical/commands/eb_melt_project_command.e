@@ -232,7 +232,7 @@ feature -- Added for SCOOP
 						do
 							Result :=
 								a_class_c /= Void and then
-								a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+								a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 						end
 				)
 			then
@@ -243,7 +243,7 @@ feature -- Added for SCOOP
 					agent (a_class_type: CLASS_TYPE)
 						do
 							if
-								a_class_type /= Void and then a_class_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+								a_class_type /= Void and then a_class_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 							then
 								system.remove_class_type (a_class_type)
 							end
@@ -258,14 +258,14 @@ feature -- Added for SCOOP
 						do
 							-- Remove artifacts from system.
 							if
-								a_class_c /= Void and then a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+								a_class_c /= Void and then a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 							then
 								-- We have an artifact to remove.
 								create l_file.make (a_class_c.lace_class.file_name)
 								if
 									l_file.exists and then
 									l_file.is_writable and then
-									a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+									a_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 								then
 									l_file.delete
 								end
@@ -286,7 +286,7 @@ feature -- Added for SCOOP
 									agent (a_supplier_class_c: CLASS_C; a_client_class_c: CLASS_C)
 										do
 											if
-												a_client_class_c /= Void and then a_client_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+												a_client_class_c /= Void and then a_client_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 											then
 												a_supplier_class_c.clients.start
 												a_supplier_class_c.clients.search (a_client_class_c)
@@ -300,7 +300,7 @@ feature -- Added for SCOOP
 									agent (a_supplier_class_c: CLASS_C; a_client_class_c: CLASS_C)
 										do
 											if
-												a_client_class_c /= Void and then a_client_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+												a_client_class_c /= Void and then a_client_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 											then
 												a_supplier_class_c.syntactical_clients.start
 												a_supplier_class_c.syntactical_clients.search (a_client_class_c)
@@ -314,7 +314,7 @@ feature -- Added for SCOOP
 									agent (a_parent_class_c: CLASS_C; a_descendant_class_c: CLASS_C)
 										do
 											if
-												a_descendant_class_c /= Void and then a_descendant_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+												a_descendant_class_c /= Void and then a_descendant_class_c.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 											then
 												a_parent_class_c.direct_descendants.start
 												a_parent_class_c.direct_descendants.search (a_descendant_class_c)

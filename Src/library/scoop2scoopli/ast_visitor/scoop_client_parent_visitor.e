@@ -95,11 +95,11 @@ feature -- Access
 								formal_type  := l_parent.generics.i_th (i).name.name
 
 								-- print generics and store them for potention overwrites
-								if {type: CLASS_TYPE_AS} l_as.internal_conforming_parents.item.type.generics.item then
+								if attached {CLASS_TYPE_AS} l_as.internal_conforming_parents.item.type.generics.item as type then
 									l_string.append_string (type.class_name.name)
 --									n_overwrites.force (formal_type, type.class_name.name)
 									n_overwrites.force (type.class_name.name,formal_type)
-								elseif {type: FORMAL_AS} l_as.internal_conforming_parents.item.type.generics.item then
+								elseif attached {FORMAL_AS} l_as.internal_conforming_parents.item.type.generics.item as type then
 									if overwrites.has_key (type.name.name) then
 										l_string.append_string (overwrites.item (type.name.name))
 

@@ -25,12 +25,6 @@ create
 feature {NONE} -- Roundtrip: process nodes
 
 	process_like_id_as (l_as: LIKE_ID_AS) is
-		local
-			iterator: SCOOP_CONTEXT_AST_PRINTER
-			l_feature_i: FEATURE_I
-			l_type_a: TYPE_A
-			l_formal_a: FORMAL_A
-			l_name: STRING
 		do
 --			if class_as.feature_table.has (l_as.anchor.name) then
 --				l_feature_i := class_as.feature_table.item (l_as.anchor.name)

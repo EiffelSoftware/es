@@ -122,7 +122,7 @@ feature -- Synchronization
 					-- Changed for SCOOP: Make sure the synchronized stone of the compiled class points to the original class.
 					if
 						e_class.original_class.config_class.is_overriden and then
-						e_class.original_class.config_class.overriden_by.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+						e_class.original_class.config_class.overriden_by.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 					then
 						Result := create {CLASSI_STONE}.make (e_class.original_class)
 					elseif is_valid then

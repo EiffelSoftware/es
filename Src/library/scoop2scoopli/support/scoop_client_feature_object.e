@@ -115,15 +115,6 @@ feature -- Feature access
 				last_instr_call_index := crs
 			end
 
---	has_local_section: BOOLEAN
---		-- Does the feature contain a local section
-
---	set_has_local_section (has: BOOLEAN) is
---		-- Feature `has' a local keyword
---		do
---			has_local_section := has
---		end
-
 	need_local_section: BOOLEAN
 		-- Do we need to add a local section at the end
 		-- Is needed when we insert local decleration while processing the feature
@@ -142,28 +133,6 @@ feature -- Feature access
 			do
 				local_keyword_index := crs
 			end
-
-
-feature {NONE} -- Implementation
-
---	feature_alias_name_impl: STRING
---			-- Alias name of current feature.
-
---	feature_declaration_name_impl: STRING
---			-- Name of current feature with alias
---			-- or list of infix and noninfix name as string.
-
---	feature_as_impl: FEATURE_AS
---			-- Reference to current feature_as.
-
---	preconditions_impl: SCOOP_CLIENT_PRECONDITIONS
---			-- Actual container of precondition clauses, processed in 'process_routine_as'.
-
---	postconditions_impl: SCOOP_CLIENT_POSTCONDITIONS
---			-- Actual container of postcondition clauses, processed in 'process_routine_as'.
-
---	arguments_impl: SCOOP_CLIENT_ARGUMENT_OBJECT
---			-- Object collects processed arguments of processed feature.
 
 note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

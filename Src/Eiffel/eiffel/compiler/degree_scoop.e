@@ -145,16 +145,16 @@ feature {SYSTEM_I} -- Profiling
 					i > system.class_types.count
 				loop
 					-- Is this a class related to SCOOP?
-					if attached {CLASS_TYPE} system.class_types.item (i) as l_type and then l_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_override_cluster_name) then
+					if attached {CLASS_TYPE} system.class_types.item (i) as l_type and then l_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name) then
 						create l_name.make_from_string (l_type.associated_class.name_in_upper)
 
 						-- Remove scoop prefix
-						if l_type.associated_class.name_in_upper.starts_with ({SCOOP_SYSTEM_CONSTANTS}.Scoop_proxy_class_prefix) then
-							l_name.remove_head ({SCOOP_SYSTEM_CONSTANTS}.Scoop_proxy_class_prefix.count)
+						if l_type.associated_class.name_in_upper.starts_with ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix) then
+							l_name.remove_head ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix.count)
 						end
 
 						-- Do not profile scoop starter class
-						if not l_name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_starter_class_name) then
+						if not l_name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_starter_class_name) then
 							create l_class_info.make
 							l_class_info.set_name (l_name)
 							information.classes.extend (l_class_info, l_type.type_id)
@@ -168,7 +168,7 @@ feature {SYSTEM_I} -- Profiling
 								l_feature := l_type.associated_class.feature_table.item_for_iteration
 
 								-- Process feature only if it is written in SCOOP classes (override cluster)
-								if l_feature.written_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_override_cluster_name) then
+								if l_feature.written_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name) then
 									-- Create feature information
 									create l_feature_info.make
 
@@ -190,7 +190,7 @@ feature {SYSTEM_I} -- Profiling
 										until
 											l_feature.arguments.after
 										loop
-											if l_feature.arguments.item.actual_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.Scoop_override_cluster_name) then
+											if l_feature.arguments.item.actual_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name) then
 												l_feature_info.set_has_separate_arguments
 											end
 											l_feature.arguments.forth
@@ -361,7 +361,7 @@ feature {WORKBENCH_I, SYSTEM_I} -- WORKBENCH_I and SYSTEM_I support
 			-- add project target cluster
 			l_scoop_path.set_subdirectory (workbench.project_location.target)
 			-- add cluster 'cluster'
-			l_scoop_path.set_subdirectory ({SCOOP_SYSTEM_CONSTANTS}.scoop_override_cluster_name)
+			l_scoop_path.set_subdirectory ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
 
 			Result := l_scoop_path.string
 		end
@@ -731,7 +731,7 @@ feature {NONE} -- Implementation
 				-- create proxy visitor to process.
 			l_match_list := match_list_server.item (a_class_c.class_id)
 			l_printer := scoop_visitor_factory.new_client_printer
-			l_printer.process_class
+			l_printer.add_client_class
 
 			debug ("SCOOP")
 				io.error.put_string (l_printer.get_context)
@@ -756,7 +756,7 @@ feature {NONE} -- Implementation
 				-- create proxy visitor to process.
 			l_match_list := match_list_server.item (a_class_c.class_id)
 			l_printer := scoop_visitor_factory.new_proxy_printer
-			l_printer.process
+			l_printer.add_proxy_class
 
 			debug ("SCOOP")
 				io.error.put_string (l_printer.get_context)

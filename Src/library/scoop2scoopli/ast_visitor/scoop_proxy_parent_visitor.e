@@ -168,7 +168,7 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.class_name)
 
 			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-			l_generics_visitor.process_internal_generics (l_as.internal_generics, True, False)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, false, False)
 
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
