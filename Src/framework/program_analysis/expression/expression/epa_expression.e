@@ -77,8 +77,7 @@ feature -- Access
 			-- Resolved type for `type'.
 			-- Should be the same as type if `type' is also resolved.
 		do
-			Result := type.actual_type.instantiation_in (context_class.actual_type, context_class.class_id)
-			Result := actual_type_from_formal_type (Result, context_class)
+			Result := resolved_type_in_context (type, context_class)
 		end
 
 	ast: EXPR_AS

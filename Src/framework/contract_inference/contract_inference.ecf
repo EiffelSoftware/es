@@ -49,7 +49,6 @@
 			<file_rule>
 				<exclude>/.svn$</exclude>
 			</file_rule>
-			<cluster name="command" location="$EIFFEL_SRC\framework\contract_inference\command\"/>
 		</cluster>
 	</target>
 </system>

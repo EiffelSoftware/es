@@ -84,6 +84,13 @@ feature -- Access
 			Result := type_a_from_string (a_name, workbench.system.root_type.associated_class)
 		end
 
+	resolved_type_in_context (a_type: TYPE_A; a_context_class: ClASS_C): TYPE_A
+			-- Resolved type of `a_type' in context `a_context_class'
+		do
+			Result := a_type.actual_type.instantiation_in (a_context_class.actual_type, a_context_class.class_id)
+			Result := actual_type_from_formal_type (Result, a_context_class)
+		end
+
 feature{NONE} -- Implementation
 
 	cleaned_type_name (a_type_name: STRING): STRING

@@ -1,11 +1,11 @@
 note
-	description: "Context for semantic transitions"
+	description: "Context for type checking"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SEM_TRANSITION_CONTEXT
+	EPA_CONTEXT
 
 inherit
 	SHARED_EIFFEL_PARSER
@@ -25,7 +25,8 @@ create
 	make,
 	make_with_variable_names,
 	make_with_class,
-	make_with_class_and_variable_names
+	make_with_class_and_variable_names,
+	make_with_class_and_feature
 
 feature{NONE} -- Initialization
 
@@ -58,7 +59,7 @@ feature{NONE} -- Initialization
 			create feature_context.make_with_locals (feature_, a_variables)
 		end
 
-	make_with_class_and_variable_names (a_class: CLASS_C; a_variables: HASH_TABLE [STRING, STRING])
+	make_with_class_and_variable_names (a_class: like class_; a_variables: HASH_TABLE [STRING, STRING])
 			-- Initialize Current with `a_class' and `a_variables'.
 			-- Key in `a_variables' is variable name, value is type name.
 		local
@@ -83,6 +84,43 @@ feature{NONE} -- Initialization
 			make_with_class (a_class, variables)
 		end
 
+	make_with_class_and_feature (a_class: like class_; a_feature: like feature_)
+			-- Initialize Current with `a_class' and `a_feature'.
+		local
+			l_context: ETR_CLASS_CONTEXT
+			l_operands: like operand_name_types_with_feature
+			l_var_count: INTEGER
+			i: INTEGER
+			l_upper: INTEGER
+			l_tvar: ETR_TYPED_VAR
+		do
+			class_ := a_class
+			feature_ := a_feature
+			create l_context.make (class_)
+			create feature_context.make (feature_, l_context)
+
+			l_operands := operand_name_types_with_feature (a_feature, a_class)
+			l_var_count := l_operands.count
+			if feature_context.has_locals then
+				l_var_count := l_var_count + feature_context.locals.count
+			end
+
+			create variables.make (l_var_count)
+			l_operands.do_all_with_key (agent variables.put)
+			if attached {ARRAY [ETR_TYPED_VAR]} feature_context.locals as l_locals then
+				from
+					i := l_locals.lower
+					l_upper := l_locals.upper
+				until
+					i > l_upper
+				loop
+					l_tvar := l_locals.item (i)
+					variables.put (l_tvar.original_type, l_tvar.name)
+					i := i + 1
+				end
+			end
+		end
+
 feature -- Access
 
 	class_: CLASS_C
@@ -90,7 +128,7 @@ feature -- Access
 
 	feature_: FEATURE_I
 			-- Feature of current context
-			-- This is usually a fake FEATURE_I object
+			-- This is can be a fake FEATURE_I object
 			-- built just for type checking
 
 	feature_context: ETR_FEATURE_CONTEXT
@@ -165,7 +203,7 @@ feature{NONE} -- Implementation
 			Result.set_feature_name_id (l_name_id, l_name_id)
 		end
 
-	transition_feature_name: STRING = "transition__feature"
+	transition_feature_name: STRING = "dummy__feature"
 			-- Name of the fake feature used to type check feature transitions
 
 end

@@ -149,7 +149,7 @@ feature -- Class/feature related
 			Result.force_last (0, ti_current)
 			arguments_of_feature (a_feature).do_all_with_key (agent Result.force_last)
 
-			if not a_feature.type.is_void then
+			if a_feature.has_return_value then
 				Result.force_last (l_operand_count - 1, ti_result)
 			end
 		end
@@ -183,12 +183,14 @@ feature -- Class/feature related
 			i: INTEGER
 		do
 			l_operand_count := 1 + a_feature.argument_count
-			if not a_feature.type.is_void then
+			if a_feature.has_return_value then
 				l_operand_count := l_operand_count + 1
 			end
 			create Result.make (l_operand_count)
 			Result.force_last (a_context_class.actual_type, 0)
-			Result.force_last (a_feature.type, l_operand_count)
+			if a_feature.has_return_value then
+				Result.force_last (a_feature.type, l_operand_count)
+			end
 
 			l_args := a_feature.arguments
 			l_cursor := l_args.cursor
@@ -199,6 +201,43 @@ feature -- Class/feature related
 				l_args.after
 			loop
 				Result.force_last (l_args.item_for_iteration, i)
+				i := i + 1
+				l_args.forth
+			end
+			l_args.go_to (l_cursor)
+		end
+
+	operand_name_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
+			-- Types of operands of `a_feature' in the context of `a_context_class'.
+			-- Result is a table, key is operand name, such as "Current", "Result", and arguments.
+			-- Value is the type of that operand.
+			-- Note: Types in the result is not resolved.
+		local
+			l_operand_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			i: INTEGER
+		do
+			l_operand_count := 1 + a_feature.argument_count
+			if a_feature.has_return_value then
+				l_operand_count := l_operand_count + 1
+			end
+			create Result.make (l_operand_count)
+			Result.set_key_equality_tester (string_equality_tester)
+			Result.force_last (a_context_class.actual_type, ti_current)
+			if a_feature.has_return_value then
+				Result.force_last (a_feature.type, ti_result)
+			end
+
+			l_args := a_feature.arguments
+			l_cursor := l_args.cursor
+			from
+				i := 1
+				l_args.start
+			until
+				l_args.after
+			loop
+				Result.force_last (l_args.item_for_iteration, l_args.item_name (i))
 				i := i + 1
 				l_args.forth
 			end

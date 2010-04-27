@@ -14,7 +14,7 @@ inherit
 
 feature -- Access
 
-	context: SEM_TRANSITION_CONTEXT
+	context: EPA_CONTEXT
 			-- Context in which current transition is type checked
 			-- Because transitions may contain code that does not appear
 			-- in current project, so we need a special context in order to
