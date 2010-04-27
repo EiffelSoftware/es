@@ -12,6 +12,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	EPA_STRING_UTILITY
+
 feature -- Access
 
 	context: EPA_CONTEXT
@@ -240,10 +242,7 @@ feature{NONE} -- Implementation
 			-- Anonymous name for `a_position'-th variable
 			-- Format: {`a_position'}, for example "{0}".
 		do
-			create Result.make (4)
-			Result.append_character ('{')
-			Result.append (a_position.out)
-			Result.append_character ('}')
+			Result := curly_brace_surrounded_integer (a_position)
 		end
 
 	put_variable (a_variable: EPA_EXPRESSION; a_position: INTEGER; a_input: BOOLEAN; a_output: BOOLEAN)

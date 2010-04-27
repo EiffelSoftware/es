@@ -99,6 +99,7 @@ feature{NONE} -- Initialization
 			create l_context.make (class_)
 			create feature_context.make (feature_, l_context)
 
+				-- Setup `variables'.
 			l_operands := operand_name_types_with_feature (a_feature, a_class)
 			l_var_count := l_operands.count
 			if feature_context.has_locals then
