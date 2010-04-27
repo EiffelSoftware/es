@@ -1,25 +1,18 @@
 note
-	description: "Summary description for {AFX_FAILURE_EXPLAINER_I}."
+	description: "Summary description for {AFX_EXCEPTION_POSITION_RESOLVER_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AFX_FAILURE_EXPLAINER_I
+	AFX_EXCEPTION_POSITION_RESOLVER_I
 
-feature -- Operate
+feature -- Operation
 
-	explain (a_trace: STRING)
-			-- Explain a exception trace.
+	resolve (an_exception_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I])
+			-- resolve the detailed information of the exception frames
 		require
-		    trace_not_empty: not a_trace.is_empty
-		deferred
-		end
-
-feature -- Access
-
-	last_exception_explanation: detachable DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
-			-- Suspicious frames which could be faulty.
+		    exception_frames_not_empty: not an_exception_frames.is_empty
 		deferred
 		end
 

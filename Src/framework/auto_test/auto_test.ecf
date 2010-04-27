@@ -41,10 +41,12 @@
 		<library name="gobo_time" location="$ISE_LIBRARY\library\gobo\gobo_time.ecf"/>
 		<library name="gobo_tools" location="$ISE_LIBRARY\library\gobo\gobo_tools.ecf"/>
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>
+        <library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>

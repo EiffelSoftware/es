@@ -66,7 +66,7 @@ feature -- Status report
 			Result := debug_file /= null_output_stream
 		end
 
-	has_error: BOOLEAN
+	has_error: BOOLEAN assign reset_error_status
 			-- Has an error occured?
 
 	is_benchmarking: BOOLEAN
@@ -158,6 +158,12 @@ feature -- Status setting
 		do
 			start_count := a_start_count
 			counter := a_start_count
+		end
+
+	reset_error_status (a_status: BOOLEAN)
+			-- Set `has_error' with `a_status'.
+		do
+			has_error := a_status
 		end
 
 	set_start_time (a_start_time: like start_time)
@@ -635,7 +641,7 @@ invariant
 	system_attached: system /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

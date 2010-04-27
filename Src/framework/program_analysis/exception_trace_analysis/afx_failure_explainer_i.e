@@ -1,16 +1,16 @@
 note
-	description: "Summary description for {AFX_EXCEPTION_TRACE_ANALYSER_I}."
+	description: "Summary description for {AFX_FAILURE_EXPLAINER_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXCEPTION_TRACE_ANALYSER_I
+	AFX_FAILURE_EXPLAINER_I
 
 feature -- Operate
 
-	analyse (a_trace: STRING)
-			-- analyse a trace of the invocation exception
+	explain (a_trace: STRING)
+			-- Explain a exception trace.
 		require
 		    trace_not_empty: not a_trace.is_empty
 		deferred
@@ -18,20 +18,12 @@ feature -- Operate
 
 feature -- Access
 
-	last_relevant_exception_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
-			-- exception frames resulted from the analysis
+	last_exception_explanation: detachable DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
+			-- Suspicious frames which could be faulty.
 		deferred
 		end
 
-feature -- Status report
-
-	is_successful: BOOLEAN
-			-- Is analysis successful?
-		deferred
-		end
-
-
-;note
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

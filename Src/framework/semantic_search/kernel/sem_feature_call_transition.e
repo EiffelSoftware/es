@@ -13,6 +13,8 @@ inherit
 			name
 		end
 
+	EPA_HASH_CALCULATOR
+
 	EPA_UTILITY
 
 create
@@ -124,6 +126,20 @@ feature{NONE} -- Implementation
 		end
 
 feature{NONE} -- Implementation
+
+	key_to_hash: DS_LINEAR [INTEGER_32]
+			-- <Precursor>
+		local
+			l_list: DS_ARRAYED_LIST[INTEGER_32]
+		do
+			create l_list.make (4)
+			l_list.force_last (class_.hash_code)
+			l_list.force_last (feature_.feature_name_id)
+
+			-- FIXME: Make EPA_STATE hashable.
+--			l_list.force_last (precondition.hash_code)
+--			l_list.force_last ((postcondition.hash_code)
+		end
 
 	initialize (a_operands: HASH_TABLE [STRING, INTEGER])
 			-- Initialize Current with `a_variables' and `a_operands'.

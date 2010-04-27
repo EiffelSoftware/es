@@ -70,6 +70,11 @@ feature{NONE} -- Initialization
 			set_written_class (a_written_class)
 			parse_text (a_text)
 			set_type (a_type)
+			if not has_syntax_error then
+				set_text (text_from_ast (ast))
+			else
+				check should_not_happen: False end
+			end
 		end
 
 	make_with_feature (a_class: like class_; a_feature: like feature_; a_expression: like ast; a_written_class: like written_class)
@@ -105,6 +110,15 @@ feature{NONE} -- Initialization
 			set_type (a_type)
 			set_text (text_from_ast (a_expression))
 		end
+
+--	make_with_context (a_text: like text; a_written_class: like written_class; a_context: SEM_TRANSITION_CONTEXT)
+--			-- Initialize the expression.
+--		do
+--			set_class (a_context.class_)
+--			set_feature (a_context.feature_)
+--			set_written_class (a_written_class)
+--			p
+--		end
 
 feature -- Access
 

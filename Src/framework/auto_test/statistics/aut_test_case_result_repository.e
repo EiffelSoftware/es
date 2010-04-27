@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Create new repository.
 		do
-			create class_equality_tester.make
+			create class_equality_tester
 			create result_table.make_default
 			result_table.set_key_equality_tester (class_equality_tester)
 			create witnesses.make_default

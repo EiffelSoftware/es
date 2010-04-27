@@ -24,7 +24,7 @@ feature -- Status report
 			elseif u = Void then
 				Result := False
 			else
-				Result := v.is_equal (u)
+				Result := v ~ u
 			end
 		end
 

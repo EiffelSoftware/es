@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_EXCEPTION_CALL_STACK_FRAME_I
+	EPA_EXCEPTION_CALL_STACK_FRAME_I
 
 feature -- Access
 

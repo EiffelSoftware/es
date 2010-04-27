@@ -16,21 +16,17 @@ inherit
 create
     default_create
 
-feature -- status report
+feature -- Status report
 
 	test (u, v: EPA_STATE): BOOLEAN
 			-- test if `u' and `v' are considered to be equal
 		do
 		    if u = v then
 		        Result := True
-		    elseif u = Void then
-		    	Result := False
-		    elseif v = Void then
+		    elseif u = Void or else v = Void then
 		    	Result := False
 		    elseif u.class_.class_id = v.class_.class_id then
-		        if u.is_chaos and then v.is_chaos then
-		            Result := True
-		        elseif (not u.is_chaos and not v.is_chaos) and then u.hash_code = v.hash_code and then u.count = v.count then
+		        if u.count = v.count then
     		        Result := True
     		        from
     		            u.start
@@ -46,7 +42,7 @@ feature -- status report
 		    end
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
 	equation_equality_tester: EPA_EQUATION_EQUALITY_TESTER
 			-- equality tester for predicates

@@ -240,9 +240,9 @@ feature{NONE} -- Actions
 			i: INTEGER
 			l_trace_lines: STRING
 			l_done: BOOLEAN
-			l_analyzer: AFX_EXCEPTION_TRACE_ANALYSER
-			l_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
-			l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+			l_analyzer: EPA_EXCEPTION_TRACE_ANALYZER
+			l_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
+			l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 			l_ori_class: STRING
 			l_ori_feature: STRING
 			l_context_class: STRING

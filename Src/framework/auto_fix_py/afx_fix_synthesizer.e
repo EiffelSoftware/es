@@ -53,7 +53,7 @@ feature -- Access
 	fixing_target_collector: AFX_FIXING_TARGET_COLLECTOR_I
 			-- collector for collecting fixing targets
 
-	exception_call_stack_frames: DS_ARRAYED_LIST [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	exception_call_stack_frames: DS_ARRAYED_LIST [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- call stack frames when exception was raised
 
 	fix_positions: DS_ARRAYED_LIST [AFX_FIX_POSITION]
@@ -123,7 +123,7 @@ feature -- execution
 	step
 			-- <Precursor>
 		local
-		    l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+		    l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 		    l_fix_positions: DS_ARRAYED_LIST[AFX_FIX_POSITION]
 		    l_position: AFX_FIX_POSITION
 		    l_target_collection: HASH_TABLE [AFX_FIXING_TARGET_I, STRING]
@@ -289,7 +289,7 @@ feature{NONE} -- Implementation
 		    end
 		end
 
-	frame_cursor: detachable DS_LINEAR_CURSOR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	frame_cursor: detachable DS_LINEAR_CURSOR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- internal cursor to iterate `exception_call_stack_frames'
 
 	position_cursor: detachable DS_LINEAR_CURSOR [AFX_FIX_POSITION]

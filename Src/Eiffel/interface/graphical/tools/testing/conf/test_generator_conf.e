@@ -116,6 +116,38 @@ feature -- Access
 			good_result: Result = log_processor_output_cache
 		end
 
+--	is_deserializing: BOOLEAN
+--			-- <Precursor>
+--		do
+--			Result := is_deserializing_cache
+--		ensure then
+--			good_result: Result = is_deserializing_cache
+--		end
+
+	is_recursive: BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_recursive_cache
+		ensure then
+			good_result: Result = is_recursive_cache
+		end
+
+	data_input: detachable STRING
+			-- <Precursor>
+		do
+			Result := data_input_cache
+		ensure then
+			good_result: Result = data_input_cache
+		end
+
+	data_output: detachable STRING
+			-- <Precursor>
+		do
+			Result := data_output_cache
+		ensure then
+			good_result: Result = data_output_cache
+		end
+
 	max_precondition_search_tries: INTEGER
 			-- Max times to search for an object combination satisfying precondition of a feature.
 			-- 0 means search until a satisfying object combination is found.
@@ -297,6 +329,15 @@ feature -- Access: cache
 	log_processor_output_cache: like log_processor_output
 			-- Cache for `log_processor_output'
 
+	data_input_cache: like data_input
+			-- Cache for `data_input'.
+
+	data_output_cache: like data_output
+			-- Cache for `data_output'.
+
+	is_recursive_cache: BOOLEAN
+			-- Cache for `is_recursive'.
+
 	max_precondition_search_tries_cache: like max_precondition_search_tries
 			-- Cache for `max_precondition_search_tries'
 
@@ -338,6 +379,12 @@ feature -- Access: cache
 
 	is_failing_test_case_serialization_enabled_cache: BOOLEAN
 			-- Cache for `is_passing_test_case_serialization_enabled_cache'
+
+	is_passing_test_case_deserialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_deserialization_enabled_cache'
+
+	is_failing_test_case_deserialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_deserialization_enabled_cache'
 
 	is_interpreter_log_enabled_cache: BOOLEAN
 			-- Cache for `is_interpreter_log_enabled'
@@ -396,11 +443,18 @@ feature -- Status report
 		ensure then
 			result_equals_cache: Result = is_debugging_cache
 		end
+
 	is_load_log_enabled: BOOLEAN is
 			-- Should a specified load file be loaded?
 		do
 			Result := log_file_path /= Void
 		end
+
+--	is_processing_serialization: BOOLEAN
+--			-- <Precursor>
+--		do
+--			Result := serialization_filters /= Void and then is_load_log_enabled
+--		end
 
 	is_random_testing_enabled: BOOLEAN
 			-- Is random testing enabled?
@@ -528,6 +582,20 @@ feature -- Test case serialization
 			-- the same abstract states.
 		do
 			Result := is_duplicated_test_case_serialized_cache
+		end
+
+feature -- Test case deserialization
+
+	is_passing_test_case_deserialization_enabled: BOOLEAN is
+			-- <Precursor>
+		do
+			Result := is_passing_test_case_deserialization_enabled_cache
+		end
+
+	is_failing_test_case_deserialization_enabled: BOOLEAN is
+			-- <Precursor>
+		do
+			Result := is_failing_test_case_deserialization_enabled_cache
 		end
 
 feature -- Status setting
@@ -681,6 +749,22 @@ feature -- Status setting
 			end
 		end
 
+--	set_serialization_filters (a_filters: like serialization_filters)
+--			-- <Precursor>
+--		do
+--			if a_filters /= Void then
+--				create serialization_filters_cache.make (a_filters.count)
+--				from a_filters.start
+--				until a_filters.after
+--				loop
+--					serialization_filters_cache.force (a_filters.item_for_iteration.twin)
+--					a_filters.forth
+--				end
+--			else
+--				serialization_filters_cache := Void
+--			end
+--		end
+
 	set_max_precondition_search_tries (a_tries: like max_precondition_search_tries) is
 			-- Set `max_precondition_search_tries' with `a_tries'.
 		do
@@ -783,6 +867,48 @@ feature -- Status setting
 			is_failing_test_case_serialization_enabled_cache := b
 		ensure
 			is_failing_test_case_serialization_enabled_set: is_failing_test_case_serialization_enabled = b
+		end
+
+	set_is_passing_test_case_deserialization_enabled (b: BOOLEAN) is
+			-- Set `is_passing_test_case_deserialization_enabled' with `b'.
+		do
+			is_passing_test_case_deserialization_enabled_cache := b
+		ensure
+			is_passing_test_case_deserialization_enabled_set: is_passing_test_case_deserialization_enabled = b
+		end
+
+	set_is_failing_test_case_deserialization_enabled (b: BOOLEAN) is
+			-- Set `is_failing_test_case_deserialization_enabled' with `b'.
+		do
+			is_failing_test_case_deserialization_enabled_cache := b
+		ensure
+			is_failing_test_case_deserialization_enabled_set: is_failing_test_case_deserialization_enabled = b
+		end
+
+	set_recursive (b: BOOLEAN)
+			-- Set `is_recursive_cache' with 'b'.
+		do
+			is_recursive_cache := b
+		ensure
+			is_recursive_set: is_recursive = b
+		end
+
+	set_data_input (a_input: detachable STRING)
+			-- Set `data_input' with 'a_input'.
+		do
+			data_input_cache := a_input.twin
+		ensure
+			data_input_set: a_input = Void implies data_input_cache = Void
+						and then a_input /= Void implies data_input_cache ~ a_input
+		end
+
+	set_data_output (a_output: detachable STRING)
+			-- Set `data_output' with 'a_output'.
+		do
+			data_output_cache := a_output.twin
+		ensure
+			data_output_set: a_output = Void implies data_output_cache = Void
+						and then a_output /= Void implies data_output_cache ~ a_output
 		end
 
 	set_is_interpreter_log_enabled (b: BOOLEAN)

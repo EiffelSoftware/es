@@ -10,44 +10,65 @@ deferred class
 inherit
     HASHABLE
 
-feature -- status report
+feature -- Status report
 
 	hash_code: INTEGER
 			-- <Precursor>
 		local
 		    l_linear: DS_LINEAR[INTEGER]
 		    l_int: INTEGER
+		    l_max_prime: INTEGER
 		do
 		    if internal_hash_code = 0 then
 		        l_int := 0
 		        l_linear := key_to_hash
 
-    				-- The magic number `8388593' below is the greatest prime lower than
-    				-- 2^23 so that this magic number shifted to the left does not exceed 2^31.
     			from
     				l_linear.start
     			until
     				l_linear.after
     			loop
-    				l_int := ((l_int \\ 8388593) |<< 8) + l_linear.item_for_iteration
+    				l_int := ((l_int \\ internal_max_prime) |<< 8) + l_linear.item_for_iteration
     				l_linear.forth
     			end
-		        internal_hash_code := l_int
+
+    				-- Make sure the hash code we compute is not 0
+    			if l_int = 0 then
+    				internal_hash_code := internal_max_prime - 1
+    			else
+    				internal_hash_code := l_int
+    			end
 		    end
 
 		    Result := internal_hash_code.abs
 		end
 
-feature -- operation
+--	is_cached_hash_code_reset: BOOLEAN
+--			-- Is cached hash code reset to 0?
+--		do
+--			Result := internal_hash_code = 0
+--		end
 
-	key_to_hash: DS_LINEAR[INTEGER]
-			-- array of integers to calculate the hash code
-		deferred
-		end
+--feature{NONE} -- Operation
+
+--	reset_cached_hash_code
+--			-- Reset the cached hash code.
+--		do
+--			internal_hash_code := 0
+--		end
 
 feature{NONE} -- implementation
 
+	key_to_hash: DS_LINEAR[INTEGER]
+			-- Array of integers to calculate the hash code.
+		deferred
+		end
+
 	internal_hash_code: INTEGER
-			-- internal hash code
+			-- Internal hash code.
+
+	internal_max_prime: INTEGER = 8388593
+   			-- The magic number `8388593' is the greatest prime lower than
+   			-- 2^23 so that this magic number shifted to the left does not exceed 2^31.
 
 end

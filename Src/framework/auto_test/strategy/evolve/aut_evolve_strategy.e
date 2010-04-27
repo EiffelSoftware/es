@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 			create queue.make (system)
 			create types_under_test.make_default
 			create classes_under_test.make_default
-			classes_under_test.set_equality_tester (create {AUT_CLASS_EQUALITY_TESTER}.make)
+			classes_under_test.set_equality_tester (create {AUT_CLASS_EQUALITY_TESTER})
 			io.put_string ("Evolutionary testing started! %N") --TODO remove this
 		end
 
@@ -278,7 +278,7 @@ invariant
 	interpreter_not_in_replay_mode: not interpreter.is_replaying
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

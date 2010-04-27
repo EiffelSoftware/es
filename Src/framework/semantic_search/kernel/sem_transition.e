@@ -92,10 +92,10 @@ feature -- Access
 			Result := variables.subtraction (inputs).subtraction (outputs)
 		end
 
-	precondition: EPA_STATE
+	precondition: EPA_STATE assign set_precondition
 			-- Precondition of Current transition
 
-	postcondition: EPA_STATE
+	postcondition: EPA_STATE assign set_postcondition
 			-- Postcondition of Current transition
 
 	content: STRING
@@ -200,6 +200,20 @@ feature -- Access
 		deferred
 		ensure
 			result_attached: Result /= Void
+		end
+
+feature -- Status setting
+
+	set_precondition (a_pre: like precondition)
+			-- Set `precondition' with 'a_pre'.
+		do
+			precondition := a_pre
+		end
+
+	set_postcondition (a_post: like postcondition)
+			-- Set `postcondition' with 'a_post'.
+		do
+			postcondition := a_post
 		end
 
 feature -- Status report

@@ -43,7 +43,7 @@ feature -- Access
 		deferred
 		end
 
-	exception_position: detachable AFX_EXCEPTION_CALL_STACK_FRAME_I
+	exception_position: detachable EPA_EXCEPTION_CALL_STACK_FRAME_I
 			-- the position of the exception
 		deferred
 		end

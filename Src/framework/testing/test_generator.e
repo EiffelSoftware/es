@@ -250,6 +250,8 @@ feature {NONE} -- Basic operations
 			l_repo: AUT_TEST_CASE_RESULT_REPOSITORY
 			l_last_class: EIFFEL_CLASS_I
 			l_project_helper: TEST_PROJECT_HELPER_I
+			l_processor_name: STRING
+			l_query_model: AFX_QUERY_MODEL
 		do
 			is_finished := is_stop_requested
 
@@ -358,11 +360,12 @@ feature {NONE} -- Basic operations
 						else
 							if configuration.is_random_testing_enabled then
 								execute_random_tests
-							else
-								if configuration.is_load_log_enabled then
-									load_log (configuration.log_file_path)
-								end
+							elseif configuration.is_load_log_enabled then
+								load_log (configuration.log_file_path)
+							elseif configuration.is_test_case_deserialization_enabled then
+								process_deserialization
 							end
+
 							is_finished := test_task = Void
 						end
 					elseif is_generating_statistics then
@@ -1167,6 +1170,48 @@ feature -- Log processor
 
 	log_processors_internal: like log_processors
 			-- Implementation of `log_processors'
+
+	process_deserialization
+			-- Test case deserialization.
+		local
+			l_processor: AUT_DESERIALIZATION_PROCESSOR
+		do
+			create l_processor.make (system, configuration, session)
+			l_processor.process
+--			
+--			l_processors := configuration.serialization_processors
+--			if l_processors /= Void then
+
+--				-- Create and chain the serialization processors.
+--				from l_processors.finish
+--				until l_processors.before
+--				loop
+--					l_processor_name := l_processors.item_for_iteration
+--					l_processor_name.to_lower
+
+--					l_processors.back
+--				end
+
+--				-- Process serialization.
+--				l_processor.process
+--			end
+		end
+
+--	serialization_processors: HASH_TABLE [AUT_SERIALIZATION_PROCESSOR, STRING]
+--			-- Table of registered serialization processors
+--			-- [Serialization processor, name of the processor]
+--		do
+--			if serialization_processors_internal = Void then
+--				create serialization_processors_internal.make (3)
+--				serialization_processors_internal.compare_objects
+--				serialization_processors_internal.extend (create {AUT_TEST_CASE_EXTRACTOR}.make (system, configuration, session), "test_case")
+--				serialization_processors_internal.extend (create {AUT_TRANSITION_MODEL_EXTRACTOR}.make (system, configuration, session), "model")
+--			end
+--			Result := serialization_processors_internal
+--		end
+
+--	serialization_processors_internal: like serialization_processors
+--			-- Internal storage of serialization processors.
 
 feature -- CITADEL related
 

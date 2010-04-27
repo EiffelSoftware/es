@@ -78,6 +78,22 @@ feature -- Access
 		deferred
 		end
 
+	data_input: detachable STRING
+			-- File or directory where the input data is avaiable.
+			-- Usage of this option could be task-dependant.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	data_output: detachable STRING
+			-- File or directory where the output data should be stored.
+			-- Usage of this option could be task-dependant.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 	is_interpreter_log_enabled: BOOLEAN
 			-- Should messages from the interpreter be logged?
 			-- Default: False
@@ -147,6 +163,14 @@ feature -- Status report
 	is_console_output_enabled: BOOLEAN
 			-- Is console output enabled?
 			-- Default: True
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_recursive: BOOLEAN
+			-- Is each subdirectory of `data_input' processed recursively?
+			-- The option is ignored if `data_input' indicates a file, rather than a directory.
 		require
 			usable: is_interface_usable
 		deferred
@@ -341,11 +365,29 @@ feature -- Test case serialization
 		deferred
 		end
 
+feature -- Test case deserialization
 	is_post_state_serialized: BOOLEAN
 			-- Should post-state information be serialized as well?
 			-- Normally, only pre-state information is necessary, because
 			-- we can re-execute the test case to observe the post-state.
 		deferred
+		end
+
+
+	is_passing_test_case_deserialization_enabled: BOOLEAN is
+			-- Is passing test case deserialization enabled?
+		deferred
+		end
+
+	is_failing_test_case_deserialization_enabled: BOOLEAN is
+			-- Is failing test case deserialization enabled?
+		deferred
+		end
+
+	is_test_case_deserialization_enabled: BOOLEAN
+			-- Is test case deserialization enabled?
+		do
+			Result := is_passing_test_case_deserialization_enabled or is_failing_test_case_deserialization_enabled
 		end
 
 feature -- Types under test

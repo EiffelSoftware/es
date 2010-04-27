@@ -192,6 +192,15 @@ feature -- Execution
 				l_conf.set_is_passing_test_case_serialization_enabled (l_ap.is_passing_test_cases_serialization_enabled)
 				l_conf.set_is_failing_test_case_serialization_enabled (l_ap.is_failing_test_cases_serialization_enabled)
 
+					-- Set test case deserialization arguments.
+				l_conf.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
+				l_conf.set_is_failing_test_case_deserialization_enabled (l_ap.is_failing_test_cases_deserialization_enabled)
+
+				l_conf.set_recursive (l_ap.is_recursive)
+
+				l_conf.set_data_input (l_ap.data_input)
+				l_conf.set_data_output (l_ap.data_output)
+
 				l_conf.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
 				l_conf.set_is_console_output_enabled (l_ap.is_console_log_enabled)
 

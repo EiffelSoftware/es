@@ -113,7 +113,7 @@ feature{NONE} -- Initialization
 		end
 
 	make_from_state (a_state: like Current; a_type: TYPE_A)
-			-- Initialize a new state from `a_state', extracting only those predicates conforming to `a_type'
+			-- Initialize a new state from `a_state', extracting only those predicates conforming to `a_type'.
 		require
 			class_exists: a_state.class_ /= Void
 		local
@@ -355,16 +355,25 @@ feature -- Setting
 
 feature -- Status report
 
-	debug_output: STRING
-			-- String that should be displayed in debugger to represent `Current'.
+	state_report (a_prefix: STRING): STRING
+			-- Generate the string representation of current state.
+			-- With 'a_prefix' preceding each line of the result.
 		do
 			create Result.make (512)
 			do_all (
-				agent (a_equation: EPA_EQUATION; a_string: STRING)
+				agent (a_equation: EPA_EQUATION; a_string: STRING; a_pre: STRING)
 					do
+						a_string.append (a_pre)
 						a_string.append (a_equation.debug_output)
 						a_string.append_character ('%N')
-					end (?, Result))
+					end (?, Result, a_prefix))
+			Result.prune_all_trailing ('%N')
+		end
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := state_report ("")
 		end
 
 feature{NONE} -- Implementation

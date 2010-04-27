@@ -12,12 +12,12 @@ inherit
 
 feature -- Operation
 
-	mark (an_exception: EQA_TEST_INVOCATION_EXCEPTION; a_frame_list: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I])
+	mark (an_exception: EQA_TEST_INVOCATION_EXCEPTION; a_frame_list: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I])
 			-- <Precursor>
 		local
 		    l_exception_frames: like internal_frame_list
 		    l_code: INTEGER
-		    l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+		    l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 		    l_cur_class: attached CLASS_C
 		    i: INTEGER
 		    l_count_relevant_frames: INTEGER
@@ -78,7 +78,7 @@ feature -- Operation
 
 feature -- Access
 
-	last_marking_result: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	last_marking_result: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- the result of last marking process
 		do
 		    if internal_frame_list = Void then
@@ -90,12 +90,12 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	eliminate_rescued_frames (a_frame_list: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I])
+	eliminate_rescued_frames (a_frame_list: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I])
 			-- remove rescued frames from top
 		require
 		    a_frame_list_not_empty: a_frame_list /= Void and then not a_frame_list.is_empty
 		local
-		    l_frames: DS_ARRAYED_LIST [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+		    l_frames: DS_ARRAYED_LIST [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 		    l_count: INTEGER
 		    i: INTEGER
 		    l_rescued: BOOLEAN
@@ -107,7 +107,7 @@ feature{NONE} -- Implementation
 		    from i := l_count
 		    until i = 0 or l_rescued
 		    loop
-    		    if attached {AFX_EXCEPTION_CALL_STACK_FRAME_RESCUE} l_frames.at (i) then
+    		    if attached {EPA_EXCEPTION_CALL_STACK_FRAME_RESCUE} l_frames.at (i) then
     		        l_rescued := True
     		    else
     		        	-- I could have used `force_last' for performance reasons,
@@ -120,7 +120,7 @@ feature{NONE} -- Implementation
 		    internal_frame_list_not_empty: internal_frame_list /= Void and then not internal_frame_list.is_empty
 		end
 
-	internal_frame_list: detachable DS_ARRAYED_LIST [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	internal_frame_list: detachable DS_ARRAYED_LIST [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- internal storage for intermediate result
 
 

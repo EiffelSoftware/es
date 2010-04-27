@@ -5,11 +5,11 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_EXCEPTION_TRACE_ANALYSER
+	EPA_EXCEPTION_TRACE_ANALYZER
 
 inherit
 
-    AFX_EXCEPTION_TRACE_ANALYSER_I
+    EPA_EXCEPTION_TRACE_ANALYZER_I
 
 feature -- Operation
 
@@ -60,7 +60,7 @@ feature -- Operation
 
 feature -- Access
 
-	last_relevant_exception_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	last_relevant_exception_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- <Precursor>
 		do
 		    if internal_exception_frames = Void then
@@ -129,7 +129,7 @@ feature{NONE} -- Implementation
 		    l_bkpt_slot_index: INTEGER
 		    l_words: LIST[STRING]
 		    l_word: STRING
-		    l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+		    l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 		    l_bad_format: BOOLEAN
 		    i: INTEGER
 		do
@@ -165,7 +165,7 @@ feature{NONE} -- Implementation
 
 		    if l_words.at (1).starts_with (rescue_line_prefix) then
 		        	-- rescue frame
-		        create {AFX_EXCEPTION_CALL_STACK_FRAME_RESCUE}l_frame
+		        create {EPA_EXCEPTION_CALL_STACK_FRAME_RESCUE}l_frame
 		    else
 		    	reset_last_parsing_temp
 
@@ -181,7 +181,7 @@ feature{NONE} -- Implementation
                 parse_nature_of_exception
 
 				if is_last_parsing_successful then
-				    create {AFX_EXCEPTION_CALL_STACK_FRAME}l_frame.make (
+				    create {EPA_EXCEPTION_CALL_STACK_FRAME}l_frame.make (
 				    	last_context_class_name, last_origin_class_name, last_feature_name,
 				    	last_tag, last_nature_of_exception, last_breakpoint_slot_index)
 				else
@@ -392,7 +392,7 @@ feature{NONE} -- Implementation
 
 	rescue_line_prefix: STRING = "~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-	internal_exception_frames: detachable DS_ARRAYED_LIST [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	internal_exception_frames: detachable DS_ARRAYED_LIST [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- internal storage for exception frames
 
 	name_validator: EIFFEL_SYNTAX_CHECKER

@@ -57,6 +57,10 @@ feature{NONE} -- Initialization
 			l_object_state_exploration: AP_FLAG
 			l_log_processor_op: AP_STRING_OPTION
 			l_log_processor_output_op: AP_STRING_OPTION
+			l_data_input_op: AP_STRING_OPTION
+			l_data_output_op: AP_STRING_OPTION
+			l_recursive: AP_FLAG
+			l_filters: LIST [STRING]
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
 			l_max_precondition_time_op: AP_INTEGER_OPTION
 			l_prepare_citadel_tests_option: AP_STRING_OPTION
@@ -68,6 +72,7 @@ feature{NONE} -- Initialization
 			l_integer_bound_option: AP_STRING_OPTION
 			l_use_random_cursor_option: AP_STRING_OPTION
 			l_test_case_serialization_option: AP_STRING_OPTION
+			l_test_case_deserialization_option: AP_STRING_OPTION
 			l_interpreter_log_enabled: AP_STRING_OPTION
 			l_on_the_fly_tc_flag: AP_FLAG
 			l_proxy_log_option: AP_STRING_OPTION
@@ -190,6 +195,18 @@ feature{NONE} -- Initialization
 			l_log_processor_output_op.set_description ("Name of the output file from the log processor specified with the " + l_log_processor_op.name + " option.")
 			parser.options.force_last (l_log_processor_output_op)
 
+			create l_data_input_op.make_with_long_form ("data-input")
+			l_data_input_op.set_description ("File or directory where input data is available.")
+			parser.options.force_last (l_data_input_op)
+
+			create l_data_output_op.make_with_long_form ("data-output")
+			l_data_output_op.set_description ("File or directory where output data should be stored.")
+			parser.options.force_last (l_data_output_op)
+
+			create l_recursive.make_with_long_form ("recursive")
+			l_recursive.set_description ("Process subdirectories recursively.")
+			parser.options.force_last (l_recursive)
+
 			create l_max_precondition_tries_op.make_with_long_form ("max-precondition-tries")
 			l_max_precondition_tries_op.set_description ("Maximal tries to search for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
 			parser.options.force_last (l_max_precondition_tries_op)
@@ -233,6 +250,10 @@ feature{NONE} -- Initialization
 			create l_test_case_serialization_option.make_with_long_form ("serialization")
 			l_test_case_serialization_option.set_description ("Enable test case serialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
 			parser.options.force_last (l_test_case_serialization_option)
+
+			create l_test_case_deserialization_option.make_with_long_form ("deserialization")
+			l_test_case_deserialization_option.set_description ("Enable test case deserialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
+			parser.options.force_last (l_test_case_deserialization_option)
 
 			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
 			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Valid options are: on, off. Default: off.")
@@ -417,6 +438,32 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
+				if l_data_input_op.was_found then
+					data_input := l_data_input_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_data_output_op.was_found then
+					data_output := l_data_output_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_recursive.was_found then
+					is_recursive := True
+				end
+			end
+
+--			if not error_handler.has_error then
+--				if l_deserialization.was_found then
+--					is_deserializing := True
+--				else
+--					is_deserializing := False
+--				end
+--			end
+
+			if not error_handler.has_error then
 				if l_max_precondition_tries_op.was_found then
 					max_precondition_search_tries := l_max_precondition_tries_op.parameter
 				end
@@ -529,6 +576,26 @@ feature{NONE} -- Initialization
 							is_passing_test_cases_serialization_enabled := True
 						elseif l_strs.item_for_iteration.is_equal ("failing") then
 							is_failing_test_cases_serialization_enabled := True
+						end
+						l_strs.forth
+					end
+				end
+			end
+
+			if not error_handler.has_error then
+				is_passing_test_cases_deserialization_enabled := False
+				is_failing_test_cases_deserialization_enabled := False
+				if l_test_case_deserialization_option.was_found then
+					l_strs := l_test_case_deserialization_option.parameter.as_lower.split (',')
+					from
+						l_strs.start
+					until
+						l_strs.after
+					loop
+						if l_strs.item_for_iteration.is_equal ("passing") then
+							is_passing_test_cases_deserialization_enabled := True
+						elseif l_strs.item_for_iteration.is_equal ("failing") then
+							is_failing_test_cases_deserialization_enabled := True
 						end
 						l_strs.forth
 					end
@@ -763,6 +830,18 @@ feature -- Status report
 	log_processor_output: detachable STRING
 			-- Name of the output file from log processor
 
+--	is_deserializing: BOOLEAN
+--			-- Is the task to deserialize the testing history into test cases?
+
+	data_input: detachable STRING
+			-- File or directory where the input data is available.
+
+	data_output: detachable STRING
+			-- File or directory where the output data should be stored.
+
+	is_recursive: BOOLEAN
+			-- Is each subdirectory of the input directory processed recursively?
+
 	max_precondition_search_tries: INTEGER
 			-- Max tries in the search to satisfy precondition of a feature
 			-- 0 means that search until a satisfying object comibination is found.
@@ -829,6 +908,12 @@ feature -- Status report
 			-- Is test case serialization for failing test cases enabled?
 			-- Only has effect if `is_test_case_serialization_enabled' is True.
 			-- Default: False
+
+	is_passing_test_cases_deserialization_enabled: BOOLEAN
+			-- Is test case deserialization for passing test cases enabled?
+
+	is_failing_test_cases_deserialization_enabled: BOOLEAN
+			-- Is test case deserialization for failing test cases enabled?
 
 	is_interpreter_log_enabled: BOOLEAN
 			-- Is the messages from the interpreter logged?

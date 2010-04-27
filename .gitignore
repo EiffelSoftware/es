@@ -374,6 +374,7 @@ Src/framework/cli_writer/spec
 Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
 Src/framework/parser/parser/output.txt
+Src/framework/semantic_search/kernel/sem_feature_call_transition_equality_tester.e
 Src/framework/web/xebra/.project
 Src/framework/web/xebra/c_projects/.project
 Src/framework/web/xebra/c_projects/apache_mod_xebra/.libs

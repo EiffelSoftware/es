@@ -15,11 +15,11 @@ feature -- Operate
 	explain (a_trace: STRING)
 			-- <Precursor>
 		local
-		    l_exception_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
-		    l_trace_analyser: AFX_EXCEPTION_TRACE_ANALYSER_I
+		    l_exception_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
+		    l_trace_analyser: EPA_EXCEPTION_TRACE_ANALYZER_I
 		    l_position_resolver: AFX_EXCEPTION_POSITION_RESOLVER_I
 		do
-		    create {AFX_EXCEPTION_TRACE_ANALYSER}l_trace_analyser
+		    create {EPA_EXCEPTION_TRACE_ANALYZER}l_trace_analyser
 		    l_trace_analyser.analyse (a_trace)
 		    l_exception_frames := l_trace_analyser.last_relevant_exception_frames
 		    if l_trace_analyser.is_successful and then not l_exception_frames.is_empty then
@@ -34,7 +34,7 @@ feature -- Operate
 
 feature -- Access
 
-	last_exception_explanation: detachable DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
+	last_exception_explanation: detachable DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			-- <Precursor>
 
 --	dash_line: STRING = "-------------------------------------------------------------------------------"

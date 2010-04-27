@@ -255,9 +255,9 @@ feature{NONE} -- Implementation
 			l_class_name: STRING
 			l_feature_name: STRING
 			l_done: BOOLEAN
-			l_analyzer: AFX_EXCEPTION_TRACE_ANALYSER
-			l_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
-			l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+			l_analyzer: EPA_EXCEPTION_TRACE_ANALYZER
+			l_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
+			l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 		do
 --			fixme ("This is a hack. Use relevant trace analysis classes instead. 12.12.2009 Jasonw")
 			create l_analyzer

@@ -15,10 +15,10 @@ inherit
 
 feature -- Operation
 
-	resolve (an_exception_frames: DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I])
+	resolve (an_exception_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I])
 			-- <Precursor>
 		local
-		    l_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I
+		    l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 		do
 			from an_exception_frames.start
 			until an_exception_frames.after
@@ -33,7 +33,7 @@ feature -- Operation
 
 feature{NONE} -- Implementation
 
-	resolve_frame (a_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I)
+	resolve_frame (a_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I)
 			-- resolve the information of a single frame
 		require
 		    frame_information_complete: a_frame.is_information_complete
@@ -44,7 +44,7 @@ feature{NONE} -- Implementation
 		    end
 		end
 
-	resolve_context_feature (a_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I)
+	resolve_context_feature (a_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I)
 			-- resolve the `origin_feature' of `a_frame'
 		require
 		    frame_information_complete: a_frame.is_information_complete
@@ -79,7 +79,7 @@ feature{NONE} -- Implementation
 		    end
 		end
 
-	resolve_breakpoint_info (a_frame: AFX_EXCEPTION_CALL_STACK_FRAME_I)
+	resolve_breakpoint_info (a_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I)
 			-- resolve the `breakpoint_info' of `a_frame'
 		require
 		    frame_information_complete: a_frame.is_information_complete

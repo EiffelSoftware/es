@@ -24,7 +24,7 @@ feature -- Initialization
 
 feature -- Access
 
-	exception_position: AFX_EXCEPTION_CALL_STACK_FRAME_I
+	exception_position: EPA_EXCEPTION_CALL_STACK_FRAME_I
 			-- corresponding exception position
 
 	fixing_targets: DS_LINEAR [AFX_FIXING_TARGET_I]

@@ -73,7 +73,7 @@ feature -- Access
     context_feature: detachable FEATURE_AS
     		-- <Precursor>
 
-    exception_position: detachable AFX_EXCEPTION_CALL_STACK_FRAME_I
+    exception_position: detachable EPA_EXCEPTION_CALL_STACK_FRAME_I
     		-- <Precursor>
 
 	exception_ast: detachable AST_EIFFEL
