@@ -232,11 +232,11 @@ feature -- Roundtrip
 			l_path: AST_PATH
 		do
 			if attached l_as then
-				l_mod := repl_hash.item (l_path)
 				l_path := l_as.path
 			else
 				create l_path.make_from_parent (a_parent.path, a_branch)
 			end
+			l_mod := repl_hash.item (l_path)
 
 			if attached l_mod then
 				output.append_string (l_mod.replacement_text)

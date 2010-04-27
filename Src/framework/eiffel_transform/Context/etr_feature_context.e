@@ -96,7 +96,7 @@ feature {NONE} -- Creation
 			if attached a_class_context then
 				class_context := a_class_context
 			else
-				create class_context.make(a_written_feature.written_class)
+				create class_context.make (a_written_feature.written_class)
 			end
 
 			-- compute explicit type

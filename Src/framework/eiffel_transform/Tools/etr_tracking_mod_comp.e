@@ -1,51 +1,20 @@
 note
-	description: "Context factory."
+	description: "Comparator for sorting trackable modifications"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ETR_CONTEXT_FACTORY
+	ETR_TRACKING_MOD_COMP
+
 inherit
-	ETR_WORKBENCH_OPERATIONS
+	KL_PART_COMPARATOR[ETR_TRACKABLE_MODIFICATION]
 
-feature -- New
+feature
 
-	new_class_context (a_name: STRING): ETR_CLASS_CONTEXT
-			-- Returns the context in the class with `a_name'
-		require
-			system_defined: system_defined
-			non_void: a_name /= void
-		local
-			l_cls: CLASS_C
+	less_than (u, v: ETR_TRACKABLE_MODIFICATION): BOOLEAN
+			-- <precursor>
 		do
-			l_cls := compiled_class_with_name (a_name)
-
-			if l_cls /= void then
-				create Result.make(l_cls)
-			end
-		end
-
-	new_feature_context (a_classname, a_featurename: STRING): ETR_FEATURE_CONTEXT
-				-- Returns the context in the feature `a_featurename' in the class with `a_classname'
-		require
-			system_defined: system_defined
-			non_void: a_classname /= void and a_featurename /= void
-		local
-			l_feat: FEATURE_I
-			l_cc: ETR_CLASS_CONTEXT
-		do
-			l_feat := feature_of_compiled_class (a_classname, a_featurename)
-			l_cc := new_class_context (a_classname)
-
-			if l_feat /= void and l_cc /= void then
-				Result := l_cc.corresponding_feature (l_feat)
-			end
-		end
-
-	new_empty_context: ETR_CONTEXT
-			-- Returns a new empty context
-		do
-			create Result.make_empty
+			Result := u.region_start < v.region_start
 		end
 
 note

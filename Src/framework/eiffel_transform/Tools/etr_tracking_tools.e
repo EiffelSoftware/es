@@ -104,7 +104,7 @@ feature -- Combine mappings
 			l_cur_count: INTEGER
 			l_prev_old, l_prev_new: INTEGER
 			i: INTEGER
-			l_filtered_mods: LINKED_LIST[ETR_TRACKABLE_MODIFICATION]
+			l_filtered_mods: DS_LINKED_LIST[ETR_TRACKABLE_MODIFICATION]
 		do
 			-- filter modifications with no changes
 			from
@@ -114,16 +114,19 @@ feature -- Combine mappings
 				a_modifications.after
 			loop
 				if a_modifications.item.are_breakpoints_changed then
-					l_filtered_mods.extend (a_modifications.item)
+					l_filtered_mods.put_last (a_modifications.item)
 				end
 
 				a_modifications.forth
 			end
 
+			-- Sort by region start
+			l_filtered_mods.sort (create {DS_QUICK_SORTER[ETR_TRACKABLE_MODIFICATION]}.make(create {ETR_TRACKING_MOD_COMP}))
+
 			if not l_filtered_mods.is_empty then
 				create Result.make (a_count*2)
 				-- create correct mappins for the whole breakpoint range
-				l_current_old_bp:=1
+				l_current_old_bp := 1
 				l_current_new_bp := l_current_old_bp
 				l_current_shift := 0
 
@@ -132,29 +135,29 @@ feature -- Combine mappings
 				until
 					l_filtered_mods.after
 				loop
-					if l_filtered_mods.item.region_start>l_current_old_bp then
+					if l_filtered_mods.item_for_iteration.region_start>l_current_old_bp then
 						-- Map everything before current region
-						l_cur_count :=l_filtered_mods.item.region_start-l_current_new_bp+l_current_shift
+						l_cur_count := l_filtered_mods.item_for_iteration.region_start-l_current_new_bp+l_current_shift
 						map_region_shifted (Result, l_current_new_bp, l_current_old_bp, l_cur_count)
-						l_current_old_bp:=l_filtered_mods.item.region_start
-						l_current_new_bp:=l_current_new_bp+l_cur_count
+						l_current_old_bp := l_filtered_mods.item_for_iteration.region_start
+						l_current_new_bp := l_current_new_bp+l_cur_count
 					end
 
 					-- Refresh mappings of the current region
 					from
 						i:=0
 					until
-						i>=l_filtered_mods.item.new_slot_count
+						i>=l_filtered_mods.item_for_iteration.new_slot_count
 					loop
-						l_prev_new := l_filtered_mods.item.region_start+i
-						l_prev_old := l_filtered_mods.item.breakpoint_mapping[l_prev_new]
+						l_prev_new := l_filtered_mods.item_for_iteration.region_start+i
+						l_prev_old := l_filtered_mods.item_for_iteration.breakpoint_mapping[l_prev_new]
 						Result.force (l_prev_old, l_prev_new+l_current_shift)
 						i:=i+1
 					end
 
-					l_current_shift := l_current_shift+l_filtered_mods.item.new_slot_count-l_filtered_mods.item.old_slot_count
-					l_current_old_bp := l_current_old_bp+l_filtered_mods.item.old_slot_count
-					l_current_new_bp := l_current_new_bp+l_filtered_mods.item.new_slot_count
+					l_current_shift := l_current_shift+l_filtered_mods.item_for_iteration.new_slot_count-l_filtered_mods.item_for_iteration.old_slot_count
+					l_current_old_bp := l_current_old_bp+l_filtered_mods.item_for_iteration.old_slot_count
+					l_current_new_bp := l_current_new_bp+l_filtered_mods.item_for_iteration.new_slot_count
 
 					l_filtered_mods.forth
 				end

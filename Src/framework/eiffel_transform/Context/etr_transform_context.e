@@ -133,11 +133,11 @@ feature -- Transformations
 						end
 
 						if l_changed_type and l_changed_name then
-							create l_changed_var.make_changed_name_type(l_old_feat.feature_name, l_new_feat.feature_name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
+							create l_changed_var.make_changed_name_type (l_old_feat.feature_name, l_new_feat.feature_name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
 						elseif l_changed_type then
-							create l_changed_var.make_changed_type(l_old_feat.feature_name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
+							create l_changed_var.make_changed_type (l_old_feat.feature_name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
 						elseif l_changed_name then
-							create l_changed_var.make_changed_name(l_old_feat.feature_name, l_new_feat.feature_name)
+							create l_changed_var.make_changed_name (l_old_feat.feature_name, l_new_feat.feature_name)
 						end
 
 						if l_changed_var /= void then
@@ -176,7 +176,7 @@ feature -- Transformations
 							add_constraint_renamings (l_ot_local_list.item.name, l_old_expl_type, l_new_expl_type, l_constraint_renaming_list)
 						end
 					elseif attached {LIKE_CURRENT}l_ot_local_list.item.original_type as l_like_cur then
-						create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_source_class_context.written_class, l_target_class_context.written_class)
+						create l_changed_var.make_changed_type (l_ot_local_list.item.name, l_source_class_context.written_class, l_target_class_context.written_class)
 					end
 
 					if l_changed_var /= void then
@@ -201,8 +201,8 @@ feature -- Transformations
 								l_new_expl_type := l_target_feat_context.arguments[l_like_arg.position].resolved_type
 
 								if not l_old_expl_type.same_as (l_new_expl_type) then
-									create l_changed_var.make_changed_type(l_ot_local_list.item.name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
-									l_changed_args_locals.extend(l_changed_var)
+									create l_changed_var.make_changed_type (l_ot_local_list.item.name, l_old_expl_type.associated_class, l_new_expl_type.associated_class)
+									l_changed_args_locals.extend (l_changed_var)
 								end
 
 								add_constraint_renamings (l_ot_local_list.item.name, l_old_expl_type, l_new_expl_type, l_constraint_renaming_list)
@@ -253,7 +253,7 @@ feature -- Transformations
 
 								add_constraint_renamings (l_cur_old_local.name, l_cur_old_local.resolved_type, l_cur_new_local.resolved_type, l_constraint_renaming_list)
 							end
-							
+
 							l_index := l_index + 1
 						end
 					end
