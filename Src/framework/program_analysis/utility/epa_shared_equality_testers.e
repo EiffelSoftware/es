@@ -21,4 +21,10 @@ feature -- Equality tester
 			create Result
 		end
 
+	type_a_equality_tester: AGENT_BASED_EQUALITY_TESTER [TYPE_A]
+			-- Equality tester for TYPE_A objects
+		once
+			create Result.make (agent (a_type, b_type: TYPE_A): BOOLEAN do Result := a_type.is_equivalent (b_type) end)
+		end
+
 end

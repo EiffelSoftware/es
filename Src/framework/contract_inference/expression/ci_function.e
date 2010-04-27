@@ -8,11 +8,13 @@ class
 	CI_FUNCTION
 
 inherit
-	EPA_TYPE_UTILITY
+	EPA_UTILITY
 
 	EPA_STRING_UTILITY
 
 	DEBUG_OUTPUT
+
+	EPA_SHARED_EQUALITY_TESTERS
 
 create
 	make_from_expression,
@@ -148,6 +150,60 @@ feature -- Access
 			-- Arguments are represented with place holders. For example:
 			-- "{1}.has ({2})" is a body, {1} and {2} represents the first and
 			-- the second argument.
+
+	as_expression: EPA_EXPRESSION
+			-- Expression from Current function
+		require
+			fully_evaluated: arity = 0
+		do
+			create {EPA_AST_EXPRESSION} Result.make_with_type (context.class_, context.feature_, ast_from_expression_text (body), context.class_, result_type)
+		end
+
+	canonical_form: STRING
+			-- Canonical form of current function, with type information
+		local
+			l_replacements: HASH_TABLE [STRING, INTEGER]
+			i: INTEGER
+			l_context_class: CLASS_C
+		do
+			l_context_class := context.class_
+			create Result.make (64)
+			Result.append (body)
+			create l_replacements.make (arity)
+			from
+				i := 1
+			until
+				i > arity
+			loop
+				l_replacements.put (curly_brace_surrounded_typed_integer (i, resolved_type_in_context (argument_type (i), l_context_class)), i)
+				i := i + 1
+			end
+
+			from
+				l_replacements.start
+			until
+				l_replacements.after
+			loop
+				Result.replace_substring_all (curly_brace_surrounded_integer (l_replacements.key_for_iteration), l_replacements.item_for_iteration)
+				l_replacements.forth
+			end
+			Result.append (once ": ")
+			Result.append (resolved_type_in_context (result_type, l_context_class).name)
+		end
+
+	types: DS_HASH_SET [TYPE_A]
+			-- Set of types from `argument_types' and `result_type'
+		do
+			if attached types_internal as l_types then
+				Result := l_types
+			else
+				create types_internal.make (arity + 1)
+				types_internal.set_equality_tester (type_a_equality_tester)
+				argument_types.do_all (agent types_internal.force_last)
+				types_internal.force_last (result_type)
+				Result := types_internal
+			end
+		end
 
 feature -- Partial evaluation
 
@@ -357,7 +413,7 @@ feature -- Status report
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
-			Result := body
+			Result := canonical_form
 		end
 
 feature{NONE} -- Implementation
@@ -394,6 +450,9 @@ feature{NONE} -- Implementation
 				Result.append_character (')')
 			end
 		end
+
+	types_internal: detachable like types
+			-- Cache for `types'
 
 invariant
 	argument_types_valid: argument_types.lower = 1
