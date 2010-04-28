@@ -1739,8 +1739,9 @@ feature -- Predicate evaluation
 					if l_normal_response.exception /= Void and then l_normal_response.exception.is_test_invalid then
 						increase_failed_precondition_count
 						l_bp_slot := l_normal_response.exception.break_point_slot
-						l_access_patterns := precondition_access_pattern.item (a_feature)
-						if l_access_patterns /= Void then
+						precondition_access_pattern.search (a_feature)
+						if precondition_access_pattern.found then
+							l_access_patterns := precondition_access_pattern.found_item
 							l_pattern_cursor := l_access_patterns.new_cursor
 							from
 								l_pattern_cursor.start

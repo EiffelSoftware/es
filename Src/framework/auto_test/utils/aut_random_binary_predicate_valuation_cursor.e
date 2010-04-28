@@ -70,7 +70,10 @@ feature -- Cursor movement
 				l_bounded_var_tbl := container.argument_tables.item (l_bound_var_index)
 				l_bounded_var_index := candidate.item (l_mapping.item (l_bound_var_index)).index
 
-				l_set := l_bounded_var_tbl.item (l_bounded_var_index)
+				l_bounded_var_tbl.search (l_bounded_var_index)
+				if l_bounded_var_tbl.found then
+					l_set := l_bounded_var_tbl.found_item
+				end
 				if l_set /= Void then
 					barrel_storage := l_set
 					barrel_cursor := barrel_storage.new_cursor
@@ -161,7 +164,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -18,6 +18,8 @@ inherit
 			class_name as class__name
 		end
 
+	ITP_TEST_CASE_SERIALIZATION_CONSTANTS
+
 create
 	make
 
@@ -502,9 +504,10 @@ feature{NONE} -- Implementation/Test case synthesis
 	append_time (a_time: INTEGER; a_buffer: STRING)
 			-- Append `a_time' into `a_buffer'.
 		do
-			a_buffer.append (once "<time>")
+			a_buffer.append (time_tag_start)
 			a_buffer.append (a_time.out)
-			a_buffer.append (once "</time>%N")
+			a_buffer.append (time_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
 	append_test_case (a_class_name: STRING; a_feature_name: STRING; a_argument_count: INTEGER; a_is_creation: BOOLEAN; a_is_query: BOOLEAN; a_operands: like operands; a_types: like types; a_buffer: STRING)
@@ -518,12 +521,14 @@ feature{NONE} -- Implementation/Test case synthesis
 			l_last := a_operands.count - 1
 
 				-- Synthesize class.
-			a_buffer.append (once "<class>")
+			a_buffer.append (class_tag_start)
 			a_buffer.append (a_class_name)
-			a_buffer.append (once "</class>%N")
+			a_buffer.append (class_tag_end)
+			a_buffer.append_character ('%N')
 
 				-- Synthesize test case body.
-			a_buffer.append (once "<code>%N")
+			a_buffer.append (code_tag_start)
+			a_buffer.append_character ('%N')
 
 				-- Synthesize return value.
 			if a_is_query then
@@ -560,10 +565,15 @@ feature{NONE} -- Implementation/Test case synthesis
 				end
 				a_buffer.append (once ")")
 			end
-			a_buffer.append (once "%N</code>%N")
+			a_buffer.append_character ('%N')
+			a_buffer.append (code_tag_end)
+			a_buffer.append_character ('%N')
+			a_buffer.append (code_tag_end)
+			a_buffer.append_character ('%N')
 
 				-- Synthesize type information.
-			a_buffer.append (once "<operands>%N")
+			a_buffer.append (operands_tag_start)
+			a_buffer.append_character ('%N')
 			from
 				i := 0
 				create l_var_tbl.make (5)
@@ -577,7 +587,8 @@ feature{NONE} -- Implementation/Test case synthesis
 				end
 				i := i + 1
 			end
-			a_buffer.append (once "</operands>%N")
+			a_buffer.append (operands_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
 	append_all_variables (a_objects: HASH_TABLE [detachable ANY, INTEGER_32]; a_buffer: STRING)
@@ -587,7 +598,8 @@ feature{NONE} -- Implementation/Test case synthesis
 			l_index: INTEGER
 			l_object: detachable ANY
 		do
-			a_buffer.append (once "<all_variables>%N")
+			a_buffer.append (all_variables_tag_start)
+			a_buffer.append_character ('%N')
 			from
 				a_objects.start
 			until
@@ -602,25 +614,32 @@ feature{NONE} -- Implementation/Test case synthesis
 				end
 				a_objects.forth
 			end
-			a_buffer.append (once "</all_variables>%N")
+			a_buffer.append (all_variables_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
 	append_exception_trace (a_trace: detachable STRING; a_buffer: STRING)
 			-- Append `a_trace' into `a_buffer'.
 		do
-			a_buffer.append (once "<trace>%N<![CDATA[%N")
+			a_buffer.append (trace_tag_start)
+			a_buffer.append_character ('%N')
+			a_buffer.append (cdata_tag_start)
+			a_buffer.append_character ('%N')
 			if exception /= Void then
 				a_buffer.append (exception)
 			end
-			a_buffer.append (once "%N]]>%N</trace>%N")
+			a_buffer.append_character ('%N')
+			a_buffer.append (cdata_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
 	append_test_case_hash_code (a_hash_code: STRING; a_buffer: STRING)
 			-- Append test case hash code `a_hash_code' in `a_buffer'.
 		do
-			a_buffer.append (once "<hash_code>")
+			a_buffer.append (hash_code_tag_start)
 			a_buffer.append (a_hash_code)
-			a_buffer.append (once "</hash_code>%N")
+			a_buffer.append (hash_code_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
 	append_object_serialization (a_pre_state: BOOLEAN; a_serialization: detachable STRING; a_buffer: STRING)
@@ -629,9 +648,9 @@ feature{NONE} -- Implementation/Test case synthesis
 			-- in post-execution state.		
 		do
 			if a_pre_state then
-				a_buffer.append (once "<pre_serialization_length>")
+				a_buffer.append (pre_serialization_length_tag_start)
 			else
-				a_buffer.append (once "<post_serialization_length>")
+				a_buffer.append (post_serialization_length_tag_start)
 			end
 
 			if a_serialization = Void then
@@ -641,11 +660,15 @@ feature{NONE} -- Implementation/Test case synthesis
 			end
 
 			if a_pre_state then
-				a_buffer.append (once "</pre_serialization_length>%N")
-				a_buffer.append (once "<pre_serialization><![CDATA[")
+				a_buffer.append (pre_serialization_length_tag_end)
+				a_buffer.append_character ('%N')
+				a_buffer.append (pre_serialization_tag_start)
+				a_buffer.append (cdata_tag_start)
 			else
-				a_buffer.append (once "</post_serialization_length>%N")
-				a_buffer.append (once "<post_serialization><![CDATA[")
+				a_buffer.append (post_serialization_length_tag_end)
+				a_buffer.append_character ('%N')
+				a_buffer.append (post_serialization_tag_start)
+				a_buffer.append (cdata_tag_start)
 			end
 
 			if a_serialization /= Void then
@@ -653,20 +676,25 @@ feature{NONE} -- Implementation/Test case synthesis
 			end
 
 			if a_pre_state then
-				a_buffer.append (once "]]></pre_serialization>%N")
+				a_buffer.append (cdata_tag_end)
+				a_buffer.append (pre_serialization_tag_end)
+				a_buffer.append_character ('%N')
 			else
-				a_buffer.append (once "]]></post_serialization>%N")
+				a_buffer.append (cdata_tag_end)
+				a_buffer.append (post_serialization_tag_end)
+				a_buffer.append_character ('%N')
 			end
-
 		end
 
 	append_object_state (a_state: detachable ARRAYED_LIST [TUPLE [summary: STRING_8; index: INTEGER_32]]; a_is_pre_state: BOOLEAN; a_buffer: STRING)
 			-- Append `a_stat' into `a_buffer'. `a_is_pre_state' indicates whether `a_state' is retrieved before or after test case execution.
 		do
 			if a_is_pre_state then
-				a_buffer.append (once "<pre_state>%N")
+				a_buffer.append (pre_state_tag_start)
+				a_buffer.append_character ('%N')
 			else
-				a_buffer.append (once "<post_state>%N")
+				a_buffer.append (post_state_tag_start)
+				a_buffer.append_character ('%N')
 			end
 
 			if a_state /= Void then
@@ -682,9 +710,11 @@ feature{NONE} -- Implementation/Test case synthesis
 			end
 
 			if a_is_pre_state then
-				a_buffer.append (once "</pre_state>%N")
+				a_buffer.append (pre_state_tag_end)
+				a_buffer.append_character ('%N')
 			else
-				a_buffer.append (once "</post_state>%N")
+				a_buffer.append (post_state_tag_end)
+				a_buffer.append_character ('%N')
 			end
 		end
 
@@ -695,7 +725,7 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_integer (a_index)
 			a_buffer.append (once ": ")
 			if a_index = 0 then
-				a_buffer.append (once "NONE")
+				a_buffer.append (none_type_name)
 			else
 				a_buffer.append (a_type)
 			end

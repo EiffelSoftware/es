@@ -896,7 +896,11 @@ feature -- Status setting
 	set_data_input (a_input: detachable STRING)
 			-- Set `data_input' with 'a_input'.
 		do
-			data_input_cache := a_input.twin
+			if a_input = Void then
+				data_input_cache := Void
+			else
+				data_input_cache := a_input.twin
+			end
 		ensure
 			data_input_set: a_input = Void implies data_input_cache = Void
 						and then a_input /= Void implies data_input_cache ~ a_input
@@ -905,7 +909,11 @@ feature -- Status setting
 	set_data_output (a_output: detachable STRING)
 			-- Set `data_output' with 'a_output'.
 		do
-			data_output_cache := a_output.twin
+			if a_output = Void then
+				data_output_cache := Void
+			else
+				data_output_cache := a_output.twin
+			end
 		ensure
 			data_output_set: a_output = Void implies data_output_cache = Void
 						and then a_output /= Void implies data_output_cache ~ a_output

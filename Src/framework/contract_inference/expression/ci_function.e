@@ -339,7 +339,7 @@ feature -- Status report
 			good_result: Result = (arity = 1)
 		end
 
-	is_nullary, is_constant: BOOLEAN
+	is_nullary, is_constant, is_fully_evaluated: BOOLEAN
 			-- Is Current a constant (or a nullary function)?
 		do
 			Result := arity = 0

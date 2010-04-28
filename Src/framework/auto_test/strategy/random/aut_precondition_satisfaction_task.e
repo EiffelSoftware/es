@@ -248,7 +248,10 @@ feature -- Execution
 			if configuration.is_linear_constraint_solving_enabled and then not linear_solvable_preconditions.is_empty then
 				l_set_rate := configuration.object_selection_for_precondition_satisfaction_rate
 				l_rate := l_set_rate.to_double / 100
-				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
+				feature_invalid_test_case_rate.search (feature_)
+				if feature_invalid_test_case_rate.found then
+					l_invalid_rate := feature_invalid_test_case_rate.found_item
+				end
 				if l_invalid_rate = Void or else l_invalid_rate.all_times - l_invalid_rate.failed_times = 0 then
 						-- If `feature_' has not been tested
 					Result := True
@@ -638,7 +641,7 @@ invariant
 	last_precondition_satisfaction_level_valid: is_valid_precondition_satisfaction_level (last_precondition_satisfaction_level)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
