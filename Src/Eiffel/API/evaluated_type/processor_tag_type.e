@@ -163,6 +163,7 @@ feature --Debug
 		do
 			io.put_string ("Separate tag with: is_sep: " + is_sep.out)
 			io.put_string (" process name: " + tag_name)
+			io.put_string (" controlled " + controlled.out)
 			io.put_string (" handled: " + is_handled.out)
 			io.put_string (" current: " + current_proc.out)
 			io.new_line

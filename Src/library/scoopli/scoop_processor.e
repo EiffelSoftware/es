@@ -162,7 +162,7 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			from
 				i := 0
 			until
-				i = references.count
+				i = references.count or not Result
 			loop
 				sep_type ?= references.item (i)
 				if sep_type /= Void and then sep_type.processor_ = Current then

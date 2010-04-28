@@ -724,16 +724,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 			lte_attach   := other.is_implicitly_attached implies
 			                is_implicitly_attached
 
---			io.put_string ("Tag conforms: ")
---			io.put_boolean (lte_proc_tag)
---			io.new_line
-
---			io.put_string ("Attach conforms: ")
---			io.put_boolean (lte_attach)
---			io.new_line
-
---			Result := lte_proc_tag and lte_attach
-			Result := lte_attach
+			Result := lte_attach -- and lte_proc_tag
 		end
 
 	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN

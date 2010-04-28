@@ -2,7 +2,7 @@ class
 	A
 
 feature
-	separate_query_with_argument (a_separate_argument: separate A): separate A
+	separate_query_with_argument (a_separate_argument: separate A): attached separate A
 		do
 			Result := Current
 		end
@@ -12,7 +12,7 @@ feature
 			Result := Current
 		end
 		
-	separate_query_without_argument: separate A
+	separate_query_without_argument: attached separate A
 		do
 			Result := Current
 		end

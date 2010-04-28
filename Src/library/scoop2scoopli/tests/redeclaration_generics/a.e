@@ -14,11 +14,15 @@ feature -- Access
 	     do
 	     	-- do nothing
 	     end
-	g(a:separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[separate X]]]; b:D[TUPLE[INTEGER, BOOLEAN, TUPLE[separate X]]] ;c:separate D[G]): separate D[X] is
+	g(a:attached separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[attached separate X]]];
+	  b: attached D[TUPLE[INTEGER, BOOLEAN, TUPLE[attached separate X]]] ;
+	  c:attached separate D[G]): separate D[X] is
 		do
 			--do nothing
 		end
 
-
+  h (str : STRING)
+    do
+    end
 
 end

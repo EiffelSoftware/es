@@ -10,7 +10,7 @@ feature {NONE} -- Initialization
 		do
 		end
 
-	simple_computed (a_separate_argument: separate A; a_non_separate_argument: A): BOOLEAN
+	simple_computed (a_separate_argument: attached separate A; a_non_separate_argument: A): BOOLEAN
 		require
 			separate_call: a_separate_argument.is_condition_satisfied
 			non_separate_call: a_non_separate_argument.is_condition_satisfied
@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			separate_call: a_separate_argument.is_condition_satisfied
 		end
 
-	complex_computed (a_separate_argument: separate A; a_non_separate_argument: A): BOOLEAN
+	complex_computed (a_separate_argument: attached separate A; a_non_separate_argument: A): BOOLEAN
 		require
 			separate_call_in_main_chain: a_separate_argument.non_separate_query_with_argument (a_non_separate_argument.non_separate_query_without_argument).is_condition_satisfied
 			separate_call_in_actual_arguments: a_non_separate_argument.non_separate_query_with_argument (a_separate_argument.non_separate_query_without_argument).is_condition_satisfied

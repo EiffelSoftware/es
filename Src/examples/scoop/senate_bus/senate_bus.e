@@ -37,18 +37,18 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-	launch_actor(a_actor: separate ACTOR) is
+	launch_actor(a_actor: attached separate ACTOR) is
 		-- Launch an actor.
 	do
 		a_actor.live
 	end
 
-	t_passenger: separate PASSENGER
+	t_passenger: attached separate PASSENGER
 
 	passengers: INTEGER is 30
 
-	bus: separate BUS
+	bus: attached separate BUS
 
-	station: separate STATION
+	station: attached separate STATION
 
 end -- class SENATE_BUS	

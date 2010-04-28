@@ -13,14 +13,14 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 			-- Creation procedure.
 		local
 			i: INTEGER
-			a_first_fork: separate FORK
-			a_left_fork: separate FORK
-			a_right_fork: separate FORK
-			a_philosopher: separate PHILOSOPHER
+			a_first_fork: attached separate FORK
+			a_left_fork: attached separate FORK
+			a_right_fork: attached separate FORK
+			a_philosopher: attached separate PHILOSOPHER
 		do
 			io.put_string ("Dining Philosophers%N" + number_of_philosophers.out + " philosophers, " + number_of_rounds.out + " rounds%N%N")
 			from
@@ -39,17 +39,16 @@ feature -- Initialization
 				launch_philosopher (a_philosopher)
 				i := i + 1
 				a_left_fork := a_right_fork
-				a_right_fork := Void
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	number_of_philosophers: INTEGER is 5
+	number_of_philosophers: INTEGER = 5
 
-	number_of_rounds: INTEGER is 30
+	number_of_rounds: INTEGER = 30
 
-	launch_philosopher (a_philosopher: separate PHILOSOPHER)
+	launch_philosopher (a_philosopher: attached separate PHILOSOPHER)
 			-- Launch a_philosopher.
 		do
 			a_philosopher.live

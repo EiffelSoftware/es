@@ -26,9 +26,10 @@ feature -- Access
 	     do
 	     end
 
-	g(a,b: separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[separate X]]];c: separate D[G]): D[X] is
-
-	     do
-	     end
+	g(a: attached separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[attached separate X]]];
+	  b: attached separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[attached separate X]]]
+	  c: attached separate D[G]): D[X] is
+    do
+    end
 
 end

@@ -12,7 +12,7 @@ inherit
 
 feature
 
-	left, right : separate PAR_TREE [G]
+	left, right : attached separate PAR_TREE [G]
 
         compute_agents (init : G; 
                  trns : FUNCTION [ANY, TUPLE [G], G];
@@ -25,7 +25,7 @@ feature
         compute_agents_sub (init : G; 
                         trns : FUNCTION [ANY, TUPLE [G], G];
                         comb : FUNCTION [ANY, TUPLE [G,G], G];
-                        l, r : separate PAR_TREE [G]
+                        l, r : attached separate PAR_TREE [G]
                        ) : G
                 do
                         l.compute_agents (init, trns, comb)
@@ -39,7 +39,7 @@ feature
 			comp_result := sub_compute (init, left, right)
 		end
 
-	sub_compute (init : G; l, r : separate PAR_TREE [G]) : G
+	sub_compute (init : G; l, r : attached separate PAR_TREE [G]) : G
 		do
 			l.compute (init)
 			r.compute (init)

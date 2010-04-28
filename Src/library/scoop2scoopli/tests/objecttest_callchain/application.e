@@ -17,7 +17,7 @@ feature
 
 		end
 
-	print_it(l_a: separate A) is
+	print_it(l_a: attached separate A) is
 			--prints
 
 		do

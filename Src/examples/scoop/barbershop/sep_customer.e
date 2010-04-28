@@ -4,9 +4,9 @@ create
 	make
 
 feature
-	customer : separate CUSTOMER
+	customer : attached separate CUSTOMER
 
-	make (c : separate CUSTOMER)
+	make (c : attached separate CUSTOMER)
 		do
 			customer := c
 		ensure

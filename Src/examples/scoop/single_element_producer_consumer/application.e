@@ -13,8 +13,8 @@ create
 	make
 
 feature {NONE} -- Initialization
-	prod : separate PRODUCER
-	cons : separate CONSUMER
+	prod : attached separate PRODUCER
+	cons : attached separate CONSUMER
 	
 	make
 		do
@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			run (cons)
 		end
 
-	run (c : separate CONSUMER)
+	run (c : attached separate CONSUMER)
 		do
 			c.run
 
@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	produce (p : separate PRODUCER)
+	produce (p : attached separate PRODUCER)
 		require
 			not p.has_something
 		do

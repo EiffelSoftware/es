@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 
 	tree_stuff
 		local
-			lefty, righty : separate ADDER_LEAF
+			lefty, righty : attached separate ADDER_LEAF
 			list : SPECIAL [INTEGER]
 			i : INTEGER
 			tre : ADDER_BRANCH
@@ -51,12 +51,12 @@ feature {NONE} -- Initialization
 		end
 
 
-	make_c (a_x, a_y : separate S) : separate CONC
+	make_c (a_x, a_y : attached separate S) : attached separate CONC
 		do
 			create Result.make (a_x,a_y)
 		end
 
-	run_both (c1, c2 : separate CONC)
+	run_both (c1, c2 : attached separate CONC)
 		do
 			c1.f
 			c2.f

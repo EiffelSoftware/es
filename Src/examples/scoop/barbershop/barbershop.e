@@ -59,7 +59,7 @@ feature {NONE} -- Implementation
 
 	customers: ARRAY [SEP_CUSTOMER]
 
-	launch_customer (a_customer: separate CUSTOMER) is
+	launch_customer (a_customer: attached separate CUSTOMER) is
 			-- launch customer in a controlled manner
 			do
 				a_customer.live

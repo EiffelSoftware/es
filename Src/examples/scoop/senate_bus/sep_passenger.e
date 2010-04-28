@@ -4,11 +4,11 @@ create
   set_passenger
 
 feature
-  set_passenger (p : separate PASSENGER)
+  set_passenger (p : attached separate PASSENGER)
     do
       passenger := p
     end
 
-  passenger : separate PASSENGER
+  passenger : attached separate PASSENGER
 
 end

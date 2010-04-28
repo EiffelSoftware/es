@@ -21,7 +21,7 @@ feature -- Access
 		-- bla
 		local
 			d: D[X]
-			d_sep: separate D[X]
+			d_sep: attached separate D[X]
 		do
 
 		end
@@ -31,18 +31,19 @@ feature -- Access
 	     do
 	     end
 
-	g(a,b: separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[separate X]]];c: separate D[G]): D[X] is
+	g(a: attached separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[attached separate X]]];
+	  b: attached separate D[TUPLE[INTEGER, BOOLEAN, TUPLE[attached separate X]]];
+	  c: attached separate D[G]): D[X] is
 		require else
 			is_true: a.assert(b)
-	     do
-       if b.assert(a) then
-       end
+		do
+			if b.assert(a) then end
 			io.put_string("nice")
 		ensure then
 			is_true: b.assert(a) or b.assert(a)
-	    end
-
-	assert(a: D[G]): BOOLEAN is
+		end
+  
+	assert(a : D[G]): BOOLEAN is
 			-- bla
 			do
 

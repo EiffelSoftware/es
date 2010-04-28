@@ -47,7 +47,7 @@ feature -- Access
 
 	     end
 
-	g(a,b: separate D;c: separate D): D is
+	g(a,b: attached separate D;c: separate D): D is
 		require else
 			is_true: a.assert(b)
 	     do
@@ -61,7 +61,7 @@ feature -- Access
 			is_true: b.assert(a) or b.assert(a)
 	    end
 
-	lo(a,b: separate D;c: separate D): D is
+	lo(a,b: attached separate D;c: separate D): D is
 		require
 			is_true: a.assert(b)
 		do
