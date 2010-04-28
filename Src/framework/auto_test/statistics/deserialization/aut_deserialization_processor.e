@@ -501,8 +501,8 @@ feature{NONE} -- Auxiliary routines
 				a_data.resolve (system, session)
 			end
 			if a_data.is_resolved and then a_data.is_good
-					and then (configuration.is_passing_test_case_deserialization_enabled implies a_data.is_execution_successful)
-					and then (configuration.is_failing_test_case_deserialization_enabled implies not a_data.is_execution_successful) then
+					and then (a_data.is_execution_successful implies configuration.is_passing_test_case_deserialization_enabled)
+					and then (not a_data.is_execution_successful implies configuration.is_failing_test_case_deserialization_enabled) then
 				check a_data.class_ /= Void and then a_data.feature_ /= Void end
 				register.put_value (a_data, a_data.feature_, a_data.class_)
 			end

@@ -469,8 +469,9 @@ feature{NONE} -- Implementation
 					l_frames.after or else l_done
 				loop
 					l_frame := l_frames.item_for_iteration
-					if l_frame /= Void and then l_frame.breakpoint_slot_index /= 0 then
-						check correct_context: l_recipient_class ~ l_frame.context_class_name and then l_recipient_feature ~ l_frame.feature_name end
+					if l_frame /= Void and then l_recipient_class ~ l_frame.origin_class_name and then l_recipient_feature ~ l_frame.feature_name then
+--							and then l_assertion_tag ~ l_frame.tag then
+--						check correct_context: l_recipient_class ~ l_frame.context_class_name and then l_recipient_feature ~ l_frame.feature_name end
 						tc_breakpoint_index_cache := "b" + l_frame.breakpoint_slot_index.out
 						l_done := True
 					end

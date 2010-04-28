@@ -215,6 +215,7 @@ feature{NONE} -- Implementation
 			last_operand_types_attached: last_operand_types /= Void
 		local
 			l_exp_type: TYPE_A
+			l_valid_exp: BOOLEAN
 			l_str: STRING
 			l_list: LIST [STRING]
 			l_line: STRING
@@ -245,6 +246,7 @@ feature{NONE} -- Implementation
 				l_line := l_list.item_for_iteration
 
 				if l_line.starts_with ("--|") then
+					l_valid_exp := True
 					-- Object state.
 					l_start_index := 4
 					l_end_index := l_line.last_index_of ('=', l_line.count) - 1
@@ -261,7 +263,11 @@ feature{NONE} -- Implementation
 						l_start_index := l_end_index + 2
 						l_val_str := l_line.substring (l_start_index, l_line.count)
 						l_val_str.prune_all (' ')
-						if l_val_str.is_integer then
+
+						if l_val_str ~ once "[[Error]]" then
+							-- For example: "--|valid_index_set = [[Error]]"
+							l_valid_exp := False
+						elseif l_val_str.is_integer then
 							create {EPA_INTEGER_VALUE} l_value.make (l_val_str.to_integer)
 						elseif l_val_str.is_boolean then
 							create {EPA_BOOLEAN_VALUE} l_value.make (l_val_str.to_boolean)
@@ -276,9 +282,8 @@ feature{NONE} -- Implementation
 						create {EPA_VOID_VALUE} l_value.make
 					end
 
-
 					-- Store the <expr, value> pair
-					if not l_equations.has (l_expr) then
+					if l_valid_exp and then not l_equations.has (l_expr) then
 						l_equations.put (l_value, l_expr)
 					end
 

@@ -255,32 +255,24 @@ $(BODY)
         
 feature{NONE} -- Serialization data
 
-    pre_serialization: STRING
+    pre_serialization: ARRAY [NATURAL_8]
             -- Serialized test case data before the transition.
-        local
-            l_array: ARRAY [NATURAL_8]
         do
-            l_array := <<
+            Result := <<
 --<pre_serialization>
 $(PRE_SERIALIZATION) 
 --</pre_serialization>
 >>
-
-            Result := string_from_array (l_array)
         end
         
-    post_serialization: STRING
+    post_serialization: ARRAY [NATURAL_8]
     		-- Serialized test case data after the transition.
-    	local
-    		l_array: ARRAY [NATURAL_8]
     	do
-    		l_array := <<
+    		Result := <<
 --<post_serialization>
 $(POST_SERIALIZATION)
 --</post_serialization>
 			>>
-				
-			Result := string_from_array (l_array)
 		end
 		
 feature{NONE} -- Test case information
@@ -298,28 +290,6 @@ $(TRACE)
 --</exception_trace>
 
 feature{NONE} -- Implementation
-
-    string_from_array (a_array: ARRAY [NATURAL_8]): STRING is
-            -- String from `a_array'.
-        local
-            l_lower, l_upper: INTEGER
-            i: INTEGER
-            j: INTEGER
-        do
-            l_lower := a_array.lower
-            l_upper := a_array.upper
-            create Result.make_filled (' ', l_upper - l_lower + 1)
-            from
-                j := 1
-                i := l_lower
-            until
-                i > l_upper
-            loop
-                Result.put (a_array.item (i).to_character_8, j)
-                i := i + 1
-                j := j + 1
-            end
-        end
 
 note
 --<extra_information>
