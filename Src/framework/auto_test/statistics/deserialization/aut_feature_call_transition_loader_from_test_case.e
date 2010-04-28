@@ -19,16 +19,16 @@ create
 
 feature -- Initialization
 
-	make (a_session: AUT_SESSION)
+	make (a_error_handler: UT_ERROR_HANDLER)
 			-- Initialization.
 		do
-			session := a_session
+			error_handler := a_error_handler
 		end
 
 feature -- Access
 
-	session: AUT_SESSION
-			-- Session.
+	error_handler: UT_ERROR_HANDLER
+			-- Error handler.
 
 	last_transition: detachable SEM_FEATURE_CALL_TRANSITION
 			-- Transition from last `load_transition' operation.
@@ -41,26 +41,35 @@ feature -- Operation
 			-- Save the result into `last_transition'.
 		local
 			l_file: KL_TEXT_INPUT_FILE
+			l_handler: like error_handler
+			l_length: INTEGER
 			l_content, l_line: STRING
 			l_reg: RX_PCRE_REGULAR_EXPRESSION
 		do
 			last_transition := Void
+			l_handler := error_handler
 
 			create l_file.make (a_file)
-			l_file.open_read
-			if l_file.is_open_read then
-				create l_content.make (l_file.count)
-				from
-					l_file.rewind
-				until
-					l_file.end_of_file
-				loop
-					l_file.read_line
-					l_content.append (l_file.last_string)
-					l_content.append_character ('%N')
-				end
+			if l_file.exists then
+				l_length := l_file.count
+				l_file.open_read
+				if l_file.is_open_read then
+					from
+						create l_content.make (l_length)
+					until
+						l_file.end_of_file
+					loop
+						l_file.read_line
+						l_content.append (l_file.last_string)
+						l_content.append_character ('%N')
+					end
 
-				parse_transition_from_string (l_content)
+					parse_transition_from_string (l_content)
+				else
+					l_handler.report_error_message ("Error opening file to read: " + a_file)
+				end
+			else
+				l_handler.report_error_message ("File does not exist: " + a_file)
 			end
 		end
 
@@ -126,30 +135,14 @@ feature{NONE} -- Implementation
 		do
 			l_count := a_string.count
 
---			-- Pre object
---			l_reg := reg_pre_object
---			l_reg.match (a_string)
---			check l_reg.has_matched end
---			l_pre_object := l_reg.captured_substring (1)
---			l_pos := l_reg.captured_end_position (1)
-
---			-- Post object
---			l_reg := reg_post_object
---			l_reg.match_substring (a_string, l_pos, l_count)
---			check l_reg.has_matched end
---			l_post_object := l_reg.captured_substring (1)
---			l_pos := l_reg.captured_end_position (1)
-
 			-- Exception trace
 			l_reg := Reg_exception_trace
-			l_reg.reset
 			l_reg.match (a_string)
 			check l_reg.has_matched end
 			l_exception_trace := l_reg.captured_substring (1)
 
 			-- Extra information
 			l_reg := reg_extra_information
-			l_reg.reset
 			l_reg.match (a_string)
 			check l_reg.has_matched end
 			l_string := l_reg.captured_substring (1)
@@ -157,7 +150,6 @@ feature{NONE} -- Implementation
 
 			-- Class under test
 			l_reg := reg_class_under_test
-			l_reg.reset
 			l_reg.match (l_string)
 			check l_reg.has_matched end
 			l_class_under_test := l_reg.captured_substring (1)
@@ -165,7 +157,6 @@ feature{NONE} -- Implementation
 
 			-- Feature under test
 			l_reg := reg_feature_under_test
-			l_reg.reset
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_feature_under_test := l_reg.captured_substring (1)
@@ -173,7 +164,6 @@ feature{NONE} -- Implementation
 
 			-- Code
 			l_reg := Reg_code
-			l_reg.reset
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_code := l_reg.captured_substring (1)
@@ -181,7 +171,6 @@ feature{NONE} -- Implementation
 
 			-- Operands declaration
 			l_reg := reg_operands_declaration
-			l_reg.reset
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_operands_declaration := l_reg.captured_substring (1)
@@ -189,7 +178,6 @@ feature{NONE} -- Implementation
 
 			-- Pre state report
 			l_reg := reg_pre_state
-			l_reg.reset
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_pre_state_report := l_reg.captured_substring (1)
@@ -197,7 +185,6 @@ feature{NONE} -- Implementation
 
 			-- Post state report
 			l_reg := reg_post_state
-			l_reg.reset
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_post_state_report := l_reg.captured_substring (1)
@@ -207,16 +194,11 @@ feature{NONE} -- Implementation
 			last_feature := last_class.feature_named (l_feature_under_test)
 			last_operand_types := variable_type_table_from_string (l_operands_declaration)
 			last_feature_call := feature_call_from_string (l_code)
---			last_operand_names := operand_name_list
 
 			create l_context.make_with_variable_names (last_operand_types)
 			last_pre_state := state_from_string (l_context, l_pre_state_report)
 			last_post_state := state_from_string (l_context, l_post_state_report)
 
---			l_var_table := var_table_from_declaration (l_variable_declaration)
-
---			create l_pre_state.make_from_string (l_class, l_feature, l_pre_state_report, l_var_table)
---			create l_post_state.make_from_string (l_class, l_feature, l_post_state_report, l_var_table)
 			if attached {AUT_CREATE_OBJECT_REQUEST} last_feature_call then
 				l_is_creation := True
 			else
@@ -274,7 +256,6 @@ feature{NONE} -- Implementation
 						l_exp_str.append (l_line.substring (l_start_index, l_end_index))
 						l_exp_type := a_context.expression_text_type (l_exp_str)
 						create l_expr.make_with_text_and_type (a_context.class_, a_context.feature_, l_exp_str, a_context.class_, l_exp_type)
-	--					create l_expr.make_with_text (class_, Void, l_exp_str, class_)
 
 						-- Value of the expression.
 						l_start_index := l_end_index + 2
@@ -356,9 +337,6 @@ feature{NONE} -- Implementation
 			l_table.compare_objects
 
 			from
---				create variable_index_map.make (l_list.count + 1)
---				variable_index_map.compare_objects
---				l_new_index := 1
 				l_list.start
 			until l_list.after
 			loop
@@ -368,40 +346,32 @@ feature{NONE} -- Implementation
 				-- Variable.
 				l_var_name := l_line.substring (1, l_end_index - 1)
 				l_var_name.prune_all (' ')
---				l_old_index := variable_index (l_var_name, variable_name_prefix)
 
 				-- Type.
 				l_type_str := l_line.substring (l_end_index + 1, l_line.count)
 				l_type_str.prune_all (' ')
---				l_type := base_type (l_type_str)
 
 				l_table.put (l_type_str, l_var_name)
---				-- The order of variables
---				register_variable_renaming (l_old_index, l_new_index, l_type)
 
---				l_new_index := l_new_index + 1
 				l_list.forth
 			end
 			Result := l_table
 
---			-- Apply variable renaming to relevant strings.
---			apply_renaming (operands_str)
---			apply_renaming (code_str)
---			apply_renaming (pre_state_str)
---			apply_renaming (post_state_str)
 		end
 
 	feature_call_from_string (a_string: STRING): AUT_CALL_BASED_REQUEST
 			-- Get the feature call from its string representation.
 		local
 			l_parser: AUT_REQUEST_PARSER
+			l_error_handler: UT_ERROR_HANDLER
 			l_input: STRING
 			l_request: AUT_REQUEST
 		do
 			l_input := ":execute "
 			l_input.append (a_string)
 
-			create l_parser.make (system, session.error_handler)
+			l_error_handler := error_handler
+			create l_parser.make (system, create {AUT_ERROR_HANDLER}.make (system))
 			l_parser.set_input (l_input)
 			l_parser.parse
 
@@ -412,6 +382,7 @@ feature{NONE} -- Implementation
 				end
 				Result := lt_call
 			else
+				l_error_handler.report_error_message ("Bad feature call.")
 				check bad_feature_call: False end
 			end
 		end
@@ -536,21 +507,6 @@ feature{NONE} -- Implementation
 			Result.compile ("--<post_state>(.*)--</post_state>")
 		end
 
---	Reg_pre_object: RX_PCRE_REGULAR_EXPRESSION
---		once
---			create Result.make
---			Result.set_caseless (True)
---			Result.set_multiline (True)
---			Result.compile ("--<pre_object>((.)*)--</pre_object>")
---		end
-
---	Reg_post_object: RX_PCRE_REGULAR_EXPRESSION
---		once
---			create Result.make
---			Result.set_caseless (True)
---			Result.set_multiline (True)
---			Result.compile ("--<post_object>((.)*)--</post_object>")
---		end
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

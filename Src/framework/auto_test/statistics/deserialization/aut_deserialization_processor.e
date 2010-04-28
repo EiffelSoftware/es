@@ -573,7 +573,7 @@ feature{NONE} -- Auxiliary routines
 				end
 
 				-- Return the substring.
-				check correct_order: l_end > l_start end
+				check correct_order: l_end >= l_start end
 				Result := a_string.substring (l_start, l_end)
 			end
 		ensure

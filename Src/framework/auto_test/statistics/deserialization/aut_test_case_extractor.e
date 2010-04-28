@@ -48,7 +48,6 @@ feature -- Configuration
 			if l_dir.exists then
 				l_dir.recursive_delete
 			end
---			l_dir.close
 		end
 
 feature -- Access
@@ -83,7 +82,7 @@ feature{NONE} -- Implementation
 			current_data := a_data
 			write_to (test_case_dir)
 
-			create l_transition_loader.make (session)
+			create l_transition_loader.make (create {AUT_ERROR_HANDLER}.make (system))
 			create l_file_name.make_from_string (test_case_dir)
 			l_file_name.set_subdirectory (tc_class_under_test)
 			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
@@ -102,7 +101,6 @@ feature{NONE} -- Implementation
 			l_name: STRING
 		do
 			if tc_class_name_cache = Void then
-				check tc_uuid_cache /= Void end
 				create l_name.make (128)
 				l_name.copy (tc_class_name_template)
 				l_name.replace_substring_all (ph_class_under_test, tc_class_under_test)
