@@ -46,8 +46,8 @@ feature
 						 agent show_external_editor ("Specs", agent {JSTAR_PROOFS}.specs_file_name),
 						 agent show_external_editor ("Logic", agent {JSTAR_PROOFS}.logic_file_name),
 						 agent show_external_editor ("Abstraction Rules", agent {JSTAR_PROOFS}.abs_file_name),
-						 agent show_dot_file ("Control-flow graph", agent {JSTAR_PROOFS}.cfg_file_name),
-						 agent show_dot_file ("Execution graph", agent {JSTAR_PROOFS}.execution_file_name),
+						 agent show_dot_file ("Control-flow graph", "cfg", agent {JSTAR_PROOFS}.cfg_file_name),
+						 agent show_dot_file ("Execution graph", "exec", agent {JSTAR_PROOFS}.execution_file_name),
 						 agent show_external_editor ("JStar output", agent {JSTAR_PROOFS}.jstar_output_file_name)>>
 
 			from
@@ -130,7 +130,7 @@ feature {NONE}
 			req.execute (preferences.misc_data.web_browser_command.twin + " " + a_file_name)
 		end
 
-	show_dot_file (window_title: STRING; filename_agent: FUNCTION [ANY, TUPLE, STRING])
+	show_dot_file (window_title, filename_part: STRING; filename_agent: FUNCTION [ANY, TUPLE, STRING])
 		local
 			l_filename: STRING
 			l_process_factory: PROCESS_FACTORY
@@ -149,9 +149,9 @@ feature {NONE}
 			if l_filename = Void then
 				create_text_window (window_title, "Unavailable")
 			else
-				l_map_name := "execution.map"
-				l_image_name := "execution.gif"
-				l_html_name := "execution.html"
+				l_map_name := jstar_proofs.last_class_name + "_" + filename_part + ".map"
+				l_image_name := jstar_proofs.last_class_name + "_" + filename_part + ".gif"
+				l_html_name := jstar_proofs.last_class_name + "_" + filename_part + ".html"
 
 				-- Invoke dot
 				create l_process_factory
