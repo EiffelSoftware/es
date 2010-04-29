@@ -3231,7 +3231,6 @@ eweasel/results/classic/iphone-arm -text
 eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
-eweasel/tests/DONT_DELETE -text
 eweasel/tests/agent010/Ace -text
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
