@@ -18,6 +18,9 @@ feature {NONE} -- Initialization
 		local
 			cell: CEL
 			ccel2: CCEL2
+			ccell: CCELL
+			client: CLIENT
+			client2: CLIENT2
 		do
 			--| Add your code here
 		end

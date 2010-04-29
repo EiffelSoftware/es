@@ -37,26 +37,28 @@ feature
 		do
 			reset_results
 
+			my_last_class_name := c.name_in_upper.twin
+
 			jimple_code_generator.process_class (c)
 			l_jimple_code := jimple_code_generator.jimple_code
-			jimple_code_file_name := file_system.pathname (directory, "Code")
+			jimple_code_file_name := file_system.pathname (directory, last_class_name + ".code")
 			write_file (jimple_code_file_name, l_jimple_code)
 
 			spec_generator.process_class (c)
 			l_specs := spec_generator.generated_specs
-			specs_file_name := file_system.pathname (directory, "Specs")
+			specs_file_name := file_system.pathname (directory, last_class_name + ".specs")
 			write_file (specs_file_name, l_specs)
 
 			logic_and_abstraction_locator.process_class (c)
 			logic_file_name := logic_and_abstraction_locator.logic_file_name
 			abs_file_name := logic_and_abstraction_locator.abstraction_file_name
-			l_output_file_name := file_system.pathname (directory, "Output")
+			l_output_file_name := file_system.pathname (directory, last_class_name + ".output")
 			file_system.delete_file (l_output_file_name)
 
 			jstar_runner.run (dot_file_directory, jimple_code_file_name, specs_file_name, logic_file_name, abs_file_name, l_output_file_name)
 			jstar_output_file_name := l_output_file_name
-			cfg_file_name := ".icfg.dot"
-			execution_file_name := ".execution_core.dot"
+			cfg_file_name := last_class_name + ".code.icfg.dot"
+			execution_file_name := last_class_name + ".code.execution_core.dot"
 		end
 
 	timed_out: BOOLEAN
@@ -87,6 +89,11 @@ feature {NONE}
 
 feature -- Access
 
+	last_class_name: STRING
+		do
+			Result := my_last_class_name.twin
+		end
+
 	jimple_code_file_name: STRING
 
 	specs_file_name: STRING
@@ -107,6 +114,8 @@ feature -- Access
 	jstar_output_file_name: STRING
 
 feature {NONE} -- Implementation
+
+	my_last_class_name: STRING
 
 	write_file (name: STRING; contents: STRING)
 		local

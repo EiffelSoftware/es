@@ -16,8 +16,7 @@ feature {NONE} -- Initialization
 
 	make
 		local
-			person: PERSON
-			musician: MUSICIAN
+			smusician: SMUSICIAN
 		do
 			--| Add your code here
 		end

@@ -22,7 +22,7 @@ feature
 			--SL-- SEQ(Current,{s:cons(_e,_a)})
 		deferred
 		ensure
-			--SL-- SEQ(Current,{s:cons(_e,_a)}) * Result = _a
+			--SL-- SEQ(Current,{s:cons(_e,_a)}) * Result = _e
 		end
 
 	tail: MML_SEQUENCE

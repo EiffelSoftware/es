@@ -18,6 +18,9 @@ import "plus_const_datatype.logic";
 rewrite a_simple_sum:
     builtin_plus(numeric_const(0), builtin_plus(numeric_const(30), builtin_plus(numeric_const(40), builtin_plus(numeric_const(50), numeric_const(60))))) = numeric_const(180)
 
+rewrite a_simple_sum2:
+    builtin_plus(numeric_const(0), builtin_plus(numeric_const(30), builtin_plus(numeric_const(40), builtin_plus(numeric_const(50), numeric_const(65))))) = numeric_const(185)
+
 
 /******************************************* 
  *  Subeq hacks

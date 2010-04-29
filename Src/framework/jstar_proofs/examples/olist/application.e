@@ -16,6 +16,8 @@ feature {NONE} -- Initialization
 
 	make
 			-- Run application.
+		local
+			olist: OLIST
 		do
 			--| Add your code here
 		end
