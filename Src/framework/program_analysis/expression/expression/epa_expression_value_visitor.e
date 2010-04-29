@@ -49,4 +49,9 @@ feature -- Process
 		deferred
 		end
 
+	process_ast_expression_value (a_value: EPA_AST_EXPRESSION_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
 end

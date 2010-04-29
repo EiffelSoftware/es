@@ -377,6 +377,11 @@ feature{NONE} -- Visitor
 		do
 		end
 
+	process_ast_expression_value (a_value: EPA_AST_EXPRESSION_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
 feature{NONE} -- Implementation
 
 	get_effective_boolean_outline (a_class: like class_): AFX_BOOLEAN_STATE_OUTLINE

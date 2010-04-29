@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AFX_REFERENCE_VALUE}."
+	description: "A value representing address of a reference"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

@@ -14,6 +14,8 @@ inherit
 
 	EPA_STRING_UTILITY
 
+	ETR_SHARED_ERROR_HANDLER
+
 feature -- Access
 
 	context: EPA_CONTEXT
@@ -207,13 +209,15 @@ feature -- Status setting
 	set_precondition (a_pre: like precondition)
 			-- Set `precondition' with 'a_pre'.
 		do
-			precondition := a_pre
+			precondition.wipe_out
+			adapt_state (a_pre, precondition)
 		end
 
 	set_postcondition (a_post: like postcondition)
 			-- Set `postcondition' with 'a_post'.
 		do
-			postcondition := a_post
+			postcondition.wipe_out
+			adapt_state (a_post, postcondition)
 		end
 
 feature -- Status report
@@ -240,6 +244,36 @@ feature -- Status report
 			-- Is `a_variable' an operand variable (either input or output)?
 		do
 			Result := is_input_variable (a_variable) or else is_output_variable (a_variable)
+		end
+
+	is_valid_precondition (a_equation: EPA_EQUATION): BOOLEAN
+			-- Is `a_expr' a valid precondition assertion?
+		do
+			Result := context.expression_type (a_equation.expression.ast) /= Void
+		end
+
+	is_valid_postcondition (a_equation: EPA_EQUATION): BOOLEAN
+			-- Is `a_equation' a valid postcondition assertion?
+		do
+			Result := context.expression_type (a_equation.expression.ast) /= Void
+		end
+
+feature -- Setting
+
+	extend_ast_precondition_equation (a_equation: EPA_EQUATION)
+			-- Extend `a_equation' into `precondition'.
+		require
+			a_expr_valid: is_valid_precondition (a_equation)
+		do
+			precondition.force_last (a_equation)
+		end
+
+	extend_ast_postcondition_equation (a_equation: EPA_EQUATION)
+			-- Extend `a_equation' into `postcondition'.
+		require
+			a_expr_valid: is_valid_postcondition (a_equation)
+		do
+			postcondition.force_last (a_equation)
 		end
 
 feature{NONE} -- Implementation
@@ -337,6 +371,86 @@ feature -- Variable name
 	variable_normalized_position_name: INTEGER = 2    -- v_0, v_1
 	variable_type_name: INTEGER = 3					  -- {LINKED_LIST [ANY]}, {ANY}
 	variable_original_name: INTEGER = 4				  -- Original variable name
+
+feature{NONE} -- Implementation
+
+	ast_in_other_context (a_ast: AST_EIFFEL; a_source_context: ETR_CONTEXT; a_target_context: ETR_CONTEXT): detachable AST_EIFFEL
+			-- New AST from `a_ast' (in `a_source_context'), but viewed from `a_target_context'.
+			-- Void if context transformation failed.
+		local
+			l_transformable: ETR_TRANSFORMABLE
+		do
+			error_handler.reset_errors
+			create l_transformable.make (a_ast, a_source_context, True)
+			Result := l_transformable.as_in_other_context (a_target_context)
+			if error_handler.has_errors then
+				Result := Void
+			end
+		end
+
+	equation_in_other_context (a_equation: EPA_EQUATION; a_source_context: ETR_CONTEXT; a_target_context: ETR_CONTEXT; a_type_checking_context: like context): detachable EPA_EQUATION
+			-- Equation `a_equation' (originally in `a_source_context' viewed from `a_target_context'.
+			-- Void if context transformation failed.
+		local
+			l_type: detachable TYPE_A
+			l_expr: EPA_AST_EXPRESSION
+			l_value: detachable EPA_EXPRESSION_VALUE
+		do
+			if attached {EXPR_AS} ast_in_other_context (a_equation.expression.ast, a_source_context, a_target_context) as l_new_expr then
+				l_type := a_type_checking_context.expression_type (l_new_expr)
+				if l_type /= Void then
+					create l_expr.make_with_type (a_type_checking_context.class_, a_type_checking_context.feature_, l_new_expr, a_type_checking_context.class_, l_type)
+					if attached {EPA_AST_EXPRESSION_VALUE} a_equation.value as l_ast_value then
+						fixme ("Use a visitor to process a_equation.value is safer. 29.4.2010 Jasonw")
+						if attached {EXPR_AS} ast_in_other_context (l_ast_value.item, a_source_context, a_target_context) as l_new_value_ast then
+							l_type := a_type_checking_context.expression_type (l_new_value_ast)
+							if l_type /= Void then
+								create {EPA_AST_EXPRESSION_VALUE} l_value.make (l_new_value_ast, l_type)
+							end
+						end
+					else
+						l_value := a_equation.value
+					end
+					if l_value /= Void then
+						create Result.make (l_expr, l_value)
+					end
+				end
+			end
+		end
+
+	adapt_state (a_source_state: EPA_STATE; a_target_state: EPA_STATE)
+			-- Adapt `a_source_state' into `a_target_state'.
+			-- Adaptation means possible renaming.
+		local
+			l_source_context: ETR_CONTEXT
+			l_target_context: ETR_CONTEXT
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_context: like context
+			l_equation: EPA_EQUATION
+		do
+				-- Calculate source and target context.
+			if attached {FEATURE_I} a_source_state.feature_ as l_feature then
+				create {ETR_FEATURE_CONTEXT} l_source_context.make (l_feature, create {ETR_CLASS_CONTEXT}.make (a_source_state.class_))
+			else
+				create {ETR_CLASS_CONTEXT} l_source_context.make (a_source_state.class_)
+			end
+			l_target_context := context.feature_context
+
+				-- Iterate through `a_source_state' and translate all the expressions in `a_source_state'
+				-- to expressions in `l_target_context'.
+			l_context := context
+			from
+				l_cursor := a_source_state.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if attached {EPA_EQUATION} equation_in_other_context (l_cursor.item, l_source_context, l_target_context, l_context) as l_new_equation then
+					a_target_state.force_last (l_new_equation)
+				end
+				l_cursor.forth
+			end
+		end
 
 invariant
 	variable_positions_valid: variable_positions.for_all_with_key (agent is_variable_position_valid)

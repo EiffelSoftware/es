@@ -17,6 +17,8 @@ inherit
 
 	EPA_UTILITY
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -63,6 +65,14 @@ feature -- Status report
 	is_creation: BOOLEAN
 			-- Is current transition a creation?
 
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := content_of_transition_internal (variable_type_name)
+		end
+
 feature{NONE} -- Implementation
 
 	content_of_transition_internal (a_variable_display_type: INTEGER): STRING
@@ -93,7 +103,7 @@ feature{NONE} -- Implementation
 				from
 					i := 1
 				until
-					i <= l_arg_count
+					i > l_arg_count
 				loop
 					Result.append (variable_name (reversed_variable_position.item (i), a_variable_display_type))
 					if i < l_arg_count then

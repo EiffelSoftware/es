@@ -125,6 +125,11 @@ feature -- Process
 			process_deterministic_value (a_value)
 		end
 
+	process_ast_expression_value (a_value: EPA_AST_EXPRESSION_VALUE)
+			-- Process `a_value'.
+		do
+		end
+		
 feature{NONE} -- Implementation
 
 	max_integer_value: INTEGER

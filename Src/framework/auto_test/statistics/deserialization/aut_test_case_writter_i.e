@@ -246,16 +246,14 @@ feature{NONE} -- Constants
 	tc_generation_type: STRING = "AutoTest test case extracted from serialization"
 
 	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__$(EXCEPTION_CODE)__$(BREAKPOINT_INDEX)__$(RECIPIENT)__$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
-	tc_var_initialization_template: STRING = "$(VAR) ?= pre_operands_table[$(INDEX)]%N"
+	tc_var_initialization_template: STRING = "$(VAR) ?= pre_variable_table[$(INDEX)]%N"
 	tc_class_template: STRING = "[
-class $(CLASS_NAME)
+class 
+	$(CLASS_NAME)
 
 inherit
     EQA_SERIALIZED_TEST_SET
-
-create
-	generated_test_1
-
+	
 feature -- Test routines
 
     $(FEATURE_NAME)

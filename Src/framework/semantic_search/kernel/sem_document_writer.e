@@ -12,6 +12,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	EPA_TYPE_UTILITY
+
 feature -- Basic operation
 
 	write (a_transition: SEM_TRANSITION; a_folder: STRING)
@@ -90,13 +92,6 @@ feature{NONE} -- Impelementation
 
 feature{NONE} -- Implementation
 
-	normalized_type_name (a_type: STRING): STRING
-			-- Normalized type name
-		do
-			create Result.make_from_string (a_type)
-			Result.replace_substring_all (once "?", once "")
-		end
-
 	append_content
 			-- Append content of `transition' to `buffer'.
 		do
@@ -121,7 +116,7 @@ feature{NONE} -- Implementation
 			loop
 				l_values.append (l_cursor.key.text)
 				l_values.append (once ": {")
-				l_values.append (normalized_type_name (l_cursor.key.resolved_type.name))
+				l_values.append (cleaned_type_name (l_cursor.key.resolved_type.name))
 				l_values.append (once "}@")
 				l_values.append (l_cursor.item.out)
 				if i < c then
@@ -360,7 +355,7 @@ feature{NONE} -- Implementation
 					end
 					i := i + 1
 				end
-				append_field (field_type + once "{" + normalized_type_name (l_cursor.key.name) + "}", default_boost, type_integer, l_values)
+				append_field (field_type + once "{" + cleaned_type_name (l_cursor.key.name) + "}", default_boost, type_integer, l_values)
 				l_cursor.forth
 			end
 		end

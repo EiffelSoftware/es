@@ -70,11 +70,22 @@ feature -- Status report
 			good_result: Result = not is_random
 		end
 
+	is_ast_expression_value: BOOLEAN
+			-- Does current represent an AST expression value?
+		do
+		end
+
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
-			Result := type.is_equivalent (other.type) and then item ~ other.item
+			Result := type.is_equivalent (other.type) and then is_item_equal (other)
+		end
+
+	is_item_equal (other: like Current): BOOLEAN
+			-- Is `item' equal to `other'.`item'?
+		do
+			Result := item ~ other.item
 		end
 
 feature -- Process
