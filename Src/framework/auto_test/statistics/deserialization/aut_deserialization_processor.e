@@ -22,6 +22,8 @@ inherit
 	KL_SHARED_FILE_SYSTEM
 		export {NONE} all end
 
+	ITP_TEST_CASE_SERIALIZATION_CONSTANTS
+
 create
 	make
 
@@ -229,10 +231,10 @@ feature{NONE} -- Implementation
 			l_start_tag, l_finish_tag: STRING
 			l_length: INTEGER
 		do
-			if a_line.substring_index (start_test_case_tag, 1) /= 0 then
+			if a_line.substring_index (test_case_tag_start, 1) /= 0 then
 				start_serialization
 			elseif is_inside_serialization then
-				if a_line.substring_index (finish_test_case_tag, 1) /= 0 then
+				if a_line.substring_index (test_case_tag_end, 1) /= 0 then
 					finish_serialization
 				elseif is_good_serialization_block then
 					if has_start_tag (a_line) then
@@ -240,14 +242,14 @@ feature{NONE} -- Implementation
 						collect_tag_block (last_tag, a_line, a_stream)
 
 						-- Process data tag specially.
-						if last_tag ~ start_pre_serialization_length_tag then
+						if last_tag ~ pre_serialization_length_tag_start then
 							if last_length /= Void and then last_length.is_integer then
 								l_length := last_length.to_integer
 								collect_serialization_tag_block (l_length, a_stream, True)
 							else
 								raise ("Bad data length format.")
 							end
-						elseif last_tag ~ start_post_serialization_length_tag then
+						elseif last_tag ~ post_serialization_length_tag_start then
 							if last_length /= Void and then last_length.is_integer then
 								l_length := last_length.to_integer
 								collect_serialization_tag_block (l_length, a_stream, False)
@@ -366,30 +368,30 @@ feature{NONE} -- Auxiliary routines
 		local
 			l_start, l_end: INTEGER
 		do
-			if a_tag ~ start_class_tag then
+			if a_tag ~ class_tag_start then
 				last_class_name := pruned_string (a_block)
-			elseif a_tag ~ start_time_tag then
+			elseif a_tag ~ time_tag_start then
 				last_time := pruned_string (a_block)
-			elseif a_tag ~ start_code_tag then
+			elseif a_tag ~ code_tag_start then
 				last_test_case := pruned_string (a_block)
-			elseif a_tag ~ start_operands_tag then
+			elseif a_tag ~ operands_tag_start then
 				last_operands := pruned_string (a_block)
-			elseif a_tag ~ start_variables_tag then
+			elseif a_tag ~ all_variables_tag_start then
 				last_variables := pruned_string (a_block)
-			elseif a_tag ~ start_trace_tag then
-				l_start := a_block.substring_index (start_cdata_tag, 1) + start_cdata_tag.count
-				l_end := a_block.substring_index (finish_cdata_tag, 1) - 1
+			elseif a_tag ~ trace_tag_start then
+				l_start := a_block.substring_index (cdata_tag_start, 1) + cdata_tag_start.count
+				l_end := a_block.substring_index (cdata_tag_end, 1) - 1
 				check l_start /= 0 and l_start <= l_end end
 				last_trace := pruned_string (a_block.substring (l_start, l_end))
-			elseif a_tag ~ start_hash_code_tag then
+			elseif a_tag ~ hash_code_tag_start then
 				last_hash_code := pruned_string (a_block)
-			elseif a_tag ~ start_pre_state_tag then
+			elseif a_tag ~ pre_state_tag_start then
 				last_pre_state := pruned_string (a_block)
-			elseif a_tag ~ start_post_state_tag then
+			elseif a_tag ~ post_state_tag_start then
 				last_post_state := pruned_string (a_block)
-			elseif a_tag ~ start_pre_serialization_length_tag then
+			elseif a_tag ~ pre_serialization_length_tag_start then
 				last_length := pruned_string (a_block)
-			elseif a_tag ~ start_post_serialization_length_tag then
+			elseif a_tag ~ post_serialization_length_tag_start then
 				last_length := pruned_string (a_block)
 			else
 				check dead_end: False end
@@ -410,11 +412,11 @@ feature{NONE} -- Auxiliary routines
 		do
 			-- Total length of the block, including the preceding/succeeding tags
 			if a_is_pre then
-				l_prefix_count := start_pre_serialization_tag.count + start_cdata_tag.count
-				l_postfix_count := finish_pre_serialization_tag.count + finish_cdata_tag.count
+				l_prefix_count := pre_serialization_tag_start.count + cdata_tag_start.count
+				l_postfix_count := pre_serialization_tag_end.count + cdata_tag_end.count
 			else
-				l_prefix_count := start_post_serialization_tag.count + start_cdata_tag.count
-				l_postfix_count := finish_post_serialization_tag.count + finish_cdata_tag.count
+				l_prefix_count := post_serialization_tag_start.count + cdata_tag_start.count
+				l_postfix_count := post_serialization_tag_end.count + cdata_tag_end.count
 			end
 			l_length := a_length + l_prefix_count + l_postfix_count
 
@@ -432,9 +434,9 @@ feature{NONE} -- Auxiliary routines
 			end
 
 			from
-				l_start_index := l_data.substring_index (start_cdata_tag, 1) + start_cdata_tag.count
+				l_start_index := l_data.substring_index (cdata_tag_start, 1) + cdata_tag_start.count
 				check l_start_index = l_prefix_count + 1 end
-				l_finish_index := l_data.substring_index (finish_cdata_tag, 1)
+				l_finish_index := l_data.substring_index (cdata_tag_end, 1)
 				check l_finish_index = l_length - l_postfix_count + 1 end
 			until
 				l_start_index >= l_finish_index
@@ -623,50 +625,50 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Constants
 
-	start_test_case_tag: STRING = "<test_case>"
-	finish_test_case_tag: STRING = "</test_case>"
+--	test_case_tag_start: STRING = "<test_case>"
+--	test_case_tag_end: STRING = "</test_case>"
 
-	start_class_tag: STRING = "<class>"
-	finish_class_tag: STRING = "</class>"
+--	class_tag_start: STRING = "<class>"
+--	class_tag_end: STRING = "</class>"
 
-	start_time_tag: STRING = "<time>"
-	finish_time_tag: STRING = "</time>"
+--	time_tag_start: STRING = "<time>"
+--	time_tag_end: STRING = "</time>"
 
-	start_code_tag: STRING = "<code>"
-	finish_code_tag: STRING = "</code>"
+--	code_tag_start: STRING = "<code>"
+--	code_tag_end: STRING = "</code>"
 
-	start_operands_tag: STRING = "<operands>"
-	finish_operands_tag: STRING = "</operands>"
+--	operands_tag_start: STRING = "<operands>"
+--	operands_tag_end: STRING = "</operands>"
 
-	start_variables_tag: STRING = "<all_variables>"
-	finish_variables_tag: STRING = "</all_variables>"
+--	all_variables_tag_start: STRING = "<all_variables>"
+--	all_variables_tag_end: STRING = "</all_variables>"
 
-	start_trace_tag: STRING = "<trace>"
-	finish_trace_tag: STRING = "</trace>"
+--	trace_tag_start: STRING = "<trace>"
+--	trace_tag_end: STRING = "</trace>"
 
-	start_hash_code_tag: STRING = "<hash_code>"
-	finish_hash_code_tag: STRING = "</hash_code>"
+--	hash_code_tag_start: STRING = "<hash_code>"
+--	hash_code_tag_end: STRING = "</hash_code>"
 
-	start_pre_state_tag: STRING = "<pre_state>"
-	finish_pre_state_tag: STRING = "</pre_state>"
+--	pre_state_tag_start: STRING = "<pre_state>"
+--	pre_state_tag_end: STRING = "</pre_state>"
 
-	start_post_state_tag: STRING = "<post_state>"
-	finish_post_state_tag: STRING = "</post_state>"
+--	post_state_tag_start: STRING = "<post_state>"
+--	post_state_tag_end: STRING = "</post_state>"
 
-	start_pre_serialization_length_tag: STRING = "<pre_serialization_length>"
-	finish_pre_serialization_length_tag: STRING = "</pre_serialization_length>"
+--	pre_serialization_length_tag_start: STRING = "<pre_serialization_length>"
+--	pre_serialization_length_tag_end: STRING = "</pre_serialization_length>"
 
-	start_pre_serialization_tag: STRING  = "<pre_serialization>"
-	finish_pre_serialization_tag: STRING = "</pre_serialization>"
+--	pre_serialization_tag_start: STRING  = "<pre_serialization>"
+--	pre_serialization_tag_end: STRING = "</pre_serialization>"
 
-	start_post_serialization_length_tag: STRING = "<post_serialization_length>"
-	finish_post_serialization_length_tag: STRING = "</post_serialization_length>"
+--	post_serialization_length_tag_start: STRING = "<post_serialization_length>"
+--	post_serialization_length_tag_end: STRING = "</post_serialization_length>"
 
-	start_post_serialization_tag: STRING = "<post_serialization>"
-	finish_post_serialization_tag: STRING = "</post_serialization>"
+--	post_serialization_tag_start: STRING = "<post_serialization>"
+--	post_serialization_tag_end: STRING = "</post_serialization>"
 
-	start_cdata_tag: STRING = "<![CDATA["
-	finish_cdata_tag: STRING = "]]>"
+--	cdata_tag_start: STRING = "<![CDATA["
+--	cdata_tag_end: STRING = "]]>"
 
 	serialization_tags: HASH_TABLE [STRING, STRING]
 			-- Serialization tags used in the files.
@@ -674,19 +676,19 @@ feature{NONE} -- Constants
 			if serialization_tags_cache = Void then
 				create serialization_tags_cache.make (16)
 				serialization_tags_cache.compare_objects
-				serialization_tags_cache.put (finish_class_tag,   start_class_tag)
-				serialization_tags_cache.put (finish_time_tag,         start_time_tag)
-				serialization_tags_cache.put (finish_code_tag,    start_code_tag)
-				serialization_tags_cache.put (finish_operands_tag,     start_operands_tag)
-				serialization_tags_cache.put (finish_variables_tag,    start_variables_tag)
-				serialization_tags_cache.put (finish_trace_tag,        start_trace_tag)
-				serialization_tags_cache.put (finish_hash_code_tag,     start_hash_code_tag)
-				serialization_tags_cache.put (finish_pre_state_tag, start_pre_state_tag)
-				serialization_tags_cache.put (finish_post_state_tag, start_post_state_tag)
-				serialization_tags_cache.put (finish_pre_serialization_length_tag,  start_pre_serialization_length_tag)
-				serialization_tags_cache.put (finish_pre_serialization_tag,         start_pre_serialization_tag)
-				serialization_tags_cache.put (finish_post_serialization_length_tag,  start_post_serialization_length_tag)
-				serialization_tags_cache.put (finish_post_serialization_tag,         start_post_serialization_tag)
+				serialization_tags_cache.put (class_tag_end,   class_tag_start)
+				serialization_tags_cache.put (time_tag_end,         time_tag_start)
+				serialization_tags_cache.put (code_tag_end,    code_tag_start)
+				serialization_tags_cache.put (operands_tag_end,     operands_tag_start)
+				serialization_tags_cache.put (all_variables_tag_end,    all_variables_tag_start)
+				serialization_tags_cache.put (trace_tag_end,        trace_tag_start)
+				serialization_tags_cache.put (hash_code_tag_end,     hash_code_tag_start)
+				serialization_tags_cache.put (pre_state_tag_end, pre_state_tag_start)
+				serialization_tags_cache.put (post_state_tag_end, post_state_tag_start)
+				serialization_tags_cache.put (pre_serialization_length_tag_end,  pre_serialization_length_tag_start)
+				serialization_tags_cache.put (pre_serialization_tag_end,         pre_serialization_tag_start)
+				serialization_tags_cache.put (post_serialization_length_tag_end,  post_serialization_length_tag_start)
+				serialization_tags_cache.put (post_serialization_tag_end,         post_serialization_tag_start)
 			end
 
 			Result := serialization_tags_cache

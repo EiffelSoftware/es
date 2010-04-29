@@ -24,24 +24,29 @@ feature -- Operation
 		require
 			directory_exists: True -- the directory exists.
 		local
+			l_name: STRING
 			l_dir: DIRECTORY
 			l_file_name: FILE_NAME
 			l_file: KL_TEXT_OUTPUT_FILE
 			l_class_content: STRING
+			l_length: INTEGER
 		do
 			is_successful := True
 
 			-- Prepare test case directory.
---			update_uuid
-			create l_file_name.make_from_string (a_dir_name)
-			l_file_name.set_subdirectory (tc_class_under_test)
-			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
-			recursive_create_directory (l_file_name.string)
+			prepare_directory (a_dir_name)
+--			create l_file_name.make_from_string (a_dir_name)
+--			l_file_name.set_subdirectory (tc_class_under_test)
+--			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
+--			recursive_create_directory (l_file_name.string)
 
 			-- Create test case file.
-			l_file_name.set_file_name (tc_class_name)
-			l_file_name.add_extension (tc_name_extension)
-			create l_file.make (l_file_name)
+			l_name := tc_class_full_path (a_dir_name)
+--			l_length := 255 - l_file_name.string.count - 2
+--			truncate_class_name (l_length)
+--			l_file_name.set_file_name (tc_class_name)
+--			l_file_name.add_extension (tc_name_extension)
+			create l_file.make (l_name)
 
 			-- Write test case.
 			l_file.recursive_open_write
@@ -55,6 +60,16 @@ feature -- Operation
 		end
 
 feature{NONE} -- Construction
+
+	prepare_directory (a_dir_name: STRING)
+			-- Prepare the directory where the class will be saved.
+		deferred
+		end
+
+	tc_class_full_path (a_dir_name: STRING): STRING
+			-- Full path of the test case file.
+		deferred
+		end
 
 	tc_class_content: STRING
 			-- Construct a test case class, with its name in 'name' and content in 'content'.

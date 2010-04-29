@@ -9,6 +9,9 @@ class
 
 feature -- Constants
 
+	test_case_tag_start: STRING = "<test_case>"
+	test_case_tag_end: STRING = "</test_case>"
+
 	time_tag_start: STRING = "<time>"
 	time_tag_end: STRING = "</time>"
 

@@ -94,6 +94,49 @@ feature{NONE} -- Implementation
 			current_data := Void
 		end
 
+	prepare_directory (a_dir_name: STRING)
+			-- <Precursor>
+		local
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make_from_string (a_dir_name)
+			l_file_name.set_subdirectory (tc_class_under_test)
+			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
+			recursive_create_directory (l_file_name.string)
+		end
+
+	truncate_class_name (a_length: INTEGER)
+			-- Truncate the class name so that it contains no more than 'a_length' characters.
+			-- Due to the constraint on the length of file name, we need to truncate the extra part.
+			-- This may result in incomplete information in the file name.
+		local
+			l_name: STRING
+		do
+			l_name := tc_class_name
+			if l_name.count > a_length then
+				session.error_handler.report_warning_message ("Class name truncated: " + l_name)
+				tc_class_name_cache := l_name.substring (1, a_length)
+			end
+		end
+
+	tc_class_full_path (a_dir_name: STRING): STRING
+			-- <Precursor>
+		local
+			l_file_name: FILE_NAME
+			l_length: INTEGER
+		do
+			create l_file_name.make_from_string (a_dir_name)
+			l_file_name.set_subdirectory (tc_class_under_test)
+			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
+			-- Make sure the length of file name does not exceed 255.
+			l_length := 255 - l_file_name.string.count - 2
+			truncate_class_name (l_length)
+			l_file_name.set_file_name (tc_class_name)
+			l_file_name.add_extension (tc_name_extension)
+
+			Result := l_file_name.string
+		end
+
 	tc_class_name: STRING
 			-- <Precursor>
 			-- Get test case class name 'tc_class_name_cache'.
@@ -115,6 +158,32 @@ feature{NONE} -- Implementation
 				tc_class_name_cache := l_name
 			end
 			Result := tc_class_name_cache
+		end
+
+	string_to_identifier (a_str: STRING): STRING
+			-- Get an identifier out of 'a_str' by removing all the invalid characters.
+		local
+			l_is_start: BOOLEAN
+			l_char: CHARACTER
+			l_index: INTEGER
+		do
+			l_is_start := True
+			from
+				create Result.make (a_str.count)
+				l_index := 1
+			until
+				l_index > a_str.count
+			loop
+				l_char := a_str[l_index]
+				if (l_is_start and then l_char.is_alpha)
+						or else (not l_is_start and then (l_char.is_alpha_numeric or else l_char = '_')) then
+					Result.append_character (l_char)
+					if l_is_start then
+						l_is_start := False
+					end
+				end
+				l_index := l_index + 1
+			end
 		end
 
 	tc_exception_code: STRING
@@ -344,10 +413,9 @@ feature{NONE} -- Implementation
 			l_line: STRING
 		do
 			l_data := a_object
-			check l_data.count /= 0 end
 
 			from
-				create Result.make (l_data.count * 4)
+				create Result.make (l_data.count * 4 + 1)
 				create l_line.make (128)
 				l_index := 1
 				l_data.start
@@ -416,7 +484,7 @@ feature{NONE} -- Implementation
 			l_lines: LIST[STRING]
 			l_exception_code: STRING
 			l_recipient_class, l_recipient_feature: STRING
-			l_assertion_tag: STRING
+			l_assertion_tag, l_assertion_tag_new: STRING
 			l_start, l_end: INTEGER
 			l_str: STRING
 			l_done: BOOLEAN
@@ -454,7 +522,11 @@ feature{NONE} -- Implementation
 				if l_assertion_tag.is_empty then
 					tc_assertion_tag_cache := "TAG_noname"
 				else
-					tc_assertion_tag_cache := "TAG_" + l_assertion_tag
+					l_assertion_tag_new := string_to_identifier (l_assertion_tag)
+					if l_assertion_tag /~ l_assertion_tag_new then
+						session.error_handler.report_error_message ("Unexpected character(s) in the failing assertion tag: " + l_assertion_tag)
+					end
+					tc_assertion_tag_cache := "TAG_" + l_assertion_tag_new
 				end
 
 				-- Breakpoint index
