@@ -215,6 +215,7 @@ feature{NONE} -- Implementation
     			if i < l_count then
     				Result.append_character (',')
     			end
+    			i := i + 1
     			l_tbl.forth
     		end
     		l_tbl.go_to (l_cursor)
