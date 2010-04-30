@@ -208,7 +208,7 @@ feature -- Operations
 			end
 
 			if not error_handler.has_errors then
-				-- Make sure all class inherit in some way from the class we declare in
+				-- Make sure all classes inherit in some way from the class we declare in
 				from
 					found_constants.start
 				until
@@ -234,7 +234,7 @@ feature -- Operations
 				l_constant_kind := const_ast_to_type (a_constant.target_node)
 				parsing_helper.parse_type (l_constant_kind)
 				l_constant_type_as := parsing_helper.parsed_type
-				l_constant_type := type_checker.written_type_from_type_as (l_constant_type_as, l_source_class, l_source_feature)
+				l_constant_type := type_checker.written_type_from_type_as (l_constant_type_as, l_source_feature, l_source_class)
 
 				parsing_helper.parse_feature (a_constant_name+":"+l_constant_kind+" = "+a_constant.out)
 				create l_feat_list.make (1)

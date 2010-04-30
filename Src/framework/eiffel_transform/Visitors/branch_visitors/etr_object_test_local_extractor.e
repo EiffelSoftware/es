@@ -122,7 +122,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		do
 			if attached l_as.name and attached not current_scope.is_empty then
 				if attached l_as.type then
-					l_written_type := type_checker.written_type_from_type_as (l_as.type, context.class_context.written_class, context.written_feature)
+					l_written_type := type_checker.written_type_from_type_as (l_as.type, context.written_feature, context.class_context.written_class)
 				else
 					type_checker.check_ast_type_at (l_as.expression, context, current_path)
 					l_written_type := type_checker.last_type

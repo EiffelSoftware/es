@@ -61,7 +61,7 @@ feature {AST_EIFFEL} -- Roundtrip
 
 			if attached l_as.name then
 				if attached l_as.type then
-					l_written_type := type_checker.written_type_from_type_as (l_as.type, context.class_context.written_class, l_feat_context.written_feature)
+					l_written_type := type_checker.written_type_from_type_as (l_as.type, l_feat_context.written_feature, context.class_context.written_class)
 				else
 					type_checker.check_ast_type_at (l_as.expression, context, l_as.path)
 					l_written_type := type_checker.last_type

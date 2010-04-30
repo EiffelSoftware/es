@@ -190,19 +190,24 @@ feature -- Output
 
 feature -- Type evaluation
 
-	written_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
-			-- Returns the type of `a_type' as it was written
+	written_type_from_type_as (a_type: TYPE_AS; a_feature: FEATURE_I; a_class: detachable CLASS_C; ): TYPE_A
+			-- Returns the type of `a_type' as it was written in the context of `a_feature' seen from `a_class'
 		require
 			type_non_void: a_type /= void
-			context_set: a_written_class /= void and a_feature /= void
+			context_set: a_feature /= void
+			conforms: attached a_class implies a_class.inherits_from (a_feature.written_class)
 		local
 			l_generated_type, l_resolved_type: TYPE_A
 		do
-			l_generated_type := type_a_generator.evaluate_type (a_type, a_written_class)
-			type_a_checker.init_for_checking (a_feature, a_written_class, void, void)
+			l_generated_type := type_a_generator.evaluate_type (a_type, a_feature.written_class)
+			type_a_checker.init_for_checking (a_feature, a_feature.written_class, void, void)
 			l_resolved_type := type_a_checker.solved(l_generated_type, void)
 
-			Result := l_resolved_type
+			if attached a_class and then a_feature.written_class.class_id /= a_class.class_id then
+				Result := l_resolved_type.evaluated_type_in_descendant (a_feature.written_class, a_class, a_feature)
+			else
+				Result := l_resolved_type
+			end
 		end
 
 	explicit_type_from_type_as (a_type: TYPE_AS; a_written_class: CLASS_C; a_feature: FEATURE_I): TYPE_A
@@ -213,7 +218,7 @@ feature -- Type evaluation
 		local
 			l_written_type: TYPE_A
 		do
-			l_written_type := written_type_from_type_as(a_type, a_written_class, a_feature)
+			l_written_type := written_type_from_type_as(a_type, a_feature, a_written_class)
 			Result := l_written_type.actual_type
 
 			if not Result.is_explicit then

@@ -199,9 +199,7 @@ feature -- Test features
 	test_typechecker
 		local
 			l_trans, l_expr: ETR_TRANSFORMABLE
-			l_class_context: ETR_CLASS_CONTEXT
 			l_feat_context: ETR_FEATURE_CONTEXT
-			l_feat: FEATURE_I
 		do
 			l_trans := transformable_factory.new_feature_transformable ("M_EX", "test")
 
@@ -213,9 +211,7 @@ feature -- Test features
 			dbg_assert ("correct_type_1", type_checker.last_type.dump.is_equal ("INTEGER_32"))
 
 			-- Typecheck in a mixed context
-			l_class_context := context_factory.new_class_context ("A2")
-			l_feat := feature_of_compiled_class ("A", "a_feature")
-			l_feat_context := l_class_context.corresponding_feature (l_feat)
+			l_feat_context := context_factory.new_feature_context ("A2", "a_feature")
 
 			l_expr := transformable_factory.new_expr ("Result.item(index)", l_feat_context)
 			type_checker.check_transformable (l_expr)
